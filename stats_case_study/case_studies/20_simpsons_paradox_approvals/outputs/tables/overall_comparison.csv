@@ -1,0 +1,6 @@
+,estimate,ci_low,ci_high
+approval rate before,0.6958333333,0.6875404896,0.7040008362
+approval rate after,0.6569333333,0.6492968406,0.6644894663
+difference (percentage points),-3.89,-5.0101573602,-2.7698426398
+risk ratio,0.9440958084,,
+odds ratio,0.837045691,0.7950546221,0.8812545318

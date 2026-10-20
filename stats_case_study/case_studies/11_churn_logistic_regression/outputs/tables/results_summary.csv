@@ -1,0 +1,10 @@
+,Value
+Churn rate,"10.5% over 6 months (1,255 of 12,000)"
+Complaints (raw),"raw risk ratio 2.3, odds ratio 2.6 (any complaint); RR 3.3 for 2+"
+Complaints (adjusted),"AME +7.6 pp (1), +20.2 pp (2+)"
+Other drivers,salary account -7.8 pp; one more product -2.8 pp; balance −10 pts +2.1 pp
+Tenure (non-linear),spline LR p = < 0.001; tenure 1 → 5 yrs -6.1 pp
+Complaints × salary account,"LR p = 0.090: not significant, dropped"
+Not drivers,region LR p = 0.97; segment LR p = 0.26
+Model quality (test),AUC 0.75 (0.72–0.78); Hosmer-Lemeshow p = 0.29
+Call list,"break-even p = 14.3%; top 1,000: 353 churners reached, realised net value ₹882,600"

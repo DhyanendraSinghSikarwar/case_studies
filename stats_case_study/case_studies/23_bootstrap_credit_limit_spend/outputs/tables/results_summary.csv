@@ -1,0 +1,7 @@
+,Value
+Distribution,skewness 12; mean ÷ median 1.9; top 1% hold 15% of spend
+Mean,"difference in means ₹2,003 (BCa −1,141 to 5,733)"
+Median,"difference in medians ₹1,382 (BCa 254 to 2,519); ratio 1.09"
+Big spenders and utilisation,"share over ₹50,000 +1.5 pp; spend per rupee of limit −3.2 pp"
+Coverage,"mean, n = 30: t 86%, percentile 85%, BCa 88%, bootstrap-t 91%"
+Failures,"max 0%; n = 8 mean 76%; autocorrelated: i.i.d. 58%, block 88%"

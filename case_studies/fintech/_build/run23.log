@@ -1,0 +1,32 @@
+C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\zmq\_future.py:718: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+cs23_transaction_purpose_classification.ipynb: executed OK in 3427s (attempt 1)
+ol of Business\Documents\personal\case_studies\fintech\_build\nbtool.py", line 149, in <module>
+    {"src2nb": lambda: src2nb(*args), "run": lambda: run(*args), "dump": lambda: dump(*args), "fill": lambda: fill(*args),
+  File "C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\case_studies\fintech\_build\nbtool.py", line 149, in <lambda>
+    {"src2nb": lambda: src2nb(*args), "run": lambda: run(*args), "dump": lambda: dump(*args), "fill": lambda: fill(*args),
+                                                     ^^^^^^^^^^
+  File "C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\case_studies\fintech\_build\nbtool.py", line 46, in run
+    ExecutePreprocessor(timeout=-1, kernel_name="fintech-cases").preprocess(nb, {"metadata": {"path": "."}})
+  File "C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\nbconvert\preprocessors\execute.py", line 97, in preprocess
+    with self.setup_kernel():
+         ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\nbclient\client.py", line 603, in setup_kernel
+    self.start_new_kernel_client()
+  File "C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jupyter_core\utils\__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\asyncio\base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\nbclient\client.py", line 566, in async_start_new_kernel_client
+    await ensure_async(self.kc.wait_for_ready(timeout=self.startup_timeout))
+  File "C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jupyter_core\utils\__init__.py", line 214, in ensure_async
+    result = await obj
+             ^^^^^^^^^
+  File "C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\jupyter_client\client.py", line 208, in _async_wait_for_ready
+    raise RuntimeError("Kernel didn't respond in %d seconds" % timeout)
+RuntimeError: Kernel didn't respond in 60 seconds

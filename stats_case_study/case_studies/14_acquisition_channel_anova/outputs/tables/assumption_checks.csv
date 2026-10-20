@@ -1,0 +1,5 @@
+,statistic,p_value
+Levene (mean-centred),158.8002012707,0.0
+Brown-Forsythe (median-centred),158.5596800927,0.0
+residual skewness,-0.0264038772,
+residual excess kurtosis,0.7019260261,

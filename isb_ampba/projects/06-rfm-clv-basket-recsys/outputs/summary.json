@@ -1,0 +1,64 @@
+{
+  "segments": {
+    "Champions": {
+      "customers": 1166,
+      "customer_share": 0.2324561404,
+      "revenue_share": 0.6870511725
+    },
+    "Loyal": {
+      "customers": 1471,
+      "customer_share": 0.293261563,
+      "revenue_share": 0.0915396985
+    },
+    "At-Risk": {
+      "customers": 642,
+      "customer_share": 0.1279904306,
+      "revenue_share": 0.0534976868
+    },
+    "Hibernating": {
+      "customers": 1278,
+      "customer_share": 0.254784689,
+      "revenue_share": 0.0312269406
+    },
+    "New": {
+      "customers": 208,
+      "customer_share": 0.0414673046,
+      "revenue_share": 0.0071372459
+    },
+    "Big-spenders": {
+      "customers": 251,
+      "customer_share": 0.0500398724,
+      "revenue_share": 0.1295472557
+    }
+  },
+  "silhouette_kmeans_final": 0.37659890991611356,
+  "kmeans_k_final": 4,
+  "silhouette_target": 0.35,
+  "silhouette_target_met": true,
+  "clv_mae_spend_model": 548.9827486611485,
+  "clv_mae_spend_baseline": 570.4701780679642,
+  "clv_spearman_spend_model": 0.6080004531638045,
+  "clv_spearman_spend_baseline": 0.5669100261726316,
+  "clv_top_decile_share_predicted_12m": 0.5888495738734085,
+  "clv_top_decile_share_of_actual_holdout_spend": 0.606755461833988,
+  "n_bundles": 20,
+  "top_bundle_lift": 49.991,
+  "recsys_primary_protocol": "repeat_allowed",
+  "recsys_als_ndcg": 0.24210790652617784,
+  "recsys_popularity_ndcg": 0.08875671469590601,
+  "recsys_als_ndcg_ratio": 2.7277700324496723,
+  "recsys_als_ndcg_ratio_ci95": [
+    2.5399253182076302,
+    2.989573913374379
+  ],
+  "recsys_target_ratio": 1.3,
+  "recsys_target_met": true,
+  "recsys_secondary_protocol": "discovery",
+  "recsys_secondary_als_ndcg_ratio": 2.203066992308701,
+  "recsys_best_model_primary": "als",
+  "campaign_funded_roi": 1.5246387760084037,
+  "campaign_funded_net_profit_gbp": 7623.193880042017,
+  "campaign_unconstrained_roi": 1.0891046454326994,
+  "n_customers": 5016,
+  "runtime_seconds_pipeline": 1233.2
+}

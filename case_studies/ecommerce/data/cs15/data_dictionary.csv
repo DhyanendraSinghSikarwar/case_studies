@@ -1,0 +1,5 @@
+field(s),meaning
+"purchases: user, item, day, order_ts","Customer, item, day 0–179, timestamp"
+complement,1 if the purchase followed an accessory pairing (simulation flag)
+"items: item, category, list_price_inr",Item attributes
+"_log_pop_z, true_params.npz","HIDDEN: popularity, latent taste vectors (digital twin only)"

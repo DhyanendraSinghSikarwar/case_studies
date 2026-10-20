@@ -1,0 +1,10 @@
+field(s),meaning
+"txn_id, ts, business_line, merchant_id","Transaction identity, time, merchant line (gaming / ecommerce / edtech)"
+"customer_id, device_id, ip, card_hash, phone_hash",Entity tokens (graph nodes)
+"ip_type, ip_state, bin_state",Geo/IP: datacenter/VPN flag; IP state vs card-issuing state
+"email_type, phone_type",Contact intelligence: disposable / virtual
+"emulator, device_age_days, new_account",Device intelligence
+negative_list_hit,Any entity on a negative list (incl. regulator lists)
+"amount_inr, promo_used, payment_status","Value, promo code used, success/declined"
+"is_fraud, label_date",Confirmed fraud and when it was confirmed
+_type,HIDDEN truth: legit / card_testing / stolen_card / promo_abuse (used only for cost and diagnostics)

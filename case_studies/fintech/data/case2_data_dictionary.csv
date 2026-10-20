@@ -1,0 +1,29 @@
+column,type,description,range / values
+application_id,id,Unique application,—
+business_id,id,Unique business (re-applications share it),—
+application_date,date,Application (≈ disbursal) date,Apr 2019 – Mar 2021
+source_channel,cat,Origination channel,"Direct Web, Mobile App, DSA partners, Marketplace"
+industry,cat,Business sector,8 sectors
+city_tier,cat,City tier of business address,Tier 1/2/3
+constitution,cat,Legal form,Proprietorship / Partnership / Private Ltd
+vintage_years,num,Business age (years),1–40; 99 = unknown (sentinel)
+loan_amount_inr,num,Loan requested/sanctioned (₹),₹1 lakh – ₹50 lakh
+bureau_score,num,Bureau (CIBIL-style) score,300–900; blank = new-to-credit; 0 = no-hit sentinel
+bureau_enquiries_6m,num,Credit enquiries in last 6 months,count
+avg_monthly_credits_inr,num,"AGGREGATE: average monthly credits (inflows), 12-month window",₹
+max_monthly_credit_inr,num,AGGREGATE: maximum monthly credit,₹
+credit_months_active,num,AGGREGATE: months (of 12) with business credits ('max credit months'),3–12
+avg_closing_balance_inr,num,AGGREGATE: average closing balance (≈ ADB),₹
+min_closing_balance_inr,num,AGGREGATE: minimum closing balance,₹
+balance_trend_pct,num,"TREND: slope of monthly balance, % per month",%
+credit_trend_pct,num,"TREND: slope of monthly credits, % per month",%
+credit_growth_qoq_pct,num,"MOMENTUM: credits growth, last quarter vs previous",%
+credit_growth_hoh_pct,num,MOMENTUM: half-year on half-year,%
+credit_growth_yoy_pct,num,MOMENTUM: year on year,%
+cheque_bounces_6m,num,NEGATIVE: inward cheque / NACH returns in 6 months,count
+credit_declines_6m,num,NEGATIVE: loan applications declined by other lenders in 6 months,count
+emi_to_adb,num,KEY RATIO: proposed EMI ÷ average daily balance,ratio
+gst_registered,flag,GST-registered business,0/1
+gst_turnover_12m_inr,num,GST: declared 12-month turnover (₹),₹; blank if not registered
+gst_filing_ontime_pct,num,GST: % of returns filed on time,0–100; blank if not registered
+default_90dpd_12m,target,1 = 90+ days past due within 12 months of disbursal,0/1

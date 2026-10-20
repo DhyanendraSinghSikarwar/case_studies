@@ -1,0 +1,3 @@
+screen,LR+ (alert),LR- (no alert),prior odds,posterior odds after alert,posterior probability after alert,posterior probability after NO alert
+Rule engine,32.1480150142,0.1539125041,0.0042446072,0.1364556962,0.1200712854,0.0006528716
+ML score,40.2118230397,0.1883623965,0.0042446072,0.1706833939,0.1457980823,0.0007988857

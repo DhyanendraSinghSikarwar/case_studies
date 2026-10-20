@@ -1,0 +1,3 @@
+experiment,true_lift_pp,baseline_rate
+A (checkout),0.1,0.05
+B (fee waiver),2.0,0.08

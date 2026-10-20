@@ -1,0 +1,11 @@
+quantity,estimate / value 1,ci_low / value 2,ci_high
+"Income elasticity (salaried), full model",0.8669597304,0.8340484874,0.8998709735
+Income elasticity (self-employed),1.030998446,0.9851115651,1.0768853269
+"Income elasticity, income-only model",0.8080892465,0.7806217168,0.8355567762
+Existing EMI % per ₹1k: individual,0.5994567803,0.4548252695,0.7442965267
+Existing EMI % per ₹1k: conditional,-1.229477176,-1.3261067711,-1.1327529532
+City tier block F-test p,0.3401977278,,
+Age F-test p,0.3113663514,,
+Income × employment interaction p,1e-10,,
+Holdout R² (log): income only → final,0.4688689017,0.6855526948,
+80% PI width (×): income only → final,3.1587746572,2.4897581144,

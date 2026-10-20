@@ -1,0 +1,178 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs27.py
+--- cell 8 (exec 3) ---
+270,950 rating rows | 80,000 users | 28,196 products rated | 1,500 sellers | generated in 55s
+   rating_id   user  product  seller  stars                  ts  _fake
+0          0  31066    17351     619      5 2025-09-10 16:08:00  False
+1          1  49004    16424    1457      5 2026-01-26 18:19:26  False
+2          2  78429    21259     926      1 2025-11-13 09:44:43  False
+3          3  31087    18553     703      5 2025-07-13 04:03:31  False
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0  ratings: rating_id, user, product, seller, sta...  One rating: who, what, which seller, 1 to 5 st...
+1                          products: product, seller                     Which seller owns each product
+2                                  users_truth: user                                            User id
+3  _fake (ratings), _is_fraud, _fraud_type, _styl...  HIDDEN truth: used only for validation and the...
+--- cell 12 (exec 5) ---
+duplicate rows (same rating_id)     1500
+invalid star values (not 1 to 5)      60
+missing timestamps                    80
+
+Clean: 269,310 ratings | users with at least 1 rating: 79,988 of 80,000 | users with 1 rating: 27.8% | with 2 to 3: 39.6% | with 10 or more: 4.3%
+Hidden truth: 1,076 fraud accounts (1.34%) | fake ratings 13,653 (5.07% of ratings)
+--- cell 14 (exec 6) ---
+[image]
+Mean stars: honest 4.10, fraud 3.91 | gaps under 10 minutes: honest 10.6%, fraud 53.3%
+Honest look-alikes: enthusiasts 1,540, batch raters 4,799
+--- cell 16 (exec 7) ---
+Rating-count matrix (80000, 5), gap-count matrix (80000, 20); users with 0 gaps: 27.8%; time-bucket base = 2.37
+                                                        parameters  log-likelihood          BIC
+view                   model                                                                   
+ratings (5 stars)      multinomial (no user variation)           4   -134,186.3000 268,413.1000
+                       Dirichlet-multinomial, K = 1              5   -127,232.8000 254,516.3000
+                       Dirichlet-multinomial, K = 2             11   -127,164.9000 254,441.2000
+                       Dirichlet-multinomial, K = 3             17   -127,150.0000 254,472.2000
+time gaps (20 buckets) multinomial (no user variation)          19   -205,803.5000 411,799.3000
+                       Dirichlet-multinomial, K = 1             20   -204,163.6000 408,529.7000
+                       Dirichlet-multinomial, K = 2             41   -200,164.8000 400,744.8000
+                       Dirichlet-multinomial, K = 3             62   -199,951.4000 400,530.6000
+
+Global Dirichlet (stars 1 to 5): [0.443 0.336 0.542 1.326 2.985] | concentration alpha0 = 5.63 | mean star share: [0.079 0.06  0.096 0.235 0.53 ]
+Global Dirichlet (time buckets): alpha0 = 28.4
+Likelihood-ratio statistic, Dirichlet vs multinomial (stars, 25,000-user sample): 13,907 on 1 df (chi-square p = 0.00e+00)
+--- cell 18 (exec 8) ---
+Fraud prevalence (AP of a random ranking): 0.0135 | total fraud accounts 1,076
+                                 AP    AUC   P@50  P@250  P@1000
+method                                                          
+BIRDNEST (stars + time, sum) 0.5765 0.8729 1.0000 1.0000  0.5810
+NEST stars only              0.2111 0.4167 1.0000 0.8520  0.2240
+NEST time only               0.7127 0.9386 1.0000 1.0000  0.7000
+NEST max(stars, time)        0.7187 0.9413 1.0000 1.0000  0.7050
+raw skew (no shrinkage)      0.0111 0.3399 0.0000 0.0000  0.0000
+raw burst share              0.0449 0.8155 0.0000 0.0280  0.0390
+volume (ratings count)       0.2323 0.9381 0.3400 0.3200  0.3130
+--- cell 20 (exec 9) ---
+[image]
+Top-250 composition by true type: {'defame': 167, 'burst_only': 44, 'boost': 39}
+--- cell 22 (exec 10) ---
+                                 ΔAP (base − other)  CI low  CI high  bootstrap p  p_holm
+vs BIRDNEST (stars + time, sum)                                                          
+NEST stars only                              0.3655  0.3418   0.3911       0.0050  0.0299
+NEST time only                              -0.1361 -0.1544  -0.1183       0.0050  0.0299
+NEST max(stars, time)                       -0.1422 -0.1606  -0.1261       0.0050  0.0299
+raw skew (no shrinkage)                      0.5654  0.5382   0.5906       0.0050  0.0299
+raw burst share                              0.5316  0.5053   0.5559       0.0050  0.0299
+volume (ratings count)                       0.3442  0.3164   0.3705       0.0050  0.0299
+--- cell 24 (exec 11) ---
+Flag top 800 under each method. Among accounts with 1 to 2 ratings: raw skew flags 769, NEST stars flags 0 (Fisher p = 0.00e+00); overall precision: raw 0.000, NEST stars 0.279, BIRDNEST 0.681
+[image]
+     users  fraud users  raw skew flagged  raw skew precision  NEST stars flagged  NEST stars precision  BIRDNEST flagged  BIRDNEST precision
+1    22259            0               668              0.0000                   0                   NaN                 0                 NaN
+2    19244           29               101              0.0000                   0                   NaN                 3              0.0000
+3    12466           39                25              0.0000                  84                0.0000                41              0.0000
+4-5  13737           44                 5              0.0000                 237                0.0000                89              0.0000
+6-9   8806          226                 1              0.0000                 264                0.1930               182              0.5050
+10+   3476          738                 0                 NaN                 215                0.8000               485              0.9340
+--- cell 26 (exec 12) ---
+Flag top 1600: BIRDNEST precision 0.405, recall 0.602 | chi-square across types = 525.2 (df 4), p = 2.39e-112 | honest accounts flagged: 952
+Honest accounts flagged by style: {'normal': 791, 'batch': 150, 'enthusiast': 11} | flag rate by style: {'normal': 0.0109, 'enthusiast': 0.0071, 'batch': 0.0313}
+[image]
+            accounts  BIRDNEST recall  CI low  CI high  stars only recall  time only recall
+type                                                                                       
+boost            452           0.6350  0.5900   0.6780             0.0000            0.8810
+defame           216           1.0000  0.9830   1.0000             1.0000            0.8890
+burst_only       162           0.8520  0.7890   0.8980             0.0800            0.9510
+skew_only        140           0.0140  0.0040   0.0510             0.0000            0.1640
+stealth          106           0.0470  0.0200   0.1060             0.0000            0.1700
+--- cell 28 (exec 13) ---
+Null scores simulated: 640,000 | users with p ≤ 0.001: 307 (0.38%) | median p of honest 'normal' users: 0.547
+                  flagged  true fraud among flagged  realised false-discovery share  CI low  CI high  recall
+rule                                                                                                        
+BH at 5%              116                       116                          0.0000  0.0000   0.0321  0.1078
+BH at 1%                0                         0                          0.0000     NaN      NaN  0.0000
+Bonferroni at 5%        0                         0                          0.0000     NaN      NaN  0.0000
+--- cell 30 (exec 14) ---
+[image]
+                             boost  skew-only  burst-only
+ratings left by the account                              
+2                           0.0290     0.0000      0.0400
+3                           0.0160     0.0000      0.0360
+4                           0.0360     0.0000      0.0500
+5                           0.0220     0.0000      0.0540
+6                           0.0480     0.0000      0.0840
+8                           0.1040     0.0000      0.1450
+10                          0.1980     0.0000      0.2630
+15                          0.4890     0.0000      0.5390
+20                          0.7390     0.0000      0.7440
+30                          0.9920     0.0000      0.9870
+
+Precision@250 = 1.000. Labels needed for ±5 points, planning with the paper's documented 84.4% precision (finite population of 250): 113 | random labels needed for prevalence ±0.3 points: 5,664 | expected measured precision if experts mislabel 5% of cases: 0.950
+--- cell 32 (exec 15) ---
+[image]
+                                  ratings stars 1..5 counts  raw average  posterior mean  CI low  CI high  BIRDNEST score
+account                                                                                                                  
+most suspicious account                43       33 10 0 0 0       1.2330          1.5650  1.3120   1.9200         56.5510
+honest, one 5-star rating               1         0 0 0 0 1       5.0000          4.2170  3.1700   4.8340         14.3460
+honest, typical (6 to 9 ratings)        6         0 1 0 2 3       4.1670          4.1200  3.3910   4.6460         14.0720
+--- cell 34 (exec 16) ---
+Test users 40,000 with 539 fraud accounts
+                                   model  training labels  AP (test half)  CI low  CI high  fraud labels in training
+0     BIRDNEST (unsupervised, no labels)                0          0.5760  0.5280   0.6140                       NaN
+1               supervised A (no seller)              500          0.6490  0.6030   0.6890                   10.0000
+2  supervised B (+ seller concentration)              500          0.7320  0.6910   0.7620                   10.0000
+3               supervised A (no seller)             2000          0.6670  0.6260   0.7030                   25.0000
+4  supervised B (+ seller concentration)             2000          0.8020  0.7660   0.8300                   25.0000
+5               supervised A (no seller)             8000          0.7890  0.7560   0.8160                  114.0000
+6  supervised B (+ seller concentration)             8000          0.9250  0.9080   0.9420                  114.0000
+7               supervised A (no seller)            40000          0.8750  0.8520   0.8940                  537.0000
+8  supervised B (+ seller concentration)            40000          0.9670  0.9570   0.9760                  537.0000
+--- cell 36 (exec 17) ---
+Targeted sellers: 1148 | mean rating shift for boosted sellers +0.05 stars (801 sellers), for defamed -0.18 (345 sellers) | mean absolute shift 0.09
+Share of the rating distortion removed by reviewing the top k: {200: np.float64(0.339), 400: np.float64(0.598), 800: np.float64(0.6), 1600: np.float64(0.442), 3200: np.float64(0.162)}
+    review depth k (sim) share of users scenario  precision@k  harm from distorted ratings (₹ cr/yr)  benefit (₹ cr/yr)  review + false-flag cost (₹ cr/yr)  \
+0                    200          0.25%    worst       1.0000                                 1.0490             0.3560                              1.5000   
+1                    200          0.25%     base       1.0000                                10.4900             3.5580                              1.0000   
+2                    200          0.25%     best       1.0000                                62.9400            21.3470                              0.7500   
+3                    400          0.50%    worst       0.9700                                 1.0490             0.6270                              3.4500   
+4                    400          0.50%     base       0.9700                                10.4900             6.2720                              2.3000   
+5                    400          0.50%     best       0.9700                                62.9400            37.6320                              1.7250   
+6                    800          1.00%    worst       0.6810                                 1.0490             0.6290                             15.5620   
+7                    800          1.00%     base       0.6810                                10.4900             6.2900                             10.3750   
+8                    800          1.00%     best       0.6810                                62.9400            37.7400                              7.7810   
+9                   1600          2.00%    worst       0.4050                                 1.0490             0.4640                             47.7000   
+10                  1600          2.00%     base       0.4050                                10.4900             4.6420                             31.8000   
+11                  1600          2.00%     best       0.4050                                62.9400            27.8510                             23.8500   
+12                  3200          4.00%    worst       0.2250                                 1.0490             0.1700                            117.0000   
+13                  3200          4.00%     base       0.2250                                10.4900             1.7030                             78.0000   
+14                  3200          4.00%     best       0.2250                                62.9400            10.2170                             58.5000   
+
+    net (₹ cr/yr)  
+0         -1.1440  
+1          2.5580  
+2         20.5970  
+3         -2.8230  
+4          3.9720  
+5         35.9070  
+6        -14.9340  
+7         -4.0850  
+8         29.9590  
+9        -47.2360  
+10       -27.1580  
+11         4.0010  
+12      -116.8300  
+13       -76.2970  
+14       -48.2830
+--- cell 38 (exec 18) ---
+Base case: average value of removing one fraud account = ₹780 a year; break-even precision p* = (c + f) / (V + f) = 0.8633
+Capacity check: a review team of 100 accounts per analyst-day needs 11 analyst-days to clear every true fraud account in the sim; at platform scale ×125
+               precision in the band  worth reviewing at base-case costs
+rank band                                                               
+1 to 250                      1.0000                                True
+251 to 500                    0.7960                               False
+501 to 1000                   0.2640                               False
+1001 to 2000                  0.0910                               False
+2001 to 4000                  0.0295                               False
+4001 to 8000                  0.0160                               False
+8001 to 16000                 0.0062                               False

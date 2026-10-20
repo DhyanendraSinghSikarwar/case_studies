@@ -1,0 +1,10 @@
+Finding,Value
+Correlation of the two income signals (salaried),r = 0.996
+VIF of each income signal (full model),116 and 115
+Income coefficients across quarters,declared +0.24 to +0.86; credits -0.04 to +0.60
+Sum of the two (income elasticity),0.74 to 0.84 (SE ≈ 0.035)
+Q2: individual p-values / joint test,"p = 0.12 and 0.07; joint F = 225, p < 0.001"
+Quarterly models' predictions (same customers),median gap 6.2%
+Pilot: full model error,+18% (under-prediction)
+Pilot: error range across quarterly fits,-3% to +43%
+Final model: max VIF,4.2

@@ -1,0 +1,10 @@
+field(s),meaning
+"purchases: order_id, customer_id, product_id, category, day","Order, customer, product, category; day 0–179 of the window"
+size_ordered_idx / size_ordered,"Ordered size as an index 0–5 (S-, S, M, L, XL, XXL) / label"
+return_reason,"none, size_smaller, size_larger or other (label source; 4% of size reasons carry the wrong direction)"
+"customers: gender, age_band, city_tier",Customer attributes
+"pre_orders, pre_small_returns, pre_large_returns, usual_size",Prior-period history; usual_size = mean size of prior orders that were kept (blank for new customers)
+"products: brand, fabric, price_inr, launch_day, avg_rating_snapshot",Product attributes; launch_day ≥ 0 means launched inside the window (no reviews at snapshot)
+"reviews: product_id, day, review_text, fit_tag, rating","Review text (English / Hinglish), the platform's optional fit tag (small / ok / large) on ≈ 8% of reviews; all posted before the window"
+"public_fit_reviews: review_text, label",Public labelled fit reviews (stand-in for ModCloth)
+"_gap, _ret_u, _true_reason, _body, _runs, _perceived","HIDDEN truth: body-vs-garment gap, return draw, true return reason, body size, product offset, perceived fit (digital twin only)"

@@ -1,0 +1,140 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs01.py
+
+--- cell 8 (exec 3) ---
+221,500 rows | 220,000 unique sessions | generated in 34s
+                                          84795                37726                26043
+session_id                             S0084795             S0037726             S0026043
+ts                          2026-03-02 20:30:42  2026-03-14 13:08:02  2026-03-12 13:36:20
+city                                     Mumbai               Mumbai               Mumbai
+restaurant_id                             R0222                R0307                R0106
+hour                                         20                   13                   13
+weekday                                       0                    5                    3
+n_items                                       2                    3                    2
+distance_km                              1.9500               2.8800               4.1000
+rain                                          0                    0                    1
+kitchen_orders_vs_capacity               0.4780               1.1450               0.4200
+de_per_order                             0.8660               0.9730               0.6510
+shown_promise_min                       38.0000              34.0000              39.0000
+promise_offset_min                            0                    0                    0
+placed                                        0                    1                    0
+o2a_min                                     NaN               0.8700                  NaN
+fm_min                                      NaN               3.1100                  NaN
+wt_min                                      NaN               2.9200                  NaN
+lm_min                                      NaN              11.1600                  NaN
+o2r_min                                     NaN              18.0700                  NaN
+care_contact                                NaN               0.0000                  NaN
+cancelled_after_place                       NaN               0.0000                  NaN
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0  session_id, ts, city, restaurant_id, hour, wee...                           Cart session and context
+1                         n_items, distance_km, rain  Basket size, restaurant→customer distance (1,2...
+2           kitchen_orders_vs_capacity, de_per_order  Kitchen stress; delivery executives per active...
+3              shown_promise_min, promise_offset_min  Promise shown at cart; randomised perturbation...
+4                                             placed                          Customer placed the order
+5           o2a_min, fm_min, wt_min, lm_min, o2r_min  Order→assigned, first mile, wait, last mile, o...
+6                care_contact, cancelled_after_place  Customer-care contact; cancellation after placing
+7                        _prep_true, _rest_prep_mean          HIDDEN true prep time and restaurant mean
+--- cell 12 (exec 5) ---
+duplicate sessions                                              1500
+distance missing (geocoding failure)                            1200
+delivery time > 200 min (stuck app)                              300
+legs do not add up to O2R (|diff| > 0.05, placed, not stuck)       0
+placed orders with no legs                                         0
+
+Clean: 220,000 sessions | placed 146,772 | usable orders 146,472 (stuck-app orders excluded from training and scoring) | train 109,301 · test 37,171
+--- cell 14 (exec 6) ---
+[image]
+--- cell 16 (exec 7) ---
+Identity check: max |O2A + FM + WT + LM − O2R| = 0.020 min | total variance of O2R = 144.3 min²
+         mean min  SD min  share of Var(O2R)
+o2a_min    3.7760  4.2400             0.1090
+fm_min     6.2680  4.5040             0.1310
+wt_min     5.8210  7.2620             0.2170
+lm_min    17.4470  8.6220             0.5430
+         o2a_min  fm_min  wt_min  lm_min
+o2a_min   1.0000  0.2600 -0.4300  0.0700
+fm_min    0.2600  1.0000 -0.4700  0.1200
+wt_min   -0.4300 -0.4700  1.0000 -0.0600
+lm_min    0.0700  0.1200 -0.0600  1.0000
+--- cell 18 (exec 8) ---
+Test orders: 37,171. Note: the legacy promise is deliberately padded by +4 min, so its bias is positive; MAE is not the right yardstick for a *promise* (see 7.3).
+                                     MAE  MAPE %  BDC (±5 min)  ED (> 10 min late)  bias (pred − actual)  ΔMAE vs legacy CI low  CI high  Wilcoxon p
+1 legacy promise (band mean + 4)  9.5163 35.2756        0.2770              0.0838                5.0486                 0.0000   0.0000         NaN
+2 restaurant-hour mean (train)    8.2460 28.2442        0.3657              0.1321                1.1746                -1.3049  -1.2351      0.0000
+3 gradient boosting on O2R        4.6281 14.1538        0.6537              0.0750               -0.7518                -4.9622  -4.8228      0.0000
+4 sum of 4 independent leg models 4.9885 14.3824        0.6370              0.1191               -2.8453                -4.6000  -4.4479      0.0000
+5 joint multi-output network      4.6745 14.7164        0.6409              0.0628                0.0559                -4.9088  -4.7750      0.0000
+--- cell 20 (exec 9) ---
+[image]
+        mean promise (min)  coverage (delivered by promise)  binomial p (cov = τ)  late > promise + 5    MAE
+τ                                                                                                           
+0.5000             31.7627                           0.5026                0.3093              0.2003 4.6281
+0.6000             33.2202                           0.6037                0.1469              0.1508 4.7814
+0.7000             34.8995                           0.7026                0.2723              0.1059 5.3021
+0.8000             36.9658                           0.7992                0.6877              0.0676 6.3451
+0.9000             40.2516                           0.8977                0.1464              0.0327 8.6624
+--- cell 22 (exec 10) ---
+Randomised arm: OR per +1 promised minute = 0.9601 (95% CI 0.9538–0.9665), p = 2.5e-33 | observational slope OR = 0.9568 (adjusted for distance, rain, peak, city)
+Placement rate: −3 min 69.28%, 0 66.75%, +3 min 63.88%
+[image]
+Best promise quantile on the test week: τ = 0.5
+       hour  distance_km   rain   peak
+off                                   
+-3  17.0100       3.6960 0.1740 0.6780
+ 0  16.9960       3.6980 0.1710 0.6820
+ 3  16.9870       3.7270 0.1680 0.6810
+                net margin per session ₹  conversion  mean lateness cost ₹ per order  late > promise + 5  Δ vs legacy ₹/session  Δ CI low  Δ CI high
+promise                                                                                                                                             
+legacy promise                   32.6240      0.6750                          6.8470              0.1450                 0.0000       NaN        NaN
+τ = 0.5                          34.8220      0.7170                          6.6150              0.2000                 2.1980    2.1550     2.2380
+τ = 0.6                          34.7240      0.7050                          5.8670              0.1510                 2.1000    2.0610     2.1420
+τ = 0.7                          34.4340      0.6900                          5.2240              0.1060                 1.8100    1.7690     1.8540
+τ = 0.8                          33.8850      0.6720                          4.6730              0.0680                 1.2610    1.2160     1.3050
+τ = 0.9                          32.7090      0.6430                          4.1660              0.0330                 0.0850    0.0390     0.1340
+--- cell 24 (exec 11) ---
+[image]
+                        name  MAE: cart prediction only  MAE: independent stage model  MAE: chained stage model
+stage                                                                                                          
+1                    ordered                     4.6280                        4.6280                    4.6280
+2                   assigned                     4.6280                        4.2660                    4.2800
+3      arrived at restaurant                     4.6280                        3.9230                    3.9230
+4                  picked up                     4.6280                        1.3720                    1.3770
+             mean |bump| independent  mean |bump| chained  share > 5 min: independent  share > 5 min: chained  Wilcoxon p
+refresh                                                                                                                  
+stage 1 → 2                   1.3477               1.2067                      0.0402                  0.0379      0.0000
+stage 2 → 3                   1.2835               1.1126                      0.0376                  0.0345      0.0000
+stage 3 → 4                   3.5941               3.5565                      0.2313                  0.2291      0.0000
+--- cell 26 (exec 12) ---
+segment 'rain' is empty - skipped
+                                orders  coverage  CI low  CI high  binomial p vs 0.8  mean promise  late > +5   q_BH
+segment                                                                                                             
+peak (12–13, 19–21)              24915    0.7964  0.7914   0.8014             0.1587       39.7438     0.0771 0.2493
+off-peak                         12256    0.8047  0.7976   0.8117             0.1903       31.3185     0.0483 0.2616
+no rain                          37171    0.7992  0.7951   0.8032             0.6877       36.9658     0.0676 0.7565
+Bengaluru                        14759    0.8053  0.7989   0.8117             0.1062       37.5419     0.0663 0.1988
+Mumbai                           11781    0.7931  0.7856   0.8003             0.0605       37.1000     0.0697 0.1988
+Delhi                            10631    0.7974  0.7896   0.8050             0.4972       36.0173     0.0672 0.6077
+distance > 5 km                   7471    0.7925  0.7832   0.8017             0.1084       50.0941     0.0811 0.1988
+distance ≤ 2 km                   7671    0.8116  0.8027   0.8203             0.0106       28.8486     0.0598 0.0584
+cloud-kitchen-like (fast prep)   11282    0.8148  0.8075   0.8220             0.0001       32.3094     0.0548 0.0008
+slow kitchens (> 16 min)          7329    0.7922  0.7827   0.8014             0.0960       45.3621     0.0961 0.1988
+low rider supply (< 0.7)         12477    0.7998  0.7927   0.8068             0.9554       41.0848     0.0842 0.9554
+--- cell 28 (exec 13) ---
+Between city-hour SD of conversion = 0.054: a switchback (randomise city-hour blocks) needs ≈ 463 blocks per arm to detect +1 pp (≈ 9 days across 3 cities × 17 active hours)
+                                    sessions per arm
+metric            effect to detect                  
+conversion        +0.5 pp                     138746
+                  +1.0 pp                      34550
+                  +2.0 pp                       8566
+care-contact rate -0.5 pp                      53006
+                  -1.0 pp                      12929
+--- cell 30 (exec 14) ---
+Best τ = 0.5: conversion 71.74% vs legacy 67.48%; late > +5: 20.0% vs 14.5%; mean promise 31.8 vs legacy 37.6 min
+                                 Δ ₹ per session  ₹ crore / year
+scenario                                                        
+worst (CI low, elasticity −30%)           1.5090         41.2730
+base (point estimate)                     2.1980         60.1350
+best (CI high)                            2.2380         61.2140

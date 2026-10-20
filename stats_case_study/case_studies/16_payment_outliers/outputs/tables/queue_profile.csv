@@ -1,0 +1,10 @@
+,dashboard queue,all payments
+payments,58.0,20230.0
+median amount (₹),412312.5,2148.0
+median ratio to customer's usual,4.2861384644,1.0028882876
+manual-keyed share,0.3793103448,0.017844785
+new-device share,0.0517241379,0.0411764706
+location-mismatch share,0.0517241379,0.0180425111
+festival-week share,0.1034482759,0.0842807711
+Privileged tier share,0.3620689655,0.0394463668
+median tenure (months),58.5,41.0

@@ -1,0 +1,6 @@
+interaction,LR_stat,df,p_value,coef,p_holm,decision
+dti × self-employed,35.1315574213,1,3.1e-09,1.6754008045,1.54e-08,include
+utilisation × bureau score,0.032313626,1,0.8573410563,0.0356987835,1.0,exclude
+enquiries × DTI,5.1816456144,1,0.0228266948,0.2142557005,0.0913067793,exclude
+no-hit × age,1.7061417965,1,0.1914867188,0.0096245447,0.5744601565,exclude
+log income × self-employed,0.2294556217,1,0.6319277709,-0.0386160434,1.0,exclude

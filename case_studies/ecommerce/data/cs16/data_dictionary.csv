@@ -1,0 +1,9 @@
+field(s),meaning
+"sessions: session_id, user_id, day, area",One search; day 0 to 59; delivery area 0 to 4
+query_raw,"Query as typed (messy case, spaces, '?')"
+"served_arm, n_results, n_clicks, first_click_pos, ordered_listing","Which system served it, how many results were shown, clicks, first clicked position, listing ordered (-1 if none)"
+"impressions: session_id, position, listing_id, clicked",What was shown (up to 20) and whether it was clicked
+"listings: listing_id, restaurant_id, name_id, price_inr, orders_norm, rating, prep_min, dist_km, cost_for_two","A dish offered by a restaurant, with business features"
+"dish_names: name_id, dish_name","1,200 menu names; families.csv holds the taxonomy (family, cluster, category)"
+"_type, _family, _cluster, _modifier, _intent, _misspelled, _edit_dist, _bot",HIDDEN: true query intent and spelling noise (used only for evaluation)
+true_relevance.npz,HIDDEN: graded relevance of every menu name for every query intent; area availability

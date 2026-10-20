@@ -1,0 +1,464 @@
+#%% md
+# Case Study 16 — How Much Can a Merchant Borrow? Cash-Flow Forecasting from QR Data, Burden-Based Limits, and Fuzzy KYC Name Matching
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 16 — *BharatPe: merchant lending from QR transaction data and automated KYC* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Merchant Lending, Credit Policy, KYC Operations, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-16-01). Merchant settlement, loan and KYC data are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs16_merchant_qr_lending.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+BharatPe sees every QR payment a kirana store, pharmacy or salon receives. That is a better view of the merchant's real business than any document. A merchant loan is repaid by an **equated daily instalment (EDI)** taken automatically from tomorrow's QR settlements. So "how much can this merchant borrow?" becomes "**how much QR money will they receive over the next months, and what share of it can they hand back each day without getting into trouble?**"
+
+Two practical problems sit next to that:
+1. **Forecasting:** past QR inflow is a noisy guide to future inflow. Seasons change, some businesses decline, some shops close.
+2. **KYC name matching:** before money is sent, the name on the KYC document must match the bank-account holder's name. Indian names are written many ways ("Mohd Imran Khan" / "MD IMRAN KHAN" / "Khan Imran"), and a strict exact match rejects thousands of genuine merchants, while a loose match pays mule accounts.
+
+BharatPe reports cutting loan turnaround **"from two days to just five seconds"**. This notebook shows the statistics that make that safe.
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What BharatPe did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | Legacy warehouse could not scale; loan decisions to small merchants were slow |
+| Question | "How much can a merchant borrow, given their QR payment behaviour? Can KYC and store verification be automated?" |
+| Data | Merchant transactions (volume, frequency); "**over 200 attributes**" of behaviour and demographics; KYC documents and store photos; 80 TB/day |
+| Approach | An ML model sets **borrowing capacity** from transaction volume and frequency; Document AI / Vision AI for KYC and store photos; **FuzzyWuzzy name matching** in BigQuery; payment behaviour for BNPL |
+| Statistics / metrics | **ND** |
+| Tech | BigQuery, Vertex AI, Document AI, Vision AI, FuzzyWuzzy, Composer/Airflow (1,000+ DAGs), Dataflow, Pub/Sub, Cloud SQL |
+| Impact | Loan "turnaround time has decreased from **two days to just five seconds**" |
+
+**Source:** Google Cloud customer story, BharatPe (undated; refers to 2022 awards) — https://cloud.google.com/customers/bharatpe
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | (A) 40,000 merchants × 15 months of QR aggregates (value, count, unique payers, active days; seasonality, growth, volatility; 6% hit a business shock). 12,000 took a 6-month EDI loan in month 12, sized by a legacy rule, with outcomes. (B) 30,000 labelled KYC vs bank-account name pairs with realistic Indian name variants and impostors. |
+| Statistics added (none disclosed) | Forecasting: naive vs gradient boosting vs **quantile** forecasts, with the **Diebold–Mariano** test, pinball loss and interval-coverage binomial tests. **Burden → default** dose–response (trend test, logistic). Default model (DeLong). **Limit-policy comparison** on a digital twin with bootstrap CIs. Name matching: four matchers compared by ROC/AUC, McNemar and per-variant recall; a three-zone auto-accept / review / reject threshold chosen by cost |
+
+### (c) How the industry uses this
+
+Cash-flow-based merchant lending with automatic EDI deduction is the core model of BharatPe, Paytm (merchant loans), PhonePe (via lending partners), Razorpay Capital and Pine Labs. The Account Aggregator framework and GST data (Case 11) are extending it to every MSME. Fuzzy name matching is a mandatory step in every Indian disbursal flow (penny-drop account verification returns the bank's name for the account, which must match the KYC name). It is also used in AML screening against sanctions lists.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | What loan amount should each merchant be offered automatically, and when can we disburse without a human checking the name? |
+| Analytical | (1) Can we forecast future QR inflow better than "average of the last 3 months", with honest uncertainty? (2) How does default rise with the repayment burden (EDI ÷ daily inflow)? (3) Which limit rule maximises profit at an acceptable default rate? (4) Which name matcher and thresholds minimise errors and manual reviews? |
+
+**Hypotheses**
+- **H1 (forecast):** H0: the model's forecast error equals the naive forecast's (Diebold–Mariano on absolute log errors). H1b: the P20 quantile forecast is exceeded 80% of the time (binomial test).
+- **H2 (burden):** H0: default does not rise with burden (Cochran–Armitage trend).
+- **H3 (policy):** H0: the forecast-and-burden-based limit earns the same expected profit as the legacy rule (paired bootstrap on the digital twin).
+- **H4 (names):** H0: the best fuzzy matcher has the same error rate as exact matching after normalisation (McNemar).
+
+**Primary metrics:** expected profit per offered merchant, with expected default ≤ 8% as the guardrail; for names, false-accept rate (pays a wrong person) ≤ 0.5% and auto-decision rate. **Design:** merchants split 50/50 into model-building and test halves; months 1–12 are known, months 13–15 are the future.
+
+#%% code
+import sys, warnings, importlib, os, re, difflib
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.stats import rankdata
+import statsmodels.formula.api as smf
+from sklearn.ensemble import HistGradientBoostingRegressor as HGBR, HistGradientBoostingClassifier as HGB
+from sklearn.metrics import roc_auc_score
+from statsmodels.stats.proportion import proportion_confint
+from statsmodels.stats.contingency_tables import mcnemar
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public merchant QR settlement + loan data | **None.** Settlement data are confidential. NPCI publishes only aggregate UPI volumes. |
+| Public Indian name-pair data | **None** with match labels. Name lists exist, but not KYC-vs-bank-account pairs. |
+| **Decision** | Synthetic merchants, loans and labelled name pairs (D-16-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs16.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs16.py
+
+#%% code
+os.makedirs("data/cs16", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs16 as gen; importlib.reload(gen)
+mm_raw, prof, ln, nm = gen.generate(seed=SEED)
+mm_raw.to_csv("data/cs16/merchant_monthly.csv.gz", index=False); prof.to_csv("data/cs16/merchant_profile.csv.gz", index=False)
+ln.to_csv("data/cs16/loans.csv.gz", index=False); nm.to_csv("data/cs16/name_pairs.csv.gz", index=False)
+print(f"{len(mm_raw):,} merchant-month rows | {len(prof):,} merchants | {len(ln):,} loans | {len(nm):,} name pairs")
+nm.sample(6, random_state=SEED)[["kyc_name", "bank_account_name"]]
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Merchants | 40,000; 8 categories; median ≈ ₹90k QR per month; growth, seasonality (apparel, mobile shops), volatility (higher for restaurants/apparel); 6% suffer a 30–70% business shock after month 12 | Our assumption |
+| Loans | 12,000 in month 12; legacy size = 0.25–1.7 × average monthly QR (varied by officer/campaign); 6-month tenure; 12% flat fee; EDI = amount × 1.12 / 180 days | Typical merchant cash-advance terms |
+| Default | Rises steeply once EDI exceeds ≈ 10% of actual daily inflow; worse for volatile, lower-quality merchants (true function exposed for the digital twin) | Our assumption, typical of EDI products |
+| Name pairs | 85% same person with variants (exact 25%, initials, order swap, Mohd/Mohammed-type spellings, typos, honorifics, dropped middle name, shop name instead of owner); 15% different person (unrelated, same surname, same first name) | Realistic Indian naming variation |
+| DQ issues | 1,200 duplicate merchant-month rows; 900 missing monthly values (settlement-file gaps); 150 blank bank-account names (API failure) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("merchant_monthly: merchant_id, month", "Merchant and month 1–15 (13–15 = the future)"), ("qr_value_inr, qr_txn_count, unique_payers, active_days", "Monthly QR aggregates"),
+    ("merchant_profile: category, months_on_platform, owner_age, has_soundbox, city_tier", "Merchant attributes"), ("_q, _vol, _shock", "HIDDEN: quality, volatility, future shock"),
+    ("loans: loan_amount, edi_inr", "Loan in month 12 and its equated daily instalment"), ("default_30d_missed", "Missed > 30 days of EDI (target)"),
+    ("_burden_true, _p_default", "HIDDEN: EDI / actual future daily inflow; true default probability"),
+    ("name_pairs: kyc_name, bank_account_name", "Name on KYC vs name returned by the bank for the account"), ("_is_same_person, _variant", "HIDDEN label and variant type"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs16/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks and Features
+
+#%% code
+checks = {"duplicate merchant-month rows": int(mm_raw.duplicated(["merchant_id", "month"]).sum()), "missing monthly QR value": int(mm_raw.qr_value_inr.isna().sum()),
+          "merchants with < 15 months": int((mm_raw.drop_duplicates(["merchant_id", "month"]).groupby("merchant_id").size() < 15).sum()),
+          "blank bank-account names": int((nm.bank_account_name.str.strip() == "").sum()), "loans with EDI ≤ 0": int((ln.edi_inr <= 0).sum())}
+print(pd.Series(checks, name="rows").to_string())
+mm = mm_raw.drop_duplicates(["merchant_id", "month"]).sort_values(["merchant_id", "month"]).copy()
+mm["qr_value_inr"] = mm.groupby("merchant_id").qr_value_inr.transform(lambda s: s.interpolate(limit_direction="both"))   # fill settlement gaps from neighbouring months
+W = mm.pivot(index="merchant_id", columns="month", values="qr_value_inr")
+C = mm.pivot(index="merchant_id", columns="month", values="qr_txn_count"); U = mm.pivot(index="merchant_id", columns="month", values="unique_payers")
+A = mm.pivot(index="merchant_id", columns="month", values="active_days")
+hist = W.loc[:, 1:12]; lv = np.log(hist)
+F = pd.DataFrame(index=W.index)
+F["avg3"] = hist.loc[:, 10:12].mean(1); F["avg6"] = hist.loc[:, 7:12].mean(1); F["avg12"] = hist.mean(1)
+F["slope"] = np.polyfit(np.arange(12), lv.T.values, 1)[0]; F["cv"] = (lv.diff(axis=1)).std(1)
+F["last_vs_avg12"] = hist[12] / F.avg12; F["same_month_last_year_ratio"] = (W[1] + W[2] + W[3]) / (W[10] + W[11] + W[12])          # season proxy: months 13–15 ≈ months 1–3
+F["txn_per_month"] = C.loc[:, 10:12].mean(1); F["ticket"] = F.avg3 / F.txn_per_month; F["payer_ratio"] = (U.loc[:, 10:12].sum(1) / C.loc[:, 10:12].sum(1))
+F["active_days"] = A.loc[:, 10:12].mean(1); F["active_days_drop"] = A.loc[:, 10:12].mean(1) - A.loc[:, 1:9].mean(1)
+F = F.join(prof.set_index("merchant_id")[["category", "months_on_platform", "owner_age", "has_soundbox", "city_tier", "_q", "_vol", "_shock"]])
+F["cat_c"] = F.category.astype("category").cat.codes
+F["future_avg"] = W.loc[:, 13:15].mean(1)
+F["test"] = RNG.random(len(F)) < 0.5
+print(f"\nClean: {len(mm):,} merchant-months, {len(F):,} merchants ({F.test.sum():,} in the test half) | median monthly QR ₹{F.avg12.median():,.0f}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+L = ln.merge(F[["avg3", "cv", "test"]], left_on="merchant_id", right_index=True)
+L["burden_exante"] = L.edi_inr / (L.avg3 / 30)
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.4))
+sample = W.sample(6, random_state=SEED)
+for mid, r in sample.iterrows(): axes[0].plot(r.index, r.values / 1000, marker=".", lw=1)
+axes[0].axvline(12.5, color="grey", ls="--"); axes[0].text(12.7, axes[0].get_ylim()[1] * 0.9, "future →", fontsize=9)
+axes[0].set_xlabel("Month"); axes[0].set_ylabel("QR inflow (₹ thousand)"); axes[0].set_title("QR inflow of six merchants: growth, seasons, shocks")
+b = pd.qcut(L.burden_exante, 10); g = L.groupby(b).default_30d_missed.mean() * 100
+axes[1].plot([iv.mid * 100 for iv in g.index], g.values, "o-", color="#b23a48"); axes[1].set_xlabel("EDI as % of recent daily QR inflow (decile mid-point)")
+axes[1].set_ylabel("Default rate (%)"); axes[1].set_title("Default rises steeply with the repayment burden")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Forecasting next quarter's QR inflow: naive vs model, with honest uncertainty
+
+**(a) Why?** The loan is repaid from **future** inflow, so the limit should rest on a forecast, not on the past average. We compare:
+- **Naive:** average of the last 3 months.
+- **Naive + trend:** last-3 average × (1 + monthly slope)².
+- **Gradient boosting** on log scale with cash-flow features.
+- A **P20 quantile** gradient-boosting forecast: a conservative figure that should be beaten by the actual 80% of the time.
+
+Out-of-sample on the test half of merchants:
+- **Error:** median absolute % error and mean absolute log error.
+- **Diebold–Mariano test** on the paired loss differences: are the errors really different?
+- **Coverage:** a binomial test of whether the P20 forecast is exceeded 80% of the time.
+
+#%% code
+FEATS = ["avg3", "avg6", "avg12", "slope", "cv", "last_vs_avg12", "same_month_last_year_ratio", "txn_per_month", "ticket", "payer_ratio", "active_days", "active_days_drop",
+         "months_on_platform", "has_soundbox", "city_tier", "cat_c"]
+tr, te = F[~F.test], F[F.test]; ytr = np.log(tr.future_avg); yte = np.log(te.future_avg)
+Xtr = tr[FEATS].copy(); Xte = te[FEATS].copy()
+for X_ in (Xtr, Xte):
+    for c in ["avg3", "avg6", "avg12", "txn_per_month", "ticket"]: X_[c] = np.log(X_[c])
+gb = HGBR(max_iter=300, learning_rate=0.06, random_state=SEED).fit(Xtr, ytr)
+q20 = HGBR(loss="quantile", quantile=0.2, max_iter=300, learning_rate=0.06, random_state=SEED).fit(Xtr, ytr)
+FC = {"naive: last-3-month average": np.log(te.avg3), "naive + trend": np.log(te.avg3) + 2 * te.slope, "gradient boosting (median-type)": gb.predict(Xte)}
+p20 = q20.predict(Xte)
+rows = []
+for nm_, f in FC.items():
+    e = yte - f; rows.append((nm_, np.median(np.abs(np.exp(f) / te.future_avg - 1)) * 100, np.abs(e).mean(), e.mean()))
+fe = pd.DataFrame(rows, columns=["forecast", "median abs % error", "mean abs log error", "bias (log)"]).set_index("forecast")
+def dm(e1, e2):
+    d = np.abs(e1) - np.abs(e2); return d.mean() / (d.std(ddof=1) / np.sqrt(len(d)))
+z = dm(yte - FC["naive: last-3-month average"], yte - FC["gradient boosting (median-type)"])
+cover = (te.future_avg.values >= np.exp(p20)).mean(); bt = stats.binomtest(int((te.future_avg.values >= np.exp(p20)).sum()), len(te), 0.8)
+def pinball(y, q, tau=0.2): u = y - q; return np.mean(np.maximum(tau * u, (tau - 1) * u))
+print(f"Diebold–Mariano (naive vs boosting, absolute log error): z = {z:.1f}, p = {2 * stats.norm.sf(abs(z)):.2g}")
+print(f"P20 forecast: actual ≥ P20 for {cover:.1%} of merchants (target 80%; binomial p = {bt.pvalue:.2g}); pinball loss P20 model {pinball(yte.values, p20):.4f} vs "
+      f"naive×0.8 {pinball(yte.values, np.log(te.avg3.values * 0.8)):.4f}")
+shock = te._shock.values == 1
+print(f"Merchants hit by a future shock (6%): naive overestimates their inflow by {np.median(np.exp(FC['naive: last-3-month average'][shock]) / te.future_avg[shock] - 1):.0%} (median); "
+      f"P20 by {np.median(np.exp(p20[shock]) / te.future_avg[shock] - 1):.0%}")
+fe.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 How does default depend on the repayment burden?
+
+**(a) Why?** The limit decision is really a burden decision: EDI ÷ daily inflow. On the 12,000 legacy loans (whose sizes varied 0.25–1.7× monthly inflow), we measure default by **ex-ante burden** (EDI ÷ recent daily inflow, what we know at decision time) with Wilson CIs and a **Cochran–Armitage trend test**. A logistic regression adds volatility, because the same burden is riskier for a volatile business.
+
+#%% code
+L["burden_band"] = pd.cut(L.burden_exante, [0, 0.06, 0.08, 0.10, 0.12, 0.15, 0.20, 0.25, 0.30, 5], right=False)
+bb = L.groupby("burden_band").default_30d_missed.agg(["sum", "size"]); bb["default rate"] = bb["sum"] / bb["size"]
+ci = [proportion_confint(r["sum"], r["size"], method="wilson") for _, r in bb.iterrows()]; bb["CI low"], bb["CI high"] = [c[0] for c in ci], [c[1] for c in ci]
+x = np.arange(len(bb)); n_ = bb["size"].values; s_ = bb["sum"].values; pbar = s_.sum() / n_.sum(); xbar = (x * n_).sum() / n_.sum()
+zt = (x * (s_ - n_ * pbar)).sum() / np.sqrt(pbar * (1 - pbar) * (n_ * (x - xbar) ** 2).sum())
+lg = smf.logit("default_30d_missed ~ burden_exante + I(np.maximum(burden_exante - 0.10, 0)) + cv", data=L).fit(disp=0)
+print(f"Cochran–Armitage trend: z = {zt:.1f}, p = {2 * stats.norm.sf(abs(zt)):.2g}")
+print(f"Logistic (hinge at 10% burden): slope below 10% = {lg.params['burden_exante']:.2f}, extra slope above 10% = {lg.params['I(np.maximum(burden_exante - 0.10, 0))']:.2f} "
+      f"(p = {lg.pvalues['I(np.maximum(burden_exante - 0.10, 0))']:.2g}); volatility OR per +0.1 = {np.exp(0.1 * lg.params['cv']):.2f} (p = {lg.pvalues['cv']:.2g})")
+bb.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O72»
+
+### 7.3 A default model for merchant loans
+
+Burden is not the only driver. We train a gradient-boosting default model on the **model-building half** of loans (cash-flow features + ex-ante burden) and test it on loans of test-half merchants, comparing it with **burden alone** (DeLong).
+
+#%% code
+def delong(y, preds):
+    y = np.asarray(y); pos, neg = preds[:, y == 1], preds[:, y == 0]; m, n = pos.shape[1], neg.shape[1]
+    tx = np.array([rankdata(p) for p in pos]); ty = np.array([rankdata(q) for q in neg]); tz = np.array([rankdata(np.r_[p, q]) for p, q in zip(pos, neg)])
+    aucs = tz[:, :m].sum(1) / m / n - (m + 1) / 2 / n; v01 = (tz[:, :m] - tx) / n; v10 = 1 - (tz[:, m:] - ty) / m
+    return aucs, np.atleast_2d(np.cov(v01)) / m + np.atleast_2d(np.cov(v10)) / n
+LF = L.merge(F[FEATS], left_on="merchant_id", right_index=True, suffixes=("", "_f"))
+DF = FEATS + ["burden_exante"]
+dm_ = HGB(max_iter=300, learning_rate=0.06, random_state=SEED).fit(LF.loc[~LF.test, DF], LF.default_30d_missed[~LF.test])
+pt = dm_.predict_proba(LF.loc[LF.test, DF])[:, 1]; yt = LF.default_30d_missed[LF.test].values
+a_, c_ = delong(yt, np.vstack([LF.burden_exante[LF.test].values, pt])); se = np.sqrt(c_[0, 0] + c_[1, 1] - 2 * c_[0, 1])
+print(f"Test loans: {len(yt):,} ({yt.sum()} defaults) | AUC burden alone {a_[0]:.4f} vs model {a_[1]:.4f}: Δ = {a_[1] - a_[0]:+.4f}, DeLong p = {2 * stats.norm.sf(abs(a_[1] - a_[0]) / se):.2g}")
+imp = pd.Series({f: max(roc_auc_score(yt, LF.loc[LF.test, f]), 1 - roc_auc_score(yt, LF.loc[LF.test, f])) for f in DF}).sort_values(ascending=False)
+imp.head(8).round(3).to_frame("single-feature AUC (direction-free)")
+
+#%% md
+**Observation:** «O73»
+
+### 7.4 Which limit rule? Comparing policies on a digital twin
+
+**Why a digital twin?** Real loans show the outcome only at the size actually lent. To compare limit rules fairly, we apply each rule to **every test-half merchant** and compute the **true** expected default from the generator's hidden function, using the merchant's actual future inflow. This is possible only in simulation and is flagged as such. In real life the same comparison needs a randomised limit test (Case 15).
+
+**Profit per offered merchant** = (1 − PD) × 12% fee × amount − PD × 60% LGD × amount. Policies:
+1. **Legacy:** 1.0 × average monthly QR (the middle of the legacy range).
+2. **Burden cap on the naive forecast:** EDI ≤ 10% of last-3-month daily inflow.
+3. **Burden cap on the P20 forecast:** EDI ≤ 10% of the *conservative* forecast daily inflow.
+4. **P20 + risk tiers:** as 3, with the cap set by the default model's risk tier (12% / 10% / 7% / no offer).
+
+#%% code
+T = te.copy(); T["p20"] = np.exp(p20)
+def amount_from_edi_share(daily_inflow, share): return np.round(share * daily_inflow * 180 / 1.12, -3)
+T["burden_exante_proxy"] = 0.10
+Xd = T[FEATS].copy(); Xd["burden_exante"] = 0.10; risk = dm_.predict_proba(Xd[DF])[:, 1]
+tier_cap = np.select([risk < np.quantile(risk, 0.4), risk < np.quantile(risk, 0.75), risk < np.quantile(risk, 0.95)], [0.12, 0.10, 0.07], 0.0)
+POL = {"1 legacy: 1.0 × avg monthly QR": np.round(T.avg3.values * 1.0, -3), "2 EDI ≤ 10% of naive daily inflow": amount_from_edi_share(T.avg3.values / 30, 0.10),
+       "3 EDI ≤ 10% of P20 forecast": amount_from_edi_share(T.p20.values / 30, 0.10), "4 P20 + risk-tiered cap (12/10/7% / no offer)": amount_from_edi_share(T.p20.values / 30, tier_cap)}
+fut_daily = T.future_avg.values / 30; rows, PR = [], {}
+for nm_, amt in POL.items():
+    off = amt > 0; edi = amt * 1.12 / 180; pdf = np.where(off, gen.true_default_prob(edi / fut_daily, T._q.values, T._vol.values), 0)
+    prof_ = np.where(off, (1 - pdf) * 0.12 * amt - pdf * 0.60 * amt, 0); PR[nm_] = prof_
+    rows.append((nm_, off.mean(), amt[off].mean(), (pdf * amt).sum() / amt.sum(), pdf[off].mean(), prof_.mean(), amt.sum() / 1e7))
+pol = pd.DataFrame(rows, columns=["policy", "share offered", "avg loan ₹", "₹-weighted default", "default rate (offered)", "profit per merchant ₹", "₹ crore lent (test half)"]).set_index("policy")
+base_ = "1 legacy: 1.0 × avg monthly QR"
+for k in PR:
+    d = PR[k] - PR[base_]; bs = [d[RNG.integers(0, len(d), len(d))].mean() for _ in range(1000)]
+    pol.loc[k, "Δ profit vs legacy"] = d.mean(); pol.loc[k, "CI low"] = np.percentile(bs, 2.5); pol.loc[k, "CI high"] = np.percentile(bs, 97.5)
+pol.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O74»
+
+### 7.5 KYC name matching: which matcher, and where to set the thresholds?
+
+**(a) Why?** Before disbursal, the KYC name must match the bank-account name returned by the penny-drop check. We compare four matchers (FuzzyWuzzy is not in our library list, so its token-sort and token-set ratios are re-implemented with Python's `difflib`):
+1. **Exact after normalisation:** lower-case, remove honorifics and punctuation, collapse spaces.
+2. **Token-sort ratio:** sort the words, then compare strings (robust to word order).
+3. **Token-set ratio:** compares shared words (robust to dropped middle names and extra words).
+4. **Hybrid:** token-set + Jaro–Winkler per token + initials expansion ("R Sharma" matches "Ramesh Sharma"), taking the best word alignment.
+
+Evaluated on the 30,000 labelled pairs: AUC, recall by variant type, and **McNemar** for paired error comparison. The decision policy has **two zones**:
+- **Auto-accept** at or above a threshold set so that false accepts are ≤ 0.5% of different-person pairs.
+- **Manual review** for everything else, including blank names.
+
+We do not auto-*reject*: a name mismatch is a reason to check, not to refuse a merchant who may simply be "Mohd" on one document and "Mohammed" on another.
+
+#%% code
+HON = r"\b(mr|mrs|ms|smt|shri|sri|dr|m/s)\b\.?"
+def norm(s): s = re.sub(HON, " ", str(s).lower()); s = re.sub(r"[^a-z ]", " ", s); return " ".join(s.split())
+def ratio(a, b): return difflib.SequenceMatcher(None, a, b).ratio() * 100
+def token_sort(a, b): return ratio(" ".join(sorted(a.split())), " ".join(sorted(b.split())))
+def token_set(a, b):
+    A, B = set(a.split()), set(b.split()); inter = " ".join(sorted(A & B)); da = " ".join(sorted(A - B)); db = " ".join(sorted(B - A))
+    s1, s2 = (inter + " " + da).strip(), (inter + " " + db).strip()
+    return max(ratio(inter, s1) if inter else 0, ratio(inter, s2) if inter else 0, ratio(s1, s2))
+def jaro_winkler(s, t):
+    if s == t: return 1.0
+    ls, lt = len(s), len(t)
+    if not ls or not lt: return 0.0
+    md = max(ls, lt) // 2 - 1; sm = [False] * ls; tm = [False] * lt; m = 0
+    for i in range(ls):
+        for j in range(max(0, i - md), min(i + md + 1, lt)):
+            if not tm[j] and s[i] == t[j]: sm[i] = tm[j] = True; m += 1; break
+    if not m: return 0.0
+    k = tr_ = 0
+    for i in range(ls):
+        if sm[i]:
+            while not tm[k]: k += 1
+            if s[i] != t[k]: tr_ += 1
+            k += 1
+    j = (m / ls + m / lt + (m - tr_ / 2) / m) / 3; p = 0
+    for a_, b_ in zip(s[:4], t[:4]):
+        if a_ == b_: p += 1
+        else: break
+    return j + 0.1 * p * (1 - j)
+def hybrid(a, b):
+    A, B = a.split(), b.split()
+    if not A or not B: return 0.0
+    if len(A) > len(B): A, B = B, A
+    def tok(x, y): return 1.0 if (len(x) == 1 and y.startswith(x)) or (len(y) == 1 and x.startswith(y)) else jaro_winkler(x, y)
+    used, sc = set(), []
+    for x in A:
+        best = max(((tok(x, y), j) for j, y in enumerate(B) if j not in used), default=(0, -1)); sc.append(best[0]); used.add(best[1])
+    return 100 * np.mean(sc) * (0.85 + 0.15 * len(A) / len(B))
+names = nm.copy(); names["a"] = names.kyc_name.map(norm); names["b"] = names.bank_account_name.map(norm); blank = names.b == ""
+for nm_, f in (("exact (normalised)", lambda a, b: 100.0 * (a == b)), ("token-sort ratio", token_sort), ("token-set ratio", token_set), ("hybrid (set + Jaro–Winkler + initials)", hybrid)):
+    names[nm_] = [0.0 if b == "" else f(a, b) for a, b in zip(names.a, names.b)]
+MATCHERS = ["exact (normalised)", "token-sort ratio", "token-set ratio", "hybrid (set + Jaro–Winkler + initials)"]
+y = names._is_same_person.values; nb = ~blank.values
+def accept_threshold(score, y, fa_max=0.005):
+    neg = score[y == 0]; ok = [t for t in np.unique(score) if (neg >= t).mean() <= fa_max]     # smallest threshold with ≤ 0.5% impostors at/above it
+    return min(ok) if ok else np.inf
+mrows, ACC = [], {}
+for m_ in MATCHERS:
+    s = names[m_].values[nb]; yy = y[nb]; hi = accept_threshold(s, yy); acc = s >= hi; ACC[m_] = acc
+    fa = (acc & (yy == 0)).sum(); fa_hi = proportion_confint(fa, (yy == 0).sum(), method="wilson")[1]
+    mrows.append((m_, roc_auc_score(yy, s), hi, fa / (yy == 0).sum(), fa_hi, acc[yy == 1].mean(), (~acc).mean(), int(((s >= 99.999) & (yy == 0)).sum())))
+mt = pd.DataFrame(mrows, columns=["matcher", "AUC", "accept at/above", "false-accept rate", "FA CI high", "genuine auto-accepted", "share sent to review", "impostors scoring 100"]).set_index("matcher")
+a1, a2 = ACC["exact (normalised)"] == (y[nb] == 1), ACC["hybrid (set + Jaro–Winkler + initials)"] == (y[nb] == 1)
+mc = mcnemar([[int((a1 & a2).sum()), int((a1 & ~a2).sum())], [int((~a1 & a2).sum()), int((~a1 & ~a2).sum())]], exact=False, correction=True)
+print(f"Blank bank names routed to manual review: {blank.sum()} | McNemar (auto-accept correctness, exact vs hybrid): χ² = {mc.statistic:.0f}, p = {mc.pvalue:.2g}")
+mt.round(4)
+
+#%% code
+var = names[nb].groupby("_variant").apply(lambda g: pd.Series({m_: (g[m_] >= mt.loc[m_, "accept at/above"]).mean() for m_ in MATCHERS}))
+var.insert(0, "same person?", names[nb].groupby("_variant")._is_same_person.first().map({1: "yes", 0: "no"}))
+fig, ax = plt.subplots(figsize=(10, 4.6))
+v_ = var[var["same person?"] == "yes"].drop(columns="same person?") * 100
+v_.plot(kind="bar", ax=ax, width=0.8); ax.set_xlabel("How the genuine bank-account name differs from the KYC name"); ax.set_ylabel("% auto-accepted")
+ax.set_title("Hybrid matching auto-accepts most genuine variants"); ax.tick_params(axis="x", rotation=30); ax.legend(fontsize=7, loc="lower left")
+plt.tight_layout(); plt.show()
+var.round(3)
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.6 How much can be decided in "five seconds"?
+
+The documented turnaround fell from two days to five seconds. Only applications that need **no human step** can be that fast. We combine the two automatic gates for test-half merchants: (i) a limit offered by policy 4, and (ii) a name pair in the hybrid matcher's auto-accept zone (name pairs assigned to merchants at random, for illustration).
+
+#%% code
+s_h = names["hybrid (set + Jaro–Winkler + initials)"].values; hi = mt.loc["hybrid (set + Jaro–Winkler + initials)", "accept at/above"]
+zone = np.where(blank.values, "review", np.where(s_h >= hi, "auto-accept", "review"))
+zone_m = RNG.choice(zone, len(T)); offered = POL["4 P20 + risk-tiered cap (12/10/7% / no offer)"] > 0
+auto = offered & (zone_m == "auto-accept"); lo_, hi_ = proportion_confint(auto.sum(), len(auto), method="wilson")
+print(f"Fully automatic decisions: {auto.mean():.1%} of test merchants (CI {lo_:.1%}–{hi_:.1%}); offered but name needs review: {(offered & (zone_m == 'review')).mean():.1%}; "
+      f"no offer (risk tier): {(~offered).mean():.1%}")
+print(f"Exact matching alone would auto-accept only {mt.loc['exact (normalised)', 'genuine auto-accepted']:.1%} of genuine names vs {mt.loc['hybrid (set + Jaro–Winkler + initials)', 'genuine auto-accepted']:.1%} for hybrid")
+
+#%% md
+**Observation:** «O76»
+
+## 8. ML Section — brief
+
+- **Forecast:** gradient boosting on log inflow, with a **quantile (P20)** variant. A quantile forecast answers the credit question ("how low could inflow plausibly go?") better than a mean forecast. No tuning (per the brief).
+- **Default model:** gradient boosting on cash-flow features + ex-ante burden. Used for risk tiers, not as the only gate.
+- **Name matching:** deterministic similarity functions, which are auditable. An ML matcher trained on the labelled pairs could add a little, but an explainable score with three zones is easier to defend to auditors and the RBI.
+
+## 9. Business Translation — ₹ impact
+
+#%% code
+SCALE = 1e5 / len(T)                                                            # scale: 1 lakh merchants offered per quarter (assumption, D-16-07)
+money = pol[["share offered", "₹-weighted default", "profit per merchant ₹", "Δ profit vs legacy", "CI low", "CI high"]].copy()
+money["₹ crore profit per 1 lakh merchants"] = pol["profit per merchant ₹"] * 1e5 / 1e7; money["vs legacy ₹ crore"] = pol["Δ profit vs legacy"] * 1e5 / 1e7
+avg_loan = pol.loc["4 P20 + risk-tiered cap (12/10/7% / no offer)", "avg loan ₹"]
+REVIEW_COST, ABANDON, WRONG_PAYEE_LOSS = 40, 0.05, 0.6 * avg_loan               # ₹40 per review; 5% of reviewed genuine merchants drop out (delay); wrong payee loses 60%
+nm_cost = []
+for m_ in MATCHERS:
+    r = mt.loc[m_]; n_pairs = 1e5; gen_rev = 0.85 * (1 - r["genuine auto-accepted"])
+    cost = n_pairs * r["share sent to review"] * REVIEW_COST + n_pairs * gen_rev * ABANDON * 0.12 * avg_loan + n_pairs * 0.15 * r["false-accept rate"] * WRONG_PAYEE_LOSS
+    nm_cost.append((m_, r["share sent to review"], cost / 1e5))
+print(f"Name-matching cost per 1 lakh disbursals (review ₹{REVIEW_COST}; {ABANDON:.0%} of reviewed genuine merchants abandon, losing a 12% fee on ₹{avg_loan:,.0f}; wrong-payee loss ₹{WRONG_PAYEE_LOSS:,.0f}):")
+print(pd.DataFrame(nm_cost, columns=["matcher", "share reviewed", "₹ lakh"]).set_index("matcher").round(3).to_string())
+money.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Digital twin:** the policy comparison in 7.4 uses the generator's true default function. In production, run a **randomised limit test** (Case 15) before switching rules, because the burden–default curve is the key unknown.
+- **Shocks:** 6% of merchants suffered a business shock no history could predict. Keep EDI monitoring with automatic restructuring (pause or extend) when daily inflow drops, rather than relying only on the upfront limit.
+- **Self-dealing and circular flows:** QR inflow can be inflated by merchants paying themselves to raise their limit. Add checks on payer diversity (the unique-payer ratio feature) and on round-tripping.
+- **Name matching:** thresholds were tuned on synthetic variants. Tune on real penny-drop results, monitor false accepts via fraud reports, and keep human review for the middle zone. Never auto-reject without a clear reason shown to the merchant.
+- **Regulation:** the lending partner (an NBFC or bank) owns the credit decision under RBI's Digital Lending Guidelines. The limit rule, its validation and the KFS (Key Fact Statement) must be documented.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| EDI | loan × (1 + fee) / 180 days |
+| Repayment burden | EDI ÷ daily QR inflow |
+| Diebold–Mariano | DM = d̄ / (s_d/√n), dₜ = |e₁ₜ| − |e₂ₜ| |
+| Pinball loss (τ = 0.2) | mean(max(τ·u, (τ − 1)·u)), u = y − q̂ |
+| Expected profit | (1 − PD)·fee·A − PD·LGD·A |
+| Token-sort ratio | similarity of the word-sorted strings |
+| Token-set ratio | max similarity among {shared words, shared + rest of A, shared + rest of B}; scores 100 whenever one name's words are a subset of the other's |
+| Jaro–Winkler | Jaro similarity + 0.1 × common prefix (≤ 4) × (1 − Jaro) |
+
+| Term | Meaning |
+|---|---|
+| QR settlement | Money from customers' QR payments credited to the merchant |
+| EDI | Equated daily instalment, deducted from settlements |
+| Quantile (P20) forecast | A value the outcome exceeds 80% of the time |
+| Digital twin | A simulation in which every counterfactual outcome is known |
+| Penny drop | A ₹1 test transfer that returns the bank-account holder's name |
+| False accept | Treating two different people as the same (paying the wrong person) |

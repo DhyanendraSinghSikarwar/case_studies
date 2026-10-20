@@ -1,0 +1,135 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs21.py
+--- cell 8 (exec 3) ---
+962,100 customer-month rows | 40,000 customers | generated in 189s
+   customer_id  month  orders    gov_inr  member  delivery_subsidy_inr  contribution_inr  _orders_cf  _contribution_cf
+0            0      0       3 1,322.0000       0                0.0000          172.7000           3          172.7000
+1            0      1       1   490.0000       0                0.0000           57.6000           1           57.6000
+2            0      2       6 2,524.0000       0                0.0000          345.5000           6          345.5000
+3            0      3       3 1,161.0000       0                0.0000          172.7000           3          172.7000
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0                          panel: customer_id, month  Customer and month index 0 to 23 (launch in mo...
+1                                    orders, gov_inr          Orders and gross order value in the month
+2                                             member   1 if the customer was a paying member that month
+3                               delivery_subsidy_inr  Delivery fee and discount given to members on ...
+4                                   contribution_inr  Contribution margin of the month: orders × mar...
+5  customers: city_tier, fee_paid_share, coupon_s...  Tier (blank = unknown), share of orders that p...
+6                                  offer, join_month  Free-trial invitation at launch (random); mont...
+7  _orders_cf, _contribution_cf, _u, _tau, _subsi...  HIDDEN: counterfactual orders and contribution...
+--- cell 12 (exec 5) ---
+duplicate customer-month rows                                1500
+staff/test-like accounts (> 30 orders a month on average)      28
+customers with missing city tier                             2000
+member flag disagrees with join_month                           0
+
+Clean: 39,997 customers × 24 months | members at month 23: 41.6% | joined in launch month: 8,429 | never joined: 23,377
+--- cell 14 (exec 6) ---
+Observational sample: 15,502 active, un-invited customers; dropped 4,927 who joined after the launch month; kept 10,575: 1,981 launch-month members vs 8,594 never-members
+[image]
+Pre-launch (months 0-11) mean orders: members 3.18 vs never-members 2.64; last three pre-launch months: 3.39 vs 2.33
+--- cell 16 (exec 7) ---
+Mean post-launch orders: members 3.78 vs never-members 2.22
+
+                                                   difference  CI low  CI high  p-value  relative size
+comparison (orders per customer-month)                                                                
+Members − never-members, post-launch months 12-17      1.5531  1.4229   1.6833   0.0000         0.6989
+Same gap BEFORE launch, months 6-11 (placebo)          0.6459  0.5403   0.7515   0.0000         0.2638
+Members: after − before (pre/post)                     0.6815  0.6201   0.7429   0.0000         0.2203
+--- cell 18 (exec 8) ---
+Cross-validated AUC of the join model: {'v1 levels': 0.633, 'v2 levels + trend': 0.728, 'GBM on v2 (default settings)': 0.701}
+Overlap (share of controls inside the treated 1st-99th percentile range of the v2 logit score): 91.7%
+[image]
+                treated mean  control mean  SMD (raw)
+o12                   3.1760        2.6380     0.2530
+aov_pre             441.9670      440.0670     0.0140
+fee_paid_share        0.4320        0.3730     0.2960
+coupon_share          0.3310        0.2900     0.2510
+tenure_months        14.8410       14.8830    -0.0030
+tier1                 0.4920        0.3890     0.2090
+tier2                 0.2970        0.3630    -0.1410
+tierU                 0.0540        0.0480     0.0250
+o3                    3.3950        2.3350     0.4960
+growth                0.6020       -0.2270     0.6150
+slope6                0.1560       -0.0760     0.5680
+--- cell 20 (exec 9) ---
+Cross-sectional matched effect on post-launch orders per customer-month (months 12-17):
+[image]
+                   treated matched  treated total  distinct controls used  max |SMD| after (v2 covariates)  ATT orders/month (post)  CI low  CI high  p-value  \
+propensity model                                                                                                                                                
+v1 levels                     1981           1981                    1621                           0.6751                   1.0962  0.9177   1.2746   0.0000   
+v2 levels + trend             1975           1981                    1496                           0.0404                   0.9165  0.7314   1.1015   0.0000   
+
+                   relative to matched controls  
+propensity model                                 
+v1 levels                                0.4091  
+v2 levels + trend                        0.3244
+--- cell 22 (exec 10) ---
+[image]
+                                  ATT orders/month  CI low  CI high  p-value  placebo DiD (months 0-2 → 3-5)  placebo p-value
+design                                                                                                                       
+DiD, all controls                           0.9072  0.8404   0.9741   0.0000                          0.0274           0.4547
+DiD, matched v1 (levels)                    0.9976  0.9026   1.0925   0.0000                         -0.0493           0.3542
+DiD, matched v2 (levels + trend)            1.0161  0.9160   1.1162   0.0000                          0.0105           0.8474
+--- cell 24 (exec 11) ---
+Customers in the pilot analysis: 31,211 (15,709 invited). Randomisation check (LR test of invitation on 11 covariates): p = 0.05; max |SMD| = 0.027
+First stage: P(join in launch month) = 0.406 if invited vs 0.128 if not; difference 0.278, F = 3,437
+Intention-to-treat effect on orders per month: 0.0907 (SE 0.0150); Wald/IV effect on a complier: 0.326 orders/month, bootstrap 95% CI 0.237 to 0.426; CI width relative to estimate: 0.6×
+                                     invited  not invited
+share joined in launch month          0.4061       0.1278
+change in orders/month (post − pre)   0.2336       0.1429
+--- cell 26 (exec 12) ---
+Hidden counterfactual gap members − never-members (no-programme world), orders/month: months 0-5 0.43, months 6-8 0.23, months 9-11 1.06, months 12-17 1.16; implied DiD bias with window 6-11 → 12-17: 0.51
+TRUE effect on launch-month members: 0.395 orders/month = 11.7% of their counterfactual 3.38 orders/month
+[image]
+                                  ATT orders/month  CI low  CI high  error vs truth  CI covers truth  as % of counterfactual
+estimator                                                                                                                   
+naive cross-section                         1.5530  1.4230   1.6830          1.1590            False                 69.8890
+naive pre/post                              0.6810  0.6200   0.7430          0.2870            False                 22.0260
+PSM v1                                      1.0960  0.9180   1.2750          0.7020            False                 40.9130
+PSM v2                                      0.9160  0.7310   1.1020          0.5220            False                 32.0550
+DiD, all controls                           0.9070  0.8400   0.9740          0.5130            False                 31.6310
+DiD, matched v1 (levels)                    0.9980  0.9030   1.0920          0.6030            False                 35.9110
+DiD, matched v2 (levels + trend)            1.0160  0.9160   1.1160          0.6220            False                 36.8250
+IV (free-trial pilot)                       0.3260  0.2370   0.4260         -0.0690             True                  9.4410
+--- cell 28 (exec 13) ---
+Fee per month ₹49.7; pre-launch contribution per order of the members ₹57.7; members' mean post orders 3.78
+                                    naive gap (members − never)  matched v2 ATT   CI low  CI high  p-value  true effect (hidden)
+outcome                                                                                                                         
+GOV per month (₹)                                      757.0001        520.6003 470.7648 570.4357   0.0000                   NaN
+Contribution margin per month (₹)                       30.8257          1.7615  -4.2845   7.8075   0.5680              -37.7287
+Retained (ordered in months 15-17)                       0.1534          0.1316   0.1076   0.1557   0.0000                0.0273
+--- cell 30 (exec 14) ---
+Hidden mean true frequency lift (log-rate) by fee-paid tercile of members: {'low': 0.046, 'mid': 0.096, 'high': 0.159}
+[image]
+                            members  margin ATT ₹/month   CI low  CI high  p-value  p_holm
+subgroup (of members)                                                                     
+fee-paid share: low             497             16.7801   5.8345  27.7258   0.0027  0.0080
+fee-paid share: mid             654              5.2308  -4.4186  14.8801   0.2880  0.2880
+fee-paid share: high            824            -10.0507 -19.7270  -0.3743   0.0418  0.0835
+pre-launch frequency: low       543             42.9951  35.4151  50.5751   0.0000  0.0000
+pre-launch frequency: mid       626             18.5646  10.8164  26.3128   0.0000  0.0000
+pre-launch frequency: high      806            -39.0680 -49.5717 -28.5644   0.0000  0.0000
+--- cell 32 (exec 15) ---
+SD of the pre/post change: orders 1.33, contribution ₹76.1
+                                           SD of the change score  customers per arm
+outcome                  effect to detect                                           
+orders per month         0.1000                            1.3000               2763
+                         0.2000                            1.3000                691
+                         0.3900                            1.3000                182
+contribution ₹ per month 10.0000                          76.1000                911
+                         25.0000                          76.1000                146
+                         50.0000                          76.1000                 37
+--- cell 34 (exec 16) ---
+Invitation effect on orders/month (ITT) among predicted top half: 0.094 (CI 0.035 to 0.153); bottom half: 0.059 (CI 0.001 to 0.116)
+Top − bottom difference: 0.035 (SE 0.042, p = 0.4); Spearman of predicted uplift with the hidden true effect: +0.180
+--- cell 36 (exec 17) ---
+Break-even fee for the average member: ₹48 a month = ₹144 per three months (now ₹149)
+                                                    ₹ crore / year  per member per month (₹)
+Worst (CI low)                                             -4.6300                   -4.2800
+Base (matched v2 ATT)                                       1.9000                    1.7600
+Best (CI high)                                              8.4300                    7.8100
+Targeted to high fee-paid tercile (base)                   -3.6200                  -10.0500
+Naive claim (post-launch gap × pre-launch margi...         96.7100                   89.5500

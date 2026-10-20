@@ -1,0 +1,182 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs26.py
+--- cell 8 (exec 3) ---
+481,500 order rows | 160,000 customers | 7,000 products | 46,704 reviews | 6,000 public labelled reviews | generated in 65s
+   order_id  customer_id  product_id               category  day  size_ordered_idx return_reason    _gap  _ret_u _true_reason size_ordered
+0        76       128210        6245     Men's Polo T-shirt    0            2.0000         other  0.0902  0.7417         none            M
+1      1198        83891        6248     Men's Polo T-shirt    0            2.0000          none -0.0103  0.8369         none            M
+2      1709       144641        4220             Men's Jean    0            2.0000          none -0.1504  0.5897         none            M
+3      2048        68496        4165  Women Kurta and Kurti    0            3.0000          none  0.8549  0.8160         none            L
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0  purchases: order_id, customer_id, product_id, ...  Order, customer, product, category; day 0–179 ...
+1                    size_ordered_idx / size_ordered  Ordered size as an index 0–5 (S-, S, M, L, XL,...
+2                                      return_reason  none, size_smaller, size_larger or other (labe...
+3             customers: gender, age_band, city_tier                                Customer attributes
+4  pre_orders, pre_small_returns, pre_large_retur...  Prior-period history; usual_size = mean size o...
+5  products: brand, fabric, price_inr, launch_day...  Product attributes; launch_day ≥ 0 means launc...
+6  reviews: product_id, day, review_text, fit_tag...  Review text (English / Hinglish), the platform...
+7             public_fit_reviews: review_text, label  Public labelled fit reviews (stand-in for ModC...
+8  _gap, _ret_u, _true_reason, _body, _runs, _per...  HIDDEN truth: body-vs-garment gap, return draw...
+--- cell 12 (exec 5) ---
+duplicate order rows                                        1500
+orders with missing size                                    3965
+products with missing brand                                   75
+generic bulk reviews (≤ 2 words, repeated ≥ 100 times)      3640
+reviews posted on or after the window start (leak check)       0
+size returns with the wrong direction code (sim truth)       959
+
+Clean orders: 476,048 | customers 143,395 | products 7,000
+Truly mismatched orders (sim truth): 9.84%; of these 50% were silently kept and are labelled 'fit'; 5.2% of the 'fit' class is truly mismatched; wrong-direction reason codes among true size returns: 4.0%
+                       orders  small (sim)  small (documented)  large (sim)  large (documented)
+category                                                                                       
+Women Jacket            74022       0.0443              0.0452       0.0175              0.0168
+Women Kurta and Kurti  188939       0.0235              0.0240       0.0136              0.0130
+Men's Jean             117004       0.0292              0.0292       0.0241              0.0235
+Men's Polo T-shirt      96083       0.0309              0.0314       0.0277              0.0276
+--- cell 14 (exec 6) ---
+[image]
+Orders by customer history: {'new customer': 39.8, '1-2 prior orders': 31.0, '3+ prior orders': 29.2}
+Orders by informative reviews on the product: {'0 reviews': 38.8, '1-4 reviews': 22.7, '5+ reviews': 38.5}
+--- cell 16 (exec 7) ---
+[image]
+Orders from customers with a usual size: 280,575
+class  too large (size_larger)  too small (size_smaller)  orders
+delta                                                           
+-3                      0.0122                    0.2538     654
+-2                      0.0069                    0.1764   13677
+-1                      0.0035                    0.0658   59026
+ 0                      0.0071                    0.0128  133831
+ 1                      0.0397                    0.0029   58576
+ 2                      0.1231                    0.0053   14106
+ 3                      0.2468                    0.0085     705
+--- cell 18 (exec 8) ---
+                                                    value                                               note
+quantity                                                                                                    
+class mix differs by category: chi-square (df = 6)  1,648                          p = 0; Cramér's V = 0.042
+true mismatch rate (small or large)                 9.84%                                       hidden truth
+share of mismatched orders that were returned       50.0%                                   design value 50%
+'fit' class that is truly mismatched                 5.2%                   label noise 1: silent mismatches
+labelled small/large orders whose reason code i...   4.0%  label noise 2: wrong direction code (agent mis...
+recall of labels for true mismatches                48.0%  share of true mismatches that carry the correc...
+--- cell 20 (exec 9) ---
+                                                    odds ratio per size step  CI low  CI high      p
+model                                                                                               
+small, customers with a usual size (n = 280,575)                      0.2389  0.2325   0.2455 0.0000
+large, customers with a usual size (n = 280,575)                      3.8941  3.7719   4.0203 0.0000
+small, new customers: size minus category avera...                    0.4808  0.4689   0.4929 0.0000
+large, new customers: size minus category avera...                    2.1670  2.1037   2.2322 0.0000
+--- cell 22 (exec 10) ---
+McNemar (platform-trained vs public-trained correct/incorrect): only platform right 366, only public right 31, p = 4.6e-63 | Hinglish-style share of tagged reviews: 21.0%
+                               tagged reviews  macro-F1  CI low  CI high  macro-F1 English-style  macro-F1 Hinglish-style
+classifier                                                                                                               
+public-trained (transfer)                3724    0.7244  0.7075   0.7418                  0.7891                   0.4017
+platform-trained (fine-tuned)            3724    0.8375  0.8248   0.8506                  0.7883                   1.0000
+--- cell 24 (exec 11) ---
+Products with ≥ 30 training orders and ≥ 3 informative reviews: 1,205 | Spearman(review score, actual large−small return rate) = +0.567 (95% CI +0.526 to +0.609), p = 1.9e-103
+
+Correlation of review score with the HIDDEN true product offset, by informative reviews per product:
+                     products  corr with hidden truth
+informative reviews                                  
+1-2                       779                  0.4410
+3-5                       860                  0.6540
+6-10                      945                  0.7770
+11-20                     916                  0.8590
+21-+                      571                  0.9290
+--- cell 26 (exec 12) ---
+Train 299,301 | validation 88,211 | test 88,536 orders (test: small 3.05%, large 1.93%) | models fitted in 2868s
+Prior (always 'fit') macro-F1 = 0.3248; random-ranking AP = class share (small 0.0305, large 0.0193)
+                                      macro-F1  F1 CI low  F1 CI high    mAP  mAP CI low  mAP CI high  AP small  AP large
+model                                                                                                                    
+L-reviews only                          0.2137     0.2114      0.2158 0.0463      0.0441       0.0495    0.0519    0.0407
+L0 logistic, no reviews                 0.3228     0.3197      0.3265 0.1556      0.1462       0.1640    0.1805    0.1307
+L1 logistic + reviews                   0.3283     0.3249      0.3313 0.1640      0.1552       0.1736    0.1849    0.1432
+G0 boosting, no reviews                 0.3512     0.3479      0.3546 0.1670      0.1587       0.1769    0.1958    0.1381
+G1 boosting + reviews                   0.3557     0.3524      0.3590 0.1752      0.1657       0.1835    0.2020    0.1484
+G2 boosting + public-trained reviews    0.3581     0.3549      0.3616 0.1715      0.1630       0.1804    0.1996    0.1433
+--- cell 28 (exec 13) ---
+                                            Δ mAP  CI low  CI high  p (boot)  Δ macro-F1  F1 CI low  F1 CI high  p F1 (boot)  p_holm (mAP)  p_holm (F1)
+comparison (first minus second)                                                                                                                        
+reviews added (logistic)                   0.0084  0.0055   0.0109    0.0100      0.0054     0.0040      0.0066       0.0100        0.0398       0.0398
+reviews added (boosting)                   0.0082  0.0037   0.0114    0.0100      0.0045     0.0032      0.0056       0.0100        0.0398       0.0398
+boosting vs logistic (no reviews)          0.0113  0.0059   0.0178    0.0100      0.0283     0.0268      0.0299       0.0100        0.0398       0.0398
+platform-trained vs public-trained reviews 0.0037  0.0004   0.0070    0.0498     -0.0024    -0.0036     -0.0012       0.0100        0.0498       0.0398
+--- cell 30 (exec 14) ---
+Difference in gain, new minus returning customers: -0.0058 (95% CI -0.0131 to +0.0020), p = 0.199
+[image]
+                                 gain in mAP (G1 − G0)  CI low CI high  orders mAP without reviews size-return share
+new customers (no history)                      0.0042 -0.0005  0.0092   35338              0.1154            0.0490
+customers with history                          0.0100  0.0041  0.0165   53198              0.1964            0.0503
+product: 0 informative reviews                 -0.0003 -0.0061  0.0049   40008              0.1659            0.0498
+product: 1-4 informative reviews                0.0155  0.0058  0.0242   17954              0.1548            0.0501
+product: 5+ informative reviews                 0.0138  0.0056  0.0226   30574              0.1764            0.0496
+                       orders  size-return share  mAP without reviews   gain  CI low  CI high      p  p_holm
+category                                                                                                    
+Women Jacket            14403             0.0644               0.1822 0.0072 -0.0040   0.0183 0.2119  0.4238
+Women Kurta and Kurti   34267             0.0377               0.1774 0.0009 -0.0068   0.0086 0.7285  0.7285
+Men's Jean              22302             0.0525               0.1531 0.0080  0.0002   0.0150 0.0662  0.1987
+Men's Polo T-shirt      17564             0.0580               0.1620 0.0147  0.0063   0.0243 0.0132  0.0530
+--- cell 32 (exec 15) ---
+[image]
+class    ECE  top-decile lift  top-decile observed rate  base rate
+small 0.0026           5.5190                    0.1681     0.0305
+large 0.0022           5.9694                    0.1154     0.0193
+               score cut-off  orders flagged  precision (right direction)  CI low  CI high  base rate    lift  p (one-sided z)
+flagged share                                                                                                                 
+top 1%                0.2558             886                       0.3612  0.3302   0.3933     0.0283 12.7428           0.0000
+top 2%                0.2167            1771                       0.3100  0.2889   0.3319     0.0278 11.1373           0.0000
+top 5%                0.1659            4427                       0.2431  0.2306   0.2559     0.0276  8.8050           0.0000
+top 10%               0.1232            8854                       0.1973  0.1892   0.2057     0.0272  7.2612           0.0000
+top 20%               0.0769           17708                       0.1461  0.1410   0.1514     0.0266  5.4934           0.0000
+--- cell 34 (exec 16) ---
+Flagged share 5.0%; control size-return rate among flagged (predicted direction) = 24.3%; all-order size-return rate = 5.0%
+                                   control rate (flagged)  flagged orders per arm  total orders per arm to collect them  customers per arm  \
+relative drop in the flagged rate                                                                                                            
+-10%                                               0.2431                    4710                                 94195               3432   
+-20%                                               0.2431                    1131                                 22618                825   
+-30%                                               0.2431                     480                                  9599                350   
+
+                                   orders per arm if all orders analysed  
+relative drop in the flagged rate                                         
+-10%                                                              496415  
+-20%                                                              122646  
+-30%                                                               53860
+--- cell 36 (exec 17) ---
+Validation mAP of G1 on a 30,000-order subset: 0.1935
+                               mAP drop when permuted  std over 3 shuffles
+feature group                                                             
+customer history and size gap                  0.1113               0.0024
+brand and fabric                               0.0875               0.0010
+ordered size                                   0.0648               0.0034
+review features                                0.0291               0.0001
+category, price, rating                        0.0036               0.0006
+customer demographics                         -0.0004               0.0005
+--- cell 38 (exec 18) ---
+Chosen cut-off on validation (max net value): 0.06
+                    share of orders flagged (val)  returns avoided per flagged order (full compliance)  net ₹ per order (val, base)
+calibrated cut-off                                                                                                                 
+0.0400                                     0.3670                                             0.0810                         2.1774
+0.0600                                     0.2582                                             0.1076                         2.3141
+0.0800                                     0.1900                                             0.1288                         2.1620
+0.1000                                     0.1380                                             0.1505                         1.9123
+0.1200                                     0.1029                                             0.1727                         1.6857
+0.1500                                     0.0662                                             0.2010                         1.2987
+0.2000                                     0.0280                                             0.2513                         0.7101
+0.3000                                     0.0038                                             0.2589                         0.0999
+--- cell 40 (exec 19) ---
+Test: flagged 25.94% of orders (22,968) | precision of direction 12.7% | size-return rate among flagged before tip 13.4% -> after (100% follow) 2.3% | avoided per flagged order 0.1110 (95% CI 0.1062 to 0.1153)
+[image]
+                       orders flagged  flag rate  precision of direction  returns avoided per 100 flagged (full follow)
+category                                                                                                               
+Women Jacket                     4847     0.3365                  0.1407                                        11.7805
+Women Kurta and Kurti            6092     0.1778                  0.1316                                        12.1963
+Men's Jean                       6309     0.2829                  0.1195                                        10.4137
+Men's Polo T-shirt               5720     0.3257                  0.1182                                        10.1224
+
+          tip followed  ₹ per size return  lost sales on tip  returns avoided per year (lakh)  net ₹ crore / year  CI low (effect)  CI high (effect)
+scenario                                                                                                                                            
+worst           0.1500           280.0000             0.0300                           0.8640             -2.2050          -2.3100           -2.1120
+base            0.3000           380.0000             0.0150                           1.7280              3.6550           3.3700            3.9080
+best            0.4500           500.0000             0.0100                           2.5920             10.6190          10.0580           11.1200

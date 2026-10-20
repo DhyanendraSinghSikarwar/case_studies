@@ -1,0 +1,9 @@
+field(s),meaning
+"session_id, ts, city, restaurant_id, hour, weekday",Cart session and context
+"n_items, distance_km, rain","Basket size, restaurant→customer distance (1,200 missing), rain flag"
+"kitchen_orders_vs_capacity, de_per_order",Kitchen stress; delivery executives per active order
+"shown_promise_min, promise_offset_min","Promise shown at cart; randomised perturbation (−3, 0, +3)"
+placed,Customer placed the order
+"o2a_min, fm_min, wt_min, lm_min, o2r_min","Order→assigned, first mile, wait, last mile, order→reached"
+"care_contact, cancelled_after_place",Customer-care contact; cancellation after placing
+"_prep_true, _rest_prep_mean",HIDDEN true prep time and restaurant mean

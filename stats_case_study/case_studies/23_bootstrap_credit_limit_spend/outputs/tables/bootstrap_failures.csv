@@ -1,0 +1,5 @@
+situation,coverage of the nominal 95% bootstrap CI
+"maximum of 50 uniform(0, 1) values (true maximum = 1)",0.0
+mean of 8 lognormal values (percentile bootstrap),0.761
+"mean of an autocorrelated series (AR(1), ρ = 0.7, n = 200): i.i.d. bootstrap",0.58
+same series: moving-block bootstrap (blocks of 20),0.884

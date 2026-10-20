@@ -1,0 +1,4 @@
+,test AUC
+"GBM WITH leakage, random 80/20 split",0.9591644261
+"GBM without leakage, random 80/20 split",0.7657923457
+"Current scorecard (M0), random 80/20 split",0.7647347641

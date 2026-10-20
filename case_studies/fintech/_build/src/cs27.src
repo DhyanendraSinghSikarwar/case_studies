@@ -1,0 +1,362 @@
+#%% md
+# Case Study 27 — From 10 Million Call Minutes to Decisions: Intent Frequency, Compliance Monitoring and a Cluster-Randomised Dialler Test
+
+**Priority:** ★ Optional · **Reference:** Case Study 27 — *Policybazaar: speech analytics, request-frequency insight and dialler analytics* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Sales Operations, Quality & Compliance, Product (health insurance), Contact-centre analytics
+**Data:** ⚠️ **SYNTHETIC** (D-27-01). Call audio and dialler logs are confidential. We simulate the *outputs* an analytics team works with, not audio.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs27_call_analytics_dialler.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+A large insurance marketplace handles ~**10 million call minutes a month**. Humans could listen to only **1–2%** of them. A speech-to-text engine (for Hindi, English and mixed "Hinglish") plus language analysis turns every call into text and tags. That unlocks three uses:
+1. **What are customers asking for?** A simple count of request types showed that **cashless-hospital requests** were the 7th–8th most common, which led to a product (a cashless-hospital integration).
+2. **Are agents following the rules?** Real-time alerts for compliance breaches and mis-selling, on 100% of calls instead of 1–2%.
+3. **Can the dialler be more efficient?** More dials, more connects, shorter callbacks, and less idle time.
+
+The data-science questions: how accurate is the transcript-derived intent (and is that count *reliable enough* to drive a product decision), how well does the compliance flag work, and **did the dialler change really cause the reported efficiency gain**, tested in an experiment with teams as the unit?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Policybazaar did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | "Only 1–2% of about 10 million monthly call minutes could be quality-checked by humans"; "nearly 100 million customer queries over the phone in 2017" |
+| Question | What are customers asking for? Where are agents breaking compliance or mis-selling? How can dialler efficiency be improved? |
+| Data | Call audio (~10M minutes/month, Hindi and English); dialler logs (dial-outs, connects, callbacks) |
+| Approach | Proprietary Hindi voice-to-text (third-party tools "inadequate") → NLP → real-time alerts for compliance breaches and pitch mismatches → request-frequency analysis → dialler analytics |
+| Statistics | Frequency ranking of request types: **cashless hospital requests were the 7th–8th most common** |
+| ML | In-house ASR + NLP; **WER and validation ND**; TensorFlow, SageMaker, GPUs |
+| Impact | Dialler: "**50%** increase in dial-out rates"; call efficiency **40% → 85%**; callback time cut to 30–45 minutes |
+
+**Source:** AWS case study / press coverage on Policybazaar (links in the reference file).
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Part A | 60,000 inbound calls over 12 weeks with an ASR+NLP **predicted intent** (13 intents) vs the hidden true intent; error rates depend on language (Hindi worst); cashless-hospital requests **rise over the 12 weeks** |
+| Part B | 8,000 calls re-listened by QA vs the model's compliance-breach score (6% true breaches) |
+| Part C | 120 agents in 24 teams × 40 days; **cluster-randomised** (12 teams new dialler, 12 old); outcomes: dials, connects, talk time, sales, callback delay |
+| Statistics added | Intent accuracy and per-intent F1 with bootstrap CIs; ranking uncertainty (**rank CIs by bootstrap**); correction of frequencies for classifier confusion (**matrix inversion**); trend test for a rising intent; compliance flag PR/ROC and **alert budget**; **team-level cluster analysis** of the dialler (permutation test, mixed model, cluster-robust SE, ICC, design effect); callbacks; ₹ |
+
+### (c) How the industry uses this
+
+Speech analytics is mainstream in Indian BFSI contact centres (Policybazaar, Bajaj Finserv, HDFC Bank, Airtel). Vendors include Observe.AI, Uniphore, Skit.ai and in-house Indic ASR. **Intent counts drive product roadmaps; QA flags drive compliance (IRDAI call-recording and mis-selling norms); dialler settings drive productivity.** Each needs its own validation, which is what this notebook does.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Can we trust transcript-based request counts to drive product decisions, rely on the compliance flag for QA, and prove the new dialler increases efficiency? |
+| Analytical | (1) How accurate and how biased are intent counts, and is the rank of "cashless hospital" reliable? (2) What alert budget gives useful compliance QA? (3) What is the causal effect of the new dialler on dials, talk time and sales, with teams as the unit of randomisation? |
+
+**Hypotheses**
+- **H1:** H0: intent accuracy does not differ by language (χ²).
+- **H2:** H0: the weekly share of cashless-hospital requests has no trend (Cochran–Armitage, on corrected shares).
+- **H3:** H0: the compliance flag's precision at a 5% alert budget ≤ the base rate (6%).
+- **H4:** H0: the new dialler has no effect on talk-time share / sales per agent-day (team-level permutation test and cluster-robust regression).
+
+**Primary metric (dialler):** sales per logged-in hour, with **talk-time share** (call efficiency) as the documented mechanism. **Unit of randomisation: team** (24), so effective n is 24, not 4,800 agent-days.
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import statsmodels.formula.api as smf
+from sklearn.metrics import f1_score, accuracy_score, confusion_matrix, roc_auc_score, precision_recall_curve
+from statsmodels.stats.proportion import proportion_confint
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public Indian contact-centre call logs, intents and dialler logs | **None.** Call recordings and dialler data are confidential and personal. Public Indic speech corpora (e.g., Mozilla Common Voice Hindi, IndicTTS) have no business intents or dialler logs. |
+| **Decision** | Simulated transcript-derived intents, QA audit records and a cluster-randomised dialler experiment (D-27-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs27.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs27.py
+
+#%% code
+os.makedirs("data/cs27", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs27 as gen; importlib.reload(gen)
+calls_raw, qa, dl_raw = gen.generate(seed=SEED)
+calls_raw.to_csv("data/cs27/calls.csv.gz", index=False); qa.to_csv("data/cs27/qa_audit.csv.gz", index=False); dl_raw.to_csv("data/cs27/dialler_agent_days.csv.gz", index=False)
+print(f"calls: {len(calls_raw):,} rows ({calls_raw.call_id.nunique():,} unique) | QA audit: {len(qa):,} | dialler: {len(dl_raw):,} agent-days, {dl_raw.agent_id.nunique()} agents, {dl_raw.team_id.nunique()} teams")
+calls_raw.drop(columns=["_true_intent"]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Calls | 60,000 over 12 weeks; Hindi 45% / English 25% / Hinglish 30%; mean duration 5.5 min | Our assumption; **documented** Hindi and English |
+| Intents | 13 types; cashless-hospital ≈ 3.5% rising ~13% per week | **Documented** 7th–8th most common |
+| ASR/NLP | Accuracy falls with word-error rate (WER: Hindi 22%, Hinglish 17%, English 9%); confusions concentrate on similar intents (claim status ↔ cashless hospital) | Typical Indic ASR behaviour; **WER ND in the source** |
+| QA audit | 8,000 re-listened calls, 6% true breaches | Our assumption |
+| Dialler experiment | 24 teams × 5 agents × 40 days; 12 teams get the new dialler (randomised); ≈ +32% dials/hour, talk share 40% → 60%, callback delay 260 → 40 minutes | **Documented** direction ("+50% dial-out", "efficiency 40% → 85%", "callback 30–45 min"); sizes ours |
+| DQ issues | 300 duplicate calls; 250 ASR failures (blank intent); 60 agent-days logged under the wrong ID (0 logged-in minutes) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("calls: call_id, week, language, duration_min, asr_wer", "Call, week, language, length, word-error rate"), ("predicted_intent", "Intent from ASR + NLP (blank = ASR failure)"),
+    ("_true_intent", "HIDDEN true intent"), ("qa_audit: qa_breach, model_breach_score", "QA re-listen result; model's breach score"),
+    ("dialler: agent_id, team_id, new_dialler, day", "Agent-day; the team's randomised arm"), ("logged_in_min, dials, connects, talk_min, non_talk_min, sales", "Daily activity and outcomes"),
+    ("avg_callback_delay_min", "Average delay before a requested callback was made"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs27/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+checks = {"duplicate calls": int(calls_raw.call_id.duplicated().sum()), "ASR failures (blank intent)": int((calls_raw.drop_duplicates("call_id").predicted_intent.fillna("") == "").sum()),
+          "agent-days with 0 logged-in minutes (wrong ID)": int((dl_raw.logged_in_min == 0).sum()), "connects > dials": int((dl_raw.connects > dl_raw.dials).sum())}
+print(pd.Series(checks, name="rows").to_string())
+calls = calls_raw.drop_duplicates("call_id").copy(); calls["predicted_intent"] = calls.predicted_intent.fillna("")
+asr_fail = calls.predicted_intent == ""; cl = calls[~asr_fail].copy()
+dl = dl_raw[dl_raw.logged_in_min > 0].copy(); dl["talk_share"] = dl.talk_min / dl.logged_in_min; dl["dials_per_hr"] = dl.dials / (dl.logged_in_min / 60); dl["sales_per_hr"] = dl.sales / (dl.logged_in_min / 60)
+dl["connect_rate"] = dl.connects / dl.dials.clip(lower=1); dl["callback_delay"] = dl.avg_callback_delay_min
+print(f"\nClean: {len(calls):,} calls ({asr_fail.sum()} ASR failures routed to a human, excluded from frequency counts) | dialler {len(dl):,} agent-days")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(15, 4.6))
+tc, pc = cl._true_intent.value_counts(), cl.predicted_intent.value_counts(); fr = pd.DataFrame({"true": tc, "ASR+NLP predicted": pc}).fillna(0) / len(cl) * 100
+fr = fr.sort_values("true"); fr.plot(kind="barh", ax=axes[0], color=["#2a6f97", "#e07a1f"]); axes[0].set_xlabel("Share of calls (%)"); axes[0].set_ylabel("Intent"); axes[0].set_title("What customers ask: true vs transcript-derived")
+tm = dl.groupby(["day", "new_dialler"]).talk_share.mean().unstack() * 100
+axes[1].plot(tm.index, tm[0], color="#e07a1f", label="old dialler"); axes[1].plot(tm.index, tm[1], color="#2a6f97", label="new dialler")
+axes[1].set_xlabel("Day of experiment"); axes[1].set_ylabel("Talk time as % of logged-in time (call efficiency)"); axes[1].set_title("Call efficiency by dialler arm"); axes[1].legend()
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 How accurate is the intent tagging, and for whom?
+
+Accuracy and macro-F1 (bootstrap CIs) against the true intent (here from the hidden truth; in practice a QA-labelled sample). Accuracy **by language** with Wilson CIs and a χ² test (H1), plus per-intent F1 for the intents that matter most.
+
+#%% code
+yt, yp = cl._true_intent.values, cl.predicted_intent.values
+bs = [accuracy_score(yt[i], yp[i]) for i in (RNG.integers(0, len(yt), len(yt)) for _ in range(300))]
+print(f"Overall intent accuracy {accuracy_score(yt, yp):.1%} (bootstrap CI {np.percentile(bs, 2.5):.1%}–{np.percentile(bs, 97.5):.1%}); macro-F1 {f1_score(yt, yp, average='macro'):.3f}")
+la = cl.assign(ok=(yt == yp)).groupby("language").ok.agg(["mean", "sum", "size"]); ci = [proportion_confint(r["sum"], r["size"], method="wilson") for _, r in la.iterrows()]; la["CI low"], la["CI high"] = [c[0] for c in ci], [c[1] for c in ci]
+c2 = stats.chi2_contingency(pd.crosstab(cl.language, yt == yp)); print(f"Accuracy by language: χ² = {c2[0]:.0f}, p = {c2[1]:.2g}")
+f1 = pd.Series(f1_score(yt, yp, average=None, labels=gen.INTENTS), index=gen.INTENTS, name="F1")
+display(la.round(4)); f1.sort_values().round(3).to_frame()
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Is "cashless hospital is 7th–8th" a reliable finding? Ranking uncertainty and misclassification correction
+
+The product decision rested on a **frequency rank**. Two problems: (1) sampling noise in ranks; (2) **misclassification bias**: classifier confusions shift counts between intents. We (a) bootstrap the **rank of each intent**, and (b) correct the predicted shares using the confusion matrix estimated on a labelled sample of 3,000 calls: if p̂ = M p (M = P(predicted ∣ true)), then p = M⁻¹ p̂ (projected onto the simplex), with bootstrap CIs.
+
+#%% code
+INT = gen.INTENTS; k = len(INT); lab_idx = RNG.choice(len(cl), 3000, replace=False)
+def est_M(t, p):
+    M = np.zeros((k, k))
+    for i, ti in enumerate(INT):
+        m = t == ti; M[:, i] = [(p[m] == pj).mean() if m.sum() else 0 for pj in INT]
+    return M
+def corrected(pshare, M):
+    x = np.linalg.lstsq(M, pshare, rcond=None)[0]; x = np.clip(x, 0, None); return x / x.sum()
+M = est_M(yt[lab_idx], yp[lab_idx]); p_hat = np.array([(yp == i).mean() for i in INT]); p_corr = corrected(p_hat, M); p_true = np.array([(yt == i).mean() for i in INT])
+rank_bs, corr_bs = [], []
+for _ in range(300):
+    i = RNG.integers(0, len(yp), len(yp)); ph = np.array([(yp[i] == j).mean() for j in INT]); rank_bs.append(stats.rankdata(-ph)); j = RNG.choice(lab_idx, 3000)
+    corr_bs.append(corrected(ph, est_M(yt[j], yp[j])))
+rank_bs, corr_bs = np.array(rank_bs), np.array(corr_bs); ci_i = INT.index("cashless_hospital")
+tab = pd.DataFrame({"true share": p_true * 100, "predicted share": p_hat * 100, "corrected share": p_corr * 100, "corrected CI low": np.percentile(corr_bs, 2.5, 0) * 100, "corrected CI high": np.percentile(corr_bs, 97.5, 0) * 100,
+                    "rank (true)": stats.rankdata(-p_true), "rank (predicted)": stats.rankdata(-p_hat), "rank CI (predicted)": [f"{int(np.percentile(rank_bs[:, j], 2.5))}–{int(np.percentile(rank_bs[:, j], 97.5))}" for j in range(k)]}, index=INT)
+print(f"Cashless hospital: true rank {int(stats.rankdata(-p_true)[ci_i])}, predicted rank {int(stats.rankdata(-p_hat)[ci_i])} (95% bootstrap range {np.percentile(rank_bs[:, ci_i], 2.5):.0f}–{np.percentile(rank_bs[:, ci_i], 97.5):.0f}); "
+      f"share: true {p_true[ci_i] * 100:.2f}%, predicted {p_hat[ci_i] * 100:.2f}%, corrected {p_corr[ci_i] * 100:.2f}% (CI {np.percentile(corr_bs[:, ci_i], 2.5) * 100:.2f}–{np.percentile(corr_bs[:, ci_i], 97.5) * 100:.2f}%)")
+tab.sort_values("true share", ascending=False).round(3)
+
+#%% md
+**Observation:** «O72»
+
+### 7.3 Is the request really growing? Trend test on a rising intent
+
+Cashless-hospital requests rise over the 12 weeks. We test the trend in the **weekly share** with a **Cochran–Armitage** trend test on (a) predicted and (b) misclassification-corrected counts, and fit a log-linear weekly growth rate.
+
+#%% code
+rows = []
+for w in range(1, 13):
+    s = cl[cl.week == w]; ph = np.array([(s.predicted_intent == j).mean() for j in INT]); pc_ = corrected(ph, M)
+    rows.append((w, len(s), ph[ci_i], pc_[ci_i], (s._true_intent == "cashless_hospital").mean()))
+tw = pd.DataFrame(rows, columns=["week", "calls", "predicted share", "corrected share", "true share"]).set_index("week")
+def ca(x_succ, n_tot):
+    x = np.arange(len(n_tot)); p = x_succ.sum() / n_tot.sum(); xb = (x * n_tot).sum() / n_tot.sum()
+    T = (x * (x_succ - n_tot * p)).sum() / np.sqrt(p * (1 - p) * (n_tot * (x - xb) ** 2).sum()); return T, 2 * stats.norm.sf(abs(T))
+T_p, p_p = ca((tw["predicted share"] * tw.calls).values, tw.calls.values); T_t, p_t = ca((tw["true share"] * tw.calls).values, tw.calls.values)
+g = stats.linregress(tw.index, np.log(tw["predicted share"]))
+print(f"Cochran–Armitage trend on predicted counts: z = {T_p:.1f}, p = {p_p:.2g} | on true counts: z = {T_t:.1f}, p = {p_t:.2g} | log-linear growth of predicted share = {np.exp(g.slope) - 1:+.1%} per week")
+fig, ax = plt.subplots(figsize=(8, 4)); ax.plot(tw.index, tw["true share"] * 100, "o-", label="true"); ax.plot(tw.index, tw["predicted share"] * 100, "s--", label="predicted (transcript-derived)"); ax.plot(tw.index, tw["corrected share"] * 100, "^:", label="corrected")
+ax.set_xlabel("Week"); ax.set_ylabel("Cashless-hospital share of calls (%)"); ax.set_title("A rising request: visible in transcripts, biased in level"); ax.legend(); plt.tight_layout(); plt.show()
+tw.round(4)
+
+#%% md
+**Takeaway:** «O73»
+
+### 7.4 Compliance monitoring: from 1–2% sampling to 100% monitoring
+
+On the 8,000-call QA audit, the model's breach score is evaluated with **ROC-AUC** and **precision–recall**. The operational question is an **alert budget**: QA staff can re-listen to a fixed number of flagged calls. For several budgets we report precision (share of alerts that are true breaches, Wilson CI), recall (share of all breaches caught), and the comparison with **random sampling at the old 1–2% rate**. We also test whether performance differs by language (AUC, DeLong-style bootstrap).
+
+#%% code
+y, s = qa.qa_breach.values, qa.model_breach_score.values; auc = roc_auc_score(y, s)
+rows = []
+for bud in (0.01, 0.02, 0.05, 0.10, 0.20):
+    k_ = int(bud * len(y)); top = np.argsort(-s)[:k_]; tp = y[top].sum(); lo, hi = proportion_confint(tp, k_, method="wilson")
+    rows.append((f"{bud:.0%}", k_, tp / k_, lo, hi, tp / y.sum(), y.mean(), bud))
+bd = pd.DataFrame(rows, columns=["alert budget (share of calls)", "alerts", "precision", "CI low", "CI high", "recall (breaches caught)", "precision of random sampling", "recall of random sampling"]).set_index("alert budget (share of calls)")
+la2 = {}
+for l_, g_ in qa.groupby("language"):
+    a_ = roc_auc_score(g_.qa_breach, g_.model_breach_score); bs_ = [roc_auc_score(g_.qa_breach.values[i], g_.model_breach_score.values[i]) for i in (RNG.integers(0, len(g_), len(g_)) for _ in range(200))]
+    la2[l_] = (a_, np.percentile(bs_, 2.5), np.percentile(bs_, 97.5))
+print(f"Breach base rate {y.mean():.1%} | model ROC-AUC {auc:.3f} | AUC by language: " + ", ".join(f"{k} {v[0]:.3f} ({v[1]:.3f}–{v[2]:.3f})" for k, v in la2.items()))
+bd.round(4)
+
+#%% md
+**Observation:** «O74»
+
+### 7.5 The dialler experiment: cluster-randomised, analysed at the team level
+
+**(a) Why not just compare agent-days?** Teams, not agents, were randomised. Agents in a team share a supervisor and call list, so their days are **correlated**. Treating 4,800 agent-days as independent would make the result look far more certain than it is. The correct unit is the **team** (24 of them).
+
+**Analyses:**
+1. **Team-level means** with a **permutation test** (relabel which teams were "new", 10,000 times) and a Welch t-test on the 24 team means.
+2. **Cluster-robust regression** (SEs clustered by team) on agent-day outcomes, with day fixed effects.
+3. **ICC** and **design effect** (how much clustering inflates the variance), both estimated **after removing the arm effect**, so that the treatment difference is not mistaken for team-to-team variation.
+4. Outcomes: dials per hour, talk-time share, connect rate, sales per logged-in hour (and callback delay).
+
+#%% code
+tm = dl.groupby(["team_id", "new_dialler"]).agg(dials_per_hr=("dials_per_hr", "mean"), talk_share=("talk_share", "mean"), connect_rate=("connect_rate", "mean"), sales_per_hr=("sales_per_hr", "mean"),
+                                                   callback_delay=("avg_callback_delay_min", "mean")).reset_index()
+outs = ["dials_per_hr", "talk_share", "connect_rate", "sales_per_hr", "callback_delay"]; rows = []
+for o in outs:
+    a1, a0 = tm.loc[tm.new_dialler == 1, o].values, tm.loc[tm.new_dialler == 0, o].values; obs = a1.mean() - a0.mean(); pooled = tm[o].values; lab = tm.new_dialler.values
+    perm = np.array([(lambda l: pooled[l == 1].mean() - pooled[l == 0].mean())(RNG.permutation(lab)) for _ in range(10000)]); pp = (np.abs(perm) >= abs(obs)).mean()
+    w = stats.ttest_ind(a1, a0, equal_var=False); icc_m = smf.mixedlm(f"{o} ~ new_dialler", data=dl, groups=dl.team_id).fit(); icc = icc_m.cov_re.iloc[0, 0] / (icc_m.cov_re.iloc[0, 0] + icc_m.scale)
+    cr = smf.ols(f"{o} ~ new_dialler + C(day)", data=dl).fit(cov_type="cluster", cov_kwds={"groups": dl.team_id}); ci = cr.conf_int().loc["new_dialler"]
+    rows.append((o, a0.mean(), a1.mean(), obs / a0.mean(), pp, w.pvalue, cr.params["new_dialler"], ci[0], ci[1], icc, 1 + (dl.groupby("team_id").size().mean() - 1) * icc))
+dx = pd.DataFrame(rows, columns=["outcome", "old dialler (team mean)", "new dialler", "relative change", "permutation p", "Welch p (24 teams)", "cluster-robust effect", "CI low", "CI high", "ICC", "design effect"]).set_index("outcome")
+naive = smf.ols("sales_per_hr ~ new_dialler + C(day)", data=dl).fit(); print(f"Naive SE for the sales effect (treating agent-days as independent) = {naive.bse['new_dialler']:.4f} vs cluster-robust {smf.ols('sales_per_hr ~ new_dialler + C(day)', data=dl).fit(cov_type='cluster', cov_kwds={'groups': dl.team_id}).bse['new_dialler']:.4f}")
+dx.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O75»
+
+### 7.6 Callbacks and customer experience
+
+The documented callback time of 30–45 minutes. We compare the average callback delay (log-scale, team means; Mann–Whitney across teams) and the share of agent-days with a callback delay under 60 minutes, and check whether faster callbacks go with more sales (a team-level correlation, descriptive only).
+
+#%% code
+cb = tm.assign(l=np.log(tm.callback_delay)); a1, a0 = cb.loc[cb.new_dialler == 1, "callback_delay"], cb.loc[cb.new_dialler == 0, "callback_delay"]; mw = stats.mannwhitneyu(a1, a0)
+u60 = dl.groupby("new_dialler").avg_callback_delay_min.apply(lambda s: (s < 60).mean())
+print(f"Median callback delay: old {dl.loc[dl.new_dialler == 0, 'avg_callback_delay_min'].median():.0f} min vs new {dl.loc[dl.new_dialler == 1, 'avg_callback_delay_min'].median():.0f} min (team-level Mann–Whitney p = {mw.pvalue:.2g}); "
+      f"agent-days with callback < 60 min: {u60[0]:.0%} → {u60[1]:.0%}")
+r_, p_ = stats.spearmanr(tm.callback_delay, tm.sales_per_hr); print(f"Team-level Spearman(callback delay, sales per hour) = {r_:+.2f} (p = {p_:.2g}); mostly reflects the arm, since arms differ in both")
+
+#%% md
+**Observation:** «O76»
+
+### 7.7 How many teams do we need next time?
+
+With cluster randomisation, power depends on the **number of teams** and the ICC, not on agent-days. From the observed between-team SD of the team-level outcome, we compute teams per arm for 80% power (α = 0.05, two-sided).
+
+#%% code
+rows = []
+for o, rel in (("talk_share", 0.10), ("talk_share", 0.25), ("sales_per_hr", 0.10), ("sales_per_hr", 0.25), ("dials_per_hr", 0.10)):
+    sd = tm.groupby("new_dialler")[o].std().mean(); base = tm.loc[tm.new_dialler == 0, o].mean(); n = int(np.ceil(2 * (1.96 + 0.84) ** 2 * sd ** 2 / (rel * base) ** 2)); rows.append((o, f"{rel:.0%}", n, max(n, 3)))
+pd.DataFrame(rows, columns=["outcome", "relative effect to detect", "teams per arm (formula)", "teams per arm (practical floor of 3)"]).set_index(["outcome", "relative effect to detect"])
+
+#%% md
+**Observation:** «O77»
+
+## 8. ML Section — not reproduced; what to validate
+
+The proprietary Hindi ASR and NLP models are not reproduced (no audio, no deep-learning framework in the library list). The decision-relevant statistics (intent accuracy by language, corrected counts, flag precision at an alert budget, a randomised dialler test) are model-agnostic. In production, add: **WER by language/accent/noise on a labelled sample**, a **drift monitor** (new products and slang change vocabulary), and **fairness checks** (compliance flags should not over-trigger for particular accents or languages).
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-27-07):
+- 400 outbound agents; 26 working days a month; agent cost ₹35,000 a month.
+- Each sale earns ₹1,800 margin.
+- QA: a reviewer re-listens at 5 minutes per flagged call; ₹400 per hour.
+
+#%% code
+AG, DAYS, COST, MARG = 400, 26, 35000, 1800
+s0, s1 = dl.loc[dl.new_dialler == 0, "sales"].mean(), dl.loc[dl.new_dialler == 1, "sales"].mean(); gain = AG * DAYS * (s1 - s0) * MARG
+pe = dx.loc["sales_per_hr"]; lo_g, hi_g = AG * DAYS * 8 * pe["CI low"] * MARG, AG * DAYS * 8 * pe["CI high"] * MARG
+print(f"Sales per agent-day: old {s0:.2f} vs new {s1:.2f} → extra margin ≈ ₹{gain / 1e7:.1f} crore/month for 400 agents (cluster-robust 95% range ≈ ₹{lo_g / 1e7:.1f}–{hi_g / 1e7:.1f} crore)")
+print(f"Equivalent to {AG * (s1 / s0 - 1):.0f} extra agents' output ≈ ₹{AG * (s1 / s0 - 1) * COST / 1e7:.1f} crore/month of salary avoided")
+k_ = int(0.05 * 1e6); qa_cost = k_ * 5 / 60 * 400
+print(f"QA at a 5% alert budget on 10 lakh calls/month: {k_:,} alerts, ≈ {k_ * bd.loc['5%', 'precision']:,.0f} true breaches found (random 1–2% sampling would find ≈ {1e6 * 0.015 * y.mean():,.0f} breaches at 6.4% precision); QA cost ≈ ₹{qa_cost / 1e7:.2f} crore/month")
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated ASR/NLP:** error structure and WER are assumed. Measure WER on real labelled Hindi/Hinglish telephony audio, because accent and call-quality effects are large.
+- **Correction needs a representative labelled sample:** the confusion-matrix correction (7.2) assumes the error pattern is the same in labelled and unlabelled calls. Re-estimate it as the product mix changes.
+- **Cluster trials are expensive in teams:** with 24 teams the dialler test detects only fairly large effects (7.7). Stepped-wedge rollouts (teams switching at random times) give more power.
+- **Efficiency vs conversion:** more dials and more talk time are mechanism metrics. The business metric is sales per hour and customer experience (complaints, opt-outs). Watch spam-call complaints and RBI/TRAI call-time rules.
+- **Privacy:** call recording and transcript analytics need consent notices and retention limits under the DPDP Act and IRDAI norms.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Misclassification correction | p̂ = M·p → p = M⁻¹·p̂ (projected to the simplex) |
+| Cochran–Armitage | z = Σ xᵢ(sᵢ − nᵢp̄) / √(p̄(1 − p̄)Σnᵢ(xᵢ − x̄)²) |
+| Precision / recall at budget b | true breaches in the top b·N / (b·N); / all breaches |
+| ICC | σ²_team / (σ²_team + σ²_within) |
+| Design effect | 1 + (m − 1)·ICC, m = observations per cluster |
+| Teams needed per arm | n = 2(z₀.₉₇₅ + z₀.₈)² σ²_team / Δ² |
+
+| Term | Meaning |
+|---|---|
+| ASR / WER | Automatic speech recognition / word error rate |
+| Intent | The purpose of a call (e.g., claim status, cashless hospital) |
+| Predictive dialler | Software that dials ahead and connects only answered calls to free agents |
+| Call efficiency | Talk time as a share of logged-in time |
+| Cluster randomisation | Randomising whole teams, not individuals |
+| ICC | How similar observations within a team are |

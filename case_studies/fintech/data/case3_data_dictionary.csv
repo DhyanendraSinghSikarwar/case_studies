@@ -1,0 +1,22 @@
+column,type,description,source
+customer_id,id,Unique customer,synthetic
+"age, job, marital, education",cat/num,Demographics,UCI (real)
+credit_default_flag,flag,Has a credit default on record,UCI (real)
+has_home_loan / has_personal_loan,flag,Existing housing / personal loan,UCI (real)
+prior_campaign_success,flag,Responded to the previous campaign,UCI poutcome (real)
+prior_deposit_response,flag,Subscribed to a term deposit in the UCI campaign,UCI y (real)
+avg_balance_inr,num,"Average savings balance (₹), rank-mapped from UCI balance",semi-synthetic
+city_tier,cat,Tier 1/2/3,synthetic
+tenure_months,num,Months with the bank (1.5% missing),synthetic
+income_band,cat,<5L / 5-10L / 10-25L / >25L annual income (2% Unknown),synthetic
+digital_active,flag,Active mobile-app user (push reachable),synthetic
+pre_digital_txns_90d,num,Digital transactions in the 90 days BEFORE the campaign (CUPED covariate),synthetic
+pre_revenue_inr_90d,num,Revenue from the customer in the 90 days BEFORE the campaign (CUPED covariate),synthetic
+group,cat,treatment / control (randomised),synthetic
+channel,cat,SMS / Email / WhatsApp / Push; 'none' for control,synthetic
+billpay_registered,0/1,Registered for BillPay during the campaign,synthetic outcome
+pl_booked,0/1,Booked a personal loan during the campaign,synthetic outcome
+pl_amount_inr,num,PL amount (₹); blank if not booked,synthetic outcome
+pl_booking_date,date,PL booking date; blank if not booked,synthetic outcome
+in_campaign_export,flag,1 = row present in Marketing's campaign-tracking export,synthetic (SRM bug)
+post_digital_txns_60d,num,Digital transactions DURING the campaign (engagement guardrail),synthetic outcome

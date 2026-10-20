@@ -1,0 +1,8 @@
+field(s),meaning
+"calls: call_id, week, language, duration_min, asr_wer","Call, week, language, length, word-error rate"
+predicted_intent,Intent from ASR + NLP (blank = ASR failure)
+_true_intent,HIDDEN true intent
+"qa_audit: qa_breach, model_breach_score",QA re-listen result; model's breach score
+"dialler: agent_id, team_id, new_dialler, day",Agent-day; the team's randomised arm
+"logged_in_min, dials, connects, talk_min, non_talk_min, sales",Daily activity and outcomes
+avg_callback_delay_min,Average delay before a requested callback was made

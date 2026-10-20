@@ -1,0 +1,16 @@
+.venv/
+data/raw/*
+data/interim/*
+data/processed/*
+!data/*/.gitkeep
+models/*
+!models/.gitkeep
+__pycache__/
+*.pyc
+.env
+*.duckdb
+mlruns/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.ipynb_checkpoints/

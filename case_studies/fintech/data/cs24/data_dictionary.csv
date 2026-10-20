@@ -1,0 +1,9 @@
+field(s),meaning
+"parts: case_id, part",Inspection and car part
+"p_none, p_scratch, p_dent, p_crack, pred_damage",Model probabilities and predicted class
+model_cost,Model's repair-cost estimate for the part
+"surveyor_checked, surveyor_damage, surveyor_cost",Surveyor re-inspection (20% of cases)
+"_true_damage, _true_cost",HIDDEN truth
+"cases: case_type, photo_quality, night_shot, car_value_inr",Inspection context (quality 0–1; 150 missing)
+"model_cost, surveyor_cost (case level)",Summed estimates
+"_complex, _true_cost, structural_dent",HIDDEN: complex claim flag and true cost

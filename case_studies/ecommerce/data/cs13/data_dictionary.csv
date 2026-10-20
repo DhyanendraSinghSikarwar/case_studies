@@ -1,0 +1,6 @@
+field(s),meaning
+"query_log: query_id, day, device, raw_query","Query id, day 0 to 89, device, the typed query (lower case)"
+api_translation,Noisy third-party-API-style translation (the pseudo-label)
+"_gold_en, _tok_lang, _template, _items, _colour, _audience, _is_hinglish, _is_gap, _stratum","HIDDEN truth: true English query, per-word language tags (h/e), template, intended item(s), colour, audience, flags, Head/Torso/Tail"
+"human_tagged: query_id, raw_query, human_translation, human_token_lang, split",Human-tagged queries with true English translation and per-word language tags; split = train / test
+"catalogue: product_id, title, item, colour, audience, feature, brand, price_inr",English catalogue used to measure search success

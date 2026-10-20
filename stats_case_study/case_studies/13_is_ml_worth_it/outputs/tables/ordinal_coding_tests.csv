@@ -1,0 +1,4 @@
+variable,levels,LR_stat (categorical vs trend),df,p_value,decision
+education,4,0.2932376006,2,0.8636231276,single ordinal score (linear trend adequate)
+city_tier,4,0.8904425905,2,0.6406824804,single ordinal score (linear trend adequate)
+income_verification,3,0.7552335505,1,0.3848242994,single ordinal score (linear trend adequate)

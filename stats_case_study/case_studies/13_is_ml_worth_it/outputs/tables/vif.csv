@@ -1,0 +1,16 @@
+,VIF
+age,1.0144368965
+log_income,3.5745221492
+bureau_score_f,1.3121572941
+no_hit,1.1099974928
+utilization_f,1.0215600142
+enquiries_6m,1.0117039356
+ever_delinquent,1.281637068
+recent_delinquency,1.2150047073
+dti,1.1085428707
+years_at_employer,1.0174073268
+num_credit_cards,2.1759752006
+requested_limit,2.8111437298
+education_score,1.0325878786
+city_tier_score,1.0611410803
+income_verification_score,1.0005162439

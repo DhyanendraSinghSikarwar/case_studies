@@ -1,0 +1,407 @@
+#%% md
+# Case Study 15 — "Customers Who Bought This Also Bought": Item-to-Item Collaborative Filtering, Cold Start, Popularity Bias and the Offline–Online Gap
+
+**Priority:** ★★★ Must-visit · **Reference:** Case Study 15 — *Amazon: item-to-item collaborative filtering* (`indian_ecommerce_data_science_case_studies.md`)
+**Audience:** Head of Personalisation, Product (home page, product page, cart), Growth, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-15-01). Purchase logs are confidential; this is a calibrated simulation with a hidden "true taste" model.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs15_item_to_item_collaborative_filtering.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+Every ecommerce app shows "**Customers who bought this also bought…**" and "**Recommended for you**". With millions of customers and millions of products, it has to pick a handful of items in a few milliseconds for each person. Amazon's 2003 paper gave the answer that is still the default building block: instead of finding customers *similar to you* (millions of comparisons, slow, and unstable), find **items similar to the ones you already bought**. Item-to-item similarity can be **computed overnight** and looked up instantly. It also works when you have bought only **two or three items**.
+
+Leaders and interviewers want to know:
+1. How much better is it than just showing **best-sellers**?
+2. How does it compare with **customer-based** methods and **matrix factorisation**?
+3. Does it work for **new customers** with little history, and for **new or niche items**?
+4. Does it just recommend **popular items** (popularity bias)?
+5. Why can **offline accuracy** disagree with what happens in an **A/B test**?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Amazon did — *documented*
+
+| Item | Documented fact (from the reference file) |
+|---|---|
+| Problem | Real-time personalised recommendations over a very large catalogue and customer base. The paper states Amazon had "more than 29 million customers and several million catalog items", and notes earlier algorithms were tested on much smaller data such as MovieLens (35,000 customers, 3,000 items) |
+| Question | How to generate recommendations in real time, with good quality even for customers with little history, at a scale where classic user-based CF breaks? |
+| Approach | Offline: build a **similar-items table** by finding items customers tend to buy together; similarity per item pair, typically **cosine** over the customers who bought each. Online: for each item the user bought or rated, look up similar items, aggregate and recommend the most popular or correlated. The paper contrasts traditional CF (compares a user with many customers), cluster models (cheap but lower quality) and search-based methods |
+| Complexity | Offline worst case O(N²M), "closer to O(NM) in practice"; online lookup depends only on the number of items the user has purchased or rated |
+| Evidence limits | The paper is qualitative on quality: **no metric tables and no revenue figures** (validation, impact: ND). Works "based on as few as two or three items" |
+
+**Source:** Linden, Smith & York, "Amazon.com Recommendations: Item-to-Item Collaborative Filtering", IEEE Internet Computing, Jan/Feb 2003 (read through a text-extraction proxy).
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 15,000 customers × 2,500 items (25 categories) over 180 days, ≈ 166,000 purchases (density 0.4%). Taste is latent (12 dimensions), popularity is long-tailed, 120 accessory pairs ("phone → case") are bought together within a week with probability 0.18, and 15% of customers have 3 or fewer purchases. |
+| Methods compared | (1) Best-sellers; (2) **user-based CF** (kNN, cosine); (3) **item-to-item CF** (Amazon's method, top-50 neighbour table); (4) item-to-item with **popularity damping**; (5) **truncated-SVD matrix factorisation**; (6) **sequence-aware co-purchase** ("bought j within a week after i") |
+| Statistics added | Leave-last-out evaluation (HR@10, NDCG@10, MRR); **McNemar** and **paired bootstrap/Wilcoxon** per user (Holm); results by history length (cold start); **head vs tail items**; coverage and exposure **Gini**; **digital-twin online test** to compare offline and online rankings; **runtime scaling** (the O(NM) claim); A/B sample size |
+
+### (c) How the industry uses this
+
+"Customers also bought" and "similar items" are on every Indian marketplace and quick-commerce app (Amazon, Flipkart, Myntra, Meesho, Swiggy Instamart "add more"). The **item-to-item table plus ranking model on top** is the standard architecture; matrix factorisation and neural two-tower models are used for the candidate-generation step. It is among the most-asked ecommerce interview topics: similarity measures, sparsity, cold start, popularity bias, offline vs online evaluation.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | What should we recommend to each customer, and how do we know a new recommender is really better? |
+| Analytical | Which method best predicts each customer's next purchase out of time, for whom (cold start, tail items), and does the offline winner also win online? |
+
+**Hypotheses**
+- **H1:** H0: item-to-item CF's hit rate at 10 equals best-sellers' (McNemar on the same users).
+- **H2:** H0: item-to-item CF equals user-based CF and SVD in NDCG@10 (paired bootstrap / Wilcoxon; Holm).
+- **H3 (cold start):** H0: item-to-item CF's advantage over best-sellers is the same for customers with 1–3 items as for those with 10+ (interaction test).
+- **H4 (online):** H0: the offline ranking of methods equals their ranking in a twin online test (Spearman).
+
+**Primary metrics:** **HR@10** and **NDCG@10** on each customer's **last purchase** (held out in time). **Diagnostic metrics:** catalogue **coverage**, **exposure Gini**, mean log-popularity of recommendations. **Online proxy:** expected CTR of the top 10 under the hidden true-taste model.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy import sparse
+from sklearn.decomposition import TruncatedSVD
+from sklearn.preprocessing import normalize
+from statsmodels.stats.contingency_tables import mcnemar
+from statsmodels.stats.multitest import multipletests
+from statsmodels.stats.proportion import proportion_confint
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public Indian ecommerce purchase logs | **None.** Public sets (Instacart, Retailrocket, Amazon reviews, MovieLens) are US/other, several are Kaggle-hosted, and none has a known true-taste model. |
+| **Decision** | Synthetic purchases with hidden taste and popularity, so that offline and "online" evaluation can both be run (D-15-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs15.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/ecommerce/data/generate_cs15.py
+
+#%% code
+os.makedirs("data/cs15", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs15 as gen; importlib.reload(gen)
+t0 = time.time(); raw, items, TP = gen.generate(seed=SEED); raw.to_csv("data/cs15/purchases.csv.gz", index=False); items.to_csv("data/cs15/items.csv.gz", index=False)
+print(f"{len(raw):,} purchase rows | {raw.drop_duplicates(['user', 'item']).shape[0]:,} unique user-item pairs | generated in {time.time() - t0:.0f}s")
+raw.head(4)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Scale | 15,000 customers, 2,500 items, 180 days | Our assumption (Amazon: 29M customers, several million items) |
+| Taste | 12-dim latent vectors; customers favour 2 categories | Our assumption |
+| Popularity | Pareto-tailed item popularity; top 1% of items ≈ 20% of purchases | Typical ecommerce long tail |
+| Purchases | NB, mean ≈ 11 (median 9); 15% of customers have ≤ 3 | **Documented** concern for "as few as two or three items" |
+| Complements | 120 accessory pairs, 18% bought within 7 days | Our assumption |
+| Online twin | Click probability = sigmoid(−7.0 + taste affinity + popularity effect) | Our assumption (hidden truth) |
+| DQ issues | 4,000 duplicate rows; one bot account with 800 purchases | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("purchases: user, item, day, order_ts", "Customer, item, day 0–179, timestamp"), ("complement", "1 if the purchase followed an accessory pairing (simulation flag)"),
+    ("items: item, category, list_price_inr", "Item attributes"), ("_log_pop_z, true_params.npz", "HIDDEN: popularity, latent taste vectors (digital twin only)"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs15/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+cnt = raw.drop_duplicates(["user", "item"]).groupby("user").size(); thr = cnt.median() * 20
+checks = {"duplicate user-item rows": int(raw.duplicated(["user", "item"]).sum()), "bot-like users (> 20× median purchases)": int((cnt > thr).sum()), "purchases by the bot": int(cnt[cnt > thr].sum())}
+print(pd.Series(checks, name="rows").to_string())
+bots = cnt[cnt > thr].index; df = raw.drop_duplicates(["user", "item"]); df = df[~df.user.isin(bots)].sort_values(["user", "day", "item"]).reset_index(drop=True)
+NU, NI = gen.N_U, gen.N_I; per = df.groupby("user").size()
+print(f"\nClean: {len(df):,} purchases | {df.user.nunique():,} customers | {df.item.nunique():,} items | density {len(df) / (NU * NI):.3%} | median purchases {per.median():.0f} | customers with ≤ 3 purchases: {(per <= 3).mean():.1%}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
+ip = df.item.value_counts().reindex(range(NI), fill_value=0).sort_values(ascending=False).values
+axes[0].plot(np.arange(1, NI + 1), ip, color="#2a6f97"); axes[0].set_xscale("log"); axes[0].set_yscale("log"); axes[0].set_xlabel("Item rank (log)"); axes[0].set_ylabel("Purchases (log)"); axes[0].set_title("Long tail: a few best-sellers, many rare items")
+axes[1].hist(per, bins=np.arange(0, 60), color="#e07a1f"); axes[1].set_xlabel("Purchases per customer"); axes[1].set_ylabel("Customers"); axes[1].set_title("Many customers have very little history")
+cum = np.cumsum(ip) / ip.sum(); axes[2].plot(np.arange(1, NI + 1) / NI * 100, cum * 100, color="#2a6f97"); axes[2].set_xlabel("% of items (best-sellers first)"); axes[2].set_ylabel("% of purchases"); axes[2].set_title("Concentration: where purchases happen")
+plt.tight_layout(); plt.show()
+print(f"Top 1% of items = {cum[int(0.01 * NI)] * 100:.1f}% of purchases; top 20% = {cum[int(0.2 * NI)] * 100:.1f}%; items never purchased: {(ip == 0).sum()}")
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Setup: leave-last-out, five recommenders
+
+**Evaluation protocol:** for every customer with ≥ 2 purchases, the **last purchase (by time)** is the test item; everything before it is training. This respects time order (no peeking at the future). A recommender returns 10 items the customer has not bought. **HR@10** = hit if the test item is in the list; **NDCG@10** rewards ranking it higher; **MRR** = 1/rank.
+
+| # | Method | In one line |
+|---|---|---|
+| 1 | Best-sellers | The 10 most-bought items overall |
+| 2 | User-based CF | Find the 50 most similar customers (cosine), recommend what they bought |
+| 3 | **Item-to-item CF (Amazon)** | Cosine similarity between item purchase vectors; keep each item's 50 nearest items; sum the neighbours of the customer's items |
+| 4 | Item-to-item, popularity-damped | As 3, but divide the final scores by (item popularity + 10)^0.3, to stop best-sellers dominating |
+| 5 | Matrix factorisation | Truncated SVD (32 factors) of the customer × item matrix |
+| 6 | Sequence-aware co-purchase | P(buy j within 7 days after i) counts: captures "accessory" pairs |
+
+#### Code
+
+#%% code
+last = df.groupby("user").tail(1); hist = df.drop(last.index); users = last.user.values; test_item = last.item.values
+X = sparse.csr_matrix((np.ones(len(hist)), (hist.user.values, hist.item.values)), shape=(NU, NI)); nh = np.asarray(X.sum(1)).ravel()
+keep = nh[users] >= 1; users, test_item = users[keep], test_item[keep]; pop = np.asarray(X.sum(0)).ravel()
+print(f"Evaluation customers: {len(users):,} | training purchases {X.nnz:,}")
+def ev_scores(S_fn, chunk=3000):
+    out = np.zeros((len(users), 10), int)
+    for lo in range(0, len(users), chunk):
+        u = users[lo:lo + chunk]; sc = S_fn(u); sc = np.asarray(sc.todense()) if sparse.issparse(sc) else np.asarray(sc, float); sc[X[u].toarray() > 0] = -1e9
+        idx = np.argpartition(-sc, 10, axis=1)[:, :10]; o = np.argsort(-np.take_along_axis(sc, idx, 1), axis=1); out[lo:lo + chunk] = np.take_along_axis(idx, o, 1)
+    return out
+t = {}; REC = {}
+# 1 best-sellers
+t0 = time.time(); REC["1 best-sellers"] = ev_scores(lambda u: np.tile(pop, (len(u), 1)).astype(float) + np.random.default_rng(0).random((len(u), NI)) * 1e-3); t["1 best-sellers"] = time.time() - t0
+# 2 user-based CF
+t0 = time.time(); Xn = normalize(X, axis=1)
+def ub(u, k=50):
+    sim = (Xn[u] @ Xn.T).toarray(); sim[np.arange(len(u)), u] = 0; idx = np.argpartition(-sim, k, axis=1)[:, :k]; w = np.take_along_axis(sim, idx, 1)
+    W = sparse.csr_matrix((w.ravel(), (np.repeat(np.arange(len(u)), k), idx.ravel())), shape=(len(u), NU)); return W @ X
+REC["2 user-based CF (k = 50)"] = ev_scores(ub, 1500); t["2 user-based CF (k = 50)"] = time.time() - t0
+# 3 item-to-item CF: cosine, top-50 neighbours per item
+t0 = time.time(); Xc = normalize(X, axis=0); S = (Xc.T @ Xc).toarray(); np.fill_diagonal(S, 0)
+def topn_table(S, n=50):
+    idx = np.argpartition(-S, n, axis=1)[:, :n]; rows = np.repeat(np.arange(S.shape[0]), n); return sparse.csr_matrix((np.take_along_axis(S, idx, 1).ravel(), (rows, idx.ravel())), shape=S.shape)
+T3 = topn_table(S); t["build item-item table"] = time.time() - t0
+REC["3 item-to-item CF (Amazon, top-50)"] = ev_scores(lambda u: X[u] @ T3);
+# 4 popularity-damped
+DAMP = (pop + 10) ** 0.3; REC["4 item-to-item, popularity-damped"] = ev_scores(lambda u: np.asarray((X[u] @ T3).todense()) / DAMP[None, :])
+# 5 SVD
+t0 = time.time(); svd = TruncatedSVD(32, random_state=SEED).fit(X); Uf = svd.transform(X); Vf = svd.components_; REC["5 matrix factorisation (SVD-32)"] = ev_scores(lambda u: Uf[u] @ Vf); t["5 SVD"] = time.time() - t0
+# 6 sequence-aware co-purchase within 7 days
+t0 = time.time(); h = hist.copy(); pairs = h.merge(h, on="user", suffixes=("_a", "_b")); pairs = pairs[(pairs.item_a != pairs.item_b) & (pairs.day_b >= pairs.day_a) & (pairs.day_b - pairs.day_a <= 7)]
+SQ = sparse.csr_matrix((np.ones(len(pairs)), (pairs.item_a.values, pairs.item_b.values)), shape=(NI, NI)); SQ = SQ.multiply(1 / np.maximum(pop, 1)[:, None] ** 0.5).tocsr(); T6 = topn_table(SQ.toarray())
+REC["6 sequence-aware co-purchase (7 days)"] = ev_scores(lambda u: X[u] @ T6); t["6 sequence"] = time.time() - t0
+def metrics(rec):
+    hit = (rec == test_item[:, None]); h = hit.any(1); pos = np.where(h, hit.argmax(1) + 1, 0)
+    return h.astype(int), np.where(h, 1 / np.log2(pos + 1), 0.0), np.where(h, 1.0 / np.maximum(pos, 1), 0.0)
+M = {k: metrics(r) for k, r in REC.items()}
+rows = []
+for k, (hh, nd, mr) in M.items():
+    rec = REC[k]; lo, hi = proportion_confint(hh.sum(), len(hh), method="wilson"); cov = len(np.unique(rec)) / NI; counts = np.bincount(rec.ravel(), minlength=NI); srt = np.sort(counts); gini = 1 - 2 * ((srt.cumsum() - srt / 2) / srt.sum()).sum() / NI
+    rows.append((k, hh.mean(), lo, hi, nd.mean(), mr.mean(), cov, gini, np.log(np.maximum(pop[rec], 1)).mean()))
+res = pd.DataFrame(rows, columns=["method", "HR@10", "CI low", "CI high", "NDCG@10", "MRR", "catalogue coverage", "exposure Gini", "mean log-popularity of recs"]).set_index("method")
+print({k: f"{v:.1f}s" for k, v in t.items()})
+res.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Is the winner really better? Paired tests on the same customers
+
+**(a) Why?** Every method is scored on the **same customers**, so the right tests are paired:
+- **McNemar** on hit/no-hit (Holm across comparisons) for HR@10.
+- **Paired bootstrap** (1,000 resamples of customers) for the NDCG@10 difference, with a Wilcoxon signed-rank p-value.
+
+We compare the best-performing method with each of the others.
+
+#### Code
+
+#%% code
+best = res["HR@10"].idxmax(); rows = []
+for k in res.index:
+    if k == best: continue
+    a, b = M[best][0], M[k][0]; mc = mcnemar([[int((a & b).sum()), int((a & ~b).sum())], [int((~a & b).sum()), int((~a & ~b).sum())]], exact=False, correction=True)
+    d = M[best][1] - M[k][1]; bs = [d[i].mean() for i in (RNG.integers(0, len(d), len(d)) for _ in range(1000))]
+    rows.append((k, int((a & ~b).sum()), int((~a & b).sum()), mc.pvalue, d.mean(), np.percentile(bs, 2.5), np.percentile(bs, 97.5), stats.wilcoxon(M[best][1], M[k][1]).pvalue))
+pt = pd.DataFrame(rows, columns=[f"vs {best}", "hits only best", "hits only other", "McNemar p", "ΔNDCG (best − other)", "CI low", "CI high", "Wilcoxon p"]).set_index(f"vs {best}"); pt["p_holm (McNemar)"] = multipletests(pt["McNemar p"], method="holm")[1]
+print(f"Best method on HR@10: {best}"); pt.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O72»
+
+### 7.3 Cold start: does item-to-item work with "as few as two or three items"?
+
+Customers are split by **history length** (training purchases): 1–3, 4–9, 10+. For each group we compute HR@10 for each method with Wilson CIs, and a **logistic interaction test** of whether the advantage of item-to-item CF over best-sellers depends on history length (likelihood-ratio test of method × history bucket).
+
+#### Code
+
+#%% code
+nhu = nh[users]; bucket = np.where(nhu <= 3, "1–3 items", np.where(nhu <= 9, "4–9 items", "10+ items")); cs = []
+for b_ in ("1–3 items", "4–9 items", "10+ items"):
+    m = bucket == b_; row = {"history": b_, "customers": int(m.sum())}
+    for k in res.index: row[k.split(" ", 1)[0] + " " + k.split(" ", 1)[1][:22]] = M[k][0][m].mean()
+    cs.append(row)
+cs = pd.DataFrame(cs).set_index("history")
+import statsmodels.formula.api as smf
+kA, kB = "3 item-to-item CF (Amazon, top-50)", "1 best-sellers"
+dd2 = pd.concat([pd.DataFrame({"hit": M[kA][0], "bucket": bucket, "method": "item2item"}), pd.DataFrame({"hit": M[kB][0], "bucket": bucket, "method": "popular"})])
+m0 = smf.logit("hit ~ C(method) + C(bucket)", data=dd2).fit(disp=0); m1 = smf.logit("hit ~ C(method) * C(bucket)", data=dd2).fit(disp=0); LR = 2 * (m1.llf - m0.llf)
+print(f"Method × history interaction (item-to-item vs best-sellers): LR χ² = {LR:.1f}, df = 2, p = {stats.chi2.sf(LR, 2):.2g}")
+lift = {b_: M[kA][0][bucket == b_].mean() / max(M[kB][0][bucket == b_].mean(), 1e-9) for b_ in ("1–3 items", "4–9 items", "10+ items")}; print("Lift of item-to-item over best-sellers (HR@10 ratio):", {k: round(v, 2) for k, v in lift.items()})
+cs.round(4)
+
+#%% md
+**Observation:** «O73»
+
+### 7.4 Popularity bias: head vs tail, and the accessory pairs
+
+Item-based methods can over-recommend best-sellers. We compare HR@10 when the test item is a **head item** (top 5% by popularity) vs a **tail item** (the rest), and the hit rate on the **accessory-pair purchases** (test items that completed an accessory pairing, `complement = 1`). The exposure Gini and coverage in 7.1 show the supply side of the same issue.
+
+#### Code
+
+#%% code
+rank = pd.Series(pop).rank(ascending=False).values; head = rank[test_item] <= 0.05 * NI; comp = last.complement.values[keep] == 1
+rows = []
+for k in res.index:
+    hh = M[k][0]; rows.append((k, hh[head].mean(), hh[~head].mean(), hh[comp].mean() if comp.sum() else np.nan))
+pb = pd.DataFrame(rows, columns=["method", "HR@10: head items (top 5%)", "HR@10: tail items", f"HR@10: accessory-pair purchases (n = {int(comp.sum())})"]).set_index("method")
+pb["tail / head ratio"] = pb.iloc[:, 1] / pb.iloc[:, 0]; print(f"Share of test purchases that are head items: {head.mean():.1%}; accessory-pair test purchases: {comp.sum()}")
+pb.round(4)
+
+#%% md
+**Takeaway:** «O74»
+
+### 7.5 Offline vs online: a digital-twin test
+
+**(a) Why?** Offline accuracy rewards predicting what customers **happened to buy** (a logged, popularity-skewed outcome). An online A/B test measures what customers **click** when shown the list. In the simulation, we know the true click model, so we can compute each method's **expected CTR** for the 10 items shown (excluding items already bought) and compare the two rankings (Spearman). Paired Wilcoxon tests compare methods' per-customer expected CTR with the best one.
+
+#### Code
+
+#%% code
+U_, V_, lp_ = TP["U"], TP["V"], TP["logpop"]
+def ctr(rec): z = -7.0 + 1.1 * (np.einsum("uk,uvk->uv", U_[users], V_[rec]) / np.sqrt(gen.K)) + 0.9 * lp_[rec]; return (1 / (1 + np.exp(-z))).mean(1)
+CT = {k: ctr(r) for k, r in REC.items()}
+rows = [(k, CT[k].mean(), res.loc[k, "HR@10"], res.loc[k, "NDCG@10"]) for k in res.index]
+tw = pd.DataFrame(rows, columns=["method", "expected CTR (twin online)", "HR@10 (offline)", "NDCG@10 (offline)"]).set_index("method"); tw["rank online"] = tw.iloc[:, 0].rank(ascending=False); tw["rank offline (HR)"] = tw["HR@10 (offline)"].rank(ascending=False)
+rho = stats.spearmanr(tw["rank online"], tw["rank offline (HR)"])[0]; best_on = tw.iloc[:, 0].idxmax()
+pw = {k: stats.wilcoxon(CT[best_on], CT[k]).pvalue for k in res.index if k != best_on}
+print(f"Spearman(offline rank, online rank) = {rho:+.2f} | best online: {best_on} | best offline: {best} | Wilcoxon p of best-online vs others: " + ", ".join(f"{k.split(' ')[0]}: {p:.2g}" for k, p in pw.items()))
+tw.round(4)
+
+#%% md
+**Observation:** «O75»
+
+### 7.6 Does it scale? Offline build time vs size (the O(NM) claim)
+
+Amazon states the offline item table costs O(N²M) in the worst case but "closer to O(NM)" in practice, where N = items and M = customers. We time the sparse similarity product (the part that scales with the data) for increasing numbers of customers and for increasing numbers of items, and fit the **log-log slope** of runtime vs the number of purchases. A slope near 1 supports "roughly linear in data size" for sparse data.
+
+#### Code
+
+#%% code
+def build_time(users_frac=1.0, items_n=NI, reps=7):
+    ts = []
+    for r in range(reps):
+        uu = RNG.choice(NU, int(NU * users_frac), replace=False); sub = hist[hist.user.isin(uu) & (hist.item < items_n)]
+        Xs = sparse.csr_matrix((np.ones(len(sub)), (pd.factorize(sub.user)[0], sub.item.values)), shape=(sub.user.nunique(), items_n)); Xs_c = normalize(Xs, axis=0); XT = Xs_c.T.tocsr(); t0 = time.perf_counter(); S_ = XT @ Xs_c; ts.append(time.perf_counter() - t0)
+    return min(ts), len(sub)
+_ = build_time(0.2, 500, 1)   # warm-up so the first timed point is not inflated
+rows = [("customers", f"{f:.0%}", *build_time(users_frac=f)) for f in (0.2, 0.4, 0.6, 0.8, 1.0)] + [("items", f"{n}", *build_time(items_n=n)) for n in (500, 1000, 1500, 2000, 2500)]
+sc = pd.DataFrame(rows, columns=["scaled dimension", "level", "build seconds", "purchases"]); sl_u = stats.linregress(np.log(sc[sc["scaled dimension"] == "customers"].purchases), np.log(sc[sc["scaled dimension"] == "customers"]["build seconds"]))
+sl_i = stats.linregress(np.log(sc[sc["scaled dimension"] == "items"].purchases), np.log(sc[sc["scaled dimension"] == "items"]["build seconds"])); sl_n = stats.linregress(np.log([500, 1000, 1500, 2000, 2500]), np.log(sc[sc["scaled dimension"] == "items"]["build seconds"]))
+print(f"Log-log slope of build time vs purchases: adding customers {sl_u.slope:.2f} (R² {sl_u.rvalue ** 2:.2f}); adding items {sl_i.slope:.2f}; vs number of items alone {sl_n.slope:.2f}")
+sc.round(3)
+
+#%% md
+**Observation:** «O76»
+
+### 7.7 What would an A/B test need? Sample size and a small-effect warning
+
+Using the twin's expected CTR of the baseline (best-sellers) as the control, we compute **recommendation impressions (or customers) per arm** to detect a **relative CTR lift** of 5%, 10% and 20% (80% power, α = 0.05, two-sided; clicks treated as Bernoulli per impression; the **design effect** from multiple impressions per customer is shown for 10 impressions with an intra-customer correlation of 0.05).
+
+#### Code
+
+#%% code
+p0 = CT[kB].mean(); rows = []
+for rel in (0.05, 0.10, 0.20):
+    p1 = p0 * (1 + rel); n_imp = int(np.ceil(2 * (1.96 + 0.84) ** 2 * (p0 * (1 - p0) + p1 * (1 - p1)) / 2 / (p1 - p0) ** 2)); deff = 1 + 9 * 0.05; rows.append((f"+{rel:.0%}", p0, p1, n_imp, int(n_imp * deff / 10)))
+pd.DataFrame(rows, columns=["relative CTR lift", "control CTR", "treatment CTR", "impressions per arm (independent)", "customers per arm (10 impressions each, ICC 0.05)"]).set_index("relative CTR lift").round(4)
+
+#%% md
+**Observation:** «O77»
+
+## 8. ML Section — what we built and what is beyond it
+
+- **Item-to-item CF is a similarity table, not a trained model:** no parameters to fit, easy to explain, and incremental to update. Matrix factorisation learns latent factors; sequence-aware methods exploit order.
+- **Beyond this notebook:** modern stacks use these as **candidate generators** (hundreds of items) and a **ranking model** (gradient boosting or neural nets with price, availability, margin, and user context) to pick the final 10; see Case 17 for ranking with CTR/CVR calibration. Two-tower embeddings and sequence transformers extend the same ideas.
+- **No tuning** (per the brief): k = 50, popularity exponent 0.3 and 32 factors are fixed defaults.
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-15-07): 1 crore recommendation impressions a day; 2% of clicks convert; average order ₹700 at 12% contribution margin; baseline is best-sellers. The lift is taken from the twin's expected CTR (best vs best-sellers) with a bootstrap CI.
+
+#### Code
+
+#%% code
+IMP, CONV, AOV, MG = 1e7, 0.02, 700, 0.12
+bd = {}
+for k in res.index:
+    d = CT[k] - CT[kB]; bs = [d[i].mean() for i in (RNG.integers(0, len(d), len(d)) for _ in range(400))]; bd[k] = (d.mean(), np.percentile(bs, 2.5), np.percentile(bs, 97.5))
+money = pd.DataFrame({k: {"Δ CTR (pp)": v[0] * 100, "extra clicks / day (lakh)": v[0] * IMP / 1e5, "₹ crore / year (base)": v[0] * IMP * CONV * AOV * MG * 365 / 1e7, "₹ crore / year (CI low)": v[1] * IMP * CONV * AOV * MG * 365 / 1e7, "₹ crore / year (CI high)": v[2] * IMP * CONV * AOV * MG * 365 / 1e7} for k, v in bd.items()}).T
+money.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated tastes:** latent factors and popularity were assumed; method rankings depend on how much of purchasing is personal taste vs popularity. Re-measure on real logs.
+- **Offline accuracy can mislead:** logged purchases reflect what the old recommender and search showed (exposure bias). The twin test in 7.5 only works because we know the truth. Always confirm with a live A/B or interleaving test.
+- **Feedback loops:** recommendations change what people buy and therefore what the next model learns; keep a small random-exploration slice (Case 18).
+- **Business objectives:** margin, stock availability, delivery promise (quick commerce) and seller fairness are not in the similarity score. A ranking layer must add them.
+- **Next steps:** add context features and a ranker; handle new items via content-based similarity (Case 11, Case 18); A/B test the best two methods per placement.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Cosine similarity (items i, j) | |B_i ∩ B_j| / √(|B_i| |B_j|), B_i = customers who bought i |
+| Item-to-item score | score(u, j) = Σ_{i ∈ bought(u)} sim(i, j) over j's neighbour table |
+| HR@10 | 1 if the held-out item is in the top 10 |
+| NDCG@10 | 1/log₂(rank + 1) if hit, else 0 |
+| MRR | 1/rank if hit, else 0 |
+| Exposure Gini | inequality of how often each item is recommended |
+| Coverage | share of catalogue recommended to anyone |
+| McNemar | test on customers where exactly one method hits |
+
+| Term | Meaning |
+|---|---|
+| Collaborative filtering | Recommending from the behaviour of many customers |
+| Item-to-item CF | Recommending items similar (by co-purchase) to the ones you bought |
+| Cold start | Too little history for a customer or item |
+| Popularity bias | Over-recommending best-sellers |
+| Candidate generation vs ranking | Pick a few hundred plausible items, then order them |
+| Leave-last-out | Hold out each customer's last purchase for testing |
+| Digital twin | A simulation where the true behaviour is known |

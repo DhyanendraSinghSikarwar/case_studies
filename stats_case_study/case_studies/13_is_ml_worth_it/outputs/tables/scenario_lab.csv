@@ -1,0 +1,5 @@
+world,n,events,AUC logistic,AUC GBM,GBM − LR,CI low,CI high,p corrected,p naive,best AUC vs null (95th pct),decision
+A. Linear,10000,1690,0.7820297425,0.7667682232,-0.0152615192,-0.0228502808,-0.0076727576,0.0013872223,1.34518e-05,0.782 vs 0.533,GBM significantly WORSE → logistic
+B. Strongly non-linear,10000,3210,0.6486662629,0.81933827,0.1706720071,0.1585604342,0.18278358,1e-10,0.0,0.819 vs 0.521,GBM significantly better → ML worth evaluating on value
+C. No signal,10000,1177,0.4869978285,0.4904424109,0.0034445824,-0.0305516515,0.0374408163,0.8238316673,0.6781440108,0.490 vs 0.539,No usable signal → don't model; revisit data/target
+"D. Small data, many features",800,144,0.7591431272,0.715526215,-0.0436169122,-0.1026517246,0.0154179003,0.1289853761,0.0121838769,0.759 vs 0.574,No significant difference → prefer simpler model

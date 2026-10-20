@@ -1,0 +1,8 @@
+quantity,estimate,ci_low,ci_high,method,p_value
+Email campaign: absolute lift (pp),0.420696,0.14475,0.671017,two-proportion z = 2.92,0.003464
+Email campaign: relative lift,0.233069,0.070967,0.419708,log-ratio CI,
+Email campaign: incremental loans,285.980702,98.398172,456.143884,lift × emails,
+Email campaign: net value (₹ lakh),23.568318,6.68589,38.883005,economics,
+"Effect among openers, CACE (pp)",1.265625,,,ITT / open rate,
+Naive openers vs non-openers gap (pp),2.565959,,,biased comparison,
+RM pilot: difference (pp),2.777778,-0.320287,6.552694,Fisher's exact,0.121344

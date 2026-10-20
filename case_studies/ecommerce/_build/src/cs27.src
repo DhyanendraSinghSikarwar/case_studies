@@ -1,0 +1,554 @@
+#%% md
+# Case Study 27 — Catching Fake and Defaming Ratings: Bayesian Anomaly Scoring (BIRDNEST), Shrinkage, False Discovery Control and a Review-Queue Business Case
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 27 — *Flipkart (with CMU and others): BIRDNEST rating-fraud detection* (`indian_ecommerce_data_science_case_studies.md`)
+**Audience:** Head of Trust and Safety, Seller Operations, Catalogue and Reviews Product, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-27-01). Marketplace ratings with fraud labels are confidential; this is a calibrated simulation with hidden fraud labels.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs27_fake_review_rating_fraud.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+Ratings decide which seller a customer trusts. That makes them worth faking. A seller can **pay accounts to leave 5-star ratings** on its own products (**boosting**), or pay accounts to leave **1-star ratings on a competitor** (**defaming**). Nobody hands us a list of fake accounts. We only see, for each account, **which star ratings it gave** and **when**.
+
+The idea of the model studied here is simple: look at each account's two fingerprints.
+1. **Star pattern:** does it give almost only 5 stars (or only 1 stars), far more than a normal customer does?
+2. **Timing pattern:** does it leave ratings in rapid bursts, minutes apart, far more than a normal customer does?
+
+The hard part is **small numbers**. A customer with one rating, a 5-star one, is "100% 5-star", but that tells us nothing. A good method must be **less suspicious of thin evidence** and **more suspicious of strong evidence**. That is what the Bayesian part does.
+
+Leaders and interviewers want to know:
+1. Does combining star pattern and timing beat either one alone?
+2. Does the Bayesian method really beat a simple "how skewed is this account" score on thin-evidence accounts?
+3. How many accounts can we flag before the review queue fills with honest people (false discoveries)?
+4. What kinds of fraud does it miss, and how much evidence must an account leave before we can catch it?
+5. What is it worth in ₹, and how deep should the human review queue go?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What the paper documents
+
+| Item | Documented fact (from the reference file) |
+|---|---|
+| Source | Hooi, Shah, Beutel, Gunnemann, Akoglu, Kumar, Makhija, Faloutsos, "BIRDNEST: Bayesian Inference for Ratings-Fraud Detection", arXiv:1511.06030 (v1 Nov 2015, v2 Mar 2016). Two co-authors are linked to Flipkart; the paper reports Flipkart's own labelling |
+| Data | Flipkart ratings: 1.1M users, 550K products, 3.3M ratings with timestamps; a second crawled software-app review set |
+| Features per user | Count of each star level, and counts of inter-rating time gaps in log-scale buckets (about 20 buckets) |
+| Model | **BIRD:** users belong to one of K clusters; each cluster has Dirichlet parameters; a user's star distribution and time-gap distribution are drawn from the cluster's Dirichlet prior; observed counts are multinomial. Fit by maximum likelihood (fixed-point iterations). The posterior of each user's distribution is Dirichlet (conjugate) |
+| Score | **NEST:** expected "surprise" of the user's posterior under the global fitted distribution, computed separately for stars and for time gaps, each normalised by its standard deviation across users, then combined so neither dominates |
+| Fraud patterns found by Flipkart experts | Spamming 4/5-star ratings to many products of one seller (boosting) or 1/2-star ratings to many products of another seller (defaming) |
+| Validation | Top 250 users were hand-labelled by Flipkart: **211 of 250 (84.4%)** fraudulent; the top 50 were all fraudulent. This is the authors' claim, validated by Flipkart reviewers, with no independent audit. No recall estimate is possible from top-k labelling |
+| Scale | Linear-time; about 2 minutes on 1.1M users and 3.3M ratings on a laptop (authors' statement) |
+| Not documented | Production deployment, what action Flipkart took on flagged accounts, rupee impact, and any baseline numbers beyond the Flipkart evaluation. The data is from 2015 to 2016 and says nothing about modern incentivised or LLM-written reviews |
+
+**Evidence note:** the paper is a real method with real Flipkart labelling, but it is dated and has no production-impact figure. The paper's exact NEST formula is not reproduced in the reference file, so the score below is **our own implementation of the documented idea** (expected KL divergence of the posterior from the global distribution), not a copy of the authors' code. This notebook is an interview-standard solution on simulated data, not a reproduction of Flipkart's system.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 80,000 users, 30,000 products, 1,500 sellers, about 271,000 rating rows over 365 days (about 3.4 per user, close to the documented 3.3M / 1.1M = 3.0). Star mix, session timing and fraud behaviours are **assumed** |
+| Honest traps | 2% genuine "enthusiasts" (many ratings, mostly 5 stars) and about 6% genuine "batch raters" (rate everything in one sitting). These look like fraud on one signal |
+| Fraud accounts | 1.3% of users, five behaviours: boost, defame, burst-only (honest-looking stars, rapid timing), skew-only (5-star spam spread over time), stealth (only 2 to 4 ratings) |
+| Model | BIRD with K = 1 (global Dirichlet) as primary and K = 2, 3 mixtures as sensitivity; our NEST (expected KL of the posterior from the global mean) per view, standardised, summed |
+| Baselines | Raw skew (no shrinkage), raw burst share, ratings volume |
+| Statistics added | Paired bootstrap on average precision (Holm), shrinkage by evidence level, recall by fraud type, **parametric-bootstrap null with Benjamini-Hochberg FDR**, **power curve by number of ratings**, label sample size, a supervised comparison with a learning curve, a ₹ review-queue model |
+
+### (c) How the industry uses this
+
+Rating and review integrity is run by every Indian marketplace (Flipkart, Amazon India, Myntra, Meesho, Nykaa) and by food and local-service apps. Public method detail is thin outside this one paper. The common design is the one the paper illustrates: an unsupervised score gives a **ranked queue**, human reviewers label the top of it, and the labels later train a supervised model and rules.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Which accounts should reviewers look at first, how far down the list should they go, and what is it worth? |
+| Analytical | Does a Bayesian two-signal score rank fraudulent accounts above honest ones better than single signals or raw scores, for whom does it fail, and where does the review queue stop paying for itself? |
+
+**Hypotheses**
+- **H1:** H0: the combined BIRDNEST score has the same average precision as the best single-signal or raw baseline (paired bootstrap on the same users; Holm).
+- **H2 (shrinkage):** H0: among accounts with 1 to 2 ratings, the raw skew score and the Bayesian score flag the same share of accounts.
+- **H3 (blind spots):** H0: detection rate is the same across fraud types (chi-square).
+- **H4 (false discoveries):** H0: BH-controlled flagging at a nominal 5% FDR gives a realised false-discovery share of at most 5%.
+- **H5 (evidence needed):** H0: detection power does not depend on how many ratings the account leaves.
+
+**Primary metric:** **average precision (AP)** and **precision at k** against the hidden fraud label (the stand-in for expert labelling). **Diagnostics:** AUC, recall by fraud type, realised FDR, review-queue ₹ net.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.special import digamma, gammaln, logsumexp
+from sklearn.cluster import KMeans
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import average_precision_score, roc_auc_score
+from statsmodels.stats.multitest import multipletests
+from statsmodels.stats.proportion import proportion_confint
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public Indian marketplace ratings with fraud labels | **None.** The Flipkart data in the paper is not public. Public review sets (Amazon reviews, Yelp) are non-Indian, and fraud labels in them are filters or heuristics, not expert labels |
+| **Decision** | Synthetic ratings with hidden fraud labels and honest look-alikes, so that every claim can be checked against the truth (D-27-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs27.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/ecommerce/data/generate_cs27.py
+
+#%% code
+os.makedirs("data/cs27", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs27 as gen; importlib.reload(gen)
+t0 = time.time(); raw, prod, truth = gen.generate(seed=SEED)
+raw.to_csv("data/cs27/ratings.csv.gz", index=False); prod.to_csv("data/cs27/products.csv.gz", index=False); truth.to_csv("data/cs27/users_truth.csv.gz", index=False)
+print(f"{len(raw):,} rating rows | {raw.user.nunique():,} users | {raw["product"].nunique():,} products rated | {raw.seller.nunique():,} sellers | generated in {time.time() - t0:.0f}s")
+raw.head(4)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Scale | 80,000 users, 30,000 products, 1,500 sellers, 365 days | Our scale-down (paper: 1.1M users, 550K products) |
+| Ratings per user | 1 + negative binomial, mean about 3.4 | **Documented** ratio about 3.0 ratings per user |
+| Honest star mix | Per-user Dirichlet around 8/6/10/24/52% for 1 to 5 stars | Our assumption (J-shaped) |
+| Honest timing | Sessions: gaps either minutes (same sitting) or weeks to months | Our assumption |
+| Honest look-alikes | 2% enthusiasts; about 6% batch raters | Our assumption; creates realistic false positives |
+| Fraud share | 1.3% of users, 13,796 fake ratings | Our assumption (paper gives no prevalence) |
+| Fraud behaviours | boost 40%, defame 20%, burst-only 16%, skew-only 14%, stealth 10% | Documented patterns: boost and defame; the other three are our assumption |
+| Targets | 150 sellers boosted, 100 competitors defamed | Our assumption |
+| DQ issues | 1,500 duplicate rows, 60 invalid star values, 80 missing timestamps | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("ratings: rating_id, user, product, seller, stars, ts", "One rating: who, what, which seller, 1 to 5 stars, timestamp"),
+    ("products: product, seller", "Which seller owns each product"),
+    ("users_truth: user", "User id"),
+    ("_fake (ratings), _is_fraud, _fraud_type, _style (users_truth)", "HIDDEN truth: used only for validation and the simulation, never as a model input"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs27/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+checks = {"duplicate rows (same rating_id)": int(raw.duplicated("rating_id").sum()), "invalid star values (not 1 to 5)": int((~raw.stars.between(1, 5)).sum()), "missing timestamps": int(raw.ts.isna().sum())}
+print(pd.Series(checks, name="rows").to_string())
+r = raw.drop_duplicates("rating_id"); r = r[r.stars.between(1, 5) & r.ts.notna()].copy(); r["stars"] = r.stars.astype(int)
+NU = gen.N_U; per = r.groupby("user").size().reindex(range(NU), fill_value=0)
+y = truth.sort_values("user")["_is_fraud"].values.astype(bool); ftype = truth.sort_values("user")["_fraud_type"].values; style = truth.sort_values("user")["_style"].values
+print(f"\nClean: {len(r):,} ratings | users with at least 1 rating: {(per > 0).sum():,} of {NU:,} | users with 1 rating: {(per == 1).mean():.1%} | with 2 to 3: {per.between(2, 3).mean():.1%} | with 10 or more: {(per >= 10).mean():.1%}")
+print(f"Hidden truth: {y.sum():,} fraud accounts ({y.mean():.2%}) | fake ratings {int(r._fake.sum()):,} ({r._fake.mean():.2%} of ratings)")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+r = r.sort_values(["user", "ts"]).reset_index(drop=True); r["gap"] = r.groupby("user").ts.diff().dt.total_seconds()
+isf = y[r.user.values]
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
+st = pd.DataFrame({"honest accounts": r[~isf].stars.value_counts(normalize=True).sort_index(), "fraud accounts": r[isf].stars.value_counts(normalize=True).sort_index()}) * 100
+st.plot.bar(ax=axes[0], color=["#2a6f97", "#e07a1f"]); axes[0].set_xlabel("Stars"); axes[0].set_ylabel("Share of the group's ratings (%)"); axes[0].set_title("Stars: fraud is skewed, honest is J-shaped")
+axes[1].hist(per[per > 0].clip(upper=30), bins=np.arange(1, 32), color="#2a6f97"); axes[1].set_yscale("log"); axes[1].set_xlabel("Ratings per user (capped at 30)"); axes[1].set_ylabel("Users (log)"); axes[1].set_title("Most users leave one to three ratings")
+lg = np.log10(r.gap.dropna().clip(lower=1)); lgf = np.log10(r[isf].gap.dropna().clip(lower=1)); lgh = np.log10(r[~isf].gap.dropna().clip(lower=1))
+axes[2].hist(lgh, bins=40, range=(0, 8), density=True, alpha=0.6, color="#2a6f97", label="honest"); axes[2].hist(lgf, bins=40, range=(0, 8), density=True, alpha=0.6, color="#e07a1f", label="fraud")
+axes[2].set_xlabel("Gap since the user's previous rating (log10 seconds)"); axes[2].set_ylabel("Density"); axes[2].set_title("Timing: fraud is mostly bursts, honest has two modes"); axes[2].legend()
+plt.tight_layout(); plt.show()
+mean_h, mean_f = r[~isf].stars.mean(), r[isf].stars.mean()
+print(f"Mean stars: honest {mean_h:.2f}, fraud {mean_f:.2f} | gaps under 10 minutes: honest {(r[~isf].gap.dropna() < 600).mean():.1%}, fraud {(r[isf].gap.dropna() < 600).mean():.1%}")
+print("Honest look-alikes: enthusiasts " + f"{(style == 'enthusiast').sum():,}, batch raters {(style == 'batch').sum():,}")
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Features and the BIRD fit: do the Dirichlet assumptions hold?
+
+**(a) Why?** Each user gets two count vectors: ratings per star (5 numbers) and gaps per log-time bucket (20 numbers; bucket = ⌊ln(gap seconds + 1) / s⌋ with s chosen so the largest gap lands in bucket 20, i.e. a base of about 2.4). BIRD assumes a user's true distribution is drawn from a Dirichlet and counts are multinomial given that distribution. Two things to check: (1) users **really differ** from one another (otherwise a plain multinomial would do and there would be nothing to be surprised about), shown by a Dirichlet-multinomial beating a multinomial in likelihood; (2) how many clusters (K) the data supports (BIC).
+
+**(b) Assumptions:** counts independent given the user's distribution; gaps are measured from the user's previous rating, so a user with n ratings contributes n − 1 gaps (a single-rating user contributes none).
+
+#### Code
+
+#%% code
+B = 20; lgap = np.log1p(r.gap.dropna().values); scale = lgap.max() / B
+bucket = np.minimum((lgap / scale).astype(int), B - 1); gu = r.loc[r.gap.notna(), "user"].values
+R = np.zeros((NU, 5)); np.add.at(R, (r.user.values, r.stars.values - 1), 1)
+T = np.zeros((NU, B)); np.add.at(T, (gu, bucket), 1)
+nR, nT = R.sum(1), T.sum(1)
+print(f"Rating-count matrix {R.shape}, gap-count matrix {T.shape}; users with 0 gaps: {(nT == 0).mean():.1%}; time-bucket base = {np.exp(scale):.2f}")
+
+def fit_dirichlet(C, w=None, alpha=None, iters=300, tol=1e-8):
+    """Maximum likelihood Dirichlet-multinomial by Minka's fixed-point iteration (weights w for EM)."""
+    n, d = C.shape; w = np.ones(n) if w is None else w; N = C.sum(1)
+    if alpha is None: alpha = np.maximum((w @ C) / (w @ N), 1e-3) * 3.0
+    for _ in range(iters):
+        a0 = alpha.sum(); num = (w[:, None] * (digamma(C + alpha) - digamma(alpha))).sum(0); den = (w * (digamma(N + a0) - digamma(a0))).sum()
+        new = np.maximum(alpha * num / den, 1e-3)
+        if np.abs(new - alpha).max() < tol: alpha = new; break
+        alpha = new
+    return alpha
+def dm_ll(C, alpha):
+    N = C.sum(1); a0 = alpha.sum(); return gammaln(a0) - gammaln(N + a0) + (gammaln(C + alpha) - gammaln(alpha)).sum(1)
+def fit_mix(C, K, em=10):
+    n = len(C)
+    if K == 1:
+        a = fit_dirichlet(C); return a[None, :], np.array([1.0]), dm_ll(C, a).sum()
+    P = (C + 0.5) / (C.sum(1, keepdims=True) + 0.5 * C.shape[1]); lab = KMeans(K, n_init=1, random_state=SEED).fit_predict(P)
+    resp = np.eye(K)[lab] * 0.9 + 0.1 / K; al = np.array([fit_dirichlet(C, resp[:, k]) for k in range(K)])
+    for _ in range(em):
+        pi = resp.mean(0); al = np.array([fit_dirichlet(C, resp[:, k], al[k], iters=10) for k in range(K)])
+        L = np.log(pi) + np.stack([dm_ll(C, al[k]) for k in range(K)], 1); resp = np.exp(L - logsumexp(L, 1, keepdims=True))
+    pi = resp.mean(0); L = np.log(pi) + np.stack([dm_ll(C, al[k]) for k in range(K)], 1)
+    return al, pi, logsumexp(L, 1).sum()
+def multinom_ll(C):
+    p = C.sum(0) / C.sum(); return (C * np.log(np.maximum(p, 1e-12))).sum()
+
+mt = nT >= 1; rows = []; FIT = {}; sub_i = np.random.default_rng(SEED).choice(np.where(mt)[0], 25000, replace=False)
+for view, C in (("ratings (5 stars)", R[sub_i]), ("time gaps (20 buckets)", T[sub_i])):
+    d = C.shape[1]; ll_mn = multinom_ll(C); rows.append((view, "multinomial (no user variation)", d - 1, ll_mn, -2 * ll_mn + (d - 1) * np.log(len(C))))
+    for K in (1, 2, 3):
+        al, pi, ll = fit_mix(C, K); npar = K * d + (K - 1); FIT[(view, K)] = (al, pi); rows.append((view, f"Dirichlet-multinomial, K = {K}", npar, ll, -2 * ll + npar * np.log(len(C))))
+fit = pd.DataFrame(rows, columns=["view", "model", "parameters", "log-likelihood", "BIC"]).set_index(["view", "model"]); print(fit.round(1).to_string())
+aR, aT = fit_dirichlet(R), fit_dirichlet(T[mt])
+print("\nGlobal Dirichlet (stars 1 to 5):", aR.round(3), "| concentration alpha0 =", round(aR.sum(), 2), "| mean star share:", (aR / aR.sum()).round(3))
+print("Global Dirichlet (time buckets): alpha0 =", round(aT.sum(), 2))
+lr = 2 * (fit.loc[("ratings (5 stars)", "Dirichlet-multinomial, K = 1"), "log-likelihood"] - fit.loc[("ratings (5 stars)", "multinomial (no user variation)"), "log-likelihood"])
+print(f"Likelihood-ratio statistic, Dirichlet vs multinomial (stars, 25,000-user sample): {lr:,.0f} on 1 df (chi-square p = {stats.chi2.sf(lr, 1):.2e})")
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 The scores: Bayesian NEST against simple baselines
+
+**(a) Why?** The Bayesian posterior for a user is Dirichlet(α + counts). **Few ratings keep the posterior close to the prior (the global pattern); many ratings pull it toward the user's own pattern.** Our NEST score for one view is the **expected KL divergence** of a draw from the user's posterior to the global mean distribution, in closed form: Σᵢ mᵢ [ψ(aᵢ + 1) − ψ(a₀ + 1) − log gᵢ], with a = α + counts, m = a / a₀, g = α / α₀. Each view is divided by its standard deviation across users and the two are added, so neither dominates.
+
+**Baselines**, all on the same users: (1) **raw skew:** KL of the user's observed star shares to the global mean (no shrinkage); (2) **raw burst share:** share of the user's gaps under 1 hour; (3) **volume:** number of ratings; (4) **NEST stars only** and (5) **NEST time only**; (6) **NEST max** instead of sum. The hidden label stands in for Flipkart's expert labelling.
+
+#### Code
+
+#%% code
+def ekl(C, alpha):
+    a = C + alpha; a0 = a.sum(1, keepdims=True); m = a / a0; g = alpha / alpha.sum()
+    return (m * (digamma(a + 1) - digamma(a0 + 1) - np.log(g))).sum(1)
+sR = ekl(R, aR); sT = ekl(T, aT); sdR, sdT = sR.std(), sT.std(); zR, zT = sR / sdR, sT / sdT; nest = zR + zT
+gR = aR / aR.sum(); ph = R / np.maximum(nR[:, None], 1); raw_skew = np.where(ph > 0, ph * np.log(np.maximum(ph, 1e-12) / gR), 0).sum(1)
+burst_raw = np.where(nT > 0, (T[:, :int(np.log(3600) / scale) + 1].sum(1)) / np.maximum(nT, 1), 0)
+SC = {"BIRDNEST (stars + time, sum)": nest, "NEST stars only": zR, "NEST time only": zT, "NEST max(stars, time)": np.maximum(zR, zT),
+      "raw skew (no shrinkage)": raw_skew, "raw burst share": burst_raw, "volume (ratings count)": nR}
+def prec_at(s, k): return y[np.argsort(-s, kind="stable")[:k]].mean()
+rows = []
+for k_, s in SC.items():
+    rows.append((k_, average_precision_score(y, s), roc_auc_score(y, s), prec_at(s, 50), prec_at(s, 250), prec_at(s, 1000)))
+res = pd.DataFrame(rows, columns=["method", "AP", "AUC", "P@50", "P@250", "P@1000"]).set_index("method")
+print(f"Fraud prevalence (AP of a random ranking): {y.mean():.4f} | total fraud accounts {y.sum():,}")
+res.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O72»
+
+#### Where the score separates the groups
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.8))
+sub = RNG.choice(NU, 25000, replace=False); cols = np.where(y[sub], "#e07a1f", "#2a6f97")
+axes[0].scatter(zR[sub], zT[sub], c=cols, s=5, alpha=0.5); axes[0].set_xlabel("Star-pattern surprise (NEST stars, standardised)"); axes[0].set_ylabel("Timing surprise (NEST time, standardised)"); axes[0].set_title("Two signals: honest (blue) vs fraud (orange), 25,000 users")
+bins = np.linspace(np.percentile(nest, 0.1), np.percentile(nest, 99.9), 60)
+axes[1].hist(nest[~y], bins=bins, density=True, alpha=0.6, color="#2a6f97", label="honest"); axes[1].hist(nest[y], bins=bins, density=True, alpha=0.6, color="#e07a1f", label="fraud")
+axes[1].set_xlabel("BIRDNEST score (z stars + z time)"); axes[1].set_ylabel("Density"); axes[1].set_title("Score distribution by hidden label"); axes[1].legend()
+plt.tight_layout(); plt.show()
+top = np.argsort(-nest)[:250]; print("Top-250 composition by true type:", pd.Series(np.where(y[top], ftype[top], "honest: " + style[top])).value_counts().to_dict())
+
+#%% md
+**Takeaway:** «O73»
+
+### 7.3 Is the combined score really better? Paired bootstrap on the same users
+
+**(a) Why?** All scores are computed on the **same 80,000 users**, so differences in AP are paired. We resample users with replacement (200 times) and take the 95% percentile interval of AP(BIRDNEST) − AP(other). The p-value is the two-sided bootstrap tail share; Holm corrects across the six comparisons.
+
+#### Code
+
+#%% code
+BS = 200; idx = [RNG.integers(0, NU, NU) for _ in range(BS)]; ap_b = {k_: np.array([average_precision_score(y[i], s[i]) for i in idx]) for k_, s in SC.items()}
+base = "BIRDNEST (stars + time, sum)"; rows = []
+for k_ in SC:
+    if k_ == base: continue
+    d = ap_b[base] - ap_b[k_]; p = max(2 * min((d <= 0).mean(), (d >= 0).mean()), 1 / (BS + 1))
+    rows.append((k_, res.loc[base, "AP"] - res.loc[k_, "AP"], np.percentile(d, 2.5), np.percentile(d, 97.5), p))
+pt = pd.DataFrame(rows, columns=["vs " + base, "ΔAP (base − other)", "CI low", "CI high", "bootstrap p"]).set_index("vs " + base)
+pt["p_holm"] = multipletests(pt["bootstrap p"], method="holm")[1]; pt.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O74»
+
+### 7.4 Does Bayesian shrinkage matter? Accounts with thin evidence
+
+**(a) Why?** A raw skew score cannot tell "one 5-star rating" from "forty 5-star ratings". The Bayesian posterior can. We flag the **top 1% (800 accounts)** under each method and look at who gets flagged by evidence level (ratings per account).
+**(b) Test (H2):** among accounts with 1 to 2 ratings, Fisher's exact test comparing the share flagged by raw skew with the share flagged by NEST stars-only (both flag the same number of accounts overall).
+
+#### Code
+
+#%% code
+K1 = 800; f_raw = np.zeros(NU, bool); f_raw[np.argsort(-raw_skew, kind="stable")[:K1]] = True; f_nest = np.zeros(NU, bool); f_nest[np.argsort(-zR, kind="stable")[:K1]] = True; f_comb = np.zeros(NU, bool); f_comb[np.argsort(-nest, kind="stable")[:K1]] = True
+edges = [0, 1, 2, 3, 5, 9, 1000]; labs = ["1", "2", "3", "4-5", "6-9", "10+"]; lev = pd.cut(nR, edges, labels=labs)
+tab = pd.DataFrame({"users": pd.Series(lev).value_counts().reindex(labs), "fraud users": pd.Series(lev[y]).value_counts().reindex(labs)})
+for nm, f in (("raw skew", f_raw), ("NEST stars", f_nest), ("BIRDNEST", f_comb)):
+    tab[f"{nm} flagged"] = pd.Series(lev[f]).value_counts().reindex(labs); tab[f"{nm} precision"] = pd.Series(lev[f & y]).value_counts().reindex(labs) / tab[f"{nm} flagged"]
+low = nR <= 2; a1 = int((f_raw & low).sum()); a2 = int((f_nest & low).sum()); odds, pF = stats.fisher_exact([[a1, K1 - a1], [a2, K1 - a2]])
+print(f"Flag top {K1} under each method. Among accounts with 1 to 2 ratings: raw skew flags {a1}, NEST stars flags {a2} (Fisher p = {pF:.2e}); overall precision: raw {y[f_raw].mean():.3f}, NEST stars {y[f_nest].mean():.3f}, BIRDNEST {y[f_comb].mean():.3f}")
+fig, ax = plt.subplots(figsize=(10, 4.4)); w = 0.27; xs = np.arange(len(labs))
+for j, (nm, c) in enumerate((("raw skew", "#bbbbbb"), ("NEST stars", "#2a6f97"), ("BIRDNEST", "#e07a1f"))):
+    ax.bar(xs + (j - 1) * w, tab[f"{nm} precision"].fillna(0).values * 100, w, label=nm, color=c)
+ax.set_xticks(xs); ax.set_xticklabels(labs); ax.set_xlabel("Ratings by the account"); ax.set_ylabel("Precision of the top 1% flagged (%)"); ax.set_title("Raw skew fills the list with thin-evidence accounts; shrinkage does not"); ax.legend(); plt.tight_layout(); plt.show()
+tab.round(3)
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.5 Which fraud does it miss? Recall by fraud type
+
+**(a) Why?** The paper's motivation is that either signal may be absent in a given dataset. We flag the **top 2% (1,600 accounts)** and measure recall by true fraud type.
+**(b) Test (H3):** chi-square test of homogeneity of recall across the five types, for BIRDNEST; Wilson 95% intervals per type.
+
+#### Code
+
+#%% code
+K2 = 1600; flag = {nm: np.zeros(NU, bool) for nm in ("BIRDNEST", "stars only", "time only")}
+for nm, s in (("BIRDNEST", nest), ("stars only", zR), ("time only", zT)): flag[nm][np.argsort(-s, kind="stable")[:K2]] = True
+types = ["boost", "defame", "burst_only", "skew_only", "stealth"]; rows = []
+for t_ in types:
+    m = ftype == t_; row = {"type": t_, "accounts": int(m.sum())}
+    for nm in flag:
+        h = int(flag[nm][m].sum()); lo, hi = proportion_confint(h, m.sum(), method="wilson"); row[f"{nm} recall"] = h / m.sum()
+        if nm == "BIRDNEST": row["CI low"], row["CI high"] = lo, hi
+    rows.append(row)
+ty = pd.DataFrame(rows).set_index("type"); hits = np.array([[int(flag["BIRDNEST"][ftype == t_].sum()), int((ftype == t_).sum() - flag["BIRDNEST"][ftype == t_].sum())] for t_ in types])
+chi2, pchi, _, _ = stats.chi2_contingency(hits); fp_h = int((flag["BIRDNEST"] & ~y).sum())
+print(f"Flag top {K2}: BIRDNEST precision {y[flag['BIRDNEST']].mean():.3f}, recall {flag['BIRDNEST'][y].mean():.3f} | chi-square across types = {chi2:.1f} (df 4), p = {pchi:.2e} | honest accounts flagged: {fp_h}")
+print("Honest accounts flagged by style:", pd.Series(style[flag["BIRDNEST"] & ~y]).value_counts().to_dict(), "| flag rate by style:", {s_: round(float(flag["BIRDNEST"][(style == s_)].mean()), 4) for s_ in ("normal", "enthusiast", "batch")})
+fig, ax = plt.subplots(figsize=(10, 4.4)); w = 0.27
+for j, (nm, c) in enumerate((("BIRDNEST", "#e07a1f"), ("stars only", "#2a6f97"), ("time only", "#8da0cb"))):
+    ax.bar(np.arange(5) + (j - 1) * w, ty[f"{nm} recall"].values * 100, w, label=nm, color=c)
+ax.set_xticks(range(5)); ax.set_xticklabels(types); ax.set_xlabel("True fraud type (hidden)"); ax.set_ylabel(f"Recall in the top {K2:,} flagged (%)"); ax.set_title("Each signal catches what the other misses"); ax.legend(); plt.tight_layout(); plt.show()
+ty.round(3)
+
+#%% md
+**Takeaway:** «O76»
+
+### 7.6 How many can we flag? Parametric-bootstrap null and Benjamini-Hochberg
+
+**(a) Why?** A ranked list needs a **cut-off**. We build a null: simulate users from the fitted global model (same ratings-per-user pattern, 8 copies of the user base), score them with the same formula, and compare each real user with simulated honest users **in the same evidence stratum** (1, 2, 3, 4-5, 6-9, 10-19, 20+ ratings). The empirical p-value is the share of null scores at least as extreme. Then **Benjamini-Hochberg** across 80,000 users at a nominal FDR of 5% and 1%.
+**(b) Assumptions and limits:** the global fit includes the fraud and the genuine enthusiasts and batch raters, so the null is imperfect (it is "mostly honest", not "purely honest"). The **realised** FDR against the hidden truth tells us how much to trust the nominal one (H4).
+
+#### Code
+
+#%% code
+def sim_counts(n_vec, alpha, rng):
+    th = rng.gamma(alpha, size=(len(n_vec), len(alpha))); th /= th.sum(1, keepdims=True); C = np.zeros_like(th); rem = n_vec.astype(int).copy(); prem = np.ones(len(n_vec))
+    for k in range(len(alpha) - 1):
+        p = np.clip(th[:, k] / np.maximum(prem, 1e-12), 0, 1); c = rng.binomial(rem, p); C[:, k] = c; rem = rem - c; prem = prem - th[:, k]
+    C[:, -1] = rem; return C
+def nest_of(Cr, Ct): return ekl(Cr, aR) / sdR + ekl(Ct, aT) / sdT
+REP = 8; nr_null = np.tile(nR.astype(int), REP); nt_null = np.maximum(nr_null - 1, 0)
+Cr0 = sim_counts(nr_null, aR, RNG); Ct0 = sim_counts(nt_null, aT, RNG); null_s = nest_of(Cr0, Ct0)
+strata = np.digitize(nR, [2, 3, 4, 6, 10, 20]); sn = np.digitize(nr_null, [2, 3, 4, 6, 10, 20]); pv = np.ones(NU)
+for g_ in np.unique(strata):
+    ns = np.sort(null_s[sn == g_]); m = strata == g_; pv[m] = (1 + (len(ns) - np.searchsorted(ns, nest[m], side="left"))) / (1 + len(ns))
+rows = []
+for alpha_ in (0.05, 0.01):
+    rej = multipletests(pv, alpha=alpha_, method="fdr_bh")[0]; nrej = int(rej.sum()); tp = int((rej & y).sum())
+    lo, hi = proportion_confint(nrej - tp, max(nrej, 1), method="wilson") if nrej else (np.nan, np.nan)
+    rows.append((f"BH at {alpha_:.0%}", nrej, tp, (nrej - tp) / max(nrej, 1), lo, hi, tp / y.sum()))
+rb = multipletests(pv, alpha=0.05, method="bonferroni")[0]; rows.append(("Bonferroni at 5%", int(rb.sum()), int((rb & y).sum()), (rb.sum() - (rb & y).sum()) / max(rb.sum(), 1), np.nan, np.nan, (rb & y).sum() / y.sum()))
+fdr = pd.DataFrame(rows, columns=["rule", "flagged", "true fraud among flagged", "realised false-discovery share", "CI low", "CI high", "recall"]).set_index("rule")
+print(f"Null scores simulated: {len(null_s):,} | users with p ≤ 0.001: {(pv <= 0.001).sum():,} ({(pv <= 0.001).mean():.2%}) | median p of honest 'normal' users: {np.median(pv[(style == 'normal')]):.3f}")
+fdr.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O79»
+
+### 7.7 How much evidence does an account need? Power by number of ratings, and label sample size
+
+**(a) Why?** Shrinkage protects thin-evidence honest users, but it also protects thin-evidence fraudsters. We inject fresh fraud accounts that leave exactly **m ratings** and measure the share whose score beats the **99.9th percentile of honest accounts with the same m** (a per-account false-positive rate of 0.1%). Three behaviours: **boost** (5-star mix and bursts), **skew-only** (5-star mix, natural timing), **burst-only** (honest star mix, bursts). 2,000 injected accounts per point.
+**(b) Label size:** how many expert labels are needed to estimate precision of the top list to within ±5 percentage points, and to estimate the fraud prevalence to ±0.3 points.
+
+#### Code
+
+#%% code
+def gaps_to_counts(g):
+    b = np.minimum((np.log1p(g) / scale).astype(int), B - 1); C = np.zeros((g.shape[0], B))
+    for j in range(g.shape[1]): np.add.at(C, (np.arange(g.shape[0]), b[:, j]), 1)
+    return C
+def counts_from_p(m, p, n, rng): return rng.multinomial(m, p, size=n).astype(float)
+def injected(m, kind, n, rng):
+    if kind == "boost": Cr = counts_from_p(m, [0, 0, 0, 0.2, 0.8], n, rng); g = rng.lognormal(5.0, 1.3, (n, m - 1))
+    elif kind == "skew-only": Cr = counts_from_p(m, [0, 0, 0, 0.2, 0.8], n, rng); g = np.exp(rng.uniform(np.log(86400), np.log(86400 * 120), (n, m - 1)))
+    else: Cr = np.stack([rng.multinomial(m, rng.dirichlet(7 * gen.BASE)) for _ in range(n)]).astype(float); g = rng.lognormal(5.0, 1.3, (n, m - 1))
+    return Cr, gaps_to_counts(g)
+ms = [2, 3, 4, 5, 6, 8, 10, 15, 20, 30]; thr = {}; pw = {k_: [] for k_ in ("boost", "skew-only", "burst-only")}
+for m in ms:
+    nv = np.full(20000, m); s0 = nest_of(sim_counts(nv, aR, RNG), sim_counts(nv - 1, aT, RNG)); thr[m] = np.percentile(s0, 99.9)
+    for k_ in pw: Cr, Ct = injected(m, k_, 2000, RNG); pw[k_].append((nest_of(Cr, Ct) > thr[m]).mean())
+pwd = pd.DataFrame(pw, index=ms); pwd.index.name = "ratings left by the account"
+fig, ax = plt.subplots(figsize=(9, 4.4))
+for k_, c in (("boost", "#e07a1f"), ("skew-only", "#2a6f97"), ("burst-only", "#8da0cb")): ax.plot(ms, pwd[k_] * 100, marker="o", label=k_, color=c)
+ax.set_xlabel("Number of ratings the fraud account leaves"); ax.set_ylabel("Detection rate at 0.1% false-positive rate (%)"); ax.set_title("Detection power rises steeply with evidence; two or three ratings is near-invisible"); ax.legend(); plt.tight_layout(); plt.show()
+print(pwd.round(3).to_string())
+p250 = prec_at(nest, 250); pplan = 0.844; e = 0.05; n0 = 1.96 ** 2 * pplan * (1 - pplan) / e ** 2; nlab = n0 / (1 + (n0 - 1) / 250); n_prev = 1.96 ** 2 * y.mean() * (1 - y.mean()) / 0.003 ** 2
+print(f"\nPrecision@250 = {p250:.3f}. Labels needed for ±5 points, planning with the paper's documented 84.4% precision (finite population of 250): {int(np.ceil(nlab))} | random labels needed for prevalence ±0.3 points: {int(np.ceil(n_prev)):,} | expected measured precision if experts mislabel 5% of cases: {p250 * 0.95 + (1 - p250) * 0.05:.3f}")
+
+#%% md
+**Takeaway:** «O710»
+
+### 7.8 Reading one account: the posterior (interpretability)
+
+**(a) Why?** As in the paper, a reviewer wants to see **why** an account is flagged. We draw 10,000 samples from the Dirichlet posterior of three accounts' star distributions and plot the implied **long-run average rating**: the most suspicious account, an honest account with a single 5-star rating, and an honest account with several ratings and a typical score.
+
+#### Code
+
+#%% code
+hi_u = int(np.argmax(nest)); one5 = int(np.where((nR == 1) & (R[:, 4] == 1) & ~y)[0][0]); mid = np.where((nR >= 6) & (nR <= 9) & ~y)[0]; mid_u = int(mid[np.argsort(nest[mid])[len(mid) // 2]])
+fig, ax = plt.subplots(figsize=(10, 4.4)); stars_v = np.arange(1, 6); rows = []
+for u, nm, c in ((hi_u, "most suspicious account", "#e07a1f"), (one5, "honest, one 5-star rating", "#2a6f97"), (mid_u, "honest, typical (6 to 9 ratings)", "#6a994e")):
+    th = RNG.dirichlet(aR + R[u], 10000); avg = th @ stars_v; ax.hist(avg, bins=60, range=(1, 5), density=True, alpha=0.6, label=f"{nm} (n = {int(nR[u])})", color=c)
+    rows.append((nm, int(nR[u]), " ".join(str(int(v)) for v in R[u]), float(ph[u] @ stars_v), avg.mean(), np.percentile(avg, 2.5), np.percentile(avg, 97.5), nest[u]))
+ax.set_xlabel("Posterior long-run average rating"); ax.set_ylabel("Density"); ax.set_title("A thin-evidence account stays near the prior; a strong one does not"); ax.legend(fontsize=8); plt.tight_layout(); plt.show()
+pd.DataFrame(rows, columns=["account", "ratings", "stars 1..5 counts", "raw average", "posterior mean", "CI low", "CI high", "BIRDNEST score"]).set_index("account").round(3)
+
+#%% md
+**Takeaway:** «O713»
+
+## 8. ML Section — what we built and what is beyond it
+
+BIRDNEST is **unsupervised**: no labels needed. Once reviewers produce labels, a supervised model can learn from them. The comparison below asks a practical question: **how many labelled accounts does a supervised gradient-boosting classifier need before it beats the unsupervised score?** Labels are drawn at random from half of the users; evaluation is on the other half. Features: star shares, ratings count, gap-bucket shares (no hidden fields). Variant B adds the **seller concentration** of the account (share of its ratings on its most-rated seller), which the paper's feature set does not use. No hyper-parameter tuning (defaults, seed 42).
+
+#### Code
+
+#%% code
+sel = r.groupby("user").seller.agg(lambda s: s.value_counts(normalize=True).iloc[0]).reindex(range(NU)).fillna(0).values
+FA = np.column_stack([nR, R / np.maximum(nR[:, None], 1), nT, T / np.maximum(nT[:, None], 1), zR, zT]); FB = np.column_stack([FA, sel])
+perm = np.random.default_rng(SEED).permutation(NU); pool, test = perm[:NU // 2], perm[NU // 2:]; yt = y[test]
+def boot_ap(score, yy, B_=200):
+    rr = np.random.default_rng(1); ii = [rr.integers(0, len(yy), len(yy)) for _ in range(B_)]; v = [average_precision_score(yy[i], score[i]) for i in ii]; return np.percentile(v, 2.5), np.percentile(v, 97.5)
+rows = [("BIRDNEST (unsupervised, no labels)", 0, average_precision_score(yt, nest[test]), *boot_ap(nest[test], yt), np.nan)]
+for nl in (500, 2000, 8000, 40000):
+    tr = pool[:nl]
+    for nm, F in (("supervised A (no seller)", FA), ("supervised B (+ seller concentration)", FB)):
+        if y[tr].sum() < 3: rows.append((nm, nl, np.nan, np.nan, np.nan, int(y[tr].sum()))); continue
+        gb = GradientBoostingClassifier(random_state=SEED).fit(F[tr], y[tr]); s = gb.predict_proba(F[test])[:, 1]; rows.append((nm, nl, average_precision_score(yt, s), *boot_ap(s, yt), int(y[tr].sum())))
+ml = pd.DataFrame(rows, columns=["model", "training labels", "AP (test half)", "CI low", "CI high", "fraud labels in training"]); print(f"Test users {len(test):,} with {yt.sum()} fraud accounts"); ml.round(3)
+
+#%% md
+**Observation:** «O81»
+
+**Beyond this notebook:** the production pattern is a **cascade**: the unsupervised score fills the review queue, reviewers label, a supervised model and rules take over for the obvious cases, and the unsupervised score keeps looking for new behaviours. Graph signals (accounts sharing sellers, devices or payment instruments) and text of the review are the usual next features; LLM-written reviews are outside what a star-and-time model can see.
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-27-08), **all assumed** (the paper reports no rupee figure): each targeted seller has **annual GMV** G; a rating shift of 0.1 star changes that seller's conversion by s (relative); the platform loses a share h of the distorted GMV (refunds, returns, lost trust and honest sellers losing sales); a reviewer costs ₹ c per account; a wrongly flagged honest account costs ₹ f (appeals, goodwill). The **rating shift and the share of it removed are measured** in the simulation. Results are scaled from our 80,000 users to a platform with **1 crore rating accounts** (a pure scale assumption).
+
+#### Code
+
+#%% code
+fk = r._fake.values; allm = r.groupby("seller").stars.mean(); honm = r[~r._fake].groupby("seller").stars.mean(); tgt = r[r._fake].groupby("seller").size(); tgt = tgt[tgt >= 1].index
+shift = (allm.reindex(tgt) - honm.reindex(tgt)).dropna(); order = np.argsort(-nest, kind="stable")
+def residual(kk):
+    fl = np.zeros(NU, bool); fl[order[:kk]] = True; keep = r[~fl[r.user.values]]; m = keep.groupby("seller").stars.mean(); return (m.reindex(shift.index) - honm.reindex(shift.index)).fillna(0)
+print(f"Targeted sellers: {len(shift)} | mean rating shift for boosted sellers {shift[shift > 0].mean():+.2f} stars ({(shift > 0).sum()} sellers), for defamed {shift[shift < 0].mean():+.2f} ({(shift < 0).sum()} sellers) | mean absolute shift {shift.abs().mean():.2f}")
+SCALE = 1e7 / NU; ks = [200, 400, 800, 1600, 3200]; meas = {}
+for kk in ks:
+    rs = residual(kk); fl = order[:kk]; meas[kk] = (1 - rs.abs().sum() / shift.abs().sum(), int(y[fl].sum()), kk - int(y[fl].sum()))
+print("Share of the rating distortion removed by reviewing the top k:", {k_: round(v[0], 3) for k_, v in meas.items()})
+SCEN = {"worst": dict(G=4e5, s=0.005, h=0.04, c=600, f=3000), "base": dict(G=1e6, s=0.01, h=0.08, c=400, f=2000), "best": dict(G=2e6, s=0.02, h=0.12, c=300, f=1500)}
+def money(sc, kk):
+    p = SCEN[sc]; harm_total = (shift.abs() / 0.1 * p["s"] * p["G"] * p["h"]).sum(); rem, tp, fp = meas[kk]
+    ben = harm_total * rem; cost = kk * p["c"] + fp * p["f"]; return harm_total * SCALE / 1e7, ben * SCALE / 1e7, cost * SCALE / 1e7, (ben - cost) * SCALE / 1e7
+rows = []
+for kk in ks:
+    for sc in ("worst", "base", "best"):
+        ht, b_, c_, n_ = money(sc, kk); rows.append((kk, f"{kk / NU:.2%}", sc, meas[kk][1] / kk, ht, b_, c_, n_))
+mo = pd.DataFrame(rows, columns=["review depth k (sim)", "share of users", "scenario", "precision@k", "harm from distorted ratings (₹ cr/yr)", "benefit (₹ cr/yr)", "review + false-flag cost (₹ cr/yr)", "net (₹ cr/yr)"])
+mo.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+#### Decision rule: how deep should the queue go?
+
+#### Code
+
+#%% code
+p = SCEN["base"]; harm_total = (shift.abs() / 0.1 * p["s"] * p["G"] * p["h"]).sum(); V = harm_total / y.sum()
+pstar = (p["c"] + p["f"]) / (V + p["f"]); print(f"Base case: average value of removing one fraud account = ₹{V:,.0f} a year; break-even precision p* = (c + f) / (V + f) = {pstar:.4f}")
+bins_ = [0, 250, 500, 1000, 2000, 4000, 8000, 16000]; rows = []
+for a_, b_ in zip(bins_[:-1], bins_[1:]):
+    seg = order[a_:b_]; rows.append((f"{a_ + 1} to {b_}", y[seg].mean(), y[seg].mean() > pstar))
+dr = pd.DataFrame(rows, columns=["rank band", "precision in the band", "worth reviewing at base-case costs"]).set_index("rank band"); print(f"Capacity check: a review team of 100 accounts per analyst-day needs {y.sum() / 100:.0f} analyst-days to clear every true fraud account in the sim; at platform scale ×{SCALE:,.0f}")
+dr.round(4)
+
+#%% md
+**Observation:** «O91»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated behaviour:** the star mix, timing sessions, fraud mix and prevalence were assumed. Real fraud adapts: once accounts are banned for bursts, the next wave drips. Re-measure on real, expert-labelled data.
+- **Labels are expert opinion:** the paper's labels come from Flipkart reviewers, who can be wrong and who see only the top of the list. Our "truth" is perfect, which flatters every number. Section 7.7 shows how mislabelling distorts precision.
+- **Selection bias in labels:** labels gathered only from the top of the queue cannot estimate recall or train an unbiased supervised model; keep a small **random sample** for labelling every cycle.
+- **Our NEST is not the authors' formula:** it implements the documented idea (expected surprise of the posterior under the global distribution, per view, standardised, combined). Exact scoring details of the paper may differ.
+- **Genuine unusual users:** enthusiasts and batch raters look suspicious on one signal. Any action beyond review (removing ratings, banning) needs a second signal, such as seller concentration.
+- **Evidence ceiling:** accounts that leave two or three ratings are close to invisible to any per-account rating model; seller-side and device-side signals are needed.
+- **₹ figures are assumptions:** the paper gives no impact figure; only the measured rating distortion and removal share come from the data.
+- **Next steps:** add seller-concentration and device or payment graph features; text models for review content; random-label sampling; an A/B or holdback test on seller conversion after cleaning ratings (Case 19).
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Posterior | counts n ~ Multinomial(θ), θ ~ Dirichlet(α) ⇒ θ \| n ~ Dirichlet(α + n) |
+| Dirichlet-multinomial log-likelihood | ln Γ(α₀) − ln Γ(N + α₀) + Σ [ln Γ(nᵢ + αᵢ) − ln Γ(αᵢ)] |
+| Minka fixed point | αᵢ ← αᵢ · Σᵤ [ψ(nᵤᵢ + αᵢ) − ψ(αᵢ)] / Σᵤ [ψ(Nᵤ + α₀) − ψ(α₀)] |
+| Expected KL of the posterior to the global mean g | Σᵢ mᵢ [ψ(aᵢ + 1) − ψ(a₀ + 1) − ln gᵢ], a = α + n, m = a / a₀ |
+| Combined score | z = KL_stars / sd + KL_time / sd |
+| Precision@k, AP | share of fraud in the top k; mean of precision at each fraud's rank |
+| BH procedure | reject p₍ᵢ₎ ≤ (i / m) q for the largest such i |
+| Break-even precision | p* = (c + f) / (V + f) |
+
+| Term | Meaning |
+|---|---|
+| Boosting / defaming | Fake high ratings for your own product / fake low ratings against a competitor |
+| Dirichlet | A distribution over distributions: here, over a user's star shares |
+| Conjugate prior | A prior whose posterior has the same form, so updating is just adding counts |
+| Shrinkage | Pulling thin-evidence estimates toward the global average |
+| KL divergence | How far one distribution is from another |
+| FDR | Expected share of false alarms among everything flagged |
+| Precision@k | Share of the top k that is truly fraud |
+| Digital twin | A simulation where the truth is known |

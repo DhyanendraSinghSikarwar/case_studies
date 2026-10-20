@@ -1,0 +1,402 @@
+#%% md
+# Case Study 15 — From a Wallet-Behaviour Score to BNPL Credit Limits: Score Building, a Randomised Limit Test, and Profit-Optimal Limits
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 15 — *MobiKwik: setting BNPL credit limits with a wallet-behaviour score (MobiScore)* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Credit (BNPL), Product (ZIP), Collections, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-15-01). Wallet and credit data are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs15_bnpl_limit_assignment.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+MobiKwik knows how millions of wallet users behave: what they spend, whether they pay bills on time, whether they top up regularly or at the last minute, how often they change phones, and whether they respond when the app nudges them. Most have no bureau history. MobiKwik turns this into a **behaviour score (MobiScore)** and uses it for two decisions:
+1. **Pre-approval:** who gets a BNPL ("ZIP") credit line at all.
+2. **Limit:** how much (₹1,000? ₹5,000?).
+
+The limit question is harder than it looks. A higher limit earns more (people spend more on it) but loses more when someone defaults. The *amount* lost depends on the limit, and so may the *chance* of default. Looking at past data misleads, because past limits were not random: good customers were given high limits, so high limits *look* safe.
+
+This notebook:
+- Builds the score.
+- Shows why engagement signals (contactability, responsiveness) matter mostly for **collections**.
+- Uses a **randomised limit test** to find the most profitable limit for each score band.
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What MobiKwik did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | "Pre-approve wallet users for BNPL ('ZIP') and set credit limits without a traditional bureau history" |
+| Data | Behavioural ("spending patterns, payment patterns, outstanding amounts, channel preferences"); device/location ("device information, location history, app usage"); engagement ("contactability, responsiveness"); "**More than 500 raw and derived variables**" |
+| Approach | Raw and derived variables feed **MobiScore**, which drives pre-approval and limits; ML collection strategies mentioned |
+| Statistics / ML / metrics | **ND** |
+| Decision | BNPL pre-approval and limit assignment by MobiScore; collections with 89 in-house staff (31 Mar 2021) plus agencies |
+| Impact | **Not publicly disclosed** |
+
+**Source:** Inc42, 13 Jul 2021 (summary of the DRHP filed 12 Jul 2021) — https://inc42.com/buzz/mobikwiks-mobiscore-collects-spending-patterns-device-information/
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | ≈ 132,000 pre-approved wallet users with 16 behavioural, device and engagement features, in two cohorts: **historical** (limits from the old rule, which favoured better-looking users) and **experiment** (limits randomly ₹1k / 2k / 3k / 5k). 6-month outcomes: line spend, revenue (2% merchant fee + late fees), 30+ DPD, 90+ DPD default, loss, and collections **cure** after 30+ DPD |
+| Statistics added (none disclosed) | Feature screening (Mann–Whitney + rank-biserial, Holm); score AUC/KS with decile rank ordering; engagement features for default vs cure (odds ratios, LR tests); **confounding demonstration** (historical vs randomised limit effect); randomisation checks (SRM, SMD); limit × score-band heterogeneity (LR test); **profit-optimal limits** per band with bootstrap CIs, chosen on one half of the experiment and evaluated on the other; power |
+
+### (c) How the industry uses this
+
+Behaviour scores from first-party data drive limits at every Indian BNPL and credit-line product: Paytm Postpaid, Amazon Pay Later, Flipkart Pay Later, LazyPay, Simpl (Case 10) and MobiKwik ZIP. **Randomised credit-line tests** are standard at card issuers worldwide (Capital One's "test-and-learn"), because limit effects cannot be learned from historical data where limits followed risk. RBI's Digital Lending Guidelines (2022) require limits to be set by the regulated lender's credit policy, which is exactly this kind of documented, tested rule.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Who should get a BNPL line, and what limit maximises profit without excessive losses? |
+| Analytical | (1) Does the behaviour score rank default risk? (2) What is the **causal** effect of a higher limit on spend, default and profit, and does it differ by score band? (3) Which limit per band maximises expected profit? |
+
+**Hypotheses**
+- **H1 (score):** H0: AUC of the score = 0.5 on the experiment cohort (out-of-cohort; DeLong CI).
+- **H2 (engagement):** H0: contactability and responsiveness add no information to (a) default and (b) cure models (LR tests).
+- **H3 (limit effect):** H0: default rate does not depend on the randomly assigned limit (χ² trend); H0b: the limit effect is the same in all score bands (LR test of limit × band).
+- **H4 (policy):** H0: the score-based limit policy earns the same profit per user as the best uniform limit (paired bootstrap on the held-out half).
+
+**Primary metric:** 6-month **profit per pre-approved user** = revenue − credit loss. **Guardrail:** portfolio default rate ≤ 6%. **Unit:** user.
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.stats import rankdata
+import statsmodels.formula.api as smf
+from sklearn.ensemble import HistGradientBoostingClassifier as HGB
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import roc_auc_score
+from statsmodels.stats.proportion import proportion_confint
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public wallet-behaviour + credit-line outcome data | **None.** Wallet transaction data are confidential and personal (DPDP Act). No public dataset has randomised credit limits. |
+| **Decision** | Synthetic users in two cohorts, one with randomised limits (D-15-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs15.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs15.py
+
+#%% code
+os.makedirs("data/cs15", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs15 as gen; importlib.reload(gen)
+raw = gen.generate(seed=SEED); raw.to_csv("data/cs15/users.csv.gz", index=False)
+print(f"{len(raw):,} rows | {raw.user_id.nunique():,} unique pre-approved users")
+raw.drop(columns=["_q", "_p_default"]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Users | ≈ 132k pre-approved (from 140k wallet users); half historical, half experiment | Our assumption |
+| Features | 16 (spend, bill-pay punctuality, top-up regularity, low-balance days, P2P and gaming share, device/city changes, app sessions, contactability, nudge response, tenure) | **Documented** families; the "500 variables" condensed |
+| Limits | Historical: old rule (better-looking users → higher limits). Experiment: uniform random ₹1k/2k/3k/5k | Randomised credit-line test (our design) |
+| Outcomes | Spend rises with limit; default risk rises with limit mostly for low-quality users; revenue = 2% of spend + ₹250 late fee (70% collected); loss = 85% of utilised amount on default | Our assumption |
+| Collections | Cure after 30+ DPD depends strongly on contactability and responsiveness | **Documented** rationale for engagement features |
+| DQ issues | 300 duplicate rows; 350 missing app-session counts; 120 utilisations above the limit (late-posted reversals) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("user_id, cohort", "User; historical (rule-based limits) or experiment (random limits)"), ("tenure_months, txn_count_6m, wallet_spend_6m", "Wallet relationship and spend"),
+    ("bill_pay_share, ontime_bill_rate, topup_regularity, low_balance_days_6m", "Payment patterns"), ("p2p_out_share, gaming_share", "Channel / category preferences"),
+    ("device_changes_6m, city_changes_6m, app_sessions_per_week", "Device, location and app usage"), ("contactable, nudge_response_rate", "Engagement: reachable phone; share of nudges acted on"),
+    ("credit_limit", "Assigned BNPL limit (₹)"), ("line_spend_6m, max_utilised", "Spend on the line; peak outstanding"),
+    ("dpd30_6m, default_90dpd, cured_after_dpd30", "Delinquency, default, cure (−1 = never 30+ DPD)"), ("revenue_inr, loss_inr", "6-month revenue and credit loss"),
+    ("_q, _p_default", "HIDDEN truth: latent quality and true default probability"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs15/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+df = pd.read_csv("data/cs15/users.csv.gz")
+checks = {"duplicate user_id": int(df.user_id.duplicated().sum()), "app sessions missing": int(df.app_sessions_per_week.isna().sum()),
+          "utilised > limit (late reversals)": int((df.max_utilised > df.credit_limit).sum()), "default without 30+ DPD": int(((df.default_90dpd == 1) & (df.dpd30_6m == 0)).sum()),
+          "loss > 0 without default": int(((df.loss_inr > 0) & (df.default_90dpd == 0)).sum())}
+print(pd.Series(checks, name="rows").to_string())
+df = df.drop_duplicates("user_id").reset_index(drop=True)
+df["sessions_missing"] = df.app_sessions_per_week.isna().astype(int); df["app_sessions_per_week"] = df.app_sessions_per_week.fillna(df.app_sessions_per_week.median())
+df["max_utilised"] = np.minimum(df.max_utilised, df.credit_limit)
+df["profit"] = df.revenue_inr - df.loss_inr
+H, E = (df.cohort == "historical").values, (df.cohort == "experiment").values
+print(f"\nClean: {len(df):,} users | historical {H.sum():,} · experiment {E.sum():,} | default {df.default_90dpd.mean():.2%} | 30+ DPD {df.dpd30_6m.mean():.2%}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.5))
+g = df.groupby(["cohort", "credit_limit"]).default_90dpd.mean().unstack(0) * 100
+g.plot(marker="o", ax=axes[0], color=["#b23a48", "#2a6f97"]); axes[0].set_xlabel("Credit limit (₹)"); axes[0].set_ylabel("Default rate, 90+ DPD (%)")
+axes[0].set_title("Past data says higher limits are safer; the experiment says the opposite"); axes[0].legend(title="cohort")
+dq = df[df.cured_after_dpd30 >= 0].copy(); dq["response band"] = pd.qcut(dq.nudge_response_rate, 4, labels=["lowest", "low", "high", "highest"])
+cr = dq.groupby(["response band", "contactable"]).cured_after_dpd30.mean().unstack() * 100; cr.columns = ["not contactable", "contactable"]
+cr.plot(kind="bar", ax=axes[1], color=["#999", "#2a6f97"]); axes[1].set_xlabel("Nudge-response quartile"); axes[1].set_ylabel("Cured after 30+ DPD (%)")
+axes[1].set_title("Engagement drives collections cure"); axes[1].tick_params(axis="x", rotation=0)
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Which behaviours separate defaulters? (screening)
+
+**(a) Why?** Before modelling, check each feature's univariate separation with a test that does not assume normality (wallet features are skewed): **Mann–Whitney U** with the **rank-biserial correlation** as the effect size (± 0.1 small, 0.3 medium, 0.5 large), Holm across 16 features. Computed on the historical cohort, where the score is built.
+
+#%% code
+FEAT = ["tenure_months", "txn_count_6m", "wallet_spend_6m", "bill_pay_share", "ontime_bill_rate", "topup_regularity", "low_balance_days_6m", "p2p_out_share",
+        "gaming_share", "device_changes_6m", "city_changes_6m", "app_sessions_per_week", "contactable", "nudge_response_rate", "sessions_missing"]
+h = df[H]; rows = []
+for f in FEAT:
+    a, b = h.loc[h.default_90dpd == 1, f], h.loc[h.default_90dpd == 0, f]
+    u = stats.mannwhitneyu(a, b); r = 2 * u.statistic / (len(a) * len(b)) - 1
+    rows.append((f, a.median(), b.median(), r, u.pvalue))
+scr = pd.DataFrame(rows, columns=["feature", "median defaulters", "median non-defaulters", "rank-biserial r", "p"]).set_index("feature")
+scr["p_holm"] = multipletests(scr.p, method="holm")[1]; scr.sort_values("rank-biserial r", key=abs, ascending=False).round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Building the score (MobiScore-style) and testing it out of cohort
+
+We train on the **historical** cohort and test on the **experiment** cohort, a different set of users whose limits are random, so their default risk does not depend on the old rule's choices. Two models: **logistic regression** (log-scaled, standardised features; the transparent "scorecard") and **gradient boosting**. Credit limit is deliberately **excluded**: the score must describe the customer, not the decision we are about to make. We report AUC with a DeLong-style bootstrap CI, KS, and decile rank ordering.
+
+#%% code
+def X_(d):
+    X = d[FEAT].copy()
+    for c in ["txn_count_6m", "wallet_spend_6m", "low_balance_days_6m", "app_sessions_per_week", "tenure_months"]: X[c] = np.log1p(X[c])
+    return X
+lg = make_pipeline(StandardScaler(), LogisticRegression(max_iter=3000)).fit(X_(df[H]), df.default_90dpd[H])
+hg = HGB(max_iter=300, learning_rate=0.06, random_state=SEED).fit(df.loc[H, FEAT], df.default_90dpd[H])
+ye = df.default_90dpd.values[E]; p_lg = lg.predict_proba(X_(df[E]))[:, 1]; p_hg = hg.predict_proba(df.loc[E, FEAT])[:, 1]
+def ks(y, p): o = np.argsort(-p); yy = y[o]; return np.max(np.abs(np.cumsum(yy) / yy.sum() - np.cumsum(1 - yy) / (1 - yy).sum()))
+res = []
+for nm, p in (("logistic scorecard", p_lg), ("gradient boosting", p_hg)):
+    bs = [roc_auc_score(ye[i], p[i]) for i in (RNG.integers(0, len(ye), len(ye)) for _ in range(300))]
+    res.append((nm, roc_auc_score(ye, p), np.percentile(bs, 2.5), np.percentile(bs, 97.5), ks(ye, p), roc_auc_score(df._q.values[E] < np.quantile(df._q.values[E], 0.2), p)))
+print(pd.DataFrame(res, columns=["model", "AUC (experiment cohort)", "CI low", "CI high", "KS", "AUC for spotting the true bottom-20% quality"]).set_index("model").round(4).to_string())
+df["score"] = np.nan; df.loc[E, "score"] = p_lg; df.loc[H, "score"] = lg.predict_proba(X_(df[H]))[:, 1]
+df["band"] = pd.qcut(df.score.rank(method="first"), 5, labels=["A (safest)", "B", "C", "D", "E (riskiest)"])
+dec = df[E].groupby("band").agg(users=("user_id", "size"), default_rate=("default_90dpd", "mean"), mean_score=("score", "mean"))
+dec
+
+#%% md
+**Observation:** «O72»
+
+### 7.3 Engagement features: for default, or for collections?
+
+The documented features "**contactability**" and "**responsiveness**" are unusual in a credit score. We test them twice, with likelihood-ratio tests and odds ratios with 95% CIs:
+- **Default model:** do they add to the behaviour features in predicting default?
+- **Cure model:** among users who reach 30+ DPD (not yet defaulted), do they predict being **cured** by collections?
+
+#%% code
+d = df.copy(); d["l_spend"] = np.log1p(d.wallet_spend_6m); d["l_lowbal"] = np.log1p(d.low_balance_days_6m)
+base = "ontime_bill_rate + topup_regularity + l_lowbal + device_changes_6m + gaming_share + l_spend"
+m0 = smf.logit(f"default_90dpd ~ {base}", data=d[H]).fit(disp=0); m1 = smf.logit(f"default_90dpd ~ {base} + contactable + nudge_response_rate", data=d[H]).fit(disp=0)
+cu = d[(d.cured_after_dpd30 >= 0)]
+c0 = smf.logit(f"cured_after_dpd30 ~ {base}", data=cu).fit(disp=0); c1 = smf.logit(f"cured_after_dpd30 ~ {base} + contactable + nudge_response_rate", data=cu).fit(disp=0)
+out = []
+for nm, a, b in (("default (historical cohort)", m0, m1), ("cure after 30+ DPD (all users)", c0, c1)):
+    LR = 2 * (b.llf - a.llf); ci = np.exp(b.conf_int())
+    out.append((nm, int(b.nobs), LR, stats.chi2.sf(LR, 2), np.exp(b.params["contactable"]), ci.loc["contactable", 0], ci.loc["contactable", 1],
+                np.exp(b.params["nudge_response_rate"] * 0.1), np.exp(ci.loc["nudge_response_rate", 0] * 0.1), np.exp(ci.loc["nudge_response_rate", 1] * 0.1)))
+eng = pd.DataFrame(out, columns=["outcome", "n", "LR χ² (2 df)", "p", "OR contactable", "CI low", "CI high", "OR per +10 pp nudge response", "CI low ", "CI high "]).set_index("outcome")
+print(f"Cure rate among 30+ DPD users: contactable {cu[cu.contactable == 1].cured_after_dpd30.mean():.1%} vs not {cu[cu.contactable == 0].cured_after_dpd30.mean():.1%}")
+eng.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O73»
+
+### 7.4 Why a randomised test? The confounding trap in historical limits
+
+**(a)** In the historical cohort, limits were set by the old rule, which partly saw customer quality. A regression of default on limit therefore mixes two things: the effect *of the limit* and the fact that *good customers got bigger limits*. We estimate the limit effect three ways:
+1. **Historical, naive:** default ~ limit.
+2. **Historical, adjusted** for the behaviour score.
+3. **Experiment:** default ~ limit, where the limit was randomly assigned, so it is unbiased.
+
+#%% code
+d["lim_k"] = d.credit_limit / 1000; d["logit_score"] = np.log(d.score / (1 - d.score))
+fits = {"1 historical, naive": smf.logit("default_90dpd ~ lim_k", data=d[H]).fit(disp=0),
+        "2 historical, adjusted for score": smf.logit("default_90dpd ~ lim_k + logit_score", data=d[H]).fit(disp=0),
+        "3 experiment (randomised)": smf.logit("default_90dpd ~ lim_k", data=d[E]).fit(disp=0),
+        "3b experiment, adjusted for score": smf.logit("default_90dpd ~ lim_k + logit_score", data=d[E]).fit(disp=0)}
+conf = pd.DataFrame({k: {"OR per +₹1,000 limit": np.exp(f.params["lim_k"]), "CI low": np.exp(f.conf_int().loc["lim_k", 0]), "CI high": np.exp(f.conf_int().loc["lim_k", 1]),
+                         "p": f.pvalues["lim_k"]} for k, f in fits.items()}).T
+print(f"Correlation of limit with hidden true quality: historical {np.corrcoef(d.lim_k[H], d._q[H])[0, 1]:.2f} vs experiment {np.corrcoef(d.lim_k[E], d._q[E])[0, 1]:.3f}")
+conf.round(4)
+
+#%% md
+**Observation:** «O74»
+
+### 7.5 Checking the experiment, then measuring the limit effect by score band
+
+**Randomisation checks:**
+- **SRM:** χ² test that the four arms got equal numbers.
+- **Balance:** standardised mean difference (SMD) of key features across arms; |SMD| < 0.1 means balanced.
+
+**Effects:** default rate, spend, revenue, loss and profit by limit × score band. The heterogeneity test is the **LR test of limit × band interactions** in a logistic default model. A trend test (Cochran–Armitage via logistic slope) runs within each band.
+
+#%% code
+ex = d[E].copy()
+cnt = ex.credit_limit.value_counts().sort_index(); srm = stats.chisquare(cnt.values)
+smd = {}
+for f in ["ontime_bill_rate", "topup_regularity", "wallet_spend_6m", "score"]:
+    m_ = ex.groupby("credit_limit")[f].mean(); s_ = ex[f].std(); smd[f] = (m_.max() - m_.min()) / s_
+print(f"SRM: arm sizes {cnt.to_dict()}, χ² p = {srm.pvalue:.3f} | max |SMD| across arms: " + ", ".join(f"{k} {v:.3f}" for k, v in smd.items()))
+mA = smf.logit("default_90dpd ~ C(band) + lim_k", data=ex).fit(disp=0); mB = smf.logit("default_90dpd ~ C(band) * lim_k", data=ex).fit(disp=0)
+LR = 2 * (mB.llf - mA.llf); print(f"Limit × band heterogeneity in default: LR χ² = {LR:.1f}, df = 4, p = {stats.chi2.sf(LR, 4):.2g}")
+slopes = []
+for b in ex.band.cat.categories:
+    s_ = smf.logit("default_90dpd ~ lim_k", data=ex[ex.band == b]).fit(disp=0); slopes.append((b, np.exp(s_.params["lim_k"]), s_.pvalues["lim_k"]))
+sl = pd.DataFrame(slopes, columns=["band", "OR default per +₹1,000", "p"]).set_index("band"); sl["p_holm"] = multipletests(sl.p, method="holm")[1]
+eff = ex.groupby(["band", "credit_limit"]).agg(users=("user_id", "size"), default=("default_90dpd", "mean"), spend=("line_spend_6m", "mean"), revenue=("revenue_inr", "mean"),
+                                               loss=("loss_inr", "mean"), profit=("profit", "mean"))
+display(sl.round(4))
+fig, ax = plt.subplots(figsize=(9, 4.5))
+for b, c_ in zip(ex.band.cat.categories, sns.color_palette("RdYlGn_r", 5)):
+    e_ = eff.loc[b]; ax.plot(e_.index, e_.profit, "o-", color=c_, label=b)
+ax.axhline(0, color="black", lw=0.8); ax.set_xlabel("Randomly assigned limit (₹)"); ax.set_ylabel("6-month profit per user (₹)"); ax.set_title("Profit by limit: higher limits pay only for safer bands"); ax.legend(title="score band")
+plt.tight_layout(); plt.show()
+eff.round(3)
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.6 Choosing limits per band, evaluated honestly
+
+We split the experiment cohort randomly in two halves:
+- **Design half:** pick, for each score band, the limit with the highest mean profit (or "do not offer" if every limit loses money).
+- **Evaluation half:** estimate the profit of that policy and of the alternatives on users whose random limit equals the policy's limit, weighted ×4 because each limit had a 1/4 chance. This is an inverse-propensity estimate, unbiased because assignment was random.
+
+Paired bootstrap CIs for the differences, plus the policy's default rate (guardrail ≤ 6%).
+
+#%% code
+half = RNG.random(len(ex)) < 0.5; des, ev = ex[half], ex[~half]
+LIM = [1000, 2000, 3000, 5000]; bands = list(ex.band.cat.categories)
+pm = des.groupby(["band", "credit_limit"]).profit.mean().unstack()
+policy = {b: (int(pm.loc[b].idxmax()) if pm.loc[b].max() > 0 else 0) for b in bands}
+old_rule_like = {b: l for b, l in zip(bands, [5000, 3000, 2000, 2000, 1000])}
+POL = {"uniform ₹1,000": {b: 1000 for b in bands}, "uniform ₹2,000": {b: 2000 for b in bands}, "uniform ₹3,000": {b: 3000 for b in bands},
+       "uniform ₹5,000": {b: 5000 for b in bands}, "score-tiered (old-rule style)": old_rule_like, "profit-optimal per band (design half)": policy}
+def value(d_, pol):
+    lim = d_.band.map(pol).astype(float).values; match = d_.credit_limit.values == lim; off = lim == 0
+    prof = np.where(off, 0.0, match * d_.profit.values * 4); dflt = np.where(off, 0.0, match * d_.default_90dpd.values * 4); offered = np.where(off, 0.0, match * 4.0)
+    return prof, dflt, offered
+rows, PV = [], {}
+for nm, pol in POL.items():
+    prof, dflt, offd = value(ev, pol); PV[nm] = prof
+    rows.append((nm, ", ".join(f"{b.split()[0]}:{'—' if pol[b] == 0 else pol[b] // 1000}k" for b in bands), prof.mean(), dflt.sum() / max(offd.sum(), 1), offd.mean()))
+pt = pd.DataFrame(rows, columns=["policy", "limits A–E", "profit per user ₹ (evaluation half)", "default rate of offered", "share offered"]).set_index("policy")
+best_uni = pt.loc[[i for i in pt.index if i.startswith("uniform")], "profit per user ₹ (evaluation half)"].idxmax()
+dlt = PV["profit-optimal per band (design half)"] - PV[best_uni]
+bs = [dlt[RNG.integers(0, len(dlt), len(dlt))].mean() for _ in range(2000)]
+print(f"Profit-optimal vs best uniform ({best_uni}): {dlt.mean():+.1f} ₹/user (95% bootstrap CI {np.percentile(bs, 2.5):+.1f} to {np.percentile(bs, 97.5):+.1f})")
+pt.round(3)
+
+#%% md
+**Observation:** «O76»
+
+### 7.7 Power: how big must a limit test be?
+
+Profit per user is very noisy (most users earn ₹30–150; a few defaulters lose up to ₹4,000). We compute the users needed **per arm per band** to detect a ₹20 per-user profit difference (80% power, α = 0.05), from the observed standard deviation of profit in each band.
+
+#%% code
+pw = ex.groupby("band").profit.std().to_frame("profit SD ₹")
+for delta in (10, 20, 40):
+    pw[f"n per arm for Δ = ₹{delta}"] = np.ceil(2 * (1.96 + 0.84) ** 2 * pw["profit SD ₹"] ** 2 / delta ** 2).astype(int)
+pw["n per arm in this test"] = ex.groupby(["band", "credit_limit"]).size().groupby(level=0).min()
+pw.round(1)
+
+#%% md
+**Observation:** «O77»
+
+## 8. ML Section — brief
+
+- **Logistic vs gradient boosting:** compared in 7.2 without tuning. The logistic scorecard is the production choice if its AUC is within ~0.01 of boosting: it is explainable to customers (RBI's Digital Lending Guidelines expect reasons for credit decisions) and stable.
+- **Limit is never a model input.** The score describes the customer. The limit is a decision evaluated by the experiment (7.4–7.6).
+- **Two-model design:** the documented engagement features go mainly into a **collections/cure model**, which decides whom to call and how early, not into the approval score.
+
+## 9. Business Translation — ₹ impact
+
+#%% code
+N_USERS = 1e6                                                            # scale: 10 lakh pre-approved users per 6-month cycle (assumption, D-15-07)
+imp = pt[["profit per user ₹ (evaluation half)", "default rate of offered", "share offered"]].copy()
+imp["₹ crore per 6 months (10 lakh users)"] = imp["profit per user ₹ (evaluation half)"] * N_USERS / 1e7
+imp["vs best uniform (₹ crore)"] = imp["₹ crore per 6 months (10 lakh users)"] - imp.loc[best_uni, "₹ crore per 6 months (10 lakh users)"]
+cure_gain = (cu[cu.contactable == 1].cured_after_dpd30.mean() - cu[cu.contactable == 0].cured_after_dpd30.mean())
+avg_bal_30 = df.loc[(df.dpd30_6m == 1) & (df.default_90dpd == 0), "max_utilised"].mean()
+print(f"Collections: contactable users cure {cure_gain:.1%} more often; average balance at 30+ DPD ≈ ₹{avg_bal_30:,.0f}")
+imp.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic effects:** the size and shape of the limit effect were assumed. A real randomised test is essential (7.7 gives the sample size).
+- **Ethics of limit experiments:** randomising limits is acceptable when every arm is within credit policy (here ₹1k–5k for pre-approved users). Do not randomise users into limits the policy would reject, and disclose limits clearly (RBI DLG Key Fact Statement).
+- **Six months is short:** profit from higher limits accrues over the customer's life (repeat use, cross-sell). Losses also arrive late. Track 12-month outcomes before scaling.
+- **Feedback loops:** once limits follow the score, future historical data are confounded again. Keep a small **permanent random-limit holdout** (e.g., 2–5%) for ongoing learning.
+- **Behavioural data and consent:** wallet behaviour, device and location data need explicit consent and purpose limitation under the DPDP Act. Engagement data used for collections must respect RBI's fair-practices code (no harassment, contact-hour limits).
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Rank-biserial | r = 2U/(n₁n₂) − 1 |
+| Profit per user | revenue (2% × line spend + collected late fees) − loss (85% × utilised on default) |
+| IPW policy value | V̂(π) = mean( 1{assigned limit = π(x)} · profit / (1/4) ) |
+| SMD | (max arm mean − min arm mean) / pooled SD |
+| Sample size per arm | n = 2(z₀.₉₇₅ + z₀.₈)² σ² / Δ² |
+| Confounding | E[default ∣ limit] ≠ effect of limit when limit depends on quality |
+
+| Term | Meaning |
+|---|---|
+| BNPL / credit line | Buy now, pay later; a small revolving limit |
+| Behaviour score | A risk score built from on-platform behaviour, not the bureau |
+| Pre-approval | Offering credit before the customer applies |
+| Randomised limit test | Assigning limits at random within policy to learn their effect |
+| Confounding | A hidden common cause (quality) that makes two things look related |
+| Cure | A delinquent customer brought back to current |
+| DPD | Days past due |

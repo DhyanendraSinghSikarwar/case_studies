@@ -1,0 +1,8 @@
+metric,z0,acceleration a,interpretation
+difference in means (₹),0.0401168102,0.0147660403,close to symmetric
+ratio of means,0.0386116674,0.0104785944,close to symmetric
+difference in medians (₹),-0.0481458569,0.0,close to symmetric
+ratio of medians,-0.0421238092,-7.774e-07,close to symmetric
+difference in 90th percentiles (₹),0.0198036577,-0.0090063976,close to symmetric
+"difference in share over ₹50,000 (pp)",0.0228122957,0.0001156986,close to symmetric
+difference in spend per rupee of limit (pp),0.0175472984,0.0079679113,close to symmetric

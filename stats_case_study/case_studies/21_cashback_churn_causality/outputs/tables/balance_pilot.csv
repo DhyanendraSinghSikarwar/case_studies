@@ -1,0 +1,7 @@
+variable,offered mean,not offered mean,SMD
+tenure_months,40.868125,40.52175,0.0126577354
+income_band,2.493375,2.500375,-0.0092069386
+digital_logins_per_month,5.712375,5.72925,-0.0056591659
+spend_3m_before,15.2326,15.2959875,-0.0063161914
+spend_trend_before,-0.0361625,0.1293625,-0.0137288017
+complaints_12m,0.224,0.222125,0.0036070132

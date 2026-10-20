@@ -1,0 +1,517 @@
+#%% md
+# Case Study 20 — Predicting the Value of a New Customer Before Their First Order: Zero-Inflated LTV, Ranking Metrics and Bid Optimisation
+
+**Priority:** ★★★ Must-visit · **Reference:** Case Study 20 — *Swiggy: predicted customer lifetime value (pLTV) for acquisition bidding* (`indian_ecommerce_data_science_case_studies.md`)
+**Audience:** Head of Growth / Performance Marketing, Data Science, Finance, Product (Food and Instamart)
+**Data:** ⚠️ **SYNTHETIC** (D-20-01). Swiggy's customer data is confidential; this is a calibrated simulation with hidden ground truth.
+**Evidence level:** Medium (the source is an InfoQ report of Swiggy's own post; the original post was not readable). Swiggy has not disclosed dataset size, split scheme, layer sizes or lift figures. This notebook is an interview-standard solution on simulated data, not a reproduction of Swiggy's results.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs20_customer_lifetime_value.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+When we pay to acquire a new app user (a Google ad click, an Instagram install), we do not know yet whether that person will order once and disappear or order every week for a year. Most acquisition systems bid for the **short-term outcome** (an install, a first order). That favours cheap, low-quality users. If we could **predict, before the first order, how much a user will be worth over the next six months**, we could bid more for the valuable users and less for the rest.
+
+Three things make this hard:
+1. **Cold start.** Before the first order we have no purchase history, so the usual tools (RFM scores, BG/NBD purchase-count models) do not apply. We only have *signals*: channel, device, location, browsing, coupon use, fraud risk.
+2. **A strange target.** Many new users never order (here about 40% within six months), while a small group orders a lot (the top 10% of customers carry about 58% of value). Averages and "percent error" are misleading.
+3. **It is a ranking and bidding problem.** The model does not need to guess each rupee exactly. It needs to rank users well enough that **bids differ in the right direction**.
+
+Leaders and interviewers want to know:
+1. How should we judge a model for a zero-inflated, heavy-tailed target (and why not MAE or MAPE)?
+2. Which model families work, and does a hurdle structure or a neural network matter?
+3. Is the model calibrated and stable across channels and over time?
+4. What does it do to acquisition **profit and ROAS** compared with flat bidding and with a vendor's short-term model?
+5. How would we prove it in an A/B test when the outcome takes six months to mature?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Swiggy did — *documented* (second-hand, via InfoQ)
+
+| Item | Documented fact (from the reference file) |
+|---|---|
+| Problem | Predict long-term value of new customers across **Food and Instamart before their first order**, so ad bids optimise long-term value, not short-term conversion. Early signals are sparse and the target is skewed: many new users place no orders in 30 days while a small group has much higher LTV |
+| Features | **350+** pre-first-order features: acquisition channel, device and fraud signals, geographic behaviour, complaint history, Instamart category affinity, order behaviour, payment patterns, socio-economic indicators. Dataset size and time range: ND |
+| Model | **Multi-task MLP**: three shared hidden layers, task heads for Food and Instamart; parameters cut from 363,000 to 135,000 ("63% reduction"); a four-head version was marginally better. Layer sizes/activations: ND. Target: LTV (primary), order count (auxiliary) |
+| Evaluation | MAE and MAPE judged insufficient (many zeros, long tail). Predicted and actual values split into **ten quantiles**; **Spearman above 0.75** for both Food and Instamart; **diagonal coverage 70% to 80%**. Split scheme and hypothesis tests: ND |
+| Use | Output feeds **Google tROAS bidding**; next step: probabilistic pLTV for uncertainty |
+| Decision / impact | Use the in-house pLTV signal instead of a third-party pLTV platform. In a production A/B the in-house model gave "higher retention and gross order value per acquired user, with no additional platform costs"; the external platform **acquired more users per dollar**. Exact figures: ND |
+
+**Source:** InfoQ, "Swiggy Uses 350+ Features and Multi-Task MLP to Predict Customer Lifetime Value", Leela Kumili, 2 Sep 2026 (original Swiggy Bytes post not read). Classic RFM segmentation at Nykaa/Myntra/FirstCry/Flipkart: no company source found.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 60,000 new customers over 52 weekly cohorts; about 60 pre-first-order features (a few strong, many weak, 20 pure noise; **Swiggy used 350+**, we cannot replicate that); 180-day gross order value (GOV) for Food and Instamart; hurdle structure with a heavy tail; channel mix drifting over time |
+| Models compared | (1) channel × city × OS segment mean (what competing bidders can see); (2) OLS on log value; (3) **hurdle gradient boosting** (P(order) × value if active); (4) gradient boosting on raw value; (5) gradient boosting on log value; (6) **multi-task MLP** with Food and Instamart heads; (7) a **vendor-like** short-term model (restricted features, predicts P(order within 30 days)) |
+| Statistics added | **Ranking metrics** (Spearman with bootstrap CI, decile diagonal coverage, top-decile capture, normalised Gini) beside MAE/MAPE; **paired bootstrap** comparisons with Holm; **calibration** (ratio of totals, slope, decile table); feature screening with **BH** (including noise features); stability over time and by channel; **auction simulation** at equal spend with bootstrap CIs; A/B **sample size** |
+| Numbers | Every metric here is **simulated**. Our Spearman is not comparable with Swiggy's reported 0.75; it depends on how strong our assumed signals are |
+
+### (c) How the industry uses this
+
+Marketing teams at Indian consumer apps (Swiggy, Zomato, Nykaa, Myntra, Flipkart, Meesho) value acquisition by predicted LTV: pLTV models feed tROAS/value-based bidding in Google and Meta, budget allocation by channel, and CRM targeting. After the first order, simpler models (RFM, BG/NBD with Gamma-Gamma, cohort curves) take over. It is among the most-asked growth data-science interview topics: cold start, zero-inflated targets, calibration, "how do you validate it when LTV takes six months?".
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Can pre-first-order information rank new users by future value well enough to differentiate ad bids and raise return on acquisition spend? |
+| Analytical | Which model best ranks users by 180-day value out of time, is it calibrated and stable, and how much does it change ROAS at equal spend against flat bidding, segment-average bidding and a short-term vendor model? |
+
+**Hypotheses**
+- **H1 (target):** H0: early orders (first 30 days) carry no information about 180-day value; value is not concentrated (Gini = 0).
+- **H2 (signal):** H0: each pre-order feature is unrelated to value (Spearman / Kruskal, Benjamini-Hochberg across about 60 features; 20 are pure noise by construction).
+- **H3 (ranking):** H0: the best model's Spearman equals each alternative's on the same customers (paired bootstrap, Holm).
+- **H4 (calibration):** H0: predicted total value equals actual total value (ratio = 1, bootstrap CI).
+- **H5 (stability):** H0: ranking quality is the same in the latest cohorts as in the validation cohorts and across channels.
+- **H6 (decision):** H0: bidding on the model gives the same ROAS at equal spend as flat bidding / the vendor-like model (paired bootstrap).
+
+**Primary metric:** Spearman rank correlation between predicted and actual 180-day GOV on a **time-ordered hold-out** (latest cohorts). **Decision metric:** GOV per ₹ of acquisition spend (ROAS) at equal budget. **Diagnostics:** top-decile value capture, diagonal coverage, calibration ratio.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from statsmodels.stats.multitest import multipletests
+from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPRegressor
+from sklearn.preprocessing import StandardScaler
+from sklearn.inspection import permutation_importance
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public Indian food/quick-commerce customer-level LTV data | **None.** Public customer-value datasets (Online Retail UCI, CDNow, Olist, Instacart) are non-Indian retail transactions, have no pre-first-order signals and no ad-auction side. |
+| **Decision** | Synthetic new customers with pre-first-order signals, a hidden hurdle-style value process and an auction side table, so that bidding can be simulated at equal spend (D-20-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs20.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/ecommerce/data/generate_cs20.py
+
+#%% code
+os.makedirs("data/cs20", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs20 as gen; importlib.reload(gen)
+t0 = time.time(); raw = gen.generate(seed=SEED); raw.to_csv("data/cs20/customers.csv.gz", index=False)
+print(f"{len(raw):,} rows x {raw.shape[1]} columns | generated in {time.time() - t0:.0f}s")
+raw.iloc[:4, :14]
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Customers | 60,000 over 52 weekly cohorts | Our assumption (Swiggy: ND) |
+| Features | about 60 (channel, device, geography, browsing, Instamart category views, payment, fraud, complaints, affluence) plus 20 pure-noise columns | **Documented** categories; **350+** features at Swiggy |
+| Target | 180-day GOV (Food + Instamart); about 40% never order, 52% have no order in the first 30 days (**documented** concern: many zeros) | Our assumption |
+| Heavy tail | Order counts overdispersed (negative binomial) with customer-level frailty; top 10% of customers ≈ 58% of value | Our assumption (documented: "small group much higher") |
+| Drift | Influencer share rises from 6% to 15% of signups over the year | Our assumption |
+| Auction | Competitors' clearing price = 4% of a **coarse** value (channel, city, OS, device tier) × lognormal noise (σ = 0.55); mean ≈ ₹70 per customer | Our assumption (second-price auction) |
+| DQ issues | 600 duplicate rows; 36 bulk/corporate accounts (₹1.5–6 lakh); 14 negative values (refunds); missing values in device tier (6%), affluence (4%), fraud score (2%) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#### Code
+
+#%% code
+dd = pd.DataFrame([
+    ("customer_id, signup_week", "Customer and weekly signup cohort 0–51"),
+    ("channel, os_ios, device_price_tier, city_tier, signup_hour, signup_dow", "Acquisition and device context (known at install)"),
+    ("payment_pref, referral_used, coupon_first_session, notification_opt_in, location_precise, app_version_bucket", "Payment and first-session signals"),
+    ("first_session_minutes, sessions_pre, searches_pre, cart_adds_pre, cart_value_pre_inr, food_browse_share, restaurants_viewed, avg_restaurant_price_viewed", "Browsing before the first order"),
+    ("insta_views_grocery / fresh / snacks / personal_care / electronics", "Instamart category affinity (views)"),
+    ("distance_nearest_store_km, pincode_affluence_index, pincode_order_density, fraud_score, complaints_pre, contacts_book_size, install_to_signup_hours", "Geography, socio-economic, risk and support signals"),
+    ("noise_01 … noise_20", "Pure noise (used to test false discoveries)"),
+    ("orders_30d, orders_180d, food_ltv_180d, insta_ltv_180d, ltv_180d", "OUTCOMES (never used as features): orders and GOV"),
+    ("_latent_intent, _p_active, _active180, _clearing_price_inr, _coarse_value_inr", "HIDDEN: latent intent, activation probability, auction clearing price, coarse value"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs20/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+chk = {"rows": len(raw), "duplicate customer rows": int(raw.duplicated("customer_id").sum()), "negative LTV (refund booked)": int((raw.ltv_180d < 0).sum()), "bulk accounts (LTV > ₹1 lakh)": int((raw.ltv_180d > 1e5).sum()),
+       "share of all value in bulk accounts": float(raw.loc[raw.ltv_180d > 1e5, "ltv_180d"].sum() / raw.loc[raw.ltv_180d > 0, "ltv_180d"].sum()), "missing device_price_tier": int(raw.device_price_tier.isna().sum()),
+       "missing pincode_affluence_index": int(raw.pincode_affluence_index.isna().sum()), "missing fraud_score": int(raw.fraud_score.isna().sum())}
+print(pd.Series(chk, name="value").to_string())
+C = raw.drop_duplicates("customer_id"); n_before = len(C); C = C[(C.ltv_180d >= 0) & (C.ltv_180d <= 1e5)].copy().reset_index(drop=True)
+print(f"\nDropped {n_before - len(C)} rows (negative refunds and bulk accounts, which are not ordinary new customers). Clean: {len(C):,} customers | zero 180-day value: {(C.ltv_180d == 0).mean():.1%} | zero orders in 30 days: {(C.orders_30d == 0).mean():.1%} | mean LTV ₹{C.ltv_180d.mean():,.0f} | median ₹{C.ltv_180d.median():,.0f}")
+TARG = ["orders_30d", "orders_180d", "food_ltv_180d", "insta_ltv_180d", "ltv_180d"]; HID = [c for c in C.columns if c.startswith("_")]
+TR_W, VA_W = 36, 44; trm, vam, tem = (C.signup_week < TR_W).values, ((C.signup_week >= TR_W) & (C.signup_week < VA_W)).values, (C.signup_week >= VA_W).values
+print(f"Time-ordered split: train weeks 0-{TR_W - 1}: {trm.sum():,} | validation weeks {TR_W}-{VA_W - 1}: {vam.sum():,} | test weeks {VA_W}-51: {tem.sum():,}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+### 6.1 The target: zeros, a long tail and concentration
+
+#%% code
+y = C.ltv_180d.values; fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
+pos = y[y > 0]; axes[0].hist(np.log10(pos), bins=50, color="#2a6f97"); axes[0].set_xlabel("log10 of 180-day GOV (₹), customers with orders"); axes[0].set_ylabel("Customers"); axes[0].set_title(f"{(y == 0).mean():.0%} have zero value; the rest are right-skewed")
+srt = np.sort(y); lor = np.cumsum(srt) / srt.sum(); xs = np.arange(1, len(srt) + 1) / len(srt); axes[1].plot(xs * 100, lor * 100, color="#2a6f97", label="actual"); axes[1].plot([0, 100], [0, 100], "--", color="#8a8a8a", label="equality"); axes[1].set_xlabel("% of customers (lowest value first)"); axes[1].set_ylabel("% of total value"); axes[1].set_title("Lorenz curve: value is concentrated"); axes[1].legend()
+g = C.groupby("channel").ltv_180d.agg(["mean", "std", "count"]).sort_values("mean"); g["ci"] = 1.96 * g["std"] / np.sqrt(g["count"]); axes[2].barh(g.index, g["mean"], xerr=g.ci, color="#e07a1f"); axes[2].set_xlabel("Mean 180-day GOV per customer (₹), 95% CI"); axes[2].set_ylabel("Acquisition channel"); axes[2].set_title("Channel quality differs a lot")
+plt.tight_layout(); plt.show()
+print(f"Top 10% of customers = {np.sort(y)[::-1][:len(y) // 10].sum() / y.sum():.1%} of value | top 1% = {np.sort(y)[::-1][:len(y) // 100].sum() / y.sum():.1%} | Gini = {1 - 2 * np.trapezoid(lor, xs):.3f} | best channel ₹{g['mean'].max():,.0f} vs worst ₹{g['mean'].min():,.0f}")
+
+#%% md
+**Takeaway:** «O61»
+
+### 6.2 Time: channel mix drift and the early-order signal
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(13, 4.4)); C["quarter"] = C.signup_week // 13 + 1
+mix = pd.crosstab(C.quarter, C.channel, normalize="index") * 100; mix.plot(kind="bar", stacked=True, ax=axes[0], colormap="tab20c", width=0.8); axes[0].set_xlabel("Signup quarter"); axes[0].set_ylabel("Share of new customers (%)"); axes[0].set_title("Channel mix drifts towards influencer traffic"); axes[0].legend(fontsize=7, loc="center left", bbox_to_anchor=(1.0, 0.5)); axes[0].tick_params(axis="x", rotation=0)
+b30 = C.orders_30d.clip(upper=4); gm = C.groupby(b30).ltv_180d.agg(["mean", "median"]); axes[1].bar(gm.index.astype(str).str.replace("4", "4+"), gm["mean"], color="#2a6f97", label="mean"); axes[1].plot(range(len(gm)), gm["median"], "o-", color="#e07a1f", label="median"); axes[1].set_xlabel("Orders in the first 30 days"); axes[1].set_ylabel("180-day GOV (₹)"); axes[1].set_title("Early orders predict value, but only after they happen"); axes[1].legend()
+plt.tight_layout(); plt.show()
+late = C[(C.orders_30d == 0) & (C.ltv_180d > 0)]; print(f"Customers with no order in 30 days who still order later: {len(late):,} ({len(late) / (C.orders_30d == 0).sum():.1%} of the zero-30-day group); they hold {late.ltv_180d.sum() / C.ltv_180d.sum():.1%} of all value")
+
+#%% md
+**Takeaway:** «O62»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Anatomy of the target: is it really zero-inflated and heavy-tailed?
+
+**(a) Why?** The choice of loss, metric and model depends on the shape of the target. We test: **zero inflation** (share of zeros, Wilson CI), **overdispersion** of order counts (variance ≫ mean means a plain Poisson fails), **heavy tail** (top-decile share and Gini with bootstrap CIs; skewness; a normal-on-log test of positive values), and the **early signal** (Spearman between 30-day orders and 180-day value, with a bootstrap CI).
+- **Hypotheses:** H0: dispersion index = 1; H0: Gini = 0; H0: log-values are normal (Shapiro-Wilk on a 5,000 sample); H0: 30-day orders and 180-day value are uncorrelated.
+
+#### Code
+
+#%% code
+from statsmodels.stats.proportion import proportion_confint
+n_ = len(C); z0 = (y == 0).sum(); lo_, hi_ = proportion_confint(z0, n_, method="wilson"); oa = C.loc[C.orders_180d > 0, "orders_180d"]
+def gini(v): s = np.sort(v); c = np.cumsum(s) / s.sum(); return 1 - 2 * np.trapezoid(c, np.arange(1, len(s) + 1) / len(s))
+def topshare(v, f=0.10): s = np.sort(v)[::-1]; return s[:int(len(s) * f)].sum() / s.sum()
+bs = [(gini(y[i]), topshare(y[i])) for i in (RNG.integers(0, n_, n_) for _ in range(300))]; bsr = [stats.spearmanr(C.orders_30d.values[i], y[i])[0] for i in (RNG.integers(0, n_, n_) for _ in range(300))]
+lp = np.log(pos); sh = stats.shapiro(RNG.choice(lp, 5000, replace=False)); rho30 = stats.spearmanr(C.orders_30d, y)[0]
+print(f"Zero 180-day value: {z0 / n_:.1%} (95% CI {lo_:.1%} to {hi_:.1%})")
+print(f"Orders per active customer: mean {oa.mean():.2f}, variance {oa.var():.2f}, dispersion index {oa.var() / oa.mean():.2f} (Poisson = 1) | max {oa.max()}")
+print(f"Gini {gini(y):.3f} (95% CI {np.percentile([b[0] for b in bs], 2.5):.3f} to {np.percentile([b[0] for b in bs], 97.5):.3f}) | top-10% share {topshare(y):.1%} (CI {np.percentile([b[1] for b in bs], 2.5):.1%} to {np.percentile([b[1] for b in bs], 97.5):.1%})")
+print(f"Positive values: skewness {stats.skew(pos):.2f}; log-values skewness {stats.skew(lp):.2f}; Shapiro-Wilk on logs W = {sh.statistic:.3f}, p = {sh.pvalue:.2g} | mean/median of positives {pos.mean() / np.median(pos):.2f}")
+print(f"Spearman(30-day orders, 180-day GOV) = {rho30:.3f} (95% CI {np.percentile(bsr, 2.5):.3f} to {np.percentile(bsr, 97.5):.3f}); share of top-decile customers with zero orders in 30 days: {(C.orders_30d.values[y >= np.quantile(y, 0.9)] == 0).mean():.1%}")
+pd.DataFrame({"value": [z0 / n_, oa.var() / oa.mean(), gini(y), topshare(y), rho30]}, index=["zero share", "dispersion index", "Gini", "top-10% share", "Spearman 30d vs 180d"]).round(3)
+
+#%% md
+**Observation:** «O71»
+
+### 7.2 Which pre-order signals carry information? Feature screening with false-discovery control
+
+**(a) Why?** We have about 60 candidate signals including **20 pure-noise columns**. Testing 60 features at 5% would give about 3 false positives by chance. We use **Spearman rank correlation** (numeric) or **Kruskal-Wallis** (categorical) against 180-day value on the **training** weeks only, and compare uncorrected, Holm and **Benjamini-Hochberg** decisions. A good screen flags real signals and few noise columns. We also run a Kruskal-Wallis test of value across channels with Holm-adjusted Mann-Whitney comparisons to organic.
+- **Hypotheses:** H0: the feature has no monotone/group association with value; H0: all channels have the same value distribution.
+
+#### Code
+
+#%% code
+CATS = ["channel", "payment_pref"]; NUM = [c for c in C.columns if c not in TARG + HID + CATS + ["customer_id", "signup_week", "quarter"]]
+Ctr = C[trm]; rows = []
+for c in NUM:
+    v = Ctr[[c, "ltv_180d"]].dropna(); r, p = stats.spearmanr(v[c], v.ltv_180d); rows.append((c, "numeric", r, p, c.startswith("noise_")))
+for c in CATS:
+    gs = [g.ltv_180d.values for _, g in Ctr.groupby(c)]; h, p = stats.kruskal(*gs); eta = (h - len(gs) + 1) / (len(Ctr) - len(gs)); rows.append((c, "categorical", np.sqrt(max(eta, 0)), p, False))
+fs = pd.DataFrame(rows, columns=["feature", "type", "effect (|rho| or sqrt(eta²_H))", "p", "is_noise"]).set_index("feature"); fs["p_holm"] = multipletests(fs.p, method="holm")[1]; fs["p_BH"] = multipletests(fs.p, method="fdr_bh")[1]
+sm_ = pd.DataFrame({"flagged": [(fs.p < 0.05).sum(), (fs.p_holm < 0.05).sum(), (fs.p_BH < 0.05).sum()], "of which noise": [((fs.p < 0.05) & fs.is_noise).sum(), ((fs.p_holm < 0.05) & fs.is_noise).sum(), ((fs.p_BH < 0.05) & fs.is_noise).sum()]}, index=["uncorrected p < 0.05", "Holm", "Benjamini-Hochberg"])
+print(f"{len(fs)} features screened on {len(Ctr):,} training customers ({int(fs.is_noise.sum())} are pure noise)"); print(sm_.to_string())
+print("\nStrongest signals (effect size, BH-adjusted p):"); print(fs.sort_values("effect (|rho| or sqrt(eta²_H))", key=lambda v: v.abs(), ascending=False).head(10)[["effect (|rho| or sqrt(eta²_H))", "p_BH"]].round(4).to_string())
+kw = stats.kruskal(*[g.ltv_180d.values for _, g in C.groupby("channel")]); org = C[C.channel == "organic"].ltv_180d.values; pw = []
+for ch_, g in C.groupby("channel"):
+    if ch_ == "organic": continue
+    pw.append((ch_, len(g), g.ltv_180d.mean(), g.ltv_180d.mean() / org.mean() - 1, stats.mannwhitneyu(g.ltv_180d.values, org).pvalue))
+pw = pd.DataFrame(pw, columns=["channel vs organic", "customers", "mean value (₹)", "relative to organic", "Mann-Whitney p"]).set_index("channel vs organic"); pw["p_holm"] = multipletests(pw["Mann-Whitney p"], method="holm")[1]
+print(f"\nKruskal-Wallis across 6 channels: H = {kw.statistic:.0f}, p = {kw.pvalue:.2g}"); pw.round(4)
+
+#%% md
+**Observation:** «O72»
+
+### 7.3 Setup and results: seven models, ranking metrics and why MAE misleads
+
+**(a) Why?** All models see **only pre-first-order information** (no 30-day orders, no outcomes). They are fitted on training weeks, tuned/scaled with validation weeks only where noted (smearing and scale factors), and scored on the **latest weeks (test)**.
+
+| # | Model | In one line |
+|---|---|---|
+| 1 | Segment mean | Mean 180-day value by channel × city tier × OS (all a competing bidder can see) |
+| 2 | OLS on log value | Linear model of log(1 + value), back-transformed with a smearing factor |
+| 3 | Hurdle GBM | Gradient boosting classifier for P(any order) × boosting regressor for log value among those who order |
+| 4 | GBM on raw value | Squared-error boosting on rupees |
+| 5 | GBM on log value | Boosting on log(1 + value), smeared |
+| 6 | Multi-task MLP | Three shared hidden layers (96-64-32), two heads (Food and Instamart log value), as documented in structure |
+| 7 | Vendor-like | Restricted features (channel, OS, device tier, city, hour, weekday) and a classifier of **P(order within 30 days)**, a short-term target |
+
+**Ranking metrics (test weeks):** Spearman; **top-decile capture** (share of total value held by the 10% of customers the model scores highest; the oracle's share is the ceiling); **normalised Gini** (Gini of the ranking divided by the oracle's); **decile diagonal coverage** (share of customers whose predicted decile equals the actual decile, and within ±1; zeros are tied, so the strict figure cannot reach 100%: the ceiling shown is an oracle with random tie-breaking); and, for contrast, **MAE** and **MAPE on customers with orders**.
+
+#### Code
+
+#%% code
+def build_X(df, med):
+    X = df[NUM].copy()
+    for c in ("device_price_tier", "pincode_affluence_index", "fraud_score"): X[c + "_missing"] = X[c].isna().astype(float)
+    X = X.fillna(med)
+    for ch_ in gen.CHANNELS: X["ch_" + ch_] = (df.channel == ch_).astype(float)
+    for p_ in ("upi", "card", "cod", "wallet"): X["pay_" + p_] = (df.payment_pref == p_).astype(float)
+    return X.astype(float)
+MED = C.loc[trm, NUM].median(); X = build_X(C, MED); FEATS = list(X.columns); print(f"{len(FEATS)} model features ({len(NUM)} raw + missing flags + channel and payment indicators)")
+Y = C.ltv_180d.values.astype(float); Yf, Yi = C.food_ltv_180d.values.astype(float), C.insta_ltv_180d.values.astype(float); act = (Y > 0).astype(int); y30 = (C.orders_30d.values > 0).astype(int)
+S = {}; PAR = {}; t0 = time.time()
+seg = C[trm].groupby(["channel", "city_tier", "os_ios"]).ltv_180d.mean(); S["1 segment mean (channel x city x OS)"] = np.array([seg.get((a, b, c), Y[trm].mean()) for a, b, c in zip(C.channel, C.city_tier, C.os_ios)])
+ols = LinearRegression().fit(X[trm], np.log1p(Y[trm])); sm_ols = np.mean(np.exp(np.log1p(Y[vam]) - ols.predict(X[vam]))); S["2 OLS on log value"] = np.maximum(np.exp(ols.predict(X)) * sm_ols - 1, 0)
+gb = dict(max_iter=250, learning_rate=0.05, max_depth=4, l2_regularization=1.0, random_state=SEED)
+clf = HistGradientBoostingClassifier(**gb).fit(X[trm], act[trm]); pm = trm & (Y > 0); reg = HistGradientBoostingRegressor(**gb).fit(X[pm], np.log(Y[pm])); vp = vam & (Y > 0); sm_h = np.mean(np.exp(np.log(Y[vp]) - reg.predict(X[vp])))
+p_hat = clf.predict_proba(X)[:, 1]; S["3 hurdle GBM"] = p_hat * np.exp(reg.predict(X)) * sm_h
+rawm = HistGradientBoostingRegressor(**gb).fit(X[trm], Y[trm]); S["4 GBM on raw value"] = np.maximum(rawm.predict(X), 0)
+logm = HistGradientBoostingRegressor(**gb).fit(X[trm], np.log1p(Y[trm])); sm_l = np.mean(np.exp(np.log1p(Y[vam]) - logm.predict(X[vam]))); S["5 GBM on log value"] = np.maximum(np.exp(logm.predict(X)) * sm_l - 1, 0)
+sc = StandardScaler().fit(X[trm]); Xs = sc.transform(X); YY = np.log1p(np.column_stack([Yf, Yi]))
+def fit_mlp(cols, seed, hidden=(96, 64, 32)):
+    m = MLPRegressor(hidden_layer_sizes=hidden, alpha=1e-3, batch_size=256, early_stopping=True, validation_fraction=0.1, n_iter_no_change=8, max_iter=80, random_state=seed); m.fit(Xs[trm], YY[trm][:, cols] if len(cols) > 1 else YY[trm][:, cols[0]]); return m
+def n_params(m): return sum(w.size for w in m.coefs_) + sum(b.size for b in m.intercepts_)
+mt = fit_mlp([0, 1], SEED); pr = np.expm1(mt.predict(Xs)).clip(min=0); cal = Y[vam].sum() / pr[vam].sum(); S["6 multi-task MLP (Food + Instamart heads)"] = pr.sum(1) * cal; PAR["mt"] = (mt, cal)
+VR = ["os_ios", "device_price_tier", "city_tier", "signup_hour", "signup_dow"] + ["ch_" + c for c in gen.CHANNELS]; vend = HistGradientBoostingClassifier(max_iter=120, learning_rate=0.05, max_depth=3, random_state=SEED).fit(X.loc[trm, VR], y30[trm]); S["7 vendor-like (P(order in 30 days), restricted features)"] = vend.predict_proba(X[VR])[:, 1]
+print(f"fitted in {time.time() - t0:.0f}s | MLP: {mt.n_iter_} epochs, {n_params(mt):,} parameters | smearing factors: OLS {sm_ols:.2f}, hurdle {sm_h:.2f}, GBM-log {sm_l:.2f} | MLP scale {cal:.2f}")
+yt = Y[tem]; nt = len(yt); jit = np.random.default_rng(1).random(nt)
+def dec(v, jt): o = np.lexsort((jt, v)); r = np.empty(nt, int); r[o] = np.arange(nt); return (r * 10 // nt)
+ad = dec(yt, jit)
+def norm_gini(sc_, yv): o = np.argsort(sc_, kind="stable"); c = np.cumsum(yv[o]) / yv.sum(); g_ = 1 - 2 * np.trapezoid(c, np.arange(1, len(yv) + 1) / len(yv)); return g_ / gini(yv)
+def evalm(sc_, yv=yt):
+    pdc = dec(sc_, np.random.default_rng(2).random(nt)); top = np.argsort(-sc_, kind="stable")[: nt // 10]
+    return dict(spearman=stats.spearmanr(sc_, yv)[0], top_decile_capture=yv[top].sum() / yv.sum(), norm_gini=norm_gini(sc_, yv), diag_strict=(pdc == ad).mean(), diag_within1=(np.abs(pdc - ad) <= 1).mean())
+res = pd.DataFrame({k: evalm(v[tem]) for k, v in S.items()}).T
+orc_dec = dec(yt, np.random.default_rng(3).random(nt)); orc = dict(strict=(orc_dec == ad).mean(), w1=(np.abs(orc_dec - ad) <= 1).mean(), top=np.sort(yt)[::-1][: nt // 10].sum() / yt.sum())
+med_tr = np.median(Y[trm]); mae = {"constant: training median": np.abs(yt - med_tr).mean(), "constant: training mean": np.abs(yt - Y[trm].mean()).mean()}
+for k, v in S.items(): mae[k] = np.abs(yt - v[tem]).mean() if k[0] not in "7" else np.nan
+res["MAE (₹)"] = [mae[k] for k in res.index]; res["MAPE on customers with orders"] = [np.mean(np.abs(yt[yt > 0] - v[tem][yt > 0]) / yt[yt > 0]) if k[0] != "7" else np.nan for k, v in S.items()]
+print(f"Test customers: {nt:,} | oracle ceilings: top-decile capture {orc['top']:.1%}, strict diagonal {orc['strict']:.1%}, within ±1 {orc['w1']:.1%} | constant-median MAE ₹{mae['constant: training median']:.0f}, constant-mean MAE ₹{mae['constant: training mean']:.0f}")
+res.round(4)
+
+#%% md
+**Observation:** «O73»
+
+### 7.4 Is the best model really better? Paired bootstrap on the same customers
+
+**(a) Why?** Models are scored on the **same test customers**, so differences should be tested in pairs. We resample customers 400 times, recompute Spearman for every model on each resample, and test the best model's Spearman minus each other's with a two-sided bootstrap p-value (2 × the smaller tail), adjusted by **Holm**. A bootstrap with 400 resamples cannot resolve p below about 0.005.
+- **Hypotheses:** H0: Spearman(best) = Spearman(other).
+
+#### Code
+
+#%% code
+names = list(S); bestm = res.spearman.idxmax(); B = 400; sp = np.zeros((B, len(names))); idxs = [RNG.integers(0, nt, nt) for _ in range(B)]
+for j, k in enumerate(names):
+    st = S[k][tem]
+    for b, ix in enumerate(idxs): sp[b, j] = stats.spearmanr(st[ix], yt[ix])[0]
+bi = names.index(bestm); rows = []
+for j, k in enumerate(names):
+    ci = (np.percentile(sp[:, j], 2.5), np.percentile(sp[:, j], 97.5))
+    if j == bi: rows.append((k, res.loc[k, "spearman"], *ci, np.nan, np.nan, np.nan, np.nan)); continue
+    d = sp[:, bi] - sp[:, j]; p = min(1.0, 2 * min((d <= 0).mean(), (d >= 0).mean()) + 1 / B); rows.append((k, res.loc[k, "spearman"], *ci, d.mean(), np.percentile(d, 2.5), np.percentile(d, 97.5), p))
+pt = pd.DataFrame(rows, columns=["model", "Spearman", "CI low", "CI high", f"Δ vs best ({bestm[:14]})", "Δ CI low", "Δ CI high", "bootstrap p"]).set_index("model"); mk_ = pt["bootstrap p"].notna(); pt.loc[mk_, "p_holm"] = multipletests(pt.loc[mk_, "bootstrap p"], method="holm")[1]
+print(f"Best model by Spearman: {bestm}"); pt.round(4)
+
+#%% md
+**Observation:** «O74»
+
+### 7.5 Calibration and decile structure
+
+**(a) Why?** A bidding system multiplies the prediction by a rate, so the **level** must be right, not only the order. We check (i) the **ratio of predicted to actual total value** on the test weeks with a bootstrap CI (H0: ratio = 1), (ii) the **calibration slope** from regressing actual value on the prediction (H0: slope = 1; robust SE), and (iii) a **decile table** of mean predicted vs mean actual value, for the expected-value models.
+
+#### Code
+
+#%% code
+EV = [k for k in names if k[0] in "2356"] + [k for k in names if k[0] == "4"]; rows = []
+for k in EV:
+    p_ = S[k][tem]; ratio = p_.sum() / yt.sum(); bsr_ = [p_[ix].sum() / yt[ix].sum() for ix in idxs]; fit = sm.OLS(yt, sm.add_constant(p_)).fit(cov_type="HC1"); sl = fit.params[1]; se = fit.bse[1]
+    rows.append((k, ratio, np.percentile(bsr_, 2.5), np.percentile(bsr_, 97.5), sl, sl - 1.96 * se, sl + 1.96 * se, stats.norm.sf(abs((sl - 1) / se)) * 2))
+cb = pd.DataFrame(rows, columns=["model", "predicted / actual total", "CI low", "CI high", "calibration slope", "slope CI low", "slope CI high", "p (slope = 1)"]).set_index("model"); print("Calibration on test weeks:"); print(cb.round(4).to_string())
+bp = S[bestm][tem]; dq = pd.qcut(pd.Series(bp).rank(method="first"), 10, labels=False); dt = pd.DataFrame({"decile": dq + 1, "pred": bp, "act": yt}).groupby("decile").agg(pred=("pred", "mean"), act=("act", "mean"), zero_share=("act", lambda v: (v == 0).mean()))
+print(f"\nDecile table for {bestm}:"); print(dt.round(1).T.to_string())
+cm = pd.crosstab(dec(bp, np.random.default_rng(2).random(nt)) + 1, ad + 1, normalize="index") * 100
+fig, axes = plt.subplots(1, 2, figsize=(13, 4.6)); axes[0].plot([dt.pred.min(), dt.pred.max()], [dt.pred.min(), dt.pred.max()], "--", color="#8a8a8a", label="perfect calibration"); axes[0].plot(dt.pred, dt.act, "o-", color="#2a6f97", label="decile means"); axes[0].set_xscale("log"); axes[0].set_yscale("log"); axes[0].set_xlabel("Mean predicted value in decile (₹, log scale)"); axes[0].set_ylabel("Mean actual value in decile (₹, log scale)"); axes[0].set_title("Calibration by predicted decile"); axes[0].legend()
+sns.heatmap(cm, cmap="Blues", annot=True, fmt=".0f", cbar_kws={"label": "% of predicted decile"}, ax=axes[1]); axes[1].set_xlabel("Actual decile (1 = lowest value)"); axes[1].set_ylabel("Predicted decile"); axes[1].set_title("Where customers land: predicted vs actual decile")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.6 Stability: later cohorts, channels and drift
+
+**(a) Why?** A model trained on weeks 0–35 is used on future customers. We compare Spearman on the **validation weeks (36–43)** with the **test weeks (44–51)**, check the shift in channel mix (**Population Stability Index**, PSI; above 0.1 is a notable shift, 0.25 a major one), and compute Spearman by channel and city tier with bootstrap CIs. A **Fisher z comparison** of the validation and test Spearman tests whether ranking quality changed.
+- **Hypotheses:** H0: validation Spearman = test Spearman; H0: Spearman is the same in every channel.
+
+#### Code
+
+#%% code
+def spear_ci(s, yv, reps=200):
+    n = len(yv); bs_ = [stats.spearmanr(s[i], yv[i])[0] for i in (RNG.integers(0, n, n) for _ in range(reps))]; return stats.spearmanr(s, yv)[0], np.percentile(bs_, 2.5), np.percentile(bs_, 97.5)
+sB = S[bestm]; r_va = stats.spearmanr(sB[vam], Y[vam])[0]; r_te = stats.spearmanr(sB[tem], Y[tem])[0]; nv, nte = vam.sum(), tem.sum(); zf = (np.arctanh(r_va) - np.arctanh(r_te)) / np.sqrt(1 / (nv - 3) + 1 / (nte - 3)); pz = 2 * stats.norm.sf(abs(zf))
+def psi(a, b): a, b = a.clip(1e-4), b.clip(1e-4); return float(((a - b) * np.log(a / b)).sum())
+mx = C.groupby([np.where(trm, "train", np.where(vam, "val", "test")), "channel"]).size().unstack(0); mx = mx / mx.sum()
+print(f"Best model ({bestm}): Spearman validation {r_va:.3f} vs test {r_te:.3f} (Fisher z = {zf:.2f}, p = {pz:.3f}) | PSI of channel mix: train→validation {psi(mx['train'], mx['val']):.3f}, train→test {psi(mx['train'], mx['test']):.3f}")
+rows = []
+for var, vals in (("channel", sorted(C.channel.unique())), ("city_tier", [1, 2, 3])):
+    for v in vals:
+        m_ = tem & (C[var] == v).values; r, lo, hi = spear_ci(sB[m_], Y[m_]); rows.append((var, v, int(m_.sum()), (Y[m_] == 0).mean(), Y[m_].mean(), r, lo, hi))
+sg = pd.DataFrame(rows, columns=["variable", "group", "test customers", "zero-value share", "mean value (₹)", "Spearman", "CI low", "CI high"]).set_index(["variable", "group"])
+print("\nSpearman by subgroup on test weeks:"); sg.round(3)
+
+#%% md
+**Observation:** «O76»
+
+### 7.7 Does it change the decision? Bidding simulation at equal spend, and the A/B-test size
+
+**(a) Why?** The business decision is how much to bid for each user. We simulate a **second-price auction** on the test-week customers: each customer is an ad opportunity with a competitor clearing price (the `_clearing_price_inr`, set from coarse signals only). A strategy bids `m × score`; it wins the customer if the bid ≥ the clearing price and then **pays the clearing price**. We choose each strategy's multiplier m so that **spend equals a fixed budget** (25% of the cost of buying every opportunity), so the comparison is at equal spend. Strategies: flat bid; segment-mean pLTV; the best model; the multi-task MLP; the vendor-like short-term model; and an oracle that knows true value.
+- **Metrics:** customers acquired, GOV per customer, **ROAS = GOV / spend**, share of acquired customers with zero orders. 95% CIs by bootstrapping opportunities (200 resamples, budget recomputed each time).
+- **Hypotheses:** H0: ROAS(model) = ROAS(flat); H0: ROAS(model) = ROAS(vendor-like); H0: ROAS(model) = ROAS(segment mean). Paired bootstrap p-values, Holm-adjusted.
+- **A/B size:** customers per arm needed to detect a 5% or 10% relative difference in GOV per acquired customer (80% power, α = 0.05), from the SD of value among acquired customers.
+
+#### Code
+
+#%% code
+cp_ = C._clearing_price_inr.values[tem]; BF = 0.25
+STRAT = {"flat bid": np.ones(nt), "segment-mean pLTV": S[names[0]][tem], f"model: {bestm[2:20]}": S[bestm][tem], "multi-task MLP": S[names[5]][tem], "vendor-like (30-day conversion)": S[names[6]][tem], "oracle (true value)": yt + 1e-6}
+def run_auction(score, cp, yv, budget):
+    lo, hi = 0.0, 1e6 * max(cp.max() / max(score.max(), 1e-9), 1)
+    for _ in range(45):
+        mid = (lo + hi) / 2; won = mid * score >= cp
+        if cp[won].sum() > budget: hi = mid
+        else: lo = mid
+    won = lo * score >= cp; sp_ = cp[won].sum(); return won.sum(), sp_, yv[won].sum(), (yv[won] == 0).mean() if won.sum() else np.nan
+def summarise_auction(ix):
+    cpb, ytb = cp_[ix], yt[ix]; bud = BF * cpb.sum(); out = {}
+    for k, sc_ in STRAT.items():
+        n_, sp_, g_, z_ = run_auction(sc_[ix], cpb, ytb, bud); out[k] = (n_, sp_, g_ / max(n_, 1), g_ / max(sp_, 1e-9), z_)
+    return out
+base = summarise_auction(np.arange(nt)); boots = [summarise_auction(ix) for ix in [RNG.integers(0, nt, nt) for _ in range(200)]]
+cols_ = ["customers acquired", "spend (₹)", "GOV per customer (₹)", "ROAS (GOV per ₹)", "share with zero orders"]; ab = pd.DataFrame(base, index=cols_).T
+for j, c_ in enumerate(cols_[:4]): ab[c_ + " lo"] = [np.percentile([b[k][j] for b in boots], 2.5) for k in STRAT]; ab[c_ + " hi"] = [np.percentile([b[k][j] for b in boots], 97.5) for k in STRAT]
+print(f"Budget = {BF:.0%} of the cost of buying all {nt:,} opportunities = ₹{BF * cp_.sum():,.0f} (mean clearing price ₹{cp_.mean():.0f})")
+print(ab[cols_].round(3).to_string()); print("\n95% CIs (ROAS, customers acquired):"); print(ab[["ROAS (GOV per ₹) lo", "ROAS (GOV per ₹) hi", "customers acquired lo", "customers acquired hi"]].round(2).to_string())
+mk = f"model: {bestm[2:20]}"; rows = []
+for other in ("flat bid", "segment-mean pLTV", "vendor-like (30-day conversion)", "multi-task MLP"):
+    d = np.array([b[mk][3] - b[other][3] for b in boots]); dn = np.array([b[mk][0] - b[other][0] for b in boots]); dg = np.array([b[mk][2] - b[other][2] for b in boots])
+    rows.append((f"{mk} vs {other}", base[mk][3] - base[other][3], np.percentile(d, 2.5), np.percentile(d, 97.5), min(1.0, 2 * min((d <= 0).mean(), (d >= 0).mean()) + 1 / 200), base[mk][0] - base[other][0], np.percentile(dn, 2.5), np.percentile(dn, 97.5), base[mk][2] - base[other][2]))
+dfc = pd.DataFrame(rows, columns=["comparison", "Δ ROAS", "CI low", "CI high", "bootstrap p", "Δ customers acquired", "CI low ", "CI high ", "Δ GOV per customer (₹)"]).set_index("comparison"); dfc["p_holm"] = multipletests(dfc["bootstrap p"], method="holm")[1]
+print("\nPaired differences (model minus other), equal spend:"); print(dfc.round(3).to_string())
+won_v = (np.argsort(np.argsort(-STRAT["vendor-like (30-day conversion)"])) < base["vendor-like (30-day conversion)"][0]); sd_ = yt.std(); mu_ = yt.mean(); zz = (stats.norm.ppf(0.975) + stats.norm.ppf(0.8)) ** 2
+print(f"\nA/B sample size: SD of value among all test customers ₹{sd_:,.0f} vs mean ₹{mu_:,.0f} (SD/mean {sd_ / mu_:.1f}); customers per arm for a 5% difference: {int(np.ceil(2 * zz * sd_ ** 2 / (0.05 * mu_) ** 2)):,}; for 10%: {int(np.ceil(2 * zz * sd_ ** 2 / (0.10 * mu_) ** 2)):,}; Spearman(30-day orders, 180-day value) = {rho30:.2f} (a 30-day proxy is imperfect)")
+fig, axes = plt.subplots(1, 2, figsize=(13, 4.6)); lab = list(STRAT); xs_ = np.arange(len(lab)); r_ = ab["ROAS (GOV per ₹)"].values; e_ = [r_ - ab["ROAS (GOV per ₹) lo"].values, ab["ROAS (GOV per ₹) hi"].values - r_]
+axes[0].barh(xs_, r_, xerr=e_, color=["#8a8a8a", "#8a8a8a", "#2a6f97", "#2a6f97", "#e07a1f", "#c0392b"]); axes[0].set_yticks(xs_); axes[0].set_yticklabels(lab, fontsize=8); axes[0].invert_yaxis(); axes[0].set_xlabel("ROAS: GOV per ₹ of spend (95% CI)"); axes[0].set_ylabel("Bidding strategy"); axes[0].set_title("Return on acquisition spend at equal budget")
+nacq = ab["customers acquired"].values; axes[1].barh(xs_, nacq, color=["#8a8a8a", "#8a8a8a", "#2a6f97", "#2a6f97", "#e07a1f", "#c0392b"]); axes[1].set_yticks(xs_); axes[1].set_yticklabels(lab, fontsize=8); axes[1].invert_yaxis(); axes[1].set_xlabel("Customers acquired with the same budget"); axes[1].set_ylabel("Bidding strategy"); axes[1].set_title("Volume bought: cheaper users vs better users")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O77»
+
+## 8. ML Section — multi-task versus single-task, and what drives the prediction
+
+**(a) Why?** Swiggy documents a multi-task MLP (shared layers, Food and Instamart heads). We test what the multi-task structure buys here: the same network trained **jointly** on both targets versus **two separate single-task networks** with the same layers, over **three seeds** (42, 43, 44), comparing parameters and test Spearman for Food, Instamart and total value. We also compute **permutation importance** (drop in R² on the test weeks when a feature is shuffled) for the log-value gradient-boosting model, to see whether the noise columns are ignored. No tuning: fixed architecture and settings.
+
+#### Code
+
+#%% code
+rows = []; t0 = time.time(); fo, io = Yf[tem], Yi[tem]
+for sd in (42, 43, 44):
+    m_mt = mt if sd == SEED else fit_mlp([0, 1], sd); m_f = fit_mlp([0], sd); m_i = fit_mlp([1], sd)
+    pm_ = np.expm1(m_mt.predict(Xs)).clip(min=0); pf, pi_ = np.expm1(m_f.predict(Xs)).clip(min=0), np.expm1(m_i.predict(Xs)).clip(min=0)
+    for nm, a_, b_, npar in (("multi-task", pm_[:, 0], pm_[:, 1], n_params(m_mt)), ("two single-task nets", pf, pi_, n_params(m_f) + n_params(m_i))):
+        rows.append((nm, sd, npar, stats.spearmanr(a_[tem], fo)[0], stats.spearmanr(b_[tem], io)[0], stats.spearmanr((a_ + b_)[tem], yt)[0]))
+mtt = pd.DataFrame(rows, columns=["setup", "seed", "parameters", "Spearman Food", "Spearman Instamart", "Spearman total"]); smry = mtt.groupby("setup").agg(parameters=("parameters", "first"), food=("Spearman Food", "mean"), food_sd=("Spearman Food", "std"), insta=("Spearman Instamart", "mean"), insta_sd=("Spearman Instamart", "std"), total=("Spearman total", "mean"), total_sd=("Spearman total", "std"))
+pdiff = mtt.pivot(index="seed", columns="setup", values="Spearman total"); dseed = pdiff["multi-task"] - pdiff["two single-task nets"]
+print(f"Trained in {time.time() - t0:.0f}s"); print(smry.round(4).to_string()); print(f"\nParameter ratio multi-task / two nets: {smry.loc['multi-task', 'parameters'] / smry.loc['two single-task nets', 'parameters']:.2f} | per-seed Δ total Spearman (multi-task − separate): {np.round(dseed.values, 4).tolist()} | mean {dseed.mean():+.4f}, paired t-test p = {stats.ttest_1samp(dseed, 0).pvalue:.2f} (n = 3 seeds, low power)")
+pi_res = permutation_importance(logm, X[tem], np.log1p(Y[tem]), n_repeats=3, random_state=SEED, scoring="r2"); imp = pd.Series(pi_res.importances_mean, index=FEATS).sort_values(ascending=False); nz = imp[[f for f in FEATS if f.startswith("noise_")]]
+print(f"\nPermutation importance (drop in R² of log value, test weeks). Top 10:"); print(imp.head(10).round(4).to_string()); print(f"Noise columns: largest drop {nz.max():.4f}, mean {nz.mean():.5f}; features with drop > 0.002: {int((imp > 0.002).sum())} of {len(imp)}")
+smry.round(4)
+
+#%% md
+**Observation:** «O8»
+
+- **Beyond this notebook:** Swiggy's next step is **probabilistic pLTV** (predicting a distribution, so bids can reflect uncertainty); other standard options are quantile or mixture heads, BG/NBD plus Gamma-Gamma once the first orders are observed, and survival-style retention curves. Our 60 features are far fewer than Swiggy's 350+.
+- **No tuning** (per the brief): fixed boosting depth, learning rate and iterations; one MLP architecture.
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-20-08): an annual acquisition budget of **₹200 crore** spent through value-based bidding; ROAS differences from 7.7 carry over to that budget (the simulation's budget is a fraction of the cost of buying all opportunities); contribution margin **8% of GOV**; GOV is the 180-day horizon only. Scenarios: worst = lower bootstrap bound on the ROAS gain, base = point estimate, best = upper bound. The comparison is against flat bidding and against the vendor-like short-term model.
+
+#### Code
+
+#%% code
+BUDGET, CM = 200.0, 0.08; rows = []
+for other in ("flat bid", "vendor-like (30-day conversion)"):
+    r = dfc.loc[f"{mk} vs {other}"]
+    for sc_nm, v in (("worst (CI low)", r["CI low"]), ("base (estimate)", r["Δ ROAS"]), ("best (CI high)", r["CI high"])):
+        rows.append((other, sc_nm, v, v * BUDGET, v * BUDGET * CM))
+bz = pd.DataFrame(rows, columns=["compared with", "scenario", "Δ ROAS (GOV per ₹)", "extra GOV (₹ crore a year)", "extra contribution (₹ crore a year)"]).set_index(["compared with", "scenario"])
+users_bought = {k: base[k][0] for k in ("flat bid", mk, "vendor-like (30-day conversion)")}
+print(f"Customers acquired at equal spend: model {users_bought[mk]:,}, flat {users_bought['flat bid']:,}, vendor-like {users_bought['vendor-like (30-day conversion)']:,}")
+print(f"Share of acquired customers who never order within 180 days: model {base[mk][4]:.1%}, flat {base['flat bid'][4]:.1%}, vendor-like {base['vendor-like (30-day conversion)'][4]:.1%}")
+bz.round(1)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated world:** signal strengths, the hurdle structure and the auction are assumptions. The ROAS gain depends on how much information the model has beyond what competing bidders see (here: coarse signals only) and on the second-price rule; Google's tROAS auction is not public.
+- **Far fewer features than Swiggy:** about 60 versus 350+; our Spearman is not comparable with the reported 0.75.
+- **Label delay:** a 180-day target means the training set is at least six months old; drift (channel mix, pricing, competitors) is the main production risk. Monitor PSI and the ranking metric by cohort.
+- **Closed-loop bias:** users we do not bid for are never observed, so the model learns only from acquired customers; keep an exploration slice of random bids (Case 18).
+- **Fraud and incentives:** cashback/affiliate traffic can be gamed once the model is known; keep fraud signals outside the bid-optimisation feedback loop.
+- **Margin, not GOV:** LTV here is gross order value; real bidding should use contribution margin after delivery cost, refunds and discounts.
+- **Next steps:** probabilistic pLTV with calibrated intervals; a randomised holdout of bidding policies (in-house vs flat vs vendor) matured over 180 days, with a 30-day proxy metric validated against it; add post-first-order models (BG/NBD, RFM) for re-targeting.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| LTV (this notebook) | Σ gross order value over 180 days after signup (Food + Instamart) |
+| Hurdle expected value | E[LTV] = P(any order) × E[LTV given active] |
+| Smearing back-transform | E[y] ≈ exp(ŷ_log) × mean(exp(residual)) |
+| Spearman | Pearson correlation of ranks (ties averaged) |
+| Top-decile capture | value held by the 10% highest-scored customers ÷ total value |
+| Normalised Gini | Gini of the ranking ÷ Gini of the oracle ranking |
+| Diagonal coverage | share of customers whose predicted decile = actual decile (±1) |
+| PSI | Σ (a − b) · ln(a / b) over groups |
+| ROAS | GOV acquired ÷ acquisition spend |
+| Second-price bid | win if bid ≥ clearing price; pay the clearing price |
+| Sample size (means) | n per arm = 2 (z₁₋α/₂ + z₁₋β)² σ² / δ² |
+| BH | largest i with p₍ᵢ₎ ≤ 0.05·i/m |
+
+| Term | Meaning |
+|---|---|
+| pLTV | Predicted lifetime value |
+| Cold start | Predicting before any purchase history exists |
+| Zero-inflated | A large share of exact zeros |
+| Hurdle model | Two parts: will they order at all, and how much if they do |
+| Multi-task learning | One network with shared layers and several outputs |
+| tROAS | Target return-on-ad-spend bidding in Google Ads |
+| Calibration | Predicted levels match actual levels |
+| Smearing | Correction when back-transforming a log-scale prediction |
+| PSI | A measure of distribution shift between two samples |
+| GOV | Gross order value |

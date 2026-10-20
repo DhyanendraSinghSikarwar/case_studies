@@ -1,0 +1,10 @@
+field(s),meaning
+"txn_id, customer_id",Transaction and customer
+narration,Raw statement narration (blank for 300 legacy rows)
+"channel, amount_inr",Payment rail and amount
+split,"labelled (hand-labelled, noisy) / audited_test (clean) / unlabelled"
+label,Hand label (blank if unlabelled)
+_purpose,HIDDEN true purpose
+"customers: monthly_income, age",Customer profile
+"took_home_loan_6m, took_education_loan_6m",Downstream outcomes
+"_renter, _parent",HIDDEN true life events

@@ -1,0 +1,7 @@
+,CV RMSE (log),fold SD
+Full (both income signals),0.2974926202,0.0090672735
+Declared income only,0.2976632546,0.009336641
+Salary credits only,0.2982499921,0.0085927544
+Income index (average of the two logs),0.2974717303,0.0089790329
+Neither income signal,0.3689260128,0.010589043
+"Ridge (all predictors, CV-tuned)",0.2974880983,0.009043002

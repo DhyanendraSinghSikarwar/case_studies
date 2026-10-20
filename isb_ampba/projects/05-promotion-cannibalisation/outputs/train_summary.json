@@ -1,0 +1,70 @@
+{
+  "data": {
+    "raw_rows": 1067371,
+    "clean_lines": 1036875,
+    "invoices": 39514,
+    "skus": 4706,
+    "revenue_gbp": 19863342.2,
+    "date_min": "2009-12-01",
+    "date_max": "2011-12-09",
+    "q4_revenue_share": 0.37923714721080526,
+    "identifiability": {
+      "n_sku_weeks": 196142,
+      "n_skus": 4706,
+      "n_consecutive_pairs": 152246,
+      "share_changed_gt1pct": 0.3157061597677443,
+      "share_changed_gt5pct": 0.30652365250975394,
+      "share_drop_gt5pct": 0.14973135583200872,
+      "share_drop_gt10pct": 0.14267698330333803,
+      "skus_with_min_drops": 1787,
+      "skus_identifiable": 1593,
+      "skus_single_price": 584
+    },
+    "cancellation_lines": 19494
+  },
+  "families": {
+    "n_skus": 4706,
+    "n_families": 3827,
+    "n_multi_sku_families": 331,
+    "n_skus_in_multi_families": 1210,
+    "max_family_size": 27,
+    "median_multi_family_size": 3.0,
+    "copurchase_n_families_checked": 331,
+    "copurchase_median_share": 0.21395348837209302,
+    "copurchase_mean_share": 0.24423445295983306,
+    "n_weak_substitute_families": 107,
+    "pct_weak_substitute_families": 32.3262839879154
+  },
+  "baskets": {
+    "matrix_shape": [
+      36065,
+      400
+    ],
+    "n_rules": 640,
+    "n_skus_with_halo": 162,
+    "median_halo_units_per_unit_where_positive": 0.7967661420280372
+  },
+  "demand": {
+    "n_skus": 4706,
+    "n_eligible": 1593,
+    "n_valid_negative": 1579,
+    "n_positive_dropped": 14,
+    "eps_hat_median": -2.3891285587232436,
+    "eps_hat_p10": -5.282401224789022,
+    "eps_hat_p90": -1.2264658657991954,
+    "tau2": 4.340379754917751,
+    "source_counts": {
+      "prior": 2913,
+      "estimated_shrunk": 1579,
+      "family_median": 214
+    },
+    "final_eps_median": -2.0,
+    "pooled_two_way_fe": {
+      "eps": -2.03284001522198,
+      "se": 0.03029665947654842,
+      "n_obs": 122396,
+      "n_skus": 1593
+    },
+    "prior_elasticity": -2.0
+  }
+}

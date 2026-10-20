@@ -1,0 +1,8 @@
+,Value
+Data,"20,230 payments; skewness 40; mean ÷ median = 7.5"
+Detectors,"z > 3: 58; IQR raw: 2,537; IQR log: 16; MAD log: 10"
+Masking,"SD falls from ₹89,543 to ₹9,954 as flagged points are removed (2157 flagged over 5 rounds)"
+Dashboard,"dashboard: 58 flags, 52% of errors, 3% of fraud"
+New screen,"new screen: 130 flags, 100% of errors, 100% of fraud"
+Triage rules,"error rule precision 100%, recall 100%; fraud rule precision 100%, recall 97%"
+Average ticket bias,"do nothing +17.5%; delete dashboard flags −3.5%; correct errors, drop fraud −0.0%"

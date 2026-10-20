@@ -1,0 +1,9 @@
+finding,value,meaning
+"Limit ~ spend, Pearson (raw → retail)",0.41 → 0.73,outliers move Pearson a lot
+"Limit ~ spend, Spearman (all versions)",0.69–0.70,robust
+"Limit ~ spend, partial r given income (logs)","0.23 [0.20, 0.25]",mostly confounded by income
+Customers ≥ 85% utilised,4.9%,only they can respond to a higher limit
++30% limits: naive vs true uplift,+27% vs +1.5%,correlation ≠ causal effect
+"Logins ~ spend, pooled vs within segments",-0.12 vs +0.35 to +0.58,reversal
+"Age ~ spend, Pearson; age² LRT p",0.04; < 0.001,inverted U
+"Marketing ~ card spend, levels vs changes",0.91 vs 0.17,spurious trend correlation

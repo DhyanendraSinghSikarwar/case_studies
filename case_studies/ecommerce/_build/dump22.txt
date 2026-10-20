@@ -1,0 +1,185 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs22.py
+--- cell 8 (exec 3) ---
+random traffic 203,000 rows | logged policy 80,000 | online 240,000 | generated and saved in 126s
+   user_id  tenure_days  rides_last30  rides_last90  avg_ride_min  city_tier  age  prev_subscriber  days_since_last_ride  coupons_redeemed_90d  sessions_7d  \
+0        0          368             5            13       10.5000          2   27                0                3.0000                     1            3   
+1        1          267             3             6       12.6000          1   22                0                5.0000                     0            0   
+2        2          418             7            15        7.3000          3   16                0                0.0000                     2            3   
+3        3           76             6            20       19.4000          2   30                1                2.0000                     1            5   
+
+   weekend_share  spend_90d  offered_price  converted  
+0         0.4930        NaN        59.0000          0  
+1         0.5300   142.0000        79.0000          0  
+2         0.4330   192.0000        89.0000          0  
+3         0.4320   279.0000        89.0000          0
+--- cell 10 (exec 4) ---
+                                field(s)                                            meaning
+0                                user_id                                Customer identifier
+1  tenure_days … spend_90d (12 features)  Customer, riding, recency, coupon-history and ...
+2                          offered_price  Subscription price shown after the coupon (₹59...
+3                              converted                       1 if the customer subscribed
+4             arrival_hour (online only)  Hour of day the customer arrives (for the budg...
+5           _cvr_59 … _cvr_99, _a, _beta  HIDDEN: true conversion probability at each pr...
+--- cell 12 (exec 5) ---
+duplicate user rows                        3000
+invalid price codes (not on the ladder)     213
+impossible age (< 16 or > 70)               197
+implausible rides_last30 (> 200)            158
+negative spend_90d                          269
+
+Missing values: {'avg_ride_min': 6130, 'days_since_last_ride': 2976, 'spend_90d': 4090}
+
+Clean: 199,791 users | conversion 13.08% | impossible values set to missing (the gradient-boosting model handles missing values natively)
+Split: model-train 119,875 | calibration 39,958 | test 39,958
+--- cell 14 (exec 6) ---
+[image]
+Conversion by price (%): {59.0: 17.77, 69.0: 15.02, 79.0: 12.53, 89.0: 10.71, 99.0: 9.39}
+Revenue per user (₹): {59.0: 10.48, 69.0: 10.37, 79.0: 9.9, 89.0: 9.53, 99.0: 9.3}
+--- cell 16 (exec 7) ---
+[image]
+--- cell 18 (exec 8) ---
+Balance: smallest raw p = 0.144; smallest Holm p = 1.000; features with Holm p < 0.05: 0 of 12
+Price effect per +₹10: log-odds -0.188 (95% CI -0.197 to -0.178), odds ratio 0.829 (CI 0.821 to 0.837), p = 0
+Average price elasticity of conversion at ₹79: -1.29
+Features with a significant price interaction (Holm < 0.05): ['rides_last30', 'rides_last90', 'city_tier', 'prev_subscriber', 'days_since_last_ride', 'coupons_redeemed_90d', 'sessions_7d', 'spend_90d']
+                      price × feature log-odds (per SD, per ₹10)      p  p_holm
+feature                                                                        
+coupons_redeemed_90d                                     -0.0474 0.0000  0.0000
+rides_last90                                              0.0253 0.0000  0.0000
+rides_last30                                              0.0222 0.0000  0.0000
+spend_90d                                                 0.0214 0.0000  0.0000
+city_tier                                                -0.0247 0.0000  0.0000
+sessions_7d                                               0.0216 0.0000  0.0000
+prev_subscriber                                           0.0220 0.0000  0.0000
+days_since_last_ride                                     -0.0316 0.0001  0.0005
+age                                                       0.0040 0.4028  1.0000
+tenure_days                                               0.0034 0.4739  1.0000
+weekend_share                                            -0.0008 0.8603  1.0000
+avg_ride_min                                              0.0008 0.8740  1.0000
+--- cell 20 (exec 9) ---
+PAVA check vs scikit-learn: max abs difference 2.220446049250313e-16
+model fitted in 183s
+model       logistic (one price slope)  gradient boosting, raw  gradient boosting + isotonic
+AUC                             0.6950                  0.6954                        0.6944
+AUC lo                          0.6864                  0.6876                        0.6875
+AUC hi                          0.7034                  0.7042                        0.7010
+log loss                        0.3629                  0.3623                        0.3633
+Brier                           0.1081                  0.1080                        0.1081
+PCOC                            0.9861                  0.9847                        0.9988
+PCOC lo                         0.9616                  0.9599                        0.9753
+PCOC hi                         1.0094                  1.0079                        1.0237
+cal. slope                      0.9927                  0.9946                        0.9262
+slope lo                        0.9500                  0.9552                        0.8826
+slope hi                        1.0314                  1.0351                        0.9693
+ECE                             0.0079                  0.0041                        0.0071
+
+PCOC by offered price (raw GB vs isotonic):
+price     59.0000  69.0000  79.0000  89.0000  99.0000
+raw GB     0.9400   1.0100   1.0130   0.9970   0.9830
+isotonic   0.9630   1.0280   1.0250   1.0050   0.9830
+
+Customers whose predicted conversion RISES with price somewhere on the ladder: raw 5.2% | calibrated + monotone 0.0%
+[image]
+--- cell 22 (exec 10) ---
+LP optimum 11.1864 ₹/user | Lagrangian (trisection) 11.1954 ₹/user at lambda 0.0383, average price 78.76 | relative gap -8.10e-04
+Solve time on 3,000 customers: trisection 148 ms, LP 1553 ms
+[image]
+--- cell 24 (exec 11) ---
+Group-level allocation (20 groups): lambda 0.0436, average price 79.62, solve 6.5 ms | smallest cell in the group×price table has 99 customers
+User-level allocation (240,000 customers): lambda 0.0383, average price 79.46, solve 6.96 s (model scoring of the ladder: 8.7 s)
+                                  0           1           2           3           4          5           6           7           8          9           10         11  \
+group size (online users) 9,933.0000 18,561.0000 19,344.0000 14,451.0000 16,667.0000 9,275.0000 11,451.0000 12,270.0000 12,274.0000 1,230.0000 20,949.0000 4,079.0000   
+price chosen                 99.0000     79.0000     79.0000     99.0000     69.0000    59.0000     89.0000     59.0000     89.0000    99.0000     69.0000    99.0000   
+
+                                  12          13         14          15          16          17          18          19  
+group size (online users) 2,915.0000 11,266.0000 8,415.0000 11,995.0000 11,601.0000 18,189.0000 12,171.0000 12,964.0000  
+price chosen                 99.0000     89.0000    69.0000     99.0000     99.0000     69.0000     69.0000     69.0000
+--- cell 26 (exec 12) ---
+Budget is an average offered price of at least ₹79.
+
+                                                avg price (₹)  conversion (%)  revenue / user (₹)  gain vs random  CI low  CI high  share of oracle gain
+policy                                                                                                                                                  
+1 random coupon                                       79.0000         13.0070              9.8423          0.0000  0.0000   0.0000                0.0000
+2 flat ₹79                                            79.0000         12.5544              9.9180          0.0077  0.0075   0.0078                0.0511
+3 manual rule (heavier riders pay more)               78.9999         12.5381             10.2005          0.0364  0.0356   0.0372                0.2418
+4 group-level allocation (offline IP stand-in)        79.6231         12.8483             10.2739          0.0439  0.0431   0.0446                0.2913
+5 LDM (raw model)                                     79.0001         13.2003             10.2632          0.0428  0.0421   0.0436                0.2841
+6 LDM-IR (calibrated, monotone)                       79.4552         13.0781             10.1664          0.0329  0.0322   0.0336                0.2188
+7 oracle (true response)                              79.0000         14.9145             11.3238          0.1505  0.1496   0.1515                1.0000
+
+                                                Δ revenue/user (₹), LDM-IR − other  CI low  CI high  paired t p  p_holm  relative
+vs policy                                                                                                                        
+1 random coupon                                                             0.3242  0.3177   0.3309      0.0000  0.0000    0.0329
+2 flat ₹79                                                                  0.2484  0.2405   0.2565      0.0000  0.0000    0.0251
+3 manual rule (heavier riders pay more)                                    -0.0341 -0.0420  -0.0251      0.0000  0.0000   -0.0033
+4 group-level allocation (offline IP stand-in)                             -0.1075 -0.1153  -0.0994      0.0000  0.0000   -0.0105
+5 LDM (raw model)                                                          -0.0968 -0.1024  -0.0911      0.0000  0.0000   -0.0094
+7 oracle (true response)                                                   -1.1574 -1.1662  -1.1478      0.0000  0.0000   -0.1022
+[image]
+--- cell 28 (exec 13) ---
+         customers  rides_30d  prev_sub  coupons_90d  true_sensitivity
+price                                                                 
+59.0000      45682     3.3030    0.1690       1.2380            0.2410
+69.0000      53337     4.3940    0.3080       1.0090            0.2120
+79.0000      51786     7.0440    0.4350       0.8390            0.1710
+89.0000      22765     6.6500    0.6540       0.5900            0.1720
+99.0000      66430     5.2880    0.3100       0.7160            0.1990
+
+Spearman(true price sensitivity, price offered by LDM-IR) = -0.120; with the oracle -0.878
+--- cell 30 (exec 14) ---
+                         users  avg price (₹)  conversion (%)  revenue / user (₹)   s.e.
+arm                                                                                     
+A random coupon          80000        79.0040         13.1012              9.9137 0.0920
+B group-level incumbent  80000        79.6780         12.8688             10.3112 0.0965
+C LDM-IR                 80000        79.4396         13.0188             10.1088 0.0940
+
+            Δ revenue/user (₹)  CI low  CI high  relative  Welch p (revenue)  z-test p (conversion)  Holm p (revenue)
+comparison                                                                                                           
+C vs A                  0.1951 -0.0627   0.4528    0.0197             0.1380                 0.6244            0.2659
+C vs B                 -0.2024 -0.4664   0.0616   -0.0196             0.1329                 0.3715            0.2659
+B vs A                  0.3975  0.1361   0.6588    0.0401             0.0029                 0.1666            0.0086
+
+True gain of LDM-IR over the incumbent (twin): ₹-0.107 per user (-1.05%); revenue per user has s.d. ₹26.9
+
+Customers per arm for 80% power at the true gain (formula): 985,380
+                   power (200 runs)
+customers per arm                  
+10000                        0.0350
+20000                        0.1200
+40000                        0.1050
+80000                        0.1200
+[image]
+--- cell 32 (exec 15) ---
+Planned lambda0 (random-traffic test set): 0.0383
+                                    static lambda     PID
+final avg price, one day (₹)              77.8080 78.9950
+final error vs budget (%)                 -1.5080 -0.0060
+max |deviation| across ticks (₹)           1.4480  0.8480
+mean final avg price, 200 days (₹)        77.8260 78.9970
+2.5th pct, 200 days (₹)                   77.7100 78.9750
+97.5th pct, 200 days (₹)                  77.9230 79.0280
+Share of 200 days ending below the ₹79 budget (budget overspend): static 100% | PID 0%  (below by more than ₹0.50)
+[image]
+--- cell 34 (exec 16) ---
+training data                         trained on logged targeted policy  trained on random traffic (same size)
+avg price (₹)                                                   99.0000                                79.1828
+revenue / user (₹)                                               9.0165                                10.1282
+gain vs random                                                  -0.0839                                 0.0291
+share of oracle gain                                            -0.5574                                 0.1930
+raw curves strictly falling in price                             0.0000                                 0.9088
+raw: conversion at ₹59 > at ₹99                                  0.0000                                 0.9999
+Spearman(pred. sensitivity, true β)                              0.2573                                 0.2577
+
+Random-traffic model minus logged-policy model: ₹1.112 per user (95% CI 1.101 to 1.123); paired t p = 0
+--- cell 36 (exec 17) ---
+                                               Δ revenue per exposed user (₹)  ₹ crore / month (contribution)  ₹ crore / year (contribution)
+comparison               scenario                                                                                                           
+vs incumbent group-level worst (CI low × 50%)                         -0.0580                         -0.1040                        -1.2490
+                         base (point × 70%)                           -0.0750                         -0.1350                        -1.6250
+                         best (point × 100%)                          -0.1070                         -0.1930                        -2.3210
+vs random coupon         worst (CI low × 50%)                          0.1580                          0.2850                         3.4220
+                         base (point × 70%)                            0.2270                          0.4080                         4.9010
+                         best (point × 100%)                           0.3240                          0.5840                         7.0020

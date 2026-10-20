@@ -1,0 +1,116 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs07.py
+--- cell 8 (exec 3) ---
+842,000 rows | 840,000 unique store-SKU-days | generated in 103s
+                            512076               264451               229610
+date           2026-03-10 00:00:00  2026-02-07 00:00:00  2026-02-02 00:00:00
+store_id                         0                    2                   28
+sku_id                          76                   51                   10
+gsku_id                         15                   10                    2
+category                    bakery                dairy               snacks
+perishable                       1                    1                    0
+price_inr                  48.0000              41.0000              63.0000
+promo                            0                    0                    0
+rain                             0                    0                    0
+festival                    0.0000               0.0000               0.0000
+opening_stock                    1                    2                    6
+units_sold                       1                    2                    6
+avail_share                 1.0000               0.6150               0.5750
+wasted_units                     0                    0                    0
+--- cell 10 (exec 4) ---
+                          field(s)                                            meaning
+0  date, store_id, sku_id, gsku_id  Store-SKU-day and the substitution group of th...
+1  category, perishable, price_inr                                 Product attributes
+2            promo, rain, festival  Planned promotion; rain; festival uplift index...
+3                    opening_stock                         Units on the shelf at open
+4                       units_sold                     Units sold (censored by stock)
+5                      avail_share  Share of open hours the SKU was orderable (3,0...
+6                     wasted_units                        Units expired (perishables)
+7                     _true_demand  HIDDEN: what customers would have bought with ...
+--- cell 12 (exec 5) ---
+duplicate store-SKU-days      2000
+availability missing          3008
+units_sold > opening_stock       0
+wasted > opening_stock           0
+
+Clean: 840,000 rows | 8,000 store-SKU series × 105 days | stock-out days (availability < 100%): 29.6% | mean availability 91.6%
+--- cell 14 (exec 6) ---
+[image]
+--- cell 16 (exec 7) ---
+Stock-out days: 248,432 (29.6%). Sales capture 59.5% of true demand on those days (mean unmet demand 5.19 units/day, Wilcoxon p = 0)
+Whole panel: sales = 75.1% of true demand | weekly stock/demand ratio after week 1: slope -0.80 pp/week (p = 0.04), settling near 93%
+Series-level: share of store-SKU series whose average sales understate demand by > 10%: 88.1%; Spearman(avg availability, sales/demand) = +0.85
+--- cell 18 (exec 8) ---
+Wilcoxon (absolute error vs profile scaling): raw p = 0, availability scaling p = 0
+                        wMAPE vs truth (stock-out days)  bias (est − truth)/truth  share within ±25%
+estimator                                                                                           
+1 raw sales                                      0.4047                   -0.4047             0.2947
+2 availability scaling                           0.1662                   -0.1662             0.9065
+3 profile scaling                                0.0149                   -0.0145             0.9809
+--- cell 20 (exec 9) ---
+Models trained in 272s on 456,000 training rows; test rows 160,000
+Spearman between model rankings under the two metrics: -0.50
+                                            wMAPE vs OBSERVED sales  wMAPE vs TRUE demand  bias vs observed  bias vs truth  rank (observed)  rank (truth)
+model                                                                                                                                                    
+1 seasonal naive (lag 7 sales)                               0.3663                0.5237           -0.0001        -0.2731           3.0000        5.0000
+2 moving average (7-day sales)                               0.3037                0.4952           -0.0023        -0.2748           2.0000        4.0000
+3 GBM on raw sales                                           0.2917                0.4862           -0.0056        -0.2771           1.0000        3.0000
+4 GBM on de-biased demand                                    0.4548                0.4481            0.3708        -0.0036           4.0000        1.0000
+5 group-level GBM (GSKU) allocated to SKUs                   0.4575                0.4541            0.3728        -0.0021           5.0000        2.0000
+--- cell 22 (exec 10) ---
+                                                    share of series where second is better  mean MAE gap (units)  Δ wMAPE CI low  Δ wMAPE CI high  Wilcoxon p  p_holm
+comparison (first − second)                                                                                                                                          
+3 GBM on raw sales  vs  4 GBM on de-biased demand                                   0.5352                0.2312          0.0350           0.0407      0.0000  0.0000
+2 moving average (7-day sales)  vs  4 GBM on de...                                  0.6484                0.2863          0.0444           0.0496      0.0000  0.0000
+4 GBM on de-biased demand  vs  5 group-level GB...                                  0.3836               -0.0367         -0.0074          -0.0046      0.0000  0.0000
+--- cell 24 (exec 11) ---
+                           slow movers  medium  fast movers  group total (5 SKUs)
+approach                                                                         
+SKU-level GBM (de-biased)       0.8206  0.5365       0.3933                0.2472
+group-level GBM allocated       0.8244  0.5484       0.3980                0.2490
+--- cell 26 (exec 12) ---
+Quantile coverage (true demand ≤ stock; with integer stock coverage is ≥ τ, so the test is one-sided 'less'): [(0.4, np.float64(0.632), 'p=1'), (0.5, np.float64(0.689), 'p=1'), (0.7, np.float64(0.82), 'p=1'), (0.9, np.float64(0.94), 'p=1')]
+Critical ratios: non-perishable 0.93, perishable 0.42
+[image]
+                                      fill rate (sold / true demand)  wasted share of stock (perishables)  leftover share (all)  profit per store-SKU-day ₹  \
+stocking policy                                                                                                                                               
+legacy rule (realised opening stock)                          0.7132                               0.0407                0.2323                    106.2375   
+mean forecast × 1.0                                           0.8063                               0.0425                0.2524                    118.2539   
+mean forecast × 1.1                                           0.8429                               0.0477                0.2846                    119.1813   
+one quantile for all (τ = 0.9)                                0.9600                               0.0791                0.4691                     94.9573   
+class-specific critical ratio                                 0.8855                               0.0187                0.4331                    134.4734   
+
+                                      P(demand ≤ stock)  Δ profit vs legacy  Δ CI low  Δ CI high  
+stocking policy                                                                                   
+legacy rule (realised opening stock)             0.6784              0.0000    0.0000     0.0000  
+mean forecast × 1.0                              0.7277             12.0164   11.1343    13.0429  
+mean forecast × 1.1                              0.7680             12.9438   11.7418    14.1186  
+one quantile for all (τ = 0.9)                   0.9398            -11.2801  -14.1149    -8.3463  
+class-specific critical ratio                    0.8406             28.2359   26.5413    29.8590
+--- cell 28 (exec 13) ---
+segment 'festival days' is empty - skipped
+           moving average  GBM raw  GBM de-biased  group GBM
+test week                                                   
+week 1             0.4965   0.4872         0.4474     0.4545
+week 2             0.4953   0.4860         0.4502     0.4564
+week 3             0.4938   0.4853         0.4464     0.4512
+                  rows  wMAPE vs truth    bias  coverage of τ = 0.9 stock  binomial p vs 0.9   q_BH
+segment                                                                                            
+perishable       56800          0.4557 -0.0018                     0.9423             0.0000 0.0000
+non-perishable  103200          0.4444 -0.0044                     0.9385             0.0000 0.0000
+promo days       11117          0.4319 -0.0227                     0.9231             0.0000 0.0000
+no promo        148883          0.4497 -0.0016                     0.9411             0.0000 0.0000
+weekend          48000          0.4332 -0.0191                     0.9306             0.0000 0.0000
+weekday         112000          0.4561  0.0048                     0.9438             0.0000 0.0000
+slow movers      53660          0.8206  0.0917                     0.9693             0.0000 0.0000
+fast movers      53300          0.3933 -0.0165                     0.9123             0.0000 0.0000
+--- cell 30 (exec 14) ---
+Highest-profit policy on the test days: class-specific critical ratio
+Class-specific vs legacy: fill rate 88.5% vs 71.3%; expired perishable share 1.87% vs 4.07%
+                                         Δ ₹ per store-SKU-day  ₹ crore / year (1,000 stores × 200 core SKUs)
+scenario                                                                                                     
+worst (CI low, ×0.5 for long-tail drag)                13.2710                                        96.8760
+base (point estimate)                                  28.2360                                       206.1220
+best (CI high)                                         29.8590                                       217.9710

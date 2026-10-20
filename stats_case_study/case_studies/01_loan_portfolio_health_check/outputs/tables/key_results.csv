@@ -1,0 +1,5 @@
+metric,estimate,ci_low,ci_high,se,benchmark,test,statistic,p_value
+Mean ticket size (₹),324580.0,313961.830178,335198.169822,5414.909227,300000.0,one-sample t (two-sided),4.539319,6e-06
+Median ticket size (₹),250000.0,240000.0,250000.0,4681.042108,,bootstrap CI,,
+12m 90+ DPD rate,0.0536,0.045436,0.063133,0.004505,0.04,"exact binomial, one-sided H1: p > 4% (z shown)",3.47011,0.000532
+DTI policy-exception rate,0.0044,0.002459,0.007862,0.001324,0.01,Wilson CI vs limit,,

@@ -1,0 +1,5 @@
+,statistic,p_value,what it compares
+One-way ANOVA (raw days),2.0035663657,0.0957805356,means
+Welch ANOVA (raw days),1.8560763482,0.1250067698,means (unequal variances)
+ANOVA on log(days),5.9602418293,0.0001560911,geometric means
+Kruskal-Wallis,33.6490458059,8.795e-07,rank distributions (typical values)

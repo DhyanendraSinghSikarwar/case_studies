@@ -1,0 +1,8 @@
+field(s),meaning
+"request_id, day, slot","Request, day (0 to 13) and the slot (1 to 8) where the item was shown"
+"is_ads, bid",1 if sponsored; bid in ₹ per click (0 for organic)
+cat,"Request category type: 0 high ad relevance, 1 neutral, 2 low ad relevance"
+"x_rel, cobrowse, pop, log_price_ratio, rating","Model features: noisy relevance score, co-browse strength, popularity, log price vs the viewed product, rating"
+explore,1 if the request used random slotting (exploration bucket)
+"click, order",Outcomes: click on the item; order after a click
+"_aff, _p_ctr_attr, _p_cvr","HIDDEN truth: affinity, position-free click probability, order probability given click (twin only, never a feature)"

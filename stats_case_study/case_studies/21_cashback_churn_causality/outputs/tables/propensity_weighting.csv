@@ -1,0 +1,2 @@
+,estimate (pp),ci_low,ci_high,weighted control churn,enrolled churn,effective n of controls
+propensity weighting (ATT),-6.2130502296,-7.6348306312,-4.5601574496,0.1316471593,0.069516657,761.5191540265

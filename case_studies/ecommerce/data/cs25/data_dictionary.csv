@@ -1,0 +1,9 @@
+field(s),meaning
+"order_id, user_id, day, hour, weekday","Order and customer identifiers; day 0–179 of the window, order hour, weekday"
+"category, seller_id, pincode_id, order_value_inr",Order attributes available at checkout
+"user_rto_3m/1y, user_n_3m/1y, pin_/seller_/cat_ rto_3m/1y",RTO ratio and order counts in the past 3 months and 1 year (missing when no history)
+"found_profile, match_score",A candidate public profile was found; its match score (0–1)
+"is_student, n_jobs, n_degrees, friends, followers, years_working, years_education, emb_0…emb_7",Social-profile features (quantitative and an embedding-style vector); shown only if a profile was found
+rto,"1 if the order became RTO (NaN if the outcome was never observed, legacy-logged set only)"
+legacy_blocked,1 if the old rule blocked the order (legacy-logged set)
+"_p_rto, _type, _reliability, _user_effect, _true_match, _rto_if_shipped","HIDDEN truth: true RTO probability, occupation type, reliability, user effect, whether the matched profile is right, outcome had it shipped"

@@ -1,0 +1,8 @@
+field(s),meaning
+"order_id, order_ts, day, hour, weekday","Order id, timestamp, day 0-59, hour of day, weekday (0 = Monday)"
+"is_national_holiday, is_hrd, is_post_hrd, planned_volume_ratio",Order-day calendar flags; planned volume over capacity (known for sale days)
+"warehouse, centre, zone, distance_km","Source warehouse (0-5), last-mile centre (0-59), zone (metro/tier2/remote), road distance"
+"n_items, vendor_item, carrier_3pl",Items in the order; 1 if a vendor-procured item is present; 1 if shipped by a 3PL
+"pend_wh_prev_day, pend_centre_prev_day, centre_holiday_next2","Yesterday's noisy backlog readings (warehouse, centre); regional holiday at the centre within 2 days"
+"delivery_days (D), delivery_ts",TARGET: delivery calendar date minus order date (days); delivery timestamp
+"_proc_hours, _ship_hours, _stall, _wh_backlog, _centre_backlog","HIDDEN truth: realised processing and shipping hours, stall flag, true backlogs"

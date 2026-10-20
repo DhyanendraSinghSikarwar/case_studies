@@ -1,0 +1,9 @@
+,Value
+Mean first-year revenue,"Aggregator ₹3,309 (highest) … Social media ₹2,188 (lowest)"
+ANOVA,"F = 17.6 (classic), 21.8 (Welch); p < 0.001 for both"
+Effect size,"η² = 0.012, ω² = 0.011: channel explains about 1% of customer-level variation"
+Equal variances?,Levene/Brown-Forsythe p < 0.001; SD ratio 2.0
+Post-hoc,Social media lower than every other channel; no other pair differs (Tukey and Games-Howell agree)
+Planned contrast,digital − offline/partner ≈ −₹179 (p = 0.066; CI includes 0)
+ANCOVA,Aggregator vs Branch: raw +₹256 → same income −₹659
+Net of acquisition cost,"best: Partner co-brand ₹2,146/customer; worst: Aggregator ₹409"

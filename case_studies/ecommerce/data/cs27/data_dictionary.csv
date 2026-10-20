@@ -1,0 +1,5 @@
+field(s),meaning
+"ratings: rating_id, user, product, seller, stars, ts","One rating: who, what, which seller, 1 to 5 stars, timestamp"
+"products: product, seller",Which seller owns each product
+users_truth: user,User id
+"_fake (ratings), _is_fraud, _fraud_type, _style (users_truth)","HIDDEN truth: used only for validation and the simulation, never as a model input"

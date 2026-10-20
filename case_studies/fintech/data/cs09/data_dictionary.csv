@@ -1,0 +1,11 @@
+field(s),meaning
+"bank, account_id",Partner bank and account
+"occupation, declared_income_monthly, customer_age, kyc_type",KYC profile (income 5% missing)
+"account_age_days, dormant_days_before",Account vintage; days dormant before the 90-day window
+"credits_90d_inr, debits_90d_inr, n_credits_90d, avg_balance_inr",Raw 90-day aggregates (what every bank has)
+"distinct_senders_30d, median_hold_hours",Fan-in and how long money stays
+"cash_withdrawal_share, round_amount_share",Cash-out behaviour
+night_share_23_01,Share of transactions between 11 PM and 1 AM
+"n_devices_30d, sim_change_30d",Device / SIM churn
+confirmed_mule,Label available to the bank (investigation / I4C complaint)
+"_is_mule, _typologies, _sleeper",HIDDEN truth (evaluation only)

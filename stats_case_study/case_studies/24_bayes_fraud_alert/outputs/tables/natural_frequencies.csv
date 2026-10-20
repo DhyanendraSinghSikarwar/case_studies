@@ -1,0 +1,8 @@
+,"count out of 100,000"
+transactions,100000.0
+are fraud,422.6666666667
+are genuine,99577.3333333333
+fraud AND alert,359.3333333333
+"fraud, no alert (missed)",63.3333333333
+genuine AND alert (false alarms),2633.3333333333
+"genuine, no alert",96944.0

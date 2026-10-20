@@ -1,0 +1,161 @@
+segment_id,customer_type,region,wave,arm,customers,conversions
+S01,Salaried (mass),North,1,control,808,41
+S01,Salaried (mass),North,1,treatment,808,26
+S01,Salaried (mass),North,2,control,803,26
+S01,Salaried (mass),North,2,treatment,803,41
+S02,Salaried (mass),South,1,control,687,31
+S02,Salaried (mass),South,1,treatment,687,34
+S02,Salaried (mass),South,2,control,793,44
+S02,Salaried (mass),South,2,treatment,793,52
+S03,Salaried (mass),East,1,control,1225,95
+S03,Salaried (mass),East,1,treatment,1225,89
+S03,Salaried (mass),East,2,control,1096,87
+S03,Salaried (mass),East,2,treatment,1096,93
+S04,Salaried (mass),West,1,control,1104,91
+S04,Salaried (mass),West,1,treatment,1104,85
+S04,Salaried (mass),West,2,control,1230,93
+S04,Salaried (mass),West,2,treatment,1230,85
+S05,Salaried (mass),Central,1,control,1114,77
+S05,Salaried (mass),Central,1,treatment,1114,65
+S05,Salaried (mass),Central,2,control,1085,76
+S05,Salaried (mass),Central,2,treatment,1085,71
+S06,Salaried (affluent),North,1,control,867,68
+S06,Salaried (affluent),North,1,treatment,867,56
+S06,Salaried (affluent),North,2,control,831,69
+S06,Salaried (affluent),North,2,treatment,831,57
+S07,Salaried (affluent),South,1,control,1857,174
+S07,Salaried (affluent),South,1,treatment,1857,144
+S07,Salaried (affluent),South,2,control,1658,137
+S07,Salaried (affluent),South,2,treatment,1658,138
+S08,Salaried (affluent),East,1,control,2286,121
+S08,Salaried (affluent),East,1,treatment,2286,101
+S08,Salaried (affluent),East,2,control,1998,72
+S08,Salaried (affluent),East,2,treatment,1998,86
+S09,Salaried (affluent),West,1,control,1222,23
+S09,Salaried (affluent),West,1,treatment,1222,22
+S09,Salaried (affluent),West,2,control,1208,24
+S09,Salaried (affluent),West,2,treatment,1208,25
+S10,Salaried (affluent),Central,1,control,1559,88
+S10,Salaried (affluent),Central,1,treatment,1559,81
+S10,Salaried (affluent),Central,2,control,1603,74
+S10,Salaried (affluent),Central,2,treatment,1603,77
+S11,Self-employed,North,1,control,1026,66
+S11,Self-employed,North,1,treatment,1026,100
+S11,Self-employed,North,2,control,1027,85
+S11,Self-employed,North,2,treatment,1027,73
+S12,Self-employed,South,1,control,2115,175
+S12,Self-employed,South,1,treatment,2115,164
+S12,Self-employed,South,2,control,2326,192
+S12,Self-employed,South,2,treatment,2326,185
+S13,Self-employed,East,1,control,2127,49
+S13,Self-employed,East,1,treatment,2127,94
+S13,Self-employed,East,2,control,2090,42
+S13,Self-employed,East,2,treatment,2090,93
+S14,Self-employed,West,1,control,1638,97
+S14,Self-employed,West,1,treatment,1638,78
+S14,Self-employed,West,2,control,1628,74
+S14,Self-employed,West,2,treatment,1628,91
+S15,Self-employed,Central,1,control,1303,119
+S15,Self-employed,Central,1,treatment,1303,122
+S15,Self-employed,Central,2,control,1338,101
+S15,Self-employed,Central,2,treatment,1338,104
+S16,Gig worker,North,1,control,2367,141
+S16,Gig worker,North,1,treatment,2367,123
+S16,Gig worker,North,2,control,2145,128
+S16,Gig worker,North,2,treatment,2145,134
+S17,Gig worker,South,1,control,1793,118
+S17,Gig worker,South,1,treatment,1793,95
+S17,Gig worker,South,2,control,1770,112
+S17,Gig worker,South,2,treatment,1770,116
+S18,Gig worker,East,1,control,2222,133
+S18,Gig worker,East,1,treatment,2222,128
+S18,Gig worker,East,2,control,2427,121
+S18,Gig worker,East,2,treatment,2427,133
+S19,Gig worker,West,1,control,2463,99
+S19,Gig worker,West,1,treatment,2463,109
+S19,Gig worker,West,2,control,2230,99
+S19,Gig worker,West,2,treatment,2230,103
+S20,Gig worker,Central,1,control,1881,57
+S20,Gig worker,Central,1,treatment,1881,75
+S20,Gig worker,Central,2,control,1814,63
+S20,Gig worker,Central,2,treatment,1814,57
+S21,Student,North,1,control,2042,47
+S21,Student,North,1,treatment,2042,36
+S21,Student,North,2,control,2108,41
+S21,Student,North,2,treatment,2108,59
+S22,Student,South,1,control,1770,159
+S22,Student,South,1,treatment,1770,189
+S22,Student,South,2,control,1620,120
+S22,Student,South,2,treatment,1620,169
+S23,Student,East,1,control,1780,169
+S23,Student,East,1,treatment,1780,183
+S23,Student,East,2,control,1967,174
+S23,Student,East,2,treatment,1967,175
+S24,Student,West,1,control,800,33
+S24,Student,West,1,treatment,800,53
+S24,Student,West,2,control,860,37
+S24,Student,West,2,treatment,860,54
+S25,Student,Central,1,control,1501,63
+S25,Student,Central,1,treatment,1501,48
+S25,Student,Central,2,control,1426,45
+S25,Student,Central,2,treatment,1426,51
+S26,Retired,North,1,control,1294,46
+S26,Retired,North,1,treatment,1294,37
+S26,Retired,North,2,control,1260,50
+S26,Retired,North,2,treatment,1260,37
+S27,Retired,South,1,control,1688,77
+S27,Retired,South,1,treatment,1688,79
+S27,Retired,South,2,control,1665,88
+S27,Retired,South,2,treatment,1665,68
+S28,Retired,East,1,control,1934,33
+S28,Retired,East,1,treatment,1934,54
+S28,Retired,East,2,control,2039,54
+S28,Retired,East,2,treatment,2039,42
+S29,Retired,West,1,control,788,33
+S29,Retired,West,1,treatment,788,48
+S29,Retired,West,2,control,830,35
+S29,Retired,West,2,treatment,830,53
+S30,Retired,Central,1,control,1207,52
+S30,Retired,Central,1,treatment,1207,30
+S30,Retired,Central,2,control,1223,33
+S30,Retired,Central,2,treatment,1223,46
+S31,Homemaker,North,1,control,1366,86
+S31,Homemaker,North,1,treatment,1366,123
+S31,Homemaker,North,2,control,1474,104
+S31,Homemaker,North,2,treatment,1474,120
+S32,Homemaker,South,1,control,889,56
+S32,Homemaker,South,1,treatment,889,79
+S32,Homemaker,South,2,control,833,55
+S32,Homemaker,South,2,treatment,833,68
+S33,Homemaker,East,1,control,852,58
+S33,Homemaker,East,1,treatment,852,58
+S33,Homemaker,East,2,control,801,61
+S33,Homemaker,East,2,treatment,801,59
+S34,Homemaker,West,1,control,1874,62
+S34,Homemaker,West,1,treatment,1874,62
+S34,Homemaker,West,2,control,2019,54
+S34,Homemaker,West,2,treatment,2019,52
+S35,Homemaker,Central,1,control,1114,70
+S35,Homemaker,Central,1,treatment,1114,61
+S35,Homemaker,Central,2,control,1051,77
+S35,Homemaker,Central,2,treatment,1051,66
+S36,Business owner,North,1,control,1200,48
+S36,Business owner,North,1,treatment,1200,65
+S36,Business owner,North,2,control,1063,45
+S36,Business owner,North,2,treatment,1063,66
+S37,Business owner,South,1,control,933,62
+S37,Business owner,South,1,treatment,933,51
+S37,Business owner,South,2,control,959,56
+S37,Business owner,South,2,treatment,959,61
+S38,Business owner,East,1,control,1821,71
+S38,Business owner,East,1,treatment,1821,74
+S38,Business owner,East,2,control,1970,80
+S38,Business owner,East,2,treatment,1970,88
+S39,Business owner,West,1,control,2030,119
+S39,Business owner,West,1,treatment,2030,110
+S39,Business owner,West,2,control,1964,85
+S39,Business owner,West,2,treatment,1964,110
+S40,Business owner,Central,1,control,1197,57
+S40,Business owner,Central,1,treatment,1197,60
+S40,Business owner,Central,2,control,1061,57
+S40,Business owner,Central,2,treatment,1061,50

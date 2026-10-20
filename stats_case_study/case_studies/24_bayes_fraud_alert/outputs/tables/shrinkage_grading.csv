@@ -1,0 +1,3 @@
+,mean squared error (×10⁻⁶),mean absolute error (pp),95% intervals covering the truth,mean interval width (pp)
+raw rates (Wilson CI),3.1497860859,0.1499510017,14,1.1259850348
+Beta-Binomial posterior,5.6477657419,0.204035434,12,0.6718889221

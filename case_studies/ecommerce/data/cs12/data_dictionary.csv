@@ -1,0 +1,5 @@
+field(s),meaning
+"demand_weekly: week, region, fc, category, units","Week start (Monday), location in the hierarchy, units shipped"
+_mu,"HIDDEN: true expected units (used only to describe the simulation, never to forecast)"
+"hierarchy: region, fc, category",Parent-child structure of the 96 bottom series
+derived nodes,"Total, 4 regions and 16 FCs are sums of the bottom series (summing matrix S, 117 x 96)"

@@ -1,0 +1,7 @@
+,value
+"churn rate, no complaint",0.0878020035
+"churn rate, any complaint",0.198569857
+risk difference (pp),0.1107678535
+risk ratio,2.2615640759
+odds ratio (from the 2×2 table),2.5741410363
+odds ratio (e^β from logistic regression),2.5741410363

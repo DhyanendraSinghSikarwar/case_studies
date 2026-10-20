@@ -1,0 +1,5 @@
+design,mean estimate,bias,true SE (SD across samples),SRS-formula SE (what a naive analyst reports),design effect (true var ÷ SRS var),95% CI coverage
+Simple random,7.07095375,3.75e-06,0.0662493258,0.0654217397,1.0054315844,0.946
+"Stratified (by complaints, proportional)",7.0726132666,0.0016632666,0.0610579754,0.0654315918,0.8540324976,0.964
+"Cluster (8 random branches, 100 customers each)",7.06906125,-0.00188875,0.1290928142,0.0653005077,3.8176291202,0.67
+Voluntary (800 of the email respondents),7.86950625,0.79855625,0.0455938074,0.0587593036,0.4762130783,0.0

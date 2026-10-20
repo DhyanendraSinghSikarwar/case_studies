@@ -1,0 +1,7 @@
+,Value
+A,"lift +0.10 pp (95% CI 0.05 to 0.15), relative 2.0%, p < 0.001, Cohen's h 0.004"
+A: economics,break−even 0.20 pp; net value −17 lakh/year (CI −24 to −9); P(true lift below break−even) < 0.001
+B,"lift +2.0 pp (95% CI −1.4 to +5.4), p = 0.25; power at +2 pp 21%"
+B: decision,"P(lift > break-even) 65% (flat prior), 54% (weak prior); expected net value ₹+60 per customer offered"
+B: value of information,launch now ₹30 lakh; bigger test then decide ₹107 lakh; perfect information ₹123 lakh per year
+Type M,power 23%; significant estimates average 4.2 pp = 2.1× the truth

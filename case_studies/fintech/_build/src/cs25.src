@@ -1,0 +1,349 @@
+#%% md
+# Case Study 25 — "2× Productivity": Evaluating an AI Claims Copilot for Extraction Accuracy, Speed, Decision Quality and Automation Bias
+
+**Priority:** ★ Optional · **Reference:** Case Study 25 — *ICICI Lombard: health-claims adjudication copilot (OCR + LLM)* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Health Claims, Claims Audit, Medical Panel, Operations
+**Data:** ⚠️ **SYNTHETIC** (D-25-01). Claim documents are confidential. We simulate the *records of an evaluation*, not documents or LLM text.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs25_claims_copilot_evaluation.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+A health-insurance adjudicator reads **20+ pages per claim** (discharge summary, lab reports, bills, handwritten notes) and decides to approve, part-pay or reject. ICICI Lombard added a **copilot**: OCR reads the documents, a language model structures the key facts (diagnosis, dates, bill, procedure), checks the treatment against national guidelines and writes a summary. Humans still decide. The reported benefit is "**2× productivity**" and a more than 50% cut in processing time.
+
+For a regulated, money-moving decision, leaders need more than a time saving:
+1. **Is the extraction accurate** on messy, handwritten documents, and does the copilot know when it is unsure?
+2. **Is the time saving real**, measured in a fair experiment?
+3. **Are decisions still correct?** A confident but wrong summary can **anchor** a busy adjudicator (automation bias).
+4. **Does the guideline check work**, in terms of both missed deviations and false alarms?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What ICICI Lombard did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | "Adjudicators read 20+ pages per claim … One adjudication took several hours" |
+| Question | "Can documents be structured automatically and checked against policy terms and treatment guidelines, so adjudicators decide faster and more consistently?" |
+| Approach | OCR/document extraction → structuring into diagnosis, presentation, history, treatment, labs → comparison with NHA and disease guidelines → summary for the adjudicator |
+| ML | Azure OCR / Document Intelligence + Azure OpenAI + an "indigenous model" (Microsoft); Gemini (Google); target / validation / metrics **ND** |
+| Decision | Adjudicators work from AI summaries and guideline checks; "humans remain the decision-makers" |
+| Impact | "**2x** productivity increase"; processing time cut "by over **50%**" (Microsoft); adjudication "to just a few minutes" (Google) |
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Part A (extraction audit) | 4,000 claims × 8 key fields, with true vs extracted values, document quality (clean print / scan / handwritten), pages and model confidence |
+| Part B (productivity) | A **randomised** study of 6,000 claims by 60 adjudicators; half got the copilot summary. Outcomes: handling minutes, decision, a 10% **gold-audited** subsample (3 senior adjudicators), later disputes. 6–14% of AI summaries contain an error (automation-bias risk). |
+| Part C (guidelines) | 1,500 claims: copilot "deviation" flags vs an expert's judgement |
+| Statistics added | Per-field accuracy with Wilson CIs; logistic model of extraction errors on quality/pages; confidence calibration and **selective review**; **cluster-aware** randomised comparison of time (mixed model, log scale, ratio with CI, Mann–Whitney); decision accuracy vs gold (two-proportion, equivalence-style **non-inferiority**); effect of a wrong summary (automation bias); sensitivity/specificity of the guideline check; sample sizes |
+
+### (c) How the industry uses this
+
+LLM "copilots" for claims, KYC and underwriting are being piloted across Indian insurers and banks (ICICI Lombard, Star Health, Bajaj Allianz, HDFC ERGO, Niva Bupa) with vendors on Azure OpenAI, Google Gemini and local OCR providers. IRDAI expects human accountability for claim decisions and a clear audit trail, which makes **"decision support with measured quality"** the standard pattern. The evaluation here (extraction audit, randomised productivity test, gold-panel quality, automation-bias check) is what a model-risk or claims-audit committee asks for.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Does the copilot make adjudication faster without making decisions worse, and where is human review essential? |
+| Analytical | What are the copilot's extraction error rates and where, how much handling time does it save in a randomised test, and are decision quality and disputes unaffected (non-inferior)? |
+
+**Hypotheses**
+- **H1 (extraction):** H0: error rate does not depend on document quality (logistic LR test).
+- **H2 (time):** H0: AI-assisted handling time = manual (log-scale mixed model, adjudicator random effect; randomised arms).
+- **H3 (quality):** H0: AI-assisted decision accuracy is *inferior* to manual by more than **2 pp** (non-inferiority on the gold-audited subsample).
+- **H4 (automation bias):** H0: when the AI summary is wrong, adjudicators are no more likely to be wrong than when it is right.
+
+**Primary metric:** median handling time ratio (AI/manual) **and** decision accuracy vs gold (non-inferior). **Guardrails:** dispute rate; accuracy on complex claims.
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import statsmodels.formula.api as smf
+from statsmodels.stats.proportion import proportion_confint, confint_proportions_2indep, proportions_ztest
+from statsmodels.stats.multitest import multipletests
+from sklearn.metrics import roc_auc_score
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public health-claim documents with adjudication outcomes | **None.** Claims data are confidential medical and financial records (DPDP Act). Public medical-text sets (MIMIC, i2b2) are US-based and restricted. |
+| **Decision** | Simulated evaluation records for the three study parts (D-25-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs25.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs25.py
+
+#%% code
+os.makedirs("data/cs25", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs25 as gen; importlib.reload(gen)
+ext, adj_raw, gl = gen.generate(seed=SEED)
+ext.to_csv("data/cs25/extraction_audit.csv.gz", index=False); adj_raw.to_csv("data/cs25/adjudication.csv.gz", index=False); gl.to_csv("data/cs25/guideline_check.csv.gz", index=False)
+print(f"extraction audit: {len(ext):,} field checks | adjudication study: {len(adj_raw):,} rows ({adj_raw.claim_id.nunique():,} claims) | guideline check: {len(gl):,} claims")
+adj_raw.drop(columns=["_true_decision", "_summary_wrong"]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Extraction | 8 fields; error rates 3–12% on clean print, ×1.4 on scans, ×3.2 on handwriting, rising with page count; wrong values carry lower model confidence | Typical OCR + LLM behaviour; **documented** field types |
+| Study | 6,000 claims, 60 adjudicators with different speeds and skills; **randomised 50/50** copilot vs manual | Our design |
+| Time | Manual median ≈ 75 minutes (rises with pages and ICU); copilot saves 35–70%, more on long files | **Documented** "several hours" for hard cases, "over 50%" saved |
+| Summary errors | 6% of AI summaries wrong (simple), 14% (complex); a wrong summary lowers adjudicator accuracy | Our assumption: the automation-bias risk |
+| Gold | 10% of claims audited by 3 senior adjudicators (majority) | Our design |
+| Guideline check | 18% of treatments truly deviate; copilot flags 78% of deviations and 7% of conforming treatments | Our assumption |
+| DQ issues | 60 duplicate rows; 40 handling times recorded as 0 (timer not stopped) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("extraction: claim_id, field, doc_quality, pages", "Field audited; document type (clean_print / scan / handwritten); page count"),
+    ("extraction_correct, model_confidence", "Extracted value matches the true value; the model's confidence"),
+    ("adjudication: adjudicator_id, pages, icu, claim_value_inr, complex_claim", "Adjudicator and claim attributes"),
+    ("ai_assisted", "Randomised arm: 1 = copilot summary, 0 = manual"), ("handling_minutes, decision, disputed_later", "Time, approve/partial/reject, later dispute"),
+    ("gold_decision", "Senior-panel decision for the 10% audit sample"), ("_true_decision, _summary_wrong", "HIDDEN truth and whether the AI summary contained an error"),
+    ("guideline_check: expert_deviation, copilot_flag, copilot_confidence", "Expert vs copilot deviation judgement"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs25/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+checks = {"duplicate claim rows": int(adj_raw.claim_id.duplicated().sum()), "handling time recorded as 0 (timer not stopped)": int((adj_raw.handling_minutes == 0).sum()),
+          "AI-assisted arm share": round(float(adj_raw.drop_duplicates('claim_id').ai_assisted.mean()), 3)}
+print(pd.Series(checks, name="value").to_string())
+adj = adj_raw.drop_duplicates("claim_id").copy(); adj = adj[adj.handling_minutes > 0].reset_index(drop=True)
+adj["log_min"] = np.log(adj.handling_minutes)
+audit = adj[adj.gold_decision.fillna("") != ""].copy()
+bal = adj.groupby("ai_assisted")[["pages", "icu", "complex_claim"]].mean(); srm = stats.chisquare(adj.ai_assisted.value_counts().values)
+print(f"\nClean: {len(adj):,} claims | gold-audited {len(audit):,} | randomisation check: SRM p = {srm.pvalue:.3f}; complex share {bal.loc[0, 'complex_claim']:.1%} (manual) vs {bal.loc[1, 'complex_claim']:.1%} (AI)")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.5))
+for a_, c_, nm in ((0, "#e07a1f", "manual"), (1, "#2a6f97", "AI-assisted")):
+    axes[0].hist(np.log10(adj.loc[adj.ai_assisted == a_, "handling_minutes"]), bins=50, alpha=0.55, density=True, color=c_, label=nm)
+axes[0].set_xlabel("Handling time per claim (log10 minutes)"); axes[0].set_ylabel("Density"); axes[0].set_title("The copilot shifts the whole time distribution left"); axes[0].legend()
+q = ext.groupby(["field", "doc_quality"]).extraction_correct.mean().unstack()[["clean_print", "scan", "handwritten"]] * 100
+sns.heatmap(q, annot=True, fmt=".0f", cmap="RdYlGn", vmin=60, vmax=100, ax=axes[1], cbar_kws={"label": "% extracted correctly"}); axes[1].set_xlabel("Document quality"); axes[1].set_ylabel("Field"); axes[1].set_title("Handwriting and risk-flag fields are hardest")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Extraction accuracy by field and document quality
+
+**(a)** Per field: accuracy with Wilson CIs. Then a logistic model of extraction **errors** on document quality and pages (all fields pooled, field fixed effects, standard errors clustered by claim); the LR test for quality answers H1. Odds ratios with 95% CIs.
+
+#%% code
+fa = ext.groupby("field").extraction_correct.agg(["mean", "sum", "size"]); ci = [proportion_confint(r["sum"], r["size"], method="wilson") for _, r in fa.iterrows()]
+fa["CI low"], fa["CI high"] = [c[0] for c in ci], [c[1] for c in ci]
+e = ext.assign(err=1 - ext.extraction_correct, pages_10=ext.pages / 10)
+m0 = smf.logit("err ~ C(field) + pages_10", data=e).fit(disp=0); m1 = smf.logit("err ~ C(field) + pages_10 + C(doc_quality, Treatment('clean_print'))", data=e).fit(disp=0); LR = 2 * (m1.llf - m0.llf)
+orr = np.exp(m1.params.filter(like="doc_quality")); print(f"Overall field accuracy {ext.extraction_correct.mean():.1%} | LR test for document quality: χ² = {LR:.0f}, p = {stats.chi2.sf(LR, 2):.2g} | "
+      f"OR scan = {orr.iloc[0]:.2f}, handwritten = {orr.iloc[1]:.2f}, per +10 pages = {np.exp(m1.params['pages_10']):.2f}")
+claim_ok = ext.groupby("claim_id").extraction_correct.min(); lo, hi = proportion_confint(claim_ok.sum(), len(claim_ok), method="wilson")
+print(f"Claims with ALL 8 fields correct: {claim_ok.mean():.1%} (Wilson {lo:.1%}–{hi:.1%}), so most claims need at least a glance at the source")
+fa.sort_values("mean").round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Does the copilot know when it is unsure? Confidence and selective review
+
+For each extracted field we compare confidence for correct vs wrong values (AUC), then choose a **confidence threshold below which the field is shown with a "verify" flag** to the adjudicator. We report coverage, the error rate among fields **not** flagged, and the share of all errors caught by the flag.
+
+#%% code
+auc_c = roc_auc_score(ext.extraction_correct, ext.model_confidence)
+rows = []
+for th in (0.0, 0.5, 0.6, 0.7, 0.8, 0.9):
+    flagged = ext.model_confidence < th; unf = ~flagged; errs = ext.extraction_correct == 0
+    rows.append((th, flagged.mean(), ext.extraction_correct[unf].eq(0).mean(), (flagged & errs).sum() / errs.sum()))
+sr = pd.DataFrame(rows, columns=["flag if confidence <", "share of fields flagged", "error rate among unflagged fields", "share of all errors caught"]).set_index("flag if confidence <")
+print(f"AUC of confidence for separating correct from wrong extractions = {auc_c:.3f}")
+sr.round(4)
+
+#%% md
+**Observation:** «O72»
+
+### 7.3 The randomised time comparison (cluster-aware)
+
+**(a) Why a mixed model?** Adjudicators differ in speed, and each handles ~100 claims, so claims are not independent. We model **log handling time** on the randomised arm with pages, ICU and value as covariates and a **random intercept per adjudicator**. exp(β) is the **time ratio** (AI vs manual). A distribution-free **Mann–Whitney** test and the ratio of medians confirm. We also report the time ratio on **complex** vs **simple** claims (interaction).
+
+#%% code
+adj["pages_10"] = adj.pages / 10; adj["l_val"] = np.log(adj.claim_value_inr)
+mm = smf.mixedlm("log_min ~ ai_assisted + pages_10 + icu + l_val", data=adj, groups=adj.adjudicator_id).fit()
+b, se = mm.params["ai_assisted"], mm.bse["ai_assisted"]
+mi = smf.mixedlm("log_min ~ ai_assisted * complex_claim + pages_10 + icu + l_val", data=adj, groups=adj.adjudicator_id).fit()
+med = adj.groupby("ai_assisted").handling_minutes.median(); mw = stats.mannwhitneyu(adj.loc[adj.ai_assisted == 1, "handling_minutes"], adj.loc[adj.ai_assisted == 0, "handling_minutes"])
+bs = [np.median(adj.handling_minutes[adj.ai_assisted == 1].sample(frac=1, replace=True, random_state=int(RNG.integers(1e9)))) / np.median(adj.handling_minutes[adj.ai_assisted == 0].sample(frac=1, replace=True, random_state=int(RNG.integers(1e9)))) for _ in range(300)]
+print(f"Median minutes: manual {med[0]:.1f} vs AI {med[1]:.1f} → ratio {med[1] / med[0]:.2f} (bootstrap CI {np.percentile(bs, 2.5):.2f}–{np.percentile(bs, 97.5):.2f}); Mann–Whitney p = {mw.pvalue:.2g}")
+print(f"Mixed model time ratio (AI/manual) = {np.exp(b):.3f} (95% CI {np.exp(b - 1.96 * se):.3f}–{np.exp(b + 1.96 * se):.3f}) → time saved {1 - np.exp(b):.0%}; adjudicator SD (log) = {np.sqrt(mm.cov_re.iloc[0, 0]):.2f}")
+b_s, b_c = mi.params["ai_assisted"], mi.params["ai_assisted"] + mi.params["ai_assisted:complex_claim"]
+print(f"Time ratio: simple claims {np.exp(b_s):.3f} vs complex claims {np.exp(b_c):.3f} (interaction p = {mi.pvalues['ai_assisted:complex_claim']:.2g})")
+print(f"Productivity (claims per adjudicator-day, 450 minutes): manual {450 / adj.loc[adj.ai_assisted == 0, 'handling_minutes'].mean():.1f} vs AI {450 / adj.loc[adj.ai_assisted == 1, 'handling_minutes'].mean():.1f} → {adj.loc[adj.ai_assisted == 0, 'handling_minutes'].mean() / adj.loc[adj.ai_assisted == 1, 'handling_minutes'].mean():.2f}×")
+
+#%% md
+**(c)/(f) Observation:** «O73»
+
+### 7.4 Are decisions still correct? Non-inferiority against the gold panel
+
+**(a)** On the gold-audited subsample, decision accuracy (agrees with the senior panel) is compared by arm. **Non-inferiority margin: 2 pp.** Non-inferior if the lower 95% bound of (AI − manual) is above −2 pp (Newcombe CI). We also report accuracy by complexity, and dispute rates (two-proportion tests; Holm).
+
+#%% code
+audit["ok"] = (audit.decision == audit.gold_decision).astype(int)
+a1, a0 = audit[audit.ai_assisted == 1], audit[audit.ai_assisted == 0]
+lo, hi = confint_proportions_2indep(a1.ok.sum(), len(a1), a0.ok.sum(), len(a0), method="newcomb")
+print(f"Accuracy vs gold (n = {len(audit)}): AI {a1.ok.mean():.1%} vs manual {a0.ok.mean():.1%} → diff {(a1.ok.mean() - a0.ok.mean()) * 100:+.1f} pp (CI {lo * 100:+.1f} to {hi * 100:+.1f}) → "
+      f"{'NON-INFERIOR' if lo > -0.02 else 'NOT shown non-inferior'} at −2 pp (small sample: CI is wide)")
+adj["ok_all"] = (adj.decision == adj._true_decision).astype(int)
+a1, a0 = adj[adj.ai_assisted == 1], adj[adj.ai_assisted == 0]; lo2, hi2 = confint_proportions_2indep(a1.ok_all.sum(), len(a1), a0.ok_all.sum(), len(a0), method="newcomb")
+print(f"Accuracy vs hidden truth on ALL claims (n = {len(adj):,}, possible only in simulation): AI {a1.ok_all.mean():.1%} vs manual {a0.ok_all.mean():.1%} → diff {(a1.ok_all.mean() - a0.ok_all.mean()) * 100:+.2f} pp (CI {lo2 * 100:+.2f} to {hi2 * 100:+.2f}) → {'NON-INFERIOR' if lo2 > -0.02 else 'NOT shown'}")
+rows = []
+for cx in (0, 1):
+    s1, s0 = adj[(adj.ai_assisted == 1) & (adj.complex_claim == cx)], adj[(adj.ai_assisted == 0) & (adj.complex_claim == cx)]
+    z, p = proportions_ztest([s1.ok_all.sum(), s0.ok_all.sum()], [len(s1), len(s0)]); rows.append(("complex" if cx else "simple", len(s1) + len(s0), s0.ok_all.mean(), s1.ok_all.mean(), (s1.ok_all.mean() - s0.ok_all.mean()) * 100, p))
+z, p_d = proportions_ztest([a1.disputed_later.sum(), a0.disputed_later.sum()], [len(a1), len(a0)]); rows.append(("dispute rate (all)", len(adj), a0.disputed_later.mean(), a1.disputed_later.mean(), (a1.disputed_later.mean() - a0.disputed_later.mean()) * 100, p_d))
+res = pd.DataFrame(rows, columns=["slice", "claims", "manual", "AI-assisted", "diff (pp)", "p"]).set_index("slice"); res["p_holm"] = multipletests(res.p, method="holm")[1]
+res.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O74»
+
+### 7.5 Automation bias: what happens when the AI summary is wrong?
+
+Within the AI-assisted arm, we compare adjudicator accuracy when the summary contained an error vs when it was correct (Fisher / two-proportion), and against the manual arm on the same kind of claims. A wrong summary that adjudicators copy is the main risk of decision support.
+
+#%% code
+ai = adj[adj.ai_assisted == 1]; w_, r_ = ai[ai._summary_wrong == 1], ai[ai._summary_wrong == 0]
+tab = pd.crosstab(ai._summary_wrong, ai.ok_all); p_f = stats.fisher_exact(tab.values)[1]
+lo, hi = confint_proportions_2indep(w_.ok_all.sum(), len(w_), r_.ok_all.sum(), len(r_), method="newcomb")
+man = adj[adj.ai_assisted == 0]
+print(f"AI summary wrong in {ai._summary_wrong.mean():.1%} of AI-assisted claims ({len(w_)}), {w_.complex_claim.mean():.0%} of them complex")
+print(f"Adjudicator accuracy when the summary is right {r_.ok_all.mean():.1%} vs wrong {w_.ok_all.mean():.1%} → {(w_.ok_all.mean() - r_.ok_all.mean()) * 100:+.1f} pp (CI {lo * 100:+.1f} to {hi * 100:+.1f}), Fisher p = {p_f:.2g}; manual arm overall {man.ok_all.mean():.1%}")
+print(f"Net effect: the {len(w_)} wrong-summary claims cost ≈ {(r_.ok_all.mean() - w_.ok_all.mean()) * len(w_):.0f} extra wrong decisions, offset by better accuracy elsewhere in the AI arm")
+
+#%% md
+**Observation:** «O75»
+
+### 7.6 The guideline check: sensitivity, specificity and calibration
+
+On 1,500 claims: **sensitivity** (treatment deviations the copilot flags), **specificity** (conforming treatments not flagged), precision and the false-alarm load for adjudicators, with Wilson CIs. Then the flag's usefulness at different confidence cut-offs.
+
+#%% code
+t = gl.expert_deviation == 1; f = gl.copilot_flag == 1; tp, fn, tn, fp = int((t & f).sum()), int((t & ~f).sum()), int((~t & ~f).sum()), int((~t & f).sum())
+r = {"sensitivity": (tp, tp + fn), "specificity": (tn, tn + fp), "precision (flag is a true deviation)": (tp, tp + fp), "negative predictive value": (tn, tn + fn)}
+gt = pd.DataFrame({k: [v[0] / v[1], *proportion_confint(*v, method="wilson")] for k, v in r.items()}, index=["estimate", "CI low", "CI high"]).T
+rows = []
+for c_ in (0.3, 0.4, 0.5, 0.6, 0.7):
+    ff = gl.copilot_confidence >= c_; rows.append((c_, ff.mean(), (ff & t).sum() / t.sum(), (ff & ~t).sum() / (~t).sum(), (ff & t).sum() / ff.sum()))
+cut = pd.DataFrame(rows, columns=["flag if confidence ≥", "share flagged", "sensitivity", "false-alarm rate", "precision"]).set_index("flag if confidence ≥")
+print(f"Deviation prevalence {t.mean():.1%} | AUC of copilot confidence = {roc_auc_score(t, gl.copilot_confidence):.3f} | with these rates, {1 - gt.loc['precision (flag is a true deviation)', 'estimate']:.0%} of flags are false alarms")
+display(gt.round(4)); cut.round(4)
+
+#%% md
+**Observation:** «O76»
+
+### 7.7 Sizing the next study
+
+How many claims per arm are needed to detect (a) a 20% time saving, from the observed log-time SD, and (b) a 2 pp accuracy loss (non-inferiority at 2 pp margin if true accuracy is the same)?
+
+#%% code
+sd = adj.groupby("ai_assisted").log_min.std().mean(); p_acc = adj.ok_all.mean(); rows = []
+for eff in (0.10, 0.20, 0.35):
+    n_ = int(np.ceil(2 * (1.96 + 0.84) ** 2 * sd ** 2 / np.log(1 / (1 - eff)) ** 2)); rows.append((f"time saving {eff:.0%}", n_))
+for m_ in (0.02, 0.03, 0.05):
+    n_ = int(np.ceil(2 * (1.645 + 0.84) ** 2 * p_acc * (1 - p_acc) / m_ ** 2)); rows.append((f"accuracy NI margin {m_ * 100:.0f} pp (80% power, α = 0.05 one-sided)", n_))
+pd.DataFrame(rows, columns=["target", "claims per arm"]).set_index("target")
+
+#%% md
+**Observation:** «O77»
+
+## 8. ML Section — what we did and did not evaluate
+
+The OCR, LLM and "indigenous model" are not reproduced: their documented inputs and outputs are proprietary, and a language model is outside the brief's library list. What matters for the business is the **evaluation** (extraction audit, calibrated confidence, randomised productivity test, gold-panel quality, bias check), which applies to any vendor model. In production, this evaluation must be repeated whenever the model, prompt or OCR engine changes, on a frozen audit set.
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-25-07):
+- 2 lakh health claims a month; adjudicator cost ₹900 per hour.
+- A wrong decision costs ₹6,000 on average (leakage or dispute handling).
+- Copilot running cost ₹45 per claim.
+
+#%% code
+N_CL, HR, WRONG, COPILOT = 2e5, 900, 6000, 45
+t0, t1 = adj.loc[adj.ai_assisted == 0, "handling_minutes"].mean(), adj.loc[adj.ai_assisted == 1, "handling_minutes"].mean()
+w0, w1 = 1 - adj.loc[adj.ai_assisted == 0, "ok_all"].mean(), 1 - adj.loc[adj.ai_assisted == 1, "ok_all"].mean()
+rows = [("manual", N_CL * t0 / 60 * HR / 1e7, N_CL * w0 * WRONG / 1e7, 0.0), ("AI-assisted", N_CL * t1 / 60 * HR / 1e7, N_CL * w1 * WRONG / 1e7, N_CL * COPILOT / 1e7)]
+money = pd.DataFrame(rows, columns=["process", "adjudicator cost ₹ crore/month", "cost of wrong decisions ₹ crore/month", "copilot cost ₹ crore/month"]).set_index("process"); money["total ₹ crore/month"] = money.sum(1)
+print(f"Adjudicator hours: manual {N_CL * t0 / 60:,.0f}/month vs AI {N_CL * t1 / 60:,.0f}/month → {N_CL * (t0 - t1) / 60:,.0f} hours freed; equivalent to {N_CL * (t0 - t1) / 60 / 150:,.0f} full-time adjudicators at 150 hours a month")
+money.round(2)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated copilot:** summary-error rates, anchoring strength and time savings are assumed. The *evaluation design* (randomised arms, a gold panel, an automation-bias analysis) is the transferable part.
+- **Gold panel size:** the 10% audit gives a wide CI on decision accuracy (7.4). A bigger audit or the full-truth check is needed for a tight non-inferiority claim.
+- **Hallucinated or mis-cited evidence:** LLM summaries can invent facts. Each summary should link every fact to a source page for one-click verification. Audit a sample of summaries for faithfulness.
+- **Regulation and fairness:** IRDAI and the Insurance Ombudsman expect transparent, human-accountable decisions. The copilot should not reduce claims approval for specific conditions or hospitals without review.
+- **Model drift:** new document formats, hospitals and treatment guidelines change accuracy. Re-run the extraction audit monthly.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Mixed model | log T_ij = β₀ + β₁·AI + γ·x + u_j + ε_ij, u_j ~ N(0, σ²_adj) |
+| Time ratio | exp(β₁) |
+| Non-inferiority | lower 95% bound of (p_AI − p_manual) > −δ |
+| Sensitivity / specificity | TP/(TP + FN), TN/(TN + FP) |
+| Time-saving sample size | n = 2(z₀.₉₇₅ + z₀.₈)² σ² / ln(1/(1 − s))² per arm |
+| Non-inferiority sample size | n = 2(z₁₋α + z₁₋β)² p(1 − p) / δ² per arm |
+
+| Term | Meaning |
+|---|---|
+| Copilot / decision support | A tool that prepares and checks, while a human decides |
+| Automation bias | Over-trusting a machine's suggestion, even when wrong |
+| Gold panel | Senior reviewers whose majority vote is the reference |
+| Adjudication | Deciding whether and how much to pay a claim |
+| NHA | National Health Authority (treatment package guidelines) |
+| Non-inferiority | Showing a new process is not worse than the old one by more than a set margin |

@@ -1,0 +1,9 @@
+,Value
+Test month,"30,000 transactions, 157 frauds (0.52%)"
+Always 'genuine',"99.48% accuracy, catches nothing"
+Current rules,"precision 2.9%, recall 23%, 1,256 alerts"
+Logistic model,"ROC-AUC 0.966, PR-AUC 0.43 (random = 0.005); GBM PR-AUC 0.25"
+Rebalancing,ranking unchanged; mean predicted fraud 16.9% (class weights) vs actual 0.52%
+Recommended policy,"300 alerts: precision 17%, recall 33%, 72% of fraud ₹ caught"
+Saving (month 4),₹9.9 lakh vs no alerts; ₹2.8 lakh more than the rules
+Drift,actual ÷ predicted fraud = 1.39 in month 4 (online gaming 1.69)

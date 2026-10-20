@@ -1,0 +1,4 @@
+,AIC,adj. R²
+"LOS linear, age linear",9509.9831287687,0.4901873283
+"log(LOS), age linear",9455.1814570216,0.4963664404
+"log(LOS), age + age² (centred)",9391.1448670351,0.5036020677

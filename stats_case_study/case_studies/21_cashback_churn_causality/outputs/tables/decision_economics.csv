@@ -1,0 +1,4 @@
+basis,churn reduction (pp),churners avoided per 1000 enrolled,value per enrolled customer (Rs),net per enrolled customer (Rs)
+Marketing's naive number,19.3641237699,193.6412376985,1161.8474261911,711.8474261911
+Pilot complier effect,4.0798027348,40.7980273481,244.7881640888,-205.2118359112
+Truth (answer key),4.3252671651,43.2526716508,259.516029905,-190.483970095

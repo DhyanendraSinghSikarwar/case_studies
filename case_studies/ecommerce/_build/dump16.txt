@@ -1,0 +1,178 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs16.py
+--- cell 8 (exec 3) ---
+49,600 session rows | 878,462 logged impressions | 19,600 listings in 5 areas | 1,200 menu names | generated in 96s
+   session_id  day  area          query_raw   served_arm  n_results  n_clicks  ordered_listing          _type  _misspelled
+0           0   46     0           sev puri  ngram_trial         20         4             3689           dish        False
+1           1   38     3  cheese frryd rice   production         20         1            12101  dish_modifier         True
+2           2   59     3             raajma   production         20         4               -1           dish         True
+3           3   46     3         fried rice   production         20         4               -1           dish        False
+4           4   24     4               disa   production          0         0               -1           dish         True
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0           sessions: session_id, user_id, day, area      One search; day 0 to 59; delivery area 0 to 4
+1                                          query_raw           Query as typed (messy case, spaces, '?')
+2  served_arm, n_results, n_clicks, first_click_p...  Which system served it, how many results were ...
+3  impressions: session_id, position, listing_id,...  What was shown (up to 20) and whether it was c...
+4  listings: listing_id, restaurant_id, name_id, ...  A dish offered by a restaurant, with business ...
+5                     dish_names: name_id, dish_name  1,200 menu names; families.csv holds the taxon...
+6  _type, _family, _cluster, _modifier, _intent, ...  HIDDEN: true query intent and spelling noise (...
+7                                 true_relevance.npz  HIDDEN: graded relevance of every menu name fo...
+--- cell 12 (exec 5) ---
+duplicate session rows                           900
+empty queries                                    149
+queries with upper case, extra spaces or '?'    4702
+bot-like users (> 20× median sessions)             1
+sessions by the bot                              712
+
+Clean: 47,854 sessions | 10,981 distinct queries | zero-result sessions 9.9% | sessions with a click 68.9% | with an order 31.0% | clean impressions 861,882
+query types: {'dish': 0.519, 'dish_modifier': 0.281, 'vague': 0.119, 'multi_intent': 0.081} | misspelled share of dish-like queries: 0.333
+--- cell 14 (exec 6) ---
+[image]
+10,981 distinct strings for 47,854 sessions; the 10 most common queries cover 20.4%; zero-result rate in production: clean dish 4.2%, misspelled dish 20.8%, vague 39.3%
+--- cell 16 (exec 7) ---
+train sessions 27,922 (days 0-34) | test sessions 5,548 (days 53-59) | distinct query strings train 7,533, test 2,220 | scored in 39s
+test sessions by type: {'dish': 2872, 'dish_modifier': 1579, 'vague': 660, 'multi_intent': 437} | misspelled: 1739
+--- cell 17 (exec 8) ---
+order pairs from logs: 8,665 + dictionary/menu/taxonomy pairs: 2,280 | 4 fits in 132s
+           top-1 family accuracy      
+                            mean  size
+seg                                   
+clean                     0.9991  3269
+misspelled                0.9555  1619
+--- cell 19 (exec 9) ---
+logged training impressions 502,151; random subsample used 300,000 (click rate 8.7%; 32,958 from the trial arm) | 3 rankers fitted in 321s
+features: m_exact, m_fuzzy, m_trigram, p_family, p_cluster, rating, dist_km, prep_min, cost_for_two, price_inr, orders_norm, q_tokens, q_chars
+--- cell 21 (exec 10) ---
+test sessions 5,548; answerable (an exact-dish listing exists in the area): 81.5%; LTR pool of 40 contains an exact-dish listing for 95.0% of answerable sessions
+                                   NDCG@10  CI low  CI high  NDCG@1  NDCG@3  MRR@10 (answerable)  P@1 (answerable)  zero-result rate  twin P(click)
+method                                                                                                                                             
+1 exact lexical                     0.6730  0.6616   0.6843  0.6745  0.6726               0.7217            0.7169            0.2022         0.5428
+2 fuzzy lexical (production-like)   0.7763  0.7662   0.7862  0.7821  0.7803               0.8402            0.8381            0.1081         0.6224
+3 character-trigram cosine          0.8131  0.8038   0.8227  0.8175  0.8163               0.8763            0.8713            0.0094         0.6482
+4 learned query classifier          0.8783  0.8716   0.8844  0.8666  0.8679               0.7877            0.7605            0.0000         0.7010
+5 heuristic blend of 2-4            0.8934  0.8863   0.9014  0.8983  0.8973               0.9170            0.9160            0.0000         0.6913
+6 LTR on clicks                     0.9004  0.8940   0.9070  0.9139  0.9109               0.9195            0.9023            0.0000         0.7909
+7 LTR on clicks, IPW                0.8961  0.8894   0.9026  0.9101  0.9041               0.9046            0.8799            0.0000         0.8117
+8 LTR, production logs only         0.8958  0.8895   0.9030  0.9033  0.9004               0.9042            0.8782            0.0000         0.7887
+--- cell 23 (exec 11) ---
+Best method on NDCG@10: 6 LTR on clicks
+                                   ΔNDCG@10 (best − other)  CI low  CI high  Cohen d_z  Wilcoxon p  sessions best wins  sessions other wins  p_holm
+vs 6 LTR on clicks                                                                                                                                 
+1 exact lexical                                     0.2275  0.2158   0.2387     0.5502      0.0000                1682                  787  0.0000
+2 fuzzy lexical (production-like)                   0.1242  0.1160   0.1327     0.3697      0.0000                1118                  908  0.0000
+3 character-trigram cosine                          0.0874  0.0798   0.0950     0.2945      0.0000                 978                  993  0.0000
+4 learned query classifier                          0.0221  0.0160   0.0286     0.0999      0.0000                 942                  623  0.0000
+5 heuristic blend of 2-4                            0.0070  0.0029   0.0112     0.0444      0.0000                 362                 1057  0.0000
+7 LTR on clicks, IPW                                0.0043  0.0028   0.0060     0.0718      0.0000                 799                  612  0.0000
+8 LTR, production logs only                         0.0046  0.0031   0.0061     0.0769      0.0000                 809                  548  0.0000
+--- cell 25 (exec 12) ---
+[image]
+{'1 exact lexical': np.float64(0.674), '2 fuzzy lexical (production-like)': np.float64(0.782), '3 character-trigram cosine': np.float64(0.817), '4 learned query classifier': np.float64(0.867), '5 heuristic blend of 2-4': np.float64(0.898), '6 LTR on clicks': np.float64(0.914), '7 LTR on clicks, IPW': np.float64(0.91), '8 LTR, production logs only': np.float64(0.903)}
+--- cell 27 (exec 13) ---
+Spearman(edits, NDCG@10) among misspelled sessions: fuzzy lexical -0.30 (p = 9.1e-36); learned classifier -0.03 (p = 0.2) | misspelled share of dish-like test sessions: 33.1%
+[image]
+                                   clean  misspelled  gap (clean − misspelled)
+1 exact lexical                   0.9189      0.3658                    0.5531
+2 fuzzy lexical (production-like) 0.9189      0.6976                    0.2213
+3 character-trigram cosine        0.9242      0.7896                    0.1346
+4 learned query classifier        0.9160      0.8901                    0.0259
+5 heuristic blend of 2-4          0.9613      0.9143                    0.0471
+6 LTR on clicks                   0.9610      0.9013                    0.0597
+7 LTR on clicks, IPW              0.9559      0.8920                    0.0639
+8 LTR, production logs only       0.9538      0.8953                    0.0586
+                            gain on clean  gain on misspelled  diff-in-diff  CI low  CI high  Mann-Whitney p
+method − fuzzy lexical                                                                                      
+1 exact lexical                   -0.0000             -0.3318       -0.3318 -0.3528  -0.3101          0.0000
+3 character-trigram cosine         0.0053              0.0919        0.0867  0.0676   0.1035          0.0000
+4 learned query classifier        -0.0029              0.1925        0.1954  0.1680   0.2216          0.0000
+6 LTR on clicks                    0.0420              0.2037        0.1616  0.1415   0.1846          0.0000
+          exact lexical  fuzzy lexical (production-li  character-trigram cosine  learned query classifier  heuristic blend of 2-4  LTR on clicks  LTR on clicks, IPW  \
+0 edits          0.9190                        0.9190                    0.9240                    0.9160                  0.9610         0.9610              0.9560   
+1 edit           0.3680                        0.8320                    0.8490                    0.9040                  0.9390         0.9230              0.9090   
+2 edits          0.4360                        0.7440                    0.8240                    0.8960                  0.9220         0.9020              0.8940   
+3+ edits         0.2550                        0.4580                    0.6610                    0.8630                  0.8710         0.8710              0.8650   
+
+          LTR, production logs only  
+0 edits                      0.9540  
+1 edit                       0.9170  
+2 edits                      0.8980  
+3+ edits                     0.8640
+--- cell 29 (exec 14) ---
+Kruskal-Wallis across query types for 6 LTR on clicks: H = 1274.4, p = 5.3e-276 | share of dish-like test sessions with no exact dish in the area: 21.0%
+                               dish  dish_modifier  multi_intent  vague
+exact lexical                0.7300         0.7390        0.7590 0.2080
+fuzzy lexical (production-li 0.8600         0.8160        0.8590 0.2620
+character-trigram cosine     0.8980         0.8410        0.8980 0.3200
+learned query classifier     0.9910         0.7340        0.9850 0.6630
+heuristic blend of 2-4       0.9560         0.9260        0.9490 0.5060
+LTR on clicks                0.9680         0.8840        0.9680 0.5980
+LTR on clicks, IPW           0.9750         0.8520        0.9710 0.6100
+LTR, production logs only    0.9600         0.8780        0.9680 0.6100
+                                   NDCG@10: dish available  NDCG@10: dish unavailable (n = 1026)  top-10 in intended category (unavailable)  \
+method                                                                                                                                        
+1 exact lexical                                     0.8090                                0.4610                                     0.5540   
+2 fuzzy lexical (production-like)                   0.9360                                0.5050                                     0.5900   
+3 character-trigram cosine                          0.9680                                0.5480                                     0.6650   
+4 learned query classifier                          0.8890                                0.9750                                     0.9840   
+5 heuristic blend of 2-4                            0.9910                                0.7740                                     0.8260   
+6 LTR on clicks                                     0.9630                                0.8600                                     0.8830   
+7 LTR on clicks, IPW                                0.9520                                0.8690                                     0.8860   
+8 LTR, production logs only                         0.9540                                0.8630                                     0.8840   
+
+                                   top-10 in intended category (production zero-result, n = 313)  NDCG@10 (production zero-result)  
+method                                                                                                                              
+1 exact lexical                                                               0.0000                                        0.0000  
+2 fuzzy lexical (production-like)                                             0.0000                                        0.0000  
+3 character-trigram cosine                                                    0.5420                                        0.4340  
+4 learned query classifier                                                    0.9650                                        0.9500  
+5 heuristic blend of 2-4                                                      0.8850                                        0.8260  
+6 LTR on clicks                                                               0.9220                                        0.9010  
+7 LTR on clicks, IPW                                                          0.9190                                        0.9000  
+8 LTR, production logs only                                                   0.9290                                        0.9080
+--- cell 31 (exec 15) ---
+Davies-Bouldin (lower = tighter family clusters): word-level 0.89 | character-trigram 0.36 | share of sampled queries with no known word: all 22.0%, misspelled 66.7%, clean 0.0% | all dish-like test queries with no known word: 12.5%
+[image]
+--- cell 33 (exec 16) ---
+[image]
+Logistic fit: coefficient on log(position) = -0.85 (95% CI -0.86 to -0.84); odds of a click at position 10 vs 1 for the same relevance: 0.14
+Click-label noise: 91.5% of clicks are on exact-dish listings, 0.4% on unrelated ones | 88.2% of exact-dish listings that were shown were not clicked | exact-dish share of the top-20 shown: 68.9%
+Spearman of method ranks: editorial vs replay -0.31 (p = 0.46) | editorial vs twin +0.95 (p = 0.00026) | replay vs twin -0.52 (p = 0.18) | test sessions with an order: 1,706
+                                   editorial NDCG@10  click replay: ordered dish in top 10  online twin P(click)  rank editorial  rank replay  rank twin
+1 exact lexical                               0.6730                                0.7737                0.5428          8.0000       5.0000     8.0000
+2 fuzzy lexical (production-like)             0.7763                                0.8834                0.6224          7.0000       1.0000     7.0000
+3 character-trigram cosine                    0.8131                                0.8271                0.6482          6.0000       3.0000     6.0000
+4 learned query classifier                    0.8783                                0.4197                0.7010          5.0000       8.0000     4.0000
+5 heuristic blend of 2-4                      0.8934                                0.8359                0.6913          4.0000       2.0000     5.0000
+6 LTR on clicks                               0.9004                                0.7773                0.7909          1.0000       4.0000     2.0000
+7 LTR on clicks, IPW                          0.8961                                0.5920                0.8117          2.0000       7.0000     1.0000
+8 LTR, production logs only                   0.8958                                0.7696                0.7887          3.0000       6.0000     3.0000
+--- cell 35 (exec 17) ---
+Observed paired SD of the NDCG@10 difference (best − production-like): 0.336; mean difference 0.124; minimum detectable difference with our 5,548 test sessions: 0.0126
+                          sessions needed
+target (paired, offline)                 
+ΔNDCG@10 = 0.005                    35378
+ΔNDCG@10 = 0.010                     8845
+ΔNDCG@10 = 0.020                     2212
+ΔNDCG@10 = 0.050                      354
+                                control  treatment  sessions per arm
+lift in sessions with ≥1 click                                      
++2% relative                     0.6845     0.6982             17851
++5% relative                     0.6845     0.7187              2799
++10% relative                    0.6845     0.7529               673
+--- cell 37 (exec 18) ---
+Click-prediction AUC on logged test impressions (biased labels): LTR 0.753, LTR with IPW 0.722; held-out logged impressions 99,940
+                        m_trigram  rating  orders_norm  p_cluster  m_exact  q_chars  m_fuzzy  p_family  dist_km  q_tokens  price_inr  prep_min  cost_for_two
+AUC drop when shuffled     0.0896  0.0528       0.0475     0.0376   0.0200   0.0179   0.0164    0.0162   0.0098    0.0025     0.0023    0.0006        0.0001
+--- cell 39 (exec 19) ---
+Best by base-case value: 7 LTR on clicks, IPW | production-like baseline expected P(click in top 10) = 0.622 | search sessions per year: 91 crore
+                             relative lift in P(click)  lift CI low  lift CI high  ₹ crore/yr worst  ₹ crore/yr base  ₹ crore/yr best
+1 exact lexical                                -0.1280      -0.1380       -0.1180          -19.0730         -32.0100         -42.8810
+3 character-trigram cosine                      0.0410       0.0350        0.0480           -0.1340           5.0760          11.6830
+4 learned query classifier                      0.1260       0.1160        0.1370            8.6890          23.6900          41.0000
+5 heuristic blend of 2-4                        0.1110       0.1020        0.1190            7.1480          20.2510          35.2380
+6 LTR on clicks                                 0.2710       0.2610        0.2810           24.5740          55.3210          88.2520
+7 LTR on clicks, IPW                            0.3040       0.2940        0.3130           28.1890          62.6220          98.9730
+8 LTR, production logs only                     0.2670       0.2580        0.2770           24.2710          54.5170          87.0070

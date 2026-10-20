@@ -1,0 +1,7 @@
+column,issue,rows,decision
+customer_age,"Outside policy band 21-60 (typos: 3, 17, 230)",3,Set to missing; reported to data owner; not imputed
+interest_rate,"Keyed as decimal (0.155 = 15.5%), confirmed via EMI",5,Corrected (x100)
+monthly_income,Annual income keyed as monthly (DTI ratio = 12),4,Corrected (/12)
+credit_score,"-1 = no bureau history (a status, not a score)",134,Score set to missing; flag no_bureau_history created; rows kept
+monthly_income,Missing (not re-verified; more often self-employed),90,Left missing; income stats reported on verified subset
+(all),Exact duplicate rows,6,Dropped

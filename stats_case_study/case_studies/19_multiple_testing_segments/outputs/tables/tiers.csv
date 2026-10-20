@@ -1,0 +1,5 @@
+tier,segments,customers_per_arm,mean_uplift_pp,mean_shrunken_pp
+"1. Confirmed (survives Holm, FWER 5%)",2,7607.0,2.3034416811,1.5812314855
+2. Promising (BH q < 0.10): confirm in wave 3,4,8381.0,1.953463693,1.1052797597
+3. Not supported by the data: default campaign,15,46950.0,0.4261706978,0.3171643724
+4. Negative or none: do not target,19,56099.0,-0.4636948046,-0.155691924

@@ -1,0 +1,10 @@
+field(s),meaning
+"merchant_monthly: merchant_id, month",Merchant and month 1–15 (13–15 = the future)
+"qr_value_inr, qr_txn_count, unique_payers, active_days",Monthly QR aggregates
+"merchant_profile: category, months_on_platform, owner_age, has_soundbox, city_tier",Merchant attributes
+"_q, _vol, _shock","HIDDEN: quality, volatility, future shock"
+"loans: loan_amount, edi_inr",Loan in month 12 and its equated daily instalment
+default_30d_missed,Missed > 30 days of EDI (target)
+"_burden_true, _p_default",HIDDEN: EDI / actual future daily inflow; true default probability
+"name_pairs: kyc_name, bank_account_name",Name on KYC vs name returned by the bank for the account
+"_is_same_person, _variant",HIDDEN label and variant type

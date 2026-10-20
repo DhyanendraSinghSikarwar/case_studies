@@ -1,0 +1,9 @@
+field(s),meaning
+"daily_trades: date, platform",Trading day; web / android / ios / other_brokers
+penny_trades_first_time,Penny-stock trades by first-time investors that day
+active_first_time_investors,Active first-time investors that day (exposure)
+nudge_live,1 once that platform's nudge is live
+_market_index,HIDDEN market-wide speculative interest
+user_holdout: holdout_no_nudge,1 = randomised 5% who never see nudges
+"traded_penny_90d, penny_loss_90d_inr",Any penny trade in 90 days; realised loss
+_spec,HIDDEN speculative propensity

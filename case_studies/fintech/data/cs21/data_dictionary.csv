@@ -1,0 +1,7 @@
+field(s),meaning
+"user_id, user_idx",User
+day,Day 0–55 (shown as days 1–56 in text)
+"category, cat_idx",One of 12 service categories
+clicks,Number of homepage clicks on that category that day
+"users_hidden: _r, _lam, _aff_*","HIDDEN: trend responsiveness, visit rate, true affinity"
+trend_hidden,HIDDEN: true trend multiplier per day and category

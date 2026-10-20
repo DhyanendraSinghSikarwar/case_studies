@@ -1,0 +1,8 @@
+field,meaning,range
+timestamp,Start of the 5-minute window (IST),29 Sep – 9 Nov 2025
+merchant_id,Merchant,M01–M16
+gateway,Payment gateway / bank connection,"GW_A, GW_B, GW_C"
+attempts,Payment attempts in the window,≥ 0
+successes,Successful payments in the window,0 … attempts
+latency_p95_ms,95th-percentile gateway latency (ms); blank when attempts = 0,> 0
+incidents.csv,"Ground truth: incident id, type, start, end, affected series",41 incidents

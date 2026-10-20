@@ -1,0 +1,21 @@
+[project]
+name = "promo"
+version = "0.1.0"
+description = "Promotion Cannibalisation Engine - score discounts on family net contribution"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 140
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501", "E701", "E702", "E741"]

@@ -1,0 +1,5 @@
+,customers called,lowest p called,churners reached,precision (churners / called),recall (share of all churners),"expected net value (₹, model)",realised net value (₹)
+p > 50% (default threshold),86.0,0.5017924721,52.0,0.6046511628,0.0414342629,157542.356037248,166800.0
+"p > 14.3% (break-even, no capacity limit)",2807.0,0.1429182358,684.0,0.243676523,0.5450199203,1189265.0111063644,1188599.9999999995
+"top 1,000 by probability (capacity)",1000.0,0.2459430776,353.0,0.353,0.2812749004,864061.4846043466,882600.0
+"1,000 random customers",1000.0,0.0008810196,118.0,0.118,0.0940239044,-147780.427986735,-104400.0000000001

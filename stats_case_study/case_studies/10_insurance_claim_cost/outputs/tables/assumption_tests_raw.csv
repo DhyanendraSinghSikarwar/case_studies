@@ -1,0 +1,4 @@
+,statistic,p_value,checks
+Breusch-Pagan (F),28.5425868385,0.0,constant variance
+"RESET (F, squared fitted)",167.4748109018,0.0,functional form (linearity)
+Jarque-Bera,40972.7308242715,0.0,normal residuals

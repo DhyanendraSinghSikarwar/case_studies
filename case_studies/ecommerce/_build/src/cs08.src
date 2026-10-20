@@ -1,0 +1,489 @@
+#%% md
+# Case Study 8 — Price Elasticity and Discount Efficacy: Is the Sale Really a Sale, and Do Discounts Pay?
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 8 — *Marketplace price monitoring / discount efficacy on Flipkart (outside academic analysis)* (`indian_ecommerce_data_science_case_studies.md`)
+**Audience:** Head of Pricing and Promotions, Category Heads, Finance, Growth
+**Evidence level:** **Weak.** The only public source is an outside study of public Flipkart prices; no company pricing method is documented. See section 2.
+**Data:** ⚠️ **SYNTHETIC** (D-08-01). Price and unit data are confidential; this is a calibrated simulation with a hidden true elasticity per product.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs08_price_elasticity_discounts.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+A marketplace runs discounts all year and especially in sale weeks. Three plain questions follow.
+
+1. **How much do sales rise when price falls?** That is **price elasticity**: a 10% price cut that lifts units by 18% means an elasticity of about −1.8. It decides which categories deserve discounts.
+2. **Is the sale really a sale?** Many listings show a large "% off" against an inflated list price (MRP). A shopper or an analyst needs a test of whether the discount is **real** (against what the item normally sells for).
+3. **Does a discount pay for itself?** Extra units in the sale week are partly **pulled forward** from the weeks after, and the platform often funds part of the discount.
+
+The trap in the first question is that **prices are not set at random**. Sellers change prices because demand moved, cost moved or a rival moved. A naive "units against price" regression on this data can show elasticity near zero or even the wrong sign, and then the business concludes "discounts do not work" or "any discount works". This notebook shows how large that error is, and how to remove it with fixed effects, an instrument and a randomised price test.
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What is documented — *weak evidence*
+
+| Item | Documented fact (from the reference file) |
+|---|---|
+| Source | One outside academic paper: arXiv 2005.04612 (Singhania et al., 2020), a study of public **Flipkart Summer Sale** data on **mobile phones** |
+| Question | Whether a "sale" discount is genuinely significant; can product features and original price predict that |
+| Method | A support vector machine classifier; metric: accuracy (the authors claim "accuracy of 91.11%" and that very few phones have a significant discount) |
+| Not documented | Dataset size and fields, the definition of "significant", features, validation, any sales or elasticity data |
+| Company evidence | **None.** No Flipkart or Amazon India engineering source on price optimisation was found. This is a buyer-side view, not a company pricing engine |
+
+> **Plain statement:** public method detail is thin. This notebook is an **interview-standard solution on simulated data**, not a reproduction of any company's pricing system, and the paper's 91.11% is the authors' own claim that we do not reproduce or test.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice (all assumptions) |
+|---|---|
+| Data | 600 SKUs in 8 categories × 52 weeks (≈ 31,000 SKU-weeks), prices, units, MRP, a competitor price, a supplier-cost index, 4 sale-event weeks |
+| Hidden truth | A true elasticity per SKU (category means from −1.4 for mobiles to −2.6 for accessories), post-promotion demand dips, price endogeneity, and 30% of SKUs with an inflated MRP |
+| Randomised test | 120 SKUs, 8 weeks, price −10% / 0% / +10% drawn at random per SKU-week |
+| Statistics added | Ladder of elasticity estimators (naive, fixed effects, controls, **instrumental variables**, experiment), Hausman-type test, category elasticities with **Holm**, experiment analysis with **power**, **event study** of promotion lift and the dip, displayed vs true discount agreement (**Cohen's kappa**, **McNemar**), classifier vs majority baseline |
+| ML | The paper's task: classify "significant discount" with SVM, logistic regression and gradient boosting, judged against the majority baseline |
+
+### (c) How the industry uses this
+
+Elasticity estimates feed promotion planning, price-matching rules and markdowns. Interview questions on this topic are about **identification** (why naive regressions mislead), log-log models, instruments and experiments, the pull-forward dip, MRP inflation, and constrained optimisation (a discount budget). Public company detail is limited, so the interview answer rests on general method.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Where should we spend discount money, and how do we tell a real sale from a cosmetic one? |
+| Analytical | What is the causal price elasticity by category, how much of a promotion's lift survives the post-promotion dip, and can a classifier flag significant discounts better than "never significant"? |
+
+**Hypotheses**
+- **H1:** H0: the naive pooled elasticity equals the randomised-experiment elasticity (and fixed-effects OLS equals IV: Hausman-type bootstrap test).
+- **H2:** H0: a category's elasticity is −1, so a price change leaves revenue unchanged (IV; Holm across 8 categories).
+- **H3:** H0: the net effect of a promotion on units over the promotion week plus the next two weeks is zero (event study; cluster bootstrap).
+- **H4:** H0: the displayed-discount badge (≥ 30% off MRP) agrees with a true significant discount (≥ 15% below the SKU's trailing 8-week median price) no better than chance (Cohen's kappa; McNemar).
+- **H5:** H0: a classifier of significant discounts is no better than predicting "never significant" (McNemar on the same SKU-weeks).
+
+**Primary metrics:** elasticity (log-log slope), net promotion lift, kappa, PR-AUC. **Business metric:** platform contribution per ₹ of discount, in ₹ crore a year.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score, average_precision_score, cohen_kappa_score
+from statsmodels.stats.contingency_tables import mcnemar
+from statsmodels.stats.multitest import multipletests
+from statsmodels.stats.diagnostic import het_breuschpagan
+import statsmodels.api as sm
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public Indian marketplace price and unit data | **None with units.** Public price scrapes exist (the paper above used public Flipkart prices) but show no sales, so elasticity cannot be estimated from them. |
+| **Decision** | Synthetic SKU-week panel with hidden true elasticity, so that every estimator can be checked against the truth (D-08-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs08.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/ecommerce/data/generate_cs08.py
+
+#%% code
+os.makedirs("data/cs08", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs08 as gen; importlib.reload(gen)
+t0 = time.time(); raw, skus = gen.generate(seed=SEED); raw.to_csv("data/cs08/panel.csv.gz", index=False); skus.to_csv("data/cs08/skus.csv.gz", index=False)
+raw[["event_name", "exp_arm"]] = raw[["event_name", "exp_arm"]].fillna("")
+print(f"{len(raw):,} SKU-week rows | {raw.sku_id.nunique()} SKUs | {raw.category.nunique()} categories | {raw.week.max()} weeks | generated in {time.time() - t0:.0f}s")
+raw.drop(columns=[c for c in raw.columns if c.startswith("_")]).head(4)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Scale | 600 SKUs (75 per category) × 52 weeks | Our assumption |
+| True elasticity | Category mean −1.4 (mobiles) to −2.6 (accessories) plus SKU noise (sd 0.35); premium brands less elastic | Our assumption |
+| Demand | log units = SKU level + season + sale traffic (+30%) + elasticity × log price gap + 0.25 × competitor gap + AR(1) shock (sd 0.2) − post-promotion dip | Our assumption |
+| Price setting | Sale weeks (4): 70% of SKUs cut 18–32%; other weeks 6% random promotions of 15–30%; sellers also pass on cost shocks (0.8), match competitors (0.3) and raise price after strong weeks (0.25) | Our assumption (this creates the endogeneity) |
+| Post-promotion dip | 70% of the log price cut is lost next week, 30% the week after | Our assumption |
+| MRP inflation | 30% of SKUs show a list price 40–80% above their normal price | Our assumption (the paper's concern: significance must be judged against a reference price) |
+| Experiment | 120 SKUs, weeks 43–50, price −10% / 0% / +10% at random | Our assumption |
+| DQ issues | 600 duplicate rows, 1.5% missing price, 0.3% prices in paise, 20 negative units, ≈ 3% stock-out weeks | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("panel: sku_id, week, category", "SKU, week 1-52, category"), ("price_inr, mrp_inr", "Selling price and displayed list price (MRP) in ₹"),
+    ("competitor_price_inr", "Scraped competitor price (₹)"), ("supplier_cost_index", "Observed supplier cost index (1.0 = normal); the instrument"),
+    ("units, in_stock", "Units sold; in_stock = 0 when the SKU was out of stock part of the week (censored sales)"),
+    ("sale_event, event_name", "1 in the four sale-event weeks"), ("exp_arm", "Price experiment arm: cut10, control, raise10 (blank outside the experiment)"),
+    ("skus: brand_tier, rating, review_count, in_price_experiment", "SKU attributes"),
+    ("_mu, _mu_cf, _promo_m, _u, _base_price, _eps; skus: _true_elasticity, _mrp_inflated", "HIDDEN truth: expected units with and without promotion, true promotion depth, demand shock, base price, elasticity"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs08/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+n0 = len(raw); ratio_mrp = raw.price_inr / raw.mrp_inr
+checks = {"duplicate rows": int(raw.duplicated().sum()), "missing price": int(raw.price_inr.isna().sum()), "price > 20 × MRP (paise error)": int((ratio_mrp > 20).sum()),
+          "negative units (returns netted)": int((raw.units < 0).sum()), "stock-out weeks (units censored)": int((raw.in_stock == 0).sum()), "zero-unit weeks": int((raw.units == 0).sum())}
+print(pd.Series(checks, name="rows").to_string())
+d0 = raw.drop_duplicates().copy(); d0 = d0[d0.price_inr.notna() & (d0.units >= 0)].copy()
+bad = d0.price_inr / d0.mrp_inr > 20; d0.loc[bad, "price_inr"] = d0.loc[bad, "price_inr"] / 100
+print(f"paise errors fixed by dividing by 100: {int(bad.sum())} (max price / MRP afterwards {(d0.price_inr / d0.mrp_inr).max():.2f})")
+d0 = d0.merge(skus[["sku_id", "brand_tier", "rating", "review_count", "in_price_experiment"]], on="sku_id").sort_values(["sku_id", "week"]).reset_index(drop=True)
+g = d0.groupby("sku_id"); d0["ref_price"] = g.price_inr.transform(lambda s: s.shift(1).rolling(8, min_periods=4).median())
+d0["disc_true"] = 1 - d0.price_inr / d0.ref_price; d0["disc_shown"] = 1 - d0.price_inr / d0.mrp_inr
+d0["sig_true"] = np.where(d0.ref_price.notna(), (d0.disc_true >= 0.15).astype(float), np.nan); d0["sig_shown"] = (d0.disc_shown >= 0.30).astype(int)
+d0["obs"] = ~((d0.in_price_experiment == 1) & (d0.week >= 43))
+d0["lq"] = np.log(d0.units.clip(lower=1)); d0["lp"] = np.log(d0.price_inr); d0["lc"] = np.log(d0.competitor_price_inr); d0["lz"] = np.log(d0.supplier_cost_index)
+M = d0[d0.obs & (d0.in_stock == 1) & (d0.units > 0)].copy()
+print(f"\nClean panel: {len(d0):,} SKU-weeks | observational modelling frame (in stock, units > 0, outside experiment weeks): {len(M):,} rows | {M.sku_id.nunique()} SKUs")
+print(f"Price experiment rows used: {int(((d0.exp_arm != '') & (d0.in_stock == 1) & (d0.units > 0)).sum()):,} | rows without a trailing reference price (first weeks): {int(d0.ref_price.isna().sum()):,}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
+axes[0].hist(d0.disc_shown.clip(-0.2, 0.7), bins=50, color="#e07a1f"); axes[0].axvline(0.30, color="k", ls="--", lw=1); axes[0].set_xlabel("Displayed discount vs MRP"); axes[0].set_ylabel("SKU-weeks"); axes[0].set_title("Displayed discount: a second mass at 30%+")
+axes[1].hist(d0.disc_true.dropna().clip(-0.4, 0.5), bins=50, color="#2a6f97"); axes[1].axvline(0.15, color="k", ls="--", lw=1); axes[1].set_xlabel("Discount vs trailing 8-week median price"); axes[1].set_ylabel("SKU-weeks"); axes[1].set_title("True discount: few weeks are real sales")
+sm_ = M.sample(6000, random_state=SEED); axes[2].scatter(sm_.lp, sm_.lq, s=3, alpha=0.25, color="#2a6f97"); axes[2].set_xlabel("log price"); axes[2].set_ylabel("log units"); axes[2].set_title("Pooled units vs price: weak slope")
+plt.tight_layout(); plt.show()
+ev_share = d0.groupby("sale_event").sig_true.mean()
+print(f"Displayed discount >= 30%: {d0.sig_shown.mean():.1%} of SKU-weeks | true significant discount (>= 15% below trailing median): {d0.sig_true.mean():.1%} ({ev_share[1]:.1%} in sale weeks, {ev_share[0]:.1%} otherwise)")
+print(f"Pooled correlation of log price and log units: {M.lp.corr(M.lq):+.2f} | units per SKU-week: median {d0.units.median():.0f}, mean {d0.units.mean():.0f}")
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 The ladder of elasticity estimators, checked against the truth
+
+**(a) Why?** A log-log model `log units = ε · log price + …` makes ε the elasticity. The question is which estimate to trust. We climb a ladder:
+
+| Rung | Estimator | What it fixes |
+|---|---|---|
+| A | Pooled OLS | Nothing: compares expensive and cheap SKUs |
+| B | + SKU fixed effects | Compares each SKU with itself |
+| C | + sale-week flag and competitor price | Removes sale traffic and price matching |
+| D | + week fixed effects | Removes anything common to a week |
+| E | **IV (2SLS)**: supplier-cost index as instrument | Removes price changes driven by the demand shock |
+| F | **Randomised price test** | Randomisation removes everything |
+
+**(b) Assumptions.** IV needs the cost index to move price (**relevance**, tested by the first-stage F) and to affect demand only through price (**exclusion**, argued, not testable with one instrument). Standard errors are clustered by SKU because weekly shocks are correlated within a SKU. The benchmark "truth" is the average hidden elasticity over the rows each estimator uses.
+
+#### Code
+
+#%% code
+def dm(A, st, cn):
+    mean = np.add.reduceat(A, st, axis=0) / cn[:, None]
+    return A - np.repeat(mean, cn, axis=0)
+def grp(sku):
+    st = np.flatnonzero(np.r_[True, sku[1:] != sku[:-1]]); return st, np.diff(np.r_[st, len(sku)])
+def fit(y, X, st, cn, Zx=None, within=True):
+    """OLS or 2SLS with SKU fixed effects (within transform) and SKU-clustered covariance. Returns b, V, residuals."""
+    parts = [y, X] + ([Zx] if Zx is not None else []); A = np.column_stack(parts)
+    A = dm(A, st, cn) if within else A; yy, XX = A[:, 0], A[:, 1:1 + X.shape[1]]
+    Xh = XX if Zx is None else A[:, 1 + X.shape[1]:] @ np.linalg.lstsq(A[:, 1 + X.shape[1]:], XX, rcond=None)[0]
+    Ai = np.linalg.inv(Xh.T @ XX); b = Ai @ (Xh.T @ yy); e = yy - XX @ b
+    s = np.add.reduceat(Xh * e[:, None], st, axis=0); G = len(st); V = Ai @ (s.T @ s) @ Ai.T * G / (G - 1)
+    return b, V, e
+M = M.sort_values(["sku_id", "week"]).reset_index(drop=True); st, cn = grp(M.sku_id.values)
+y = M.lq.values; lp = M.lp.values; lc = M.lc.values; lz = M.lz.values; ev = M.sale_event.values.astype(float)
+WK = pd.get_dummies(M.week, drop_first=True, dtype=float).values
+truth_obs = M._eps.mean()
+res = {}
+b, V, _ = fit(y, np.column_stack([lp, np.ones(len(y))]), st, cn, within=False); res["A pooled OLS"] = (b[0], np.sqrt(V[0, 0]))
+b, V, _ = fit(y, lp[:, None], st, cn); res["B + SKU fixed effects"] = (b[0], np.sqrt(V[0, 0]))
+b, V, eC = fit(y, np.column_stack([lp, lc, ev]), st, cn); res["C + sale flag, competitor price"] = (b[0], np.sqrt(V[0, 0]))
+b, V, _ = fit(y, np.column_stack([lp, lc, WK]), st, cn); res["D + week fixed effects"] = (b[0], np.sqrt(V[0, 0]))
+bI, VI, eI = fit(y, np.column_stack([lp, lc, ev]), st, cn, Zx=np.column_stack([lc, ev, lz])); res["E IV (cost index)"] = (bI[0], np.sqrt(VI[0, 0]))
+Ex = d0[(d0.exp_arm != "") & (d0.in_stock == 1) & (d0.units > 0)].sort_values(["sku_id", "week"]).reset_index(drop=True)
+Ex["a"] = Ex.exp_arm.map({"cut10": np.log(0.9), "control": 0.0, "raise10": np.log(1.1)}); stx, cnx = grp(Ex.sku_id.values)
+bF, VF, eF = fit(Ex.lq.values, Ex.a.values[:, None], stx, cnx); res["F randomised test"] = (bF[0], np.sqrt(VF[0, 0]))
+truth_exp = Ex.merge(skus[["sku_id", "_true_elasticity"]], on="sku_id")._true_elasticity.mean()
+lad = pd.DataFrame(res, index=["elasticity", "SE (clustered)"]).T; lad["CI low"] = lad.elasticity - 1.96 * lad["SE (clustered)"]; lad["CI high"] = lad.elasticity + 1.96 * lad["SE (clustered)"]
+lad["true mean elasticity (same rows)"] = [truth_obs] * 5 + [truth_exp]; lad["error vs truth"] = lad.elasticity - lad["true mean elasticity (same rows)"]
+fig, ax = plt.subplots(figsize=(10, 4.2)); yy_ = np.arange(len(lad))[::-1]
+ax.errorbar(lad.elasticity, yy_, xerr=1.96 * lad["SE (clustered)"], fmt="o", color="#2a6f97", capsize=3); ax.axvline(truth_obs, color="#c0392b", ls="--", lw=1.2, label=f"true mean elasticity ({truth_obs:.2f})"); ax.axvline(-1, color="grey", ls=":", lw=1)
+ax.set_yticks(yy_); ax.set_yticklabels(lad.index); ax.set_xlabel("Estimated price elasticity (95% CI)"); ax.set_ylabel("Estimator"); ax.set_title("Which estimators recover the true elasticity?"); ax.legend(loc="upper right")
+plt.tight_layout(); plt.show()
+print(f"Rows: observational {len(M):,} | experiment {len(Ex):,}")
+lad.round(3)
+
+#%% md
+**Takeaway:** «O71»
+
+### 7.1b Diagnostics: first stage, bias test, heteroskedasticity, serial correlation
+
+**(a) Why?** We check the pieces the IV argument rests on.
+- **Relevance:** first-stage F for the cost index (F > 10 is the usual rule of thumb).
+- **H1 (Hausman-type):** is IV different from fixed-effects OLS? We bootstrap whole SKUs (200 resamples) to get the standard error of the difference.
+- **Heteroskedasticity:** Breusch–Pagan on the pooled model, which is why clustered errors are used.
+- **Serial correlation:** correlation of a SKU's residual with its previous week's, and a sanity check that the cost index is uncorrelated with the previous week's residual.
+
+#### Code
+
+#%% code
+bF1, VF1, _ = fit(lp, np.column_stack([lc, ev, lz]), st, cn); F1 = (bF1[2] ** 2) / VF1[2, 2]
+bp = het_breuschpagan(sm.OLS(y, sm.add_constant(lp)).fit().resid, sm.add_constant(lp))
+prev = M.sku_id.values[1:] == M.sku_id.values[:-1]; contig = prev & (np.diff(M.week.values) == 1)
+ac = np.corrcoef(eI[1:][contig], eI[:-1][contig])[0, 1]; zc = np.corrcoef(M.lz.values[1:][contig] - M.groupby("sku_id").lz.transform("mean").values[1:][contig], eI[:-1][contig])[0, 1]
+boot = []; t0 = time.time(); XC = np.column_stack([lp, lc, ev]); ZC = np.column_stack([lc, ev, lz])
+for _ in range(200):
+    sel = RNG.integers(0, len(st), len(st)); idx = np.concatenate([np.arange(st[i], st[i] + cn[i]) for i in sel]); cn2 = cn[sel]; st2 = np.r_[0, np.cumsum(cn2)[:-1]]
+    bc, _, _ = fit(y[idx], XC[idx], st2, cn2); bi, _, _ = fit(y[idx], XC[idx], st2, cn2, Zx=ZC[idx]); boot.append((bc[0], bi[0]))
+boot = np.array(boot); diff = res["E IV (cost index)"][0] - res["C + sale flag, competitor price"][0]; se_d = (boot[:, 1] - boot[:, 0]).std(ddof=1); zH = diff / se_d
+print(f"First-stage F (cost index -> log price): {F1:.0f} | coefficient {bF1[2]:.2f}")
+print(f"Hausman-type test, IV minus FE-OLS (rung C): difference {diff:+.3f}, bootstrap SE {se_d:.3f}, z = {zH:.1f}, p = {2 * stats.norm.sf(abs(zH)):.2g}")
+print(f"Bootstrap 95% CI of the IV elasticity: ({np.percentile(boot[:, 1], 2.5):.2f}, {np.percentile(boot[:, 1], 97.5):.2f}) | analytic: ({lad.loc['E IV (cost index)', 'CI low']:.2f}, {lad.loc['E IV (cost index)', 'CI high']:.2f}) | {time.time() - t0:.0f}s")
+print(f"Breusch-Pagan on pooled model: LM = {bp[0]:.1f}, p = {bp[1]:.2g} | week-to-week residual autocorrelation (IV residuals): {ac:+.2f} | corr(cost shock, previous week's residual): {zc:+.3f}")
+print(f"H1 against the experiment: naive pooled {lad.iloc[0, 0]:.2f} vs experiment {lad.iloc[5, 0]:.2f}; z = {(lad.iloc[0, 0] - lad.iloc[5, 0]) / np.hypot(lad.iloc[0, 1], lad.iloc[5, 1]):.1f}")
+
+#%% md
+**Observation:** «O72»
+
+### 7.2 Elasticity by category (H2) with Holm correction
+
+**(a) Why?** Discount policy is set by category, so we need an elasticity and a CI for each. H0 for each is **ε = −1** (a price change leaves revenue unchanged; below −1 a cut raises revenue). Eight tests, so **Holm** correction. We also show the first-stage F in each category and the truth.
+
+#### Code
+
+#%% code
+rows = []
+for c in sorted(M.category.unique()):
+    mc = (M.category == c).values; yc, X_, Z_ = y[mc], XC[mc], ZC[mc]; stc, cnc = grp(M.sku_id.values[mc])
+    b, V, _ = fit(yc, X_, stc, cnc, Zx=Z_); se = np.sqrt(V[0, 0]); b1, V1, _ = fit(lp[mc], ZC[mc], stc, cnc); f1 = b1[2] ** 2 / V1[2, 2]; G = len(stc)
+    rows.append((c, b[0], se, b[0] - 1.96 * se, b[0] + 1.96 * se, M.loc[mc, "_eps"].mean(), 2 * stats.t.sf(abs((b[0] + 1) / se), G - 1), f1, int(mc.sum())))
+cat = pd.DataFrame(rows, columns=["category", "IV elasticity", "SE", "CI low", "CI high", "true mean", "p (H0: ε = -1)", "first-stage F", "rows"]).set_index("category")
+cat["p_holm"] = multipletests(cat["p (H0: ε = -1)"], method="holm")[1]; cat["covers truth"] = (cat["CI low"] <= cat["true mean"]) & (cat["true mean"] <= cat["CI high"]); cat["elastic (CI high < -1)"] = cat["CI high"] < -1
+cat = cat.sort_values("IV elasticity")
+fig, ax = plt.subplots(figsize=(10, 4.6)); yy_ = np.arange(len(cat))[::-1]
+ax.errorbar(cat["IV elasticity"], yy_, xerr=[cat["IV elasticity"] - cat["CI low"], cat["CI high"] - cat["IV elasticity"]], fmt="o", color="#2a6f97", capsize=3, label="IV estimate (95% CI)"); ax.scatter(cat["true mean"], yy_, marker="D", color="#c0392b", zorder=3, label="true mean (hidden)"); ax.axvline(-1, color="grey", ls=":", lw=1)
+ax.set_yticks(yy_); ax.set_yticklabels(cat.index); ax.set_xlabel("Price elasticity"); ax.set_ylabel("Category"); ax.set_title("Category elasticities from IV, against the hidden truth"); ax.legend(loc="lower left")
+plt.tight_layout(); plt.show()
+print(f"CI covers truth in {int(cat['covers truth'].sum())} of {len(cat)} categories | first-stage F range {cat['first-stage F'].min():.0f} to {cat['first-stage F'].max():.0f}")
+cat.round(3)
+
+#%% md
+**Takeaway:** «O73»
+
+### 7.3 The randomised price test: analysis, balance and power
+
+**(a) Why?** Randomisation is the cleanest evidence, but only 120 SKUs for 8 weeks. We check **balance** (are arms alike in prior sales, one-way ANOVA), estimate the elasticity with SKU fixed effects, estimate the **price-cut and price-rise** slopes separately (asymmetry test), and compute the **sample size** needed for a given CI half-width.
+
+#### Code
+
+#%% code
+pre = d0[(d0.week.between(35, 42))].groupby("sku_id").lq.mean(); Ex["pre_lq"] = Ex.sku_id.map(pre)
+bal = [Ex.loc[Ex.exp_arm == a_, "pre_lq"].values for a_ in ("cut10", "control", "raise10")]; fa = stats.f_oneway(*bal)
+print("Arm sizes (SKU-weeks):", Ex.exp_arm.value_counts().to_dict(), f"| balance on prior-8-week log units: ANOVA F = {fa.statistic:.2f}, p = {fa.pvalue:.2f}")
+Xs = np.column_stack([np.minimum(Ex.a.values, 0), np.maximum(Ex.a.values, 0)]); bS, VS, _ = fit(Ex.lq.values, Xs, stx, cnx)
+zA = (bS[0] - bS[1]) / np.sqrt(VS[0, 0] + VS[1, 1] - 2 * VS[0, 1])
+print(f"Pooled experiment elasticity {bF[0]:.2f} (SE {np.sqrt(VF[0, 0]):.2f}) | price-cut slope {bS[0]:.2f} (SE {np.sqrt(VS[0, 0]):.2f}) | price-rise slope {bS[1]:.2f} (SE {np.sqrt(VS[1, 1]):.2f}) | asymmetry test z = {zA:.2f}, p = {2 * stats.norm.sf(abs(zA)):.2f}")
+means = Ex.groupby("exp_arm").agg(SKU_weeks=("lq", "size"), mean_units=("units", "mean"), mean_log_units=("lq", "mean")).loc[["cut10", "control", "raise10"]]
+sd_e = eF.std(); sd_a = dm(Ex.a.values[:, None], stx, cnx).std(); se_now = np.sqrt(VF[0, 0])
+need = pd.DataFrame({"CI half-width target": [0.5, 0.3, 0.2, 0.1]}); need["SKU-weeks needed"] = np.ceil((1.96 * sd_e / (sd_a * need["CI half-width target"])) ** 2).astype(int); need["≈ SKUs for 8 weeks"] = np.ceil(need["SKU-weeks needed"] / 8).astype(int)
+print(f"Residual sd {sd_e:.2f}, sd of price variation {sd_a:.3f} | current half-width {1.96 * se_now:.2f} | minimum detectable elasticity (80% power, 5% level) {2.8 * se_now:.2f}")
+print(means.round(2).to_string()); need
+
+#%% md
+**Observation:** «O74»
+
+### 7.4 Promotion event study: gross lift, the dip and the net effect (H3)
+
+**(a) Why?** A promotion's sale-week lift overstates its value if demand is pulled forward. We flag a **promotion** when the price is at least 15% below the SKU's trailing 8-week median, then regress log units on the promotion flag and its first two lags, with SKU and week fixed effects and the competitor price. The **net effect over three weeks** is the average of the three multipliers minus 1; its CI comes from a cluster bootstrap (200 resamples of SKUs). Because the flag is built from noisy observed prices, we also report how often it matches the hidden true promotion.
+
+#### Code
+
+#%% code
+d0["promo"] = d0.sig_true
+for k in (1, 2):
+    ok = (d0.sku_id == d0.sku_id.shift(k)) & (d0.week - d0.week.shift(k) == k); d0[f"promo_l{k}"] = np.where(ok, d0.promo.shift(k), np.nan)
+    ok2 = (d0.sku_id == d0.sku_id.shift(-k)) & (d0.week.shift(-k) - d0.week == k); d0[f"mu_f{k}"] = np.where(ok2, d0._mu.shift(-k), np.nan); d0[f"mucf_f{k}"] = np.where(ok2, d0._mu_cf.shift(-k), np.nan)
+ES = d0[d0.obs & (d0.in_stock == 1) & (d0.units > 0)].dropna(subset=["promo", "promo_l1", "promo_l2"]).sort_values(["sku_id", "week"]).reset_index(drop=True); ste, cne = grp(ES.sku_id.values)
+Wes = pd.get_dummies(ES.week, drop_first=True, dtype=float).values; Xe = np.column_stack([ES.promo, ES.promo_l1, ES.promo_l2, ES.lc, Wes]); ye = ES.lq.values
+bE, VE, _ = fit(ye, Xe, ste, cne); sE = np.sqrt(np.diag(VE)[:3]); gross = np.exp(bE[:3]) - 1; lo = np.exp(bE[:3] - 1.96 * sE) - 1; hi = np.exp(bE[:3] + 1.96 * sE) - 1
+netm = lambda b3: np.exp(b3).mean() - 1; net = netm(bE[:3]); nb = []
+for _ in range(200):
+    sel = RNG.integers(0, len(ste), len(ste)); idx = np.concatenate([np.arange(ste[i], ste[i] + cne[i]) for i in sel]); cn2 = cne[sel]; st2 = np.r_[0, np.cumsum(cn2)[:-1]]
+    bb, _, _ = fit(ye[idx], Xe[idx], st2, cn2); nb.append(netm(bb[:3]))
+net_ci = (np.percentile(nb, 2.5), np.percentile(nb, 97.5)); R1, R2 = bE[1] / bE[0], bE[2] / bE[0]
+P = d0[(d0.promo == 1) & d0.obs]; Pm = P.dropna(subset=["mu_f1", "mu_f2"])
+true_ = [P._mu.sum() / P._mu_cf.sum() - 1, Pm.mu_f1.sum() / Pm.mucf_f1.sum() - 1, Pm.mu_f2.sum() / Pm.mucf_f2.sum() - 1]; true_net = (Pm._mu.sum() + Pm.mu_f1.sum() + Pm.mu_f2.sum()) / (Pm._mu_cf.sum() + Pm.mucf_f1.sum() + Pm.mucf_f2.sum()) - 1
+Dd = d0[d0.obs & d0.promo.notna()]; prec = (Dd[Dd.promo == 1]._promo_m < -0.10).mean(); rec = (Dd[Dd._promo_m < -0.10].promo == 1).mean()
+tab = pd.DataFrame({"estimated lift": gross, "CI low": lo, "CI high": hi, "true lift (hidden)": true_}, index=["promotion week", "week +1", "week +2"])
+fig, ax = plt.subplots(figsize=(9, 4.4)); xx = np.arange(3)
+ax.bar(xx - 0.2, gross * 100, 0.4, yerr=[(gross - lo) * 100, (hi - gross) * 100], color="#2a6f97", capsize=3, label="estimated (95% CI)"); ax.bar(xx + 0.2, np.array(true_) * 100, 0.4, color="#c0392b", alpha=0.8, label="true (hidden)"); ax.axhline(0, color="k", lw=0.8)
+ax.set_xticks(xx); ax.set_xticklabels(tab.index); ax.set_xlabel("Week relative to promotion"); ax.set_ylabel("Change in units vs no promotion (%)"); ax.set_title("Promotion lift and the post-promotion dip"); ax.legend()
+plt.tight_layout(); plt.show()
+print(f"Promotions flagged: {int(ES.promo.sum()):,} of {len(ES):,} SKU-weeks ({ES.promo.mean():.1%}); flag precision vs hidden truth {prec:.1%}, recall {rec:.1%}")
+print(f"Net effect over 3 weeks (average multiplier - 1): {net:+.1%} (95% CI {net_ci[0]:+.1%} to {net_ci[1]:+.1%}) | true net {true_net:+.1%} | dip in weeks +1 and +2 as a share of the sale-week lift: {-(gross[1] + gross[2]) / gross[0]:.0%}")
+print(f"Dip scaling used in section 9 (log lift in week +1 and +2 as a multiple of the sale-week log lift): {R1:.2f} and {R2:.2f}")
+tab.round(3)
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.5 Is the badge honest? Displayed vs true discount (H4)
+
+**(a) Why?** The paper's core question is whether a sale discount is significant. A badge of "30% off MRP" compares the price with the list price, which can be inflated. We compare the **badge** (≥ 30% off MRP) with the **true significant discount** (≥ 15% below the trailing 8-week median). Agreement is measured with **Cohen's kappa** (bootstrap CI over SKUs) and **McNemar** on the disagreements; the hidden MRP-inflation flag shows where the false badges come from.
+
+#### Code
+
+#%% code
+Q = d0.dropna(subset=["sig_true"]).merge(skus[["sku_id", "_mrp_inflated"]], on="sku_id"); a_, b_ = Q.sig_shown.values, Q.sig_true.values.astype(int)
+ct = pd.crosstab(Q.sig_shown.map({0: "badge: no", 1: "badge: yes"}), Q.sig_true.map({0.0: "true sale: no", 1.0: "true sale: yes"}))
+kap = cohen_kappa_score(a_, b_); sk_ids = Q.sku_id.values; ust = np.unique(sk_ids); idxs = {u_: np.flatnonzero(sk_ids == u_) for u_ in ust}; kb = []
+for _ in range(200):
+    ii = np.concatenate([idxs[u_] for u_ in RNG.choice(ust, len(ust))]); kb.append(cohen_kappa_score(a_[ii], b_[ii]))
+n01 = int(((a_ == 1) & (b_ == 0)).sum()); n10 = int(((a_ == 0) & (b_ == 1)).sum()); mc = mcnemar([[int(((a_ == 1) & (b_ == 1)).sum()), n01], [n10, int(((a_ == 0) & (b_ == 0)).sum())]], exact=False, correction=True)
+prec_b = ((a_ == 1) & (b_ == 1)).sum() / (a_ == 1).sum(); rec_b = ((a_ == 1) & (b_ == 1)).sum() / (b_ == 1).sum()
+fake = Q[(Q.sig_shown == 1) & (Q.sig_true == 0)]; infl_share = fake._mrp_inflated.mean(); infl_skus = skus._mrp_inflated.mean()
+print(ct.to_string())
+print(f"\nBadge precision (badge weeks that are real sales): {prec_b:.1%} | recall (real sales that show the badge): {rec_b:.1%}")
+print(f"Cohen's kappa {kap:.3f} (bootstrap 95% CI {np.percentile(kb, 2.5):.3f} to {np.percentile(kb, 97.5):.3f}) | McNemar: badge-only {n01:,} vs true-only {n10:,}, p = {mc.pvalue:.2g}")
+print(f"Share of false-badge weeks on inflated-MRP SKUs: {infl_share:.1%} (inflated SKUs are {infl_skus:.1%} of the catalogue)")
+ct
+
+#%% md
+**Observation:** «O76»
+
+## 8. ML Section — can a classifier call a discount "significant"? (H5)
+
+This is the paper's task. We predict `sig_true` (≥ 15% below the trailing median) for each SKU-week with an **SVM (RBF)**, **logistic regression** and **gradient boosting**, using a **70/30 split by SKU** (no SKU in both sets). Two feature sets:
+- **A (with calendar):** product features, MRP, MRP relative to the trailing price, and the sale-event flag.
+- **B (product and price only):** the paper's setting, without the sale-event flag.
+
+Because only a small share of SKU-weeks are significant discounts, **accuracy alone is misleading**: always predicting "not significant" already scores high. We report accuracy against that **majority baseline**, balanced accuracy, F1 and PR-AUC (average precision; its baseline is the prevalence). No tuning: default settings, SVM trained on 6,000 SKU-weeks.
+
+#### Code
+
+#%% code
+Z = d0.dropna(subset=["sig_true"]).copy(); Z["log_rev"] = np.log(Z.review_count); Z["log_mrp"] = np.log(Z.mrp_inr); Z["mrp_over_ref"] = Z.mrp_inr / Z.ref_price
+base_cols = ["brand_tier", "rating", "log_rev", "log_mrp", "mrp_over_ref"]; catd = pd.get_dummies(Z.category, dtype=float)
+FA = pd.concat([Z[base_cols + ["sale_event"]].astype(float), catd], axis=1); FB = pd.concat([Z[base_cols].astype(float), catd], axis=1); yz = Z.sig_true.values.astype(int)
+ids = Z.sku_id.unique(); test_ids = RNG.choice(ids, int(0.3 * len(ids)), replace=False); te = Z.sku_id.isin(test_ids).values; tr = ~te
+prev_te = yz[te].mean(); maj_acc = 1 - prev_te; rows = []; PRED = {}; SCORE = {}; yte = yz[te]
+for fs_name, F in (("A with calendar", FA), ("B product and price only", FB)):
+    sc = StandardScaler().fit(F[tr]); Xtr, Xte = sc.transform(F[tr]), sc.transform(F[te]); ytr = yz[tr]
+    sub = RNG.choice(len(ytr), 6000, replace=False)
+    models = {"logistic regression": (LogisticRegression(max_iter=1000), Xtr, ytr), "SVM (RBF)": (SVC(kernel="rbf", gamma="scale", C=1.0), Xtr[sub], ytr[sub]), "gradient boosting": (HistGradientBoostingClassifier(random_state=SEED), Xtr, ytr)}
+    for mn, (mdl, Xf, yf) in models.items():
+        mdl.fit(Xf, yf); pr = mdl.predict(Xte); s_ = mdl.predict_proba(Xte)[:, 1] if mn == "gradient boosting" else mdl.decision_function(Xte); PRED[(fs_name, mn)] = pr; SCORE[(fs_name, mn)] = s_
+        rows.append((fs_name, mn, accuracy_score(yte, pr), balanced_accuracy_score(yte, pr), f1_score(yte, pr), average_precision_score(yte, s_)))
+mlr = pd.DataFrame(rows, columns=["features", "model", "accuracy", "balanced accuracy", "F1", "PR-AUC"]).set_index(["features", "model"])
+best_key = max(PRED, key=lambda k: average_precision_score(yte, SCORE[k])); pb = PRED[best_key]; cm_ = pb == yte; cj_ = yte == 0
+mcb = mcnemar([[int((cm_ & cj_).sum()), int((cm_ & ~cj_).sum())], [int((~cm_ & cj_).sum()), int((~cm_ & ~cj_).sum())]], exact=False, correction=True)
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.8)); lab = [f"{k[0][0]}: {k[1]}" for k in mlr.index]; cols = ["#2a6f97"] * 3 + ["#e07a1f"] * 3
+axes[0].bar(range(len(lab)), mlr.accuracy.values, color=cols); axes[0].axhline(maj_acc, color="#c0392b", ls="--", label=f"majority baseline {maj_acc:.3f}"); axes[0].set_ylim(0.8, 1.0); axes[0].set_xticks(range(len(lab))); axes[0].set_xticklabels(lab, rotation=40, ha="right"); axes[0].set_xlabel("Feature set (A with calendar, B product and price only) and model"); axes[0].set_ylabel("Accuracy (test SKUs)"); axes[0].set_title("Accuracy against the majority baseline"); axes[0].legend()
+axes[1].bar(range(len(lab)), mlr["PR-AUC"].values, color=cols); axes[1].axhline(prev_te, color="#c0392b", ls="--", label=f"prevalence {prev_te:.3f}"); axes[1].set_xticks(range(len(lab))); axes[1].set_xticklabels(lab, rotation=40, ha="right"); axes[1].set_xlabel("Feature set (A with calendar, B product and price only) and model"); axes[1].set_ylabel("PR-AUC (average precision)"); axes[1].set_title("PR-AUC against prevalence"); axes[1].legend()
+plt.tight_layout(); plt.show()
+print(f"Train {tr.sum():,} / test {te.sum():,} SKU-weeks | test prevalence of significant discounts {prev_te:.1%} | majority-baseline accuracy {maj_acc:.3f}")
+print(f"Best by PR-AUC: {best_key} | McNemar vs majority baseline: model-only correct {int((cm_ & ~cj_).sum()):,}, majority-only correct {int((~cm_ & cj_).sum()):,}, p = {mcb.pvalue:.2g}")
+mlr.round(4)
+
+#%% md
+**Takeaway:** «O8»
+
+## 9. Business Translation — ₹ impact
+
+**What a discount costs the platform.** At price cut δ with elasticity ε, the sale-week log lift is L = ε · ln(1 − δ). Platform revenue per ₹ of GMV is a **take rate** (commission plus ads and fees) and the platform funds a share of the discount. Over the promotion week and the next two weeks, the **profit multiplier** (1 = same profit as three normal weeks) is [ e^L × (take × (1 − δ) − funding × δ) / take + e^(r1·L) + e^(r2·L) ] / 3, where r1 and r2 are the dip sizes estimated in 7.4 (as multiples of the sale-week log lift).
+
+Assumptions (D-08-07, all ours): take rate 17% of GMV; platform funds 10% of the base price when it cuts price (sensitivity: 0% and 25%); these 8 categories are worth ₹30,000 crore of GMV a year; no value is placed on new-customer acquisition or ads shown during sales. Best and worst cases use the ends of each category's IV confidence interval.
+
+#### Code
+
+#%% code
+TAKE, FUND, ANNUAL_GMV = 0.17, 0.10, 30000e7
+def mult(eps, delta, fund):
+    L = np.asarray(eps, float) * np.log(1 - np.asarray(delta, float)); return (np.exp(L) * (TAKE * (1 - delta) - fund * delta) / TAKE + np.exp(R1 * L) + np.exp(R2 * L)) / 3
+Dd = d0[d0.obs].copy(); Dd["gmv"] = Dd.price_inr * Dd.units; Dd["is_promo"] = Dd.sig_true == 1
+cs = Dd.dropna(subset=["sig_true"]).groupby("category").apply(lambda x: pd.Series({"promo share": x.is_promo.mean(), "avg depth": x.loc[x.is_promo, "disc_true"].mean(), "base GMV": x.loc[~x.is_promo, "gmv"].mean() * 52 * x.sku_id.nunique()}))
+cs["base GMV ₹ crore"] = cs["base GMV"] / cs["base GMV"].sum() * ANNUAL_GMV / 1e7
+tb = cs.join(cat[["IV elasticity", "CI low", "CI high"]])
+for lab_, e_ in (("mult (base)", tb["IV elasticity"]), ("mult (worst: more elastic)", tb["CI low"]), ("mult (best: less elastic)", tb["CI high"])): tb[lab_] = mult(e_, tb["avg depth"], FUND)
+tb["mult funding 0%"] = mult(tb["IV elasticity"], tb["avg depth"], 0.0); tb["mult funding 25%"] = mult(tb["IV elasticity"], tb["avg depth"], 0.25)
+tb["annual promo effect ₹ crore (base)"] = 3 * tb["promo share"] * TAKE * tb["base GMV ₹ crore"] * (tb["mult (base)"] - 1)
+def gain(stop, col): return float((-3 * tb["promo share"] * TAKE * tb["base GMV ₹ crore"] * (tb[col] - 1))[stop].sum())
+stop = tb["mult (base)"] < 1; sc_ = {"worst (more elastic)": gain(stop, "mult (worst: more elastic)"), "base": gain(stop, "mult (base)"), "best (less elastic)": gain(stop, "mult (best: less elastic)")}
+grid = np.linspace(-0.5, -10, 400); be_eps = {f: (grid[np.argmax(mult(grid, 0.2, f) >= 1)] if (mult(grid, 0.2, f) >= 1).any() else np.nan) for f in (0.0, 0.10, 0.25)}
+fig, ax = plt.subplots(figsize=(10, 4.6)); xs = np.linspace(-0.6, -4.0, 80)
+for f, col in ((0.0, "#2a6f97"), (0.10, "#e07a1f"), (0.25, "#c0392b")): ax.plot(xs, mult(xs, 0.2, f), color=col, label=f"platform funds {f:.0%} of base price")
+ax.scatter(tb["IV elasticity"], mult(tb["IV elasticity"], 0.2, FUND), color="k", zorder=3, label="categories (IV estimate, 10% funding)"); ax.axhline(1, color="grey", ls=":", lw=1); ax.invert_xaxis()
+ax.set_xlabel("Price elasticity (more elastic to the right)"); ax.set_ylabel("3-week profit multiplier of a 20% promotion (1 = break-even)"); ax.set_title("A promotion pays only where the response beats the subsidy")
+ax.legend(loc="lower right", fontsize=8); plt.tight_layout(); plt.show()
+print(f"dip scaling r1 = {R1:.2f}, r2 = {R2:.2f} | take rate {TAKE:.0%} | funding {FUND:.0%} | scale: ₹{ANNUAL_GMV / 1e7:,.0f} crore GMV across the 8 categories")
+print("Break-even gross elasticity for a 20% promotion by funding share: " + ", ".join((f"{f:.0%}: {v:.2f}" if not np.isnan(v) else f"{f:.0%}: none within -10") for f, v in be_eps.items()))
+print(f"Categories where the base multiplier is below 1 (stop or move to seller funding): {list(tb.index[stop])}")
+print("Annual gain from stopping those promotions (₹ crore): " + ", ".join(f"{k} {v:,.0f}" for k, v in sc_.items()))
+tb[["promo share", "avg depth", "base GMV ₹ crore", "IV elasticity", "mult (base)", "mult (worst: more elastic)", "mult (best: less elastic)", "mult funding 0%", "mult funding 25%", "annual promo effect ₹ crore (base)"]].round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Weak evidence base.** Nothing here reproduces a company system. The one public paper is an outside study with no sales data; its 91.11% accuracy claim is not tested here. Treat every number as a property of the simulation.
+- **Simulated elasticities and an assumed cost structure.** Category elasticities, the post-promotion dip, the take rate, the funding share and the ₹30,000 crore scale are assumptions. The ranking logic (naive is biased, IV and experiments are not) is robust; the rupee figures are not.
+- **Instrument validity.** The exclusion restriction for the cost index is true by construction here. In real data, supplier cost shocks may coincide with quality or availability changes, and a single instrument cannot be tested. Always confirm with a randomised price test.
+- **Local, short-run elasticities.** IV estimates the response of SKUs whose price moves with cost; the experiment covers only ±10% for 8 weeks. Extrapolating to deep sale discounts or to long-run reference-price effects is not supported.
+- **Value left out.** New-customer acquisition, ad revenue during sales, competitor reaction and seller relationships are not in the profit multiplier.
+- **Next steps:** run category-level price experiments in the sale season; build a reference-price rule for badges; estimate cross-price and cannibalisation effects between close substitutes; use bandits for price tests once the elasticity range is known.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Log-log elasticity | ε = d log units / d log price |
+| Fixed-effects (within) estimator | demean y and x by SKU, then OLS |
+| 2SLS | first stage: log price on controls + instrument; second stage: log units on fitted log price |
+| Cluster-robust variance | (X'X)⁻¹ [Σ_g X_g' e_g e_g' X_g] (X'X)⁻¹ × G/(G−1), g = SKU |
+| First-stage F | (instrument coefficient / SE)² for one instrument |
+| Net 3-week promotion effect | mean(e^b0, e^b1, e^b2) − 1 |
+| True discount | 1 − price / median(price over previous 8 weeks) |
+| Displayed discount | 1 − price / MRP |
+| Cohen's kappa | (observed agreement − chance agreement) / (1 − chance agreement) |
+| 3-week profit multiplier | [e^L × (take (1−δ) − funding × δ) / take + e^(r1 L) + e^(r2 L)] / 3, L = ε ln(1−δ) |
+
+| Term | Meaning |
+|---|---|
+| Price elasticity | % change in units per 1% change in price |
+| Endogeneity | Price moves for reasons that also move demand |
+| Instrument | A variable that moves price but touches demand only through price |
+| MRP inflation | List price set high so the "% off" looks large |
+| Pull-forward / dip | Sale-week units borrowed from the following weeks |
+| Take rate | Platform revenue as a share of GMV |
+| PR-AUC | Area under the precision-recall curve; its baseline is the prevalence |
+| Holm | Step-down correction for multiple tests |

@@ -1,0 +1,11 @@
+field(s),meaning
+"merchant_id, month, category","Merchant, review month, business category"
+"website_exists, ssl_valid, page_load_s, policy_pages, content_matches_business",Website evidence
+domain_age_days,WHOIS domain age
+"fraud_db_hit, social_presence, price_anomaly","Internal fraud DB, social profiles, pricing red flags"
+"analyst_id, analyst_reject, analyst_minutes",Human review
+"agent_reject, agent_p_reject, agent_confidence","Agent decision, probability, confidence (blank = timeout)"
+"agent_latency_s_v1/v2, agent_tokens_v1/v2",Latency and tokens for the monolithic (v1) and planner (v2) designs
+bad_6m_if_approved,Fraud / chargeback / violation within 6 months if approved
+"gold_panel: senior_k_reject, gold_reject",3 senior reviewers and majority vote
+"_risky, _ev","HIDDEN: true risk status, evidence strength"

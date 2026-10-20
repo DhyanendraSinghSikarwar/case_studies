@@ -1,0 +1,6 @@
+,AUC,Brier score,log loss
+No income variable at all,0.7286963827,0.1354513979,0.4323703393
+"Train on complete cases, mean-fill at scoring",0.7299934166,0.137498219,0.4349151348
+Mean imputation (no indicator),0.7365686576,0.1343707816,0.4278680758
+Mean imputation + missing indicator,0.7665527395,0.1286420847,0.4114316522
+Stochastic regression imputation + indicator,0.766560109,0.1285487819,0.4117585424

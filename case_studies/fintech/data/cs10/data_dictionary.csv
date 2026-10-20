@@ -1,0 +1,9 @@
+field(s),meaning
+"user_id, onboard_ts",User and onboarding time
+"device_id, phone_id, email_pattern",Identity tokens (email_pattern groups look-alike addresses such as rahul.k1@ / rahul.k2@)
+"address_id, ip_block, repay_bank_acct","Delivery address, carrier IP block, bank account used for repayment"
+sim_age_days,Age of the SIM (fresh SIMs are risky)
+credit_limit_inr,Limit assigned at onboarding
+"spend_first7d_inr, n_txn_first7d, n_merchants_first7d, night_txn_first7d",First-week behaviour (known only 7 days after onboarding)
+fpd,First-payment default (the label the lender observes)
+"_kind, _ring","HIDDEN truth: genuine / ring / lone_fraud, and ring id (evaluation only)"

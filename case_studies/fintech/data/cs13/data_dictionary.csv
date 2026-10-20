@@ -1,0 +1,23 @@
+field,family,permissible for a lending app today?
+bureau_score,bureau,Yes (with consent / KYC)
+monthly_income_inr,financial,Yes (with consent / KYC)
+employment,financial,Yes (with consent / KYC)
+existing_emi_inr,financial,Yes (with consent / KYC)
+os_ios,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+facebook_login,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+linkedin_login,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+n_financial_apps,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+n_other_loan_apps,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+has_dating_app,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+n_ecommerce_apps,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+n_travel_apps,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+n_contacts,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+n_sms_30d,footprint,"Restricted: needs explicit consent, purpose limitation and app-store policy review"
+outgoing_call_minutes_30d,call logs,No: RBI DLG 2022 prohibits call-log/contact access
+missed_call_ratio,call logs,No: RBI DLG 2022 prohibits call-log/contact access
+distinct_numbers_called_30d,call logs,No: RBI DLG 2022 prohibits call-log/contact access
+night_call_share,call logs,No: RBI DLG 2022 prohibits call-log/contact access
+"loan_amount_inr, tenure_days, age",application,Yes (with consent / KYC)
+approved,decision (historical policy),Yes (with consent / KYC)
+defaulted,outcome: observed ONLY if approved,Yes (with consent / KYC)
+_default_if_funded,hidden truth incl. denied (simulation only),Yes (with consent / KYC)

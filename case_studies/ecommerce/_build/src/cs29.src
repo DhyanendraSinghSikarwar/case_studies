@@ -1,0 +1,512 @@
+#%% md
+# Case Study 29 — Automating Food-Delivery Support with LLM Agents: Containment, Latency, CSAT and the Cost of Over-Containment
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 29 — *Zomato: Zia and Nugget support automation* (`indian_ecommerce_data_science_case_studies.md`)
+**Audience:** Head of Customer Experience, Operations, Product (support), Finance, Trust and Safety
+**Data:** ⚠️ **SYNTHETIC** (D-29-01). Support tickets, chat logs and CSAT scores are confidential; this is a simulation with hidden "needs a human", abuse and safety labels.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs29_support_automation_resolution.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+When a food order goes wrong, the customer opens the app and chats with support. Most of those chats are simple ("where is my order?") and a bot can answer them in seconds. Some are not: a safety complaint, a payment dispute, a rude rider, or a refund request from an account that abuses refunds. The company wants the bot to handle as many chats as possible (**containment**) because a human chat costs far more, but it also wants customers to leave **satisfied** (**CSAT**) and **not come back** with the same problem.
+
+The trap is that containment is easy to raise and easy to misread. A bot can "contain" a chat by being the last thing the customer talks to, even if the customer gave up. Leaders and interviewers want to know:
+1. What exactly counts as **resolved**, and how far is plain containment from it?
+2. Why did containment **swing from day to day** when the LLM alone decided when to escalate, and did a policy layer fix it?
+3. Did CSAT really improve, and how do we know without a **randomised holdout**?
+4. How much faster is the bot, and does speed explain CSAT?
+5. Where does the bot **over-contain** (keep tickets that needed a human), including safety issues and refund abuse?
+6. What escalation threshold gives the best balance of cost and resolution?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Zomato reported — *documented, vendor-published, unaudited*
+
+| Item | Documented fact (from the reference file) |
+|---|---|
+| Problem | Support cost grew to about US$20M a year, spread over 10 platforms (MongoDB case study, vendor-authored). Zomato handles over a million orders a day with meal-time spikes of 10 to 50 times baseline traffic (Together AI story, adapted from a Fifth Elephant 2024 talk) |
+| Approach | Function classification then function calling to fetch order data; the answer is composed from order data, chat history and policy text. Larger (70B) models detect intent, smaller (8B) models complete the chat. First version used GPT-4, then Llama 3 |
+| Escalation | With LLM-only escalation decisions, containment is reported to have swung between 80% and 50% day to day (paraphrase by the fetch tool, not a verbatim quote); a policy layer was added to stabilise it |
+| Evaluation | Human review of every change, human grading of a sample, LLM-as-judge on four metrics: factual consistency, relevance, guideline compliance, pain-point resolution |
+| Reported impact | CSAT "roughly doubled", average response time down 75% to under 10 seconds (Together AI); "85%" average query resolution rate, support cost from US$20M to about US$9M (MongoDB). No audited numbers, no control group, no statistical tests documented |
+| Conflict | A search result suggested a different CSAT figure (a 25% improvement) from another vendor page; it was not fetched, so the "2x" is treated as unreconciled |
+
+**Sources:** Together AI customer story on Zomato (Zia); MongoDB blog, "Zomato Cuts $11M in Support Costs With MongoDB-Powered AI Platform" (24 March 2026).
+
+**Evidence level: medium (vendor-narrated).** Public method detail is thin: no definitions of containment or CSAT, no experiment design, no model accuracy. This notebook is an **interview-standard solution on simulated data**, not a reproduction of Zomato's system. The documented numbers above are context only and none of them is used to calibrate results.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 56 days of order-support tickets (about 180,000), three regimes: **legacy decision-tree bot**, **LLM-only escalation**, **LLM plus policy layer** with a **5% randomised human-first holdout**. Nine intents, hidden "needs a human", abuse and safety flags, CSAT survey with non-response, 72-hour re-contact, refund amounts |
+| Statistics added | Containment funnel (naive vs proxy vs true); **variance test** on daily containment (Levene, bootstrap SD ratio); CSAT with **non-response weighting**; **holdout randomisation check** and intention-to-treat effects with Holm; latency quantiles and the wait-CSAT link; over-containment and safety misses; refund-abuse leakage; **power and design effect** |
+| ML | Failure predictor for bot-handled tickets (gradient boosting vs logistic), calibration, and an **escalation-threshold frontier** against random escalation |
+
+### (c) How the industry uses this
+
+Indian food-delivery, quick-commerce and fintech apps all run intent-routed bots in front of human queues. The standard stack is a deterministic policy layer (refund limits, abuse scores, safety keywords, escalation rules) around an LLM that classifies and drafts. Metrics reported are containment, first-response time, CSAT, re-contact rate and cost per ticket. Mature teams keep a small human-first holdout so that CSAT effects can be measured rather than assumed.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Can LLM agents resolve most order-support tickets quickly and safely, improve CSAT and cut cost per ticket? |
+| Analytical | How far is reported containment from true resolution; is a policy layer needed for stability; does the bot beat a human-first route on resolution and CSAT, for which intents; what escalation threshold is best? |
+
+**Hypotheses**
+- **H1 (stability):** H0: the day-to-day variance of containment is the same under LLM-only escalation and under the policy layer (Levene, bootstrap SD ratio).
+- **H2 (CSAT):** H0: top-2-box CSAT of the policy-layer bot equals the legacy bot's and the randomised human-first holdout's (two-proportion tests, with and without non-response weights).
+- **H3 (holdout):** H0: the bot pipeline's true resolution rate equals the human-first rate, overall and per intent (Holm over nine intents).
+- **H4 (over-containment):** H0: the policy layer does not change the share of tickets that needed a human but were kept by the bot; same for safety tickets.
+- **H5 (leakage):** H0: the approval rate of abusive refund requests is the same under LLM-only and policy-layer decisions.
+
+**Primary metrics:** true resolution rate, containment (naive and true), top-2-box CSAT (4 or 5 out of 5), first-response time, 72-hour re-contact, ₹ cost per ticket.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import roc_auc_score, brier_score_loss
+from sklearn.calibration import calibration_curve
+import statsmodels.formula.api as smf
+import statsmodels.api as sm
+from statsmodels.stats.proportion import proportion_confint, proportions_ztest, proportion_effectsize
+from statsmodels.stats.multitest import multipletests
+from statsmodels.stats.power import NormalIndPower
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public Indian food-delivery support tickets with CSAT | **None.** Public customer-support datasets (Twitter support, Kaggle chat corpora) have no order data, no resolution truth, no survey and are not Indian food delivery |
+| **Decision** | Synthetic tickets with hidden truth (needs a human, abuse, safety, actually resolved) so that proxies can be audited against truth, with a randomised holdout built in (D-29-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs29.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/ecommerce/data/generate_cs29.py
+
+#%% code
+os.makedirs("data/cs29", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs29 as gen; importlib.reload(gen)
+t0 = time.time(); raw = gen.generate(seed=SEED); raw.to_csv("data/cs29/tickets.csv.gz", index=False)
+print(f"{len(raw):,} ticket rows | {raw.ticket_id.nunique():,} unique tickets | {raw.day.nunique()} days | generated in {time.time() - t0:.0f}s")
+raw.drop(columns=[c for c in raw.columns if c.startswith("_")]).head(4)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Scale | About 3,000 tickets a day for 56 days; a surge day (day 36) with about twice the volume and later orders | Our assumption (Zomato: over a million orders a day; meal-time spikes of 10 to 50 times) |
+| Phases | Days 0-13 legacy decision tree; 14-27 LLM-only escalation; 28-55 LLM plus policy layer, 5% randomly human-first | Our design to mirror the documented story |
+| LLM escalation | Score = 1.4 × needs-a-human + noise; escalate above a threshold; LLM-only phase adds a **day-level drift** (SD 0.75) | Our assumption (documented: LLM-only containment swung 50% to 80%) |
+| Policy layer | Always escalate rider-behaviour, high-value payment issues, safety keywords, refund requests with a high abuse score or value; drift damped | Our assumption |
+| Truth | About one in five tickets truly needs a human; 7% of food-quality tickets are safety issues; about 4% of customers abuse refunds | Our assumption |
+| Latency | Bot median 6 s (28 s for the legacy tree), human wait median 3 minutes, inflated at peak and on the surge day | Our assumption (documented: under 10 seconds for the bot) |
+| CSAT | Latent score driven by resolution, abandonment and wait; about 13% respond, unhappy and human-handled customers respond more, abandoned users rarely | Our assumption |
+| DQ issues | 1,200 duplicate rows, 300 QA tickets, 150 invalid CSAT values, 50 negative latencies, 0.8% missing intent | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("ticket_id, user_id, created_ts, day, hour, peak_hour", "Ticket, customer, timestamp, day 0-55, hour, meal-peak flag"),
+    ("phase, arm", "0 legacy tree, 1 LLM-only, 2 LLM + policy; arm = bot_pipeline or human_first (randomised holdout, phase 2 only)"),
+    ("intent, order_value_inr, late_min, prior_refund_ratio, tenure_orders, tickets_30d", "Ticket intent and order / customer context available to the bot"),
+    ("chat_turns, sentiment, llm_escalation_score, abuse_score, safety_keyword", "Chat features, LLM escalation score, fraud model score, safety keyword hit"),
+    ("handled_by, first_response_s, time_to_resolution_wait_s", "Who finished the ticket; seconds to the first response the customer sees; seconds of waiting until the final handler responds"),
+    ("abandoned, recontact_72h", "Customer left without resolution; customer contacted again within 72 hours"),
+    ("refund_requested, refund_inr, refund_approved, csat", "Refund request, amount, decision; CSAT 1-5 if the customer answered the survey (else empty)"),
+    ("_needs_human, _abuse, _safety, _resolved, _leak_inr, _complexity", "HIDDEN truth: needs a human, refund abuse, safety issue, actually resolved, ₹ leaked to abuse, complexity (simulation audit only)"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs29/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+chk = {"duplicate ticket rows": int(raw.duplicated("ticket_id").sum()), "QA / test tickets (user_id = -1)": int((raw.user_id == -1).sum()),
+       "CSAT outside 1-5": int((raw.csat.notna() & ~raw.csat.between(1, 5)).sum()), "negative first-response times": int((raw.first_response_s < 0).sum()), "missing intent": int(raw.intent.isna().sum())}
+print(pd.Series(chk, name="rows").to_string())
+df = raw.drop_duplicates("ticket_id"); df = df[df.user_id != -1].copy()
+df["csat"] = df.csat.where(df.csat.between(1, 5)); df["first_response_s"] = df.first_response_s.abs(); df = df[df.intent.notna()].copy()
+df["cont"] = (df.handled_by == "bot"); df["group"] = np.where(df.arm == "human_first", "H human-first holdout", np.where(df.phase == 0, "L legacy tree", np.where(df.phase == 1, "M LLM-only", "P LLM + policy")))
+df["top2"] = np.where(df.csat.notna(), (df.csat >= 4).astype(float), np.nan); df["over_cont"] = (df.cont & (df._needs_human == 1)).astype(int)
+pipe = df[df.arm == "bot_pipeline"]
+print(f"\nClean: {len(df):,} tickets | {df.day.nunique()} days | CSAT responders {df.csat.notna().sum():,} ({df.csat.notna().mean():.1%}) | holdout tickets {(df.arm == 'human_first').sum():,} ({(df.arm == 'human_first').sum() / (df.phase == 2).sum():.1%} of phase 2)")
+print(df.groupby("group").size().rename("tickets").to_string())
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
+vol = df.groupby("day").size(); axes[0].plot(vol.index, vol.values, color="#2a6f97"); axes[0].axvline(14, color="grey", ls="--"); axes[0].axvline(28, color="grey", ls="--"); axes[0].set_xlabel("Day (dashed lines: LLM-only starts, policy layer starts)"); axes[0].set_ylabel("Tickets per day"); axes[0].set_title("Volume: weekly cycle and one surge day")
+im = df.intent.value_counts(normalize=True).sort_values(); axes[1].barh(im.index, im.values * 100, color="#e07a1f"); axes[1].set_xlabel("% of tickets"); axes[1].set_ylabel("Intent"); axes[1].set_title("Intent mix: order status dominates")
+hr = df.groupby("hour").size(); axes[2].bar(hr.index, hr.values, color="#2a6f97"); axes[2].set_xlabel("Hour of day"); axes[2].set_ylabel("Tickets"); axes[2].set_title("Lunch and dinner peaks")
+plt.tight_layout(); plt.show()
+print(f"Surge day volume = {vol.loc[36]:,} vs median day {vol.median():,.0f}; hidden truth: {df._needs_human.mean():.1%} of tickets need a human, {df._safety.mean():.2%} are safety issues, {df._abuse.mean():.2%} are abusive refund requests")
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 What does "containment" really measure? A funnel of definitions
+
+**(a) Why?** "Containment" can mean three things: (1) **naive**: the bot was the last handler, (2) **proxy** (what we can observe): the bot was the last handler, the customer did not abandon, and did not re-contact within 72 hours, (3) **true** (simulation truth): the bot handler actually resolved the issue. The gap between them is the hidden cost of chasing containment. We use the bot pipeline (excluding the randomised holdout) in each phase and Wilson 95% CIs.
+
+#### Code
+
+#%% code
+def wil(k, n): lo, hi = proportion_confint(k, n, method="wilson"); return lo, hi
+rows = []
+for g_, d_ in df[df.arm == "bot_pipeline"].groupby("group"):
+    n_ = len(d_); proxy = d_.cont & (d_.abandoned == 0) & (d_.recontact_72h == 0); truth = d_.cont & (d_._resolved == 1)
+    lo, hi = wil(int(d_.cont.sum()), n_)
+    rows.append((g_, n_, d_.cont.mean(), lo, hi, proxy.mean(), truth.mean(), d_[d_.cont].abandoned.mean(), d_[d_.cont].recontact_72h.mean(), d_.over_cont.mean(), d_._resolved.mean()))
+fun = pd.DataFrame(rows, columns=["phase", "tickets", "naive containment", "CI low", "CI high", "proxy containment", "true containment", "abandon rate (of bot-kept)", "re-contact rate (of bot-kept)", "over-containment (kept but needed human)", "all-ticket resolution rate"]).set_index("phase")
+fun.round(4)
+
+#%% md
+**Observation:** «O71»
+
+### 7.2 Why did containment swing? Daily volatility under LLM-only escalation vs the policy layer
+
+**(a) Why?** The documented problem is that daily containment swung widely when the LLM alone decided escalations. We compute containment per day, then test whether the **variance** differs between the LLM-only days (14-27) and the policy-layer days (28-55): **Levene** (median-centred, robust to non-normality), the **F ratio** of variances, and a **bootstrap CI** for the SD ratio (resample days within each phase). A regression of daily containment on the daily intent mix and lateness checks whether ordinary mix shifts explain the swings.
+
+**(b) Assumptions:** days are the unit (n = 14 and 28); daily rates are roughly independent after removing the weekly cycle, which is checked with the lag-1 autocorrelation.
+
+#### Code
+
+#%% code
+dc = pipe.groupby("day").agg(cont=("cont", "mean"), n=("cont", "size"), where_share=("intent", lambda s: (s == "where_is_order").mean()), late=("late_min", "mean"), phase=("phase", "first"))
+a, b = dc[dc.phase == 1].cont.values, dc[dc.phase == 2].cont.values
+lev = stats.levene(a, b, center="median"); F = a.var(ddof=1) / b.var(ddof=1); pF = 2 * min(stats.f.cdf(F, len(a) - 1, len(b) - 1), stats.f.sf(F, len(a) - 1, len(b) - 1))
+bs = [np.std(RNG.choice(a, len(a)), ddof=1) / np.std(RNG.choice(b, len(b)), ddof=1) for _ in range(5000)]
+print(f"Phase 1 (LLM-only): mean {a.mean():.1%}, SD {a.std(ddof=1) * 100:.1f} pp, range {a.min():.1%} to {a.max():.1%}")
+print(f"Phase 2 (policy)  : mean {b.mean():.1%}, SD {b.std(ddof=1) * 100:.1f} pp, range {b.min():.1%} to {b.max():.1%}")
+print(f"Levene (median) W = {lev.statistic:.1f}, p = {lev.pvalue:.2g} | F = {F:.1f}, p = {pF:.2g} | SD ratio = {np.std(a, ddof=1) / np.std(b, ddof=1):.1f} (bootstrap 95% CI {np.percentile(bs, 2.5):.1f} to {np.percentile(bs, 97.5):.1f})")
+for ph in (1, 2):
+    s = dc[dc.phase == ph]; m = smf.ols("cont ~ where_share + late", data=s).fit(); print(f"Phase {ph}: R² of daily containment on intent mix + lateness = {m.rsquared:.2f} | lag-1 autocorrelation of daily containment = {s.cont.autocorr(1):+.2f}")
+fig, ax = plt.subplots(figsize=(11, 4.3))
+ax.plot(dc.index, dc.cont * 100, color="#2a6f97", marker="o", ms=3); ax.axvspan(14, 27.5, color="#e07a1f", alpha=0.12, label="LLM-only escalation"); ax.axvspan(27.5, 55.5, color="#2a9d8f", alpha=0.10, label="LLM + policy layer"); ax.axvspan(-0.5, 13.5, color="grey", alpha=0.10, label="legacy tree")
+ax.set_xlabel("Day"); ax.set_ylabel("Naive containment (%)"); ax.set_title("Daily containment: unstable under LLM-only escalation, steady with a policy layer"); ax.legend(loc="lower left"); plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O72»
+
+### 7.3 Did CSAT improve? Before/after vs the randomised holdout, with non-response
+
+**(a) Why?** CSAT comes from a survey that only about one customer in eight answers, and who answers depends on the experience (unhappy and human-handled customers respond more; customers who abandon rarely do). We report **top-2-box** (share of 4 or 5 out of 5) among responders with Wilson CIs, **satisfied customers per 100 tickets** (which includes non-response) and an **inverse-probability-weighted (IPW)** top-2-box using observable predictors of response (intent, handler, abandonment, peak, group). Tests: two-proportion z-tests of P vs L and P vs H, a risk ratio with a log-method CI, and Cohen's h.
+
+**(b) Assumptions and limits:** IPW removes bias from response differences explained by the observables; non-response driven by the unseen feeling cannot be fixed. L, M and P are different periods, so before/after contrasts are confounded by time; only P vs H is randomised.
+
+#### Code
+
+#%% code
+resp = df.csat.notna().astype(int)
+lr = smf.logit("resp ~ C(intent) + C(handled_by) + abandoned + peak_hour + C(group)", data=df.assign(resp=resp)).fit(disp=0)
+df["w"] = np.where(resp == 1, 1 / lr.predict(df), 0.0)
+rows = []; order_g = ["L legacy tree", "M LLM-only", "P LLM + policy", "H human-first holdout"]
+for g_ in order_g:
+    d_ = df[df.group == g_]; r_ = d_[d_.csat.notna()]; lo, hi = wil(int(r_.top2.sum()), len(r_))
+    rows.append((g_, len(d_), len(r_) / len(d_), r_.csat.mean(), r_.top2.mean(), lo, hi, r_.top2.sum() / len(d_) * 100, np.average(r_.top2, weights=r_.w)))
+cs = pd.DataFrame(rows, columns=["group", "tickets", "response rate", "mean CSAT", "top-2-box (responders)", "CI low", "CI high", "satisfied per 100 tickets", "top-2-box (IPW)"]).set_index("group")
+def ztwo(g1, g2):
+    r1, r2 = df[(df.group == g1) & df.csat.notna()], df[(df.group == g2) & df.csat.notna()]; k = np.array([r1.top2.sum(), r2.top2.sum()]); n = np.array([len(r1), len(r2)])
+    z, p = proportions_ztest(k, n); p1, p2 = k / n; rr = p1 / p2; se = np.sqrt((1 - p1) / k[0] + (1 - p2) / k[1]); h = proportion_effectsize(p1, p2)
+    return (f"{g1[0]} vs {g2[0]}", p1 - p2, p, rr, rr * np.exp(-1.96 * se), rr * np.exp(1.96 * se), h)
+ct = pd.DataFrame([ztwo("P LLM + policy", "L legacy tree"), ztwo("M LLM-only", "L legacy tree"), ztwo("P LLM + policy", "H human-first holdout")], columns=["contrast", "Δ top-2-box", "p (z-test)", "risk ratio", "RR CI low", "RR CI high", "Cohen's h"]).set_index("contrast")
+print(cs.round(4).to_string()); print(); print(ct.round(4).to_string())
+print(f"\nSatisfied per 100 tickets, P vs L: {cs.loc['P LLM + policy', 'satisfied per 100 tickets'] / cs.loc['L legacy tree', 'satisfied per 100 tickets']:.2f}x")
+fig, ax = plt.subplots(figsize=(9, 4.3)); x = np.arange(len(order_g))
+ax.bar(x - 0.2, cs["top-2-box (responders)"] * 100, 0.4, yerr=[(cs["top-2-box (responders)"] - cs["CI low"]) * 100, (cs["CI high"] - cs["top-2-box (responders)"]) * 100], color="#2a6f97", capsize=3, label="raw responders")
+ax.bar(x + 0.2, cs["top-2-box (IPW)"] * 100, 0.4, color="#e07a1f", label="IPW (non-response adjusted)")
+ax.set_xticks(x); ax.set_xticklabels([g.split(" ")[0] + " " + g.split(" ")[1] for g in order_g]); ax.set_xlabel("Group"); ax.set_ylabel("Top-2-box CSAT (%)"); ax.set_title("CSAT by regime: modest differences, not a doubling"); ax.legend(); plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O73»
+
+### 7.4 The randomised holdout: bot pipeline vs human-first (intention to treat)
+
+**(a) Why?** In phase 2, 5% of tickets were randomly sent to humans first. This is the only clean causal comparison: the **bot pipeline** (bot, with escalation when needed) vs **human-first**, both analysed as randomised (intention to treat). First we check **randomisation** with standardised mean differences (SMD below 0.1 is balanced) and a chi-square on the intent mix; then compare true resolution, the observable no-re-contact rate, first response time and IPW top-2-box (bootstrap CI).
+
+#### Code
+
+#%% code
+p2 = df[df.phase == 2]; Pp, Hh = p2[p2.arm == "bot_pipeline"], p2[p2.arm == "human_first"]
+cov_ = ["order_value_inr", "late_min", "prior_refund_ratio", "tenure_orders", "chat_turns", "sentiment", "llm_escalation_score", "peak_hour", "_needs_human"]
+smd = pd.Series({c: (Pp[c].mean() - Hh[c].mean()) / np.sqrt((Pp[c].var() + Hh[c].var()) / 2) for c in cov_}, name="SMD (bot pipeline - holdout)")
+chi_int = stats.chi2_contingency(pd.crosstab(p2.arm, p2.intent))
+print(f"Tickets: bot pipeline {len(Pp):,} | human-first {len(Hh):,} | max |SMD| = {smd.abs().max():.3f} | intent-mix chi-square p = {chi_int[1]:.2f}")
+def two(k1, n1, k2, n2):
+    p1, p2_ = k1 / n1, k2 / n2; se = np.sqrt(p1 * (1 - p1) / n1 + p2_ * (1 - p2_) / n2); return p1 - p2_, p1 - p2_ - 1.96 * se, p1 - p2_ + 1.96 * se, proportions_ztest([k1, k2], [n1, n2])[1]
+rows = []
+for nm, col in (("true resolution (hidden truth)", "_resolved"), ("no re-contact within 72 h (observable)", None)):
+    s1 = Pp._resolved if col else (1 - Pp.recontact_72h); s2 = Hh._resolved if col else (1 - Hh.recontact_72h)
+    rows.append((nm, s1.mean(), s2.mean(), *two(int(s1.sum()), len(s1), int(s2.sum()), len(s2))))
+rP, rH = Pp[Pp.csat.notna()], Hh[Hh.csat.notna()]
+dIPW = np.average(rP.top2, weights=rP.w) - np.average(rH.top2, weights=rH.w)
+bsI = [np.average(x.top2, weights=x.w) - np.average(y.top2, weights=y.w) for x, y in ((rP.iloc[RNG.integers(0, len(rP), len(rP))], rH.iloc[RNG.integers(0, len(rH), len(rH))]) for _ in range(1000))]
+rows.append(("top-2-box CSAT, IPW (responders)", np.average(rP.top2, weights=rP.w), np.average(rH.top2, weights=rH.w), dIPW, np.percentile(bsI, 2.5), np.percentile(bsI, 97.5), np.nan))
+itt = pd.DataFrame(rows, columns=["outcome", "bot pipeline", "human-first", "difference", "CI low", "CI high", "p"]).set_index("outcome")
+mw = stats.mannwhitneyu(Pp.first_response_s, Hh.first_response_s)
+print(f"First response: median {Pp.first_response_s.median():.1f}s (bot pipeline) vs {Hh.first_response_s.median():.1f}s (human-first), Mann-Whitney p = {mw.pvalue:.2g}")
+print(f"Responders: {len(rP):,} (pipeline) vs {len(rH):,} (holdout)"); print(smd.round(3).to_string()); itt.round(4)
+
+#%% md
+**Observation:** «O74»
+
+#### Per intent (Holm over nine intents)
+
+Resolution differences per intent, with Wald CIs and Holm-adjusted p-values. CSAT per intent is not tested because the holdout has too few survey responders.
+
+#### Code
+
+#%% code
+rows = []
+for it, d_ in p2.groupby("intent"):
+    x, y = d_[d_.arm == "bot_pipeline"], d_[d_.arm == "human_first"]; diff, lo, hi, p = two(int(x._resolved.sum()), len(x), int(y._resolved.sum()), len(y)); rows.append((it, len(y), x._resolved.mean(), y._resolved.mean(), diff, lo, hi, p, x.cont.mean()))
+pi = pd.DataFrame(rows, columns=["intent", "holdout n", "bot pipeline", "human-first", "diff", "CI low", "CI high", "p", "bot containment"]).set_index("intent"); pi["p_holm"] = multipletests(pi.p, method="holm")[1]; pi = pi.sort_values("diff")
+fig, ax = plt.subplots(figsize=(9, 4.6)); yy = np.arange(len(pi))
+ax.errorbar(pi["diff"] * 100, yy, xerr=[(pi["diff"] - pi["CI low"]) * 100, (pi["CI high"] - pi["diff"]) * 100], fmt="o", color="#2a6f97", capsize=3); ax.axvline(0, color="grey", ls="--")
+ax.set_yticks(yy); ax.set_yticklabels(pi.index); ax.set_xlabel("Resolution: bot pipeline minus human-first (pp)"); ax.set_ylabel("Intent"); ax.set_title("Per-intent effect of the bot pipeline on resolution (95% CI)"); plt.tight_layout(); plt.show()
+pi.round(4)
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.5 Latency: how much faster, and does speed explain CSAT?
+
+**(a) Why?** The documented claim is a response time under 10 seconds. First response is highly skewed, so we report **median, p90 and p99** (bootstrap CI for the median), a **Mann-Whitney** test L vs M, peak vs off-peak ratios, and a **logistic regression** of top-2-box on the wait until the final handler responds (minutes), controlling for resolution and handler, to ask whether speed matters beyond resolution.
+
+#### Code
+
+#%% code
+rows = []
+for g_ in order_g:
+    s = df[df.group == g_].first_response_s; bm = [np.median(RNG.choice(s.values, len(s))) for _ in range(300)]
+    rows.append((g_, s.median(), np.percentile(bm, 2.5), np.percentile(bm, 97.5), s.quantile(0.9), s.quantile(0.99), s.mean(), df[(df.group == g_) & (df.peak_hour == 1)].first_response_s.median() / df[(df.group == g_) & (df.peak_hour == 0)].first_response_s.median()))
+lat = pd.DataFrame(rows, columns=["group", "median s", "CI low", "CI high", "p90 s", "p99 s", "mean s", "peak / off-peak median"]).set_index("group")
+ml_ = stats.mannwhitneyu(df[df.group == "M LLM-only"].first_response_s, df[df.group == "L legacy tree"].first_response_s)
+rr_ = df[df.csat.notna()].assign(wait_min=lambda x: x.time_to_resolution_wait_s / 60)
+lg = smf.logit("top2 ~ wait_min + _resolved + C(handled_by)", data=rr_).fit(disp=0)
+print(f"Mann-Whitney M vs L (first response): p = {ml_.pvalue:.2g} | mean first response {df[df.group == 'L legacy tree'].first_response_s.mean():.0f}s (L) -> {df[df.group == 'P LLM + policy'].first_response_s.mean():.0f}s (P)")
+print(f"Logistic top-2-box: odds ratio per extra minute of waiting = {np.exp(lg.params['wait_min']):.3f} (95% CI {np.exp(lg.conf_int().loc['wait_min', 0]):.3f} to {np.exp(lg.conf_int().loc['wait_min', 1]):.3f}), p = {lg.pvalues['wait_min']:.2g}; resolved odds ratio {np.exp(lg.params['_resolved']):.1f}")
+fig, ax = plt.subplots(figsize=(9.5, 4.3))
+for g_, c_ in zip(order_g, ["grey", "#e07a1f", "#2a9d8f", "#2a6f97"]):
+    s = np.sort(df[df.group == g_].first_response_s.values); ax.plot(s, np.arange(1, len(s) + 1) / len(s) * 100, label=g_, color=c_)
+ax.set_xscale("log"); ax.axvline(10, color="red", ls=":"); ax.set_xlabel("First response time (seconds, log scale; dotted line = 10 s)"); ax.set_ylabel("Cumulative % of tickets"); ax.set_title("First response time: the bot answers in seconds, a human queue in minutes"); ax.legend(); plt.tight_layout(); plt.show()
+lat.round(2)
+
+#%% md
+**Takeaway:** «O76»
+
+### 7.6 Over-containment and safety: where does the bot keep tickets it should not?
+
+**(a) Why?** Over-containment (hidden truth: the ticket needed a human but the bot kept it) is the main hidden cost of high containment. We map it by intent and regime (heatmap), test whether the policy layer changed the **overall** rate (chi-square, risk ratio), and test the **safety** tickets separately (Fisher exact), because a missed safety complaint is a different kind of failure from a missed "where is my order". A logistic regression of 72-hour re-contact on over-containment (with intent and peak controls) shows what it costs.
+
+#### Code
+
+#%% code
+hm = pipe.pivot_table(index="intent", columns="group", values="over_cont", aggfunc="mean") * 100
+tt = pipe[pipe.phase.isin([1, 2])]; ct2 = pd.crosstab(tt.phase, tt.over_cont); chi_oc = stats.chi2_contingency(ct2, correction=False); rr_oc = tt[tt.phase == 2].over_cont.mean() / tt[tt.phase == 1].over_cont.mean()
+sf = pipe[(pipe._safety == 1) & pipe.phase.isin([1, 2])]; sft = pd.crosstab(sf.phase, sf.cont); fe = stats.fisher_exact(sft.values)
+srows = [(g_, int(((d_._safety == 1)).sum()), int(((d_._safety == 1) & d_.cont).sum())) for g_, d_ in pipe.groupby("group")]
+sfx = pd.DataFrame(srows, columns=["phase", "safety tickets", "safety tickets kept by the bot"]).set_index("phase"); sfx["share kept"] = sfx.iloc[:, 1] / sfx.iloc[:, 0]
+lg2 = smf.logit("recontact_72h ~ over_cont + C(intent) + peak_hour", data=pipe).fit(disp=0)
+print(f"Over-containment, LLM-only vs policy: {tt[tt.phase == 1].over_cont.mean():.2%} vs {tt[tt.phase == 2].over_cont.mean():.2%} (RR {rr_oc:.2f}), chi-square p = {chi_oc[1]:.2g}")
+print(f"Safety tickets kept by the bot, LLM-only vs policy: Fisher exact p = {fe[1]:.2g}, odds ratio {fe[0]:.2f}"); print(sfx.round(3).to_string())
+print(f"Re-contact odds ratio for an over-contained ticket = {np.exp(lg2.params['over_cont']):.1f} (95% CI {np.exp(lg2.conf_int().loc['over_cont', 0]):.1f} to {np.exp(lg2.conf_int().loc['over_cont', 1]):.1f})")
+fig, ax = plt.subplots(figsize=(8, 4.8)); sns.heatmap(hm[["L legacy tree", "M LLM-only", "P LLM + policy"]], annot=True, fmt=".1f", cmap="Reds", ax=ax, cbar_kws={"label": "% of tickets"}); ax.set_title("Over-containment rate by intent: heatmap of tickets kept that needed a human"); ax.set_xlabel("Regime"); ax.set_ylabel("Intent"); plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O77»
+
+### 7.7 Refund abuse: leakage under LLM-only decisions vs the policy layer
+
+**(a) Why?** LLM-only agents tend to trust the customer's story. Among abusive refund requests (hidden truth) we compare the **approval rate** and the **₹ leaked** per 1,000 refund tickets across regimes, test LLM-only vs policy with a chi-square, and measure the **friction** on legitimate refund requests (share escalated to a human or denied).
+
+#### Code
+
+#%% code
+rf = pipe[pipe.refund_requested == 1]; rows = []
+for g_, d_ in rf.groupby("group"):
+    ab, lg_ = d_[d_._abuse == 1], d_[d_._abuse == 0]
+    rows.append((g_, len(d_), len(ab), ab.refund_approved.mean(), d_._leak_inr.sum() / len(d_) * 1000, lg_.cont.mean(), (lg_.refund_approved == 0).mean(), (~lg_.cont | (lg_.refund_approved == 0)).mean()))
+lk = pd.DataFrame(rows, columns=["phase", "refund tickets", "abusive requests", "approval rate of abusive", "₹ leaked per 1,000 refund tickets", "legit tickets kept by bot", "legit tickets denied", "legit friction (escalated or denied)"]).set_index("phase")
+a1, a2 = rf[(rf._abuse == 1) & (rf.phase == 1)], rf[(rf._abuse == 1) & (rf.phase == 2)]
+ch = stats.chi2_contingency(np.array([[a1.refund_approved.sum(), len(a1) - a1.refund_approved.sum()], [a2.refund_approved.sum(), len(a2) - a2.refund_approved.sum()]]), correction=False)
+print(f"Abusive-request approval, LLM-only vs policy: {a1.refund_approved.mean():.1%} (n = {len(a1)}) vs {a2.refund_approved.mean():.1%} (n = {len(a2)}), chi-square p = {ch[1]:.2g}")
+print(f"Abuse score separates abuse: AUC = {roc_auc_score(rf._abuse, rf.abuse_score):.3f}")
+lk.round(3)
+
+#%% md
+**Observation:** «O78»
+
+### 7.8 Power and design: how big must a holdout be, and how many days to trust a volatility estimate?
+
+**(a) Why?** Without a holdout we cannot measure CSAT effects; with a small one we may miss them. We compute the **minimum detectable effect** for true resolution and top-2-box CSAT at our holdout size (80% power, two-sided 5%), the **sample sizes** needed for a 3-point CSAT effect, and how precisely a **standard deviation of daily containment** can be estimated from n days (chi-square CI), since the stability claim rests on 14 and 28 days.
+
+#### Code
+
+#%% code
+pw = NormalIndPower(); nP, nH = len(Pp), len(Hh)
+res_h, cs_h = Hh._resolved.mean(), rH.top2.mean(); eff_res = pw.solve_power(effect_size=None, nobs1=nH, alpha=0.05, power=0.8, ratio=nP / nH); eff_cs = pw.solve_power(effect_size=None, nobs1=len(rH), alpha=0.05, power=0.8, ratio=len(rP) / len(rH))
+print(f"Holdout n = {nH:,} tickets, {len(rH)} survey responders. Minimum detectable effect (Cohen's h): resolution {eff_res:.3f} (about {eff_res * 2 * np.sqrt(res_h * (1 - res_h)) * 100:.1f} pp near {res_h:.0%}), CSAT top-2-box {eff_cs:.3f} (about {eff_cs * 2 * np.sqrt(cs_h * (1 - cs_h)) * 100:.1f} pp near {cs_h:.0%})")
+rr_resp = df.csat.notna().mean(); rows = []
+for d_pp in (0.02, 0.03, 0.05):
+    h = proportion_effectsize(cs_h + d_pp, cs_h); n_r = int(np.ceil(pw.solve_power(effect_size=h, alpha=0.05, power=0.8))); rows.append((f"{d_pp * 100:.0f} pp CSAT effect", n_r, int(np.ceil(n_r / rr_resp))))
+pwt = pd.DataFrame(rows, columns=["effect to detect", "responders per arm", "tickets per arm (at observed response rate)"]).set_index("effect to detect")
+sd_rows = [(nd, np.sqrt((nd - 1) / stats.chi2.ppf(0.975, nd - 1)), np.sqrt((nd - 1) / stats.chi2.ppf(0.025, nd - 1))) for nd in (7, 14, 28, 56)]
+sdt = pd.DataFrame(sd_rows, columns=["days observed", "SD CI low (x estimate)", "SD CI high (x estimate)"]).set_index("days observed")
+print(pwt.to_string()); sdt.round(2)
+
+#%% md
+**Observation:** «O79»
+
+## 8. ML Section — predicting bot failure and setting the escalation threshold
+
+The bot already escalates using the LLM score and the policy rules. Can a small model, trained only on **observable** features (intent, order and customer context, chat turns, sentiment, LLM score, abuse score, safety keyword), predict which **bot-kept** tickets will fail (the customer abandons or re-contacts within 72 hours), so that we can escalate the riskiest few percent earlier? Training uses days 14 to 41; testing uses days 42 to 55 (time-ordered). Gradient boosting (fixed defaults, **no tuning**) is compared with logistic regression. Escalated tickets are assumed to be handled by a human with the outcomes observed in the same period.
+
+#### Code
+
+#%% code
+feats = ["order_value_inr", "late_min", "prior_refund_ratio", "tenure_orders", "tickets_30d", "chat_turns", "sentiment", "llm_escalation_score", "abuse_score", "peak_hour", "hour", "safety_keyword"]
+bk = pipe[pipe.cont & (pipe.phase >= 1)].copy(); bk["fail"] = ((bk.abandoned == 1) | (bk.recontact_72h == 1)).astype(int)
+Xf = pd.concat([bk[feats], pd.get_dummies(bk.intent, prefix="i").astype(float)], axis=1); tr, te = (bk.day < 42).values, (bk.day >= 42).values
+gb = HistGradientBoostingClassifier(random_state=SEED).fit(Xf[tr], bk.fail[tr]); lgm = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000)).fit(Xf[tr], bk.fail[tr])
+pg, pl = gb.predict_proba(Xf[te])[:, 1], lgm.predict_proba(Xf[te])[:, 1]; yte = bk.fail[te].values
+def auc_ci(y, p, B=300):
+    v = [roc_auc_score(y[i], p[i]) for i in (RNG.integers(0, len(y), len(y)) for _ in range(B))]; return np.percentile(v, 2.5), np.percentile(v, 97.5)
+mt = pd.DataFrame({"AUC": [roc_auc_score(yte, pg), roc_auc_score(yte, pl)], "AUC CI low": [auc_ci(yte, pg)[0], auc_ci(yte, pl)[0]], "AUC CI high": [auc_ci(yte, pg)[1], auc_ci(yte, pl)[1]], "Brier": [brier_score_loss(yte, pg), brier_score_loss(yte, pl)]}, index=["gradient boosting", "logistic regression"])
+top = pg >= np.quantile(pg, 0.9)
+print(f"Train {tr.sum():,} / test {te.sum():,} bot-kept tickets | failure rate train {bk.fail[tr].mean():.1%}, test {yte.mean():.1%} | base failure rate in top-10% risk {yte[top].mean():.1%} (lift {yte[top].mean() / yte.mean():.2f}x)")
+mt.round(4)
+
+#%% md
+**Observation:** «O81»
+
+#### Escalation-threshold frontier
+
+For the test days, take every bot-pipeline ticket. Escalate the top q% riskiest bot-kept tickets (by the model) to humans and compare with escalating the **same number at random**. Escalated tickets get the human outcomes seen in phase 2 (resolution, re-contact, refund approval of abusive requests). We track naive containment, all-ticket true resolution and ₹ cost per ticket (human ₹55, bot ₹4, re-contact costs one more human ticket, ₹120 margin lost per unresolved ticket, plus refund leakage; assumptions D-29-07).
+
+#### Code
+
+#%% code
+HC, BC, LOSS = 55.0, 4.0, 120.0
+tp_ = pipe[pipe.day >= 42].copy(); tp_["p"] = np.nan; tp_.loc[tp_.cont, "p"] = gb.predict_proba(pd.concat([tp_.loc[tp_.cont, feats], pd.get_dummies(tp_.loc[tp_.cont, "intent"], prefix="i").astype(float)], axis=1).reindex(columns=Xf.columns, fill_value=0.0))[:, 1]
+hum = pipe[(pipe.phase == 2) & ~pipe.cont]; h_res, h_rc = hum._resolved.mean(), hum.recontact_72h.mean(); APPR_ABUSE = 0.35
+def econ(esc):
+    N = len(tp_); kept = tp_.cont.values & ~esc; e_n = esc.sum(); res = tp_._resolved.values[kept].sum() + h_res * e_n + tp_._resolved.values[~tp_.cont.values].sum()
+    rc = tp_.recontact_72h.values[kept].sum() + h_rc * e_n + tp_.recontact_72h.values[~tp_.cont.values].sum(); leak = tp_._leak_inr.values[kept | ~tp_.cont.values].sum() + (tp_._abuse.values * tp_.refund_inr.values * APPR_ABUSE)[esc].sum()
+    bot, humn = kept.sum() / N, 1 - kept.sum() / N; cost = BC * bot + HC * (humn + rc / N) + LOSS * (1 - res / N) + leak / N
+    return dict(containment=bot, true_resolution=res / N, recontact=rc / N, leak_per_ticket=leak / N, cost_per_ticket=cost)
+fr = []; cidx = np.where(tp_.cont.values)[0]; ordr = cidx[np.argsort(-tp_.p.values[cidx])]
+for q in (0, 0.05, 0.10, 0.15, 0.20, 0.30):
+    k = int(q * len(cidx)); e = np.zeros(len(tp_), bool); e[ordr[:k]] = True
+    m_ = econ(e); rnd = [econ(np.isin(np.arange(len(tp_)), RNG.choice(cidx, k, replace=False))) for _ in range(10)]
+    fr.append({"escalate extra": q, "containment (model)": m_["containment"], "true resolution (model)": m_["true_resolution"], "cost/ticket ₹ (model)": m_["cost_per_ticket"], "true resolution (random)": np.mean([r["true_resolution"] for r in rnd]), "cost/ticket ₹ (random)": np.mean([r["cost_per_ticket"] for r in rnd])})
+fr = pd.DataFrame(fr).set_index("escalate extra")
+fig, axes = plt.subplots(1, 2, figsize=(13, 4.3))
+cc, cp = calibration_curve(yte, pg, n_bins=10, strategy="quantile"); axes[0].plot(cp, cc, "o-", color="#2a6f97", label="gradient boosting"); axes[0].plot([0, 0.6], [0, 0.6], "k--", label="perfect"); axes[0].set_xlabel("Predicted failure probability"); axes[0].set_ylabel("Observed failure rate"); axes[0].set_title("Calibration on held-out days"); axes[0].legend()
+axes[1].plot(fr["containment (model)"] * 100, fr["true resolution (model)"] * 100, "o-", color="#2a6f97", label="escalate riskiest (model)"); axes[1].plot(fr["containment (model)"] * 100, fr["true resolution (random)"] * 100, "s--", color="#e07a1f", label="escalate at random"); axes[1].set_xlabel("Naive containment (%)"); axes[1].set_ylabel("All-ticket true resolution (%)"); axes[1].set_title("Frontier: containment bought vs resolution lost"); axes[1].legend()
+plt.tight_layout(); plt.show()
+fr.round(4)
+
+#%% md
+**Takeaway:** «O82»
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-29-07): **1 crore support contacts a month** (the reference reports more than 1.5 crore conversations a month; we use a smaller round number), human-handled ticket ₹55, bot ticket ₹4, a re-contact costs one more human ticket, each unresolved ticket loses ₹120 of future margin, refund leakage as simulated. Scenarios change the human cost, the margin lost per unresolved ticket and the leakage multiplier. Baseline is the legacy tree. Rates come from each regime's bot-pipeline tickets; the "policy plus model" row applies the frontier's 10% extra escalation to the policy-layer regime.
+
+#### Code
+
+#%% code
+def rates(d_): return dict(bot=d_.cont.mean(), recon=d_.recontact_72h.mean(), unres=1 - d_._resolved.mean(), leak=d_._leak_inr.mean())
+RT = {"legacy tree": rates(pipe[pipe.phase == 0]), "LLM-only": rates(pipe[pipe.phase == 1]), "LLM + policy layer": rates(pipe[pipe.phase == 2])}
+b0, b10 = econ(np.zeros(len(tp_), bool)), econ(np.isin(np.arange(len(tp_)), ordr[:int(0.10 * len(cidx))]))
+pp_ = RT["LLM + policy layer"]; dres = b10["true_resolution"] - b0["true_resolution"]; dleak = b10["leak_per_ticket"] - b0["leak_per_ticket"]; dbot = b10["containment"] - b0["containment"]; drc = b10["recontact"] - b0["recontact"]
+RT["LLM + policy + model (10% extra)"] = dict(bot=pp_["bot"] + dbot, recon=pp_["recon"] + drc, unres=pp_["unres"] - dres, leak=pp_["leak"] + dleak)
+SC = {"best": (80.0, 200.0, 1.0), "base": (55.0, 120.0, 1.0), "worst": (40.0, 60.0, 2.0)}
+def cost(r, hc, loss, lm): return BC * r["bot"] + hc * (1 - r["bot"] + r["recon"]) + loss * r["unres"] + lm * r["leak"]
+rows = {}
+for nm, r in RT.items():
+    rows[nm] = {"bot share": r["bot"], "unresolved share": r["unres"], "leak ₹/ticket": r["leak"], "cost ₹/ticket (base)": cost(r, *SC["base"])}
+    for sc, prm in SC.items():
+        if nm != "legacy tree": rows[nm][f"saving ₹ crore/year ({sc})"] = (cost(RT["legacy tree"], *prm) - cost(r, *prm)) * 12
+money = pd.DataFrame(rows).T; print("Volume: 1 crore contacts a month = 12 crore a year; saving = (legacy cost − new cost) per ticket × 12 crore"); money.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated truth:** the hidden labels (needs a human, abuse, safety, resolved) are assumed; in real data resolution is unobserved and must be estimated from re-contact, sampled human grading and LLM-as-judge on the four documented rubric metrics.
+- **Survey bias:** only about one customer in eight answers the CSAT survey and non-response is not random. IPW fixes only what the observables explain; keep the randomised holdout and compare against it.
+- **Holdout size:** 5% gave a precise resolution contrast but too few survey responders for per-intent CSAT. Plan the size for the outcome that matters.
+- **Policy layer is a stabiliser, not a free gain:** here it lowered naive containment and added friction for some legitimate refund requests; tune its rules with cost data.
+- **Escalated tickets:** the frontier assumes extra escalations get the human outcomes seen in the same period; a queue that grows with escalations would raise waits and lower CSAT.
+- **Model drift:** the LLM, prompts and policy text change often; re-run the volatility and holdout checks after every change, as the documented review process also requires.
+- **Next steps:** run the failure model in shadow mode; add LLM-as-judge scores; pilot the extra-escalation rule on one intent group with a holdout; track safety tickets as a separate zero-tolerance KPI.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Naive containment | tickets last handled by the bot ÷ tickets |
+| Proxy containment | bot-handled, not abandoned, no re-contact within 72 h ÷ tickets |
+| True containment | bot-handled and actually resolved ÷ tickets |
+| Over-containment | tickets that needed a human but were kept by the bot ÷ tickets |
+| Top-2-box CSAT | share of survey answers equal to 4 or 5 |
+| IPW | each responder weighted by 1 ÷ P(respond given observables) |
+| Standardised mean difference | (mean₁ − mean₀) ÷ pooled SD |
+| Cohen's h | 2·asin(√p₁) − 2·asin(√p₂) |
+| SD CI from n days | s·√((n−1)/χ²) with the chi-square quantiles at 0.975 and 0.025 |
+| Cost per ticket | bot ₹ × bot share + human ₹ × (human share + re-contact) + margin lost × unresolved + leakage |
+
+| Term | Meaning |
+|---|---|
+| Containment | Share of tickets the bot finishes without a human |
+| CSAT | Customer satisfaction survey score, 1 to 5 |
+| Escalation | Handing the ticket to a human agent |
+| Policy layer | Deterministic rules around the LLM (limits, safety keywords, abuse score) |
+| Holdout | Customers randomly kept out of the new system to measure its effect |
+| Intention to treat | Analyse as randomised, whatever happened afterwards |
+| Over-containment | Keeping tickets that needed a human |
+| Leakage | Money paid out that policy should have blocked (here abusive refunds) |

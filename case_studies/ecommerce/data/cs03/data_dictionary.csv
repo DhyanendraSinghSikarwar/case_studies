@@ -1,0 +1,11 @@
+field(s),meaning
+"pod_id, cluster_id, sku_id, day, date, category","Pod (48), cluster (8 of 6 pods), SKU (120), day 0-83, date, category"
+"shelf_life_days, price_inr, unit_cost_inr","Shelf life (999 = non-perishable), selling price, purchase cost"
+"promo, festival, rain_forecast_mm","Known-ahead drivers: promotion flag, festival day, rain forecast (noisy)"
+"po_qty, received_qty, opening_stock","Units ordered, received after vendor short-shipment, stock at the start of the day"
+"units_sold, avail_share, wasted_units","Observed sales (censored), share of open hours in stock, units expired at the start of the day"
+hourly_sales.npz (hourly),"Observed units sold per open hour [pod-SKU, day, 16 hours]"
+sku_master: target_availability,Category availability target set by the business (our assumption)
+"pick_orders: arrival_sec, n_items, n_zones, zone_mask, weight_kg","Order arrival second, basket size, zones visited, bit-mask of zones, weight"
+"pick_orders: assign_wait_sec, order_to_ready_sec, pick_pack_sec",Logged times under round-robin assignment with 5 pickers
+"_true_demand, _lost_sales, _vendor_short_prob, TR['H']","HIDDEN truth: demand (incl. hourly), lost sales, vendor reliability (used by the twin only)"

@@ -1,0 +1,9 @@
+,value
+conv_rm_call,0.033333
+conv_no_call,0.005556
+diff_pp,2.777778
+diff_ci_low_pp,-0.320287
+diff_ci_high_pp,6.552694
+fisher_p,0.121344
+z_test_p,0.056331
+min_expected_count,3.5

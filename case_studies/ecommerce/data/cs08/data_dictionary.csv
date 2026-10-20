@@ -1,0 +1,10 @@
+field(s),meaning
+"panel: sku_id, week, category","SKU, week 1-52, category"
+"price_inr, mrp_inr",Selling price and displayed list price (MRP) in ₹
+competitor_price_inr,Scraped competitor price (₹)
+supplier_cost_index,Observed supplier cost index (1.0 = normal); the instrument
+"units, in_stock",Units sold; in_stock = 0 when the SKU was out of stock part of the week (censored sales)
+"sale_event, event_name",1 in the four sale-event weeks
+exp_arm,"Price experiment arm: cut10, control, raise10 (blank outside the experiment)"
+"skus: brand_tier, rating, review_count, in_price_experiment",SKU attributes
+"_mu, _mu_cf, _promo_m, _u, _base_price, _eps; skus: _true_elasticity, _mrp_inflated","HIDDEN truth: expected units with and without promotion, true promotion depth, demand shock, base price, elasticity"

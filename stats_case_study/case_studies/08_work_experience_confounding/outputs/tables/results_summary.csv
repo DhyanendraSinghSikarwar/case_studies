@@ -1,0 +1,5 @@
+Variable,On its own,Conditional,What happened,Decision
+Experience,+1.5%/yr,+4.3%/yr (v1) → +0.5%/yr (v2),Mediation: ~87% runs through job grade,Keep (essential when grade is missing)
+Metro city,+12%,≈ −1% (CI includes 0),Confounding by employer type,Reject the metro uplift
+Years at current employer,≈ 0 (r ≈ 0.0),−3.9%/yr,Suppression by experience,Keep (2nd most useful in v2)
+Postgraduate vs Graduate,≈ 0,+21% (same experience); +9% (same grade),Masked by experience (young postgraduates),Keep education

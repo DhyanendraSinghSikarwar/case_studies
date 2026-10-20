@@ -1,0 +1,174 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs25.py
+--- cell 8 (exec 3) ---
+control set 40,600 rows | legacy-logged 40,000 rows | generated and saved in 24s
+   order_id  user_id  day  pincode_id  order_value_inr  user_rto_1y  pin_rto_3m  found_profile  match_score  rto
+0         0      528    0          10       1,471.0000          NaN      0.1550              0          NaN    1
+1         1      529    0         153         396.0000       0.0000      0.1290              1       0.7790    0
+2         2     2547    0         175       2,018.0000          NaN      0.0740              1       0.4550    1
+3         3     2891    0          70       1,318.0000       0.0000      0.3760              0          NaN    0
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0              order_id, user_id, day, hour, weekday  Order and customer identifiers; day 0–179 of t...
+1   category, seller_id, pincode_id, order_value_inr             Order attributes available at checkout
+2  user_rto_3m/1y, user_n_3m/1y, pin_/seller_/cat...  RTO ratio and order counts in the past 3 month...
+3                         found_profile, match_score  A candidate public profile was found; its matc...
+4  is_student, n_jobs, n_degrees, friends, follow...  Social-profile features (quantitative and an e...
+5                                                rto  1 if the order became RTO (NaN if the outcome ...
+6                                     legacy_blocked  1 if the old rule blocked the order (legacy-lo...
+7  _p_rto, _type, _reliability, _user_effect, _tr...  HIDDEN truth: true RTO probability, occupation...
+--- cell 12 (exec 5) ---
+duplicate order rows                            600
+missing order value                             427
+order value above ₹2,00,000                      72
+impossible hour (> 23)                          129
+orders with no user history (user_n_1y = 0)    8520
+
+Clean: 40,000 orders | RTO 31.77% | users 10,963 | orders by users with a found profile: 50.3% | no user history (n_1y = 0): 21.0%
+Missing trend values are meaningful (no history) and are coded -1 with the counts kept; missing order value / hour take the training median.
+--- cell 14 (exec 6) ---
+[image]
+RTO rate by user-history bucket: {'no history': 31.1, '0–0.2': 23.6, '0.2–0.4': 36.0, '0.4–0.6': 44.0, '0.6–0.8': 55.7, '0.8–1': 55.7} | orders: {'no history': 8399, '0–0.2': 20026, '0.2–0.4': 3472, '0.4–0.6': 3299, '0.6–0.8': 1354, '0.8–1': 3450}
+--- cell 16 (exec 7) ---
+[image]
+--- cell 18 (exec 8) ---
+training data                randomised control set  legacy-logged (blocked orders unobserved)
+train orders                            33,255.0000                                27,750.0000
+RTO rate in training labels                  0.3170                                     0.2707
+test AUC                                     0.7925                                     0.7870
+AUC lo                                       0.7810                                     0.7773
+AUC hi                                       0.8034                                     0.7987
+recall at cap                                0.2374                                     0.2960
+recall lo                                    0.2212                                     0.2785
+recall hi                                    0.2549                                     0.3127
+realised FPR                                 0.0278                                     0.0465
+PCOC (pred / obs)                            1.0038                                     0.9713
+
+Legacy-logged observed RTO rate 27.07% vs control 31.70% (z = -12.2, p = 1.9e-34); share of legacy orders blocked: 16.8%, of which true RTO had they shipped: 56.2%
+Time trend in RTO rate: odds ratio per month 1.012 (95% CI 1.000 to 1.024), p = 0.058
+--- cell 20 (exec 9) ---
+Users: 10,963 | with a candidate profile: 5,514 (50.3%) | candidates that are the right person (hidden): 88.5%
+           matched / found  matched / all users  match precision  prec. lo  prec. hi  orders with social features  test AUC (all features)  AUC lo  AUC hi
+threshold                                                                                                                                                 
+0.4000              0.9369               0.4712           0.9431    0.9364    0.9491                       0.4706                   0.8053  0.7949  0.8185
+0.5000              0.9068               0.4561           0.9656    0.9602    0.9703                       0.4548                   0.8063  0.7966  0.8163
+0.6000              0.8622               0.4336           0.9813    0.9770    0.9848                       0.4338                   0.8066  0.7965  0.8165
+0.8000              0.5490               0.2761           0.9970    0.9944    0.9984                       0.2792                   0.8027  0.7916  0.8136
+0.9000              0.2354               0.1184           1.0000    0.9970    1.0000                       0.1148                   0.7958  0.7855  0.8045
+0.9500              0.0749               0.0377           1.0000    0.9908    1.0000                       0.0350                   0.7920  0.7802  0.8021
+Chi-square on right/wrong match counts at thresholds 0.4, 0.6, 0.8: chi2 = 223.3, p = 3.3e-49
+[image]
+--- cell 22 (exec 10) ---
+Test month: 6,745 orders, 2,169 RTO (32.2%) | fitted 9 models in 489s
+                               AUC  AUC lo  AUC hi  PR-AUC  recall at cap  precision at cap  realised FPR  Goodness (bps)
+model features                                                                                                           
+LR    history only          0.7580  0.7460  0.7708  0.6087         0.1978            0.7513        0.0310        397.4452
+      + social quantitative 0.7805  0.7694  0.7914  0.6401         0.2310            0.7696        0.0328        478.5969
+      + social embedding    0.7804  0.7698  0.7911  0.6396         0.2324            0.7718        0.0326        482.6228
+RF    history only          0.7866  0.7769  0.7967  0.6518         0.2370            0.7944        0.0291        501.7108
+      + social quantitative 0.7987  0.7865  0.8088  0.6649         0.2490            0.8012        0.0293        532.4671
+      + social embedding    0.7985  0.7882  0.8101  0.6635         0.2467            0.7938        0.0304        524.2312
+HGB   history only          0.7925  0.7814  0.8029  0.6607         0.2374            0.8022        0.0278        505.5728
+      + social quantitative 0.8052  0.7949  0.8153  0.6734         0.2513            0.8110        0.0278        541.5839
+      + social embedding    0.8066  0.7976  0.8181  0.6769         0.2591            0.8157        0.0278        562.1486
+--- cell 24 (exec 11) ---
+Model family with the highest AUC (best feature group): HGB
+                                                                         orders   ΔAUC  AUC lo  AUC hi  Δrecall  rec lo  rec hi  RTO caught only by new  \
+subset                       step                                                                                                                         
+all test orders              history only → + social quantitative          6745 0.0127  0.0085  0.0170   0.0138  0.0030  0.0254                     100   
+                             + social quantitative → + social embedding    6745 0.0014  0.0001  0.0027   0.0078  0.0000  0.0147                      45   
+                             history only → + social embedding             6745 0.0141  0.0099  0.0182   0.0217  0.0096  0.0330                     110   
+re-identified users only     history only → + social quantitative          2915 0.0305  0.0216  0.0389   0.0421  0.0201  0.0633                      85   
+                             + social quantitative → + social embedding    2915 0.0021 -0.0005  0.0046   0.0144 -0.0005  0.0282                      30   
+                             history only → + social embedding             2915 0.0325  0.0234  0.0420   0.0565  0.0321  0.0813                      97   
+thin history (user_n_1y ≤ 1) history only → + social quantitative          2991 0.0194  0.0119  0.0276   0.0248  0.0089  0.0440                      55   
+                             + social quantitative → + social embedding    2991 0.0014 -0.0010  0.0035   0.0186  0.0063  0.0297                      27   
+                             history only → + social embedding             2991 0.0208  0.0134  0.0283   0.0435  0.0259  0.0619                      64   
+
+                                                                         caught only by old  McNemar p  ΔGoodness (bps)  good lo  good hi  p_holm  
+subset                       step                                                                                                                  
+all test orders              history only → + social quantitative                        70     0.0258          36.0112   7.1385  66.5704  0.0517  
+                             + social quantitative → + social embedding                  28     0.0604          20.5647  -0.4930  41.2368  0.0604  
+                             history only → + social embedding                           63     0.0004          56.5758  23.5442  86.7831  0.0013  
+re-identified users only     history only → + social quantitative                        44     0.0004         109.6001  46.9813 170.9189  0.0008  
+                             + social quantitative → + social embedding                  16     0.0541          39.3444  -2.1851  76.2710  0.0541  
+                             history only → + social embedding                           42     0.0000         148.9445  83.6062 217.1175  0.0000  
+thin history (user_n_1y ≤ 1) history only → + social quantitative                        31     0.0127          59.1736  15.0435 110.0802  0.0127  
+                             + social quantitative → + social embedding                   9     0.0039          48.1820  14.8786  79.3858  0.0079  
+                             history only → + social embedding                           22     0.0000         107.3556  64.9790 156.1186  0.0000
+--- cell 26 (exec 12) ---
+Final model: HGB with all features | cap 3% | threshold 0.674
+              estimate   CI low  CI high
+precision       0.8157   0.7901   0.8432
+recall          0.2591   0.2425   0.2790
+fpr             0.0278   0.0236   0.0325
+flagged         0.1021      NaN      NaN
+goodness_bps  562.1486 510.7266 613.7532
+
+         recall  precision  realised FPR  share of orders flagged  Goodness (bps)
+FPR cap                                                                          
+0.0100   0.1374     0.8791        0.0090                   0.0503        295.0160
+0.0200   0.2089     0.8420        0.0186                   0.0798        451.0948
+0.0300   0.2591     0.8157        0.0278                   0.1021        562.1486
+0.0500   0.3338     0.7743        0.0461                   0.1386        728.6241
+0.1000   0.4601     0.6897        0.0981                   0.2145      1,005.4473
+
+Calibration slope 1.106 (95% CI 1.046 to 1.165), intercept +0.051 | PCOC 1.005 | Hosmer–Lemeshow chi2 = 22.9 (df 8), p = 0.00348
+[image]
+--- cell 28 (exec 13) ---
+Chi-square across occupation types on good orders: chi2 = 11.5, p = 0.042 | lowest-FPR group: senior manager
+                          good orders  FPR (final model)  FPR lo  FPR hi  FPR (history only)  flag rate  RTO rate
+occupation type (hidden)                                                                                         
+student                           607             0.0346  0.0227  0.0523              0.0346     0.1450    0.3624
+early career                     1172             0.0239  0.0166  0.0343              0.0230     0.1036    0.3438
+mid-career professional          1083             0.0212  0.0142  0.0317              0.0212     0.0635    0.2362
+self-employed / business          742             0.0350  0.0240  0.0508              0.0350     0.1021    0.3297
+senior manager                    418             0.0144  0.0066  0.0310              0.0263     0.0495    0.2330
+other / not stated                554             0.0415  0.0278  0.0615              0.0343     0.1451    0.4088
+
+                          Fisher p  p_holm
+type vs lowest-FPR group                  
+student                     0.0489  0.1622
+early career                0.3252  0.6505
+mid-career professional     0.5304  0.6505
+self-employed / business    0.0405  0.1622
+other / not stated          0.0134  0.0669
+
+               orders  flag rate  RTO rate    FPR  recall
+has_social                                               
+0          3,830.0000     0.0943    0.3120 0.0292  0.2377
+1          2,915.0000     0.1125    0.3341 0.0258  0.2854
+[image]
+--- cell 30 (exec 14) ---
+                           share flagged  recall  precision    FPR  net saving per 1,000 orders (₹)      CI low     CI high
+policy                                                                                                                     
+no model                          0.0000  0.0000        NaN 0.0000                           0.0000      0.0000      0.0000
+capped threshold (3% FPR)         0.1020  0.2590     0.8160 0.0280                       6,768.4760  6,146.1330  7,426.3520
+cost-optimal rule                 0.6280  0.8500     0.4350 0.5230                      17,689.1120 16,628.7100 18,760.7020
+
+Cost-optimal minus capped: ₹10,921 per 1,000 orders (95% CI 10,024 to 11,854); paired t p = 3.8e-106
+
+Net ₹ per 1,000 orders of the capped threshold, by effect and loss assumptions:
+            φ = 10%    φ = 25%    φ = 40%
+ρ = 30%  4,207.0000 3,769.0000 3,331.0000
+ρ = 50%  7,207.0000 6,768.0000 6,330.0000
+ρ = 70% 10,206.0000 9,768.0000 9,330.0000
+
+A/B test size (flag share and precision from the capped model):
+                            RTO rate, flagged, no nudge  RTO rate, flagged, nudge  flagged orders per arm  total COD orders needed (both arms)
+RTO reduction by the nudge                                                                                                                    
+20%                                              0.8160                    0.6530                     112                                 2193
+35%                                              0.8160                    0.5300                      39                                  764
+50%                                              0.8160                    0.4080                      19                                  373
+[image]
+--- cell 32 (exec 15) ---
+                                        net ₹ per 1,000 orders  ₹ crore / year   CI low  CI high  share flagged
+scenario             policy                                                                                    
+worst (ρ 30%, φ 40%) capped (3% FPR)                3,330.6730         12.1570  10.5160  13.7870         0.1020
+                     cost-optimal rule              6,243.5940         22.7890  20.4530  25.5600         0.3640
+base (ρ 50%, φ 25%)  capped (3% FPR)                6,768.4760         24.7050  22.6480  26.9590         0.1020
+                     cost-optimal rule             17,689.1120         64.5650  61.2950  68.5040         0.6280
+best (ρ 70%, φ 10%)  capped (3% FPR)               10,206.2780         37.2530  34.3690  40.1530         0.1020
+                     cost-optimal rule             34,105.5230        124.4850 117.6580 130.2210         0.9100

@@ -1,0 +1,9 @@
+field(s),meaning
+"extraction: claim_id, field, doc_quality, pages",Field audited; document type (clean_print / scan / handwritten); page count
+"extraction_correct, model_confidence",Extracted value matches the true value; the model's confidence
+"adjudication: adjudicator_id, pages, icu, claim_value_inr, complex_claim",Adjudicator and claim attributes
+ai_assisted,"Randomised arm: 1 = copilot summary, 0 = manual"
+"handling_minutes, decision, disputed_later","Time, approve/partial/reject, later dispute"
+gold_decision,Senior-panel decision for the 10% audit sample
+"_true_decision, _summary_wrong",HIDDEN truth and whether the AI summary contained an error
+"guideline_check: expert_deviation, copilot_flag, copilot_confidence",Expert vs copilot deviation judgement

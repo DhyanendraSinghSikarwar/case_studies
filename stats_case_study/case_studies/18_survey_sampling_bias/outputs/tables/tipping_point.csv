@@ -1,0 +1,7 @@
+non-respondents lower by (points),"implied mean score, all customers",conclusion 'score ≥ 7.5',conclusion 'score ≥ 7.0'
+0.0,7.6343049663,holds,holds
+0.2,7.4445949663,fails,holds
+0.4,7.2548849663,fails,holds
+0.6,7.0651749663,fails,holds
+0.8,6.8754649663,fails,fails
+1.0,6.6857549663,fails,fails

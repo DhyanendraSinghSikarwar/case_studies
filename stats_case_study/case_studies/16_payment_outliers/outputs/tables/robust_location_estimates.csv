@@ -1,0 +1,6 @@
+estimator,"typical payment, all payments (₹)","same, legitimate payments only (₹)",contamination effect (%)
+mean of log amounts (geometric mean),3067.1726317637,3022.2653327405,1.4858820811
+median,2148.0,2120.4994694647,1.296889291
+10% trimmed mean (log scale),2829.4247968177,2797.157841369,1.153562197
+Huber M-estimator (log scale),2953.661043923,2919.6189913355,1.1659758581
+ordinary mean of raw ₹ (for comparison),16009.5610973801,13629.8409836066,17.459632263

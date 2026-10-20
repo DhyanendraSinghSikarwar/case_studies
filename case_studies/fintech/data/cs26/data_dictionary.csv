@@ -1,0 +1,8 @@
+field(s),meaning
+"visitor_id, week, traffic_source, device","Session identity, week 1–8, acquisition source, device"
+"days_to_expiry, quotes_viewed, returning_visitor, addons_viewed",Observed intent signals
+"car_age_years, claim_free_ncb",Vehicle and no-claim-bonus status
+chat_popup_shown,Randomised encouragement (weeks 3–8)
+"chatted, bot_handled, first_response_min","Chat use, whether the bot answered, first-reply delay"
+"purchased, premium_inr",Bought a policy in the session; premium
+"_intent, _u",HIDDEN purchase intent (observed-correlated and unobserved parts)

@@ -1,0 +1,10 @@
+field(s),meaning
+"customer_id, signup_week",Customer and weekly signup cohort 0–51
+"channel, os_ios, device_price_tier, city_tier, signup_hour, signup_dow",Acquisition and device context (known at install)
+"payment_pref, referral_used, coupon_first_session, notification_opt_in, location_precise, app_version_bucket",Payment and first-session signals
+"first_session_minutes, sessions_pre, searches_pre, cart_adds_pre, cart_value_pre_inr, food_browse_share, restaurants_viewed, avg_restaurant_price_viewed",Browsing before the first order
+insta_views_grocery / fresh / snacks / personal_care / electronics,Instamart category affinity (views)
+"distance_nearest_store_km, pincode_affluence_index, pincode_order_density, fraud_score, complaints_pre, contacts_book_size, install_to_signup_hours","Geography, socio-economic, risk and support signals"
+noise_01 … noise_20,Pure noise (used to test false discoveries)
+"orders_30d, orders_180d, food_ltv_180d, insta_ltv_180d, ltv_180d",OUTCOMES (never used as features): orders and GOV
+"_latent_intent, _p_active, _active180, _clearing_price_inr, _coarse_value_inr","HIDDEN: latent intent, activation probability, auction clearing price, coarse value"

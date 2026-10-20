@@ -1,0 +1,189 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs19.py
+--- cell 8 (exec 3) ---
+119,955 user rows | 40,620 minute rows | 50,000 marketplace users | generated in 41s
+   user_id  arm  day platform city_tier  new_user  pre_orders_28d  pre_sessions_28d  pre_spend_28d  converted  orders  revenue_inr  add_to_cart  wishlist_adds  bounced  \
+0   107932    0    8      app     metro         0               0                 2         0.0000          0       0       0.0000            0              2        0   
+1    56043    0    4      web     tier2         0               2                 6       893.0000          0       0       0.0000            1              2        0   
+2     5020    1   11      web     tier3         1               0                 1         0.0000          0       0       0.0000            0              0        0   
+3    69023    1   12      web     tier2         0               0                 5         0.0000          0       0       0.0000            1              0        0   
+
+   page_load_ms  support_contact  _true_rel_lift_conv  _latent_engagement  
+0    1,380.0000                0               0.0300             -0.9770  
+1    2,213.0000                0               0.0300              0.7120  
+2    1,827.0000                0               0.1500              0.1240  
+3    2,843.0000                0               0.0300             -0.3060
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0  users_ab: user_id, arm, day, platform, city_ti...  User, arm (1 = new homepage), day of entry 0–1...
+1  users_ab: pre_orders_28d, pre_sessions_28d, pr...          Pre-experiment covariates (used by CUPED)
+2           users_ab: converted, orders, revenue_inr                              Outcomes over 14 days
+3  users_ab: add_to_cart, wishlist_adds, bounced,...                   Secondary metrics and guardrails
+4  market_switchback: minute, day, hour, interval...  Minute-level marketplace; interval = 53-minute...
+5   market_userab: user_id, arm, requests, completed  The same marketplace tested by a user-level 50...
+6  _true_rel_lift_conv, _latent_engagement, truth...  HIDDEN: true effect and engagement; global-rol...
+--- cell 12 (exec 5) ---
+user rows                                       119,955.0000
+duplicate user rows                               1,500.0000
+missing pre_spend_28d                             3,602.0000
+missing page_load_ms                              1,199.0000
+revenue outliers (> ₹1 lakh)                         25.0000
+share of all revenue from those outliers              0.4709
+market: duplicate minute rows                       300.0000
+market: minutes with missing requests                81.0000
+market: supply spikes (> 1.8× rolling median)        15.0000
+
+Clean: 118,455 users | revenue winsorised at the 99.9th percentile (₹6,324) | 40,320 market minutes (81 with missing counts, dropped from estimation)
+--- cell 14 (exec 6) ---
+[image]
+Conversion 7.59% | mean revenue ₹169.7 (winsorised ₹88.1) | corr(pre-spend, revenue, winsorised) = 0.164 | new users 30%
+--- cell 16 (exec 7) ---
+[image]
+Success rate overall 82.9% | lowest hour 74.8% (hour 17) | highest hour 90.2% | requests/minute 70.8
+--- cell 18 (exec 8) ---
+Overall: control 60,264 | treatment 58,191 | treatment share 0.4912 | SRM chi-square = 36.3, p = 1.7e-09
+Cells with SRM after Holm (platform, day, treatment share, p_holm):
+platform  day  count  share  p_holm
+     web    5   2458 0.3133  0.0000
+     web    6   2435 0.3405  0.0000
+
+Excluded web users on days [np.int64(5), np.int64(6)] from BOTH arms (4,893 users). After: control 56,970 | treatment 56,592 | share 0.4983 | SRM p = 0.262
+Joint balance test (logistic arm ~ covariates): LR chi-square = 4.8, df = 7, p = 0.688
+     pre_orders_28d  pre_sessions_28d  pre_spend_28d  new_user    app   tier2   tier3
+SMD         -0.0047           -0.0004        -0.0050   -0.0063 0.0062 -0.0010 -0.0056
+--- cell 20 (exec 9) ---
+Primary metric and secondary/guardrail metrics (difference = treatment − control):
+                                  control mean  difference  relative lift  CI low  CI high       z      p  p_holm   p_BH
+metric                                                                                                                  
+conversion (PRIMARY)                    0.0731      0.0063         0.0857  0.0032   0.0094  3.9779 0.0001  0.0004 0.0002
+orders per user                         0.1089      0.0097         0.0888  0.0045   0.0148  3.6816 0.0002  0.0012 0.0005
+revenue per user (winsorised, ₹)       86.4365      4.3590         0.0504 -0.8083   9.5264  1.6534 0.0982  0.3930 0.1572
+add-to-cart rate                        0.2476      0.0147         0.0594  0.0096   0.0198  5.6816 0.0000  0.0000 0.0000
+wishlist adds per user                  0.5199      0.0022         0.0042 -0.0064   0.0108  0.5022 0.6155  1.0000 0.7035
+bounce rate (guardrail)                 0.2961     -0.0005        -0.0016 -0.0058   0.0048 -0.1700 0.8650  1.0000 0.8650
+page load ms (guardrail)            2,194.8112     21.7050         0.0099 12.0186  31.3913  4.3919 0.0000  0.0001 0.0000
+support contact (guardrail)             0.0277      0.0014         0.0488 -0.0006   0.0033  1.3712 0.1703  0.5110 0.2271
+
+Revenue per user: raw diff ₹78.41 (95% CI 8.84 to 147.99) | winsorised ₹4.36 (CI -0.81 to 9.53) | bootstrap CI winsorised -0.59 to 9.33 | Mann-Whitney p = 0.000
+Outliers: 25 users above ₹1 lakh (treatment 18, control 7); SE falls from 35.50 to 2.64 after winsorising
+
+Guardrail non-inferiority (harm = increase):
+      guardrail scale  harm estimate  one-sided 95% upper bound  margin  p (H0: harm ≥ margin)   conclusion
+        bounced   abs        -0.0005                     0.0040  0.0050                 0.0219 non-inferior
+   page_load_ms   rel         0.0099                     0.0136  0.0300                 0.0000 non-inferior
+support_contact   abs         0.0014                     0.0030  0.0030                 0.0472 non-inferior
+
+Heterogeneity tests:
+moderator  LR chi-square  df      p  p_holm
+ new_user         0.3797   1 0.5378  1.0000
+ platform         0.0052   1 0.9427  1.0000
+city_tier         0.0802   2 0.9607  1.0000
+
+Conversion lift by customer type:
+             group  users  control conv.  difference  relative lift  CI low  CI high
+new_user: existing  79574         0.0722      0.0055         0.0767  0.0019   0.0092
+     new_user: new  33988         0.0753      0.0080         0.1063  0.0023   0.0138
+--- cell 22 (exec 10) ---
+           effect (raw)  SE raw  effect (CUPED)  SE CUPED  effect (ANCOVA)  SE ANCOVA  variance reduction CUPED  variance reduction ANCOVA  corr(y, pre-spend)
+metric                                                                                                                                                        
+converted        0.0063  0.0016          0.0065    0.0015           0.0067     0.0015                    0.0383                     0.0764              0.1958
+orders           0.0097  0.0026          0.0101    0.0026           0.0104     0.0025                    0.0431                     0.0805              0.2079
+rev_w            4.3590  2.6364          4.7183    2.6014           4.8998     2.5711                    0.0264                     0.0489              0.1624
+
+A/A validation on control users only (400 random splits):
+                  mean estimate  SD of estimate  false-positive rate (α = 0.05)
+conversion raw           0.0000          0.0022                          0.0425
+conversion CUPED         0.0000          0.0021                          0.0525
+revenue raw              0.1364          3.8765                          0.0550
+revenue CUPED            0.1237          3.8221                          0.0600
+--- cell 24 (exec 11) ---
+Baseline conversion 7.31%; 113,562 users in 14 days (8,112 a day)
+                     MDE (relative conversion lift)  power to detect +5% relative  power to detect a 5% DROP (guardrail view)
+treatment share 10%                          0.0986                        0.2946                                      0.2946
+treatment share 20%                          0.0740                        0.4734                                      0.4734
+treatment share 50%                          0.0592                        0.6579                                      0.6579
+
+Revenue per user: mean ₹86.4, SD ₹444.2 (SD/mean = 5.1); ANCOVA variance reduction 4.9%
+                                     users per arm  days at this traffic
+target (50/50, 80% power, α = 0.05)                                     
++2% conversion                              497294              122.6000
++5% conversion                               79567               19.6000
++10% conversion                              19892                4.9000
++5% revenue per user (raw)                  165848               40.9000
++5% revenue per user (ANCOVA)               157733               38.9000
++10% revenue per user (raw)                  41462               10.2000
++10% revenue per user (ANCOVA)               39434                9.7000
+--- cell 26 (exec 12) ---
+Looks: 5; true effect z at the final look = 2.80 (80% power for a fixed test)
+OBF boundaries by look: [4.56, 3.23, 2.63, 2.28, 2.04]
+                                 false-positive rate (A/A)  power (real effect)  average share of planned sample used
+rule                                                                                                                 
+fixed (final look only)                             0.0508               0.8019                                1.0000
+naive peeking (1.96 every look)                     0.1428               0.8487                                0.5778
+Bonferroni (2.576)                                  0.0334               0.6452                                0.7514
+Pocock (2.413)                                      0.0495               0.7071                                0.7093
+O'Brien-Fleming                                     0.0506               0.7903                                0.8010
+--- cell 28 (exec 13) ---
+Users: requests per user +7.2% for treated users; intervals analysed: 761 (washout) / 761
+Simple pooled minute-level treated-minus-control comparison (no adjustment): +1.89%
+                                completed-trips lift  CI low  CI high  success rate change (pp)  CI low   CI high 
+method                                                                                                            
+user-level A/B (50/50 users)                  0.0720  0.0493   0.0952                    0.0046  -0.3686    0.3778
+switchback, no washout                        0.0287  0.0140   0.0436                   -0.7261  -1.2078   -0.2445
+switchback, 10-min washout                    0.0309  0.0141   0.0479                   -0.8018  -1.3821   -0.2215
+TRUTH: global rollout (hidden)                0.0412     NaN      NaN                   -1.4907      NaN       NaN
+--- cell 29 (exec 14) ---
+[image]
+--- cell 31 (exec 15) ---
+120 replications × 9 designs in 201s
+                                    mean truth (%)  mean estimate (%)  bias (pp of lift)  ± 95% MC error  RMSE (pp)  coverage of truth  power (CI excludes 0)  mean CI width (pp)  success-rate bias (pp)
+design                                                                                                                                                                                                   
+alternating, 60 min                         4.0900             0.7540            -3.3370          0.0280     3.3410             0.0000                 0.9670              0.7820                 -3.1110
+alternating, 53 min                         4.0900             2.1890            -1.9010          0.0240     1.9060             0.0000                 1.0000              2.6080                  0.7440
+random, 53 min                              4.0900             3.2550            -0.8350          0.1530     1.1940             0.8080                 0.9830              3.3380                  0.4030
+paired-random, 53 min                       4.0900             2.9110            -1.1800          0.1130     1.3370             0.6420                 0.9750              2.7740                  0.5180
+paired-random, 53 min, washout 10           4.0900             3.4700            -0.6200          0.1100     0.8710             0.9170                 1.0000              2.8130                  0.3400
+paired-random, 53 min, washout 20           4.0900             3.8220            -0.2680          0.1320     0.7820             0.9250                 1.0000              2.8560                  0.2080
+paired-random, 29 min, washout 10           4.0900             2.9180            -1.1720          0.0720     1.2380             0.1330                 1.0000              1.6440                  0.5290
+paired-random, 112 min, washout 10          4.0900             3.7970            -0.2930          0.2270     1.2950             0.9580                 0.8420              5.1110                  0.2160
+user-level A/B                              4.0900             6.0500             1.9600          0.2040     2.2640             0.5670                 1.0000              4.5590                  1.4970
+
+Duration (paired-random 53, washout 10):
+         bias (pp of lift)  RMSE (pp)  coverage of truth  power (CI excludes 0)  mean CI width (pp)
+design                                                                                             
+7 days             -0.6340     1.4180             0.9580                 0.5080              6.7760
+14 days            -0.6020     1.0250             0.9330                 0.9330              4.1130
+28 days            -0.6200     0.8710             0.9170                 1.0000              2.8130
+
+A/A tests (zero effect, switchback designs):
+                                   mean estimate (%)  SD of estimate (%)  false-positive rate (α = 0.05)
+A/A design (true effect = 0)                                                                            
+alternating, 60 min                          -1.5911              0.1641                          1.0000
+paired-random, 53 min, washout 10             0.0738              0.6536                          0.0417
+--- cell 32 (exec 16) ---
+[image]
+--- cell 34 (exec 17) ---
+           R² of out-of-fold prediction  SE raw  SE ANCOVA (linear)  SE CUPAC (GBM)  variance reduction ANCOVA  variance reduction CUPAC  effect raw  effect ANCOVA  \
+metric                                                                                                                                                                
+converted                        0.0809  0.0016              0.0015          0.0015                     0.0764                    0.0808      0.0063         0.0067   
+rev_w                            0.0487  2.6364              2.5711          2.5707                     0.0489                    0.0493      4.3590         4.8998   
+
+           effect CUPAC  
+metric                   
+converted        0.0067  
+rev_w            5.1012
+--- cell 36 (exec 18) ---
+Homepage (ANCOVA effect on 14-day revenue per user: ₹4.90, 95% CI -0.14 to 9.94)
+                               Δ revenue per user, 14 days (₹)  GMV per year (₹ crore)  contribution per year (₹ crore)
+worst (CI low, 50% persists)                           -0.1400                 -3.6200                          -0.2900
+base (estimate, 80% persists)                           4.9000                203.8300                          16.3100
+best (CI high, 100% persists)                           9.9400                516.8300                          41.3500
+
+Marketplace: the naive A/B point estimate overstates the true yearly value by ₹33.3 crore
+                               ₹ crore / year (worst: CI low)  ₹ crore / year (base)  ₹ crore / year (best: CI high)  lift used
+method                                                                                                                         
+user-level A/B (naive)                                53.1910                77.7550                        102.8510     0.0720
+switchback, 10-min washout                            15.2680                33.3760                         51.7840     0.0310
+truth (hidden global rollout)                             NaN                44.4780                             NaN     0.0410

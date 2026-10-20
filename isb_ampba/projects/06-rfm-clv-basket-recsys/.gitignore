@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+data/raw/*
+data/interim/*
+data/processed/*
+!data/*/.gitkeep
+models/*
+!models/.gitkeep
+*.parquet
+*.duckdb
+.env
+mlruns/

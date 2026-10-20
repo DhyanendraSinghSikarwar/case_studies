@@ -1,0 +1,4 @@
+,payments flagged,smallest flagged amount (₹),median flagged amount (₹)
+unusual for its merchant segment (robust z of log ₹ > 3.5),50,8622.0,140450.0
+unusual for this customer (robust z of log amount ÷ customer average > 3.5),58,2528.0,121950.0
+"three or more risk flags (new device, location mismatch, night, burst)",73,106.0,10305.0

@@ -1,0 +1,12 @@
+field(s),meaning
+"loan_id, disb_month, product","Loan, disbursal month, product"
+"bureau_depth, employment, repeat_customer",Segment keys
+"age, city_tier, monthly_income",KYC / profile (income 2% missing)
+"bureau_score, n_tradelines, dpd30_last12m, enquiries_3m",Bureau (score blank for NTC)
+"inflow_volatility, bounces_6m, avg_bal_to_income",Bank-statement cash-flow features
+gst_consistency,Self-employed only: GST turnover consistency (0–1)
+digital_footprint_score,Consented digital-footprint score (0–100)
+"loan_amount, emi_to_income",Ticket and affordability
+"prior_loans, prior_max_dpd",Repeat customers: history with this lender
+bad_60dpd_6m,Target: 60+ days past due within 6 months
+_p_bad,HIDDEN true default probability

@@ -1,0 +1,9 @@
+field(s),meaning
+"date, store_id, sku_id, gsku_id",Store-SKU-day and the substitution group of the SKU
+"category, perishable, price_inr",Product attributes
+"promo, rain, festival",Planned promotion; rain; festival uplift index (known in advance)
+opening_stock,Units on the shelf at open
+units_sold,Units sold (censored by stock)
+avail_share,"Share of open hours the SKU was orderable (3,000 missing)"
+wasted_units,Units expired (perishables)
+_true_demand,HIDDEN: what customers would have bought with unlimited stock (excluding spill-over)

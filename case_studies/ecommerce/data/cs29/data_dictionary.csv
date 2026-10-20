@@ -1,0 +1,9 @@
+field(s),meaning
+"ticket_id, user_id, created_ts, day, hour, peak_hour","Ticket, customer, timestamp, day 0-55, hour, meal-peak flag"
+"phase, arm","0 legacy tree, 1 LLM-only, 2 LLM + policy; arm = bot_pipeline or human_first (randomised holdout, phase 2 only)"
+"intent, order_value_inr, late_min, prior_refund_ratio, tenure_orders, tickets_30d",Ticket intent and order / customer context available to the bot
+"chat_turns, sentiment, llm_escalation_score, abuse_score, safety_keyword","Chat features, LLM escalation score, fraud model score, safety keyword hit"
+"handled_by, first_response_s, time_to_resolution_wait_s",Who finished the ticket; seconds to the first response the customer sees; seconds of waiting until the final handler responds
+"abandoned, recontact_72h",Customer left without resolution; customer contacted again within 72 hours
+"refund_requested, refund_inr, refund_approved, csat","Refund request, amount, decision; CSAT 1-5 if the customer answered the survey (else empty)"
+"_needs_human, _abuse, _safety, _resolved, _leak_inr, _complexity","HIDDEN truth: needs a human, refund abuse, safety issue, actually resolved, ₹ leaked to abuse, complexity (simulation audit only)"

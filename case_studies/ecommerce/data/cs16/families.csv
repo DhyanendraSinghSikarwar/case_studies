@@ -1,0 +1,121 @@
+family_id,family_name,cluster,category,_demand_weight
+0,biryani,0,rice and biryani,0.06208633095330623
+1,pulao,0,rice and biryani,0.003962957294891887
+2,tehri,0,rice and biryani,0.004901552443682071
+3,khichdi,0,rice and biryani,0.002357708770378718
+4,curd rice,1,rice and biryani,0.007163807417689181
+5,lemon rice,1,rice and biryani,0.00219128226894022
+6,bisibele bath,1,rice and biryani,0.0025869304563877595
+7,pongal,1,rice and biryani,0.046564748214979676
+8,fried rice,2,rice and biryani,0.1862589928599187
+9,jeera rice,2,rice and biryani,0.004049108540433015
+10,rajma chawal,2,rice and biryani,0.0026608427551416958
+11,kadhi chawal,2,rice and biryani,0.002244084251324322
+12,idli,3,rice and biryani,0.002092797672583356
+13,dosa,3,rice and biryani,0.00886947585047232
+14,uttapam,3,rice and biryani,0.0032677016291213805
+15,medu vada,3,rice and biryani,0.0020027848694614916
+16,poha,4,rice and biryani,0.0019814786474459437
+17,upma,4,rice and biryani,0.0074503597143967485
+18,sabudana khichdi,4,rice and biryani,0.0020695443651102077
+19,thalipeeth,4,rice and biryani,0.0016338508145606902
+20,butter chicken,5,curries,0.0016196434161732062
+21,chicken tikka masala,5,curries,0.0033260534439271193
+22,kadai chicken,5,curries,0.009803104887364142
+23,chicken korma,5,curries,0.001757160309999233
+24,paneer butter masala,6,curries,0.006422723891721335
+25,palak paneer,6,curries,0.00547820567235055
+26,kadai paneer,6,curries,0.0018625899285991871
+27,shahi paneer,6,curries,0.0015521582738326559
+28,dal makhani,7,curries,0.002623366096618573
+29,dal tadka,7,curries,0.002299493739011342
+30,chana masala,7,curries,0.0066521068878542386
+31,rajma,7,curries,0.03725179857198374
+32,fish curry,8,curries,0.00221736896261808
+33,prawn masala,8,curries,0.0031043165476653117
+34,egg curry,8,curries,0.008466317857269033
+35,mutton rogan josh,8,curries,0.004775871611792787
+36,sambar,9,curries,0.0018814039682820073
+37,rasam,9,curries,0.0036521371149003667
+38,kootu,9,curries,0.003514320619998466
+39,avial,9,curries,0.0035819037088445907
+40,naan,10,breads and rolls,0.0019401978422908196
+41,roti,10,breads and rolls,0.023282374107489838
+42,paratha,10,breads and rolls,0.0024189479592197235
+43,kulcha,10,breads and rolls,0.0029102967634362297
+44,kathi roll,11,breads and rolls,0.006898481217034026
+45,frankie,11,breads and rolls,0.0025170134170259283
+46,shawarma,11,breads and rolls,0.001773895170094464
+47,wrap,11,breads and rolls,0.002271451132438033
+48,burger,12,breads and rolls,0.016932635714538066
+49,sandwich,12,breads and rolls,0.0062086330953306235
+50,club sandwich,12,breads and rolls,0.0016630267219635596
+51,sub,12,breads and rolls,0.0015784660411857518
+52,pizza,13,breads and rolls,0.0019606209774728285
+53,garlic bread,13,breads and rolls,0.010347721825551038
+54,calzone,13,breads and rolls,0.004656474821497968
+55,pasta,13,breads and rolls,0.001808339736504065
+56,pav bhaji,14,breads and rolls,0.0016780089446839523
+57,vada pav,14,breads and rolls,0.0016932635714538063
+58,misal pav,14,breads and rolls,0.0024507762218410356
+59,dabeli,14,breads and rolls,0.004542902264876066
+60,samosa,15,snacks and chaat,0.0015919572039309292
+61,kachori,15,snacks and chaat,0.004331604485114388
+62,pakora,15,snacks and chaat,0.002328237410748984
+63,bhajiya,15,snacks and chaat,0.031043165476653114
+64,pani puri,16,snacks and chaat,0.002165802242557194
+65,sev puri,16,snacks and chaat,0.09312949642995935
+66,bhel puri,16,snacks and chaat,0.0026994056936220103
+67,dahi puri,16,snacks and chaat,0.0025514930528755986
+68,chole bhature,17,snacks and chaat,0.0021409079639071113
+69,aloo tikki,17,snacks and chaat,0.0018260685574501834
+70,papdi chaat,17,snacks and chaat,0.0016483096713267142
+71,raj kachori,17,snacks and chaat,0.004233158928634516
+72,french fries,18,snacks and chaat,0.0020245542702165076
+73,nachos,18,snacks and chaat,0.005644211904846022
+74,onion rings,18,snacks and chaat,0.003004177304192237
+75,chicken wings,18,snacks and chaat,0.0032113619458606674
+76,dhokla,19,snacks and chaat,0.0019201958026795743
+77,khandvi,19,snacks and chaat,0.0077607913691632785
+78,fafda,19,snacks and chaat,0.0016056809729303337
+79,thepla,19,snacks and chaat,0.002116579464317258
+80,hakka noodles,20,chinese and fusion,0.011641187053744919
+81,chowmein,20,chinese and fusion,0.003801203935916708
+82,schezwan noodles,20,chinese and fusion,0.003053426112457684
+83,singapore noodles,20,chinese and fusion,0.01862589928599187
+84,manchurian,21,chinese and fusion,0.0029564919501574396
+85,chilli paneer,21,chinese and fusion,0.0058205935268724595
+86,chilli chicken,21,chinese and fusion,0.0020468021193397663
+87,dragon chicken,21,chinese and fusion,0.0109564113447011
+88,momos,22,chinese and fusion,0.004139088730220415
+89,wonton,22,chinese and fusion,0.001844148444157611
+90,dim sum,22,chinese and fusion,0.002739102836175275
+91,spring roll,22,chinese and fusion,0.0053216855102833915
+92,manchow soup,23,chinese and fusion,0.006008354608384474
+93,hot and sour soup,23,chinese and fusion,0.0031569320823715036
+94,sweet corn soup,23,chinese and fusion,0.0024834532381322496
+95,tomato soup,23,chinese and fusion,0.0017407382510272774
+96,chicken tikka,24,chinese and fusion,0.0015652016206715857
+97,paneer tikka,24,chinese and fusion,0.0033865271429076127
+98,malai tikka,24,chinese and fusion,0.0037251798571983743
+99,reshmi kebab,24,chinese and fusion,0.026608427551416954
+100,gulab jamun,25,desserts and drinks,0.0017087980996322817
+101,rasgulla,25,desserts and drinks,0.015521582738326557
+102,rasmalai,25,desserts and drinks,0.0017909518544222953
+103,kala jamun,25,desserts and drinks,0.00443473792523616
+104,jalebi,26,desserts and drinks,0.00809821708086603
+105,imarti,26,desserts and drinks,0.009312949642995935
+106,malpua,26,desserts and drinks,0.005173860912775519
+107,rabri,26,desserts and drinks,0.0028655229670756727
+108,brownie,27,desserts and drinks,0.0038803956845816392
+109,cake,27,desserts and drinks,0.014327614835378363
+110,pastry,27,desserts and drinks,0.003449240608517013
+111,cheesecake,27,desserts and drinks,0.0017246203042585065
+112,ice cream,28,desserts and drinks,0.012417266190661247
+113,kulfi,28,desserts and drinks,0.013304213775708477
+114,falooda,28,desserts and drinks,0.002779984968058488
+115,sundae,28,desserts and drinks,0.005034026834051857
+116,lassi,29,desserts and drinks,0.001900601967958354
+117,masala chai,29,desserts and drinks,0.002822105952423011
+118,cold coffee,29,desserts and drinks,0.0023879358058963933
+119,milkshake,29,desserts and drinks,0.020695443651102076

@@ -1,0 +1,11 @@
+quantity,estimate,ci_low,ci_high,method,p_value
+"Planned users per arm (80% power, 1 pp MDE)",31996.025618111,,,power analysis,
+False-positive rate with daily peeking,0.2245,,,A/A simulation,
+Per-look threshold for 14 looks (Pocock-style),0.008245614,,,calibrated by simulation,
+SRM p-value (all users),1.44e-08,,,exact binomial,1.44e-08
+Missing pre-v5 treatment users,1272.0,,,control − treatment count,
+"Primary lift, v5+ (pp)",1.0411396947,0.3179368392,1.7641605093,two-proportion z = 2.82,0.00477871
+"Relative lift, v5+",0.0148047691,0.0044976473,0.025217652,log-ratio CI,
+"Guardrail: payment-error difference, v5+ (pp)",-0.0992685522,-0.3252814731,0.1266395759,two-proportion z,0.3885942146
+Day-3 cumulative lift (pp),1.7793969952,0.1862600206,3.370210441,interim look,0.0285893493
+Annual net revenue from v5+ rollout (₹ lakh),16.5813426504,5.0635084782,28.0962776123,lift × traffic × value,

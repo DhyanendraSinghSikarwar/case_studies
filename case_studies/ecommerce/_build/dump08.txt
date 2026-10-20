@@ -1,0 +1,141 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs08.py
+--- cell 8 (exec 3) ---
+31,800 SKU-week rows | 600 SKUs | 8 categories | 52 weeks | generated in 7s
+   sku_id  week            category  price_inr    mrp_inr  competitor_price_inr  supplier_cost_index    units  in_stock  sale_event event_name exp_arm
+0     507    44    Small appliances 1,785.0000 1,995.0000            1,779.0000               0.9724  32.0000         1           0                   
+1     208    28             Apparel 1,005.0000 1,351.0000              910.0000               1.0430 102.0000         1           0                   
+2     571    45  Books & stationery   284.0000   444.0000              246.0000               1.0141  90.0000         1           0                   
+3     511    39    Small appliances 2,451.0000 4,082.0000            2,206.0000               1.0165   8.0000         1           0
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0                      panel: sku_id, week, category                           SKU, week 1-52, category
+1                                 price_inr, mrp_inr  Selling price and displayed list price (MRP) in ₹
+2                               competitor_price_inr                       Scraped competitor price (₹)
+3                                supplier_cost_index  Observed supplier cost index (1.0 = normal); t...
+4                                    units, in_stock  Units sold; in_stock = 0 when the SKU was out ...
+5                             sale_event, event_name                     1 in the four sale-event weeks
+6                                            exp_arm  Price experiment arm: cut10, control, raise10 ...
+7  skus: brand_tier, rating, review_count, in_pri...                                     SKU attributes
+8  _mu, _mu_cf, _promo_m, _u, _base_price, _eps; ...  HIDDEN truth: expected units with and without ...
+--- cell 12 (exec 5) ---
+duplicate rows                      600
+missing price                       481
+price > 20 × MRP (paise error)       94
+negative units (returns netted)      20
+stock-out weeks (units censored)    968
+zero-unit weeks                     116
+paise errors fixed by dividing by 100: 93 (max price / MRP afterwards 1.25)
+
+Clean panel: 30,712 SKU-weeks | observational modelling frame (in stock, units > 0, outside experiment weeks): 28,623 rows | 600 SKUs
+Price experiment rows used: 918 | rows without a trailing reference price (first weeks): 2,400
+--- cell 14 (exec 6) ---
+[image]
+Displayed discount >= 30%: 32.6% of SKU-weeks | true significant discount (>= 15% below trailing median): 10.7% (65.9% in sale weeks, 5.7% otherwise)
+Pooled correlation of log price and log units: -0.33 | units per SKU-week: median 39, mean 58
+--- cell 16 (exec 7) ---
+[image]
+Rows: observational 28,623 | experiment 918
+                                 elasticity  SE (clustered)  CI low  CI high  true mean elasticity (same rows)  error vs truth
+A pooled OLS                        -0.2380          0.0240 -0.2860  -0.1910                           -1.9710          1.7330
+B + SKU fixed effects               -1.9870          0.0310 -2.0480  -1.9260                           -1.9710         -0.0160
+C + sale flag, competitor price     -1.5060          0.0330 -1.5700  -1.4410                           -1.9710          0.4650
+D + week fixed effects              -1.5100          0.0320 -1.5730  -1.4470                           -1.9710          0.4610
+E IV (cost index)                   -1.9400          0.0560 -2.0490  -1.8310                           -1.9710          0.0310
+F randomised test                   -2.0020          0.1530 -2.3010  -1.7030                           -1.8950         -0.1070
+--- cell 18 (exec 8) ---
+First-stage F (cost index -> log price): 5658 | coefficient 0.82
+Hausman-type test, IV minus FE-OLS (rung C): difference -0.434, bootstrap SE 0.047, z = -9.2, p = 2.5e-20
+Bootstrap 95% CI of the IV elasticity: (-2.06, -1.84) | analytic: (-2.05, -1.83) | 5s
+Breusch-Pagan on pooled model: LM = 0.5, p = 0.5 | week-to-week residual autocorrelation (IV residuals): +0.20 | corr(cost shock, previous week's residual): +0.003
+H1 against the experiment: naive pooled -0.24 vs experiment -2.00; z = 11.4
+--- cell 20 (exec 9) ---
+[image]
+CI covers truth in 8 of 8 categories | first-stage F range 567 to 847
+                    IV elasticity     SE  CI low  CI high  true mean  p (H0: ε = -1)  first-stage F  rows  p_holm  covers truth  elastic (CI high < -1)
+category                                                                                                                                               
+Mobile accessories        -2.7420 0.1300 -2.9980  -2.4870    -2.6910          0.0000       843.0170  3576  0.0000          True                    True
+Books & stationery        -2.2870 0.1200 -2.5230  -2.0510    -2.4330          0.0000       846.5140  3592  0.0000          True                    True
+Apparel                   -2.2260 0.1460 -2.5110  -1.9410    -2.1460          0.0000       646.7500  3579  0.0000          True                    True
+Footwear                  -1.8480 0.1600 -2.1600  -1.5350    -2.0090          0.0000       630.9010  3593  0.0000          True                    True
+Home & kitchen            -1.7650 0.1480 -2.0550  -1.4760    -1.8280          0.0000       812.7320  3555  0.0000          True                    True
+Beauty                    -1.7460 0.1490 -2.0380  -1.4550    -1.6630          0.0000       574.5080  3609  0.0000          True                    True
+Small appliances          -1.5070 0.1530 -1.8070  -1.2070    -1.5550          0.0010       567.3770  3554  0.0030          True                    True
+Mobiles                   -1.4120 0.1790 -1.7630  -1.0610    -1.4380          0.0240       831.0160  3565  0.0240          True                    True
+--- cell 22 (exec 10) ---
+Arm sizes (SKU-weeks): {'control': 328, 'cut10': 314, 'raise10': 276} | balance on prior-8-week log units: ANOVA F = 0.74, p = 0.48
+Pooled experiment elasticity -2.00 (SE 0.15) | price-cut slope -2.17 (SE 0.27) | price-rise slope -1.80 (SE 0.32) | asymmetry test z = -0.74, p = 0.46
+Residual sd 0.31, sd of price variation 0.076 | current half-width 0.30 | minimum detectable elasticity (80% power, 5% level) 0.43
+         SKU_weeks  mean_units  mean_log_units
+exp_arm                                       
+cut10          314     61.5500          3.8000
+control        328     46.7800          3.5200
+raise10        276     42.0100          3.4000
+   CI half-width target  SKU-weeks needed  ≈ SKUs for 8 weeks
+0                0.5000               259                  33
+1                0.3000               719                  90
+2                0.2000              1617                 203
+3                0.1000              6466                 809
+--- cell 24 (exec 11) ---
+[image]
+Promotions flagged: 2,427 of 24,369 SKU-weeks (10.0%); flag precision vs hidden truth 92.6%, recall 87.0%
+Net effect over 3 weeks (average multiplier - 1): +13.6% (95% CI +12.3% to +14.9%) | true net +24.2% | dip in weeks +1 and +2 as a share of the sale-week lift: 36%
+Dip scaling used in section 9 (log lift in week +1 and +2 as a multiple of the sale-week log lift): -0.35 and -0.16
+                estimated lift  CI low  CI high  true lift (hidden)
+promotion week          0.6410  0.6060   0.6770              0.7500
+week +1                -0.1570 -0.1710  -0.1440             -0.1160
+week +2                -0.0760 -0.0900  -0.0600             -0.0190
+--- cell 26 (exec 12) ---
+sig_true    true sale: no  true sale: yes
+sig_shown                                
+badge: no           18186             806
+badge: yes           7103            2217
+
+Badge precision (badge weeks that are real sales): 23.8% | recall (real sales that show the badge): 73.3%
+Cohen's kappa 0.236 (bootstrap 95% CI 0.209 to 0.268) | McNemar: badge-only 7,103 vs true-only 806, p = 0
+Share of false-badge weeks on inflated-MRP SKUs: 100.0% (inflated SKUs are 32.2% of the catalogue)
+sig_true    true sale: no  true sale: yes
+sig_shown                                
+badge: no           18186             806
+badge: yes           7103            2217
+--- cell 28 (exec 13) ---
+[image]
+Train 19,824 / test 8,488 SKU-weeks | test prevalence of significant discounts 10.6% | majority-baseline accuracy 0.894
+Best by PR-AUC: ('A with calendar', 'gradient boosting') | McNemar vs majority baseline: model-only correct 445, majority-only correct 231, p = 2.6e-16
+                                              accuracy  balanced accuracy     F1  PR-AUC
+features                 model                                                          
+A with calendar          logistic regression    0.9199             0.7388 0.5745  0.4396
+                         SVM (RBF)              0.9199             0.7388 0.5745  0.4449
+                         gradient boosting      0.9189             0.7314 0.5640  0.4485
+B product and price only logistic regression    0.8937             0.5000 0.0000  0.1109
+                         SVM (RBF)              0.8937             0.5000 0.0000  0.1109
+                         gradient boosting      0.8937             0.5000 0.0000  0.1167
+--- cell 30 (exec 14) ---
+[image]
+dip scaling r1 = -0.35, r2 = -0.16 | take rate 17% | funding 10% | scale: ₹30,000 crore GMV across the 8 categories
+Break-even gross elasticity for a 20% promotion by funding share: 0%: -1.79, 10%: -2.88, 25%: -4.76
+Categories where the base multiplier is below 1 (stop or move to seller funding): ['Apparel', 'Beauty', 'Books & stationery', 'Footwear', 'Home & kitchen', 'Mobile accessories', 'Mobiles', 'Small appliances']
+Annual gain from stopping those promotions (₹ crore): worst (more elastic) 106, base 136, best (less elastic) 160
+                    promo share  avg depth  base GMV ₹ crore  IV elasticity  mult (base)  mult (worst: more elastic)  mult (best: less elastic)  mult funding 0%  \
+category                                                                                                                                                           
+Apparel                  0.1130     0.2440        2,427.8300        -2.2260       0.9510                      0.9720                     0.9330           1.0410   
+Beauty                   0.1130     0.2440        1,054.8140        -1.7460       0.9230                      0.9390                     0.9090           1.0010   
+Books & stationery       0.1060     0.2460        1,107.9570        -2.2870       0.9550                      0.9720                     0.9390           1.0470   
+Footwear                 0.1070     0.2430        2,871.3400        -1.8480       0.9280                      0.9470                     0.9130           1.0080   
+Home & kitchen           0.1140     0.2430        1,850.1430        -1.7650       0.9240                      0.9410                     0.9100           1.0020   
+Mobile accessories       0.1080     0.2420        1,571.4910        -2.7420       0.9910                      1.0130                     0.9700           1.0920   
+Mobiles                  0.1130     0.2440       15,704.7690        -1.4120       0.9070                      0.9240                     0.8940           0.9780   
+Small appliances         0.1070     0.2450        3,411.6560        -1.5070       0.9110                      0.9260                     0.8980           0.9840   
+
+                    mult funding 25%  annual promo effect ₹ crore (base)  
+category                                                                  
+Apparel                       0.8170                             -6.8390  
+Beauty                        0.8060                             -4.6840  
+Books & stationery            0.8170                             -2.6980  
+Footwear                      0.8090                            -11.2560  
+Home & kitchen                0.8070                             -8.1660  
+Mobile accessories            0.8390                             -0.8090  
+Mobiles                       0.8010                            -84.4790  
+Small appliances              0.8000                            -16.6120

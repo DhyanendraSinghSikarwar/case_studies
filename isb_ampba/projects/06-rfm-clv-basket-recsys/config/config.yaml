@@ -1,0 +1,81 @@
+seed: 42
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  outputs: outputs
+  figures: figures
+  models: models
+data:
+  external_dir_env: AMPBA_DATA_DIR
+  external_dir_default: "C:/ampba_data"
+  parquet_name: online_retail_ii.parquet
+  ucimlrepo_id: 502
+  zip_url: "https://archive.ics.uci.edu/static/public/502/online+retail+ii.zip"
+  non_product_codes: [POST, D, DOT, M, C2, BANK CHARGES, S, AMAZONFEE, ADJUST, ADJUST2, CRUK, PADS, TEST001, TEST002]
+  calibration_end: "2011-06-30"
+  holdout_end: "2011-12-09"
+rfm:
+  new_max_tenure_days: 60        # first purchase within this many days of snapshot AND <=2 orders -> New
+  champions_min_score: 4
+  loyal_min_f: 3
+  loyal_min_r: 3
+  at_risk_max_r: 2
+  at_risk_min_f: 3
+cluster:
+  features: [recency, frequency, monetary]          # primary clustering space (log1p + z-score)
+  profile_features: [recency, frequency, monetary, tenure, avg_basket, n_products]
+  ablation_feature_sets:                             # reported honestly next to the primary choice
+    rfm_plus_tenure: [recency, frequency, monetary, tenure]
+    all_six: [recency, frequency, monetary, tenure, avg_basket, n_products]
+  k_min: 2
+  k_max: 10
+  k_final_min: 3                 # smallest k considered "actionable" when choosing the final model
+  gmm_covariance: full
+  gmm_n_init: 1
+  hdbscan_min_cluster_size: 50
+  silhouette_sample: 5000
+  umap_neighbors: 30
+clv:
+  penalizer_bgnbd: 0.001
+  penalizer_gg: 0.001
+  horizon_days_clv: 365          # 12-month CLV
+  decile_count: 10
+basket:
+  support_grid: [0.02, 0.012, 0.008, 0.006, 0.004, 0.003]
+  target_rules: 100
+  max_itemsets: 400000
+  max_len: 3
+  top_items: 2500
+  min_lift: 3.0
+  min_confidence: 0.3
+  top_bundles: 20
+recsys:
+  train_end: "2011-11-09"
+  test_start: "2011-11-10"
+  test_end: "2011-12-09"
+  val_train_end: "2011-10-09"    # tuning split: train<=this, validate on (this, train_end]
+  k: 10
+  als_grid:
+    factors: [64, 128, 256]
+    regularization: [0.01, 0.1, 1.0]
+    alpha: [0.25, 1, 5]
+    iterations: [15]
+  hybrid_weights: [0.0, 0.1, 0.2, 0.3, 0.5, 0.7]
+  primary_protocol: repeat_allowed   # repeat_allowed | discovery
+  bootstrap: 300
+campaign:
+  inr_per_gbp: 105.0             # display only
+  total_budget_gbp: 5000
+  horizon_note: "uplift assumptions apply to the next 90 days; response_rate = INCREMENTAL response vs a control group"
+  gross_margin: 0.30
+  actions:
+    Champions:    {action: "VIP loyalty perks + early access", cost_per_contact: 2.00, response_rate: 0.04, order_value_factor: 1.00, reach: 1.0}
+    Loyal:        {action: "Loyalty points + cross-sell bundle", cost_per_contact: 1.00, response_rate: 0.03, order_value_factor: 0.90, reach: 1.0}
+    At-Risk:      {action: "Win-back offer (10% off)", cost_per_contact: 1.50, response_rate: 0.03, order_value_factor: 0.70, reach: 1.0, discount_cost_rate: 0.10}
+    Hibernating:  {action: "Low-cost reactivation e-mail", cost_per_contact: 0.30, response_rate: 0.008, order_value_factor: 0.60, reach: 1.0, discount_cost_rate: 0.10}
+    New:          {action: "Welcome series + second-order incentive", cost_per_contact: 1.00, response_rate: 0.05, order_value_factor: 0.80, reach: 1.0, discount_cost_rate: 0.05}
+    Big-spenders: {action: "Upsell: personalised bundle + account manager call", cost_per_contact: 6.00, response_rate: 0.03, order_value_factor: 1.20, reach: 1.0}
+  sensitivity:
+    response_multipliers: [0.5, 0.75, 1.0, 1.25, 1.5]
+    margins: [0.20, 0.30, 0.40]

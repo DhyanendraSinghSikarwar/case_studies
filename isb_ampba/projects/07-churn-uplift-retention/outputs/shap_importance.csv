@@ -1,0 +1,14 @@
+,mean_abs_shap
+tenure_days,0.42949468
+frequency_6m,0.34459257
+ipt_mean,0.32419845
+ipt_std,0.31114176
+recency_days,0.22108205
+spend_trend,0.20871417
+monetary_6m,0.18331571
+n_skus_6m,0.1656256
+items_per_order,0.14210221
+recency_over_ipt,0.09887402
+aov_6m,0.08239254
+n_returns,0.045200486
+is_uk,0.009112784

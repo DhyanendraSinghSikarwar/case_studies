@@ -1,0 +1,353 @@
+#%% md
+# Case Study 24 — When Is a Phone Photo "Fit for Purpose"? Validating Computer-Vision Motor Inspections and Deciding Which Claims to Auto-Settle
+
+**Priority:** ★ Optional · **Reference:** Case Study 24 — *ICICI Lombard: smartphone motor inspection with computer vision* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Motor Claims, Underwriting (break-in renewals), Claims Audit, Operations
+**Data:** ⚠️ **SYNTHETIC** (D-24-01). We simulate a validation study's records (model outputs vs surveyor re-inspection), not images.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs24_motor_inspection_cv_validation.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+When a motor policy lapses and is renewed ("break-in"), or a customer claims for a small dent, an insurer traditionally sends a **surveyor**. That takes days and costs money. ICICI Lombard lets customers **upload phone photos** instead. A computer-vision model finds each car part and classifies damage (scratch, dent, crack), so simple cases can be settled the same day.
+
+The model never has to be perfect. It has to be **"fit for purpose"**: good enough on the cases it decides alone, and smart enough to send the rest to a human. The data-science questions are:
+- How accurate is it, part by part and damage type by damage type, against a surveyor?
+- When do photos fail (blur, glare, night)?
+- How close are its **repair-cost** estimates?
+- Which claims can be **auto-settled** with an acceptable risk of paying a complex claim as simple?
+- How big must the validation study be to prove it?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What ICICI Lombard did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | Renewals after a break and simple damage claims needed physical inspections, taking "days or longer" |
+| Question | "Can photos taken by the customer on a smartphone replace a surveyor's inspection?" |
+| Approach | "Split uploaded images into frames" → "Identify car components" → "Detect damage types (scratch, dent, crack)" |
+| Statistics / metrics | **ND**; accuracy "**fit for purpose**" (no figure); architecture ND; Microsoft Azure |
+| Decision | Launched for renewals Dec 2018; claims module in beta in 2019; simple claims to be settled on app inspection |
+| Impact | **150–200 cars a day** inspected through the app; inspection time "**days to mere minutes**"; target of "**over 80,000 simple claims every month**" by end-2019 with same-day turnaround |
+
+**Source:** Microsoft customer story / press coverage (2018–19), links in the reference file.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 24,000 inspections (45% break-in renewals, 55% own-damage claims) × 10 parts = 240,000 part assessments. True damage, the model's probabilities for none/scratch/dent/crack, photo quality and night shots, and repair costs. A **20% surveyor re-inspection sample** (surveyors are 97% accurate). "Complex" = cost > ₹25,000 or a structural dent. |
+| Statistics added | Per-class sensitivity/precision with Wilson CIs and Cohen's κ vs surveyor; logistic model of errors on photo quality; **Bland–Altman** agreement for cost estimates; a **triage rule** chosen by grid search with a **Clopper–Pearson upper bound** on complex claims wrongly auto-settled; renewal pre-existing-damage sensitivity; validation sample size (rule of three); ₹ |
+
+### (c) How the industry uses this
+
+AI photo inspection is now standard in Indian motor insurance: ICICI Lombard (InstaSpect), Bajaj Allianz, HDFC ERGO, Digit and Acko all use self-inspection, often with vendors such as Tractable or Inspektlabs. Banks use similar validation logic for AI document checks. IRDAI's push for faster claims settlement makes **"auto-settle simple, escalate complex"** the standard operating model, and the validation statistics here are what auditors and regulators expect.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Which inspections and claims can be decided from photos alone, and how many surveyor visits does that save? |
+| Analytical | What auto-settlement rule keeps the rate of complex claims wrongly auto-settled ≤ 2%, and repair-cost errors acceptable, while covering as many cases as possible? |
+
+**Fit-for-purpose criteria (pre-registered, D-24-04):**
+1. Among auto-settled claims, **≤ 2% are actually complex**, using the one-sided 95% Clopper–Pearson upper bound on the surveyor sample.
+2. For auto-settled claims, the model's cost estimate is within **±₹3,000** of the surveyor's for ≥ 80% of claims.
+3. For break-in renewals, pre-existing damage is detected (any damage flagged) with **≥ 90% sensitivity**, so it cannot be claimed later.
+
+**Hypotheses**
+- **H1:** H0: per-part accuracy does not depend on photo quality (logistic LR test).
+- **H2:** H0: mean cost difference (model − surveyor) = 0 (paired t / Bland–Altman bias).
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import statsmodels.formula.api as smf
+from statsmodels.stats.proportion import proportion_confint
+from statsmodels.stats.inter_rater import cohens_kappa
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public labelled car-damage images | Some exist (e.g., research datasets such as CarDD on GitHub, Kaggle car-damage sets), but **none come with insurer surveyor costs or Indian claim outcomes**, and training a CV model is outside the brief's library list. |
+| **Decision** | Simulate the *validation records* (model probabilities vs surveyor truth), which is what the business decision depends on (D-24-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs24.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs24.py
+
+#%% code
+os.makedirs("data/cs24", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs24 as gen; importlib.reload(gen)
+parts_raw, cases_raw = gen.generate(seed=SEED)
+parts_raw.to_csv("data/cs24/parts.csv.gz", index=False); cases_raw.to_csv("data/cs24/cases.csv.gz", index=False)
+print(f"{len(parts_raw):,} part rows | {len(cases_raw):,} cases")
+parts_raw.drop(columns=["_true_damage", "_true_cost"]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Inspections | 24,000: 45% break-in renewals (few damages), 55% own-damage claims (≈ 1.6 damaged parts) | **Documented** use cases |
+| Parts × damage | 10 parts; glass/lamps mostly cracks; body panels scratches and dents | **Documented** damage types |
+| Model behaviour | Cracks on glass easy; dents often confused with scratches; glare creates false scratches; accuracy rises with photo quality; 12% night shots | Typical CV failure modes |
+| Costs | Scratch ₹2.5k, dent ₹6.5k, crack ₹9k × part multiplier (bonnet 1.6, mirror 0.4); "complex" = > ₹25k or structural dent | Our assumption |
+| Surveyor sample | 20% of cases re-inspected; surveyors 97% accurate on damage class, ±8% on cost | Our design |
+| DQ issues | 500 duplicate frames; 150 cases missing photo metadata (EXIF) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("parts: case_id, part", "Inspection and car part"), ("p_none, p_scratch, p_dent, p_crack, pred_damage", "Model probabilities and predicted class"),
+    ("model_cost", "Model's repair-cost estimate for the part"), ("surveyor_checked, surveyor_damage, surveyor_cost", "Surveyor re-inspection (20% of cases)"),
+    ("_true_damage, _true_cost", "HIDDEN truth"), ("cases: case_type, photo_quality, night_shot, car_value_inr", "Inspection context (quality 0–1; 150 missing)"),
+    ("model_cost, surveyor_cost (case level)", "Summed estimates"), ("_complex, _true_cost, structural_dent", "HIDDEN: complex claim flag and true cost"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs24/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+checks = {"duplicate case-part rows (repeated frames)": int(parts_raw.duplicated(["case_id", "part"]).sum()), "cases missing photo quality (EXIF)": int(cases_raw.photo_quality.isna().sum()),
+          "probabilities not summing to 1": int((parts_raw[["p_none", "p_scratch", "p_dent", "p_crack"]].sum(1).sub(1).abs() > 1e-6).sum()),
+          "surveyor cost present without check": int((cases_raw.surveyor_checked.eq(0) & cases_raw.surveyor_cost.notna()).sum())}
+print(pd.Series(checks, name="rows").to_string())
+parts = parts_raw.drop_duplicates(["case_id", "part"]).reset_index(drop=True); cases = cases_raw.copy()
+cases["quality_missing"] = cases.photo_quality.isna().astype(int)
+q = cases.set_index("case_idx").photo_quality; parts["photo_quality"] = parts.case_idx.map(q); parts["night"] = parts.case_idx.map(cases.set_index("case_idx").night_shot)
+parts["glass"] = parts.part.isin(gen.GLASS).astype(int)
+sv = parts[parts.surveyor_checked == 1]; csv = cases[cases.surveyor_checked == 1]
+print(f"\nClean: {len(cases):,} inspections, {len(parts):,} part assessments | surveyor sample: {csv.shape[0]:,} cases, {len(sv):,} parts | cases without quality metadata → manual route")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.6))
+cm = pd.crosstab(sv.surveyor_damage, sv.pred_damage, normalize="index").reindex(index=gen.DMG, columns=gen.DMG) * 100
+sns.heatmap(cm, annot=True, fmt=".1f", cmap="Blues", ax=axes[0], cbar_kws={"label": "% of surveyor class"}); axes[0].set_xlabel("Model prediction"); axes[0].set_ylabel("Surveyor assessment")
+axes[0].set_title("Dents are the hard class (often called scratches)")
+sv_ = sv.dropna(subset=["photo_quality"]).assign(ok=lambda d: (d.pred_damage == d.surveyor_damage).astype(int), qb=lambda d: pd.cut(d.photo_quality, [0, 0.3, 0.5, 0.65, 0.8, 1.0]))
+dmg_only = sv_[sv_.surveyor_damage != "none"]
+g1 = dmg_only.groupby("qb").ok.mean() * 100; g0 = sv_[sv_.surveyor_damage == "none"].groupby("qb").ok.mean() * 100
+axes[1].plot([str(i) for i in g1.index], g1.values, "o-", label="damaged parts"); axes[1].plot([str(i) for i in g0.index], g0.values, "s-", label="undamaged parts")
+axes[1].set_xlabel("Photo quality band"); axes[1].set_ylabel("Model agrees with surveyor (%)"); axes[1].set_title("Poor photos hurt damage detection most"); axes[1].legend()
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Part-level validation against the surveyor
+
+Per damage class: **sensitivity** (surveyor-damaged parts the model labels correctly), **precision** and **F1**, with Wilson CIs; Cohen's κ overall; glass vs body panels. Note that the surveyor is the reference, not perfect truth (97% accurate here), so we also report agreement with hidden truth as a check.
+
+#%% code
+rows = []
+for d_ in gen.DMG:
+    t = sv.surveyor_damage == d_; p = sv.pred_damage == d_; tp = int((t & p).sum())
+    lo, hi = proportion_confint(tp, t.sum(), method="wilson"); plo, phi = proportion_confint(tp, p.sum(), method="wilson")
+    rows.append((d_, int(t.sum()), tp / t.sum(), lo, hi, tp / p.sum(), plo, phi, 2 * tp / (t.sum() + p.sum())))
+pc = pd.DataFrame(rows, columns=["damage class", "surveyor count", "sensitivity", "CI low", "CI high", "precision", "P CI low", "P CI high", "F1"]).set_index("damage class")
+k_all = cohens_kappa(pd.crosstab(sv.surveyor_damage, sv.pred_damage).reindex(index=gen.DMG, columns=gen.DMG, fill_value=0).values).kappa
+gl = sv.groupby("glass").apply(lambda d: (d.pred_damage == d.surveyor_damage)[d.surveyor_damage != "none"].mean())
+print(f"Cohen's κ (model vs surveyor, 4 classes) = {k_all:.3f} | accuracy on damaged parts: body panels {gl[0]:.1%} vs glass/lamps {gl[1]:.1%} | "
+      f"surveyor vs truth agreement {(sv.surveyor_damage == sv._true_damage).mean():.1%}")
+pc.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 What makes the model fail? Photo quality, night shots, damage type
+
+**(a)** A logistic model of "model disagrees with surveyor" on photo quality, night shot, glass part and surveyor damage class (damaged parts only). The likelihood-ratio test for photo quality answers H1. We then simulate a **quality gate**: photos below a quality cut-off trigger an in-app "please retake" before submission.
+
+#%% code
+md = dmg_only.assign(err=1 - dmg_only.ok)
+m0 = smf.logit("err ~ night + glass + C(surveyor_damage)", data=md).fit(disp=0); m1 = smf.logit("err ~ photo_quality + night + glass + C(surveyor_damage)", data=md).fit(disp=0)
+LR = 2 * (m1.llf - m0.llf)
+print(f"LR test for photo quality: χ² = {LR:.1f}, p = {stats.chi2.sf(LR, 1):.2g} | OR of error per +0.1 quality = {np.exp(0.1 * m1.params['photo_quality']):.3f} | night OR = {np.exp(m1.params['night']):.2f} (p = {m1.pvalues['night']:.2g})")
+gate = []
+for cut in (0.0, 0.3, 0.4, 0.5):
+    keep = md.photo_quality >= cut; gate.append((cut, 1 - keep.mean(), (1 - md.err[keep]).mean()))
+pd.DataFrame(gate, columns=["retake if quality <", "share of damaged-part photos sent back", "accuracy on remaining damaged parts"]).set_index("retake if quality <").round(4)
+
+#%% md
+**Observation:** «O72»
+
+### 7.3 Are the repair-cost estimates close enough? (Bland–Altman)
+
+For damaged cases in the surveyor sample, we compare the model's case-level cost estimate with the surveyor's:
+- **bias** (mean difference) with a paired t-test,
+- **95% limits of agreement** (bias ± 1.96 SD),
+- the share within ±₹3,000 and ±15%,
+- whether the error grows with claim size (regression of the difference on the mean).
+
+#%% code
+ba = csv[csv.surveyor_cost > 0].copy(); ba["diff"] = ba.model_cost - ba.surveyor_cost; ba["mean"] = (ba.model_cost + ba.surveyor_cost) / 2
+bias, sd = ba["diff"].mean(), ba["diff"].std(); t_ = stats.ttest_1samp(ba["diff"], 0); slope = stats.linregress(ba["mean"], ba["diff"])
+w3 = (ba["diff"].abs() <= 3000).mean(); w15 = (ba["diff"].abs() <= 0.15 * ba.surveyor_cost).mean()
+fig, ax = plt.subplots(figsize=(8.5, 4.5))
+ax.scatter(ba["mean"] / 1000, ba["diff"] / 1000, s=6, alpha=0.3); ax.axhline(bias / 1000, color="#b23a48", label=f"bias ₹{bias:,.0f}")
+for s_ in (-1.96, 1.96): ax.axhline((bias + s_ * sd) / 1000, color="grey", ls="--")
+ax.set_xlabel("Mean of model and surveyor estimate (₹ thousand)"); ax.set_ylabel("Model − surveyor (₹ thousand)"); ax.set_title("Bland–Altman: cost errors grow with claim size"); ax.legend()
+plt.tight_layout(); plt.show()
+print(f"n = {len(ba):,} damaged cases | bias ₹{bias:,.0f} (paired t p = {t_.pvalue:.2g}) | 95% limits of agreement ₹{bias - 1.96 * sd:,.0f} to ₹{bias + 1.96 * sd:,.0f}")
+print(f"Within ±₹3,000: {w3:.1%} | within ±15%: {w15:.1%} | difference grows by ₹{slope.slope * 1000:,.0f} per ₹1,000 of claim size (p = {slope.pvalue:.2g})")
+
+#%% md
+**Takeaway:** «O73»
+
+### 7.4 The triage rule: which claims may be auto-settled?
+
+**Rule:** auto-settle an own-damage claim if
+- the model's **estimated cost ≤ ₹C** (a safety margin below the ₹25,000 "simple" limit),
+- **no structural dent is predicted** (bonnet, doors, fender),
+- the **least-confident damaged-part prediction ≥ τ**,
+- **photo quality ≥ 0.4** with metadata present.
+
+Everything else goes to a surveyor. On the surveyor-checked claims, for each (C, τ) we compute:
+- coverage (share auto-settled),
+- the **share of auto-settled claims that are truly complex**, with a one-sided 95% Clopper–Pearson upper bound (criterion 1: ≤ 2%),
+- the share whose cost estimate is within ±₹3,000 (criterion 2: ≥ 80%).
+
+We pick the highest-coverage rule that meets both.
+
+#%% code
+pc_ = parts.assign(maxp=parts[["p_none", "p_scratch", "p_dent", "p_crack"]].max(1), pred_struct=((parts.pred_damage == "dent") & parts.part.isin(["bonnet", "left_door", "right_door", "fender"])).astype(int))
+agg = pc_.groupby("case_idx").agg(min_conf=("maxp", "min"), pred_struct=("pred_struct", "max"), n_pred_dmg=("pred_damage", lambda s: (s != "none").sum()))
+cl = cases.set_index("case_idx").join(agg); cl = cl[cl.case_type == "own_damage_claim"]
+chk = cl[cl.surveyor_checked == 1]
+grid = []
+for C_ in (12000, 15000, 18000, 20000, 25000):
+    for tau in (0.5, 0.6, 0.7, 0.8):
+        auto = (chk.model_cost <= C_) & (chk.pred_struct == 0) & (chk.min_conf >= tau) & (chk.photo_quality >= 0.4) & (chk.quality_missing == 0)
+        k, n_ = int(chk._complex[auto].sum()), int(auto.sum())
+        ub = stats.beta.ppf(0.95, k + 1, n_ - k) if n_ else np.nan
+        within = ((chk.model_cost - chk.surveyor_cost).abs() <= 3000)[auto].mean()
+        grid.append((C_, tau, auto.mean(), n_, k / max(n_, 1), ub, within, (chk.model_cost - chk.surveyor_cost)[auto].mean()))
+grid = pd.DataFrame(grid, columns=["cost cap ₹", "min confidence τ", "coverage", "auto-settled (checked)", "complex share", "95% upper bound", "cost within ±₹3,000", "mean over-payment ₹"])
+ok = grid[(grid["95% upper bound"] <= 0.02) & (grid["cost within ±₹3,000"] >= 0.80)]
+best = ok.sort_values("coverage", ascending=False).iloc[0] if len(ok) else grid.sort_values("95% upper bound").iloc[0]
+print(("Best rule MEETING both criteria" if len(ok) else "NO rule meets both criteria; closest") + f": cost ≤ ₹{best['cost cap ₹']:,.0f}, confidence ≥ {best['min confidence τ']}, quality ≥ 0.4 → auto-settles {best.coverage:.1%} of own-damage claims; "
+      f"complex share {best['complex share']:.2%} (UB {best['95% upper bound']:.2%}); cost within ±₹3k {best['cost within ±₹3,000']:.1%}")
+grid.round(4).sort_values(["cost cap ₹", "min confidence τ"])
+
+#%% md
+**(c)/(f) Observation:** «O74»
+
+### 7.5 Break-in renewals: is pre-existing damage recorded?
+
+For renewals, the goal is to **record** existing damage so it cannot be claimed later. The key metric is **case-level sensitivity**: among cars with any damage (surveyor), the share where the model flags at least one damaged part (criterion 3: ≥ 90%). Wilson CI; we also check sensitivity by damage type.
+
+#%% code
+ren_parts = sv[sv.case_idx.isin(cases.loc[cases.case_type == "renewal_breakin", "case_idx"])]
+cs_ = ren_parts.groupby("case_idx").agg(sv_any=("surveyor_damage", lambda s: (s != "none").any()), m_any=("pred_damage", lambda s: (s != "none").any()))
+k, n_ = int((cs_.sv_any & cs_.m_any).sum()), int(cs_.sv_any.sum()); lo, hi = proportion_confint(k, n_, method="wilson")
+spec = (~cs_.m_any[~cs_.sv_any]).mean()
+pt = ren_parts[ren_parts.surveyor_damage != "none"].groupby("surveyor_damage").apply(lambda d: (d.pred_damage != "none").mean())
+print(f"Renewals with pre-existing damage: {n_} | model flags damage on {k / n_:.1%} (Wilson {lo:.1%}–{hi:.1%}) → criterion 3 {'met' if lo >= 0.90 else ('point estimate met, CI not' if k / n_ >= 0.9 else 'NOT met')}")
+print(f"Specificity (clean cars correctly passed): {spec:.1%}")
+pt.round(4).to_frame("part-level 'any damage' detection by damage type")
+
+#%% md
+**Observation:** «O75»
+
+### 7.6 How large must the validation study be?
+
+To certify "≤ 2% of auto-settled claims are complex" with 95% confidence, the upper bound must fall below 2%. With **zero** complex claims found, the **rule of three** says n ≥ 3/0.02 = 150 auto-settled claims must be checked. With a true rate near 1%, many more are needed. We compute the n required for several true rates.
+
+#%% code
+rows = []
+for true_r in (0.0, 0.005, 0.01, 0.015):
+    for n_ in range(50, 20001, 50):
+        k_exp = int(round(true_r * n_)); ub = stats.beta.ppf(0.95, k_exp + 1, n_ - k_exp)
+        if ub <= 0.02: rows.append((f"{true_r:.1%}", n_)); break
+pd.DataFrame(rows, columns=["true complex rate among auto-settled", "checked auto-settled claims needed"]).set_index("true complex rate among auto-settled")
+
+#%% md
+**Observation:** «O76»
+
+## 8. ML Section — what a real CV model adds, and what we evaluated
+
+The documented pipeline (frame split → part detection → damage classification) would use object-detection and segmentation networks (e.g., Mask R-CNN- or YOLO-type models) trained on labelled car images. We **did not train a vision model**: the brief's library list has no deep-learning framework, and the business decision depends on the *validation statistics*, which are model-agnostic. The same tables, curves and rules apply to any vendor model. The truth must be a **surveyor re-inspection of a random sample**, not the model's own confident cases.
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-24-07):
+- 80,000 own-damage simple-claim candidates a month (the documented target scale).
+- Surveyor visit ₹1,500 and 2.5 days of turnaround.
+- Over- and under-payment taken from the auto-settled sample.
+- A complex claim settled as simple costs ₹20,000 in leakage (missed damage later re-claimed, or under-assessed repairs).
+
+#%% code
+N_M, SURV, LEAK = 80000, 1500, 20000
+cov = best.coverage; cx = best["complex share"]; overpay = best["mean over-payment ₹"]
+saved = N_M * cov * SURV; leak = N_M * cov * cx * LEAK; over = N_M * cov * overpay
+money = pd.Series({"claims auto-settled / month": N_M * cov, "surveyor cost saved ₹ crore / month": saved / 1e7, "complex-claim leakage ₹ crore / month": leak / 1e7,
+                   "net over(+)/under(−)-payment on auto claims ₹ crore / month": over / 1e7, "net benefit ₹ crore / month": (saved - leak - over) / 1e7,
+                   "customer-days of waiting avoided / month": N_M * cov * 2.5})
+money.round(2).to_frame("value")
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated model:** the confusion patterns (dents vs scratches, glare) are typical but assumed. Re-run this validation on real vendor outputs with a **random** surveyor sample.
+- **Fraud:** photo inspection invites manipulation (old photos, another car, edited images). Add metadata checks (EXIF time and location, duplicate-image hashing) and random physical audits.
+- **Distribution shift:** new car models, monsoon conditions and different phones change accuracy. Monitor monthly, with the surveyor sample stratified by quality and car segment.
+- **Regulation and customer fairness:** IRDAI expects transparent settlement. Customers must be able to request a physical survey, and auto-settlement must not systematically under-pay.
+- **Cost estimates are the weak link:** dents are mis-classified most, and they drive cost. Consider a "dent check" prompt (an extra angled photo) when the model sees a possible dent.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Sensitivity / precision | TP/(TP+FN), TP/(TP+FP) |
+| Cohen's κ | (p_o − p_e)/(1 − p_e) |
+| Bland–Altman | bias = mean(d); LoA = bias ± 1.96·SD(d), d = model − surveyor |
+| Clopper–Pearson upper bound | Beta⁻¹(0.95; k + 1, n − k) |
+| Rule of three | with 0 events in n, 95% upper bound ≈ 3/n |
+
+| Term | Meaning |
+|---|---|
+| Break-in renewal | Renewing a lapsed policy, which needs a check for existing damage |
+| Surveyor | A licensed loss assessor who inspects vehicles |
+| Fit for purpose | Accurate enough for the cases it is allowed to decide |
+| Triage | Deciding which cases a machine settles and which go to a human |
+| Leakage | Money paid that should not have been, or claims under-assessed |

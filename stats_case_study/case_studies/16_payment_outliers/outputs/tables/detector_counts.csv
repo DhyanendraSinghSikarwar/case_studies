@@ -1,0 +1,5 @@
+,payments flagged,share of all payments,smallest flagged amount (₹)
+z-score > 3 (raw ₹): the dashboard,58,0.0028670292,285331.0
+IQR fence (raw ₹),2537,0.1254078102,32016.0
+IQR fence (log ₹),16,0.0007909046,1006500.0
+MAD robust z > 3.5 (log ₹),10,0.0004943154,1792200.0

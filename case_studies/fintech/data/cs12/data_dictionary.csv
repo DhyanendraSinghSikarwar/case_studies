@@ -1,0 +1,10 @@
+field(s),meaning,grain
+"loans.csv: loan_id, vintage",Loan id and origination month,static
+"bureau_score, income_band, employment, city_tier",Borrower profile at origination,static
+"channel, cac_inr",Acquisition channel and cost of acquisition (₹),static
+"principal_inr, tenure_months, apr, emi_inr",Loan terms,static
+"performance: month, mob",Calendar month and months-on-book,monthly
+bucket_start / bucket_end,"Delinquency bucket at start / end of month: Current, B1 (1–29), B2 (30–59), B3 (60–89), NPA (90+), Closed",monthly
+"emi_due_inr, amount_paid_inr",Amount due (EMI × months overdue + 1) and paid this month,monthly
+outstanding_inr,Principal outstanding at month end,monthly
+"tele_called, pilot_month",Account was tele-called this month; month was part of the randomised pilot,monthly

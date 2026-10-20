@@ -1,0 +1,3 @@
+column,issue,rows,decision
+monthly_spend,keyed in paise (utilisation > 100%),15,corrected ÷100
+credit_limit,corporate-style cards (different policy),13,"flagged; excluded from retail analyses, shown separately"

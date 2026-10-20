@@ -1,0 +1,7 @@
+,Value
+Naive,enrolled 7.0% vs not enrolled 26.3%: −19.4 pp (74% lower)
+Selection,"enrolled customers are older in tenure, spend more, log in more, and have a rising spend trend (SMD up to 1.19)"
+Adjusted,"adjusted effect among enrolled: -19.4, -16.1, -9.6, -7.0 pp as controls are added"
+Weighting,propensity weighting −6.2 pp (CI −7.6 to −4.6)
+Pilot,"pilot: ITT −2.3 pp, take−up 56%, complier effect −4.1 pp (CI −6.1 to −2.0)"
+Truth,truth: −4.3 pp among enrolled

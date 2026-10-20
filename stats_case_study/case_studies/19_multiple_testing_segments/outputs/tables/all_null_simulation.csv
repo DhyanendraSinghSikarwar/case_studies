@@ -1,0 +1,5 @@
+,P(at least one false alarm),average number of false alarms,"worst case in 5,000 trials"
+no correction,0.8724,1.997,7
+Bonferroni,0.049,0.0494,2
+Holm,0.049,0.0494,2
+Benjamini-Hochberg,0.05,0.0546,3

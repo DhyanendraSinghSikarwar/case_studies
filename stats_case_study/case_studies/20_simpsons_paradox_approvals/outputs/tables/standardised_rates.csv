@@ -1,0 +1,4 @@
+reference mix,standardised approval before,standardised approval after,difference (pp),ci_low (pp),ci_high (pp)
+Before-policy mix,0.6958333333,0.7518932114,5.605987809,4.6293479933,6.4792847098
+After-policy mix,0.6008150128,0.6569333333,5.6118320506,4.5593273304,6.5317070588
+Pooled mix (all applications),0.6430453775,0.6991377236,5.6092346099,4.5930207656,6.4380988247

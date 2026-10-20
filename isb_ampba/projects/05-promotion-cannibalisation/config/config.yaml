@@ -1,0 +1,54 @@
+# All paths, seeds, hyper-parameters and BUSINESS ASSUMPTIONS live here.
+seed: 42
+paths: {raw: data/raw, interim: data/interim, processed: data/processed, outputs: outputs, figures: figures, models: models, docs: docs}
+data:
+  uci_id: 502
+  uci_zip: https://archive.ics.uci.edu/static/public/502/online+retail+ii.zip
+  parquet_name: online_retail_ii.parquet
+  data_dir_env: AMPBA_DATA_DIR            # env var; default dir below
+  default_data_dir: C:/ampba_data
+  non_product_codes: [POST, D, DOT, M, "BANK CHARGES", S, AMAZONFEE, ADJUST, ADJUST2, CRUK, PADS, C2, TEST001, TEST002, B]
+  cancelled_bulk_min_qty: 10000           # drop sale lines >= this qty that were fully cancelled (same SKU+qty return)
+  strict_code_regex: true                 # keep only 5-digit-prefixed product codes (drops gift_*, DCGS*, SP*...)
+panel: {price_col: modal}                 # list price = modal unit price per SKU-week
+catalog: {active_within_weeks: 26}        # sibling must have sold in the last N weeks of the data to count
+families:
+  distance_threshold: 0.75
+  min_family_size: 2
+  top_skus: 1500
+  drop_words: [red, blue, green, pink, white, black, yellow, orange, purple, ivory, cream, silver, gold, brown, grey, gray, turquoise, multi, assorted, set, pack, small, medium, large, mini, retrospot, vintage]
+  copurchase_weak_threshold: 0.30         # share of member-invoices holding >=2 members => "weak substitute" family
+  weak_sub_weight: 0.5                    # cap applied to cannibalisation in weak-substitute families
+  overrides_csv: config/family_overrides.csv
+baskets: {top_skus: 400, min_support: 0.01, min_lift: 1.5, min_confidence: 0.20}
+demand:
+  min_weeks: 40
+  min_price_drops: 5
+  drop_threshold: 0.05
+  prior_elasticity: -2.0                  # used when a SKU fails the identifiability filter and its family has no estimate
+  eps_bounds: [-12.0, -0.5]
+  tau2_floor: 0.05
+  outside_share: 0.40                     # share of "no purchase from this family" in the MNL (assumption, swept)
+  baseline_weeks: 52
+engine:
+  promo_weeks: 2
+  unit_cost_share: 0.60                   # unit cost = 60% of list price -> 40% margin (assumption; data has no costs)
+  halo_factor: 0.5                        # share of basket-rule pull that is truly incremental (assumption)
+  gbp_to_inr: 105.0
+reference: {discount: 0.10, top_n: 24}
+sweep:
+  n_draws: 2000
+  elasticity: [-6.0, -1.0]
+  substitution_share: [0.0, 0.8]
+  margin: [0.25, 0.55]
+  halo: [0.0, 1.0]
+  breakeven_bounds: [-12.0, -0.5]
+kpi: {noise_levels: [0.10, 0.25, 0.50]}   # relative parameter-knowledge noise for the classification KPI
+reference_sensitivity: {margins: [0.30, 0.40, 0.50], outside_shares: [0.20, 0.40, 0.60]}
+optimiser:
+  discounts: [0.0, 0.05, 0.10, 0.15, 0.20, 0.25]
+  budget_frac: 0.30                       # budget = frac x one week of promo-eligible revenue (revenue of the promoted SKUs)
+  budget_sensitivity: [0.01, 0.03, 0.10, 0.30]
+  max_promos_per_week: 4
+  horizon_weeks: 8
+  top_families: 200

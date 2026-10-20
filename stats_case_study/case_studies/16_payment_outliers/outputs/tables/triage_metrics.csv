@@ -1,0 +1,5 @@
+type,rule calls it,of which correct,precision,recall among all true cases
+entry_error,40,40,1.0,1.0
+fraud,58,58,1.0,0.9666666667
+vip,9,8,0.8888888889,0.16
+festival,5,5,1.0,0.0625

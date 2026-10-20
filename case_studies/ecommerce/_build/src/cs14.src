@@ -1,0 +1,531 @@
+#%% md
+# Case Study 14 — "Buy Me That Look": Visual Similar-Item Retrieval for Every Garment in a Model Image (Myntra ShopLook)
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 14 — *Myntra ShopLook* (`indian_ecommerce_data_science_case_studies.md`)
+**Audience:** Head of Personalisation, Product (fashion product page), Computer-vision lead, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-14-01). No images and no deep networks: image **embeddings are simulated** with a hidden "true visual identity" for each item. This is an interview-standard solution, not a reproduction of Myntra's system.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs14_visual_similarity_recommendations.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+A shopper opens a product page. The photo shows a model wearing a shirt, jeans, a belt and sneakers. The shopper may like the **look**, not just the shirt they searched for. ShopLook tries to answer: *"for every garment in this picture, show me similar products from the catalogue that I can buy."*
+
+Doing this by hand is impossible at catalogue scale, so a pipeline does it: **find the garments** in the image, **cut each out**, turn each cut-out into a list of numbers (an **embedding**) so that visually similar items have nearby numbers, then **look up the nearest catalogue items**.
+
+Leaders and interviewers want to know:
+1. How much better is a **trained** embedding than a generic one, and than non-visual rules like best-sellers?
+2. Where does the **detector** lose garments, and what did **active learning** buy?
+3. Why does **Precision@K look low** while shoppers or experts say the items are relevant?
+4. Does the **offline winner** also win **online**, and how big must an A/B test be to see it?
+5. What is it worth in ₹, with honest best, base and worst cases?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Myntra documented — *documented*
+
+| Item | Documented fact (from the reference file) |
+|---|---|
+| Problem | Product pages show a model wearing a full outfit; shoppers may want similar items for every garment worn. The authors state this supports cross-selling and engagement |
+| Question | Given a full-shot catalogue image, detect each garment and recommend visually similar catalogue products for each |
+| Pipeline | (1) full-shot detection with human keypoints (head and ankle present) plus a pose classifier; (2) article localisation with Mask R-CNN for about 20 apparel types, with an active-learning loop; (3) a triplet-network embedding per detected article (shared-weight ResNet50 branches, margin 0.2, embedding size 2048, semi-hard mining, Street2Shop pairs for hard anchor-positive pairs); (4) cosine-similarity retrieval against the catalogue |
+| Detection | Mask R-CNN mean AP 78%. Active learning raised AP: topwear 82.65 to 87.60, bottomwear 87.11 to 90.25, skirts 51.42 to 69.09, footwear 87.32 to 88.47, bags 69.71 to 78.37 |
+| Retrieval | P@3 28.4, R@3 15.5, P@5 24.6, R@5 26.1, P@10 15.8, R@10 37.6, beating the baselines (EUC, CE, SIFT) at every K |
+| Expert review | 477 of 500 sampled recommendations judged visually relevant (about 95%) |
+| Online | Authors report a click-through rise of 25%, add-to-cart ratio up 4% and longer sessions. The reference notes the wording was paraphrased by a fetch tool and **not verified**; **no duration, sample size or significance** is given |
+| Latency (V100) | pose about 200 ms, detection about 400 ms, embedding about 100 ms, retrieval about 5 ms per image |
+
+**Source:** Ravi, Repakula, Dutta, Parmar, "Buy Me That Look: An Approach for Recommending Similar Fashion Products", arXiv 2008.11638 (IEEE MIPR 2021). Evidence level: strong (company authors), but the **method detail on data, the control arm, serving and rollout is thin**.
+
+**Honesty note:** the paper is public but the images, labels and the A/B control are not. This notebook solves the same problem on simulated embeddings with a known truth. It is **not** a reproduction of the company's system, and none of its numbers are expected to match theirs.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Catalogue | 6,000 items (plus 60 near-duplicate listings), 10 article types in the 5 documented groups (topwear, bottomwear, skirts, footwear, bags), colour (8), pattern (6) and style (5). Each item has a hidden 14-dimension "true visual identity" |
+| Embeddings | A frozen "backbone" of 64 numbers = linear mix of the identity + nuisance factors (background, pose, lighting) + noise. Studio catalogue photos are cleanest, model photos noisier, street photos noisiest and shifted (domain shift) |
+| Outfits | 2,500 model images, 2 to 4 garments each (7,201 garments). A garment is detected with probability equal to its group's AP before or after active learning (our assumption), and a badly cut crop leaks part of a neighbouring garment into the query |
+| Methods compared | (0) in-type best-sellers (non-visual); (1) colour histogram (handcrafted); (2) frozen backbone, Euclidean; (3) frozen backbone, cosine; (4) PCA-whitened frozen embedding; (5) **triplet-trained** embedding, a linear projection learned with a triplet loss and semi-hard mining (a numpy stand-in for the paper's ResNet50 triplet network) |
+| Statistics added | Paired tests and **outfit-cluster bootstrap** CIs; Holm; McNemar for active learning by group; strict-label vs lenient "expert" relevance; simulated expert review with annotator noise and kappa; hubness and coverage; **digital-twin online test**; A/B sample size; retrieval timing |
+
+### (c) How the industry uses this
+
+"Shop the look", "similar products" and visual search are on most fashion marketplaces (Myntra, Flipkart, Ajio, Nykaa Fashion, Amazon Fashion; Pinterest-style visual search globally). The usual design is **per-article-type indexes of embeddings with approximate nearest-neighbour search**, a re-ranker for price, stock and margin, and an online test on click-through and add-to-cart. This case is asked less often than Case 15 but is a standard computer-vision-meets-recommendation question.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Should we ship ShopLook (visual similar items for each garment), and what must it get right to pay for itself? |
+| Analytical | Which embedding gives the most relevant neighbours, where does the pipeline lose garments, and does the offline winner also win online? |
+
+**Hypotheses**
+- **H1:** H0: the triplet-trained embedding has the same NDCG@5 as the frozen cosine embedding (and the other methods); paired, outfit-cluster bootstrap, Holm.
+- **H2:** H0: active learning does not change the share of garments that end with a relevant recommendation, in each documented group (paired McNemar, Holm).
+- **H3:** H0: strict label-match Precision@K and lenient ("expert-style") relevance@K are equal, i.e. offline label metrics do not understate perceived relevance.
+- **H4:** H0: the offline ranking of methods equals their ranking in a twin online test (Spearman).
+- **H5:** H0: the A/B test can detect a 25% CTR lift and a 4% add-to-cart lift with feasible traffic (sample-size calculation).
+
+**Metrics.** *Strict* = recommended item has the same article type, colour and pattern as the query garment. *Lenient* = same article type, colour within one hue step, and the same pattern or either is plain (our stand-in for an expert's "looks similar"). *Exact-item recall* = the garment's own catalogue item is found (Street2Shop-style round trip). **NDCG@5** uses grades 0/1/2 = not relevant / lenient / strict. **Online proxy** = expected click and add-to-cart rate under the hidden true-similarity model.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from sklearn.preprocessing import normalize
+from sklearn.decomposition import PCA
+from sklearn.metrics import cohen_kappa_score
+from statsmodels.stats.contingency_tables import mcnemar
+from statsmodels.stats.multitest import multipletests
+from statsmodels.stats.proportion import proportion_confint, proportion_effectsize
+from statsmodels.stats.power import NormalIndPower
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Myntra catalogue and model images | **Not public.** The paper describes about 150k training images but releases none |
+| Street2Shop (Kiapour et al.) | A public street-to-shop photo set exists, but it is US-centric, needs real images and a deep network, and has no known similarity truth |
+| **Decision** | Simulated image embeddings with a hidden true visual identity, so that relevance and an online twin can both be defined (D-14-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs14.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/ecommerce/data/generate_cs14.py
+
+#%% code
+os.makedirs("data/cs14", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs14 as gen; importlib.reload(gen)
+t0 = time.time(); items, garm, AR = gen.generate(seed=SEED)
+items.to_csv("data/cs14/items.csv.gz", index=False); garm.to_csv("data/cs14/garments.csv.gz", index=False); np.savez_compressed("data/cs14/embeddings.npz", **AR)
+print(f"{len(items):,} catalogue items | {len(garm):,} garments in {garm.outfit.nunique():,} outfits | {len(AR['E_tr']):,} street training photos | generated in {time.time() - t0:.0f}s")
+garm.head(4)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Scale | 6,000 items, 10 types in 5 documented groups, 2,500 outfits | Our assumption (paper: about 150k training images, about 20 types) |
+| Embedding | 64 dims = 14-dim identity + 16 nuisance factors + noise; catalogue / model / street nuisance sd 0.7 / 1.1 / 1.6 | Our assumption |
+| Detector | P(detect) = documented group AP, before (82.65, 87.11, 51.42, 87.32, 69.71) or after (87.60, 90.25, 69.09, 88.47, 78.37) active learning | **Documented** AP numbers, used as detection probabilities by assumption (AP is not recall) |
+| Crop leakage | clean crops leak 4% of a neighbouring garment; badly cut crops (probability 1.2 × (1 − AP)) leak 25–55% | Our assumption |
+| Training pairs | 3,600 train items × 2 street photos paired with the catalogue photo | Mirrors Street2Shop pairs |
+| Twin | click = exposure(rank) × sigmoid(−6.4 + 3.0 × true similarity + 0.3 × popularity); add-to-cart given click = sigmoid(−2.6 + 1.6 × similarity) | Our assumption (hidden truth) |
+| DQ issues | 60 near-duplicate listings, 90 failed embeddings, about 2% wrong article-type labels, 1.5% missing colour | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("items: item, article_type, colour, pattern, price_inr, units_90d", "Catalogue item and its (possibly wrong or missing) labels; observed 90-day sales"),
+    ("items: is_train, embedding_ok", "1 if the item is in the metric-learning train split; 0 if its image embedding failed"),
+    ("garments: outfit, item, article_type, group", "A garment worn in a model image, the catalogue item it is, its type and documented detector group"),
+    ("garments: detected_before / detected_after", "Detector found the garment before / after active learning"),
+    ("garments: messy_before / messy_after, _leak_u", "Crop was badly localised; hidden leak share of a neighbouring garment"),
+    ("embeddings.npz: E_cat, H_cat", "Catalogue backbone embedding (64) and colour histogram (8)"),
+    ("embeddings.npz: E_tr, tr_item", "Street training photos and the item each pairs with"),
+    ("embeddings.npz: E_q_clean, E_q_other, H_q", "Model-photo garment embedding, the neighbouring garment's embedding (leakage), query colour histogram"),
+    ("items: _true_type/_true_colour/_true_pattern/_style/_log_pop_z/_z0.._z13/_dup_of", "HIDDEN truth (relevance, audit and digital twin only)"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs14/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+NT = len(gen.TYPES); Ecat = AR["E_cat"].astype(float); nan_r = np.isnan(Ecat).any(1); zero_r = (~nan_r) & (np.abs(np.nan_to_num(Ecat)).sum(1) == 0); bad_emb = nan_r | zero_r
+lab = items.article_type.map({t: i for i, t in enumerate(gen.TYPES)}).values
+Cn = normalize(np.nan_to_num(Ecat)); dup = np.zeros(len(items), bool)
+for t in range(NT):
+    ids = np.where((lab == t) & ~bad_emb)[0]; Sm = Cn[ids] @ Cn[ids].T; np.fill_diagonal(Sm, 0); ii, jj = np.where(np.triu(Sm > 0.99)); dup[ids[jj]] = True
+true_dup = items._dup_of.values >= 0
+aud = RNG.choice(len(items), 400, replace=False); mis = (lab[aud] != items._true_type.values[aud]); mlo, mhi = proportion_confint(mis.sum(), len(aud), method="wilson")
+gal = ~bad_emb & ~dup
+checks = {"failed embeddings (NaN or all-zero)": int(bad_emb.sum()), "near-duplicate listings flagged (cosine > 0.99)": int(dup.sum()), "  of which truly re-listed items": int((dup & true_dup).sum()), "true re-listed items missed": int((true_dup & ~dup).sum()),
+          "missing colour label": int(items.colour.isna().sum()), "garments with no detection after active learning": int((garm.detected_after == 0).sum())}
+print(pd.Series(checks, name="rows").to_string())
+print(f"Label audit of {len(aud)} random items: wrong article type = {mis.mean():.1%} (95% CI {mlo:.1%} to {mhi:.1%})")
+Ecl = Ecat[~bad_emb]; ntr = np.linalg.norm(AR["E_tr"], axis=1); nq = np.linalg.norm(AR["E_q_clean"], axis=1); nc_ = np.linalg.norm(Ecl, axis=1)
+print(f"Embedding norms: catalogue {nc_.mean():.1f} | model photo {nq.mean():.1f} | street photo {ntr.mean():.1f}")
+pair_cos = lambda E1, i1: np.einsum("ij,ij->i", normalize(E1), normalize(np.nan_to_num(Ecat[i1]))).mean()
+print(f"Mean cosine to the same item's catalogue photo: street {pair_cos(AR['E_tr'], AR['tr_item']):.3f} | model {pair_cos(AR['E_q_clean'], garm.item.values):.3f}  (domain shift: below 1 even for the same item)")
+print(f"Gallery after cleaning: {gal.sum():,} items; detection rate before {garm.detected_before.mean():.1%}, after {garm.detected_after.mean():.1%}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
+grp = garm.groupby("group").agg(before=("detected_before", "mean"), after=("detected_after", "mean")).loc[["topwear", "bottomwear", "footwear", "bags", "skirts"]]
+xx = np.arange(len(grp)); axes[0].bar(xx - 0.2, grp.before, 0.4, color="#9ecae1", label="before active learning"); axes[0].bar(xx + 0.2, grp.after, 0.4, color="#2a6f97", label="after active learning")
+axes[0].set_xticks(xx); axes[0].set_xticklabels(grp.index, rotation=20); axes[0].set_ylim(0, 1); axes[0].set_xlabel("Garment group"); axes[0].set_ylabel("Share of garments detected"); axes[0].set_title("Detector coverage by group"); axes[0].legend(fontsize=8)
+for nm_, E_, c_ in (("catalogue photo", Ecl, "#2a6f97"), ("model photo", AR["E_q_clean"], "#e07a1f"), ("street photo", AR["E_tr"], "#c0392b")):
+    axes[1].hist(np.linalg.norm(E_, axis=1), bins=40, alpha=0.6, color=c_, label=nm_, density=True)
+axes[1].set_xlabel("Embedding norm"); axes[1].set_ylabel("Density"); axes[1].set_title("Domain shift: three image sources"); axes[1].legend(fontsize=8)
+pc = PCA(2, random_state=SEED).fit(Ecl); P2 = pc.transform(Ecl); tl = lab[~bad_emb]
+for t in range(NT): axes[2].scatter(P2[tl == t, 0], P2[tl == t, 1], s=3, alpha=0.5, label=gen.TYPES[t])
+axes[2].set_xlabel("PCA component 1"); axes[2].set_ylabel("PCA component 2"); axes[2].set_title("Frozen embeddings: types separate"); axes[2].legend(fontsize=6, markerscale=3, ncol=2)
+plt.tight_layout(); plt.show()
+print(f"PCA 2 components explain {pc.explained_variance_ratio_.sum():.1%} of variance | garments per outfit: {garm.groupby('outfit').size().value_counts().sort_index().to_dict()} | colour shares: " + ", ".join(f"{c} {s:.0%}" for c, s in items.colour.value_counts(normalize=True).head(4).items()))
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Setup: training the embedding and scoring six retrievers
+
+**Protocol.** The detector assigns each garment a type, and retrieval runs **inside that type's index** (as in the paper, per-article-type). Each query is a model-photo crop of a catalogue item; the item itself is **excluded** from the list (the shopper already sees it). Relevance is judged from hidden attributes. We score the garments that the detector found **after active learning**, using their (possibly leaky) crops.
+
+| # | Method | In one line |
+|---|---|---|
+| 0 | In-type best-sellers | Most-sold items of that type (non-visual control) |
+| 1 | Colour histogram | Cosine of 8-bin colour histograms (handcrafted) |
+| 2 | Frozen backbone, Euclidean | Nearest by squared distance on raw embeddings |
+| 3 | Frozen backbone, cosine | As 2 but cosine |
+| 4 | PCA-whitened frozen | Centre, rotate to top 24 principal components, equalise variance, cosine |
+| 5 | **Triplet-trained** | Linear 64→24 projection trained on street/catalogue pairs with triplet loss (margin 0.5 in standardised space), semi-hard negatives, Adam, 600 steps of 512; **fixed settings, no tuning** |
+
+#### Code
+
+#%% code
+Ecl_all = np.nan_to_num(Ecat); mu = Ecl_all[gal].mean(0); sd_ = Ecl_all[gal].std(0)
+Zc = (Ecl_all - mu) / sd_; Ztr = (AR["E_tr"].astype(float) - mu) / sd_; tri = AR["tr_item"]
+def train_triplet(dim=24, iters=600, bs=512, lr=0.01, margin=0.5, seed=SEED):
+    r = np.random.default_rng(seed); Z = Ztr; C = Zc; log = []
+    W = np.linalg.svd(Z - Z.mean(0), full_matrices=False)[2][:dim].copy() * 0.3; m1 = np.zeros_like(W); v1 = np.zeros_like(W)
+    for it in range(1, iters + 1):
+        idx = r.integers(0, len(Z), bs); a = Z[idx]; pi = tri[idx]; p = C[pi]; ea = a @ W.T; ep = p @ W.T
+        dap = ((ea - ep) ** 2).sum(1); D2 = (ea ** 2).sum(1)[:, None] + (ep ** 2).sum(1)[None, :] - 2 * ea @ ep.T; D2[pi[:, None] == pi[None, :]] = np.inf
+        semi = np.where(D2 > dap[:, None], D2, np.inf); j = np.where(np.isfinite(semi).any(1), semi.argmin(1), D2.argmin(1)); n = p[j]
+        dan = ((ea - n @ W.T) ** 2).sum(1); loss = np.maximum(0, margin + dap - dan); act = loss > 0
+        if it % 20 == 0: log.append((it, loss.mean(), act.mean()))
+        if act.sum() == 0: continue
+        da = a[act] - p[act]; dn = a[act] - n[act]; G = 2 * (W @ (da.T @ da) - W @ (dn.T @ dn)) / bs
+        m1 = 0.9 * m1 + 0.1 * G; v1 = 0.999 * v1 + 0.001 * G * G; W -= lr * (m1 / (1 - 0.9 ** it)) / (np.sqrt(v1 / (1 - 0.999 ** it)) + 1e-8)
+    return W, pd.DataFrame(log, columns=["step", "mean triplet loss", "share of active triplets"])
+t0 = time.time(); Wt, tlog = train_triplet(); print(f"Triplet training: {time.time() - t0:.1f}s | loss {tlog.iloc[0, 1]:.3f} at step 20 -> {tlog.iloc[-1, 1]:.3f} at step 600 | active triplets {tlog.iloc[0, 2]:.0%} -> {tlog.iloc[-1, 2]:.0%}")
+pca_w = PCA(24, whiten=True, random_state=SEED).fit(Zc[gal])
+CE = {"2": Zc, "3": Zc, "4": pca_w.transform(Zc), "5": Zc @ Wt.T}; CEn = {k: normalize(v) for k, v in CE.items()}
+Hc = AR["H_cat"].astype(float); Hcn = normalize(Hc); Hqn = normalize(AR["H_q"].astype(float))
+tt, tc, tp = items._true_type.values, items._true_colour.values, items._true_pattern.values; CAND = [np.where((lab == t) & gal)[0] for t in range(NT)]
+Eq_c = AR["E_q_clean"].astype(float); Eq_o = AR["E_q_other"].astype(float)
+def mix(messy, leak): lam = np.where(messy == 1, leak, 0.04)[:, None]; return (1 - lam) * Eq_c + lam * Eq_o
+EQ_after = mix(garm.messy_after.values, garm._leak_u.values); EQ_before = mix(garm.messy_before.values, garm._leak_u.values)
+units = items.units_90d.values.astype(float)
+METH = {"0 in-type best-sellers": "0", "1 colour histogram": "1", "2 frozen, Euclidean": "2", "3 frozen, cosine": "3", "4 PCA-whitened frozen": "4", "5 triplet-trained": "5"}
+def scorer(m, qs, EQ, cand):
+    if m == "0": return np.tile(units[cand] + RNG.random(len(cand)) * 1e-3, (len(qs), 1))
+    if m == "1": return Hqn[qs] @ Hcn[cand].T
+    if m == "2": q = (EQ[qs] - mu) / sd_; return -((q ** 2).sum(1)[:, None] + (Zc[cand] ** 2).sum(1)[None, :] - 2 * q @ Zc[cand].T)
+    if m == "3": return normalize((EQ[qs] - mu) / sd_) @ CEn["3"][cand].T
+    if m == "4": return normalize(pca_w.transform((EQ[qs] - mu) / sd_)) @ CEn["4"][cand].T
+    return normalize(((EQ[qs] - mu) / sd_) @ Wt.T) @ CEn["5"][cand].T
+def evaluate(m, qsel, EQ, K=10):
+    n = len(qsel); rec = np.zeros((n, K), int); gr = np.zeros((n, K)); ideal = np.zeros((n, 5)); srank = np.full(n, np.inf); qt = garm.article_type.values[qsel]; qi = garm.item.values[qsel]
+    for t in range(NT):
+        qm = np.where(qt == t)[0]; cand = CAND[t]
+        if len(qm) == 0: continue
+        S = scorer(m, qsel[qm], EQ, cand).astype(float); si = np.minimum(np.searchsorted(cand, qi[qm]), len(cand) - 1); inside = cand[si] == qi[qm]; ar_ = np.arange(len(qm))
+        ss = S[ar_, si]; rk = 1 + (S > ss[:, None]).sum(1); srank[qm[inside]] = rk[inside]; S[ar_[inside], si[inside]] = -np.inf
+        top = np.argsort(-S, axis=1)[:, :K]; rec[qm] = cand[top]
+        qa, qb, qc = tt[qi[qm]][:, None], tc[qi[qm]][:, None], tp[qi[qm]][:, None]; cd = np.minimum((tc[cand][None, :] - qb) % 8, (qb - tc[cand][None, :]) % 8)
+        strict = (tt[cand][None, :] == qa) & (tc[cand][None, :] == qb) & (tp[cand][None, :] == qc)
+        leni = (tt[cand][None, :] == qa) & (cd <= 1) & ((tp[cand][None, :] == qc) | (tp[cand][None, :] == 0) | (qc == 0)); G = strict.astype(int) + leni.astype(int)
+        G[ar_[inside], si[inside]] = 0; gr[qm] = np.take_along_axis(G, top, 1); ideal[qm] = -np.sort(-G, axis=1)[:, :5]
+    disc = 1 / np.log2(np.arange(2, 7)); dcg = ((2 ** gr[:, :5] - 1) * disc).sum(1); idcg = ((2 ** ideal - 1) * disc).sum(1)
+    return dict(rec=rec, gr=gr, ndcg=np.where(idcg > 0, dcg / np.maximum(idcg, 1e-9), np.nan), srank=srank)
+qsel = np.where(garm.detected_after.values == 1)[0]; outf = garm.outfit.values[qsel]
+t0 = time.time(); EV = {k: evaluate(m, qsel, EQ_after) for k, m in METH.items()}; print(f"Scored {len(qsel):,} detected garments with 6 methods in {time.time() - t0:.0f}s")
+def cboot(v, n=1000):
+    # outfit-cluster bootstrap mean and 95% CI for a per-query vector (ignores NaN)
+    ok = ~np.isnan(v); s = np.bincount(outf[ok], weights=v[ok], minlength=2500); c = np.bincount(outf[ok], minlength=2500).astype(float); w = RNG.multinomial(2500, np.ones(2500) / 2500, size=n)
+    est = (w @ s) / (w @ c); return np.nansum(v) / ok.sum(), np.percentile(est, 2.5), np.percentile(est, 97.5)
+rows = []
+for k, e in EV.items():
+    gr = e["gr"]; nd = cboot(e["ndcg"]); s3 = cboot((gr[:, :3] >= 2).mean(1)); l5 = cboot((gr[:, :5] >= 1).mean(1)); sr = e["srank"]
+    rows.append((k, nd[0], nd[1], nd[2], s3[0], (gr[:, :5] >= 2).mean(), (gr[:, :10] >= 2).mean(), (gr[:, :3] >= 1).mean(), l5[0], (sr <= 5).mean()))
+res = pd.DataFrame(rows, columns=["method", "NDCG@5", "CI low", "CI high", "strict P@3", "strict P@5", "strict P@10", "lenient P@3", "lenient P@5", "exact-item recall@5"]).set_index("method")
+res.round(4)
+
+#%% md
+**Observation:** «O71»
+
+### 7.2 Is the trained embedding really better? Paired tests on the same garments
+
+**(a) Why?** Every method is scored on the **same garments**, so paired tests apply. Garments in the same outfit share a model and a photo style, so they are **not independent**: we estimate the intra-outfit correlation and report outfit-cluster bootstrap CIs. Tests: **McNemar** on "at least one lenient-relevant item in the top 5" (Holm across comparisons), a **paired outfit-cluster bootstrap** for the NDCG@5 difference, and a Wilcoxon signed-rank p-value (not cluster-adjusted, so treat as indicative).
+
+#### Code
+
+#%% code
+best = res["NDCG@5"].idxmax(); rows = []; hit = {k: (e["gr"][:, :5] >= 1).any(1) for k, e in EV.items()}
+for k in res.index:
+    if k == best: continue
+    a, b = hit[best], hit[k]; mc = mcnemar([[int((a & b).sum()), int((a & ~b).sum())], [int((~a & b).sum()), int((~a & ~b).sum())]], exact=False, correction=True)
+    d = EV[best]["ndcg"] - EV[k]["ndcg"]; dm, dlo, dhi = cboot(d); ok = ~np.isnan(d)
+    rows.append((k, int((a & ~b).sum()), int((~a & b).sum()), mc.pvalue, dm, dlo, dhi, stats.wilcoxon(EV[best]["ndcg"][ok], EV[k]["ndcg"][ok]).pvalue))
+pt = pd.DataFrame(rows, columns=[f"vs {best}", "hits only best", "hits only other", "McNemar p", "ΔNDCG@5 (best − other)", "CI low", "CI high", "Wilcoxon p"]).set_index(f"vs {best}"); pt["p_holm (McNemar)"] = multipletests(pt["McNemar p"], method="holm")[1]
+v5 = (EV[best]["gr"][:, :5] >= 1).mean(1); oid = pd.Series(v5).groupby(outf).agg(["mean", "size"]); mbar = oid["size"].mean(); msb = ((oid["mean"] - v5.mean()) ** 2 * oid["size"]).sum() / (len(oid) - 1); msw = ((v5 - oid["mean"].reindex(outf).values) ** 2).sum() / (len(v5) - len(oid))
+icc = (msb - msw) / (msb + (mbar - 1) * msw); deff = 1 + (mbar - 1) * max(icc, 0)
+sk = stats.skew(EV[best]["ndcg"][~np.isnan(EV[best]["ndcg"])])
+print(f"Best method on NDCG@5: {best} | intra-outfit correlation of relevance ρ = {icc:.3f}, mean garments per outfit {mbar:.2f}, design effect {deff:.2f} | skewness of per-garment NDCG@5 = {sk:.2f} (not normal, so Wilcoxon and bootstrap, not t-tests)")
+pt.round(4)
+
+#%% md
+**Observation:** «O72»
+
+### 7.3 The detector: where garments are lost, and what active learning buys
+
+**(a) Why?** The embedding only matters for garments the detector finds and cuts well. We follow every garment through the funnel **before** and **after** active learning (same garments, the later model detects a superset). The end-to-end success is "detected **and** a lenient-relevant item in the top 5", scored with the triplet-trained embedding. Because the two versions are **paired**, we use McNemar per documented group (Holm across the 5 groups). We also compare relevance for **clean vs badly cut crops** and across article types (chi-square).
+
+#### Code
+
+#%% code
+def e2e(det, EQ):
+    s = np.where(det == 1)[0]; ev = evaluate("5", s, EQ); out = np.zeros(len(garm), bool); out[s] = (ev["gr"][:, :5] >= 1).any(1); return out, s, ev
+ok_b, sb, evb = e2e(garm.detected_before.values, EQ_before); ok_a, sa, eva = e2e(garm.detected_after.values, EQ_after)
+rows = []; order = ["topwear", "bottomwear", "footwear", "bags", "skirts"]
+for g_ in order:
+    m = (garm.group == g_).values; a, b = ok_a[m], ok_b[m]; mc = mcnemar([[int((a & b).sum()), int((a & ~b).sum())], [int((~a & b).sum()), int((~a & ~b).sum())]], exact=True)
+    rows.append((g_, int(m.sum()), garm.detected_before[m].mean(), garm.detected_after[m].mean(), b.mean(), a.mean(), a.mean() - b.mean(), int((a & ~b).sum()), int((~a & b).sum()), mc.pvalue))
+fn = pd.DataFrame(rows, columns=["group", "garments", "detected before", "detected after", "end-to-end before", "end-to-end after", "gain (pp)", "gained", "lost", "McNemar p"]).set_index("group"); fn["p_holm"] = multipletests(fn["McNemar p"], method="holm")[1]; fn["gain (pp)"] *= 100
+ou = pd.DataFrame({"outfit": garm.outfit.values, "a": ok_a, "b": ok_b}).groupby("outfit").agg(all_a=("a", "all"), all_b=("b", "all"), any_a=("a", "any"), any_b=("b", "any"))
+dg = eva["gr"][:, :5]; messy = garm.messy_after.values[sa] == 1; relq = (dg >= 1).any(1); tab = np.array([[relq[~messy].sum(), (~relq[~messy]).sum()], [relq[messy].sum(), (~relq[messy]).sum()]]); chi_m = stats.chi2_contingency(tab, correction=False)
+ty = garm.article_type.values[sa]; tab2 = np.array([[relq[ty == t].sum(), (~relq[ty == t]).sum()] for t in range(NT)]); chi_t = stats.chi2_contingency(tab2)
+cr = np.sqrt(chi_t[0] / (tab2.sum() * 1))
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.4)); xx = np.arange(len(order))
+axes[0].bar(xx - 0.2, fn.loc[order, "end-to-end before"], 0.4, color="#9ecae1", label="before active learning"); axes[0].bar(xx + 0.2, fn.loc[order, "end-to-end after"], 0.4, color="#2a6f97", label="after active learning")
+axes[0].set_xticks(xx); axes[0].set_xticklabels(order, rotation=20); axes[0].set_ylim(0, 1); axes[0].set_xlabel("Garment group"); axes[0].set_ylabel("Garments with a relevant recommendation"); axes[0].set_title("End-to-end success by group"); axes[0].legend(fontsize=8)
+rt = pd.Series([relq[ty == t].mean() for t in range(NT)], index=gen.TYPES); ci_ = np.array([proportion_confint(relq[ty == t].sum(), (ty == t).sum(), method="wilson") for t in range(NT)]); o_ = rt.sort_values().index
+axes[1].barh(range(NT), rt[o_].values, xerr=[rt[o_].values - ci_[[gen.TYPES.index(i) for i in o_], 0], ci_[[gen.TYPES.index(i) for i in o_], 1] - rt[o_].values], color="#e07a1f"); axes[1].set_yticks(range(NT)); axes[1].set_yticklabels(o_)
+axes[1].set_xlabel("Detected garments with a relevant item in the top 5"); axes[1].set_ylabel("Article type"); axes[1].set_title("Relevance by article type (95% CI)")
+plt.tight_layout(); plt.show()
+print(f"Outfits where EVERY garment gets a relevant recommendation: before {ou.all_b.mean():.1%}, after {ou.all_a.mean():.1%} | outfits with at least one: before {ou.any_b.mean():.1%}, after {ou.any_a.mean():.1%}")
+print(f"Relevance given detection: clean crops {relq[~messy].mean():.1%} (n = {int((~messy).sum())}) vs badly cut crops {relq[messy].mean():.1%} (n = {int(messy.sum())}); chi-square p = {chi_m[1]:.2g} | across 10 article types chi-square p = {chi_t[1]:.2g}, Cramér's V = {cr:.3f}")
+fn.round(4)
+
+#%% md
+**Takeaway:** «O73»
+
+### 7.4 Why Precision@K looks low: strict labels vs lenient relevance, and a simulated expert review
+
+**(a) Why?** The paper's label-matching metrics (P@3 = 28.4) look weak next to its expert review (477 of 500, about 95%). Offline labels count a result right only if it matches the **annotated** pair, but a shopper accepts **similar-looking** items. We reproduce the mechanism: strict (same type, colour, pattern) vs lenient relevance by K for the frozen-cosine and trained embeddings, with a paired outfit-cluster CI on the gap at K = 3. Then a **simulated expert review**: 500 random (query, top-3 item) pairs from the trained embedding are judged by two annotators, each of whom flips the lenient truth with probability 5% (our assumption). We report the relevant share with a Wilson CI, Cohen's kappa between annotators, and the documented 477/500 for comparison. Our "expert" rule is our own and need not match Myntra's.
+
+#### Code
+
+#%% code
+Ks = np.arange(1, 11); curves = {}
+for k in ("3 frozen, cosine", "5 triplet-trained"):
+    g_ = EV[k]["gr"]; curves[k] = ((g_ >= 2).cumsum(1) / Ks).mean(0), ((g_ >= 1).cumsum(1) / Ks).mean(0)
+gap = {}
+for k in ("3 frozen, cosine", "5 triplet-trained"): gap[k] = cboot((EV[k]["gr"][:, :3] >= 1).mean(1) - (EV[k]["gr"][:, :3] >= 2).mean(1))
+g5 = EV["5 triplet-trained"]["gr"][:, :3]; pairs = np.array([(i, r) for i in range(len(g5)) for r in range(3)]); pick = RNG.choice(len(pairs), 500, replace=False); truth = np.array([g5[i, r] >= 1 for i, r in pairs[pick]])
+annA = truth ^ (RNG.random(500) < 0.05); annB = truth ^ (RNG.random(500) < 0.05); nrel = int(annA.sum()); elo, ehi = proportion_confint(nrel, 500, method="wilson"); plo, phi = proportion_confint(477, 500, method="wilson")
+kap = cohen_kappa_score(annA, annB); true_rate = truth.mean()
+fig, ax = plt.subplots(figsize=(9, 4.4))
+for k, c_ in (("3 frozen, cosine", "#7f8c8d"), ("5 triplet-trained", "#2a6f97")):
+    ax.plot(Ks, curves[k][0], "--", color=c_, label=f"{k}: strict labels"); ax.plot(Ks, curves[k][1], "-", color=c_, label=f"{k}: lenient relevance")
+ax.set_xlabel("K (list length)"); ax.set_ylabel("Precision@K"); ax.set_title("Strict label match understates perceived relevance"); ax.set_ylim(0, 1); ax.legend(fontsize=8); plt.tight_layout(); plt.show()
+print(f"Gap lenient − strict at K = 3 (95% outfit-cluster CI): frozen {gap['3 frozen, cosine'][0]:.3f} ({gap['3 frozen, cosine'][1]:.3f} to {gap['3 frozen, cosine'][2]:.3f}); trained {gap['5 triplet-trained'][0]:.3f} ({gap['5 triplet-trained'][1]:.3f} to {gap['5 triplet-trained'][2]:.3f})")
+print(f"Simulated expert review of 500 trained-embedding recommendations: {nrel} judged relevant = {nrel / 500:.1%} (95% CI {elo:.1%} to {ehi:.1%}); true lenient rate in the sample {true_rate:.1%}; annotator kappa {kap:.2f} | documented: 477/500 = 95.4% (Wilson CI {plo:.1%} to {phi:.1%})")
+pd.DataFrame({"strict P@K (trained)": curves["5 triplet-trained"][0], "lenient P@K (trained)": curves["5 triplet-trained"][1], "strict P@K (frozen cos)": curves["3 frozen, cosine"][0], "lenient P@K (frozen cos)": curves["3 frozen, cosine"][1]}, index=Ks).T.round(3)
+
+#%% md
+**Takeaway:** «O74»
+
+### 7.5 Exact-item recall, exposure and "hub" items
+
+**(a) Why?** Two more checks. **Exact-item recall** (the Street2Shop round trip: is the garment's own catalogue item in the top K when we do *not* exclude it?) is a hard, label-based metric, so it is low for similar-looking catalogues even when recommendations are good. **Exposure**: embedding retrieval can create **hubs**, a few items that appear in many lists. We count how often each gallery item is recommended in the top 5, and report catalogue coverage, an exposure Gini, the share of recommendations going to the 10% most-recommended items, and the skewness of the count distribution.
+
+#### Code
+
+#%% code
+rows = []; gal_n = int(gal.sum())
+for k, e in EV.items():
+    sr = e["srank"]; cnt = np.bincount(e["rec"][:, :5].ravel(), minlength=len(items))[gal]; srt = np.sort(cnt); gini = 1 - 2 * ((srt.cumsum() - srt / 2) / srt.sum()).sum() / len(cnt); top10 = np.sort(cnt)[::-1][:int(0.1 * len(cnt))].sum() / cnt.sum()
+    rows.append((k, (sr <= 1).mean(), (sr <= 5).mean(), (sr <= 10).mean(), (cnt > 0).mean(), gini, top10, stats.skew(cnt)))
+hub = pd.DataFrame(rows, columns=["method", "exact recall@1", "exact recall@5", "exact recall@10", "gallery coverage", "exposure Gini", "share to top-10% items", "skewness of counts"]).set_index("method"); print(f"Gallery size {gal_n:,}; {len(qsel):,} queries; top-5 lists")
+hub.round(4)
+
+#%% md
+**Observation:** «O75»
+
+### 7.6 Offline vs online: a digital-twin test
+
+**(a) Why?** Offline relevance is our own rule. An online test measures what people **click and add to cart**. In the simulation we know the true click model, so we compute each method's **expected carousel click-through** and **add-to-cart rate** for the top 5 shown (position decay 1/(1 + 0.35 × rank), and a mild popularity effect), then compare with the offline ranking by Spearman. The **control** is in-type best-sellers (what a product page could show without visual similarity; Myntra's actual control is not documented), and we also report lift over the frozen cosine embedding ("version 1"). Lift CIs use the outfit-cluster bootstrap.
+
+#### Code
+
+#%% code
+Zt = items[[f"_z{k}" for k in range(14)]].values[:, 4:]; Znt = normalize(Zt); lpop = items._log_pop_z.values; qi_ = garm.item.values[qsel]
+def twin(rec):
+    r = rec[:, :5]; s = np.einsum("ij,ikj->ik", Znt[qi_], Znt[r]); ex = 1 / (1 + 0.35 * np.arange(5))[None, :]; pc_ = ex * (1 / (1 + np.exp(-(-6.4 + 3.0 * s + 0.3 * lpop[r]))))
+    pa = pc_ * (1 / (1 + np.exp(-(-2.6 + 1.6 * s)))); return 1 - np.prod(1 - pc_, 1), 1 - np.prod(1 - pa, 1), s.mean(1)
+TW = {k: twin(e["rec"]) for k, e in EV.items()}; ctl, v1 = "0 in-type best-sellers", "3 frozen, cosine"; rows = []
+for k in EV:
+    c = cboot(TW[k][0]); a = cboot(TW[k][1]); lc = cboot(TW[k][0] - TW[ctl][0]); la = cboot(TW[k][1] - TW[ctl][1]); rows.append((k, c[0], c[1], c[2], a[0], a[1], a[2], c[0] / TW[ctl][0].mean() - 1, a[0] / TW[ctl][1].mean() - 1, TW[k][2].mean(), res.loc[k, "NDCG@5"]))
+on = pd.DataFrame(rows, columns=["method", "twin CTR", "CTR CI low", "CTR CI high", "twin ATC rate", "ATC CI low", "ATC CI high", "CTR lift vs best-sellers", "ATC lift vs best-sellers", "mean true similarity", "NDCG@5 (offline)"]).set_index("method")
+rho = stats.spearmanr(on["NDCG@5 (offline)"], on["twin CTR"]); rho_a = stats.spearmanr(on["NDCG@5 (offline)"], on["twin ATC rate"]); best_on = on["twin CTR"].idxmax()
+pw = {k: stats.wilcoxon(TW[best_on][0], TW[k][0]).pvalue for k in EV if k != best_on}
+l_v1 = cboot(TW["5 triplet-trained"][0] - TW[v1][0]); la_v1 = cboot(TW["5 triplet-trained"][1] - TW[v1][1])
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.4)); xx = np.arange(len(on)); nm = [k.split(" ", 1)[0] for k in on.index]
+axes[0].bar(xx, on["twin CTR"], yerr=[on["twin CTR"] - on["CTR CI low"], on["CTR CI high"] - on["twin CTR"]], color=["#bdbdbd", "#bdbdbd", "#9ecae1", "#9ecae1", "#9ecae1", "#2a6f97"]); axes[0].set_xticks(xx); axes[0].set_xticklabels(nm); axes[0].set_xlabel("Method (0 best-sellers, 1 colour, 2 Euclid, 3 cosine, 4 PCA, 5 triplet)"); axes[0].set_ylabel("Twin carousel click-through"); axes[0].set_title("Online proxy: expected click-through (95% CI)")
+axes[1].scatter(on["NDCG@5 (offline)"], on["twin CTR"], s=70, color="#2a6f97")
+for n_, x_, y_ in zip(nm, on["NDCG@5 (offline)"], on["twin CTR"]): axes[1].annotate(n_, (x_, y_), textcoords="offset points", xytext=(6, 4))
+axes[1].set_xlabel("Offline NDCG@5"); axes[1].set_ylabel("Twin carousel click-through"); axes[1].set_title(f"Offline vs online ranking (Spearman {rho[0]:+.2f})")
+plt.tight_layout(); plt.show()
+print(f"Spearman(offline NDCG@5, twin CTR) = {rho[0]:+.2f} (p = {rho[1]:.2g}); vs twin ATC = {rho_a[0]:+.2f} | best online: {best_on} | Wilcoxon p of best-online vs others: " + ", ".join(f"{k.split(' ')[0]}: {p:.2g}" for k, p in pw.items()))
+print(f"Trained vs frozen cosine: CTR gain {l_v1[0] * 100:.2f} pp (CI {l_v1[1] * 100:.2f} to {l_v1[2] * 100:.2f}); ATC gain {la_v1[0] * 100:.2f} pp (CI {la_v1[1] * 100:.2f} to {la_v1[2] * 100:.2f}) | documented claim: CTR +25%, add-to-cart ratio +4% (control unknown, unverified wording)")
+on.round(4)
+
+#%% md
+**Takeaway:** «O76»
+
+### 7.7 What would an A/B test need?
+
+**(a) Why?** The paper gives no duration, sample size or significance. We compute **carousels per arm** to detect relative lifts in click-through and add-to-cart (80% power, α = 0.05, two-sided; proportion effect size with the normal approximation), taking the twin's **best-sellers** rates as control. A design effect for repeated carousels per user (3 per session, intra-user correlation 0.05, both assumptions) converts carousels to users. We also show the smallest lift detectable with 5 lakh carousels per arm.
+
+#### Code
+
+#%% code
+pw_ = NormalIndPower(); p0c, p0a = TW[ctl][0].mean(), TW[ctl][1].mean(); deff2 = 1 + 2 * 0.05; rows = []
+for lab_, p0, rel in (("CTR +25% (documented claim)", p0c, 0.25), ("CTR +10%", p0c, 0.10), ("add-to-cart +10%", p0a, 0.10), ("add-to-cart +4% (documented claim)", p0a, 0.04)):
+    p1 = min(p0 * (1 + rel), 0.999); n_ = pw_.solve_power(effect_size=proportion_effectsize(p1, p0), alpha=0.05, power=0.8); rows.append((lab_, p0, p1, int(np.ceil(n_)), int(np.ceil(n_ * deff2 / 3))))
+ss = pd.DataFrame(rows, columns=["target", "control rate", "treatment rate", "carousels per arm (independent)", "users per arm (3 carousels, ICC 0.05)"]).set_index("target")
+mde = []
+for nm_, p0 in (("CTR", p0c), ("add-to-cart", p0a)):
+    es = pw_.solve_power(nobs1=500_000 / deff2, alpha=0.05, power=0.8); lo_, hi_ = p0, min(0.999, p0 * 3)
+    for _ in range(40): mid = (lo_ + hi_) / 2; lo_, hi_ = (mid, hi_) if proportion_effectsize(mid, p0) < es else (lo_, mid)
+    mde.append((nm_, p0, hi_ / p0 - 1))
+print("Smallest detectable relative lift with 5 lakh carousels per arm (design-effect adjusted): " + ", ".join(f"{n}: {m:.1%}" for n, _, m in mde))
+ss.round(4)
+
+#%% md
+**Observation:** «O77»
+
+### 7.8 Does retrieval scale? Brute-force timing vs gallery size
+
+**(a) Why?** The paper reports about 5 ms retrieval per image. We time exact (brute-force) nearest-neighbour search on random embeddings for growing gallery sizes, for the 24-dimension trained space and the 64-dimension frozen space, and fit the log-log slope of time per query vs gallery size. This is a sanity check on why production systems add approximate nearest-neighbour indexes; it says nothing about the paper's hardware.
+
+#### Code
+
+#%% code
+def time_search(n, d, nq=64, reps=3):
+    G = normalize(RNG.normal(size=(n, d)).astype(np.float32)); Q = normalize(RNG.normal(size=(nq, d)).astype(np.float32)); ts = []
+    for _ in range(reps):
+        t0 = time.perf_counter(); S = Q @ G.T; np.argpartition(-S, 10, axis=1)[:, :10]; ts.append(time.perf_counter() - t0)
+    return min(ts) / nq * 1000
+_ = time_search(2000, 24, reps=1); sizes = [1000, 4000, 16000, 64000, 200000]; tm = pd.DataFrame({"gallery size": sizes, "ms per query (24 dims)": [time_search(n, 24) for n in sizes], "ms per query (64 dims)": [time_search(n, 64) for n in sizes]}).set_index("gallery size")
+sl24 = stats.linregress(np.log(sizes), np.log(tm.iloc[:, 0])); sl64 = stats.linregress(np.log(sizes), np.log(tm.iloc[:, 1]))
+fig, ax = plt.subplots(figsize=(8, 4.2)); ax.plot(sizes, tm.iloc[:, 0], "o-", color="#2a6f97", label="24 dims"); ax.plot(sizes, tm.iloc[:, 1], "s-", color="#e07a1f", label="64 dims"); ax.set_xscale("log"); ax.set_yscale("log")
+ax.set_xlabel("Gallery size (items, log)"); ax.set_ylabel("Brute-force ms per query (log)"); ax.set_title("Exact search time grows with the gallery"); ax.legend(); plt.tight_layout(); plt.show()
+print(f"Log-log slope of time vs gallery size: 24 dims {sl24.slope:.2f} (R² {sl24.rvalue ** 2:.3f}); 64 dims {sl64.slope:.2f} (R² {sl64.rvalue ** 2:.3f}) | at 2 lakh items: {tm.iloc[-1, 0]:.2f} ms (24 dims), {tm.iloc[-1, 1]:.2f} ms (64 dims) per query")
+tm.round(3)
+
+#%% md
+**Takeaway:** «O78»
+
+## 8. ML Section — what we built and what is beyond it
+
+- **What we built:** a **linear** triplet-trained projection on frozen simulated embeddings. It is a transparent stand-in for the paper's end-to-end ResNet50 triplet network, which learns the features as well as the metric. Stage 1 (full-shot and pose) and Stage 2 (Mask R-CNN) are **not simulated beyond their documented AP**.
+- **Beyond this notebook:** hard-pair mining from Street2Shop-like pairs, weighted triplet loss, per-type fine-tuning, approximate nearest-neighbour indexes (HNSW, IVF-PQ), a re-ranker for price, stock and margin (see Case 17) and complementary-item logic ("complete the look"), which the reference file stresses is a different problem.
+- **No tuning** (per the brief): margin, learning rate, 24 dimensions and 600 steps were fixed before any result. Below we only show the training curve and a **dimension sensitivity** (8, 16, 24, 48), not a search for the best setting.
+
+#### Code
+
+#%% code
+abl = {24: (Wt, tlog)}
+for d_ in (8, 16, 48): abl[d_] = train_triplet(dim=d_)
+def ndcg_dim(W_):
+    global CE, CEn, Wt
+    old = Wt; Wt = W_; CEn["5"] = normalize(Zc @ Wt.T); e = evaluate("5", qsel, EQ_after); Wt = old; CEn["5"] = normalize(Zc @ Wt.T); return np.nanmean(e["ndcg"]), (e["gr"][:, :3] >= 2).mean()
+dres = pd.DataFrame({d_: ndcg_dim(abl[d_][0]) for d_ in (8, 16, 24, 48)}, index=["NDCG@5", "strict P@3"]).T; dres.index.name = "embedding dims"
+fig, axes = plt.subplots(1, 2, figsize=(13, 4.2)); axes[0].plot(tlog["step"], tlog["mean triplet loss"], color="#2a6f97", label="mean triplet loss"); a2 = axes[0].twinx(); a2.plot(tlog["step"], tlog["share of active triplets"], color="#e07a1f", label="share of active triplets"); a2.set_ylabel("Share of active triplets"); a2.grid(False)
+axes[0].set_xlabel("Training step"); axes[0].set_ylabel("Mean triplet loss"); axes[0].set_title("Triplet training curve (24 dims)")
+axes[1].bar(dres.index.astype(str), dres["NDCG@5"], color="#2a6f97"); axes[1].axhline(res.loc["3 frozen, cosine", "NDCG@5"], color="#7f8c8d", ls="--", label="frozen cosine"); axes[1].set_xlabel("Embedding dimensions"); axes[1].set_ylabel("NDCG@5"); axes[1].set_title("Sensitivity to embedding size"); axes[1].legend(fontsize=8)
+plt.tight_layout(); plt.show(); dres.round(4)
+
+#%% md
+**Takeaway:** «O81»
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-14-07). Myntra's traffic, order values and the A/B control are not documented, so **all of these are ours**: 60 lakh eligible model-image page views a day; one carousel per detected garment (garments per image and detection rate from the data); a click-and-cart baseline from the twin; 30% of add-to-carts become orders; average order ₹1,150 at a 16% contribution margin; running cost ₹3 crore a year (GPU serving, index refresh, tagging for active learning, a small team). The **comparison is against in-type best-sellers**. Scenarios: **base** = twin lift and 50% incrementality (half of the extra carts would have happened anyway); **best** = upper CI, 70% incrementality; **worst** = lower CI, **half the twin lift** (twin optimism haircut), 30% incrementality, detector at its pre-active-learning level.
+
+#### Code
+
+#%% code
+VIEWS, CART2ORD, AOV, MG, COST = 6e6, 0.30, 1150, 0.16, 3.0
+g_per = garm.groupby("outfit").size().mean(); da, db = garm.detected_after.mean(), garm.detected_before.mean()
+la = cboot(TW["5 triplet-trained"][1] - TW[ctl][1]); lc = cboot(TW["5 triplet-trained"][0] - TW[ctl][0])
+def rupees(dlift, det, incr): return dlift * VIEWS * g_per * det * 365 * CART2ORD * AOV * MG * incr / 1e7
+sc = pd.DataFrame({"base": dict(lift=la[0], det=da, incr=0.5), "best": dict(lift=la[2], det=da, incr=0.7), "worst": dict(lift=max(la[1], 0) * 0.5, det=db, incr=0.3)}).T
+sc["Δ add-to-cart per carousel (pp)"] = sc.lift * 100; sc["carousels per day (lakh)"] = VIEWS * g_per * sc.det / 1e5; sc["gross ₹ crore / year"] = [rupees(r.lift, r.det, r.incr) for r in sc.itertuples()]; sc["net of ₹3 crore cost"] = sc["gross ₹ crore / year"] - COST
+al = rupees(la[0], da, 0.5) - rupees(la[0] * (ok_b.mean() / ok_a.mean()), db, 0.5)
+print(f"Garments per image {g_per:.2f}; detection {db:.1%} -> {da:.1%}; end-to-end relevance {ok_b.mean():.1%} -> {ok_a.mean():.1%}; base-case value of active learning ≈ ₹{al:.1f} crore a year (relevance-proportional approximation)")
+sc[["Δ add-to-cart per carousel (pp)", "carousels per day (lakh)", "gross ₹ crore / year", "net of ₹3 crore cost"]].round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated embeddings:** the trained-vs-frozen gap depends entirely on how much nuisance (background, pose, lighting) we put into the frozen embedding and how linear it is. A real ResNet50 is more structured and the gap could be smaller or larger. Re-measure on real images.
+- **Our relevance rule is ours:** strict and lenient labels, the 5% annotator error and the twin's click model are assumptions. The simulated expert review is **not** a replication of the documented 95%.
+- **AP used as detection probability:** AP is not recall, and per-type APs for our 10 types are group values. The funnel is directional.
+- **Linear metric learning only:** no end-to-end features, no hard-pair mining, no pose or full-shot stage. Complementary items ("complete the look") are out of scope.
+- **Online claims are unverified:** the documented +25% click-through and +4% add-to-cart come with no control arm, duration or significance. Our twin lifts are not evidence for them.
+- **Next steps:** run on a labelled sample of real model images; add a price, stock and margin re-ranker; add approximate nearest-neighbour search; run a live A/B with the sample sizes in 7.7 and a guardrail on session length and returns.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Cosine similarity | a·b / (‖a‖ ‖b‖) |
+| Triplet loss | max(0, margin + ‖f(a) − f(p)‖² − ‖f(a) − f(n)‖²) |
+| Semi-hard negative | the closest negative that is still farther than the positive |
+| Precision@K | share of the top K that are relevant |
+| NDCG@5 | Σ (2^grade − 1) / log₂(rank + 1), divided by the best possible ordering |
+| Exact-item recall@K | share of queries whose own catalogue item is in the top K |
+| Design effect | 1 + (m − 1) ρ, with m items per cluster and intra-cluster correlation ρ |
+| Wilson interval | confidence interval for a proportion that behaves at small n and near 0 or 1 |
+| McNemar | test on discordant pairs where exactly one of two methods succeeds |
+
+| Term | Meaning |
+|---|---|
+| Embedding | A list of numbers describing an image so that similar images have nearby lists |
+| Triplet network | Trained so an anchor is closer to its positive than to a negative |
+| Mask R-CNN | A detector that outlines each object in an image |
+| Active learning | Humans correct the model's weakest cases, which are then used to retrain |
+| Street2Shop | A public set of street photos paired with shop photos of the same product |
+| Domain shift | Studio, model and street photos differ, so embeddings of the same item differ |
+| Hubness | A few items appear in many nearest-neighbour lists |
+| Digital twin | A simulation where the true behaviour is known |

@@ -1,0 +1,139 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs14.py
+--- cell 8 (exec 3) ---
+6,060 catalogue items | 7,201 garments in 2,500 outfits | 7,200 street training photos | generated in 30s
+   outfit  item  article_type       group  detected_before  detected_after  messy_before  messy_after  _leak_u article_type_name
+0       0  3491             0     topwear                1               1             0            0   0.4384            tshirt
+1       0   471             3  bottomwear                1               1             0            0   0.3182             jeans
+2       0  1234             1     topwear                1               1             0            0   0.5305             shirt
+3       0  4442             8        bags                1               1             1            1   0.2846           handbag
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0  items: item, article_type, colour, pattern, pr...  Catalogue item and its (possibly wrong or miss...
+1                      items: is_train, embedding_ok  1 if the item is in the metric-learning train ...
+2        garments: outfit, item, article_type, group  A garment worn in a model image, the catalogue...
+3         garments: detected_before / detected_after  Detector found the garment before / after acti...
+4      garments: messy_before / messy_after, _leak_u  Crop was badly localised; hidden leak share of...
+5                       embeddings.npz: E_cat, H_cat  Catalogue backbone embedding (64) and colour h...
+6                      embeddings.npz: E_tr, tr_item  Street training photos and the item each pairs...
+7          embeddings.npz: E_q_clean, E_q_other, H_q  Model-photo garment embedding, the neighbourin...
+8  items: _true_type/_true_colour/_true_pattern/_...  HIDDEN truth (relevance, audit and digital twi...
+--- cell 12 (exec 5) ---
+failed embeddings (NaN or all-zero)                   90
+near-duplicate listings flagged (cosine > 0.99)       59
+  of which truly re-listed items                      59
+true re-listed items missed                            1
+missing colour label                                 103
+garments with no detection after active learning    1035
+Label audit of 400 random items: wrong article type = 1.0% (95% CI 0.4% to 2.5%)
+Embedding norms: catalogue 11.8 | model photo 13.8 | street photo 17.7
+Mean cosine to the same item's catalogue photo: street 0.476 | model 0.590  (domain shift: below 1 even for the same item)
+Gallery after cleaning: 5,911 items; detection rate before 80.3%, after 85.6%
+--- cell 14 (exec 6) ---
+[image]
+PCA 2 components explain 34.0% of variance | garments per outfit: {2: 901, 3: 997, 4: 602} | colour shares: black 24%, blue 18%, white 16%, brown 10%
+--- cell 16 (exec 7) ---
+Triplet training: 33.0s | loss 0.011 at step 20 -> 0.002 at step 600 | active triplets 6% -> 1%
+Scored 6,166 detected garments with 6 methods in 14s
+                        NDCG@5  CI low  CI high  strict P@3  strict P@5  strict P@10  lenient P@3  lenient P@5  exact-item recall@5
+method                                                                                                                             
+0 in-type best-sellers  0.1337  0.1311   0.1368      0.0365      0.0427       0.0388       0.3166       0.3271               0.0055
+1 colour histogram      0.3844  0.3786   0.3901      0.2148      0.2101       0.2089       0.7143       0.7135               0.0584
+2 frozen, Euclidean     0.3477  0.3419   0.3535      0.2201      0.2041       0.1829       0.6124       0.5933               0.2345
+3 frozen, cosine        0.3512  0.3453   0.3565      0.2226      0.2082       0.1870       0.6122       0.5950               0.2522
+4 PCA-whitened frozen   0.2688  0.2641   0.2738      0.1445      0.1360       0.1225       0.5179       0.5039               0.1150
+5 triplet-trained       0.5633  0.5564   0.5704      0.4525      0.4158       0.3547       0.7986       0.7834               0.8669
+--- cell 18 (exec 8) ---
+Best method on NDCG@5: 5 triplet-trained | intra-outfit correlation of relevance ρ = 0.016, mean garments per outfit 2.49, design effect 1.02 | skewness of per-garment NDCG@5 = -0.27 (not normal, so Wilcoxon and bootstrap, not t-tests)
+                        hits only best  hits only other  McNemar p  ΔNDCG@5 (best − other)  CI low  CI high  Wilcoxon p  p_holm (McNemar)
+vs 5 triplet-trained                                                                                                                     
+0 in-type best-sellers            1292              109     0.0000                  0.4296  0.4232   0.4364      0.0000            0.0000
+1 colour histogram                 126              143     0.3293                  0.1789  0.1717   0.1865      0.0000            0.3293
+2 frozen, Euclidean                304              119     0.0000                  0.2156  0.2091   0.2219      0.0000            0.0000
+3 frozen, cosine                   303              103     0.0000                  0.2122  0.2060   0.2184      0.0000            0.0000
+4 PCA-whitened frozen              448              112     0.0000                  0.2945  0.2880   0.3007      0.0000            0.0000
+--- cell 20 (exec 9) ---
+[image]
+Outfits where EVERY garment gets a relevant recommendation: before 49.2%, after 59.6% | outfits with at least one: before 98.0%, after 98.9%
+Relevance given detection: clean crops 99.0% (n = 5119) vs badly cut crops 90.3% (n = 1047); chi-square p = 5e-63 | across 10 article types chi-square p = 0.01, Cramér's V = 0.059
+            garments  detected before  detected after  end-to-end before  end-to-end after  gain (pp)  gained  lost  McNemar p  p_holm
+group                                                                                                                                 
+topwear         2621           0.8279          0.8764             0.8092            0.8607     5.1507     136     1     0.0000  0.0000
+bottomwear      1594           0.8657          0.8971             0.8438            0.8758     3.1995      51     0     0.0000  0.0000
+footwear        1267           0.8800          0.8942             0.8540            0.8698     1.5785      20     0     0.0000  0.0000
+bags            1233           0.6918          0.7753             0.6699            0.7526     8.2725     102     0     0.0000  0.0000
+skirts           486           0.5432          0.7202             0.5103            0.6852    17.4897      85     0     0.0000  0.0000
+--- cell 22 (exec 10) ---
+[image]
+Gap lenient − strict at K = 3 (95% outfit-cluster CI): frozen 0.390 (0.382 to 0.397); trained 0.346 (0.338 to 0.354)
+Simulated expert review of 500 trained-embedding recommendations: 387 judged relevant = 77.4% (95% CI 73.5% to 80.8%); true lenient rate in the sample 81.4%; annotator kappa 0.70 | documented: 477/500 = 95.4% (Wilson CI 93.2% to 96.9%)
+                             1      2      3      4      5      6      7      8      9      10
+strict P@K (trained)     0.5120 0.4780 0.4530 0.4320 0.4160 0.4000 0.3860 0.3740 0.3640 0.3550
+lenient P@K (trained)    0.8220 0.8120 0.7990 0.7900 0.7830 0.7760 0.7690 0.7630 0.7570 0.7500
+strict P@K (frozen cos)  0.2480 0.2330 0.2230 0.2150 0.2080 0.2030 0.1990 0.1940 0.1900 0.1870
+lenient P@K (frozen cos) 0.6450 0.6260 0.6120 0.6030 0.5950 0.5880 0.5820 0.5760 0.5720 0.5680
+--- cell 24 (exec 11) ---
+Gallery size 5,911; 6,166 queries; top-5 lists
+                        exact recall@1  exact recall@5  exact recall@10  gallery coverage  exposure Gini  share to top-10% items  skewness of counts
+method                                                                                                                                              
+0 in-type best-sellers          0.0018          0.0055           0.0190            0.0098         0.9930                  1.0000             12.2222
+1 colour histogram              0.0120          0.0584           0.1139            0.8493         0.5236                  0.3279              1.7163
+2 frozen, Euclidean             0.0869          0.2345           0.3425            0.8997         0.4934                  0.3305              2.1269
+3 frozen, cosine                0.0892          0.2522           0.3596            0.9413         0.4095                  0.2686              1.4342
+4 PCA-whitened frozen           0.0341          0.1150           0.1758            0.9509         0.4029                  0.2676              1.4781
+5 triplet-trained               0.6974          0.8669           0.8999            0.9256         0.4143                  0.2614              1.0270
+--- cell 26 (exec 12) ---
+[image]
+Spearman(offline NDCG@5, twin CTR) = +0.09 (p = 0.87); vs twin ATC = +0.37 | best online: 5 triplet-trained | Wilcoxon p of best-online vs others: 0: 1.2e-107, 1: 0, 2: 0, 3: 0, 4: 0
+Trained vs frozen cosine: CTR gain 1.96 pp (CI 1.92 to 2.01); ATC gain 0.56 pp (CI 0.55 to 0.57) | documented claim: CTR +25%, add-to-cart ratio +4% (control unknown, unverified wording)
+                        twin CTR  CTR CI low  CTR CI high  twin ATC rate  ATC CI low  ATC CI high  CTR lift vs best-sellers  ATC lift vs best-sellers  \
+method                                                                                                                                                  
+0 in-type best-sellers    0.0558      0.0551       0.0565         0.0077      0.0076       0.0079                    0.0000                    0.0000   
+1 colour histogram        0.0210      0.0208       0.0213         0.0034      0.0033       0.0034                   -0.6231                   -0.5615   
+2 frozen, Euclidean       0.0425      0.0420       0.0429         0.0085      0.0084       0.0086                   -0.2389                    0.1005   
+3 frozen, cosine          0.0432      0.0427       0.0437         0.0087      0.0086       0.0088                   -0.2263                    0.1272   
+4 PCA-whitened frozen     0.0320      0.0316       0.0324         0.0060      0.0059       0.0060                   -0.4261                   -0.2304   
+5 triplet-trained         0.0628      0.0623       0.0633         0.0143      0.0142       0.0144                    0.1251                    0.8489   
+
+                        mean true similarity  NDCG@5 (offline)  
+method                                                          
+0 in-type best-sellers                0.1230            0.1337  
+1 colour histogram                    0.3234            0.3844  
+2 frozen, Euclidean                   0.6007            0.3477  
+3 frozen, cosine                      0.6090            0.3512  
+4 PCA-whitened frozen                 0.4674            0.2688  
+5 triplet-trained                     0.7817            0.5633
+--- cell 28 (exec 13) ---
+Smallest detectable relative lift with 5 lakh carousels per arm (design-effect adjusted): CTR: 2.4%, add-to-cart: 6.8%
+                                    control rate  treatment rate  carousels per arm (independent)  users per arm (3 carousels, ICC 0.05)
+target                                                                                                                                  
+CTR +25% (documented claim)               0.0558          0.0698                             4732                                   1735
+CTR +10%                                  0.0558          0.0614                            27789                                  10190
+add-to-cart +10%                          0.0077          0.0085                           211327                                  77487
+add-to-cart +4% (documented claim)        0.0077          0.0080                          1283958                                 470785
+--- cell 30 (exec 14) ---
+[image]
+Log-log slope of time vs gallery size: 24 dims 0.85 (R² 0.963); 64 dims 0.84 (R² 0.959) | at 2 lakh items: 15.49 ms (24 dims), 16.70 ms (64 dims) per query
+              ms per query (24 dims)  ms per query (64 dims)
+gallery size                                                
+1000                          0.1890                  0.1860
+4000                          0.2780                  0.3870
+16000                         1.0030                  0.8170
+64000                         3.9350                  3.9830
+200000                       15.4910                 16.7030
+--- cell 32 (exec 15) ---
+[image]
+                NDCG@5  strict P@3
+embedding dims                    
+8               0.5190      0.4218
+16              0.5409      0.4380
+24              0.5633      0.4525
+48              0.5368      0.4263
+--- cell 34 (exec 16) ---
+Garments per image 2.88; detection 80.3% -> 85.6%; end-to-end relevance 78.1% -> 83.5%; base-case value of active learning ≈ ₹12.1 crore a year (relevance-proportional approximation)
+       Δ add-to-cart per carousel (pp)  carousels per day (lakh)  gross ₹ crore / year  net of ₹3 crore cost
+base                            0.6560                  147.9840               97.8440               94.8440
+best                            0.6740                  147.9840              140.6430              137.6430
+worst                           0.3200                  138.7680               26.8130               23.8130

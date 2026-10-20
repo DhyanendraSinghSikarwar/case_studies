@@ -1,0 +1,55 @@
+| B1P02-Q1 | 2 | Why can't we use linear regression for a classification problem? Why logistic regression instead? |
+| B1P02-Q2 | 2 | What are the assumptions of linear regression, and what happens to the model if each is violated? (interview-level) |
+| B1P02-Q3 | 2 | What is logistic regression? Is it a linear model, and what do the sigmoid and log-odds do? |
+| B1P02-Q4 | 2 | What is regularization and why do we need it? How does it relate to bias-variance? |
+| B1P02-Q5 | 2 | L1 vs L2 regularization: how do they differ, and why does L1 give sparse weights while L2 only shrinks? |
+| B1P02-Q6 | 2 | What is the difference between R-squared and adjusted R-squared? Can R-squared be negative? |
+| B1P02-Q7 | 2 | How do you interpret the coefficients of a linear regression and of a logistic regression (odds ratio)? If one weight is larger, is that feature more important? |
+| B1P02-Q8 | 2 | What is multicollinearity? How does it affect linear regression, how do you detect it (VIF), and how do you fix it? |
+| B1P02-Q9 | 2 | Derive the logistic regression loss (MLE / log loss) and its gradient. Why not use MSE for logistic regression? |
+| B1P02-Q10 | 2 | Does feature scaling matter for linear regression, logistic regression and regularized models? When can you skip it? |
+| B1P02-Q11 | 2 | How do you handle categorical variables for linear/logistic models? One-hot vs ordinal vs target/frequency encoding, and the dummy-variable trap. |
+| B1P02-Q12 | 2 | How do you choose between Lasso and Ridge for a given problem, and how do you pick the regularization strength (CV)? |
+| B1P02-Q13 | 2 | How do you handle missing values in a feature pipeline? Compare drop, mean/median, model-based, missing-indicator flags. |
+| B1P02-Q14 | 2 | What is data leakage in feature engineering and preprocessing (scaling, imputation, target encoding)? How do you prevent it with pipelines? |
+| B1P02-Q15 | 2 | Walk me through feature engineering on a project you did. Which features moved the metric and how did you validate them? |
+| B1P02-Q16 | 2 | What feature-selection methods do you know (filter, wrapper, embedded)? Is feature selection important for linear models, and can L1/L2 do it? |
+| B1P02-Q17 | 2 | How do you solve linear regression: normal equation vs gradient descent (batch/SGD/mini-batch)? When do you prefer which? |
+| B1P02-Q18 | 2 | Which regression error metric would you choose: MSE, RMSE, MAE, Huber, MAPE? How does the choice affect the model with outliers? |
+| B1P02-Q19 | 2 | What is Elastic Net, and when would you use it over Lasso or Ridge? |
+| B1P02-Q20 | 2 | What is the dummy variable trap, and how does drop-first/intercept handling resolve it? |
+| B1P02-Q21 | 2 | Why does regularization not usually penalize the intercept, and why must features be standardized before applying a penalty? |
+| B1P02-Q22 | 2 | Normalization vs standardization vs robust scaling: which to use when, and how do outliers affect each? |
+| B1P02-Q23 | 2 | If one column is the sum of two others (or the sum plus noise), what happens to a linear model and to its Ridge/Lasso version? |
+| B1P02-Q24 | 2 | Why does Ridge fix the singular XtX problem? Write the closed-form Ridge solution and explain shrinkage. |
+| B1P02-Q25 | 2 | How does L2 regularization appear in logistic regression (sklearn's C parameter, MAP view)? How does it change the gradient? |
+| B1P02-Q26 | 2 | How do you choose lambda in practice (LassoCV/RidgeCV, one-standard-error rule, regularization path) and what do you do if CV curves are flat? |
+| B1P02-Q27 | 2 | Logistic regression decision boundary is linear. How do you capture non-linearity (interactions, polynomial features, splines, binning)? |
+| B1P02-Q28 | 2 | How do outliers affect linear regression and what robust options exist (winsorizing, Huber, quantile regression)? |
+| B1P02-Q29 | 2 | Target is right-skewed (e.g., price, delivery time). Do you log-transform it? How do you interpret results and avoid back-transform bias? |
+| B1P02-Q30 | 2 | How do you handle high-cardinality categoricals (city, pincode, SKU, user ID)? Compare target encoding, frequency encoding, hashing, embeddings, grouping rare levels. |
+| B1P02-Q31 | 2 | How do you do target encoding without leakage (out-of-fold, smoothing)? Why does naive target encoding overfit? |
+| B1P02-Q32 | 2 | How do you engineer features from timestamps and recency/frequency data (cyclical encoding, lags, rolling aggregates, RFM)? |
+| B1P02-Q33 | 2 | Multiclass logistic regression: softmax vs one-vs-rest, and how the loss and gradients change. |
+| B1P02-Q34 | 2 | Why is logistic regression still widely used in industry (CTR, credit scoring, baseline)? When do you pick it over a tree ensemble? |
+| B1P02-Q35 | 2 | How do you compute feature importance for linear/logistic models (standardized coefficients, permutation importance) and what can go wrong with correlated features? |
+| B1P02-Q36 | 2 | A coefficient's sign flips or becomes insignificant after adding a variable. What are the possible reasons (collinearity, confounding, omitted variable)? |
+| B1P02-Q37 | 2 | How do you build and evaluate a text-feature baseline (bag-of-words/TF-IDF + logistic regression)? What regularization works for sparse high-dimensional input? |
+| B1P02-Q38 | 2 | Training-serving skew for features: how do you ensure the same transformations run offline and online? |
+| B1P02-Q39 | 2 | AI-era: an LLM generated this sklearn pipeline (scaler fit on full data, target encoding before split, p-value-based feature dropping). Review it and list the bugs. |
+| B1P02-Q40 | 2 | How does Lasso behave with correlated features, and how do Elastic Net or stability selection address it? |
+| B1P02-Q41 | 2 | Explain L1 and L2 as Bayesian priors (Laplace vs Gaussian) and give the geometric (constraint-region) intuition. |
+| B1P02-Q42 | 2 | What is perfect (quasi-)separation in logistic regression? What happens to the coefficients and how do you fix it? |
+| B1P02-Q43 | 2 | How do you do Weight of Evidence binning and Information Value for logistic scorecards, and what are the pitfalls? |
+| B1P02-Q44 | 2 | How do linear models treat ordinal, nominal and binary features differently from tree models? |
+| B1P02-Q45 | 2 | What is p > n (high-dimensional) regression, why does OLS fail, and what are your options? |
+| B1P02-Q46 | 2 | Poisson, Tweedie and Gamma GLMs: when would you use them instead of OLS (counts, claims, ETA, demand)? |
+| B1P02-Q47 | 2 | What is quantile regression and when is it preferred to OLS (SLA, ETA P90, pricing)? |
+| B1P02-Q48 | 2 | Feature crosses and hashing at scale in linear CTR models: why do ads systems still use them? |
+| B1P02-Q49 | 2 | Principal-component regression vs Ridge vs PLS: when would you choose each? |
+| B1P02-Q50 | 2 | Does feature engineering still matter in the LLM/embeddings era? How would you use embeddings as features in a regularized linear model? |
+| B1P02-Q51 | 2 | How do you do inference (p-values, CIs) after Lasso selection, and why are naive p-values invalid? |
+| B1P02-Q52 | 2 | Generalized Additive Models and monotonic constraints as interpretable alternatives to plain logistic regression in credit/insurance. |
+| B1P02-Q53 | 2 | Implement coordinate-descent Lasso (soft-thresholding) in NumPy and explain why it yields exact zeros. |
+| B1P02-Q54 | 2 | Derive the bias and variance of the Ridge estimator and show how shrinkage trades bias for variance. |
+| B1P02-Q55 | 2 | Marginal effects in logistic regression: why is a coefficient not a constant change in probability, and how do you report average marginal effects? |

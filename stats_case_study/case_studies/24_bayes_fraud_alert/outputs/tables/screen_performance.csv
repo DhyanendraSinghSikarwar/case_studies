@@ -1,0 +1,3 @@
+screen,alerts,true alerts,false alerts,missed frauds,sensitivity P(alert|fraud),sens CI low,sens CI high,specificity P(no alert|genuine),PPV P(fraud|alert),PPV CI low,PPV CI high,NPV P(genuine|no alert)
+Rule engine,4489,539,3950,95,0.8501577287,0.8202694678,0.8758281213,0.973554892,0.1200712854,0.1108858837,0.1299064024,0.9993471284
+ML score,3546,517,3029,117,0.8154574132,0.7833918897,0.8437230554,0.9797209539,0.1457980823,0.1345657233,0.1577970683,0.9992011143

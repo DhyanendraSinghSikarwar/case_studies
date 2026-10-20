@@ -1,0 +1,7 @@
+distribution of changes,scenario,Paired t,Wilcoxon,Sign
+normal,no effect (type I error),0.051,0.049,0.0305
+normal,real shift (power),0.7205,0.7035,0.5345
+"heavy tails (t, 2 df)",no effect (type I error),0.04,0.0475,0.047
+"heavy tails (t, 2 df)",real shift (power),0.327,0.4445,0.417
+5% outliers,no effect (type I error),0.0295,0.054,0.0455
+5% outliers,real shift (power),0.399,0.592,0.4755

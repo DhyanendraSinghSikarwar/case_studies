@@ -1,0 +1,9 @@
+field(s),meaning
+"user_id, date",User and impression date (exploration log)
+"age_band, city_tier, ios, journey_stage",Demographics and lifecycle stage
+"txn_count_30d, salary_credit_flag, p2m_share","Behaviour: transactions, salary-like credits, share paid to merchants"
+used_<category> (8 flags),User had already transacted in the category before (repeat vs acquisition)
+shown_category,Masthead category shown at random (exploration only)
+converted_7d,Transacted in the shown category within 7 days
+revenue_12m_inr,12-month margin attributed to the conversion (₹)
+"_p_<cat>, _v_<cat> (experiment users)",HIDDEN true conversion probability and value per category (simulation only)

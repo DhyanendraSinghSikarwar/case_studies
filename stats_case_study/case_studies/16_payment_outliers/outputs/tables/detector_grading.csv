@@ -1,0 +1,9 @@
+,entry_error,fraud,vip,festival,normal,total flagged,share of flags that are errors or fraud,errors caught (of 40),fraud caught (of 60)
+Dashboard: z > 3 (raw ₹),21,2,8,5,22,58,0.3965517241,0.525,0.0333333333
+IQR fence (raw ₹),38,19,49,67,2364,2537,0.0224674813,0.95,0.3166666667
+IQR fence (log ₹),16,0,0,0,0,16,1.0,0.4,0.0
+MAD robust z (log ₹),10,0,0,0,0,10,1.0,0.25,0.0
+Segment-aware robust z,39,4,0,0,7,50,0.86,0.975,0.0666666667
+Customer-relative robust z,40,10,0,0,8,58,0.8620689655,1.0,0.1666666667
+3+ risk flags,0,58,0,0,15,73,0.7945205479,0.0,0.9666666667
+New screen (segment OR customer OR context),40,60,0,0,30,130,0.7692307692,1.0,1.0

@@ -1,0 +1,10 @@
+field(s),meaning
+"items: item, article_type, colour, pattern, price_inr, units_90d",Catalogue item and its (possibly wrong or missing) labels; observed 90-day sales
+"items: is_train, embedding_ok",1 if the item is in the metric-learning train split; 0 if its image embedding failed
+"garments: outfit, item, article_type, group","A garment worn in a model image, the catalogue item it is, its type and documented detector group"
+garments: detected_before / detected_after,Detector found the garment before / after active learning
+"garments: messy_before / messy_after, _leak_u",Crop was badly localised; hidden leak share of a neighbouring garment
+"embeddings.npz: E_cat, H_cat",Catalogue backbone embedding (64) and colour histogram (8)
+"embeddings.npz: E_tr, tr_item",Street training photos and the item each pairs with
+"embeddings.npz: E_q_clean, E_q_other, H_q","Model-photo garment embedding, the neighbouring garment's embedding (leakage), query colour histogram"
+items: _true_type/_true_colour/_true_pattern/_style/_log_pop_z/_z0.._z13/_dup_of,"HIDDEN truth (relevance, audit and digital twin only)"

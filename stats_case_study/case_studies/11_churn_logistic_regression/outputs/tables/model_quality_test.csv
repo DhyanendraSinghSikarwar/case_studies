@@ -1,0 +1,11 @@
+,value
+AUC (test),0.7517212024
+AUC 95% CI low,0.7215430484
+AUC 95% CI high,0.781040762
+Brier score,0.083431101
+Brier score of 'everyone = base rate',0.0939750149
+Brier skill score,0.1121991187
+Hosmer-Lemeshow χ² (8 df),9.6160775874
+Hosmer-Lemeshow p,0.2930123441
+mean predicted churn,0.108613804
+actual churn rate,0.105

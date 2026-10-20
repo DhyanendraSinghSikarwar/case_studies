@@ -1,0 +1,383 @@
+#%% md
+# Case Study 30 — "92% Resolved by AI": Resolution Rate Against Reality, CSAT That Only 9% of Customers Give, and Where to Escalate
+
+**Priority:** ★ Optional · **Reference:** Case Study 30 — *PhonePe: AI-first customer support (intent classification + LLM summaries + knowledge retrieval)* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Customer Support, Product (support automation), Risk/Grievance Redressal, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-30-01). Support data are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs30_support_automation_resolution.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+A payments app handles billions of transactions a month, so support volume grows with it. PhonePe made AI the **first line of support**: it works out what the customer's problem is (intent classification), reads their transaction and ticket history, finds the right help article, and either resolves the issue or passes it to a human. It reports "**over 92%**" of queries resolved by AI, "**one support agent for every 20 million transactions**", and **CSAT of 70%**.
+
+Three questions that every support leader should ask of such numbers:
+1. **"Resolved" by whose definition?** The bot closing a ticket is not the same as the customer's problem being fixed. A true test is that the customer **does not come back** about the same issue.
+2. **CSAT from whom?** Only a small share of customers rate. If unhappy customers are more likely to answer (or to skip), the score is biased.
+3. **What is the cost to customers the bot cannot help?** A fraud complaint or a debited-but-failed payment handled badly is a serious harm, not a statistic.
+
+This notebook measures all three, uses a **randomised human-only holdout** as the benchmark, and shows how to choose when the bot should escalate.
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What PhonePe did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | "Support volume grows with billions of transactions a month. Hiring agents in proportion is not sustainable." |
+| Question | "What is the user's issue, and can it be resolved automatically using their transaction and ticket context?" |
+| Data | Transaction history linked to the query; ticket history; a knowledge base |
+| Approach | "Intent classification → LLM summaries of transaction and ticket history → knowledge-base matching → multilingual chatbot or voicebot → human escalation" |
+| ML / metrics | Intent classifiers, LLMs; specifics ND; **AI resolution rate, CSAT, handling time** |
+| Impact | "Over **92%**" of queries resolved by AI; "one support agent for every **20 million** transactions"; CSAT **70%**; 30–50 seconds saved per interaction |
+| Lesson | "Report **resolution rate together with CSAT**. Automation that resolves tickets but annoys users is not a win." |
+
+**Source:** PhonePe engineering blog / press coverage (link in the reference file).
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 120,000 contacts over 8 weeks, 12 issue types (routine ones such as "refund status"; high-stakes ones such as "fraud complaint", "wrong-recipient transfer"), 4 languages. **95% AI-first, a random 5% human-only holdout.** Per contact: intent prediction and confidence, whether the bot **closed** it, whether it escalated, handling time, whether the customer **re-contacted within 7 days** about the same issue, and CSAT (1–5) given by only ≈ 9% of customers. |
+| Statistics added | Intent accuracy by language (Wilson, χ²); **claimed vs true resolution** (bot-closed vs 7-day non-recontact) by intent; randomised **AI vs holdout** comparison on true resolution, recontact, time (two-proportion z, Newcombe CI, Mann–Whitney); **CSAT non-response bias** and inverse-probability-weighted CSAT; resolution–CSAT trade-off by intent; **escalation threshold** chosen on a cost curve with Clopper–Pearson bound on harm; per-language fairness; power |
+
+### (c) How the industry uses this
+
+AI-first support is now the norm in Indian fintech (PhonePe, Paytm, Cred, Razorpay, banks' chat assistants), with RBI's Integrated Ombudsman and grievance-redressal rules making **mis-closed complaints** a compliance issue, not only an experience issue. Containment/deflection rate is the number leaders usually quote. Mature teams measure **resolution** (no repeat contact), **CSAT with a non-response correction**, and **escalation quality**.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Is AI-first support really resolving customers' problems, and where must a human step in? |
+| Analytical | What are the claimed and true resolution rates, how do they compare with human-only support, and how reliable is CSAT as a quality signal? |
+
+**Hypotheses**
+- **H1 (claim vs reality):** H0: among bot-closed tickets, the 7-day non-recontact rate equals the human-only holdout's.
+- **H2 (randomised):** H0: true resolution (no recontact) is the same for AI-first and human-only (two-proportion; non-inferiority margin 3 pp).
+- **H3 (CSAT bias):** H0: responders and non-responders have the same distribution of (latent) satisfaction; an IPW-corrected CSAT equals the raw responder CSAT.
+- **H4 (escalation):** a confidence threshold exists at which harm from wrongly closed high-stakes tickets ≤ 1% (Clopper–Pearson).
+
+**Primary metric:** **true resolution** (no 7-day recontact), alongside **CSAT (weighted)** and **handling time**. **Guardrail:** wrongly closed high-stakes tickets (fraud, wrong recipient, blocked account).
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import statsmodels.formula.api as smf
+from statsmodels.stats.proportion import proportion_confint, confint_proportions_2indep, proportions_ztest
+from statsmodels.stats.multitest import multipletests
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public support-ticket data with intents, resolution and CSAT | **None** for Indian fintech. Public customer-support sets (e.g., Twitter customer support, Kaggle ticket datasets) lack recontact and CSAT linkage. |
+| **Decision** | Synthetic contacts with a randomised human-only holdout and a biased survey (D-30-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs30.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs30.py
+
+#%% code
+os.makedirs("data/cs30", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs30 as gen; importlib.reload(gen)
+raw = gen.generate(seed=SEED); raw.to_csv("data/cs30/contacts.csv.gz", index=False)
+print(f"{len(raw):,} contact rows | {raw.contact_id.nunique():,} unique contacts")
+raw.drop(columns=["_intent", "_resolved", "_csat_latent"]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Contacts | 120,000 over 8 weeks; 12 issue types; languages English 28% / Hindi 32% / Hinglish 28% / regional 12% | Our assumption |
+| Design | 95% AI-first; **random 5% human-only holdout** | Our design (what a careful team keeps) |
+| Bot behaviour | Predicts intent with confidence; closes the ticket when confidence ≥ 0.2 and it can fix the issue **or** over-claims (closes with a generic article); regional-language accuracy is lower | **Documented** pipeline; over-claiming is our assumption |
+| Resolution truth | Bot truly fixes routine issues (refund status 95%, history 98%) and rarely the hard ones (fraud 5%, wrong recipient 10%); humans fix ≈ 85% | Our assumption |
+| Recontact | 72% of unresolved customers contact again within 7 days (4% of resolved ones do) | Our assumption |
+| CSAT | Latent satisfaction → rating 1–5; **only ≈ 9% respond**; unhappy (1–2) and delighted (5) respond more | Typical survey behaviour |
+| DQ issues | 700 duplicate rows; 500 lost handling timers; 40 CSAT values of 0 (invalid) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("contact_id, week, language", "Contact, week, language"), ("served_ai_first", "1 = AI-first (95%); 0 = random human-only holdout (5%)"), ("predicted_intent, intent_confidence", "Bot's intent and confidence"),
+    ("bot_closed, escalated_to_human", "Bot closed the ticket / handed it to a human"), ("handling_minutes, wait_minutes", "Handling time; wait before help"),
+    ("recontact_7d", "Customer contacted again about the same issue within 7 days (true resolution = 0)"), ("csat", "1–5 rating if the customer responded (≈ 9%); blank otherwise; 0 = invalid"),
+    ("_intent, _resolved, _csat_latent", "HIDDEN true intent, true resolution, latent satisfaction"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs30/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+checks = {"duplicate contacts": int(raw.contact_id.duplicated().sum()), "handling time missing (timer lost)": int(raw.drop_duplicates("contact_id").handling_minutes.isna().sum()),
+          "CSAT = 0 (invalid)": int((raw.csat == 0).sum()), "bot-closed but also escalated": int(((raw.bot_closed == 1) & (raw.escalated_to_human == 1)).sum())}
+print(pd.Series(checks, name="rows").to_string())
+df = raw.drop_duplicates("contact_id").copy(); df.loc[df.csat == 0, "csat"] = np.nan
+df["true_resolved"] = 1 - df.recontact_7d; df["intent"] = df._intent
+df["high_stakes"] = df.intent.isin(["fraud_complaint", "wrong_recipient_transfer", "account_blocked", "merchant_dispute"]).astype(int)
+ai, ho = df[df.served_ai_first == 1].copy(), df[df.served_ai_first == 0].copy()
+print(f"\nClean: {len(df):,} contacts | AI-first {len(ai):,} | human-only holdout {len(ho):,} ({len(ho) / len(df):.1%}) | CSAT responses {df.csat.notna().sum():,} ({df.csat.notna().mean():.1%})")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(15, 4.6))
+g = ai.groupby("intent").agg(bot_closed=("bot_closed", "mean"), true=("true_resolved", "mean"), n=("contact_id", "size")).sort_values("bot_closed")
+y = np.arange(len(g)); axes[0].barh(y - 0.2, g.bot_closed * 100, 0.4, color="#e07a1f", label="bot claims resolved"); axes[0].barh(y + 0.2, g.true * 100, 0.4, color="#2a6f97", label="truly resolved (no recontact)")
+axes[0].set_yticks(y); axes[0].set_yticklabels(g.index, fontsize=8); axes[0].set_xlabel("%"); axes[0].set_ylabel("Issue type"); axes[0].set_title("Claimed vs true resolution by issue type"); axes[0].legend(fontsize=8)
+csat = df.csat.dropna().astype(int).value_counts(normalize=True).sort_index() * 100; axes[1].bar(csat.index.astype(str), csat.values, color="#2a6f97"); axes[1].set_xlabel("CSAT rating (1–5)"); axes[1].set_ylabel("% of the 9% who answered")
+axes[1].set_title("CSAT comes from a self-selected 9% of customers")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Intent classification: accuracy and who it fails
+
+Accuracy of the bot's predicted intent against the true intent (from the hidden truth; in practice a labelled sample), overall and **by language**, with Wilson CIs and a χ² test.
+
+#%% code
+ai["intent_ok"] = (ai.predicted_intent == ai.intent).astype(int)
+la = ai.groupby("language").intent_ok.agg(["mean", "sum", "size"]); ci = [proportion_confint(r["sum"], r["size"], method="wilson") for _, r in la.iterrows()]; la["CI low"], la["CI high"] = [c[0] for c in ci], [c[1] for c in ci]
+c2 = stats.chi2_contingency(pd.crosstab(ai.language, ai.intent_ok)); lo, hi = proportion_confint(ai.intent_ok.sum(), len(ai), method="wilson")
+print(f"Overall intent accuracy {ai.intent_ok.mean():.1%} (Wilson {lo:.1%}–{hi:.1%}) | by language χ² = {c2[0]:.0f}, p = {c2[1]:.2g} | mean confidence {ai.intent_confidence.mean():.2f}")
+la.sort_values("mean").round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 The headline: claimed resolution vs true resolution (randomised benchmark)
+
+**(a)** Three numbers for the AI-first group:
+- **Bot-closed rate** ("containment", what the bot claims).
+- **True resolution:** no recontact within 7 days.
+- **True resolution among bot-closed tickets.**
+
+We compare true resolution of AI-first with the **randomised human-only holdout** (two-proportion z, Newcombe CI), with a **non-inferiority margin of 3 pp**. We also compare recontact, handling time and wait (Mann–Whitney).
+
+#%% code
+def prop_row(name, x1, n1, x0, n0):
+    lo, hi = confint_proportions_2indep(x1, n1, x0, n0, method="newcomb"); z, p = proportions_ztest([x1, x0], [n1, n0]); return (name, x1 / n1, x0 / n0, (x1 / n1 - x0 / n0) * 100, lo * 100, hi * 100, p)
+bc = ai[ai.bot_closed == 1]
+print(f"AI-first: bot claims {ai.bot_closed.mean():.1%} resolved | truly resolved {ai.true_resolved.mean():.1%} | among bot-closed tickets only {bc.true_resolved.mean():.1%} | human-only holdout truly resolved {ho.true_resolved.mean():.1%}")
+rows = [prop_row("true resolution: AI-first vs human-only", ai.true_resolved.sum(), len(ai), ho.true_resolved.sum(), len(ho)),
+        prop_row("true resolution: bot-closed tickets vs human-only", bc.true_resolved.sum(), len(bc), ho.true_resolved.sum(), len(ho)),
+        prop_row("7-day recontact: AI-first vs human-only", ai.recontact_7d.sum(), len(ai), ho.recontact_7d.sum(), len(ho))]
+cmp_ = pd.DataFrame(rows, columns=["comparison", "AI-first", "human-only", "diff (pp)", "CI low", "CI high", "p"]).set_index("comparison")
+tt = []
+for c_, lab in (("handling_minutes", "handling minutes"), ("wait_minutes", "wait minutes")):
+    a_, h_ = ai[c_].dropna(), ho[c_].dropna(); mw = stats.mannwhitneyu(a_, h_); tt.append((lab, a_.mean(), h_.mean(), (a_.mean() / h_.mean() - 1), mw.pvalue))
+tt = pd.DataFrame(tt, columns=["metric", "AI-first mean", "human-only mean", "relative change", "Mann–Whitney p"]).set_index("metric")
+ni = cmp_.iloc[0]; print(f"Non-inferiority (margin −3 pp) of AI-first on true resolution: lower CI bound {ni['CI low']:+.1f} pp → {'non-inferior' if ni['CI low'] > -3 else 'NOT non-inferior'}")
+display(cmp_.round(4)); tt.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O72»
+
+### 7.3 Where does the bot over-claim? By issue type
+
+For each issue type: bot-closed rate, **true resolution among bot-closed tickets**, the **false-closure rate** (closed but customer came back), and the human-only holdout's true resolution for the same type, with a one-sided test (AI-closed vs holdout, Holm across 12 types).
+
+#%% code
+rows = []
+for it, g in ai.groupby("intent"):
+    b = g[g.bot_closed == 1]; h = ho[ho.intent == it]
+    if len(b) < 30 or len(h) < 20: continue
+    z, p = proportions_ztest([b.true_resolved.sum(), h.true_resolved.sum()], [len(b), len(h)], alternative="smaller")
+    rows.append((it, len(g), g.bot_closed.mean(), len(b), b.true_resolved.mean(), 1 - b.true_resolved.mean(), h.true_resolved.mean(), len(h), p))
+oc = pd.DataFrame(rows, columns=["issue type", "AI-first contacts", "bot-closed rate", "bot-closed tickets", "true resolution (closed)", "false-closure rate", "human-only resolution", "holdout n", "p (AI < human)"]).set_index("issue type")
+oc["p_holm"] = multipletests(oc["p (AI < human)"], method="holm")[1]; oc.sort_values("false-closure rate", ascending=False).round(4)
+
+#%% md
+**Observation:** «O73»
+
+### 7.4 CSAT: who answers, and what does the score really say?
+
+**(a)** Only ≈ 9% of customers answer. We (i) model **who responds** (logistic on language, issue type, bot-closed, resolved, wait), (ii) compute raw CSAT (top-2-box share, 4–5) among responders, (iii) reweight responders by **inverse probability of response** using only information available for everyone (language, issue type, bot-closed, wait, and handling time, not the unobservable true satisfaction), and (iv) compare with the **true latent top-2-box** share (known only in simulation). We also show CSAT for AI-first vs holdout, raw and weighted, with bootstrap CIs.
+
+#%% code
+d = df.copy(); d["resp"] = d.csat.notna().astype(int); d["handling_f"] = d.handling_minutes.fillna(d.handling_minutes.median()); d["lang_c"] = d.language
+rm = smf.logit("resp ~ C(lang_c) + C(intent) + bot_closed + served_ai_first + wait_minutes + handling_f + recontact_7d", data=d).fit(disp=0)
+d["p_resp"] = rm.predict(d); r = d[d.resp == 1].copy(); r["w"] = 1 / r.p_resp
+top2 = lambda x, w=None: np.average(x >= 4, weights=w)
+print(f"Response model: recontact OR = {np.exp(rm.params['recontact_7d']):.2f} (p = {rm.pvalues['recontact_7d']:.2g}), bot-closed OR = {np.exp(rm.params['bot_closed']):.2f} (p = {rm.pvalues['bot_closed']:.2g}); response rate {d.resp.mean():.1%}")
+rows = []
+for nm, m in (("all customers", np.ones(len(r), bool)), ("AI-first", (r.served_ai_first == 1).values), ("human-only holdout", (r.served_ai_first == 0).values)):
+    s = r[m]; idx = np.flatnonzero(m); bs_raw, bs_w = [], []
+    for _ in range(300):
+        j = RNG.choice(len(s), len(s)); bs_raw.append(top2(s.csat.values[j])); bs_w.append(top2(s.csat.values[j], s.w.values[j]))
+    truth = (d[(d.served_ai_first == 1) if nm == "AI-first" else (d.served_ai_first == 0) if nm == "human-only holdout" else d.served_ai_first.isin([0, 1])]._csat_latent >= 4).mean()
+    rows.append((nm, len(s), top2(s.csat.values), np.percentile(bs_raw, 2.5), np.percentile(bs_raw, 97.5), top2(s.csat.values, s.w.values), np.percentile(bs_w, 2.5), np.percentile(bs_w, 97.5), truth))
+cs = pd.DataFrame(rows, columns=["group", "responders", "CSAT top-2 (raw)", "CI low", "CI high", "CSAT top-2 (IPW)", "IPW CI low", "IPW CI high", "true top-2 (all customers; simulation only)"]).set_index("group")
+cs.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O74»
+
+### 7.5 The resolution–CSAT trade-off by issue type
+
+The documented lesson: report resolution **together with** CSAT. For each issue type we plot the AI-first **true resolution** against **weighted CSAT** (IPW within the type), and flag types in the "bad" corner (high bot-closed rate, low true resolution, low CSAT).
+
+#%% code
+rows = []
+for it, g in r[r.served_ai_first == 1].groupby("intent"):
+    full = ai[ai.intent == it]
+    if len(g) < 15: continue
+    rows.append((it, len(full), full.bot_closed.mean(), full.true_resolved.mean(), top2(g.csat.values, g.w.values), len(g)))
+tr = pd.DataFrame(rows, columns=["issue type", "AI-first contacts", "bot-closed rate", "true resolution", "CSAT top-2 (IPW)", "CSAT responders"]).set_index("issue type")
+fig, ax = plt.subplots(figsize=(8.5, 5.2))
+sc = ax.scatter(tr["true resolution"] * 100, tr["CSAT top-2 (IPW)"] * 100, s=tr["AI-first contacts"] / 40, c=tr["bot-closed rate"] * 100, cmap="RdYlGn_r", edgecolor="k")
+for it, rr in tr.iterrows(): ax.annotate(it, (rr["true resolution"] * 100, rr["CSAT top-2 (IPW)"] * 100), fontsize=7, xytext=(4, 3), textcoords="offset points")
+plt.colorbar(sc, label="bot-closed rate (%)"); ax.set_xlabel("True resolution, no recontact (%)"); ax.set_ylabel("CSAT top-2-box, weighted (%)"); ax.set_title("High claimed containment with low true resolution: worst quadrant")
+plt.tight_layout(); plt.show()
+print(f"Spearman(true resolution, CSAT) across {len(tr)} issue types = {stats.spearmanr(tr['true resolution'], tr['CSAT top-2 (IPW)'])[0]:+.2f}")
+tr.round(4)
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.6 When should the bot escalate? Confidence thresholds and the cost of a wrong closure
+
+The bot closes a ticket when confidence ≥ τ. Raising τ means more human handling (cost) but fewer wrongly closed tickets (customer harm, especially for high-stakes issues). For τ from 0.2 to 0.8 we compute among AI-first contacts:
+- **Containment** (closed share) and **true resolution** overall,
+- **False closures**: closed tickets that were not truly resolved,
+- **High-stakes false closures** (fraud, wrong recipient, blocked account, merchant dispute) with a **one-sided Clopper–Pearson 95% upper bound** on the share of high-stakes tickets wrongly closed,
+- **Expected cost per contact** = ₹1 per bot-closed contact (model and infrastructure) + human minutes × ₹6 for escalations + ₹120 per unresolved contact (bot false closures *and* unresolved human cases: extra contact and goodwill) + ₹900 per high-stakes false closure (compliance and complaint risk).
+
+#### Policy variant: never auto-close high-stakes intents (route them to humans regardless of confidence).
+
+#%% code
+HUM_MIN_COST, FALSE_COST, HS_COST, BOT_COST = 6.0, 120.0, 900.0, 1.0
+human_min = ho.handling_minutes.mean(); bot_min = ai.loc[ai.bot_closed == 1, "handling_minutes"].mean(); esc_min = ai.loc[ai.escalated_to_human == 1, "handling_minutes"].mean()
+tru_h = ho.groupby("intent").true_resolved.mean()
+rows = []
+for tau in (0.2, 0.4, 0.5, 0.6, 0.7, 0.8):
+    for pol in ("threshold only", "threshold + never auto-close high-stakes"):
+        closed = (ai.bot_closed == 1) & (ai.intent_confidence >= tau) & ((ai.high_stakes == 0) if pol.startswith("threshold +") else True)
+        resolved_closed = closed & (ai.true_resolved == 1); false_closed = closed & (ai.true_resolved == 0)
+        # escalated contacts are handled by a human: true resolution for them follows the holdout's rate for the same intent
+        esc = ~closed; esc_res = ai.intent[esc].map(tru_h).mean() if esc.any() else 0
+        overall_true = (resolved_closed.sum() + esc_res * esc.sum()) / len(ai)
+        hs = ai.high_stakes == 1; hs_closed_bad = (false_closed & hs).sum(); hs_n = hs.sum(); ub = stats.beta.ppf(0.95, hs_closed_bad + 1, hs_n - hs_closed_bad)
+        cost = closed.mean() * BOT_COST + esc.mean() * human_min * HUM_MIN_COST + (false_closed.mean() + esc.mean() * (1 - esc_res)) * FALSE_COST + (false_closed & hs).mean() * HS_COST
+        rows.append((tau, pol, closed.mean(), overall_true, false_closed.mean(), hs_closed_bad / hs_n, ub, cost))
+th = pd.DataFrame(rows, columns=["confidence τ", "policy", "containment", "true resolution (est.)", "false-closure share of all", "high-stakes wrongly closed", "95% upper bound", "cost per contact ₹"])
+best = th.loc[th["cost per contact ₹"].idxmin()]
+fig, ax = plt.subplots(figsize=(8.5, 4.3))
+for pol, c_ in (("threshold only", "#e07a1f"), ("threshold + never auto-close high-stakes", "#2a6f97")):
+    s = th[th.policy == pol]; ax.plot(s["confidence τ"], s["cost per contact ₹"], "o-", color=c_, label=pol)
+ax.set_xlabel("Bot closes only if confidence ≥ τ"); ax.set_ylabel("Expected cost per contact (₹)"); ax.set_title("Raising the bar and ring-fencing high-stakes issues lowers total cost"); ax.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+print(f"Lowest-cost setting: τ = {best['confidence τ']}, policy '{best['policy']}' → containment {best['containment']:.1%}, true resolution ≈ {best['true resolution (est.)']:.1%}, ₹{best['cost per contact ₹']:.1f} per contact")
+th.round(4)
+
+#%% md
+**Takeaway:** «O76»
+
+### 7.7 Fairness: language and escalation
+
+Does the bot treat languages equally? For each language: bot-closed rate, true resolution (AI-first), wait, and CSAT (IPW). Test: a logistic model of true resolution on language adjusted for issue type (LR test); regional-language users are the group to watch.
+
+#%% code
+m0 = smf.logit("true_resolved ~ C(intent)", data=ai).fit(disp=0); m1 = smf.logit("true_resolved ~ C(intent) + C(language, Treatment('english'))", data=ai).fit(disp=0); LR = 2 * (m1.llf - m0.llf)
+print(f"LR test for language (adjusting for issue type): χ² = {LR:.1f}, p = {stats.chi2.sf(LR, 3):.2g}")
+orr = np.exp(m1.params.filter(like="language")); ci = np.exp(m1.conf_int().filter(like="language", axis=0))
+fl = ai.groupby("language").agg(contacts=("contact_id", "size"), bot_closed=("bot_closed", "mean"), true_resolution=("true_resolved", "mean"), wait=("wait_minutes", "mean"))
+fl["adjusted OR vs English"] = np.nan
+for lang in fl.index:
+    if lang != "english": k = [i for i in orr.index if lang in i][0]; fl.loc[lang, "adjusted OR vs English"] = orr[k]; fl.loc[lang, "OR CI low"] = ci.loc[k, 0]; fl.loc[lang, "OR CI high"] = ci.loc[k, 1]
+fl.loc["english", "adjusted OR vs English"] = 1.0
+fl.round(4)
+
+#%% md
+**Observation:** «O77»
+
+## 8. ML Section — what we evaluated
+
+The intent classifiers, LLM summaries and retrieval are proprietary and not reproduced. The decision-relevant statistics (claimed vs true resolution against a randomised holdout, CSAT non-response correction, escalation threshold, fairness) are model-agnostic. In production also measure: **LLM faithfulness** (does the answer match the knowledge-base article?), **harmful-answer rate** on a red-team set, and **prompt-injection** resistance.
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-30-07):
+- 3 crore support contacts a month (the transaction base is far larger, so only a fraction contact support).
+- Human handling ₹6 per minute (fully loaded).
+- A false closure costs ₹120 (second contact + goodwill); a high-stakes false closure costs ₹900.
+
+#%% code
+N_C = 3e7
+base_ai = th[(th["confidence τ"] == 0.2) & (th.policy == "threshold only")].iloc[0]; best_p = best
+hum_cost_hum = ho.handling_minutes.mean() * HUM_MIN_COST + (1 - ho.true_resolved.mean()) * FALSE_COST                 # human-only: handling cost + unresolved contacts
+money = pd.DataFrame([("human-only (holdout)", ho.true_resolved.mean(), hum_cost_hum, hum_cost_hum * N_C / 1e7),
+                      ("AI-first as run (τ = 0.2)", base_ai["true resolution (est.)"], base_ai["cost per contact ₹"], base_ai["cost per contact ₹"] * N_C / 1e7),
+                      (f"AI-first recommended (τ = {best_p['confidence τ']}, {best_p['policy']})", best_p["true resolution (est.)"], best_p["cost per contact ₹"], best_p["cost per contact ₹"] * N_C / 1e7)],
+                     columns=["policy", "true resolution", "cost per contact ₹", "₹ crore / month at 3 crore contacts"]).set_index("policy")
+print(f"Agents: at {ho.handling_minutes.mean():.1f} min per human contact, {N_C * ho.handling_minutes.mean() / 60 / 150 / 1000:,.0f}k agent-equivalents would be needed if everything were human-handled; AI-first leaves {(1 - base_ai.containment) * N_C * human_min / 60 / 150 / 1000:,.0f}k")
+money.round(2)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic over-claiming:** how often the bot closes with a generic article was assumed. Measure it with **recontact and escalation audits** on real data. The 7-day window can miss slower recontacts: check 14/30 days.
+- **Recontact is imperfect:** customers may give up without recontacting (silent churn) or recontact about something new. Pair it with a post-contact "was this resolved?" micro-survey and agent-reviewed samples.
+- **Cost assumptions are illustrative:** the ₹ values for false closures and high-stakes failures drive the optimal threshold. Compliance and risk teams should set them.
+- **Regulatory:** RBI's grievance-redressal rules require timely, correct resolution and the right to a human. Fraud/dispute complaints should never be closed by a bot without a resolution record.
+- **Keep the human-only holdout:** a 2–5% randomised holdout is the only unbiased benchmark. It costs a little customer experience, so apply it to low-stakes issue types, or use a delayed-escalation design.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Containment | bot-closed tickets / all AI-first contacts |
+| True resolution | 1 − P(recontact about the same issue within 7 days) |
+| False-closure rate | bot-closed tickets that were not truly resolved / bot-closed tickets |
+| IPW CSAT | Σ wᵢ·1{ratingᵢ ≥ 4} / Σ wᵢ, wᵢ = 1/P(respond ∣ xᵢ) |
+| Clopper–Pearson upper bound | Beta⁻¹(0.95; k + 1, n − k) |
+| Non-inferiority | lower 95% bound of (p_AI − p_human) > −δ |
+
+| Term | Meaning |
+|---|---|
+| CSAT | Customer satisfaction score (here the share rating 4–5) |
+| Containment / deflection | Share of contacts the bot handles without a human |
+| True resolution | The customer's problem was fixed: they did not come back |
+| Escalation | The bot hands the case to a human |
+| Non-response bias | The customers who answer a survey differ from those who do not |
+| Human-only holdout | A random group served without AI, used as an unbiased benchmark |

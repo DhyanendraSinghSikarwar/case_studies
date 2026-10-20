@@ -1,0 +1,5 @@
+,estimate (%/yr),95% CI low,95% CI high,share (%)
+TOTAL effect (v1: grade not held fixed),4.28433625,4.1182109399,4.4517813818,100.0
+DIRECT effect (v2: same grade),0.5286477901,0.3548243732,0.7026502157,12.56836647
+INDIRECT effect via grade (log points ×100),3.6678431442,3.5128290015,3.8246827667,87.43163353
+share of total that runs through grade,,83.9134170719,91.3398692047,87.43163353

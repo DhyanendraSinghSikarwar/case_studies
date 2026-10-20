@@ -1,0 +1,79 @@
+C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\zmq\_future.py:718: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+cs12_hierarchical_probabilistic_forecasting.ipynb: CELL ERROR
+min[39;00m [38;5;28mrange[39m([32m1000[39m)]
+[32m      6[39m     rows[sname] = {[33m"[39m[33mcu (₹/unit short)[39m[33m"[39m: cu_, [33m"[39m[33mco (₹/unit leftover)[39m[33m"[39m: co_, [33m"[39m[33moptimal quantile[39m[33m"[39m: qs_, [33m"[39m[33msaving vs point forecast (₹ crore/yr)[39m[33m"[39m: ann(d1.mean()), [33m"[39m[33m  95[39m[33m%[39m[33m CI low[39m[33m"[39m: ann(np.percentile(bs1, [32m2.5[39m)), [33m"[39m[33m  95[39m[33m%[39m[33m CI high[39m[33m"[39m: ann(np.percentile(bs1, [32m97.5[39m)),
+[32m      7[39m                    [33m"[39m[33msaving vs incoherent base distribution (₹ crore/yr)[39m[33m"[39m: ann(d2.mean()), [33m"[39m[33m  CI low[39m[33m"[39m: ann(np.percentile(bs2, [32m2.5[39m)), [33m"[39m[33m  CI high[39m[33m"[39m: ann(np.percentile(bs2, [32m97.5[39m)), [33m"[39m[33mcost at point forecast (₹ crore/yr)[39m[33m"[39m: ann(pa.mean())}
+
+[36mFile [39m[32m~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\numpy\_core\_methods.py:120[39m, in [36m_mean[39m[34m(a, axis, dtype, out, keepdims, where)[39m
+[32m    116[39m arr = asanyarray(a)
+[32m    118[39m is_float16_result = [38;5;28;01mFalse[39;00m
+[32m--> [39m[32m120[39m rcount = [43m_count_reduce_items[49m[43m([49m[43marr[49m[43m,[49m[43m [49m[43maxis[49m[43m,[49m[43m [49m[43mkeepdims[49m[43m=[49m[43mkeepdims[49m[43m,[49m[43m [49m[43mwhere[49m[43m=[49m[43mwhere[49m[43m)[49m
+[32m    121[39m [38;5;28;01mif[39;00m rcount == [32m0[39m [38;5;28;01mif[39;00m where [38;5;129;01mis[39;00m [38;5;28;01mTrue[39;00m [38;5;28;01melse[39;00m umr_any(rcount == [32m0[39m, axis=[38;5;28;01mNone[39;00m):
+[32m    122[39m     warnings.warn([33m"[39m[33mMean of empty slice[39m[33m"[39m, [38;5;167;01mRuntimeWarning[39;00m, stacklevel=[32m2[39m)
+
+[36mFile [39m[32m~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\numpy\_core\_methods.py:83[39m, in [36m_count_reduce_items[39m[34m(arr, axis, keepdims, where)[39m
+[32m     81[39m     items = [32m1[39m
+[32m     82[39m     [38;5;28;01mfor[39;00m ax [38;5;129;01min[39;00m axis:
+[32m---> [39m[32m83[39m         items *= arr.shape[[43mmu[49m[43m.[49m[43mnormalize_axis_index[49m[43m([49m[43max[49m[43m,[49m[43m [49m[43marr[49m[43m.[49m[43mndim[49m[43m)[49m]
+[32m     84[39m     items = nt.intp(items)
+[32m     85[39m [38;5;28;01melse[39;00m:
+[32m     86[39m     [38;5;66;03m# TODO: Optimize case when `where` is broadcast along a non-reduction[39;00m
+[32m     87[39m     [38;5;66;03m# axis and full sum is more excessive than needed.[39;00m
+[32m     88[39m 
+[32m     89[39m     [38;5;66;03m# guarded to protect circular imports[39;00m
+
+[31mAxisError[39m: axis 3 is out of bounds for array of dimension 3
+
+, 2.5)), "  CI high": ann(np.percentile(bs2, 97.5)), "cost at point forecast (\u20b9 crore/yr)": ann(pa.mean())}
+bz = pd.DataFrame(rows).T; bz["saving vs point (% of cost)"] = bz["saving vs point forecast (\u20b9 crore/yr)"] / bz["cost at point forecast (\u20b9 crore/yr)"] * 100
+print(f"best method used: {METHODS[bi]}; 96 bottom series x 52 weeks; rolling windows are treated as a year of weeks (average cost per node-week x 52)"); bz.round(3)
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mAxisError[39m                                 Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[19][39m[32m, line 4[39m
+[32m      2[39m [38;5;28;01mfor[39;00m sname, (cu_, co_) [38;5;129;01min[39;00m SCEN.items():
+[32m      3[39m     qs_ = cu_ / (cu_ + co_); c_pt = cost(MEANF[[32m0[39m][..., B0:], YB, cu_, co_); c_base = cost(order_q([32m0[39m, qs_), YB, cu_, co_); c_best = cost(order_q(bi, qs_), YB, cu_, co_)
+[32m----> [39m[32m4[39m     pa = c_pt.mean(axis=([32m1[39m, [32m2[39m, [32m3[39m)); ba = c_base.mean(axis=([32m1[39m, [32m2[39m, [32m3[39m)); bb = c_best.mean(axis=([32m1[39m, [32m2[39m, [32m3[39m)); ann = [38;5;28;01mlambda[39;00m x: x * NB * [32m52[39m / [32m1e7[39m
+[32m      5[39m     d1 = pa - bb; d2 = ba - bb; bs1 = [d1[RNG.integers([32m0[39m, O, O)].mean() [38;5;28;01mfor[39;00m _ [38;5;129;01min[39;00m [38;5;28mrange[39m([32m1000[39m)]; bs2 = [d2[RNG.integers([32m0[39m, O, O)].mean() [38;5;28;01mfor[39;00m _ [38;5;129;01min[39;00m [38;5;28mrange[39m([32m1000[39m)]
+[32m      6[39m     rows[sname] = {[33m"[39m[33mcu (\u20b9/unit short)[39m[33m"[39m: cu_, [33m"[39m[33mco (\u20b9/unit leftover)[39m[33m"[39m: co_, [33m"[39m[33moptimal quantile[39m[33m"[39m: qs_, [33m"[39m[33msaving vs point forecast (\u20b9 crore/yr)[39m[33m"[39m: ann(d1.mean()), [33m"[39m[33m  95[39m[33m%[39m[33m CI low[39m[33m"[39m: ann(np.percentile(bs1, [32m2.5[39m)), [33m"[39m[33m  95[39m[33m%[39m[33m CI high[39m[33m"[39m: ann(np.percentile(bs1, [32m97.5[39m)),
+[32m      7[39m                    [33m"[39m[33msaving vs incoherent base distribution (\u20b9 crore/yr)[39m[33m"[39m: ann(d2.mean()), [33m"[39m[33m  CI low[39m[33m"[39m: ann(np.percentile(bs2, [32m2.5[39m)), [33m"[39m[33m  CI high[39m[33m"[39m: ann(np.percentile(bs2, [32m97.5[39m)), [33m"[39m[33mcost at point forecast (\u20b9 crore/yr)[39m[33m"[39m: ann(pa.mean())}
+
+[36mFile [39m[32m~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\numpy\_core\_methods.py:120[39m, in [36m_mean[39m[34m(a, axis, dtype, out, keepdims, where)[39m
+[32m    116[39m arr = asanyarray(a)
+[32m    118[39m is_float16_result = [38;5;28;01mFalse[39;00m
+[32m--> [39m[32m120[39m rcount = [43m_count_reduce_items[49m[43m([49m[43marr[49m[43m,[49m[43m [49m[43maxis[49m[43m,[49m[43m [49m[43mkeepdims[49m[43m=[49m[43mkeepdims[49m[43m,[49m[43m [49m[43mwhere[49m[43m=[49m[43mwhere[49m[43m)[49m
+[32m    121[39m [38;5;28;01mif[39;00m rcount == [32m0[39m [38;5;28;01mif[39;00m where [38;5;129;01mis[39;00m [38;5;28;01mTrue[39;00m [38;5;28;01melse[39;00m umr_any(rcount == [32m0[39m, axis=[38;5;28;01mNone[39;00m):
+[32m    122[39m     warnings.warn([33m"[39m[33mMean of empty slice[39m[33m"[39m, [38;5;167;01mRuntimeWarning[39;00m, stacklevel=[32m2[39m)
+
+[36mFile [39m[32m~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\numpy\_core\_methods.py:83[39m, in [36m_count_reduce_items[39m[34m(arr, axis, keepdims, where)[39m
+[32m     81[39m     items = [32m1[39m
+[32m     82[39m     [38;5;28;01mfor[39;00m ax [38;5;129;01min[39;00m axis:
+[32m---> [39m[32m83[39m         items *= arr.shape[[43mmu[49m[43m.[49m[43mnormalize_axis_index[49m[43m([49m[43max[49m[43m,[49m[43m [49m[43marr[49m[43m.[49m[43mndim[49m[43m)[49m]
+[32m     84[39m     items = nt.intp(items)
+[32m     85[39m [38;5;28;01melse[39;00m:
+[32m     86[39m     [38;5;66;03m# TODO: Optimize case when `where` is broadcast along a non-reduction[39;00m
+[32m     87[39m     [38;5;66;03m# axis and full sum is more excessive than needed.[39;00m
+[32m     88[39m 
+[32m     89[39m     [38;5;66;03m# guarded to protect circular imports[39;00m
+
+[31mAxisError[39m: axis 3 is out of bounds for array of dimension 3
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\case_studies\ecommerce\_build\nbtool.py", line 149, in <module>
+    {"src2nb": lambda: src2nb(*args), "run": lambda: run(*args), "dump": lambda: dump(*args), "fill": lambda: fill(*args),
+  File "C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\case_studies\ecommerce\_build\nbtool.py", line 149, in <lambda>
+    {"src2nb": lambda: src2nb(*args), "run": lambda: run(*args), "dump": lambda: dump(*args), "fill": lambda: fill(*args),
+                                                     ^^^^^^^^^^
+  File "C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\case_studies\ecommerce\_build\nbtool.py", line 49, in run
+    nbformat.write(nb, path); print(f"{path}: CELL ERROR\n{str(e)[-3000:]}"); sys.exit(1)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u20b9' in position 171: character maps to <undefined>

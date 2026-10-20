@@ -1,0 +1,9 @@
+field(s),meaning
+"contact_id, week, language","Contact, week, language"
+served_ai_first,1 = AI-first (95%); 0 = random human-only holdout (5%)
+"predicted_intent, intent_confidence",Bot's intent and confidence
+"bot_closed, escalated_to_human",Bot closed the ticket / handed it to a human
+"handling_minutes, wait_minutes",Handling time; wait before help
+recontact_7d,Customer contacted again about the same issue within 7 days (true resolution = 0)
+csat,1–5 rating if the customer responded (≈ 9%); blank otherwise; 0 = invalid
+"_intent, _resolved, _csat_latent","HIDDEN true intent, true resolution, latent satisfaction"

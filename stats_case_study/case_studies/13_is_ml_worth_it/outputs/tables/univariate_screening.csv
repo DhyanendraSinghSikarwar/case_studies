@@ -1,0 +1,21 @@
+variable,type,test,p_value,spearman_rho,pearson_r,univariate_auc,cramers_v,mutual_info,q_value_BH,signal?
+bureau_score_f,numerical,Mann-Whitney U,0.0,-0.1818967277,-0.1892952462,0.692840853,,0.0214308951,0.0,yes
+monthly_income,numerical,Mann-Whitney U,0.0,-0.1473198364,-0.1209528561,0.6562107296,,0.0114506308,0.0,yes
+occupation,nominal,chi-square (df=6),0.0,,,,0.145836853,0.0102435072,0.0,yes
+requested_limit,numerical,Mann-Whitney U,0.0,-0.1316684825,-0.1061521286,0.6396130174,,0.0101299869,0.0,yes
+num_credit_cards,numerical,Mann-Whitney U,0.0,-0.132270347,-0.1253023675,0.6320229852,,0.0100096165,0.0,yes
+dti,numerical,Mann-Whitney U,0.0,0.1023557314,0.1083655363,0.6085328316,,0.0062049124,0.0,yes
+utilization_f,numerical,Mann-Whitney U,0.0,0.0381867844,0.0434634644,0.5404811469,,0.0044906347,1e-10,yes
+enquiries_6m,numerical,Mann-Whitney U,0.0,0.0691165769,0.0817307586,0.571292304,,0.0030908452,0.0,yes
+years_at_employer,numerical,Mann-Whitney U,1.67e-08,-0.0325863909,-0.0261366871,0.5345488387,,0.0022846496,2.08e-08,yes
+age,numerical,Mann-Whitney U,0.0,-0.0486415554,-0.046445665,0.551548118,,0.00222155,0.0,yes
+no_hit,binary flag,Mann-Whitney U,0.0,0.0596869699,0.0596869699,0.5267082769,,0.0014961118,0.0,yes
+education,ordinal,trend (linear-by-linear),0.0,-0.0523923253,,,0.0548925155,0.0014480619,0.0,yes
+ever_delinquent,binary flag,Mann-Whitney U,0.0,0.0565788622,0.0565788622,0.5313373067,,0.0014084433,0.0,yes
+recent_delinquency,binary flag,Mann-Whitney U,0.0,0.0583054987,0.0583054987,0.514808252,,0.0012706399,0.0,yes
+income_verification,ordinal,trend (linear-by-linear),0.0,-0.0421810002,,,0.0427125591,0.0008999275,0.0,yes
+acquisition_channel,nominal,chi-square (df=4),1e-10,,,,0.0421518084,0.0008921333,1e-10,yes
+state,nominal,chi-square (df=11),0.0077649812,,,,0.0291429465,0.0004127739,0.0081736644,yes
+residence_type,nominal,chi-square (df=3),0.0034662214,,,,0.0213116121,0.0002300208,0.0038513571,yes
+city_tier,ordinal,trend (linear-by-linear),0.0006184869,-0.01986665,,,0.0209141424,0.0002154258,0.0007276316,yes
+marital_status,nominal,chi-square (df=2),0.5618612585,,,,0.0062000842,1.88231e-05,0.5618612585,no

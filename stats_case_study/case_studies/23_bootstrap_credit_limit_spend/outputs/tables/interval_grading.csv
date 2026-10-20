@@ -1,0 +1,15 @@
+metric,data,true value,estimate,percentile CI covers?,BCa CI covers?,BCa width
+difference in means (₹),main test,2846.1732724126,2003.378,True,True,6874.0168347827
+difference in means (₹),pilot (60 vs 60),2846.1732724126,12610.4,False,False,20857.1716309119
+ratio of means,main test,1.1027197085,1.0708419094,True,True,0.2514983643
+ratio of means,pilot (60 vs 60),1.1027197085,1.7619170377,False,False,1.4961972378
+difference in medians (₹),main test,1552.2005774415,1382.0,True,True,2264.684123773
+difference in medians (₹),pilot (60 vs 60),1552.2005774415,5001.5,True,True,19848.3161403978
+ratio of medians,main test,1.1048954331,1.0934257225,True,True,0.1608837119
+ratio of medians,pilot (60 vs 60),1.1048954331,1.46788905,True,True,2.0207399265
+difference in 90th percentiles (₹),main test,6387.1911088658,6663.9,True,True,14175.1950967611
+difference in 90th percentiles (₹),pilot (60 vs 60),6387.1911088658,31519.2,False,True,44289.5
+"difference in share over ₹50,000 (pp)",main test,2.0556333333,1.52,True,True,3.9157367283
+"difference in share over ₹50,000 (pp)",pilot (60 vs 60),2.0556333333,15.0,False,False,23.3333333333
+difference in spend per rupee of limit (pp),main test,-2.4593351471,-3.2284602502,True,True,4.1560760537
+difference in spend per rupee of limit (pp),pilot (60 vs 60),-2.4593351471,-2.4959794493,True,True,11.4132862561

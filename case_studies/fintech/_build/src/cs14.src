@@ -1,0 +1,438 @@
+#%% md
+# Case Study 14 — One Credit Model or Many? Segment-Specific Underwriting, the Top/Bottom Bad-Rate Ratio, and When Segmentation Stops Paying
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 14 — *Kissht (OnEMI): segment-specific underwriting with 39 sub-models* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Chief Risk Officer, Head of Credit Policy, Model Risk Management, Business heads (consumer durable & personal loans)
+**Data:** ⚠️ **SYNTHETIC** (D-14-01). Lender data are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs14_segmented_underwriting.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+A digital lender approves small loans in minutes for very different people:
+- A salaried person with ten years of credit history.
+- A first-time borrower with no bureau record at all ("new to credit").
+- A self-employed shopkeeper whose income swings month to month.
+- A repeat customer who has already repaid two loans.
+
+**What predicts default is different for each.** The bureau score is everything for the first person and does not exist for the second. Kissht reportedly runs **39 specialised sub-models** for this reason, and claims its scores separate the riskiest from the safest customers **5.17×** (vs 2.13× for bureau scores).
+
+Leaders need to know:
+- Do separate models really beat one well-built global model?
+- How many segments are too many?
+- Is "5.17× vs 2.13×" a fair way to compare models?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Kissht did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | "Underwrite very different customer types quickly and keep losses controlled" |
+| Data | "over 400" key variables (bureau, KYC, banking/transactional, digital footprint); feature library "over 7,000 variables" (75% credit/financial, 25% consumption/online); "200+ fraud triggers" |
+| Approach | Segment-specific models: "**39 specialized ML sub-models**" (MoneyFlow) or "40+ underwriting models" (Zen Nivesh); algorithms ND |
+| Statistics | "approximately **5.17x** separation in default rates between highest and lowest risk segments" vs "**2.13x** for traditional credit bureau scores"; Zen Nivesh: "2.5x better risk separation". **The sources are inconsistent**; KS/Gini ND |
+| Decision | ≈ **85%** of new customers get offers within 10 minutes; "**26.46%** of repeat applicants were declined" |
+| Impact (9M FY26) | GNPA 2.90%; NNPA 0.38%; 30-DPD collection efficiency 96.95% |
+
+**Sources:** MoneyFlow India, 5 May 2026 — https://moneyflowindia.substack.com/p/moneyflow-india-deep-dive-2-kissht · Zen Nivesh, 17 Jul 2026 — https://zennivesh.substack.com/p/onemi-tech-kissht-an-emi-factory (both are independent analyses of the RHP; check the RHP for exact figures)
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 120,000 booked loans over 12 months; 12 structural segments (new-to-credit / thin / thick bureau × salaried / self-employed × new / repeat customer); 2 products; 17 features. **Default drivers differ by segment by construction.** Target: 60+ DPD within 6 months (≈ 7%). |
+| Statistics added | Likelihood-ratio (Chow-type) test that coefficients differ by segment; global vs segmented models out-of-time with DeLong; KS/Gini; the **top/bottom bad-rate ratio** with bootstrap CIs and its sensitivity to bucket choice; a **number-of-segments sweep** (1 → 48 sub-models) with events-per-variable; per-segment calibration; Cochran–Armitage rank-ordering trend; PSI for mix shift; approval rate at a fixed loss target |
+
+### (c) How the industry uses this
+
+Segmented scorecards are the oldest practice in retail credit (FICO's "scorecard trees"). In India, every digital lender separates **NTC vs bureau-tested** and **new vs repeat** customers (KreditBee, MoneyView, Fibe, Kissht, Bajaj Finance). Bureaus themselves (CIBIL, CRIF, Experian) ship separate NTC scores. The open question is always **how far to split**, because every extra sub-model must be validated, monitored and documented under RBI's model-risk expectations.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Should we run one global credit model, a handful of segment models, or dozens of sub-models? |
+| Analytical | (1) Do risk drivers differ between segments? (2) Do segmented models rank and price risk better **out-of-time** than a global model? (3) At what number of segments does performance stop improving? |
+
+**Hypotheses**
+- **H1 (heterogeneity):** H0: logistic coefficients are the same in all segments (LR test of segment × feature interactions).
+- **H2 (segmented vs global):** H0: AUC(segmented) = AUC(global) on out-of-time loans (DeLong, Holm across model pairs).
+- **H3 (fragmentation):** H0: AUC does not decline as the number of segments rises beyond the optimum (reported with bootstrap CIs; descriptive).
+- **H4 (calibration):** H0: predicted = observed bad rate within each segment (calibration-in-the-large, z-test; Holm across 12 segments).
+
+**Primary metric:** out-of-time AUC/Gini and **approval rate at a fixed portfolio bad rate** (the business lever). **Communication metric:** top/bottom decile bad-rate ratio (the documented style). **Guardrail:** per-segment calibration error ≤ 1 pp. **Design:** train months 1–9 → **test months 10–12**.
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.stats import rankdata
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from sklearn.ensemble import HistGradientBoostingClassifier as HGB
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import roc_auc_score
+from statsmodels.stats.proportion import proportion_confint
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public Indian loan-performance data with bureau depth and bank-statement features | **None.** The RBI/CIC data are confidential. UCI Taiwan default (credit cards) and German Credit have no NTC/thin/thick structure and no bank-statement features. Lending Club (US, Kaggle-hosted) is excluded by the brief. |
+| **Decision** | Synthetic booked loans with segment-specific default drivers (D-14-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs14.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs14.py
+
+#%% code
+os.makedirs("data/cs14", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs14 as gen; importlib.reload(gen)
+raw = gen.generate(seed=SEED); raw.to_csv("data/cs14/loans.csv.gz", index=False)
+print(f"{len(raw):,} rows | {raw.loan_id.nunique():,} unique loans")
+raw.drop(columns=["_p_bad"]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Book | 120,000 loans, Apr 2025–Mar 2026; consumer durable 55% / personal loan 45%; ₹18k–25k median ticket | Our assumption (small-ticket digital lending) |
+| Segments | NTC 30% / thin 25% / thick 45%; salaried 62% / self-employed 38%; repeat share rising from 15% to 32% (mix shift) | Our assumption; documented "new-to-credit vs repeat" |
+| Drivers | Thick: bureau score, DPD history. Thin/NTC: bounces, balance-to-income, digital footprint. Self-employed: inflow volatility, GST consistency. Repeat: own prior max DPD | Our assumption, the premise of segmentation |
+| Bad rate | 60+ DPD in 6 months ≈ 7% (1.3% repeat to 16% NTC self-employed) | Booked-loan bad rate; GNPA 2.90% is a book-level stock, not comparable |
+| DQ issues | 400 duplicate disbursal rows; 300 bureau scores coded −1 ("no hit"); 2% missing income | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("loan_id, disb_month, product", "Loan, disbursal month, product"), ("bureau_depth, employment, repeat_customer", "Segment keys"),
+    ("age, city_tier, monthly_income", "KYC / profile (income 2% missing)"), ("bureau_score, n_tradelines, dpd30_last12m, enquiries_3m", "Bureau (score blank for NTC)"),
+    ("inflow_volatility, bounces_6m, avg_bal_to_income", "Bank-statement cash-flow features"), ("gst_consistency", "Self-employed only: GST turnover consistency (0–1)"),
+    ("digital_footprint_score", "Consented digital-footprint score (0–100)"), ("loan_amount, emi_to_income", "Ticket and affordability"),
+    ("prior_loans, prior_max_dpd", "Repeat customers: history with this lender"), ("bad_60dpd_6m", "Target: 60+ days past due within 6 months"), ("_p_bad", "HIDDEN true default probability"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs14/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+df = pd.read_csv("data/cs14/loans.csv.gz")
+checks = {"duplicate loan_id": int(df.loan_id.duplicated().sum()), "bureau_score = −1 ('no hit' code)": int((df.bureau_score == -1).sum()),
+          "bureau score present for NTC": int(((df.bureau_depth == "NTC") & df.bureau_score.notna() & (df.bureau_score > 0)).sum()),
+          "income missing": int(df.monthly_income.isna().sum()), "prior_max_dpd present for new customers": int(((df.repeat_customer == 0) & df.prior_max_dpd.notna()).sum())}
+print(pd.Series(checks, name="rows").to_string())
+df = df.drop_duplicates("loan_id").reset_index(drop=True)
+df["bureau_nohit"] = ((df.bureau_score == -1) | df.bureau_score.isna()).astype(int); df.loc[df.bureau_score == -1, "bureau_score"] = np.nan
+df["income_missing"] = df.monthly_income.isna().astype(int)
+df["monthly_income"] = df.monthly_income.fillna(df.groupby("employment").monthly_income.transform("median"))
+df["m"] = pd.to_datetime(df.disb_month).dt.to_period("M").astype(int); df["m"] -= df.m.min()
+df["segment"] = df.bureau_depth + "|" + df.employment.str[:4] + "|" + np.where(df.repeat_customer == 1, "repeat", "new")
+TR, TE = (df.m <= 8).values, (df.m >= 9).values
+print(f"\nClean: {len(df):,} loans | bad rate {df.bad_60dpd_6m.mean():.2%} | train (months 1–9) {TR.sum():,} · test (months 10–12) {TE.sum():,} | 12 segments")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(15, 4.6))
+hm = df.pivot_table(index=["bureau_depth", "employment"], columns="repeat_customer", values="bad_60dpd_6m", aggfunc="mean") * 100
+hm.columns = ["new customer", "repeat customer"]
+sns.heatmap(hm, annot=True, fmt=".1f", cmap="Reds", ax=axes[0], cbar_kws={"label": "bad rate %"}); axes[0].set_title("Bad rate (%) by segment"); axes[0].set_xlabel("Relationship"); axes[0].set_ylabel("Bureau depth | employment")
+nb = df[(df.repeat_customer == 0) & df.bureau_score.notna()].copy(); nb["band"] = pd.qcut(nb.bureau_score, 8, duplicates="drop")
+for dpt, c_ in (("THICK", "#2a6f97"), ("THIN", "#e07a1f")):
+    g = nb[nb.bureau_depth == dpt].groupby("band").bad_60dpd_6m.mean() * 100
+    axes[1].plot([iv.mid for iv in g.index], g.values, "o-", color=c_, label=f"{dpt} file")
+axes[1].set_xlabel("Bureau score (band mid-point)"); axes[1].set_ylabel("Bad rate (%)"); axes[1].set_title("The bureau score ranks thick files far better than thin"); axes[1].legend()
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Do the drivers of default differ by segment? (likelihood-ratio test)
+
+**(a) Why?** Segmentation is justified only if **the relationship between features and default differs** across segments, not merely the average bad rate (a global model handles that with a segment dummy). We compare, on training loans:
+- **M_global:** logistic regression with all features + segment dummies.
+- **M_interact:** M_global + segment × feature interactions for the 6 key drivers.
+
+The **LR test** is a multi-group Chow test. We also show per-segment coefficients for two drivers with 95% CIs.
+**(b) Assumptions:** logit link, independent loans, n per segment ≫ parameters (smallest new-customer segment: ≈ 6,000 loans).
+
+#%% code
+tr = df[TR & (df.repeat_customer == 0).values].copy()                             # new customers (repeat handled separately)
+tr["zb"] = ((tr.bureau_score - 720) / 60).fillna(0); tr["lbal"] = np.log(tr.avg_bal_to_income); tr["gst"] = tr.gst_consistency.fillna(0.65)
+tr["bnc"] = tr.bounces_6m.clip(upper=4); tr["dpd"] = tr.dpd30_last12m.clip(upper=4)
+base_f = "bad_60dpd_6m ~ C(bureau_depth) * C(employment) + zb + dpd + bnc + lbal + inflow_volatility + gst + digital_footprint_score + enquiries_3m + emi_to_income + C(city_tier) + C(product)"
+m0 = smf.logit(base_f, data=tr).fit(disp=0)
+tr["thick"] = (tr.bureau_depth == "THICK").astype(int)          # bureau terms are zero for NTC, so depth interactions use a thick-file indicator
+inter = " + ".join([f"C(bureau_depth):{v}" for v in ["bnc", "lbal", "inflow_volatility", "digital_footprint_score"]] +
+                   [f"C(employment):{v}" for v in ["zb", "dpd", "bnc", "lbal", "inflow_volatility", "digital_footprint_score"]] + ["thick:zb", "thick:dpd"])
+m1 = smf.logit(base_f + " + " + inter, data=tr).fit(disp=0)
+LR = 2 * (m1.llf - m0.llf); dfree = int(m1.df_model - m0.df_model)
+print(f"LR test (segment-specific drivers vs common drivers): χ² = {LR:.1f}, df = {dfree}, p = {stats.chi2.sf(LR, dfree):.2g} | AIC {m0.aic:,.0f} → {m1.aic:,.0f}")
+rows = []
+for dpt in ["NTC", "THIN", "THICK"]:
+    for emp in ["salaried", "self_employed"]:
+        s_ = tr[(tr.bureau_depth == dpt) & (tr.employment == emp)]
+        f_ = "bad_60dpd_6m ~ bnc + lbal + inflow_volatility + digital_footprint_score + emi_to_income" + (" + zb + dpd" if dpt != "NTC" else "")
+        mm = smf.logit(f_, data=s_).fit(disp=0); ci = mm.conf_int()
+        for v in ["zb", "bnc", "inflow_volatility"]:
+            if v in mm.params: rows.append((f"{dpt}|{emp[:4]}", v, mm.params[v], ci.loc[v, 0], ci.loc[v, 1], len(s_), int(s_.bad_60dpd_6m.sum())))
+coef = pd.DataFrame(rows, columns=["segment (new customers)", "driver", "coef (log-odds)", "CI low", "CI high", "n", "bads"]).pivot_table(index="segment (new customers)", columns="driver", values="coef (log-odds)")
+coef.columns = ["bounces (per bounce)", "inflow volatility", "bureau score (per 60 pts)"]
+coef.round(3)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Global vs segmented models, out-of-time
+
+**(a) Why?** The decision is between building and maintaining **one model or twelve**. We compare five scorers on months 10–12:
+1. **Bureau score only.** Exists only for thin/thick files; NTC applicants get the median, i.e., no information.
+2. **Global logistic** with segment dummies.
+3. **Global gradient boosting** with segment variables, which can learn interactions by itself.
+4. **12 segmented logistic models.**
+5. **12 segmented gradient-boosting models.**
+
+AUC with **DeLong** (Holm over the comparisons vs the global logistic), Gini, KS, and the documented **top/bottom decile bad-rate ratio** with bootstrap CIs.
+
+#%% code
+FEAT = ["bureau_score", "bureau_nohit", "n_tradelines", "dpd30_last12m", "enquiries_3m", "inflow_volatility", "bounces_6m", "avg_bal_to_income", "gst_consistency",
+        "digital_footprint_score", "loan_amount", "emi_to_income", "monthly_income", "income_missing", "age", "city_tier", "prior_loans", "prior_max_dpd"]
+SEGV = ["is_ntc", "is_thin", "is_se", "repeat_customer", "is_pl"]
+df["is_ntc"] = (df.bureau_depth == "NTC").astype(int); df["is_thin"] = (df.bureau_depth == "THIN").astype(int); df["is_se"] = (df.employment == "self_employed").astype(int)
+df["is_pl"] = (df["product"] == "personal_loan").astype(int)
+def lin_X(d):
+    X = d[FEAT + SEGV].copy(); X["bureau_score"] = X.bureau_score.fillna(720); X["gst_consistency"] = X.gst_consistency.fillna(0.65); X["prior_max_dpd"] = X.prior_max_dpd.fillna(0)
+    for c in ["avg_bal_to_income", "loan_amount", "monthly_income"]: X[c] = np.log(X[c])
+    X["bounces_6m"] = X.bounces_6m.clip(upper=6); X["dpd30_last12m"] = X.dpd30_last12m.clip(upper=6)
+    return X
+def logit(): return make_pipeline(StandardScaler(), LogisticRegression(max_iter=3000, C=1.0))
+def hgb(): return HGB(max_iter=300, learning_rate=0.06, max_leaf_nodes=31, random_state=SEED)
+y = df.bad_60dpd_6m.values; yte = y[TE]; XL = lin_X(df); XH = df[FEAT + SEGV]
+P = {"1 bureau score only": -df.bureau_score.fillna(df.bureau_score.median()).values[TE]}
+P["2 global logistic"] = logit().fit(XL[TR], y[TR]).predict_proba(XL[TE])[:, 1]
+P["3 global gradient boosting"] = hgb().fit(XH[TR], y[TR]).predict_proba(XH[TE])[:, 1]
+def segmented(make, X, key="segment", rows_tr=TR, rows_te=TE):
+    out = np.zeros(rows_te.sum()); seg_te = df[key].values[rows_te]
+    for s_ in np.unique(df[key].values[rows_tr]):
+        mtr = rows_tr & (df[key].values == s_); mte = seg_te == s_
+        if mte.sum() == 0: continue
+        if y[mtr].sum() < 10 or (1 - y[mtr]).sum() < 10: out[mte] = y[mtr].mean(); continue
+        out[mte] = make().fit(X[mtr], y[mtr]).predict_proba(X[rows_te][mte])[:, 1]
+    return out
+P["4 segmented logistic (12)"] = segmented(logit, XL); P["5 segmented gradient boosting (12)"] = segmented(hgb, XH)
+def delong(y, preds):
+    y = np.asarray(y); pos, neg = preds[:, y == 1], preds[:, y == 0]; m, n = pos.shape[1], neg.shape[1]
+    tx = np.array([rankdata(p) for p in pos]); ty = np.array([rankdata(q) for q in neg]); tz = np.array([rankdata(np.r_[p, q]) for p, q in zip(pos, neg)])
+    aucs = tz[:, :m].sum(1) / m / n - (m + 1) / 2 / n; v01 = (tz[:, :m] - tx) / n; v10 = 1 - (tz[:, m:] - ty) / m
+    return aucs, np.atleast_2d(np.cov(v01)) / m + np.atleast_2d(np.cov(v10)) / n
+def ks(y, p): o = np.argsort(-p); yy = y[o]; return np.max(np.abs(np.cumsum(yy) / yy.sum() - np.cumsum(1 - yy) / (1 - yy).sum()))
+def topbot(y, p, q=10):
+    b = pd.qcut(rankdata(p, method="ordinal"), q, labels=False); g = pd.Series(y).groupby(b).mean(); return g.iloc[-1] / g.iloc[0] if g.iloc[0] > 0 else np.inf
+names = list(P); A_, C_ = delong(yte, np.vstack([P[n] for n in names]))
+mt = pd.DataFrame({"AUC": A_, "Gini": 2 * A_ - 1, "KS": [ks(yte, P[n]) for n in names], "top/bottom decile bad-rate ratio": [topbot(yte, P[n]) for n in names]}, index=names)
+ref = names.index("2 global logistic"); pv = [2 * stats.norm.sf(abs(A_[i] - A_[ref]) / np.sqrt(C_[i, i] + C_[ref, ref] - 2 * C_[i, ref])) if i != ref else np.nan for i in range(len(names))]
+mt["Δ AUC vs global logistic"] = A_ - A_[ref]; mt["DeLong p"] = pv
+mask = ~np.isnan(pv); mt.loc[np.array(names)[mask], "p_holm"] = multipletests(np.array(pv)[mask], method="holm")[1]
+bs = {n: [] for n in names}
+for _ in range(500):
+    i = RNG.integers(0, len(yte), len(yte))
+    for n in names: bs[n].append(topbot(yte[i], P[n][i]))
+mt["ratio CI low"] = [np.percentile(bs[n], 2.5) for n in names]; mt["ratio CI high"] = [np.percentile(bs[n], 97.5) for n in names]
+mt.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O72»
+
+### 7.3 Within-segment performance: where does segmentation help?
+
+Pooled AUC mixes two things: ranking *across* segments (easy, since segments have different bad rates) and ranking *within* a segment (hard, and what matters when a segment has its own cut-off). We report AUC **within each of the 12 segments** for the global and segmented gradient-boosting models (DeLong per segment, BH across segments).
+
+#%% code
+seg_te = df.segment.values[TE]; rows = []
+for s_ in sorted(np.unique(seg_te)):
+    m = seg_te == s_; ys = yte[m]
+    if ys.sum() < 15: continue
+    a_, c_ = delong(ys, np.vstack([P["3 global gradient boosting"][m], P["5 segmented gradient boosting (12)"][m], P["2 global logistic"][m], P["4 segmented logistic (12)"][m]]))
+    d = a_[1] - a_[0]; se = np.sqrt(c_[0, 0] + c_[1, 1] - 2 * c_[0, 1]); d2 = a_[3] - a_[2]; se2 = np.sqrt(c_[2, 2] + c_[3, 3] - 2 * c_[2, 3])
+    rows.append((s_, int(m.sum()), int(ys.sum()), int(y[TR & (df.segment.values == s_)].sum()), a_[2], a_[3], d2, 2 * stats.norm.sf(abs(d2) / se2), a_[0], a_[1], d, 2 * stats.norm.sf(abs(d) / se)))
+ws = pd.DataFrame(rows, columns=["segment", "test n", "test bads", "train bads", "AUC global logit", "AUC segmented logit", "Δ logit", "p logit", "AUC global GBM", "AUC segmented GBM", "Δ GBM", "p GBM"]).set_index("segment")
+ws["q_BH logit"] = multipletests(ws["p logit"], method="fdr_bh")[1]; ws["q_BH GBM"] = multipletests(ws["p GBM"], method="fdr_bh")[1]
+ws.round(4)
+
+#%% md
+**Observation:** «O73»
+
+### 7.4 How many sub-models? The fragmentation sweep
+
+We split the book into ever finer segments: 1, 2 (new/repeat), 3 (bureau depth), 6 (+ employment), 12 (+ new/repeat), 24 (+ product) and 72 (+ city tier: beyond Kissht's "39"). We fit one **logistic** sub-model per segment (logistic because it is what most model-risk teams validate per segment). For each split we report the out-of-time AUC and log loss, the **events per variable** (bads per parameter) in the smallest segment, and the number of segments below the common EPV ≥ 10 rule. Bootstrap CIs for AUC.
+
+#%% code
+df["seg2"] = np.where(df.repeat_customer == 1, "repeat", "new"); df["seg3"] = df.bureau_depth; df["seg6"] = df.bureau_depth + "|" + df.employment
+df["seg12"] = df.segment; df["seg24"] = df.segment + "|" + df["product"]; df["seg72"] = df.seg24 + "|T" + df.city_tier.astype(str); df["seg1"] = "all"
+from sklearn.metrics import log_loss
+sw = []; NPAR = XL.shape[1] + 1
+for key in ["seg1", "seg2", "seg3", "seg6", "seg12", "seg24", "seg72"]:
+    p_ = np.clip(segmented(logit, XL, key=key), 1e-4, 1 - 1e-4); a = roc_auc_score(yte, p_)
+    bads = df[TR].groupby(key).bad_60dpd_6m.sum()
+    bsa = [roc_auc_score(yte[i], p_[i]) for i in (RNG.integers(0, len(yte), len(yte)) for _ in range(200))]
+    sw.append((int(key[3:]), df[key].nunique(), a, np.percentile(bsa, 2.5), np.percentile(bsa, 97.5), log_loss(yte, p_), int(bads.min()), bads.min() / NPAR, int((bads / NPAR < 10).sum())))
+sw = pd.DataFrame(sw, columns=["split", "segments", "AUC", "CI low", "CI high", "log loss", "fewest train bads in a segment", "min EPV", "segments with EPV < 10"]).set_index("split")
+fig, ax = plt.subplots(figsize=(8.5, 4.3))
+ax.errorbar(sw.segments, sw.AUC, yerr=[sw.AUC - sw["CI low"], sw["CI high"] - sw.AUC], fmt="o-", capsize=4)
+ax.set_xscale("log"); ax.set_xticks(sw.segments); ax.set_xticklabels(sw.segments); ax.set_xlabel("Number of logistic sub-models (log scale)"); ax.set_ylabel("Out-of-time AUC")
+ax.set_title("Segmentation helps, then over-fragmentation erodes it"); plt.tight_layout(); plt.show()
+sw.round(4)
+
+#%% md
+**Takeaway:** «O74»
+
+### 7.5 Is "5.17× vs 2.13×" a fair comparison? The top/bottom ratio under different definitions
+
+The top/bottom bad-rate ratio is easy to explain, but it **depends on how many buckets you use and on who is in the population**. We compute it for the best model and the bureau score under deciles, quintiles and ventiles, and on two populations: all loans, and bureau-tested loans only (where the bureau score exists).
+
+#%% code
+best_name = mt.AUC.idxmax(); pb = P[best_name]; bur = P["1 bureau score only"]; bt = (df.bureau_depth != "NTC").values[TE]
+rr = []
+for q, lab in ((5, "quintiles"), (10, "deciles"), (20, "ventiles")):
+    rr.append((lab, topbot(yte, pb, q), topbot(yte, bur, q), topbot(yte[bt], pb[bt], q), topbot(yte[bt], bur[bt], q)))
+rr = pd.DataFrame(rr, columns=["buckets", f"best model, all loans", "bureau score, all loans", "best model, bureau-tested only", "bureau score, bureau-tested only"]).set_index("buckets")
+print(f"Best model = {best_name}")
+rr.round(2)
+
+#%% md
+**Observation:** «O75»
+
+### 7.6 Calibration within segments: does a global model mis-price some customers?
+
+A global model can rank well overall yet **systematically over- or under-predict** for a segment. That mis-prices loans and distorts segment cut-offs. For each segment we test calibration-in-the-large (observed − predicted bad rate) with a z-test, using Holm across 12 segments, for the global logistic and the best model.
+
+#%% code
+cal = []
+for s_ in sorted(np.unique(seg_te)):
+    m = seg_te == s_; ys = yte[m]; row = [s_, int(m.sum()), ys.mean()]
+    for nm in ["2 global logistic", best_name]:
+        pp = P[nm][m]; diff = ys.mean() - pp.mean(); se = np.sqrt((pp * (1 - pp)).sum()) / m.sum()
+        row += [pp.mean(), diff * 100, 2 * stats.norm.sf(abs(diff) / se)]
+    cal.append(row)
+cal = pd.DataFrame(cal, columns=["segment", "n", "observed", "pred global", "obs − pred global (pp)", "p global", "pred best", "obs − pred best (pp)", "p best"]).set_index("segment")
+cal["p_holm global"] = multipletests(cal["p global"], method="holm")[1]; cal["p_holm best"] = multipletests(cal["p best"], method="holm")[1]
+print(f"Mean absolute calibration error across segments: global {cal['obs − pred global (pp)'].abs().mean():.2f} pp vs best {cal['obs − pred best (pp)'].abs().mean():.2f} pp")
+cal.round(4)
+
+#%% md
+**Observation:** «O76»
+
+### 7.7 Rank ordering and stability: monotonic deciles and population shift
+
+Two checks every model-risk team requires:
+1. **Monotonic rank ordering:** bad rate should rise steadily across score deciles. Tested with the **Cochran–Armitage trend test** and a count of decile reversals.
+2. **Population stability:** the share of repeat customers grows over the year. The **PSI** of the score between training and test (overall and by segment) tells us whether the model is being applied to a different population (PSI < 0.1 stable; 0.1–0.25 watch; > 0.25 act).
+
+#%% code
+dec = pd.qcut(rankdata(pb, method="ordinal"), 10, labels=False); g = pd.DataFrame({"d": dec, "y": yte}).groupby("d").y.agg(["sum", "size"]); g["bad rate"] = g["sum"] / g["size"]
+xbar = (g.index * g["size"]).sum() / g["size"].sum(); pbar = g["sum"].sum() / g["size"].sum()
+T = (g.index.values * (g["sum"] - g["size"] * pbar)).sum(); V = pbar * (1 - pbar) * ((g["size"] * (g.index.values - xbar) ** 2).sum())
+print(f"Cochran–Armitage trend: z = {T / np.sqrt(V):.1f}, p = {2 * stats.norm.sf(abs(T / np.sqrt(V))):.2g}; decile reversals = {(np.diff(g['bad rate']) < 0).sum()}")
+p_tr_best = (hgb().fit(XH[TR], y[TR]).predict_proba(XH[TR])[:, 1] if best_name.startswith("3") else segmented(hgb, XH, rows_te=TR) if best_name.startswith("5") else
+             logit().fit(XL[TR], y[TR]).predict_proba(XL[TR])[:, 1] if best_name.startswith("2") else segmented(logit, XL, rows_te=TR))
+def psi(a, b, q=10):
+    e = np.quantile(a, np.linspace(0, 1, q + 1)); e[0], e[-1] = -np.inf, np.inf
+    pa = np.histogram(a, e)[0] / len(a) + 1e-6; pbb = np.histogram(b, e)[0] / len(b) + 1e-6; return ((pa - pbb) * np.log(pa / pbb)).sum()
+ps = {"overall": psi(p_tr_best, pb)}
+for s_ in ["new", "repeat"]:
+    ps[f"{s_} customers"] = psi(p_tr_best[df.seg2.values[TR] == s_], pb[df.seg2.values[TE] == s_])
+print(f"Repeat-customer share: train {df.repeat_customer[TR].mean():.1%} → test {df.repeat_customer[TE].mean():.1%}")
+print("PSI of the score (train → test):", {k: round(v, 3) for k, v in ps.items()})
+g.round(4)
+
+#%% md
+**Observation:** «O77»
+
+## 8. ML Section — brief
+
+- **Gradient boosting** is the main model, with no tuning (per the brief). It is compared with logistic regression, the model-risk-friendly benchmark that most segment scorecards still use.
+- **What a global tree model does:** splitting on `is_ntc`, `repeat_customer` and `is_se` first, it effectively builds its own segments and segment-specific interactions, which is why "one GBM" competes with "many logistic models" (7.2–7.4).
+- **Repeat customers** get their own treatment in every approach because their own repayment history (prior max DPD) dominates. This matches the documented 26.46% decline rate for repeat applicants.
+
+## 9. Business Translation — more approvals at the same loss rate
+
+Booked-loan data show who defaults among approved customers. As a **business proxy** (D-14-07), we ask: if each test-period applicant were scored, how many could we approve while keeping the **approved book's bad rate ≤ 3%**? More approvals at the same risk is the direct business value of better ranking. Each extra good loan earns ≈ ₹2,800 (interest + fees net of funding over the tenure); each extra bad loan loses 75% of the ticket.
+
+#%% code
+TARGET = 0.03; MARGIN, LGD = 2800, 0.75; amt = df.loan_amount.values[TE]
+def approve_at_target(p):
+    o = np.argsort(p); cum_bad = np.cumsum(yte[o]) / np.arange(1, len(o) + 1); k = np.where(cum_bad <= TARGET)[0]
+    k = k.max() + 1 if len(k) else 0; sel = o[:k]; return k / len(o), yte[sel].mean() if k else np.nan, ((1 - yte[sel]) * MARGIN - yte[sel] * LGD * amt[sel]).sum()
+ap = pd.DataFrame([(n, *approve_at_target(P[n])) for n in names], columns=["model", "approval rate at ≤ 3% bad", "bad rate of approved", "₹ profit on approved (test, 3 months)"]).set_index("model")
+ap["extra approvals vs global logistic (pp)"] = (ap.iloc[:, 0] - ap.loc["2 global logistic"].iloc[0]) * 100
+ap["₹ crore / year vs global logistic (per 1 lakh applicants/month)"] = (ap.iloc[:, 2] - ap.loc["2 global logistic"].iloc[2]) / TE.sum() * 1e5 * 12 / 1e7
+ap.round(4)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic drivers:** we built segment-specific drivers into the data, so heterogeneity is guaranteed here. On real data, test it first (7.1) before building sub-models.
+- **Booked-loan bias:** we only see the outcomes of approved loans, so the approval-rate analysis is a proxy. Reject inference (Case 13) or a small random-approval holdout is needed for real cut-off setting.
+- **Model risk and governance:** every sub-model needs development documentation, validation, monitoring and annual review (RBI's model-risk expectations for regulated entities and their lending partners). 39 models carry roughly 39 times the governance load.
+- **Mix shift:** the repeat share grows (PSI in 7.7). Monitor PSI per segment monthly and recalibrate when it exceeds 0.1.
+- **Metric hygiene:** never compare top/bottom ratios across different bucket definitions or populations (7.5). Pair them with Gini/KS and approval rate at fixed loss.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| LR (Chow-type) test | LR = 2(ℓ_interact − ℓ_global) ~ χ²(df = extra parameters) |
+| Gini, KS | Gini = 2·AUC − 1; KS = max |F_bad(s) − F_good(s)| |
+| Top/bottom ratio | bad rate(riskiest bucket) / bad rate(safest bucket) |
+| Events per variable | EPV = bads / model parameters (rule of thumb ≥ 10) |
+| Cochran–Armitage | z = Σ xᵢ(bᵢ − nᵢp̄) / √(p̄(1−p̄) Σ nᵢ(xᵢ − x̄)²) |
+| PSI | Σ (pₐ − p_b) ln(pₐ/p_b) over score bins |
+| Approval at target | largest share approved (safest first) with cumulative bad rate ≤ target |
+
+| Term | Meaning |
+|---|---|
+| NTC / thin / thick file | No bureau record / 1–2 tradelines / established history |
+| Segmented model | A separate model for each customer segment |
+| Sub-model fragmentation | Too many segments, each with too few defaults to learn from |
+| Rank ordering | Riskier scores have higher bad rates |
+| GNPA | Gross non-performing assets as a share of the loan book |
+| DPD | Days past due |

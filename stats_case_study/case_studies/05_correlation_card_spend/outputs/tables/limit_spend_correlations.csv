@@ -1,0 +1,4 @@
+data,n,Pearson r,Pearson CI,Spearman ρ,Pearson r on logs,r² (Pearson)
+raw data (unit errors in),6000,0.4096614402,"[0.39, 0.43]",0.6945614573,0.7209433069,0.1678224956
+"unit errors fixed, corporate cards in",6000,0.8569583598,"[0.85, 0.86]",0.6999229278,0.7484483073,0.7343776305
+"retail only (errors fixed, corporate out)",5987,0.7302815484,"[0.72, 0.74]",0.6979640625,0.7369632054,0.5333111399

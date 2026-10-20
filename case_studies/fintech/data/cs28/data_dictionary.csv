@@ -1,0 +1,9 @@
+field(s),meaning
+"lead_id, day, hour, product","Lead, day 1–42, form-fill hour, product"
+ai_first_touch,Randomised (days 22–35): AI voice call within a minute
+first_contact_delay_min,Minutes from form to first contact attempt (missing / negative = bad timestamp)
+reached,Lead answered
+qualified,"AI qualification passed (AI-touched, reached)"
+route,ai_handled / rm_handoff / scheduled_callback / no_answer_retry
+converted,Policy purchased
+_q,HIDDEN lead quality

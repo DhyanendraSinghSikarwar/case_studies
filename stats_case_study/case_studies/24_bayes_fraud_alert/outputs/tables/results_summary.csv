@@ -1,0 +1,7 @@
+,Value
+Rule engine,"rule sensitivity 85%, specificity 97.4%, prevalence 0.42%"
+Alert meaning,P(fraud | rule alert) = 12.0% (95% CI 11.1% to 13.0%); 88% of alerts are false alarms
+Base rate,"PPV by channel: Card present 6%, UPI 12%, Card not present 17%"
+Two alerts,"LR+ rule 32, ML 40; P(fraud | both alert) observed 87% vs independent-Bayes prediction 85%"
+Decision,"investigate above 2.5%; block above 11%; cheapest policy: Probability-based (investigate above p*, block above block threshold)"
+Small groups,"merchant groups: empirical-Bayes prior Beta(4.4, 740); top 3 by raw rate ['Merchant group G', 'Merchant group N', 'Merchant group J'], by P(rate>1%) ['Merchant group N', 'Merchant group J', 'Merchant group G']"

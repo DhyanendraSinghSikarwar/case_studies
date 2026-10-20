@@ -1,0 +1,391 @@
+#%% md
+# Case Study 18 — "40% Better Than the Bureau" — on What Metric? Comparing an In-House Credit Score with a Generic Bureau Score
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 18 — *Axis Bank: in-house credit scores that beat generic bureau models* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Chief Risk Officer, Head of Retail Credit, Model Validation, Business heads (cards & personal loans)
+**Data:** ⚠️ **SYNTHETIC** (D-18-01). Bank data are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs18_custom_score_vs_bureau.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+Axis Bank says its own machine-learning credit models are "**more than 40% better**" than generic bureau scores. That sounds impressive, but **40% better at what?**
+- Ranking risky customers above safe ones (Gini)?
+- The biggest gap between good and bad customers (KS)?
+- Fewer defaults at the same approval rate?
+- More approvals at the same default rate?
+
+The same two models can be "15% better" on one measure and "60% better" on another.
+
+A bank's advantage is data the bureau does not have: salary credits, balance trends, bounced payments, internal collections history. This notebook builds a bureau-only score and an in-house score on synthetic data. It shows how much each metric says the in-house score improves, and turns the improvement into what a credit committee cares about: **defaults avoided and customers approved**. It also checks **who** the new score approves differently (the "swap set").
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Axis Bank did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | "Replace intuition-based credit strategy with data-driven decisions"; on-premises setup could not support ad-hoc ML |
+| Question | "Can the bank's own data predict credit risk better than generic bureau scores, and support pre-approved, database-driven lending?" |
+| Data | 750 TB from Oracle Exadata and other sources; application, transaction and collections data; **2,000** credit-model attributes |
+| ML / metric | "ML-based credit models"; "**More than 40% improvement**" over generic bureau models; **metric (Gini / KS / other) ND** |
+| Decision / impact | "**66% of personal loans**" via database-driven programmes; "**79% of new credit card sourcing** via data-driven strategy" |
+| Tech | Cloudera Machine Learning / Data Engineering / Data Warehouse (data mesh) |
+
+**Source:** Cloudera customer story, Axis Bank (undated) — https://www.cloudera.com/customers/axis-bank.html (related, older: https://www.sas.com/en_in/customers/axis-bank-india-capitalize-data.html)
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 150,000 applications by existing customers over 18 months (PL + cards). Risk has a **bureau-visible** part and an **internal-only** part. 68% thick bureau files, 20% thin, 12% no hit. 13 internal features. Target: 90+ DPD in 12 months (≈ 5.7%). |
+| Models | (0) bureau score alone; (1) bureau + application data (logistic); (2) **in-house**: internal + bureau (gradient boosting); (3) internal only |
+| Statistics added | Out-of-time AUC/Gini/KS with DeLong; **relative improvement on 7 metrics with paired bootstrap CIs**; bad rate at a fixed approval rate and approvals at a fixed bad rate; **swap-set analysis** with Wilson CIs; results by bureau depth; calibration; month-by-month Gini stability and PSI |
+
+### (c) How the industry uses this
+
+Every large Indian bank and NBFC now builds in-house "application + behaviour" scores on top of bureau scores (HDFC P27 in Case 17, ICICI, Kotak, Bajaj Finance), and bureaus sell custom scores too. The **champion–challenger** comparison here (same population, out-of-time, business metrics, swap sets) is the standard validation a model-risk team requires before a new score replaces the old one.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Should we replace the bureau score with our in-house score for pre-approved and data-driven lending? What do we gain? |
+| Analytical | How much better does the in-house score rank and select applicants out-of-time, measured on several metrics, and what does that mean for defaults and approvals? |
+
+**Hypotheses**
+- **H1:** H0: AUC(in-house) = AUC(bureau) (DeLong, out-of-time). Also vs bureau + application (Holm across comparisons).
+- **H2:** H0: bad rate among approved applicants at a **70% approval rate** is the same (paired bootstrap).
+- **H3 (swap set):** H0: applicants approved by the in-house score but rejected by the bureau ("swap-in") have the same bad rate as those approved by the bureau but rejected by the in-house score ("swap-out").
+
+**Primary business metric:** bad rate at a fixed 70% approval rate. **Secondary:** approval rate at a fixed 3.5% bad rate; Gini; KS. **Design:** train months 1–12 → **test months 13–18**.
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.stats import rankdata
+import statsmodels.api as sm
+from sklearn.ensemble import HistGradientBoostingClassifier as HGB
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import roc_auc_score, brier_score_loss
+from statsmodels.stats.proportion import proportion_confint, proportions_ztest
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public bank data with bureau score + internal transaction features + outcomes | **None.** Bureau scores are licensed; internal data are confidential. |
+| **Decision** | Synthetic applications with a bureau-visible and an internal-only risk component (D-18-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs18.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs18.py
+
+#%% code
+os.makedirs("data/cs18", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs18 as gen; importlib.reload(gen)
+raw = gen.generate(seed=SEED); raw.to_csv("data/cs18/applications.csv.gz", index=False)
+print(f"{len(raw):,} rows | {raw.app_id.nunique():,} unique applications")
+raw.drop(columns=[c for c in raw.columns if c.startswith("_")]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Applications | 150,000 over 18 months; PL 45% / cards 55% | Our assumption |
+| Risk structure | Equal weight on a bureau-visible component (cross-lender repayment) and an internal-only component (cash flow, stability) | Our assumption: the reason in-house data help |
+| Bureau | 68% thick (precise), 20% thin (noisy), 12% no hit | Typical Indian bank applicant mix |
+| Internal features | Salary, salary-credit regularity, balance trend, CASA vintage, bounces, internal DPD, products held, card spend, cash withdrawals, EMI-to-salary, age | **Documented** application/transaction/collections data; "2,000 attributes" condensed |
+| Target | 90+ DPD in 12 months ≈ 5.7% | Our assumption |
+| DQ issues | 500 duplicate rows; 600 bureau scores coded 0 (timeouts); 1.5% missing balance trend | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("app_id, app_month, product", "Application, month 1–18, PL or card"), ("bureau_depth, bureau_score", "thick / thin / no_hit; generic bureau score (blank for no-hit)"),
+    ("monthly_salary, salary_credit_regularity, balance_trend_6m, casa_vintage_years", "Internal: income and stability"),
+    ("bounces_12m, internal_dpd_events_24m", "Internal: bounced payments, internal collections history"), ("n_products_held, card_spend_to_salary, cash_withdrawal_share, emi_to_salary, age", "Internal: relationship and behaviour"),
+    ("bad_90dpd_12m", "Target: 90+ DPD within 12 months"), ("_p_bad, _zb, _zi", "HIDDEN: true PD, bureau-visible and internal-only risk"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs18/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+df = raw.copy()
+checks = {"duplicate app_id": int(df.app_id.duplicated().sum()), "bureau_score = 0 (timeout sentinel)": int((df.bureau_score == 0).sum()),
+          "bureau score present for no-hit": int(((df.bureau_depth == "no_hit") & df.bureau_score.notna() & (df.bureau_score > 0)).sum()),
+          "balance trend missing": int(df.balance_trend_6m.isna().sum())}
+print(pd.Series(checks, name="rows").to_string())
+df = df.drop_duplicates("app_id").reset_index(drop=True)
+df["bureau_missing"] = ((df.bureau_score == 0) | df.bureau_score.isna()).astype(int); df.loc[df.bureau_score == 0, "bureau_score"] = np.nan
+df["bal_missing"] = df.balance_trend_6m.isna().astype(int); df["balance_trend_6m"] = df.balance_trend_6m.fillna(0)
+df["is_card"] = (df["product"] == "credit_card").astype(int); df["depth_c"] = df.bureau_depth.map({"thick": 0, "thin": 1, "no_hit": 2})
+TR, TE = (df.app_month <= 12).values, (df.app_month >= 13).values
+print(f"\nClean: {len(df):,} applications | bad rate {df.bad_90dpd_12m.mean():.2%} | train {TR.sum():,} · out-of-time test {TE.sum():,} ({df.bad_90dpd_12m[TE].sum():,} bads)")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.4))
+b = df[df.bureau_score.notna()].copy(); b["band"] = pd.qcut(b.bureau_score, 10)
+for dpt, c_ in (("thick", "#2a6f97"), ("thin", "#e07a1f")):
+    g = b[b.bureau_depth == dpt].groupby("band").bad_90dpd_12m.mean() * 100; axes[0].plot([iv.mid for iv in g.index], g.values, "o-", color=c_, label=f"{dpt} file")
+axes[0].axhline(df.loc[df.bureau_depth == "no_hit", "bad_90dpd_12m"].mean() * 100, color="grey", ls="--", label="no-hit (no score)")
+axes[0].set_xlabel("Bureau score (decile mid-point)"); axes[0].set_ylabel("Bad rate (%)"); axes[0].set_title("The bureau score ranks thick files; thin less; no-hit not at all"); axes[0].legend()
+for f_, ax_lab in (("bounces_12m", "bounces in 12 months"), ):
+    g = df.groupby(df[f_].clip(upper=5)).bad_90dpd_12m.mean() * 100
+    axes[1].bar(g.index.astype(str), g.values, color="#b23a48")
+axes[1].set_xlabel("Bounced payments in last 12 months (5 = 5+)"); axes[1].set_ylabel("Bad rate (%)"); axes[1].set_title("Internal data the bureau never sees: bounces")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Four scores, out-of-time
+
+**(a) Why out-of-time?** A new score must work on *future* applicants. We train on months 1–12 and test on months 13–18. The four scorers:
+1. **Bureau score alone:** the "generic bureau model". No-hit applicants get the median, so it cannot rank them.
+2. **Bureau + application:** logistic on bureau score, depth, product, age and salary, i.e., what a bank without transaction data could build.
+3. **In-house (internal + bureau):** gradient boosting on all features. This is the challenger.
+4. **Internal only:** gradient boosting without the bureau. How much do internal data alone carry?
+
+AUC with **DeLong** (Holm vs the bureau score), Gini = 2·AUC − 1, KS.
+
+#%% code
+INT = ["monthly_salary", "salary_credit_regularity", "balance_trend_6m", "bal_missing", "casa_vintage_years", "bounces_12m", "internal_dpd_events_24m", "n_products_held",
+       "card_spend_to_salary", "cash_withdrawal_share", "emi_to_salary", "age", "is_card"]
+BUR = ["bureau_score", "bureau_missing", "depth_c"]
+y = df.bad_90dpd_12m.values; yte = y[TE]
+def hgb(): return HGB(max_iter=300, learning_rate=0.06, max_leaf_nodes=31, random_state=SEED)
+Xapp = df[["bureau_score", "bureau_missing", "depth_c", "is_card", "age"]].copy(); Xapp["bureau_score"] = Xapp.bureau_score.fillna(df.bureau_score.median()); Xapp["l_sal"] = np.log(df.monthly_salary)
+P = {"0 bureau score alone": -df.bureau_score.fillna(df.bureau_score.median()).values[TE],
+     "1 bureau + application (logistic)": make_pipeline(StandardScaler(), LogisticRegression(max_iter=3000)).fit(Xapp[TR], y[TR]).predict_proba(Xapp[TE])[:, 1],
+     "2 in-house: internal + bureau (GBM)": hgb().fit(df.loc[TR, INT + BUR], y[TR]).predict_proba(df.loc[TE, INT + BUR])[:, 1],
+     "3 internal only (GBM)": hgb().fit(df.loc[TR, INT], y[TR]).predict_proba(df.loc[TE, INT])[:, 1]}
+def delong(y, preds):
+    y = np.asarray(y); pos, neg = preds[:, y == 1], preds[:, y == 0]; m, n = pos.shape[1], neg.shape[1]
+    tx = np.array([rankdata(p) for p in pos]); ty = np.array([rankdata(q) for q in neg]); tz = np.array([rankdata(np.r_[p, q]) for p, q in zip(pos, neg)])
+    aucs = tz[:, :m].sum(1) / m / n - (m + 1) / 2 / n; v01 = (tz[:, :m] - tx) / n; v10 = 1 - (tz[:, m:] - ty) / m
+    return aucs, np.atleast_2d(np.cov(v01)) / m + np.atleast_2d(np.cov(v10)) / n
+def ks(y, p): o = np.argsort(-p); yy = y[o]; return np.max(np.abs(np.cumsum(yy) / yy.sum() - np.cumsum(1 - yy) / (1 - yy).sum()))
+names = list(P); A_, C_ = delong(yte, np.vstack([P[n] for n in names]))
+mt = pd.DataFrame({"AUC": A_, "Gini": 2 * A_ - 1, "KS": [ks(yte, P[n]) for n in names]}, index=names)
+pv = [np.nan] + [2 * stats.norm.sf(abs(A_[i] - A_[0]) / np.sqrt(C_[i, i] + C_[0, 0] - 2 * C_[0, i])) for i in range(1, 4)]
+mt["Δ AUC vs bureau"] = A_ - A_[0]; mt["DeLong p vs bureau"] = pv; mt.loc[names[1:], "p_holm"] = multipletests(pv[1:], method="holm")[1]
+d23 = 2 * stats.norm.sf(abs(A_[2] - A_[1]) / np.sqrt(C_[2, 2] + C_[1, 1] - 2 * C_[1, 2]))
+print(f"In-house vs bureau + application: ΔAUC = {A_[2] - A_[1]:+.4f}, DeLong p = {d23:.2g}")
+mt.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 "40% better" — the same models on seven metrics
+
+We compute the in-house score's **relative improvement over the bureau score** on seven metrics, each with a **paired bootstrap 95% CI** (1,000 resamples of test applicants):
+
+| Metric | "Better" means |
+|---|---|
+| Gini | (G₁ − G₀)/G₀ |
+| AUC | (A₁ − A₀)/A₀ |
+| KS | (KS₁ − KS₀)/KS₀ |
+| Bad rate at 70% approval | reduction (B₀ − B₁)/B₀ |
+| Approval at 3.5% bad rate | (Ap₁ − Ap₀)/Ap₀ |
+| Bads captured in the riskiest 10% | (C₁ − C₀)/C₀ |
+| Brier skill vs base rate | (BS₀ − BS₁)/BS₀ (bureau converted to a probability by logistic calibration on training data) |
+
+#%% code
+APPROVE, TARGET = 0.70, 0.035
+def bad_at_approval(y, p, a=APPROVE): k = int(a * len(y)); return y[np.argsort(p)[:k]].mean()
+def approval_at_bad(y, p, t=TARGET):
+    cb = np.cumsum(y[np.argsort(p)]) / np.arange(1, len(y) + 1); ok = np.where(cb <= t)[0]; return (ok.max() + 1) / len(y) if len(ok) else 0.0
+def capture(y, p, q=0.10): k = int(q * len(y)); return y[np.argsort(-p)[:k]].sum() / y.sum()
+cal0 = LogisticRegression().fit(-df.bureau_score.fillna(df.bureau_score.median()).values[TR].reshape(-1, 1), y[TR])
+p0_prob = cal0.predict_proba(P["0 bureau score alone"].reshape(-1, 1))[:, 1]; p2 = P["2 in-house: internal + bureau (GBM)"]
+def metrics(y, a, b, ap, bp):
+    A0, A1 = roc_auc_score(y, a), roc_auc_score(y, b); bs_ref = y.mean() * (1 - y.mean())
+    return np.array([(2 * A1 - 1) / (2 * A0 - 1) - 1, A1 / A0 - 1, ks(y, b) / ks(y, a) - 1, 1 - bad_at_approval(y, b) / bad_at_approval(y, a),
+                     approval_at_bad(y, b) / max(approval_at_bad(y, a), 1e-9) - 1, capture(y, b) / capture(y, a) - 1,
+                     (bs_ref - brier_score_loss(y, bp)) / (bs_ref - brier_score_loss(y, ap)) - 1])
+MN = ["Gini", "AUC", "KS", "bad rate at 70% approval (reduction)", "approval rate at 3.5% bad rate", "bads captured in riskiest 10%", "Brier skill score"]
+point = metrics(yte, P["0 bureau score alone"], p2, p0_prob, p2)
+bs = np.array([metrics(yte[i], P["0 bureau score alone"][i], p2[i], p0_prob[i], p2[i]) for i in (RNG.integers(0, len(yte), len(yte)) for _ in range(1000))])
+rel = pd.DataFrame({"in-house improvement over bureau": point, "CI low": np.percentile(bs, 2.5, axis=0), "CI high": np.percentile(bs, 97.5, axis=0)}, index=MN)
+lv = pd.DataFrame({"bureau": [2 * A_[0] - 1, A_[0], ks(yte, P[names[0]]), bad_at_approval(yte, P[names[0]]), approval_at_bad(yte, P[names[0]]), capture(yte, P[names[0]]), np.nan],
+                   "in-house": [2 * A_[2] - 1, A_[2], ks(yte, p2), bad_at_approval(yte, p2), approval_at_bad(yte, p2), capture(yte, p2), np.nan]}, index=MN)
+fig, ax = plt.subplots(figsize=(9, 4.5))
+ax.barh(rel.index, rel.iloc[:, 0] * 100, xerr=[(rel.iloc[:, 0] - rel["CI low"]) * 100, (rel["CI high"] - rel.iloc[:, 0]) * 100], color="#2a6f97", capsize=3)
+ax.axvline(40, color="#b23a48", ls="--", label="documented '40%'"); ax.set_xlabel("Relative improvement of the in-house score over the bureau score (%)"); ax.set_ylabel("Metric")
+ax.set_title("'40% better' depends entirely on the metric"); ax.legend(); plt.tight_layout(); plt.show()
+display(lv.round(4)); rel.round(4)
+
+#%% md
+**Takeaway:** «O72»
+
+### 7.3 Swap-set analysis: who does the new score approve differently?
+
+At a 70% approval rate, the two scores agree on most applicants. The decision value lies in the **swap set**:
+- **Swap-in:** approved by the in-house score, rejected by the bureau.
+- **Swap-out:** approved by the bureau, rejected by the in-house score.
+
+If the in-house score is better, swap-ins should be **much safer** than swap-outs. Wilson CIs; two-proportion z-test.
+
+#%% code
+k = int(APPROVE * len(yte)); app0 = np.zeros(len(yte), bool); app0[np.argsort(P[names[0]])[:k]] = True; app2 = np.zeros(len(yte), bool); app2[np.argsort(p2)[:k]] = True
+grp = {"approved by both": app0 & app2, "swap-in (in-house approves, bureau rejects)": ~app0 & app2, "swap-out (bureau approves, in-house rejects)": app0 & ~app2, "rejected by both": ~app0 & ~app2}
+dep = df.bureau_depth.values[TE]; rows = []
+for nm_, m in grp.items():
+    lo, hi = proportion_confint(yte[m].sum(), m.sum(), method="wilson")
+    rows.append((nm_, int(m.sum()), m.mean(), yte[m].mean(), lo, hi, (dep[m] == "no_hit").mean(), (dep[m] == "thin").mean()))
+sw = pd.DataFrame(rows, columns=["group", "applicants", "share", "bad rate", "CI low", "CI high", "share no-hit", "share thin"]).set_index("group")
+z, p = proportions_ztest([yte[grp["swap-out (bureau approves, in-house rejects)"]].sum(), yte[grp["swap-in (in-house approves, bureau rejects)"]].sum()],
+                         [grp["swap-out (bureau approves, in-house rejects)"].sum(), grp["swap-in (in-house approves, bureau rejects)"].sum()])
+print(f"Swap-out vs swap-in bad rate: z = {z:.1f}, p = {p:.2g}")
+sw.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O73»
+
+### 7.4 Where does the gain come from? Performance by bureau depth
+
+We compute AUC within each bureau-depth group for the bureau score and the in-house score (DeLong; Holm across 3 groups). We also report the in-house score's calibration (calibration-in-the-large and slope) by group.
+
+#%% code
+rows = []
+for d_ in ["thick", "thin", "no_hit"]:
+    m = dep == d_; a_, c_ = delong(yte[m], np.vstack([P[names[0]][m], p2[m]])); se = np.sqrt(c_[0, 0] + c_[1, 1] - 2 * c_[0, 1])
+    lp = np.log(np.clip(p2[m], 1e-6, 1 - 1e-6) / (1 - np.clip(p2[m], 1e-6, 1 - 1e-6))); slope = sm.Logit(yte[m], sm.add_constant(lp)).fit(disp=0).params[1]
+    rows.append((d_, int(m.sum()), yte[m].mean(), a_[0], a_[1], a_[1] - a_[0], 2 * stats.norm.sf(abs(a_[1] - a_[0]) / se) if se > 0 else np.nan, p2[m].mean() - yte[m].mean(), slope))
+bd = pd.DataFrame(rows, columns=["bureau depth", "test n", "bad rate", "AUC bureau", "AUC in-house", "Δ AUC", "DeLong p", "in-house mean pred − obs", "in-house calibration slope"]).set_index("bureau depth")
+bd["p_holm"] = multipletests(bd["DeLong p"].fillna(1), method="holm")[1]; bd.round(4)
+
+#%% md
+**Observation:** «O74»
+
+### 7.5 Is the advantage stable over time?
+
+A score that wins in the first test month but decays is a weak replacement. We compute Gini **for each test month** (13–18) for both scores, test whether the in-house advantage has a trend (regression of monthly ΔGini on month), and compute the **PSI** of the in-house score between training and test.
+
+#%% code
+mo = df.app_month.values[TE]; rows = []
+for m_ in sorted(np.unique(mo)):
+    s = mo == m_; rows.append((m_, int(s.sum()), 2 * roc_auc_score(yte[s], P[names[0]][s]) - 1, 2 * roc_auc_score(yte[s], p2[s]) - 1))
+st = pd.DataFrame(rows, columns=["month", "n", "Gini bureau", "Gini in-house"]).set_index("month"); st["Δ Gini"] = st["Gini in-house"] - st["Gini bureau"]
+tr_ = stats.linregress(st.index, st["Δ Gini"])
+p2_tr = hgb().fit(df.loc[TR, INT + BUR], y[TR]).predict_proba(df.loc[TR, INT + BUR])[:, 1]
+def psi(a, b, q=10):
+    e = np.quantile(a, np.linspace(0, 1, q + 1)); e[0], e[-1] = -np.inf, np.inf; pa = np.histogram(a, e)[0] / len(a) + 1e-6; pb = np.histogram(b, e)[0] / len(b) + 1e-6
+    return ((pa - pb) * np.log(pa / pb)).sum()
+print(f"Trend in monthly ΔGini: slope {tr_.slope:+.4f} per month (p = {tr_.pvalue:.2f}) | PSI of in-house score train → test = {psi(p2_tr, p2):.3f}")
+st.round(4)
+
+#%% md
+**Observation:** «O75»
+
+## 8. ML Section — brief
+
+- The in-house challenger is gradient boosting (no tuning, per the brief) on 13 internal features plus the bureau score. "Internal only" (model 3) shows the bureau still adds information: the two sources are **complements, not substitutes**.
+- **Most important internal signals** are measured by the drop in test AUC when each is shuffled (permutation importance on a 20,000-row subsample).
+
+#%% code
+from sklearn.inspection import permutation_importance
+m2 = hgb().fit(df.loc[TR, INT + BUR], y[TR]); sub = RNG.choice(np.flatnonzero(TE), 20000, replace=False)
+pi = permutation_importance(m2, df.loc[sub, INT + BUR], y[sub], scoring="roc_auc", n_repeats=5, random_state=SEED, n_jobs=1)
+pd.Series(pi.importances_mean, index=INT + BUR).sort_values(ascending=False).head(8).round(4).to_frame("AUC drop when shuffled")
+
+#%% md
+**Observation:** «O8»
+
+## 9. Business Translation — ₹ impact
+
+**Assumptions (D-18-07):**
+- Average exposure ₹1.5 lakh.
+- Loss given default 65%.
+- Margin per good customer over 12 months ₹6,000.
+- Scale: 1 lakh applications a month.
+
+Two ways to bank the improvement:
+- **(a) Same approvals, fewer defaults:** approve 70%, as today.
+- **(b) Same risk, more approvals:** hold the bad rate at the bureau-based level.
+
+#%% code
+EXP, LGD, MARGIN, N_M = 1.5e5, 0.65, 6000, 1e5
+br0, br2 = bad_at_approval(yte, P[names[0]]), bad_at_approval(yte, p2)
+saved = (br0 - br2) * APPROVE * N_M * EXP * LGD * 12 / 1e7
+ap0, ap2 = approval_at_bad(yte, P[names[0]], br0), approval_at_bad(yte, p2, br0)
+extra = (ap2 - ap0) * N_M * 12 * ((1 - br0) * MARGIN - br0 * EXP * LGD) / 1e7
+bs_s = []
+for i in (RNG.integers(0, len(yte), len(yte)) for _ in range(500)):
+    bs_s.append((bad_at_approval(yte[i], P[names[0]][i]) - bad_at_approval(yte[i], p2[i])) * APPROVE * N_M * EXP * LGD * 12 / 1e7)
+print(f"(a) At 70% approval: bad rate {br0:.2%} → {br2:.2%}; credit loss avoided ≈ ₹{saved:,.0f} crore/year (95% CI ₹{np.percentile(bs_s, 2.5):,.0f}–{np.percentile(bs_s, 97.5):,.0f} crore)")
+print(f"(b) At the bureau's bad rate ({br0:.2%}): approval {ap0:.1%} → {ap2:.1%} (+{(ap2 - ap0) * 100:.1f} pp) ≈ ₹{extra:,.0f} crore/year of extra profit")
+print(f"Bureau + application logistic at 70% approval: bad rate {bad_at_approval(yte, P[names[1]]):.2%} (the cheaper, partial upgrade)")
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic risk structure:** we gave internal data as much information as the bureau. Real gains depend on how much the bank's data see that the bureau does not. Measure it with this exact out-of-time, multi-metric comparison.
+- **Existing-customer bias:** in-house data exist only for existing customers. The score cannot replace the bureau for new-to-bank applicants, and the "66% / 79% data-driven sourcing" is by construction limited to the customer base.
+- **Selection in training data:** we observe outcomes only for approved applicants. A champion–challenger deployment (a few percent of decisions by the challenger) and reject inference are needed before full switch-over.
+- **Explainability and fairness:** a 2,000-attribute ML score needs reason codes for declined customers and checks that internal features (e.g., cash-withdrawal share) do not proxy for protected groups.
+- **Metric hygiene:** always report the metric behind "X% better", together with the business translation (bad rate at fixed approval, approvals at fixed bad rate).
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Gini | 2·AUC − 1 |
+| KS | max |F_bad(s) − F_good(s)| |
+| Bad rate at approval a | bad rate among the safest a·N applicants |
+| Approval at bad-rate t | largest safest-first share with cumulative bad rate ≤ t |
+| Capture rate | bads in the riskiest 10% / all bads |
+| Brier skill | (BS_ref − BS_model)/BS_ref, BS_ref = p̄(1 − p̄) |
+| Swap set | applicants on whom two scores' approve/decline decisions differ |
+| PSI | Σ(pₐ − p_b) ln(pₐ/p_b) |
+
+| Term | Meaning |
+|---|---|
+| Generic bureau score | A score from a credit bureau (CIBIL, CRIF, Experian, Equifax) built for all lenders |
+| In-house / custom score | A lender's own model using its internal data |
+| Champion–challenger | Running a new model on a slice of decisions against the current one |
+| Swap-in / swap-out | Applicants newly approved / newly declined under the new score |
+| Thin file / no hit | Little or no bureau history |

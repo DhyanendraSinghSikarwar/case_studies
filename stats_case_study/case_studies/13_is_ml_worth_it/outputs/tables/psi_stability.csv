@@ -1,0 +1,10 @@
+item,PSI,reading
+score: M0 current scorecard,0.0010830443,stable
+score: M1 full linear,0.0019209177,stable
+score: M2 spec. GLM,0.0036303734,stable
+score: M3 GBM,0.0017746365,stable
+feature: credit_utilization,0.0269392504,stable
+feature: enquiries_6m,0.0002641042,stable
+feature: monthly_income,0.0020480545,stable
+feature: dti,0.0014589455,stable
+feature: acquisition_channel,0.024234938,stable

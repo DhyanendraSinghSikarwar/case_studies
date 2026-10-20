@@ -1,0 +1,5 @@
+policy,total cost (₹ lakh),transactions touched,frauds stopped,genuine customers blocked
+Pass everything (no screening),76.08,0,0,0
+Block every rule alert (the operations head's plan),70.65,4489,539,3950
+Investigate every rule alert,24.867,4489,539,0
+"Probability-based (investigate above p*, block above block threshold)",18.816,3281,555,68

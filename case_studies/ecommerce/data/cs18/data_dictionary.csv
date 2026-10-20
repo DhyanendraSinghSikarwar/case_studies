@@ -1,0 +1,8 @@
+field(s),meaning
+"users: user, gender, city_tier, region, age_band",New-user demographics (region and age may be missing)
+logged_in,1 if logged in at first session (user state)
+n_early_clicks,Number of early clicks recorded before the first feed decision
+future_cat_1..3,Sub-categories of the user's next three clicks (evaluation labels)
+"early_events: user, seq, sub_category, dwell_s",Early click sequence with dwell time in seconds
+"widgets: widget, widget_type, launch_day, retire_day",Widget lifecycle on the home page over 60 days
+"true_params.npz: P, pop_logit, b_*","HIDDEN: true category taste per user, widget click weights, types, embeddings, schedule (digital twin only)"

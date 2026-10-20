@@ -1,0 +1,384 @@
+#%% md
+# Case Study 29 — Did the Nudge Cut Penny-Stock Trading, or Did the Market? Pre/Post vs Interrupted Time Series vs Difference-in-Differences vs a Holdout
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 29 — *Zerodha: nudging first-time investors away from penny stocks* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Product heads (trading platform), Compliance / investor protection, Leadership
+**Data:** ⚠️ **SYNTHETIC** (D-29-01). Broker trade data are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs29_penny_stock_nudge_causal.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+Zerodha shows first-time investors a warning ("Nudge") when they try to buy penny stocks or illiquid instruments, which carry a high risk of loss. Afterwards, penny-stock trading on its platform fell by **more than 50%**. That is a good outcome, but was it the nudge?
+
+The nudge launched while the market itself was changing. In 2020–21, a speculative boom in small and penny stocks peaked and then faded. If penny trading was falling **everywhere**, a before/after comparison on one platform credits the nudge with the market's cooling.
+
+This notebook applies four increasingly credible methods to the same question:
+1. **Before/after** (what was reported).
+2. **Interrupted time series**: does the trend break at launch?
+3. **Difference-in-differences**: compare with other brokers who had no nudge, and use the staggered rollout across web, Android and iOS.
+4. **A randomised holdout** of users who never see the nudge: the gold standard Zerodha could add.
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Zerodha did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | "First-time investors were trading penny stocks and illiquid instruments, with a high risk of losses" |
+| Question | "Can contextual warnings at the point of trade reduce risky trading?" |
+| Data | Trade attempts (instrument type, liquidity, user profile, rules-based); Zerodha "deliberately does not run behavioural tracking or engagement analytics" |
+| Approach | "Rules flag risky instruments, and a 'Nudge' warning appears when a trade is attempted" |
+| Statistics | "Before/after comparison of penny-stock volumes. **No control group is stated.**" |
+| ML | **None** (rule-based) |
+| Impact | "Penny stock trading volumes on Kite have dropped by **more than 50%**, probably saving tens of crores of rupees." The reference file notes this is before/after only; causality is not established |
+
+**Sources:** Zerodha Z-Connect (Nithin Kamath), 15 Aug 2020; Kailash Nadh, "User disengagement", 6 May 2022 (links in the reference file).
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | ≈ 18 months of daily penny-stock trades by first-time investors on 3 platforms (web, Android, iOS), plus **other brokers** with no nudge (control). A **market boom-and-fade** in speculative penny interest affects everyone. The nudge rolls out **staggered**: web (day 230), Android (262), iOS (300). **True effect: −30%.** Plus 120,000 users over 90 days with a **5% randomised holdout** that never sees nudges. |
+| Statistics added | Pre/post rate ratio; **interrupted time series** (segmented regression, Newey–West SEs) with and without a market control; **difference-in-differences** (log counts, platform and date fixed effects); **event study** with pre-trend tests; **placebo launch dates**; holdout ITT with CIs; power; ₹ losses avoided under each estimate |
+
+### (c) How the industry uses this
+
+Every product team in Indian fintech launches features into moving markets: brokers (nudges, F&O risk warnings mandated by SEBI in 2023–24), lenders (new collection scripts), payment apps (UPI Lite, autopay prompts). **Pre/post claims are the most common, and most commonly overstated, impact numbers in press releases.** Staggered rollouts, never-treated comparison groups and small permanent holdouts are the standard ways to measure such launches credibly.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | How much did the nudge reduce risky penny-stock trading by first-time investors, and how much money did it save them? |
+| Analytical | What is the causal % change in penny trades attributable to the nudge, net of market-wide changes? |
+
+**Hypotheses**
+- **H1 (pre/post):** H0: daily penny trades are the same before and after (Poisson rate ratio). This is what was reported.
+- **H2 (ITS):** H0: no level/trend break at launch, controlling for the market (segmented regression).
+- **H3 (DiD):** H0: the platform-vs-control gap does not change when the nudge goes live (log-linear two-way fixed effects; event-study leads test the parallel-trends assumption).
+- **H4 (holdout):** H0: users in the no-nudge holdout trade penny stocks as often as nudged users (two-proportion z).
+
+**Primary estimate:** the holdout ITT where available; otherwise DiD. **Estimand:** % change in penny trades by first-time investors.
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from statsmodels.stats.proportion import proportion_confint, confint_proportions_2indep, proportions_ztest
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Broker-level penny trades by first-time investors | **None public.** Zerodha shared only the headline. Exchanges (NSE/BSE) publish aggregate volumes by security, not by broker or investor experience. |
+| **Decision** | Synthetic daily series with a market cycle, a control group and a staggered rollout; synthetic user holdout (D-29-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs29.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs29.py
+
+#%% code
+os.makedirs("data/cs29", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs29 as gen; importlib.reload(gen)
+daily_raw, users = gen.generate(seed=SEED)
+daily_raw.to_csv("data/cs29/daily_trades.csv.gz", index=False); users.to_csv("data/cs29/user_holdout.csv.gz", index=False)
+print(f"{len(daily_raw):,} platform-day rows | {users.shape[0]:,} users in the holdout study")
+daily_raw.drop(columns=["_market_index"]).head(4)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Period | 1 Jan 2020 → mid-2021, trading days only | Covers the documented Aug 2020 period and the 2020–21 small-cap boom |
+| Market confounder | Speculative penny interest rises ~2.8× to a peak (~day 200), then fades | Stylised boom-and-fade; affects all brokers |
+| Rollout | Nudge live on web day 230, Android day 262, iOS day 300 (effect builds over ~10 days) | Our assumption: staggered roll-outs are typical |
+| True effect | −30% penny trades on a platform once its nudge is live | Our assumption (below the documented "> 50%") |
+| Control | Other brokers' first-time investors: same market, no nudge | Our design |
+| Holdout | 120,000 users × 90 days after full rollout; 5% never nudged | Our design (what a careful team adds) |
+| DQ issues | 20 duplicated platform-days; 6 days where the exchange file did not arrive (zeros) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("daily_trades: date, platform", "Trading day; web / android / ios / other_brokers"), ("penny_trades_first_time", "Penny-stock trades by first-time investors that day"),
+    ("active_first_time_investors", "Active first-time investors that day (exposure)"), ("nudge_live", "1 once that platform's nudge is live"),
+    ("_market_index", "HIDDEN market-wide speculative interest"), ("user_holdout: holdout_no_nudge", "1 = randomised 5% who never see nudges"),
+    ("traded_penny_90d, penny_loss_90d_inr", "Any penny trade in 90 days; realised loss"), ("_spec", "HIDDEN speculative propensity"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs29/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+dup = daily_raw.duplicated(["date", "platform"]).sum()
+d0 = daily_raw.drop_duplicates(["date", "platform"]).copy()
+zero = d0[(d0.penny_trades_first_time == 0)]
+print(pd.Series({"duplicated platform-day rows": int(dup), "zero-trade platform-days (missing exchange files)": len(zero)}, name="rows").to_string())
+print("Zero days:", sorted(zip(zero.date.dt.date.astype(str), zero.platform)))
+d0.loc[d0.penny_trades_first_time == 0, "penny_trades_first_time"] = np.nan
+d0["t"] = (d0.date - gen.START).dt.days; d0["ly"] = np.log(d0.penny_trades_first_time); d0["week"] = d0.t // 7
+W = d0.pivot(index="date", columns="platform", values="penny_trades_first_time")
+broker = W[["web", "android", "ios"]].sum(1, min_count=3)
+print(f"\nClean: {d0.date.nunique()} trading days × 4 series | missing days set to NaN (never as zero trades)")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, ax = plt.subplots(figsize=(12, 4.8))
+base = W[(W.index >= gen.START + pd.Timedelta(days=150)) & (W.index < gen.START + pd.Timedelta(days=220))].mean()
+for p_, c_ in (("web", "#2a6f97"), ("android", "#3a9d5d"), ("ios", "#6a4c93"), ("other_brokers", "#999")):
+    ax.plot(W.index, (W[p_] / base[p_]).rolling(5, min_periods=3).mean(), color=c_, lw=2 if p_ != "other_brokers" else 3, label=p_)
+for p_, d_ in gen.LAUNCH.items(): ax.axvline(gen.START + pd.Timedelta(days=d_), color="black", ls=":", lw=1); ax.text(gen.START + pd.Timedelta(days=d_ + 2), 1.55, f"{p_} nudge", fontsize=8, rotation=90)
+ax.set_xlabel("Date"); ax.set_ylabel("Penny trades (index, pre-launch avg = 1; 5-day mean)"); ax.set_title("Penny trading fell everywhere after the boom; nudged platforms fell more"); ax.legend()
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 The documented method: before vs after
+
+The broker's daily penny trades (all 3 platforms) in the **60 trading days before the first launch** vs **60 trading days starting 30 days after the last launch**. Test: a **Poisson rate ratio** on daily totals (with a quasi-Poisson correction for over-dispersion).
+
+#%% code
+pre = broker[(broker.index >= gen.START + pd.Timedelta(days=140)) & (broker.index < gen.START + pd.Timedelta(days=230))].dropna().iloc[-60:]
+post = broker[broker.index >= gen.START + pd.Timedelta(days=330)].dropna().iloc[:60]
+rr = post.mean() / pre.mean(); phi = max(1, np.var(np.r_[pre / pre.mean(), post / post.mean()]) * np.mean(np.r_[pre, post]))
+se = np.sqrt(phi * (1 / pre.sum() + 1 / post.sum()))
+print(f"Pre: {pre.mean():,.0f} trades/day | post: {post.mean():,.0f} trades/day → change {rr - 1:+.1%} (95% CI {np.exp(np.log(rr) - 1.96 * se) - 1:+.1%} to {np.exp(np.log(rr) + 1.96 * se) - 1:+.1%}); dispersion φ = {phi:,.0f}")
+ob = W.other_brokers; pre_o = ob.loc[pre.index].mean(); post_o = ob.loc[post.index].mean()
+print(f"Other brokers (no nudge) over the same windows: {post_o / pre_o - 1:+.1%}")
+
+#%% md
+**Observation:** «O71»
+
+### 7.2 Interrupted time series: does the trend break at launch?
+
+**(a) Why?** ITS uses the pre-launch trend to predict what would have happened. **Segmented regression** on log daily broker trades (first launch = day 230):
+
+log Y_t = β₀ + β₁·t + β₂·post_t + β₃·(t − 230)·post_t + weekday effects (+ γ·log market control)
+
+**(b) Assumptions:** the pre-trend would have continued (fragile when the market turns), and no other change at launch. Errors are autocorrelated, so we use **Newey–West (HAC)** standard errors with 10 lags. We fit it (i) without and (ii) with other brokers' log trades as a market control.
+
+#%% code
+its = pd.DataFrame({"ly": np.log(broker), "t": (broker.index - gen.START).days, "wd": broker.index.weekday, "lctrl": np.log(W.other_brokers)}).dropna()
+its = its[(its.t >= 120) & (its.t < 400)]
+its["post"] = (its.t >= 230).astype(int); its["tpost"] = np.maximum(its.t - 230, 0)
+m1 = smf.ols("ly ~ t + post + tpost + C(wd)", data=its).fit(cov_type="HAC", cov_kwds={"maxlags": 10})
+m2 = smf.ols("ly ~ t + post + tpost + C(wd) + lctrl", data=its).fit(cov_type="HAC", cov_kwds={"maxlags": 10})
+def eff_at(m, k=60):
+    c = m.params; V = m.cov_params(); g = np.zeros(len(c)); g[list(c.index).index("post")] = 1; g[list(c.index).index("tpost")] = k
+    est = g @ c.values; s = np.sqrt(g @ V.values @ g); return est, s
+rows = []
+for nm, m in (("ITS, no control", m1), ("ITS + market control (other brokers)", m2)):
+    e60, s60 = eff_at(m); rows.append((nm, m.params["post"], m.pvalues["post"], m.params["tpost"], m.pvalues["tpost"], np.exp(e60) - 1, np.exp(e60 - 1.96 * s60) - 1, np.exp(e60 + 1.96 * s60) - 1))
+itst = pd.DataFrame(rows, columns=["model", "level change (log)", "p level", "slope change (log/day)", "p slope", "effect at day +60", "CI low", "CI high"]).set_index("model")
+itst.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O72»
+
+### 7.3 Difference-in-differences with the staggered rollout
+
+**(a) Why?** Other brokers' first-time investors face the same market but no nudge. Each nudged platform is compared with them: the change in the gap when its nudge goes live is the effect.
+
+**Model** (log daily trades, platform-days stacked; each platform compared only with the never-treated control, avoiding the known bias of two-way fixed effects with staggered timing):
+
+log Y_pt = α_p + δ_t + τ·nudge_live_pt + ε_pt
+
+τ is the average effect, and exp(τ) − 1 is the % change. We use date fixed effects (which absorb the market cycle completely) and HAC/cluster-robust SEs by week.
+
+**(b) Parallel trends:** an **event study** replaces τ with weekly coefficients relative to launch (−8 to +12 weeks; week −1 as reference). The pre-launch coefficients should be ≈ 0, which we test jointly with a Wald test.
+
+#%% code
+panel = d0[["date", "t", "week", "platform", "ly", "nudge_live"]].dropna().copy()
+panel = panel[(panel.t >= 120) & (panel.t < 420)]
+res = []
+for p_ in ["web", "android", "ios"]:
+    sub = panel[panel.platform.isin([p_, "other_brokers"])].copy()
+    m = smf.ols("ly ~ C(platform) + C(date) + nudge_live", data=sub).fit(cov_type="cluster", cov_kwds={"groups": sub.week})
+    res.append((p_, gen.LAUNCH[p_], m.params["nudge_live"], m.bse["nudge_live"], np.exp(m.params["nudge_live"]) - 1,
+                np.exp(m.params["nudge_live"] - 1.96 * m.bse["nudge_live"]) - 1, np.exp(m.params["nudge_live"] + 1.96 * m.bse["nudge_live"]) - 1, m.pvalues["nudge_live"]))
+did = pd.DataFrame(res, columns=["platform", "launch day", "τ (log)", "SE", "% change", "CI low", "CI high", "p"]).set_index("platform")
+rob = {}
+for p_ in ["web", "android", "ios"]:                                                    # robustness: allow each platform its own linear trend vs control
+    sub = panel[panel.platform.isin([p_, "other_brokers"])].copy(); sub["trt_t"] = (sub.platform == p_) * (sub.t - 230) / 100
+    m = smf.ols("ly ~ C(platform) + C(date) + trt_t + nudge_live", data=sub).fit(cov_type="cluster", cov_kwds={"groups": sub.week}); rob[p_] = np.exp(m.params["nudge_live"]) - 1
+did["% change with platform trend"] = pd.Series(rob)
+w_ = 1 / did.SE ** 2; tau_pool = (w_ * did["τ (log)"]).sum() / w_.sum(); se_pool = np.sqrt(1 / w_.sum())
+Q = (w_ * (did["τ (log)"] - tau_pool) ** 2).sum()
+print(f"Pooled DiD (inverse-variance across platforms): {np.exp(tau_pool) - 1:+.1%} (95% CI {np.exp(tau_pool - 1.96 * se_pool) - 1:+.1%} to {np.exp(tau_pool + 1.96 * se_pool) - 1:+.1%}); "
+      f"heterogeneity Q = {Q:.2f} (p = {stats.chi2.sf(Q, 2):.2f}) | truth: −30%")
+did.round(4)
+
+#%% code
+ev = []
+for p_ in ["web", "android", "ios"]:
+    sub = panel[panel.platform.isin([p_, "other_brokers"])].copy(); rel = (sub.t - gen.LAUNCH[p_]) // 7
+    sub["rel"] = np.where(sub.platform == p_, rel.clip(-8, 12), -99)
+    for k in range(-8, 13):
+        if k == -1: continue
+        sub[f"e{k + 8}"] = (sub.rel == k).astype(int)
+    terms = " + ".join(f"e{k + 8}" for k in range(-8, 13) if k != -1)
+    m = smf.ols(f"ly ~ C(platform) + C(date) + {terms}", data=sub).fit(cov_type="cluster", cov_kwds={"groups": sub.week})
+    pre_terms = [f"e{k + 8}" for k in range(-8, -1)]; wald = m.wald_test(" , ".join(f"{t_} = 0" for t_ in pre_terms), scalar=True)
+    for k in range(-8, 13):
+        if k == -1: ev.append((p_, k, 0.0, 0.0, wald.pvalue)); continue
+        ev.append((p_, k, m.params[f"e{k + 8}"], m.bse[f"e{k + 8}"], wald.pvalue))
+ev = pd.DataFrame(ev, columns=["platform", "week rel. to launch", "coef", "se", "pre-trend Wald p"])
+fig, ax = plt.subplots(figsize=(10, 4.5))
+for p_, c_, off in (("web", "#2a6f97", -0.15), ("android", "#3a9d5d", 0), ("ios", "#6a4c93", 0.15)):
+    e_ = ev[ev.platform == p_]; ax.errorbar(e_["week rel. to launch"] + off, (np.exp(e_.coef) - 1) * 100, yerr=1.96 * e_.se * 100, fmt="o", ms=4, capsize=2, color=c_, label=p_)
+ax.axhline(0, color="black", lw=0.8); ax.axvline(-0.5, color="grey", ls="--"); ax.axhline(-30, color="#b23a48", ls=":", label="true effect (−30%)")
+ax.set_xlabel("Weeks relative to the platform's nudge launch"); ax.set_ylabel("% difference vs other brokers (week −1 = 0)"); ax.set_title("Event study: flat before launch, a drop after"); ax.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+pre_ev = ev[(ev["week rel. to launch"] < -1)]
+pd.DataFrame({"joint test of 7 pre-launch weeks = 0 (p)": ev.groupby("platform")["pre-trend Wald p"].first(),
+              "largest |pre-launch weekly deviation| (%)": pre_ev.groupby("platform").coef.apply(lambda c: (np.exp(c.abs().max()) - 1) * 100),
+              "average post-launch effect, weeks +2..+12 (%)": ev[ev["week rel. to launch"] >= 2].groupby("platform").coef.apply(lambda c: (np.exp(c.mean()) - 1) * 100)}).round(4)
+
+#%% md
+**Takeaway:** «O73»
+
+### 7.4 Placebo tests: would the method "find" an effect where none exists?
+
+We re-run the DiD with **fake launch dates** in the pre-period (days 140, 170 and 200, all before any real nudge, using only pre-launch data). A credible method should find ≈ 0. We also run the same **naive pre/post** on the *control* (other brokers), which never had a nudge.
+
+#%% code
+pl = []
+for fake in (140, 170, 200):
+    for p_ in ["web", "android", "ios"]:
+        sub = panel[panel.platform.isin([p_, "other_brokers"]) & (panel.t < min(gen.LAUNCH.values()))].copy()
+        sub["fake"] = ((sub.platform == p_) & (sub.t >= fake)).astype(int)
+        m = smf.ols("ly ~ C(platform) + C(date) + fake", data=sub).fit(cov_type="cluster", cov_kwds={"groups": sub.week})
+        pl.append((fake, p_, np.exp(m.params["fake"]) - 1, m.pvalues["fake"]))
+pl = pd.DataFrame(pl, columns=["fake launch day", "platform", "placebo % change", "p"])
+print(f"Naive pre/post on OTHER BROKERS (no nudge ever): {post_o / pre_o - 1:+.1%}, i.e., the market alone")
+pl.round(4)
+
+#%% md
+**Observation:** «O74»
+
+### 7.5 The gold standard: a randomised holdout of users
+
+**(a)** In the 90 days after full rollout, 5% of first-time investors are randomly kept in a **holdout** that never sees nudges. The share who trade penny stocks, compared between nudged and holdout users, is a pure causal estimate (ITT): no market confounding, no trend assumptions. Two-proportion z-test with a Newcombe CI; relative effect with a log-RR CI; balance check on age and capital.
+
+#%% code
+h, n_ = users[users.holdout_no_nudge == 1], users[users.holdout_no_nudge == 0]
+x1, N1, x0, N0 = n_.traded_penny_90d.sum(), len(n_), h.traded_penny_90d.sum(), len(h)
+lo, hi = confint_proportions_2indep(x1, N1, x0, N0, method="newcomb"); z, p = proportions_ztest([x1, x0], [N1, N0])
+rr_h = (x1 / N1) / (x0 / N0); se_h = np.sqrt(1 / x1 - 1 / N1 + 1 / x0 - 1 / N0)
+smd_age = (n_.age.mean() - h.age.mean()) / np.sqrt((n_.age.var() + h.age.var()) / 2)
+print(f"Holdout n = {N0:,} ({N0 / len(users):.1%}) | balance SMD(age) = {smd_age:.3f}")
+print(f"Traded penny stocks in 90 days: nudged {x1 / N1:.2%} vs holdout {x0 / N0:.2%} → {(x1 / N1 - x0 / N0) * 100:+.2f} pp (CI {lo * 100:+.2f} to {hi * 100:+.2f}), z = {z:.1f}, p = {p:.2g}")
+print(f"Relative effect: {rr_h - 1:+.1%} (95% CI {np.exp(np.log(rr_h) - 1.96 * se_h) - 1:+.1%} to {np.exp(np.log(rr_h) + 1.96 * se_h) - 1:+.1%}) | truth −30%")
+loss_d = n_.penny_loss_90d_inr.mean() - h.penny_loss_90d_inr.mean()
+bsl = [users.iloc[i].groupby("holdout_no_nudge").penny_loss_90d_inr.mean().pipe(lambda s: s[0] - s[1]) for i in (RNG.integers(0, len(users), len(users)) for _ in range(500))]
+print(f"Penny-stock losses per user in 90 days: nudged ₹{n_.penny_loss_90d_inr.mean():,.0f} vs holdout ₹{h.penny_loss_90d_inr.mean():,.0f} → ₹{loss_d:,.0f} per user (CI ₹{np.percentile(bsl, 2.5):,.0f} to ₹{np.percentile(bsl, 97.5):,.0f})")
+
+#%% md
+**(c)/(f) Observation:** «O75»
+
+### 7.6 How big must the holdout be?
+
+A holdout costs something: those users miss the protection. Below: the minimum detectable relative reduction (80% power, α = 0.05) for different holdout shares of 1.2 lakh users, base rate 23%.
+
+#%% code
+p_h = x0 / N0; rows = []
+for share in (0.01, 0.02, 0.05, 0.10):
+    nh, nn = 120000 * share, 120000 * (1 - share); se_ = np.sqrt(p_h * (1 - p_h) * (1 / nh + 1 / nn)); mde = (1.96 + 0.84) * se_ / p_h
+    rows.append((f"{share:.0%}", int(nh), mde))
+pd.DataFrame(rows, columns=["holdout share", "holdout users", "minimum detectable relative reduction"]).set_index("holdout share").round(4)
+
+#%% md
+**Observation:** «O76»
+
+## 8. ML Section — deliberately none
+
+The documented intervention is **rule-based** ("Rules flag risky instruments"), and Zerodha says it deliberately avoids behavioural tracking. We agree that no ML is needed to *run* the nudge. The data-science work is entirely in **measuring** it, which is where this notebook spends its effort. That is the reference file's lesson: "Not every intervention needs ML. Sometimes the analysis *is* the decision."
+
+## 9. Business Translation — "probably saving tens of crores": how much, really?
+
+Assumptions (D-29-07):
+- Penny-trade volume and losses are scaled to a broker with 20 lakh active first-time investors.
+- The average loss per penny trade comes from the holdout study.
+
+We compute penny trades avoided per year under each estimate of the effect.
+
+#%% code
+avg_loss = h.loc[h.traded_penny_90d == 1, "penny_loss_90d_inr"].mean(); BASE_TRADERS = 2e6
+p_base = x0 / N0
+ests = {"naive pre/post (documented style)": rr - 1, "ITS + market control": itst.iloc[1]["effect at day +60"], "DiD (pooled, vs other brokers)": np.exp(tau_pool) - 1, "randomised holdout": rr_h - 1}
+proj = pd.DataFrame([(k, v, BASE_TRADERS * p_base * (-v) * 4, BASE_TRADERS * p_base * (-v) * 4 * avg_loss / 1e7) for k, v in ests.items()],
+                    columns=["estimate", "% change in penny trading", "first-time investors protected / year", "losses avoided ₹ crore / year"]).set_index("estimate")
+print(f"Average 90-day loss of a holdout user who traded penny stocks ≈ ₹{avg_loss:,.0f}")
+proj.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic market and effect:** the market cycle and the −30% effect were assumed to show how methods differ. Real numbers would differ, but the ranking of methods by credibility would not.
+- **Control-group validity:** other brokers' first-time investors may differ (different marketing, different apps). The event-study pre-trends (7.3) and placebos (7.4) are the checks, and they must be re-run on real data.
+- **Displacement:** nudged users might move penny trading to another broker or to other risky products (F&O). Measure total risky trading per user, not just penny trades on one platform.
+- **Ethics of holdouts:** withholding a protective warning from a few percent of users is a real cost. Keep the holdout small (2–5%), time-limited, and approved by compliance. Alternatively, use the staggered rollout itself as the experiment.
+- **Regulatory context:** SEBI's later F&O risk disclosures (2023–24) are a similar intervention, and the same DiD/event-study toolkit applies to measuring them.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Pre/post rate ratio | RR = mean(post)/mean(pre); quasi-Poisson SE √(φ(1/Σpre + 1/Σpost)) |
+| Segmented ITS | log Y = β₀ + β₁t + β₂·post + β₃·(t − t₀)·post + seasonality |
+| Newey–West | HAC covariance robust to autocorrelation (lag L = 10) |
+| DiD (log-linear) | log Y_pt = α_p + δ_t + τ·D_pt; % effect = e^τ − 1 |
+| Event study | log Y_pt = α_p + δ_t + Σ_k β_k·1{t − t₀,p ∈ week k} (k = −1 reference) |
+| Holdout ITT | p_nudged − p_holdout; RR CI via log RR |
+| MDE | (z₀.₉₇₅ + z₀.₈)·√(p(1 − p)(1/n_h + 1/n_t)) / p |
+
+| Term | Meaning |
+|---|---|
+| Nudge | A warning or prompt that steers a choice without forbidding it |
+| Penny stock | A very low-priced, often illiquid, highly speculative share |
+| Confounder | Something else changing at the same time (here, the market cycle) |
+| Interrupted time series | Testing for a break in a series' trend at an intervention |
+| Difference-in-differences | Comparing the change in a treated group with the change in a control group |
+| Staggered rollout | Launching to different groups at different times |
+| Holdout | A random group kept without the intervention to measure its effect |
+| Placebo test | Applying the method where no effect should exist |

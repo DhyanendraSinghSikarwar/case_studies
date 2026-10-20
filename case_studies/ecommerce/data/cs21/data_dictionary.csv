@@ -1,0 +1,9 @@
+field(s),meaning
+"panel: customer_id, month",Customer and month index 0 to 23 (launch in month 12)
+"orders, gov_inr",Orders and gross order value in the month
+member,1 if the customer was a paying member that month
+delivery_subsidy_inr,Delivery fee and discount given to members on their orders
+contribution_inr,Contribution margin of the month: orders × margin − subsidy + membership fee share
+"customers: city_tier, fee_paid_share, coupon_share, tenure_months","Tier (blank = unknown), share of orders that paid a delivery fee, share of orders with a coupon, months since first order"
+"offer, join_month",Free-trial invitation at launch (random); month of joining (blank = never)
+"_orders_cf, _contribution_cf, _u, _tau, _subsidy_per_order, _margin_per_order","HIDDEN: counterfactual orders and contribution, momentum, true effect (grading only)"

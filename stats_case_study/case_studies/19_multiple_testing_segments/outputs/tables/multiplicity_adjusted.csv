@@ -1,0 +1,41 @@
+segment_id,p_value,Bonferroni-adjusted p,Holm-adjusted p,BH q-value,uplift (pp),uncorrected p < 0.05,Bonferroni,Holm,BH (FDR 5%),BH (FDR 10%),customer_type,region
+S13,4.8e-09,1.908e-07,1.908e-07,1.908e-07,2.2764998814,True,True,True,True,True,Self-employed,East
+S22,0.0010076582,0.0403063289,0.0392986707,0.0201531645,2.3303834808,True,True,True,True,True,Student,South
+S24,0.0042588099,0.1703523978,0.1618347779,0.0567841326,2.2289156627,True,False,False,False,True,Student,West
+S31,0.0080484963,0.3219398515,0.2977943627,0.0613848,1.8661971831,True,False,False,False,True,Homemaker,North
+S29,0.0091216245,0.3648649817,0.3283784835,0.0613848,2.0395550062,True,False,False,False,True,Retired,West
+S36,0.00920772,0.3683088001,0.3283784835,0.0613848,1.67918692,True,False,False,False,True,Business owner,North
+S32,0.0197932771,0.7917310829,0.6729714204,0.1131044404,2.0905923345,True,False,False,False,False,Homemaker,South
+S26,0.0861397423,1.0,1.0,0.4306987116,-0.8613938919,False,False,False,False,False,Retired,North
+S06,0.1147838066,1.0,1.0,0.5101502515,-1.4134275618,False,False,False,False,False,Salaried (affluent),North
+S11,0.2028407384,1.0,1.0,0.7110110393,1.0716025329,False,False,False,False,False,Self-employed,North
+S35,0.2118888921,1.0,1.0,0.7110110393,-0.9237875289,False,False,False,False,False,Homemaker,Central
+S07,0.2133033118,1.0,1.0,0.7110110393,-0.8250355619,False,False,False,False,False,Salaried (affluent),South
+S27,0.2966631564,1.0,1.0,0.8406834092,-0.5368326871,False,False,False,False,False,Retired,South
+S05,0.3008701475,1.0,1.0,0.8406834092,-0.7730786721,False,False,False,False,False,Salaried (mass),Central
+S17,0.3502377377,1.0,1.0,0.8406834092,-0.53325849,False,False,False,False,False,Gig worker,South
+S02,0.3726579029,1.0,1.0,0.8406834092,0.7432432432,False,False,False,False,False,Salaried (mass),South
+S39,0.4245746318,1.0,1.0,0.8406834092,0.4006009014,False,False,False,False,False,Business owner,West
+S04,0.4389194117,1.0,1.0,0.8406834092,-0.5998286204,False,False,False,False,False,Salaried (mass),West
+S20,0.4418001913,1.0,1.0,0.8406834092,0.3247631935,False,False,False,False,False,Gig worker,Central
+S30,0.4706952766,1.0,1.0,0.8406834092,-0.3703703704,False,False,False,False,False,Retired,Central
+S19,0.4795507499,1.0,1.0,0.8406834092,0.2983166418,False,False,False,False,False,Gig worker,West
+S12,0.4829517187,1.0,1.0,0.8406834092,-0.4053141184,False,False,False,False,False,Self-employed,South
+S28,0.5008867685,1.0,1.0,0.8406834092,0.2265290712,False,False,False,False,False,Retired,East
+S25,0.5241865886,1.0,1.0,0.8406834092,-0.3074820635,False,False,False,False,False,Student,Central
+S38,0.5254271308,1.0,1.0,0.8406834092,0.2901609074,False,False,False,False,False,Business owner,East
+S23,0.551805628,1.0,1.0,0.8489317353,0.4003202562,False,False,False,False,False,Student,East
+S16,0.5897662742,1.0,1.0,0.8582807029,-0.2659574468,False,False,False,False,False,Gig worker,North
+S21,0.600796492,1.0,1.0,0.8582807029,0.1686746988,False,False,False,False,False,Student,North
+S37,0.6831053306,1.0,1.0,0.9422142491,-0.3171247357,False,False,False,False,False,Business owner,South
+S18,0.7509618239,1.0,1.0,0.9502689125,0.1505700151,False,False,False,False,False,Gig worker,East
+S08,0.7528719318,1.0,1.0,0.9502689125,-0.1400560224,False,False,False,False,False,Salaried (affluent),East
+S15,0.7665273666,1.0,1.0,0.9502689125,0.2271866717,False,False,False,False,False,Self-employed,Central
+S40,0.7839718528,1.0,1.0,0.9502689125,-0.1771479185,False,False,False,False,False,Business owner,Central
+S10,0.8184893959,1.0,1.0,0.9629287011,-0.1265022138,False,False,False,False,False,Salaried (affluent),Central
+S33,0.8925325932,1.0,1.0,0.9851854312,-0.1209921355,False,False,False,False,False,Homemaker,East
+S34,0.8935068262,1.0,1.0,0.9851854312,-0.0513742615,False,False,False,False,False,Homemaker,West
+S14,0.9112965239,1.0,1.0,0.9851854312,-0.0612369871,False,False,False,False,False,Self-employed,West
+S01,1.0,1.0,1.0,1.0,0.0,False,False,False,False,False,Salaried (mass),North
+S09,1.0,1.0,1.0,1.0,0.0,False,False,False,False,False,Salaried (affluent),West
+S03,1.0,1.0,1.0,1.0,0.0,False,False,False,False,False,Salaried (mass),East

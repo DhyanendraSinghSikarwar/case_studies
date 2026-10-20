@@ -1,0 +1,6 @@
+,estimate,ci_low,ci_high
+"default rate, income < ₹30k",0.130015,0.113095,0.14904
+"default rate, income ≥ ₹30k",0.05049,0.044526,0.057204
+risk difference (pp),0.079525,0.060475,0.098575
+risk ratio,2.575079,2.136739,3.103341
+odds ratio,2.810466,2.285953,3.45533

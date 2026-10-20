@@ -1,0 +1,48 @@
+seed: 42
+paths: {raw: data/raw, interim: data/interim, processed: data/processed, outputs: outputs, figures: figures, models: models}
+data:
+  env_var: AMPBA_DATA_DIR          # directory that may hold online_retail_ii.parquet
+  default_dir: "C:/ampba_data"
+  parquet_name: online_retail_ii.parquet
+  uci_zip_url: "https://archive.ics.uci.edu/static/public/502/online+retail+ii.zip"
+  hillstrom_url: "http://www.minethatdata.com/Kevin_Hillstrom_MineThatData_E-MailAnalytics_DataMiningChallenge_2008.03.20.csv"
+snapshots:
+  train: ["2011-03-01", "2011-04-01", "2011-05-01"]
+  test: "2011-08-01"
+  lookback_days: 180          # eligibility + feature window
+  min_orders: 2               # eligible = >= 2 distinct invoices in the lookback window
+  horizon_days: 90            # churn = no purchase in the next 90 days
+business:                     # ALL assumptions live here and are swept in sensitivity tables
+  gbp_to_inr: 105.0           # assumption - update to the current rate
+  gross_margin: 0.30
+  clv_months: 12              # months of margin credited to a saved customer
+  offer_cost_inr: 250.0       # cost per customer who receives the offer (plan default); higher costs swept below
+  save_rate: 0.20             # risk-only rule of thumb: P(offer saves a would-be churner), assumed constant
+models:
+  cv_folds: 3
+  calibration_method: isotonic
+  threshold_grid_max: 0.95
+pilot:
+  treat_share: 0.5
+  extra_snapshots: ["2010-12-01", "2011-01-01", "2011-02-01"]   # more history for the pilot training cohorts
+  pattern: mid_freq           # response pattern of the simulator: mid_freq | high_freq
+uplift:
+  learners: [S, T, X, TO, CT]
+  base: {n_estimators: 200, num_leaves: 8, min_child_samples: 40, learning_rate: 0.03, subsample: 0.8, colsample_bytree: 0.8}
+  cv_folds: 3
+  uplift_at_k: 0.3
+  n_boot: 200
+policy:
+  budget_frac: 0.30
+sensitivity:
+  save_rate: [0.05, 0.10, 0.20, 0.30]
+  offer_cost_inr: [100, 250, 500, 1000, 2500, 5000, 10000]
+  gross_margin: [0.15, 0.30, 0.45]
+  clv_months: [6, 12, 24]
+hillstrom:
+  email_cost_usd: 0.10        # assumption: cost of one e-mail
+  margin_on_spend: 0.30       # assumption: gross margin on the recorded spend
+  n_boot: 500
+  test_size: 0.5
+survival:
+  enabled: true

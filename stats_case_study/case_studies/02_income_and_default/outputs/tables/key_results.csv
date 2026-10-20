@@ -1,0 +1,8 @@
+quantity,estimate,ci_low,ci_high,test / method,p_value,effect size
+"Mean income, defaulted − repaid (₹)",-17361.942257,-19937.692789,-14786.191726,"Welch t = -13.2, df ≈ 581",0.0,Cohen's d = -0.45
+"Typical income ratio, defaulted / repaid",0.73925,0.704503,0.775711,Welch t on logs = -12.3,0.0,26% lower
+Median income difference (₹),-14800.0,-17400.0,-12400.0,bootstrap,,
+P(defaulter earns more than repayer),0.340275,,,Mann-Whitney U,0.0,rank-biserial = -0.32
+Income band × default,115.986653,,,"chi-square, df = 4",0.0,Cramér's V = 0.14
+"Risk ratio, < ₹30k vs ≥ ₹30k",2.575079,2.136739,3.103341,Wald CI (log scale),,RD = 8.0 pp
+Net value of ₹30k floor (₹ crore),-0.28882,-0.478908,-0.078115,bootstrap,,break-even margin 9.5%

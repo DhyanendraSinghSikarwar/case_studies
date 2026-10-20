@@ -1,0 +1,561 @@
+#%% md
+# Case Study 3 — "Have It in Stock, Don't Throw It Away": Dark-Store Demand Planning, the Newsvendor Core, Offline Metric Alignment and Picking Batching
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 3 — *Swiggy Instamart: dark-store demand planning for availability versus wastage, plus picking batching* (`indian_ecommerce_data_science_case_studies.md`)
+**Audience:** Head of Supply Chain / Planning, Dark-Store Operations, Category Heads, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-03-01). Pod inventory and picker logs are confidential; this is a calibrated simulation with a hidden true-demand model and a replayable inventory twin.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs03_dark_store_inventory.ipynb`
+**Companion:** Case 7 covers *forecasting under censored sales*. This notebook takes the forecast as given and studies the **planning and picking side**: how much to order, how to judge a model by availability and wastage, and how to batch picks.
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+A dark store ("pod") is a small warehouse that serves a few kilometres around it. Every morning it must hold the right stock. Hold too little and a customer who opens the app sees "out of stock" (**availability** drops, and the sale is lost). Hold too much of a **perishable** item (bread, milk, cut vegetables) and the unsold units **expire** (**wastage**). This is the classic **newsvendor** problem: the newspaper seller who must buy copies before knowing how many he will sell.
+
+Three things make it harder than the textbook:
+1. **Different items cost differently to run short or long.** A ₹30 bread loaf that expires after one day is very different from a ₹220 shampoo that keeps for a year.
+2. **The forecast is only half of it.** The order quantity also needs a **buffer** for forecast error and for vendors who ship less than ordered. How big should the buffer be, item by item?
+3. **Judging a forecast model on past sales is misleading**, because past sales stop at the moment the shelf was empty. A model that looks worse on the usual error metric (wMAPE) can still give better availability and wastage once it drives orders.
+
+On the same floor, **pickers** walk the aisles to collect each order. When orders pile up, handing a picker **two similar orders at once** can save walking, but a bigger basket takes longer and raises the chance of packing errors.
+
+Leaders and interviewers want to know:
+1. How should we choose the **order quantity** per category: a fixed buffer, or the newsvendor rule? How much better is it?
+2. Does the usual **wMAPE on sales** pick the same model that is best for **availability and wastage**?
+3. Can we **estimate availability and wastage offline** for a model that was never run, and does that estimate match a **randomised pod experiment**?
+4. How many pods does such an experiment need?
+5. When does **batching two orders** per picker help, and when is it a waste of effort?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Swiggy documented
+
+| Item | Documented fact (from the reference file) |
+|---|---|
+| Problem | Dark-store demand planning must "maximize availability while reducing the wastage"; business teams set different availability and wastage targets by category. Assortment is "hundreds of thousands of products" |
+| Censoring | Sales equal true demand only when the item was in stock; during a stock-out, sales are truncated demand, so standard forecast metrics mislead. The post lists three wMAPE flaws: under-prediction bias when availability is low, ignoring cold-start and long-tail SKUs when evaluating only on high-availability days, and no direction for the business metrics |
+| Planning chain | Forecast k days ahead (k = 1 to 7, set by vendor lead time and shelf life) per SKU per pod, then a second ML model adds a purchase-order buffer for forecast error and **fill rate**, then warehouse, pods, inventory update. "6 to 7 pods form a cluster" |
+| Metric | **Estimated Availability (EA)** and **Estimated Wastage (EW)**: what availability and wastage would have been if this prediction had been used. A simple version assumes availability rises in proportion to sales; a refined version uses **hourly sales** to find when the predicted stock would have sold out, otherwise extrapolating with the day's median hourly sales |
+| Validation | Two models run in two randomly chosen sets of pods, each model's EA/EW computed on the pods where it was **not** used (to avoid leakage); and a 50-50 random bucketing of stores comparing predicted with actual lift |
+| Result | In one example, model M2 vs M1 showed "a relative 2.4% better estimated availability with relative 2% reduced estimated wastage"; the post says the live availability lift "is very well estimated" and the wastage direction matched. The table of actual values was an image, so **numbers are not available** (the 65% and 146-unit examples are illustrative). Company claim |
+| Picking (Jul 2024) | Free pickers are assigned round-robin. The proposal batches **up to 2 orders** for one picker with an optimisation model using Time To Pack (item similarity), Time To Free and a delay cost, validated by a SimPy simulation on real order, picker and shelving data. Results are qualitative only: assignment time down, picker-assigned-to-ready down, mean time-to-pack up for batched orders. No numbers |
+
+**Sources:** Swiggy Bytes, "Adaptive Metric Alignment for Demand Forecasting in Swiggy Instamart" (24 May 2023) and "Optimising the picking process to enable faster deliveries for Instamart" (10 Jul 2024).
+**Evidence limits:** the forecast models, the purchase-order buffer model, pod counts, wastage rates and picking cap rules beyond k = 2 are **not documented** in what was read. Assortment selection and dark-store placement are not documented at all. This notebook is an **interview-standard solution on simulated data, not a reproduction of Swiggy's system**.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 48 pods (8 clusters of 6) × 120 SKUs × 84 days (≈ 485,000 pod-SKU-days). 6 categories with shelf lives of 1, 2, 3 days or non-perishable, category margins and dispersion, festival, rain, promotions, vendor short-shipments. Demand is drawn **hour by hour** and stock is tracked **by age (FIFO)** |
+| Legacy ordering | Trailing 14-day mean of sales × a category buffer, which is what runs in the logs |
+| Twin | The generator keeps the **true hourly demand**, so any alternative ordering policy can be **replayed** on the same demand to get its true availability, wastage and profit |
+| Analyses | Two forecasters (a seasonal-naive M1 and a gradient-boosted M2); wMAPE vs EA/EW; **estimator validity** of the simple and hourly EA; **newsvendor** order rules against fixed buffers (selection on half the pods, test on the other half, Holm); a **randomised 24 v 24 pod experiment** with leak-free and leaky EA; sample size and cluster design effect; picking: **time-to-pack model**, **batching simulation** over staffing levels with paired days |
+| Not covered | Forecast censoring correction (Case 7), assortment, pod placement, multi-echelon warehouse flow |
+
+### (c) How the industry uses this
+
+Every quick-commerce and grocery retailer runs a **forecast, then a service-level-based order rule**, with category-specific service targets and wastage budgets. Perishable categories (bakery, dairy, produce) are where the newsvendor logic pays most. Metric design for planning (choosing the model by business outcome instead of forecast error) and **randomised store experiments** are standard practice. Picker assignment and order batching appear in dark-store, grocery and warehouse operations interviews.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | How should each pod order each day so availability targets are met with the least wastage, how do we choose between forecast models, and can picking be made faster? |
+| Analytical | Which ordering rule gives the best profit, availability and wastage per category? Does an offline estimate of availability agree with the truth and with a live experiment? When does batching help? |
+
+**Hypotheses**
+- **H1 (metric alignment):** H0: M1 and M2 rank the same on wMAPE (computed on sales) as on true availability and wastage.
+- **H2 (estimator validity):** H0: the simple and hourly EA estimators have zero bias for the true counterfactual availability, and for the M2 − M1 lift.
+- **H3 (ordering rule):** H0: the best newsvendor rule and the best fixed buffer give the same profit per pod-day (paired Wilcoxon on held-out pods, Holm across 6 categories).
+- **H4 (live experiment):** H0: the leak-free EA lift equals the actual lift in the randomised pod experiment; the leaky version is biased.
+- **H5 (picking):** H0: batching up to 2 orders does not change mean order-to-ready time (paired days; Holm across staffing × similarity settings); H5b: the effect does not depend on staffing level.
+
+**Primary metrics:** **availability** (share of the 16 open hours an SKU can be ordered), **wastage value** (cost of expired units as a % of sales value), **profit per pod-day** (margin on sales − cost of wasted units − 50% of price per lost sale − small holding cost), **order-to-ready time** (picking).
+
+#%% code
+import os
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"): os.environ[_v] = "1"   # avoids thread oversubscription slowdowns
+import sys, warnings, importlib, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.stats import nbinom
+from sklearn.ensemble import HistGradientBoostingRegressor
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public dark-store or pod-level inventory data | **None.** Public retail sets (M5/Walmart, Instacart, Favorita) are daily sales without hourly stock state, wastage by age, or a replayable truth; none is Indian quick commerce |
+| Public picker or order-batching logs | **None** found |
+| **Decision** | Synthetic pod-SKU-day logs with hidden true hourly demand, so any policy can be replayed, plus a synthetic order log for picking (D-03-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs03.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/ecommerce/data/generate_cs03.py
+
+#%% code
+os.makedirs("data/cs03", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs03 as gen; importlib.reload(gen)
+t0 = time.time(); raw, TR = gen.generate(seed=SEED)
+raw.to_csv("data/cs03/pod_sku_days.csv.gz", index=False); np.savez_compressed("data/cs03/hourly_sales.npz", hourly=TR["hourly"]); TR["sku_master"].to_csv("data/cs03/sku_master.csv.gz", index=False)
+picks = gen.generate_picking(seed=SEED); picks.to_csv("data/cs03/pick_orders.csv.gz", index=False)
+print(f"{len(raw):,} pod-SKU-day rows | {len(picks):,} pick orders | generated in {time.time() - t0:.0f}s")
+raw.head(4)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Scale | 48 pods in 8 clusters of 6, 120 SKUs, 84 days, 16 open hours | **Documented**: "6–7 pods form a cluster"; pod and SKU counts are our assumption |
+| Categories | Bakery/ready-to-eat (1-day life), fresh produce (2), dairy/eggs (3), packaged, snacks/beverages, home/personal care (non-perishable) | Our assumption; shelf life and category targets documented as concepts only |
+| Demand | Poisson with a gamma-mixed rate (dispersion r = 5 to 12), weekday, festival (+30%, 2 days), rain, promo (+40%), trend, cluster shocks, drawn per hour | Our assumption |
+| Legacy ordering | Trailing 14-day mean of **sales** × buffer 1.10 to 1.25; vendor short-shipments (mean ≈ 2.5% of units) | Our assumption (buffer + fill rate **documented** as concepts) |
+| Costs | Margin 8–45% of price; a lost sale costs 50% of price in goodwill (basket abandonment and churn risk); a wasted unit costs its purchase cost; holding 0.4% of cost per day (a non-perishable unit overstocked is costed at about 10 days of holding) | Our assumption |
+| Picking | Time to pack = 20 s setup + 10 s per item + 24 s per zone visited + 18 s pack; batch adds 10 s sorting; error rate 0.4% single, up to 1.6% for dissimilar batched orders | Our assumption (mechanism **documented**, numbers are not) |
+| DQ issues | 0.3% duplicate rows, 0.8% missing availability, 0.2% opening-stock glitches, one pod offline for 2 days | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("pod_id, cluster_id, sku_id, day, date, category", "Pod (48), cluster (8 of 6 pods), SKU (120), day 0-83, date, category"),
+    ("shelf_life_days, price_inr, unit_cost_inr", "Shelf life (999 = non-perishable), selling price, purchase cost"),
+    ("promo, festival, rain_forecast_mm", "Known-ahead drivers: promotion flag, festival day, rain forecast (noisy)"),
+    ("po_qty, received_qty, opening_stock", "Units ordered, received after vendor short-shipment, stock at the start of the day"),
+    ("units_sold, avail_share, wasted_units", "Observed sales (censored), share of open hours in stock, units expired at the start of the day"),
+    ("hourly_sales.npz (hourly)", "Observed units sold per open hour [pod-SKU, day, 16 hours]"),
+    ("sku_master: target_availability", "Category availability target set by the business (our assumption)"),
+    ("pick_orders: arrival_sec, n_items, n_zones, zone_mask, weight_kg", "Order arrival second, basket size, zones visited, bit-mask of zones, weight"),
+    ("pick_orders: assign_wait_sec, order_to_ready_sec, pick_pack_sec", "Logged times under round-robin assignment with 5 pickers"),
+    ("_true_demand, _lost_sales, _vendor_short_prob, TR['H']", "HIDDEN truth: demand (incl. hourly), lost sales, vendor reliability (used by the twin only)"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs03/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+N, D = gen.N_PODS * gen.N_SKU, gen.DAYS
+df = raw.drop_duplicates("row_id").copy()
+checks = {"duplicate rows": int(raw.duplicated("row_id").sum()), "missing availability": int(df.avail_share.isna().sum()),
+          "opening stock 0 but units sold > 0": int(((df.opening_stock == 0) & (df.units_sold > 0)).sum()), "missing pod-days (rows absent)": int(N * D - len(df)),
+          "units sold > received + carry-over bound (units_sold > opening_stock)": int((df.units_sold > df.opening_stock).sum()), "negative values": int((df[["units_sold", "wasted_units", "po_qty"]] < 0).sum().sum())}
+print(pd.Series(checks, name="rows").to_string())
+df["opening_stock"] = np.maximum(df.opening_stock, df.units_sold)
+def mat(col, fill=np.nan):
+    M = np.full(N * D, fill, float); M[df.row_id.values] = df[col].values; return M.reshape(N, D)
+SOLD, AV, WASTE, PROMO, RAIN, PO = mat("units_sold"), mat("avail_share"), mat("wasted_units"), mat("promo", 0), mat("rain_forecast_mm", 0), mat("po_qty")
+VALID = ~np.isnan(SOLD); AVf = np.where(np.isnan(AV), np.nanmean(AV, 1, keepdims=True), AV); SOLD = np.where(VALID, SOLD, np.nanmedian(SOLD, 1, keepdims=True)); AVf = np.where(VALID, AVf, 0.9)
+HOURLY = np.load("data/cs03/hourly_sales.npz")["hourly"]; H = TR["H"]; DTRUE = H.sum(2)
+SKM = TR["sku_master"]; cat_n = TR["cat_n"]; Lrow = TR["L"]; nonper = TR["nonper"]; FILLU = TR["fillu"]
+price_row = np.tile(SKM.price_inr.values, gen.N_PODS)[:, None]; cost_row = np.tile(SKM.unit_cost_inr.values, gen.N_PODS)[:, None]
+dayinfo = df.groupby("day").agg(dow=("date", lambda s: pd.Timestamp(s.iloc[0]).dayofweek), fest=("festival", "max")); DOW = dayinfo.dow.values; FESTD = dayinfo.fest.values
+print(f"\nClean: {len(df):,} rows | {VALID.sum():,} valid pod-SKU-days | mean availability {np.nanmean(AV):.1%} | wastage {np.nansum(WASTE) / (np.nansum(SOLD * VALID) + np.nansum(WASTE)):.1%} of units | vendor fill {df.received_qty.sum() / df.po_qty.sum():.1%}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#### Code
+
+#%% code
+fig, axes = plt.subplots(1, 3, figsize=(17, 4.5)); cn = gen.CAT_NAMES
+g = df.groupby("category").agg(av=("avail_share", "mean"), sold=("units_sold", "sum"), wasted=("wasted_units", "sum")).reindex(cn); tg = SKM.groupby("category").target_availability.first().reindex(cn)
+x = np.arange(6); axes[0].bar(x, g.av * 100, color="#2a6f97"); axes[0].scatter(x, tg * 100, color="#e07a1f", zorder=3, label="business target", s=60); axes[0].set_xticks(x); axes[0].set_xticklabels([c.split(" and")[0][:12] for c in cn], rotation=30, ha="right")
+axes[0].set_ylim(60, 100); axes[0].set_xlabel("Category"); axes[0].set_ylabel("Mean availability (%)"); axes[0].set_title("Availability vs target by category"); axes[0].legend()
+axes[1].bar(x, g.wasted / (g.sold + g.wasted) * 100, color="#bc4749"); axes[1].set_xticks(x); axes[1].set_xticklabels([c.split(" and")[0][:12] for c in cn], rotation=30, ha="right"); axes[1].set_xlabel("Category"); axes[1].set_ylabel("Wasted units (% of units handled)"); axes[1].set_title("Wastage is a perishable problem")
+low = (AVf < 0.75) & VALID; hi = (AVf >= 0.999) & VALID
+axes[2].plot(np.arange(1, 17), HOURLY[hi].sum(0) / HOURLY[hi].sum() * 100, marker="o", color="#2a6f97", label="in stock all day"); axes[2].plot(np.arange(1, 17), HOURLY[low].sum(0) / HOURLY[low].sum() * 100, marker="o", color="#bc4749", label="availability < 75%")
+axes[2].set_xlabel("Open hour"); axes[2].set_ylabel("Share of the day's sales (%)"); axes[2].set_title("Stock-outs truncate the evening peak"); axes[2].legend()
+plt.tight_layout(); plt.show()
+ratio = pd.Series({lab: DTRUE[m & VALID].sum() / SOLD[m & VALID].sum() for lab, m in {"availability >= 95%": AVf >= 0.95, "75% to 95%": (AVf >= 0.75) & (AVf < 0.95), "< 75%": AVf < 0.75}.items()})
+print("True demand / observed sales (simulation-only check of censoring):", ratio.round(3).to_dict(), "| share of pod-SKU-days below 75% availability:", f"{(AVf < 0.75)[VALID].mean():.1%}")
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Two forecasters and the usual metric (wMAPE on sales)
+
+**(a) Why?** The planning chain starts with a forecast. We build two simple, fixed (untuned) models trained on days 14–48 and tested on days 49–83: **M1** = trailing 14-day mean of sales × a weekday factor (seasonal naive), **M2** = gradient-boosted trees (Poisson loss) on lags, an availability-adjusted lag, weekday, festival, promo, rain forecast, price, shelf life and category. Both see only **censored sales**. We compute **wMAPE on observed sales** (the usual metric), the same on **true demand** (possible only in the simulation) and the bias. Per-pod wMAPE differences are tested with a paired Wilcoxon test (48 pods).
+
+#### Code
+
+#%% code
+TRN, TST = (14, 49), (49, 84); MEAS = 3   # first 3 test days are warm-up for the replay and are excluded from outcomes
+cs_s = np.concatenate([np.zeros((N, 1)), np.cumsum(SOLD, 1)], 1); cs_a = np.concatenate([np.zeros((N, 1)), np.cumsum(AVf, 1)], 1)
+def build(d0, d1):
+    d = np.arange(d0, d1); nd = len(d); w14 = cs_s[:, d] - cs_s[:, d - 14]
+    f = dict(m14=w14 / 14, m7=(cs_s[:, d] - cs_s[:, d - 7]) / 7, last=SOLD[:, d - 1], lag7=SOLD[:, d - 7], adj14=w14 / np.maximum(cs_a[:, d] - cs_a[:, d - 14], 0.5), av14=(cs_a[:, d] - cs_a[:, d - 14]) / 14,
+             expmean=cs_s[:, d] / d[None, :], dow=np.tile(DOW[d], (N, 1)), fest=np.tile(FESTD[d], (N, 1)), promo=PROMO[:, d], rain=RAIN[:, d], cat=np.tile(cat_n[:, None], (1, nd)),
+             price=np.tile(price_row, (1, nd)), shelf=np.tile(np.minimum(Lrow, 4)[:, None], (1, nd)))
+    return pd.DataFrame({k: v.reshape(-1) for k, v in f.items()})
+Xtr, Xte = build(*TRN), build(*TST); ytr = SOLD[:, TRN[0]:TRN[1]].reshape(-1); vtr = VALID[:, TRN[0]:TRN[1]].reshape(-1)
+yte = SOLD[:, TST[0]:].reshape(-1); dte = DTRUE[:, TST[0]:].reshape(-1); vte = VALID[:, TST[0]:].reshape(-1); avte = AVf[:, TST[0]:].reshape(-1)
+nd_te = TST[1] - TST[0]; pod_te = np.repeat(np.arange(N) // gen.N_SKU, nd_te)
+t0 = time.time(); m2 = HistGradientBoostingRegressor(loss="poisson", max_iter=200, learning_rate=0.1, random_state=SEED).fit(Xtr[vtr], ytr[vtr]); print(f"M2 fitted in {time.time() - t0:.0f}s")
+dowf = np.ones((6, 7))
+for c in range(6):
+    for k in range(7):
+        sel = vtr & (Xtr.cat.values == c); dowf[c, k] = ytr[sel & (Xtr.dow.values == k)].mean() / ytr[sel].mean()
+F1 = (Xte.m14.values * dowf[Xte.cat.values.astype(int), Xte.dow.values.astype(int)]); F2 = m2.predict(Xte); F2tr = m2.predict(Xtr)
+def wmape(F, y, m): return np.abs(F[m] - y[m]).sum() / y[m].sum()
+rows = []
+for name, F in (("M1 seasonal naive", F1), ("M2 gradient boosting", F2)):
+    hi_av = vte & (avte >= 0.9)
+    rows.append((name, wmape(F, yte, vte), wmape(F, yte, hi_av), wmape(F, dte, vte), F[vte].sum() / yte[vte].sum() - 1, F[vte].sum() / dte[vte].sum() - 1))
+fc = pd.DataFrame(rows, columns=["model", "wMAPE vs sales", "wMAPE vs sales (availability >= 90% only)", "wMAPE vs TRUE demand", "bias vs sales", "bias vs TRUE demand"]).set_index("model")
+pw = lambda F, y: np.array([np.abs(F[vte & (pod_te == p)] - y[vte & (pod_te == p)]).sum() / y[vte & (pod_te == p)].sum() for p in range(gen.N_PODS)])
+d_sales = pw(F1, yte) - pw(F2, yte); d_true = pw(F1, dte) - pw(F2, dte)
+print(f"Pod-level wMAPE (M1 − M2) on sales: mean {d_sales.mean():+.4f}, Wilcoxon p = {stats.wilcoxon(d_sales).pvalue:.2g}; on true demand: mean {d_true.mean():+.4f}, p = {stats.wilcoxon(d_true).pvalue:.2g}")
+fc.round(4)
+
+#%% md
+**Observation:** «O71»
+
+### 7.2 Does the offline metric match the business outcome? Estimated availability and wastage (EA / EW)
+
+**(a) Why?** The business cares about availability and wastage once a model drives the **purchase order (PO)**. For each model we set the day's PO target = forecast × the category buffer (the same rule in both arms). The **truth** (a one-day counterfactual with stock = PO target, using the hidden hourly demand) is available only in the simulation. From the **logs alone** we estimate it two ways, following the documented idea: **simple EA** = observed availability × (predicted stock ÷ observed sales), capped at 1; **hourly EA** = find the hour at which the predicted stock would have sold out using observed hourly sales, or extend the observed in-stock hours at the day's **median hourly sales** if the prediction exceeds what was sold. **EW** (leftover units) is the stock that would remain.
+
+**(b) Assumptions:** hourly sales are observed; demand per hour is steady while out of stock (checked in 7.2 by comparing to the truth); the estimator is a **one-day** counterfactual with no carry-over.
+
+**(c) Tests:** bias and error of each estimator against the truth, pod-bootstrap 95% CI (2,000 resamples) for the **M2 − M1 lift**.
+
+#### Code
+
+#%% code
+BUF = gen.LEGACY_BUFFER[cat_n][:, None]; Hts = H[:, TST[0]:]; Sts = SOLD[:, TST[0]:]; Ats = AVf[:, TST[0]:]; HSts = HOURLY[:, TST[0]:]; Vts = VALID[:, TST[0]:].copy(); Vts[:, :MEAS] = False
+def tgt_from(F): return np.maximum(np.ceil(F.reshape(N, nd_te) * BUF), 1)
+T1, T2 = tgt_from(F1), tgt_from(F2)
+def ea_est(T, S, A, HS):
+    Ah = A * 16; cs = np.cumsum(HS, axis=2).astype(float); simple = np.where(S > 0, np.minimum(1, A * T / np.maximum(S, 1e-9)), A)
+    instock = np.arange(16)[None, None, :] < np.ceil(Ah - 1e-9)[..., None]; med = np.nan_to_num(np.nanmedian(np.where(instock, HS, np.nan), axis=2))
+    reach = cs >= T[..., None] - 1e-9; h = reach.argmax(2); prev = np.where(h > 0, np.take_along_axis(cs, np.maximum(h - 1, 0)[..., None], 2)[..., 0], 0.0); hsh = np.take_along_axis(HS.astype(float), h[..., None], 2)[..., 0]
+    pos = h + np.where(hsh > 0, (T - prev) / np.maximum(hsh, 1e-9), 1.0); ea_a = np.minimum(pos, 16) / 16
+    extra = np.where(med > 0, (T - S) / np.maximum(med, 1e-9), 0.0); ea_b = np.where(A >= 0.999, 1.0, np.minimum(1.0, (Ah + extra) / 16))
+    hourly = np.where(T <= S + 1e-9, ea_a, ea_b); Sest = np.where(T <= S + 1e-9, T, np.minimum(T, S + np.maximum(hourly * 16 - Ah, 0) * med)); return simple, hourly, T - Sest
+def podmean(x, mask): return (x * mask).reshape(gen.N_PODS, gen.N_SKU, -1).sum((1, 2)) / mask.reshape(gen.N_PODS, gen.N_SKU, -1).sum((1, 2))
+def ci_mean(x, B=2000): bs = x[RNG.integers(0, len(x), (B, len(x)))].mean(1); return x.mean(), np.percentile(bs, 2.5), np.percentile(bs, 97.5)
+res = {}
+for nm, T in (("M1", T1), ("M2", T2)):
+    s_true, a_true, left_true = gen.oneday_truth(Hts.astype(float), T); a_simple, a_hour, left_est = ea_est(T, Sts, Ats, HSts)
+    res[nm] = dict(true=podmean(a_true, Vts), simple=podmean(a_simple, Vts), hourly=podmean(a_hour, Vts), left_true=podmean(left_true, Vts), left_est=podmean(left_est, Vts))
+rows = []
+for k in ("true", "simple", "hourly"):
+    m1, m2_ = res["M1"][k], res["M2"][k]; lift = m2_ - m1; mu, lo, hi = ci_mean(lift); rows.append((k, m1.mean(), m2_.mean(), mu * 100, lo * 100, hi * 100))
+ea_tab = pd.DataFrame(rows, columns=["EA version", "M1 availability", "M2 availability", "M2 − M1 lift (pp)", "CI low (pp)", "CI high (pp)"]).set_index("EA version")
+bias = {k: (res["M1"][k] - res["M1"]["true"]).mean() * 100 for k in ("simple", "hourly")}; rmse = {k: np.sqrt(np.mean((res["M1"][k] - res["M1"]["true"]) ** 2)) * 100 for k in ("simple", "hourly")}
+print(f"Estimator bias vs truth for M1 (pp of availability): simple {bias['simple']:+.2f}, hourly {bias['hourly']:+.2f}; pod-level RMSE (pp): simple {rmse['simple']:.2f}, hourly {rmse['hourly']:.2f}")
+print(f"Leftover units per pod-SKU-day, M1: truth {res['M1']['left_true'].mean():.3f}, estimated {res['M1']['left_est'].mean():.3f}; M2: truth {res['M2']['left_true'].mean():.3f}, estimated {res['M2']['left_est'].mean():.3f}")
+ea_tab.round(4)
+
+#%% md
+**Observation:** «O72»
+
+### 7.3 The newsvendor core: how much to order per category
+
+**(a) Why?** With demand uncertainty, the profit-maximising order stocks up to the demand quantile equal to the **critical ratio** CR = Cu ÷ (Cu + Co), where **Cu** is the cost of one unit too few (margin + 50% of price goodwill) and **Co** the cost of one unit too many (purchase cost for perishables; about 10 days of holding cost for non-perishables). We build the order target from the **M2 forecast** plus the demand **distribution**: negative binomial with mean = forecast and dispersion fitted by least squares on training days where availability was ≥ 95% (an optimistic selection; the fit is flagged as a limitation). We compare the newsvendor family (target = demand quantile q) with the **fixed-buffer** family (target = forecast × m).
+
+**(b) How we test:** each ordering rule is **replayed on the twin** (same true demand, same vendor shortfalls, FIFO ageing, carry-over). For each category we pick the best q and best m on the **even-numbered pods** and report profit on the **odd-numbered pods** (24 paired pods; Wilcoxon; Holm across 6 categories), so tuning does not flatter the result. We also check the textbook q = CR against the empirical profit-maximising q.
+
+#### Code
+
+#%% code
+Cu = (price_row - cost_row) + gen.GOODWILL * price_row; Co = np.where(nonper[:, None], cost_row * gen.HOLD * 10, cost_row); CRrow = (Cu / (Cu + Co))[:, 0]; CRcat = np.array([CRrow[cat_n == c].mean() for c in range(6)])
+# the textbook CR is exact for a 1-day shelf life only; for longer lives leftovers are not lost, so the real optimum is higher
+Ftr = np.maximum(F2tr, 0.05); hi_tr = vtr & (Xtr.av14.values > 0) & (AVf[:, TRN[0]:TRN[1]].reshape(-1) >= 0.95); rhat = np.zeros(6); bhat = np.zeros(6)
+for c in range(6):
+    s = hi_tr & (Xtr.cat.values == c); b = np.sum(((ytr[s] - Ftr[s]) ** 2 - Ftr[s]) * Ftr[s] ** 2) / np.sum(Ftr[s] ** 4); bhat[c] = max(b, 0.02); rhat[c] = np.clip(1 / bhat[c], 1, 50)
+Fte2 = np.maximum(F2.reshape(N, nd_te), 0.05); r_row = rhat[cat_n][:, None]
+def T_nb(q): return np.maximum(nbinom.ppf(q, r_row, r_row / (r_row + Fte2)), 1)
+def T_fix(m): return np.maximum(np.ceil(Fte2 * m), 1)
+def replay(T, hourly=False):
+    return gen.simulate(Hts, T, Lrow, nonper, FILLU[:, TST[0]:], collect_hourly=hourly)
+def podcat(M): return M[:, MEAS:].reshape(gen.N_PODS, 6, 20, -1).sum((2, 3))
+def econ(sim):
+    sold, wasted, lost, op = sim["sold"], sim["wasted"], sim["lost"], sim["opening"]; prof = sold * (price_row - cost_row) - wasted * cost_row - gen.GOODWILL * price_row * lost - gen.HOLD * cost_row * np.maximum(op - sold, 0)
+    return dict(profit=podcat(prof), gmv=podcat(sold * price_row), wval=podcat(wasted * cost_row), avail=podcat(sim["avail"]) / (20 * (nd_te - MEAS)))
+QG = [0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.98, 0.995]; MG = [0.9, 1.0, 1.1, 1.2, 1.3, 1.45, 1.6, 1.8]
+t0 = time.time(); E_nb = {q: econ(replay(T_nb(q))) for q in QG}; E_fx = {m: econ(replay(T_fix(m))) for m in MG}; print(f"{len(QG) + len(MG)} policy replays in {time.time() - t0:.0f}s")
+pdays = gen.N_PODS * (nd_te - MEAS); ev = np.arange(gen.N_PODS) % 2 == 0; od = ~ev; rows = []; pvals = []
+for c in range(6):
+    bq = max(QG, key=lambda q: E_nb[q]["profit"][ev, c].sum()); bm = max(MG, key=lambda m: E_fx[m]["profit"][ev, c].sum())
+    a, b = E_nb[bq]["profit"][od, c], E_fx[bm]["profit"][od, c]; p = stats.wilcoxon(a, b).pvalue; pvals.append(p); allq = max(QG, key=lambda q: E_nb[q]["profit"][:, c].sum())
+    rows.append((gen.CAT_NAMES[c], CRcat[c], bq, allq, bm, a.sum() / (od.sum() * (nd_te - MEAS)) / 1, b.sum() / (od.sum() * (nd_te - MEAS)), (a - b).mean() / (nd_te - MEAS) * 20 / 20, E_nb[bq]["avail"][od, c].mean(), E_fx[bm]["avail"][od, c].mean(),
+                 E_nb[bq]["wval"][od, c].sum() / E_nb[bq]["gmv"][od, c].sum(), E_fx[bm]["wval"][od, c].sum() / E_fx[bm]["gmv"][od, c].sum(), SKM.target_availability[SKM.category == gen.CAT_NAMES[c]].iloc[0], p))
+nv = pd.DataFrame(rows, columns=["category", "critical ratio", "best q (even pods)", "best q (all pods)", "best buffer m (even pods)", "₹ profit/pod-day NV (odd pods)", "₹ profit/pod-day fixed", "Δ ₹/pod-day (mean)", "avail NV", "avail fixed", "waste % GMV NV", "waste % GMV fixed", "target avail", "Wilcoxon p"]).set_index("category")
+nv["p_holm"] = multipletests(nv["Wilcoxon p"], method="holm")[1]
+print("Dispersion fitted vs true (simulation only):", {gen.CAT_NAMES[c].split(' and')[0][:9]: (round(rhat[c], 1), gen.CATS[c][4]) for c in range(6)})
+nv.round(4)
+
+#%% md
+**Observation:** «O73»
+
+#### Frontier chart
+
+#%% code
+fig, axes = plt.subplots(1, 3, figsize=(17, 4.6))
+for ax, cats, ttl in ((axes[0], [0, 1, 2], "Perishables (bakery, produce, dairy)"), (axes[1], [3, 4, 5], "Non-perishables")):
+    for E, key, col, lab in ((E_nb, QG, "#2a6f97", "newsvendor quantile q"), (E_fx, MG, "#e07a1f", "fixed buffer m")):
+        xs = [E[k]["wval"][:, cats].sum() / E[k]["gmv"][:, cats].sum() * 100 for k in key]; ys = [E[k]["avail"][:, cats].mean() * 100 for k in key]; ax.plot(xs, ys, marker="o", color=col, label=lab)
+    ax.set_xlabel("Wastage (% of sales value)"); ax.set_ylabel("Availability (%)"); ax.set_title(ttl); ax.legend()
+for c in range(6):
+    pr = np.array([E_nb[q]["profit"][:, c].sum() for q in QG]); axes[2].plot(QG, pr / pr.max(), marker=".", label=gen.CAT_NAMES[c].split(" and")[0][:12])
+axes[2].set_ylim(0.0, 1.02); axes[2].set_xlabel("Newsvendor quantile q"); axes[2].set_ylabel("Profit as share of its best"); axes[2].set_title("Profit by q, per category"); axes[2].legend(fontsize=7)
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O731»
+
+### 7.4 The randomised pod experiment: leak-free EA, leaky EA and the actual lift
+
+**(a) Why?** The documented validation runs two models in two randomly chosen sets of pods and checks the offline estimate against the actual lift. We repeat it on the twin: **24 pods are randomly assigned M2, 24 stay on M1** (same PO buffer rule), and the replay gives every pod's actual outcome. Each model's EA is estimated from the logs of the pods where it was **not** used (**leak-free**) and, for contrast, where it **was** used (**leaky**). Because the twin can run **both** models on **every** pod with the same demand, we also get the **paired oracle lift**, which the real company cannot see.
+
+**(b) Tests:** Welch and **ANCOVA** (adjusting for each pod's pre-period availability) for the actual lift; bootstrap CIs for the EA lifts. The EA estimators come from 7.2.
+
+#### Code
+
+#%% code
+arm = np.zeros(gen.N_PODS, int); arm[RNG.permutation(gen.N_PODS)[:24]] = 1     # 1 = M2
+S1, S2 = replay(T1, True), replay(T2, True); E1, E2 = econ(S1), econ(S2)
+pod_av = lambda E: E["avail"].mean(1); pod_w = lambda E: E["wval"].sum(1) / E["gmv"].sum(1); pod_p = lambda E: E["profit"].sum(1) / (nd_te - MEAS)
+act = {k: np.where(arm == 1, f(E2), f(E1)) for k, f in (("avail", pod_av), ("waste", pod_w), ("profit", pod_p))}
+pre = AVf[:, 21:49].reshape(gen.N_PODS, gen.N_SKU, -1).mean((1, 2))
+def lift_tab(y):
+    d = y[arm == 1].mean() - y[arm == 0].mean(); t = stats.ttest_ind(y[arm == 1], y[arm == 0], equal_var=False); se = np.sqrt(y[arm == 1].var(ddof=1) / 24 + y[arm == 0].var(ddof=1) / 24)
+    m = sm.OLS(y, sm.add_constant(np.c_[arm, pre])).fit(); return d, d - 1.96 * se, d + 1.96 * se, t.pvalue, m.params[1], *m.conf_int()[1], m.pvalues[1], m
+ta = lift_tab(act["avail"]); tw = lift_tab(act["waste"]); tp = lift_tab(act["profit"])
+orc = {k: f(E2) - f(E1) for k, f in (("avail", pod_av), ("waste", pod_w), ("profit", pod_p))}
+def ea_for(T, S_sim, pods_mask, kind):
+    a_s, a_h, l_ = ea_est(T, S_sim["sold"], S_sim["avail"], S_sim["hourly"]); x = a_h if kind == "hourly" else a_s; return podmean(x, Vts)[pods_mask]
+rows = []
+def add(name, vals_hi, vals_lo): d = vals_hi.mean() - vals_lo.mean(); bs = [vals_hi[RNG.integers(0, len(vals_hi), len(vals_hi))].mean() - vals_lo[RNG.integers(0, len(vals_lo), len(vals_lo))].mean() for _ in range(2000)]; rows.append((name, d * 100, np.percentile(bs, 2.5) * 100, np.percentile(bs, 97.5) * 100))
+for kind in ("hourly", "simple"):
+    add(f"EA {kind}, leak-free (M2 on M1 pods − M1 on M2 pods)", ea_for(T2, S1, arm == 0, kind), ea_for(T1, S2, arm == 1, kind))
+    add(f"EA {kind}, LEAKY (M2 on M2 pods − M1 on M1 pods)", ea_for(T2, S2, arm == 1, kind), ea_for(T1, S1, arm == 0, kind))
+add("EA hourly, same pods (all pods' M1 logs)", ea_for(T2, S1, np.ones(48, bool), "hourly"), ea_for(T1, S1, np.ones(48, bool), "hourly"))
+mu, lo, hi = ci_mean(orc["avail"]); rows.append(("Paired oracle lift, full replay with carry-over (all pods)", mu * 100, lo * 100, hi * 100)); rows.append(("Actual lift in the 24 v 24 experiment, ANCOVA", ta[4] * 100, ta[5] * 100, ta[6] * 100))
+rows.append(("Actual lift in the 24 v 24 experiment, difference in means", ta[0] * 100, ta[1] * 100, ta[2] * 100))
+ex = pd.DataFrame(rows, columns=["availability lift estimate", "pp", "CI low", "CI high"]).set_index("availability lift estimate")
+print(f"Arms: {arm.sum()} v {(1 - arm).sum()} pods; pre-period availability balance: M2 pods {pre[arm == 1].mean():.4f}, M1 pods {pre[arm == 0].mean():.4f}")
+print(f"Availability: diff p = {ta[3]:.3g}, ANCOVA p = {ta[7]:.3g} | wastage (% of sales value): diff {tw[0] * 100:+.2f} pp (CI {tw[1] * 100:+.2f} to {tw[2] * 100:+.2f}) | profit/pod-day: diff ₹{tp[0]:,.0f} (CI ₹{tp[1]:,.0f} to ₹{tp[2]:,.0f}) | oracle paired profit ₹{orc['profit'].mean():,.0f}, waste {orc['waste'].mean() * 100:+.2f} pp")
+ex.round(3)
+
+#%% md
+**Observation:** «O74»
+
+#### Forest chart of the lift estimates
+
+#%% code
+fig, ax = plt.subplots(figsize=(10, 4.6)); yy = np.arange(len(ex))[::-1]
+ax.errorbar(ex["pp"], yy, xerr=[ex["pp"] - ex["CI low"], ex["CI high"] - ex["pp"]], fmt="o", color="#2a6f97", capsize=3); ax.axvline(0, color="grey", lw=1)
+ax.set_yticks(yy); ax.set_yticklabels([s[:58] for s in ex.index], fontsize=8); ax.set_xlabel("Availability lift of M2 over M1 (percentage points)"); ax.set_ylabel("Estimate"); ax.set_title("Offline estimates vs the real experiment: M2 − M1 availability")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O741»
+
+### 7.5 How many pods does such an experiment need?
+
+With 48 pods the experiment above can detect only large effects. Using the pod-level standard deviation of the availability outcome (raw and after ANCOVA adjustment for pre-period availability), we compute **pods per arm** to detect lifts of 0.5, 1, 2 and 3 percentage points (80% power, α = 0.05, two-sided; n = 2(1.96+0.84)² σ² ÷ δ²). Because pods in a cluster share demand, we also estimate the **intra-cluster correlation (ICC)** and the **design effect** if randomisation had to be by cluster of 6 pods.
+
+#### Code
+
+#%% code
+sd_raw = act["avail"].std(ddof=1); sd_adj = np.sqrt(ta[-1].scale); clus = np.arange(gen.N_PODS) // gen.PER_CLUSTER if hasattr(gen, "PER_CLUSTER") else np.arange(gen.N_PODS) // 6
+pre_pod = pre; g_ = pd.Series(pre_pod).groupby(clus); msb = 6 * g_.mean().var(ddof=1); msw = g_.var(ddof=1).mean(); icc = max((msb - msw) / (msb + 5 * msw), 0.0); deff = 1 + 5 * icc
+rows = [(f"{d:.1f} pp", int(np.ceil(2 * 2.8 ** 2 * sd_raw ** 2 / (d / 100) ** 2)), int(np.ceil(2 * 2.8 ** 2 * sd_adj ** 2 / (d / 100) ** 2)), int(np.ceil(2 * 2.8 ** 2 * sd_adj ** 2 / (d / 100) ** 2 * deff))) for d in (0.5, 1, 2, 3)]
+pw_ = pd.DataFrame(rows, columns=["lift to detect", "pods per arm (raw)", "pods per arm (ANCOVA)", "pods per arm, cluster-randomised (design effect)"]).set_index("lift to detect")
+mde = 2.8 * sd_adj * np.sqrt(2 / 24) * 100
+print(f"Pod-level SD of availability: raw {sd_raw * 100:.2f} pp, after ANCOVA {sd_adj * 100:.2f} pp | pre-period correlation with outcome r = {np.corrcoef(pre, act['avail'])[0, 1]:.2f} | ICC by cluster (pre-period) = {icc:.3f}, design effect {deff:.2f} | minimum detectable lift with 24 v 24 pods: {mde:.2f} pp")
+pw_
+
+#%% md
+**Observation:** «O75»
+
+### 7.6 Picking, part 1: what drives time-to-pack?
+
+**(a) Why?** The batching decision trades **setup and walking saved** against a **bigger basket**. That needs a time-to-pack model. From the order log (single-order picks under round-robin assignment) we regress pick-and-pack seconds on the number of items, the number of distinct **zones** visited and weight. Heteroscedasticity-robust (HC3) errors; the simulation's true per-item (10 s) and per-zone (24 s) times serve as a check.
+
+#### Code
+
+#%% code
+pk = picks.copy(); ols = smf.ols("pick_pack_sec ~ n_items + n_zones + weight_kg", data=pk).fit(cov_type="HC3")
+resid = ols.resid; bp = sm.stats.diagnostic.het_breuschpagan(resid, ols.model.exog)[1]
+print(f"Orders: {len(pk):,} | R² = {ols.rsquared:.3f} | residual skew {stats.skew(resid):.2f} | Breusch-Pagan p = {bp:.2g}")
+ct = pd.DataFrame({"coef (s)": ols.params, "CI low": ols.conf_int()[0], "CI high": ols.conf_int()[1], "p": ols.pvalues}); ct["true value in simulation (s)"] = [gen.SETUP + gen.PACK, gen.T_ITEM, gen.T_ZONE, 0.0]
+ct.round(3)
+
+#%% md
+**Observation:** «O76»
+
+### 7.7 Picking, part 2: when does batching up to 2 orders help?
+
+**(a) Why?** The documented rule: batch up to 2 orders when free pickers are fewer than unassigned orders. Our event simulator applies exactly that: when a picker frees up and more orders are waiting than pickers are free, the oldest order is paired with the **most similar** of the next 8 waiting orders (zone Jaccard similarity ≥ θ, at most 14 items and 12 kg together). Pairs share setup and walking but pay a sorting step, and mixed baskets raise the packing-error rate. We replay **30 paired order-days** (same orders for every policy) at 4 to 7 pickers and θ = 0.2, 0.4, 0.6, and compare with **no batching**.
+
+**(b) Tests:** per setting, paired differences of daily means with t-based 95% CI and Wilcoxon; Holm across the 12 comparisons; a regression of the θ = 0.2 gain on staffing for the interaction (H5b). Error cost ₹120 per packing error (assumption).
+
+#### Code
+
+#%% code
+KS, THS, ND = [4, 5, 6, 7], [None, 0.2, 0.4, 0.6], 30
+orders = [gen.gen_orders(np.random.default_rng(1000 + s)) for s in range(ND)]; rows = []; t0 = time.time()
+for K in KS:
+    for th in THS:
+        for s, o in enumerate(orders):
+            r = gen.sim_picking(o, K, th); rows.append((K, "none" if th is None else f"θ={th}", s, r["assign_wait"].mean(), r["order_to_ready"].mean(), np.percentile(r["order_to_ready"], 90), r["batched"].mean(), r["error"].sum(), r["busy"] / 3600))
+bt = pd.DataFrame(rows, columns=["pickers", "policy", "day", "assign_wait", "order_to_ready", "p90_ready", "batched_share", "errors", "busy_hours"]); print(f"{len(bt)} simulated pod-days in {time.time() - t0:.0f}s")
+rows = []
+for K in KS:
+    base = bt[(bt.pickers == K) & (bt.policy == "none")].sort_values("day")
+    for pol in ("θ=0.2", "θ=0.4", "θ=0.6"):
+        cur = bt[(bt.pickers == K) & (bt.policy == pol)].sort_values("day"); d = cur.order_to_ready.values - base.order_to_ready.values; dw = cur.assign_wait.values - base.assign_wait.values; de = cur.errors.values - base.errors.values
+        se = d.std(ddof=1) / np.sqrt(ND); tc = stats.t.ppf(0.975, ND - 1); rows.append((K, pol, base.order_to_ready.mean(), d.mean(), d.mean() - tc * se, d.mean() + tc * se, dw.mean(), cur.batched_share.mean(), de.mean(), stats.wilcoxon(cur.order_to_ready.values, base.order_to_ready.values).pvalue))
+bs = pd.DataFrame(rows, columns=["pickers", "policy", "baseline order-to-ready (s)", "Δ order-to-ready (s)", "CI low", "CI high", "Δ assign wait (s)", "share batched", "Δ errors/day", "Wilcoxon p"]); bs["p_holm"] = multipletests(bs["Wilcoxon p"], method="holm")[1]
+g2 = bs[bs.policy == "θ=0.2"]; sl = stats.linregress(g2.pickers, g2["Δ order-to-ready (s)"]); print(f"Gain from θ=0.2 vs staffing: slope {sl.slope:+.1f} s per extra picker (95% CI {sl.slope - 1.96 * sl.stderr:+.1f} to {sl.slope + 1.96 * sl.stderr:+.1f}), p = {sl.pvalue:.2g}")
+bs.set_index(["pickers", "policy"]).round(3)
+
+#%% md
+**Observation:** «O77»
+
+#### Chart
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.5)); colors = {"θ=0.2": "#2a6f97", "θ=0.4": "#e07a1f", "θ=0.6": "#6a994e"}
+for pol, col in colors.items():
+    s_ = bs[bs.policy == pol]; axes[0].errorbar(s_.pickers + {"θ=0.2": -0.05, "θ=0.4": 0, "θ=0.6": 0.05}[pol], s_["Δ order-to-ready (s)"], yerr=[s_["Δ order-to-ready (s)"] - s_["CI low"], s_["CI high"] - s_["Δ order-to-ready (s)"]], marker="o", capsize=3, color=col, label=pol)
+axes[0].axhline(0, color="grey", lw=1); axes[0].set_xlabel("Pickers on shift"); axes[0].set_ylabel("Change in mean order-to-ready (s)"); axes[0].set_title("Batching helps only when pickers are scarce"); axes[0].set_xticks(KS); axes[0].legend()
+for pol, col in (("none", "#bc4749"),) + tuple(colors.items()):
+    s_ = bt[bt.policy == pol].groupby("pickers").assign_wait.mean(); axes[1].plot(s_.index, s_.values, marker="o", color=col, label=pol)
+axes[1].set_xlabel("Pickers on shift"); axes[1].set_ylabel("Mean wait before a picker is assigned (s)"); axes[1].set_title("Assignment wait by policy"); axes[1].set_xticks(KS); axes[1].legend()
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O771»
+
+## 8. ML Section — what we built and what is beyond it
+
+The two ML pieces are small by design. **M2** (gradient boosting) is the forecaster of 7.1. Here we add the model the newsvendor logic actually wants: a **quantile gradient-boosted model** trained directly at each category's critical ratio (no distribution assumed), and compare three ordering rules head to head on the twin, all on **all 48 pods** with no tuning on the test data: (A) the legacy rule (M2 forecast × category buffer), (B) newsvendor on the M2 mean with a fitted negative binomial at q = CR, (C) quantile GBM at q = CR. The Wilcoxon test is paired by pod (Holm across 3 comparisons).
+
+#### Code
+
+#%% code
+qc = np.clip(CRcat, 0.5, 0.995); Tq = np.zeros((N, nd_te)); t0 = time.time()
+for c in range(6):
+    mq = HistGradientBoostingRegressor(loss="quantile", quantile=float(qc[c]), max_iter=150, learning_rate=0.1, random_state=SEED); s = vtr & (Xtr.cat.values == c); mq.fit(Xtr[s], ytr[s])
+    sel = Xte.cat.values == c; pred = np.zeros(len(Xte)); pred[sel] = mq.predict(Xte[sel]); Tq += pred.reshape(N, nd_te) * (cat_n[:, None] == c)
+print(f"6 quantile models fitted in {time.time() - t0:.0f}s | q by category: {dict(zip([c.split(' and')[0][:9] for c in gen.CAT_NAMES], qc.round(3)))}")
+Tq = np.maximum(np.ceil(Tq), 1); Tnb_cr = np.maximum(nbinom.ppf(qc[cat_n][:, None], r_row, r_row / (r_row + Fte2)), 1)
+pol = {"A legacy buffer × M2": T_fix(1.0) * 0 + np.maximum(np.ceil(Fte2 * BUF), 1), "B newsvendor NB at q = CR": Tnb_cr, "C quantile GBM at q = CR": Tq}
+EP = {k: econ(replay(T)) for k, T in pol.items()}; base = "A legacy buffer × M2"; rows = []; pp_ = []
+for k, E in EP.items():
+    pp = E["profit"].sum(1) / (nd_te - MEAS); d = pp - EP[base]["profit"].sum(1) / (nd_te - MEAS); p = stats.wilcoxon(d).pvalue if k != base else np.nan; pp_.append(p)
+    rows.append((k, pp.mean(), d.mean(), *ci_mean(d)[1:], E["avail"].mean() * 100, E["wval"].sum() / E["gmv"].sum() * 100, p))
+ml = pd.DataFrame(rows, columns=["rule", "₹ profit / pod-day (120 SKUs)", "Δ vs legacy", "CI low", "CI high", "availability %", "wastage % of sales value", "Wilcoxon p"]).set_index("rule")
+ml.loc[ml.index[1:], "p_holm"] = multipletests(ml["Wilcoxon p"].values[1:], method="holm")[1]
+d_bc = (EP[list(pol)[2]]["profit"].sum(1) - EP[list(pol)[1]]["profit"].sum(1)) / (nd_te - MEAS); print(f"C − B profit per pod-day: mean ₹{d_bc.mean():,.0f}, Wilcoxon p = {stats.wilcoxon(d_bc).pvalue:.2g}")
+ml.round(3)
+
+#%% md
+**Observation:** «O8»
+
+- **What is not ML here:** the order rule is an optimisation on top of a forecast; the documented PO-buffer model is a second ML model, undisclosed beyond its role.
+- **Beyond this notebook:** hierarchical and probabilistic forecasts (Case 12), censoring-aware training (Case 7), joint assortment and replenishment, multi-day shelf-life dynamic programs, and reinforcement-learning dispatch for picking (Case 4).
+- **No tuning** (per the brief): learning rate 0.1, 150 to 200 iterations, defaults otherwise.
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-03-08, none documented by Swiggy): **400 pods** at scale, each with ₹6 lakh of daily sales; our 120 simulated SKUs are scaled up to the pod's full sales by the ratio of the pod's sales to the simulated sales. The **planning uplift** is the profit gain of the best rule over the legacy rule, expressed as a share of simulated sales and applied to the pod's sales. The **picking saving** applies only if batching lets a pod run one picker fewer at the same order-to-ready time, at ₹95 per picker-hour over a 16-hour day, minus the extra packing errors at ₹120 each. The simulated gain is large because the legacy rule is weak on this data, so only a **haircut share survives: 15% (worst), 25% (base), 35% (best)** (our assumption, not measured). Best and worst also use the 95% CI on the uplift, with 600 and 150 pods.
+
+#### Code
+
+#%% code
+best_rule = ml["Δ vs legacy"].idxmax(); d_pod = EP[best_rule]["profit"].sum(1) / (nd_te - MEAS) - EP[base]["profit"].sum(1) / (nd_te - MEAS)
+gmv_pod_day = EP[base]["gmv"].sum() / (gen.N_PODS * (nd_te - MEAS)); share = ml.loc[best_rule, ["Δ vs legacy", "CI low", "CI high"]] / gmv_pod_day
+POD_GMV = 6e5; DAYSY = 365
+REAL = {"worst": 0.15, "base": 0.25, "best": 0.35}   # share of the simulated gain assumed to survive in reality (sim-to-real haircut)
+scen = {"worst": (150, max(share["CI low"], 0.0)), "base": (400, share["Δ vs legacy"]), "best": (600, share["CI high"])}
+plan = {k: n * POD_GMV * s * REAL[k] * DAYSY / 1e7 for k, (n, s) in scen.items()}
+# picking: smallest staffing at which batching (best theta) matches the unbatched order-to-ready of one more picker
+best_th = bs.loc[bs["Δ order-to-ready (s)"].idxmin(), "policy"]; saved = 0.0; note = "no setting found"
+for K in KS[:-1]:
+    b_k = bs[(bs.pickers == K) & (bs.policy == best_th)].iloc[0]; nxt = bs[(bs.pickers == K + 1) & (bs.policy == best_th)].iloc[0]
+    if b_k["baseline order-to-ready (s)"] + b_k["Δ order-to-ready (s)"] <= nxt["baseline order-to-ready (s)"] + 1.0: saved = 1.0; note = f"{best_th} at {K} pickers matches no batching at {K + 1}"; break
+err_cost = float(bs[(bs.policy == best_th) & (bs.pickers == 4)]["Δ errors/day"].mean()) * 120
+pick_cr = {k: (n * (saved * 16 * 95 - max(err_cost, 0)) * DAYSY / 1e7 if saved > 0 else 0.0) for k, (n, s) in scen.items()}
+money = pd.DataFrame({"pods": {k: v[0] for k, v in scen.items()}, "simulated uplift (% of sales)": {k: v[1] * 100 for k, v in scen.items()}, "realisation haircut": REAL, "planning ₹ crore / yr": plan, "picking ₹ crore / yr": pick_cr}).T
+money.loc["total ₹ crore / yr"] = money.loc["planning ₹ crore / yr"] + money.loc["picking ₹ crore / yr"]
+print(f"Best rule: {best_rule} | simulated sales per pod-day (120 SKUs) ₹{gmv_pod_day:,.0f} | planning Δ profit ₹{d_pod.mean():,.0f} per pod-day (= {share['Δ vs legacy'] * 100:.2f}% of sales) | picking: {note}; extra error cost ₹{err_cost:,.0f} per pod-day")
+money.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated demand and costs:** dispersion, margins, shelf lives, the 50% goodwill cost and category targets are assumptions; the newsvendor gain depends on how noisy demand really is and on the true cost of a lost sale. Re-estimate on real pod logs.
+- **Dispersion fit is optimistic:** the fit used days with availability ≥ 95%, which are lower-demand days, so the buffer can be too small for volatile items. A censoring-aware fit (Case 7) is the fix.
+- **One-day EA ignores carry-over and multi-day shelf life:** it is exact for 1-day items only; the full replay (7.3, 7.4) is the more honest metric where a simulator exists.
+- **The textbook critical ratio is not the full story:** for items with a 2 to 3 day life, leftovers are not lost, so the best quantile differs from the critical ratio (7.3).
+- **Pod-level experiments are noisy:** 48 pods detect only large effects (7.5); cluster-level randomisation needs more.
+- **Picking:** the simulator assumes steady staffing, a fixed layout and the stated time and error parameters; the documented post gives no numbers. Unmodelled: picker fatigue, pack-station queues, rider arrival timing (Case 4).
+- **Next steps:** run the 50-50 pod experiment on the best rule per perishable category first; fit dispersion with a censoring-aware method; add vendor lead-time variability and multi-day horizons; learn the batch cap k from a live test.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Critical ratio | CR = Cu ÷ (Cu + Co); order up to the demand quantile at CR |
+| Cu, Co (here) | Cu = price − cost + 0.50 × price; Co = purchase cost (perishables), 10 days of holding (non-perishables) |
+| Negative-binomial demand | mean μ, variance μ + μ²/r; target = NB quantile at q |
+| wMAPE | Σ\|F − y\| ÷ Σ y |
+| Availability | share of the 16 open hours with stock |
+| Simple EA | min(1, A × predicted stock ÷ sales) |
+| Hourly EA | hours until cumulative hourly sales reach the predicted stock; else observed in-stock hours + (stock − sales) ÷ median hourly sales, divided by 16 |
+| Time to pack | setup + t_item × items + t_zone × zones + pack; batch adds a sorting step |
+| Sample size (two means) | n per arm = 2 (1.96 + 0.84)² σ² ÷ δ² |
+| Design effect | 1 + (m − 1) × ICC, m = pods per cluster |
+| Zone Jaccard | \|Z₁ ∩ Z₂\| ÷ \|Z₁ ∪ Z₂\| |
+
+| Term | Meaning |
+|---|---|
+| Pod / dark store | Small fulfilment warehouse serving a few kilometres |
+| Newsvendor | Order once under demand uncertainty; balance the cost of too few against too many |
+| Censored demand | Sales stop at stock-out, so sales understate demand |
+| Fill rate | Share of ordered units the vendor delivers |
+| EA / EW | Estimated availability / wastage if a prediction had been used |
+| Leakage | Estimating a model on pods where it already controlled stock |
+| ANCOVA | Regression of the outcome on the arm and a pre-period covariate |
+| Order-to-ready | Seconds from order placed to packed and ready |

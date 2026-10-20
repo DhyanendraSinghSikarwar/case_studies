@@ -1,0 +1,13 @@
+field(s),meaning
+"payment_id, ts",Payment identity and time
+"customer_id, device_id",Hashed shopper and device tokens
+"merchant_id, merchant_cat",Merchant token and category
+pincode,Delivery / billing pincode token (1.5% missing)
+method,upi / card / netbanking / wallet / cod (target of the checkout task)
+"issuer, card_network, bin_country","Bank, card scheme, domestic/international ('none' if not applicable)"
+amount_inr,Payment value
+gateway,Gateway the payment was (randomly) routed to; 'none' for COD
+route_success,Task 1: online payment succeeded
+"is_fraud, label_date",Task 2: confirmed fraud and the date the label became known
+rto,Task 3: COD parcel returned (COD only)
+"_segment, _ring, _p_*","HIDDEN truth (never used as features): segment, ring, true probabilities"

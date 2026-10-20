@@ -1,0 +1,8 @@
+,estimate,ci_low,ci_high
+"conversion, control",0.0501847426,,
+"conversion, redesign",0.0511681446,,
+absolute lift (percentage points),0.0983402003,0.048746246,0.1479341546
+relative lift (share of control rate),0.0195956371,0.0097133598,0.0294779144
+Cohen's h,0.0044835895,,
+z,3.8865475023,,
+p-value,0.00010168,,

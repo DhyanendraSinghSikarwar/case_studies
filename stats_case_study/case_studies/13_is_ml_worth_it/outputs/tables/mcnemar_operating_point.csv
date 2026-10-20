@@ -1,0 +1,6 @@
+comparison,only_A_correct,only_B_correct,chi2,p_value,bads_caught_A,bads_caught_B
+M1 full linear − M0 current scorecard,289,281,0.0859649123,0.7693710146,370,366
+M2 spec. GLM − M1 full linear,191,161,2.3892045455,0.1221757824,385,370
+M2 spec. GLM − M0 current scorecard,351,313,2.061746988,0.1510369252,385,366
+M3 GBM − M1 full linear,306,270,2.1267361111,0.1447486866,388,370
+M3 GBM − M2 spec. GLM,263,257,0.0480769231,0.8264440102,388,385

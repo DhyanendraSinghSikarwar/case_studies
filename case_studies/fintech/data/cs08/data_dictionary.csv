@@ -1,0 +1,40 @@
+feature,family
+account_age_days,account
+kyc_type,account
+holder_age,account
+occupation,account
+pincode_risk_tier,account
+devices_linked_30d,device
+accounts_sharing_device,device
+inbound_txn_30d,transaction behaviour (30 days)
+inbound_distinct_senders_30d,transaction behaviour (30 days)
+inbound_count_7d,transaction behaviour (30 days)
+outbound_txn_30d,transaction behaviour (30 days)
+distinct_beneficiaries_30d,transaction behaviour (30 days)
+avg_inbound_amount,transaction behaviour (30 days)
+total_inflow_30d,transaction behaviour (30 days)
+max_single_inbound,transaction behaviour (30 days)
+pass_through_ratio,transaction behaviour (30 days)
+median_dwell_minutes,transaction behaviour (30 days)
+round_amount_share,transaction behaviour (30 days)
+night_txn_share,transaction behaviour (30 days)
+atm_withdrawal_share,transaction behaviour (30 days)
+atm_distinct_locations_30d,transaction behaviour (30 days)
+merchant_spend_share,transaction behaviour (30 days)
+bill_payments_30d,transaction behaviour (30 days)
+salary_like_credit,transaction behaviour (30 days)
+dormant_then_active,transaction behaviour (30 days)
+upi_handle_changes_90d,transaction behaviour (30 days)
+inbound_from_flagged_accounts,transaction behaviour (30 days)
+avg_balance,transaction behaviour (30 days)
+max_daily_inflow_ratio,transaction behaviour (30 days)
+email_disposable,account
+app_logins_30d,device
+profile_updates_30d,device
+failed_login_attempts_30d,device
+card_present_txn_30d,transaction behaviour (30 days)
+noise_feature_1,noise (pure random)
+noise_feature_2,noise (pure random)
+noise_feature_3,noise (pure random)
+noise_feature_4,noise (pure random)
+noise_feature_5,noise (pure random)

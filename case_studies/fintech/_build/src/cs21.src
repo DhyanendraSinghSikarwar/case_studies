@@ -1,0 +1,375 @@
+#%% md
+# Case Study 21 — A One-Line Bayesian Recommender: Combining "What You Like" with "What's Trending" on a Super-App Homepage
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 21 — *Paytm Labs: Bayesian trend filtering for homepage personalisation* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Growth / Homepage Product, Personalisation team, Category business heads
+**Data:** ⚠️ **SYNTHETIC** (D-21-01). Click logs are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs21_bayesian_trend_personalisation.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+A super-app's homepage has room for only a few highlighted service icons (recharge, bill payment, movie tickets, flights, gold, insurance and so on), but hundreds of millions of users with different needs. Two signals matter:
+1. **What this user likes:** someone who pays electricity bills every month should see "electricity".
+2. **What is trending right now:** before Diwali everyone looks at flights and gold, and on a blockbuster weekend, movie tickets.
+
+Paytm Labs combined them with **one line of Bayes' rule**: take the user's own category preference and multiply it by how much each category is trending *right now* compared with normal:
+
+> score(c) = P(c | this user) × P_now(c) / P_usual(c)
+
+It is simple, explainable and computable in real time. **Does it actually beat the alternatives**: showing everyone what is popular, showing each user only their habits, or a "proper" machine-learning recommender? And how should its two settings be chosen (how much to trust sparse users, and how short a window counts as "now")?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Paytm did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | "The homepage has hundreds of service icons and banners for **400M+ users**" |
+| Question | "Which categories should each user see, combining *their* interests with what is *trending* across the platform?" |
+| Data | User category-level click history; platform-wide click distribution and time-windowed trends; banner/icon inventory proportions |
+| Approach | Category-level Bayesian update: **p_next(c ∣ click) = p(c ∣ click) · p_next(c) / p(c)** |
+| ML | "Bayesian trend filtering (probabilistic, not a learned black box)"; benefits: "**Simple to formulate and implement**", interpretable, real-time |
+| Validation / A/B results | **ND** |
+| Impact | **Not publicly disclosed** |
+
+**Source:** Paytm Labs blog (Santoshi, Machine Learning Engineer; undated) — https://paytmlabs.com/blog
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 50,000 users × 12 categories × 8 weeks (≈ 1.6 M clicks). Stable personal affinities; platform trends (blockbuster weekends, Diwali travel, Dhanteras gold, gifting, FASTag growth, month-start bills); users differ in **trend responsiveness**; heavy-tailed activity (many cold-start users). True click probabilities are kept for a digital-twin A/B. |
+| Methods compared | (1) Global trending popularity; (2) user affinity only (smoothed); (3) **Bayesian trend filter** (documented); (4) matrix factorisation (truncated SVD), the "complex model" baseline |
+| Statistics added | Next-day evaluation over 14 test days: hit@3, NDCG@3, MRR, log loss; **paired Wilcoxon signed-rank tests across users** (Holm); effect by user activity (cold start); **empirical-Bayes choice of the smoothing strength** and the trend window on validation days; festival-day analysis; digital-twin A/B of the expected top-3 click-through rate |
+
+### (c) How the industry uses this
+
+Every Indian super-app personalises its homepage tiles: Paytm, PhonePe (Case 20's propensity × LTV ranking), Google Pay, Amazon Pay and banking apps (Axis in Case 22, HDFC, ICICI iMobile). Simple Bayesian blends of "personal affinity × global trend" are the standard **first model and the permanent baseline** that any complex recommender must beat in an A/B test. They also work for cold-start users, where learned models struggle.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Which 3 categories should each user see on the homepage today? |
+| Analytical | Which scoring rule puts the categories users actually click tomorrow into the top 3 most often, overall, for cold-start users, and during trend spikes? |
+
+**Hypotheses** (per-user metrics averaged over the 14 test days; paired across users):
+- **H1:** H0: hit@3(Bayesian) = hit@3(affinity only). Wilcoxon signed-rank.
+- **H2:** H0: hit@3(Bayesian) = hit@3(global trending). Wilcoxon.
+- **H3:** H0: hit@3(Bayesian) = hit@3(matrix factorisation). Wilcoxon.
+- Holm across H1–H3. Effect size: matched-pairs rank-biserial correlation.
+
+**Primary metric:** hit@3 = share of a user's clicks that fall in their top-3 recommended categories. **Secondary:** NDCG@3, MRR, log loss (is the score a good probability?). **Online proxy:** expected top-3 click-through on the digital twin. **Design:** history = all days before the scored day; tune on days 36–42; **test on days 43–56**.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from sklearn.decomposition import TruncatedSVD
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public super-app click logs | **None.** Paytm/PhonePe logs are confidential. Public recommender datasets (MovieLens, RetailRocket, Open Bandit) have no Indian payment-service categories or festival trends; RetailRocket is Kaggle-hosted. |
+| **Decision** | Synthetic click logs with personal affinities and platform trends (D-21-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs21.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs21.py
+
+#%% code
+os.makedirs("data/cs21", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs21 as gen; importlib.reload(gen)
+clk_raw, users_h, trend_h = gen.generate(seed=SEED)
+clk_raw.to_csv("data/cs21/daily_clicks.csv.gz", index=False); users_h.to_csv("data/cs21/users_hidden.csv.gz", index=False); trend_h.to_csv("data/cs21/trend_hidden.csv.gz", index=False)
+print(f"{len(clk_raw):,} user-day-category rows | {clk_raw.clicks.sum():,} clicks | {clk_raw.user_id.nunique():,} user IDs")
+clk_raw.sample(5, random_state=SEED)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Users / categories / days | 50,000 users (simulation of a 400M+ base); 12 payment-service categories; 56 days | **Documented** scale and category-level design |
+| Affinity | Dirichlet around platform shares; concentration varies (some users stick to 1–2 services) | Our assumption |
+| Trends | Blockbuster weekends (movies ×3.5), Diwali build-up (flights ×3, trains ×2.6), Dhanteras (gold ×5 for 3 days), gifting, FASTag +2%/day, month-start bill cycle | Indian seasonal patterns |
+| Responsiveness | Each user follows trends with exponent r ~ Beta(2, 2) | Our assumption: why trend weighting must be moderate |
+| Activity | Visits ~ Poisson(λ), λ log-normal (median 0.25/day), weekends +30% | Heavy-tailed engagement |
+| DQ issues | One bot user (400 clicks/category/day); 3,000 duplicated rows; logging outage on day 21 (half the events lost) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("user_id, user_idx", "User"), ("day", "Day 0–55 (shown as days 1–56 in text)"), ("category, cat_idx", "One of 12 service categories"),
+    ("clicks", "Number of homepage clicks on that category that day"),
+    ("users_hidden: _r, _lam, _aff_*", "HIDDEN: trend responsiveness, visit rate, true affinity"), ("trend_hidden", "HIDDEN: true trend multiplier per day and category"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs21/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+CATS = gen.CATS; K = len(CATS); DAYS = gen.DAYS
+dup = clk_raw.duplicated(["user_id", "day", "category"]).sum()
+per_user_day = clk_raw.groupby(["user_id", "day"]).clicks.sum()
+bots = per_user_day.groupby(level=0).max(); bots = bots[bots > 100].index.tolist()
+daily = clk_raw[~clk_raw.user_id.isin(bots)].drop_duplicates(["user_id", "day", "category"]).groupby("day").clicks.sum()      # check gaps AFTER removing bots and duplicates
+checks = {"duplicated user-day-category rows": int(dup), "users with > 100 clicks in a day (bots)": int((per_user_day.groupby(level=0).max() > 100).sum()),
+          "days with total clicks < 70% of the 7-day median (logging gaps)": int((daily < 0.7 * daily.rolling(7, center=True, min_periods=3).median()).sum())}
+print(pd.Series(checks, name="count").to_string())
+gap_days = daily[daily < 0.7 * daily.rolling(7, center=True, min_periods=3).median()].index.tolist()
+print(f"Bot users removed: {bots} | logging-gap days (0-based): {gap_days} (kept for history, excluded from evaluation)")
+clk = clk_raw.drop_duplicates(["user_id", "day", "category"]); clk = clk[~clk.user_id.isin(bots)]
+N = int(clk.user_idx.max()) + 1
+cnt = np.zeros((N, DAYS, K), np.int32); np.add.at(cnt, (clk.user_idx.values, clk.day.values, clk.cat_idx.values), clk.clicks.values)
+cum = np.cumsum(cnt, axis=1); G = cnt.sum(0).astype(float)                         # G[day, cat] = platform clicks
+print(f"Clean: {cnt.sum():,} clicks from {(cnt.sum((1, 2)) > 0).sum():,} users | median clicks per user over 8 weeks = {np.median(cnt.sum((1, 2))):.0f}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(15, 4.5))
+share = G / G.sum(1, keepdims=True)
+for c_, col in zip(["movie_tickets", "flights", "digital_gold", "gift_vouchers", "fastag"], sns.color_palette("tab10", 5)):
+    axes[0].plot(np.arange(1, DAYS + 1), share[:, CATS.index(c_)] * 100, color=col, label=c_)
+axes[0].axvspan(43, 56, color="grey", alpha=0.12, label="test days"); axes[0].set_xlabel("Day"); axes[0].set_ylabel("Share of platform clicks (%)")
+axes[0].set_title("Platform trends: blockbusters, Diwali travel, Dhanteras gold"); axes[0].legend(fontsize=8, ncol=2)
+tot = cnt.sum((1, 2)); tot = tot[tot > 0]
+axes[1].hist(np.log10(tot), bins=40, color="#2a6f97"); axes[1].set_xlabel("Clicks per user over 8 weeks (log10)"); axes[1].set_ylabel("Users")
+axes[1].set_title("Heavy-tailed activity: many users have little history")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 The four scoring rules, and how to set the Bayesian filter's two dials
+
+For a user on day d (history = all clicks before d):
+- **P_usual(c):** platform share over the last 28 days.
+- **P_now(c):** platform share over the last **w** days (the trend window).
+- **P(c ∣ user):** the user's own click shares, **smoothed** toward P_usual with strength α (a Dirichlet prior, i.e., α "pseudo-clicks"): (n_uc + α·P_usual(c)) / (n_u + α). Without smoothing, a user with one click would get a 100% preference.
+
+| Rule | Score |
+|---|---|
+| 1 Global trending | P_now(c) (same for everyone) |
+| 2 Affinity only | P(c ∣ user) |
+| 3 **Bayesian trend filter** | P(c ∣ user) × P_now(c) / P_usual(c) |
+| 4 Matrix factorisation | rank-4 truncated SVD of the user × category history (log counts), blended with P_now for users with no history |
+
+**Choosing α and w (empirical Bayes / validation):** we grid-search α ∈ {0.5, 2, 5, 10, 25} and w ∈ {1, 3, 7, 14} days on **validation days 36–42**, maximising hit@3. We also report α estimated by the **Dirichlet–multinomial marginal likelihood**, the textbook empirical-Bayes estimate.
+
+#%% code
+def scores(d, alpha, w, method):
+    hist = cum[:, d - 1, :].astype(float); n_u = hist.sum(1, keepdims=True)
+    p_us = G[max(0, d - 28):d].sum(0); p_us = p_us / p_us.sum(); p_now = G[max(0, d - w):d].sum(0); p_now = p_now / p_now.sum()
+    if method == "1 global trending": return np.tile(p_now, (N, 1))
+    aff = (hist + alpha * p_us) / (n_u + alpha)
+    if method == "2 affinity only": return aff
+    if method == "3 Bayesian trend filter":
+        s = aff * p_now / p_us; return s / s.sum(1, keepdims=True)
+    if method == "4 matrix factorisation":
+        X = np.log1p(hist); svd = TruncatedSVD(4, random_state=SEED).fit(X); R = np.clip(svd.inverse_transform(svd.transform(X)), 0, None) + 1e-6
+        R = R / R.sum(1, keepdims=True); cold = (n_u[:, 0] == 0); R[cold] = p_now; return R
+def evaluate(d, S):
+    tgt = cnt[:, d, :]; act = tgt.sum(1) > 0; S, tgt = S[act], tgt[act]
+    rank = np.argsort(-S, 1); top3 = np.zeros_like(S, bool); np.put_along_axis(top3, rank[:, :3], True, 1)
+    hit = (tgt * top3).sum(1) / tgt.sum(1)
+    pos = np.empty_like(rank); np.put_along_axis(pos, rank, np.arange(K)[None, :].repeat(len(rank), 0), 1)
+    mrr = (tgt / (pos + 1)).sum(1) / tgt.sum(1)
+    gain = np.where(pos < 3, 1 / np.log2(pos + 2), 0); ideal = np.array([sum(1 / np.log2(i + 2) for i in range(min(3, k))) for k in (tgt > 0).sum(1)])
+    ndcg = ((tgt > 0) * gain).sum(1) / ideal
+    P = np.clip(S / S.sum(1, keepdims=True), 1e-6, 1); ll = -(tgt * np.log(P)).sum(1) / tgt.sum(1)
+    return np.flatnonzero(act), hit, ndcg, mrr, ll
+VAL = [d for d in range(35, 42) if d not in gap_days]; TEST = [d for d in range(42, 56) if d not in gap_days]
+grid = []
+for a in (0.5, 2, 5, 10, 25):
+    for w in (1, 3, 7, 14):
+        h = [evaluate(d, scores(d, a, w, "3 Bayesian trend filter"))[1] for d in VAL]; grid.append((a, w, np.concatenate(h).mean()))
+grid = pd.DataFrame(grid, columns=["alpha", "window w (days)", "hit@3 (validation)"]).pivot(index="alpha", columns="window w (days)", values="hit@3 (validation)")
+A_BEST = grid.stack().idxmax()[0]; W_BEST = grid.stack().idxmax()[1]
+a_aff = max((evaluate(VAL[0], scores(VAL[0], a, 7, "2 affinity only"))[1].mean(), a) for a in (0.5, 2, 5, 10, 25))[1]
+from scipy.special import gammaln
+H = cum[:, 41 - 1, :].astype(float); H = H[H.sum(1) > 0]; p_us = G[13:41].sum(0) / G[13:41].sum()
+def dm_loglik(a): A = a * p_us; return (gammaln(a) - gammaln(H.sum(1) + a) + (gammaln(H + A) - gammaln(A)).sum(1)).sum()
+alphas = np.exp(np.linspace(np.log(0.2), np.log(100), 60)); a_eb = alphas[np.argmax([dm_loglik(a) for a in alphas])]
+print(f"Best on validation: α = {A_BEST}, w = {W_BEST} days | empirical-Bayes α (Dirichlet–multinomial marginal likelihood) = {a_eb:.1f} | affinity-only best α = {a_aff}")
+grid.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Test-period comparison (14 days, paired across users)
+
+#%% code
+METHODS = ["1 global trending", "2 affinity only", "3 Bayesian trend filter", "4 matrix factorisation"]
+par = {"1 global trending": (A_BEST, W_BEST), "2 affinity only": (a_aff, W_BEST), "3 Bayesian trend filter": (A_BEST, W_BEST), "4 matrix factorisation": (A_BEST, W_BEST)}
+recs = {m: [] for m in METHODS}; t0 = time.time()
+for d in TEST:
+    for m in METHODS:
+        u, hit, nd, mr, ll = evaluate(d, scores(d, *par[m], m)); recs[m].append(pd.DataFrame({"u": u, "day": d, "hit": hit, "ndcg": nd, "mrr": mr, "ll": ll}))
+R = {m: pd.concat(v) for m, v in recs.items()}
+summ = pd.DataFrame({m: R[m][["hit", "ndcg", "mrr", "ll"]].mean() for m in METHODS}).T; summ.columns = ["hit@3", "NDCG@3", "MRR", "log loss"]
+per_user = pd.DataFrame({m: R[m].groupby("u").hit.mean() for m in METHODS})
+rows = []
+for m in ["2 affinity only", "1 global trending", "4 matrix factorisation"]:
+    d_ = per_user["3 Bayesian trend filter"] - per_user[m]; nz = d_[d_ != 0]
+    w = stats.wilcoxon(per_user["3 Bayesian trend filter"], per_user[m], zero_method="wilcox")
+    rpos = stats.rankdata(np.abs(nz)); rbc = (rpos[nz > 0].sum() - rpos[nz < 0].sum()) / rpos.sum()
+    rows.append((f"Bayesian vs {m}", d_.mean(), np.percentile([d_.values[RNG.integers(0, len(d_), len(d_))].mean() for _ in range(1000)], 2.5),
+                 np.percentile([d_.values[RNG.integers(0, len(d_), len(d_))].mean() for _ in range(1000)], 97.5), rbc, w.pvalue, (d_ > 0).mean(), (d_ < 0).mean()))
+tests = pd.DataFrame(rows, columns=["comparison", "mean Δ hit@3 per user", "CI low", "CI high", "rank-biserial", "Wilcoxon p", "users better", "users worse"]).set_index("comparison")
+tests["p_holm"] = multipletests(tests["Wilcoxon p"], method="holm")[1]
+print(f"Test days {TEST[0] + 1}–{TEST[-1] + 1}; {per_user.shape[0]:,} users active at least once; evaluation took {time.time() - t0:.0f}s")
+display(summ.round(4)); tests.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O72»
+
+### 7.3 Who benefits? Cold-start vs heavy users
+
+#%% code
+hist_n = cum[:, 41, :].sum(1)
+seg = pd.cut(hist_n[per_user.index], [-1, 0, 5, 20, 60, 10 ** 6], labels=["0 clicks (new)", "1–5", "6–20", "21–60", "60+"])
+by = per_user.groupby(seg).mean(); by["users"] = per_user.groupby(seg).size()
+p_seg = []
+for s_ in by.index:
+    m = (seg == s_)
+    p_seg.append(stats.wilcoxon(per_user.loc[m, "3 Bayesian trend filter"], per_user.loc[m, "2 affinity only"]).pvalue if (per_user.loc[m, "3 Bayesian trend filter"] != per_user.loc[m, "2 affinity only"]).any() else np.nan)
+by["Bayes − affinity"] = by["3 Bayesian trend filter"] - by["2 affinity only"]; by["Bayes − trending"] = by["3 Bayesian trend filter"] - by["1 global trending"]
+by["p (Bayes vs affinity)"] = p_seg; by["q_BH"] = multipletests(np.nan_to_num(p_seg, nan=1), method="fdr_bh")[1]
+fig, ax = plt.subplots(figsize=(9, 4.3))
+for m, c_ in zip(METHODS, ["#999", "#e07a1f", "#2a6f97", "#6a4c93"]): ax.plot(by.index.astype(str), by[m] * 100, "o-", color=c_, label=m)
+ax.set_xlabel("Clicks in the user's history before the test period"); ax.set_ylabel("hit@3 (%)"); ax.set_title("The Bayesian filter helps most where history is thin"); ax.legend(fontsize=8)
+plt.tight_layout(); plt.show()
+by.round(4)
+
+#%% md
+**Takeaway:** «O73»
+
+### 7.4 Trend spikes: does the filter react in time?
+
+Festival days are when trend weighting should matter most. We compare daily hit@3 of affinity-only and the Bayesian filter across test days, and test the advantage on **spike days** (Dhanteras gold days 45–47, the second blockbuster weekend 49–51, peak travel days) vs normal days (Mann–Whitney across days). We also compare a **slow trend window** (w = 14 days), which reacts late to spikes.
+
+#%% code
+daily = pd.DataFrame({m: R[m].groupby("day").hit.mean() for m in METHODS}); daily.index = daily.index + 1                    # 1-based day numbers
+d1 = []
+for d in TEST: d1.append(evaluate(d, scores(d, A_BEST, 14, "3 Bayesian trend filter"))[1].mean())
+daily["Bayesian, w = 14 days"] = d1; daily["w=best − w=14 (pp)"] = (daily["3 Bayesian trend filter"] - daily["Bayesian, w = 14 days"]) * 100; daily["Bayes − affinity (pp)"] = (daily["3 Bayesian trend filter"] - daily["2 affinity only"]) * 100
+spike = daily.index.isin([45, 46, 47, 49, 50, 51])
+mw = stats.mannwhitneyu(daily.loc[spike, "Bayes − affinity (pp)"], daily.loc[~spike, "Bayes − affinity (pp)"], alternative="greater")
+print(f"Bayes advantage over affinity: spike days {daily.loc[spike, 'Bayes − affinity (pp)'].mean():+.2f} pp vs normal days {daily.loc[~spike, 'Bayes − affinity (pp)'].mean():+.2f} pp (Mann–Whitney one-sided p = {mw.pvalue:.3f})")
+daily.round(4)
+
+#%% md
+**Observation:** «O74»
+
+### 7.5 Digital-twin A/B: expected top-3 click-through
+
+Offline hit-rates use only what users happened to click. In the simulation we also know each user's **true** click probabilities each day, so we can compute, for every policy, the expected probability that a visit's click falls in the 3 highlighted tiles. That is the quantity an online A/B would measure, without the noise. Paired bootstrap across users; Holm.
+
+#%% code
+aff_true = users_h[[f"_aff_{c}" for c in CATS]].values; r_true = users_h._r.values; T = trend_h[CATS].values
+ctr = {m: [] for m in METHODS + ["oracle (true probabilities)"]}; uu = []
+for d in TEST:
+    act = np.flatnonzero(cnt[:, d, :].sum(1) > 0); P_true = gen.true_probs(aff_true[act], r_true[act], d, T); uu.append(act)
+    for m in METHODS:
+        S = scores(d, *par[m], m)[act]; top = np.argsort(-S, 1)[:, :3]; ctr[m].append(np.take_along_axis(P_true, top, 1).sum(1))
+    ctr["oracle (true probabilities)"].append(np.sort(P_true, 1)[:, -3:].sum(1))
+C = {m: np.concatenate(v) for m, v in ctr.items()}
+tw = pd.DataFrame({"expected top-3 CTR": {m: C[m].mean() for m in C}})
+for m in METHODS:
+    dlt = C["3 Bayesian trend filter"] - C[m]; bs = [dlt[RNG.integers(0, len(dlt), len(dlt))].mean() for _ in range(500)]
+    tw.loc[m, "Bayes − this (pp)"] = dlt.mean() * 100; tw.loc[m, "CI low"] = np.percentile(bs, 2.5) * 100; tw.loc[m, "CI high"] = np.percentile(bs, 97.5) * 100
+tw["share of oracle"] = tw["expected top-3 CTR"] / tw.loc["oracle (true probabilities)", "expected top-3 CTR"]
+tw.round(4)
+
+#%% md
+**Observation:** «O75»
+
+## 8. ML Section — "simple beats complex"?
+
+Matrix factorisation (method 4) is the stand-in for a learned recommender. It captures *which categories go together* across users, but has **no notion of time**: it cannot know that today is Dhanteras. The documented formula is a closed form with two interpretable dials (α, w), computable in microseconds per user and explainable to any category head ("we show you gold because you like investments **and** gold is 5× more popular than usual today"). Section 7 measures whether the learned model's extra flexibility is worth it.
+
+## 9. Business Translation — ₹ impact
+
+**Assumptions (D-21-07):**
+- 1 crore daily homepage visits.
+- 35% of a top-3 tile click converts into a transaction.
+- Average take of ₹3 per transaction (convenience fees, MDR and commissions across services).
+
+The value of a policy is its extra expected top-3 clicks vs an alternative.
+
+#%% code
+VISITS, CONV, TAKE = 1e7, 0.35, 3.0
+money = pd.DataFrame({"extra tile clicks per day (lakh)": (tw.loc["3 Bayesian trend filter", "expected top-3 CTR"] - tw["expected top-3 CTR"]) * VISITS / 1e5})
+money["₹ crore per year"] = money.iloc[:, 0] * 1e5 * CONV * TAKE * 365 / 1e7
+head = -money.loc["oracle (true probabilities)"]; money = money.drop(index=["3 Bayesian trend filter", "oracle (true probabilities)"]); money.index = ["Bayes vs " + i for i in money.index]
+print(f"Headroom: a perfect (oracle) ranking would add {head.iloc[0]:.2f} lakh tile clicks/day ≈ ₹{head.iloc[1]:.1f} crore/year more than the Bayesian filter")
+money.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic tastes and trends:** the simulation fixes the "true" model (affinity × trend^r), which is close to the documented formula's assumptions and so favours it. Real users have cross-category patterns (e.g., flights → hotels) where learned models can add value. **The live A/B is the real test.**
+- **Inventory and business rules:** the documented system also balances banner/icon inventory proportions and commercial commitments. Those constraints sit on top of the score (e.g., guaranteed slots for paid campaigns) and reduce the achievable gain.
+- **Feedback loops:** showing trending tiles makes them more clicked, which feeds the trend. Keep a small random-exploration slot and compute trends from **organic** (non-promoted) clicks.
+- **Responsiveness differs:** some users never follow trends. A per-user exponent (score = P(c∣u) × (P_now/P_usual)^r̂ᵤ) is the natural next refinement.
+- **Measure the right outcome:** clicks are a proxy. The business metric is transactions and their margin (see Case 20 for propensity × LTV ranking).
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Documented Bayesian update | p_next(c ∣ u) ∝ p(c ∣ u) · p_now(c) / p_usual(c) |
+| Dirichlet smoothing | p(c ∣ u) = (n_uc + α·p_usual(c)) / (n_u + α) |
+| Dirichlet–multinomial marginal likelihood | Σ_u [ln Γ(α) − ln Γ(n_u + α) + Σ_c (ln Γ(n_uc + α p_c) − ln Γ(α p_c))] |
+| hit@3 | clicks on the top-3 categories / all clicks |
+| NDCG@3 | Σ_clicked 1/log₂(rank + 1) for ranks ≤ 3, divided by the ideal |
+| MRR | mean of 1/rank of clicked categories |
+| Matched-pairs rank-biserial | (ΣR⁺ − ΣR⁻)/ΣR |
+
+| Term | Meaning |
+|---|---|
+| Affinity | A user's own preference over categories |
+| Trend | How much more (or less) popular a category is now than usual |
+| Cold start | Users with little or no history |
+| Empirical Bayes | Estimating the prior's strength from the data themselves |
+| Matrix factorisation | A learned model that compresses the user × category matrix into a few factors |
+| Digital twin | A simulation in which the true click probabilities are known |

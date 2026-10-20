@@ -1,0 +1,11 @@
+{
+  "identity_tolerance": 1e-06,
+  "sweep_n_draws": 2000,
+  "dashboard_accuracy_pct": 75.0,
+  "engine_accuracy_pct_noise_10": 91.8,
+  "engine_accuracy_pct_noise_25": 82.55,
+  "engine_accuracy_pct_noise_50": 72.85000000000001,
+  "pct_promoted_only_profitable": 60.5,
+  "pct_family_profitable": 38.7,
+  "reference_family_net_total_gbp": 779.012221016446
+}

@@ -1,0 +1,13 @@
+field(s),meaning
+"account_id, lender_portfolio",Account and product (PL / BNPL / card)
+dpd,Days past due at experiment start (30–89)
+"outstanding_inr, overdue_inr",Total outstanding; amount overdue (₹)
+paid_ratio_6m,Share of last 6 EMIs paid on time
+broken_ptp_count,Broken promises-to-pay in history
+contactability,Historical call answer rate (0–1); blank = no history
+"preferred_language, city_tier, age, income_band",Customer profile
+assigned_channel,Randomised arm: SMS only / Voice bot / Tele-caller / Field visit
+resolved_30d,Paid at least the overdue EMI within 30 days
+amount_recovered_inr,₹ recovered within 30 days
+experiment_month,Month of the experiment
+_p_sms / _p_bot / _p_tele / _p_field,HIDDEN true resolution probability under each channel (simulation only)

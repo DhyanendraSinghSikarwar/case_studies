@@ -1,0 +1,11 @@
+field(s),meaning
+"customers: salary_credit_monthly, salaried_account, avg_balance_6m",Ability-to-pay layer
+bureau_score,Bureau layer
+"card_utilisation, past_dpd_events_24m, relationship_years",Behavioural layer
+digital_engagement_score,"'Social' layer (internet usage proxy; 1,500 missing)"
+"p27_score, eligible",Combined layered score; top third = eligible for instant loans
+_z,HIDDEN latent creditworthiness
+"loans: cohort, channel",observational / pilot; digital (instant) / physical
+"loan_amount, tat_minutes",Ticket; turnaround (≈ 10 seconds vs ≈ 2–3 days)
+"dpd30_12m, dpd30_month, dpd90_12m","30+ DPD within 12 months, month first reached, 90+ DPD"
+_p30,HIDDEN true probability of 30+ DPD

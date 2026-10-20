@@ -1,0 +1,530 @@
+#%% md
+# Case Study 16 — "Biriyani, Biryani, Beriani": Dish Search, Query Understanding and Ranking Metrics (NDCG, MRR) at Swiggy
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 16 — *Swiggy: dish search and query understanding* (`indian_ecommerce_data_science_case_studies.md`)
+**Audience:** Head of Search and Discovery, Product (search, restaurant listing), Growth, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-16-01). Swiggy's search logs, taxonomy and relevance labels are confidential; this is a calibrated simulation with hidden graded relevance and a hidden click model.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs16_dish_search_ranking.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+Search is where the hungriest customers start. They type a dish, not a restaurant. But Indian dish names have **no standard English spelling**: *biryani* is typed as *biriyani*, *biriani*, *beriani* or *briyani*. A system that matches words exactly returns **nothing**, and even a system that tolerates one or two typing errors can miss a transliteration. Some dishes are also **not available nearby**, and then the customer should see the closest alternatives instead of an empty page. Newer queries are vaguer ("tiffin", "something sweet", "biryani near me under 200").
+
+Leaders and interviewers want to know:
+1. How much better is a **character-level, learned** approach than the **fuzzy word matching** we have today, and **for whom** (clean vs misspelled, plain vs vague queries)?
+2. Which **ranking metrics** should we trust (**NDCG**, **MRR**, precision at 1), and how many queries do we need to judge a difference?
+3. Can we train a **ranker on click logs**, given that clicks are biased by **position** and by **what the old system chose to show**?
+4. Does an **offline** win predict an **online** win?
+5. What is a fix worth in ₹, and what should we ship first?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Swiggy did — *documented*
+
+| Item | Documented fact (from the reference file) |
+|---|---|
+| Problem | Dish names have no standard English spelling; text matching can return no results; some searched dishes are unavailable locally and nothing similar is shown; later posts add multi-intent queries (dish, diet, mood, time slot) |
+| Data (as reported) | About 2M query–ordered-dish tuples over 2 months for embedding training; 35,000 query–clicked-dish pairs for validation V1 and 26,000 for a misspelled set V2 built from a curated spelling-variation dictionary; one month of click logs for ranking, validated on a week from a much later period; a food taxonomy of 300+ dish families and 6 categories |
+| Approach (2021) | Siamese network with a **custom character-trigram tokenizer** and triplet loss to embed queries and dishes; the cosine similarity is used as a feature in a **learning-to-rank** model. A word-piece transformer was rejected because misspellings break tokenization and it was slow. Ranking: retrieval cuts millions of dishes to hundreds, then a deep model scores semantic, restaurant, popularity and distance-time inputs, trained on **clicked > shown-but-not-clicked > random** negatives |
+| Approach (2024) | Two-stage fine-tuned small language model for embedding retrieval of complex queries, tested on a small cohort |
+| Metrics reported | MRR, Recall@100 (embeddings), MAP, Precision@1, Precision@5 (2024); the character-trigram model improves on a FastText baseline by 3% (MRR) and 4.49% (Recall@100) on V1 and by 93% and 25% on the misspelled V2; Word2Vec could not embed about 32% of available dishes in the test city; Davies-Bouldin index used to check that embeddings cluster by dish family |
+| Evidence limits | Most result tables are images (values not disclosed). **No online conversion or revenue lift is published** (ND). Public method detail is thin for the ranking model |
+
+**Source:** Swiggy Bytes, "Find My Food" (2021-03-27), "Using Deep Learning for Ranking in Dish Search" (2021-07-20), "Improving search relevance in hyperlocal food delivery using (small) language models" (2024-03-13, CODS-COMAD 2024), read through a proxy.
+
+**Plain statement of limits:** the public posts describe the ideas and a few relative numbers, not the full system. This notebook is an **interview-standard solution on simulated data**, not a reproduction of Swiggy's model. We do not train a deep Siamese network; we use character n-gram features with a linear classifier and gradient boosting, in the same spirit.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 120 dish families (30 clusters of 4, in 6 categories), 1,200 menu names, 700 restaurants and 19,600 listings in 5 delivery areas, about 48,000 search sessions over 60 days. 31% of sessions misspelled; some dishes unavailable in some areas; four query types (plain dish, dish + modifier, vague cluster word, multi-intent); hidden graded relevance 0 to 3 and a hidden click model with position bias |
+| Methods compared | (1) exact word match; (2) **fuzzy word match** (an ElasticSearch-style baseline and our "production"); (3) **character-trigram cosine**; (4) **learned query classifier** (query to dish family, trained on ordered dishes plus a spelling dictionary); (5) a heuristic blend; (6) **learning to rank** on clicks (gradient boosting); (7) the same with inverse-propensity weights; (8) the same trained only on production logs (selection-bias check) |
+| Statistics added | NDCG@k, MRR, precision@1 with bootstrap CIs; **paired Wilcoxon and bootstrap** tests with Holm; **difference-in-differences** for misspelled vs clean; edit-distance trend; heterogeneity by query type and availability; **Davies-Bouldin** embedding check and out-of-vocabulary rate; position-bias and click-label noise; **offline replay vs editorial vs online twin** (Spearman); evaluation-set size and **A/B sample size** |
+
+### (c) How the industry uses this
+
+Every Indian food and grocery app runs the same stack: **query understanding** (spell and transliteration handling, intent classification), **retrieval** (text plus embeddings), and a **ranker** that combines relevance with rating, delivery time, price and popularity. Teams evaluate with **NDCG, MRR and precision@k** on human-labelled sets and confirm online with search conversion, null-result rate and orders per search. Interview questions: why NDCG over accuracy, how to build a test set for misspellings, position bias in click data, and how to ship a ranker safely.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | How do we make dish search return the right dish, even when it is misspelled, vague or locally unavailable, and prove it before we ship? |
+| Analytical | Which retrieval and ranking method gives the best graded relevance, for which queries, how many judged queries do we need, and can click logs train a ranker without inheriting the old system's blind spots? |
+
+**Hypotheses**
+- **H1:** H0: the fuzzy word-match baseline and the best alternative have equal mean NDCG@10 on the same sessions (paired Wilcoxon and bootstrap; Holm across comparisons).
+- **H2 (misspellings):** H0: the gain of the learned/character-level approach over fuzzy word match is the same for clean and misspelled queries (difference-in-differences with bootstrap CI).
+- **H3 (learning to rank):** H0: a ranker trained on clicks has the same NDCG@10 as the best text-only method; and H0: weighting by inverse propensity, or training only on production logs, changes nothing.
+- **H4 (embeddings):** H0: character-trigram embeddings cluster dish families no better than word-level embeddings (Davies-Bouldin).
+- **H5 (metrics):** H0: the offline click-replay ranking of methods equals their editorial-NDCG ranking and their online (twin) ranking (Spearman).
+
+**Primary metric:** **NDCG@10** with gain 2^rel − 1 and graded editorial relevance 0 to 3 (the hidden truth). **Secondary:** **MRR@10** and **precision@1** (answerable queries), **zero-result rate**, NDCG@1/3/5. **Online proxy:** expected probability of at least one click in the top 10 under the hidden click model.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.decomposition import TruncatedSVD
+from sklearn.metrics import davies_bouldin_score, roc_auc_score
+from sklearn.inspection import permutation_importance
+from statsmodels.stats.multitest import multipletests
+from threadpoolctl import threadpool_limits
+threadpool_limits(4)
+import statsmodels.formula.api as smf
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public Indian food-search logs with relevance labels | **None.** Public query logs (AOL, MS MARCO, Amazon ESCI) are English web or product search; none has transliteration noise, hyperlocal availability or a known click model, and several are hosted on Kaggle or restricted sites. |
+| **Decision** | Synthetic sessions with hidden graded relevance and a hidden click model, so that editorial NDCG, click-based offline metrics and an online twin can all be computed (D-16-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs16.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/ecommerce/data/generate_cs16.py
+
+#%% code
+os.makedirs("data/cs16", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs16 as gen; importlib.reload(gen)
+t0 = time.time(); D = gen.generate(seed=SEED)
+raw, imps_all, lst, nms, fams, RELM = D["sessions"], D["impressions"], D["listings"], D["names"], D["families"], D["RELM"]
+raw.to_csv("data/cs16/sessions.csv.gz", index=False); imps_all.to_csv("data/cs16/impressions.csv.gz", index=False); lst.to_csv("data/cs16/listings.csv.gz", index=False)
+nms.to_csv("data/cs16/dish_names.csv.gz", index=False); fams.to_csv("data/cs16/families.csv", index=False); D["restaurants"].to_csv("data/cs16/restaurants.csv", index=False); np.savez_compressed("data/cs16/true_relevance.npz", relevance=RELM, available=D["avail"])
+print(f"{len(raw):,} session rows | {len(imps_all):,} logged impressions | {len(lst):,} listings in {lst.area.nunique()} areas | {len(nms):,} menu names | generated in {time.time() - t0:.0f}s")
+raw[["session_id", "day", "area", "query_raw", "served_arm", "n_results", "n_clicks", "ordered_listing", "_type", "_misspelled"]].head(5)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Taxonomy | 120 families = 30 clusters × 4, in 6 categories; 10 menu names per family | **Documented** that a taxonomy with 300+ families and 6 categories exists; our scale is smaller |
+| Demand | Zipf over families (a few dishes get most searches) | Typical search logs |
+| Availability | Head dishes available in about 97% of areas, tail dishes in about 62% | Our assumption (documented: some dishes unavailable locally) |
+| Query types | 52% plain dish, 28% dish + modifier, 12% vague cluster word, 8% multi-intent ("biryani near me") | Our assumption |
+| Misspellings | 38% of dish queries (30% for head dishes, up to 50% for tail), 24 transliteration rules plus typing slips, 1 to 3 edits | **Documented** that misspellings are common; the rate is our assumption |
+| Relevance | 3 = the dish asked for; 2 = same family (or the same cluster for a plain dish); 1 = same cluster or category; 0 = otherwise | Our assumption (editorial scale) |
+| Click model | Click probability = examination by position × attractiveness (relevance, rating, distance, popularity); examination falls 1 / (1 + 0.35 (position − 1)) | Our assumption (hidden truth) |
+| Serving | 90% production (fuzzy word match), 10% character n-gram trial arm; only shown items are logged | Our assumption |
+| DQ issues | 900 duplicate rows, a bot with 700 identical queries, 0.3% empty queries, messy case and spacing | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("sessions: session_id, user_id, day, area", "One search; day 0 to 59; delivery area 0 to 4"), ("query_raw", "Query as typed (messy case, spaces, '?')"),
+    ("served_arm, n_results, n_clicks, first_click_pos, ordered_listing", "Which system served it, how many results were shown, clicks, first clicked position, listing ordered (-1 if none)"),
+    ("impressions: session_id, position, listing_id, clicked", "What was shown (up to 20) and whether it was clicked"),
+    ("listings: listing_id, restaurant_id, name_id, price_inr, orders_norm, rating, prep_min, dist_km, cost_for_two", "A dish offered by a restaurant, with business features"),
+    ("dish_names: name_id, dish_name", "1,200 menu names; families.csv holds the taxonomy (family, cluster, category)"),
+    ("_type, _family, _cluster, _modifier, _intent, _misspelled, _edit_dist, _bot", "HIDDEN: true query intent and spelling noise (used only for evaluation)"),
+    ("true_relevance.npz", "HIDDEN: graded relevance of every menu name for every query intent; area availability"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs16/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+s = raw.copy(); qraw = s.query_raw.fillna("")
+user_n = s.drop_duplicates("session_id").groupby("user_id").size(); bots = user_n[user_n > 20 * user_n.median()].index
+checks = {"duplicate session rows": int(s.duplicated("session_id").sum()), "empty queries": int((qraw.str.strip() == "").sum()),
+          "queries with upper case, extra spaces or '?'": int((qraw.str.contains(r"[A-Z?]|\s\s|^\s|\s$")).sum()), "bot-like users (> 20× median sessions)": int(len(bots)), "sessions by the bot": int(s.user_id.isin(bots).sum())}
+print(pd.Series(checks, name="rows").to_string())
+s = s.drop_duplicates("session_id"); s = s[s.query_raw.fillna("").str.strip() != ""]; s = s[~s.user_id.isin(bots)].copy()
+s["q"] = s.query_raw.str.lower().str.replace(r"[^a-z0-9 ]", " ", regex=True).str.split().str.join(" "); s["n_tok"] = s.q.str.split().str.len()
+imps = imps_all[imps_all.session_id.isin(s.session_id)]
+print(f"\nClean: {len(s):,} sessions | {s.q.nunique():,} distinct queries | zero-result sessions {(s.n_results == 0).mean():.1%} | sessions with a click {(s.n_clicks > 0).mean():.1%} | with an order {(s.ordered_listing >= 0).mean():.1%} | clean impressions {len(imps):,}")
+print("query types:", s._type.value_counts(normalize=True).round(3).to_dict(), "| misspelled share of dish-like queries:", round(s[s._type != "vague"]._misspelled.mean(), 3))
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+s["seg"] = s._type.str.replace("_", " ") + np.where(s._misspelled, " (misspelled)", ""); prod = s[s.served_arm == "production"]
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
+qf = s.q.value_counts().values; axes[0].plot(np.arange(1, len(qf) + 1), qf, color="#2a6f97"); axes[0].set_xscale("log"); axes[0].set_yscale("log"); axes[0].set_xlabel("Distinct query, by rank (log)"); axes[0].set_ylabel("Sessions (log)"); axes[0].set_title("Long tail of query strings")
+zr = prod.groupby("seg").apply(lambda d: (d.n_results == 0).mean()).sort_values(); axes[1].barh(zr.index, zr.values * 100, color="#e07a1f"); axes[1].set_xlabel("Zero-result sessions (%)"); axes[1].set_ylabel("Query segment"); axes[1].set_title("Production: misspelled and vague queries return nothing")
+ed = s[s._misspelled & (s._type != "vague")]._edit_dist.value_counts().sort_index(); axes[2].bar(ed.index.astype(str), ed.values, color="#2a6f97"); axes[2].set_xlabel("Character edits between typed and intended query"); axes[2].set_ylabel("Sessions"); axes[2].set_title("Most misspellings are 1 to 3 edits")
+plt.tight_layout(); plt.show()
+print(f"{s.q.nunique():,} distinct strings for {len(s):,} sessions; the 10 most common queries cover {qf[:10].sum() / qf.sum():.1%}; zero-result rate in production: clean dish {zr.get('dish', np.nan):.1%}, misspelled dish {zr.get('dish (misspelled)', np.nan):.1%}, vague {zr.get('vague', np.nan):.1%}")
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Setup: split in time, five retrieval methods, a learned ranker
+
+**Evaluation protocol:** train on **days 0 to 34**, test on **days 53 to 59** (a later week, as Swiggy validates on a week from a much later period). Relevance comes from the hidden graded labels (our stand-in for editorial tags). For every test session we rank the **listings in the customer's area** and score the top 10.
+
+| # | Method | In one line |
+|---|---|---|
+| 1 | Exact lexical | Word match with idf weights (BM25-like); misspelled words match nothing |
+| 2 | **Fuzzy lexical (production-like)** | As 1, with ElasticSearch-style edit-distance tolerance (1 edit for 3 to 5 letters, 2 for 6+) and a popularity tie-break |
+| 3 | Character-trigram cosine | TF-IDF over character trigrams of query and menu name; robust to spelling |
+| 4 | **Learned query classifier** | Query → dish family: logistic regression on character 2 to 4-grams, trained on **ordered dishes from logs plus a spelling-variation dictionary** (built with only part of the true noise rules and no typing slips) and the menu names; listing score = P(family) + 0.3 P(cluster) |
+| 5 | Heuristic blend | Sum of normalised scores of 2, 3 and 4 |
+| 6 | **LTR on clicks** | Gradient boosting on 13 features (the four text scores, family and cluster probabilities, rating, distance, prep time, cost, price, popularity, query length), rerank the 40-listing blend pool, label = click on a shown item |
+| 7 | LTR, IPW | As 6, with clicks weighted by 1 / examination probability (capped at 5) |
+| 8 | LTR, production logs only | As 6, but dropping the 10% trial-arm sessions (selection-bias check) |
+
+No hyper-parameter tuning; all settings are defaults or fixed choices.
+
+#### Code (scoring, stage 1)
+
+#%% code
+TR = s[s.day <= 34].reset_index(drop=True); TE = s[s.day >= 53].reset_index(drop=True)
+NN, NF = len(nms), len(fams); nm_fam = nms._family.values; fam_cl = fams.cluster.values; nm_cl = fam_cl[nm_fam]; fam_cat = D["fam_cat"]; nm_cat = fam_cat[nm_fam]
+l_name = lst.name_id.values; l_area = lst.area.values; LA = [np.where(l_area == a)[0] for a in range(gen.N_AREA)]; TIE = 0.02 * pd.Series(lst.orders_norm.values).rank(pct=True).values
+CLM = np.zeros((NF, 30)); CLM[np.arange(NF), fam_cl] = 1
+Lx = gen.Lex(nms.dish_name.tolist()); tri = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 3), sublinear_tf=True).fit(nms.dish_name); Nv = tri.transform(nms.dish_name)
+def text_scores(df):
+    uq, qi = np.unique(df.q.values, return_inverse=True)
+    return dict(qi=qi, S1=Lx.scores(list(uq), False), S2=Lx.scores(list(uq), True), S3=(tri.transform(uq) @ Nv.T).toarray().astype(np.float32))
+t0 = time.time(); XT = text_scores(TE); XR = text_scores(TR)
+print(f"train sessions {len(TR):,} (days 0-34) | test sessions {len(TE):,} (days 53-59) | distinct query strings train {len(XR['S1']):,}, test {len(XT['S1']):,} | scored in {time.time() - t0:.0f}s")
+print("test sessions by type:", TE._type.value_counts().to_dict(), "| misspelled:", int(TE._misspelled.sum()))
+
+#%% code
+# Query classifier (method 4): ordered dishes from logs + spelling dictionary + menu names + taxonomy words. Cross-fitted for training sessions (3 folds) so that LTR features are not in-sample.
+rng_d = np.random.default_rng(SEED); dic = [(n, f) for n, f in zip(nms.dish_name, nm_fam)]
+for f in range(NF): dic += [(gen.misspell(fams.family_name[f], rng_d, rule_n=14, typos=False), f) for _ in range(8)]
+for c in range(30): dic += [(gen.CLUSTER_WORDS[c], f) for f in np.where(fam_cl == c)[0]]
+dic = pd.DataFrame(dic, columns=["q", "fam"]); ordd = TR[TR.ordered_listing >= 0]; logq = pd.DataFrame({"q": ordd.q.values, "fam": nm_fam[l_name[ordd.ordered_listing.values]], "fold": ordd.session_id.values % 3})
+vec = TfidfVectorizer(analyzer="char_wb", ngram_range=(2, 4), sublinear_tf=True).fit(pd.concat([dic.q, logq.q, TR.q]))
+def fit_clf(d): return LogisticRegression(C=10, max_iter=100).fit(vec.transform(d.q), d.fam)
+def proba(clf, q): u, inv = np.unique(q, return_inverse=True); return clf.predict_proba(vec.transform(u))[inv].astype(np.float32)
+t0 = time.time(); P4_tr = np.zeros((len(TR), NF), np.float32); fold = TR.session_id.values % 3
+for k in range(3):
+    clf_k = fit_clf(pd.concat([dic, logq[logq.fold != k][["q", "fam"]]])); P4_tr[fold == k] = proba(clf_k, TR.q.values[fold == k])
+clf = fit_clf(pd.concat([dic, logq[["q", "fam"]]])); P4_te = proba(clf, TE.q.values); PC_tr, PC_te = P4_tr @ CLM, P4_te @ CLM
+fam_true = TE._family.values; ok = fam_true >= 0; top1 = P4_te.argmax(1)
+acc = pd.DataFrame({"top-1 family accuracy": (top1 == fam_true)[ok], "seg": np.where(TE._misspelled.values[ok], "misspelled", "clean")}).groupby("seg").agg(["mean", "size"])
+print(f"order pairs from logs: {len(logq):,} + dictionary/menu/taxonomy pairs: {len(dic):,} | 4 fits in {time.time() - t0:.0f}s")
+acc
+
+#%% md
+**Observation:** «O70»
+
+#### Code (learning to rank, stage 2)
+
+#%% code
+rz = ((lst.rating.values - 4.0) / 0.35); dz = ((lst.dist_km.values - 2.8) / 1.5); pz = lst.orders_norm.values
+def feats(sr, l, X, P4, PC, T):
+    qi = X["qi"][sr]; nid = l_name[l]
+    return pd.DataFrame({"m_exact": X["S1"][qi, nid], "m_fuzzy": X["S2"][qi, nid], "m_trigram": X["S3"][qi, nid], "p_family": P4[sr, nm_fam[nid]], "p_cluster": PC[sr, nm_cl[nid]], "rating": lst.rating.values[l], "dist_km": lst.dist_km.values[l],
+                         "prep_min": lst.prep_min.values[l], "cost_for_two": lst.cost_for_two.values[l], "price_inr": lst.price_inr.values[l], "orders_norm": pz[l], "q_tokens": T.n_tok.values[sr], "q_chars": T.q.str.len().values[sr]})
+row_of = pd.Series(np.arange(len(TR)), index=TR.session_id.values); itr = imps[imps.session_id.isin(TR.session_id)]; sr_tr = row_of[itr.session_id.values].values
+Ftr = feats(sr_tr, itr.listing_id.values, XR, P4_tr, PC_tr, TR); ytr = itr.clicked.values; pos = itr.position.values; arm_tr = TR.served_arm.values[sr_tr]
+sub_tr = np.sort(RNG.choice(len(Ftr), 300_000, replace=False)); n_all = len(Ftr); Ftr, ytr, pos, arm_tr = Ftr.iloc[sub_tr], ytr[sub_tr], pos[sub_tr], arm_tr[sub_tr]   # random 300,000 logged impressions (speed)
+w_ipw = np.where(ytr == 1, np.minimum(1 / gen.EXAM[pos - 1], 5.0), 1.0); hgb = lambda: HistGradientBoostingClassifier(max_iter=100, random_state=SEED)
+t0 = time.time(); L1 = hgb().fit(Ftr, ytr); L2 = hgb().fit(Ftr, ytr, sample_weight=w_ipw); L3 = hgb().fit(Ftr[arm_tr == "production"], ytr[arm_tr == "production"])
+print(f"logged training impressions {n_all:,}; random subsample used {len(Ftr):,} (click rate {ytr.mean():.1%}; {int((arm_tr != 'production').sum()):,} from the trial arm) | 3 rankers fitted in {time.time() - t0:.0f}s")
+print("features:", ", ".join(Ftr.columns))
+
+#%% md
+**Observation:** «O71»
+
+#### Code (rank the test sessions with every method, then score)
+
+#%% code
+SS = {"S1": XT["S1"][XT["qi"]], "S2": XT["S2"][XT["qi"]], "S3": XT["S3"][XT["qi"]]}; SS["S4"] = P4_te[:, nm_fam] + 0.3 * PC_te[:, nm_cl]
+SS["BL"] = SS["S3"] + SS["S4"] + 0.5 * SS["S2"] / np.maximum(SS["S2"].max(1, keepdims=True), 1e-9)
+def topk(Sn, T, k=10, thr=None):
+    out = np.full((len(T), k), -1); ar = T.area.values
+    for a in range(gen.N_AREA):
+        m = np.where(ar == a)[0]; la = LA[a]; base = Sn[m][:, l_name[la]]; sc = base + TIE[la][None, :]
+        if thr is not None: sc = np.where(base > thr, sc, -np.inf)
+        idx = np.argpartition(-sc, k, axis=1)[:, :k]; v = np.take_along_axis(sc, idx, 1); o = np.argsort(-v, axis=1, kind="stable"); idx, v = np.take_along_axis(idx, o, 1), np.take_along_axis(v, o, 1)
+        lid = la[idx]; lid[~np.isfinite(v)] = -1; out[m] = lid
+    return out
+TOP = {"1 exact lexical": topk(SS["S1"], TE, thr=0), "2 fuzzy lexical (production-like)": topk(SS["S2"], TE, thr=0), "3 character-trigram cosine": topk(SS["S3"], TE, thr=0.05),
+       "4 learned query classifier": topk(SS["S4"], TE), "5 heuristic blend of 2-4": topk(SS["BL"], TE)}
+POOL = topk(SS["BL"], TE, k=40); nT = len(TE); srT = np.repeat(np.arange(nT), 40); Fte = feats(srT, POOL.ravel(), XT, P4_te, PC_te, TE)
+for name, mdl in (("6 LTR on clicks", L1), ("7 LTR on clicks, IPW", L2), ("8 LTR, production logs only", L3)):
+    p = mdl.predict_proba(Fte)[:, 1].reshape(nT, 40); o = np.argsort(-p, axis=1, kind="stable")[:, :10]; TOP[name] = np.take_along_axis(POOL, o, 1)
+# ideal ranking per session (area-specific) and metrics
+disc = 1 / np.log2(np.arange(2, 12)); intent = TE._intent.values; IG = np.zeros((nT, 10)); ANS = np.zeros(nT, bool)
+for a in range(gen.N_AREA):
+    m = np.where(TE.area.values == a)[0]; R = -np.sort(-RELM[intent[m]][:, l_name[LA[a]]], axis=1)[:, :10]; IG[m] = np.cumsum((2.0 ** R - 1) * disc, 1); ANS[m] = R[:, 0] == 3
+catT = np.where(TE._family.values >= 0, fam_cat[np.maximum(TE._family.values, 0)], TE._cluster.values // 5)
+ATT = lambda rel, l: 1 / (1 + np.exp(-(gen.A_REL[rel] + 0.55 * rz[l] + (-0.25) * dz[l] + 0.20 * pz[l])))
+def evaluate(top):
+    valid = top >= 0; lid = np.maximum(top, 0); rel = np.where(valid, RELM[intent[:, None], l_name[lid]], 0); G = np.cumsum((2.0 ** rel - 1) * valid * disc, 1)
+    nd = {k: np.where(IG[:, k - 1] > 0, G[:, k - 1] / np.maximum(IG[:, k - 1], 1e-9), 0) for k in (1, 3, 5, 10)}
+    first = np.where((rel == 3).any(1), (rel == 3).argmax(1) + 1, 0); rr = np.where(first > 0, 1 / np.maximum(first, 1), 0.0)
+    catshare = np.where(valid, nm_cat[l_name[lid]] == catT[:, None], False).sum(1) / np.maximum(valid.sum(1), 1)
+    pclick = np.where(valid, gen.EXAM[:10][None, :] * ATT(rel, lid), 0.0); succ = 1 - np.prod(1 - pclick, 1)
+    return dict(ndcg1=nd[1], ndcg3=nd[3], ndcg5=nd[5], ndcg=nd[10], rr=rr, p1=(rel[:, 0] == 3).astype(float), zero=(~valid[:, 0]).astype(float), catshare=catshare, succ=succ, rel=rel)
+MET = {k: evaluate(v) for k, v in TOP.items()}; names_m = list(MET)
+def boot_ci(x, B=500):
+    idx = RNG.integers(0, len(x), (B, len(x))); b = x[idx].mean(1); return np.percentile(b, 2.5), np.percentile(b, 97.5)
+rows = []
+for k in names_m:
+    m = MET[k]; lo, hi = boot_ci(m["ndcg"]); rows.append((k, m["ndcg"].mean(), lo, hi, m["ndcg1"].mean(), m["ndcg3"].mean(), m["rr"][ANS].mean(), m["p1"][ANS].mean(), m["zero"].mean(), m["succ"].mean()))
+res = pd.DataFrame(rows, columns=["method", "NDCG@10", "CI low", "CI high", "NDCG@1", "NDCG@3", "MRR@10 (answerable)", "P@1 (answerable)", "zero-result rate", "twin P(click)"]).set_index("method")
+print(f"test sessions {nT:,}; answerable (an exact-dish listing exists in the area): {ANS.mean():.1%}; LTR pool of 40 contains an exact-dish listing for {np.mean([(RELM[intent[i]][l_name[POOL[i]]] == 3).any() for i in np.where(ANS)[0]]):.1%} of answerable sessions")
+res.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O72»
+
+### 7.2 Is the winner really better? Paired tests on the same sessions
+
+**(a) Why?** Every method is scored on the **same test sessions**, so the tests are paired: a **Wilcoxon signed-rank** test and a **paired bootstrap** CI (1,000 resamples) on the NDCG@10 difference, with **Holm** across the seven comparisons and **Cohen's d_z** as the effect size. We compare the best method with each of the others. NDCG per session is bounded and has many ties and zeros, so the rank test and the bootstrap are safer than a paired t-test.
+
+#### Code
+
+#%% code
+best = res["NDCG@10"].idxmax(); rows = []
+for k in names_m:
+    if k == best: continue
+    d = MET[best]["ndcg"] - MET[k]["ndcg"]; bs = np.array([d[RNG.integers(0, len(d), len(d))].mean() for _ in range(1000)])
+    try: pw = stats.wilcoxon(d).pvalue
+    except ValueError: pw = 1.0
+    rows.append((k, d.mean(), np.percentile(bs, 2.5), np.percentile(bs, 97.5), d.mean() / d.std(ddof=1), pw, int((d > 1e-9).sum()), int((d < -1e-9).sum())))
+pt = pd.DataFrame(rows, columns=[f"vs {best}", "ΔNDCG@10 (best − other)", "CI low", "CI high", "Cohen d_z", "Wilcoxon p", "sessions best wins", "sessions other wins"]).set_index(f"vs {best}"); pt["p_holm"] = multipletests(pt["Wilcoxon p"], method="holm")[1]
+print(f"Best method on NDCG@10: {best}"); pt.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O73»
+
+#### Chart: NDCG at several cut-offs and the zero-result rate
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(15, 4.6)); ks = [1, 3, 5, 10]
+for k in names_m: axes[0].plot([f"@{x}" for x in ks], [MET[k][{1: "ndcg1", 3: "ndcg3", 5: "ndcg5", 10: "ndcg"}[x]].mean() for x in ks], marker="o", label=k)
+axes[0].set_xlabel("Cut-off k"); axes[0].set_ylabel("Mean NDCG@k"); axes[0].set_title("Ranking quality by cut-off"); axes[0].legend(fontsize=7, loc="lower right")
+zz = res["zero-result rate"].sort_values(ascending=False); axes[1].barh([x.split(" ", 1)[1][:34] for x in zz.index], zz.values * 100, color="#e07a1f"); axes[1].set_xlabel("Sessions with no result (%)"); axes[1].set_ylabel("Method"); axes[1].set_title("Zero-result rate on the test week")
+plt.tight_layout(); plt.show()
+print({k: round(MET[k]["ndcg1"].mean(), 3) for k in names_m})
+
+#%% md
+**Takeaway:** «O74»
+
+### 7.3 Misspellings: who benefits? (difference-in-differences and the edit-distance trend)
+
+**(a) Why?** The Swiggy posts report the largest gains on the **misspelled set (V2)**. We split plain-dish-like sessions (dish, dish + modifier, multi-intent) into **clean** and **misspelled**, compare each method, and test the **interaction**: is the gain of the best character-level method over fuzzy word match bigger for misspelled queries? Difference-in-differences with a bootstrap CI over sessions; plus NDCG by **number of character edits** (0, 1, 2, 3+) and a Spearman trend test for the fuzzy baseline.
+
+#### Code
+
+#%% code
+dishlike = (TE._type.values != "vague"); mis = TE._misspelled.values; edv = TE._edit_dist.values; fz = "2 fuzzy lexical (production-like)"
+cm = pd.DataFrame({k: {"clean": MET[k]["ndcg"][dishlike & ~mis].mean(), "misspelled": MET[k]["ndcg"][dishlike & mis].mean(), "gap (clean − misspelled)": MET[k]["ndcg"][dishlike & ~mis].mean() - MET[k]["ndcg"][dishlike & mis].mean()} for k in names_m}).T
+alt = [k for k in names_m if k != fz][:3] + ["6 LTR on clicks"]; did = []
+for k in alt:
+    d = MET[k]["ndcg"] - MET[fz]["ndcg"]; a, b = d[dishlike & mis], d[dishlike & ~mis]; bs = [RNG.choice(a, len(a)).mean() - RNG.choice(b, len(b)).mean() for _ in range(1000)]
+    did.append((k, b.mean(), a.mean(), a.mean() - b.mean(), np.percentile(bs, 2.5), np.percentile(bs, 97.5), stats.mannwhitneyu(a, b).pvalue))
+did = pd.DataFrame(did, columns=["method − fuzzy lexical", "gain on clean", "gain on misspelled", "diff-in-diff", "CI low", "CI high", "Mann-Whitney p"]).set_index("method − fuzzy lexical")
+eb = np.minimum(edv, 3); ed_tab = pd.DataFrame({k.split(" ", 1)[1][:28]: [MET[k]["ndcg"][dishlike & (eb == e)].mean() for e in range(4)] for k in names_m}, index=["0 edits", "1 edit", "2 edits", "3+ edits"])
+rho, prho = stats.spearmanr(edv[dishlike & mis], MET[fz]["ndcg"][dishlike & mis]); rho4, prho4 = stats.spearmanr(edv[dishlike & mis], MET["4 learned query classifier"]["ndcg"][dishlike & mis])
+print(f"Spearman(edits, NDCG@10) among misspelled sessions: fuzzy lexical {rho:+.2f} (p = {prho:.2g}); learned classifier {rho4:+.2f} (p = {prho4:.2g}) | misspelled share of dish-like test sessions: {mis[dishlike].mean():.1%}")
+fig, axes = plt.subplots(1, 2, figsize=(15, 4.6)); xx = np.arange(len(names_m)); w = 0.38
+axes[0].bar(xx - w / 2, cm["clean"], w, label="clean queries", color="#2a6f97"); axes[0].bar(xx + w / 2, cm["misspelled"], w, label="misspelled queries", color="#e07a1f"); axes[0].set_xticks(xx); axes[0].set_xticklabels([x.split(" ")[0] for x in names_m]); axes[0].set_xlabel("Method number"); axes[0].set_ylabel("Mean NDCG@10"); axes[0].set_title("Clean vs misspelled queries"); axes[0].legend()
+for k in names_m: axes[1].plot(ed_tab.index, ed_tab[k.split(" ", 1)[1][:28]], marker="o", label=k.split(" ")[0])
+axes[1].set_xlabel("Character edits in the query"); axes[1].set_ylabel("Mean NDCG@10"); axes[1].set_title("Quality as the spelling gets worse"); axes[1].legend(title="method", fontsize=8)
+plt.tight_layout(); plt.show()
+display(cm.round(4)); display(did.round(4)); ed_tab.round(3)
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.4 Query types and availability: where does each method struggle?
+
+**(a) Why?** Averages hide segments. We report NDCG@10 by **query type**, test the **heterogeneity** for the best method (Kruskal–Wallis across types), and look at **unavailable dishes** (no exact-dish listing in the customer's area): there the right answer is a close alternative, and we also report the share of the top 10 that sits in the **intended category** (the Swiggy check for queries that used to return nothing).
+
+#### Code
+
+#%% code
+typ = TE._type.values; seg_tab = pd.DataFrame({k.split(" ", 1)[1][:28]: {t: MET[k]["ndcg"][typ == t].mean() for t in ("dish", "dish_modifier", "multi_intent", "vague")} for k in names_m}).T
+kw = stats.kruskal(*[MET[best]["ndcg"][typ == t] for t in ("dish", "dish_modifier", "multi_intent", "vague")])
+unav = (~ANS) & (typ != "vague"); av = ANS & (typ != "vague"); zr_old = MET[fz]["zero"] == 1
+rows = []
+for k in names_m:
+    m = MET[k]; rows.append((k, m["ndcg"][av].mean(), m["ndcg"][unav].mean(), m["catshare"][unav].mean(), m["catshare"][zr_old & dishlike].mean() if (zr_old & dishlike).any() else np.nan, m["ndcg"][zr_old & dishlike].mean() if (zr_old & dishlike).any() else np.nan))
+av_tab = pd.DataFrame(rows, columns=["method", "NDCG@10: dish available", f"NDCG@10: dish unavailable (n = {int(unav.sum())})", "top-10 in intended category (unavailable)", f"top-10 in intended category (production zero-result, n = {int((zr_old & dishlike).sum())})", "NDCG@10 (production zero-result)"]).set_index("method")
+print(f"Kruskal-Wallis across query types for {best}: H = {kw.statistic:.1f}, p = {kw.pvalue:.2g} | share of dish-like test sessions with no exact dish in the area: {unav.sum() / dishlike.sum():.1%}")
+display(seg_tab.round(3)); av_tab.round(3)
+
+#%% md
+**Observation:** «O76»
+
+### 7.5 Embeddings: do character trigrams cluster dish families? (Davies-Bouldin and out-of-vocabulary)
+
+**(a) Why?** Swiggy checks that embeddings group dishes by family (Davies-Bouldin index, lower is better) and notes that word-level embeddings could not embed about 32% of dishes. We take **10 head families × 150 test queries** (clean and misspelled) and embed them two ways: (i) **word-level** TF-IDF over the menu vocabulary (unseen words are dropped, so a fully misspelled query becomes a zero vector), (ii) **character-trigram** TF-IDF; both reduced to 64 dimensions by SVD fitted on menu names only. We report the Davies-Bouldin index of each, the **out-of-vocabulary rate** of word-level matching, and a 2-D picture.
+
+#### Code
+
+#%% code
+head = np.argsort(-fams._demand_weight.values)[:10]; sel = []
+for f in head:
+    idx = np.where((TE._family.values == f) & (TE._type.values == "dish"))[0]; sel.append(RNG.choice(idx, 150, replace=len(idx) < 150))
+sel = np.concatenate(sel); qs = TE.q.values[sel]; labs = TE._family.values[sel]; names_txt = nms.dish_name.tolist()
+wv = TfidfVectorizer(analyzer="word", sublinear_tf=True).fit(names_txt); tv = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 3), sublinear_tf=True).fit(names_txt)
+sw = TruncatedSVD(64, random_state=SEED).fit(wv.transform(names_txt)); st = TruncatedSVD(64, random_state=SEED).fit(tv.transform(names_txt))
+Ew, Et = sw.transform(wv.transform(qs)), st.transform(tv.transform(qs)); oov = np.asarray(wv.transform(qs).sum(1)).ravel() == 0
+dbw, dbt = davies_bouldin_score(Ew, labs), davies_bouldin_score(Et, labs)
+mis_q = TE._misspelled.values[sel]; tokv = set(wv.vocabulary_); oov_rate_all = np.mean([not any(t in tokv for t in q.split()) for q in TE.q.values[dishlike]])
+print(f"Davies-Bouldin (lower = tighter family clusters): word-level {dbw:.2f} | character-trigram {dbt:.2f} | share of sampled queries with no known word: all {oov.mean():.1%}, misspelled {oov[mis_q].mean():.1%}, clean {oov[~mis_q].mean():.1%} | all dish-like test queries with no known word: {oov_rate_all:.1%}")
+fig, axes = plt.subplots(1, 2, figsize=(14, 5.2)); pal = sns.color_palette("tab10", 10)
+for ax, E, ttl in ((axes[0], Ew, "Word-level embedding"), (axes[1], Et, "Character-trigram embedding")):
+    Z = TruncatedSVD(2, random_state=SEED).fit_transform(E + RNG.normal(0, 1e-6, E.shape))
+    for j, f in enumerate(head): ax.scatter(Z[labs == f, 0], Z[labs == f, 1], s=10, color=pal[j], alpha=0.6, label=fams.family_name[f] if ax is axes[1] else None)
+    ax.set_xlabel("Component 1"); ax.set_ylabel("Component 2"); ax.set_title(ttl + f" (DB {dbw if ax is axes[0] else dbt:.2f})")
+axes[1].legend(fontsize=7, ncol=2, title="dish family"); plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O77»
+
+### 7.6 Clicks as labels: position bias, replay metrics and offline vs online agreement
+
+**(a) Why?** Click logs are the cheap labels, but (i) users **examine top positions more**, (ii) clicks only exist for what the **old system showed**, and (iii) clicks miss relevant items nobody saw. We (1) look at the click rate **by position for exact-dish listings** (a flat curve would mean no bias), fitted with a logistic regression of click on log-position and relevance; (2) measure **label noise**: the share of clicks on exact-dish listings and the share of exact-dish listings that were shown but not clicked; (3) compare three ways of ranking the methods: **editorial NDCG@10** (hidden truth), **click replay** (does the item the customer actually ordered appear in the method's top 10? only for test sessions with an order), and the **online twin** (expected probability of at least one click); each pair tested with Spearman (H5).
+
+#### Code
+
+#%% code
+iv = itr.merge(TR[["session_id", "_intent", "served_arm"]], on="session_id"); iv["rel"] = RELM[iv._intent.values, l_name[iv.listing_id.values]]; pv = iv[iv.served_arm == "production"].copy()
+ctr_pos = pv[pv.rel == 3].groupby("position").clicked.mean(); ctr_pos_hi = pv[pv.rel == 0].groupby("position").clicked.mean()
+lg = smf.logit("clicked ~ np.log(position) + C(rel)", data=pv).fit(disp=0)
+fig, ax = plt.subplots(figsize=(9, 4.4)); ax.plot(ctr_pos.index, ctr_pos.values * 100, marker="o", color="#2a6f97", label="exact-dish listings (rel 3)"); ax.plot(ctr_pos_hi.index, ctr_pos_hi.values * 100, marker="s", color="#e07a1f", label="unrelated listings (rel 0)")
+ax.set_xlabel("Position shown"); ax.set_ylabel("Click rate (%)"); ax.set_title("Click rate falls with position, even for the right dish"); ax.legend(); plt.tight_layout(); plt.show()
+shown3 = pv[pv.rel == 3]; clicks = pv[pv.clicked == 1]
+print(f"Logistic fit: coefficient on log(position) = {lg.params['np.log(position)']:+.2f} (95% CI {lg.conf_int().loc['np.log(position)', 0]:+.2f} to {lg.conf_int().loc['np.log(position)', 1]:+.2f}); odds of a click at position 10 vs 1 for the same relevance: {np.exp(lg.params['np.log(position)'] * np.log(10)):.2f}")
+print(f"Click-label noise: {(clicks.rel == 3).mean():.1%} of clicks are on exact-dish listings, {(clicks.rel == 0).mean():.1%} on unrelated ones | {1 - shown3.clicked.mean():.1%} of exact-dish listings that were shown were not clicked | exact-dish share of the top-20 shown: {(pv.rel == 3).mean():.1%}")
+orde = np.where(TE.ordered_listing.values >= 0)[0]; replay = {k: np.mean([(TOP[k][i] == TE.ordered_listing.values[i]).any() for i in orde]) for k in names_m}
+cmp_ = pd.DataFrame({"editorial NDCG@10": res["NDCG@10"], "click replay: ordered dish in top 10": pd.Series(replay), "online twin P(click)": res["twin P(click)"]})
+cmp_["rank editorial"] = cmp_.iloc[:, 0].rank(ascending=False); cmp_["rank replay"] = cmp_.iloc[:, 1].rank(ascending=False); cmp_["rank twin"] = cmp_.iloc[:, 2].rank(ascending=False)
+r_er, p_er = stats.spearmanr(cmp_["rank editorial"], cmp_["rank replay"]); r_et, p_et = stats.spearmanr(cmp_["rank editorial"], cmp_["rank twin"]); r_rt, p_rt = stats.spearmanr(cmp_["rank replay"], cmp_["rank twin"])
+print(f"Spearman of method ranks: editorial vs replay {r_er:+.2f} (p = {p_er:.2g}) | editorial vs twin {r_et:+.2f} (p = {p_et:.2g}) | replay vs twin {r_rt:+.2f} (p = {p_rt:.2g}) | test sessions with an order: {len(orde):,}")
+cmp_.round(4)
+
+#%% md
+**Takeaway:** «O78»
+
+### 7.7 How many judged queries and how big an A/B test? Sample-size and power
+
+**(a) Why?** Swiggy's 2024 test set had 5,000+ labelled samples. How many do we need? With a paired design the required number of **sessions** for a mean NDCG difference Δ is n = ((z₍α/2₎ + z₍β₎) · SD(d) / Δ)², using the observed SD of the per-session difference between the best method and the production-like baseline (80% power, two-sided α = 0.05). The **minimum detectable difference** on our test set follows from the same formula. For the live test, the outcome is the share of search sessions with at least one click, and the sample size per arm for a **relative** lift is the usual two-proportion formula.
+
+#### Code
+
+#%% code
+d = MET[best]["ndcg"] - MET[fz]["ndcg"]; sd = d.std(ddof=1); zz = 1.96 + 0.84
+rows = [(f"ΔNDCG@10 = {D_:.3f}", int(np.ceil((zz * sd / D_) ** 2))) for D_ in (0.005, 0.01, 0.02, 0.05)]
+print(f"Observed paired SD of the NDCG@10 difference (best − production-like): {sd:.3f}; mean difference {d.mean():.3f}; minimum detectable difference with our {nT:,} test sessions: {zz * sd / np.sqrt(nT):.4f}")
+p0 = MET[fz]["succ"].mean(); base_click = (TE[TE.served_arm == "production"].n_clicks > 0).mean(); rows2 = []
+for rel_ in (0.02, 0.05, 0.10):
+    p1 = base_click * (1 + rel_); n_ = int(np.ceil(2 * zz ** 2 * (base_click * (1 - base_click) + p1 * (1 - p1)) / 2 / (p1 - base_click) ** 2)); rows2.append((f"+{rel_:.0%} relative", base_click, p1, n_))
+display(pd.DataFrame(rows, columns=["target (paired, offline)", "sessions needed"]).set_index("target (paired, offline)"))
+pd.DataFrame(rows2, columns=["lift in sessions with ≥1 click", "control", "treatment", "sessions per arm"]).set_index("lift in sessions with ≥1 click").round(4)
+
+#%% md
+**Observation:** «O79»
+
+## 8. ML Section — what we built and what is beyond it
+
+#### Code: which features does the click-trained ranker use?
+
+#%% code
+lg_te = imps[imps.session_id.isin(TE.session_id)]; rte = pd.Series(np.arange(len(TE)), index=TE.session_id.values)[lg_te.session_id.values].values
+Fh = feats(rte, lg_te.listing_id.values, XT, P4_te, PC_te, TE); yh = lg_te.clicked.values; auc = roc_auc_score(yh, L1.predict_proba(Fh)[:, 1]); auc_ipw = roc_auc_score(yh, L2.predict_proba(Fh)[:, 1])
+sub = RNG.choice(len(Fh), min(60000, len(Fh)), replace=False); pi = permutation_importance(L1, Fh.iloc[sub], yh[sub], scoring="roc_auc", n_repeats=3, random_state=SEED)
+imp = pd.Series(pi.importances_mean, index=Fh.columns).sort_values(ascending=False)
+print(f"Click-prediction AUC on logged test impressions (biased labels): LTR {auc:.3f}, LTR with IPW {auc_ipw:.3f}; held-out logged impressions {len(Fh):,}")
+imp.round(4).to_frame("AUC drop when shuffled").T
+
+#%% md
+**Observation:** «O8»
+
+- **What we built:** a similarity score from character n-grams, a logistic-regression query classifier (query understanding), and a gradient-boosting ranker on 13 features. Swiggy's documented system is a Siamese network on trigrams feeding a learning-to-rank model; ours is a lighter stand-in with the same interfaces.
+- **Beyond this notebook:** a trained Siamese or small-language-model encoder for semantic and multi-intent queries ("healthy lunch", "something sweet"), listwise ranking losses, de-biasing by randomised result swaps, hard negatives (clicked > shown > random), and multi-objective ranking with delivery time and margin.
+- **No tuning** (per the brief): C = 10, 100 boosting rounds, pool size 40 and the 0.3 cluster weight are fixed defaults.
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-16-07; **none published by Swiggy**, so all are ours): 25 lakh search sessions a day; 20% of search sessions end in an order today; contribution of ₹30 per order (about 7% of a ₹450 basket after discounts and delivery cost); a yearly cost of ₹4 crore for the team, compute and testing. The relative lift in orders is taken from the twin's **expected probability of at least one click** (best method vs the production-like baseline), with a paired bootstrap CI. Three scenarios: **worst** = CI low and only 20% of the extra clicks turning into extra orders (the rest would have ordered anyway), **base** = point estimate and 40% pass-through, **best** = CI high and 60% pass-through. The twin's click model rewards rating and distance as well as relevance, so its lift is larger than the editorial NDCG gain; treat the rupee figures as an upper-leaning order of magnitude.
+
+#### Code
+
+#%% code
+SESS, CONV, CM_, COST = 2.5e6, 0.20, 30.0, 4.0; cand = [k for k in names_m if k != fz]; rows = {}
+for k in cand:
+    dd_ = MET[k]["succ"] - MET[fz]["succ"]; b0 = MET[fz]["succ"].mean(); bs = np.array([dd_[RNG.integers(0, len(dd_), len(dd_))].mean() for _ in range(500)]) / b0; pt_ = dd_.mean() / b0
+    f = lambda lift, pt_through: SESS * 365 * CONV * lift * pt_through * CM_ / 1e7
+    rows[k] = {"relative lift in P(click)": pt_, "lift CI low": np.percentile(bs, 2.5), "lift CI high": np.percentile(bs, 97.5), "₹ crore/yr worst": f(np.percentile(bs, 2.5), 0.2) - COST, "₹ crore/yr base": f(pt_, 0.4) - COST, "₹ crore/yr best": f(np.percentile(bs, 97.5), 0.6) - COST}
+money = pd.DataFrame(rows).T; best_biz = money["₹ crore/yr base"].idxmax(); print(f"Best by base-case value: {best_biz} | production-like baseline expected P(click in top 10) = {MET[fz]['succ'].mean():.3f} | search sessions per year: {SESS * 365 / 1e7:.0f} crore")
+money.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated queries and labels:** the noise model, the taxonomy, availability and the click model were assumed; the **spelling dictionary used the same family of rules** as the test noise (a subset, with no typing slips), which probably flatters the learned classifier. Rebuild the test set from real logs with human relevance tags.
+- **Editorial relevance here is exact:** real labels are noisy, disagree between raters, and cost money; plan the budget from the sample-size table, and measure inter-rater agreement.
+- **Click data is biased:** position bias, a selection effect (only items the old system showed), and the trial arm that made learning possible. A learning-to-rank model without exploration cannot learn what it was never shown.
+- **Offline is not online:** replay metrics reward predicting what customers ordered after seeing the old results. Confirm with a live A/B or interleaving test (guardrails: orders per search, zero-result rate, latency, ads revenue per search).
+- **Latency and scale:** our scoring is offline; Swiggy reports a 100 ms embedding budget on CPU and millions of dishes. A production design must pre-compute dish embeddings and use approximate nearest-neighbour retrieval.
+- **Multi-intent and LLM-style queries:** our vague and multi-intent segments are simple. Dietary, mood and time-of-day intents need a richer encoder and relevance labels.
+- **Next steps:** add a spelling-dictionary refresh from real logs, a randomised-swap experiment for propensities, a trained trigram encoder, and a live test of the n-gram retriever for misspelled queries first.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| DCG@k | Σ_{i=1..k} (2^{rel_i} − 1) / log₂(i + 1) |
+| NDCG@k | DCG@k / DCG@k of the ideal ordering of the area's listings (0 if no relevant listing exists) |
+| MRR@10 | mean of 1 / rank of the first exact-dish listing in the top 10 (0 if absent), over answerable sessions |
+| Precision@1 | share of sessions whose first result is an exact-dish listing, over answerable sessions |
+| Zero-result rate | share of sessions for which the method returns no listing |
+| Trigram cosine | cosine between TF-IDF vectors of character trigrams |
+| ES-style fuzziness (AUTO) | allowed edits: 0 for 1 to 2 characters, 1 for 3 to 5, 2 for 6 or more |
+| Davies-Bouldin | mean over clusters of the worst ratio (within-cluster scatter + other's scatter) / centre distance; lower is better |
+| Examination model | P(click) = P(examine position) × P(attractive); examine = 1 / (1 + 0.35 (position − 1)) |
+| IPW label weight | clicks weighted by 1 / P(examine position), capped at 5 |
+| Paired sample size | n = ((z₍α/2₎ + z₍β₎) · SD(d) / Δ)² |
+
+| Term | Meaning |
+|---|---|
+| Query understanding | Turning typed text into an intent (dish, spelling fix, category) before searching |
+| Transliteration noise | Different English spellings of the same Indian word |
+| Retrieval vs ranking | Retrieval finds candidates; ranking orders them using relevance and business features |
+| Learning to rank (LTR) | A model that scores candidates from features, trained on clicks or labels |
+| Position bias | Higher results get more clicks regardless of quality |
+| Selection bias | Only items the old system showed can be clicked |
+| IPW | Inverse propensity weighting: up-weight clicks that were unlikely to be seen |
+| Graded relevance | Labels 0 to 3 instead of relevant / not relevant |
+| Digital twin | A simulation in which the true behaviour is known |

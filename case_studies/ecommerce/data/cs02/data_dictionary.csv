@@ -1,0 +1,11 @@
+field(s),meaning
+"order_id, restaurant_id, order_ts, day, hour, dow","Order, restaurant, acceptance time, day 0 to 59, hour, day of week"
+"rest_type, kitchen_capacity, cuisine_group","Restaurant type, rated kitchen capacity (1 to 6), main cuisine"
+"dish_group, n_items, order_value_inr","Main dish group of the order, number of items, basket value"
+running_orders,Orders accepted by the same restaurant in the previous 15 minutes (capped at 5)
+rain,1 if it rained that day
+est_first_mile_min,Dispatch system's estimate of rider assignment plus first-mile time
+pickup_label_min,OLD LABEL: acceptance to rider pick-up (includes rider behaviour; contains glitches)
+for_label_min,FOR LABEL: acceptance to restaurant pressing Food Order Ready (missing if not pressed)
+"_true_fpt_min, _first_mile_min, _for_gamed, _qlen, _peak","HIDDEN truth: real food-ready time, real rider first-mile, FOR pressed at pick-up, uncapped queue, peak flag (never used as model features)"
+"restaurants: _speed, _noise_sigma, _for_compliance, _for_gaming_rate",HIDDEN restaurant traits (digital twin only)

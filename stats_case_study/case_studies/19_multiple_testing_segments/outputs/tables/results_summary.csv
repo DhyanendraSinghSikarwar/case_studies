@@ -1,0 +1,7 @@
+,Value
+Marketing's winners,7 of 40 at p < 0.05; overall pooled uplift +0.22 pp (p 0.017)
+False-alarm simulation,no effect anywhere: ≥ 1 false alarm in 87% of campaigns (avg 2.0); Holm 4.9%; BH 5.0%
+Corrections,"Bonferroni 2, Holm 2, BH 5% 2, BH 10% 6"
+Winner's curse (two waves),wave 1 2.39 pp → wave 2 0.88 pp for the 6 wave-1 winners; 1 still significant
+Power,median MDE 1.6 pp (α = 0.05) and 2.4 pp (Bonferroni)
+Grading,"uncorrected p < 0.05: 5 real, 2 false; Holm: 2 real, 0 false; BH (FDR 5%): 2 real, 0 false"

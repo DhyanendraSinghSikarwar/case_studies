@@ -1,0 +1,6 @@
+comparison,value_gain_lakh_per_year,ci_low,ci_high,P(gain > 0),net_of_ML_cost,P(gain > ML cost)
+M1 full linear − M0 current scorecard,51.6464818337,-192.7960164148,271.1890701631,0.597,,
+M2 spec. GLM − M1 full linear,193.6743068762,26.7015313782,349.5145631068,0.989,,
+M2 spec. GLM − M0 current scorecard,245.3207887098,-23.1658492643,454.8193374037,0.965,,
+M3 GBM − M1 full linear,232.4091682514,0.8782904614,440.1736562907,0.975,,
+M3 GBM − M2 spec. GLM,38.7348613752,-167.8510659594,232.4091682514,0.644,-6.2651386248,0.465

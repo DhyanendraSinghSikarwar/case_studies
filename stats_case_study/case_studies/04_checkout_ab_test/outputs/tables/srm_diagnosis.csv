@@ -1,0 +1,8 @@
+,control,treatment,treatment_share,srm_p,level
+Android,22143,20672,0.4828214411,0.0,platform
+iOS,11752,11762,0.5002126393,0.9531975596,platform
+pre-v5,3459,2187,0.3873538789,0.0,app_version
+v5+,30436,30247,0.498442727,0.4453590955,app_version
+"('Android', 'pre-v5')",3459,2187,0.3873538789,0.0,platform × version
+"('Android', 'v5+')",18684,18485,0.497323038,0.3044156075,platform × version
+"('iOS', 'v5+')",11752,11762,0.5002126393,0.9531975596,platform × version

@@ -1,0 +1,6 @@
+,individual (simple) coef,conditional (full model) coef,conditional p-value,individual % effect,conditional % effect,what happened
+log income (elasticity),0.8080892465,0.9249342749,0.0,,,grew (omitted-variable bias removed)
+existing EMI (per ₹1k),0.0059766719,-0.0123078173,0.0,0.5994567803,-1.2232385885,flipped sign
+age (per year),0.0131038459,-0.0007042205,0.3113663514,1.3190077529,-0.0703972578,vanished (proxy for income)
+credit score (per point),0.0031785908,0.0009647319,0.0,0.3183647834,0.0965197449,shrank by ~2/3
+Tier-3 vs Metro,-0.3701613008,-0.0024692939,0.8949775878,-30.9377076406,-0.2466247654,vanished (proxy for income)

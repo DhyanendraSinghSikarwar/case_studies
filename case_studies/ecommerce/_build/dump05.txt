@@ -1,0 +1,199 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs05.py
+--- cell 8 (exec 3) ---
+142,374 order rows | 141,974 unique orders | 60 days | generated in 33s
+   order_id            order_ts  day    hour  weekday  is_national_holiday  is_hrd  is_post_hrd  warehouse  centre    zone  distance_km  n_items  vendor_item  \
+0         0 2026-08-03 15:58:45    0 15.9800        0                    0       0            0          3      45   tier2     569.0000        1            0   
+1         1 2026-08-03 15:45:27    0 15.7600        0                    0       0            0          0      53   tier2   1,627.0000        2            0   
+2         2 2026-08-03 02:59:20    0  2.9900        0                    0       0            0          5      42   tier2     933.0000        1            0   
+3         3 2026-08-03 21:50:43    0 21.8500        0                    0       0            0          2      43  remote     828.0000        1            0   
+
+   carrier_3pl  pend_wh_prev_day  pend_centre_prev_day  centre_holiday_next2  planned_volume_ratio  delivery_days         delivery_ts  
+0            0            0.1380               -0.0260                     0                1.0000         2.0000 2026-08-05 11:17:12  
+1            1           -0.1140               -0.1360                     0                1.0000         3.0000 2026-08-06 18:23:46  
+2            1           -0.0900                0.1680                     0                1.0000         2.0000 2026-08-05 17:17:34  
+3            0            0.0500               -0.0980                     0                1.0000         4.0000 2026-08-07 10:00:00
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0             order_id, order_ts, day, hour, weekday  Order id, timestamp, day 0-59, hour of day, we...
+1  is_national_holiday, is_hrd, is_post_hrd, plan...  Order-day calendar flags; planned volume over ...
+2               warehouse, centre, zone, distance_km  Source warehouse (0-5), last-mile centre (0-59...
+3                  n_items, vendor_item, carrier_3pl  Items in the order; 1 if a vendor-procured ite...
+4  pend_wh_prev_day, pend_centre_prev_day, centre...  Yesterday's noisy backlog readings (warehouse,...
+5                     delivery_days (D), delivery_ts  TARGET: delivery calendar date minus order dat...
+6  _proc_hours, _ship_hours, _stall, _wh_backlog,...  HIDDEN truth: realised processing and shipping...
+--- cell 12 (exec 5) ---
+duplicate order rows                                  400
+missing delivery outcome                              150
+distance unit errors (> 5× lane median)                60
+orders on a holiday or Sunday delivered with D = 0      0
+
+Clean: 141,824 orders | days 0-59 | HRD orders 31,280 (22.1%) | median D 3 | D range 1-18
+Share of orders by D (days): {1: '1.2%', 2: '18.8%', 3: '34.0%', 4: '24.5%', 5: '12.6%', 6: '5.3%', 7: '2.0%', 8: '1.0%', 9: '0.4%'}
+--- cell 14 (exec 6) ---
+[image]
+            mean D   sd D  p95 D
+period                          
+BAU         3.4600 1.3100 6.0000
+HRD (sale)  4.0600 1.5700 7.0000
+post-HRD    3.9900 1.4500 7.0000
+Corr(D, distance) = 0.48; Corr(D, 3PL) = 0.22; Corr(D, vendor item) = 0.37
+--- cell 16 (exec 7) ---
+train 80,667 (days 0-34) | calibration 9,816 (days 35-39) | embargo 10,119 (days 40-44) | test 41,222 (days 45-59)
+fitted mean, expectile and quantile models in 84s
+Rule-based table: {'metro': 5, 'tier2': 6, 'remote': 7} | calibration offset -1.01 days | zone offsets {'metro': np.float64(-1.05), 'tier2': np.float64(-0.98), 'remote': np.float64(-1.3)} | BAU orders 20,086, HRD 15,630
+                                                    BAU breach  CI low  CI high  BAU accuracy (0 to -1)  BAU mean promise (days)  BAU slack (days)  HRD breach  \
+method                                                                                                                                                           
+1 rule-based (zone table)                               0.0203  0.0185   0.0224                  0.1657                   5.9672            2.5386      0.0677   
+2 mean + 1 day                                          0.0193  0.0175   0.0213                  0.3636                   5.0623            1.6321      0.0598   
+3 asymmetric (expectile) loss                           0.0232  0.0212   0.0254                  0.5981                   4.7420            1.3179      0.0692   
+4 quantile regression (0.95)                            0.0128  0.0113   0.0144                  0.3740                   5.2900            1.8479      0.0458   
+5 feedback control (3-day)                              0.3441  0.3375   0.3507                  0.5653                   3.4701            0.4385      0.4434   
+6 split-conformal                                       0.0487  0.0458   0.0518                  0.7367                   4.2794            0.8867      0.0960   
+7 Mondrian conformal (zone)                             0.0489  0.0460   0.0520                  0.7536                   4.2355            0.8441      0.1013   
+8 rolling conformal (10-day)                            0.0691  0.0656   0.0726                  0.6672                   4.3569            0.9835      0.1068   
+9 hybrid (conformal on BAU, plain QR on sale days)      0.0487  0.0458   0.0518                  0.7367                   4.2794            0.8867      0.0458   
+
+                                                    HRD accuracy (0 to -2)  post-HRD breach  
+method                                                                                       
+1 rule-based (zone table)                                           0.5221           0.0637  
+2 mean + 1 day                                                      0.8599           0.0490  
+3 asymmetric (expectile) loss                                       0.8541           0.0603  
+4 quantile regression (0.95)                                        0.7264           0.0429  
+5 feedback control (3-day)                                          0.5414           0.4223  
+6 split-conformal                                                   0.8457           0.1181  
+7 Mondrian conformal (zone)                                         0.8443           0.1224  
+8 rolling conformal (10-day)                                        0.8404           0.1420  
+9 hybrid (conformal on BAU, plain QR on sale days)                  0.7264           0.0429
+--- cell 18 (exec 8) ---
+BAU days in test: 10 | orders per day ≈ 2,009 | between-day variance of the quantile-regression breach rate gives ICC ≈ 0.0006, design effect ≈ 2.2
+                                                    BAU breach  day-bootstrap CI low  day-bootstrap CI high  exact p (H0: ≤ 5%)  share of bootstrap draws ≤ 5%  p_holm  \
+method                                                                                                                                                                   
+1 rule-based (zone table)                               0.0203                0.0174                 0.0233              1.0000                         1.0000  1.0000   
+2 mean + 1 day                                          0.0193                0.0162                 0.0224              1.0000                         1.0000  1.0000   
+3 asymmetric (expectile) loss                           0.0232                0.0188                 0.0283              1.0000                         1.0000  1.0000   
+4 quantile regression (0.95)                            0.0128                0.0106                 0.0149              1.0000                         1.0000  1.0000   
+5 feedback control (3-day)                              0.3441                0.2057                 0.5078              0.0000                         0.0000  0.0000   
+6 split-conformal                                       0.0487                0.0380                 0.0592              0.8069                         0.5715  1.0000   
+7 Mondrian conformal (zone)                             0.0489                0.0382                 0.0600              0.7591                         0.5610  1.0000   
+8 rolling conformal (10-day)                            0.0691                0.0377                 0.1085              0.0000                         0.1290  0.0000   
+9 hybrid (conformal on BAU, plain QR on sale days)      0.0487                0.0378                 0.0595              0.8069                         0.5780  1.0000   
+
+                                                    meets 5% (CI high ≤ 5%)  
+method                                                                       
+1 rule-based (zone table)                                              True  
+2 mean + 1 day                                                         True  
+3 asymmetric (expectile) loss                                          True  
+4 quantile regression (0.95)                                           True  
+5 feedback control (3-day)                                            False  
+6 split-conformal                                                     False  
+7 Mondrian conformal (zone)                                           False  
+8 rolling conformal (10-day)                                          False  
+9 hybrid (conformal on BAU, plain QR on sale days)                    False
+--- cell 20 (exec 9) ---
+     metric              QR (rule 4) minus  difference (pp as fraction)  CI low  CI high  only QR event  only other event  McNemar p  p_holm
+0    breach      1 rule-based (zone table)                      -0.0075 -0.0103  -0.0048             98               249     0.0000  0.0000
+1    breach                 2 mean + 1 day                      -0.0065 -0.0087  -0.0044             19               149     0.0000  0.0000
+2    breach  3 asymmetric (expectile) loss                      -0.0104 -0.0147  -0.0074              2               211     0.0000  0.0000
+3  accuracy      1 rule-based (zone table)                       0.2083  0.1109   0.2931           5770              1586     0.0000  0.0000
+4  accuracy                 2 mean + 1 day                       0.0104 -0.0477   0.0680           2110              1902     0.0011  0.0011
+5  accuracy  3 asymmetric (expectile) loss                      -0.2241 -0.2618  -0.1889            253              4755     0.0000  0.0000
+--- cell 22 (exec 10) ---
+[image]
+               mean coverage (empirical)  mean coverage (theory)  sd (empirical)  sd (theory)  share of splits below 95% (empirical)  share below 95% (theory)  KS p vs Beta
+calibration n                                                                                                                                                               
+100                               0.9495                  0.9505          0.0218       0.0215                                 0.4650                    0.4360        0.4933
+500                               0.9505                  0.9501          0.0101       0.0097                                 0.4525                    0.4714        0.2779
+2000                              0.9503                  0.9500          0.0055       0.0049                                 0.4825                    0.4857        0.2512
+
+Split-conformal offset -1.01 days. Coverage on test days: BAU 95.1%, HRD (sale) 90.4%, post-HRD 88.2%
+Mean score (D minus 1 minus 95% prediction): calibration -2.37, BAU test -2.33, HRD -2.31, post-HRD -2.10
+KS tests of residuals vs calibration days: BAU D = 0.026 (p = 0.00037); HRD D = 0.063 (p = 4.2e-21); post-HRD D = 0.109 (p = 9.3e-37)
+--- cell 24 (exec 11) ---
+[image]
+Breach % by segment (test orders):
+                          1 rule-based (zone table)  4 quantile regression (0.95)  6 split-conformal  7 Mondrian conformal (zone)  5 feedback control (3-day)  8 rolling conformal (10-day)  9 hybrid (conformal on BAU, plain QR on sale days)      orders
+zone: tier2                                  1.7000                        1.2000             5.3000                       4.4000                     37.5000                        8.1000                                              5.3000 12,419.0000
+zone: metro                                  3.1000                        0.9000             4.3000                       5.8000                     35.4000                        5.7000                                              4.3000  4,163.0000
+zone: remote                                 2.0000                        1.9000             3.9000                       5.7000                     22.2000                        4.0000                                              3.9000  3,504.0000
+courier: 3PL                                 2.7000                        2.0000             4.4000                       5.0000                     25.1000                        4.5000                                              4.4000  6,677.0000
+courier: own fleet                           1.7000                        0.9000             5.1000                       4.9000                     39.0000                        8.1000                                              5.1000 13,409.0000
+vendor item: stock item                      0.8000                        1.2000             4.9000                       4.9000                     36.9000                        7.2000                                              4.9000 18,136.0000
+vendor item: vendor item                    13.6000                        2.0000             4.6000                       4.7000                     11.5000                        4.5000                                              4.6000  1,950.0000
+cut-off: before 16:00                        1.4000                        1.2000             3.9000                       4.1000                     31.0000                        6.0000                                              3.9000 10,999.0000
+cut-off: after 16:00                         2.8000                        1.3000             6.0000                       5.8000                     38.5000                        8.1000                                              6.0000  9,087.0000
+period: BAU                                  2.0000                        1.3000             4.9000                       4.9000                     34.4000                        6.9000                                              4.9000 20,086.0000
+period: HRD (sale)                           6.8000                        4.6000             9.6000                      10.1000                     44.3000                       10.7000                                              4.6000 15,630.0000
+period: post-HRD                             6.4000                        4.3000            11.8000                      12.2000                     42.2000                       14.2000                                              4.3000  5,506.0000
+
+Holm-adjusted chi-square p-values for H4 (breach equal across the levels of each segmentation):
+method        1 rule-based (zone table)  4 quantile regression (0.95)  5 feedback control (3-day)  6 split-conformal  7 Mondrian conformal (zone)  8 rolling conformal (10-day)  9 hybrid (conformal on BAU, plain QR on sale days)
+segmentation                                                                                                                                                                                                                       
+courier                          0.0000                        0.0000                      0.0000             0.4375                       1.0000                        0.0000                                              0.4375
+cut-off                          0.0000                        1.0000                      0.0000             0.0000                       0.0000                        0.0000                                              0.0000
+period                           0.0000                        0.0000                      0.0000             0.0000                       0.0000                        0.0000                                              0.8686
+vendor item                      0.0000                        0.0366                      0.0000             1.0000                       1.0000                        0.0001                                              1.0000
+zone                             0.0000                        0.0044                      0.0000             0.0076                       0.0017                        0.0000                                              0.0076
+
+Worst-segment breach by method: {'1 rule-based (zone table)': 0.136, '4 quantile regression (0.95)': 0.046, '6 split-conformal': 0.118, '7 Mondrian conformal (zone)': 0.122, '5 feedback control (3-day)': 0.443, '8 rolling conformal (10-day)': 0.142, '9 hybrid (conformal on BAU, plain QR on sale days)': 0.06}
+--- cell 26 (exec 12) ---
+[image]
+Usable feedback (average over test days):
+               delivered share of window  covered at offset 0, delivered only  covered at offset 0, all in window
+window                                                                                                           
+10-day window                     0.6280                               0.9890                              0.9710
+3-day window                      0.0660                               1.0000                              0.9750
+
+Mean offset applied (days): split-conformal -1.01; feedback 3-day -1.91 (range -2.8 to -1.0); rolling 10-day -0.99 (range -1.2 to -0.5)
+Daily breach (%): rule-based (zone table): BAU mean 2.0, HRD mean 6.8; quantile regression (0.95): BAU mean 1.3, HRD mean 4.6; split-conformal: BAU mean 4.9, HRD mean 9.6; rolling conformal (10-day): BAU mean 6.9, HRD mean 10.7; hybrid (conformal on BAU, plain QR on sale days): BAU mean 4.9, HRD mean 4.6
+Lag-1 autocorrelation of daily breach: {'rule-based (zone table)': np.float64(0.73), 'quantile regression (0.95)': np.float64(0.74), 'split-conformal': np.float64(0.76), 'rolling conformal (10-day)': np.float64(0.64), 'hybrid (conformal on BAU, plain QR on sale days)': np.float64(0.23)}
+--- cell 28 (exec 13) ---
+[image]
+Accuracy at 5% breach (interpolated): quantile regression 81.1%, mean + buffer 84.0%, conformal 73.7% | rule-based 16.6% at 2.0% breach
+Quantile crossing check on test orders (share where a higher tau gives a lower prediction): {'0.5->0.8': 0.1073, '0.8->0.9': 0.1169, '0.9->0.95': 0.1191, '0.95->0.99': 0.0176}
+
+                                      pinball loss (τ = 0.95)  minus QR  CI low (day bootstrap)  CI high
+model                                                                                                   
+quantile regression (0.95)                             0.1486    0.0000                  0.0000   0.0000
+mean + empirical 95% residual buffer                   0.1583    0.0097                  0.0038   0.0117
+expectile (k = 9)                                      0.1766    0.0280                  0.0108   0.0335
+rule-based table                                       0.1945    0.0458                  0.0403   0.0582
+--- cell 30 (exec 14) ---
+Pseudo R² (τ = 0.95) = 0.303; intercept 3.03 days
+                      shift in 95th percentile of D (days)  CI low  CI high      p  p_holm  shift at the median
+is_hrd                                              1.3640  1.2768   1.4512 0.0000  0.0000               0.3675
+is_post_hrd                                         0.9239  0.7179   1.1299 0.0000  0.0000               0.6291
+carrier_3pl                                         0.6084  0.5361   0.6807 0.0000  0.0000               0.3046
+vendor_item                                         2.7007  2.5989   2.8024 0.0000  0.0000               1.5850
+after_cutoff                                        0.7521  0.6889   0.8154 0.0000  0.0000               0.8394
+multi                                              -0.0258 -0.0889   0.0374 0.4242  0.4242               0.0243
+remote                                              0.9627  0.8468   1.0787 0.0000  0.0000               0.8472
+tier2                                               0.1139  0.0326   0.1952 0.0061  0.0121               0.1972
+dist_000km                                          1.0088  0.9600   1.0577 0.0000  0.0000               1.0417
+pend_centre_prev_day                                0.0816  0.0325   0.1308 0.0011  0.0034               0.0782
+pend_wh_prev_day                                   -0.1694 -0.2174  -0.1214 0.0000  0.0000               0.0186
+--- cell 32 (exec 15) ---
+Orders needed: ±1 pp CI around 5% breach: 1,825 (independent) | detect 5% -> 7% at 80% power: 822 (independent)
+
+Design effect from daily clustering ≈ 2.21 (ICC 0.0006, 2,009 orders a day); ±1 pp CI with clustering ≈ 4,034
+Lanes with orders in one BAU week (days 51-57): 354; lanes with ≥ 1,825: 0; with ≥ 200: 20; median weekly orders per lane 14
+Orders per zone in that week: {'metro': 2932, 'remote': 2512, 'tier2': 8655}
+--- cell 34 (exec 16) ---
+[image]
+Top features: {'vendor_item': 0.0658, 'distance_km': 0.0589, 'planned_volume_ratio': 0.0176, 'centre': 0.0142, 'hour': 0.0133}
+--- cell 36 (exec 17) ---
+Base case: a breach costs ₹94; a day of padding costs ₹2.86 per order in lost margin -> newsvendor-optimal quantile τ* = 0.970 (breach 3.0%)
+  worst: breach ₹58, padding ₹0.86 per order-day -> τ* = 0.985
+  base: breach ₹94, padding ₹2.86 per order-day -> τ* = 0.970
+  best: breach ₹136, padding ₹5.72 per order-day -> τ* = 0.960
+Sale and post-sale days, 4 quantile regression (0.95): promised days 5.76 vs rule-based 5.97; breach 4.5% vs 6.7%; accuracy (0 to -2) 73.5% vs 51.3%
+Sale and post-sale days, 6 split-conformal: promised days 4.76 vs rule-based 5.97; breach 10.2% vs 6.7%; accuracy (0 to -2) 84.4% vs 51.3%
+Sale and post-sale days, 9 hybrid (conformal on BAU, plain QR on sale days): promised days 5.76 vs rule-based 5.97; breach 4.5% vs 6.7%; accuracy (0 to -2) 73.5% vs 51.3%
+                              Δ promised days vs rule-based  Δ breach (pp)  ₹ crore/yr worst  ₹ crore/yr base  ₹ crore/yr best
+2 mean + 1 day                                       0.9050         0.1050            6.1100          19.6100          38.8230
+4 quantile regression (0.95)                         0.6770         0.7520            7.4240          19.2970          35.7400
+6 split-conformal                                    1.6880        -2.8380           -1.4440          15.7640          42.3000
+7 Mondrian conformal (zone)                          1.7320        -2.8630           -1.2750          16.5100          43.8860
+8 rolling conformal (10-day)                         1.6100        -4.8740          -10.5510           0.1750          18.8510

@@ -1,0 +1,9 @@
+,Value
+Data errors,6 claims keyed in paise (×100); found by Cook's distance and the sum-insured rule
+Model A (raw ₹),R² 0.46; 96 negative predictions; all assumption tests rejected
+Box-Cox,λ = 0.15 (95% CI 0.13 to 0.17) → log
+Mean-variance,slope 1.94 → gamma; shape k = 2.56
+Smearing factor,1.23 → naive exp() under-predicts by 19%
+Gamma effects,"cardiac +175%, oncology +205%, suite +57%, smoker +6%"
+Holdout totals,raw OLS +4.7% (worst procedure 13%); naive log -14.4%; gamma + cap -0.1%
+"Reserve (1,500 open claims)",best estimate ₹18.66 Cr; 90% range ₹18.07 Cr – ₹19.27 Cr; actual ₹18.67 Cr

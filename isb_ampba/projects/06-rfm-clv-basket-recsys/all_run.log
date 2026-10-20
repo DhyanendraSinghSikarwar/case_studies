@@ -1,0 +1,20 @@
+>> C:\Users\11624\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe -m crm.data
+2026-10-20 08:56:54,247 INFO __main__: reading external parquet C:\ampba_data\online_retail_ii.parquet
+2026-10-20 08:57:13,086 INFO __main__: clean sales: 802634 lines, 5852 customers
+2026-10-20 08:57:19,748 INFO __main__: raw rows=1067371 sales=802634 returns=18744 -> C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\bus_2_ml_case_study\isb_ampba\projects\06-rfm-clv-basket-recsys\data\processed
+>> C:\Users\11624\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe -m crm.train
+2026-10-20 08:57:58,758 INFO __main__: M1 rfm done (4s)
+2026-10-20 09:11:21,884 INFO __main__: M2 clustering done (807s)
+2026-10-20 09:11:28,313 INFO __main__: M3 clv done (814s)
+2026-10-20 09:12:06,334 INFO crm.basket: basket tuning: [{'min_support': 0.02, 'itemsets': 232, 'rules': 56, 'seconds': 6.9}, {'min_support': 0.012, 'itemsets': 655, 'rules': 309, 'seconds': 11.6}]
+2026-10-20 09:17:16,713 INFO crm.recsys: best ALS {'factors': 64, 'regularization': 1.0, 'alpha': 1.0, 'iterations': 15} hybrid_w=0.00
+2026-10-20 09:18:21,326 INFO __main__: M4 basket+recsys done (1227s)
+2026-10-20 09:18:27,837 INFO __main__: pipeline done in 1233s
+>> C:\Users\11624\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe analysis/run_analysis.py
+2026-10-20 09:19:31,624 INFO analysis: wrote C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\bus_2_ml_case_study\isb_ampba\projects\06-rfm-clv-basket-recsys\outputs\summary.json and figures in C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\bus_2_ml_case_study\isb_ampba\projects\06-rfm-clv-basket-recsys\figures
+>> C:\Users\11624\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe -m ruff check .
+All checks passed!
+>> C:\Users\11624\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe -m pytest -q
+...........................                                              [100%]
+27 passed in 339.54s (0:05:39)
+EXIT 0 SECONDS 1852

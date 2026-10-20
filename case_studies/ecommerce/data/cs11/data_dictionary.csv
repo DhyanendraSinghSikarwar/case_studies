@@ -1,0 +1,7 @@
+field(s),meaning
+"styles: style_id, article_type, brand_id, brand_tier, price_band, list_price_inr",Style and brand attributes known before launch
+"styles: colour, material, pattern, launch_week",Fashion attributes and launch week (0 to 103)
+"weekly_sales: style_id, week, units_sold",Net units sold by calendar week (0 to 129)
+"weekly_sales: discount_dev_pp, visibility_ratio",Merchandising plan: discount deviation from brand average in percentage points; list-page visibility relative to average
+promo_weeks.csv: week,Calendar weeks with a platform sale event (known in advance)
+"_quality, _mu","HIDDEN: style quality (style table) and true expected weekly units (panel); used only to check the analysis, never as a feature"

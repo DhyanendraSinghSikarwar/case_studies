@@ -1,0 +1,8 @@
+field(s),meaning
+"users_ab: user_id, arm, day, platform, city_tier, new_user","User, arm (1 = new homepage), day of entry 0–13, platform, city tier, new-customer flag"
+"users_ab: pre_orders_28d, pre_sessions_28d, pre_spend_28d",Pre-experiment covariates (used by CUPED)
+"users_ab: converted, orders, revenue_inr",Outcomes over 14 days
+"users_ab: add_to_cart, wishlist_adds, bounced, page_load_ms, support_contact",Secondary metrics and guardrails
+"market_switchback: minute, day, hour, interval, treat, requests, completed, supply",Minute-level marketplace; interval = 53-minute switchback slot; supply = available driver capacity
+"market_userab: user_id, arm, requests, completed",The same marketplace tested by a user-level 50/50 A/B
+"_true_rel_lift_conv, _latent_engagement, truth.json",HIDDEN: true effect and engagement; global-rollout truth (never used for fitting)

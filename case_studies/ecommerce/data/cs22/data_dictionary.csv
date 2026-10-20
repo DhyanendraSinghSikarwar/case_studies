@@ -1,0 +1,7 @@
+field(s),meaning
+user_id,Customer identifier
+tenure_days … spend_90d (12 features),"Customer, riding, recency, coupon-history and spend features, known before the offer"
+offered_price,Subscription price shown after the coupon (₹59–99)
+converted,1 if the customer subscribed
+arrival_hour (online only),Hour of day the customer arrives (for the budget-control simulation)
+"_cvr_59 … _cvr_99, _a, _beta","HIDDEN: true conversion probability at each price, baseline propensity, price sensitivity (the twin only)"

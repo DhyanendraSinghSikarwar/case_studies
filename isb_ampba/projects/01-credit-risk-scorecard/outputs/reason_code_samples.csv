@@ -1,0 +1,9 @@
+row_id,pd,reasons
+11739,0.9787026047706604,Latest repayment status code 2 (1+ = late) | Worst payment delay of 2 month(s) | 6 of last 6 months delayed | Unstable utilisation (sd 0%)
+16788,0.9473684430122375,Latest repayment status code 3 (1+ = late) | Worst payment delay of 7 month(s) | 6 of last 6 months delayed | Unstable utilisation (sd 0%)
+25053,0.9473684430122375,Latest repayment status code 3 (1+ = late) | Worst payment delay of 3 month(s) | 6 of last 6 months delayed | Unstable utilisation (sd 0%)
+12955,0.9473684430122375,Latest repayment status code 2 (1+ = late) | Worst payment delay of 2 month(s) | 6 of last 6 months delayed | Unstable utilisation (sd 0%)
+29115,0.9473684430122375,Latest repayment status code 3 (1+ = late) | Worst payment delay of 4 month(s) | 6 of last 6 months delayed | Outstanding bill rising (-16% of limit)
+17862,0.9473684430122375,Latest repayment status code 3 (1+ = late) | Worst payment delay of 7 month(s) | 6 of last 6 months delayed | pay_ratio_3 = 0.00
+22124,0.9473684430122375,Latest repayment status code 3 (1+ = late) | Worst payment delay of 3 month(s) | 6 of last 6 months delayed | Outstanding bill rising (-9% of limit)
+16477,0.8269230723381042,Latest repayment status code 2 (1+ = late) | Worst payment delay of 2 month(s) | 6 of last 6 months delayed | Outstanding bill rising (-6% of limit)

@@ -1,0 +1,11 @@
+field(s),meaning
+"attempt_id, order_id, attempt_no",Attempt and order identity; attempt 2–3 are customer retries
+timestamp,Attempt time
+processor,P1 (premium) / P2 (cheaper)
+"card_network, card_type, issuer_bank","Card scheme, credit/debit, issuing bank (1% unknown)"
+amount_inr,Order value
+three_ds_flow,"frictionless (risk-based, no OTP) / challenge (OTP)"
+auth_success,Stage 1: authentication passed
+authz_success,Stage 2: issuer approved (blank if stage 1 failed)
+success,Attempt succeeded
+"failure_stage, failure_reason",Where and why it failed (reason codes)

@@ -1,0 +1,31 @@
+C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\zmq\_future.py:718: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+cs18_cold_start_exploration_bandits.ipynb: CELL ERROR
+m[43m [49m[43mdata[49m[43m)[49m
+[32m    492[39m         [38;5;28;01mif[39;00m factor [38;5;129;01min[39;00m cat_sniffers [38;5;129;01mor[39;00m guess_categorical(value):
+[32m    493[39m             [38;5;28;01mif[39;00m factor [38;5;129;01mnot[39;00m [38;5;129;01min[39;00m cat_sniffers:
+
+[36mFile [39m[32m~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\patsy\eval.py:599[39m, in [36mEvalFactor.eval[39m[34m(self, memorize_state, data)[39m
+[32m    598[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34meval[39m([38;5;28mself[39m, memorize_state, data):
+[32m--> [39m[32m599[39m     [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[43m.[49m[43m_eval[49m[43m([49m[43mmemorize_state[49m[43m[[49m[33;43m"[39;49m[33;43meval_code[39;49m[33;43m"[39;49m[43m][49m[43m,[49m[43m [49m[43mmemorize_state[49m[43m,[49m[43m [49m[43mdata[49m[43m)[49m
+
+[36mFile [39m[32m~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\patsy\eval.py:582[39m, in [36mEvalFactor._eval[39m[34m(self, code, memorize_state, data)[39m
+[32m    580[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m_eval[39m([38;5;28mself[39m, code, memorize_state, data):
+[32m    581[39m     inner_namespace = VarLookupDict([data, memorize_state[[33m"[39m[33mtransforms[39m[33m"[39m]])
+[32m--> [39m[32m582[39m     [38;5;28;01mreturn[39;00m [43mcall_and_wrap_exc[49m[43m([49m
+[32m    583[39m [43m        [49m[33;43m"[39;49m[33;43mError evaluating factor[39;49m[33;43m"[39;49m[43m,[49m
+[32m    584[39m [43m        [49m[38;5;28;43mself[39;49m[43m,[49m
+[32m    585[39m [43m        [49m[43mmemorize_state[49m[43m[[49m[33;43m"[39;49m[33;43meval_env[39;49m[33;43m"[39;49m[43m][49m[43m.[49m[43meval[49m[43m,[49m
+[32m    586[39m [43m        [49m[43mcode[49m[43m,[49m
+[32m    587[39m [43m        [49m[43minner_namespace[49m[43m=[49m[43minner_namespace[49m[43m,[49m
+[32m    588[39m [43m    [49m[43m)[49m
+
+[36mFile [39m[32m~\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\patsy\compat.py:43[39m, in [36mcall_and_wrap_exc[39m[34m(msg, origin, f, *args, **kwargs)[39m
+[32m     41[39m [38;5;28;01mexcept[39;00m [38;5;167;01mException[39;00m [38;5;28;01mas[39;00m e:
+[32m     42[39m     new_exc = PatsyError([33m"[39m[38;5;132;01m%s[39;00m[33m: [39m[38;5;132;01m%s[39;00m[33m: [39m[38;5;132;01m%s[39;00m[33m"[39m % (msg, e.[34m__class__[39m.[34m__name__[39m, e), origin)
+[32m---> [39m[32m43[39m     [38;5;28;01mraise[39;00m new_exc [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01me[39;00m
+
+[31mPatsyError[39m: Error evaluating factor: TypeError: 'numpy.ndarray' object is not callable
+    d ~ C(bucket)
+        ^^^^^^^^^
+

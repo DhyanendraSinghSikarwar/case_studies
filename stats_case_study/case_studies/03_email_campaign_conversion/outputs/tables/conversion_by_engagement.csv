@@ -1,0 +1,5 @@
+group,digital_active,customers,conversions,rate,ci_low,ci_high
+email,Not digitally active,29818,412,0.013817,0.012553,0.015206
+email,Digitally active,38160,1101,0.028852,0.02722,0.03058
+holdout,Not digitally active,5256,72,0.013699,0.010893,0.017215
+holdout,Digitally active,6766,145,0.021431,0.018242,0.025163

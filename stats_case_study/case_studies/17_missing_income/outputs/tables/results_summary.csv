@@ -1,0 +1,7 @@
+,Value
+Missingness,income 23.4% · credit score 6.2% (thin file) · employment years 4.8%
+Mechanism,missingness model LR p < 0.001; AUC 0.72; default rate 31% (missing) vs 15% (present)
+Truth,"−1.102 (log-odds per unit of log income, complete data)"
+Coefficient bias by strategy,Complete cases: +13%; Mean imputation: +41%; Group−mean imputation: +34%; Mean + missing indicator: +19%; Regression imputation: +19%; Stochastic regression imputation: +33%; MI EXCLUDED from the imputation model: +33%; MI INCLUDED: +11%
+MNAR sensitivity,true MNAR gap δ ≈ 0.18 log points (17% lower than MAR imputation suggests)
+Scoring performance (test AUC),AUC 0.729–0.767; best: Stochastic regression imputation + indicator

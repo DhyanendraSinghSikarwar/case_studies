@@ -1,0 +1,12 @@
+column,type,description,valid values / range,notes
+txn_id,string,Unique payment attempt ID,T00000001 …,Primary key; duplicates = webhook replays (DQ issue)
+timestamp,datetime,Time the payment was initiated (IST),2025-10-01 to 2025-10-30,A few rows carry 1970-01-01 (clock reset)
+merchant_id,string,Merchant identifier,M_001 … M_120,Zipf-like sizes: a few large merchants
+payment_method,category,Instrument used,UPI / Card / Netbanking / Wallet,
+card_network,category,Card scheme (cards only),Visa / Mastercard / RuPay,Structurally blank for non-card; 1% of cards missing
+issuer_bank,category,"Customer's bank (UPI remitter, card issuer, NB bank)","SBI, HDFC, ICICI, Axis, Kotak, Others",Structurally blank for wallets
+amount_inr,float,Order value in ₹,> 0,Right-skewed; a few zero/negative rows are invalid
+gateway,category,Gateway chosen by today's fixed rules,PG_A / PG_B / PG_C / PG_D,
+success,int,"1 = payment succeeded, 0 = failed",0 / 1,Primary outcome
+failure_stage,category,Where a failed payment broke,authentication / authorisation / none,'none' iff success = 1
+latency_ms,float,Gateway round-trip time in milliseconds,> 0,1.5% missing (logging gap)

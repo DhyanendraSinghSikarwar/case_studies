@@ -1,0 +1,3 @@
+,F,"df (num, denom)",p_value
+Classic ANOVA (equal variances),17.6145302761,"4, 5995",0.0
+Welch ANOVA (unequal variances),21.8409201406,"4, 2401",0.0

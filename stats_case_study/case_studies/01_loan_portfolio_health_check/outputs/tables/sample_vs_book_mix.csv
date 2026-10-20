@@ -1,0 +1,10 @@
+variable,level,book_share,sample_share,difference_pp
+channel,Branch,0.448933,0.464,1.506667
+channel,Digital,0.3566,0.3464,-1.02
+channel,DSA,0.194467,0.1896,-0.486667
+region,North,0.298283,0.3044,0.611667
+region,South,0.281033,0.2696,-1.143333
+region,West,0.250783,0.2588,0.801667
+region,East,0.1699,0.1672,-0.27
+employment_type,Salaried,0.720517,0.7252,0.468333
+employment_type,Self-employed,0.279483,0.2748,-0.468333

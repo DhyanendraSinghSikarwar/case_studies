@@ -1,0 +1,4 @@
+,risk ratio (churn),E-value
+Naive,0.2641632967,7.0328061064
+Adjusted (model 4),0.4981037147,3.4299009183
+Pilot ITT,0.877027027,1.5400608911

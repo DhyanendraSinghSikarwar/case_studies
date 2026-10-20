@@ -1,0 +1,422 @@
+{
+  "seed": 42,
+  "data": {
+    "clean_lines": 802634,
+    "customers_total": 5852,
+    "calibration_lines": 578236,
+    "calibration_customers": 5016,
+    "holdout_lines": 224398,
+    "holdout_customers": 3360,
+    "customers_in_both": 2524,
+    "holdout_spend": 4831459.050000001,
+    "date_min": "2009-12-01 07:45:00",
+    "date_max": "2011-12-09 12:50:00",
+    "calibration_max_date": "2011-06-30 20:08:00",
+    "holdout_min_date": "2011-07-01 08:16:00"
+  },
+  "rfm": {
+    "asof": "2011-07-01 00:00:00",
+    "n_customers": 5016,
+    "segments": [
+      {
+        "segment": "Champions",
+        "customers": 1166,
+        "revenue": 8658909.83,
+        "recency": 32.2131027254,
+        "frequency": 14.0231560892,
+        "monetary": 7426.1662349914,
+        "avg_basket": 458.3780079922,
+        "customer_share": 0.2324561404,
+        "revenue_share": 0.6870511725
+      },
+      {
+        "segment": "Loyal",
+        "customers": 1471,
+        "revenue": 1153675.34,
+        "recency": 107.3888629239,
+        "frequency": 3.0149558124,
+        "monetary": 784.2796329028,
+        "avg_basket": 289.2139797775,
+        "customer_share": 0.293261563,
+        "revenue_share": 0.0915396985
+      },
+      {
+        "segment": "At-Risk",
+        "customers": 642,
+        "revenue": 674231.65,
+        "recency": 293.883285739,
+        "frequency": 3.453271028,
+        "monetary": 1050.2050623053,
+        "avg_basket": 338.0593663655,
+        "customer_share": 0.1279904306,
+        "revenue_share": 0.0534976868
+      },
+      {
+        "segment": "Hibernating",
+        "customers": 1278,
+        "revenue": 393553.31,
+        "recency": 356.5530788124,
+        "frequency": 1.1885758998,
+        "monetary": 307.944687011,
+        "avg_basket": 277.4063302034,
+        "customer_share": 0.254784689,
+        "revenue_share": 0.0312269406
+      },
+      {
+        "segment": "New",
+        "customers": 208,
+        "revenue": 89950.75,
+        "recency": 27.5810296474,
+        "frequency": 1.1778846154,
+        "monetary": 432.4555288462,
+        "avg_basket": 379.5297355769,
+        "customer_share": 0.0414673046,
+        "revenue_share": 0.0071372459
+      },
+      {
+        "segment": "Big-spenders",
+        "customers": 251,
+        "revenue": 1632684.8,
+        "recency": 192.5075586543,
+        "frequency": 8.6812749004,
+        "monetary": 6504.7203187251,
+        "avg_basket": 1214.0636407583,
+        "customer_share": 0.0500398724,
+        "revenue_share": 0.1295472557
+      }
+    ]
+  },
+  "cluster": {
+    "kmeans_best_k_any": 2,
+    "kmeans_best_silhouette_any": 0.4560501569390725,
+    "kmeans_k_final": 4,
+    "kmeans_silhouette_final": 0.37659890991611356,
+    "gmm_best_k_bic": 9,
+    "gmm_silhouette_at_k_final": 0.21188247116926517,
+    "gmm_best_silhouette": 0.3309770610354201,
+    "hdbscan_n_clusters": 3,
+    "hdbscan_noise_share": 0.3440988835725678,
+    "hdbscan_silhouette_non_noise": 0.2209735986505665,
+    "ari_kmeans_vs_rule_segments": 0.3179025064329062,
+    "feature_set_ablation": {
+      "rfm_plus_tenure": {
+        "features": [
+          "recency",
+          "frequency",
+          "monetary",
+          "tenure"
+        ],
+        "best_k": 3,
+        "best_silhouette": 0.4088253293103473,
+        "silhouette_by_k": {
+          "2": 0.3886540747315527,
+          "3": 0.4088253293103473,
+          "4": 0.3390413256519539,
+          "5": 0.3230812963497109,
+          "6": 0.30641950533228646,
+          "7": 0.30092424583759403,
+          "8": 0.27984355137218875,
+          "9": 0.281016337833185,
+          "10": 0.27129601056797736
+        }
+      },
+      "all_six": {
+        "features": [
+          "recency",
+          "frequency",
+          "monetary",
+          "tenure",
+          "avg_basket",
+          "n_products"
+        ],
+        "best_k": 2,
+        "best_silhouette": 0.32337657708759127,
+        "silhouette_by_k": {
+          "2": 0.32337657708759127,
+          "3": 0.315266951905497,
+          "4": 0.25657917125714114,
+          "5": 0.22095921595344317,
+          "6": 0.22443618529818588,
+          "7": 0.22307107193137235,
+          "8": 0.2046143685550231,
+          "9": 0.20921277606530067,
+          "10": 0.19478441711955702
+        }
+      }
+    },
+    "embedding_method": "UMAP",
+    "features": [
+      "recency",
+      "frequency",
+      "monetary"
+    ],
+    "profile": [
+      {
+        "cluster": 0,
+        "customers": 2093,
+        "revenue": 733993.1,
+        "recency": 287.6486004937,
+        "frequency": 1.3889154324,
+        "tenure": 331.6825761799,
+        "avg_basket": 273.4820084806,
+        "n_products": 24.4648829431,
+        "monetary": 350.6894887721,
+        "customer_share": 0.4172647528,
+        "revenue_share": 0.0582395278,
+        "name": "One-off lapsed"
+      },
+      {
+        "cluster": 1,
+        "customers": 735,
+        "revenue": 8128761.55,
+        "recency": 28.4781887755,
+        "frequency": 19.3972789116,
+        "tenure": 500.8803750945,
+        "avg_basket": 527.2433555652,
+        "n_products": 196.3265306122,
+        "monetary": 11059.5395238095,
+        "customer_share": 0.1465311005,
+        "revenue_share": 0.6449859467,
+        "name": "Top spenders"
+      },
+      {
+        "cluster": 2,
+        "customers": 1443,
+        "revenue": 3031133.08,
+        "recency": 174.8987756988,
+        "frequency": 5.0540540541,
+        "tenure": 447.9919818857,
+        "avg_basket": 499.2768382797,
+        "n_products": 86.4712404712,
+        "monetary": 2100.5773250173,
+        "customer_share": 0.2876794258,
+        "revenue_share": 0.2405087451,
+        "name": "Lapsing regulars"
+      },
+      {
+        "cluster": 3,
+        "customers": 745,
+        "revenue": 709117.95,
+        "recency": 24.9325205071,
+        "frequency": 3.3409395973,
+        "tenure": 258.6681282625,
+        "avg_basket": 315.1085850746,
+        "n_products": 53.0926174497,
+        "monetary": 951.8361744966,
+        "customer_share": 0.1485247209,
+        "revenue_share": 0.0562657804,
+        "name": "Active regulars"
+      }
+    ]
+  },
+  "clv": {
+    "model": {
+      "mae_spend": 548.9827486611485,
+      "mae_purchases": 0.9593565966149904,
+      "spearman_spend": 0.6080004531638045,
+      "spearman_purchases": 0.6192960755129071,
+      "total_pred_spend": 3420030.8997312235
+    },
+    "baseline_hist": {
+      "mae_spend": 570.4701780679642,
+      "mae_purchases": 1.0286704728577392,
+      "spearman_spend": 0.5669100261726316,
+      "spearman_purchases": 0.543221541462176,
+      "total_pred_spend": 3538452.201317158
+    },
+    "naive_mean": {
+      "mae_spend": 1106.8556378440662,
+      "note": "predict the population mean spend for everyone"
+    },
+    "actual_total_spend": 4189658.1899999995,
+    "top_decile": {
+      "share_of_predicted_clv": 0.5876353066637745,
+      "share_of_actual_holdout_spend": 0.606755461833988,
+      "share_of_actual_spend_oracle_top_decile": 0.7206212901105425,
+      "baseline_share_of_actual_holdout_spend": 0.5977548516911353
+    },
+    "horizon_days": 162.0,
+    "n_customers": 5016,
+    "bgnbd_params": {
+      "r": 0.6736916321800004,
+      "alpha": 65.59830871863842,
+      "a": 0.08854115455359379,
+      "b": 1.2872986782433122
+    },
+    "gg_params": {
+      "p": 11.79088858758049,
+      "q": 0.8798784431043132,
+      "v": 11.747812612119462
+    },
+    "freq_monetary_corr": 0.08556229832417209,
+    "clv_12m_top_decile_share": 0.5888495738734085,
+    "clv_12m_total": 7589679.97984471
+  },
+  "basket": {
+    "n_baskets": 36275,
+    "n_items_considered": 2500,
+    "min_support_chosen": 0.012,
+    "n_itemsets": 655,
+    "n_rules_filtered": 309,
+    "n_bundles": 20,
+    "top_lift": 49.991,
+    "median_lift_top20": 29.3345,
+    "tuning": [
+      {
+        "min_support": 0.02,
+        "itemsets": 232,
+        "rules": 56,
+        "seconds": 6.9
+      },
+      {
+        "min_support": 0.012,
+        "itemsets": 655,
+        "rules": 309,
+        "seconds": 11.6
+      }
+    ]
+  },
+  "recsys": {
+    "repeat_allowed": {
+      "popularity": {
+        "hitrate": 0.48778833107191316,
+        "ndcg": 0.08875671469590601,
+        "recall": 0.03682536654118407,
+        "coverage": 0.0021743857360295715,
+        "n_users": 1474
+      },
+      "itemknn_cosine": {
+        "hitrate": 0.683853459972863,
+        "ndcg": 0.2086932932053179,
+        "recall": 0.11249780412147553,
+        "coverage": 0.2343987823439878,
+        "n_users": 1474,
+        "ndcg_ratio_vs_popularity": 2.3512958306347054,
+        "ndcg_ratio_ci95": [
+          2.2009531881187017,
+          2.51573200533664
+        ],
+        "hitrate_ratio_vs_popularity": 1.4019471488178026
+      },
+      "als": {
+        "hitrate": 0.7272727272727273,
+        "ndcg": 0.24210790652617784,
+        "recall": 0.11916025282971575,
+        "coverage": 0.13328984561861273,
+        "n_users": 1474,
+        "ndcg_ratio_vs_popularity": 2.7277700324496723,
+        "ndcg_ratio_ci95": [
+          2.5399253182076302,
+          2.989573913374379
+        ],
+        "hitrate_ratio_vs_popularity": 1.4909596662030598
+      },
+      "hybrid_als_pop": {
+        "hitrate": 0.7272727272727273,
+        "ndcg": 0.24210790652617784,
+        "recall": 0.11916025282971575,
+        "coverage": 0.13328984561861273,
+        "n_users": 1474,
+        "ndcg_ratio_vs_popularity": 2.7277700324496723,
+        "ndcg_ratio_ci95": [
+          2.5377443925013097,
+          2.950200768437599
+        ],
+        "hitrate_ratio_vs_popularity": 1.4909596662030598
+      },
+      "random": {
+        "hitrate": 0.07055630936227951,
+        "ndcg": 0.008105680199358582,
+        "recall": 0.0022220366603211837,
+        "coverage": 0.9569471624266145,
+        "n_users": 1474
+      }
+    },
+    "discovery": {
+      "popularity": {
+        "hitrate": 0.2292134831460674,
+        "ndcg": 0.034193347612643185,
+        "recall": 0.019800130423773526,
+        "coverage": 0.017395085888236572,
+        "n_users": 1335
+      },
+      "itemknn_cosine": {
+        "hitrate": 0.2898876404494382,
+        "ndcg": 0.05699653163636497,
+        "recall": 0.03707044125392193,
+        "coverage": 0.1289410741465536,
+        "n_users": 1335,
+        "ndcg_ratio_vs_popularity": 1.666889486283881,
+        "ndcg_ratio_ci95": [
+          1.4916495915351557,
+          1.8930215658972476
+        ],
+        "hitrate_ratio_vs_popularity": 1.2647058823529413
+      },
+      "als": {
+        "hitrate": 0.3752808988764045,
+        "ndcg": 0.07533023548195172,
+        "recall": 0.04808444782264396,
+        "coverage": 0.1761252446183953,
+        "n_users": 1335,
+        "ndcg_ratio_vs_popularity": 2.203066992308701,
+        "ndcg_ratio_ci95": [
+          1.922940113121024,
+          2.5802997360679227
+        ],
+        "hitrate_ratio_vs_popularity": 1.6372549019607843
+      },
+      "hybrid_als_pop": {
+        "hitrate": 0.3752808988764045,
+        "ndcg": 0.07533023548195172,
+        "recall": 0.04808444782264396,
+        "coverage": 0.1761252446183953,
+        "n_users": 1335,
+        "ndcg_ratio_vs_popularity": 2.203066992308701,
+        "ndcg_ratio_ci95": [
+          1.943151683155082,
+          2.5660578149570026
+        ],
+        "hitrate_ratio_vs_popularity": 1.6372549019607843
+      },
+      "random": {
+        "hitrate": 0.0449438202247191,
+        "ndcg": 0.004886719376406838,
+        "recall": 0.0026740935312385473,
+        "coverage": 0.9428136551424222,
+        "n_users": 1335
+      }
+    },
+    "n_eval_users": {
+      "repeat_allowed": 1474,
+      "discovery": 1335
+    },
+    "train_rows": 738599,
+    "test_rows": 64035,
+    "n_users_train": 5700,
+    "n_items_train": 4599,
+    "train_max_date": "2011-11-09 17:47:00",
+    "test_min_date": "2011-11-10 08:06:00",
+    "best_params": {
+      "factors": 64,
+      "regularization": 1.0,
+      "alpha": 1.0,
+      "iterations": 15
+    },
+    "best_hybrid_weight": 0.0
+  },
+  "campaign": {
+    "unconstrained_total_cost": 7647.228146933916,
+    "unconstrained_net_profit": 8328.63169950942,
+    "unconstrained_roi": 1.0891046454326994,
+    "budget": 5000.0,
+    "funded_cost": 4999.999999999999,
+    "funded_net_profit": 7623.193880042017,
+    "funded_roi": 1.5246387760084037,
+    "funded_net_profit_inr": 800435.3574044118,
+    "break_even_response_multiplier_at_margin": 0.5,
+    "sensitivity_min_roi": -0.2660157008287279,
+    "sensitivity_max_roi": 2.974518526591435
+  },
+  "runtime_seconds": 1233.2
+}

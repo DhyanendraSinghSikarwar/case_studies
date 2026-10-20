@@ -1,0 +1,4 @@
+,estimate (pp),ci_low,ci_high
+ITT: effect of the OFFER (whole offered group),-2.275,-3.4483427035,-1.1016572965
+Complier effect: effect of ENROLLING (ITT ÷ take-up),-4.0798027348,-6.1338021217,-1.9997834406
+Invalid: enrolled vs not enrolled inside the pilot,-13.6932344039,,

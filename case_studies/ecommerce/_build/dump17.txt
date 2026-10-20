@@ -1,0 +1,218 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs17.py
+--- cell 8 (exec 3) ---
+642,000 impression rows | 80,000 requests | generated in 101s
+   request_id  cand  is_ads  cat  x_rel  cobrowse     pop  log_price_ratio  rating    bid   _aff  _p_ctr_attr  _p_cvr  slot  explore  day  click  order
+0          23    10       0    2 1.2430    0.0210 -0.3700          -0.6000  4.1900 0.0000 0.2101       0.0213  0.0456     1        0    0      0      0
+1          23    15       1    2 0.6870    0.2300  0.4260           0.9110  4.3100 3.2200 0.3344       0.0406  0.0512     2        0    0      0      0
+2          23    11       0    2 0.3340    0.1790  0.1430          -0.6810  4.6000 0.0000 0.3099       0.0320  0.0637     3        0    0      0      0
+3          23     2       0    2 1.1610    0.0820 -0.6020           0.4730  4.3100 0.0000 0.5343       0.0315  0.0572     4        0    0      0      0
+--- cell 10 (exec 4) ---
+                                        field(s)                                            meaning
+0                          request_id, day, slot  Request, day (0 to 13) and the slot (1 to 8) w...
+1                                    is_ads, bid  1 if sponsored; bid in ₹ per click (0 for orga...
+2                                            cat  Request category type: 0 high ad relevance, 1 ...
+3  x_rel, cobrowse, pop, log_price_ratio, rating  Model features: noisy relevance score, co-brow...
+4                                        explore  1 if the request used random slotting (explora...
+5                                   click, order   Outcomes: click on the item; order after a click
+6                      _aff, _p_ctr_attr, _p_cvr  HIDDEN truth: affinity, position-free click pr...
+--- cell 12 (exec 5) ---
+duplicate impression rows (request, slot)    2000
+missing rating                               1500
+impossible bids (< 0)                         300
+orders without a click                        250
+
+Clean: 640,000 impressions | 80,000 requests | ads share of impressions 25.0% | exploration requests 19.9%
+Logged CTR: organic 4.13%, ads 2.12% | exploration CTR: organic 2.40%, ads 1.60% | CVR given click: organic 9.3%, ads 5.5% | orders per 1,000 requests 25.5
+--- cell 14 (exec 6) ---
+[image]
+Exploration CTR slot 1 vs slot 8 (all items): 4.72% vs 0.81% (ratio 0.17); ads share of logged impressions in slots 2 and 5: 85%, in other slots: 5%
+organic CTR top decile / bottom decile of relevance: 18.9x
+sponsored CTR top decile / bottom decile of relevance: 8.5x
+--- cell 16 (exec 7) ---
+[image]
+ cat  is_ads  CTR_pct  size
+   0       0   2.3550 23991
+   0       1   2.6800  7985
+   1       0   2.4100 47640
+   1       1   1.5250 16128
+   2       0   2.4320 23524
+   2       1   0.6660  7812
+Median ad bid ₹3.89; mean ₹4.40; CVR given click organic 9.3% vs ads 5.5%
+--- cell 18 (exec 8) ---
+Test: 22,749 requests, 181,992 impressions, clicks 6,638 (ads 966); exploration requests 4,464 with at least one click 684
+                                AUC  AUC organic  AUC ads  log loss  log loss organic  log loss ads  Request AUC  AUC low  AUC high  ReqAUC low  ReqAUC high
+model                                                                                                                                                       
+M0 organic features, no flag 0.7980       0.8070   0.7158    0.1328            0.1448        0.0967       0.7331   0.7932    0.8026      0.7123       0.7534
+M1 + isAds flag              0.7979       0.8069   0.7153    0.1328            0.1448        0.0967       0.7337   0.7933    0.8025      0.7132       0.7543
+M2 + flag x crosses          0.7993       0.8071   0.7215    0.1325            0.1448        0.0959       0.7392   0.7946    0.8042      0.7187       0.7584
+M3 separate models           0.7994       0.8071   0.7215    0.1325            0.1448        0.0959       0.7388   0.7946    0.8043      0.7176       0.7584
+M4 gradient boosting         0.7972       0.8062   0.7124    0.1329            0.1451        0.0965       0.7327   0.7922    0.8020      0.7114       0.7532
+--- cell 19 (exec 9) ---
+                                ΔAUC     low   high  Δlog loss ads    low    high   bootstrap p  ΔRequest AUC   low    high    p_holm (log loss ads)
+vs M1 + isAds flag                                                                                                                                  
+M0 organic features, no flag  0.0001 -0.0001 0.0002        -0.0000 -0.0001  0.0000       0.2200       -0.0006 -0.0027  0.0017                 0.4400
+M2 + flag x crosses           0.0015  0.0008 0.0023        -0.0008 -0.0012 -0.0005       0.0100        0.0055  0.0004  0.0110                 0.0400
+M3 separate models            0.0015  0.0009 0.0023        -0.0008 -0.0012 -0.0005       0.0100        0.0051 -0.0000  0.0103                 0.0400
+M4 gradient boosting         -0.0006 -0.0017 0.0004        -0.0002 -0.0006  0.0001       0.2600       -0.0010 -0.0099  0.0079                 0.4400
+--- cell 21 (exec 10) ---
+                                         mean predicted  mean actual  actual / predicted  intercept (CITL)  int low  int high  p (intercept)  slope  slope low  \
+model                        population                                                                                                                          
+M0 organic features, no flag organic             0.0415       0.0416              1.0024            0.0027  -0.0248    0.0303         0.8458 1.0304     1.0053   
+                             ads                 0.0209       0.0212              1.0154            0.0160  -0.0493    0.0814         0.6307 0.7824     0.7170   
+M1 + isAds flag              organic             0.0413       0.0416              1.0053            0.0060  -0.0215    0.0336         0.6687 1.0284     1.0032   
+                             ads                 0.0210       0.0212              1.0098            0.0103  -0.0551    0.0756         0.7577 0.7820     0.7167   
+M2 + flag x crosses          organic             0.0414       0.0416              1.0043            0.0048  -0.0229    0.0326         0.7327 0.9979     0.9737   
+                             ads                 0.0211       0.0212              1.0060            0.0063  -0.0582    0.0707         0.8490 0.9962     0.9135   
+M3 separate models           organic             0.0413       0.0416              1.0062            0.0070  -0.0207    0.0348         0.6197 0.9974     0.9732   
+                             ads                 0.0211       0.0212              1.0065            0.0068  -0.0577    0.0712         0.8367 0.9909     0.9084   
+M4 gradient boosting         organic             0.0413       0.0416              1.0055            0.0062  -0.0215    0.0340         0.6593 0.9973     0.9734   
+                             ads                 0.0211       0.0212              1.0056            0.0058  -0.0590    0.0706         0.8602 0.8707     0.7974   
+
+                                         slope high  p (slope = 1)    ECE  exploration actual / predicted  p_holm (intercept)  
+model                        population                                                                                        
+M0 organic features, no flag organic         1.0556         0.0175 0.0012                          0.9214              1.0000  
+                             ads             0.8477         0.0000 0.0037                          1.0752              1.0000  
+M1 + isAds flag              organic         1.0535         0.0270 0.0013                          0.9369              1.0000  
+                             ads             0.8473         0.0000 0.0037                          1.0525              1.0000  
+M2 + flag x crosses          organic         1.0221         0.8646 0.0008                          0.9471              1.0000  
+                             ads             1.0789         0.9276 0.0014                          1.0237              1.0000  
+M3 separate models           organic         1.0217         0.8362 0.0007                          0.9536              1.0000  
+                             ads             1.0734         0.8286 0.0017                          0.9471              1.0000  
+M4 gradient boosting         organic         1.0212         0.8237 0.0012                          0.9697              1.0000  
+                             ads             0.9440         0.0005 0.0025                          1.0017              1.0000
+--- cell 22 (exec 11) ---
+[image]
+Actual / predicted click rate by population:
+population                      ads  organic
+model                                       
+M0 organic features, no flag 1.0150   1.0020
+M1 + isAds flag              1.0100   1.0050
+M2 + flag x crosses          1.0060   1.0040
+M3 separate models           1.0070   1.0060
+M4 gradient boosting         1.0060   1.0050
+--- cell 24 (exec 12) ---
+Training clicks 16,570 (orders 1,453; ads orders 135) | test clicks 6,638 (orders 584; ads orders 52)
+                       AUC  AUC low  AUC high  log loss  organic actual/pred  org low  org high  org p  ads actual/pred  ads low  ads high  ads p
+model                                                                                                                                            
+C0 no flag          0.6297   0.6055    0.6530    0.2896               1.0162   0.9307    1.1137 0.6953           0.8548   0.6380    1.1192 0.2401
+C1 + isAds flag     0.6307   0.6064    0.6536    0.2895               1.0013   0.9155    1.0954 0.9756           0.9736   0.7341    1.2866 0.8418
+C2 + flag x crosses 0.6292   0.6043    0.6524    0.2896               1.0015   0.9155    1.0959 0.9714           0.9578   0.7225    1.2631 0.7483
+--- cell 26 (exec 13) ---
+Pinned (legacy): organic orders 26.55 / 1,000 requests; ad revenue ₹213.1 / 1,000 requests; sponsored share 25.0%; 30,000 test requests
+                                       organic orders / 1,000 req   lift    low   high      p  ad revenue ₹ / 1,000 req  lift     low   high      p   \
+policy                                                                                                                                                 
+unified, M0 organic features, no flag                     30.4198 0.1457 0.1430 0.1482 0.0010                  213.8207 0.0034 -0.0028 0.0094 0.2960   
+unified, M1 + isAds flag                                  30.2460 0.1392 0.1364 0.1417 0.0010                  221.6092 0.0400  0.0338 0.0459 0.0010   
+unified, M2 + flag x crosses                              30.3161 0.1418 0.1392 0.1442 0.0010                  225.2233 0.0569  0.0510 0.0629 0.0010   
+unified, M3 separate models                               30.4053 0.1451 0.1425 0.1476 0.0010                  221.5513 0.0397  0.0336 0.0454 0.0010   
+unified, M4 gradient boosting                             30.1564 0.1358 0.1331 0.1382 0.0010                  220.6114 0.0353  0.0291 0.0408 0.0010   
+unified, oracle (true probabilities)                      32.1764 0.2119 0.2087 0.2146 0.0010                  236.2618 0.1087  0.1031 0.1149 0.0010   
+
+                                       sponsored share of slots  p_holm (orders)  p_holm (revenue)  
+policy                                                                                              
+unified, M0 organic features, no flag                    0.2479           0.0120            0.2960  
+unified, M1 + isAds flag                                 0.2529           0.0120            0.0120  
+unified, M2 + flag x crosses                             0.2995           0.0120            0.0120  
+unified, M3 separate models                              0.2985           0.0120            0.0120  
+unified, M4 gradient boosting                            0.2820           0.0120            0.0120  
+unified, oracle (true probabilities)                     0.3116           0.0120            0.0120
+--- cell 28 (exec 14) ---
+Chosen lambda on the tuning set: M2 = 3.0, M0 = 3.0
+   model  lambda  organic orders lift  ad revenue lift  sponsored share
+0     M2  0.0000               0.2107          -0.4193           0.1825
+1     M2  0.2500               0.1950          -0.2606           0.2216
+2     M2  0.5000               0.1784          -0.1355           0.2536
+3     M2  1.0000               0.1430           0.0581           0.3007
+4     M2  1.5000               0.1088           0.1927           0.3357
+5     M2  2.0000               0.0762           0.2954           0.3617
+6     M2  3.0000               0.0169           0.4390           0.3976
+7     M2  5.0000              -0.0788           0.5987           0.4381
+8     M0  0.0000               0.2099          -0.4398           0.1490
+9     M0  0.2500               0.1952          -0.2963           0.1801
+10    M0  0.5000               0.1798          -0.1787           0.2067
+11    M0  1.0000               0.1477           0.0007           0.2484
+12    M0  1.5000               0.1170           0.1310           0.2804
+13    M0  2.0000               0.0878           0.2305           0.3050
+14    M0  3.0000               0.0340           0.3735           0.3426
+15    M0  5.0000              -0.0540           0.5394           0.3897
+                                                    organic orders lift    low   high  p_holm  ad revenue lift   low   high   p_holm   sponsored share  \
+policy (test set)                                                                                                                                        
+M2 + flag x crosses at tuned lambda = 3.0                        0.0147 0.0119 0.0177  0.0020           0.4407 0.4358 0.4455   0.0020           0.3962   
+M0 organic features, no flag at tuned lambda = 3.0               0.0318 0.0288 0.0347  0.0020           0.3759 0.3710 0.3809   0.0020           0.3414   
+
+                                                    total orders lift  
+policy (test set)                                                      
+M2 + flag x crosses at tuned lambda = 3.0                      0.0670  
+M0 organic features, no flag at tuned lambda = 3.0             0.0811
+--- cell 29 (exec 15) ---
+[image]
+Best point with organic orders not below pinned: {'M2': (3.0, 43.9), 'M0': (3.0, 37.35)}
+--- cell 31 (exec 16) ---
+Normal operation (no failure): sponsored share 39.6%; pinned policy sponsored share 25.0%
+                                                         sponsored share of slots  organic orders / 1,000 req  organic orders vs pinned  ad revenue vs pinned  \
+failed share of ad scores guard                                                                                                                                 
+0.0000                    default 0.5                                      0.3962                     26.9419                    0.0147                0.4407   
+                          safe default (mean ad pCTR)                      0.3962                     26.9419                    0.0147                0.4407   
+                          default 0.5 + circuit breaker                    0.2903                     27.9878                    0.0541                0.1062   
+0.0100                    default 0.5                                      0.3971                     26.6900                    0.0052                0.4409   
+                          safe default (mean ad pCTR)                      0.3970                     26.9351                    0.0145                0.4396   
+                          default 0.5 + circuit breaker                    0.2904                     27.8312                    0.0482                0.1066   
+0.0500                    default 0.5                                      0.4002                     25.7485                   -0.0302                0.4402   
+                          safe default (mean ad pCTR)                      0.3996                     26.9287                    0.0142                0.4334   
+                          default 0.5 + circuit breaker                    0.2908                     27.2452                    0.0261                0.1077   
+0.1000                    default 0.5                                      0.4041                     24.7042                   -0.0696                0.4430   
+                          safe default (mean ad pCTR)                      0.4027                     26.9104                    0.0135                0.4268   
+                          default 0.5 + circuit breaker                    0.2912                     26.6591                    0.0041                0.1099   
+0.2500                    default 0.5                                      0.4169                     21.7092                   -0.1824                0.4649   
+                          safe default (mean ad pCTR)                      0.4131                     26.8539                    0.0114                0.4064   
+                          default 0.5 + circuit breaker                    0.2917                     25.1017                   -0.0546                0.1161   
+
+                                                         requests reverted to pinned  
+failed share of ad scores guard                                                       
+0.0000                    default 0.5                                         0.0000  
+                          safe default (mean ad pCTR)                         0.0000  
+                          default 0.5 + circuit breaker                       0.4236  
+0.0100                    default 0.5                                         0.0000  
+                          safe default (mean ad pCTR)                         0.0000  
+                          default 0.5 + circuit breaker                       0.4270  
+0.0500                    default 0.5                                         0.0000  
+                          safe default (mean ad pCTR)                         0.0000  
+                          default 0.5 + circuit breaker                       0.4374  
+0.1000                    default 0.5                                         0.0000  
+                          safe default (mean ad pCTR)                         0.0000  
+                          default 0.5 + circuit breaker                       0.4516  
+0.2500                    default 0.5                                         0.0000  
+                          safe default (mean ad pCTR)                         0.0000  
+                          default 0.5 + circuit breaker                       0.5007
+--- cell 33 (exec 17) ---
+                                                    relative lift  requests per arm (80% power)  requests per arm if 8 impressions each = impressions
+metric and effect                                                                                                                                    
+organic orders: our simulated lift                         0.0147                       2808130                                           22465040   
+organic orders: company-reported +1.36% (applie...         0.0136                       3255289                                           26042312   
+ad revenue: our simulated lift                             0.4407                          2517                                              20136   
+ad revenue: company-reported +3.4% (applied to ...         0.0340                        362906                                            2903248
+                true lift  mean estimated lift  power at 1,000,000 per arm (200 tests)  A/A false-positive rate  Wilson low  Wilson high  binomial p (rate = 5%)  \
+metric                                                                                                                                                             
+organic orders     0.0147               0.0148                                  0.4000                   0.0500      0.0274       0.0896                  1.0000   
+ad revenue         0.4407               0.4403                                  1.0000                   0.0300      0.0138       0.0639                  0.2536   
+
+                CI coverage of true difference  
+metric                                          
+organic orders                          0.9500  
+ad revenue                              0.9650
+--- cell 35 (exec 18) ---
+Baseline per 1,000 requests (pinned, twin): organic orders 26.55, ad revenue ₹213.1; ad revenue at base volume ₹233 crore / year
+                                                    requests / day (crore)  organic orders lift  ad revenue lift  ₹ crore / year: organic orders  \
+worst                                                               1.0000               0.0120           0.4360                          6.9480   
+base                                                                3.0000               0.0150           0.4410                         25.6600   
+best                                                                5.0000               0.0180           0.4460                         51.4770   
+company-reported lifts on our baseline (base vo...                  3.0000               0.0140           0.0340                         23.7240   
+
+                                                    ₹ crore / year: ad revenue  ₹ crore / year: total  
+worst                                                                  33.8940                40.8420  
+base                                                                  102.8370               128.4970  
+best                                                                  173.2710               224.7480  
+company-reported lifts on our baseline (base vo...                      7.9340                31.6580

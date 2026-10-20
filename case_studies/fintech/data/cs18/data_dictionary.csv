@@ -1,0 +1,8 @@
+field(s),meaning
+"app_id, app_month, product","Application, month 1–18, PL or card"
+"bureau_depth, bureau_score",thick / thin / no_hit; generic bureau score (blank for no-hit)
+"monthly_salary, salary_credit_regularity, balance_trend_6m, casa_vintage_years",Internal: income and stability
+"bounces_12m, internal_dpd_events_24m","Internal: bounced payments, internal collections history"
+"n_products_held, card_spend_to_salary, cash_withdrawal_share, emi_to_salary, age",Internal: relationship and behaviour
+bad_90dpd_12m,Target: 90+ DPD within 12 months
+"_p_bad, _zb, _zi","HIDDEN: true PD, bureau-visible and internal-only risk"

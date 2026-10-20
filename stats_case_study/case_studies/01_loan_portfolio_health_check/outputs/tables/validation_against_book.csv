@@ -1,0 +1,5 @@
+metric,estimate,ci_low,ci_high,true_book_value,sampling_error,ci_contains_truth
+Mean ticket size (₹),324580.0,313961.830178,335198.169822,324372.833333,207.166667,True
+Median ticket size (₹),250000.0,240000.0,250000.0,250000.0,0.0,True
+12m 90+ DPD rate,0.0536,0.045436,0.063133,0.050733,0.002867,True
+DTI policy-exception rate,0.0044,0.002459,0.007862,0.003217,0.001183,True

@@ -1,0 +1,5 @@
+,estimate,95% CI low,95% CI high
+precision (Wilson CI),0.1733333333,0.1347006005,0.2202261407
+recall (Wilson CI),0.3312101911,0.262394467,0.4080885019
+"saving vs no alerts (₹, bootstrap)",991864.0,499046.55,1606718.45
+"extra saving vs current rules (₹, bootstrap)",277848.0,78389.45,471241.7999999999

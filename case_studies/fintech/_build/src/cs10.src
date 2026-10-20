@@ -1,0 +1,477 @@
+#%% md
+# Case Study 10 — Finding BNPL Fraud Rings with Graph Communities, and Counting the Cost to Good Users
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 10 — *Simpl: a BNPL ML platform for fraud rings, underwriting and repayment support* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Risk, Fraud Strategy, Growth (onboarding funnel), Finance
+**Data:** ⚠️ **SYNTHETIC** (D-10-01). BNPL user data are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs10_bnpl_fraud_rings_graph.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+A buy-now-pay-later (BNPL) company gives shoppers instant credit at checkout. A common attack is a **fraud ring**: a gang creates dozens of accounts, often with the same few phones, delivery addresses and bank accounts, uses each account's full limit within days, and never repays. Looked at one at a time, each account seems like an ordinary new customer. Looked at **as a group**, they are obvious: 20 "different" people sharing three phones and two addresses.
+
+That is what Simpl's **graph ML** does: connect accounts that share identity details and look at the **communities** they form. The catch is that genuine people share things too. Families share a phone, and hostel, PG and office residents share an address. A careless graph lumps hundreds of genuine users into "suspicious" clusters and declines them. The documented metric is therefore the **precision–recall trade-off and its impact on good users**.
+
+This notebook asks:
+- How much do graph communities add beyond single-account checks?
+- How should the graph be built so it does not punish families and hostels?
+- Does real-time graph updating beat a nightly batch?
+- Where should the decline line be drawn, counting the cost to good users?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Simpl did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Business | Instant checkout credit across "**26,000+ merchants**"; stop fraud "including account takeover and identity theft" in real time; set limits at onboarding; help users who struggle to repay |
+| Data | Current transaction payload; "one year of user history"; identity ("email IDs, phone numbers", batch analysis); real-time velocity and amount monitoring |
+| Approach | "Rules and filters, then ML models, then neural networks"; "**Graph ML** to find fraud communities"; batch models in Airflow |
+| ML / metrics | Neural network combining payload + history; graph ML for communities; "**precision–recall trade-off and impact on 'good users'**". **No numbers** |
+| Tech | Apache Flink (**70–80 ms SLA**), Airflow, DynamoDB feature store, SageMaker; 28 data scientists + 16 data engineers |
+| Impact | **Not publicly disclosed** |
+
+**Source:** TrueFoundry, "True ML Talks #5" with Sheekha Verma (Director of Data Science, Simpl), 6 Aug 2024 — https://www.truefoundry.com/blog/machine-learning-platform-simpl
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 120,000 users onboarded over 13 weeks with device, phone, email pattern, delivery address, IP block and repayment bank account. 70 fraud rings (≈ 730 accounts) + ≈ 500 lone fraudsters. Genuine sharing: 10% families (shared device/address), 12% hostel/PG/office address hubs (Zipf-sized), carrier IP blocks. Observed label: **first-payment default (FPD)**, which mixes fraud with genuine credit stress (3% of good users). |
+| Statistics added (none disclosed) | Permutation test that defaults cluster in communities; hub-pruning sensitivity (collateral damage to good users); feature-tier comparison (individual → 1-hop links → communities → first-week behaviour) with DeLong + Holm; label choice (FPD vs confirmed fraud); batch vs real-time graph (McNemar); cluster-bootstrap precision by community; cost-optimal decline threshold including good-user lifetime value |
+
+### (c) How the industry uses this
+
+Identity-graph fraud detection is standard across Indian lending and BNPL: Simpl, LazyPay, ZestMoney (before its shutdown), Slice, KreditBee and MoneyView all link applications by device, phone, address and bank account. Bureaus offer it as a service (CRIF and TransUnion CIBIL application-fraud consortia; Experian Hunter). The same technique finds collusive merchants (QR fraud), referral abuse and synthetic identities. The hard part everywhere is **not finding rings but not hurting genuine shared households**.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Which new users should be declined (or given a minimal limit) at onboarding, and how many good users is that worth losing? |
+| Analytical | Do graph-community features computed at onboarding identify fraud beyond single-account and direct-link features, without sweeping genuine households and hostels into suspicious clusters? |
+
+**Hypotheses**
+- **H1 (clustering):** H0: defaults are spread over communities as if at random (label permutation test).
+- **H2 (tiers):** H0: AUC(+ communities) = AUC(+ 1-hop links), and AUC(+ 1-hop) = AUC(individual) (DeLong, Holm).
+- **H3 (real time):** H0: an hourly-updated graph catches the same frauds as a nightly-batch graph at a fixed decline budget (McNemar).
+- **H4 (labels):** training on FPD vs true fraud labels gives the same fraud recall (reported descriptively; true fraud labels exist only in the simulation).
+
+**Primary metric:** recall of fraudsters at a fixed decline budget (1% of applicants). **Guardrail ("impact on good users"):** good users declined per fraudster stopped, and the share of genuine users placed in suspicious communities. **Decision metric:** total ₹ cost (fraud loss + credit loss + lost good-user value). **Design:** train on users onboarded in weeks 1–7, **test on weeks 9–13**. Every graph feature uses only users onboarded **before** the applicant.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.stats import rankdata
+from scipy.sparse import coo_matrix
+from scipy.sparse.csgraph import connected_components
+from sklearn.ensemble import HistGradientBoostingClassifier as HGB
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.metrics import roc_auc_score, average_precision_score
+from statsmodels.stats.proportion import proportion_confint
+from statsmodels.stats.contingency_tables import mcnemar
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public BNPL / application-fraud data with shared identity attributes | **None.** Lending applications are personal data (DPDP Act); public credit sets (UCI German/Taiwan) have no identity links. Elliptic/Bitcoin graph data is unrelated (crypto transactions). |
+| **Decision** | Synthetic onboarding data with rings and genuine sharing (D-10-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs10.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs10.py
+
+#%% code
+os.makedirs("data/cs10", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs10 as gen; importlib.reload(gen)
+raw = gen.generate(seed=SEED); raw.to_csv("data/cs10/users.csv.gz", index=False)
+print(f"{len(raw):,} rows | {raw.user_id.nunique():,} unique users")
+raw.drop(columns=["_kind", "_ring"]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Users | 120,000 onboarded over 13 weeks; limits ₹1,500–10,000 | Our assumption; documented 26,000+ merchants |
+| Fraud rings | 70 gangs of 4–40 accounts formed over 3–20 days; re-use of a few devices, addresses, bank accounts (50–95% re-use), sequential email patterns; fresh SIMs; 75–100% of limit spent in week 1; 93% FPD | **Documented** "fraud communities", "identity theft"; sizes ours |
+| Lone fraud / ATO | ≈ 0.4% of users, no links, high spend; 86% FPD | **Documented** "account takeover" |
+| Genuine sharing | 10% families (device + address; half share a bank account); 12% at Zipf-sized hostel/PG/office address hubs; 3,000 carrier IP blocks | Realism: the "good users" problem |
+| Label | FPD = not paid 30 days after the first due date; 3% of genuine users default for credit reasons | Realism |
+| DQ issues | 1,500 users with a placeholder device ID `00000000` (old SDK); 1% missing address; 500 duplicate onboarding events | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("user_id, onboard_ts", "User and onboarding time"), ("device_id, phone_id, email_pattern", "Identity tokens (email_pattern groups look-alike addresses such as rahul.k1@ / rahul.k2@)"),
+    ("address_id, ip_block, repay_bank_acct", "Delivery address, carrier IP block, bank account used for repayment"), ("sim_age_days", "Age of the SIM (fresh SIMs are risky)"),
+    ("credit_limit_inr", "Limit assigned at onboarding"), ("spend_first7d_inr, n_txn_first7d, n_merchants_first7d, night_txn_first7d", "First-week behaviour (known only 7 days after onboarding)"),
+    ("fpd", "First-payment default (the label the lender observes)"), ("_kind, _ring", "HIDDEN truth: genuine / ring / lone_fraud, and ring id (evaluation only)"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs10/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+df = pd.read_csv("data/cs10/users.csv.gz", parse_dates=["onboard_ts"], dtype={"device_id": str})
+dev_counts = df.drop_duplicates("user_id").device_id.value_counts()
+checks = {"duplicate user_id (onboarding events)": int(df.user_id.duplicated().sum()), "placeholder device '00000000'": int((df.device_id == "00000000").sum()),
+          "address missing": int(df.address_id.isna().sum()), "spend > limit": int((df.spend_first7d_inr > df.credit_limit_inr).sum()),
+          "largest device 'family' (before cleaning)": int(dev_counts.iloc[0])}
+print(pd.Series(checks, name="rows").to_string())
+df = df.drop_duplicates("user_id").sort_values("onboard_ts").reset_index(drop=True)
+df.loc[df.device_id == "00000000", "device_id"] = np.nan                          # a placeholder is not a shared device
+df["day"] = (df.onboard_ts - gen.START).dt.total_seconds() / 86400
+df["fraud"] = (df._kind != "genuine").astype(int)
+ATTR = ["device_id", "address_id", "repay_bank_acct", "email_pattern"]
+def static_components(d, D, attrs=ATTR):
+    """Connected components of the user–attribute graph, dropping attribute nodes shared by more than D users."""
+    n = len(d); rows, cols, off = [], [], n
+    for a in attrs:
+        v = d[a].dropna(); deg = v.map(v.value_counts()); v = v[(deg > 1) & (deg <= D)]
+        codes, uniq = pd.factorize(v); rows.append(v.index.values); cols.append(codes + off); off += len(uniq)
+    r, c = np.concatenate(rows), np.concatenate(cols)
+    _, lab = connected_components(coo_matrix((np.ones(len(r)), (r, c)), shape=(off, off)), directed=False)
+    lab = lab[:n]; return lab, pd.Series(lab).map(pd.Series(lab).value_counts()).values
+raw_u = raw.drop_duplicates("user_id").reset_index(drop=True)
+_, s_dirty = static_components(raw_u, 10 ** 9); _, s_clean = static_components(df, 10 ** 9)
+print(f"\nLargest connected community, no pruning: with placeholder device {s_dirty.max():,} users vs cleaned {s_clean.max():,} users")
+print(f"Clean: {len(df):,} users | fraud {df.fraud.mean():.2%} (rings {(df._kind == 'ring').sum()}, lone {(df._kind == 'lone_fraud').sum()}) | FPD {df.fpd.mean():.2%} | "
+      f"share of FPD that is fraud {df.fraud[df.fpd == 1].mean():.0%}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+lab10, size10 = static_components(df, 10)
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.3))
+for k, c_ in (("genuine", "#2a6f97"), ("ring", "#b23a48"), ("lone_fraud", "#e07a1f")):
+    m = (df._kind == k).values; vals, cnt = np.unique(np.clip(size10[m], 1, 40), return_counts=True)
+    axes[0].plot(vals, cnt / m.sum() * 100, "o-", color=c_, label=k)
+axes[0].set_yscale("log"); axes[0].set_xlabel("Size of the user's community (capped at 40)"); axes[0].set_ylabel("% of users (log)"); axes[0].set_title("Rings live in communities of 4–40"); axes[0].legend()
+for k, c_ in (("genuine", "#2a6f97"), ("ring", "#b23a48"), ("lone_fraud", "#e07a1f")):
+    axes[1].hist(np.log10(df.sim_age_days[df._kind == k] + 1), bins=40, density=True, histtype="step", lw=2, color=c_, label=k)
+axes[1].set_xlabel("SIM age (log10 days)"); axes[1].set_ylabel("Density"); axes[1].set_title("Fraud uses fresh SIMs"); axes[1].legend()
+util = df.spend_first7d_inr / df.credit_limit_inr
+for k, c_ in (("genuine", "#2a6f97"), ("ring", "#b23a48"), ("lone_fraud", "#e07a1f")):
+    axes[2].hist(util[df._kind == k], bins=30, range=(0, 1), density=True, histtype="step", lw=2, color=c_, label=k)
+axes[2].set_xlabel("Share of limit spent in the first 7 days"); axes[2].set_ylabel("Density"); axes[2].set_title("Bust-out: fraud maxes out the limit"); axes[2].legend()
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Do defaults cluster in communities more than chance? (permutation test)
+
+**(a) Why?** Before building graph features, we check that the graph carries signal. **Statistic:** among FPD users in communities of size ≥ 2, the share whose community contains **another** FPD user. **Null distribution:** shuffle FPD labels across all users 500 times (keeping the graph fixed). **(b) Assumption:** exchangeability of labels under H0. We use the pruned graph (attribute nodes shared by ≤ 10 users; 7.2 justifies the choice).
+
+#%% code
+def co_default_share(lab, size, y):
+    m = size >= 2; comp_fpd = pd.Series(y[m]).groupby(lab[m]).transform("sum").values
+    return ((comp_fpd >= 2) & (y[m] == 1)).sum() / max((y[m] == 1).sum(), 1)
+y_fpd = df.fpd.values; obs = co_default_share(lab10, size10, y_fpd)
+null = np.array([co_default_share(lab10, size10, RNG.permutation(y_fpd)) for _ in range(500)])
+p_perm = (1 + (null >= obs).sum()) / (1 + len(null))
+obs_g = co_default_share(lab10, size10, ((df.fpd == 1) & (df.fraud == 0)).astype(int).values)
+print(f"FPD users in shared communities whose community has another FPD: observed {obs:.1%} vs permutation mean {null.mean():.1%} (95th pct {np.percentile(null, 95):.1%}); p = {p_perm:.4f}")
+print(f"Same statistic for genuine credit-stress defaults only: {obs_g:.1%} (fraud drives the clustering)")
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Building the graph without punishing good users: hub-pruning sensitivity
+
+**(a) Why?** An address shared by 60 people is a hostel, not a gang. We drop **attribute nodes shared by more than D users** before forming communities, and measure for each D:
+- **Ring coverage:** the share of ring members placed in a community of ≥ 4 users.
+- **Collateral damage:** the share of genuine users placed in such communities.
+- **Ring purity:** the share of ring members' community-mates who are also fraud.
+
+Wilson CIs for the shares.
+
+#%% code
+hp = []; ring = (df._kind == "ring").values; gen_ = (df.fraud == 0).values
+for D in (3, 5, 8, 10, 15, 25, 50, 10 ** 9):
+    lab, size = static_components(df, D); big = size >= 4
+    comp_f = pd.Series(df.fraud.values).groupby(lab).transform("sum").values
+    purity = ((comp_f[ring] - 1) / np.maximum(size[ring] - 1, 1))[big[ring]].mean()
+    g_lo, g_hi = proportion_confint(big[gen_].sum(), gen_.sum(), method="wilson")
+    hp.append(("no pruning" if D > 10 ** 6 else D, big[ring].mean(), big[gen_].mean(), g_lo, g_hi, int(big[gen_].sum()), purity, int(size.max())))
+hp = pd.DataFrame(hp, columns=["max users per attribute (D)", "ring members in community ≥ 4", "genuine users in community ≥ 4", "CI low", "CI high", "genuine users affected", "ring purity", "largest community"]).set_index("max users per attribute (D)")
+fig, ax = plt.subplots(figsize=(8.5, 4.3))
+xs = np.arange(len(hp)); ax.plot(xs, hp.iloc[:, 0] * 100, "o-", color="#b23a48", label="ring members captured (%)")
+ax.plot(xs, hp.iloc[:, 1] * 100 * 10, "s-", color="#2a6f97", label="genuine users swept in (% × 10)")
+ax.set_xticks(xs); ax.set_xticklabels(hp.index.astype(str)); ax.set_xlabel("Hub pruning: max users sharing one attribute (D)"); ax.set_ylabel("%")
+ax.set_title("Pruning hubs protects good users; too much pruning loses rings"); ax.legend(); plt.tight_layout(); plt.show()
+hp.round(4)
+
+#%% md
+**Takeaway:** «O72»
+
+### 7.3 Building features as of onboarding time: nightly batch vs real time
+
+Graph features must use only users who onboarded **before** the applicant. We compute them two ways:
+- **Nightly batch** (Airflow-style): the graph as of midnight. Same-day ring members cannot see each other.
+- **Real time** (Flink-style): the graph updated **hourly**.
+
+For each applicant, we look up the communities its device, address, bank account and email pattern belong to (attributes shared by ≤ 10 earlier users) and add up community size, recent sign-ups (last 14 days), fresh-SIM members and **already-known defaulters** (FPD becomes known 45 days after onboarding).
+
+#%% code
+DPRUNE = 10; t0 = time.time()
+codes = {a: pd.factorize(df[a])[0] for a in ATTR}                                 # -1 = missing
+offs = np.cumsum([0] + [codes[a].max() + 1 for a in ATTR]); N_U = len(df); N_NODE = N_U + offs[-1]
+anode = {a: np.where(codes[a] >= 0, N_U + offs[i] + codes[a], -1) for i, a in enumerate(ATTR)}
+fresh = (df.sim_age_days < 60).values; fpd_known_day = df.day.values + 45
+def graph_features(bin_days):
+    b = np.floor(df.day.values / bin_days).astype(int); out = np.zeros((N_U, 8))
+    for bb in np.unique(b):
+        past = np.flatnonzero(b < bb); cur = np.flatnonzero(b == bb); t_now = bb * bin_days
+        deg = np.zeros(N_NODE, int)
+        for a in ATTR:
+            v = anode[a][past]; deg += np.bincount(v[v >= 0], minlength=N_NODE)
+        for j, a in enumerate(ATTR):                                               # direct (1-hop) sharing counts, unpruned
+            v = anode[a][cur]; out[cur, j] = np.where(v >= 0, deg[np.maximum(v, 0)], 0)
+        if len(past) == 0: continue
+        r, c = [], []
+        for a in ATTR:
+            v = anode[a][past]; keep = (v >= 0) & (deg[np.maximum(v, 0)] + 1 <= DPRUNE); r.append(past[keep]); c.append(v[keep])
+        r, c = np.concatenate(r), np.concatenate(c)
+        _, lab = connected_components(coo_matrix((np.ones(len(r)), (r, c)), shape=(N_NODE, N_NODE)), directed=False)
+        lp = lab[past]; ncomp = lab.max() + 1
+        agg = np.vstack([np.bincount(lp, minlength=ncomp), np.bincount(lp, weights=(df.day.values[past] > t_now - 14).astype(float), minlength=ncomp),
+                         np.bincount(lp, weights=fresh[past].astype(float), minlength=ncomp),
+                         np.bincount(lp, weights=((y_fpd[past] == 1) & (fpd_known_day[past] < t_now)).astype(float), minlength=ncomp)])
+        C = np.full((len(ATTR), len(cur)), -1)
+        for j, a in enumerate(ATTR):
+            v = anode[a][cur]; ok = (v >= 0) & (deg[np.maximum(v, 0)] >= 1) & (deg[np.maximum(v, 0)] + 1 <= DPRUNE)
+            C[j, ok] = lab[v[ok]]
+        for j in range(1, len(ATTR)):                                               # count each community once per applicant
+            for i in range(j): C[j, C[j] == C[i]] = -1
+        tot = np.zeros((4, len(cur)))
+        for j in range(len(ATTR)):
+            ok = C[j] >= 0; tot[:, ok] += agg[:, C[j, ok]]
+        out[cur, 4:] = tot.T
+    return pd.DataFrame(out, columns=["deg_device", "deg_address", "deg_bank", "deg_email", "comm_size", "comm_recent", "comm_fresh_sim", "comm_known_fpd"], index=df.index)
+G_batch = graph_features(1.0); G_rt = graph_features(1 / 24)
+print(f"Graph features built in {time.time() - t0:.0f}s (nightly batch: 91 snapshots; real time: 2,184 hourly snapshots)")
+G_rt.assign(kind=df._kind).groupby("kind").mean().round(2)
+
+#%% md
+**Observation:** «O73»
+
+### 7.4 What does each layer of information add? Individual → 1-hop links → communities → first-week behaviour
+
+**(a) Why?** Each layer costs engineering: 1-hop counts need a lookup table, communities need a graph store, behaviour needs waiting a week. We train the same gradient-boosting model on cumulative feature tiers (training users: weeks 1–7, label = FPD as the lender would) and score test users (weeks 9–13). Evaluation is against **true fraud** with DeLong for adjacent tiers (Holm). Recall at a **1% decline budget** is the business metric.
+**(b)** Tiers 1–3 are available **at onboarding**; tier 4 only after 7 days (useful for limit decisions and collections, too late to stop a bust-out).
+
+#%% code
+df["util7"] = df.spend_first7d_inr / df.credit_limit_inr; df["hour"] = df.onboard_ts.dt.hour
+IND = ["sim_age_days", "credit_limit_inr", "hour"]; HOP = ["deg_device", "deg_address", "deg_bank", "deg_email"]; COM = ["comm_size", "comm_recent", "comm_fresh_sim", "comm_known_fpd"]
+BEH = ["util7", "n_txn_first7d", "n_merchants_first7d", "night_txn_first7d"]
+X = pd.concat([df[IND + BEH], G_rt], axis=1); Xb = pd.concat([df[IND + BEH], G_batch], axis=1)
+TR = (df.day < 49).values; TE = (df.day >= 56).values; yf_te = df.fraud.values[TE]; K1 = int(0.01 * TE.sum())
+def hgb(): return HGB(max_iter=300, learning_rate=0.06, max_leaf_nodes=31, random_state=SEED)
+def delong(y, preds):
+    y = np.asarray(y); pos, neg = preds[:, y == 1], preds[:, y == 0]; m, n = pos.shape[1], neg.shape[1]
+    tx = np.array([rankdata(p) for p in pos]); ty = np.array([rankdata(q) for q in neg]); tz = np.array([rankdata(np.r_[p, q]) for p, q in zip(pos, neg)])
+    aucs = tz[:, :m].sum(1) / m / n - (m + 1) / 2 / n; v01 = (tz[:, :m] - tx) / n; v10 = 1 - (tz[:, m:] - ty) / m
+    return aucs, np.atleast_2d(np.cov(v01)) / m + np.atleast_2d(np.cov(v10)) / n
+def rec_at(p, y=yf_te, k=K1): return y[np.argsort(-p)[:k]].sum() / y.sum()
+TIERS = {"1 individual (SIM age, limit, hour)": IND, "2 + 1-hop sharing counts": IND + HOP, "3 + graph communities": IND + HOP + COM, "4 + first-week behaviour (day 7)": IND + HOP + COM + BEH}
+P = {}
+for nm, f in TIERS.items(): P[nm] = hgb().fit(X.loc[TR, f], df.fpd[TR]).predict_proba(X.loc[TE, f])[:, 1]
+names = list(P); A_, C_ = delong(yf_te, np.vstack([P[n] for n in names]))
+tier = pd.DataFrame({"AUC vs true fraud": A_, "PR-AUC": [average_precision_score(yf_te, P[n]) for n in names], "recall @1% declines": [rec_at(P[n]) for n in names],
+                     "ring recall @1%": [df._kind.values[TE][np.argsort(-P[n])[:K1]].tolist().count("ring") / (df._kind.values[TE] == "ring").sum() for n in names],
+                     "AUC vs FPD (lender's view)": [roc_auc_score(df.fpd.values[TE], P[n]) for n in names]}, index=names)
+pv = [2 * stats.norm.sf(abs(A_[i + 1] - A_[i]) / np.sqrt(C_[i, i] + C_[i + 1, i + 1] - 2 * C_[i, i + 1])) for i in range(len(names) - 1)]
+tier["Δ AUC vs previous tier"] = np.r_[np.nan, np.diff(A_)]; tier["DeLong p (vs previous)"] = np.r_[np.nan, pv]; tier["p_holm"] = np.r_[np.nan, multipletests(pv, method="holm")[1]]
+print(f"Test: {TE.sum():,} applicants, {yf_te.sum()} fraudsters ({(df._kind.values[TE] == 'ring').sum()} ring members); decline budget = {K1} (1%)")
+tier.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O74»
+
+### 7.5 Nightly batch vs real-time graph updates
+
+Same tier-3 model (available at onboarding); features from the nightly graph vs the hourly graph. Paired comparison of the frauds caught at a 1% decline budget (exact McNemar), split by whether the applicant had a ring-mate who signed up **earlier the same day**.
+
+#%% code
+f3 = TIERS["3 + graph communities"]
+p_rt = P["3 + graph communities"]; p_bt = hgb().fit(Xb.loc[TR, f3], df.fpd[TR]).predict_proba(Xb.loc[TE, f3])[:, 1]
+top_rt = np.zeros(TE.sum(), bool); top_rt[np.argsort(-p_rt)[:K1]] = True; top_bt = np.zeros(TE.sum(), bool); top_bt[np.argsort(-p_bt)[:K1]] = True
+fr = yf_te == 1
+mt = mcnemar([[int((top_rt & top_bt & fr).sum()), int((top_rt & ~top_bt & fr).sum())], [int((~top_rt & top_bt & fr).sum()), int((~top_rt & ~top_bt & fr).sum())]], exact=True)
+dte = df[TE]; same_day = dte.groupby(["_ring", np.floor(dte.day)]).cumcount().values > 0; same_day &= (dte._kind == "ring").values
+print(f"Fraud recall @1%: real time {top_rt[fr].mean():.1%} vs nightly batch {top_bt[fr].mean():.1%}; caught only by real time {int((top_rt & ~top_bt & fr).sum())}, "
+      f"only by batch {int((~top_rt & top_bt & fr).sum())}; exact McNemar p = {mt.pvalue:.3g}")
+print(f"Ring members with an earlier same-day ring-mate: {same_day.sum()} — recall real time {top_rt[same_day].mean():.1%} vs batch {top_bt[same_day].mean():.1%}")
+print(f"AUC real time {roc_auc_score(yf_te, p_rt):.4f} vs batch {roc_auc_score(yf_te, p_bt):.4f}")
+
+#%% md
+**Observation:** «O75»
+
+### 7.6 Which label should the model learn? FPD vs confirmed fraud
+
+The lender observes **first-payment default**, and only about a quarter of FPDs are fraud (the rest are genuine credit stress). A fraud team can build a cleaner label by investigating defaulters. We compare a tier-3 model trained on FPD with one trained on **confirmed fraud**, which in practice requires investigation, simulated here by the hidden truth.
+
+#%% code
+p_fr = hgb().fit(X.loc[TR, f3], df.fraud[TR]).predict_proba(X.loc[TE, f3])[:, 1]
+lab_t = pd.DataFrame({"trained on FPD": [roc_auc_score(yf_te, p_rt), rec_at(p_rt), df.fraud.values[TE][np.argsort(-p_rt)[:K1]].mean(), df.fpd.values[TE][np.argsort(-p_rt)[:K1]].mean()],
+                      "trained on confirmed fraud": [roc_auc_score(yf_te, p_fr), rec_at(p_fr), df.fraud.values[TE][np.argsort(-p_fr)[:K1]].mean(), df.fpd.values[TE][np.argsort(-p_fr)[:K1]].mean()]},
+                     index=["AUC vs true fraud", "fraud recall @1%", "precision (fraud) of declines", "share of declines that default (FPD)"])
+a2, c2 = delong(yf_te, np.vstack([p_rt, p_fr])); print(f"DeLong (confirmed-fraud vs FPD label): ΔAUC = {a2[1] - a2[0]:+.4f}, p = {2 * stats.norm.sf(abs(a2[1] - a2[0]) / np.sqrt(c2[0, 0] + c2[1, 1] - 2 * c2[0, 1])):.2g}")
+lab_t.round(4)
+
+#%% md
+**Observation:** «O76»
+
+### 7.7 Precision of declines, counted honestly: cluster bootstrap by community
+
+Declines are **clustered**: if one ring member is declined, its ring-mates often are too. A naive binomial CI treats declines as independent and is too narrow. We bootstrap **communities** (resampling whole connected groups, as of the end of the period) to get a cluster-robust CI for the precision of the 1% decline list.
+
+#%% code
+p_use = p_rt; top = np.argsort(-p_use)[:K1]; dec = df.index[TE][top]
+comm_id = lab10[dec]; hit = df.fraud.values[dec]
+g = pd.DataFrame({"c": comm_id, "h": hit}).groupby("c").h.agg(["sum", "size"])
+bs = []
+for _ in range(2000):
+    s_ = g.iloc[RNG.integers(0, len(g), len(g))]; bs.append(s_["sum"].sum() / s_["size"].sum())
+lo_n, hi_n = proportion_confint(hit.sum(), len(hit), method="wilson")
+print(f"Precision of the {K1} declines: {hit.mean():.1%} | naive Wilson CI {lo_n:.1%}–{hi_n:.1%} | cluster-bootstrap CI {np.percentile(bs, 2.5):.1%}–{np.percentile(bs, 97.5):.1%} "
+      f"({len(g)} distinct communities; largest contributes {g['size'].max()} declines)")
+print(f"Good users declined per fraudster stopped: {(1 - hit).sum() / hit.sum():.2f}")
+
+#%% md
+**Observation:** «O77»
+
+### 7.8 Where to draw the decline line: total cost including good users
+
+**Cost model (D-10-06), per test applicant:**
+- **Approve a fraudster:** lose 90% of the limit (bust-out).
+- **Approve a genuine user who will default for credit reasons:** lose 50% of the limit.
+- **Decline a good user:** lose their 12-month margin, ₹1,200 (interchange-style merchant fees on repeat purchases).
+- **Approve a good user:** that margin is earned (counted as zero cost here).
+
+We sweep the decline share and report frauds stopped, good users lost and net ₹.
+
+#%% code
+LTV = 1200
+lim = df.credit_limit_inr.values[TE]; kind = df._kind.values[TE]; fpd_te = df.fpd.values[TE]
+loss_if_approved = np.where(kind != "genuine", 0.9 * lim, np.where(fpd_te == 1, 0.5 * lim, 0.0)); cost_if_declined = np.where((kind == "genuine") & (fpd_te == 0), LTV, 0.0)
+order = np.argsort(-p_rt); base = loss_if_approved.sum(); rows = []
+for share in (0, 0.0025, 0.005, 0.01, 0.015, 0.02, 0.03, 0.05, 0.08):
+    k = int(share * len(order)); d = np.zeros(len(order), bool); d[order[:k]] = True
+    cost = loss_if_approved[~d].sum() + cost_if_declined[d].sum()
+    rows.append((f"{share:.2%}", k, (d & (kind != "genuine")).sum() / (kind != "genuine").sum(), int((d & (kind == "genuine") & (fpd_te == 0)).sum()), cost / 1e5, (base - cost) / 1e5))
+cc = pd.DataFrame(rows, columns=["decline share", "declines", "fraud recall", "good users declined", "total cost ₹ lakh", "saving vs approve-all ₹ lakh"]).set_index("decline share")
+best = cc["total cost ₹ lakh"].idxmin()
+fig, ax = plt.subplots(figsize=(8.5, 4.3))
+ax.plot(cc["declines"], cc["saving vs approve-all ₹ lakh"], "o-", color="#2a6f97"); ax.axvline(cc.loc[best, "declines"], ls="--", color="grey", label=f"best: decline {best}")
+ax.set_xlabel("Applicants declined in the 5 test weeks"); ax.set_ylabel("Saving vs approving everyone (₹ lakh)"); ax.set_title("Declining more stops fraud, then starts costing good users"); ax.legend()
+plt.tight_layout(); plt.show()
+cc.round(3)
+
+#%% md
+**Takeaway:** «O78»
+
+## 8. ML Section — gradient boosting vs a small neural network
+
+Simpl describes moving from rules to ML to **neural networks**. As a short check (no tuning), we train a small multi-layer perceptron (2 hidden layers, 64-32, early stopping) on the same tier-3 features (log-scaled, standardised) and compare it with gradient boosting.
+
+#%% code
+Xl = np.log1p(X[f3].clip(lower=0))
+mlp = make_pipeline(StandardScaler(), MLPClassifier(hidden_layer_sizes=(64, 32), early_stopping=True, max_iter=300, random_state=SEED)).fit(Xl[TR], df.fpd[TR])
+p_mlp = mlp.predict_proba(Xl[TE])[:, 1]; a3, c3 = delong(yf_te, np.vstack([p_rt, p_mlp]))
+print(f"AUC vs true fraud: gradient boosting {a3[0]:.4f} vs MLP {a3[1]:.4f} (DeLong p = {2 * stats.norm.sf(abs(a3[1] - a3[0]) / np.sqrt(c3[0, 0] + c3[1, 1] - 2 * c3[0, 1])):.2g}); "
+      f"recall @1%: {rec_at(p_rt):.1%} vs {rec_at(p_mlp):.1%}")
+imp = pd.Series({f: roc_auc_score(yf_te, X.loc[TE, f]) for f in f3}).sort_values(ascending=False)
+print("Single-feature AUC vs true fraud (direction-free):"); print(imp.apply(lambda a: max(a, 1 - a)).round(3).to_string())
+
+#%% md
+**Observation:** «O8»
+
+## 9. Business Translation — ₹ impact at scale
+
+#%% code
+weeks_test = (df.day[TE].max() - 56) / 7; SCALE_USERS_MONTH = 5e5                      # assumption: 5 lakh new users a month (D-10-07)
+per_user = lambda lakh: lakh * 1e5 / TE.sum()
+sc = pd.DataFrame({"saving per applicant ₹": [per_user(cc.loc[s, "saving vs approve-all ₹ lakh"]) for s in cc.index],
+                   "₹ crore / month at 5 lakh sign-ups": [per_user(cc.loc[s, "saving vs approve-all ₹ lakh"]) * SCALE_USERS_MONTH / 1e7 for s in cc.index],
+                   "good users declined / month": [cc.loc[s, "good users declined"] / TE.sum() * SCALE_USERS_MONTH for s in cc.index]}, index=cc.index)
+tiers_money = {}
+for nm in names[:3]:
+    d = np.zeros(TE.sum(), bool); d[np.argsort(-P[nm])[:int(0.01 * TE.sum())]] = True
+    tiers_money[nm] = per_user((base - (loss_if_approved[~d].sum() + cost_if_declined[d].sum())) / 1e5) * SCALE_USERS_MONTH / 1e7
+print("Saving at a 1% decline budget by onboarding feature tier (₹ crore / month):"); print(pd.Series(tiers_money).round(2).to_string())
+sc.round(2)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic rings:** real gangs adapt, using fresh devices per account and rented addresses. Graph value decays as rings learn, which is why the 1-hop and community features must be refreshed with new link types (UPI handles, employer IDs, KYC document hashes).
+- **Collateral damage is a fairness issue:** hostels, PGs and joint families are often students and lower-income users. Monitor decline rates for users in shared-address communities, and offer a **lower limit or extra verification** instead of a flat decline.
+- **Label delay:** FPD is known only ~45 days after onboarding, so "known defaulters" in a community lag behind the ring. Investigator-confirmed fraud flags shorten this.
+- **Privacy:** linking identities is processing personal data. It needs a lawful purpose (fraud prevention is a legitimate use under the DPDP Act), data minimisation (hashed attributes) and retention limits.
+- **Latency:** community lookups must fit the documented 70–80 ms SLA. Precompute component IDs in the feature store and update incrementally (union-find) on each onboarding.
+- **Next steps:** (1) shadow-run the tier-3 model for 4 weeks; (2) A/B "decline" vs "₹500 starter limit" for the riskiest 1%; (3) add device-fingerprint and KYC-document links.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Permutation p-value | (1 + #{null ≥ observed}) / (1 + B) |
+| Hub pruning | drop attribute node v if deg(v) > D before computing connected components |
+| Community features | Σ over distinct communities touched by the applicant's attributes (size, recent, fresh SIM, known FPD) |
+| Recall @ budget | frauds among the top k scores / all frauds, k = 1% of applicants |
+| Cluster bootstrap | resample communities with replacement; precision = Σ hits / Σ declines |
+| Total cost | Σ_approved loss + Σ_declined good-user LTV |
+
+| Term | Meaning |
+|---|---|
+| BNPL | Buy now, pay later: short-term checkout credit |
+| Fraud ring / bust-out | A gang of accounts that max out limits and never repay |
+| First-payment default (FPD) | The first instalment is never paid |
+| Graph community | A group of users connected through shared attributes |
+| Hub | An attribute shared by many unrelated people (a hostel address, a carrier IP) |
+| 1-hop link | Directly sharing an attribute with an earlier user |
+| Batch vs real time | Features recomputed nightly vs updated as events arrive |
+| Collateral damage | Good users caught by a fraud control |

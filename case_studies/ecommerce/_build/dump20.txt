@@ -1,0 +1,206 @@
+--- cell 5 (exec 1) ---
+ready
+--- cell 7 (exec 2) ---
+Overwriting data/generate_cs20.py
+--- cell 8 (exec 3) ---
+60,600 rows x 64 columns | generated in 44s
+   customer_id  signup_week             channel  os_ios  device_price_tier  city_tier  signup_hour  signup_dow payment_pref  referral_used  coupon_first_session  \
+0        30627           26                meta       0             2.0000          1           23           2          upi              0                     1   
+1        40402           34             organic       1             2.0000          2            9           6          cod              0                     1   
+2        40105           34                meta       1             2.0000          1           15           4       wallet              0                     1   
+3        32869           28  cashback_affiliate       0             1.0000          3           18           0          upi              1                     1   
+
+   notification_opt_in  location_precise  app_version_bucket  
+0                    1                 0                   2  
+1                    1                 1                   3  
+2                    1                 0                   3  
+3                    0                 1                   2
+--- cell 10 (exec 4) ---
+                                            field(s)                                            meaning
+0                           customer_id, signup_week             Customer and weekly signup cohort 0–51
+1  channel, os_ios, device_price_tier, city_tier,...  Acquisition and device context (known at install)
+2  payment_pref, referral_used, coupon_first_sess...                  Payment and first-session signals
+3  first_session_minutes, sessions_pre, searches_...                    Browsing before the first order
+4  insta_views_grocery / fresh / snacks / persona...                Instamart category affinity (views)
+5  distance_nearest_store_km, pincode_affluence_i...  Geography, socio-economic, risk and support si...
+6                                noise_01 … noise_20        Pure noise (used to test false discoveries)
+7  orders_30d, orders_180d, food_ltv_180d, insta_...  OUTCOMES (never used as features): orders and GOV
+8  _latent_intent, _p_active, _active180, _cleari...  HIDDEN: latent intent, activation probability,...
+--- cell 12 (exec 5) ---
+rows                                  60,600.0000
+duplicate customer rows                  600.0000
+negative LTV (refund booked)              14.0000
+bulk accounts (LTV > ₹1 lakh)             38.0000
+share of all value in bulk accounts        0.1217
+missing device_price_tier              3,638.0000
+missing pincode_affluence_index        2,426.0000
+missing fraud_score                    1,215.0000
+
+Dropped 52 rows (negative refunds and bulk accounts, which are not ordinary new customers). Clean: 59,948 customers | zero 180-day value: 40.0% | zero orders in 30 days: 52.1% | mean LTV ₹1,573 | median ₹436
+Time-ordered split: train weeks 0-35: 41,560 | validation weeks 36-43: 9,246 | test weeks 44-51: 9,142
+--- cell 14 (exec 6) ---
+[image]
+Top 10% of customers = 58.1% of value | top 1% = 16.9% | Gini = 0.754 | best channel ₹2,050 vs worst ₹796
+--- cell 16 (exec 7) ---
+[image]
+Customers with no order in 30 days who still order later: 7,251 (23.2% of the zero-30-day group); they hold 20.3% of all value
+--- cell 18 (exec 8) ---
+Zero 180-day value: 40.0% (95% CI 39.6% to 40.4%)
+Orders per active customer: mean 5.30, variance 57.55, dispersion index 10.86 (Poisson = 1) | max 180
+Gini 0.754 (95% CI 0.751 to 0.757) | top-10% share 58.1% (CI 57.5% to 58.7%)
+Positive values: skewness 6.59; log-values skewness 0.26; Shapiro-Wilk on logs W = 0.993, p = 2.6e-15 | mean/median of positives 2.00
+Spearman(30-day orders, 180-day GOV) = 0.755 (95% CI 0.750 to 0.760); share of top-decile customers with zero orders in 30 days: 20.4%
+                       value
+zero share            0.4000
+dispersion index     10.8570
+Gini                  0.7540
+top-10% share         0.5810
+Spearman 30d vs 180d  0.7550
+--- cell 20 (exec 9) ---
+52 features screened on 41,560 training customers (20 are pure noise)
+                      flagged  of which noise
+uncorrected p < 0.05       33               4
+Holm                       28               0
+Benjamini-Hochberg         30               1
+
+Strongest signals (effect size, BH-adjusted p):
+                           effect (|rho| or sqrt(eta²_H))   p_BH
+feature                                                         
+sessions_pre                                       0.2456 0.0000
+searches_pre                                       0.2309 0.0000
+cart_adds_pre                                      0.2218 0.0000
+cart_value_pre_inr                                 0.2217 0.0000
+pincode_affluence_index                            0.2011 0.0000
+restaurants_viewed                                 0.1906 0.0000
+channel                                            0.1858 0.0000
+first_session_minutes                              0.1755 0.0000
+fraud_score                                       -0.1560 0.0000
+distance_nearest_store_km                         -0.1382 0.0000
+
+Kruskal-Wallis across 6 channels: H = 2150, p = 0
+                    customers  mean value (₹)  relative to organic  Mann-Whitney p  p_holm
+channel vs organic                                                                        
+cashback_affiliate       6665        796.2738              -0.5875          0.0000  0.0000
+google_uac              14945      1,585.7336              -0.1786          0.0000  0.0000
+influencer               6397      1,187.4699              -0.3849          0.0000  0.0000
+meta                    11541      1,526.0691              -0.2095          0.0000  0.0000
+referral                 6108      2,050.1377               0.0620          0.0000  0.0000
+--- cell 22 (exec 10) ---
+63 model features (50 raw + missing flags + channel and payment indicators)
+fitted in 663s | MLP: 13 epochs, 14,498 parameters | smearing factors: OLS 19.08, hurdle 1.62, GBM-log 19.80 | MLP scale 1.99
+Test customers: 9,142 | oracle ceilings: top-decile capture 57.8%, strict diagonal 68.5%, within ±1 83.4% | constant-median MAE ₹1451, constant-mean MAE ₹1807
+                                                    spearman  top_decile_capture  norm_gini  diag_strict  diag_within1    MAE (₹)  MAPE on customers with orders
+1 segment mean (channel x city x OS)                  0.2282              0.1593     0.2596       0.1192        0.3353 1,716.3844                         1.4182
+2 OLS on log value                                    0.4685              0.2970     0.5447       0.1605        0.4138 9,708.5960                         8.7493
+3 hurdle GBM                                          0.4555              0.3169     0.5839       0.1621        0.4141 1,472.2232                         1.2064
+4 GBM on raw value                                    0.4264              0.3125     0.5662       0.1612        0.4014 1,535.7759                         1.2898
+5 GBM on log value                                    0.4606              0.3008     0.5374       0.1581        0.4081 4,137.2214                         4.8142
+6 multi-task MLP (Food + Instamart heads)             0.4523              0.2963     0.5346       0.1605        0.4125 1,423.9379                         0.9328
+7 vendor-like (P(order in 30 days), restricted ...    0.2409              0.1493     0.2736       0.1279        0.3414        NaN                            NaN
+--- cell 24 (exec 11) ---
+Best model by Spearman: 2 OLS on log value
+                                                    Spearman  CI low  CI high  Δ vs best (2 OLS on log v)  Δ CI low  Δ CI high  bootstrap p  p_holm
+model                                                                                                                                              
+1 segment mean (channel x city x OS)                  0.2282  0.2084   0.2467                      0.2404    0.2219     0.2601       0.0025  0.0150
+2 OLS on log value                                    0.4685  0.4514   0.4839                         NaN       NaN        NaN          NaN     NaN
+3 hurdle GBM                                          0.4555  0.4370   0.4721                      0.0129    0.0047     0.0211       0.0075  0.0150
+4 GBM on raw value                                    0.4264  0.4089   0.4441                      0.0421    0.0305     0.0529       0.0025  0.0150
+5 GBM on log value                                    0.4606  0.4435   0.4767                      0.0079    0.0025     0.0130       0.0025  0.0150
+6 multi-task MLP (Food + Instamart heads)             0.4523  0.4350   0.4690                      0.0162    0.0100     0.0227       0.0025  0.0150
+7 vendor-like (P(order in 30 days), restricted ...    0.2409  0.2205   0.2600                      0.2278    0.2101     0.2479       0.0025  0.0150
+--- cell 26 (exec 12) ---
+Calibration on test weeks:
+                                           predicted / actual total  CI low  CI high  calibration slope  slope CI low  slope CI high  p (slope = 1)
+model                                                                                                                                              
+2 OLS on log value                                           6.8467  4.5092  10.4608             0.0007       -0.0002         0.0016         0.0000
+3 hurdle GBM                                                 0.9645  0.9282   1.0039             1.1337        1.0113         1.2560         0.0323
+5 GBM on log value                                           3.1695  3.0113   3.3407             0.1059        0.0858         0.1261         0.0000
+6 multi-task MLP (Food + Instamart heads)                    0.2653  0.2370   0.2990             0.1969        0.0339         0.3599         0.0000
+4 GBM on raw value                                           1.0363  0.9947   1.0764             0.9960        0.8851         1.1069         0.9431
+
+Decile table for 2 OLS on log value:
+decile           1        2        3        4          5          6          7          8          9           10
+pred        91.7000 262.7000 470.5000 725.8000 1,077.5000 1,581.8000 2,326.1000 3,690.7000 6,854.4000 85,380.6000
+act        192.9000 453.5000 693.6000 888.9000 1,028.5000 1,317.1000 1,615.0000 1,956.4000 2,377.6000  4,450.3000
+zero_share   0.8000   0.6000   0.5000   0.5000     0.4000     0.4000     0.3000     0.3000     0.2000      0.1000
+[image]
+--- cell 28 (exec 13) ---
+Best model (2 OLS on log value): Spearman validation 0.469 vs test 0.468 (Fisher z = 0.04, p = 0.967) | PSI of channel mix: train→validation 0.040, train→test 0.056
+
+Spearman by subgroup on test weeks:
+                              test customers  zero-value share  mean value (₹)  Spearman  CI low  CI high
+variable  group                                                                                          
+channel   cashback_affiliate            1100            0.6080        719.4250    0.4080  0.3660   0.4520
+          google_uac                    2262            0.3910      1,518.0840    0.4260  0.3940   0.4610
+          influencer                    1387            0.4940      1,301.8490    0.4410  0.3940   0.4830
+          meta                          1726            0.4070      1,523.3540    0.4370  0.3970   0.4730
+          organic                       1727            0.3350      1,840.4570    0.4500  0.4150   0.4900
+          referral                       940            0.2800      1,970.0930    0.4550  0.3960   0.5060
+city_tier 1                             4068            0.3790      1,830.5290    0.4530  0.4270   0.4770
+          2                             3001            0.4070      1,441.3170    0.4650  0.4340   0.4940
+          3                             2073            0.4920        925.5280    0.4470  0.4150   0.4840
+--- cell 30 (exec 14) ---
+Budget = 25% of the cost of buying all 9,142 opportunities = ₹154,000 (mean clearing price ₹67)
+                                 customers acquired    spend (₹)  GOV per customer (₹)  ROAS (GOV per ₹)  share with zero orders
+flat bid                                 4,553.0000 153,404.3000            1,303.7400           38.6950                  0.4570
+segment-mean pLTV                        4,134.0000 153,860.3000            1,537.4500           41.3090                  0.4070
+model: OLS on log value                  2,630.0000 153,950.6000            2,873.0030           49.0810                  0.1980
+multi-task MLP                           2,664.0000 153,966.2000            2,790.5180           48.2830                  0.2090
+vendor-like (30-day conversion)          4,490.0000 153,974.0000            1,402.2660           40.8910                  0.4360
+oracle (true value)                      2,764.0000 153,953.6000            4,212.9690           75.6370                  0.0000
+
+95% CIs (ROAS, customers acquired):
+                                 ROAS (GOV per ₹) lo  ROAS (GOV per ₹) hi  customers acquired lo  customers acquired hi
+flat bid                                     36.2500              40.9400             4,521.0000             4,595.0500
+segment-mean pLTV                            38.9200              43.7700             4,093.9000             4,182.0200
+model: OLS on log value                      45.6200              52.1700             2,564.9500             2,687.1800
+multi-task MLP                               45.2500              51.2700             2,601.6800             2,729.2200
+vendor-like (30-day conversion)              38.1000              43.2400             4,454.9800             4,528.0500
+oracle (true value)                          72.1900              79.0600             2,705.0000             2,819.0500
+
+Paired differences (model minus other), equal spend:
+                                                            Δ ROAS  CI low  CI high  bootstrap p  Δ customers acquired     CI low     CI high   Δ GOV per customer (₹)  p_holm
+comparison                                                                                                                                                                    
+model: OLS on log value vs flat bid                        10.3860  7.9190  12.5530       0.0050                 -1923 -2,000.0750 -1,868.7500              1,569.2640  0.0200
+model: OLS on log value vs segment-mean pLTV                7.7720  5.7400  10.0050       0.0050                 -1504 -1,584.1250 -1,440.9750              1,335.5530  0.0200
+model: OLS on log value vs vendor-like (30-day conversion)  8.1900  6.1380  10.8480       0.0050                 -1860 -1,935.1750 -1,798.9000              1,470.7380  0.0200
+model: OLS on log value vs multi-task MLP                   0.7980 -0.2500   1.9450       0.1750                   -34    -80.0750      1.0750                 82.4850  0.1750
+
+A/B sample size: SD of value among all test customers ₹3,206 vs mean ₹1,498 (SD/mean 2.1); customers per arm for a 5% difference: 28,778; for 10%: 7,195; Spearman(30-day orders, 180-day value) = 0.76 (a 30-day proxy is imperfect)
+[image]
+--- cell 32 (exec 15) ---
+Trained in 1468s
+                      parameters   food  food_sd  insta  insta_sd  total  total_sd
+setup                                                                             
+multi-task                 14498 0.4191   0.0028 0.4143    0.0030 0.4489    0.0031
+two single-task nets       28930 0.4222   0.0032 0.4134    0.0026 0.4495    0.0016
+
+Parameter ratio multi-task / two nets: 0.50 | per-seed Δ total Spearman (multi-task − separate): [0.0022, 0.0006, -0.0046] | mean -0.0006, paired t-test p = 0.81 (n = 3 seeds, low power)
+
+Permutation importance (drop in R² of log value, test weeks). Top 10:
+fraud_score                 0.0443
+pincode_affluence_index     0.0312
+distance_nearest_store_km   0.0297
+sessions_pre                0.0212
+searches_pre                0.0168
+restaurants_viewed          0.0142
+ch_cashback_affiliate       0.0126
+coupon_first_session        0.0100
+first_session_minutes       0.0065
+cart_value_pre_inr          0.0059
+Noise columns: largest drop 0.0003, mean 0.00000; features with drop > 0.002: 16 of 63
+                      parameters   food  food_sd  insta  insta_sd  total  total_sd
+setup                                                                             
+multi-task                 14498 0.4191   0.0028 0.4143    0.0030 0.4489    0.0031
+two single-task nets       28930 0.4222   0.0032 0.4134    0.0026 0.4495    0.0016
+--- cell 34 (exec 16) ---
+Customers acquired at equal spend: model 2,630, flat 4,553, vendor-like 4,490
+Share of acquired customers who never order within 180 days: model 19.8%, flat 45.7%, vendor-like 43.6%
+                                                 Δ ROAS (GOV per ₹)  extra GOV (₹ crore a year)  extra contribution (₹ crore a year)
+compared with                   scenario                                                                                            
+flat bid                        worst (CI low)               7.9000                  1,583.8000                             126.7000
+                                base (estimate)             10.4000                  2,077.2000                             166.2000
+                                best (CI high)              12.6000                  2,510.5000                             200.8000
+vendor-like (30-day conversion) worst (CI low)               6.1000                  1,227.6000                              98.2000
+                                base (estimate)              8.2000                  1,637.9000                             131.0000
+                                best (CI high)              10.8000                  2,169.7000                             173.6000

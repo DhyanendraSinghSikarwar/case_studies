@@ -1,0 +1,5 @@
+,email,holdout,difference
+customers,67978.0,12022.0,55956.0
+affluent_share,0.148975,0.146066,0.002909
+mean_tenure,5.994992,5.972109,0.022883
+digital_active_share,0.561358,0.562802,-0.001443

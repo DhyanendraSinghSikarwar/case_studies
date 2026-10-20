@@ -1,0 +1,5 @@
+,estimate (days),p_value,what it tests,ci_low,ci_high
+Paired t-test,-0.41,0.6511533165,mean change = 0 (assumes roughly normal changes),-2.2779209808,1.4579209808
+Wilcoxon signed-rank (Hodges-Lehmann estimate),-1.1,0.0026488001,changes symmetric around 0 (pseudo-median = 0),-1.65,-0.55
+Sign test (median change),-1.1,0.0004024506,P(faster) = 50% (direction only),,
+Sign-flip permutation (mean),-0.41,0.85725,"mean change = 0, without normality",,

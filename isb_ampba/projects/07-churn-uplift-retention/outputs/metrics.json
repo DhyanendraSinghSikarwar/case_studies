@@ -1,0 +1,314 @@
+{
+  "churn": {
+    "supplementary_logit_6_snapshots_test_auc": 0.7560709456700274,
+    "models": {
+      "logit": {
+        "auc": 0.7469599898363838,
+        "pr_auc": 0.5226344911316477,
+        "ks": 0.3816710073776964,
+        "brier": 0.17643769384729854,
+        "mean_pred": 0.3219466532684748,
+        "base_rate": 0.2848402447314752,
+        "cv_auc_train": 0.782506532748244
+      },
+      "rf": {
+        "auc": 0.7474091853680227,
+        "pr_auc": 0.5156490698103889,
+        "ks": 0.38153261885532275,
+        "brier": 0.17850588686191637,
+        "mean_pred": 0.3510854726881869,
+        "base_rate": 0.2848402447314752,
+        "cv_auc_train": 0.7770995452453912
+      },
+      "xgb": {
+        "auc": 0.739648084793597,
+        "pr_auc": 0.5141335604499937,
+        "ks": 0.3568223272865868,
+        "brier": 0.18120412528514862,
+        "mean_pred": 0.3333708941936493,
+        "base_rate": 0.2848402447314752,
+        "cv_auc_train": 0.7773111821716796
+      },
+      "lgbm": {
+        "auc": 0.7318915215477736,
+        "pr_auc": 0.5034502568613654,
+        "ks": 0.3374842327831066,
+        "brier": 0.1874356078676987,
+        "mean_pred": 0.33767374951019863,
+        "base_rate": 0.2848402447314752,
+        "cv_auc_train": 0.7665159641077075
+      },
+      "baseline_train_rate": {
+        "auc": 0.5,
+        "brier": 0.21708501410111258,
+        "mean_pred": 0.40050672383550967,
+        "base_rate": 0.2848402447314752
+      },
+      "champion_calibrated": {
+        "auc": 0.7457122244707206,
+        "pr_auc": 0.5175968995752744,
+        "ks": 0.38539615416027656,
+        "brier": 0.177191155063103,
+        "mean_pred": 0.319390730702619,
+        "base_rate": 0.2848402447314752
+      }
+    },
+    "cv_auc_train": {
+      "logit": 0.782506532748244,
+      "rf": 0.7770995452453912,
+      "xgb": 0.7773111821716796,
+      "lgbm": 0.7665159641077075
+    },
+    "champion": "logit",
+    "tree_champion_for_shap": "xgb",
+    "snapshots": [
+      {
+        "asof": "2010-12-01",
+        "split": "pilot_hist",
+        "n_eligible": 1999,
+        "churn_rate": 0.48624312156078037
+      },
+      {
+        "asof": "2011-01-01",
+        "split": "pilot_hist",
+        "n_eligible": 1962,
+        "churn_rate": 0.481651376146789
+      },
+      {
+        "asof": "2011-02-01",
+        "split": "pilot_hist",
+        "n_eligible": 1863,
+        "churn_rate": 0.46162104133118625
+      },
+      {
+        "asof": "2011-03-01",
+        "split": "train",
+        "n_eligible": 1822,
+        "churn_rate": 0.4264544456641054
+      },
+      {
+        "asof": "2011-04-01",
+        "split": "train",
+        "n_eligible": 1758,
+        "churn_rate": 0.4118316268486917
+      },
+      {
+        "asof": "2011-05-01",
+        "split": "train",
+        "n_eligible": 1551,
+        "churn_rate": 0.35718891038039974
+      },
+      {
+        "asof": "2011-08-01",
+        "split": "test",
+        "n_eligible": 1471,
+        "churn_rate": 0.2848402447314752
+      }
+    ],
+    "checks": {
+      "features_before_asof_enforced": true,
+      "label_windows_do_not_overlap": true,
+      "no_nan_features": true,
+      "recency_in_lookback": true,
+      "n_features": 13
+    },
+    "shap_top5": {
+      "tenure_days": 0.429500013589859,
+      "frequency_6m": 0.34459999203681946,
+      "ipt_mean": 0.32420000433921814,
+      "ipt_std": 0.3111000061035156,
+      "recency_days": 0.22110000252723694
+    },
+    "calibration_gap_test": {
+      "mean_pred_calibrated": 0.319390730702619,
+      "observed_rate": 0.2848402447314752
+    },
+    "n_train_rows": 5131,
+    "n_test_rows": 1471,
+    "n_customers_in_train_and_test": 1126
+  },
+  "uplift": {
+    "selected_learner": "S",
+    "selection_rule": "highest grouped-CV Qini on the training pilot",
+    "cv_qini_train": {
+      "S": 541225.6322027976,
+      "T": 370994.0594015834,
+      "X": 389662.03551613353,
+      "TO": -21312.019221165916,
+      "CT": 245597.79496182548
+    },
+    "learners": {
+      "S": {
+        "qini": 6306.662430830289,
+        "qini_ci95": [
+          -7887.333097357012,
+          21115.2471983
+        ],
+        "qini_pct_of_oracle": 107.41634556926361,
+        "auuc": 0.017657251180863996,
+        "uplift_at_30": 0.09583659028263458,
+        "tau_recovery": {
+          "pearson": 0.7877135966319119,
+          "spearman": 0.7904789094308315,
+          "rmse": 0.03739078978798042
+        },
+        "cv_qini_train": 541225.6322027976
+      },
+      "T": {
+        "qini": 2760.505355762387,
+        "qini_ci95": [
+          -12379.469917052447,
+          17285.193091818026
+        ],
+        "qini_pct_of_oracle": 47.01748357273935,
+        "auuc": 0.016018426019926615,
+        "uplift_at_30": 0.10568570134628841,
+        "tau_recovery": {
+          "pearson": 0.664468840095367,
+          "spearman": 0.5740140681348631,
+          "rmse": 0.06646307608289498
+        },
+        "cv_qini_train": 370994.0594015834
+      },
+      "X": {
+        "qini": -629.3596281916034,
+        "qini_ci95": [
+          -14767.64419372468,
+          14286.1623675976
+        ],
+        "qini_pct_of_oracle": -10.719380028759893,
+        "auuc": 0.014451829868012502,
+        "uplift_at_30": 0.07767570239762711,
+        "tau_recovery": {
+          "pearson": 0.7028601344698413,
+          "spearman": 0.6649546536448913,
+          "rmse": 0.05014063773390072
+        },
+        "cv_qini_train": 389662.03551613353
+      },
+      "TO": {
+        "qini": -913.4900284553041,
+        "qini_ci95": [
+          -15828.564083902666,
+          12269.01853863704
+        ],
+        "qini_pct_of_oracle": -15.558746269809962,
+        "auuc": 0.014320521513903442,
+        "uplift_at_30": 0.03142386152895116,
+        "tau_recovery": {
+          "pearson": 0.30148750399955665,
+          "spearman": 0.34672685493611555,
+          "rmse": 0.11936138802233977
+        },
+        "cv_qini_train": -21312.019221165916
+      },
+      "CT": {
+        "qini": -5308.833136622554,
+        "qini_ci95": [
+          -17024.62250226475,
+          10159.418485302856
+        ],
+        "qini_pct_of_oracle": -90.42111592738763,
+        "auuc": 0.012289252530569061,
+        "uplift_at_30": 0.04112554112554112,
+        "tau_recovery": {
+          "pearson": 0.5431294696594129,
+          "spearman": 0.5345190261836769,
+          "rmse": 0.07714661366385366
+        },
+        "cv_qini_train": 245597.79496182548
+      },
+      "oracle": {
+        "qini": 5871.231605774246,
+        "qini_ci95": [
+          -7862.833103303101,
+          20880.704778323292
+        ],
+        "qini_pct_of_oracle": 100.00000000000001,
+        "auuc": 0.017456020672219394,
+        "uplift_at_30": 0.09302995391705071
+      },
+      "random": {
+        "qini": -1019.4124821069017,
+        "qini_ci95": [
+          -16056.677794782856,
+          10531.834009653969
+        ],
+        "qini_pct_of_oracle": -17.362838848059216,
+        "auuc": 0.014271570387803328,
+        "uplift_at_30": 0.07472518423977925
+      },
+      "risk_only": {
+        "qini": 2737.4799120587013,
+        "qini_ci95": [
+          -10765.800605044733,
+          17440.705246296522
+        ],
+        "qini_pct_of_oracle": 46.625309575020694,
+        "auuc": 0.016007785014555295,
+        "uplift_at_30": 0.06892147977259622
+      }
+    }
+  },
+  "policy": {
+    "table": [
+      {
+        "policy": "random",
+        "n_treated": 441,
+        "total_offer_cost_inr": 110250.0,
+        "profit_inr": 802532.3833738118,
+        "pct_of_oracle": 28.650244284013887
+      },
+      {
+        "policy": "all",
+        "n_treated": 1471,
+        "total_offer_cost_inr": 367750.0,
+        "profit_inr": 2751518.299082808,
+        "pct_of_oracle": 98.2286485303582
+      },
+      {
+        "policy": "risk_top_k",
+        "n_treated": 441,
+        "total_offer_cost_inr": 110250.0,
+        "profit_inr": 1275672.891030658,
+        "pct_of_oracle": 45.5412650152196
+      },
+      {
+        "policy": "clv_top_k",
+        "n_treated": 441,
+        "total_offer_cost_inr": 110250.0,
+        "profit_inr": 602721.1821668508,
+        "pct_of_oracle": 21.517024685827028
+      },
+      {
+        "policy": "uplift_top_k",
+        "n_treated": 441,
+        "total_offer_cost_inr": 110250.0,
+        "profit_inr": 1351338.620158495,
+        "pct_of_oracle": 48.24251628975016
+      },
+      {
+        "policy": "profit_optimal",
+        "n_treated": 1098,
+        "total_offer_cost_inr": 274500.0,
+        "profit_inr": 2584617.0303898673,
+        "pct_of_oracle": 92.27030688779135
+      },
+      {
+        "policy": "oracle",
+        "n_treated": 1214,
+        "total_offer_cost_inr": 303500.0,
+        "profit_inr": 2801136.267524269,
+        "pct_of_oracle": 100.00000000000001
+      },
+      {
+        "policy": "risk_threshold_m2",
+        "n_treated": 1372,
+        "total_offer_cost_inr": 343000.0,
+        "profit_inr": 2770631.317862586,
+        "pct_of_oracle": 98.91097944732822
+      }
+    ],
+    "uplift_policy_pct_of_oracle": 92.27030688779135
+  }
+}

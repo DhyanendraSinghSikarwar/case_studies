@@ -1,0 +1,13 @@
+field(s),meaning
+"offers: comp_id, product_id, seller_id",One row per offer in one Buy Box competition (a product page at one time)
+"price_inr, shipping_inr, delivery_days","Offer price, shipping fee, promised delivery days"
+"fulfilled_by_marketplace, is_buy_box",FBA-style fulfilment flag; 1 for the offer that won the box
+"competitions: comp_id, product_id, keyword_id, day, n_offers, winner_seller_id",One row per competition
+"sellers: seller_id, seller_type, n_ratings",related / FBA / FBM; lifetime number of ratings
+"reviews_12m, low_rated_12m, struck_low_12m","12-month reviews, low-rated reviews, low-rated reviews struck through"
+"pos_feedback_reported, avg_rating_reported",Metrics as displayed (struck reviews excluded)
+"pos_feedback_rectified, avg_rating_rectified",Metrics recomputed from all reviews (what the audit recomputed)
+"late_ship_rate, defect_rate, cancel_rate","Platform-internal performance rates (not visible to an outside auditor; used only in the redesign, 7.8)"
+"survey: arm, participant_id, task_comp_id, option","One row per displayed option; arms S1_control, T0_control, T1_hide_n, T2_rectified_no_n, T3_rectified_with_n"
+"is_related, price_premium_pct, fast_delivery, avg_rating_shown, pos_pct_shown, n_ratings_shown, chosen",Option features as shown (n_ratings_shown empty when hidden); 1 for the first-preference vote
+"_true_pos_rate, _strike_prob, HID","HIDDEN: true positive rate, strike probability, hidden winner and respondent weights (used only to grade the audit)"

@@ -1,0 +1,13 @@
+# Versions used to execute all 30 notebooks (Python 3.12, Windows 11)
+pandas==2.3.3
+numpy==2.4.1
+scipy==1.16.3
+statsmodels==0.14.6
+scikit-learn==1.8.0
+matplotlib==3.10.8
+seaborn==0.13.2
+xgboost==3.2.0          # Case 11 (02_msme_credit_scoring) only
+# notebook execution
+nbconvert==7.17.1
+nbformat==5.11.1
+ipykernel==7.1.0

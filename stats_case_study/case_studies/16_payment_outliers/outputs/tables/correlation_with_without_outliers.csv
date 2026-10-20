@@ -1,0 +1,5 @@
+sample,n,"Pearson r (amount, customer's usual)",Spearman ρ,"Pearson r (log amount, log usual)"
+all payments,20230,0.3042741723,0.9328421879,0.9413413337
+without rule-identified errors,20190,0.812504082,0.9356600347,0.947357499
+without rule-identified errors and fraud,20132,0.8210498375,0.9366000943,0.9484899935
+legitimate payments only (truth),20130,0.8210510505,0.9366709717,0.9485519959

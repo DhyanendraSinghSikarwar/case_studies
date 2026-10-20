@@ -1,0 +1,4 @@
+,odds ratio for 'after',ci_low,ci_high,p_value
+crude: approved ~ after,0.837045691,0.795055374,0.8812536984,0.0
+adjusted for risk band,1.4469108105,1.3584093055,1.5411782627,0.0
+adjusted for risk band and channel,1.4515655442,1.3563655199,1.5534474285,0.0

@@ -1,0 +1,20 @@
+ready
+cell 5: 57s
+142,374 order rows | 141,974 unique orders | 60 days | generated in 24s
+cell 8: 25s
+cell 10: 0s
+duplicate order rows                                  400
+missing delivery outcome                              150
+distance unit errors (> 5× lane median)                60
+orders on a holiday or Sunday delivered with D = 0      0
+
+Clean: 141,824 orders | days 0-59 | HRD orders 31,280 (22.1%) | median D 3 | D range 1-18
+Share of orders by D (days): {1: '1.2%', 2: '18.8%', 3: '34.0%', 4: '24.5%', 5: '12.6%', 6: '5.3%', 7: '2.0%', 8: '1.0%', 9: '0.4%'}
+cell 12: 0s
+            mean D   sd D  p95 D
+period                          
+BAU         3.4600 1.3100 6.0000
+HRD (sale)  4.0600 1.5700 7.0000
+post-HRD    3.9900 1.4500 7.0000
+Corr(D, distance) = 0.48; Corr(D, 3PL) = 0.22; Corr(D, vendor item) = 0.37
+cell 14: 4s

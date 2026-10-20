@@ -1,0 +1,381 @@
+#%% md
+# Case Study 23 — What Is This Payment *For*? Classifying Transaction Purpose from Messy Bank Narrations, and Proving It Is Worth Something
+
+**Priority:** ★ Optional · **Reference:** Case Study 23 — *YES Bank: transaction-purpose and demographic classification* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Analytics, Retail Products / Cross-sell, Loyalty programme, Data Engineering
+**Data:** ⚠️ **SYNTHETIC** (D-23-01). Bank narrations are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs23_transaction_purpose_classification.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+Every bank statement line has a short, messy **narration**:
+- "UPI/4123…/ghar kiraya oct/ramesh.k@okhdfc"
+- "NACH DR TP ACH BAJAJFIN 4567"
+- "NEFT-SCHOOLFEES-DPS-…"
+
+A human can tell the first is **rent**, the second a **loan EMI** and the third **school fees**. If a model can too, for millions of transactions a day, the bank learns life facts about its customers: who rents (a home-loan prospect), who has school-going children (education loans, child plans), who invests monthly (wealth products). YES Bank built neural networks to do this, to "treat every customer as a segment".
+
+Two questions for leaders:
+1. **How accurately** can purpose be read from narrations, and how much labelled data does that need?
+2. **Is it worth it?** Do the inferred life events actually improve targeting of loan offers?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What YES Bank did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | Data spread across federated marts, no single customer view; the bank wanted to treat "every customer as a segment" |
+| Question | "What is each transaction *for* (rent, school fees, etc.), and what does that say about the customer?" |
+| Data | 100+ applications; clickstreams, logs, emails, SMS, push notifications, transactions |
+| Approach | Unify data in a lake → engineer about **1,000 features** → a **neural network for transaction purpose** → a separate neural network for demographic classification |
+| Statistics / accuracy | **ND** |
+| Impact | "100s of TB analyzed daily"; "**$250,000 saved annually**" from the in-house loyalty programme |
+
+**Source:** Cloudera customer story, YES Bank (undated) — link in the reference file.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 8,000 customers × 6 months ≈ 240,000 debit transactions with realistic narrations (UPI/NACH/NEFT/IMPS/POS formats, Hinglish, abbreviations, typos, truncation, generic remarks) across **14 purposes**. A hand-labelled 12% sample (with **5% labelling errors**) and a clean, audited 4% test set. Customer outcomes: took a home loan / an education loan in the next 6 months. |
+| Statistics added | Keyword-rule baseline vs **TF-IDF character n-grams + logistic regression** vs a **neural network (MLP)**; macro-F1 and per-class F1 with bootstrap CIs; **McNemar** (Holm); learning curve (labels needed); label-noise audit and its effect; calibration (ECE) and **abstention**; confusion analysis; **downstream value test**: do inferred rent/school-fee signals improve loan-propensity AUC (DeLong) and top-decile lift? |
+
+### (c) How the industry uses this
+
+Transaction categorisation underpins Indian banking analytics: personal-finance views in bank apps (HDFC SmartBuy insights, ICICI iMobile spend analysis), Account Aggregator–based underwriting (classifying bank-statement lines into salary, EMI, bounce and rent for lenders like Lendingkart in Case 11), and AML typologies. Fintechs such as Perfios, FinBox and Setu sell it as a service. **The data-science value is in measuring accuracy honestly and proving downstream lift**, not in the classifier itself.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Can we label every transaction's purpose reliably enough to drive cross-sell and loyalty? |
+| Analytical | Which classifier best predicts purpose on an **audited** test set, and do customer-level purpose shares improve loan-uptake prediction? |
+
+**Hypotheses**
+- **H1:** H0: macro-F1(learned model) = macro-F1(keyword rules) (paired bootstrap); McNemar on per-transaction correctness (Holm across model pairs).
+- **H2:** H0: the neural network = logistic regression (McNemar).
+- **H3 (value):** H0: AUC(loan propensity with inferred life-event features) = AUC(without) (DeLong), for home loans and education loans (Holm).
+
+**Primary metric:** **macro-F1** on the audited test set. It weights rare but valuable classes (school fees, rent) equally with common ones (groceries), unlike accuracy. **Business metric:** lift in loan uptake among the top decile targeted.
+
+#%% code
+import sys, warnings, importlib, os, re, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.stats import rankdata
+from scipy.sparse import hstack, csr_matrix
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import f1_score, accuracy_score, confusion_matrix, roc_auc_score
+from statsmodels.stats.proportion import proportion_confint
+from statsmodels.stats.contingency_tables import mcnemar
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public labelled Indian bank narrations | **None.** Statement narrations are personal financial data (DPDP Act, RBI confidentiality). Public "transaction categorisation" sets are US/EU card data (and Kaggle-hosted). |
+| **Decision** | Synthetic narrations in real Indian formats (D-23-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs23.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs23.py
+
+#%% code
+os.makedirs("data/cs23", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs23 as gen; importlib.reload(gen)
+t0 = time.time(); tx_raw, cust = gen.generate(seed=SEED)
+tx_raw.to_csv("data/cs23/transactions.csv.gz", index=False); cust.to_csv("data/cs23/customers.csv.gz", index=False)
+print(f"{len(tx_raw):,} transaction rows | {cust.shape[0]:,} customers | generated in {time.time() - t0:.0f}s")
+tx_raw.sample(8, random_state=SEED)[["narration", "channel", "amount_inr", "label"]]
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Customers / transactions | 8,000 × ~30 debits each over 6 months | Our assumption |
+| Purposes | 14, with life-event classes (rent, school fees, EMI, SIP, insurance) concentrated in customer subgroups (32% renters, 28% parents, 35% borrowers, 22% SIP investors) | **Documented** "rent, school fees, etc." |
+| Narrations | Real Indian formats (UPI/NACH/NEFT/IMPS/POS), Hinglish ("kiraya", "bijli bill"), 15% typos, truncation at 32–60 characters, **12% generic remarks** ("payment", "ok") | Realism |
+| Labels | 12% hand-labelled with 5% errors; 4% audited clean test set; 84% unlabelled | Typical labelling budgets |
+| Outcomes | Home loan (renters 4–5× more likely), education loan (parents ~6× more likely) within 6 months | Our assumption: life events drive product need |
+| DQ issues | 400 duplicate rows; 300 blank narrations (legacy core system) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("txn_id, customer_id", "Transaction and customer"), ("narration", "Raw statement narration (blank for 300 legacy rows)"), ("channel, amount_inr", "Payment rail and amount"),
+    ("split", "labelled (hand-labelled, noisy) / audited_test (clean) / unlabelled"), ("label", "Hand label (blank if unlabelled)"),
+    ("_purpose", "HIDDEN true purpose"), ("customers: monthly_income, age", "Customer profile"), ("took_home_loan_6m, took_education_loan_6m", "Downstream outcomes"),
+    ("_renter, _parent", "HIDDEN true life events"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs23/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+checks = {"duplicate txn_id": int(tx_raw.txn_id.duplicated().sum()), "blank narrations": int((tx_raw.narration.fillna("").str.strip() == "").sum()),
+          "labelled rows with label ≠ true purpose (label noise)": int(((tx_raw.split == "labelled") & (tx_raw.label != tx_raw._purpose)).sum())}
+print(pd.Series(checks, name="rows").to_string())
+tx = tx_raw.drop_duplicates("txn_id").reset_index(drop=True); tx["narration"] = tx.narration.fillna("")
+blank = tx.narration.str.strip() == ""
+lab = tx[(tx.split == "labelled") & ~blank]; aud = tx[(tx.split == "audited_test") & ~blank]
+audit = lab.sample(500, random_state=SEED); k = int((audit.label != audit._purpose).sum()); lo, hi = proportion_confint(k, 500, method="wilson")
+print(f"\nRe-label audit of 500 hand-labelled rows by a senior: {k} disagreements → label error rate {k / 500:.1%} (Wilson {lo:.1%}–{hi:.1%})")
+print(f"Clean: {len(tx):,} transactions | labelled {len(lab):,} · audited test {len(aud):,} · unlabelled {(tx.split == 'unlabelled').sum():,} | blank narrations → class 'unknown' (never guessed)")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(15, 4.6))
+tx[~blank]._purpose.value_counts().sort_values().plot(kind="barh", ax=axes[0], color="#2a6f97"); axes[0].set_xlabel("Transactions"); axes[0].set_ylabel("True purpose")
+axes[0].set_title("Class imbalance: groceries and EMIs dominate, school fees are rare")
+ch = pd.crosstab(tx[~blank]._purpose, tx[~blank].channel, normalize="index") * 100
+sns.heatmap(ch, annot=True, fmt=".0f", cmap="Blues", ax=axes[1], cbar_kws={"label": "% of the purpose's transactions"}); axes[1].set_title("Payment rail is a strong but imperfect clue")
+axes[1].set_xlabel("Channel"); axes[1].set_ylabel("Purpose")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Three classifiers on the audited test set
+
+1. **Keyword rules:** an analyst's list of ~3–5 obvious keywords per class (English spellings), plus "NACH → EMI" when nothing matches. The typical first version in a bank.
+2. **TF-IDF character n-grams (2–5) + logistic regression.** Character n-grams handle typos, truncation and Hinglish ("kiraya", "kiraaya", "rnt"). Channel and log amount are added as features.
+3. **Neural network (MLP, 1 hidden layer of 128)** on the same features, as documented ("a neural network for transaction purpose").
+
+All are trained on the **noisy hand-labelled** set and scored on the **audited** test set. Macro-F1 and accuracy carry bootstrap CIs; **McNemar** compares per-transaction correctness (Holm).
+
+#%% code
+CL = gen.CLASSES
+RULES = {"rent": ["rent"], "school_fees": ["school", "tuition", "fee"], "emi_loan": ["emi", "loan", "bajajfin"], "utilities": ["electricity", "bill", "bescom", "power", "broadband"],
+         "groceries": ["dmart", "grocery", "bigbasket", "fresh"], "fuel": ["petrol", "fuel", "hpcl", "bpcl", "iocl", "oil"], "insurance_premium": ["lic", "insurance", "premium", "life"],
+         "mf_sip": ["sip", "mutual fund", "mf"], "medical": ["pharmacy", "hospital", "clinic", "medic"], "family_transfer": ["papa", "mummy", "family", "maa"],
+         "online_shopping": ["amazon", "flipkart", "myntra"], "dining": ["swiggy", "zomato", "restaurant", "cafe"], "travel": ["irctc", "uber", "ola", "makemytrip", "indigo"],
+         "salary_to_self": ["self", "own"]}
+def rule_predict(s):
+    t = s.lower()
+    for c in ["school_fees", "rent", "mf_sip", "insurance_premium", "emi_loan", "utilities", "fuel", "medical", "groceries", "online_shopping", "dining", "travel", "family_transfer", "salary_to_self"]:
+        if any(k in t for k in RULES[c]): return c
+    return "emi_loan" if t.startswith("nach") else "family_transfer" if t.startswith("upi") else "groceries"
+def clean(s): return re.sub(r"\d{6,}", " ", s.lower())                                   # strip long reference numbers
+vec = TfidfVectorizer(analyzer="char_wb", ngram_range=(2, 5), min_df=3, max_features=60000, sublinear_tf=True, preprocessor=clean).fit(lab.narration)
+CH = sorted(tx.channel.unique())
+def feats(d): return hstack([vec.transform(d.narration), csr_matrix(pd.get_dummies(d.channel).reindex(columns=CH, fill_value=0).values.astype(float)),
+                             csr_matrix(np.log1p(d.amount_inr.values).reshape(-1, 1) / 10)]).tocsr()
+Xl, Xa = feats(lab), feats(aud); yl, ya = lab.label.values, aud._purpose.values
+t0 = time.time()
+lr = LogisticRegression(max_iter=2000, C=5.0).fit(Xl, yl)
+CODE = {c: i for i, c in enumerate(CL)}                                                  # MLP early stopping needs numeric labels (sklearn limitation)
+mlp = MLPClassifier(hidden_layer_sizes=(128,), early_stopping=True, max_iter=40, random_state=SEED).fit(Xl, np.array([CODE[c] for c in yl]))
+P = {"1 keyword rules": np.array([rule_predict(s) for s in aud.narration]), "2 char n-gram TF-IDF + logistic": lr.predict(Xa), "3 neural network (MLP)": np.array(CL)[mlp.predict(Xa)]}
+print(f"Trained in {time.time() - t0:.0f}s on {len(lab):,} labelled transactions ({Xl.shape[1]:,} features)")
+rows = []
+for nm, p in P.items():
+    bs = [f1_score(ya[i], p[i], average="macro") for i in (RNG.integers(0, len(ya), len(ya)) for _ in range(300))]
+    rows.append((nm, accuracy_score(ya, p), f1_score(ya, p, average="macro"), np.percentile(bs, 2.5), np.percentile(bs, 97.5), f1_score(ya, p, average="weighted")))
+res = pd.DataFrame(rows, columns=["model", "accuracy", "macro-F1", "macro-F1 CI low", "macro-F1 CI high", "weighted-F1"]).set_index("model")
+names = list(P); mc = []
+for i in range(3):
+    for j in range(i + 1, 3):
+        a, b = P[names[i]] == ya, P[names[j]] == ya; r = mcnemar([[int((a & b).sum()), int((a & ~b).sum())], [int((~a & b).sum()), int((~a & ~b).sum())]], exact=False, correction=True)
+        mc.append((f"{names[i]} vs {names[j]}", int((a & ~b).sum()), int((~a & b).sum()), r.pvalue))
+mc = pd.DataFrame(mc, columns=["pair", "only first right", "only second right", "McNemar p"]).set_index("pair"); mc["p_holm"] = multipletests(mc["McNemar p"], method="holm")[1]
+display(res.round(4)); mc.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Which purposes are hard? Per-class F1 and the main confusions
+
+#%% code
+best = "2 char n-gram TF-IDF + logistic" if res.loc["2 char n-gram TF-IDF + logistic", "macro-F1"] >= res.loc["3 neural network (MLP)", "macro-F1"] else "3 neural network (MLP)"
+pc = pd.DataFrame({nm: f1_score(ya, p, average=None, labels=CL) for nm, p in P.items()}, index=CL); pc["support"] = pd.Series(ya).value_counts().reindex(CL).values
+cm = pd.DataFrame(confusion_matrix(ya, P[best], labels=CL), index=CL, columns=CL); off = cm.where(~np.eye(len(CL), dtype=bool)).stack().sort_values(ascending=False).head(6)
+fig, ax = plt.subplots(figsize=(10, 7.5))
+sns.heatmap(cm.div(cm.sum(1), axis=0) * 100, annot=True, fmt=".0f", cmap="Blues", ax=ax, cbar_kws={"label": "% of true class"})
+ax.set_xlabel("Predicted purpose"); ax.set_ylabel("True purpose"); ax.set_title(f"Confusion matrix (%), {best}"); plt.tight_layout(); plt.show()
+print("Largest confusions (true → predicted: count):"); print(off.to_string())
+pc.sort_values(best).round(3)
+
+#%% md
+**Takeaway:** «O72»
+
+### 7.3 How many labels are needed? Learning curve
+
+Labelling costs analyst time. We retrain the logistic model on 500 → all labelled transactions and track audited macro-F1.
+
+#%% code
+lc = []
+for n_ in (500, 1000, 2500, 5000, 10000, 20000, len(lab)):
+    sub = lab.sample(n_, random_state=SEED); m = LogisticRegression(max_iter=2000, C=5.0).fit(feats(sub), sub.label); lc.append((n_, f1_score(ya, m.predict(Xa), average="macro")))
+lc = pd.DataFrame(lc, columns=["labelled transactions", "audited macro-F1"]).set_index("labelled transactions")
+fig, ax = plt.subplots(figsize=(8, 4)); ax.plot(lc.index, lc.iloc[:, 0], "o-"); ax.set_xscale("log"); ax.set_xlabel("Labelled training transactions (log scale)"); ax.set_ylabel("Macro-F1 (audited test)")
+ax.set_title("Diminishing returns from more labels"); plt.tight_layout(); plt.show()
+lc.round(4)
+
+#%% md
+**Takeaway:** «O73»
+
+### 7.4 Does 5% label noise hurt?
+
+The same rows are trained once with their noisy hand labels and once with the true labels (possible only in simulation), and evaluated on the audited set (McNemar).
+
+#%% code
+m_clean = LogisticRegression(max_iter=2000, C=5.0).fit(Xl, lab._purpose.values); p_clean = m_clean.predict(Xa)
+a, b = P["2 char n-gram TF-IDF + logistic"] == ya, p_clean == ya
+r = mcnemar([[int((a & b).sum()), int((a & ~b).sum())], [int((~a & b).sum()), int((~a & ~b).sum())]], exact=False, correction=True)
+print(f"Macro-F1: noisy labels {f1_score(ya, P['2 char n-gram TF-IDF + logistic'], average='macro'):.4f} vs clean labels {f1_score(ya, p_clean, average='macro'):.4f}; "
+      f"accuracy {a.mean():.4f} vs {b.mean():.4f}; McNemar p = {r.pvalue:.3g}")
+smp = lab.sample(5000, random_state=1); print(f"Scoring against the NOISY labels instead (in-sample, 5,000 labelled rows) would report accuracy {accuracy_score(smp.label, lr.predict(feats(smp))):.4f}, a distorted number: about 5% of those labels are wrong. Always score on an audited set")
+
+#%% md
+**Observation:** «O74»
+
+### 7.5 Calibration and abstention: label only what we are sure of
+
+Downstream products need **reliable** labels more than complete ones. We check calibration (ECE: expected calibration error) and set an **abstention** rule: assign a purpose only when the model's top probability ≥ τ, otherwise "unknown". We report coverage vs accuracy, with Wilson CIs on accuracy among labelled transactions.
+
+#%% code
+proba = lr.predict_proba(Xa); conf = proba.max(1); pred = lr.classes_[proba.argmax(1)]; corr = pred == ya
+bins = pd.qcut(conf, 10, duplicates="drop"); g = pd.DataFrame({"c": conf, "ok": corr, "b": bins}).groupby("b")
+ece = float((g.size() / len(conf) * (g.c.mean() - g.ok.mean()).abs()).sum())
+rows = []
+for tau in (0.0, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9):
+    m = conf >= tau; lo, hi = proportion_confint(corr[m].sum(), m.sum(), method="wilson")
+    rows.append((tau, m.mean(), corr[m].mean(), lo, hi, f1_score(ya[m], pred[m], average="macro")))
+ab = pd.DataFrame(rows, columns=["min confidence τ", "coverage", "accuracy (covered)", "CI low", "CI high", "macro-F1 (covered)"]).set_index("min confidence τ")
+print(f"Expected calibration error (logistic) = {ece:.3f}")
+ab.round(4)
+
+#%% md
+**Observation:** «O75»
+
+### 7.6 Does it pay off? Life-event signals and loan targeting
+
+We classify all **unlabelled** transactions with the logistic model (abstaining below τ = 0.6) and build customer-level features: the share of a customer's transactions that are rent, school fees, EMI and SIP. Then we predict **home-loan** and **education-loan** uptake in the next 6 months, with income and age as base features. Customers are split 50/50 for training and testing. We compare base-only vs base + life events (DeLong, Holm) and report **top-decile lift**, the share of loan takers captured by targeting the 10% highest-scored customers.
+
+#%% code
+unl = tx[(tx.split != "audited_test") & ~blank]; pu = lr.predict_proba(feats(unl)); keep = pu.max(1) >= 0.6
+unl = unl.assign(pred=np.where(keep, lr.classes_[pu.argmax(1)], "unknown"))
+share = pd.crosstab(unl.customer_id, unl.pred, normalize="index").reindex(columns=CL + ["unknown"], fill_value=0)
+C = cust.set_index("customer_id").join(share[["rent", "school_fees", "emi_loan", "mf_sip"]].add_prefix("sh_")).fillna(0)
+C["l_inc"] = np.log(C.monthly_income); tr = RNG.random(len(C)) < 0.5
+print(f"Inferred renter (rent share > 5%) vs true renter: precision {((C.sh_rent > 0.05) & (C._renter == 1)).sum() / (C.sh_rent > 0.05).sum():.1%}, "
+      f"recall {((C.sh_rent > 0.05) & (C._renter == 1)).sum() / C._renter.sum():.1%}")
+def delong(y, preds):
+    y = np.asarray(y); pos, neg = preds[:, y == 1], preds[:, y == 0]; m, n = pos.shape[1], neg.shape[1]
+    tx_ = np.array([rankdata(p) for p in pos]); ty = np.array([rankdata(q) for q in neg]); tz = np.array([rankdata(np.r_[p, q]) for p, q in zip(pos, neg)])
+    aucs = tz[:, :m].sum(1) / m / n - (m + 1) / 2 / n; v01 = (tz[:, :m] - tx_) / n; v10 = 1 - (tz[:, m:] - ty) / m
+    return aucs, np.atleast_2d(np.cov(v01)) / m + np.atleast_2d(np.cov(v10)) / n
+def lift(y, p, q=0.1): k = int(q * len(y)); return y[np.argsort(-p)[:k]].sum() / y.sum()
+rows = []
+for outcome, extra in (("took_home_loan_6m", ["sh_rent", "sh_emi_loan"]), ("took_education_loan_6m", ["sh_school_fees", "sh_mf_sip"])):
+    base = ["l_inc", "age"]; y_ = C[outcome].values
+    m0 = LogisticRegression(max_iter=2000).fit(C.loc[tr, base], y_[tr]); m1 = LogisticRegression(max_iter=2000).fit(C.loc[tr, base + extra], y_[tr])
+    p0, p1 = m0.predict_proba(C.loc[~tr, base])[:, 1], m1.predict_proba(C.loc[~tr, base + extra])[:, 1]; yt = y_[~tr]
+    a_, c_ = delong(yt, np.vstack([p0, p1])); se = np.sqrt(c_[0, 0] + c_[1, 1] - 2 * c_[0, 1])
+    rows.append((outcome, int(yt.sum()), a_[0], a_[1], a_[1] - a_[0], 2 * stats.norm.sf(abs(a_[1] - a_[0]) / se), lift(yt, p0), lift(yt, p1)))
+dv = pd.DataFrame(rows, columns=["outcome", "test loan takers", "AUC base", "AUC + life events", "Δ AUC", "DeLong p", "top-decile capture base", "top-decile capture + life events"]).set_index("outcome")
+dv["p_holm"] = multipletests(dv["DeLong p"], method="holm")[1]; dv.round(4)
+
+#%% md
+**Observation:** «O76»
+
+## 8. ML Section — logistic vs neural network
+
+The documented choice is a neural network. On sparse character n-gram features, a well-regularised **logistic regression is a strong, fast, explainable baseline**: each class has interpretable n-gram weights. A small MLP adds non-linear combinations. Section 7.1 shows whether that is worth it here. At YES Bank scale (100s of TB, 1,000 features including clickstreams and SMS), neural networks can exploit richer inputs, but they should still be benchmarked against this baseline on an audited set.
+
+#%% code
+top = {}
+for c in ["rent", "school_fees", "family_transfer", "salary_to_self"]:
+    i = list(lr.classes_).index(c); w = lr.coef_[i][: len(vec.vocabulary_)]; inv = {v: k for k, v in vec.vocabulary_.items()}
+    top[c] = ", ".join(repr(inv[j]) for j in np.argsort(-w)[:8])
+pd.Series(top, name="highest-weight character n-grams (logistic)").to_frame()
+
+#%% md
+**Observation:** «O8»
+
+## 9. Business Translation — ₹ impact of life-event targeting
+
+Assumptions (D-23-07):
+- A cross-sell campaign targets the top 10% of 10 lakh customers.
+- Margin per home loan ₹60,000; per education loan ₹25,000.
+- Campaign cost ₹40 per customer contacted.
+
+The value is the extra loan takers reached with life-event features vs without, at the same campaign size.
+
+#%% code
+N_CUST, MARG = 1e6, {"took_home_loan_6m": 60000, "took_education_loan_6m": 25000}
+rows = []
+for o in dv.index:
+    base_rate = C[o].mean(); takers = N_CUST * base_rate; extra = (dv.loc[o, "top-decile capture + life events"] - dv.loc[o, "top-decile capture base"]) * takers
+    rows.append((o, takers, dv.loc[o, "top-decile capture base"] * takers, dv.loc[o, "top-decile capture + life events"] * takers, extra, extra * MARG[o] / 1e7))
+money = pd.DataFrame(rows, columns=["outcome", "loan takers per 10 lakh", "reached (base)", "reached (+ life events)", "extra reached", "extra margin ₹ crore"]).set_index("outcome")
+print(f"Campaign cost (same in both): ₹{N_CUST * 0.1 * 40 / 1e7:.1f} crore per campaign")
+money.round(2)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic narrations:** real narrations vary by bank, rail and merchant aggregator and change over time (new UPI apps, new billers). Re-audit quarterly, and add new classes (e.g., BNPL repayments, crypto exchanges) as they appear.
+- **Privacy and purpose limitation:** inferring life events (rent, children's schooling, medical spending) is sensitive. Under the DPDP Act, use requires a clear purpose and consent. Medical and family-transfer inferences should not drive marketing without explicit opt-in.
+- **Fair lending:** life-event features must not proxy for protected characteristics in credit decisions. They are used here for **marketing** prioritisation, not approval.
+- **Label drift:** P2P transfers labelled "rent" depend on remarks people type. As UPI apps auto-fill remarks, signal quality can change suddenly. Monitor class shares weekly.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Macro-F1 | mean over classes of 2·P·R/(P + R) |
+| Character n-grams | all 2–5-character substrings within word boundaries |
+| ECE | Σ_bins (n_b/N)·|mean confidence − accuracy| |
+| Abstention | predict only if max_c p(c ∣ x) ≥ τ |
+| McNemar | test on transactions where exactly one model is right |
+| Top-decile capture | loan takers in the top 10% of scores / all loan takers |
+
+| Term | Meaning |
+|---|---|
+| Narration | The text description on a bank statement line |
+| NACH / ECS | Auto-debit mandates (EMIs, SIPs, insurance) |
+| UPI remark | Free text the payer types in a UPI payment |
+| Audited test set | Transactions labelled carefully by a senior reviewer, used only for evaluation |
+| Life event | A change such as renting, having school-age children or taking a loan that signals product needs |

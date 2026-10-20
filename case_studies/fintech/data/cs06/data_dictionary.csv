@@ -1,0 +1,17 @@
+column(s),meaning,family
+"txn_id, timestamp, sender_id, receiver_id",Transfer identity and time,transaction
+amount_inr,Transfer amount (₹; UPI P2P cap ₹1 lakh),transaction
+"sender_age_band, sender_city_tier, sender_tenure_days","Sender profile (Profile Store, batch)",sender
+sender_txn_count_7d,Sender's transfers in the last 7 days (real-time aggregate),sender
+amount_to_sender_median,Amount ÷ sender's 30-day median amount,sender × txn
+is_new_payee,First transfer from this sender to this receiver,transaction
+is_collect_request,Receiver-initiated 'collect' request approved by the sender (classic scam vector),transaction
+device_changed_24h,Sender logged in on a new device in the last 24 h (account-takeover signal),sender
+receiver_type_hint,Receiver handle looks business-like vs personal (noisy),receiver
+receiver_tenure_days,Receiver account age (1% missing),receiver
+receiver_distinct_senders_24h,Distinct senders paying this receiver in the last 24 h (velocity),receiver
+receiver_prior_complaints_30d,Complaints against the receiver in the previous 30 days,receiver
+hour,Hour of day,transaction
+"complaint_filed, complaint_reason, complaint_delay_days","Noisy observed label: user complaint, self-reported reason, delay",label
+"audited, audit_outcome","Investigator-confirmed outcome for 2,000 complaints",label
+true_label,"Hidden truth (fraud / dispute / legit), used ONLY for audit and final evaluation",label (simulation only)

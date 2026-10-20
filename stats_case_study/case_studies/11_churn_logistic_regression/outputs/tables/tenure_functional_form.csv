@@ -1,0 +1,4 @@
+,AIC,LR test vs linear
+tenure linear,5381.6391900579,
+log(1 + tenure),5348.821258393,
+spline in tenure (4 df),5332.4422820522,0.0

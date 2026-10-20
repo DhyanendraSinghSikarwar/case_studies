@@ -1,0 +1,5 @@
+,value
+raw model MAE,55084.6332097638
+log model MAE,52394.3662289664
+raw model median abs % error,0.2813689507
+log model median abs % error,0.2584195551

@@ -1,0 +1,10 @@
+quantity,estimate,ci_low / value 2,ci_high
+Raw model: ₹ loan per ₹10k income,26377.7782739429,24544.0146586694,28211.5418892165
+Raw model: R²,0.5900210356,,
+Raw model: RMSE (₹),85896.9490219732,,
+Raw model: slope per ₹10k without 4 capped earners,27212.8344660708,26111.1564892937,28314.5124428478
+Log model: elasticity,0.9193628085,0.885269356,0.9534562609
+Log model: R² (log scale),0.5546855962,,
+Log model: residual SD (log),0.4056707435,,
+"Holdout 80% PI coverage, raw model (lowest / top band)",0.9866666667,0.7066666667,
+"Holdout 80% PI coverage, log model (lowest / top band)",0.86,0.82,

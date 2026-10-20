@@ -1,0 +1,7 @@
+,Value
+Response,"2,058 of 40,000 (5.1%); response rates 1.8%–11.7% across groups"
+Naive result,"mean 7.87 (CI 7.80–7.94), NPS +19"
+Raked result,"mean 7.63, NPS +9; effective sample size 1323 of 2,058"
+Follow-up,7.28 (n = 246) vs 7.87 for respondents; combined estimate 7.31
+Truth,"mean 7.07, NPS −13; including customers who left: 6.83"
+Bias of mean score,naive bias +0.80; raked bias +0.56; IPW bias +0.55

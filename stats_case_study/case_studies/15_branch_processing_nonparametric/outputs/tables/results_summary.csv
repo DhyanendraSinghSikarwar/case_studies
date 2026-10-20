@@ -1,0 +1,6 @@
+,Value
+Branch times,medians 6.0–10.4 days; means 8.1–14.4 (stuck loans)
+Branch tests,ANOVA p = 0.10; Welch p = 0.125; log-ANOVA p = < 0.001; Kruskal-Wallis p = < 0.001 (ε² = 0.16)
+Post-hoc (Dunn),6 of 10 pairs significant (Holm); Panvel and Thane slower than Andheri/Borivali/Vashi
+Workflow change,"mean −0.41 days, median −1.10, Hodges-Lehmann −1.10 days; 18 of 20 officers faster"
+Workflow tests,paired t p = 0.65; Wilcoxon p = 0.003; sign test p = < 0.001; permutation p = 0.86

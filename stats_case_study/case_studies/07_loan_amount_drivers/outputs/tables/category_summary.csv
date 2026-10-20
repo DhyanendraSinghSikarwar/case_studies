@@ -1,0 +1,14 @@
+,,n,median_amount,median_income
+employment_type,Salaried,2521,90000.0,53300.0
+employment_type,Professional,359,140000.0,74200.0
+employment_type,Self-employed,1120,110000.0,58100.0
+loan_purpose,Debt consolidation,1194,90000.0,56200.0
+loan_purpose,Education,372,110000.0,57150.0
+loan_purpose,Home renovation,750,130000.0,56300.0
+loan_purpose,Medical,475,80000.0,55900.0
+loan_purpose,Travel,741,60000.0,56400.0
+loan_purpose,Wedding,468,140000.0,57450.0
+city_tier,Metro,1339,120000.0,67800.0
+city_tier,Tier-1,1068,100000.0,56300.0
+city_tier,Tier-2,1013,80000.0,51300.0
+city_tier,Tier-3,580,70000.0,44250.0

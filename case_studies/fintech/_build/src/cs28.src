@@ -1,0 +1,336 @@
+#%% md
+# Case Study 28 — Speed-to-Lead: How Much Does a Minute Cost? Contact Delay, a Randomised AI-First-Touch Test, and Capacity-Constrained Routing
+
+**Priority:** ★ Optional · **Reference:** Case Study 28 — *Policybazaar (with Ringg AI): AI voice first-touch, qualification and routing* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Sales, Lead Operations, Growth, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-28-01). Lead and call data are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs28_speed_to_lead.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+Someone fills a "get a quote" form. If a sales agent (relationship manager, RM) calls back in **1 minute**, the person is still at the screen. After **10 minutes** they are busy, comparing other sites, or have forgotten. Policybazaar's RMs took **8–12 minutes** to reach a new lead, and each RM could make only about 80 calls a day. The fix was an **AI voice call within 60 seconds** that asks a few questions, qualifies the lead (intent, profile, budget, cover) and routes it: the AI handles simple cases, a human RM takes the promising ones, and the rest get a scheduled callback.
+
+Two things make "faster is better" harder to prove than it sounds:
+1. In normal data, delay is **not random**. Hot leads are called first, and peak hours have long queues.
+2. Capacity is limited: speeding up some leads slows others.
+
+This notebook measures how conversion falls with delay, separates speed from lead quality using a **randomised AI-first-touch test**, and compares routing rules under limited RM capacity.
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Policybazaar did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | RMs took "**8–12 minutes** to reach a new lead, and the lead's intent faded in that time"; each RM made about **80 calls a day** |
+| Question | "Can every lead be contacted within a minute, qualified on intent, profile, budget and coverage, and routed to the right next step?" |
+| Data | Lead forms; call conversations (Hindi / English / Hinglish); **57,000+ connected calls a day** |
+| Approach | AI voice call within 60 seconds of the form → 4-minute structured qualification → routing to AI handling, an RM, or a scheduled callback |
+| Statistics / ML | **ND**; metrics: response time, qualified-lead rate, containment rate |
+| Impact | Response < **60 seconds**; qualified-lead rate **5–7%**; level-0 containment **67%**; routing **67% AI-handled, 7% RM, 26% scheduled callback** |
+
+**Source:** Ringg AI / Policybazaar case study and press coverage (links in the reference file).
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | ≈ 148,000 leads over 6 weeks (motor, health, term life, travel). RM first-contact delay has a median ≈ 10 minutes (queues at 12:00 and 18:00; high-value, high-intent leads jump the queue, so delay is **confounded**). In weeks 4–5 a **random 30%** of leads got an AI call within a minute. Outcomes: reached, qualified, routed, converted. |
+| Statistics added | Delay–conversion curves with Wilson CIs (observational); **confounding by hour and lead quality**; adjusted logistic dose–response; **randomised ITT** with CIs; the **speed effect isolated** and compared with the observational estimate; qualified-rate and routing mix vs documented; **capacity-constrained routing simulation** (queueing, M/M/c), with ₹; power |
+
+### (c) How the industry uses this
+
+"Speed to lead" is a standard growth metric in Indian lead-driven businesses (insurance marketplaces, lending apps, education, real estate). Studies elsewhere (e.g., the well-known "lead response" benchmarks) show conversion falling sharply within the first minutes. AI voice agents (Ringg, Skit.ai, Yellow.ai) and WhatsApp bots now handle the first touch. **The statistics that matter are a clean estimate of the speed effect and an honest capacity model.**
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | What is a minute of delay worth, and should every lead get an immediate AI call? |
+| Analytical | What is the **causal** effect of contacting a lead within a minute on reach and conversion, and how does it compare with what raw data suggest? How should leads be routed when RM capacity is fixed? |
+
+**Hypotheses**
+- **H1 (observational):** H0: conversion does not depend on first-contact delay (trend test across delay bands).
+- **H2 (randomised):** H0: AI-first-touch does not change reach or conversion (two-proportion, ITT).
+- **H3 (confounding):** H0: the adjusted dose–response effect of delay equals the unadjusted one (compare slopes).
+- **H4 (routing):** H0: a capacity-aware routing rule yields the same expected conversions as first-come-first-served (queue simulation, bootstrap).
+
+**Primary metric:** conversion per lead (randomised comparison). **Mechanism:** reach rate. **Guardrail:** AI-handled leads must not convert worse than they would have with an RM.
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import statsmodels.formula.api as smf
+from statsmodels.stats.proportion import proportion_confint, confint_proportions_2indep, proportions_ztest
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public lead-response datasets with first-contact times and conversions | **None** for India. Lead data are confidential; public CRM-style sets (Kaggle lead scoring) have no timestamps of first contact. |
+| **Decision** | Synthetic leads with RM queue delays and a randomised AI-first-touch window (D-28-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs28.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs28.py
+
+#%% code
+os.makedirs("data/cs28", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs28 as gen; importlib.reload(gen)
+raw = gen.generate(seed=SEED); raw.to_csv("data/cs28/leads.csv.gz", index=False)
+print(f"{len(raw):,} lead rows | {raw.lead_id.nunique():,} unique leads")
+raw.drop(columns=["_q"]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Leads | 150,000 over 6 weeks; motor 35% / health 30% / term 20% / travel 15%; peak hours 12:00 and 18:00 | Our assumption |
+| RM delay | Median ≈ 10 min, longer at peaks; high-quality / high-value leads are called sooner (**confounding**) | **Documented** 8–12 min |
+| Reach / conversion | Reach falls with delay (≈ 81% within 1 min, 60% at 10–30 min, 13% after an hour); conversion given reach falls with delay; both rise with lead quality | Our assumption of intent decay |
+| AI test | Weeks 4–5: random 30% of leads get an AI voice call within ~1 minute | **Documented** < 60 seconds; our design |
+| Routing | AI-touched leads: no answer → retry; qualified → RM hand-off; otherwise AI-handled (72%) or a scheduled callback | **Documented** categories |
+| DQ issues | 800 duplicate leads; 1,500 missing delay timestamps; 300 negative delays (clock skew) | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("lead_id, day, hour, product", "Lead, day 1–42, form-fill hour, product"), ("ai_first_touch", "Randomised (days 22–35): AI voice call within a minute"),
+    ("first_contact_delay_min", "Minutes from form to first contact attempt (missing / negative = bad timestamp)"), ("reached", "Lead answered"), ("qualified", "AI qualification passed (AI-touched, reached)"),
+    ("route", "ai_handled / rm_handoff / scheduled_callback / no_answer_retry"), ("converted", "Policy purchased"), ("_q", "HIDDEN lead quality"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs28/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+checks = {"duplicate leads": int(raw.lead_id.duplicated().sum()), "missing delay timestamp": int(raw.drop_duplicates("lead_id").first_contact_delay_min.isna().sum()),
+          "negative delay (clock skew)": int((raw.drop_duplicates("lead_id").first_contact_delay_min < 0).sum())}
+print(pd.Series(checks, name="rows").to_string())
+df = raw.drop_duplicates("lead_id").copy(); df = df[df.first_contact_delay_min.notna() & (df.first_contact_delay_min >= 0)].reset_index(drop=True)
+df["log_delay"] = np.log1p(df.first_contact_delay_min); df["peak"] = df.hour.isin([11, 12, 13, 17, 18, 19]).astype(int)
+exp = df[(df.day >= 22) & (df.day <= 35)].copy(); obs = df[df.ai_first_touch == 0].copy()
+print(f"\nClean: {len(df):,} leads | randomised window (days 22–35): {len(exp):,} ({exp.ai_first_touch.mean():.1%} AI) | RM-queue leads: {len(obs):,} | median RM delay {obs.first_contact_delay_min.median():.1f} min")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.5))
+obs["band"] = pd.cut(obs.first_contact_delay_min, [0, 1, 3, 5, 10, 20, 30, 60, 1e4], labels=["<1", "1–3", "3–5", "5–10", "10–20", "20–30", "30–60", "60+"])
+g = obs.groupby("band", observed=True).agg(reach=("reached", "mean"), conv=("converted", "mean"), n=("lead_id", "size"))
+axes[0].plot(g.index.astype(str), g.reach * 100, "o-", color="#2a6f97", label="reached"); ax2 = axes[0].twinx(); ax2.plot(g.index.astype(str), g.conv * 100, "s-", color="#b23a48", label="converted"); ax2.set_ylabel("Converted (%)"); ax2.grid(False)
+axes[0].set_xlabel("Minutes until the first contact attempt"); axes[0].set_ylabel("Reached (%)"); axes[0].set_title("Reach and conversion fall with delay (observational)")
+hr = obs.groupby("hour").first_contact_delay_min.median(); axes[1].plot(hr.index, hr.values, "o-", color="#e07a1f"); axes[1].set_xlabel("Hour the form was filled"); axes[1].set_ylabel("Median RM delay (minutes)"); axes[1].set_title("RM queues peak at lunch and early evening")
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Conversion by delay band (observational, RM queue)
+
+For leads handled by RMs: reach and conversion rates per delay band with Wilson CIs, and a **Cochran–Armitage trend test** across bands.
+
+#%% code
+rows = []
+for b, r in g.iterrows():
+    sub = obs[obs.band == b]; lo, hi = proportion_confint(sub.converted.sum(), len(sub), method="wilson"); rows.append((b, len(sub), r.reach, sub.converted.mean(), lo, hi))
+bt = pd.DataFrame(rows, columns=["delay band (min)", "leads", "reach rate", "conversion", "CI low", "CI high"]).set_index("delay band (min)")
+n_, s_ = bt.leads.values, (bt.conversion * bt.leads).values; x = np.arange(len(bt)); p = s_.sum() / n_.sum(); xb = (x * n_).sum() / n_.sum()
+T = (x * (s_ - n_ * p)).sum() / np.sqrt(p * (1 - p) * (n_ * (x - xb) ** 2).sum())
+print(f"Cochran–Armitage trend of conversion across delay bands: z = {T:.1f}, p = {2 * stats.norm.sf(abs(T)):.2g}")
+print(f"Conversion: within 3 minutes {obs[obs.first_contact_delay_min <= 3].converted.mean():.2%} vs 10–30 minutes {obs[(obs.first_contact_delay_min > 10) & (obs.first_contact_delay_min <= 30)].converted.mean():.2%}")
+bt.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Is the delay effect confounded? Adjusted dose–response
+
+**(a)** Delay is partly determined by hour (queues) and by lead quality (hot leads were called first). We fit logistic models of conversion on log-delay:
+1. **Unadjusted.**
+2. **Adjusted** for hour of day (peak flag) and product.
+3. We cannot observe lead quality in practice, but in the simulation we can show **what happens when it is added** (an oracle check).
+
+The odds ratio per doubling of delay and the comparison of slopes address H3.
+
+#%% code
+m0 = smf.logit("converted ~ log_delay", data=obs).fit(disp=0); m1 = smf.logit("converted ~ log_delay + peak + C(product) + C(hour)", data=obs).fit(disp=0)
+m2 = smf.logit("converted ~ log_delay + peak + C(product) + C(hour) + _q", data=obs).fit(disp=0)
+def orr(m): b, ci = m.params["log_delay"], m.conf_int().loc["log_delay"]; return np.exp(b * np.log(2)), np.exp(ci[0] * np.log(2)), np.exp(ci[1] * np.log(2))   # per doubling of (1 + delay) approx
+res = pd.DataFrame([orr(m0), orr(m1), orr(m2)], columns=["OR per doubling of delay", "CI low", "CI high"], index=["1 unadjusted", "2 + hour, product", "3 + true lead quality (oracle, not observable)"])
+print("Odds of conversion fall by " + " / ".join(f"{(1 - r) * 100:.0f}%" for r in res.iloc[:, 0]) + " per doubling of delay in the three models")
+res.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O72»
+
+### 7.3 The randomised AI-first-touch test
+
+**(a) Design:** in days 22–35 a random 30% of leads received an AI call within ~1 minute (median 40 seconds). Everyone else followed the RM queue. Because assignment is random, a plain comparison is causal. **Checks:** sample-ratio, and balance on hour, product and lead mix.
+**Tests:** two-proportion z (Newcombe CI) for **reach** and **conversion**, relative lift with log-RR CI, and the effect within **pre-treatment subgroups** (peak vs off-peak hour, product; Holm) to see who benefits most. (Comparing the AI group with control leads grouped by their *delay* would be wrong: fast-called RM leads are the hot ones, so that is selection.)
+
+#%% code
+a, b = exp[exp.ai_first_touch == 1], exp[exp.ai_first_touch == 0]
+srm = stats.binomtest(len(a), len(exp), 0.30); bal = pd.DataFrame({"AI": a[["hour", "peak"]].mean(), "RM": b[["hour", "peak"]].mean()})
+print(f"Assignment: {len(a):,} AI vs {len(b):,} RM ({len(a) / len(exp):.1%}; binomial test vs 30%: p = {srm.pvalue:.2f}) | mean hour {a.hour.mean():.2f} vs {b.hour.mean():.2f}; product mix identical by design")
+rows = []
+for o in ("reached", "converted"):
+    x1, n1, x0, n0 = a[o].sum(), len(a), b[o].sum(), len(b); lo, hi = confint_proportions_2indep(x1, n1, x0, n0, method="newcomb"); z, p = proportions_ztest([x1, x0], [n1, n0])
+    rr = (x1 / n1) / (x0 / n0); se = np.sqrt(1 / x1 - 1 / n1 + 1 / x0 - 1 / n0)
+    rows.append((o, x0 / n0, x1 / n1, (x1 / n1 - x0 / n0) * 100, lo * 100, hi * 100, rr, np.exp(np.log(rr) - 1.96 * se), np.exp(np.log(rr) + 1.96 * se), p))
+rt = pd.DataFrame(rows, columns=["outcome", "RM queue", "AI first touch", "diff (pp)", "CI low", "CI high", "relative lift", "RR CI low", "RR CI high", "p"]).set_index("outcome")
+het = []
+for lab_, mask_a, mask_b in (("peak hours (11–13, 17–19)", a.peak == 1, b.peak == 1), ("off-peak hours", a.peak == 0, b.peak == 0), ("motor", a["product"] == "motor", b["product"] == "motor"),
+                             ("health", a["product"] == "health", b["product"] == "health"), ("term life", a["product"] == "term_life", b["product"] == "term_life"), ("travel", a["product"] == "travel", b["product"] == "travel")):
+    x1, n1, x0, n0 = a.converted[mask_a].sum(), mask_a.sum(), b.converted[mask_b].sum(), mask_b.sum(); z, pz = proportions_ztest([x1, x0], [n1, n0])
+    het.append((lab_, n1 + n0, x0 / n0, x1 / n1, (x1 / n1 - x0 / n0) * 100, ((x1 / n1) / (x0 / n0) - 1) if x0 else np.nan, pz))
+het = pd.DataFrame(het, columns=["subgroup (pre-treatment)", "leads", "RM queue", "AI first touch", "diff (pp)", "relative lift", "p"]).set_index("subgroup (pre-treatment)"); het["p_holm"] = multipletests(het.p, method="holm")[1]
+display(rt.round(4)); het.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O73»
+
+### 7.4 Speed vs quality of the first touch: separating the two
+
+The AI call is both **faster** and **different** (a bot, not a human). The experiment tells us the *package* effect. To see how much of it is **speed**, we compare the randomised result with what the **observational delay curve** predicts (7.2) if RM leads were contacted within a minute, and report the gap. A large gap means the observational curve cannot be trusted for the extreme (sub-minute) case: it is extrapolating a log-delay curve to the edge of the data, from leads that were fast *because* they were hot.
+
+#%% code
+pred = m1.predict(obs.assign(log_delay=np.log1p(0.7)))                                   # RM-queue leads re-scored at a 0.7-minute delay (observational model 2)
+speed_only = pred.mean(); base_c = obs.converted.mean(); ai_c = a.converted.mean(); ctrl_c = exp[exp.ai_first_touch == 0].converted.mean()
+print(f"Observational model: conversion would rise {base_c:.2%} → {speed_only:.2%} ({(speed_only / base_c - 1):+.0%}) if RM leads were contacted in under a minute")
+print(f"Randomised test: {ctrl_c:.2%} → {ai_c:.2%} ({(ai_c / ctrl_c - 1):+.0%}) with the AI first touch → the experiment delivers only {((ai_c / ctrl_c - 1) / (speed_only / base_c - 1)):.0%} of the lift the observational curve predicts, so that curve overstates the benefit of sub-minute contact")
+
+#%% md
+**Observation:** «O74»
+
+### 7.5 Qualification and routing mix vs the documented figures
+
+For AI-touched leads: qualified rate (of all leads and of reached leads, with Wilson CIs), the routing mix, and **conversion by route** (does the AI-handled path convert, and do hand-offs convert more?).
+
+#%% code
+ai_all = a.copy(); q_ = ai_all.qualified.mean(); qr = ai_all[ai_all.reached == 1].qualified.mean(); lo, hi = proportion_confint(ai_all.qualified.sum(), len(ai_all), method="wilson")
+mix = ai_all.route.value_counts(normalize=True); rc = ai_all.groupby("route").agg(leads=("lead_id", "size"), conversion=("converted", "mean"))
+reached_mix = ai_all[ai_all.reached == 1].route.value_counts(normalize=True)
+print(f"Qualified: {q_:.1%} of all AI-touched leads (Wilson {lo:.1%}–{hi:.1%}), {qr:.1%} of reached leads (documented 5–7%)")
+print("Routing among reached leads:", {k: f"{v:.0%}" for k, v in reached_mix.items()}, "(documented 67% AI-handled, 7% RM, 26% scheduled callback)")
+rc.round(4)
+
+#%% md
+**Observation:** «O75»
+
+### 7.6 Capacity-constrained routing: a queue simulation
+
+**Setup:** 40 RMs, each able to make ~80 calls a day (so ~3,200 a day at ~8 minutes of effort per call across an 11-hour day). A busy day brings **3,500 leads**, with the observed hourly arrival pattern. We simulate 100 days of two policies:
+1. **FCFS (today):** RMs call leads in arrival order. We simulate waits and utilisation (conversions come from the randomised control arm).
+2. **AI first touch for every lead:** the AI contacts everyone within about a minute. Only the share the AI hands off (`rm_handoff` in the randomised arm) joins the RM queue. Conversion comes from the randomised arm, which already includes the AI path and the hand-offs, provided hand-off waits stay short. We check that by simulating the RM queue for hand-offs only.
+
+We report RM utilisation and the median/90th-percentile wait from the queue simulation, and conversions per day from the randomised arms (a conversion model driven by simulated waits does not reproduce observed conversions, so we do not use it).
+
+#%% code
+hours = np.arange(8, 22); arr_w = df.groupby("hour").size().reindex(hours, fill_value=0).values; arr_w = arr_w / arr_w.sum()
+N_DAY, N_RM, SERVE = 3500, 40, 8.0
+def sim_queue(n_leads, rng):
+    """FCFS multi-server queue; returns waits (minutes) and arrival hour for each lead served before 22:00."""
+    h = rng.choice(hours, n_leads, p=arr_w); t = np.sort(h * 60 + rng.uniform(0, 60, n_leads)); free = np.full(N_RM, 8 * 60.0); waits = np.full(n_leads, np.nan); hrs = (t // 60).astype(int)
+    for k, ti in enumerate(t):
+        j = free.argmin(); start = max(free[j], ti)
+        if start < 22 * 60: waits[k] = start - ti; free[j] = start + SERVE * rng.uniform(0.6, 1.4)
+    return waits, hrs, free
+PMIX = df["product"].value_counts(normalize=True)
+def conv_prob(wait, hour, rng):
+    d = pd.DataFrame({"log_delay": np.log1p(wait + 1.0), "peak": np.isin(hour, [11, 12, 13, 17, 18, 19]).astype(int), "product": rng.choice(PMIX.index, len(wait), p=PMIX.values), "hour": hour}); return m1.predict(d).values
+rng_ = np.random.default_rng(SEED); fcfs, util1, w50, w90 = [], [], [], []
+p_hand = (a.route == "rm_handoff").mean(); hand_conv, hu, h50, h90 = [], [], [], []
+for _ in range(100):
+    n = rng_.poisson(N_DAY); w, hrs, free = sim_queue(n, rng_); ok_ = ~np.isnan(w)
+    fcfs.append(conv_prob(w[ok_], hrs[ok_], rng_).sum()); util1.append(ok_.sum() * SERVE / (N_RM * 14 * 60)); w50.append(np.median(w[ok_])); w90.append(np.percentile(w[ok_], 90))
+    nh = rng_.binomial(n, p_hand); wh, _, _ = sim_queue(nh, rng_); okh = ~np.isnan(wh); hu.append(okh.sum() * SERVE / (N_RM * 14 * 60)); h50.append(np.median(wh[okh])); h90.append(np.percentile(wh[okh], 90))
+ai_conv_day = N_DAY * a.converted.mean(); ctrl_conv_day = N_DAY * exp.loc[exp.ai_first_touch == 0, "converted"].mean()
+rt6 = pd.DataFrame({"conversions per day (randomised arms)": [ctrl_conv_day, ai_conv_day], "RM calls per day": [np.mean([u * N_RM * 14 * 60 / SERVE for u in util1]), N_DAY * p_hand],
+                    "RM utilisation": [np.mean(util1), np.mean(hu)], "median wait (min)": [np.mean(w50), np.mean(h50)], "P90 wait (min)": [np.mean(w90), np.mean(h90)]},
+                   index=["FCFS (today)", "AI first touch; RMs take hand-offs only"])
+print(f"{N_DAY:,} leads/day, {N_RM} RMs, ~{SERVE:.0f} min per call. AI hand-off share of all leads: {p_hand:.1%}")
+print(f"Conversions per day use the randomised arms (control {ctrl_conv_day:,.0f}, AI {ai_conv_day:,.0f}). The simulated queue is used ONLY for waits and utilisation: a conversion model driven by the simulated waits gives {np.mean(fcfs):,.0f}/day, "
+      f"not the observed {obs.converted.mean() * N_DAY:,.0f}/day, because simulated waits (median {np.mean(w50):.0f} min) are shorter than real first-contact delays (median {obs.first_contact_delay_min.median():.0f} min), which include retries and breaks")
+rt6.round(3)
+
+#%% md
+**Observation:** «O76»
+
+## 8. ML Section — what we did and did not build
+
+No ML model is needed to demonstrate the speed effect. The documented "scoring model" for qualification is ND, and the voice AI itself is proprietary. A real deployment should (a) score every lead's expected value *before* contacting it (so high-value leads get the fastest human), (b) track the AI call's **conversation outcomes** (containment, handoff quality), and (c) A/B test script changes as in Case 22.
+
+## 9. Business Translation — what is a minute worth?
+
+#%% code
+MARG = 1800; N_LEADS_M = 4.5e5
+lift = rt.loc["converted", "diff (pp)"] / 100; ci_lo, ci_hi = rt.loc["converted", "CI low"] / 100, rt.loc["converted", "CI high"] / 100
+extra = N_LEADS_M * lift; extra_lo, extra_hi = N_LEADS_M * ci_lo, N_LEADS_M * ci_hi
+print(f"{N_LEADS_M:,.0f} leads/month × randomised lift of {lift * 100:+.2f} pp = {extra:,.0f} extra policies/month (95% CI {extra_lo:,.0f}–{extra_hi:,.0f}) ≈ ₹{extra * MARG / 1e7:.1f} crore/month margin (range ₹{extra_lo * MARG / 1e7:.1f}–{extra_hi * MARG / 1e7:.1f} crore)")
+per_min = (obs.converted.mean() - speed_only) / (obs.first_contact_delay_min.mean() - 0.7)
+print(f"Observational value of a minute: ≈ {abs(per_min) * 100:.3f} pp of conversion per minute of delay around the mean delay of {obs.first_contact_delay_min.mean():.1f} min ≈ ₹{abs(per_min) * N_LEADS_M * MARG / 1e5:,.1f} lakh/month per minute")
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic effect sizes:** the decay of reach and conversion with delay was assumed. The method (randomised first-touch plus a confounded observational check) is what transfers.
+- **The AI is a package:** a randomised test of "AI within a minute" vs "RM queue" cannot separate speed from the voice agent. A second arm, "RM-quality human call within a minute" (using spare capacity), would.
+- **Capacity model is stylised:** a simple FCFS queue with a fixed ~8-minute call; real routing needs actual call-duration distributions, shift rosters and callbacks.
+- **Customer experience:** AI calls at 9 pm or repeated retries can annoy customers and breach TRAI/DND rules. Track complaints and opt-outs as guardrails.
+- **Contactability filters and consent:** the form must include consent for calls.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Cochran–Armitage | z = Σ xᵢ(sᵢ − nᵢp̄) / √(p̄(1 − p̄)Σnᵢ(xᵢ − x̄)²) |
+| ITT | P(convert ∣ AI) − P(convert ∣ RM), assignment random |
+| Odds ratio per doubling | exp(β·ln 2) for log-delay |
+| M/M/c intuition | with arrival rate λ, service rate μ and c agents, waits explode as λ/(cμ) → 1 |
+
+| Term | Meaning |
+|---|---|
+| Speed to lead | How fast a new lead is first contacted |
+| RM | Relationship manager (sales agent) |
+| Containment | Share of leads fully handled by the AI without a human |
+| Confounding | Hot leads were called faster, so speed and quality are tangled |
+| ITT | Intention-to-treat: compare groups as randomised |

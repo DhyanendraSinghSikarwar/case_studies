@@ -1,0 +1,12 @@
+field(s),meaning
+"user_id, cohort",User; historical (rule-based limits) or experiment (random limits)
+"tenure_months, txn_count_6m, wallet_spend_6m",Wallet relationship and spend
+"bill_pay_share, ontime_bill_rate, topup_regularity, low_balance_days_6m",Payment patterns
+"p2p_out_share, gaming_share",Channel / category preferences
+"device_changes_6m, city_changes_6m, app_sessions_per_week","Device, location and app usage"
+"contactable, nudge_response_rate",Engagement: reachable phone; share of nudges acted on
+credit_limit,Assigned BNPL limit (₹)
+"line_spend_6m, max_utilised",Spend on the line; peak outstanding
+"dpd30_6m, default_90dpd, cured_after_dpd30","Delinquency, default, cure (−1 = never 30+ DPD)"
+"revenue_inr, loss_inr",6-month revenue and credit loss
+"_q, _p_default",HIDDEN truth: latent quality and true default probability

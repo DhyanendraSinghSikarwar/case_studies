@@ -1,0 +1,394 @@
+#%% md
+# Case Study 17 — "Same Delinquency, 10 Seconds Instead of Days": Proving Non-Inferiority of Pre-Approved Instant Personal Loans
+
+**Priority:** ★★ Good to have · **Reference:** Case Study 17 — *HDFC Bank: 10-second pre-approved personal loans for existing customers* (`indian_fintech_data_science_case_studies.md`)
+**Audience:** Head of Retail Assets, Chief Risk Officer, Credit Committee, Digital Banking
+**Data:** ⚠️ **SYNTHETIC** (D-17-01). Bank customer data are confidential; this is a calibrated simulation.
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs17_preapproved_pl_noninferiority.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+HDFC Bank lets existing customers take a personal loan in **10 seconds**, with no documents, because it already knows their salary credits, balances, card behaviour and bureau record. The bank's success test was simple: **is delinquency "on a par" with loans sourced the traditional way**, through branches with paperwork and a credit officer?
+
+This is a classic **non-inferiority** question. We do not need the instant loans to be *better*, just **not meaningfully worse**, because they are far cheaper and faster. Two traps make it harder than it looks:
+1. **Different customers:** instant loans go only to the top third of customers by the bank's score, while branch loans go to a mix. "Same delinquency" between different populations can hide a channel that is worse *for the same customer*.
+2. **"Not significantly different" ≠ "on par":** a small sample can fail to detect a real deterioration. Non-inferiority needs a pre-agreed **margin** and a one-sided test against it.
+
+The notebook tests the layered "P27" score, shows the trap in the raw comparison, and analyses a **randomised pilot**, the gold-standard way to prove "on par".
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What HDFC Bank did — *documented*
+
+| Item | Documented fact (quoted from the reference file) |
+|---|---|
+| Problem | "Disburse personal loans instantly to existing customers, without paperwork, while keeping delinquency in check" |
+| Data | Bank statements, transaction history, credit and debit card transactions, account inflows, payment records; internal and bureau credit history; a "**social score**" (internet consumption patterns) |
+| Approach | "**P27 (Power of 27)**" multi-layer framework: ability-to-pay income score + bureau scores + behavioural score + social score |
+| Statistics / ML | ND; "Metric used to judge success: **Delinquency compared with physically sourced loans**" |
+| Decision | About **one-third of roughly 30M customers** eligible; loans capped at **₹15 lakh**; launched 30 Apr 2015 |
+| Impact | 10-second loans ≈ **one-third of roughly ₹6,000 crore** monthly PL disbursals; ≈ ₹350 crore in the first month; delinquency "**on a par with loans disbursed physically**" |
+
+**Source:** Business Standard, interview with Arvind Kapil (Country Head), 6 Jul 2019 — https://www.business-standard.com/article/finance/how-hdfc-bank-disburses-loans-in-10-seconds-119070600010_1.html
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 200,000 existing customers with four score layers; top third eligible. Loans followed for 12 months: **observational** instant (≈ 5.6k) and branch (≈ 3.7k) loans, plus a **randomised pilot** of 16,000 eligible applicants assigned 1:1 to instant vs physical processing. Hidden truth: instant processing raises 30+ DPD risk slightly (+0.12 log-odds) for the *same* customer; branch officers screen on information the data do not capture. |
+| Statistics added (none disclosed) | Layer-by-layer AUC and LR tests (is the "social" layer worth it?); **non-inferiority tests** (one-sided CI vs a pre-set margin, Farrington–Manning z, risk-ratio margin); covariate balance (SMD) and **inverse-probability weighting**; **E-value** sensitivity to unmeasured confounding; Kaplan–Meier, log-rank and **Cox** hazard-ratio non-inferiority; power and sample size for NI designs |
+
+### (c) How the industry uses this
+
+Pre-approved instant loans to existing customers are now standard at every large Indian bank: HDFC (10-second loans, Xpress Personal Loans), ICICI (instant PL), Axis (Case 18), SBI (YONO pre-approved). **Non-inferiority testing** is the statistical tool behind every "faster/cheaper but just as safe" claim: digital vs branch KYC, video KYC, automated underwriting vs credit officers, and bureau-light products. RBI's model-risk and fair-practice expectations make a documented NI test the natural evidence for a credit committee.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Can instant pre-approved loans replace physically sourced loans for eligible customers without raising credit losses meaningfully? |
+| Analytical | Is the 12-month 30+ DPD rate of instant loans **no more than 1 percentage point higher** than physically processed loans **for comparable customers**? |
+
+**Non-inferiority margin (pre-registered, D-17-04):** δ = **+1.0 pp absolute** on 12-month 30+ DPD. Base rate ≈ 4%, so 1 pp ≈ 25% relative. The credit committee agrees the cost and TAT savings outweigh up to that deterioration (§9 checks this in ₹). Secondary margins: risk ratio < 1.25 and hazard ratio < 1.25.
+
+**Hypotheses**
+- **H0 (inferior):** p_digital − p_physical ≥ +1.0 pp. **H1 (non-inferior):** p_digital − p_physical < +1.0 pp. One-sided α = 0.025; we reject H0 if the **upper bound of the two-sided 95% CI** is below +1.0 pp.
+- **H2 (layers):** H0: each P27 layer adds nothing to the others (LR tests).
+- **Hsens:** how strong would unmeasured confounding need to be to explain the observational result (E-value)?
+
+**Primary analysis:** the randomised pilot. **Secondary:** observational, raw and IPW-adjusted, to show the trap. **Guardrail:** 90+ DPD rate.
+
+#%% code
+import sys, warnings, importlib, os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.stats import rankdata
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+from statsmodels.duration.survfunc import SurvfuncRight, survdiff
+from statsmodels.duration.hazard_regression import PHReg
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import HistGradientBoostingClassifier as HGB
+from sklearn.metrics import roc_auc_score
+from statsmodels.stats.proportion import proportion_confint, confint_proportions_2indep
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+MARGIN = 0.01
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public bank PL performance by sourcing channel | **None.** Loan-level bank data are confidential. RBI publishes only aggregate sectoral credit. |
+| **Decision** | Synthetic customers, observational loans and a randomised pilot (D-17-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs17.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/fintech/data/generate_cs17.py
+
+#%% code
+os.makedirs("data/cs17", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs17 as gen; importlib.reload(gen)
+cust_raw, loans_raw = gen.generate(seed=SEED)
+cust_raw.to_csv("data/cs17/customers.csv.gz", index=False); loans_raw.to_csv("data/cs17/loans.csv.gz", index=False)
+print(f"{len(cust_raw):,} customers | {len(loans_raw):,} loan rows ({loans_raw.loan_id.nunique():,} unique)")
+loans_raw.drop(columns=["_p30"]).sample(3, random_state=SEED).T
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Customers | 200,000 existing customers; salary credits, balances, bureau, card utilisation, past DPD, relationship years, digital engagement | **Documented** data families |
+| P27-style score | Weighted ability + bureau + behaviour + a small "social" weight; **top third eligible** | **Documented** "about one-third … eligible" |
+| Loans | ₹50k–₹15 lakh (cap documented), 4–12× monthly salary; 12-month 30+ DPD ≈ 4%, 90+ DPD ≈ 1.4% | Typical salaried PL |
+| Channel effect (hidden) | Instant processing +0.12 log-odds of 30+ DPD for the same customer (≈ +0.4 pp) | Our assumption: a small real deterioration |
+| Branch selection | Branch applicants are a mix of eligible and non-eligible customers; officers decline the riskiest on information **not in the data** | Realistic manual underwriting |
+| Pilot | 16,000 eligible applicants randomised 1:1 | Our design |
+| DQ issues | 300 duplicate loan rows; 250 delinquent loans missing the delinquency month; 1,500 missing engagement scores | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#%% code
+dd = pd.DataFrame([
+    ("customers: salary_credit_monthly, salaried_account, avg_balance_6m", "Ability-to-pay layer"), ("bureau_score", "Bureau layer"),
+    ("card_utilisation, past_dpd_events_24m, relationship_years", "Behavioural layer"), ("digital_engagement_score", "'Social' layer (internet usage proxy; 1,500 missing)"),
+    ("p27_score, eligible", "Combined layered score; top third = eligible for instant loans"), ("_z", "HIDDEN latent creditworthiness"),
+    ("loans: cohort, channel", "observational / pilot; digital (instant) / physical"), ("loan_amount, tat_minutes", "Ticket; turnaround (≈ 10 seconds vs ≈ 2–3 days)"),
+    ("dpd30_12m, dpd30_month, dpd90_12m", "30+ DPD within 12 months, month first reached, 90+ DPD"), ("_p30", "HIDDEN true probability of 30+ DPD"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs17/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+checks = {"duplicate loan_id": int(loans_raw.loan_id.duplicated().sum()), "delinquent but month missing": int(loans_raw.drop_duplicates("loan_id").pipe(lambda d: ((d.dpd30_12m == 1) & d.dpd30_month.isna()).sum())),
+          "90+ DPD without 30+ DPD": int(((loans_raw.dpd90_12m == 1) & (loans_raw.dpd30_12m == 0)).sum()), "loan amount > ₹15 lakh cap": int((loans_raw.loan_amount > 15e5).sum()),
+          "engagement score missing": int(cust_raw.digital_engagement_score.isna().sum())}
+print(pd.Series(checks, name="rows").to_string())
+cust = cust_raw.copy(); cust["eng_missing"] = cust.digital_engagement_score.isna().astype(int)
+cust["digital_engagement_score"] = cust.digital_engagement_score.fillna(cust.digital_engagement_score.median())
+ln = loans_raw.drop_duplicates("loan_id").merge(cust, on="customer_id", how="left")
+ln["month_missing"] = ((ln.dpd30_12m == 1) & ln.dpd30_month.isna()).astype(int)
+ln["dpd30_month"] = np.where(ln.month_missing == 1, 6.0, ln.dpd30_month)          # unknown month: mid-point for survival (flagged; sensitivity below)
+ln["time"] = np.where(ln.dpd30_12m == 1, ln.dpd30_month, 12.0); ln["digital"] = (ln.channel == "digital").astype(int)
+obs, pil = ln[ln.cohort == "observational"].copy(), ln[ln.cohort == "pilot"].copy()
+print(f"\nClean: {len(ln):,} loans | observational {len(obs):,} (digital {obs.digital.sum():,}, physical {(1 - obs.digital).sum():,}) | pilot {len(pil):,} | 30+ DPD {ln.dpd30_12m.mean():.2%}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.5))
+for (coh, ch), g in ln.groupby(["cohort", "channel"]):
+    sf = SurvfuncRight(g.time, g.dpd30_12m); axes[0].step(sf.surv_times, (1 - sf.surv_prob) * 100, where="post", label=f"{coh}: {ch}",
+                                                          ls="-" if coh == "pilot" else "--", color="#2a6f97" if ch == "digital" else "#e07a1f")
+axes[0].set_xlabel("Months on book"); axes[0].set_ylabel("Cumulative % reaching 30+ DPD"); axes[0].set_title("Delinquency curves by channel"); axes[0].legend(fontsize=8)
+for ch, c_ in (("digital", "#2a6f97"), ("physical", "#e07a1f")):
+    axes[1].hist(obs.loc[obs.channel == ch, "p27_score"], bins=40, density=True, alpha=0.5, color=c_, label=f"observational {ch}")
+axes[1].axvline(cust.p27_score.quantile(2 / 3), color="black", ls=":", label="eligibility cut-off")
+axes[1].set_xlabel("P27-style score"); axes[1].set_ylabel("Density"); axes[1].set_title("Instant-loan borrowers are a better-scored population"); axes[1].legend(fontsize=8)
+plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O61»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Does each layer of the P27 framework earn its place?
+
+**(a) Why?** The framework stacks four layers: ability, bureau, behaviour and "social". The social layer raises privacy and fairness questions, so it should be kept only if it adds information. On all loans, we fit a logistic model of 30+ DPD on the four layer scores and test each layer with a **drop-one LR test** (Holm). We also report the AUC of each layer alone and of the combined score.
+
+#%% code
+ln["s_ability"] = np.log(ln.salary_credit_monthly) * 0.8 + 0.25 * np.log(ln.avg_balance_6m) + 0.3 * ln.salaried_account
+ln["s_bureau"] = (ln.bureau_score - 730) / 50; ln["s_behav"] = -2.0 * ln.card_utilisation - 0.6 * ln.past_dpd_events_24m + 0.04 * ln.relationship_years
+ln["s_social"] = (ln.digital_engagement_score - 50) / 18; ln["l_amt"] = np.log(ln.loan_amount)
+LAY = ["s_ability", "s_bureau", "s_behav", "s_social"]
+obs, pil = ln[ln.cohort == "observational"].copy(), ln[ln.cohort == "pilot"].copy()
+full = smf.logit("dpd30_12m ~ " + " + ".join(LAY) + " + l_amt", data=ln).fit(disp=0)
+rows = []
+for L_ in LAY:
+    red = smf.logit("dpd30_12m ~ " + " + ".join([x for x in LAY if x != L_]) + " + l_amt", data=ln).fit(disp=0); LR = 2 * (full.llf - red.llf)
+    rows.append((L_, roc_auc_score(ln.dpd30_12m, -ln[L_]), full.params[L_], np.exp(full.params[L_]), LR, stats.chi2.sf(LR, 1)))
+lay = pd.DataFrame(rows, columns=["layer", "AUC alone", "coef (log-odds per unit)", "odds ratio", "drop-one LR χ²", "p"]).set_index("layer")
+lay["p_holm"] = multipletests(lay.p, method="holm")[1]
+print(f"Combined P27-style score AUC = {roc_auc_score(ln.dpd30_12m, -ln.p27_score):.4f}; full layered logistic AUC = {roc_auc_score(ln.dpd30_12m, full.predict(ln)):.4f}")
+lay.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 The raw comparison and why it misleads
+
+**(a)** The naive version of the documented test compares 30+ DPD of all instant loans with all branch loans. We compute the difference with a **Newcombe CI** and apply the NI rule (upper bound < +1 pp). Then we look at **who** is in each group: standardised mean differences (SMD; |SMD| > 0.1 means imbalance) on the risk layers.
+
+#%% code
+def ni_test(d, label, w=None):
+    a, b = d[d.digital == 1], d[d.digital == 0]
+    if w is None:
+        x1, n1, x0, n0 = a.dpd30_12m.sum(), len(a), b.dpd30_12m.sum(), len(b); p1, p0 = x1 / n1, x0 / n0
+        lo, hi = confint_proportions_2indep(x1, n1, x0, n0, method="newcomb")
+        se_fm = np.sqrt(p1 * (1 - p1) / n1 + p0 * (1 - p0) / n0); z_ni = (p1 - p0 - MARGIN) / se_fm
+        rr = p1 / p0; se_lrr = np.sqrt(1 / x1 - 1 / n1 + 1 / x0 - 1 / n0); rr_hi = np.exp(np.log(rr) + 1.96 * se_lrr)
+        return dict(analysis=label, n_digital=n1, n_physical=n0, dpd_digital=p1, dpd_physical=p0, diff_pp=(p1 - p0) * 100, ci_low_pp=lo * 100, ci_high_pp=hi * 100,
+                    p_NI=stats.norm.cdf(z_ni), RR=rr, RR_ci_high=rr_hi, verdict="non-inferior" if hi < MARGIN else "NOT shown non-inferior")
+    wa, wb = w[d.digital.values == 1], w[d.digital.values == 0]
+    p1, p0 = np.average(a.dpd30_12m, weights=wa), np.average(b.dpd30_12m, weights=wb)
+    bs = []
+    for _ in range(1000):
+        i = RNG.integers(0, len(a), len(a)); j = RNG.integers(0, len(b), len(b))
+        bs.append(np.average(a.dpd30_12m.values[i], weights=wa[i]) - np.average(b.dpd30_12m.values[j], weights=wb[j]))
+    lo, hi = np.percentile(bs, [2.5, 97.5])
+    return dict(analysis=label, n_digital=len(a), n_physical=len(b), dpd_digital=p1, dpd_physical=p0, diff_pp=(p1 - p0) * 100, ci_low_pp=lo * 100, ci_high_pp=hi * 100,
+                p_NI=(np.array(bs) >= MARGIN).mean(), RR=p1 / p0, RR_ci_high=np.nan, verdict="non-inferior" if hi < MARGIN else "NOT shown non-inferior")
+raw = ni_test(ln[ln.cohort == "observational"], "observational, raw")
+def smd(d, cols, w=None):
+    out = {}
+    for c in cols:
+        a, b = d.loc[d.digital == 1, c], d.loc[d.digital == 0, c]
+        if w is None: ma, mb, va, vb = a.mean(), b.mean(), a.var(), b.var()
+        else:
+            wa, wb = w[d.digital.values == 1], w[d.digital.values == 0]; ma, mb = np.average(a, weights=wa), np.average(b, weights=wb)
+            va, vb = np.average((a - ma) ** 2, weights=wa), np.average((b - mb) ** 2, weights=wb)
+        out[c] = (ma - mb) / np.sqrt((va + vb) / 2)
+    return out
+obs = ln[ln.cohort == "observational"].copy(); BAL = LAY + ["l_amt", "eligible"]
+print(pd.DataFrame([raw]).set_index("analysis").round(4).to_string())
+pd.Series(smd(obs, BAL), name="SMD (digital − physical), observational").round(3).to_frame()
+
+#%% md
+**Observation:** «O72»
+
+### 7.3 Adjusting the observational comparison: inverse-probability weighting, and its limits
+
+We model the probability of an instant loan given the observed layers, loan size and eligibility (logistic propensity score). We then reweight the branch loans to resemble the instant-loan population (ATT weights: digital = 1, physical = e/(1 − e)), check balance, and re-run the NI test. Because the instant channel exists only for eligible customers, we also run the comparison **within eligible customers only** (the population the decision is about).
+
+#%% code
+ps_m = LogisticRegression(max_iter=3000, C=1.0).fit(obs[BAL], obs.digital); e = np.clip(ps_m.predict_proba(obs[BAL])[:, 1], 0.01, 0.99)
+w_att = np.where(obs.digital == 1, 1.0, e / (1 - e))
+adj = ni_test(obs, "observational, IPW (ATT)", w=w_att)
+oe = obs[obs.eligible == 1].copy(); el = ni_test(oe, "observational, eligible customers only (raw)")
+ps2 = LogisticRegression(max_iter=3000).fit(oe[BAL[:-1]], oe.digital); e2 = np.clip(ps2.predict_proba(oe[BAL[:-1]])[:, 1], 0.01, 0.99)
+el_w = ni_test(oe, "observational, eligible only, IPW (ATT)", w=np.where(oe.digital == 1, 1.0, e2 / (1 - e2)))
+bal = pd.DataFrame({"SMD before": smd(obs, BAL), "SMD after IPW": smd(obs, BAL, w_att)})
+print(f"Propensity overlap: share of physical loans with e > 0.1: {(e[obs.digital == 0] > 0.1).mean():.1%}; effective sample size of weighted physical group: "
+      f"{w_att[obs.digital == 0].sum() ** 2 / (w_att[obs.digital == 0] ** 2).sum():,.0f} of {(obs.digital == 0).sum():,}")
+display(bal.round(3))
+pd.DataFrame([raw, adj, el, el_w]).set_index("analysis").round(4)
+
+#%% md
+**(c)/(f) Observation:** «O73»
+
+### 7.4 How much hidden confounding could explain the observational result? (E-value)
+
+IPW only fixes **measured** differences. Branch credit officers also screen on things the data do not record (an interview, documents, local knowledge), so branch borrowers may be better than their scores suggest. The **E-value** answers: *how strong would an unmeasured factor have to be (as a risk ratio with both channel and delinquency) to fully explain away the observed risk ratio?*
+
+#%% code
+def evalue(rr):
+    rr = rr if rr >= 1 else 1 / rr; return rr + np.sqrt(rr * (rr - 1))
+for r_ in (raw, adj, el_w):
+    print(f"{r_['analysis']:<45} RR = {r_['RR']:.3f} → E-value = {evalue(r_['RR']):.2f}")
+true_rr = pil.groupby("digital")._p30.mean(); print(f"(Truth, from the hidden model, for pilot-like customers: RR ≈ {true_rr[1] / true_rr[0]:.3f})")
+
+#%% md
+**Observation:** «O74»
+
+### 7.5 The randomised pilot: the causal non-inferiority test
+
+**(a) Why?** Randomly assigning eligible applicants to instant vs physical processing removes all confounding, measured or not. **(b) Checks:** sample-ratio mismatch (χ²) and covariate balance (SMD). **Tests:**
+- **Primary:** difference in 12-month 30+ DPD with a Newcombe 95% CI. Non-inferior if the upper bound is below +1 pp; Farrington–Manning-style z-test against the margin.
+- **Secondary:** risk ratio (margin 1.25); time to 30+ DPD with **Kaplan–Meier**, **log-rank**, and a **Cox** hazard ratio (margin 1.25), adjusted for the layers.
+- **Guardrail:** 90+ DPD.
+
+#%% code
+srm = stats.chisquare(pil.digital.value_counts().values); sb = pd.Series(smd(pil, BAL[:-1]), name="SMD")
+print(f"SRM: {pil.digital.value_counts().to_dict()}, χ² p = {srm.pvalue:.3f} | max |SMD| = {sb.abs().max():.3f}")
+prim = ni_test(pil, "PILOT (randomised), 30+ DPD")
+x1, n1 = pil.loc[pil.digital == 1, "dpd90_12m"].sum(), (pil.digital == 1).sum(); x0, n0 = pil.loc[pil.digital == 0, "dpd90_12m"].sum(), (pil.digital == 0).sum()
+lo9, hi9 = confint_proportions_2indep(x1, n1, x0, n0, method="newcomb")
+lr = survdiff(pil.time, pil.dpd30_12m, pil.digital)
+cox = PHReg.from_formula("time ~ digital + s_ability + s_bureau + s_behav + s_social + l_amt", status="dpd30_12m", data=pil, ties="efron").fit()
+hr, hr_lo, hr_hi = np.exp(cox.params[0]), np.exp(cox.conf_int()[0, 0]), np.exp(cox.conf_int()[0, 1])
+cox_s = PHReg.from_formula("time ~ digital + s_ability + s_bureau + s_behav + s_social + l_amt", status="dpd30_12m", data=pil[pil.month_missing == 0], ties="efron").fit()
+print(pd.DataFrame([prim]).set_index("analysis").round(4).to_string())
+print(f"\n90+ DPD (guardrail): digital {x1 / n1:.2%} vs physical {x0 / n0:.2%}, diff {100 * (x1 / n1 - x0 / n0):+.2f} pp (CI {lo9 * 100:+.2f} to {hi9 * 100:+.2f})")
+print(f"Log-rank: χ² = {lr[0]:.2f}, p = {lr[1]:.3f} | Cox HR (digital vs physical, adjusted) = {hr:.3f} (95% CI {hr_lo:.3f}–{hr_hi:.3f}) → "
+      f"{'non-inferior' if hr_hi < 1.25 else 'NOT shown non-inferior'} at HR margin 1.25 | excluding missing-month loans: HR {np.exp(cox_s.params[0]):.3f}")
+fig, ax = plt.subplots(figsize=(8, 4.2))
+for d_, c_, nm_ in ((1, "#2a6f97", "instant (digital)"), (0, "#e07a1f", "physical")):
+    g = pil[pil.digital == d_]; sf = SurvfuncRight(g.time, g.dpd30_12m); ax.step(sf.surv_times, (1 - sf.surv_prob) * 100, where="post", color=c_, label=nm_)
+ax.set_xlabel("Months on book"); ax.set_ylabel("Cumulative % reaching 30+ DPD"); ax.set_title("Pilot: delinquency curves nearly overlap"); ax.legend(); plt.tight_layout(); plt.show()
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.6 Was the pilot big enough? Power for non-inferiority
+
+For an NI test, power depends on the **true** difference and the margin. Below is the sample size per arm for 80% and 90% power (one-sided α = 0.025, base rate 3.7%) for several true differences and margins, plus the power our 8,000-per-arm pilot had.
+
+#%% code
+p0 = pil.loc[pil.digital == 0, "dpd30_12m"].mean(); rows = []
+for m_ in (0.005, 0.01, 0.015):
+    for true_d in (0.0, 0.002, 0.004):
+        p1 = p0 + true_d; var = p0 * (1 - p0) + p1 * (1 - p1)
+        n80 = int(np.ceil((1.96 + 0.84) ** 2 * var / (m_ - true_d) ** 2)); n90 = int(np.ceil((1.96 + 1.28) ** 2 * var / (m_ - true_d) ** 2))
+        pw = stats.norm.cdf((m_ - true_d) / np.sqrt(var / 8000) - 1.96)
+        rows.append((f"{m_ * 100:.1f} pp", f"{true_d * 100:+.1f} pp", n80, n90, pw))
+pd.DataFrame(rows, columns=["NI margin", "true difference", "n per arm (80% power)", "n per arm (90% power)", "power with 8,000 per arm"]).set_index(["NI margin", "true difference"]).round(3)
+
+#%% md
+**Observation:** «O76»
+
+## 8. ML Section — brief
+
+The documented framework is a layered **score**, not a black box. We check whether a gradient-boosting model on the raw layer inputs beats the combined linear P27-style score (out-of-sample on the pilot loans, trained on the observational loans). If not, the transparent layered score is preferable for credit committees.
+
+#%% code
+RAWF = ["salary_credit_monthly", "salaried_account", "avg_balance_6m", "bureau_score", "card_utilisation", "past_dpd_events_24m", "relationship_years", "digital_engagement_score", "loan_amount"]
+gb = HGB(max_iter=300, learning_rate=0.06, random_state=SEED).fit(obs[RAWF], obs.dpd30_12m)
+print(f"Pilot loans: AUC combined P27-style score {roc_auc_score(pil.dpd30_12m, -pil.p27_score):.4f} vs gradient boosting {roc_auc_score(pil.dpd30_12m, gb.predict_proba(pil[RAWF])[:, 1]):.4f} "
+      f"(note: pilot borrowers are all eligible, so scores are range-restricted)")
+
+#%% md
+**Observation:** «O8»
+
+## 9. Business Translation — is "same delinquency, 10 seconds" worth it?
+
+**Assumptions (D-17-07):**
+- Physical processing costs ₹2,500 per loan (branch staff, documents, verification); instant costs ₹150.
+- Loss on a 30+ DPD loan ≈ 35% of the amount (some cure, some roll to write-off).
+- Average ticket from the data.
+
+The **extra credit loss** uses the pilot's difference: point estimate and upper CI bound, plus the full 1 pp margin as the worst case the committee accepted. The saving is compared on the documented scale: about **₹2,000 crore a month** of instant disbursals.
+
+#%% code
+avg_amt = pil.loan_amount.mean(); MONTHLY = 2000e7; n_loans = MONTHLY / avg_amt; LOSS_RATE = 0.35
+op_saving = n_loans * (2500 - 150)
+scen = {"pilot point estimate": prim["diff_pp"] / 100, "pilot upper 95% bound": prim["ci_high_pp"] / 100, "NI margin (worst accepted)": MARGIN, "truth (hidden model)": true_rr[1] * 0 + (true_rr[1] - true_rr[0])}
+rows = [(k, d * 100, n_loans * d * avg_amt * LOSS_RATE / 1e7, op_saving / 1e7, (op_saving - n_loans * d * avg_amt * LOSS_RATE) / 1e7) for k, d in scen.items()]
+be = op_saving / (n_loans * avg_amt * LOSS_RATE) * 100
+print(f"Average ticket ₹{avg_amt:,.0f} → ≈ {n_loans:,.0f} instant loans a month | break-even extra delinquency = {be:.2f} pp")
+pd.DataFrame(rows, columns=["scenario", "extra 30+ DPD (pp)", "extra credit loss ₹ crore/month", "processing saving ₹ crore/month", "net ₹ crore/month"]).set_index("scenario").round(2)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Synthetic effects:** the hidden channel effect (+0.12 log-odds) and the branch screening were assumed. The *method* (pre-set margin, randomised pilot, one-sided CI) is what transfers.
+- **Margin choice:** the 1 pp margin must be agreed *before* looking at data and justified economically (§9 gives the break-even). Post-hoc margins are not credible.
+- **12 months is short for PL:** losses on 3–5-year loans emerge later. Re-test NI on 24-month 90+ DPD.
+- **Who is "eligible" will change:** if the bank widens eligibility beyond the top third, the pilot result does not automatically transfer. Run a new NI pilot for each expansion band.
+- **"Social" scores:** internet-usage data raise consent and fairness concerns (DPDP Act; RBI DLG on data use). §7.1 shows how little it adds here, so it is a good candidate to drop.
+- **Ethics of the pilot:** randomising processing channel is low-risk when both channels apply the same credit policy. Customers must see the same terms (KFS) in both arms.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Non-inferiority (difference) | H0: p_d − p_p ≥ δ; reject if upper 95% CI < δ (one-sided α = 0.025) |
+| Farrington–Manning-style z | z = (p̂_d − p̂_p − δ) / SE; p = Φ(z) |
+| Newcombe CI | hybrid Wilson-score interval for p₁ − p₂ |
+| ATT weights | digital: 1; physical: e/(1 − e), e = P(digital ∣ X) |
+| SMD | (mean_d − mean_p) / √((s²_d + s²_p)/2) |
+| E-value | RR + √(RR·(RR − 1)) |
+| Cox model | h(t ∣ x) = h₀(t)·exp(β·digital + γ·x) |
+| NI sample size | n = (z₁₋α + z₁₋β)² (p₁q₁ + p₀q₀) / (δ − Δ)² |
+
+| Term | Meaning |
+|---|---|
+| Non-inferiority | Showing a new option is not worse than the standard by more than a pre-agreed margin |
+| Margin (δ) | The largest deterioration the business will accept |
+| Pre-approved / instant loan | A loan offered to existing customers from data the bank already holds |
+| Confounding | A difference between groups that is not caused by the channel |
+| IPW | Inverse-probability weighting: reweighting one group to resemble the other |
+| E-value | Strength of hidden confounding needed to explain away a result |
+| DPD | Days past due |

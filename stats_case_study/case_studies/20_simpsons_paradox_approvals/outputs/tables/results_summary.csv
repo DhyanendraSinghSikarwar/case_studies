@@ -1,0 +1,7 @@
+,Value
+Overall,69.6% → 65.7%: −3.9 pp (95% CI −5.0 to −2.8); OR 0.84
+Within bands,"A +5.1, B +6.4, C +5.7, D +5.0 pp (all p ≤ 0.001)"
+Decomposition,"share in bands C/D 24% → 40%;  rate effect +5.6 pp, mix effect −9.5 pp"
+Cause of mix shift,Agent channel 11% → 45%; within-channel risk mix unchanged (p = 0.15–0.66)
+Standardised,"+5.6 pp (before mix), +5.6 pp (after mix); CI +4.6 to +6.4"
+Stratified / adjusted,"Mantel-Haenszel OR 1.45 (95% CI 1.36–1.54); Breslow-Day p < 0.001 (odds-ratio scale), Cochran Q p = 0.71 (risk-difference scale); logistic OR 1.45 (band-adjusted)"

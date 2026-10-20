@@ -1,0 +1,546 @@
+#%% md
+# Case Study 17 — Unified Ranking of Sponsored and Organic Products: CTR/CVR Models, Calibration Across Populations, Blending and the A/B Test
+
+**Priority:** ★★★ Must-visit · **Reference:** Case Study 17 — *Flipkart: unified ranking of sponsored and organic products on "Similar Products"* (`indian_ecommerce_data_science_case_studies.md`)
+**Audience:** Head of Ads and Retail Media, Search and Recommendations, Product, Finance
+**Data:** ⚠️ **SYNTHETIC** (D-17-01). Flipkart's impression logs and bids are confidential; this is a calibrated simulation with a hidden "true click model" (a digital twin).
+**Reproducibility:** seed = 42 · `python -m nbconvert --to notebook --execute --inplace cs17_ads_ranking_ctr_cvr.ipynb`
+
+#%% md
+## 0. Executive Summary for Business
+
+«EXEC»
+
+#%% md
+## 1. The Problem in Simple English
+
+On a product page, the "Similar Products" strip shows a handful of items. Some are **organic** (chosen because they fit the shopper), some are **sponsored** (a seller paid to be shown, usually per click). The old design **pinned** sponsored items at fixed positions (slots 2 and 5) no matter what. That is predictable, but it shows a poor ad even where no ad fits (a pair of pocket scissors) and it limits good ads where several fit (a new smartphone).
+
+The new idea is to let organic and sponsored items **compete for the same slots under one scoring rule**. The hard part is not the ranking; it is that clicks on ads and on organic items have **different base rates**. If the model says "4% chance of a click" for an ad that really gets 2%, the ranker will over-show ads, hurting shoppers and organic sellers without paying off.
+
+Leaders and interviewers want to know:
+1. Can one model predict click and purchase probability for **both** ads and organic items, and is it **calibrated** for each?
+2. Does letting ads and organic items compete beat pinned slots on **both** organic orders and ad revenue, or does one pay for the other?
+3. How should the **weights** between shopper value and ad revenue be chosen?
+4. What happens when the model **fails** (the default 0.5 score) and how do we guard against it?
+5. How big must the **A/B test** be to see the lift?
+
+#%% md
+## 2. Reference from the Case File
+
+### (a) What Flipkart did — *documented*
+
+| Item | Documented fact (from the reference file) |
+|---|---|
+| Problem | Product-page widgets pinned sponsored items at fixed slots 2 and 5. The authors call this "safe, predictable, but ultimately sub-optimal". Goal: let sponsored and organic items compete for slots under one objective |
+| Data | Historical impressions from both organic and ads pipelines, combined; organic feedback is "multi-fold" larger than ads. Co-browse and co-impression "pair stats", popularity; **27 key features** crossed with isAds. Ad bids/costs used in the sponsored score (exact formula not disclosed) |
+| Approach | Funnel: candidate sourcing, a relevance-filtering stage (SGD classifier for the probability of conversion given impression), then a personalised online ranker (FTRL) with **separate CTR and CVR models**. One training set with an **isAds flag plus 2-way and 3-way crosses** of the 27 features with isAds. Separate organic and sponsored objective functions (organic: a weighted combination with tunable alpha and beta; sponsored adds bid cost components). Weights chosen by **offline simulation framed as multi-objective optimisation**. A **circuit breaker** reverts to pinned slots 2 and 5 if the organic ranker fails; the 0.5 default-score fallback could flood the page with ads |
+| Validation | Offline grid: baseline organic-only features vs isAds flag only vs full crosses, on organic-only and ads-only test sets; metrics AUC, Request AUC, NDCG, MAP, MRR (the lift chart is an image, values not disclosed; text says the lift was larger for ads with organic about unchanged). Online high-mod A/B with cumulative exposures above **100 million**; test type and CIs not disclosed |
+| Decision and impact | Scaled to 100% of Flipkart traffic and launched for "Similar Products". Company claim: "a statistically significant **(1.36%) increase in orders for organic products** and a **3.4% increase in bottomline Ads revenue**" |
+
+**Source:** "The Science of Unified Ranking: Integrating Ads and Organic Recommendations", Flipkart Tech blog (Amar Kumar et al.), 4 Nov 2025. The exact auction or pricing mechanism is **not described**, so we attribute none: our sponsored value simply adds the bid per click.
+
+### (b) What *we* simulate and add
+
+| Item | Our choice |
+|---|---|
+| Data | 80,000 requests over 14 days, each with 12 organic and 4 sponsored candidates and a hidden true click/order model. Legacy logging pins two ads at slots 2 and 5 (so 75% of logged impressions are organic), with a 20% random-slotting exploration bucket (**our assumption**, so every candidate type is observed in every slot). Ads have a lower base rate and a weaker dependence on relevance than organic items; the request category changes how relevant ads are |
+| Models | Logistic CTR models: organic-features only (no flag), flag only, **flag + crosses** (the documented design, with our own 7 base features instead of 27), separate organic and ads models, and a gradient-boosted model. Logistic CVR models of the same kinds. FTRL itself is **not** run (we use L2 logistic regression; no tuning) |
+| Statistics added | AUC, **Request AUC** and log loss with request-clustered bootstrap CIs; **calibration-in-the-large and slope per population** with cluster-robust tests (Holm); a unified-ranking simulation against the pinned legacy policy on the twin with paired bootstrap and Holm; a **weight sweep (Pareto frontier)** with the constraint "organic orders must not fall"; a **failure-mode** simulation (0.5 default, circuit breaker); **A/B power**, an A/A false-positive check and a Monte Carlo test of the analytic sample size |
+| Business translation | ₹ impact with worst/base/best scenarios. Value per organic order, request volume and the scoring weights are **our assumptions** |
+
+### (c) How the industry uses this
+
+Retail media is a major revenue line for Indian ecommerce (Flipkart, Amazon, Myntra, Meesho, quick-commerce apps), and "ads plus organic in one slate" is the standard design. The common stack is CTR and CVR models (logistic regression, GBDT, FTRL, DeepFM), calibration (Platt or isotonic), an expected-value score of the form bid × pCTR × pCVR, a second-price or GSP auction, and position-bias handling. Interviewers expect: calibration, AUC vs log loss vs NDCG, position bias, delayed conversions, counter metrics (organic orders), and A/B tests with seller and platform guardrails.
+
+#%% md
+## 3. Business Question → Analytical Question → Statistical Hypotheses
+
+| Level | Statement |
+|---|---|
+| Business | Can ads and organic items compete in one ranking and beat pinned ad slots on **both** organic orders and ad revenue? |
+| Analytical | Is a single pCTR/pCVR model with an isAds flag and crosses calibrated for both populations, does ranking with it beat the pinned policy on the twin, and how big must the A/B test be? |
+
+**Hypotheses**
+- **H1:** H0: adding the isAds flag and crosses does not change discrimination (AUC, Request AUC) or log loss versus the organic-features model (paired request bootstrap).
+- **H2:** H0: each model is calibrated for each population (calibration-in-the-large = 0, slope = 1; cluster-robust Wald, Holm).
+- **H3:** H0: unified ranking equals the pinned policy in organic orders and in ad revenue (paired bootstrap on requests, Holm across the two primary metrics).
+- **H4:** H0: the weight on bids has no effect on the organic-orders / ad-revenue trade-off.
+- **H5:** H0: a 0.5 default pCTR for failed ad scores does not change the sponsored share (and a circuit breaker does not help).
+- **H6:** H0: an A/B test of the realistic size has no power to detect the simulated lift; the analytic sample size matches a Monte Carlo test (A/A false-positive rate = 5%).
+
+**Primary metrics:** **organic orders per 1,000 requests** (counter metric, must not fall) and **ad revenue per 1,000 requests** (₹). **Diagnostics:** AUC, Request AUC, log loss, calibration slope, sponsored share of slots.
+
+#%% code
+import sys, warnings, importlib, os, time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+from scipy.stats import rankdata
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import HistGradientBoostingClassifier
+import statsmodels.api as sm
+from statsmodels.stats.multitest import multipletests
+
+SEED = 42
+np.random.seed(SEED)
+RNG = np.random.default_rng(np.random.SeedSequence(SEED).spawn(1)[0])
+warnings.filterwarnings("ignore")
+pd.set_option("display.width", 170, "display.max_columns", 30, "display.float_format", "{:,.4f}".format)
+sns.set_theme(style="whitegrid"); plt.rcParams.update({"figure.figsize": (10, 4.5), "figure.dpi": 110, "axes.titleweight": "bold"})
+print("ready")
+
+#%% md
+## 4. Data
+
+### 4.1 Sourcing outcome
+
+| Attempt | Result |
+|---|---|
+| Public Indian ads and organic impression logs | **None.** Public CTR sets (Criteo, Avazu, KDD Cup, Taobao) are non-Indian, have no organic/sponsored mix with a known truth, and none has the counterfactual candidates needed to test a new ranking policy |
+| **Decision** | Synthetic impressions with a hidden true click and order model (a digital twin), so the unified policy can be compared with pinned slots on the same candidate sets (D-17-01) |
+
+### 4.2 Generator — clearly marked section
+
+#%% code
+%%writefile data/generate_cs17.py
+@@INCLUDE C:/Users/11624/OneDrive - Indian School of Business/Documents/personal/case_studies/ecommerce/data/generate_cs17.py
+
+#%% code
+os.makedirs("data/cs17", exist_ok=True)
+sys.path.insert(0, "data"); import generate_cs17 as gen; importlib.reload(gen)
+t0 = time.time(); raw = gen.generate(seed=SEED); raw.to_csv("data/cs17/impressions.csv.gz", index=False)
+print(f"{len(raw):,} impression rows | {raw.request_id.nunique():,} requests | generated in {time.time() - t0:.0f}s")
+raw.head(4)
+
+#%% md
+| Parameter | Value | Basis |
+|---|---|---|
+| Widget | 8 slots; 12 organic + 4 sponsored candidates per request | Our assumption (the pinned design at slots 2 and 5 is **documented**) |
+| Logging | Legacy policy: 6 organic + 2 ads pinned at slots 2 and 5; 20% random-slotting exploration bucket | Pinned slots **documented**; exploration bucket our assumption; organic impressions are 3 times ads (documented: "multi-fold") |
+| Position bias | Examination 1.00, 0.72, 0.55, 0.43, 0.35, 0.28, 0.23, 0.19 for slots 1 to 8 | Our assumption |
+| CTR | Slot examination × sigmoid(attribute logit); organic base rate higher than ads, ads less sensitive to relevance | Our assumption (the base-rate gap is the calibration challenge described in the case) |
+| CVR given click | Organic higher than ads; both depend on hidden affinity and rating | Our assumption |
+| Ad bid | Lognormal around ₹3 per click | Our assumption (mechanism undisclosed) |
+| Request category | 25% high ad relevance, 50% neutral, 25% low ad relevance | Our assumption (the smartphone vs pocket-scissors contrast in the case) |
+| DQ issues | 2,000 duplicate rows, 1,500 missing ratings, 300 impossible bids, 250 orders without a click | Built-in messiness |
+
+### 4.3 Data dictionary
+
+#### Code
+
+#%% code
+dd = pd.DataFrame([
+    ("request_id, day, slot", "Request, day (0 to 13) and the slot (1 to 8) where the item was shown"),
+    ("is_ads, bid", "1 if sponsored; bid in ₹ per click (0 for organic)"),
+    ("cat", "Request category type: 0 high ad relevance, 1 neutral, 2 low ad relevance"),
+    ("x_rel, cobrowse, pop, log_price_ratio, rating", "Model features: noisy relevance score, co-browse strength, popularity, log price vs the viewed product, rating"),
+    ("explore", "1 if the request used random slotting (exploration bucket)"),
+    ("click, order", "Outcomes: click on the item; order after a click"),
+    ("_aff, _p_ctr_attr, _p_cvr", "HIDDEN truth: affinity, position-free click probability, order probability given click (twin only, never a feature)"),
+], columns=["field(s)", "meaning"])
+dd.to_csv("data/cs17/data_dictionary.csv", index=False); dd
+
+#%% md
+## 5. Data Quality Checks
+
+#%% code
+chk = {"duplicate impression rows (request, slot)": int(raw.duplicated(["request_id", "slot"]).sum()), "missing rating": int(raw.rating.isna().sum()), "impossible bids (< 0)": int((raw.bid < 0).sum()), "orders without a click": int(((raw.order == 1) & (raw.click == 0)).sum())}
+print(pd.Series(chk, name="rows").to_string())
+d = raw.drop_duplicates(["request_id", "slot"]).copy(); d["rating"] = d.rating.fillna(d.groupby("is_ads").rating.transform("median"))
+d.loc[d.bid < 0, "bid"] = d.loc[(d.is_ads == 1) & (d.bid >= 0), "bid"].median(); d["order"] = d.order * d.click; d["bid_log"] = np.log1p(d.bid)
+d = d.sort_values(["day", "request_id", "slot"]).reset_index(drop=True); assert (d.groupby("request_id").size() == gen.K).all()
+ex = d[d.explore == 1]
+print(f"\nClean: {len(d):,} impressions | {d.request_id.nunique():,} requests | ads share of impressions {d.is_ads.mean():.1%} | exploration requests {ex.request_id.nunique() / d.request_id.nunique():.1%}")
+print(f"Logged CTR: organic {d[d.is_ads == 0].click.mean():.2%}, ads {d[d.is_ads == 1].click.mean():.2%} | exploration CTR: organic {ex[ex.is_ads == 0].click.mean():.2%}, ads {ex[ex.is_ads == 1].click.mean():.2%} | CVR given click: organic {d[(d.is_ads == 0) & (d.click == 1)].order.mean():.1%}, ads {d[(d.is_ads == 1) & (d.click == 1)].order.mean():.1%} | orders per 1,000 requests {1000 * d.order.sum() / d.request_id.nunique():.1f}")
+
+#%% md
+**Observation:** «O5»
+
+## 6. Exploratory Data Analysis
+
+#%% code
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
+for g_, lab, col in ((0, "organic", "#2a6f97"), (1, "sponsored", "#e07a1f")):
+    s_ = ex[ex.is_ads == g_].groupby("slot").click.agg(["mean", "size"]); se = np.sqrt(s_["mean"] * (1 - s_["mean"]) / s_["size"]); axes[0].errorbar(s_.index, s_["mean"] * 100, yerr=1.96 * se * 100, marker="o", label=lab, color=col, capsize=3)
+axes[0].set_xlabel("Slot (1 = top)"); axes[0].set_ylabel("CTR % (exploration requests, 95% CI)"); axes[0].set_title("Position bias: CTR falls down the slate"); axes[0].legend()
+lg = d.groupby(["slot", "is_ads"]).size().unstack().fillna(0); lg = lg.div(lg.sum(1), axis=0); axes[1].bar(lg.index, lg[1] * 100, color="#e07a1f"); axes[1].set_xlabel("Slot"); axes[1].set_ylabel("Sponsored share of impressions in the slot (%)"); axes[1].set_title("Logs: ads are pinned at slots 2 and 5 (plus exploration)")
+for g_, col in ((0, "#2a6f97"), (1, "#e07a1f")):
+    e = ex[ex.is_ads == g_].copy(); e["q"] = pd.qcut(e.x_rel, 10, labels=False, duplicates="drop"); r_ = e.groupby("q").click.mean(); axes[2].plot(r_.index + 1, r_.values * 100, marker="o", color=col, label="organic" if g_ == 0 else "sponsored")
+axes[2].set_xlabel("Relevance-score decile (1 = lowest)"); axes[2].set_ylabel("CTR % (exploration requests)"); axes[2].set_title("Relevance lifts organic CTR more than ad CTR"); axes[2].legend()
+plt.tight_layout(); plt.show()
+pe = ex.groupby("slot").click.mean(); print(f"Exploration CTR slot 1 vs slot 8 (all items): {pe.iloc[0]:.2%} vs {pe.iloc[-1]:.2%} (ratio {pe.iloc[-1] / pe.iloc[0]:.2f}); ads share of logged impressions in slots 2 and 5: {lg.loc[[2, 5], 1].mean():.0%}, in other slots: {lg.loc[[1, 3, 4, 6, 7, 8], 1].mean():.0%}")
+for g_ in (0, 1):
+    e = ex[ex.is_ads == g_].copy(); e["q"] = pd.qcut(e.x_rel, 10, labels=False, duplicates="drop"); r_ = e.groupby("q").click.mean(); print(("organic" if g_ == 0 else "sponsored"), f"CTR top decile / bottom decile of relevance: {r_.iloc[-1] / r_.iloc[0]:.1f}x")
+
+#%% md
+**Takeaway:** «O61»
+
+#%% code
+fig, axes = plt.subplots(1, 3, figsize=(16, 4.4))
+ct = ex.groupby(["cat", "is_ads"]).click.agg(["mean", "size"]).reset_index(); ct["se"] = np.sqrt(ct["mean"] * (1 - ct["mean"]) / ct["size"]); lab_c = {0: "high ad relevance", 1: "neutral", 2: "low ad relevance"}
+w_ = 0.38
+for g_, col, nm in ((0, "#2a6f97", "organic"), (1, "#e07a1f", "sponsored")):
+    z_ = ct[ct.is_ads == g_]; axes[0].bar(z_.cat + (g_ - 0.5) * w_, z_["mean"] * 100, w_, yerr=1.96 * z_.se * 100, color=col, label=nm, capsize=3)
+axes[0].set_xticks([0, 1, 2]); axes[0].set_xticklabels([lab_c[i] for i in range(3)], rotation=15); axes[0].set_xlabel("Request category"); axes[0].set_ylabel("CTR % (exploration, 95% CI)"); axes[0].set_title("Ad CTR depends on the request category"); axes[0].legend()
+a_ = d[d.is_ads == 1]; axes[1].hist(np.clip(a_.bid, 0, 15), bins=40, color="#e07a1f"); axes[1].set_xlabel("Ad bid (₹ per click, clipped at 15)"); axes[1].set_ylabel("Ad impressions"); axes[1].set_title("Bids are right-skewed")
+cv_ = d[d.click == 1].groupby(["cat", "is_ads"]).order.mean().unstack() * 100; cv_.index = [lab_c[i] for i in cv_.index]; cv_.columns = ["organic", "sponsored"]; cv_.plot.bar(ax=axes[2], color=["#2a6f97", "#e07a1f"]); axes[2].set_xlabel("Request category"); axes[2].set_ylabel("Orders per 100 clicks"); axes[2].set_title("Conversion given click, by population"); axes[2].tick_params(axis="x", rotation=15)
+plt.tight_layout(); plt.show()
+print(ct.assign(CTR_pct=ct["mean"] * 100).round(3)[["cat", "is_ads", "CTR_pct", "size"]].to_string(index=False)); print(f"Median ad bid ₹{a_.bid.median():.2f}; mean ₹{a_.bid.mean():.2f}; CVR given click organic {d[(d.click == 1) & (d.is_ads == 0)].order.mean():.1%} vs ads {d[(d.click == 1) & (d.is_ads == 1)].order.mean():.1%}")
+
+#%% md
+**Takeaway:** «O62»
+
+## 7. Statistical Analysis (core section)
+
+### 7.1 Setup: five pCTR models, discrimination (AUC, Request AUC, log loss)
+
+**Protocol:** train on days 0 to 9, test on days 10 to 13 (time split). All models see the **slot** (one-hot) so that position bias is not blamed on the item; at **ranking time the slot is set to 1** for everyone (a position-free score). Features: relevance score, co-browse, popularity, log price ratio, rating, request category.
+
+| # | Model | In one line |
+|---|---|---|
+| M0 | Organic-features model, no flag | One logistic model on all impressions with no ads indicator and no bid |
+| M1 | + isAds flag | M0 plus the flag and the (log) bid |
+| M2 | + flag × crosses | M1 plus isAds × each feature, and isAds × category × relevance (the documented 2-way and 3-way crosses, on our 7 base features) |
+| M3 | Separate models | One logistic model for organic and one for ads |
+| M4 | Gradient boosting | Gradient-boosted trees on the M1 features (interactions learned) |
+
+**Metrics:** AUC overall and within each population; **log loss** (rewards calibration); **Request AUC** = within-request pairwise ordering of clicked above non-clicked items, computed on the **exploration** requests only (random slotting removes position confounding); 95% CIs from a **request-clustered bootstrap** (100 resamples). H1: paired differences versus M1.
+
+#### Code
+
+#%% code
+NUMS = ["x_rel", "cobrowse", "pop", "log_price_ratio", "rating"]; mu_, sd_ = d[NUMS].mean(), d[NUMS].std()
+def design(df, kind, slot=None):
+    z = ((df[NUMS] - mu_) / sd_).copy().reset_index(drop=True)
+    for k in (0, 1, 2): z[f"cat{k}"] = (df.cat.values == k).astype(float)
+    sl = df.slot.values if slot is None else np.full(len(df), slot)
+    for s_ in range(2, 9): z[f"slot{s_}"] = (sl == s_).astype(float)
+    if kind == "M0": return z
+    a = df.is_ads.values.astype(float); z["is_ads"] = a; z["bid_log"] = np.log1p(df.bid.values)
+    if kind == "M1": return z
+    for c in NUMS + ["cat0", "cat1", "cat2"]: z[f"ads_x_{c}"] = a * z[c].values
+    for k in (0, 1, 2): z[f"ads_cat{k}_x_rel"] = a * z[f"cat{k}"].values * z["x_rel"].values
+    return z
+def lr(): return LogisticRegression(C=1.0, max_iter=400)
+trm = d.day < 10; D_tr, D_te = d[trm].reset_index(drop=True), d[~trm].reset_index(drop=True)
+FIT = {}
+for k in ("M0", "M1", "M2"): FIT[k] = lr().fit(design(D_tr, k), D_tr.click)
+FIT["M3_org"] = lr().fit(design(D_tr[D_tr.is_ads == 0], "M0"), D_tr[D_tr.is_ads == 0].click); FIT["M3_ads"] = lr().fit(design(D_tr[D_tr.is_ads == 1], "M1"), D_tr[D_tr.is_ads == 1].click)
+M4cols = lambda df, slot=None: pd.DataFrame({**{c: df[c].values for c in NUMS}, "cat": df.cat.values, "is_ads": df.is_ads.values, "bid_log": np.log1p(df.bid.values), "slot": df.slot.values if slot is None else np.full(len(df), slot)})
+FIT["M4"] = HistGradientBoostingClassifier(max_iter=200, learning_rate=0.1, max_leaf_nodes=31, min_samples_leaf=100, random_state=SEED).fit(M4cols(D_tr), D_tr.click)
+def predict_ctr(kind, df, slot=None):
+    if kind in ("M0", "M1", "M2"): return FIT[kind].predict_proba(design(df, kind, slot))[:, 1]
+    if kind == "M4": return FIT["M4"].predict_proba(M4cols(df, slot))[:, 1]
+    p = np.zeros(len(df)); a = df.is_ads.values == 1
+    if (~a).any(): p[~a] = FIT["M3_org"].predict_proba(design(df[~a], "M0", slot))[:, 1]
+    if a.any(): p[a] = FIT["M3_ads"].predict_proba(design(df[a], "M1", slot))[:, 1]
+    return p
+KINDS = ["M0", "M1", "M2", "M3", "M4"]; NAMES = {"M0": "M0 organic features, no flag", "M1": "M1 + isAds flag", "M2": "M2 + flag x crosses", "M3": "M3 separate models", "M4": "M4 gradient boosting"}
+P = {k: predict_ctr(k, D_te) for k in KINDS}; yt = D_te.click.values; ad_t = D_te.is_ads.values == 1; nreq_t = len(D_te) // gen.K
+def auc(yy, s):
+    n1 = yy.sum(); n0 = len(yy) - n1; return np.nan if n1 == 0 or n0 == 0 else (rankdata(s)[yy == 1].sum() - n1 * (n1 + 1) / 2) / (n1 * n0)
+def ll(yy, p): p = np.clip(p, 1e-9, 1 - 1e-9); return -np.mean(yy * np.log(p) + (1 - yy) * np.log(1 - p))
+def metrics_rows(rows):
+    out = {}
+    for k in KINDS:
+        p, yy, a = P[k][rows], yt[rows], ad_t[rows]; out[k] = (auc(yy, p), auc(yy[~a], p[~a]), auc(yy[a], p[a]), ll(yy, p), ll(yy[~a], p[~a]), ll(yy[a], p[a]))
+    return out
+all_rows = np.arange(len(D_te)); base_m = metrics_rows(all_rows); BR = np.random.default_rng(SEED); NB = 100; bm = []
+for _ in range(NB):
+    idx = BR.integers(0, nreq_t, nreq_t); rows = (idx[:, None] * gen.K + np.arange(gen.K)).ravel(); bm.append(metrics_rows(rows))
+# request AUC on exploration requests, position-free scores (slot = 1)
+exr = (D_te.explore.values.reshape(-1, gen.K)[:, 0] == 1); Cm = yt.reshape(-1, gen.K)[exr]; S_free = {k: predict_ctr(k, D_te, slot=1).reshape(-1, gen.K)[exr] for k in KINDS}
+def req_auc_parts(S):
+    pos, neg = Cm[:, :, None] * (1 - Cm)[:, None, :], None; gt = (S[:, :, None] > S[:, None, :]) + 0.5 * (S[:, :, None] == S[:, None, :]); return (pos * gt).sum((1, 2)), pos.sum((1, 2))
+RA = {k: req_auc_parts(S_free[k]) for k in KINDS}; nE = exr.sum(); RB = BR.integers(0, nE, (1000, nE))
+rows = []
+for j, k in enumerate(KINDS):
+    ra = RA[k][0].sum() / RA[k][1].sum(); rb = RA[k][0][RB].sum(1) / RA[k][1][RB].sum(1); b_ = np.array([m[k] for m in bm])
+    rows.append((NAMES[k], *base_m[k], ra, np.percentile(b_[:, 0], 2.5), np.percentile(b_[:, 0], 97.5), np.percentile(rb, 2.5), np.percentile(rb, 97.5)))
+disc = pd.DataFrame(rows, columns=["model", "AUC", "AUC organic", "AUC ads", "log loss", "log loss organic", "log loss ads", "Request AUC", "AUC low", "AUC high", "ReqAUC low", "ReqAUC high"]).set_index("model")
+print(f"Test: {nreq_t:,} requests, {len(D_te):,} impressions, clicks {yt.sum():,} (ads {yt[ad_t].sum():,}); exploration requests {nE:,} with at least one click {int((Cm.sum(1) > 0).sum()):,}")
+disc.round(4)
+
+#%% code
+rows = []; ref = "M1"; pv = []
+for k in KINDS:
+    if k == ref: continue
+    b_ = np.array([[m[k][i] - m[ref][i] for i in range(6)] for m in bm]); rb = RA[k][0][RB].sum(1) / RA[k][1][RB].sum(1) - RA[ref][0][RB].sum(1) / RA[ref][1][RB].sum(1); d0 = base_m[k][5] - base_m[ref][5]
+    p_ll = max(2 * min((b_[:, 5] >= 0).mean(), (b_[:, 5] <= 0).mean()), 1 / NB); pv.append(p_ll)
+    rows.append((NAMES[k], base_m[k][0] - base_m[ref][0], np.percentile(b_[:, 0], 2.5), np.percentile(b_[:, 0], 97.5), d0, np.percentile(b_[:, 5], 2.5), np.percentile(b_[:, 5], 97.5), p_ll, RA[k][0].sum() / RA[k][1].sum() - RA[ref][0].sum() / RA[ref][1].sum(), np.percentile(rb, 2.5), np.percentile(rb, 97.5)))
+dif = pd.DataFrame(rows, columns=[f"vs {NAMES[ref]}", "ΔAUC", "low", "high", "Δlog loss ads", "low ", "high ", "bootstrap p", "ΔRequest AUC", "low  ", "high  "]).set_index(f"vs {NAMES[ref]}"); dif["p_holm (log loss ads)"] = multipletests(dif["bootstrap p"], method="holm")[1]
+dif.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O71»
+
+### 7.2 Calibration across populations: ads vs organic
+
+**(a) Why?** The ranker compares an ad's pCTR with an organic item's pCTR, so each population's predictions must be calibrated on its own. For each model and population we fit (i) a **calibration-in-the-large** model (logistic regression of the click on an offset of logit(p); the intercept is the log of the over/under-prediction, H0: 0) and (ii) a **calibration slope** (logistic regression of the click on logit(p); H0: slope = 1), both with request-clustered standard errors. We also report the ratio of the actual to the predicted click rate on the **exploration** requests alone, and the **expected calibration error** (10 equal-frequency bins). Holm across the 10 intercept tests.
+
+#### Code
+
+#%% code
+def calib(p, yy, grp):
+    p = np.clip(p, 1e-6, 1 - 1e-6); lg_ = np.log(p / (1 - p)); f1 = sm.GLM(yy, sm.add_constant(lg_), family=sm.families.Binomial()).fit(cov_type="cluster", cov_kwds={"groups": grp})
+    f2 = sm.GLM(yy, np.ones(len(yy)), family=sm.families.Binomial(), offset=lg_).fit(cov_type="cluster", cov_kwds={"groups": grp})
+    q = pd.qcut(p, 10, labels=False, duplicates="drop"); g = pd.DataFrame({"p": p, "y": yy, "q": q}).groupby("q").agg(p=("p", "mean"), y=("y", "mean"), n=("y", "size")); ece = (g.n * (g.p - g.y).abs()).sum() / g.n.sum()
+    return f2.params[0], f2.bse[0], f2.pvalues[0], f1.params[1], f1.bse[1], ece
+rows = []; grp_t = D_te.request_id.values; ex_t = D_te.explore.values == 1
+for k in KINDS:
+    for gname, m_ in (("organic", ~ad_t), ("ads", ad_t)):
+        ci, cse, cp, sl_, sse, ece = calib(P[k][m_], yt[m_], grp_t[m_]); me = m_ & ex_t
+        rows.append((NAMES[k], gname, P[k][m_].mean(), yt[m_].mean(), yt[m_].sum() / P[k][m_].sum(), ci, ci - 1.96 * cse, ci + 1.96 * cse, cp, sl_, sl_ - 1.96 * sse, sl_ + 1.96 * sse, 2 * stats.norm.sf(abs(sl_ - 1) / sse), ece, yt[me].sum() / P[k][me].sum()))
+cal = pd.DataFrame(rows, columns=["model", "population", "mean predicted", "mean actual", "actual / predicted", "intercept (CITL)", "int low", "int high", "p (intercept)", "slope", "slope low", "slope high", "p (slope = 1)", "ECE", "exploration actual / predicted"]).set_index(["model", "population"])
+cal["p_holm (intercept)"] = multipletests(cal["p (intercept)"], method="holm")[1]
+cal.round(4)
+
+#%% code
+fig, axes = plt.subplots(1, 2, figsize=(14, 4.6))
+for ax, (gname, m_) in zip(axes, (("organic", ~ad_t), ("sponsored", ad_t))):
+    for k, col in (("M0", "#c44e52"), ("M1", "#8172b2"), ("M2", "#2a6f97")):
+        p = P[k][m_]; q = pd.qcut(p, 10, labels=False, duplicates="drop"); g = pd.DataFrame({"p": p, "y": yt[m_], "q": q}).groupby("q").mean(); ax.plot(g.p * 100, g.y * 100, marker="o", label=NAMES[k], color=col)
+    lim = max(ax.get_xlim()[1], ax.get_ylim()[1]); ax.plot([0, lim], [0, lim], "k--", lw=1, label="perfect calibration"); ax.set_xlabel("Mean predicted CTR % (decile)"); ax.set_ylabel("Actual CTR %"); ax.set_title(f"Reliability: {gname} impressions"); ax.legend()
+plt.tight_layout(); plt.show()
+cs = cal["actual / predicted"].unstack(); print("Actual / predicted click rate by population:"); print(cs.round(3).to_string())
+
+#%% md
+**Takeaway:** «O72»
+
+### 7.3 pCVR: does the same logic hold for conversion, with far fewer events?
+
+**(a) Why?** The score uses pCTR × pCVR. Conversions given a click are rare (especially for ads), so the CVR model is the noisier half. We fit three logistic CVR models on clicked impressions (days 0 to 9) and test on days 10 to 13: C0 no flag, C1 + flag and bid, C2 + flag × crosses. Metrics: AUC, log loss and the ratio of actual to predicted conversion by population (cluster-robust CI). H0: each population is calibrated (ratio = 1).
+
+#### Code
+
+#%% code
+def design_cv(df, kind):
+    z = ((df[NUMS] - mu_) / sd_).copy().reset_index(drop=True)
+    for k in (0, 1, 2): z[f"cat{k}"] = (df.cat.values == k).astype(float)
+    if kind == "C0": return z
+    a = df.is_ads.values.astype(float); z["is_ads"] = a; z["bid_log"] = np.log1p(df.bid.values)
+    if kind == "C1": return z
+    for c in NUMS + ["cat0", "cat1", "cat2"]: z[f"ads_x_{c}"] = a * z[c].values
+    return z
+CT_tr, CT_te = D_tr[D_tr.click == 1].reset_index(drop=True), D_te[D_te.click == 1].reset_index(drop=True); CFIT = {k: LogisticRegression(C=1.0, max_iter=400).fit(design_cv(CT_tr, k), CT_tr.order) for k in ("C0", "C1", "C2")}
+yo = CT_te.order.values; ad_c = CT_te.is_ads.values == 1; PC_ = {k: CFIT[k].predict_proba(design_cv(CT_te, k))[:, 1] for k in CFIT}; rows = []
+print(f"Training clicks {len(CT_tr):,} (orders {int(CT_tr.order.sum()):,}; ads orders {int(CT_tr[CT_tr.is_ads == 1].order.sum()):,}) | test clicks {len(CT_te):,} (orders {int(yo.sum()):,}; ads orders {int(yo[ad_c].sum()):,})")
+bs_ = np.random.default_rng(SEED); BX = bs_.integers(0, len(CT_te), (300, len(CT_te)))
+for k, nm in (("C0", "C0 no flag"), ("C1", "C1 + isAds flag"), ("C2", "C2 + flag x crosses")):
+    p = PC_[k]; ab = np.array([auc(yo[ix], p[ix]) for ix in BX]); row = [nm, auc(yo, p), np.percentile(ab, 2.5), np.percentile(ab, 97.5), ll(yo, p)]
+    for m_ in (~ad_c, ad_c):
+        p_ = np.clip(p[m_], 1e-6, 1 - 1e-6); lg_ = np.log(p_ / (1 - p_)); f = sm.GLM(yo[m_], np.ones(m_.sum()), family=sm.families.Binomial(), offset=lg_).fit(cov_type="cluster", cov_kwds={"groups": CT_te.request_id.values[m_]}); row += [yo[m_].sum() / p_.sum(), np.exp(f.params[0] - 1.96 * f.bse[0]), np.exp(f.params[0] + 1.96 * f.bse[0]), f.pvalues[0]]
+    rows.append(row)
+cvr = pd.DataFrame(rows, columns=["model", "AUC", "AUC low", "AUC high", "log loss", "organic actual/pred", "org low", "org high", "org p", "ads actual/pred", "ads low", "ads high", "ads p"]).set_index("model")
+cvr.round(4)
+
+#%% md
+**Observation:** «O73»
+
+### 7.4 Does unified ranking beat pinned slots? A twin comparison on the same candidate sets
+
+**(a) Why?** Offline AUC cannot say what happens when the **ranking policy** changes, because the logs only contain the items the old policy showed. In the digital twin we generate fresh candidate sets (12 organic + 4 sponsored), rank them with each policy and compute the **expected** outcome under the hidden true click and order model (position bias included). Every policy sees the **same requests**, so differences are paired and tested with a **bootstrap over requests** (1,000 resamples); Holm across the 12 tests on the two primary metrics.
+
+**Scoring rule** (our assumption; the company's exact formula is not disclosed): value per impression = pCTR × (a + b × pCVR) for organic items, with a = ₹0.30 per click and b = ₹60 per order; sponsored items add the bid: pCTR × (λ × bid + a + b × pCVR). Here **λ = 1** (bid at face value). Policies: **pinned** (legacy: organic by relevance, two ads at slots 2 and 5), unified with each of the five pCTR models (pCVR from C2), and an **oracle** unified policy using the true probabilities.
+
+#### Code
+
+#%% code
+EXAM = np.array(gen.EXAM); A_CLK, B_ORD = 0.30, 60.0; NR_T, NR_E = 20_000, 30_000; ss = np.random.SeedSequence(SEED + 17).spawn(3)
+def make_set(n, seed_seq):
+    r = np.random.default_rng(seed_seq); c = gen.make_candidates(n, r); c["bid_log"] = np.log1p(c.bid); c["slot"] = 1
+    S = {k: c[k].values.reshape(n, 16) for k in ("is_ads", "bid", "_p_ctr_attr", "_p_cvr")}; S["pinned"] = gen.legacy_slate(c, np.random.default_rng(seed_seq.spawn(1)[0]))
+    S["pc"] = {k: predict_ctr(k, c, slot=1).reshape(n, 16) for k in KINDS}; S["cv"] = {k: CFIT[k].predict_proba(design_cv(c, k))[:, 1].reshape(n, 16) for k in CFIT}; return c, S
+cand_tune, S_tune = make_set(NR_T, ss[0]); cand_test, S_test = make_set(NR_E, ss[1])
+def slate_by_score(S, pc, cv, lam):
+    val = pc * (np.where(S["is_ads"] == 1, lam * S["bid"], 0.0) + A_CLK + B_ORD * cv); return np.argsort(-val, axis=1)[:, :gen.K]
+def outcomes(S, slate):
+    tk = lambda a: np.take_along_axis(a, slate, 1); pa = tk(S["_p_ctr_attr"]) * EXAM; cvt = tk(S["_p_cvr"]); ad = tk(S["is_ads"]); bid = tk(S["bid"]); od = pa * cvt
+    return {"organic orders": (od * (1 - ad)).sum(1), "ad revenue": (pa * bid * ad).sum(1), "ad orders": (od * ad).sum(1), "sponsored share": ad.mean(1), "clicks": pa.sum(1)}
+def pol(S, kind, lam=1.0):
+    if kind == "pinned": return S["pinned"]
+    if kind == "oracle": return slate_by_score(S, S["_p_ctr_attr"], S["_p_cvr"], lam)
+    return slate_by_score(S, S["pc"][kind], S["cv"]["C2"], lam)
+BQ = np.random.default_rng(SEED).integers(0, NR_E, (1000, NR_E))
+def lift_ci(o, o0, key):
+    a, b = o[key], o0[key]; l_ = (a.mean() - b.mean()) / b.mean(); d_ = a - b; mb = d_[BQ].mean(1); rel = mb / b[BQ].mean(1); p_ = max(2 * min((mb <= 0).mean(), (mb >= 0).mean()), 1 / 1000); return l_, np.percentile(rel, 2.5), np.percentile(rel, 97.5), p_
+O0 = outcomes(S_test, pol(S_test, "pinned")); POL = {"unified, " + NAMES[k]: k for k in KINDS}; POL["unified, oracle (true probabilities)"] = "oracle"; rows = []; OC = {}
+for nm, k in POL.items():
+    o = outcomes(S_test, pol(S_test, k, 1.0)); OC[nm] = o; lo_, a1, b1, p1 = lift_ci(o, O0, "organic orders"); lr_, a2, b2, p2 = lift_ci(o, O0, "ad revenue")
+    rows.append((nm, 1000 * o["organic orders"].mean(), lo_, a1, b1, p1, 1000 * o["ad revenue"].mean(), lr_, a2, b2, p2, o["sponsored share"].mean()))
+uni = pd.DataFrame(rows, columns=["policy", "organic orders / 1,000 req", "lift", "low", "high", "p", "ad revenue ₹ / 1,000 req", "lift ", "low ", "high ", "p ", "sponsored share of slots"]).set_index("policy")
+pa_ = uni["p"].values; pb_ = uni["p "].values; hp = multipletests(np.r_[pa_, pb_], method="holm")[1]; uni["p_holm (orders)"] = hp[: len(pa_)]; uni["p_holm (revenue)"] = hp[len(pa_):]
+print(f"Pinned (legacy): organic orders {1000 * O0['organic orders'].mean():.2f} / 1,000 requests; ad revenue ₹{1000 * O0['ad revenue'].mean():.1f} / 1,000 requests; sponsored share {O0['sponsored share'].mean():.1%}; {NR_E:,} test requests")
+uni.round(4)
+
+#%% md
+**(c)/(f) Observation:** «O74»
+
+### 7.5 Choosing the weights: the Pareto frontier and a "do no harm" rule
+
+**(a) Why?** The documented design picks weights by offline simulation as a **multi-objective** problem. The bid weight λ moves the policy along a frontier between organic orders and ad revenue. We sweep λ on a **tuning set** of 20,000 fresh requests for the flag + crosses model (M2) and for the organic-features model (M0), choose the λ that **maximises ad revenue subject to organic orders not falling below the pinned policy** (fall back to λ = 0 if none qualifies), and evaluate that λ once on the **separate test set** with paired bootstrap CIs and Holm across the two primary metrics. H4: the lift in revenue is flat in λ.
+
+#### Code
+
+#%% code
+LAMS = [0.0, 0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0]; O0t = outcomes(S_tune, pol(S_tune, "pinned")); fr = []
+for k in ("M2", "M0"):
+    for lam in LAMS:
+        o = outcomes(S_tune, pol(S_tune, k, lam)); fr.append((k, lam, o["organic orders"].mean() / O0t["organic orders"].mean() - 1, o["ad revenue"].mean() / O0t["ad revenue"].mean() - 1, o["sponsored share"].mean()))
+fr = pd.DataFrame(fr, columns=["model", "lambda", "organic orders lift", "ad revenue lift", "sponsored share"])
+STAR = {}
+for k in ("M2", "M0"):
+    f_ = fr[(fr.model == k) & (fr["organic orders lift"] >= 0)]; STAR[k] = float(f_.loc[f_["ad revenue lift"].idxmax(), "lambda"]) if len(f_) else 0.0
+rows = []
+for k in ("M2", "M0"):
+    o = outcomes(S_test, pol(S_test, k, STAR[k])); OC[f"tuned {k}"] = o; lo_, a1, b1, p1 = lift_ci(o, O0, "organic orders"); lr_, a2, b2, p2 = lift_ci(o, O0, "ad revenue"); hp = multipletests([p1, p2], method="holm")[1]
+    rows.append((f"{NAMES[k]} at tuned lambda = {STAR[k]}", lo_, a1, b1, hp[0], lr_, a2, b2, hp[1], o["sponsored share"].mean(), (o["organic orders"].sum() + o["ad orders"].sum()) / (O0["organic orders"].sum() + O0["ad orders"].sum()) - 1))
+tun = pd.DataFrame(rows, columns=["policy (test set)", "organic orders lift", "low", "high", "p_holm", "ad revenue lift", "low ", "high ", "p_holm ", "sponsored share", "total orders lift"]).set_index("policy (test set)")
+print(f"Chosen lambda on the tuning set: M2 = {STAR['M2']}, M0 = {STAR['M0']}"); display(fr.round(4)); tun.round(4)
+
+#%% code
+fig, ax = plt.subplots(figsize=(9, 5))
+for k, col in (("M2", "#2a6f97"), ("M0", "#c44e52")):
+    f_ = fr[fr.model == k]; ax.plot(f_["organic orders lift"] * 100, f_["ad revenue lift"] * 100, marker="o", color=col, label=NAMES[k])
+    for _, r_ in f_.iterrows(): ax.annotate(f"{r_['lambda']:g}", (r_["organic orders lift"] * 100, r_["ad revenue lift"] * 100), textcoords="offset points", xytext=(4, 4), fontsize=8, color=col)
+ax.axhline(0, color="grey", lw=1); ax.axvline(0, color="grey", lw=1); ax.plot([0], [0], "k*", ms=12, label="pinned slots (legacy)"); ax.set_xlabel("Organic orders vs pinned (%)"); ax.set_ylabel("Ad revenue vs pinned (%)"); ax.set_title("Frontier of the bid weight lambda (tuning set; labels = lambda)"); ax.legend()
+plt.tight_layout(); plt.show()
+print("Best point with organic orders not below pinned:", {k: (STAR[k], round(float(fr[(fr.model == k) & (fr['lambda'] == STAR[k])]['ad revenue lift'].iloc[0]) * 100, 2)) for k in STAR})
+
+#%% md
+**Takeaway:** «O75»
+
+### 7.6 Failure modes: the 0.5 default and the circuit breaker
+
+**(a) Why?** The case warns that a default score of 0.5 for missing predictions could flood the page with ads. We simulate a scoring outage for a share *f* of the sponsored candidates (f = 0, 1%, 5%, 10%, 25%) in the tuned M2 policy, where a failed ad gets pCTR = **0.5**. Two guards are compared: (i) a **safe default**, the population's mean pCTR; (ii) a **circuit breaker** that reverts a request to the pinned slate if all four sponsored candidates enter the slate (a sponsored-share cap of 4 in 8 slots, our assumption). H5: the failure raises the sponsored share and lowers organic orders; the guards restore them.
+
+#### Code
+
+#%% code
+rf = np.random.default_rng(SEED + 5); Sx = S_test; lamM2 = STAR["M2"]; base_pc = Sx["pc"]["M2"]; safe = base_pc[Sx["is_ads"] == 1].mean(); rows = []
+for f in (0.0, 0.01, 0.05, 0.10, 0.25):
+    fail = (Sx["is_ads"] == 1) & (rf.random(Sx["is_ads"].shape) < f)
+    for mode in ("default 0.5", "safe default (mean ad pCTR)", "default 0.5 + circuit breaker"):
+        pc_ = np.where(fail, safe if mode.startswith("safe") else 0.5, base_pc); slate = slate_by_score(Sx, pc_, Sx["cv"]["C2"], lamM2); tripped = np.zeros(len(slate), bool)
+        if "breaker" in mode:
+            tripped = np.take_along_axis(Sx["is_ads"], slate, 1).sum(1) >= 4; slate = np.where(tripped[:, None], Sx["pinned"], slate)
+        o = outcomes(Sx, slate); rows.append((f, mode, o["sponsored share"].mean(), 1000 * o["organic orders"].mean(), o["organic orders"].mean() / O0["organic orders"].mean() - 1, o["ad revenue"].mean() / O0["ad revenue"].mean() - 1, tripped.mean()))
+fm = pd.DataFrame(rows, columns=["failed share of ad scores", "guard", "sponsored share of slots", "organic orders / 1,000 req", "organic orders vs pinned", "ad revenue vs pinned", "requests reverted to pinned"]).set_index(["failed share of ad scores", "guard"])
+print(f"Normal operation (no failure): sponsored share {fm.loc[(0.0, 'default 0.5'), 'sponsored share of slots']:.1%}; pinned policy sponsored share {O0['sponsored share'].mean():.1%}")
+fm.round(4)
+
+#%% md
+**Observation:** «O76»
+
+### 7.7 What would the A/B test need? Power, a false-positive check and Monte Carlo
+
+**(a) Why?** The company reports a test with cumulative exposures above 100 million, a significant 1.36% rise in organic orders and a 3.4% rise in ad revenue. We turn the twin into an experiment: each request produces Poisson order counts (and click-driven revenue) with its expected rate under pinned or unified. (1) **Analytic sample size** per arm for a two-sided test (α = 0.05, 80% power) using the per-request variance of the outcome (Poisson noise plus variation across requests); we show it for our simulated lifts and for the company's reported lifts. (2) **Monte Carlo at 1 million requests per arm**: 200 simulated tests of unified vs pinned (power and CI coverage of the true lift) and 200 **A/A tests** (pinned vs pinned) to check that the false-positive rate is about 5% (exact binomial test; Wilson CI). H6.
+
+#### Code
+
+#%% code
+oT = outcomes(S_test, pol(S_test, "M2", STAR["M2"]))
+def rates(S, slate):
+    tk = lambda a: np.take_along_axis(a, slate, 1); pa = tk(S["_p_ctr_attr"]) * EXAM; ad = tk(S["is_ads"]); bid = tk(S["bid"]); cl_ad = (pa * ad).sum(1)
+    return {"organic orders": (pa * tk(S["_p_cvr"]) * (1 - ad)).sum(1), "ad clicks": cl_ad, "rpc": np.where(cl_ad > 0, (pa * ad * bid).sum(1) / np.maximum(cl_ad, 1e-12), 0.0)}
+Rp, Ru = rates(S_test, pol(S_test, "pinned")), rates(S_test, pol(S_test, "M2", STAR["M2"]))
+def var_orders(lam): return (lam + lam ** 2).mean() - lam.mean() ** 2                       # Poisson count with a request-specific rate
+def var_rev(c, rpc): return (rpc ** 2 * (c + c ** 2)).mean() - (c * rpc).mean() ** 2        # Poisson clicks x revenue per click
+vo_p, vo_u = var_orders(Rp["organic orders"]), var_orders(Ru["organic orders"]); mo_p, mo_u = Rp["organic orders"].mean(), Ru["organic orders"].mean()
+vr_p, vr_u = var_rev(Rp["ad clicks"], Rp["rpc"]), var_rev(Ru["ad clicks"], Ru["rpc"]); mr_p, mr_u = (Rp["ad clicks"] * Rp["rpc"]).mean(), (Ru["ad clicks"] * Ru["rpc"]).mean()
+zz = (stats.norm.ppf(0.975) + stats.norm.ppf(0.8)) ** 2
+def n_arm(v0, v1, delta): return int(np.ceil(zz * (v0 + v1) / delta ** 2))
+rows = [("organic orders: our simulated lift", mo_u / mo_p - 1, n_arm(vo_p, vo_u, mo_u - mo_p)), ("organic orders: company-reported +1.36% (applied to our baseline)", 0.0136, n_arm(vo_p, vo_p, 0.0136 * mo_p)), ("ad revenue: our simulated lift", mr_u / mr_p - 1, n_arm(vr_p, vr_u, mr_u - mr_p)), ("ad revenue: company-reported +3.4% (applied to our baseline)", 0.034, n_arm(vr_p, vr_p, 0.034 * mr_p))]
+ss_n = pd.DataFrame(rows, columns=["metric and effect", "relative lift", "requests per arm (80% power)"]).set_index("metric and effect")
+ss_n["requests per arm if 8 impressions each = impressions"] = ss_n.iloc[:, 1] * gen.K
+display(ss_n.round(4))
+# Monte Carlo
+RM = np.random.default_rng(SEED + 9); NMC, REPS = 1_000_000, 200; Z = stats.norm.ppf(0.975)
+def arm(R, n):
+    ix = RM.integers(0, len(R["organic orders"]), n); y1 = RM.poisson(R["organic orders"][ix]).astype(float); c = RM.poisson(R["ad clicks"][ix]); y2 = c * R["rpc"][ix]; return y1.mean(), y1.var(ddof=1) / n, y2.mean(), y2.var(ddof=1) / n
+def one(Ra, Rb):
+    a, b = arm(Ra, NMC), arm(Rb, NMC); res_ = []
+    for i in (0, 2):
+        dlt = b[i] - a[i]; se = np.sqrt(a[i + 1] + b[i + 1]); res_.append((dlt, se, abs(dlt / se) > Z))
+    return res_, (b[0] / a[0] - 1, b[2] / a[2] - 1)
+ab = [one(Rp, Ru) for _ in range(REPS)]; aa = [one(Rp, Rp) for _ in range(REPS)]
+true_lift = (mo_u / mo_p - 1, mr_u / mr_p - 1); true_diff = (mo_u - mo_p, mr_u - mr_p); rows = []
+for j, nm in ((0, "organic orders"), (1, "ad revenue")):
+    rej_ab = np.mean([r[0][j][2] for r in ab]); rej_aa = np.mean([r[0][j][2] for r in aa]); k_ = int(sum(r[0][j][2] for r in aa)); bt = stats.binomtest(k_, REPS, 0.05); ci_aa = bt.proportion_ci(method="wilson")
+    cover = np.mean([(r[0][j][0] - Z * r[0][j][1] <= true_diff[j] <= r[0][j][0] + Z * r[0][j][1]) for r in ab])
+    rows.append((nm, true_lift[j], np.mean([r[1][j] for r in ab]), rej_ab, rej_aa, ci_aa.low, ci_aa.high, bt.pvalue, cover))
+mc = pd.DataFrame(rows, columns=["metric", "true lift", "mean estimated lift", f"power at {NMC:,} per arm ({REPS} tests)", "A/A false-positive rate", "Wilson low", "Wilson high", "binomial p (rate = 5%)", "CI coverage of true difference"]).set_index("metric")
+mc.round(4)
+
+#%% md
+**Observation:** «O77»
+
+## 8. ML Section — what we built and what is beyond it
+
+- **CTR and CVR as calibrated probabilities:** L2 logistic regression with explicit flag and crosses is transparent and fast; the gradient-boosted model learns interactions without hand-made crosses. The documented stack uses **FTRL** (online logistic) for the ranker and an **SGD classifier** for the relevance-filter stage; we did not run either (no tuning, per the brief).
+- **Position bias:** all models are trained with the slot as a feature and scored at slot 1. In real logs the slot is confounded with the policy (ads at 2 and 5), so an exploration bucket, interleaving or inverse-propensity weighting is needed. Here the bucket is simulated.
+- **Calibration** is checked per population (7.2); Platt or isotonic recalibration per population is the standard fix if it fails.
+- **Beyond this notebook:** deep CTR models (DeepFM, DCN), delayed-conversion handling, an explicit auction (second price / GSP) with reserve prices, personalised features, and learning-to-rank losses (see Case 15 for candidate generation).
+
+## 9. Business Translation — ₹ impact
+
+Assumptions (D-17-07): the tuned M2 policy; value of an organic order to the platform ₹60 (a contribution margin, our assumption); the "Similar Products" widget serves **3 crore requests a day** (base; 1 crore worst, 5 crore best; assumption); sponsored revenue is the bid per click. The per-request gains come from the twin (test set); worst and best use the **CI bounds** of the lifts. We also show the company's reported lifts applied to our baseline for comparison.
+
+#### Code
+
+#%% code
+vol = {"worst": 1e7, "base": 3e7, "best": 5e7}; r_o, r_a = O0["organic orders"].mean(), O0["ad revenue"].mean(); o_t = OC["tuned M2"]
+lo_, a1, b1, _ = lift_ci(o_t, O0, "organic orders"); lr_, a2, b2, _ = lift_ci(o_t, O0, "ad revenue")
+sc_ = {"worst": (a1, a2), "base": (lo_, lr_), "best": (b1, b2)}
+money = {k: {"requests / day (crore)": vol[k] / 1e7, "organic orders lift": sc_[k][0], "ad revenue lift": sc_[k][1], "₹ crore / year: organic orders": sc_[k][0] * r_o * B_ORD * vol[k] * 365 / 1e7, "₹ crore / year: ad revenue": sc_[k][1] * r_a * vol[k] * 365 / 1e7} for k in vol}
+money["company-reported lifts on our baseline (base volume)"] = {"requests / day (crore)": 3.0, "organic orders lift": 0.0136, "ad revenue lift": 0.034, "₹ crore / year: organic orders": 0.0136 * r_o * B_ORD * 3e7 * 365 / 1e7, "₹ crore / year: ad revenue": 0.034 * r_a * 3e7 * 365 / 1e7}
+money = pd.DataFrame(money).T; money["₹ crore / year: total"] = money.iloc[:, 3] + money.iloc[:, 4]
+print(f"Baseline per 1,000 requests (pinned, twin): organic orders {1000 * r_o:.2f}, ad revenue ₹{1000 * r_a:.1f}; ad revenue at base volume ₹{r_a * 3e7 * 365 / 1e7:,.0f} crore / year")
+money.round(3)
+
+#%% md
+**Takeaway (business reading):** «O9»
+
+## 10. Recommendation and Decision
+
+«O10»
+
+## 11. Risks, Limitations and Next Steps
+
+- **Simulated truth:** base rates, slopes, position bias, request categories, the exploration bucket and the scoring weights are assumptions. The measured lifts show that the **method works in a world with these features**, not what Flipkart's lift is. Our simulated lifts should not be compared with the company's 1.36% and 3.4% as if they validated each other.
+- **Mechanism undisclosed:** the exact sponsored score and auction are not described by the company. Our value formula (bid per click added to the shopper value) is a placeholder; a real auction with second-price payments changes both revenue and bidder behaviour.
+- **Counterfactual evaluation:** the twin knows the true probabilities; real logs only reveal the items shown. Real offline evaluation needs exploration traffic, inverse-propensity or doubly robust estimators, and an A/B test.
+- **Position bias and feedback loops:** models trained on a policy's own logs inherit its exposure; ads pinned at fixed slots confound position and sponsorship. Keep an exploration slice and refresh models often.
+- **Calibration drift:** base rates move with seasons and sale events; monitor calibration per population daily and recalibrate.
+- **Delayed conversions** and returns were ignored; ad pricing, advertiser budgets, pacing and seller fairness are not modelled.
+- **Guardrails to add:** cap sponsored share per request, a sanity range for scores, a circuit breaker with alerting, and counter metrics (organic orders, cancellations, return rate, seller concentration).
+- **Next steps:** a two-sided experiment on a few categories; position-debiased training from an exploration slice; per-category weights; an explicit auction.
+
+## 12. Appendix
+
+| Quantity | Formula |
+|---|---|
+| Click probability (twin) | exam(slot) × sigmoid(attribute logit) |
+| Organic value per impression | pCTR × (a + b × pCVR) |
+| Sponsored value per impression | pCTR × (λ × bid + a + b × pCVR) |
+| Request AUC | Σ over requests of pairs (clicked above non-clicked, ties 0.5) / Σ pairs |
+| Log loss | −mean[y log p + (1 − y) log(1 − p)] |
+| Calibration-in-the-large | intercept of logit(P(y = 1)) = α + offset(logit p); 0 when calibrated |
+| Calibration slope | β in logit(P(y = 1)) = α + β logit p; 1 when calibrated |
+| ECE | Σ bins (n_bin / n) · |mean p − mean y| |
+| Sample size per arm | n = (z₀.₉₇₅ + z₀.₈₀)² (σ₀² + σ₁²) / Δ² |
+| Lift | (policy − pinned) / pinned, per request, with a paired bootstrap |
+
+| Term | Meaning |
+|---|---|
+| pCTR, pCVR | Predicted probability of a click, and of an order given a click |
+| isAds | Flag marking a sponsored item |
+| Crosses | Features multiplied with the flag so the two populations get different effective weights |
+| Calibration | Predicted probabilities match observed frequencies |
+| Position bias | Items higher on the page get more clicks regardless of quality |
+| Pareto frontier | Set of weights where one metric cannot rise without the other falling |
+| Circuit breaker | Automatic fallback to the old policy when the new one misbehaves |
+| Digital twin | A simulation where the true behaviour is known |

@@ -1,0 +1,6 @@
+method,declared winners,truly positive (correct),no real effect (false alarm),truly harmful (wrong sign),also flagged as significant LOSERS,real winners found (of 8),false discovery proportion
+uncorrected p < 0.05,7,5,2,0,0,5,0.2857142857
+Bonferroni,2,2,0,0,0,2,0.0
+Holm,2,2,0,0,0,2,0.0
+BH (FDR 5%),2,2,0,0,0,2,0.0
+BH (FDR 10%),6,4,2,0,0,4,0.3333333333
