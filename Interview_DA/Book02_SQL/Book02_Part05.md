@@ -2788,7 +2788,7 @@ d['n_products'] = d.groupby('category')['revenue'].transform('size')
 res = d[(d['rk'] <= 3) & (d['n_products'] >= 3)].sort_values(['category', 'rk', 'product'])[['category', 'product', 'revenue', 'rk']]
 # result matches the SQL Output above (checked by running both)
 ```
-**Edge cases:** Ties at 3rd place give more than 3 rows with RANK. If a product appears on several rows (e.g. one row per order), COUNT(*) counts rows, not products: use the grouped revenue table first or COUNT(DISTINCT) via a subquery (COUNT(DISTINCT) is not allowed as a window function in some engines, e.g. SQL Server). NULL revenue sorts first in DESC in PostgreSQL.
+**Edge cases:** Ties at 3rd place give more than 3 rows with RANK. If a product appears on several rows (e.g. one row per order), COUNT(*) counts rows, not products: use the grouped revenue table first or COUNT(DISTINCT) via a subquery (COUNT(DISTINCT) is not allowed as a window function in some engines, e.g. SQL Server; from memory, not run here). NULL revenue sorts first in DESC in PostgreSQL.
 **Likely follow-ups:**
 1. Alternative without window COUNT? Join to `SELECT category FROM products GROUP BY category HAVING COUNT(*) >= 3`.
 2. Does the size filter go before ranking? It can, in a subquery, and gives the same answer here.
@@ -3582,7 +3582,7 @@ result['position'] = range(1, len(result) + 1)
 result['rank_by_score'] = result['score'].rank(method='min', ascending=False).astype(int)
 # result matches the SQL output row for row (checked by running both)
 ```
-**Edge cases:** If even the tie-breaker columns tie (two students with the same name and score), ROW_NUMBER picks between them arbitrarily, so add a unique column such as `student_id` as the last key. NULL score sorts last in SQLite/MySQL for ASC and first for DESC in PostgreSQL/Oracle.
+**Edge cases:** If even the tie-breaker columns tie (two students with the same name and score), ROW_NUMBER picks between them arbitrarily, so add a unique column such as `student_id` as the last key. NULL score sorts first for ASC and last for DESC in SQLite/MySQL/SQL Server (NULL treated as smallest), and the opposite in PostgreSQL/Oracle (from memory, see Q32).
 **Likely follow-ups:**
 - How do you sort names Z to A as the tie-breaker? `name DESC`.
 - What if the tie-breaker should be a date? Same idea: `score DESC, submitted_at ASC` (earliest wins).
