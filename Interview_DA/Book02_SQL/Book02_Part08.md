@@ -1251,8 +1251,10 @@ result = g.sort_values("avg_order_value", ascending=False).reset_index(drop=True
 | 6 | 2024-11-01 | 2025-06-30 |
 | 7 | 2018-07-01 | 2024-12-31 |
 | 8 | 2025-01-20 | NULL |
-
-(first 8 of 12 rows shown)
+| 9 | 2025-03-10 | NULL |
+| 10 | 2025-04-07 | 2025-09-30 |
+| 11 | 2025-04-21 | NULL |
+| 12 | 2025-10-06 | NULL |
 
 **SQL:**
 ```sql

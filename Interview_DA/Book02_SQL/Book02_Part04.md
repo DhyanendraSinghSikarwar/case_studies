@@ -1707,10 +1707,25 @@ res = c[c.customers > c.customers.mean()].sort_values(['customers','city'], asce
 **Say this in the interview:** "Not by itself. A CTE mainly makes the query readable. It is not stored on disk. Depending on the database it is either merged into the main query or computed once for that query only. I check the execution plan before claiming any speed difference."
 **Explain simply:**
 - A CTE exists only for the one statement that follows it; nothing is saved afterwards.
-- PostgreSQL 12+ inlines a non-recursive CTE used once (like a subquery) and may compute a CTE used several times once (you can force with MATERIALIZED / NOT MATERIALIZED); before version 12 it always computed it separately. SQL Server and MySQL 8 generally treat it like a subquery or derived table (SQL Server may re-evaluate a CTE referenced twice). Oracle may materialise it, or inline it.
+- PostgreSQL 12+ inlines a non-recursive CTE used once (like a subquery) and computes a CTE used two or more times once and reuses it (you can force either way with MATERIALIZED / NOT MATERIALIZED); before version 12 it always computed it separately (from memory / not run here). SQL Server and MySQL 8 generally treat it like a subquery or derived table (SQL Server may re-evaluate a CTE referenced twice). Oracle may materialise it, or inline it.
 - So: same result always; speed differs only by engine and version. Check with `EXPLAIN`.
 - A temp table, by contrast, really stores data (Q15).
 **Example:** Averaging salaries and listing people above average: both forms below give the same answer. In SQLite the plans for both are listed under Output.
+**Sample data:**
+
+*employees* (average salary = 680,000 / 8 = 85,000)
+
+| emp_id | name | dept_id | salary | left_date |
+|---|---|---|---|---|
+| 1 | Asha | 1 | 50000 | NULL |
+| 2 | Bala | 1 | 60000 | 2026-03-31 |
+| 3 | Chitra | 2 | 70000 | NULL |
+| 4 | Dev | 2 | 90000 | 2026-06-30 |
+| 5 | Esha | 2 | 90000 | NULL |
+| 6 | Farid | 3 | 80000 | NULL |
+| 7 | Gita | 3 | 120000 | NULL |
+| 8 | Hari | 3 | 120000 | NULL |
+
 **SQL:**
 ```sql
 SELECT name FROM employees
@@ -1735,6 +1750,11 @@ Both queries return:
 SQLite plan, subquery version: `SCAN employees | SCALAR SUBQUERY 1 | SCAN employees | USE TEMP B-TREE FOR ORDER BY`
 
 SQLite plan, CTE version: `CO-ROUTINE avg_sal | SCAN employees | SCAN avg_sal | SCAN employees | USE TEMP B-TREE FOR ORDER BY`
+
+**pandas equivalent:** (pandas has no CTE-vs-subquery split; both versions are the same one-liner)
+```python
+result = employees[employees.salary > employees.salary.mean()][['name']].sort_values('name').reset_index(drop=True)
+```
 **Edge cases:** A CTE referenced twice may be computed twice in some engines. A non-deterministic function inside a CTE (random, now) may give different values per reference when inlined.
 **Likely follow-ups:**
 - When is a CTE slower? When the engine re-runs it for each reference, or when it blocks index use by materialising (older PostgreSQL).
@@ -2284,6 +2304,21 @@ res = t.sort_values('sales', ascending=False).reset_index(drop=True)
 - Fix 3: an index on the correlated column (`dept_id`) so each inner lookup is fast.
 - Optimisers often rewrite simple correlated subqueries themselves, so measure with EXPLAIN before assuming it is slow.
 **Example:** Employees above their own department average (HR avg 55k, Sales 83.3k, IT 106.7k): Bala, Dev, Esha, Gita, Hari. All three forms give this same answer.
+**Sample data:**
+
+*employees*
+
+| emp_id | name | dept_id | salary | left_date |
+|---|---|---|---|---|
+| 1 | Asha | 1 | 50000 | NULL |
+| 2 | Bala | 1 | 60000 | 2026-03-31 |
+| 3 | Chitra | 2 | 70000 | NULL |
+| 4 | Dev | 2 | 90000 | 2026-06-30 |
+| 5 | Esha | 2 | 90000 | NULL |
+| 6 | Farid | 3 | 80000 | NULL |
+| 7 | Gita | 3 | 120000 | NULL |
+| 8 | Hari | 3 | 120000 | NULL |
+
 **SQL:**
 ```sql
 -- slow-prone: correlated

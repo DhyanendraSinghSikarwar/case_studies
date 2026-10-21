@@ -462,7 +462,7 @@ res['ma_3day'] = res['amount'].rolling(3, min_periods=1).mean().round(2)
 - **ROWS**: position based. Row 3 is row 3, even if row 2 has the same date.
 - **RANGE**: value based. All rows tied on the ORDER BY value are in the frame together.
 - The difference shows up only when ORDER BY values repeat (or when you use value offsets like 7 days).
-- RANGE with numeric or date offsets is not supported on every database (MySQL and PostgreSQL differ; check your dialect).
+- RANGE with numeric or date offsets (e.g. 6 PRECEDING) is not supported on every database; SQL Server does not allow it (from memory, not run here), so check your dialect.
 **Example:** Two sales on 2 Jan (50 and 70): ROWS gives 150 then 220; RANGE gives 220 on both rows.
 **Sample data:**
 
@@ -668,7 +668,7 @@ SELECT sale_date, amount,
 FROM daily_sales
 WINDOW w AS (ORDER BY sale_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)
 ORDER BY sale_date;
--- Named WINDOW clause: PostgreSQL, MySQL 8, SQLite. SQL Server does not support it (not run here / from memory); repeat the OVER(...) text instead.
+-- Named WINDOW clause: PostgreSQL, MySQL 8, SQLite (run here). SQL Server supports it only from 2022 (from memory, not run here); on older versions repeat the OVER(...) text instead.
 ```
 **Output:**
 
@@ -757,7 +757,7 @@ res['whole'] = res['amount'].sum()
 `employees` (see Q1)
 **SQL:**
 ```sql
--- Runs on PostgreSQL, MySQL 8+, SQL Server, SQLite 3.25+ (window functions need these versions)
+-- Runs on PostgreSQL, MySQL 8+, SQLite (run here). The named WINDOW clause needs SQL Server 2022+ (from memory); older SQL Server: repeat the OVER text.
 SELECT dept, name, salary,
        FIRST_VALUE(name) OVER w AS lowest_paid,
        LAST_VALUE(name)  OVER (PARTITION BY dept ORDER BY salary, emp_id
@@ -986,7 +986,7 @@ ORDER BY dept, rnk;
 | Karan | Sales | 52000 | 2 | 70000 | 167000 |
 | Arjun | Sales | 45000 | 3 | 52000 | 167000 |
 
-**Edge cases:** Some engines (SQL Server 2019 and older) do not support every function, e.g. NTH_VALUE or the WINDOW clause (from memory). Ties: RANK repeats the number and skips; ROW_NUMBER never repeats.
+**Edge cases:** Support differs by engine: SQL Server has no NTH_VALUE and only added the WINDOW clause in 2022 (from memory, not run here). Ties: RANK repeats the number and skips; ROW_NUMBER never repeats.
 **Likely follow-ups:**
 - *Are NTILE/PERCENT_RANK ranking?* Yes, they sit in the ranking family.
 - *Can a normal aggregate be a window function?* Yes, add OVER.
@@ -1265,7 +1265,7 @@ Meera Sales   70000  55666.67       14333.33
 Karan Sales   52000  55666.67       -3666.67
 Arjun Sales   45000  55666.67      -10666.67
 ```
-**Edge cases:** NULL salaries are ignored by AVG, but the NULL person's own diff is NULL. A one-person department gives diff 0. Integer division: in SQL Server/PostgreSQL AVG of integers returns decimal, fine; some engines truncate, so cast if unsure.
+**Edge cases:** NULL salaries are ignored by AVG, but the NULL person's own diff is NULL. A one-person department gives diff 0. Integer columns: PostgreSQL, MySQL and SQLite return a decimal average, but SQL Server returns an integer (truncated), so use AVG(salary * 1.0) there (from memory, not run here).
 **Likely follow-ups:**
 - *Percent above average?* salary * 100.0 / AVG(salary) OVER (PARTITION BY dept).
 - *Only people above average?* Put it in a CTE and filter WHERE diff_from_avg > 0.
@@ -1956,7 +1956,7 @@ Karan Sales   Pune   52000               1           52000.0
 **Explain simply:**
 - `WINDOW w AS (...)` goes after HAVING and before ORDER BY.
 - `OVER w` reuses it. You can also extend a named window, e.g. `OVER (w ORDER BY x)` (rules vary by engine).
-- Supported in PostgreSQL, MySQL 8+, SQLite 3.28+ (run here). SQL Server does not support it (from memory), where you repeat the definition.
+- Supported in PostgreSQL, MySQL 8+ and SQLite (run here). SQL Server supports it only from 2022 (from memory, not run here); on older versions you repeat the definition.
 - Best when 3 or more functions share the same partition and order.
 **Example:** A salary report needing rank, running payroll and next-higher salary per department would repeat the same 40-character window three times; with the WINDOW clause it is written once.
 **Sample data:**
@@ -1999,7 +1999,7 @@ ORDER BY dept, salary DESC;
 **Likely follow-ups:**
 - *Does it change the result?* No, it is just shorthand.
 - *Why is the running payroll in descending order?* Because the shared window sorts by salary DESC.
-**Common mistakes:** Placing WINDOW before WHERE/GROUP BY, or using it on SQL Server.
+**Common mistakes:** Placing WINDOW before WHERE/GROUP BY, or using it on SQL Server older than 2022.
 
 ### Q36 ⭐⭐ 🟡 How do you compute a window function on top of GROUP BY results (for example, running total of monthly totals)?
 **Asked at:** commonly asked (no company-specific report found)
@@ -2092,6 +2092,7 @@ pandas output (same as the SQL result):
 | 5 | Esha | IT | 90000 |
 | 6 | Farhan | IT | 80000 |
 | 7 | Gita | Sales | 45000 |
+
 **SQL:**
 ```sql
 CREATE TABLE emp (emp_id INT, name TEXT, dept TEXT, salary INT);
@@ -2117,6 +2118,7 @@ ORDER BY dept, salary, emp_id;
 | Farhan | IT | 80000 | 90000 | 90000 |
 | Esha | IT | 90000 | NULL | NULL |
 | Gita | Sales | 45000 | NULL | NULL |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2174,6 +2176,7 @@ Farhan    IT   80000        90000.0               90000.0
 | 2026-03-04 | 200 |
 | 2026-03-05 | 180 |
 | 2026-03-06 | 90 |
+
 **SQL:**
 ```sql
 CREATE TABLE sales (day TEXT, amount INT);
@@ -2195,6 +2198,7 @@ ORDER BY day;
 | 2026-03-04 | 200 | 570 | 120 | 156.67 |
 | 2026-03-05 | 180 | 750 | 200 | 166.67 |
 | 2026-03-06 | 90 | 840 | 180 | 156.67 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2231,7 +2235,7 @@ Output (real run, matches the SQL result):
 ### Q39 ⭐ 🟢 What are PERCENT_RANK() and CUME_DIST(), and how do they differ from NTILE?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Can you separate rank-as-a-fraction (PERCENT_RANK, CUME_DIST) from equal-sized buckets (NTILE)?
-**Say this in the interview:** PERCENT_RANK tells me what fraction of rows are strictly below this one, CUME_DIST tells me what fraction are at or below it, and NTILE just chops the sorted rows into n equal-sized buckets.
+**Say this in the interview:** PERCENT_RANK tells me what fraction of the other rows are strictly below this one, CUME_DIST tells me what fraction are at or below it, and NTILE just chops the sorted rows into n equal-sized buckets.
 **Explain simply:**
 - PERCENT_RANK = (rank - 1) / (rows - 1). It runs from 0 to 1; the lowest value is always 0 and the highest is 1.
 - CUME_DIST = rows with value less than or equal to this one / total rows. It never returns 0, and the top row is always 1. Ties get the same (higher) value.
@@ -2249,6 +2253,7 @@ Output (real run, matches the SQL result):
 | 5 | Esha | IT | 90000 |
 | 6 | Farhan | IT | 80000 |
 | 7 | Gita | Sales | 45000 |
+
 **SQL:**
 ```sql
 CREATE TABLE emp (emp_id INT, name TEXT, dept TEXT, salary INT);
@@ -2273,6 +2278,7 @@ ORDER BY salary, emp_id;
 | Dev | 70000 | 0.6667 | 0.7143 | 3 |
 | Farhan | 80000 | 0.8333 | 0.8571 | 3 |
 | Esha | 90000 | 1 | 1 | 4 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2335,6 +2341,7 @@ Farhan   80000    0.8333     0.8571         3
 | 2026-03-09 | 20 |
 | 2026-03-15 | 40 |
 | 2026-03-16 | 10 |
+
 **SQL:**
 ```sql
 CREATE TABLE sales2 (sale_date DATE, amount INT);
@@ -2359,7 +2366,7 @@ ORDER BY sale_date;
 ```
 **Output:**
 
-Query 1 (run in duckdb):
+Query 1 (PostgreSQL/DuckDB syntax; DuckDB is not installed here, so not re-run; the numbers match Query 2 and the pandas run):
 
 | sale_date | amount | sum_7_calendar_days | sum_last_7_rows |
 |---|---|---|---|
@@ -2382,6 +2389,7 @@ Query 2 (run in sqlite):
 | 2026-03-09 | 20 | 120 |
 | 2026-03-15 | 40 | 60 |
 | 2026-03-16 | 10 | 50 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2438,6 +2446,7 @@ Output (real run, matches the SQL result):
 | 4 | 2026-03-04 | refund | 120 |
 | 5 | 2026-03-05 | sale | 200 |
 | 6 | 2026-03-06 | refund | 50 |
+
 **SQL:**
 ```sql
 CREATE TABLE txns (id INT, day TEXT, kind TEXT, amount INT);
@@ -2460,6 +2469,7 @@ ORDER BY day, id;
 | 4 | 2026-03-04 | refund | 120 | 200 | 200 |
 | 5 | 2026-03-05 | sale | 200 | 200 | 200 |
 | 6 | 2026-03-06 | refund | 50 | 250 | 250 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2512,6 +2522,7 @@ Output (real run, matches the SQL result):
 | 2026-03-04 | 200 |
 | 2026-03-05 | 180 |
 | 2026-03-06 | 90 |
+
 **SQL:**
 ```sql
 CREATE TABLE sales (day TEXT, amount INT);
@@ -2533,6 +2544,7 @@ ORDER BY day;
 | 2026-03-04 | 200 | 123.33 | 123.33 |
 | 2026-03-05 | 180 | 156.67 | 156.67 |
 | 2026-03-06 | 90 | 166.67 | 166.67 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2588,6 +2600,7 @@ Output (real run, matches the SQL result):
 | 5 | Esha | IT | 90000 |
 | 6 | Farhan | IT | 80000 |
 | 7 | Gita | Sales | 45000 |
+
 **SQL:**
 ```sql
 CREATE TABLE emp (emp_id INT, name TEXT, dept TEXT, salary INT);
@@ -2602,7 +2615,7 @@ WINDOW w_default AS (PARTITION BY dept ORDER BY salary DESC, emp_id),
                   ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
 ORDER BY dept, salary DESC, emp_id;
 
--- Dialects: NTH_VALUE exists in PostgreSQL, MySQL 8, SQL Server 2022, SQLite, DuckDB (not in older SQL Server; use ROW_NUMBER then). The named WINDOW clause is not in SQL Server (not run here / from memory).
+-- Dialects: NTH_VALUE exists in PostgreSQL, MySQL 8, SQLite (run here), Oracle. SQL Server has no NTH_VALUE (from memory, not run here): use ROW_NUMBER instead. The named WINDOW clause needs SQL Server 2022+ (from memory).
 ```
 **Output:** (run in sqlite)
 
@@ -2615,6 +2628,7 @@ ORDER BY dept, salary DESC, emp_id;
 | Farhan | IT | 80000 | 90000 | 80000 | 80000 |
 | Dev | IT | 70000 | 90000 | 80000 | 80000 |
 | Gita | Sales | 45000 | 45000 | NULL | NULL |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2646,7 +2660,7 @@ Farhan    IT   80000    90000               80000.0            80000.0
    Dev    IT   70000    90000               80000.0            80000.0
   Gita Sales   45000    45000                   NaN                NaN
 ```
-**Edge cases:** Departments with a single person (Sales) give NULL for the second value. Ties count as separate rows (two people on 60,000 in HR fill positions 2 and 3), so 'second-highest salary value' needs DENSE_RANK instead. NTH_VALUE counts NULLs unless IGNORE NULLS is supported (Oracle, SQL Server 2022; not PostgreSQL/MySQL).
+**Edge cases:** Departments with a single person (Sales) give NULL for the second value. Ties count as separate rows (two people on 60,000 in HR fill positions 2 and 3), so 'second-highest salary value' needs DENSE_RANK instead. NTH_VALUE counts NULLs unless IGNORE NULLS is supported (Oracle; not PostgreSQL/MySQL; from memory, not run here).
 **Likely follow-ups:**
 - Second highest salary overall without NTH_VALUE? DENSE_RANK() = 2 in a subquery.
 - Difference to LEAD? LEAD is relative to the current row; NTH_VALUE is absolute inside the frame.
@@ -2672,6 +2686,7 @@ Farhan    IT   80000    90000               80000.0            80000.0
 | 3 | 2 | 30 |
 | 4 | 5 | 40 |
 | 5 | 6 | 50 |
+
 **SQL:**
 ```sql
 CREATE TABLE t (id INT, day INT, amt INT);
@@ -2692,6 +2707,7 @@ ORDER BY day, id;
 | 3 | 2 | 30 | 50 | 60 | 60 |
 | 4 | 5 | 40 | 70 | 40 | 90 |
 | 5 | 6 | 50 | 90 | 90 | 90 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2734,7 +2750,7 @@ Output (real run, matches the SQL result):
 - COUNT(col) ignores NULLs, so a running COUNT(col) only goes up on rows that have a value.
 - That running count is a label: all rows after one real value (up to the next one) share a label.
 - MAX(col) OVER (PARTITION BY label) then returns that one real value for the whole group.
-- Some engines have LAST_VALUE(col IGNORE NULLS) (Oracle, SQL Server 2022, DuckDB). PostgreSQL, MySQL and SQLite do not, so this trick is the portable way.
+- Some engines have LAST_VALUE(col IGNORE NULLS) (Oracle, SQL Server 2022, DuckDB; from memory, not run here). PostgreSQL, MySQL and SQLite do not, so this trick is the portable way.
 **Example:** Salary is recorded only in months where it changed. HR wants the salary in force each month.
 **Sample data:** `pay`
 
@@ -2748,6 +2764,7 @@ Output (real run, matches the SQL result):
 | 102 | 2026-01 | NULL |
 | 102 | 2026-02 | 40000 |
 | 102 | 2026-03 | NULL |
+
 **SQL:**
 ```sql
 CREATE TABLE pay (emp_id INT, month TEXT, salary INT);
@@ -2774,6 +2791,7 @@ ORDER BY emp_id, month;
 | 102 | 2026-01 | NULL | NULL |
 | 102 | 2026-02 | 40000 | 40000 |
 | 102 | 2026-03 | NULL | 40000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2829,6 +2847,7 @@ Output (real run, matches the SQL result):
 | 4 | 2026-03-08 | withdrawal | 300 |
 | 5 | 2026-03-10 | deposit | 700 |
 | 6 | 2026-03-12 | withdrawal | 200 |
+
 **SQL:**
 ```sql
 CREATE TABLE bank (id INT, txn_date TEXT, kind TEXT, amount INT);
@@ -2871,6 +2890,7 @@ Query 2 (run in sqlite):
 | first_negative_date | balance |
 |---|---|
 | 2026-03-08 | -200 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2929,6 +2949,7 @@ Output (real run, matches the SQL result):
 | 6 | 105 |
 | 7 | 107 |
 | 8 | 106 |
+
 **SQL:**
 ```sql
 CREATE TABLE prices (day INT, price INT);
@@ -2950,6 +2971,7 @@ ORDER BY day;
 | 3 | 100 | 101 | 103 |
 | 6 | 102 | 104 | 105 |
 | 7 | 104 | 105 | 107 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3005,6 +3027,7 @@ Output (real run, matches the SQL result):
 | 6 | 15 |
 | 7 | 60 |
 | 8 | 70 |
+
 **SQL:**
 ```sql
 CREATE TABLE orders_amt (id INT, amt INT);
@@ -3035,6 +3058,7 @@ ORDER BY id;
 | 6 | 15 | 15 | 0 |
 | 7 | 60 | 75 | 0 |
 | 8 | 70 | 145 | 1 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3084,7 +3108,7 @@ Output (real run, matches the SQL result):
 - The median is the middle value when sorted; with an even count it is the average of the two middle values.
 - PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) computes it. In PostgreSQL, Oracle and DuckDB it is an aggregate (use GROUP BY); in SQL Server it is a window function (OVER (PARTITION BY ...)); MySQL has neither.
 - AVG would be pulled up by one very high salary; the median is not.
-- MySQL/SQLite alternative: ROW_NUMBER and COUNT per group; keep the rows at positions (n+1)/2 and (n+2)/2 and average them (integer division).
+- MySQL/SQLite alternative: ROW_NUMBER and COUNT per group; keep the rows with position between n/2 and n/2 + 1 (the one middle row if n is odd, the two middle rows if n is even) and average them.
 **Example:** Median salary per department: HR has an outlier (90,000), so the average would mislead.
 **Sample data:** `staff`
 
@@ -3099,6 +3123,7 @@ Output (real run, matches the SQL result):
 | G | IT | 120000 |
 | H | Sales | 45000 |
 | I | Sales | 55000 |
+
 **SQL:**
 ```sql
 CREATE TABLE staff (name TEXT, dept TEXT, salary INT);
@@ -3109,7 +3134,7 @@ FROM staff
 GROUP BY dept
 ORDER BY dept;
 
--- Portable (MySQL 8 / SQLite / any engine with window functions)
+-- Portable (MySQL 8 / SQLite / any engine with window functions; run here)
 WITH r AS (
   SELECT dept, salary,
          ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salary) AS rn,
@@ -3117,7 +3142,7 @@ WITH r AS (
   FROM staff)
 SELECT dept, AVG(salary) AS median_salary
 FROM r
-WHERE rn IN ((n + 1) / 2, (n + 2) / 2)
+WHERE rn BETWEEN n / 2.0 AND n / 2.0 + 1
 GROUP BY dept
 ORDER BY dept;
 
@@ -3126,7 +3151,7 @@ ORDER BY dept;
 ```
 **Output:**
 
-Query 1 (run in duckdb):
+Query 1 (PostgreSQL/DuckDB syntax; not re-run here because SQLite lacks PERCENTILE_CONT; the numbers match Query 2 and pandas):
 
 | dept | median_salary |
 |---|---|
@@ -3141,6 +3166,7 @@ Query 2 (run in sqlite):
 | HR | 55000 |
 | IT | 80000 |
 | Sales | 50000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3169,7 +3195,7 @@ Sales        50000.0
 **Likely follow-ups:**
 - Median vs mean? Median resists outliers; report both when pay is skewed.
 - Median of the whole company? Drop the PARTITION BY / GROUP BY.
-**Common mistakes:** Using AVG and calling it median, forgetting ORDER BY inside WITHIN GROUP, and in the portable method using / on engines where it returns a decimal (use integer division, or FLOOR).
+**Common mistakes:** Using AVG and calling it median, forgetting ORDER BY inside WITHIN GROUP, and in the portable method dividing integers with / (use 2.0 so the result is not truncated).
 
 ### Q50 ⭐ 🔴 How do you calculate an exponential moving average in SQL, and why is it hard?
 **Asked at:** commonly asked (no company-specific report found)
@@ -3190,6 +3216,7 @@ Sales        50000.0
 | 3 | 11 |
 | 4 | 15 |
 | 5 | 14 |
+
 **SQL:**
 ```sql
 CREATE TABLE daily (day INT, orders INT);
@@ -3212,6 +3239,7 @@ ORDER BY day;
 | 3 | 11 | 11 |
 | 4 | 15 | 13 |
 | 5 | 14 | 13.5 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3263,6 +3291,7 @@ Output (real run, matches the SQL result):
 | 6 | 2 |
 | 7 | 7 |
 | 8 | 3 |
+
 **SQL:**
 ```sql
 CREATE TABLE series (day INT, val INT);
@@ -3283,6 +3312,7 @@ ORDER BY day;
 |---|---|---|---|
 | 2 | 3 | 5 | 4 |
 | 7 | 2 | 7 | 3 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3336,6 +3366,7 @@ Output (real run, matches the SQL result):
 | 5 | 2026-03-03 | Meera |
 | 6 | 2026-03-04 | Ravi |
 | 7 | 2026-03-04 | Tej |
+
 **SQL:**
 ```sql
 CREATE TABLE orders (order_id INT, order_date TEXT, customer TEXT);
@@ -3362,6 +3393,7 @@ ORDER BY order_date, order_id;
 | 5 | 2026-03-03 | Meera | 0 | 3 |
 | 6 | 2026-03-04 | Ravi | 0 | 3 |
 | 7 | 2026-03-04 | Tej | 1 | 4 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3392,7 +3424,7 @@ Output (real run, matches the SQL result):
 ```
 **Edge cases:** Ties on the same date need the order_id tiebreaker so 'first' is stable. To report one row per day, take the MAX of the running value per day, or aggregate the flags per day first and then run the SUM. NULL customer ids would form their own partition; filter them out.
 **Likely follow-ups:**
-- Does the engine support it directly? Some (e.g. DuckDB) allow approximations; standard answer is the flag method.
+- Does the engine support it directly? Support varies by engine (from memory, not run here); the flag method works everywhere.
 - Running distinct per month (resets)? Partition the ROW_NUMBER by customer and month.
 **Common mistakes:** Using COUNT(DISTINCT) OVER (error or unsupported), forgetting the tiebreaker, and taking a plain COUNT(DISTINCT customer) per row without the window.
 
