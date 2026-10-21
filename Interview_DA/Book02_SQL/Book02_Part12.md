@@ -9,11 +9,11 @@
 **What the interviewer is checking:** Honesty about your path, whether you practise on real problems, and whether the timeline is believable.
 **Say this in the interview:** "I learned SQL by doing, not just watching. I followed a structured plan for about twelve weeks, around two hours a day: first SELECT and filters, then GROUP BY, joins, subqueries and window functions. I practised on free interactive sites and built a small HR project on my own data. I am comfortable with day-to-day analyst queries and still learning the advanced topics."
 **Explain simply:**
-- Give a time frame you can defend: "12 weeks at about 2 hours a day, six days a week" is the roadmap in this book (Part 12, section A). If your real timeline differs, say your real one.
+- Give a time frame you can defend: "12 weeks at about 2 hours a day, six days a week" is the roadmap in this book (Part 12, "Skill-development plan", section A, at the end of this part). If your real timeline differs, say your real one.
 - Name the order (basics, aggregates, joins, subqueries, windows) so it sounds structured, not random.
 - Name one thing you built (a project) and one thing you are still weak at. Admitting a gap is safer than being caught overstating.
 - "How long" is not "how good". Add one proof point: a quiz score, a mock test, a GitHub project.
-**Example:** "Weeks 1-3: filtering and GROUP BY on an employee table. Weeks 4-5: joins. Weeks 6-8: CTEs and window functions. Weeks 9-12: scenario queries, a mini-project and timed mock tests."
+**Example:** "Weeks 1-3: filtering and GROUP BY on an employee table. Weeks 4-5: joins. Weeks 6-8: CTEs and window functions. Weeks 9-12: CASE WHEN and dates, scenario queries, a mini-project and timed mock tests."
 **Weak vs strong:**
 - Weak: "I watched some videos and practised a bit." (no proof, no order, no time frame)
 - Strong: the answer above: a time frame, an order, a project, one honest gap.
@@ -32,7 +32,7 @@
   - 5-6: joins (INNER and LEFT), HAVING, subqueries, CASE WHEN, NULL handling.
   - 7: CTEs, window functions (RANK, LAG, running total), cohort-style queries.
   - 8-9: recursive CTEs, reading an execution plan, tuning, dialect differences.
-- Back your number with evidence: "I scored 7 of 8 on my own joins quiz" (self-check tests in Q22).
+- Back your number with evidence: "I scored 6 of 8 on my own joins quiz" (self-check tests in Q22).
 - Never say 9 or 10 in an entry-level interview; the next question will be a hard query.
 **Example:** After Week 11 of the roadmap with Quiz 6 passed (4 of 5), "6 to 7 out of 10" is defensible. After Week 5, say "5".
 **Weak vs strong:**
@@ -53,7 +53,7 @@
   - Interview-style practice: DataLemur, StrataScratch, HackerRank SQL, LeetCode Top SQL 50.
   - Your own data: SQLite or PostgreSQL on your laptop.
 - Pick two or three and name something concrete from each, such as "SQLZoo's join exercises made me understand LEFT JOIN".
-- Honest limits: the free status of LeetCode's list could not be verified here (the page blocked our fetch), so check what needs Premium before you plan around it. HackerRank needs an account; its price was not stated on the page we read.
+- Honest limits: the free status of LeetCode's list could not be verified here (the page blocked our fetch), so check what needs Premium before you plan around it. HackerRank offers account sign-up; its price was not stated on the page we read.
 **Example:** "About 40 problems on SQLZoo and SQLBolt, about 100 on HackerRank, about 60 on DataLemur" is a believable split. Use your real counts.
 **Weak vs strong:**
 - Weak: "LeetCode, HackerRank, Codechef, everything." (a list, no detail)
@@ -109,7 +109,7 @@
 - Method: the 2 or 3 queries that matter and why (LEFT JOIN so unassigned staff are not lost, CASE WHEN to count exits, DENSE_RANK for top earners).
 - Result: one sentence with numbers.
 - Limitation and next step.
-**Example:** Sample data (employees table used in the project):
+**Example:** Sample data (employees table used in the project; the departments table is 10 = HR, 20 = Sales, 30 = IT):
 
 | emp_id | name | dept_id | manager_id | hire_date | exit_date | salary | overtime |
 |---|---|---|---|---|---|---|---|
@@ -276,7 +276,7 @@ SELECT dept_name, name, salary, rnk FROM ranked WHERE rnk <= 3 ORDER BY dept_nam
 | Mode SQL Tutorial, now at thoughtspot.com/sql-tutorial | Analyst-style tutorial | Price/login unverified |
 | DataLemur (datalemur.com) | Interview-style questions, free tutorial, 9-day crash course | Tutorial and crash course stated free; a Premium tier exists; which questions are locked unverified |
 | StrataScratch (stratascratch.com) | Interview questions, "Comprehensive SQL" path | "Start coding free, no credit card"; SQL path stated free; other features may be paid |
-| HackerRank SQL (hackerrank.com/domains/sql) | Easy/Medium/Hard challenges like online assessments | Account needed; price unverified |
+| HackerRank SQL (hackerrank.com/domains/sql) | Easy/Medium/Hard challenges like online assessments | Account sign-up offered; price unverified |
 | LeetCode Top SQL 50 (leetcode.com/studyplan/top-sql-50/) | Popular practice list | UNVERIFIED: page returned HTTP 403 to our fetch; price unverified, check Premium yourself |
 | SQLite (sqlite.org/download.html) | Zero-setup local database | Licence page linked; public-domain status unverified on that page |
 | DB Browser for SQLite (sqlitebrowser.org) | Point-and-click viewer | Open source (stated); price not stated |
@@ -328,7 +328,7 @@ Not verified and not recommended here by name: any YouTube channel, Kaggle Learn
 - Option 4, industry-style: PostgreSQL from postgresql.org/download (free).
 - Steps for options 2/3: create a database, create tables (CREATE TABLE), add rows (INSERT, or import a CSV), run SELECT, save the file.
 - Keep your practice database in a folder with your `.sql` files so you can re-run everything.
-**Example (run here):** Check the engine from Python; the same SQL works in DB Browser's "Execute SQL" tab:
+**Example:** (run here) Check the engine from Python; the same SQL works in DB Browser's "Execute SQL" tab:
 ```sql
 SELECT sqlite_version() AS sqlite_version;
 ```
@@ -411,7 +411,7 @@ result = (j[j["salary"] > j["salary_m"]][["name","salary","name_m","salary_m"]]
 |---|---|---|---|
 | Neha | 112000 | Dev | 110000 |
 
-**SQL:** Current employees with no leave in 2026 (LEFT JOIN anti-join).
+**SQL:** Current employees with no leave in 2026 (LEFT JOIN anti-join). Uses the 9-row `leave_log (emp_id, leave_date)` table from the Q22 kit: employees 2, 5, 10 and 11 have 2026 leave; employee 3 has one 2023 row.
 ```sql
 SELECT e.name, e.dept_id
 FROM employees e
@@ -506,7 +506,7 @@ result = emp
 - Hand-check: pick two or three rows and calculate manually.
 - Trap list: join duplicates, NULL in filters or joins, ties in ranking, inclusive versus exclusive date ranges, a LEFT JOIN turned into an inner join by a WHERE condition.
 - Sanity: do percentages sum to about 100? Is the result plausible for the business?
-**Example (run on the 16-employee table from Q6):** A join to the leave table inflates and drops rows.
+**Example:** (run on the 16-employee table from Q6 and the 9-row `leave_log` table in the Q22 kit) A join to the leave table inflates and drops rows.
 **SQL:**
 ```sql
 -- WRONG: joining to leave_log repeats an employee once per leave day
@@ -584,6 +584,7 @@ Both methods give 5 employees who ever took leave. Agreement raises confidence.
 | Days between dates | `julianday(b) - julianday(a)` | `b::date - a::date` (date minus date gives days) | `DATEDIFF(b, a)` | `DATEDIFF(day, a, b)` |
 | Join text | `a \|\| b` | `a \|\| b` | `CONCAT(a, b)` | `a + b` or `CONCAT(a, b)` |
 | Current date | `date('now')` | `CURRENT_DATE` | `CURDATE()` | `GETDATE()` |
+**Example:** You practised on SQLite and the test editor is SQL Server. Write the logic first, then translate only the dialect parts: `LIMIT 3` becomes `TOP 3`, and `julianday(b) - julianday(a)` becomes `DATEDIFF(day, a, b)`. The answer is the same: Isha, 130000, 3255 days (SQLite run below).
 **SQL (run on SQLite, as practised):**
 ```sql
 SELECT name, salary,
@@ -625,7 +626,7 @@ FROM employees WHERE exit_date IS NULL ORDER BY salary DESC LIMIT 3;
 - Bad uses: pasting the question and copying the answer; trusting syntax for a dialect you did not name.
 - Safeguards: build a tiny test table; compute the expected answer by hand; run; compare (Q15).
 - Timed practice and mock tests are AI-free.
-**Example (run):** A quick answer to "third highest salary in IT" looks right but fails when salaries tie. The employees table (IT: 130,000; 95,000; 95,000; 88,000; 72,000 across all IT staff):
+**Example:** (run) A quick answer to "third highest salary in IT" looks right but fails when salaries tie. The employees table (IT: 130,000; 95,000; 95,000; 88,000; 72,000 across all IT staff):
 **SQL:**
 ```sql
 -- Typical quick answer: third highest salary in IT using LIMIT/OFFSET
@@ -709,7 +710,19 @@ LIMIT/OFFSET returned 95,000 (the second tied row). The correct third distinct s
 - 5 Clean: de-duplicate, drop or flag missing values; keep a raw table and a cleaned view.
 - 6 Analyse: 10 to 12 queries from basic to window functions.
 - 7 Communicate: five findings with numbers, a limitation, a README.
-**Example (run, synthetic orders CSV with one duplicate row and one missing amount):** Profile first.
+**Example:** (run, synthetic orders CSV with one duplicate row and one missing amount) Profile first. Sample data, table `orders_raw`:
+
+| order_id | order_date | customer | category | amount |
+|---|---|---|---|---|
+| 1001 | 2026-01-05 | Asha | Books | 900 |
+| 1002 | 2026-01-18 | Bala | Toys | 750 |
+| 1003 | 2026-02-02 | Chitra | Books | 800 |
+| 1003 | 2026-02-02 | Chitra | Books | 800 |
+| 1004 | 2026-02-20 | Dev | Toys | 650 |
+| 1005 | 2026-03-07 | Esha | Books | 700 |
+| 1006 | 2026-03-25 | Farhan | Toys | 550 |
+| 1007 | 2026-03-30 | Gita | Books | NULL |
+
 **SQL:**
 ```sql
 SELECT COUNT(*) AS rows_raw, COUNT(DISTINCT order_id) AS distinct_orders,
@@ -743,6 +756,7 @@ FROM orders_clean GROUP BY substr(order_date,1,7) ORDER BY month;
 ```python
 raw = pd.read_csv("orders.csv")
 cl = raw.drop_duplicates().dropna(subset=["amount"]).copy()
+cl["amount"] = cl["amount"].astype(int)   # NaN made the column float; restore whole numbers
 cl["month"] = cl["order_date"].str[:7]
 result = cl.groupby("month").agg(orders=("order_id","count"), revenue=("amount","sum")).reset_index()
 ```
@@ -921,6 +935,8 @@ FROM y ORDER BY yr;
 | 2023 | 2 | 12 | 0 |
 | 2024 | 4 | 16 | 2 |
 
+**Example:** In one attempt you match the key on T1-T5, T7 and T8, but on T6 you used ROW_NUMBER, so Kiran (tied with Jai at 95,000) is missing. That is 7 of 8, and the error log says "ties: use DENSE_RANK". Repeat T6-style questions, then retake after 3 days.
+
 **Scoring:** a query counts only if the output matches the key, including row count and ties. Explain WHERE versus HAVING and RANK versus DENSE_RANK aloud. A pass of 7 of 8 with clear explanations is a good signal; below 5, repeat Parts 2-5.
 **Edge cases:** Ties (Jai and Kiran), NULL department (Pooja), a manager with no manager (NULL), and the first year of a LAG (NULL difference).
 **Likely follow-ups:**
@@ -960,7 +976,7 @@ FROM y ORDER BY yr;
 - Method: explain with a real question first, then the syntax; give a worked example, then a slightly different one for them to try; make errors normal and keep a mistakes log; use free tools (SQLBolt, SQLZoo; free status in Q10).
 - Check understanding by asking them to predict an output before running.
 - Use the Q22 kit style for quizzes.
-**Example (lesson 1, run):** "List current Sales employees by salary" teaches SELECT, WHERE, AND and ORDER BY in one query.
+**Example:** (lesson 1, run) "List current Sales employees by salary" teaches SELECT, WHERE, AND and ORDER BY in one query.
 **SQL:**
 ```sql
 SELECT name, salary
@@ -983,3 +999,55 @@ ORDER BY salary DESC;
 - *How do you know it worked?* They pass the weekly check and can explain a query without help.
 **Common mistakes:** Showing slides instead of typing; starting with theory; teaching windows functions in month one; not checking understanding.
 
+
+---
+
+## Skill-development plan: from zero to job-ready SQL (12 weeks)
+
+This is the plan the questions above refer to. It is a study design, not a research finding: the hours, problem counts and pass marks are targets to adjust, not figures from a source. Platform names and free/paid notes are in Q10; datasets are in Q11; the self-test kit is in Q22.
+
+### A. Zero-to-job-ready roadmap (about 2 hours a day, 6 days a week)
+| Week | Topics (Book 2 part) | Problem target | Check at the end |
+|---|---|---|---|
+| 1 | SELECT, WHERE, ORDER BY, DISTINCT, LIMIT (Part 1); skim Part 11 (keys, tables) | 25 | none |
+| 2 | COUNT/SUM/AVG, GROUP BY, HAVING, a first look at NULL (Part 2) | 30 | Quiz 1: 10 queries, 8 correct |
+| 3 | Consolidate aggregates and filters on the HR tables | 30 | Quiz 2: 7 of 8 |
+| 4 | INNER and LEFT JOIN (Part 3) | 25 | none |
+| 5 | Self join, anti-join, join traps (duplicates after a join) | 20 | Quiz 3: 6 of 8 on joins |
+| 6 | Subqueries and CTEs (Part 4) | 25 | none |
+| 7 | Window functions: ROW_NUMBER, RANK, DENSE_RANK (Part 5) | 25 | Quiz 4: 5 of 6 |
+| 8 | LAG/LEAD, running totals (Part 6) | 20 | none |
+| 9 | CASE WHEN, NULL handling, strings, dates (Part 7) | 30 | Quiz 5: 6 of 8 |
+| 10 | Business scenarios: sales, HR, e-commerce, banking (Part 8) | 15 | none |
+| 11 | Hard patterns: cohorts, funnels, de-duplication, nth highest (Parts 9-10) | 15 | Quiz 6: 4 of 5 scenarios |
+| 12 | Revisit Part 11; two timed mock rounds; finish projects | mocks | Final: 4 of 5 in 45 minutes |
+
+Weeks 1-11 add up to 260 problems (25+30+30+25+20+25+25+20+30+15+15, checked by running the sum). If you miss a pass mark: repeat that week and retake the quiz after 3 days. Job-ready signal: pass the Final twice in a row on two different datasets and have at least two finished mini-projects online (Q22).
+
+### B. Daily practice plan (120 minutes)
+| Block | Minutes | What you do |
+|---|---|---|
+| Learn | 30 | Read the Book 2 part or one interactive lesson |
+| Guided practice | 30 | Re-type the worked examples, change one thing, predict the output |
+| Problem solving | 40 | 3 to 5 problems alone, no hints for the first 10 minutes |
+| Review | 20 | Update the mistakes log; redo yesterday's failed problem |
+
+With 1 hour a day, halve each block and never skip Review; the roadmap then takes about 24 weeks. One day a week is rest.
+
+### C. Free resources
+See Q10 for the full table with what each site itself states about price. Stage guide: SQLBolt (weeks 1-3), SQLZoo joins (weeks 4-5), DataLemur crash course and free questions (weeks 6-9), HackerRank for timed practice (weeks 10-12). LeetCode's Top SQL 50 could not be checked here; verify what needs Premium yourself.
+
+### D. Practice datasets
+Self-made HR tables first (the 16-row `employees` table in Q6 and Q22), then Chinook or Northwind for realistic multi-table joins (Q11), then a public HR attrition CSV for a project. Check each licence yourself where Q11 says unverified.
+
+### E. Mini-projects
+| Project | Question | Data | Skills shown | Where explained |
+|---|---|---|---|---|
+| 1 HR attrition | Which department loses people fastest? | Self-made employees, departments, leave | LEFT JOIN, CASE WHEN, DENSE_RANK | Q6 |
+| 2 Sales/orders analysis | Which months drive revenue? | Synthetic or public orders CSV | Profiling, de-duplication, GROUP BY by month | Q21 |
+| 3 Chinook revenue | Which country brings the most invoice revenue? | Chinook (SQLite script) | Multi-table joins, window ranking | Q11 |
+
+Each project: README with the question, data source and licence, tables, how to run, five findings with numbers, one limitation (Q20).
+
+### F. Self-check tests
+Six quizzes (weeks 2, 3, 5, 7, 9, 11) and a Final (week 12) use the pass marks in table A. The runnable kit with database, eight questions T1-T8 and an answer key is in Q22. Test on a dataset you did not practise on, closed book, and speak your approach aloud.

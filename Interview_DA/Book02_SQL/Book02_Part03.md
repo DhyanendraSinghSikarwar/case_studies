@@ -4232,6 +4232,7 @@ ORDER BY 2, 1;
 **Example:** Order 2 is 200 with refunds 50 and 30. Naive join counts 200 twice (400). C1's true net is 100 + 200 - 80 = 220.
 **Sample data:**
 `orders`
+
 | order_id | customer_id | amount |
 |---|---|---|
 | 1 | C1 | 100 |
@@ -4241,6 +4242,7 @@ ORDER BY 2, 1;
 | 5 | C2 | 50 |
 
 `returns` (order 2 was returned in two parts)
+
 | return_id | order_id | refund_amount |
 |---|---|---|
 | 1 | 2 | 50 |
@@ -4264,6 +4266,7 @@ ORDER BY o.customer_id;
 ```
 
 Wrong version (join first, then SUM) gives this, which overstates C1's gross sales because order 2 appears twice after the join:
+
 | customer_id | gross_sales | refunds | net_sales |
 |---|---|---|---|
 | C1 | 500 | 80 | 420 |
@@ -4271,6 +4274,7 @@ Wrong version (join first, then SUM) gives this, which overstates C1's gross sal
 | C3 | 80 | 0 | 80 |
 
 **Output:**
+
 | customer_id | gross_sales | refunds | net_sales |
 |---|---|---|---|
 | C1 | 300 | 80 | 220 |
@@ -4306,6 +4310,7 @@ result = (m.groupby('customer_id', as_index=False)
 **Example:** Of 5 employees, 2 took leave (Asha twice, Chitra once). Semi gives 2 names, anti gives 3.
 **Sample data:**
 `employees`
+
 | emp_id | name |
 |---|---|
 | 1 | Asha |
@@ -4315,6 +4320,7 @@ result = (m.groupby('customer_id', as_index=False)
 | 5 | Esha |
 
 `leaves` (Asha has two)
+
 | leave_id | emp_id | leave_date |
 |---|---|---|
 | 1 | 1 | 2025-01-05 |
@@ -4334,6 +4340,7 @@ ORDER BY 1 DESC, 2;
 ```
 
 **Output:**
+
 | kind | name |
 |---|---|
 | semi: has leave | Asha |
@@ -4352,6 +4359,7 @@ result = (pd.concat([semi, anti])[['kind','name']]
 ```
 
 Why not a plain INNER JOIN for the semi case? Asha would show twice:
+
 | name |
 |---|
 | Asha |
@@ -4376,6 +4384,7 @@ NULL trap: after inserting one leave row with `emp_id = NULL`, `WHERE emp_id NOT
 **Example:** HR version: employees x leave records. Who took leave = (a); who never took leave = (b); every employee x every month grid = (c).
 **Sample data:**
 `customers`
+
 | cust_id | name |
 |---|---|
 | 1 | Asha |
@@ -4383,6 +4392,7 @@ NULL trap: after inserting one leave row with `emp_id = NULL`, `WHERE emp_id NOT
 | 3 | Chitra |
 
 `orders`
+
 | order_id | cust_id | amount |
 |---|---|---|
 | 10 | 1 | 500 |
@@ -4403,6 +4413,7 @@ FROM customers c CROSS JOIN orders o;
 ```
 
 **Output:**
+
 | need | rows_returned |
 |---|---|
 | (a) customers with their orders - INNER JOIN | 3 |
@@ -4438,6 +4449,7 @@ result = pd.DataFrame({'need': ['(a) customers with their orders - INNER JOIN',
 **Example:** Employees and departments both have `id` and `name`; after aliasing you read emp_name = Asha, dept_name = HR, not two columns called name.
 **Sample data:**
 `employees`
+
 | id | name | dept_id |
 |---|---|---|
 | 1 | Asha | 10 |
@@ -4445,6 +4457,7 @@ result = pd.DataFrame({'need': ['(a) customers with their orders - INNER JOIN',
 | 3 | Chitra | 10 |
 
 `departments`
+
 | id | name |
 |---|---|
 | 10 | HR |
@@ -4463,6 +4476,7 @@ ORDER BY e.id;
 
 Column names returned by `SELECT *` on the same join: `['id', 'name', 'dept_id', 'id', 'name']` (id and name repeat).
 **Output:**
+
 | emp_id | emp_name | dept_id | dept_name |
 |---|---|---|---|
 | 1 | Asha | 10 | HR |
@@ -4566,6 +4580,7 @@ SEARCH e USING INDEX ix_emp_dept (dept_id=?)
 **Example:** HR: show the two highest-paid employees in each department; Legal has nobody, so LEFT keeps it with NULLs.
 **Sample data:**
 `departments`
+
 | dept_id | dept_name |
 |---|---|
 | 10 | HR |
@@ -4573,6 +4588,7 @@ SEARCH e USING INDEX ix_emp_dept (dept_id=?)
 | 30 | Legal |
 
 `employees`
+
 | emp_id | emp_name | dept_id | salary |
 |---|---|---|---|
 | 1 | Asha | 10 | 60000 |
@@ -4597,6 +4613,7 @@ ORDER BY d.dept_name, t.salary DESC;
 
 SQL Server / Oracle equivalent (not run here): `FROM departments d OUTER APPLY (SELECT TOP 2 e.emp_name, e.salary FROM employees e WHERE e.dept_id = d.dept_id ORDER BY e.salary DESC) t` (use `CROSS APPLY` to drop departments with no rows).
 **Output:**
+
 | dept_name | emp_name | salary |
 |---|---|---|
 | Finance | Dev | 90000 |
@@ -4630,6 +4647,7 @@ result = (departments.merge(top2, on='dept_id', how='left')[['dept_name','emp_na
 **Example:** Attendance dashboard: Ben took no leave at all, yet the report must still show Ben with 0 days in Jan, Feb and Mar.
 **Sample data:**
 `employees`
+
 | emp_id | name |
 |---|---|
 | 1 | Asha |
@@ -4637,6 +4655,7 @@ result = (departments.merge(top2, on='dept_id', how='left')[['dept_name','emp_na
 | 3 | Chitra |
 
 `leave_taken` (only months with leave are stored)
+
 | emp_id | month | days |
 |---|---|---|
 | 1 | 2025-01 | 2 |
@@ -4655,6 +4674,7 @@ ORDER BY e.name, m.month;
 ```
 
 **Output:**
+
 | name | month | leave_days |
 |---|---|---|
 | Asha | 2025-01 | 2 |
@@ -4694,6 +4714,7 @@ result = m[['name','month','leave_days']].sort_values(['name','month'])
 **Example:** Daily headcount of employees present: a holiday with no rows should show 0, not vanish from the chart. Here 3, 4 and 6 March show 0 revenue.
 **Sample data:**
 `orders` (no sales on 3, 4 and 6 March)
+
 | order_id | order_date | amount |
 |---|---|---|
 | 1 | 2025-03-01 | 500 |
@@ -4719,6 +4740,7 @@ ORDER BY s.d;
 
 Other dialects (not run here): PostgreSQL `generate_series('2025-03-01'::date, '2025-03-07', interval '1 day')`; DuckDB `range(DATE '2025-03-01', DATE '2025-03-08', INTERVAL 1 DAY)`; SQL Server and MySQL 8 use the same recursive CTE with `DATEADD(day,1,d)` / `DATE_ADD(d, INTERVAL 1 DAY)`. Many warehouses keep a permanent `calendar` table instead.
 **Output:**
+
 | sale_date | revenue |
 |---|---|
 | 2025-03-01 | 800 |
@@ -4796,6 +4818,7 @@ The function-wrapped join matches 200 of 200 rows here (the emails differ only i
 **Example:** Org chart with 6 people: Chitra reports to Asha, Asha to Ravi, so Chitra's manager's manager is Ravi.
 **Sample data:**
 `employees` (manager_id points to another row's emp_id)
+
 | emp_id | name | manager_id |
 |---|---|---|
 | 1 | Meera (CEO) | NULL |
@@ -4817,6 +4840,7 @@ ORDER BY e.emp_id;
 ```
 
 **Output:**
+
 | employee | manager | managers_manager |
 |---|---|---|
 | Meera (CEO) | NULL | NULL |
@@ -4854,6 +4878,7 @@ result = r.rename(columns={'name':'employee'})[['employee','manager','managers_m
 **Example:** Top 3 selling products per category for the catalog page; Laptops has only 3 products so all appear; Phones shows 4 because of the three-way tie.
 **Sample data:**
 `products` (P2, P3 and P4 tie at 700)
+
 | product_id | category | product_name | revenue |
 |---|---|---|---|
 | 1 | Phones | P1 | 900 |
@@ -4878,6 +4903,7 @@ ORDER BY p.category, p.revenue DESC, p.product_name;
 ```
 
 **Output:**
+
 | category | product_name | revenue |
 |---|---|---|
 | Laptops | L1 | 1200 |
@@ -4915,6 +4941,7 @@ result = (r[r['beaten_by'] < 3][['category','product_name','revenue']]
 **Example:** Payroll source has 5 employees, the warehouse 5: Chitra is missing, Farah is extra, Ben's salary differs (60,000 vs 62,000), Dev's NULL vs 40,000 differs, and Esha is spelled Isha.
 **Sample data:**
 `src_emp` (source system)
+
 | emp_id | name | salary |
 |---|---|---|
 | 1 | Asha | 50000 |
@@ -4924,6 +4951,7 @@ result = (r[r['beaten_by'] < 3][['category','product_name','revenue']]
 | 5 | Esha | 70000 |
 
 `dw_emp` (warehouse copy)
+
 | emp_id | name | salary |
 |---|---|---|
 | 1 | Asha | 50000 |
@@ -4951,6 +4979,7 @@ ORDER BY 1;
 
 Other dialects (not run here): PostgreSQL `s.salary IS DISTINCT FROM w.salary`; MySQL `NOT (s.salary <=> w.salary)` and FULL JOIN emulated with LEFT JOIN UNION RIGHT JOIN; SQL Server `IS DISTINCT FROM` from 2022, older versions need `(a <> b OR (a IS NULL AND b IS NOT NULL) OR (a IS NOT NULL AND b IS NULL))`.
 **Output:**
+
 | emp_id | status | src_name | dw_name | src_salary | dw_salary |
 |---|---|---|---|---|---|
 | 2 | mismatch | Ben | Ben | 60000 | 62000 |
@@ -4988,6 +5017,7 @@ result = (m[bad].rename(columns={'name_src':'src_name','name_dw':'dw_name','sala
 **Example:** Finance says 1,000; the dashboard says 1,500 after joining order items. Order 2 (200) has 3 items, so it was counted 600.
 **Sample data:**
 `orders`
+
 | order_id | customer_id | amount |
 |---|---|---|
 | 1 | C1 | 100 |
@@ -4996,6 +5026,7 @@ result = (m[bad].rename(columns={'name_src':'src_name','name_dw':'dw_name','sala
 | 4 | C3 | 400 |
 
 `order_items` (many rows per order)
+
 | item_id | order_id | sku |
 |---|---|---|
 | 1 | 1 | A |
@@ -5017,6 +5048,7 @@ JOIN order_items i ON i.order_id = o.order_id;
 ```
 
 **Output (step 1):**
+
 | rows_after_join | distinct_orders | report_revenue | finance_revenue |
 |---|---|---|---|
 | 7 | 4 | 1500 | 1000 |
@@ -5038,6 +5070,7 @@ ORDER BY o.customer_id;
 ```
 
 **Output (step 2):**
+
 | customer_id | revenue | items_sold |
 |---|---|---|
 | C1 | 300 | 5 |
@@ -5072,6 +5105,7 @@ result = (m.groupby('customer_id', as_index=False)
 **Example:** HR report 'all employees with leave type': Ben and Dev never took leave, but version A drops them from the headcount.
 **Sample data:**
 `employees`
+
 | emp_id | name |
 |---|---|
 | 1 | Asha |
@@ -5080,12 +5114,14 @@ result = (m.groupby('customer_id', as_index=False)
 | 4 | Dev |
 
 `leaves`
+
 | leave_id | emp_id | type_id |
 |---|---|---|
 | 1 | 1 | 1 |
 | 2 | 3 | 2 |
 
 `leave_types`
+
 | type_id | type_name |
 |---|---|
 | 1 | Casual |
@@ -5110,12 +5146,14 @@ ORDER BY e.emp_id;
 
 Alternative to C without nested join syntax: `FROM employees e LEFT JOIN leaves l ON ... LEFT JOIN leave_types t ON ...` (all LEFT), or move the leave_types condition into a subquery or CTE.
 **Output (A): employees without leaves are lost**
+
 | name | type_name |
 |---|---|
 | Asha | Casual |
 | Chitra | Sick |
 
 **Output (C, same as all-LEFT): all 4 employees kept**
+
 | name | type_name |
 |---|---|
 | Asha | Casual |
@@ -5151,6 +5189,7 @@ a = employees.merge(leaves, on='emp_id', how='left').merge(leave_types, on='type
 **Example:** E1 is on Alpha until 31 Mar and Beta from 15 Mar: they overlap for 17 days, so E1 is double-booked. E3's Gamma sits fully inside Beta; that also counts.
 **Sample data:**
 `assignments` (E1's Gamma has no end date yet; E2's two projects touch on 28 Feb)
+
 | assign_id | emp_id | project | start_date | end_date |
 |---|---|---|---|---|
 | 1 | E1 | Alpha | 2025-01-01 | 2025-03-31 |
@@ -5178,6 +5217,7 @@ ORDER BY a.emp_id, a.assign_id, b.assign_id;
 
 Other dialects (not run here): PostgreSQL / MySQL use `GREATEST(a.start_date, b.start_date)` and `LEAST(...)`; SQL Server 2022+ has the same; PostgreSQL also has a built-in `daterange(a.start,a.end,'[]') && daterange(...)` overlap operator.
 **Output:**
+
 | emp_id | project_1 | project_2 | overlap_start | overlap_end |
 |---|---|---|---|---|
 | E1 | Alpha | Beta | 2025-03-15 | 2025-03-31 |
@@ -5218,6 +5258,7 @@ result = (m.rename(columns={'project_1':'project_1','project_2':'project_2'})
 **Example:** HR has Asha, Ben; payroll has Ben, 3. Output rows: Asha with no salary, Ben with both, employee 3 with a salary but no name.
 **Sample data:**
 `hr`
+
 | emp_id | name |
 |---|---|
 | 1 | Asha |
@@ -5225,6 +5266,7 @@ result = (m.rename(columns={'project_1':'project_1','project_2':'project_2'})
 | NULL | Ghost |
 
 `pay`
+
 | emp_id | salary |
 |---|---|
 | 2 | 60000 |
@@ -5240,6 +5282,7 @@ ORDER BY emp_id, name;
 ```
 
 **Output:**
+
 | emp_id | name | salary |
 |---|---|---|
 | NULL | NULL | 40000 |

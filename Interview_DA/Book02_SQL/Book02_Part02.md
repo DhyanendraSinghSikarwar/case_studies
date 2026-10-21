@@ -1667,18 +1667,18 @@ res.columns.name = None
 **Sample data:**
 **employees** (8 rows)
 
-| emp_id | name | dept | salary | hire_date | status |
-|---|---|---|---|---|---|
-| 1 | Asha | HR | 45000 | 2020-03-01 | Active |
-| 2 | Ravi | HR | 52000 | 2019-07-15 | Left |
-| 3 | Ravi K | HR | 50000 | 2021-01-10 | Active |
-| 4 | Karan | IT | 75000 | 2020-09-01 | Left |
-| 5 | Sunil | IT | 110000 | 2017-02-11 | Active |
-| 6 | Priya | Sales | 40000 | 2022-04-04 | Active |
-| 7 | Neha | Sales | 38000 | 2023-01-09 | Left |
-| 8 | Omar | Finance | 60000 | 2019-11-30 | Active |
+| emp_id | name | dept | salary | hire_date | status | email |
+|---|---|---|---|---|---|---|
+| 1 | Asha | HR | 45000 | 2020-03-01 | Active | asha@x.com |
+| 2 | Ravi | HR | 52000 | 2019-07-15 | Left | ravi@x.com |
+| 3 | Ravi K | HR | 50000 | 2021-01-10 | Active | ravi@x.com |
+| 4 | Karan | IT | 75000 | 2020-09-01 | Left | karan@x.com |
+| 5 | Sunil | IT | 110000 | 2017-02-11 | Active | sunil@x.com |
+| 6 | Priya | Sales | 40000 | 2022-04-04 | Active | sales@x.com |
+| 7 | Neha | Sales | 38000 | 2023-01-09 | Left | sales@x.com |
+| 8 | Omar | Finance | 60000 | 2019-11-30 | Active | omar@x.com |
 
-Emails: Ravi and Ravi K share `ravi@x.com`; Priya and Neha share `sales@x.com` (the email column is also in the table).
+The question needs an `email` column, so it is added to the sample table. Ravi and Ravi K share `ravi@x.com`; Priya and Neha share `sales@x.com`.
 **SQL:**
 ```sql
 SELECT email,
@@ -1986,7 +1986,7 @@ NULL dates are ignored by COUNT(DISTINCT).
 - The sample has only 8 employees, so the demo uses 2; the production threshold would be 10.
 **Example:** IT men average 92,500 over 2 people; the HR women group (1 person) is hidden because it is below the threshold.
 **Sample data:**
-The question mentions a `gender` column, which I add to the sample.
+The question mentions a `gender` column, which I add to the sample. Table `employees` (only the columns this query needs):
 
 | emp_id | name | dept | gender | salary |
 |---|---|---|---|---|

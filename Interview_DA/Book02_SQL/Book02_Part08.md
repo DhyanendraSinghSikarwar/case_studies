@@ -167,8 +167,8 @@ result = (m.groupby("category", as_index=False)["revenue"].sum()
 | 6 | 3 | 900 |
 | 7 | 4 | 2000 |
 | 8 | 5 | 250 |
-
-(first 8 of 10 rows shown)
+| 9 | 1 | 300 |
+| 10 | 6 | 1000 |
 
 **SQL:**
 ```sql
@@ -377,6 +377,7 @@ ORDER BY order_day;
 
 **pandas equivalent** (gives the same result as the SQL above):
 ```python
+today = pd.Timestamp("2026-10-21")   # same fixed date as the SQL
 o = orders.copy()
 o["order_date"] = pd.to_datetime(o["order_date"])
 w = o[(o["order_date"] >= today - pd.Timedelta(days=6)) & (o["order_date"] <= today)]
@@ -744,6 +745,7 @@ Employees with more than 5 years of service
 
 **pandas equivalent** (gives the same result as the SQL above):
 ```python
+today = pd.Timestamp("2026-10-21")   # same fixed date as the SQL
 # Each current employee with tenure and department average
 e = employees[employees["left_date"].isna()].merge(departments, on="dept_id").copy()
 e["tenure_years"] = (today - pd.to_datetime(e["join_date"])).dt.days / 365.25
@@ -810,6 +812,7 @@ ORDER BY orders_last_90d DESC, customer_id;
 
 **pandas equivalent** (gives the same result as the SQL above):
 ```python
+today = pd.Timestamp("2026-10-21")   # same fixed date as the SQL
 o = orders.copy()
 o["order_date"] = pd.to_datetime(o["order_date"])
 w = o[(o["order_date"] >= today - pd.Timedelta(days=90)) & (o["order_date"] <= today)]
@@ -1813,7 +1816,7 @@ WHERE status IS NOT NULL;
 ```python
 # the tables above are DataFrames with the same names and columns
 import pandas as pd
-All orders in the denominator
+# All orders in the denominator
 res = pd.DataFrame({'total_orders': [len(orders)],
                     'cancelled': [int((orders.status == 'cancelled').sum())]})
 res['cancellation_pct'] = (100 * res.cancelled / res.total_orders).round(2)
@@ -1821,7 +1824,7 @@ res['cancellation_pct'] = (100 * res.cancelled / res.total_orders).round(2)
 #  total_orders  cancelled  cancellation_pct
 #            12          2             16.67
 
-Only orders that have a status
+# Only orders that have a status
 known = orders[orders.status.notna()]
 res = pd.DataFrame({'cancellation_pct': [round(100 * (known.status == 'cancelled').mean(), 2)]})
 # Output (matches the SQL):
@@ -2073,7 +2076,7 @@ ORDER BY p.product_id;
 ```python
 # the tables above are DataFrames with the same names and columns
 import pandas as pd
-Products to re-order
+# Products to re-order
 m = inventory.merge(products, on='product_id')
 m['shortfall'] = m.reorder_level - m.stock_qty
 res = (m[m.stock_qty <= m.reorder_level]
@@ -2085,7 +2088,7 @@ res = (m[m.stock_qty <= m.reorder_level]
 #           2     Notebook       40.0           50.0       10.0
 #           3      Stapler       30.0           30.0        0.0
 
-Data-quality check: rows the first query cannot judge
+# Data-quality check: rows the first query cannot judge
 m = inventory.merge(products, on='product_id')
 res = (m[m.stock_qty.isna() | m.reorder_level.isna()]
        [['product_id', 'product_name', 'stock_qty', 'reorder_level']]
@@ -2323,7 +2326,7 @@ ORDER BY e.emp_id;
 ```python
 # the tables above are DataFrames with the same names and columns
 import pandas as pd
-Correct: NOT EXISTS
+# Correct: NOT EXISTS
 l = leaves[(leaves.start_date <= '2026-10-21') & (leaves.end_date >= '2026-01-01')]
 res = (employees[~employees.emp_id.isin(l.emp_id.dropna())]
        .sort_values('emp_id').reset_index(drop=True))
@@ -2435,7 +2438,7 @@ ORDER BY leave_days DESC;
 ```python
 # the tables above are DataFrames with the same names and columns
 import pandas as pd
-Average leave days per employee, by department
+# Average leave days per employee, by department
 l = leaves.copy()
 l['days'] = (pd.to_datetime(l.end_date) - pd.to_datetime(l.start_date)).dt.days + 1
 tot = l.groupby('emp_id').days.sum()
@@ -2452,7 +2455,7 @@ res = res.sort_values('dept_name').reset_index(drop=True)
 #        IT          1           1                    1.0
 #     Sales          3          29                    9.7
 
-Employees with more than 20 leave days
+# Employees with more than 20 leave days
 t = (l.groupby('emp_id', as_index=False).days.sum().rename(columns={'days': 'leave_days'})
      .merge(employees, on='emp_id').merge(departments, on='dept_id'))
 res = (t[t.leave_days > 20][['emp_id', 'name', 'dept_name', 'leave_days']]
@@ -2686,7 +2689,7 @@ ORDER BY direct_reports DESC;
 ```python
 # the tables above are DataFrames with the same names and columns
 import pandas as pd
-Direct reports per manager (everyone)
+# Direct reports per manager (everyone)
 m = employees.merge(employees, left_on='manager_id', right_on='emp_id', suffixes=('', '_mgr'))
 res = (m.groupby(['emp_id_mgr', 'name_mgr'], as_index=False).size()
        .rename(columns={'emp_id_mgr': 'manager_id', 'name_mgr': 'manager', 'size': 'direct_reports'})
@@ -2698,7 +2701,7 @@ res = (m.groupby(['emp_id_mgr', 'name_mgr'], as_index=False).size()
 #           1   Meera               2
 #           4   Tarun               1
 
-Managers with more than 5 direct reports
+# Managers with more than 5 direct reports
 res = res[res.direct_reports > 5].reset_index(drop=True)
 # Output (matches the SQL):
 #  manager_id manager  direct_reports
@@ -2940,7 +2943,7 @@ WHERE left_date IS NOT NULL;
 ```python
 # the tables above are DataFrames with the same names and columns
 import pandas as pd
-The early leavers
+# The early leavers
 e = employees[employees.left_date.notna()].copy()
 j, l = pd.to_datetime(e.join_date), pd.to_datetime(e.left_date)
 e['days_to_exit'] = (l - j).dt.days
@@ -2953,7 +2956,7 @@ res = (early[['emp_id', 'name', 'join_date', 'left_date', 'days_to_exit']]
 #       1   Asha 2025-01-10 2025-05-20           130
 #       3 Chitra 2025-08-31 2026-02-28           181
 
-Share of all leavers
+# Share of all leavers
 res = pd.DataFrame({'leavers': [len(e)], 'early_leavers': [len(early)]})
 res['early_share_pct'] = (100 * res.early_leavers / res.leavers).round(1)
 # Output (matches the SQL):
