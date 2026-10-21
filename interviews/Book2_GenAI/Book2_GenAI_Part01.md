@@ -798,15 +798,122 @@ print(m(torch.randn(2, 5, 64)).shape, sum(p.numel() for p in m.parameters()))  #
 
 ### Q22 ⭐⭐ 🟡 What is cross-attention, where is it used (T5, Whisper, diffusion, multimodal) and how does it differ from self-attention?
 **Asked at:** all types
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Cross-attention is attention where the queries come from one sequence and the keys and values come from a different one, so one stream can read from another.
+
+**Then explain:**
+- **Self-attention:** Q, K and V all come from the same sequence. **Cross-attention:** `Q = W_q · x_decoder`, `K = W_k · x_other`, `V = W_v · x_other`. The score matrix is `(T_q, T_kv)`, not square.
+- **No causal mask** over the other sequence. The decoder can look at all of the encoder output (the decoder's own self-attention stays causal).
+- **Output length** equals the query length, `T_q`. The cost is O(T_q · T_kv), so a long source gets expensive, but the K and V of the source can be computed **once** and reused for every decoding step.
+- **Where it is used:**
+  - **T5 / original transformer / BART:** the decoder attends to the encoder's output in every layer (translation, summarisation).
+  - **Whisper:** the text decoder attends to the audio encoder's features.
+  - **Diffusion models (Stable Diffusion-style):** image latents are the queries and the text-encoder embeddings are the keys and values, which is how the prompt conditions the image.
+  - **Multimodal LLMs:** some designs insert cross-attention layers so text queries read image features (Flamingo-style). Others skip it and simply concatenate image tokens into the text sequence (see Q31).
+
+**Example:** translating a 12-token English sentence into 9 French tokens so far. Cross-attention weights have shape `(heads, 9, 12)`, and each French token distributes its attention over the English tokens.
+
+**Code:** (run, torch 2.14)
+```python
+import math, torch
+import torch.nn.functional as F
+torch.manual_seed(0)
+B, Tq, Tk, D, H = 2, 3, 10, 32, 4
+dh = D // H
+Wq, Wk, Wv = (torch.nn.Linear(D, D, bias=False) for _ in range(3))
+dec = torch.randn(B, Tq, D)      # queries: decoder / text side
+enc = torch.randn(B, Tk, D)      # keys, values: encoder / image / audio side
+sp = lambda t, T: t.view(B, T, H, dh).transpose(1, 2)
+q, k, v = sp(Wq(dec), Tq), sp(Wk(enc), Tk), sp(Wv(enc), Tk)
+w = (q @ k.transpose(-2, -1) / math.sqrt(dh)).softmax(-1)      # (B,H,Tq,Tk), no causal mask
+out = (w @ v).transpose(1, 2).reshape(B, Tq, D)
+print(tuple(w.shape), tuple(out.shape))                         # (2, 4, 3, 10) (2, 3, 32)
+print(torch.allclose(out, F.scaled_dot_product_attention(q, k, v).transpose(1, 2).reshape(B, Tq, D), atol=1e-6))  # True
+```
+
+**Follow-ups:**
+- *Why do decoder-only LLMs not have it?* The prompt and output are one sequence, so ordinary causal self-attention already lets output tokens read the prompt. Fewer components, one KV cache.
+- *Cache implication?* The encoder K/V are fixed, so they are computed once per request. Only decoder self-attention K/V grow during generation.
+- *Is the source ever masked?* Only for padding.
+
+**Common mistakes:** saying Q, K, V all come from the encoder; applying a causal mask to the source; forgetting that the score matrix is not square; saying the cost grows with generated length for the encoder part (it is computed once); confusing "cross-attention" with "cross-encoder" rerankers.
 
 ### Q23 ⭐⭐ 🟡 Which levers reduce KV-cache memory (GQA, quantised cache, sliding window, eviction)? Compare their trade-offs.
 **Asked at:** big tech, inference/platform teams
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** The cache is `2 · L · n_kv · d_head · T · B · bytes`, so each lever attacks one factor: fewer KV heads (GQA/MQA/MLA), fewer bytes (quantisation), fewer tokens (sliding window, eviction), or better packing (paging, sharing). They differ in what quality they risk and whether they need retraining.
+
+**Then explain:**
+
+| Lever | Factor attacked | Typical saving | Cost / risk | Retrain? |
+|---|---|---|---|---|
+| GQA / MQA (Q10) | n_kv | 4x for 32 to 8 heads; 32x for MQA | small quality loss if trained that way | yes (or uptrain) |
+| MLA (Q33) | compressed latent instead of full K/V | large (architecture-dependent) | more complex kernels | yes |
+| Quantised cache (int8/fp8, int4) | bytes | 2x for int8 vs fp16; about 4x for int4 | small for int8; int4 can hurt long or precise tasks | no |
+| Sliding window (Q29) | T (capped at window W) | cache is O(W) instead of O(T) | tokens outside the window are not directly visible | yes (trained) or used with sinks |
+| Eviction (H2O, StreamingLLM: sinks + recent) | T | fixed budget | may drop a token needed later; hurts retrieval-style tasks | no |
+| Prefix sharing (Q24) | duplicated prefixes across requests | big when prompts share a prefix | none on quality | no |
+| Paged allocation (Part 10) | wasted space | removes fragmentation, not live size | small overhead | no |
+| Offload to CPU/disk | GPU residency | frees GPU memory | latency over PCIe | no |
+
+- **Order of choice:** things that cost no quality come first: paging, prefix sharing, fp8/int8 cache. Then architecture (GQA/MLA) if you control training. Window and eviction trade accuracy for a hard memory bound.
+- **They multiply.** Example with the Q15 numbers, Llama-2-7B-like at 32k context, B=1: fp16 MHA is 16 GiB. GQA with n_kv=8 gives 4 GiB. Adding an int8 cache gives about 2 GiB (4x * 2x = 8x, ignoring the small scale overhead).
+- **Bandwidth bonus:** a smaller cache also means less data read per decode step, so it helps speed as well as capacity (see Q7).
+
+**Example:** you are serving 64 users at 8k context and run out of GPU memory. First try fp8 KV and prefix sharing for the common system prompt (no retraining). If that is not enough, move to a GQA/MLA model. Use a sliding window or eviction only if the product can tolerate forgetting old tokens (for example, a streaming chat), not for document QA.
+
+**Follow-ups:**
+- *Does GQA reduce compute?* Mainly the cache size and bandwidth, so decode benefits most. Prefill compute is similar.
+- *Does sliding window lose information?* Directly, yes. Across layers, information can propagate further than W because each layer reads W tokens of a previous layer's output.
+- *How do you check the quality of a quantised cache?* Compare task metrics and long-context accuracy against fp16, not just perplexity.
+
+**Common mistakes:** treating paging as a way to shrink the live cache (it removes waste); forgetting that GQA must be trained in; assuming eviction is free; quoting savings without naming the baseline (fp16 MHA); forgetting that weights, not just cache, take memory.
 
 ### Q24 ⭐⭐ 🟡 What are prompt/prefix caching in LLM APIs, and how do they relate to the KV cache? How do you structure prompts to benefit?
 **Asked at:** product, GCC, API-heavy teams
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Prompt (prefix) caching stores the KV cache of a prompt prefix so that a later request starting with the exact same tokens skips recomputing that part of prefill. It is the KV cache reused across requests, not just across decode steps. To benefit, put the static content first and the changing content last.
+
+**Then explain:**
+- **Link to the KV cache:** in a causal model, the K and V at position i depend only on tokens 0..i. So if two requests share the first N tokens, the K/V for those N tokens are identical and can be reused. (RoPE needs the same positions, which holds for a shared prefix.)
+- **What it saves:** prefill compute and time-to-first-token for the cached part. It does not speed up decoding. Providers typically bill cached input tokens at a discount, but the exact discount, minimum prefix length, lifetime (TTL) and whether it is automatic or explicit differ by provider, so check the current docs.
+- **Exact prefix match only:** matching is by token prefix (open-source servers such as vLLM hash fixed-size blocks, where each block's key includes all earlier tokens). A single changed token early on invalidates everything after it.
+- **How to structure prompts:**
+  - Order: system prompt, tool/function definitions, few-shot examples, long reference documents, then conversation history, then the new user question last.
+  - Keep the static part byte-identical: no timestamps, request ids, user names or random ordering at the top. Serialise JSON and tool lists in a stable order.
+  - Make conversation history append-only (do not edit or re-summarise old turns every request).
+  - Put per-user or per-request variables at the end.
+  - Check the usage fields in the API response to confirm that cached tokens are being counted.
+
+**Example (toy run):** block size 4. Request 1 has a 12-token shared prefix and 3 new tokens (15 tokens): all 15 are prefilled. Request 2 has the same 12-token prefix and 5 new tokens (17): 12 reused, 5 prefilled. Request 3 adds one token at the front (16 tokens): 0 reused, 16 prefilled.
+
+**Code:** (run; a toy block-hash prefix cache, not a real server)
+```python
+import hashlib
+BLOCK = 4
+def block_keys(tokens):
+    keys, prev = [], ""
+    for i in range(0, len(tokens) - len(tokens) % BLOCK, BLOCK):   # full blocks only
+        prev = hashlib.sha1((prev + str(tokens[i:i+BLOCK])).encode()).hexdigest()[:8]  # depends on ALL earlier tokens
+        keys.append(prev)
+    return keys
+cache = set()
+def run(name, tokens):
+    ks = block_keys(tokens); hit = 0
+    for k in ks:
+        if k in cache: hit += 1
+        else: break
+    cache.update(ks)
+    print(f"{name}: {len(tokens)} tokens, reused {hit*BLOCK}, prefill {len(tokens)-hit*BLOCK}")
+system = list(range(100, 112))
+run("req1", system + [1, 2, 3])            # reused 0, prefill 15
+run("req2", system + [7, 8, 9, 10, 11])    # reused 12, prefill 5
+run("req3", [999] + system + [1, 2, 3])    # reused 0, prefill 16
+```
+
+**Follow-ups:**
+- *Is the cached prefix always useful?* Only if it is reused within the cache lifetime. Low-traffic prompts may expire before the next hit, so caching saves nothing.
+- *Is the output different with caching?* It should be the same (same K/V), apart from tiny numerical differences from different kernels or batching.
+- *Memory cost on the server?* Cached prefixes occupy KV memory (see Q23), so servers evict by LRU or TTL. Paging and sharing details are in Part 10.
+
+**Common mistakes:** putting the user question or a timestamp at the top of the prompt; thinking caching works on "similar" prompts (it is exact prefix, not semantic); assuming it speeds up generation (it speeds prefill); inventing provider discount numbers; confusing prompt caching with semantic response caching (which returns a stored answer).
 
 ### Q25 ⭐⭐ 🟡 Explain input embeddings, the unembedding (LM head) layer and weight tying. How does vocabulary size affect model size and cost?
 **Asked at:** product, GenAI startups
@@ -1546,16 +1653,169 @@ A one-row check of just the max and denominator also matched (`m == s.max()`, `l
 
 ### Q44 ⭐ 🔴 What stability tricks do large transformers use (pre-norm, QK-norm, logit soft-capping, z-loss, warmup)? Why do loss spikes happen?
 **Asked at:** big tech, research-leaning teams
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Most tricks keep some quantity from growing without bound: activations (pre-norm), attention logits (QK-norm, soft-capping), output logits (z-loss, soft-capping), or the early update size (warmup). Loss spikes have several interacting causes, and the field only partly understands them, so in practice people combine tricks and also skip bad data or roll back.
+
+**Then explain:**
+
+| Trick | What it does | Notes |
+|---|---|---|
+| **Pre-norm** | Normalise at the *input* of each attention/FFN block, residual path stays clean (`x + f(norm(x))`) | Gradients flow through the residual path, so deep models train with less fuss than post-norm. Cost: the residual stream can grow with depth, so some models add a final norm or extra norms (e.g. norms on sub-block outputs) |
+| **Warmup** | Learning rate rises from ~0 over the first few thousand steps | Early on, Adam's second-moment estimates are poor and weights are random, so a full-size step can blow up |
+| **QK-norm** | Normalise q and k (per head) before the dot product | Bounds attention logits, which otherwise can grow until softmax is almost one-hot (attention entropy collapse). Used in e.g. ViT-22B (Dehghani et al. 2023) and several recent LLMs |
+| **Logit soft-capping** | `cap * tanh(x / cap)` on attention and/or final logits | Smooth hard bound. Gemma 2 used it (reported caps: 50 attention, 30 final logits); a later model family reportedly moved to QK-norm instead. Check the model card; it is not universal and can conflict with fused attention kernels |
+| **z-loss** | Add `c * (log Z)^2` to the loss, with `Z = sum exp(logits)`, c ~ 1e-4 (PaLM) | Keeps the softmax normaliser near 1, so output logits do not drift in scale |
+| **Others** | Gradient clipping (norm 1.0 is common), lower Adam beta2 (0.95 rather than 0.999), eps tuning, careful init, bf16 rather than fp16 | Adam with a slow beta2 reacts slowly to a sudden gradient jump, which can produce a spike |
+
+- **Why spikes happen (not fully settled):**
+  - *Attention-logit growth:* q.k grows, softmax saturates, gradients get sharp (Wortsman et al. 2023 reproduced this at small scale and showed QK-norm, z-loss help).
+  - *Output-logit drift:* logits grow in scale, loss becomes sensitive.
+  - *Adam dynamics:* if gradient statistics change suddenly while the second-moment estimate is stale, the update is much larger than intended (Molybog et al. 2023 analyse this).
+  - *Data:* a bad batch (e.g. a corrupted or extremely repetitive document) can trigger or worsen a spike.
+  - *Numerics:* low precision, rare large activations.
+- **Operational response:** PaLM reported restarting from a checkpoint a bit before the spike and skipping the batches around it. This is a mitigation, not a root-cause fix.
+
+**Example (executed):** soft-capping at 30 maps logits [-200, -50, -5, 0, 5, 50, 200] to [-30.00, -27.93, -4.95, 0, 4.95, 27.93, 30.00], so small values are nearly untouched and huge ones saturate. With exploded activations (q, k scaled by 50), `q.k/sqrt(d)` was 4047 raw but 1.74 after RMS-normalising q and k.
+
+**Code:** (executed, torch)
+```python
+import torch
+cap = 30.0
+x = torch.tensor([-200., -50., -5., 0., 5., 50., 200.])
+print((cap * torch.tanh(x / cap)).round(decimals=2))             # soft-cap
+logits = torch.randn(4, 100) * 3
+z_loss = 1e-4 * torch.logsumexp(logits, -1).pow(2).mean()        # add to cross-entropy
+rms = lambda t: t / t.pow(2).mean().sqrt()                       # QK-norm idea (real versions have learnable scale)
+q, k = torch.randn(64) * 50, torch.randn(64) * 50
+print((q @ k / 8).item(), (rms(q) @ rms(k) / 8).item())          # large vs bounded
+```
+
+**Follow-ups:**
+- *Pre-norm vs post-norm trade-off?* Post-norm can give slightly better final quality when it trains but is harder to optimise at depth and needs careful warmup. Pre-norm is the default for LLMs.
+- *Does QK-norm cost quality?* Generally reported as neutral to positive; it adds a small compute cost and constrains logit scale, so a learnable temperature is often added.
+- *How do you detect trouble early?* Track max attention logit, output-logit norm, gradient norm, update/weight ratios and loss per data source, not just the loss.
+
+**Common mistakes:** Presenting one tricks list as "the" cause. Saying spikes are always bad data. Confusing z-loss (regularises the normaliser) with weight decay. Claiming every modern LLM uses soft-capping or QK-norm.
 
 ### Q45 ⭐ 🔴 What is multi-token prediction, and how does it relate to speculative decoding?
 **Asked at:** big tech, GenAI startups
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Multi-token prediction (MTP) trains the model to predict several future tokens at each position instead of just the next one. It is a training objective; speculative decoding is an inference method. They connect because the extra prediction heads can serve as a built-in draft model that the main model then verifies.
+
+**Then explain:**
+- **MTP in training:** Gloeckle et al. (Meta, 2024) put `n` independent output heads on a shared trunk; head j predicts the token j steps ahead. The loss is the sum over heads. Reported benefits: better sample efficiency on code at larger model sizes, and faster inference through self-speculation. Gains were not uniform across tasks and sizes.
+- **DeepSeek-V3's variant:** MTP modules are chained sequentially (each keeps the causal chain by taking the previous depth's representation plus the next token embedding), used as an extra training signal. They also report it can be reused for speculative decoding, with a high acceptance rate for the second token (they quote roughly 85-90%; treat as their reported figure).
+- **Why it might help training:** it forces the hidden state to encode information about further ahead, a denser learning signal, and may help planning-like behaviour. This is the authors' hypothesis, not a settled explanation.
+- **Speculative decoding (Leviathan et al.; Chen et al., 2023):** a cheap draft proposes `k` tokens. The big model scores all `k` in *one* forward pass (parallel, like prefill) and accepts a prefix using a rejection-sampling rule that keeps the output distribution *identical* to the big model's. You always get at least one token per big-model pass.
+- **Relation:** a normal draft is a separate small model. With MTP the draft comes from extra heads on the same model: no second model to host or to keep in sync, and the draft sees the main model's hidden states. Verification step is the same.
+- **Caveat:** extra heads cost parameters and training compute, and the farther ahead a head predicts, the lower its acceptance rate.
+
+**Example (executed):** If each drafted token is accepted independently with probability a, the expected tokens per big-model pass with k drafts is `(1 - a^(k+1)) / (1 - a)`. For a=0.7, k=4 that is 2.77 (Monte Carlo over 200k trials: 2.768). For a=0.9, k=4: 4.10; k=8: 6.13. For a=0.5, extra drafts barely help: 1.94 at k=4, 2.00 at k=8. Real acceptance is not independent across positions, so this is an idealised guide, and drafting overhead is not counted.
+
+**Code:** (executed, numpy)
+```python
+import numpy as np
+def expected(a, k): return (1 - a**(k+1)) / (1 - a)
+print({k: round(expected(0.7, k), 2) for k in (1, 2, 4, 8)})     # {1: 1.7, 2: 2.19, 4: 2.77, 8: 3.2}
+rng = np.random.default_rng(0); a, k = 0.7, 4
+def one():
+    n = 0
+    while n < k and rng.random() < a: n += 1
+    return n + 1                       # accepted drafts + 1 token from the big model
+print(np.mean([one() for _ in range(200000)]).round(3), round(expected(a, k), 3))   # 2.768 2.773
+```
+
+**Follow-ups:**
+- *Is speculative decoding lossless?* With the standard acceptance rule and the same sampling settings, yes: the output distribution matches the target model. Greedy decoding: same text as greedy from the big model (up to floating-point differences).
+- *Why does it speed up decode at all?* Decode is memory-bound; checking `k` tokens in one pass costs about the same weight reads as one token, so the extra tokens are nearly free until compute becomes the limit.
+- *When does it not help?* Large batches (already compute-bound), low-acceptance domains such as high-temperature creative text, or when the draft is too slow.
+- *Does MTP always make the base model better?* No. Reported gains depend on model size and task; the paper itself notes small models can get worse.
+
+**Common mistakes:** Saying MTP outputs several tokens at once and they are all accepted (they must be verified). Confusing the training benefit of MTP with the inference benefit. Claiming speculative decoding changes output quality (the standard method does not). Using acceptance numbers from one model or domain as a general rule.
 
 ### Q46 ⭐ 🔴 Diffusion language models vs autoregressive LLMs: how do they differ, and what are the trade-offs?
 **Asked at:** research-leaning teams, GenAI startups
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** An autoregressive model writes left to right, one token per forward pass. A diffusion LM starts from a fully masked or noised sequence and refines many positions in parallel over several denoising steps, using bidirectional attention. The promise is fewer sequential steps and more parallelism; the open questions are quality at equal cost, caching and mature tooling. This is a fast-moving area, so I would treat claims as provisional.
+
+**Then explain:**
+
+| | Autoregressive (AR) | Masked-diffusion LM |
+|---|---|---|
+| Factorisation | `p(x) = prod_t p(x_t given x_<t)` | Learn to unmask: corrupt by masking tokens with random ratio, train to predict the masked ones; generate by starting all-masked and unmasking over T steps |
+| Attention | Causal | Bidirectional (full) |
+| Tokens per forward pass | 1 (more with speculation/MTP, Q45) | Several per step (parallel unmasking), step count is a knob |
+| Likelihood | Exact | Bound (ELBO) only, so perplexity comparisons need care |
+| KV cache | Yes, exact (Q6) | No straightforward exact cache because every position can change attention over all others; block-wise and approximate caching schemes exist and are active research |
+| Length | Stops at EOS naturally | Often fixed canvas or block size chosen up front; variable length needs extra design |
+| Editing / infilling | Awkward | Natural (bidirectional context) |
+
+- **Examples (to my knowledge, check current status):** LLaDA (Nie et al., 2025, an ~8B masked-diffusion model trained from scratch, reported competitive with similar-size AR models on several benchmarks), plus commercial or preview systems from companies such as Inception Labs (Mercury) and Google (a Gemini Diffusion demo) that emphasise speed. I would not quote their speed numbers from memory.
+- **Why parallel decode is not free:** tokens unmasked in the same step are sampled independently given the context, so strongly dependent tokens (e.g. two halves of a name) can become inconsistent. Fewer steps means more of this error. Quality improves with more steps, which erodes the speed advantage.
+- **Compute view:** each denoising step is a full forward pass over the whole sequence (no cache), so total FLOPs can exceed AR unless steps are few. The gain is latency per token on hardware that is under-used in AR decode (batch size 1, memory-bound), not necessarily total cost at high batch.
+- **Other trade-offs:** training and serving ecosystems (kernels, vLLM-style schedulers, RLHF recipes, evaluation) are far more mature for AR; instruction tuning and reasoning-style RL for diffusion LMs are earlier-stage. At the frontier scale, diffusion LMs have not (as far as I know) shown clear superiority over AR.
+
+**Example:** Generate 256 tokens. AR: 256 sequential passes (each cheap with a KV cache). Diffusion with 64 steps unmasking 4 tokens per step: 64 passes, each over the full 256-token canvas. Whether that wins depends on step quality and hardware; at large serving batch AR with a cache may be cheaper per token. *(Illustrative arithmetic, not a benchmark.)*
+
+**Code:** (not executed: conceptual; shown as pseudocode to explain the decode loop)
+```python
+# masked-diffusion decoding sketch
+x = [MASK] * L
+for step in range(T):                       # T << L is the speed idea
+    probs = model(x)                        # bidirectional, full sequence
+    conf  = probs.max(-1)                   # confidence per position
+    pick  = top_k_most_confident(masked_positions(x), n=L // T)
+    x[pick] = probs.argmax(-1)[pick]        # commit these; others stay masked (some schemes re-mask)
+```
+
+**Follow-ups:**
+- *Can a diffusion LM do chain-of-thought and reasoning?* Possible, but the left-to-right causal flow of reasoning fits AR naturally; the evidence for diffusion at long reasoning is still limited.
+- *Continuous vs discrete diffusion for text?* Text is discrete; most current competitive LMs use discrete masked diffusion over tokens, with earlier continuous-embedding diffusion approaches less successful at scale. Treat as a trend.
+- *Where might it win?* Low-latency generation at small batch, infilling/editing, and tasks where bidirectional context helps.
+
+**Common mistakes:** Saying diffusion LMs are "faster" without conditions (steps, batch size, caching). Forgetting they lack an exact KV cache. Claiming exact perplexity comparison with AR models. Overstating maturity or claiming they have replaced AR.
 
 ### Q47 ⭐ 🔴 Design question: choose the architecture and attention variant for a 32k-context, low-latency chat model that must run on one GPU.
 **Asked at:** senior roles at big tech, product, GenAI startups
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** I would pick a dense decoder-only transformer around 7-8B parameters with GQA (about 8 KV heads), RoPE, RMSNorm, SwiGLU and FlashAttention kernels. I would quantise weights (and maybe the KV cache) to fit the GPU, and use prefix caching and chunked prefill for latency. GQA is the key choice because at 32k the KV cache, not the weights, is what limits concurrency and decode speed.
+
+**Then explain (requirements, then trade-offs):**
+- **Requirements to clarify first:** which GPU (24 GB, 40 GB or 80 GB), concurrent users, p95 time-to-first-token (TTFT) and per-token latency targets, typical vs maximum prompt length (most chats are far below 32k), quality bar, and whether the context is real (retrieval over long docs) or just headroom.
+- **Memory budget (executed arithmetic, 32 layers, head_dim 128, fp16 KV):**
+
+| Attention | KV per token | 32k ctx, one sequence (fp16) | int8 KV |
+|---|---|---|---|
+| MHA, 32 KV heads | 512 KiB | 16.00 GiB | 8.00 GiB |
+| GQA, 8 KV heads | 128 KiB | 4.00 GiB | 2.00 GiB |
+| GQA, 4 KV heads | 64 KiB | 2.00 GiB | 1.00 GiB |
+
+  Weights of an 8B model: 14.9 GiB in fp16, 7.5 GiB in int8, 3.7 GiB in 4-bit.
+  Assuming 10% of GPU memory is reserved for activations and overhead, with GQA-8 and fp16 KV the number of full 32k sequences that fit is: 24 GB GPU 1 (fp16 weights) or 3 (int8 weights); 40 GB 5 or 7; 80 GB 14 or 16. With plain MHA, one 32k sequence alone takes 16 GiB, so a 24 GB card would be unusable at long context.
+- **Attention variant:** GQA is the safe default (small quality loss, mature kernels, easy to serve). MLA (Q33) cuts the cache further but needs it trained in from the start (or an expensive conversion) and custom kernels. Sliding-window layers help a lot if some layers are windowed (e.g. half the layers at a 4k window: 2.25 GiB instead of 4.00 GiB per 32k sequence in my calculation), at the risk of weaker long-range retrieval; check quality on your own long tasks.
+- **Positions:** RoPE, trained or extended to 32k with interpolation/YaRN-style scaling plus a long-context fine-tune (Q38). Evaluate with real long-context retrieval, not just perplexity.
+- **Why not MoE or SSMs here?** MoE saves compute per token but all experts must sit in memory, which is the scarce resource on one GPU. SSM/hybrid models (Q27) shrink the cache but have less proven recall quality and a thinner tooling ecosystem; a hybrid is a reasonable experiment if memory is the binding limit.
+- **Latency:**
+  - *Decode* is memory-bandwidth-bound: each token reads all weights plus the sequence's KV. Smaller weights (quantisation) and fewer KV heads both reduce time per token. Long contexts make each token slower because the KV read grows.
+  - *Prefill* of a 32k prompt is compute-bound. Back-of-envelope (not executed): `2 * 8e9 * 32768 ~ 5e14` FLOPs for the weights matmuls alone, plus attention cost. That is seconds on one GPU, so TTFT for a full 32k prompt cannot be tiny. Mitigate with prefix caching (system prompt, shared documents; Q24), chunked prefill so decode of other users is not blocked, and FlashAttention.
+  - *Speculative decoding* (Q45) can cut per-token latency at small batch.
+- **Serving stack:** a paged KV cache (PagedAttention-style; Part 10), continuous batching, admission control by KV memory, not only by request count.
+- **Evaluation and monitoring:** long-context needle and multi-document QA at 4k/16k/32k, short-context quality regression, TTFT and inter-token latency percentiles, KV-cache utilisation, preemption/eviction rate.
+
+**Example (the recommendation in one line):** 8B dense, GQA-8, RoPE with 32k extension, int8 or 4-bit weights, fp16 or int8 KV, on a 40 GB card: about 5-7 full 32k sequences at once, many more at typical chat lengths, with prefix caching for the system prompt.
+
+**Code:** (executed, python) the arithmetic behind the table
+```python
+GiB = 2**30
+def kv_per_token(layers, kv_heads, head_dim, nbytes=2): return 2 * layers * kv_heads * head_dim * nbytes
+for kvh in (32, 8, 4):
+    b = kv_per_token(32, kvh, 128)
+    print(kvh, b // 1024, "KiB/token", b * 32768 / GiB, "GiB per 32k sequence")   # 512/16.0, 128/4.0, 64/2.0
+params = 8e9
+for gpu in (24, 40, 80):
+    free = gpu * 0.9 - params * 2 / GiB            # fp16 weights, 10% reserve (an assumption)
+    print(gpu, int(free * GiB // (kv_per_token(32, 8, 128) * 32768)), "full 32k sequences")   # 1, 5, 14
+```
+
+**Follow-ups:**
+- *What if the budget is 24 GB?* Quantise weights to int8 or 4-bit, use GQA with an int8 KV cache, cap concurrency by KV memory, and consider a smaller model (3-4B). Check quality loss from quantisation on long-context tasks.
+- *How do you keep latency low under load?* Continuous batching, chunked prefill, prefix caching, and limiting the max context per request for free tiers.
+- *Would you use retrieval instead of 32k context?* Often yes for cost and latency: long-context is expensive per request. Choose by task; long context for whole-document reasoning, RAG when the answer lives in a few passages.
+
+**Common mistakes:** Sizing only the weights and forgetting the KV cache (it is 4 GiB per 32k sequence even with GQA). Choosing MoE for a single-GPU deployment. Choosing the architecture before clarifying the GPU, concurrency and latency targets. Claiming exact latency numbers without hardware specifics. Evaluating long context only by perplexity.
