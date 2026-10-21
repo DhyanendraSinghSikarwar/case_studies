@@ -1062,7 +1062,39 @@ print(f"break-even served tokens {be:.2e}")   # 1.06e+12
 
 ### Q33 ⭐⭐ 🟡 Estimate the cost of pretraining a 7B model on 2T tokens: FLOPs, GPU-hours, model FLOPs utilisation (MFU) and rough dollars.
 **Asked at:** big tech, product, infra/platform teams
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Training FLOPs are about 6 x parameters x tokens, which is 8.4e22 for 7B on 2T tokens; divide by what the GPUs really deliver (peak x MFU) to get GPU-hours, then multiply by price. On illustrative assumptions that is roughly 59k GPU-hours and about $120k of raw compute at 40% MFU.
+
+**Then explain:**
+- **FLOPs = 6ND:** 2ND for the forward pass and 4ND for backward (a standard approximation; ignores attention-over-context terms and recompute).
+- **GPU-hours = FLOPs / (peak FLOP/s x MFU x 3600).** **MFU** (model FLOPs utilisation) = useful model FLOPs achieved / hardware peak. It is below 100% because of memory-bound ops, communication, data loading and bubbles. Reported large-run values are often in the 30-55% range; treat as ballpark.
+- **All hardware numbers below are assumptions:** peak 989e12 FLOP/s (H100-class bf16 dense, from vendor spec as I recall it) and $2.00 per GPU-hour. Real prices vary widely by provider and contract.
+- **Sensitivity:** cost is inversely proportional to MFU, so a poor setup costs much more.
+- This is only the final run. Real budgets add failed runs, ablations, scaling-law experiments, data processing, evals and staff, often multiples of the final run. Also compare memory needs (Q34).
+
+**Example (computed):** 6 x 7e9 x 2e12 = 8.4e22 FLOPs.
+
+| MFU | GPU-hours | Cost at $2/GPU-hr | Days on 1,024 GPUs |
+|---|---|---|---|
+| 30% | 78,643 | $157,286 | 3.2 |
+| 40% | 58,982 | $117,964 | 2.4 |
+| 50% | 47,186 | $94,371 | 1.9 |
+
+**Code:** (executed)
+```python
+N, D = 7e9, 2e12
+F = 6*N*D; print(f"{F:.2e}")                      # 8.40e+22
+peak, price = 989e12, 2.0                          # ASSUMPTIONS, not measurements
+for mfu in (0.3, 0.4, 0.5):
+    gh = F/(peak*mfu*3600)
+    print(f"{mfu:.0%} {gh:,.0f} GPU-h ${gh*price:,.0f} {gh/1024/24:.1f} days@1024")
+# 30% 78,643 $157,286 3.2 | 40% 58,982 $117,964 2.4 | 50% 47,186 $94,371 1.9
+```
+
+**Follow-ups:**
+- *Why does a real company spend more?* Experiments, restarts, failures, data and evals, plus higher-priced capacity.
+- *What would change the estimate most?* MFU and token count, then GPU price; MoE or longer context change the FLOPs formula.
+
+**Common mistakes:** Using peak FLOPs with no MFU. Using sparse (2x) peak numbers for dense training. Forgetting the factor 6 vs 2. Presenting the dollar figure as the total cost of building a model.
 
 ### Q34 ⭐⭐ 🔴 Live maths: how much GPU memory does training a 7B model need (weights, gradients, Adam states, activations)? Explain data, tensor and pipeline parallelism and ZeRO/FSDP at a high level.
 **Asked at:** big tech, infra/platform teams, GenAI startups
@@ -1355,7 +1387,40 @@ for f in (0.0, 0.1, 0.5):
 
 ### Q40 ⭐ 🔴 Are emergent abilities real or an artefact of the metric? How would you test it?
 **Asked at:** research-leaning teams, big tech
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Schaeffer et al. (2023) argued that many reported "emergent" jumps come largely from the metric: all-or-nothing scores like exact match look like a sudden jump even when the underlying per-token skill improves smoothly, and small test sets add noise. That does not prove every capability change is smooth, so I would say "partly an artefact, not fully refuted", and test it myself.
+
+**Then explain:**
+- **Claim being tested:** some abilities appear abruptly at a certain scale, not predictable from smaller models (Wei et al., 2022).
+- **The metric argument:** exact match over k tokens is roughly `p^k` where p is per-token accuracy. A smooth rise in p gives a curve that hugs zero and then takes off. A continuous metric (token-level log-likelihood, edit distance, partial credit) on the same models looks smooth. The paper also reports that changing the metric on the same outputs makes some jumps disappear (from memory; I would not give numbers).
+- **Statistics:** with few test items and scores near zero, noise is large; error bars are often missing.
+- **What it does not show:** that every ability is smooth, or that capability-in-practice (a user needs the whole answer right) is not threshold-like. For users, exact-match-like success is what matters, so the "jump" can be real in usefulness even if the loss is smooth.
+- **How I would test:** (1) evaluate the same model family at several sizes with several metrics (exact match, partial credit, log-likelihood of the correct answer); (2) use large test sets and report confidence intervals; (3) use more intermediate sizes or checkpoints; (4) check whether the continuous metric predicts the discontinuous one; (5) beware contamination.
+
+**Example (synthetic, made-up curve, not real models):** per-token accuracy follows a smooth logistic in log model size, and exact match requires 10 tokens all right. Per-token accuracy goes 0.14 to 0.95 smoothly across 1e7 to 1e11 "parameters", while exact match goes 0.000, 0.000, 0.000, 0.001, 0.013, 0.072, 0.217, 0.420, 0.615: flat near zero and then rising fast. Same underlying skill, very different picture.
+
+**Code:** (executed, synthetic)
+```python
+import numpy as np
+# SYNTHETIC: per-token accuracy rises smoothly with log model size; exact match needs k tokens all right.
+sizes = np.logspace(7, 11, 9)                       # 1e7 ... 1e11 "parameters"
+p = 1 / (1 + np.exp(-(np.log10(sizes) - 8.5) * 1.2))   # smooth per-token accuracy (assumed)
+k = 10
+em = p ** k
+print("params   per-token acc   exact-match(k=10)")
+for n, a, e in zip(sizes, p, em):
+    print(f"{n:8.0e}   {a:6.3f}          {e:6.3f}")
+for n_items in (100, 1000):
+    se = (0.05 * 0.95 / n_items) ** 0.5
+    print(f"test set {n_items}: std error at acc=0.05 is {se:.3f}")
+# std error at acc=0.05: 0.022 (100 items) vs 0.007 (1000 items)
+```
+
+**Follow-ups:**
+- *So are emergent abilities fake?* No: the paper shows metric choice explains many cases; whether all are explained is still debated, and in-context and multi-step skills may behave differently.
+- *Why does it matter?* For forecasting: if the smooth underlying skill is measurable, you can predict when a task becomes usable, instead of being surprised.
+- *Relation to scaling laws?* Loss is smooth and predictable (Q41); downstream task scores can be harder to extrapolate.
+
+**Common mistakes:** Saying "emergence is debunked". Saying it is purely magic. Ignoring sample size and error bars. Judging only on exact match or multiple-choice accuracy.
 
 ### Q41 ⭐ 🔴 What are the limits and critiques of scaling laws (fit uncertainty, extrapolation risk, the data wall, test-time compute)?
 **Asked at:** senior roles at big tech, research-leaning teams
