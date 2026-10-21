@@ -649,11 +649,11 @@ print(kv_bytes(32,32,128,4096,32)/2**30, kv_bytes(32,8,128,4096,32)/2**30)  # 64
 
 | d_k | Var of raw score | Var after scaling | Mean max weight, raw | Mean max weight, scaled |
 |---|---|---|---|---|
-| 4 | 4.0 | 1.0 | 0.273 | 0.104 |
-| 64 | 63.2 | 0.99 | 0.789 | 0.108 |
-| 512 | 512.3 | 1.0 | 0.930 | 0.109 |
+| 4 | 4.1 | 1.01 | 0.283 | 0.108 |
+| 64 | 64.0 | 1.0 | 0.783 | 0.106 |
+| 512 | 511.1 | 1.0 | 0.927 | 0.106 |
 
-Unscaled at d_k=512, the top key takes 93% of the weight on random data. Scaled, it stays around 0.11 regardless of d_k.
+Unscaled at d_k=512, the top key takes about 93% of the weight on random data. Scaled, it stays around 0.11 regardless of d_k.
 
 **Code:** (run, NumPy seed 0)
 ```python
@@ -666,7 +666,6 @@ for dk in [4, 64, 512]:
     print(dk, round(raw.var(), 1), round((raw / np.sqrt(dk)).var(), 2),
           round(softmax(raw).max(1).mean(), 3), round(softmax(raw / np.sqrt(dk)).max(1).mean(), 3))
 ```
-(Exact variances differ slightly from the table because the table used a separate 20,000-sample draw for the variance; they are all within noise of d_k and 1.)
 
 **Follow-ups:**
 - *Does it hold after training?* Not exactly, since trained q and k are not unit-variance. It is an initialisation-time argument, and some large models add QK-norm for stability instead (see Q44).
@@ -677,19 +676,125 @@ for dk in [4, 64, 512]:
 
 ### Q18 ⭐⭐ 🟡 How does RoPE work, and how do position interpolation, NTK-aware scaling and YaRN extend context length?
 **Asked at:** product, GenAI startups, big tech
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** RoPE rotates each pair of dimensions of q and k by an angle proportional to the token position, so the q·k score depends only on the relative distance. To go beyond the trained length you squeeze or re-scale those angles so the model never sees positions it was not trained on.
+
+**Then explain:**
+- **How RoPE works:** split the head dim into d/2 pairs. For pair i, the rotation angle at position m is `m · theta_i` with `theta_i = base^(-2i/d)` (base 10000 in the original; Llama-3 uses 500000). Rotating q at position m and k at position n gives a score that depends on `m - n`. Low i means a high frequency (fast rotation, local detail); high i means a low frequency (slow rotation, long range). Code is in Q42.
+- **The problem:** past the trained length L, the low-frequency pairs reach angles never seen in training, and quality collapses.
+- **Position interpolation (PI):** divide positions by the scale `s = L_new / L_old`, so `m -> m/s`. All positions fit inside the trained range. It needs a short fine-tune, and it blurs nearby tokens because high-frequency dims are compressed too.
+- **NTK-aware scaling:** do not compress everything. Increase the base (`base' = base · s^(d/(d-2))`), which stretches the low frequencies a lot and the high frequencies hardly at all. This keeps local resolution and works somewhat even without fine-tuning.
+- **YaRN:** treat each frequency band differently. High-frequency dims are left alone, low-frequency dims are interpolated, and a ramp blends the middle ("NTK-by-parts"). It also applies a mild attention temperature (logit scaling) to correct for the entropy shift at long length. It needs a small amount of long-context fine-tuning and reaches long contexts cheaply.
+
+| Method | What changes | Fine-tune? |
+|---|---|---|
+| PI | positions / s | yes, short |
+| NTK-aware | base is increased | helps zero-shot, better with a little tuning |
+| YaRN | per-band interpolation + temperature | small, efficient |
+
+**Example:** a model trained at 4k that you want at 16k. PI uses s=4, so position 16000 behaves like 4000. NTK-aware instead raises the base so slow dims cover 16k while fast dims stay near their original speed.
+
+**Follow-ups:**
+- *Does extending the window guarantee good long-context quality?* No. You still need long-context data and evaluation (see Q19).
+- *Cache before or after RoPE?* Typically K is cached after rotation, which is why positions must stay consistent. Some systems cache pre-RoPE keys to allow window shifts.
+- *Why is RoPE better than learned absolute positions here?* Learned tables have no entries past the trained length, whereas RoPE at least has a formula.
+
+**Common mistakes:** saying RoPE is added to the embedding (it rotates q and k inside attention); saying it adds parameters (it has none); saying PI/YaRN need no training (they usually need a short fine-tune); saying NTK-aware is the same as PI; forgetting that Q is rotated too.
 
 ### Q19 ⭐⭐ 🟡 What is the context window, and why is the effective context often shorter than the advertised one ("lost in the middle")?
 **Asked at:** all types
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** The context window is the maximum number of tokens (prompt plus generated output) the model can attend to in one request. The usable context is often shorter because the model is trained mostly on shorter sequences, attention gets diluted over many tokens, and models use the start and end of the prompt better than the middle.
+
+**Then explain:**
+- **What counts:** input tokens + output tokens (+ any reasoning tokens) must fit. Bigger windows cost more: KV cache memory grows linearly (Q6, Q15), prefill compute grows roughly quadratically with length (Q9).
+- **Why effective < advertised:**
+  - Most pretraining data is short. Long contexts are often added late by RoPE scaling plus brief fine-tuning (Q18), so long-range skills are less practised.
+  - Softmax attention spreads over more tokens. With thousands of distractors, the signal from the relevant tokens is diluted.
+  - **Lost in the middle** (Liu et al., 2023): on multi-document QA and key-value retrieval, accuracy was highest when the relevant information was at the start or end of the context and dropped when it was in the middle (a U shape). Newer models reduce it, but you should not assume it is gone.
+- **Needle-in-a-haystack is too easy:** finding one planted sentence tests lookup, not reasoning. Multi-needle, aggregation and multi-hop long-context benchmarks (RULER-style) usually show a lower effective length than the advertised one.
+- **Practical mitigations:**
+  - Put instructions and the key facts at the start and end.
+  - Retrieve and rerank so you send the top few chunks instead of everything (Parts 6 and 7).
+  - Trim and summarise history.
+  - Evaluate on your own task at the lengths you actually use.
+
+**Example:** a 128k-window model, 100 retrieved chunks, answer in chunk 50. Sending all 100 is slower, costs more, and may do worse than sending the best 8 chunks with the strongest at the edges.
+
+**Follow-ups:**
+- *Does a longer window replace RAG?* Not usually. Cost, latency, freshness, access control and the middle-of-context problem still favour retrieval for large corpora.
+- *How would you measure effective context?* Run your task with the gold information at several depths and total lengths, and plot accuracy against both.
+- *Is the cost only about money?* No, also latency: prefill time grows with prompt length (see Q7).
+
+**Common mistakes:** saying "128k window means 128k of reliable memory"; forgetting that output tokens share the window; claiming lost-in-the-middle is a bug in attention code (it is an emergent behaviour); trusting single-needle tests as proof of long-context ability; stating that the problem is fixed in all current models.
 
 ### Q20 ⭐⭐ 🟡 LayerNorm vs RMSNorm: what changes and why do modern LLMs prefer RMSNorm?
 **Asked at:** product, GenAI startups
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** RMSNorm drops the mean-subtraction and the bias of LayerNorm. It only rescales by the root-mean-square, so it is a bit cheaper and works just as well in practice.
+
+**Then explain:**
+- **LayerNorm:** `y = (x - mean) / sqrt(var + eps) * gamma + beta`. It re-centres and re-scales, with 2d parameters per norm.
+- **RMSNorm:** `y = x / sqrt(mean(x^2) + eps) * gamma`. There is no re-centring and no beta, so it has d parameters and fewer reductions (one statistic instead of two).
+- **Why LLMs prefer it:**
+  - Empirically it gives about the same quality (the RMSNorm paper argues re-scaling is what matters, not re-centring).
+  - It is simpler and cheaper, which matters because there are two norms per layer, run on every token. The saving is mostly memory traffic and fused-kernel simplicity, not FLOPs.
+  - No bias terms fits the modern "no biases" recipe (Llama, Qwen; see Q39).
+- **Note:** if the input already has zero mean per token, the two are identical (apart from beta). The output of RMSNorm has unit RMS, not zero mean.
+
+**Example (checked):** on a tensor with mean about 1.5 and std 3 per token (d=4096), LayerNorm outputs mean 0.0 and std 1.0. RMSNorm outputs RMS 1.0 but mean 0.44. After subtracting the mean first, the two match (`allclose` True). Parameters: LayerNorm 8192 vs RMSNorm 4096.
+
+**Code:** (run)
+```python
+import torch
+torch.manual_seed(0)
+x = torch.randn(2, 5, 4096) * 3 + 1.5
+ln = torch.nn.LayerNorm(4096, eps=1e-6)
+def rmsnorm(x, w, eps=1e-6):
+    return x * torch.rsqrt(x.pow(2).mean(-1, keepdim=True) + eps) * w
+y_ln, y_rms = ln(x), rmsnorm(x, torch.ones(4096))
+print(y_ln.mean().item(), y_ln.std().item())        # about 0.0, 1.0
+print(y_rms.mean().item(), y_rms.pow(2).mean().sqrt().item())  # about 0.44, 1.0
+xc = x - x.mean(-1, keepdim=True)
+print(torch.allclose(ln(xc), rmsnorm(xc, torch.ones(4096)), atol=1e-4))  # True
+```
+I also timed both in eager PyTorch on CPU and saw no speed gain for a naive RMSNorm, so the speed benefit depends on fused kernels and GPU memory traffic. Do not claim a number you have not measured on your own hardware.
+
+**Follow-ups:**
+- *Pre-norm or post-norm?* Modern LLMs use pre-norm with RMSNorm (see Q12).
+- *Why compute norms in fp32?* The mean of squares can overflow or lose precision in fp16/bf16, so implementations upcast.
+- *What is QK-norm?* An RMSNorm applied to q and k to bound attention logits (see Q44).
+
+**Common mistakes:** saying RMSNorm "removes normalisation"; saying it has no learnable scale (it has gamma); claiming big accuracy gains (it is mainly an efficiency and simplicity choice); forgetting that LayerNorm also has a bias; saying the saving is in FLOPs when it is mostly memory-bound ops.
 
 ### Q21 ⭐⭐ 🟡 What does the feed-forward network do in a transformer? Explain GELU vs SwiGLU/gated FFNs and where most parameters live.
 **Asked at:** product, GenAI startups
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Attention mixes information across tokens. The FFN then processes each token on its own, with a large non-linear expand-and-project step, and it holds about two-thirds of the parameters in a block.
+
+**Then explain:**
+- **Classic FFN:** `W2 · GELU(W1 x)`. It expands from d to 4d and projects back. Parameters: `2 · d · 4d = 8d²`. Without it, a stack of attention layers would be mostly linear mixing of values and would have little non-linear capacity.
+- **Gated FFN (SwiGLU):** `W_down · ( SiLU(W_gate x) ⊙ (W_up x) )`. One path is a learned "gate" that multiplies the other element-wise. It has 3 matrices, so to keep parameters equal, the hidden size is cut to about `8/3 · d` instead of 4d. Shazeer (2020) found gated variants gave better quality at equal compute, and Llama, Qwen, Mistral and PaLM-style models use them.
+- **Where parameters live:** attention is `4d²` (Wq, Wk, Wv, Wo, with full MHA). A GELU FFN is `8d²` and so is a SwiGLU FFN at hidden 8/3·d. So the FFN is about 2/3 of the block. For Llama-2-7B: attention 67.1M vs FFN 135.3M per layer, FFN share 66.8%.
+- **Intuition (an interpretation, not a proof):** FFN layers act like key-value memories storing facts and patterns, while attention routes information between positions. Mixture-of-Experts replaces the FFN with many experts (Q34) because that is where capacity sits.
+- **Position-wise:** the same weights are applied to every token, with no interaction between tokens inside the FFN.
+
+**Example (checked, d=4096):** GELU FFN with hidden 4d has 134,217,728 parameters. SwiGLU with hidden 11008 (Llama-2-7B; 8/3·4096 = 10923, rounded up to a multiple of 256) has 135,266,304. Almost identical size, different shape.
+
+**Code:** (run)
+```python
+import torch, torch.nn as nn, torch.nn.functional as F
+class SwiGLU(nn.Module):
+    def __init__(s, d, h):
+        super().__init__()
+        s.gate = nn.Linear(d, h, bias=False); s.up = nn.Linear(d, h, bias=False); s.down = nn.Linear(h, d, bias=False)
+    def forward(s, x): return s.down(F.silu(s.gate(x)) * s.up(x))
+m = SwiGLU(64, 172)
+print(m(torch.randn(2, 5, 64)).shape, sum(p.numel() for p in m.parameters()))  # torch.Size([2, 5, 64]) 33024
+```
+
+**Follow-ups:**
+- *Why not just use 4d with SwiGLU?* It would have 1.5x the FFN parameters, so it is no longer a fair comparison. Llama cuts the hidden size to keep the budget.
+- *Is GELU vs ReLU important?* Smooth activations (GELU, SiLU) train a bit better. The gating matters more than the exact activation.
+- *Does the FFN cost more FLOPs than attention?* At short contexts yes (FFN dominates). At very long contexts the T² attention term takes over.
+
+**Common mistakes:** saying the FFN mixes tokens (it does not); saying attention holds most parameters; forgetting SwiGLU has three matrices; comparing SwiGLU at hidden 4d against GELU at 4d as if the sizes were equal; saying GELU is "gated" (it is a plain activation).
 
 ### Q22 ⭐⭐ 🟡 What is cross-attention, where is it used (T5, Whisper, diffusion, multimodal) and how does it differ from self-attention?
 **Asked at:** all types
@@ -966,15 +1071,161 @@ print(mla*L*2*128000/1e9)             # 8.85 GB (bf16, 128k tokens)
 
 ### Q34 ⭐⭐ 🔴 Explain Mixture-of-Experts layers: routing, load balancing, active vs total parameters, and the serving trade-offs.
 **Asked at:** big tech, GenAI startups, product
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** A Mixture-of-Experts layer replaces one FFN with many parallel FFN "experts" and a small router that sends each token to only the top-k of them, so total parameters are large but active parameters (and FLOPs) per token stay small.
+**Then explain:**
+- **Where:** only the FFN of a block is replaced; attention stays dense and shared.
+- **Routing:** router = a linear layer `d -> E`; softmax; pick top-k experts per token; mix their outputs with the (renormalised) gate weights. Mixtral 8x7B uses 8 experts with top-2 (46.7B total, about 12.9B active per token, per its release).
+- **Load balancing:** left alone, the router collapses onto a few favoured experts (rich get richer), others never train, and under expert parallelism a hot expert becomes the bottleneck. Fixes: an auxiliary loss pushing equal usage (Switch-style `E * sum(fraction_e * mean_prob_e)`, equals 1 when balanced), capacity limits with token dropping, or auxiliary-loss-free bias adjustment (used in DeepSeek-V3, per its report). Some designs add always-on shared experts plus many small routed ones (DeepSeekMoE).
+- **Active vs total:** compute and decode speed track the active count; memory tracks the total. You pay for all weights in GPU memory but only use a few per token.
+- **Serving trade-offs:**
+  - Memory: must hold all experts, so a "12.9B-active" model needs memory like 46.7B.
+  - Batch size 1: only k experts are touched, so decode bandwidth is low. Larger batches touch most experts, so the bandwidth advantage fades.
+  - Expert parallelism needs all-to-all communication between GPUs; skewed routing creates stragglers.
+  - Training is harder (instability, balance tuning).
+
+**Example:** E=8, k=2: each token uses 2/8 of the expert weights. In a toy layer I ran (8 experts, top-2, 1000 random tokens) the measured token share per expert ranged from 10% to 16% (perfect = 12.5%) and the balance loss was 1.005. Active params per token were 2,272 of 8,704 total.
+
+**Code:**
+```python
+import torch, torch.nn as nn, torch.nn.functional as F
+class MoE(nn.Module):
+    def __init__(s, d=16, E=8, k=2, hid=32):
+        super().__init__(); s.k, s.E = k, E
+        s.router = nn.Linear(d, E, bias=False)
+        s.experts = nn.ModuleList(nn.Sequential(nn.Linear(d, hid), nn.GELU(), nn.Linear(hid, d)) for _ in range(E))
+    def forward(s, x):
+        probs = F.softmax(s.router(x), -1)
+        topv, topi = probs.topk(s.k, -1)
+        topv = topv / topv.sum(-1, keepdim=True)            # renormalise the k gates
+        out = torch.zeros_like(x)
+        for e in range(s.E):
+            tok, slot = (topi == e).nonzero(as_tuple=True)
+            if len(tok): out[tok] += topv[tok, slot, None] * s.experts[e](x[tok])
+        frac = F.one_hot(topi, s.E).float().sum(1).mean(0) / s.k
+        aux = s.E * (frac * probs.mean(0)).sum()             # balance loss
+        return out, aux
+torch.manual_seed(0); y, aux = MoE()(torch.randn(1000, 16)); print(aux.item())  # about 1.005
+```
+
+**Follow-ups:**
+- *Is MoE cheaper to train?* Cheaper per quality in FLOPs, but needs more memory and engineering.
+- *Why does an untrained router collapse?* Experts that win early get more gradient, improve, and win more.
+
+**Common mistakes:** Equating active parameters with memory needed. Saying every layer part is an expert (only FFN). Forgetting load balancing.
 
 ### Q35 ⭐⭐ 🔴 Code: write a decoding loop with a KV cache and verify it matches the no-cache output.
 **Asked at:** product, big tech, inference teams
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Prefill the whole prompt once and store each layer's K and V; then for every new token compute only its own Q, K, V, append K and V to the cache, and attend over the full cache; the result must equal recomputing everything each step, which I verify with greedy decoding and a logit diff.
+**Then explain:**
+- **Prefill:** run all prompt tokens together with a normal causal mask; save K, V per layer, shape `(B, heads, S, head_dim)`.
+- **Decode step:** input is one token (T=1) at absolute position `S`. Concatenate its K, V to the cache. The query attends to all `S+1` keys, so no mask is needed for T=1 (every cached key is in the past).
+- **Details that cause bugs:** position embeddings must use the *absolute* position (`start=S`), not 0; the mask for T>1 with a non-empty cache must be offset (`tril(diagonal=S-T)`); store K/V after the projection (and, with RoPE, store keys *after* rotation, since their position is fixed).
+- **Correctness test:** greedy decode both ways and compare tokens, then compare logits for the final step. They will not be bit-identical in floating point (different matmul shapes, summation order), so expect a tiny difference, not exactly zero.
+
+**Example:** Tiny random 2-layer model (vocab 50, d=32, 4 heads, seed 0), 7-token prompt, 20 new tokens. Run result: generated tokens equal `True`; max abs logit diff `1.79e-07`; cache K shape per layer `(2, 4, 26, 8)` (batch 2, 4 heads, 7 + 19 cached positions = 26, head dim 8; the last generated token has not been fed back yet).
+
+**Code:**
+```python
+import torch, torch.nn as nn, torch.nn.functional as F
+torch.manual_seed(0)
+
+class Block(nn.Module):
+    def __init__(s, d, h):
+        super().__init__()
+        s.h, s.dh = h, d // h
+        s.qkv = nn.Linear(d, 3 * d, bias=False)
+        s.o = nn.Linear(d, d, bias=False)
+        s.n1, s.n2 = nn.LayerNorm(d), nn.LayerNorm(d)
+        s.ff = nn.Sequential(nn.Linear(d, 4 * d), nn.GELU(), nn.Linear(4 * d, d))
+    def forward(s, x, cache=None):
+        B, T, D = x.shape
+        q, k, v = s.qkv(s.n1(x)).view(B, T, 3, s.h, s.dh).permute(2, 0, 3, 1, 4)
+        if cache is not None:                      # append new K,V to cached K,V
+            if "k" in cache:
+                k = torch.cat([cache["k"], k], dim=2)
+                v = torch.cat([cache["v"], v], dim=2)
+            cache["k"], cache["v"] = k, v
+        S = k.shape[2]                             # total length so far
+        # query i sits at absolute position S-T+i; it may see keys j <= S-T+i
+        mask = torch.ones(T, S, dtype=torch.bool).tril(diagonal=S - T)
+        a = F.scaled_dot_product_attention(q, k, v, attn_mask=mask)
+        x = x + s.o(a.transpose(1, 2).reshape(B, T, D))
+        return x + s.ff(s.n2(x))
+
+class TinyLM(nn.Module):
+    def __init__(s, V=50, d=32, h=4, L=2, maxlen=64):
+        super().__init__()
+        s.emb, s.pos = nn.Embedding(V, d), nn.Embedding(maxlen, d)
+        s.blocks = nn.ModuleList(Block(d, h) for _ in range(L))
+        s.nf, s.head = nn.LayerNorm(d), nn.Linear(d, V, bias=False)
+    def forward(s, ids, caches=None, start=0):
+        T = ids.shape[1]
+        x = s.emb(ids) + s.pos(torch.arange(start, start + T))
+        for i, b in enumerate(s.blocks):
+            x = b(x, None if caches is None else caches[i])
+        return s.head(s.nf(x))
+
+@torch.no_grad()
+def generate_nocache(m, ids, n):
+    for _ in range(n):
+        nxt = m(ids)[:, -1].argmax(-1, keepdim=True)   # recompute everything each step
+        ids = torch.cat([ids, nxt], 1)
+    return ids
+
+@torch.no_grad()
+def generate_cache(m, ids, n):
+    caches = [dict() for _ in m.blocks]
+    logits = m(ids, caches, start=0)                   # prefill: whole prompt at once
+    out = ids
+    for _ in range(n):
+        nxt = logits[:, -1].argmax(-1, keepdim=True)
+        out = torch.cat([out, nxt], 1)
+        logits = m(nxt, caches, start=out.shape[1] - 1)  # decode: 1 token, reuse cache
+    return out
+
+m = TinyLM().eval()
+prompt = torch.randint(0, 50, (2, 7))
+a, b = generate_nocache(m, prompt, 20), generate_cache(m, prompt, 20)
+print("tokens equal:", torch.equal(a, b))
+
+# compare logits (not just argmax tokens) at the last step
+with torch.no_grad():
+    full = m(a[:, :-1])[:, -1]
+    caches = [dict() for _ in m.blocks]
+    m(a[:, :7], caches, 0)
+    for t in range(7, a.shape[1] - 1):
+        step = m(a[:, t:t+1], caches, start=t)[:, -1]
+print("max abs logit diff:", (full - step).abs().max().item())
+print("cache K shape per layer:", tuple(caches[0]["k"].shape))
+# output: tokens equal: True / max abs logit diff: 1.7881393432617188e-07 / (2, 4, 26, 8)
+```
+
+**Follow-ups:**
+- *How much does the cache save?* Per step, projections and attention are done for 1 token instead of S; total generation work goes from about `O(n^3)`-ish (recompute each time) to `O(n^2)`, at the cost of memory (Q6).
+- *Ragged batches?* Pad and track per-sequence lengths with masks; production engines use paged caches (Part 10).
+- *With RoPE?* Cache keys after applying rotation at their absolute position.
+
+**Common mistakes:** Restarting position ids at 0 in decode. Using a plain causal mask when T < S. Comparing with `==` instead of a tolerance. Forgetting `torch.no_grad()` so the cache keeps autograd graphs.
 
 ### Q36 ⭐ 🟢 Explain transformers to a non-technical stakeholder in two minutes.
 **Asked at:** all types; senior/client-facing roles
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** A transformer is the kind of AI model behind ChatGPT-style tools: it reads text as small pieces, works out which pieces matter for each other, and then predicts the next piece, over and over, to write an answer.
+**Then explain:** (what I would actually say, no jargon)
+- **Step 1, pieces:** "It chops text into small chunks called tokens, roughly parts of words, and turns each into a list of numbers."
+- **Step 2, attention:** "For every word, the model asks: which other words in this text help me understand this one? In 'The bank raised rates', the word 'rates' tells it that 'bank' is a financial bank, not a river bank. That looking-around step is called attention. It does this for all words at the same time, which is why these models can be trained on huge amounts of text quickly."
+- **Step 3, stacking:** "That step is repeated in many layers. Early layers pick up simple patterns, later ones pick up more abstract meaning."
+- **Step 4, predict:** "Finally it predicts a likely next token, adds it to the text, and repeats. An answer is built one token at a time."
+- **Where it learned:** "By reading very large amounts of text and practising next-word prediction, then being tuned to follow instructions."
+- **Business-relevant honesty:** it is good at language and patterns, but it predicts plausible text rather than looking up truth, so it can state wrong things confidently. That is why we pair it with our own documents (retrieval), checks and human review. Longer inputs and longer answers cost more and respond slower, which is why we watch usage and cost.
+
+**Example (analogy):** "Imagine a very well-read colleague who has skimmed a huge library. Given the start of a sentence, they are excellent at continuing it sensibly. They are not checking a database, so for facts that matter we hand them the right documents first."
+
+**Follow-ups:**
+- *"Does it understand?"* Say it behaves as if it understands in many tasks, but it has no guarantee of truth, so we verify.
+- *"Why now?"* Parallel training on lots of data and compute made these models practical; I would not over-claim beyond that.
+- *"What should we worry about?"* Wrong answers stated confidently, data privacy, and cost at scale.
+
+**Common mistakes:** Using terms like softmax or Q/K/V with non-technical people. Saying "it thinks like a human" or "it looks up the answer". Skipping the limitations that the stakeholder needs for decisions. Running over two minutes: stop at one analogy and one limitation.
 
 ### Q37 ⭐ 🟡 Derive the sinusoidal positional encoding and its relative-position property. Why is it rarely used in modern LLMs?
 **Asked at:** big tech, research-leaning teams
@@ -1071,12 +1322,12 @@ RoPE itself is implemented and checked in Q42.
 | **No biases** | Linear layers without `+ b` | Slightly fewer parameters and simpler/faster kernels; reported to make no real quality difference. Exception: Qwen2/2.5 keep a bias on the Q, K, V projections only |
 | **Tied embeddings** | Input embedding matrix = LM head transposed | Saves `vocab * d` parameters. That matters for small models (e.g. the 1B/3B class), where the embedding is a big share of total size. Large models usually do not tie |
 
-- **DeepSeek is different in attention:** DeepSeek-V2/V3 use MLA (compress K and V into a small latent, Q23) instead of GQA, and a fine-grained MoE FFN (many small experts plus shared experts) instead of a dense SwiGLU FFN. The SwiGLU-style expert itself is still used.
+- **DeepSeek is different in attention:** DeepSeek-V2/V3 use MLA (compress K and V into a small latent, Q33) instead of GQA, and a fine-grained MoE FFN (many small experts plus shared experts) instead of a dense SwiGLU FFN. The SwiGLU-style expert itself is still used.
 - **Why one recipe?** Copying what was validated at scale is lower risk than ablating each part when a training run costs millions of dollars. Ablations at small scale (like Shazeer's) support the choices, but not all were tested rigorously at the largest scales.
 
 **Example:** SwiGLU with d=4096: hidden size about `8/3 * 4096 ~ 10923`, which Llama-style models round up to a multiple (e.g. 11008 for 7B). Parameters: `3 * 4096 * 11008 ~ 135M` per layer, close to the classic `2 * 4096 * 16384 ~ 134M`.
 
-**Code:** (not executed: short reference sketch of the two blocks; arithmetic above checked by hand)
+**Code:** (executed, torch) RMSNorm output has unit RMS; SwiGLU(4096, 11008) has 135.27M parameters
 ```python
 import torch, torch.nn as nn, torch.nn.functional as F
 class RMSNorm(nn.Module):
@@ -1125,15 +1376,173 @@ class SwiGLU(nn.Module):
 
 ### Q41 ⭐ 🟡 AI code review: this LLM-written attention snippet has bugs (softmax dim, missing mask, missing scaling, wrong reshape). Find and fix them.
 **Asked at:** product, big tech, AI-era code-review rounds
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** I check four things in any attention code: softmax over the key axis (last dim), causal mask applied before softmax, scores divided by sqrt(head_dim), and heads split with `view(B, T, H, dh)` then `transpose(1, 2)`, not `view(B, H, T, dh)`. Then I test it against `scaled_dot_product_attention`. The buggy code runs without errors and gives plausible-looking numbers, which is why these bugs are dangerous.
+
+**The buggy snippet (as an LLM might write it):**
+```python
+def buggy_mha(x):                               # x: (B, T, D), H heads, dh = D // H
+    B, T, D = x.shape
+    q, k, v = x @ Wq, x @ Wk, x @ Wv
+    q = q.view(B, H, T, dh); k = k.view(B, H, T, dh); v = v.view(B, H, T, dh)   # BUG 4
+    scores = q @ k.transpose(-2, -1)            # BUG 3: no / sqrt(dh);  BUG 2: no causal mask
+    w = torch.softmax(scores, dim=-2)           # BUG 1: normalises over queries, not keys
+    return (w @ v).transpose(1, 2).reshape(B, T, D) @ Wo
+```
+
+**Then explain (each bug, what it does, and how I would prove it):**
+
+| # | Bug | Effect | Evidence from my run (B=2, T=6, D=16, H=4) |
+|---|---|---|---|
+| 1 | `softmax(dim=-2)` | Weights sum to 1 over *queries* for each key. Each query's weights over keys do not sum to 1, so outputs have the wrong scale and meaning | Row sums were 0.47, 0.50, 0.68 (should be 1); column sums were 1.0 |
+| 2 | No causal mask | Token t sees future tokens. In training the model cheats and the loss looks great; at inference it falls apart. Silent | Changing only the last token changed earlier outputs by up to 10.1; with the mask the change was exactly 0.0 |
+| 3 | No `/ sqrt(dh)` | Dot products of `dh` random unit-variance entries have variance `dh`, so scores are large, softmax saturates to near one-hot and gradients vanish | With dh=64: score std 8.01 unscaled vs 1.00 scaled. Mean max-attention-weight per row 0.707 vs 0.017 |
+| 4 | `view(B,H,T,dh)` on a `(B,T,D)` tensor | Shape is right, content is wrong. `view` reinterprets memory in order, so a "head" holds chunks of dimension slices from different tokens. Never raises an error | `bad[0,0,1]` equals dims 4-7 of token 0; `bad[0,0,4]` equals dims 0-3 of token 1 |
+
+- Max abs difference from the reference output when only one bug is injected: softmax dim 2.41, no mask 2.30, no scaling 0.95, wrong reshape 3.68. All four together: 2.78. The fixed version: 2.4e-7 (float32 rounding).
+- Same shape, no exceptions, finite numbers: so shape asserts alone do not catch these. Numerical tests do.
+
+**Fixed version, checked against torch:**
+```python
+import torch, math, torch.nn.functional as F
+def fixed_mha(x):
+    B, T, D = x.shape
+    q, k, v = x @ Wq, x @ Wk, x @ Wv
+    q, k, v = [t.view(B, T, H, dh).transpose(1, 2) for t in (q, k, v)]   # (B, H, T, dh)
+    scores = q @ k.transpose(-2, -1) / math.sqrt(dh)
+    mask = torch.triu(torch.ones(T, T, dtype=torch.bool), diagonal=1)    # True above diagonal = future
+    scores = scores.masked_fill(mask, float("-inf"))                     # mask BEFORE softmax
+    w = torch.softmax(scores, dim=-1)                                    # over keys
+    return (w @ v).transpose(1, 2).reshape(B, T, D) @ Wo                 # merge heads back
+
+def ref(x):  # PyTorch's fused implementation
+    q, k, v = [(x @ W).view(B, T, H, dh).transpose(1, 2) for W in (Wq, Wk, Wv)]
+    return F.scaled_dot_product_attention(q, k, v, is_causal=True).transpose(1, 2).reshape(B, T, D) @ Wo
+print((fixed_mha(x) - ref(x)).abs().max())   # 2.4e-07  (buggy_mha: 2.78)
+```
+All of this was executed with torch (seed 0, random weights scaled by 1/sqrt(D)); the numbers above are from that run.
+
+**Follow-ups:**
+- *How would you unit-test attention?* (1) Compare with `scaled_dot_product_attention`. (2) Causality test: perturb token t, assert outputs before t are unchanged. (3) Rows of attention weights sum to 1. (4) Permutation test for non-causal attention. (5) Head-split test with distinct values per token.
+- *`dim=-2` vs `-1`: why do people get it wrong?* With shape `(B, H, T, T)` both are valid axes of the same size, so there is no shape error.
+- *Other bugs to look for?* Mask applied after softmax; mask with 0 instead of `-inf`; padding mask forgotten; fully-masked rows giving NaN; dropout during eval; `reshape` after `transpose` without `contiguous` when using `view`; attention in fp16 without upcasting softmax.
+
+**Common mistakes:** Trusting code because it runs and the shapes match. Fixing only the obvious bugs (scaling) and missing the reshape one. Putting the mask after softmax. Using `view` where a `transpose` is needed.
 
 ### Q42 ⭐ 🔴 Code: implement rotary position embeddings (RoPE) and show that scores depend on relative position.
 **Asked at:** big tech, GenAI startups
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** RoPE splits each query and key vector into 2D pairs and rotates pair i by the angle `pos * theta_i`. A dot product of two rotated vectors only depends on the difference of the angles, so the score depends on the relative offset `m - n` and not on the absolute positions.
+
+**Then explain:**
+- **Math (one pair):** rotate q at position m by angle `m*t`, k at position n by `n*t`. The dot product of two 2D vectors rotated by `a` and `b` equals the dot product of the originals rotated by `a - b`. So `<R_m q, R_n k> = <q, R_{n-m} k>` (function of `n - m` only). With `d/2` pairs and `theta_i = base^(-2i/d)` (base 10000 typical), the full score is a sum of such terms.
+- **Applied to q and k only**, not v. Position is injected every layer, right before the dot product.
+- **No parameters**, norm is preserved (rotation), and it composes with KV cache: cache the *rotated* keys, since a key's rotation depends only on its own position.
+- **Convention note:** my code pairs adjacent dims (x[0],x[1]), (x[2],x[3])... Some implementations (e.g. Hugging Face Llama "rotate_half") pair dim i with dim i+d/2. They are equivalent up to a fixed permutation of dimensions, but weights must match the convention used in training.
+
+**Example:** with a fixed q and k (d=64, float64) the score at offset 3 is 2.729352 whether q sits at position 3 or 5003. With no rotation the score is 7.382404, the same as offset 0. Offsets 0, 1, 2, 5, 50 give different scores (7.38, 4.95, 2.70, 9.59, 14.53), so position information is there.
+
+**Code:** (executed, torch)
+```python
+import torch
+torch.manual_seed(0)
+def rope(x, pos, base=10000.0):
+    """x: (..., T, d), d even; pos: (T,) ints. Rotate each pair (x[2i], x[2i+1]) by pos * theta_i."""
+    d = x.shape[-1]
+    theta = base ** (-torch.arange(0, d, 2, dtype=x.dtype) / d)        # (d/2,)
+    ang = pos[:, None].to(x.dtype) * theta[None, :]                    # (T, d/2)
+    cos, sin = ang.cos(), ang.sin()
+    x1, x2 = x[..., 0::2], x[..., 1::2]
+    out = torch.empty_like(x)
+    out[..., 0::2] = x1 * cos - x2 * sin
+    out[..., 1::2] = x1 * sin + x2 * cos
+    return out
+
+d = 64
+q = torch.randn(d, dtype=torch.float64); k = torch.randn(d, dtype=torch.float64)
+def score(m, n):
+    return (rope(q[None], torch.tensor([m]))[0] @ rope(k[None], torch.tensor([n]))[0]).item()
+
+for off in (0, 3, 17):
+    print(off, [round(score(m + off, m), 6) for m in (0, 5, 100, 1000, 5000)])
+# 0  [7.382404, 7.382404, 7.382404, 7.382404, 7.382404]   (equals unrotated q.k = 7.382404)
+# 3  [2.729352, 2.729352, 2.729352, 2.729352, 2.729352]
+# 17 [-0.126001, -0.126001, -0.126001, -0.126001, -0.126001]
+S = rope(q.expand(8, d).clone(), torch.arange(8)) @ rope(k.expand(8, d).clone(), torch.arange(8)).T
+# S is constant along every diagonal (Toeplitz): True. Rotation preserves norm: True
+```
+(I also checked the max spread across positions 0..2000 for offset 3: 4.7e-13, i.e. float64 rounding.)
+
+**Follow-ups:**
+- *Why does RoPE not extrapolate well past training length?* Angles at unseen positions were never trained on (Q38). Interpolation or base-scaling methods rescale them.
+- *Why different frequencies?* Fast pairs resolve nearby offsets, slow pairs encode far offsets, like sinusoidal encoding (Q37) but applied as a rotation inside attention.
+- *Does the score still depend on content?* Yes. Position changes the angle between q and k pairs, content sets their lengths and starting angles.
+- *Cache before or after RoPE?* Store keys after rotation (each key keeps its own position); queries are rotated at the time of use. Alternative designs (cache un-rotated keys) cost recomputation each step.
+
+**Common mistakes:** Rotating v. Using the same angle for every pair. Forgetting that the "relative" property holds for the dot product of rotated q and k, not for the vectors themselves. Mixing pairing conventions between code and checkpoint, which silently ruins a pretrained model. Testing with random q and k at each position, which hides the property (to see it, keep the content vectors fixed and vary the positions).
 
 ### Q43 ⭐ 🔴 Derive FlashAttention's online softmax and explain how tiling reduces HBM reads/writes.
 **Asked at:** big tech, inference teams
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** FlashAttention computes exactly the same attention output, but never writes the N x N score matrix to GPU main memory (HBM). It processes K/V in tiles inside fast on-chip memory (SRAM) and keeps a running max and running sum, so softmax can be finished one tile at a time. It saves memory traffic and memory, not FLOPs.
+
+**Then explain:**
+- **Why the standard way is slow:** `S = QK^T/sqrt(d)` (N x N) is written to HBM, read back for softmax, `P` is written, read again for `P V`. For long sequences attention is limited by memory traffic, not by arithmetic.
+- **Derivation of online softmax (one row).** Safe softmax needs the max `m` and sum `l = sum_j exp(s_j - m)`. Process scores in blocks. After block 1 you hold `m1` and `l1`. A new block with max `b` and block sum `sum exp(s - m2)` arrives:
+  - `m_new = max(m_old, b)`
+  - `l_new = l_old * exp(m_old - m_new) + sum_j exp(s_j - m_new)`
+  The old sum was measured relative to `m_old`; multiplying by `exp(m_old - m_new)` re-expresses it relative to `m_new`. This is exact algebra: `exp(s - m_old) * exp(m_old - m_new) = exp(s - m_new)`.
+- **Including V:** keep an unnormalised accumulator `acc = sum_j exp(s_j - m) * v_j`. On each new tile: `acc_new = acc_old * exp(m_old - m_new) + exp(S_tile - m_new) @ V_tile`. At the very end, `O = acc / l`. Normalise once, at the end.
+- **Tiling loop:** outer loop over query tiles (kept in SRAM), inner loop over K/V tiles streamed from HBM. For each query tile the N x N block never leaves SRAM.
+- **IO count:** standard attention does `Theta(N d + N^2)` HBM accesses. FlashAttention does `Theta(N^2 d^2 / M)` where M is SRAM size (Dao et al. 2022), which is much smaller when `d^2` is far below M. Extra memory is O(N) (only the row statistics), not O(N^2). Backward recomputes the tile scores instead of storing P (extra FLOPs, less traffic, net faster).
+- **Causal:** skip tiles entirely above the diagonal and mask only diagonal tiles.
+
+**Example (numbers):** N=4096, d=128 for one head: the score matrix has 16.8M elements; Q, K, V, O together have 2.1M. Materialising S (written and read back, at least twice) dominates traffic. The tiled version only reads Q, K, V once per tile pass and writes O.
+
+**Code:** (executed, numpy float64) tiled attention equals standard, including causal and huge scores
+```python
+import numpy as np
+rng = np.random.default_rng(0)
+def std_attn(Q, K, V, causal=False):
+    S = Q @ K.T / np.sqrt(Q.shape[1])
+    if causal: S = np.where(np.triu(np.ones_like(S, bool), 1), -np.inf, S)
+    P = np.exp(S - S.max(1, keepdims=True)); P /= P.sum(1, keepdims=True)
+    return P @ V
+
+def flash_attn(Q, K, V, Br=16, Bc=32, causal=False):
+    N, d = Q.shape; O = np.zeros_like(Q)
+    for i in range(0, N, Br):                          # query tile
+        q = Q[i:i+Br]
+        m = np.full(len(q), -np.inf); l = np.zeros(len(q)); acc = np.zeros((len(q), d))
+        for j in range(0, N, Bc):                      # stream K/V tiles
+            if causal and j > i + len(q) - 1: break    # tile fully in the future
+            S = q @ K[j:j+Bc].T / np.sqrt(d)
+            if causal:
+                qi = np.arange(i, i+len(q))[:, None]; kj = np.arange(j, j+S.shape[1])[None, :]
+                S = np.where(kj > qi, -np.inf, S)
+            m_new = np.maximum(m, S.max(1))
+            p = np.exp(S - m_new[:, None])
+            scale = np.exp(m - m_new)                  # rescale old stats (0 on the first tile)
+            l = l * scale + p.sum(1)
+            acc = acc * scale[:, None] + p @ V[j:j+Bc]
+            m = m_new
+        O[i:i+Br] = acc / l[:, None]
+    return O
+
+N, d = 200, 32
+Q, K, V = (rng.normal(size=(N, d)) * 2 for _ in range(3))
+for causal in (False, True):
+    print(causal, np.abs(flash_attn(Q, K, V, causal=causal) - std_attn(Q, K, V, causal=causal)).max())
+# False 1.12e-14    True 1.11e-14
+Qb = Q * 100       # naive exp(S) without max-subtraction overflows to inf here; the tiled version still matches
+print(np.allclose(flash_attn(Qb, K, V), std_attn(Qb, K, V)))     # True
+```
+A one-row check of just the max and denominator also matched (`m == s.max()`, `l == sum(exp(s-max))`) for a block size of 4 on 19 scores.
+
+**Follow-ups:**
+- *Is FlashAttention approximate?* No. Output is the same up to floating-point reordering. (Approximate attention methods are a different family.)
+- *Does it reduce FLOPs?* No, slightly more in backward due to recomputation. It cuts HBM traffic and memory from O(N^2) to O(N).
+- *Why does it matter for decode?* In decode there is one query, so the N x N matrix is not the issue; the cost is reading the KV cache. Split-K style kernels ("flash-decoding") parallelise over the KV length. Details depend on the kernel.
+- *What changed in later versions?* FlashAttention-2 reorganised loops and work split for better GPU utilisation, FlashAttention-3 targets Hopper-specific hardware features. I would not quote speed-up numbers from memory.
+
+**Common mistakes:** Saying it is an approximation or that it lowers FLOPs. Forgetting to rescale the accumulator `acc` (only rescaling `l`). Normalising each tile separately. Claiming O(N) *time*; time is still O(N^2), memory is O(N).
 
 ### Q44 ⭐ 🔴 What stability tricks do large transformers use (pre-norm, QK-norm, logit soft-capping, z-loss, warmup)? Why do loss spikes happen?
 **Asked at:** big tech, research-leaning teams
