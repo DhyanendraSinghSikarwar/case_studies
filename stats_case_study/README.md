@@ -86,7 +86,9 @@ stats_case_study/
 └── final_summary/
     ├── statistics_cheat_sheet.md
     ├── decision_framework.md
+    ├── build_presentation.py
     └── presentation/
+        └── statistics_playbook.pptx
 ```
 
 ## 5. Statistical concepts covered
@@ -298,6 +300,11 @@ python case_studies/01_loan_portfolio_health_check/src/build_presentation.py
 
 All paths are resolved relative to the repository, so these commands work from any working directory.
 
+> **Windows note.** If `jupyter nbconvert` or `nbclient` fails with `FileNotFoundError` when starting the kernel, the
+> `python` on your PATH is probably the Microsoft Store alias. Register a kernel that points at the real interpreter
+> (`python -m ipykernel install --user --name py312abs`, then edit the `argv[0]` path in the generated `kernel.json`
+> to the full path of `python.exe`, saved without a byte-order mark) and run notebooks with `--ExecutePreprocessor.kernel_name=py312abs`.
+
 ## 10. How datasets are generated
 
 Each case's data comes from `src/generate_data.py`. The generator:
@@ -358,7 +365,7 @@ Rules enforced throughout the book:
 
 ## 14. Progress
 
-See [PROGRESS.md](PROGRESS.md). Cases are built strictly one at a time. A case is marked COMPLETE only after its
+See [PROGRESS.md](PROGRESS.md). All 27 cases and the final summary are complete. Cases are built strictly one at a time. A case is marked COMPLETE only after its
 notebook has executed end-to-end, its outputs and deck have been regenerated, and its content has been reviewed.
 
 ## 15. License
