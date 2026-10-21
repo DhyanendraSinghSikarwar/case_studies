@@ -1,6 +1,6 @@
 # Book 1 — Excel | Part 2: Core Functions (IF, AND/OR, COUNTIF(S), SUMIF(S), text and date functions) 🟢
 
-**Target:** 70 questions | **Actual:** 76 questions
+**Target:** 70 questions | **Actual:** 74 questions
 **Scope:** IF, nested IF/IFS, AND/OR, COUNTIF(S), SUMIF(S), AVERAGEIF(S), text functions, date functions and basic error handling.
 
 ### Q1 ⭐⭐⭐ 🟢 What does the IF function do, and what are its three arguments?
@@ -138,95 +138,89 @@
 ### Q45 ⭐⭐ 🟡 How do you extract the domain from an email address such as "ravi@abc.com"?
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐⭐ 🟡 How do you split a full name into first and last name using formulas?
+### Q46 ⭐⭐ 🟡 How do you calculate age in years, months and days from a date of birth?
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐⭐ 🟡 How do you calculate age in years, months and days from a date of birth?
+### Q47 ⭐⭐ 🟡 How do you get the last day of the month and the date six months from today?
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐⭐ 🟡 How do you get the last day of the month and the date six months from today?
+### Q48 ⭐⭐ 🟡 How do you calculate the end date of a project, skipping weekends and holidays?
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐⭐ 🟡 How do you calculate the end date of a project, skipping weekends and holidays?
+### Q49 ⭐⭐ 🟡 How do you apply OR logic in SUMIFS, for example total sales for Mumbai or Delhi?
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐⭐ 🟡 How do you apply OR logic in SUMIFS, for example total sales for Mumbai or Delhi?
+### Q50 ⭐⭐ 🟡 How do you flag duplicate employee IDs with COUNTIF?
 <!-- ANSWER_PENDING -->
 
-### Q51 ⭐⭐ 🟡 How do you flag duplicate employee IDs with COUNTIF?
+### Q51 ⭐⭐ 🟡 How do you count rows between two values (for example salary from 30,000 to 50,000) with COUNTIFS?
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐⭐ 🟡 How do you count rows between two values (for example salary from 30,000 to 50,000) with COUNTIFS?
+### Q52 ⭐⭐ 🟡 How do you find the quarter or financial year (April to March) from a date?
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐⭐ 🟡 How do you find the quarter or financial year (April to March) from a date?
+### Q53 ⭐⭐ 🟡 How do you keep leading zeros in employee IDs, and how do you add them with a formula?
 <!-- ANSWER_PENDING -->
 
-### Q54 ⭐⭐ 🟡 How do you convert dates stored as text into real dates?
+### Q54 ⭐⭐ 🟡 Why can a COUNTIF or SUMIF formula return the wrong result when copied down, and how do you fix it?
 <!-- ANSWER_PENDING -->
 
-### Q55 ⭐⭐ 🟡 How do you keep leading zeros in employee IDs, and how do you add them with a formula?
+### Q55 ⭐⭐ 🟡 Why does COUNTIF not count numbers stored as text, or count them differently?
 <!-- ANSWER_PENDING -->
 
-### Q56 ⭐⭐ 🟡 Why can a COUNTIF or SUMIF formula return the wrong result when copied down, and how do you fix it?
+### Q56 ⭐⭐ 🟡 How do you do a multi-condition count or sum with SUMPRODUCT, and when would you use it instead of COUNTIFS?
 <!-- ANSWER_PENDING -->
 
-### Q57 ⭐⭐ 🟡 Why does COUNTIF not count numbers stored as text, or count them differently?
+### Q57 ⭐⭐ 🟡 How do you list headcount by joining month from a table of joining dates?
 <!-- ANSWER_PENDING -->
 
-### Q58 ⭐⭐ 🟡 How do you do a multi-condition count or sum with SUMPRODUCT, and when would you use it instead of COUNTIFS?
+### Q58 ⭐⭐ 🟡 How do you show a line break inside a cell using a formula, and combine several cells with commas?
 <!-- ANSWER_PENDING -->
 
-### Q59 ⭐⭐ 🟡 How do you list headcount by joining month from a table of joining dates?
+### Q59 ⭐⭐ 🟡 How do you use IF with text and dates, for example "Overdue" if the due date is before today?
 <!-- ANSWER_PENDING -->
 
-### Q60 ⭐⭐ 🟡 How do you show a line break inside a cell using a formula, and combine several cells with commas?
+### Q60 ⭐⭐ 🔴 How many IF functions can you nest, and what are the alternatives to deep nesting?
 <!-- ANSWER_PENDING -->
 
-### Q61 ⭐⭐ 🟡 How do you use IF with text and dates, for example "Overdue" if the due date is before today?
+### Q61 ⭐⭐ 🔴 How do you count the number of unique values in a column using a formula?
 <!-- ANSWER_PENDING -->
 
-### Q62 ⭐⭐ 🔴 How many IF functions can you nest, and what are the alternatives to deep nesting?
+### Q62 ⭐⭐ 🔴 How do you count the number of error cells in a range?
 <!-- ANSWER_PENDING -->
 
-### Q63 ⭐⭐ 🔴 How do you count the number of unique values in a column using a formula?
+### Q63 ⭐ 🟢 What does the EXACT function do, and is COUNTIF case-sensitive?
 <!-- ANSWER_PENDING -->
 
-### Q64 ⭐⭐ 🔴 How do you count the number of error cells in a range?
+### Q64 ⭐ 🟢 What do the WORKDAY and YEARFRAC functions do?
 <!-- ANSWER_PENDING -->
 
-### Q65 ⭐ 🟢 What does the EXACT function do, and is COUNTIF case-sensitive?
+### Q65 ⭐ 🟢 How do you repeat a character or text, for example a star rating, with REPT?
 <!-- ANSWER_PENDING -->
 
-### Q66 ⭐ 🟢 What do the WORKDAY and YEARFRAC functions do?
+### Q66 ⭐ 🟢 Which functions in this part are available only in Excel 2019 or 365, and what do you use in Excel 2016?
 <!-- ANSWER_PENDING -->
 
-### Q67 ⭐ 🟢 How do you repeat a character or text, for example a star rating, with REPT?
+### Q67 ⭐ 🟢 How do COUNTIFS and SUMIFS differ in Google Sheets compared with Excel?
 <!-- ANSWER_PENDING -->
 
-### Q68 ⭐ 🟢 Which functions in this part are available only in Excel 2019 or 365, and what do you use in Excel 2016?
+### Q68 ⭐ 🟡 What are TEXTBEFORE, TEXTAFTER and TEXTSPLIT, and how do they replace LEFT/MID/FIND?
 <!-- ANSWER_PENDING -->
 
-### Q69 ⭐ 🟢 How do COUNTIFS and SUMIFS differ in Google Sheets compared with Excel?
+### Q69 ⭐ 🟡 What are ARRAYFORMULA and the REGEX functions in Google Sheets, and how do they compare with Excel?
 <!-- ANSWER_PENDING -->
 
-### Q70 ⭐ 🟡 What are TEXTBEFORE, TEXTAFTER and TEXTSPLIT, and how do they replace LEFT/MID/FIND?
+### Q70 ⭐ 🟡 How do you use the TEXT function inside a formula to build a label such as "Jan-2026: 45 hires"?
 <!-- ANSWER_PENDING -->
 
-### Q71 ⭐ 🟡 What are ARRAYFORMULA and the REGEX functions in Google Sheets, and how do they compare with Excel?
+### Q71 ⭐ 🟡 What are the criteria length and wildcard limits of COUNTIF (255 characters, ~ escape)?
 <!-- ANSWER_PENDING -->
 
-### Q72 ⭐ 🟡 How do you use the TEXT function inside a formula to build a label such as "Jan-2026: 45 hires"?
+### Q72 ⭐ 🔴 What is the known problem with the "MD" unit of DATEDIF, and how do you get remaining days correctly?
 <!-- ANSWER_PENDING -->
 
-### Q73 ⭐ 🟡 What are the criteria length and wildcard limits of COUNTIF (255 characters, ~ escape)?
+### Q73 ⭐ 🔴 Why can COUNTIF match long numbers such as 16-digit IDs wrongly, and how do you fix it?
 <!-- ANSWER_PENDING -->
 
-### Q74 ⭐ 🔴 What is the known problem with the "MD" unit of DATEDIF, and how do you get remaining days correctly?
-<!-- ANSWER_PENDING -->
-
-### Q75 ⭐ 🔴 Why can COUNTIF match long numbers such as 16-digit IDs wrongly, and how do you fix it?
-<!-- ANSWER_PENDING -->
-
-### Q76 ⭐ 🔴 How would you build a monthly attrition table using COUNTIFS on joining and exit dates?
+### Q74 ⭐ 🔴 How would you build a monthly attrition table using COUNTIFS on joining and exit dates?
 <!-- ANSWER_PENDING -->

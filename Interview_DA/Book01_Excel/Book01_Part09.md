@@ -1,6 +1,6 @@
 # Book 1 — Excel | Part 9: What-if, Goal Seek, Conditional Formatting, Data Validation 🟡
 
-**Target:** 40 questions | **Actual:** 47 questions
+**Target:** 40 questions | **Actual:** 46 questions
 **Scope:** What-If Analysis (Goal Seek, Data Table, Scenario Manager), conditional formatting and data validation including drop-down lists, with HR-flavoured practical tasks.
 
 ### Q1 ⭐⭐⭐ 🟢 What is conditional formatting in Excel, and where would you use it as an analyst?
@@ -135,11 +135,8 @@
 ### Q44 ⭐ 🟡 Can too many conditional formatting rules slow a workbook down, and how do you keep them efficient?
 <!-- ANSWER_PENDING -->
 
-### Q45 ⭐ 🟡 How do you apply conditional formatting to the values of a pivot table so that it survives a refresh?
+### Q45 ⭐ 🔴 How can you allow multiple selections in a single drop-down cell in Excel, and what is the Google Sheets alternative?
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐ 🔴 How can you allow multiple selections in a single drop-down cell in Excel, and what is the Google Sheets alternative?
-<!-- ANSWER_PENDING -->
-
-### Q47 ⭐ 🔴 How do you build a dependent drop-down in Excel 365 using UNIQUE and FILTER spilled ranges, and what breaks it (#SPILL!, older versions)?
+### Q46 ⭐ 🔴 How do you build a dependent drop-down in Excel 365 using UNIQUE and FILTER spilled ranges, and what breaks it (#SPILL!, older versions)?
 <!-- ANSWER_PENDING -->

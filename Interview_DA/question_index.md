@@ -131,8 +131,647 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 | B0Q123 | 0 | 7 | Are there analyst roles in Pune, Chennai or NCR that suit switchers? |
 
 ## Book 1 — Excel
+
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B1P01Q1 | 1 | 1 | What is a cell reference in Excel, and what are the three types? |
+| B1P01Q2 | 1 | 1 | What is the difference between a relative and an absolute cell reference? |
+| B1P01Q3 | 1 | 1 | What is a mixed cell reference, and when would you use one? |
+| B1P01Q4 | 1 | 1 | Which key toggles between relative, absolute and mixed references while editing a formula, and what does it cycle through? |
+| B1P01Q5 | 1 | 1 | Cell B2 holds a price and column D holds quantities. How do you calculate a total for every row in column E using the same price cell without it shifting when you copy the formula down? |
+| B1P01Q6 | 1 | 1 | How do you sort data in Excel? |
+| B1P01Q7 | 1 | 1 | Why must you tick 'My data has headers' in the Sort dialog, and what goes wrong if you sort a single column without selecting the full table? |
+| B1P01Q8 | 1 | 1 | How do you sort employee data by Department first and then by Salary from highest to lowest? |
+| B1P01Q9 | 1 | 1 | How do you filter data in Excel? |
+| B1P01Q10 | 1 | 1 | What is the difference between sorting and filtering? |
+| B1P01Q11 | 1 | 1 | How do you show only the rows for the Sales department with a joining date in 2025 using a filter? |
+| B1P01Q12 | 1 | 1 | How do you clear a filter, and how do you remove the filter arrows completely? |
+| B1P01Q13 | 1 | 1 | What is Freeze Panes, and how do you keep the header row visible while scrolling a long sheet? |
+| B1P01Q14 | 1 | 1 | How do you format data in Excel (number, currency, percentage, date)? |
+| B1P01Q15 | 1 | 1 | Name five keyboard shortcuts you use every day in Excel. |
+| B1P01Q16 | 1 | 1 | What is the shortcut to toggle AutoFilter on and off? |
+| B1P01Q17 | 1 | 1 | How do you quickly sum a column of numbers without typing a formula? |
+| B1P01Q18 | 1 | 1 | What is the difference between a workbook, a worksheet and a cell? |
+| B1P01Q19 | 1 | 1 | What is the difference between a value and a formula in a cell, and how do you view the formula behind a result? |
+| B1P01Q20 | 1 | 1 | Why does a sorted list put 10 before 2, and how do you sort numbers stored as text correctly? |
+| B1P01Q21 | 1 | 1 | What is the Name Box, and how do you use it to jump to a cell or range? |
+| B1P01Q22 | 1 | 1 | How do you select an entire row, an entire column and the whole sheet using the keyboard? |
+| B1P01Q23 | 1 | 1 | How do you move to the end of a data block or select a whole data block with the keyboard? |
+| B1P01Q24 | 1 | 1 | How do you move to the previous and next worksheet using the keyboard? |
+| B1P01Q25 | 1 | 1 | What is the quick way to return to a particular area of a worksheet? |
+| B1P01Q26 | 1 | 1 | How do you use AutoFill to copy a formula or create a series of dates or numbers down a column? |
+| B1P01Q27 | 1 | 1 | What is Format Cells, and how do you open it quickly? |
+| B1P01Q28 | 1 | 1 | What are the differences between the General, Number, Currency and Accounting formats? |
+| B1P01Q29 | 1 | 1 | How do you wrap text within a cell, and how is it different from merging cells? |
+| B1P01Q30 | 1 | 1 | What is the difference between Merge & Center and Center Across Selection, and why do analysts avoid merged cells in data tables? |
+| B1P01Q31 | 1 | 1 | What are left, right, fill and distributed alignments? |
+| B1P01Q32 | 1 | 1 | How do you convert a plain data range into an Excel Table, and what are its advantages? |
+| B1P01Q33 | 1 | 1 | How do you filter for text that contains a word, for example every job title containing 'Analyst'? |
+| B1P01Q34 | 1 | 1 | How do you filter by cell colour or font colour, and how do you sort by colour? |
+| B1P01Q35 | 1 | 1 | How do you filter numbers using greater than, between and Top 10 options? |
+| B1P01Q36 | 1 | 1 | How do you filter dates by month, quarter or 'this week' using the date filter? |
+| B1P01Q37 | 1 | 1 | What do the wildcard characters * and ? do when you type them in the filter search box? |
+| B1P01Q38 | 1 | 1 | How do you use Paste Special to paste only values, only formats or transposed data? |
+| B1P01Q39 | 1 | 1 | How do you add a new worksheet, and how do you rename, move or copy one? |
+| B1P01Q40 | 1 | 1 | How do you hide and unhide rows, columns and sheets? |
+| B1P01Q41 | 1 | 1 | How do you format a date column that shows as 45678 or ##### in the cells? |
+| B1P01Q42 | 1 | 1 | How do you set the print area, print titles (repeat header row) and fit a sheet to one page wide? |
+| B1P01Q43 | 1 | 1 | What is the use of Find & Replace, and how do you find all cells with a particular value or format? |
+| B1P01Q44 | 1 | 1 | How do you refer to a cell in another worksheet in a formula (for example Jan!B5)? |
+| B1P01Q45 | 1 | 1 | How do you stop formulas showing as text, and what does an apostrophe at the start of a cell do? |
+| B1P01Q46 | 1 | 1 | How do you create a custom sort order, for example High, Medium, Low, instead of alphabetical? |
+| B1P01Q47 | 1 | 1 | What is the difference between AutoFilter and Advanced Filter, and when would you use each? |
+| B1P01Q48 | 1 | 1 | What filter will you use if you want more than two conditions, or want to copy the filtered result to another place? |
+| B1P01Q49 | 1 | 1 | What does a #REF! error mean, and how does deleting a row or column cause it? |
+| B1P01Q50 | 1 | 1 | What are the common Excel errors #DIV/0!, #VALUE!, #NAME?, #REF! and #N/A, and what causes each? |
+| B1P01Q51 | 1 | 1 | How do you sort a list randomly, or restore the original order after sorting? |
+| B1P01Q52 | 1 | 1 | How do you apply the same formatting to every sheet in a workbook? |
+| B1P01Q53 | 1 | 1 | How do you use Format Painter, and what does double-clicking it do? |
+| B1P01Q54 | 1 | 1 | How do you use the Fill Handle's double-click shortcut, and when does it stop short? |
+| B1P01Q55 | 1 | 1 | How do you insert and delete rows or columns, and what shortcut do you use? |
+| B1P01Q56 | 1 | 1 | How do you insert today's date and the current time as fixed values with the keyboard, and how is that different from the TODAY function? |
+| B1P01Q57 | 1 | 1 | How do you protect a worksheet or a workbook with a password, and what is the difference between the two? |
+| B1P01Q58 | 1 | 1 | How do you freeze both the top row and the first column at the same time? |
+| B1P01Q59 | 1 | 1 | How do you check which version of Excel you use, and name two features that exist in Microsoft 365 but not in Excel 2016? |
+| B1P01Q60 | 1 | 1 | What are the key differences between Excel and Google Sheets for basic sorting, filtering and sharing? |
+| B1P01Q61 | 1 | 1 | How do you filter or sort only the visible rows, and why does copying a filtered range sometimes paste hidden rows? |
+| B1P01Q62 | 1 | 1 | How do you sort left to right (by columns instead of rows)? |
+| B1P01Q63 | 1 | 1 | How do you stop Excel from changing long numbers, such as an employee ID or phone number, into scientific notation or dropping leading zeros? |
+| B1P01Q64 | 1 | 1 | You receive a sheet where sorting scrambles the data because one column was left out of the selection. How do you recover, and how do you prevent it? |
+| B1P01Q65 | 1 | 1 | How do you create and use a custom number format, for example showing 1500000 as 1.5M or adding 'days' after a number? |
+| B1P01Q66 | 1 | 1 | A manager asks for a quick attendance list: how would you filter a sheet of 5,000 employees to show only those absent more than 3 days in a month, sorted by team? |
+| B1P02Q1 | 1 | 2 | What does the IF function do, and what are its three arguments? |
+| B1P02Q2 | 1 | 2 | Write a formula that returns "Pass" if the marks in B2 are 40 or more, otherwise "Fail". |
+| B1P02Q3 | 1 | 2 | How do you write a nested IF to give grades A, B, C and D based on marks? |
+| B1P02Q4 | 1 | 2 | How do the AND and OR functions work, and how do you use them inside IF? |
+| B1P02Q5 | 1 | 2 | How do you use COUNTIF to count how many employees are in the "Sales" department? |
+| B1P02Q6 | 1 | 2 | What is the difference between COUNT, COUNTA, COUNTBLANK and COUNTIF? |
+| B1P02Q7 | 1 | 2 | How do you use SUMIF to total the salary of one department? |
+| B1P02Q8 | 1 | 2 | What is the difference between COUNTIF and COUNTIFS? Give an example. |
+| B1P02Q9 | 1 | 2 | What is the difference between SUMIF and SUMIFS, and how does the argument order differ? |
+| B1P02Q10 | 1 | 2 | Write a COUNTIFS formula to count employees in Sales, based in Hyderabad, with salary above 50,000. |
+| B1P02Q11 | 1 | 2 | What does IFERROR do, and when would you use it? |
+| B1P02Q12 | 1 | 2 | How do you extract the first three characters of an employee ID such as "HYD-1045"? Which functions get the last four? |
+| B1P02Q13 | 1 | 2 | How do you combine first name and last name into a full name? |
+| B1P02Q14 | 1 | 2 | What does the TODAY function do, and does its value change? |
+| B1P02Q15 | 1 | 2 | In an attendance sheet marked P, A and L, how do you count the days each employee was present? |
+| B1P02Q16 | 1 | 2 | How do you calculate the average salary of each department? |
+| B1P02Q17 | 1 | 2 | How do you calculate an employee's tenure in years from the date of joining? |
+| B1P02Q18 | 1 | 2 | How do you calculate the attrition rate in Excel? |
+| B1P02Q19 | 1 | 2 | Write an IF formula that pays a 10% bonus only if the rating is 4 or more and tenure is above 2 years. |
+| B1P02Q20 | 1 | 2 | How do you COUNTIF with a cell reference in the criteria, for example salaries greater than the value in F1? |
+| B1P02Q21 | 1 | 2 | How do you sum sales between two dates using SUMIFS? |
+| B1P02Q22 | 1 | 2 | What is the IFS function, and in which Excel versions is it available? |
+| B1P02Q23 | 1 | 2 | What does the LEN function return, and where would you use it? |
+| B1P02Q24 | 1 | 2 | What do UPPER, LOWER and PROPER do? |
+| B1P02Q25 | 1 | 2 | How do you pull the year, month and day out of a date? |
+| B1P02Q26 | 1 | 2 | How does the TEXT function work? Show a date formatted as "dd-mmm-yyyy" and as a weekday name. |
+| B1P02Q27 | 1 | 2 | How do you count working days between two dates, excluding weekends and holidays? |
+| B1P02Q28 | 1 | 2 | How do you find the day of the week for a date? |
+| B1P02Q29 | 1 | 2 | Why do dates sometimes show up as numbers like 45231, and how do you fix it? |
+| B1P02Q30 | 1 | 2 | What is the difference between TODAY and NOW? |
+| B1P02Q31 | 1 | 2 | How do you use wildcards (* and ?) in COUNTIF to count names starting with "A"? |
+| B1P02Q32 | 1 | 2 | How do you count cells that contain specific text anywhere inside them? |
+| B1P02Q33 | 1 | 2 | What is the difference between FIND and SEARCH? |
+| B1P02Q34 | 1 | 2 | How do you replace one piece of text with another using SUBSTITUTE? |
+| B1P02Q35 | 1 | 2 | What is the difference between CONCATENATE, CONCAT, the & operator and TEXTJOIN? |
+| B1P02Q36 | 1 | 2 | How do you check whether a cell is blank, and what is the difference between a blank cell and a cell holding ""? |
+| B1P02Q37 | 1 | 2 | What do ROUND, ROUNDUP and ROUNDDOWN do? |
+| B1P02Q38 | 1 | 2 | What does the #DIV/0! error mean, and how do you avoid it when calculating a percentage? |
+| B1P02Q39 | 1 | 2 | What causes the #VALUE! and #NAME? errors? |
+| B1P02Q40 | 1 | 2 | What does the #REF! error mean, and how does it happen? |
+| B1P02Q41 | 1 | 2 | What causes the #N/A error, and how do you handle it? |
+| B1P02Q42 | 1 | 2 | How do you calculate the average of rows that meet one or more conditions (AVERAGEIF, AVERAGEIFS)? |
+| B1P02Q43 | 1 | 2 | How do you find the highest salary in each department using MAXIFS, and what do you do in Excel 2016? |
+| B1P02Q44 | 1 | 2 | What is the SWITCH function, and when is it better than nested IF? |
+| B1P02Q45 | 1 | 2 | How do you extract the domain from an email address such as "ravi@abc.com"? |
+| B1P02Q46 | 1 | 2 | How do you calculate age in years, months and days from a date of birth? |
+| B1P02Q47 | 1 | 2 | How do you get the last day of the month and the date six months from today? |
+| B1P02Q48 | 1 | 2 | How do you calculate the end date of a project, skipping weekends and holidays? |
+| B1P02Q49 | 1 | 2 | How do you apply OR logic in SUMIFS, for example total sales for Mumbai or Delhi? |
+| B1P02Q50 | 1 | 2 | How do you flag duplicate employee IDs with COUNTIF? |
+| B1P02Q51 | 1 | 2 | How do you count rows between two values (for example salary from 30,000 to 50,000) with COUNTIFS? |
+| B1P02Q52 | 1 | 2 | How do you find the quarter or financial year (April to March) from a date? |
+| B1P02Q53 | 1 | 2 | How do you keep leading zeros in employee IDs, and how do you add them with a formula? |
+| B1P02Q54 | 1 | 2 | Why can a COUNTIF or SUMIF formula return the wrong result when copied down, and how do you fix it? |
+| B1P02Q55 | 1 | 2 | Why does COUNTIF not count numbers stored as text, or count them differently? |
+| B1P02Q56 | 1 | 2 | How do you do a multi-condition count or sum with SUMPRODUCT, and when would you use it instead of COUNTIFS? |
+| B1P02Q57 | 1 | 2 | How do you list headcount by joining month from a table of joining dates? |
+| B1P02Q58 | 1 | 2 | How do you show a line break inside a cell using a formula, and combine several cells with commas? |
+| B1P02Q59 | 1 | 2 | How do you use IF with text and dates, for example "Overdue" if the due date is before today? |
+| B1P02Q60 | 1 | 2 | How many IF functions can you nest, and what are the alternatives to deep nesting? |
+| B1P02Q61 | 1 | 2 | How do you count the number of unique values in a column using a formula? |
+| B1P02Q62 | 1 | 2 | How do you count the number of error cells in a range? |
+| B1P02Q63 | 1 | 2 | What does the EXACT function do, and is COUNTIF case-sensitive? |
+| B1P02Q64 | 1 | 2 | What do the WORKDAY and YEARFRAC functions do? |
+| B1P02Q65 | 1 | 2 | How do you repeat a character or text, for example a star rating, with REPT? |
+| B1P02Q66 | 1 | 2 | Which functions in this part are available only in Excel 2019 or 365, and what do you use in Excel 2016? |
+| B1P02Q67 | 1 | 2 | How do COUNTIFS and SUMIFS differ in Google Sheets compared with Excel? |
+| B1P02Q68 | 1 | 2 | What are TEXTBEFORE, TEXTAFTER and TEXTSPLIT, and how do they replace LEFT/MID/FIND? |
+| B1P02Q69 | 1 | 2 | What are ARRAYFORMULA and the REGEX functions in Google Sheets, and how do they compare with Excel? |
+| B1P02Q70 | 1 | 2 | How do you use the TEXT function inside a formula to build a label such as "Jan-2026: 45 hires"? |
+| B1P02Q71 | 1 | 2 | What are the criteria length and wildcard limits of COUNTIF (255 characters, ~ escape)? |
+| B1P02Q72 | 1 | 2 | What is the known problem with the "MD" unit of DATEDIF, and how do you get remaining days correctly? |
+| B1P02Q73 | 1 | 2 | Why can COUNTIF match long numbers such as 16-digit IDs wrongly, and how do you fix it? |
+| B1P02Q74 | 1 | 2 | How would you build a monthly attrition table using COUNTIFS on joining and exit dates? |
+| B1P03Q1 | 1 | 3 | What is VLOOKUP, and what are its four arguments? |
+| B1P03Q2 | 1 | 3 | What is the difference between exact match and approximate match in VLOOKUP, and which one do you use most often? |
+| B1P03Q3 | 1 | 3 | You have an attendance sheet with Employee ID and a master sheet with Employee ID, name and department. Write the formula to bring the department into the attendance sheet. |
+| B1P03Q4 | 1 | 3 | What are the limitations of VLOOKUP? |
+| B1P03Q5 | 1 | 3 | Why does VLOOKUP return #N/A, and how do you fix it? |
+| B1P03Q6 | 1 | 3 | How do you hide or replace the #N/A error that VLOOKUP returns, for example with "Not found"? |
+| B1P03Q7 | 1 | 3 | What is XLOOKUP, and how is it different from VLOOKUP? |
+| B1P03Q8 | 1 | 3 | What is INDEX-MATCH, and why would you use it instead of VLOOKUP? |
+| B1P03Q9 | 1 | 3 | What does the INDEX function do, and what are its arguments? |
+| B1P03Q10 | 1 | 3 | What does the MATCH function do, and what do the match types 0, 1 and -1 mean? |
+| B1P03Q11 | 1 | 3 | Which Excel versions have XLOOKUP, and what do you do if a colleague uses Excel 2016 or 2019? |
+| B1P03Q12 | 1 | 3 | Your VLOOKUP gave correct values yesterday, but after someone inserted a column in the lookup table it returns wrong values. Why, and how do you prevent it? |
+| B1P03Q13 | 1 | 3 | You write a VLOOKUP in the first row and drag it down, but many rows return #N/A even though the IDs exist. What is the most likely cause? |
+| B1P03Q14 | 1 | 3 | Two employee IDs look identical, but VLOOKUP says #N/A. What could be wrong with the data, and how do you check and fix it? |
+| B1P03Q15 | 1 | 3 | How do you look up a value that sits to the left of the key column? |
+| B1P03Q16 | 1 | 3 | How do you pull data with VLOOKUP from a different sheet or a different workbook? |
+| B1P03Q17 | 1 | 3 | What is HLOOKUP, and when do you use it? |
+| B1P03Q18 | 1 | 3 | What is the difference between VLOOKUP and HLOOKUP? |
+| B1P03Q19 | 1 | 3 | What is col_index_num in VLOOKUP, and what happens if it is larger than the number of columns in the table? |
+| B1P03Q20 | 1 | 3 | What is the difference between IFERROR and IFNA, and which one is safer around a lookup? |
+| B1P03Q21 | 1 | 3 | What happens when the lookup column has duplicate values? Which row does VLOOKUP return? |
+| B1P03Q22 | 1 | 3 | Is VLOOKUP case-sensitive? |
+| B1P03Q23 | 1 | 3 | What is the if_not_found argument in XLOOKUP? |
+| B1P03Q24 | 1 | 3 | Can XLOOKUP look to the left? Show a formula that returns the employee ID when you only know the name. |
+| B1P03Q25 | 1 | 3 | Convert this formula to XLOOKUP: =VLOOKUP(A2, Master!A:D, 4, FALSE). |
+| B1P03Q26 | 1 | 3 | How do you return several columns (for example name, department and city) with a single XLOOKUP formula? |
+| B1P03Q27 | 1 | 3 | How do you wrap a lookup in an absolute reference properly (table_array with $) and why does it matter when you drag the formula? |
+| B1P03Q28 | 1 | 3 | How do you assign a performance grade, incentive slab or tax slab from a score or salary using VLOOKUP approximate match? |
+| B1P03Q29 | 1 | 3 | How do you make the column number in VLOOKUP dynamic so it does not break when columns move? |
+| B1P03Q30 | 1 | 3 | How do you do a two-way lookup, for example the sales of a given month for a given employee, using INDEX and MATCH? |
+| B1P03Q31 | 1 | 3 | How do you look up a value using two or more criteria (for example Employee ID and Month) with a helper column? |
+| B1P03Q32 | 1 | 3 | How do you look up with multiple criteria in INDEX-MATCH without a helper column? |
+| B1P03Q33 | 1 | 3 | How do you find the last (latest) matching entry for an employee with XLOOKUP? |
+| B1P03Q34 | 1 | 3 | How do you do a partial-text lookup using wildcards in VLOOKUP and XLOOKUP? |
+| B1P03Q35 | 1 | 3 | Which is faster on a large dataset: VLOOKUP, INDEX-MATCH or XLOOKUP, and what can you do to speed up lookups? |
+| B1P03Q36 | 1 | 3 | You have two lists, active employees and payroll records. How do you find which employees are missing from payroll using a lookup? |
+| B1P03Q37 | 1 | 3 | How do you use XLOOKUP for an approximate match, for example to pick the slab that applies to a given salary? |
+| B1P03Q38 | 1 | 3 | What happens if you omit the third argument of MATCH, and why should you almost always type 0? |
+| B1P03Q39 | 1 | 3 | How do you do a two-way lookup with XLOOKUP? |
+| B1P03Q40 | 1 | 3 | What is XMATCH, and how is it different from MATCH? |
+| B1P03Q41 | 1 | 3 | How do structured (Excel Table) references help lookups when new rows are added every month? |
+| B1P03Q42 | 1 | 3 | Your XLOOKUP shows #SPILL!. What does it mean and how do you fix it? |
+| B1P03Q43 | 1 | 3 | A lookup returns 0 instead of blank when the matching cell is empty. How do you handle it? |
+| B1P03Q44 | 1 | 3 | What is the LOOKUP function, and how is it different from VLOOKUP? |
+| B1P03Q45 | 1 | 3 | What are TRUE/FALSE and 1/0 as the last argument of VLOOKUP, and are they interchangeable? |
+| B1P03Q46 | 1 | 3 | How do you get the row number or position of a value in a list? |
+| B1P03Q47 | 1 | 3 | Do VLOOKUP, INDEX-MATCH and XLOOKUP work in Google Sheets, and what differs from Excel? |
+| B1P03Q48 | 1 | 3 | A VLOOKUP only returns the first match. How can you return all rows that match a value? |
+| B1P03Q49 | 1 | 3 | How do you look up many values at once with one XLOOKUP formula instead of dragging it down? |
+| B1P03Q50 | 1 | 3 | How do you do a case-sensitive lookup? |
+| B1P03Q51 | 1 | 3 | How do you find the closest date or the nearest value in a list (for example the policy period a joining date falls in)? |
+| B1P03Q52 | 1 | 3 | How would you build an employee look-up card where choosing a name from a drop-down shows their department, manager and salary? |
+| B1P03Q53 | 1 | 3 | You do not know which of three monthly sheets holds an employee. How do you search across the sheets? |
+| B1P03Q54 | 1 | 3 | You are asked to replace all VLOOKUPs in a workbook with XLOOKUP. What do you check first? |
+| B1P03Q55 | 1 | 3 | What is binary search mode in XLOOKUP, and when is it safe to use? |
+| B1P03Q56 | 1 | 3 | How can the CHOOSE function be used to make VLOOKUP look to the left? |
+| B1P03Q57 | 1 | 3 | How do you return the nth match (second or third occurrence) of a value using INDEX with SMALL? |
+| B1P03Q58 | 1 | 3 | What is the classic LOOKUP(2,1/(range=value),result_range) trick, and what does it return? |
+| B1P03Q59 | 1 | 3 | How can INDIRECT make a VLOOKUP pick its sheet from a cell value, and what are the risks? |
+| B1P03Q60 | 1 | 3 | How can XLOOKUP return a reference so that you can sum between two lookup points? |
+| B1P04Q1 | 1 | 4 | What is a pivot table, and why do analysts use it? |
+| B1P04Q2 | 1 | 4 | How do you create a pivot table in Excel from a raw data sheet? |
+| B1P04Q3 | 1 | 4 | What are the four areas of the PivotTable Fields pane (Filters, Columns, Rows, Values), and what does each do? |
+| B1P04Q4 | 1 | 4 | What should your source data look like before you build a pivot table? |
+| B1P04Q5 | 1 | 4 | Given columns Employee ID, Department, Location and Salary, how do you build a pivot table that shows headcount by department? |
+| B1P04Q6 | 1 | 4 | Given a sales sheet with Region, Product and Amount, how do you show total sales by region and product? |
+| B1P04Q7 | 1 | 4 | How do you refresh a pivot table after the source data changes? |
+| B1P04Q8 | 1 | 4 | Why does a pivot table show the count of a field instead of the sum, and how do you change it? |
+| B1P04Q9 | 1 | 4 | What is a slicer, and how do you add one to a pivot table? |
+| B1P04Q10 | 1 | 4 | What is a pivot chart, and how do you create one? |
+| B1P04Q11 | 1 | 4 | How do you filter a pivot table to show only the top 5 items? |
+| B1P04Q12 | 1 | 4 | Your pivot table does not show the new rows you added to the source. What do you check? |
+| B1P04Q13 | 1 | 4 | How do you group dates in a pivot table into months, quarters or years? |
+| B1P04Q14 | 1 | 4 | What is the difference between a slicer and a report filter in a pivot table? |
+| B1P04Q15 | 1 | 4 | How would you build a month-wise attrition (leavers) summary by department from an HR data sheet using a pivot table? |
+| B1P04Q16 | 1 | 4 | What is the difference between a pivot table and formulas such as SUMIFS or COUNTIFS? When would you use each? |
+| B1P04Q17 | 1 | 4 | How do you change a Values field from Sum to Average, Count, Max or Min? |
+| B1P04Q18 | 1 | 4 | How do you show values as a percentage of the grand total or of the row total in a pivot table? |
+| B1P04Q19 | 1 | 4 | How do you sort a pivot table by the values column (largest to smallest)? |
+| B1P04Q20 | 1 | 4 | How do you drill down into a number in a pivot table to see the rows behind it? |
+| B1P04Q21 | 1 | 4 | How do you move or remove a field from a pivot table? |
+| B1P04Q22 | 1 | 4 | What are Grand Totals and Subtotals in a pivot table, and how do you turn them off? |
+| B1P04Q23 | 1 | 4 | How do you change the number format of values in a pivot table (for example currency or percent)? |
+| B1P04Q24 | 1 | 4 | How do you rename a field or the column heading in a pivot table? |
+| B1P04Q25 | 1 | 4 | How do you show items with no data (zeros) instead of blank cells in a pivot table? |
+| B1P04Q26 | 1 | 4 | What are Recommended PivotTables, and in which Excel versions can you use them? |
+| B1P04Q27 | 1 | 4 | How do you change the layout of a pivot table to Compact, Outline or Tabular form, and when would you use each? |
+| B1P04Q28 | 1 | 4 | Given a daily attendance sheet with Employee, Date and Status (Present/Absent/Leave), how do you summarise days present per employee per month with a pivot table? |
+| B1P04Q29 | 1 | 4 | How do you apply a filter to a pivot table for one department only (using the Filters area)? |
+| B1P04Q30 | 1 | 4 | What is a calculated field in a pivot table, and how do you create one? |
+| B1P04Q31 | 1 | 4 | What is the difference between a calculated field and a calculated item? |
+| B1P04Q32 | 1 | 4 | How do you connect one slicer to multiple pivot tables? |
+| B1P04Q33 | 1 | 4 | What is a timeline slicer, and how is it different from a normal slicer? |
+| B1P04Q34 | 1 | 4 | How do you use Show Values As to show month-over-month change (difference and percentage) in a pivot table? |
+| B1P04Q35 | 1 | 4 | How do you calculate year-over-year growth percentage with a pivot table? |
+| B1P04Q36 | 1 | 4 | How do you group numbers in a pivot table, for example salary bands or age groups of 10 years? |
+| B1P04Q37 | 1 | 4 | How do you build a pivot chart that updates when you click a slicer? |
+| B1P04Q38 | 1 | 4 | Why does a pivot table not let you group dates, and how do you fix it (blank cells or text dates)? |
+| B1P04Q39 | 1 | 4 | How do you use a pivot table to find duplicate values in a column? |
+| B1P04Q40 | 1 | 4 | How do you find the distinct (unique) count of employees in a pivot table? |
+| B1P04Q41 | 1 | 4 | What is the difference between a pivot chart and a normal chart? |
+| B1P04Q42 | 1 | 4 | What happens to a pivot chart when you filter or change the pivot table behind it? |
+| B1P04Q43 | 1 | 4 | How do you turn a pivot table into static values and why might you do that before sharing it? |
+| B1P04Q44 | 1 | 4 | How do you stop column widths and formatting from resetting every time you refresh a pivot table? |
+| B1P04Q45 | 1 | 4 | How do you merge data from two raw sheets before building a pivot table (for example with Power Query or an Excel Table)? |
+| B1P04Q46 | 1 | 4 | How do you make several pivot tables from one source without increasing the file size much? |
+| B1P04Q47 | 1 | 4 | How do you copy a pivot table to another sheet and keep it working? |
+| B1P04Q48 | 1 | 4 | How do you hide or show the field list and the +/- expand buttons in a pivot table? |
+| B1P04Q49 | 1 | 4 | How do you add a custom sort order (for example Jan to Dec instead of alphabetical) to pivot items? |
+| B1P04Q50 | 1 | 4 | How do you apply a pivot table style or banded rows for a cleaner report? |
+| B1P04Q51 | 1 | 4 | How do you make a pivot table update automatically when the file opens? |
+| B1P04Q52 | 1 | 4 | Why is an Excel Table or a dynamic named range a better pivot source than a fixed range? |
+| B1P04Q53 | 1 | 4 | What is the pivot cache, and why do two pivot tables sometimes share it? |
+| B1P04Q54 | 1 | 4 | What is GETPIVOTDATA, and why does Excel insert it when you click a pivot cell in a formula? |
+| B1P04Q55 | 1 | 4 | How do you turn off the automatic GETPIVOTDATA formula? |
+| B1P04Q56 | 1 | 4 | Why can the pivot show old items that no longer exist in the data, and how do you clear them? |
+| B1P04Q57 | 1 | 4 | What does "Retain items deleted from the data source" do in PivotTable Options? |
+| B1P04Q58 | 1 | 4 | Why does a calculated field give an unexpected result in the Grand Total row? |
+| B1P04Q59 | 1 | 4 | How do you show a running total in a pivot table? |
+| B1P04Q60 | 1 | 4 | How do you rank items in a pivot table using Show Values As? |
+| B1P04Q61 | 1 | 4 | How do you group text items in a pivot table, for example combine several cities into one region? |
+| B1P04Q62 | 1 | 4 | How do you apply conditional formatting to a pivot table so it follows the data when it refreshes? |
+| B1P04Q63 | 1 | 4 | How do you build a simple dashboard from pivot tables, pivot charts and slicers on one sheet? |
+| B1P04Q64 | 1 | 4 | Your pivot shows #REF! after you renamed the source sheet. What happened and how do you fix it? |
+| B1P04Q65 | 1 | 4 | What is the difference between Refresh and Refresh All, and what happens to pivots linked to external data? |
+| B1P04Q66 | 1 | 4 | What is the difference between a pivot table built on a normal range and one built from the Data Model? |
+| B1P04Q67 | 1 | 4 | You are given 2,00,000 rows of HR data and the pivot table is very slow. What would you do? |
+| B1P04Q68 | 1 | 4 | How would you reproduce a pivot table summary without using a pivot table, using SUMIFS or dynamic arrays? |
+| B1P04Q69 | 1 | 4 | How do you show a text field (such as employee names) in the Values area of a pivot table? |
+| B1P04Q70 | 1 | 4 | How do you create a pivot table in Google Sheets, and how does it differ from Excel? |
+| B1P04Q71 | 1 | 4 | How do you share a pivot-table report with someone who has Excel 2016 when you built it in Microsoft 365? |
+| B1P04Q72 | 1 | 4 | How do you use a pivot table to compare actual against target and show the variance? |
+| B1P04Q73 | 1 | 4 | What are the limitations of pivot tables that make you reach for Power Pivot or Power Query? |
+| B1P04Q74 | 1 | 4 | How do you build a headcount-by-tenure-band report from joining dates using a pivot table? |
+| B1P05Q1 | 1 | 5 | How do you remove duplicate rows in Excel? |
+| B1P05Q2 | 1 | 5 | What does the TRIM function do, and when would you use it? |
+| B1P05Q3 | 1 | 5 | How do you find duplicates in Excel without deleting them? |
+| B1P05Q4 | 1 | 5 | What steps do you follow when you receive a messy dataset and have to clean it before analysis? |
+| B1P05Q5 | 1 | 5 | What is Text to Columns, and how do you use it? |
+| B1P05Q6 | 1 | 5 | What is Flash Fill, and how do you trigger it? |
+| B1P05Q7 | 1 | 5 | Given a list of employee IDs in column A, how do you flag the rows whose ID appears more than once? |
+| B1P05Q8 | 1 | 5 | When you use Remove Duplicates, which row does Excel keep, and how do the selected columns decide what counts as a duplicate? |
+| B1P05Q9 | 1 | 5 | Names in column A have extra spaces in front, behind and between words. How do you clean the whole column and keep the result as values? |
+| B1P05Q10 | 1 | 5 | How do you remove duplicates safely so that you can recover the original data if something goes wrong? |
+| B1P05Q11 | 1 | 5 | What is the difference between Remove Duplicates and filtering for unique values? |
+| B1P05Q12 | 1 | 5 | What is the difference between Text to Columns delimited and fixed width? |
+| B1P05Q13 | 1 | 5 | What does the CLEAN function do, and how is it different from TRIM? |
+| B1P05Q14 | 1 | 5 | How do you use Find and Replace to fix inconsistent spellings such as 'Hyd' and 'Hyderabad'? |
+| B1P05Q15 | 1 | 5 | How do you find and handle blank cells in a column of data? |
+| B1P05Q16 | 1 | 5 | How do you fill blank cells in a column with the value from the cell above? |
+| B1P05Q17 | 1 | 5 | Numbers imported from another system are left-aligned and will not add up. What is the problem, and how do you fix it? |
+| B1P05Q18 | 1 | 5 | How do you split a full name in one column into first name and last name in two columns? |
+| B1P05Q19 | 1 | 5 | How do you delete all blank rows from a dataset? |
+| B1P05Q20 | 1 | 5 | How do you use Data Validation to stop bad data from entering a sheet in the first place? |
+| B1P05Q21 | 1 | 5 | Remove Duplicates does not remove two rows that look identical. What could be the reasons, and how do you find out? |
+| B1P05Q22 | 1 | 5 | TRIM does not remove a space that is clearly visible in a cell. What is going on, and what formula fixes it? |
+| B1P05Q23 | 1 | 5 | Dates imported from a CSV file are stored as text. How do you convert them into real dates? |
+| B1P05Q24 | 1 | 5 | A date column has some entries as dd/mm/yyyy and others as mm/dd/yyyy. How do you detect and fix this? |
+| B1P05Q25 | 1 | 5 | What are the limitations of Flash Fill, and when would you use a formula instead? |
+| B1P05Q26 | 1 | 5 | A column holds 'EMP001 - Priya Sharma - Hyderabad'. How do you split it into three columns using Text to Columns, and what must you do before you run it? |
+| B1P05Q27 | 1 | 5 | How do you count how many duplicate records exist in a dataset using formulas? |
+| B1P05Q28 | 1 | 5 | How do you keep only the latest record per employee ID when an HR list has several rows per employee? |
+| B1P05Q29 | 1 | 5 | How do you extract a list of unique values in Excel 2016 or 2019, and how does it differ from Excel 365? |
+| B1P05Q30 | 1 | 5 | How do you use Go To Special to select blanks, errors or constants, and why is it useful in cleaning? |
+| B1P05Q31 | 1 | 5 | A phone number column has entries like '+91 98765-43210', '09876543210' and '98765 43210'. How do you standardise them to ten digits? |
+| B1P05Q32 | 1 | 5 | Remove Duplicates treats "HYD" and "hyd" as the same value. How do you find or remove duplicates that must match case exactly? |
+| B1P05Q33 | 1 | 5 | How do you remove duplicates in Google Sheets, and how does it differ from Excel? |
+| B1P05Q34 | 1 | 5 | What is the difference between SUBSTITUTE and REPLACE when cleaning text? |
+| B1P05Q35 | 1 | 5 | What does the VALUE function do, and how is it different from multiplying the cell by 1? |
+| B1P05Q36 | 1 | 5 | How do you remove leading zeros, or add them back, in a column such as employee codes? |
+| B1P05Q37 | 1 | 5 | How do you remove unwanted characters such as '#', '-' or brackets from a column of text? |
+| B1P05Q38 | 1 | 5 | A cell shows 1.2E+15 for a long ID number. What happened, and how do you prevent it? |
+| B1P05Q39 | 1 | 5 | How do you remove duplicates in Excel 365 using the UNIQUE function, and what are the pros and cons compared with the Remove Duplicates button? |
+| B1P05Q40 | 1 | 5 | How do you find duplicates based on a combination of two or more columns, such as employee ID plus month? |
+| B1P05Q41 | 1 | 5 | How do you use TEXTSPLIT and TEXTBEFORE or TEXTAFTER to clean text, and which Excel versions have them? |
+| B1P05Q42 | 1 | 5 | How do you find near-duplicates, such as 'Infosys Ltd' and 'Infosys Limited', in a company list? |
+| B1P05Q43 | 1 | 5 | How do you convert a column of numbers stored as text when green triangle warnings appear on the cells? |
+| B1P05Q44 | 1 | 5 | Which cleaning steps would you do in Power Query instead of formulas, and why? |
+| B1P05Q45 | 1 | 5 | How do you clean data that arrives every month in the same messy format, so that you do not repeat the manual steps? |
+| B1P05Q46 | 1 | 5 | How do you standardise text with Flash Fill, for example turning 'priya sharma' into 'Sharma, Priya'? |
+| B1P05Q47 | 1 | 5 | How do you check data quality after cleaning, so you can tell your manager the data is reliable? |
+| B1P05Q48 | 1 | 5 | How do you extract the numbers from a mixed text string such as 'Invoice-4581-Q3' without Power Query? |
+| B1P05Q49 | 1 | 5 | How do you remove duplicates while keeping a count of how many times each record appeared? |
+| B1P05Q50 | 1 | 5 | A cleaning formula using TRIM, CLEAN and SUBSTITUTE is slow on 500,000 rows. How do you make the workflow faster and more reliable? |
+| B1P06Q1 | 1 | 6 | What are dynamic arrays in Excel, and what does it mean when a formula "spills"? |
+| B1P06Q2 | 1 | 6 | What does the FILTER function do, and what is its syntax? |
+| B1P06Q3 | 1 | 6 | How do you get a list of unique values from a column using the UNIQUE function? |
+| B1P06Q4 | 1 | 6 | Which Excel versions support dynamic array functions such as FILTER, UNIQUE and SORT, and what happens if you open such a file in Excel 2019? |
+| B1P06Q5 | 1 | 6 | What causes the #SPILL! error and how do you fix it? |
+| B1P06Q6 | 1 | 6 | Given an employee table with Department in column B and Salary in column C, how do you list all employees from the HR department using FILTER, showing a friendly message if there are none? |
+| B1P06Q7 | 1 | 6 | What is the syntax of the SORT function, and what do sort_index and sort_order mean? |
+| B1P06Q8 | 1 | 6 | How do you produce an alphabetically sorted list of unique departments from a column? |
+| B1P06Q9 | 1 | 6 | How do you count the number of distinct values in a column using dynamic array functions? |
+| B1P06Q10 | 1 | 6 | What is the if_empty argument of FILTER for, and what error appears if you leave it out and nothing matches? |
+| B1P06Q11 | 1 | 6 | When would you use FILTER instead of the AutoFilter on the Data tab? |
+| B1P06Q12 | 1 | 6 | When would you use a pivot table instead of FILTER and UNIQUE formulas? |
+| B1P06Q13 | 1 | 6 | How do you filter rows that meet two conditions at the same time (for example Department = "Sales" and Salary greater than 50000)? |
+| B1P06Q14 | 1 | 6 | How do you filter rows that meet either of two conditions (OR logic) with FILTER? |
+| B1P06Q15 | 1 | 6 | What is the difference between SORT and SORTBY, and when do you need SORTBY? |
+| B1P06Q16 | 1 | 6 | What is the spill range operator (#), and how do you use it? |
+| B1P06Q17 | 1 | 6 | How does FILTER help when you need to return all matching rows, where VLOOKUP or XLOOKUP return only the first match? |
+| B1P06Q18 | 1 | 6 | What is the LET function, what is its syntax, and why would you use it? |
+| B1P06Q19 | 1 | 6 | What does the exactly_once argument of UNIQUE do? Give a practical example. |
+| B1P06Q20 | 1 | 6 | How do you sum or average the values returned by FILTER, and when is SUM(FILTER(...)) better or worse than SUMIFS? |
+| B1P06Q21 | 1 | 6 | How do you join all employee names in a department into one cell, separated by commas? |
+| B1P06Q22 | 1 | 6 | What is the @ (implicit intersection) operator that Excel sometimes adds to a formula? |
+| B1P06Q23 | 1 | 6 | Can you use a spilling formula inside an Excel Table? What do you do instead? |
+| B1P06Q24 | 1 | 6 | HR scenario: from a monthly attendance log with one row per employee per absence, how do you list the employees who were absent more than three times? |
+| B1P06Q25 | 1 | 6 | How do you create a dependent or dynamic drop-down list that updates automatically from a UNIQUE formula? |
+| B1P06Q26 | 1 | 6 | Name the dynamic array functions Microsoft introduced (FILTER, SORT, SORTBY, UNIQUE, SEQUENCE, RANDARRAY, XLOOKUP, XMATCH) and give one use for each. |
+| B1P06Q27 | 1 | 6 | How do you generate a list of numbers 1 to 12, or the 12 month-start dates of a year, using SEQUENCE? |
+| B1P06Q28 | 1 | 6 | Does UNIQUE treat "HR" and "hr" as the same value? |
+| B1P06Q29 | 1 | 6 | Do FILTER, UNIQUE and SORT work in Google Sheets, and what Sheets function is often used instead? |
+| B1P06Q30 | 1 | 6 | What is the difference between legacy array formulas (Ctrl+Shift+Enter) and dynamic array formulas? |
+| B1P06Q31 | 1 | 6 | What are the rules for naming variables inside LET, and how many name/value pairs can you define? |
+| B1P06Q32 | 1 | 6 | How does LET make a FILTER formula shorter and faster? Give an example where the same range is used more than once. |
+| B1P06Q33 | 1 | 6 | How do you filter rows where a text column contains a keyword (partial match), for example job titles containing "Analyst"? |
+| B1P06Q34 | 1 | 6 | How do you filter out blank rows or return only non-blank entries from a range? |
+| B1P06Q35 | 1 | 6 | How do you sort a table by Department A to Z and then by Salary high to low with one formula? |
+| B1P06Q36 | 1 | 6 | HR attrition scenario: given a table with Employee, Department and Exit Date, how do you list the employees who left between 1 April and 30 June? |
+| B1P06Q37 | 1 | 6 | How do you return only some columns (for example Name and Salary) from a FILTER result? |
+| B1P06Q38 | 1 | 6 | How do you return the top 5 highest salaries with their employee names using dynamic arrays? |
+| B1P06Q39 | 1 | 6 | How does ARRAYFORMULA in Google Sheets differ from Excel dynamic arrays, and what does the QUERY function add? |
+| B1P06Q40 | 1 | 6 | Why does a formula referencing a closed workbook with FILTER or UNIQUE return #REF!? |
+| B1P06Q41 | 1 | 6 | How do you count the distinct employees who joined in a given year using UNIQUE and FILTER, without getting an error when nobody joined? |
+| B1P06Q42 | 1 | 6 | Why can FILTER return #VALUE!, and how do you check that the include array matches the data array? |
+| B1P06Q43 | 1 | 6 | How would you give the same result as FILTER to colleagues who use Excel 2016 or 2019? |
+| B1P06Q44 | 1 | 6 | For each department, how do you return the highest salary and the employee who earns it using dynamic arrays and LET? |
+| B1P06Q45 | 1 | 6 | How do you build a chart or named range that expands automatically with a spilled FILTER or UNIQUE result? |
+| B1P07Q1 | 1 | 7 | What is Power Query in Excel and what do you use it for? |
+| B1P07Q2 | 1 | 7 | What is the difference between Power Query and Power Pivot? |
+| B1P07Q3 | 1 | 7 | What is the difference between Merge and Append in Power Query? |
+| B1P07Q4 | 1 | 7 | How do you refresh a Power Query report when the source file changes? |
+| B1P07Q5 | 1 | 7 | Why would you use Power Query instead of formulas or manual copy-paste to clean and prepare data? |
+| B1P07Q6 | 1 | 7 | How would you combine 12 monthly attendance files from one folder into a single table using Power Query? |
+| B1P07Q7 | 1 | 7 | What is the difference between a calculated column and a measure in Power Pivot? |
+| B1P07Q8 | 1 | 7 | Where do you find Power Query in Excel 2016, 2019 and Microsoft 365? |
+| B1P07Q9 | 1 | 7 | What are Applied Steps in the Power Query Editor, and why do they matter? |
+| B1P07Q10 | 1 | 7 | How do you change data types of columns in Power Query, and what goes wrong if you skip it? |
+| B1P07Q11 | 1 | 7 | How do you remove duplicates and blank rows in Power Query? |
+| B1P07Q12 | 1 | 7 | How do you replace null values with a default value (for example 0 or "Not Available") in Power Query? |
+| B1P07Q13 | 1 | 7 | How do you split a "Full Name" column into first name and last name in Power Query? |
+| B1P07Q14 | 1 | 7 | How do you trim spaces and fix text case (Clean, Trim, Proper) in Power Query? |
+| B1P07Q15 | 1 | 7 | How do you filter rows in Power Query (for example keep only employees from the Hyderabad office)? |
+| B1P07Q16 | 1 | 7 | How do you add a conditional column in Power Query (the equivalent of an IF formula)? |
+| B1P07Q17 | 1 | 7 | What is Group By in Power Query, and how is it different from a PivotTable? |
+| B1P07Q18 | 1 | 7 | What does "Close & Load To..." offer, and what is a "Connection only" query? |
+| B1P07Q19 | 1 | 7 | What is Power Pivot, and how do you enable it in Excel? |
+| B1P07Q20 | 1 | 7 | What is the Excel Data Model? |
+| B1P07Q21 | 1 | 7 | Why would you build a Data Model with relationships instead of using VLOOKUP to bring tables together? |
+| B1P07Q22 | 1 | 7 | How do you create a relationship between two tables in the Power Pivot Data Model? |
+| B1P07Q23 | 1 | 7 | What is the difference between a one-to-many and a many-to-many relationship? |
+| B1P07Q24 | 1 | 7 | How do you create a PivotTable from the Data Model, and how is it different from a normal PivotTable? |
+| B1P07Q25 | 1 | 7 | What is Unpivot in Power Query, and when would you use it? (for example, a sheet with one column per month) |
+| B1P07Q26 | 1 | 7 | What are the different join kinds available in a Power Query merge? |
+| B1P07Q27 | 1 | 7 | How do you find employees present in the HR master list but missing from the payroll list using Power Query? |
+| B1P07Q28 | 1 | 7 | What is the difference between Reference and Duplicate for a query? |
+| B1P07Q29 | 1 | 7 | How do you handle errors in Power Query (for example Remove Errors, Replace Errors, try ... otherwise)? |
+| B1P07Q30 | 1 | 7 | What do you do when appending two tables whose column names do not match exactly? |
+| B1P07Q31 | 1 | 7 | How do you reduce a table's columns and rows early in a query, and why does the order of steps matter? |
+| B1P07Q32 | 1 | 7 | How do you create a measure in Power Pivot, and what is a simple example? |
+| B1P07Q33 | 1 | 7 | What is DAX, and how is it different from an Excel formula? |
+| B1P07Q34 | 1 | 7 | What does the CALCULATE function do in DAX? |
+| B1P07Q35 | 1 | 7 | How do you count unique employees in Power Pivot (DISTINCTCOUNT), and why can a normal PivotTable not do this directly? |
+| B1P07Q36 | 1 | 7 | What is a star schema, and why is it recommended for a Data Model? |
+| B1P07Q37 | 1 | 7 | Why does a measure sometimes show the same value for every row in a PivotTable? |
+| B1P07Q38 | 1 | 7 | How do you check what a query is doing from the Advanced Editor, and what is the M language? |
+| B1P07Q39 | 1 | 7 | How do you pull data from a web page or a CSV file into Excel with Power Query? |
+| B1P07Q40 | 1 | 7 | What is the Power Query Editor "Query Settings" pane used for? |
+| B1P07Q41 | 1 | 7 | What is query folding, and how can you tell whether a step folds? |
+| B1P07Q42 | 1 | 7 | What is fuzzy matching in a Power Query merge, and which Excel versions support it? |
+| B1P07Q43 | 1 | 7 | How do you unpivot only the selected columns versus the other columns, and what is the difference? |
+| B1P07Q44 | 1 | 7 | How do you pivot a column in Power Query (the reverse of unpivot)? |
+| B1P07Q45 | 1 | 7 | How do you add a Date table to the Data Model, and why is one needed for time intelligence? |
+| B1P07Q46 | 1 | 7 | What is the difference between Power Query "Merge" and an Excel VLOOKUP or XLOOKUP? |
+| B1P07Q47 | 1 | 7 | How do you stop a Power Query refresh from breaking when a column is renamed or removed at the source? |
+| B1P07Q48 | 1 | 7 | How do you share a workbook with Power Query connections to a local file path with colleagues without refresh errors? |
+| B1P07Q49 | 1 | 7 | What is a Power Query parameter, and how would you use one (for example a folder path or a cut-off date)? |
+| B1P07Q50 | 1 | 7 | How do you calculate year-to-date headcount or salary cost with a time-intelligence function such as TOTALYTD or DATESYTD? |
+| B1P07Q51 | 1 | 7 | How do you calculate each department's share of total headcount as a percentage in Power Pivot? |
+| B1P07Q52 | 1 | 7 | What is the difference between SUM and SUMX in DAX? |
+| B1P07Q53 | 1 | 7 | What is the difference between ALL and ALLEXCEPT in DAX? |
+| B1P07Q54 | 1 | 7 | What is row context versus filter context? |
+| B1P07Q55 | 1 | 7 | How do you create a KPI or a hierarchy (Department > Team) in Power Pivot? |
+| B1P07Q56 | 1 | 7 | How do you use slicers to control several PivotTables built on the same Data Model? |
+| B1P07Q57 | 1 | 7 | How would you build a refreshable monthly attrition report using Power Query, a Data Model and a PivotTable? |
+| B1P07Q58 | 1 | 7 | When would you move from Excel Power Query and Power Pivot to Power BI? |
+| B1P07Q59 | 1 | 7 | What are the limits of Power Pivot and the Data Model when files get very large, and how would you handle them? |
+| B1P07Q60 | 1 | 7 | How do you write a custom column in M using if...then...else, Text.Upper or Date functions? |
+| B1P07Q61 | 1 | 7 | What are privacy levels in Power Query, and why can a merge of two sources show a "Formula.Firewall" error? |
+| B1P07Q62 | 1 | 7 | How do you make Power Query refresh automatically when the workbook opens, and what are the limits? |
+| B1P07Q63 | 1 | 7 | How do you troubleshoot a Power Query step that shows "Expression.Error: The column ... of the table wasn't found"? |
+| B1P07Q64 | 1 | 7 | What is the difference between Import mode and DirectQuery, and does Excel support both? |
+| B1P08Q1 | 1 | 8 | What types of charts are available in Excel, and how do you choose the right one for your data? |
+| B1P08Q2 | 1 | 8 | When would you use a column or bar chart, and when a line chart? |
+| B1P08Q3 | 1 | 8 | What is the fastest way to create a chart in Excel from a data range? |
+| B1P08Q4 | 1 | 8 | What is an Excel dashboard, and how is it different from a normal report or a pivot table? |
+| B1P08Q5 | 1 | 8 | What are the key elements of a good Excel dashboard? |
+| B1P08Q6 | 1 | 8 | Walk me through how you would build an interactive dashboard in Excel from raw data. |
+| B1P08Q7 | 1 | 8 | How do you make one slicer control several pivot tables and charts on a dashboard? |
+| B1P08Q8 | 1 | 8 | How do you create a combo chart with a secondary axis, for example revenue as columns and margin percentage as a line? |
+| B1P08Q9 | 1 | 8 | Which chart would you use to show monthly attrition for the last 12 months, and how would you build it? |
+| B1P08Q10 | 1 | 8 | What is the difference between a clustered column chart and a stacked column chart, and when do you use each? |
+| B1P08Q11 | 1 | 8 | When is a pie chart appropriate, and when should you avoid it? |
+| B1P08Q12 | 1 | 8 | What are a data series, the category axis, the value axis and the legend in an Excel chart? |
+| B1P08Q13 | 1 | 8 | How do you add or edit a chart title, axis titles and data labels? |
+| B1P08Q14 | 1 | 8 | What are sparklines, and what types are available? |
+| B1P08Q15 | 1 | 8 | How do you add a trendline to a chart, and what does the R-squared value tell you? |
+| B1P08Q16 | 1 | 8 | A chart is plotting the wrong way round (months as series instead of categories). How do you fix it? |
+| B1P08Q17 | 1 | 8 | You have headcount by department in a table. Which chart would you make for HR leadership, and how would you present it? |
+| B1P08Q18 | 1 | 8 | What are good practices for choosing colours and formatting in Excel charts? |
+| B1P08Q19 | 1 | 8 | How do you hide gridlines and headings on a dashboard sheet so it looks clean? |
+| B1P08Q20 | 1 | 8 | How do you copy an Excel chart into PowerPoint or Word, and what is the difference between pasting as a picture, embedding and linking? |
+| B1P08Q21 | 1 | 8 | How do you make a chart update automatically when new rows of data are added? |
+| B1P08Q22 | 1 | 8 | What is a waterfall chart, when would you use it, and how do you create one? |
+| B1P08Q23 | 1 | 8 | How do you create a histogram in Excel, and how does it differ from a column chart? |
+| B1P08Q24 | 1 | 8 | What is the difference between a Pareto chart and a histogram? |
+| B1P08Q25 | 1 | 8 | How do you build KPI cards on a dashboard that show the value, target and variance with an up or down indicator? |
+| B1P08Q26 | 1 | 8 | How do you show actual versus target in an Excel chart? |
+| B1P08Q27 | 1 | 8 | You are asked for an HR attrition dashboard. Which KPIs, charts and filters would you include? |
+| B1P08Q28 | 1 | 8 | What is a Timeline in Excel, and how do you use it on a dashboard? |
+| B1P08Q29 | 1 | 8 | How do you create a chart title that changes automatically based on a cell value or filter selection? |
+| B1P08Q30 | 1 | 8 | How do you make a chart change when the user picks an option from a dropdown list? |
+| B1P08Q31 | 1 | 8 | How do you handle blank cells and gaps in a line chart? |
+| B1P08Q32 | 1 | 8 | How do you refresh a dashboard when the source data changes? |
+| B1P08Q33 | 1 | 8 | How do you protect a dashboard from accidental edits while keeping slicers usable? |
+| B1P08Q34 | 1 | 8 | How would you decide between building a dashboard in Excel or in Power BI? |
+| B1P08Q35 | 1 | 8 | Which chart types are available in Excel 2016, 2019 and Microsoft 365, and which are missing in older versions? |
+| B1P08Q36 | 1 | 8 | How do you create charts and a simple dashboard in Google Sheets, and how does it differ from Excel? |
+| B1P08Q37 | 1 | 8 | What is a scatter plot, and how does a bubble chart differ from it? |
+| B1P08Q38 | 1 | 8 | What are error bars, and when would you use them? |
+| B1P08Q39 | 1 | 8 | Why can a chart whose value axis does not start at zero be misleading? |
+| B1P08Q40 | 1 | 8 | What are Recommended Charts and Quick Analysis in Excel? |
+| B1P08Q41 | 1 | 8 | How do you group small categories into an Other slice or bar in a chart? |
+| B1P08Q42 | 1 | 8 | How do you save a formatted chart as a template and reuse it? |
+| B1P08Q43 | 1 | 8 | How do you build a hiring funnel chart, from applications to offers to joiners? |
+| B1P08Q44 | 1 | 8 | How do you show salary distribution by grade using a box and whisker chart? |
+| B1P08Q45 | 1 | 8 | How do you create a map chart of employees by state, and what are its requirements? |
+| B1P08Q46 | 1 | 8 | What is the difference between a dynamic chart range built with OFFSET and one built with an Excel Table? |
+| B1P08Q47 | 1 | 8 | How do you colour bars red when they fall below target and green when they meet it? |
+| B1P08Q48 | 1 | 8 | How do you create a Gantt chart for a project plan in Excel? |
+| B1P08Q49 | 1 | 8 | How do you create a gauge or speedometer chart for a KPI? |
+| B1P08Q50 | 1 | 8 | How do you use form controls such as a scroll bar or option buttons to make a chart interactive? |
+| B1P08Q51 | 1 | 8 | How would you speed up a dashboard that has become slow with several hundred thousand rows of data? |
+| B1P08Q52 | 1 | 8 | Design a one-click monthly MIS dashboard that refreshes from new source files, using Power Query, pivots, slicers and a macro. |
+| B1P08Q53 | 1 | 8 | You are shown a cluttered dashboard with 3D pie charts and 15 KPIs. How would you critique and redesign it? |
+| B1P08Q54 | 1 | 8 | How would you present an Excel dashboard to non-technical senior leaders and handle conflicting requests from different stakeholders? |
+| B1P09Q1 | 1 | 9 | What is conditional formatting in Excel, and where would you use it as an analyst? |
+| B1P09Q2 | 1 | 9 | What is data validation in Excel, and why is it important for data accuracy? |
+| B1P09Q3 | 1 | 9 | How do you create a drop-down list in a cell using Data Validation? |
+| B1P09Q4 | 1 | 9 | How do you highlight duplicate values in a column using conditional formatting? |
+| B1P09Q5 | 1 | 9 | In an attendance sheet, how do you highlight every employee whose attendance percentage is below 90%? |
+| B1P09Q6 | 1 | 9 | What is Goal Seek in Excel, and when would you use it? |
+| B1P09Q7 | 1 | 9 | How do you highlight an entire row based on the value in one cell (for example, every row where Status is "Resigned")? |
+| B1P09Q8 | 1 | 9 | What is the difference between Goal Seek, Data Table and Scenario Manager? |
+| B1P09Q9 | 1 | 9 | What is What-If Analysis in Excel, and which tools does it include? |
+| B1P09Q10 | 1 | 9 | Walk me through using Goal Seek to find the units you must sell to reach a target profit. |
+| B1P09Q11 | 1 | 9 | What are Color Scales, Data Bars and Icon Sets in conditional formatting, and when would you use each? |
+| B1P09Q12 | 1 | 9 | How do you highlight cells that contain errors such as #N/A or #DIV/0! using conditional formatting? |
+| B1P09Q13 | 1 | 9 | How do you view, edit, reorder or delete conditional formatting rules (Rules Manager)? |
+| B1P09Q14 | 1 | 9 | What are the three error alert styles in data validation (Stop, Warning, Information), and when would you use each? |
+| B1P09Q15 | 1 | 9 | How do you restrict a cell so that it accepts only whole numbers between 18 and 60 (for example, employee age)? |
+| B1P09Q16 | 1 | 9 | How do you add an input message and a custom error message to a data validation rule? |
+| B1P09Q17 | 1 | 9 | How do you highlight cells that contain specific text, for example every department that contains "Sales"? |
+| B1P09Q18 | 1 | 9 | What is a one-variable data table, and how do you build one? |
+| B1P09Q19 | 1 | 9 | How do you build a two-variable data table, for example loan EMI against interest rate and tenure? |
+| B1P09Q20 | 1 | 9 | How do you prevent duplicate entries in a column (for example, Employee ID) using data validation? |
+| B1P09Q21 | 1 | 9 | How do you create a dependent (cascading) drop-down list, for example State and then City? |
+| B1P09Q22 | 1 | 9 | How do you make a drop-down list update automatically when new items are added to the source list? |
+| B1P09Q23 | 1 | 9 | How do you highlight employee contracts that expire within the next 30 days? |
+| B1P09Q24 | 1 | 9 | How do you highlight the top 10 values, the bottom 10% or the values above average? |
+| B1P09Q25 | 1 | 9 | Why do formula-based conditional formatting rules need mixed references such as $B2, and what goes wrong if you get them wrong? |
+| B1P09Q26 | 1 | 9 | What is Scenario Manager, and how do you create best-case, base-case and worst-case scenarios? |
+| B1P09Q27 | 1 | 9 | How do you highlight names in List A that are missing from List B (for example, employees on the payroll but not on the attendance list)? |
+| B1P09Q28 | 1 | 9 | How do you highlight weekends in an attendance sheet with a date row? |
+| B1P09Q29 | 1 | 9 | What happens when several conditional formatting rules apply to the same cell, and what does Stop If True do? |
+| B1P09Q30 | 1 | 9 | What is the difference between Goal Seek and Solver, and when do you need Solver? |
+| B1P09Q31 | 1 | 9 | How do you highlight blank cells or rows with missing mandatory fields in a hiring tracker? |
+| B1P09Q32 | 1 | 9 | How do you find and remove invalid data and clear data validation from a range (Circle Invalid Data, Clear All)? |
+| B1P09Q33 | 1 | 9 | How do you copy conditional formatting or data validation from one range to another? |
+| B1P09Q34 | 1 | 9 | How do you create a drop-down list whose source list is on another sheet? |
+| B1P09Q35 | 1 | 9 | How do you restrict an entry to exactly 10 digits (for example, a mobile number) using data validation? |
+| B1P09Q36 | 1 | 9 | What are the limitations of Goal Seek, and why might it say it may not have found a solution? |
+| B1P09Q37 | 1 | 9 | Why does a data table sometimes not recalculate, and what does "Automatic except for data tables" mean? |
+| B1P09Q38 | 1 | 9 | How do you apply conditional formatting and a drop-down list in Google Sheets, and how do they differ from Excel? |
+| B1P09Q39 | 1 | 9 | How do you shade alternate rows (banded rows) with conditional formatting so the banding survives sorting and filtering? |
+| B1P09Q40 | 1 | 9 | Can data validation be bypassed, and how can you make it more reliable? |
+| B1P09Q41 | 1 | 9 | Your drop-down arrow is not showing in a cell. What are the common reasons? |
+| B1P09Q42 | 1 | 9 | Why does the Scenario Summary report not update when you change an input, and how do you refresh it? |
+| B1P09Q43 | 1 | 9 | How do you build a traffic-light attrition indicator with Icon Sets, and how do you show only the icon without the number? |
+| B1P09Q44 | 1 | 9 | Can too many conditional formatting rules slow a workbook down, and how do you keep them efficient? |
+| B1P09Q45 | 1 | 9 | How can you allow multiple selections in a single drop-down cell in Excel, and what is the Google Sheets alternative? |
+| B1P09Q46 | 1 | 9 | How do you build a dependent drop-down in Excel 365 using UNIQUE and FILTER spilled ranges, and what breaks it (#SPILL!, older versions)? |
+| B1P10Q1 | 1 | 10 | How do you prepare an MIS report in Excel from raw data? |
+| B1P10Q2 | 1 | 10 | What is an MIS report, and what do daily, weekly and monthly MIS reports usually contain? |
+| B1P10Q3 | 1 | 10 | How do you calculate an employee's tenure in years and months in Excel? |
+| B1P10Q4 | 1 | 10 | Walk me through how you would reconcile two reports from different sources in Excel. |
+| B1P10Q5 | 1 | 10 | Given employee data (Employee ID, Department, Join Date, Exit Date, Status), how would you build a department-wise headcount and attrition summary? |
+| B1P10Q6 | 1 | 10 | What checks do you run on data accuracy before sending an MIS report to management? |
+| B1P10Q7 | 1 | 10 | How would you set up a monthly report so that it updates with minimal manual work when new data is pasted in? |
+| B1P10Q8 | 1 | 10 | How do you handle #N/A, #DIV/0! and #REF! errors in a report before you send it? |
+| B1P10Q9 | 1 | 10 | How do you calculate the absenteeism rate by department for a month? |
+| B1P10Q10 | 1 | 10 | Your report total does not match the source total. How do you find the difference? |
+| B1P10Q11 | 1 | 10 | Given a raw attendance log (Employee ID, Date, In-time, Out-time), how do you calculate hours worked per day and flag late arrivals? |
+| B1P10Q12 | 1 | 10 | How do you protect a worksheet so that others cannot change your formulas? |
+| B1P10Q13 | 1 | 10 | How do you calculate month-on-month growth or variance percentage in a report? |
+| B1P10Q14 | 1 | 10 | How do you group employees into age bands or tenure bands in Excel? |
+| B1P10Q15 | 1 | 10 | How do you add GST to an amount, or take GST out of a GST-inclusive amount, in Excel? |
+| B1P10Q16 | 1 | 10 | How do you highlight the top 10 or bottom 5 performers in a report? |
+| B1P10Q17 | 1 | 10 | How do you present MIS findings to a non-technical manager, beyond sending the sheet? |
+| B1P10Q18 | 1 | 10 | How do you calculate the average and the median salary by department in Excel, and which one would you report? |
+| B1P10Q19 | 1 | 10 | How do you calculate the voluntary and involuntary attrition split for a month? |
+| B1P10Q20 | 1 | 10 | How do you calculate first-year (early) attrition in Excel? |
+| B1P10Q21 | 1 | 10 | How do you calculate attrition by tenure band using COUNTIFS? |
+| B1P10Q22 | 1 | 10 | How do you find the opening and closing headcount of a month from join dates and exit dates? |
+| B1P10Q23 | 1 | 10 | How do you build an HR attrition dashboard in Excel with slicers for department, gender and age band? |
+| B1P10Q24 | 1 | 10 | Given a hiring tracker with candidate stages, how do you calculate the conversion rate from one stage to the next? |
+| B1P10Q25 | 1 | 10 | How do you calculate average time-to-hire by department from requisition and joining dates? |
+| B1P10Q26 | 1 | 10 | How do you build a payroll summary by department and month using SUMIFS? |
+| B1P10Q27 | 1 | 10 | How do you calculate overtime hours and overtime pay from daily hours worked? |
+| B1P10Q28 | 1 | 10 | How do you find employees who are in the HR master list but missing from the payroll sheet, and the reverse? |
+| B1P10Q29 | 1 | 10 | How do you consolidate monthly files from several branches or teams into one report? |
+| B1P10Q30 | 1 | 10 | How do you rank employees by performance rating within each department? |
+| B1P10Q31 | 1 | 10 | How do you speed up a slow, heavy Excel workbook? |
+| B1P10Q32 | 1 | 10 | How do you find employees with more than a set number of absences in the last 12 months? |
+| B1P10Q33 | 1 | 10 | How do you build a leave balance tracker from opening balance, leaves taken and leaves credited? |
+| B1P10Q34 | 1 | 10 | Which would you use for a recurring daily MIS report: manual formulas, Power Query or a macro, and why? |
+| B1P10Q35 | 1 | 10 | How do you build a report that shows each month's figure as a percentage of the annual total? |
+| B1P10Q36 | 1 | 10 | How do you build a department-wise cost summary with subtotals and a grand total for a management report? |
+| B1P10Q37 | 1 | 10 | How do you calculate a rolling 12-month attrition rate? |
+| B1P10Q38 | 1 | 10 | Case: given a sales table (Region, Product, Month, Sales), how would you produce a summary with pivot, rank and formulas in a timed Excel test? |
+| B1P10Q39 | 1 | 10 | How do you share an Excel report with a team without people breaking it or creating conflicting versions? |
+| B1P10Q40 | 1 | 10 | What would you do if your data has more rows than Excel's row limit? |
+| B1P10Q41 | 1 | 10 | How do you document and hand over a recurring report so someone else can run it? |
+| B1P10Q42 | 1 | 10 | How do you check the salary data for outliers and wrong entries? |
+| B1P10Q43 | 1 | 10 | How do you calculate compa-ratio (salary against the band midpoint) for each employee? |
+| B1P10Q44 | 1 | 10 | How do you track training completion by department against a target? |
+| B1P10Q45 | 1 | 10 | How do you calculate the headcount of each manager's team (span of control) from an employee list with a manager ID? |
+| B1P10Q46 | 1 | 10 | How would you build the same attrition report in Google Sheets, and what differs from Excel? |
+| B1P10Q47 | 1 | 10 | What would you do differently in a monthly report if your company is on Excel 2016 instead of Microsoft 365? |
+| B1P10Q48 | 1 | 10 | How do you calculate gender diversity ratio by department and level? |
+| B1P10Q49 | 1 | 10 | How do you reconcile headcount between the HRMS, payroll and the attendance system? |
+| B1P10Q50 | 1 | 10 | How do you build an interview scheduling and hiring status tracker that flags overdue follow-ups? |
+| B1P10Q51 | 1 | 10 | How do you identify which department or tenure band has the highest attrition risk using a simple weighted score? |
+| B1P10Q52 | 1 | 10 | How do you create a monthly revenue-per-employee or cost-per-hire metric in Excel? |
+| B1P10Q53 | 1 | 10 | How do you calculate loss-of-pay (unpaid leave) deductions from an attendance sheet and monthly salary? |
+| B1P10Q54 | 1 | 10 | How do you calculate a cohort-wise retention table (joiners of each month and how many remain after 3, 6 and 12 months)? |
+| B1P10Q55 | 1 | 10 | How do you build a variance report between budget and actual headcount cost with drill-down to the cause? |
+| B1P10Q56 | 1 | 10 | How do you clean and standardise a messy attendance export where timestamps are text and some are blank? |
+| B1P10Q57 | 1 | 10 | How do you prepare an exit-interview analysis in Excel where reasons are free text? |
+| B1P10Q58 | 1 | 10 | How do you audit someone else's MIS workbook to find hidden formula errors? |
+| B1P10Q59 | 1 | 10 | If a stakeholder disputes the attrition number in your report, how do you trace and defend it? |
+| B1P10Q60 | 1 | 10 | How do you build a six-month headcount forecast from the hiring plan and an expected attrition rate? |
+| B1P11Q1 | 1 | 11 | What is a macro in Excel, and what is VBA? |
+| B1P11Q2 | 1 | 11 | How do you record a macro in Excel, and where do you see and edit the code it creates? |
+| B1P11Q3 | 1 | 11 | What is the difference between recording a macro and writing VBA code by hand? |
+| B1P11Q4 | 1 | 11 | Have you used a macro or VBA to automate a task? Give an example, such as a monthly HR attendance report. |
+| B1P11Q5 | 1 | 11 | What is Copilot in Excel, and how can a data analyst use it? |
+| B1P11Q6 | 1 | 11 | How do you verify the output of Copilot or any AI tool before you send a report to a manager? |
+| B1P11Q7 | 1 | 11 | How do you save a workbook that contains macros, and why does Excel show a security warning for macros? |
+| B1P11Q8 | 1 | 11 | What is the difference between absolute and relative reference recording in the macro recorder? |
+| B1P11Q9 | 1 | 11 | What does Option Explicit do, and how do you declare variables in VBA (Dim and data types)? |
+| B1P11Q10 | 1 | 11 | What is the difference between a Sub and a Function in VBA, and what is a user-defined function (UDF)? |
+| B1P11Q11 | 1 | 11 | What is Gemini in Google Sheets, and what can it do for an analyst? |
+| B1P11Q12 | 1 | 11 | What do you need in place to use Copilot in Excel (licence, file location, data format)? |
+| B1P11Q13 | 1 | 11 | What is the Google Sheets equivalent of VBA macros, and how does it differ from Excel VBA? |
+| B1P11Q14 | 1 | 11 | Write a VBA loop that goes through rows 2 to 500 and flags employees with less than one year of tenure. |
+| B1P11Q15 | 1 | 11 | How do you find the last used row in a column with VBA, and why is it needed? |
+| B1P11Q16 | 1 | 11 | How do you handle errors in VBA (On Error GoTo versus On Error Resume Next)? |
+| B1P11Q17 | 1 | 11 | A macro takes five minutes to run on 50,000 rows. How would you speed it up? |
+| B1P11Q18 | 1 | 11 | What is the COPILOT function in Excel, and how is it different from functions such as SUM or IF? |
+| B1P11Q19 | 1 | 11 | What data privacy risks should you consider when using AI tools on employee or payroll data? |
+| B1P11Q20 | 1 | 11 | When would you use Copilot, and when would you use a formula, a PivotTable or Power Query instead? |
+| B1P11Q21 | 1 | 11 | Write a prompt you would give Copilot or Gemini to classify 500 employee feedback comments into themes. |
+| B1P12Q1 | 1 | 12 | How did you learn Excel, and how long did it take you? |
+| B1P12Q2 | 1 | 12 | How would you rate yourself in Excel out of 10, and why? |
+| B1P12Q3 | 1 | 12 | Which version of Excel do you use (2016, 2019, 2021 or Microsoft 365), and does the version matter for your work? |
+| B1P12Q4 | 1 | 12 | You come from HR with no technical background. How did you learn Excel? |
+| B1P12Q5 | 1 | 12 | Walk me through an Excel report or workbook you built from start to finish. |
+| B1P12Q6 | 1 | 12 | Which Excel topic did you find hardest, and how did you overcome it? |
+| B1P12Q7 | 1 | 12 | Which Excel functions and features do you use most often, and which have you not tried yet? |
+| B1P12Q8 | 1 | 12 | How do you learn an Excel function or feature you have never used before? |
+| B1P12Q9 | 1 | 12 | Which free resources would you recommend to a beginner learning Excel? |
+| B1P12Q10 | 1 | 12 | Which practice datasets have you worked with in Excel? |
+| B1P12Q11 | 1 | 12 | Have you used Google Sheets as well as Excel, and how did you pick it up? |
+| B1P12Q12 | 1 | 12 | How much time do you spend practising Excel each day or week? |
+| B1P12Q13 | 1 | 12 | In what order did you study Excel topics, and why that order? |
+| B1P12Q14 | 1 | 12 | How do you check that your own Excel work is correct when there is no answer key? |
+| B1P12Q15 | 1 | 12 | How would you prepare for a live Excel test in one week? |
+| B1P12Q16 | 1 | 12 | How do you use AI assistants such as Copilot or ChatGPT to learn Excel without depending on them? |
+| B1P12Q17 | 1 | 12 | Is Excel enough for a data analyst role, and what would you learn next? |
+| B1P12Q18 | 1 | 12 | How do you keep your Excel skills current as new functions are added? |
+| B1P12Q19 | 1 | 12 | Do Excel certifications help, and have you done any (for example Microsoft Office Specialist)? |
+| B1P12Q20 | 1 | 12 | Have you shared your Excel work publicly or kept a portfolio of it? |
+| B1P12Q21 | 1 | 12 | How would you build an Excel portfolio project from a public HR dataset? |
+| B1P12Q22 | 1 | 12 | How would you set up a self-check test to measure your own Excel level? |
+| B1P12Q23 | 1 | 12 | What is your plan to improve your Excel over the next three months? |
+| B1P12Q24 | 1 | 12 | An HR colleague uses Excel only as a list maker. How would you coach them towards pivot tables and lookups? |
 
 ## Book 2 — SQL
 | Q-ID | Book | Part | Canonical question |
