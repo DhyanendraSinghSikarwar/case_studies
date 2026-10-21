@@ -1,7 +1,7 @@
 # Book 2 — Part 02: Tokenization, Pretraining, Scaling Laws and Decoding
 
 **Topic:** subword tokenizers (BPE, WordPiece, Unigram, byte-level), token economics, pretraining objective, data pipeline, optimisation recipe and precision, scaling laws and compute estimates, and decoding strategies (greedy, sampling, beam, penalties, determinism, logprobs, test-time compute).
-**Target:** 40  |  **Actual:** 44 (⭐⭐⭐ 13, ⭐⭐ 21, ⭐ 10)  |  **Date:** 2026-10-21  |  **Status:** Questions frozen (Wave A); answers pending (Wave B)
+**Target:** 40  |  **Actual:** 44 (⭐⭐⭐ 13, ⭐⭐ 21, ⭐ 10)  |  **Date:** 2026-10-21  |  **Status:** Wave A done; Wave B answers written (Q1-Q44); Wave C review done (see review_notes/Book2_Part02_review.md)
 
 Scope note: Part 1 already covers input embeddings, unembedding and the vocabulary's effect on model size (Q25), BERT vs GPT objectives (Q16), training-stability tricks (Q44) and multi-token prediction (Q45). Here those are cross-referenced, not repeated. Overlaps with Book 1 are intentional but deeper here: subword tokenization (B1P09-Q27: here the merge algorithm, byte-level and design trade-offs), LM perplexity (B1P09-Q18: here bits-per-byte and cross-tokenizer comparison), beam search (B1P09-Q44: here cost and length normalisation), LR schedules, loss curves and mixed precision (B1P08-Q14/Q16/Q40: here LLM-pretraining specifics), benchmark contamination (B1P01-Q34: here decontamination of a corpus), and calibration from logprobs (B1P03-Q44: here logprob mechanics). Answers must cross-reference, not copy. Constrained/structured decoding belongs to Part 3, fine-tuning to Part 4, RLHF/DPO to Part 5, and speculative decoding, PagedAttention and serving to Part 10. Generic distributed-training and MLOps detail belongs to Book 4.
 
@@ -1059,6 +1059,8 @@ Equal micro-batch sizes are assumed. With padding or variable valid-token counts
 - *How would you measure the critical batch size?* Estimate gradient noise scale from gradient norms at two batch sizes, or run short sweeps; a heuristic, not exact.
 
 **Common mistakes:** Quoting batch size in sequences without sequence length. Not dividing by accumulation steps. Believing the LR scaling rule is exact. Assuming bigger batch is always faster to a given loss.⭐⭐ 🟡 How do you read a pretraining loss curve? What do spikes, divergence, plateaus and a train/validation gap tell you, and what would you do?
+
+### Q29 ⭐⭐ 🟡 How do you read a pretraining loss curve? What do spikes, divergence, plateaus and a train/validation gap tell you, and what would you do?
 **Asked at:** big tech, GenAI startups, research-leaning teams
 **Say this first (1 line):** A healthy pretraining curve falls smoothly on a log-log-like trend; I watch loss against tokens together with gradient norm, update size and per-domain validation loss, and I treat spikes and divergence as data or optimiser-stability problems to fix with skipped batches, lower LR or a restart from an earlier checkpoint.
 
@@ -1691,4 +1693,41 @@ Samples are assumed independent, which flatters real systems.
 
 ### Q44 ⭐ 🔴 Design question: choose decoding settings and stop rules for four products (code completion, support chat, creative writing, data extraction) and defend them.
 **Asked at:** senior roles at product companies, GenAI startups, GCCs
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Match randomness to how many acceptable answers exist: code completion and extraction have one right answer, so near-greedy; support chat needs consistency with a little variety; creative writing wants diversity. Then set stop rules and max tokens from the output format, and defend each with latency, cost and an eval. The values below are starting points to tune, not universal constants.
+
+**Then explain:**
+
+| Product | Temperature / truncation | Stop rules, max tokens | Why | Main risk and guardrail |
+|---|---|---|---|---|
+| Code completion | 0 to 0.2, greedy or near | stop at end of block (blank line, next `def`/`class`, closing bracket), small cap (tens of tokens) | One correct continuation; fast; repeatable suggestions | Overrunning into unrelated code: stop sequences plus a hard cap |
+| Support chat | about 0.3 to 0.5, top-p about 0.9 | stop at turn marker or end-of-turn token, moderate cap (hundreds) | Consistent tone and facts, slight variety so replies do not sound canned | Hallucinated policy: ground on retrieved docs, refuse or escalate when unsure, moderation filter |
+| Creative writing | about 0.8 to 1.1, top-p about 0.95 or min-p (about 0.05) | end-of-text token, large cap | Diversity is the goal; truncation avoids the incoherent tail | Rambling and repetition: mild repetition penalty, length cap |
+| Data extraction | 0, plus schema-constrained decoding (Part 3) | stop at closing brace, small cap | Deterministic and valid JSON every time | Wrong values in valid JSON: validate fields, abstain on missing fields |
+
+- **Why temperature is not the only knob:** top-p/min-p cut the unreliable tail so higher temperature stays coherent (Q4, Q13); stop sequences and `max_tokens` bound cost and latency.
+- **Latency and cost:** completion is interactive (target well under a second, shorter outputs, smaller model, caching of the prefix); extraction is batchable; chat streams tokens so time-to-first-token matters. Output tokens are usually priced higher than input and generated sequentially, so tight caps save money and time.
+- **Determinism caveat:** temperature 0 is not always bit-identical across runs or hardware (see Part 2 determinism question), so do not promise it; cache by input where needed.
+- **Evaluation per product:** completion: pass rate on unit tests and acceptance rate in production, latency p95. Chat: resolution rate, faithfulness to sources, human or LLM-judge rubric (with spot checks), escalation rate. Creative: human preference and diversity measures (distinct n-grams) at fixed quality. Extraction: field-level precision/recall and schema-validity rate. Tune the settings by a small grid on these evals.
+- **Not for every product:** for reasoning-heavy tasks, sampling many answers (Q42, Q43) is a separate cost decision.
+
+**Example:** extraction at temperature 0 with a JSON schema gives valid JSON by construction, but a wrong invoice total is still possible, so I would add a validator (line items sum to total) and measure field accuracy on a labelled set.
+
+**Code:** (executed; a plain config check, nothing model-specific)
+```python
+SETTINGS = {  # starting points to tune on an eval set, not universal values
+    "code_completion": dict(temperature=0.0, top_p=1.0, max_tokens=64,  stop=["\n\n", "\ndef ", "\nclass "]),
+    "support_chat":    dict(temperature=0.4, top_p=0.9, max_tokens=400, stop=["\nUser:"]),
+    "creative":        dict(temperature=1.0, top_p=0.95, max_tokens=1200, stop=[]),   # or min_p ~0.05 instead of top_p
+    "extraction":      dict(temperature=0.0, top_p=1.0, max_tokens=300, stop=[]),     # + schema-constrained output (Part 3)
+}
+for name, s in SETTINGS.items():
+    assert 0 <= s["temperature"] <= 2 and 0 < s["top_p"] <= 1 and s["max_tokens"] > 0
+    print(f"{name:16s} {s}")
+```
+
+**Follow-ups:**
+- *Why not temperature 0 for chat?* Repetitive, brittle replies and loops; a moderate temperature with top-p usually reads better. Test on your own conversations.
+- *Why change only one of temperature and top-p?* Both reshape the distribution and interact; tune one at a time against the eval.
+- *How do you pick values in practice?* Start from the table, run a small grid on a held-out eval, and monitor online metrics after launch.
+
+**Common mistakes:** One global setting for every product. Temperature above 0 for extraction. No stop sequence or cap, so completions run on and cost more. Promising determinism at temperature 0. Tuning by looking at a few examples instead of an eval.
