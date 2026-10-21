@@ -2571,7 +2571,7 @@ res = (t[t.leave_days > 20][['emp_id', 'name', 'dept_name', 'leave_days']]
 - Do the daily step first, then `SUM` per employee-month. If you subtract 9 hours from the monthly total instead, short days cancel long days, which is not what overtime pay means.
 - `HAVING SUM(...) > 40` keeps only groups above the threshold (`WHERE` cannot see sums).
 **Example:** Employee 3 in October works 15 days of 12 hours (+3 each = 45 overtime hours) and 5 days of 6 hours. Per-day logic: 45 hours -> listed. Wrong monthly-net logic: 45 - 15 = 30 -> missed. Employee 1 in September has exactly 40 hours: not above 40, so not listed.
-**Sample data:** (the real test set has 84 rows: Employee 1 works 11-hour days (20 days in September, 22 in October); Employee 2 works 10.5-hour days (22 days in October); Employee 3 as in the example. Only the first rows are shown to keep the page short. Clock times are text 'YYYY-MM-DD HH:MM'.)
+**Sample data:** (the real test set has 84 rows: Employee 1 works 11-hour days (20 days in September, 22 in October); Employee 2 works 10.5-hour days (22 days in October); Employee 3 works 15 days of 12 hours and 5 days of 6 hours in October, as in the Example (45 overtime hours). The output below was confirmed on a rebuilt 84-row set (weekdays, 09:00 start; the 12-hour/6-hour split of employee 3 was checked by arithmetic, not exact rows). Only the first rows are shown to keep the page short. Clock times are text 'YYYY-MM-DD HH:MM'.)
 
 *attendance* (first 6 of 84 rows)
 

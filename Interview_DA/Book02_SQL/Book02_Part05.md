@@ -1371,7 +1371,7 @@ res["tercile"] = ntile(len(res), 3)
 **Say this in the interview:** "SQL runs FROM, then WHERE, GROUP BY, HAVING, then window functions, then SELECT's remaining work, DISTINCT, ORDER BY and LIMIT. Window functions come after WHERE, so WHERE can't see them and they only see rows that survived the filter. To filter on a rank, I wrap the query in a CTE or subquery."
 **Explain simply:**
 - Logical order (not the order you type): 1 FROM/JOIN, 2 WHERE, 3 GROUP BY, 4 HAVING, 5 window functions, 6 SELECT list, 7 DISTINCT, 8 ORDER BY, 9 LIMIT/TOP.
-- WHERE runs before windows, so `WHERE rnk = 1` fails: the rank does not exist yet. Same reason you can't use a SELECT alias in WHERE.
+- WHERE runs before windows, so `WHERE rnk = 1` fails: the rank does not exist yet. Same reason most databases don't let you use a SELECT alias in WHERE (SQLite is lenient about plain aliases, but not window ones).
 - Rows removed by WHERE never enter the window: filter first and the ranks change.
 - Fix: compute the rank in a subquery/CTE, then filter in the outer query. (Some engines like Snowflake/BigQuery/DuckDB offer QUALIFY, a clause that filters after windows; not standard, not in SQLite/PostgreSQL/MySQL/SQL Server, from memory.)
 **Example:** Top earner per department. Filtering `salary <= 80000` inside the inner query first would drop Dev (90k) before ranking, so Esha would wrongly look like the IT top earner; filtering after ranking keeps everyone in the ranking.
@@ -2327,7 +2327,7 @@ ORDER BY dept, name;
 import pandas as pd
 d = emp.copy()
 d['rk'] = d.groupby('dept')['salary'].rank(method='min', ascending=False)
-res = d[(d['rk'] == 1) & (d['salary'] > 50000)][['name', 'dept', 'salary']]
+res = d[(d['rk'] == 1) & (d['salary'] > 50000)][['name', 'dept', 'salary']].sort_values(['dept', 'name'])
 # result matches the SQL Output above (checked by running both)
 ```
 **Edge cases:** Ties: RANK keeps both Isha and Jay; use ROW_NUMBER with a tie-breaker if you need exactly one per department. NULL salary: NULL > 50000 is unknown, so those rows are dropped. If no one qualifies, the result is empty.
@@ -2412,7 +2412,8 @@ Same thing with a CTE:
 import pandas as pd
 d = emp.copy()
 d['rk'] = d.groupby('dept')['salary'].rank(method='dense', ascending=False)
-res = d[(d['rk'] <= 2) & d['dept'].isin(['Sales', 'Support'])][['name', 'dept', 'salary']]
+res = (d[(d['rk'] <= 2) & d['dept'].isin(['Sales', 'Support'])][['name', 'dept', 'salary']]
+       .sort_values(['dept', 'salary', 'name'], ascending=[True, False, True]))
 # result matches the SQL Output above (checked by running both)
 ```
 **Edge cases:** Filtering `dept` in the outer query works but the inner query still ranks every department; filter inside as well when the table is big. Ties: DENSE_RANK <= 2 can return more than 2 people per department (Sales has 3 here).
@@ -2866,7 +2867,7 @@ res = d.sort_values(['salary', 'name'], ascending=[False, True])[['name', 'salar
 - Window functions entered the SQL standard in 2003. Versions below are from memory (not run here), so double-check before quoting them.
 - **PostgreSQL**: 8.4 and later (2009). **Oracle**: yes for a long time (analytic functions since 8i). **SQL Server**: ranking functions (ROW_NUMBER, RANK, DENSE_RANK, NTILE) since 2005; running totals, LAG, LEAD and FIRST_VALUE need 2012 or later.
 - **MySQL**: yes from 8.0 (2018); **not** in 5.7 or earlier. **MariaDB** from 10.2. **SQLite**: from 3.25 (2018). Cloud warehouses (BigQuery, Snowflake, Redshift) support them.
-- Verified here: SQLite 3.49.1 and DuckDB 1.5.6 run the demo below. Check yours with `SELECT VERSION();` (MySQL/PostgreSQL), `SELECT @@VERSION;` (SQL Server), `SELECT sqlite_version();` (SQLite).
+- Verified here: SQLite 3.45.1 runs the demo below (it uses the 18-row `employees` table from Q37). Check yours with `SELECT VERSION();` (MySQL/PostgreSQL), `SELECT @@VERSION;` (SQL Server), `SELECT sqlite_version();` (SQLite).
 - Syntax differences: QUALIFY exists only in some engines; named WINDOW clauses (`WINDOW w AS (...)`) are not in SQL Server (from memory).
 **Example:** A team moves from an old MySQL 5.7 server to MySQL 8: queries that needed correlated subqueries for rank can be rewritten with ROW_NUMBER.
 **SQL:**
@@ -2878,7 +2879,7 @@ SELECT sqlite_version() AS sqlite_version,
 
 | sqlite_version | top_row_number |
 |---|---|
-| 3.49.1 | 1 |
+| 3.45.1 | 1 |
 **Edge cases:** On an unsupported engine the query fails with a syntax error near OVER. SQLite older than 3.25 behaves the same.
 **Likely follow-ups:**
 1. What do you do on MySQL 5.7? Correlated subquery or self join (Q52), or session variables, which are fragile (from memory).
@@ -3359,7 +3360,7 @@ SELECT dept, emp_name, salary,
 FROM employees
 ORDER BY overall_position;
 ```
-Runs unchanged on PostgreSQL, MySQL 8, SQL Server and Oracle (comments use `--`). Main query was run in SQLite 3.49.
+Should run unchanged on PostgreSQL, MySQL 8, SQL Server and Oracle (comments use `--`; not run here, from memory). Both queries were run in SQLite 3.45.1.
 **Output:**
 
 *Two-level ranking (dept payroll rank + salary rank inside dept)*
@@ -3781,7 +3782,7 @@ result = (employees.sample(frac=1, random_state=7)      # shuffle all rows
 ```
 **Edge cases:** Not reproducible unless you control a seed (SQLite and PostgreSQL `RANDOM()` have no simple per-query seed; pandas uses `random_state`). Departments smaller than 2 return fewer rows. On a huge table a full shuffle is expensive.
 **Likely follow-ups:**
-- How would I make it repeatable? Store the sample, or order by a hash such as `MD5(emp_id || 'seed')` instead of RANDOM().
+- How would I make it repeatable? Store the sample, or order by a hash such as `MD5(CAST(emp_id AS TEXT) || 'seed')` (PostgreSQL; MySQL uses `MD5(CONCAT(emp_id, 'seed'))`; both from memory, not run here) instead of RANDOM().
 - Why not `ORDER BY RANDOM() LIMIT 2`? That samples 2 rows overall, not per department.
 **Common mistakes:** Using `ORDER BY RANDOM() LIMIT 2` (one sample for the whole table); leaving out PARTITION BY; forgetting the wrapper so `WHERE rn <= 2` fails.
 
@@ -3894,10 +3895,10 @@ EXPLAIN QUERY PLAN <the SELECT above>;
 ```
 **Output:**
 
-Table `big` was generated with 50,000 rows (5 departments, random salaries). Real SQLite 3.49 `EXPLAIN QUERY PLAN` output:
+Table `big` was generated with 50,000 rows (5 departments, random salaries). Real SQLite 3.45.1 `EXPLAIN QUERY PLAN` output (the subquery labels vary a little between SQLite versions; the key line is the `SCAN big` one):
 
-- Before the index: `CO-ROUTINE (subquery-1)`, `CO-ROUTINE (subquery-3)`, `SCAN big`, `USE TEMP B-TREE FOR ORDER BY`, `SCAN (subquery-3)`, `SCAN (subquery-1)`
-- After the index: `CO-ROUTINE (subquery-1)`, `CO-ROUTINE (subquery-3)`, `SCAN big USING INDEX idx_dept_salary`, `SCAN (subquery-3)`, `SCAN (subquery-1)`
+- Before the index: `CO-ROUTINE t`, `CO-ROUTINE (subquery-3)`, `SCAN big`, `USE TEMP B-TREE FOR ORDER BY`, `SCAN (subquery-3)`, `SCAN t`
+- After the index: `CO-ROUTINE t`, `CO-ROUTINE (subquery-3)`, `SCAN big USING INDEX idx_dept_salary`, `SCAN (subquery-3)`, `SCAN t`
 - Rows returned either way: 15 (5 departments x 3).
 **Edge cases:** An index only helps if its column order and direction match PARTITION BY then ORDER BY. A function on the column (`UPPER(dept)`) or a different sort order may prevent use. Very wide partitions (one giant department) still need big memory. Index syntax such as `DESC` in the index definition and `INCLUDE` columns differs by database (SQL Server and PostgreSQL support covering indexes; from memory).
 **Likely follow-ups:**
@@ -4546,7 +4547,7 @@ result2 = b[b['rn'] <= 3][['dept', 'emp_name', 'salary', 'rn']]
 - Normal clause order: WHERE, GROUP BY, HAVING, window functions, QUALIFY, ORDER BY.
 - QUALIFY lets you write the window expression directly in the filter, or filter on an alias of a window defined in SELECT (support for aliases depends on the database).
 - It is not part of the common SQL standard, so interviews that use PostgreSQL or SQL Server need the subquery version.
-- Support (verified here only for DuckDB; others from memory): Snowflake, BigQuery, Teradata and DuckDB have it. PostgreSQL, MySQL, SQL Server and Oracle do not.
+- Support (all from memory, not run here): Snowflake, BigQuery, Teradata and DuckDB have it. PostgreSQL, MySQL, SQL Server and Oracle do not.
 - Speed is normally the same, the optimiser treats both alike (from memory, check the plan).
 **Example:** Top 2 earners per department: Eng gives Asha and Bala, Sales gives Dev and Esha, HR gives Farah. QUALIFY needs one clause, the subquery needs a wrapper.
 **Sample data:**
@@ -4579,7 +4580,7 @@ ORDER BY dept, salary DESC;
 ```
 **Output:**
 
-*QUALIFY version, run in DuckDB 1.5 (SQLite has no QUALIFY)*
+*QUALIFY version (SQLite has no QUALIFY, and DuckDB is not installed here, so this was not re-run in review; the rows are what the subquery version below returns, which I ran on SQLite)*
 
 | dept | emp_name | salary |
 |---|---|---|
@@ -4589,7 +4590,7 @@ ORDER BY dept, salary DESC;
 | Sales | Dev | 75000 |
 | Sales | Esha | 65000 |
 
-*Subquery version, run in SQLite 3.49 (and DuckDB gives the identical rows)*
+*Subquery version, run in SQLite 3.45.1*
 
 | dept | emp_name | salary |
 |---|---|---|
