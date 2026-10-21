@@ -379,7 +379,7 @@ SELECT (SELECT DISTINCT salary
         LIMIT 1 OFFSET 1) AS second_highest;   -- scalar subquery: no row => NULL
 ```
 
-Dialect alternatives (not run here, from memory): SQL Server `SELECT (SELECT DISTINCT salary FROM employees ORDER BY salary DESC OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY)`; standard SQL / PostgreSQL 13+ / Oracle 12c+ `... OFFSET 1 ROW FETCH FIRST 1 ROW ONLY`; `TOP` cannot skip rows. MySQL and PostgreSQL accept the LIMIT form shown.
+Dialect alternatives (not run here, from memory): SQL Server `SELECT (SELECT DISTINCT salary FROM employees ORDER BY salary DESC OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY)`; standard SQL / PostgreSQL / Oracle 12c+ `... OFFSET 1 ROW FETCH FIRST 1 ROW ONLY`; `TOP` cannot skip rows. MySQL and PostgreSQL accept the LIMIT form shown.
 **Output:** on `employees`:
 
 | second_highest |
@@ -423,7 +423,7 @@ one-row table             NaN
 - **Step 3, index the filter/join columns:** an **index** is a sorted lookup list, like a book's index, that lets the database jump to rows instead of reading every page.
 - **Step 4, fewer columns:** avoid `SELECT *` (Q15); avoid DISTINCT or ORDER BY you do not need.
 - **Step 5, re-measure.** Indexes slow down inserts and updates and take space, so add only what the query needs. Refresh statistics (`ANALYZE`) if the plan looks wrong.
-**Example:** HR table with 20,000 employees (generated test data); report: Sales hires since 1 Jan 2025. 366 rows match.
+**Example:** HR table with 20,000 employees (generated test data); report: Sales hires since 1 Jan 2025 (a few hundred rows match).
 **Sample data:** `employees(emp_id, name, dept, hire_date, salary, emp_code)`, 20,000 generated rows (5 departments, hire dates 2015-2025, seed 7).
 **SQL:**
 ```sql
@@ -1098,7 +1098,7 @@ Priya 60000.0    3
 - SQL Server has no such column but allows deleting through a CTE: `WITH x AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY emp_id, log_date, status ORDER BY (SELECT NULL)) rn FROM t) DELETE FROM x WHERE rn > 1;` (not run here).
 - The portable alternative: `CREATE TABLE new AS SELECT DISTINCT ...`, verify counts, drop the old table, rename. Indexes and constraints must be recreated.
 - Afterwards add a primary key or `UNIQUE (emp_id, log_date)` so it cannot happen again.
-**Example:** The biometric attendance machine uploaded Asha's 1 June punch twice and Meena's three times: 6 clean rows, 7 in the table.
+**Example:** The biometric attendance machine uploaded Asha's 1 June punch twice and employee 3's (Meena) three times: 7 rows in the table, 4 clean rows after de-duplication.
 **Sample data:**
 
 `attendance_log` (no primary key; 7 rows)
@@ -1225,7 +1225,7 @@ result = full[~full["missing_invoice"].isin(df["invoice_no"])].reset_index(drop=
 s = df["invoice_no"].sort_values().reset_index(drop=True)
 nxt = s.shift(-1)
 gaps = nxt - s > 1
-result = pd.DataFrame({"gap_start": s[gaps] + 1, "gap_end": (nxt[gaps] - 1).astype(int)}).reset_index(drop=True)
+gap_ranges = pd.DataFrame({"gap_start": s[gaps] + 1, "gap_end": (nxt[gaps] - 1).astype(int)}).reset_index(drop=True)
 ```
 Result (actual run, missing numbers):
 ```text
@@ -1662,7 +1662,9 @@ Real plans here:
 - IN: `['SEARCH employees USING INTEGER PRIMARY KEY (rowid=?)', 'LIST SUBQUERY 1', 'SCAN leave_requests']`
 - JOIN: `['SCAN l', 'SEARCH e USING INTEGER PRIMARY KEY (rowid=?)', 'USE TEMP B-TREE FOR ORDER BY']`
 
-NULL trap (after inserting a leave row with `emp_id` NULL): `NOT IN` returned **0 rows**, `NOT EXISTS` returned | emp_id | name |
+NULL trap (after inserting a leave row with `emp_id` NULL): `NOT IN` returned **0 rows**, `NOT EXISTS` returned:
+
+| emp_id | name |
 |---|---|
 | 2 | Ravi |
 | 4 | Karan |
@@ -2339,7 +2341,7 @@ Plain-word reading: the exact repeat is blocked, the upper-case variant slips th
 - **Batches:** delete e.g. 100,000 rows at a time in a loop so other users are not blocked for hours.
 - **Verify** with counts (`rows_after = distinct keys`) before swapping, and keep the old table until the business signs off.
 - Add a UNIQUE index afterwards so duplicates cannot come back (Q35).
-**Example:** A 300-million-row attendance table has repeated swipes. Create `attendance_clean`, compare `COUNT(DISTINCT (emp_id, swipe_time))`, swap during a quiet window, and keep `attendance_old` for a week.
+**Example:** A 300-million-row attendance table has repeated swipes. Create `attendance_clean`, compare the number of distinct (emp_id, swipe_time) pairs with the row count, swap during a quiet window, and keep `attendance_old` for a week.
 **Sample data:** `emp_raw` (7 rows, 4 distinct emails)
 
 | id | email | updated |
@@ -2875,7 +2877,7 @@ Result (actual run):
 
 | version | time_ms | rows_returned | plan (SQLite) |
 |---|---|---|---|
-| correlated subquery, no index | 604.0 | 1969 | SCAN e; CORRELATED SCALAR SUBQUERY 1; SEARCH e2 USING COVERING INDEX ix_d (dept_id=?) |
+| correlated subquery, no index | 604.0 | 1969 | SCAN e; CORRELATED SCALAR SUBQUERY 1; SCAN e2 |
 | correlated subquery, index on (dept_id, salary) | 23.1 | 1969 | SCAN e; CORRELATED SCALAR SUBQUERY 1; SEARCH e2 USING COVERING INDEX ix_d (dept_id=?) |
 | join to pre-aggregated subquery | 2.9 | 1969 | CO-ROUTINE d; SCAN employees; USE TEMP B-TREE FOR GROUP BY; SCAN e; BLOOM FILTER ON d (dept_id=?); SEARCH d USING AUTOMATIC COVERING INDEX (dept_id=?) |
 | window function | 4.2 | 1969 | CO-ROUTINE (subquery-1); CO-ROUTINE (subquery-3); SCAN employees; USE TEMP B-TREE FOR ORDER BY; SCAN (subquery-3); SCAN (subquery-1); USE TEMP B-TREE FOR ORDER BY |

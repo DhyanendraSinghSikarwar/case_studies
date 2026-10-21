@@ -433,7 +433,15 @@ result = employees[employees.dept_id.isin(rich)][['name','salary']].reset_index(
 | 7 | Gita | 3 | 90000 |
 | 8 | Hari | 4 | 40000 |
 
-Department totals:
+| dept_id | dept_name |
+|---|---|
+| 1 | HR |
+| 2 | Finance |
+| 3 | IT |
+| 4 | Sales |
+| 5 | Legal |
+
+Department totals (what the CTE will produce):
 
 | dept_id | total_salary |
 |---|---|
@@ -482,7 +490,7 @@ result = tot.merge(departments, on='dept_id')[['dept_name','total_salary']].sort
 - FROM: a full table in brackets; it needs an alias in most databases (Q12).
 - SELECT: must return exactly one value per row (scalar, Q10).
 - Also allowed in JOIN ... ON conditions and in INSERT/UPDATE/DELETE (Q29).
-**Example:** HR examples: staff in HR or IT (WHERE); departments with average pay above 70k (FROM); show each person next to the company maximum (SELECT); departments bigger than average (HR 2, IT 3 vs average 2).
+**Example:** HR examples: staff in HR or IT (WHERE); departments with average pay above 70k (FROM); show each person next to the company maximum (SELECT); departments bigger than average (IT has 3 people; the average is 8 people / 4 departments = 2, so HR and Finance with 2 do not qualify).
 **Sample data:**
 
 | emp_id | name | dept_id | salary |
@@ -574,7 +582,7 @@ HAVING:
 **Explain simply:**
 - Scalar = one value, e.g. `(SELECT MAX(salary) FROM employees)`.
 - Zero rows is allowed: the scalar subquery then gives NULL.
-- More than one row: error in DuckDB and PostgreSQL ('more than one row returned by a subquery used as an expression'), MySQL (error 1242) and SQL Server (error 512). SQLite does not complain and uses the first row. (DuckDB was run here; the others are not run here.)
+- More than one row: error in PostgreSQL ('more than one row returned by a subquery used as an expression'), MySQL (error 1242), SQL Server (error 512) and Oracle (ORA-01427). SQLite does not complain and uses the first row. Only the SQLite behaviour was run here; the error messages are from memory / not run here.
 - Fix: guarantee one row with an aggregate (MAX/MIN/AVG), a primary-key filter, or use IN / ANY for lists.
 **Example:** IT has three people (90k, 120k, 90k). `salary = (SELECT salary ... WHERE dept_id = 3)` asks to compare with three values at once, which is ambiguous.
 **Sample data:**
@@ -607,7 +615,7 @@ Problem query run in SQLite (silently uses only the first IT salary found, so it
 | Esha |
 | Gita |
 
-Same query in DuckDB: `Invalid Input Error: More than one row returned by a subquery used as an expression - scalar subqueries can only return a single row.`
+Same query in PostgreSQL (from memory, not run here): `ERROR: more than one row returned by a subquery used as an expression`.
 
 Fixed query:
 
@@ -879,7 +887,7 @@ result = employees.merge(top, on=['dept_id','salary'])[['name','dept_id','salary
 |---|---|---|---|
 | Stores data? | No | Yes (rows copied) | No (stores the query) |
 | Lives for | One statement | Your session | Until dropped |
-| Index possible? | No | Yes | Only on materialized views (PostgreSQL/Oracle) |
+| Index possible? | No | Yes | Only on materialized views (PostgreSQL/Oracle) or indexed views (SQL Server); from memory, not run here |
 | Reusable across queries? | No | Yes (same session) | Yes, by everyone with access |
 | Typical use | Break a query into steps | Heavy intermediate result used many times | Shared, standard definition (e.g., 'active employees') |
 
@@ -1246,7 +1254,7 @@ ORDER BY dept_name, name;
 | Sales | Esha | 90000 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 m = employees.merge(departments, on='dept_id')
 res = (m[m.salary == m.groupby('dept_id').salary.transform('max')]
        [['dept_name','name','salary']].sort_values(['dept_name','name']).reset_index(drop=True))
@@ -1327,7 +1335,7 @@ ORDER BY total DESC, c.name;
 | Uma | 750 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 t = orders.groupby('customer_id', as_index=False).amount.sum().rename(columns={'amount':'total'})
 res = (t[t.total > t.total.mean()].merge(customers, on='customer_id')[['name','total']]
        .sort_values(['total','name'], ascending=[False,True]).reset_index(drop=True))
@@ -1385,7 +1393,7 @@ WHERE total = (SELECT MAX(total) FROM monthly);
 | 2026-03 | 1200 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 monthly = (orders.assign(month=orders.order_date.str[:7]).groupby('month', as_index=False).amount.sum()
            .rename(columns={'amount':'total'}))
 res = monthly[monthly.total == monthly.total.max()].reset_index(drop=True)
@@ -1449,7 +1457,7 @@ ORDER BY d.dept_name;
 | Sales | 3 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 cnt = employees.groupby('dept_id').size().rename('headcount').reset_index()
 res = (cnt[cnt.headcount > cnt.headcount.mean()].merge(departments, on='dept_id')
        [['dept_name','headcount']].sort_values('dept_name').reset_index(drop=True))
@@ -1560,7 +1568,7 @@ ORDER BY name;
 | Hari | 120000 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 res = employees[employees.salary == employees.salary.max()][['name','salary']].sort_values('name').reset_index(drop=True)
 # Output (matches the SQL):
 # name  salary
@@ -1679,7 +1687,7 @@ ORDER BY customers DESC, city;
 | Bengaluru | 2 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 c = customers.groupby('city').size().rename('customers').reset_index()
 res = c[c.customers > c.customers.mean()].sort_values(['customers','city'], ascending=[False,True]).reset_index(drop=True)
 # Output (matches the SQL):
@@ -1753,6 +1761,14 @@ SQLite plan, CTE version: `CO-ROUTINE avg_sal | SCAN employees | SCAN avg_sal | 
 | 2 | Bala | 1 | 60000 |
 | 3 | Chitra | 2 | 70000 |
 | 9 | Ira | 9 | 45000 |
+
+*departments* (there is no department 9)
+
+| dept_id | dept_name |
+|---|---|
+| 1 | HR |
+| 2 | Finance |
+
 **SQL:**
 ```sql
 DELETE FROM employees
@@ -1765,7 +1781,7 @@ WHERE dept_id = (SELECT dept_id FROM departments WHERE dept_name = 'HR');
 ```
 **Output:**
 
-After both statements (8 rows left):
+After both statements (3 rows left; Ira was deleted):
 
 | emp_id | name | dept_id | salary |
 |---|---|---|---|
@@ -1851,7 +1867,7 @@ ORDER BY s.name;
 | Charu |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 maths = set(enrolments.loc[enrolments.subject == 'Maths', 'student_id'])
 phys = set(enrolments.loc[enrolments.subject == 'Physics', 'student_id'])
 res = students[students.student_id.isin(maths - phys)][['name']].sort_values('name').reset_index(drop=True)
@@ -1921,7 +1937,7 @@ ORDER BY d.dept_name;
 | Sales | 3 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 cnt = employees.groupby('dept_id').size().rename('headcount').reset_index()
 res = (departments.merge(cnt, on='dept_id', how='left').fillna({'headcount': 0})
        .astype({'headcount': int})[['dept_name','headcount']].sort_values('dept_name').reset_index(drop=True))
@@ -2004,7 +2020,7 @@ ORDER BY o.order_id;
 | 108 | Sita | Hyderabad | 600 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 top = customers.city.value_counts()
 cities = top[top == top.max()].index
 m = orders.merge(customers, on='customer_id')
@@ -2083,7 +2099,7 @@ ORDER BY d.dept_name;
 | Sales | 3 | 1 | 33.3 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 st = (employees.assign(left=employees.left_date.notna().astype(int)).groupby('dept_id')
       .agg(headcount=('emp_id','size'), leavers=('left','sum')).reset_index())
 m = departments.merge(st, on='dept_id', how='left')
@@ -2155,11 +2171,11 @@ ORDER BY cur.month;
 | month | total | prev_total | mom_growth_pct |
 |---|---|---|---|
 | 2026-01 | 500 | NULL | NULL |
-| 2026-02 | 800 | 500.0 | 60.0 |
-| 2026-03 | 1200 | 800.0 | 50.0 |
+| 2026-02 | 800 | 500 | 60.0 |
+| 2026-03 | 1200 | 800 | 50.0 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 m = (orders.assign(month=orders.order_date.str[:7]).groupby('month', as_index=False).amount.sum()
      .rename(columns={'amount':'total'}).sort_values('month'))
 m['prev_total'] = m.total.shift(1)
@@ -2241,7 +2257,7 @@ ORDER BY sales DESC;
 | Monitor | 500 | 20.0 |
 **pandas equivalent:**
 ```python
-# employees, customers... are DataFrames loaded from the tables above
+# each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
 t = orders.merge(products, on='product_id').groupby('product_name', as_index=False).amount.sum().rename(columns={'amount':'sales'})
 t['pct_of_total'] = (100.0 * t.sales / t.sales.sum()).round(1)
 res = t.sort_values('sales', ascending=False).reset_index(drop=True)

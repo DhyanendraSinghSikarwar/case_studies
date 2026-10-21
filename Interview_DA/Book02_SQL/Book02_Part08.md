@@ -1029,8 +1029,26 @@ result = g[g["n"] == 2][["name"]].sort_values("name").reset_index(drop=True)
 | 6 | E6 | HR | 62000 |
 | 7 | E7 | Finance | 70000 |
 | 8 | E8 | Finance | 75000 |
-
-(first 8 of 28 rows shown)
+| 9 | E9 | Finance | 72000 |
+| 10 | E10 | Finance | 78000 |
+| 11 | E11 | Finance | 76000 |
+| 12 | E12 | Finance | 75000 |
+| 13 | E13 | IT | 90000 |
+| 14 | E14 | IT | 95000 |
+| 15 | E15 | IT | 100000 |
+| 16 | E16 | IT | 92000 |
+| 17 | E17 | IT | 98000 |
+| 18 | E18 | IT | 85000 |
+| 19 | E19 | IT | 100000 |
+| 20 | E20 | Legal | 80000 |
+| 21 | E21 | Legal | 85000 |
+| 22 | E22 | Legal | 90000 |
+| 23 | E23 | Admin | 40000 |
+| 24 | E24 | Admin | 42000 |
+| 25 | E25 | Admin | 41000 |
+| 26 | E26 | Admin | 43000 |
+| 27 | E27 | Admin | 44000 |
+| 28 | E28 | Admin | 40000 |
 
 **SQL:**
 ```sql
