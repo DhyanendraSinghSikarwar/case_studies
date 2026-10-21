@@ -1242,6 +1242,7 @@ result = employees.assign(company_avg=avg, diff=employees.salary - avg)[['name',
 | 2 | Sales |
 | 3 | IT |
 | 4 | Finance |
+
 **SQL:**
 ```sql
 SELECT d.dept_name, e.name, e.salary
@@ -1269,6 +1270,7 @@ ORDER BY dept_name, name;
 | IT | Hari | 120000 |
 | Sales | Dev | 90000 |
 | Sales | Esha | 90000 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -1324,6 +1326,7 @@ res = (m[m.salary == m.groupby('dept_id').salary.transform('max')]
 | 106 | 4 | 1 | 2026-03-02 | 500 |
 | 107 | 5 | 3 | 2026-03-15 | 100 |
 | 108 | 2 | 2 | 2026-03-28 | 600 |
+
 **SQL:**
 ```sql
 WITH cust_total AS (
@@ -1350,6 +1353,7 @@ ORDER BY total DESC, c.name;
 |---|---|
 | Sita | 750 |
 | Uma | 750 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -1390,6 +1394,7 @@ res = (t[t.total > t.total.mean()].merge(customers, on='customer_id')[['name','t
 | 106 | 4 | 1 | 2026-03-02 | 500 |
 | 107 | 5 | 3 | 2026-03-15 | 100 |
 | 108 | 2 | 2 | 2026-03-28 | 600 |
+
 **SQL:**
 ```sql
 -- SQLite month = strftime('%Y-%m', date). PostgreSQL: TO_CHAR(order_date,'YYYY-MM') or DATE_TRUNC('month', order_date).
@@ -1408,6 +1413,7 @@ WHERE total = (SELECT MAX(total) FROM monthly);
 | month | total |
 |---|---|
 | 2026-03 | 1200 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -1456,6 +1462,7 @@ res = monthly[monthly.total == monthly.total.max()].reset_index(drop=True)
 | 2 | Sales |
 | 3 | IT |
 | 4 | Finance |
+
 **SQL:**
 ```sql
 SELECT d.dept_name, COUNT(*) AS headcount
@@ -1472,6 +1479,7 @@ ORDER BY d.dept_name;
 |---|---|
 | IT | 3 |
 | Sales | 3 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -1513,6 +1521,7 @@ res = (cnt[cnt.headcount > cnt.headcount.mean()].merge(departments, on='dept_id'
 | 6 | Farid | 3 | 80000 | NULL |
 | 7 | Gita | 3 | 120000 | NULL |
 | 8 | Hari | 3 | 120000 | NULL |
+
 **SQL:**
 ```sql
 SELECT name
@@ -1541,6 +1550,7 @@ SELECT name FROM employees WHERE dept_id IN (SELECT dept_id FROM big_depts) ORDE
 | Farid |
 | Gita |
 | Hari |
+
 **pandas equivalent:**
 ```python
 tot = employees.groupby('dept_id').salary.sum()
@@ -1576,6 +1586,7 @@ result = employees[employees.dept_id.isin(big)][['name']].sort_values('name').re
 | 6 | Farid | 3 | 80000 | NULL |
 | 7 | Gita | 3 | 120000 | NULL |
 | 8 | Hari | 3 | 120000 | NULL |
+
 **SQL:**
 ```sql
 SELECT name, salary
@@ -1589,6 +1600,7 @@ ORDER BY name;
 |---|---|
 | Gita | 120000 |
 | Hari | 120000 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -1628,6 +1640,7 @@ res = employees[employees.salary == employees.salary.max()][['name','salary']].s
 | 6 | Farid | 3 | 80000 | NULL |
 | 7 | Gita | 3 | 120000 | NULL |
 | 8 | Hari | 3 | 120000 | NULL |
+
 **SQL:**
 ```sql
 -- PostgreSQL / MySQL / SQL Server / Oracle (not run here: SQLite lacks ANY/ALL)
@@ -1666,6 +1679,7 @@ ANY / MIN form (above 70,000, the lowest Sales salary):
 | Esha | 90000 |
 | Gita | 120000 |
 | Hari | 120000 |
+
 **pandas equivalent:**
 ```python
 all_res = employees[employees.salary > employees.loc[employees.dept_id == 1, 'salary'].max()][['name','salary']]
@@ -1699,6 +1713,7 @@ any_res = employees[employees.salary > employees.loc[employees.dept_id == 2, 'sa
 | 5 | Vik | Bengaluru |
 | 6 | Wen | Pune |
 | 7 | Xan | Chennai |
+
 **SQL:**
 ```sql
 SELECT city, COUNT(*) AS customers
@@ -1713,6 +1728,7 @@ ORDER BY customers DESC, city;
 |---|---|
 | Hyderabad | 3 |
 | Bengaluru | 2 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -1836,6 +1852,7 @@ After both statements (3 rows left; Ira was deleted):
 | 1 | Asha | 1 | 55000 |
 | 2 | Bala | 1 | 66000 |
 | 3 | Chitra | 2 | 70000 |
+
 **pandas equivalent:**
 ```python
 # employees, departments are DataFrames; here we edit them in memory (a database UPDATE/DELETE changes the table itself)
@@ -1887,6 +1904,7 @@ employees.loc[employees.dept_id == hr, 'salary'] = employees.salary * 11 // 10  
 | 4 | Physics |
 | 5 | Maths |
 | 5 | Physics |
+
 **SQL:**
 ```sql
 SELECT s.name
@@ -1913,6 +1931,7 @@ ORDER BY s.name;
 |---|
 | Bina |
 | Charu |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -1962,6 +1981,7 @@ res = students[students.student_id.isin(maths - phys)][['name']].sort_values('na
 | 2 | Sales |
 | 3 | IT |
 | 4 | Finance |
+
 **SQL:**
 ```sql
 SELECT d.dept_name,
@@ -1983,6 +2003,7 @@ ORDER BY d.dept_name;
 | HR | 2 |
 | IT | 3 |
 | Sales | 3 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -2037,6 +2058,7 @@ res = (departments.merge(cnt, on='dept_id', how='left').fillna({'headcount': 0})
 | 106 | 4 | 1 | 2026-03-02 | 500 |
 | 107 | 5 | 3 | 2026-03-15 | 100 |
 | 108 | 2 | 2 | 2026-03-28 | 600 |
+
 **SQL:**
 ```sql
 SELECT o.order_id, c.name, c.city, o.amount
@@ -2066,6 +2088,7 @@ ORDER BY o.order_id;
 | 103 | Sita | Hyderabad | 150 |
 | 104 | Tara | Hyderabad | 400 |
 | 108 | Sita | Hyderabad | 600 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -2120,6 +2143,7 @@ res = m[m.city.isin(cities)][['order_id','name','city','amount']].sort_values('o
 | 2 | Sales |
 | 3 | IT |
 | 4 | Finance |
+
 **SQL:**
 ```sql
 WITH dept_stats AS (
@@ -2145,6 +2169,7 @@ ORDER BY d.dept_name;
 | HR | 2 | 1 | 50.0 |
 | IT | 3 | 0 | 0.0 |
 | Sales | 3 | 1 | 33.3 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -2190,6 +2215,7 @@ res = m[['dept_name','headcount','leavers','attrition_pct']].sort_values('dept_n
 | 106 | 4 | 1 | 2026-03-02 | 500 |
 | 107 | 5 | 3 | 2026-03-15 | 100 |
 | 108 | 2 | 2 | 2026-03-28 | 600 |
+
 **SQL:**
 ```sql
 WITH monthly AS (
@@ -2221,6 +2247,7 @@ ORDER BY cur.month;
 | 2026-01 | 500 | NULL | NULL |
 | 2026-02 | 800 | 500 | 60.0 |
 | 2026-03 | 1200 | 800 | 50.0 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -2272,6 +2299,7 @@ res = m[['month','total','prev_total','mom_growth_pct']].reset_index(drop=True)
 | 1 | Laptop |
 | 2 | Mouse |
 | 3 | Monitor |
+
 **SQL:**
 ```sql
 SELECT p.product_name,
@@ -2303,6 +2331,7 @@ ORDER BY sales DESC;
 | Mouse | 1150 | 46.0 |
 | Laptop | 850 | 34.0 |
 | Monitor | 500 | 20.0 |
+
 **pandas equivalent:**
 ```python
 # each table above is a pandas DataFrame with the same name (employees, departments, orders, ...)
@@ -2545,6 +2574,7 @@ Recursive demo result (SQLite):
 | MariaDB | Yes, since 10.2 | Similar to MySQL |
 | Oracle | Yes, 'subquery factoring', since 9i R2; recursive since 11gR2 | No `RECURSIVE` keyword; recursive CTE needs a column alias list; scalar SELECT needs `FROM dual` |
 | SQLite | Yes, since 3.8.3 | Needs `RECURSIVE` |
+
 **pandas equivalent:** (pandas has no CTE syntax; a named variable plays the same role)
 ```python
 dept_cost = employees.groupby('dept_id', as_index=False).agg(cost=('salary','sum'))
@@ -2579,6 +2609,7 @@ result = dept_cost[dept_cost.cost > 100000]
 | 6 | Farid | 3 | 80000 |
 | 7 | Gita | 3 | 80000 |
 | 8 | Hari | 4 | 65000 |
+
 **SQL:**
 *SQLite 3.35+ also accepts the same keywords, so this ran here*
 ```sql
@@ -2595,6 +2626,7 @@ ORDER BY e.name
 |---|---|---|
 | Bala | 60000 | 55000 |
 | Esha | 90000 | 83333.33 |
+
 **pandas equivalent:**
 ```python
 g = employees.groupby('dept_id', as_index=False).agg(avg_sal=('salary','mean'))
@@ -2652,6 +2684,7 @@ Query plan for NOT MATERIALIZED:
 | 6 | Farid | 3 | 80000 |
 | 7 | Gita | 3 | 80000 |
 | 8 | Hari | 4 | 65000 |
+
 **SQL:**
 ```sql
 SELECT name, salary
@@ -2666,6 +2699,7 @@ ORDER BY name
 |---|---|
 | Farid | 80000 |
 | Gita | 80000 |
+
 **pandas equivalent:**
 ```python
 d = employees.loc[employees.emp_id == 5, 'dept_id'].iloc[0]
@@ -2700,6 +2734,7 @@ result = employees[(employees.dept_id == d) & (employees.emp_id != 5)][['name','
 | 6 | Farid | 3 | 80000 |
 | 7 | Gita | 3 | 80000 |
 | 8 | Hari | 4 | 65000 |
+
 **SQL:**
 ```sql
 SELECT name, dept_id, salary
@@ -2716,6 +2751,7 @@ ORDER BY dept_id, name
 | Dev | 2 | 70000 |
 | Esha | 3 | 90000 |
 | Hari | 4 | 65000 |
+
 **pandas equivalent:**
 ```python
 top = employees.groupby('dept_id', as_index=False).agg(salary=('salary','max'))
@@ -2758,6 +2794,7 @@ JOIN (SELECT dept_id, MAX(salary) AS mx FROM employees GROUP BY dept_id) t
 | Rice | Grocery | 200 |
 | Oil | Grocery | 150 |
 | Tea | Grocery | 100 |
+
 **SQL:**
 ```sql
 SELECT p.category, p.product, p.sales
@@ -2777,6 +2814,7 @@ ORDER BY p.category, p.sales DESC, p.product
 | Grocery | Rice | 200 |
 | Grocery | Oil | 150 |
 | Grocery | Tea | 100 |
+
 **pandas equivalent:**
 ```python
 ps = product_sales.copy()
@@ -2823,6 +2861,7 @@ result = ps[ps.rnk <= 3][['category','product','sales']].sort_values(['category'
 | 3 | 3 | 1 |
 | 4 | 5 | 4 |
 | 5 | 5 | 1 |
+
 **SQL:**
 ```sql
 SELECT e.emp_id, e.name
@@ -2837,6 +2876,7 @@ ORDER BY e.emp_id
 | 1 | Asha |
 | 3 | Chitra |
 | 5 | Esha |
+
 **pandas equivalent:**
 ```python
 result = employees[employees.emp_id.isin(leaves.emp_id)][['emp_id','name']].sort_values('emp_id')
@@ -2871,6 +2911,7 @@ result = employees[employees.emp_id.isin(leaves.emp_id)][['emp_id','name']].sort
 | 6 | Farid | 3 | 80000 |
 | 7 | Gita | 3 | 80000 |
 | 8 | Hari | 4 | 65000 |
+
 **SQL:**
 *CTE + window function*
 ```sql
@@ -2888,6 +2929,7 @@ WHERE rn IN ((cnt + 1) / 2, (cnt + 2) / 2)
 | median_salary |
 |---|
 | 70000 |
+
 **pandas equivalent:**
 ```python
 result = pd.DataFrame({'median_salary': [employees.salary.median()]})
@@ -2929,6 +2971,7 @@ FROM (SELECT salary FROM employees ORDER BY salary
 | 6 | Farid | 3 | 80000 |
 | 7 | Gita | 3 | 80000 |
 | 8 | Hari | 4 | 65000 |
+
 **SQL:**
 *after `CREATE TEMP TABLE tmp_dept_avg AS SELECT dept_id, AVG(salary) AS avg_sal FROM employees GROUP BY dept_id;` and `CREATE INDEX idx_tmp_dept ON tmp_dept_avg(dept_id);`*
 ```sql
@@ -2946,6 +2989,7 @@ ORDER BY e.name
 | Dev | 70000 | 70000 |
 | Esha | 90000 | 83333 |
 | Hari | 65000 | 65000 |
+
 **pandas equivalent:**
 ```python
 g = employees.groupby('dept_id', as_index=False).agg(avg_sal=('salary','mean'))
@@ -2993,6 +3037,7 @@ result = m[['name','salary','dept_avg']].sort_values('name')
 | 6 | Farid | 3 | 80000 |
 | 7 | Gita | 3 | 80000 |
 | 8 | Hari | 4 | 65000 |
+
 **SQL:**
 (PostgreSQL / DuckDB-style syntax; not run here, because SQLite has no LATERAL and DuckDB is not installed. The output below is worked out by hand and matches the pandas version, which was run.)
 ```sql
@@ -3018,6 +3063,7 @@ ORDER BY d.dept_id, t.salary DESC, t.name
 | IT | Farid | 80000 |
 | Finance | Hari | 65000 |
 | Legal | NULL | NULL |
+
 **pandas equivalent:**
 ```python
 top2 = (employees.sort_values(['salary','name'], ascending=[False,True])
@@ -3054,6 +3100,7 @@ result = m.sort_values(['dept_id','salary','name'], ascending=[True,False,True],
 | 4 | Chitra | c@x.com |
 | 5 | Asha Kumar | asha@x.com |
 | 6 | Chitra S | c@x.com |
+
 **SQL:**
 ```sql
 WITH flagged AS (
@@ -3075,6 +3122,7 @@ ORDER BY customer_id
 | 4 | Chitra | c@x.com | keep |
 | 5 | Asha Kumar | asha@x.com | duplicate |
 | 6 | Chitra S | c@x.com | duplicate |
+
 **pandas equivalent:**
 ```python
 c = customers_raw.copy()
@@ -3113,6 +3161,7 @@ result = c[['customer_id','name','email_clean','status']].sort_values('customer_
 | 6 | u4 | 2025-01-20 |
 | 7 | u5 | 2025-01-30 |
 | 8 | u5 | 2025-02-27 |
+
 **SQL:**
 ```sql
 WITH jan AS (
@@ -3132,6 +3181,7 @@ ORDER BY j.user_id
 |---|
 | u2 |
 | u4 |
+
 **pandas equivalent:**
 ```python
 o = orders
@@ -3190,6 +3240,7 @@ result = pd.DataFrame({'user_id': sorted(jan - feb)})
 | 3 | 4 |
 | 4 | 3 |
 | 4 | 3 |
+
 **SQL:**
 *double NOT EXISTS*
 ```sql
@@ -3209,6 +3260,7 @@ ORDER BY c.customer_id
 |---|---|
 | 1 | Asha |
 | 3 | Chitra |
+
 **pandas equivalent:**
 ```python
 need = set(products.loc[products.category == 'Electronics', 'product_id'])
@@ -3256,6 +3308,7 @@ ORDER BY c.customer_id
 | 6 | Farid | 3 | 80000 |
 | 7 | Gita | 3 | 80000 |
 | 8 | Hari | 4 | 65000 |
+
 **SQL:**
 *refactored CTE version*
 ```sql
@@ -3281,6 +3334,7 @@ ORDER BY e.name
 | Esha | 90000 |
 | Farid | 80000 |
 | Gita | 80000 |
+
 **pandas equivalent:**
 ```python
 da = employees.groupby('dept_id', as_index=False).agg(avg_sal=('salary','mean'))
@@ -3336,6 +3390,7 @@ ORDER BY name
 | 5 | Esha | 2 | 2022 | 80000 |
 | 5 | Esha | 2 | 2023 | 82000 |
 | 5 | Esha | 2 | 2024 | 60000 |
+
 **SQL:**
 ```sql
 WITH dept_year_avg AS (
@@ -3355,6 +3410,7 @@ ORDER BY a1.emp_id
 |---|---|
 | 1 | Asha |
 | 5 | Esha |
+
 **pandas equivalent:**
 ```python
 a = pay.groupby(['dept_id','year']).salary.transform('mean')
@@ -3390,6 +3446,7 @@ result = m[['emp_id','name']].drop_duplicates().sort_values('emp_id')
 | 3 | Sita | 1 |
 | 4 | Tom | 2 |
 | 5 | Uma | 4 |
+
 **SQL:**
 ```sql
 WITH RECURSIVE chain(emp_id, name, level) AS (
@@ -3408,6 +3465,7 @@ SELECT emp_id, name, level FROM chain ORDER BY level, emp_id
 | 3 | Sita | 1 |
 | 4 | Tom | 2 |
 | 5 | Uma | 3 |
+
 **pandas equivalent:**
 ```python
 rows = [(1, 'Meera', 0)]
@@ -3450,6 +3508,7 @@ WHERE salary > (SELECT AVG(salary) FROM employees)
 | Esha | 90000 |
 | Farid | 80000 |
 | Gita | 80000 |
+
 **pandas equivalent:**
 ```python
 result = employees[employees.salary > employees.salary.mean()][['name','salary']]
@@ -3502,6 +3561,7 @@ SELECT name, salary FROM employees, avg_sal WHERE salary > a
 | B | 60000 |
 | B | 70000 |
 | B | 80000 |
+
 **SQL:**
 *WHERE version (row filter)*
 ```sql
@@ -3516,6 +3576,7 @@ ORDER BY dept
 | dept | avg_sal | n |
 |---|---|---|
 | A | 200000 | 1 |
+
 **pandas equivalent:**
 ```python
 cut = staff.salary.mean()
@@ -3536,6 +3597,7 @@ ORDER BY dept
 | dept | avg_sal | n |
 |---|---|---|
 | A | 90000 | 3 |
+
 **pandas equivalent:**
 ```python
 cut = staff.salary.mean()
@@ -3582,6 +3644,7 @@ result = g[g.avg_sal > cut]
 | 6 | Farid | 3 | 80000 |
 | 7 | Gita | 3 | 80000 |
 | 8 | Hari | 4 | 65000 |
+
 **SQL:**
 *A: only departments that have employees*
 ```sql
@@ -3597,6 +3660,7 @@ ORDER BY d.dept_name
 | dept_name | n |
 |---|---|
 | IT | 3 |
+
 **pandas equivalent:**
 ```python
 h = employees.groupby('dept_id', as_index=False).agg(n=('emp_id','size'))
@@ -3622,6 +3686,7 @@ ORDER BY dept_name
 | HR | 2 |
 | IT | 3 |
 | Sales | 2 |
+
 **pandas equivalent:**
 ```python
 h = departments.merge(employees, on='dept_id', how='left').groupby(['dept_id','dept_name'], as_index=False).agg(n=('emp_id','count'))

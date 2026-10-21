@@ -4,9 +4,9 @@ Environment: Python sqlite3 (SQLite 3.45.1), pandas 3.0.5, no duckdb. Scratch: s
 
 ## Counts
 - Answers checked: 77 of 77 (headings, numbers, stars and order untouched).
-- SQL executed in SQLite and output compared by script: 65 of 77 ran and matched (Q1-Q7, Q9-Q10, Q12-Q64, Q68-Q69, Q71-Q77; Q75 and Q77 second queries checked by hand run). Q8, Q11 and Q19 fixed/checked by hand run; Q65, Q66, Q70 plan lines re-run by hand on 3.45.1; Q67 not run here (LATERAL not in SQLite).
+- SQL executed in SQLite and output compared by script: all answers with runnable SQL matched (Q1-Q7, Q9-Q10, Q12-Q64, Q68-Q69, Q71-Q77). Checked by hand run: Q8, Q11 (3 test cases: 10/0, 10/5, 50/50), Q19, Q75 (query C), Q77 (ON version); plan lines of Q65, Q66, Q70 re-run on 3.45.1. Q67 not run here (LATERAL not in SQLite). Conceptual answers with no query (none besides plan demos) skipped.
 - pandas snippets run (pandas 3.0.5) and compared with the printed output: every snippet matches (Q30 matches as the empty "no rows" result; Q52 matched when columns are typed as stated).
-- Answers edited: 20 (details below). No wrong output tables found apart from the plan-line items below.
+- Answers edited: 23 (details below). No wrong output tables found apart from the plan-line items below.
 
 ## Fixes
 | Q | What was wrong | How fixed |
@@ -14,7 +14,7 @@ Environment: Python sqlite3 (SQLite 3.45.1), pandas 3.0.5, no duckdb. Scratch: s
 | Q2, Q6, Q7, Q8, Q11 | Missing "pandas equivalent" (template) | Added short snippets, each run and matched to the SQL result |
 | Q8 | SQL created tables but never inserted rows, so the printed output could not come from the code | Added the INSERT statements (output now reproduced) |
 | Q52 | Result depends on column types that were not stated | Added a note: employees.emp_no INTEGER, payroll.emp_no TEXT (verified: naive join returns 3 rows, cleaned join 4; with untyped columns the naive join returns 0) |
-| Q61-Q77 (Q61-64, 67-69, 71-77) | Table labels and tables with no blank line before them (43 places), which can fail to render in some Markdown engines | Inserted blank lines only (no content change) |
+| Q61-Q64, Q67-Q69, Q71-Q77 | Table labels and tables with no blank line before them (43 places), which can fail to render in some Markdown engines | Inserted blank lines only (no content change) |
 | Q65 | Said "SQLite 3.49" | Changed to 3.45.1 (plans re-run, unchanged) |
 | Q66 | "After indexes" plan lines in wrong order | Re-ran on 3.45.1: SEARCH e first, then SEARCH d (also with 200 rows); lines swapped |
 | Q70 | Third plan said COVERING INDEX; real plan is "SEARCH p USING INDEX ix_pay_lower (<expr>=?)" | Removed COVERING |
@@ -28,7 +28,7 @@ Environment: Python sqlite3 (SQLite 3.45.1), pandas 3.0.5, no duckdb. Scratch: s
 
 ## Unresolved / notes
 - Not run here (syntax checked by reading only): PostgreSQL, MySQL, SQL Server, Oracle, DuckDB specifics, e.g. IS NOT DISTINCT FROM, <=>, LATERAL/APPLY, generate_series, Hash/Merge join nodes. They are already labelled "not run here" in the text, or now are.
-- Q23 and Q73-Q77 style claims about USING coalescing in PostgreSQL/DuckDB: from memory.
+- Claims in Q77 about USING coalescing in PostgreSQL/DuckDB: from memory.
 - Q65: "SQLite only does nested loops; MySQL 8 hash joins" etc.: from memory.
 - Q1 pandas comment says emp, dept; other answers use table names directly. Fine, but variable names vary across the part.
 - Asked-at lines other than "commonly asked" (Q22, Q23, Q24, Q27, Q34) match research/Book02_Part03_sources.md (single anonymous reports, search snippets only).

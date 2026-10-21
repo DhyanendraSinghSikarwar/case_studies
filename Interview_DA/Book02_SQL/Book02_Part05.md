@@ -1152,6 +1152,7 @@ Output of the pandas code (same rows as the SQL):
 **Example:** HR wants each employee next to their department payroll without losing the employee rows. Dept IT total = 90+80+80+70 = 320k.
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -1162,6 +1163,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 SELECT name, dept, salary,
@@ -1172,6 +1174,7 @@ FROM emp
 ORDER BY emp_id;
 ```
 **Output:**
+
 | name | dept | salary | dept_total | dept_headcount | running_total |
 |---|---|---|---|---|---|
 | Asha | HR | 50000 | 110000 | 2 | 50000 |
@@ -1182,6 +1185,7 @@ ORDER BY emp_id;
 | Gita | IT | 70000 | 320000 | 4 | 320000 |
 | Isha | Sales | 55000 | 120000 | 2 | 55000 |
 | Jay | Sales | 65000 | 120000 | 2 | 120000 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = emp.copy()
@@ -1207,6 +1211,7 @@ res = res[["name", "dept", "salary", "dept_total", "dept_headcount", "running_to
 **Example:** Company average salary = 550,000 / 8 = 68,750. Gita earns 70,000 so she is 1,250 above average.
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -1217,6 +1222,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 SELECT name, salary,
@@ -1227,6 +1233,7 @@ FROM emp
 ORDER BY emp_id;
 ```
 **Output:**
+
 | name | salary | headcount | company_avg | diff_from_avg |
 |---|---|---|---|---|
 | Asha | 50000 | 8 | 68750 | -18750 |
@@ -1237,6 +1244,7 @@ ORDER BY emp_id;
 | Gita | 70000 | 8 | 68750 | 1250 |
 | Isha | 55000 | 8 | 68750 | -13750 |
 | Jay | 65000 | 8 | 68750 | -3750 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = emp[["name", "salary"]].copy()
@@ -1261,6 +1269,7 @@ res["diff_from_avg"] = res["salary"] - res["company_avg"]
 **Example:** Top salary 90,000 should be rank 1 in a pay review.
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -1271,6 +1280,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 SELECT name, salary,
@@ -1281,6 +1291,7 @@ FROM emp
 ORDER BY rnk, name;
 ```
 **Output:**
+
 | name | salary | rnk | dense_rnk | rnk_ascending |
 |---|---|---|---|---|
 | Dev | 90000 | 1 | 1 | 8 |
@@ -1291,6 +1302,7 @@ ORDER BY rnk, name;
 | Bala | 60000 | 6 | 5 | 3 |
 | Isha | 55000 | 7 | 6 | 2 |
 | Asha | 50000 | 8 | 7 | 1 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = emp[["name", "salary"]].copy()
@@ -1317,6 +1329,7 @@ res = res.sort_values(["rnk", "name"]).reset_index(drop=True)
 **Example:** 8 employees into 4 salary quartiles = 2 people per quartile; into 3 groups = 3, 3, 2.
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -1327,6 +1340,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 SELECT name, salary,
@@ -1336,6 +1350,7 @@ FROM emp
 ORDER BY salary DESC, emp_id;
 ```
 **Output:**
+
 | name | salary | quartile | tercile |
 |---|---|---|---|
 | Dev | 90000 | 1 | 1 |
@@ -1346,6 +1361,7 @@ ORDER BY salary DESC, emp_id;
 | Bala | 60000 | 3 | 2 |
 | Isha | 55000 | 4 | 3 |
 | Asha | 50000 | 4 | 3 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 def ntile(n_rows, n):
@@ -1390,18 +1406,22 @@ SELECT dept, name, salary FROM (
 ) t WHERE rnk = 1 ORDER BY dept;
 ```
 **Output:** (right query, run)
+
 | dept | name | salary |
 |---|---|---|
 | HR | Bala | 60000 |
 | IT | Dev | 90000 |
 | Sales | Jay | 65000 |
+
 With `WHERE salary <= 80000` placed inside the inner query (filter first), the IT winner changes because Dev is removed before ranking:
+
 | dept | name | salary |
 |---|---|---|
 | HR | Bala | 60000 |
 | IT | Esha | 80000 |
 | IT | Farid | 80000 |
 | Sales | Jay | 65000 |
+
 **Edge cases:** HAVING also runs before windows, so you can window over aggregated results (`RANK() OVER (ORDER BY SUM(x) DESC)`) but not filter on the rank in HAVING. ORDER BY runs after windows, so it can use the rank alias.
 **Likely follow-ups:**
 - Why can ORDER BY use an alias but WHERE can't? ORDER BY runs later, after SELECT.
@@ -1420,6 +1440,7 @@ With `WHERE salary <= 80000` placed inside the inner query (filter first), the I
 **Example:** Rahul has two orders on 12 Mar (102 and 106). With order_id DESC as tie-break, 106 is picked every time.
 **Sample data:**
 Table `orders`:
+
 | order_id | customer | order_date | amount |
 |---|---|---|---|
 | 101 | Rahul | 2025-01-05 | 500 |
@@ -1429,6 +1450,7 @@ Table `orders`:
 | 105 | Karan | 2025-01-20 | 900 |
 | 106 | Rahul | 2025-03-12 | 200 |
 | 107 | Karan | 2025-04-02 | 100 |
+
 **SQL:**
 ```sql
 SELECT customer, order_id, order_date, amount
@@ -1441,11 +1463,13 @@ WHERE rn = 1
 ORDER BY customer;
 ```
 **Output:**
+
 | customer | order_id | order_date | amount |
 |---|---|---|---|
 | Karan | 107 | 2025-04-02 | 100 |
 | Meena | 104 | 2025-02-01 | 450 |
 | Rahul | 106 | 2025-03-12 | 200 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = (orders.sort_values(["customer", "order_date", "order_id"], ascending=[True, False, False])
@@ -1482,11 +1506,13 @@ WHERE rn = 1
 ORDER BY customer;
 ```
 **Output:**
+
 | customer | order_id | order_date | amount |
 |---|---|---|---|
 | Karan | 105 | 2025-01-20 | 900 |
 | Meena | 103 | 2025-02-01 | 300 |
 | Rahul | 101 | 2025-01-05 | 500 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = (orders.sort_values(["customer", "order_date", "order_id"])
@@ -1511,6 +1537,7 @@ res = (orders.sort_values(["customer", "order_date", "order_id"])
 **Example:** Class A: Ann 95, Ben 90, Cara 90, Dan 85. Ben and Cara tie for 2nd, so Dan is 4th with RANK and is excluded.
 **Sample data:**
 Table `students`:
+
 | name | class | marks |
 |---|---|---|
 | Ann | A | 95 |
@@ -1523,6 +1550,7 @@ Table `students`:
 | Hal | B | 88 |
 | Ivy | B | 70 |
 | Jo | B | 60 |
+
 **SQL:**
 ```sql
 SELECT class, name, marks, rnk
@@ -1535,6 +1563,7 @@ WHERE rnk <= 3
 ORDER BY class, rnk, name;
 ```
 **Output:**
+
 | class | name | marks | rnk |
 |---|---|---|---|
 | A | Ann | 95 | 1 |
@@ -1543,6 +1572,7 @@ ORDER BY class, rnk, name;
 | B | Fay | 88 | 1 |
 | B | Gus | 88 | 1 |
 | B | Hal | 88 | 1 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = students.copy()
@@ -1567,6 +1597,7 @@ res = res[res["rnk"] <= 3].sort_values(["class", "rnk", "name"]).reset_index(dro
 **Example:** In IT, Esha joined Nov 2017 (rank 1, about 7.2 years by 1 Jan 2025) and Gita joined Jan 2023 (rank 4).
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -1577,6 +1608,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 -- tenure measured up to a fixed date so the result is repeatable
@@ -1588,6 +1620,7 @@ ORDER BY dept, tenure_rank;
 ```
 Dialect notes (not run here, from memory): PostgreSQL `CURRENT_DATE - hire_date` gives days, or `AGE(...)`; MySQL `TIMESTAMPDIFF(YEAR, hire_date, CURDATE())`; SQL Server `DATEDIFF(YEAR, hire_date, GETDATE())` (counts year boundaries, not full years).
 **Output:**
+
 | dept | name | hire_date | tenure_years | tenure_rank |
 |---|---|---|---|---|
 | HR | Asha | 2019-03-01 | 5.8 | 1 |
@@ -1598,6 +1631,7 @@ Dialect notes (not run here, from memory): PostgreSQL `CURRENT_DATE - hire_date`
 | IT | Gita | 2023-01-09 | 2 | 4 |
 | Sales | Isha | 2019-06-30 | 5.5 | 1 |
 | Sales | Jay | 2024-03-18 | 0.8 | 2 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = emp[["dept", "name", "hire_date"]].copy()
@@ -1624,6 +1658,7 @@ res = res.sort_values(["dept", "tenure_rank"]).reset_index(drop=True)
 **Example:** Dev (IT) is rank 1 in IT and rank 1 in the company; Bala (HR) is rank 1 in HR but only rank 6 in the company.
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -1634,6 +1669,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 SELECT name, dept, salary,
@@ -1643,6 +1679,7 @@ FROM emp
 ORDER BY company_rank, name;
 ```
 **Output:**
+
 | name | dept | salary | dept_rank | company_rank |
 |---|---|---|---|---|
 | Dev | IT | 90000 | 1 | 1 |
@@ -1653,6 +1690,7 @@ ORDER BY company_rank, name;
 | Bala | HR | 60000 | 1 | 6 |
 | Isha | Sales | 55000 | 2 | 7 |
 | Asha | HR | 50000 | 2 | 8 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = emp[["name", "dept", "salary"]].copy()
@@ -1678,6 +1716,7 @@ res = res.sort_values(["company_rank", "name"]).reset_index(drop=True)
 **Example:** Salaries 90k, 80k, 80k, 70k: the 70k person is 4th by RANK, 3rd by DENSE_RANK.
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -1688,6 +1727,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 SELECT name, salary,
@@ -1698,6 +1738,7 @@ FROM emp
 ORDER BY salary DESC, emp_id;
 ```
 **Output:**
+
 | name | salary | rank_ | dense_rank_ | row_num |
 |---|---|---|---|---|
 | Dev | 90000 | 1 | 1 | 1 |
@@ -1708,6 +1749,7 @@ ORDER BY salary DESC, emp_id;
 | Bala | 60000 | 6 | 5 | 6 |
 | Isha | 55000 | 7 | 6 | 7 |
 | Asha | 50000 | 8 | 7 | 8 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = emp.sort_values(["salary", "emp_id"], ascending=[False, True])[["name", "salary"]].copy()
@@ -1734,6 +1776,7 @@ res = res.reset_index(drop=True)
 **Example:** Esha and Farid both earn 80k. With emp_id ASC as the tie-break, Esha (id 4) is always row 3 and Farid (id 5) row 4.
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -1744,6 +1787,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 SELECT emp_id, name, salary,
@@ -1752,6 +1796,7 @@ FROM emp
 ORDER BY rn;
 ```
 **Output:**
+
 | emp_id | name | salary | rn |
 |---|---|---|---|
 | 3 | Dev | 90000 | 1 |
@@ -1762,6 +1807,7 @@ ORDER BY rn;
 | 2 | Bala | 60000 | 6 |
 | 7 | Isha | 55000 | 7 |
 | 1 | Asha | 50000 | 8 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = emp.sort_values(["salary", "emp_id"], ascending=[False, True])[["emp_id", "name", "salary"]].reset_index(drop=True)
@@ -1792,12 +1838,14 @@ SELECT name, salary,
 FROM emp WHERE salary >= 70000 ORDER BY rn_with_tiebreak;
 ```
 **Output:** (SQLite 3 run; the unsafe column happened to look sensible here, which is exactly why the bug hides)
+
 | name | salary | rn_no_tiebreak | rn_with_tiebreak |
 |---|---|---|---|
 | Dev | 90000 | 1 | 1 |
 | Esha | 80000 | 2 | 2 |
 | Farid | 80000 | 3 | 3 |
 | Gita | 70000 | 4 | 4 |
+
 In a quick test on the two 80k rows, SQLite returned [('Esha', 1), ('Farid', 2)] without a tie-break and [('Esha', 1), ('Farid', 2)] with one, even after I added an index on (salary, name). I could not make it differ here, so I cannot show the failure live; the standard simply does not guarantee the order, and other engines or larger data may differ.
 **Edge cases:** Ties are only a problem when you filter on the number (rn = 1) or the tied rows differ in other columns. If the ORDER BY is on a unique column there is no issue. The same risk applies to LIMIT with ties (Q37).
 **Likely follow-ups:**
@@ -1817,6 +1865,7 @@ In a quick test on the two 80k rows, SQLite returned [('Esha', 1), ('Farid', 2)]
 **Example:** Two new joiners have no salary entered yet. A salary ranking should not put them at rank 1.
 **Sample data:**
 Table `emp_n`:
+
 | emp_id | name | salary |
 |---|---|---|
 | 1 | Anil | 50000 |
@@ -1824,6 +1873,7 @@ Table `emp_n`:
 | 3 | Chet | 60000 |
 | 4 | Divya | NULL |
 | 5 | Eshan | 40000 |
+
 **SQL:**
 ```sql
 SELECT name, salary,
@@ -1833,6 +1883,7 @@ SELECT name, salary,
 FROM emp_n ORDER BY emp_id;
 ```
 **Output:**
+
 | name | salary | rank_default | rank_nulls_last | rank_nulls_first |
 |---|---|---|---|---|
 | Anil | 50000 | 2 | 2 | 4 |
@@ -1840,6 +1891,7 @@ FROM emp_n ORDER BY emp_id;
 | Chet | 60000 | 1 | 1 | 3 |
 | Divya | NULL | 4 | 4 | 1 |
 | Eshan | 40000 | 3 | 3 | 5 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = emp_n[["name", "salary"]].copy()
@@ -1865,6 +1917,7 @@ res["rank_nulls_first"] = res["salary"].rank(method="min", ascending=False, na_o
 **Example:** January: Mouse 15, Keyboard 12, Laptop 4 so Mouse wins. February: Laptop 8 and Keyboard 8 tie for first.
 **Sample data:**
 Table `sales`:
+
 | sale_id | product | sale_date | qty |
 |---|---|---|---|
 | 1 | Mouse | 2025-01-05 | 10 |
@@ -1875,6 +1928,7 @@ Table `sales`:
 | 6 | Keyboard | 2025-02-10 | 6 |
 | 7 | Mouse | 2025-02-14 | 6 |
 | 8 | Keyboard | 2025-02-21 | 2 |
+
 **SQL:**
 ```sql
 WITH monthly AS (
@@ -1893,11 +1947,13 @@ ORDER BY month, product;
 ```
 Month extraction shown is SQLite (`strftime`); other dialects differ as listed in the follow-ups.
 **Output:**
+
 | month | product | total_qty |
 |---|---|---|
 | 2025-01 | Mouse | 15 |
 | 2025-02 | Keyboard | 8 |
 | 2025-02 | Laptop | 8 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 s = sales.assign(month=sales["sale_date"].str[:7])
@@ -1923,6 +1979,7 @@ res = m[m["rnk"] == 1].sort_values(["month", "product"])[["month", "product", "t
 **Example:** Payroll: HR 110k, Sales 120k, IT 320k, so IT is the answer.
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -1933,6 +1990,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 SELECT dept, total_salary
@@ -1945,9 +2003,11 @@ FROM (
 WHERE rnk = 1;
 ```
 **Output:**
+
 | dept | total_salary |
 |---|---|
 | IT | 320000 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 t = emp.groupby("dept", as_index=False)["salary"].sum().rename(columns={"salary": "total_salary"})
@@ -1972,6 +2032,7 @@ res = t[t["rnk"] == 1][["dept", "total_salary"]].reset_index(drop=True)
 **Example:** 2023: LinkedIn 2, then Agency 1 and Referral 1 tie; Agency is kept by the alphabetical tie-break. 2024: Referral 3, LinkedIn 1.
 **Sample data:**
 Table `hires`:
+
 | hire_id | source | hire_date |
 |---|---|---|
 | 1 | LinkedIn | 2023-02-10 |
@@ -1982,6 +2043,7 @@ Table `hires`:
 | 6 | Referral | 2024-03-09 |
 | 7 | Referral | 2024-07-30 |
 | 8 | LinkedIn | 2024-09-12 |
+
 **SQL:**
 ```sql
 WITH yearly AS (
@@ -1999,12 +2061,14 @@ WHERE rn <= 2
 ORDER BY yr, rn;
 ```
 **Output:**
+
 | yr | source | hires | rn |
 |---|---|---|---|
 | 2023 | LinkedIn | 2 | 1 |
 | 2023 | Agency | 1 | 2 |
 | 2024 | Referral | 3 | 1 |
 | 2024 | LinkedIn | 1 | 2 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 h = hires.assign(yr=hires["hire_date"].str[:4])
@@ -2031,6 +2095,7 @@ res = y[y["rn"] <= 2].reset_index(drop=True)
 **Example:** Dev earns 90k: dept average (IT) 80k, company average 68,750, so +10k vs dept and +21,250 vs company.
 **Sample data:**
 Table `emp`:
+
 | emp_id | name | dept | salary | hire_date |
 |---|---|---|---|---|
 | 1 | Asha | HR | 50000 | 2019-03-01 |
@@ -2041,6 +2106,7 @@ Table `emp`:
 | 6 | Gita | IT | 70000 | 2023-01-09 |
 | 7 | Isha | Sales | 55000 | 2019-06-30 |
 | 8 | Jay | Sales | 65000 | 2024-03-18 |
+
 **SQL:**
 ```sql
 SELECT name, dept, salary,
@@ -2052,6 +2118,7 @@ FROM emp
 ORDER BY dept, dept_rank, name;
 ```
 **Output:**
+
 | name | dept | salary | dept_avg | company_avg | dept_rank | vs_dept_avg |
 |---|---|---|---|---|---|---|
 | Bala | HR | 60000 | 55000 | 68750 | 1 | 5000 |
@@ -2062,6 +2129,7 @@ ORDER BY dept, dept_rank, name;
 | Gita | IT | 70000 | 80000 | 68750 | 4 | -10000 |
 | Jay | Sales | 65000 | 60000 | 68750 | 1 | 5000 |
 | Isha | Sales | 55000 | 60000 | 68750 | 2 | -5000 |
+
 **pandas equivalent:** (result checked equal to the SQL output)
 ```python
 res = emp[["name", "dept", "salary"]].copy()
@@ -2111,6 +2179,7 @@ res = res.sort_values(["dept", "dept_rank", "name"]).reset_index(drop=True)
 | 16 | Quinn | Support | 14 | 38000 | 5 |
 | 17 | Ujwal | Eng | 5 | 85000 | 4 |
 | 18 | Vik | Eng | 5 | 60000 | 3 |
+
 **SQL:**
 ```sql
 -- LIMIT 1: one row for the whole table
@@ -2140,6 +2209,7 @@ ROW_NUMBER: one row per department:
 | HR | Meera | 90000 |
 | Sales | Isha | 52000 |
 | Support | Om | 44000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2178,6 +2248,7 @@ res = (emp.sort_values(['dept', 'salary', 'emp_id'], ascending=[True, False, Tru
 | 11 | Isha | Sales | 52000 |
 | 12 | Jay | Sales | 52000 |
 | 13 | Neha | Sales | 40000 |
+
 **SQL:**
 ```sql
 SELECT dept, name, salary,
@@ -2200,6 +2271,7 @@ ORDER BY dept, salary DESC, emp_id;
 | Sales | Jay | 52000 | 2 | 1 | 1 |
 | Sales | Gopal | 46000 | 3 | 3 | 2 |
 | Sales | Neha | 40000 | 4 | 4 | 3 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2238,6 +2310,7 @@ res = d.sort_values(['dept', 'row_num'])[['dept', 'name', 'salary', 'row_num', '
 | 4 | Tom | HR |
 | 5 | Kiran | Eng |
 | 6 | Leena | Eng |
+
 **SQL:**
 ```sql
 SELECT ROW_NUMBER() OVER (ORDER BY emp_id) AS s_no, name, dept
@@ -2255,6 +2328,7 @@ LIMIT 6;
 | 4 | Tom | HR |
 | 5 | Kiran | Eng |
 | 6 | Leena | Eng |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2302,6 +2376,7 @@ res = d[['s_no', 'name', 'dept']].head(6)
 | 16 | Quinn | Support | 38000 |
 | 17 | Ujwal | Eng | 85000 |
 | 18 | Vik | Eng | 60000 |
+
 **SQL:**
 ```sql
 WITH ranked AS (
@@ -2322,6 +2397,7 @@ ORDER BY dept, name;
 | Meera | HR | 90000 |
 | Isha | Sales | 52000 |
 | Jay | Sales | 52000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2358,6 +2434,7 @@ res = d[(d['rk'] == 1) & (d['salary'] > 50000)][['name', 'dept', 'salary']].sort
 | 14 | Om | Support | 44000 |
 | 15 | Pia | Support | 38000 |
 | 16 | Quinn | Support | 38000 |
+
 **SQL:**
 ```sql
 -- Wrong: window function in WHERE (errors, not shown as output)
@@ -2407,6 +2484,7 @@ Same thing with a CTE:
 | Om | Support | 44000 |
 | Pia | Support | 38000 |
 | Quinn | Support | 38000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2444,6 +2522,7 @@ res = (d[(d['rk'] <= 2) & d['dept'].isin(['Sales', 'Support'])][['name', 'dept',
 | 14 | Om | Support | 44000 |
 | 15 | Pia | Support | 38000 |
 | 16 | Quinn | Support | 38000 |
+
 **SQL:**
 ```sql
 SELECT dept, name, salary,
@@ -2464,6 +2543,7 @@ ORDER BY dept, salary DESC, name;
 | Support | Om | 44000 | 1 | 0 |
 | Support | Pia | 38000 | 2 | 0.5 |
 | Support | Quinn | 38000 | 2 | 0.5 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2545,6 +2625,7 @@ ORDER BY spend_rank;
 |---|---|---|---|---|
 | C20 | 3500 | 1 | 0.05 | 1 |
 | C18 | 3240 | 2 | 0.1 | 1 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2594,6 +2675,7 @@ res = t[t['cume'] <= 0.10][['customer', 'total_spend', 'spend_rank', 'cume', 'de
 | 16 | Quinn | Support | 14 | 38000 | 5 |
 | 17 | Ujwal | Eng | 5 | 85000 | 4 |
 | 18 | Vik | Eng | 5 | 60000 | 3 |
+
 **SQL:**
 ```sql
 SELECT manager_id, name, rating, salary,
@@ -2621,6 +2703,7 @@ ORDER BY manager_id, rating_rank, rank_with_tiebreak;
 | 10 | Jay | 3 | 52000 | 3 | 3 |
 | 14 | Quinn | 5 | 38000 | 1 | 1 |
 | 14 | Pia | 4 | 38000 | 2 | 2 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2667,6 +2750,7 @@ res = d.sort_values(['manager_id', 'rating_rank', 'rank_with_tiebreak'])[['manag
 | Tablets | Mini | 60000 |
 | Accessories | Cable | 30000 |
 | Accessories | Case | 45000 |
+
 **SQL:**
 ```sql
 WITH r AS (
@@ -2694,6 +2778,7 @@ ORDER BY category, rk, product;
 | Tablets | Slate | 210000 | 1 |
 | Tablets | Tab9 | 180000 | 2 |
 | Tablets | Mini | 60000 | 3 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2751,6 +2836,7 @@ res = d[(d['rk'] <= 3) & (d['n_products'] >= 3)].sort_values(['category', 'rk', 
 | Eng | 2 |
 | HR | 1 |
 | Sales | 3 |
+
 **SQL:**
 ```sql
 CREATE TABLE dept_limits (dept TEXT, n INTEGER);
@@ -2778,6 +2864,7 @@ ORDER BY r.dept, r.rn;
 | Sales | Jay | 52000 | 2 |
 | Sales | Gopal | 46000 | 3 |
 | Support | Om | 44000 | 1 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2811,6 +2898,7 @@ res = d[d['rn'] <= d['n']].sort_values(['dept', 'rn'])[['dept', 'name', 'salary'
 | 11 | Isha | Sales | 52000 |
 | 12 | Jay | Sales | 52000 |
 | 13 | Neha | Sales | 40000 |
+
 **SQL:**
 ```sql
 -- Gap vs no gap (Sales)
@@ -2844,6 +2932,7 @@ Second-highest salary level: RANK finds nobody, DENSE_RANK finds Gopal:
 | method | name | salary |
 |---|---|---|
 | DENSE_RANK = 2 | Gopal | 46000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2880,6 +2969,7 @@ SELECT sqlite_version() AS sqlite_version,
 | sqlite_version | top_row_number |
 |---|---|
 | 3.45.1 | 1 |
+
 **Edge cases:** On an unsupported engine the query fails with a syntax error near OVER. SQLite older than 3.25 behaves the same.
 **Likely follow-ups:**
 1. What do you do on MySQL 5.7? Correlated subquery or self join (Q52), or session variables, which are fragile (from memory).
@@ -2906,6 +2996,7 @@ SELECT sqlite_version() AS sqlite_version,
 | Chirag | 85 |
 | Dev | 70 |
 | Esha | 60 |
+
 **SQL:**
 ```sql
 SELECT candidate, score,
@@ -2923,6 +3014,7 @@ ORDER BY score DESC, candidate;
 | Chirag | 85 | 2 | 0.25 |
 | Dev | 70 | 4 | 0.75 |
 | Esha | 60 | 5 | 1 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -2960,6 +3052,7 @@ res = d.sort_values(['score', 'candidate'], ascending=[False, True])[['candidate
 | 9 | Farah | Eng | 48000 |
 | 17 | Ujwal | Eng | 85000 |
 | 18 | Vik | Eng | 60000 |
+
 **SQL:**
 ```sql
 WITH r AS (
@@ -2984,6 +3077,7 @@ ORDER BY dept, salary DESC, name;
 | Eng | Divya | 70000 | Bottom 3 |
 | Eng | Vik | 60000 | Bottom 2 |
 | Eng | Farah | 48000 | Bottom 1 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3024,6 +3118,7 @@ res = d[((d['rn_top'] <= 3) | (d['rn_bottom'] <= 3)) & (d['dept'] == 'Eng')].sor
 | 14 | Om | Support | 44000 |
 | 15 | Pia | Support | 38000 |
 | 16 | Quinn | Support | 38000 |
+
 **SQL:**
 ```sql
 SELECT dept, name, salary,
@@ -3048,6 +3143,7 @@ ORDER BY dept, salary DESC, emp_id;
 | Support | Om | 44000 | 44000 | 44000 | 38000 | 0 |
 | Support | Pia | 38000 | 44000 | 38000 | 38000 | 6000 |
 | Support | Quinn | 38000 | 44000 | 38000 | 38000 | 6000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3101,6 +3197,7 @@ res = d.sort_values(['dept', 'salary', 'emp_id'], ascending=[True, False, True])
 | 16 | Quinn | Support | 38000 |
 | 17 | Ujwal | Eng | 85000 |
 | 18 | Vik | Eng | 60000 |
+
 **SQL:**
 ```sql
 CREATE INDEX idx_emp_dept_salary ON employees (dept, salary DESC);
@@ -3153,6 +3250,7 @@ Self join with GROUP BY / HAVING (same answer):
 | Support | Om | 44000 |
 | Support | Pia | 38000 |
 | Support | Quinn | 38000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3232,6 +3330,7 @@ ORDER BY d.dept, t.salary DESC, t.name;
 | Sales | Jay | 52000 |
 | Support | Om | 44000 |
 | Support | Pia | 38000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3278,6 +3377,7 @@ res = (emp.sort_values(['dept', 'salary', 'emp_id'], ascending=[True, False, Tru
 | 16 | Quinn | Support | 38000 |
 | 17 | Ujwal | Eng | 85000 |
 | 18 | Vik | Eng | 60000 |
+
 **SQL:**
 ```sql
 WITH t AS (
@@ -3302,6 +3402,7 @@ ORDER BY dept, salary DESC, name;
 | Isha | Sales | 52000 | 47500 |
 | Jay | Sales | 52000 | 47500 |
 | Om | Support | 44000 | 40000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3339,6 +3440,7 @@ res = d[d['salary'] > d['dept_avg']].assign(dept_avg=lambda x: x['dept_avg'].rou
 | 5 | Esha | Sales | 50000 |
 | 6 | Farah | HR | 55000 |
 | 7 | Gita | HR | 45000 |
+
 **SQL:**
 ```sql
 -- Two-level ranking (dept payroll rank + salary rank inside dept)
@@ -3386,6 +3488,7 @@ Should run unchanged on PostgreSQL, MySQL 8, SQL Server and Oracle (comments use
 | HR | Gita | 45000 | 5 |
 | Sales | Dev | 60000 | 6 |
 | Sales | Esha | 50000 | 7 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3440,6 +3543,7 @@ result2 = t2[['dept', 'emp_name', 'salary', 'overall_position']]
 | Kabir | 85 |
 | Lata | 78 |
 | Ravi | 85 |
+
 **SQL:**
 ```sql
 SELECT name, score,
@@ -3458,6 +3562,7 @@ ORDER BY position;
 | Kabir | 85 | 4 | 3 |
 | Ravi | 85 | 5 | 3 |
 | Lata | 78 | 6 | 6 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3504,6 +3609,7 @@ result['rank_by_score'] = result['score'].rank(method='min', ascending=False).as
 | Dee | 870 |
 | Eli | 870 |
 | Fay | 800 |
+
 **SQL:**
 ```sql
 SELECT player, points,
@@ -3522,6 +3628,7 @@ ORDER BY points DESC, player;
 | Dee | 870 | 3 | 4 |
 | Eli | 870 | 3 | 4 |
 | Fay | 800 | 4 | 6 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3569,6 +3676,7 @@ result['rank_with_gaps'] = result['points'].rank(method='min', ascending=False).
 | 5 | 2025-01-18 | 4000 |
 | 6 | 2025-02-20 | 6500 |
 | 7 | 2025-03-11 | 3000 |
+
 **SQL:**
 ```sql
 WITH monthly AS (
@@ -3594,6 +3702,7 @@ Other dialects (not run here / from memory): PostgreSQL `EXTRACT(YEAR FROM order
 | 2025 | 02 | 6500 | 1 |
 | 2025 | 01 | 4000 | 2 |
 | 2025 | 03 | 3000 | 3 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3649,6 +3758,7 @@ result = m.sort_values(['yr', 'month_rank', 'mon'])
 | 8 | 60000 |
 | 9 | 55000 |
 | 10 | 50000 |
+
 **SQL:**
 ```sql
 -- 10 rows into 4 buckets
@@ -3686,6 +3796,7 @@ FROM top3;
 | 1 | 95000 | 1 |
 | 2 | 90000 | 2 |
 | 3 | 85000 | 3 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3739,6 +3850,7 @@ result['bucket'] = np.repeat(range(1, k + 1), sizes)
 | 6 | Farah | Sales |
 | 7 | Gita | Sales |
 | 8 | Hari | HR |
+
 **SQL:**
 ```sql
 SELECT dept, emp_name
@@ -3760,6 +3872,7 @@ Random function by dialect: SQLite and PostgreSQL `RANDOM()`, MySQL `RAND()`, SQ
 | HR | Hari |
 | Sales | Farah |
 | Sales | Gita |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3809,6 +3922,7 @@ result = (employees.sample(frac=1, random_state=7)      # shuffle all rows
 | 6 | Farah | 70000 |
 | 7 | Gita | 60000 |
 | 8 | Hari | 50000 |
+
 **SQL:**
 ```sql
 WITH s AS (
@@ -3836,6 +3950,7 @@ ORDER BY salary DESC;
 | Farah | 70000 | Middle | 0.286 | Middle |
 | Gita | 60000 | Bottom 25% | 0.143 | Bottom 25% |
 | Hari | 50000 | Bottom 25% | 0 | Bottom 25% |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -3929,6 +4044,7 @@ Table `big` was generated with 50,000 rows (5 departments, random salaries). Rea
 | Apparel | Shirt | 200 |
 | Apparel | Jacket | 150 |
 | Apparel | Socks | 100 |
+
 **SQL:**
 ```sql
 WITH r AS (
@@ -3953,6 +4069,7 @@ ORDER BY category, rnk;
 | Electronics | Phone | 500 | 1 | 38.5 |
 | Electronics | Laptop | 400 | 2 | 30.8 |
 | Electronics | TV | 300 | 3 | 23.1 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -4006,6 +4123,7 @@ result = p[p['rnk'] <= 3].sort_values(['category', 'rnk'])[['category', 'product
 | 7 | Ops | 80000 |
 | 8 | Finance | 300000 |
 | 9 | Finance | 100000 |
+
 **SQL:**
 ```sql
 WITH r AS (
@@ -4027,6 +4145,7 @@ ORDER BY dept;
 |---|---|---|
 | Eng | 200000 | 90000 |
 | Finance | 300000 | 100000 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -4079,6 +4198,7 @@ result = g[g['top_salary'] > 2 * g['second_salary']].astype(int).reset_index()
 | 6 | Vik | 2 | 90000 |
 | 7 | Wen | 3 | 85000 |
 | 8 | Xan | 3 | 100000 |
+
 **SQL:**
 ```sql
 -- Rank direct reports inside each manager's team
@@ -4128,6 +4248,7 @@ Recursive CTE syntax: PostgreSQL, MySQL 8 and SQLite use `WITH RECURSIVE`; SQL S
 | 3 | Tom | 90000 | 3 |
 | 3 | Vik | 90000 | 3 |
 | 3 | Wen | 85000 | 5 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -4197,6 +4318,7 @@ result = (j.rename(columns={'emp_name': 'employee'})
 | 9 | 5 | 2025-02-02 |
 | 10 | 6 | 2025-03-05 |
 | 11 | 7 | 2025-01-30 |
+
 **SQL:**
 ```sql
 WITH stats AS (
@@ -4228,6 +4350,7 @@ ORDER BY city, rn;
 | Pune | Esha | 2 | 2025-02-02 | 1 |
 | Pune | Farid | 1 | 2025-03-05 | 2 |
 | Pune | Gauri | 1 | 2025-01-30 | 3 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -4291,6 +4414,7 @@ result = s[s['position'] <= 3][['city', 'name', 'orders', 'last_order', 'positio
 | 3 | Chitra | Sales | 60000 |
 | 4 | Dev | Sales | 60000 |
 | 5 | Esha | HR | 55000 |
+
 **SQL:**
 ```sql
 -- These FAIL in SQLite (other major databases also reject them):
@@ -4346,6 +4470,7 @@ Real SQLite errors for the four failing statements:
 | 1 | 1 |
 | 2 | 1 |
 | 3 | 2 |
+
 **Edge cases:** Error wording differs: PostgreSQL says window functions are not allowed in WHERE/GROUP BY/HAVING, SQL Server says they can only appear in SELECT or ORDER BY (from memory). Snowflake, BigQuery and DuckDB have QUALIFY to filter on a window without a wrapper (see Q70).
 **Likely follow-ups:**
 - Why does `HAVING` work with SUM but not with RANK? HAVING runs after GROUP BY but before windows.
@@ -4382,6 +4507,7 @@ Real SQLite errors for the four failing statements:
 | 2 | Alpha |
 | 3 | Gamma |
 | 3 | Delta |
+
 **SQL:**
 ```sql
 -- Looks like duplicate ranks: numbering happens BEFORE a join that repeats rows
@@ -4434,6 +4560,7 @@ ORDER BY dept, rn;
 | Eng | Asha | 1 |
 | Eng | Bala | 2 |
 | Sales | Chitra | 1 |
+
 **Edge cases:** If you truly see repeated values with no PARTITION BY and no join, check that you are not reading a RANK column, that the data was not appended twice, and that the number was not computed in two places. NULLs never cause repeated ROW_NUMBER values; they only affect the order.
 **Likely follow-ups:**
 - How do I deduplicate with it? Number per duplicate key and keep `rn = 1` (Part 10).
@@ -4464,6 +4591,7 @@ ORDER BY dept, rn;
 | 6 | Farah | Sales | 75000 |
 | 7 | Gita | Sales | 65000 |
 | 8 | Hari | Sales | 55000 |
+
 **SQL:**
 ```sql
 -- RANK <= 3 (returns 4 in Eng)
@@ -4508,6 +4636,7 @@ ORDER BY dept, rn;
 | Sales | Farah | 75000 | 1 |
 | Sales | Gita | 65000 | 2 |
 | Sales | Hari | 55000 | 3 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd
@@ -4562,6 +4691,7 @@ result2 = b[b['rn'] <= 3][['dept', 'emp_name', 'salary', 'rn']]
 | 4 | Dev | Sales | 75000 |
 | 5 | Esha | Sales | 65000 |
 | 6 | Farah | HR | 55000 |
+
 **SQL:**
 ```sql
 -- QUALIFY: filter on a window function directly (DuckDB, Snowflake, BigQuery, Teradata)
@@ -4599,6 +4729,7 @@ ORDER BY dept, salary DESC;
 | HR | Farah | 55000 |
 | Sales | Dev | 75000 |
 | Sales | Esha | 65000 |
+
 **Edge cases:** With QUALIFY you cannot filter on a window and use a plain WHERE that depends on the window result; WHERE still runs before the window. Ties follow the same rules as any ranking (ROW_NUMBER exact N, RANK keeps ties). BigQuery historically wanted QUALIFY alongside a WHERE/GROUP BY/HAVING (from memory, may have changed).
 **Likely follow-ups:**
 - Can QUALIFY replace a CTE for everything? Only for filtering on window results; you still need a CTE to reuse results.
@@ -4630,6 +4761,7 @@ ORDER BY dept, salary DESC;
 | 7 | Gita | Sales | 80000 |
 | 8 | Hari | Sales | 75000 |
 | 9 | Ila | Sales | 60000 |
+
 **SQL:**
 ```sql
 -- People holding the top 3 distinct salaries
@@ -4676,6 +4808,7 @@ ORDER BY dept, dr;
 | Sales | 80000 | 2 | 1 |
 | Sales | 75000 | 1 | 2 |
 | Sales | 60000 | 1 | 3 |
+
 **pandas equivalent:**
 ```python
 import pandas as pd

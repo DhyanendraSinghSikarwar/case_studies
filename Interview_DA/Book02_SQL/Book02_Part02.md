@@ -1267,6 +1267,7 @@ res = pd.DataFrame({'avg_salary': g.mean(), 'sum_div_count_star': g.sum() / emp.
 | 6 | Priya | Sales | 40000 | 2022-04-04 | Active |
 | 7 | Neha | Sales | 38000 | 2023-01-09 | Left |
 | 8 | Omar | Finance | 60000 | 2019-11-30 | Active |
+
 **SQL:**
 ```sql
 SELECT COUNT(*) AS headcount, AVG(salary) AS avg_salary
@@ -1277,6 +1278,7 @@ FROM employees;
 | headcount | avg_salary |
 |---|---|
 | 8 | 58750 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 # whole-table aggregate: build a one-row frame
@@ -1309,6 +1311,7 @@ res = pd.DataFrame({'headcount': [len(emp)], 'avg_salary': [emp['salary'].mean()
 | 6 | Priya | Sales | 40000 | 2022-04-04 | Active |
 | 7 | Neha | Sales | 38000 | 2023-01-09 | Left |
 | 8 | Omar | Finance | 60000 | 2019-11-30 | Active |
+
 **SQL:**
 ```sql
 SELECT SUM(salary) AS total_salary,
@@ -1323,6 +1326,7 @@ WHERE dept = 'Legal';
 | total_salary | rows_n | cnt_salary | total_or_zero |
 |---|---|---|---|
 | NULL | 0 | 0 | 0 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 m = emp[emp['dept'] == 'Legal']['salary']
@@ -1355,6 +1359,7 @@ res = pd.DataFrame({'total_salary': [m.sum(min_count=1)], 'rows_n': [len(m)], 'c
 | 6 | Priya | Sales | 40000 | 2022-04-04 | Active |
 | 7 | Neha | Sales | 38000 | 2023-01-09 | Left |
 | 8 | Omar | Finance | 60000 | 2019-11-30 | Active |
+
 **SQL:**
 ```sql
 -- unique list
@@ -1368,6 +1373,7 @@ SELECT DISTINCT dept FROM employees ORDER BY dept;
 | HR |
 | IT |
 | Sales |
+
 Same list with GROUP BY, plus a count (the GROUP BY-only ability):
 
 ```sql
@@ -1383,6 +1389,7 @@ ORDER BY dept;
 | HR | 3 |
 | IT | 2 |
 | Sales | 2 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 res = emp[['dept']].drop_duplicates().sort_values('dept').reset_index(drop=True)
@@ -1414,6 +1421,7 @@ res = emp[['dept']].drop_duplicates().sort_values('dept').reset_index(drop=True)
 | 6 | Priya | Sales | 40000 | 2022-04-04 | Active |
 | 7 | Neha | Sales | 38000 | 2023-01-09 | Left |
 | 8 | Omar | Finance | 60000 | 2019-11-30 | Active |
+
 **SQL:**
 ```sql
 WITH bill AS (
@@ -1430,6 +1438,7 @@ WHERE total_salary = (SELECT MAX(total_salary) FROM bill);
 | dept | total_salary |
 |---|---|
 | IT | 185000 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 bill = emp.groupby('dept', as_index=False).agg(total_salary=('salary', 'sum'))
@@ -1474,6 +1483,7 @@ NULL salaries are skipped by SUM; a department with all-NULL salaries has a NULL
 | 6 | C3 | Laptop | 800 | 2025-10-12 |
 | 7 | C4 | Phone | 600 | 2026-01-08 |
 | 8 | C1 | Tablet | 200 | 2026-01-08 |
+
 **SQL:**
 ```sql
 SELECT customer_id,
@@ -1491,6 +1501,7 @@ ORDER BY customer_id;
 | C2 | 2025-02-10 | 2025-04-15 |
 | C3 | 2025-07-01 | 2025-10-12 |
 | C4 | 2026-01-08 | 2026-01-08 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 res = (orders.groupby('customer_id', as_index=False)
@@ -1525,6 +1536,7 @@ res['last_order'] = res['last_order'].dt.strftime('%Y-%m-%d')
 | 6 | Priya | Sales | 40000 | 2022-04-04 | Active |
 | 7 | Neha | Sales | 38000 | 2023-01-09 | Left |
 | 8 | Omar | Finance | 60000 | 2019-11-30 | Active |
+
 **SQL:**
 ```sql
 SELECT dept,
@@ -1542,6 +1554,7 @@ ORDER BY dept;
 | HR | 2 | 1 |
 | IT | 1 | 1 |
 | Sales | 1 | 1 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 t = emp.assign(a=(emp['status'] == 'Active').astype(int), l=(emp['status'] == 'Left').astype(int))
@@ -1573,6 +1586,7 @@ res = t.groupby('dept', as_index=False).agg(active_cnt=('a', 'sum'), left_cnt=('
 | 6 | Priya | Sales | 40000 | 2022-04-04 | Active |
 | 7 | Neha | Sales | 38000 | 2023-01-09 | Left |
 | 8 | Omar | Finance | 60000 | 2019-11-30 | Active |
+
 **SQL:**
 ```sql
 SELECT dept,
@@ -1591,6 +1605,7 @@ ORDER BY dept;
 | HR | 3 | 1 | 33.33 |
 | IT | 2 | 1 | 50 |
 | Sales | 2 | 1 | 50 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 g = emp.groupby('dept').agg(headcount=('emp_id', 'count'), left_cnt=('status', lambda s: (s == 'Left').sum()))
@@ -1624,6 +1639,7 @@ res = g.reset_index().sort_values('dept').reset_index(drop=True)
 | 6 | C3 | Laptop | 800 | 2025-10-12 |
 | 7 | C4 | Phone | 600 | 2026-01-08 |
 | 8 | C1 | Tablet | 200 | 2026-01-08 |
+
 **SQL:**
 ```sql
 SELECT category,
@@ -1643,6 +1659,7 @@ ORDER BY category;
 | Laptop | 2200 | 0 | 0 | 800 |
 | Phone | 500 | 300 | 0 | 0 |
 | Tablet | 0 | 0 | 400 | 0 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 o = orders[orders['order_date'].dt.year == 2025].copy()
@@ -1695,6 +1712,7 @@ ORDER BY email;
 |---|---|---|
 | ravi@x.com | 2 | 2, 3 |
 | sales@x.com | 2 | 6, 7 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 g = emp.groupby('email').agg(n=('emp_id', 'count'), emp_ids=('emp_id', lambda s: ', '.join(map(str, s))))
@@ -1726,6 +1744,7 @@ res = g[g['n'] > 1].reset_index().sort_values('email').reset_index(drop=True)
 | 6 | C3 | Laptop | 800 | 2025-10-12 |
 | 7 | C4 | Phone | 600 | 2026-01-08 |
 | 8 | C1 | Tablet | 200 | 2026-01-08 |
+
 **SQL:**
 ```sql
 SELECT category, AVG(amount) AS avg_order_value
@@ -1739,6 +1758,7 @@ ORDER BY category;
 | category | avg_order_value |
 |---|---|
 | Laptop | 1000 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 overall = orders['amount'].mean()
@@ -1771,6 +1791,7 @@ res = g[g['avg_order_value'] > overall].sort_values('category').reset_index(drop
 | 6 | Priya | Sales | 40000 | 2022-04-04 | Active |
 | 7 | Neha | Sales | 38000 | 2023-01-09 | Left |
 | 8 | Omar | Finance | 60000 | 2019-11-30 | Active |
+
 **SQL:**
 ```sql
 SELECT dept,
@@ -1787,6 +1808,7 @@ ORDER BY dept;
 | dept | max_salary | min_salary | gap |
 |---|---|---|---|
 | IT | 110000 | 75000 | 35000 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 g = emp.groupby('dept', as_index=False).agg(max_salary=('salary', 'max'), min_salary=('salary', 'min'))
@@ -1850,6 +1872,7 @@ ORDER BY d.dept_name;
 | IT | 2 |
 | Legal | 0 |
 | Sales | 2 |
+
 With the wrong `COUNT(*)`, Legal is shown as 1:
 
 | dept_name | headcount |
@@ -1859,6 +1882,7 @@ With the wrong `COUNT(*)`, Legal is shown as 1:
 | IT | 2 |
 | Legal | 1 |
 | Sales | 2 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 m = dept.merge(emp, how='left', left_on='dept_name', right_on='dept')
@@ -1891,6 +1915,7 @@ res = (m.groupby('dept_name', as_index=False).agg(headcount=('emp_id', 'count'))
 | 6 | C3 | Laptop | 800 | 2025-10-12 |
 | 7 | C4 | Phone | 600 | 2026-01-08 |
 | 8 | C1 | Tablet | 200 | 2026-01-08 |
+
 **SQL:**
 ```sql
 SELECT strftime('%Y', order_date) AS yr,
@@ -1910,6 +1935,7 @@ ORDER BY yr, mth;
 | 2025 | 07 | 400 |
 | 2025 | 10 | 800 |
 | 2026 | 01 | 800 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 g = orders.assign(yr=orders['order_date'].dt.strftime('%Y'), mth=orders['order_date'].dt.strftime('%m'))
@@ -1941,6 +1967,7 @@ res = g.groupby(['yr', 'mth'], as_index=False).agg(revenue=('amount', 'sum')).so
 | 6 | C3 | Laptop | 800 | 2025-10-12 |
 | 7 | C4 | Phone | 600 | 2026-01-08 |
 | 8 | C1 | Tablet | 200 | 2026-01-08 |
+
 **SQL:**
 ```sql
 SELECT customer_id,
@@ -1957,6 +1984,7 @@ ORDER BY customer_id;
 | C1 | 2 |
 | C2 | 2 |
 | C3 | 2 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 o = orders.assign(ym=orders['order_date'].dt.strftime('%Y-%m'))
@@ -1998,6 +2026,7 @@ The question mentions a `gender` column, which I add to the sample. Table `emplo
 | 6 | Priya | Sales | F | 40000 |
 | 7 | Neha | Sales | F | 38000 |
 | 8 | Omar | Finance | M | 60000 |
+
 **SQL:**
 ```sql
 SELECT dept, gender,
@@ -2015,6 +2044,7 @@ ORDER BY dept, gender;
 | HR | M | 2 | 51000 |
 | IT | M | 2 | 92500 |
 | Sales | F | 2 | 39000 |
+
 SQL as run uses `>= 2`; for the real question change it to `HAVING COUNT(*) >= 10`.
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
@@ -2041,6 +2071,7 @@ res = g[g['headcount'] >= 2].sort_values(['dept', 'gender']).reset_index(drop=Tr
 |---|---|---|
 | A | 2 | 100 |
 | B | 8 | 50 |
+
 **Sample data:**
 **employees** (8 rows)
 
@@ -2054,6 +2085,7 @@ res = g[g['headcount'] >= 2].sort_values(['dept', 'gender']).reset_index(drop=Tr
 | 6 | Priya | Sales | 40000 | 2022-04-04 | Active |
 | 7 | Neha | Sales | 38000 | 2023-01-09 | Left |
 | 8 | Omar | Finance | 60000 | 2019-11-30 | Active |
+
 **SQL:**
 ```sql
 WITH d AS (
@@ -2070,6 +2102,7 @@ SELECT ROUND((SELECT AVG(dept_avg) FROM d), 2) AS avg_of_dept_avgs,
 | avg_of_dept_avgs | company_avg | weighted_avg |
 |---|---|---|
 | 60125 | 58750 | 58750 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 g = emp.groupby('dept').agg(n=('salary', 'size'), dept_avg=('salary', 'mean'))
@@ -2102,6 +2135,7 @@ res = pd.DataFrame({'avg_of_dept_avgs': [round(g['dept_avg'].mean(), 2)], 'compa
 | 6 | C3 | Laptop | 800 | 2025-10-12 |
 | 7 | C4 | Phone | 600 | 2026-01-08 |
 | 8 | C1 | Tablet | 200 | 2026-01-08 |
+
 **SQL:**
 ```sql
 SELECT category,
@@ -2118,6 +2152,7 @@ ORDER BY sales DESC;
 | Laptop | 3000 | 60 |
 | Phone | 1400 | 28 |
 | Tablet | 600 | 12 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 g = orders.groupby('category', as_index=False).agg(sales=('amount', 'sum'))
@@ -2166,6 +2201,7 @@ Q: Percent within customer? A: PARTITION BY customer_id in the window.
 | 4 | 102 | Phone | 1 |
 | 5 | 102 | Case | 1 |
 | 6 | 103 | Tablet | 1 |
+
 **SQL:**
 ```sql
 WITH items AS (
@@ -2183,6 +2219,7 @@ JOIN items i ON i.order_id = o.order_id;
 | total_revenue | total_units |
 |---|---|
 | 1800 | 7 |
+
 **pandas equivalent:** (run; result identical to the Output above)
 ```python
 items = (pd.DataFrame({'order_id': [101,101,101,102,102,103], 'line_qty': [1,2,1,1,1,1]})
@@ -2223,6 +2260,7 @@ An inner join drops orders with no items; use LEFT JOIN if those orders still co
 | 6 | C3 | Laptop | 800 | 2025-10-12 |
 | 7 | C4 | Phone | 600 | 2026-01-08 |
 | 8 | C1 | Tablet | 200 | 2026-01-08 |
+
 **SQL:**
 ```sql
 SELECT order_date, COUNT(*) AS orders_cnt
@@ -2237,6 +2275,7 @@ ORDER BY order_date DESC;
 |---|---|
 | 2026-01-08 | 2 |
 | 2025-01-05 | 2 |
+
 As run: threshold `> 1`. Real question: `HAVING COUNT(*) > 100`.
 **pandas equivalent:** (run; result identical to the Output above)
 ```python

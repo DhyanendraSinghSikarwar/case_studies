@@ -31,6 +31,7 @@
 | 1 | 2025-01-15 09:30:00 |
 | 1 | 2025-02-03 09:00:00 |
 | 5 | 2025-02-03 13:00:00 |
+
 **SQL:**
 ```sql
 -- 1) DAU (daily)
@@ -89,6 +90,7 @@ ORDER BY month;
 |---|---|
 | 2025-01 | 4 |
 | 2025-02 | 2 |
+
 **pandas equivalent:**
 ```python
 # 1) DAU (daily)
@@ -162,6 +164,7 @@ Result (actual run):
 | 5 | 2025-03-07 | 1350 |
 | 6 | 2025-04-02 | 1000 |
 | 7 | 2025-04-25 | 800 |
+
 **SQL:**
 ```sql
 WITH monthly AS (
@@ -193,6 +196,7 @@ ORDER BY month;
 | 2025-02 | 1500 | 1200 | 25 |
 | 2025-03 | 1350 | 1500 | -10 |
 | 2025-04 | 1800 | 1350 | 33.3 |
+
 **pandas equivalent:**
 ```python
 m = (orders.assign(month=pd.to_datetime(orders["order_date"]).dt.strftime("%Y-%m"))
@@ -246,6 +250,7 @@ Result (actual run):
 | 4 | cart |
 | 1 | purchase |
 | 2 | purchase |
+
 **SQL:**
 ```sql
 -- 1) Users per step
@@ -280,6 +285,7 @@ FROM (SELECT COUNT(DISTINCT CASE WHEN step = 'view'     THEN user_id END) AS vie
 | viewers | buyers | view_to_purchase_pct |
 |---|---|---|
 | 6 | 2 | 33.3 |
+
 **pandas equivalent:**
 ```python
 # 1) Users per step
@@ -342,6 +348,7 @@ Result (actual run):
 | 10 | 2025-04-01 |
 | 11 | 2025-04-12 |
 | 12 | 2025-04-29 |
+
 **SQL:**
 ```sql
 WITH monthly AS (
@@ -368,6 +375,7 @@ ORDER BY month;
 | 2025-02 | 4 | 3 | 1 | 33.3 |
 | 2025-03 | 2 | 4 | -2 | -50 |
 | 2025-04 | 3 | 2 | 1 | 50 |
+
 **pandas equivalent:**
 ```python
 m = (users.assign(month=pd.to_datetime(users["signup_date"]).dt.strftime("%Y-%m"))
@@ -413,6 +421,7 @@ Result (actual run):
 | 3 | 2025-03-12 | 600 |
 | 4 | 2025-04-08 | 0 |
 | 5 | 2025-05-15 | 900 |
+
 **SQL:**
 ```sql
 WITH RECURSIVE spine(month_start) AS (
@@ -452,6 +461,7 @@ ORDER BY month;
 | 2025-03 | 600 | 0 | NULL | no base (previous = 0) |
 | 2025-04 | 0 | 600 | -100 |  |
 | 2025-05 | 900 | 0 | NULL | no base (previous = 0) |
+
 **pandas equivalent:**
 ```python
 monthly = (orders.assign(month=pd.to_datetime(orders["order_date"]).dt.strftime("%Y-%m"))
@@ -536,6 +546,7 @@ Result (actual run):
 | 11 | 2025-03-15 |
 | 11 | 2025-04-20 |
 | 12 | 2025-04-03 |
+
 **SQL:**
 ```sql
 WITH cohort AS (
@@ -564,6 +575,7 @@ ORDER BY c.cohort_month;
 | 2025-01 | 4 | 3 | 75 |
 | 2025-02 | 4 | 2 | 50 |
 | 2025-03 | 3 | 2 | 66.7 |
+
 **pandas equivalent:**
 ```python
 u = users.assign(cohort=pd.to_datetime(users["signup_date"]).dt.to_period("M"))
@@ -617,6 +629,7 @@ cohort_month  cohort_size  retained  month1_retention_pct
 | 7 | 104 | 2025-03-03 | 600 |
 | 8 | 103 | 2025-03-15 | 150 |
 | 9 | 105 | 2025-03-22 | 100 |
+
 **SQL:**
 ```sql
 WITH first_order AS (
@@ -647,6 +660,7 @@ ORDER BY month, customer_type;
 | 2025-02 | repeat | 2 | 750 |
 | 2025-03 | new | 2 | 700 |
 | 2025-03 | repeat | 1 | 150 |
+
 **pandas equivalent:**
 ```python
 o = orders.assign(od=pd.to_datetime(orders["order_date"]))
@@ -700,6 +714,7 @@ Result (actual run):
 | 7 | 104 | 2025-02-11 |
 | 8 | 105 | 2025-02-14 |
 | 9 | 103 | 2025-03-02 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT j.customer_id
@@ -736,6 +751,7 @@ ORDER BY j.customer_id;
 |---|
 | 102 |
 | 103 |
+
 **pandas equivalent:**
 ```python
 om = pd.to_datetime(orders["order_date"]).dt.strftime("%Y-%m")
@@ -791,6 +807,7 @@ Result (actual run):
 | 5 | 2024-12-30 |
 | 5 | 2024-12-31 |
 | 5 | 2025-01-01 |
+
 **SQL:**
 ```sql
 WITH days AS (
@@ -830,6 +847,7 @@ ORDER BY d1.user_id;
 | 1 | 2025-01-01 | 2025-01-04 | 4 |
 | 3 | 2025-01-05 | 2025-01-07 | 3 |
 | 5 | 2024-12-30 | 2025-01-01 | 3 |
+
 **pandas equivalent:**
 ```python
 d = logins.drop_duplicates().copy()
@@ -892,6 +910,7 @@ Result (actual run):
 | 1 | payment |
 | 2 | payment |
 | 5 | payment |
+
 **SQL:**
 ```sql
 -- 1) Step conversion and drop-off
@@ -943,6 +962,7 @@ FROM u;
 | viewed | carted | checked_out | paid |
 |---|---|---|---|
 | 8 | 5 | 4 | 2 |
+
 **pandas equivalent:**
 ```python
 # 1) Step conversion and drop-off
@@ -1039,6 +1059,7 @@ Result (actual run):
 | 11 | 2025-03-15 |
 | 11 | 2025-04-20 |
 | 12 | 2025-04-03 |
+
 **SQL:**
 ```sql
 WITH c AS (
@@ -1073,6 +1094,7 @@ ORDER BY g.cohort_start;
 | 2025-02 | 4 | 4 | 2 | 1 | NULL |
 | 2025-03 | 3 | 3 | 2 | NULL | NULL |
 | 2025-04 | 1 | 1 | NULL | NULL | NULL |
+
 **pandas equivalent:**
 ```python
 u = users.assign(cohort=pd.to_datetime(users["signup_date"]).dt.to_period("M"))
@@ -1131,6 +1153,7 @@ cohort_month  cohort_size  m0  m1  m2  m3
 | 7 | 2025-02-12 | 110000 |
 | 8 | 2025-03-18 | 150000 |
 | 9 | 2025-04-20 | 99000 |
+
 **SQL:**
 ```sql
 WITH m AS (
@@ -1160,6 +1183,7 @@ ORDER BY cur.month_start;
 | 2025-02 | 110000 | NULL | NULL |
 | 2025-03 | 150000 | 120000 | 25 |
 | 2025-04 | 99000 | 90000 | 10 |
+
 **pandas equivalent:**
 ```python
 s = (orders.assign(month=pd.to_datetime(orders["order_date"]).dt.to_period("M"))
@@ -1233,6 +1257,7 @@ Result (actual run):
 | 7 | 2025-01-17 |
 | 8 | 2025-01-21 |
 | 8 | 2025-01-28 |
+
 **SQL:**
 ```sql
 WITH cohort AS (
@@ -1282,6 +1307,7 @@ ORDER BY cohort_week, week_no;
 | 2025-01-13 | 2 | 1 | 3 | 33.3 |
 | 2025-01-20 | 0 | 1 | 1 | 100 |
 | 2025-01-20 | 1 | 1 | 1 | 100 |
+
 **pandas equivalent:**
 ```python
 u = users.assign(sd=pd.to_datetime(users["signup_date"]))
@@ -1348,6 +1374,7 @@ cohort_week  week_no  active_users  cohort_size  retention_pct
 | 7 | 4 |
 | 8 | 5 |
 | 9 | 6 |
+
 **SQL:**
 ```sql
 SELECT COUNT(*) AS customers,
@@ -1362,6 +1389,7 @@ FROM (SELECT customer_id, COUNT(DISTINCT order_id) AS n
 | customers | repeat_customers | repeat_rate_pct |
 |---|---|---|
 | 6 | 2 | 33.3 |
+
 **pandas equivalent:**
 ```python
 n = orders.groupby("customer_id")["order_id"].nunique()
@@ -1404,6 +1432,7 @@ Result (actual run):
 | 3 | 2025-01-02 12:00:00 |
 | 4 | 2025-01-03 18:00:00 |
 | 1 | 2025-02-01 09:00:00 |
+
 **SQL:**
 ```sql
 WITH daily AS (
@@ -1428,6 +1457,7 @@ FROM mau CROSS JOIN cal;
 | avg_dau | mau | stickiness_pct |
 |---|---|---|
 | 0.19 | 4 | 4.8 |
+
 **pandas equivalent:**
 ```python
 e = events.assign(ts=pd.to_datetime(events["event_time"]))
@@ -1487,6 +1517,7 @@ Result (actual run):
 | 5 | 6 | 2025-01-16 |
 | 6 | 6 | 2025-01-18 |
 | 7 | 8 | 2025-02-09 |
+
 **SQL:**
 ```sql
 SELECT COUNT(DISTINCT u.user_id) AS eligible_users,
@@ -1508,6 +1539,7 @@ WHERE u.signup_date <= date('2025-02-10', '-7 days');   -- data loaded through 2
 | eligible_users | activated_users | activation_pct |
 |---|---|---|
 | 7 | 4 | 57.1 |
+
 **pandas equivalent:**
 ```python
 cutoff = pd.Timestamp("2025-02-10") - pd.Timedelta(days=7)

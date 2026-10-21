@@ -25,6 +25,7 @@ SELECT emp_name, department FROM Employees ORDER BY emp_id LIMIT 3;
 | Anita Sharma | HR |
 | Arjun Mehta | Sales |
 | Sneha Iyer | HR |
+
 **Edge cases:** `SELECT *` over a view or joined tables can return duplicate column names. Order of columns follows your list, not the table.
 **Likely follow-ups:**
 - Does SELECT change data? No, only INSERT/UPDATE/DELETE do.
@@ -51,6 +52,7 @@ SELECT emp_name, department FROM Employees ORDER BY emp_id LIMIT 3;
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, department
@@ -68,6 +70,7 @@ FROM Employees;
 | Amit Kumar | IT |
 | Kavya Reddy | Finance |
 | Vikram Singh | Sales |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -101,6 +104,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, salary
@@ -116,6 +120,7 @@ WHERE salary > 50000;
 | Rahul Verma | 55000 |
 | Priya Nair | 90000 |
 | Amit Kumar | 65000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -149,6 +154,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, department, salary
@@ -163,6 +169,7 @@ WHERE (department = 'Sales' OR department = 'HR')
 | Anita Sharma | HR | 90000 |
 | Arjun Mehta | Sales | 72000 |
 | Rahul Verma | Sales | 55000 |
+
 **Wrong version (no brackets) - note Vikram 38,000 sneaks in:**
 ```sql
 SELECT emp_name, department, salary
@@ -176,6 +183,7 @@ WHERE department = 'Sales' OR department = 'HR' AND salary > 50000;
 | Arjun Mehta | Sales | 72000 |
 | Rahul Verma | Sales | 55000 |
 | Vikram Singh | Sales | 38000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -210,6 +218,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, salary
@@ -228,6 +237,7 @@ ORDER BY salary DESC, emp_id;
 | Kavya Reddy | 50000 |
 | Sneha Iyer | 48000 |
 | Vikram Singh | 38000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -261,6 +271,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT department
@@ -274,6 +285,7 @@ FROM Employees;
 | Sales |
 | IT |
 | Finance |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -306,6 +318,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, salary
@@ -329,6 +342,7 @@ SELECT emp_name, salary FROM Employees ORDER BY salary DESC, emp_id FETCH FIRST 
 | Arjun Mehta | 72000 |
 | Amit Kumar | 65000 |
 | Rahul Verma | 55000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -362,6 +376,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_id, emp_name
@@ -373,6 +388,7 @@ WHERE manager_id IS NULL;
 | emp_id | emp_name |
 |---|---|
 | 1 | Anita Sharma |
+
 **Broken version: = NULL returns nothing:**
 ```sql
 SELECT emp_id, emp_name FROM Employees WHERE manager_id = NULL;
@@ -381,6 +397,7 @@ SELECT emp_id, emp_name FROM Employees WHERE manager_id = NULL;
 | emp_id | emp_name |
 |---|---|
 | *(no rows)* | |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -414,6 +431,7 @@ SELECT NULL = NULL AS null_eq_null,
 | null_eq_null | null_is_null | zero_eq_null | empty_is_null |
 |---|---|---|---|
 | NULL | 1 | NULL | 0 |
+
 **Edge cases:** SQLite shows true as 1 and false as 0; NULL stays NULL (unknown). Oracle treats '' as NULL, other databases do not. NULL + 5 is NULL.
 **Likely follow-ups:**
 - COUNT(*) vs COUNT(col)? The latter skips NULLs.
@@ -442,6 +460,7 @@ SELECT NULL = NULL AS null_eq_null,
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name
@@ -455,6 +474,7 @@ WHERE emp_name LIKE 'A%';
 | Anita Sharma |
 | Arjun Mehta |
 | Amit Kumar |
+
 **Underscore demo - A, any one letter, then i:**
 ```sql
 SELECT emp_name FROM Employees WHERE emp_name LIKE 'A_i%';
@@ -464,6 +484,7 @@ SELECT emp_name FROM Employees WHERE emp_name LIKE 'A_i%';
 |---|
 | Anita Sharma |
 | Amit Kumar |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -497,6 +518,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, hire_date
@@ -510,6 +532,7 @@ WHERE hire_date BETWEEN '2023-01-01' AND '2023-12-31';
 | Rahul Verma | 2023-02-14 |
 | Priya Nair | 2023-08-01 |
 | Amit Kumar | 2023-12-31 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -545,6 +568,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, city
@@ -562,6 +586,7 @@ WHERE city IN ('Hyderabad', 'Bengaluru', 'Pune');
 | Priya Nair | Bengaluru |
 | Amit Kumar | Pune |
 | Kavya Reddy | Hyderabad |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -597,6 +622,7 @@ LIMIT 2;                  -- 5. LIMIT (SELECT is step 3)
 |---|---|
 | Anita Sharma | 1080000 |
 | Priya Nair | 1080000 |
+
 **Edge cases:** Real optimisers may reorder internally, but results behave as if this order holds. Window functions run after WHERE/GROUP BY/HAVING, before ORDER BY.
 **Likely follow-ups:**
 - Where do aggregates filter? HAVING runs after GROUP BY.
@@ -629,6 +655,7 @@ ORDER BY annual_pay DESC;
 | Priya Nair | 1080000 |
 | Arjun Mehta | 864000 |
 | Amit Kumar | 780000 |
+
 **Alias in ORDER BY works everywhere:**
 ```sql
 SELECT emp_name, salary * 12 AS annual_pay FROM Employees ORDER BY annual_pay DESC, emp_id LIMIT 3;
@@ -639,6 +666,7 @@ SELECT emp_name, salary * 12 AS annual_pay FROM Employees ORDER BY annual_pay DE
 | Anita Sharma | 1080000 |
 | Priya Nair | 1080000 |
 | Arjun Mehta | 864000 |
+
 **Edge cases:** `WHERE annual_pay > 700000` directly is an error on PostgreSQL/SQL Server/Oracle (not run here; this SQLite engine happens to accept it). In SQL Server ORDER BY alias works too.
 **Likely follow-ups:**
 - Can HAVING use alias? MySQL yes, PostgreSQL no.
@@ -666,6 +694,7 @@ SELECT emp_name, salary * 12 AS annual_pay FROM Employees ORDER BY annual_pay DE
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT salary
@@ -679,6 +708,7 @@ SQL Server: `ORDER BY salary DESC OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY`. MySQL a
 | salary |
 |---|
 | 72000 |
+
 **Safe version when only one salary exists (table Pay1 has only 70,000 twice):**
 ```sql
 SELECT (SELECT DISTINCT salary FROM Pay1 ORDER BY salary DESC LIMIT 1 OFFSET 1) AS second_highest;
@@ -687,6 +717,7 @@ SELECT (SELECT DISTINCT salary FROM Pay1 ORDER BY salary DESC LIMIT 1 OFFSET 1) 
 | second_highest |
 |---|
 | NULL |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -720,6 +751,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT salary
@@ -733,6 +765,7 @@ Replace the 2 with N-1. In older MySQL, LIMIT/OFFSET must be a plain number, not
 | salary |
 |---|
 | 65000 |
+
 **Wrong: without DISTINCT the two 90,000 rows take up places 1 and 2:**
 ```sql
 SELECT salary FROM Employees ORDER BY salary DESC LIMIT 1 OFFSET 2;
@@ -741,6 +774,7 @@ SELECT salary FROM Employees ORDER BY salary DESC LIMIT 1 OFFSET 2;
 | salary |
 |---|
 | 72000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -775,6 +809,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, hire_date, salary
@@ -791,6 +826,7 @@ ORDER BY salary DESC, emp_id;
 | Rahul Verma | 2023-02-14 | 55000 |
 | Kavya Reddy | 2024-01-15 | 50000 |
 | Vikram Singh | 2024-04-01 | 38000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -826,6 +862,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT department, emp_name, salary
@@ -844,6 +881,7 @@ ORDER BY department ASC, salary DESC;
 | Sales | Arjun Mehta | 72000 |
 | Sales | Rahul Verma | 55000 |
 | Sales | Vikram Singh | 38000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -877,6 +915,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT department, city
@@ -895,6 +934,7 @@ ORDER BY department, city;
 | Sales | Bengaluru |
 | Sales | Chennai |
 | Sales | Hyderabad |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -923,6 +963,7 @@ Same result as the SQL (checked by running both).
 | A | 90 |
 | B | 90 |
 | C | 80 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT salary
@@ -935,6 +976,7 @@ LIMIT 1 OFFSET 1;
 | salary |
 |---|
 | 80 |
+
 **Wrong - no DISTINCT returns 90:**
 ```sql
 SELECT salary FROM Pay3 ORDER BY salary DESC LIMIT 1 OFFSET 1;
@@ -943,6 +985,7 @@ SELECT salary FROM Pay3 ORDER BY salary DESC LIMIT 1 OFFSET 1;
 | salary |
 |---|
 | 90 |
+
 **pandas equivalent:**
 ```python
 res = pd.DataFrame({'salary': sorted(pay3['salary'].unique(), reverse=True)[1:2]})
@@ -975,6 +1018,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name AS "Employee Name",
@@ -992,6 +1036,7 @@ MySQL: use backticks (`Employee Name`). SQL Server: [Employee Name] or "Employee
 | Arjun Mehta | 864000 |
 | Sneha Iyer | 576000 |
 | Rahul Verma | 660000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -1026,6 +1071,7 @@ Same result as the SQL (checked by running both).
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_id, emp_name, department
@@ -1040,6 +1086,7 @@ WHERE department <> 'HR';
 | 4 | Karan | IT |
 | 5 | Divya | Finance |
 | 8 | Omar | Sales |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1075,6 +1122,7 @@ result = employees.loc[employees.department.notna() & (employees.department != '
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- NOT IN
@@ -1115,6 +1163,7 @@ NOT LIKE
 | Sam |
 | Neha |
 | Omar |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1160,6 +1209,7 @@ result = employees.loc[~employees.emp_name.str.startswith('A'), ['emp_name']]
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name, city FROM employees WHERE city = 'Pune';
@@ -1181,6 +1231,7 @@ Pattern match
 | Ravi |
 | Karan |
 | Sam |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1226,6 +1277,7 @@ The three operators side by side:
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name, department, salary
@@ -1238,6 +1290,7 @@ WHERE department IN ('IT', 'Sales')
 | emp_name | department | salary |
 |---|---|---|
 | Meena | Sales | 60000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1275,6 +1328,7 @@ result = employees.loc[employees.department.isin(['IT', 'Sales'])
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT department, COUNT(*) AS headcount, AVG(salary) AS avg_salary
@@ -1288,6 +1342,7 @@ HAVING COUNT(*) >= 2;
 |---|---|---|
 | IT | 2 | 80000.0 |
 | Sales | 2 | 65000.0 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1331,6 +1386,7 @@ Quoting rules at a glance:
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name FROM employees
@@ -1342,6 +1398,7 @@ WHERE salary = 80000
 | emp_name |
 |---|
 | Karan |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1376,6 +1433,7 @@ result = employees.loc[(employees.salary == 80000) & (employees.city == 'Bengalu
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 CREATE TABLE employees (
@@ -1392,6 +1450,7 @@ SELECT * FROM employees WHERE emp_id = 2;   -- a query
 | emp_id | emp_name | department | city | salary | hire_date |
 |---|---|---|---|---|---|
 | 2 | Ravi | IT | Hyderabad | 80000 | 2020-03-01 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1426,6 +1485,7 @@ result = employees[employees.emp_id == 2]
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name FROM employees WHERE LOWER(department) = 'sales';   -- safe everywhere
@@ -1435,6 +1495,7 @@ SELECT emp_name FROM employees WHERE LOWER(department) = 'sales';   -- safe ever
 |---|
 | Meena |
 | Omar |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1469,6 +1530,7 @@ result = employees.loc[employees.department.str.lower() == 'sales', ['emp_name']
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- most recent hire
@@ -1499,6 +1561,7 @@ Most recent hire
 | 6 | Sam | 2024-02-12 |
 | 8 | Omar | 2023-11-05 |
 | 3 | Meena | 2023-01-10 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1538,6 +1601,7 @@ result = employees.sort_values(['hire_date', 'emp_id'], ascending=False).head(5)
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- one row only
@@ -1563,6 +1627,7 @@ All top earners
 |---|---|---|
 | 2 | Ravi | 80000 |
 | 4 | Karan | 80000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1602,6 +1667,7 @@ result = employees.loc[employees.salary == employees.salary.max(), ['emp_id', 'e
 | 6 | Rohit | Hyderabad | 81 | Shortlisted |
 | 7 | Lata | Hyderabad | NULL | Shortlisted |
 | 8 | Vikram | Hyderabad | 70 | On hold |
+
 **SQL:**
 ```sql
 SELECT candidate_name, interview_score
@@ -1619,6 +1685,7 @@ LIMIT 10;
 | Sneha | 88 |
 | Rohit | 81 |
 | Lata | NULL |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1655,6 +1722,7 @@ result = (candidates[(candidates.city == 'Hyderabad') & (candidates.status == 'S
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name, salary FROM employees;
@@ -1697,6 +1765,7 @@ LIMIT 3, no ORDER BY, after index
 | Asha | 45000 |
 | Sam | 50000 |
 | Neha | 52000 |
+
 **pandas equivalent:**
 ```python
 # a DataFrame keeps row order, so pandas hides this problem; always sort explicitly
@@ -1730,6 +1799,7 @@ result = employees.sort_values(['salary', 'emp_id'], ascending=[False, True]).he
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_id, emp_name, salary
@@ -1743,6 +1813,7 @@ LIMIT 3;
 | 2 | Ravi | 80000 |
 | 4 | Karan | 80000 |
 | 5 | Divya | 70000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1783,6 +1854,7 @@ How NULLs sort by database:
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name, department FROM employees ORDER BY department ASC;
@@ -1842,6 +1914,7 @@ Flag trick
 | Meena | Sales |
 | Omar | Sales |
 | Sam | NULL |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1877,6 +1950,7 @@ result = employees.sort_values(['department', 'emp_id'], na_position='last')[['e
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- Sam is silently dropped
@@ -1918,6 +1992,7 @@ Fix 2
 | Divya | Finance |
 | Sam | NULL |
 | Omar | Sales |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1959,6 +2034,7 @@ result = employees.loc[(employees.department != 'HR') | employees.department.isn
 |---|
 | HR |
 | NULL |
+
 **SQL:**
 ```sql
 -- breaks: list contains a NULL
@@ -1998,6 +2074,7 @@ Fix 2
 | Divya | Finance |
 | Sam | NULL |
 | Omar | Sales |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -2033,6 +2110,7 @@ result = employees.loc[employees.department.notna() & ~employees.department.isin
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- wrong for the request
@@ -2058,6 +2136,7 @@ With brackets
 |---|---|---|
 | Ravi | IT | 80000 |
 | Karan | IT | 80000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -2098,6 +2177,7 @@ result = employees.loc[employees.department.isin(['HR', 'IT']) & (employees.sala
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_id, emp_name FROM employees
@@ -2120,6 +2200,7 @@ Page 3, size 3
 |---|---|
 | 7 | Neha |
 | 8 | Omar |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -2161,6 +2242,7 @@ result = employees.sort_values('emp_id').iloc[(page - 1) * size : page * size][[
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- by position (2nd column = salary)
@@ -2194,6 +2276,7 @@ ORDER BY salary * 12 DESC, emp_name
 | Neha | 624000 |
 | Sam | 600000 |
 | Asha | 540000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -2233,6 +2316,7 @@ result = employees.assign(annual_pay=employees.salary * 12).sort_values(['annual
 | 6 | Completed | 2500.00 | 2023-06-01 |
 | 7 | Completed | 300.00 | 2024-01-01 |
 | 8 | Completed | 1800.00 | 2023-09-09 |
+
 **SQL:**
 ```sql
 SELECT order_id, total_amount, order_date
@@ -2265,6 +2349,7 @@ BETWEEN version (misses order 3)
 | 6 | 2500.00 | 2023-06-01 |
 | 8 | 1800.00 | 2023-09-09 |
 | 1 | 1200.50 | 2023-02-14 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames

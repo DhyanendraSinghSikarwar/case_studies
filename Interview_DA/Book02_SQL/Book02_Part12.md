@@ -306,6 +306,7 @@ Not verified and not recommended here by name: any YouTube channel, Kaggle Learn
 | AdventureWorks (github.com/microsoft/sql-server-samples, adventureworks release) | Microsoft sample company, OLTP/LT/DW versions | Larger multi-table practice | Needs SQL Server to restore; heavier setup; free to download |
 | IBM HR Analytics Attrition (Kaggle) | HR attrition and performance, single table | HR projects, GROUP BY, CASE WHEN | Page title only seen; Kaggle login and licence unverified; load the CSV into SQLite |
 | Self-made HR tables | employees, departments, attendance, hires, exits (50 to 200 rows) | Anything; you know the right answer | Build with CREATE TABLE/INSERT or a CSV from Excel |
+
 - Why self-made data matters: you can compute the answer by hand and compare (Q15).
 - The 16-row employees table used across this book's Part 12 answers is one example (see Q6).
 **Example:** Chinook question: "Which country brings the most invoice revenue?" needs customers joined to invoices, then GROUP BY country.
@@ -566,6 +567,7 @@ Both methods give 5 employees who ever took leave. Agreement raises confidence.
 | 12 | Mock round 2 on a new dataset | any | Score and error log |
 | 13 | Fix the top 5 recurring mistakes; revise dialect cheat sheet (Q17); project walkthrough | Parts 10-11 | 3-minute project speech |
 | 14 | Light revision, sleep, set up the tool you will use | - | - |
+
 **Example:** If the company's profile points to basic-medium SQL (service MNC reports), spend less time on recursive CTEs and more on joins and window basics. If it is a startup, add hard window and cohort patterns.
 **Edge cases:** If you have only 3 or 4 days, do joins, GROUP BY/HAVING, DENSE_RANK, and one project story. Do not start new topics the day before.
 **Likely follow-ups:**
@@ -584,6 +586,7 @@ Both methods give 5 employees who ever took leave. Agreement raises confidence.
 | Days between dates | `julianday(b) - julianday(a)` | `b::date - a::date` (date minus date gives days) | `DATEDIFF(b, a)` | `DATEDIFF(day, a, b)` |
 | Join text | `a \|\| b` | `a \|\| b` | `CONCAT(a, b)` | `a + b` or `CONCAT(a, b)` |
 | Current date | `date('now')` | `CURRENT_DATE` | `CURDATE()` | `GETDATE()` |
+
 **Example:** You practised on SQLite and the test editor is SQL Server. Write the logic first, then translate only the dialect parts: `LIMIT 3` becomes `TOP 3`, and `julianday(b) - julianday(a)` becomes `DATEDIFF(day, a, b)`. The answer is the same: Isha, 130000, 3255 days (SQLite run below).
 **SQL (run on SQLite, as practised):**
 ```sql
@@ -973,6 +976,7 @@ FROM y ORDER BY yr;
 | 2 | COUNT, SUM, AVG, GROUP BY; WHERE versus HAVING; CASE WHEN for bands | 20 queries (headcount by department, average salary) | 7 of 8; explain WHERE versus HAVING aloud |
 | 3 | JOIN and LEFT JOIN with departments/leave; check row counts after a join | 15 queries | 6 of 8; no accidental duplicates |
 | 4 | Mini project on their own anonymised practice data: 5 questions and a one-page summary | Present findings in 5 minutes | Review: read each query aloud and say why |
+
 - Method: explain with a real question first, then the syntax; give a worked example, then a slightly different one for them to try; make errors normal and keep a mistakes log; use free tools (SQLBolt, SQLZoo; free status in Q10).
 - Check understanding by asking them to predict an output before running.
 - Use the Q22 kit style for quizzes.

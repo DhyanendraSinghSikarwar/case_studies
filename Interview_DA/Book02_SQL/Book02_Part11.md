@@ -51,6 +51,7 @@ DELETE dept 10          -> FOREIGN KEY constraint failed
 | DML | Data Manipulation Language | Changes the **rows** | INSERT, UPDATE, DELETE (SELECT reads) |
 | DCL | Data Control Language | Decides **who may do what** | GRANT, REVOKE |
 | TCL | Transaction Control Language | Saves or undoes a batch of DML | COMMIT, ROLLBACK, SAVEPOINT |
+
 - Think of a filing cabinet: DDL builds drawers, DML moves papers in and out, DCL hands out keys, TCL says "keep" or "undo" for the last batch of changes.
 - Some textbooks list TRUNCATE under DDL and some under DML; say it is usually DDL.
 **Example:** HR admin creates `employees` (DDL), inserts a new joiner (DML), gives the payroll analyst read-only access (DCL), then commits (TCL).
@@ -88,6 +89,7 @@ DCL is **not run here**. Standard form, from memory: PostgreSQL / MySQL / SQL Se
 | Table still exists | Yes | Yes | No |
 | Rollback | Yes, inside a transaction | Engine-dependent* | Engine-dependent* |
 | Speed on big tables | Slower (row by row, logged) | Fast | Fast |
+
 *PostgreSQL and SQL Server can roll them back inside a transaction; MySQL and Oracle cannot (from memory, not run here).
 - Typical extra: TRUNCATE usually resets auto-number counters and DELETE does not (MySQL, SQL Server; PostgreSQL only with `TRUNCATE ... RESTART IDENTITY`; from memory, not run here).
 **Example:** Remove only employees who left in 2020: DELETE with WHERE. Clear a staging table before tonight's load: TRUNCATE. Retire the table `temp_payroll_test`: DROP.
@@ -270,6 +272,7 @@ Isolation was **not** demonstrated here (needs two concurrent sessions). Isolati
 | Users | Clerks, apps, customers | Analysts, managers |
 | Speed goal | Milliseconds per transaction | Fast big scans and aggregates |
 | Examples | HRMS, banking, e-commerce checkout | Data warehouse, BI reports |
+
 **Example:** Swiping attendance at the gate writes one row (OLTP). The monthly attrition dashboard scans 3 years of rows (OLAP).
 **Code / Steps:** No query needed. The same table can be queried both ways; the difference is the workload and design. Running heavy analytics directly on the OLTP database can slow the live system, so companies copy data into a warehouse.
 **Likely follow-ups:**
@@ -371,6 +374,7 @@ GROUP BY p.category, r.region ORDER BY 1, 2;
 | NULL allowed | No | Usually yes (see engines) |
 | Purpose | Identify the row | Stop duplicates in another attribute |
 | Typical column | emp_id | email, PAN number |
+
 - Engines differ on NULLs in a unique column: SQLite and PostgreSQL allow many NULLs; SQL Server allows only one NULL (from memory, not run here).
 **Example:** `emp_id` is the primary key; `email` is unique, so two staff cannot share an email, but a new joiner can have no email yet.
 **SQL:** (run in SQLite 3.45.1)
@@ -608,6 +612,7 @@ SELECT dept,salary ... with index (dept,salary) -> COVERING INDEX idx_dept_sal
 | Can change data (INSERT/UPDATE) | Yes | Usually not (restricted in SQL Server) |
 | Transactions inside | Yes | Generally no |
 | Parameters | IN / OUT | IN only |
+
 - Benefits of procedures: reuse, fewer network calls, permission control, consistent logic.
 - Downsides: logic hidden in the database, harder to version control, engine-specific syntax.
 **Example:** `usp_close_month(month)` locks payroll and writes summary rows; `fn_tenure_years(join_date)` is used in a SELECT to show tenure.
@@ -673,6 +678,7 @@ SELECT * FROM emp_report;       -- no join needed to read it
 | Redundancy | Some repeated text | Less |
 | Ease for analysts | Easier | More complex |
 | Maintenance of a changing attribute | Update many rows | Update one row |
+
 - Most BI tools and analysts prefer star for simplicity (editorial view; trade-offs are standard textbook).
 **Example:** `dim_product` holds category text on every product (star). In the snowflake, `dim_product_sf` holds a `category_id` and `dim_category` holds the name once.
 **SQL:** (run in SQLite 3.45.1, same fact table as Q10)
