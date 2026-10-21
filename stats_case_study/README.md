@@ -61,6 +61,7 @@ it is first needed.
 stats_case_study/
 ├── README.md                     ← you are here (roadmap)
 ├── PROGRESS.md                   ← build status of every case
+├── tools/check_book.py           ← consistency checker: files, executed notebooks, no placeholders, PROGRESS status
 ├── requirements.txt / environment.yml
 ├── LICENSE
 ├── 00_shared_resources/          ← plotting style, stats helpers, deck builder used by every case
@@ -365,7 +366,7 @@ Rules enforced throughout the book:
 
 ## 14. Progress
 
-See [PROGRESS.md](PROGRESS.md). All 27 cases and the final summary are complete. Cases are built strictly one at a time. A case is marked COMPLETE only after its
+See [PROGRESS.md](PROGRESS.md). All 27 cases and the final summary are complete. Run `python tools/check_book.py` to verify that every case still has its README, executed notebook (no errors or warnings, no placeholder text) and deck. Cases are built strictly one at a time. A case is marked COMPLETE only after its
 notebook has executed end-to-end, its outputs and deck have been regenerated, and its content has been reviewed.
 
 ## 15. License
