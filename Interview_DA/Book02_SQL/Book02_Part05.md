@@ -1847,6 +1847,13 @@ FROM emp WHERE salary >= 70000 ORDER BY rn_with_tiebreak;
 | Gita | 70000 | 4 | 4 |
 
 In a quick test on the two 80k rows, SQLite returned [('Esha', 1), ('Farid', 2)] without a tie-break and [('Esha', 1), ('Farid', 2)] with one, even after I added an index on (salary, name). I could not make it differ here, so I cannot show the failure live; the standard simply does not guarantee the order, and other engines or larger data may differ.
+**pandas equivalent:** (the tie-break version; run on pandas 3.0.5, same rows as `rn_with_tiebreak`)
+```python
+res = emp[emp["salary"] >= 70000].sort_values(["salary", "emp_id"], ascending=[False, True], kind="stable").reset_index(drop=True)
+res["rn_with_tiebreak"] = range(1, len(res) + 1)
+res = res[["name", "salary", "rn_with_tiebreak"]]
+```
+
 **Edge cases:** Ties are only a problem when you filter on the number (rn = 1) or the tied rows differ in other columns. If the ORDER BY is on a unique column there is no issue. The same risk applies to LIMIT with ties (Q37).
 **Likely follow-ups:**
 - How do you fix it? Add a unique column to ORDER BY.
@@ -4560,6 +4567,16 @@ ORDER BY dept, rn;
 | Eng | Asha | 1 |
 | Eng | Bala | 2 |
 | Sales | Chitra | 1 |
+
+**pandas equivalent:** (the first two queries; run on pandas 3.0.5, results equal the SQL tables above)
+```python
+n = employees.sort_values("salary", ascending=False).assign(rn=lambda d: range(1, len(d) + 1))
+bad = n.merge(assignments, on="emp_id")[["rn", "emp_name", "project"]].sort_values(["rn", "project"]).reset_index(drop=True)
+
+good = employees.merge(assignments, on="emp_id").sort_values(["salary", "emp_id", "project"], ascending=[False, True, True]).reset_index(drop=True)
+good["rn"] = range(1, len(good) + 1)
+good = good[["rn", "emp_name", "project"]]
+```
 
 **Edge cases:** If you truly see repeated values with no PARTITION BY and no join, check that you are not reading a RANK column, that the data was not appended twice, and that the number was not computed in two places. NULLs never cause repeated ROW_NUMBER values; they only affect the order.
 **Likely follow-ups:**
