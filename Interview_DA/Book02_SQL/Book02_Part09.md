@@ -215,7 +215,7 @@ Result (actual run):
 - How do you do YoY? Compare with the same month last year (Q12).
 - Why not LAG on orders directly? Each order row would be compared with the previous order, not the previous month.
 - Percent points or percent? Growth is a percent change; if the metric is itself a percentage, report the difference in percentage points.
-**Common mistakes:** Applying LAG before grouping, dividing by the current month instead of the previous, and integer division (`100 * (a-b) / b` with whole numbers can be fine but `(a-b)/b` alone gives 0).
+**Common mistakes:** Applying LAG before grouping, dividing by the current month instead of the previous, and integer division (with whole numbers `(a-b)/b` gives 0 and even `100 * (a-b) / b` drops the decimals; use `100.0 *`).
 
 ### Q3 ⭐⭐⭐ 🟢 Given a funnel_events table (user_id, step: view/cart/purchase), count the users at each step and the overall conversion percentage from view to purchase.
 **Asked at:** commonly asked (no company-specific report found). Generic interview-prep lists name this as a standard product-analytics pattern (aggregator pages, unverified).
@@ -1904,7 +1904,7 @@ Result (actual run):
 **Explain simply:**
 - **Rolling 7-day active users**: for date D, how many different users did something between D minus 6 and D (7 days including D).
 - A window function like `COUNT(DISTINCT ...) OVER (...)` is not allowed in most databases, so we join the calendar to the events with a date range instead.
-- A **recursive CTE** makes the calendar in SQLite (PostgreSQL has `generate_series`; not run here).
+- A **recursive CTE** (a query that calls itself to generate rows, see Q5) makes the calendar in SQLite (PostgreSQL has `generate_series`; not run here).
 - Using a calendar means days with no events still get a row.
 **Example:** On 8 Jan the window is 2 to 8 Jan. User 1 appears on 3 Jan and 8 Jan but is counted once, so users 1, 2 and 3 give 3.
 **Sample data:**
@@ -2346,7 +2346,7 @@ user_id  sessions  finished_sessions  avg_minutes
 **Likely follow-ups:**
 - Median duration? Averages are skewed by long sessions; use a window-function median (see Q36).
 - Sessions per user per day? Group by user and date.
-**Common mistakes:** Averaging averages, treating NULL end times as zero, and using minute-truncating DATEDIFF.
+**Common mistakes:** Averaging averages, treating NULL end times as zero, and using SQL Server `DATEDIFF(minute, ...)`, which counts minute boundaries crossed, not full elapsed minutes (from memory, not run here).
 
 ### Q27 ⭐⭐ 🟡 Calculate Day-1 and Day-7 retention: the percentage of new users who returned exactly 1 day and 7 days after signup.
 **Asked at:** commonly asked (no company-specific report found)
@@ -2510,7 +2510,7 @@ Result (actual run):
 **Edge cases:** A month with zero signups is missing, so the running total just carries on (add a calendar if the chart needs every month). Duplicate customer rows would inflate counts: `COUNT(DISTINCT customer_id)`. If 'new customers' means first order, take `MIN(order_date)` per customer first. The share is of the total in the data you loaded, so it changes when new data arrives.
 **Likely follow-ups:**
 - Restart each year? `PARTITION BY strftime('%Y', ...)` inside OVER.
-- Why ROWS and not the default? The default RANGE frame treats equal sort values as one group; ROWS is explicit and usually faster.
+- Why ROWS and not the default? The default RANGE frame treats equal sort values as one group; ROWS is explicit and avoids the tie surprise (some engines also compute it faster: from memory, not run here).
 **Common mistakes:** Forgetting ORDER BY inside OVER (the 'running' total becomes the grand total), dividing by the wrong total, and counting repeat customers as new.
 
 ### Q29 ⭐⭐ 🟡 Calculate cumulative revenue per signup cohort by month since signup (a simple customer lifetime value curve).
@@ -3302,7 +3302,7 @@ Result (actual run):
 **Edge cases:** Users who never purchased (user 6) are dropped by the inner join: say that the median is among buyers only, or the real median could be 'never'. Same-day purchase gives 0 days. NULLs in `days` would sort first, so filter them. Ties are fine because only the values matter.
 **Likely follow-ups:**
 - How would you get the 90th percentile? Use position `CEIL(0.9 * cnt)` instead of the middle (or PERCENTILE_CONT in PostgreSQL, not run here).
-- What about users who have not purchased yet? Report the share of non-buyers separately, or use a survival-style view (see Q41).
+- What about users who have not purchased yet? Report the share of non-buyers separately, or only count customers old enough to have bought, as in Q41.
 **Common mistakes:** Reporting the average, taking the middle row without handling an even count, using all purchases instead of the first one, and ignoring users who never bought.
 
 ### Q37 ⭐ 🟡 Calculate week-over-week (WoW) growth correctly across the year boundary (week 52/53 to week 1).

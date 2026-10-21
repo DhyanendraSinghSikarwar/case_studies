@@ -349,8 +349,8 @@ result = pd.DataFrame({"delivered_revenue": [orders.loc[orders["status"] == "del
 | 6 | 2026-10-18 | 200 |
 | 7 | 2026-10-18 | 300 |
 | 8 | 2026-10-20 | 700 |
-
-(first 8 of 10 rows shown)
+| 9 | 2026-10-21 | 250 |
+| 10 | 2026-10-21 | 350 |
 
 **SQL:**
 ```sql
@@ -606,8 +606,10 @@ result = t.groupby("account_id", as_index=False).agg(balance=("signed", "sum"))
 | 6 | 1 | 2019-07-01 | 2024-10-31 |
 | 7 | 2 | 2020-01-05 | NULL |
 | 8 | 2 | 2021-09-01 | NULL |
-
-(first 8 of 12 rows shown)
+| 9 | 2 | 2018-05-01 | 2025-02-28 |
+| 10 | 2 | 2019-08-12 | 2025-08-31 |
+| 11 | 2 | 2022-04-01 | NULL |
+| 12 | 2 | 2025-02-01 | NULL |
 
 `departments`
 
@@ -787,8 +789,11 @@ result = e.sort_values("tenure_years", ascending=False)[["name", "dept_name", "t
 | 6 | 102 | 2026-09-01 |
 | 7 | 102 | 2026-08-01 |
 | 8 | 103 | 2026-10-10 |
-
-(first 8 of 13 rows shown)
+| 9 | 103 | 2026-09-20 |
+| 10 | 103 | 2026-08-15 |
+| 11 | 103 | 2026-06-30 |
+| 12 | 103 | 2026-05-15 |
+| 13 | 104 | 2026-10-18 |
 
 **SQL:**
 ```sql

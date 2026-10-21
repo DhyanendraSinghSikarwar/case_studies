@@ -3531,6 +3531,8 @@ ORDER BY t.sale_date;
 | 0103 | 38000 |
 | E104 | 30000 |
 
+(Column types matter here: `employees.emp_no` is INTEGER and `payroll.emp_no` is TEXT, so the stray space and zero are real characters. Run in SQLite 3.45.1.)
+
 **SQL:** naive join (what the data does as-is)
 
 ```sql
