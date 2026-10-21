@@ -736,3 +736,50 @@ Canonical questions per book. Wave A agents: check this BEFORE adding a question
 ## Book 2 — GenAI / LLM / RAG / Agentic AI
 | Q-ID | Part | Canonical question |
 |---|---|---|
+| B2P01-Q1 | 1 | Explain self-attention step by step (Q, K, V, scaled dot-product, softmax). What does each of Q, K and V represent? |
+| B2P01-Q2 | 1 | Why did transformers replace RNNs/LSTMs? What are the remaining drawbacks of transformers? |
+| B2P01-Q3 | 1 | What is multi-head attention? Why use several heads instead of one big head, and what are the tensor shapes and cost? |
+| B2P01-Q4 | 1 | Encoder-only vs decoder-only vs encoder-decoder models: how do they differ, with examples and when to use each? |
+| B2P01-Q5 | 1 | What is the causal mask? Why can training be parallel over all tokens while generation is sequential? |
+| B2P01-Q6 | 1 | What is the KV cache, why does it speed up generation, and how does its memory grow? |
+| B2P01-Q7 | 1 | Prefill vs decode: what happens in each phase, and why is decode memory-bandwidth-bound while prefill is compute-bound? |
+| B2P01-Q8 | 1 | Why does a transformer need positional information? Compare sinusoidal, learned and rotary (RoPE) encodings. |
+| B2P01-Q9 | 1 | Why is self-attention O(n^2), and how do you cope with long sequences? |
+| B2P01-Q10 | 1 | What are multi-query (MQA) and grouped-query attention (GQA)? How do they shrink the KV cache and what do they cost? |
+| B2P01-Q11 | 1 | What is FlashAttention? Does it change the result, and why is it faster? |
+| B2P01-Q12 | 1 | Walk through a transformer block: residual connections, normalisation, feed-forward network. Pre-LN vs post-LN? |
+| B2P01-Q13 | 1 | Code: implement causal scaled dot-product (multi-head) self-attention from scratch in PyTorch or NumPy. |
+| B2P01-Q14 | 1 | Walk through one forward pass of a decoder-only LLM, from text to next-token probabilities. |
+| B2P01-Q15 | 1 | Live maths: estimate parameter count and KV-cache memory for a Llama-style model (layers, heads, head dim, context, batch). |
+| B2P01-Q16 | 1 | BERT vs GPT: pretraining objectives, attention pattern, typical uses. Why did decoder-only models come to dominate? |
+| B2P01-Q17 | 1 | Why do we divide attention scores by sqrt(d_k)? Give the variance argument. |
+| B2P01-Q18 | 1 | How does RoPE work, and how do position interpolation, NTK-aware scaling and YaRN extend context length? |
+| B2P01-Q19 | 1 | What is the context window, and why is the effective context often shorter than the advertised one ("lost in the middle")? |
+| B2P01-Q20 | 1 | LayerNorm vs RMSNorm: what changes and why do modern LLMs prefer RMSNorm? |
+| B2P01-Q21 | 1 | What does the feed-forward network do in a transformer? Explain GELU vs SwiGLU/gated FFNs and where most parameters live. |
+| B2P01-Q22 | 1 | What is cross-attention, where is it used (T5, Whisper, diffusion, multimodal) and how does it differ from self-attention? |
+| B2P01-Q23 | 1 | Which levers reduce KV-cache memory (GQA, quantised cache, sliding window, eviction)? Compare their trade-offs. |
+| B2P01-Q24 | 1 | What are prompt/prefix caching in LLM APIs, and how do they relate to the KV cache? How do you structure prompts to benefit? |
+| B2P01-Q25 | 1 | Explain input embeddings, the unembedding (LM head) layer and weight tying. How does vocabulary size affect model size and cost? |
+| B2P01-Q26 | 1 | Where do a transformer's parameters live (attention vs FFN vs embeddings)? How is head dimension chosen? |
+| B2P01-Q27 | 1 | Transformers vs state-space models (Mamba), linear attention and hybrid architectures: when would you pick each? |
+| B2P01-Q28 | 1 | Do attention weights explain a model's output? What are induction heads and how do they relate to in-context learning? |
+| B2P01-Q29 | 1 | What are sliding-window, local and sparse attention? What are attention sinks and why do they matter for streaming? |
+| B2P01-Q30 | 1 | What breaks when you go from 8k to 128k–1M context (compute, memory, quality)? What is ring attention / sequence parallelism at a high level? |
+| B2P01-Q31 | 1 | How do multimodal LLMs ingest images (ViT patches, projector, cross-attention vs token concatenation)? |
+| B2P01-Q32 | 1 | Use arithmetic intensity (roofline thinking) to explain why batching helps decode throughput and when it stops helping. |
+| B2P01-Q33 | 1 | What is Multi-head Latent Attention (MLA, as in DeepSeek)? How does it compress the KV cache versus GQA? |
+| B2P01-Q34 | 1 | Explain Mixture-of-Experts layers: routing, load balancing, active vs total parameters, and the serving trade-offs. |
+| B2P01-Q35 | 1 | Code: write a decoding loop with a KV cache and verify it matches the no-cache output. |
+| B2P01-Q36 | 1 | Explain transformers to a non-technical stakeholder in two minutes. |
+| B2P01-Q37 | 1 | Derive the sinusoidal positional encoding and its relative-position property. Why is it rarely used in modern LLMs? |
+| B2P01-Q38 | 1 | ALiBi vs RoPE: how does each handle length extrapolation? |
+| B2P01-Q39 | 1 | What architectural choices do modern open LLMs (Llama, Qwen, DeepSeek) make: RMSNorm, SwiGLU, RoPE, GQA, no biases, tied embeddings? Why? |
+| B2P01-Q40 | 1 | Do attention heads specialise? What does head pruning or head ablation tell you? |
+| B2P01-Q41 | 1 | AI code review: this LLM-written attention snippet has bugs (softmax dim, missing mask, missing scaling, wrong reshape). Find and fix them. |
+| B2P01-Q42 | 1 | Code: implement rotary position embeddings (RoPE) and show that scores depend on relative position. |
+| B2P01-Q43 | 1 | Derive FlashAttention's online softmax and explain how tiling reduces HBM reads/writes. |
+| B2P01-Q44 | 1 | What stability tricks do large transformers use (pre-norm, QK-norm, logit soft-capping, z-loss, warmup)? Why do loss spikes happen? |
+| B2P01-Q45 | 1 | What is multi-token prediction, and how does it relate to speculative decoding? |
+| B2P01-Q46 | 1 | Diffusion language models vs autoregressive LLMs: how do they differ, and what are the trade-offs? |
+| B2P01-Q47 | 1 | Design question: choose the architecture and attention variant for a 32k-context, low-latency chat model that must run on one GPU. |
