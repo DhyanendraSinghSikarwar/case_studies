@@ -5568,7 +5568,7 @@ FROM employees e
 JOIN med m ON m.dept = e.dept AND e.salary = m.median_salary
 ORDER BY e.dept, e.name;
 ```
-Shorter in engines with a median function (ran in DuckDB here and matched; PostgreSQL's `PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary)` and Oracle `MEDIAN` are not run here):
+Shorter in engines with a median function (`MEDIAN` exists in DuckDB, Snowflake and Oracle; not run here, from memory; PostgreSQL's `PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary)` and Oracle `MEDIAN` are not run here):
 ```sql
 SELECT e.dept, e.name, e.salary, m.med AS median_salary
 FROM employees e
@@ -5627,8 +5627,12 @@ Tech  Sara   60000        60000.0
 | 6 | C05 | 1500 |
 | 7 | C05 | 1000 |
 | 8 | C06 | 2000 |
-
-(first 8 of 14 rows shown)
+| 9 | C07 | 1500 |
+| 10 | C08 | 1200 |
+| 11 | C09 | 1000 |
+| 12 | C10 | 800 |
+| 13 | C11 | 600 |
+| 14 | C12 | 400 |
 
 **SQL:**
 ```sql

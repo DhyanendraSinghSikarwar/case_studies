@@ -2495,12 +2495,30 @@ res = d.sort_values(['dept', 'salary', 'name'], ascending=[True, False, True])[[
 
 | order_id | customer | amount |
 |---|---|---|
-| 1 | C01 | 140 |
-| 2 | C01 | 165 |
-| 3 | C02 | 280 |
-| 4 | C02 | 190 |
-| 5 | C02 | 30 |
-| 6 | C03 | 320 |
+| 1 | C01 | 150 |
+| 2 | C02 | 300 |
+| 3 | C03 | 450 |
+| 4 | C04 | 600 |
+| 5 | C05 | 750 |
+| 6 | C06 | 900 |
+| 7 | C07 | 1050 |
+| 8 | C08 | 1200 |
+| 9 | C09 | 1350 |
+| 10 | C10 | 1500 |
+| 11 | C11 | 1650 |
+| 12 | C12 | 1800 |
+| 13 | C13 | 1950 |
+| 14 | C14 | 2100 |
+| 15 | C15 | 2250 |
+| 16 | C16 | 2400 |
+| 17 | C17 | 2550 |
+| 18 | C18 | 3240 |
+| 19 | C19 | 2900 |
+| 20 | C20 | 2000 |
+| 21 | C20 | 1500 |
+
+20 customers in total (C20 placed two orders, 2000 + 1500 = 3500).
+
 **SQL:**
 ```sql
 WITH totals AS (
@@ -3158,7 +3176,7 @@ res = d[d['higher_paid_in_dept'] < 2].sort_values(['dept', 'salary', 'name'], as
 - SQL Server form: `FROM departments d CROSS APPLY (SELECT TOP 2 name, salary FROM employees e WHERE e.dept = d.dept ORDER BY salary DESC) t` (not run here, from memory).
 - **Faster when**: few groups, many rows per group, and an index on (dept, salary DESC): each group reads only N index entries without sorting everything.
 - **Slower when**: many tiny groups (thousands of loops) or no index, where a single window-function pass is better.
-- Version note: MySQL LATERAL support is from memory; verified here only in DuckDB.
+- Version note: LATERAL/CROSS APPLY syntax and version numbers here are from memory, not run here (SQLite has neither).
 **Example:** HR wants the 2 best-paid people for each department; the department list is short (4) and the employee table is huge.
 **Sample data:**
 
@@ -3170,10 +3188,23 @@ res = d[d['higher_paid_in_dept'] < 2].sort_values(['dept', 'salary', 'name'], as
 | 2 | Ravi | HR | 60000 |
 | 3 | Sana | HR | 60000 |
 | 4 | Tom | HR | 45000 |
+| 5 | Kiran | Eng | 120000 |
+| 6 | Leena | Eng | 95000 |
+| 7 | Arjun | Eng | 95000 |
+| 8 | Divya | Eng | 70000 |
+| 9 | Farah | Eng | 48000 |
 | 10 | Gopal | Sales | 46000 |
 | 11 | Isha | Sales | 52000 |
 | 12 | Jay | Sales | 52000 |
 | 13 | Neha | Sales | 40000 |
+| 14 | Om | Support | 44000 |
+| 15 | Pia | Support | 38000 |
+| 16 | Quinn | Support | 38000 |
+| 17 | Ujwal | Eng | 85000 |
+| 18 | Vik | Eng | 60000 |
+
+LATERAL is not supported by SQLite, so the query below was **not run here**. The Output table is the result of the equivalent `ROW_NUMBER() ... WHERE rn <= 2` query, which I ran on SQLite 3.45.1 on this data (the lateral form should return the same rows; an earlier author note says it was run in DuckDB, which I could not re-check).
+
 **SQL:**
 ```sql
 -- optional supporting index, matters on big tables

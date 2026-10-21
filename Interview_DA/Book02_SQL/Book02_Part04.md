@@ -331,6 +331,11 @@ Correlated (above own-department average):
 | Chitra |
 | Farhan |
 
+**pandas equivalent:**
+```python
+non_corr = employees[employees.salary > employees.salary.mean()][['name']]                       # one fixed average
+corr = employees[employees.salary > employees.groupby('dept_id').salary.transform('mean')][['name']]  # average per row's department
+```
 **Edge cases:** NULL join column in a correlated subquery makes the comparison unknown, so those rows drop out.
 **Likely follow-ups:**
 - Which is faster? Non-correlated usually, since it runs once.
@@ -569,6 +574,13 @@ HAVING:
 |---|---|
 | 3 | 3 |
 
+**pandas equivalent:** (WHERE and HAVING versions)
+```python
+ids = departments.loc[departments.dept_name.isin(['HR','IT']), 'dept_id']
+where_res = employees[employees.dept_id.isin(ids)][['name']]
+hc = employees.groupby('dept_id', as_index=False).agg(headcount=('emp_id','count'))
+having_res = hc[hc.headcount > hc.headcount.mean()]          # mean of 4 headcounts = 2
+```
 **Edge cases:** Subquery in SELECT returning more than one row errors in most databases. In HAVING the subquery sees the whole table, not the group (see Q54). NULLs inside IN lists cause surprises (Q18).
 **Likely follow-ups:**
 - Which clause is most common? WHERE, then FROM.
@@ -623,6 +635,11 @@ Fixed query:
 |---|
 | Farhan |
 
+**pandas equivalent:** (the fixed query; pandas never returns "one row by accident", it compares to the single number you compute)
+```python
+it_max = employees.loc[employees.dept_id == 3, 'salary'].max()
+result = employees[employees.salary == it_max][['name']]
+```
 **Edge cases:** Zero rows gives NULL, so `salary = NULL` matches nothing. Ties for MAX still return all tied employees.
 **Likely follow-ups:**
 - How do you handle several values? Use IN, ANY or an aggregate.
@@ -1524,6 +1541,12 @@ SELECT name FROM employees WHERE dept_id IN (SELECT dept_id FROM big_depts) ORDE
 | Farid |
 | Gita |
 | Hari |
+**pandas equivalent:**
+```python
+tot = employees.groupby('dept_id').salary.sum()
+big = tot[tot > tot.mean()].index
+result = employees[employees.dept_id.isin(big)][['name']].sort_values('name').reset_index(drop=True)
+```
 **Edge cases:** NOT IN at any level breaks if the inner list has a NULL (see Q18). Every derived table needs an alias in MySQL/PostgreSQL. SQL Server does not allow an ORDER BY inside a subquery without TOP.
 **Likely follow-ups:**
 - Do CTEs make it faster? Usually no, same plan (see Q28).
@@ -1643,6 +1666,11 @@ ANY / MIN form (above 70,000, the lowest Sales salary):
 | Esha | 90000 |
 | Gita | 120000 |
 | Hari | 120000 |
+**pandas equivalent:**
+```python
+all_res = employees[employees.salary > employees.loc[employees.dept_id == 1, 'salary'].max()][['name','salary']]
+any_res = employees[employees.salary > employees.loc[employees.dept_id == 2, 'salary'].min()][['name','salary']]
+```
 **Edge cases:** `> ALL` over an empty subquery is true for every row; `> ANY` over an empty subquery is false. If the list contains a NULL, `> ALL` can become unknown (no rows) and `<> ALL` behaves like the NOT IN NULL trap.
 **Likely follow-ups:**
 - Is `= ANY` the same as IN? Yes.

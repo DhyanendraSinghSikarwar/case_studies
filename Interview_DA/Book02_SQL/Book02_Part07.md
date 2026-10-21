@@ -28,6 +28,7 @@
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -58,6 +59,7 @@ Query 3:
 | null_eq_null | null_is_null |
 |---|---|
 | NULL | 1 |
+
 **pandas equivalent:**
 ```python
 # employees = pd.read_sql('SELECT * FROM employees', conn)
@@ -94,6 +96,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -126,6 +129,7 @@ Query 2:
 | avg_ignoring_null | avg_null_as_zero |
 |---|---|
 | 60166.67 | 45125 |
+
 **pandas equivalent:**
 ```python
 res = employees[['emp_id', 'first_name', 'salary']].copy()
@@ -162,6 +166,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -189,6 +194,7 @@ ORDER BY emp_id;
 | 6 | Karan | NULL | Unknown |
 | 7 | Anil | 30000 | Low |
 | 8 | Sana | 65000 | Medium |
+
 **pandas equivalent:**
 ```python
 res = employees[['emp_id', 'first_name', 'salary']].copy()
@@ -227,6 +233,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -258,6 +265,7 @@ ORDER BY emp_id;
 | Karan | Sales | Sales | Not set |
 | Anil | Finance | Finance | Standard |
 | Sana | Finance | Finance | Standard |
+
 **pandas equivalent:**
 ```python
 res = employees[['first_name', 'dept']].copy()
@@ -296,6 +304,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -313,6 +322,7 @@ FROM employees;
 | all_rows | salary_not_null | total_salary | avg_salary | if_nulls_were_zero |
 |---|---|---|---|---|
 | 8 | 6 | 361000 | 60166.67 | 45125 |
+
 **pandas equivalent:**
 ```python
 res = pd.DataFrame({
@@ -353,6 +363,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -378,6 +389,7 @@ ORDER BY emp_id;
 | Karan | 2022-09-12 | 1022 |
 | Anil | 2024-05-30 | 396 |
 | Sana | 2017-08-08 | 2883 |
+
 **pandas equivalent:**
 ```python
 today = pd.Timestamp('2025-06-30')
@@ -416,6 +428,7 @@ SELECT CURRENT_DATE AS today, CURRENT_TIMESTAMP AS now_utc, date('now') AS sqlit
 | today | now_utc | sqlite_date | sqlite_datetime |
 |---|---|---|---|
 | 2026-10-21 | 2026-10-21 05:55:32 | 2026-10-21 | 2026-10-21 05:55:32 |
+
 **pandas equivalent:**
 ```python
 res = pd.DataFrame({'today': [pd.Timestamp.now().normalize()], 'now': [pd.Timestamp.now()]})
@@ -450,6 +463,7 @@ res = pd.DataFrame({'today': [pd.Timestamp.now().normalize()], 'now': [pd.Timest
 | 5 | 2025-01-10 | North | 700 |
 | 6 | 2024-12-20 | South | 900 |
 | 7 | 2025-06-30 | North | 400 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -504,6 +518,7 @@ Query 3:
 | 4 | 2025-06-29 | 1500 |
 | 5 | 2025-01-10 | 700 |
 | 7 | 2025-06-30 | 400 |
+
 **pandas equivalent:**
 ```python
 sales['order_date'] = pd.to_datetime(sales['order_date'])
@@ -542,6 +557,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -566,6 +582,7 @@ ORDER BY emp_id;
 | 6 | Karan Shah |
 | 7 | Anil Verma |
 | 8 | Sana Khan |
+
 **pandas equivalent:**
 ```python
 res = employees[['emp_id']].copy()
@@ -602,6 +619,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -624,6 +642,7 @@ ORDER BY dept;
 | HR | 0 | 2 | 2 |
 | IT | 1 | 1 | 2 |
 | Sales | 2 | 0 | 2 |
+
 **pandas equivalent:**
 ```python
 res = (employees.groupby('dept')
@@ -662,6 +681,7 @@ Result matches the SQL output.
 | 5 | 2025-01-10 | North | 700 |
 | 6 | 2024-12-20 | South | 900 |
 | 7 | 2025-06-30 | North | 400 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -685,6 +705,7 @@ ORDER BY yr, mth;
 | 2025 | 01 | 700 |
 | 2025 | 05 | 1300 |
 | 2025 | 06 | 3100 |
+
 **pandas equivalent:**
 ```python
 sales['order_date'] = pd.to_datetime(sales['order_date'])
@@ -723,6 +744,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -751,6 +773,7 @@ ORDER BY emp_id;
 | Karan | 2022-09-12 | 2 | 2.8 |
 | Anil | 2024-05-30 | 1 | 1.1 |
 | Sana | 2017-08-08 | 7 | 7.9 |
+
 **pandas equivalent:**
 ```python
 today = pd.Timestamp('2025-06-30')
@@ -788,6 +811,7 @@ Result matches the SQL output.
 | 4 | Arjun | Active |
 | 5 | Neha | NULL |
 | 6 | Karan | Resigned |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -823,6 +847,7 @@ Query 3:
 | a_key | b_key |
 |---|---|
 | 1 | 1 |
+
 **pandas equivalent:**
 ```python
 # SQL-style: NULL rows excluded
@@ -859,6 +884,7 @@ Result matches the SQL output.
 | 5 | 2025-01-10 | North | 700 |
 | 6 | 2024-12-20 | South | 900 |
 | 7 | 2025-06-30 | North | 400 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -878,6 +904,7 @@ ORDER BY region;
 |---|---|---|---|
 | North | 700 | 500 | 1600 |
 | South | 0 | 800 | 1500 |
+
 **pandas equivalent:**
 ```python
 sales['order_date'] = pd.to_datetime(sales['order_date'])
@@ -902,7 +929,7 @@ Result matches the SQL output.
 **Explain simply:**
 - `NULLIF(x, y)` = 'give NULL if x = y, else give x'. It is the opposite of COALESCE.
 - Division by NULL gives NULL, so the query keeps running.
-- PostgreSQL and SQL Server raise an error on /0 (SQLite and MySQL by default return NULL), so the guard is needed for portability.
+- PostgreSQL and SQL Server raise an error on /0, while SQLite and MySQL return NULL in a plain SELECT (MySQL can error inside INSERT/UPDATE in strict mode; from memory). So the guard is needed for portability.
 - Also useful to turn blank strings into NULL: `NULLIF(TRIM(col), '')`.
 **Example:** IT has a budget of 900,000 but 0 headcount; budget per head would be a divide-by-zero. With NULLIF it shows NULL.
 **Sample data:**
@@ -915,6 +942,7 @@ Result matches the SQL output.
 | IT | 900000 | 0 | 0 |
 | Sales | 300000 | 3 | 1 |
 | Finance | 400000 | 4 | 2 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -933,6 +961,7 @@ ORDER BY dept;
 | HR | 500000 | 5 | 100000 |
 | IT | 900000 | 0 | NULL |
 | Sales | 300000 | 3 | 100000 |
+
 **pandas equivalent:**
 ```python
 res = dept_stats[['dept', 'budget', 'headcount']].sort_values('dept').reset_index(drop=True)
@@ -965,6 +994,7 @@ Result matches the SQL output.
 | IT | 900000 | 0 | 0 |
 | Sales | 300000 | 3 | 1 |
 | Finance | 400000 | 4 | 2 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -984,6 +1014,7 @@ ORDER BY dept;
 | HR | 1 | 5 | 20 | 20 |
 | IT | 0 | 0 | NULL | 0 |
 | Sales | 1 | 3 | 33.3 | 33.3 |
+
 **pandas equivalent:**
 ```python
 res = dept_stats[['dept', 'leavers', 'headcount']].sort_values('dept').reset_index(drop=True)
@@ -1021,6 +1052,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -1043,6 +1075,7 @@ WHERE emp_id IN (1, 3, 6);
 | 1 | 52000 | 52000 | 52000 | 5 |
 | 3 | NULL | 0 | 0 | 5 |
 | 6 | NULL | 0 | 0 | 5 |
+
 **pandas equivalent:**
 ```python
 res = employees.loc[employees['emp_id'].isin([1, 3, 6]), ['emp_id', 'salary']].copy()
@@ -1081,6 +1114,7 @@ Result matches the SQL output.
 | 6 | Karan | Shah | M | Sales | NULL | 2022-09-12 |
 | 7 | Anil | Verma | M | Finance | 30000 | 2024-05-30 |
 | 8 | Sana | Khan | F | Finance | 65000 | 2017-08-08 |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -1107,6 +1141,7 @@ ORDER BY emp_id;
 | Karan | NULL | Other | Other |
 | Anil | 30000 | Other | Other |
 | Sana | 65000 | High | High |
+
 **pandas equivalent:**
 ```python
 res = employees[['first_name', 'salary']].copy()
@@ -1141,6 +1176,7 @@ Result matches the SQL output.
 | 3 | hyderabad |
 | 4 | Pune |
 | 5 |  pune |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -1174,6 +1210,7 @@ Query 2:
 |---|---|
 | hyderabad | 3 |
 | pune | 2 |
+
 **pandas equivalent:**
 ```python
 res = candidates[['id', 'city']].copy()
@@ -1208,6 +1245,7 @@ Result matches the SQL output.
 | 4 | Venkatasubramanian |
 | 5 | Neha Gupta |
 | 6 | NULL |
+
 **SQL:**
 ```sql
 -- SQLite (run here); standard SQL unless noted
@@ -1228,6 +1266,7 @@ ORDER BY id;
 | 1 | Priyadarshini Menon | 19 |
 | 2 | Ravi Kumar   | 12 |
 | 4 | Venkatasubramanian | 18 |
+
 **pandas equivalent:**
 ```python
 res = staff_names.assign(name_len=staff_names['name'].str.len())
@@ -2001,12 +2040,12 @@ print(res)
 ### Q33 ⭐⭐ 🟡 What is DATE_TRUNC / how do you truncate dates to month or week in each dialect?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Do you know how to group dates into month or week buckets and that week start day differs.
-**Say this in the interview:** DATE_TRUNC('month', date) chops a date down to the first day of its month. PostgreSQL, DuckDB, Snowflake and BigQuery have it; MySQL and SQLite do not, so I use DATE_FORMAT or date modifiers instead.
+**Say this in the interview:** DATE_TRUNC('month', date) chops a date down to the first day of its month. PostgreSQL, DuckDB, Snowflake and BigQuery have it (from memory); MySQL and SQLite do not, so I use DATE_FORMAT or date modifiers instead.
 **Explain simply:**
 - *Truncate* here means rounding a date down: 2021-03-15 becomes 2021-03-01 for month.
 - It is the standard trick to count hires per month: GROUP BY the truncated date.
 - `DATE_TRUNC('week', d)` returns the Monday of that week in PostgreSQL/DuckDB (from memory for PostgreSQL). SQL Server's DATETRUNC week depends on DATEFIRST.
-- The main query below ran in DuckDB (PostgreSQL-style syntax); the SQLite version is also run and matches.
+- The `DATE_TRUNC` query below is PostgreSQL syntax and was not run here (no PostgreSQL or DuckDB in this environment). The SQLite version was run, and its output is the table shown.
 **Example:** Hire 2021-03-15 (a Monday) -> month_start 2021-03-01, week_start 2021-03-15. Hire 2022-11-10 (Thursday) -> week starts Monday 2022-11-07.
 **Sample data:**
 
@@ -2020,14 +2059,14 @@ print(res)
 
 **SQL:**
 ```sql
--- table: emp(emp_id, name, hire_date)  -- DuckDB, hire_date is DATE
+-- PostgreSQL syntax, not run here. table: emp(emp_id, name, hire_date), hire_date is DATE
 SELECT emp_id, hire_date,
        CAST(date_trunc('month', hire_date) AS DATE) AS month_start,
        CAST(date_trunc('week',  hire_date) AS DATE) AS week_start_monday
 FROM emp
 WHERE emp_id <= 5;
 ```
-SQLite alternative (also run here, same result; SQLite has no DATE_TRUNC):
+SQLite version (run here; SQLite has no DATE_TRUNC). The Output table below comes from this query:
 ```sql
 SELECT emp_id, hire_date,
        date(hire_date, 'start of month')            AS month_start,
@@ -2064,7 +2103,7 @@ res = pd.DataFrame({'emp_id': emp['emp_id'], 'hire_date': emp['hire_date'],
 res = res[res['emp_id'] <= 5].reset_index(drop=True)
 print(res)
 ```
-**Edge cases:** NULL date gives NULL. date_trunc on a DATE returns a timestamp (2021-03-01 00:00:00) in DuckDB (verified here, hence the CAST to DATE) and in PostgreSQL (from memory). A week crossing a year end can belong to the earlier year. Decide Monday vs Sunday start before reporting weekly numbers.
+**Edge cases:** NULL date gives NULL. In PostgreSQL, `date_trunc` on a DATE returns a timestamp (2021-03-01 00:00:00), hence the CAST to DATE (from memory, not run here). A week crossing a year end can belong to the earlier year. Decide Monday vs Sunday start before reporting weekly numbers.
 **Likely follow-ups:**
 - Count hires per month? `SELECT date_trunc('month', hire_date) m, COUNT(*) FROM emp GROUP BY 1 ORDER BY 1`.
 - Truncate to year or quarter? Replace 'month' with 'year' or 'quarter'.
@@ -2078,7 +2117,7 @@ print(res)
 - A text like '15-08-2025' is ambiguous: is it 15 August or (in US style) month 15? The database needs the *format*.
 - Once it is a real DATE you can add days, sort correctly, and extract the month.
 - SQLite has no such function; I rebuilt the ISO form 'YYYY-MM-DD' with SUBSTR, which SQLite treats as a date.
-- DuckDB's `strptime(text, '%d-%m-%Y')` gave identical dates (also run here).
+- Only the SQLite query was run here; the other dialect lines are from memory.
 **Example:** A legacy HR file has joining dates as '15-08-2025'; you convert them to 2025-08-15 so tenure and month reports work.
 **Sample data:**
 
@@ -2104,7 +2143,6 @@ SELECT STR_TO_DATE(joined_text, '%d-%m-%Y') FROM raw_dates;
 SELECT TO_DATE(joined_text, 'DD-MM-YYYY') FROM raw_dates;
 -- SQL Server (style 105 = dd-mm-yyyy)
 SELECT CONVERT(date, joined_text, 105) FROM raw_dates;
--- DuckDB (run here): SELECT strptime(joined_text, '%d-%m-%Y')::DATE FROM raw_dates;
 ```
 
 **Output:**
@@ -2540,8 +2578,11 @@ print(res)
 - Multiply by 100.0, not 100: in many databases (SQL Server, PostgreSQL) integer / integer drops decimals, so 1/3 becomes 0.
 - Shortcut: `AVG(CASE WHEN status='Left' THEN 1.0 ELSE 0 END)` is the leaver share directly.
 - Strictly, attrition rate = leavers / average headcount in the period; this simple version uses current rows.
-**Example:** HR has 3 IT staff and 1 has left, so IT attrition is 1/3 = 33.3%.
+**Example:** The HR file shows 3 people in IT and 1 of them has left, so IT attrition is 1/3 = 33.3%.
 **Sample data:**
+
+`emp`
+
 | emp_id | name | dept | status |
 |---|---|---|---|
 | 1 | Asha | Sales | Active |
@@ -2551,8 +2592,10 @@ print(res)
 | 5 | Esha | IT | Active |
 | 6 | Farhan | IT | Active |
 | 7 | Gita | IT | Left |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 SELECT dept,
        COUNT(*) AS headcount,
        SUM(CASE WHEN status = 'Left' THEN 1 ELSE 0 END) AS leavers,
@@ -2562,13 +2605,16 @@ GROUP BY dept
 ORDER BY dept
 ```
 **Output:**
+
 | dept | headcount | leavers | attrition_pct |
 |---|---|---|---|
 | HR | 2 | 1 | 50.0 |
 | IT | 3 | 1 | 33.3 |
 | Sales | 2 | 1 | 50.0 |
+
 **pandas equivalent:**
 ```python
+# emp = the `emp` sample table above, loaded as a DataFrame
 res = emp.assign(l=(emp.status == 'Left').astype(int)).groupby('dept').agg(headcount=('emp_id','count'), leavers=('l','sum')).reset_index()
 res['attrition_pct'] = (100 * res.leavers / res.headcount).round(1)
 # result matches the SQL output (checked)
@@ -2589,14 +2635,19 @@ res['attrition_pct'] = (100 * res.leavers / res.headcount).round(1)
 - First day of month: `DATE_TRUNC('month', d)` (Postgres), `DATE_FORMAT(d,'%Y-%m-01')` (MySQL), `DATEFROMPARTS(YEAR(d),MONTH(d),1)` (SQL Server). Last day: `EOMONTH(d)` (SQL Server), `LAST_DAY(d)` (MySQL), `DATE_TRUNC('month',d)+INTERVAL '1 month - 1 day'` (Postgres). Not run here / from memory; SQLite version below was run.
 **Example:** Asha has attendance rows on 3, 4, 6 and 7 March 2025, so 5 March is the missing day.
 **Sample data:**
+
+`attendance`
+
 | emp_id | work_date |
 |---|---|
 | 1 | 2025-03-03 |
 | 1 | 2025-03-04 |
 | 1 | 2025-03-06 |
 | 1 | 2025-03-07 |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 WITH RECURSIVE cal(d) AS (
     SELECT MIN(work_date) FROM attendance
     UNION ALL
@@ -2612,6 +2663,7 @@ SELECT date('2025-02-14', 'start of month') AS first_day,
        date('2025-02-14', 'start of month', '+1 month', '-1 day') AS last_day;
 ```
 **Output:**
+
 | missing_date |
 |---|
 | 2025-03-05 |
@@ -2619,8 +2671,11 @@ SELECT date('2025-02-14', 'start of month') AS first_day,
 | first_day | last_day |
 |---|---|
 | 2025-02-01 | 2025-02-28 |
+
 **pandas equivalent:**
 ```python
+# att = the `attendance` sample table above, loaded as a DataFrame
+att['work_date'] = pd.to_datetime(att['work_date'])   # text -> real dates, otherwise difference() finds nothing
 full = pd.date_range(att.work_date.min(), att.work_date.max())
 res = pd.DataFrame({'missing_date': full.difference(att.work_date)})
 # month boundaries
@@ -2640,32 +2695,40 @@ d = pd.Timestamp('2025-02-14'); first = d.replace(day=1); last = d + pd.offsets.
 **Explain simply:**
 - NULL means 'unknown'. Is unknown equal to unknown? Unknown - so `NULL = NULL` is not true, and a WHERE filter only keeps rows that are true.
 - `a IS NOT DISTINCT FROM b` is true when both are equal or both are NULL; `IS DISTINCT FROM` is the opposite (different, or exactly one is NULL).
-- MySQL: `a <=> b`. SQL Server: `a IS NOT DISTINCT FROM b` since SQL Server 2022 (from memory); older versions use `(a = b OR (a IS NULL AND b IS NULL))`. SQLite: `a IS b` also works.
+- MySQL: `a <=> b`. SQL Server: `a IS NOT DISTINCT FROM b` since SQL Server 2022 (from memory); older versions use `(a = b OR (a IS NULL AND b IS NULL))`. SQLite: `a IS b` also works, and SQLite 3.39+ accepts `IS NOT DISTINCT FROM` (the query below ran on 3.45.1).
 - Handy for comparing old and new data to find changed rows, including changes to or from NULL.
 **Example:** Comparing last year's manager_id to this year's: if both are NULL (no manager) a normal `=` says 'not equal' - wrong for a change report.
 **Sample data:**
+
+`t`
+
 | id | a | b |
 |---|---|---|
 | 1 | x | x |
 | 2 | x | NULL |
 | 3 | NULL | NULL |
 | 4 | x | y |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 SELECT id, a, b,
        CASE WHEN a = b THEN 'true' WHEN NOT (a = b) THEN 'false' ELSE 'unknown(NULL)' END AS plain_equals,
        CASE WHEN a IS NOT DISTINCT FROM b THEN 'true' ELSE 'false' END AS null_safe_equals
 FROM t
 ```
 **Output:**
+
 | id | a | b | plain_equals | null_safe_equals |
 |---|---|---|---|---|
 | 1 | x | x | true | true |
 | 2 | x | NULL | unknown(NULL) | false |
 | 3 | NULL | NULL | unknown(NULL) | true |
 | 4 | x | y | false | false |
+
 **pandas equivalent:**
 ```python
+# tdf = the `t` sample table above, loaded as a DataFrame
 same = (tdf.a == tdf.b) | (tdf.a.isna() & tdf.b.isna())
 print(tdf[same].id.tolist())   # [1, 3]
 # note: pandas NaN != NaN, so you must add the both-null test yourself
@@ -2687,13 +2750,18 @@ print(tdf[same].id.tolist())   # [1, 3]
 - Counted inclusive: 3 to 14 March has 12 calendar days, 10 of them weekdays.
 **Example:** Leave from Fri 7 Mar to Mon 10 Mar is 2 working days; Sat 8 to Sun 9 is 0.
 **Sample data:**
+
+`tasks`
+
 | id | start_date | end_date |
 |---|---|---|
 | 1 | 2025-03-03 | 2025-03-14 |
 | 2 | 2025-03-07 | 2025-03-10 |
 | 3 | 2025-03-08 | 2025-03-09 |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 WITH RECURSIVE cal(d) AS (
     SELECT MIN(start_date) FROM tasks
     UNION ALL
@@ -2709,13 +2777,16 @@ GROUP BY t.id, t.start_date, t.end_date
 ORDER BY t.id
 ```
 **Output:**
+
 | id | start_date | end_date | working_days |
 |---|---|---|---|
 | 1 | 2025-03-03 | 2025-03-14 | 10 |
 | 2 | 2025-03-07 | 2025-03-10 | 2 |
 | 3 | 2025-03-08 | 2025-03-09 | 0 |
+
 **pandas equivalent:**
 ```python
+# tk = the `tasks` sample table above, loaded as a DataFrame
 res = tk.copy()
 res['working_days'] = np.busday_count(pd.to_datetime(tk.start_date).values.astype('datetime64[D]'),
                                       (pd.to_datetime(tk.end_date) + pd.Timedelta(days=1)).values.astype('datetime64[D]'))
@@ -2739,14 +2810,19 @@ res['working_days'] = np.busday_count(pd.to_datetime(tk.start_date).values.astyp
 - Plain TRIM removes spaces only, not tabs, line breaks or the non-breaking space copied from web pages; use REPLACE for those.
 **Example:** A name typed as '  Asha ' with 6 characters becomes 'Asha' with 4.
 **Sample data:**
+
+`names`
+
 | id | name |
 |---|---|
 | 1 |   Asha  |
 | 2 |  Bala |
 | 3 | Chitra    |
 | 4 | Deepak |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 SELECT '[' || name || ']'          AS raw,
        '[' || TRIM(name) || ']'    AS trimmed,
        '[' || LTRIM(name) || ']'   AS left_trimmed,
@@ -2755,14 +2831,17 @@ SELECT '[' || name || ']'          AS raw,
 FROM names
 ```
 **Output:**
+
 | raw | trimmed | left_trimmed | right_trimmed | clean_length |
 |---|---|---|---|---|
 | [  Asha ] | [Asha] | [Asha ] | [  Asha] | 4 |
 | [ Bala] | [Bala] | [Bala] | [ Bala] | 4 |
 | [Chitra   ] | [Chitra] | [Chitra   ] | [Chitra] | 6 |
 | [Deepak] | [Deepak] | [Deepak] | [Deepak] | 6 |
+
 **pandas equivalent:**
 ```python
+# nm = the `names` sample table above, loaded as a DataFrame
 res = pd.DataFrame({'raw': '[' + nm.name + ']', 'trimmed': '[' + nm.name.str.strip() + ']',
                     'left_trimmed': '[' + nm.name.str.lstrip() + ']', 'right_trimmed': '[' + nm.name.str.rstrip() + ']',
                     'clean_length': nm.name.str.strip().str.len()})
@@ -2785,13 +2864,18 @@ res = pd.DataFrame({'raw': '[' + nm.name + ']', 'trimmed': '[' + nm.name.str.str
 - Caution: LPAD truncates if the value is longer than the target width (MySQL/Postgres), so 1234567 becomes 12345.
 **Example:** Employee 42 becomes EMP00042 and 105 becomes EMP00105.
 **Sample data:**
+
+`ids`
+
 | emp_id |
 |---|
 | 7 |
 | 42 |
 | 105 |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 SELECT emp_id,
        printf('%05d', emp_id)                      AS padded,
        'EMP' || printf('%05d', emp_id)            AS emp_code,
@@ -2799,13 +2883,16 @@ SELECT emp_id,
 FROM ids
 ```
 **Output:**
+
 | emp_id | padded | emp_code | padded_alt |
 |---|---|---|---|
 | 7 | 00007 | EMP00007 | 00007 |
 | 42 | 00042 | EMP00042 | 00042 |
 | 105 | 00105 | EMP00105 | 00105 |
+
 **pandas equivalent:**
 ```python
+# ii = the `ids` sample table above, loaded as a DataFrame
 res = pd.DataFrame({'emp_id': ii.emp_id, 'padded': ii.emp_id.astype(str).str.zfill(5)})
 res['emp_code'] = 'EMP' + res.padded
 res['padded_alt'] = res.padded
@@ -2828,6 +2915,9 @@ res['padded_alt'] = res.padded
 - Better question: is it total sales or average per day? A weekday that appears in more weeks naturally has more total.
 **Example:** Fridays 7 and 14 March gave 300 + 320 = 620, the highest total.
 **Sample data:**
+
+`sales`
+
 | sale_date | amount |
 |---|---|
 | 2025-03-03 | 200 |
@@ -2838,8 +2928,10 @@ res['padded_alt'] = res.padded
 | 2025-03-10 | 250 |
 | 2025-03-14 | 320 |
 | 2025-03-15 | 60 |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 SELECT strftime('%w', sale_date) AS dow_no,           -- 0 = Sunday in SQLite
        substr('SunMonTueWedThuFriSat', strftime('%w', sale_date) * 3 + 1, 3) AS day_name,
        SUM(amount) AS total_sales
@@ -2849,11 +2941,14 @@ ORDER BY total_sales DESC
 LIMIT 1
 ```
 **Output:**
+
 | dow_no | day_name | total_sales |
 |---|---|---|
 | 5 | Fri | 620 |
+
 **pandas equivalent:**
 ```python
+# sd = the `sales` sample table above, loaded as a DataFrame
 sd['day'] = sd.d.dt.day_name().str[:3]
 res = sd.groupby('day', as_index=False).amount.sum().sort_values('amount', ascending=False).head(1)
 print(res)   # Fri, 620
@@ -2875,6 +2970,9 @@ print(res)   # Fri, 620
 - Shortcut in MySQL/SQL Server: shift the date back 3 months, then use the normal YEAR/QUARTER: `YEAR(DATE_SUB(d, INTERVAL 3 MONTH))` (not run here).
 **Example:** Sale on 20 March 2025 is FY2024-25 Q4; sale on 5 April 2025 is FY2025-26 Q1.
 **Sample data:**
+
+`sales2`
+
 | sale_date | amount |
 |---|---|
 | 2025-03-20 | 100 |
@@ -2884,8 +2982,10 @@ print(res)   # Fri, 620
 | 2025-12-25 | 300 |
 | 2026-01-10 | 80 |
 | 2026-03-31 | 60 |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 WITH x AS (
     SELECT amount,
            CAST(strftime('%Y', sale_date) AS INT) AS yr,
@@ -2900,6 +3000,7 @@ GROUP BY fy_start, fiscal_quarter
 ORDER BY fy_start, fiscal_quarter
 ```
 **Output:**
+
 | fiscal_year | fiscal_quarter | total_sales |
 |---|---|---|
 | FY2024-25 | Q4 | 100 |
@@ -2907,8 +3008,10 @@ ORDER BY fy_start, fiscal_quarter
 | FY2025-26 | Q2 | 120 |
 | FY2025-26 | Q3 | 300 |
 | FY2025-26 | Q4 | 140 |
+
 **pandas equivalent:**
 ```python
+# s2 = the `sales2` sample table above, loaded as a DataFrame
 d = pd.to_datetime(s2.sale_date)
 fy = np.where(d.dt.month >= 4, d.dt.year, d.dt.year - 1)
 s2['fiscal_year'] = ['FY%d-%02d' % (y, (y + 1) % 100) for y in fy]
@@ -2934,25 +3037,33 @@ res = s2.groupby(['fiscal_year', 'fiscal_quarter'], as_index=False).amount.sum()
 - pandas `find` is 0-based and returns -1 for not found, so add 1.
 **Example:** In asha@acme.com the @ is the 5th character.
 **Sample data:**
+
+`emp`
+
 | emp_id | email |
 |---|---|
 | 1 | asha@acme.com |
 | 2 | bala@gmail.com |
 | 3 | chitra@acme.com |
 | 4 | deepak@acme.com |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 SELECT email, INSTR(email, '@') AS at_position, SUBSTR(email, INSTR(email, '@') + 1) AS domain FROM emp WHERE emp_id <= 4
 ```
 **Output:**
+
 | email | at_position | domain |
 |---|---|---|
 | asha@acme.com | 5 | acme.com |
 | bala@gmail.com | 5 | gmail.com |
 | chitra@acme.com | 7 | acme.com |
 | deepak@acme.com | 7 | acme.com |
+
 **pandas equivalent:**
 ```python
+# e4 = the `emp` sample table above, loaded as a DataFrame
 res = pd.DataFrame({'email': e4.email, 'at_position': e4.email.str.find('@') + 1, 'domain': e4.email.str.split('@').str[1]})
 # result matches the SQL output (checked)
 ```
@@ -2973,25 +3084,33 @@ res = pd.DataFrame({'email': e4.email, 'at_position': e4.email.str.find('@') + 1
 - Regex counting exists in some engines (Oracle `REGEXP_COUNT`, not run here).
 **Example:** 'esha@outlook.in' has 1 dot; 'asha@acme.com' has 1 dot; a value like 'a.b.c@x.com' has 3.
 **Sample data:**
+
+`emp`
+
 | emp_id | email |
 |---|---|
 | 1 | asha@acme.com |
 | 3 | chitra@acme.com |
 | 4 | deepak@acme.com |
 | 5 | esha@outlook.in |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 SELECT email, LENGTH(email) - LENGTH(REPLACE(email, '.', '')) AS dot_count FROM emp WHERE emp_id IN (1,3,4,5)
 ```
 **Output:**
+
 | email | dot_count |
 |---|---|
 | asha@acme.com | 1 |
 | chitra@acme.com | 1 |
 | deepak@acme.com | 1 |
 | esha@outlook.in | 1 |
+
 **pandas equivalent:**
 ```python
+# e = the `emp` sample table above, loaded as a DataFrame
 res = pd.DataFrame({'email': e.email, 'dot_count': e.email.str.count(r'\.')})
 # result matches the SQL output (checked)
 ```
@@ -3007,11 +3126,14 @@ res = pd.DataFrame({'email': e.email, 'dot_count': e.email.str.count(r'\.')})
 **Say this in the interview:** A regular expression is a pattern language for text. MySQL uses REGEXP, PostgreSQL uses the ~ operator, SQL Server has no regex (use LIKE or PATINDEX), and I would keep the pattern simple and document its limits.
 **Explain simply:**
 - Pattern parts: `^` start, `$` end, `[0-9]{5}` exactly five digits, `+` one or more, `\.` a real dot.
-- MySQL: `email REGEXP 'pattern'`. PostgreSQL: `email ~ 'pattern'` (`~*` ignores case). Oracle: `REGEXP_LIKE`. DuckDB (run here): `regexp_matches`. SQL Server: no native regex until recent previews (from memory), so use LIKE/PATINDEX. Only DuckDB was run; SQLite has no built-in REGEXP.
+- MySQL: `email REGEXP 'pattern'`. PostgreSQL: `email ~ 'pattern'` (`~*` ignores case). Oracle: `REGEXP_LIKE`. DuckDB: `regexp_matches`. SQL Server: no native regex until recent previews (from memory), so use LIKE/PATINDEX. SQLite has no built-in REGEXP, so the SQL below was not run here; the 1/0 flags in the Output were checked with Python's `re` module using the same patterns.
 - Regex validates shape only: it cannot tell if the mailbox exists.
 - Use it to flag dirty data in a staging table before loading it.
 **Example:** Flag HR records where the phone is not 5 digits, a dash, then 5 digits.
 **Sample data:**
+
+`contacts`
+
 | name | email | phone |
 |---|---|---|
 | Asha | asha@acme.com | 98765-43210 |
@@ -3019,14 +3141,17 @@ res = pd.DataFrame({'email': e.email, 'dot_count': e.email.str.count(r'\.')})
 | Chitra | chitra@acme.com | 99999 00000 |
 | Deepak | deepak@@acme.com | 9876543210 |
 | Esha | esha@outlook.in | 77777-22222 |
+
 **SQL:**
 ```sql
+-- DuckDB syntax, not run here (in MySQL: email REGEXP '...'; in PostgreSQL: email ~ '...')
 SELECT name, email, phone,
        regexp_matches(email, '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$') AS email_ok,
        regexp_matches(phone, '^[0-9]{5}-[0-9]{5}$')                              AS phone_ok
 FROM contacts
 ```
 **Output:**
+
 | name | email | phone | email_ok | phone_ok |
 |---|---|---|---|---|
 | Asha | asha@acme.com | 98765-43210 | 1 | 1 |
@@ -3034,8 +3159,10 @@ FROM contacts
 | Chitra | chitra@acme.com | 99999 00000 | 1 | 0 |
 | Deepak | deepak@@acme.com | 9876543210 | 0 | 0 |
 | Esha | esha@outlook.in | 77777-22222 | 1 | 1 |
+
 **pandas equivalent:**
 ```python
+# ct = the `contacts` sample table above, loaded as a DataFrame
 res = ct.copy()
 res['email_ok'] = ct.email.str.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 res['phone_ok'] = ct.phone.str.match(r'^[0-9]{5}-[0-9]{5}$')
@@ -3058,6 +3185,9 @@ res['phone_ok'] = ct.phone.str.match(r'^[0-9]{5}-[0-9]{5}$')
 - SQLite: `GROUP_CONCAT(x, sep ORDER BY ...)` needs 3.44+.
 **Example:** List all HR people in one cell for a report: 'Chitra, Deepak'.
 **Sample data:**
+
+`emp`
+
 | dept | name |
 |---|---|
 | Sales | Asha |
@@ -3067,18 +3197,23 @@ res['phone_ok'] = ct.phone.str.match(r'^[0-9]{5}-[0-9]{5}$')
 | IT | Esha |
 | IT | Farhan |
 | IT | Gita |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 SELECT dept, GROUP_CONCAT(name, ', ' ORDER BY name) AS employees FROM emp GROUP BY dept ORDER BY dept
 ```
 **Output:**
+
 | dept | employees |
 |---|---|
 | HR | Chitra, Deepak |
 | IT | Esha, Farhan, Gita |
 | Sales | Asha, Bala |
+
 **pandas equivalent:**
 ```python
+# emp = the `emp` sample table above, loaded as a DataFrame
 res = emp.sort_values('name').groupby('dept', as_index=False).name.agg(', '.join).rename(columns={'name': 'employees'})
 # result matches the SQL output (checked)
 ```
@@ -3125,6 +3260,9 @@ CREATE TABLE login_log (
 - Same shape in MySQL, PostgreSQL, SQL Server; only the next-day arithmetic differs (`+ INTERVAL 1 DAY`, `+ INTERVAL '1 day'`, `DATEADD(day,1,...)`).
 **Example:** Count how many people logged in on 10 March 2025: 3 rows (00:00, 09:15, 23:59:59).
 **Sample data:**
+
+`logins`
+
 | user_id | login_ts |
 |---|---|
 | 1 | 2025-03-09 18:30:00 |
@@ -3132,6 +3270,7 @@ CREATE TABLE login_log (
 | 3 | 2025-03-10 09:15:00 |
 | 4 | 2025-03-10 23:59:59 |
 | 5 | 2025-03-11 00:00:00 |
+
 **SQL:**
 ```sql
 -- wrong: BETWEEN '2025-03-10' AND '2025-03-10' only matches exactly midnight
@@ -3145,6 +3284,7 @@ WHERE login_ts >= '2025-03-10'
   AND login_ts <  '2025-03-11'
 ```
 **Output:**
+
 | wrong_count |
 |---|
 | 0 |
@@ -3154,8 +3294,10 @@ WHERE login_ts >= '2025-03-10'
 | 2 | 2025-03-10 00:00:00 |
 | 3 | 2025-03-10 09:15:00 |
 | 4 | 2025-03-10 23:59:59 |
+
 **pandas equivalent:**
 ```python
+# lg = the `logins` sample table above, loaded as a DataFrame
 res = lg[(lg.t >= '2025-03-10') & (lg.t < '2025-03-11')][['user_id', 'login_ts']]
 # result matches the SQL output (checked)
 ```
@@ -3176,6 +3318,9 @@ res = lg[(lg.t >= '2025-03-10') & (lg.t < '2025-03-11')][['user_id', 'login_ts']
 - Avoid deep nesting when rules change often or exceed ~5 branches: store thresholds in a table and JOIN.
 **Example:** IT earning 80,000+ is 'IT-Senior', HR earning 50,000+ is 'HR-Senior'.
 **Sample data:**
+
+`emp`
+
 | name | dept | salary |
 |---|---|---|
 | Asha | Sales | 52000 |
@@ -3185,8 +3330,10 @@ res = lg[(lg.t >= '2025-03-10') & (lg.t < '2025-03-11')][['user_id', 'login_ts']
 | Esha | IT | 90000 |
 | Farhan | IT | 75000 |
 | Gita | IT | 82000 |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 SELECT name, dept, salary,
        CASE WHEN dept = 'IT' THEN
                 CASE WHEN salary >= 80000 THEN 'IT-Senior' ELSE 'IT-Regular' END
@@ -3203,6 +3350,7 @@ SELECT name, dept, salary,
 FROM emp
 ```
 **Output:**
+
 | name | dept | salary | band_nested | band_flat |
 |---|---|---|---|---|
 | Asha | Sales | 52000 | Other | Other |
@@ -3212,8 +3360,10 @@ FROM emp
 | Esha | IT | 90000 | IT-Senior | IT-Senior |
 | Farhan | IT | 75000 | IT-Regular | IT-Regular |
 | Gita | IT | 82000 | IT-Senior | IT-Senior |
+
 **pandas equivalent:**
 ```python
+# emp = the `emp` sample table above, loaded as a DataFrame
 def band(r):
     if r.dept == 'IT': return 'IT-Senior' if r.salary >= 80000 else 'IT-Regular'
     if r.dept == 'HR': return 'HR-Senior' if r.salary >= 50000 else 'HR-Regular'
@@ -3237,6 +3387,7 @@ emp['band'] = emp.apply(band, axis=1)
 - Sargable (search-argument-able) version: `order_date >= '2025-01-01' AND order_date < '2026-01-01'`.
 - Same principle: avoid `col + 1 = 5`, `LEFT(col,3)='abc'` (use `LIKE 'abc%'`), and leading-% LIKE. SQL Server and PostgreSQL can use function-based indexes if needed (from memory).
 **Example:** On a 10-million-row order table, the YEAR() filter reads all rows; the range filter jumps straight to 2025.
+**Sample data:** an `orders` table with 499 generated rows (dates in 2024 and 2025). The row values do not matter here; only the query plan does.
 **SQL:**
 ```sql
 CREATE TABLE orders(order_id INT, order_date TEXT, amount INT);
@@ -3257,6 +3408,8 @@ Query plans from SQLite (499 rows):
 |---|---|
 | function on column | SCAN orders |
 | date range | SEARCH orders USING INDEX idx_orders_date (order_date>? AND order_date<?) |
+
+**pandas equivalent:** not applicable. pandas has no indexes or query plans; filter with `df[(df.order_date >= '2025-01-01') & (df.order_date < '2026-01-01')]` for the same rows.
 **Edge cases:** Small tables may be scanned anyway. A function-based/computed index can make the first form fast. Statistics and data distribution affect the plan. Implicit conversions also break index use (Q58).
 **Likely follow-ups:**
 - How to check? Look at the execution plan (EXPLAIN / SHOW PLAN).
@@ -3274,6 +3427,9 @@ Query plans from SQLite (499 rows):
 - Fix at source with validation (drop-downs) where possible.
 **Example:** The 7 employees show as 5 different city strings, but after cleaning only 2 cities remain (see output).
 **Sample data:**
+
+`emp`
+
 | emp_id | name | city |
 |---|---|---|
 | 1 | Asha | Hyderabad |
@@ -3283,6 +3439,7 @@ Query plans from SQLite (499 rows):
 | 5 | Esha | Hyderabad |
 | 6 | Farhan | HYDERABAD |
 | 7 | Gita | Hyd |
+
 **SQL:**
 ```sql
 -- detect
@@ -3298,6 +3455,7 @@ GROUP BY clean_city
 ORDER BY employees DESC
 ```
 **Output:**
+
 | city | employees |
 |---|---|
 | Bengaluru | 1 |
@@ -3312,8 +3470,10 @@ After cleaning:
 |---|---|
 | Hyderabad | 6 |
 | Bengaluru | 1 |
+
 **pandas equivalent:**
 ```python
+# emp = the `emp` sample table above, loaded as a DataFrame
 cm = emp.city.str.strip().str.lower().replace({'hyd': 'hyderabad'}).str.title()
 res = cm.value_counts().rename_axis('clean_city').reset_index(name='employees')
 # result matches the SQL output (checked)
@@ -3335,12 +3495,16 @@ res = cm.value_counts().rename_axis('clean_city').reset_index(name='employees')
 - Fix the schema (store numbers as numbers) and CAST explicitly.
 **Example:** A zip or employee code stored as text: finding codes above 5 returns only 9 instead of 9, 10, 25, 100.
 **Sample data:**
+
+`codes`
+
 | code |
 |---|
 | 9 |
 | 10 |
 | 100 |
 | 25 |
+
 **SQL:**
 ```sql
 -- code is stored as TEXT
@@ -3357,6 +3521,15 @@ SELECT code FROM codes WHERE CAST(code AS INTEGER) > 5;       -- explicit, corre
 - ORDER BY CAST(code AS INTEGER): 9, 10, 25, 100
 - WHERE code > 5: 9
 - WHERE CAST(code AS INTEGER) > 5: 9, 10, 100, 25
+**pandas equivalent:**
+```python
+codes = pd.DataFrame({'code': ['9', '10', '100', '25']})   # text, like the SQL column
+codes.sort_values('code').code.tolist()                                  # ['10', '100', '25', '9']
+codes.sort_values('code', key=lambda s: s.astype(int)).code.tolist()     # ['9', '10', '25', '100']
+codes[codes.code > '5'].code.tolist()                                    # ['9']  (text comparison)
+codes[codes.code.astype(int) > 5].code.tolist()                          # ['9', '10', '100', '25']
+```
+Result matches the SQL output (run here; pandas refuses `codes.code > 5` with a TypeError, which is safer than SQLite's silent text comparison).
 **Edge cases:** NULLs stay NULL. Dates stored as text compare correctly only in ISO yyyy-mm-dd format. CAST of bad text errors in PostgreSQL and SQL Server and gives 0 in SQLite (MySQL: 0 with a warning, from memory).
 **Likely follow-ups:**
 - How to find bad conversions safely? `TRY_CAST` (SQL Server) / `TRY_CONVERT`, `CAST ... DEFAULT ON CONVERSION ERROR` (Oracle), regex checks first.
@@ -3369,19 +3542,22 @@ SELECT code FROM codes WHERE CAST(code AS INTEGER) > 5;       -- explicit, corre
 **Say this in the interview:** I store timestamps in UTC and convert to the viewer's zone only when reporting. PostgreSQL uses AT TIME ZONE, MySQL uses CONVERT_TZ, SQL Server uses AT TIME ZONE on datetimeoffset.
 **Explain simply:**
 - A time zone is an offset from UTC: India is +05:30 all year; New York changes with daylight saving. Always use named zones like 'Asia/Kolkata', not fixed offsets.
-- PostgreSQL / DuckDB: `ts AT TIME ZONE 'Asia/Kolkata'` converts a timestamptz to local clock time (run here in DuckDB).
+- PostgreSQL: `ts AT TIME ZONE 'Asia/Kolkata'` converts a timestamptz to local clock time (not run here; the pandas check below was run).
 - MySQL: `CONVERT_TZ(ts,'UTC','Asia/Kolkata')` - needs the time-zone tables loaded, else returns NULL. SQL Server 2016+: `ts AT TIME ZONE 'UTC' AT TIME ZONE 'India Standard Time'`. Not run here / from memory.
 - Day boundaries change with zone: 9 pm UTC on 10 March is already 11 March in India, so convert before grouping by day.
 **Example:** A login at 09:00 UTC shows as 14:30 for a Hyderabad employee and 05:00 for New York in March 2025.
 **SQL:**
 ```sql
+-- PostgreSQL syntax, not run here
 SELECT TIMESTAMPTZ '2025-03-10 09:00:00+00' AT TIME ZONE 'Asia/Kolkata'     AS ist_local,
        TIMESTAMPTZ '2025-03-10 09:00:00+00' AT TIME ZONE 'America/New_York' AS new_york_local
 ```
 **Output:**
+
 | ist_local | new_york_local |
 |---|---|
 | 2025-03-10 14:30:00 | 2025-03-10 05:00:00 |
+
 **pandas equivalent:**
 ```python
 ts = pd.Timestamp('2025-03-10 09:00:00', tz='UTC')
@@ -3400,11 +3576,14 @@ print(ts.tz_convert('America/New_York'))  # 2025-03-10 05:00:00-04:00
 **Say this in the interview:** I generate the dates with GENERATE_SERIES in PostgreSQL, or a recursive CTE in MySQL 8, SQL Server and SQLite, then LEFT JOIN my data so days with no rows show zero.
 **Explain simply:**
 - A calendar (date) table lists every day once, so gaps in the data become visible.
-- PostgreSQL: `SELECT d::date FROM generate_series('2025-03-01'::date,'2025-03-07','1 day') d`. DuckDB: `generate_series(DATE '2025-03-01', DATE '2025-03-07', INTERVAL 1 DAY)`.
+- PostgreSQL: `SELECT d::date FROM generate_series('2025-03-01'::date,'2025-03-07','1 day') d`. DuckDB: `generate_series(DATE '2025-03-01', DATE '2025-03-07', INTERVAL 1 DAY)` (neither run here).
 - MySQL 8 / SQL Server / SQLite: recursive CTE as run here. SQL Server needs `WITH` (no RECURSIVE keyword) and `DATEADD(day,1,d)`, plus `OPTION (MAXRECURSION 0)` for >100 days; MySQL 8 uses `DATE_ADD(d, INTERVAL 1 DAY)` (from memory, not run).
 - For production reporting, keep a permanent calendar table with columns such as weekday, month, fiscal year, holiday flag.
 **Example:** Sales exist for 4 of 7 days; the report must still show the 3 empty days as 0.
 **Sample data:**
+
+`daily_sales`
+
 | sale_date | amount |
 |---|---|
 | 2025-03-01 | 100 |
@@ -3412,8 +3591,10 @@ print(ts.tz_convert('America/New_York'))  # 2025-03-10 05:00:00-04:00
 | 2025-03-02 | 70 |
 | 2025-03-05 | 200 |
 | 2025-03-07 | 90 |
+
 **SQL:**
 ```sql
+-- SQLite (run here); standard SQL unless noted
 WITH RECURSIVE cal(d) AS (
     SELECT '2025-03-01'
     UNION ALL
@@ -3426,6 +3607,7 @@ GROUP BY cal.d
 ORDER BY cal.d
 ```
 **Output:**
+
 | day | sales |
 |---|---|
 | 2025-03-01 | 100 |
@@ -3435,8 +3617,10 @@ ORDER BY cal.d
 | 2025-03-05 | 200 |
 | 2025-03-06 | 0 |
 | 2025-03-07 | 90 |
+
 **pandas equivalent:**
 ```python
+# ds = the `daily_sales` sample table above, loaded as a DataFrame
 res = ds.groupby('sale_date').amount.sum()
 res.index = pd.to_datetime(res.index)
 res = res.reindex(pd.date_range('2025-03-01', '2025-03-07'), fill_value=0).rename_axis('day').reset_index(name='sales')
