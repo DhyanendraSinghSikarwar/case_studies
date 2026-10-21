@@ -56,9 +56,14 @@
   "recsys_secondary_protocol": "discovery",
   "recsys_secondary_als_ndcg_ratio": 2.203066992308701,
   "recsys_best_model_primary": "als",
+  "recsys_own_history_ndcg_primary": 0.3141210633606475,
+  "recsys_als_ndcg_ratio_vs_own_history_primary": 0.7707471251242067,
+  "recsys_own_history_ndcg_secondary": 0.034193347612643185,
+  "recsys_als_ndcg_ratio_vs_own_history_secondary": 2.203066992308701,
+  "campaign_break_even_response_multiplier": 0.5,
   "campaign_funded_roi": 1.5246387760084037,
   "campaign_funded_net_profit_gbp": 7623.193880042017,
   "campaign_unconstrained_roi": 1.0891046454326994,
   "n_customers": 5016,
-  "runtime_seconds_pipeline": 1233.2
+  "runtime_seconds_pipeline": 126.4
 }

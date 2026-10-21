@@ -1,0 +1,6 @@
+Q6 AUC 0.92 AP 0.259 baseline 0.0099
+Traceback (most recent call last):
+  File "C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\bus_2_ml_case_study\interviews\scratch\P03_Q01-24\b.py", line 9, in <module>
+    print("Q7 thr",t,"prec",precision_score(y,p).round(3),"rec",recall_score(y,p).round(3),"F1",f1_score(y,p).round(3))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'float' object has no attribute 'round'

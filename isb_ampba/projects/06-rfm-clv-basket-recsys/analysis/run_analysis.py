@@ -120,7 +120,8 @@ def fig_bundles(b: pd.DataFrame, figdir: Path) -> None:
 
 def fig_recsys(rs: dict, figdir: Path) -> None:
     """NDCG@10 and HitRate@10 by model and protocol."""
-    models = ["popularity", "itemknn_cosine", "als", "hybrid_als_pop"]
+    models = ["popularity", "own_history", "itemknn_cosine", "als", "hybrid_als_pop"]
+    models = [x for x in models if x in rs["repeat_allowed"]]
     fig, ax = plt.subplots(1, 2, figsize=(10, 3.6))
     for a, met in zip(ax, ("ndcg", "hitrate"), strict=True):
         for j, prot in enumerate(("repeat_allowed", "discovery")):
@@ -183,11 +184,37 @@ def build_summary(m: dict, cfg: dict, cust: pd.DataFrame) -> dict:
         "recsys_secondary_protocol": other,
         "recsys_secondary_als_ndcg_ratio": rs[other]["als"]["ndcg_ratio_vs_popularity"],
         "recsys_best_model_primary": best_name,
+        "recsys_own_history_ndcg_primary": rs[prim]["own_history"]["ndcg"],
+        "recsys_als_ndcg_ratio_vs_own_history_primary": rs[prim]["als"]["ndcg_ratio_vs_own_history"],
+        "recsys_own_history_ndcg_secondary": rs[other]["own_history"]["ndcg"],
+        "recsys_als_ndcg_ratio_vs_own_history_secondary": rs[other]["als"]["ndcg_ratio_vs_own_history"],
+        "campaign_break_even_response_multiplier": cp.get("break_even_response_multiplier_at_margin"),
         "campaign_funded_roi": cp["funded_roi"], "campaign_funded_net_profit_gbp": cp["funded_net_profit"],
         "campaign_unconstrained_roi": cp["unconstrained_roi"],
         "n_customers": len(cust), "runtime_seconds_pipeline": m.get("runtime_seconds"),
     }
     return s
+
+
+def _ensure_own_history(m: dict, cfg: dict, out: Path) -> dict:
+    """Add the personalised own-history baseline to metrics.json when an older train run lacks it.
+
+    Cheap (no ALS refit): reads the cleaned sales and scores the baseline on the same split, then
+    writes the numbers (computed by code) into the recsys block together with ALS-vs-baseline ratios.
+    """
+    rs = m["recsys"]
+    if all("own_history" in rs[p] for p in ("repeat_allowed", "discovery")):
+        return m
+    from crm.data import load_sales
+    from crm.recsys import own_history_eval
+
+    ev = own_history_eval(load_sales(cfg), cfg)
+    for prot, vals in ev.items():
+        rs[prot]["own_history"] = vals
+        for n in ("itemknn_cosine", "als", "hybrid_als_pop"):
+            rs[prot][n]["ndcg_ratio_vs_own_history"] = rs[prot][n]["ndcg"] / vals["ndcg"]
+    (out / "metrics.json").write_text(json.dumps(m, indent=2), encoding="utf-8")
+    return m
 
 
 def main() -> None:
@@ -206,6 +233,7 @@ def main() -> None:
 
         run_pipeline(load_sales(cfg), cfg, out, resolve(cfg, "models"))
     m = json.loads((out / "metrics.json").read_text(encoding="utf-8"))
+    m = _ensure_own_history(m, cfg, out)
     cust = pd.read_csv(out / "customers.csv")
     seg = pd.read_csv(out / "segment_summary.csv")
     fig_segments(seg, figdir)

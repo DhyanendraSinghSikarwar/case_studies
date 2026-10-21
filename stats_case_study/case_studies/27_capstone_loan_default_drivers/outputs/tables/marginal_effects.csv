@@ -1,0 +1,10 @@
+,change in default probability (pp),baseline default rate (pp)
+DTI +10 points,3.2469858328,7.7222222222
+credit score +50,-2.8584964364,7.7222222222
+prior delinquency 0 to 1,2.2242882037,7.7222222222
+loan-to-annual-income +0.5,2.6328098523,7.7222222222
+term +12 months,0.7609222604,7.7222222222
+utilisation +20 points,1.975815113,7.7222222222
+self-employed (vs salaried),1.0753654472,7.7222222222
+gig (vs salaried),4.4640719614,7.7222222222
+agent channel (vs branch),0.544814946,7.7222222222

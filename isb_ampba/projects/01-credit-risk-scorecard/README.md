@@ -76,7 +76,7 @@ Figures are in `figures/`: `eda_*.png` (6 EDA charts), `roc_test.png`, `calibrat
 ## Business impact
 
 <!-- BUSINESS:START -->
-- Optimal cut-off: approve if PD <= **0.19** (score >= 529); break-even PD = margin/(margin+LGD) = 0.217.
+- Optimal cut-off: approve if PD <= **0.19** (score >= 529), selected on the validation split and evaluated on test (test-oracle optimum 0.19); break-even PD = margin/(margin+LGD) = 0.217.
 - Approval rate **65.5%**; bad rate among approved **10.7%** vs 22.1% approve-all.
 - Expected profit INR 49.9 mn vs INR 2.8 mn approve-all (uplift INR 47.0 mn; realised-outcome uplift INR 52.8 mn).
 - Sensitivity (LGD 0.45-0.85 x margin 0.10-0.26): optimal cut-off 0.11-0.36; uplift range INR 23.0 mn to INR 86.5 mn (positive in every cell).
@@ -162,7 +162,7 @@ python tasks.py test | lint | data | train | evaluate
 ## Milestone log
 
 <!-- LOG:START -->
-- **2026-10-20 M1-M5 complete.** Data validated (30,000 customers, default rate 22.12%, 590 rows with negative BILL_AMT1 (1930 with any negative bill), 35 duplicate rows (kept). Stratified split: 18,000 / 6,000 / 6,000 (train / valid / test).) ; scorecard test AUC 0.7720; champion xgb test AUC 0.7907, KS 0.4498; optimal cut-off 0.19; uplift INR 47.0 mn. All headline targets were met on the test set.
+- **2026-10-21 M1-M5 complete.** Data validated (30,000 customers, default rate 22.12%, 590 rows with negative BILL_AMT1 (1930 with any negative bill), 35 duplicate rows (kept). Stratified split: 18,000 / 6,000 / 6,000 (train / valid / test).) ; scorecard test AUC 0.7720; champion xgb test AUC 0.7907, KS 0.4498; optimal cut-off 0.19; uplift INR 47.0 mn. All headline targets were met on the test set.
 <!-- LOG:END -->
 
 ## References

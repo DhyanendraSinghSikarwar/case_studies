@@ -187,6 +187,13 @@ def evaluate(res: dict, panel: pd.DataFrame, cfg: dict, out_dir: Path, fig_dir: 
             sens_rows.append({"margin": m, "outside_share": o, "family_net_total_gbp": float(r2["family_net"].sum()),
                               "promoted_only_total_gbp": float(r2["promoted_only"].sum()), "n_profitable_family": int(r2["profitable_family"].sum())})
     sens = pd.DataFrame(sens_rows); sens.to_csv(out_dir / "reference_sensitivity.csv", index=False)
+    nest_rows = []
+    for lam in rs.get("nest_lambdas", [1.0]):
+        r3 = reference_promo(ctx, ref_skus, d_ref, nest_lambda=lam)
+        nest_rows.append({"nest_lambda": lam, "family_net_total_gbp": float(r3["family_net"].sum()),
+                          "cannibalised_total_gbp": float(r3["cannibalised_margin"].sum()),
+                          "promoted_only_total_gbp": float(r3["promoted_only"].sum()), "n_profitable_family": int(r3["profitable_family"].sum())})
+    pd.DataFrame(nest_rows).to_csv(out_dir / "reference_nested_logit.csv", index=False)
     # --- sweep
     ratios = ref["stock_code"].map(t["halo_rev_per_unit"]) / ref["stock_code"].map(t["list_price"])
     ratio = float(ratios.median())
@@ -251,7 +258,7 @@ def evaluate(res: dict, panel: pd.DataFrame, cfg: dict, out_dir: Path, fig_dir: 
             viz.family_units_chart(r, [t.at[m, "description"] for m in r["members"]], f"{t.at[s, 'family_name'][:35]} @ {int(d_ref * 100)}% off", fig_dir / f"family_units_{k + 1}.png")
             k += 1
     mnl = _mnl_checks(ctx, ref_skus, cfg)
-    return {"reference": reference, "reference_sensitivity": sens.to_dict("records"), "sweep": s_sum, "sweep_by_discount": sw_by_d,
+    return {"reference": reference, "reference_sensitivity": sens.to_dict("records"), "nested_logit_sensitivity": nest_rows, "sweep": s_sum, "sweep_by_discount": sw_by_d,
             "tornado": tor.to_dict("records"), "tornado_base_net": tor.attrs.get("base_net"), "kpi_classification": kpi,
             "optimiser": opt, "mnl_checks": mnl}
 

@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from sklearn.metrics import roc_auc_score
 
 from churnx.models import fit_all, fit_calibrated, group_splits, lift_table, make_models, metrics
@@ -72,3 +73,13 @@ def test_threshold_report_never_worse_than_nobody_or_everybody():
     rep = threshold_report(p, m, biz)
     assert rep["best"]["profit_inr"] >= 0
     assert rep["best"]["profit_inr"] >= rep["profit_contact_all_inr"] - 1e-6
+
+
+def test_temporal_window_check_is_train_only(snaps):
+    from churnx.models import temporal_window_check
+
+    w = temporal_window_check(snaps, FEATURES)
+    test_asof = snaps[snaps["split"] == "test"]["asof"].min()
+    assert pd.Timestamp(w["validation_snapshot"]) < test_asof
+    keys = [k for k in w if "__C=" in k]
+    assert len(keys) == 4 and all(0.5 < w[k] <= 1 for k in keys)

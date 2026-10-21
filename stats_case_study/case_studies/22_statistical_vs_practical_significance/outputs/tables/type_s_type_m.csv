@@ -1,7 +1,7 @@
 ,value
-power: share of pilots with p < 0.05,0.23005
-"average estimated lift, all pilots (true +2.0 pp)",2.0190916667
-average estimated lift among SIGNIFICANT pilots (pp),4.1762298051
-exaggeration ratio (Type M): significant estimate ÷ true lift,2.0881149026
-Type S: share of significant results with the WRONG sign,0.0028254727
+power: share of pilots with p < 0.05,0.226
+"average estimated lift, all pilots (true +2.0 pp)",2.0191333333
+average estimated lift among SIGNIFICANT pilots (pp),4.1839970501
+exaggeration ratio (Type M): significant estimate ÷ true lift,2.0919985251
+Type S: share of significant results with the WRONG sign,0.0033185841
 share of positive significant pilots whose estimate exceeds break-even,1.0

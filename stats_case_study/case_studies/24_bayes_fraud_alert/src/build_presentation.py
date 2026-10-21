@@ -88,7 +88,7 @@ def main() -> None:
         [f"**Probability each group exceeds a 1% fraud rate:** N {top_p.iloc[0]:.0%}, J {top_p.iloc[1]:.0%}, G {top_p.iloc[2]:.0%}. No group is beyond reasonable doubt.",
          f"**The prior matters for tiny groups:** for G a flat prior gives {prior.iloc[0, 3]:.0%} probability of exceeding 1%, the data-based prior {prior.iloc[1, 3]:.0%}.",
          f"**Shrinkage is better on average, not always:** on this one set of 14 groups it did not beat the raw rates "
-         f"(squared error {shr.iloc[1, 0]:.1f} vs {shr.iloc[0, 0]:.1f}, ×10⁻⁶). Over 3,000 simulated sets it won 71% of the time."],
+         f"(squared error {shr.iloc[1, 0]:.1f} for shrinkage vs {shr.iloc[0, 0]:.1f} for raw rates, ×10⁻⁶). Over 3,000 simulated sets it won 71% of the time."],
         takeaway="Report probabilities and intervals for small groups, not a raw league table.",
         size=17,
     )

@@ -136,3 +136,25 @@ def fit_all(X: pd.DataFrame, y: np.ndarray, groups: np.ndarray, Xte: pd.DataFram
     mets["champion_calibrated"] = metrics(yte, p_cal)
     return {"fitted": fitted, "probs": probs, "metrics": mets, "cv_auc": cv, "champion": champion,
             "tree_champion": tree_champ, "calibrated": cal, "p_test_cal": p_cal, "p_test_raw": probs[champion]}
+
+
+def temporal_window_check(snaps: pd.DataFrame, features: list[str], seed: int = 42) -> dict[str, Any]:
+    """Train-only check of the training window and regularisation (never touches the test snapshot).
+
+    Fits the logit on the earlier training snapshots (``train`` split, excluding the last) versus those plus the
+    ``pilot_hist`` snapshots, and scores each on the last training snapshot. Used to justify (or reject) a wider
+    window / different ``C`` without looking at the test AUC.
+    """
+    tr = snaps[snaps["split"] == "train"]
+    last = tr["asof"].max()
+    val = tr[tr["asof"] == last]
+    windows = {"train_prior_only": tr[tr["asof"] < last],
+               "pilot_hist_plus_train_prior": snaps[snaps["split"].isin(["pilot_hist", "train"]) & (snaps["asof"] < last)]}
+    out: dict[str, Any] = {"validation_snapshot": str(pd.Timestamp(last).date())}
+    for wname, w in windows.items():
+        for c in (0.05, 0.5):
+            m = make_pipeline(FunctionTransformer(_signed_log1p), StandardScaler(),
+                              LogisticRegression(max_iter=2000, C=c)).fit(w[features], w["churn"])
+            out[f"{wname}__C={c}"] = float(roc_auc_score(val["churn"], m.predict_proba(val[features])[:, 1]))
+    out["n_validation_rows"] = int(len(val))
+    return out

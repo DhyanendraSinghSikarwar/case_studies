@@ -1,0 +1,5 @@
+,estimate,ci_low,ci_high
+resolved by day 30,0.4191891752,0.4062732965,0.4323510369
+resolved by day 60,0.6091654808,0.5955629495,0.6227985311
+resolved by day 90,0.7267259022,0.7133659065,0.7399377852
+median days to resolve,42.0,,

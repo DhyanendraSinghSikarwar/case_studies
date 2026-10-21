@@ -1,0 +1,39 @@
+== q10
+normal eq: [ 3.994  2.004 -0.999  0.506]
+grad desc: [ 3.994  2.004 -0.999  0.506]
+== q11
+lr=0.001  final loss=0.6782
+lr=0.1    final loss=0.5975
+lr=5      final loss=0.5973
+lr=500    final loss=10.0545
+acc scratch: 0.652
+coef scratch: [ 0.28  0.46  0.85 -0.09  0.23]
+coef sklearn: [ 0.28  0.46  0.85 -0.09  0.23]
+== q12
+scratch inertia: 733.9
+sklearn inertia: 733.9
+== q13
+scratch: 1.0
+Traceback (most recent call last):
+  File "C:\Users\11624\OneDrive - Indian School of Business\Documents\personal\bus_2_ml_case_study\interviews\scratch\P01_Q01-18\q13.py", line 18, in <module>
+    print("sklearn:", KNeighborsClassifier(5).fit(Xtr, ytr).score(Xte, yte).round(3))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'float' object has no attribute 'round'
+== q14
+batch [ 1.    1.98 -2.97] mse=0.246
+SGD [ 1.06  2.01 -3.03] mse=0.248
+mini-32 [ 1.04  2.03 -2.99] mse=0.247
+lr too high: [-4.14644042e+58  6.62253961e+58 -5.14190580e+58]
+== q16
+d=2     (max-min)/min = 134.62
+d=10    (max-min)/min = 3.48
+d=100   (max-min)/min = 0.39
+d=1000  (max-min)/min = 0.11
+== q17
+mean 98359 median 59321 std 120084 skew 4.00
+p25/p75/p90/p99: [ 30762. 119468. 215894. 604051.]
+skew after log: -0.03
+== q18
+random  test pos rate: 0.018  stratified: 0.019  overall: 0.019
+500-row sample, random split test-rate spread: min 0.000 max 0.060
+stratified spread: min 0.020 max 0.020

@@ -1,0 +1,15 @@
+== q18
+AUC  LOF 1.0  IsolationForest 0.953
+   (111s)
+== q19
+AUC 1.0 | threshold 0.067 | anomalies caught 1.0 | false alarms 0.015
+   (7s)
+== q21
+off-subspace AUC recon 1.0  AUC mahal 0.46
+extreme-in-subspace AUC recon 0.04  AUC mahal 1.0
+   (0s)
+== q22
+perplexity 2 trustworthiness(k=10): 0.934  silhouette of true labels in 2D: 0.44
+perplexity 30 trustworthiness(k=10): 0.956  silhouette of true labels in 2D: 0.87
+perplexity 150 trustworthiness(k=10): 0.934  silhouette of true labels in 2D: 0.915
+   (197s)

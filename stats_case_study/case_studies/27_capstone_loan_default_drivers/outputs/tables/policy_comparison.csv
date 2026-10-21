@@ -1,0 +1,7 @@
+,approval rate,default rate among approved,expected profit per application (₹),total profit (₹ lakh)
+Approve all,1.0,0.0738333333,1127.0,135.24
+Reject the agent channel (dashboard proposal),0.70975,0.0569449337,1591.0,190.92
+Credit score at least 650,0.5061666667,0.0317747777,1975.5,237.06
+Model: approve if predicted PD below 9.1%,0.7463333333,0.0343903528,2784.0,334.08
+Model: approve if PD below 6%,0.6201666667,0.0262026337,2648.5,317.82
+Model: approve if PD below 12%,0.8159166667,0.0391175569,2789.0,334.68

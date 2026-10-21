@@ -1,0 +1,3 @@
+['not', 'happy', 'the', 'delivery', 'was', 'not', 'on', 'time', 'and', "i'm", 'asking', 'for', 'a', 'refund']
+['happy', 'delivery', 'time', "i'm", 'asking', 'refund']
+True True

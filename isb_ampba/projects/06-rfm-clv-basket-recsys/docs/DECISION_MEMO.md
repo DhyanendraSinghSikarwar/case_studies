@@ -42,11 +42,14 @@ portfolio ROI stays between -0.27 and 2.97 across the sensitivity grid.
 - **Recommender:** under `repeat_allowed` the best of ALS/hybrid ('als') reaches NDCG@10 0.242 vs popularity 0.089;
   plain ALS is 2.73x popularity (95% CI 2.54-2.99; target 1.30x:
   met) and 2.20x under `discovery`.
+  Caveat: a personalised own-history (re-order) baseline scores NDCG@10 0.314 under `repeat_allowed`, so ALS is only
+  0.77x of it; ALS adds value for discovery (excluding already-bought items), not for re-orders.
 - **Bundles:** 20 bundles with lift > 3 and confidence > 0.3 (top lift 50.0), mostly colour/size variants of the same product family,
   suited to "complete the set" prompts.
 
 ## Risks and limitations
-- Campaign response rates, costs and margin are planning assumptions; only a controlled pilot can validate them.
+- Campaign response rates, costs and margin are planning assumptions; only a controlled pilot can validate them. Break-even response multiplier
+  (portfolio net profit >= 0 at the base margin): 0.5x of the assumed rates.
 - About 5k customers and heavy-tailed spend: segment and decile boundaries are noisy; small segments should not be over-read.
 - BG/NBD ignores seasonality (holdout contains the Q4 peak) and first-purchase dates are left-censored at 2009-12-01.
 - Wholesale B2B behaviour (bulk re-orders) dominates; recommendations that include re-orders mostly resurface past purchases, discovery lift is lower.

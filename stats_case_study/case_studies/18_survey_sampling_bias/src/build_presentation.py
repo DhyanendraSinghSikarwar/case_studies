@@ -71,7 +71,7 @@ def main() -> None:
     deck.image("Who answers? Older, app-using, non-complaining customers", figs / "fig01_response_rates.png",
                takeaway="Response rate rises from under 2% for the youngest to about 12% for the over-60s. A representative survey needs similar rates in every group.")
     deck.image("Respondents do not look like our customers", figs / "fig02_respondent_profile.png",
-               takeaway="Dots on the right of the grey line are over-represented among respondents; customers with complaints are under-represented.")
+               takeaway="Where the orange dot (respondents) sits to the right of the blue dot (all customers), the group is over-represented among respondents; customers with complaints are under-represented.")
     deck.image("Weighting makes respondents look like the customer base, at a price", figs / "fig03_weights.png",
                takeaway=f"Weights run from about 5 to 245. Effective sample size falls from {n_resp:,} to about {ess:,.0f}.")
     rows = pd.DataFrame({

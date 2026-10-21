@@ -1,0 +1,4 @@
+SignificanceResult(statistic=np.float64(20.0), pvalue=np.float64(0.034965034965034975))
+0.0134
+[[5.625 4.375]
+ [3.375 2.625]]

@@ -1,0 +1,8 @@
+Q21/22 logreg AUC 0.891 Brier 0.0505 ECE 0.018
+Q21/22 rf AUC 0.926 Brier 0.0374 ECE 0.0312
+Q21/22 nb AUC 0.891 Brier 0.0639 ECE 0.0399
+Q20 raw Brier 0.0374 ECE 0.0312 AUC 0.9259
+Q20 platt Brier 0.0355 ECE 0.0186 AUC 0.9259
+Q20 isotonic Brier 0.0345 ECE 0.0048 AUC 0.9262
+Q23 true rate 0.113 mean balanced 0.306 mean corrected 0.105 ECE bal 0.192 ECE corr 0.021
+Q24 theory t 0.048 grid best 0.07 cost@.5 6010 cost@theory 3460 cost@best 3442

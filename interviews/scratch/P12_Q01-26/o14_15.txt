@@ -1,0 +1,15 @@
+=== Q14 ===
+base rate neg: 0.884
+0 as-is        (acc, auc): (0.996, 0.984)
+1 drop target-derived:    (0.933, 0.761)
+2 drop ID-like:           (0.931, 0.793)
+3 dedupe + group split:   (0.901, 0.584)
+=== Q15 ===
+  order_id order_date     price  qty      category   age
+0        1 2025-01-05    1200.5    2   electronics  34.0
+1        2 2025-05-02      99.0    1   electronics  29.0
+2        3 2025-03-03    2450.0    1   electronics   NaN
+3        4 2025-03-09  100000.0    1  home_kitchen  41.0
+5        5 2025-04-01       NaN    3  home_kitchen   NaN
+6        6        NaT      15.5    1  home_kitchen  38.0
+rows 7 -> 6 | unmapped category: 0 | bad dates: 1 | impossible ages: 2

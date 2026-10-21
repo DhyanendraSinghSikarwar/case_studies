@@ -1,5 +1,5 @@
 # Decision memo - Card approval cut-off and limit policy
-_Generated 2026-10-20 by `analysis/make_docs.py` from `outputs/summary.json` and `outputs/metrics.json`._
+_Generated 2026-10-21 by `analysis/make_docs.py` from `outputs/summary.json` and `outputs/metrics.json`._
 
 **Decision requested:** Approve the PD cut-off and limit actions below for new/review decisions on the card book.
 

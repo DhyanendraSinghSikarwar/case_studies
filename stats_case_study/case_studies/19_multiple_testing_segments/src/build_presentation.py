@@ -51,7 +51,7 @@ def main() -> None:
     )
     deck.image("Forest plot: seven segments cross the line, but with 40 tests that is not surprising",
                figs / "fig01_forest_and_pvalues.png",
-               takeaway="The spike of small p-values (right) says some segments truly respond; the flat part says many do not.")
+               takeaway="Red intervals (left) are the seven segments with p < 0.05. The spike of small p-values (right) says some segments truly respond; the flat part says many do not.")
     deck.image("If the campaign did nothing, we would still see 'winners'", figs / "fig02_all_null_simulation.png",
                takeaway="Left: the number of 'significant' segments in 5,000 simulated campaigns with no effect anywhere.")
     rows = pd.DataFrame({"Rule": ["p < 0.05, no correction", "Bonferroni (strict, any false alarm)", "Holm (strict, more power)",

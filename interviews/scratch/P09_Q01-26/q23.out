@@ -1,0 +1,3 @@
+clipped unigram precision: 0.71 0.33 (naive for bad: 1.0 )
+ROUGE-1 P,R,F1: (0.71, 0.83, 0.77)
+BP for 3-word candidate vs 6-word ref: 0.37

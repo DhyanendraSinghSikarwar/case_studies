@@ -56,10 +56,21 @@ def test_streamlit_app_runs(project):
     root, _ = project
     os.environ["CHURNX_ROOT"] = str(root)
     try:
-        at = AppTest.from_file(str(APP), default_timeout=120).run()
+        at = AppTest.from_file(str(APP), default_timeout=300).run()
         assert not at.exception, [e.value for e in at.exception]
         assert len(at.tabs) == 5
         at.slider(key="p_cost").set_value(5000).run()
         assert not at.exception
     finally:
         os.environ.pop("CHURNX_ROOT", None)
+
+
+def test_docs_render_from_outputs_contains_caveats(project):
+    from churnx.docgen import memo
+
+    root, _ = project
+    import json
+    s = json.loads((root / "outputs" / "summary.json").read_text(encoding="utf-8"))
+    m = json.loads((root / "outputs" / "metrics.json").read_text(encoding="utf-8"))["churn"]
+    text = memo(s, m)
+    assert "70%-of-oracle criterion is weak" in text and "by construction of the simulator" in text

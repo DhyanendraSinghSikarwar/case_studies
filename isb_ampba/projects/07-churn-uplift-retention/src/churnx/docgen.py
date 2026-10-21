@@ -122,6 +122,18 @@ def hillstrom_md(h: dict[str, Any]) -> str:
             f"training half.\n\n{pol}\n\n{q}")
 
 
+def window_note(m: dict[str, Any]) -> str:
+    """One-sentence train-only evidence on the training window / regularisation (no test snapshot involved)."""
+    w = m.get("temporal_window_check_train_only")
+    if not w:
+        return "no train-only window check was run"
+    a, b = w["train_prior_only__C=0.5"], w["pilot_hist_plus_train_prior__C=0.5"]
+    c = w["train_prior_only__C=0.05"]
+    verdict = "so the wider window was NOT adopted" if b <= a else "so the wider window would be justified"
+    return (f"train-only check on the {w['validation_snapshot']} snapshot: AUC {a:.3f} with train-only history, {b:.3f} with pilot "
+            f"history added, {c:.3f} with stronger regularisation (C=0.05), {verdict}")
+
+
 def results_block(s: dict[str, Any], m: dict[str, Any]) -> str:
     """The generated README results section."""
     p, t = s["policy"], s["threshold"]
@@ -149,7 +161,7 @@ Snapshots (eligible customers and churn rate):
 Mean calibrated prediction on the test snapshot is {cal['mean_pred_calibrated']:.3f} versus an observed churn rate of
 {cal['observed_rate']:.3f}: the pre-Christmas season lowers churn relative to the training snapshots, so calibration drifts
 even though ranking (AUC) holds. A logit trained on 6 snapshots (pilot history + train) reaches test AUC
-{m['supplementary_logit_6_snapshots_test_auc']:.3f} (supplementary, not the headline). SHAP top drivers (mean |SHAP|, {m['tree_champion_for_shap']}):
+{m['supplementary_logit_6_snapshots_test_auc']:.3f} (supplementary, not the headline; {window_note(m)}). SHAP top drivers (mean |SHAP|, {m['tree_champion_for_shap']}):
 {', '.join(f'`{k}` {v:.3f}' for k, v in m['shap_top5'].items())}.
 
 ### Cost-optimal contact threshold (risk-only, constant save rate {s['assumptions']['save_rate']:.0%}, offer cost {inr(s['assumptions']['offer_cost_inr'])})
@@ -289,6 +301,9 @@ pattern, which only a real randomised pilot can reveal.
   (calibration drifted: mean prediction {m['calibration_gap_test']['mean_pred_calibrated']:.3f} vs observed
   {m['calibration_gap_test']['observed_rate']:.3f}) and test AUC is {s['churn']['test_auc']:.3f}, {'below' if s['churn']['test_auc'] < 0.75 else 'at or above'} the 0.75 target.
 - Test cohort has ~{s['pilot']['n_test_cohort']:,} customers; uplift Qini intervals include zero.
+- The 70%-of-oracle criterion is weak here: contact-all earns {tab['all']['pct_of_oracle']:.1f}% and the M2 risk-threshold rule
+  {tab['risk_threshold_m2']['pct_of_oracle']:.1f}% of the oracle at the base offer cost, i.e. at or above the uplift policy
+  ({tab['profit_optimal']['pct_of_oracle']:.1f}%); uplift only clearly wins when the offer is costly (cost sweep in the README).
 
 **Next steps:** run a real 50/50 pilot (owner: CRM), log offers and outcomes, refit quarterly, monitor holdout Qini and
 calibration, re-estimate the economics (offer cost, margin) before scaling.

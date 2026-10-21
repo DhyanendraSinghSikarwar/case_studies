@@ -67,8 +67,9 @@ def targets_table() -> str:
 def business_block() -> str:
     """Business impact bullets."""
     a = S["assumptions"]
-    return (f"- Optimal cut-off: approve if PD <= **{S['opt_cutoff']:.2f}** (score >= {S['opt_cutoff_score']:.0f}); break-even PD "
-            f"= margin/(margin+LGD) = {a['breakeven_pd']:.3f}.\n"
+    return (f"- Optimal cut-off: approve if PD <= **{S['opt_cutoff']:.2f}** (score >= {S['opt_cutoff_score']:.0f}), selected on the "
+            f"{S['opt_cutoff_selected_on']} split and evaluated on test (test-oracle optimum {S['opt_cutoff_test_oracle']:.2f}); "
+            f"break-even PD = margin/(margin+LGD) = {a['breakeven_pd']:.3f}.\n"
             f"- Approval rate **{pct(S['approval_rate'])}**; bad rate among approved **{pct(S['bad_rate_approved'])}** "
             f"vs {pct(S['bad_rate_all'])} approve-all.\n"
             f"- Expected profit {inr(S['profit_opt_inr'])} vs {inr(S['profit_approve_all_inr'])} approve-all "

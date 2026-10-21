@@ -1,5 +1,5 @@
 # Model card - Credit risk PD model (champion: xgb)
-_Generated 2026-10-20 from `outputs/`._
+_Generated 2026-10-21 from `outputs/`._
 
 ## Intended use
 Rank card customers by probability of default (next month), convert to a 300-900 score with bands A-F, and support approve/decline and limit actions in a portfolio-economics analysis. Portfolio/educational use; not validated for live credit decisions.

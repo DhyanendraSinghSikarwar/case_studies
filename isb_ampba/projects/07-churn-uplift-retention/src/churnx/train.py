@@ -14,7 +14,7 @@ from sklearn.metrics import roc_auc_score
 from churnx import plots
 from churnx.config import ROOT, get_logger, load_config, resolve, set_seed
 from churnx.data import load_transactions
-from churnx.models import calibration_table, fit_all, lift_table, make_models, shap_importance
+from churnx.models import calibration_table, fit_all, lift_table, make_models, shap_importance, temporal_window_check
 from churnx.snapshot import FEATURES, build_all_snapshots, clean_sales
 from churnx.validate import validate_snapshots
 
@@ -81,6 +81,7 @@ def run(cfg: dict[str, Any], tx: pd.DataFrame, root: Path | None = None, make_fi
     sup = make_models(cfg["seed"])["logit"].fit(hist[FEATURES], hist["churn"])
     sup_auc = float(roc_auc_score(yte, sup.predict_proba(te[FEATURES])[:, 1]))
     metrics = {"supplementary_logit_6_snapshots_test_auc": sup_auc,
+               "temporal_window_check_train_only": temporal_window_check(snaps, FEATURES, cfg["seed"]),
                "models": res["metrics"], "cv_auc_train": res["cv_auc"], "champion": res["champion"],
                "tree_champion_for_shap": res["tree_champion"], "snapshots": snap_tbl.to_dict("records"),
                "checks": checks, "shap_top5": imp.head(5).round(4).to_dict(),

@@ -147,22 +147,30 @@ lift>3 and confidence>0.3). Top lift 50.0; median lift of the top 20 29.3.
 ALS best params (tuned on a validation window inside the training period): {'factors': 64, 'regularization': 1.0, 'alpha': 1.0, 'iterations': 15}; hybrid weight (popularity) = 0.0.
 
 **Protocol `repeat_allowed`** (re-orders count; 1,474 users):
-| Model | HitRate@10 | NDCG@10 | Coverage | NDCG vs popularity | 95% CI |
-|---|---|---|---|---|---|
-| random | 0.0706 | 0.0081 | 0.9569 | - | - |
-| popularity | 0.4878 | 0.0888 | 0.0022 | - | - |
-| itemknn_cosine | 0.6839 | 0.2087 | 0.2344 | 2.35x | [2.20, 2.52] |
-| als | 0.7273 | 0.2421 | 0.1333 | 2.73x | [2.54, 2.99] |
-| hybrid_als_pop | 0.7273 | 0.2421 | 0.1333 | 2.73x | [2.54, 2.95] |
+| Model | HitRate@10 | NDCG@10 | Coverage | NDCG vs popularity | NDCG vs own_history | 95% CI (vs popularity) |
+|---|---|---|---|---|---|---|
+| random | 0.0706 | 0.0081 | 0.9569 | - | - | - |
+| popularity | 0.4878 | 0.0888 | 0.0022 | - | - | - |
+| own_history | 0.8100 | 0.3141 | 0.3362 | 3.54x | - | - |
+| itemknn_cosine | 0.6839 | 0.2087 | 0.2344 | 2.35x | 0.66x | [2.20, 2.52] |
+| als | 0.7273 | 0.2421 | 0.1333 | 2.73x | 0.77x | [2.54, 2.99] |
+| hybrid_als_pop | 0.7273 | 0.2421 | 0.1333 | 2.73x | 0.77x | [2.54, 2.95] |
 
 **Protocol `discovery`** (already-bought items excluded; 1,335 users):
-| Model | HitRate@10 | NDCG@10 | Coverage | NDCG vs popularity | 95% CI |
-|---|---|---|---|---|---|
-| random | 0.0449 | 0.0049 | 0.9428 | - | - |
-| popularity | 0.2292 | 0.0342 | 0.0174 | - | - |
-| itemknn_cosine | 0.2899 | 0.0570 | 0.1289 | 1.67x | [1.49, 1.89] |
-| als | 0.3753 | 0.0753 | 0.1761 | 2.20x | [1.92, 2.58] |
-| hybrid_als_pop | 0.3753 | 0.0753 | 0.1761 | 2.20x | [1.94, 2.57] |
+| Model | HitRate@10 | NDCG@10 | Coverage | NDCG vs popularity | NDCG vs own_history | 95% CI (vs popularity) |
+|---|---|---|---|---|---|---|
+| random | 0.0449 | 0.0049 | 0.9428 | - | - | - |
+| popularity | 0.2292 | 0.0342 | 0.0174 | - | - | - |
+| own_history | 0.2292 | 0.0342 | 0.0174 | 1.00x | - | - |
+| itemknn_cosine | 0.2899 | 0.0570 | 0.1289 | 1.67x | 1.67x | [1.49, 1.89] |
+| als | 0.3753 | 0.0753 | 0.1761 | 2.20x | 2.20x | [1.92, 2.58] |
+| hybrid_als_pop | 0.3753 | 0.0753 | 0.1761 | 2.20x | 2.20x | [1.94, 2.57] |
+
+`own_history` is a personalised baseline (rank the user's own past items by purchase count, popularity tie-break).
+Under `repeat_allowed` it scores NDCG@10 0.3141, i.e. ALS is
+0.77x of it: the 2.73x lead over popularity is mostly
+re-order memory, not discovery. Under `discovery` (seen items excluded) the baseline collapses to popularity and ALS is
+2.20x, which is the fair headline for "new product" e-mail content.
 
 ![recsys](figures/07_recsys_metrics.png)
 
@@ -196,6 +204,9 @@ Campaign uplifts, costs and margin are **assumptions** in `config/config.yaml` (
 - Recommender evaluated on purchases only; wholesale re-orders make "repeat_allowed" scores much higher than "discovery".
 - Segments/CLV are a 2011-06-30 snapshot so predictions can be validated; a production run would refit on all data.
 
+- The popularity-blend weight chosen on the validation window is 0.0, so the "hybrid" row equals plain ALS (blending did not help).
+- Runtime: about 6 min for `train` on an idle laptop (measured 341 s); under heavy CPU contention the full `all` took ~31 min, so allow headroom.
+
 ## Deviations
 | Spec item | What was done | Why |
 |---|---|---|
@@ -209,6 +220,8 @@ Campaign uplifts, costs and margin are **assumptions** in `config/config.yaml` (
 | BG/NBD penalizer | 0.001 (0.01 produced numerically invalid predictions for 484 customers); chosen without looking at holdout metrics | lifetimes numerical issue |
 | ALS | confidence = alpha * log1p(count); tuned on a validation window inside the training period | no tuning on the test window |
 | Recsys protocols | both `repeat_allowed` (primary, chosen before seeing results) and `discovery` reported | DATA.md pitfall 5 |
+| Recsys baseline (review fix) | added personalised `own_history` baseline next to popularity; headline vs popularity kept per spec, but ALS does not beat own_history under `repeat_allowed` (see Results) | popularity alone is a weak, non-personal bar for wholesale re-order data |
+| Review run (CPU contention) | review re-ran `pytest`, `ruff`, `python tasks.py evaluate` only; the full `all` was not re-run, `outputs/metrics.json` ALS/CLV/cluster numbers are from the earlier train | other projects were running concurrently |
 | Python/venv | Python 3.12, no venv; deps pinned in requirements.txt to the installed versions | environment |
 
 ## How to run

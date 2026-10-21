@@ -60,6 +60,17 @@ def itemknn_scores(train: sp.csr_matrix, rows: np.ndarray) -> np.ndarray:
     return np.asarray(b[rows] @ sim)
 
 
+def own_history_scores(train: sp.csr_matrix, rows: np.ndarray) -> np.ndarray:
+    """Personalised 're-order' baseline: rank a user's own past items by purchase count.
+
+    Ties (and users with <10 past items) are broken by global popularity so every list is full.
+    Under the `discovery` protocol seen items are masked later, so this reduces to popularity.
+    """
+    own = np.asarray(train[rows].todense(), dtype=float)
+    pop = np.asarray((train > 0).sum(axis=0)).ravel().astype(float)
+    return own + 1e-6 * np.log1p(pop)[None, :]
+
+
 def als_model(train: sp.csr_matrix, factors: int, regularization: float, alpha: float,
               iterations: int, seed: int):
     """Fit implicit ALS on confidence = alpha * log1p(count) (user x item)."""
@@ -217,6 +228,7 @@ def run_recsys(sales: pd.DataFrame, cfg: dict | None = None) -> dict:
         # random baseline for sanity
         rng = np.random.default_rng(cfg["seed"])
         cands["random"] = rng.random(pop.shape)
+        cands["own_history"] = own_history_scores(tr, rows)
         res = {n: evaluate_scores(s, rows, pos, tr, protocol, k) for n, s in cands.items()}
         pm = res["popularity"]["_ndcg_users"]
         boot = {}
@@ -230,7 +242,11 @@ def run_recsys(sales: pd.DataFrame, cfg: dict | None = None) -> dict:
             boot[n] = [float(np.percentile(ratios, 2.5)), float(np.percentile(ratios, 97.5))]
         out["metrics"][protocol] = {
             n: {kk: vv for kk, vv in r.items() if not kk.startswith("_")} for n, r in res.items()}
+        out["metrics"][protocol]["own_history"]["ndcg_ratio_vs_popularity"] = (
+            res["own_history"]["ndcg"] / res["popularity"]["ndcg"])
         for n in ("itemknn_cosine", "als", "hybrid_als_pop"):
+            out["metrics"][protocol][n]["ndcg_ratio_vs_own_history"] = (
+                res[n]["ndcg"] / max(res["own_history"]["ndcg"], 1e-12))
             out["metrics"][protocol][n]["ndcg_ratio_vs_popularity"] = (
                 res[n]["ndcg"] / res["popularity"]["ndcg"])
             out["metrics"][protocol][n]["ndcg_ratio_ci95"] = boot[n]
@@ -243,6 +259,23 @@ def run_recsys(sales: pd.DataFrame, cfg: dict | None = None) -> dict:
     out["metrics"]["n_items_train"] = len(inter.items)
     out["metrics"]["train_max_date"] = str(train_df["invoice_date"].max())
     out["metrics"]["test_min_date"] = str(test_df["invoice_date"].min())
+    return out
+
+
+def own_history_eval(sales: pd.DataFrame, cfg: dict | None = None) -> dict:
+    """Own-history baseline metrics per protocol, without refitting ALS (used to extend metrics.json)."""
+    cfg = cfg or load_config()
+    rc = cfg["recsys"]
+    train_df, test_df = time_split(sales, rc["train_end"], rc["test_start"], rc["test_end"])
+    inter = Interactions(train_df)
+    tr = inter.matrix
+    out = {}
+    for protocol in ("repeat_allowed", "discovery"):
+        rows, pos = build_eval_sets(inter, test_df, protocol)
+        e = evaluate_scores(own_history_scores(tr, rows), rows, pos, tr, protocol, rc["k"])
+        p = evaluate_scores(popularity_scores(tr, len(rows)), rows, pos, tr, protocol, rc["k"])
+        out[protocol] = {kk: vv for kk, vv in e.items() if not kk.startswith("_")}
+        out[protocol]["ndcg_ratio_vs_popularity"] = e["ndcg"] / p["ndcg"]
     return out
 
 

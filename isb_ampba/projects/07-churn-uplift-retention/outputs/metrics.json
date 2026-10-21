@@ -1,6 +1,14 @@
 {
   "churn": {
     "supplementary_logit_6_snapshots_test_auc": 0.7560709456700274,
+    "temporal_window_check_train_only": {
+      "validation_snapshot": "2011-05-01",
+      "train_prior_only__C=0.05": 0.7798503814693177,
+      "train_prior_only__C=0.5": 0.7833826388914035,
+      "pilot_hist_plus_train_prior__C=0.05": 0.7647943831494484,
+      "pilot_hist_plus_train_prior__C=0.5": 0.7675427003030753,
+      "n_validation_rows": 1551
+    },
     "models": {
       "logit": {
         "auc": 0.7469599898363838,

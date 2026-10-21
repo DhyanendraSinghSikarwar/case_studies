@@ -1,0 +1,4 @@
+9.6 0.0019 1
+[[ 75. 125.]
+ [ 75. 125.]]
+Power_divergenceResult(statistic=np.float64(2.9), pvalue=np.float64(0.5746972058298043))

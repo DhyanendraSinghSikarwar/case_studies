@@ -1083,5 +1083,5 @@
       "note": "enforced by tests/test_snapshot.py::test_features_before_asof"
     }
   },
-  "runtime_seconds_analysis": 213.6
+  "runtime_seconds_analysis": 67.3
 }

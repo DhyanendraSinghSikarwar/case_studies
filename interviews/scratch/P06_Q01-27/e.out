@@ -1,0 +1,6 @@
+seasonal naive: expanding MAE=6.18  rolling(48) MAE=6.18  folds=20
+Holt-Winters: expanding MAE=2.27  rolling(48) MAE=2.34  folds=20
+SMA3 last 149.64 | SES a=.3 forecast 151.86
+ACF lag1,12 [0.79 0.82]
+snaive h=3 [159.3 160.2 163.3]
+check vs statsmodels True

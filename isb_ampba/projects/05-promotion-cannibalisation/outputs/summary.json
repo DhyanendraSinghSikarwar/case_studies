@@ -162,6 +162,29 @@
       "n_profitable_family": 18
     }
   ],
+  "nested_logit_sensitivity": [
+    {
+      "nest_lambda": 1.0,
+      "family_net_total_gbp": 779.012221016446,
+      "cannibalised_total_gbp": 1436.4178178574284,
+      "promoted_only_total_gbp": 133.4505383961569,
+      "n_profitable_family": 10
+    },
+    {
+      "nest_lambda": 0.7,
+      "family_net_total_gbp": 363.0513503003816,
+      "cannibalised_total_gbp": 1772.6056811052317,
+      "promoted_only_total_gbp": 64.13859052404695,
+      "n_profitable_family": 10
+    },
+    {
+      "nest_lambda": 0.5,
+      "family_net_total_gbp": -3.902671317987938,
+      "cannibalised_total_gbp": 2025.5484321145057,
+      "promoted_only_total_gbp": -38.03984639332592,
+      "n_profitable_family": 8
+    }
+  ],
   "sweep": {
     "n_draws": 2000,
     "pct_promoted_only_profitable": 60.5,
@@ -372,5 +395,5 @@
     "max_rel_elasticity_error_d0.001": 0.003977469061827166,
     "n_checked": 24
   },
-  "runtime_seconds_evaluate": 66.5
+  "runtime_seconds_evaluate": 8.4
 }

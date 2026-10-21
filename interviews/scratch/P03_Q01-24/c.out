@@ -1,0 +1,7 @@
+pos rate 0.0305
+Q8 plain LR AP 0.213
+Q8 balanced LR AP 0.189
+Q11 SMOTE pipe AP 0.186
+Q10 leaky AP 0.998 correct AP 0.25
+Q12 best t 0.783 F1 0.349 F1@0.5 0.148
+Q12 held-out F1 at chosen t 0.275 at .5 0.138

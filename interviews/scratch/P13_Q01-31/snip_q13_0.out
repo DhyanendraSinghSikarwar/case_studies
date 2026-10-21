@@ -1,0 +1,5 @@
+56
+bonferroni 1 true found: 1 false: 0
+holm 1 true found: 1 false: 0
+fdr_bh 10 true found: 10 false: 0
+0.6415140775914581

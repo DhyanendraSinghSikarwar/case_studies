@@ -1,0 +1,8 @@
+,2025 total (millions),growth vs 2024
+Seasonal naive,4066.32,0.0
+Naive,4666.56,0.1476125834
+Trend + season regression,4827.0718383414,0.1870860725
+Holt-Winters (damped),4844.5614502329,0.1913871634
+Seasonal naive + drift,5067.1328381725,0.2461224985
+SARIMA,5330.6682876564,0.3109318223
+Last year + 20% rule,4879.584,0.2

@@ -32,22 +32,24 @@ CLV vs baselines:
 | Population mean (naive) | 1106.900 | - | - | - |
 
 Recommender, `repeat_allowed`:
-| Model | HitRate@10 | NDCG@10 | Coverage | NDCG vs popularity | 95% CI |
-|---|---|---|---|---|---|
-| random | 0.0706 | 0.0081 | 0.9569 | - | - |
-| popularity | 0.4878 | 0.0888 | 0.0022 | - | - |
-| itemknn_cosine | 0.6839 | 0.2087 | 0.2344 | 2.35x | [2.20, 2.52] |
-| als | 0.7273 | 0.2421 | 0.1333 | 2.73x | [2.54, 2.99] |
-| hybrid_als_pop | 0.7273 | 0.2421 | 0.1333 | 2.73x | [2.54, 2.95] |
+| Model | HitRate@10 | NDCG@10 | Coverage | NDCG vs popularity | NDCG vs own_history | 95% CI (vs popularity) |
+|---|---|---|---|---|---|---|
+| random | 0.0706 | 0.0081 | 0.9569 | - | - | - |
+| popularity | 0.4878 | 0.0888 | 0.0022 | - | - | - |
+| own_history | 0.8100 | 0.3141 | 0.3362 | 3.54x | - | - |
+| itemknn_cosine | 0.6839 | 0.2087 | 0.2344 | 2.35x | 0.66x | [2.20, 2.52] |
+| als | 0.7273 | 0.2421 | 0.1333 | 2.73x | 0.77x | [2.54, 2.99] |
+| hybrid_als_pop | 0.7273 | 0.2421 | 0.1333 | 2.73x | 0.77x | [2.54, 2.95] |
 
 Recommender, `discovery`:
-| Model | HitRate@10 | NDCG@10 | Coverage | NDCG vs popularity | 95% CI |
-|---|---|---|---|---|---|
-| random | 0.0449 | 0.0049 | 0.9428 | - | - |
-| popularity | 0.2292 | 0.0342 | 0.0174 | - | - |
-| itemknn_cosine | 0.2899 | 0.0570 | 0.1289 | 1.67x | [1.49, 1.89] |
-| als | 0.3753 | 0.0753 | 0.1761 | 2.20x | [1.92, 2.58] |
-| hybrid_als_pop | 0.3753 | 0.0753 | 0.1761 | 2.20x | [1.94, 2.57] |
+| Model | HitRate@10 | NDCG@10 | Coverage | NDCG vs popularity | NDCG vs own_history | 95% CI (vs popularity) |
+|---|---|---|---|---|---|---|
+| random | 0.0449 | 0.0049 | 0.9428 | - | - | - |
+| popularity | 0.2292 | 0.0342 | 0.0174 | - | - | - |
+| own_history | 0.2292 | 0.0342 | 0.0174 | 1.00x | - | - |
+| itemknn_cosine | 0.2899 | 0.0570 | 0.1289 | 1.67x | 1.67x | [1.49, 1.89] |
+| als | 0.3753 | 0.0753 | 0.1761 | 2.20x | 2.20x | [1.92, 2.58] |
+| hybrid_als_pop | 0.3753 | 0.0753 | 0.1761 | 2.20x | 2.20x | [1.94, 2.57] |
 
 ## Fairness / segment checks
 No personal attributes (age, gender, ethnicity) exist in the data; the only demographic-like field is Country (about 92% UK).
@@ -67,4 +69,4 @@ Monthly refit; track BG/NBD calibration plot by frequency bucket, top-decile sha
 on a rolling last-30-days test, segment migration matrix and campaign response vs the control group.
 
 ## Version / seed
-crm 0.1.0, seed 42, pinned in requirements.txt; pipeline runtime 1233.2 s.
+crm 0.1.0, seed 42, pinned in requirements.txt; pipeline runtime 126.4 s.

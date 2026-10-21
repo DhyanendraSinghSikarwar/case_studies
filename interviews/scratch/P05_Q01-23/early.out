@@ -1,0 +1,11 @@
+== q03
+[0.705 0.26  0.018 0.011 0.005 0.002] [0.705 0.965 0.982 0.993 0.998 1.   ]
+== q05
+kmeans ARI 0.25
+dbscan ARI 1.0
+== q06
+k-dist percentiles 50/90/95/99: [0.058 0.092 0.11  0.136]
+clusters 2 noise 2
+== q07
+precision@20: 0.85
+mean score normal/anom: 0.431 0.711

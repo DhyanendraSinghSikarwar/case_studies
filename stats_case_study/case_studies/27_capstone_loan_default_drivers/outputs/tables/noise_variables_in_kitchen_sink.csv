@@ -1,0 +1,4 @@
+,true effect,estimate,ci_low,ci_high,CI contains zero
+interest rate (per point),0.0,0.0186859339,-0.0774962007,0.1148680684,True
+age (per year),0.0,-0.0021993717,-0.0114039829,0.0070052396,True
+log income,0.0,-0.0820498895,-0.3629658196,0.1988660405,True

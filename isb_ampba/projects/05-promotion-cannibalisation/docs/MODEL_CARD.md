@@ -30,7 +30,7 @@ Reference promo (10% off top-24): family net £779, promoted-only £133. Sweep (
 - Sensitivity: margin and outside share grid in `outputs/reference_sensitivity.csv`; four-parameter sweep in `outputs/sweep_draws.csv`.
 
 ## Known failure modes
-Confounded price changes (clearance, mix) bias elasticities; text-based families can mix product types (fix with `config/family_overrides.csv`); basket confidence is not causal pull; MNL/IIA spreads sibling losses by share; baseline units are means over active weeks and overstate sporadic SKUs.
+Confounded price changes (clearance, mix) bias elasticities; text-based families can mix product types (fix with `config/family_overrides.csv`); basket confidence is not causal pull; MNL/IIA spreads sibling losses by share (nested logit with lambda < 1 concentrates losses on siblings; see README sensitivity); baseline units are means over active weeks and overstate sporadic SKUs.
 
 ## Monitoring plan
 Compare predicted vs realised family net on each controlled promotion; track elasticity drift and share of SKUs on the prior; re-fit monthly.

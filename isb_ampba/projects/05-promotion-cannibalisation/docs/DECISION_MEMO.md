@@ -22,6 +22,6 @@ The assumption that moves the answer most (tornado, one-at-a-time): **elasticity
 **Risks & limitations:**
 - No cost data: margin (40%) is an assumption; conclusions flip within the swept margin range.
 - No promotion flags: price drops are inferred and not randomised, so elasticities are associations (1579 of 4706 SKUs had an identifiable estimate; 2913 SKUs use the prior -2.0; 14 positive estimates were dropped). Where price does not vary we rely on priors and the sweep.
-- Wholesale customers buy variants together (median co-purchase share 21.4%; 107 of 331 multi-SKU families flagged weak substitutes), so substitution may be overstated; MNL assumes IIA; one promo window only (no pull-forward, stockpiling or competitor reaction).
+- Wholesale customers buy variants together (median co-purchase share 21.4%; 107 of 331 multi-SKU families flagged weak substitutes), so substitution may be overstated; MNL assumes IIA (a nested-logit variant is reported as a sensitivity: reference family net -£4 at lambda 0.5 vs £779 under MNL); one promo window only (no pull-forward, stockpiling or competitor reaction).
 
 **Next steps:** run controlled promotions with sibling tracking (owner: category management + pricing analytics); replace assumed margins with finance data; validate against a dataset with real promo flags (Dunnhumby); re-run this engine monthly and monitor realised vs predicted family net.

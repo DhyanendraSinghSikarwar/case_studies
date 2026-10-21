@@ -68,3 +68,20 @@ def test_context_reference_promo(ctx):
     ref = reference_promo(ctx, skus, 0.10)
     assert len(ref) == 5
     assert np.allclose(ref["family_net"], ref["direct_uplift"] - ref["subsidy_cost"] - ref["cannibalised_margin"] + ref["halo_margin"], atol=1e-6)
+
+
+def test_engine_identity_nested_logit(cfg):
+    rng = np.random.default_rng(7)
+    for _ in range(100):
+        u, p, i, d, eps, m, hu, hm, sw = _rand_case(rng)
+        lam = float(rng.uniform(0.3, 1.0))
+        r = score_promo(u, p, i, d, eps, m, hu, hm, cfg, sub_weight=sw, nest_lambda=lam)
+        assert abs(r["family_net"] - (r["direct_uplift"] - r["subsidy_cost"] - r["cannibalised_margin"] + r["halo_margin"])) < 1e-6
+        assert r["cannibalised_margin"] >= 0
+
+
+def test_nested_break_even_root(cfg, family):
+    u, p = family
+    be = break_even_elasticity(u, p, 0, 0.10, 0.4, 1.0, 0.5, cfg, nest_lambda=0.6)
+    assert np.isfinite(be)
+    assert abs(score_promo(u, p, 0, 0.10, be, 0.4, 1.0, 0.5, cfg, nest_lambda=0.6)["family_net"]) < 1e-5

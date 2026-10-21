@@ -82,7 +82,7 @@ Snapshots (eligible customers and churn rate):
 Mean calibrated prediction on the test snapshot is 0.319 versus an observed churn rate of
 0.285: the pre-Christmas season lowers churn relative to the training snapshots, so calibration drifts
 even though ranking (AUC) holds. A logit trained on 6 snapshots (pilot history + train) reaches test AUC
-0.756 (supplementary, not the headline). SHAP top drivers (mean |SHAP|, xgb):
+0.756 (supplementary, not the headline; train-only check on the 2011-05-01 snapshot: AUC 0.783 with train-only history, 0.768 with pilot history added, 0.780 with stronger regularisation (C=0.05), so the wider window was NOT adopted). SHAP top drivers (mean |SHAP|, xgb):
 `tenure_days` 0.430, `frequency_6m` 0.345, `ipt_mean` 0.324, `ipt_std` 0.311, `recency_days` 0.221.
 
 ### Cost-optimal contact threshold (risk-only, constant save rate 20%, offer cost ₹250)

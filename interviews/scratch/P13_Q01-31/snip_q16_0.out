@@ -1,0 +1,3 @@
+[25.4  42.93] 33.39
+4.47 4.52
+ConfidenceInterval(low=np.float64(25.361151044126306), high=np.float64(42.83547982351421))

@@ -1,0 +1,52 @@
+C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\sklearn\utils\validation.py:2691: UserWarning: X does not have valid feature names, but LGBMRegressor was fitted with feature names
+  warnings.warn(
+C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\sklearn\utils\validation.py:2691: UserWarning: X does not have valid feature names, but LGBMClassifier was fitted with feature names
+  warnings.warn(
+C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\sklearn\utils\validation.py:2691: UserWarning: X does not have valid feature names, but LGBMClassifier was fitted with feature names
+  warnings.warn(
+C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\sklearn\utils\validation.py:2691: UserWarning: X does not have valid feature names, but LGBMClassifier was fitted with feature names
+  warnings.warn(
+=== Q9/11/19 early stopping, lr vs trees
+0.3 best_iter 19 val auc 0.938 test auc 0.9499
+0.05 best_iter 178 val auc 0.9388 test auc 0.9549
+=== Q12/22 MDI vs permutation with noise high-card feature
+train acc 1.0 test acc 0.842
+MDI    [0.22  0.099 0.177 0.099 0.309 0.096]
+perm   [ 0.192  0.002  0.123 -0.003  0.236  0.006]
+=== Q23 correlated
+perm with dup: [ 0.14  -0.017  0.065  0.052]
+perm no dup  : [0.226 0.005 0.078]
+=== Q13 native TreeSHAP additivity
+(5, 21) True
+mean |shap| top3 features: [ 3 16  5]
+shap 0.51.0
+=== Q14 NaN
+xgb with 20% NaN, test auc 0.933
+=== Q16 hand table: see q16
+=== Q17 regression split
+2.5 171.25 5.5 16.25
+6.5 2.67 5.33 20.0
+10.5 164.0 9.0 20.0
+total SSE 325.33
+=== Q18 OOB
+OOB acc 0.9144 test acc 0.92
+=== Q20/21
+RF test auc 0.9538 fit s 7.6
+ET test auc 0.9532 fit s 3.2
+AdaBoost test auc 0.9377 fit s 6.7
+GBM test auc 0.9527 fit s 14.4
+=== Q24 imbalance
+plain PR-AUC 0.559 ROC-AUC 0.865 mean p 0.018 true rate 0.025
+spw PR-AUC 0.559 ROC-AUC 0.863 mean p 0.061 true rate 0.025
+=== Q27 extrapolation
+tree [19.7 19.7] linear [23.9 29.9] truth [24, 30]
+lgb linear_tree [23.9 29.9]
+linear+tree residual [23.9 29.9]
+=== Q25 lightgbm
+31 -1 test auc 0.9506
+255 -1 test auc 0.9507
+31 5 test auc 0.9509
+=== Q26
+optuna 4.8.0
+0.9389 {'colsample_bytree': np.float64(0.887), 'learning_rate': np.float64(0.069), 'max_depth': 5, 'min_child_weight': 1, 'subsample': np.float64(0.608)}
+DONE

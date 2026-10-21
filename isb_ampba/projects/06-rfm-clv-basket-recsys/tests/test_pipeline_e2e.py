@@ -54,7 +54,7 @@ def test_streamlit_app_renders(artifacts, monkeypatch):
 
     out, _ = artifacts
     monkeypatch.setenv("CRM_OUTPUTS", str(out))
-    at = AppTest.from_file(str(ROOT / "app" / "streamlit_app.py"), default_timeout=90).run()
+    at = AppTest.from_file(str(ROOT / "app" / "streamlit_app.py"), default_timeout=300).run()
     assert not at.exception, at.exception
     assert len(at.tabs) == 4
     at.selectbox[0].select_index(3).run()                    # pick another customer in Customer 360

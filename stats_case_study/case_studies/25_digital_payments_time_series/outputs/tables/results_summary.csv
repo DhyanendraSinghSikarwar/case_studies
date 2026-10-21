@@ -1,0 +1,6 @@
+,Value
+History,"108 months; trend growth 52% (early) to 19% (late); December vs average month x1.06, October x1.09, February x0.87"
+Stationarity,"ADF p-values: raw 1.00, log 0.05, log first diff 0.014, log first + seasonal diff 0.000175"
+Accuracy,rolling-origin MAPE: Trend + season regression 4.2%; Holt-Winters (damped) 6.7%; Seasonal naive + drift 8.7%; SARIMA 9.8%; Naive 14.4%; Seasonal naive 21.4%
+Intervals,interval coverage (95% nominal): SARIMA 96%; Trend + season regression 95%
+2025,"2025 forecast total: SARIMA 5,331; 20% rule 4,880; 2025 actual 4,822"

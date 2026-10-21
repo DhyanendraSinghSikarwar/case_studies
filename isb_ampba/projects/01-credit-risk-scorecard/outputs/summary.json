@@ -34,6 +34,9 @@
     "fx_ntd_inr": 2.6,
     "breakeven_pd": 0.21686746987951805
   },
+  "opt_cutoff_selected_on": "validation",
+  "opt_cutoff_test_oracle": 0.19,
+  "uplift_test_oracle_inr": 47046377.56444478,
   "opt_cutoff": 0.19,
   "opt_cutoff_score": 528.9613259933262,
   "approval_rate": 0.6555,

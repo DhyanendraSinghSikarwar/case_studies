@@ -180,7 +180,16 @@ def main() -> None:
     y, p = pred["y"].to_numpy(), pred["pd"].to_numpy()
     grid = eco.cutoff_grid(CFG)
     curve = eco.profit_curve(p, ead, y, margin, lgd, grid)
-    opt = eco.find_optimal_cutoff(curve)
+    # The cut-off is CHOSEN on the validation split (champion PDs) and only EVALUATED on test, so the
+    # reported uplift is not tuned on the test outcomes. The test-oracle optimum is kept for comparison.
+    champ_bundle = joblib.load(ROOT / CFG["paths"]["models"] / f"{champion}.joblib")
+    v_f = add_features(valid_raw)
+    p_valid = predict_pd(champ_bundle["model"], v_f[champ_bundle["features"]], champ_bundle["calibrator"])
+    ead_valid = eco.make_ead(v_f["LIMIT_BAL"], v_f["avg_util"], fx)
+    valid_curve = eco.profit_curve(p_valid, ead_valid, v_f[TARGET].to_numpy(), margin, lgd, grid)
+    cutoff_valid = float(eco.find_optimal_cutoff(valid_curve)["cutoff"])
+    opt = curve.loc[(curve["cutoff"] - cutoff_valid).abs().idxmin()]
+    opt_oracle = eco.find_optimal_cutoff(curve)
     curve.to_csv(OUT / "profit_curve.csv", index=False)
     approve_all_exp = float(eco.unit_profit(p, ead, margin, lgd).sum())
     approve_all_real = float(eco.realised_profit(y, ead, margin, lgd).sum())
@@ -245,6 +254,9 @@ def main() -> None:
         "benchmark_r1": {"auc": 0.783, "ks": 0.424},
         "scorecard_max_point_diff": metrics["scorecard_check"]["max_abs_diff_points"],
         "assumptions": {"margin": margin, "lgd": lgd, "fx_ntd_inr": fx, "breakeven_pd": breakeven_pd},
+        "opt_cutoff_selected_on": "validation",
+        "opt_cutoff_test_oracle": float(opt_oracle["cutoff"]),
+        "uplift_test_oracle_inr": float(opt_oracle["exp_profit"] - approve_all_exp),
         "opt_cutoff": float(opt["cutoff"]), "opt_cutoff_score": float(sc.pd_to_score(opt["cutoff"], scfg["base_score"], scfg["base_odds"], scfg["pdo"],
                                                  tuple(scfg["clip"]))),
         "approval_rate": float(opt["approval_rate"]), "bad_rate_approved": float(opt["bad_rate_approved"]),

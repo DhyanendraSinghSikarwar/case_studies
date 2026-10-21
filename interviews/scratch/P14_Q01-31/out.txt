@@ -1,0 +1,70 @@
+===== Q2
+23 0.5072972343239854
+32 77162.0864
+64 5056894494.3104
+128 2.1719196472385626e+19
+===== Q4
+stay 0.33168 switch 0.66832
+===== Q5
+14.70125 14.700000000000001
+===== Q6
+{'ham': np.float64(0.394), 'spam': np.float64(0.606)}
+===== Q7
+HH 6.00405 HT 3.9885
+===== Q9
+[0.136 0.141 0.148 0.143 0.14  0.147 0.144]
+===== Q11
+Breusch-Pagan p: 6.6820655519346815e-18
+classic SE: [0.657 0.104]
+HC3 SE    : [0.449 0.106]
+WLS SE    : [0.235 0.07 ]
+===== Q14
+flat prior    mean 0.153  95% CrI [0.107 0.206]
+Beta(20,180)  mean 0.125  95% CrI [0.094 0.159]
+===== Q15
+theta 0.80  rho^2 0.59
+raw   (effect, SE): (np.float64(0.237), np.float64(0.0443))
+CUPED (effect, SE): (np.float64(0.213), np.float64(0.0285))
+===== Q16
+false positive, peek daily : 0.2255
+false positive, look once  : 0.05275
+===== Q17
+pi ~ 3.141168  SE ~ 0.0016424784917240165
+int_0^1 exp(-x^2) ~ 0.7468997570965495 (true 0.7468)
+n for +-0.001 on a p=0.5 estimate: 960400
+===== Q19
+prior 0.01, 1 positive test(s): posterior 0.167
+prior 0.01, 2 positive test(s): posterior 0.798
+prior 0.10, 1 positive test(s): posterior 0.687
+prior 0.10, 2 positive test(s): posterior 0.978
+===== Q22
+leverage[0] 0.66 (rule of thumb 2p/n = 0.13)
+Cook D[0] 25.9, next largest 0.33 (rule 4/n = 0.13)
+slope with point 0.01, without 1.82
+===== Q25
+fixed points (n=10): 0.99937
+distinct birthdays, 23 people: 22.319962396220888
+empty bins, 100 balls in 100 bins: 36.60323412732292
+===== Q26
+fair   sim: (0.69705, 21.1381)  theory: (0.7, 21)
+p=.45  sim: (0.87325, 17.2413)  theory: (0.8717476511872477, 17.174765118724764)
+===== Q27
+P(hit +a) sim 0.631 theory 0.625 | E[steps] sim 15.09 theory 15
+P(at 0 after 100 steps) = 0.07958923738717877  approx 0.07978845608028654
+===== Q28
+pi: [0.6364 0.2727 0.0909]  check pi@P == pi: True
+row of P^100: [0.6364 0.2727 0.0909]
+===== Q29
+[[0.799 0.15  0.051]
+ [0.298 0.505 0.197]
+ [0.    0.    1.   ]]
+expected months until churn, from active: 11.77 (true 11.82)
+prev=0 -> P(next | now active): [0.801 0.148 0.051]
+prev=1 -> P(next | now active): [0.791 0.152 0.057]
+===== Q30
+[0.2199 0.131  0.4292 0.2199] 1.0 iterations: 31
+===== Q31
+P(B > A)            : 0.908
+expected loss ship B: 0.00065
+expected loss keep A: 0.02058
+p-value (z-test)    : 0.184

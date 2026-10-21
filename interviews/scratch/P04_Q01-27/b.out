@@ -1,0 +1,5 @@
+(900, 10) True
+global top3: [9 6 1] builtin gain top3: [9 8 6]
+row0 contributions top: [1 9 8] [-4.7  -1.02 -0.73]
+0.9742 {'max_depth': 7, 'learning_rate': 0.178, 'subsample': 0.921, 'colsample_bytree': 0.907, 'min_child_weight': 2, 'reg_lambda': 2.368}
+DONE

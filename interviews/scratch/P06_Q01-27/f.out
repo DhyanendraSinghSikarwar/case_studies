@@ -1,0 +1,11 @@
+      date  is_holiday  days_to_holiday  pre_holiday_week
+2024-10-20           0             11.0                 0
+2024-10-30           0              1.0                 1
+2024-10-31           1              0.0                 0
+2024-11-01           1              0.0                 0
+2024-11-02           0              NaN                 0
+   dow_sin  dow_cos
+0    0.000    1.000
+6   -0.782    0.623
+Sunday->Monday distance raw: 6  sin/cos: 0.868  Mon->Tue: 0.868
+(400, 10)

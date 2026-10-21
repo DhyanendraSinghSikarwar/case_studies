@@ -16,6 +16,7 @@ def score_promo(
     u: np.ndarray, p: np.ndarray, i: int, d: float, eps_i: float, margin: float,
     halo_per_unit: float, halo_margin_per_unit: float, cfg: dict,
     sub_weight: float = 1.0, halo_factor: float | None = None, outside_share: float | None = None,
+    nest_lambda: float | None = None,
 ) -> dict:
     """Score discount d on SKU i of a family. All money in GBP over ``promo_weeks`` weeks.
 
@@ -29,7 +30,8 @@ def score_promo(
     hf = cfg["engine"]["halo_factor"] if halo_factor is None else halo_factor
     os_ = cfg["demand"]["outside_share"] if outside_share is None else outside_share
     c = (1 - margin) * p
-    u2 = mnl_after_discount(u, p, i, d, eps_i, os_, sub_weight)
+    nl = cfg["demand"].get("nest_lambda", 1.0) if nest_lambda is None else nest_lambda
+    u2 = mnl_after_discount(u, p, i, d, eps_i, os_, sub_weight, nl)
     p_i2 = p[i] * (1 - d)
     delta_i = (u2[i] - u[i]) * W
     direct = delta_i * (p_i2 - c[i])
@@ -49,11 +51,11 @@ def score_promo(
 def break_even_elasticity(
     u: np.ndarray, p: np.ndarray, i: int, d: float, margin: float, halo_per_unit: float, halo_margin_per_unit: float,
     cfg: dict, sub_weight: float = 1.0, halo_factor: float | None = None, outside_share: float | None = None,
-    bounds: tuple[float, float] = (-12.0, -0.5),
+    bounds: tuple[float, float] = (-12.0, -0.5), nest_lambda: float | None = None,
 ) -> float:
     """Elasticity at which family_net = 0 (brentq on bounds); NaN when the sign never changes in range."""
     def f(eps: float) -> float:
-        return score_promo(u, p, i, d, eps, margin, halo_per_unit, halo_margin_per_unit, cfg, sub_weight, halo_factor, outside_share)["family_net"]
+        return score_promo(u, p, i, d, eps, margin, halo_per_unit, halo_margin_per_unit, cfg, sub_weight, halo_factor, outside_share, nest_lambda)["family_net"]
 
     if d <= 0:
         return float("nan")
@@ -90,7 +92,8 @@ class EngineContext:
         return mem, t["base_units"].to_numpy(float), t["list_price"].to_numpy(float)
 
     def score(self, sku: str, d: float, eps: float | None = None, margin: float | None = None,
-              halo_factor: float | None = None, outside_share: float | None = None, sub_weight: float | None = None) -> dict:
+              halo_factor: float | None = None, outside_share: float | None = None, sub_weight: float | None = None,
+              nest_lambda: float | None = None) -> dict:
         """Score discount d on SKU using the family, elasticity and halo stored in the table (overridable)."""
         mem, u, p = self.arrays(sku)
         r = self.table.loc[sku]
@@ -99,12 +102,13 @@ class EngineContext:
         e = float(r["eps"]) if eps is None else eps
         hu = float(r.get("halo_units", 0.0) or 0.0)
         hr = float(r.get("halo_rev_per_unit", 0.0) or 0.0)
-        out = score_promo(u, p, 0, d, e, m, hu, m * hr, self.cfg, sw, halo_factor, outside_share)
+        out = score_promo(u, p, 0, d, e, m, hu, m * hr, self.cfg, sw, halo_factor, outside_share, nest_lambda)
         out["members"] = mem; out["baseline_units"] = u; out["prices"] = p; out["eps"] = e; out["margin"] = m
         return out
 
     def break_even(self, sku: str, d: float, margin: float | None = None, halo_factor: float | None = None,
-                   outside_share: float | None = None, sub_weight: float | None = None) -> float:
+                   outside_share: float | None = None, sub_weight: float | None = None,
+                   nest_lambda: float | None = None) -> float:
         """Break-even elasticity for the SKU's family at discount d."""
         mem, u, p = self.arrays(sku)
         r = self.table.loc[sku]
@@ -112,7 +116,7 @@ class EngineContext:
         sw = float(r["sub_weight"]) if sub_weight is None else sub_weight
         hu = float(r.get("halo_units", 0.0) or 0.0); hr = float(r.get("halo_rev_per_unit", 0.0) or 0.0)
         return break_even_elasticity(u, p, 0, d, m, hu, m * hr, self.cfg, sw, halo_factor, outside_share,
-                                     tuple(self.cfg["sweep"]["breakeven_bounds"]))
+                                     tuple(self.cfg["sweep"]["breakeven_bounds"]), nest_lambda)
 
 
 def reference_promo(ctx: EngineContext, skus: list[str], d: float, **kw: float) -> pd.DataFrame:
@@ -120,7 +124,7 @@ def reference_promo(ctx: EngineContext, skus: list[str], d: float, **kw: float) 
     rows = []
     for s in skus:
         r = ctx.score(s, d, **kw)
-        be = ctx.break_even(s, d, **{k: v for k, v in kw.items() if k in ("margin", "halo_factor", "outside_share", "sub_weight")})
+        be = ctx.break_even(s, d, **{k: v for k, v in kw.items() if k in ("margin", "halo_factor", "outside_share", "sub_weight", "nest_lambda")})
         t = ctx.table.loc[s]
         rows.append({
             "stock_code": s, "description": t["description"], "family": t["family"], "n_family_active": len(r["members"]),

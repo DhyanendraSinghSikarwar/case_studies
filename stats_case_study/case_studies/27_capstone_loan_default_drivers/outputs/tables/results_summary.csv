@@ -1,0 +1,6 @@
+,Value
+Data,"24,060 rows; 60 duplicates, 25 income typos, 3 impossible ages, 6.5% income missing (more for agent and self-employed), 5.1% thin files; default 7.5%"
+Claims,"dashboard claims, raw to adjusted OR: agent channel 1.85 to 1.83; interest rate 1.64 to 1.82; monthly income 0.89 to 1.82; age 0.90 to 1.82"
+Model,final model AUC out-of-time 0.793 (CI 0.777 to 0.808); KS 0.44; calibration slope 0.96
+Policy,policy profit on 2023 (₹ lakh): approve all 135; reject agents 191; score>=650 237; model 334
+Truth,9 of 10 coefficient intervals cover the truth; the noise variables in the kitchen-sink model have intervals containing zero: 3 of 3

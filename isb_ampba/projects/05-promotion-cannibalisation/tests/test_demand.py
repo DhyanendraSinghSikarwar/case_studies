@@ -1,11 +1,13 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from promo.demand import (
     baseline_table,
     estimate_elasticities,
     mnl_after_discount,
     mnl_shares_after_discount,
+    nested_shares_after_discount,
     pooled_fe_elasticity,
     seasonal_index,
     sku_elasticity_ols,
@@ -85,3 +87,29 @@ def test_seasonal_index_uses_only_past(sales_panel):
     mod = panel.copy()
     mod.loc[mod["week"] > cut, "revenue"] *= 50
     assert np.allclose(a, seasonal_index(mod, 4, as_of=cut)) and (a >= 0).all()
+
+
+def test_nested_logit_lambda_one_equals_mnl(family):
+    u, p = family
+    a = mnl_after_discount(u, p, 1, 0.15, -3.0, 0.4)
+    b = nested_shares_after_discount(u, p, 1, 0.15, -3.0, 0.4, 1.0)
+    assert np.allclose(a, b[2] * b[0])
+
+
+def test_nested_logit_calibration_and_shares(family):
+    u, p = family
+    for lam in (0.3, 0.6, 0.9):
+        s2, s0, M = nested_shares_after_discount(u, p, 0, 0.0, -3.0, 0.4, lam)
+        assert np.allclose(M * s2, u) and abs(s2.sum() + s0 - 1) < 1e-12          # baseline reproduced
+        s2, s0, _ = nested_shares_after_discount(u, p, 0, 0.2, -3.0, 0.4, lam)
+        assert abs(s2.sum() + s0 - 1) < 1e-12 and (s2 > 0).all()
+        u2 = mnl_after_discount(u, p, 0, 0.001, -3.0, 0.4, nest_lambda=lam)
+        assert abs(np.log(u2[0] / u[0]) / np.log(1 - 0.001) / -3.0 - 1) < 0.01     # own elasticity recovered
+
+
+def test_nested_logit_more_cannibalisation_than_mnl(family):
+    u, p = family
+    lost = lambda lam: (u[1:] - mnl_after_discount(u, p, 0, 0.2, -3.0, 0.4, nest_lambda=lam)[1:]).sum()  # noqa: E731
+    assert lost(0.5) > lost(1.0) > 0
+    with pytest.raises(ValueError):
+        nested_shares_after_discount(u, p, 0, 0.1, -3.0, 0.4, 1.5)

@@ -37,3 +37,12 @@ If `.claude/skills/` does not exist or is missing any folder from `claude-skills
 5. Reference repos (alumni work) are for design inspiration only — do not copy code verbatim; cite them in the project README "References".
 6. Update the progress table in the root `README.md` when a milestone completes.
 7. Windows + OneDrive: use pathlib, provide `tasks.py` as a `make` alternative, keep data/models/venv out of git and ideally out of OneDrive sync (`.venv` inside project is fine but gitignored).
+
+## Token-saving kit (claude-kit, Reference mode — installed globally as a plugin, nothing copied here)
+Use these instead of reading raw output/files in the main context:
+- Tests/lint: `claude-kit:test-runner` / `test-summarizer` (agents) or `/test`; `claude-kit:lint-runner` or `/lint`. Never paste >30 lines of pytest/ruff output into context.
+- Logs/pipeline failures: `claude-kit:log-triager` (`/triage`) before reading any long log (e.g. `all_run.log`).
+- Large docs/PDFs/xlsx (plan, alumni repos): `claude-kit:doc-oracle`, `pdf-extractor`, `office-extractor`; search with `scoped-search` limited to one `projects/NN-*/` folder.
+- Notebooks: `claude-kit:notebook-cleaner` (strip outputs before sharing; notebooks stay thin per project rules).
+- Docs/commit hygiene: `claude-kit:doc-writer`, `commit-drafter` (`/commit`), `dupe-detector` (`/dupes`). Identity rule: use `anonymous-git-push` before any git commit/push.
+- Routing: start multi-step work with `anthropic-skills:usage-router`; cheap models (haiku/sonnet, low effort) for docs, README, memo regeneration; heavy model only for design/debugging. Run long pipelines once, in the background, never concurrently across projects.

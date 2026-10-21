@@ -1,0 +1,15 @@
+variable,type,defaulters median,non-defaulters median,AUC (0.5 = no signal),p-value,Cramér's V,BH-adjusted p,significant after BH (5%),strength
+dti_pct,numeric,30.75,24.7,0.6846617373,0.0,,0.0,True,0.6846617373
+credit_score,numeric,604.5,655.0,0.2640171021,0.0,,0.0,True,0.7359828979
+interest_rate,numeric,11.87,10.63,0.7061686803,0.0,,0.0,True,0.7061686803
+monthly_income,numeric,37750.0,45900.0,0.4079847791,0.0,,0.0,True,0.5920152209
+loan_amount,numeric,425500.0,427000.0,0.4999436734,0.9955030665,,0.9955030665,False,0.5000563266
+lti,numeric,1.0459814209,0.8421862465,0.5971343317,0.0,,0.0,True,0.5971343317
+term_months,numeric,36.0,36.0,0.5425961221,1.0509e-05,,1.47126e-05,True,0.5425961221
+utilisation_pct,numeric,49.75,39.5,0.665523004,0.0,,0.0,True,0.665523004
+age,numeric,36.0,37.0,0.4725025258,0.0059117667,,0.0068970611,True,0.5274974742
+years_in_job,numeric,6.6,7.2,0.4708311933,0.0034821276,,0.0044317987,True,0.5291688067
+channel,categorical,,,,0.0,0.0766022251,0.0,True,
+employment_type,categorical,,,,0.0,0.0678482431,0.0,True,
+prior_delinquency,categorical,,,,0.0,0.1876112882,0.0,True,
+city_tier,categorical,,,,0.749163545,0.0069377947,0.80679151,False,

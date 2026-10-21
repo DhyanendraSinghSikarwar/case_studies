@@ -1,0 +1,9 @@
+F_onewayResult(statistic=np.float64(7.566408074338711), pvalue=np.float64(0.000934107012401142))
+Multiple Comparison of Means - Tukey HSD, FWER=0.05
+===================================================
+group1 group2 meandiff p-adj   lower  upper  reject
+---------------------------------------------------
+     A      B   1.1202  0.074  -0.085 2.3253  False
+     A      C   1.9594 0.0006  0.7542 3.1645   True
+     B      C   0.8392 0.2263 -0.3659 2.0443  False
+---------------------------------------------------

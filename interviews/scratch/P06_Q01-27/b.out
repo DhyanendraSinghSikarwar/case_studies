@@ -1,0 +1,15 @@
+C:\Users\11624\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\statsmodels\base\model.py:607: ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals
+  warnings.warn("Maximum Likelihood optimization failed to "
+naive 14.09 snaive 6.61 MA12 8.68
+ARIMA (1, 1, 0) AIC 662.9 BIC 668.3
+ARIMA (1, 1, 1) AIC 664.2 BIC 672.2
+ARIMA (2, 1, 2) AIC 600.9 BIC 614.3
+ARIMA (0, 1, 1) AIC 665.3 BIC 670.6
+SARIMA AIC 491.1 MAE 1.87
+HW MAE 1.94 alpha 0.0
+      lb_stat  lb_pvalue
+12  11.959364   0.287785
+bad model LB p 8.33105247396084e-18
+train 0 - 8 test 11 - 13
+train 0 - 11 test 14 - 16
+train 0 - 14 test 17 - 19

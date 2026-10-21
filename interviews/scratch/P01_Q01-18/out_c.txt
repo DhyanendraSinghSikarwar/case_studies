@@ -1,0 +1,13 @@
+scratch: 1.0
+sklearn: 1.0
+1 train 1.0 test 0.978
+5 train 0.962 test 1.0
+25 train 0.924 test 0.978
+90 train 0.99 test 0.978
+lr=0.001  final loss=0.6642
+lr=0.1    final loss=0.4393
+lr=5      final loss=0.4240
+lr=500    final loss=7.1611
+acc scratch: 0.811
+coef scratch: [ 1.26  0.88  2.46 -0.07  1.36]
+coef sklearn: [ 1.26  0.88  2.46 -0.07  1.36]

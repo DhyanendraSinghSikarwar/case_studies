@@ -37,6 +37,9 @@ pattern, which only a real randomised pilot can reveal.
   (calibration drifted: mean prediction 0.319 vs observed
   0.285) and test AUC is 0.747, below the 0.75 target.
 - Test cohort has ~1,471 customers; uplift Qini intervals include zero.
+- The 70%-of-oracle criterion is weak here: contact-all earns 98.2% and the M2 risk-threshold rule
+  98.9% of the oracle at the base offer cost, i.e. at or above the uplift policy
+  (92.3%); uplift only clearly wins when the offer is costly (cost sweep in the README).
 
 **Next steps:** run a real 50/50 pilot (owner: CRM), log offers and outcomes, refit quarterly, monitor holdout Qini and
 calibration, re-estimate the economics (offer cost, margin) before scaling.

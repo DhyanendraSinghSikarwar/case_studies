@@ -1,0 +1,7 @@
+,Value
+Arrivals,"mean 9.6 calls per 15 minutes, variance ÷ mean 2.0 overall; within-hour variance ÷ mean 0.80 to 1.17; peak hour 14 calls"
+Staffing,"agents needed (80% in 20 s, AHT 6 min): 4 to 9"
+Censoring,"65% resolved, 35% censored; report: 61% of resolved within 30 days, mean 32 days"
+SLA,Kaplan-Meier: 41.9% resolved by day 30 (CI 40.6% to 43.2%); median 42 days; SLA 70%
+Group effects,"Cox hazard ratios: call_first 1.41, late bucket 0.65, high balance 0.71"
+Truth,truth: 40.7% resolved by 30 days; KM interval covers in 12 of 12 segments

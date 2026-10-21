@@ -1,4 +1,4 @@
-"""Demand: price-response (log-log) estimates where price varies, baseline table, and the MNL choice model."""
+"""Demand: price-response (log-log) estimates where price varies, baseline table, and the MNL / nested-logit choice models."""
 from __future__ import annotations
 
 import numpy as np
@@ -162,13 +162,43 @@ def mnl_shares_after_discount(u: np.ndarray, p: np.ndarray, i: int, d: float, ep
     return e / denom, 1.0 / denom, float(M)
 
 
-def mnl_after_discount(u: np.ndarray, p: np.ndarray, i: int, d: float, eps_i: float, outside_share: float, sub_weight: float = 1.0) -> np.ndarray:
+def nested_shares_after_discount(u: np.ndarray, p: np.ndarray, i: int, d: float, eps_i: float, outside_share: float,
+                                 lam: float) -> tuple[np.ndarray, float, float]:
+    """Two-level nested logit: the family is one nest (dissimilarity ``lam`` in (0, 1]), "no purchase" is a singleton nest.
+
+    lam = 1 is exactly the MNL; lam < 1 means siblings are closer substitutes than the outside option (more of the
+    promoted SKU's gain is diverted from siblings, less from the outside). Calibrated to the baseline shares and to SKU
+    i's own-price elasticity eps_i = -beta p_i [1/lam - (1/lam - 1) s_i|g - s_i]. Returns (shares, s0', market size M).
+    """
+    if not 0 < lam <= 1:
+        raise ValueError("nest lambda must be in (0, 1]")
+    u = np.asarray(u, float); p = np.asarray(p, float)
+    s0 = outside_share
+    M = u.sum() / (1 - s0)
+    s = u / M
+    S = s.sum()
+    s_cond = s / S
+    beta = -eps_i / (p[i] * (1 / lam - (1 / lam - 1) * s_cond[i] - s[i]))
+    v = lam * np.log(s / s0) - (lam - 1) * np.log(S / s0)          # systematic utilities at baseline prices
+    p2 = p.copy(); p2[i] = p[i] * (1 - d)
+    ev = np.exp((v + beta * p - beta * p2) / lam)                   # exp(V'_j / lam), V'_j = a_j - beta p'_j
+    inc = ev.sum()
+    inside_prob = inc**lam / (1.0 + inc**lam)
+    return ev / inc * inside_prob, 1.0 - inside_prob, float(M)
+
+
+def mnl_after_discount(u: np.ndarray, p: np.ndarray, i: int, d: float, eps_i: float, outside_share: float,
+                       sub_weight: float = 1.0, nest_lambda: float = 1.0) -> np.ndarray:
     """New weekly units of every family SKU after discount d on SKU i.
 
     sub_weight in [0, 1] scales how much of the sibling losses is realised (1 = pure MNL/IIA; <1 caps
     cannibalisation for weak-substitute families). The promoted SKU's units are unaffected by the cap.
+    nest_lambda < 1 switches to the nested-logit variant (1 = MNL).
     """
-    s2, _, M = mnl_shares_after_discount(u, p, i, d, eps_i, outside_share)
+    if nest_lambda == 1.0:
+        s2, _, M = mnl_shares_after_discount(u, p, i, d, eps_i, outside_share)
+    else:
+        s2, _, M = nested_shares_after_discount(u, p, i, d, eps_i, outside_share, nest_lambda)
     u2 = M * s2
     if sub_weight != 1.0:
         sib = np.arange(len(u)) != i

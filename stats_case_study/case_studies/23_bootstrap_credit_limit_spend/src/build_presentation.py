@@ -70,7 +70,7 @@ def main() -> None:
                col_widths=[3.0, 1.3, 2.6, 0.9], font_size=14)
     deck.image("The bootstrap: resample the customers, recompute, read off the interval", figs / "fig02_bootstrap_distributions.png",
                takeaway="With 2,500 per arm, the percentile and BCa intervals nearly coincide.")
-    deck.image("The 60 vs 60 pilot overstates every effect and its intervals are very wide", figs / "fig03_main_vs_pilot.png",
+    deck.image("The 60 vs 60 pilot overstates most effects and its intervals are very wide", figs / "fig03_main_vs_pilot.png",
                takeaway=f"BCa intervals cover the truth for {main_cov} of 7 metrics in the main test and {pilot_cov} of 7 in the pilot. The pilot's mean difference (+₹12,600) is about six times the main test's.")
     deck.image("Does the bootstrap deserve trust? A coverage check on skewed data", figs / "fig04_coverage.png",
                takeaway=f"For the mean at n = 30, a nominal 95% interval contains the truth {c30['mean: t']:.0%} (t), {c30['mean: percentile']:.0%} (percentile), "
@@ -87,7 +87,7 @@ def main() -> None:
     deck.bullets(
         "Revenue: the number Finance wants is the noisiest one",
         [f"At 1.6% interchange, the mean difference is about ₹{rev.iloc[1, 1]:,.0f} extra annual interchange per customer.",
-         f"The interval runs from {sgn(rev.iloc[0, 1])} to {sgn(rev.iloc[2, 1])} per customer, so a loss cannot be ruled out.",
+         f"The interval runs from {sgn(rev.iloc[0, 1]).replace('−', '−₹').replace('+', '+₹')} to {sgn(rev.iloc[2, 1]).replace('−', '−₹').replace('+', '+₹')} per customer, so a loss cannot be ruled out.",
          "This ignores the extra credit-risk cost of larger limits and the fall in utilisation."],
         takeaway="A bigger test, or adjusting for prior spend, is needed before quoting revenue.",
         size=18,

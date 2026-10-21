@@ -85,13 +85,17 @@ def recsys_table(m: dict, protocol: str) -> str:
     """Recommender metrics for one protocol."""
     r = m["recsys"][protocol]
     rows = []
-    for n in ("random", "popularity", "itemknn_cosine", "als", "hybrid_als_pop"):
+    for n in ("random", "popularity", "own_history", "itemknn_cosine", "als", "hybrid_als_pop"):
+        if n not in r:
+            continue
         x = r[n]
         rows.append({"Model": n, "HitRate@10": round(x["hitrate"], 4), "NDCG@10": round(x["ndcg"], 4),
                      "Coverage": round(x["coverage"], 4),
                      "NDCG vs popularity": f"{x['ndcg_ratio_vs_popularity']:.2f}x" if "ndcg_ratio_vs_popularity" in x else "-",
-                     "95% CI": (f"[{x['ndcg_ratio_ci95'][0]:.2f}, {x['ndcg_ratio_ci95'][1]:.2f}]"
-                                if "ndcg_ratio_ci95" in x else "-")})
+                     "NDCG vs own_history": (f"{x['ndcg_ratio_vs_own_history']:.2f}x"
+                                         if "ndcg_ratio_vs_own_history" in x else "-"),
+                     "95% CI (vs popularity)": (f"[{x['ndcg_ratio_ci95'][0]:.2f}, {x['ndcg_ratio_ci95'][1]:.2f}]"
+                                                if "ndcg_ratio_ci95" in x else "-")})
     return _md(pd.DataFrame(rows), ".4f")
 
 
@@ -210,6 +214,12 @@ ALS best params (tuned on a validation window inside the training period): {m['r
 **Protocol `discovery`** (already-bought items excluded; {m['recsys']['n_eval_users']['discovery']:,} users):
 {recsys_table(m, 'discovery')}
 
+`own_history` is a personalised baseline (rank the user's own past items by purchase count, popularity tie-break).
+Under `repeat_allowed` it scores NDCG@10 {m['recsys']['repeat_allowed']['own_history']['ndcg']:.4f}, i.e. ALS is
+{m['recsys']['repeat_allowed']['als']['ndcg_ratio_vs_own_history']:.2f}x of it: the {m['recsys']['repeat_allowed']['als']['ndcg_ratio_vs_popularity']:.2f}x lead over popularity is mostly
+re-order memory, not discovery. Under `discovery` (seen items excluded) the baseline collapses to popularity and ALS is
+{m['recsys']['discovery']['als']['ndcg_ratio_vs_own_history']:.2f}x, which is the fair headline for "new product" e-mail content.
+
 ![recsys](figures/07_recsys_metrics.png)
 
 ### Campaign planner (assumptions in `config/config.yaml`)
@@ -262,11 +272,14 @@ portfolio ROI stays between {cp['sensitivity_min_roi']:.2f} and {cp['sensitivity
 - **Recommender:** under `{prim}` the best of ALS/hybrid ('{best}') reaches NDCG@10 {rs[prim][best]['ndcg']:.3f} vs popularity {rs[prim]['popularity']['ndcg']:.3f};
   plain ALS is {s['recsys_als_ndcg_ratio']:.2f}x popularity (95% CI {s['recsys_als_ndcg_ratio_ci95'][0]:.2f}-{s['recsys_als_ndcg_ratio_ci95'][1]:.2f}; target 1.30x:
   {'met' if s['recsys_target_met'] else 'NOT met'}) and {s['recsys_secondary_als_ndcg_ratio']:.2f}x under `{s['recsys_secondary_protocol']}`.
+  Caveat: a personalised own-history (re-order) baseline scores NDCG@10 {s['recsys_own_history_ndcg_primary']:.3f} under `{prim}`, so ALS is only
+  {s['recsys_als_ndcg_ratio_vs_own_history_primary']:.2f}x of it; ALS adds value for discovery (excluding already-bought items), not for re-orders.
 - **Bundles:** {m['basket']['n_bundles']} bundles with lift > 3 and confidence > 0.3 (top lift {m['basket']['top_lift']:.1f}), mostly colour/size variants of the same product family,
   suited to "complete the set" prompts.
 
 ## Risks and limitations
-- Campaign response rates, costs and margin are planning assumptions; only a controlled pilot can validate them.
+- Campaign response rates, costs and margin are planning assumptions; only a controlled pilot can validate them. Break-even response multiplier
+  (portfolio net profit >= 0 at the base margin): {cp['break_even_response_multiplier_at_margin']}x of the assumed rates.
 - About 5k customers and heavy-tailed spend: segment and decile boundaries are noisy; small segments should not be over-read.
 - BG/NBD ignores seasonality (holdout contains the Q4 peak) and first-purchase dates are left-censored at 2009-12-01.
 - Wholesale B2B behaviour (bulk re-orders) dominates; recommendations that include re-orders mostly resurface past purchases, discovery lift is lower.

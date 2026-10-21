@@ -1,0 +1,8 @@
+Q9 (100, 2) within min/max box: True
+Q19 AP mine 0.340601 sk 0.340601
+Q19 prf mine [0.1984 0.6757 0.3067] sk [0.1984 0.6757 0.3067]
+Q13 0.3085 0.3085
+Q13 confident wrong 4.605 vs hedged 0.916
+Q18 beta 0.5 0.549
+Q18 beta 1 0.643
+Q18 beta 2 0.776

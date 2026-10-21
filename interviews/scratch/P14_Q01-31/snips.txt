@@ -1,0 +1,192 @@
+#### Q2
+import numpy as np
+n = 1
+while 1 - np.prod(1 - np.arange(n) / 365) < 0.5: n += 1
+print(n, 1 - np.prod(1 - np.arange(n) / 365))
+for bits in (32, 64, 128): print(bits, 1.1774 * 2 ** (bits / 2))
+#### Q4
+import numpy as np
+rng = np.random.default_rng(0); N = 100_000
+car, pick = rng.integers(0, 3, N), rng.integers(0, 3, N)
+print("stay", (pick == car).mean(), "switch", (pick != car).mean())  # switching wins iff first pick was wrong
+#### Q5
+import numpy as np
+rng = np.random.default_rng(0)
+def rolls_until_all(n):
+    seen, t = set(), 0
+    while len(seen) < n: seen.add(rng.integers(n)); t += 1
+    return t
+print(np.mean([rolls_until_all(6) for _ in range(20000)]), 6 * sum(1 / k for k in range(1, 7)))
+#### Q6
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+docs = ["win free prize now", "free money win", "meeting at noon", "lunch meeting tomorrow", "free lunch offer now", "project update meeting"]
+y = np.array([1, 1, 0, 0, 1, 0])                  # 1 = spam
+cv = CountVectorizer(); X = cv.fit_transform(docs)
+nb = MultinomialNB(alpha=1).fit(X, y)             # alpha=1 -> Laplace smoothing
+print("P(ham), P(spam):", nb.predict_proba(cv.transform(["free prize meeting"]))[0].round(3))
+#### Q7
+import numpy as np
+rng = np.random.default_rng(0)
+def wait(pattern):
+    s = []
+    while s[-2:] != pattern: s.append(int(rng.integers(2)))
+    return len(s)
+print("HH", np.mean([wait([1, 1]) for _ in range(20000)]), "HT", np.mean([wait([1, 0]) for _ in range(20000)]))
+#### Q9
+import numpy as np
+rng = np.random.default_rng(1)
+def fair_bit(p):                      # von Neumann: toss twice, HT -> 1, TH -> 0, else retry
+    while True:
+        a, b = rng.random() < p, rng.random() < p
+        if a != b: return int(a)
+def uniform7(p):                      # 3 fair bits -> 0..7, reject 7
+    while True:
+        v = 4 * fair_bit(p) + 2 * fair_bit(p) + fair_bit(p)
+        if v < 7: return v
+print(np.round(np.bincount([uniform7(0.8) for _ in range(14000)]) / 14000, 3))
+#### Q11
+import numpy as np, statsmodels.api as sm
+from statsmodels.stats.diagnostic import het_breuschpagan
+rng = np.random.default_rng(0)
+x = rng.uniform(1, 10, 500); y = 2 + 3 * x + rng.normal(0, x)   # noise sd grows with x
+X = sm.add_constant(x); m = sm.OLS(y, X).fit()
+print("Breusch-Pagan p:", het_breuschpagan(m.resid, X)[1])
+print("classic SE:", m.bse.round(3))
+print("HC3 SE    :", m.get_robustcov_results("HC3").bse.round(3))
+print("WLS SE    :", sm.WLS(y, X, weights=1 / x ** 2).fit().bse.round(3))
+#### Q14
+import numpy as np
+from scipy import stats
+a, b, k, n = 1, 1, 30, 200
+post = stats.beta(a + k, b + n - k)
+print("flat prior    mean %.3f  95%% CrI %s" % (post.mean(), np.round(post.interval(0.95), 3)))
+post2 = stats.beta(20 + k, 180 + n - k)          # informative prior centred on 10%
+print("Beta(20,180)  mean %.3f  95%% CrI %s" % (post2.mean(), np.round(post2.interval(0.95), 3)))
+#### Q15
+import numpy as np
+rng = np.random.default_rng(0); N = 20000
+pre = rng.normal(10, 3, N)                       # pre-experiment metric
+t = rng.integers(0, 2, N)                        # random assignment
+y = 0.8 * pre + rng.normal(0, 2, N) + 0.2 * t    # true effect = 0.2
+theta = np.cov(y, pre)[0, 1] / np.var(pre, ddof=1)
+y_c = y - theta * (pre - pre.mean())
+def est(v):
+    d = v[t == 1].mean() - v[t == 0].mean()
+    se = np.sqrt(v[t == 1].var(ddof=1) / (t == 1).sum() + v[t == 0].var(ddof=1) / (t == 0).sum())
+    return round(float(d), 3), round(float(se), 4)
+print("theta %.2f  rho^2 %.2f" % (theta, np.corrcoef(y, pre)[0, 1] ** 2))
+print("raw   (effect, SE):", est(y)); print("CUPED (effect, SE):", est(y_c))
+#### Q16
+import numpy as np
+rng = np.random.default_rng(0)
+sims, days, per = 4000, 14, 200                  # A/A test: no true difference
+a = rng.normal(size=(sims, days, per)); b = rng.normal(size=(sims, days, per))
+n = per * np.arange(1, days + 1)                 # cumulative users per arm
+ma, mb = a.sum(2).cumsum(1) / n, b.sum(2).cumsum(1) / n
+va = ((a ** 2).sum(2).cumsum(1) - n * ma ** 2) / (n - 1); vb = ((b ** 2).sum(2).cumsum(1) - n * mb ** 2) / (n - 1)
+sig = np.abs((ma - mb) / np.sqrt((va + vb) / n)) > 1.96
+print("false positive, peek daily :", sig.any(1).mean())
+print("false positive, look once  :", sig[:, -1].mean())
+#### Q17
+import numpy as np
+rng = np.random.default_rng(0); M = 1_000_000
+xy = rng.random((M, 2))
+hit = (xy ** 2).sum(1) < 1
+print("pi ~", 4 * hit.mean(), " SE ~", 4 * hit.std() / np.sqrt(M))
+print("int_0^1 exp(-x^2) ~", np.exp(-rng.random(M) ** 2).mean(), "(true 0.7468)")
+print("n for +-0.001 on a p=0.5 estimate:", int((1.96 * 0.5 / 0.001) ** 2))
+#### Q19
+sens, spec = 0.99, 0.95
+lr = sens / (1 - spec)                      # likelihood ratio of a positive test = 19.8
+for prior in (0.01, 0.10):
+    odds = prior / (1 - prior)
+    for k in (1, 2):
+        o = odds * lr ** k
+        print(f"prior {prior:.2f}, {k} positive test(s): posterior {o / (1 + o):.3f}")
+#### Q22
+import numpy as np, statsmodels.api as sm
+rng = np.random.default_rng(0)
+x = rng.normal(size=30); y = 1 + 2 * x + rng.normal(0, .5, 30)
+x[0], y[0] = 6, -5                                # one far-out point that breaks the trend
+m = sm.OLS(y, sm.add_constant(x)).fit(); inf = m.get_influence()
+h, cd = inf.hat_matrix_diag, inf.cooks_distance[0]
+print("leverage[0] %.2f (rule of thumb 2p/n = %.2f)" % (h[0], 2 * 2 / 30))
+print("Cook D[0] %.1f, next largest %.2f (rule 4/n = %.2f)" % (cd[0], np.sort(cd)[-2], 4 / 30))
+print("slope with point %.2f, without %.2f" % (m.params[1], sm.OLS(y[1:], sm.add_constant(x[1:])).fit().params[1]))
+#### Q25
+import numpy as np
+rng = np.random.default_rng(0)
+print("fixed points (n=10):", np.mean([(rng.permutation(10) == np.arange(10)).sum() for _ in range(100000)]))
+print("distinct birthdays, 23 people:", 365 * (1 - (364 / 365) ** 23))
+print("empty bins, 100 balls in 100 bins:", 100 * (1 - 1 / 100) ** 100)
+#### Q26
+import numpy as np
+rng = np.random.default_rng(0)
+def sim(i, N, p, T=20000):
+    ruined = steps = 0
+    for _ in range(T):
+        x = i; t = 0
+        while 0 < x < N: x += 1 if rng.random() < p else -1; t += 1
+        ruined += (x == 0); steps += t
+    return ruined / T, steps / T
+i, N = 3, 10
+print("fair   sim:", sim(i, N, .5), " theory:", (1 - i / N, i * (N - i)))
+p = .45; q = 1 - p; r = q / p
+ruin = (r ** i - r ** N) / (1 - r ** N); dur = i / (q - p) - N / (q - p) * (1 - r ** i) / (1 - r ** N)
+print("p=.45  sim:", sim(i, N, p), " theory:", (ruin, dur))
+#### Q27
+import numpy as np, math
+rng = np.random.default_rng(0); a, b, T = 3, 5, 20000
+hit_up = steps = 0
+for _ in range(T):
+    x = t = 0
+    while -b < x < a: x += 1 if rng.random() < .5 else -1; t += 1
+    hit_up += (x == a); steps += t
+print("P(hit +a) sim %.3f theory %.3f | E[steps] sim %.2f theory %d" % (hit_up / T, b / (a + b), steps / T, a * b))
+print("P(at 0 after 100 steps) =", math.comb(100, 50) / 2 ** 100, " approx", 1 / math.sqrt(math.pi * 50))
+#### Q28
+import numpy as np
+P = np.array([[.9, .1, 0], [.2, .7, .1], [.1, .2, .7]])
+w, v = np.linalg.eig(P.T)                         # pi P = pi  <=>  P^T pi = pi (eigenvalue 1)
+pi = np.real(v[:, np.argmin(abs(w - 1))]); pi /= pi.sum()
+print("pi:", pi.round(4), " check pi@P == pi:", np.allclose(pi @ P, pi))
+print("row of P^100:", np.linalg.matrix_power(P, 100)[0].round(4))
+#### Q29
+import numpy as np
+rng = np.random.default_rng(0)
+true = np.array([[.80, .15, .05], [.30, .50, .20], [0, 0, 1.]])   # active, dormant, churned
+U, T = 5000, 12; S = np.zeros((U, T), int); cum = true.cumsum(1)
+for t in range(1, T): S[:, t] = (rng.random(U)[:, None] > cum[S[:, t - 1]]).sum(1)
+cnt = np.zeros((3, 3)); np.add.at(cnt, (S[:, :-1].ravel(), S[:, 1:].ravel()), 1)
+P = cnt / cnt.sum(1, keepdims=True); print(P.round(3))             # estimate = row-normalised counts
+Q = P[:2, :2]; N = np.linalg.inv(np.eye(2) - Q)                    # fundamental matrix
+print("expected months until churn, from active: %.2f (true %.2f)" % (N[0].sum(), np.linalg.inv(np.eye(2) - true[:2, :2])[0].sum()))
+prev, cur, nxt = S[:, :-2].ravel(), S[:, 1:-1].ravel(), S[:, 2:].ravel()   # Markov check
+for a in (0, 1):
+    m = (cur == 0) & (prev == a); print("prev=%d -> P(next | now active):" % a, (np.bincount(nxt[m], minlength=3) / m.sum()).round(3))
+#### Q30
+import numpy as np
+L = np.array([[0, 1, 1, 0], [0, 0, 1, 0], [1, 0, 0, 1], [0, 0, 1, 0]], float)   # L[i,j]=1: page i links to j
+def pagerank(L, d=0.85, tol=1e-10):
+    n = len(L); out = L.sum(1, keepdims=True)
+    P = np.where(out > 0, L / np.where(out > 0, out, 1), 1 / n)      # dangling page -> jump anywhere
+    r = np.ones(n) / n
+    for it in range(1000):
+        r_new = d * r @ P + (1 - d) / n                              # follow link w.p. d, teleport w.p. 1-d
+        if np.abs(r_new - r).sum() < tol: return r_new, it
+        r = r_new
+    return r, it
+r, it = pagerank(L); print(r.round(4), r.sum().round(6), "iterations:", it)
+#### Q31
+import numpy as np
+from scipy import stats
+from statsmodels.stats.proportion import proportions_ztest
+kA, nA, kB, nB = 120, 1000, 140, 1000
+a = stats.beta(1 + kA, 1 + nA - kA).rvs(500_000, random_state=1)
+b = stats.beta(1 + kB, 1 + nB - kB).rvs(500_000, random_state=2)
+print("P(B > A)            :", (b > a).mean().round(3))
+print("expected loss ship B:", np.maximum(a - b, 0).mean().round(5))
+print("expected loss keep A:", np.maximum(b - a, 0).mean().round(5))
+print("p-value (z-test)    :", proportions_ztest([kB, kA], [nB, nA])[1].round(3))

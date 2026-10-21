@@ -62,9 +62,10 @@ with st.sidebar:
     margin = st.slider("Unit margin (assumed)", 0.10, 0.70, float(1 - cfg["engine"]["unit_cost_share"]), 0.01, key="margin")
     halo_f = st.slider("Halo factor (share of basket pull that is incremental)", 0.0, 1.0, float(cfg["engine"]["halo_factor"]), 0.05, key="halo")
     outside = st.slider("Outside share (no purchase from family)", 0.05, 0.90, float(cfg["demand"]["outside_share"]), 0.05, key="outside")
+    nest = st.slider("Nested-logit lambda (1 = MNL; lower = closer substitutes)", 0.3, 1.0, float(cfg["demand"].get("nest_lambda", 1.0)), 0.05, key="nest")
 
-res = ctx.score(sku, disc, eps=eps, margin=margin, halo_factor=halo_f, outside_share=outside)
-be = ctx.break_even(sku, disc, margin=margin, halo_factor=halo_f, outside_share=outside)
+res = ctx.score(sku, disc, eps=eps, margin=margin, halo_factor=halo_f, outside_share=outside, nest_lambda=nest)
+be = ctx.break_even(sku, disc, margin=margin, halo_factor=halo_f, outside_share=outside, nest_lambda=nest)
 
 tab1, tab2, tab3, tab4 = st.tabs(["Waterfall", "Sensitivity", "Family view", "Promo plan"])
 
@@ -122,7 +123,7 @@ with tab3:
     df = pd.DataFrame({"SKU": res["members"], "Description": names, "Price": res["prices"], "Baseline units/wk": res["baseline_units"],
                        "Promoted units/wk": res["units_after"], "Change": res["units_after"] - res["baseline_units"]})
     st.dataframe(df.round(2), width="stretch", hide_index=True)
-    st.caption("Substitution follows a multinomial logit with an outside option (IIA): siblings lose units in proportion to their share.")
+    st.caption("Substitution follows a multinomial logit with an outside option (IIA) when lambda = 1: siblings lose units in proportion to their share; lambda < 1 gives the nested-logit variant (siblings are closer substitutes).")
 
 with tab4:
     o = summary["optimiser"]

@@ -39,3 +39,13 @@ def test_sensitivity_monotone_in_response_rate(seg_df, cfg):
         assert g["net_profit"].is_monotonic_increasing
     for _, g in s.groupby("response_multiplier"):
         assert g.sort_values("gross_margin")["net_profit"].is_monotonic_increasing
+
+
+def test_break_even_multiplier_is_consistent(seg_df, cfg):
+    from crm.campaign import _break_even
+
+    m = _break_even(seg_df, cfg)
+    assert m is not None
+    assert segment_economics(seg_df, cfg, response_mult=m)["net_profit"].sum() >= 0
+    if m > 0.05:
+        assert segment_economics(seg_df, cfg, response_mult=m - 0.05)["net_profit"].sum() < 0

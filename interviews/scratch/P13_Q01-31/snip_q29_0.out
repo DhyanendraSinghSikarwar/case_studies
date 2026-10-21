@@ -1,0 +1,2 @@
+KstestResult(statistic=np.float64(0.009428043023716026), pvalue=np.float64(0.762020642807214), statistic_location=np.float64(0.47169583008370786), statistic_sign=np.int8(-1))
+KstestResult(statistic=np.float64(0.1344), pvalue=np.float64(9.161194374327684e-40), statistic_location=np.float64(-0.19514697147279386), statistic_sign=np.int8(1))

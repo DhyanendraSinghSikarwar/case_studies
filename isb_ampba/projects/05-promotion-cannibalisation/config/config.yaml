@@ -29,6 +29,7 @@ demand:
   eps_bounds: [-12.0, -0.5]
   tau2_floor: 0.05
   outside_share: 0.40                     # share of "no purchase from this family" in the MNL (assumption, swept)
+  nest_lambda: 1.0                        # nested-logit dissimilarity in (0,1]; 1.0 = plain MNL (base case)
   baseline_weeks: 52
 engine:
   promo_weeks: 2
@@ -44,7 +45,7 @@ sweep:
   halo: [0.0, 1.0]
   breakeven_bounds: [-12.0, -0.5]
 kpi: {noise_levels: [0.10, 0.25, 0.50]}   # relative parameter-knowledge noise for the classification KPI
-reference_sensitivity: {margins: [0.30, 0.40, 0.50], outside_shares: [0.20, 0.40, 0.60]}
+reference_sensitivity: {margins: [0.30, 0.40, 0.50], outside_shares: [0.20, 0.40, 0.60], nest_lambdas: [1.0, 0.7, 0.5]}
 optimiser:
   discounts: [0.0, 0.05, 0.10, 0.15, 0.20, 0.25]
   budget_frac: 0.30                       # budget = frac x one week of promo-eligible revenue (revenue of the promoted SKUs)

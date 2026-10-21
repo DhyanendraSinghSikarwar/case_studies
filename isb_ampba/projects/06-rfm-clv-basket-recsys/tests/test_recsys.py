@@ -9,6 +9,8 @@ from crm.recsys import (
     als_model,
     als_scores,
     ndcg_hit_per_user,
+    own_history_eval,
+    own_history_scores,
     popularity_scores,
     run_recsys,
     time_split,
@@ -72,3 +74,23 @@ def test_run_recsys_beats_random_and_reports_protocols(sales, fast_cfg):
         assert r["als"]["ndcg"] > r["random"]["ndcg"]
         assert 0 <= r["als"]["hitrate"] <= 1 and 0 < r["als"]["coverage"] <= 1
     assert o["metrics"]["train_max_date"] < o["metrics"]["test_min_date"]
+
+
+def test_own_history_baseline_ranks_own_items_and_is_personal(sales):
+    tr, _ = time_split(sales, *SPLIT)
+    m = Interactions(tr).matrix
+    rows = np.arange(5)
+    sc = own_history_scores(m, rows)
+    top = topk(sc, 1)
+    dense = m[rows].toarray()
+    for r in range(5):
+        if dense[r].max() > 0:                       # most-bought own item ranks first
+            assert dense[r, top[r, 0]] == dense[r].max()
+    assert not (sc == sc[0]).all()                   # unlike popularity, differs per user
+
+
+def test_own_history_eval_reports_both_protocols(sales, fast_cfg):
+    ev = own_history_eval(sales, fast_cfg)
+    assert set(ev) == {"repeat_allowed", "discovery"}
+    # discovery masks seen items, so the baseline cannot beat itself being popularity-like: just bounded
+    assert 0 <= ev["discovery"]["ndcg"] <= 1 and 0 <= ev["repeat_allowed"]["hitrate"] <= 1

@@ -1,0 +1,6 @@
+series,ADF statistic,p-value,lags used,observations,stationary at 5%?
+raw volume,4.9504774584,1.0,11,96,False
+log volume,-2.8588171587,0.0503508735,13,94,False
+"log, first difference",-3.3106024665,0.014411145,11,95,True
+"log, seasonal difference (12)",-1.6887803742,0.4369022393,12,83,False
+"log, first + seasonal difference",-4.5280722691,0.0001749055,11,83,True
