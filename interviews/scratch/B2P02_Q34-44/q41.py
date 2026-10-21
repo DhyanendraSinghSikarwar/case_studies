@@ -1,11 +1,11 @@
 import numpy as np
-# SYNTHETIC: true law L = 1.7 + 400 * N^-0.34 (N in millions); noisy small runs; extrapolate 100x
+# SYNTHETIC: true law L = 1.7 + 2.0 * N^-0.34 (N in millions); noisy small runs; extrapolate 100x
 f = lambda N, E, A, a: E + A * N ** (-a)
-true = (1.7, 400.0, 0.34)
+true = (1.7, 2.0, 0.34)
 rng = np.random.default_rng(0)
 N_fit = np.logspace(0, 2, 8)                        # 1M .. 100M params
 N_big = 1e4                                         # 10B params = 100x beyond the fit range
-grid = np.linspace(0.05, 1.0, 400)                  # candidate exponents
+grid = np.linspace(0.05, 1.5, 300)                  # candidate exponents
 
 def fit(y):
     best = None
@@ -19,7 +19,7 @@ def fit(y):
 
 preds = []
 for s in range(200):
-    y = f(N_fit, *true) + rng.normal(0, 0.01, N_fit.size)   # 0.01 loss noise
+    y = f(N_fit, *true) + rng.normal(0, 0.02, N_fit.size)   # 0.02 loss noise
     E, A, a = fit(y)
     preds.append((f(N_big, E, A, a), E))
 preds = np.array(preds)

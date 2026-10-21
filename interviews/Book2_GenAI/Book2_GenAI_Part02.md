@@ -283,19 +283,144 @@ Output from my run: `50.0`, then `A 20.09 1.082` and `B 6.69 1.096`.
 
 ### Q8 ⭐⭐⭐ 🟡 Pretraining vs continued pretraining vs fine-tuning: what changes in data, objective, cost and risk, and when do you choose each?
 **Asked at:** all types
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** All three train the same way (next-token loss), the difference is the starting point, the data and the scale: pretraining starts from random weights on trillions of general tokens, continued pretraining starts from a pretrained model on a large domain corpus, and fine-tuning starts from a pretrained model on a small curated task or instruction set.
+
+**Then explain:**
+
+| | Pretraining | Continued pretraining (CPT) | Fine-tuning (SFT) |
+|---|---|---|---|
+| Start | random init | pretrained checkpoint | pretrained (or CPT) checkpoint |
+| Data | trillions of tokens, broad web, code, books | billions of domain tokens (legal, medical, a language, code) | thousands to hundreds of thousands of labelled examples |
+| Objective | next-token on raw text | same next-token on raw text | next-token on responses (loss often only on the answer), or classification |
+| Cost | millions of dollars, weeks of cluster time | a small fraction of that | usually one to a few GPUs (with LoRA, even less) |
+| Main risk | wasted run, instability, data bugs | **catastrophic forgetting**, domain drift | overfitting, forgetting, learning style not facts |
+
+- **Choose:** pretraining only if you are a lab, need a new language or tokenizer, or have a strong data advantage. CPT when the domain vocabulary and knowledge are far from web text (a low-resource language, a specialised field) and you have a lot of raw text. Fine-tuning for behaviour, format, tone or a narrow task. Try prompting and RAG first; fine-tuning changes behaviour more than it adds reliable new facts (Part 4 goes deeper).
+- CPT tips: mix in some of the original general data (replay), use a lower learning rate with a short warmup, and watch general benchmarks for forgetting.
+- Preference tuning (RLHF/DPO) comes after SFT, see Part 5.
+
+**Example:** Compute with the standard approximation `C ~ 6ND` (Q11) for a 7B model (my arithmetic): pretraining on 2T tokens is about 8.4e22 FLOPs, CPT on 50B tokens about 2.1e21 (40x less), and a full fine-tune on 50k examples of 500 tokens (2.5e7 tokens) about 1.05e18, roughly 80,000x less than pretraining. The model size and token counts are hypothetical.
+
+**Code:** (run, plain Python)
+```python
+N = 7e9
+for name, tokens in [("pretrain, 2T tokens", 2e12), ("CPT, 50B tokens", 50e9), ("full FT, 50k ex x 500 tok", 50_000 * 500)]:
+    print(f"{name:28s} {6 * N * tokens:.2e} FLOPs")   # 8.40e+22, 2.10e+21, 1.05e+18
+```
+
+**Follow-ups:**
+- *Does CPT teach new facts?* Somewhat, but unevenly; it shifts the distribution and vocabulary usage. RAG is better for facts that change.
+- *Can I skip pretraining and just fine-tune on a new language?* Poor if the tokenizer handles the language badly (Q17); CPT plus possibly extending the vocabulary is the usual route.
+- *How do you limit forgetting?* Replay of general data, lower learning rate, LoRA or adapters, evaluating on a general benchmark during training.
+
+**Common mistakes:** saying fine-tuning teaches the model new knowledge reliably; thinking SFT uses a different loss from pretraining (it is the same loss on different data and masking); skipping evaluation for forgetting after CPT; going straight to fine-tuning when prompting or RAG would do.
 
 ### Q9 ⭐⭐⭐ 🟡 Walk through a pretraining data pipeline: sources, cleaning, quality filtering, language ID, PII/toxicity filtering, deduplication and mixing.
 **Asked at:** product, big tech, GenAI startups
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Collect raw web and other text, extract and clean it, filter by language and quality, remove PII and toxic content, deduplicate (exact and near-duplicate), then mix sources with chosen weights and tokenize. Data quality and deduplication move model quality as much as extra tokens do.
+
+**Then explain:** (the order below is typical, real pipelines vary)
+1. **Sources:** web crawl (largest, noisiest), code, books, papers, encyclopedias, forums, curated or licensed data. Check licences and robots rules.
+2. **Extraction and cleaning:** pull the main text out of HTML (remove boilerplate, menus, ads), fix encoding, drop very short pages and pages with heavy repetition.
+3. **Language ID:** a fast classifier (such as fastText-style models) tags the language; keep the target languages and a confidence threshold.
+4. **Quality filtering:** heuristic rules (length, symbol ratio, repeated lines or words) plus model-based scores (a classifier trained to separate reference text from random crawl, or perplexity from a small LM). Over-aggressive filters can remove dialects and minority-language text.
+5. **Safety and privacy:** remove or mask PII (emails, phone numbers, IDs; regex plus ML), drop toxic or adult content by classifier or blocklist. This is a trade-off: too much toxicity filtering can hurt the model's ability to recognise harmful text.
+6. **Deduplication:** exact (hash of normalised text) and near-duplicate (MinHash with LSH, which approximates Jaccard similarity of n-gram shingles without comparing all pairs; the exact all-pairs comparison is O(n^2)). Also remove eval benchmark text (decontamination, Part 6 and Q30).
+7. **Mixing:** choose proportions across sources and languages (upsample high-quality, downsample noisy), often tuned with small proxy runs. Then shuffle, tokenize and pack into fixed-length sequences.
+- Why dedup matters: repeated text is memorised, wastes compute and inflates benchmark scores if it overlaps eval data.
+
+**Example:** My 7-document toy run. The quality filter (at least 5 words, unique-word ratio above 0.5) dropped "hi" and a repetitive spam line. Exact dedup on normalised text removed the copy that differed only in punctuation, leaving 4 of 7 documents. A near-duplicate with one word changed had true Jaccard similarity 0.70 (3-word shingles) and a 128-hash MinHash estimate of 0.68, while an unrelated pair scored 0.0. The PII regex turned an email and a 10-digit number into `<PII>`. These are toy rules; production filters are far more elaborate.
+
+**Code:** (run, plain Python, toy rules)
+```python
+import hashlib, re
+docs = ["The quick brown fox jumps over the lazy dog near the river bank today and everyone watched it happen.",
+        "The quick brown fox jumps over the lazy dog near the river bank today and everyone watched it happen!!",
+        "The quick brown fox jumps over the lazy dog near the river bank today and everybody watched it happen.",
+        "buy now buy now buy now buy now buy now buy now",
+        "Contact me at john.doe@example.com or call 9876543210 for the report details.",
+        "Gradient descent updates parameters in the direction that reduces the loss function.", "hi"]
+norm = lambda t: re.sub(r"\W+", " ", t.lower()).strip()
+def quality(t): w = t.split(); return len(w) >= 5 and len(set(w)) / len(w) > 0.5
+seen, kept = set(), []
+for d in docs:
+    h = hashlib.md5(norm(d).encode()).hexdigest()
+    if quality(d) and h not in seen: seen.add(h); kept.append(d)
+print(len(kept))                                                   # 4
+def shingles(t, k=3): w = norm(t).split(); return {" ".join(w[i:i+k]) for i in range(len(w)-k+1)}
+S = [shingles(d) for d in kept]
+def minhash(sh, n=128): return [min(int(hashlib.md5(f"{i}|{s}".encode()).hexdigest()[:8], 16) for s in sh) for i in range(n)]
+M = [minhash(s) for s in S]
+print(len(S[0] & S[1]) / len(S[0] | S[1]), sum(a == b for a, b in zip(M[0], M[1])) / 128)   # 0.7 0.68
+```
+
+**Follow-ups:**
+- *Why MinHash/LSH?* All-pairs comparison does not scale to billions of documents; LSH buckets similar signatures so only candidates are compared.
+- *Dedup at what level?* Document, paragraph or line, and across the whole corpus rather than per file; more aggressive dedup removes more memorisation but can also remove useful repeated facts.
+- *How do you pick mixture weights?* Small proxy models and ablations; there is no universal answer.
+
+**Common mistakes:** listing steps without saying why; forgetting language ID and PII; treating perplexity filtering as neutral (it biases toward the style of the reference model's data); deduplicating only exact copies; ignoring benchmark decontamination; forgetting to dedup across sources.
 
 ### Q10 ⭐⭐⭐ 🟡 What are LLM scaling laws? What do loss versus parameters, data and compute look like, and what can you do with them?
 **Asked at:** big tech, product, GenAI startups
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Scaling laws say that test loss falls as a smooth power law as you increase parameters N, training tokens D or compute C, so you can fit small runs and predict big ones, and choose how to split a fixed budget between model size and data.
+
+**Then explain:**
+- **Shape:** `L(x) ~ a * x^(-alpha)` (plus an irreducible floor in fuller forms). On a log-log plot it is a straight line, and each 10x in N, D or C cuts loss by a constant factor. The exponents are small, so gains are steady but slow.
+- **Kaplan et al. (OpenAI, 2020):** loss follows power laws in N, D and C over many orders of magnitude, with architecture details like depth vs width mattering little. Their reading was that, for a given compute budget, you should grow model size much faster than data (exponents from memory: roughly 0.076 for N, 0.095 for D, 0.05 for C). Models of that era were large and trained on relatively few tokens.
+- **Hoffmann et al. (DeepMind, 2022, "Chinchilla"):** refit with many more runs and found N and D should grow about equally with compute, which is roughly 20 tokens per parameter. Details in Q11.
+- **Standard compute approximation:** `C ~ 6ND` FLOPs for training a dense transformer (about 2ND for the forward pass and 4ND for the backward pass).
+- **What you can do with them:** (1) predict the loss of a big run from small ones before spending the money, (2) pick N and D for a budget, (3) decide where to invest (more data vs a bigger model), (4) sanity-check that a run is on trend, and spot data or bug problems when it is not.
+- **Caveats:** loss is not the same as downstream ability; fits can be sensitive to the setup (learning-rate schedule, data quality, epochs of repeated data); they extrapolate well over a range but not forever; and they ignore inference cost, which is why many models are trained past the compute-optimal point (Q11).
+
+**Example:** A tiny demo on synthetic data (generated from a known law, so it only shows the method). I generated losses from `L = 20 * N^(-0.076)` with a little noise for N from 1e6 to 1e10, and a log-log fit recovered alpha = 0.076. A 10x bigger model multiplies loss by `10^(-0.076)`, about 0.84, and the fit extrapolated to N=1e11 predicted 2.921 against the noiseless 2.918. Real fits use real runs; the numbers here are not from any real model.
+
+**Code:** (run, NumPy, synthetic data)
+```python
+import numpy as np
+rng = np.random.default_rng(0)
+N = np.logspace(6, 10, 9); alpha, a = 0.076, 20.0
+L = a * N**(-alpha) * np.exp(rng.normal(0, 0.003, N.size))     # synthetic power law + noise
+slope, icpt = np.polyfit(np.log(N), np.log(L), 1)              # straight line in log-log space
+print(round(-slope, 3), round(10**slope, 3))                   # 0.076 0.84
+print(round(float(np.exp(icpt) * 1e11**slope), 3))             # 2.921 (extrapolation)
+```
+
+**Follow-ups:**
+- *Do scaling laws predict emergent abilities?* Loss scales smoothly, but specific task accuracy can look like a sudden jump; whether that is real or a metric artefact is debated (Q40).
+- *Why is loss a power law?* There is no single accepted explanation; treat it as an empirical regularity.
+- *Does repeating data break them?* Yes, extra epochs have diminishing value, so the data term assumes mostly fresh tokens.
+
+**Common mistakes:** saying "bigger is always better" without the diminishing-returns shape; presenting `C ~ 6ND` as a Chinchilla result (it is a standard approximation); treating loss as accuracy; extrapolating far outside the fitted range; forgetting the irreducible-loss floor.
 
 ### Q11 ⭐⭐⭐ 🟡 What did Chinchilla find? Use C ~ 6ND to work out the compute-optimal model size and token count for a given budget.
 **Asked at:** big tech, product, research-leaning teams
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Chinchilla (Hoffmann et al., DeepMind, 2022) found that earlier large models were undertrained: for a fixed compute budget, parameters and training tokens should scale together, at roughly 20 tokens per parameter. Their 70B model trained on 1.4T tokens beat the 280B Gopher, which used about the same compute.
+
+**Then explain:**
+- **Finding:** they trained 400+ models of varying size and data, and fitted how loss depends on N and D. Result: for compute-optimal training, N and D should grow in equal proportion (each about the square root of compute). Kaplan et al. (2020) had favoured growing the model faster than the data (Q10).
+- **Headline result:** Chinchilla 70B, 1.4T tokens, ratio 20. Gopher 280B. Reported MMLU about 67.5 vs 60 for Gopher (from the explainer page I used). Smaller models are also cheaper to serve.
+- **The maths, with the standard approximation `C ~ 6ND`:** put `D = 20N`, so `C = 6 * N * 20N = 120 N^2`, hence `N = sqrt(C/120)` and `D = 20N`. (The `6ND` approximation is standard, not something the Chinchilla result itself states.)
+- **Caveats:** the 20:1 ratio is approximate. Other fits and a replication attempt put the optimum somewhere in the teens to twenties, with wide uncertainty. It optimises training compute only. If a model will serve billions of requests, you should train a smaller model on far more tokens than compute-optimal, since inference cost dominates (many open models are trained at hundreds of tokens per parameter). And it assumes enough fresh, quality data exists.
+
+**Example:** Budget `C = 1e23` FLOPs (my computation): `N = sqrt(1e23/120)` is about 2.89e10, so 28.9B parameters, and `D = 20N` is about 5.77e11, so 577B tokens. Check: 6 x 2.89e10 x 5.77e11 = 1.0e23. If the true ratio were 10, 15 or 25 instead, N would be 40.8B, 33.3B or 25.8B, and D 408B, 500B or 645B tokens, so the answer moves by tens of percent, not by orders of magnitude. As a sanity check, 6ND for Chinchilla itself is 5.88e23, and `sqrt(5.88e23/120)` gives exactly 70.0B and 1,400B tokens, which is what the formula should give for ratio 20. For Gopher, 6ND with 280B parameters and 300B tokens (the token count is from memory) is about 5.0e23, the same order as Chinchilla's budget, consistent with "same compute". By contrast a 7B model on 2T tokens (ratio about 286) uses 8.4e22 FLOPs, deliberately over-trained for cheap inference.
+
+**Code:** (run, plain Python)
+```python
+import math
+C = 1e23
+N = math.sqrt(C / 120); D = 20 * N                    # from C = 6*N*D and D = 20*N
+print(f"N={N/1e9:.1f}B params, D={D/1e9:.0f}B tokens, 6ND={6*N*D:.2e}")   # 28.9B, 577B, 1.00e+23
+for r in [10, 15, 20, 25]:                            # sensitivity to the tokens-per-parameter ratio
+    n = math.sqrt(C / (6 * r)); print(r, f"{n/1e9:.1f}B", f"{r*n/1e9:.0f}B tokens")
+```
+
+**Follow-ups:**
+- *Why do people train Llama-style models far beyond 20 tokens per parameter?* Training is a one-time cost, inference is repeated; a smaller, longer-trained model is cheaper to serve at similar quality.
+- *Is Chinchilla's 20 exact?* No; it comes from a fit, and refits give somewhat different ratios.
+- *What if data runs out?* Repeating data a few epochs helps a little but with diminishing returns; synthetic data and quality filtering are the usual responses (Q9).
+
+**Common mistakes:** saying exactly 20 tokens per parameter as if it were a law; forgetting the 6 in `6ND`, or mixing up params and tokens; attributing `6ND` to the Chinchilla page or paper as a headline finding; ignoring inference cost when choosing N; saying Chinchilla showed "more data beats bigger models" without the equal-scaling point.
 
 ### Q12 ⭐⭐⭐ 🟡 Code: implement a byte-pair-encoding tokenizer (train, encode, decode) with deterministic tie-breaking, and show a round trip.
 **Asked at:** product, big tech, live-coding rounds; a Glean software-engineer onsite/technical-screen report and a Perplexity online-assessment listing mention BPE coding
@@ -1424,15 +1549,145 @@ for n_items in (100, 1000):
 
 ### Q41 ⭐ 🔴 What are the limits and critiques of scaling laws (fit uncertainty, extrapolation risk, the data wall, test-time compute)?
 **Asked at:** senior roles at big tech, research-leaning teams
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Scaling laws are useful empirical fits of loss against compute, parameters and data, but they are fits, not physics: the constants have uncertainty, extrapolating far beyond the fitted range is risky, downstream task scores are harder to predict than loss, and they say little about the data wall or about spending compute at inference instead.
+
+**Then explain:**
+- **Fit uncertainty:** the laws have several free parameters (an irreducible-loss term, coefficients, exponents) fitted on a limited set of runs. These parameters trade off against each other, so small changes in data or fitting method move the answer. A replication attempt of the Chinchilla fit (arXiv 2404.10102, seen via search, not read in full) reportedly found the estimates sensitive and the optimal tokens-per-parameter ratio different from the commonly quoted ~20 (in the teens by my notes). I treat 20 as a rule of thumb (Q10/Q11), not a constant.
+- **Extrapolation risk:** you fit at small scale and predict 10x to 100x larger. Small errors in the exponent become large errors in the prediction (my toy below).
+- **Setup dependence:** the "optimal" split depends on what is held fixed: learning-rate schedule, batch size, data quality and mixture, tokenizer (Q7), architecture. It also ignores inference cost: models trained far past "compute-optimal" are popular because they are cheaper to serve (Q32).
+- **Loss is not capability:** smooth loss does not tell you when a downstream skill becomes usable (Q40).
+- **Data wall:** the laws assume you can keep getting fresh tokens. High-quality web text is finite; repetition (Q39), synthetic data (Q38) and multimodal data are the responses, each with caveats.
+- **Test-time compute:** a different axis, spending more compute per query (Q43). Reported results suggest it can substitute for some pretraining compute on reasoning tasks, with limits.
+- **Net:** use scaling laws to plan and compare recipes at small scale, with error bars, and re-check with an intermediate-scale run.
+
+**Example (synthetic):** a true law `L = 1.7 + 2.0 * N^-0.34` (N in millions of parameters), eight noisy runs from 1M to 100M (noise 0.02 loss), refit 200 times and extrapolate to 10B. True loss 1.787. Across refits the prediction ranged from 1.726 to 1.863 (5th to 95th percentile) and the fitted irreducible term from 1.60 to 1.80 (true 1.70). The whole gain from 100M to 10B is only about 0.1 loss here, so the fit uncertainty is of the same size as the effect we want to predict.
+
+**Code:** (executed, synthetic, numpy only)
+```python
+import numpy as np
+# SYNTHETIC: true law L = 1.7 + 2.0 * N^-0.34 (N in millions); noisy small runs; extrapolate 100x
+f = lambda N, E, A, a: E + A * N ** (-a)
+true = (1.7, 2.0, 0.34)
+rng = np.random.default_rng(0)
+N_fit = np.logspace(0, 2, 8)                        # 1M .. 100M params
+N_big = 1e4                                         # 10B params = 100x beyond the fit range
+grid = np.linspace(0.05, 1.5, 300)                  # candidate exponents
+
+def fit(y):
+    best = None
+    for a in grid:                                  # for each a, E and A are linear least squares
+        X = np.c_[np.ones_like(N_fit), N_fit ** (-a)]
+        coef, res, *_ = np.linalg.lstsq(X, y, rcond=None)
+        sse = ((X @ coef - y) ** 2).sum()
+        if coef[1] > 0 and coef[0] >= 0 and (best is None or sse < best[0]):
+            best = (sse, coef[0], coef[1], a)
+    return best[1:]
+
+preds = []
+for s in range(200):
+    y = f(N_fit, *true) + rng.normal(0, 0.02, N_fit.size)   # 0.02 loss noise
+    E, A, a = fit(y)
+    preds.append((f(N_big, E, A, a), E))
+preds = np.array(preds)
+print("true loss at 10B: %.3f" % f(N_big, *true))
+print("extrapolated: median %.3f, 5th-95th pct %.3f to %.3f" % (np.median(preds[:, 0]), *np.percentile(preds[:, 0], [5, 95])))
+print("fitted irreducible term E: 5th-95th pct %.2f to %.2f (true 1.70)" % tuple(np.percentile(preds[:, 1], [5, 95])))
+# true 1.787; extrapolated median 1.787, 1.726 to 1.863; E 1.60 to 1.80
+```
+
+**Follow-ups:**
+- *Do scaling laws still matter?* Yes for planning and ablation at small scale; just report uncertainty and validate at an intermediate size.
+- *Why train beyond compute-optimal?* Serving cost: a smaller model trained on more tokens is cheaper per query (Q32).
+- *Has scaling stopped?* I would not claim that. I would say pretraining returns are debated, data is a constraint, and inference-time compute has become a second axis.
+
+**Common mistakes:** Treating 20 tokens per parameter as a law. Quoting fitted constants without error bars. Equating loss with downstream ability. Saying scaling "is dead" or "will solve everything" without evidence.
 
 ### Q42 ⭐ 🔴 Decoding-time methods to improve quality: self-consistency, contrastive decoding and DoLa. How do they work and what do they cost?
 **Asked at:** research-leaning teams, big tech
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Self-consistency samples several reasoning chains and takes the majority final answer; it costs n times the tokens. Contrastive decoding and DoLa change the next-token scores instead: they subtract what a weaker model (or an earlier layer) believes from what the stronger one believes, to favour tokens that reflect real knowledge. Details vary by paper, so I describe the idea and hedge specifics.
+
+**Then explain:**
+- **Self-consistency** (Wang et al., 2022): sample n chain-of-thought answers at temperature above 0, extract each final answer, return the most common. Works when answers are short and comparable (numbers, multiple choice), not for free-form text. Cost: about n x output tokens (prompt tokens can be shared); latency is the same if sampled in parallel. Gains shrink as n grows, and they depend on the errors being fairly independent and the correct answer being the most common one.
+- **Contrastive decoding** (Li et al., 2022, from memory): take a large "expert" and a small "amateur" model. Score each token by `log p_expert - log p_amateur`, but only among tokens the expert finds plausible (the plausibility constraint: probability above a fraction of the expert's top probability), otherwise you would pick junk tokens that the amateur happens to dislike. Intuition: generic, repetitive text is likely under both models, so subtracting removes it. Cost: running a second (smaller) model per step. Reported for open-ended generation quality; gains on factual tasks vary.
+- **DoLa** (Chuang et al., 2023, from memory): no second model. Contrast the final layer's next-token distribution with an earlier ("premature") layer's, dynamically picking the earlier layer that differs most. Idea: factual knowledge tends to sharpen in later layers, so tokens whose probability rises through the layers are favoured. Cost: a little extra compute to project early-layer states through the output head. Reported to reduce hallucination in some benchmarks; I would test it on my data before trusting it.
+- Contrast and DoLa act on the logits, so they interact with sampling settings (Q4); self-consistency sits on top of any sampler.
+
+**Example (synthetic simulation, independent samples assumed):** each sample is right with probability 0.6, wrong answers spread over 4 wrong values. Majority-vote accuracy: n=1 0.601, n=3 0.722, n=5 0.835, n=11 0.966, n=21 0.998. With p=0.4 (right answer still the single most likely) it needs far more votes: n=11 0.708, n=21 0.853, n=41 0.961. Real samples are correlated, so real curves are flatter.
+
+**Code:** (executed, synthetic)
+```python
+import numpy as np
+# SYNTHETIC: each sampled answer is correct w.p. p; wrong answers spread uniformly over 4 wrong values.
+# Assumes independent samples (real samples are correlated, so real gains are smaller).
+rng = np.random.default_rng(0)
+def maj_acc(p, n, trials=20000):
+    correct = rng.random((trials, n)) < p
+    ans = np.where(correct, 0, rng.integers(1, 5, (trials, n)))   # 0 = right answer
+    counts = np.stack([(ans == v).sum(1) for v in range(5)], 1)
+    noisy = counts + rng.random(counts.shape) * 0.5               # random tie-break
+    return (noisy.argmax(1) == 0).mean()
+for p in (0.4, 0.6):
+    print(f"single-sample accuracy {p}")
+    for n in (1, 3, 5, 11, 21, 41):
+        print(f"  n={n:3d}  majority acc {maj_acc(p, n):.3f}  relative cost {n}x")
+# p=0.6: 0.601, 0.722, 0.835, 0.966, 0.998, 1.000 ; p=0.4: 0.392, 0.461, 0.547, 0.708, 0.853, 0.961
+```
+
+**Follow-ups:**
+- *When does self-consistency fail?* When the model is consistently wrong (the wrong answer is the mode), when answers are not comparable, or when samples are copies of each other (temperature too low).
+- *Why the plausibility constraint?* Without it the subtraction rewards very unlikely tokens, producing nonsense.
+- *Cost comparison?* Self-consistency: n x tokens. Contrastive: roughly expert plus amateur compute per step. DoLa: close to one model.
+
+**Common mistakes:** Calling self-consistency "free" or assuming it fixes systematic errors. Using temperature 0 for the samples. Describing contrastive decoding as just "subtract logits" without the plausibility constraint. Stating benchmark gains from memory.
 
 ### Q43 ⭐ 🔴 Test-time compute: best-of-n, majority voting and long chain-of-thought sampling. How do cost, latency and accuracy trade off?
 **Asked at:** big tech, GenAI startups, product
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** Test-time compute means spending more inference compute per question to get better answers: sample n answers and pick by majority vote or by a verifier/reward model (best-of-n), or let the model think longer in one long chain of thought. Cost is roughly n x tokens x price, accuracy gains diminish, and for best-of-n the verifier's quality caps what you can gain.
+
+**Then explain:**
+- **Majority voting:** needs no verifier, only comparable final answers (Q42). Cost n x tokens.
+- **Best-of-n with a verifier or reward model:** generate n candidates, score each, return the top. Works on answers that cannot be voted (code, proofs, free text) if a good scorer exists (unit tests are the best verifier; a learned reward model is noisier and can be gamed as n grows).
+- **Long chain-of-thought (reasoning models):** one sample, but thousands of "thinking" tokens, trained with reinforcement learning to reason and self-check. Cost scales with tokens generated, latency scales almost linearly with thinking length because tokens are produced sequentially (Q2, Part 10).
+- **Cost model:** `cost = n x (output tokens per sample) x price per token` (plus the prompt once if cached, plus verifier calls). Parallel sampling keeps latency near one sample but multiplies the GPU bill; long CoT multiplies latency.
+- **Diminishing returns:** each doubling of n gives less. The ceiling is the "any sample correct" rate (oracle), and the gap to it is verifier quality.
+- **When it pays:** hard tasks where p(correct) is moderate and a good verifier exists; not for easy tasks, strict latency budgets or when the model is consistently wrong. Route: cheap model first, escalate only low-confidence queries.
+
+**Example (illustrative toy, numbers assumed, not real models or prices):** each sample is right with probability 0.4; the verifier gives right answers a score shifted by `d` over wrong ones (d=0 is a useless verifier). Assume 500 output tokens per sample and $10 per 1M output tokens.
+
+| n | cost/query | d=0 | d=1 | d=2 | d=4 | oracle (any right) |
+|---|---|---|---|---|---|---|
+| 1 | $0.005 | 0.392 | 0.403 | 0.398 | 0.402 | 0.400 |
+| 4 | $0.020 | 0.399 | 0.638 | 0.794 | 0.866 | 0.870 |
+| 8 | $0.040 | 0.401 | 0.731 | 0.914 | 0.980 | 0.983 |
+| 32 | $0.160 | 0.403 | 0.846 | 0.988 | 1.000 | 1.000 |
+
+A useless verifier gains nothing at any cost; a weak one (d=1) still sits well below the oracle at 32x the price, while a good one (d=4) reaches the ceiling by n=8 to 16.
+
+**Code:** (executed, illustrative toy)
+```python
+import numpy as np
+# ILLUSTRATIVE toy. Each sample is right w.p. p=0.4. Verifier: right answers score ~ N(d,1), wrong ~ N(0,1).
+rng = np.random.default_rng(0)
+p, trials = 0.4, 20000
+tokens_per_sample, price_per_M = 500, 10.0           # assumed values
+def best_of_n(n, d):
+    right = rng.random((trials, n)) < p
+    score = rng.normal(0, 1, (trials, n)) + d * right
+    return right[np.arange(trials), score.argmax(1)].mean()
+print(" n | cost/query($) | d=0 | d=1 | d=2 | d=4 | oracle")
+for n in (1, 2, 4, 8, 16, 32):
+    cost = n * tokens_per_sample * price_per_M / 1e6
+    oracle = 1 - (1 - p) ** n
+    print(f"{n:2d} | {cost:.4f} | " + " | ".join(f"{best_of_n(n, d):.3f}" for d in (0, 1, 2, 4)) + f" | {oracle:.3f}")
+```
+Samples are assumed independent, which flatters real systems.
+
+**Follow-ups:**
+- *Majority vote or best-of-n?* Vote when answers are short and comparable and no verifier exists; best-of-n when you have a reliable checker (tests, a calculator, a proof checker).
+- *Reward-model hacking?* As n grows you increasingly select candidates that fool the scorer, so gains can peak and fall. Use held-out checks.
+- *Test-time vs a bigger model?* Reported results suggest test-time compute can beat a larger model on some reasoning tasks, but not everywhere; measure cost per correct answer.
+
+**Common mistakes:** Quoting accuracy without cost or latency. Assuming n samples are independent. Ignoring verifier quality. Applying heavy test-time compute to easy queries. Forgetting prompt tokens and verifier calls in the cost.
 
 ### Q44 ⭐ 🔴 Design question: choose decoding settings and stop rules for four products (code completion, support chat, creative writing, data extraction) and defend them.
 **Asked at:** senior roles at product companies, GenAI startups, GCCs
