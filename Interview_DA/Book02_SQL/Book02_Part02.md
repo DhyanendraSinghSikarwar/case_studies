@@ -637,7 +637,7 @@ ORDER BY dept;
 | IT | 2018-05-01 | 5 |
 | Sales | 2020-10-10 | 3 |
 
-**Edge cases:** The faulty query is `SELECT dept, name, COUNT(*) FROM employees GROUP BY dept;`. PostgreSQL, SQL Server, Oracle, DuckDB reject it. DuckDB says (run here): `Binder Error: column "name" must appear in the GROUP BY clause or must be part of an aggregate function.`. MySQL with ONLY_FULL_GROUP_BY (default since 5.7) also rejects it; older MySQL and SQLite accept it and return an arbitrary name, which is dangerous (Q50).
+**Edge cases:** The faulty query is `SELECT dept, name, COUNT(*) FROM employees GROUP BY dept;`. PostgreSQL, SQL Server, Oracle, DuckDB reject it. DuckDB words it as `Binder Error: column "name" must appear in the GROUP BY clause or must be part of an aggregate function.` (quoted from memory; DuckDB was not run here). PostgreSQL's wording is similar (from memory, not run here). MySQL with ONLY_FULL_GROUP_BY (default since 5.7) also rejects it; older MySQL and SQLite accept it and return an arbitrary name, which is dangerous (Q50).
 **Likely follow-ups:**
 - What if I want each dept's top earner's name? Use a window function or a join to a grouped subquery (later parts).
 - Is SQLite's silence safe? No; the shown name is arbitrary.
@@ -924,7 +924,7 @@ res = emp[emp['salary'] > avg].sort_values('salary', ascending=False)[['name', '
 **Explain simply:**
 - The alias is created in SELECT, which logically runs after WHERE, GROUP BY and HAVING.
 - ORDER BY runs after SELECT, so aliases always work there.
-- Vendor extras: MySQL allows alias in GROUP BY and HAVING; PostgreSQL only in GROUP BY and ORDER BY; SQL Server and Oracle (older versions) only in ORDER BY (not run here).
+- Vendor extras: MySQL allows alias in GROUP BY and HAVING; PostgreSQL only in GROUP BY and ORDER BY; SQL Server and Oracle (older versions) only in ORDER BY (from memory, not run here; newer Oracle releases relaxed this).
 - Portable habit: repeat the expression in GROUP BY and HAVING; alias only in ORDER BY.
 **Example:** SUM(amount) AS total_sales is handy to sort a report, but HAVING total_sales > 10000 may break when the script moves from MySQL to SQL Server.
 **Sample data:**
@@ -1238,7 +1238,7 @@ res = pd.DataFrame({'avg_salary': g.mean(), 'sum_div_count_star': g.sum() / emp.
 #      IT 72400.000000        72400.000000       72400.000000
 #   Sales 35666.666667        35666.666667       35666.666667
 ```
-**Edge cases:** Only HR differs because only HR has a NULL. The * 1.0 avoids integer division in SQL Server and PostgreSQL (INT / INT drops decimals); SQLite did it above for the same reason. All-NULL group: AVG is NULL, SUM/COUNT(*) becomes NULL or 0 depending on the rest.
+**Edge cases:** Only HR differs because only HR has a NULL. The * 1.0 avoids integer division in SQL Server and PostgreSQL (INT / INT drops decimals); SQLite would also return a decimal here because of the * 1.0. All-NULL group: AVG is NULL and SUM/COUNT(*) is also NULL (SUM is NULL).
 **Likely follow-ups:**
 - When would AVG(COALESCE(salary, 0)) be right? When a missing value truly means zero.
 - Does MIN/MAX ignore NULL too? Yes.
@@ -2420,9 +2420,15 @@ ORDER BY 1;
 | IT | 3 |
 | Sales | 2 |
 
+**pandas equivalent:**
+```python
+res = employees.groupby('dept').size().reset_index(name='headcount').sort_values('dept')
+# Output: HR 3, IT 3, Sales 2
+```
+
 **Edge cases:** Position numbers start at 1 and must be within the SELECT list; GROUP BY 0 or 9 raises an error. A literal number in WHERE is different: WHERE 1 = 1 is just a constant.
 
-**Likely follow-ups:** Q: Can you use column aliases in GROUP BY instead? A: Yes in MySQL, PostgreSQL, DuckDB and BigQuery; not in SQL Server or Oracle. Q: Is it standard SQL? A: Positional GROUP BY is not in the standard, it is a vendor convenience.
+**Likely follow-ups:** Q: Can you use column aliases in GROUP BY instead? A: Yes in MySQL, PostgreSQL, DuckDB and BigQuery; not in SQL Server, and older Oracle (from memory, not run here). Q: Is it standard SQL? A: Positional GROUP BY is not in the standard, it is a vendor convenience.
 
 **Common mistakes:** Thinking GROUP BY 1 means the first column of the table (it is the first column of the SELECT list); mixing it into production queries that get edited often.
 
@@ -2444,9 +2450,8 @@ ORDER BY 1;
 
 **SQL:**
 ```sql
-WITH emp AS (
-  SELECT * FROM (VALUES (1, 'Asha', NULL), (2, 'Bala', 'Asha'), (3, 'Chitra', 'Asha'), (4, 'Esha', 'Bala'))
-  AS t(emp_id, name, manager)
+WITH emp(emp_id, name, manager) AS (
+  VALUES (1, 'Asha', NULL), (2, 'Bala', 'Asha'), (3, 'Chitra', 'Asha'), (4, 'Esha', 'Bala')
 )
 SELECT COUNT(*) AS count_star,
        COUNT(1) AS count_one,
@@ -2460,6 +2465,16 @@ FROM emp;
 | count_star | count_one | count_manager | count_distinct_manager |
 |---|---|---|---|
 | 4 | 4 | 3 | 2 |
+
+(Run in SQLite 3.45.1; the `WITH emp(cols) AS (VALUES ...)` form also works in PostgreSQL.)
+
+**pandas equivalent:**
+```python
+emp = pd.DataFrame({'manager': [None, 'Asha', 'Asha', 'Bala']})
+res = pd.DataFrame([{'count_star': len(emp), 'count_one': len(emp), 'count_manager': emp['manager'].count(),
+                     'count_distinct_manager': emp['manager'].nunique()}])
+# Output: 4, 4, 3, 2
+```
 
 **Edge cases:** NULLs only matter for COUNT(column). An empty table: COUNT(*) and COUNT(1) return 0 (one row, value 0); with GROUP BY and no rows you get no rows at all.
 
@@ -2500,9 +2515,10 @@ FROM emp;
 ```sql
 SELECT MIN(name) AS first_name, MAX(name) AS last_name FROM employees;
 
-SELECT GREATEST('Apple', 'Banana') AS bigger,
-       (SELECT MAX(x) FROM (VALUES ('9'), ('10')) AS t(x)) AS max_of_text_numbers,
-       (SELECT MAX(x) FROM (VALUES ('apple'), ('Banana')) AS t(x)) AS binary_case_demo;
+-- SQLite: two-argument MAX is the scalar form (MySQL/PostgreSQL: GREATEST, not run here)
+SELECT MAX('Apple', 'Banana') AS bigger,
+       (SELECT MAX(x) FROM (SELECT '9' AS x UNION ALL SELECT '10')) AS max_of_text_numbers,
+       (SELECT MAX(x) FROM (SELECT 'apple' AS x UNION ALL SELECT 'Banana')) AS binary_case_demo;
 ```
 
 **Output:**
@@ -2513,11 +2529,18 @@ Aggregate over a column:
 |---|---|
 | Asha | Kiran |
 
-Scalar GREATEST and text-number trap (DuckDB, binary collation):
+Scalar max and text-number trap (run in SQLite 3.45.1, binary collation):
 
 | bigger | max_of_text_numbers | binary_case_demo |
 |---|---|---|
 | Banana | 9 | apple |
+
+**pandas equivalent:**
+```python
+res1 = pd.DataFrame([{'first_name': employees['name'].min(), 'last_name': employees['name'].max()}])
+# Output: Asha, Kiran
+res2 = pd.Series(['9', '10']).max()   # '9' (text comparison)
+```
 
 **Edge cases:** NULLs are ignored by MIN/MAX. GREATEST in PostgreSQL ignores NULL arguments but in MySQL returns NULL if any argument is NULL. SQL Server has no GREATEST before 2022.
 
@@ -2580,6 +2603,8 @@ ORDER BY g_dept, g_status, dept, status;
 | NULL | Active | 5 | 1 | 0 |
 | NULL | Left | 3 | 1 | 0 |
 | NULL | NULL | 8 | 1 | 1 |
+
+(Not run here: SQLite has no CUBE or GROUPING(). I checked the 12 rows by rebuilding them with a UNION ALL of the four GROUP BYs in SQLite.)
 
 **Edge cases:** Real NULL values in the grouped columns look like subtotal rows; GROUPING() returns 1 only for subtotal rows. Row count grows fast with CUBE: 2^n combinations.
 
@@ -2670,6 +2695,8 @@ Output:
 GRAND TOTAL               4500
 ```
 
+(Not run here: SQLite has no ROLLUP or GROUPING(); the numbers were checked with plain GROUP BY queries, and the pandas code below was run.)
+
 **Edge cases:** A real NULL category would look like a subtotal if you use COALESCE; GROUPING() avoids that. The grand total is a row with all grouping columns rolled up. Empty table: ROLLUP still returns the grand total row (NULL sum) in most databases.
 
 **Likely follow-ups:** Q: Only category subtotals, no customer detail? A: GROUP BY ROLLUP(category) is just per category plus total. Q: How to sort total rows last? A: ORDER BY GROUPING(col) as shown.
@@ -2688,7 +2715,7 @@ GRAND TOTAL               4500
 - Normal: GROUP BY makes many groups, HAVING filters them.
 - No GROUP BY: all rows form one group, and the SELECT can only have aggregates (or constants).
 - HAVING with a true condition returns one row, with a false condition returns zero rows.
-- Works in PostgreSQL, MySQL, SQL Server, Oracle and SQLite. A WHERE condition would not work here because WHERE cannot see SUM().
+- Works in PostgreSQL, MySQL, SQL Server and Oracle. SQLite accepts it from version 3.39 (this book ran 3.45.1); older SQLite raised an error (version detail from memory). A WHERE condition would not work here because WHERE cannot see SUM().
 
 **Example:** Return the company-wide order total only if it exceeds 4000. Our total is 4500, so a row comes back. Change the threshold to 5000 and you get nothing.
 
@@ -2895,6 +2922,8 @@ category  orders  avg_amount  stddev_samp  stddev_pop
     Toys       2       750.0       212.13      150.00
 ```
 
+(SQL not run here: SQLite has no STDDEV functions. The numbers were checked with the pandas code below, which was run.)
+
 **Edge cases:** A single-row group gives NULL for sample standard deviation (division by zero) and 0 for population. NULL amounts are ignored. pandas std defaults to sample (ddof=1), NumPy std defaults to population.
 
 **Likely follow-ups:** Q: Why is SD alone not enough? A: Compare with the mean: coefficient of variation = SD / mean. Q: Outliers? A: SD is sensitive to them; consider median and IQR.
@@ -2907,7 +2936,7 @@ category  orders  avg_amount  stddev_samp  stddev_pop
 
 **What the interviewer is checking:** Do you know how to bucket dates into weeks and that the week start day differs by database?
 
-**Say this in the interview:** I truncate each order date to the start of its week, then group and sum. In PostgreSQL and DuckDB that is DATE_TRUNC('week', order_date), and weeks start on Monday.
+**Say this in the interview:** I truncate each order date to the start of its week, then group and sum. In PostgreSQL and DuckDB that is DATE_TRUNC('week', order_date), and weeks start on Monday (from memory, not run here).
 
 **Explain simply:**
 - Date truncation snaps a date back to the start of a period, so every date in the same week gets the same label.
@@ -2947,7 +2976,7 @@ ORDER BY 1;
 
 **Output:**
 
-DuckDB / PostgreSQL style (main query):
+DuckDB / PostgreSQL style (main query; not run here, same values as the SQLite and pandas versions that were run):
 
 | week_start | weekly_sales |
 |---|---|
@@ -2955,7 +2984,7 @@ DuckDB / PostgreSQL style (main query):
 | 2025-01-06 | 1650 |
 | 2025-01-13 | 1150 |
 
-SQLite version (run here too):
+SQLite version (run here):
 
 | week_start | weekly_sales |
 |---|---|
@@ -3024,7 +3053,7 @@ SELECT dept, COUNT(*) AS headcount, STRING_AGG(name, ', ' ORDER BY name) AS name
 
 **Output:**
 
-Strict engine (DuckDB, like PostgreSQL / MySQL strict mode) rejects it:
+Strict engines (PostgreSQL, SQL Server, MySQL with ONLY_FULL_GROUP_BY) reject it. Error text below is DuckDB's, quoted from memory (DuckDB not run here):
 
 Error: Binder Error: column "name" must appear in the GROUP BY clause or must be part of an aggregate function.
 
@@ -3236,7 +3265,7 @@ ORDER BY dept;
 
 **Output:**
 
-PERCENTILE_CONT (PostgreSQL, Oracle, DuckDB):
+PERCENTILE_CONT (PostgreSQL, Oracle, DuckDB; not run here, values match the portable method and pandas, which were run):
 
 | dept | median_salary |
 |---|---|
@@ -3564,6 +3593,8 @@ Sales    NaN          2       0         1
   NaN      F          5       1         0
   NaN      M          3       1         0
 ```
+
+(Not run here: SQLite has no GROUPING SETS; the counts were checked with a UNION ALL of three GROUP BYs, and the pandas code was run.)
 
 **Edge cases:** If gender has real NULLs, those rows also show NULL; only GROUPING() distinguishes them. GROUPING SETS with () adds a grand total. ROLLUP(a,b) equals GROUPING SETS ((a,b),(a),()); CUBE(a,b) equals ((a,b),(a),(b),()).
 

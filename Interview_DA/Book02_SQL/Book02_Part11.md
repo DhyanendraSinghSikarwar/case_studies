@@ -76,7 +76,7 @@ DCL is **not run here**. Standard form, from memory: PostgreSQL / MySQL / SQL Se
 **Common mistakes:** Calling DELETE a DDL command, forgetting DCL and TCL, and not knowing that DDL can auto-commit in MySQL.
 
 ### Q3 ⭐⭐⭐ 🟢 What is the difference between DELETE, TRUNCATE and DROP?
-**Asked at:** commonly asked (no company-specific report found)
+**Asked at:** GCC: a Nov 2024 Wells Fargo (Hyderabad, Senior Analytics Consultant) report lists TRUNCATE vs DELETE (research/interview_processes.md, via search snippet, lower confidence); otherwise commonly asked
 **What the interviewer is checking:** Whether you know what each removes (rows vs all rows vs the table itself) and which can be undone.
 **Say this in the interview:** DELETE removes chosen rows and can use WHERE; TRUNCATE empties the whole table quickly but keeps its structure; DROP removes the table itself, structure and data. (The query-writing use of DELETE is in Parts 1-2; here the focus is the concept.)
 **Explain simply:**
@@ -89,10 +89,11 @@ DCL is **not run here**. Standard form, from memory: PostgreSQL / MySQL / SQL Se
 | Rollback | Yes, inside a transaction | Engine-dependent* | Engine-dependent* |
 | Speed on big tables | Slower (row by row, logged) | Fast | Fast |
 *PostgreSQL and SQL Server can roll them back inside a transaction; MySQL and Oracle cannot (from memory, not run here).
-- Typical extra: TRUNCATE usually resets auto-number counters; DELETE does not.
+- Typical extra: TRUNCATE usually resets auto-number counters and DELETE does not (MySQL, SQL Server; PostgreSQL only with `TRUNCATE ... RESTART IDENTITY`; from memory, not run here).
 **Example:** Remove only employees who left in 2020: DELETE with WHERE. Clear a staging table before tonight's load: TRUNCATE. Retire the table `temp_payroll_test`: DROP.
 **SQL:** (run in SQLite 3.45.1)
 ```sql
+CREATE TABLE emp(emp_id INT);  INSERT INTO emp VALUES (1),(2),(3);   -- setup: 3 rows
 DELETE FROM emp WHERE emp_id = 3;   -- 3 rows -> 2 rows
 TRUNCATE TABLE emp;                 -- SQLite: not supported
 DROP TABLE emp;                     -- table gone
@@ -204,7 +205,7 @@ CREATE TABLE emp_flat(emp_id INT, name TEXT, dept_id INT, dept_name TEXT, dept_h
 INSERT INTO emp_flat VALUES (1,'Asha',10,'HR','Nisha'),(2,'Karan',10,'HR','Nisha'),
                             (3,'Ravi',20,'Sales','Vikram'),(4,'Meena',20,'Sales','Vikram');
 UPDATE emp_flat SET dept_head='Neha' WHERE emp_id = 1;      -- forgot Karan's row
-SELECT dept_name, dept_head, COUNT(*) FROM emp_flat GROUP BY 1,2;
+SELECT dept_name, dept_head, COUNT(*) AS n FROM emp_flat GROUP BY 1,2;
 ```
 **Output (actual run):**
 
@@ -245,8 +246,8 @@ BEGIN; UPDATE acct SET balance = balance - 5000 WHERE acct_id = 1;           -- 
 inside txn      : Asha 700, Ravi 500
 after ROLLBACK  : Asha 1000, Ravi 500
 after COMMIT    : Asha 700, Ravi 800
-overdraw 5000   : CHECK constraint failed: balance>=0   (then ROLLBACK; balances unchanged)
-reopen file DB after commit: 1 row still there          (durability, basic check)
+overdraw 5000   : CHECK constraint failed: balance >= 0   (then ROLLBACK; balances unchanged)
+reopen file DB after commit: Asha 700, Ravi 800 still there   (durability, basic check)
 ```
 Isolation was **not** demonstrated here (needs two concurrent sessions). Isolation level facts from the PostgreSQL documentation: Read Committed blocks dirty reads; Serializable blocks all anomalies; PostgreSQL treats Read Uncommitted as Read Committed.
 **Edge cases:** Higher isolation costs concurrency; serialization failures must be retried by the app.
@@ -335,7 +336,10 @@ CREATE TABLE dim_product(product_id INTEGER PRIMARY KEY, product_name TEXT, cate
 CREATE TABLE dim_region(region_id INTEGER PRIMARY KEY, region TEXT);
 CREATE TABLE fact_sales(sale_id INTEGER PRIMARY KEY, product_id INT REFERENCES dim_product,
                         region_id INT REFERENCES dim_region, sale_date TEXT, qty INT, amount INT);
--- 3 products (Laptop, Mouse: Electronics; Desk: Furniture), 2 regions (South, North), 5 sales
+INSERT INTO dim_product VALUES (1,'Laptop','Electronics'),(2,'Mouse','Electronics'),(3,'Desk','Furniture');
+INSERT INTO dim_region VALUES (1,'South'),(2,'North');
+INSERT INTO fact_sales VALUES (1,1,1,'2025-06-01',1,60000),(2,2,1,'2025-06-02',3,1500),
+  (3,1,2,'2025-06-03',1,60000),(4,2,2,'2025-06-04',1,500),(5,3,2,'2025-06-05',2,12000);
 SELECT p.category, r.region, SUM(f.amount) AS revenue
 FROM fact_sales f
 JOIN dim_product p ON p.product_id = f.product_id
@@ -445,7 +449,7 @@ INSERT INTO emp(emp_id,email,name,salary) VALUES (6,'z@x.com','Divya',-5);      
 row 1 saved with status = 'active' (DEFAULT filled it)
 dup email       -> UNIQUE constraint failed: emp.email
 NULL name       -> NOT NULL constraint failed: emp.name
-negative salary -> CHECK constraint failed: salary>0
+negative salary -> CHECK constraint failed: salary > 0
 ```
 **Edge cases:** MySQL enforced CHECK only from 8.0.16 onward (from memory, not run here). A CHECK that evaluates to NULL passes (NULL salary is not rejected by `salary > 0`; add NOT NULL).
 **Likely follow-ups:**
@@ -465,6 +469,7 @@ negative salary -> CHECK constraint failed: salary>0
 **Example:** Giving a department a 10% raise: 40 UPDATEs. If step 25 fails you roll back and nobody is left half-paid.
 **SQL:** (run in SQLite 3.45.1)
 ```sql
+-- setup (same as Q7): acct(1 Asha 1000, 2 Ravi 500)
 BEGIN;
 UPDATE acct SET balance = balance - 300 WHERE acct_id = 1;
 SELECT * FROM acct;       -- Asha 700 inside the transaction
@@ -617,8 +622,12 @@ CREATE PROCEDURE raise_salary(d text, pct numeric) LANGUAGE sql AS
 $$ UPDATE employees SET salary = salary*(1+pct/100) WHERE dept = d; $$;
 CALL raise_salary('HR', 10);
 -- MySQL
-DELIMITER //  CREATE PROCEDURE raise_salary(IN d VARCHAR(20), IN pct DECIMAL(5,2))
-BEGIN UPDATE employees SET salary = salary*(1+pct/100) WHERE dept = d; END //  DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE raise_salary(IN d VARCHAR(20), IN pct DECIMAL(5,2))
+BEGIN
+  UPDATE employees SET salary = salary*(1+pct/100) WHERE dept = d;
+END //
+DELIMITER ;
 CALL raise_salary('HR', 10);
 ```
 **Edge cases:** PostgreSQL only got true procedures (`CREATE PROCEDURE`) in version 11; before that people used functions (from memory).
@@ -639,6 +648,7 @@ CALL raise_salary('HR', 10);
 **Example:** A dashboard shows employee name, department name and head thousands of times a day; build `emp_report` once nightly.
 **SQL:** (run in SQLite 3.45.1)
 ```sql
+-- setup: the normalized departments and employees tables from Q6
 CREATE TABLE emp_report AS
 SELECT e.emp_id, e.name, d.dept_name, d.dept_head
 FROM employees e JOIN departments d USING (dept_id);
@@ -797,19 +807,20 @@ DELETE FROM dept WHERE dept_id = 20;        -- restricted child exists
 DELETE FROM dept WHERE dept_id = 10;        -- cascade
 DELETE FROM dept WHERE dept_id = 30;        -- set null
 ```
-**Output:** Orphan insert and the delete of dept 20 both fail with `FOREIGN KEY constraint failed`. After the other deletes, `emp_cascade` has lost the dept-10 employee and `emp_setnull` has a NULL link:
+**Output:** Orphan insert and the delete of dept 20 both fail with `FOREIGN KEY constraint failed`. After the other deletes, `emp_cascade` has lost the dept-10 employee and `emp_setnull` has a NULL link.
+
+`emp_cascade`
 
 | emp_id | dept_id |
 |---|---|
 | 2 | 20 |
 
-(`emp_cascade`)
+`emp_setnull`
 
 | emp_id | dept_id |
 |---|---|
 | 1 | NULL |
 
-(`emp_setnull`)
 **Edge cases:** NULL in a foreign key is allowed (no parent needed) unless the column is NOT NULL. Syntax is the same in PostgreSQL/MySQL/SQL Server (SQL Server: `ON DELETE NO ACTION`, from memory).
 **Likely follow-ups:**
 - Which rule for payroll? RESTRICT, so history is never lost silently.
@@ -966,7 +977,7 @@ SELECT '2025-12-01' < '2025-2-01' AS unpadded_text_says_dec_before_feb,
 |---|---|---|
 | 1 | 0 | 1 |
 
-**Edge cases:** Integer division truncates in SQLite, SQL Server and PostgreSQL (`10/4=2`); MySQL `/` gives 2.5 (from memory, not run here). Storing `'9'<'10'` returned 0 here because SQLite compared text; the text date `'2025-12-01'` was wrongly called earlier than `'2025-2-01'`.
+**Edge cases:** Integer division truncates in SQLite, SQL Server and PostgreSQL (`10/4=2`); MySQL `/` gives 2.5 (from memory, not run here). `'9'<'10'` returned 0 because both are text and `'9'` sorts after `'1'`; the unpadded text date `'2025-2-01'` sorted after `'2025-12-01'`, so December looked earlier than February.
 **Likely follow-ups:**
 - CHAR vs VARCHAR? CHAR is fixed length, VARCHAR variable.
 - Why not store phone numbers as INT? Leading zeros and `+` are lost.
@@ -1154,7 +1165,7 @@ Type 1 result: `(1, Analytics)`, history lost. Type 3 result: `(1, Analytics, pr
 **Common mistakes:** Saying a lake is "just a bigger warehouse"; ignoring governance (a lake without rules becomes a swamp).
 
 ### Q36 ⭐ 🟡 What is a temporary table, and how does it differ from a CTE or a table variable?
-**Asked at:** commonly asked (no company-specific report found).
+**Asked at:** GCC: the Nov 2024 Wells Fargo (Hyderabad) report mentions views vs temp tables (research/interview_processes.md, via search snippet, lower confidence); otherwise commonly asked.
 **What the interviewer is checking:** Scope, lifetime and reuse differences.
 **Say this in the interview:** A temp table is a real table that lives for my session, so I can index it and reuse it many times. A CTE is a named subquery that exists only for one statement. A table variable is a SQL Server/T-SQL object scoped to a batch.
 **Explain simply:**
@@ -1248,7 +1259,7 @@ SELECT COUNT(*) FROM attendance WHERE work_date >= '2025-06-01' AND work_date < 
 - SQLite: `SCAN` = whole table, `SEARCH ... USING INDEX` = index lookup, `COVERING INDEX` = answered from the index alone.
 - PostgreSQL: Seq Scan vs Index Scan vs Bitmap Scan; `cost` is in arbitrary units, not milliseconds; a big gap between estimated and actual rows usually means stale statistics (run ANALYZE). `EXPLAIN ANALYZE` actually executes the statement, so wrap INSERT/UPDATE/DELETE in BEGIN...ROLLBACK (https://www.postgresql.org/docs/current/using-explain.html).
 - Small tables may legitimately scan.
-**Example:** Find Hyderabad-style employees by dept and city in a 20,000-row table.
+**Example:** Find the employees of one department in one city in a 20,000-row table.
 **SQL:**
 ```sql
 -- SQLite (run here)
@@ -1343,6 +1354,11 @@ SELECT SUM(amount) AS right_payroll FROM fact_pay;
 | 112000 |
 
 Employee 1's 50,000 was counted twice because that employee has two attendance rows.
+**pandas equivalent:** (run here, pandas 3.0.5; same numbers)
+```python
+wrong = pay.merge(att, on='emp_id')['amount'].sum()   # 162000
+right = pay['amount'].sum()                          # 112000
+```
 **Edge cases:** Duplicate rows at the stated grain mean a data problem; test with `GROUP BY` on the grain columns `HAVING COUNT(*)>1`.
 **Likely follow-ups:**
 - Grain of a hiring funnel? One row per candidate per stage change, or per candidate per day.
@@ -1362,6 +1378,7 @@ Employee 1's 50,000 was counted twice because that employee has two attendance r
 department 1---N employee 1---N salary_history
                    | 1---N attendance      (employee.manager_id -> employee.emp_id)
 ```
+**Example:** Asha (Analytics, reports to Meena in HR) joined in April 2023 at 50,000 a month and got a raise to 56,000 from April 2025. That is two `salary_history` rows, so her old pay is kept and her current pay is the latest row. On 1 June 2025 she took leave (`L`): one attendance row for (Asha, 2025-06-01), and a second row for the same day is rejected.
 **SQL:**
 ```sql
 -- SQLite (run here); foreign keys need PRAGMA foreign_keys=ON in SQLite
@@ -1380,7 +1397,11 @@ CREATE TABLE attendance(
   emp_id INTEGER NOT NULL REFERENCES employee(emp_id),
   work_date TEXT NOT NULL, status TEXT NOT NULL CHECK(status IN('P','A','L','WFH')),
   PRIMARY KEY(emp_id,work_date));
--- sample rows: 2 departments, 3 employees, 3 salary rows, 3 attendance rows
+INSERT INTO department VALUES (1,'HR'),(2,'Analytics');
+INSERT INTO employee VALUES (1,'Meena','meena@x.com',1,NULL,'2020-01-15',NULL),
+  (2,'Asha','asha@x.com',2,1,'2023-04-01',NULL),(3,'Ravi','ravi@x.com',2,2,'2024-02-01',NULL);
+INSERT INTO salary_history VALUES (2,'2023-04-01',50000),(2,'2025-04-01',56000),(3,'2024-02-01',62000);
+INSERT INTO attendance VALUES (2,'2025-06-01','L'),(2,'2025-06-02','P'),(3,'2025-06-01','P');
 SELECT e.emp_name, d.dept_name, m.emp_name AS manager,
   (SELECT monthly_salary FROM salary_history s WHERE s.emp_id=e.emp_id ORDER BY effective_from DESC LIMIT 1) AS current_salary,
   (SELECT COUNT(*) FROM attendance a WHERE a.emp_id=e.emp_id AND a.status='L') AS leave_days
@@ -1411,7 +1432,7 @@ Constraint tests (run): a second attendance row for the same employee and date f
 - **Star** = one fact in the centre, dimensions around it, one join each (snowflake normalises dimensions further, Q22).
 - Hiring funnel version: grain = one row per candidate per stage; dimensions = date, job, recruiter, source, stage; measures = candidate count, days in stage.
 - Use surrogate integer keys in dimensions (Q34).
-**Example (sales):** June: laptop 55,000 to Pune; July: laptops 1,10,000 and stationery to Hyderabad.
+**Example:** Sales grain = one row per order line. Order 502 (June, Laptop, Ravi in Pune, 1 unit, 55,000) is one fact row with keys to date, product and customer. Hiring funnel grain = one row per candidate per stage: candidate 7, stage "Interview", entered 3 Mar, left 10 Mar gives one row with days_in_stage = 7, linked to dim_job, dim_source and dim_stage. Both are the same star shape with different grain and measures.
 **SQL:**
 ```sql
 -- SQLite (run here)
@@ -1439,6 +1460,12 @@ GROUP BY d.month, p.category, c.city ORDER BY d.month, p.category, c.city;
 | 2025-07 | Electronics | Hyderabad | 110000.0 | 2 |
 | 2025-07 | Stationery | Hyderabad | 250.0 | 5 |
 
+**pandas equivalent:** (run here, pandas 3.0.5; same four rows)
+```python
+r = (f.merge(d, on='date_key').merge(p, on='product_key').merge(c, on='customer_key')
+       .groupby(['month','category','city'], as_index=False)
+       .agg(revenue=('revenue','sum'), units=('qty','sum')))
+```
 **Edge cases:** Non-additive measures (prices, ratios) should not be summed; store the components. Unknown dimension values need a default "Unknown" row. Order-level amounts repeated on each line cause double counting (Q41).
 **Likely follow-ups:**
 - Why a date dimension? Month, quarter, weekday and holiday flags without date functions.

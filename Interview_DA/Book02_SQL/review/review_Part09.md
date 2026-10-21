@@ -4,10 +4,10 @@ Reviewer: Wave C. Environment: Python sqlite3 (SQLite 3.45.1), pandas 3.0.5. Scr
 
 ## Counts
 - Answers checked: 46 (Q1-Q46).
-- Executed OK: 46/46. Every sample table was rebuilt from the markdown; every runnable SQL block was run and matched the printed Output (Q9 alternative self-join returns users 1, 3, 5 as stated). 4 exact-match harness hints (Q1, Q3, Q10, Q24, Q26, Q31 marked MISMATCH in rerun.json) were harness limits: my own run matched.
+- Executed OK: 46/46. Every sample table was rebuilt from the markdown; every runnable SQL block was run and matched the printed Output (Q9 alternative self-join returns users 1, 3, 5 as stated). The 6 MISMATCH hints in rerun.json (Q1, Q3, Q10, Q24, Q26, Q31) were harness limits: my own run matched.
 - pandas: all 49 snippets run under pandas 3.0.5; each printed "Result (actual run)" is identical to the real result, and every value agrees with the SQL Output.
 - Claims verified by execution: Q8 NOT IN with a NULL returns 0 rows; Q12 LAG(12) gives no growth on the gappy data; Q40 raw vs clean DAU (3 to 2) and 5 clean events; Q10 strict funnel (paid = 2); Q35, Q36, Q37, Q41, Q42 worked numbers in the Example lines.
-- Fixed: 4 wording/claim fixes (no SQL or output changes needed).
+- Fixed: 5 wording/claim fixes (no SQL or output changes needed).
 
 ## Fixes
 | Q | Problem | Fix |
@@ -17,8 +17,6 @@ Reviewer: Wave C. Environment: Python sqlite3 (SQLite 3.45.1), pandas 3.0.5. Scr
 | Q26 | "minute-truncating DATEDIFF" was vague/inaccurate | Now says SQL Server DATEDIFF(minute) counts minute boundaries crossed; labelled from memory, not run here |
 | Q28 | "ROWS ... usually faster" unqualified performance claim | Qualified as "some engines ... from memory, not run here" |
 | Q36 | "survival-style view" jargon in follow-up | Replaced with plain wording (count only customers old enough, as in Q41) |
-
-(Five rows because Q36 was a clarity fix on top of the four claim/accuracy fixes.)
 
 ## Checks passed
 - Template: all 12 required fields present in all 46 answers; code fences balanced; tables render; no ANSWER_PENDING.

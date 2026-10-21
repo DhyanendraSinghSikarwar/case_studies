@@ -1115,7 +1115,7 @@ ORDER BY customer, order_date, order_id;
 d = orders[orders.customer.isin(['Asha','Bala','Chitra'])].sort_values(['customer','order_date','order_id']).copy()
 d['prev_order_date'] = d.groupby('customer')['order_date'].shift(1)
 d['days_since_prev'] = (pd.to_datetime(d['order_date']) - pd.to_datetime(d['prev_order_date'])).dt.days
-res = d
+res = d[['customer','order_id','order_date','prev_order_date','days_since_prev']]
 ```
 pandas output (same as the SQL result):
 ```text
@@ -1399,7 +1399,7 @@ ORDER BY customer, order_date, order_id;
 ```python
 d = orders[orders.customer.isin(['Asha','Bala','Chitra'])].sort_values(['customer','order_date','order_id']).copy()
 d['order_no'] = d.groupby('customer').cumcount() + 1
-res = d
+res = d[['customer','order_id','order_date','amount','order_no']]
 ```
 pandas output (same as the SQL result):
 ```text
@@ -1534,7 +1534,7 @@ ORDER BY customer, order_date, order_id;
 ```python
 d = orders[orders.customer.isin(['Asha','Bala','Chitra'])].sort_values(['customer','order_date','order_id']).copy()
 d['first_order_date'] = d.groupby('customer')['order_date'].transform('min')
-res = d
+res = d[['customer','order_id','order_date','amount','first_order_date']]
 ```
 pandas output (same as the SQL result):
 ```text
@@ -1929,7 +1929,7 @@ d = emp.sort_values(['dept','city','salary']).copy()
 g = d.groupby(['dept','city'])['salary']
 d['heads_in_group'] = g.transform('count')
 d['group_avg_salary'] = g.transform('mean').round(0)
-res = d
+res = d[['name','dept','city','salary','heads_in_group','group_avg_salary']]
 ```
 pandas output (same as the SQL result):
 ```text

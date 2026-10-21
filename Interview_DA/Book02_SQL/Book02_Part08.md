@@ -849,11 +849,33 @@ result = g[g["orders_last_90d"] > 3].sort_values(["orders_last_90d", "customer_i
 | 1 | 2026-03-04 | present |
 | 1 | 2026-03-05 | present |
 | 1 | 2026-03-06 | present |
-| 1 | 2026-03-07 | present |
-| 1 | 2026-03-08 | present |
 | 1 | 2026-03-09 | present |
-
-(first 8 of 32 rows shown)
+| 1 | 2026-03-10 | present |
+| 1 | 2026-03-11 | present |
+| 2 | 2026-03-02 | present |
+| 2 | 2026-03-03 | present |
+| 2 | 2026-03-04 | present |
+| 2 | 2026-03-05 | present |
+| 2 | 2026-03-06 | present |
+| 2 | 2026-03-09 | absent |
+| 2 | 2026-03-10 | leave |
+| 2 | 2026-03-11 | absent |
+| 3 | 2026-03-02 | present |
+| 3 | 2026-03-03 | present |
+| 3 | 2026-03-04 | present |
+| 3 | 2026-03-05 | present |
+| 3 | 2026-03-06 | present |
+| 3 | 2026-03-09 | present |
+| 3 | 2026-03-10 | absent |
+| 3 | 2026-03-11 | leave |
+| 4 | 2026-03-02 | present |
+| 4 | 2026-03-03 | present |
+| 4 | 2026-03-04 | present |
+| 4 | 2026-03-05 | present |
+| 4 | 2026-03-06 | absent |
+| 4 | 2026-03-09 | absent |
+| 4 | 2026-03-10 | leave |
+| 4 | 2026-03-11 | absent |
 
 **SQL:**
 ```sql
