@@ -468,7 +468,7 @@ interviews/data_analyst/
 | Phase 0 | — | — | — | ✅ research done (JD sample 186; pending your approval) |
 | 0 | 7 sections | ✅ 123 FAQs + guide outline | ⬜ | ⬜ |
 | 1 Excel | 12 | ⬜ | ⬜ | ⬜ |
-| 2 SQL | 12 | ✅ 664 (after removing 30 cross-part duplicates; see research/dedupe_log_book02.md) | ⬜ | ⬜ |
+| 2 SQL | 12 | ✅ 664 (after removing 30 cross-part duplicates; see research/dedupe_log_book02.md) | ✅ 664 (all 12 parts merged; code run on SQLite 3.45.1 / pandas 3.0.5; non-SQLite syntax labelled "not run here") | ⬜ |
 | 3 Python | 12 | ⬜ | ⬜ | ⬜ |
 | 4 Power BI | 12 | ⬜ | ⬜ | ⬜ |
 | 5 Stats & Maths | 12 | ⬜ | ⬜ | ⬜ |
