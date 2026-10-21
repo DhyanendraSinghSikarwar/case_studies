@@ -827,3 +827,47 @@ Canonical questions per book. Wave A agents: check this BEFORE adding a question
 | B2P02-Q42 | 2 | Decoding-time methods to improve quality: self-consistency, contrastive decoding and DoLa. How do they work and what do they cost? |
 | B2P02-Q43 | 2 | Test-time compute: best-of-n, majority voting and long chain-of-thought sampling. How do cost, latency and accuracy trade off? |
 | B2P02-Q44 | 2 | Design question: choose decoding settings and stop rules for four products (code completion, support chat, creative writing, data extraction) and defend them. |
+| B2P03-Q1 | 3 | What are zero-shot, one-shot and few-shot prompting? Why do examples often beat a longer description, and how do you pick them? |
+| B2P03-Q2 | 3 | System, user and assistant messages: what is each role for, what goes where, and what happens when instructions conflict? |
+| B2P03-Q3 | 3 | What is chain-of-thought prompting? When does it help, what does it cost in latency and tokens, and when does it hurt? |
+| B2P03-Q4 | 3 | How do you structure a complex prompt (sections, delimiters or XML tags, ordering, where to put key instructions, what to do when a condition is not met)? |
+| B2P03-Q5 | 3 | How do you design prompts to reduce hallucinations (grounding, permission to say "I don't know", citations, temperature)? What are the limits of prompting here? |
+| B2P03-Q6 | 3 | How do you iterate on a prompt systematically? How do you know a prompt change did not make things worse (golden set, one change at a time, regression runs)? |
+| B2P03-Q7 | 3 | How do you get reliable JSON from an LLM? Compare prompt-only, JSON mode, schema-based structured outputs, function calling and constrained decoding. |
+| B2P03-Q8 | 3 | Explain function calling end to end: tool definitions, the model emitting a call, your code executing it, returning the result, and the final answer. |
+| B2P03-Q9 | 3 | How do you design good tool or function definitions (names, descriptions, parameter schemas, enums, how many tools)? |
+| B2P03-Q10 | 3 | Your agent returns valid JSON but the numbers are sometimes wrong. Where do you look first? Why is valid not the same as correct? |
+| B2P03-Q11 | 3 | Code: implement a function-calling loop against a mocked model: parse the call, validate arguments, execute, return the result, with a maximum number of steps. |
+| B2P03-Q12 | 3 | Code: validate LLM JSON output against a schema, repair or retry with a bounded budget, and fail closed when retries run out. |
+| B2P03-Q13 | 3 | How do you select and order few-shot examples (coverage, label balance, recency bias, dynamic selection by retrieval)? |
+| B2P03-Q14 | 3 | Zero-shot CoT, few-shot CoT, self-consistency and reasoning models: when does explicit "think step by step" prompting help, and when is it counter-productive? |
+| B2P03-Q15 | 3 | What is ReAct prompting (thought, action, observation) and how does it differ from plain chain-of-thought? |
+| B2P03-Q16 | 3 | Task decomposition and prompt chaining versus one big prompt: when do you split, and how do you choose the decomposition? |
+| B2P03-Q17 | 3 | How should a prompt handle ambiguity and missing information (fallback behaviour, clarifying questions, defaults, missing tool parameters)? |
+| B2P03-Q18 | 3 | What is context engineering? How do you decide what goes into the context window, and how do you manage long-running conversations (rolling summary vs retrieval)? |
+| B2P03-Q19 | 3 | Does role or persona prompting ("you are an expert...") help? How do you control tone and style reliably? |
+| B2P03-Q20 | 3 | Negative constraints and instruction following: why do "do not" instructions fail, how do you resolve conflicting instructions, and what works better? |
+| B2P03-Q21 | 3 | How do you control output length and format (explicit specs, examples, stop sequences, max tokens)? What goes wrong with truncation? |
+| B2P03-Q22 | 3 | What does constrained decoding do at the logit level? How does a schema become a grammar or state machine, and what does it guarantee and not guarantee? |
+| B2P03-Q23 | 3 | What does a provider's strict structured-output mode require of your JSON schema (additionalProperties, required fields, optional fields), and what are the limits of the supported schema subset? |
+| B2P03-Q24 | 3 | Does forcing a structured format hurt answer quality? How do field order and a free-text reasoning field help? |
+| B2P03-Q25 | 3 | What are the tool_choice options (auto, required, forced function, none, allowed tools) and when do you use each? |
+| B2P03-Q26 | 3 | Parallel tool calls: when can the model make several calls in one turn, how do you return results, and when do you disable it? |
+| B2P03-Q27 | 3 | What are the common tool-calling failure modes (wrong tool, hallucinated arguments, unnecessary calls, loops, timeouts) and how do you debug them? |
+| B2P03-Q28 | 3 | Retries, idempotency and side effects in tool calls: how do you avoid duplicate refunds or double writes, and when do you require human approval? |
+| B2P03-Q29 | 3 | How should tool results and errors be returned to the model (compact structured errors, truncating large results, untrusted content)? |
+| B2P03-Q30 | 3 | What happens when an agent has too many tools? Discuss selection accuracy, the token cost of tool definitions, grouping and tool search or deferred loading. |
+| B2P03-Q31 | 3 | JSON mode vs structured outputs vs function calling vs prompt-only: how do they differ in guarantees, and when would you pick each? |
+| B2P03-Q32 | 3 | How do you evaluate prompts (metrics by task type, rubrics for subjective outputs)? What are the limits of LLM-as-judge for this? |
+| B2P03-Q33 | 3 | How do you version, test and roll out prompts in production (prompt store, canary, A/B, rollback)? Where should prompts live? |
+| B2P03-Q34 | 3 | What is prompt injection (direct vs indirect), why do prompt-only defences fall short, and what structural defences help (separation, least privilege)? |
+| B2P03-Q35 | 3 | How sensitive are LLMs to prompt wording, format and example order, and how do you test a prompt's robustness? |
+| B2P03-Q36 | 3 | How do you cut cost and latency through prompt design (shorter prompts, caching-friendly structure, smaller models, routing)? |
+| B2P03-Q37 | 3 | AI code review: this LLM-written tool-calling loop has bugs (no step limit, wrong tool_use_id, unvalidated arguments, ignored stop reason or parallel calls, swallowed exceptions). Find and fix them. |
+| B2P03-Q38 | 3 | Design a reliability stack for an agent that issues refunds or changes account settings (schema validation, business rules, retries, approval, idempotency, audit). |
+| B2P03-Q39 | 3 | When would you choose not to force a strict schema on a model, and what do you do instead? |
+| B2P03-Q40 | 3 | A schema is generated per request and grammar compilation is slow. How do you keep p99 latency acceptable? |
+| B2P03-Q41 | 3 | Design the prompts, tools, guardrails, escalation and evaluation for a production customer-support assistant. |
+| B2P03-Q42 | 3 | Automatic prompt optimisation (DSPy-style compilation, meta-prompting, search over prompts): how does it work and when is it worth it? |
+| B2P03-Q43 | 3 | How does prompting a reasoning model differ from prompting a standard chat model (reasoning effort or budget, less hand-holding, no step-by-step instructions)? |
+| B2P03-Q44 | 3 | How would you evaluate tool use: tool-selection accuracy, argument accuracy, multi-turn calls, public function-calling benchmarks, and an in-house eval set? |
