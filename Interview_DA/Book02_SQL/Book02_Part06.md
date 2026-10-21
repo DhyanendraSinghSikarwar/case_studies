@@ -890,6 +890,8 @@ res['dept_headcount'] = emp.groupby('dept')['name'].transform('size')
 **Example:** Compare today's sales with sales two days ago to skip a weekend effect. Day 3 (90) has two_days_ago = 120 (day 1).
 **Sample data:**
 
+`dsales`
+
 | day | amount |
 |---|---|
 | 2024-06-01 | 120 |
@@ -953,6 +955,8 @@ pandas output (same as the SQL result):
 **Example:** In an HR table: RANK = who is the top earner in each department; LAG = the next higher salary; SUM OVER = department payroll beside each person.
 **Sample data:**
 
+`emp`
+
 | name | dept | salary |
 |---|---|---|
 | Anita | HR | 50000 |
@@ -986,6 +990,17 @@ ORDER BY dept, rnk;
 | Karan | Sales | 52000 | 2 | 70000 | 167000 |
 | Arjun | Sales | 45000 | 3 | 52000 | 167000 |
 
+**pandas equivalent:**
+```python
+d = emp.sort_values(['dept','salary'], ascending=[True, False]).copy()
+g = d.groupby('dept')['salary']
+d['rnk'] = g.rank(method='min', ascending=False).astype(int)   # RANK
+d['salary_above'] = g.shift(1)                                 # LAG
+d['dept_total'] = g.transform('sum')                           # SUM OVER
+res = d.sort_values(['dept','rnk'])
+```
+Run here (pandas 3.0.5), same values as the SQL output (NaN is pandas' NULL).
+
 **Edge cases:** Support differs by engine: SQL Server has no NTH_VALUE and only added the WINDOW clause in 2022 (from memory, not run here). Ties: RANK repeats the number and skips; ROW_NUMBER never repeats.
 **Likely follow-ups:**
 - *Are NTILE/PERCENT_RANK ranking?* Yes, they sit in the ranking family.
@@ -1003,6 +1018,8 @@ ORDER BY dept, rnk;
 - Fix: `ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING`, or flip the sort and use FIRST_VALUE.
 **Example:** Highest salary in each department: LAST_VALUE with the default frame just echoes each person's own salary; with the full frame it returns 62000 for every HR person.
 **Sample data:**
+
+`emp`
 
 | name | dept | salary |
 |---|---|---|
@@ -1073,6 +1090,8 @@ Meera Sales   70000         70000     70000
 - Add a tie-breaker (order_id) so two orders on the same day sort in a fixed order.
 **Example:** Asha ordered 5 Jan, 20 Jan and 2 Mar: gaps are 15 and 42 days. HR parallel: days between an employee's consecutive leaves.
 **Sample data:**
+
+`orders`
 
 | order_id | customer | order_date | amount |
 |---|---|---|---|
@@ -1148,6 +1167,8 @@ customer  order_id order_date prev_order_date  days_since_prev
 **Example:** Monthly headcount 100, 104, 104, 99: the labels are first row, increased, unchanged, decreased. Same pattern flags rising or falling attrition.
 **Sample data:**
 
+`hc`
+
 | month | headcount |
 |---|---|
 | 2024-01 | 100 |
@@ -1213,6 +1234,8 @@ pandas output (same as the SQL result):
 - The older way is a GROUP BY subquery joined back; the window version is shorter.
 **Example:** HR dept average is (50000 + 62000 + 58000)/3 = 56666.67, so Ravi at 62000 is +5333.33 above his department. Useful for pay-equity checks.
 **Sample data:**
+
+`emp`
 
 | name | dept | salary |
 |---|---|---|
@@ -1282,6 +1305,8 @@ Arjun Sales   45000  55666.67      -10666.67
 - If rows do not divide evenly, the first buckets get one extra row.
 **Example:** 8 customers means 2 per quartile. Bala (950) and Chitra (700) are the top quartile. HR parallel: pay quartiles for compensation benchmarking.
 **Sample data:**
+
+`orders`
 
 | order_id | customer | order_date | amount |
 |---|---|---|---|
@@ -1360,6 +1385,8 @@ customer  total_spend  quartile
 **Example:** Order number 3 for a customer tells you she is a repeat buyer. HR parallel: nth interview round for each candidate.
 **Sample data:**
 
+`orders`
+
 | order_id | customer | order_date | amount |
 |---|---|---|---|
 | 1 | Asha | 2024-01-05 | 200 |
@@ -1432,6 +1459,8 @@ customer  order_id order_date  amount  order_no
 **Example:** Sales total 860 over 6 days; by day 4 we have 560, which is 65.1 percent of the period. HR parallel: cumulative share of attrition by tenure band.
 **Sample data:**
 
+`dsales`
+
 | day | amount |
 |---|---|
 | 2024-06-01 | 120 |
@@ -1495,6 +1524,8 @@ pandas output (same as the SQL result):
 - Alternative: FIRST_VALUE(order_date) OVER (PARTITION BY customer ORDER BY order_date).
 **Example:** Asha's first order was 5 Jan, so every Asha row shows 5 Jan. Then days since first order = order_date minus first_order_date (customer tenure). HR parallel: joining date beside each attendance row.
 **Sample data:**
+
+`orders`
 
 | order_id | customer | order_date | amount |
 |---|---|---|---|
@@ -1567,6 +1598,8 @@ customer  order_id order_date  amount first_order_date
 **Example:** User 1 logs in on 2 Jan, 5 Jan, 9 Jan: gaps 3 and 4 days, last row NULL. HR parallel: next absence date after each absence.
 **Sample data:**
 
+`logins`
+
 | user_id | login_date |
 |---|---|
 | 1 | 2024-01-02 |
@@ -1627,6 +1660,8 @@ pandas output (same as the SQL result):
 - Add PARTITION BY to restart per group (per stock, per employee).
 **Example:** A stock closes 102, 100, 105, 103, 99, 108; the running high goes 102, 102, 105, 105, 105, 108. HR parallel: best monthly performance score so far.
 **Sample data:**
+
+`prices`
 
 | day | price |
 |---|---|
@@ -1691,6 +1726,8 @@ pandas output (same as the SQL result):
 **Example:** Daily sales 120, 150, 90: running average is 120, 135, 120. Handy to see where an average is settling. HR parallel: average time-to-hire of all hires so far.
 **Sample data:**
 
+`dsales`
+
 | day | amount |
 |---|---|
 | 2024-06-01 | 120 |
@@ -1752,6 +1789,8 @@ pandas output (same as the SQL result):
 - Date shift per dialect: SQLite `date(m,'-1 year')` (run); PostgreSQL `m - INTERVAL '1 year'`; MySQL `DATE_SUB(m, INTERVAL 1 YEAR)`; SQL Server `DATEADD(year,-1,m)` (not run).
 **Example:** Sales this February vs last February. A missing month in the data silently shifts every later LAG(12) by one. HR parallel: headcount vs same month last year when a month's snapshot failed to load.
 **Sample data:**
+
+`msales`
 
 | month | sales |
 |---|---|
@@ -1829,6 +1868,8 @@ pandas output (same as the SQL result):
 **Example:** Revenue goes 0, 120, 90: month 2 has no meaningful percent change (growth from zero), month 3 is -25.0 percent. HR parallel: attrition rate change when last month's leavers were zero.
 **Sample data:**
 
+`gr`
+
 | month | revenue |
 |---|---|
 | m1 | 0 |
@@ -1890,6 +1931,8 @@ month  revenue  prev_rev  pct_change
 - Different window functions in one SELECT can use different PARTITION BY lists.
 **Example:** Pune HR has 2 people averaging 56000; Mumbai HR has 1 at 58000. HR parallel: average salary per department per location.
 **Sample data:**
+
+`emp`
 
 | emp_id | name | dept | city | salary |
 |---|---|---|---|---|
@@ -1961,6 +2004,8 @@ Karan Sales   Pune   52000               1           52000.0
 **Example:** A salary report needing rank, running payroll and next-higher salary per department would repeat the same 40-character window three times; with the WINDOW clause it is written once.
 **Sample data:**
 
+`emp`
+
 | name | dept | salary |
 |---|---|---|
 | Anita | HR | 50000 |
@@ -1995,6 +2040,17 @@ ORDER BY dept, salary DESC;
 | Karan | Sales | 52000 | 2 | 122000 | 70000 |
 | Arjun | Sales | 45000 | 3 | 167000 | 52000 |
 
+**pandas equivalent:**
+```python
+d = emp.sort_values(['dept','salary'], ascending=[True, False]).copy()
+g = d.groupby('dept')['salary']
+d['rnk'] = g.rank(method='min', ascending=False).astype(int)
+d['running_payroll'] = g.cumsum()
+d['next_higher_salary'] = g.shift(1)
+res = d
+```
+pandas has no named windows: the shared sort and groupby play that role. Run here, same values as the SQL output.
+
 **Edge cases:** Referencing an undefined window name is an error. The frame in the named window applies to every function using it, but ranking functions like RANK ignore frames, so mixing them is fine. LAG also ignores frames.
 **Likely follow-ups:**
 - *Does it change the result?* No, it is just shorthand.
@@ -2012,6 +2068,8 @@ ORDER BY dept, salary DESC;
 - Month formatting: SQLite `strftime('%Y-%m', d)`; PostgreSQL `to_char(d,'YYYY-MM')`; MySQL `DATE_FORMAT(d,'%Y-%m')`; SQL Server `FORMAT(d,'yyyy-MM')` (not run).
 **Example:** Monthly totals 930, 520, 1340, 610 give running totals 930, 1450, 2790, 3400. HR parallel: cumulative hires by month.
 **Sample data:**
+
+`orders`
 
 | order_id | customer | order_date | amount |
 |---|---|---|---|

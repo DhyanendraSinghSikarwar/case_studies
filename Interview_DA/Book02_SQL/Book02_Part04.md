@@ -2370,6 +2370,11 @@ SQLite plan for the join version:
   SEARCH a USING AUTOMATIC COVERING INDEX (dept_id=?)
   USE TEMP B-TREE FOR ORDER BY
 ```
+**pandas equivalent:** (the `transform` is the "join back" or window rewrite: one pass, no per-row re-run)
+```python
+employees['avg_sal'] = employees.groupby('dept_id').salary.transform('mean')
+result = employees[employees.salary > employees.avg_sal].sort_values(['dept_id','name'])[['name','dept_id','salary']].reset_index(drop=True)
+```
 **Edge cases:** NULL salaries are ignored by AVG; all three forms agree. A department with a single employee never has salary > its own average. The speed gap only shows on large tables; at 8 rows nothing is slow.
 **Likely follow-ups:**
 - How do you prove it is slow? Run EXPLAIN (ANALYZE in PostgreSQL) and compare time and rows scanned.
@@ -2400,6 +2405,18 @@ SQLite plan for the join version:
 | 6 | Farid | 3 | 80000 | NULL |
 | 7 | Gita | 3 | 120000 | NULL |
 | 8 | Hari | 3 | 120000 | NULL |
+
+*departments*
+
+| dept_id | dept_name |
+|---|---|
+| 1 | HR |
+| 2 | Sales |
+| 3 | IT |
+| 4 | Finance |
+
+*leavers* starts as an empty archive table: `CREATE TABLE leavers (emp_id, name, left_date);`
+
 **SQL:**
 ```sql
 -- UPDATE (run in SQLite)
@@ -2433,6 +2450,14 @@ Table `leavers`:
 |---|---|---|
 | 2 | Bala | 2026-03-31 |
 | 4 | Dev | 2026-06-30 |
+
+**pandas equivalent:** (in-memory edits, same three steps)
+```python
+leavers = employees.loc[employees.left_date.notna(), ['emp_id','name','left_date']]          # INSERT into archive
+hr = departments.loc[departments.dept_name == 'HR', 'dept_id']
+employees.loc[employees.dept_id.isin(hr), 'salary'] += 5000                                  # UPDATE
+employees = employees[~employees.emp_id.isin(leavers.emp_id)]                                 # DELETE
+```
 **Edge cases:** Run the CTE as a SELECT first to see which rows will change. In a transaction you can ROLLBACK. A CTE cannot be reused by the next statement; it lives for one statement only.
 **Likely follow-ups:**
 - Why not just a subquery? Same effect; a CTE helps when the list is complex or used twice.
@@ -2449,6 +2474,7 @@ Table `leavers`:
 - Version dates in the table are from my knowledge of the vendors' release notes (I did not re-check them here); verify for your exact version.
 - Ask which database and version the team uses; interviews often do not care, but job tasks do.
 **Example:** A company still on MySQL 5.7 cannot run `WITH`; the same logic goes into a subquery in FROM.
+**Sample data:** the 8-row `employees` table from Q1 (department totals: 1 = 110,000; 2 = 150,000; 3 = 300,000; 4 = 40,000).
 **SQL:**
 ```sql
 -- Portable basic CTE (same text in PostgreSQL, SQL Server, MySQL 8+, Oracle, SQLite)
@@ -2467,6 +2493,14 @@ WHERE cost > 100000;
 ```
 **Output:**
 
+Portable CTE and the MySQL 5.7 derived-table version (both give the same rows; checked in SQLite):
+
+| dept_id | cost |
+|---|---|
+| 1 | 110000 |
+| 2 | 150000 |
+| 3 | 300000 |
+
 Recursive demo result (SQLite):
 
 | i |
@@ -2483,6 +2517,11 @@ Recursive demo result (SQLite):
 | MariaDB | Yes, since 10.2 | Similar to MySQL |
 | Oracle | Yes, 'subquery factoring', since 9i R2; recursive since 11gR2 | No `RECURSIVE` keyword; recursive CTE needs a column alias list; scalar SELECT needs `FROM dual` |
 | SQLite | Yes, since 3.8.3 | Needs `RECURSIVE` |
+**pandas equivalent:** (pandas has no CTE syntax; a named variable plays the same role)
+```python
+dept_cost = employees.groupby('dept_id', as_index=False).agg(cost=('salary','sum'))
+result = dept_cost[dept_cost.cost > 100000]
+```
 **Edge cases:** On old versions the failure is a syntax error at `WITH`. Recursive CTEs have depth limits (SQL Server 100 by default).
 **Likely follow-ups:**
 - What replaces a CTE on MySQL 5.7? Derived tables, temporary tables or views.
@@ -2619,7 +2658,7 @@ result = employees[(employees.dept_id == d) & (employees.emp_id != 5)][['name','
 - A **row value** (tuple) is a bracketed list like `(dept_id, salary)`. Matching it against a subquery that returns two columns means both values must match together, in the same row.
 - Matching columns one at a time would be wrong: `dept_id IN (...) AND salary IN (...)` would accept an HR employee whose salary equals the top salary of some other department.
 - Supported in PostgreSQL, MySQL, Oracle and SQLite. SQL Server does **not** support it; use `EXISTS` or a join to the grouped query instead (not run here).
-**Example:** 'Who is the highest paid in each department?' Chitra and Dev both earn 70,000 in Sales, so both show up (a tie).
+**Example:** 'Who is the highest paid in each department?' Chitra and Dev both earn 70,000 in department 2, so both show up (a tie).
 **Sample data:**
 `employees`
 
@@ -2662,7 +2701,7 @@ FROM employees e
 JOIN (SELECT dept_id, MAX(salary) AS mx FROM employees GROUP BY dept_id) t
   ON t.dept_id = e.dept_id AND t.mx = e.salary;
 ```
-**Edge cases:** Ties all appear (Sales). NULL in any column of the pair makes the comparison unknown, so that row never matches. Column order inside the brackets must be the same on both sides.
+**Edge cases:** Ties all appear (department 2). NULL in any column of the pair makes the comparison unknown, so that row never matches. Column order inside the brackets must be the same on both sides.
 **Likely follow-ups:**
 - Window-function way? `RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) = 1` (Part 5).
 - Why not two separate IN conditions? They check columns independently and give wrong rows.
@@ -2826,7 +2865,7 @@ WHERE rn IN ((cnt + 1) / 2, (cnt + 2) / 2)
 result = pd.DataFrame({'median_salary': [employees.salary.median()]})
 ```
 (result checked identical to the SQL output)
-**Without window functions (subqueries only, SQLite/MySQL/PostgreSQL `LIMIT ... OFFSET` style, checked identical):**
+**Without window functions (subqueries only, `LIMIT ... OFFSET` style; checked identical in SQLite. PostgreSQL accepts subqueries in LIMIT/OFFSET (from memory, not run here); MySQL does not, so use the window version or a user variable there):**
 ```sql
 SELECT AVG(salary) AS median_salary
 FROM (SELECT salary FROM employees ORDER BY salary
@@ -2899,7 +2938,7 @@ result = m[['name','salary','dept_avg']].sort_values('name')
 **Say this in the interview:** Normally the items in FROM are built independently, so a derived table cannot see the other tables next to it. LATERAL lets the subquery look left and use the current row of an earlier table, like a correlated subquery but in FROM, and it can return many rows and columns.
 **Explain simply:**
 - **Derived table** = a subquery in FROM. By default it is evaluated on its own, as if each FROM item were a separate box. So `e.dept_id = d.dept_id` inside it fails: SQLite replied `no such column: d.dept_id`.
-- **LATERAL** (PostgreSQL 9.3+, MySQL 8.0.14+, Oracle 12c+, DuckDB) removes that limit: the subquery runs once per row of the table to its left. SQL Server spells it `CROSS APPLY` / `OUTER APPLY`.
+- **LATERAL** (PostgreSQL 9.3+, MySQL 8.0.14+, Oracle 12c+, DuckDB; version numbers from memory) removes that limit: the subquery runs once per row of the table to its left. SQL Server spells it `CROSS APPLY` / `OUTER APPLY`.
 - Typical use: 'top N rows per group' (here the top 2 earners per department) without window functions.
 - `LEFT JOIN LATERAL ... ON true` keeps departments with no match (Legal shows NULL), like `OUTER APPLY`.
 **Example:** For every department, list its two best-paid employees. Legal has no employees and still shows up.
@@ -2927,7 +2966,7 @@ result = m[['name','salary','dept_avg']].sort_values('name')
 | 7 | Gita | 3 | 80000 |
 | 8 | Hari | 4 | 65000 |
 **SQL:**
-(run on DuckDB, because SQLite has no LATERAL)
+(PostgreSQL / DuckDB-style syntax; not run here, because SQLite has no LATERAL and DuckDB is not installed. The output below is worked out by hand and matches the pandas version, which was run.)
 ```sql
 SELECT d.dept_name, t.name, t.salary
 FROM departments d
@@ -3076,7 +3115,7 @@ result = pd.DataFrame({'user_id': sorted(jan - feb)})
 **Edge cases:** If `feb` contains a NULL user_id, `NOT IN` returns nothing at all; NOT EXISTS is immune. Use DISTINCT to avoid repeating a user who ordered twice. A user with orders in Dec and Feb but none in Jan is not included.
 **Likely follow-ups:**
 - Which users are new in February? Swap the two CTEs.
-- Same with LEFT JOIN? `FROM jan LEFT JOIN feb USING (user_id) WHERE feb.user_id IS NULL`.
+- Same with LEFT JOIN? `FROM jan LEFT JOIN feb ON feb.user_id = jan.user_id WHERE feb.user_id IS NULL` (the `USING` shortcut does not exist in SQL Server).
 **Common mistakes:** Using `NOT IN` on a column that can be NULL; filtering months with `LIKE '2025-01%'` or functions on the column (slow, breaks on date types); forgetting that a 'user' may appear many times.
 
 ### Q49 ⭐ 🔴 Find customers who bought every product in a given category (relational division with NOT EXISTS).
@@ -3248,7 +3287,7 @@ ORDER BY name
 - Joining on `year + 1` is safer than the LAG function when some years are missing, because LAG would pair the 2022 row with the 2024 row if 2023 is absent.
 - Strictly above: Chitra earns exactly the department average in 2022 and 2023, so those years do not count.
 - DISTINCT stops an employee who is above average three years in a row from showing twice.
-**Example:** Asha is above her department's average in 2023 and 2024; Esha in 2022 and 2023. Bala is above in 2022 and 2024 but not in 2023, so not consecutive.
+**Example:** Asha is above her department's average in 2023 and 2024; Esha in 2022 and 2023. Bala is above only in 2022 (HR average 55,000; he earns 60,000), then below in 2023 and 2024, so no chain.
 **Sample data:**
 `pay`
 
