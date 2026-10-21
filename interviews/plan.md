@@ -299,7 +299,7 @@ Daily split: 40% coding (DSA/SQL), 35% ML/GenAI theory + design, 25% scenarios/b
 | Book | Parts done |
 |---|---|
 | 1 | 14 / 14 (Questions ✅ Answers ✅ Review ✅; 728 Qs, see review_Book1.md) |
-| 2 | 0 / 12 (Part 1 questions ✅ 47 Qs; answers pending; see BOOK2_EXECUTION_PLAN.md) |
+| 2 | 1 / 12 (Part 1: Questions ✅ Answers ✅ Review ✅; 47 Qs, see review_notes/Book2_Part01_review.md) |
 | 3 | 0 / 12 |
 | 4 | 0 / 12 |
 | 5 | 0 / 14 |

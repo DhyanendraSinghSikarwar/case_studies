@@ -11,7 +11,7 @@ Follows plan.md §5 (Book 2 table), §11 (workflow) and style_guide.md. Book 1 i
 ## Part checklist (target Qs from plan.md)
 | Part | Topic | Target | Wave A | Wave B | Wave C |
 |---|---|---|---|---|---|
-| 1 | Transformer internals: attention, positional encoding, KV cache | 45 | ✅ (47 Qs) | ⬜ | ⬜ |
+| 1 | Transformer internals: attention, positional encoding, KV cache | 45 | ✅ (47 Qs) | ✅ | ✅ |
 | 2 | Tokenization, pretraining, scaling laws, decoding | 40 | ⬜ | ⬜ | ⬜ |
 | 3 | Prompting, structured outputs, function calling | 40 | ⬜ | ⬜ | ⬜ |
 | 4 | Fine-tuning: SFT, LoRA/QLoRA, PEFT, distillation | 45 | ⬜ | ⬜ | ⬜ |
@@ -32,4 +32,4 @@ Book 1 Part 9 owns light NLP/transformer intro; Book 4 owns generic MLOps/Docker
 - torch/transformers may not be installed; code needing them must be marked `# not executed: <reason>`.
 
 ## Next step
-Part 1 Wave B (answers for Q1–Q47), then Part 2 Wave A.
+Part 2 Wave A (tokenization, pretraining, scaling laws, decoding). WebFetch works now (some sites return 403/429); torch 2.14 CPU installed this session (pip install --index-url https://download.pytorch.org/whl/cpu torch).

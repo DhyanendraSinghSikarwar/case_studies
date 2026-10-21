@@ -1,7 +1,7 @@
 # Book 2 — Part 01: Transformer Internals (attention, positional encoding, KV cache)
 
 **Topic:** self-attention and multi-head attention, transformer block, encoder/decoder variants, positional encodings (sinusoidal, RoPE, ALiBi), KV cache, prefill vs decode, MQA/GQA/MLA, FlashAttention, long-context, MoE, alternatives to attention.
-**Target:** 45  |  **Actual:** 47 (⭐⭐⭐ 15, ⭐⭐ 20, ⭐ 12)  |  **Date:** 2026-10-21  |  **Status:** Questions frozen (Wave A); answers pending (Wave B)
+**Target:** 45  |  **Actual:** 47 (⭐⭐⭐ 15, ⭐⭐ 20, ⭐ 12)  |  **Date:** 2026-10-21  |  **Status:** Wave A done; Wave B answers written (Q1-Q47); Wave C review done (see review_notes/Book2_Part01_review.md)
 
 Scope note: Book 1 Part 9 gave a light transformer intro (self-attention, positional encoding, O(n^2)); this part is the deep treatment and must not repeat Book 1 answers verbatim. Tokenization, pretraining and decoding strategies are Part 2; serving (vLLM, PagedAttention, quantization, speculative decoding) is Part 10; LoRA/PEFT is Part 4.
 
@@ -1511,6 +1511,11 @@ def buggy_mha(x):                               # x: (B, T, D), H heads, dh = D 
 **Fixed version, checked against torch:**
 ```python
 import torch, math, torch.nn.functional as F
+torch.manual_seed(0)
+B, T, D, H = 2, 6, 16, 4; dh = D // H
+x = torch.randn(B, T, D)
+Wq, Wk, Wv, Wo = [torch.randn(D, D) / math.sqrt(D) for _ in range(4)]   # random weights, scaled
+
 def fixed_mha(x):
     B, T, D = x.shape
     q, k, v = x @ Wq, x @ Wk, x @ Wv
@@ -1527,6 +1532,8 @@ def ref(x):  # PyTorch's fused implementation
 print((fixed_mha(x) - ref(x)).abs().max())   # 2.4e-07  (buggy_mha: 2.78)
 ```
 All of this was executed with torch (seed 0, random weights scaled by 1/sqrt(D)); the numbers above are from that run.
+
+**Example:** with B=2, T=6, D=16, H=4 the buggy version still returns a (2, 6, 16) tensor of finite numbers, yet it differs from the reference by 2.78 while the fixed version differs by 2.4e-7. That is why I test numerically, not by shape.
 
 **Follow-ups:**
 - *How would you unit-test attention?* (1) Compare with `scaled_dot_product_attention`. (2) Causality test: perturb token t, assert outputs before t are unchanged. (3) Rows of attention weights sum to 1. (4) Permutation test for non-causal attention. (5) Head-split test with distinct values per token.
@@ -1637,7 +1644,7 @@ N, d = 200, 32
 Q, K, V = (rng.normal(size=(N, d)) * 2 for _ in range(3))
 for causal in (False, True):
     print(causal, np.abs(flash_attn(Q, K, V, causal=causal) - std_attn(Q, K, V, causal=causal)).max())
-# False 1.12e-14    True 1.11e-14
+# False 1.68e-14    True 2.04e-14   (float64 rounding noise, about 1e-14)
 Qb = Q * 100       # naive exp(S) without max-subtraction overflows to inf here; the tiled version still matches
 print(np.allclose(flash_attn(Qb, K, V), std_attn(Qb, K, V)))     # True
 ```
@@ -1756,6 +1763,7 @@ print(np.mean([one() for _ in range(200000)]).round(3), round(expected(a, k), 3)
 
 **Code:** (not executed: conceptual; shown as pseudocode to explain the decode loop)
 ```python
+# not executed: pseudocode (MASK, model, top_k_most_confident are placeholders)
 # masked-diffusion decoding sketch
 x = [MASK] * L
 for step in range(T):                       # T << L is the speed idea
