@@ -83,7 +83,7 @@ Reported shape: 2 to 4 rounds. Usually an online aptitude/assessment, a technica
 
 | Dimension | Service MNCs | GCCs | Analytics firms | Product / startups |
 |---|---|---|---|---|
-| Typical rounds | 2-4 | 2-6 (Amazon 5; Wells Fargo 3; HSBC 2; Novartis 2-6) | 3-6 (Tiger 4; Mu Sigma 3-4; Indium 4; LatentView 3-6) | 2-5 (Meesho 2-3; PhonePe 2-3; Flipkart 2-4) |
+| Typical rounds | 2-4 | 2-6 (Amazon 5; Wells Fargo 3; HSBC 2; Novartis 2-6) | 3-6 (Tiger 4; Mu Sigma 3-4; Indium 4; LatentView 3-6) | 2-5 (Meesho 2-3; PhonePe 2-3; Flipkart 2-4; see note below) |
 | First filter | Aptitude / online test | SQL screen or analytical online test | Long aptitude plus coding/SQL test | SQL-heavy online test |
 | SQL difficulty | Basic-medium | Basic-medium | Medium | Medium-hard |
 | Case / guesstimate | Rare | Amazon case; Novartis Excel case | Common | Common |
@@ -93,6 +93,8 @@ Reported shape: 2 to 4 rounds. Usually an online aptitude/assessment, a technica
 | Evidence strength | Moderate (many thin reports) | Weak to moderate | Moderate (campus-skewed) | Moderate for Meesho/Flipkart/PhonePe; weak for Swiggy/Zepto |
 
 (IP Section 3)
+
+Note on conflict: the IP table gives Meesho and PhonePe as 2-3 rounds, but IP Section 2.4 describes Meesho as four steps (online test, SQL technical, case/product, HR/manager) and PhonePe as a recruiter call plus a manager round. Counting an online test as a round or not explains most of this. Use the ranges as rough only.
 
 ### 3.6 Group discussions, timelines and the typical loop
 
@@ -132,13 +134,13 @@ Each block says what the round tests, where it was reported, how long (only wher
 
 - **What is tested.** Quant, logical and verbal aptitude; data interpretation; basic CS or database questions; sometimes SQL or small coding tasks. Examples: Tiger's roughly 90-minute proctored test (about 20 aptitude/maths, 10 CS, 2 coding) [R]; Fractal's 75-question test with a video introduction [S]; Deloitte campus AMCAT, 75 minutes [R]; Accenture's elimination round plus a non-elimination English communication assessment [G/S]; a Novartis online MCQ with a pie-chart interpretation question [S]; PhonePe's quant/logical test plus 5 SQL questions [S]; one Meesho variant with 4 SQL questions plus 24 MCQs on SQL, aptitude and Excel [S].
 - **Who uses it.** Service MNCs and analytics firms as a first gate; GCCs and startups swap in an SQL-flavoured test.
-- **Length.** Only the figures above are reported. Do not assume others.
+- **Length.** Only two durations are reported: Tiger about 90 minutes and Deloitte campus AMCAT 75 minutes. Fractal (75 questions) and the Meesho variant (4 SQL plus 24 MCQs) give question counts, not time. Do not assume others.
 - **Prepare.** Book 6 for aptitude and data interpretation; Book 2 for SQL questions; Book 3 for small coding items.
-- **Honest note.** These tests are a filter, and a switcher with a good resume can be cut here. Practise them under time limits.
+- **Honest note (guidance, not research).** These tests act as a filter, so a switcher with a good resume could be cut here. Practise them under time limits.
 
 ### 4.3 Live SQL
 
-- **What is tested.** Joins, GROUP BY/HAVING, Nth-highest salary (often with DENSE_RANK), window functions, CTEs, duplicates, subqueries; at startups also recursive CTEs, self-joins, cumulative sums. (IP 2.1-2.4)
+- **What is tested.** Joins, GROUP BY/HAVING, Nth-highest salary (DENSE_RANK appears in an Amazon report), window functions, CTEs, duplicates, subqueries; at startups also recursive CTEs, self-joins, cumulative sums. (IP 2.1-2.4)
 - **Difficulty by type (reports).** Service MNCs and GCCs basic to medium; analytics firms medium; product/startups medium-hard, with "LeetCode-hard" at PhonePe. Individual exceptions exist: a Deloitte Nov 2025 candidate solved one of two medium-hard questions [S]. (IP Section 3)
 - **Format.** Shared screen (Amazon, [S]), Teams call (Wells Fargo, [S]), or in-person.
 - **Prepare.** Book 2. Aim for the tier of the company type you target, and say your reasoning aloud while you write.
@@ -166,7 +168,7 @@ Only guides mention it, for Zepto, and no first-hand DA report was found. Treat 
 
 ### 4.8 Project walk-through
 
-- **What is tested.** Whether you really did what the resume says and can explain it end to end. Near-universal: about 14 profiles, including Deloitte, TCS, Wipro, Fractal, Tiger, LatentView, Mu Sigma and Flipkart. For a switcher this is often the decisive round, because your projects are your proof.
+- **What is tested.** Whether you really did what the resume says and can explain it end to end. Near-universal: about 14 profiles, including Deloitte, TCS, Wipro, Fractal, Tiger, LatentView, Mu Sigma and Flipkart. The research does not say how decisive it is for switchers; as guidance, your projects are your main proof, so prepare this round well.
 - **Prepare.** Book 8 Part 8 (project deep-dive questions), Book 12 for portfolio and resume, and have one project you can explain in plain business words.
 
 ### 4.9 Managerial and HR/behavioural rounds
@@ -195,7 +197,8 @@ Before any of these, confirm the structure with the recruiter.
 
 ### Limitations (Section 4)
 
-- Round contents are candidate-reported. Durations are known for only a few tests (Tiger, Fractal, Deloitte AMCAT, Meesho variant).
+- Round contents are candidate-reported. Durations are known for only two tests (Tiger, Deloitte AMCAT); Fractal and Meesho give question counts only.
+- The IP tallies have small internal inconsistencies: the SQL count "about 19 of 20" lists three exclusions (Zepto, Swiggy, Microsoft), which would give about 17; the guesstimate count of "about 6" names Fractal twice (5 distinct companies). Read all counts as rough.
 - Frequency counts are tallies of company profiles, not a sample of interviews, and several rest on one report.
 - No reliable data was found on how often switchers (as against freshers) are cut at each round, or on how interviewers treat HR-to-analytics candidates specifically.
 - The "how to behave" advice in 4.11 and the preparation priorities in 4.12 are guidance, not research findings.
