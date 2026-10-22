@@ -265,7 +265,7 @@
 **Formula / Steps:** D2 `=B2/C2`; E2 `=IFERROR(B2/C2,"Check")`, fill down.
 **Alternative:** `=IF(C2=0,"Check",B2/C2)` (fixes only the zero case), or `IFNA` for lookup #N/A only.
 **Result (run in LibreOffice 24.2):** Plain: 100, #DIV/0!, #VALUE!. IFERROR: 100, Check, Check.
-**Version note:** Excel 2007 onward; listed for 2016 to 365 (Microsoft Support). IFNA exists since 2013 (from memory, unverified). Google Sheets has both.
+**Version note:** Excel 2007 onward; listed for 2016 to 365 (Microsoft Support). Microsoft Support's "IFNA function" page lists Excel 2016 and later; I believe IFNA arrived in Excel 2013 (from memory, unverified). Google Sheets has both.
 **Edge cases:** Row 4 shows the danger: a data-entry error ("n/a") is hidden just like the harmless zero. Do not wrap a whole workbook in IFERROR.
 **Likely follow-ups:** (1) "IFERROR versus IFNA?" IFNA only catches #N/A. (2) "Can it return blank?" Yes, `""`.
 **Common mistakes:** Hiding every error; returning 0, which then pollutes averages; putting IFERROR around the wrong part.
