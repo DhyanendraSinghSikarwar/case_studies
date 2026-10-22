@@ -1239,7 +1239,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Version note:** Power Query is available in "all Excel 2016 or later Windows stand alone versions"; some features (fuzzy merge) are 365 only (Microsoft Support, "Power Query data sources in Excel versions"; that page is cited here from the original writing and was not re-fetched in review). Not run here.
 **Edge cases:** Column names change in a new file and break steps; case matters in Replace Values; Power Query's Trim leaves inner double spaces; a text-to-number step errors on cells such as "N/A" (they show as Error in that column, to be handled with Replace Errors).
 **Likely follow-ups:** 1) *Formulas faster?* Power Query handles big data better. 2) *Does it change the raw file?* No. 3) *When do you still use formulas?* Small one-offs or values that must recalculate beside other formulas.
-**Common mistakes:** Hard-coding file paths; forgetting to refresh; doing steps in the wrong order (change type before trimming, so "38500 " errors).
+**Common mistakes:** Hard-coding file paths; forgetting to refresh; doing steps in a careless order (trim before changing type is the safe habit; whether "38500 " converts without trimming is from memory, unverified).
 
 ### Q45 ⭐ 🟡 How do you clean data that arrives every month in the same messy format, so that you do not repeat the manual steps?
 **Asked at:** commonly asked (no company-specific report found).
