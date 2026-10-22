@@ -918,3 +918,44 @@ Canonical questions per book. Wave A agents: check this BEFORE adding a question
 | B2P04-Q45 | 4 | What are the pitfalls of distillation (capacity gap, exposure bias, evaluation, teacher licensing terms), and when does it fail? |
 | B2P04-Q46 | 4 | How do you handle sequential or continual fine-tuning without forgetting (replay, per-task adapters, EWC-style regularisation, merging)? |
 | B2P04-Q47 | 4 | What is rejection-sampling fine-tuning or self-improvement (RFT, STaR-style): how do you bootstrap SFT data from a model's own verified samples, and what can go wrong? |
+| B2P05-Q1 | 5 | What is RLHF? Walk through the pipeline (SFT, reward model, policy optimisation) and explain why a base LLM needs it. |
+| B2P05-Q2 | 5 | What is the KL penalty in RLHF, why is it needed, and what does the beta coefficient trade off? |
+| B2P05-Q3 | 5 | What is reward hacking? Give examples (length bias, sycophancy) and the standard mitigations. |
+| B2P05-Q4 | 5 | DPO vs PPO-based RLHF: how does DPO work, what does it remove, and when would you pick each? |
+| B2P05-Q5 | 5 | How is a reward model trained? Explain preference pairs, the Bradley-Terry loss and the architecture. |
+| B2P05-Q6 | 5 | Code: implement the DPO loss in PyTorch (log-probability ratios against a reference model, beta, implicit rewards) and test it on toy tensors. |
+| B2P05-Q7 | 5 | How do you collect high-quality preference data (guidelines, annotator agreement, pair sampling, AI feedback)? |
+| B2P05-Q8 | 5 | What are the guardrail layers in an LLM application (input rails, output rails, dialog or topic control, retrieval and tool checks)? |
+| B2P05-Q9 | 5 | Jailbreaks vs prompt injection: what attack families exist and how do you defend in depth? |
+| B2P05-Q10 | 5 | How do you evaluate a post-trained or aligned model (helpfulness, harmlessness, regressions, pairwise human or model judging, win rate)? |
+| B2P05-Q11 | 5 | Your model started refusing benign requests after a safety-training round. What do you investigate and how do you fix it? |
+| B2P05-Q12 | 5 | Code: implement PPO's clipped surrogate objective and the KL-regularised reward in PyTorch and check it on toy tensors. |
+| B2P05-Q13 | 5 | PPO inside RLHF: policy, value head, advantages and GAE, clipping, and why four models (policy, reference, reward, value) are in memory. |
+| B2P05-Q14 | 5 | What are Constitutional AI and RLAIF? How do the two phases work, and what are the benefits and risks of AI feedback? |
+| B2P05-Q15 | 5 | DPO in more detail: the reference model, beta, the implicit reward, data requirements and known failure modes. |
+| B2P05-Q16 | 5 | What do IPO, KTO, ORPO and SimPO change relative to DPO, and when would you consider them? |
+| B2P05-Q17 | 5 | How do reward models fail (overfitting, distribution shift, length bias, over-optimisation), and what do ensembles and process reward models offer? |
+| B2P05-Q18 | 5 | What is sycophancy? Why does RLHF encourage it, and how do you measure and reduce it? |
+| B2P05-Q19 | 5 | What causes length bias and verbosity in aligned models, and how do you measure and mitigate it? |
+| B2P05-Q20 | 5 | What are GRPO and RLVR? How does a group-relative advantage replace the critic, and what are the weaknesses of verifiable rewards? |
+| B2P05-Q21 | 5 | How are reasoning models post-trained (RL on verifiable tasks, test-time compute), and how does that differ from preference-based RLHF? |
+| B2P05-Q22 | 5 | How do you balance helpfulness and harmlessness in safety training? What is the alignment tax and how do you limit it? |
+| B2P05-Q23 | 5 | How do you run a red-team exercise (manual vs automated, coverage, attack success rate, fixing what you find)? |
+| B2P05-Q24 | 5 | How do safety-classifier guardrails (Llama Guard style) work for inputs and outputs: taxonomy, thresholds, latency and limits? |
+| B2P05-Q25 | 5 | What do guardrail frameworks such as NeMo Guardrails provide (self-check rails, dialog flows, third-party integrations), and when would you use a framework instead of custom checks? |
+| B2P05-Q26 | 5 | Guardrails vs alignment: what does each handle, why do you need both, and what does defence in depth look like? |
+| B2P05-Q27 | 5 | How do you build output-side guardrails for PII, secrets and toxicity (regex, NER, classifier) and what are the trade-offs? |
+| B2P05-Q28 | 5 | What do guardrails cost in latency and money, and how do you reduce it (cheap checks first, parallel rails, streaming, caching)? |
+| B2P05-Q29 | 5 | How do you measure guardrail quality (precision and recall per category, thresholds, cost of false positives vs false negatives, evaluation set design)? |
+| B2P05-Q30 | 5 | Online vs offline preference optimisation: DPO on a fixed dataset, iterative or online DPO, and PPO. Why does on-policy data matter? |
+| B2P05-Q31 | 5 | How do you handle annotator disagreement and label noise in preference data (inter-annotator agreement, adjudication, noise-robust training)? |
+| B2P05-Q32 | 5 | How do you evaluate a reward model itself (held-out preference accuracy, agreement with humans, best-of-n probes)? |
+| B2P05-Q33 | 5 | AI code review: this LLM-written DPO/PPO training snippet has bugs (loss sign, reference model gradients, summed vs averaged log-probabilities, KL direction, missing clipping). Find and fix them. |
+| B2P05-Q34 | 5 | Best-of-n with a reward model vs RL fine-tuning: what are the cost, quality and over-optimisation trade-offs? |
+| B2P05-Q35 | 5 | Why do jailbreaks work (competing objectives, mismatched generalisation), and what are the main families (role-play, obfuscation, multi-turn, multimodal)? |
+| B2P05-Q36 | 5 | Derive DPO from the KL-regularised reward-maximisation objective: the optimal policy, the reward reparameterisation and the final loss. |
+| B2P05-Q37 | 5 | Design question: build the post-training pipeline for a coding model (SFT data, preference data from execution tests, RLVR, evaluation, safety). |
+| B2P05-Q38 | 5 | Design question: build a preference-data collection platform with quality control (guidelines, redundancy, adjudication, audits, throughput). |
+| B2P05-Q39 | 5 | Design question: guardrail architecture for a customer-facing assistant that can issue refunds (rails, approvals, escalation, logging, red-team gates). |
+| B2P05-Q40 | 5 | What is scalable oversight, and why does preference-based RLHF struggle on tasks humans cannot easily judge? |
+| B2P05-Q41 | 5 | What are the engineering challenges of distributed PPO for LLMs (generation vs training throughput, four models, staleness), and how do teams address them? |

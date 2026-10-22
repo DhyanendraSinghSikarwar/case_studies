@@ -15,7 +15,7 @@ Follows plan.md §5 (Book 2 table), §11 (workflow) and style_guide.md. Book 1 i
 | 2 | Tokenization, pretraining, scaling laws, decoding | 40 | ✅ (44 Qs) | ✅ | ✅ |
 | 3 | Prompting, structured outputs, function calling | 40 | ✅ (44 Qs) | ✅ | ✅ |
 | 4 | Fine-tuning: SFT, LoRA/QLoRA, PEFT, distillation | 45 | ✅ (47 Qs) | ⬜ | ⬜ |
-| 5 | Alignment: RLHF, DPO, safety, guardrails | 35 | ⬜ | ⬜ | ⬜ |
+| 5 | Alignment: RLHF, DPO, safety, guardrails | 35 | ✅ (41 Qs) | ⬜ | ⬜ |
 | 6 | RAG basics | 50 | ⬜ | ⬜ | ⬜ |
 | 7 | Advanced RAG | 45 | ⬜ | ⬜ | ⬜ |
 | 8 | Agents, tool use, MCP, multi-agent | 50 | ⬜ | ⬜ | ⬜ |
