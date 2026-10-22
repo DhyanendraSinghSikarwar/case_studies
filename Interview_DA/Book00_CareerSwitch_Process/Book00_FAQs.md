@@ -5,11 +5,11 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 ### Q1 ⭐⭐⭐ 🟢 Is it realistic for an HR professional with no coding background to become a data analyst?
 **Short answer:** Yes for the entry roles that are Excel-first (MIS, reporting, operations analyst, HR-tech reporting). It is harder for Python-heavy product or startup analyst roles. No reliable data found on how many HR people actually make the switch.
 **Why / explain simply:**
-- Most 0-2 year analyst postings do not ask for coding. Python appears in about 32% of them; in MIS/reporting postings it is about 16%.
+- Most 0-2 year analyst postings do not ask for coding. Python appears in about 32% of them (pooled n=186); in the MIS/reporting sub-sample (n=32) it is about 16%.
 - The tools asked most often are Excel, SQL and dashboards (a dashboard is a one-page visual report that updates from data). You can learn these without a coding background.
 - Communication is named in about 73% of postings. HR work already trains this.
 - Realistic does not mean quick or guaranteed. It means the entry bar is learnable.
-**What the evidence says:** n=186 non-random JD sample, about +/-7 points: dashboards/reporting 75%, communication 73%, Excel 60%, SQL 54%, Python 32% (MS Addendum). MIS sample: Excel 72%, SQL 44%, Python 16% (MS Addendum). No reliable data found on switch success rates, because no outcome statistics for HR-to-analyst switchers exist in the research set (B0S gaps).
+**What the evidence says:** n=186 non-random JD sample, about +/-7 points: dashboards/reporting 75%, communication 73%, Excel 60%, SQL 54%, Python 32% (MS Addendum). MIS/reporting sub-sample (n=32, includes 5 near-identical Honhr rows, about +/-15 points): Excel 72%, SQL 44%, Python 16% (MS Addendum). No reliable data found on switch success rates, because no outcome statistics for HR-to-analyst switchers exist in the research set (B0S gaps).
 **What to do:**
 - Pick one entry target: MIS/reporting if you are Excel-first, or data analyst/BI if you can commit to SQL.
 - Open 10 real postings for that role and list the tools named. If most name only Excel, SQL and a BI tool, your path is realistic.
@@ -28,7 +28,7 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 **What the evidence says:** No reliable data found on time-to-hire for switchers (B0S gaps). The Google Data Analytics certificate page (fetched, coursera.org) states about 6 months at 10 hours a week, over 180 hours of instruction; that is the course's own claim about finishing the course, not about getting a job.
 **What to do:**
 - Count your real weekly hours. Illustrative arithmetic: 10 hours a week for 24 weeks is 240 hours; 17 hours a week for 24 weeks is about 400 hours.
-- Set checkpoints: Excel done by week 3, SQL core by week 10 (see Book 0 roadmap).
+- Set checkpoints from the plan (plan.md Section 7; Guide Section 6): Excel by about week 3, SQL Parts 1-6 by about week 7, the rest of SQL by week 10. These are our targets, not research findings.
 - Start applying to MIS/reporting roles when Excel and basic SQL are solid; keep studying while you apply.
 **Example:** (illustrative) Arjun can study 1 hour on weekdays and 4 on weekends, about 9 hours a week. He should plan for a longer runway than a plan built for 2-3 hours a day.
 **Common mistakes:** Believing a promised timeline. Quitting at month 3 because the plan said "job-ready". Not counting the job-search months.
@@ -39,7 +39,7 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 **Why / explain simply:**
 - Excel and SQL are the only two tools above 50% in the postings we read. SQL is how you pull and summarise data from a database with short written commands.
 - Power BI (a dashboard tool) is next at about 40%; Tableau, a similar tool, is about 33%.
-- Python (a programming language) is about 32%, and it is the "mid-level separator": it appeared more often in postings needing 3+ years.
+- Python (a programming language) is about 32%, and it is the "mid-level separator": it appeared more often in the roughly 25 excluded postings needing 3+ years (a reading impression, not counted: MS Section 3).
 - If your target is MIS/reporting, Excel matters most and Python least.
 **What the evidence says:** n=186 non-random JD sample, +/-7 points: Excel 60%, SQL 54%, Power BI 40%, Tableau 33%, Python 32%, statistics 23% (MS Addendum). Interviews: SQL appears in about 19 of 20 company profiles, Python about 10, Power BI about 7, Excel about 5 (IP Section 4; candidate-reported, anecdotal). Note SQL is far more asked in interviews than in some JDs.
 **What to do:**
@@ -53,10 +53,10 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 ### Q4 ⭐⭐⭐ 🟢 Do I need to learn Python to get my first data analyst job?
 **Short answer:** Not for many entry roles, especially MIS, reporting and operations analyst roles. It becomes more useful for data analyst roles at product companies, GCCs and startups.
 **Why / explain simply:**
-- Python is named in about 32% of postings overall and about 16% of MIS/reporting postings. Hyderabad, Bengaluru and GCC samples show roughly 30-40%.
+- Python is named in about 32% of postings overall and about 16% of MIS/reporting postings. The Hyderabad (n=47), Bengaluru (n=42) and GCC (n=25) samples show roughly 30-40%.
 - When Python is asked in interviews, reports describe basic tasks (lists, strings, duplicates, simple pandas, which is a Python table library), not advanced work.
 - Without Python you rule out some roles, not all.
-**What the evidence says:** n=186 non-random JD sample, +/-7 points: Python 32%; MIS sample 16%; Hyd 30%, Blr 40%, GCC 40% (MS Addendum). Python-heavy product/startup analyst roles are the hardest entry point (MS Section 6). Interviews: Python in about 10 of 20 company profiles, mostly basic (IP Section 4; candidate-reported).
+**What the evidence says:** n=186 non-random JD sample, +/-7 points: Python 32%; MIS sub-sample (n=32) 16%; Hyd (n=47) 30%, Blr (n=42) 40%, GCC (n=25) 40%; per-sample figures carry about +/-15 to +/-20 points (MS Addendum). Python-heavy product/startup analyst roles are the hardest entry point (MS Section 6). Interviews: Python in about 10 of 20 company profiles, mostly basic (IP Section 4; candidate-reported).
 **What to do:**
 - If targeting MIS/ops/reporting: skip Python until you have Excel, SQL and a BI tool.
 - If targeting data analyst at GCC/product: plan basic Python in months 4-5.
@@ -100,8 +100,8 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 **Why / explain simply:**
 - MIS (management information system) work means building regular reports, mostly in Excel.
 - Data analyst/BI roles lean on SQL and dashboards. Business analyst roles add stakeholder work.
-- Workday-reporting roles in our sample asked 3+ years, with one Entry exception (Deutsche Bank Workday Prism, Bengaluru).
-**What the evidence says:** No pure people-analytics role at 0-2 years was found in the n=186 non-random sample (MS Addendum). Most switcher-accessible by tool bar: MIS, operations analyst, HR-tech reporting, research/pricing analyst (MS Section 6). Stakeholder management about 60% in Bengaluru and GCC samples (MS Addendum).
+- Workday-reporting roles in our sample mostly asked 3+ years. The sources conflict on one case: MS Section 6 and Appendix A tag the Deutsche Bank Workday Prism role (Bengaluru) as Entry, while the MS Addendum says all Workday-reporting roles asked 3+ years. Treat it as one Entry-tagged posting, not a pattern.
+**What the evidence says:** No pure people-analytics role at 0-2 years was found in the n=186 non-random sample (MS Addendum). Most switcher-accessible by tool bar: MIS, operations analyst, HR-tech reporting, research/pricing analyst (MS Section 6). Stakeholder management about 60% in the Bengaluru (n=42) and GCC (n=25) samples, about +/-15 to +/-20 points (MS Addendum).
 **What to do:**
 - Decision rule: Excel-strong goes MIS/ops; SQL-ready goes data analyst/BI; Workday experience goes HR-tech reporting.
 - Read the JD, not the title: titles overlap (Q16).
@@ -133,13 +133,16 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - GCCs and startups: a SQL screen often replaces the aptitude test.
 - Analytics firms: a long aptitude gate, technical rounds, case or guesstimate (an estimation puzzle).
 - Round counts conflict between sources.
-**What the evidence says:** Candidate-reported, anonymous: service MNCs 2-4 rounds; GCCs 2-6 (Amazon about 5, Wells Fargo 3, HSBC 2); analytics firms 3-6; product/startups 2-5 (IP Section 3). Fewer than 3 sources means "anecdote". No company publishes an official structure we found (IP Section 1). Evidence is thin for HSBC, JPMorgan, Microsoft, Swiggy and Zepto.
+- Group discussions (GD, a group conversation on a topic that is scored) show up mainly in campus hiring at analytics and BPO-type firms; none were seen for lateral hires at service MNCs, GCCs or startups (IP 2.5; mostly campus, mostly pre-2023).
+- Size of the company does not decide the shape: the same firm can differ by role, city and year.
+**What the evidence says:** Candidate-reported, anonymous: service MNCs 2-4 rounds; GCCs 2-6 (Amazon about 5, Wells Fargo 3, HSBC 2); analytics firms 3-6; product/startups 2-5 (IP Section 3). Fewer than 3 sources means "anecdote". No company publishes an official structure we found (IP Section 1). Evidence is thin for HSBC, JPMorgan, Microsoft, Swiggy and Zepto. Examples: Tiger Analytics 4 rounds (campus), Mu Sigma 3-4, Indium 4 (Hyderabad, July 2026), Meesho 2-3, PhonePe 2-3, Flipkart 2-4 (IP Sections 2-3). The conflict is real: for Swiggy, one guide says 5 rounds and another 2-3 (IP 2.4).
 **What to do:**
-- Ask the recruiter: how many rounds, which topics, any online test or assignment.
+- Ask the recruiter: how many rounds, which topics, any online test or assignment. A polite line: "Could you share the number of rounds, the topics in each, and whether there is an online test or a take-home exercise?"
 - Prepare SQL regardless (about 19 of 20 profiles mention it).
 - Keep a short project walk-through ready.
-**Example:** (illustrative) A recruiter says "online test, SQL round, HR". You spend the week on timed SQL and aptitude practice.
-**Common mistakes:** Trusting one blog's round count. Not asking the recruiter.
+- Write down what the recruiter says and build a one-week prep plan from it.
+**Example:** (illustrative) A recruiter says "online test, SQL round, HR". You spend the week on timed SQL and aptitude practice. If the recruiter instead says "two technical rounds and a client round", you add project and stakeholder practice.
+**Common mistakes:** Trusting one blog's round count. Not asking the recruiter. Preparing for a group discussion when no source shows one for your kind of role.
 **Where this is covered:** Guide Sections 3-4; Q39, Q41.
 
 ### Q10 ⭐⭐⭐ 🟢 Will I have to take an online aptitude or assessment test, and what does it cover?
@@ -148,14 +151,17 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Aptitude means timed quant (maths), logical reasoning and verbal questions.
 - Some tests add SQL, basic computer-science or small coding questions.
 - Accenture reports include an English communication assessment (Q77).
-**What the evidence says:** Candidate-reported only: Fractal aptitude about 75 questions with a video introduction (one 2024 Bengaluru report); Tiger Analytics about 90-minute proctored test (campus, about 20 aptitude, 10 CS, 2 coding); Deloitte 2021 campus AMCAT 75 minutes; Meesho variants with SQL plus MCQs; aptitude or assessment appears in about 14 of 20 profiles (IP Sections 2-4). Campus reports differ from lateral hiring.
+- At GCCs and startups the first test is often analytical or SQL: for example an online analytical/data-interpretation test in a 2023 Amazon BIE Bangalore report, and a PhonePe business analyst test with 5 SQL questions (1 easy, 2 medium, 2 hard) plus aptitude (IP 2.2, 2.4).
+- Data interpretation means reading tables and charts to answer questions; a Novartis report included a pie-chart question (IP 2.2).
+**What the evidence says:** Candidate-reported only: Fractal aptitude about 75 questions with a video introduction (one 2024 Bengaluru report); Tiger Analytics about 90-minute proctored test (campus, about 20 aptitude, 10 CS, 2 coding); Deloitte 2021 campus AMCAT 75 minutes; Meesho variants with SQL plus MCQs; Accenture reports a verbal, logical, quant and database-basics elimination round with 1-2 coding problems (Bengaluru report, via guide/summary); aptitude or assessment appears in about 14 of 20 profiles (IP Sections 2-4; candidate-reported, anonymous, many via search summaries). Campus reports differ from lateral hiring.
 **What to do:**
 - Ask the recruiter whether a test exists and what it covers.
 - Practise timed aptitude daily for two weeks before applying.
 - Practise a SQL timed set.
+- After each set, write down which question type cost you time (for example data interpretation) and repeat that type.
 **Example:** (illustrative) You give yourself 30 minutes for 20 aptitude questions and review every wrong one.
 **Common mistakes:** Ignoring aptitude because you are "experienced". Practising untimed.
-**Where this is covered:** Book 6; Guide Section 4.
+**Where this is covered:** Book 6 (Parts 8 and 11); Guide Section 4.
 
 ### Q11 ⭐⭐⭐ 🟢 How much SQL do interviewers expect from a beginner switcher?
 **Short answer:** At service MNCs and GCCs, reports describe basic-to-medium SQL: joins, GROUP BY, filters, ranking. Startups reach medium-hard. Prepare to write queries by hand.
@@ -163,13 +169,16 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - A join combines two tables. GROUP BY summarises rows per category. A window function ranks or totals rows without collapsing them.
 - Commonly reported: Nth-highest salary, duplicates, CTEs (named temporary results).
 - Beginner roles reward clean basics over clever tricks.
+- Reported examples by company type: Wipro joins, GROUP BY/HAVING and department-highest-salary; Accenture INNER vs LEFT JOIN; Deloitte (Nov 2025) two medium-hard SQL questions of which the candidate solved one; Amazon third-highest salary per department with DENSE_RANK; Meesho UNION vs UNION ALL, cumulative sum and a recursive CTE (IP 2.1, 2.2, 2.4; candidate-reported, anecdotal).
 **What the evidence says:** Candidate-reported: service MNC SQL basic-medium (Deloitte one "medium-hard"); GCCs basic-medium; analytics firms medium; startups medium-hard ("LeetCode hard" at PhonePe) (IP Section 3). SQL named in about 54% of JDs (n=186, +/-7) (MS Addendum).
 **What to do:**
 - Get fluent in joins, GROUP BY/HAVING, subqueries, then window functions and CTEs.
 - Time yourself on 20 queries.
 - Match depth to company type.
+- Practise saying your approach aloud before typing, as live rounds are shared-screen (Q42).
 **Example:** (illustrative) "Highest salary per department" practised on a sample employee table until you can write it without notes.
-**Common mistakes:** Memorising answers. Skipping window functions.
+**Say this in the interview:** "Let me first restate what the output should look like, then I will join the two tables and group by department. If the query is slow or wrong, I will check it on a small sample."
+**Common mistakes:** Memorising answers. Skipping window functions. Typing silently.
 **Where this is covered:** Book 2; Q24, Q42.
 
 ### Q12 ⭐⭐⭐ 🟢 Should I join a paid bootcamp or study on my own?
@@ -178,12 +187,14 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Bootcamps sell structure, deadlines and a network.
 - Self-study is cheaper but needs discipline.
 - Placement claims are marketing until verified (Q57).
-**What the evidence says:** No reliable data found on placement rates. Fees of about Rs 50,000-1.5 lakh are a blog claim, vendor/blog claim, unverified (B0S). Free and low-cost resources exist (Q50).
+- The real cost is money plus time: a course you do not finish costs both.
+**What the evidence says:** No reliable data found on placement rates. Fees of about Rs 50,000-1.5 lakh are a blog claim, vendor/blog claim, unverified (B0S). Free and low-cost resources exist (Q50). For scale, the Google Data Analytics certificate page (fetched 2026-10-22) shows $49 a month in the US and Canada after a 7-day trial, with most learners finishing for under $300 USD; that is US pricing and India pricing was not checked.
 **What to do:**
 - Try 3 weeks of free study first. If you finish on schedule, you may not need a bootcamp.
 - If paying, get the syllabus, refund terms and graduate contacts you can reach independently.
 - Never pay for a guarantee you cannot verify.
-**Example:** (illustrative) Neha dropped her first self-study plan twice. She pays for a course with weekly deadlines and checks its refund policy first.
+- Compare the fee with your Q25 worksheet: add it to the cost of the switch before you decide.
+**Example:** (illustrative) Neha dropped her first self-study plan twice. She pays for a course with weekly deadlines and checks its refund policy first. A different reader, Karan, finishes 3 weeks of free Excel on schedule and decides to continue alone.
 **Common mistakes:** Paying because of fear. Believing "100% placement".
 **Where this is covered:** Guide Section 6; Q56, Q57.
 
@@ -193,13 +204,14 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Hours matter less than consistency.
 - With a full-time job, weekday hours are limited (Q52).
 - Quality: practise, do not only watch videos.
+- The Guide Section 6 arithmetic: at 2-3 hours a day, 5 days a week for 24 weeks is about 240-360 hours; at 7 days a week, about 336-504 hours.
 **What the evidence says:** The 2-3 hours a day is the series' own planning assumption, not evidence. The Google Data Analytics certificate page (fetched, coursera.org) states about 6 months at 10 hours a week, over 180 hours, for finishing that course only.
 **What to do:**
 - Calculate: 2.5 hours x 7 days x 24 weeks is about 420 hours (illustrative arithmetic).
-- If you have 10 hours a week, stretch the plan to 9-12 months.
+- If you have 10 hours a week, a 420-hour plan takes 42 weeks (about 10 months); at 8 hours a week, about 52 weeks (illustrative arithmetic, same plan, fewer hours).
 - Track hours weekly.
-**Example:** (illustrative) 1.5 hours on weekdays plus 4 hours on weekends is 11.5 hours a week.
-**Common mistakes:** Planning 5 hours a day then burning out.
+**Example:** (illustrative) 1.5 hours on weekdays plus 4 hours on weekends is 5 x 1.5 + 2 x 4 = 15.5 hours a week, not 11.5; on that budget 420 hours takes about 27 weeks.
+**Common mistakes:** Planning 5 hours a day then burning out. Counting hours of watching as hours of practice. Never recomputing the plan when your real hours turn out lower.
 **Where this is covered:** Guide Section 6; Q2, Q49, Q52.
 
 ### Q14 ⭐⭐⭐ 🟢 Do I need a portfolio of projects, and how many are enough?
@@ -208,13 +220,15 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - You have no analytics job history, so projects are your proof.
 - One strong project you can explain beats five copied ones.
 - Use HR data (attrition, hiring funnel) for the story.
-**What the evidence says:** Project or resume walk-through appears in about 14 of 20 interview profiles (IP Section 4, candidate-reported). Advice of 2-3 projects comes from blogs, anecdotal (B0S). Book 12 plans 5 projects.
+- Never use confidential employer data; use public or invented data (Q53).
+**What the evidence says:** Project or resume walk-through appears in about 14 of 20 interview profiles (IP Section 4, candidate-reported). The 2-3 starting rule is our own rule of thumb, not a sourced figure. Book 12 plans 5 projects (HR attrition, sales dashboard, SQL case, Python EDA, guesstimate deck: plan.md Section 6), so treat 2-3 as the first milestone and 5 as the full set.
 **What to do:**
 - Build one SQL project and one dashboard project first.
 - Write the business question, data, method, finding.
 - Practise explaining each in 2 minutes.
-**Example:** (illustrative) A dashboard on a public attrition dataset that answers which department loses people soonest.
-**Common mistakes:** Copying tutorials. Not knowing why you made each choice.
+- Put the project links at the top of your resume (Q26).
+**Example:** (illustrative) A dashboard on a public attrition dataset that answers which department loses people soonest, plus a short note on what the data cannot tell you.
+**Common mistakes:** Copying tutorials. Not knowing why you made each choice. Starting a fifth project before the first is explained well.
 **Where this is covered:** Book 12 Section 2; Book 8 Part 8; Q53.
 
 ### Q15 ⭐⭐⭐ 🟢 Is data analyst still a good career in 2026 with AI tools doing more of the work?
@@ -223,6 +237,7 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - AI tools can speed up writing queries and formulas, but someone must check results and explain them.
 - Employers still list Excel, SQL and communication most.
 - Demand figures on course sites are unverified.
+- Two sample sizes, do not mix them: GenAI/AI tools were 20% of the first n=40 sample (about +/-15 points) but 14% of the pooled n=186 (about +/-7 points).
 **What the evidence says:** GenAI/AI tools named in about 14% of n=186 non-random JDs, +/-7 points (MS Addendum). Demand-growth numbers from course blogs are unverified and not used (B0S). One interview report of an LLM test (Infosys Hyderabad, Mar 2026, anecdote) (IP Section 4).
 **What to do:**
 - Learn the basics first, then use AI as an assistant.
@@ -238,14 +253,16 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - MIS: regular reports, Excel, often VBA (macros).
 - Data analyst/BI: SQL, Power BI or Tableau.
 - Business and product analyst: stakeholder-heavy, metrics.
-- No independent definition source in our research (B0S).
-**What the evidence says:** MIS: Excel 72%, SQL 44%, Python 16%; Hyd/Blr/GCC samples Python about 30-40%; stakeholder management about 60% in Bengaluru and GCC (n=186 non-random, +/-7) (MS Addendum). Role rows in MS Section 6.
+- No independent definition source in our research (B0S); the lines above are general knowledge, not checked.
+- Switcher-accessible examples seen in postings: MIS (TMI, Tata Play Fiber), operations analyst (KPMG, HPE), non-tech product analyst (Netcom Learning, asks Excel, Power BI, AI tools), pricing/research (Easyship, TriNet, Gartner) (MS Section 6).
+**What the evidence says:** MIS sub-sample (n=32): Excel 72%, SQL 44%, Python 16%; Hyd (n=47), Blr (n=42), GCC (n=25) samples Python about 30-40%; stakeholder management about 60% in Bengaluru and GCC. These per-sample figures come from the non-random pooled set and carry about +/-15 to +/-20 points (MS Addendum). Role rows in MS Section 6.
 **What to do:**
 - Make a table of 10 postings with title, tools, years.
 - Group by tools, not title.
 - Choose the group matching your skills.
-**Example:** (illustrative) A "Business Analyst" posting that asks Excel and dashboards is similar to MIS.
-**Common mistakes:** Judging by title alone.
+- Check the years asked: the same title can mean 0-2 or 3+ years.
+**Example:** (illustrative) A "Business Analyst" posting that asks Excel and dashboards is similar to MIS. A "Data Analyst" posting that asks SQL, Power BI and Python belongs to a different group.
+**Common mistakes:** Judging by title alone. Assuming a "BI analyst" never needs SQL. Ignoring the experience line.
 **Where this is covered:** Guide Section 1; Q7, Q98.
 
 ### Q17 ⭐⭐⭐ 🟢 Which certifications are worth doing, if any (Google Data Analytics, PL-300)?
@@ -254,7 +271,7 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Certificates may help structure learning; they are not hiring filters in our sample.
 - Google Data Analytics (Coursera): 9 courses, tools Python, SQL, spreadsheets, Tableau, presentations; about 6 months at 10 hours a week; no degree or experience required (page fetched). Coursera lists R among tools but says R is not covered.
 - PL-300 (Microsoft Certified: Power BI Data Analyst Associate): 100-minute proctored exam covering preparing, modelling, visualising and securing Power BI; renewal every 12 months at no cost (Microsoft Learn page, fetched).
-**What the evidence says:** No named certification in any of the 40 first-sample JDs; named only as advantages elsewhere (Tableau/Power BI cert, Google DA, MS Data Analyst Associate, CBAP) (MS Sections 5, Addendum). Value in India: no reliable data found.
+**What the evidence says:** No named certification in any of the 40 first-sample JDs; named only as advantages elsewhere (Tableau/Power BI cert, Google DA, MS Data Analyst Associate, CBAP) (MS Sections 5, Addendum). Value in India: no reliable data found. Tableau Desktop Certified Associate appeared only in a 3+ year posting, and CBAP/CCBA/PMI-PBA/CSPO only in a 4-6 year Business Analyst posting (MS Section 5). Course and exam facts above were re-checked on the official pages on 2026-10-22; Coursera shows US/Canada pricing only (about $49 a month after a 7-day trial) and the PL-300 page says price depends on country, so check India prices yourself.
 **What to do:**
 - Only take PL-300 if Power BI is named in your target postings.
 - Check exam fees on the official page yourself; I did not verify the India price.
@@ -269,14 +286,17 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Interviewers worry you may leave again or are running from HR.
 - Say what you are moving toward, not what you dislike.
 - Show proof: projects, tools learned.
+- Keep it short (about 45-60 seconds) and end on the role you want, not on HR.
+- Only say what is true: if you have not built a project yet, say what you have practised and what you will finish.
 **What the evidence says:** No reliable data found on how interviewers score this answer; this is practical advice. Behavioural/HR round appears in about 15 of 20 profiles (IP Section 4, candidate-reported).
 **What to do:**
 - Write 3 sentences: trigger, proof, goal.
 - Remove negativity about HR.
 - Practise aloud.
-**Example:** (illustrative) Trigger: a monthly attrition report; proof: SQL and Power BI project; goal: analytics role.
+- Prepare one follow-up: "What if analytics does not suit you?" (answer with what you tested in projects).
+**Example:** (illustrative) Trigger: a monthly attrition report you built in Excel; proof: SQL and Power BI project on public hiring data; goal: an analyst role where you work with data daily and explain it to business teams.
 **Say this in the interview:** "The part of HR I enjoyed most was the data: attrition and hiring reports. I started learning SQL and Power BI, built a project on it, and I want to do that work full time. My HR background helps me understand the business questions."
-**Common mistakes:** Criticising HR. Saying "for a better salary". Vague answers.
+**Common mistakes:** Criticising HR. Saying "for a better salary". Vague answers. Memorising a script that sounds untrue when probed.
 **Where this is covered:** Book 11 Part 2; Guide Section 5.
 
 ### Q19 ⭐⭐⭐ 🟢 Will recruiters reject my resume because my degree or experience is non-technical?
@@ -285,13 +305,15 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Postings name skills and tools, not usually specific degrees.
 - Resume screening may be automated (ATS, applicant tracking system) and keyword-based.
 - Experience filters matter more than degree.
-**What the evidence says:** No reliable data found on resume rejection by background. Our JD samples report skills required; "statistics" is counted only when named as a skill (MS Section 1). Experience labels are sometimes wide, e.g. "0-4 years" (MS Addendum).
+- Entry-tagged and 0-2 year postings exist, and some employers say freshers are welcome (for example Honhr BI Analyst, 1 year, freshers encouraged; a KPMG Bengaluru fresher contract role asked BCom only: jd_sample_mis_people.md; jd_sample_bengaluru.md B7).
+**What the evidence says:** No reliable data found on resume rejection by background. Our JD samples report skills required; "statistics" is counted only when named as a skill (MS Section 1). Experience labels are sometimes wide, e.g. "0-4 years" (MS Addendum). Decision rule: if the posting names a skill you can show with a project and the years line is 0-2 or "freshers welcome", apply; if it says 3+ years, skip it.
 **What to do:**
 - Put a skills section and projects above HR duties.
 - Mirror keywords honestly from the posting.
 - Apply to roles at 0-2 years.
-**Example:** (illustrative) Resume lists SQL, Excel, Power BI and a project at the top.
-**Common mistakes:** Hiding HR history. Keyword-stuffing skills you lack.
+- Track your applications; after 10 with no replies, change the resume, not the target (Book 12 Section 6).
+**Example:** (illustrative) Resume lists SQL, Excel, Power BI and a project at the top, then HR roles reframed as data tasks.
+**Common mistakes:** Hiding HR history. Keyword-stuffing skills you lack. Applying to 3+ year roles and concluding "nobody will hire me".
 **Where this is covered:** Book 12 Section 1; Q26, Q83.
 
 ### Q20 ⭐⭐⭐ 🟢 Is Excel alone enough to get a job as an MIS or reporting analyst?
@@ -300,13 +322,15 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - In MIS postings Excel is most common, often advanced.
 - SQL appears in about 44% of MIS postings.
 - VBA (macros that automate Excel) appears in about 19% of MIS postings.
-**What the evidence says:** MIS sample: Excel 72%, SQL 44%, Python 16%, VBA 19%, Google Sheets 16% (n=186 pooled, per-sample column, +/-7) (MS Addendum). MIS/reporting roles: Excel often advanced, VBA, BI tool basics (MS Section 6). One TMI Group MIS posting showed pay of about Rs 1.6-1.8 LPA, unverified single posting (MS Section 4).
+- Examples seen: Tata Play Fiber SME MIS (Entry) asked Excel, VBA, dashboards, data cleaning; EXL MIS Reporting (2-5 years) asked Excel and dashboards; TMI MIS Executive (2+ years) asked Excel and cleaning (MS Appendix A rows 21, 22, 30).
+**What the evidence says:** MIS sub-sample (n=32, includes 5 near-identical Honhr rows, about +/-15 points): Excel 72%, SQL 44%, Python 16%, VBA 19%, Google Sheets 16% (MS Addendum). MIS/reporting roles: Excel often advanced, VBA, BI tool basics (MS Section 6). One TMI Group MIS posting showed pay of about Rs 1.6-1.8 LPA, unverified single posting (MS Section 4).
 **What to do:**
 - Master pivots, lookups, text/date functions.
 - Add SQL basics and one dashboard.
 - Check pay bands.
+- Decision rule: read 10 MIS postings; if fewer than half name SQL or a BI tool, Excel plus one dashboard is a fair start, otherwise add SQL.
 **Example:** (illustrative) An MIS posting asks "advanced Excel, VBA" so you add a macro to your project.
-**Common mistakes:** Stopping at VLOOKUP. Ignoring pay.
+**Common mistakes:** Stopping at VLOOKUP. Ignoring pay (entry MIS/BA mostly Rs 3-6 LPA, MS Addendum). Learning VBA before pivots and lookups.
 **Where this is covered:** Book 1; Q89; Guide Section 1.
 
 ### Q21 ⭐⭐⭐ 🟢 What should I do in the first week of my switch if I am a complete beginner?
@@ -315,14 +339,17 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Direction first, then tools.
 - A realistic schedule beats ambitious plans.
 - Early small wins keep you going.
+- Buying nothing in week one costs nothing and lets the postings, not an advert, pick your first tool.
+- Excel and SQL are the two tools above half of the postings (60% and 54%, pooled n=186, about +/-7 points), so Excel is a safe first step.
 **What the evidence says:** No reliable data found on first-week activities; this is practical guidance based on the skill frequencies (MS Addendum).
 **What to do:**
 - Day 1: save 10 postings for MIS or analyst roles and list tools named.
 - Day 2: compute weekly study hours (Q13).
 - Days 3-7: Excel basics, 1 hour a day, with a practice sheet using HR data.
 - End of week: write the 3 HR data tasks for Q8.
-**Example:** (illustrative) By Sunday you have a sheet of 10 postings and a clean attendance table in Excel.
-**Common mistakes:** Paying for a course first. Watching videos without practising.
+- Block the study hours in your calendar like meetings.
+**Example:** (illustrative) By Sunday you have a sheet of 10 postings, a clean attendance table in Excel, and a short list of the 3 HR data tasks you will use in interviews.
+**Common mistakes:** Paying for a course first. Watching videos without practising. Starting with a 3-hour daily plan you cannot keep.
 **Where this is covered:** Guide Section 6; Book 1; Q3, Q107.
 
 ### Q22 ⭐⭐⭐ 🟢 How should I approach the HR round, and what will they ask a career switcher?
@@ -489,11 +516,11 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 ### Q32 ⭐⭐ 🟢 Do I need a degree in statistics, maths or computer science?
 **Short answer:** Usually not for entry-level analyst roles that I could verify, but some employers set degree filters. Skills and projects matter more than the exact degree, though I cannot give you a percentage.
 **Why / explain simply:**
-- Most entry analyst JDs ask for a graduate degree, often "any stream" or listing commerce, engineering, stats.
+- Many JDs name a graduate degree, sometimes "any stream", but degrees were not tallied in the research, so no figure is available.
 - Statistics is named in JDs only as a skill, not mainly through degrees. It appeared in 23% of the pooled JDs (MS Addendum; n=186 non-random, about +/-7 points).
-- Some roles (analytics firms, risk, data science) are more likely to filter on quantitative degrees.
+- Some roles (analytics firms, risk, data science) may filter on quantitative degrees (general impression, not checked).
 - If your degree is non-quantitative, you need other proof: projects, a statistics basics course, a clean SQL test.
-**What the evidence says:** No reliable data found on how many JDs require a quantitative degree; the research tallied skills, not degree requirements. One KPMG operations analyst posting in the sample asked for BCom only (a fresher contract role; MS Section 4 and jd_sample_bengaluru.md B7), which shows non-quantitative degrees do get accepted somewhere. Analytics firms asked harder aptitude and probability questions (IP 2.3).
+**What the evidence says:** No reliable data found on how many JDs require a quantitative degree; the research tallied skills, not degree requirements. One KPMG operations analyst posting in the sample asked for BCom only (a fresher 6-month contract role; jd_sample_bengaluru.md B7), which shows non-quantitative degrees do get accepted somewhere. Analytics firms asked harder aptitude and probability questions (IP 2.3).
 **What to do:** Read the degree line in each JD you apply to. If it says "any graduate", apply. If it says "statistics/maths/CS preferred", still apply if you can show projects. Fill the maths gap with basic statistics (mean, variance, probability, hypothesis testing).
 **Example:** (illustrative) An MBA-HR candidate applies to MIS and BA roles that list "any graduate", and spends 4 weeks on basic statistics before applying to analytics firms.
 **Common mistakes:** Assuming rejection from the degree line alone; enrolling in a second degree before testing the market; ignoring probability for analytics-firm interviews.
@@ -519,7 +546,7 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Many reporting roles that touch HR data (HR-tech reporting, MIS) are open, and they build SQL and Excel skills you can reuse anywhere.
 - General analyst skills are portable; if you move to people analytics later, you do so from strength.
 - Do not rule it out: keep an eye on it and use HR experience as a story in any role.
-**What the evidence says:** No pure people-analytics role at 0-2 years was found in the JD samples; all Workday-reporting roles asked 3+ years (MS Addendum "Other findings"; n=186 non-random). Entry examples found: Deutsche Bank Workday Prism Analytics and Reporting, Bengaluru, Entry (MS Appendix A row 20); an EdTech Jobs People Data Analyst snippet at Rs 6-10 LPA is unverified (MS Section 4). Workday, SuccessFactors and Visier were not named in any in-scope JD of the MIS/people sample (jd_sample_mis_people.md).
+**What the evidence says:** No pure people-analytics role at 0-2 years was found in the JD samples; all Workday-reporting roles asked 3+ years (MS Addendum "Other findings"; n=186 non-random). Entry examples found: Deutsche Bank Workday Prism Analytics and Reporting, Bengaluru, Entry (MS Appendix A row 20); an EdTech Jobs People Data Analyst snippet at Rs 6-10 LPA is unverified (MS Section 4). Workday, SuccessFactors and Visier were not named in any in-scope JD of the MIS/people sample (jd_sample_mis_people.md). Source conflict: MS Appendix A tags the Deutsche Bank Workday role Entry, while the MS Addendum says all Workday-reporting roles asked 3+ years; treat it as one Entry-tagged posting.
 **What to do:** Decision rule: build Excel + SQL + Power BI first, apply to MIS, ops analyst and HR reporting roles, and set a job alert for "people analytics" and "HR analytics" so you notice rare openings. Use HR datasets in your portfolio to keep the door open.
 **Example:** (illustrative) You apply to an HR-tech reporting opening and a general BI analyst opening in the same week, with the same SQL and Power BI projects.
 **Common mistakes:** Waiting for a people-analytics opening; ignoring general roles; assuming HR analytics pays more (vendor claims conflict and were not used).
@@ -532,7 +559,7 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Most job postings do not show pay.
 - Small samples of pay in postings are mixed with outliers (remote, US-facing, startup).
 - A switcher with senior HR experience is often still treated as an analytics fresher (see Q85), but that varies.
-**What the evidence says:** No reliable data found on fresher-vs-experienced pay for analytics. Pay shown in postings: entry MIS/BA mostly Rs 3-6 LPA (MS Addendum); verified in-scope JD pay mostly Rs 3.5-9 LPA (MS Section 4; only 8 of 40 JDs showed pay). Single-posting examples: Hire Daily Data Analyst, 0-3 years, Rs 5-9 LPA (stated as an estimate); Newton School Data Analyst, 0-1 year, Rs 4-8 LPA (jd_sample_bengaluru.md); two startup postings at 2+ years showed Rs 12-30 LPA, which are outliers and not a norm (jd_sample_hyderabad.md H45; jd_sample_bengaluru.md B3). Blog claims were conflicting and unverified (B0S).
+**What the evidence says:** No reliable data found on fresher-vs-experienced pay for analytics. Pay shown in postings: entry MIS/BA mostly Rs 3-6 LPA (MS Addendum); verified in-scope JD pay mostly Rs 3.5-9 LPA (MS Section 4; only 8 of 40 JDs showed pay). Single-posting examples: Hire Daily Data Analyst, 0-3 years, Rs 5-9 LPA (stated as an estimate); Newton School Data Analyst, 0-1 year, Rs 4-8 LPA (jd_sample_bengaluru.md); two startup postings above the entry band showed Rs 12-22 LPA (Xohani Solutions, 2-6 years, jd_sample_hyderabad.md H45) and Rs 20-30 LPA (Velocity, 2+ years, jd_sample_bengaluru.md B3), which are outliers and not a norm. Blog claims were conflicting and unverified (B0S).
 **What to do:** Decision rule: use the posting for each role, not an average. Note the experience range, compare against your Q25 worksheet, and ask recruiters for the band before you invest in a process.
 **Example:** (illustrative) Two postings for the same title show Rs 4-6 LPA at 0-2 years and Rs 9-12 LPA at 3-5 years; your plan should state which band you realistically enter, based on your tested skills.
 **Common mistakes:** Quoting blog numbers; treating outlier postings as normal; negotiating from a stranger's salary post.
@@ -558,7 +585,7 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - "Non-IT" is judged by the degree line, which was not tallied.
 - Operations, MIS, finance-analytics and research analyst roles are the most Excel-first, so the most plausible fit.
 - A company appearing here is a lead to check, not a promise.
-**What the evidence says:** Companies in the samples that posted entry-level or 0-2 year analyst, MIS or operations roles (non-random, as of October 2026): KPMG (Operations Analyst, Bengaluru, including a fresher BCom-only contract role), Tata Play Fiber (MIS and Reporting, Bengaluru), EXL (MIS Reporting BA, Bengaluru), HPE (Procurement Ops Analyst I, Bengaluru), The Hackett Group (Associate Analyst, Hyderabad), Cushman & Wakefield (Analyst, Hyderabad), Guardian Capital (Operations Analyst, Hyderabad), Amazon (Business Analyst I roles, 1+ years, both cities), Unisys (Associate Analyst OCM, remote) (MS Appendix A; jd_sample_gcc_mnc.md; jd_sample_hyderabad.md). Honhr appears as a bulk-posting template (jd_sample_mis_people.md); treat with caution. No reliable data found on non-IT acceptance.
+**What the evidence says:** Companies in the samples that posted entry-level or 0-2 year analyst, MIS or operations roles (non-random, as of October 2026): KPMG (Operations Analyst, Bengaluru, including a fresher BCom-only contract role), Tata Play Fiber (MIS and Reporting, Bengaluru), HPE (Procurement Ops Analyst I, Bengaluru), The Hackett Group (Associate Analyst, Hyderabad), Cushman & Wakefield (Analyst, Hyderabad), Guardian Capital (Operations Analyst, Hyderabad), Amazon (Business Analyst I roles, 1+ years, both cities), Unisys (Associate Analyst OCM, remote) (MS Appendix A; jd_sample_gcc_mnc.md; jd_sample_hyderabad.md). EXL's MIS Reporting BA role asked 2-5 years, so it is left out. Honhr appears as a bulk-posting template (jd_sample_mis_people.md); treat with caution. No reliable data found on non-IT acceptance.
 **What to do:** (1) Check each company's careers page this week. (2) Read the degree and experience lines. (3) Use LinkedIn to find alumni or HR contacts there. (4) Verify any recruiter or training firm before paying anything (see Q99).
 **Example:** (illustrative) Short-list five roles from the list, apply to those that say "any graduate", and note the rest.
 **Common mistakes:** Treating the list as a guarantee; applying to jobs asking 3+ years; paying for "placement" at a listed name.
@@ -1727,7 +1754,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Short answer:** Possible in principle, but unlikely as a first move. Data scientist roles usually need statistics, Python and machine learning that most HR professionals have not yet built. A staged route through an analyst role is the more realistic path.
 **Why / explain simply:**
 - Analyst roles mainly use Excel, SQL and dashboards. Data science adds modelling, code and statistics at a deeper level.
-- Machine learning is named in only a minority of entry-level postings, and hiring for it often asks for a technical degree or proven projects.
+- Machine learning is named in only a minority of entry-level analyst postings (10%, see below). That hiring for data scientist roles often asks for a technical degree or proven projects is general knowledge, not checked here.
 - Doing one analyst role first gives you real data experience, which a bare certificate cannot replace.
 **What the evidence says:** No reliable data found on HR-to-data-scientist conversions. In 186 analyst-type JDs (non-random, about +/-7 points), ML was named in 10%, Python in 32% and statistics in 23% (MS Addendum). The samples were analyst roles, so they do not describe data scientist postings. Among 3+ year postings, ML and Python appeared more often (MS Section 3 note, an impression, not counted).
 **What to do:**
@@ -1745,7 +1772,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - An LLM is the kind of AI model behind chat assistants. Analysts are mostly asked whether they can use such tools safely, not to build them.
 - Interviewers care about checking outputs and protecting company data more than naming techniques.
 - Preparing a short honest answer costs little.
-**What the evidence says:** Interview side: one candidate report (Infosys Hyderabad, March 2026, candidate-reported, anonymous) had a dedicated LLM/RAG/GenAI test; none were seen at GCCs, analytics firms or startups. That is one report, not a pattern (IP Section 4). Job-posting side: GenAI/AI tools in 14% of 186 JDs (non-random, about +/-7 points) (MS Addendum). Treat "AI used as interviewer" mentions as unrelated.
+**What the evidence says:** Interview side: one candidate report (Infosys Hyderabad, March 2026, candidate-reported, anonymous; the role was not confirmed as a data analyst role) had a dedicated LLM/RAG/GenAI test; none were seen at GCCs, analytics firms or startups. That is one report, not a pattern (IP Section 4). Job-posting side: GenAI/AI tools in 14% of 186 JDs (non-random, about +/-7 points) (MS Addendum). Treat "AI used as interviewer" mentions as unrelated.
 **What to do:**
 1. Prepare a 60-second answer on how you use an AI assistant for work, and where you do not trust it.
 2. Learn the plain definitions: LLM, prompt, hallucination (confident but wrong output), data privacy.
@@ -1757,28 +1784,28 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Where this is covered:** Book 9 (ML and AI); Book 11 Part 1; Guide Section 4.
 
 ### Q110 ⭐ 🟡 Are group discussions part of the interview for lateral analyst hires?
-**Short answer:** Rarely, as far as the evidence shows. Group discussions (GDs) are mostly a campus or early-career screen. If the recruiter does not mention one, do not spend weeks on it.
+**Short answer:** Rarely, as far as the evidence shows. Group discussions (GDs) are mostly a campus or early-career screen in the few reports found. If the recruiter does not mention one, do not spend weeks on it.
 **Why / explain simply:**
 - A GD is a panel watching a group talk on a topic. It tests fluency, listening and structure.
-- Mid-size firms with large fresher intakes use it to cut numbers quickly. Lateral hiring uses technical and managerial rounds instead.
+- In the reports, GD is an elimination step at mid-size analytics and BPO-adjacent firms, mostly for campus hires (IP Section 2.5). Lateral hiring in the reports uses technical and managerial rounds instead.
 - You are a switcher with work experience, so you may be treated as lateral or as a fresher. Ask which.
-**What the evidence says:** About 6 sources mention GDs, mostly campus (Ugam 2021 campus report: about 50% eliminated at the GD, candidate-reported). 2025-26 mentions: Indium (Hyderabad, one report) and Novartis (one report). No evidence of GDs for lateral hires at service MNCs, GCCs or startups. The claim is thin: "few reports" (IP Section 2.5, candidate-reported, anonymous).
+**What the evidence says:** About 6 sources mention GDs, mostly campus (Ugam 2021 campus report: about 50% eliminated at the GD; LatentView 2020 campus: 94 of 307 selected at the GD; both candidate-reported). 2025-26 mentions: Indium (Hyderabad, May 2026, one report) and Novartis (Sept 2025, one report). No evidence of GDs for lateral hires at service MNCs, GCCs or startups. The claim is thin: "few reports" (IP Section 2.5, candidate-reported, anonymous).
 **What to do:**
 1. Ask the recruiter: "What are the rounds and is there a group discussion?"
 2. If yes, practise 3 topics out loud with a timer, 5 minutes to prepare.
 3. Use a simple structure: start with a definition, give two points, respond to others by name, and close with a summary.
 **Example:** (illustrative) Your HR background helps: you are used to moderating a meeting, so you invite quieter people in and then summarise.
 **Common mistakes:** Over-speaking or interrupting; reciting statistics you do not remember; ignoring the question of whether a GD exists at all.
-**Where this is covered:** Guide Section 3 and 4; Book 11 (soft skills).
+**Where this is covered:** Guide Sections 3 and 4; Book 11 Part 7.
 
 ### Q111 ⭐ 🟡 What is Workday Prism Analytics and is learning it useful?
 **Short answer:** Workday is a widely used HR and finance system, and Prism Analytics is its reporting and data-blending part. It could help if you target HR-technology reporting roles, but it is not a first skill to learn, and you usually cannot practise it without employer access.
 **Why / explain simply:**
 - Many large firms keep HR data in Workday. Reports and dashboards from that data are a real job.
-- This description is general knowledge. I did not open Workday's official pages for this answer, so check Workday's own documentation for exact features.
-- Workday training normally needs a licence, so most self-learners cannot practise at home.
+- This description is general knowledge, not checked. I did not open Workday's official pages for this answer, so check Workday's own documentation for exact features.
+- Workday training normally needs employer or licence access (general knowledge, not checked), so many self-learners cannot practise at home.
 - The transferable core (data definitions, reporting logic, SQL and BI thinking) is learnable anywhere.
-**What the evidence says:** One Entry-level posting in the first sample named it (Deutsche Bank, Workday Prism Analytics and Reporting Consultant, Bengaluru; MS Section 6, Appendix A row 20). Other Workday reporting postings asked 3+ years. Workday, SuccessFactors and Visier were not named in any in-scope posting of the MIS/people sample (32 rows) (MS Addendum; jd_sample_mis_people.md). Small sample, non-random.
+**What the evidence says:** The sources conflict. One Entry-tagged posting in the first sample (n=40) named it (Deutsche Bank, Workday Prism Analytics and Reporting Consultant, Bengaluru; MS Section 6, Appendix A row 20). The pooled Addendum says Workday-reporting roles asked 3+ years, and Workday, SuccessFactors and Visier were not named in any in-scope posting of the MIS/people sample (32 rows) (MS Addendum; jd_sample_mis_people.md). Treat the Entry tag as one exception. Small, non-random sample.
 **What to do:**
 1. Do not buy Workday training now.
 2. Build Excel, SQL and one BI tool first.
@@ -1786,7 +1813,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 4. Search for 5 postings naming it and read what they require.
 **Example:** (illustrative) An HR operations executive who builds Workday reports at work describes it as "headcount and attrition reporting for 2,000 employees"; do not copy this number, use your own.
 **Common mistakes:** Paying for a licence-gated course with no job in sight; listing the tool without being able to explain a report you built.
-**Where this is covered:** Book 10 Part 1 (HR domain); Guide Section 5.
+**Where this is covered:** Book 10 Parts 1 and 7 (HR domain; HR-systems mini-section); Guide Section 5.
 
 ### Q112 ⭐ 🟡 Are ISB or IIM executive analytics programs worth it for a switcher?
 **Short answer:** I cannot call them worth it or not, because the research gives no outcome data for them. Decide by your own numbers: the total cost, your current salary, and what you cannot learn on your own, such as a network and a structured credential.
@@ -1814,7 +1841,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 **What to do:**
 1. Write your current fixed pay and the minimum you can accept.
 2. Ask your own company for analytics-heavy HR work, such as attrition and headcount reporting, for 6 months.
-3. Target postings asking 3+ years where your experience counts, such as HR analytics.
+3. Target postings asking 3+ years where your experience counts, such as HR analytics (examples read in the research: Syneos HR Analytics and Visualization, Hyderabad, 3+ years; Unisys People Analytics, Bengaluru, 4-6 years; MS Section 6).
 4. Build proof: one HR-data project and SQL plus a BI tool.
 **Example:** (illustrative) A manager reduces the pay gap by moving internally into an HR analytics lead role instead of resigning for a junior role.
 **Say this in the interview:** "I have led HR processes for over ten years. I now want to apply the same business judgement to data, and I have built reporting projects on HR data to show it."
@@ -1827,7 +1854,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Employers often prefer to train and supervise juniors in person.
 - Postings that say "remote India" are often from startups and product companies, and may expect you to work with little supervision.
 - Policies change, and a posting's label may not match the final offer. Ask the recruiter.
-**What the evidence says:** In the first sample (n=40, Built In-heavy, about +/-15 points), 11 postings were labelled remote or remote India. Built In lists many startups, so the true share across the market is unknown. Hybrid or onsite policy is mostly not stated in postings. No reliable data found on remote policy for juniors across employers (MS Appendix A).
+**What the evidence says:** In the first sample (n=40, Built In-heavy with 31 of 40 from Built In, about +/-15 points), 11 postings were labelled remote or remote India by my count of Appendix A (12 if the Cummins "India/remote" row is included). Built In lists many startups, so the true share across the market is unknown. Hybrid or onsite policy is mostly not stated in postings. No reliable data found on remote policy for juniors across employers (MS Appendix A).
 **What to do:**
 1. Treat remote as a bonus, not a requirement.
 2. Ask the recruiter early: days in office per week, and whether juniors are included.
@@ -1835,7 +1862,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 4. Check whether pay differs between remote and office roles.
 **Example:** (illustrative) Two postings both say "flexible". One means 3 office days per week, the other fully remote. You find out on the recruiter call, not from the listing.
 **Common mistakes:** Filtering out all office roles; assuming "remote" means easy; ignoring the lower supervision in remote junior roles.
-**Where this is covered:** Guide Sections 2b and 3; Book 11 (soft skills).
+**Where this is covered:** Guide Sections 2b and 3; Book 11 Part 8.
 
 ### Q115 ⭐ 🟡 What do freelance or contract analyst roles look like for switchers?
 **Short answer:** Contract roles exist, mostly short and fixed-term, but freelancing as a first move is hard because clients want proof. A contract role can be a way in if you accept lower security.
@@ -1843,7 +1870,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - A contract role has a fixed end date and usually no guaranteed conversion.
 - Freelance work needs you to find clients and deliver unsupervised, so it suits people with a portfolio.
 - The benefit is real experience for your resume. The risk is income gaps.
-**What the evidence says:** Contract examples seen in samples: KPMG Operations Analyst, Bengaluru, fresher, 6-month contract, Rs 3.65 LPA, and a Hyreo "Analyst (contract)" in Bengaluru (MS Appendix A row 4; jd_sample_bengaluru.md). Two examples, not a pattern. No reliable data found on freelance rates, demand, or conversion from contract to permanent.
+**What the evidence says:** Contract examples seen in samples: a KPMG Operation Analyst posting, Bengaluru, fresher, 6-month contract, Rs 3.65 LPA (jd_sample_bengaluru.md row B7; page about a year old, so possibly stale), and a Hyreo "Analyst (contract)" in Bengaluru, 2+ years (MS Appendix A row 4). Two examples, not a pattern. No reliable data found on freelance rates, demand, or conversion from contract to permanent.
 **What to do:**
 1. Ask what happens at the contract's end (extension, conversion, none).
 2. Compare pay on a monthly basis and include a gap period in your budget.
@@ -1885,7 +1912,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Example:** (illustrative) "Thank you, I am excited about this role. Based on my current fixed pay and the skills I have built, could we look at a higher fixed component? I can join by the date you need."
 **Say this in the interview:** "I would like to understand the pay band for this role. Given my experience in HR and my analytics project work, is there flexibility on the fixed component?"
 **Common mistakes:** Naming a number too early; lying about current pay; negotiating only the fixed number; accepting verbally and then asking later.
-**Where this is covered:** Guide Section 2b; Book 11 (soft skills); Q116.
+**Where this is covered:** Guide Section 2b; Book 11 Part 8; Q116.
 
 ### Q118 ⭐ 🟡 Why do some analyst job postings show wide experience ranges like 0-4 years and how should I read them?
 **Short answer:** A wide range usually means the employer is flexible about seniority and will decide at the interview. Read the duties more than the number, and apply if you meet most of the skills.
@@ -1893,7 +1920,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - A range often covers two levels in one posting, with pay and title decided by who clears the interview.
 - Some ranges are copied from templates or recruiters, so they do not always reflect the team's real need.
 - The first number shows the minimum, but companies hire candidates above it more often than below it. That is general reasoning, not a measured fact.
-**What the evidence says:** The JD samples noted that "Hyd/Blr experience labels sometimes wide (0-4 yrs)" (MS Addendum, "Other findings"). Examples in the first sample: Hire Daily 0-3 years, OrbiTouch 0-2, Perceptive Analytics 0-3 (MS Appendix A). No reliable data found on how often people below the stated minimum get hired.
+**What the evidence says:** The JD samples noted that "Hyd/Blr experience labels sometimes wide (0-4 yrs)" (MS Addendum, "Other findings"). Examples in the first sample (n=40): Hire Daily 0-3 years, Perceptive Analytics 0-3, PharmaForceIQ 2-4, Rocket Learning 2-4 (MS Appendix A). No reliable data found on how often people below the stated minimum get hired.
 **What to do:**
 1. Read the duties and tools. If you can do about two-thirds, apply.
 2. Check the pay if shown. A wide range often comes with a wide pay band.
@@ -1934,7 +1961,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 4. For work, tell your manager after you have an offer, or earlier only if your relationship allows it.
 **Example:** (illustrative) "I will study 10 hours a week for 6 months, keep 8 months of expenses saved, and we will review in March."
 **Common mistakes:** Promising a quick result; hiding the pay cut; telling colleagues before the offer; making the plan only emotional.
-**Where this is covered:** Guide Sections 2b and 6; Book 11 (soft skills); Q102.
+**Where this is covered:** Guide Sections 2b and 6; Book 11 Part 2; Q102.
 
 ### Q121 ⭐ 🟡 What mistakes do HR professionals typically make when switching to analytics?
 **Short answer:** The common ones are learning too many tools at once, skipping Excel and SQL for Python, building no proof, and underselling HR experience. No study measures these, so this list comes from the evidence on skills and interviews and from practical reasoning.
@@ -1942,7 +1969,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Excel and SQL are the main tools in postings. Many beginners start with Python because it sounds more advanced.
 - Projects show you can do the work; courses alone do not.
 - HR data knowledge is a strength, but it does not replace technical skills.
-**What the evidence says:** Excel 60% and SQL 54% of 186 JDs, Python 32% (MS Addendum, non-random, about +/-7 points). SQL appeared in about 19 of 20 company interview profiles; project walk-throughs in about 14 (IP Section 4, candidate-reported). No reliable data found on specific switcher mistakes or failure rates.
+**What the evidence says:** Excel 60% and SQL 54% of 186 JDs, Python 32% (MS Addendum, non-random, about +/-7 points). SQL appeared in about 19 of about 20 company interview profiles; project walk-throughs in about 14 (IP Section 4, candidate-reported, anonymous, not a statistical sample). No reliable data found on specific switcher mistakes or failure rates.
 **What to do:**
 1. Start with Excel and SQL, then one BI tool.
 2. Build 2-3 projects, at least one using HR-style data (attrition, hiring funnel).
@@ -1957,9 +1984,9 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Short answer:** I did not find reliable data on pay progression, so I cannot give a raise figure. Pay usually rises with skills and a change of employer, but how much depends on your employer type and tools.
 **Why / explain simply:**
 - Postings that ask for 3+ years generally list more advanced tools, so the jump comes from skills as well as years.
-- Employer type matters: GCCs, product companies and finance-analytics firms tend to pay at the upper end.
+- Employer type may matter: the higher pay seen in the 0-2 year postings was at GCC, product and finance-analytics employers (MS Section 4); this is not data on raises.
 - Blog salary tables are estimates with unknown methods.
-**What the evidence says:** No reliable data found on pay after 2-3 years. In the 0-2 year postings, stated pay was mostly Rs 3.5-9 LPA; Rs 6-10 LPA was the upper part (MS Section 4, pay shown in only 8 of 40 postings). In about 25 postings asking 3+ years, Python, Power BI or Tableau, cloud platforms and GenAI/ML appeared more often (MS Section 3 note, an impression, not counted). Blog estimates (for example Rs 4-12 LPA in Bengaluru) are unverified (MS Section 4).
+**What the evidence says:** No reliable data found on pay after 2-3 years. In the 0-2 year postings, stated pay was mostly Rs 3.5-9 LPA; Rs 6-10 LPA was the upper part (MS Section 4, pay shown in only 8 of 40 postings). In about 25 postings asking 3+ years, Python, Power BI or Tableau, cloud platforms and GenAI/ML appeared more often (MS Section 3 note, an impression, not counted). Blog estimates (for example about Rs 4-12 LPA for entry/mid Bangalore analysts, from a Jobrise blog) are vendor/blog claims, unverified (MS Section 4).
 **What to do:**
 1. Read 10 postings that ask for 3+ years. List the skills you would need.
 2. Plan one skill step per year, such as Power BI then Python.
@@ -1967,7 +1994,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 4. Check pay at two or three employers, not only your own.
 **Example:** (illustrative) You list your own current figure, then the range shown in three postings you read, and decide which skill gap to close first.
 **Common mistakes:** Trusting one salary blog; assuming raises come automatically; changing employers without checking tools and growth.
-**Where this is covered:** Guide Section 2b; Book 11 (soft skills); Q117 and Q104.
+**Where this is covered:** Guide Section 2b; Book 11 Part 8; Q117 and Q104.
 
 ### Q123 ⭐ 🟡 Are there analyst roles in Pune, Chennai or NCR that suit switchers?
 **Short answer:** Yes, analyst roles exist there, but my job-posting research covered only Hyderabad and Bengaluru, so I have no counts for those cities. Use the same method on local postings.
