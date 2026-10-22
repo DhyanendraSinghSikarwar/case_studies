@@ -1,19 +1,16 @@
 # Review F2: FAQ answers Q42-Q82 (Book00_FAQs.md)
 Reviewer F2, 2026-10-22. Scope: Q42-Q82 only, edited in place (headings, numbers, stars, order untouched). Sources: MS = market_skills_2026.md, IP = interview_processes.md, B0S = Book00_sources.md, guide parts.
-
 ## Counts
 Items checked: 41 answers (all with every number, process claim, pointer). Answers edited: 28 (about 45 targeted replacements). Template: all 41 have all required fields; Q42-Q82 are all over 150 words, so no padding added.
-
 ## Number audit (all rows checked against the files)
 | Claim (answers) | Source | Result |
 |---|---|---|
 | SQL in ~19 of 20 profiles; project ~14; aptitude ~14; behavioural ~15; Power BI ~7; Tableau ~4; Python ~10; Excel ~5; stats ~6; guesstimates ~6; cases ~8 (Q42-44,46-48,51,58,70,82) | IP Section 4 | OK |
 | Excel 60%, SQL 54%, dashboards 75%, comm 73%, stakeholder 44%, Power BI 40%, Tableau 33%, Python 32%, stats 23%, ML 10%, GenAI 14%, VBA 13%, Sheets 8%, DAX 5% (n=186, +/-7) | MS Addendum | OK |
-| MIS sample Excel 72, SQL 44, Python 16, stats 6, VBA 19 (n=32) | MS Addendum | OK |
 | Hyd PBI 49/Tab 40; GCC Tab 48/PBI 32, GCC SQL 76 Excel 76; Blr/GCC Python ~40 (Q47,48,51) | MS Addendum per-sample columns | OK |
 | First sample (n=40): PBI 32.5, Tab 12.5, GenAI 20, domain 1 of 40 (+/-15) | MS Section 3 | OK |
 | Pay: 8 of 40 show pay; Rs 3.5-9 LPA mostly; entry MIS/BA Rs 3-6; TopGrep 3.5-4.5, KPMG 3.5, OrbiTouch 4-5, PharmaForceIQ 4.25 base, Hire Daily 5-9 "estimate", Peakflo 7-10, TMI ~1.6-1.8, Weekday 15-25, foundit 5-12, blog 3.5-9 (Q59,60,76) | MS Section 4, Addendum | OK ("Verified" pay wording in Q59 corrected to "employer-stated") |
-| Course fee Rs 50,000-1.5 lakh (Q56) | B0S (blog claim, unverified) | OK, labelled |
+| Course fee Rs 50,000-1.5 lakh (Q56); MIS sample Excel 72, SQL 44 (n=32) | B0S (blog claim); MS Addendum | OK, labelled |
 | Rs 1 lakh / Rs 3 lakh per year = 4 months; Rs 40,000 x 6 = Rs 2.4 lakh (Q56,62) | arithmetic, labelled illustrative | OK |
 | Q49/Q52 hours: plan 24 weeks, 240-504 hours | guide 6.1 | Q49 example (8 h/week = 9 months) was inconsistent; corrected to 400 h illustrative = ~50 weeks |
 | Daily split 40/25/20/15, start applying month 3 (Q49) | guide 6.1, 6.4 (plan design, not data) | OK, labelled |
@@ -33,11 +30,10 @@ Items checked: 41 answers (all with every number, process claim, pointer). Answe
 | Q61 | Example asserted negotiation is usual | Rewrote as a script that promises nothing |
 | Q60,62 | "offers can be verified"; "most people search while employed" | Softened / labelled judgement |
 | Q65, Q75 | MS Section 6 (DB Workday Entry) vs MS Addendum (all Workday roles 3+) conflict not stated in Q65; Q75 said "a few exceptions" | Conflict stated explicitly in both |
-| Q66 | cleaning "large share" unsupported; ML claim | Labelled general; added ML 10% (JD count only) |
-| Q67 | stray Book 11 Part 9 pointer; time-zone claim | Pointer removed; labelled general knowledge |
+| Q66,67 | Unsupported cleaning/time-zone claims; stray pointer | Labelled general; ML 10% added; pointer removed |
 | Q42,43,50,56,75,76 | Unlabelled general claims | Softened or labelled "general knowledge, not checked" |
 | Q70,72,73,80 | Unlabelled thresholds (3 of 5, 10 applications, tiers, 6-8 stories) | Labelled "suggested, not data" |
-| Q74 | "Say this in the interview" used for an outreach message; thin example | Relabelled "Say this in your message"; example expanded |
+| Q74 | Outreach message labelled "interview"; thin example | Relabelled; example expanded |
 | Q77 | Overstated as general "candidate reports"; "spoken and written" invented; missing tags, location, 579 | Rewritten to IP 2.1 wording and labels ([G/S], [S], [R], single report) |
 | Q78 | Mu Sigma/Fractal/Indium details thinner than IP | Added Mu Sigma 3-4 rounds, Fractal single-report note, Indium (Hyderabad) |
 | Q80 | "customer focus" principle name unverified; rejection detail | Labelled general knowledge; added IP detail |
