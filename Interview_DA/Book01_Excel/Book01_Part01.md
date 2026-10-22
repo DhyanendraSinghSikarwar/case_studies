@@ -565,6 +565,7 @@
 | 2 | E01 | 30000 | `=B2*10%` | 31-Jan-2026 | 1 |
 | 3 | E02 | 45000 | `=B3*10%` | `=EOMONTH(D2,1)` | `=E2+1` |
 | 4 | E03 | 28000 | `=B4*10%` | `=EOMONTH(D3,1)` | `=E3+1` |
+
 **Formula / Steps:**
 1. In C2 type `=B2*10%`, press Enter.
 2. Click C2, double-click the fill handle (or drag to C4); or select C2:C4 and press Ctrl+D (Fill Down; Microsoft Support).
@@ -621,6 +622,7 @@
 | | A | B | C | D | E |
 |---|---|---|---|---|---|
 | 1 | 1234.5 | `=TEXT(A1,"0.00")` | `=TEXT(A1,"#,##0.00")` | `=TEXT(A1,"$#,##0.00")` | `=ISNUMBER(A1)` |
+
 **Formula / Steps:** Select cells > Ctrl+1 > Number tab > pick category. Shortcuts: Ctrl+Shift+$ = Currency with two decimals (Microsoft Support).
 **Alternative:** Home tab > Number group > dropdown (General/Number/Currency/Accounting), or the ₹/$ button which applies Accounting (from memory, unverified).
 **Result (run in LibreOffice, TEXT mimics the formats):** B1 `1234.50`, C1 `1,234.50`, D1 `$1,234.50`, E1 `TRUE`. TEXT returns text, so use it only for labels.
@@ -745,6 +747,7 @@
 | 5 | Analytics Manager |
 | 6 | Payroll Analyst - II |
 | 7 | analyst trainee |
+
 **Formula / Steps:**
 1. Click inside the data > Data tab > Filter (Ctrl+Shift+L).
 2. Click the dropdown on Job Title > Text Filters > Contains.
@@ -803,6 +806,7 @@ Sort: Data tab > Sort > Sort On: Cell Color (or Font Color) > choose the colour 
 | 5 | 48000 |
 | 6 | 75000 |
 | 7 | 52000 |
+
 **Formula / Steps:**
 1. Data > Filter > dropdown on Salary > Number Filters.
 2. Greater Than: enter 50000. Between: 40000 and 60000. Top 10: Top, 3, Items.
@@ -835,6 +839,7 @@ Formula checks: `=COUNTIF(A2:A7,">50000")`, `=COUNTIFS(A2:A7,">=40000",A2:A7,"<=
 | 4 | 20-Apr-2026 | | |
 | 5 | 09-May-2026 | | |
 | 6 | 01-Jul-2026 | | |
+
 **Formula / Steps:**
 1. Data > Filter > dropdown on Join date > Date Filters.
 2. Pick This Month, This Week, or All Dates in the Period > Quarter 2.
@@ -866,6 +871,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 | 5 | TMP001 |
 | 6 | EMP-001 |
 | 7 | AB |
+
 **Formula / Steps:** Filter dropdown > type the pattern in the Search box > OK. The same patterns work in `COUNTIF`: `=COUNTIF(A2:A7,"EMP*")`.
 **Alternative:** Text Filters > Begins With / Ends With / Contains.
 **Result (run in LibreOffice):** `"EMP*"` = 4; `"EMP???"` = 1 (EMP001); `"??"` = 1 (AB); `"*001"` = 3 (EMP001, TMP001, EMP-001); `"EMP~*"` = 0.
@@ -894,6 +900,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 | 1 | 100 | `=A3*2` | `=SUM(A1:A3)` |
 | 2 | 250 | | |
 | 3 | `=A1+A2` | | |
+
 **Formula / Steps:**
 1. Select and copy (Ctrl+C).
 2. Click the target cell > Home > Paste dropdown > Paste Special (or Ctrl+Alt+V).
@@ -975,6 +982,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 | 4 | `=TEXT(A2,"dddd")` |
 | 5 | `=A2+30` |
 | 6 | `=DATEVALUE("25-Jan-2025")` |
+
 **Formula / Steps:**
 1. Select the column.
 2. Ctrl+1 > Number tab > Date (or Custom `dd-mmm-yyyy`) > OK, or Home > Number dropdown > Short Date.
@@ -1033,6 +1041,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 | 3 | attrition rate | `=COUNTIF(A2:A5,"attrition*")` |
 | 4 | Attr. | `=SUMPRODUCT(--EXACT(A2:A5,"attrition"))` |
 | 5 | ATTRITION | |
+
 **Formula / Steps:**
 1. Ctrl+F > type value > Options > Find All.
 2. Replace: Ctrl+H > Find what / Replace with > Replace All (check the preview first).
@@ -1064,6 +1073,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 | 5 | 1200 | `=Jan!B5` |
 | 6 | 800 | `=SUM(Jan!B5:B6)` |
 | 7 | | `=Jan!B5*2` |
+
 **Formula / Steps:** On Summary, click B2, type `=`, click the Jan tab, click B5, press Enter.
 **Alternative:** `=INDIRECT("Jan!B5")` (text-driven sheet name; volatile, slower). Also 3D references like `=SUM(Jan:Mar!B5)` add the same cell across consecutive sheets (from memory, unverified).
 **Result (run in LibreOffice):** `=Jan!B5` = 1200; `=SUM(Jan!B5:B6)` = 2000; `='Jan'!B5*2` = 2400.

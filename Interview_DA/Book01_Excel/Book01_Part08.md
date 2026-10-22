@@ -634,6 +634,7 @@ Dynamic name route: Formulas > Define Name > Name `Sales`, Refers to `=OFFSET($B
 | 4 | 28 | 40 | 50 | |
 | 5 | 31 | 50 | 60 | |
 | 6 | 34 | 60 | 100 | |
+
 (A7 to A16 hold the other nine salaries.)
 
 **Formula / Steps:** E2 `=COUNTIFS($A$2:$A$16,">"&C2,$A$2:$A$16,"<="&D2)` filled to E6. Chart (not run here): select A1:A16 > Insert > Insert Statistic Chart > Histogram > right-click the horizontal axis > Format Axis > set Bin width 10.
@@ -749,6 +750,7 @@ Dynamic name route: Formulas > Define Name > Name `Sales`, Refers to `=OFFSET($B
 | 3 | Jan | 480 | 4 | | |
 | 4 | Feb | 484 | 6 | | |
 | 5 | Mar | 490 | 5 | | |
+
 (rows 6 to 14 cover Apr to Dec: leavers 7, 3, 4, 6, 5, 5, 3, 2, 4)
 
 **Formula / Steps:** D3 `=AVERAGE(B2:B3)`; E3 `=C3/D3`; year row: C15 `=SUM(C3:C14)`, D15 `=AVERAGE(D3:D14)`, E15 `=C15/D15`. Dashboard build (not run here): PivotTable from an employee table (Join Date, Exit Date, Dept, Grade) > PivotCharts > Slicers (Q6, Q7).

@@ -1605,6 +1605,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 2 | Asha | Rao | HR |
 | 3 | Vikram | Nair | Payroll |
 | 4 | Meera | Iyer | Hiring |
+
 **Formula / Steps:**
 1. Line break: `=A2&CHAR(10)&B2&CHAR(10)&C2`, then Home > Alignment > Wrap Text.
 2. Commas, one row: `=TEXTJOIN(", ",TRUE,A2:C2)`
@@ -1636,6 +1637,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 4 | Exit interview | 30-Oct-26 | Open |
 | 5 | Induction deck | 10-Oct-26 | Done |
 | 6 | Policy sign-off | (blank) | Open |
+
 **Formula / Steps:** Basic: `=IF(B2<TODAY(),"Overdue","On time")`. Safe: `=IF(C2="Done","Done",IF(B2="","No date",IF(B2<TODAY(),"Overdue","On time")))`
 **Alternative:** `=IF(AND(C2<>"Done",B2<>"",B2<TODAY()),"Overdue","OK")`, or `=IFS(...)` in 2019+.
 **Result (run with $F$1 = 21-Oct-2026):** basic formula: Overdue, On time, On time, Overdue, Overdue (wrong for rows 5 and 6). Safe formula: Overdue, On time, On time, Done, No date.
@@ -1664,6 +1666,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 4 | 64 | 60 | C |
 | 5 | 51 | 75 | B |
 | 6 | 40 | 90 | A |
+
 **Formula / Steps:** Nested: `=IF(A2>=90,"A",IF(A2>=75,"B",IF(A2>=60,"C",IF(A2>=45,"D","F"))))`
 **Alternative:** `=IFS(A2>=90,"A",A2>=75,"B",A2>=60,"C",A2>=45,"D",TRUE,"F")`; table: `=VLOOKUP(A2,$F$2:$G$6,2,TRUE)` or `=LOOKUP(A2,$F$2:$F$6,$G$2:$G$6)`. Others: SWITCH, CHOOSE+MATCH.
 **Result (run):** all four methods return A, B, C, D, F for 92, 78, 64, 51, 40.
@@ -1695,6 +1698,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 7 | E102 |
 | 8 | E101 |
 | 9 | E104 |
+
 **Formula / Steps:** Blank-safe: `=SUMPRODUCT((A2:A9<>"")/COUNTIF(A2:A9,A2:A9&""))`
 **Alternative:** 365/2021: `=COUNTA(UNIQUE(A2:A9,,FALSE))` (blank still counted as one in some cases; filter first with `UNIQUE(FILTER(A2:A9,A2:A9<>""))`). Or a PivotTable with "Add this data to the Data Model" > Distinct Count.
 **Result:** blank-safe SUMPRODUCT returns **4** (run). The plain `SUMPRODUCT(1/COUNTIF(A2:A9,A2:A9))` returns #DIV/0! (run). On A2:A5 only (no blank), the plain version returns 3 (run). UNIQUE version: **not run here**; by hand it gives E101, E102, E103, E104, so 4 once blanks are removed.
@@ -1723,6 +1727,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 5 | E104 | TBD | 30 | #VALUE! | #N/A |
 | 6 | E105 | 48000 | 26 | 1846.15 | #N/A |
 | 7 | E106 | 39000 | 25 | 1560 | #N/A |
+
 **Formula / Steps:** `=SUMPRODUCT(--ISERROR(D2:D7))`
 **Alternative:** One type: `=COUNTIF(D2:D7,"#DIV/0!")`, `=SUMPRODUCT(--ISNA(E2:E7))`. Manual: Home > Find & Select > Go To Special > Formulas > Errors (selects them; the count shows in the status bar/selection). 
 **Result (run):** `SUMPRODUCT(--ISERROR(D2:D7))` = 2; over D2:E7 = 5; `ISNA(E2:E7)` = 3; `COUNTIF(D2:D7,"#DIV/0!")` = 1.
@@ -1751,6 +1756,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 5 | HR (trailing space) |
 | 6 | HRBP |
 | 7 | HR |
+
 **Formula / Steps:** `=EXACT(A2,A3)`; case-sensitive count: `=SUMPRODUCT(--EXACT(A2:A7,"HR"))`
 **Alternative:** `=SUMPRODUCT(--(A2:A7="HR"))` is case-insensitive (same as COUNTIF); or use FIND (case-sensitive) for partial matches.
 **Result (run):** `EXACT(A2,A3)` = FALSE; `EXACT(A2,A7)` = TRUE; `EXACT(A2,A5)` = FALSE; `COUNTIF(A2:A7,"HR")` = 4; `SUMPRODUCT(--EXACT(A2:A7,"HR"))` = 2.
@@ -1775,6 +1781,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 |---|---|---|---|---|
 | 2 | 22-Oct-26 | 03-Apr-23 | As-of 22-Oct-26 | 29-Oct-26 |
 | 3 | 01-Oct-26 | 22-Oct-25 | | 09-Nov-26 |
+
 **Formula / Steps:** Last day: `=WORKDAY(B2,30,$H$2:$H$3)`. Tenure: `=YEARFRAC(C2,$F$2,1)`
 **Alternative:** `=WORKDAY.INTL(B2,30,1,$H$2:$H$3)` for other weekends; tenure in whole years `=DATEDIF(C2,$F$2,"Y")`.
 **Result (run):** `WORKDAY(B2,30)` = 03-Dec-2026; with holidays = 07-Dec-2026; `WORKDAY(B3,10)` = 15-Oct-2026. `YEARFRAC(C2,F2)` = 3.553 (basis 0), basis 1 = 3.554, `DATEDIF(...,"Y")` = 3, `ROUND(YEARFRAC(C2,F2,1),1)` = 3.6. `YEARFRAC(C3,F2)` = 1.
@@ -1803,6 +1810,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 4 | Meera | 4 |
 | 5 | Rohit | 1 |
 | 6 | Isha | 0 |
+
 **Formula / Steps:** `=REPT("★",B2)&REPT("☆",5-B2)`
 **Alternative:** Bar: `=REPT("|",B2*3)`; or Conditional Formatting > Icon Sets / Data Bars (Home > Styles > Conditional Formatting).
 **Result (run):** Asha ★★★★★; Vikram ★★★☆☆; Meera ★★★★☆; Rohit ★☆☆☆☆; Isha ☆☆☆☆☆. `REPT("ab",3)` = ababab.
@@ -1829,6 +1837,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | UNIQUE | 2021/365 | `SUMPRODUCT(1/COUNTIF())`, Remove Duplicates |
 | XLOOKUP | 365/2021 | INDEX/MATCH |
 | TEXTBEFORE/AFTER/SPLIT | 365 | LEFT/MID/FIND, Text to Columns |
+
 **Formula / Steps:** `=MAXIFS(B2:B5,A2:A5,"HR")` becomes `=SUMPRODUCT(MAX((A2:A5="HR")*B2:B5))`
 **Alternative:** Check File > Account > About Excel to see your version.
 **Result (run):** MAXIFS = 65 and the SUMPRODUCT version = 65 on data HR 50/65 (rows 2 and 4), Sales 70, IT 40; CONCAT(A2:A5) and `A2&A3&A4&A5` both return HRSalesHRIT; SWITCH and CHOOSE+MATCH both return Human Resources.
@@ -1869,6 +1878,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 2 | ananya.rao@acme.com | | |
 | 3 | vikram.nair@acme.in | | |
 | 4 | no-email | | |
+
 **Formula / Steps:** Classic: B2 `=LEFT(A2,FIND("@",A2)-1)`; C2 `=MID(A2,FIND("@",A2)+1,100)`. New: `=TEXTBEFORE(A2,"@")`, `=TEXTAFTER(A2,"@")`, `=TEXTSPLIT(A2,"@")`.
 **Alternative:** Data > Text to Columns (feature route, any version, but static, not formula-driven).
 **Result:** Classic formulas (run): row 2 gives ananya.rao and acme.com; row 3 gives vikram.nair and acme.in; row 4 gives #VALUE! (no "@"). New functions: **not run here**; by hand they return the same text, and TEXTBEFORE returns #N/A when the delimiter is missing (from memory).
@@ -1908,6 +1918,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 2 | 01-Jan-26 | 45 | |
 | 3 | 01-Feb-26 | 1234 | |
 | 4 | | | 0.275 |
+
 **Formula / Steps:** `=TEXT(A2,"mmm-yyyy")&": "&B2&" hires"`
 **Alternative:** `="Offer accept rate: "&TEXT(C4,"0.0%")`; or CONCAT/TEXTJOIN around TEXT.
 **Result (run):** row 2: `Jan-2026: 45 hires`; row 3 with `TEXT(B3,"#,##0")`: `Feb-2026: 1,234 hires`; `Offer accept rate: 27.5%`; `TEXT(A2,"dd mmm yyyy")` = 01 Jan 2026; `TEXT(A2,"mmmm")` = January.
@@ -1934,6 +1945,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 5 | What? |
 | 6 | What1 |
 | 7 | a~b |
+
 **Formula / Steps:** `=COUNTIF(A2:A7,"Ops*Lead")`; literal: `=COUNTIF(A2:A7,"Ops~*Lead")`
 **Alternative:** For long text or exact matching: `=SUMPRODUCT(--(A2:A7=C1))`.
 **Result (run in LibreOffice):** "Ops*Lead" = 3; "Ops~*Lead" = 1; "What?" = 2; "What~?" = 1; "a~~b" = 1. Long text: LibreOffice has no 255 limit (300-character test returned 1), so **the 255 problem is not reproduced here**; it comes from Microsoft documentation.
@@ -1958,6 +1970,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 3 | 31-Dec-25 | 28-Feb-26 |
 | 4 | 15-Jan-26 | 10-Mar-26 |
 | 5 | 20-May-24 | 22-Oct-26 |
+
 **Formula / Steps:** Months `=DATEDIF(A2,B2,"M")`; days `=B2-EDATE(A2,DATEDIF(A2,B2,"M"))`
 **Alternative:** Microsoft's own workaround: `=B2-DATE(YEAR(B2),MONTH(B2),1)` (days into the end month; not identical to leftover days after full months when the start day is later than the end day).
 **Result (run in LibreOffice):** months = 1, 1, 1, 29; "MD" = -2, 28, 23, 2; EDATE method = 1, 28, 23, 2; Microsoft workaround = 0, 27, 9, 21. LibreOffice returned MD = -2 for row 2, an example of the negative result Microsoft describes; Excel's own MD numbers were **not run here** and may differ.
@@ -1982,6 +1995,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 3 | 1234567890123457 | |
 | 4 | 1234567890123458 | |
 | 5 | 9876543210987654 | |
+
 **Formula / Steps:** Risky: `=COUNTIF(A2:A5,C2)`. Safe: `=SUMPRODUCT(--(A2:A5=C2))` or `=SUMPRODUCT(--EXACT(A2:A5,C2))` or `=COUNTIF(A2:A5,C2&"*")`.
 **Alternative:** Add a helper column with `"ID"&A2` so it is never numeric.
 **Result:** In LibreOffice all four formulas returned 1; **the bug is not reproduced here**. In Excel the risky COUNTIF is expected to return 3 (by hand: the three IDs share the same first 15 digits; not run here, from memory). The safe versions return 1 (run).
@@ -2010,6 +2024,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 7 | E6 | 03-Feb-26 | 09-Mar-26 |
 | 8 | E7 | 02-Mar-26 | |
 | 9 | E8 | 01-Sep-23 | 25-Mar-26 |
+
 **Formula / Steps (month start in F2):**
 - G2 Opening: `=COUNTIFS($B$2:$B$9,"<"&F2)-COUNTIFS($C$2:$C$9,"<"&F2)`
 - H2 Joined: `=COUNTIFS($B$2:$B$9,">="&F2,$B$2:$B$9,"<"&EDATE(F2,1))`
@@ -2022,6 +2037,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | Jan-26 | 5 | 1 | 1 | 5 | 20.0% |
 | Feb-26 | 5 | 1 | 1 | 5 | 20.0% |
 | Mar-26 | 5 | 1 | 2 | 4 | 44.4% |
+
 **Version note:** COUNTIFS and EDATE work in 2007+ and Google Sheets.
 **Edge cases:** Exit dates typed as text are not counted; same-month join and exit; annualise by multiplying by 12 only for a rough view.
 **Likely follow-ups:** *Annual rate?* Leavers in year / average headcount.

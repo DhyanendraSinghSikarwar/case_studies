@@ -211,6 +211,7 @@
 | Google Sheets training and help (support.google.com/a/users/answer/9282959) | Lessons, a cheat sheet, "Switch from Microsoft Excel to Sheets" | Price not stated |
 | TrumpExcel sample data | "15 Free Datasets", 1,000 rows each, includes an Employee HR Records set | Free per title; licence unverified |
 | AIHR, 9 HR datasets | 8 of 9 free (some may need a Kaggle sign-in); one needs a paid AIHR course | Licences unverified |
+
 - Chandoo.org blocked our fetch (HTTP 403), so I do not recommend it by name. YouTube, Coursera, Udemy and LinkedIn Learning were not checked.
 **Example:** Week 4 (lookups): Microsoft Support page for VLOOKUP for syntax, an Exceljet example, then 10 lookups on the TrumpExcel HR file.
 **Weak vs strong:**
@@ -344,6 +345,7 @@
 | 5 | Timed mock 1 (30 min) on the Q22 kit style | review misses |
 | 6 | Charts, conditional formatting, shortcuts; Timed mock 2 | review misses |
 | 7 | Rest, review mistakes log, set up files | none |
+
 - In the test: read the question twice, sort/filter the data first, name your assumptions aloud.
 **Example:** A 30-minute mock: 8 questions at under 4 minutes each; pass 6 of 8.
 **Weak vs strong:**

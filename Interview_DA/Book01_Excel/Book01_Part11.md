@@ -88,6 +88,7 @@ ThisWorkbook.Worksheets("Employees").Range("A1:F1").Font.Bold = True
 | 6 | E105 | Sana | HR | 22 | 14 | | |
 | 7 | E106 | Dev | HR | 22 | 20 | | |
 | 8 | E107 | Neha | Ops | 0 | 0 | | |
+
 **Formula / Steps:** VBA (not run here):
 ```vba
 Option Explicit
@@ -141,6 +142,7 @@ End Sub
 | 7 | E6 | HR | Active |
 | 8 | E7 | Sales | Active |
 | 9 | E8 | Ops | Active |
+
 **Formula / Steps:** Click the Copilot icon on the Home tab/ribbon (the pane opens at the side; exact location varies, from memory), type the request. Reference formula: `=COUNTIFS(B2:B9,"Sales",C2:C9,"Left")/COUNTIF(B2:B9,"Sales")`.
 **Alternative:** A PivotTable with Status in Columns and Dept in Rows, "Show values as % of row".
 **Result:** 33.3%, 50%, 0% (Sales, HR, Ops).
@@ -167,6 +169,7 @@ End Sub
 | 4 | Sales payroll | 139,000 |
 | 5 | Total payroll | 354,000 |
 | 6 | Reconciliation (Sales+Ops+HR − total) | 0 |
+
 **Formula / Steps:** `G1 =COUNTA(A2:A9)`, `G2 =COUNTIF(C2:C9,"Left")`, `G3 =G2/G1`, `G4 =SUMIFS(D2:D9,B2:B9,"Sales")`, `G5 =SUM(D2:D9)`, `G6 =SUMIFS(D2:D9,B2:B9,"Sales")+SUMIFS(D2:D9,B2:B9,"Ops")+SUMIFS(D2:D9,B2:B9,"HR")-G5`.
 **Alternative:** Rebuild the same figure in a PivotTable or ask a colleague to review.
 **Result:** 8, 2, 0.25, 139000, 354000, 0 (run in LibreOffice 24.2).
@@ -262,6 +265,7 @@ To turn it on automatically: VBE > Tools > Options > Require Variable Declaratio
 | 4 | 23-Oct-2025 | 22-Oct-2026 | 0 |
 | 5 | 29-Feb-2020 | 28-Feb-2026 | 5 |
 | 6 | 29-Feb-2020 | 01-Mar-2026 | 6 |
+
 **Formula / Steps:** VBA (not run here):
 ```vba
 Function TenureYears(hireDate As Date, asOf As Date) As Long
@@ -366,6 +370,7 @@ function flagNewJoiners() {
 | 7 | E206 | Tia | N/A (text) | |
 | 8 | E207 | Gus | 01-Sep-2026 | |
 | 9 | E208 | Lee | 30-Jun-2020 | |
+
 **Formula / Steps:** VBA (not run here):
 ```vba
 Option Explicit
@@ -417,6 +422,7 @@ End Sub
 | 6 | E105 |
 | 7 | E106 |
 | 8 | E107 |
+
 **Formula / Steps:** VBA (not run here):
 ```vba
 Dim lastRow As Long
@@ -587,6 +593,7 @@ Illustrative expected output (hand-written, not a tool output):
 | "My manager never gives feedback" | Manager/Leadership |
 | "Salary is below market" | Pay & Benefits |
 | "Too many late-night calls" | Workload & Work-life balance |
+
 **Formula / Steps:** 1) Remove names/IDs 2) Test on 30 rows 3) Fix the theme list 4) Run on 500 5) Sample 10% (50 rows), count mistakes 6) Pivot the themes.
 **Alternative:** Keyword formula `=IF(ISNUMBER(SEARCH("salary",B2)),"Pay & Benefits","Other")` as a transparent baseline to compare against.
 **Version note:** Copilot in Excel or Gemini in Sheets need eligible plans (Q12, Q11); Copilot function is retired (Q18).
