@@ -100,8 +100,10 @@ Sheet `S`: G1 = 102.
 - Text and number mismatch, or stray spaces, give #N/A (Q14).
 - Not case-sensitive; one return column per formula.
 **Example:** A payroll table with Salary left of Employee ID cannot be searched by ID with VLOOKUP.
+**Sample sheet:** Sheet `S`: A1:C4 = Salary, EmpID, Name; rows 2 to 4 = (42000, 101, Asha), (55000, 102, Ravi), (68000, 103, Meena). E1 = 102.
 **Formula / Steps:** Fixes: `=INDEX(return_col,MATCH(key,key_col,0))` or `=XLOOKUP(key,key_col,return_col)`.
 **Alternative:** Convert the range to an Excel Table (Insert > Table) so references adjust automatically.
+**Result:** Run: `=VLOOKUP(E1,A1:C4,1,FALSE)` returns `#N/A` (it searches column A, which holds salaries); `=INDEX(A2:A4,MATCH(E1,B2:B4,0))` returns `55000`.
 **Version note:** XLOOKUP not in Excel 2016/2019 (Microsoft Support, "XLOOKUP function": "XLOOKUP is not available in Excel 2016 and Excel 2019").
 **Edge cases:** Whole-column lookups on 500k rows can be slow.
 **Likely follow-ups:** 1) *Which one would you pick today?* XLOOKUP if everyone has 2021/365, else INDEX-MATCH. 2) *Is VLOOKUP dead?* No, still everywhere in legacy files.
@@ -236,7 +238,8 @@ Sheet `S`: G1 = 102.
 **Example:** Your HR dashboard goes to a regional manager on Excel 2016.
 **Formula / Steps:** Replace `=XLOOKUP(A2,Master!A:A,Master!C:C)` with `=INDEX(Master!C:C,MATCH(A2,Master!A:A,0))`.
 **Alternative:** Paste as values; or share a PDF.
-**Version note:** Google Sheets supports XLOOKUP (from memory, unverified).
+**Result:** Not applicable to a version question. The INDEX-MATCH replacement was run on the Q1 Master sheet with `103` in A2: it returns `IT`, the same as `VLOOKUP(A2,Master!A:C,3,FALSE)`; the XLOOKUP original is not run here.
+**Version note:** Google Sheets supports XLOOKUP (Google Docs Editors Help, "XLOOKUP function", fetched).
 **Edge cases:** In an old version, XLOOKUP cells show #NAME? after recalculation; cached values may display until then.
 **Likely follow-ups:** 1) *Find out the version?* File > Account > About Excel. 2) *Which do you default to?* INDEX-MATCH in mixed teams.
 **Common mistakes:** Sending an XLOOKUP workbook without checking recipients.
@@ -250,10 +253,10 @@ Sheet `S`: G1 = 102.
 - Fix: `MATCH("Dept",header_row,0)` as the column number.
 - Or reference the return column directly.
 **Example:** Someone adds a Phone column before Dept.
-**Sample sheet:** Before: A EmpID, B Name, C Dept. After: A EmpID, B Name, C Phone, D Dept. F1 = 102.
+**Sample sheet:** Before: A EmpID, B Name, C Dept (rows: 101 Asha HR; 102 Ravi Finance). After: A EmpID, B Name, C Phone, D Dept (Phone: 9700011111 for Asha, 9700022222 for Ravi). F1 = 102.
 **Formula / Steps:** Fragile: `=VLOOKUP(F1,A1:D3,3,FALSE)`. Robust: `=VLOOKUP(F1,A1:D3,MATCH("Dept",A1:D1,0),FALSE)`.
 **Alternative:** `=INDEX(A1:D3,MATCH(F1,A1:A3,0),MATCH("Dept",A1:D1,0))`; or XLOOKUP (not run here).
-**Result:** Run: before the insert, fragile returns `Finance`. After the insert, fragile returns `97xxx` (the phone, wrong), while both robust versions still return `Finance`.
+**Result:** Run: before the insert, fragile returns `Finance`. After the insert, fragile returns `9700022222` (the phone, wrong), while both robust versions still return `Finance`.
 **Version note:** All versions for MATCH-based fixes.
 **Edge cases:** Renaming the header breaks MATCH; use an Excel Table so headers stay consistent.
 **Likely follow-ups:** 1) *Does INDEX-MATCH always survive?* Yes if ranges adjust. 2) *Silent or loud?* Silent, which is the danger.
@@ -271,7 +274,7 @@ Sheet `S`: G1 = 102.
 **Sample sheet:** Master as in Q1; IDs in S!A2:A6 = 101..105.
 **Formula / Steps:** Wrong: `B2: =VLOOKUP(A2,Master!A2:C6,3,FALSE)` copied down. Right: `=VLOOKUP(A2,Master!$A$2:$C$6,3,FALSE)`.
 **Alternative:** Convert Master to an Excel Table and use `Master[#All]` style references, or name the range.
-**Result:** Run: with the slid range, the formula in B2 to B6 happened to give correct values here because each key sits at the top of its own sliding window (HR, Finance, IT, HR, Sales). The slide does not produce #N/A in this ordering; it would if the IDs were in a different order than the master. Takeaway: always lock the range even when it works. When rows are in a different order from the master (like Q3's 103, 101, 105, 102, 104), the unlocked range loses keys and returns #N/A (reasoning, not run).
+**Result:** Run, two cases. (1) IDs in master order 101 to 105 with the unlocked range copied down: B2:B6 = HR, Finance, IT, HR, Sales, all correct, because each key sits at the top of its own sliding window. So the slide does not always show up. (2) IDs in a different order, like Q3's 103, 101, 105, 102, 104, with `Master!A2:C6` sliding to `A3:C7`, `A4:C8`, and so on: B2:B6 = `IT`, `#N/A`, `Sales`, `#N/A`, `#N/A`. Takeaway: always lock the range, even when it happens to work.
 **Version note:** All versions.
 **Edge cases:** The other likely cause is text-versus-number mismatch (Q14).
 **Likely follow-ups:** 1) *Other causes?* Spaces, text IDs. 2) *Range name?* Named ranges avoid the issue.
@@ -398,15 +401,15 @@ F1 = Feb.
 **Explain simply:**
 - 1 = the key column itself; 2 = next column; and so on.
 - Table A2:C6 has 3 columns, so 4 is out of range.
-- Microsoft Support ("VLOOKUP function") lists #REF! for a number greater than the columns in table_array and #VALUE! for less than 1 (page fetched via summariser; not read verbatim).
+- Microsoft Support ("VLOOKUP function", fetched): "If col_index_num is greater than the number of columns in table-array, you'll get the #REF! error value." The same page's #VALUE! line is worded as "If the table_array is less than 1", which looks like a typo for col_index_num.
 **Example:** Asking for column 4 in a three-column table.
 **Sample sheet:** Master as in Q1.
 **Formula / Steps:** `=VLOOKUP(103,Master!A2:C6,3,FALSE)`; too big: `=VLOOKUP(103,Master!A2:C6,4,FALSE)`; safe: `=VLOOKUP(103,Master!A2:E6,COLUMNS(Master!A2:E6),FALSE)` returns the last column.
 **Alternative:** `MATCH` on the header name (Q29).
-**Result:** Run: `IT` for column 3. Column 4 returned `#VALUE!` and column 0 returned `#VALUE!` in LibreOffice; Excel returns `#REF!` for column 4 (from Microsoft documentation, not run here). Last column via COLUMNS returned `68000`.
+**Result:** Run: `IT` for column 3. Column 4 returned `#VALUE!` and column 0 returned `#VALUE!` in LibreOffice; Excel returns `#REF!` for column 4 (Microsoft Support, "VLOOKUP function"; not run here). Last column via COLUMNS returned `68000`.
 **Version note:** All versions.
 **Edge cases:** IFERROR would hide this bug, so test the formula before wrapping it.
-**Likely follow-ups:** 1) *Make it dynamic?* Q29. 2) *Decimal like 2.7?* Excel truncates to 2 (from memory, unverified).
+**Likely follow-ups:** 1) *Make it dynamic?* Q29. 2) *Decimal like 2.7?* LibreOffice used column 2 (run); Excel is believed to truncate the same way (the Microsoft page does not cover it; from memory, unverified).
 **Common mistakes:** Counting from sheet column A; table starting at column C but counting from the sheet.
 
 ### Q20 ⭐⭐ 🟢 What is the difference between IFERROR and IFNA, and which one is safer around a lookup?
@@ -502,7 +505,7 @@ F1 = Feb.
 **Alternative:** Older Excel: `=IFNA(VLOOKUP(A2,Master!A2:D6,4,FALSE),"Not found")`.
 **Result:** XLOOKUP is **not run here** (LibreOffice 24.2 lacks it); expected from the data: B2 `Pune`, B3 `Not found`. The IFNA alternative was run: B2 `Pune`, B3 `Not found`.
 **Version note:** XLOOKUP is not in Excel 2016 and 2019 (Microsoft Support, "XLOOKUP function": "XLOOKUP is not available in Excel 2016 and Excel 2019"), so treat it as 365/2021/2024. Google Sheets has XLOOKUP with a `missing_value` argument (Google Docs Editors Help, "XLOOKUP function").
-**Edge cases:** The argument can be a number, text or even `""` for blank. A blank argument position (`,,`) is different from omitting it; it is treated as not supplied.
+**Edge cases:** The argument can be a number, text or even `""` for blank. An empty argument slot (`,,`) is, as far as I know, treated like leaving that argument out (from memory, unverified, not run here).
 **Likely follow-ups:** 1) *Why not IFERROR?* It hides every error, even a wrong range. 2) *Can it return another lookup?* Yes, you can nest a second XLOOKUP there.
 **Common mistakes:** Putting if_not_found in the wrong (fifth) position, which is match_mode; forgetting quotes around text.
 
@@ -569,8 +572,8 @@ F1 = Feb.
 **Formula / Steps:** `B2: =XLOOKUP($A2,Master!$A$2:$A$6,Master!$B$2:$D$6)`
 **Alternative:** Without spill, one formula per column: `=VLOOKUP($A2,Master!$A$2:$D$6,COLUMN(B1),FALSE)` copied right (COLUMN(B1) = 2, then 3, then 4), or INDEX-MATCH per column.
 **Result:** XLOOKUP is **not run here**; expected B2:D2 = `Meena`, `IT`, `Bengaluru`. The per-column alternatives were run: `Meena`, `IT`, `Bengaluru` from both the VLOOKUP-COLUMN and INDEX-MATCH versions.
-**Version note:** Spilling needs 365/2021/2024; not in 2016/2019 (Microsoft Support, "XLOOKUP function"). Google Sheets XLOOKUP can also return several columns (from memory, unverified).
-**Edge cases:** If the ID is missing, all three cells show #N/A (or your if_not_found text in the first cell only).
+**Version note:** Spilling needs 365/2021/2024; not in 2016/2019 (Microsoft Support, "XLOOKUP function"). Google Sheets XLOOKUP can also return several columns: "If result_range spans more than one row or column, the function returns the entire matching row or column" (Google Docs Editors Help, "XLOOKUP function", fetched, paraphrased). `B2#` and CHOOSECOLS are from memory, unverified.
+**Edge cases:** If the ID is missing, the result is #N/A, or your if_not_found text; how that text is spread over the three cells was not tested (from memory, unverified, not run here).
 **Likely follow-ups:** 1) *Reference the whole spill?* Use `B2#` in 365. 2) *Pick non-adjacent columns?* Use CHOOSECOLS in 365, or separate formulas.
 **Common mistakes:** Typing the formula in all three cells; leaving something in the spill area.
 
@@ -638,7 +641,7 @@ F1 = Feb.
 - `MATCH("City", header row, 0)` returns the position of that header (here 4).
 - Bonus: change H1 to Dept or Salary and the same formula returns a different field.
 **Example:** A monthly report where HR often adds new columns to the master.
-**Sample sheet:** G1 = 103, H1 = City.
+**Sample sheet:** G1 = 103, H1 = City. (For the "after" test, a Grade column with values L2, L3, L4 for rows 2 to 4 is inserted before City.)
 
 | | A | B | C | D | E |
 |---|---|---|---|---|---|
@@ -649,7 +652,7 @@ F1 = Feb.
 
 **Formula / Steps:** `G2: =VLOOKUP(G1,A1:E4,MATCH(H1,A1:E1,0),FALSE)`
 **Alternative:** `=INDEX(A2:E4,MATCH(G1,A2:A4,0),MATCH(H1,A1:E1,0))`, or XLOOKUP (365) which has no column number at all.
-**Result:** Run: MATCH returns `4`, the formula returns `Bengaluru`. After inserting a Grade column before City (new table A1:F4) the MATCH version still returns `Bengaluru` (run). A hard-coded `4` would then land on Grade, and return `L4` (by reading the table, not run).
+**Result:** Run: MATCH returns `4`, the formula returns `Bengaluru`. After inserting a Grade column before City (new table A1:F4) the MATCH version still returns `Bengaluru` (run). A hard-coded `4` would then land on Grade, and return `L4` (run in the same test).
 **Version note:** All versions and Google Sheets (from memory, unverified).
 **Edge cases:** A header typo or trailing space gives #N/A; duplicate headers return the first. Inserting a column just outside the table edge does not stretch the range automatically.
 **Likely follow-ups:** 1) *Another fix?* COLUMNS($A:C) trick or INDEX-MATCH. 2) *Why FALSE?* Exact match.
@@ -805,7 +808,9 @@ F1 = Feb.
 **Example:** 100,000 payroll rows, each needing 6 fields from the master: compute the MATCH once in a helper column, then 6 INDEX formulas read that position.
 **Formula / Steps:** Helper `=MATCH(A2,Master!$A$2:$A$50000,0)` in column H, then `=INDEX(Master!$C$2:$C$50000,$H2)`.
 **Alternative:** Power Query merge (Data > Get Data > Combine Queries > Merge) for refreshable joins.
-**Version note:** Speed claims here are from memory, unverified, and not run (LibreOffice timings would not represent Excel). Power Query is built into Excel 2016 and later (from memory, unverified).
+**Sample sheet:** Not meaningful for speed; correctness of the helper pattern was checked on the Q1 Master sheet with A2 = 104.
+**Result:** Run: `MATCH` returns `4`; the INDEX reads give `HR` (Dept) and `Chennai` (City), equal to `VLOOKUP(A2,Master!A2:D6,3,FALSE)` = `HR`. No timing was measured.
+**Version note:** Speed claims here are from memory, unverified, and not run (LibreOffice timings would not represent Excel). Power Query: "available in all Excel 2016 or later Windows stand alone versions" and Microsoft 365 plans (Microsoft Support, "Power Query data sources in Excel versions", fetched).
 **Edge cases:** Whole-column references are fine for lookups in modern Excel but add cost in array formulas like SUMPRODUCT.
 **Likely follow-ups:** 1) *Does sorting help exact match?* Not unless you use binary mode. 2) *Volatile functions?* OFFSET and INDIRECT recalculate constantly; avoid them.
 **Common mistakes:** Claiming a fixed "X is 10 times faster"; thousands of lookups each returning one column.
@@ -973,7 +978,7 @@ F1 = Feb.
 3. `=XLOOKUP(F1,tblEmp[EmpID],tblEmp[Dept])` or `=VLOOKUP(F1,tblEmp,3,FALSE)`.
 **Alternative:** `=INDEX(tblEmp[Dept],MATCH(F1,tblEmp[EmpID],0))` (works in every version that has tables).
 **Result:** **Not run here** (LibreOffice cannot create Excel Tables). By hand, F1 = 103 returns `IT`. Add a row 6 (105, Divya, Sales) and F1 = 105 returns `Sales` with no edit to the formula.
-**Version note:** Tables and structured references are listed for Excel 2016, 2019, 2021, 365 (Microsoft Support, "Using structured references with Excel tables"); I believe they exist from Excel 2007 (from memory, unverified). XLOOKUP needs 2021/365.
+**Version note:** Tables and structured references are listed for Excel 2016, 2019, 2021, 365 (Microsoft Support, "Using structured references with Excel tables"); The page also lists Excel 2019, 2021, 2024 and Mobile; Excel 2007 origin is from memory, unverified. Google Sheets now has its own tables with named references (Google Docs Editors Help, "Use tables in Google Sheets", fetched). XLOOKUP needs 2021/365.
 **Edge cases:** Type the new row directly under the table, with no blank row between. A lookup in a different workbook that uses a table name needs that workbook open.
 **Likely follow-ups:** 1) *Alternative without tables?* Whole-column references (`A:C`) or a dynamic named range. 2) *Why not whole columns?* Fine for VLOOKUP, but slower in huge files.
 **Common mistakes:** Leaving the data as a plain range; leaving a blank row so the table does not extend; typing `Table1` and forgetting to rename it.
@@ -987,7 +992,7 @@ F1 = Feb.
 - XLOOKUP spills when the lookup value is a whole range (`A2:A20`) or when the return range has several columns.
 - Microsoft Support ("Dynamic array formulas and spilled array behavior"): #SPILL! means the output range is blocked by other data.
 - Fixes: delete or move whatever sits in the spill area (even a space or a hidden value counts); or make the formula return one cell, for example by looking up one key instead of a range.
-**Example:** In E2 you type `=XLOOKUP(A2:A20,Master!A:A,Master!B:B)` but E5 already holds a typed note. Result: #SPILL!. Clear E5.
+**Example:** In E2 you type `=XLOOKUP(A2:A4,Master!A:A,Master!C:C)`, which wants to fill E2:E4, but E3 already holds a typed note. Result: #SPILL!. Clear E3.
 **Sample sheet:** E3 holds the text "check" and blocks the spill from E2:
 
 | | A | B | E |
@@ -997,9 +1002,9 @@ F1 = Feb.
 | 4 | 103 | | |
 
 **Formula / Steps:** 1. Click the cell with #SPILL!; the warning icon shows "Spill range isn't blank". 2. Choose "Select Obstructing Cells". 3. Delete or move them.
-**Alternative:** Return a single value, `=XLOOKUP(A2,Master!A:A,Master!C:C)`, then drag down. Other causes: merged cells in the spill area, a spill that runs off the sheet, or an Excel Table (spills do not work inside tables).
+**Alternative:** Return a single value, `=XLOOKUP(A2,Master!A:A,Master!C:C)`, then drag down. Other causes: an Excel Table (spilled formulas are not supported inside tables: Microsoft Support, "Dynamic array formulas and spilled array behavior", fetched); merged cells in the spill area and a spill that runs off the sheet (from memory, unverified).
 **Result:** **Not run here** (LibreOffice has no spill). Expected in Excel 365 once E3 is cleared: E2:E4 show the three departments.
-**Version note:** Spilling exists only in 365 and 2021 (XLOOKUP and FILTER are listed only for those, Microsoft Support). The dynamic-array page's own "Applies to" list also names 2016 and 2019, which looks inconsistent; treat it as 2021/365.
+**Version note:** Spilling exists only in 365 and 2021 (XLOOKUP and FILTER are listed only for those, Microsoft Support). The dynamic-array page's own "Applies to" list also names 2016 and 2019 and the page gives no version statement, which looks inconsistent; treat it as 2021/365 (the FILTER page lists only 365/2024/2021 plus mobile). The `E2#` spill operator is not covered on the page read (from memory, unverified).
 **Edge cases:** A hidden or "empty-looking" cell with a space blocks the spill.
 **Likely follow-ups:** 1) *How do you reference the spilled result?* `E2#`. 2) *How do you stop spilling?* Use one lookup value.
 **Common mistakes:** Typing over the spill area; trying it inside a Table; thinking the formula is wrong when the output area is simply blocked.
@@ -1111,8 +1116,9 @@ D1 = 104.
 - **VLOOKUP:** same four inputs: search key, range, column index, optional exact/approximate setting (Google Docs Editors Help, "VLOOKUP").
 - **XLOOKUP:** `XLOOKUP(search_key, lookup_range, result_range, [missing_value], [match_mode], [search_mode])`; the default for missing is #N/A; match modes 0, -1, 1, 2 and search modes 1, -1, 2, -2 as in Excel (Google Docs Editors Help, "XLOOKUP function"). Excel calls the third optional argument `if_not_found`.
 - **INDEX-MATCH:** works (from memory, unverified).
-- Differences, from memory, unverified: another file needs `IMPORTRANGE` instead of a workbook link; filling a formula down a whole column is often done with `ARRAYFORMULA`; Sheets has no Excel Tables.
+- Differences: another file is read with `IMPORTRANGE`, which "pulls a block of cells from another spreadsheet" (Google Docs Editors Help, "IMPORTRANGE", fetched; title and gist only); `ARRAYFORMULA` lets results fill several rows and lets non-array functions work with arrays (Google Docs Editors Help, "ARRAYFORMULA", fetched). Using them for lookups is from memory, unverified; Sheets has no *Excel* Tables, but it now has its own Tables feature (Format > Convert to table; Google Docs Editors Help, "Use tables in Google Sheets", fetched).
 **Example:** The same HR master list queried in both tools.
+**Sample sheet:** Same Master layout as Q1 (EmpID, Name, Dept, City, Salary); not rebuilt in Sheets.
 **Formula / Steps:** Same text works in both: `=VLOOKUP(A2,Master!A:C,3,FALSE)`. Sheets: `=XLOOKUP(A2,Master!A:A,Master!C:C,"Not found")`.
 **Alternative:** `=INDEX(Master!C:C,MATCH(A2,Master!A:A,0))`.
 **Result:** Not run here (Google Sheets is not available in this environment); behaviour as documented above.
@@ -1144,9 +1150,9 @@ D1 = 104.
 E1 = HR; F1:F4 = 1, 2, 3, 4.
 **Formula / Steps:** Helper A2: `=C2&"-"&COUNTIF(C$2:C2,C2)` (drag down). Then G1: `=IFERROR(VLOOKUP($E$1&"-"&F1,$A$2:$B$6,2,FALSE),"")` (drag down).
 **Alternative:** 365/2021: `=FILTER(B2:B6,C2:C6=E1)`. Older: array formula `=IFERROR(INDEX($B$2:$B$6,SMALL(IF($C$2:$C$6=$E$1,ROW($C$2:$C$6)-ROW($C$2)+1),F1)),"")` (Ctrl+Shift+Enter).
-**Result:** Run in LibreOffice: helper approach returns `Asha`, `Meena`, `Divya`, then blank; the INDEX/SMALL array formula returns the same. FILTER **not run here**; expected (pandas-style by hand) Asha, Meena, Divya.
-**Version note:** FILTER: Excel 2021, 2024, 365 (Microsoft Support). Helper and array methods: all versions.
-**Edge cases:** FILTER returns #CALC! when nothing matches unless you add the third argument `"None"` (from memory, unverified). Helper keys break if rows are sorted after the numbering is hard-typed; keep it as a formula.
+**Result:** Run in LibreOffice: helper approach returns `Asha`, `Meena`, `Divya`, then blank; the INDEX/SMALL array formula, entered as an array formula, returns the same (without array entry it returned wrong values such as `Ravi`). FILTER **not run here**; expected (pandas-style by hand) Asha, Meena, Divya.
+**Version note:** FILTER: Excel 2021, 2024, 365 plus mobile apps (Microsoft Support, "FILTER function", Applies-to list). Helper and array methods: all versions.
+**Edge cases:** FILTER returns #CALC! when nothing matches unless you add the third argument, e.g. `"None"` (Microsoft Support, "FILTER function", fetched: "a #CALC! error will result"). Helper keys break if rows are sorted after the numbering is hard-typed; keep it as a formula.
 **Likely follow-ups:** 1) *Pivot alternative?* Yes, a PivotTable lists names under each dept. 2) *Count matches?* `COUNTIF`.
 **Common mistakes:** Expecting VLOOKUP to loop; hard-typing helper keys.
 
@@ -1172,7 +1178,7 @@ E1 = HR; F1:F4 = 1, 2, 3, 4.
 **Formula / Steps:** In E2: `=XLOOKUP(D2:D5,A2:A5,B2:B5,"Not found")`
 **Alternative:** `=VLOOKUP(D2:D5,A2:B5,2,FALSE)` also spills in 365; classic way is to write one formula and drag.
 **Result:** **Not run here** (no spill in LibreOffice). Expected, by hand: E2:E5 = IT, HR, HR, Not found.
-**Version note:** Needs 365/2021 (XLOOKUP not in 2016/2019, Microsoft Support, "XLOOKUP function"). Google Sheets XLOOKUP also accepts a range of keys only via `ARRAYFORMULA` (from memory, unverified).
+**Version note:** Needs 365/2021 (XLOOKUP not in 2016/2019, Microsoft Support, "XLOOKUP function"). Google Sheets: the XLOOKUP help page describes search_key as one value and does not address a range of keys; whether it spills or needs `ARRAYFORMULA` was not confirmed (unverified).
 **Edge cases:** Blocked spill area gives #SPILL!. If `if_not_found` is omitted, missing keys show #N/A in their rows.
 **Likely follow-ups:** 1) *Return several columns?* Make the return range wider (Q26). 2) *Excel 2019?* Write one formula and drag.
 **Common mistakes:** Typing over the spill; using it in an Excel Table.
@@ -1224,7 +1230,7 @@ E1 = HR; F1:F4 = 1, 2, 3, 4.
 **Formula / Steps:** `=VLOOKUP(D1,A2:B5,2,TRUE)`. Nearest value, with salaries in H2:H6 (42000, 47000, 55000, 68000, 39000) and J1 = 50000: array formula (Ctrl+Shift+Enter in older Excel) `=INDEX(H2:H6,MATCH(MIN(ABS(H2:H6-J1)),ABS(H2:H6-J1),0))`.
 **Alternative:** `=INDEX(B2:B5,MATCH(D1,A2:A5,1))`; 365/2021: `=XLOOKUP(D1,A2:A5,B2:B5,,-1)` (not run here; match_mode -1 means exact or next smaller).
 **Result:** Run in LibreOffice: D1 gives `P3`; INDEX-MATCH gives `P3`; D2 (before first start) gives `#N/A`, which `IFERROR(...,"Before first policy")` turns into text; nearest to 50000 returns `47000` (distance 3000 against 5000 for 55000).
-**Version note:** VLOOKUP/MATCH: all versions. XLOOKUP form: 2021/365. The un-entered (non-array) version of the nearest formula returned #VALUE! in LibreOffice; in 365 it works natively (from memory, unverified).
+**Version note:** VLOOKUP/MATCH: all versions. XLOOKUP form: 2021/365. The nearest formula run as an array formula (Ctrl+Shift+Enter) returned `47000`; entered normally it returned a wrong value (`42000`) in LibreOffice, so array-enter it in older Excel. In 365 it works natively (from memory, unverified).
 **Edge cases:** Ties return the first. Dates stored as text will not work.
 **Likely follow-ups:** 1) *Closest date after?* match_mode 1. 2) *Unsorted starts?* Sort first.
 **Common mistakes:** Unsorted period list; using end dates as the table.
@@ -1412,11 +1418,12 @@ Search IDs in `S`!A2:A5 = 104, 106, 101, 999.
 **Say this in the interview:** "INDIRECT turns text like 'Jan'!A2:C3 into a real reference, so the sheet name can come from a cell. The risks: it is volatile, breaks if sheets are renamed, and needs other workbooks to be open."
 **Explain simply:**
 - INDIRECT "returns the reference specified by a text string" (Microsoft Support, "INDIRECT function").
-- **Volatile** = recalculates at every change, slowing big files.
+- **Volatile** = recalculates at every change, slowing big files (the Microsoft INDIRECT page read does not mention this; from memory, unverified).
 - If the text points to a closed workbook, it returns #REF! (Microsoft Support).
 - Names with spaces need single quotes inside the text.
 **Example:** A summary sheet pulls salary from the monthly sheet named in column B.
-**Sample sheet:** Sheets `Jan`, `Feb`, `Pay Mar` each have A2:C3: (101 Asha, salary), (102 Ravi, salary). In `S`, A = 102, B = sheet name.
+**Sample sheet:** Sheets `Jan`, `Feb`, `Pay Mar` each have A2:C3: (101 Asha, salary), (102 Ravi, salary). In `S`, A = 102, B = sheet name. Salaries of ID 102: Jan 55000, Feb 56500, Pay Mar 57000 (ID 101 earns 1000 less in each); no sheet named Apr.
+
 | | A | B |
 |---|---|---|
 | 2 | 102 | Jan |
@@ -1437,7 +1444,7 @@ Search IDs in `S`!A2:A5 = 104, 106, 101, 999.
 **What the interviewer is checking:** Do you know XLOOKUP returns a cell reference, not just a value?
 **Say this in the interview:** "Because XLOOKUP returns a reference, I can put a colon between two XLOOKUPs, which makes a range from the first found cell to the second, and SUM it. For example, total sales from February to May."
 **Explain simply:**
-- XLOOKUP's result is a cell reference, so `XLOOKUP(...):XLOOKUP(...)` is a range.
+- XLOOKUP's result is a cell reference, so `XLOOKUP(...):XLOOKUP(...)` is a range. Microsoft Support ("XLOOKUP function", Example 6, fetched) uses exactly this pattern inside SUM and says "XLOOKUP returns a range".
 - Older equivalent is `INDEX(...):INDEX(...)`, which also returns references.
 - Both ends are included.
 **Example:** Total sales from the month in D1 to the month in E1.

@@ -4,7 +4,7 @@
 **Scope:** Cell references, sorting, filtering, formatting, keyboard shortcuts and other first-week Excel basics asked of 0-3 year data/MIS/HR analysts.
 
 ### Q1 ⭐⭐⭐ 🟢 What is a cell reference in Excel, and what are the three types?
-**Asked at:** commonly asked (no company-specific report found); appears in every beginner Excel list we found (DataCamp, Guru99).
+**Asked at:** commonly asked (no company-specific report found); appears in the DataCamp beginner list (sources file).
 **What the interviewer is checking:** Do you know that formulas point to cells by address, and that the dollar sign controls what happens on copying?
 **Say this in the interview:** "A cell reference is the address of a cell, like B2, column letter plus row number. A formula uses it to read that cell's value. There are three types: relative (B2), absolute ($B$2) and mixed ($B2 or B$2)."
 **Explain simply:**
@@ -123,7 +123,7 @@
 **Alternative:** `=PRODUCT($B$2,D5)`, or name B2 as Price and use `=Price*D5`.
 **Result:** Run in LibreOffice: 1000, 2500, 750, 2000, 3000.
 **Version note:** All versions and Google Sheets (from memory, unverified).
-**Edge cases:** Blank quantity gives 0; text quantity like "10 " gives #VALUE!.
+**Edge cases:** Blank quantity gives 0; a word like "ten" gives #VALUE! (run). A number stored as text, such as "10 " with a space, was converted and gave 2500 in LibreOffice; Excel normally converts such text too (from memory, unverified).
 **Likely follow-ups:** 1) *What if the price is in a column?* Use mixed `$B2` style. 2) *Using a Table?* Use a structured reference, see Q32.
 **Common mistakes:** Writing `=B2*D5` and getting wrong totals from row 6 on; locking D5 too.
 
@@ -164,7 +164,7 @@
 - Without the tick, the word "Salary" is treated as a value and sorted along with numbers.
 - Each row is one employee. Sorting only one column breaks that link.
 - Excel warns with "Sort Warning" when you select one column next to other data. Choose "Expand the selection".
-**Example:** Sorting only the Salary column makes Asha earn 35000 instead of 40000.
+**Example:** Before the damage: Asha 40000, Ravi 52000, Meena 35000, Karan 60000. Sorting only the Salary column gives 35000, 40000, 52000, 60000 in the same row positions, so Asha now shows 35000 instead of 40000.
 **Sample sheet:**
 
 | | A | B |
@@ -172,8 +172,8 @@
 | 1 | Emp | Salary |
 | 2 | Asha | 35000 |
 | 3 | Ravi | 40000 |
-| 4 | Meena | 45000 |
-| 5 | Karan | 52000 |
+| 4 | Meena | 52000 |
+| 5 | Karan | 60000 |
 
 (Wrong: only column B sorted; names stayed in place.)
 **Formula / Steps:** 1. Click one cell in the table (do not select a column). 2. Data > Sort. 3. Tick My data has headers. 4. Choose column and order. 5. OK.
@@ -270,6 +270,7 @@
 - Clear one column: click its arrow > Clear Filter From "Column".
 - Clear all columns: Data > Sort & Filter > Clear.
 - Remove arrows: Data > Filter again.
+**Example:** A 5,000-row attendance sheet is filtered to Dept = Ops and shows 420 rows (illustrative numbers). Data > Clear brings back all 5,000 rows but the arrows stay. Data > Filter removes the arrows too.
 **Formula / Steps:** 1. Data tab. 2. Sort & Filter group. 3. Clear (rows return) or Filter (arrows gone).
 **Alternative:** Shortcut Ctrl+Shift+L turns the arrows on or off. Reapply re-runs the filter after new data is typed.
 **Version note:** Same in all versions (from memory, unverified).
@@ -342,6 +343,7 @@
 - Click a cell inside the data first.
 - Alt, A, T is the older ribbon key sequence for the same Filter command (from memory).
 - Microsoft Support's shortcut page listed Ctrl+Shift+L for Mac and Excel for the web ("Toggle AutoFilter on and off"); that it works on Windows desktop is from my memory, unverified from that page.
+**Example:** You open a 5,000-row HR export that has no arrows on its header row. Click cell A1, press Ctrl+Shift+L, and arrows appear on every header. Press it again and they disappear; all rows are shown.
 **Formula / Steps:** Click inside data > Ctrl+Shift+L.
 **Alternative:** Data > Filter.
 **Version note:** Works in desktop Excel on Windows in my experience (from memory); Google Sheets uses a different shortcut.
@@ -367,12 +369,11 @@
 | 3 | 52000 |
 | 4 | 35000 |
 | 5 | 60000 |
-| 6 | |
-| 7 | 187000 |
+| 6 | 187000 |
 
-**Formula / Steps:** Click A7 > Alt+= > Enter. The formula is `=SUM(A2:A5)`.
+**Formula / Steps:** Click A6 (directly under the numbers) > Alt+= > Enter. The formula is `=SUM(A2:A5)`.
 **Alternative:** `=SUBTOTAL(109,A2:A5)` ignores filtered-out rows. Ran in LibreOffice.
-**Result:** Both returned 187000.
+**Result:** Both returned 187000 (SUM in A6, SUBTOTAL in B6 when run).
 **Version note:** All versions.
 **Edge cases:** Blank row in the middle stops AutoSum's auto range. SUM ignores text; numbers stored as text are missed (Q20).
 **Likely follow-ups:** 1) *Sum of filtered rows?* SUBTOTAL. 2) *Average quickly?* Status bar.
@@ -384,7 +385,7 @@
 **Say this in the interview:** "A workbook is the whole Excel file. A worksheet is one tab inside it. A cell is one box at the crossing of a row and a column."
 **Explain simply:**
 - Workbook = a binder (.xlsx file); worksheets = pages; cells = boxes on a page.
-- A worksheet has 1,048,576 rows and 16,384 columns (A to XFD) in current Excel (from memory, unverified).
+- A worksheet has 1,048,576 rows and 16,384 columns (A to XFD) (Microsoft Support, *Excel specifications and limits*).
 - A cell holds a value, text or formula.
 **Example:** The file "Attrition_2026.xlsx" (workbook) has tabs Jan, Feb, Summary (worksheets); cell B5 on Jan is one number.
 **Version note:** Row/column limits apply to Excel 2007 and later (from memory, unverified).
@@ -403,15 +404,15 @@
 **Example:** Pay for 26 days on 30000 basic.
 **Sample sheet:**
 
-| | A | B | C |
-|---|---|---|---|
-| 1 | Basic | Days | Pay |
-| 2 | 30000 | 26 | 26000 |
-| 3 | Fixed | | 780 |
+| | A | B | C | D |
+|---|---|---|---|---|
+| 1 | Basic | Days | Pay | Formula text |
+| 2 | 30000 | 26 | 26000 | `=FORMULATEXT(C2)` |
+| 3 | Fixed | | 780 | |
 
 **Formula / Steps:** C2 `=A2/30*B2`. C3 is just typed 780.
 **Alternative:** `=FORMULATEXT(C2)` displays the formula as text (Excel 2013+, from memory; LibreOffice returned `=A2/30*B2` when run).
-**Result:** C2 returned 26000 when run in LibreOffice; D2 FORMULATEXT returned `=A2/30*B2`.
+**Result:** C2 returned 26000 when run in LibreOffice; D2 `=FORMULATEXT(C2)` returned `=A2/30*B2`.
 **Version note:** FORMULATEXT from Excel 2013 (from memory, unverified).
 **Edge cases:** A cell formatted as Text shows the formula itself instead of calculating (Q45).
 **Likely follow-ups:** 1) *Why avoid hard-coded numbers?* They go stale. 2) *Convert formula to value?* Paste Special > Values (Q38).
@@ -439,7 +440,7 @@
 **Alternative:** `=A1*1` or `=--A1`; also the warning icon > Convert to Number.
 **Result:** Run in LibreOffice. `=SUM(A1:A4)` on text gave 0; `=SUM(B1:B4)` gave 137. Text order (Python): 10, 100, 2, 25; number order: 2, 10, 25, 100.
 **Version note:** All versions (from memory, unverified).
-**Edge cases:** Hidden spaces or non-breaking spaces make VALUE fail (#VALUE!); use TRIM or CLEAN first. Excel sometimes coerces text in `=A1*1` but LibreOffice behaviour can differ in edge cases.
+**Edge cases:** Hidden spaces or non-breaking spaces make VALUE fail (#VALUE!); use TRIM or CLEAN first. In this run LibreOffice turned plain-digit text into numbers with `=A1*1` (10) and `=--A2` (2); Excel does the same for plain digits (from memory, unverified), but edge cases such as stray spaces may differ.
 **Likely follow-ups:** 1) *How do you detect it?* `=ISTEXT(A1)`. 2) *IDs with leading zeros?* Keep as text (Q63).
 **Common mistakes:** Changing format to Number only (existing text stays text until re-entered); sorting without converting.
 
@@ -515,7 +516,7 @@
 2. Press Page Down (next) or Page Up (previous).
 3. To jump to a named sheet, right-click the small arrows at the bottom-left of the tab bar and pick the sheet.
 **Alternative:** Click the tab with the mouse, or use the sheet list from the right-click menu.
-**Version note:** All Windows versions. Mac uses Fn+Ctrl+Down/Up Arrow on laptops (from memory, unverified). Google Sheets uses Alt+Down/Up (from memory, unverified).
+**Version note:** All Windows versions. Mac uses Fn+Ctrl+Down/Up Arrow on laptops (from memory, unverified). Google Sheets uses Alt+Down/Up (Google Docs Editors Help, keyboard shortcuts for Google Sheets).
 **Edge cases:**
 - Hidden sheets are skipped.
 - If several sheets are grouped, moving to another tab can ungroup them, so be careful before typing.
@@ -539,7 +540,7 @@
 2. Click the Name Box, type `AttritionTable`, press Enter (Formulas tab > Define Name also works).
 3. Any time later: F5 > pick AttritionTable > OK.
 **Alternative:** Insert a hyperlink to a cell (Ctrl+K > Place in This Document) so you can click to jump.
-**Version note:** Works in all versions; Google Sheets uses the "Named ranges" panel and Ctrl+J for "jump to range" (from memory, unverified).
+**Version note:** Works in all versions; Google Sheets has a Named ranges panel (from memory, unverified). Google's shortcuts page lists Go to range as Ctrl+G on Mac only and no Windows key, so the earlier "Ctrl+J" claim was removed.
 **Edge cases:**
 - A name is workbook-wide by default, so it works from any sheet.
 - Names cannot contain spaces or look like cell addresses (for example `AB12`).
@@ -559,6 +560,7 @@
 - The small icon after filling (Auto Fill Options) lets you switch between Copy Cells, Fill Series and Fill Formatting Only.
 **Example:** Bonus is 10% of basic pay for 3 employees. Enter the formula once, fill down.
 **Sample sheet:**
+
 | | A | B | C | D | E |
 |---|---|---|---|---|---|
 | 1 | Emp | Basic | Bonus 10% | Month end | No. |
@@ -619,6 +621,7 @@
 - All four only change display; the value stays the same.
 **Example:** A payroll column of 1,234.5 and 98,000: Currency shows ₹1,234.50 and ₹98,000.00 side by side; Accounting puts all ₹ signs at the left edge, so totals are easy to read.
 **Sample sheet:**
+
 | | A | B | C | D | E |
 |---|---|---|---|---|---|
 | 1 | 1234.5 | `=TEXT(A1,"0.00")` | `=TEXT(A1,"#,##0.00")` | `=TEXT(A1,"$#,##0.00")` | `=ISNUMBER(A1)` |
@@ -739,6 +742,7 @@
 - The same idea in formulas uses wildcards: `*` stands for "any number of characters".
 **Example:** From a list of job titles, show every title containing Analyst.
 **Sample sheet:**
+
 | | A (Title) |
 |---|---|
 | 2 | Data Analyst |
@@ -780,7 +784,7 @@ Counting the same rows by formula: `=COUNTIF(A2:A7,"*Analyst*")`.
 Sort: Data tab > Sort > Sort On: Cell Color (or Font Color) > choose the colour and "On Top" > Add Level for the next colour.
 **Alternative:** Add a helper column such as `Status` with text ("Late") so formulas can count it; better than relying on colour.
 **Result:** Not run here (formatting is not a formula). Counting coloured rows needs the filter plus the status bar count or SUBTOTAL(103,...) on visible rows (from memory, unverified).
-**Version note:** Filter and sort by colour exist since Excel 2007 (from memory, unverified). Google Sheets supports filter by colour too (from memory, unverified).
+**Version note:** Filter and sort by colour exist since Excel 2007 (from memory, unverified). Google Sheets supports filter and sort by colour, including conditional-formatting colours (Google Docs Editors Help, filter views page, fetched).
 **Edge cases:**
 - Colours from conditional formatting can also be filtered (from memory, unverified).
 - Slightly different shades appear as separate colours.
@@ -798,6 +802,7 @@ Sort: Data tab > Sort > Sort On: Cell Color (or Font Color) > choose the colour 
 - Filters on different columns combine with AND; filters are additive (Microsoft Support, *Use AutoFilter to filter your data*, seen in search snippet only).
 **Example:** Salaries of six employees; find those above 50,000, between 40,000 and 60,000 and the top 3.
 **Sample sheet:**
+
 | | A (Salary) |
 |---|---|
 | 2 | 35000 |
@@ -832,6 +837,7 @@ Formula checks: `=COUNTIF(A2:A7,">50000")`, `=COUNTIFS(A2:A7,">=40000",A2:A7,"<=
 - Filters on text-dates ("Jan 5" typed as text) do not show these options.
 **Example:** Join dates of five hires; see who joined in Q2.
 **Sample sheet:**
+
 | | A (Join date) | B (Month) | C (Quarter) |
 |---|---|---|---|
 | 2 | 15-Jan-2026 | `=MONTH(A2)` | `="Q"&ROUNDUP(MONTH(A2)/3,0)` |
@@ -863,6 +869,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 - In the filter search box, typed text already matches "contains"; wildcards let you anchor the pattern.
 **Example:** Employee IDs: `EMP*` = starts with EMP; `EMP???` = EMP followed by exactly 3 characters; `*001` = ends with 001.
 **Sample sheet:**
+
 | | A (ID) |
 |---|---|
 | 2 | EMP001 |
@@ -895,6 +902,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 - Ctrl+Alt+V "Open the Paste Special dialog box" (Microsoft Support, *Keyboard shortcuts in Excel*).
 **Example:** A headcount report has `=A1+A2` giving 350. Paste it as values to send a fixed 350 that will not change if inputs change.
 **Sample sheet:**
+
 | | A | B | C |
 |---|---|---|---|
 | 1 | 100 | `=A3*2` | `=SUM(A1:A3)` |
@@ -907,7 +915,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 3. Choose Values, Formats, or tick Transpose > OK.
 **Alternative:** Transpose with a function: `=TRANSPOSE(A1:A3)` (array formula; live link; from memory, unverified on spill rules by version).
 **Result:** The formulas return A3 = 350, B1 = 700, C1 = 700 in LibreOffice. Paste Special itself is a feature and was not run here.
-**Version note:** All versions have Paste Special; Google Sheets has Paste special in the Edit menu (from memory, unverified).
+**Version note:** All versions have Paste Special; Google Sheets has Paste special in the Edit menu (from memory, unverified); paste values only is Ctrl+Shift+V (Google Docs Editors Help, keyboard shortcuts page).
 **Edge cases:**
 - After pasting values, links to the source are gone.
 - Paste values keeps the destination's formats only if you choose Values (not "Values & Source Formatting").
@@ -975,6 +983,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 - ##### means the column is too narrow, or the value is a negative date/time.
 **Example:** Date of joining exported from an HRMS shows 45678. After formatting you see 21-Jan-2025.
 **Sample sheet:**
+
 | | A |
 |---|---|
 | 2 | 45678 |
@@ -999,7 +1008,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 **Common mistakes:** Re-typing the dates; using TEXT and then trying to calculate with the result; not checking the regional date order.
 
 ### Q42 ⭐⭐ 🟢 How do you set the print area, print titles (repeat header row) and fit a sheet to one page wide?
-**Asked at:** commonly asked; print setup is standard for MIS roles (sources file).
+**Asked at:** commonly asked; print setup is an MIS-style task in the sources file's star reasoning; no company report found.
 **What the interviewer is checking:** Report presentation basics.
 **Say this in the interview:** "On the Page Layout tab I set Print Area, then Print Titles to repeat row 1 on every page, and in Scale to Fit I set Width to one page and Height to automatic."
 **Explain simply:**
@@ -1035,6 +1044,7 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 - Ctrl+H: Mac section of the Microsoft page lists it; on Windows from memory, unverified. Ctrl+F is listed for Excel for the web (Microsoft Support).
 **Example:** An HR export has "Attrition", "attrition rate", "Attr." and "ATTRITION". Replacing needs care.
 **Sample sheet:**
+
 | | A | B |
 |---|---|---|
 | 2 | Attrition | `=COUNTIF(A2:A5,"attrition")` |
@@ -1068,13 +1078,14 @@ Formula for Q2 count: `=COUNTIFS(A2:A6,">="&DATE(2026,4,1),A2:A6,"<="&DATE(2026,
 - Ranges work too: `=SUM(Jan!B5:B6)`.
 **Example:** A Summary sheet collects January payroll from the Jan sheet.
 **Sample sheet:**
+
 | | Jan: B | Summary: B |
 |---|---|---|
 | 5 | 1200 | `=Jan!B5` |
 | 6 | 800 | `=SUM(Jan!B5:B6)` |
 | 7 | | `=Jan!B5*2` |
 
-**Formula / Steps:** On Summary, click B2, type `=`, click the Jan tab, click B5, press Enter.
+**Formula / Steps:** On Summary, click B5, type `=`, click the Jan tab, click B5, press Enter.
 **Alternative:** `=INDIRECT("Jan!B5")` (text-driven sheet name; volatile, slower). Also 3D references like `=SUM(Jan:Mar!B5)` add the same cell across consecutive sheets (from memory, unverified).
 **Result (run in LibreOffice):** `=Jan!B5` = 1200; `=SUM(Jan!B5:B6)` = 2000; `='Jan'!B5*2` = 2400.
 **Version note:** All versions. Google Sheets: `=Jan!B5` the same; across files use IMPORTRANGE (from memory, unverified).
@@ -1145,7 +1156,7 @@ Helper route: `=MATCH(B2,{"High","Medium","Low"},0)` in C2, fill down, sort by C
 **Alternative:** Save the list permanently via File > Options > Advanced > General > Edit Custom Lists > Import. In 365: `=SORTBY(A2:B6,MATCH(B2:B6,{"High","Medium","Low"},0))` (not run here; expected order T2, T4, T3, T1, T5).
 **Result:** (run) MATCH returns 3,1,2,1,3 for rows 2-6, so sorting ascending on C gives T2, T4, T3, T1, T5 (Excel sort is stable on ties, from memory).
 **Version note:** Custom list sort works in all desktop versions; SORTBY needs 365/2021 (Microsoft Support UNIQUE page lists 2021/2024/365 for the dynamic-array family; SORTBY itself not fetched, so unverified). Google Sheets has no custom list; use a helper column (from memory, unverified).
-**Edge cases:** A label not in the list (e.g. "Urgent") gives #N/A in MATCH (run) and goes to the bottom in a custom-list sort; trailing spaces break matches.
+**Edge cases:** A label not in the list (e.g. "Urgent") gives #N/A in MATCH (run) and goes to the bottom in a custom-list sort (from memory, unverified); trailing spaces break matches.
 **Likely follow-ups:**
 1. Sort by two levels? Data > Sort > Add Level (Team, then Priority).
 2. Sort by colour? Same dialog, Sort On: Cell Color.
@@ -1216,20 +1227,20 @@ Criteria area (E1:F2): E1 `Team`, F1 `Absent`; E2 `<>HR`, F2 `>3`.
 **Explain simply:**
 - A **reference** is a cell address in a formula, like B5.
 - Deleting the cell the formula needs turns the address into `#REF!` inside the formula text.
-- Also caused by a lookup column number larger than the table width in some versions, INDEX with a row beyond the range, or a closed workbook link that moved.
+- Also caused by a VLOOKUP column number larger than the table width (Microsoft Support, *VLOOKUP function*), INDEX with a row beyond the range, or a closed workbook link that moved.
 - Fix: press Ctrl+Z immediately; otherwise re-point the formula by hand.
 **Example:** `=B2+C2` for total pay; delete column C and the formula becomes `=B2+#REF!`.
 **Sample sheet:**
 
-| | A | B |
-|---|---|---|
-| 1 | 1 | `=INDEX(A1:A3,5)` |
-| 2 | 2 | `=VLOOKUP(2,A1:B3,5,FALSE)` |
-| 3 | 3 | `=SUM(A1:A3)` |
+| | A | B | D |
+|---|---|---|---|
+| 1 | 1 | 10 | `=INDEX(A1:A3,5)` |
+| 2 | 2 | 20 | `=VLOOKUP(2,A1:B3,5,FALSE)` |
+| 3 | 3 | 30 | `=SUM(A1:A3)` |
 
 **Formula / Steps:** To prevent: use whole-range SUM (`=SUM(B2:B10)`) so deleting one row inside just shrinks the range; hide instead of delete; use Tables or named ranges.
 **Alternative:** Trace the fault with Formulas > Error Checking or Trace Precedents.
-**Result:** (run) INDEX beyond range gives #REF!; the SUM is 6. VLOOKUP with column 5 of a 2-column range gave #VALUE! in LibreOffice (Excel documents #REF! for this, from memory, unverified).
+**Result:** (run) INDEX beyond range gives #REF!; the SUM is 6. VLOOKUP with column 5 of a 2-column range gave #VALUE! in LibreOffice, but Microsoft Support's VLOOKUP page (fetched) says Excel returns #REF! when col_index_num is greater than the number of columns, so expect #REF! in Excel. (An earlier sample put this VLOOKUP inside its own lookup range, a circular reference; it now sits in column D.)
 **Version note:** Same in all versions (from memory, unverified; Microsoft's #REF! page returned 404).
 **Edge cases:** Deleting the last row inside `SUM(B2:B10)` ranges is safe; deleting the cell that is the single reference is not.
 **Likely follow-ups:**
@@ -1351,7 +1362,7 @@ Criteria area (E1:F2): E1 `Team`, F1 `Absent`; E2 `<>HR`, F2 `>3`.
 - The **Fill Handle** is the small square at the corner of a selected cell.
 - Double-click fills down to match the length of the adjacent column.
 - It uses the nearest column with data on the left (or right if left is empty).
-- It stops at a blank cell, so 5,000 rows with one gap in row 800 fills only 799 rows.
+- It stops at a blank cell, so with one gap in row 800 it fills only down to row 799 and leaves the rest empty.
 **Example:** Add a formula `=C2*D2` for 5,000 employees; double-click fills all rows.
 **Formula / Steps:**
 1. Enter the formula in the first row.
@@ -1391,7 +1402,7 @@ Criteria area (E1:F2): E1 `Team`, F1 `Absent`; E2 `<>HR`, F2 `>3`.
 - Fixed values never change: perfect for a joining date or sign-in time.
 - `=TODAY()` shows today's date and updates whenever you open the file; `=NOW()` includes time.
 - A date in Excel is a serial number; the time is the decimal part.
-**Example:** Joining date typed with Ctrl+; stays 21-Oct-2026; `=TODAY()-B2` gives days of service that grows daily.
+**Example:** Joining date typed with Ctrl+; stays 21-Oct-2026; `=TODAY()-A2` gives days of service that grows daily.
 **Sample sheet:**
 
 | | A | B |
@@ -1401,8 +1412,8 @@ Criteria area (E1:F2): E1 `Team`, F1 `Absent`; E2 `<>HR`, F2 `>3`.
 
 **Formula / Steps:** Select cell > Ctrl+; then Space then Ctrl+Shift+; for both in one cell.
 **Alternative:** `=TODAY()` then Copy > Paste Special > Values to freeze it.
-**Result:** (run on 21-Oct-2026) `=TODAY()-DATE(2026,1,1)` returned 293, matching the Python check; `TODAY()-INT(TODAY())` = 0 (no time part); the answer changes each day.
-**Version note:** All versions (shortcuts per Microsoft page; Google Sheets uses Ctrl+; and Ctrl+Shift+; too, unverified).
+**Result:** (run on 21-Oct-2026) `=TODAY()-DATE(2026,1,1)` returned 293, matching the Python check (re-run during review on 22-Oct-2026: 294); `TODAY()-INT(TODAY())` = 0 (no time part); the answer changes each day.
+**Version note:** All versions (shortcuts per Microsoft page; Google Sheets uses Ctrl+; and Ctrl+Shift+; too, per Google Docs Editors Help, keyboard shortcuts page).
 **Edge cases:** TODAY is volatile: attendance records using it will change when reopened; time cells need a time number format.
 **Likely follow-ups:**
 1. Date and time together? Ctrl+; Space Ctrl+Shift+;.
@@ -1468,16 +1479,16 @@ Criteria area (E1:F2): E1 `Team`, F1 `Absent`; E2 `<>HR`, F2 `>3`.
 ### Q60 ⭐ 🟢 What are the key differences between Excel and Google Sheets for basic sorting, filtering and sharing?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Tool awareness for collaborative work.
-**Say this in the interview:** "Both sort and filter similarly, but Sheets is web-first with real-time sharing by link, while desktop Excel is stronger for large data, pivots, Power Query and offline work." (All Google Sheets claims here are from memory, unverified; no Google help page was fetched.)
+**Say this in the interview:** "Both sort and filter similarly, but Sheets is web-first with real-time sharing by link, while desktop Excel is stronger for large data, pivots, Power Query and offline work." (Filter views and colour filtering are confirmed on Google Docs Editors Help, filter views page; other Sheets claims here are from memory, unverified.)
 **Explain simply:**
 - **Sorting:** both support multi-column sort; Excel has custom lists and sort by colour; Sheets has Data > Sort range and the `SORT` function.
-- **Filtering:** Excel AutoFilter and Advanced Filter; Sheets filter views let each person filter without affecting others, and the `FILTER` function.
+- **Filtering:** Excel AutoFilter and Advanced Filter; Sheets filter views let each person filter without affecting others (Google filter views page, fetched), and the `FILTER` function.
 - **Sharing:** Sheets edits live by default with comments; Excel co-authoring needs OneDrive/SharePoint.
 - Excel handles much larger files and has Power Query; Sheets limits are lower.
 **Example:** A recruiter team shares one tracker; Sheets filter views let each recruiter view only their own candidates.
 **Formula / Steps:** Excel: Data > Filter. Sheets: Data > Create a filter, or Create filter view.
 **Alternative:** Excel for the web gives browser co-editing with fewer features.
-**Version note:** Unverified from memory.
+**Version note:** Filter views confirmed (see above); everything else about Sheets limits and Excel co-authoring is from memory, unverified.
 **Edge cases:** Formulas and macros may not convert perfectly between them.
 **Likely follow-ups:**
 1. When pick Excel? Heavy data, pivots, VBA.
@@ -1544,7 +1555,7 @@ Criteria area (E1:F2): E1 `Team`, F1 `Absent`; E2 `<>HR`, F2 `>3`.
 **What the interviewer is checking:** Treating identifiers as text, not numbers.
 **Say this in the interview:** "IDs are labels, not quantities, so I format the column as Text before typing or importing, or type an apostrophe first. For fixed-length codes I can use a custom format like 000000."
 **Explain simply:**
-- Excel keeps only 15 significant digits for numbers (from memory, unverified); longer numbers lose digits and may show as 1.23E+11.
+- Excel keeps only 15 digits of number precision (Microsoft Support, *Excel specifications and limits*); longer numbers lose digits and may show as 1.23E+11.
 - A leading zero is dropped because 007 is the number 7.
 - Text format or apostrophe keeps it exactly.
 - Custom format `000000` only displays zeros; the value is still 42.
@@ -1596,7 +1607,7 @@ Criteria area (E1:F2): E1 `Team`, F1 `Absent`; E2 `<>HR`, F2 `>3`.
 - Steps per Microsoft Support, "Create or delete a custom number format": select data, Home > Number group dialog launcher > Custom > type the format > OK; text goes in quotation marks.
 - Each trailing comma divides the display by 1,000, so `,,` gives millions (from memory; confirmed by the test below).
 - `0` forces a digit; `#` shows a digit only if present.
-- Custom formats cannot be created in Excel for the web (Microsoft Support page above).
+- Custom formats cannot be created in Excel for the web (the same Microsoft page, fetched: "You can't create custom formats in Excel for the web").
 **Example:** Payroll cost 1500000 shown as 1.5M on a dashboard; leave balance 5 shown as 5 days.
 **Sample sheet:**
 
@@ -1641,7 +1652,7 @@ Criteria area (E1:F2): E1 `Team`, F1 `Absent`; E2 `<>HR`, F2 `>3`.
 2. Absent > Number Filters > Greater Than > 3.
 3. Data > Sort > Sort by Team (A to Z), Add Level > Absent (Largest to Smallest).
 Check count: `=COUNTIF(C2:C7,">3")`.
-**Alternative:** 365: `=SORT(FILTER(A2:C7,C2:C7>3),2)` (not run here).
+**Alternative:** 365: `=SORT(FILTER(A2:C7,C2:C7>3),{2,3},{1,-1})` sorts by Team A-Z, then Absent largest first (not run here; same order as the expected list).
 **Result:** (pandas and run) `COUNTIF` = 4. Expected list: E06 HR 9; E03 Ops 4; E05 Sales 7; E01 Sales 5. E04 (exactly 3) is excluded. The filter and sort UI is not run here.
 **Version note:** AutoFilter and Sort work in all versions; FILTER/SORT need 365/2021 (from memory, unverified).
 **Edge cases:** Absent stored as text will not filter correctly (Q45); an employee with several rows needs totals first (SUMIFS or pivot); define "a month" clearly.
