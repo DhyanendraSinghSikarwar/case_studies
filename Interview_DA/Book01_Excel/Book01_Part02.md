@@ -1599,6 +1599,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - `TEXTJOIN(separator, ignore_empty, range)` joins a whole range in one go and can skip blanks.
 **Example:** An HR mailing label needs "Asha / Rao / HR" on three lines, and a report needs the list of departments "HR, Payroll, Hiring" in one cell.
 **Sample sheet:**
+
 | | A | B | C |
 |---|---|---|---|
 | 1 | First | Last | Dept |
@@ -1629,6 +1630,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - Text you want returned goes in double quotes; to test text, compare with `="Done"`.
 **Example:** HR task tracker: "Done" tasks should never show Overdue; blank due dates should show "No date" (a blank counts as 0, which is before today, so it would wrongly say Overdue).
 **Sample sheet:** (as-of date in F1 = 21-Oct-2026 so the result is repeatable; replace `$F$1` by `TODAY()` in real use)
+
 | | A | B | C |
 |---|---|---|---|
 | 1 | Task | Due | Status |
@@ -1658,6 +1660,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - A lookup table keeps the rules visible: change the grade bands in the table, not in 40 formulas.
 **Example:** Performance rating from a score: 90+ = A, 75+ = B, 60+ = C, 45+ = D, else F.
 **Sample sheet:** (A2:A6 scores; table in F2:G6)
+
 | | A | F | G |
 |---|---|---|---|
 | 1 | Score | Min | Grade |
@@ -1687,6 +1690,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - Blanks break it: COUNTIF of a blank gives 0, so 1/0 gives #DIV/0!.
 **Example:** An attendance log has several rows per employee; the question is "how many different employees were present?"
 **Sample sheet:**
+
 | | A |
 |---|---|
 | 1 | Emp ID |
@@ -1719,6 +1723,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - Counting them is a data-quality check before reporting.
 **Example:** Pay per day = Salary / Days worked. One employee has 0 days (#DIV/0!), one has "TBD" salary (#VALUE!).
 **Sample sheet:**
+
 | | A | B | C | D (=B/C) | E (VLOOKUP) |
 |---|---|---|---|---|---|
 | 2 | E101 | 60000 | 30 | 2000 | HR |
@@ -1748,6 +1753,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - COUNTIF being case-insensitive is stated by Microsoft Support ("Use the COUNTIF function").
 **Example:** Employee codes where "HR" (department) and "hr" (a typo) must be told apart.
 **Sample sheet:**
+
 | | A |
 |---|---|
 | 2 | HR |
@@ -1777,6 +1783,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - NETWORKDAYS counts working days; WORKDAY finds the date.
 **Example:** Asha resigns on 22-Oct-2026 with a 30-working-day notice; company holidays 29-Oct and 9-Nov. When is her last day? And what is her tenure?
 **Sample sheet:**
+
 | | B (Resigned) | C (Joined) | F | H (Holidays) |
 |---|---|---|---|---|
 | 2 | 22-Oct-26 | 03-Apr-23 | As-of 22-Oct-26 | 29-Oct-26 |
@@ -1802,6 +1809,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - The number can be a calculation, e.g. `B2*3`.
 **Example:** Manager rating 1 to 5 shown as stars on a feedback sheet.
 **Sample sheet:**
+
 | | A | B |
 |---|---|---|
 | 1 | Employee | Rating |
@@ -1828,6 +1836,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 **Explain simply:** Availability from Microsoft Support pages fetched: IFS, SWITCH, MAXIFS, CONCAT, TEXTJOIN (Office 2019 or 365); UNIQUE (2021, 2024, 365); TEXTSPLIT (365, 2024); XLOOKUP (the page's note says it is not available in 2016 and 2019, although its Applies-to list names them).
 **Example:** You send a 365 workbook with IFS to a manager on Excel 2016: the cell shows #NAME?.
 **Sample sheet / table:**
+
 | New function | Needs | Excel 2016 substitute |
 |---|---|---|
 | IFS | 2019+ | nested IF or lookup table |
@@ -1858,6 +1867,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 **Example:** Count of employees in "HR" who joined after 1-Jan-2025: `=COUNTIFS(A:A,"HR",B:B,">"&DATE(2025,1,1))` in either tool.
 **Formula / Steps:** Same formula in both. Google: `=ARRAYFORMULA(COUNTIFS(A2:A,E2:E4))` for several criteria (**not run here**, from memory).
 **Alternative:** Google Sheets QUERY function, Excel PivotTable.
+**Result:** Excel side: the COUNTIFS pattern is the same one run in Q8 and Q10 (LibreOffice 24.2). The Google Sheets formulas were not run here (no Sheets available); no sample sheet is given because both tools use identical syntax.
 **Version note:** COUNTIFS/SUMIFS exist from Excel 2007; Sheets always has them. Differences in regex-based criteria settings in Sheets are from memory, unverified.
 **Edge cases:** Dates as text, trailing spaces, and criteria like ">"&cell work the same way.
 **Likely follow-ups:** *Does COUNTIFS accept OR?* No; add two COUNTIFS or use SUMPRODUCT.
@@ -1873,6 +1883,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - Old way: `FIND` locates the character position, `LEFT`/`MID` cuts there.
 **Example:** Get the user name and domain from work emails.
 **Sample sheet:**
+
 | | A | B | C |
 |---|---|---|---|
 | 2 | ananya.rao@acme.com | | |
@@ -1898,7 +1909,8 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 **Example:** Mark rows whose employee ID looks like E followed by 3 digits.
 **Formula / Steps:** Sheets: `=ARRAYFORMULA(REGEXMATCH(A2:A5,"^E[0-9]{3}$"))` (**not run here**). By hand on E101, E12, e105, X200 returns TRUE, FALSE, FALSE, FALSE (regex is case-sensitive).
 **Alternative:** Excel: `=LEFT(A2,1)="E"` plus LEN/ISNUMBER tests, wildcards in COUNTIF, or Flash Fill (Data > Flash Fill). Microsoft has been adding REGEX functions to Microsoft 365; check your build (from memory, unverified).
-**Version note:** Excel 365 dynamic arrays spill without Ctrl+Shift+Enter; Excel 2016/2019 do not.
+**Result:** Not run here (Google Sheets and Excel regex are unavailable in this environment); the TRUE/FALSE values above are a hand check.
+**Version note:** Excel 365 dynamic arrays spill without Ctrl+Shift+Enter; Excel 2016/2019 do not (from memory, unverified).
 **Edge cases:** ARRAYFORMULA cannot be exported (Google page); regex differences between tools.
 **Likely follow-ups:** *Alternative to ARRAYFORMULA?* Fill-down or QUERY.
 **Common mistakes:** Passing numbers to REGEXMATCH; forgetting anchors ^ and $.
@@ -1913,6 +1925,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - Codes: mmm = Jan, mmmm = January, yyyy = year, #,##0 = thousands separator, 0.0% = percent.
 **Example:** Dashboard titles for a monthly hiring report.
 **Sample sheet:**
+
 | | A (Month) | B (Hires) | C (Accept rate) |
 |---|---|---|---|
 | 2 | 01-Jan-26 | 45 | |
@@ -1937,6 +1950,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - To find a real tilde use `~~` (from memory, unverified; run below worked in LibreOffice).
 **Example:** Counting job titles with "*" in them, e.g. "Ops*Lead".
 **Sample sheet:**
+
 | | A |
 |---|---|
 | 2 | Ops*Lead |
@@ -1949,7 +1963,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 **Formula / Steps:** `=COUNTIF(A2:A7,"Ops*Lead")`; literal: `=COUNTIF(A2:A7,"Ops~*Lead")`
 **Alternative:** For long text or exact matching: `=SUMPRODUCT(--(A2:A7=C1))`.
 **Result (run in LibreOffice):** "Ops*Lead" = 3; "Ops~*Lead" = 1; "What?" = 2; "What~?" = 1; "a~~b" = 1. Long text: LibreOffice has no 255 limit (300-character test returned 1), so **the 255 problem is not reproduced here**; it comes from Microsoft documentation.
-**Version note:** Applies to Excel 365, 2024, 2021 per the page; behaviour of older versions unverified.
+**Version note:** The COUNTIF page (fetched in this review) lists Excel 365, 2024 and 2021 in Applies-to; older versions are not listed, so behaviour there is unverified. The page does not say wildcards match only text; "wildcards work only on text" is from memory, unverified.
 **Edge cases:** Criteria "=" on blanks; numbers stored as text.
 **Likely follow-ups:** *Does SUMIF have the same limit?* Likely, from memory, unverified.
 **Common mistakes:** Forgetting ~ when searching for "*"; trusting COUNTIF on very long strings.
@@ -1964,6 +1978,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - Better: months with `"M"`, then days = end minus the date you reach after those months.
 **Example:** Tenure "2 years 5 months 2 days" for an exit letter.
 **Sample sheet:**
+
 | | A (Start) | B (End) |
 |---|---|---|
 | 2 | 31-Jan-26 | 01-Mar-26 |
@@ -1989,6 +2004,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - IDs (card, Aadhaar-like, employee numbers) should be stored as text.
 **Example:** Three IDs ending 6, 7, 8 may all be counted for the ID ending in 7.
 **Sample sheet:**
+
 | | A (ID, text) | C |
 |---|---|---|
 | 2 | 1234567890123456 | Look-up: 1234567890123457 |
@@ -2014,6 +2030,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - `EDATE(date,1)` gives the same day next month.
 **Example:** 8 employees, months Jan to Mar 2026.
 **Sample sheet:**
+
 | | A (Emp) | B (Joined) | C (Exit) |
 |---|---|---|---|
 | 2 | E1 | 01-Jun-24 | |
@@ -2032,6 +2049,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 - J2 Closing: `=G2+H2-I2`; K2 Attrition: `=I2/AVERAGE(G2,J2)`
 **Alternative:** A PivotTable grouped by month (not run here), or SUMPRODUCT.
 **Result (run):**
+
 | Month | Opening | Joined | Left | Closing | Attrition |
 |---|---|---|---|---|---|
 | Jan-26 | 5 | 1 | 1 | 5 | 20.0% |

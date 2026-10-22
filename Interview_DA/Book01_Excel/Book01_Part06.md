@@ -111,8 +111,8 @@
 **What the interviewer is checking:** Do you know compatibility limits before you share a workbook with a team?
 **Say this in the interview:** "They work in Microsoft 365, Excel 2021 and Excel 2024. They are not in Excel 2019 or 2016, so a colleague on 2019 will see the formulas fail. I would check which version my audience has before building the report."
 **Explain simply:**
-- Microsoft's pages for FILTER, UNIQUE, SORT, SORTBY, SEQUENCE and RANDARRAY each list Microsoft 365, Excel 2024 and Excel 2021 (plus iPad, iPhone and Android). 2019 and 2016 are not listed.
-- LET is the same list. TAKE, CHOOSECOLS and HSTACK are narrower: Microsoft 365 and Excel 2024 only, not 2021.
+- Microsoft's pages for FILTER, UNIQUE, SORT, SORTBY, SEQUENCE and RANDARRAY each list (SORTBY, FILTER, LET, XMATCH re-checked in the Wave C review) Microsoft 365, Excel 2024 and Excel 2021 (plus iPad, iPhone and Android). 2019 and 2016 are not listed.
+- LET is the same list. TAKE and CHOOSECOLS are narrower: their Microsoft pages list Microsoft 365 and Excel 2024 only, not 2021 (fetched in the Wave C review). HSTACK/VSTACK availability was not fetched: from memory, unverified.
 - XLOOKUP's page carries a note: "XLOOKUP is not available in Excel 2016 and Excel 2019" (Microsoft Support, "XLOOKUP function"). Its "Applies to" box still lists 2016/2019, so do not trust that box alone. The same happens on the dynamic array page, whose box lists 2019 and 2016; the function pages are the safer guide.
 - In an older version, Microsoft says a formula that could return several values is shown as a legacy array formula that "cannot resize" and has no spill border (Microsoft Support, "Dynamic array formulas in non-dynamic aware Excel"). Where `@` was added, it shows as `_xlfn.SINGLE()` and returns #NAME? (Microsoft Support, "Implicit intersection operator: @").
 **Example:** Your attrition dashboard uses FILTER. A colleague on Excel 2019 opens it: the filtered list shows an error rather than names.
@@ -273,7 +273,7 @@
 **Alternative (works in any version):** `=SUMPRODUCT(1/COUNTIF(B2:B9,B2:B9))`.
 **Result:** UNIQUE version not run here (expected result reproduced with pandas): `df.Dept.nunique()` printed 3. The alternative was run in LibreOffice 24.2: 3.
 **Version note:** UNIQUE: Microsoft 365, 2021, 2024. SUMPRODUCT/COUNTIF work in every version.
-**Edge cases:** The SUMPRODUCT trick returns #DIV/0! if the range has blank cells (from memory, unverified). Text with different spacing counts as different values.
+**Edge cases:** The SUMPRODUCT trick returns #DIV/0! if the range has blank cells (run in LibreOffice 24.2 in the review: #DIV/0!; Excel should behave the same, from memory). Text with different spacing counts as different values.
 **Likely follow-ups:** 1) *Distinct but only for Sales?* `=COUNTA(UNIQUE(FILTER(...)))`. 2) *Pivot way?* Add to Data Model and use Distinct Count (from memory, unverified).
 **Common mistakes:** Using COUNT (counts numbers only) on text; forgetting blanks; selecting the header.
 
@@ -510,7 +510,7 @@
 - Syntax (Microsoft Support, "LET function"): `=LET(name1, name_value1, calculation_or_name2, [name_value2, calculation_or_name3...])`.
 - The last item is the calculation that returns the result.
 - Names work like temporary variables that exist only inside that formula.
-- Speed benefit: I recall Microsoft says LET can improve performance by calculating once; I did not see that on the page I read, so treat it as from memory, unverified.
+- Speed benefit: the Microsoft Support "LET function" page says a repeated expression is recalculated each time, while LET calculates a named one once; its own filter example is described as computing "twice as fast" (fetched in the Wave C review; the speed-up depends on the formula, so I would not promise it).
 **Example:** Employees paid above the average salary. The average of the 8 salaries is 54,375, so the result is Ravi, Meena, Priya, Dev.
 **Sample sheet:**
 
@@ -621,8 +621,8 @@
 **Formula / Steps:** `=TEXTJOIN(", ",TRUE,FILTER(A2:A9,B2:B9="HR",""))`
 **Alternative (Excel 2019 too):** array formula entered with Ctrl+Shift+Enter: `=TEXTJOIN(", ",TRUE,IF(B2:B9="HR",A2:A9,""))`.
 **Result:** FILTER version not run here (expected result reproduced with pandas): `Asha, Karan, Tara`. The alternative was run in LibreOffice 24.2 as an array formula and returned `Asha, Karan, Tara`.
-**Version note:** TEXTJOIN is listed for 365, 2024, 2021 and 2019 (Microsoft Support); not 2016.
-**Edge cases:** Results over 32,767 characters give #VALUE! (from memory, unverified). Department with no match gives an empty cell.
+**Version note:** TEXTJOIN is listed for 365, 2024, 2021 and 2019 (Microsoft Support, "TEXTJOIN function", fetched in review); the page does not list 2016. It also confirms #VALUE! beyond 32,767 characters.
+**Edge cases:** Results over 32,767 characters give #VALUE! (Microsoft Support, "TEXTJOIN function"). Department with no match gives an empty cell.
 **Likely follow-ups:** 1) *Sorted names?* Wrap FILTER in SORT. 2) *One cell per department?* LET plus MAP, 365 only (not verified).
 **Common mistakes:** Using & with a range; forgetting the quotes round the delimiter; CSE in 2019.
 
@@ -729,7 +729,7 @@
 **Alternative:** Excel Table plus a named range pointing at the column (no spill needed, but duplicates remain), or a pre-365 `OFFSET`/`COUNTA` named range.
 **Result:** Not run here (dynamic arrays and Data Validation). Expected list reproduced with pandas: `['Finance', 'HR', 'IT']`; without removing blanks UNIQUE would also return a blank entry (pandas: `['HR','IT','Finance',nan]`).
 **Version note:** Spill functions: 365/2021/2024 (Microsoft Support, "UNIQUE function"). Using `#` inside the Data Validation source is from memory, unverified.
-**Edge cases:** If something blocks the spill, F2 shows #SPILL! and the list breaks. A text-then-blank problem: UNIQUE returns 0 for blank cells unless removed. Never put the list inside an Excel Table (spills are not supported in tables, Microsoft Support, "Dynamic array formulas and spilled array behavior").
+**Edge cases:** If something blocks the spill, F2 shows #SPILL! and the list breaks. UNIQUE shows a blank source cell as 0 unless FILTER removes blanks first (from memory, unverified). Never put the list inside an Excel Table (spills are not supported in tables, Microsoft Support, "Dynamic array formulas and spilled array behavior").
 **Likely follow-ups:** 1) *Why not type the list?* It never updates. 2) *Where to keep the list?* On a hidden Lists sheet.
 **Common mistakes:** Typing `F2:F10` instead of `F2#`; leaving blanks in the source; placing the helper in a Table.
 
@@ -741,12 +741,12 @@
 - FILTER: list all employees in HR. SORT: order by salary. SORTBY: order a table by a column you do not display. UNIQUE: list departments once.
 - SEQUENCE: numbers 1-12 or month dates. RANDARRAY: random numbers, e.g. for sampling.
 - XLOOKUP: look up a value and return the matching value from another column. XMATCH: return the position of an item.
-- Premise note: XLOOKUP and XMATCH are lookup functions that *can* return arrays; I believe they arrived later than the first group (from memory, unverified).
+- Premise note: XLOOKUP and XMATCH are lookup functions that can return arrays, but they are not usually grouped with the dynamic array functions; I believe they arrived later than the first group (from memory, unverified).
 **Example:** `=SEQUENCE(5,1,1001,1000)` gives 1001, 2001, 3001, 4001, 5001 (Microsoft's own GL-code example).
 **Sample sheet / Result:** Not run here (expected result reproduced with pandas): `[1001, 2001, 3001, 4001, 5001]`.
 **Formula / Steps:** `=FILTER(...)`, `=SORT(...)`, `=SORTBY(...)`, `=UNIQUE(...)`, `=SEQUENCE(rows,[columns],[start],[step])`, `=RANDARRAY([rows],[columns],[min],[max],[whole_number])`, `=XLOOKUP(...)`, `=XMATCH(lookup_value,lookup_array,[match_mode],[search_mode])`.
 **Alternative:** Old equivalents: AutoFilter or Advanced Filter, Sort button, Remove Duplicates, ROW(), RAND(), VLOOKUP, MATCH.
-**Version note:** FILTER, SORT, SORTBY, UNIQUE, SEQUENCE, RANDARRAY, XMATCH: Excel 365, 2024, 2021 (Microsoft Support pages for each). XLOOKUP: I fetched its page but its availability text was ambiguous, so "365/2021, not 2016/2019" is from memory, unverified.
+**Version note:** FILTER, SORT, SORTBY, UNIQUE, SEQUENCE, RANDARRAY, XMATCH: Excel 365, 2024, 2021 (Microsoft Support pages for each). XLOOKUP: Microsoft's page has a note "XLOOKUP is not available in Excel 2016 and Excel 2019" but its Applies-to list names 2016 and 2019 (conflict, fetched in review); I follow the note and treat XLOOKUP as 2021/365. The XMATCH page lists 365, 2024 and 2021 and has no 2016/2019 note.
 **Edge cases:** In Excel 2016/2019 they show #NAME? (from memory, unverified).
 **Likely follow-ups:** 1) *Which is the most useful?* FILTER. 2) *Is SORT the same as the Sort button?* No, the formula leaves the source untouched.
 **Common mistakes:** Believing they work in Excel 2019; mixing up SORT (column number) and SORTBY (range).
@@ -768,8 +768,8 @@
 | 2 | (spills down to row 12) |
 
 **Formula / Steps:** `=SEQUENCE(12)` or across `=SEQUENCE(1,12)`; dates: `=DATE(2026,SEQUENCE(12),1)`, then Home > Number > Short Date.
-**Alternative:** `=EDATE(DATE(2026,1,1),SEQUENCE(12,1,0))`, or in older Excel type 1 and 2, drag the fill handle.
-**Result:** SEQUENCE: not run here (expected result reproduced with pandas): 1..12 and 01-Jan-2026 ... 01-Dec-2026 (pandas `date_range(freq='MS')`). The same DATE(2026,n,1) logic was run in LibreOffice cell by cell for n=1..12 and gave 01-Jan-2026 through 01-Dec-2026.
+**Alternative:** `=EDATE(DATE(2026,1,1),SEQUENCE(12,1,0))` (the SEQUENCE form is not run here; EDATE itself was run, see Result), or in older Excel type 1 and 2, drag the fill handle.
+**Result:** SEQUENCE: not run here (expected result reproduced with pandas): 1..12 and 01-Jan-2026 ... 01-Dec-2026 (pandas `date_range(freq='MS')`). The same DATE(2026,n,1) logic was run in LibreOffice cell by cell for n=1..12 and gave 01-Jan-2026 through 01-Dec-2026. Wave C check of the EDATE alternative: `=EDATE(DATE(2026,1,1),n)` for n=0..11 was compared with `DATE(2026,n+1,1)` inside the sheet (`=B1=A1`, difference column) and returned TRUE for all 12 months, difference 0. The earlier FALSE came from the author's Python script, not from Excel: LibreOffice stored the EDATE cells with a plain number format, so they came back as serial numbers (46023, 46054, ... 46357) while the DATE cells came back as dates, and a number never equals a date in Python. In Excel a date is only a serial number with a date format, so the two formulas agree; 46023 is 1-Jan-2026.
 **Version note:** SEQUENCE: 365/2021/2024 (Microsoft Support, "SEQUENCE function"). DATE and EDATE work in all versions.
 **Edge cases:** Month 13 rolls into next year; leap years are handled by DATE.
 **Likely follow-ups:** 1) *Month names?* `=TEXT(DATE(2026,SEQUENCE(12),1),"mmm")`. 2) *Last day of month?* `=EOMONTH(DATE(2026,SEQUENCE(12),1),0)`.
@@ -808,14 +808,14 @@
 **Explain simply:**
 - Premise note: nothing needs replacing; the functions exist. QUERY is just a popular extra.
 - QUERY: `=QUERY(A1:C11,"select A,C where B='HR' order by C desc",1)`, with 1 meaning one header row.
-- Sheets facts here are from memory, unverified (I did not fetch Google Docs Editors Help).
+- Fetched in the Wave C review (Google Docs Editors Help, "FILTER function", "SORT function", "QUERY function"): Sheets FILTER is `FILTER(range, condition1, ...)` and returns #N/A when nothing matches; SORT takes `is_ascending` TRUE/FALSE and extra sort_column/is_ascending pairs; QUERY is `QUERY(data, query, [headers])` using the Google Visualization API Query Language. The UNIQUE, ARRAYFORMULA and LET help pages were not reachable: statements about them are from memory, unverified.
 **Example:** HR employees by salary descending, Sheets QUERY versus Excel `=SORT(FILTER(...),2,-1)`.
-**Sample sheet:** Uses the 10-person employee table; HR rows are Asha 48000, Meena 52000, Imran 90000, Pooja 41000.
+**Sample sheet:** A 10-person table in A1:C11 (A Employee, B Dept, C Salary): Asha HR 48000, Ravi IT 72000, Meena HR 52000, Karan Finance 45000, Divya IT 72000, Imran HR 90000, Sneha Finance 58000, Vikram IT 95000, Pooja HR 41000, Arjun Finance 30000 (same table as Q32). HR rows are Asha 48000, Meena 52000, Imran 90000, Pooja 41000.
 **Formula / Steps:** Excel: `=SORT(FILTER(A2:C11,B2:B11="HR"),3,-1)`; Sheets: `=QUERY(A1:C11,"select A,C where B='HR' order by C desc",1)`.
 **Alternative:** In Sheets the sort order argument is TRUE/FALSE rather than 1/-1: `=SORT(FILTER(A2:C11,B2:B11="HR"),3,FALSE)` (from memory, unverified).
 **Result:** Not run here (expected result reproduced with pandas): Imran 90000, Meena 52000, Asha 48000, Pooja 41000.
-**Version note:** Sheets features are from memory, unverified.
-**Edge cases:** QUERY needs consistent data types per column; mixed text and numbers can drop values (from memory).
+**Version note:** FILTER, SORT, QUERY: Google Docs Editors Help pages fetched (no version limits apply to Sheets). UNIQUE and LET in Sheets: from memory, unverified.
+**Edge cases:** QUERY needs consistent data types per column; in a mixed column the majority type wins and the minority values are treated as null (Google Docs Editors Help, "QUERY function"). Note the QUERY example returns only columns A and C, while the Excel formula returns all three.
 **Likely follow-ups:** 1) *Does Sheets have LET?* I believe yes (unverified). 2) *Can Excel run QUERY?* No; use Power Query.
 **Common mistakes:** Forgetting the header-count argument in QUERY; copying Excel's `-1` order into Sheets.
 
@@ -825,7 +825,7 @@
 **Say this in the interview:** "Old array formulas needed Ctrl+Shift+Enter and showed curly braces; the result stayed in a fixed block. In 365 you just press Enter and the result spills as far as needed."
 **Explain simply:**
 - An *array formula* is one formula that works on many values at once.
-- Legacy ones are still supported but Microsoft says not to use them; you convert them by re-entering in the top-left cell (Microsoft Support, "Dynamic array formulas and spilled array behavior").
+- Legacy ones are still supported but Microsoft says they "should no longer be used"; you convert them by re-entering in the top-left cell (Microsoft Support, "Dynamic array formulas and spilled array behavior").
 - Dynamic formulas resize on their own; legacy ones keep the block you selected.
 **Example:** Total salary of HR staff earning over 35,000.
 **Sample sheet:**
@@ -840,7 +840,7 @@
 
 **Formula / Steps:** Legacy: select cell, type `=SUM(IF((A2:A6="HR")*(B2:B6>35000),B2:B6))`, press Ctrl+Shift+Enter. Modern: same formula, Enter.
 **Alternative:** `=SUMIFS(B2:B6,A2:A6,"HR",B2:B6,">35000")`, no array needed.
-**Result:** Expected total 95,000 (40,000 + 55,000), confirmed with pandas. In LibreOffice I ran `=SUMPRODUCT((A2:A6="HR")*B2:B6)` = 125000 (all HR) and the row count with salary above 35,000 = 2.
+**Result:** Expected total 95,000 (40,000 + 55,000), confirmed with pandas. In LibreOffice I ran `=SUMPRODUCT((A2:A6="HR")*(B2:B6>35000)*B2:B6)` = 95000, `=SUMIFS(...)` = 95000, `=SUMPRODUCT((A2:A6="HR")*B2:B6)` = 125000 (all HR) and the count of HR rows above 35,000 = 2. The `SUM(IF(...))` array form itself was not entered as CSE here, but the SUMPRODUCT equivalent confirms the 95,000.
 **Version note:** Dynamic arrays: 365/2021/2024; CSE works everywhere.
 **Edge cases:** Editing a legacy formula without CSE breaks it in old Excel.
 **Likely follow-ups:** 1) *How do I see braces?* They mark legacy arrays. 2) *Best non-array option?* SUMIFS.
@@ -852,9 +852,11 @@
 **Say this in the interview:** "Names must start with a letter and be valid Name Manager names, and a LET can hold up to 126 pairs. The last argument must be the calculation that returns the answer."
 **Explain simply:**
 - Syntax: `=LET(name1, value1, [name2, value2, ...], calculation)` (Microsoft Support, "LET function").
-- A name cannot clash with a cell reference or R1C1 style: "a" is fine, "c" is not (same page).
+- The name must begin with a letter and cannot clash with range syntax or R1C1 style: "a" is fine, "c" is not (same page, fetched in review; the page also says up to 126 name/value pairs).
 - Use readable names like `dept`, `pay`.
 **Example:** `=LET(pay,C2:C11,AVERAGE(pay))` returns 60,300 for the sample salaries.
+**Sample sheet:** The 10-salary table of Q32 (C2:C11: 48000, 72000, 52000, 45000, 72000, 90000, 58000, 95000, 41000, 30000; sum 603,000).
+
 **Formula / Steps:** `=LET(pay,C2:C11,avg,AVERAGE(pay),COUNTIF(pay,">"&avg))`
 **Alternative:** Named ranges via Name Manager (workbook-wide), at the cost of being hidden.
 **Result:** Not run here (expected result reproduced with pandas): mean 60,300; 4 salaries above it.
@@ -866,10 +868,10 @@
 ### Q32 ⭐ 🟡 How does LET make a FILTER formula shorter and faster? Give an example where the same range is used more than once.
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Do you write maintainable formulas?
-**Say this in the interview:** "Without LET I repeat the salary range in the test and in the AVERAGE. With LET I name it once, so the formula is shorter and easier to fix. Speed gains are usually small; I have not measured them."
+**Say this in the interview:** "Without LET I repeat the salary range in the test and in the AVERAGE. With LET I name it once, so the formula is shorter and easier to fix. Microsoft's page claims a speed-up on its own example; on small HR tables I have not measured any."
 **Explain simply:**
 - Shorter: one range reference to edit instead of two.
-- Faster: LET calculates a named value once, which can help with heavy repeated calculations (general claim, unmeasured; Microsoft's page does not state timings).
+- Faster: LET calculates a named value once, which can help with heavy repeated calculations (Microsoft Support, "LET function": the named value is calculated once; the page's own example is described as twice as fast. Not measured here).
 **Example:** Employees paid above the average salary of 60,300.
 **Sample sheet:**
 
@@ -911,12 +913,15 @@
 | 4 | Meena | HR Executive |
 | 5 | Karan | Payroll Analyst |
 | 6 | Divya | Developer |
-| 7 | Vikram | Senior Analyst |
-| 8 | Arjun | Analyst Intern |
+| 7 | Imran | HR Manager |
+| 8 | Sneha | Finance Executive |
+| 9 | Vikram | Senior Analyst |
+| 10 | Pooja | HR Coordinator |
+| 11 | Arjun | Analyst Intern |
 
 **Formula / Steps:** `=FILTER(A2:B11,ISNUMBER(SEARCH("Analyst",B2:B11)),"No match")`
 **Alternative:** Helper column C with `=COUNTIF(B2,"*Analyst*")>0` (COUNTIF accepts wildcards), then filter on column C; this also works in Excel 2016/2019 with AutoFilter.
-**Result:** FILTER: not run here (expected result reproduced with pandas): Asha, Ravi, Karan, Vikram, Arjun. The include array was run in LibreOffice: `ISNUMBER(SEARCH("Analyst",...))` over the 10 titles gave TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE,FALSE,TRUE; `FIND("analyst",...)` gave all FALSE, proving it is case-sensitive.
+**Result:** FILTER: not run here (expected result reproduced with pandas): Asha, Ravi, Karan, Vikram, Arjun. The include array was run in LibreOffice: `ISNUMBER(SEARCH("Analyst",...))` over the 10 titles (rows 2-11, re-run in the review) gave TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE,FALSE,TRUE; `FIND("analyst",...)` gave all FALSE, proving it is case-sensitive.
 **Version note:** FILTER: 365/2021/2024.
 **Edge cases:** `?`, `*` inside SEARCH text act as wildcards; use `~*` to search for a literal star. Blank cells give FALSE.
 **Likely follow-ups:** 1) *Starts with?* `LEFT(B2:B11,7)="Analyst"`. 2) *Several keywords?* Add tests with `+`.
@@ -1005,13 +1010,14 @@
 **Explain simply:**
 - CHOOSECOLS(array, col_num1, ...) returns the chosen columns (Microsoft Support, "CHOOSECOLS function").
 - INDEX with a blank row argument and `{1,3}` returns columns 1 and 3 of an array (from memory, unverified).
+- Microsoft Support, "CHOOSECOLS function" (fetched in review): `=CHOOSECOLS(array, col_num1, [col_num2], ...)`, listed for Microsoft 365 and Excel 2024 only; a col_num of zero or beyond the column count returns #VALUE!.
 **Example:** HR staff, Name and Salary only (Dept column dropped).
 **Sample sheet:** Table from Q32 (A Employee, B Dept, C Salary).
-**Formula / Steps:** `=CHOOSECOLS(FILTER(A2:C11,B2:B11="HR","None"),1,3)`
-**Alternative:** `=INDEX(FILTER(A2:C11,B2:B11="HR","None"),,{1,3})` for 2021; or rearrange so the wanted columns are adjacent.
+**Formula / Steps:** `=IFERROR(CHOOSECOLS(FILTER(A2:C11,B2:B11="HR"),1,3),"None")` (the message goes outside: a one-cell "None" from FILTER has no column 3, so CHOOSECOLS would return #VALUE!, per the page's error rule; not run here)
+**Alternative:** `=IFERROR(INDEX(FILTER(A2:C11,B2:B11="HR"),,{1,3}),"None")` for 2021; or rearrange so the wanted columns are adjacent.
 **Result:** Not run here (expected result reproduced with pandas): Asha 48000, Meena 52000, Imran 90000, Pooja 41000.
-**Version note:** CHOOSECOLS: Excel 365 and 2024 only (Microsoft Support page lists 365 and 2024, not 2021). FILTER: 365/2021/2024.
-**Edge cases:** A negative col_num counts from the right; 0 or too large gives an error. If the if_empty text is one value, the CHOOSECOLS output may misbehave; test it.
+**Version note:** CHOOSECOLS: Excel 365 and 2024 only (Microsoft Support, "CHOOSECOLS function", fetched: lists 365 and 2024, not 2021). FILTER: 365/2021/2024.
+**Edge cases:** A negative col_num counts from the right (from Microsoft's example `CHOOSECOLS(A2:D7,-1,-2)`); 0 or too large gives #VALUE!. Keep the fallback message outside CHOOSECOLS (see Formula).
 **Likely follow-ups:** 1) *Reorder columns?* List numbers in the order wanted. 2) *Why not select cells?* Non-adjacent ranges cannot go in FILTER.
 **Common mistakes:** Passing two separate ranges to FILTER; using CHOOSECOLS in 2021.
 
@@ -1020,13 +1026,13 @@
 **What the interviewer is checking:** Sort descending then take the first five, and think about ties.
 **Say this in the interview:** "I sort by salary high to low, then take the first five rows with TAKE. In Excel 2021, where TAKE does not exist, I use INDEX with SEQUENCE."
 **Explain simply:**
-- TAKE(array, rows) keeps the first rows (Microsoft Support, "TAKE function": 365 and 2024).
+- TAKE(array, rows, [columns]) keeps the first rows; a negative number takes from the end (Microsoft Support, "TAKE function", fetched in review: 365 and 2024 only).
 - `SEQUENCE(5)` makes 1,2,3,4,5 as row numbers.
 **Example:** The 10-person table; Ravi and Divya tie at 72,000 in 3rd and 4th place.
 **Sample sheet:** Columns A Employee and B Salary (see Q32 for values).
 **Formula / Steps:** `=TAKE(SORT(A2:B11,2,-1),5)`
-**Alternative:** 2021: `=INDEX(SORT(A2:B11,2,-1),SEQUENCE(5),{1,2})` (INDEX array form, from memory, unverified). Ties-inclusive: `=FILTER(A2:B11,B2:B11>=LARGE(B2:B11,5))`.
-**Result:** Not run here (expected result reproduced with pandas): Vikram 95000, Imran 90000, Divya 72000, Ravi 72000, Sneha 58000. LibreOffice run: `LARGE(B2:B11,5)` = 58000 and 5 rows are >= it.
+**Alternative:** 2021: `=INDEX(SORT(A2:B11,2,-1),SEQUENCE(5),{1,2})` (INDEX array form, from memory, unverified). Ties-inclusive: `=FILTER(A2:B11,B2:B11>=LARGE(B2:B11,5))` (rows come back in original order, so wrap it in `SORT(...,2,-1)` to rank them).
+**Result:** Not run here (expected result reproduced with pandas): Vikram 95000, Imran 90000, Ravi 72000, Divya 72000, Sneha 58000 (pandas stable sort, which keeps Ravi, row 3, ahead of Divya, row 6, as Excel is believed to do for ties; from memory, unverified). LibreOffice run: `LARGE(B2:B11,5)` = 58000 and 5 rows are >= it.
 **Version note:** TAKE: 365/2024 only. SORT, FILTER: 365/2021/2024.
 **Edge cases:** If the 5th and 6th salaries tie, FILTER with LARGE returns 6 rows; TAKE returns exactly 5, picking arbitrarily by original order.
 **Likely follow-ups:** 1) *Bottom 5?* Sort ascending. 2) *Top 5 per dept?* Needs GROUPBY or per-dept FILTER.
@@ -1039,14 +1045,14 @@
 **Explain simply:**
 - ARRAYFORMULA: tells Sheets to run a formula on a full range, e.g. `=ARRAYFORMULA(C2:C*1.1)`.
 - QUERY: select, where, group by, order by in text (like SQL).
-- All Sheets claims are from memory, unverified.
+- QUERY clauses (select, where, group by, order by) and the header-row argument are confirmed by Google Docs Editors Help, "QUERY function" (fetched in review). ARRAYFORMULA wording is from memory, unverified (page not reachable).
 **Example:** Total salary by department with QUERY.
 **Sample sheet:** Table from Q32.
 **Formula / Steps:** `=QUERY(A1:C11,"select B,sum(C) where B is not null group by B order by sum(C) desc",1)`
 **Alternative:** Excel: `=LET(d,UNIQUE(B2:B11),HSTACK(d,SUMIFS(C2:C11,B2:B11,d)))` (HSTACK: 365, not verified here).
 **Result:** Not run here (expected result reproduced with pandas): IT 239000, HR 231000, Finance 133000.
-**Version note:** Sheets features from memory, unverified.
-**Edge cases:** QUERY labels default to "sum Salary" headers; mixed types in a column cause blanks.
+**Version note:** QUERY: Google help page fetched. ARRAYFORMULA, HSTACK: not verified.
+**Edge cases:** QUERY labels default to "sum Salary" headers (from memory); a column with mixed types treats the minority type as null (Google help).
 **Likely follow-ups:** 1) *Excel counterpart of QUERY?* Power Query or PivotTable. 2) *Does Excel need ARRAYFORMULA?* No.
 **Common mistakes:** Forgetting ARRAYFORMULA in Sheets; wrong header count in QUERY.
 
@@ -1059,9 +1065,10 @@
 - The data is not corrupted; the formula just cannot read the closed file.
 **Example:** A monthly HR dashboard file pulls `FILTER` results from Payroll.xlsx.
 **Formula / Steps:** Open the source workbook, then recalculate (Ctrl+Alt+F9). Or paste values, or load the data with Power Query (Data > Get Data).
-**Alternative:** Keep both tables in one workbook; or use SUMIFS/INDEX-MATCH, which can read closed files (from memory, unverified).
-**Version note:** Applies in 365/2021/2024 (Microsoft Support).
-**Edge cases:** Saving with the source open still breaks next time if the source is later closed. Result: not run here (cannot be reproduced in LibreOffice).
+**Alternative:** Keep both tables in one workbook; or use INDEX/MATCH or VLOOKUP links, which normally read closed workbooks. Avoid SUMIF/SUMIFS/COUNTIF on a closed workbook: they are known to fail there (from memory, unverified; not tested here).
+**Version note:** Applies in 365/2021/2024 (Microsoft Support, "FILTER function" and "Dynamic array formulas and spilled array behavior", both re-read in review: "limited support ... between workbooks", #REF! when the source is closed).
+**Result:** Not run here (cannot be reproduced in LibreOffice).
+**Edge cases:** Saving with the source open still breaks next time if the source is later closed.
 **Likely follow-ups:** 1) *Does the cached value stay?* Until refresh. 2) *Safer link?* Power Query.
 **Common mistakes:** Blaming the formula syntax; sending the dashboard without the source.
 
@@ -1100,7 +1107,7 @@
 **Explain simply:**
 - Microsoft says: include must have the same height or width as array; an error value inside include makes FILTER return an error, though the page does not say which one (Microsoft Support, "FILTER function"). #VALUE! for mismatched sizes is from memory, unverified.
 - Other triggers: an error cell in the tested column, or text that cannot convert to TRUE/FALSE.
-**Example:** Data A2:C11 (10 rows) but test on B2:B10 (9 rows).
+**Example:** Data A2:C11 (10 rows, the Q32 table) but test on B2:B10 (9 rows).
 **Formula / Steps:**
 1. Test: `=ROWS(A2:C11)=ROWS(B2:B10)` returns FALSE.
 2. Paste the include test alone in a spare cell to see TRUE/FALSE list and any errors.
@@ -1119,7 +1126,7 @@
 **Explain simply:**
 - A *helper column* is an extra column used only for intermediate calculation.
 - TEXTJOIN exists from Excel 2019 (Microsoft Support, "TEXTJOIN function"), but not 2016.
-- Power Query is another option; "built into Excel 2016" is from memory, unverified.
+- Power Query is another option; "built into Excel 2016" is from memory, unverified (page not found in the review).
 **Example:** List HR staff: Asha, Meena, Imran, Pooja.
 **Sample sheet:**
 
@@ -1136,8 +1143,8 @@
 | 10 | Pooja | HR | 4 |
 | 11 | Arjun | Finance | |
 
-**Formula / Steps:** Helper I2 (copy down): `=IF(B2=$G$1,COUNTIF($B$2:B2,$G$1),"")` with G1 = HR. Output (copy down): `=IFERROR(INDEX($A$2:$A$11,MATCH(ROWS($1:1),$I$2:$I$11,0)),"")`.
-**Alternative:** `AGGREGATE(15,6,(ROW(...)-ROW(first)+1)/(B2:B11=G1),k)` with INDEX needs no helper column (from memory, unverified: LibreOffice returned blanks, so I could not confirm it).
+**Formula / Steps:** Put the department wanted in G1 (here "HR", not shown in the grid above). Helper I2 (copy down): `=IF(B2=$G$1,COUNTIF($B$2:B2,$G$1),"")` with G1 = HR. Output (copy down): `=IFERROR(INDEX($A$2:$A$11,MATCH(ROWS($1:1),$I$2:$I$11,0)),"")`.
+**Alternative:** `AGGREGATE(15,6,(ROW(...)-ROW(first)+1)/(B2:B11=G1),k)` with INDEX needs no helper column (from memory, unverified: re-run in the review, LibreOffice returned an error for it, so it is not confirmed here).
 **Result:** Run in LibreOffice 24.2: helper column gave 1,"",2,"","",3,"","",4,"" and INDEX/MATCH gave Asha, Meena, Imran, Pooja, then blank. Matches pandas.
 **Version note:** INDEX/MATCH works in all versions.
 **Edge cases:** Copy the output formula down further than the maximum matches; blanks hide extras.
@@ -1149,13 +1156,14 @@
 **What the interviewer is checking:** Combining SORT, UNIQUE, lookup inside LET.
 **Say this in the interview:** "Sort everyone by salary high to low, so each department's top earner comes first, then for each unique department look up the first match."
 **Explain simply:**
-- XLOOKUP/XMATCH returns the first match by default, and after sorting that is the highest earner. XMATCH needs 365/2021/2024 (Microsoft Support, "XMATCH function").
+- XLOOKUP/XMATCH returns the first match by default, and after sorting that is the highest earner. XMATCH is listed for 365/2024/2021 (Microsoft Support, "XMATCH function", fetched in review).
+- `INDEX(s,r,{2,1,3})` with a column of row numbers and a row of column numbers is a common way to reorder columns; I did not verify it in Excel. The sorted output has Dept first because of the reorder.
 - Ties: only the first listed of tied earners appears.
 **Example:** Finance: Sneha 58000. HR: Imran 90000. IT: Vikram 95000.
 **Sample sheet:** Table from Q32 (A Employee, B Dept, C Salary).
 **Formula / Steps:** `=LET(s,SORT(A2:C11,3,-1),d,INDEX(s,,2),u,UNIQUE(d),r,XMATCH(u,d),SORT(INDEX(s,r,{2,1,3})))`
-**Alternative:** Per department, no spill: `=MAXIFS(C2:C11,B2:B11,F2)` and `=INDEX(A2:A11,MATCH(1,INDEX((B2:B11=F2)*(C2:C11=G2),0),0))`.
-**Result:** Dynamic formula: not run here (expected result reproduced with pandas; the exact formula itself was not executed, so test it in Excel): Finance Sneha 58000, HR Imran 90000, IT Vikram 95000. The alternative ran in LibreOffice: Finance 58000/Sneha, HR 90000/Imran, IT 95000/Vikram.
+**Alternative:** Per department, no spill: `=MAXIFS(C2:C11,B2:B11,F2)` and `=INDEX(A2:A11,MATCH(1,INDEX((B2:B11=F2)*(C2:C11=G2),0),0))` (F2 holds the department, e.g. HR; G2 its MAXIFS result, 90000).
+**Result:** Dynamic formula: not run here (expected result reproduced with pandas; the exact formula itself was not executed, so test it in Excel): Finance Sneha 58000, HR Imran 90000, IT Vikram 95000. The alternative ran in LibreOffice (re-run in review): MAXIFS Finance 58000, HR 90000, IT 95000, and the INDEX/MATCH names Sneha, Imran, Vikram.
 **Version note:** LET, SORT, UNIQUE, XMATCH: 365/2021/2024.
 **Edge cases:** If two people tie for the top salary in a department, only the first one in sorted order appears (Ravi and Divya tie at 72,000 in IT but sit below Vikram, so no issue here). Blank department rows form their own group.
 **Likely follow-ups:** 1) *Show all tied earners?* Use FILTER with MAXIFS. 2) *Without LET?* Use helper columns.
@@ -1166,7 +1174,7 @@
 **What the interviewer is checking:** Do you know the `#` operator in named ranges for self-updating charts?
 **Say this in the interview:** "I create a name that refers to the spill cell with `#`, for example `=Sheet1!$F$2#`, and point the chart series at that name. As the spill grows or shrinks, the chart follows."
 **Explain simply:**
-- The spill range operator `#` means "all cells this formula spilled into" (Microsoft's SORTBY page shows `#` used with a spilled SEQUENCE range; fuller explanation is on the Exceljet page I read earlier in research).
+- The spill range operator `#` means "all cells this formula spilled into" (Microsoft Support, "Spilled range operator", fetched in review: `=SUM(A2#)` refers to the whole spill and adjusts as it grows or shrinks; the "SORTBY function" page also uses `E2#`).
 - Using the name in a chart series: from memory, unverified.
 - The spill cannot live in an Excel Table (Microsoft Support, "Dynamic array formulas and spilled array behavior").
 **Example:** Headcount by department in F2:G4 grows when a new department appears.

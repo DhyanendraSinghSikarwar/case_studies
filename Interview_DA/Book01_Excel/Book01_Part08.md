@@ -24,7 +24,7 @@
 **Formula / Steps:** 1. Select the data including headers. 2. Insert tab > Charts group > Recommended Charts (Microsoft Support, "Create a chart from start to finish"). 3. Preview each option, use the All Charts tab for the full list, click OK. Chart building is not run here (charts cannot run in this environment); only the numbers behind charts were checked.
 **Alternative:** Pick the chart by message type first, then check that Excel's Recommended Charts agrees.
 **Result:** Not run here (chart choice). The numbers in later answers behind each chart were recalculated.
-**Version note:** Column, bar, line, pie, scatter, bubble are in every version (from memory, unverified). Treemap, sunburst, histogram, Pareto, box and whisker, waterfall arrived in Excel 2016 (from memory; only waterfall's 2016 support is confirmed, see Q35 of this part). Funnel needs Office 2021 or Microsoft 365 on Windows per the current Microsoft page; map needs Microsoft 365 (Microsoft Support pages above).
+**Version note:** Column, bar, line, pie, scatter, bubble are in every version (from memory, unverified). Fetched Microsoft pages: waterfall, histogram, box and whisker and sunburst list Excel 2016 in their Applies To lists; the Pareto and treemap pages list only 365, 2024 and 2021 (2016 availability of those two is unconfirmed; see Q35 of this part). Funnel needs Office 2021 or Microsoft 365 on Windows per the current Microsoft page; map needs Microsoft 365 (Microsoft Support pages above).
 **Edge cases:** A chart type that does not fit the data (pie with negatives or 15 slices) is a red flag.
 **Likely follow-ups:** 1) *Pie or bar?* Bar when slices are close or many. 2) *Many series on a line chart?* Limit to about 4-5 lines or use small multiples.
 **Common mistakes:** Choosing the flashy chart first; 3D effects; too many categories; forgetting the title says what the chart shows.
@@ -39,208 +39,7 @@
 - Line: best for trends over evenly spaced intervals and many points (same page).
 - A line joins points, which implies "in between" values exist, so it makes no sense for unrelated categories like departments.
 **Example:** Headcount by department (Sales 210, Operations 180, IT 120) is a bar chart. Monthly attrition (Jan 2.02%, Feb 1.63%, Mar 2.48%, ...) is a line chart.
-**Sample sheet:**
-
-| | A | B | C |
-|---|---|---|---|
-| 1 | Month | Attrition % | Headcount (Dec) |
-| 2 | Jan | 2.02% | |
-| 3 | Feb | 1.63% | |
-| 4 | Mar | 2.48% | |
-| 5 | Dept: Sales | | 210 |
-
-**Formula / Steps:** 1. Select the range. 2. Insert > Charts > Insert Column or Bar Chart (or Insert Line Chart) > pick 2-D version. 3. Add a title (Chart Design > Add Chart Element > Chart Title). Not run here.
-**Alternative:** For a few time periods (say 4 quarters) a column chart is fine; for 12+ points a line is cleaner.
-**Result:** The attrition values come from `=C2/AVERAGE(B2,D2)` (leavers divided by average of opening and closing headcount): Jan 10/496 = 2.02%, Feb 8/490 = 1.63%, Mar 12/484 = 2.48% (recalculated in LibreOffice).
-**Version note:** Available in all Excel versions and Google Sheets (from memory, unverified).
-**Edge cases:** Uneven time gaps (missing months) distort a line; use a date axis. Negative values need columns that cross zero.
-**Likely follow-ups:** 1) *Column vs bar?* Label length. 2) *Can you mix them?* Yes, a combo chart (Q8).
-**Common mistakes:** Line chart for categories; bars not sorted; time running right to left.
-
-### Q3 ⭐⭐⭐ 🟢 What is the fastest way to create a chart in Excel from a data range?
-**Asked at:** commonly asked (no company-specific report found); "fastest way to create a chart" is on the ClimbTheLadder Excel charts list (undated).
-**What the interviewer is checking:** Do you know the shortcut and its limit?
-**Say this in the interview:** "I select the data with its headers and press Alt+F1, which drops a chart straight onto the sheet. If I want a better fit I use Insert > Recommended Charts instead."
-**Explain simply:**
-- Alt+F1 after selecting data creates a chart immediately, but it may not suit the data (Microsoft Support, "Create a chart from start to finish").
-- Recommended Charts shows previews of suitable charts and an All Charts tab (same page).
-- Select the data as one clean block: headers on top, labels on the left, no blank rows.
-- The F11 shortcut makes a chart on its own sheet (from memory, unverified).
-**Example:** Four months of hires (Jan 12, Feb 18, Mar 15, Apr 22): select A1:B5, press Alt+F1, a column chart appears with a title placeholder.
-**Sample sheet:**
-
-| | A | B |
-|---|---|---|
-| 1 | Month | Hires |
-| 2 | Jan | 12 |
-| 3 | Feb | 18 |
-| 4 | Mar | 15 |
-| 5 | Apr | 22 |
-
-**Formula / Steps:** 1. Click any cell in A1:B5 (Excel picks the block) or select it. 2. Press Alt+F1. 3. Or: Insert tab > Charts group > Recommended Charts > choose > OK. Not run here.
-**Alternative:** Convert the range to a Table (Ctrl+T) first so the chart grows with the data (see Q21 of this part).
-**Result:** Not run here (a chart cannot be created here). By hand, total hires = 12+18+15+22 = 67, average 16.75 per month.
-**Version note:** Alt+F1 and Recommended Charts exist in Excel 2013 onward (Recommended Charts from memory, unverified); the fetched page covers Microsoft 365.
-**Edge cases:** Blank rows or a numeric "Year" column in the data can be plotted as a series; Excel may treat the year as data.
-**Likely follow-ups:** 1) *Why is the chart wrong?* Probably the data block had a stray column. 2) *Chart on its own sheet?* F11 (unverified).
-**Common mistakes:** Selecting only numbers (no labels), then seeing "Series1"; trusting the default chart without a title.
-
-### Q4 ⭐⭐⭐ 🟢 What is an Excel dashboard, and how is it different from a normal report or a pivot table?
-**Asked at:** commonly asked (no company-specific report found); dashboards appear in MIS and analyst Excel question lists (Interview Query, Blind, snippets only, not read in full).
-**What the interviewer is checking:** Do you know a dashboard is a one-page, decision-focused view, not just numbers?
-**Say this in the interview:** "A dashboard is a single screen of KPIs and charts that answers a few business questions at a glance, usually with slicers to filter. A pivot table is one summary table; a report is a detailed document. A dashboard sits on top of pivots and charts."
-**Explain simply:**
-- *KPI* = key performance indicator, a headline number such as attrition rate.
-- *Pivot table* = a drag-and-drop summary of raw data. It is a building block, not the finished view.
-- *Slicer* = a clickable button filter. Microsoft's walkthrough builds a dashboard from a Table, PivotTables, PivotCharts and slicers (Microsoft Support, "Create and share a dashboard with Excel and Microsoft Groups").
-- A report explains in detail; a dashboard summarises and lets you explore.
-**Example:** 12 employee rows: a pivot shows headcount by department (Sales 5, IT 4, HR 3). A dashboard shows "Headcount 12, Attrition 33.3%" cards, a bar chart by department and a Region slicer on one page.
-**Sample sheet:**
-
-| | A | B | C | D |
-|---|---|---|---|---|
-| 1 | ID | Dept | Region | Status |
-| 2 | E01 | Sales | North | Active |
-| 3 | E02 | Sales | South | Left |
-| 4 | E03 | IT | South | Active |
-| 5 | E07 | IT | South | Left |
-
-**Formula / Steps:** KPI cards use formulas such as `=COUNTA(A2:A13)` and `=COUNTIFS(D2:D13,"Left")/COUNTA(A2:A13)`. Build click-path in Q6. Not run here (layout).
-**Alternative:** Power BI for bigger or shared dashboards (Q34 of this part).
-**Result:** Run in LibreOffice on the full 12-row sample: headcount 12, leavers 4, attrition 33.3%; Sales 5 people, 2 left (40%).
-**Version note:** Dashboard walkthrough applies to Excel 2016, 2019, 2021, 2024, 365 (Microsoft Support page above).
-**Edge cases:** Dashboard numbers should tie back to the source data total.
-**Likely follow-ups:** 1) *Static or interactive?* Slicers make it interactive. 2) *Who is the audience?* Decide before designing.
-**Common mistakes:** Calling a big pivot a dashboard; too many KPIs; no refresh plan.
-
-### Q5 ⭐⭐⭐ 🟢 What are the key elements of a good Excel dashboard?
-**Asked at:** commonly asked (no company-specific report found).
-**What the interviewer is checking:** Design judgement: clarity, few KPIs, correct numbers.
-**Say this in the interview:** "A clear purpose and audience, five to ten KPI cards at the top, two or three well-chosen charts, filters like slicers, consistent colours, and a note on data source and last refresh date."
-**Explain simply:**
-- Separate sheets: raw data, calculations (pivots), dashboard. This is common practice in tutorials (thebricks, myexcelonline, snippets only), not an official rule.
-- Headline KPIs first, with target and variance (Q25).
-- Charts matched to questions (Q1); titles say what the chart shows.
-- Slicers or a timeline to filter (Microsoft Support dashboard walkthrough); hide gridlines and headings for a clean look (same page).
-- Footer: data source, refresh date, definitions (e.g. how attrition is calculated).
-**Example:** HR dashboard: cards for Headcount 466 (average), Attrition 23.4% (109 leavers), line of monthly attrition, bar of headcount by department, Region slicer.
-**Sample sheet:**
-
-| | A | B |
-|---|---|---|
-| 1 | KPI | Value |
-| 2 | Leavers (12 months) | 109 |
-| 3 | Average headcount | 466.4 |
-| 4 | Annual attrition | 23.4% |
-
-**Formula / Steps:** `B2: =SUM(Data!C2:C13)`, `B3: =AVERAGE(Data!B2:B13)`, `B4: =B2/B3`. Layout: View > untick Gridlines and Headings. Not run here (layout).
-**Alternative:** Use a text box note with "Source: HRIS export, refreshed on <date>".
-**Result:** Run in LibreOffice: 109, 466.4167, 23.37%.
-**Version note:** All versions; slicers on PivotTables from Excel 2010 (from memory, unverified).
-**Edge cases:** State whether attrition uses average or opening headcount; the two give different percentages.
-**Likely follow-ups:** 1) *How many KPIs?* Five to ten (tutorial guidance, snippets). 2) *Colour use?* Q18.
-**Common mistakes:** Clutter, mixed colours, no definitions, numbers typed by hand instead of formulas.
-
-### Q6 ⭐⭐⭐ 🟡 Walk me through how you would build an interactive dashboard in Excel from raw data.
-**Asked at:** commonly asked (no company-specific report found); the steps follow the Microsoft Support dashboard walkthrough.
-**What the interviewer is checking:** Do you know the pipeline: clean data, Table, pivots, charts, slicers, layout?
-**Say this in the interview:** "I clean the data and turn it into a Table, build PivotTables for each KPI, add PivotCharts, add slicers connected to all of them, then arrange everything on one sheet with gridlines hidden."
-**Explain simply:**
-- *Table* = a named, expanding range (Ctrl+T) so new rows are included automatically.
-- *PivotTable* = summary table; *PivotChart* = a chart tied to a pivot.
-- *Slicer* = filter buttons; connect each slicer to every pivot (Q7).
-- Verify one number by hand before presenting.
-**Example:** 12-row HR sample. Pivot: Dept in Rows, Count of ID in Values. Check: Sales 5, IT 4, HR 3; leavers 4 of 12 = 33.3%.
-**Sample sheet:**
-
-| | A | B | C | D |
-|---|---|---|---|---|
-| 1 | ID | Dept | Region | Status |
-| 2 | E01 | Sales | North | Active |
-| 3 | E02 | Sales | South | Left |
-| 4 | E03 | IT | South | Active |
-| 5 | E05 | HR | South | Active |
-
-**Formula / Steps:** (Microsoft Support dashboard walkthrough; not run here)
-1. Format data as a Table (Home > Format as Table, or Ctrl+T).
-2. Insert > PivotTable > New Worksheet. Copy it for each metric; name them (PivotTable Analyze > PivotTable Name).
-3. Click in a pivot > PivotTable Analyze > Tools > PivotChart > choose type.
-4. PivotTable Analyze > Filter > Insert Slicer > tick fields > OK.
-5. Slicer > Report Connections > tick all pivots.
-6. Move charts and cards to a Dashboard sheet; View > untick Headings and Gridlines.
-**Alternative:** Build charts from formula-driven summary tables (`COUNTIFS`) rather than pivots, so layout is fully controllable.
-**Result:** Checked by formula in LibreOffice: `=COUNTIFS(B2:B13,"Sales")` = 5; `=COUNTIFS(B2:B13,"Sales",D2:D13,"Left")` = 2; rate 40%. The pivot itself is not run here.
-**Version note:** Works in Excel 2016 to 365 (Microsoft Support page above). Excel for the web has limited pivot/slicer authoring (from memory, unverified).
-**Edge cases:** Pivots do not refresh themselves; use Data > Refresh All (Q32).
-**Likely follow-ups:** 1) *Why a Table?* Auto-expand. 2) *Why separate sheets?* Easier maintenance.
-**Common mistakes:** Charts built from different copies of the data; forgetting Report Connections; hand-typed numbers.
-
-### Q7 ⭐⭐⭐ 🟡 How do you make one slicer control several pivot tables and charts on a dashboard?
-**Asked at:** commonly asked (no company-specific report found); Report Connections is in the Microsoft Support dashboard walkthrough.
-**What the interviewer is checking:** Do you know Report Connections?
-**Say this in the interview:** "I select the slicer, open Report Connections, and tick every PivotTable I want it to control. Pivots must share the same source data; charts follow their pivots."
-**Explain simply:**
-- A slicer starts attached to one pivot only.
-- *Report Connections* is the dialog that links it to more.
-- A PivotChart is driven by its pivot, so connecting the pivot also moves the chart.
-- Pivots built from the same Table share one cache (the stored copy of data), which is what makes the connection possible (from memory, unverified).
-**Example:** Region slicer = South. Headcount pivot: 8 people. Attrition pivot: 3 leavers, 37.5%. Both update together; with North selected the numbers change for both.
-**Sample sheet:**
-
-| | A | B | C |
-|---|---|---|---|
-| 1 | Dept (South only) | Headcount | Left |
-| 2 | HR | 2 | 1 |
-| 3 | IT | 3 | 1 |
-| 4 | Sales | 3 | 1 |
-
-**Formula / Steps:** (Microsoft Support dashboard walkthrough; not run here) 1. Click the slicer. 2. Slicer tab > Slicer group > Report Connections. 3. Tick each PivotTable. 4. OK. For a Timeline, use the Report Connections option on the Timeline tab (same page).
-**Alternative:** Insert one slicer for each pivot and keep them in sync with VBA (not recommended).
-**Result:** Reproduced with pandas (not run in Excel): South has 8 employees, 3 left, 37.5%; HR 50%, IT 33.3%, Sales 33.3%.
-**Version note:** Page applies to Excel 2016 to 365. Slicers need Excel 2010 or later (from memory, unverified).
-**Edge cases:** A pivot from a different data source will not appear in the list; pivots must be built from the same Table.
-**Likely follow-ups:** 1) *Slicer greyed out pivot?* Different source. 2) *Several slicers?* They combine with AND.
-**Common mistakes:** Copying a pivot from another workbook; forgetting to connect new pivots added later.
-
-### Q8 ⭐⭐⭐ 🟡 How do you create a combo chart with a secondary axis, for example revenue as columns and margin percentage as a line?
-**Asked at:** commonly asked (no company-specific report found); secondary axis appears in the ClimbTheLadder Excel charts list (undated).
-**What the interviewer is checking:** Can you combine two measures on very different scales?
-**Say this in the interview:** "I select the data, go to Insert > Recommended Charts > All Charts > Combo, set revenue to Clustered Column, margin to Line, and tick Secondary Axis for the margin series."
-**Explain simply:**
-- A *combo chart* mixes chart types in one chart.
-- A *secondary axis* is a second scale on the right so a percentage (0-20%) is not flattened next to revenue (100-160).
-- Margin % = profit divided by revenue.
-- Label both axes so readers know which scale belongs to which series.
-**Example:** Revenue (in lakh) Jan 120, Feb 135, Mar 150, Apr 160; profit 18, 24, 27, 25 gives margins 15.0%, 17.8%, 18.0%, 15.6%.
-**Sample sheet:**
-
-| | A | B | C | D |
-|---|---|---|---|---|
-| 1 | Month | Revenue | Profit | Margin % |
-| 2 | Jan | 120 | 18 | |
-| 3 | Feb | 135 | 24 | |
-| 4 | Mar | 150 | 27 | |
-| 5 | Apr | 160 | 25 | |
-
-**Formula / Steps:** `D2: =C2/B2`, fill down, format as %. Chart (Microsoft Support dashboard walkthrough; not run here): select A1:B5 and D1:D5 (Ctrl for the gap) > Insert > Recommended Charts > All Charts > Combo > Revenue: Clustered Column, Margin %: Line, tick Secondary Axis > OK.
-**Alternative:** Chart Design > Change Chart Type > Combo (a Microsoft Support search summary describes this route, "Add or remove a secondary axis in a chart in Excel"); or select the series and use Chart Design > Add Chart Element > Axes > Secondary Vertical.
-**Result:** Run in LibreOffice: D2 0.15, D3 0.1778, D4 0.18, D5 0.15625.
-**Version note:** The Microsoft pages list Excel 2016 through 365; the combo chart is also available in Google Sheets (from memory, unverified).
-**Edge cases:** Two different scales can mislead; set the margin axis min/max deliberately.
-**Likely follow-ups:** 1) *Risk of dual axes?* Readers may infer a false relationship. 2) *Can you do three series?* Yes, but keep it readable.
-**Common mistakes:** Forgetting to tick Secondary Axis; leaving the % unformatted (0.15); no axis titles.
-
-### Q9 ⭐⭐⭐ 🟡 Which chart would you use to show monthly attrition for the last 12 months, and how would you build it?
-**Asked at:** commonly asked (no company-specific report found); an HR-flavoured chart-selection scenario.
-**What the interviewer is checking:** Correct chart (line) plus correct metric definition.
-**Say this in the interview:** "A line chart with months on the horizontal axis and monthly attrition rate on the vertical axis, because it shows the trend. I calculate each month as leavers divided by average headcount, and add a target line."
-**Explain simply:**
-- *Attrition rate* = leavers divided by average headcount, in a period.
-- Average headcount = (opening + closing) / 2.
-- Monthly points show the pattern; the annual rate is a separate number.
-- Add a data label on the latest point and a flat target line.
-**Example:** 109 leavers across the year with average headcount about 466 gives about 23.4% annual attrition; the worst month is October at 2.70%, the best August at 1.32%.
-**Sample sheet:**
+**Sample sheet (trend data, then a separate headcount table):**
 
 | | A | B | C | D | E |
 |---|---|---|---|---|---|
@@ -249,13 +48,18 @@
 | 3 | Feb | 492 | 8 | 488 | 1.63% |
 | 4 | Mar | 488 | 12 | 480 | 2.48% |
 | 5 | Apr | 480 | 9 | 474 | 1.89% |
-| 6 | Oct | 448 | 12 | 440 | 2.70% |
-| 7 | Dec | 436 | 9 | 431 | 2.08% |
+| 6 | May | 474 | 7 | 469 | 1.48% |
+| 7 | Jun | 469 | 11 | 462 | 2.36% |
+| 8 | Jul | 462 | 10 | 456 | 2.18% |
+| 9 | Aug | 456 | 6 | 452 | 1.32% |
+| 10 | Sep | 452 | 8 | 448 | 1.78% |
+| 11 | Oct | 448 | 12 | 440 | 2.70% |
+| 12 | Nov | 440 | 7 | 436 | 1.60% |
+| 13 | Dec | 436 | 9 | 431 | 2.08% |
 
-(Rows for May to Sep and Nov omitted for space; all 12 months were calculated.)
 **Formula / Steps:** `E2: =C2/AVERAGE(B2,D2)`, fill down to row 13. Annual: `=SUM(C2:C13)/AVERAGE(B2:B13)`. Peak month: `=INDEX(A2:A13,MATCH(MAX(E2:E13),E2:E13,0))`. Chart (not run here): select A1:A13 and E1:E13 > Insert > Line with Markers > add title and axis titles.
 **Alternative:** Add a rolling 12-month line (leavers in last 12 months divided by average headcount) to smooth seasonality; or a column chart of leavers with attrition % line (Q8).
-**Result:** Run in LibreOffice: monthly 2.02%, 1.63%, 2.48%, 1.89%, 1.48%, 2.36%, 2.18%, 1.32%, 1.78%, 2.70%, 1.60%, 2.08%; annual 109 / 466.42 = 23.37%; peak month Oct.
+**Result:** Re-run in LibreOffice on the full 12-row table above: monthly 2.02%, 1.63%, 2.48%, 1.89%, 1.48%, 2.36%, 2.18%, 1.32%, 1.78%, 2.70%, 1.60%, 2.08%; annual 109 / 466.42 = 23.37%; peak month Oct.
 **Version note:** Line charts in all versions.
 **Edge cases:** Months with zero leavers give 0%, not blank; a month with zero headcount would give #DIV/0!, wrap in IFERROR.
 **Likely follow-ups:** 1) *Monthly vs annualised?* Multiply monthly by 12 only as an approximation. 2) *Voluntary vs involuntary?* Show as two lines.
@@ -435,7 +239,7 @@
 **What the interviewer is checking:** Do you know Switch Row/Column and the rule behind it?
 **Say this in the interview:** "I click the chart, go to Chart Design and press Switch Row/Column. It swaps what is plotted as series and what is plotted as categories."
 **Explain simply:**
-- Excel decides automatically: it puts the larger number of rows or columns on the horizontal axis; if equal, rows are plotted on the vertical axis and columns on the horizontal (Microsoft Support, "Change how rows and columns of data are plotted in a chart").
+- Excel decides automatically: it puts the larger number of rows or columns on the horizontal axis; if equal, rows are plotted on the vertical axis and columns on the horizontal (Microsoft Support, "Change how rows and columns of data are plotted in a chart", fetched: "Excel places the larger number on the horizontal axis"; for equal counts it "plots the rows of data on the vertical axis, and the columns of data on the horizontal axis").
 - So a square block (4 months x 4 departments) can come out the wrong way round.
 - Switching changes what appears in the legend versus the axis labels.
 **Example:** Headcount for 4 months (rows) by 4 departments (columns). Equal counts, so months become the legend; Switch Row/Column puts months on the axis, 4 series (departments) x 4 categories (months) = 16 bars either way.
@@ -452,7 +256,7 @@
 **Formula / Steps:** 1. Click a point in the chart (Chart Design and Format tabs appear). 2. Chart Design tab > Data group > Switch Row/Column (Microsoft Support). Alternatively Chart Design > Select Data > Switch Row/Column. Not run here.
 **Alternative:** Re-lay out the table so the larger dimension runs along the axis you want, or select the data again.
 **Result:** Not run here (chart behaviour). By hand: 4 x 4 = 16 data points either way.
-**Version note:** The fetched page lists Microsoft 365, 2024 and 2021; the button also exists in Excel 2016 and 2019 (from memory, unverified).
+**Version note:** The fetched page's Applies To list names only Microsoft 365, 2024 and 2021; the button also exists in Excel 2016 and 2019 (from memory, unverified; the page is silent on them).
 **Edge cases:** Does not work if the chart is not selected or the data is a PivotChart (change the pivot layout instead, from memory, unverified).
 **Likely follow-ups:** 1) *Why did it happen?* Equal rows and columns. 2) *Fix for a PivotChart?* Move fields between Axis and Legend.
 **Common mistakes:** Retyping data instead of switching; selecting the entire sheet.
@@ -480,7 +284,7 @@
 | 7 | Legal | 15 | 2.5% |
 
 **Formula / Steps:** `C2: =B2/SUM($B$2:$B$7)`; top-two share `=SUMPRODUCT(LARGE(B2:B7,{1,2}))/SUM(B2:B7)`. Chart (not run here): Data > Sort Z to A on Headcount > Insert > Bar > Clustered Bar > Format Axis > Categories in reverse order (largest on top, from memory, unverified) > Add Data Labels > edit title.
-**Alternative:** A treemap (Excel 2016+, from memory, unverified) or a pie for 3-4 departments.
+**Alternative:** A treemap (Microsoft's treemap page lists 365, 2024 and 2021; 2016 not confirmed, see Q35) or a pie for 3-4 departments.
 **Result:** Run in LibreOffice: shares 0.35, 0.30, 0.20, 0.075, 0.05, 0.025; top two = 0.65; bottom three = 0.15; total 600.
 **Version note:** Bar charts in all versions.
 **Edge cases:** Include a total in the title; mention the date of the snapshot.
@@ -493,8 +297,8 @@
 **Say this in the interview:** "Use one neutral colour for most bars and one accent for what matters, keep consistent colours across the dashboard, avoid red-green only distinctions, make sure text contrasts with the background, and remove clutter like heavy gridlines."
 **Explain simply:**
 - Colour should carry meaning: grey for context, one accent for the message.
-- About 1 in 12 men are colour-blind (from memory, unverified), so do not rely on red versus green alone; add labels or icons.
-- Contrast ratio compares text and background brightness; the WCAG guideline asks 4.5:1 for normal text (from memory, unverified).
+- About 1 in 12 men have colour vision deficiency (US National Eye Institute, "Color Blindness", fetched), so do not rely on red versus green alone; add labels or icons.
+- Contrast ratio compares text and background brightness; the WCAG 2.1 Level AA rule asks at least 4.5:1 for normal text (W3C, "Understanding Success Criterion 1.4.3: Contrast (Minimum)", fetched).
 - Remove 3D, shadows, heavy borders; keep fonts consistent and at least 10-12 pt.
 **Example:** Contrast on white background (calculated with the WCAG formula in Python): dark blue #1F4E79 8.66, dark red #C00000 6.48, mid-grey #7F7F7F 4.00 (fails 4.5), light grey #BFBFBF 1.84, yellow #FFFF00 1.07.
 **Sample sheet:**
@@ -509,7 +313,7 @@
 
 **Formula / Steps:** (not run here) Select a series > Format tab > Shape Fill; or Chart Design > Change Colors; set Page Layout > Colors > a theme so the workbook stays consistent. Highlight one bar: click the bar twice > Shape Fill.
 **Alternative:** Use a company theme palette (Page Layout > Themes) so charts match slides.
-**Result:** Contrast ratios computed in Python (not Excel); the 4.5:1 target is from memory, unverified.
+**Result:** Contrast ratios computed in Python (not Excel); the 4.5:1 target is confirmed by the W3C page named above. Re-computed here: 8.66, 6.48, 4.00, 1.84, 1.07 all match.
 **Version note:** Format options are in all versions.
 **Edge cases:** Printing in black and white removes colour distinctions; use patterns or labels.
 **Likely follow-ups:** 1) *Rainbow palette?* Avoid for ordered data. 2) *Red and green?* Add arrows or text.
@@ -641,7 +445,7 @@ Dynamic name route: Formulas > Define Name > Name `Sales`, Refers to `=OFFSET($B
 **Alternative:** `=FREQUENCY(A2:A16,D2:D6)` as an array formula, then a column chart with gap width 0; or the old Analysis ToolPak Histogram tool, which outputs a table and chart on a new sheet (Microsoft page describes this older tool without naming the ToolPak).
 **Result:** Run in LibreOffice: counts 3, 4, 3, 2, 3 (total 15). Mean 45.87, median 41, confirmed with pandas. The skew (mean above median) is the "long right tail" the histogram shows. The chart is not run here.
 **Version note:** Histogram chart is listed for Excel 2016, 2019, 2021, 2024 and 365 (Microsoft Support, "Create a histogram"); the mobile version needs Microsoft 365. Google Sheets has a histogram chart type (Google Docs Editors Help list, as above).
-**Edge cases:** Bin boundaries: Excel's built-in histogram bins are "above lower, up to and including upper" for the standard case (from memory, unverified); my COUNTIFS uses the same rule. Text or blank cells are ignored.
+**Edge cases:** Bin boundaries: Microsoft's histogram page (fetched) says a value falls in a bin if it is greater than the lower bound and "equal to or less than the greatest bound", so the upper bound is included; my COUNTIFS uses the same rule. The page does not use interval notation. Text or blank cells are ignored.
 **Likely follow-ups:** 1) *Mean vs median?* Median is safer when a 95 outlier is present. 2) *Pareto?* See Q24.
 **Common mistakes:** Using a column chart with a gap between bars; choosing bins so narrow that every bar is 1.
 
@@ -747,15 +551,22 @@ Dynamic name route: Formulas > Define Name > Name `Sales`, Refers to `=OFFSET($B
 |---|---|---|---|---|---|
 | 1 | Month | Closing headcount | Leavers | Avg headcount | Monthly attrition % |
 | 2 | Dec (opening) | 476 | | | |
-| 3 | Jan | 480 | 4 | | |
-| 4 | Feb | 484 | 6 | | |
-| 5 | Mar | 490 | 5 | | |
-
-(rows 6 to 14 cover Apr to Dec: leavers 7, 3, 4, 6, 5, 5, 3, 2, 4)
+| 3 | Jan | 480 | 4 | 478 | 0.84% |
+| 4 | Feb | 484 | 6 | 482 | 1.24% |
+| 5 | Mar | 490 | 5 | 487 | 1.03% |
+| 6 | Apr | 492 | 7 | 491 | 1.43% |
+| 7 | May | 495 | 3 | 493.5 | 0.61% |
+| 8 | Jun | 497 | 4 | 496 | 0.81% |
+| 9 | Jul | 499 | 6 | 498 | 1.20% |
+| 10 | Aug | 500 | 5 | 499.5 | 1.00% |
+| 11 | Sep | 501 | 5 | 500.5 | 1.00% |
+| 12 | Oct | 502 | 3 | 501.5 | 0.60% |
+| 13 | Nov | 503 | 2 | 502.5 | 0.40% |
+| 14 | Dec | 500 | 4 | 501.5 | 0.80% |
 
 **Formula / Steps:** D3 `=AVERAGE(B2:B3)`; E3 `=C3/D3`; year row: C15 `=SUM(C3:C14)`, D15 `=AVERAGE(D3:D14)`, E15 `=C15/D15`. Dashboard build (not run here): PivotTable from an employee table (Join Date, Exit Date, Dept, Grade) > PivotCharts > Slicers (Q6, Q7).
 **Alternative:** Calculate attrition from the employee list with COUNTIFS on the exit date between month start and end, and headcount with COUNTIFS on join date <= month end and (exit date blank or > month end).
-**Result:** Run in LibreOffice: January 4/478 = 0.84%, February 6/482 = 1.24%, March 5/487 = 1.03%; year: 54 leavers, average headcount 494.25, annual attrition 10.93%. Summing the twelve monthly rates gives 10.94%, nearly identical.
+**Result:** Re-run in LibreOffice on the full table above (closing headcounts for Apr to Dec were chosen so the year averages 494.25): January 4/478 = 0.84%, February 6/482 = 1.24%, March 5/487 = 1.03%; year: 54 leavers, average headcount 494.25, annual attrition 10.93%. Summing the twelve monthly rates gives 10.94%, nearly identical.
 **Version note:** Everything above works in Excel 2016 to 365 (slicers and timelines on pivots are covered in Microsoft's dashboard walkthrough for 2016 to 365). Google Sheets has slicers but no Timeline (Google Docs Editors Help, "Filter charts and tables with Slicers"; Timeline absence from memory, unverified).
 **Edge cases:** Definition: some companies divide by opening headcount; say which you use. Mid-month joiners and leavers shift the average. Small departments give noisy percentages; show counts as well.
 **Likely follow-ups:** 1) *Annualising a monthly rate?* Multiply by 12 or use year-to-date leavers over average headcount. 2) *Voluntary vs involuntary?* A split bar.
@@ -771,6 +582,20 @@ Dynamic name route: Formulas > Define Name > Name `Sales`, Refers to `=OFFSET($B
 - Like slicers, one timeline can control several PivotTables if they share the same data source: select it, open Report Connections and tick the pivots (same Microsoft page).
 - Time levels (Years, Quarters, Months, Days) are chosen from the dropdown at the top right of the timeline; that detail is from memory, unverified, since the Microsoft page does not describe levels.
 **Example:** Joiners table with 8 joining dates in 2026. Selecting January to March on the timeline should show 5 joiners (Sales 2, Ops 2, HR 1) instead of all 8.
+**Sample sheet (8 joiners, 2026):**
+
+| | A | B | C |
+|---|---|---|---|
+| 1 | Employee | Dept | Join Date |
+| 2 | E01 | Sales | 12-Jan-2026 |
+| 3 | E02 | Ops | 20-Jan-2026 |
+| 4 | E03 | HR | 09-Feb-2026 |
+| 5 | E04 | Sales | 02-Mar-2026 |
+| 6 | E05 | Ops | 23-Mar-2026 |
+| 7 | E06 | Sales | 06-Apr-2026 |
+| 8 | E07 | Ops | 18-May-2026 |
+| 9 | E08 | HR | 15-Jun-2026 |
+
 **Formula / Steps (not run here):**
 1. Build the PivotTable(s) from an Excel Table with a true date column.
 2. Click in the pivot > PivotTable Analyze > Insert Timeline > tick Join Date > OK.
@@ -938,7 +763,7 @@ Tip: PivotTable Analyze > Options > Data > tick "Refresh data when opening the f
 ### Q35 ⭐⭐ 🟡 Which chart types are available in Excel 2016, 2019 and Microsoft 365, and which are missing in older versions?
 **Asked at:** commonly asked (no company-specific report found); a version-awareness question.
 **What the interviewer is checking:** Do you know which modern charts depend on the Excel version, so you do not build something a colleague cannot open?
-**Say this in the interview:** "The classic charts (column, bar, line, pie, scatter, area, combo) exist in every modern version. Waterfall, histogram and box and whisker are in 2016 and later. Funnel needs 2021 or Microsoft 365, and the Map chart needs Microsoft 365. If my audience has an older Excel, I stick to the classics or paste as a picture."
+**Say this in the interview:** "The classic charts (column, bar, line, pie, scatter, area, combo) exist in every modern version. Waterfall, histogram and box and whisker are in 2016 and later (per their Microsoft pages). Funnel needs 2021 or Microsoft 365, and the Map chart needs Microsoft 365. If my audience has an older Excel, I stick to the classics or paste as a picture."
 **Explain simply:**
 - Classic types listed by Microsoft: column, line, pie and doughnut, bar, area, XY scatter and bubble, stock, surface, radar, combo (Microsoft Support, "Available chart types in Office").
 - Newer types on the same page: treemap, sunburst, histogram and Pareto, box and whisker, waterfall, funnel, map (same page).
@@ -949,8 +774,9 @@ Tip: PivotTable Analyze > Options > Data > tick "Refresh data when opening the f
 | Waterfall | Page applies to 2016, 2019, 2021, 2024, 365 (Microsoft Support, "Create a waterfall chart") |
 | Histogram | Page applies to 2016, 2019, 2021, 2024, 365 (Microsoft Support, "Create a histogram") |
 | Box and whisker | Applies To list includes Excel 2016 and 2019 (Microsoft Support, "Create a box and whisker chart") |
-| Pareto | Applies To lists 365, 2024, 2021 only; 2016/2019 not listed (Microsoft Support, "Create a Pareto chart"); Excel 2016 introduction is from memory, unverified |
-| Treemap | Applies To lists 365, 2024, 2021 only (Microsoft Support, "Create a treemap chart in Office"); 2016 availability from memory, unverified |
+| Pareto | Applies To lists 365, 2024, 2021 only; 2016/2019 not listed (Microsoft Support, "Create a Pareto chart"); the page states no introduction date (only image file names mention 2016), so Excel 2016 availability is unconfirmed |
+| Treemap | Applies To lists 365, 2024, 2021 only (Microsoft Support, "Create a treemap chart in Office"); an image caption says "Office 2016 for Windows" but no introduction date is stated, so 2016 availability is unconfirmed |
+| Sunburst | Applies To list includes Excel 2016 (Microsoft Support, "Create a sunburst chart in Office"); no introduction date stated |
 | Funnel | "only available in Excel for Windows if you have Office 2021, or ... a Microsoft 365 subscription" (Microsoft Support, "Create a funnel chart based on Excel data") |
 | Map (filled) | "available if you have a Microsoft 365 subscription" (Microsoft Support, "Create a Map chart in Excel") |
 | Dynamic charts | introduced with Office 2024 and in Microsoft 365 (Microsoft Support, "Available chart types in Office") |
@@ -960,7 +786,7 @@ Tip: PivotTable Analyze > Options > Data > tick "Refresh data when opening the f
 **Formula / Steps:** Check version: File > Account > About Excel (from memory, unverified). Insert tab > Charts group shows what your version offers. Nothing to calculate; no formulas run.
 **Alternative:** Recommended Charts (Insert > Recommended Charts) only suggests chart types your version supports (from memory, unverified).
 **Result:** Not applicable (reference answer). Nothing was run; every availability line comes from the fetched pages cited above or is labelled unverified.
-**Version note:** Excel 2013 and older lack the 2016 chart group (from memory, unverified). Google Sheets has a different list: waterfall, histogram, treemap, geo and many more (Google Docs Editors Help, "Add & edit a chart or graph", partly read).
+**Version note:** Excel 2013 and older lack the 2016 chart group (from memory, unverified). Google Sheets has a different list: the fetched Google page names line, area, column, bar, scatter, pie, waterfall, histogram, radar, candlestick and treemap; geo and gauge are not named there (from memory, unverified).
 **Edge cases:** A file with a new chart opened in an older Excel shows an empty placeholder, losing the chart. "Excel 2019" is perpetual; Microsoft 365 receives features monthly, so 2019 gets none later.
 **Likely follow-ups:** 1) *How to share safely?* Paste as picture (Q20). 2) *Which new charts can't link titles?* Waterfall, funnel, histogram and similar (Q29).
 **Common mistakes:** Assuming everyone has 365; building with a map chart and emailing to a 2019 user.
@@ -1150,7 +976,7 @@ Tip: PivotTable Analyze > Options > Data > tick "Refresh data when opening the f
 - Conversion rate = this stage divided by the previous stage. Overall yield = joiners divided by applications.
 - Microsoft's page: Funnel requires Office 2021 or a Microsoft 365 subscription (Microsoft Support, "Create a funnel chart based on Excel data").
 - Without Funnel: a stacked bar with a hidden spacer series centres each bar.
-**Example:** 1,200 applications, 600 screened, 240 interviewed, 60 offers, 45 joiners. Biggest drop is interview to offer (25%). Offer acceptance is 75%.
+**Example:** 1,200 applications, 600 screened, 240 interviewed, 60 offers, 45 joiners. The weakest conversion is interview to offer (25%). Offer acceptance is 75%.
 **Sample sheet:**
 
 | | A (Stage) | B (Count) | C (Conv.) | D (Spacer) |
@@ -1180,20 +1006,24 @@ Funnel: select A1:B6 > Insert > Waterfall, Funnel, Stock, Surface or Radar chart
 - The page's options: show inner points, outlier points, mean markers, mean line and a Quartile Calculation of inclusive or exclusive median (Microsoft Support, "Create a box and whisker chart").
 - The chart needs a column per grade (or a Grade column and a Salary column).
 **Example:** One grade, 8 salaries (lakh): 4.2, 4.8, 5.0, 5.5, 6.1, 6.4, 7.0, 15.0. The 15.0 pay is an outlier and drags the mean to 6.75 above the median of 5.8.
-**Sample sheet:**
+**Sample sheet (no header row, so cell numbers match the formulas):**
 
-| | A (Salary) | C (Inclusive) | D (Exclusive) |
-|---|---|---|---|
-| 1 | 4.2 | Q1 4.95 | Q1 4.85 |
-| 2 | 4.8 | Median 5.8 | Median 5.8 |
-| 3 | 5.0 | Q3 6.55 | Q3 6.85 |
-| 4-8 | 5.5, 6.1, 6.4, 7.0, 15.0 | | |
+| | A (Salary) | C | D (Inclusive) | E (Exclusive) |
+|---|---|---|---|---|
+| 1 | 4.2 | Q1 | 4.95 | 4.85 |
+| 2 | 4.8 | Median | 5.8 | 5.8 |
+| 3 | 5.0 | Q3 | 6.55 | 6.85 |
+| 4 | 5.5 | | | |
+| 5 | 6.1 | | | |
+| 6 | 6.4 | | | |
+| 7 | 7.0 | | | |
+| 8 | 15.0 | | | |
 
-**Formula / Steps:** `=QUARTILE.INC(A1:A8,1)`, `=MEDIAN(A1:A8)`, `=QUARTILE.INC(A1:A8,3)`; `=QUARTILE.EXC(...)` for the exclusive method; upper fence `=C3+1.5*(C3-C1)`.
+**Formula / Steps:** `=QUARTILE.INC(A1:A8,1)`, `=MEDIAN(A1:A8)`, `=QUARTILE.INC(A1:A8,3)`; `=QUARTILE.EXC(...)` for the exclusive method; upper fence `=D3+1.5*(D3-D1)` (inclusive column).
 Chart (not run here): select the data > Insert > Insert Statistic Chart > Box and Whisker; right-click a box > Format Data Series to show outliers and the mean.
 **Alternative:** Show median, Q1, Q3 in a PivotTable and a stacked-column "pseudo box" (not run here).
-**Result:** (Run.) INC: 4.95, 5.8, 6.55, IQR 1.6, upper fence 8.95, lower fence 2.55, mean 6.75; EXC: 4.85, 5.8, 6.85. So 15.0 is above the fence (outlier); the top whisker ends at 7.0 and the bottom at 4.2 (read off the data). Chart's exact quartile maths: not run here.
-**Version note:** Page applies to 365, 2024, 2021, 2019 and 2016 (Microsoft Support). Google Sheets has no native box plot, only a candlestick workaround, from memory, unverified. Which Excel option equals QUARTILE.INC or EXC is unverified.
+**Result:** (Run; QUARTILE.EXC needs the _xlfn. prefix when written through openpyxl.) INC: 4.95, 5.8, 6.55, IQR 1.6, upper fence 8.95, lower fence 2.55, mean 6.75; EXC: 4.85, 5.8, 6.85. So 15.0 is above the fence (outlier); the top whisker ends at 7.0 and the bottom at 4.2 (read off the data). Chart's exact quartile maths: not run here.
+**Version note:** Page applies to 365, 2024, 2021, 2019 and 2016 (Microsoft Support). Google Sheets has no native box plot, only a candlestick workaround, from memory, unverified. Microsoft's box and whisker page (fetched) defines Inclusive/Exclusive median only as whether the median is included in the quartile calculation when N is odd; it does not say they equal QUARTILE.INC or QUARTILE.EXC, so which numbers the chart draws for N = 8 is unverified.
 **Edge cases:** Small groups (under 5 people) make meaningless boxes; blanks are ignored.
 **Likely follow-ups:** 1) *Why median over mean?* Outliers distort the mean. 2) *Pay compression?* Boxes of adjacent grades overlap.
 **Common mistakes:** Calling the whisker the min and max; confusing quartile methods.

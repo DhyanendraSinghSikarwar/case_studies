@@ -1606,43 +1606,50 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 
 ### Q64 ⭐ 🟡 Your pivot shows #REF! after you renamed the source sheet. What happened and how do you fix it?
 **Asked at:** commonly asked (no company-specific report found).
-**What the interviewer is checking:** Can you diagnose a broken source or broken formula?
-**Say this in the interview:** "First I would check what shows #REF!. Renaming a sheet normally does not break the pivot source, so it is usually a deleted sheet or a GETPIVOTDATA formula pointing at something that is no longer visible. I would reset the source via Change Data Source."
+**What the interviewer is checking:** Can you diagnose before you fix, and do you challenge a premise that may be wrong?
+**Say this in the interview:** "First I would find out where the #REF! actually shows. Renaming a sheet normally does not break a pivot's source, so I suspect either a deleted source sheet or a GETPIVOTDATA formula that points at an item no longer visible. I check both, then reset the source with Change Data Source."
 **Explain simply:**
-- Premise check: renaming an in-workbook sheet normally updates the pivot's source automatically (from memory, unverified). The cases I know that really break it are a deleted source sheet, or a source in another workbook that was renamed or moved.
-- Microsoft Support ("GETPIVOTDATA function") says that function returns #REF! if the pivot_table argument does not reference a pivot, or if the field or item is not visible in the pivot (for example filtered out).
-- So the #REF! could be in cells outside the pivot that use GETPIVOTDATA.
-**Example:** A dashboard cell shows #REF! after someone filtered Legal out of the pivot it reads.
-**Formula / Steps:** (not run here)
-1. Click the pivot > PivotTable Analyze > Change Data Source and re-select the range or Table.
-2. For GETPIVOTDATA cells, make sure the item is visible, or clear the filter.
-3. Turn off auto-generation if you prefer normal cell references: PivotTable Analyze > Options dropdown > untick Generate GetPivotData (Microsoft Support).
-**Alternative:** Use a named Table as source so the reference follows renames.
-**Result:** Not run here; no reproducible computed value.
-**Version note:** Applies to all current desktop Excel versions (Microsoft's GETPIVOTDATA page).
-**Edge cases:** External-workbook sources need the file path updated.
-**Likely follow-ups:** 1) *Prevent it?* Use Tables. 2) *Source deleted?* Rebuild the pivot from restored data.
-**Common mistakes:** Assuming rename is the cause without checking; rebuilding the whole pivot unnecessarily.
+- Premise check: renaming a sheet inside the same workbook normally updates the pivot's source reference by itself (from memory, unverified; Microsoft's "Change the source data for a PivotTable" page, fetched, does not cover renamed or deleted sheets).
+- The cases that really break a refresh are a deleted source sheet, or a source in another workbook that was renamed or moved. Excel then usually shows a "reference isn't valid" style message, not #REF! in cells (from memory, unverified).
+- #REF! in cells is most often a GETPIVOTDATA formula: Microsoft Support ("GETPIVOTDATA function") says it returns #REF! if the pivot_table argument does not reference a pivot, or the field or item is not visible (for example filtered out).
+- So the answer is "it depends where": inside the pivot (source problem) or in cells outside it (GETPIVOTDATA problem).
+**Example:** A dashboard cell `=GETPIVOTDATA("Sales",$A$3,"Month","Mar")` normally returns 200. Someone filters Month to Jan and Feb only; the cell shows #REF! although nothing was renamed. Clearing the filter brings 200 back.
+**Sample sheet:** Pivot at A3 (same layout as Q54): Feb 120, Jan 180, Mar 200. The formula points at Mar.
+**Formula / Steps (not run here; Change Data Source steps from Microsoft Support, "Change the source data for a PivotTable"):**
+1. Find the error: is it inside the pivot, or in a formula cell next to it?
+2. Source problem: click the pivot > PivotTable Analyze > Change Data Source > re-select the range or Table (or the right workbook) > OK > Refresh.
+3. GETPIVOTDATA problem: make the item visible (clear the filter), or check the field and item spelling.
+4. If you prefer plain cell references, untick Generate GetPivotData (Q55).
+**Alternative:** Use a named Table as the source so the reference follows renames and growth (Q52). If the source sheet was deleted, restore it (Ctrl+Z or an older file version) and re-point the pivot.
+**Result:** Not run here (a pivot is needed). Expected from Microsoft's description: with Mar visible the formula returns 200; with Mar filtered out it returns #REF!. The 200 is checked: `=SUMIFS` on the raw rows returned 200 in LibreOffice (Q54).
+**Version note:** The GETPIVOTDATA page applies to Excel 2016 to 365 (Microsoft Support). Error wording for a broken source is from memory, unverified, and may differ by version.
+**Edge cases:** An external-workbook source needs its file path updated. A Data Model pivot cannot have its source changed with this command (Microsoft Support, "Change the source data for a PivotTable"); you fix the table or connection instead. A pivot built on a fixed range keeps showing old numbers if only the data moved.
+**Likely follow-ups:** 1) *How do you prevent it?* Use Tables, keep GETPIVOTDATA references to items that always exist, and do not delete source sheets. 2) *Source deleted for good?* Rebuild the pivot from restored data.
+**Common mistakes:** Assuming rename is the cause without checking where #REF! appears; rebuilding the whole pivot when only the data source needed resetting; hiding an item with a filter and forgetting formulas depend on it.
 
 ### Q65 ⭐ 🟡 What is the difference between Refresh and Refresh All, and what happens to pivots linked to external data?
 **Asked at:** commonly asked (no company-specific report found).
-**What the interviewer is checking:** Can you refresh the right scope and know that external sources need a connection?
-**Say this in the interview:** "Refresh updates the selected pivot; Refresh All updates every pivot and connection in the workbook. For external data, a refresh re-runs the query against the source."
+**What the interviewer is checking:** Can you refresh the right scope, and do you know that external sources need a connection and access?
+**Say this in the interview:** "Refresh updates the pivot I selected; Refresh All updates every pivot in the workbook. For a pivot built on external data, such as a database, refresh re-runs the query, so I need access and credentials. For shared reports I also tick refresh on open."
 **Explain simply:**
-- Microsoft Support ("Refresh PivotTable data"): Refresh updates the selected pivot (Alt+F5 or right-click); Refresh All, from the Refresh arrow, updates every pivot in the workbook.
-- External sources such as SQL Server, Oracle, Access, Analysis Services and data feeds can be refreshed from the same command.
+- Microsoft Support ("Refresh PivotTable data", fetched): Refresh updates the selected pivot (right-click, or Alt+F5 on Windows); Refresh All, from the Refresh arrow, updates every pivot in the workbook.
+- External sources it names: Power Query imports from SQL Server, Oracle, Access, Analysis Services cubes and data feeds. A pivot based on an Excel Table also picks up changes from that table's external source.
 - Refresh Status shows progress and Cancel Refresh stops a slow one.
-- "Refresh data when opening the file" is in PivotTable Options > Data.
-**Example:** The HRMS export refreshes nightly; the pivot reads the connected table on opening.
-**Formula / Steps:** (not run here; steps from Microsoft Support)
-1. One pivot: right-click > Refresh.
-2. All: PivotTable Analyze > Refresh arrow > Refresh All (or Data > Refresh All).
-**Alternative:** Refresh on open for shared reports.
-**Result:** Not run here.
-**Version note:** Microsoft's page covers Excel 2016 to 365; its Auto Refresh feature was described as for Microsoft 365 Insiders at the time of the fetch.
-**Edge cases:** A pivot on external data needs credentials and network access. If two pivots share a cache, one refresh may update both (from memory).
-**Likely follow-ups:** 1) *Why still stale?* Check source range. 2) *Auto-refresh?* On open.
-**Common mistakes:** Refreshing one pivot while another dashboard pivot stays old.
+- "Refresh data when opening the file" is on the Data tab of PivotTable Options (Windows); the web version has a similar setting in the PivotTable Settings pane (same page).
+- Refresh pulls new numbers from the source; it never edits the source.
+**Example:** The monthly HRMS export lands in an Excel Table via Power Query. You have an attrition pivot and a headcount pivot on the same sheet. Right-click Refresh updates only the attrition pivot, so headcount still shows last month's 120 while attrition shows this month's data. Refresh All updates both.
+**Sample sheet:** Two pivots on one source: Pivot A (leavers by department) and Pivot B (headcount by department). Source gains 3 new leaver rows (2 IT, 1 HR). Before refresh both show the old figures; after refreshing only A, A shows IT +2 and HR +1 while B is unchanged; after Refresh All both match the source. (Illustration of the described behaviour; not run here.)
+**Formula / Steps (not run here; steps from Microsoft Support, "Refresh PivotTable data"):**
+1. One pivot: right-click inside it > Refresh, or select it and press Alt+F5.
+2. All pivots: PivotTable Analyze > arrow under Refresh > Refresh All (or Data > Refresh All).
+3. Slow refresh: arrow under Refresh > Refresh Status, or Cancel Refresh.
+4. Automatic on open: PivotTable Analyze > Options > Data tab > tick Refresh data when opening the file.
+**Alternative:** Refresh on open for shared reports; a short macro running `ActiveWorkbook.RefreshAll` (from memory, unverified).
+**Result:** Not run here; no calculation involved.
+**Version note:** The page's applies-to list is Excel for Microsoft 365, 2024, 2021, 2019 and 2016. Its Auto Refresh feature (pivots on local workbook data refresh on their own) is described as limited to Microsoft 365 Insider participants at the time of the fetch, so do not rely on it.
+**Edge cases:** A pivot on external data needs credentials and network access; a refresh can fail or prompt for a password, and Protected View can block it. Refresh All also refreshes data connections and queries, which can be slow. Pivots that share a cache update together on one refresh (from memory, unverified). Refresh can reset column widths and formats unless the options in Q44 are set.
+**Likely follow-ups:** 1) *Why is it still stale?* The source range may be too small (Q12). 2) *Can it refresh by itself?* On open, or with a macro; classic pivots do not refresh as data changes. 3) *Does Refresh change the source?* No.
+**Common mistakes:** Refreshing one pivot while another dashboard pivot stays old; sending a report without refreshing; assuming Refresh All is harmless on a huge database connection.
 
 ### Q66 ⭐ 🟡 What is the difference between a pivot table built on a normal range and one built from the Data Model?
 **Asked at:** commonly asked (no company-specific report found).
@@ -1760,47 +1767,70 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 
 ### Q70 ⭐ 🔴 How do you create a pivot table in Google Sheets, and how does it differ from Excel?
 **Asked at:** commonly asked (no company-specific report found).
-**What the interviewer is checking:** Awareness of Sheets, since many startups use it.
-**Say this in the interview:** "Select the data with headers, Insert > Pivot table, then add Rows, Columns and Values in the side panel. It updates automatically when the source changes."
+**What the interviewer is checking:** Do you know Sheets as well as Excel, since many startups use it, and can you compare the two honestly?
+**Say this in the interview:** "In Google Sheets I select the data with headers, go to Insert > Pivot table, and add Rows, Columns and Values in the side panel. The big difference from Excel is that a Sheets pivot refreshes by itself when the source changes, so there is no Refresh button to remember."
 **Explain simply:**
-- Google Docs Editors Help ("Create & use pivot tables"): select the data with a header for each column, Insert > Pivot table, then click Add next to Rows, Columns or Values.
-- It refreshes automatically when source cells change (same page).
-- Calculated fields: Values > Add > Calculated field.
-- Sheets may suggest pivot tables; turn off under Tools > Suggestion controls.
-- Differences from Excel: no manual refresh needed; no slicers on pivots like Excel's Report Connections (from memory, unverified); Excel has a Data Model and Power Pivot, Sheets does not (from memory, unverified).
-**Example:** Total amount by region.
-**Sample sheet:** (A = Region, B = Prod, C = Amt; same as Q68, A1:C7.)
-**Formula / Steps:** (not run here; steps from Google Docs Editors Help)
-1. Select A1:C7 > Insert > Pivot table > Create.
-2. Rows: Region; Values: Amt (SUM).
-**Alternative:** `=QUERY()` or SUMIFS formulas (from memory).
-**Result:** pandas (run): E 20, N 150, S 180.
-**Version note:** Google Sheets is always current; Google's page did not describe a Show as option, so I treat that comparison as unverified.
-**Edge cases:** Header-less data; merged cells.
-**Likely follow-ups:** 1) *Can Sheets filter?* Yes, pivot filters. 2) *Share?* Share the sheet.
-**Common mistakes:** Selecting data without headers.
+- Google Docs Editors Help ("Create & use pivot tables", fetched): select the data, each column needs a header, Insert > Pivot table, then add fields to Rows, Columns and Values.
+- Same page: the pivot table refreshes any time you change the source data cells it is drawn from.
+- Same page: calculated fields let you add a new metric inside the pivot with SUM or a custom formula; Sheets may suggest pivots (switch off under Tools > Suggestion controls).
+- Google Docs Editors Help ("Filter charts and tables with Slicers", fetched): slicers can filter pivot tables, and apply to every chart and pivot table on the sheet that uses the same data set. So Sheets does have slicers for pivots (an earlier draft of this answer said otherwise; corrected).
+- Excel-only strengths (from memory, unverified): Data Model and Power Pivot, Power Query, Report Connections for linking slicers across separate pivot caches, GETPIVOTDATA is in both.
+**Example:** Total amount by region from a 6-row sales list: Rows = Region, Values = Amt (SUM) gives East 20, North 150, South 180.
+**Sample sheet:** A1:C7 (same as Q68):
+
+| | A | B | C |
+|---|---|---|---|
+| 1 | Region | Prod | Amt |
+| 2 | N | A | 100 |
+| 3 | N | B | 50 |
+| 4 | S | A | 70 |
+| 5 | S | A | 30 |
+| 6 | S | B | 80 |
+| 7 | E | B | 20 |
+
+**Formula / Steps (not run here; steps from Google Docs Editors Help, "Create & use pivot tables"):**
+1. Select A1:C7 > Insert > Pivot table > Create (new sheet).
+2. Side panel: Rows > Add > Region; Values > Add > Amt (Summarize by SUM).
+3. Optional: Columns > Add > Prod; Data > Add a slicer to filter the pivot.
+**Alternative:** `=QUERY(A1:C7,"select A, sum(C) group by A")` or SUMIFS formulas (from memory, unverified, not run here).
+**Result:** pandas (run): E 20, N 150, S 180; with Prod in Columns: N has A 100, B 50; S has A 100, B 80; E has B 20 (total 350). The Sheets pivot itself was not run here.
+**Version note:** Google Sheets has no versions to buy; features arrive for everyone. No Excel-version issue. Google's page did not describe a "Show as" percentage option, so I treat that comparison as unverified.
+**Edge cases:** Data without headers, blank header cells, or merged cells break the pivot. Source data typed as text numbers sums to 0, as in Excel. The pivot can sit on a different sheet from the data.
+**Likely follow-ups:** 1) *Can Sheets filter a pivot?* Yes, pivot filters and slicers (Google Help). 2) *How do you share it?* Share the spreadsheet link; viewers see the live pivot. 3) *Which would you pick for 2 lakh rows?* Excel with the Data Model or a database; Sheets is slower on large data (from memory, unverified).
+**Common mistakes:** Selecting data without headers; expecting a manual Refresh; expecting the same menus as Excel (the Sheets editor is a side panel).
 
 ### Q71 ⭐ 🔴 How do you share a pivot-table report with someone who has Excel 2016 when you built it in Microsoft 365?
 **Asked at:** commonly asked (no company-specific report found).
-**What the interviewer is checking:** Compatibility awareness.
-**Say this in the interview:** "I run the Compatibility Checker, avoid 365-only functions such as XLOOKUP and UNIQUE, and if in doubt send a values-only copy or a PDF."
+**What the interviewer is checking:** Compatibility awareness: do you know a file that opens is not the same as a file that works?
+**Say this in the interview:** "I run the Compatibility Checker, avoid 365-only functions such as XLOOKUP and UNIQUE, and test the key numbers on the other version. If I cannot test, I send a values-only copy or a PDF alongside the live file."
 **Explain simply:**
-- Microsoft Support ("Save an Excel workbook for compatibility with earlier versions of Excel"): File > Info > Check for Issues > Check Compatibility lists features that might not be available in earlier versions.
-- XLOOKUP is not available in Excel 2016 and 2019 (Microsoft Support "XLOOKUP function", which is itself inconsistent about 2016/2019 in its Applies To list); a file with XLOOKUP can still open there.
-- UNIQUE is listed for 365, 2024 and 2021 only (Microsoft Support "UNIQUE function").
-- Data Model pivots work on Windows Excel 2016 (Microsoft Support "Use multiple tables..."), but not on Mac.
-- Pivot tables, slicers and pivot charts open in Excel 2016 (slicer page notes 2016 UI differences).
-**Example:** Your dashboard uses XLOOKUP for a helper column; the 2016 user sees errors.
-**Formula / Steps:** (not run here)
-1. File > Info > Check for Issues > Check Compatibility.
-2. Replace XLOOKUP with INDEX/MATCH; UNIQUE with Remove Duplicates or a pivot.
-3. Paste values for fragile formulas, or Save As PDF.
-**Alternative:** Ask them to use Excel for the web (from memory).
-**Result:** Not run here.
-**Version note:** As cited above.
-**Edge cases:** Mac recipients cannot use Data Model pivots.
-**Likely follow-ups:** 1) *Other option?* Share a PDF.
-**Common mistakes:** Assuming the whole file works because it opens.
+- Microsoft Support ("Save an Excel workbook for compatibility with earlier versions of Excel", fetched): File > Info > Check for Issues > Check Compatibility lists features that might not be available in an earlier version. Its applies-to line lists 365, 2024 and 2021.
+- The same page says data features that analyse multiple tables are not supported in versions like Excel 2019 because those versions lack a Data Model. Microsoft's "Use multiple tables to create a PivotTable" page (read in Wave B) lists Windows Excel 2016 to 365. These two pages conflict; Data Model availability also depends on the Office edition (Power Pivot edition list unresolved), so test on the recipient's machine.
+- XLOOKUP: Microsoft's XLOOKUP page says it is not available in Excel 2016 and 2019 but its applies-to list names them; I treat XLOOKUP as Excel 2021/365 only. UNIQUE is listed for 365, 2024 and 2021 only (Microsoft Support "UNIQUE function").
+- Ordinary pivot tables, slicers, timelines and pivot charts open and work in Excel 2016 (Microsoft slicer page notes 2016 UI differences, Q9).
+- What a recipient sees for a newer function when the file opens in an older version is from memory, unverified: usually a #NAME? error once the cell recalculates.
+**Example:** Your dashboard has a pivot plus a helper column using XLOOKUP to pull a manager name. The 2016 user opens it; the pivot refreshes fine but the helper column shows #NAME?, so the dashboard's manager column breaks.
+**Sample sheet:** Helper lookup in A1:B5 (department headcount: HR 2, IT 3, Sales 2, Finance 1) with D2 = IT:
+
+| | A | B |
+|---|---|---|
+| 1 | Dept | Headcount |
+| 2 | HR | 2 |
+| 3 | IT | 3 |
+| 4 | Sales | 2 |
+| 5 | Finance | 1 |
+
+**Formula / Steps:**
+1. Run File > Info > Check for Issues > Check Compatibility (not run here).
+2. Replace the 365-only formula `=XLOOKUP(D2,A2:A5,B2:B5)` (not run here, LibreOffice 24.2 lacks XLOOKUP) with `=INDEX($B$2:$B$5,MATCH(D2,$A$2:$A$5,0))`.
+3. Replace UNIQUE-based lists with Data > Remove Duplicates or a pivot.
+4. Paste values for fragile formulas, or Save As PDF for a read-only copy.
+**Alternative:** Ask them to open the file in Excel for the web (from memory, unverified), or send a values-only copy.
+**Result:** INDEX/MATCH run in LibreOffice: D2 = IT returns 3, and the column total is 8, the same as the XLOOKUP version would return (XLOOKUP itself not run here).
+**Version note:** As cited above: XLOOKUP and UNIQUE are 2021/365 only; basic pivots, slicers and pivot charts work in 2016; Data Model features have a source conflict (Microsoft pages disagree).
+**Edge cases:** Mac recipients cannot use Data Model pivots (Microsoft "Use multiple tables..."). A pivot made on a newer file format keeps working, but newer chart types and Auto Refresh features do not. Slicers appear with a different ribbon layout in 2016. Cached values may still display until the recipient recalculates.
+**Likely follow-ups:** 1) *Other option?* Share a PDF or a values-only copy. 2) *How do you know what they have?* Ask for their Excel version (File > Account). 3) *Why not just tell them to upgrade?* Often they cannot.
+**Common mistakes:** Assuming the whole file works because it opens; using XLOOKUP and dynamic arrays in a file meant for older versions; never running the Compatibility Checker.
 
 ### Q72 ⭐ 🔴 How do you use a pivot table to compare actual against target and show the variance?
 **Asked at:** commonly asked (no company-specific report found).
@@ -1834,22 +1864,29 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 
 ### Q73 ⭐ 🔴 What are the limitations of pivot tables that make you reach for Power Pivot or Power Query?
 **Asked at:** commonly asked (no company-specific report found).
-**What the interviewer is checking:** Whether you know when to step up the tool.
-**Say this in the interview:** "A normal pivot works on one flat table and needs clean data. Power Query cleans and combines sources; Power Pivot relates many tables and handles millions of rows with measures."
+**What the interviewer is checking:** Whether you know where an ordinary pivot stops and which tool picks up from there.
+**Say this in the interview:** "A normal pivot summarises one flat table and needs a refresh. When I need to join several tables, count distinct people, write richer measures, or the data is bigger than a sheet, I use Power Query to clean and combine, and Power Pivot with the Data Model to relate tables and build measures."
 **Explain simply:**
-- Microsoft Support ("Learn to use Power Query and Power Pivot in Excel"): Power Query imports, shapes and combines data; Power Pivot builds models from many sources; both handle "up to millions of rows".
-- Excel's own limits: 1,048,576 rows per sheet (Support, "Excel specifications and limits").
-- Normal pivots cannot join tables or do distinct counts (Data Model needed).
-- Data Models are not supported on Mac (Support "Use multiple tables...").
-- Calculated fields are limited compared with DAX (from memory).
-**Example:** Joining HRMS, payroll and attendance exports monthly.
-**Formula / Steps:** (not run here) Data > Get Data > Combine Queries > Merge; load to Data Model.
-**Alternative:** Power BI or SQL.
-**Result:** Not run here.
-**Version note:** Per Microsoft page: full features in Windows Microsoft 365 Apps for enterprise; Excel 2024 and 2021 listed.
-**Edge cases:** 32-bit Excel memory limits.
-**Likely follow-ups:** 1) *Power Query vs Pivot?* Query prepares, pivot summarises.
-**Common mistakes:** Treating Power Pivot as a separate product from Excel.
+- One flat table: a normal pivot cannot join tables. Power Query (Data > Get Data) merges and cleans first (Q45); Power Pivot relates tables inside the Data Model (Q66).
+- Distinct count: only available on a Data Model pivot (Q40).
+- Size: a worksheet holds 1,048,576 rows (Microsoft Support, "Excel specifications and limits", fetched). The Data Model is not bound by sheet rows; Microsoft's "Data Model specification and limits" page (seen in search results only) lists about 2 billion rows per table, so treat that as unverified here.
+- Pivot limits from the specifications page (fetched): 1,048,576 unique items per field and 256 value fields per pivot; in 32-bit Excel a Data Model can use roughly 500 to 700 MB.
+- Calculations: calculated fields work on summed values and cannot use cell references (Microsoft Support); DAX measures in Power Pivot are far more flexible (from memory).
+- Refresh and repeatability: Power Query records the cleaning steps and re-runs them on refresh; a hand-cleaned pivot source must be redone.
+- Platform: Data Models are not supported on Excel for Mac (Microsoft "Use multiple tables..."). Microsoft's "Learn to use Power Query and Power Pivot in Excel" page (seen in search results only) says the Windows desktop app offers the full features with Microsoft 365 Apps for enterprise and describes the tools for datasets of up to millions of rows. Which editions include Power Pivot is unresolved (the page I fetched did not list editions).
+**Example:** Each month HR gets three exports: HRMS (EmpID, Dept), payroll (EmpID, Pay) and attendance (EmpID, Days). A normal pivot needs one table, so you would VLOOKUP by hand every month. With Power Query you merge on EmpID once and refresh monthly. If attendance has 2 rows for EmpID 101, the pivot's Count shows rows while Distinct Count shows people: in the Q40 data the pivot count is 8 rows but 5 distinct employees (verified by pandas and by LibreOffice SUMPRODUCT).
+**Sample sheet:** Not a single sheet; reuse the Q40 sheet (EmpID, Dept; 8 rows, 5 distinct IDs) for the distinct-count limit and the Q45 sheets (Emp, Pay) for the join limit.
+**Formula / Steps (not run here; Power Query and Power Pivot cannot run in this environment):**
+1. Data > Get Data > From Table/Range for each source; Home > Merge Queries on EmpID.
+2. Close & Load To... > Only Create Connection, tick Add this data to the Data Model.
+3. Insert > PivotTable > From Data Model; or Data > Relationships to link tables.
+4. For distinct count: Value Field Settings > Distinct Count (Q40).
+**Alternative:** Power BI or SQL when data is large or shared across teams.
+**Result:** Row-limit arithmetic: 12 monthly files of 100,000 rows each is 1,200,000 rows, more than the 1,048,576 a sheet holds, so they must go into the Data Model, not a sheet. Distinct count 5 versus 8 rows is from the Q40 runs. The Power Query and Power Pivot steps themselves were not run here.
+**Version note:** Power Query is built in on Windows Excel 2016 and later (Microsoft "About Power Query in Excel", Q45). Power Pivot and Data Model availability varies by edition and by page: see the unresolved conflict in Q71 and Q66. Excel for Mac has no Data Model.
+**Edge cases:** 32-bit Excel runs out of memory sooner (500 to 700 MB for a Data Model, Microsoft Support). A Data Model pivot cannot have its source changed with Change Data Source. Calculated fields and items are not allowed on Data Model pivots (use DAX; from memory, unverified). Slow pivots are often fixed with fewer columns and one shared cache (Q67) before reaching for a new tool.
+**Likely follow-ups:** 1) *Power Query vs Pivot?* Query prepares data, pivot summarises it. 2) *Power Pivot vs Power BI?* Same engine idea; Power BI is a separate product for sharing and dashboards. 3) *When would you stay with a plain pivot?* One clean table under a few hundred thousand rows.
+**Common mistakes:** Treating Power Pivot as a separate product from Excel; reaching for Power Pivot when a helper column would do; forgetting that Mac Excel lacks the Data Model.
 
 ### Q74 ⭐ 🔴 How do you build a headcount-by-tenure-band report from joining dates using a pivot table?
 **Asked at:** commonly asked (no company-specific report found).
