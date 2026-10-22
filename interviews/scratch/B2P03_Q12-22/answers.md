@@ -437,3 +437,185 @@ Output from my run:
 
 **Common mistakes:** stuffing everything in; trimming from the front and losing the system prompt; summaries that drop numbers or constraints; no token budget; counting words and treating them as tokens; putting volatile content before stable content and breaking the cache.
 
+### Q19 ⭐⭐ 🟡 Does role or persona prompting ("you are an expert...") help? How do you control tone and style reliably?
+**Asked at:** all types
+**Say this first (1 line):** A role line has a modest and task-dependent effect on accuracy, so do not count on it; it is fine for setting voice and audience, but reliable tone and style come from explicit style rules and examples.
+**Then explain:**
+- **Accuracy:** the evidence is mixed. Some studies and practitioners report small gains from "you are an expert in X" on some tasks, others find no gain or even worse results, and it varies by model and task. Treat it as a hypothesis to test on your golden set (Q6), not a trick. It will not add knowledge the model lacks.
+- **What a role is good for:** setting audience and register ("you are a support agent for a bank, writing to retail customers"), scope ("only answer banking questions"), and a perspective for reviews ("act as a strict code reviewer"). Say who the reader is and what they need; that does more than a job title.
+- **Reliable tone and style:** write the rules down (sentence length, formality, words to use or avoid, structure, length), and give 2-3 examples of good output and ideally one bad-versus-good pair (Q1, Q13). Examples beat adjectives like "friendly but professional".
+- **Enforce and measure:** a checklist or a judge prompt scoring tone against the style guide (Part 9), plus simple code checks (length, banned phrases, required sections). Keep the style guide in the system prompt (Q2).
+- **Risks:** a persona can make the model overconfident ("as an expert" may produce confident wrong answers), or role-play content you did not intend. Never use a persona as a security boundary.
+- If tone must be exact across many outputs, fine-tuning on style examples is an option (Part 4), after prompting is exhausted.
+
+**Example:** "You are a senior data scientist" versus no role on a statistics question: expect little difference you can rely on; test it. For a bank reply, a style guide ("max 80 words, no exclamation marks, address by first name, end with next step") plus two sample replies gives much more consistent tone than "be friendly and professional". (Illustrative; I did not measure it here.)
+
+**Code:** not executed: prompt text only.
+```text
+Style guide:
+- Audience: retail banking customer, non-technical.
+- 60-80 words, plain sentences, no exclamation marks, no jargon.
+- Structure: acknowledge, answer, next step.
+Example (good): "Hi Asha, your refund of Rs 499 was issued on 12 Oct and usually shows within 5 working days. If it is not there by 20 Oct, reply here and we will trace it."
+```
+
+**Follow-ups:**
+- *Should you always include a role?* A one-line role is cheap and harmless for voice; just do not expect accuracy from it.
+- *Multiple personas?* Keep them separate per task or stage (Q16), not mixed in one prompt.
+- *Does a role help jailbreak resistance?* No; use guardrails (Part 5, Part 11).
+
+**Common mistakes:** claiming "expert persona improves accuracy" as a fact; vague style words with no examples; long flowery persona text that adds tokens only; never testing the persona; relying on role text for safety.
+
+### Q20 ⭐⭐ 🟡 Negative constraints and instruction following: why do "do not" instructions fail, how do you resolve conflicting instructions, and what works better?
+**Asked at:** product, GenAI startups
+**Say this first (1 line):** "Do not" rules are weaker than they look because naming the forbidden thing puts it in the context and gives no alternative, so state what to do instead, set an explicit priority order for conflicts, and test the rules.
+**Then explain:**
+- **Why negatives fail (usually, model-dependent):** the prompt now mentions the banned topic or phrase, which can prime it; the rule says what to avoid but not what to produce; long lists of "do nots" get diluted or contradict each other. Newer models follow negatives better, so test on yours rather than assuming.
+- **Positive framing:** "Reply in plain prose paragraphs" instead of "do not use bullet points". "If the answer is not in the context, say 'I don't know'" instead of "do not make things up". Give the fallback behaviour for each restriction (Q17).
+- **Conflicts:** tell the model the order: for example "Safety and legal rules first, then the output format, then tone, then length". Put system-level rules in the system message and say they override user requests where relevant (Q2). Remove accidental contradictions ("be concise" plus "explain in detail").
+- **Hard rules belong in code:** for must-never cases (PII, forbidden words, format), check the output with code or a classifier and block or retry (Q12, Part 5, Part 11). A prompt is a request, not a guarantee.
+- **Test it:** write adversarial and conflicting cases (the user asks for exactly what the rule forbids, two rules clash) into the golden set and count violations.
+- Keep the rule list short, specific and ordered; put the most important rules first and last in long prompts (Q4).
+
+**Example:** weak: "Do not mention competitors. Do not be long." Better: "Talk only about our products; if asked to compare, say you can only describe our features and offer to do that. Answer in at most 3 sentences. If rules conflict, follow this order: legal/safety, then accuracy, then the length limit." Then run 20 prompts that ask for competitor comparisons and count slips. (Illustrative.)
+
+**Code:** not executed: prompt text only; the enforcement check below is the part that is code.
+```text
+Prompt:  "Priority if rules conflict: 1 legal/safety, 2 accuracy, 3 format, 4 length."
+Code:    if any(w in output.lower() for w in BANNED): block_or_retry()   # hard rule enforced outside the model
+```
+
+**Follow-ups:**
+- *Are negatives ever fine?* Yes, a short "never do X" next to the positive alternative works on many models; just verify.
+- *What if user and system instructions conflict?* State precedence in the system prompt and test; do not assume the model will resolve it as you intend.
+- *How do you find conflicts in a long prompt?* Review it as a spec, and run the conflicting test cases.
+
+**Common mistakes:** a long list of "do nots" with no alternative; contradictory rules; no priority order; relying on the prompt for must-never rules; never testing violations; assuming behaviour is the same across models.
+
+### Q21 ⭐⭐ 🟡 How do you control output length and format (explicit specs, examples, stop sequences, max tokens)? What goes wrong with truncation?
+**Asked at:** product, GCC, API-heavy teams
+**Say this first (1 line):** Say the exact length and format in the prompt, show an example, use stop sequences to end cleanly, set `max_tokens` as a safety cap (not as the way to make answers short), and always check the finish reason, because truncation silently produces cut sentences and invalid JSON.
+**Then explain:**
+- **Explicit spec:** "3 bullets, each under 15 words", "JSON with keys a, b, c only", "no preamble". Models are better with sentences or bullets than with exact word counts, so allow a tolerance and check in code.
+- **Examples:** one or two outputs in the exact format are stronger than a description (Q1).
+- **`max_tokens`:** it is a hard cut-off, not a hint. If the model needs more, output stops mid-word. Set it above the longest legitimate answer, and use the prompt for brevity. Parameter names differ by provider and some reasoning models count thinking tokens in the limit, so check the current docs.
+- **Stop sequences:** end generation at a delimiter (for example a closing tag or "\n\n###") so the model does not ramble or start a fake next turn. Details and streaming pitfalls: Part 2 Q22.
+- **Finish reason:** `stop` (natural end or stop sequence) versus `length` (hit the limit); the field name and values vary by provider, check the docs. On `length`: do not parse; retry with a higher limit or a shorter spec, or continue generation.
+- **Format:** for machine consumers use structured outputs or constrained decoding (Q7, Q22) and validation with retries (Q12), not just a prompt.
+
+**Example (run, mock):** a JSON answer of 62 characters is cut at 30 by the limit. The mock reports `length`; the wrapper raises a clear "truncated" error. Without that check, `json.loads` fails with an "Unterminated string" error that looks like a model-format problem. With a limit of 200 the same call parses. (Character counts stand in for tokens in the mock.)
+
+**Code:** (executed; mock model)
+```python
+# Check the finish reason before parsing. The "model" is a MOCK returning (text, finish_reason).
+import json
+
+def mock_model(max_tokens):
+    full = '{"summary": "Refund approved for order 4821", "priority": "high"}'
+    cut = full[: max_tokens]                       # crude stand-in: max_tokens measured in characters here
+    return cut, ("stop" if len(cut) == len(full) else "length")
+
+def get_json(max_tokens):
+    text, reason = mock_model(max_tokens)
+    if reason == "length":                         # truncated: do not parse, do not "repair" blindly
+        raise RuntimeError(f"truncated at max_tokens={max_tokens}; raise the limit or shorten the output spec")
+    return json.loads(text)
+
+for limit in (30, 200):
+    try:
+        print(limit, "->", get_json(limit))
+    except RuntimeError as e:
+        print(limit, "->", e)
+try:
+    json.loads(mock_model(30)[0])
+except json.JSONDecodeError as e:
+    print("parsing the cut text without checking finish reason:", e.msg)
+```
+Output from my run:
+```
+30 -> truncated at max_tokens=30; raise the limit or shorten the output spec
+200 -> {'summary': 'Refund approved for order 4821', 'priority': 'high'}
+parsing the cut text without checking finish reason: Unterminated string starting at
+```
+
+**Follow-ups:**
+- *How do you make answers shorter?* Say so with a limit and an example; lowering `max_tokens` only truncates.
+- *What about streaming?* You still get the finish reason at the end; do not parse partial JSON as final.
+- *Reasoning models?* Budget extra for hidden reasoning tokens, or output can be empty or cut before the answer.
+
+**Common mistakes:** using `max_tokens` as a length control; ignoring the finish reason; setting the cap too low for JSON; asking for exact word counts and not checking; no stop sequence in few-shot templates, so the model invents the next example.
+
+### Q22 ⭐⭐ 🟡 What does constrained decoding do at the logit level? How does a schema become a grammar or state machine, and what does it guarantee and not guarantee?
+**Asked at:** product, GenAI startups, inference/platform teams
+**Say this first (1 line):** At each step it computes which next tokens keep the output valid under a grammar or state machine, sets the logits of all other tokens to minus infinity before the softmax, and samples from what is left, so the output always matches the shape, though not necessarily the truth.
+**Then explain:**
+- **Logit masking:** logits `z` become `z + mask` where invalid tokens get `-inf`. After softmax they have probability exactly 0. The allowed tokens keep their relative probabilities, so the model still chooses among valid options. Decoding settings (Part 2 Q4) apply after the mask.
+- **Schema to grammar:** a JSON schema is compiled into a grammar (or a finite-state machine / pushdown automaton for nesting): object braces, required keys in order, value types, enums as an alternation of strings, numbers by a pattern. The engine tracks the current state and at each step finds the tokens that are allowed from it.
+- **Tokens vs characters:** grammars are over characters but models emit tokens, and one token can span several grammar symbols (like `rove` or `":"`) or end halfway through one. So the engine checks each vocabulary token against the current state, usually with precomputed masks over the tokenizer's vocabulary. This is where compile time and per-step overhead come from, and why a schema with many large enums or deep recursion can add latency on the first request.
+- **Guarantees:** syntax and shape (valid JSON, required keys, enum values, types). **Not guaranteed:** correct values (a valid but wrong number, Q10), a sensible choice among enum values, business rules across fields, or completeness if generation hits `max_tokens` mid-object (Q21). A grammar can also push a model that "wants" something else into awkward text; and some schema features may be unsupported by a given engine or provider, so check the docs.
+- **Engines:** the structured-output article I read names XGrammar, Outlines and llguidance as examples; I am naming them only as listed there, not describing their internals. Hosted APIs expose a strict schema option instead (check the current docs, these change).
+- Pair it with validation and a bounded retry (Q12) and semantic checks.
+
+**Example (run, toy):** the allowed outputs are `approve`, `reject`, `escalate`. The vocabulary mixes single letters and multi-letter tokens (`app`, `rove`, `rej`, `ect`, `esc`, `alate`), and logits are random numbers standing in for a model. Over 2000 samples: unconstrained sampling gives 0 valid outputs (0.0%); with the mask, 2000 of 2000 (100%). At the empty state only `a, e, r, app, rej, esc` stay allowed; after `app`, only `r` and `rove`. Note the model here is random, so this shows the mechanism, not any real model's behaviour.
+
+**Code:** (executed, torch CPU; random logits, toy grammar)
+```python
+# Toy logit masking demo: random logits stand in for a model. Grammar = one of 3 allowed strings.
+import torch
+torch.manual_seed(0)
+
+ALLOWED = ["approve", "reject", "escalate"]
+# Vocabulary mixes single characters and multi-character tokens (a token can span several grammar symbols).
+VOCAB = list("abcdefghijklmnopqrstuvwxyz") + ["app", "rove", "rej", "ect", "esc", "alate", "the", "ing"] + ["<eos>"]
+EOS = VOCAB.index("<eos>")
+MAXLEN = 8
+
+def valid_token_mask(text):
+    """True for tokens that keep `text` a prefix of some allowed string (EOS only if text is complete)."""
+    mask = torch.zeros(len(VOCAB), dtype=torch.bool)
+    for i, tok in enumerate(VOCAB):
+        if i == EOS:
+            mask[i] = text in ALLOWED
+        else:
+            mask[i] = any(a.startswith(text + tok) for a in ALLOWED)
+    return mask
+
+def generate(constrained):
+    text = ""
+    for _ in range(MAXLEN):
+        logits = torch.randn(len(VOCAB))                       # pretend model output
+        if constrained:
+            logits = logits.masked_fill(~valid_token_mask(text), float("-inf"))
+        probs = torch.softmax(logits, dim=-1)                  # -inf -> probability exactly 0
+        tok = torch.multinomial(probs, 1).item()
+        if tok == EOS:
+            break
+        text += VOCAB[tok]
+    return text
+
+N = 2000
+for name, flag in [("unconstrained", False), ("constrained", True)]:
+    outs = [generate(flag) for _ in range(N)]
+    ok = sum(o in ALLOWED for o in outs)
+    print(f"{name:14s} valid: {ok}/{N} = {ok/N:.1%}   examples: {outs[:4]}")
+
+# Show the mask at two states
+for state in ["", "app"]:
+    m = valid_token_mask(state)
+    print(f"state {state!r:6} allowed tokens:", [VOCAB[i] for i in range(len(VOCAB)) if m[i]])
+```
+Output from my run:
+```
+unconstrained  valid: 0/2000 = 0.0%   examples: ['uectcdytheir', 'ecttappiwzdb', 'gwmwroveyxesc', 'eqvthexsix']
+constrained    valid: 2000/2000 = 100.0%   examples: ['approve', 'reject', 'escalate', 'reject']
+state ''     allowed tokens: ['a', 'e', 'r', 'app', 'rej', 'esc']
+state 'app'  allowed tokens: ['r', 'rove']
+```
+
+**Follow-ups:**
+- *Does it hurt quality?* It can, if the mask forces unlikely tokens, or the schema forces the model to answer something it should refuse; allow an "unknown" or `null` option and evaluate.
+- *Why is the first request with a new schema slower?* The grammar must be compiled and token masks prepared; cache compiled schemas and keep them stable (see the p99 point in the sources for Q38-Q40 of this part).
+- *Constrained decoding vs function calling vs JSON mode?* Compared in Q7.
+
+**Common mistakes:** saying "100% correct" instead of 100% valid; ignoring that tokens do not align with characters; forgetting truncation at the length limit; very large or unsupported schemas; skipping semantic validation after generation.
+
