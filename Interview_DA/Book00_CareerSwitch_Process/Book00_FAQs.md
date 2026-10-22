@@ -658,7 +658,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 ### Q42 ⭐⭐ 🟢 What happens in a live SQL round and how should I behave in it?
 **Short answer:** You are given a few tables (or a question on a shared screen) and asked to write queries while the interviewer watches. They are judging how you think and communicate as much as whether the final query runs.
 **Why / explain simply:**
-- "Live" means you type in real time, often on a shared screen or a coding site. Nobody expects perfect syntax from memory; they expect a sensible approach.
+- "Live" means you type in real time, often on a shared screen or a coding site. In general, interviewers care more about a sensible approach than perfect syntax (general knowledge, not checked).
 - Typical topics reported: joins, GROUP BY/HAVING, Nth highest salary, duplicates, window functions, CTEs (a CTE is a named sub-query you write first and then use).
 - Difficulty varies by company type: basic-to-medium at service MNCs and GCCs, medium-hard at product/startup firms.
 **What the evidence says:** SQL appears in about 19 of 20 company profiles (candidate-reported, anonymous, not a statistical sample; IP Section 4). Reported difficulty: basic-medium at service MNCs, medium (windows, CTE) at analytics firms, medium-hard at startups, with one report of "LeetCode hard" at PhonePe (IP Section 3, single-source). Amazon-style processes reportedly open with a shared-screen SQL screen (IP 2.2). Evidence for any one company is thin; ask the recruiter what the round looks like.
@@ -678,11 +678,11 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 **Why / explain simply:**
 - A "practical task" tests whether you can actually do the work, not recite definitions.
 - Excel tasks reported: pivots, rank, lookups and formulas on a case. Power BI questions reported: row-level security, SUM vs SUMX, ALL vs ALLEXCEPT, optimisation (DAX is Power BI's formula language).
-- Many firms never run a hands-on task; Excel and Power BI show up less often than SQL in interview reports.
+- Not every process reports a hands-on task (the research found few first-hand task reports); Excel and Power BI show up less often than SQL in interview reports.
 **What the evidence says:** Excel appears in about 5 and Power BI/DAX in about 7 of roughly 20 company profiles (candidate-reported, anonymous; IP Section 4). Examples: Novartis Excel case with pivots, rank and formulas (March 2023 report, single source); Deloitte USI Hyderabad Power BI round (2025-26, search-summary level; IP 2.1). Excel is in 60% and Power BI in 40% of JDs (n=186 non-random sample, about +/-7 points; MS Addendum), so they matter for the job even if less asked in interviews.
 **What to do:**
 1. Build one end-to-end task: raw HR file, cleaned, pivot, 3 charts, 3-line summary.
-2. Time yourself at 60 to 90 minutes.
+2. Time yourself (60 to 90 minutes is a suggested practice length, not a reported figure).
 3. Practise explaining what each chart tells a manager.
 4. Learn the DAX terms above if Power BI is in the JD.
 5. Ask the recruiter if a task is part of the process.
@@ -742,8 +742,8 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 ### Q47 ⭐⭐ 🟢 Should I learn Power BI or Tableau first?
 **Short answer:** Power BI first, for most Hyderabad/Bengaluru entry roles, unless your target JDs clearly say Tableau. Concepts transfer, so the second tool is much quicker.
 **Why / explain simply:**
-- Power BI appears more often in the JD samples and is free to download for Windows (check Microsoft's current terms).
-- Tableau appears more in GCC/finance-type postings.
+- Power BI appears slightly more often than Tableau in the pooled JD sample (40% vs 33%). Check each tool's current pricing and platform terms yourself; I did not verify them.
+- Tableau appeared more in the GCC/MNC sample (48% vs 32%; see below).
 - Both do the same job: connect data, build charts, share dashboards.
 **What the evidence says:** Pooled JDs: Power BI 40%, Tableau 33% (n=186 non-random sample, about +/-7 points). It flips by sample: GCC/MNC sample Tableau 48% vs Power BI 32%; Hyderabad sample Power BI 49% vs Tableau 40%; the first 40-JD sample had Power BI 32% vs Tableau 12% (MS Addendum). Gap is small, so evidence is weak either way. In interviews Power BI is reported in about 7 profiles and Tableau about 4 (candidate-reported; IP Section 4).
 **What to do:**
@@ -783,8 +783,8 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 2. Keep the same order, but stretch months if you have fewer hours.
 3. End each month with one small deliverable (month 1 Excel task, month 2 five SQL queries on a dataset, month 3 dashboard).
 4. Test yourself monthly and repeat weak topics rather than moving on.
-5. Build 2 to 3 projects by month 5 (blog advice, anecdotal).
-**Example:** (illustrative) Working 8 hours a week, you take about 9 months for the same plan and start applying for MIS roles at month 4.
+5. Build 2 to 3 projects by month 5 (a sensible minimum chosen for this plan, not a proven threshold; no reliable data found on how many projects employers expect).
+**Example:** (illustrative) If the plan needs about 400 hours (an illustrative value; the guide's own range is 240-504 hours, Section 6.1), 8 hours a week takes about 50 weeks, roughly 12 months. You start applying for MIS roles once your Excel and SQL basics work (guide Section 6.4).
 **Common mistakes:** Treating six months as a promise; learning in parallel; no projects; waiting until "ready" to apply.
 **Where this is covered:** Guide Section 6; Book 12 (portfolio).
 
@@ -792,7 +792,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 **Short answer:** Use free official documentation and tutorials, and practise on public datasets or your own anonymised HR-style data. Start with the free material in each book's "How to Develop" part before paying for anything.
 **Why / explain simply:**
 - Free learning exists for Excel, SQL, Power BI and Python, from vendor documentation to public tutorials.
-- Public datasets (government open-data portals, Kaggle-style sites) let you build projects; some HR datasets there are synthetic, so say so.
+- Public datasets (government open-data portals, Kaggle-style sites) let you build projects; some HR datasets there are synthetic, so say so (general knowledge, not checked).
 - Never use real employee data from your employer.
 **What the evidence says:** No reliable data found comparing free and paid learning outcomes; sources surfaced were provider blogs (vendor/blog claim, unverified; B0S). I did not verify specific resource pages for this answer, so check any site's current terms and content yourself.
 **What to do:**
@@ -822,7 +822,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 **Where this is covered:** Book 1 (Excel); Book 2 (SQL); guide Sections 2 and 6.
 
 ### Q52 ⭐⭐ 🟢 Can I learn data analytics while working full time in HR?
-**Short answer:** Yes, many people do, but it takes longer than the headline "6 months" timelines. Consistency (a small block every day) matters more than occasional long sessions.
+**Short answer:** Yes, it is possible, but it takes longer than the headline "6 months" timelines. Consistency (a small block every day) matters more than occasional long sessions.
 **Why / explain simply:**
 - Full-time work means fewer hours, so stretch the plan rather than cram it.
 - Your job can become practice: automate a report or analyse a workforce file (with permission).
@@ -834,9 +834,9 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 3. Fix one daily slot and a weekly review.
 4. Use work tasks, within company data rules, as practice.
 5. Reassess monthly; adjust, do not abandon.
-**Example:** (illustrative) If the plan needs about 400 hours and you have 10 hours a week, that is 40 weeks, not 26. Plan for 10 months.
+**Example:** (illustrative) If the plan needs about 400 hours and you have 10 hours a week, that is 40 weeks, not 26 (400 is an illustrative value inside the guide's 240-504 hour range, Section 6.1). Plan for about 9 to 10 months.
 **Common mistakes:** Copying someone's full-time timeline; studying only on weekends; breaking data-privacy rules with company data; burning out in week 3.
-**Where this is covered:** Guide Section 6; Book 11 (soft skills, including time and stress).
+**Where this is covered:** Guide Section 6; Book 12 Section 6 (weekly routine).
 
 ### Q53 ⭐⭐ 🟢 How do I use HR datasets (attrition, hiring funnel, attendance) to build portfolio projects?
 **Short answer:** Pick a business question, use a public or synthetic HR dataset, analyse it with SQL/Excel/Power BI, and present findings the way you would to an HR head. Never use real employee data from work.
@@ -892,7 +892,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 **Why / explain simply:**
 - Courses sell structure, mentoring and a network; those can be real benefits.
 - "Placement guarantee" often has conditions (attendance, test scores, number of job offers you must accept).
-- Everything can also be learned free; the fee buys discipline and support.
+- Much of the content can also be found free (general knowledge, not checked); the fee mainly buys structure and support.
 **What the evidence says:** Fee claim of about Rs 50,000 to 1.5 lakh appears only in one provider-adjacent blog (vendor/blog claim, unverified; B0S). Placement rates, salary outcomes and conversion rates: No reliable data found; all sources were providers or forums.
 **What to do:**
 1. Write the total cost, including fees and lost income.
@@ -919,7 +919,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 5. Compare with a cheaper alternative before paying.
 **Example:** (illustrative) A provider says "90% placed" but cannot say how many students enrolled or whether the role is analyst. Treat the claim as unverified.
 **Common mistakes:** Trusting testimonials on the provider's site; checking only top salary claims; not reading refund terms; skipping alumni calls.
-**Where this is covered:** Guide Section 6; Book 11 (networking).
+**Where this is covered:** Guide Section 6; Book 12 Section 4 (outreach to people).
 
 ### Q58 ⭐⭐ 🟢 How do I prepare for the "tell me about yourself" question as a switcher?
 **Short answer:** Use a 60 to 90 second story with three parts: what you did in HR, what pulled you towards data and what you have built since, ending with why this role. Keep it honest, specific and forward-looking.
@@ -945,7 +945,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 - The question tests whether you did research and whether you will fit the budget.
 - Ranges are safer than single numbers.
 - Entry pay is wide, so knowing your floor matters before you speak.
-**What the evidence says:** Verified in-scope JD pay was mostly Rs 3.5 to 9 LPA; Rs 6 to 10 LPA is the upper part, reachable in GCC/product/finance-analytics postings (MS Section 4; only 8 of 40 JDs showed pay; unverified for the full market). Entry MIS/BA mostly Rs 3 to 6 LPA (MS Addendum). Blog figures are secondary and unverified (MS Section 4). HR-to-analyst pay-cut size and what offers switchers actually get: No reliable data found.
+**What the evidence says:** Employer-stated pay in the in-scope JDs was mostly Rs 3.5 to 9 LPA; Rs 6 to 10 LPA is the upper part, reachable in GCC/product/finance-analytics postings (MS Section 4; only 8 of 40 JDs showed pay; unverified for the full market). Entry MIS/BA mostly Rs 3 to 6 LPA (MS Addendum). Blog figures are secondary and unverified (MS Section 4). HR-to-analyst pay-cut size and what offers switchers actually get: No reliable data found.
 **What to do:**
 1. Calculate your minimum monthly need, then your target.
 2. Check the JD and employer type for pay hints.
@@ -955,10 +955,10 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 **Example:** (illustrative) Your minimum is Rs 5 LPA and you target Rs 6. You say, "Based on the role and my skills, I am looking at Rs 5.5 to 7 LPA, and I am open to discussing the full package."
 **Say this in the interview:** "I am looking at a range of X to Y for this role and my skill level. I am open to discussing it once I understand the full scope."
 **Common mistakes:** Saying "whatever you offer"; naming Rs 10 LPA for an entry role without evidence; not knowing your floor; mixing monthly and annual numbers.
-**Where this is covered:** Guide Section 2b; Book 11 (negotiation).
+**Where this is covered:** Guide Section 2b; Book 11 Part 8 (HR round: salary, notice period).
 
 ### Q60 ⭐⭐ 🟢 What should I say about my current CTC and expected CTC?
-**Short answer:** State your current CTC truthfully if asked, with fixed and variable split, and then talk about expected CTC as a range based on the role. Never lie; offers can be verified.
+**Short answer:** State your current CTC truthfully if asked, with fixed and variable split, and then talk about expected CTC as a range based on the role. Never lie; employers may check.
 **Why / explain simply:**
 - CTC (cost to company) is the total yearly package, not take-home.
 - Be clear what is fixed, variable and benefits.
@@ -973,7 +973,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 **Example:** (illustrative) Current Rs 8 LPA (Rs 7 fixed, Rs 1 variable). Analyst offer Rs 6 LPA. That is a Rs 2 LPA cut; check monthly budget and growth over two years before accepting.
 **Say this in the interview:** "My current CTC is X, with Y fixed and Z variable. I am moving into analytics, so I am looking at roles at X to Y rather than matching my current figure exactly."
 **Common mistakes:** Inflating the current CTC; confusing in-hand and CTC; refusing to discuss any number; ignoring variable pay.
-**Where this is covered:** Guide Section 2b; Book 11 (negotiation).
+**Where this is covered:** Guide Section 2b; Book 11 Part 8 (HR round: salary, notice period).
 
 ### Q61 ⭐⭐ 🟢 How do I handle a notice period of 60 or 90 days when applying?
 **Short answer:** State it honestly, ask early whether the notice period can be negotiated or bought out, and be clear about what you will do. A long notice period is common and not automatically a rejection.
@@ -988,13 +988,13 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 3. Put your notice in the application form honestly.
 4. Prepare a line for the recruiter; offer to start prep tasks or handover plans.
 5. Do not promise a date you cannot meet.
-**Example:** (illustrative) Notice is 90 days. You tell the recruiter you can usually negotiate down to 60 days with a handover plan, and you will confirm once an offer is in hand.
+**Example:** (illustrative) Notice is 90 days. You tell the recruiter the contract says 90 days, that you will ask your employer about early release only once an offer is in hand, and that you cannot promise an earlier date before then.
 **Say this in the interview:** "My notice period is 90 days. I will check with my employer on early release once I have an offer, and I will not leave a messy handover."
 **Common mistakes:** Hiding the notice period; promising early release without checking; resigning before an offer; badmouthing the current employer.
-**Where this is covered:** Guide Section 3 (timelines); Book 11 (soft skills).
+**Where this is covered:** Guide Section 3 (timelines); Book 11 Part 8 (notice period).
 
 ### Q62 ⭐⭐ 🟢 Do I need to resign before I start looking for analytics jobs?
-**Short answer:** No. Most people search while employed; it is lower risk, gives you pay continuity and leaves your options open. Resign only if you have an offer or enough savings to cover a long search.
+**Short answer:** No. Searching while employed is lower risk (a judgement, not a measured finding): it gives you pay continuity and leaves your options open. Resign only if you have an offer or enough savings to cover a long search.
 **Why / explain simply:**
 - You do not need to quit to learn, build projects or apply.
 - Searching while employed removes pressure to take the first poor offer.
@@ -1008,7 +1008,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 5. Plan notice period and handover once you have an offer.
 **Example:** (illustrative) Monthly expenses are Rs 40,000 and savings Rs 2.4 lakh, which is 6 months. You still keep the job and apply on weekends.
 **Common mistakes:** Quitting for "focus" without savings; telling colleagues too early; skipping the offer letter check before resigning; underestimating how long the search takes.
-**Where this is covered:** Guide Section 6; Book 11 (soft skills).
+**Where this is covered:** Guide Section 6; Book 12 Section 6.
 
 ### Q63 ⭐⭐ 🟢 What is the difference between a fresher role and a lateral role for a switcher?
 **Short answer:** A fresher role is labelled "entry" or 0-1 years and expects no prior work experience in the field. A lateral role expects you to already do the same job elsewhere. As an HR professional switching, you sit awkwardly between the two, and the realistic target is the "0-2 years" band.
@@ -1050,7 +1050,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 - Switcher-friendly means the tool bar is low enough that a few months of focused learning clears it.
 - Python-heavy product and startup analyst roles are the hardest entry point.
 - HR-tech reporting means building reports from systems like Workday or SuccessFactors.
-**What the evidence says:** In the JD samples, the most accessible roles were MIS and reporting, operations analyst, HR-tech reporting and research or pricing analyst, mostly Excel-first with SQL optional (MS Section 6). Examples: Tata Play Fiber MIS (Entry), HPE Procurement Ops Analyst (0-2 years), KPMG Operations Analyst (1-2 years), Deutsche Bank Workday Prism (Entry) (MS Appendix A). MIS-sample tool rates: Excel 72%, SQL 44%, Python 16% (n=32 sample, small).
+**What the evidence says:** In the JD samples, the most accessible roles were MIS and reporting, operations analyst, HR-tech reporting and research or pricing analyst, mostly Excel-first with SQL optional (MS Section 6). Examples: Tata Play Fiber MIS (Entry), HPE Procurement Ops Analyst (0-2 years), KPMG Operations Analyst (1-2 years), Deutsche Bank Workday Prism (Entry) (MS Appendix A). Source conflict: MS Section 6 and Appendix A list that Deutsche Bank role as Entry and in-scope, but the MS Addendum says all Workday-reporting roles in the pooled samples asked 3+ years; read the experience line of every HR-tech JD before applying. MIS-sample tool rates: Excel 72%, SQL 44%, Python 16% (n=32 sample, small).
 **What to do:**
 - Build a list of 20 matching JDs. Tick each required tool you have.
 - Apply first where you meet most of the must-haves.
@@ -1065,10 +1065,10 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 **Short answer:** Mostly gets data, cleans it, answers business questions with Excel or SQL, builds or refreshes reports and dashboards, and explains the result to non-technical people. Heavy modelling is rare at entry level.
 **Why / explain simply:**
 - A manager asks "why did cost per hire rise?" You find the data, check it, summarise it and explain it.
-- Cleaning means fixing duplicates, blanks and wrong formats. It takes a large share of time.
+- Cleaning means fixing duplicates, blanks and wrong formats. It can take a lot of time (general knowledge, not checked).
 - Dashboards are shared pages of charts that update from data.
 - Meetings and clarifying vague requests are part of the day.
-**What the evidence says:** No reliable data found on time-use of working analysts. The nearest evidence is what JDs ask for (n=186, non-random sample, about +/-7 points): dashboards/reporting/MIS 75%, communication 73%, Excel 60%, SQL 54%, stakeholder management 44%, Python 32% (MS Addendum). That suggests reporting, querying and communicating dominate. This is my inference from JDs, not a measured work diary.
+**What the evidence says:** No reliable data found on time-use of working analysts. The nearest evidence is what JDs ask for (n=186, non-random sample, about +/-7 points): dashboards/reporting/MIS 75%, communication 73%, Excel 60%, SQL 54%, stakeholder management 44%, Python 32% (MS Addendum). That suggests reporting, querying and communicating dominate. This is my inference from JDs, not a measured work diary. Machine learning is named in only 10% of the 186 JDs (same label), which fits "heavy modelling is rare", but that too is a JD count, not evidence of daily work.
 **What to do:**
 - Read five real JDs and underline the verbs: "build", "maintain", "present", "reconcile".
 - Try one small task end to end: take a sample HR dataset, clean it, answer one question, present it in 3 sentences.
@@ -1081,7 +1081,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 **Short answer:** No reliable data found for stress levels or hours in these roles in India. It varies by employer, team and deadline cycle, and reporting roles often have recurring month-end or weekly peaks.
 **Why / explain simply:**
 - Stress usually comes from tight deadlines, unclear requests, and data that does not match.
-- Support-style roles serving other time zones can mean shifted hours. Check the JD for shift mentions.
+- Support-style roles serving other time zones can mean shifted hours (general knowledge, not checked). Check the JD for shift mentions.
 - HR roles also have peaks (appraisals, payroll), so you may already know this pattern.
 **What the evidence says:** No reliable data found. The research files did not collect hours, shift or stress information, and the review sites (Glassdoor, AmbitionBox) were blocked, so I cannot give figures. Interview-process reports are not about work life (IP Section 1).
 **What to do:**
@@ -1091,7 +1091,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 - Treat any single review as one person's view, not a pattern.
 **Example:** (illustrative) Two postings both say "Analyst". One is a day-shift internal reporting role. The other serves a US client with late-evening calls. The title is identical, the life is not. Only the JD and the team can tell you.
 **Common mistakes:** Assuming analytics means a relaxed 9-to-6. Assuming it is always high-pressure. Not asking about shifts before accepting.
-**Where this is covered:** Guide Section 3 (reliability note); Book 11 Part 9; FAQ Q96.
+**Where this is covered:** Guide Section 3 (reliability note); FAQ Q96.
 
 ### Q68 ⭐⭐ 🟢 Will AI and automation replace entry-level data analysts?
 **Short answer:** No reliable data found to say so either way, and I will not forecast. What can be said is that AI tools are already named in some job descriptions, so learning to use them is sensible.
@@ -1140,7 +1140,7 @@ Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics
 - Project: explain one project start to finish in 3 minutes.
 - Story: say your switch story in 60-90 seconds, same each time.
 - Mocks: record one answer, watch it, note three fixes.
-If three of the five fail twice in a row, delay applying to that role type.
+If three of the five fail twice in a row, delay applying to that role type (a personal rule of thumb, not data).
 **Example:** (illustrative) After month 3, you solve 6 of 10 SQL questions in 30 minutes. You target windows and CTEs for two weeks, then retest.
 **Common mistakes:** Only watching tutorials. Never timing yourself. Skipping the project and story practice.
 **Where this is covered:** Guide Sections 4 and 6; Book 2; Book 8 Part 8; Book 11 Part 1.
@@ -1159,7 +1159,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Apply once the main rounds pass, and keep mocking weekly while interviewing.
 **Example:** (illustrative) Plan: 2 SQL mocks, 2 project walk-throughs, 2 HR-round mocks, 1 guesstimate mock, then apply. After each real interview, write what was asked and do a mock on it.
 **Common mistakes:** Waiting for a "perfect" number. Mocking only with friends who say "good". Never practising out loud.
-**Where this is covered:** Guide Section 4; Book 11 Parts 1, 8 and 9; Book 6 mock sets.
+**Where this is covered:** Guide Section 4; Book 11 Parts 1, 8 and 9; Book 6 Part 10 (aptitude mock sets).
 
 ### Q72 ⭐⭐ 🟢 How do I handle rejection and long waits after interviews?
 **Short answer:** Expect both. Waits of a week to months and silent rejections appear in candidate reports. Keep applying, follow up politely once, and learn from each round.
@@ -1173,7 +1173,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Follow up once after 5-7 working days, politely, then once more later. Then move on.
 - Keep at least 5 live applications.
 - Set a weekly routine: applications, practice, one outreach message.
-- Decide in advance how many rejections trigger a review of resume or skills, for example after 10 applications with no interview.
+- Decide in advance how many rejections trigger a review of resume or skills, for example after 10 applications with no interview (an illustrative threshold, not data).
 **Example:** (illustrative) You interview Monday. By Friday, no reply. You email the recruiter: "Thank you again for Monday. Could you share the expected timeline?" Meanwhile you continue with other applications.
 **Common mistakes:** Waiting on one company. Sending daily follow-ups. Taking rejection as proof the switch is impossible.
 **Where this is covered:** Guide Section 3; Book 11 Part 9; Book 12 Section 6.
@@ -1186,7 +1186,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Mass-applying to roles you do not match wastes time.
 **What the evidence says:** No reliable data found on which strategy leads to more offers. Interview processes differ by company type (candidate-reported): service firms use online test, technical and HR; GCC and startup processes start with an SQL screen; startups reach the hardest SQL (IP Section 3, Section 5). Because processes differ, preparing by company type is practical.
 **What to do:**
-- Tier A (about 5 companies): your preferred ones. Tailor the resume, find a referral.
+- Tier A (about 5 companies; the sizes here are suggestions, not data): your preferred ones. Tailor the resume, find a referral.
 - Tier B (about 15-20): roles that match at least most must-have tools. Standard tailoring.
 - Tier C: practice interviews at companies you are less keen on, early in the search.
 - Review every 2 weeks: drop what is not responding, add similar roles to what is.
@@ -1207,18 +1207,18 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Ask for 15 minutes of advice, not a job.
 - If it goes well, ask: "Would you be comfortable referring me for this specific role? I can send the JD and a short summary."
 - Thank them, and update them later on the outcome.
-**Example:** (illustrative) You message a former colleague now in a reporting team.
-**Say this in the interview:** (outreach message) "Hi, I moved from HR into data reporting and I am applying to the Associate Analyst role on your team. I built an attrition dashboard as a project. Could I ask you two questions about the team, and would you be open to referring me if you think I fit?"
+**Example:** (illustrative) You message a former colleague now in a reporting team and ask two questions about how the team uses SQL and Power BI. Only after a useful reply do you ask whether they would refer you to one named opening.
+**Say this in your message:** "Hi, I moved from HR into data reporting and I am applying to the Associate Analyst role on your team. I built an attrition dashboard as a project. Could I ask you two questions about the team, and would you be open to referring me if you think I fit?"
 **Common mistakes:** Asking strangers for a referral in the first message. Generic copy-paste messages. Not following up with thanks.
 **Where this is covered:** Book 12 Section 4; guide Section 6.
 
 ### Q75 ⭐⭐ 🟡 Are pure people analytics roles available at 0-2 years of analytics experience in India?
-**Short answer:** In the research samples, no pure people analytics role at 0-2 years was found. Roles in Workday or HR-tech reporting mostly asked for 3+ years, with a few entry exceptions.
+**Short answer:** In the research samples, no pure people analytics role at 0-2 years was found. Roles in Workday or HR-tech reporting mostly asked for 3+ years, but the sources conflict on one entry-tagged exception (see evidence).
 **Why / explain simply:**
 - People analytics means analysing HR data: attrition, hiring, engagement, pay.
-- Such teams are usually small, and they often prefer people who already know analytics tools.
+- Such teams are usually small, and they often prefer people who already know analytics tools (general knowledge, not checked).
 - Your HR background helps most when combined with SQL, Excel or Power BI.
-**What the evidence says:** n=186 non-random JD sample: "No pure people-analytics role at 0-2 yrs found (all Workday-reporting roles asked 3+ yrs)" (MS Addendum). Examples: Syneos HR Analytics (3+ years), Unisys People Analytics (4-6 years) (MS Appendix B). Exceptions: Deutsche Bank Workday Prism Analytics and Reporting Consultant, Bengaluru, tagged Entry (MS Appendix A row 20), and Unisys Associate Analyst OCM, 0-2 years, HR-adjacent (MS Section 6). A People Data Analyst posting at Rs 6-10 LPA is a search-snippet only, experience not shown, unverified (MS Section 4). Blocked sites mean this is not the full market.
+**What the evidence says:** n=186 non-random JD sample: "No pure people-analytics role at 0-2 yrs found (all Workday-reporting roles asked 3+ yrs)" (MS Addendum). Examples: Syneos HR Analytics (3+ years), Unisys People Analytics (4-6 years) (MS Appendix B). Exceptions and a source conflict: the Deutsche Bank Workday Prism Analytics and Reporting Consultant role, Bengaluru, is tagged Entry and in-scope in MS Section 6 and Appendix A (row 20), while the MS Addendum says all Workday-reporting roles asked 3+ years. The two statements conflict, so read the experience line of any such JD. Also Unisys Associate Analyst OCM, 0-2 years, HR-adjacent (MS Section 6). A People Data Analyst posting at Rs 6-10 LPA is a search-snippet only, experience not shown, unverified (MS Section 4). Blocked sites mean this is not the full market.
 **What to do:**
 - Apply for HR-adjacent entry roles (HR reporting, HRIS, change management analytics) as a bridge.
 - Build an HR attrition project to show the domain plus tools.
@@ -1232,7 +1232,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Short answer:** Entry MIS and BA roles were mostly Rs 3-6 LPA in the samples, and data analyst postings with pay shown were mostly Rs 3.5-9 LPA. Few JDs state pay, so treat these as rough. No reliable data found for a clean MIS-versus-DA gap.
 **Why / explain simply:**
 - LPA means lakhs per annum, the yearly pay.
-- MIS roles often need less SQL and more Excel, so pay tends to sit lower, but employer type matters more than title in the samples.
+- MIS roles often need less SQL and more Excel (MIS sample: Excel 72%, SQL 44%; MS Addendum). Whether that makes pay lower is an inference; the pay data is too thin to show a clean gap.
 - Pay disclosed in a JD may not match the final offer.
 **What the evidence says:** Only 8 of 40 in-scope JDs showed pay (MS Section 4). Stated: Rs 3.5-4.5 LPA (TopGrep Junior Power BI), Rs 3.5 LPA (KPMG Operations Analyst), Rs 4-5 LPA (OrbiTouch Junior DA), Rs 4.25 LPA base (PharmaForceIQ), Rs 5-9 LPA (Hire Daily, an "estimate"), Rs 7-10 LPA (Peakflo, remote). One MIS figure (TMI, about Rs 1.6-1.8 LPA) is the page's own figure and unverified. Rs 15-25 LPA (Weekday) is an outlier. Pooled note: "entry MIS/BA mostly Rs 3-6 LPA; Amazon/GCC/product higher but unstated" (MS Addendum). Snippets such as Rs 5-12 LPA (foundit) and blogs (Rs 3.5-9 Hyderabad) are unverified.
 **What to do:**
@@ -1244,11 +1244,11 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Where this is covered:** Guide Section 2b; Book 11 Part 8.
 
 ### Q77 ⭐⭐ 🟡 What does the Accenture English communication assessment involve?
-**Short answer:** Candidate reports say Accenture runs a separate English communication assessment after an online elimination round. Details of format are thin, and I have not verified them on an official page.
+**Short answer:** One Bengaluru candidate report (guide or search-summary level) describes an English communication assessment after an online elimination round, and the research notes an English communication check in the Accenture process generally. The format is thin and unverified, and I have not checked an official Accenture page.
 **Why / explain simply:**
-- It tests spoken and written English at a working level, not literary skill.
-- It is separate from the technical test, so a strong SQL score does not cover it.
-**What the evidence says:** Candidate-reported, anonymous: one Bengaluru report describes an online elimination round (verbal, logical, quant, core CS including databases, 1-2 coding problems) then a non-elimination English communication assessment (IP Section 2.1, guide/summary-level source). A Jan 2026 report lists aptitude then technical on Python, SQL and basic statistics, with INNER vs LEFT JOIN asked. A GfG post lists phone screen, technical, behavioural, case and final rounds, with no questions given. Dataford's offer-rate figure (about 58%) is an aggregator claim with unverified method; do not rely on it. I did not fetch an Accenture official page, so exact task types and scoring are unverified. Ask the recruiter.
+- The research does not say whether it is spoken, written or both, or how it is scored, so prepare for both.
+- In the one detailed report it was a separate, non-elimination step after the online technical-style round, so SQL skill alone does not cover it.
+**What the evidence says:** Candidate-reported, anonymous: one Bengaluru report describes an online elimination round (verbal, logical, quant, core CS including databases, 1-2 coding problems) then a non-elimination English communication assessment (IP 2.1, [G/S] guide or search-summary level; single report). A Jan 2026 Bangalore-Rural report (search summary, [S]) lists aptitude then technical on Python, SQL and basic statistics, with INNER vs LEFT JOIN asked. A GfG DA post [R] lists phone screen, technical (SQL, Excel, data scenarios), behavioural, case/technical and final rounds, with no questions, location or interview date given. Dataford says its aggregate of 579 reports rates the process medium difficulty with about a 58% offer rate [G, unverified method]; do not rely on it. I did not fetch an Accenture official page, so exact task types and scoring are unverified. Ask the recruiter.
 **What to do:**
 - Ask the recruiter: "What does the communication assessment cover and is it scored?"
 - Practise speaking 2 minutes on a work topic, recorded, then review clarity and pace.
@@ -1264,7 +1264,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - These firms sell analytics to clients, so they test structured thinking as much as tools.
 - Guesstimates are rough estimates from assumptions, such as "how many coffee shops are in Bangalore".
 - Interviewers grade the structure and stated assumptions more than the final number.
-**What the evidence says:** Candidate-reported, anonymous (IP Section 2.3). Tiger Analytics: a GfG campus post (year unknown) lists 4 rounds with a roughly 90-minute online test, then two technical rounds covering SQL, probability and project discussion, and HR; stats/probability was "the hardest part"; about 4 sources. Fractal: a 75-question aptitude test, a resume-based technical round, HR; case/guesstimate for business roles; about 3-4 sources. Mu Sigma: aptitude and psychometric tests, a group case activity, then guesstimate and case interviews; guide-level source; mostly campus hiring. LatentView: no Hyderabad or Bengaluru report found.
+**What the evidence says:** Candidate-reported, anonymous (IP Section 2.3). Tiger Analytics: a GfG campus post (year unknown) lists 4 rounds with a roughly 90-minute online test, then two technical rounds covering SQL, probability and project discussion, and HR; stats/probability was "the hardest part"; about 4 sources. Fractal: one 2024 Bengaluru BA report (search summary) describes a 75-question aptitude test, a resume-based technical round and HR; other reports add case/guesstimate for business roles; about 3-4 sources. Mu Sigma: 3-4 rounds per a FACE Prep guide [R/G]: aptitude and psychometric tests, a video-based observational test, a group case activity, then a personal interview with guesstimates, cases and puzzles; some 2026 cohorts reportedly add an AI-led screening; mostly campus/trainee hiring. LatentView: no Hyderabad or Bengaluru report found (its base is Chennai). Indium Software, the most Hyderabad-relevant firm of this group, has about 4-5 reviews: for example 4 rounds in July 2026 (two technical, a client round, HR), SQL-heavy, review-to-detail mapping unverified.
 **What to do:**
 - Practise probability basics (Bayes, conditional probability), SQL windows, and basic Python.
 - Practise 10 guesstimates with spoken assumptions.
@@ -1294,12 +1294,12 @@ If three of the five fail twice in a row, delay applying to that role type.
 ### Q80 ⭐⭐ 🟡 How does the Amazon data analyst or BA interview work (SQL screen plus Leadership Principles)?
 **Short answer:** Candidate reports describe a SQL screen first, then several rounds mixing data or case questions with behavioural questions built on Amazon's Leadership Principles (LPs). It is the most consistent GCC pattern in the research.
 **Why / explain simply:**
-- Leadership Principles are Amazon's published values, such as customer focus and ownership. Interviewers ask for real examples of each.
+- Leadership Principles are Amazon's published values (for example ownership; general knowledge, not checked). Interviewers reportedly ask for real examples.
 - Answer in STAR form: Situation, Task, Action, Result.
 - Amazon publishes its principles on its own jobs site; I did not fetch it, so read the current list there.
-**What the evidence says:** Candidate-reported, anonymous, about 4 India sources agree on SQL early and LP-based behavioural rounds later (IP Section 2.2). A LeetCode BA-II India post: 5 rounds, SQL screen with shared screen, scenario and LP rounds on Chime. A GfG BIE Bangalore post (fresh graduate, early 2023): online data-interpretation test, SQL plus data modelling, LP round, data/case round, final with a senior manager. A Hyderabad report rated SQL easy (basic-medium plus basic pandas). A Bengaluru 2025 report: third-highest salary per department with DENSE_RANK. Not company-confirmed.
+**What the evidence says:** Candidate-reported, anonymous, about 4 India sources agree on SQL early and LP-based behavioural rounds later (IP Section 2.2). A LeetCode BA-II India post: 5 rounds, SQL screen with shared screen, scenario and LP rounds on Chime. A GfG BIE Bangalore post (fresh graduate, early 2023): online data-interpretation test, SQL plus data modelling, LP round, data/case round, final with a senior manager. A Hyderabad report rated SQL easy (basic-medium plus basic pandas). A Bengaluru 2025 report: third-highest salary per department with DENSE_RANK; rejection came after over a month with no explanation. Not company-confirmed.
 **What to do:**
-- Prepare 6-8 STAR stories from HR work, each reusable across several principles.
+- Prepare 6-8 STAR stories (a suggested number, not data) from HR work, each reusable across several principles.
 - Practise SQL ranking with DENSE_RANK, joins, GROUP BY.
 - Practise explaining your reasoning aloud while coding.
 - Ask the recruiter about the round structure for your level.
@@ -1312,7 +1312,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Short answer:** A take-home is a small analysis task you do on your own time, such as cleaning a dataset and presenting findings. The research has little first-hand evidence for it in these roles, so ask the recruiter whether one is likely.
 **Why / explain simply:**
 - It tests how you work: framing the question, checking data, reaching a conclusion and communicating it.
-- Interviewers often discuss your submission afterwards, so you must be able to defend every step.
+- Interviewers may discuss your submission afterwards, so be able to defend every step.
 **What the evidence says:** Thin. No candidate report in my research files describes a take-home at a Hyderabad or Bengaluru employer. Zepto: aggregator guides say a take-home or live data exercise exists (guides only, unverified) (IP Section 2.4). An Interview Query SQL guide lists take-homes among screen types (guide-level) (Book 2 sources). Treat as uncommon in the evidence, not as absent.
 **What to do:**
 - Clarify scope, deadline and tools, and ask what format they expect.
