@@ -510,3 +510,116 @@ for k in MODELS: plan(k)
 - Launching the full job without a dry run on the longest batch.
 - No resume test, so a crash at hour 20 wastes the run.
 - Quoting a memory number without saying what it assumes.
+
+### Q43 ⭐ 🔴 Design question: build an end-to-end fine-tuning project for a support-ticket extraction task (data, training, evaluation gates, regression checks, rollout and rollback).
+**Asked at:** senior roles at product companies, GCCs, GenAI startups
+**Say this first (1 line):** I start with a prompted-model baseline and a golden set, fine-tune only if the baseline misses the quality, cost or latency target, and I ship through hard gates: per-field F1 against the baseline, a regression suite, latency and cost budgets, then shadow, canary, and a ready rollback.
+
+**Then explain:**
+- **1. Framing:** the task is ticket text to JSON with fixed fields (for example category, priority, product, order id). Define each field's rules, allowed values and what "absent" means (null, not a guess). Write the success bar with the business: per-field F1, invalid-JSON rate, cost per 1,000 tickets, p95 latency.
+- **2. Baseline first:** a prompted model with schema-constrained output (Part 3). Measure it. If it already clears the bar, stop. Fine-tuning pays when the baseline is too expensive or slow at volume, a smaller fine-tuned model can match it, or a few fields keep failing on company-specific wording.
+- **3. Data:** sample real tickets across channels, products, languages and months. Label with a guideline, two annotators on a sample, measure agreement, resolve disputes; LLM pre-labels are fine if humans review them. Dedup near-duplicates (the same ticket appears via email threads), remove or mask PII (names, phones, emails, card numbers) before any data leaves its store, and check the legal basis for using customer text.
+- **4. Splits:** split by time and by customer or thread, not by random row, so the test mimics the future and no thread leaks between train and test. Keep a frozen golden set nobody trains on, plus a hard slice (rare fields, long tickets, mixed languages, adversarial text).
+- **5. Training:** SFT with LoRA or QLoRA on a right-sized base (Q42), loss only on the JSON, chat template matching serving, constrained decoding at inference. Start from small data (a few hundred to a few thousand examples is a plausible range, but I would plot a data-size curve rather than assume). Track against the baseline each epoch.
+- **6. Eval gates (all must pass):** per-field F1 not below the baseline by more than a margin and above an absolute floor; invalid-JSON rate; a regression suite of previously failed tickets and prompt-injection-like tickets; general-ability sanity if the model is also used elsewhere (Q8); p95 latency; cost per 1,000.
+- **7. Rollout:** shadow mode (candidate runs on live traffic, outputs logged, not used) then canary (a small share of traffic, a human-review sample) then gradual ramp. Rollback = flip a config flag to the previous model or the prompted baseline; keep both deployable.
+- **8. Monitoring and retraining:** log field null-rates, value distributions, schema failures, disagreement with a weekly human-labelled sample, latency and cost. Retrain triggers: F1 on the weekly sample drops below a threshold, new product or category names appear, input distribution shifts (Part 11).
+- **Gate function:** the code compares candidate to baseline per field on a synthetic golden set. The data and the "models" are simulated (label: synthetic); only the gate logic is meant to be reused.
+
+| Run (synthetic) | priority F1 base to cand | other fields | latency p95 | Gate |
+|---|---|---|---|---|
+| Candidate A | 0.877 to 0.938 | all up | 420 ms | pass |
+| Candidate B | 0.877 to 0.858 | all up | 950 ms | fail: priority regressed, latency over 800 ms budget |
+
+**Example:** candidate B improves three fields strongly, and still fails: one field regressed and latency broke the budget. A single average F1 would have hidden the priority regression, which is why the gate works per field.
+
+**Code:** (executed, standalone, stdlib only; SYNTHETIC golden set and simulated outputs; thresholds are illustrative)
+```python
+# Standalone, python stdlib only. SYNTHETIC golden set and simulated model outputs; no model is called.
+import random
+random.seed(0)
+FIELDS = {"category": ["billing", "bug", "access", "other"], "priority": ["low", "med", "high"],
+          "product": ["app", "web", "api"], "order_id": None}
+
+def make_gold(n=400):
+    rows = []
+    for i in range(n):
+        r = {f: random.choice(v) for f, v in FIELDS.items() if v}
+        r["order_id"] = f"ORD{random.randint(1000, 9999)}" if random.random() < 0.6 else None   # absent in 40%
+        rows.append(r)
+    return rows
+
+def simulate(gold, acc, abstain=0.0, hallucinate_id=0.0):                                    # fake model outputs
+    out = []
+    for g in gold:
+        p = {}
+        for f, v in FIELDS.items():
+            if v: p[f] = g[f] if random.random() < acc[f] else random.choice(v)
+        if g["order_id"] is None: p["order_id"] = f"ORD{random.randint(1000, 9999)}" if random.random() < hallucinate_id else None
+        else: p["order_id"] = g["order_id"] if random.random() < acc["order_id"] else (None if random.random() < abstain else "ORD0000")
+        out.append(p)
+    return out
+
+def field_f1(gold, pred, f):
+    tp = sum(1 for g, p in zip(gold, pred) if g[f] is not None and p[f] == g[f])
+    n_pred = sum(1 for p in pred if p[f] is not None); n_gold = sum(1 for g in gold if g[f] is not None)
+    prec, rec = tp / max(n_pred, 1), tp / max(n_gold, 1)
+    return 2 * prec * rec / max(prec + rec, 1e-9)
+
+def gate(gold, base_pred, cand_pred, cand_latency_p95_ms, base_cost_per_1k, cand_cost_per_1k,
+         min_f1=0.80, max_regress=0.01, latency_budget_ms=800, cost_ratio_max=1.0):
+    reasons, rows = [], {}
+    for f in FIELDS:
+        b, c = field_f1(gold, base_pred, f), field_f1(gold, cand_pred, f); rows[f] = (round(b, 3), round(c, 3))
+        if c < min_f1: reasons.append(f"{f}: F1 {c:.3f} below absolute floor {min_f1}")
+        if c < b - max_regress: reasons.append(f"{f}: regressed {b:.3f} -> {c:.3f}")
+    if cand_latency_p95_ms > latency_budget_ms: reasons.append(f"latency p95 {cand_latency_p95_ms}ms > {latency_budget_ms}ms")
+    if cand_cost_per_1k > base_cost_per_1k * cost_ratio_max: reasons.append(f"cost {cand_cost_per_1k} > baseline {base_cost_per_1k}")
+    return {"pass": not reasons, "per_field_f1 (base, cand)": rows, "reasons": reasons}
+
+gold = make_gold()
+base = simulate(gold, {"category": .86, "priority": .83, "product": .90, "order_id": .85}, abstain=.2, hallucinate_id=.08)
+good = simulate(gold, {"category": .93, "priority": .90, "product": .95, "order_id": .96}, abstain=.2, hallucinate_id=.02)
+bad  = simulate(gold, {"category": .95, "priority": .78, "product": .95, "order_id": .97}, abstain=.2, hallucinate_id=.02)
+print("candidate A:", gate(gold, base, good, 420, 5.0, 1.2))
+print("candidate B:", gate(gold, base, bad, 950, 5.0, 1.2))
+
+```
+
+**Follow-ups:**
+- *What if there are few labels?* Prompt with few-shot first; use a strong model to pre-label then review, and fine-tune later. With about 50 examples, few-shot is the better answer (Q1).
+- *How do you handle PII?* Mask before labelling and training, restrict access, keep a retention policy, and check outputs for leakage. The legal side is for the company's policy and counsel.
+- *When do you drop the fine-tune?* When the prompted frontier model gets cheaper or better and meets the gate at acceptable cost: re-run the gate against it every quarter.
+
+**Common mistakes:**
+- Random row split with the same thread in train and test.
+- One overall score instead of per-field results.
+- No null handling: the model learns to invent order ids.
+- No rollback path, or no plan to re-measure the baseline.
+
+### Q44 ⭐ 🔴 Can fine-tuning inject new facts? Why does it often fail compared with retrieval, and what does the evidence say?
+**Asked at:** senior roles at product companies, GenAI startups, research-leaning teams
+**Say this first (1 line):** Sometimes a little, but it is unreliable and it can make hallucination worse, so for facts I use retrieval and I use fine-tuning for form, behaviour and cost. The exception is heavy continued pretraining on a large domain corpus, which is a different job from a small SFT.
+
+**Then explain:**
+- **Why SFT on a few facts is weak:**
+  - A few thousand Q&A pairs, seen a few epochs, teach the model to answer in that shape, but the fact is stored only as a brittle association. Rephrase the question and it may not recall (the "reversal curse" and paraphrase failures are commonly reported; named as from memory, not verified).
+  - Pushing the model to give answers it cannot connect to what it already knows can encourage it to guess confidently. Gekhman et al., 2024, "Does fine-tuning LLMs on new knowledge encourage hallucinations?" reports roughly this (from memory, not verified: new-knowledge examples are learned slowly and, once learned, raise hallucination on other questions). Read the paper before quoting it.
+  - Overfitting to the training set, and forgetting of other abilities (Q8).
+- **Operational reasons against it:** facts go stale (every update is a new training run); no citation or source; no access control (the model may reveal training text to everyone); hard to delete one fact; evaluation is hard (you need paraphrase tests).
+- **What I use instead:** RAG for facts, with citations and permissions (Parts 6 and 7); fine-tune to teach the model *how* to use retrieved context, output format, tone, refusal behaviour, and to say "not found".
+- **Where fact-heavy training does work:** continued pretraining on a large in-domain corpus (billions of tokens, Part 2 Q8) can change what the model knows, at much higher cost and with the same staleness issue. Some teams combine: continued pretraining for domain language, RAG for current facts.
+- **How I would test a claim "the model learned it":** ask the fact in 5 to 10 paraphrases, in reverse direction, inside multi-step questions, and for facts the model did not see (to catch invented answers); compare to RAG on the same set.
+
+**Example:** a company's price list changes every month. Fine-tuning on the old list yields confident, outdated prices, with no citation. Retrieval from the current price table gives the right number and the source. If the bot also needs the company's reply style, fine-tune that part with a few hundred examples.
+
+**Follow-ups:**
+- *So never fine-tune on domain facts?* For stable, widely repeated domain knowledge at scale (continued pretraining), it can help. For a small, changing, or private document set, use retrieval.
+- *Does RAG plus fine-tuning conflict?* No. Fine-tune with examples that include retrieved passages, so the model learns to rely on them and to abstain when they lack the answer.
+- *What about "knowledge editing" methods?* Research area (locate-and-edit approaches); I would treat them as experimental, not production, and say I have not validated them.
+
+**Common mistakes:**
+- Fine-tuning on documents and expecting reliable Q&A.
+- Testing only with the exact training questions.
+- Claiming research results with exact numbers from memory.
+- Forgetting that fine-tuned facts cannot be cited or access-controlled.
