@@ -1,7 +1,7 @@
 # Book 2 — Part 04: Fine-tuning (SFT, LoRA/QLoRA, PEFT, Distillation)
 
 **Topic:** when to fine-tune, SFT and instruction tuning (data, loss masking, chat templates), LoRA and QLoRA (rank, alpha, target modules, memory maths, merging), other PEFT methods and LoRA variants, catastrophic forgetting and evaluation, knowledge distillation (classic, white-box and black-box LLM distillation, forward vs reverse KL), and fine-tuning design and debugging.
-**Target:** 45  |  **Actual:** 47 (⭐⭐⭐ 15, ⭐⭐ 21, ⭐ 11)  |  **Date:** 2026-10-22  |  **Status:** Questions frozen (Wave A); answers pending (Wave B)
+**Target:** 45  |  **Actual:** 47 (⭐⭐⭐ 15, ⭐⭐ 21, ⭐ 11)  |  **Date:** 2026-10-22  |  **Status:** Wave A done; Wave B answers written (Q1-Q47); Wave C review done (see review_notes/Book2_Part04_review.md)
 
 Scope note: Book 1 only frames fine-tuning basics (B1P09-Q39 full vs adapters vs feature extraction and forgetting; B1P09-Q14 prompting vs RAG vs fine-tuning, depth deferred to Book 2; B1P08-Q39 transfer learning; B1P08-Q55 and B1P09-Q47 distillation basics for serving), so answers here must go deeper and cross-reference rather than copy. Part 2 already covers pretraining vs continued pretraining vs fine-tuning (Q8), extending a tokenizer and model to a new domain (Q36), bf16/fp16 (Q27) and the 16 bytes-per-parameter training memory accounting (Q34); Part 3 covers prompt and tool-calling design. RLHF, DPO and safety belong to Part 5; quantization, serving and merging for deployment to Part 10; evaluation depth (LLM-as-judge, benchmarks) to Part 9; RAG to Parts 6-7. Library details (Hugging Face PEFT and TRL parameter names, defaults) change quickly: answers must use the names from the docs opened on 2026-10-22 and tell the reader to check current docs.
 
@@ -2687,8 +2687,157 @@ except RuntimeError as e: print("\nlogit KD with different vocab sizes fails:", 
 
 ### Q46 ⭐ 🔴 How do you handle sequential or continual fine-tuning without forgetting (replay, per-task adapters, EWC-style regularisation, merging)?
 **Asked at:** research-leaning teams, big tech, GenAI startups
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** I avoid sequential overwriting where I can: replay a slice of old data, or keep one adapter per task and route at inference; regularisers like EWC and weight merging are the next options, each with a cost I measure on the old tasks after every stage.
+**Then explain:**
+- **Replay:** mix a sample of earlier data (or generated or curated stand-ins) into the new training set. Simple and usually the strongest baseline. Cost: you must keep or regenerate old data, and the privacy and licence status of it matters.
+- **Per-task adapters:** train a separate LoRA per task on the frozen base. No interference by construction. Cost: you need a router (task id, a classifier or user choice), more artefacts to serve and version.
+- **EWC (Elastic Weight Consolidation, Kirkpatrick et al., 2017, from memory, not verified):** add a penalty lambda/2 * sum_i F_i (theta_i - theta*_i)^2 where theta* are the weights after the old task and F_i is the diagonal Fisher information (how much the old-task loss cares about weight i, estimated from squared gradients of the old data). Important weights are held in place. Costs: a Fisher estimate per task, lambda tuning, and it trades new-task accuracy for old-task retention.
+- **Model merging:** combine adapters or fine-tuned weights after the fact (Q41); cheap, needs the same base, check interference.
+- **Always:** evaluate all previous tasks plus a general set after each stage (Q8), keep a rollback checkpoint, and fine-tune with a small LR and few epochs.
+- **What my toy shows (synthetic, small MLP, 3 seeds, test accuracy; two binary tasks on different input regions, chance 0.5):**
+
+| Method | Task A before B | Task A after B | Task B |
+|---|---|---|---|
+| sequential, no replay | 0.974 | 0.571 | 0.983 |
+| replay 500 of 2,000 A | 0.974 | 0.891 | 0.944 |
+| EWC lambda=10 | 0.974 | 0.573 | 0.983 |
+| EWC lambda=1,000 | 0.974 | 0.636 | 0.977 |
+| EWC lambda=100,000 | 0.974 | 0.789 | 0.938 |
+
+  Forgetting was nearly complete without protection. Replay recovered most of task A at a small cost on B. EWC helped only as lambda grew very large, and still trailed replay at similar B accuracy. This is one small synthetic setup. My first attempt, where both tasks used the same inputs with conflicting labels and a smaller network, showed that neither replay nor EWC could help (no task identity, so the tasks truly conflict); I replaced it with a version where tasks occupy different regions. Results on LLMs will differ.
+
+**Example:** a support model is fine-tuned in January on billing tickets and in March on returns. A March-only run drops billing F1. The team replays 20% billing data in the March run, evaluates both slices, and keeps a billing adapter as a fallback.
+
+**Code:** (executed, standalone, torch only, single thread; SYNTHETIC toy, about 25 seconds)
+```python
+# Standalone, torch only. SYNTHETIC sequential tasks on a small MLP (not an LLM). Averages over 3 seeds.
+import torch, torch.nn as nn, torch.nn.functional as F
+torch.set_num_threads(1)
+D, H = 20, 32
+
+def task_data(w, n, g, offset):                                # task = (input region, labelling rule); regions overlap only a little
+    z = torch.randn(n, D, generator=g)
+    y = (z @ w > 0).long()                                     # linear rule in task-centred coordinates
+    return z + offset, y
+
+def acc(m, x, y):
+    with torch.no_grad(): return (m(x).argmax(-1) == y).float().mean().item()
+
+def run(seed, mode, lam=0.0):
+    g = torch.Generator().manual_seed(seed); torch.manual_seed(seed)
+    wA, wB = torch.randn(D, generator=g), torch.randn(D, generator=g)
+    oA, oB = torch.zeros(D), torch.cat([torch.full((6,), 2.0), torch.zeros(D - 6)])
+    xa, ya = task_data(wA, 2000, g, oA); xb, yb = task_data(wB, 2000, g, oB)
+    xat, yat = task_data(wA, 2000, g, oA); xbt, ybt = task_data(wB, 2000, g, oB)
+    m = nn.Sequential(nn.Linear(D, H), nn.ReLU(), nn.Linear(H, 2))
+    def fit(x, y, steps=800, penalty=None, replay=None):
+        opt = torch.optim.Adam(m.parameters(), lr=1e-2)
+        for _ in range(steps):
+            opt.zero_grad(); loss = F.cross_entropy(m(x), y)
+            if replay is not None: loss = loss + F.cross_entropy(m(replay[0]), replay[1])   # replay: mix in old data
+            if penalty is not None: loss = loss + penalty()
+            loss.backward(); opt.step()
+    fit(xa, ya); a_after_A = acc(m, xat, yat)
+    if mode == "ewc":                                          # diagonal Fisher from task A (empirical, per-sample grads on 300 samples)
+        star = [p.detach().clone() for p in m.parameters()]; fisher = [torch.zeros_like(p) for p in m.parameters()]
+        for i in range(300):
+            m.zero_grad(); F.cross_entropy(m(xa[i:i+1]), ya[i:i+1]).backward()
+            for f, p in zip(fisher, m.parameters()): f += p.grad.detach() ** 2 / 300
+        pen = lambda: lam / 2 * sum((f * (p - s) ** 2).sum() for f, p, s in zip(fisher, m.parameters(), star))
+        fit(xb, yb, penalty=pen)
+    elif mode == "replay": fit(xb, yb, replay=(xa[:500], ya[:500]))   # replay 25% of old data
+    else: fit(xb, yb)
+    return a_after_A, acc(m, xat, yat), acc(m, xbt, ybt)
+
+def avg(mode, lam=0.0, seeds=range(3)):
+    r = torch.tensor([run(s, mode, lam) for s in seeds]); return r.mean(0).tolist()
+
+print(f"{'method':<22}{'A before B':>11}{'A after B':>11}{'B':>8}   (test accuracy, mean of 3 seeds; chance = 0.50)")
+for name, mode, lam in [("sequential, no replay", "plain", 0), ("replay 500 of 2000 A", "replay", 0)] + [(f"EWC lambda={l}", "ewc", l) for l in (10, 1000, 100000)]:
+    a0, a1, b = avg(mode, lam); print(f"{name:<22}{a0:>11.3f}{a1:>11.3f}{b:>8.3f}")
+
+```
+
+**Follow-ups:**
+- *Why is Fisher diagonal?* Full Fisher is parameters x parameters, far too big; the diagonal is a cheap approximation that ignores weight interactions.
+- *Does LoRA reduce forgetting?* It is often reported to forget less than full fine-tuning, but not zero, so measure (Q8). I am not quoting numbers.
+- *Replay data is private?* Use synthetic or de-identified stand-ins, or choose adapters.
+
+**Common mistakes:**
+- Evaluating only the newest task.
+- Setting EWC lambda by feel, without sweeping it on old-task data.
+- Using adapters with no router plan.
+- Assuming results from a toy transfer to an LLM.
 
 ### Q47 ⭐ 🔴 What is rejection-sampling fine-tuning or self-improvement (RFT, STaR-style): how do you bootstrap SFT data from a model's own verified samples, and what can go wrong?
 **Asked at:** research-leaning teams, GenAI startups, big tech
-<!-- ANSWER_PENDING -->
+**Say this first (1 line):** For each prompt I sample k answers from the model, keep only those a verifier or checker marks correct, fine-tune on the kept ones, and repeat. It works when there is a reliable checker, and it goes wrong through weak verifiers, easy-problem bias, lost diversity and compounding errors.
+**Then explain:**
+- **Loop:** (1) sample k answers (with reasoning) per prompt at a temperature above zero; (2) verify: exact match, unit tests for code, a calculator, a proof checker, or a reward model; (3) keep correct samples, often capped per prompt and deduplicated; (4) SFT, usually from the base or the original SFT model rather than stacking on the last round; (5) evaluate on a held-out set; (6) repeat if it still improves.
+- **Named work (from memory, not verified):** STaR (Zelikman et al., 2022) bootstraps reasoning from the model's own correct rationales, and adds "rationalisation" (re-trying failed problems with the answer as a hint); rejection-sampling fine-tuning is described in work on math reasoning (for example Yuan et al., 2023, "RFT"). Check the papers for details and numbers. This is closely related to expert iteration and to the sampling step in RL pipelines (Part 5).
+- **Risks:**
+  - *Weak verifier, reward hacking:* the model learns whatever passes the check, not what is right.
+  - *Easy-problem bias:* hard prompts rarely produce a correct sample, so they vanish from the kept data and the training mix gets easier each round.
+  - *Diversity collapse:* repeated training on its own best samples narrows styles and solution paths; pass@k can fall even as pass@1 rises.
+  - *Compounding errors:* a wrong-but-accepted sample is learned, and the next round samples more of it.
+  - Also: right answer with wrong reasoning (Q39), contamination if prompts overlap the eval, and cost of sampling k times.
+- **Mitigations:** strict verifiers (and spot checks of the verifier itself with human review), per-prompt caps, upweight or add hard prompts, keep a mix of earlier data, track diversity and a held-out set that is never used to select data, stop when held-out accuracy plateaus.
+- **What my mock shows (sampler is a scripted mock, prompts are synthetic multiplications of 1 to 4 digits, 250 each, k=8):** with a strict checker, kept data was 55.8% / 35.2% / 8.4% / 0.6% from 1, 2, 3, 4-digit problems (the prompt mix is 25% each); only 71% of 3-digit and 8% of 4-digit prompts had any kept sample. With a weak checker that only compares the last digit, 46.8% of the kept samples were wrong, and the kept mix looked deceptively balanced (30.6 / 26.9 / 22.2 / 20.3%). The last lines of the code are a crude assumed update rule, not training; they just show hard-problem skill rising slowly.
+
+**Example:** code generation with unit tests as the verifier: 16 samples per problem, keep those that pass. Problems nobody solves are dropped, so I add a curriculum or hint-based retries for them, and I check that the tests are strong enough that wrong code cannot pass.
+
+**Code:** (executed, standalone, stdlib only; MOCK sampler and SYNTHETIC prompts, no model)
+```python
+# Standalone, stdlib only. MOCK sampler and SYNTHETIC prompts: no model. Shows how rejection sampling skews data.
+import random
+from collections import Counter
+random.seed(0)
+# prompt = multiply two numbers with `digits` digits each; difficulty = digits (1..4)
+prompts = [(d, random.randint(10**(d-1), 10**d - 1), random.randint(10**(d-1), 10**d - 1)) for d in (1, 2, 3, 4) for _ in range(250)]
+SKILL = {1: 0.95, 2: 0.6, 3: 0.15, 4: 0.01}                  # mock per-sample success probability by difficulty
+
+def mock_sample(d, a, b):                                    # the "model": right with prob SKILL, else a plausible wrong answer
+    if random.random() < SKILL[d]: return a * b
+    wrong = a * b + random.choice([-1, 1, -10, 10, 100])
+    if random.random() < 0.15: wrong = (a * b // 10) * 10 + (a * b) % 10 + 10 * random.choice([-1, 1])   # keeps the last digit
+    return wrong
+
+def strict_check(a, b, ans): return ans == a * b
+def weak_check(a, b, ans):   return ans % 10 == (a * b) % 10     # BAD verifier: only checks the last digit
+
+K = 8
+for name, check in [("strict checker", strict_check), ("weak checker (last digit)", weak_check)]:
+    kept, solved_prompts, wrong_kept = Counter(), Counter(), 0
+    for d, a, b in prompts:
+        got = [s for s in (mock_sample(d, a, b) for _ in range(K)) if check(a, b, s)]
+        kept[d] += len(got); solved_prompts[d] += bool(got); wrong_kept += sum(s != a * b for s in got)
+    tot = sum(kept.values())
+    print(f"\n{name}: kept {tot} samples from {len(prompts)} prompts x {K}")
+    print("  share of kept data by difficulty (digits):", {d: f"{kept[d]/tot:.1%}" for d in sorted(kept)}, "(prompt mix is 25% each)")
+    print("  prompts with at least one kept sample:", {d: f"{solved_prompts[d]/250:.0%}" for d in sorted(kept)})
+    print(f"  wrong answers inside the kept set: {wrong_kept} ({wrong_kept/tot:.1%})")
+
+# crude mock of iterating: SFT on the kept data nudges skill toward the kept mix (assumed update rule, NOT real training)
+skill = dict(SKILL)
+for rnd in range(1, 4):
+    kept = Counter()
+    for d, a, b in prompts:
+        kept[d] += sum(strict_check(a, b, s) for s in (mock_sample(d, a, b) for _ in range(K)))
+    tot = sum(kept.values())
+    for d in skill: skill[d] = min(0.99, skill[d] + 0.3 * (kept[d] / tot) * (1 - skill[d]))
+    SKILL.update(skill)
+    print(f"round {rnd}: mock skill by difficulty {[round(skill[d], 2) for d in (1, 2, 3, 4)]}")
+
+```
+
+**Follow-ups:**
+- *How is this different from RLHF or RL with verifiable rewards?* It is offline, filter-then-SFT, with no gradient from the reward on failed samples; RL also learns from failures (Part 5).
+- *How do you pick k?* Enough to find a correct sample on mid-difficulty prompts; measure the fraction of prompts with at least one kept sample as k grows, against compute cost.
+- *Can the model exceed its starting ability?* It can sharpen what it can already sometimes do; it cannot reliably learn what it never samples correctly.
+
+**Common mistakes:**
+- Trusting a checker nobody tested.
+- Ignoring the difficulty distribution of kept data.
+- Training on all rounds' data without a held-out check.
+- Quoting paper results from memory.
+
