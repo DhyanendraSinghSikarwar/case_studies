@@ -623,3 +623,73 @@ print("candidate B:", gate(gold, base, bad, 950, 5.0, 1.2))
 - Testing only with the exact training questions.
 - Claiming research results with exact numbers from memory.
 - Forgetting that fine-tuned facts cannot be cited or access-controlled.
+
+### Q45 ⭐ 🔴 What are the pitfalls of distillation (capacity gap, exposure bias, evaluation, teacher licensing terms), and when does it fail?
+**Asked at:** senior roles at product companies, GenAI startups, big tech
+**Say this first (1 line):** Distillation fails when the student cannot represent what the teacher knows, when the student only sees teacher-written text and never its own mistakes, when evaluation looks only at the average, and when the teacher's errors, biases or licence terms come along with the data.
+
+**Then explain:**
+- **Capacity gap:** if the student is far smaller than the teacher, it may not benefit and the soft targets can even be a worse teaching signal than hard labels. A common mitigation is an intermediate "teacher assistant" model (Mirzadeh et al., 2020, from memory, not verified). In my toy, a linear student trained with soft targets from an MLP teacher reached 0.942 overall accuracy, no better than the same student with hard labels (0.940); a small MLP student with the same soft targets reached 0.991 (teacher 0.992).
+- **Exposure bias:** in sequence distillation the student trains on teacher-written prefixes, but at inference it conditions on its own, which drift. Mitigations: on-policy distillation where the student samples and the teacher scores (MiniLLM's abstract describes on-policy optimisation with reverse KL, Q24); also mix student samples into training.
+- **Teacher errors and bias inherited:** the student copies hallucinations, refusals, political or demographic bias and the teacher's style. Filter by correctness or a checker (Q39), audit slices.
+- **Evaluation:** an average can hide the tail. In the toy, a rare slice (3% of data) was answered correctly 0.77 of the time by the teacher and 0.53 by the linear student, while overall numbers were 0.992 and 0.942. Even the teacher's tail was far below its average. I evaluate by slice, by difficulty, on safety prompts, on long inputs and in production-like conditions, not only on a benchmark average (Part 9).
+- **Licensing and terms:** model licences and API terms may forbid using outputs to train other models, or restrict who may use the student. Check the current terms, and have legal sign off. I do not assume a given provider's rule.
+- **Tokenizer mismatch (logit KD):** probability-matching needs the same vocabulary and token ids. With sizes 32,000 vs 50,000 the KL fails in the toy; real pairs may have the same size but different ids, which silently misaligns. Options: same-family models, vocabulary alignment methods (research), or black-box text distillation.
+- **Over-reliance on teacher style:** the student learns phrasing and length habits; if the teacher is verbose, so is the student, and costs go up. Style-match is not skill-match.
+- **When not to distil:** no clear cost or latency problem; a prompted large model is good enough; the task is mostly new knowledge; the licence forbids it; the student is too small for the skill.
+
+**Example:** distilling a 70B into a 1B for classification of tickets: average F1 matches, but the rare "legal complaint" class drops sharply. The team only noticed because the gate has a per-class check (Q43). They then trained a 3B student and kept a rule to route low-confidence tickets to the large model.
+
+**Code:** (executed, standalone, torch only; SYNTHETIC 2-D data; teacher is a small MLP; this is a toy, not an LLM)
+```python
+# Standalone, torch only. SYNTHETIC 2-D data. Shows: a too-small student can match the teacher's average accuracy
+# and still lose a rare slice, so the average metric hides it. Also a vocabulary-mismatch check for logit KD.
+import torch, torch.nn as nn, torch.nn.functional as F
+torch.set_num_threads(1); torch.manual_seed(0)
+
+def make(n):
+    x = torch.randn(n, 2) * 1.0
+    y = (x[:, 0] > 0).long()                                     # majority rule: linear
+    rare = torch.rand(n) < 0.03                                  # 3% rare slice in its own region
+    x[rare] = torch.randn(int(rare.sum()), 2) * 0.3 + torch.tensor([3.0, 3.0])
+    y[rare] = ((x[rare, 0] > 3.0) ^ (x[rare, 1] > 3.0)).long()      # inside the slice the rule is XOR (needs nonlinearity)
+    return x, y, rare
+xtr, ytr, _ = make(20000); xte, yte, rte = make(20000)
+
+def fit(model, loss_fn, steps=1500, lr=0.05):
+    opt = torch.optim.Adam(model.parameters(), lr=lr)
+    for _ in range(steps):
+        opt.zero_grad(); loss_fn(model(xtr)).backward(); opt.step()
+    return model
+def report(name, m):
+    with torch.no_grad(): p = m(xte).argmax(-1)
+    print(f"{name:<28} overall acc {(p==yte).float().mean():.3f}   rare-slice acc {(p[rte]==yte[rte]).float().mean():.3f}")
+
+teacher = fit(nn.Sequential(nn.Linear(2, 32), nn.Tanh(), nn.Linear(32, 32), nn.Tanh(), nn.Linear(32, 2)), lambda o: F.cross_entropy(o, ytr))
+with torch.no_grad(): soft = F.softmax(teacher(xtr), -1)
+student_kd = fit(nn.Linear(2, 2), lambda o: F.kl_div(F.log_softmax(o, -1), soft, reduction="batchmean"))      # linear student, KD only
+student_hard = fit(nn.Linear(2, 2), lambda o: F.cross_entropy(o, ytr))
+big_kd = fit(nn.Sequential(nn.Linear(2, 16), nn.Tanh(), nn.Linear(16, 2)), lambda o: F.kl_div(F.log_softmax(o, -1), soft, reduction="batchmean"))
+print(f"rare slice share of test set: {rte.float().mean():.3f}")
+report("teacher (MLP 32x32)", teacher); report("student linear + KD", student_kd)
+report("student linear, hard labels", student_hard); report("student MLP 16 + KD", big_kd)
+
+# logit KD needs the same vocabulary / token ids
+teacher_vocab, student_vocab = 32000, 50000
+try:
+    t = torch.randn(1, teacher_vocab); s = torch.randn(1, student_vocab)
+    F.kl_div(F.log_softmax(s, -1), F.softmax(t, -1), reduction="batchmean")
+except RuntimeError as e: print("\nlogit KD with different vocab sizes fails:", str(e)[:70])
+
+```
+
+**Follow-ups:**
+- *Forward or reverse KL?* Forward KL is mass-covering and can spread the student over modes it cannot fit; reverse KL is mode-seeking (the MiniLLM abstract uses reverse KL for generative models). It is a trade-off, not a rule (Q24).
+- *Does temperature matter for LLMs?* Classic distillation uses softened targets; the tutorials I saw say LLM distillation often uses temperature 1 (unverified detail).
+- *Can the student beat the teacher?* Sometimes on narrow tasks with good filtering and task-specific data; on general ability, rarely.
+
+**Common mistakes:**
+- Reporting one average and calling the student "as good".
+- Ignoring the tokenizer when planning logit distillation.
+- Forgetting the legal check on teacher outputs.
+- Choosing a student too small and blaming the method.
