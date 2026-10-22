@@ -30,7 +30,7 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 - Count your real weekly hours. Illustrative arithmetic: 10 hours a week for 24 weeks is 240 hours; 17 hours a week for 24 weeks is about 400 hours.
 - Set checkpoints from the plan (plan.md Section 7; Guide Section 6): Excel by about week 3, SQL Parts 1-6 by about week 7, the rest of SQL by week 10. These are our targets, not research findings.
 - Start applying to MIS/reporting roles when Excel and basic SQL are solid; keep studying while you apply.
-**Example:** (illustrative) Arjun can study 1 hour on weekdays and 4 on weekends, about 9 hours a week. He should plan for a longer runway than a plan built for 2-3 hours a day.
+**Example:** (illustrative) Arjun can study 1 hour on weekdays and 4 on weekends, 5 x 1 + 2 x 4 = 13 hours a week. Over 24 weeks that is 312 hours, so he should plan for a longer runway than a plan built for 2-3 hours a day (about 336-504 hours over 24 weeks at 7 days a week).
 **Common mistakes:** Believing a promised timeline. Quitting at month 3 because the plan said "job-ready". Not counting the job-search months.
 **Where this is covered:** Guide Section 6 (roadmap); Q13, Q49.
 
