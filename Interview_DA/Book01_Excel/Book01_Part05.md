@@ -92,7 +92,7 @@
 **Alternative:** To mark only the repeats and not the first occurrence: `D2: =IF(COUNTIF($A$2:A2,A2)>1,"Repeat","First")` (expanding range). Total rows involved in duplicates: `=SUMPRODUCT((COUNTIF(A2:A8,A2:A8)>1)*1)`.
 **Result:** Run in LibreOffice: Times seen = 2, 3, 1, 3, 1, 2, 3. Flag shows "Duplicate" on rows 2, 3, 5, 7, 8. Repeat/First = First, First, First, Repeat, First, Repeat, Repeat. The SUMPRODUCT returns 5.
 **Version note:** Conditional Formatting and COUNTIF work in all versions and Google Sheets (from memory, unverified); in Sheets the colour rule is Format > Conditional formatting with a custom formula `=COUNTIF(A:A,A1)>1`.
-**Edge cases:** COUNTIF ignores case and treats `E1*` wildcards literally only if typed in the criteria; IDs with trailing spaces will not match, so TRIM first. Very long ID text (over 255 characters) can fail in COUNTIF.
+**Edge cases:** COUNTIF ignores case and treats `*` and `?` inside the criteria as wildcards (so an ID containing them can over-match; use `~*` to mean a real asterisk); IDs with trailing spaces will not match, so TRIM first. Criteria strings over 255 characters can fail in COUNTIF (from memory, unverified; the Excel specifications page I fetched does not mention it).
 **Likely follow-ups:** 1) *How do you then remove them?* Filter on "Repeat" and delete those rows, or run Remove Duplicates. 2) *Why the dollar signs?* They lock the range while the formula is filled down.
 **Common mistakes:** Forgetting `$` so the range slides down; checking only one column when a duplicate needs ID plus date; assuming the highlight marks only the extra copies.
 
@@ -374,7 +374,7 @@
 
 **Formula / Steps:** `B2: =CLEAN(A2)`; full recipe `=TRIM(CLEAN(SUBSTITUTE(A2,CHAR(160)," ")))`.
 **Alternative:** Find and Replace with Ctrl+J for line breaks; Power Query Transform > Format > Clean.
-**Result:** Run in LibreOffice: CLEAN gives `AshaRao`, `Ravi Das`, `Meena` + CHAR(160) + `Nair` (unchanged), and `  Karan   Singh  ` (unchanged). The full recipe gives `AshaRao`, `Ravi Das`, `Meena Nair`, `Karan Singh`.
+**Result:** Run in LibreOffice: CLEAN gives `AshaRao`, `Ravi Das`, `Meena` + CHAR(160) + `Nair` (unchanged), and `  Karan   Singh  ` (unchanged). The full recipe gives `AshaRao`, `Ravi Das`, `Meena Nair`, `Karan Singh` only when the non-breaking space is written as `UNICHAR(160)`: with `CHAR(160)` LibreOffice left `Meena` + nbsp + `Nair` unchanged (in Excel for Windows `CHAR(160)` is the standard recipe, from memory, unverified). The bell and line-break test cells were built with `CHAR(7)` and `CHAR(10)`.
 **Version note:** CLEAN is listed for Excel 2016 through 365 (Microsoft Support). Google Sheets has CLEAN (from memory, unverified).
 **Edge cases:** CLEAN removes a line break without adding a space, so "Asha" and "Rao" join; replace with a space first: `SUBSTITUTE(A2,CHAR(10)," ")`.
 **Likely follow-ups:** 1) *Why a space still shows after TRIM?* CHAR(160). 2) *How to see hidden characters?* `=CODE(MID(A2,n,1))`.
@@ -406,7 +406,7 @@
 3. Find what: `Hyd`; Replace with: `Hyderabad`.
 4. Click Options >>, tick **Match entire cell contents**.
 5. Replace All. Repeat for `HYD` and `Hyd.` (case is ignored unless "Match case" is ticked, from memory, unverified).
-**Alternative:** A mapping table plus VLOOKUP/XLOOKUP, which is auditable: list wrong and right spellings and look up each city. Or `=IF(OR(TRIM(A2)="Hyd",TRIM(A2)="Hyd."),"Hyderabad",A2)`.
+**Alternative:** A mapping table plus VLOOKUP (or XLOOKUP in 365/2021; Microsoft's XLOOKUP page has a note saying it is not available in Excel 2016 and 2019 while its Applies-to list names them, so I treat it as 2021/365 only; not run here), which is auditable: list wrong and right spellings and look up each city. Or `=IF(OR(TRIM(A2)="Hyd",TRIM(A2)="Hyd."),"Hyderabad",A2)`.
 **Result:** Run in LibreOffice: naive `=SUBSTITUTE(A2,"Hyd","Hyderabad")` returns `Hyderabad`, `Hyderabaderabad`, `HYD`, `Hyderabad.`, `Pune`: it damages row 3. The safe IF formula returns `Hyderabad` for rows 2 to 5 and `Pune` for row 6 (the `=` test ignores case).
 **Version note:** Ctrl+H works in all versions and Google Sheets (from memory, unverified).
 **Edge cases:** Wildcards `*` and `?` in Find what act as wildcards; type `~*` to find a real asterisk.
@@ -501,7 +501,7 @@
 - Quick: select the column > Data tab > Text to Columns > Finish (without changing anything). Or click the yellow warning icon > Convert to Number.
 - Formula: `B2: =VALUE(TRIM(A2))`; for the CHAR(160) row `=VALUE(TRIM(SUBSTITUTE(A2,CHAR(160)," ")))`; then Copy > Paste Special > Values.
 **Alternative:** `=--A2` or `=A2*1`; Paste Special > Multiply by a cell containing 1; Power Query: Transform > Data Type > Whole Number.
-**Result:** Run in LibreOffice: ISTEXT is TRUE for rows 2 to 5 and FALSE for row 6. `=SUM(A2:A6)` returns 47000 (only the real number). The CHAR(160)-aware VALUE formula returns 45000, 52000, 38000, 61000, 47000, and the total is 243000. Plain `VALUE(TRIM())` on row 5 returns an error.
+**Result:** Run in LibreOffice: ISTEXT is TRUE for rows 2 to 5 and FALSE for row 6. `=SUM(A2:A6)` returns 47000 (only the real number). The CHAR(160)-aware VALUE formula returns 45000, 52000, 38000, 61000, 47000, and the total is 243000. Plain `VALUE(TRIM(A5))` on row 5 also returned 61000 in LibreOffice, because LibreOffice's VALUE tolerates the non-breaking space; Excel may return #VALUE! there (from memory, unverified), so keep the SUBSTITUTE in the formula. `VALUE(TRIM())` on rows 2 to 4 returned 45000, 52000, 38000.
 **Version note:** All versions (from memory, unverified). Convert to Number prompt wording can differ by version.
 **Edge cases:** Leading zeros (ID codes like 00123) should stay text. Decimal commas vs points depend on regional settings; `NUMBERVALUE` handles separators (from memory, unverified). In Excel, `+` arithmetic may coerce some text that SUM ignores; LibreOffice behaves similarly but not identically.
 **Likely follow-ups:** 1) *Why does SUM show 0?* It skips text. 2) *How to check?* `=ISTEXT(A2)` or `=ISNUMBER(A2)`.
@@ -611,10 +611,10 @@ Feature route: select A2:A6 > Data tab > Data Tools > Text to Columns > Delimite
 | 4 | Priya (nbsp) | | | |
 | 5 | Priya | | | |
 
-**Formula / Steps:** B2 `=LEN(A2)`; C2 `=UNICODE(RIGHT(A2,1))` (Excel 2013+); D3 `=EXACT(A3,A$2)`. Fix: `=TRIM(SUBSTITUTE(A2,CHAR(160)," "))`, paste as values, run Data > Data Tools > Remove Duplicates.
+**Formula / Steps:** B2 `=LEN(A2)`; C2 `=UNICODE(RIGHT(A2,1))` (listed for Excel 2016 and later by Microsoft); D3 `=EXACT(A3,A$2)`. Fix: `=TRIM(SUBSTITUTE(A2,CHAR(160)," "))`, paste as values, run Data > Data Tools > Remove Duplicates.
 **Alternative:** Conditional formatting > Duplicate Values highlights what Excel thinks matches; the rows that should but do not are your suspects. Or Power Query > Transform > Trim/Clean.
 **Result:** Run in LibreOffice: LEN = 5, 6, 6, 5; last char code = 97, 32, 160, 97; EXACT = FALSE, FALSE, TRUE for rows 3, 4, 5. So rows 3 and 4 hide a space and a non-breaking space. Row 5 is a true duplicate.
-**Version note:** UNICODE is Excel 2013+; the rest works everywhere.
+**Version note:** Microsoft's UNICODE function page lists Excel 2016, 2019, 2021, 2024 and 365 (Microsoft Support, "UNICODE function"); that it arrived in Excel 2013 is from memory, unverified. The rest works everywhere.
 **Edge cases:** `CHAR(160)` works in Excel on Windows; in LibreOffice it did not match, so I tested with UNICHAR(160), which does. ISNUMBER catches text numbers.
 **Likely follow-ups:** 1) *Does case matter?* Remove Duplicates ignores case (from memory, unverified); see Q32. 2) *Why not just retype?* Does not scale.
 **Common mistakes:** Trusting your eyes; using TRIM and assuming it fixed everything.
@@ -638,7 +638,7 @@ Feature route: select A2:A6 > Data tab > Data Tools > Text to Columns > Delimite
 **Formula / Steps:** `=TRIM(SUBSTITUTE(A2,CHAR(160)," "))`. Safer on all platforms: `=TRIM(SUBSTITUTE(A2,UNICHAR(160)," "))`. With line breaks too: `=TRIM(CLEAN(SUBSTITUTE(A2,CHAR(160)," ")))`. Then copy > Paste Special > Values.
 **Alternative:** Find & Replace: in Find what press Alt+0160 on the numeric keypad (or paste the character), leave Replace with empty or one space.
 **Result:** Run in LibreOffice using UNICHAR(160): LEN before TRIM = 13 and LEN(TRIM) still = 13 (TRIM did nothing); after the fix the text is "Priya Sharma" with LEN 12; the last character code was 160.
-**Version note:** CHAR and SUBSTITUTE work everywhere; UNICHAR is Excel 2013+.
+**Version note:** CHAR and SUBSTITUTE work everywhere; UNICHAR and UNICODE are listed from Excel 2016 on Microsoft's UNICODE page (the 2013 start is from memory, unverified).
 **Edge cases:** Other odd spaces exist (zero-width space, code 8203); check with UNICODE and substitute them too. LibreOffice's CHAR(160) did not match, hence UNICHAR in my test; Excel for Windows CHAR(160) is the standard recipe (from memory).
 **Likely follow-ups:** 1) *How to detect?* LEN vs LEN(TRIM). 2) *Does CLEAN remove it?* No, CLEAN removes codes 0 to 31.
 **Common mistakes:** Applying TRIM again and again; forgetting to paste as values.
@@ -717,7 +717,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Formula / Steps:** `=LEFT(A2)&MID(A2,FIND(" ",A2&" ")+1,1)`; fill down. Flash Fill: type PS in B2, press Ctrl+E in B3 (Data > Data Tools > Flash Fill).
 **Alternative:** Power Query (Data > Get & Transform) keeps the steps and replays them on new data.
 **Result:** Formula run in LibreOffice: PS, RK, AK, M. The formula states its rule exactly; Flash Fill's output for the last two rows is "not run here" (I cannot run the feature) and is the kind of thing to verify.
-**Version note:** Flash Fill is available from Excel 2013 (from memory, unverified).
+**Version note:** Microsoft's Flash Fill page lists Excel 2016, 2019, 2021, 2024 and 365 and lists no limitations (Microsoft Support, "Using Flash Fill in Excel"); that it started in Excel 2013 is from memory, unverified.
 **Edge cases:** Blank or inconsistent source rows; automatic fill may be switched off (File > Options > Advanced > Automatically Flash Fill).
 **Likely follow-ups:** 1) *Does it update?* No. 2) *Is it reliable for dates?* Not always; use real date functions.
 **Common mistakes:** Not checking the output; using it on data that will be refreshed.
@@ -800,7 +800,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Formula / Steps:** Backup first. 1) Data > Sort & Filter > Sort: UpdatedOn, Newest to Oldest. 2) Data > Data Tools > Remove Duplicates, tick only EmpID. Or mark rows: E2 `=IF(D2=MAXIFS($D$2:$D$7,$A$2:$A$7,A2),"Keep","Old")`, filter for Old and delete.
 **Alternative:** 365: `=SORT(...)` with `UNIQUE` on the sorted list (not run here). Or a pivot with Max of date.
 **Result:** MAXIFS marker run in LibreOffice: Old, Old, Keep, Keep, Keep, Old for rows 2 to 7. Sorting plus de-duplication reproduced in pandas: 101 Asha Admin 2026-02-15; 102 Ravi Sales 2026-06-30; 103 Meena IT 2025-08-05.
-**Version note:** MAXIFS needs Excel 2019/365 (from memory, unverified; Excel 2016 non-subscription lacks it). Sort and Remove Duplicates work everywhere.
+**Version note:** Microsoft's MAXIFS page says the feature is available if you have Office 2019 or a Microsoft 365 subscription, and lists Excel 2019, 2021, 2024 and 365; Excel 2016 (non-subscription) is not listed (Microsoft Support, "MAXIFS function"). The marker formula was run in LibreOffice with the `_xlfn.` prefix. Sort and Remove Duplicates work everywhere.
 **Edge cases:** Two rows with the same latest date both get "Keep"; add a tie-breaker. Dates stored as text sort wrongly (Q23).
 **Likely follow-ups:** 1) *What if no date column?* Use row order or a version number. 2) *Can you undo?* Only right after, so keep a copy.
 **Common mistakes:** Not sorting first; ticking all columns so nothing is removed.
@@ -920,7 +920,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Say this in the interview:** "In Google Sheets I select the range and use Data > Data cleanup > Remove duplicates, choose the columns and tick the header option. It is nearly the same as Excel, but Sheets has the UNIQUE function in every version, so I can also build a live de-duplicated list."
 **Explain simply:**
 - Steps: select range > Data menu > Data cleanup > Remove duplicates > tick "Data has header row" > choose columns > Remove duplicates. A message reports how many rows were removed.
-- The Google Docs Editors Help page could not be fetched (404), and third-party tutorials confirmed these steps, so details below are from memory, unverified.
+- The Google Docs Editors Help page could not be fetched (404 on the URL tried; a search returned only third-party tutorials). The tutorials agree on the steps and that the checked columns together decide a duplicate, but this is not an official source, so the details below are from memory, unverified.
 - Differences from Excel: menu location (Data cleanup, not Data Tools); UNIQUE and also QUERY available without a version problem; Excel has Advanced Filter and Power Query, Sheets does not.
 - Both tools keep the first occurrence and delete the rest (the Excel behaviour is from Microsoft Support; the Sheets one is from memory).
 **Example:** A shared candidate tracker with repeated entries.
@@ -940,7 +940,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Explain simply:**
 - `SUBSTITUTE(text, old_text, new_text, [instance_num])`: all matches, or only the Nth match if you give instance_num.
 - `REPLACE(old_text, start_num, num_chars, new_text)`: starts at a position, replaces that many characters. Using 0 characters inserts text.
-- Both are case-sensitive and return new text, leaving the original unchanged.
+- Both return new text, leaving the original unchanged. SUBSTITUTE matches text and is case-sensitive; REPLACE works by position, so case does not apply to it.
 **Example:** Employee code EMP-001-A: remove all hyphens (SUBSTITUTE), or change the prefix EMP to STF (REPLACE).
 **Sample sheet:**
 
@@ -954,7 +954,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Alternative:** Find & Replace (Ctrl+H) for one-off, non-formula fixes; Power Query Replace Values.
 **Result:** Run in LibreOffice: EMP001A; EMP-001/A (only the 2nd hyphen); STF-001-A; EMP_001-A; "Priya Sharma"; EMP-001.
 **Version note:** Both exist in every Excel version and in Google Sheets.
-**Edge cases:** SUBSTITUTE without a match returns the text unchanged; REPLACE with a start beyond the length appends. Both are case-sensitive. They return text, so a number-like result needs VALUE if you want numbers.
+**Edge cases:** SUBSTITUTE without a match returns the text unchanged; REPLACE with a start beyond the length appends (`REPLACE("EMP",10,0,"X")` gave `EMPX` in LibreOffice; Excel not checked). Only SUBSTITUTE is case-sensitive. They return text, so a number-like result needs VALUE if you want numbers.
 **Likely follow-ups:** 1) *Remove all of several characters?* Nest SUBSTITUTE (see Q31). 2) *Why not TRIM for double spaces?* TRIM already does it, except for non-breaking spaces.
 **Common mistakes:** Mixing up the arguments (REPLACE needs positions); using REPLACE when the position varies.
 
@@ -982,7 +982,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Alternative:** `=--A2`, or Data > Text to Columns > Finish, or Paste Special > Multiply (see Q43).
 **Result:** Run in LibreOffice: B2:B4 = 42000, 38500, 51000; C2:C4 = same; B5 and C5 = `#VALUE!`. `SUM(A2:A4)` = 0 but `SUM(B2:B4)` = 131500.
 **Version note:** VALUE is listed for Excel 2016, 2019, 2021, 2024 and 365 (Microsoft Support, "VALUE function"). Google Sheets also has VALUE (from memory, unverified).
-**Edge cases:** Unreadable text gives #VALUE! in both. A truly empty cell*1 gives 0 (run here); `VALUE("")` gave 0 in LibreOffice but Excel returns #VALUE! (from memory, unverified). Reading "1,250" or dates depends on regional settings.
+**Edge cases:** Unreadable text gives #VALUE! in both. A truly empty cell*1 gives 0 (run here); `VALUE("")` returned #VALUE! in LibreOffice here. Microsoft's VALUE page says text not in a recognised format returns #VALUE! but does not mention empty text directly, so Excel's result for `""` is unconfirmed. Reading "1,250" or dates depends on regional settings.
 **Likely follow-ups:** 1) *Text with a non-breaking space?* Clean with SUBSTITUTE(A2,CHAR(160),"") first. 2) *Why not just reformat to Number?* Changing the format does not convert text already stored.
 **Common mistakes:** Changing the cell format and expecting the text to turn numeric; leaving the converted column as formulas and then deleting the source column.
 
@@ -1047,7 +1047,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Say this in the interview:** "Excel treated the ID as a number and showed it in scientific notation, 1.2E+15 meaning 1.2 times ten to the power 15. Worse, Excel keeps only 15 significant digits, so digits after the 15th become zeros. IDs are labels, not quantities, so I set the column to Text before pasting or importing."
 **Explain simply:**
 - **Scientific notation** = a short way to show very large numbers. A column that is too narrow triggers it.
-- The bigger risk is **precision**: from memory (Microsoft documentation, not re-fetched), Excel stores 15 digits exactly; a 16-digit ID 1234567890123456 becomes 1234567890123450 once it is a number. That change cannot be undone.
+- The bigger risk is **precision**: Microsoft's "Excel specifications and limits" page lists number precision as 15 digits, so Excel stores 15 digits exactly; a 16-digit ID 1234567890123456 becomes 1234567890123450 once it is a number. That change cannot be undone.
 - Widening the column only fixes the display for up to 15 digits.
 - Rule: if you never add or average it, it is text (Aadhaar-style numbers, bank accounts, phone numbers, employee codes).
 **Example:** A 16-digit card or account number pasted from a payroll CSV shows 1.23457E+15; two different accounts could look identical after truncation.
@@ -1062,7 +1062,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Formula / Steps (prevent):** 1. Select the column > Home > Number group > Number Format box > **Text** (before pasting). 2. Or type an apostrophe first (`'1234567890123456`). 3. For a CSV: Data > From Text/CSV > Transform Data > set the column type to Text, then Close & Load.
 **Alternative:** Format Cells > Custom `0` only fixes display up to 15 digits; it cannot restore lost digits.
 **Result:** Not reproduced here: LibreOffice kept all 16 digits, so it does not show Excel's 15-digit behaviour. Run here only: `LEN(A2)` on the text version returns 16. Excel's truncation and the COUNTIF mismatch (COUNTIF treats long digit text as numbers, so the two IDs above can be counted as equal) are from memory, unverified.
-**Version note:** Applies to all Excel versions (from memory, unverified). Google Sheets handles long digit strings differently (from memory, unverified).
+**Version note:** The 15-digit precision is on Microsoft's "Excel specifications and limits" page; that it applies to every version is from memory, unverified. Google Sheets handles long digit strings differently (from memory, unverified).
 **Edge cases:** If the data is already corrupted, you must get the original file again. Text-formatted IDs show a green triangle; ignore it.
 **Likely follow-ups:** 1) *Can I fix it after the fact?* No, lost digits are gone. 2) *How to test uniqueness of long IDs?* Use SUMPRODUCT with `=` comparison, not COUNTIF.
 **Common mistakes:** Widening the column and thinking it is fixed; formatting as Text after pasting (already converted); saving the CSV from Excel after opening it.
@@ -1323,8 +1323,8 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 
 **Formula / Steps:** Between hyphens: B2 `=MID(A2,FIND("-",A2)+1,FIND("-",A2,FIND("-",A2)+1)-FIND("-",A2)-1)`. All digits (array formula, Ctrl+Shift+Enter in older versions): C2 `=TEXTJOIN("",TRUE,IF(ISNUMBER(--MID(A2,ROW($1:$30),1)),MID(A2,ROW($1:$30),1),""))`.
 **Alternative:** Excel 365: `=TEXTBEFORE(TEXTAFTER(A2,"-"),"-")` (not run); Flash Fill with an example (not run).
-**Result:** Run in LibreOffice: B = 4581, 77, 120045; all-digits C = 45813, 771, 1200454 (as text; use `--C2` for a number).
-**Version note:** TEXTJOIN needs Excel 2019 or later (from an earlier Microsoft Support fetch in this book); Excel 2016 needs a long legacy formula or VBA.
+**Result:** Run in LibreOffice: B = 4581, 77, 120045. The all-digits formula was run as an array formula (it returns nothing in LibreOffice if entered as a normal formula): C = 45813, 771, 1200454 (as text; use `--C2` for a number). TEXTBEFORE/TEXTAFTER alternative not run here.
+**Version note:** Microsoft's TEXTJOIN page says the feature is available with Office 2019 or Microsoft 365 and lists Excel 2019, 2021, 2024 and 365 (Microsoft Support, "TEXTJOIN function"); Excel 2016 needs a long legacy formula or VBA.
 **Edge cases:** Strings over 30 characters need a larger ROW range; decimals and minus signs are not handled.
 **Likely follow-ups:** 1) *Keep as number?* Wrap in `--`. 2) *Only letters?* Reverse the test.
 **Common mistakes:** Not asking which number is wanted; forgetting array entry.
@@ -1376,7 +1376,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Alternative:** Power Query steps (not run here).
 **Result:** Run in LibreOffice on a tiny sample, using `UNICHAR(160)` because LibreOffice's `CHAR(160)` does not return a non-breaking space (in Excel for Windows, `CHAR(160)` does; from memory, unverified): "  Priya[nbsp]Sharma[line break] " became "Priya Sharma" (12 characters), and "Ravi   Kumar" became "Ravi Kumar" (10). Speed claims are not benchmarked here (from experience and memory, unverified).
 **Version note:** Power Query is in Excel 2016 and later Windows versions (Microsoft Support, "Power Query data sources in Excel versions").
-**Edge cases:** Excel row limit 1,048,576; Power Query loads to a table or the Data Model.
+**Edge cases:** Excel row limit 1,048,576 rows (Microsoft Support, "Excel specifications and limits"); Power Query loads to a table or the Data Model.
 **Likely follow-ups:** 1) *Still slow?* Use SQL or Python. 2) *Why manual calc?* Prevents recalculation after each edit.
 **Common mistakes:** Whole-column formulas; leaving everything live.
 

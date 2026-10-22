@@ -15,7 +15,7 @@
 **Example:** HR gets a messy attendance export every month: blank rows, extra spaces in names, text instead of numbers. You clean it once in Power Query (about 6 steps). Each month you drop the new file in, press Refresh, and the clean table is ready.
 **Formula / Steps:** Data > Get Data > choose a source > Transform Data (opens the Power Query Editor) > apply steps > Home > Close & Load (not run here; steps from Microsoft Support, "About Power Query in Excel").
 **Alternative:** Formulas (TRIM, VLOOKUP) or manual copy-paste do the same job once, but must be redone every time.
-**Version note:** Built in on Excel 2016, 2019, 2021, 2024 and Microsoft 365 (Microsoft Support, "About Power Query in Excel" and "Where is Get & Transform (Power Query)"). Excel for Mac: Microsoft 365 only, through Get Data (same page). Excel for the web is limited; Android/iOS not supported (same page). Google Sheets has no equivalent (from memory, unverified).
+**Version note:** Built in on Excel 2016, 2019, 2021, 2024 and Microsoft 365 (Microsoft Support, "About Power Query in Excel" and "Power Query data sources in Excel versions"). Excel for Mac: Microsoft 365 only, through Get Data (same page). Excel for the web is limited; Android/iOS not supported (same page). Google Sheets has no equivalent (from memory, unverified).
 **Edge cases:** It needs data in a consistent layout; if the source changes shape (renamed column) the refresh can fail (see Q63).
 **Likely follow-ups:** 1) *Does it change the source file?* No. 2) *Is it a formula?* No, it is a recorded list of steps written in a language called M (Q38).
 **Common mistakes:** Calling it a macro; forgetting to Refresh; pasting results over the loaded table.
@@ -74,7 +74,7 @@ Merge (Master left join Payroll on EmpID):
 **Result:** pandas: append gives 6 rows, left merge gives 5 rows with 2 blanks (run here); the Excel steps were not run.
 **Version note:** Both available wherever Power Query exists (2016+). 
 **Edge cases:** Append with different column names creates extra columns with nulls (Q30). Merge on a key with duplicates multiplies rows (Q21 shows the same effect).
-**Likely follow-ups:** 1) *Which join by default?* Left Outer. 2) *Can you append more than two?* Yes, append can take more than two tables (from memory, unverified).
+**Likely follow-ups:** 1) *Which join by default?* Microsoft's "Merge queries (Power Query)" page says inner; Left Outer is the usual choice (conflict explained in Q26). 2) *Can you append more than two?* Yes, append can take more than two tables (from memory, unverified).
 **Common mistakes:** Appending when you needed a merge; merging on a key that has spaces or different case, so nothing matches.
 
 ### Q4 ⭐⭐⭐ 🟢 How do you refresh a Power Query report when the source file changes?
@@ -172,13 +172,13 @@ Merge (Master left join Payroll on EmpID):
 **What the interviewer is checking:** Version awareness.
 **Say this in the interview:** "On Windows, in all three it is on the Data tab in the Get & Transform group. It is built in from Excel 2016; Microsoft 365 has the full feature set, perpetual versions a subset."
 **Explain simply:**
-- Microsoft: Power Query is included in "all Excel 2016 or later Windows stand alone versions and Microsoft 365 subscription plans"; ribbon location Data > Get & Transform (Microsoft Support, "Where is Get & Transform (Power Query)").
+- Microsoft: Power Query is included in "all Excel 2016 or later Windows stand alone versions and Microsoft 365 subscription plans"; ribbon location Data > Get & Transform (Microsoft Support, "Power Query data sources in Excel versions").
 - 365 has all features; perpetual versions have a subset; for example fuzzy merge is in 365 but not 2019 (same page).
 - Mac: Microsoft 365 only, via Get Data on the Data tab. Excel for the web: limited sources. Android/iOS: not supported (same page).
 **Example:** A colleague on Excel 2019 cannot use fuzzy matching in Merge that you use on 365.
 **Formula / Steps:** Data tab > Get & Transform Data group > Get Data (not run here).
 **Alternative:** On Excel 2010/2013 it was a separate add-in (from memory, unverified).
-**Version note:** As above, all from the cited Microsoft page.
+**Version note:** As above, all from the cited Microsoft page. Its title when fetched on 2026-10-22 was "Power Query data sources in Excel versions"; the sources file recorded the same article (ID e9332067) as "Where is Get & Transform (Power Query)", so earlier wording of this part may use either title. Fuzzy merge in 2016 perpetual is not stated (see Q42).
 **Edge cases:** Ribbon labels differ slightly between builds ("Get & Transform" vs "Get & Transform Data").
 **Likely follow-ups:** 1) *Mac?* Yes with 365, with limited sources. 2) *Excel online?* Limited.
 **Common mistakes:** Looking under Insert; assuming every feature is in every version.
@@ -367,7 +367,7 @@ Merge (Master left join Payroll on EmpID):
 **Alternative:** Excel `=IF(...)` or `=IFS(...)` (IFS is 2019+, from memory, unverified).
 **Result:** Bands above from pandas (run here); Power Query not run.
 **Version note:** 2016+ (not separately verified).
-**Edge cases:** In M, comparing null with >= returns null/false: handle nulls first (my pandas replica checks null first).
+**Edge cases:** In M, comparing null with >= does not give a clean true (the exact result, null or false, is from memory, unverified): handle nulls first, as the pandas replica does.
 **Likely follow-ups:** 1) *More than the dialog allows?* Use Custom Column. 2) *Is "if" case-sensitive in M?* Yes, lower case.
 **Common mistakes:** Wrong order of conditions; not setting the type of the new column.
 
@@ -379,7 +379,7 @@ Merge (Master left join Payroll on EmpID):
 - Transform > Group By; choose the column(s) to group and the aggregations (Sum, Average, Count Rows...).
 - Output is a normal table you can merge or load.
 - PivotTable: drag-and-drop, slicers, subtotals, no step recording.
-**Example:** Six employees by department. Output (pandas, run here):
+**Example:** Six employees by department (HR: 40000, 41000; IT: 68000 three times; Sales: 49000). Output (pandas, run here, rechecked in Wave C):
 
 **Sample sheet:**
 
@@ -425,9 +425,9 @@ Merge (Master left join Payroll on EmpID):
 **Example:** An HR analyst relates Employees, Attendance and Departments tables and builds a "Headcount" measure used in one PivotTable.
 **Formula / Steps:** Power Pivot tab > Manage (not run here).
 **Alternative:** The Data Model can also be used without opening Power Pivot, via Add to Data Model on a PivotTable.
-**Version note:** The overview page lists Excel for Microsoft 365, 2024, 2021, 2019, 2016 (Microsoft Support, "Power Pivot - overview and learning"); the "Start" page lists 365, 2024, 2021. Which Office editions include it (for example Home & Student or Mac) is unverified: the "Where is Power Pivot?" page returned HTTP 403 and the overview page did not list exclusions. A search summary suggested some perpetual editions and Mac do not include it, unverified; check with the IT team.
+**Version note:** The overview page lists Excel for Microsoft 365, 2024, 2021, 2019, 2016 (Microsoft Support, "Power Pivot - overview and learning"); the "Start" page lists 365, 2024, 2021. Which Office editions include it (for example Home & Student or Mac) is unverified: the "Where is Power Pivot?" page returned HTTP 403 earlier, and on re-fetch that address showed the overview page, which lists no exclusions. Microsoft Support, "Turn on Power Pivot" (fetched): "Power Pivot isn't currently available on Excel for Mac" or Excel for the web; it is available in the Excel desktop app (Windows). A search summary (page not read) said an older Microsoft article, "What versions of Office include Power Pivot?", excludes Office Home & Student 2016 and Home & Business 2016 and includes Office 2016 Professional Plus only through volume licensing, while Wikipedia says an April 2018 update added it to all Excel 2016 versions; both unverified. Check with the IT team.
 **Edge cases:** Corporate laptops may block add-ins.
-**Likely follow-ups:** 1) *Mac?* Unverified. 2) *Difference from Power Query?* Q2.
+**Likely follow-ups:** 1) *Mac?* No: Microsoft Support, "Turn on Power Pivot", says it is not available on Excel for Mac or the web. 2) *Difference from Power Query?* Q2.
 **Common mistakes:** Assuming every Excel install has the tab; confusing it with a PivotTable.
 
 ### Q20 ⭐⭐ 🟢 What is the Excel Data Model?
@@ -456,7 +456,7 @@ Merge (Master left join Payroll on EmpID):
 - VLOOKUP creates one formula per row and widens the sheet.
 - Changes made once in the lookup table flow through.
 - Several fact tables can share the same lookup tables.
-**Example:** Employees (EmpID, Dept) and Department (Dept, Head). A relationship on Dept gives salary by department head: Das 49,000; Rao 81,000; Sen 204,000 (pandas join then group, run here).
+**Example:** Employees (EmpID, Dept, Salary: HR 40000 and 41000, IT 68000 three times, Sales 49000) and Department (Dept, Head). A relationship on Dept gives salary by department head: Das 49,000; Rao 81,000; Sen 204,000 (pandas join then group, run here).
 **Sample sheet:**
 
 | Dept | Head | Salary total |
@@ -500,7 +500,7 @@ Merge (Master left join Payroll on EmpID):
 - One-to-many: the "one" table (Departments) has each DeptID once; the "many" table (Attendance) repeats it.
 - Many-to-many: both tables repeat the key (employees with many skills, skills with many projects). Joining them multiplies rows.
 - Microsoft: "Many-to-many relationships are not supported in a Data Model" and "the data values in the lookup column must be unique" (Microsoft Support, "Relationships between tables in a Data Model").
-**Example:** Attendance has 5 rows over 3 departments. Joined to a unique Department table, totals stay correct. Joining a 3-row Skills list to a 3-row Projects list on Skill gives 5 rows, a row explosion.
+**Example:** Attendance has 5 rows over 3 departments. Joined to a unique Department table, totals stay correct. Joining a 3-row Skills list (a, a, b) to a 3-row Projects list (a, a, b) on Skill gives 5 rows, a row explosion.
 **Sample sheet:**
 
 | | A (Dept table) | B | | D (Attendance) | E | F |
@@ -558,7 +558,7 @@ Merge (Master left join Payroll on EmpID):
 **Formula / Steps:** (Not run here.) Data > From Table/Range > select column Emp > Transform > Unpivot Columns dropdown > Unpivot Other Columns > rename Attribute and Value > Close & Load. M: `Table.UnpivotOtherColumns(Source, {"Emp"}, "Month", "Days")`.
 **Alternative:** Select Jan:Mar and use Unpivot Columns (see Q43).
 **Result:** pandas melt (run): Asha-Jan 22, Ravi-Jan 20, Asha-Feb 19, Ravi-Feb 21, Asha-Mar 21, Ravi-Mar 22 (6 rows).
-**Version note:** Power Query is in all Windows Excel 2016 or later (Microsoft Support, "Power Query data sources in Excel versions"; page title as fetched).
+**Version note:** The "Unpivot columns (Power Query)" page applies to Excel 365, 2024 and 2021 (fetched). Power Query is in all Windows Excel 2016 or later (Microsoft Support, "Power Query data sources in Excel versions"; page title as fetched).
 **Edge cases:** Blank cells become nulls and are dropped (from memory, unverified); headers must be text-like months, not dates you want to sort.
 **Likely follow-ups:** 1) *Reverse?* Pivot Column (Q44). 2) *Does it fold on SQL?* Sources conflict; unverified.
 **Common mistakes:** Unpivoting the key column too; leaving the Month column typed as text when sorting.
@@ -566,17 +566,17 @@ Merge (Master left join Payroll on EmpID):
 ### Q26 ⭐⭐ 🟡 What are the different join kinds available in a Power Query merge?
 **Asked at:** EY intern review (Glassdoor, reported Feb 2026, single report, search snippet only) mentions Merge vs Append; join kinds are an expected follow-up.
 **What the interviewer is checking:** Do you know which rows each join keeps?
-**Say this in the interview:** "There are six main kinds: inner, left outer, right outer, full outer, left anti, right anti, plus cross join. I pick by asking which table's unmatched rows I still need."
+**Say this in the interview:** "There are seven kinds: inner, left outer, right outer, full outer, left anti, right anti and cross. I pick by asking which table's unmatched rows I still need."
 **Explain simply:**
 - Primary table = first table chosen; related = second.
 - Inner: only matches. Left outer: all primary + matches. Right outer: all related + matches. Full outer: all rows from both. Left anti: primary rows with no match. Right anti: related rows with no match. Cross: every row paired with every row (Microsoft Support, "Merge queries (Power Query)").
-- Microsoft says the default is inner join; the fuzzy match page says Left Outer is default. The dialog differs by version, so check it.
+- Conflict: Microsoft Support, "Merge queries (Power Query)" (fetched; applies to 365, 365 for Mac, 2024, 2021) says "The default join operation is an inner join". An earlier note said the fuzzy match page names Left Outer as default; that page returned 404 and could not be re-read. The preselected kind in today's dialog is Left Outer from memory, unverified, so always check it before clicking OK. The page lists exactly the seven kinds above.
 - Matching columns must have the same data type.
 **Example:** HR master (101-104) vs payroll (102-105).
 **Sample sheet:** HR: 101 Asha, 102 Ravi, 103 Meena, 104 Karan. Payroll: 102 50, 103 48, 104 60, 105 45.
 **Formula / Steps:** (Not run here.) Data > Get Data > Combine Queries > Merge > pick both tables and EmpID columns > choose Join Kind > OK > expand. M: `Table.NestedJoin(HR,{"EmpID"},Pay,{"EmpID"},"Pay",JoinKind.LeftOuter)`.
 **Alternative:** Excel formulas such as XLOOKUP, but only for one lookup column at a time.
-**Result:** pandas (run): left 4 rows (Asha Net blank); right 4 rows (105 has no name); full outer 5 rows; inner 3 rows; left anti = 101 Asha; right anti = 105; cross = 16 rows.
+**Result:** pandas (run): left 4 rows (Asha's payroll value blank); right 4 rows (105 has no name); full outer 5 rows; inner 3 rows; left anti = 101 Asha; right anti = 105; cross = 16 rows.
 **Version note:** Merge exists wherever Power Query does (2016+ Windows).
 **Edge cases:** Duplicate keys multiply rows; trailing spaces stop matches.
 **Likely follow-ups:** 1) *Merge vs Append?* Side-by-side vs stacked. 2) *Which for missing employees?* Left anti.
@@ -672,10 +672,10 @@ Merge (Master left join Payroll on EmpID):
 - Steps run in order; a later step cannot use a column you already removed.
 - With databases, early filters can be pushed to the server (query folding, Q41). With CSV/Excel files, Microsoft says no folding, so less data still just means less processing.
 **Example:** 100,000 payroll rows; you need Hyderabad active staff with EmpID and Salary.
-**Sample sheet:** 6 rows with EmpID, Office, Status, Salary, Notes.
+**Sample sheet:** (EmpID, Office, Status, Salary): 1 Hyd Active 50; 2 Hyd Left 45; 3 Pune Active 40; 4 Hyd Active 60; 5 Blr Active 55; 6 Pune Left 42 (Notes column dropped by Choose Columns).
 **Formula / Steps:** (Not run here.) Home > Choose Columns (or Remove Columns) > Filter Office > Filter Status. M: `Table.SelectRows(Cols, each [Office]="Hyd" and [Status]="Active")`.
 **Alternative:** Filter first, then remove columns; same result.
-**Result:** pandas (run): rows kept EmpID 1 and 4 (Salary 1 and 4).
+**Result:** pandas (run): rows kept EmpID 1 and 4 (Salary 50 and 60), the same result whichever order you filter and remove columns.
 **Version note:** All Power Query versions.
 **Edge cases:** Do type changes after filtering; changing types on all columns early can add errors.
 **Likely follow-ups:** 1) *Does order change the result?* Rarely, if later steps need a removed column. 2) *Sort?* Sort late (it is costly).
@@ -853,7 +853,7 @@ Merge (Master left join Payroll on EmpID):
 **Formula / Steps:** (Not run here.) Right-click a step > View Native Query: if greyed out, the step likely does not fold (greyed-out detail from memory, unverified).
 **Alternative:** SQL Profiler / database logs (from memory).
 **Result:** Not applicable.
-**Version note:** Unpivot folding: the Microsoft pages fetched do not say whether Unpivot folds; sources conflict, so unverified. Do not claim it either way.
+**Version note:** Unpivot folding: neither the Microsoft Learn folding page nor the Support "Unpivot columns" page (both re-fetched in Wave C) mentions it; blog sources conflict, so unverified. Do not claim it either way.
 **Edge cases:** Merging two different sources or adding an index column can stop folding (from memory, unverified).
 **Likely follow-ups:** 1) *Does Excel file source fold?* No, per Microsoft. 2) *Order?* Put foldable steps first.
 **Common mistakes:** Expecting folding on CSV.
@@ -865,7 +865,7 @@ Merge (Master left join Payroll on EmpID):
 **Explain simply:**
 - Only for merges on text columns; uses Jaccard similarity; default threshold 0.80 (0 matches everything, 1 exact only) (Microsoft Support, "Create a fuzzy match (Power Query)", applies to Excel for Microsoft 365).
 - Options: ignore case, maximum matches, transformation table (From/To mapping like Microsoft/MSFT).
-- Version: "fuzzy merge is supported in Microsoft 365, but not in 2019 perpetual" (Microsoft Support, "Power Query data sources in Excel versions"). Excel 2016 is not stated on that page: unverified.
+- Version: "fuzzy merge is supported in Microsoft 365, but not in 2019 perpetual" (Microsoft Support, "Power Query data sources in Excel versions"). Excel 2016 is not stated on that page (re-fetched 2026-10-22); it only adds that "More features were added to 2019 perpetual than were available in 2016 perpetual", which suggests 2016 lacks it but does not say so: unverified.
 **Example:** Office names typed differently in two HR files.
 **Formula / Steps:** (Not run here.) Merge Queries > pick text columns > tick "Use fuzzy matching to perform the merge" > Fuzzy matching options > Similarity Threshold > OK.
 **Alternative:** Clean names with Replace Values or a transformation table.
@@ -923,7 +923,7 @@ Merge (Master left join Payroll on EmpID):
 M code (not run here): `= Table.Pivot(Source, List.Distinct(Source[Month]), "Month", "Days", List.Sum)`
 **Alternative:** A PivotTable on the same data gives the same grid, but it is a report, not a cleaned table you can feed to later steps.
 **Result:** Reproduced with pandas (the Power Query step itself was not run here): E1 gives Jan 22, Feb 20, Mar 21; E2 gives Jan 18, Feb 19, Mar 22. If a duplicate row (E1, Jan, 1) is added, "Don't aggregate" would fail, while Sum gives E1 Jan = 23.
-**Version note:** Power Query is in Excel 2016 and later for Windows and in Microsoft 365 (Microsoft Support, "Where is Get & Transform (Power Query)"). The Pivot Column steps above are from the Support page quoted in Explain simply.
+**Version note:** Power Query is in Excel 2016 and later for Windows and in Microsoft 365 (Microsoft Support, "Power Query data sources in Excel versions"). The Pivot Column steps above are from the Support page quoted in Explain simply.
 **Edge cases:** Duplicates per cell (use an aggregation); a month with no row produces null; new months appearing later become new columns, which can break downstream steps that expect fixed columns.
 **Likely follow-ups:** 1) *Why not just use a PivotTable?* Pivot Column changes the data shape inside the query, so later steps and loads see it. 2) *Which aggregation for text?* Don't aggregate or Count.
 **Common mistakes:** Choosing "Don't aggregate" on data with duplicates; pivoting a column with hundreds of unique values and creating hundreds of columns.
@@ -982,8 +982,8 @@ M code (not run here): `= Table.Pivot(Source, List.Distinct(Source[Month]), "Mon
 **Formula / Steps:** `C2: =IFERROR(VLOOKUP(A2,$E$2:$F$5,2,FALSE),"missing")`, fill down. Merge route (not run here): Data > Get Data > Combine Queries > Merge, select EmpID in both, Join Kind: Left Outer, expand Salary.
 **Alternative:** `=XLOOKUP(A2,E2:E5,F2:F5,"missing")` in 365/2021 (not run here, LibreOffice 24.2 lacks XLOOKUP).
 **Result:** VLOOKUP run in LibreOffice: C2 50000, C3 60000, C4 missing, C5 missing. pandas left merge (not Power Query, so the merge itself is "not run here"): E1 50000; E2 60000 and E2 61000 (two rows); E3 and E4 blank.
-**Version note:** XLOOKUP needs 365/2021 (from memory, unverified); Power Query is in Excel 2016+ for Windows (Microsoft Support, "Where is Get & Transform (Power Query)").
-**Edge cases:** Text vs number keys do not match in either tool; trailing spaces break both.
+**Version note:** XLOOKUP is treated as 2021/365 only: Microsoft's XLOOKUP page says it is not available in Excel 2016 and 2019 while its Applies-to list names them (conflict; not re-fetched here); Power Query is in Excel 2016+ for Windows (Microsoft Support, "Power Query data sources in Excel versions").
+**Edge cases:** Text vs number keys do not match in either tool; trailing spaces break both. Exact-match VLOOKUP gives the same four values in Excel as in LibreOffice (from memory, unverified).
 **Likely follow-ups:** 1) *Which is faster on 500k rows?* Merge, from experience (unverified). 2) *Does Merge auto-update?* After refresh.
 **Common mistakes:** Expecting VLOOKUP to show all matches; forgetting a left merge multiplies rows when keys repeat.
 
@@ -1018,7 +1018,7 @@ M code (not run here): `= Table.Pivot(Source, List.Distinct(Source[Month]), "Mon
 **Formula / Steps (not run here):** Home > Manage Parameters > New Parameter (name FilePath, Text). Source step > gear icon > File path: Parameter > FilePath. Close & Load.
 **Alternative:** Keep a path cell in an Excel table, load it as a query, and reference it (Support page shows loading a cell value as a query).
 **Result:** Not run here (no workbook sharing possible). Behaviour: refresh fails on a machine where the old path does not exist; works after the parameter points to a reachable path.
-**Version note:** Power Query is in Excel 2016+ for Windows and Microsoft 365; Excel for Mac supports Power Query in 365 and Excel for Android and iOS does not (Microsoft Support, "Where is Get & Transform (Power Query)").
+**Version note:** Power Query is in Excel 2016+ for Windows and Microsoft 365; Excel for Mac supports Power Query in 365 and Excel for Android and iOS does not (Microsoft Support, "Power Query data sources in Excel versions").
 **Edge cases:** Mapped drive letters differ between users (a UNC path or SharePoint URL is safer); privacy-level prompts may appear for each new user.
 **Likely follow-ups:** 1) *Can the data be removed from the file?* Yes, via connection properties (not verified here). 2) *Why credentials errors?* Each user must sign in.
 **Common mistakes:** Emailing the workbook with a personal path; hardcoding paths in several queries.
@@ -1130,7 +1130,7 @@ M code (not run here): `= Table.Pivot(Source, List.Distinct(Source[Month]), "Mon
 
 **Formula / Steps (DAX not run here):** `Total Pay := SUMX(Pay, Pay[Hours] * Pay[Rate])`. Wrong version: `SUM(Pay[Hours]) * SUM(Pay[Rate])`.
 **Alternative:** Add a calculated column `Pay = Hours*Rate` then SUM it, but that stores a column in the model (see Q7 about columns vs measures).
-**Result:** pandas (DAX not run here): SUM hours 480, SUM rate 750, wrong product 360,000, SUMX 119,500. Excel equivalent `=SUMPRODUCT(B2:B4,C2:C4)` can be run in LibreOffice.
+**Result:** pandas (DAX not run here): SUM hours 480, SUM rate 750, wrong product 360,000, SUMX 119,500. Excel equivalent `=SUMPRODUCT(B2:B4,C2:C4)` run in LibreOffice 24.2: 119500; `=SUM(B2:B4)*SUM(C2:C4)` gave 360000 (both run here).
 **Version note:** Same as other Power Pivot DAX; function details from memory, unverified.
 **Edge cases:** SUMX over a filtered table respects filters; blanks multiply as zero.
 **Likely follow-ups:** 1) *Other iterators?* AVERAGEX, COUNTX. 2) *Is SUM an iterator?* Internally it behaves like SUMX over one column (from memory).
@@ -1253,7 +1253,7 @@ M code (not run here): `= Table.Pivot(Source, List.Distinct(Source[Month]), "Mon
 - Power Pivot measures: Exits, Opening, Closing, Attrition %.
 - PivotTable with a Department slicer; refresh updates everything (Microsoft Support, "How Power Query and Power Pivot work together" describes this pairing).
 **Example:** 200 employees at start, 198 at end, 4 exits: average 199, attrition 2.01%.
-**Sample sheet (10-person toy to show logic):**
+**Sample sheet (10-person toy to show logic; closing = opening minus exits, assuming no joiners):**
 
 | | A | B | C |
 |---|---|---|---|
@@ -1298,10 +1298,10 @@ M code (not run here): `= Table.Pivot(Source, List.Distinct(Source[Month]), "Mon
 **What the interviewer is checking:** Awareness of size limits and practical remedies.
 **Say this in the interview:** "A table can hold up to about 2 billion rows on paper, but real limits are memory, file size on SharePoint or the web, and speed. I reduce columns and rows on import, and move to Power BI or a database when needed."
 **Explain simply:**
-- Microsoft's specification page lists 1,999,999,997 rows per table, 5 connections, and a 250 MB total file size limit for Excel for the web in Microsoft 365 (Microsoft Support, "Data Model specification and limits"). It gave no memory limit or 32-bit/64-bit figure.
+- Microsoft's specification page lists 1,999,999,997 rows per table, 5 connections, and a 250 MB total file size limit for Excel for the web in Microsoft 365 (Microsoft Support, "Data Model specification and limits", fetched again in Wave C; applies to 365, 2024, 2021). It gave no memory limit or 32-bit/64-bit figure.
 - SharePoint Server 2013 upload default is 50 MB, rendering default is 10 MB, with a 2 GB maximum an admin must configure (same page).
 - Remedies (Microsoft Support, "Create a memory-efficient Data Model using Excel and the Power Pivot add-in"): remove unneeded columns, filter unneeded rows, split datetime columns, round decimals, use DAX measures instead of derived columns, run the Workbook Size Optimizer. A model is typically 7 to 10 times smaller than its source.
-- That page also quotes a 10 MB SharePoint Online/Excel Web App limit, which conflicts with the 250 MB figure; check the current docs before quoting either.
+- That page also quotes a 10 MB SharePoint Online/Excel Web App limit, which conflicts with the 250 MB figure; the 250 MB page (fetched, applies to 365/2024/2021) is the one re-read in Wave C, the 10 MB wording was seen only in a search summary; check the current docs before quoting either.
 **Example:** A payroll export of 40 columns shrinks sharply if you import only EmpID, Month, Gross, Dept (4 columns).
 **Formula / Steps (not run here):** Power Query: Home > Choose Columns; Filter Rows to current two years; load to Data Model only (no worksheet copy).
 **Alternative:** Pre-aggregate in SQL, or move to Power BI/a database.
@@ -1333,7 +1333,7 @@ M code (not run here): `= Table.Pivot(Source, List.Distinct(Source[Month]), "Mon
 **Alternative:** Add Column > Conditional Column (point and click) for simple if/else.
 **Result:** pandas reproduction (M not run here): Band Senior/Junior; NameUp ASHA RAO, RAVI K; JoinYear 2018, 2024; Month April, November.
 **Version note:** Custom Column is in Power Query in Excel 2016+; I did not confirm function availability on a Microsoft page.
-**Edge cases:** Nulls: `null >= 5` is not true; handle with `if [Tenure] = null then ...`. Join must be a Date type for Date functions.
+**Edge cases:** Nulls: `null >= 5` is not true (from memory, unverified); handle with `if [Tenure] = null then ...`. Join must be a Date type for Date functions.
 **Likely follow-ups:** 1) *Text.Proper?* Capitalises each word. 2) *Case error?* `If` fails; keywords are lower case.
 **Common mistakes:** Using Excel syntax (`IF(...)`); comparing text with numbers; forgetting the column type.
 
@@ -1369,7 +1369,7 @@ M code (not run here): `= Table.Pivot(Source, List.Distinct(Source[Month]), "Mon
 **Formula / Steps:** Follow the Support-page steps above (Connection Properties). Not run here. The alternative route Data > Queries & Connections > right-click the query > Properties is from memory, unverified.
 **Alternative:** Office Scripts / Power Automate or VBA `ThisWorkbook.RefreshAll` in Workbook_Open (from memory, unverified).
 **Result:** Not run here.
-**Version note:** Refresh for queries loaded to the Data Model is not yet supported in Excel for the web (Microsoft Support, "Where is Get & Transform (Power Query)"). Excel for Android and iOS do not support Power Query (same page).
+**Version note:** Refresh for queries loaded to the Data Model is not yet supported in Excel for the web (Microsoft Support, "Power Query data sources in Excel versions"). Excel for Android and iOS do not support Power Query (same page).
 **Edge cases:** Security prompt blocks refresh; credentials may be needed; a slow source delays opening.
 **Likely follow-ups:** 1) *Overnight without opening?* Not in plain Excel. 2) *Disable on open?* Untick the box.
 **Common mistakes:** Assuming it refreshes while closed; forgetting Trust Center.

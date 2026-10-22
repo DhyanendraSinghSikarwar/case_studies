@@ -195,7 +195,7 @@
 **Example:** HR budget: Goal Seek finds the hike % that fits a Rs 11 lakh budget; a Data Table shows total cost for hikes of 5% to 15%; scenarios compare a "hiring freeze" vs "aggressive hiring" plan.
 **Formula / Steps:** All three sit at Data > Forecast > What-If Analysis (Data Tools group in some builds). Not run here (steps from Microsoft Support).
 **Alternative:** Solver for many inputs with constraints (Q30).
-**Version note:** All three exist in Excel 2016 to Microsoft 365 (Microsoft Support). In Excel 2016 the What-If Analysis command is in the Forecast group (same Microsoft page on data tables).
+**Version note:** The Goal Seek and data-table pages list Excel 2016, 2019, 2021, 2024 and Microsoft 365; the scenarios page lists only 365, 2024 and 2021, so Scenario Manager in 2016/2019 is from memory, unverified (Microsoft Support, fetched). The command sits in the Forecast group on the Data tab.
 **Edge cases:** Data Table output is live; Goal Seek and scenario summary reports are static.
 **Likely follow-ups:** 1) *Which for 3 inputs at once?* Scenario Manager or Solver. 2) *Which stays live?* Data Table.
 **Common mistakes:** Using Goal Seek for two inputs; thinking scenario reports update.
@@ -248,8 +248,8 @@
 **Say this in the interview:** "Color Scales shade cells on a gradient from low to high, like a heat map. Data Bars draw a bar inside each cell sized by value. Icon Sets sort values into 3 to 5 groups with icons such as traffic lights."
 **Explain simply:**
 - Color Scales: two or three colours; "visual guides which help you understand data distribution and variation" (Microsoft Support, "Use conditional formatting to highlight information in Excel").
-- Data Bars: "help you see the value of a cell relative to other cells" (same page). Good for comparing headcount by department.
-- Icon Sets: classify into three to five categories separated by thresholds (same page). Good for on-track/at-risk/off-track.
+- Data Bars: "A data bar helps you see the value of a cell relative to other cells" (same page). Good for comparing headcount by department.
+- Icon Sets: "three to five categories that are distinguished by a threshold value" (Microsoft Support, "Use data bars, color scales, and icon sets to highlight data"). Good for on-track/at-risk/off-track.
 **Example:** Colour-scale the monthly attrition % by department; bars for headcount; traffic lights for offer-acceptance (green 80% and above, amber 60-79%, red below 60%).
 **Formula / Steps:** Select range > Home > Conditional Formatting > Color Scales / Data Bars / Icon Sets > pick a style. Edit thresholds: Manage Rules > Edit Rule (not run here; steps from Microsoft Support).
 **Alternative:** Sparklines or a chart for trends; a formula rule for a single threshold.
@@ -290,7 +290,7 @@
 **What the interviewer is checking:** Can you manage rules, not just create them?
 **Say this in the interview:** "Home, Conditional Formatting, Manage Rules. In the box I switch 'Show formatting rules for' to This Worksheet to see all, then edit, delete, or move rules up and down. Higher rules take priority."
 **Explain simply:**
-- The Manage Rules dialog lets you "create, edit, duplicate, delete, and reorder rules"; rules higher in the list take precedence (Microsoft Support, "Use conditional formatting to highlight information in Excel").
+- The desktop Manage Rules dialog is where "You create, edit, delete, and view all conditional formatting rules"; the same page covers a Duplicate Rule button and Move Up / Move Down arrows, and says "A rule higher in the list has greater precedence" (Microsoft Support, "Use conditional formatting to highlight information in Excel", fetched).
 - Clear Rules (same menu) removes rules from the selection or the whole sheet.
 - "Applies to" lets you widen or narrow the range a rule covers.
 **Example:** After months of copy-paste, an attendance sheet has 14 overlapping rules and is slow. You open Manage Rules, delete the duplicates, and fix "Applies to".
@@ -340,7 +340,7 @@
 
 **Formula / Steps:** Data > Data Validation > Settings > Allow: Whole number > Data: between > Minimum 18 > Maximum 60 > Error Alert tab: Stop, message "Enter age 18 to 60" > OK (not run here; steps from Microsoft Support, "Apply data validation to cells").
 **Alternative:** Custom rule `=AND(ISNUMBER(A2),A2=INT(A2),A2>=18,A2<=60)`.
-**Result:** The dialog is not run here. The custom formula equivalent, run in LibreOffice 24.2 on rows 2-9: FALSE, TRUE, FALSE, TRUE, FALSE, #VALUE! (the INT test errors on text; Excel would also reject it), FALSE (blank), FALSE (text 25).
+**Result:** The dialog is not run here. The custom formula equivalent, run in LibreOffice 24.2 on rows 2-9: FALSE, TRUE, FALSE, TRUE, FALSE, #VALUE! (for "abc" the INT test errors on text in LibreOffice; how Excel treats an error result inside a validation rule is not verified, so wrap it as `=IF(ISNUMBER(A2),AND(A2=INT(A2),A2>=18,A2<=60),FALSE)` to get a clean FALSE), FALSE (blank), FALSE (text 25, entered here as the text 25).
 **Version note:** Excel 2016 to 365 (Microsoft Support).
 **Edge cases:** With "Ignore blank" ticked, an empty cell is allowed (not tested by the formula above). A text "25" typed with an apostrophe fails; pasted values bypass the rule.
 **Likely follow-ups:** 1) *Allow decimals?* Use Decimal. 2) *Dynamic limits?* Reference cells instead of numbers.
@@ -358,7 +358,7 @@
 **Formula / Steps:** 1) Select cells > Data > Data Validation. 2) Input Message tab > tick "Show input message when cell is selected" > Title, Input message. 3) Error Alert tab > tick "Show error alert after invalid data is entered" > Style > Title, Error message > OK. Not run here (steps from Microsoft Support, "Apply data validation to cells").
 **Alternative:** A visible note column beside the entry area, or cell comments.
 **Version note:** Excel 2016 to 365 (Microsoft Support).
-**Edge cases:** Titles and message have length limits (from memory, unverified: about 32 and 255 characters).
+**Edge cases:** Titles and message have length limits (from memory, unverified: about 32 and 255 characters; the Microsoft page I fetched, "Apply data validation to cells", states no limits).
 **Likely follow-ups:** 1) *Error style?* Q14. 2) *Does the message show on paste?* No (Q40).
 **Common mistakes:** Setting the message but leaving the tick box off.
 
@@ -490,7 +490,7 @@
 
 **Formula / Steps:** 1) Select A1:C4 > Formulas > Create from Selection > Top row (names Telangana, Tamil_Nadu, Kerala; then resize each name to its filled cells). 2) State cell: Data Validation > List > source `=$A$1:$C$1`. 3) City cell: Data Validation > List > Source `=INDIRECT(SUBSTITUTE(E2," ","_"))`. Not run here (dialog steps; from memory, unverified: Microsoft's pages I fetched do not cover this).
 **Alternative:** Without named ranges: Source `=OFFSET($A$1,1,MATCH(E2,$A$1:$C$1,0)-1,COUNTA(OFFSET($A$1,1,MATCH(E2,$A$1:$C$1,0)-1,10,1)),1)`.
-**Result:** The two formulas were run in LibreOffice 24.2 with the named ranges defined: for "Tamil Nadu", INDIRECT returns a 2-item range (second item Coimbatore); the OFFSET version also returns 2 rows (second item Coimbatore). The drop-down dialog is not run here.
+**Result:** Re-run in LibreOffice 24.2 with the three named ranges defined (headers typed as "Tamil Nadu" with a space): `=INDIRECT(SUBSTITUTE(E2," ","_"))` returns a 2-item range (second item Coimbatore); the OFFSET version also returns 2 rows (second item Coimbatore). The drop-down dialog is not run here.
 **Version note:** INDIRECT method works in all desktop versions Excel 2016 to 365 (from memory, unverified). Dynamic-array alternatives (Q22) need 365/2021.
 **Edge cases:** Blank city cells inside a named range show as blanks in the list; INDIRECT is volatile (recalculates every change).
 **Likely follow-ups:** 1) *Why #REF!?* Name doesn't match the state text. 2) *Without INDIRECT?* OFFSET/MATCH.
@@ -559,7 +559,7 @@
 - *Conditional formatting* means a cell changes colour automatically based on its value or a formula.
 - *Top 10 Items* picks the N biggest values (you can change 10 to any number from 1 to 1000); *Bottom 10%* picks the smallest tenth of the cells by count; *Above Average* compares each cell with the average of the selected range.
 - These rules only look at numbers in the range you selected, so select just the data column, not the header.
-**Example:** 12 employees' bonuses (Rs 000). Average is 56.58. Rule "Top 3" colours 70, 66 and 90; Bottom 10% of 12 cells colours only the lowest value, 35; Above Average colours the 7 values above 56.58.
+**Example:** 12 employees' bonuses (Rs 000). Average is 56.58. Rule "Top 3" colours 70, 66 and 90; Bottom 10% of 12 cells colours only the lowest value, 35; Above Average colours the 6 values above 56.58 (61, 70, 66, 90, 58, 64).
 **Sample sheet:**
 
 Column A = Employee, column B = Bonus (Rs 000).
@@ -713,7 +713,7 @@ Scenario Manager itself: not run here.
 **Explain simply:**
 - *COUNTIF(range, value)* counts how many cells in the range equal the value. Zero means "missing".
 - Lock the other list with dollar signs ($D$2:$D$6) so it does not slide down; leave the first cell relative (A2).
-- The rule can reference another sheet in recent Excel versions (from memory, unverified); on older versions use a named range.
+- A rule can look at cells on another worksheet of the same workbook, but not at another workbook (Microsoft Support, "Use conditional formatting to highlight information in Excel", fetched). Which Excel versions allow the direct sheet reference was not verified; a named range is the safe route.
 **Example:** Payroll has 7 names, attendance has 5. Meena, Karan and Sneha are on payroll but not in attendance: 3 people to investigate.
 **Sample sheet:**
 
@@ -849,9 +849,9 @@ Changing cells B2:B4 = hires from Referral, Portal, Agency; cost B5.
 **Formula / Steps:** Solver dialog: not run here (steps from Microsoft Support). 1) Data > Analysis > Solver. 2) Set Objective `B5`, To: Max. 3) By Changing `B2:B4`. 4) Add constraints: `B6<=700`, `B2<=15`, `B3<=12`, `B4>=3`, `B4<=10`, `B2:B4=integer`. 5) Method: Simplex LP / GRG, Solve.
 **Alternative:** Goal Seek (Data > What-If Analysis > Goal Seek) can only answer "what single number makes this cell equal X", e.g. the cost per hire that makes total cost exactly 700.
 **Result:** Solver: not run here. Reproduced with a Python brute-force over all integer plans: maximum is 26 hires, e.g. 14 referral + 9 portal + 3 agency, costing Rs 700k (Rs 7,00,000). There are 2 optimal plans: [[14, 9, 3], [15, 8, 3]]. Solver may return either one.
-**Version note:** Goal Seek is built into all versions; Solver is an add-in in desktop Excel (page applies to 365, 2024, 2021; older versions from memory). Google Sheets has a Solver add-on (from memory, unverified).
+**Version note:** Goal Seek is built into all versions; Solver is an add-in in desktop Excel (Microsoft Support, "Define and solve a problem by using Solver", lists 365, 2024, 2021, 2019 and 2016). Google Sheets has a Solver add-on (from memory, unverified).
 **Edge cases:** Several plans can tie. Solver may stop at a local best with non-linear models. Without the "integer" constraint, Solver may give fractional hires. Constraints must be on cells, not typed into formulas.
-**Likely follow-ups:** 1) *Can Goal Seek do two inputs?* No (Microsoft Support). 2) *Which engine?* Simplex LP for linear, GRG Nonlinear for smooth curves, Evolutionary for rough ones (from memory, unverified). 3) *Is the answer saved?* Choose Keep Solver Solution; save a scenario if you want to reuse it.
+**Likely follow-ups:** 1) *Can Goal Seek do two inputs?* No (Microsoft Support). 2) *Which engine?* Simplex LP for linear, GRG Nonlinear for smooth curves, Evolutionary for rough ones (same Solver page, fetched). 3) *Is the answer saved?* Choose Keep Solver Solution; save a scenario if you want to reuse it.
 **Common mistakes:** Forgetting the integer constraint; not enabling the add-in first; expecting Goal Seek to respect limits.
 
 ### Q31 ⭐⭐ 🟡 How do you highlight blank cells or rows with missing mandatory fields in a hiring tracker?
@@ -935,7 +935,7 @@ Ages in A2:A9, rule is whole number 18 to 60.
 | 9 | 60 | TRUE |
 
 The circles themselves: not run here.
-**Version note:** Circle Invalid Data is desktop Excel only (Microsoft Support); not in Excel for the web and I know of no direct Google Sheets equivalent (from memory, unverified).
+**Version note:** Circle Invalid Data is a desktop Excel feature; Microsoft says in Excel for the web "you may not see this feature" (Microsoft Support, "Display or hide circles around invalid data", seen in search results, page not opened); and I know of no direct Google Sheets equivalent (from memory, unverified).
 **Edge cases:** Circles disappear when the cell is corrected or when you click Clear Validation Circles; they do not save as a filter. Blank cells are not circled if "Ignore blank" is ticked.
 **Likely follow-ups:** 1) *Does it fix the data?* No, it only marks it. 2) *Remove validation but keep the values?* Clear All. 3) *Remove validation from the whole sheet?* Select all then Clear All.
 **Common mistakes:** Expecting validation to flag existing data; using Delete on the cell (clears the value, not the rule); not realising Clear All also removes the drop-down.
@@ -945,7 +945,7 @@ The circles themselves: not run here.
 **What the interviewer is checking:** Do you know Format Painter and Paste Special options and how relative references adjust?
 **Say this in the interview:** "For conditional formatting I use Format Painter. For data validation I copy the cell and use Paste Special > Validation, so the values underneath stay untouched."
 **Explain simply:**
-- *Format Painter* (Home > Clipboard) copies formatting including conditional formatting rules (Microsoft Support, Conditional Formatting page); double-click it to paste to several places.
+- *Format Painter* (Home > Clipboard) copies conditional formatting ("use Format Painter to copy the conditional formatting", Microsoft Support, Conditional Formatting page, fetched); double-click it to paste to several places.
 - Pasting changes the rule's "Applies to" range, and relative references shift with it, so `$B2` becomes `$B12` when the range starts at row 12.
 - Paste Special > Validation copies only the rule (from memory, unverified).
 **Example:** Attendance table 1 has the rule "below 90%". You paste it to table 2 further down and it keeps working, flagging 88% and 60%.
@@ -985,7 +985,7 @@ Wrong version that keeps the old row `=$B2<0.9` inside table 2:
 | 15 | Arjun | 0.91 | TRUE |
 
 The painting itself: not run here.
-**Version note:** Format Painter and Paste Special exist in all versions; Format Painter does not create the rule in another Excel instance (Microsoft Support). Google Sheets: Paste special > Conditional formatting only / Data validation only (from memory, unverified).
+**Version note:** Format Painter and Paste Special exist in all versions. Microsoft's page says pasting cells with conditional formats creates a new rule for the destination cells. Google Sheets: Paste special > Conditional formatting only / Data validation only (from memory, unverified).
 **Edge cases:** Format Painter also copies fonts and borders. Data validation pasted over a cell with a formula does not change the value. Rules that reference other workbooks cannot exist (Microsoft Support).
 **Likely follow-ups:** 1) *Copy only the rule, not the colour?* Not possible in Format Painter; use Paste Special > Validation for validation. 2) *Many rules got duplicated?* Open Manage Rules and clean up. 3) *Does Fill Down copy CF?* Yes, formats copy with fill (from memory).
 **Common mistakes:** Using normal paste (overwrites values); pasting from a different workbook and expecting the rule to follow; leaving stale "Applies to" fragments.
@@ -1095,7 +1095,7 @@ Set cell B2 `=B1^2`, changing cell B1.
 
 **Formula / Steps:** Not run here (Goal Seek dialog; steps from Microsoft Support): Data > What-If Analysis > Goal Seek > Set cell `B2` > To value `25` > By changing cell `B1` > OK. If the result is not acceptable, click Cancel, change the start value, try again.
 **Alternative:** For more inputs, limits or best/worst answers use Solver (Q30). For a closed form, solve the equation algebraically.
-**Result:** Not run here (my Python Newton-style illustration, not Excel's exact algorithm): target 25 gives 5.0 from start 3 and -5.0 from start -3. Target -4 for x squared has no real solution (the minimum of x squared + 4 is 4), so a search stalls; Python stopped at x = 0.81 with the gap between formula and target still 4.66, never reaching 0.
+**Result:** Not run here (my Python Newton-style illustration, not Excel's exact algorithm): target 25 gives 5.0 from start 3 and -5.0 from start -3. Target -4 for x squared has no real solution: x squared is never below 0, so the gap to -4 can never be less than 4 and no search can close it (by hand; I did not simulate Excel's stopping point). The 5.0 / -5.0 figures were re-run with a simple Newton loop.
 **Version note:** Goal Seek exists in all desktop Excel versions (Microsoft Support page "Introduction to What-If Analysis" lists 365, 2024, 2021). Google Sheets has no built-in Goal Seek; there is a Goal Seek add-on (from memory, unverified).
 **Edge cases:** It stops once within tolerance, so you may see 24.9996 instead of 25. Flat, jumpy (IF-based) or discontinuous formulas confuse it. Results are not updated if inputs change later (Goal Seek is a one-off). Ranges with errors in the chain stop it.
 **Likely follow-ups:** 1) *Why different answers on repeat?* Different start values. 2) *Can it keep a limit like units >= 0?* No, use Solver. 3) *Can a macro run it?* Yes, Range.GoalSeek in VBA (from memory).
@@ -1147,8 +1147,9 @@ The Excel data table and its mode setting: not run here.
 **Explain simply:**
 - Conditional formatting: select cells > Format > Conditional formatting; under "Format cells if" choose "Custom formula is" and enter a formula for the first cell with dollar signs (Google Docs Editors Help, "Use conditional formatting rules in Google Sheets").
 - Rules are evaluated in the order listed and the first true rule sets the format (same page); in Excel several true rules can combine.
-- Drop-down: Insert > Dropdown, or Data > Data validation > Add rule > Dropdown from a range, or right-click > Dropdown (Google Docs Editors Help, "Add a drop-down list").
-- A custom formula that points to another sheet needs INDIRECT in Sheets (same help page).
+- Drop-down: Insert > Dropdown, or Data > Data validation > Add rule > Dropdown from a range, or right-click > Dropdown (Google Docs Editors Help, "Create an in-cell dropdown list", fetched; the same page says unmatched entries are rejected by default, or you can set "Show a warning").
+- A custom formula that points to another sheet needs INDIRECT in Sheets ("To reference another sheet in the formula, use the INDIRECT function", "Use conditional formatting rules in Google Sheets", fetched).
+- *Chip format* means each choice shows as a small coloured label inside the cell. Only chip-format drop-downs can allow several choices in one cell, so Sheets now has native multi-select where Excel does not.
 **Example:** Highlight resigned employees: select A2:E50, custom formula `=$D2="Resigned"`. Add a Status drop-down with Active, Resigned.
 **Sample sheet:**
 
@@ -1175,8 +1176,8 @@ Status in column D.
 | 6 | Divya | Active | FALSE |
 
 The Sheets panel: not run here.
-**Version note:** Sheets multi-select: "Allow multiple selections" can be turned on only for chip-format drop-downs, and not on mobile (Google Docs Editors Help). Excel has no built-in multi-select (from memory; the Microsoft drop-down page I read covers choosing one item). Excel 2016 to 365 all have CF and validation (the drop-down page lists 2016-365).
-**Edge cases:** Sheets applies rules by order (first true wins); Excel applies all true rules unless Stop If True. Excel allows a row-wise formula using a range on another sheet directly (from memory, unverified). Sheets data validation can reject or just warn (from memory).
+**Version note:** Sheets multi-select: "Allow multiple selections" can only be enabled for chip format dropdowns, and on mobile "you currently can't select multiple dropdown options even when multiple selection is enabled" (Google Docs Editors Help, "Create an in-cell dropdown list", fetched 2026-10-22). Excel has no built-in multi-select that I could find (Microsoft's "Create a drop-down list" page, fetched, does not mention multiple selection; unverified beyond that). Excel 2016 to 365 all have CF and validation (the drop-down page lists 2016-365).
+**Edge cases:** Sheets applies rules by order (first true wins); Excel applies all true rules unless Stop If True. Excel conditional formatting can read another worksheet of the same workbook directly (Microsoft Support CF page, fetched). Sheets data validation can reject or just warn (from memory).
 **Likely follow-ups:** 1) *Colour scale in Sheets?* Yes: Color scale tab. 2) *Drop-down from another sheet?* Choose range on other sheet. 3) *Does validation stop pasting?* No in either (Q40).
 **Common mistakes:** Writing the formula for the wrong first cell; forgetting dollar signs; pasting from Excel and expecting the same rule order.
 
@@ -1324,7 +1325,7 @@ Inputs B1:B4, profit B6.
 - *Icon sets* mark each cell with an icon for the range its value falls in (Microsoft Support, "Use data bars, color scales, and icon sets to highlight data").
 - By default the first icon (green) is for the highest values. For attrition the highest is bad, so reverse the order or set the thresholds yourself.
 - The page I read gives a 67%/33% example but does not state defaults, so I set explicit thresholds with Type = Number.
-- Show Icon Only: Edit Rule > tick "Show Icon Only" (from memory, unverified: the page I read did not mention it).
+- Show Icon Only: "To show only the icon and not the value in the cell, select Show Icon Only"; Reverse Icon Order: "To make the first icon represent lower values and the last icon represent higher values, select Reverse Icon Order" (both Microsoft Support, "Use conditional formatting to highlight information in Excel", fetched).
 **Example:** Attrition by department: Sales 8% green, Support 12% yellow, Ops 18% red, Finance 5% green, IT 15% red, Admin 9.5% green.
 **Sample sheet:**
 
@@ -1396,7 +1397,7 @@ All give the same flags. Timing differences: not measured here.
 - The Microsoft drop-down page I read describes picking one item and does not cover multiple selection (Microsoft Support, "Create a drop-down list"); I found no Excel built-in for it (from memory, unverified).
 - The common solution is a *Worksheet_Change macro* (VBA code that runs when a cell changes). Programmatic edits skip validation (from memory).
 - Such a file must be saved as .xlsm and macros must be enabled; VBA does not run in Excel for the web (from memory, unverified).
-- Google Sheets: "Allow multiple selections" can be turned on only for chip-format drop-downs, and mobile cannot pick multiple (Google Docs Editors Help, "Add a drop-down list").
+- Google Sheets: "Allow multiple selections" can only be enabled for chip format dropdowns, and mobile cannot pick multiple (Google Docs Editors Help, "Create an in-cell dropdown list", fetched 2026-10-22).
 **Example:** A skills column where a candidate can pick "Excel, SQL, Power BI". After picks the cell contains one comma-separated text, which you can count with a formula.
 **Sample sheet:**
 
@@ -1433,8 +1434,8 @@ End Sub
 
 Save as .xlsm. Set A2:A100 to a normal Data Validation list first (Q3). Sheets: select cells > Insert > Dropdown > add options > turn on "Allow multiple selections" (chip format).
 **Alternative:** No-macro routes: one column per choice, check boxes (Developer > Insert), or Power Apps/Forms (from memory, unverified). To count picks use the formula below.
-**Result:** The "add or remove on click" logic simulated in Python (not VBA): pick "Excel" -> "Excel"; pick "SQL" -> "Excel, SQL"; pick "Excel" -> "SQL"; pick "Power BI" -> "SQL, Power BI". Count formula `=IF(A2="",0,LEN(A2)-LEN(SUBSTITUTE(A2,",",""))+1)` run in LibreOffice 24.2: row 2 = 2, row 3 = 1, row 4 = 3, row 5 (blank) = 0. VBA and Sheets chips: not run here.
-**Version note:** VBA works in desktop Excel (all versions); not in Excel for the web (from memory). Google Sheets: chips with multiple selection (Google Docs Editors Help, no version).
+**Result:** The macro's "append unless already there" logic simulated in Python (not VBA): pick "Excel" -> "Excel"; pick "SQL" -> "Excel, SQL"; pick "Excel" again -> unchanged (this macro ignores repeats; removing an item on a second pick needs extra code); pick "Power BI" -> "Excel, SQL, Power BI". Count formula `=IF(A2="",0,LEN(A2)-LEN(SUBSTITUTE(A2,",",""))+1)` run in LibreOffice 24.2: row 2 = 2, row 3 = 1, row 4 = 3, row 5 (blank) = 0. VBA and Sheets chips: not run here.
+**Version note:** VBA works in desktop Excel (all versions); not in Excel for the web (from memory). Google Sheets: chips with multiple selection (Google Docs Editors Help, fetched; no version stated).
 **Edge cases:** Items with commas in their names break the count. A macro that writes values bypasses the validation so the list "Allow only list items" will block manual editing of the combined text. Undo history is cleared by the macro (from memory).
 **Likely follow-ups:** 1) *Need security approval for macros?* Yes. 2) *Count/lookup each item?* TEXTSPLIT in 365 (not run here). 3) *Alternative in Sheets?* chips as above.
 **Common mistakes:** Expecting the plain list to allow multiple; leaving events off after an error; sharing as .xlsx and losing the macro.

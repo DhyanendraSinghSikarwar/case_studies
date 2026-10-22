@@ -191,8 +191,8 @@
 - Refresh All refreshes every pivot in the file.
 **Example:** A new joiner is added to the HR sheet; headcount stays 8 until you refresh, then becomes 9.
 **Sample sheet:** Not needed.
-**Formula / Steps (not run here; Microsoft Support, "Create a PivotTable to analyze worksheet data"):** Right-click inside the pivot > Refresh. For several: click a cell > PivotTable Analyze > arrow under Refresh > Refresh All. Keyboard: Alt+F5 refreshes (from memory, unverified).
-**Alternative:** Data > Refresh All; or VBA / "refresh on open" in PivotTable Options (from memory, unverified).
+**Formula / Steps (not run here; Microsoft Support, "Create a PivotTable to analyze worksheet data"):** Right-click inside the pivot > Refresh. For several: click a cell > PivotTable Analyze > arrow under Refresh > Refresh All. Keyboard: Alt+F5 refreshes the selected pivot (Microsoft Support, "Refresh PivotTable data", fetched).
+**Alternative:** Data > Refresh All; or tick "Refresh data when opening the file" on the Data tab of PivotTable Options (Microsoft Support, "Refresh PivotTable data"); VBA is also possible (from memory, unverified).
 **Result:** Not applicable.
 **Version note:** Same in 2016 to 365.
 **Edge cases:** If source rows were added below an old fixed range, refresh alone will not include them; an Excel Table as source avoids this (Microsoft Support).
@@ -295,7 +295,7 @@
 - An Excel Table source picks up new rows on refresh (Microsoft Support).
 **Example:** One new sale of West, Laptop, 600 is added in row 10. Old total 2600; after refresh over the correct range 3200 (pandas check).
 **Sample sheet:** Q6 data plus row 10: West | Laptop | 600.
-**Formula / Steps (not run here; Change Data Source steps from memory, unverified):** PivotTable Analyze > Change Data Source > select the full range > OK > Refresh.
+**Formula / Steps (not run here; Microsoft Support, "Change the source data for a PivotTable", fetched):** select the pivot > PivotTable Analyze > Data > Change Data Source > Change Data Source > enter the full range or table > OK > Refresh. (On some versions the tab is called Options.)
 **Alternative:** Ctrl+T the source first so the range grows itself.
 **Result:** pandas: total 2600 before, 3200 after (run here).
 **Version note:** Same in all recent versions.
@@ -349,7 +349,7 @@
 - Count of Employee ID = number of leavers.
 - To get attrition **rate** you also need headcount; the pivot gives the numerator only.
 **Example:** 10 employees, 8 have left between January and March.
-**Sample sheet:** A1:C11 (EmpID, Dept, ExitDate): 1 IT 15-Jan; 2 IT 10-Feb; 3 HR 20-Jan; 4 Sales blank; 5 IT 25-Feb; 6 Sales 05-Feb; 7 HR blank; 8 Sales 12-Mar; 9 IT 30-Mar; 10 Sales 08-Jan.
+**Sample sheet:** A1:C11 (EmpID, Dept, ExitDate; all dates are in 2026, which the COUNTIFS below assumes): 1 IT 15-Jan; 2 IT 10-Feb; 3 HR 20-Jan; 4 Sales blank; 5 IT 25-Feb; 6 Sales 05-Feb; 7 HR blank; 8 Sales 12-Mar; 9 IT 30-Mar; 10 Sales 08-Jan.
 **Formula / Steps (not run here; Microsoft Support):**
 1. Insert > PivotTable on the data.
 2. Dept to Rows; ExitDate to Columns; EmpID to Values (Count).
@@ -365,7 +365,7 @@
 | Sales | 1 | 1 | 1 | 3 |
 | Grand Total | 3 | 3 | 2 | 8 |
 
-Without removing blanks the data has 10 rows, so only 8 are leavers.
+Without removing blanks the data has 10 rows, so only 8 are leavers. The COUNTIFS in Alternative was run in LibreOffice on this sheet: IT gives Jan 1, Feb 2, Mar 1 (matches the IT row), and COUNT of the exit-date column gives 8 leavers.
 **Version note:** Excel 2016 to 365.
 **Edge cases:** Blank exit dates must be excluded; text dates won't group; rate = leavers / average headcount (needs separate data).
 **Likely follow-ups:** 1) *Rate?* Divide by average headcount, calculated outside the pivot. 2) *Voluntary vs involuntary?* Add the reason to Columns or Filters.
@@ -672,14 +672,21 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 | 6 | E03 | 07-Jan-2026 | Present |
 | 7 | E01 | 04-Feb-2026 | Absent |
 
-(Full test set used for the result below: 18 rows, 3 employees x 6 days.)
+(The six rows above are only the first lines of the full 18-row test set, 3 employees x 6 days, shown here as a grid. P = Present, A = Absent, L = Leave.)
+
+| Employee | 05-Jan | 06-Jan | 07-Jan | 04-Feb | 05-Feb | 06-Feb |
+|---|---|---|---|---|---|---|
+| E01 | P | P | P | A | P | P |
+| E02 | P | L | P | P | P | P |
+| E03 | A | A | P | P | A | P |
+
 **Formula / Steps (not run here; steps from Microsoft Support "Create a PivotTable to analyze worksheet data" and "Group or ungroup data in a PivotTable"):**
 1. Insert > PivotTable on the table.
 2. Employee to Rows; Date to Columns; Status to Values (it shows Count of Status).
 3. Right-click a date > Group > Months (add Years if data spans years) > OK.
 4. Put Status in Filters (or use the Status filter) and choose Present.
 
-**Alternative:** `=COUNTIFS(A:A,E2,C:C,"Present",B:B,">="&F1,B:B,"<="&G1)` per employee and month (not run on this data).
+**Alternative:** `=COUNTIFS($A$2:$A$19,$E2,$C$2:$C$19,"Present",$B$2:$B$19,">="&F$1,$B$2:$B$19,"<="&G$1)` per employee and month, with the month start in F1 and month end in G1 (run in LibreOffice on the 18-row set: E01 Jan 3, Feb 2; E02 Jan 2, Feb 3; E03 Jan 1, Feb 2, the same as the pivot).
 **Result (pandas, run on the 18-row set):**
 
 | Employee | Jan | Feb | Grand Total |
@@ -1153,8 +1160,8 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 2. In the editor: Home > Merge Queries > pick Emp and Pay, click EmpID in both, Join Kind = Left Outer > OK.
 3. Expand the new column, choose Salary > OK > Home > Close & Load.
 4. Insert a PivotTable on the loaded table.
-**Alternative:** Helper column `=IFERROR(VLOOKUP(D2,Pay!A$2:B$5,2,FALSE),"")`.
-**Result:** pandas left-merge (run): salary column 42000, 55000, 68000, NaN; pivot salary by Dept: Finance 55000, HR 42000, IT 68000. LibreOffice (run): the VLOOKUP column returns 42000, 55000, 68000 and blank for 104.
+**Alternative:** Helper column `=IFERROR(VLOOKUP(A2,Pay!A$2:B$5,2,FALSE),"")` in Emp sheet column D (EmpID is in column A; the first version of this answer pointed at the wrong cell).
+**Result:** pandas left-merge (run): salary column 42000, 55000, 68000, NaN; pivot salary by Dept: Finance 55000, HR 42000, IT 68000. LibreOffice (re-run on a rebuilt two-sheet workbook): the IFERROR/VLOOKUP column returns 42000, 55000, 68000 and blank for 104; without IFERROR, 104 returns #N/A.
 **Version note:** Microsoft Support "About Power Query in Excel" lists Excel 2016, 2019, 2021, 2024 and 365 on Windows (Get & Transform under the Data tab); no Power Query for Excel 2016/2019 for Mac. The merge page's own applies-to line lists 365, 2024, 2021.
 **Edge cases:** Unmatched keys (104, 105): inner join drops them, left join keeps blank. Duplicate keys multiply rows. Number vs text IDs fail to match.
 **Likely follow-ups:** 1) *Why Power Query over VLOOKUP?* Repeatable on refresh. 2) *Append vs merge?* Append stacks rows; merge adds columns.
@@ -1333,9 +1340,9 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 | 5 | Jan | 180 |
 | 6 | Mar | 200 |
 
-**Formula / Steps:** `=GETPIVOTDATA("Sales",$A$3,"Month","Mar")`
-**Alternative:** `=SUMIFS(C2:C7,A2:A7,"Mar")` on the raw data, or type `=B6`.
-**Result:** Not run here (needs a real pivot). pandas pivot (run): Feb 120, Jan 180, Mar 200. The formula should return 200. SUMIFS on the raw data, run in LibreOffice, returns 200.
+**Formula / Steps:** `=GETPIVOTDATA("Sales",$A$3,"Month","Mar")` (the pivot is built from raw rows in A2:C5 of a data sheet: Feb 120, Jan 100, Jan 80, Mar 200 in columns A and C, so Jan totals 180)
+**Alternative:** `=SUMIFS(C2:C5,A2:A5,"Mar")` on the raw data, or type `=B6`.
+**Result:** Not run here (needs a real pivot). pandas pivot (run): Feb 120, Jan 180, Mar 200. The formula should return 200. `=SUMIFS(C2:C5,A2:A5,"Mar")` on those raw rows, run in LibreOffice, returns 200.
 **Version note:** Excel 2016 to 365 (the page applies-to).
 **Edge cases:** #REF! if the pivot is filtered so that item isn't visible, or the combination has no data (Microsoft Support).
 **Likely follow-ups:** 1) *Why not just B6?* It breaks if sorting or adding rows moves cells. 2) *How to stop it?* Q55.
@@ -1483,7 +1490,7 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 - Rank Largest to Smallest lists the largest item as 1 and gives smaller values higher numbers; Rank Smallest to Largest does the opposite (Microsoft Support, "Show different calculations in PivotTable value fields").
 - Add the value field twice if you want the amount and the rank next to each other.
 - Rank is calculated against the base field, so keep that field in Rows.
-**Example:** Rank recruiters by offers closed.
+**Example:** Rank five sales reps by sales (the sample uses sales amounts).
 **Sample sheet:** (A = Rep, B = Sales, C = check formula)
 
 | | A | B | C |
@@ -1500,7 +1507,7 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 **Alternative:** `=RANK.EQ(B2,$B$2:$B$6,0)` (0 = largest first); Excel 2010 and later.
 **Result:** pandas rank (run): Asha 4, Bala 2, Chitra 5, Dev 1, Esha 3. `RANK.EQ` run in LibreOffice returns the same 4, 2, 5, 1, 3.
 **Version note:** Rank options listed for Excel 2016 to 365 on Microsoft's page. RANK.EQ: from memory, unverified.
-**Edge cases:** Ties: RANK.EQ gives equal ranks and skips the next number (4, 4, 6); the pivot is believed to behave similarly (from memory, unverified). Grand Total has no rank.
+**Edge cases:** Ties: RANK.EQ gives equal ranks and skips the next number (run in LibreOffice on values 5, 5, 3: ranks 1, 1, 3); the pivot's Rank option is believed to behave similarly (from memory, unverified). Grand Total has no rank.
 **Likely follow-ups:** 1) *Top 5 only?* Value Filters > Top 10. 2) *Rank within a group?* Use the inner field as base.
 **Common mistakes:** Ranking with the wrong direction; sorting the pivot and thinking the order is the rank.
 
@@ -1525,7 +1532,7 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 | 7 | Mumbai | 4 | West |
 | 8 | Chennai | 5 | South |
 
-**Formula / Steps:** (not run here; steps from Microsoft Support)
+**Formula / Steps:** (not run here; steps from Microsoft Support). For the helper-column route the lookup table in E2:F6 is Mumbai West, Pune West, Chennai South, Bengaluru South, Hyderabad South.
 1. City in Rows. Ctrl+click Mumbai and Pune > right-click > Group.
 2. Repeat for the southern cities; rename Group1 to West and Group2 to South.
 **Alternative:** Helper column C2 `=VLOOKUP(A2,$E$2:$F$6,2,FALSE)` using a city-to-region table in E:F, then put Region in Rows.
@@ -1573,7 +1580,7 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 - A slicer is a clickable filter button box.
 - Microsoft Support ("Use slicers to filter data") says a slicer can only be connected to pivots sharing the same data source.
 - Keep one data source (ideally an Excel Table) and build all pivots from it.
-**Example:** HR dashboard: leavers by department, leavers by month, with Location and Year slicers.
+**Example:** HR dashboard: leavers by department, leavers by month, with a Dept slicer and a Month slicer (the sample sheet has those two columns).
 **Sample sheet:** Source rows (A = Dept, B = Month, C = Leavers):
 
 | | A | B | C |
@@ -1745,7 +1752,7 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 
 **Formula / Steps:** E2 for HR (D2 = "HR"), array-entered in older versions: `=TEXTJOIN(", ",TRUE,IF($B$2:$B$6=D2,$A$2:$A$6,""))`.
 **Alternative:** Pivot with Name in Rows beneath Dept (not run here); or the Data Model measure.
-**Result:** TEXTJOIN formula run in LibreOffice (as an array formula): "Asha, Chitra". pandas (run): HR Asha, Chitra; IT Bala, Dev; Sales Esha; the pivot's Count would be HR 2, IT 2, Sales 1.
+**Result:** TEXTJOIN formula run in LibreOffice entered as an array formula: "Asha, Chitra" (re-run here; entered as a normal formula LibreOffice returned all five names, which shows why array entry is needed there; Excel 365 handles it natively, from memory). pandas (run): HR Asha, Chitra; IT Bala, Dev; Sales Esha; the pivot's Count would be HR 2, IT 2, Sales 1.
 **Version note:** TEXTJOIN: Excel 2019, 2021, 2024 and 365 (Microsoft Support "TEXTJOIN function"); not Excel 2016 per that page. Excel for the web: unverified.
 **Edge cases:** Blank names are skipped with TRUE. In 2019 the formula must be entered with Ctrl+Shift+Enter (from memory).
 **Likely follow-ups:** 1) *Why not Max?* Max works on numbers only. 2) *Number IDs?* They sum.
@@ -1865,10 +1872,10 @@ Compact shows one "Row Labels" column with HR, then indented Hyderabad, then IT 
 | 7 | E6 | 01-Dec-2025 | 0 | <1 |
 
 **Formula / Steps:** C2: `=DATEDIF(B2,$G$1,"y")`; D2: `=LOOKUP(C2,$I$1:$L$1,$I$2:$L$2)`. Pivot (not run here): Band to Rows, Emp to Values (Count).
-**Alternative:** Pivot on Yrs, right-click > Group, Starting 0, Ending 10, By 3 (not run here).
+**Alternative:** Pivot on Yrs, right-click > Group, Starting 0, Ending 10, By 3 (not run here). This gives equal bands 0-2, 3-5, 6-8, 9-10, which are different from the 0 / 1-2 / 3-5 / 6+ bands above, so the headcounts differ (here 0-2 would hold E1, E2, E6).
 **Result:** DATEDIF and LOOKUP run in LibreOffice: years 0, 1, 3, 5, 8, 0 and bands <1, 1-2, 3-5, 3-5, 6+, <1. pandas (run): <1 = 2, 1-2 = 1, 3-5 = 2, 6+ = 1.
 **Version note:** DATEDIF works in Excel though undocumented in the function list (from memory, unverified).
 **Edge cases:** Future join dates give errors; blanks.
-**Likely follow-ups:** 1) *Months?* "ym".
+**Likely follow-ups:** 1) *Months?* Use "ym" for months left over after whole years (run in LibreOffice: E2 gives 1 year and 7 months). 2) *Why not TODAY()?* The as-of date keeps last month's report from changing.
 **Common mistakes:** Using TODAY so history changes; band edges overlapping.
 

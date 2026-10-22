@@ -19,8 +19,8 @@ Sub BoldHeader()
     Rows(1).Font.Bold = True
 End Sub
 ```
-**Alternative:** Power Query for repeatable cleaning, Office Scripts or Power Automate for cloud automation (I have not read Microsoft's pages on those, so I will not describe their details).
-**Version note:** VBA is part of desktop Excel (Windows and Mac). Whether the web version runs VBA: from memory, unverified. Google Sheets uses Apps Script instead (Q13).
+**Alternative:** Power Query for repeatable cleaning; Office Scripts for automation in Excel on the web (Microsoft Learn, "Differences between Office Scripts and VBA macros": Office Scripts run on Excel for the web, Windows and Mac, and need an enterprise or education licence; that page's last update shown is 2023, so check it is still current). I have not read Microsoft's Power Automate pages, so I will not describe them.
+**Version note:** VBA is part of desktop Excel (Windows and Mac). VBA macros are not supported in Excel on the web (Microsoft Learn, "Differences between Office Scripts and VBA macros", support table: VBA macros = Yes on Windows and Mac, No on the web and iOS). Google Sheets uses Apps Script instead (Q13).
 **Edge cases:** Macros only run if the file is a macro-enabled workbook and the user allows macros (Q7).
 **Likely follow-ups:** 1) *Is a macro a formula?* No, a formula calculates a value in a cell; a macro performs actions. 2) *Do you need to know VBA to use macros?* No, recording needs no coding, but editing needs the basics.
 **Common mistakes:** Saying a macro "is" VBA (it is written in VBA); automating something a PivotTable would solve.
@@ -31,15 +31,15 @@ End Sub
 **Say this in the interview:** "I turn on the Developer tab, click Record Macro, name it, do the steps once, click Stop Recording. To see the code I go Developer, Macros, pick it, Edit. That opens the Visual Basic Editor."
 **Explain simply:**
 - The Developer tab is hidden by default; you switch it on first (Microsoft Support, "Quick start: Create a macro").
-- Record Macro asks for a name, an optional shortcut key and a description. Names cannot contain spaces and must start with a letter (Microsoft Support, Developer tab/macro article for Mac, seen in search results only).
+- Record Macro asks for a name, an optional shortcut key and a description. The first character of the name must be a letter (Microsoft Support "Record a macro" article, per a search result; the copy I fetched lists no naming rules). "No spaces" is the usual rule, from memory, unverified; use underscores to be safe.
 - Everything you do while recording is written as code. Stop Recording ends it.
 - Macros > Edit opens the Visual Basic Editor where "the actions that you recorded appear as code" (same Quick start page).
 - To run from the editor: click inside the macro and press F5 (Microsoft Support, search result for "Run a macro in Excel").
 **Example:** Record: select A1:F1, make it bold with a blue fill, Stop. Open Edit and you will see lines such as `Selection.Font.Bold = True` (typical recorder output, from memory, not run here).
 **Formula / Steps:** 1. File > Options > Customize Ribbon > tick Developer (from memory) 2. Developer > Code > Record Macro 3. Name (for example `FormatHeader`), choose where to store it, OK 4. Do the actions 5. Developer > Stop Recording 6. Developer > Macros > select > Edit (not run here).
-**Alternative:** Alt+F11 opens the VBE directly (from memory, unverified); View > Macros > Record Macro also works (from memory).
-**Version note:** Same steps on Excel 2016, 2019, 2021, 2024 and Microsoft 365 desktop; the Mac menu names differ slightly (Microsoft Support, Mac Developer tab article, search result only). Google Sheets has its own recorder (Q13).
-**Edge cases:** Recording captures every click, including mistakes; also the "Store macro in" choice decides whether it lives in this workbook or the Personal Macro Workbook (from memory, unverified).
+**Alternative:** Alt+F11 opens the VBE (Microsoft Support, "Copy your macros to a Personal Macro Workbook", Windows steps; on Mac that page says use Visual Basic on the Developer tab). View > Macros > Record Macro also works (from memory).
+**Version note:** Microsoft's "Quick start: Create a macro" lists Excel for Microsoft 365, Excel 2024 and Excel 2021 for Mac in its Applies-to line; it does not list 2016 or 2019, and I believe the recording steps are the same there (from memory, unverified). The Mac menu names differ slightly (same page). Google Sheets has its own recorder (Q13).
+**Edge cases:** Recording captures every click, including mistakes; also the "Store macro in" choice decides whether it lives in this workbook or in the Personal Macro Workbook, a hidden file Personal.xlsb that is available in every workbook (Microsoft Support, "Copy your macros to a Personal Macro Workbook").
 **Likely follow-ups:** 1) *Can you assign a button?* Yes, insert a shape or button and Assign Macro. 2) *Can you undo a macro?* Usually not; save a copy first.
 **Common mistakes:** Clicking around while recording; not saving as .xlsm (Q7); spaces in the name.
 
@@ -71,12 +71,12 @@ ThisWorkbook.Worksheets("Employees").Range("A1:F1").Font.Bold = True
 ### Q4 ⭐⭐ 🟢 Have you used a macro or VBA to automate a task? Give an example, such as a monthly HR attendance report.
 **Asked at:** commonly asked (no company-specific report found); typical in MIS/reporting interviews (candidate-report snippets, unverified).
 **What the interviewer is checking:** Real experience: problem, approach, result, and awareness of risk.
-**Say this in the interview:** "Yes. If you have not, say so honestly and describe how you would do it. My example: a monthly attendance report. The macro calculates each person's attendance percentage, flags anyone under 90%, and tells me how many were flagged. It turns a 30-minute manual task into one click." (Only claim this if true; otherwise present it as a project you built.)
+**Say this in the interview:** "Yes. My example is a monthly attendance report. The macro calculates each person's attendance percentage, flags anyone under 90%, and tells me how many were flagged. It turns a 30-minute manual task into one click." (Say this only if it is true. If you have not used VBA at work, say so honestly and describe a practice project you built or how you would build it.)
 **Explain simply:**
 - Describe: the input (raw HR export), the rule (below 90% = Low), the output (flag column plus a count).
 - Mention safeguards: a zero working-days case (a new joiner) is marked "Check", not divided.
 - Mention you kept a backup and tested on a copy.
-**Example:** Seven employees; working days 22. Real run below (formulas run in LibreOffice 24.2; the macro itself not run here).
+**Example:** Seven employees; working days 22. The worksheet formulas were run in LibreOffice 24.2 and re-run in review; the macro itself was not run here (no Excel).
 **Sample sheet:**
 | | A | B | C | D | E | F | G |
 |---|---|---|---|---|---|---|---|
@@ -126,7 +126,7 @@ End Sub
 **Say this in the interview:** "Copilot in Excel is Microsoft's AI assistant inside Excel. I type a request in plain English, such as 'which department has the highest attrition', and it can summarize, build formulas, charts and PivotTables. I always check its answer against my own calculation before using it."
 **Explain simply:**
 - Microsoft says it can add and edit sheets, generate data and formulas, summarize data, create charts and PivotTables, sort/filter/highlight and import data from other workbooks (Microsoft Support, "Get started with Copilot in Excel").
-- Modes: chat-only does not change your workbook; plan mode shows a plan for review; you can stop it any time (same page).
+- Modes: Allow editing (default) changes the workbook directly; Plan shows a plan for review first; Chat only does not change your workbook; you can stop it any time with the Stop button (same page).
 - It is probabilistic: it can be wrong. Microsoft warns the content "can be inaccurate or inappropriate" and to "review, edit, and verify anything Copilot creates" (Microsoft Support, "Frequently asked questions about Copilot in Excel").
 - Analyst uses: quick first look, formula drafting, chart ideas, summarising comments.
 **Example:** On the 8-employee sheet below, you ask for attrition by department. Reference answer I computed with COUNTIFS (run in LibreOffice): Sales 33.3%, HR 50%, Ops 0%. Copilot's reply is not run here; compare it to these.
@@ -143,10 +143,10 @@ End Sub
 | 8 | E7 | Sales | Active |
 | 9 | E8 | Ops | Active |
 
-**Formula / Steps:** Click the Copilot icon on the Home tab/ribbon (the pane opens at the side; exact location varies, from memory), type the request. Reference formula: `=COUNTIFS(B2:B9,"Sales",C2:C9,"Left")/COUNTIF(B2:B9,"Sales")`.
+**Formula / Steps:** Click the Copilot icon (Microsoft's "Get started with Copilot in Excel" puts it in the lower-right corner of Excel; the default mode is Allow editing, which changes the workbook directly, so switch to Chat only or Plan if you do not want edits), type the request. Reference formula: `=COUNTIFS(B2:B9,"Sales",C2:C9,"Left")/COUNTIF(B2:B9,"Sales")`.
 **Alternative:** A PivotTable with Status in Columns and Dept in Rows, "Show values as % of row".
 **Result:** 33.3%, 50%, 0% (Sales, HR, Ops).
-**Version note:** Microsoft's page lists Excel for Microsoft 365 on Windows, Mac, web, iPad, iPhone, Android with different modes; Android is chat mode only (Microsoft Support, "Get started with Copilot in Excel"). Not in Excel 2016-2024 perpetual versions: not stated on pages I read, from memory unverified.
+**Version note:** Microsoft's page lists Excel for Microsoft 365 on Windows, Mac, web, iPad, iPhone, Android with different modes; Android is chat mode only (Microsoft Support, "Get started with Copilot in Excel"). Perpetual versions (Excel 2016-2024): the Applies-to lists on the Get started and FAQ pages name only Microsoft 365, iPad and the web app, and neither page states availability for perpetual versions either way (my reading, not a Microsoft statement). On iPad Microsoft lists chat and plan modes (edit rolling out), on iPhone chat mode.
 **Edge cases:** Small samples (1-3 employees) make percentages look dramatic; Copilot may not say so.
 **Likely follow-ups:** 1) *Is it a function?* The old COPILOT function is retired (Q18). 2) *Can you trust it?* Verify (Q6).
 **Common mistakes:** Pasting its numbers into a report unchecked; assuming it is free in every plan (Q12).
@@ -160,7 +160,21 @@ End Sub
 - Checklist: 1) re-derive headline numbers with a formula or PivotTable; 2) reconcile (parts add to total, row counts match source); 3) spot-check 3-5 rows by hand; 4) read the formula Copilot wrote; 5) check ranges include all rows; 6) sense-check against last month.
 - Ask the tool to explain what it did and what data it used.
 **Example:** Copilot says "attrition was 12.5%, 1 leaver". Source sheet has 8 employees. Check run in LibreOffice: leavers = 2, attrition = 25%. The AI was wrong, caught by a 10-second COUNTIF. (The Copilot claim here is an invented illustration.)
-**Sample sheet:** (A:D = Emp ID, Dept, Status, Salary; rows 2-9; Status "Left" for E2 and E5)
+**Sample sheet:** (data in A:D, checks in F:G)
+| | A | B | C | D |
+|---|---|---|---|---|
+| 1 | Emp ID | Dept | Status | Salary |
+| 2 | E1 | Sales | Active | 50,000 |
+| 3 | E2 | Sales | Left | 42,000 |
+| 4 | E3 | Ops | Active | 38,000 |
+| 5 | E4 | Ops | Active | 41,000 |
+| 6 | E5 | HR | Left | 45,000 |
+| 7 | E6 | HR | Active | 52,000 |
+| 8 | E7 | Sales | Active | 47,000 |
+| 9 | E8 | Ops | Active | 39,000 |
+
+Checks (F:G):
+
 | | F | G |
 |---|---|---|
 | 1 | Headcount | 8 |
@@ -183,14 +197,14 @@ End Sub
 **What the interviewer is checking:** Do you know .xlsm and the security reason?
 **Say this in the interview:** "I save it as an Excel Macro-Enabled Workbook, .xlsm. A normal .xlsx cannot hold macros. Excel warns because macros can contain malicious code, so it asks before running them. I only enable macros in files from sources I trust."
 **Explain simply:**
-- Save As type: Excel Macro-Enabled Workbook (*.xlsm). If you try .xlsx, Excel offers to save without the macro, and choosing Yes removes the code (Microsoft Support, "Save a macro", Excel 2013 page, seen only in search results; wording may differ now).
+- Save As type: Excel Macro-Enabled Workbook (*.xlsm). If you try .xlsx, Excel offers to save without the macro, and choosing Yes removes the code (Microsoft Support, "Save a macro": the warning reads "Workbook contains macros or VBA code"; that page is written for Excel 2013, so the wording may differ now).
 - Microsoft: "some macros can pose a security risk by introducing viruses or malicious software" and "never enable macros in a Microsoft 365 file unless you're sure you know what those macros do" (Microsoft Support, "Enable or disable macros in Microsoft 365 files").
 - The Trust Center (File > Options > Trust Center) offers: disable all without notification, disable with notification, disable except digitally signed, enable all (not recommended) (same page).
 - Trusted locations are an alternative to trusting each file (same page).
-**Example:** HR gets an "attendance_tool.xlsm" by email; the yellow bar says macros are disabled. You check with the sender, then click Enable Content.
+**Example:** HR gets an "attendance_tool.xlsm" by email. On Windows, Microsoft says macros in files from the internet (such as email attachments) are blocked by default and Excel shows a red Security Risk banner with no Enable Content button. You check with the sender, then right-click the saved file > Properties > tick Unblock, and reopen it (Microsoft Learn, "Macros from the internet are blocked by default in Office"). Files from trusted locations or with a trusted signature, or opened earlier with Enable Content, can still show the older yellow bar.
 **Formula / Steps:** File > Save As > Save as type > Excel Macro-Enabled Workbook (*.xlsm) > Save. Settings: File > Options > Trust Center > Trust Center Settings > Macro Settings.
-**Alternative:** Keep reusable macros in the Personal Macro Workbook (from memory, unverified).
-**Version note:** Same on Excel 2016-365 desktop. Files from the internet being blocked by default: Microsoft links an article titled "Macros from the internet are blocked by default in Office"; I did not read it, so details are from memory, unverified.
+**Alternative:** Keep reusable macros in the Personal Macro Workbook, Personal.xlsb (Microsoft Support, "Copy your macros to a Personal Macro Workbook").
+**Version note:** Same on Excel 2016-365 desktop. Blocking of internet files (Microsoft Learn, "Macros from the internet are blocked by default in Office", page updated 2026): applies to Office on Windows only, not to Mac, Android, iOS or the web; rolled out from 2022 in Current Channel. Admins can also set policies (Microsoft 365 Apps for enterprise only).
 **Edge cases:** Corporate IT may lock the settings (the Microsoft page says administrators may prevent changes on managed devices).
 **Likely follow-ups:** 1) *What is a digital signature?* Proof of who wrote the macro. 2) *Can you view the file without enabling macros?* Yes (same Microsoft page).
 **Common mistakes:** Saving as .xlsx and losing the code; enabling all macros permanently.
@@ -255,7 +269,7 @@ To turn it on automatically: VBE > Tools > Options > Require Variable Declaratio
 - Sub: run from a button/Macros dialog. Function: called from a cell or other code.
 - A UDF is a public Function in a standard module of an .xlsm workbook (from memory).
 - UDFs normally only return a value; they should not change other cells (from memory).
-**Example:** Excel has no "complete years of service" function except the hidden DATEDIF. A UDF `TenureYears` gives it a friendly name.
+**Example:** Excel's only direct "complete years" function is DATEDIF, which Microsoft documents as a compatibility function kept for older Lotus 1-2-3 workbooks (Microsoft Support, "DATEDIF function"). A UDF `TenureYears` is a transparent, custom version with a friendly name.
 **Sample sheet:** (As-of 22-Oct-2026)
 | | A | B | C |
 |---|---|---|---|
@@ -277,9 +291,9 @@ End Function
 ```
 Use in a cell: `=TenureYears(A2,B2)`.
 **Alternative:** `=DATEDIF(A2,B2,"y")` without any VBA.
-**Result:** DATEDIF column above was run in LibreOffice. I re-implemented the UDF's algorithm in Python and it matched all five rows (2, 1, 0, 5, 6); the VBA itself was not run.
+**Result:** DATEDIF column above was run in LibreOffice. I re-implemented the UDF's algorithm in Python (re-checked in review) and it matched all five rows (2, 1, 0, 5, 6); the VBA itself was not run. Excel's own DATEDIF for these "y" rows is expected to agree (from memory; only LibreOffice was run).
 **Version note:** UDFs need desktop Excel and macros enabled; whether they run in Excel for the web: from memory, unverified. Not available in Google Sheets (use Apps Script custom functions).
-**Edge cases:** Feb 29 hire dates; DateSerial rolls 29-Feb-2026 to 1-Mar-2026, matching the sample.
+**Edge cases:** Feb 29 hire dates; DateSerial rolls 29-Feb-2026 to 1-Mar-2026, matching the sample. Because the arguments are typed As Date, a blank or text cell gives #VALUE! in the sheet. Microsoft notes a Function is public by default (Microsoft Learn, "Function statement (VBA)").
 **Likely follow-ups:** 1) *Why not just use DATEDIF?* Simpler; UDF only if logic is custom. 2) *Downside of UDFs?* Files must be .xlsm; others may block macros.
 **Common mistakes:** Forgetting to assign the result to the function name; expecting a Function to be runnable from the Macros list (it is not, if it takes arguments).
 
@@ -288,10 +302,10 @@ Use in a cell: `=TenureYears(A2,B2)`.
 **What the interviewer is checking:** Awareness of the Google-side AI and the same verification mindset.
 **Say this in the interview:** "Gemini is Google's AI assistant built into Sheets. I can ask in plain English for formulas, tables, charts or a summary of the data. It needs an eligible Workspace or Google AI plan, and I still verify its answers."
 **Explain simply:**
-- Google's help page says Gemini can build tables, write formulas, generate analysis and insights, create charts, and make edits such as conditional formatting, pivot tables, dropdowns, filters, sorting, find-and-replace (Google Docs Editors Help, "Collaborate with Gemini in Google Sheets").
+- Google's help page (fetched again in review; the working URL is support.google.com/docs/answer/14218565) says Gemini can build tables, write formulas, generate analysis and insights, create charts, and make edits such as conditional formatting, pivot tables, dropdowns, filters, sorting, find-and-replace (Google Docs Editors Help, "Collaborate with Gemini in Google Sheets").
 - The same page: "This feature requires an eligible Google Workspace or Google AI plan" and "works best with native Google Sheets files", so convert .xlsx first.
 - Chat history can be lost on reload; insert the output into the sheet to keep it (same page).
-- Cell-level AI function: the fetched Google page does not document a GEMINI function. Third-party guides describe `=GEMINI()` or `=AI()`; names and plans conflict, so treat as unverified.
+- Cell-level AI function: the fetched Google page does not document a GEMINI function. Third-party guides describe `=GEMINI()` or `=AI()` (some describe an Apps Script you install yourself with your own API key); names and plans conflict and I found no official Google page for a cell function, so treat as unverified.
 **Example:** Paste 500 survey comments, ask Gemini to suggest a formula that counts comments containing "manager". You check the formula on 5 rows.
 **Formula / Steps:** Open the sheet > open the Gemini panel (button location from memory, unverified) > type request > review > insert.
 **Alternative:** Normal formulas, PivotTables, or Apps Script.
@@ -308,11 +322,11 @@ Use in a cell: `=TenureYears(A2,B2)`.
 - Licence: Microsoft's FAQ lists a Microsoft 365 Personal or Family subscription with an AI credits plan, a Microsoft 365 Premium subscription, a commercial Microsoft Copilot subscription, or a Copilot Chat-eligible business/enterprise subscription; availability "may vary" by licence and tenant settings (Microsoft Support, "Frequently asked questions about Copilot in Excel").
 - File format: save as a modern format such as .xlsx; Strict Open XML is unsupported (same page).
 - Settings: editing needs Calculation Options on Automatic; SharePoint check-out requirements stop it working on Windows and Mac (same page).
-- Location and table: the pages I read do not state a required location or that data must be a table. Third-party guides say OneDrive/SharePoint with AutoSave and an Excel Table; I could not confirm this on Microsoft's pages. Tidy tabular data with headers helps in practice (from memory).
+- Location and table: the pages I read do not state a required location or that data must be a table. Third-party guides, and an older version of Microsoft's FAQ (seen only in a search summary: .xlsx/.xlsm saved to OneDrive or SharePoint with AutoSave on, tables up to two million cells), name a location and table requirement; the current FAQ page I fetched does not state either, so verify on the live page. Tidy tabular data with headers helps in practice (from memory).
 **Example:** The Copilot icon is missing for an HR analyst: check licence, then file format, then calculation mode.
 **Formula / Steps:** Check: account settings licence > file is .xlsx > Formulas > Calculation Options > Automatic > select a cell in the data > open Copilot. To format as a table: Ctrl+T.
 **Alternative:** If unavailable, use PivotTables/formulas.
-**Version note:** Microsoft 365 apps on Windows, Mac, web, iPad, iPhone, Android with different modes (Microsoft Support, "Get started with Copilot in Excel"). Licence tiers are the most change-prone fact; verify.
+**Version note:** Microsoft 365 apps on Windows, Mac, web, iPad, iPhone, Android with different modes (Microsoft Support, "Get started with Copilot in Excel", which also says Copilot may not be included in your subscription or may be unavailable per organisation settings). Licence tiers are the most change-prone fact; the list above is as the FAQ read on 22 Oct 2026 and is not guaranteed current.
 **Edge cases:** Managed company devices may block it.
 **Likely follow-ups:** 1) *Why grey/missing?* Licence, tenant admin, or file settings. 2) *Does it work offline?* From memory, no, it needs the service.
 **Common mistakes:** Quoting a plan name from an old article; blank header cells.
@@ -358,7 +372,7 @@ function flagNewJoiners() {
 - `VarType(x) = vbDate` accepts real dates and rejects text such as "N/A".
 - `IsEmpty` skips blank rows.
 **Example:** As-of date 22-Oct-2026 (cutoff 22-Oct-2025). Formula route run in LibreOffice; VBA logic mirrored in Python; VBA not run here.
-**Sample sheet:**
+**Sample sheet:** (as-of date in G1 = 22-Oct-2026, used by the formula route only)
 | | A | B | C | D |
 |---|---|---|---|---|
 | 1 | Emp ID | Name | Hire date | Flag |
@@ -396,7 +410,7 @@ End Sub
 ```
 **Alternative:** Formula in D2: `=IF(C2="","",IF(ISNUMBER(C2),IF(DATEDIF(C2,$G$1,"y")<1,"Under 1 yr","OK"),"Check date"))`, copy down, with the as-of date in G1.
 **Result:** D2:D9 = Under 1 yr, OK, Under 1 yr, OK, (blank), Check date, Under 1 yr, OK. The DATEDIF formula was run in LibreOffice 24.2; a Python mirror of the VBA rule gave the identical eight results.
-**Version note:** Works in all desktop Excel versions; DATEDIF is an undocumented-but-working function (from memory, unverified).
+**Version note:** Works in all desktop Excel versions; DATEDIF works in Excel 2016-365 (its Microsoft Support page lists those versions) but Microsoft calls it a compatibility function and warns it "may calculate incorrect results under certain scenarios", mainly the "MD" unit; this answer uses only "y".
 **Edge cases:** Text dates; blank rows; hard-coded 500 misses rows beyond it (use Q15's last row); leap-day hire dates.
 **Likely follow-ups:** 1) *Why not hard-code 500?* Use the last used row (Q15). 2) *Speed?* Read the column into an array first (Q17).
 **Common mistakes:** Using `<` vs `<=` wrongly at the exact anniversary; assuming blank cells are zero dates.
@@ -425,9 +439,9 @@ End Sub
 
 **Formula / Steps:** VBA (not run here):
 ```vba
-Dim lastRow As Long
+Dim lastRow As Long, lastBeforeGap As Long
 lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row   ' expected 8
-firstGapAbove = ws.Range("A1").End(xlDown).Row         ' expected 4 (stops at the gap)
+lastBeforeGap = ws.Range("A1").End(xlDown).Row        ' expected 4 (stops at the gap)
 ```
 **Alternative:** Worksheet formula that behaves the same way: `=SUMPRODUCT(MAX((A1:A1000<>"")*ROW(A1:A1000)))`.
 **Result:** The worksheet formula returned 8 (last row), and `=MATCH(TRUE,INDEX(A1:A1000="",0),0)-1` returned 4 (rows before the first gap), run in LibreOffice 24.2. The VBA expectations (8 and 4) follow the same logic but were not run in Excel.
@@ -469,7 +483,7 @@ End Sub
 **Alternative:** Prevent the error: `If ws.Cells(r,"D").Value = 0 Then ... Else ...` (as in Q4).
 **Version note:** All versions.
 **Edge cases:** Handler errors inside a handler are not caught; Resume Next resets in called procedures (Microsoft page).
-**Likely follow-ups:** 1) *When is Resume Next fine?* To test whether a sheet exists, then check `Err.Number`. 2) *What is `Resume`?* Retry the failing line.
+**Likely follow-ups:** 1) *When is Resume Next fine?* To test whether a sheet exists, then check `Err.Number`. 2) *What is `Resume`?* Retry the failing line. 3) *When does Microsoft prefer Resume Next?* Its page says to use it rather than On Error GoTo when accessing objects, checking `Err` after each interaction.
 **Common mistakes:** `On Error Resume Next` at the top of the whole macro; no clean-up so Excel is left with screen updating off.
 
 ### Q17 ⭐ 🟡 A macro takes five minutes to run on 50,000 rows. How would you speed it up?
@@ -481,7 +495,7 @@ End Sub
 - Manual calculation, events off (from memory): stops formulas recalculating after every write.
 - Each cell read/write has an overhead; one block read + one block write replaces tens of thousands of calls (from memory). I did not time anything here, so I cannot quote a speed-up.
 - Avoid `.Select`, use `With` blocks, avoid formulas copied per row if one array formula does it.
-**Example:** The Q14 loop done on 50,000 rows: cell-by-cell is 50,000 reads and 50,000 writes; array version is 1 read and 1 write. Results are identical (checked by the logic in Q14).
+**Example:** The Q14 loop done on 50,000 rows: cell-by-cell is 50,000 reads and 50,000 writes; array version is 1 read and 1 write. The labels are the same as Q14 (same logic; this version omits the yellow fill) but, like Q14, the VBA was not run here.
 **Formula / Steps:** VBA (not run here):
 ```vba
 Option Explicit
@@ -535,7 +549,7 @@ End Sub
 **Example:** `=SUM(B2:B9)` always gives 354,000 on the Q6 sheet. A prompt like "classify each comment" could give different wording tomorrow.
 **Formula / Steps:** Today (22 Oct 2026) the formula is not usable (not run here). Instead: open the Copilot pane and ask: "Classify the comments in A2:A20 into themes and put the result in column B."
 **Alternative:** Keyword formulas, e.g. `=IF(ISNUMBER(SEARCH("manager",A2)),"Manager","Other")`, which are repeatable.
-**Version note:** Page says it applied to Microsoft 365 apps (Windows, Mac, web, iPhone); no licence terms stated on the page. Premise note: if the question assumes it is still available, that is out of date.
+**Version note:** Confirmed against Microsoft Support "COPILOT Function" on 22 Oct 2026 (page: "Starting September 14, 2026, the COPILOT function is no longer available in Microsoft Excel"; earlier Frontier program only). Page says it applied to Microsoft 365 apps (Windows, Mac, web, iPhone); no licence terms stated on the page. Premise note: if the question assumes it is still available, that is out of date.
 **Edge cases:** Workbooks containing it will show #NAME? after recalculation; convert to values before relying on it.
 **Likely follow-ups:** 1) *Why did Microsoft retire it?* The page doesn't say. 2) *What replaces it?* The Copilot pane.
 **Common mistakes:** Building a report on the function now; calling it deterministic.
@@ -548,7 +562,7 @@ End Sub
 - Risks: data leaving the company to a third-party tool; staff seeing data they should not; AI output or chat history exposing salaries; wrong AI output affecting someone's pay or career.
 - Microsoft states that changes Copilot saves to a workbook can be seen by anyone with access to the file, including people in a coauthoring session, and that Copilot in Excel is a Copilot Chat tool that can't be turned off independently (Microsoft Support, "Frequently asked questions about Copilot in Excel").
 - Microsoft also advises avoiding Copilot for decisions in sensitive areas (same page); Google notes Gemini conversation history can be lost on reload (Google Docs Editors Help, "Collaborate with Gemini in Google Sheets"), which affects what is recorded.
-- India's Digital Personal Data Protection Act 2023 is relevant (from memory, unverified; check with legal/IT).
+- India's Digital Personal Data Protection Act 2023 (Act No. 22 of 2023, per an India Code listing in search results, not fetched) is relevant; a law-firm summary in search results says the Rules were notified on 13 November 2025 with phased commencement (unverified). Check current obligations with legal/IT.
 - Mitigation: anonymise (employee code instead of name), aggregate, use company-approved accounts, get approval, document usage.
 **Example:** Instead of uploading 2,000 rows with names and salaries, share department and salary band with a random ID, or ask the AI for formula help using 5 dummy rows.
 **Formula / Steps:** Pre-flight checklist: 1) Is the tool approved? 2) Do I need individual-level data? 3) Remove names/IDs/contact details 4) Use dummy rows to test the prompt 5) Keep an audit note.
