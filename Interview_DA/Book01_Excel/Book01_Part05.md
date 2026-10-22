@@ -1221,13 +1221,25 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 - Good for: Trim/Clean, Replace Values, Split Column, Change Type, Remove Duplicates, Remove Blank Rows, Fill Down, Unpivot, merging a folder of files.
 - Stay with formulas for: quick one-off fixes, results that must update live next to other formulas, or small sheets.
 - Source data stays untouched.
-**Example:** HR receives 12 monthly attendance files with blank rows and spaces; Power Query appends and cleans them in one query.
+**Example:** HR receives 12 monthly attendance files with blank rows and spaces; Power Query appends and cleans them in one query. For a small test, a 5-row employee list has one blank row, one exact duplicate and salaries typed as text.
+**Sample sheet:**
+
+| | A (Name) | B (Salary, text) | C (Dept) |
+|---|---|---|---|
+| 1 | Name | Salary | Dept |
+| 2 | `  Priya Sharma ` | 42000 | HR |
+| 3 | Ravi Kumar | `38500 ` | Finance |
+| 4 | `  Priya Sharma ` | 42000 | HR |
+| 5 | (blank row) | | |
+| 6 | `Meena  Iyer` | 51000 | IT |
+
 **Formula / Steps:** 1. Data > Get Data > From File > From Workbook / From Text/CSV. 2. Transform Data. 3. Apply steps: Transform > Format > Trim; Home > Remove Rows > Remove Duplicates; Transform > Data Type. 4. Home > Close & Load.
 **Alternative:** Formulas (TRIM, SUBSTITUTE, VALUE) with paste-as-values for small jobs.
-**Version note:** Power Query is available in "all Excel 2016 or later Windows stand alone versions"; some features (fuzzy merge) are 365 only (Microsoft Support, "Power Query data sources in Excel versions"). Not run here.
-**Edge cases:** Column names change in a new file and break steps; case matters in Replace Values.
-**Likely follow-ups:** 1) *Formulas faster?* Power Query handles big data better. 2) *Does it change the raw file?* No.
-**Common mistakes:** Hard-coding file paths; forgetting to refresh.
+**Result:** Power Query itself is not run here. The same steps reproduced in pandas (strip spaces, drop the empty row, convert salary to number, drop exact duplicates): 5 rows in, 4 after dropping the blank row, 3 after de-duplication (Priya Sharma 42000 HR; Ravi Kumar 38500 Finance; Meena Iyer 51000 IT); salary total 131,500. Note: Power Query's Trim removes only leading and trailing spaces, so `Meena  Iyer` keeps its double space (unlike Excel's TRIM function), which is from memory, unverified; check it before relying on it.
+**Version note:** Power Query is available in "all Excel 2016 or later Windows stand alone versions"; some features (fuzzy merge) are 365 only (Microsoft Support, "Power Query data sources in Excel versions"; that page is cited here from the original writing and was not re-fetched in review). Not run here.
+**Edge cases:** Column names change in a new file and break steps; case matters in Replace Values; Power Query's Trim leaves inner double spaces; a text-to-number step errors on cells such as "N/A" (they show as Error in that column, to be handled with Replace Errors).
+**Likely follow-ups:** 1) *Formulas faster?* Power Query handles big data better. 2) *Does it change the raw file?* No. 3) *When do you still use formulas?* Small one-offs or values that must recalculate beside other formulas.
+**Common mistakes:** Hard-coding file paths; forgetting to refresh; doing steps in the wrong order (change type before trimming, so "38500 " errors).
 
 ### Q45 ⭐ 🟡 How do you clean data that arrives every month in the same messy format, so that you do not repeat the manual steps?
 **Asked at:** commonly asked (no company-specific report found).
@@ -1237,13 +1249,22 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 - A query is a saved list of steps, so nothing is retyped.
 - Use **From Folder** so new monthly files are picked up automatically.
 - Keep a checks sheet (row counts, blanks) next to it (see Q47).
-**Example:** Monthly payroll CSV with extra spaces, text numbers and blank rows becomes a clean table in seconds.
+**Example:** Monthly payroll CSV with extra spaces, text numbers and blank rows becomes a clean table in seconds. Test case: January and February attendance files (3 employees each) have spaces in IDs and one missing day count.
+**Sample sheet:** Folder `Attendance` holding two files.
+
+| | Jan.csv: A (EmpID) | B (Days) | Feb.csv: A (EmpID) | B (Days) |
+|---|---|---|---|---|
+| 2 | E101 | 22 | `E101 ` | 21 |
+| 3 | E102 | 20 | E102 | (blank) |
+| 4 | `  E103` | 18 | E103 | 19 |
+
 **Formula / Steps:** 1. Put each month's file in one folder. 2. Data > Get Data > From File > From Folder. 3. Combine > Combine & Transform Data. 4. Apply Trim, Change Type, Remove Duplicates. 5. Close & Load to a table. 6. Next month: save the file in the folder, then Data > Refresh All.
 **Alternative:** Record a macro (VBA, Excel's built-in automation) via View > Macros > Record Macro; or a template with cleaning formulas.
-**Version note:** Power Query is built into Excel 2016 and later Windows versions (Microsoft Support, "Power Query data sources in Excel versions"). Not run here.
-**Edge cases:** If the vendor adds, renames or reorders columns the query errors; check the first step after a refresh.
-**Likely follow-ups:** 1) *What breaks it?* Column renames. 2) *Share it?* Send the workbook, not just the output.
-**Common mistakes:** Cleaning the same way by hand each month; no row-count check after refresh.
+**Result:** Not run here (Power Query). Pandas reproduction of the combine-and-clean steps: 6 rows (3 January + 3 February), IDs trimmed to E101, E102, E103, Days converted to numbers with 1 missing value, Days total 100. After a refresh with a March file the table should show 9 rows; that count is the check.
+**Version note:** Power Query is built into Excel 2016 and later Windows versions (Microsoft Support, "Power Query data sources in Excel versions"; cited from the original writing, not re-fetched in review). From Folder and Combine & Transform are from memory, unverified for each version. Not run here.
+**Edge cases:** If the vendor adds, renames or reorders columns the query errors; check the first step after a refresh. A file with a different header row, a locked or open file, or a moved folder also breaks the refresh.
+**Likely follow-ups:** 1) *What breaks it?* Column renames. 2) *Share it?* Send the workbook, not just the output. 3) *No Power Query (older Mac, Google Sheets)?* Use a template with formulas, or in Sheets a saved set of formulas and UNIQUE/QUERY (from memory, unverified).
+**Common mistakes:** Cleaning the same way by hand each month; no row-count check after refresh; testing the query only on one clean month.
 
 ### Q46 ⭐ 🟡 How do you standardise text with Flash Fill, for example turning 'priya sharma' into 'Sharma, Priya'?
 **Asked at:** commonly asked (no company-specific report found); Flash Fill is in nearly every prep list.
@@ -1281,7 +1302,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 - Completeness: blanks in key columns.
 - Uniqueness: duplicate IDs.
 - Validity: text in number columns, negative or impossible values.
-**Example:** Salary column after cleaning.
+**Example:** Salary column after cleaning: 7 employee rows should be checked before the file goes to the payroll manager. The checks below should flag the blank, the text "abc", the repeated E101 row and the negative salary.
 **Sample sheet:**
 
 | | A | B |
@@ -1297,11 +1318,11 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 
 **Formula / Steps:** Rows `=COUNTA(A2:A8)`; blanks `=COUNTBLANK(B2:B8)`; text `=SUMPRODUCT(--ISTEXT(B2:B8))`; duplicate rows `=SUMPRODUCT(--(COUNTIF(A2:A8,A2:A8)>1))`; `=MIN(B2:B8)`, `=MAX(B2:B8)`; negatives `=COUNTIF(B2:B8,"<0")`.
 **Alternative:** Power Query: Home > Keep Rows / View > Column Quality, Column Distribution and Column Profile.
-**Result:** Run in LibreOffice: 7 rows, 1 blank, 1 text, 2 duplicate rows, min -500, max 47000, 1 negative.
-**Version note:** All formulas work in every version and Google Sheets (from memory, unverified).
-**Edge cases:** MIN/MAX ignore text; COUNTBLANK counts empty text from formulas.
-**Likely follow-ups:** 1) *What else?* Compare totals to the payroll system. 2) *Rules at entry?* Data Validation.
-**Common mistakes:** Only eyeballing; no before/after counts.
+**Result:** Run in LibreOffice (cells D1:D7 in order): rows 7, blanks 1, text cells 1, duplicate rows 2, min -500, max 47000, negatives 1.
+**Version note:** All formulas work in every version and Google Sheets (from memory, unverified); Column Quality/Profile are Power Query features (not run here).
+**Edge cases:** MIN/MAX ignore text; COUNTBLANK counts empty text from formulas but not a cell holding a space; the duplicate check shows 2 *rows* (E101 twice), not 1 extra copy; a total can look right while two errors cancel out, so also compare the row count to the source. "Reliable" means checked against stated rules, so tell the manager which rules you used and which rows are exceptions.
+**Likely follow-ups:** 1) *What else?* Compare totals to the payroll system. 2) *Rules at entry?* Data Validation. 3) *What do you report?* Counts checked, exceptions found, how each was handled, and any open questions to the data owner.
+**Common mistakes:** Only eyeballing; no before/after counts; fixing exceptions silently without telling the owner.
 
 ### Q48 ⭐ 🔴 How do you extract the numbers from a mixed text string such as 'Invoice-4581-Q3' without Power Query?
 **Asked at:** commonly asked (no company-specific report found).
@@ -1337,7 +1358,7 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 - Counting must happen *before* deletion, because deleted rows cannot be counted.
 - Paste the counts as values; formulas would change when rows vanish.
 - Remove Duplicates keeps the first occurrence (Microsoft Support).
-**Example:** Swipe records per employee: E101 appears 4 times.
+**Example:** Swipe records per employee: E101 appears 4 times, so after cleaning the HR report must still show "E101, 4 swipes", not just "E101".
 **Sample sheet:**
 
 | | A |
@@ -1354,10 +1375,10 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 **Formula / Steps:** 1. Copy the sheet as a backup. 2. B2 `=COUNTIF($A$2:$A$8,A2)`, fill down. 3. Copy B > Paste Special > Values. 4. Select A:B > Data > Remove Duplicates > tick only EmpID.
 **Alternative:** 365: `=UNIQUE(A2:A8)` with `=COUNTIF(A2:A8,D2#)`; or Insert > PivotTable, EmpID in Rows and Count of EmpID in Values (not run here).
 **Result:** Run in LibreOffice: counts 4, 2, 4, 1, 4, 2, 4. After removal: E101 4, E102 2, E103 1 (pandas `value_counts` confirms the same).
-**Version note:** The COUNTIF route works in all versions; UNIQUE is 365/2021/2024 (Microsoft Support, "UNIQUE function").
-**Edge cases:** Trim and case differences create separate rows; clean first.
-**Likely follow-ups:** 1) *Why values?* Formulas recalculate. 2) *Keep the latest?* See Q28.
-**Common mistakes:** Removing first, then counting; ticking the count column in Remove Duplicates.
+**Version note:** The COUNTIF route works in all versions; UNIQUE is 365/2021/2024 (Microsoft Support, "UNIQUE function"). The `D2#` spill reference and the PivotTable alternative are not run here.
+**Edge cases:** Trim and case differences create separate rows; clean first. COUNTIF ignores case, but "E101 " with a trailing space counts separately. If you tick the count column too, Remove Duplicates compares IDs and counts together; it still works here because the count is the same for each ID, but it is the wrong habit. Blank IDs would be counted as a group of their own.
+**Likely follow-ups:** 1) *Why values?* Formulas recalculate. 2) *Keep the latest?* See Q28. 3) *Easiest no-delete route?* A PivotTable with EmpID in Rows and Count of EmpID in Values, which also leaves the source untouched.
+**Common mistakes:** Removing first, then counting; ticking the count column in Remove Duplicates; leaving the counts as formulas, so they change or break after rows are removed.
 
 ### Q50 ⭐ 🔴 A cleaning formula using TRIM, CLEAN and SUBSTITUTE is slow on 500,000 rows. How do you make the workflow faster and more reliable?
 **Asked at:** commonly asked (no company-specific report found).
@@ -1370,13 +1391,19 @@ Text to Columns route: select the column > Data > Data Tools > Text to Columns >
 - Fix 3: Formulas > Calculation Options > Manual while editing.
 - Fix 4: avoid whole-column references; save as .xlsb (binary workbook) if size matters.
 - Reliability: keep raw data untouched, add row-count checks (Q47).
-**Example:** A 500,000-row attendance log with spaces and non-breaking spaces.
-**Sample sheet:** small test only.
-**Formula / Steps:** `=TRIM(CLEAN(SUBSTITUTE(A2,CHAR(160)," ")))`.
-**Alternative:** Power Query steps (not run here).
+**Example:** A 500,000-row attendance log with spaces and non-breaking spaces. Three helper columns (TRIM, CLEAN, SUBSTITUTE) are 1.5 million formulas; one combined column is 500,000.
+**Sample sheet:** A small correctness test only (speed is not tested):
+
+| | A (Raw) | B (Clean) | C (LEN) |
+|---|---|---|---|
+| 2 | `  Priya`+nbsp+`Sharma`+line break+space | | |
+| 3 | `Ravi   Kumar` | | |
+
+**Formula / Steps:** B2 `=TRIM(CLEAN(SUBSTITUTE(A2,CHAR(160)," ")))`, C2 `=LEN(B2)`; then Copy > Paste Special > Values, and set Formulas > Calculation Options > Manual while working.
+**Alternative:** Power Query: Transform > Format > Trim, then Clean, then Replace Values (nbsp to space), Close & Load (not run here); or process in chunks.
 **Result:** Run in LibreOffice on a tiny sample, using `UNICHAR(160)` because LibreOffice's `CHAR(160)` does not return a non-breaking space (in Excel for Windows, `CHAR(160)` does; from memory, unverified): "  Priya[nbsp]Sharma[line break] " became "Priya Sharma" (12 characters), and "Ravi   Kumar" became "Ravi Kumar" (10). Speed claims are not benchmarked here (from experience and memory, unverified).
-**Version note:** Power Query is in Excel 2016 and later Windows versions (Microsoft Support, "Power Query data sources in Excel versions").
-**Edge cases:** Excel row limit 1,048,576 rows (Microsoft Support, "Excel specifications and limits"); Power Query loads to a table or the Data Model.
-**Likely follow-ups:** 1) *Still slow?* Use SQL or Python. 2) *Why manual calc?* Prevents recalculation after each edit.
-**Common mistakes:** Whole-column formulas; leaving everything live.
+**Version note:** Power Query is in Excel 2016 and later Windows versions (Microsoft Support, "Power Query data sources in Excel versions"; cited from the original writing, not re-fetched in review). The .xlsb format and Manual calculation exist in all desktop versions (from memory, unverified).
+**Edge cases:** Excel row limit 1,048,576 rows (Microsoft Support, "Excel specifications and limits"); Power Query loads to a table or the Data Model; in Manual mode, press F9 to recalculate or the numbers look stale; a file with more than 1,048,576 rows cannot be opened fully in a worksheet, so use Power Query or a database.
+**Likely follow-ups:** 1) *Still slow?* Use SQL or Python. 2) *Why manual calc?* Prevents recalculation after each edit. 3) *How do you prove it is reliable?* Row count and total before and after, spot-check ten rows (see Q47).
+**Common mistakes:** Whole-column formulas; leaving everything live; going manual and forgetting to recalculate before sending the file.
 
