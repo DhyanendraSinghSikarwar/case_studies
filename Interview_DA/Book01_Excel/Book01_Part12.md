@@ -190,8 +190,8 @@
 
 **Formula / Steps:** `=TEXTJOIN(", ",TRUE,A1:A4)`; `TRUE` means "ignore empty cells".
 **Alternative:** `=A1&", "&A2&", "&A3` (manual, breaks when rows change).
-**Result:** `Asha, Dev, Isha` (run in LibreOffice 24.2; the blank in A4 is skipped).
-**Version note:** TEXTJOIN is not in Excel 2016 or older non-365 builds: from memory, unverified (it came with Excel 2019/365).
+**Result:** `Asha, Dev, Isha` (run in LibreOffice 24.2; the blank in A4 is skipped). With `FALSE` the run returned `Asha, Dev, Isha, ` (trailing comma and space).
+**Version note:** Microsoft Support, "TEXTJOIN function" (fetched 2026-10-22): its Applies To list names Microsoft 365, Excel 2024, Excel 2021 and Excel 2019, and it says the feature is available "if you have Office 2019, or if you have a Microsoft 365 subscription". Excel 2016 is not listed, so avoid TEXTJOIN there. Run here with the `_xlfn.` prefix that file-writing tools need; in the Excel cell you just type `=TEXTJOIN(...)`.
 **Edge cases:** With `FALSE` instead of `TRUE`, an empty cell leaves a trailing `, `.
 **Likely follow-ups:**
 - *Where do you look it up?* Microsoft Support function pages and Exceljet (Q9).
@@ -203,6 +203,7 @@
 **What the interviewer is checking:** That you know good sources and can match them to a stage; no brand hype.
 **Say this in the interview:** "Microsoft's own Excel help for exact function syntax, Exceljet for short formula and shortcut explanations, and Google's Sheets training if someone wants to learn Sheets. For practice I use free HR datasets from TrumpExcel and AIHR. I check what is free before recommending, because some sites mix free and paid content."
 **Explain simply:** What each page itself stated when checked on 2026-10-21 (research/Book01_Part12_sources.md):
+
 | Resource | What was observed | Price/free status |
 |---|---|---|
 | Microsoft Support Excel hub (support.microsoft.com/en-us/excel) | Written help articles; links to training on Microsoft Learn | Price not stated on the page |
@@ -239,7 +240,7 @@
 **Version note:** CSV opens in any version; Data > From Text/CSV (Power Query) is from memory, unverified for Excel 2016 menus.
 **Likely follow-ups:**
 - *Real company data?* Never use confidential HR data in a portfolio.
-- *How big?* Excel handles about 1 million rows per sheet: from memory, unverified.
+- *How big?* Excel handles 1,048,576 rows by 16,384 columns per worksheet (Microsoft Support, "Excel specifications and limits", fetched 2026-10-22).
 **Common mistakes:** Publishing real employee data; naming a famous dataset you never opened.
 
 ### Q11 ⭐⭐ 🟢 Have you used Google Sheets as well as Excel, and how did you pick it up?
@@ -336,6 +337,7 @@
 **What the interviewer is checking:** Whether you can prioritise and practise under time pressure.
 **Say this in the interview:** "I would drill the likely topics first: SUMIFS, COUNTIFS, lookups, pivot tables, IF, and text and date cleaning. Two days practising each, then two timed 30-minute mock tests and a final review of my mistakes. During the test I speak my approach and check totals."
 **Explain simply:** 7-day plan (these hours and targets are my study-plan targets, not researched figures):
+
 | Day | Focus | Target |
 |---|---|---|
 | 1 | IF, COUNTIFS, SUMIFS, AVERAGEIFS | 15 exercises |
@@ -510,7 +512,8 @@
 | 10 | 9 | Isha | IT | 2017-11-01 | | 130000 | N |
 | 11 | 10 | Jai | IT | 2020-09-14 | | 95000 | Y |
 
-**Formula / Steps:** Eight questions (T1-T8):
+**Formula / Steps:** Eight questions (T1-T8; the formula key was run in full, see Result):
+
 | Test | Question | Formula |
 |---|---|---|
 | T1 | Active employees (blank exit date) | `=COUNTBLANK(E2:E11)` |
@@ -588,6 +591,7 @@
 This is the plan the questions above refer to. It is a study design, not a research finding: the hours, exercise counts and pass marks are my study-plan targets, not researched figures. Resource notes come from research/Book01_Part12_sources.md (accessed 2026-10-21).
 
 ### A. Zero-to-job-ready roadmap (12 weeks, about 2 hours a day, 6 days a week)
+
 | Week | Topics (Book 1 part) | Exercise target | Check at the end |
 |---|---|---|---|
 | 1 | Cell references, sorting, filters, formatting, shortcuts (Part 1) | 20 | none |
@@ -606,6 +610,7 @@ This is the plan the questions above refer to. It is a study design, not a resea
 Weeks 1-11 add up to 240 exercises (20+30+30+25+20+25+20+20+20+15+15, checked by running the sum). If you miss a pass mark, repeat that week and retake the quiz after 3 days. Job-ready signal: pass the Final twice in a row on two different datasets and have two finished mini-projects online (Q22).
 
 ### B. Daily practice plan (120 minutes)
+
 | Block | Minutes | What you do |
 |---|---|---|
 | Learn | 30 | Read the Book 1 part or one help article |
@@ -622,6 +627,7 @@ Full table in Q9. Stage guide: Microsoft Support function pages (all weeks, for 
 Self-made 10-row HR sheet first (Q22), then TrumpExcel's 15 free 1,000-row datasets including Employee HR Records (licence unverified), then a public HR attrition set for a portfolio project (AIHR's list: 8 of 9 free; IBM HR Analytics Attrition on Kaggle: size, licence and login unverified). See Q10.
 
 ### E. Mini-projects
+
 | Project | Question | Data | Skills shown | Where explained |
 |---|---|---|---|---|
 | 1 HR attrition workbook | Which department loses people fastest? | Self-made employee sheet | COUNTIFS, AVERAGEIF, checks, pivot, chart | Q5 |
@@ -631,5 +637,5 @@ Self-made 10-row HR sheet first (Q22), then TrumpExcel's 15 free 1,000-row datas
 Each project: README with the question, data source and licence, steps, five findings with numbers, one limitation (Q20).
 
 ### F. Self-check tests
-Six quizzes (weeks 2, 3, 5, 7, 9, 11) and a Final (week 12) use the pass marks in table A. Each quiz is 6 to 8 questions on that week's topics, written with an answer key before you solve and tried on a dataset you did not practise on, closed book, with your approach spoken aloud. The Final is the eight-question kit T1-T8 in Q22; verified results (run in LibreOffice 24.2): T1 = 7, T2 = 594000, T3 = 0.4, T4 = 63333.33, T5 = 57000, T6 = 5, T7 = 110000, T8 = 0.5. Retake on fresh data and aim for 7 of 8 in 30 minutes, twice.
+Six quizzes (weeks 2, 3, 5, 7, 9, 11) and a Final (week 12) use the pass marks in table A. Each quiz is 5 to 8 questions on that week's topics, written with an answer key before you solve and tried on a dataset you did not practise on, closed book, with your approach spoken aloud. The Final is the eight-question kit T1-T8 in Q22; verified results (run in LibreOffice 24.2): T1 = 7, T2 = 594000, T3 = 0.4, T4 = 63333.33, T5 = 57000, T6 = 5, T7 = 110000, T8 = 0.5. Retake on fresh data and aim for 7 of 8 in 30 minutes, twice.
 
