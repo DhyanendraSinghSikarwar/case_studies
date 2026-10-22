@@ -463,3 +463,209 @@ My run printed: raw 4740 chars, slimmed output 647 chars after truncation with `
 - *How do you handle a very large result?* Store it outside the context and return a handle plus a summary, or page it.
 
 **Common mistakes:** Dumping raw API responses into the context. Returning "Error" with no detail. Silent truncation. Letting tool output contain instructions that the model follows. Exposing secrets or internal fields in results.
+
+
+### Q30 ⭐⭐ 🟡 What happens when an agent has too many tools? Discuss selection accuracy, the token cost of tool definitions, grouping and tool search or deferred loading.
+**Asked at:** product, GenAI startups, agent-building teams
+**Say this first (1 line):** Too many tools hurts twice: the model picks the wrong tool more often, especially when descriptions overlap, and every definition is paid for as input tokens on every request. I fix it by cutting and merging tools, grouping and namespacing, routing to a subset, or loading tools on demand with tool search.
+
+**Then explain:**
+- **Selection accuracy:** with more tools, and especially near-duplicate ones (`search_orders`, `find_orders`, `lookup_order`), the model confuses them. I have not got a clean public number to quote; the OpenAI docs advise keeping fewer than about 20 functions, a soft guideline, not a hard limit. Check the current docs.
+- **Token cost:** tool definitions count as input tokens in both OpenAI and Anthropic. They add latency and cost per request, and shrink the room left for the conversation (Q36, and Part 1 on caching).
+- **Fixes, cheapest first:** (1) delete or merge tools (one `get_order` with a `fields` argument instead of five getters); (2) clear, non-overlapping names and descriptions with namespacing (`orders_get`, `billing_refund`); (3) route: a cheap classifier or rules pick a group of tools per request; (4) tool search / deferred loading: only a small search tool is visible and the full definition is loaded when needed (Anthropic has a tool search server tool; check docs for details and for OpenAI's equivalent).
+- **Trade-off:** routing adds a step that can be wrong; a bad route hides the tool the model needed. Keep a safe default group and log misroutes. Agent design depth: Part 8.
+
+**Example:** 100 near-identical tools cost about 5,460 proxy tokens per request in my illustration, against 273 for 5 tools. These are proxy numbers, not real token counts.
+
+**Code:** (executed; token counts use a word-count proxy of 1.3 tokens per word, illustrative only; the router is a keyword stand-in for a small classifier)
+```python
+import re, json
+
+# Illustrative only: word-count PROXY for tokens (real tokenizers differ; ~1.3 tokens per word is a rough rule of thumb).
+def proxy_tokens(obj): return round(len(re.findall(r"\w+", json.dumps(obj))) * 1.3)
+
+def make_tool(i):
+    return {"name": f"tool_{i}", "description": "Does something useful with records in the system, "
+            "use when the user asks about it, do not use for other things.",
+            "input_schema": {"type": "object", "required": ["id"],
+                "properties": {"id": {"type": "string", "description": "record identifier"},
+                               "limit": {"type": "integer", "description": "max rows"}}}}
+
+for n in (5, 20, 50, 100):
+    tools = [make_tool(i) for i in range(n)]
+    print(f"{n:3d} tools -> ~{proxy_tokens(tools):6d} proxy tokens sent as input on every request")
+
+# Routing to a subset with a cheap classifier (keyword stand-in for a small model).
+GROUPS = {"orders": ["get_order", "list_orders", "cancel_order"],
+          "billing": ["refund", "get_invoice"],
+          "kb": ["search_docs"]}
+KEYWORDS = {"orders": ["order", "shipment", "delivery"], "billing": ["refund", "invoice", "charge"],
+            "kb": ["how", "policy", "docs"]}
+def route(query):
+    q = query.lower()
+    hits = [g for g, kws in KEYWORDS.items() if any(k in q for k in kws)]
+    return hits or ["kb"]                      # safe default group
+for q in ["Where is my order?", "I want a refund for the wrong charge", "What is your policy?"]:
+    g = route(q); print(f"{q!r:42} -> groups {g}, tools {sum((GROUPS[x] for x in g), [])}")
+```
+Real tokenizers will give different numbers and real definitions are usually longer; the point is the linear growth, paid on every call.
+
+**Follow-ups:**
+- *Does prompt caching remove the cost?* It cuts the price of a stable tool list, but not the selection-accuracy problem, and changing the list breaks the cache.
+- *How do you measure the damage?* Tool-selection accuracy on a labelled set as you add tools (Q44).
+- *Why not one mega-tool with a `mode` argument?* It moves the confusion into the arguments; fine when the actions are truly similar.
+
+**Common mistakes:** Adding a tool per endpoint. Overlapping descriptions. Routing without a fallback. Quoting a hard tool-count limit as fact. Forgetting that definitions are paid on every turn.
+
+
+### Q31 ⭐⭐ 🟡 JSON mode vs structured outputs vs function calling vs prompt-only: how do they differ in guarantees, and when would you pick each?
+**Asked at:** product, API-heavy teams
+**Say this first (1 line):** They give different guarantees: prompt-only guarantees nothing, JSON mode guarantees syntax, structured outputs (strict schema) guarantee schema adherence, function calling is a way to get arguments shaped by a schema plus a decision to call a tool; none guarantees the values are correct.
+
+**Then explain:**
+
+| Approach | Syntax valid JSON | Matches your schema | Semantically correct | Typical use |
+|---|---|---|---|---|
+| Prompt-only ("reply in JSON") | No | No | No | Prototypes, models without other support; add validate-and-retry (Q12) |
+| JSON mode | Yes (provider claim) | No, you still validate keys and types | No | Simple outputs where the shape is loose |
+| Structured outputs (strict schema) | Yes | Yes, for the supported subset (Q23) | No | Extraction, classification, any response a program consumes |
+| Function calling | Usually; strict mode available | Yes with strict, otherwise best effort | No | Letting the model act: choose a tool and its arguments (Q8) |
+
+- **Three levels:** syntax (parses), schema (right keys and types), semantics (right numbers and facts). Only the last matters to the user and no mode guarantees it (Q10).
+- **Pick:** need a typed response for code, use structured outputs; need the model to take actions, use function calling; JSON mode only when the schema is loose or structured outputs are unavailable; prompt-only only with validation and a retry budget.
+- **Terms drifted and providers differ:** names such as "JSON mode", "structured outputs" and "strict" have shifted over time and mean slightly different things per vendor, and open-source stacks use constrained decoding (Q22). Check the current docs before relying on a guarantee.
+- **Still validate:** even with a guarantee, check business rules, ranges and cross-field consistency in code. Refusals or truncation (max tokens) can still produce incomplete output.
+
+**Example:** invoice extraction: structured outputs gives `{"total": 1180.0, "currency": "INR"}` with the right types every time, but the total can still be misread from the document. Validate `total == subtotal + tax`.
+
+**Follow-ups:**
+- *Is function calling just structured output?* Same schema mechanism, but the output is a call request that your code executes, in a loop (Q8, Q11).
+- *When prompt-only?* A throwaway script or a model with no constrained mode, with a bounded retry and fail closed.
+- *Does strictness cost anything?* First-use schema compile latency and a limited schema subset (Q40, Q23); possible quality effects (Q24).
+
+**Common mistakes:** Treating JSON mode as schema validation. Treating valid output as correct. Using function calling when you only need a typed answer, or the reverse. Assuming the same guarantee on every provider.
+
+
+### Q32 ⭐⭐ 🟡 How do you evaluate prompts (metrics by task type, rubrics for subjective outputs)? What are the limits of LLM-as-judge for this?
+**Asked at:** product, GenAI startups, GCC, evaluation-focused rounds
+**Say this first (1 line):** I pick the metric by task type, use exact or F1 scoring wherever there is a right answer, rubrics or pairwise comparison for subjective outputs, and an LLM judge only after calibrating it against human labels; I always report a confidence interval, because small eval sets are noisy.
+
+**Then explain:**
+
+| Task | Metric | Note |
+|---|---|---|
+| Classification | Accuracy, per-class precision/recall, macro-F1 | Watch class imbalance |
+| Extraction | Exact match per field, token-level F1, schema-valid rate | Normalise formats before comparing |
+| Code / SQL / tools | Execution or unit-test pass rate, tool-selection and argument accuracy (Q44) | Most objective |
+| Summaries, chat, writing | Rubric scores (1-5 per criterion) or pairwise preference | Write the rubric, give anchors |
+| RAG answers | Groundedness / faithfulness, answer relevance (Part 9) | Deeper in Part 9 |
+
+- **LLM-as-judge:** cheap and scalable, but calibrate: label 50-100 items by humans, measure judge agreement, and fix the judge prompt until it tracks them. Commonly reported biases: preference for longer answers, preference for its own model family's style (self-preference), and sensitivity to position in pairwise comparisons (swap the order and average).
+- **Design points:** a fixed golden set that covers edge cases, one change at a time (Q6), a separate held-out set so you do not overfit the prompt to the eval, and tracked cost and latency next to quality.
+- **Noise:** a pass-rate difference of a few points on 100 items is often noise. Bootstrap a confidence interval (below). Depth on judges, RAGAS and eval design is Part 9.
+
+**Example:** two prompts for ticket routing on 120 items: prompt B passes more items than A. Is it real? The bootstrap interval says.
+
+**Code:** (executed; results are SYNTHETIC pass/fail data generated in the script, not from any model)
+```python
+import random
+
+# SYNTHETIC per-example pass/fail results for two prompts on the same 120-item eval set.
+# Made up for this demo (B is built to be somewhat better), correlated per item.
+rng = random.Random(0)
+n = 120
+difficulty = [rng.random() for _ in range(n)]
+A = [1 if d < 0.70 + rng.uniform(-.15, .15) else 0 for d in difficulty]
+B = [1 if d < 0.78 + rng.uniform(-.15, .15) else 0 for d in difficulty]
+print("pass rate A:", sum(A) / n, "B:", sum(B) / n)
+
+def bootstrap_diff(a, b, iters=10000, seed=1):
+    r = random.Random(seed); n = len(a); diffs = []
+    for _ in range(iters):
+        idx = [r.randrange(n) for _ in range(n)]       # resample items, keep pairs together
+        diffs.append(sum(b[i] for i in idx) / n - sum(a[i] for i in idx) / n)
+    diffs.sort()
+    return diffs[int(.025 * iters)], diffs[int(.975 * iters)]
+
+lo, hi = bootstrap_diff(A, B)
+print(f"diff (B-A) = {sum(B)/n - sum(A)/n:+.3f}, 95% bootstrap CI = [{lo:+.3f}, {hi:+.3f}]")
+print("CI excludes 0:", lo > 0 or hi < 0)
+```
+On this synthetic data the pass rates were 0.617 and 0.758 and the paired bootstrap 95% interval for the difference was about +0.075 to +0.208, excluding zero. With real data and only 30 items the interval would be much wider. Resampling whole items keeps each pair together, which suits two prompts run on the same set.
+
+**Follow-ups:**
+- *Can the judge be the same model that wrote the answer?* Risky because of self-preference; prefer a different or stronger model, and calibrate.
+- *Pairwise or absolute scores?* Pairwise is usually more reliable for subjective quality; absolute scores drift.
+- *How big a set?* Enough that the interval is narrower than the effect you care about.
+
+**Common mistakes:** Trusting a judge without checking it against humans. Comparing prompts on a few examples. Tuning the prompt on the same set used to report results. Using BLEU/ROUGE for open-ended outputs. Ignoring length bias.
+
+
+### Q33 ⭐⭐ 🟡 How do you version, test and roll out prompts in production (prompt store, canary, A/B, rollback)? Where should prompts live?
+**Asked at:** product, GCC, platform teams
+**Say this first (1 line):** I treat prompts like code: immutable versions with ids, kept in version control or a prompt registry, gated by an eval in CI, rolled out to a small canary share, rolled back by re-pinning the previous version, and the prompt version is logged with every request.
+
+**Then explain:**
+- **Where they live:** simplest is the code repo (prompt files, reviewed in pull requests, deployed with the app). A registry or prompt store helps when non-engineers edit prompts or you want to change them without a deploy; then you need access control, review and the same eval gate. Either way, no prompts edited live in a dashboard with no history.
+- **Versioning:** each version is immutable with an id (a content hash or a semantic version). Production points to a version through a pinned alias, so "what is running" is a lookup, not a guess. Prompt, model name, tool definitions and decoding settings change together; version them as one bundle.
+- **Testing:** an eval gate in CI on a golden set (Q6, Q32), plus structural tests (output validates against the schema, no leaked variables). Block the merge if quality drops or cost and latency regress.
+- **Rollout:** canary a small percent of traffic (deterministic by request or user id), compare online metrics (thumbs, task success, escalations, cost), then ramp. A/B is the same mechanism with a planned comparison and enough traffic for a confidence interval.
+- **Rollback:** re-pin the previous version; no redeploy needed. Logging the prompt version with each request makes any bad output traceable and any regression attributable.
+- **Watch for:** a model-provider update can change behaviour with no prompt change, so pin model versions where offered and keep running the eval on a schedule.
+
+**Example:** new prompt wins the offline gate, goes to 10% of traffic for a day, metrics hold, ramp to 100%. A week later a complaint spike appears: the logs show `support@900a1cc0`, and re-pinning `prod` fixes it in seconds.
+
+**Code:** (executed; in-memory sketch with a hand-set eval number, no model call)
+```python
+import hashlib, json, random
+
+class PromptRegistry:
+    """Tiny in-memory registry: immutable versions, named aliases that can be re-pinned."""
+    def __init__(self): self.versions, self.aliases = {}, {}
+    def publish(self, name, template):
+        vid = f"{name}@{hashlib.sha256(template.encode()).hexdigest()[:8]}"   # content hash id
+        self.versions[vid] = template
+        return vid
+    def pin(self, alias, vid):
+        assert vid in self.versions; self.aliases[alias] = vid
+    def get(self, alias): vid = self.aliases[alias]; return vid, self.versions[vid]
+
+reg = PromptRegistry()
+v1 = reg.publish("support", "Answer briefly. Question: {q}")
+v2 = reg.publish("support", "Answer briefly and cite the policy id. Question: {q}")
+reg.pin("prod", v1); reg.pin("candidate", v2)
+
+def eval_gate(vid, golden_pass_rate, baseline=0.80, min_gain=0.0):   # pass rate comes from your eval run
+    return golden_pass_rate >= baseline + min_gain
+
+def choose(request_id, canary_pct=10):
+    # deterministic split: the same request id always maps to the same arm
+    bucket = int(hashlib.sha256(request_id.encode()).hexdigest(), 16) % 100
+    return "candidate" if bucket < canary_pct else "prod"
+
+def handle(request_id, q, log):
+    alias = choose(request_id)
+    vid, tmpl = reg.get(alias)
+    prompt = tmpl.format(q=q)                       # model call omitted
+    log.append({"request_id": request_id, "prompt_version": vid})   # log version with EVERY request
+    return prompt
+
+print("versions:", v1, v2)
+print("gate (candidate eval 0.84 vs baseline 0.80):", eval_gate(v2, 0.84))
+log = []
+for i in range(1000): handle(f"req-{i}", "refund?", log)
+share = sum(1 for r in log if r["prompt_version"] == v2) / len(log)
+print(f"canary share of traffic ~ {share:.3f}")
+reg.pin("candidate", v1)             # rollback = re-pin the old version; no redeploy
+reg.pin("prod", v1)
+print("after rollback prod ->", reg.get("prod")[0], "| candidate ->", reg.get("candidate")[0])
+print(log[0])
+```
+My run: two content-hashed versions were published; the gate passed for an assumed eval rate of 0.84 against baseline 0.80; a 10% canary gave about 8.9% of 1000 requests (hash split, so not exact); rollback re-pinned the old version; every log row carried the prompt version.
+
+**Follow-ups:**
+- *Canary vs shadow?* Shadow runs the new prompt on live traffic without showing users its output; safer, but costs double and gives no user feedback.
+- *How do you keep the eval gate from overfitting?* Hold-out set, refresh with real failures (Q35).
+- *What else belongs in the version?* Model id, temperature and other decoding settings (Part 2), tool schemas.
+
+**Common mistakes:** Editing the production prompt in place. Not logging which version produced an output. Evaluating only on a handful of examples. Changing prompt and model together, so you cannot tell which caused a change. Random per-request canary assignment that flips a user between versions mid-session.

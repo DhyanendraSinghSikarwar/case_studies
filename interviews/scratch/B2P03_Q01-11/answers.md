@@ -218,9 +218,10 @@ from jsonschema import validate, ValidationError
 SCHEMA = {"type": "object",
           "properties": {"name": {"type": "string"}, "age": {"type": "integer"}},
           "required": ["name", "age"], "additionalProperties": False}
+FENCE = chr(96) * 3          # three backticks, built here so this snippet stays fence-safe
 samples = {
  "clean":          '{"name": "Asha", "age": 31}',
- "markdown fence": '```json\n{"name": "Asha", "age": 31}\n```',
+ "markdown fence": FENCE + 'json\n{"name": "Asha", "age": 31}\n' + FENCE,
  "prose around":   'Sure! Here is the JSON: {"name": "Asha", "age": 31} Hope that helps.',
  "trailing comma": '{"name": "Asha", "age": 31,}',
  "single quotes":  "{'name': 'Asha', 'age': 31}",
@@ -288,3 +289,200 @@ The 29 and "clear" are made-up values for illustration. Then the model is called
 - *Side effects and retries?* Use idempotency keys for anything that writes; agent depth is Part 8.
 
 **Common mistakes:** Thinking the model runs the function; not returning a result for every call id; trusting arguments without validation; no step cap; dumping huge raw tool output back into context.
+
+### Q9 ⭐⭐⭐ 🟡 How do you design good tool or function definitions (names, descriptions, parameter schemas, enums, how many tools)?
+**Asked at:** product, GenAI startups, agent-building teams
+**Say this first (1 line):** Design a tool like a small, well-documented API for a smart but new intern: a clear verb-noun name, a description that says when to use it and when not to, tight parameter schemas with enums and required fields, nothing the model has to guess that your code already knows, and as few tools as the job allows.
+
+**Then explain:**
+- **Names:** specific and action-first (`search_orders`, `start_refund`), not `search` or `helper`. Similar names for different things confuse selection.
+- **Description:** what it does, when to use it, when not to (point to the sibling tool), and any important limits. This is the main thing the model reads when choosing.
+- **Parameters:** typed, with short descriptions, `enum` for closed sets, `minimum`/`maximum`, and `required`. For strict mode (OpenAI `strict`, Anthropic `strict: true`) expect `additionalProperties: false` and every field required, with optional ones as nullable. Check the current docs, these change.
+- **Do not ask for what your code knows:** user id, today's date, tenant, auth. Inject them server-side. Every extra parameter is a chance for a wrong or spoofed value.
+- **Intern test:** if a new hire could not use the tool correctly from the name, description and schema alone, the model will struggle too. Put examples of the format in the description.
+- **How many:** fewer is better. OpenAI's guide suggests staying well under about 20 functions; each definition costs tokens on every call (Anthropic notes this too) and more tools means more wrong picks. Merge near-duplicates, or expose tools in groups or via tool search for large catalogues.
+- **Outputs matter too:** return compact, readable results and errors (Q11), not raw dumps.
+
+**Example (executed):** before and after definitions. The "before" has vague names, free-text params and two values the server already knows. The "after" uses an enum, bounds, a when-not-to-use line, and drops `user_id` and `today`.
+
+**Code:**
+```python
+import json
+from jsonschema import Draft202012Validator
+
+before = {"name": "search", "description": "Searches stuff.",
+          "parameters": {"type": "object", "properties": {
+              "q": {"type": "string"}, "t": {"type": "string"},
+              "user_id": {"type": "string"}, "today": {"type": "string"}}}}
+
+after = {"type": "function", "name": "search_orders",
+  "description": ("Find a customer's past orders by status. Use when the user asks about an existing order. "
+                  "Do NOT use for product search or for refunds (use start_refund)."),
+  "parameters": {"type": "object", "properties": {
+      "status": {"type": "string", "enum": ["processing", "shipped", "delivered", "cancelled"],
+                 "description": "Order status to filter by."},
+      "max_results": {"type": "integer", "minimum": 1, "maximum": 20, "description": "How many orders to return."}},
+    "required": ["status", "max_results"], "additionalProperties": False}, "strict": True}
+# user_id and today are NOT parameters: the server knows them from the session.
+
+for d in (after["parameters"],): Draft202012Validator.check_schema(d)
+v = Draft202012Validator(after["parameters"])
+print("good call errors:", [e.message for e in v.iter_errors({"status": "shipped", "max_results": 5})])
+print("bad enum errors :", [e.message for e in v.iter_errors({"status": "late", "max_results": 5})])
+print("before has", len(before["parameters"]["properties"]), "free-text params; after has", len(after["parameters"]["properties"]), "constrained params")
+```
+Output (my run): the good call has no errors; `status: "late"` is rejected with a clear enum message; the tool went from 4 free-text params to 2 constrained ones. This is a design illustration with schemas only, no model was called.
+
+**Follow-ups:**
+- *Many tools anyway?* Route first (a cheap classifier or sub-agent picks a tool group), or use tool search where the provider supports it (Part 8).
+- *Optional parameters?* Prefer required plus nullable in strict mode; document what null means.
+- *How do you test tool descriptions?* Run a golden set of requests and measure correct tool and argument selection (Q6).
+
+**Common mistakes:** One mega-tool with a `mode` string; descriptions that say only what, not when; free text where an enum fits; passing identity or dates through the model; dozens of overlapping tools; never testing tool-selection accuracy.
+
+### Q10 ⭐⭐⭐ 🟡 Your agent returns valid JSON but the numbers are sometimes wrong. Where do you look first? Why is valid not the same as correct?
+**Asked at:** product, GenAI startups, agent-building teams
+**Say this first (1 line):** Valid JSON only means the syntax parses, and a schema only checks shape; neither checks that the values are true, so I trace the number back to its source, check units and extraction, and add deterministic recomputation and cross-field checks in code.
+
+**Then explain (my checklist, in order):**
+1. **Source data first:** is the number actually in the input, and is the input itself right (stale, truncated, OCR noise)? Many "model errors" are upstream.
+2. **Extraction vs generation:** if the number should be copied from the text, require a supporting quote and verify it appears in the source. If the model is computing (totals, percentages), stop letting it: use a tool or code (Q8).
+3. **Units, currency, scale, locale:** lakh vs million, thousands vs units, `1,250.50` vs `1.250,50`, INR vs USD, percent vs fraction. Make units explicit fields and put them in the schema.
+4. **Schema too loose:** `number` accepts anything; an enum that includes a wrong option, or a missing `minimum`/`maximum`, lets bad values through. Tighten ranges and enums, allow `null` for unknown so it need not invent.
+5. **Rounding and types:** floats vs Decimal, rounding at each step vs at the end, numbers returned as strings.
+6. **Prompt ambiguity:** "total" (with or without tax?), "amount" (line or invoice?). Define fields precisely, add examples (Q1).
+7. **Deterministic validation:** recompute derived fields and compare (`total == subtotal + tax`, `subtotal == sum(items)`, `qty*unit_price == amount`). Failures go to a bounded retry or human review (Q12).
+8. **Measure:** field-level accuracy on a golden set, split by field, so you know which number is failing (Q6).
+- **Limit:** consistency checks catch internal contradictions only. If every figure is consistently in the wrong currency, arithmetic still balances, so units and source checks cannot be skipped.
+
+**Example (executed):** an invoice where the model swapped digits in the total. The schema passes; the cross-check fails. A wrong currency passes both, which is exactly why step 3 exists.
+
+**Code:**
+```python
+from decimal import Decimal
+from jsonschema import validate
+
+SCHEMA = {"type": "object", "required": ["items", "subtotal", "tax", "total", "currency"],
+          "properties": {
+            "items": {"type": "array", "items": {"type": "object", "required": ["qty", "unit_price", "amount"],
+                      "properties": {"qty": {"type": "integer"}, "unit_price": {"type": "number"}, "amount": {"type": "number"}}}},
+            "subtotal": {"type": "number"}, "tax": {"type": "number"}, "total": {"type": "number"},
+            "currency": {"enum": ["INR", "USD"]}}}
+
+def cross_check(inv, tol=Decimal("0.01")):
+    """Deterministic recomputation. Returns a list of problems (empty = consistent)."""
+    d, errs = Decimal, []
+    for i, it in enumerate(inv["items"]):
+        exp = d(it["qty"]) * d(str(it["unit_price"]))
+        if abs(exp - d(str(it["amount"]))) > tol: errs.append(f"item {i}: qty*unit_price={exp} but amount={it['amount']}")
+    sub = sum(d(str(it["amount"])) for it in inv["items"])
+    if abs(sub - d(str(inv["subtotal"]))) > tol: errs.append(f"subtotal {inv['subtotal']} != sum of items {sub}")
+    if abs(d(str(inv["subtotal"])) + d(str(inv["tax"])) - d(str(inv["total"]))) > tol:
+        errs.append(f"total {inv['total']} != subtotal+tax {d(str(inv['subtotal'])) + d(str(inv['tax']))}")
+    return errs
+
+good = {"items": [{"qty": 2, "unit_price": 450.0, "amount": 900.0}, {"qty": 1, "unit_price": 1200.0, "amount": 1200.0}],
+        "subtotal": 2100.0, "tax": 378.0, "total": 2478.0, "currency": "INR"}
+bad = {**good, "total": 2748.0}                       # digits swapped: still valid JSON, still schema-valid
+bad2 = {**good, "items": [{"qty": 2, "unit_price": 450.0, "amount": 90.0}, good["items"][1]]}
+bad3 = {**good, "currency": "USD"}                    # wrong unit: no arithmetic check can see this
+for name, inv in [("good", good), ("swapped total", bad), ("bad line amount", bad2), ("wrong currency", bad3)]:
+    validate(inv, SCHEMA)                             # schema passes for all four
+    print(f"{name:15} schema: ok | cross-check:", cross_check(inv) or "ok")
+```
+Output (my run): all four invoices pass the schema. The consistent one passes the cross-check. The swapped total is caught (`total 2748.0 != subtotal+tax 2478.0`). The bad line amount is caught twice (line and subtotal). The wrong currency (INR changed to USD) passes the cross-check, so it needs a source or unit check.
+
+**Follow-ups:**
+- *Why Decimal?* Float sums can differ by tiny amounts and produce false alarms; I also use a tolerance.
+- *What do you do on a failure?* One retry with the specific error message, then fail closed to human review.
+- *Can constrained decoding fix this?* No, it guarantees shape, not truth (Q7).
+
+**Common mistakes:** Equating "parses" with "correct"; adding more schema and calling it done; letting the LLM do arithmetic; ignoring units; checking only totals and not the line items; no field-level metrics.
+
+### Q11 ⭐⭐⭐ 🟡 Code: implement a function-calling loop against a mocked model: parse the call, validate arguments, execute, return the result, with a maximum number of steps.
+**Asked at:** product, big tech, live-coding rounds
+**Say this first (1 line):** Loop up to `max_steps`: ask the model, if it returns a final answer stop, otherwise look up the tool, parse and validate the arguments with the schema, execute inside try/except, append a compact result (or error) to the messages, and go round again; if the steps run out, fail closed.
+
+**Then explain:**
+- **Mock model:** `fake_model(messages, tools)` is deterministic and returns either a tool call (id, name, arguments as a JSON string, like real APIs) or a final answer. No real LLM, so every run is reproducible. The real flow is Q8.
+- **Registry:** dict of name to schema, description and function. Unknown name returns an error that lists the available tools.
+- **Validation:** `json.loads` first, then `jsonschema` against the tool schema. Errors are returned to the model as short text so it can fix them; never crash the loop.
+- **Execution:** wrap in try/except and return `"KeyError: ..."` truncated, not a stack trace.
+- **Guards:** `max_steps`, and a trace of every step for debugging. Real systems add a time or token budget, duplicate-call detection, and idempotency for side effects (Part 8).
+
+**Example (executed):** step 1 the mock model sends bad arguments (`id` instead of `order_id`); validation returns an error; step 2 it corrects the call; step 3 it answers. A runaway model is stopped by the cap.
+
+**Code:**
+```python
+import json
+from jsonschema import Draft202012Validator
+
+# ---- tool registry: name -> (schema, function) ----
+def get_order_status(order_id):
+    db = {"A100": "shipped", "A200": "processing"}
+    if order_id not in db: raise KeyError(f"unknown order {order_id}")
+    return {"order_id": order_id, "status": db[order_id]}
+
+TOOLS = {
+  "get_order_status": {
+    "description": "Look up the status of one order by its id (format A###).",
+    "schema": {"type": "object", "properties": {"order_id": {"type": "string", "pattern": "^A[0-9]{3}$"}},
+               "required": ["order_id"], "additionalProperties": False},
+    "fn": get_order_status}}
+
+# ---- MOCK model: deterministic, no real LLM. Returns a tool call or a final answer. ----
+def fake_model(messages, tools):
+    tool_msgs = [m for m in messages if m["role"] == "tool"]
+    if not tool_msgs:                                  # step 1: bad args (wrong key name)
+        return {"type": "tool_call", "id": "call_1", "name": "get_order_status", "arguments": '{"id": "A100"}'}
+    last = json.loads(tool_msgs[-1]["content"])
+    if "error" in last and "call_1" == tool_msgs[-1]["call_id"]:   # step 2: corrected after seeing the error
+        return {"type": "tool_call", "id": "call_2", "name": "get_order_status", "arguments": '{"order_id": "A100"}'}
+    if "status" in last:
+        return {"type": "final", "content": f"Order {last['order_id']} is {last['status']}."}
+    return {"type": "final", "content": "Sorry, I could not look that up."}
+
+def run_tool(call):
+    """Parse -> validate -> execute. Always returns a compact JSON string, never raises."""
+    spec = TOOLS.get(call["name"])
+    if spec is None: return json.dumps({"error": f"unknown tool {call['name']}", "available": list(TOOLS)})
+    try: args = json.loads(call["arguments"])
+    except json.JSONDecodeError as e: return json.dumps({"error": f"arguments are not valid JSON: {e.msg}"})
+    errs = sorted(Draft202012Validator(spec["schema"]).iter_errors(args), key=lambda e: list(e.path))
+    if errs: return json.dumps({"error": "invalid arguments", "details": [e.message[:80] for e in errs[:3]]})
+    try: return json.dumps(spec["fn"](**args))
+    except Exception as e: return json.dumps({"error": f"{type(e).__name__}: {e}"[:120]})
+
+def agent_loop(user_msg, model=fake_model, max_steps=5):
+    messages, trace = [{"role": "user", "content": user_msg}], []
+    for step in range(1, max_steps + 1):
+        out = model(messages, TOOLS)
+        if out["type"] == "final":
+            trace.append((step, "final", out["content"])); return out["content"], trace
+        result = run_tool(out)
+        trace.append((step, f"{out['name']}({out['arguments']})", result))
+        messages.append({"role": "assistant", "tool_call": out})
+        messages.append({"role": "tool", "call_id": out["id"], "content": result})
+    trace.append((max_steps, "STOP", "max_steps reached")); return None, trace   # fail closed
+
+answer, trace = agent_loop("Where is order A100?")
+for t in trace: print(t)
+print("answer:", answer)
+
+# guard test: a model that never stops
+loop_model = lambda m, t: {"type": "tool_call", "id": "x", "name": "get_order_status", "arguments": '{"order_id": "A200"}'}
+a, tr = agent_loop("loop", model=loop_model, max_steps=3)
+print("runaway ->", a, "| tool steps:", len(tr) - 1, "| last:", tr[-1])
+# error paths
+print(run_tool({"name": "get_order_status", "arguments": '{"order_id": "A999"}'}))
+print(run_tool({"name": "nope", "arguments": "{}"}))
+print(run_tool({"name": "get_order_status", "arguments": "{bad"}))
+```
+Output (my run): step 1 returns `invalid arguments` with details (`'order_id' is a required property`, `Additional properties are not allowed ('id' was unexpected)`); step 2 succeeds with `{"order_id": "A100", "status": "shipped"}`; step 3 answers `Order A100 is shipped.` The always-calling model stops after 3 tool steps with `max_steps reached` and returns `None`. Error paths: unknown order gives a `KeyError` result, unknown tool lists the available ones, malformed JSON gives a parse error. All mock, nothing from a real model.
+
+**Follow-ups:**
+- *Parallel calls?* Loop over every call in the turn and append one result per call id.
+- *Retry the same bad call forever?* The step cap and a repeated-call detector stop it.
+- *Side effects?* Idempotency keys and confirmation for writes; do not blindly retry.
+
+**Common mistakes:** Letting an exception kill the loop; no step cap; passing raw tracebacks or giant outputs back; skipping argument validation; forgetting the tool result must reference the call id; no trace to debug with.

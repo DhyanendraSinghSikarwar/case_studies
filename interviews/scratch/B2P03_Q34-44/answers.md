@@ -357,3 +357,174 @@ except Truncated as e: print("                     fixed -> Truncated:", e)
 - *Is `validate` enough for safety?* It checks shape and simple rules. Business rules, approval and idempotency are the next layers (Q38).
 
 **Common mistakes:** Testing only the happy path with one tool call. Fixing the step cap and missing the id or parallel bugs. Swallowing exceptions to "keep the agent running". Treating "no tool call" as "finished" without reading the stop reason. Letting the model's JSON go straight into `**kwargs`.
+
+### Q38 ⭐ 🔴 Design a reliability stack for an agent that issues refunds or changes account settings (schema validation, business rules, retries, approval, idempotency, audit).
+**Asked at:** senior roles at product companies, fintech, GCCs
+**Say this first (1 line):** I treat the model as an untrusted proposer and put deterministic layers between its proposal and the money: schema validation, business rules, idempotency, spend limits, human approval above a threshold, an audit log, and fail closed on anything unclear, with monitoring on top. The model never gets to be the last check.
+
+**Then explain:**
+
+| Layer | What it checks | Example for refunds |
+|---|---|---|
+| 1 Schema validation | Types, required fields, no unknown keys | `amount` is a number, `order_id` a string; reject `"30"` and `true` |
+| 2 Business rules (in code, not in the prompt) | Facts from the system of record | amount > 0, amount <= order total, one refund per order, order belongs to the caller |
+| 3 Idempotency key | Same request twice does one thing | Key from order and amount (or client-supplied); a retry after a timeout does not pay twice |
+| 4 Spend limits | Blast radius | Per-day total, per-customer cap, per-agent rate limit |
+| 5 Human approval | Risky or large actions | Above a threshold, or any account-setting change, goes to a person |
+| 6 Audit log | Who, what, why, which decision | Store the request, decision, reason, model and prompt version, trace id |
+| 7 Fail closed | Unknown state means no action | Exception, timeout, missing data: deny and escalate, never "allow by default" |
+| 8 Monitoring | Drift and abuse | Denial rate, approval rate, spend per hour, duplicates, alert on spikes, kill switch |
+
+- **Least privilege:** the agent calls a `request_refund` tool that goes through this gate. It has no direct database write or payment API access. Also keep untrusted text (customer messages) from choosing the amount unchecked (Q34).
+- **Retries:** cap at 1 or 2 for the model's own argument fixes; side-effecting calls only retry with the same idempotency key.
+- **Test the gate, not just the model:** the policy function is plain code, so it has unit tests; then run adversarial and replay cases end to end.
+- **Thresholds are policy choices** (here 50 for approval, 200 per day); they are assumed numbers in the demo.
+
+**Example:** a customer says "refund 500, my order total was 500" for an order worth 120. The model proposes 500. Layer 2 denies it (exceeds total), the denial goes back to the model as an error, and the audit log records the attempt. If the model proposes 90 on a 120 order, it is allowed by rules but waits for human approval.
+
+**Code:** (executed, standalone; the policy gate only, no model; orders and limits are made-up data)
+```python
+# Standalone policy gate for a refunds agent. No model involved: this is the deterministic
+# layer that sits AFTER the model proposes a refund and BEFORE any money moves.
+from dataclasses import dataclass, field
+import hashlib, json, copy
+
+ORDERS0 = {"A1": {"total": 120.0, "refunded": 0.0, "customer": "u1"},
+          "B2": {"total": 80.0,  "refunded": 80.0, "customer": "u2"}}
+APPROVAL_ABOVE = 50.0          # human approval above this amount (assumed policy)
+DAILY_LIMIT = 200.0            # agent-wide spend limit per day (assumed policy)
+
+@dataclass
+class State:
+    spent_today: float = 0.0
+    seen_keys: dict = field(default_factory=dict)
+    audit: list = field(default_factory=list)
+    orders: dict = field(default_factory=lambda: copy.deepcopy(ORDERS0))
+
+def idem_key(order_id, amount):
+    return hashlib.sha256(json.dumps([order_id, round(amount, 2)]).encode()).hexdigest()[:12]
+
+def check_refund(req, st):
+    """Returns (decision, reason). decision in {'allow','needs_approval','deny'}. Fails closed."""
+    try:
+        oid, amt = req["order_id"], req["amount"]                # layer 1: schema-ish validation
+        if not isinstance(oid, str) or isinstance(amt, bool) or not isinstance(amt, (int, float)):
+            return "deny", "bad types"
+        if set(req) - {"order_id", "amount", "idempotency_key"}: return "deny", "unknown fields"
+        order = st.orders.get(oid)
+        if order is None: return "deny", "unknown order"
+        key = req.get("idempotency_key") or idem_key(oid, amt)   # layer 3: idempotency
+        if key in st.seen_keys: return "deny", f"duplicate of earlier request {key}"
+        if amt <= 0: return "deny", "amount must be positive"     # layer 2: business rules
+        if order["refunded"] > 0: return "deny", "order already refunded"
+        if amt > order["total"] - order["refunded"]: return "deny", "amount exceeds order total"
+        if st.spent_today + amt > DAILY_LIMIT: return "deny", "daily spend limit"   # layer 4
+        if amt > APPROVAL_ABOVE: return "needs_approval", "above approval threshold"  # layer 5
+        return "allow", "ok"
+    except Exception as e:                                       # fail closed
+        return "deny", f"error: {type(e).__name__}"
+
+def process(req, st, approved=False):
+    d, why = check_refund(req, st)
+    if d == "needs_approval" and approved: d, why = "allow", "human approved"
+    if d == "allow":
+        key = req.get("idempotency_key") or idem_key(req["order_id"], req["amount"])
+        st.seen_keys[key] = req["amount"]; st.spent_today += req["amount"]
+        st.orders[req["order_id"]]["refunded"] += req["amount"]   # one refund per order
+    st.audit.append({"req": req, "decision": d, "reason": why})   # layer 6: audit every decision
+    return d, why
+
+# ---- tests ----
+def fresh(): return State()
+assert process({"order_id": "A1", "amount": 30.0}, fresh())[0] == "allow"
+assert process({"order_id": "A1", "amount": 90.0}, fresh())[0] == "needs_approval"
+assert process({"order_id": "A1", "amount": 90.0}, fresh(), approved=True)[0] == "allow"
+assert process({"order_id": "A1", "amount": 500.0}, fresh()) == ("deny", "amount exceeds order total")
+assert process({"order_id": "A1", "amount": -5}, fresh())[0] == "deny"
+assert process({"order_id": "B2", "amount": 10.0}, fresh()) == ("deny", "order already refunded")
+assert process({"order_id": "ZZ", "amount": 10.0}, fresh())[0] == "deny"
+assert process({"order_id": "A1", "amount": "30"}, fresh())[0] == "deny"
+assert process({"order_id": "A1", "amount": True}, fresh())[0] == "deny"
+assert process({"order_id": "A1", "amount": 10.0, "note": "x"}, fresh())[0] == "deny"
+assert process({}, fresh())[0] == "deny"                                   # fails closed
+s = fresh(); process({"order_id": "A1", "amount": 30.0}, s)
+assert process({"order_id": "A1", "amount": 30.0}, s)[0] == "deny"        # retry = duplicate, not 2nd refund
+s = fresh(); s.spent_today = 190.0
+assert process({"order_id": "A1", "amount": 30.0}, s) == ("deny", "daily spend limit")
+assert len(s.audit) == 1
+print("all policy tests passed")
+s = fresh()
+for r in [{"order_id": "A1", "amount": 30.0}, {"order_id": "A1", "amount": 30.0}, {"order_id": "A1", "amount": 90.0}]:
+    print(r, "->", process(r, s))
+```
+All asserts passed in my run. In the printed trace the first 30.0 refund is allowed, the identical retry is denied as a duplicate, and a later 90.0 on the same order is denied (one refund per order).
+
+**Follow-ups:**
+- *Who sets the idempotency key?* Best from the caller or the workflow (one per business intent) so a retried tool call reuses it; deriving it from order and amount is a fallback and blocks legitimate equal repeats.
+- *Why not put the rules in the prompt?* The model can ignore or be talked out of them; code checks are enforced every time and are testable.
+- *How do you roll out?* Shadow mode (log decisions, no action), then low limits with approval for everything, then relax thresholds using measured error rates.
+
+**Common mistakes:** Relying on the prompt to enforce "never refund over the total". Giving the agent direct write access. No idempotency, so a timeout retry pays twice. Failing open on errors. Approval that humans rubber-stamp without seeing the evidence. No audit trail or kill switch.
+
+### Q39 ⭐ 🔴 When would you choose not to force a strict schema on a model, and what do you do instead?
+**Asked at:** product, GenAI startups, senior roles
+**Say this first (1 line):** I force a strict schema when downstream code needs guaranteed fields, but not for open-ended reasoning or creative text, for schemas that are huge, deeply nested or constantly changing, or when I see quality drop under constraints. There I let the model write freely, then parse in a second step, or use a looser schema with an "other" escape hatch, or parse leniently and validate.
+
+**Then explain:**
+- **When strict is the wrong tool:**
+  - Open-ended reasoning, analysis, writing: forcing structure during thinking can hurt quality, and some reports and practitioners note accuracy loss when reasoning is squeezed into fields (treat as task-dependent, measure it).
+  - Schemas that change often or are unbounded (user-defined fields, free-form key/value): you keep re-deploying, or the schema becomes `object` with no real constraint.
+  - Schemas too large or complex for the engine: unsupported keywords, deep nesting, big unions, long compile times (Q40); engines and providers support different JSON Schema subsets, check the current docs.
+  - Closed enums where reality has more cases: the model is forced to pick a wrong label.
+- **Alternatives:**
+
+| Option | How it works | Trade-off |
+|---|---|---|
+| Free text, then extraction | Step 1 reasons freely; step 2 (small model or same model) extracts a strict schema | Extra call, but quality of step 1 kept |
+| Schema with `other` + free-text field | Closed enum plus `other` and a note | You still get valid JSON; review the "other" bucket to grow the enum |
+| Reasoning field first, then answer fields | Put a free `reasoning` string before the typed answer | Costs tokens; order matters since fields are generated in order |
+| Lenient parse + validate + retry | Extract the JSON block, validate with Pydantic/Zod, retry once or twice, then fail closed | Works with any model; failures are possible, so you must handle them |
+
+- **Valid is not correct:** a schema guarantees shape, not truth. I still validate values and business rules.
+- **Decide by measurement:** compare field accuracy and task quality with and without the constraint on a labelled set.
+
+**Example:** triaging support tickets: a closed enum of 4 categories is fine until a legal threat arrives. With an `other` value plus a note, the ticket is routed to a human and the team later adds a "legal" category. Without it, the model files the threat under "billing".
+
+**Code:** (executed; MOCK model outputs as plain strings, Pydantic for validation)
+```python
+# Two fallbacks to a rigid schema, with MOCK model outputs (no real model).
+import json, re
+from typing import Literal, Optional
+from pydantic import BaseModel, ValidationError
+
+# (a) Schema with an escape hatch: closed enum + 'other' + free-text field
+class Ticket(BaseModel):
+    category: Literal["billing", "bug", "feature", "other"]
+    category_other: Optional[str] = None     # filled only when category == "other"
+    summary: str
+
+# (b) Lenient parse of free text: pull the first {...} block, then validate
+def lenient_parse(text):
+    m = re.search(r"\{.*\}", text, re.S)
+    if not m: return None, "no JSON found"
+    try: return Ticket.model_validate(json.loads(m.group(0))), None
+    except (json.JSONDecodeError, ValidationError) as e: return None, type(e).__name__
+
+mock_outputs = [
+    'Sure! Here you go:\n{"category": "bug", "summary": "App crashes on login"}\nHope that helps.',
+    '{"category": "other", "category_other": "legal threat", "summary": "Customer mentions a lawyer"}',
+    '{"category": "complaint", "summary": "Rude agent"}',      # outside the enum
+    'I think this is mostly billing but also a bug.',            # no JSON
+]
+for t in mock_outputs:
+    obj, err = lenient_parse(t)
+    print("OK  " + obj.model_dump_json() if obj else f"FAIL {err}  -> route to retry / second extraction pass / human")
+```
+Output from my run: the chatty reply with a JSON block parses, the `other` case parses, the out-of-enum category fails validation, and the reply without JSON fails parsing; both failures go to the retry or human path.
+
+**Follow-ups:**
+- *Does constrained decoding hurt quality?* It can on some tasks, mainly by forcing the model into a format that fights its natural reasoning, and by token-boundary effects; I would measure on my task rather than assume.
+- *Why does field order matter?* Generation is left to right, so a field produced before the answer can act as reasoning; an answer field first cannot benefit from a later explanation.
+- *What do you do when the lenient parse fails?* Retry once or twice with the error message, then fail closed or escalate (Part 3 Q10, Q12).
+
+**Common mistakes:** Forcing a schema on every task by default. Closed enums with no `other`. Assuming valid JSON means correct values. Unlimited retries on parse failures. Never reviewing the "other" bucket.
