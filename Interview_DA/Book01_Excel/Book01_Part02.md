@@ -22,8 +22,8 @@
 | 3 | Ravi | 8 |
 
 **Formula / Steps:** In C2 type `=IF(B2>=12,"Done","Pending")` and fill down.
-**Alternative:** `=IFS(B2>=12,"Done",TRUE,"Pending")` (same result, useful with many conditions). Not run here for this exact sheet; the same IF/IFS pattern is run in Q3.
-**Result:** By hand: C2 = Done, C3 = Pending (the same IF pattern is run with real values in Q2).
+**Alternative:** `=IFS(B2>=12,"Done",TRUE,"Pending")` (same result, useful with many conditions).
+**Result (run in LibreOffice 24.2, both formulas):** C2 = Done, C3 = Pending.
 **Version note:** IF works in every version and in Google Sheets. Microsoft Support "IF function" lists Excel 2016 through 365/2024. It does not state a nesting limit (limit figure: from memory, unverified).
 **Edge cases:** A blank cell counts as 0, so `B2>=12` is FALSE. Text such as "14" typed as text can behave differently from the number 14.
 **Likely follow-ups:** (1) "Can IF return another formula?" Yes, any value or formula. (2) "How do you test two things?" Wrap them in AND/OR (Q4).
@@ -78,7 +78,7 @@
 **Formula / Steps:** C2: `=IF(B2>=80,"A",IF(B2>=60,"B",IF(B2>=40,"C","D")))`, fill down.
 **Alternative:** `=IFS(B2>=80,"A",B2>=60,"B",B2>=40,"C",TRUE,"D")`; or a lookup table with `VLOOKUP(B2,table,2,TRUE)` for many bands.
 **Result (run in LibreOffice 24.2, both formulas agree):** A, B, B, C, D.
-**Version note:** Nested IF works everywhere. IFS needs Excel 2019 or later, not 2016 (Microsoft Support, "IFS function", fetched earlier in the part's research; not re-fetched by me, so treat as from the sources file). Google Sheets has IFS.
+**Version note:** Nested IF works everywhere. IFS needs Excel 2019 or later, not 2016 (Microsoft Support, "IFS function", read during this part's research). Google Sheets has IFS.
 **Edge cases:** Test order reversed (`>=40` first) gives everyone C or better. Blank marks give D. Decimal marks like 79.5 fall into B correctly.
 **Likely follow-ups:** (1) "How many IFs can you nest?" Modern Excel allows 64 (from memory, unverified); better to switch to IFS or a lookup. (2) "Why not IFS?" Not in Excel 2016.
 **Common mistakes:** Wrong order of tests; unbalanced closing brackets (one `)` per IF); typing grades without quotes.
@@ -165,11 +165,11 @@
 | 9 | 400 |
 
 **Formula / Steps:** `=COUNT(A2:A9)`, `=COUNTA(A2:A9)`, `=COUNTBLANK(A2:A9)`, `=COUNTIF(A2:A9,">200")`
-**Alternative:** `=ROWS(A2:A9)-COUNTBLANK(A2:A9)` equals COUNTA here.
+**Alternative:** `=ROWS(A2:A9)-COUNTBLANK(A2:A9)` gives 5 here, not 6: it differs from COUNTA by one because the `=""` cell is counted as blank by COUNTBLANK but as non-empty by COUNTA (run).
 **Result (run in LibreOffice 24.2):** COUNT 3; COUNTA 6; COUNTBLANK 3; COUNTIF >200 = 2.
 **Version note:** All versions and Google Sheets. The `=""` handling was run in LibreOffice; Excel behaves the same by my memory (unverified).
 **Edge cases:** Text-numbers are skipped by COUNT but counted by COUNTA. COUNTA counts `=""` but COUNTBLANK also counts it, so the two overlap.
-**Likely follow-ups:** (1) "Which counts only truly empty cells?" `=SUMPRODUCT(--(A2:A9=""))` also catches `""`; use `ISBLANK` per cell for true empties (Q36 covers this). (2) "How do you count text cells?" `=COUNTIF(A2:A9,"*")`.
+**Likely follow-ups:** (1) "Which counts only truly empty cells?" `=SUMPRODUCT(--(A2:A9=""))` also catches `""`; use `ISBLANK` per cell for true empties (Q36 covers this). (2) "How do you count text cells?" `=COUNTIF(A2:A9,"*")`. In Excel this counts only text cells (3 here: Asha, the `=""` cell and the text 7; from memory, unverified). LibreOffice returned 6 on this sheet because it also matches numbers, so do not trust the LibreOffice number for this one.
 **Common mistakes:** Using COUNT on a text column and getting 0; assuming COUNTA ignores formula blanks.
 
 ### Q7 ⭐⭐⭐ 🟢 How do you use SUMIF to total the salary of one department?
@@ -317,7 +317,7 @@
 
 **Formula / Steps:** `=A2&" "&B2`
 **Alternative:** `=TRIM(A2&" "&B2)` or `=TEXTJOIN(" ",TRUE,A2,B2)`, or `=CONCATENATE(A2," ",B2)`.
-**Result (run in LibreOffice 24.2):** `&`: "Asha Rao", "Imran  Khan" (double space), "Meena " (stray space). TRIM: "Asha Rao", "Imran Khan", "Meena". TEXTJOIN (ignore empty TRUE): same as TRIM.
+**Result (run in LibreOffice 24.2):** `&`: "Asha Rao", "Imran  Khan" (double space), "Meena " (stray space). TRIM: "Asha Rao", "Imran Khan", "Meena". TEXTJOIN (ignore empty TRUE): "Asha Rao", "Imran  Khan" (still a double space, because it only skips empty cells, not the space inside A3), "Meena". So TRIM is the safer cleaner when names carry stray spaces.
 **Version note:** `&` and CONCATENATE work everywhere. CONCAT: Microsoft Support page "CONCAT function" lists Excel 2016 to 365 and says it replaces CONCATENATE. TEXTJOIN: Excel 2019 and later (from the sources file, not re-fetched).
 **Edge cases:** Blank last name leaves a trailing space; TRIM or TEXTJOIN fixes it. Dates join as serial numbers unless wrapped in TEXT.
 **Likely follow-ups:** (1) "Last name first?" `=B2&", "&A2`. (2) "Proper case?" `PROPER` (Q24).
@@ -397,12 +397,12 @@
 **Example:** Service-anniversary list, as on 21 Oct 2026 (put it in D1 to make the sample repeatable).
 **Sample sheet:**
 
-| | A | B | C |
-|---|---|---|---|
-| 1 | Name / Joined | | As-of date in D1: 21-Oct-2026 |
-| 2 | Asha | 15-Mar-2020 | |
-| 3 | Ravi | 01-Dec-2024 | |
-| 4 | Meena | 21-Oct-2023 | |
+| | A | B | C | D |
+|---|---|---|---|---|
+| 1 | Name | Joined | | 21-Oct-2026 (as-of date) |
+| 2 | Asha | 15-Mar-2020 | | |
+| 3 | Ravi | 01-Dec-2024 | | |
+| 4 | Meena | 21-Oct-2023 | | |
 
 **Formula / Steps:** `=DATEDIF(B2,$D$1,"Y")` (use TODAY() instead of $D$1 for live). Years and months: `=DATEDIF(B2,$D$1,"Y")&" yrs "&DATEDIF(B2,$D$1,"YM")&" mths"`.
 **Alternative:** `=YEARFRAC(B2,$D$1)` or `=ROUND(($D$1-B2)/365.25,1)`.
@@ -623,7 +623,7 @@
 **Alternative:** `=TEXT(A2,"mmmm")` gives the month name; `=TEXT(A2,"yyyy")` gives the year as text.
 **Result (run in LibreOffice):** Row 2: 2026, 3, 15, "March". Row 3: 2025, 12, 1, "December". Row 4: 2024, 7, 28, "July". `TEXT(A2,"yyyy")` returns text "2026" (ISNUMBER = FALSE), whereas YEAR returns a number.
 **Version note:** All versions and Google Sheets.
-**Edge cases:** If the cell holds text that looks like a date, the functions may error or misread (see Q29). Blank cell returns year 1900 / month 1 / day 0.
+**Edge cases:** If the cell holds text that looks like a date, the functions may error or misread (see Q29). A blank cell is treated as date 0: Excel returns year 1900 / month 1 / day 0 (from memory, unverified); LibreOffice returned 1899 / 12 / 30 because its day 0 is 30-Dec-1899, so the two programs differ here.
 **Likely follow-ups:** 1) First of the month? `=DATE(YEAR(A2),MONTH(A2),1)` (gives 01-Mar-2026). 2) Financial year? Use IF(MONTH>=4,...).
 **Common mistakes:** Using TEXT and then doing maths on the text result; typing dates as text.
 
@@ -675,7 +675,7 @@
 **Version note:** NETWORKDAYS exists in all modern Excel versions; NETWORKDAYS.INTL from Excel 2010 (from memory, unverified). Google Sheets has both.
 **Edge cases:** Start and end are both counted if they are working days. If a holiday falls on a weekend it is not subtracted twice. A holiday typed as text gives `#VALUE!`. If the end date is earlier than the start you get a negative number.
 **Likely follow-ups:** 1) Many holidays? Keep a named holiday list. 2) Date after N working days? WORKDAY (see Q48).
-**Common mistakes:** Forgetting to lock the holiday range with `$`; using `end - start` (calendar days: 31 here, not 22).
+**Common mistakes:** Forgetting to lock the holiday range with `$`; using `end - start` (30 calendar days apart here, 31 if you count both ends, not 22).
 
 ### Q28 ⭐⭐ 🟢 How do you find the day of the week for a date?
 **Asked at:** commonly asked (no company-specific report found)
@@ -1018,8 +1018,8 @@
 3. To repair a deleted-range #REF!, press Ctrl+Z straight away; otherwise rewrite the reference.
 
 **Alternative:** Make the column number dynamic so it cannot drift: `=VLOOKUP("E102",A2:C4,MATCH("Dept",A1:C1,0),FALSE)`.
-**Result:** (run) first formula gives Sales; the column-5 version gives #REF! in Excel. LibreOffice returned #VALUE! for this case, so the VLOOKUP-specific #REF! is from Excel documentation memory, not confirmed here; the match-based version gives Sales.
-**Version note:** Applies to all versions and Google Sheets (Google Sheets shows #REF! too; unverified).
+**Result:** (run in LibreOffice 24.2) first formula gives Sales; the match-based version gives Sales. The column-5 version gives #REF! in Excel per Microsoft Support, "VLOOKUP function" ("If col_index_num is greater than the number of columns in table_array, you'll get the #REF! error value"). LibreOffice returned #VALUE! for this case, so the #REF! itself was not reproduced here.
+**Version note:** The VLOOKUP page lists Excel 2016 through 365. Google Sheets shows #REF! too (from memory, unverified).
 **Edge cases:** Deleting a whole worksheet breaks references to it; formulas in an Excel Table (structured references) survive row deletes better. Entire-column references like A:A are safer than fixed ranges when columns are removed.
 **Likely follow-ups:**
 1. Can you undo it after saving and closing? No, Ctrl+Z only works in the session; keep a backup.
@@ -1089,7 +1089,7 @@
 2. HR with rating 3 or more: `=AVERAGEIFS(B2:B9,A2:A9,"HR",C2:C9,">=3")`
 3. No match: `=IFERROR(AVERAGEIFS(B2:B9,A2:A9,"Finance"),0)`
 
-**Alternative:** `=SUMIFS(B2:B9,A2:A9,"Sales")/COUNTIFS(A2:A9,"Sales")` (but this counts blank salaries in the denominator, so differs when blanks exist).
+**Alternative:** `=SUMIFS(B2:B9,A2:A9,"Sales")/COUNTIFS(A2:A9,"Sales")` (but this counts blank salaries in the denominator, so differs when blanks exist: for HR it gives 25333 against AVERAGEIF's 38000, run).
 **Result:** (run) Sales 46666.67; HR with rating at least 3 gives 35000 (the blank row is ignored); IT 66000; Finance with no guard gives #DIV/0!; guarded gives 0.
 **Version note:** AVERAGEIF and AVERAGEIFS exist from Excel 2007, so all supported versions (from memory, unverified); also in Google Sheets.
 **Edge cases:** A zero is counted, a blank is not. Showing 0 for "no data" may mislead; "n/a" is often better.
@@ -1124,7 +1124,7 @@
 **Formula / Steps:** In E2, copy down: `=MAXIFS($B$2:$B$9,$A$2:$A$9,D2)`
 **Alternative (Excel 2016):** `=SUMPRODUCT(MAX(($A$2:$A$9=D2)*$B$2:$B$9))`. Another: `=MAX(IF($A$2:$A$9=D2,$B$2:$B$9))` confirmed with Ctrl+Shift+Enter (not run here). A pivot table with Max of Salary by Dept also works (not run here).
 **Result:** (run) Sales 52000, HR 41000, IT 72000 for both MAXIFS and the SUMPRODUCT version.
-**Version note:** MAXIFS is available in Excel 2019, 2021, 2024 and 365, not 2016 (Microsoft Support, "MAXIFS function"). Google Sheets has MAXIFS (from memory, unverified).
+**Version note:** MAXIFS is available in Excel 2019, 2021, 2024 and 365, not 2016 (Microsoft Support, "MAXIFS function", fetched in this review: Applies-to lists 365, 2024, 2021 and 2019). Google Sheets has MAXIFS (from memory, unverified).
 **Edge cases:** The SUMPRODUCT-MAX trick returns 0 if every matching value is negative or no row matches; MAXIFS returns 0 when nothing matches. Blank/text cells are ignored.
 **Likely follow-ups:**
 1. How to get the employee name too? INDEX/MATCH on the max salary (watch ties).
@@ -1212,7 +1212,7 @@
 
 **Formula / Steps:** `=DATEDIF(A2,B2,"Y")&" yrs "&DATEDIF(A2,B2,"YM")&" mths "&DATEDIF(A2,B2,"MD")&" days"`
 **Alternative:** Years only: `=INT(YEARFRAC(A2,B2,1))`. Days left over without "MD": `=B2-EDATE(A2,DATEDIF(A2,B2,"Y")*12+DATEDIF(A2,B2,"YM"))`.
-**Result:** (run in LibreOffice) row 2: 31 yrs 2 mths 1 days; row 3: 26 yrs 7 mths 22 days; row 4: 35 yrs 9 mths 20 days. The "MD" part for 31-Dec births can differ in real Excel because of the documented MD issue; verify with the EDATE alternative.
+**Result:** (run in LibreOffice) row 2: 31 yrs 2 mths 1 days; row 3: 26 yrs 7 mths 22 days; row 4: 35 yrs 9 mths 20 days. The EDATE alternative (run) gives leftover days 1, 22, 21: it agrees for rows 2 and 3 but not row 4 (20 against 21), which shows the MD problem for a 31-Dec birthday. Real Excel's MD numbers were not run here and may differ; trust the EDATE method.
 **Version note:** DATEDIF works in all versions but is undocumented in the function list; Google Sheets has DATEDIF (from memory, unverified).
 **Edge cases:** Start date after end date gives #NUM!. Leap-day birthdays (29 Feb) are treated differently by different methods.
 **Likely follow-ups:**
@@ -1270,7 +1270,7 @@
 
 **Formula / Steps:** `=WORKDAY(A2,B2,D2:D3)`
 **Alternative:** Weekend other than Sat/Sun: `=WORKDAY.INTL(A2,B2,11,D2:D3)` (11 means only Sunday off). Verify with `=NETWORKDAYS(A2,C3,D2:D3)`.
-**Result:** (run) without holidays: 9-Nov-2026; with holidays: 11-Nov-2026 (Wednesday). NETWORKDAYS from start to that end date returns 16 (it counts the start day, so days worked is 16 inclusive). WORKDAY.INTL: LibreOffice here returned #NAME? for it, so "not run here"; a numpy check with Sunday-only weekend and the same holidays gives 6-Nov-2026.
+**Result:** (run) without holidays: 9-Nov-2026; with holidays: 11-Nov-2026 (Wednesday). NETWORKDAYS from start to that end date returns 16 (it counts the start day, so days worked is 16 inclusive). `WORKDAY.INTL(A2,B2,11,D2:D3)` (Sunday-only weekend, run in LibreOffice): 6-Nov-2026, which matches a hand count.
 **Version note:** WORKDAY is available in Excel 2016 through 365 (Microsoft Support, "WORKDAY function"); WORKDAY.INTL from Excel 2010 (from memory, unverified). Google Sheets has both (from memory, unverified).
 **Edge cases:** WORKDAY does not count the start date as day 1. Negative days go backwards. Holiday on a weekend has no effect.
 **Likely follow-ups:**
@@ -1341,7 +1341,7 @@
 **Alternative:** Highlight: Home > Conditional Formatting > Highlight Cells Rules > Duplicate Values. Remove: Data > Data Tools > Remove Duplicates.
 **Result:** (run) first formula marks rows 2, 3, 5, 7 and 9 as Duplicate (E101 twice, E102 three times). Second formula marks rows 5, 7, 9 as Repeat and the rest First. Rows flagged: `=SUMPRODUCT(--(COUNTIF(A2:A9,A2:A9)>1))` gives 5; unique IDs `=SUMPRODUCT(1/COUNTIF(A2:A9,A2:A9))` gives 5.
 **Version note:** Works in all versions and Google Sheets. In 365, UNIQUE and COUNTIF-by-array also work (not run here).
-**Edge cases:** COUNTIF is not case-sensitive; "e101" matches "E101". Trailing spaces make duplicates invisible; use TRIM. COUNTIF is limited to 255-character strings (Microsoft Support, "COUNTIF function").
+**Edge cases:** COUNTIF is not case-sensitive; "e101" matches "E101". Trailing spaces make duplicates invisible; use TRIM. COUNTIF returns incorrect results when matching strings longer than 255 characters (Microsoft Support, "COUNTIF function", fetched in this review).
 **Likely follow-ups:**
 1. Duplicates on two columns? COUNTIFS.
 2. Very large data? COUNTIF gets slow; use a pivot table or Remove Duplicates.
@@ -1474,7 +1474,7 @@
 - Right: `=COUNTIF($A$2:$A$7,C2)`; select reference and press F4.
 
 **Alternative:** Convert the list to a Table (Insert > Table) and use `=COUNTIF(Table1[Name],C2)`.
-**Result:** (run) wrong copied-down formulas return 2, 1, 1, 1; the anchored formulas return 2, 2, 2, 2. Also (run): `=SUMIF(A2:A4,"a",B2:B5)` quietly returns 4 on mismatched ranges, while the SUMIFS equivalent gives #VALUE!.
+**Result:** (run in LibreOffice 24.2) wrong copied-down formulas return 2, 1, 1, 1; the anchored formulas return 2, 2, 2, 2. Mismatched sizes: `=COUNTIFS(A2:A7,"Asha",C2:C5,"Asha")` gives #VALUE! (run). SUMIF is more forgiving about a differently sized sum range (from memory, unverified), which is another reason to prefer matching sizes.
 **Version note:** Same in all versions and Google Sheets (from memory, unverified).
 **Edge cases:** Ranges that grow when rows are added: use whole-column references or Tables. Inserting rows outside the fixed range will not extend it.
 **Likely follow-ups:**
@@ -1783,7 +1783,7 @@ Pivot route (not run here): select data > Insert > PivotTable > put Joined in Ro
 | 3 | 01-Oct-26 | 22-Oct-25 | | 09-Nov-26 |
 
 **Formula / Steps:** Last day: `=WORKDAY(B2,30,$H$2:$H$3)`. Tenure: `=YEARFRAC(C2,$F$2,1)`
-**Alternative:** `=WORKDAY.INTL(B2,30,1,$H$2:$H$3)` for other weekends; tenure in whole years `=DATEDIF(C2,$F$2,"Y")`.
+**Alternative:** `=WORKDAY.INTL(B2,30,1,$H$2:$H$3)` for other weekends (run: same 07-Dec-2026 with weekend code 1); tenure in whole years `=DATEDIF(C2,$F$2,"Y")`.
 **Result (run):** `WORKDAY(B2,30)` = 03-Dec-2026; with holidays = 07-Dec-2026; `WORKDAY(B3,10)` = 15-Oct-2026. `YEARFRAC(C2,F2)` = 3.553 (basis 0), basis 1 = 3.554, `DATEDIF(...,"Y")` = 3, `ROUND(YEARFRAC(C2,F2,1),1)` = 3.6. `YEARFRAC(C3,F2)` = 1.
 **Version note:** Both work in Excel 2016 and later (Microsoft Support pages list 2016 to 365); in Google Sheets as well (from memory, unverified).
 **Edge cases:** WORKDAY ignores the start day itself (day 0). Holidays that fall on weekends make no difference. Format the result cell as a date or you see a serial number (46359).
