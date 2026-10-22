@@ -6,3 +6,4 @@
 - All Google Sheets facts mostly "from memory, unverified": reviewers should fetch Google Docs Editors Help pages where possible.
 - LibreOffice vs Excel differences flagged in P02/P03/P05 answers (CHAR(160), text-number matching, DATEDIF MD, VLOOKUP col index error code).
 - Part 7: Power Pivot edition availability (Home/Student, Mac) unresolved; unpivot query-folding unresolved; Excel 2016 fuzzy merge availability unverified; Merge default join conflicts between two Microsoft pages (Q26 states it). Reviewer should try again to find Microsoft pages (previous attempts: 403/404).
+- B01P04 Q64, Q65, Q70, Q71, Q73 (weakest Q73, Q71): thin answers, missing template fields (no Sample sheet; short follow-ups/edge cases); Q67 says sample "not meaningful". Needs a polish pass. Q57/Q62 are pandas simulations of pivot behaviour (labelled).
