@@ -87,7 +87,7 @@
 
 **Formula / Steps:** 1. Click any cell in A1:B5 (Excel picks the block) or select it. 2. Press Alt+F1. 3. Or: Insert tab > Charts group > Recommended Charts > choose > OK. Not run here.
 **Alternative:** Convert the range to a Table (Ctrl+T) first so the chart grows with the data (see Q21 of this part).
-**Result:** Not run here (a chart cannot be created here). By hand, total hires = 12+18+15+22 = 67, average 16.75 per month.
+**Result:** The chart itself is not run here (a chart cannot be created here). The numbers behind it were run in LibreOffice: `=SUM(B2:B5)` = 67 hires, `=AVERAGE(B2:B5)` = 16.75 per month.
 **Version note:** Alt+F1 and Recommended Charts exist in Excel 2013 onward (Recommended Charts from memory, unverified); the fetched page covers Microsoft 365.
 **Edge cases:** Blank rows or a numeric "Year" column in the data can be plotted as a series; Excel may treat the year as data.
 **Likely follow-ups:** 1) *Why is the chart wrong?* Probably the data block had a stray column. 2) *Chart on its own sheet?* F11 (unverified).
@@ -111,11 +111,21 @@
 | 2 | E01 | Sales | North | Active |
 | 3 | E02 | Sales | South | Left |
 | 4 | E03 | IT | South | Active |
-| 5 | E07 | IT | South | Left |
+| 5 | E04 | Sales | South | Active |
+| 6 | E05 | HR | South | Active |
+| 7 | E06 | Sales | North | Left |
+| 8 | E07 | IT | South | Left |
+| 9 | E08 | IT | South | Active |
+| 10 | E09 | HR | North | Active |
+| 11 | E10 | Sales | South | Active |
+| 12 | E11 | IT | North | Active |
+| 13 | E12 | HR | South | Left |
+
+(All 12 employees are shown, rows 2 to 13; the same table is used in Q6 and Q7.)
 
 **Formula / Steps:** KPI cards use formulas such as `=COUNTA(A2:A13)` and `=COUNTIFS(D2:D13,"Left")/COUNTA(A2:A13)`. Build click-path in Q6. Not run here (layout).
 **Alternative:** Power BI for bigger or shared dashboards (Q34 of this part).
-**Result:** Run in LibreOffice on the full 12-row sample: headcount 12, leavers 4, attrition 33.3%; Sales 5 people, 2 left (40%).
+**Result:** Run in LibreOffice on the full 12-row sample above: headcount 12, leavers 4, attrition 33.3%; Sales 5 people, 2 left (40%); IT 4; HR 3. The dashboard layout itself is not run here.
 **Version note:** Dashboard walkthrough applies to Excel 2016, 2019, 2021, 2024, 365 (Microsoft Support page above).
 **Edge cases:** Dashboard numbers should tie back to the source data total.
 **Likely follow-ups:** 1) *Static or interactive?* Slicers make it interactive. 2) *Who is the audience?* Decide before designing.
@@ -141,9 +151,9 @@
 | 3 | Average headcount | 466.4 |
 | 4 | Annual attrition | 23.4% |
 
-**Formula / Steps:** `B2: =SUM(Data!C2:C13)`, `B3: =AVERAGE(Data!B2:B13)`, `B4: =B2/B3`. Layout: View > untick Gridlines and Headings. Not run here (layout).
+**Formula / Steps:** Here `Data` is a second sheet holding the 12-month table of Q9 (Month, Opening, Leavers, Closing in columns A to D, rows 2 to 13). `B2: =SUM(Data!C2:C13)`, `B3: =AVERAGE(Data!B2:B13)`, `B4: =B2/B3`. Layout: View > untick Gridlines and Headings (layout not run here).
 **Alternative:** Use a text box note with "Source: HRIS export, refreshed on <date>".
-**Result:** Run in LibreOffice: 109, 466.4167, 23.37%.
+**Result:** Run in LibreOffice with the Q9 table as the `Data` sheet: 109, 466.4167, 23.37%.
 **Version note:** All versions; slicers on PivotTables from Excel 2010 (from memory, unverified).
 **Edge cases:** State whether attrition uses average or opening headcount; the two give different percentages.
 **Likely follow-ups:** 1) *How many KPIs?* Five to ten (tutorial guidance, snippets). 2) *Colour use?* Q18.
@@ -167,7 +177,17 @@
 | 2 | E01 | Sales | North | Active |
 | 3 | E02 | Sales | South | Left |
 | 4 | E03 | IT | South | Active |
-| 5 | E05 | HR | South | Active |
+| 5 | E04 | Sales | South | Active |
+| 6 | E05 | HR | South | Active |
+| 7 | E06 | Sales | North | Left |
+| 8 | E07 | IT | South | Left |
+| 9 | E08 | IT | South | Active |
+| 10 | E09 | HR | North | Active |
+| 11 | E10 | Sales | South | Active |
+| 12 | E11 | IT | North | Active |
+| 13 | E12 | HR | South | Left |
+
+(All 12 employees are shown, rows 2 to 13; the same table as Q4.)
 
 **Formula / Steps:** (Microsoft Support dashboard walkthrough; not run here)
 1. Format data as a Table (Home > Format as Table, or Ctrl+T).
@@ -177,7 +197,7 @@
 5. Slicer > Report Connections > tick all pivots.
 6. Move charts and cards to a Dashboard sheet; View > untick Headings and Gridlines.
 **Alternative:** Build charts from formula-driven summary tables (`COUNTIFS`) rather than pivots, so layout is fully controllable.
-**Result:** Checked by formula in LibreOffice: `=COUNTIFS(B2:B13,"Sales")` = 5; `=COUNTIFS(B2:B13,"Sales",D2:D13,"Left")` = 2; rate 40%. The pivot itself is not run here.
+**Result:** Run in LibreOffice on the 12-row sample above: `=COUNTIFS(B2:B13,"Sales")` = 5; `=COUNTIFS(B2:B13,"Sales",D2:D13,"Left")` = 2; rate 40%; `=COUNTIFS(D2:D13,"Left")` = 4 of 12 = 33.3%; IT 4, HR 3. The pivot itself is not run here.
 **Version note:** Works in Excel 2016 to 365 (Microsoft Support page above). Excel for the web has limited pivot/slicer authoring (from memory, unverified).
 **Edge cases:** Pivots do not refresh themselves; use Data > Refresh All (Q32).
 **Likely follow-ups:** 1) *Why a Table?* Auto-expand. 2) *Why separate sheets?* Easier maintenance.
@@ -204,7 +224,7 @@
 
 **Formula / Steps:** (Microsoft Support dashboard walkthrough; not run here) 1. Click the slicer. 2. Slicer tab > Slicer group > Report Connections. 3. Tick each PivotTable. 4. OK. For a Timeline, use the Report Connections option on the Timeline tab (same page).
 **Alternative:** Insert one slicer for each pivot and keep them in sync with VBA (not recommended).
-**Result:** Reproduced with pandas (not run in Excel): South has 8 employees, 3 left, 37.5%; HR 50%, IT 33.3%, Sales 33.3%.
+**Result:** The sample is the South rows of the 12-row table in Q4. Run in LibreOffice with `COUNTIFS` on that table, and confirmed with pandas: South has 8 employees, 3 left, 37.5%; HR 2 of which 1 left (50%), IT 3 with 1 left (33.3%), Sales 3 with 1 left (33.3%). The slicer and Report Connections steps are not run here.
 **Version note:** Page applies to Excel 2016 to 365. Slicers need Excel 2010 or later (from memory, unverified).
 **Edge cases:** A pivot from a different data source will not appear in the list; pivots must be built from the same Table.
 **Likely follow-ups:** 1) *Slicer greyed out pivot?* Different source. 2) *Several slicers?* They combine with AND.
@@ -257,13 +277,19 @@
 | 3 | Feb | 492 | 8 | 488 | 1.63% |
 | 4 | Mar | 488 | 12 | 480 | 2.48% |
 | 5 | Apr | 480 | 9 | 474 | 1.89% |
-| 6 | Oct | 448 | 12 | 440 | 2.70% |
-| 7 | Dec | 436 | 9 | 431 | 2.08% |
+| 6 | May | 474 | 7 | 469 | 1.48% |
+| 7 | Jun | 469 | 11 | 462 | 2.36% |
+| 8 | Jul | 462 | 10 | 455 | 2.18% |
+| 9 | Aug | 455 | 6 | 453 | 1.32% |
+| 10 | Sep | 453 | 8 | 448 | 1.78% |
+| 11 | Oct | 448 | 12 | 440 | 2.70% |
+| 12 | Nov | 440 | 7 | 436 | 1.60% |
+| 13 | Dec | 436 | 9 | 431 | 2.08% |
 
-(Rows for May to Sep and Nov omitted for space; all 12 months were calculated.)
+(All 12 months, rows 2 to 13. Column E holds the formula result, shown rounded to 2 decimals. The figures are illustrative; each month's opening equals the previous month's closing. The same table is the `Data` sheet in Q5.)
 **Formula / Steps:** `E2: =C2/AVERAGE(B2,D2)`, fill down to row 13. Annual: `=SUM(C2:C13)/AVERAGE(B2:B13)`. Peak month: `=INDEX(A2:A13,MATCH(MAX(E2:E13),E2:E13,0))`. Chart (not run here): select A1:A13 and E1:E13 > Insert > Line with Markers > add title and axis titles.
 **Alternative:** Add a rolling 12-month line (leavers in last 12 months divided by average headcount) to smooth seasonality; or a column chart of leavers with attrition % line (Q8).
-**Result:** Run in LibreOffice: monthly 2.02%, 1.63%, 2.48%, 1.89%, 1.48%, 2.36%, 2.18%, 1.32%, 1.78%, 2.70%, 1.60%, 2.08%; annual 109 / 466.42 = 23.37%; peak month Oct.
+**Result:** Run in LibreOffice on the full 12-month table above: monthly 2.02%, 1.63%, 2.48%, 1.89%, 1.48%, 2.36%, 2.18%, 1.32%, 1.78%, 2.70%, 1.60%, 2.08%; annual 109 / 466.42 = 23.37%; peak month Oct (2.70%, INDEX/MATCH with MAX); lowest month Aug (1.32%, same formula with MIN). The line chart itself is not run here.
 **Version note:** Line charts in all versions.
 **Edge cases:** Months with zero leavers give 0%, not blank; a month with zero headcount would give #DIV/0!, wrap in IFERROR.
 **Likely follow-ups:** 1) *Monthly vs annualised?* Multiply monthly by 12 only as an approximation. 2) *Voluntary vs involuntary?* Show as two lines.

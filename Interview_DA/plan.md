@@ -467,7 +467,7 @@ interviews/data_analyst/
 |---|---|---|---|---|
 | Phase 0 | — | — | — | ✅ research done (JD sample 186; pending your approval) |
 | 0 | 7 sections | ✅ 123 FAQs + guide outline | ⬜ | ⬜ |
-| 1 Excel | 12 | ✅ 638 (after removing 11 cross-part duplicates and adding 5 gap-fills; see research/dedupe_log_book01.md) | ✅ 638 (all 12 parts merged; formulas run in LibreOffice 24.2 where supported, 365-only functions/pivots/Power Query/VBA labelled "not run here") | ⬜ |
+| 1 Excel | 12 | ✅ 638 (after removing 11 cross-part duplicates and adding 5 gap-fills; see research/dedupe_log_book01.md) | ✅ 638 (all 12 parts merged; formulas run in LibreOffice 24.2 where supported, 365-only functions/pivots/Power Query/VBA labelled "not run here") | ✅ Wave C done 2026-10-22 (see Book01_Excel/review_Book01.md; never run in real Excel; several Microsoft/Google facts remain unverified) |
 | 2 SQL | 12 | ✅ 664 (after removing 30 cross-part duplicates; see research/dedupe_log_book02.md) | ✅ 664 (all 12 parts merged; code run on SQLite 3.45.1 / pandas 3.0.5; non-SQLite syntax labelled "not run here") | ✅ Wave C done 2026-10-21 (see Book02_SQL/review_Book02.md; dialect claims for non-SQLite engines remain unverified) |
 | 3 Python | 12 | ⬜ | ⬜ | ⬜ |
 | 4 Power BI | 12 | ⬜ | ⬜ | ⬜ |

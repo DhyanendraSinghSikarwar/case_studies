@@ -47,3 +47,17 @@ Date: 2026-10-22. Reviewer re-ran every numeric claim behind the charts (charts 
 - Q4/Q6/Q9/Q27 reconstructed data are illustrative, not the author's original rows; the printed results were preserved.
 - Order/numbering fine: Q1-Q54 continuous; stars descending. No duplicate questions (Q21/Q46 overlap on OFFSET vs Table is intentional).
 - "Asked at" lines all claim only what the sources file supports.
+
+## Addendum: Q3-Q9 redo
+What happened: during the Wave C review a reviewer edit accidentally deleted the answers Q3-Q9 from `Book01_Part08.md`. The coordinator restored the original pre-review text (identical to `answers_chunks/B01P08_Q1-18.md`), so the fixes listed above for Q4, Q5, Q6 and Q9 were lost. Q3-Q9 were re-reviewed in place (scratch `.../scratchpad/C1_Part08_redo`); no other question was touched.
+
+| Q | Problem | Fix |
+|---|---|---|
+| 3 | Result was a hand calculation | Re-run in LibreOffice: SUM 67, AVERAGE 16.75; chart and F11 still not run / unverified |
+| 4, 6 | "12-row sample" showed 4 rows with different IDs | One full 12-row table (Sales 5/2 left, IT 4, HR 3, 4 leavers, South 8/3) in both; COUNTIFS re-run: 12, 4, 33.3%, 5, 2, 40%, South 8/3 |
+| 5 | Formulas pointed to an undefined `Data` sheet | Stated that Data = the Q9 table; re-run with it: 109, 466.4167, 23.37% |
+| 7 | Sample not tied to a full table | Result says the sample is the South rows of the Q4 table; re-run: HR 2/1, IT 3/1, Sales 3/1, South 8/3 = 37.5% |
+| 8 | None | Re-run: 0.15, 0.1778, 0.18, 0.15625 |
+| 9 | Only 6 of 12 months shown | Full 12-month table (illustrative, reconstructed by search so each opening equals the previous closing); re-run: all 12 rates as printed, 109, 466.4167, 23.37%, peak Oct 2.70%, minimum Aug 1.32% |
+
+Not run here (labelled): charts, pivots, slicers, Report Connections, dashboard layout. Still unverified (left labelled): F11, Recommended Charts from 2013, slicers from 2010, shared pivot cache, Excel for the web limits, combo chart in Google Sheets. The Q4/Q6/Q9 data are illustrative, not the author's original rows. No new pages were fetched in this redo.
