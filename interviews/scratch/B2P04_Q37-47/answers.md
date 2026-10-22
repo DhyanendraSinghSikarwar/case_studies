@@ -366,3 +366,147 @@ print("example SFT row:", strict[0])
 - Quoting precise win rates from memory.
 - Ignoring the base-model-strength caveat.
 - Concluding from it that SFT can add facts.
+
+### Q41 ⭐ 🔴 How do multi-adapter composition and model merging work (weighted adapters, task arithmetic, TIES-style merging), and what are the risks?
+**Asked at:** research-leaning teams, GenAI startups, platform teams
+**Say this first (1 line):** Merging combines several fine-tunes of the same base into one model by adding scaled "deltas" (fine-tuned weights minus base weights) instead of retraining. It is cheap, but where two tasks push the same weight in opposite directions they interfere, so every merge needs its own evaluation.
+
+**Then explain:**
+- **Weighted adapters (PEFT):** the LoRA guide lists `add_weighted_adapter`, which builds a new adapter from several existing ones with weights. Combination methods and arguments change between versions, so check the current docs. Same base model and compatible target modules are required.
+- **Task arithmetic (from memory, not verified: Ilharco et al., 2022):** task vector = W_finetuned − W_base. Merged = W_base + Σ λ_i · τ_i. Adding vectors adds skills (roughly); subtracting one can reduce a behaviour. λ is tuned on a dev set.
+- **TIES-style merging (from memory, not verified: Yadav et al., 2023):** (1) trim: keep only the largest-magnitude entries of each task vector; (2) elect sign: per parameter, choose the sign with the larger total mass; (3) merge only entries that agree with the elected sign (a disjoint mean). The idea is to cut noise from small changes and stop opposing signs cancelling.
+- **Why plain averaging hurts:** if task A pushes a weight up and task B pushes it down, the average is about zero and neither task gets its change. Averaging also scales every delta by 1/N, so each task is weakened even where nobody conflicts.
+- **What my toy shows (synthetic task vectors, 2 tasks, 1,500 shared coordinates with opposed signs, 1,000 private ones each):** fraction of each task's own delta retained:
+
+| Method | task0 private | task1 private | task0 shared | task1 shared |
+|---|---|---|---|---|
+| naive average | 0.50 | 0.50 | 0.10 | -0.08 |
+| sum (scale 1) | 1.00 | 1.00 | 0.20 | -0.16 |
+| TIES-style | 0.81 | 0.90 | 0.61 | -0.51 |
+
+  Averaging cancels the shared block for both tasks and halves the private part. Sign election keeps most of the private deltas and rescues the shared block for the stronger task, but it does it by picking a winner: task 1 on shared coordinates is pushed the wrong way (-0.51). So sign election resolves conflicts, it does not remove them. This is a toy: real weights are not like this, and it says nothing about accuracy.
+- **Risks:** interference and sign conflicts; same base and architecture only; merging adapters trained from different initialisations is unreliable; tuned λ can overfit the dev set; safety behaviour of a base can be diluted by a merge; evaluation after merging is mandatory (each task, plus general regression); quantised bases need care (Q37, Part 10). Merging many adapters is not a substitute for multi-task training when you can afford it.
+- **Alternative to merging:** serve separate adapters and pick one per request (routing), which avoids interference at the cost of more serving complexity.
+
+**Example:** a platform team has a "SQL helper" adapter and a "support tone" adapter on one base. They try `add_weighted_adapter` at 0.5/0.5, then 0.7/0.3, and ship the best on a joint dev set only if neither task drops more than an agreed margin versus its single adapter.
+
+**Code:** (executed, standalone, numpy only; synthetic toy, not a model)
+```python
+# Standalone, numpy only. TOY: random "task vectors" (fine-tuned minus base), not real models.
+# Two tasks: each has its own important coordinates, plus a shared block where their signs are opposed.
+import numpy as np
+rng = np.random.default_rng(0)
+n, T = 10000, 2
+idx = rng.permutation(n)
+shared, own = idx[:1500], [idx[1500:2500], idx[2500:3500]]          # disjoint own-coordinate sets
+tv = np.zeros((T, n))
+for t in range(T):
+    tv[t] = rng.normal(0, 0.02, n)                                  # small noise everywhere
+    tv[t, own[t]] += rng.choice([-1, 1], 1000) * rng.uniform(0.5, 1.0, 1000)
+    tv[t, shared] += (1 if t == 0 else -1) * rng.uniform(0.5, 1.0, 1500) * (1.2 if t == 0 else 1.0)  # opposed signs, task 0 a bit stronger
+
+def retention(merged, t, coords):                                   # fraction of task t's delta kept on these coords (1.0 = all)
+    v = tv[t, coords]; return float(merged[coords] @ v / (v @ v))
+
+def ties_merge(tv, keep=0.2):
+    trimmed = np.zeros_like(tv)
+    for i, v in enumerate(tv):                                      # 1) trim: keep top-20% magnitude entries
+        thr = np.quantile(np.abs(v), 1 - keep); trimmed[i] = np.where(np.abs(v) >= thr, v, 0)
+    elected = np.sign(trimmed.sum(0))                               # 2) elect sign by total mass
+    agree = (np.sign(trimmed) == elected) & (trimmed != 0)          # 3) keep only entries that agree
+    return (trimmed * agree).sum(0) / np.maximum(agree.sum(0), 1)   # disjoint mean over agreeing entries
+
+methods = {"naive average (1/2 each)": tv.mean(0), "task-vector sum (scale 1)": tv.sum(0), "TIES-style": ties_merge(tv)}
+print(f"{'method':<28}{'task0 own':>10}{'task1 own':>10}{'task0 shared':>14}{'task1 shared':>14}")
+for name, m in methods.items():
+    print(f"{name:<28}{retention(m,0,own[0]):>10.2f}{retention(m,1,own[1]):>10.2f}{retention(m,0,shared):>14.2f}{retention(m,1,shared):>14.2f}")
+
+```
+
+**Follow-ups:**
+- *Why do LoRA deltas merge differently from full deltas?* Each LoRA delta is a low-rank B·A. Merging adapters by averaging A and B separately is not the same as averaging the products, so implementations differ; I would check how the library combines them.
+- *Does merging need data?* Not for training. It does for choosing weights and checking quality.
+- *Per-task adapter or merge?* Per-task adapters when tasks conflict or must be updated independently; merge when you need one artefact and the eval says the loss is small.
+
+**Common mistakes:**
+- Merging models with different bases and being surprised by garbage.
+- Reporting only the average score and missing one collapsed task.
+- Using a single λ without a dev-set sweep.
+- Saying TIES "solves interference".
+
+### Q42 ⭐ 🔴 Design question: plan a fine-tune of a 13B-70B model on limited GPUs (QLoRA, gradient checkpointing, sharding), including how you validate the plan before spending the compute.
+**Asked at:** senior roles at big tech, product, GenAI startups
+**Say this first (1 line):** I first do the memory arithmetic on paper, pick the cheapest method that meets the quality bar (QLoRA before LoRA before full fine-tuning), then buy certainty cheaply: a dry run to measure memory and throughput, a tiny overfit run to check the loss, and an eval gate before the full job.
+
+**Then explain:**
+- **Step 0, is fine-tuning needed:** prompting or RAG first (Q1). Pick a smaller model if it passes the quality bar.
+- **Memory plan, in order of cost:**
+  1. QLoRA: frozen 4-bit base, trainable bf16/fp32 adapters (Q6). A 70B base then fits on one 80 GB GPU by weights, with limited room left for activations.
+  2. LoRA on a bf16 base: if quality drops with 4-bit, use more GPUs and shard the frozen weights.
+  3. Full fine-tuning: about 16 bytes per parameter before activations (Part 2 Q34), so only with sharding (FSDP or ZeRO-3) across many GPUs.
+- **Activations:** gradient checkpointing (recompute instead of store, at the cost of extra forward compute), shorter max sequence length, micro-batch size 1 to a few with gradient accumulation to reach the effective batch size, and packing or length bucketing to avoid padding waste (check TRL docs for packing options).
+- **Sharding:** FSDP/ZeRO-3 shard weights, gradients and optimizer state across GPUs (Part 2 Q34); with adapters only the adapter state is small, so sharding mainly helps when the bf16 base does not fit on one GPU. Details differ across libraries and QLoRA+FSDP setups; check the current docs.
+- **Validate before spending:**
+  1. Smoke test on 50 to 200 examples for a few steps: checks the data pipeline, chat template, label masking (Q37), saving and loading.
+  2. Dry run at the real sequence length and micro-batch: record peak GPU memory and tokens per second, then extrapolate time and cost = tokens / throughput x GPU price. Try the worst-case (longest) batch first, because OOM often hits on one long example.
+  3. Overfit test: 8 to 32 examples, loss should go close to zero. If not, there is a bug.
+  4. Eval gate: baseline numbers on the held-out set *before* training; a pass/fail threshold written down in advance (task metric plus a general regression set, Q8).
+  5. Checkpoint every N steps, save optimizer state to resume, and test one resume.
+- **Run controls:** log loss, grad norm, LR, memory, tokens/s; stop on NaN or spikes; fix seeds; keep the config in version control.
+- **Estimator:** below. The accounting is *assumed*: 4-bit weights ~0.55 byte/param (0.5 plus an assumed quantisation overhead), adapter weights and Adam states 16 byte/param in fp32, 90% of an 80 GB GPU usable, Llama-style shapes written from memory. It ignores activations, the KV/activation memory of long sequences, CUDA context and fragmentation, so it is a floor.
+
+| Model (assumed shapes) | bf16 weights | 4-bit weights | 80 GB GPUs for weights only (bf16 / 4-bit) | LoRA r=16 adapter + states | Full FT states |
+|---|---|---|---|---|---|
+| 13B-like | 26.0 GB | 7.2 GB | 1 / 1 | 63M params, 1.0 GB | 208 GB (3 GPUs) |
+| 70B-like | 140.0 GB | 38.5 GB | 2 / 1 | 207M params, 3.3 GB | 1,120 GB (16 GPUs) |
+
+**Example:** 70B QLoRA on one 80 GB card: weights about 38.5 GB + adapter states 3.3 GB leave roughly 30 GB (of the 72 GB I assume usable) for activations. With checkpointing and a micro-batch of 1 at 2,048 tokens it may fit; the dry run tells me, not my estimate. If it does not, I cut sequence length, move to two GPUs with sharding, or choose the 13B model.
+
+**Code:** (executed, standalone, pure Python; ASSUMED accounting, estimate not measurement)
+```python
+# Standalone, pure Python. ASSUMED accounting, an estimate for planning, NOT a measurement.
+# Model shapes are Llama-style numbers written from memory (13B-like and 70B-like); verify against your config.json.
+import math
+GB = 1e9
+MODELS = {  # params, layers, hidden, ffn, kv_dim
+    "13B-like": dict(n=13.0e9, L=40, d=5120, ffn=13824, kv=5120),
+    "70B-like": dict(n=70.0e9, L=80, d=8192, ffn=28672, kv=1024),
+}
+ASSUME = dict(bf16=2.0, nf4=0.5 + 0.05,       # 4-bit weights ~0.5 B/param + ~0.05 B/param quant constants (assumed)
+              adapter_state=16.0,             # fp32 adapter weights 4 + grads 4 + Adam m,v 8 (assumed)
+              full_ft=16.0,                   # mixed-precision Adam accounting from Part 2 Q34
+              gpu_gb=80, usable=0.90)         # assume 90% of 80 GB is usable for tensors
+
+def lora_params(m, r):
+    d, ffn, kv = m["d"], m["ffn"], m["kv"]
+    per_layer = sum(r * (i + o) for i, o in [(d, d), (d, kv), (d, kv), (d, d), (d, ffn), (d, ffn), (ffn, d)])
+    return per_layer * m["L"]
+
+def plan(name, r=16):
+    m = MODELS[name]; n = m["n"]
+    w_bf16, w_nf4 = n * ASSUME["bf16"] / GB, n * ASSUME["nf4"] / GB
+    lp = lora_params(m, r); adapter_gb = lp * ASSUME["adapter_state"] / GB
+    full = n * ASSUME["full_ft"] / GB
+    cap = ASSUME["gpu_gb"] * ASSUME["usable"]
+    gpus = lambda gb: math.ceil(gb / cap)
+    print(f"{name}: {n/1e9:.0f}B params")
+    print(f"  weights bf16 {w_bf16:6.1f} GB -> {gpus(w_bf16)} x 80GB GPUs (weights only)")
+    print(f"  weights 4-bit {w_nf4:5.1f} GB -> {gpus(w_nf4)} x 80GB GPU  (weights only)")
+    print(f"  LoRA r={r}: {lp/1e6:.0f}M adapter params ({100*lp/n:.2f}% of base), adapter+optimizer state {adapter_gb:.1f} GB")
+    print(f"  full FT states (16 B/param) {full:7.0f} GB -> {gpus(full)} x 80GB GPUs before activations")
+    print(f"  QLoRA floor (4-bit weights + adapter state) {w_nf4 + adapter_gb:.1f} GB; activations, CUDA context, fragmentation are EXTRA")
+
+for k in MODELS: plan(k)
+
+```
+
+**Follow-ups:**
+- *What if the dry run OOMs?* In order: shorter max length, micro-batch down, gradient checkpointing on, smaller r or fewer target modules, 4-bit if not already, then more GPUs and sharding.
+- *How do you pick the learning rate?* Start from the adapter norm in the TRL docs (about 1e-4 for adapters per the docs I read), run a short sweep on the overfit set or a small subset, and look at the loss and eval curves.
+- *How do you know it is worth the money?* Compare against the prompted baseline and the smaller model on the same eval, with cost per 1,000 requests (Part 10 for serving).
+
+**Common mistakes:**
+- Estimating only weights and forgetting activations and the optimizer.
+- Launching the full job without a dry run on the longest batch.
+- No resume test, so a crash at hour 20 wastes the run.
+- Quoting a memory number without saying what it assumes.
