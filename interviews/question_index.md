@@ -871,3 +871,50 @@ Canonical questions per book. Wave A agents: check this BEFORE adding a question
 | B2P03-Q42 | 3 | Automatic prompt optimisation (DSPy-style compilation, meta-prompting, search over prompts): how does it work and when is it worth it? |
 | B2P03-Q43 | 3 | How does prompting a reasoning model differ from prompting a standard chat model (reasoning effort or budget, less hand-holding, no step-by-step instructions)? |
 | B2P03-Q44 | 3 | How would you evaluate tool use: tool-selection accuracy, argument accuracy, multi-turn calls, public function-calling benchmarks, and an in-house eval set? |
+| B2P04-Q1 | 4 | Prompting vs RAG vs fine-tuning: what is your decision framework, and in what order do you try the adaptation methods? |
+| B2P04-Q2 | 4 | What is supervised fine-tuning (instruction tuning)? What does it teach a model, what does it not teach, and what is the training loss? |
+| B2P04-Q3 | 4 | What is LoRA and how does it work? Why is it parameter-efficient, and what stays frozen? |
+| B2P04-Q4 | 4 | How do you choose LoRA's rank, alpha and dropout? What does the alpha/r scaling do? |
+| B2P04-Q5 | 4 | Which modules should LoRA target (query/value only vs all linear layers including the MLP), and why? |
+| B2P04-Q6 | 4 | What is QLoRA? Explain NF4, double quantization and paged optimizers, and where precision matters during training. |
+| B2P04-Q7 | 4 | Memory maths: how much GPU memory does full fine-tuning, LoRA and QLoRA need for a 7B or 13B model, and can you fine-tune a 13B model on one 40 GB GPU? |
+| B2P04-Q8 | 4 | What is catastrophic forgetting in fine-tuning? How do you detect it, and how do you mitigate it? |
+| B2P04-Q9 | 4 | How do you evaluate a fine-tuned model before shipping (task metric, general-capability regression, human or LLM judging)? |
+| B2P04-Q10 | 4 | How much data do you need for SFT, and what matters more, quality or quantity? How do you build and clean the dataset? |
+| B2P04-Q11 | 4 | In SFT, why do we mask prompt tokens from the loss (train on completions or assistant turns only)? How do label shifting, the ignore index and packing interact? |
+| B2P04-Q12 | 4 | Why do chat templates and the EOS token matter in fine-tuning? What breaks when training and inference templates differ? |
+| B2P04-Q13 | 4 | How do you merge a LoRA adapter into the base model? Why does a merged LoRA add no latency, why can't a QLoRA adapter be merged directly, and when would you keep adapters separate? |
+| B2P04-Q14 | 4 | Code: implement a LoRA linear layer from scratch in PyTorch (frozen weight, A and B initialisation, alpha/r scaling, merge) and verify it against W + BA. |
+| B2P04-Q15 | 4 | Code: implement the SFT loss with prompt masking in PyTorch (shifted labels, ignore index) and check it against F.cross_entropy. |
+| B2P04-Q16 | 4 | Full fine-tuning vs parameter-efficient fine-tuning: when is full fine-tuning justified, and how do learning rates differ? |
+| B2P04-Q17 | 4 | What hyperparameters matter in SFT (learning rate, epochs, batch size, warmup, scheduler, max length), and how do you recognise overfitting? |
+| B2P04-Q18 | 4 | Compare PEFT methods: adapters, prefix tuning, prompt tuning, IA3 and LoRA. When would you use each? |
+| B2P04-Q19 | 4 | What do LoRA variants change (rsLoRA, DoRA, LoRA+, LoftQ initialisation)? When are they worth trying? |
+| B2P04-Q20 | 4 | Does a higher LoRA rank always help? What limits capacity, and how do you decide when LoRA is not enough? |
+| B2P04-Q21 | 4 | How do you create instruction data: human-written, synthetic from a stronger model, self-instruct? What are the quality and licensing risks? |
+| B2P04-Q22 | 4 | What is knowledge distillation? Explain teacher and student, soft targets, temperature and the combined KL plus cross-entropy loss. |
+| B2P04-Q23 | 4 | How does distillation work for LLMs: logit-level (white-box) vs sequence-level or response distillation (black-box)? Does the student need the teacher's tokenizer? |
+| B2P04-Q24 | 4 | Forward vs reverse KL in LLM distillation (MiniLLM): what is the difference, and what does on-policy distillation fix? |
+| B2P04-Q25 | 4 | When do you fine-tune a small model instead of calling a large API model? Work through a cost, latency, privacy and quality break-even. |
+| B2P04-Q26 | 4 | For classification or extraction, would you fine-tune an LLM with SFT, add a classification head, or use a small encoder? How do you choose? |
+| B2P04-Q27 | 4 | How do you mix tasks and general data in SFT (data mixtures, ordering, replay of general data), and what goes wrong with a narrow dataset? |
+| B2P04-Q28 | 4 | How do you fine-tune for structured output or tool calling (dataset format, loss on tool calls, evaluation)? How does it relate to prompting for the same? |
+| B2P04-Q29 | 4 | Continued pretraining vs SFT for a new domain or language: when do you need continued pretraining before SFT? |
+| B2P04-Q30 | 4 | What does SFT overfitting look like (train vs validation loss, memorisation, narrow style), and what are your defences (early stopping, fewer epochs, regularisation, data)? |
+| B2P04-Q31 | 4 | What training-efficiency settings matter in practice (sequence packing, padding-free batches, gradient checkpointing, gradient accumulation, bf16), and what do they cost? |
+| B2P04-Q32 | 4 | How do you serve fine-tuned models: merged weights vs multi-LoRA serving, adapter swapping and versioning? |
+| B2P04-Q33 | 4 | Hosted fine-tuning APIs vs self-hosted fine-tuning: what are the trade-offs in control, data privacy, cost and lock-in? |
+| B2P04-Q34 | 4 | How do you keep PII and benchmark contamination out of fine-tuning data (deduplication, held-out sets, filtering)? |
+| B2P04-Q35 | 4 | A fine-tune did not learn or got worse. Walk through your debugging checklist (template, masking, learning rate, data, evaluation). |
+| B2P04-Q36 | 4 | Should you fine-tune a base or an instruct/chat checkpoint? What are the trade-offs? |
+| B2P04-Q37 | 4 | AI code review: this LLM-written LoRA/SFT training script has bugs (unshifted or unmasked labels, wrong learning rate, merging in 4-bit, dropout left on at eval, wrong target modules). Find and fix them. |
+| B2P04-Q38 | 4 | Why does low-rank adaptation work? Derive the parameter count, the identity initialisation, and the effective scaling of the update. |
+| B2P04-Q39 | 4 | Chain-of-thought and rationale distillation: how do you distil reasoning from a stronger model, and what are the limits and risks? |
+| B2P04-Q40 | 4 | What is the superficial alignment hypothesis (LIMA)? What evidence supports it, and what are its critiques and implications for data curation? |
+| B2P04-Q41 | 4 | How do multi-adapter composition and model merging work (weighted adapters, task arithmetic, TIES-style merging), and what are the risks? |
+| B2P04-Q42 | 4 | Design question: plan a fine-tune of a 13B-70B model on limited GPUs (QLoRA, gradient checkpointing, sharding), including how you validate the plan before spending the compute. |
+| B2P04-Q43 | 4 | Design question: build an end-to-end fine-tuning project for a support-ticket extraction task (data, training, evaluation gates, regression checks, rollout and rollback). |
+| B2P04-Q44 | 4 | Can fine-tuning inject new facts? Why does it often fail compared with retrieval, and what does the evidence say? |
+| B2P04-Q45 | 4 | What are the pitfalls of distillation (capacity gap, exposure bias, evaluation, teacher licensing terms), and when does it fail? |
+| B2P04-Q46 | 4 | How do you handle sequential or continual fine-tuning without forgetting (replay, per-task adapters, EWC-style regularisation, merging)? |
+| B2P04-Q47 | 4 | What is rejection-sampling fine-tuning or self-improvement (RFT, STaR-style): how do you bootstrap SFT data from a model's own verified samples, and what can go wrong? |
