@@ -10,3 +10,6 @@
 - Part 7 Q-Data Model limits: Microsoft "Data Model specification and limits" says 250 MB for Excel for the web; "memory-efficient Data Model" page says 10 MB for SharePoint Online / Excel Web App: conflict flagged in chunk, recheck.
 - Part 8: histogram/Pareto/box-and-whisker/treemap/sunburst version availability unverified (Q1, and Q35 should use the same label). Switch Row/Column and data labels pages list only 365/2024/2021: 2016/2019 availability from memory.
 - Part 9 Q38 (Google Sheets multi-select drop-downs): old claim "no native multi-select" is outdated: Google help (support.google.com/docs/answer/186103) says "Allow multiple selections" exists for chip-format dropdowns. Ensure Q38 reflects this. Error-alert third label: Microsoft pages disagree (Important vs Information).
+## Left open after Wave C (to polish)
+- Part 2 Q66-Q74: thin on Sample sheet / other fields (reviewer left as is).
+- Part 2: IFNA availability stated inconsistently (Q11 says Excel 2013, Q41 says 2016; Microsoft IFNA page Applies-to lists 2016+). Reconcile wording.
