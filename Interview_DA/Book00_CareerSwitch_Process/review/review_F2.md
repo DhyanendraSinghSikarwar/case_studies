@@ -1,5 +1,5 @@
 # Review F2: FAQ answers Q42-Q82 (Book00_FAQs.md)
-Reviewer F2, 2026-10-22. Scope: Q42-Q82 only, edited in place (headings, numbers, stars, order untouched). Sources: MS = market_skills_2026.md, IP = interview_processes.md, B0S = Book00_sources.md, guide parts.
+Reviewer F2, 2026-10-22. Scope Q42-Q82, edited in place (headings untouched). MS/IP/B0S = research files.
 ## Counts
 Items checked: 41 answers (all with every number, process claim, pointer). Answers edited: 28 (about 45 targeted replacements). Template: all 41 have all required fields; Q42-Q82 are all over 150 words, so no padding added.
 ## Number audit (all rows checked against the files)
@@ -24,11 +24,10 @@ Items checked: 41 answers (all with every number, process claim, pointer). Answe
 ## Fixes
 | Location | Problem | Fix |
 |---|---|---|
-| Q47 | "free to download for Windows" = unverified platform terms; "Tableau more in finance" unsupported | Removed; replaced with pooled 40% vs 33% and GCC sample 48% vs 32% |
+| Q47 | Unverified platform terms; "Tableau more in finance" | Replaced with 40% vs 33% pooled, 48% vs 32% GCC |
 | Q49 | Example hours contradicted Q52/guide; "2-3 projects (blog advice)" | Aligned to illustrative 400 h; project count labelled a plan choice (guide 6.5) |
-| Q59 | "Verified" pay overstated | "employer-stated" |
 | Q61 | Example asserted negotiation is usual | Rewrote as a script that promises nothing |
-| Q60,62 | "offers can be verified"; "most people search while employed" | Softened / labelled judgement |
+| Q59,60,62 | "Verified" pay; "offers can be verified"; "most people search while employed" | Softened / labelled judgement |
 | Q65, Q75 | MS Section 6 (DB Workday Entry) vs MS Addendum (all Workday roles 3+) conflict not stated in Q65; Q75 said "a few exceptions" | Conflict stated explicitly in both |
 | Q66,67 | Unsupported cleaning/time-zone claims; stray pointer | Labelled general; ML 10% added; pointer removed |
 | Q42,43,50,56,75,76 | Unlabelled general claims | Softened or labelled "general knowledge, not checked" |
@@ -43,8 +42,7 @@ Items checked: 41 answers (all with every number, process claim, pointer). Answe
 
 Claims still unverified:
 - All interview processes are candidate-reported and mostly search-summary level; Accenture format, scoring and whether it applies to lateral hires are unknown (no official page fetched).
-- Amazon Leadership Principle names, Power BI/Tableau pricing, platform terms: not checked (answers say so).
-- Blog pay/fee figures remain vendor claims.
+- Amazon LP names, tool pricing/terms not checked (answers say so); blog pay/fee figures remain vendor claims.
 
 Could not check:
 - Glassdoor/AmbitionBox/Reddit/Naukri/LinkedIn (blocked, per research files). No web fetches were made by me; all checks are against repo research files.
