@@ -5,3 +5,4 @@
 - XLOOKUP availability: Microsoft page note says not in Excel 2016/2019, applies-to list says 2016/2019; chunks follow the note (2021/365). Check consistency across all parts.
 - All Google Sheets facts mostly "from memory, unverified": reviewers should fetch Google Docs Editors Help pages where possible.
 - LibreOffice vs Excel differences flagged in P02/P03/P05 answers (CHAR(160), text-number matching, DATEDIF MD, VLOOKUP col index error code).
+- Part 7: Power Pivot edition availability (Home/Student, Mac) unresolved; unpivot query-folding unresolved; Excel 2016 fuzzy merge availability unverified; Merge default join conflicts between two Microsoft pages (Q26 states it). Reviewer should try again to find Microsoft pages (previous attempts: 403/404).
