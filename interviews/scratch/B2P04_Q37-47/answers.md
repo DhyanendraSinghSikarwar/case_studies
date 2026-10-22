@@ -265,3 +265,104 @@ for k in (1, 3, 8):
 - Claiming alpha/r keeps training "identical" across ranks. It is roughly stable at best.
 - Saying both A and B are initialised to zero.
 - Presenting the low intrinsic rank result as proven for LLM fine-tuning.
+
+### Q39 ⭐ 🔴 Chain-of-thought and rationale distillation: how do you distil reasoning from a stronger model, and what are the limits and risks?
+**Asked at:** big tech, GenAI startups, research-leaning teams
+**Say this first (1 line):** I ask a stronger teacher to solve prompts with step-by-step reasoning, keep only the traces whose final answer is correct, and fine-tune the student (SFT) on rationale plus answer. It transfers the habit of writing reasoning, but it is limited by what the student can represent and by how trustworthy the traces are.
+
+**Then explain:**
+- **Pipeline:** (1) pick prompts that match the target distribution; (2) sample one or several traces per prompt from the teacher with a "think step by step" style prompt; (3) filter: final answer matches the label or a checker, plus format checks, dedup, length limits; (4) SFT the student on `prompt -> rationale + answer` with loss on the completion only; (5) evaluate on a held-out set, with the student's answers, not the rationales.
+- **Known work (from memory, not verified):** "Distilling step-by-step" (Hsieh et al., 2023) trains small models on teacher rationales, in a multi-task form that also predicts the label; "Large language models are reasoning teachers" (Ho et al., 2022) fine-tunes small models on teacher chain-of-thought. Check the papers before quoting results.
+- **Limits:**
+  - *Student capacity:* a tiny student can copy the style of reasoning without being able to execute it. It writes fluent steps that are wrong (Q45 covers the capacity gap).
+  - *Distribution shift:* prompts outside the teacher-traced set get rationales in the same style, but not the same skill.
+  - *Teacher errors:* a correct final answer can sit on top of a wrong trace. In my mock run, 20 of 1,575 kept traces (1.3%) had a flawed step even though the answer was right.
+  - *Faithfulness:* a rationale may not be the real reason the model answered. Training on it teaches the student to produce plausible text, so I do not treat the rationale as an explanation.
+  - *Contamination:* if the teacher or the prompts include benchmark items, scores inflate. Dedup against eval sets (Part 9).
+  - *Terms of use:* many API providers restrict using outputs to train competing models. Read the teacher's current license/terms before collecting data. This is a legal check, not a technical one.
+- **Cost trade:** long rationales raise student inference cost (more tokens). Only worth it if the accuracy gain pays for it; sometimes direct-answer SFT is enough for easy tasks.
+- **Better filtering:** answer match is the cheapest. Step-level checks (a calculator, unit tests for code, a verifier model) catch lucky-right traces, at extra cost (see Q47 and Part 5 for verifier ideas).
+
+**Example:** math word problems: 5,000 prompts, 4 teacher samples each, keep the correct ones, up to 2 distinct traces per prompt. Student gains on in-distribution problems; I would report it also on a held-out set of different problem types, and check that rationales do not get longer without accuracy gain.
+
+**Code:** (executed, standalone; MOCK teacher, no model is called; only demonstrates the filter and what it misses)
+```python
+# Standalone, no libraries beyond random. MOCK teacher (a scripted noisy solver), not an LLM.
+# Problem: "a + b * c". Trace: "b*c=P; a+P=R. Answer: R"
+import random
+random.seed(0)
+
+def mock_teacher(a, b, c):
+    p = b * c
+    if random.random() < 0.15: p += random.choice([-10, -1, 1, 10])          # arithmetic slip in step 1
+    r = a + p
+    if random.random() < 0.10: r += random.choice([-1, 1])                   # slip in step 2
+    if random.random() < 0.05: r = a + b * c                                 # sloppy trace, lucky right answer
+    return f"{b}*{c}={p}; {a}+{p}={r}. Answer: {r}", r
+
+def rationale_is_consistent(a, b, c, trace):                                  # step-by-step check (what a process check could do)
+    s1, s2 = trace.split(". Answer")[0].split("; ")
+    p = int(s1.split("=")[1]); r = int(s2.split("=")[1])
+    return p == b * c and r == a + p
+
+data, stats = [], dict(sampled=0, kept=0, kept_but_bad_rationale=0)
+for _ in range(2000):
+    a, b, c = random.randint(1, 50), random.randint(2, 12), random.randint(2, 12)
+    trace, ans = mock_teacher(a, b, c)
+    stats["sampled"] += 1
+    if ans == a + b * c:                                                      # filter 1: final answer correct
+        stats["kept"] += 1
+        ok = rationale_is_consistent(a, b, c, trace)
+        stats["kept_but_bad_rationale"] += (not ok)
+        data.append({"prompt": f"{a}+{b}*{c}", "completion": trace, "rationale_ok": ok})
+print(stats)
+print(f"answer-correct rate {stats['kept']/stats['sampled']:.1%}; of kept, flawed rationale {stats['kept_but_bad_rationale']/stats['kept']:.1%}")
+strict = [d for d in data if d["rationale_ok"]]
+print("after adding a step check:", len(strict), "examples")
+print("example SFT row:", strict[0])
+
+```
+
+**Follow-ups:**
+- *Do I train on the rationale tokens only or the answer too?* Both; mask the prompt. Some setups also add the label-only task so the model keeps a short-answer mode.
+- *Is this the same as logit distillation?* No. This is black-box sequence-level distillation: only text is needed, so tokenizers can differ. Logit KD needs the teacher's probabilities and a shared vocabulary (Q22 to Q24).
+- *How many samples per prompt?* A few; more diversity helps, duplicates do not. I would measure on a dev set rather than guess.
+
+**Common mistakes:**
+- Assuming a correct final answer means a correct rationale.
+- Treating rationales as faithful explanations.
+- Ignoring the teacher's terms of service.
+- Evaluating on prompts that overlap with the distillation prompts.
+
+### Q40 ⭐ 🔴 What is the superficial alignment hypothesis (LIMA)? What evidence supports it, and what are its critiques and implications for data curation?
+**Asked at:** research-leaning teams, big tech, GenAI startups
+**Say this first (1 line):** The hypothesis says a model learns almost all its knowledge and ability in pretraining, and alignment only teaches it which style and format to use when talking to users. LIMA (Zhou et al., 2023) tested it by fine-tuning a 65B LLaMA base on only about 1,000 carefully curated examples, and got surprisingly good chat behaviour.
+
+**Then explain:**
+- **The claim:** pretraining = knowledge; SFT/alignment = format, tone, "which sub-distribution of the pretrained model to use". So quality and diversity of a small set can matter more than quantity.
+- **The evidence (as I recall it from the paper and its explainers; I did not re-open the paper):** 1,000 curated prompt-response pairs, no RLHF, on a 65B base; a human study that compared LIMA with other models and reported win-or-tie rates that were competitive. I am not quoting the exact percentages because I would rather not misstate them.
+- **Critiques:**
+  - *Small human study*, a few hundred prompts, so wide uncertainty and judge/prompt-set effects.
+  - *Strong base model:* it works because a 65B base already knows a lot. A small or weak base may not show the same effect.
+  - *Narrow eval:* chat-style helpfulness, not long multi-step reasoning, code or safety under attack.
+  - *Harder skills* such as reasoning, code and tool use often improve with more (and more targeted) data and with RL. I would hedge here: this is a common view in the literature, not a result I can cite precisely.
+  - *Style vs substance:* human and LLM judges can be swayed by style, so "looks aligned" is not "is correct" (Part 9).
+  - *"Superficial" is a hypothesis*, not a law. Even LIMA's authors framed it as a hypothesis.
+- **Implications for data curation:**
+  - Invest in a small, clean, diverse, consistently formatted set before scaling up. Remove contradictions and low-quality answers.
+  - Use a quality filter and a dedup step; cover task types and tones you will actually serve.
+  - Always compare "1k curated" vs "10k noisy" on your own eval, then decide.
+  - Do not use SFT to add knowledge; use retrieval or continued pretraining (Q44).
+
+**Example:** a support bot on a strong 8B base: 800 hand-reviewed conversations in the company's tone often change the style a lot. The same 800 will not teach new product facts that changed last week; those belong in retrieval.
+
+**Follow-ups:**
+- *If alignment is superficial, why do labs use huge RLHF/preference pipelines?* Because safety, calibrated refusals, and harder skills are not just style. That is my reading; the hypothesis is about the portion of alignment that is style and format.
+- *Is it a reason to use only 1,000 examples?* No. It is a reason to test small, high-quality data first as a baseline.
+- *How would you test the hypothesis yourself?* Train with 100, 300, 1,000, 3,000 examples at fixed quality and plot task accuracy vs format adherence separately. If format saturates early and accuracy keeps rising, the claim holds only for format.
+
+**Common mistakes:**
+- Saying LIMA proves that alignment needs no data or no RLHF.
+- Quoting precise win rates from memory.
+- Ignoring the base-model-strength caveat.
+- Concluding from it that SFT can add facts.
