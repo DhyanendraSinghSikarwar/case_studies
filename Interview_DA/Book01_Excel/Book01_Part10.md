@@ -85,7 +85,7 @@
 **Version note:** DATEDIF works in Excel 2016, 2019, 2021, 2024, 365 (Microsoft Support). YEARFRAC from memory, unverified. Google Sheets also has DATEDIF (from memory, unverified).
 **Edge cases:** Start date after end date: Microsoft documents #NUM!; LibreOffice returned #VALUE! when I tested, so wrap in `IFERROR(...,"Check dates")`. Dates stored as text will fail. Singular/plural ("1 yrs") needs extra IF if presentation matters.
 **Likely follow-ups:** 1) *Tenure in days?* `=end-start`. 2) *Why not TODAY()?* Reports change every time they are opened; use a fixed as-of cell.
-**Common mistakes:** Using (end-start)/365 (leap years drift); using "MD"; forgetting blank exit dates, which makes DATEDIF run to 1900.
+**Common mistakes:** Using (end-start)/365 (leap years drift); using "MD"; forgetting blank exit dates: a blank is read as 0 (a date in 1900), so DATEDIF returns #NUM! (end before start) and plain subtraction gives a huge negative number.
 
 ### Q4 ⭐⭐⭐ 🟡 Walk me through how you would reconcile two reports from different sources in Excel.
 **Asked at:** reconciliation appears as a standard prompt on practice sites such as Dataford (search snippet only); no company-specific report found.
@@ -221,7 +221,7 @@
 **Formula / Steps:** D2: `=VLOOKUP(A2,$L$2:$M$3,2,FALSE)`; E2: `=IFERROR(VLOOKUP(A2,$L$2:$M$3,2,FALSE),"Not found")`; IFNA version `=IFNA(VLOOKUP(...),"Not found")`; I2: `=H2/G2`; J2: `=IF(G2=0,"n/a",H2/G2)`.
 **Alternative:** Fix upstream: add the missing ID to the lookup table; or Home > Find & Select > Go To Special > Formulas > Errors to locate all errors.
 **Result:** D3 = #N/A; E3 and IFNA version = "Not found"; I2 = 0.025, I3 = #DIV/0!, J3 = "n/a"; `=IFERROR(#REF!,"x")` returned "x" (hidden error); `=IFERROR(50000/0,"masked")` returned "masked". LibreOffice also showed `=IFNA(1/0,"x")` correctly left #DIV/0!.
-**Version note:** IFERROR Excel 2016 to 365 (Microsoft Support). IFNA from Excel 2013 (from memory, unverified); Sheets has both (from memory, unverified).
+**Version note:** IFERROR Excel 2016 to 365 (Microsoft Support). IFNA: Microsoft Support "IFNA function" (fetched) lists Excel 2016, 2019, 2021, 2024 and 365 in its Applies-to list (it does not say whether 2013 has it). Sheets has both (from memory, unverified). Note: written through openpyxl, IFNA needs the `_xlfn.` prefix to run in LibreOffice; typed normally in Excel it is just `=IFNA(...)`.
 **Edge cases:** Wrapping a whole report in IFERROR turns genuine mistakes into blanks; "n/a" text in a numeric column breaks later SUMs.
 **Likely follow-ups:** 1) *How do you stop #REF!?* Do not delete referenced columns; use tables. 2) *Show 0 or blank?* Depends on meaning: 0 means measured zero, blank means unknown.
 **Common mistakes:** IFERROR everywhere; hiding the error with font colour; not investigating why.
@@ -387,9 +387,9 @@
 | 8 | E7 | 34 | | |
 
 **Formula / Steps:** C2: `=VLOOKUP(B2,$F$2:$G$5,2,TRUE)`; count in a band `=COUNTIF(C2:C8,"25-34")`.
-**Alternative:** `=IFS(B2<25,"Under 25",B2<35,"25-34",B2<45,"35-44",TRUE,"45+")` (Excel 2019 and later, from memory, unverified); or `LOOKUP`.
+**Alternative:** `=IFS(B2<25,"Under 25",B2<35,"25-34",B2<45,"35-44",TRUE,"45+")` (Excel 2019 and later: Microsoft Support "IFS function", fetched, availability note: Office 2019 or a Microsoft 365 subscription); or `LOOKUP`.
 **Result:** C2:C8 = Under 25, 25-34, 35-44, 35-44, 45+, Under 25, 25-34 (both methods agree); COUNTIF "25-34" = 2.
-**Version note:** VLOOKUP all versions; IFS needs 2019/365 (from memory, unverified; not in Excel 2016). Sheets has IFS (from memory).
+**Version note:** VLOOKUP all versions; IFS needs 2019/2021/2024/365 (Microsoft Support "IFS function", fetched; not listed for Excel 2016). Sheets has IFS (from memory).
 **Edge cases:** Unsorted band table gives wrong bands silently; blank age returns "Under 25"; boundary ages (24/25) must be tested; age should come from DOB (use DATEDIF "y").
 **Likely follow-ups:** 1) *Bands in a pivot?* Right-click a number field > Group (not run here). 2) *Compute age?* `=DATEDIF(DOB,asof,"y")`.
 **Common mistakes:** Overlapping bands; TRUE vs FALSE in VLOOKUP; unsorted limits.
@@ -559,7 +559,7 @@
 **Alternative:** Tenure bands with COUNTIFS (Q21), or a pivot of leavers by tenure band (not run here).
 **Result:** Tenure months 8, 27, 4, 44, 4. Leavers 5, early leavers 3, A = 60%. Cohort 4, early 3, B = 75%. Using "<=12" instead of "<12" gave the same count here.
 **Version note:** DATEDIF Excel 2016 to 365 (Microsoft Support); COUNTIFS also (Microsoft Support).
-**Edge cases:** The cohort must be old enough to have had 12 months (E106 joined Nov-23 and is still active, so counts as a non-leaver only because the as-of date is 31-Dec-24). Boundary at exactly 12 months, rehires, tiny cohorts, blank exit dates (G blank is ignored by "<12").
+**Edge cases:** Definition B only judges a cohort fairly once every member has had 12 months to leave: someone hired in 2024 and still active at 31-Dec-24 has not finished the window, so for a strict cohort measure use hires up to 12 months before the report date. The cohort must be old enough to have had 12 months (E106 joined Nov-23 and is still active, so counts as a non-leaver only because the as-of date is 31-Dec-24). Boundary at exactly 12 months, rehires, tiny cohorts, blank exit dates (G blank is ignored by "<12").
 **Likely follow-ups:** 1) *Which definition is better?* B, because A is distorted by how many veterans left. 2) *Why does it matter?* High early attrition points to hiring or onboarding problems.
 **Common mistakes:** Not saying which definition; dividing by total headcount; counting active people with blank tenure as early.
 
@@ -586,7 +586,9 @@
 | 6 | E5 | 01-Jun-24 | 30-Sep-25 | 15 | 1 | | 6-12 | 6 | 12 | 3 | 2 | 0.667 |
 | 7 | E6 | 01-Jun-25 | | 6 | 0 | | 12+ | 12 | 999 | 4 | 2 | 0.500 |
 | 8 | E7 | 05-Jan-25 | 01-Dec-25 | 10 | 1 | | | | Total | 10 | 7 | |
-| 9-11 | E8 to E10 continue (tenure 29, 2, 18) | | | | | | | | | | | |
+| 9 | E8 | 01-Jul-23 | | 29 | 0 | | | | | | | |
+| 10 | E9 | 01-Oct-25 | 15-Dec-25 | 2 | 1 | | | | | | | |
+| 11 | E10 | 01-Jan-24 | 20-Jul-25 | 18 | 1 | | | | | | | |
 
 **Formula / Steps:**
 - D2: `=DATEDIF(B2,IF(C2="",$H$1,C2),"m")` (completed months)
@@ -624,12 +626,12 @@
 | 7 | E6 | 01-May-24 | 31-Dec-25 | Closing | 3 | |
 | 8 | E7 | 03-Feb-26 | | Closing (direct) | 3 | |
 
-**Formula / Steps:** (month start in F1, month end `=EOMONTH(F1,0)` in F2)
-- Opening: `=COUNTIFS(B2:B8,"<"&F1)-COUNTIFS(C2:C8,"<"&F1)`
-- Joiners: `=COUNTIFS(B2:B8,">="&F1,B2:B8,"<="&F2)`
-- Leavers: `=COUNTIFS(C2:C8,">="&F1,C2:C8,"<="&F2)`
-- Closing: `=F4+F5-F6`
-**Alternative:** Direct closing: `=COUNTIFS(B2:B8,"<="&F2)-COUNTIFS(C2:C8,"<="&F2)`; or `=SUMPRODUCT((B2:B8<=F2)*((C2:C8="")+(C2:C8>F2)>0))`.
+**Formula / Steps:** (month start in E1, month end `=EOMONTH(E1,0)` in E2; the results sit in E4 to E8 as the sample shows)
+- Opening (E4): `=COUNTIFS(B2:B8,"<"&E1)-COUNTIFS(C2:C8,"<"&E1)`
+- Joiners (E5): `=COUNTIFS(B2:B8,">="&E1,B2:B8,"<="&E2)`
+- Leavers (E6): `=COUNTIFS(C2:C8,">="&E1,C2:C8,"<="&E2)`
+- Closing (E7): `=E4+E5-E6`
+**Alternative:** Direct closing (E8): `=COUNTIFS(B2:B8,"<="&E2)-COUNTIFS(C2:C8,"<="&E2)`; or `=SUMPRODUCT((B2:B8<=E2)*(((C2:C8="")+(C2:C8>E2))>0))`.
 **Result:** Run in LibreOffice 24.2: opening 3, joiners 2, leavers 2, closing 3, direct closing 3 (matches).
 **Version note:** Works in every Excel version and in Google Sheets (functions are old; Sheets from memory, unverified).
 **Edge cases:** Rejoiners need one row per stint, or they are miscounted; exit dates stored as text are not counted; E6 left on 31-Dec so is correctly outside January; joined and left in the same month counts in both joiners and leavers.
@@ -732,7 +734,7 @@
 - D2: `=IF(C2="","",C2-B2)`
 - Average by dept: `=IFERROR(AVERAGEIFS($D$2:$D$8,$A$2:$A$8,F2),"")`
 - Filled count: `=COUNTIFS($A$2:$A$8,F2,$D$2:$D$8,">=0")`
-- Open requisitions: `=COUNTIFS(A2:A8,F2)-` filled count
+- Open requisitions: `=COUNTIFS($A$2:$A$8,F2)-COUNTIFS($A$2:$A$8,F2,$D$2:$D$8,">=0")` (all requisitions of the department minus the filled ones)
 **Alternative:** PivotTable with Average of Days by Dept (not run here); or `=SUMIFS(D:D,A:A,F2)/COUNTIFS(A:A,F2,D:D,">=0")`.
 **Result:** Run in LibreOffice 24.2: Sales 40, IT 54, HR 25, all 42.6; filled counts 2, 2, 1.
 **Version note:** AVERAGEIFS exists from Excel 2007, so all current versions; Google Sheets has it (from memory, unverified).
@@ -844,7 +846,7 @@
 - Power Query (Get & Transform) is Excel's built-in data-cleaning tool; "From Folder" reads every file in a folder.
 - Microsoft says all files in the folder and subfolders are included, so keep unrelated files out; files should share headers, data types and column count (Microsoft Support, "Import data from a folder with multiple files (Power Query)", seen in a search summary).
 - Add a Source column (branch name) so rows stay traceable.
-**Example:** Pune sends 5 and 2 hires, Delhi sends 7. Combined: Pune 7, Delhi 7, total 14.
+**Example:** Power Query route: Pune's file has two lines (5 and 2 hires) and Delhi's has 7, so combined Pune 7, Delhi 7, total 14. The 3-D sum below uses a different, one-line-per-branch sample (Pune 5, Delhi 7, Chennai 3 = 15), so the two totals are not meant to match.
 **Sample sheet (identical single-cell sheets for the 3-D example):**
 
 | | A | B |
@@ -1215,7 +1217,7 @@
 - Quartiles split sorted data into four equal parts. Q1 is the 25% mark, Q3 the 75% mark; the gap between them is the IQR (inter-quartile range, the 'middle half' spread).
 - The IQR rule: anything above Q3 + 1.5 x IQR or below Q1 - 1.5 x IQR is a suspected outlier (a flag, not proof).
 - Always confirm with the source; a CEO salary can be a real outlier.
-**Example:** Seven salaries are between 39,000 and 48,000 and one is 450,000 (an extra zero on 45,000). One more was typed as text '46000', which Excel ignores in totals and quartiles.
+**Example:** Eight rows: six salaries are between 39,000 and 48,000, one is 450,000 (an extra zero on 45,000), and one more was typed as text '46000', which Excel ignores in totals and quartiles. So the quartiles are worked out on 7 numbers.
 **Sample sheet:**
 
 | row | A | B | C | D | E | F |
@@ -1368,7 +1370,7 @@
 - Microsoft's "Dynamic array formulas and spilled array behavior" page lists 2016 and 2019 in its applies-to, which looks like the same page-level inconsistency; spilling itself is a 365/2021 feature (from memory, unverified).
 - Older-safe toolkit: INDEX/MATCH or VLOOKUP, SUMIFS/COUNTIFS/AVERAGEIFS, SUMPRODUCT, IFERROR, PivotTables, Remove Duplicates.
 - Power Query is built into Excel 2016 as Get & Transform (Data tab); in 2010/2013 it was an add-in (from memory, unverified, Microsoft page not fetched).
-- IFS, MAXIFS, TEXTJOIN, SWITCH arrived in 2019 / 365 (from memory, unverified).
+- IFS is available from Excel 2019 (Microsoft Support "IFS function", fetched: Office 2019 or Microsoft 365); MAXIFS, TEXTJOIN, SWITCH also arrived in 2019 / 365 (from memory, unverified).
 **Example:** A manager on Excel 2016 opens your file with XLOOKUP and sees #NAME?. Use INDEX/MATCH and the report works for both.
 **Sample sheet:**
 
@@ -1386,7 +1388,7 @@
 **Alternative:** 365 equivalents (not run here, LibreOffice 24.2 lacks them): `=XLOOKUP(F1,A2:A7,C2:C7)`, `=ROWS(UNIQUE(B2:B7))`, `=MAXIFS(C2:C7,B2:B7,"IT")`. Expected: 60000, 3, 72000 (pandas).
 **Result:** Run: salary of E04 = 60000; distinct depts = 3; Sales payroll = 85000; max IT salary = 72000.
 **Version note:** See bullets above. All 'run' formulas work in every Excel version.
-**Edge cases:** The SUMPRODUCT distinct trick returns #DIV/0! if the range has blanks; and it is slow on big ranges. Files saved from 365 with dynamic formulas show them frozen as {=...} or #NAME? in older versions.
+**Edge cases:** The SUMPRODUCT distinct trick returns #DIV/0! if the range has blanks; and it is slow on big ranges. Files saved from 365 with dynamic formulas may show them as {=...} array formulas or #NAME? in older versions (from memory, unverified).
 **Likely follow-ups:** 1) *Can they open the 365 file?* Yes, but new functions show #NAME?. 2) *Safest approach?* Ask the reader's version, or send values/PDF.
 **Common mistakes:** Assuming everyone has 365; using a newer function and discovering the error after sending.
 
@@ -1413,9 +1415,9 @@
 | 8 | E07 | HR | Senior | F |  |  |  |  |  |  |  |
 | 9 | E08 | HR | Senior | M |  |  |  |  |  |  |  |
 
-**Formula / Steps:** `H2 =COUNTIFS($B$2:$B$9,F2,$C$2:$C$9,G2)`, `I2 =COUNTIFS($B$2:$B$9,F2,$C$2:$C$9,G2,$D$2:$D$9,"F")`, `J2 =IF(H2=0,"",ROUND(I2/H2,3))`.
+**Formula / Steps:** `H2 =COUNTIFS($B$2:$B$9,F2,$C$2:$C$9,G2)`, `I2 =COUNTIFS($B$2:$B$9,F2,$C$2:$C$9,G2,$D$2:$D$9,"F")`, `J2 =IF(H2=0,"",ROUND(I2/H2,3))`, `K2 =IF(I2=0,"n/a",(H2-I2)&":"&I2)` (men:women, "n/a" when there are no women).
 **Alternative:** PivotTable: Dept and Level in Rows, Gender in Columns, Values = Count of Emp, 'Show Values As > % of Row Total' (not run here).
-**Result:** Run (rows 2 to 5): women % = Sales Junior 0.5 (of 2), Sales Senior 0 (of 2), HR Junior 1 (of 2), HR Senior 0.5 (of 2).
+**Result:** Run (rows 2 to 5; K2:K5 = 1:1, n/a, 0:2, 1:1): women % = Sales Junior 0.5 (of 2), Sales Senior 0 (of 2), HR Junior 1 (of 2), HR Senior 0.5 (of 2).
 **Version note:** COUNTIFS: Excel 2007+; PivotTable: all versions (from memory, unverified).
 **Edge cases:** Non-binary or blank gender values need a separate row or an 'Undisclosed' bucket, else percentages will not sum to 100. Groups of size 0 give #DIV/0!. For small groups, reporting rules may require suppression (privacy).
 **Likely follow-ups:** 1) *Why not one overall %?* It hides level gaps. 2) *Pay equity?* Needs salary by gender within same grade (compa-ratio).
@@ -1445,7 +1447,7 @@
 
 (H2:J2 = row counts of HRMS, payroll, attendance; H3 = HRMS IDs missing in payroll; H4 = missing in attendance; H5 = payroll IDs not in HRMS.)
 
-**Formula / Steps:** `D2 =IF(COUNTIF($B$2:$B$7,A2)>0,"Yes","MISSING")`, `E2` same against column C, and reverse `F2 =IF(COUNTIF($A$2:$A$7,B2)=0,"Not in HRMS","")`; counts `H3 =COUNTIF(D2:D7,"MISSING")`.
+**Formula / Steps:** `D2 =IF(COUNTIF($B$2:$B$7,A2)>0,"Yes","MISSING")`, `E2` same against column C, and reverse `F2 =IF(COUNTIF($A$2:$A$7,B2)=0,"Not in HRMS","")`; row counts `H2 =COUNTA(A2:A7)`, `I2 =COUNTA(B2:B7)`, `J2 =COUNTA(C2:C7)`; differences `H3 =COUNTIF(D2:D7,"MISSING")`, `H4 =COUNTIF(E2:E7,"MISSING")`, `H5 =COUNTIF(F2:F7,"Not in HRMS")`.
 **Alternative:** Power Query: merge the three tables on Employee ID with Full Outer join, filter nulls (not run here); or `=ISNA(MATCH(A2,B:B,0))`.
 **Result:** Run: HRMS 6, payroll 6, attendance 5; HRMS IDs missing in payroll = 1; missing in attendance = 1; payroll IDs not in HRMS = 1.
 **Version note:** COUNTIF/MATCH: all versions. Power Query merge: Excel 2016+ built in (from memory, unverified).
@@ -1488,7 +1490,7 @@
 **Say this in the interview:** "I put each metric on a 0 to 1 scale so they are comparable, multiply by weights agreed with HR leadership, add them, and rank. It is a screening tool to decide where to look first, not a prediction."
 **Explain simply:**
 - Min-max scaling: (value - lowest) / (highest - lowest) converts any metric to 0 (best) to 1 (worst) so percentages and months can be added fairly.
-- Weights express importance (here attrition 50%, first-year share 30%, short tenure 20%) and must sum to 100%. They are a judgement call; show a sensitivity check.
+- Weights express importance (here attrition 50%, first-year share 30%, short tenure 20%) and must sum to 100%. This scoring recipe is my own illustrative method, not a published HR standard. They are a judgement call; show a sensitivity check.
 - Flip the direction for metrics where lower is worse (shorter tenure = more risk), using 1 minus the scaled value.
 **Example:** Ops has the highest attrition (28%), most first-year leavers (60%) and the shortest tenure (14 months), so it scores 1.0 and ranks first.
 **Sample sheet:**
@@ -1574,6 +1576,7 @@
 **What the interviewer is checking:** Can you build a cohort table, with care about who has had enough time to be measured?
 **Say this in the interview:** "A cohort is everyone who joined in the same month. For each person I flag whether they were still employed 3 and 6 months after joining, but only if that much time has passed. Then I group by joining month and divide."
 **Explain simply:**
+- The milestone rule below (kept = still employed on or after join date + N months) is my own working definition, not a published standard; state it on the report.
 - Cohort = a group of people who share a starting month; retention % = how many of them are still here after N months.
 - Helper columns keep it simple: cohort month, then a 1/0 flag per milestone.
 - A person who joined 2 months ago cannot be judged at 6 months yet, so the flag stays blank and the person is left out of the denominator.
@@ -1777,7 +1780,7 @@
 **Say this in the interview:** "It is a roll-forward: closing headcount equals opening plus hires minus leavers, and each month's opening equals the previous month's closing. Leavers come from an assumed monthly attrition rate. I keep the rate in one input cell so HR can try 15%, 18% or 22%."
 **Explain simply:**
 - Roll-forward = a table where this month's closing becomes next month's opening.
-- Monthly attrition rate = annual rate / 12 (a simple approximation; compounding gives a slightly different number).
+- Monthly attrition rate = annual rate / 12 (a simple approximation of my own choosing; compounding gives a slightly different number). The roll-forward layout is standard practice, not an AIHR formula.
 - Leavers = opening headcount x monthly rate, rounded to whole people.
 - Keep assumptions (annual rate, hires) in clearly marked input cells and label the forecast as an estimate.
 **Example:** Start Nov with 220 people, 18% annual attrition = 1.5% a month, so about 3 leavers in Nov (220 x 0.015 = 3.3 rounded to 3). With 6 hires, closing = 220 + 6 - 3 = 223.
