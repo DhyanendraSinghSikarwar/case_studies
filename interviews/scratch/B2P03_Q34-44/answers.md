@@ -656,3 +656,183 @@ FORMAT: Plain text, at most 120 words, then one clear next step.
 - *What changes for voice or multi-language?* Latency budget gets tight and error rates change, so add per-language eval slices and shorter replies.
 
 **Common mistakes:** Launching without scope and escalation rules. Letting the assistant answer policy questions from memory instead of the policy text. Giving it a refund tool with no approval. No eval set, so changes are judged by vibes. Measuring only deflection, not wrong answers or missed escalations. Logging raw PII.
+
+### Q42 ⭐ 🔴 Automatic prompt optimisation (DSPy-style compilation, meta-prompting, search over prompts): how does it work and when is it worth it?
+**Asked at:** research-leaning teams, GenAI startups, big tech
+**Say this first (1 line):** Automatic prompt optimisation treats the prompt as something to search: I declare the task (inputs, outputs), a metric, and a labelled dev set, and an optimiser tries instructions and few-shot demos and keeps what scores best. It is worth it when the metric is stable, the labelled data exists and the model changes often; the main risks are overfitting the dev set and the cost of all those evaluation calls.
+
+**Then explain:**
+- **DSPy-style (as I understand it, check the current docs):** you write a *signature* (for example "question -> answer") and compose modules, pick a metric function, and run an optimiser/compiler over a training or dev set. It can bootstrap few-shot demos from the model's own successful runs and propose or refine instructions. The compiled program is then a prompt (plus demos) you can version and re-compile when the model changes. Names and optimiser types evolve, so I would not memorise them.
+- **Meta-prompting:** ask an LLM to rewrite the prompt given failures ("here are 10 wrong outputs, improve the instructions"), then re-score. It is a manual loop made automatic.
+- **Search over prompts:** random, greedy or evolutionary search (mutate and recombine instructions and example sets, keep the best), or Bayesian search over discrete choices. All of them need a score for each candidate.
+- **The scorer decides everything:** exact match, field accuracy, unit tests, or an LLM judge (judge bias, Part 9). If the metric is noisy or wrong, the optimiser finds prompts that game it.
+- **When worth it:**
+
+| Worth it | Not worth it yet |
+|---|---|
+| Stable, trusted metric | Metric still being debated |
+| 100s of labelled dev examples, plus separate test set | A few examples |
+| Frequent model swaps (re-optimise instead of re-hand-tuning) | One model, rarely changed |
+| Multi-step pipeline with many prompts to tune together | A single simple prompt that already works |
+
+- **Risks:** overfitting the dev set (the winner of many tries looks better than it is), cost (each candidate is many calls), unreadable or brittle optimised prompts, and prompts that do not transfer to another model without re-running. Always keep a held-out test set the optimiser never sees.
+
+**Example:** a team extracts fields from invoices with 500 labelled invoices. They split 150 dev, 350 test, run an optimiser over instructions and demo sets, and report the test score. When they move to a new model they re-run the optimiser with the same data instead of hand-editing the prompt for a week.
+
+**Code:** (executed; MOCK. The scorer is a made-up function with hidden accuracies, not an LLM, so it shows the search loop and the overfitting effect only)
+```python
+# MOCK toy prompt search. The scorer is a made-up function, not an LLM: each candidate has a
+# hidden true accuracy; scoring on a dataset just samples correct/incorrect from it.
+import random, itertools
+
+INSTRUCTIONS = ["Classify the ticket.", "You are an expert triager. Pick one label.",
+                "Answer with the label only.", "Think carefully, then give the label.",
+                "Label the ticket: billing, bug or feature."]
+DEMO_SETS = {0: 0.00, 2: 0.03, 4: 0.05, 8: 0.05}       # few-shot demos: made-up gain, saturating
+
+def true_acc(instr_i, k):                                # hidden "ground truth" of the mock
+    base = [0.70, 0.72, 0.74, 0.71, 0.75][instr_i]
+    return base + DEMO_SETS[k]
+
+def mock_score(candidate, n_items, seed):                # what the optimiser can observe
+    rng = random.Random(f"{candidate}-{seed}")
+    p = true_acc(*candidate)
+    return sum(rng.random() < p for _ in range(n_items)) / n_items
+
+candidates = list(itertools.product(range(len(INSTRUCTIONS)), DEMO_SETS))
+print("search space:", len(candidates), "candidates")
+
+for dev_n in (20, 200):
+    dev = {c: mock_score(c, dev_n, seed="dev") for c in candidates}     # optimiser sees only this
+    best = max(dev, key=dev.get)
+    held = mock_score(best, 5000, seed="heldout")                       # fresh data
+    oracle = max(candidates, key=lambda c: true_acc(*c))
+    print(f"dev set {dev_n:3d}: picked {best} dev {dev[best]:.3f} -> held-out {held:.3f} "
+          f"(gap {dev[best]-held:+.3f}); truly best {oracle} at {true_acc(*oracle):.3f}")
+```
+Output from my run: with a dev set of 20 items the search picked a candidate that scored 0.900 on dev but 0.724 on 5000 fresh items (gap +0.176), and it was not the truly best one. With 200 dev items it picked the truly best candidate, dev 0.825 versus held-out 0.808. Same search, only the dev set size changed.
+
+**Follow-ups:**
+- *How do you reduce overfitting?* Larger dev set, a separate held-out test, fewer candidates or early stopping, regularise by preferring shorter prompts, and re-check on fresh production samples.
+- *Does it replace prompt engineering?* No. You still design the task, metric and data; it automates the trial and error.
+- *Cost control?* Cheap model for search, subsample the dev set in early rounds, cache outputs, budget the number of candidates.
+
+**Common mistakes:** Optimising against a metric nobody validated. Reporting the dev score as the result. Tiny dev sets. Treating the optimised prompt as portable across models. Using it before a simple hand-written baseline and eval exist.
+
+### Q43 ⭐ 🔴 How does prompting a reasoning model differ from prompting a standard chat model (reasoning effort or budget, less hand-holding, no step-by-step instructions)?
+**Asked at:** big tech, GenAI startups, product
+**Say this first (1 line):** A reasoning model already thinks before it answers, so I give it a clear goal, the constraints and the success criteria, and I do not script the steps or say "think step by step". I use the provider's reasoning effort or budget setting to trade quality against cost and latency, and I check the answer with explicit verification requirements. This area is provider-specific and moves fast, so I would check the current docs for parameter names and advice.
+
+**Then explain:**
+
+| | Standard chat model | Reasoning model |
+|---|---|---|
+| Steps | Often helped by "think step by step" or worked examples (Q3) | Reasons internally; prescribing steps can get in the way or add nothing |
+| Prompt style | Detailed instructions, examples | Short and direct: goal, context, constraints, output format, what "done" means |
+| Examples | Few-shot is common | Often fewer or none; test whether they help |
+| Control knob | Temperature, top-p, max tokens | Reasoning effort or thinking budget where offered; some parameters may be fixed or unsupported (check docs) |
+| Cost and latency | Output tokens visible | Hidden or summarised reasoning tokens usually still count toward cost and latency; calls can be slower and costlier |
+| Best for | Fast, simple, high-volume tasks | Multi-step maths, code, planning, hard analysis, ambiguous constraints |
+
+- **What I put in the prompt:** the real objective, hard constraints (budget, format, forbidden actions), the inputs, how to handle missing information, and the checks the answer must pass ("verify that totals add up and cite the line you used").
+- **What I avoid:** long step-by-step recipes, "think carefully" boilerplate, and conflicting instructions. Contradictions cost more here because the model tries to satisfy all of them.
+- **Cost control:** use the lowest effort that passes my eval, route easy requests to a standard model (Q36), set a token cap with room for the reasoning, and measure cost per correct answer.
+- **Verification still matters:** reasoning does not remove hallucination. Add tests, schema validation, or a second check on important outputs.
+- **Evaluate, do not assume:** run the same eval on both model types; for simple tasks the reasoning model may be just slower and more expensive for equal quality. Test-time compute in general is covered in Part 2 (Q42, Q43).
+
+**Example:** for a scheduling task, the standard-model prompt lists "Step 1 list the meetings, Step 2 find conflicts, Step 3 propose slots". For a reasoning model I write: "Schedule these 6 meetings in the week. Constraints: no meetings before 10, Priya only on Tue/Thu, 15 minute gaps. Return a table and list any constraint you could not satisfy." Then I raise the effort setting only if the eval shows misses.
+
+**Code:** (prompt text only; not executed, since nothing here calls a model)
+```text
+# not executed: prompt text only
+# Standard chat model (scripted steps)
+Think step by step. Step 1: list the meetings. Step 2: find conflicts. Step 3: propose slots.
+
+# Reasoning model (goal + constraints + checks)
+Goal: schedule the 6 meetings below within Mon-Fri.
+Constraints: nothing before 10:00; Priya only Tue/Thu; 15-minute gap between meetings.
+Output: a table (meeting, day, time) and a list of any constraint you could not satisfy.
+Before answering, verify that no two meetings overlap and every constraint holds.
+```
+
+**Follow-ups:**
+- *Should I ever show reasoning steps to the user?* Providers differ on whether raw reasoning is exposed; summaries may be available. Do not build logic that depends on parsing hidden reasoning.
+- *Do few-shot examples still help?* Sometimes for output format or style; test with and without.
+- *Why might a reasoning model overthink?* On easy tasks it can spend many tokens for no gain; lower the effort or route to a standard model.
+
+**Common mistakes:** Pasting old chain-of-thought prompts into a reasoning model by habit. Over-specifying steps. Using the highest effort everywhere. Ignoring reasoning tokens in cost and latency. Assuming the model verifies itself. Quoting parameter names from memory instead of the docs.
+
+### Q44 ⭐ 🔴 How would you evaluate tool use: tool-selection accuracy, argument accuracy, multi-turn calls, public function-calling benchmarks, and an in-house eval set?
+**Asked at:** big tech, GenAI startups, evaluation-focused rounds
+**Say this first (1 line):** I score tool use at several levels: did it call a tool when it should (and not when it should not), was it the right tool, were the arguments right (exact or semantically equal), did multi-turn and parallel cases work, and how many calls did it take. I use public function-calling leaderboards to shortlist models, then an in-house set built from real logged requests plus synthetic edge cases to decide.
+
+**Then explain:**
+
+| Metric | What it measures | Notes |
+|---|---|---|
+| Call / no-call decision | Calls a tool when needed, abstains when not | Include "no tool needed" and "missing information, ask the user" cases |
+| Tool-selection accuracy | Right tool name among the available ones | Watch near-duplicate tools and hallucinated tool names |
+| Argument accuracy | Right keys and values | Exact match is strict; semantic match accepts equal values ("a1" vs "A1", date formats). Define the rule per field |
+| Schema validity | Arguments pass the schema | Necessary, not sufficient (valid but wrong value) |
+| Multi-turn / parallel | Correct sequence, all parallel calls made, uses earlier results | Compare as sets for parallel calls, as sequences when order matters |
+| End-to-end outcome | Did the task get done (state check, final answer) | Often the real goal; several call paths can be correct |
+| Efficiency | Calls per task, tokens, latency, retries | A correct answer in 3 redundant calls is a cost bug |
+| Safety | Unsafe or unauthorised calls | Target zero; separate slice |
+
+- **Public benchmarks:** the Berkeley Function Calling Leaderboard (BFCL) is the one named in my source; it covers function-calling accuracy across several scenario types. Leaderboards are useful for shortlisting but their tasks and tools are not yours, and models may be tuned toward them, so treat scores as a hint and check the current leaderboard for what it actually tests.
+- **Building the in-house set:**
+  1. Sample real requests from logs (anonymised), label the expected calls or outcomes.
+  2. Add synthetic edge cases: ambiguous requests, missing arguments, no-tool needed, injection attempts, tool errors, parallel requests.
+  3. Split dev and held-out; version the set; keep failures as regression tests.
+  4. Run with the production prompt and tool definitions, several seeds, and report per-slice numbers.
+- **Prefer outcome checks where possible:** run tools against a sandbox or mock backend and compare final state, so equivalent call paths are not penalised.
+
+**Example:** on 7 labelled cases the model picked the right tool in 4, matched exact arguments in 3 (4 with case-insensitive matching), called a tool once when none was needed, and made 3 extra redundant calls. The summary says more than one "accuracy" number: selection is fine, abstention and efficiency need work.
+
+**Code:** (executed; SYNTHETIC expected-vs-actual calls, no model involved)
+```python
+# SYNTHETIC expected-vs-actual tool calls; no model. Shows the scoring logic.
+cases = [
+ # (id, expected calls, actual calls)   a call is (name, args)
+ ("c1", [("get_order", {"order_id": "A1"})],                          [("get_order", {"order_id": "A1"})]),
+ ("c2", [("get_order", {"order_id": "A1"})],                          [("get_order", {"order_id": "a1"})]),            # arg differs in case
+ ("c3", [("get_weather", {"city": "Pune"})],                          [("search_web", {"q": "weather Pune"})]),        # wrong tool
+ ("c4", [],                                                           []),                                             # no call needed: correct
+ ("c5", [],                                                           [("get_order", {"order_id": "A1"})]),            # called when not needed
+ ("c6", [("get_order", {"order_id": "A1"}), ("get_order", {"order_id": "B2"})],
+        [("get_order", {"order_id": "B2"}), ("get_order", {"order_id": "A1"})]),                                         # parallel, order differs
+ ("c7", [("get_order", {"order_id": "A1"})],
+        [("get_order", {"order_id": "A1"}), ("get_order", {"order_id": "A1"}), ("get_order", {"order_id": "A1"})]),     # correct but wasteful
+]
+
+def norm(v): return v.strip().lower() if isinstance(v, str) else v
+
+def key(call, lenient): 
+    name, args = call
+    return (name, tuple(sorted((k, norm(v) if lenient else v) for k, v in args.items())))
+
+def score(cases, lenient=False):
+    n = len(cases)
+    sel = arg = exact = nocall_ok = nocall_n = extra = 0
+    for _, exp, act in cases:
+        if not exp:
+            nocall_n += 1; nocall_ok += (not act)
+        e_names, a_names = sorted(c[0] for c in exp), sorted(c[0] for c in act)
+        sel += e_names == a_names
+        arg += sorted(key(c, lenient) for c in exp) == sorted(key(c, lenient) for c in act)
+        extra += max(0, len(act) - len(exp))
+    return dict(tool_selection=f"{sel}/{n}", args_match=f"{arg}/{n}",
+                no_call_correct=f"{nocall_ok}/{nocall_n}", extra_calls=extra,
+                avg_calls_per_case=round(sum(len(a) for _, _, a in cases) / n, 2))
+
+print("strict  :", score(cases))
+print("lenient :", score(cases, lenient=True), " (case/whitespace-insensitive strings)")
+```
+Output from my run: strict `tool_selection 4/7, args_match 3/7, no_call_correct 1/2, extra_calls 3, avg_calls_per_case 1.29`; lenient string matching raises `args_match` to 4/7 (case c2).
+
+**Follow-ups:**
+- *How do you score arguments that are free text?* Exact match is wrong for them. Use field-level rules (normalise, fuzzy match) or an LLM judge with spot-checks, and prefer constrained fields (enums, ids) in the tool design.
+- *How do you evaluate multi-turn tool use?* Replay scripted conversations against a simulated user and mock tools, score the final state and the number of steps, not only each call.
+- *How big should the set be?* Enough that per-slice confidence intervals are tighter than the changes you care about; start with a few hundred and grow it from production failures.
+
+**Common mistakes:** Reporting one accuracy number. Only testing cases where a tool is needed. Exact-match scoring that fails correct but differently formatted arguments. Ignoring efficiency. Trusting a public leaderboard instead of testing on your own tools. Never adding production failures to the set.
