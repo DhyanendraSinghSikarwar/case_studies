@@ -1539,9 +1539,10 @@ If three of the five fail twice in a row, delay applying to that role type.
 ### Q97 ⭐ 🟢 Is an analytics internship possible for experienced professionals switching careers?
 **Short answer:** Possible but uncommon and low paid. Consider it only if you can afford the pay cut and it leads to a real offer.
 **Why / explain simply:**
-- Many internships target students.
+- Many internships target students (general knowledge, not checked).
 - Project-based or part-time stints can still build proof.
-**What the evidence says:** No reliable data found on internship availability or conversion for mid-career switchers in India. The JD samples were full-time entry roles.
+- An internal project at your current employer costs no pay cut and can give you a real, checkable result.
+**What the evidence says:** No reliable data found on internship availability or conversion for mid-career switchers in India. The JD samples were full-time entry roles, so they say nothing about internships. Decision rule: take an internship only if it is paid, has a named deliverable, and you can afford the income gap; otherwise prefer an internal project.
 **What to do:**
 1. Ask your current employer for internal analytics tasks first.
 2. Offer volunteer or small business projects.
@@ -1554,16 +1555,19 @@ If three of the five fail twice in a row, delay applying to that role type.
 ### Q98 ⭐ 🟢 How do I know if a job posting is a genuine analytics role or a data-entry or operations role?
 **Short answer:** Read the duties, not the title. Analytics roles describe questions, SQL/BI tools and stakeholders; data-entry roles describe typing, copy-paste and fixed forms.
 **Why / explain simply:**
-- Titles overlap (MIS executive, analyst, associate).
+- Titles overlap (MIS executive, analyst, associate). The same title can mean report-building at one firm and form-filling at another.
 - Operations roles can be fine stepping stones if they include reporting.
-**What the evidence says:** The JD samples include operational roles that are weak fits (MS Addendum). Switcher-friendly Excel-first roles include MIS, operations analyst and research/pricing analyst (MS Section 6).
+- Data entry means typing records into a system. Analytics means asking a question of data and explaining the answer.
+- Real analytics roles name a tool, an output and a user, for example "weekly dashboard for the sales head".
+**What the evidence says:** The JD samples include operational roles that are weak fits (MS Addendum "Other findings": "a few operational roles are weak fits"). Switcher-friendly Excel-first roles include MIS, operations analyst and research/pricing analyst (MS Section 6). The reading of duties here is my judgement; no study tests it. No reliable data found on how many postings are mislabelled.
 **What to do:**
 1. Check duties: reports, dashboards, SQL, insights versus data entry.
 2. Ask in screening: "What tools will I use and what will I deliver weekly?"
 3. Look for named tools and business outcomes.
 4. Be wary if most of the described work is typing or copying and nothing is reported or analysed (my rule of thumb, not a research number).
-**Example (illustrative):** "Prepare weekly MIS using pivot tables and share insights" is analytical; "update records in portal" is not.
-**Common mistakes:** Judging by title or salary alone.
+**Example (illustrative):** "Prepare weekly MIS using pivot tables and share insights" is analytical; "update records in portal" is not. A middle case: "maintain tracker and send daily status mail" is a stepping stone only if the tracker feeds a report you can learn to build.
+**Say this in the interview:** "Could you tell me which tools I would use and what I would deliver each week? I want to be sure the role involves analysis and reporting."
+**Common mistakes:** Judging by title or salary alone; taking a typing-only role hoping it will turn into analytics; not asking what the first 3 months look like.
 **Where this is covered:** Guide Sections 1 and 2b.
 
 ### Q99 ⭐ 🟢 How do I avoid job scams and fake training-plus-job offers?
@@ -1571,21 +1575,25 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Why / explain simply:**
 - Scams ask for registration, kit, security deposit or training fees.
 - Some training sellers imply guaranteed jobs.
-**What the evidence says:** Placement and course claims in B0S are vendor/blog claims, unverified. No reliable data found on scam prevalence.
+- As an HR person you know a genuine hiring process: written offer on company letterhead, official email domain, no fee. Apply the same test as a candidate.
+- Urgency ("pay today or lose the seat") is a warning sign, not a reason to hurry.
+**What the evidence says:** Placement and course claims in B0S are vendor/blog claims, unverified. No reliable data found on scam prevalence. This answer is general safety advice, not a research finding. Decision rule: if money moves from you to the other side before you have joined and drawn a salary, stop.
 **What to do:**
 1. Verify the company on its official site and a known job portal; contact through official email domains.
 2. Refuse any payment before joining.
 3. Ask training providers for written terms, refund policy and verifiable alumni.
 4. Check that offers match the recruiter's email domain; report suspicious ones.
-**Example (illustrative):** An offer asks for Rs 5,000 "security deposit" via UPI. Do not pay; verify with the employer.
-**Common mistakes:** Trusting WhatsApp-only recruiters; urgency pressure.
+**Example (illustrative):** An offer asks for Rs 5,000 "security deposit" via UPI (a round number for illustration). Do not pay; verify with the employer through its official careers page or a phone number you found yourself.
+**Common mistakes:** Trusting WhatsApp-only recruiters; urgency pressure; sharing ID or bank documents before a verified offer; trusting a "guaranteed placement" line without written terms.
 **Where this is covered:** Guide Section 6 (bootcamp vs self-study).
 
 ### Q100 ⭐ 🟢 Should I put my learning projects on GitHub and what should they contain?
 **Short answer:** Yes, if you can make them clear. Put 2-3 projects with a README, data source, questions asked, and findings.
 **Why / explain simply:**
 - GitHub is a site that stores code and files; a link proves you did the work.
-- Recruiters rarely read code; they read the README.
+- Recruiters rarely read code; they read the README (my judgement, not measured).
+- Interviewers can open the link during the call and ask you about it, so only post what you can explain.
+- Power BI files and Excel workbooks can go in too, as screenshots and a short write-up.
 **What the evidence says:** No reliable data found on how many Hyd/Blr recruiters check GitHub. Project walk-throughs appear in about 14 of about 20 interview profiles (IP Section 4; candidate-reported).
 **What to do:**
 1. Create a repo per project: README with question, data, steps, result, screenshot.
@@ -1593,50 +1601,60 @@ If three of the five fail twice in a row, delay applying to that role type.
 3. Include SQL files, a notebook or Power BI screenshots.
 4. Put the link on your resume.
 **Example (illustrative):** "HR attrition analysis" repo: README, cleaned CSV (synthetic), SQL queries, dashboard image, 5-line takeaway.
+**Say this in the interview:** "I have a repo for this project. The README states the question, the data source, my steps and what I found. I can walk you through it."
 **Common mistakes:** Uploading confidential data; no README; dozens of unfinished repos.
 **Where this is covered:** Book 12 Section 2; Book 8 Part 8.
 
 ### Q101 ⭐ 🟢 What is the role of LinkedIn and Naukri in finding analyst jobs?
-**Short answer:** Both are major listing channels; use them together. Keep profiles keyword-rich and apply and network.
+**Short answer:** Both are widely used listing channels in India (general knowledge, not checked in this research); use them together. Keep profiles keyword-rich, apply and network.
 **Why / explain simply:**
 - Naukri is resume-search driven; LinkedIn adds networking and referrals.
-- Keywords from JDs help recruiters find you.
-**What the evidence says:** No reliable data found on which channel gives better switcher results. Naukri, Indeed, Glassdoor and foundit pages were blocked in my research, so no portal data is used (MS Section 2).
+- Keywords from JDs help recruiters find you. A profile that says "HR professional" only will not surface for analyst searches.
+- Many roles in the research came from other sources (Built In, company career pages), so do not limit yourself to two sites.
+- Keep both profiles and your resume consistent in dates and titles.
+**What the evidence says:** No reliable data found on which channel gives better switcher results. Naukri, Indeed, Glassdoor and foundit pages were blocked (HTTP 403) in my research, and LinkedIn, AmbitionBox and Instahyre were not fetched, so no portal data is used (MS Section 2). The JD samples came mostly from Built In and other sites I could reach.
 **What to do:**
 1. Update both profiles with skills from target JDs.
-2. Apply to 5-10 roles weekly and track responses.
-3. Message people in analytics for referrals.
+2. Apply to a steady number of roles weekly (5-10 is a suggestion, not a research number) and track responses in a sheet.
+3. Message people in analytics for referrals; say what you built, not only that you are looking.
+4. After 4-6 weeks, check which keywords and role titles got replies and adjust.
 **Example (illustrative):** Add "SQL, Excel, Power BI, MIS reporting" to the headline after you have projects.
-**Common mistakes:** Mass-applying without tailoring; claiming unused skills.
+**Common mistakes:** Mass-applying without tailoring; claiming unused skills; leaving a headline that still reads only "HR".
 **Where this is covered:** Book 12 Section 3.
 
 ### Q102 ⭐ 🟢 How do I stay motivated during a long switch with no job offer yet?
 **Short answer:** Use small weekly goals and track visible progress. Set a review date and a fallback plan.
 **Why / explain simply:**
-- Long searches are normal; no data exists on typical duration.
-- Process goals (projects, applications, mocks) are in your control.
-**What the evidence says:** No reliable data found on switch timelines or success rates; blog timelines are unverified (B0S).
+- Long searches are common, but no reliable data exists on typical duration, so do not compare yourself to a number.
+- Process goals (projects, applications, mocks) are in your control; outcomes (offers) are not.
+- Rejections often say little about you; the research shows interview reports with long silences and no feedback (for example one Amazon candidate waited over a month for a rejection with no explanation; IP Section 2.2, candidate-reported).
+- Rest is part of the plan. A routine you can keep beats a burst you cannot.
+**What the evidence says:** No reliable data found on switch timelines or success rates; blog timelines are unverified vendor/blog claims (B0S). The 3-month review point below is my suggestion, not a research finding.
 **What to do:**
 1. Set weekly targets: study hours, 1 project step, applications, 1 mock.
 2. Study with a peer group.
 3. Review at 3 months: change approach if no interviews.
 4. Keep income or savings runway.
 **Example (illustrative):** Log "SQL questions solved" weekly to see growth.
-**Common mistakes:** Comparing yourself to success stories; stopping practice after rejections.
+**Say this in the interview (if asked about the search):** "I have been preparing steadily and applying selectively. I built projects in the meantime and I am looking for a role where I can use them."
+**Common mistakes:** Comparing yourself to success stories; stopping practice after rejections; changing the plan every week; hiding the struggle from everyone instead of asking a peer or mentor for a mock interview.
 **Where this is covered:** Guide Section 6; Book 11 Part 10.
 
 ### Q103 ⭐ 🟢 Do analytics jobs require knowledge of Indian labour laws or HR compliance when in people analytics?
-**Short answer:** Mostly no for entry analyst roles. In people analytics, basic awareness helps, but employers expect data skills first.
+**Short answer:** Mostly no for entry analyst roles. In people analytics, basic awareness helps, but employers expect data skills first. I did not research any specific law, so check specifics yourself.
 **Why / explain simply:**
 - Compliance knowledge helps you ask better questions (attendance, payroll, statutory data).
 - You already have this advantage as an HR professional.
-**What the evidence says:** Domain knowledge was named in only 1 of 40 JDs (MS Section 3). No pure people-analytics role at 0-2 years was found (MS Addendum). No reliable data found on compliance requirements for such roles.
+- Employee data is personal data. Handling it carefully (access, sharing, anonymising) is a professional habit, whatever the specific law says.
+- What counts as a compliant metric or report differs by company policy; ask before sharing sensitive cuts.
+**What the evidence says:** Domain knowledge was named in only 1 of 40 JDs (MS Section 3; first sample n=40, about +/-15 points). No pure people-analytics role at 0-2 years was found (MS Addendum). No reliable data found on compliance requirements for such roles, and the research did not cover labour-law content. Decision rule: if a JD you want names a statute or compliance task, read that JD's wording and prepare for it; otherwise put the time into Excel and SQL.
 **What to do:**
 1. Check target JDs for compliance wording.
 2. Stay compliant with data privacy when handling employee data.
 3. Mention your compliance background as domain strength.
-**Example (illustrative):** Attendance analysis is safer when you know leave rules.
-**Common mistakes:** Over-investing in law study; ignoring data privacy.
+**Example (illustrative):** Attendance analysis is safer when you know leave rules: you can tell whether a spike in absence is a policy effect or a real pattern before you report it.
+**Say this in the interview:** "I know HR compliance data from the inside. I keep employee data restricted to those who need it, and I check definitions with the policy owner before I report a number."
+**Common mistakes:** Over-investing in law study; ignoring data privacy; sharing employee-level data in an email or public tool.
 **Where this is covered:** Book 10 Part 1; guide Section 5.
 
 ### Q104 ⭐ 🟢 How do I keep up with new tools and trends after I get the job?
