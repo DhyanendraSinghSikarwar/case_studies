@@ -9,10 +9,10 @@ Evidence labels: JD percentages come from a pooled sample of 186 in-scope postin
 | Skill named in the JD | Share of 186 JDs | What it means for you |
 |---|---|---|
 | Communication | 73% (labelled "must-have") | HR work is built on this: explaining policy, handling difficult conversations, writing clearly |
-| Stakeholder management | 44% (labelled "common"); about 60% in the Bengaluru and GCC sub-samples | You already manage managers, employees, leadership and vendors |
+| Stakeholder management | 44% (labelled "common"); 60-64% in the Hyderabad, Bengaluru and GCC sub-samples (n=47, 42, 25), but only 15-19% in the first sample and the MIS/people sample | You already manage managers, employees, leadership and vendors |
 | Dashboards/reporting | 75% | You already produce headcount, attrition and hiring reports, usually in Excel |
 | Excel | 60% | Many HR professionals already use pivots and lookups; this is your head start if so |
-| SQL | 54% | Usually NOT an HR strength. This is the gap to close |
+| SQL | 54% | Usually NOT an HR strength (general knowledge, not checked). This is the gap to close |
 
 Reading: employers ask for communication more often than they ask for Python (32%) or Power BI (40%). That is useful for you, but a JD line is not a hiring guarantee. Stakeholder skills help in the interview and on the job; they do not get you through an SQL test.
 
@@ -45,8 +45,8 @@ Where to turn this into your story and resume: Book 11 Parts 1-2 (career-switch 
 
 ### 5.4 Honest limits
 
-1. **No pure people-analytics role at 0-2 years was found.** The research found no such role in the pooled samples; the Workday-reporting roles it found mostly asked 3+ years (MS Addendum "Other findings"). The Deutsche Bank role tagged Entry is one exception in a single sample. So a "people analytics first" plan is a bet on a thin market. See Q34 and Q75 in Section 7.
-2. **Domain does not replace SQL or Excel.** Interviews test SQL in nearly all of about 20 company profiles examined (candidate-reported, anonymous; IP Section 4).
+1. **No pure people-analytics role at 0-2 years that names Workday, SuccessFactors or Visier was found** (MS Addendum "Other findings"; MIS/people sample: all Workday-reporting JDs asked 3+ years). Sources conflict here: MS Section 6 lists the Deutsche Bank Workday role as Entry, while the Addendum says Workday-reporting roles asked 3+ years. Two near-misses also exist in the pooled samples: Goldman Sachs "Human Capital Management Analyst - HRIS", Hyderabad, 1-3 years (Hyderabad sample), and McDonald's "HR Analytics" supervisor, Hyderabad, experience not stated (MIS/people sample). So the evidence is a handful of postings, not a market count, and a "people analytics first" plan is a bet on a thin market. See Q34 and Q75 in Section 7.
+2. **Domain does not replace SQL or Excel.** Interviews test SQL in about 19 of the 20 company profiles examined (candidate-reported, anonymous, one profile can rest on a single report; IP Section 4).
 3. **HR domain helps most in HR-related analyst roles and less in a product or e-commerce analyst role.** There, you will be compared with people who know funnels and SQL. For those, you need Book 10 Parts 2 onward and strong SQL (Book 2).
 4. **Domain knowledge is not a technical credential.** "I know attrition" must be followed by "and here is the query and the dashboard I built" (Book 12 Section 2).
 
@@ -70,7 +70,7 @@ The week-by-week schedule, the hours per day, the monthly milestones and the "st
 - Soft-skill practice from Book 11 Part 10 runs at 15 minutes a day from Week 1.
 - Total over 24 weeks: at 5 study days a week, 2-3 hours a day gives about 240-360 hours; at 7 days a week, about 336-504 hours. If you can study fewer hours, the same plan takes proportionally longer; recompute with your own weekly hours.
 
-The split follows what the market sample suggests: Excel and SQL are the only two tools named in more than half of the JDs (60% and 54%, n=186, about +/-7 points), so they come first (MS Section 8a). Python is named in 32%, and Power BI in 40%.
+The split follows what the market sample suggests: Excel and SQL are the only two tools named in more than half of the JDs (60% and 54%, n=186, non-random, about +/-7 points), so they come first (MS Addendum). Python is named in 32%, and Power BI in 40%.
 
 ### 6.2 Month-by-month plan
 
@@ -104,12 +104,12 @@ Guidance, not data: if you target MIS or Excel-first operations roles, start app
 
 ### 6.5 Projects, practice material and certificates
 
-- **At least two to three portfolio projects.** The research only has indicative advice from training blogs on this (B0S: anecdotal), so treat the number as a sensible minimum, not a proven threshold. Details are in Book 12 Section 2 and Q14.
+- **At least two to three portfolio projects.** No reliable data found on how many projects employers expect (B0S records no project-count finding). Treat two to three as a sensible minimum chosen for this plan, not a proven threshold; Book 12 Section 2 plans five. Details are in Q14.
 - **Free resources and practice datasets:** use each book's "How to Develop" part (Book 1 Part 12, Book 2 Part 12, Book 3 Part 12, Book 4 Part 12, Book 5 Part 12, Book 7 Part 9, Book 8 Part 9, Book 9 Part 12, Book 10 Part 8). This guide does not make external claims about specific courses.
 - **Certificates:** no certification (PL-300, Google Data Analytics, Tableau, CBAP) was named as a requirement in any of the 186 JDs; they appeared only as "advantages" in some postings. Value in India is unverified. Do them after SQL, Excel and portfolio, if at all (Book 12 Section 5, Q17, Q55).
-- **Bootcamp vs self-study:** the only thing the research offers is that a bootcamp buys structure and a network, and a training blog claims costs of Rs 50,000-1.5 lakh (vendor claim, unverified). **No reliable data found** on placement rates. Decision rule: ask any bootcamp for the number placed, the number who enrolled, the salary and employer for each, and whether placement requires paying extra; if they cannot show it, treat claims as marketing (Q12, Q56, Q57).
+- **Bootcamp vs self-study:** the research has no comparison. A training blog claims costs of Rs 50,000-1.5 lakh (vendor/blog claim, unverified). That a bootcamp can give structure and a network is general knowledge, not checked. **No reliable data found** on placement rates. Decision rule: ask any bootcamp for the number placed, the number who enrolled, the salary and employer for each, and whether placement requires paying extra; if they cannot show it, treat claims as marketing (Q12, Q56, Q57).
 
-**Limitations of this section:** plan targets, not research. Hours are arithmetic from a stated assumption. Month boundaries are approximate. The timing for applying and the project count are guidance, with no data behind them.
+**Limitations of this section:** plan targets, not research. The month table follows plan.md Section 7 (checked), but the plan's week ranges are not the same as four-week months. Hours are arithmetic from a stated assumption. Month boundaries are approximate. The timing for applying and the project count are guidance, with no data behind them.
 
 ---
 
@@ -121,16 +121,16 @@ The 123 questions are in `Book00_FAQs.md` (answers in the same file). They are o
 
 | Group | Questions | When to read |
 |---|---|---|
-| 1. Realism and timeline | Q1, Q2, Q13, Q15, Q49, Q52, Q67, Q68, Q70, Q102 | Before you commit time or money |
-| 2. Role choice | Q7, Q16, Q34, Q63, Q64, Q65, Q66, Q75, Q86, Q88, Q98, Q107, Q108, Q118 | After Section 1; to choose your first target role |
+| 1. Realism and timeline | Q1, Q2, Q13, Q15, Q49, Q52, Q67, Q68, Q70, Q72, Q102 | Before you commit time or money |
+| 2. Role choice | Q7, Q16, Q34, Q63, Q66, Q75, Q86, Q88, Q98, Q103, Q107, Q108, Q118 | After Section 1; to choose your first target role |
 | 3. Pay | Q5, Q6, Q25, Q35, Q76, Q85, Q122 | Before you set salary expectations (see Section 2b) |
 | 4. Skills order | Q3, Q4, Q11, Q20, Q44-Q48, Q51, Q87, Q89-Q92, Q109, Q111 | Before you plan your learning order (Section 6) |
 | 5. Learning path (bootcamp, certificates, self-study) | Q12, Q17, Q21, Q24, Q32, Q33, Q50, Q53, Q55-Q57, Q69, Q93, Q94, Q104, Q106, Q112 | When choosing courses and resources |
-| 6. Resume and HR framing | Q8, Q14, Q18, Q19, Q26, Q28, Q29, Q54, Q58, Q74, Q83, Q100, Q101 | Before you write your resume and your story |
-| 7. Company types and cities | Q23, Q27, Q36-Q40, Q77-Q80, Q96, Q97, Q114, Q115, Q123 | When building your target list (Section 3) |
-| 8. Interview process | Q9, Q10, Q41-Q43, Q71, Q81, Q82, Q110 | Before your first interview (Sections 3 and 4) |
-| 9. HR round and offers | Q22, Q30, Q59-Q62, Q72, Q73, Q116, Q117, Q119 | Before the HR round and when negotiating |
-| 10. Special situations (age, gaps, seniority, family, first job) | Q31, Q84, Q95, Q99, Q103, Q105, Q113, Q120, Q121 | If any of these describes you |
+| 6. Resume and HR framing | Q8, Q14, Q18, Q19, Q26, Q28, Q29, Q54, Q58, Q83, Q100, Q101 | Before you write your resume and your story |
+| 7. Company types, cities and job search | Q23, Q27, Q36-Q40, Q64, Q65, Q73, Q74, Q77-Q80, Q96, Q97, Q99, Q114, Q115, Q123 | When building your target list and applying (Section 3) |
+| 8. Interview process and answering technical questions | Q9, Q10, Q30, Q41-Q43, Q71, Q81, Q82, Q110 | Before your first interview (Sections 3 and 4) |
+| 9. HR round and offers | Q22, Q59-Q62, Q116, Q117, Q119 | Before the HR round and when negotiating |
+| 10. Special situations (age, gaps, seniority, family, first job) | Q31, Q84, Q95, Q105, Q113, Q120, Q121 | If any of these describes you |
 
 ### 7.2 How to use them
 
@@ -147,7 +147,7 @@ The 123 questions are in `Book00_FAQs.md` (answers in the same file). They are o
 
 - **Job-description evidence is a non-random pooled sample.** Skill percentages come from n=186 postings, collected from the sources that could be reached (Built In, LinkedIn public pages, Shine, TheIndiaJobs, employer career sites), with an error of about +/-7 points. Some counts used keyword matching.
 - **Interview evidence is candidate-reported and anonymous.** It is thin for several companies, and no Hyderabad/Bengaluru report was found for some. Always ask the recruiter for the round structure.
-- **Some major sources could not be accessed:** Naukri, Indeed, Glassdoor, foundit, AmbitionBox, Reddit, Quora and LinkedIn posts were blocked or needed a login, so their content is not in this guide.
+- **Some major sources could not be accessed:** Naukri, Indeed, Glassdoor, foundit, AmbitionBox, Reddit, Quora and LinkedIn posts were blocked, not surfaced or needed a login, so their content is not in this guide, except that some Glassdoor review details reached the research only as search-tool summaries of the page (second-hand). LinkedIn public job pages were used for part of the JD sample.
 - **Pay is posted in few JDs.** Only a small number of postings showed salary, so pay ranges are indicative. Unverified secondary snippets and blog ranges are labelled as such.
 - **Certificate value is unverified.** No certification was required in any sampled JD, and nothing India-specific was found on PL-300 or Google Data Analytics.
 - **Switcher outcome statistics do not exist in the research set.** No reliable data was found on outcomes by age, bootcamp placement rates, HR-to-analyst conversion rates, or the size of the HR-to-analyst pay change. Where you see "No reliable data found", the guide gives a rule for you to apply with your own numbers.

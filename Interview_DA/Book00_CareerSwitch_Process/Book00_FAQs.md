@@ -1323,7 +1323,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Most HR work already has a data side: headcount, attrition, hiring funnel, payroll, attendance, engagement scores.
 - Use the pattern: verb + metric + method/tool + outcome.
 - Only claim a tool you actually used. If you built it in Excel, write Excel.
-**What the evidence says:** Excel appears in 60% and dashboards/reporting/MIS in 75% of JDs (n=186 non-random sample, about +/-7 points) (MS Addendum). Communication is 73% and stakeholder management 44% (same caveat), so your HR stakeholder work is a real asset. No reliable data found on how recruiters weigh switcher resumes.
+**What the evidence says:** Excel appears in 60% and dashboards/reporting/MIS in 75% of JDs (n=186 non-random sample, about +/-7 points) (MS Addendum). Communication is 73% and stakeholder management 44% (same caveat), so your HR stakeholder work is a real asset. No reliable data found on how recruiters weigh switcher resumes. Decision rule: if a bullet has no tool and no result, rewrite it or drop it.
 **What to do:**
 1. List 6 HR tasks where you used numbers (monthly attrition report, MIS tracker, offer-to-join ratio).
 2. For each, write: what you measured, the tool, who used it, what decision followed.
@@ -1352,18 +1352,19 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Where this is covered:** Book 11 Part 8 (HR round: gaps); Book 11 Part 1.
 
 ### Q85 ⭐⭐ 🟡 Will I be treated as a fresher and paid like one after switching?
-**Short answer:** Often your analytics experience will be treated as entry level, so expect entry-band pay and a likely pay cut. Your HR years may help negotiation, but do not count on it.
+**Short answer:** Often your analytics experience will be treated as entry level, so expect entry-band pay and a likely pay cut. This is reasoning, not a measured finding. Your HR years may help negotiation, but do not count on it.
 **Why / explain simply:**
 - Employers price the role they are hiring for. A junior analyst role has a junior band, whatever your age.
 - Prior experience in HR can count as domain or stakeholder skill, not as analytics years.
 - Roles that use HR knowledge (HR-tech reporting, people analytics) may value you more, but they often ask for more years.
-**What the evidence says:** Pay stated in JDs was mostly Rs 3.5-9 LPA; only 8 of 40 JDs showed pay (MS Section 4). Entry MIS/BA mostly Rs 3-6 LPA (MS Addendum). Rs 6-10 LPA is the upper part, at GCC/product/finance-analytics. Blog fresher ranges (about Rs 3.5-6 LPA) are vendor blogs, unverified (B0S). No pure people-analytics role at 0-2 years was found; Workday-reporting roles asked 3+ years (MS Addendum). No reliable data found on the HR-to-analyst pay cut.
+**What the evidence says:** Pay stated in JDs was mostly Rs 3.5-9 LPA; only 8 of 40 JDs in the first sample showed pay (MS Section 4; n=40, about +/-15 points, so treat as indicative). Entry MIS/BA mostly Rs 3-6 LPA (MS Addendum, pooled n=186 non-random). Rs 6-10 LPA is the upper part, at GCC/product/finance-analytics. Blog fresher ranges (about Rs 3.5-6 LPA) are vendor/blog claims, unverified (B0S). No pure people-analytics role at 0-2 years was found; Workday-reporting roles mostly asked 3+ years, with one Entry-tagged exception (MS Addendum; MS Section 6, see Q88). No reliable data found on the HR-to-analyst pay cut.
 **What to do:**
 1. Write your current monthly in-hand and your minimum acceptable in-hand.
 2. Compare with a Rs 3.5-6 LPA entry band and see the gap.
 3. Decide how many months you can bear it and what pay you need after 12-18 months.
 4. Target MIS/ops/HR-tech reporting roles first if the cut is too large.
 **Example (illustrative):** If you earn Rs 8 LPA and an entry offer is Rs 5 LPA, the gap is Rs 3 LPA, about Rs 25,000 a month before tax. Check whether savings cover 12 months of that gap.
+**Say this in the interview:** "I understand I am moving into an analyst role at an entry level. I would like to understand the pay band for the role and how performance is reviewed."
 **Common mistakes:** Assuming experience always transfers one-to-one; refusing every entry offer; ignoring in-hand vs CTC differences.
 **Where this is covered:** Guide Section 2b; Book 11 Part 8.
 
@@ -1374,7 +1375,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Technical path: more SQL, Python, statistics, then ML (data scientist) or pipelines (analytics/data engineer).
 - Domain path: people analytics, finance analytics, product analytics, where your HR knowledge keeps paying.
 - Titles and ladders differ by company.
-**What the evidence says:** The JDs I sampled were entry level (0-2 years). Among about 25 postings asking 3+ years, Python, Power BI/Tableau, cloud platforms and GenAI/ML appeared noticeably more often; this is an impression, not a count (MS Section 3). No reliable data found on promotion timelines or pay by level in India.
+**What the evidence says:** The JDs I tallied were entry level (0-2 years). Among about 25 postings asking 3+ years that were read but not tallied, Python, Power BI/Tableau, cloud platforms and GenAI/ML appeared noticeably more often; this is an impression, not a count (MS Section 3 note). No reliable data found on promotion timelines or pay by level in India.
 **What to do:**
 1. First get the entry role; do not plan five years ahead yet.
 2. After 12 months, note which tasks you enjoy: stakeholder work, modelling, or building pipelines.
@@ -1389,7 +1390,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Machine learning means models that learn patterns from data to predict things (for example who may resign).
 - Entry analyst work is mostly cleaning data, SQL, reports and dashboards.
 - Knowing what ML is and when analysts use it is enough early on.
-**What the evidence says:** ML named in 10% of 186 JDs (n=186 non-random, about +/-7 points) (MS Addendum). In interview reports, ML basics appeared in about 4 of about 20 company profiles, SQL in about 19 (IP Section 4; candidate-reported).
+**What the evidence says:** ML named in 10% of 186 JDs (n=186 non-random, about +/-7 points) (MS Addendum). In interview reports, ML basics appeared in about 4 of about 20 company profiles, SQL in about 19 (IP Section 4; candidate-reported, anonymous, not a statistical sample).
 **What to do:**
 1. Spend months 1-3 on Excel, SQL and Power BI.
 2. Learn basics of Python and statistics next.
@@ -1406,7 +1407,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Your domain knowledge shortens the learning curve.
 - It can lead to people analytics later.
 - Skills still needed: Excel, SQL, Power BI/Tableau.
-**What the evidence says:** One entry role found: Deutsche Bank Workday Prism Analytics & Reporting, Bengaluru, Entry (MS Section 6, Appendix A row 20). Other Workday/HR analytics roles in the samples asked 3+ years; no pure people-analytics role at 0-2 years found (MS Addendum). Sample non-random, n=186. No reliable data found on the volume of such roles overall.
+**What the evidence says:** The sources conflict. MS Section 6 and Appendix A (row 20, first sample n=40) list one Deutsche Bank Workday Prism Analytics & Reporting Consultant role, Bengaluru, tagged Entry. The pooled Addendum (n=186, non-random) says the Workday-reporting roles it found all asked 3+ years, and the MIS/people sample named Workday, SuccessFactors or Visier in no in-scope JD. Read it as: one Entry-tagged exception, otherwise 3+ years. No pure people-analytics role at 0-2 years was found (MS Addendum). No reliable data found on the volume of such roles overall.
 **What to do:**
 1. Ask whether your company uses Workday/SuccessFactors/Keka and request access to reports.
 2. Build your own Excel/Power BI HR dashboards from sample data.
@@ -1422,7 +1423,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - MIS roles are the most likely to ask for it.
 - It is a differentiator, not a starting skill.
 **What the evidence says:** VBA/macros in 13% of 186 JDs overall; in the MIS sample 19% (n=186 non-random, about +/-7 points) (MS Addendum). In the first 40-JD sample, 2 of 40 (5%) (MS Section 3). Excel was named in 72% of the MIS sample.
-**What to do:**
+**What to do:** (the 2-of-5 and 2-3 week figures are my rules of thumb, not research findings)
 1. Check 5 JDs for your target role; count how many say VBA/macros.
 2. If 2 or more do, spend 2-3 weeks on recorded macros and simple loops.
 3. Otherwise, put that time into SQL.
@@ -1431,9 +1432,9 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Where this is covered:** Book 1 Part 11.
 
 ### Q90 ⭐ 🟢 Is Google Sheets knowledge needed in addition to Excel?
-**Short answer:** Not as a separate effort. Be strong in Excel; Sheets uses similar ideas and you can pick up differences in a few days.
+**Short answer:** Not as a separate effort. Be strong in Excel; Sheets uses similar ideas, and most people find the differences small (general knowledge, not checked).
 **Why / explain simply:**
-- Most formulas (SUM, VLOOKUP, IF, pivot) work in both.
+- Most common formulas (SUM, VLOOKUP, IF) and pivot tables exist in both (general knowledge, not checked).
 - Sheets has its own functions (for example QUERY) and is browser-based and shared.
 - Some startups use Sheets daily.
 **What the evidence says:** Google Sheets named in 8% of 186 JDs (n=186 non-random, about +/-7 points); 16% in the MIS sample (MS Addendum). Excel is 60% in the same pooled sample.
@@ -1455,7 +1456,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 **What to do:**
 1. Skip certifications at the start.
 2. Read a one-page explainer on warehouses.
-3. Later, try a free tier of one platform if a JD you want asks for it.
+3. Later, if a JD you want asks for it, check the provider's own site for any free practice option and its current terms (I did not verify any).
 **Example (illustrative):** Your SQL joins run the same way on a laptop database as on Snowflake; only the connection differs.
 **Common mistakes:** Paying for a cloud certificate before learning SQL and Excel.
 **Where this is covered:** Book 9 Part 11; Book 2.
@@ -1466,7 +1467,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 - Alteryx is a drag-and-drop tool that cleans and joins data without code.
 - It appears in finance/FP&A and reporting roles at large firms.
 - Your employer usually provides the licence; free practice access is limited (unverified; check the vendor site).
-**What the evidence says:** Alteryx in 3% of 186 JDs; 4% in the GCC sample (n=186 non-random, about +/-7 points) (MS Addendum). In the first 40-JD sample, named in JPMorganChase and Bottomline finance roles (MS Appendix A rows 19, 37, 38).
+**What the evidence says:** Alteryx in 3% of 186 JDs; 4% in the GCC sample (n=186 non-random, about +/-7 points) (MS Addendum). In the first 40-JD sample (n=40, about +/-15 points) it was named in 4 postings: JPMorganChase x2 and Bottomline (finance) plus Rocket Learning (product analyst) (MS Appendix A rows 19, 29, 37, 38).
 **What to do:**
 1. Look at 5 target JDs; learn Alteryx only if 2 or more name it.
 2. Meanwhile, practise data cleaning in Excel Power Query or SQL.
@@ -1484,7 +1485,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 1. Skip until you have BA work experience.
 2. If a target JD names a certification, note it and decide later.
 3. Spend the money on projects and practice.
-**Example (illustrative):** Rs 40,000 on a certificate versus the same time building two projects you can walk through in an interview.
+**Example (illustrative):** Suppose a certificate costs Rs 40,000 (a round number for arithmetic, not a real price). Compare it with spending the same weeks building two projects you can walk through in an interview.
 **Common mistakes:** Treating a certificate as a substitute for skills.
 **Where this is covered:** Book 12 Section 5; guide Section 2.
 
@@ -1508,7 +1509,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Why / explain simply:**
 - Analytics hiring tests Excel, SQL and communication, none of which depend on gender or recent employment.
 - Fresh, dated projects close the "are you current" question.
-- Some employers run returnship or re-entry programmes; check each company's careers page.
+- Some employers run returnship or re-entry programmes (general knowledge, not checked); look at each company's careers page.
 **What the evidence says:** No reliable data found on outcomes for women or break-returners in India. No claim here is based on hiring statistics.
 **What to do:**
 1. Rebuild Excel and SQL with a 12-week plan and dated projects.
@@ -1518,7 +1519,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 **Example (illustrative):** Someone returning after 2 years builds an HR attrition dashboard and a SQL case study, dates them, and puts both at the top of the resume.
 **Say this in the interview:** "I have been on a break and I rebuilt my skills in Excel and SQL; here is a project showing it."
 **Common mistakes:** Waiting to feel fully ready; leaving the break unexplained.
-**Where this is covered:** Book 11 Part 8; Book 12 Part 2.
+**Where this is covered:** Book 11 Part 8; Book 12 Sections 1 and 2.
 
 ### Q96 ⭐ 🟢 How do I choose between two job offers (service vs GCC) as a switcher?
 **Short answer:** Compare the actual work, learning, pay in-hand and stability, not the brand. For a switcher, the offer where you will use SQL and a BI tool on real data usually wins.
@@ -1548,7 +1549,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 4. Never pay for an "internship".
 **Example (illustrative):** A payroll executive helps the finance team build a monthly cost dashboard for 3 months, then lists it as work experience.
 **Common mistakes:** Paying a fee; accepting unpaid work with no outcome.
-**Where this is covered:** Book 12 Part 2; Q99.
+**Where this is covered:** Book 12 Sections 2 and 4; Q99.
 
 ### Q98 ⭐ 🟢 How do I know if a job posting is a genuine analytics role or a data-entry or operations role?
 **Short answer:** Read the duties, not the title. Analytics roles describe questions, SQL/BI tools and stakeholders; data-entry roles describe typing, copy-paste and fixed forms.
@@ -1560,10 +1561,10 @@ If three of the five fail twice in a row, delay applying to that role type.
 1. Check duties: reports, dashboards, SQL, insights versus data entry.
 2. Ask in screening: "What tools will I use and what will I deliver weekly?"
 3. Look for named tools and business outcomes.
-4. Pass if 80% of the work is typing.
+4. Be wary if most of the described work is typing or copying and nothing is reported or analysed (my rule of thumb, not a research number).
 **Example (illustrative):** "Prepare weekly MIS using pivot tables and share insights" is analytical; "update records in portal" is not.
 **Common mistakes:** Judging by title or salary alone.
-**Where this is covered:** Guide Section 1.
+**Where this is covered:** Guide Sections 1 and 2b.
 
 ### Q99 ⭐ 🟢 How do I avoid job scams and fake training-plus-job offers?
 **Short answer:** Never pay for a job, and be sceptical of any course that guarantees placement. A real employer does not charge for interviews or offers.
@@ -1593,7 +1594,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 4. Put the link on your resume.
 **Example (illustrative):** "HR attrition analysis" repo: README, cleaned CSV (synthetic), SQL queries, dashboard image, 5-line takeaway.
 **Common mistakes:** Uploading confidential data; no README; dozens of unfinished repos.
-**Where this is covered:** Book 12 Part 2; Book 8 Part 8.
+**Where this is covered:** Book 12 Section 2; Book 8 Part 8.
 
 ### Q101 ⭐ 🟢 What is the role of LinkedIn and Naukri in finding analyst jobs?
 **Short answer:** Both are major listing channels; use them together. Keep profiles keyword-rich and apply and network.
@@ -1607,7 +1608,7 @@ If three of the five fail twice in a row, delay applying to that role type.
 3. Message people in analytics for referrals.
 **Example (illustrative):** Add "SQL, Excel, Power BI, MIS reporting" to the headline after you have projects.
 **Common mistakes:** Mass-applying without tailoring; claiming unused skills.
-**Where this is covered:** Book 12 Part 3.
+**Where this is covered:** Book 12 Section 3.
 
 ### Q102 ⭐ 🟢 How do I stay motivated during a long switch with no job offer yet?
 **Short answer:** Use small weekly goals and track visible progress. Set a review date and a fallback plan.
