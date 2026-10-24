@@ -129,55 +129,55 @@
 ### Q42 ⭐ 🟢 What does Export to Excel / Analyze in Excel do, and who can use it?
 <!-- ANSWER_PENDING -->
 
-### Q43 ⭐ 🟢 What is My workspace, and why is it a poor place to keep reports the team depends on?
+### Q43 ⭐ 🟡 What is the difference between Publish to web and Embed (secure) a report, and why is Publish to web risky?
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐ 🟡 What is the difference between Publish to web and Embed (secure) a report, and why is Publish to web risky?
+### Q44 ⭐ 🟡 What are dataflows in the Power BI Service, and when would you use one?
 <!-- ANSWER_PENDING -->
 
-### Q45 ⭐ 🟡 What are dataflows in the Power BI Service, and when would you use one?
+### Q45 ⭐ 🟡 What are deployment pipelines (Development, Test, Production), and who needs which licence?
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐ 🟡 What are deployment pipelines (Development, Test, Production), and who needs which licence?
+### Q46 ⭐ 🟡 What is a gateway cluster, and why is it used?
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐ 🟡 What is a gateway cluster, and why is it used?
+### Q47 ⭐ 🟡 Why does the Power BI Service pause a scheduled refresh, and how do you turn it back on?
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐ 🟡 Why does the Power BI Service pause a scheduled refresh, and how do you turn it back on?
+### Q48 ⭐ 🟡 How do you refresh a dataset from a data source that changes only on the first of each month?
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐ 🟡 How do you refresh a dataset from a data source that changes only on the first of each month?
+### Q49 ⭐ 🟡 What does sensitivity labelling and endorsement (certified, promoted) mean in the Power BI Service?
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐ 🟡 What does sensitivity labelling and endorsement (certified, promoted) mean in the Power BI Service?
+### Q50 ⭐ 🟡 What is the Large semantic model storage format, and when is it needed?
 <!-- ANSWER_PENDING -->
 
-### Q51 ⭐ 🟡 What is the Large semantic model storage format, and when is it needed?
+### Q51 ⭐ 🟡 What is the difference between Build permission and Viewer access on a dataset?
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐ 🟡 What is the difference between Build permission and Viewer access on a dataset?
+### Q52 ⭐ 🟡 What is Direct Lake mode, and when would a Fabric workspace use it?
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐ 🟡 What is Direct Lake mode, and when would a Fabric workspace use it?
+### Q53 ⭐ 🟡 What is the Detect data changes setting in incremental refresh, and when is it useful?
 <!-- ANSWER_PENDING -->
 
-### Q54 ⭐ 🟡 What is the Detect data changes setting in incremental refresh, and when is it useful?
+### Q54 ⭐ 🟡 How does the Only refresh complete days setting work, and why does the time zone matter?
 <!-- ANSWER_PENDING -->
 
-### Q55 ⭐ 🟡 How does the Only refresh complete days setting work, and why does the time zone matter?
+### Q55 ⭐ 🟡 What is object-level security, and how does it differ from row-level security?
 <!-- ANSWER_PENDING -->
 
-### Q56 ⭐ 🟡 What is object-level security, and how does it differ from row-level security?
+### Q56 ⭐ 🟡 How do you audit who viewed or changed reports in the Power BI Service?
 <!-- ANSWER_PENDING -->
 
-### Q57 ⭐ 🟡 How do you audit who viewed or changed reports in the Power BI Service?
+### Q57 ⭐ 🟡 Why can a dataset refresh work in Desktop but fail in the Service?
 <!-- ANSWER_PENDING -->
 
-### Q58 ⭐ 🟡 Why can a dataset refresh work in Desktop but fail in the Service?
+### Q58 ⭐ 🟡 A source table is changing and you want to know which reports will break. How does lineage view help?
 <!-- ANSWER_PENDING -->
 
-### Q59 ⭐ 🟡 A source table is changing and you want to know which reports will break. How does lineage view help?
+### Q59 ⭐ 🟡 A colleague only needs to look at one report: how do you share it with them, and what permissions must they have to see the data behind it?
 <!-- ANSWER_PENDING -->
 
 ### Q60 ⭐ 🔴 Why can incremental refresh be slow or fail if query folding does not work?

@@ -1446,8 +1446,633 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 |---|---|---|---|
 
 ## Book 4 — Power BI & Visualization
+
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B4P01Q1 | 4 | 1 | What is Power BI and what is it used for? |
+| B4P01Q2 | 4 | 1 | What are the main components of Power BI? |
+| B4P01Q3 | 4 | 1 | What is the difference between Power BI Desktop and the Power BI Service? |
+| B4P01Q4 | 4 | 1 | What are the building blocks of Power BI? |
+| B4P01Q5 | 4 | 1 | What is the difference between a report and a dashboard in Power BI? |
+| B4P01Q6 | 4 | 1 | What is the typical workflow of a Power BI project, from raw data to a shared dashboard? |
+| B4P01Q7 | 4 | 1 | Which data sources can Power BI connect to? |
+| B4P01Q8 | 4 | 1 | What is Power Query, and where does it fit in the Power BI workflow? |
+| B4P01Q9 | 4 | 1 | What are the different views in Power BI Desktop, and what is each one used for? |
+| B4P01Q10 | 4 | 1 | What is a .pbix file and what does it contain? |
+| B4P01Q11 | 4 | 1 | When you load data into Power BI, what is the difference between Load and Transform Data? |
+| B4P01Q12 | 4 | 1 | How is Power BI different from Excel, and why would you use it for HR MIS reporting? |
+| B4P01Q13 | 4 | 1 | Explain Power BI end to end to a non-technical HR manager in two minutes. |
+| B4P01Q14 | 4 | 1 | Employee ID is being added up (summed) in your table visual. Why does Power BI do that, and how do you stop it? |
+| B4P01Q15 | 4 | 1 | What is the difference between Import mode and DirectQuery mode? |
+| B4P01Q16 | 4 | 1 | Walk me through building your first report from an Excel file in Power BI Desktop. |
+| B4P01Q17 | 4 | 1 | What is Power BI Mobile and who uses it? |
+| B4P01Q18 | 4 | 1 | What is a semantic model (formerly called a dataset) in Power BI? |
+| B4P01Q19 | 4 | 1 | Is Power BI Desktop free, and how do you install it? |
+| B4P01Q20 | 4 | 1 | What is a tile in Power BI, and how is one created? |
+| B4P01Q21 | 4 | 1 | What are Power Query, Power Pivot and Power View, and how do they relate to Power BI today? |
+| B4P01Q22 | 4 | 1 | What are the main panes of the Power BI Desktop report canvas (Visualizations, Data, Filters)? |
+| B4P01Q23 | 4 | 1 | How do you connect Power BI Desktop to an Excel file or a SQL Server database? |
+| B4P01Q24 | 4 | 1 | Can you create a report directly in the Power BI Service without Power BI Desktop? |
+| B4P01Q25 | 4 | 1 | How do you export the data behind a visual to Excel or CSV? |
+| B4P01Q26 | 4 | 1 | Where do you get custom visuals in Power BI? |
+| B4P01Q27 | 4 | 1 | How do you refresh the data in Power BI Desktop after the source Excel file has changed? |
+| B4P01Q28 | 4 | 1 | How do you type a small list, such as departments and cost centres, straight into Power BI Desktop without an Excel file? |
+| B4P01Q29 | 4 | 1 | In the Data pane, how do you tell apart a normal column, a measure, a calculated column and a hierarchy by their icons? |
+| B4P01Q30 | 4 | 1 | You shared a report with a colleague who has a Free licence and they cannot open it. Why, and what are your options? |
+| B4P01Q31 | 4 | 1 | Can you run Power BI Desktop on a Mac, and what do you do if your work laptop is a Mac? |
+| B4P01Q32 | 4 | 1 | What can you do in the Power BI Service that you cannot do in Desktop, and the other way round? |
+| B4P01Q33 | 4 | 1 | What is a live connection in Power BI, and how does it differ from DirectQuery? |
+| B4P01Q34 | 4 | 1 | What is Microsoft Fabric, and how does it relate to Power BI? |
+| B4P01Q35 | 4 | 1 | What is Power BI Report Server, and how is it different from the Power BI Service? |
+| B4P01Q36 | 4 | 1 | What credential types does Power BI ask for when you connect to a source (Windows, Database, Organizational account, Anonymous), and where do you change them? |
+| B4P01Q37 | 4 | 1 | Your report shows "We couldn't connect to the data source" after the Excel file was moved to another folder. How do you fix it? |
+| B4P01Q38 | 4 | 1 | What happens to your data and your report when you publish a .pbix file from Desktop to the Service? |
+| B4P01Q39 | 4 | 1 | Can two analysts work on the same .pbix file at the same time, and how do teams manage this? |
+| B4P01Q40 | 4 | 1 | You change a step in Power Query and a yellow banner appears over the report. What does it mean, and what happens if you ignore it? |
+| B4P01Q41 | 4 | 1 | What are .pbit template files and .pbip project files, and when would you use them? |
+| B4P01Q42 | 4 | 1 | How often is Power BI Desktop updated, and why does your version matter when sharing files? |
+| B4P01Q43 | 4 | 1 | Who are the typical users of Power BI: creators, consumers and administrators? |
+| B4P01Q44 | 4 | 1 | What is Power BI Report Builder, and what are paginated reports? |
+| B4P01Q45 | 4 | 1 | What is a dataflow, and how does it differ from Power Query inside Desktop? |
+| B4P01Q46 | 4 | 1 | What is Analyze in Excel in Power BI? |
+| B4P01Q47 | 4 | 1 | What are external tools in Power BI Desktop, such as DAX Studio and Tabular Editor? |
+| B4P01Q48 | 4 | 1 | Where does Power BI store imported data, and what is the VertiPaq engine? |
+| B4P01Q49 | 4 | 1 | Which Power BI component would you use to give HR managers phone access to the monthly attrition numbers? |
+| B4P01Q50 | 4 | 1 | Is it safe to load payroll data into Power BI, and what basic controls would you check first? |
+| B4P01Q51 | 4 | 1 | What is Power BI Embedded, and who uses it? |
+| B4P01Q52 | 4 | 1 | What is the size limit of a semantic model you can publish with a Pro licence? |
+| B4P01Q53 | 4 | 1 | You must share an HR dashboard with 200 employees, most of whom have no Pro licence. What are your options? |
+| B4P01Q54 | 4 | 1 | How would you set up one shared semantic model so five analysts can build separate reports on the same HR numbers? |
+| B4P01Q55 | 4 | 1 | What is Direct Lake mode, and when does it make sense compared with Import? |
+| B4P02Q1 | 4 | 2 | What is Power Query in Power BI, and why do we use it before building reports? |
+| B4P02Q2 | 4 | 2 | How do you open the Power Query Editor in Power BI Desktop? |
+| B4P02Q3 | 4 | 2 | What is the difference between Merge Queries and Append Queries? |
+| B4P02Q4 | 4 | 2 | How do you remove duplicates in Power Query? |
+| B4P02Q5 | 4 | 2 | How do you change a column's data type in Power Query, and why does it matter? |
+| B4P02Q6 | 4 | 2 | How do you handle null or blank values in Power Query? |
+| B4P02Q7 | 4 | 2 | What are Applied Steps in Power Query, and why does their order matter? |
+| B4P02Q8 | 4 | 2 | What does Close & Apply do in the Power Query Editor? |
+| B4P02Q9 | 4 | 2 | What join kinds are available when merging queries in Power Query, and when would you use each? |
+| B4P02Q10 | 4 | 2 | How do you clean a messy employee master (extra spaces, mixed case, inconsistent department names) in Power Query? |
+| B4P02Q11 | 4 | 2 | What is the difference between adding a custom column in Power Query and creating a calculated column in DAX? |
+| B4P02Q12 | 4 | 2 | How do you combine many monthly Excel or CSV files from one folder into a single table in Power BI? |
+| B4P02Q13 | 4 | 2 | What is query folding, and why does it matter? |
+| B4P02Q14 | 4 | 2 | What is the M language, and when would you edit it in the Advanced Editor? |
+| B4P02Q15 | 4 | 2 | How do you promote the first row to headers, and how do you remove top rows from a messy Excel report? |
+| B4P02Q16 | 4 | 2 | What is the difference between Remove Columns and Choose Columns, and why remove unused columns before loading? |
+| B4P02Q17 | 4 | 2 | How do you split a column by a delimiter in Power Query (for example, splitting Full Name)? |
+| B4P02Q18 | 4 | 2 | What do Trim, Clean and Capitalize Each Word do in Power Query? |
+| B4P02Q19 | 4 | 2 | What is the difference between Replace Values and Replace Errors? |
+| B4P02Q20 | 4 | 2 | How do you use Fill Down and Fill Up, and when are they needed? |
+| B4P02Q21 | 4 | 2 | What is the difference between a Custom Column and a Conditional Column in Power Query? |
+| B4P02Q22 | 4 | 2 | How do you use Group By in Power Query (for example, headcount by department)? |
+| B4P02Q23 | 4 | 2 | What are the Column Quality, Column Distribution and Column Profile tools in Power Query? |
+| B4P02Q24 | 4 | 2 | How do you extract the year, month name or day of week from a date column in Power Query? |
+| B4P02Q25 | 4 | 2 | What is the difference between Pivot Column and Unpivot Columns? |
+| B4P02Q26 | 4 | 2 | After merging two queries you see a column of Table values. What do you do next? |
+| B4P02Q27 | 4 | 2 | What does it mean to disable Enable Load on a query, and when would you do it? |
+| B4P02Q28 | 4 | 2 | What is the difference between Fixed Decimal Number, Decimal Number and Whole Number data types in Power Query? |
+| B4P02Q29 | 4 | 2 | Your refresh fails because the source Excel file was moved. How do you fix the data source path? |
+| B4P02Q30 | 4 | 2 | How would you unpivot an HR attendance sheet that has one column per day into a table with one row per employee per day? |
+| B4P02Q31 | 4 | 2 | What is the difference between Unpivot Columns, Unpivot Other Columns and Unpivot Only Selected Columns? |
+| B4P02Q32 | 4 | 2 | What is the difference between Reference and Duplicate for a query? |
+| B4P02Q33 | 4 | 2 | Your merge returns no matches or null values even though the keys look identical. What do you check? |
+| B4P02Q34 | 4 | 2 | How do you append tables whose column names do not match exactly? |
+| B4P02Q35 | 4 | 2 | How do you check whether a step in Power Query is folding to the source? |
+| B4P02Q36 | 4 | 2 | Which Power Query transformations commonly break query folding? |
+| B4P02Q37 | 4 | 2 | How do you find employees who are in the HR master but missing from the attendance data using Power Query? |
+| B4P02Q38 | 4 | 2 | When would you use Merge Queries in Power Query instead of a relationship in the data model? |
+| B4P02Q39 | 4 | 2 | How do you handle errors such as DataFormat.Error when converting a column to number or date? |
+| B4P02Q40 | 4 | 2 | How do you create a tenure band column (0-1, 1-3, 3+ years) from a joining date in Power Query? |
+| B4P02Q41 | 4 | 2 | How do you convert text dates such as 31/12/2025 correctly when your system uses US date settings? |
+| B4P02Q42 | 4 | 2 | What are parameters in Power Query, and how would you use one for a file path or server name? |
+| B4P02Q43 | 4 | 2 | How do you use try ... otherwise in Power Query? |
+| B4P02Q44 | 4 | 2 | Your Power Query refresh is slow. What do you check and change? |
+| B4P02Q45 | 4 | 2 | Why does the order of steps matter for performance, and what should you filter first? |
+| B4P02Q46 | 4 | 2 | Why should you do date, text and number cleaning in Power Query rather than in DAX? |
+| B4P02Q47 | 4 | 2 | How do you keep only the latest record per employee in Power Query? |
+| B4P02Q48 | 4 | 2 | A refresh breaks with 'The column of the table wasn't found' after the source file changed. Why does this happen and how do you make the query more resilient? |
+| B4P02Q49 | 4 | 2 | What is Column From Examples in Power Query? |
+| B4P02Q50 | 4 | 2 | What is the Query Dependencies view used for? |
+| B4P02Q51 | 4 | 2 | What is the difference between Power Query in Excel and Power Query in Power BI Desktop? |
+| B4P02Q52 | 4 | 2 | Why does Power Query add a Changed Type step automatically, and when can that cause problems? |
+| B4P02Q53 | 4 | 2 | What is fuzzy matching in a Power Query merge, and when would you use it? |
+| B4P02Q54 | 4 | 2 | How do you build a date (calendar) table in Power Query? |
+| B4P02Q55 | 4 | 2 | What is a custom function in Power Query, and how do you create and invoke one? |
+| B4P02Q56 | 4 | 2 | What are RangeStart and RangeEnd, and how do they connect Power Query to incremental refresh? |
+| B4P02Q57 | 4 | 2 | What are data source privacy levels (Private, Organizational, Public), and what causes a Formula.Firewall error? |
+| B4P02Q58 | 4 | 2 | What is a native query, and how does writing a SQL statement in Get Data affect query folding? |
+| B4P02Q59 | 4 | 2 | How would you structure queries into staging, dimension and fact queries in a Power BI file? |
+| B4P02Q60 | 4 | 2 | What is a dataflow, and how does it relate to Power Query? |
+| B4P02Q61 | 4 | 2 | What does Table.Buffer do, and when might you use it? |
+| B4P03Q1 | 4 | 3 | What is a data model in Power BI, and why do we build one instead of loading a single flat table? |
+| B4P03Q2 | 4 | 3 | What is a star schema? |
+| B4P03Q3 | 4 | 3 | What is the difference between a fact table and a dimension table? Give an HR example. |
+| B4P03Q4 | 4 | 3 | What is a relationship in Power BI, and what does it do? |
+| B4P03Q5 | 4 | 3 | What types of cardinality can a Power BI relationship have? |
+| B4P03Q6 | 4 | 3 | What is a one-to-many relationship? Explain it with Department and Employee tables. |
+| B4P03Q7 | 4 | 3 | What are a primary key and a foreign key, and how do they relate to Power BI relationships? |
+| B4P03Q8 | 4 | 3 | What is cross-filter direction, and what is the difference between Single and Both? |
+| B4P03Q9 | 4 | 3 | Why is a star schema recommended for Power BI models? |
+| B4P03Q10 | 4 | 3 | What is the difference between a star schema and a snowflake schema? |
+| B4P03Q11 | 4 | 3 | What is a bi-directional relationship, and why should you avoid it unless needed? |
+| B4P03Q12 | 4 | 3 | What is a many-to-many relationship in Power BI, and how do you handle it? |
+| B4P03Q13 | 4 | 3 | Why do you need a separate date table, and how do you mark it as a date table? |
+| B4P03Q14 | 4 | 3 | How would you model HR data with employees, departments, attendance and payroll in Power BI? |
+| B4P03Q15 | 4 | 3 | A visual shows the same total against every row. What do you check in the data model? |
+| B4P03Q16 | 4 | 3 | How does a filter on a dimension table reach the fact table? Walk me through filter propagation. |
+| B4P03Q17 | 4 | 3 | What is Model view in Power BI Desktop, and how do you create or edit a relationship there? |
+| B4P03Q18 | 4 | 3 | What does auto-detect relationships do, and should you rely on it? |
+| B4P03Q19 | 4 | 3 | What is the difference between normalized and denormalized data? |
+| B4P03Q20 | 4 | 3 | What is the grain (granularity) of a fact table, and why does it matter? |
+| B4P03Q21 | 4 | 3 | How do you sort the month name column by month number in Power BI? |
+| B4P03Q22 | 4 | 3 | Why should you hide foreign key and helper columns from Report view? |
+| B4P03Q23 | 4 | 3 | In Model view, what do the 1, the asterisk, the arrow, and a solid or dotted line on a relationship tell you? |
+| B4P03Q24 | 4 | 3 | What is the difference between an active and an inactive relationship? |
+| B4P03Q25 | 4 | 3 | What is a role-playing dimension? Give an example with Order Date and Ship Date, or Hire Date and Exit Date. |
+| B4P03Q26 | 4 | 3 | Write a DAX measure that calculates sales by Ship Date when the active relationship is on Order Date. |
+| B4P03Q27 | 4 | 3 | For a role-playing date dimension, when would you use inactive relationships and when would you duplicate the date table? |
+| B4P03Q28 | 4 | 3 | What is a bridge table, and when do you need one? |
+| B4P03Q29 | 4 | 3 | Blank rows appear in a visual after you add a relationship. What is the likely cause and how do you fix it? |
+| B4P03Q30 | 4 | 3 | Power BI will not let you create a one-to-many relationship because the column contains duplicate values. What do you do? |
+| B4P03Q31 | 4 | 3 | What do the RELATED and RELATEDTABLE functions do, and which side of the relationship does each use? |
+| B4P03Q32 | 4 | 3 | You receive one flat Excel export with orders, customers and products in the same sheet. How would you convert it into a star schema? |
+| B4P03Q33 | 4 | 3 | What is a snowflake dimension, and would you flatten it in Power Query? |
+| B4P03Q34 | 4 | 3 | How would you model Sales and Sales Target tables so that one Date slicer and one Product slicer filter both? |
+| B4P03Q35 | 4 | 3 | A relationship between two date columns does not work as expected. How can data types such as Date and DateTime cause this? |
+| B4P03Q36 | 4 | 3 | What is the Auto date/time feature, and why do many modellers turn it off? |
+| B4P03Q37 | 4 | 3 | How do you create a hierarchy such as Year, Quarter, Month, or Department, Team, Employee? |
+| B4P03Q38 | 4 | 3 | What affects the size and speed of a Power BI model, and how does the model design help? |
+| B4P03Q39 | 4 | 3 | Where should you do a transformation: SQL, Power Query or DAX? How do you decide? |
+| B4P03Q40 | 4 | 3 | How do you check that your data model gives correct numbers before sharing the report? |
+| B4P03Q41 | 4 | 3 | Two tables can only be matched using two columns together, for example Employee ID plus Month. How do you build the relationship, since Power BI links one column to one column? |
+| B4P03Q42 | 4 | 3 | What naming and documentation habits do you follow for tables, columns and measures in a model? |
+| B4P03Q43 | 4 | 3 | Which tool do you use to build a data model, and can you build one in Power BI Desktop on a Mac? |
+| B4P03Q44 | 4 | 3 | What is a one-to-one relationship, and when is it a sign of poor design? |
+| B4P03Q45 | 4 | 3 | What is a degenerate dimension? |
+| B4P03Q46 | 4 | 3 | What is a junk dimension, and when would you build one? |
+| B4P03Q47 | 4 | 3 | What is a factless fact table? Give an example such as employee attendance or training enrolment. |
+| B4P03Q48 | 4 | 3 | What is a disconnected table, and how is it used with a What-if parameter or a slicer? |
+| B4P03Q49 | 4 | 3 | Why do modellers prefer integer keys over text keys for relationships? |
+| B4P03Q50 | 4 | 3 | How do you handle fact rows whose key has no match in the dimension, such as an unknown department code? |
+| B4P03Q51 | 4 | 3 | What causes an ambiguous path or circular dependency error in a model, and how do you fix it? |
+| B4P03Q52 | 4 | 3 | What is a composite model in Power BI? |
+| B4P03Q53 | 4 | 3 | Why build one shared semantic model and connect several reports to it? |
+| B4P03Q54 | 4 | 3 | What does the Assume Referential Integrity setting do on a relationship, and when is it safe to turn on? |
+| B4P03Q55 | 4 | 3 | An employee changes department during the year. How would you model this so history stays correct (slowly changing dimension Type 2)? |
+| B4P03Q56 | 4 | 3 | How would you model an employee and manager hierarchy where each employee reports to another employee? |
+| B4P03Q57 | 4 | 3 | Sales targets are stored by category and year, but sales are stored by product and day. How do you relate them? |
+| B4P03Q58 | 4 | 3 | Why is relating two fact tables directly with a many-to-many relationship not recommended, and what is the alternative? |
+| B4P03Q59 | 4 | 3 | What does the CROSSFILTER function do, and when would you use it in a measure? |
+| B4P03Q60 | 4 | 3 | What does TREATAS do, and how does it create a virtual relationship? |
+| B4P04Q1 | 4 | 4 | What is DAX, and where is it used in Power BI? |
+| B4P04Q2 | 4 | 4 | What is the difference between a calculated column and a measure? |
+| B4P04Q3 | 4 | 4 | How do you create a calculated column and a measure in Power BI Desktop? |
+| B4P04Q4 | 4 | 4 | Should "Salary Band" be a calculated column or a measure? Why? |
+| B4P04Q5 | 4 | 4 | What is the difference between SUM and SUMX? |
+| B4P04Q6 | 4 | 4 | What is the difference between COUNT, COUNTA, COUNTROWS and DISTINCTCOUNT? |
+| B4P04Q7 | 4 | 4 | What is filter context in DAX? |
+| B4P04Q8 | 4 | 4 | What is row context in DAX? |
+| B4P04Q9 | 4 | 4 | What does the CALCULATE function do? |
+| B4P04Q10 | 4 | 4 | Write a DAX measure for total sales (or total payroll cost). |
+| B4P04Q11 | 4 | 4 | Write a DAX measure that counts unique employees. |
+| B4P04Q12 | 4 | 4 | What is the difference between row context and filter context? |
+| B4P04Q13 | 4 | 4 | Write a DAX measure for total sales of one product category using CALCULATE. |
+| B4P04Q14 | 4 | 4 | Write a DAX measure for total revenue when each row has Quantity and Unit Price columns. |
+| B4P04Q15 | 4 | 4 | Why should you use DIVIDE instead of the / operator in a measure? |
+| B4P04Q16 | 4 | 4 | Why does my measure show the same number in every row of a table visual? |
+| B4P04Q17 | 4 | 4 | What is an iterator function in DAX, and which ones do you know? |
+| B4P04Q18 | 4 | 4 | What is the difference between an implicit measure and an explicit measure? |
+| B4P04Q19 | 4 | 4 | Can you write SUM(Sales[Quantity] * Sales[Price]) in DAX? Why or why not? |
+| B4P04Q20 | 4 | 4 | What is BLANK() in DAX, and how is it different from zero or empty text? |
+| B4P04Q21 | 4 | 4 | What is the difference between DAX and Excel formulas? |
+| B4P04Q22 | 4 | 4 | What is the difference between DAX and M, the Power Query language? |
+| B4P04Q23 | 4 | 4 | What is a quick measure, and what are its limits? |
+| B4P04Q24 | 4 | 4 | Write a calculated column using IF to flag late arrivals in an attendance table. |
+| B4P04Q25 | 4 | 4 | Write a DAX formula to calculate the number of days between two dates, for example leave days. |
+| B4P04Q26 | 4 | 4 | Where are calculated columns stored, and how do they affect file size? |
+| B4P04Q27 | 4 | 4 | Why does Microsoft recommend COUNTROWS rather than COUNT to count rows? |
+| B4P04Q28 | 4 | 4 | How do you refer to columns and measures in a DAX formula (syntax conventions)? |
+| B4P04Q29 | 4 | 4 | Write a DAX measure for average salary. |
+| B4P04Q30 | 4 | 4 | Can one measure refer to another measure? |
+| B4P04Q31 | 4 | 4 | What is the difference between AVERAGE and AVERAGEX? |
+| B4P04Q32 | 4 | 4 | Write a DAX measure that shows Target Met or Below Target by comparing total sales with a sales target. |
+| B4P04Q33 | 4 | 4 | What is context transition in DAX? |
+| B4P04Q34 | 4 | 4 | Write a DAX measure for the headcount of active employees using CALCULATE and COUNTROWS. |
+| B4P04Q35 | 4 | 4 | Write a DAX measure for attendance percentage. |
+| B4P04Q36 | 4 | 4 | How does CALCULATE treat several filter arguments? |
+| B4P04Q37 | 4 | 4 | What happens when a CALCULATE filter targets a column that already has a slicer selection? |
+| B4P04Q38 | 4 | 4 | What is the difference between a Boolean filter and the FILTER function inside CALCULATE? |
+| B4P04Q39 | 4 | 4 | What is the difference between SUMX(FILTER(...)) and CALCULATE(SUM(...), ...)? |
+| B4P04Q40 | 4 | 4 | Write a DAX measure for profit margin percentage. |
+| B4P04Q41 | 4 | 4 | Write a DAX measure for each department's share of total headcount. |
+| B4P04Q42 | 4 | 4 | Write a DAX measure for net sales when the table has MRP and discount percentage columns. |
+| B4P04Q43 | 4 | 4 | How would you count unique customers when customer IDs are spread across several tables? |
+| B4P04Q44 | 4 | 4 | Why does a calculated column that uses SUM show the same total on every row? |
+| B4P04Q45 | 4 | 4 | Should you add a column in Power Query or as a DAX calculated column? |
+| B4P04Q46 | 4 | 4 | What does RELATED do, and why does it need row context? |
+| B4P04Q47 | 4 | 4 | Write a calculated column for employee tenure in years from the joining date. |
+| B4P04Q48 | 4 | 4 | Write a DAX measure for average order value. |
+| B4P04Q49 | 4 | 4 | Write a DAX measure for total payroll cost when each row has basic pay and allowances columns. |
+| B4P04Q50 | 4 | 4 | What is SWITCH, and when do you use it instead of nested IF? |
+| B4P04Q51 | 4 | 4 | What are VAR and RETURN in DAX, and why use them? |
+| B4P04Q52 | 4 | 4 | How do you debug a DAX measure that returns a wrong number? |
+| B4P04Q53 | 4 | 4 | What is a calculated table, and when would you use one? |
+| B4P04Q54 | 4 | 4 | What happens if you use COUNT on a text column? |
+| B4P04Q55 | 4 | 4 | Is DAX case-sensitive, and do spaces matter? |
+| B4P04Q56 | 4 | 4 | How do you write comments in DAX? |
+| B4P04Q57 | 4 | 4 | Does DAX work in Excel? |
+| B4P04Q58 | 4 | 4 | Can you write DAX in Power BI Service, or on a Mac? |
+| B4P04Q59 | 4 | 4 | What naming and organisation habits make measures easier to maintain (measure table, display folders)? |
+| B4P04Q60 | 4 | 4 | Write a DAX measure for the latest hiring date. |
+| B4P04Q61 | 4 | 4 | What data types does DAX support, and what is implicit conversion? |
+| B4P04Q62 | 4 | 4 | How does DISTINCTCOUNT treat blanks, and what are the alternatives? |
+| B4P04Q63 | 4 | 4 | What is a circular dependency error in DAX, and how do you fix it? |
+| B4P04Q64 | 4 | 4 | What does the error "A single value for column cannot be determined" mean? |
+| B4P04Q65 | 4 | 4 | Why does a ratio or average show the wrong grand total, and how do you fix it? |
+| B4P04Q66 | 4 | 4 | What is the DAX query view in Power BI Desktop? |
+| B4P04Q67 | 4 | 4 | What is a visual calculation, and how does it differ from a measure? |
+| B4P04Q68 | 4 | 4 | Are there DAX limitations in DirectQuery mode? |
+| B4P04Q69 | 4 | 4 | What does SELECTEDVALUE do, and when do you use it? |
+| B4P04Q70 | 4 | 4 | When are measures calculated, and what does that mean for performance? |
+| B4P04Q71 | 4 | 4 | Is SUMX always slower than SUM? |
+| B4P04Q72 | 4 | 4 | Write a DAX measure that counts rows where a column is blank. |
+| B4P04Q73 | 4 | 4 | Write a DAX measure for sales in the North or South region. |
+| B4P04Q74 | 4 | 4 | Write a DAX measure for the total of orders that are each above Rs 10,000. |
+| B4P04Q75 | 4 | 4 | Write a DAX measure for the number of employees with more than 5 years of service. |
+| B4P05Q1 | 4 | 5 | What is the difference between ALL and ALLEXCEPT in DAX? |
+| B4P05Q2 | 4 | 5 | Why do time intelligence functions need a date table, and what rules must it follow? |
+| B4P05Q3 | 4 | 5 | Write a DAX measure for percentage of total sales (each product's share of the grand total). |
+| B4P05Q4 | 4 | 5 | Write a DAX measure for year-to-date (YTD) sales. |
+| B4P05Q5 | 4 | 5 | Write a DAX measure for year-over-year (YoY) sales growth percentage. |
+| B4P05Q6 | 4 | 5 | How does RANKX work? Write a measure that ranks employees by salary. |
+| B4P05Q7 | 4 | 5 | What is the difference between ALL and ALLSELECTED? |
+| B4P05Q8 | 4 | 5 | What is the difference between ALL and REMOVEFILTERS? |
+| B4P05Q9 | 4 | 5 | What is the difference between TOTALYTD and CALCULATE with DATESYTD? |
+| B4P05Q10 | 4 | 5 | What is the difference between SAMEPERIODLASTYEAR, DATEADD and PARALLELPERIOD? |
+| B4P05Q11 | 4 | 5 | How do you create and mark a date table in Power BI, and what is the difference between CALENDAR and CALENDARAUTO? |
+| B4P05Q12 | 4 | 5 | What happens when you pass two filters on the same column, or on different columns, to CALCULATE? |
+| B4P05Q13 | 4 | 5 | Write a DAX measure for month-to-date (MTD) and quarter-to-date (QTD) values. |
+| B4P05Q14 | 4 | 5 | Write a DAX measure for a rolling 3-month average using DATESINPERIOD. |
+| B4P05Q15 | 4 | 5 | Write a DAX measure for a running (cumulative) total over dates. |
+| B4P05Q16 | 4 | 5 | How does RANKX handle ties, and what is the difference between Skip and Dense? |
+| B4P05Q17 | 4 | 5 | Why does a RANKX measure return 1 for every row in a visual, and how do you fix it? |
+| B4P05Q18 | 4 | 5 | How would you show only the Top 5 products by sales using TOPN or RANKX? |
+| B4P05Q19 | 4 | 5 | Write a DAX measure for employee attrition rate (leavers divided by average headcount). |
+| B4P05Q20 | 4 | 5 | Write a DAX measure for headcount at the end of each month from joining and exit dates. |
+| B4P05Q21 | 4 | 5 | How do you calculate employee tenure in years with DATEDIFF, and what are its limits? |
+| B4P05Q22 | 4 | 5 | What is USERELATIONSHIP, and how would you use it with hire date and exit date in one date table? |
+| B4P05Q23 | 4 | 5 | Why does the Total row in a matrix not equal the sum of the rows shown, and how do you fix it? |
+| B4P05Q24 | 4 | 5 | How do you make TOTALYTD follow an Indian financial year that ends on 31 March? |
+| B4P05Q25 | 4 | 5 | What does EARLIER do in a calculated column, and how can variables replace it? |
+| B4P05Q26 | 4 | 5 | Write a measure for the average monthly sales in a selected year (average of the monthly totals, not of the order rows). |
+| B4P05Q27 | 4 | 5 | Your YoY or YTD measure returns blank or wrong numbers: how do you debug it? |
+| B4P05Q28 | 4 | 5 | What does KEEPFILTERS do, and when would you use it? |
+| B4P05Q29 | 4 | 5 | Why do many experts prefer REMOVEFILTERS with VALUES over ALLEXCEPT? |
+| B4P05Q30 | 4 | 5 | How do you write a closing-balance (semi-additive) measure using LASTDATE or LASTNONBLANK? |
+| B4P05Q31 | 4 | 5 | Why is FILTER on a whole table inside CALCULATE slow, and how do you rewrite it? |
+| B4P05Q32 | 4 | 5 | How do you find and fix a slow DAX measure with Performance Analyzer and DAX Studio? |
+| B4P05Q33 | 4 | 5 | How would you build time intelligence once for many measures using calculation groups? |
+| B4P05Q34 | 4 | 5 | What are visual calculations in Power BI, and how do they differ from measures? |
+| B4P05Q35 | 4 | 5 | What does ISINSCOPE do, and how do you use it to show a different calculation at each level of a matrix hierarchy? |
+| B4P06Q1 | 4 | 6 | What is a slicer in Power BI, and how is it different from a filter in the Filters pane? |
+| B4P06Q2 | 4 | 6 | What is the difference between drill down and drill through in Power BI? |
+| B4P06Q3 | 4 | 6 | What are the different levels of filters in Power BI (visual, page and report level)? |
+| B4P06Q4 | 4 | 6 | What is a bookmark in Power BI, and what is it used for? |
+| B4P06Q5 | 4 | 6 | What is a tooltip in Power BI, and what is a report page tooltip? |
+| B4P06Q6 | 4 | 6 | What is the difference between a table visual and a matrix visual? |
+| B4P06Q7 | 4 | 6 | Which visual would you choose to show monthly headcount over two years, and why? |
+| B4P06Q8 | 4 | 6 | How do you create a drill-through page in Power BI, step by step? |
+| B4P06Q9 | 4 | 6 | How do you stop a slicer from filtering one particular visual on the page? |
+| B4P06Q10 | 4 | 6 | How do you make one slicer control several pages of a report? |
+| B4P06Q11 | 4 | 6 | How would you colour an attrition rate column red when it is above 15% and green otherwise? |
+| B4P06Q12 | 4 | 6 | A slicer selection is not changing one of the visuals on the page. What do you check? |
+| B4P06Q13 | 4 | 6 | What is the difference between a bar chart and a column chart, and between clustered and stacked? |
+| B4P06Q14 | 4 | 6 | When would you use a pie or donut chart, and when should you avoid it? |
+| B4P06Q15 | 4 | 6 | What are cross-filtering and cross-highlighting between visuals? |
+| B4P06Q16 | 4 | 6 | What types of slicer are available, and when would you use each (list, dropdown, tile, between, relative date)? |
+| B4P06Q17 | 4 | 6 | What is the difference between basic filtering, advanced filtering, Top N and relative date filtering? |
+| B4P06Q18 | 4 | 6 | How do you show only the top 10 products by sales in a visual? |
+| B4P06Q19 | 4 | 6 | What is the difference between a card, a multi-row card and a KPI visual? |
+| B4P06Q20 | 4 | 6 | What are buttons in Power BI, and what actions can a button perform? |
+| B4P06Q21 | 4 | 6 | What is the Selection pane used for? |
+| B4P06Q22 | 4 | 6 | What is the Analytics pane, and how do you add an average line or a target line to a chart? |
+| B4P06Q23 | 4 | 6 | How do you change the number format and display units (thousands, millions) of data labels? |
+| B4P06Q24 | 4 | 6 | What are themes in Power BI, and how do you apply one to a report? |
+| B4P06Q25 | 4 | 6 | How do you sort a visual by a different column, for example month names in calendar order instead of alphabetical? |
+| B4P06Q26 | 4 | 6 | How do you build a report page tooltip, step by step? |
+| B4P06Q27 | 4 | 6 | What do the Data, Display and Current page options of a bookmark do? |
+| B4P06Q28 | 4 | 6 | How would you let users switch between a chart and a table on the same page using bookmarks? |
+| B4P06Q29 | 4 | 6 | The Drillthrough option does not appear when you right-click a visual. What do you check? |
+| B4P06Q30 | 4 | 6 | How do you create a dynamic visual title that shows the department selected in a slicer? |
+| B4P06Q31 | 4 | 6 | How do you use a DAX measure to control conditional formatting colours (field value formatting)? |
+| B4P06Q32 | 4 | 6 | How would you build an attendance heat map for employees by day using a matrix? |
+| B4P06Q33 | 4 | 6 | A visual has no drill icons even though it uses several fields. Why, and how do you fix it? |
+| B4P06Q34 | 4 | 6 | When would you use a combo chart (line and clustered column), and what is the risk of a dual axis? |
+| B4P06Q35 | 4 | 6 | How would you let a manager click a department in a chart and see the list of its employees on another page? |
+| B4P06Q36 | 4 | 6 | Which visuals would you use to show attrition by department and by tenure band, and why? |
+| B4P06Q37 | 4 | 6 | By default, does drilling down in one visual change the other visuals on the page, and how can you change that? |
+| B4P06Q38 | 4 | 6 | What is a scatter chart, and when would you use it? |
+| B4P06Q39 | 4 | 6 | What is the difference between a line chart and an area chart? |
+| B4P06Q40 | 4 | 6 | How do you lock or hide a filter in the Filters pane? |
+| B4P06Q41 | 4 | 6 | What are Spotlight and Focus mode in Power BI? |
+| B4P06Q42 | 4 | 6 | What are custom visuals, where do you get them, and what should you check before using one? |
+| B4P06Q43 | 4 | 6 | What is the Mobile layout view in Power BI Desktop, and when do you build one? |
+| B4P06Q44 | 4 | 6 | How do you make a Power BI report more accessible (alt text, tab order, colour choices)? |
+| B4P06Q45 | 4 | 6 | What is a decomposition tree, and when is it useful? |
+| B4P06Q46 | 4 | 6 | What is the difference between a report bookmark and a personal bookmark? |
+| B4P06Q47 | 4 | 6 | What are the limitations of bookmarks (for example, visual positions and slicers added later)? |
+| B4P06Q48 | 4 | 6 | What does Keep all filters do on a drill-through page? |
+| B4P06Q49 | 4 | 6 | What are the requirements for cross-report drillthrough? |
+| B4P06Q50 | 4 | 6 | What is the difference between Go to the next level and Expand all down one level in a hierarchy visual? |
+| B4P06Q51 | 4 | 6 | What are field parameters, and how would you let users choose which measure a chart shows? |
+| B4P06Q52 | 4 | 6 | What does the Select all option in a slicer actually do to the filter? |
+| B4P06Q53 | 4 | 6 | What are Apply all slicers and Clear all slicers buttons, and why would you add them? |
+| B4P06Q54 | 4 | 6 | How would you build a slicer of top customers without using a Top N filter on the visual (disconnected table approach)? |
+| B4P06Q55 | 4 | 6 | What are the limitations of report page tooltips? |
+| B4P06Q56 | 4 | 6 | A category shows as (Blank) in a chart. How do you find out why, and how do you handle it? |
+| B4P06Q57 | 4 | 6 | What does Show items with no data do, and when would you turn it on? |
+| B4P06Q58 | 4 | 6 | How would you build a headcount waterfall (opening headcount, hires, exits, closing headcount)? |
+| B4P06Q59 | 4 | 6 | Can a field parameter be used as a drill-through or tooltip field, and what is the workaround? |
+| B4P06Q60 | 4 | 6 | How would you build a report where a slicer filters most visuals but one visual still shows the company-wide total for comparison? |
+| B4P06Q61 | 4 | 6 | How would you design one HR page where managers pick the measure (headcount, attrition, average tenure) and the grouping (department, location, grade) and can still drill through to employees? |
+| B4P07Q1 | 4 | 7 | What is row-level security (RLS) in Power BI, and why would you use it? |
+| B4P07Q2 | 4 | 7 | How do you publish a report from Power BI Desktop to the Power BI Service? |
+| B4P07Q3 | 4 | 7 | What is scheduled refresh in Power BI, and how do you set it up? |
+| B4P07Q4 | 4 | 7 | What is a Power BI workspace, and how is it different from My workspace? |
+| B4P07Q5 | 4 | 7 | How do you implement row-level security in Power BI, end to end (Desktop to Service)? |
+| B4P07Q6 | 4 | 7 | What is an on-premises data gateway, and when do you need one? |
+| B4P07Q7 | 4 | 7 | What is the difference between static and dynamic row-level security? |
+| B4P07Q8 | 4 | 7 | Your scheduled refresh failed overnight. How do you troubleshoot it? |
+| B4P07Q9 | 4 | 7 | What is incremental refresh in Power BI, and why is it used? |
+| B4P07Q10 | 4 | 7 | What is the difference between a report, a dashboard and an app in the Power BI Service? |
+| B4P07Q11 | 4 | 7 | What are the four workspace roles (Admin, Member, Contributor, Viewer) and what can each do? |
+| B4P07Q12 | 4 | 7 | How do you share a report with a colleague in the Power BI Service, and what licence do they need? |
+| B4P07Q13 | 4 | 7 | What is the difference between a semantic model (dataset) and a report in the Power BI Service? |
+| B4P07Q14 | 4 | 7 | What is the difference between Import mode, DirectQuery and Live Connection from a refresh point of view? |
+| B4P07Q15 | 4 | 7 | What is the difference between a personal gateway and a standard (enterprise) gateway? |
+| B4P07Q16 | 4 | 7 | How often can a Power BI dataset be refreshed per day on Pro versus Premium? |
+| B4P07Q17 | 4 | 7 | What happens when you publish a PBIX file again with the same name to the same workspace? |
+| B4P07Q18 | 4 | 7 | How do you refresh a report on demand in the Power BI Service? |
+| B4P07Q19 | 4 | 7 | Write the DAX filter for a role so each manager sees only the rows of their own region (static RLS for one region). |
+| B4P07Q20 | 4 | 7 | Write the DAX filter for dynamic RLS so each user sees only the rows linked to their own email address. |
+| B4P07Q21 | 4 | 7 | What is the difference between USERNAME() and USERPRINCIPALNAME() in RLS, and how do they behave in Desktop versus the Service? |
+| B4P07Q22 | 4 | 7 | How do you test that RLS works before sharing the report (View as role / Test as role)? |
+| B4P07Q23 | 4 | 7 | Does RLS apply to workspace Admins, Members and Contributors? What about Viewers? |
+| B4P07Q24 | 4 | 7 | How do you add users to an RLS role, and can you use groups? |
+| B4P07Q25 | 4 | 7 | What are RLS limits: does it hide columns, and does it work with Import and DirectQuery? |
+| B4P07Q26 | 4 | 7 | Does RLS defined in Desktop carry over when you publish to the Service? Where do you assign users? |
+| B4P07Q27 | 4 | 7 | How do you set up a refresh for a dataset that uses an on-premises SQL Server or Excel file on a shared drive? |
+| B4P07Q28 | 4 | 7 | How do you configure data source credentials and privacy levels for a dataset in the Service? |
+| B4P07Q29 | 4 | 7 | What are RangeStart and RangeEnd in incremental refresh, and what rules must they follow? |
+| B4P07Q30 | 4 | 7 | How do you set up incremental refresh in Power BI Desktop for a sales table? |
+| B4P07Q31 | 4 | 7 | What is a Power BI app, and how do you publish one from a workspace to business users? |
+| B4P07Q32 | 4 | 7 | How do you make a Power BI report refresh data automatically if the source is a file on OneDrive or SharePoint? |
+| B4P07Q33 | 4 | 7 | A user says they cannot see your report in the Service. What do you check? |
+| B4P07Q34 | 4 | 7 | Your refresh is slow or times out. What do you check, and what are the time limits on Pro and Premium? |
+| B4P07Q35 | 4 | 7 | Who gets an email when a scheduled refresh fails, and how can you change notifications? |
+| B4P07Q36 | 4 | 7 | Your manager asks which reports nobody opens anymore. How do you find out in the Power BI Service? |
+| B4P07Q37 | 4 | 7 | You publish one app for HR, finance and sales teams. How do audiences let each team see different reports? |
+| B4P07Q38 | 4 | 7 | How would you design RLS for an HR dashboard where each HR business partner sees only their own employees and the CHRO sees everyone? |
+| B4P07Q39 | 4 | 7 | You built RLS but a user in a Contributor role still sees all data. Why, and how do you fix it? |
+| B4P07Q40 | 4 | 7 | What is the Power BI mobile app, and how do you make a report mobile friendly? |
+| B4P07Q41 | 4 | 7 | What are subscriptions and alerts in the Power BI Service? |
+| B4P07Q42 | 4 | 7 | What does Export to Excel / Analyze in Excel do, and who can use it? |
+| B4P07Q43 | 4 | 7 | What is the difference between Publish to web and Embed (secure) a report, and why is Publish to web risky? |
+| B4P07Q44 | 4 | 7 | What are dataflows in the Power BI Service, and when would you use one? |
+| B4P07Q45 | 4 | 7 | What are deployment pipelines (Development, Test, Production), and who needs which licence? |
+| B4P07Q46 | 4 | 7 | What is a gateway cluster, and why is it used? |
+| B4P07Q47 | 4 | 7 | Why does the Power BI Service pause a scheduled refresh, and how do you turn it back on? |
+| B4P07Q48 | 4 | 7 | How do you refresh a dataset from a data source that changes only on the first of each month? |
+| B4P07Q49 | 4 | 7 | What does sensitivity labelling and endorsement (certified, promoted) mean in the Power BI Service? |
+| B4P07Q50 | 4 | 7 | What is the Large semantic model storage format, and when is it needed? |
+| B4P07Q51 | 4 | 7 | What is the difference between Build permission and Viewer access on a dataset? |
+| B4P07Q52 | 4 | 7 | What is Direct Lake mode, and when would a Fabric workspace use it? |
+| B4P07Q53 | 4 | 7 | What is the Detect data changes setting in incremental refresh, and when is it useful? |
+| B4P07Q54 | 4 | 7 | How does the Only refresh complete days setting work, and why does the time zone matter? |
+| B4P07Q55 | 4 | 7 | What is object-level security, and how does it differ from row-level security? |
+| B4P07Q56 | 4 | 7 | How do you audit who viewed or changed reports in the Power BI Service? |
+| B4P07Q57 | 4 | 7 | Why can a dataset refresh work in Desktop but fail in the Service? |
+| B4P07Q58 | 4 | 7 | A source table is changing and you want to know which reports will break. How does lineage view help? |
+| B4P07Q59 | 4 | 7 | A colleague only needs to look at one report: how do you share it with them, and what permissions must they have to see the data behind it? |
+| B4P07Q60 | 4 | 7 | Why can incremental refresh be slow or fail if query folding does not work? |
+| B4P07Q61 | 4 | 7 | A manager can see every employee because bi-directional filtering is on. How do RLS and Apply security filter in both directions interact? |
+| B4P07Q62 | 4 | 7 | How do you manage RLS for managers in a parent-child hierarchy (each manager sees their whole reporting line)? |
+| B4P07Q63 | 4 | 7 | A report with RLS works in Desktop but shows no data for a guest user. What would you check? |
+| B4P07Q64 | 4 | 7 | How would you move a report from a Development workspace to Production without breaking the data source connection? |
+| B4P07Q65 | 4 | 7 | A Pro user is asked to share a report with 300 free-licence employees. What are the options? |
+| B4P08Q1 | 4 | 8 | What are the key principles of good dashboard design? |
+| B4P08Q2 | 4 | 8 | How do you choose the right chart type for your data (bar, line, pie, table, card)? |
+| B4P08Q3 | 4 | 8 | How do you decide which KPIs and visuals go on a dashboard? |
+| B4P08Q4 | 4 | 8 | What is data storytelling, and why does it matter for an analyst? |
+| B4P08Q5 | 4 | 8 | Walk me through how you would approach designing a dashboard from scratch when a stakeholder asks for one. |
+| B4P08Q6 | 4 | 8 | How do you design a dashboard for non-technical senior executives? |
+| B4P08Q7 | 4 | 8 | How do you present your insights to non-technical stakeholders? |
+| B4P08Q8 | 4 | 8 | A stakeholder says the numbers on your dashboard do not match their own Excel numbers. What do you do? |
+| B4P08Q9 | 4 | 8 | Users are not using the dashboard you built (low adoption). How do you find out why and fix it? |
+| B4P08Q10 | 4 | 8 | Why are pie charts often discouraged, and when are they acceptable? |
+| B4P08Q11 | 4 | 8 | How do you use colour effectively in a dashboard? |
+| B4P08Q12 | 4 | 8 | What role do white space, alignment and visual hierarchy play in a dashboard? |
+| B4P08Q13 | 4 | 8 | Where on the page should the most important information be placed, and why? |
+| B4P08Q14 | 4 | 8 | Why do dashboards use KPI cards, and what context should a KPI card show? |
+| B4P08Q15 | 4 | 8 | How many visuals should you put on one report page? |
+| B4P08Q16 | 4 | 8 | Why should you avoid 3D charts and decorative effects? |
+| B4P08Q17 | 4 | 8 | What is the difference between a KPI and a metric? |
+| B4P08Q18 | 4 | 8 | What is decluttering in data visualization, and how do you apply it? |
+| B4P08Q19 | 4 | 8 | Describe a dashboard you built and the business decision it supported. |
+| B4P08Q20 | 4 | 8 | What is the difference between operational, analytical and strategic dashboards? |
+| B4P08Q21 | 4 | 8 | How would you show actual versus target in Power BI (card, gauge, bullet chart, variance)? |
+| B4P08Q22 | 4 | 8 | How would you visualize a hiring funnel from application to joining? |
+| B4P08Q23 | 4 | 8 | How do you highlight exceptions, such as departments above an attrition threshold, using conditional formatting? |
+| B4P08Q24 | 4 | 8 | How do you make a Power BI report accessible and colour-blind friendly? |
+| B4P08Q25 | 4 | 8 | What makes a chart misleading (truncated axis, wrong scale, cherry-picked period), and how do you avoid it? |
+| B4P08Q26 | 4 | 8 | What is a Power BI theme, and why would you use one across reports? |
+| B4P08Q27 | 4 | 8 | How do you structure a multi-page report so users move from overview to detail? |
+| B4P08Q28 | 4 | 8 | How do you design a report layout for mobile users in Power BI? |
+| B4P08Q29 | 4 | 8 | How do you collect feedback on a dashboard and iterate on its design? |
+| B4P08Q30 | 4 | 8 | When is a dual-axis chart appropriate, and what are its risks? |
+| B4P08Q31 | 4 | 8 | How do you structure a presentation of findings: what goes first, what goes last? |
+| B4P08Q32 | 4 | 8 | What is the difference between a dashboard, a scorecard and an infographic? |
+| B4P08Q33 | 4 | 8 | What is a sparkline, and when would you use one next to a KPI? |
+| B4P08Q34 | 4 | 8 | What are preattentive attributes, and how do you use them to direct attention? |
+| B4P08Q35 | 4 | 8 | What is the data-ink ratio (Edward Tufte), and how does it guide chart design? |
+| B4P08Q36 | 4 | 8 | What are the Gestalt principles (proximity, similarity, enclosure), and how do they apply to dashboards? |
+| B4P08Q37 | 4 | 8 | What narrative structure would you use for a data story (context, insight, recommendation)? |
+| B4P08Q38 | 4 | 8 | How do you handle a chart with too many categories (Top N, grouping into Other)? |
+| B4P08Q39 | 4 | 8 | Which visual would you use to show a payroll change from last month to this month (waterfall)? |
+| B4P08Q40 | 4 | 8 | How would you visualize employee attendance patterns by day and department (matrix with heatmap formatting)? |
+| B4P08Q41 | 4 | 8 | Which chart would you use to show the distribution of salaries or tenure (histogram or box plot)? |
+| B4P08Q42 | 4 | 8 | Why do some experts criticise gauge charts, and what would you use instead? |
+| B4P08Q43 | 4 | 8 | How do you keep dashboards consistent across a team (templates, style guide, naming)? |
+| B4P08Q44 | 4 | 8 | What would you check when reviewing a colleague's cluttered dashboard? |
+| B4P08Q45 | 4 | 8 | A leader has asked for 15 metrics on one page. How do you handle the request and redesign it? |
+| B4P08Q46 | 4 | 8 | Two stakeholders want conflicting things from the same dashboard. How do you resolve it? |
+| B4P08Q47 | 4 | 8 | How would you present a finding that contradicts a senior leader's long-held belief? |
+| B4P09Q1 | 4 | 9 | Walk me through a Power BI dashboard you built, from raw data to published report. |
+| B4P09Q2 | 4 | 9 | You are given an HR dataset and asked to build a dashboard in Power BI: what are your steps? |
+| B4P09Q3 | 4 | 9 | Your manager asks for a sales dashboard: what questions do you ask before you open Power BI? |
+| B4P09Q4 | 4 | 9 | Which KPIs and visuals would you put on an HR headcount and attrition dashboard? |
+| B4P09Q5 | 4 | 9 | Which KPI cards, charts and filters would you put on a monthly sales dashboard? |
+| B4P09Q6 | 4 | 9 | Write the DAX measures for headcount, leavers and attrition rate for an HR dashboard. |
+| B4P09Q7 | 4 | 9 | Your Power BI report is slow: what do you check, in order? |
+| B4P09Q8 | 4 | 9 | How do you use Performance Analyzer to find which visual is slow? |
+| B4P09Q9 | 4 | 9 | The total in your Power BI report does not match the Excel total: how do you find the reason? |
+| B4P09Q10 | 4 | 9 | How would you model the tables for a sales dashboard before building any visual? |
+| B4P09Q11 | 4 | 9 | A manager says a number on your dashboard looks wrong: how do you investigate and respond? |
+| B4P09Q12 | 4 | 9 | How would you clean a messy attendance export in Power Query before building the report? |
+| B4P09Q13 | 4 | 9 | How would you show the hiring funnel (applied, screened, interviewed, offered, joined) in Power BI? |
+| B4P09Q14 | 4 | 9 | How would you show the top 5 products or regions by sales in a Power BI report? |
+| B4P09Q15 | 4 | 9 | Which visual would you use to show monthly sales against target, and why? |
+| B4P09Q16 | 4 | 9 | How would you build a department-wise attendance summary showing present, absent and leave percentage? |
+| B4P09Q17 | 4 | 9 | How do you make one slicer filter every visual on a page, and stop one visual from responding? |
+| B4P09Q18 | 4 | 9 | A stakeholder says your dashboard is too cluttered: what would you change? |
+| B4P09Q19 | 4 | 9 | How would you schedule the report so the sales dashboard shows yesterday's data every morning? |
+| B4P09Q20 | 4 | 9 | You are using a Mac: how can you build and publish Power BI reports? |
+| B4P09Q21 | 4 | 9 | Your report is published but shows old data: what do you check? |
+| B4P09Q22 | 4 | 9 | What checks do you run on a dashboard before you release it to users? |
+| B4P09Q23 | 4 | 9 | How would you handle sales returns and cancellations so the dashboard shows net revenue? |
+| B4P09Q24 | 4 | 9 | How would you handle employees with a blank department or a missing joining date in your report? |
+| B4P09Q25 | 4 | 9 | Write a DAX measure for target achievement percentage (actual sales vs target). |
+| B4P09Q26 | 4 | 9 | Write a DAX measure for the average tenure of employees in years. |
+| B4P09Q27 | 4 | 9 | How do you calculate monthly attrition rate when people join and leave during the month? |
+| B4P09Q28 | 4 | 9 | How would you count working days per employee while excluding weekends and holidays? |
+| B4P09Q29 | 4 | 9 | How would you stop the same employee appearing twice and inflating headcount? |
+| B4P09Q30 | 4 | 9 | Your model has a fact table of millions of rows and the report is slow: what do you change in the model? |
+| B4P09Q31 | 4 | 9 | The .pbix file has grown to 500 MB: how do you reduce its size? |
+| B4P09Q32 | 4 | 9 | Your scheduled refresh in the Power BI service is failing: how do you troubleshoot it? |
+| B4P09Q33 | 4 | 9 | A visual shows wrong or blank values after you add a slicer: how do you debug the measure? |
+| B4P09Q34 | 4 | 9 | Two tables have no usable relationship and your numbers are inflated: how do you fix it? |
+| B4P09Q35 | 4 | 9 | A chart shows a (Blank) category: what does it mean and how do you fix it? |
+| B4P09Q36 | 4 | 9 | How do you build a proper date table, and why does a sales dashboard need one? |
+| B4P09Q37 | 4 | 9 | How would you handle an April-to-March fiscal year in a sales or HR dashboard? |
+| B4P09Q38 | 4 | 9 | The Excel pivot report is being replaced by Power BI: how do you migrate it and prove the numbers match? |
+| B4P09Q39 | 4 | 9 | How would you build a payroll cost dashboard (gross, deductions, net by department and month)? |
+| B4P09Q40 | 4 | 9 | How would you analyse why employees leave, by tenure band, department and manager? |
+| B4P09Q41 | 4 | 9 | How would you show current month against previous month with an up or down indicator? |
+| B4P09Q42 | 4 | 9 | How would you let users switch between Sales, Profit and Quantity in the same visual? |
+| B4P09Q43 | 4 | 9 | How would you combine monthly Excel files dropped into a folder so the report updates automatically? |
+| B4P09Q44 | 4 | 9 | A source column was renamed and the refresh now fails: how do you fix it without breaking the report? |
+| B4P09Q45 | 4 | 9 | Your colleague cannot open the report you shared: what do you check? |
+| B4P09Q46 | 4 | 9 | The numbers on the dashboard changed since yesterday though nobody edited the report: what could explain it? |
+| B4P09Q47 | 4 | 9 | Write the DAX for average time to hire (days from application to joining) and show it by department. |
+| B4P09Q48 | 4 | 9 | Sales doubled after a colleague saved a corrected copy of a monthly file into the source folder: why, and how do you stop it happening? |
+| B4P09Q49 | 4 | 9 | Your DirectQuery report is slow: what options do you have? |
+| B4P09Q50 | 4 | 9 | Power BI revenue is 2 percent off the finance ledger: how do you reconcile it step by step? |
+| B4P09Q51 | 4 | 9 | How do you test that row-level security works before publishing, and where does it not protect the data? |
+| B4P09Q52 | 4 | 9 | You get three raw Excel files of sales, products and customers: build a sales dashboard with a date slicer and a year-over-year comparison, and explain your steps. |
+| B4P09Q53 | 4 | 9 | How would you plan a dashboard project when the deadline is two weeks? |
+| B4P09Q54 | 4 | 9 | How would you present a new dashboard to non-technical stakeholders and handle change requests? |
+| B4P09Q55 | 4 | 9 | What documentation would you hand over with a report you built for a colleague to maintain? |
+| B4P09Q56 | 4 | 9 | How would you set an alert in the Power BI service when sales fall below target? |
+| B4P09Q57 | 4 | 9 | How would you build a what-if parameter to model a salary hike scenario? |
+| B4P09Q58 | 4 | 9 | How would you build a Pareto (80/20) analysis of products in Power BI? |
+| B4P09Q59 | 4 | 9 | Write a DAX measure to count new versus repeat customers per month. |
+| B4P09Q60 | 4 | 9 | Write DAX for hires and leavers by month using one date table and two date columns. |
+| B4P09Q61 | 4 | 9 | How would you count employees who joined in the last 90 days and are still on probation? |
+| B4P09Q62 | 4 | 9 | How would you flag overtime above a threshold in red in a table visual? |
+| B4P09Q63 | 4 | 9 | How would you build an executive summary page with drill-through to employee-level detail? |
+| B4P09Q64 | 4 | 9 | How would you design one report that works on both desktop and phone? |
+| B4P09Q65 | 4 | 9 | How would you hide salary details from some users while letting them see the rest of the HR report? |
+| B4P09Q66 | 4 | 9 | How would you decide between a Power BI report and a paginated report for a 40-page monthly pack? |
+| B4P09Q67 | 4 | 9 | How would you show the top 5 customers and group everyone else as Others so the chart still adds up to total sales? |
+| B4P09Q68 | 4 | 9 | Refresh became slow because a Power Query step stopped folding: how do you find and fix it? |
+| B4P09Q69 | 4 | 9 | How would you build a joiner-cohort retention view showing how many of each month's hires remain after 3, 6 and 12 months? |
+| B4P09Q70 | 4 | 9 | The report is fast in Power BI Desktop but users say it is slow in the Service: what do you check? |
+| B4P10Q1 | 4 | 10 | What is Tableau, and what is it used for? |
+| B4P10Q2 | 4 | 10 | What is the difference between a dimension and a measure in Tableau? |
+| B4P10Q3 | 4 | 10 | What are the main differences between Power BI and Tableau, and which would you pick for a company? |
+| B4P10Q4 | 4 | 10 | Why are some Tableau pills blue and some green (discrete vs continuous)? |
+| B4P10Q5 | 4 | 10 | What is the difference between a worksheet, a dashboard and a story in Tableau? |
+| B4P10Q6 | 4 | 10 | What are the Tableau products (Desktop, Public, Cloud, Server, Prep) and when is each used? |
+| B4P10Q7 | 4 | 10 | What is the difference between a live connection and an extract in Tableau? |
+| B4P10Q8 | 4 | 10 | What is a calculated field in Tableau? Give an example. |
+| B4P10Q9 | 4 | 10 | What is the difference between a filter and a parameter in Tableau? |
+| B4P10Q10 | 4 | 10 | What is the difference between sets and groups in Tableau? |
+| B4P10Q11 | 4 | 10 | What is the difference between a join and a blend in Tableau? |
+| B4P10Q12 | 4 | 10 | What is the difference between .twb and .twbx files in Tableau? |
+| B4P10Q13 | 4 | 10 | Which chart would you use to show attrition by department in Tableau, and how do you build it? |
+| B4P10Q14 | 4 | 10 | Which is easier to learn for an HR professional moving into analytics, Power BI or Tableau, and why? |
+| B4P10Q15 | 4 | 10 | What is a dual-axis chart in Tableau, and how do you create one? |
+| B4P10Q16 | 4 | 10 | What are the types of filters in Tableau and in what order do they run (order of operations)? |
+| B4P10Q17 | 4 | 10 | What is a context filter in Tableau, and when would you use one? |
+| B4P10Q18 | 4 | 10 | What is a Level of Detail (LOD) expression in Tableau, and what are FIXED, INCLUDE and EXCLUDE? |
+| B4P10Q19 | 4 | 10 | How would you calculate average salary per department regardless of the view's other dimensions using an LOD in Tableau? |
+| B4P10Q20 | 4 | 10 | What is the difference between a calculated field and a table calculation in Tableau? |
+| B4P10Q21 | 4 | 10 | A Tableau dashboard is slow. What do you check, and how do you use the Performance Recorder? |
+| B4P10Q22 | 4 | 10 | What is the Power BI equivalent of a Tableau LOD expression, and how do they compare? |
+| B4P10Q23 | 4 | 10 | How do Tableau's calculated fields differ from Power BI's DAX measures and Power Query steps? |
+| B4P10Q24 | 4 | 10 | How do you handle null values in Tableau? |
+| B4P10Q25 | 4 | 10 | How would you build a monthly attendance or attrition trend dashboard in Tableau and in Power BI? |
+| B4P10Q26 | 4 | 10 | What is Tableau Public, and why should you not put company or employee data on it? |
+| B4P10Q27 | 4 | 10 | Can Tableau Desktop and Power BI Desktop be installed on a Mac? |
+| B4P10Q28 | 4 | 10 | What is Tableau Prep, and how does it compare with Power Query in Power BI? |
+| B4P10Q29 | 4 | 10 | What is a hierarchy in Tableau, and how do you create a drill-down? |
+| B4P10Q30 | 4 | 10 | What is a dashboard action in Tableau (filter, highlight, URL)? |
+| B4P10Q31 | 4 | 10 | What is the difference between a reference line and a reference band in Tableau? |
+| B4P10Q32 | 4 | 10 | What is the difference between Tableau relationships and joins? |
+| B4P10Q33 | 4 | 10 | What is the difference between a data source filter and an extract filter in Tableau? |
+| B4P10Q34 | 4 | 10 | Why is a FIXED LOD not affected by a normal dimension filter, and how do you fix that? |
+| B4P10Q35 | 4 | 10 | Your Tableau Top 10 filter shows fewer than 10 items after you add a region filter. Why, and how do you fix it? |
+| B4P10Q36 | 4 | 10 | Your Tableau running total or rank changes when you add a field to the view. Why? |
+| B4P10Q37 | 4 | 10 | How do you implement row-level security in Tableau compared with Power BI RLS? |
+| B4P10Q38 | 4 | 10 | How do licensing and cost differ between Power BI (Free, Pro, Premium) and Tableau (Creator, Explorer, Viewer)? |
+| B4P10Q39 | 4 | 10 | How do the two tools compare for sharing dashboards, refresh and governance (Power BI Service vs Tableau Cloud or Server)? |
+| B4P10Q40 | 4 | 10 | Your company uses Tableau but you only know Power BI. How would you get productive quickly? |
+| B4P10Q41 | 4 | 10 | How would you migrate an existing Tableau report to Power BI? |
+| B4P10Q42 | 4 | 10 | A stakeholder says the Tableau and Power BI dashboards show different headcount for the same month. How do you investigate? |
+| B4P10Q43 | 4 | 10 | A join to a targets table doubled the revenue in Tableau. What happened, and how do you fix it? |
+| B4P11Q1 | 4 | 11 | What is Copilot in Power BI, and what can it do? |
+| B4P11Q2 | 4 | 11 | What are the AI visuals in Power BI (key influencers, decomposition tree, anomaly detection, smart narrative), and when would you use each? |
+| B4P11Q3 | 4 | 11 | How do you check a DAX measure or report page that Copilot generated before you share it? |
+| B4P11Q4 | 4 | 11 | What licence or capacity do you need to use Copilot in Power BI? |
+| B4P11Q5 | 4 | 11 | Is a Power BI Pro licence enough to use Copilot? |
+| B4P11Q6 | 4 | 11 | How do you start Copilot in Power BI Desktop and in the Power BI service to build a report page? |
+| B4P11Q7 | 4 | 11 | What is the Narrative visual with Copilot, and how is it different from the custom smart narrative? |
+| B4P11Q8 | 4 | 11 | What is the difference between the Copilot pane in a report and the standalone Copilot experience? |
+| B4P11Q9 | 4 | 11 | Which Copilot experiences in Power BI are generally available and which are still in preview? |
+| B4P11Q10 | 4 | 11 | What is the difference between Copilot and the Q&A visual in Power BI? |
+| B4P11Q11 | 4 | 11 | Write a Copilot prompt that builds an HR attrition report page, and explain why it is a good prompt. |
+| B4P11Q12 | 4 | 11 | How would you use Copilot to help write a DAX measure for attrition rate, and what would you check in the result? |
+| B4P11Q13 | 4 | 11 | How does Copilot work in DAX query view? |
+| B4P11Q14 | 4 | 11 | How do you use Copilot to add descriptions to your measures, and why do descriptions matter? |
+| B4P11Q15 | 4 | 11 | How do you prepare a semantic model so that Copilot gives better answers? |
+| B4P11Q16 | 4 | 11 | What are verified answers and AI instructions in Prep data for AI? |
+| B4P11Q17 | 4 | 11 | What does Approved for Copilot mean for a semantic model? |
+| B4P11Q18 | 4 | 11 | What are the limitations of creating or editing report pages with Copilot? |
+| B4P11Q19 | 4 | 11 | Who can turn Copilot on or off in a company, and where do they do it? |
+| B4P11Q20 | 4 | 11 | Does Copilot send your company data outside the organisation, and is it used to train models? |
+| B4P11Q21 | 4 | 11 | Why can Copilot give a different answer to the same question, and what do you do about it? |
+| B4P11Q22 | 4 | 11 | The Copilot button is missing or disabled in Power BI Desktop. What do you check? |
+| B4P11Q23 | 4 | 11 | How would you use the key influencers visual to find what drives employee attrition? |
+| B4P11Q24 | 4 | 11 | What is the difference between the key influencers visual and the decomposition tree? |
+| B4P11Q25 | 4 | 11 | What is a Fabric Copilot capacity, and when would a company use one? |
+| B4P11Q26 | 4 | 11 | How does Copilot use capacity, and how would an admin monitor that usage? |
+| B4P11Q27 | 4 | 11 | Your company wants to roll Copilot out to its HR dashboards. What do you check before switching it on? |
+| B4P12Q1 | 4 | 12 | How did you learn Power BI, and how long did it take you? |
+| B4P12Q2 | 4 | 12 | How would you rate yourself in Power BI out of 10, and why? |
+| B4P12Q3 | 4 | 12 | You come from HR with no technical background. How did you learn Power BI? |
+| B4P12Q4 | 4 | 12 | Which Power BI topic did you find hardest (Power Query, data modelling or DAX), and how did you overcome it? |
+| B4P12Q5 | 4 | 12 | Which Power BI features do you use most often, and which have you not tried yet? |
+| B4P12Q6 | 4 | 12 | You already know Excel. What carried over to Power BI, and what did you have to unlearn? |
+| B4P12Q7 | 4 | 12 | Which Power BI version and licence do you use (Desktop, free service account, Pro, Premium Per User or Fabric), and does it matter for your work? |
+| B4P12Q8 | 4 | 12 | Which free resources would you recommend to a beginner learning Power BI? |
+| B4P12Q9 | 4 | 12 | Which practice datasets have you worked with in Power BI? |
+| B4P12Q10 | 4 | 12 | How much time do you spend practising Power BI each day or week? |
+| B4P12Q11 | 4 | 12 | In what order did you study Power BI topics, and why that order? |
+| B4P12Q12 | 4 | 12 | How do you check that the numbers in your Power BI report are correct when there is no answer key? |
+| B4P12Q13 | 4 | 12 | How do you learn a DAX function or Power BI feature you have never used before? |
+| B4P12Q14 | 4 | 12 | You have no company Power BI account. How did you practise publishing and sharing a report? |
+| B4P12Q15 | 4 | 12 | How do you use AI assistants such as Copilot or ChatGPT to learn Power BI without depending on them? |
+| B4P12Q16 | 4 | 12 | Power BI Desktop is updated every month. How do you keep your skills current? |
+| B4P12Q17 | 4 | 12 | How would you prepare for a live Power BI or DAX test in one week? |
+| B4P12Q18 | 4 | 12 | Why did you choose Power BI as your first BI tool rather than Tableau, and what would you learn next? |
+| B4P12Q19 | 4 | 12 | Do certifications help, and have you done any (for example the Microsoft Power BI Data Analyst PL-300)? |
+| B4P12Q20 | 4 | 12 | Have you shared your Power BI work publicly or kept a portfolio of it? |
+| B4P12Q21 | 4 | 12 | What does the PL-300 exam cover, and how would you prepare for it if an employer asked for it? |
+| B4P12Q22 | 4 | 12 | How would you build a Power BI portfolio project from a public HR dataset? |
+| B4P12Q23 | 4 | 12 | How would you set up a self-check test to measure your own Power BI level? |
+| B4P12Q24 | 4 | 12 | What is your plan to improve your Power BI over the next three months? |
+| B4P12Q25 | 4 | 12 | An HR colleague only reads Power BI reports and never touches filters or slicers. How would you coach them to explore the report themselves? |
 
 ## Book 5 — Statistics & Maths
 | Q-ID | Book | Part | Canonical question |
