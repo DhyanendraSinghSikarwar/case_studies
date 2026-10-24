@@ -1,0 +1,1 @@
+- Book 4 Part 5 Q35/Q36 (calculation groups, visual calculations): availability/licensing unverified: check Microsoft Learn before answering.
