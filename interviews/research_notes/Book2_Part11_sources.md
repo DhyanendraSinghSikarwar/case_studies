@@ -43,3 +43,7 @@ Primary or vendor docs opened: Q1-Q31 (topic coverage from the pages above). Exp
 - Any detector accuracy, attack success rate or guardrail false-positive figures: only from the answers' own runs.
 - Provider data-retention and training-use terms (vary by plan; check live terms).
 - Anthropic/OpenAI guidance as of the pages read on 2026-10-24.
+
+
+## Wave B/C addendum (2026-10-24)
+- arXiv 2506.08837 pattern names: the abstract (re-opened by the lead) names no patterns. The Q45 answer agent read the HTML paper through a summarising fetch, which returned six patterns (action-selector, plan-then-execute, LLM map-reduce, dual LLM, code-then-execute, context-minimization); this matches the lead's recollection of the paper but was not read from raw text, so the names stay 'reported via a summariser, check the paper'. The frozen Q45 heading lists five of the six; the sixth patterns are covered in the answer.
