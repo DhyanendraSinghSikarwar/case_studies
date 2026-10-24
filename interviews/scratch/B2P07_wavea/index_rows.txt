@@ -1,0 +1,50 @@
+| B2P07-Q1 | 7 | Why does basic vector RAG fall short, and what does the standard advanced-RAG stack (hybrid search, reranking, query transformation) add? |
+| B2P07-Q2 | 7 | Hybrid search in depth: how do lexical (BM25), learned-sparse and dense retrievers differ, and how do you fuse their results? |
+| B2P07-Q3 | 7 | Explain reciprocal rank fusion: the formula, the role of k, its strengths and weaknesses, and code it. |
+| B2P07-Q4 | 7 | Weighted (alpha) fusion of retrieval scores: why raw scores cannot be mixed, how do you normalise, and how do you tune alpha? |
+| B2P07-Q5 | 7 | How does cross-encoder reranking work in a RAG pipeline? Cover candidate counts, latency, fine-tuning and how you prove it helps. |
+| B2P07-Q6 | 7 | What is late interaction (ColBERT)? Explain MaxSim, what is precomputed, the storage cost, and when to prefer it over a bi-encoder or a cross-encoder. |
+| B2P07-Q7 | 7 | When does query rewriting help or hurt RAG, and how do you route queries to the right transformation? |
+| B2P07-Q8 | 7 | What is HyDE (hypothetical document embeddings)? How does it work, when does it help, and what does it cost? |
+| B2P07-Q9 | 7 | What are multi-query retrieval and query expansion, and how do you combine the results of several query variants? |
+| B2P07-Q10 | 7 | How do you handle multi-hop questions with query decomposition? Walk through the design, the ordering of sub-questions and the failure modes. |
+| B2P07-Q11 | 7 | What is contextual retrieval? Explain contextual embeddings and contextual BM25, the reported gains, and the cost. |
+| B2P07-Q12 | 7 | What is GraphRAG? When would you choose it over plain vector RAG, and when not? |
+| B2P07-Q13 | 7 | Agentic RAG vs single-pass RAG: when is an agent loop worth its cost, and how do you bound it? |
+| B2P07-Q14 | 7 | How do you evaluate each advanced-RAG component (hybrid, reranker, rewriting) with ablations, and what do you report besides accuracy? |
+| B2P07-Q15 | 7 | Code: implement hybrid retrieval from scratch (BM25 plus a toy dense retriever) with RRF and weighted fusion, and compare them on a toy query set. |
+| B2P07-Q16 | 7 | What does learned sparse retrieval (SPLADE-style) add over BM25, and where does it fit in a hybrid stack? |
+| B2P07-Q17 | 7 | Which score-normalisation methods exist for fusion (min-max, z-score, rank-based), and how does each fail? |
+| B2P07-Q18 | 7 | How do you choose the candidate counts in retrieve-then-rerank (n from the first stage, k after reranking)? What is the recall ceiling? |
+| B2P07-Q19 | 7 | LLM-based rerankers (pointwise, pairwise, listwise) vs cross-encoder rerankers for RAG: quality, cost, position bias and when to use each. |
+| B2P07-Q20 | 7 | How do you train or fine-tune a reranker (hard negatives from the first stage, distillation from an LLM, evaluation)? |
+| B2P07-Q21 | 7 | How do you serve a reranker at production latency (batching, truncation, caching, early exit, hardware)? |
+| B2P07-Q22 | 7 | What is step-back prompting for retrieval, and how does it differ from HyDE and decomposition? |
+| B2P07-Q23 | 7 | How do you route queries to different retrieval strategies (FAQ lookup, multi-hop, global summary), and how do you evaluate the router? |
+| B2P07-Q24 | 7 | Conversational RAG: how do you handle coreference, history compression and query rewriting across turns, and how do you evaluate it? |
+| B2P07-Q25 | 7 | What is index-time enrichment (hypothetical questions per chunk, summaries, entity and keyword extraction, metadata), and what are its trade-offs? |
+| B2P07-Q26 | 7 | Contextual retrieval in practice: how do you generate chunk context cheaply (prompt caching, lighter alternatives) and what can go wrong? |
+| B2P07-Q27 | 7 | What is RAPTOR (hierarchical summary trees)? How is the tree built, how is it queried, and how does it compare with GraphRAG? |
+| B2P07-Q28 | 7 | Walk through the GraphRAG indexing pipeline (text units, entity and relationship extraction, community detection, community summaries) and its cost. |
+| B2P07-Q29 | 7 | What are GraphRAG's query modes (global, local, DRIFT, basic), and which question types suit each? |
+| B2P07-Q30 | 7 | Knowledge-graph retrieval vs GraphRAG-style summaries: when do graph databases, entity linking and text-to-Cypher help, and what are the risks? |
+| B2P07-Q31 | 7 | Multi-hop retrieval strategies: iterative retrieval that interleaves reasoning and search, stopping conditions, and how to avoid drifting off-topic. |
+| B2P07-Q32 | 7 | What are adaptive and self-reflective retrieval (Self-RAG, reflection tokens), and what simpler prompt-based alternatives exist? |
+| B2P07-Q33 | 7 | What is corrective RAG (CRAG)? Explain the retrieval evaluator, the fallback actions, and how production systems approximate it. |
+| B2P07-Q34 | 7 | How do you compress or filter retrieved context (extractive compression, LLM filtering, token budgets), and what is the risk of dropping evidence? |
+| B2P07-Q35 | 7 | How do you answer questions over very long documents or many documents (hierarchical retrieval, map-reduce, iterative refinement)? |
+| B2P07-Q36 | 7 | When is RAG unnecessary because the corpus fits in the context window? Work through the cost and quality trade-off at scale. |
+| B2P07-Q37 | 7 | Build a failure taxonomy for an advanced RAG pipeline: where does each component help, where can it hurt, and how do you attribute an error to a stage? |
+| B2P07-Q38 | 7 | What is the latency and cost budget of an advanced RAG pipeline (rewriting, multiple searches, reranking, contextualisation, agent loops), and how do you control it? |
+| B2P07-Q39 | 7 | How do you keep citations and provenance intact across rewriting, fusion, reranking and compression steps? |
+| B2P07-Q40 | 7 | How do you combine retrieval with structured data (SQL or API tools, tables) in a RAG assistant, and how do you choose between them? |
+| B2P07-Q41 | 7 | Multimodal RAG basics: how do you retrieve over images, charts and slides (captions vs multimodal embeddings), and what changes in evaluation? |
+| B2P07-Q42 | 7 | AI code review: this LLM-written hybrid-plus-rerank pipeline has bugs (RRF rank off by one, mixed score scales, reranking the wrong list, duplicates after fusion, dropping the original query). Find and fix them. |
+| B2P07-Q43 | 7 | Design question: an enterprise assistant that must answer multi-hop analytical questions over many documents, with an agent loop, budgets and fallbacks. |
+| B2P07-Q44 | 7 | Design question: global sensemaking over a corpus of about a million tokens (GraphRAG vs map-reduce vs RAPTOR vs long context). Choose and defend. |
+| B2P07-Q45 | 7 | When does reranking hurt? Discuss calibration, domain shift, truncation, flipping a correct top-1, and how you detect it. |
+| B2P07-Q46 | 7 | How do you evaluate GraphRAG against vector RAG fairly (question types, comprehensiveness and diversity judging, judge bias, cost)? |
+| B2P07-Q47 | 7 | How do you make agentic RAG safe (tool permissions, injection through multi-hop tool results, budgets, audit)? |
+| B2P07-Q48 | 7 | Design question: a query-understanding layer (router, rewriter, decomposer) with fallbacks, and how you measure each part's value. |
+| B2P07-Q49 | 7 | Are LLM-based retrievers worth their cost compared with a tuned hybrid-plus-rerank stack? How do you decide? |
+| B2P07-Q50 | 7 | Late-interaction storage and latency maths: estimate the index size for 10 million passages with token-level vectors and compare it with single-vector and PQ-compressed options. |
