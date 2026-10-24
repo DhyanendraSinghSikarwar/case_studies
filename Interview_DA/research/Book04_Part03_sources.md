@@ -1,0 +1,36 @@
+# Book 4 Part 3 sources (data modelling: star schema, relationships, cardinality)
+Accessed 2026-10-24. 7 web searches (snippet-level summaries) and 4 page fetches via WebFetch (Microsoft Learn pages and the Weekday article returned page text or a summary; treat the Weekday result as a model summary of the page, not verbatim). Plus internal files. No first-hand 2025-26 Hyderabad/Bengaluru interview report specific to data modelling was found; company attributions below come only from research/interview_processes.md.
+
+| Source | URL | Used for | Type | Recency | Fetch status |
+|---|---|---|---|---|---|
+| Microsoft Learn: Understand star schema and importance for Power BI | https://learn.microsoft.com/power-bi/guidance/star-schema | fact/dimension, grain, snowflake, surrogate keys, role-playing, SCD 1/2, junk, degenerate, factless/bridge | official docs | updated 2026-04 | fetched |
+| Microsoft Learn: Model relationships in Power BI Desktop | https://learn.microsoft.com/en-us/power-bi/transform-model/desktop-relationships-understand | cardinality, cross-filter table, active/inactive, regular vs limited, blank virtual row, assume referential integrity, CROSSFILTER, TREATAS, composite, ambiguity, data types | official docs | updated 2026-10 | fetched |
+| Microsoft Learn: Many-to-many relationship guidance | https://learn.microsoft.com/en-us/power-bi/guidance/relationships-many-to-many | bridge table, two facts, higher-grain targets | official docs | updated 2026-01 | fetched |
+| Weekday: 50 Power BI interview questions 2026 | https://www.weekday.works/post/power-bi-interview-questions | which modelling questions appear in a 2026 India-oriented list (star schema, fact vs dim, relationship types, date table, role-playing, bi-directional, many-to-many, same total in every row) | India job platform | 2026 | fetched (summary) |
+| Microsoft Learn: Active vs inactive relationship guidance | https://learn.microsoft.com/en-gb/power-BI/guidance/relationships-active-inactive | USERELATIONSHIP, role-playing | official docs | undated | search snippet only |
+| dax.guide USERELATIONSHIP | https://dax.guide/userelationship/ | measure pattern for ship date | reference | undated | search snippet only |
+| RADACAD: UseRelationship or role-playing dimension | https://radacad.com/userelationship-or-role-playing-dimension-dealing-with-inactive-relationships-in-power-bi/ | role-playing options | blog | undated | search snippet only |
+| lets-code.co.in Power BI interview questions 2026 | https://lets-code.co.in/articles/power-bi-interview-questions | star schema as core topic | prep blog | 2026 | search snippet only |
+| goodspace.ai Power BI interview questions | https://goodspace.ai/interview-questions/power-bi | star vs snowflake | prep site | undated | search snippet only |
+| climbtheladder: Power BI data modeling questions | https://climbtheladder.com/power-bi-data-modeling-interview-questions/ | modelling question variety | prep site | undated | search snippet only |
+| Scribd "Power BI Interview Questions Deloitte" | https://www.scribd.com/document/785504555/Power-BI-Interview-Questions-Deloitte | many-to-many risks listed as a Deloitte-tagged set | user upload | undated | search snippet only; attribution to Deloitte unverified |
+| Dataford many-to-many; Qandle Power BI questions; Acuity Training many-to-many | https://dataford.io/questions/how-do-you-handle-many-to-many-relationships-in-power-bi ; https://www.qandle.com/interview-questions/power-bi ; https://www.acuitytraining.co.uk/news-tips/power-bi-relationships-explained-and-why-many-to-many-is-almost-always-wrong/ | many-to-many, bridge table, bi-directional | prep/training | undated | search snippet only |
+| Internal: research/interview_processes.md | n/a | Deloitte Power BI round (RLS, optimisation, SUM vs SUMX), Cognizant 2022 (modelling), Wipro (DAX), Flipkart/Amazon BIE/Wipro star-schema mentions (Section 12a) | internal summary of Glassdoor/GfG | 2025-26 | read |
+| Internal: research/jd_sample_*.md, market_skills_2026.md | n/a | Power BI 32.5% of 0-2 yr JDs (40-person sample), DAX 7.5%; no JD names star schema explicitly | internal | 2026 | grep only |
+
+Blocked / not reachable: Glassdoor, AmbitionBox, LinkedIn, Reddit were not fetched (known blocked; web search did not surface first-hand modelling reports).
+
+Star reasoning
+- Three stars: star schema, fact vs dimension, relationship types, cardinality, cross-filter direction, bi-directional, many-to-many, date table all appear in the Weekday 2026 list and in every prep guide seen; interview_processes.md lists data modelling among reported topics and flags star schema at Flipkart, Amazon BIE and Wipro. "Same total in every row" is in the Weekday list and is a classic debugging question.
+- Two stars: role-playing/USERELATIONSHIP (Weekday Q30), active vs inactive, bridge table, blanks, hierarchies, date table creation, Power Query vs DAX placement; frequently asked but secondary.
+- One star: SCD, junk/degenerate/factless, composite models, CROSSFILTER, TREATAS, higher-grain targets. These appear in Microsoft docs and advanced guides, not in any India interview report; they are differentiators for a 0-3 year analyst. Stars are judgement, not measured frequency.
+
+Limitations: sample is guides and docs, not interview transcripts; company-specific claims unverified. Microsoft pages disagree or are unclear on some service-side many-to-many support details, so no answer should assert that without re-checking the live page. Most guides do not state how often questions are asked.
+
+Gap-fills (not seen in any source, added from standard practice or HR relevance): 11 of 60: primary/foreign key; HR data model scenario; semantic model (formerly dataset); sort month by month number; flat Excel to star schema; validating model numbers; naming and documentation habits; tool and Mac limitation; unmatched keys (Unknown member); shared semantic model; employee-manager hierarchy. The Mac limitation (Power BI Desktop is Windows only) should be verified against Microsoft Learn when answers are written.
+
+## Gap-fills added after de-duplication
+Three questions added to reach the 60 target. None was seen as a question in any source listed above; all are standard practice. Topic facts (multi-column keys need a combined key column, relationship line symbols, Assume referential integrity) are covered on the Microsoft Learn relationships page already listed (desktop-relationships-understand), which was fetched; no new pages were fetched for this step.
+- Two-column match (Employee ID plus Month): common practical modelling task; relationships take a single column on each side, so a concatenated or composite key column is needed. Star 2.
+- What the 1, asterisk, arrow and line style mean in Model view: basic reading skill asked in live screen-share tasks; complements Q17. Star 2.
+- Assume Referential Integrity: documented relationship option, mainly DirectQuery performance; differentiator, not in India interview reports seen. Star 1.

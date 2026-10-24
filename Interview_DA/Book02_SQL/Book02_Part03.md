@@ -112,6 +112,14 @@ UNION ALL SELECT 'CROSS', COUNT(*) FROM employees e CROSS JOIN departments d;
 | FULL | 7 |
 | CROSS | 24 |
 
+**pandas equivalent:**
+```python
+# emp, dept = the two tables as DataFrames (Sana's dept_id is NaN)
+counts = [len(emp.merge(dept, on='dept_id', how=h)) for h in ['inner', 'left', 'right', 'outer']]
+counts.append(len(emp.merge(dept, how='cross')))
+result = pd.DataFrame({'join_type': ['INNER', 'LEFT', 'RIGHT', 'FULL', 'CROSS'], 'rows_returned': counts})
+```
+
 **Edge cases:** Dialects: MySQL has no FULL OUTER JOIN (use LEFT UNION RIGHT, see Q41). SQLite supports RIGHT/FULL from 3.39. PostgreSQL and SQL Server support all.
 **Likely follow-ups:** 1) Is the OUTER keyword required? No, LEFT JOIN = LEFT OUTER JOIN. 2) Is SELF JOIN a keyword? No.
 **Common mistakes:** Calling SELF JOIN a separate syntax, or thinking a CROSS JOIN needs ON.
@@ -334,6 +342,16 @@ FROM customers c LEFT JOIN orders o ON c.customer_id = o.customer_id;
 | INNER | 4 | 3 |
 | LEFT | 6 | 5 |
 
+**pandas equivalent:**
+```python
+# customers, orders = the two tables as DataFrames
+rows = []
+for label, how in [('INNER', 'inner'), ('LEFT', 'left')]:
+    m = customers.merge(orders, on='customer_id', how=how)
+    rows.append((label, len(m), m['customer_id'].nunique()))
+result = pd.DataFrame(rows, columns=['join_type', 'rows_returned', 'customers_seen'])
+```
+
 **Edge cases:** Duplicate keys on the right inflate both results. Orders with NULL customer_id appear in neither.
 **Likely follow-ups:** 1) Can LEFT return fewer rows than INNER? Never. 2) How to turn LEFT into INNER by accident? Add a WHERE that needs a right-side value.
 **Common mistakes:** Using INNER JOIN for 'customer activity' reports and silently losing inactive customers.
@@ -387,6 +405,12 @@ ORDER BY d.dept_id, e.emp_id;
 | Finance | Kiran |
 | Legal | NULL |
 
+**pandas equivalent:**
+```python
+# pandas has a how='right' too, but the swapped LEFT merge reads better and gives the same rows
+result = departments.merge(employees, on='dept_id', how='left')[['dept_name', 'name']]
+```
+
 **Edge cases:** Verified here: the RIGHT JOIN and the swapped LEFT JOIN return identical rows. MySQL, PostgreSQL, SQL Server support RIGHT JOIN; SQLite only from 3.39. Equivalent LEFT form (also run):
 ```sql
 SELECT d.dept_name, e.name
@@ -412,6 +436,8 @@ ORDER BY d.dept_id, e.emp_id;
 CREATE TABLE dept_demo(dept_id INT PRIMARY KEY, dept_name TEXT);
 CREATE TABLE emp_demo(emp_id INT PRIMARY KEY, name TEXT,
                       dept_id INT REFERENCES dept_demo(dept_id));  -- foreign key
+INSERT INTO dept_demo VALUES (10, 'HR'), (20, 'Analytics');
+INSERT INTO emp_demo VALUES (1, 'Asha', 10), (2, 'Ravi', 20), (3, 'Meera', 20);
 SELECT e.name, d.dept_name
 FROM emp_demo e JOIN dept_demo d ON e.dept_id = d.dept_id
 ORDER BY e.emp_id;
@@ -423,6 +449,12 @@ ORDER BY e.emp_id;
 | Asha | HR |
 | Ravi | Analytics |
 | Meera | Analytics |
+
+**pandas equivalent:**
+```python
+# dept_demo, emp_demo = the two demo tables as DataFrames
+result = emp_demo.merge(dept_demo, on='dept_id')[['name', 'dept_name']].sort_values('name', key=lambda s: s.map({'Asha': 1, 'Ravi': 2, 'Meera': 3}))
+```
 
 **Edge cases:** A join works without a declared FK. In SQLite, FK enforcement needs PRAGMA foreign_keys=ON. An FK column may be NULL (an employee with no department).
 **Likely follow-ups:** 1) Can a join key be composite? Yes, several columns (Q45). 2) Does a join need a FK constraint? No.
@@ -556,6 +588,14 @@ SELECT COUNT(*) FROM a INNER JOIN b ON a.id = b.id;
 | Every row has the same key (1) | 50 | 50 |
 
 I built three tiny test cases and ran them; the middle row (unique B keys) shows INNER can also land in between.
+
+**pandas equivalent:**
+```python
+def counts(a_keys, b_keys):
+    a, b = pd.DataFrame({'id': a_keys}), pd.DataFrame({'id': b_keys})
+    return len(a.merge(b, on='id', how='left')), len(a.merge(b, on='id', how='inner'))
+counts(range(1, 11), range(101, 106)), counts(range(1, 11), range(1, 6)), counts([1] * 10, [1] * 5)   # (10, 0), (10, 5), (50, 50)
+```
 
 **Edge cases:** NULL keys never match, so they count as unmatched. If A is empty, both joins return 0.
 **Likely follow-ups:** 1) And FULL JOIN? Minimum 10 (A rows) and with no match at all it is 10 + 5 = 15; maximum is 50 when everything matches. 2) CROSS JOIN? Always exactly 50.
@@ -1120,7 +1160,7 @@ result = j[j['salary'] > j['salary_m']][['name','salary','name_m','salary_m']]
 **Common mistakes:** Comparing e.salary with e.salary, or using a LEFT JOIN, where the NULL manager salary row gets filtered out anyway.
 
 ### Q21 ⭐⭐⭐ 🟡 Write a query to count orders per customer using JOIN plus GROUP BY.
-**Asked at:** commonly asked (no company-specific report found) (join + GROUP BY is a staple of the SQL round at service MNCs, GCCs and analytics firms)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Can you combine two tables and then summarise, and do you know LEFT JOIN keeps customers with zero orders?
 **Say this in the interview:** "I join customers to orders on customer_id, group by customer, and count order_id. I use a LEFT JOIN so customers with no orders still show up with a zero."
 **Explain simply:**
@@ -1354,7 +1394,7 @@ for label, how in [("inner", "inner"), ("left", "left"), ("right", "right"), ("f
 **Common mistakes:** Forgetting the NULL padding; thinking FULL = LEFT + RIGHT (that double counts the matched rows); losing the id of B-only rows by selecting a.id.
 
 ### Q24 ⭐⭐⭐ 🟡 What is the difference between JOIN and UNION?
-**Asked at:** inner vs outer joins and set operations came up in a Deloitte (consulting) Gurgaon report, 2025 (single candidate report); JOIN vs UNION itself is commonly asked
+**Asked at:** inner vs outer joins came up in a Deloitte (consulting) Gurgaon report, 2025 (single candidate report); JOIN vs UNION itself is commonly asked (no company-specific report found)
 **What the interviewer is checking:** Do you know JOIN adds columns side by side and UNION stacks rows on top of each other?
 **Say this in the interview:** "JOIN widens a table by matching rows on a key. UNION lengthens it by stacking two result sets with the same columns, and removes duplicates; UNION ALL keeps them."
 **Explain simply:**
@@ -1455,7 +1495,7 @@ results = {
 **Common mistakes:** Using UNION when UNION ALL was meant (quietly deletes legitimate duplicate rows); mismatched column order in the two SELECTs; calling UNION a kind of join.
 
 ### Q25 ⭐⭐⭐ 🔴 How do you find the second/third highest salary or top earner per department using a join (without window functions)?
-**Asked at:** commonly asked (no company-specific report found) (Nth-highest salary is a classic; the no-window-function version is common in older-style and screening rounds)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Can you solve ranking problems with self-joins, aggregates and subqueries, and handle ties?
 **Say this in the interview:** "For the top earner I join employees to each department's MAX salary. For the Nth highest I self-join and count how many distinct salaries are higher; N-1 means it is the Nth."
 **Explain simply:**
@@ -1774,7 +1814,7 @@ results["non_equi"] = x[["name", "salary", "band"]].sort_values("name")
 **SQL:**
 ```sql
 -- forgot_on_count
-SELECT COUNT(*) AS rows_returned FROM employees e JOIN departments d;   -- SQLite/MySQL accept this; PostgreSQL/SQL Server error
+SELECT COUNT(*) AS rows_returned FROM employees e JOIN departments d;   -- SQLite (run here) and MySQL accept this; PostgreSQL/SQL Server error (from memory)
 
 -- correct_count
 SELECT COUNT(*) AS rows_returned FROM employees e JOIN departments d ON d.dept_id = e.dept_id;
@@ -1895,7 +1935,7 @@ results = {
 - `ON a.dept_id = b.dept_id` is fully flexible: different names, extra conditions, non-equi.
 - `USING (dept_id)` is shorter but only for equality on a same-named column.
 - With `SELECT *`, USING gives one `dept_id` column; ON gives two.
-- SQL Server has no USING. In PostgreSQL after USING, write plain `dept_id` (qualifying it is not allowed in some versions).
+- SQL Server has no USING. After USING, write the plain `dept_id`; Oracle rejects a qualified `d.dept_id` there, while PostgreSQL and MySQL accept it (from memory, not run here).
 **Example:** Employee and department tables both have dept_id; USING gives a cleaner report with a single dept_id column.
 **Sample data:**
 
@@ -2309,7 +2349,7 @@ result = (employees.merge(dept_history, on="emp_id", how="left")
 **Common mistakes:** Expecting a join to return one row per employee; leaving approximate-match on in VLOOKUP; ignoring duplicates in the lookup table.
 
 ### Q37 ⭐⭐ 🟢 How do you do the equivalent of a join in pandas (merge)? Map inner/left/right/outer to the how= options.
-**Asked at:** commonly asked (no company-specific report found) (pandas merge is a standard follow-up where SQL and Python are both tested)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Can you translate SQL join types to pandas `merge(how=...)` and know `on`, `left_on`, `right_on`, `suffixes`, `indicator`?
 **Say this in the interview:** "pandas.merge is the join: how='inner', 'left', 'right' or 'outer' map to INNER, LEFT, RIGHT and FULL OUTER JOIN. I use on= for same-named keys and left_on/right_on for different names."
 **Explain simply:**
@@ -2408,7 +2448,7 @@ for label, how in [("inner", "inner"), ("left", "left"), ("right", "right"), ("f
 **Common mistakes:** Forgetting `on` and getting an unintended merge on all shared columns; not noticing NaN keys match; expecting row order to be preserved after a join.
 
 ### Q38 ⭐⭐ 🟡 Write a query to find records in table A that have no match in table B (anti join) using LEFT JOIN ... IS NULL.
-**Asked at:** commonly asked (no company-specific report found) (anti joins such as customers/employees with no activity are a frequent SQL-screen pattern)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Do you know to LEFT JOIN and keep rows where the right side's key is NULL?
 **Say this in the interview:** "I LEFT JOIN A to B, then filter WHERE b.key IS NULL. Those are the A rows that found no partner in B."
 **Explain simply:**
@@ -2465,7 +2505,7 @@ result = m[m["_merge"] == "left_only"][["emp_id", "name"]].sort_values("emp_id")
 **Common mistakes:** Checking `l.emp_id IS NULL` is fine, but checking a nullable data column is not; putting the right-table condition in WHERE when it belongs in ON; using INNER JOIN.
 
 ### Q39 ⭐⭐ 🟡 Compare three ways to find non-matching rows: LEFT JOIN IS NULL, NOT IN, NOT EXISTS. Which is safest with NULLs?
-**Asked at:** commonly asked (no company-specific report found) (the NOT IN with NULL trap is a classic trick question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Do you know NOT IN returns nothing when the subquery contains a NULL, while NOT EXISTS and LEFT JOIN are NULL-safe?
 **Say this in the interview:** "All three find rows with no match, but NOT IN breaks if the subquery returns even one NULL, because `x NOT IN (1, NULL)` is never true. NOT EXISTS and LEFT JOIN IS NULL are safe, and NOT EXISTS is my default."
 **Explain simply:**
@@ -3531,6 +3571,8 @@ ORDER BY t.sale_date;
 | 0103 | 38000 |
 | E104 | 30000 |
 
+(Column types matter here: `employees.emp_no` is INTEGER and `payroll.emp_no` is TEXT, so the stray space and zero are real characters. Run in SQLite 3.45.1.)
+
 **SQL:** naive join (what the data does as-is)
 
 ```sql
@@ -4232,6 +4274,7 @@ ORDER BY 2, 1;
 **Example:** Order 2 is 200 with refunds 50 and 30. Naive join counts 200 twice (400). C1's true net is 100 + 200 - 80 = 220.
 **Sample data:**
 `orders`
+
 | order_id | customer_id | amount |
 |---|---|---|
 | 1 | C1 | 100 |
@@ -4241,6 +4284,7 @@ ORDER BY 2, 1;
 | 5 | C2 | 50 |
 
 `returns` (order 2 was returned in two parts)
+
 | return_id | order_id | refund_amount |
 |---|---|---|
 | 1 | 2 | 50 |
@@ -4264,6 +4308,7 @@ ORDER BY o.customer_id;
 ```
 
 Wrong version (join first, then SUM) gives this, which overstates C1's gross sales because order 2 appears twice after the join:
+
 | customer_id | gross_sales | refunds | net_sales |
 |---|---|---|---|
 | C1 | 500 | 80 | 420 |
@@ -4271,6 +4316,7 @@ Wrong version (join first, then SUM) gives this, which overstates C1's gross sal
 | C3 | 80 | 0 | 80 |
 
 **Output:**
+
 | customer_id | gross_sales | refunds | net_sales |
 |---|---|---|---|
 | C1 | 300 | 80 | 220 |
@@ -4306,6 +4352,7 @@ result = (m.groupby('customer_id', as_index=False)
 **Example:** Of 5 employees, 2 took leave (Asha twice, Chitra once). Semi gives 2 names, anti gives 3.
 **Sample data:**
 `employees`
+
 | emp_id | name |
 |---|---|
 | 1 | Asha |
@@ -4315,6 +4362,7 @@ result = (m.groupby('customer_id', as_index=False)
 | 5 | Esha |
 
 `leaves` (Asha has two)
+
 | leave_id | emp_id | leave_date |
 |---|---|---|
 | 1 | 1 | 2025-01-05 |
@@ -4334,6 +4382,7 @@ ORDER BY 1 DESC, 2;
 ```
 
 **Output:**
+
 | kind | name |
 |---|---|
 | semi: has leave | Asha |
@@ -4352,6 +4401,7 @@ result = (pd.concat([semi, anti])[['kind','name']]
 ```
 
 Why not a plain INNER JOIN for the semi case? Asha would show twice:
+
 | name |
 |---|
 | Asha |
@@ -4376,6 +4426,7 @@ NULL trap: after inserting one leave row with `emp_id = NULL`, `WHERE emp_id NOT
 **Example:** HR version: employees x leave records. Who took leave = (a); who never took leave = (b); every employee x every month grid = (c).
 **Sample data:**
 `customers`
+
 | cust_id | name |
 |---|---|
 | 1 | Asha |
@@ -4383,6 +4434,7 @@ NULL trap: after inserting one leave row with `emp_id = NULL`, `WHERE emp_id NOT
 | 3 | Chitra |
 
 `orders`
+
 | order_id | cust_id | amount |
 |---|---|---|
 | 10 | 1 | 500 |
@@ -4403,6 +4455,7 @@ FROM customers c CROSS JOIN orders o;
 ```
 
 **Output:**
+
 | need | rows_returned |
 |---|---|
 | (a) customers with their orders - INNER JOIN | 3 |
@@ -4438,6 +4491,7 @@ result = pd.DataFrame({'need': ['(a) customers with their orders - INNER JOIN',
 **Example:** Employees and departments both have `id` and `name`; after aliasing you read emp_name = Asha, dept_name = HR, not two columns called name.
 **Sample data:**
 `employees`
+
 | id | name | dept_id |
 |---|---|---|
 | 1 | Asha | 10 |
@@ -4445,6 +4499,7 @@ result = pd.DataFrame({'need': ['(a) customers with their orders - INNER JOIN',
 | 3 | Chitra | 10 |
 
 `departments`
+
 | id | name |
 |---|---|
 | 10 | HR |
@@ -4463,6 +4518,7 @@ ORDER BY e.id;
 
 Column names returned by `SELECT *` on the same join: `['id', 'name', 'dept_id', 'id', 'name']` (id and name repeat).
 **Output:**
+
 | emp_id | emp_name | dept_id | dept_name |
 |---|---|---|---|
 | 1 | Asha | 10 | HR |
@@ -4493,7 +4549,7 @@ result = emp.merge(dept, on='dept_id')[['emp_id','emp_name','dept_id','dept_name
 - You do not choose the algorithm; the optimizer (the part of the database that plans the query) does, using table sizes and statistics. SQLite only does nested loops; PostgreSQL, SQL Server, MySQL 8 and DuckDB also use hash joins; PostgreSQL and SQL Server use merge joins (not run here).
 - An index on the join column lets the inner side of a nested loop do a SEARCH (seek) instead of a SCAN (read everything).
 **Example:** 40 employees x 3 departments: without an index, for each department the engine reads all 40 employees (up to 120 comparisons). With an index on employees.dept_id it jumps straight to that department's employees. For 1 million x 10,000 rows the gap is huge.
-**SQL (small runnable demo, SQLite 3.49, `PRAGMA automatic_index=OFF`):**
+**SQL (small runnable demo, SQLite 3.45.1, `PRAGMA automatic_index=OFF`):**
 ```sql
 EXPLAIN QUERY PLAN
 SELECT e.name, d.dept_name FROM employees e JOIN departments d ON d.dept_id = e.dept_id;
@@ -4545,8 +4601,8 @@ SCAN d
 ```
 After indexes:
 ```
-SEARCH d USING INDEX ix_dept_id (dept_id=?)
 SEARCH e USING INDEX ix_emp_dept (dept_id=?)
+SEARCH d USING INDEX ix_dept_id (dept_id=?)
 ```
 **Edge cases:** NULL keys drop out of equality joins. Duplicate keys make the join result larger than either table. Not run here: PostgreSQL `EXPLAIN ANALYZE` and SQL Server actual-plan output, which show real timings.
 **Likely follow-ups:**
@@ -4566,6 +4622,7 @@ SEARCH e USING INDEX ix_emp_dept (dept_id=?)
 **Example:** HR: show the two highest-paid employees in each department; Legal has nobody, so LEFT keeps it with NULLs.
 **Sample data:**
 `departments`
+
 | dept_id | dept_name |
 |---|---|
 | 10 | HR |
@@ -4573,6 +4630,7 @@ SEARCH e USING INDEX ix_emp_dept (dept_id=?)
 | 30 | Legal |
 
 `employees`
+
 | emp_id | emp_name | dept_id | salary |
 |---|---|---|---|
 | 1 | Asha | 10 | 60000 |
@@ -4581,7 +4639,7 @@ SEARCH e USING INDEX ix_emp_dept (dept_id=?)
 | 4 | Dev | 20 | 90000 |
 | 5 | Esha | 20 | 81000 |
 
-**SQL (PostgreSQL / DuckDB / MySQL 8.0.14+ syntax; run here in DuckDB 1.5):**
+**SQL (PostgreSQL / DuckDB / MySQL 8.0.14+ syntax; not run here, SQLite has no LATERAL; result checked by hand and with the pandas version below):**
 ```sql
 SELECT d.dept_name, t.emp_name, t.salary
 FROM departments d
@@ -4595,8 +4653,9 @@ LEFT JOIN LATERAL (
 ORDER BY d.dept_name, t.salary DESC;
 ```
 
-SQL Server / Oracle equivalent (not run here): `FROM departments d OUTER APPLY (SELECT TOP 2 e.emp_name, e.salary FROM employees e WHERE e.dept_id = d.dept_id ORDER BY e.salary DESC) t` (use `CROSS APPLY` to drop departments with no rows).
+SQL Server equivalent (not run here): `FROM departments d OUTER APPLY (SELECT TOP 2 e.emp_name, e.salary FROM employees e WHERE e.dept_id = d.dept_id ORDER BY e.salary DESC) t` (use `CROSS APPLY` to drop departments with no rows). Oracle 12c+ writes the inner limit as `FETCH FIRST 2 ROWS ONLY`.
 **Output:**
+
 | dept_name | emp_name | salary |
 |---|---|---|
 | Finance | Dev | 90000 |
@@ -4630,6 +4689,7 @@ result = (departments.merge(top2, on='dept_id', how='left')[['dept_name','emp_na
 **Example:** Attendance dashboard: Ben took no leave at all, yet the report must still show Ben with 0 days in Jan, Feb and Mar.
 **Sample data:**
 `employees`
+
 | emp_id | name |
 |---|---|
 | 1 | Asha |
@@ -4637,6 +4697,7 @@ result = (departments.merge(top2, on='dept_id', how='left')[['dept_name','emp_na
 | 3 | Chitra |
 
 `leave_taken` (only months with leave are stored)
+
 | emp_id | month | days |
 |---|---|---|
 | 1 | 2025-01 | 2 |
@@ -4655,6 +4716,7 @@ ORDER BY e.name, m.month;
 ```
 
 **Output:**
+
 | name | month | leave_days |
 |---|---|---|
 | Asha | 2025-01 | 2 |
@@ -4694,6 +4756,7 @@ result = m[['name','month','leave_days']].sort_values(['name','month'])
 **Example:** Daily headcount of employees present: a holiday with no rows should show 0, not vanish from the chart. Here 3, 4 and 6 March show 0 revenue.
 **Sample data:**
 `orders` (no sales on 3, 4 and 6 March)
+
 | order_id | order_date | amount |
 |---|---|---|
 | 1 | 2025-03-01 | 500 |
@@ -4719,6 +4782,7 @@ ORDER BY s.d;
 
 Other dialects (not run here): PostgreSQL `generate_series('2025-03-01'::date, '2025-03-07', interval '1 day')`; DuckDB `range(DATE '2025-03-01', DATE '2025-03-08', INTERVAL 1 DAY)`; SQL Server and MySQL 8 use the same recursive CTE with `DATEADD(day,1,d)` / `DATE_ADD(d, INTERVAL 1 DAY)`. Many warehouses keep a permanent `calendar` table instead.
 **Output:**
+
 | sale_date | revenue |
 |---|---|
 | 2025-03-01 | 800 |
@@ -4775,7 +4839,7 @@ SCAN p USING COVERING INDEX ix_pay_email
 Same query after `CREATE INDEX ix_pay_lower ON payroll(LOWER(email))`:
 ```
 SCAN h
-SEARCH p USING COVERING INDEX ix_pay_lower (<expr>=?)
+SEARCH p USING INDEX ix_pay_lower (<expr>=?)
 ```
 The function-wrapped join matches 200 of 200 rows here (the emails differ only in case).
 **Edge cases:** NULL emails never match either way. Trailing spaces also break matches, so TRIM at load time too. Duplicate emails after lower-casing (User1@ and user1@) will create duplicate matches.
@@ -4796,6 +4860,7 @@ The function-wrapped join matches 200 of 200 rows here (the emails differ only i
 **Example:** Org chart with 6 people: Chitra reports to Asha, Asha to Ravi, so Chitra's manager's manager is Ravi.
 **Sample data:**
 `employees` (manager_id points to another row's emp_id)
+
 | emp_id | name | manager_id |
 |---|---|---|
 | 1 | Meera (CEO) | NULL |
@@ -4817,6 +4882,7 @@ ORDER BY e.emp_id;
 ```
 
 **Output:**
+
 | employee | manager | managers_manager |
 |---|---|---|
 | Meera (CEO) | NULL | NULL |
@@ -4854,6 +4920,7 @@ result = r.rename(columns={'name':'employee'})[['employee','manager','managers_m
 **Example:** Top 3 selling products per category for the catalog page; Laptops has only 3 products so all appear; Phones shows 4 because of the three-way tie.
 **Sample data:**
 `products` (P2, P3 and P4 tie at 700)
+
 | product_id | category | product_name | revenue |
 |---|---|---|---|
 | 1 | Phones | P1 | 900 |
@@ -4878,6 +4945,7 @@ ORDER BY p.category, p.revenue DESC, p.product_name;
 ```
 
 **Output:**
+
 | category | product_name | revenue |
 |---|---|---|
 | Laptops | L1 | 1200 |
@@ -4915,6 +4983,7 @@ result = (r[r['beaten_by'] < 3][['category','product_name','revenue']]
 **Example:** Payroll source has 5 employees, the warehouse 5: Chitra is missing, Farah is extra, Ben's salary differs (60,000 vs 62,000), Dev's NULL vs 40,000 differs, and Esha is spelled Isha.
 **Sample data:**
 `src_emp` (source system)
+
 | emp_id | name | salary |
 |---|---|---|
 | 1 | Asha | 50000 |
@@ -4924,6 +4993,7 @@ result = (r[r['beaten_by'] < 3][['category','product_name','revenue']]
 | 5 | Esha | 70000 |
 
 `dw_emp` (warehouse copy)
+
 | emp_id | name | salary |
 |---|---|---|
 | 1 | Asha | 50000 |
@@ -4951,6 +5021,7 @@ ORDER BY 1;
 
 Other dialects (not run here): PostgreSQL `s.salary IS DISTINCT FROM w.salary`; MySQL `NOT (s.salary <=> w.salary)` and FULL JOIN emulated with LEFT JOIN UNION RIGHT JOIN; SQL Server `IS DISTINCT FROM` from 2022, older versions need `(a <> b OR (a IS NULL AND b IS NOT NULL) OR (a IS NOT NULL AND b IS NULL))`.
 **Output:**
+
 | emp_id | status | src_name | dw_name | src_salary | dw_salary |
 |---|---|---|---|---|---|
 | 2 | mismatch | Ben | Ben | 60000 | 62000 |
@@ -4988,6 +5059,7 @@ result = (m[bad].rename(columns={'name_src':'src_name','name_dw':'dw_name','sala
 **Example:** Finance says 1,000; the dashboard says 1,500 after joining order items. Order 2 (200) has 3 items, so it was counted 600.
 **Sample data:**
 `orders`
+
 | order_id | customer_id | amount |
 |---|---|---|
 | 1 | C1 | 100 |
@@ -4996,6 +5068,7 @@ result = (m[bad].rename(columns={'name_src':'src_name','name_dw':'dw_name','sala
 | 4 | C3 | 400 |
 
 `order_items` (many rows per order)
+
 | item_id | order_id | sku |
 |---|---|---|
 | 1 | 1 | A |
@@ -5017,6 +5090,7 @@ JOIN order_items i ON i.order_id = o.order_id;
 ```
 
 **Output (step 1):**
+
 | rows_after_join | distinct_orders | report_revenue | finance_revenue |
 |---|---|---|---|
 | 7 | 4 | 1500 | 1000 |
@@ -5038,6 +5112,7 @@ ORDER BY o.customer_id;
 ```
 
 **Output (step 2):**
+
 | customer_id | revenue | items_sold |
 |---|---|---|
 | C1 | 300 | 5 |
@@ -5072,6 +5147,7 @@ result = (m.groupby('customer_id', as_index=False)
 **Example:** HR report 'all employees with leave type': Ben and Dev never took leave, but version A drops them from the headcount.
 **Sample data:**
 `employees`
+
 | emp_id | name |
 |---|---|
 | 1 | Asha |
@@ -5080,12 +5156,14 @@ result = (m.groupby('customer_id', as_index=False)
 | 4 | Dev |
 
 `leaves`
+
 | leave_id | emp_id | type_id |
 |---|---|---|
 | 1 | 1 | 1 |
 | 2 | 3 | 2 |
 
 `leave_types`
+
 | type_id | type_name |
 |---|---|
 | 1 | Casual |
@@ -5110,12 +5188,14 @@ ORDER BY e.emp_id;
 
 Alternative to C without nested join syntax: `FROM employees e LEFT JOIN leaves l ON ... LEFT JOIN leave_types t ON ...` (all LEFT), or move the leave_types condition into a subquery or CTE.
 **Output (A): employees without leaves are lost**
+
 | name | type_name |
 |---|---|
 | Asha | Casual |
 | Chitra | Sick |
 
 **Output (C, same as all-LEFT): all 4 employees kept**
+
 | name | type_name |
 |---|---|
 | Asha | Casual |
@@ -5132,7 +5212,7 @@ result = employees.merge(lt, on='emp_id', how='left')[['name','type_name']].sort
 a = employees.merge(leaves, on='emp_id', how='left').merge(leave_types, on='type_id', how='inner')[['name','type_name']]
 ```
 
-**Edge cases:** A LEFT JOIN whose right table has duplicates still repeats left rows. If the later join legitimately needs only matched rows (e.g. employees who took leave), the INNER JOIN is what you want. Brackets around joins are not supported in all MySQL versions of older syntax; use a subquery there.
+**Edge cases:** A LEFT JOIN whose right table has duplicates still repeats left rows. If the later join legitimately needs only matched rows (e.g. employees who took leave), the INNER JOIN is what you want. If your database or tool rejects the bracketed join, use a subquery or CTE instead (nested joins: from memory, only SQLite run here).
 **Likely follow-ups:**
 - INNER JOIN then LEFT JOIN, any trouble? No: `employees JOIN departments ... LEFT JOIN leaves` keeps the inner result and adds optional leaves.
 - How do you spot the bug? Compare the row count with the left table's row count.
@@ -5151,6 +5231,7 @@ a = employees.merge(leaves, on='emp_id', how='left').merge(leave_types, on='type
 **Example:** E1 is on Alpha until 31 Mar and Beta from 15 Mar: they overlap for 17 days, so E1 is double-booked. E3's Gamma sits fully inside Beta; that also counts.
 **Sample data:**
 `assignments` (E1's Gamma has no end date yet; E2's two projects touch on 28 Feb)
+
 | assign_id | emp_id | project | start_date | end_date |
 |---|---|---|---|---|
 | 1 | E1 | Alpha | 2025-01-01 | 2025-03-31 |
@@ -5178,6 +5259,7 @@ ORDER BY a.emp_id, a.assign_id, b.assign_id;
 
 Other dialects (not run here): PostgreSQL / MySQL use `GREATEST(a.start_date, b.start_date)` and `LEAST(...)`; SQL Server 2022+ has the same; PostgreSQL also has a built-in `daterange(a.start,a.end,'[]') && daterange(...)` overlap operator.
 **Output:**
+
 | emp_id | project_1 | project_2 | overlap_start | overlap_end |
 |---|---|---|---|---|
 | E1 | Alpha | Beta | 2025-03-15 | 2025-03-31 |
@@ -5210,7 +5292,7 @@ result = (m.rename(columns={'project_1':'project_1','project_2':'project_2'})
 **What the interviewer is checking:** Do you know USING returns one merged key column, and that NULL keys never match, even to each other.
 **Say this in the interview:** "With FULL OUTER JOIN ... USING (emp_id), the database returns a single emp_id column that already takes the value from whichever side has the row, so it behaves like COALESCE(a.emp_id, b.emp_id). With ON, I get two separate key columns, one NULL for unmatched rows, so I wrap them in COALESCE. NULL keys never match each other, so such rows stay separate on both sides."
 **Explain simply:**
-- USING (emp_id) = join on equal emp_id and show the column once. PostgreSQL, SQLite 3.39+ and DuckDB give the merged (non-NULL) value for unmatched rows. In ON, `h.emp_id` and `p.emp_id` are separate columns and one is NULL.
+- USING (emp_id) = join on equal emp_id and show the column once. SQLite 3.39+ (run here) gives the merged (non-NULL) value for unmatched rows; PostgreSQL and DuckDB do the same (from memory, not run here). In ON, `h.emp_id` and `p.emp_id` are separate columns and one is NULL.
 - Handle NULLs in other columns with COALESCE (e.g. salary 0, name 'not in HR'). Do not use `col = NULL`; use IS NULL.
 - A NULL key in either table matches nothing (NULL = NULL is unknown), so Ghost and the 40,000 pay row appear as two separate rows rather than one matched row.
 - To know which side a row came from, test a column that is never NULL in its own table (like a primary key or name) with IS NULL.
@@ -5218,6 +5300,7 @@ result = (m.rename(columns={'project_1':'project_1','project_2':'project_2'})
 **Example:** HR has Asha, Ben; payroll has Ben, 3. Output rows: Asha with no salary, Ben with both, employee 3 with a salary but no name.
 **Sample data:**
 `hr`
+
 | emp_id | name |
 |---|---|
 | 1 | Asha |
@@ -5225,6 +5308,7 @@ result = (m.rename(columns={'project_1':'project_1','project_2':'project_2'})
 | NULL | Ghost |
 
 `pay`
+
 | emp_id | salary |
 |---|---|
 | 2 | 60000 |
@@ -5240,6 +5324,7 @@ ORDER BY emp_id, name;
 ```
 
 **Output:**
+
 | emp_id | name | salary |
 |---|---|---|
 | NULL | NULL | 40000 |
@@ -5268,6 +5353,8 @@ FULL OUTER JOIN pay p ON p.emp_id = h.emp_id
 ORDER BY 1, 2;
 ```
 
+**Output (ON version):**
+
 | emp_id | name | salary | missing_in_hr |
 |---|---|---|---|
 | NULL | Ghost | 0 | 0 |
@@ -5276,7 +5363,7 @@ ORDER BY 1, 2;
 | 2 | Ben | 60000 | 0 |
 | 3 | not in HR | 55000 | 1 |
 
-(Dialect note: USING works in PostgreSQL, MySQL, SQLite and DuckDB, but not in SQL Server; MySQL has no FULL JOIN; Oracle supports both. Only the SQLite and DuckDB behaviour was checked here.)
+(Dialect note: USING works in PostgreSQL, MySQL, SQLite and DuckDB, but not in SQL Server; MySQL has no FULL JOIN; Oracle supports both. Only SQLite 3.45.1 was run here; the other databases are from memory, not run here.)
 **Edge cases:** NULL keys on both sides do not pair up (pandas `merge` does pair NaN keys, a classic difference; code above avoids it). Duplicate keys multiply rows. In some databases ORDER BY on the USING column or qualified `h.emp_id` after USING behaves differently; select the unqualified column.
 **Likely follow-ups:**
 - Which table's value does USING show? The coalesced value: the left one when both exist, else the one that exists (PostgreSQL docs: the key is merged).

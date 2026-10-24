@@ -25,6 +25,7 @@ SELECT emp_name, department FROM Employees ORDER BY emp_id LIMIT 3;
 | Anita Sharma | HR |
 | Arjun Mehta | Sales |
 | Sneha Iyer | HR |
+
 **Edge cases:** `SELECT *` over a view or joined tables can return duplicate column names. Order of columns follows your list, not the table.
 **Likely follow-ups:**
 - Does SELECT change data? No, only INSERT/UPDATE/DELETE do.
@@ -51,6 +52,7 @@ SELECT emp_name, department FROM Employees ORDER BY emp_id LIMIT 3;
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, department
@@ -68,6 +70,7 @@ FROM Employees;
 | Amit Kumar | IT |
 | Kavya Reddy | Finance |
 | Vikram Singh | Sales |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -101,6 +104,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, salary
@@ -116,6 +120,7 @@ WHERE salary > 50000;
 | Rahul Verma | 55000 |
 | Priya Nair | 90000 |
 | Amit Kumar | 65000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -149,6 +154,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, department, salary
@@ -163,6 +169,7 @@ WHERE (department = 'Sales' OR department = 'HR')
 | Anita Sharma | HR | 90000 |
 | Arjun Mehta | Sales | 72000 |
 | Rahul Verma | Sales | 55000 |
+
 **Wrong version (no brackets) - note Vikram 38,000 sneaks in:**
 ```sql
 SELECT emp_name, department, salary
@@ -176,6 +183,7 @@ WHERE department = 'Sales' OR department = 'HR' AND salary > 50000;
 | Arjun Mehta | Sales | 72000 |
 | Rahul Verma | Sales | 55000 |
 | Vikram Singh | Sales | 38000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -210,6 +218,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, salary
@@ -228,6 +237,7 @@ ORDER BY salary DESC, emp_id;
 | Kavya Reddy | 50000 |
 | Sneha Iyer | 48000 |
 | Vikram Singh | 38000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -261,6 +271,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT department
@@ -274,6 +285,7 @@ FROM Employees;
 | Sales |
 | IT |
 | Finance |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -306,6 +318,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, salary
@@ -329,6 +342,7 @@ SELECT emp_name, salary FROM Employees ORDER BY salary DESC, emp_id FETCH FIRST 
 | Arjun Mehta | 72000 |
 | Amit Kumar | 65000 |
 | Rahul Verma | 55000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -362,6 +376,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_id, emp_name
@@ -373,6 +388,7 @@ WHERE manager_id IS NULL;
 | emp_id | emp_name |
 |---|---|
 | 1 | Anita Sharma |
+
 **Broken version: = NULL returns nothing:**
 ```sql
 SELECT emp_id, emp_name FROM Employees WHERE manager_id = NULL;
@@ -381,6 +397,7 @@ SELECT emp_id, emp_name FROM Employees WHERE manager_id = NULL;
 | emp_id | emp_name |
 |---|---|
 | *(no rows)* | |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -414,6 +431,7 @@ SELECT NULL = NULL AS null_eq_null,
 | null_eq_null | null_is_null | zero_eq_null | empty_is_null |
 |---|---|---|---|
 | NULL | 1 | NULL | 0 |
+
 **Edge cases:** SQLite shows true as 1 and false as 0; NULL stays NULL (unknown). Oracle treats '' as NULL, other databases do not. NULL + 5 is NULL.
 **Likely follow-ups:**
 - COUNT(*) vs COUNT(col)? The latter skips NULLs.
@@ -442,6 +460,7 @@ SELECT NULL = NULL AS null_eq_null,
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name
@@ -455,6 +474,7 @@ WHERE emp_name LIKE 'A%';
 | Anita Sharma |
 | Arjun Mehta |
 | Amit Kumar |
+
 **Underscore demo - A, any one letter, then i:**
 ```sql
 SELECT emp_name FROM Employees WHERE emp_name LIKE 'A_i%';
@@ -464,6 +484,7 @@ SELECT emp_name FROM Employees WHERE emp_name LIKE 'A_i%';
 |---|
 | Anita Sharma |
 | Amit Kumar |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -497,6 +518,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, hire_date
@@ -510,6 +532,7 @@ WHERE hire_date BETWEEN '2023-01-01' AND '2023-12-31';
 | Rahul Verma | 2023-02-14 |
 | Priya Nair | 2023-08-01 |
 | Amit Kumar | 2023-12-31 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -545,6 +568,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, city
@@ -562,6 +586,7 @@ WHERE city IN ('Hyderabad', 'Bengaluru', 'Pune');
 | Priya Nair | Bengaluru |
 | Amit Kumar | Pune |
 | Kavya Reddy | Hyderabad |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -597,6 +622,7 @@ LIMIT 2;                  -- 5. LIMIT (SELECT is step 3)
 |---|---|
 | Anita Sharma | 1080000 |
 | Priya Nair | 1080000 |
+
 **Edge cases:** Real optimisers may reorder internally, but results behave as if this order holds. Window functions run after WHERE/GROUP BY/HAVING, before ORDER BY.
 **Likely follow-ups:**
 - Where do aggregates filter? HAVING runs after GROUP BY.
@@ -604,14 +630,14 @@ LIMIT 2;                  -- 5. LIMIT (SELECT is step 3)
 **Common mistakes:** Assuming SELECT runs first, or putting LIMIT before ORDER BY mentally.
 
 ### Q14 ⭐⭐⭐ 🟡 Why can you use a column alias in ORDER BY but not in WHERE?
-**Asked at:** Service MNC and analytics-firm interviews (execution-order follow-up; no company-specific report found).
+**Asked at:** commonly asked as an execution-order follow-up (a Cognizant report mentions SQL order of execution; no report found for this exact question).
 **What the interviewer is checking:** Applying the execution order to a real error.
 **Say this in the interview:** WHERE runs before SELECT, so the alias does not exist yet. ORDER BY runs after SELECT, so it knows the alias.
 **Explain simply:**
 - The alias is born in the SELECT step.
 - WHERE (step 2) is evaluated earlier, so strict databases (PostgreSQL, SQL Server, Oracle) say 'column does not exist'.
 - Fix: repeat the expression in WHERE, or wrap the query in a subquery or CTE (a named temporary result) and filter outside.
-- Caveat: SQLite, MySQL (partly) and DuckDB are lenient and allow some alias use in WHERE; do not rely on it.
+- Caveat: SQLite (checked here) is lenient and accepts the alias in WHERE; some other engines (e.g. DuckDB, from memory / not run here) do too. MySQL allows aliases in GROUP BY, HAVING and ORDER BY but not in WHERE (from memory). Do not rely on it.
 **Example:** annual_pay = salary x 12. To keep annual_pay above 700,000 you cannot write that alias in WHERE on PostgreSQL.
 **SQL:**
 ```sql
@@ -629,6 +655,7 @@ ORDER BY annual_pay DESC;
 | Priya Nair | 1080000 |
 | Arjun Mehta | 864000 |
 | Amit Kumar | 780000 |
+
 **Alias in ORDER BY works everywhere:**
 ```sql
 SELECT emp_name, salary * 12 AS annual_pay FROM Employees ORDER BY annual_pay DESC, emp_id LIMIT 3;
@@ -639,6 +666,7 @@ SELECT emp_name, salary * 12 AS annual_pay FROM Employees ORDER BY annual_pay DE
 | Anita Sharma | 1080000 |
 | Priya Nair | 1080000 |
 | Arjun Mehta | 864000 |
+
 **Edge cases:** `WHERE annual_pay > 700000` directly is an error on PostgreSQL/SQL Server/Oracle (not run here; this SQLite engine happens to accept it). In SQL Server ORDER BY alias works too.
 **Likely follow-ups:**
 - Can HAVING use alias? MySQL yes, PostgreSQL no.
@@ -666,6 +694,7 @@ SELECT emp_name, salary * 12 AS annual_pay FROM Employees ORDER BY annual_pay DE
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT salary
@@ -679,6 +708,7 @@ SQL Server: `ORDER BY salary DESC OFFSET 1 ROWS FETCH NEXT 1 ROWS ONLY`. MySQL a
 | salary |
 |---|
 | 72000 |
+
 **Safe version when only one salary exists (table Pay1 has only 70,000 twice):**
 ```sql
 SELECT (SELECT DISTINCT salary FROM Pay1 ORDER BY salary DESC LIMIT 1 OFFSET 1) AS second_highest;
@@ -687,6 +717,7 @@ SELECT (SELECT DISTINCT salary FROM Pay1 ORDER BY salary DESC LIMIT 1 OFFSET 1) 
 | second_highest |
 |---|
 | NULL |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -720,6 +751,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT salary
@@ -727,12 +759,13 @@ FROM Employees
 ORDER BY salary DESC
 LIMIT 1 OFFSET 2;
 ```
-Replace the 2 with N-1. MySQL cannot do `OFFSET N-1` inside LIMIT; compute it in the app or use a stored function. Not run here.
+Replace the 2 with N-1. In older MySQL, LIMIT/OFFSET must be a plain number, not an expression like N-1; compute it in the app or a prepared statement (from memory). Not run here.
 **Output:**
 
 | salary |
 |---|
 | 65000 |
+
 **Wrong: without DISTINCT the two 90,000 rows take up places 1 and 2:**
 ```sql
 SELECT salary FROM Employees ORDER BY salary DESC LIMIT 1 OFFSET 2;
@@ -741,6 +774,7 @@ SELECT salary FROM Employees ORDER BY salary DESC LIMIT 1 OFFSET 2;
 | salary |
 |---|
 | 72000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -775,6 +809,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name, hire_date, salary
@@ -791,6 +826,7 @@ ORDER BY salary DESC, emp_id;
 | Rahul Verma | 2023-02-14 | 55000 |
 | Kavya Reddy | 2024-01-15 | 50000 |
 | Vikram Singh | 2024-04-01 | 38000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -826,6 +862,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT department, emp_name, salary
@@ -844,6 +881,7 @@ ORDER BY department ASC, salary DESC;
 | Sales | Arjun Mehta | 72000 |
 | Sales | Rahul Verma | 55000 |
 | Sales | Vikram Singh | 38000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -877,6 +915,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT department, city
@@ -895,6 +934,7 @@ ORDER BY department, city;
 | Sales | Bengaluru |
 | Sales | Chennai |
 | Sales | Hyderabad |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -923,6 +963,7 @@ Same result as the SQL (checked by running both).
 | A | 90 |
 | B | 90 |
 | C | 80 |
+
 **SQL:**
 ```sql
 SELECT DISTINCT salary
@@ -935,6 +976,7 @@ LIMIT 1 OFFSET 1;
 | salary |
 |---|
 | 80 |
+
 **Wrong - no DISTINCT returns 90:**
 ```sql
 SELECT salary FROM Pay3 ORDER BY salary DESC LIMIT 1 OFFSET 1;
@@ -943,6 +985,7 @@ SELECT salary FROM Pay3 ORDER BY salary DESC LIMIT 1 OFFSET 1;
 | salary |
 |---|
 | 90 |
+
 **pandas equivalent:**
 ```python
 res = pd.DataFrame({'salary': sorted(pay3['salary'].unique(), reverse=True)[1:2]})
@@ -975,6 +1018,7 @@ Same result as the SQL (checked by running both).
 | 6 | Amit Kumar | IT | Pune | 65000 | 5 | 2023-12-31 |
 | 7 | Kavya Reddy | Finance | Hyderabad | 50000 | 1 | 2024-01-15 |
 | 8 | Vikram Singh | Sales | Chennai | 38000 | 2 | 2024-04-01 |
+
 **SQL:**
 ```sql
 SELECT emp_name AS "Employee Name",
@@ -992,6 +1036,7 @@ MySQL: use backticks (`Employee Name`). SQL Server: [Employee Name] or "Employee
 | Arjun Mehta | 864000 |
 | Sneha Iyer | 576000 |
 | Rahul Verma | 660000 |
+
 **pandas equivalent:**
 ```python
 emp = pd.read_sql('SELECT * FROM Employees', conn)  # or pd.read_csv(...)
@@ -1026,6 +1071,7 @@ Same result as the SQL (checked by running both).
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_id, emp_name, department
@@ -1040,6 +1086,7 @@ WHERE department <> 'HR';
 | 4 | Karan | IT |
 | 5 | Divya | Finance |
 | 8 | Omar | Sales |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1075,6 +1122,7 @@ result = employees.loc[employees.department.notna() & (employees.department != '
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- NOT IN
@@ -1115,6 +1163,7 @@ NOT LIKE
 | Sam |
 | Neha |
 | Omar |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1160,6 +1209,7 @@ result = employees.loc[~employees.emp_name.str.startswith('A'), ['emp_name']]
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name, city FROM employees WHERE city = 'Pune';
@@ -1181,6 +1231,7 @@ Pattern match
 | Ravi |
 | Karan |
 | Sam |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1203,11 +1254,14 @@ result = employees.loc[employees.emp_name.str.match('.a'), ['emp_name']]
 **What the interviewer is checking:** That you can pick the right tool: a list (IN), a range (BETWEEN) or a text pattern (LIKE).
 **Say this in the interview:** "IN checks against a list of exact values, BETWEEN checks a range with both ends included, and LIKE checks a text pattern. I use IN for a few known values, BETWEEN for numbers and dates in a range, LIKE when I only know part of the text."
 **Explain simply:**
-- | Operator | Use it for | Example |
+The three operators side by side:
+
+| Operator | Use it for | Example |
 |---|---|---|
 | `IN` | a short list of exact values | `department IN ('IT','Sales')` |
 | `BETWEEN` | a range, **inclusive** of both ends | `salary BETWEEN 60000 AND 80000` |
 | `LIKE` | partial text match | `emp_name LIKE '%a'` |
+
 - `IN` is just shorthand for several `OR` conditions; `BETWEEN a AND b` is shorthand for `>= a AND <= b`.
 - Order matters in `BETWEEN`: `BETWEEN 80000 AND 60000` returns nothing.
 **Example:** HR wants IT or Sales staff paid 60k-80k whose name ends in "a": the three operators combine with AND.
@@ -1223,6 +1277,7 @@ result = employees.loc[employees.emp_name.str.match('.a'), ['emp_name']]
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name, department, salary
@@ -1235,6 +1290,7 @@ WHERE department IN ('IT', 'Sales')
 | emp_name | department | salary |
 |---|---|---|
 | Meena | Sales | 60000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1244,7 +1300,7 @@ result = employees.loc[employees.department.isin(['IT', 'Sales'])
                       ['emp_name', 'department', 'salary']]
 ```
 (Checked: the pandas result is identical to the SQL output.)
-**Edge cases:** `BETWEEN` with dates and timestamps can miss the last day (Q41). `IN` with a NULL in the list never matches NULL rows. Lists in `IN` can be a subquery.
+**Edge cases:** `BETWEEN` with dates and timestamps can miss the last day (Q42). `IN` with a NULL in the list never matches NULL rows. Lists in `IN` can be a subquery.
 **Likely follow-ups:**
 - IN vs OR? Same result; IN is shorter and easier to read.
 - Is BETWEEN inclusive in every database? Yes, in all the major ones.
@@ -1272,6 +1328,7 @@ result = employees.loc[employees.department.isin(['IT', 'Sales'])
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT department, COUNT(*) AS headcount, AVG(salary) AS avg_salary
@@ -1283,8 +1340,9 @@ HAVING COUNT(*) >= 2;
 **Output:**
 | department | headcount | avg_salary |
 |---|---|---|
-| IT | 2 | 80000.00 |
-| Sales | 2 | 65000.00 |
+| IT | 2 | 80000.0 |
+| Sales | 2 | 65000.0 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1304,11 +1362,14 @@ result = g[g.headcount >= 2]
 **What the interviewer is checking:** That you know numbers are bare, text and dates are quoted, and what goes wrong otherwise.
 **Say this in the interview:** "Numbers have no quotes, text values go in single quotes, and dates also go in single quotes in the `YYYY-MM-DD` format. Without quotes the database thinks the text is a column name."
 **Explain simply:**
-- | Type | Quote? | Example |
+Quoting rules at a glance:
+
+| Type | Quote? | Example |
 |---|---|---|
 | Number | No | `salary = 50000` |
 | Text | Yes, single quotes | `city = 'Pune'` |
 | Date | Yes, single quotes, `YYYY-MM-DD` | `hire_date = '2024-04-01'` |
+
 - Single quotes are the SQL standard. Double quotes usually mean a column or table name (PostgreSQL, SQLite, SQL Server); MySQL also accepts them for text, which causes confusion.
 - Dates: write `DATE '2024-04-01'` in PostgreSQL/Oracle/MySQL for safety; SQL Server and MySQL accept the plain string. Avoid regional formats like 01/04/2024 (is it 1 April or 4 January?).
 - Quoting a number (`salary = '50000'`) often works by silent conversion, but it can disable an index and is poor style.
@@ -1325,6 +1386,7 @@ result = g[g.headcount >= 2]
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name FROM employees
@@ -1336,13 +1398,14 @@ WHERE salary = 80000
 | emp_name |
 |---|
 | Karan |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
 result = employees.loc[(employees.salary == 80000) & (employees.city == 'Bengaluru') & (employees.hire_date == '2024-04-01'), ['emp_name']]
 ```
 (Checked: the pandas result is identical to the SQL output.)
-**Edge cases:** A text value with an apostrophe needs doubling: `'O''Brien'`. Dates with a time part (`2024-04-01 09:30:00`) will not equal a plain date - compare with a range (Q41). Dates stored as text compare alphabetically; ISO format makes that correct.
+**Edge cases:** A text value with an apostrophe needs doubling: `'O''Brien'`. Dates with a time part (`2024-04-01 09:30:00`) will not equal a plain date - compare with a range (Q42). Dates stored as text compare alphabetically; ISO format makes that correct.
 **Likely follow-ups:**
 - Why not use double quotes for text? In standard SQL they quote identifiers (names).
 - How to filter between two dates? `>= '2024-01-01' AND < '2025-01-01'`.
@@ -1370,6 +1433,7 @@ result = employees.loc[(employees.salary == 80000) & (employees.city == 'Bengalu
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 CREATE TABLE employees (
@@ -1386,6 +1450,7 @@ SELECT * FROM employees WHERE emp_id = 2;   -- a query
 | emp_id | emp_name | department | city | salary | hire_date |
 |---|---|---|---|---|---|
 | 2 | Ravi | IT | Hyderabad | 80000 | 2020-03-01 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1420,6 +1485,7 @@ result = employees[employees.emp_id == 2]
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name FROM employees WHERE LOWER(department) = 'sales';   -- safe everywhere
@@ -1429,6 +1495,7 @@ SELECT emp_name FROM employees WHERE LOWER(department) = 'sales';   -- safe ever
 |---|
 | Meena |
 | Omar |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1463,6 +1530,7 @@ result = employees.loc[employees.department.str.lower() == 'sales', ['emp_name']
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- most recent hire
@@ -1493,6 +1561,7 @@ Most recent hire
 | 6 | Sam | 2024-02-12 |
 | 8 | Omar | 2023-11-05 |
 | 3 | Meena | 2023-01-10 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1532,6 +1601,7 @@ result = employees.sort_values(['hire_date', 'emp_id'], ascending=False).head(5)
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- one row only
@@ -1557,6 +1627,7 @@ All top earners
 |---|---|---|
 | 2 | Ravi | 80000 |
 | 4 | Karan | 80000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1596,6 +1667,7 @@ result = employees.loc[employees.salary == employees.salary.max(), ['emp_id', 'e
 | 6 | Rohit | Hyderabad | 81 | Shortlisted |
 | 7 | Lata | Hyderabad | NULL | Shortlisted |
 | 8 | Vikram | Hyderabad | 70 | On hold |
+
 **SQL:**
 ```sql
 SELECT candidate_name, interview_score
@@ -1613,6 +1685,7 @@ LIMIT 10;
 | Sneha | 88 |
 | Rohit | 81 |
 | Lata | NULL |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1649,6 +1722,7 @@ result = (candidates[(candidates.city == 'Hyderabad') & (candidates.status == 'S
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name, salary FROM employees;
@@ -1691,6 +1765,7 @@ LIMIT 3, no ORDER BY, after index
 | Asha | 45000 |
 | Sam | 50000 |
 | Neha | 52000 |
+
 **pandas equivalent:**
 ```python
 # a DataFrame keeps row order, so pandas hides this problem; always sort explicitly
@@ -1724,6 +1799,7 @@ result = employees.sort_values(['salary', 'emp_id'], ascending=[False, True]).he
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_id, emp_name, salary
@@ -1737,6 +1813,7 @@ LIMIT 3;
 | 2 | Ravi | 80000 |
 | 4 | Karan | 80000 |
 | 5 | Divya | 70000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1755,10 +1832,13 @@ result = employees.sort_values(['salary', 'emp_id'], ascending=[False, True]).he
 **Say this in the interview:** "It depends on the database. In MySQL, SQL Server and SQLite, NULLs count as the smallest value: first in ascending, last in descending. In PostgreSQL and Oracle, NULLs count as the largest: last in ascending, first in descending. I control it with NULLS FIRST or NULLS LAST."
 **Explain simply:**
 - **NULL** = a missing or unknown value (not zero, not blank text).
-- | Database | ASC | DESC | Control |
+How NULLs sort by database:
+
+| Database | ASC | DESC | Control |
 |---|---|---|---|
 | MySQL, SQL Server, SQLite | NULL first | NULL last | no `NULLS` keyword in MySQL/SQL Server; SQLite 3.30+ has it |
 | PostgreSQL, Oracle | NULL last | NULL first | `NULLS FIRST / NULLS LAST` |
+
 - Portable trick (works in MySQL and SQL Server too, not run in those): sort by a flag first, `ORDER BY (col IS NULL), col` in MySQL, or `ORDER BY CASE WHEN col IS NULL THEN 1 ELSE 0 END, col` in SQL Server.
 - The SQLite output below was really run; PostgreSQL ordering is described from its documented behaviour.
 **Example:** Sam has no department recorded. In a department-wise attendance list, you may want Sam at the bottom (`NULLS LAST`) so "unassigned" does not lead the report.
@@ -1774,6 +1854,7 @@ result = employees.sort_values(['salary', 'emp_id'], ascending=[False, True]).he
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_name, department FROM employees ORDER BY department ASC;
@@ -1833,6 +1914,7 @@ Flag trick
 | Meena | Sales |
 | Omar | Sales |
 | Sam | NULL |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1868,6 +1950,7 @@ result = employees.sort_values(['department', 'emp_id'], na_position='last')[['e
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- Sam is silently dropped
@@ -1909,6 +1992,7 @@ Fix 2
 | Divya | Finance |
 | Sam | NULL |
 | Omar | Sales |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -1950,6 +2034,7 @@ result = employees.loc[(employees.department != 'HR') | employees.department.isn
 |---|
 | HR |
 | NULL |
+
 **SQL:**
 ```sql
 -- breaks: list contains a NULL
@@ -1989,6 +2074,7 @@ Fix 2
 | Divya | Finance |
 | Sam | NULL |
 | Omar | Sales |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -2024,6 +2110,7 @@ result = employees.loc[employees.department.notna() & ~employees.department.isin
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- wrong for the request
@@ -2049,6 +2136,7 @@ With brackets
 |---|---|---|
 | Ravi | IT | 80000 |
 | Karan | IT | 80000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -2089,6 +2177,7 @@ result = employees.loc[employees.department.isin(['HR', 'IT']) & (employees.sala
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 SELECT emp_id, emp_name FROM employees
@@ -2111,6 +2200,7 @@ Page 3, size 3
 |---|---|
 | 7 | Neha |
 | 8 | Omar |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -2152,6 +2242,7 @@ result = employees.sort_values('emp_id').iloc[(page - 1) * size : page * size][[
 | 6 | Sam | NULL | Pune | 50000 | 2024-02-12 |
 | 7 | Neha | HR | Hyderabad | 52000 | 2024-04-01 |
 | 8 | Omar | Sales | Bengaluru | 70000 | 2023-11-05 |
+
 **SQL:**
 ```sql
 -- by position (2nd column = salary)
@@ -2185,6 +2276,7 @@ ORDER BY salary * 12 DESC, emp_name
 | Neha | 624000 |
 | Sam | 600000 |
 | Asha | 540000 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -2224,6 +2316,7 @@ result = employees.assign(annual_pay=employees.salary * 12).sort_values(['annual
 | 6 | Completed | 2500.00 | 2023-06-01 |
 | 7 | Completed | 300.00 | 2024-01-01 |
 | 8 | Completed | 1800.00 | 2023-09-09 |
+
 **SQL:**
 ```sql
 SELECT order_id, total_amount, order_date
@@ -2256,6 +2349,7 @@ BETWEEN version (misses order 3)
 | 6 | 2500.00 | 2023-06-01 |
 | 8 | 1800.00 | 2023-09-09 |
 | 1 | 1200.50 | 2023-02-14 |
+
 **pandas equivalent:**
 ```python
 # employees / candidates / orders = the tables above loaded as DataFrames
@@ -2271,7 +2365,7 @@ result = (orders[(orders.status == 'Completed') & (od >= '2023-01-01') & (od < '
 **Common mistakes:** Using BETWEEN with timestamps; sorting ascending by default; applying a function to the date column on a huge table; forgetting the status filter.
 
 ### Q42 ⭐⭐ 🟡 An order_date column stores date and time. Why does `BETWEEN '2024-01-01' AND '2024-01-31'` miss orders on 31 Jan afternoon, and how do you fix it?
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Do you know that a date with a time part is not the same as a plain date.
 **Say this in the interview:** A date written as '2024-01-31' really means 31 Jan at 00:00:00 (midnight). So BETWEEN stops at midnight and drops the rest of that day. The safe pattern is: on or after the first day, and before the day after the last day.
 **Explain simply:**
@@ -2291,7 +2385,7 @@ result = (orders[(orders.status == 'Completed') & (od >= '2023-01-01') & (od < '
 | 4 | 2024-01-31 23:59:00 | 300 |
 | 5 | 2024-02-01 09:00:00 | 900 |
 
-Buggy version: `WHERE order_date BETWEEN '2024-01-01' AND '2024-01-31'` on a real TIMESTAMP column (checked in DuckDB) returns only orders 1 and 2. Orders 3 and 4 (31 Jan afternoon and night) are lost. The sample table below stores the time as text, where order 2 would drop too, so the fixed query is what we run.
+Buggy version: `WHERE order_date BETWEEN '2024-01-01' AND '2024-01-31'` on a real TIMESTAMP column returns only orders 1 and 2 (worked out from the rule, not run here: SQLite has no TIMESTAMP type). Orders 3 and 4 (31 Jan afternoon and night) are lost. The sample table below stores the time as text, where order 2 would drop too, so the fixed query is what we run.
 
 **SQL:**
 ```sql
@@ -2323,7 +2417,7 @@ Result (real output): same rows as the SQL output above.
 **Common mistakes:** Using `<= '2024-01-31 23:59:59'` (misses fractions of a second) or forgetting the time part exists at all.
 
 ### Q43 ⭐⭐ 🟡 How do you count how many different cities appear in the Employees table? How is COUNT(DISTINCT city) different from COUNT(city) and COUNT(*)?
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether you know how COUNT treats NULLs and duplicates.
 **Say this in the interview:** COUNT(*) counts rows, COUNT(city) counts rows where city is filled in, and COUNT(DISTINCT city) counts the different filled-in cities. NULLs are ignored by the last two.
 **Explain simply:**
@@ -2372,7 +2466,7 @@ Result (real output): same rows as the SQL output above.
 **Common mistakes:** Saying COUNT(DISTINCT city) includes NULL as one more city. It does not.
 
 ### Q44 ⭐⭐ 🟡 Can DISTINCT and GROUP BY give the same result? When would you use which to list unique values?
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether you see that two different tools can solve the same problem, and know when GROUP BY is the right one.
 **Say this in the interview:** Yes. For just listing unique values, DISTINCT and GROUP BY give identical results. I use DISTINCT when I only want unique values, and GROUP BY the moment I also need a count, sum or average per group.
 **Explain simply:**
@@ -2423,7 +2517,7 @@ Result (real output): same rows as the SQL output above.
 **Common mistakes:** Writing `SELECT DISTINCT(city), name` and thinking DISTINCT applies to city only; it applies to the whole row.
 
 ### Q45 ⭐⭐ 🟡 An `Attendance` table has emp_id, work_date and status ('Present', 'Absent', 'Leave'). Write a query listing each employee who was absent at least once in March 2025, with no repeated IDs.
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Date-range filtering plus de-duplication in a realistic HR scenario.
 **Say this in the interview:** I filter to status Absent and to March with a half-open date range, then use DISTINCT on emp_id so someone absent three times is listed once.
 **Explain simply:**
@@ -2475,7 +2569,7 @@ Result (real output): same rows as the SQL output above.
 **Common mistakes:** Using `BETWEEN '2025-03-01' AND '2025-03-31'` on a timestamp column, or forgetting DISTINCT.
 
 ### Q46 ⭐⭐ 🟡 Write a query to find employees whose salary is between 40,000 and 60,000 and who joined after 2022 and live in Bengaluru or Hyderabad, sorted by hire date.
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Combining several conditions correctly with AND, BETWEEN, IN and ORDER BY.
 **Say this in the interview:** I combine the filters with AND, use BETWEEN for the salary range, IN for the two cities, a date comparison for 'after 2022', and ORDER BY hire_date.
 **Explain simply:**
@@ -2527,7 +2621,7 @@ Result (real output): same rows as the SQL output above.
 **Common mistakes:** Writing `city = 'Bengaluru' OR 'Hyderabad'` (not valid logic), or forgetting that BETWEEN includes both ends.
 
 ### Q47 ⭐⭐ 🟡 Write a query to find names with exactly five letters, and names whose second letter is 'a'.
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Knowing the LIKE wildcards % and _ .
 **Say this in the interview:** In LIKE, underscore means exactly one character and percent means any number of characters. Five letters is five underscores; second letter 'a' is underscore, then a, then percent.
 **Explain simply:**
@@ -2535,7 +2629,7 @@ Result (real output): same rows as the SQL output above.
 - Five-letter names: `name LIKE '_____'` (5 underscores).
 - Second letter 'a': `name LIKE '_a%'`.
 - A 'wildcard' is a placeholder symbol that stands in for unknown characters.
-**Example:** Rahul and Kavya are both: five letters and 'a' second. Sana has 'a' second but only four letters.
+**Example:** Rahul, Kavya and Manoj are all five letters with 'a' second. Sana has 'a' second but only four letters.
 **Sample data:**
 `employees`
 
@@ -2584,7 +2678,7 @@ Result (real output): same rows as the SQL output above.
 **Common mistakes:** Using `*` as the wildcard, or miscounting the underscores.
 
 ### Q48 ⭐⭐ 🟡 What is the difference between NULL and an empty string '' in WHERE conditions? How do you find rows where email is missing in either form?
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether you understand NULL as unknown, not as empty text, and that `= NULL` never works.
 **Say this in the interview:** NULL means no value at all; '' is a real value that happens to be empty text. They behave differently in WHERE, so to find 'missing' emails I check for both with IS NULL OR empty.
 **Explain simply:**
@@ -2634,7 +2728,7 @@ Result (real output): same rows as the SQL output above.
 ### Q49 ⭐ 🟢 Can you write a SELECT without a FROM clause? Show `SELECT 1 + 1` and `SELECT 'hello'`.
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Basic SQL fluency and awareness of dialect differences.
-**Say this in the interview:** Yes. SELECT can evaluate an expression or a literal without any table. PostgreSQL, MySQL, SQLite and SQL Server allow it; Oracle needs `FROM DUAL`.
+**Say this in the interview:** Yes. SELECT can evaluate an expression or a literal without any table. PostgreSQL, MySQL, SQLite and SQL Server allow it; Older Oracle versions need `FROM DUAL` (Oracle 23ai reportedly allows omitting it; from memory / not run here).
 **Explain simply:**
 - Handy as a quick calculator or to test a function.
 - A literal is a fixed value such as 'hello'.
@@ -2682,7 +2776,7 @@ SELECT 1 + 1 AS two  /* inline comment */;
 **Common mistakes:** Writing `--` with no space after it in MySQL, or leaving a `/*` comment unclosed.
 
 ### Q51 ⭐ 🟡 How do you do a case-insensitive search for names containing 'kumar' (LOWER, ILIKE, UPPER)? Does it matter for performance?
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Case handling in text search and awareness of how it affects indexes.
 **Say this in the interview:** I lower-case the column and compare with a lower-case pattern: `LOWER(name) LIKE '%kumar%'`. PostgreSQL also has ILIKE, which does the same thing in one word.
 **Explain simply:**
@@ -2737,7 +2831,7 @@ Result (real output): same rows as the SQL output above.
 **Explain simply:**
 - Pune appears twice with two different hire dates; after DISTINCT city there is one Pune row.
 - ORDER BY hire_date is then ambiguous: 2022 or 2024?
-- PostgreSQL error (not run here): `for SELECT DISTINCT, ORDER BY expressions must appear in select list`. SQL Server says the same in other words. SQLite is lenient (DuckDB accepted it too when I tried) and picks some value, which can silently give a wrong order.
+- PostgreSQL error (not run here): `for SELECT DISTINCT, ORDER BY expressions must appear in select list`. SQL Server says the same in other words. SQLite is lenient (checked here: it accepted `SELECT DISTINCT city ... ORDER BY hire_date`) and picks some value, which can silently give a wrong order.
 - Fix: decide what you mean, such as latest hire date per city, using GROUP BY with an aggregate.
 **Example:** HR wants cities listed by who joined most recently. 'Most recent hire in that city' is a clear question; 'DISTINCT city ORDER BY hire_date' is not.
 **Sample data:**
@@ -2774,7 +2868,7 @@ result = (employees.groupby('city', as_index=False).agg(latest_hire=('hire_date'
           .sort_values('latest_hire', ascending=False))
 ```
 Result (real output): same rows as the SQL output above.
-**Edge cases:** With ORDER BY on a selected column, DISTINCT works in every dialect. Expressions like `ORDER BY UPPER(city)` must also appear in the select list. Same rule applies to window-function results.
+**Edge cases:** With ORDER BY on a selected column, DISTINCT works in every dialect. Expressions like `ORDER BY UPPER(city)` must also appear in the select list.
 **Likely follow-ups:** 
 - *Why does GROUP BY allow ORDER BY MAX(...)?* The aggregate is a defined value per group.
 - *Is this an Oracle issue too?* Yes, Oracle raises ORA-01791.
@@ -2829,7 +2923,7 @@ Result (real output): same rows as the SQL output above.
 **Common mistakes:** Using `/` (division) or forgetting that Oracle uses MOD().
 
 ### Q54 ⭐ 🟡 Why might `WHERE city = 'Pune'` miss rows that look like Pune? Think hidden spaces and upper/lower case, and how TRIM helps.
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Data-cleaning instinct: the data that looks right but is not.
 **Say this in the interview:** The equals sign compares every character. 'Pune ' with a trailing space, ' PUNE' with a leading space, or 'pune' in lower case are different strings, so they are missed. I clean the value with TRIM and LOWER before comparing.
 **Explain simply:**
@@ -2886,13 +2980,13 @@ Result (real output): same rows as the SQL output above.
 **Common mistakes:** Trimming the column but forgetting the case, or trusting that the data is clean.
 
 ### Q55 ⭐ 🟡 How do you pick 10 random rows from a table? Why is ORDER BY RANDOM() slow on very large tables?
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Sampling and an awareness of performance on big tables.
 **Say this in the interview:** I sort by a random number and take the first 10: `ORDER BY RANDOM() LIMIT 10` in PostgreSQL and SQLite. On huge tables I avoid it because it has to give every row a random number and sort them all.
 **Explain simply:**
 - PostgreSQL/SQLite: `ORDER BY RANDOM() LIMIT 10`. MySQL: `ORDER BY RAND() LIMIT 10`. SQL Server: `SELECT TOP 10 ... ORDER BY NEWID()`. Oracle: `ORDER BY DBMS_RANDOM.VALUE FETCH FIRST 10 ROWS ONLY`. (Only the SQLite form was run here.)
-- Why slow: with 50 million rows it computes 50 million random values and sorts them (O(n log n)), just to keep 10.
-- Faster for 'about 1%': `TABLESAMPLE SYSTEM (1)` in PostgreSQL/SQL Server (not run here), which reads random pages instead of every row. It is approximate and block-based, so rows may be clustered.
+- Why slow: with 50 million rows it must compute 50 million random values and order them (some engines use a top-N shortcut, but every row is still read), just to keep 10.
+- Faster for 'about 1%': `TABLESAMPLE SYSTEM (1)` in PostgreSQL or `TABLESAMPLE (1 PERCENT)` in SQL Server (not run here), which reads random pages instead of every row. It is approximate and block-based, so rows may be clustered.
 - The result changes on every run; for a repeatable sample set a seed in pandas or sample in the application.
 **Example:** HR wants 10 random exit-interview candidates from 12 leavers; a quick random pick is fine at this size.
 **Sample data:**
@@ -2993,6 +3087,10 @@ The diagnostic that exposes the duplication:
 
 **SQL:**
 ```sql
+-- the two queries above (checked in SQLite): list looks fine, total is overstated
+-- SELECT DISTINCT e.name, e.salary FROM employees e JOIN dept_history d ON d.emp_id = e.emp_id;
+-- SELECT SUM(e.salary) AS total_salary FROM employees e JOIN dept_history d ON d.emp_id = e.emp_id;   -- 200000, true payroll 150000
+-- diagnostic:
 SELECT e.emp_id, e.name, COUNT(*) AS rows_after_join
 FROM employees e
 JOIN dept_history d ON d.emp_id = e.emp_id
@@ -3020,7 +3118,7 @@ Result (real output): same rows as the SQL output above.
 **Common mistakes:** Adding DISTINCT whenever the row count looks too high, without asking why.
 
 ### Q57 ⭐ 🟡 Write a query to find all employees whose names contain 'an' but do not start with 'S'.
-**Asked at:** service MNC / analytics firm (general SQL-basics screens; no company-specific report found for this exact question)
+**Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Combining LIKE and NOT LIKE patterns and noticing case and NULL.
 **Say this in the interview:** I use LIKE '%an%' for 'contains an' and NOT LIKE 'S%' for 'does not start with S', joined by AND. To ignore case I lower-case both parts.
 **Explain simply:**
@@ -3082,7 +3180,7 @@ Result (real output): same rows as the SQL output above.
 **Say this in the interview:** In LIKE, % and _ are wildcards. To match them as plain characters I put an escape character in front and declare it with ESCAPE: `LIKE '20!%OFF' ESCAPE '!'`.
 **Explain simply:**
 - `ESCAPE '!'` tells the database that a character after `!` is literal, not a wildcard.
-- Pick any rarely used character; backslash is the default in MySQL and PostgreSQL, but declaring ESCAPE is clearer and portable.
+- Pick any rarely used character; backslash is the default in MySQL and PostgreSQL (from memory), but declaring ESCAPE is clearer and portable.
 - Same for underscore: `'SAVE!_10' ESCAPE '!'` matches only SAVE_10, not SAVEX10.
 - SQL Server also allows brackets: `LIKE '20[%]OFF'`.
 **Example:** A discount-code table has '20%OFF'. If I search with a plain pattern '20%OFF' I also get '20PCTOFF' and '200OFF', and an HR-benefits voucher check would accept wrong codes.
@@ -3136,7 +3234,7 @@ Result (real output): same rows as the SQL output above.
 **Say this in the interview:** FETCH FIRST n ROWS WITH TIES returns n rows and then also every further row that has the same sort value as the nth row. LIMIT n returns exactly n rows and cuts through a tie arbitrarily.
 **Explain simply:**
 - 'Tie' means two or more rows with the same value in the ORDER BY column.
-- PostgreSQL 13+, Oracle 12c+ and SQL Server (`TOP (n) WITH TIES`) support it; MySQL and SQLite do not. It needs an ORDER BY. (Not run here: neither SQLite nor DuckDB supports it.)
+- PostgreSQL 13+, Oracle 12c+ and SQL Server (`TOP (n) WITH TIES`) support it; MySQL and SQLite do not. It needs an ORDER BY. (Not run here: SQLite does not support it.)
 - Standard syntax: `ORDER BY salary DESC FETCH FIRST 3 ROWS WITH TIES`.
 - Equivalent that does run everywhere with window functions: keep rows where `RANK() <= n`.
 **Example:** Top 3 salaries: Anita 90,000, then three people on 85,000. LIMIT 3 shows only two of the three 85,000 earners and which one is dropped is arbitrary, which is unfair in a pay-review list.
@@ -3190,7 +3288,7 @@ Result (real output): same rows as the SQL output above.
 **Edge cases:** Without a tie-break column LIMIT is not repeatable between runs. WITH TIES can return more than n rows (here 4). It cannot be used with OFFSET in some databases (SQL Server needs TOP, not OFFSET).
 **Likely follow-ups:** 
 - *Top 3 distinct salary values instead?* Use DENSE_RANK.
-- *Is PERCENT possible?* `FETCH FIRST 10 PERCENT ROWS ONLY` in Oracle/PostgreSQL 13+.
+- *Is PERCENT possible?* `FETCH FIRST 10 PERCENT ROWS ONLY` in Oracle 12c+ (not PostgreSQL); SQL Server has `TOP 10 PERCENT` (from memory / not run here).
 **Common mistakes:** Using LIMIT for 'top 3 earners' and being surprised that tied people are silently dropped.
 
 ### Q60 ⭐ 🔴 Why does a big OFFSET get slow for deep pages, and what is keyset (seek) pagination?
