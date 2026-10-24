@@ -1,6 +1,6 @@
 # Book 4 — Power BI & Visualization | Part 5: DAX Advanced (Filter Context, Time Intelligence, ALL vs ALLEXCEPT, RANKX, Variables) 🔴
 
-**Target:** 35 questions | **Actual:** 31 questions
+**Target:** 35 questions | **Actual:** 35 questions
 **Scope:** advanced practical DAX for analysts: filter and row context, CALCULATE modifiers (ALL, ALLEXCEPT, ALLSELECTED, REMOVEFILTERS, KEEPFILTERS), context transition, time intelligence, RANKX and Top N, variables, DAX debugging and performance. Basics (calculated column vs measure, SUM vs SUMX, COUNT, basic CALCULATE) are in Part 4.
 
 ### Q1 ⭐⭐⭐ 🟢 What is the difference between ALL and ALLEXCEPT in DAX?
@@ -72,26 +72,38 @@
 ### Q23 ⭐⭐ 🟡 Why does the Total row in a matrix not equal the sum of the rows shown, and how do you fix it?
 <!-- ANSWER_PENDING -->
 
-### Q24 ⭐⭐ 🔴 Your YoY or YTD measure returns blank or wrong numbers: how do you debug it?
+### Q24 ⭐⭐ 🟡 How do you make TOTALYTD follow an Indian financial year that ends on 31 March?
 <!-- ANSWER_PENDING -->
 
-### Q25 ⭐ 🟡 What does KEEPFILTERS do, and when would you use it?
+### Q25 ⭐⭐ 🟡 What does EARLIER do in a calculated column, and how can variables replace it?
 <!-- ANSWER_PENDING -->
 
-### Q26 ⭐ 🟡 Why do many experts prefer REMOVEFILTERS with VALUES over ALLEXCEPT?
+### Q26 ⭐⭐ 🟡 Write a measure for the average monthly sales in a selected year (average of the monthly totals, not of the order rows).
 <!-- ANSWER_PENDING -->
 
-### Q27 ⭐ 🟡 How do you write a closing-balance (semi-additive) measure using LASTDATE or LASTNONBLANK?
+### Q27 ⭐⭐ 🔴 Your YoY or YTD measure returns blank or wrong numbers: how do you debug it?
 <!-- ANSWER_PENDING -->
 
-### Q28 ⭐ 🟡 Why is FILTER on a whole table inside CALCULATE slow, and how do you rewrite it?
+### Q28 ⭐ 🟡 What does KEEPFILTERS do, and when would you use it?
 <!-- ANSWER_PENDING -->
 
-### Q29 ⭐ 🟡 How do you find and fix a slow DAX measure with Performance Analyzer and DAX Studio?
+### Q29 ⭐ 🟡 Why do many experts prefer REMOVEFILTERS with VALUES over ALLEXCEPT?
 <!-- ANSWER_PENDING -->
 
-### Q30 ⭐ 🔴 How would you build time intelligence once for many measures using calculation groups?
+### Q30 ⭐ 🟡 How do you write a closing-balance (semi-additive) measure using LASTDATE or LASTNONBLANK?
 <!-- ANSWER_PENDING -->
 
-### Q31 ⭐ 🔴 What are visual calculations in Power BI, and how do they differ from measures?
+### Q31 ⭐ 🟡 Why is FILTER on a whole table inside CALCULATE slow, and how do you rewrite it?
+<!-- ANSWER_PENDING -->
+
+### Q32 ⭐ 🟡 How do you find and fix a slow DAX measure with Performance Analyzer and DAX Studio?
+<!-- ANSWER_PENDING -->
+
+### Q33 ⭐ 🔴 How would you build time intelligence once for many measures using calculation groups?
+<!-- ANSWER_PENDING -->
+
+### Q34 ⭐ 🔴 What are visual calculations in Power BI, and how do they differ from measures?
+<!-- ANSWER_PENDING -->
+
+### Q35 ⭐ 🔴 What does ISINSCOPE do, and how do you use it to show a different calculation at each level of a matrix hierarchy?
 <!-- ANSWER_PENDING -->

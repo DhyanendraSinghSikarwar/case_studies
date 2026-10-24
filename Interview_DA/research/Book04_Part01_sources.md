@@ -37,3 +37,10 @@ About 27 of 56 are gap-fills from standard practice or the Microsoft docs rather
 - Power BI Embedded, Direct Lake details: only seen in the Microsoft pages at a high level (Direct Lake confirmed as a Fabric/OneLake mode; Embedded not fetched).
 - Prices were deliberately not used (inconsistent across sources and change).
 - Not accessible or not attempted: Glassdoor, AmbitionBox, Reddit, LinkedIn (not surfaced by searches; no first-hand reports obtained).
+
+## Gap-fills added after de-duplication
+Part had 51 questions after cross-part de-duplication against a target of 55; four gap-fills added with tools/add_questions.py (Part now 55). None was seen as a question in a source above; no new web research was done for them (they rest on standard Power BI Desktop behaviour, to be verified on Microsoft Learn before answers are written). Checked that no other Book 4 part has them.
+- Employee ID summed in a table visual (stars 3, 🟢): default aggregation of numeric columns; fix via Don't summarize / Column tools Summarization. Very common live beginner task with HR IDs and phone numbers.
+- Typing a small list with Enter Data (stars 2, 🟢): manual lookup table creation; none of the other parts covers Enter Data.
+- Data pane icons: column vs measure vs calculated column vs hierarchy (stars 2, 🟢): basic orientation in the Data pane; DAX parts cover the concepts, not the icon reading.
+- Yellow "pending changes / Apply changes" banner after editing Power Query (stars 2, 🟡): Close and apply behaviour in Desktop; Part 2 Q8 covers Close & Apply only as a step, not this banner.

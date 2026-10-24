@@ -27,3 +27,10 @@ Notes
 - Gap-fill questions (not seen in any source, from standard practice): HR attrition rate, headcount at month end, DATEDIFF tenure, MTD/QTD, running total, RANKX returns 1 on every row, semi-additive closing balance, FILTER-slowness rewrite, Performance Analyzer/DAX Studio, visual calculations: 10 of 36.
 - Blocked/not accessible: Glassdoor, AmbitionBox, Reddit (no result surfaced; not fetched). One search hit the rate limit.
 - Unverified: exact current availability and licensing of calculation groups (Desktop/Tabular Editor) and visual calculations; check in Wave B.
+
+## Gap-fills added after de-duplication
+Four questions added to reach the target of 35 (none seen in a source list; chosen from standard DAX practice after checking Parts 3, 4, 5 and 9 headings for overlap). Behaviour checked on Microsoft Learn (accessed 2026-10-24): TOTALYTD (https://learn.microsoft.com/en-us/dax/totalytd-function-dax), ISINSCOPE (https://learn.microsoft.com/en-us/dax/isinscope-function-dax), EARLIER (https://learn.microsoft.com/en-us/dax/earlier-function-dax).
+- How do you make TOTALYTD follow an Indian financial year that ends on 31 March? (stars 2) Learn confirms the optional year_end_date string such as "3/31" ("month/day" recommended, year ignored, default 31 Dec, not allowed with calendar-based time intelligence). Part 5 Q4 covers plain YTD and Part 9 Q37 covers the fiscal-year dashboard scenario, not the TOTALYTD argument.
+- What does EARLIER do in a calculated column, and how can variables replace it? (stars 2) Learn describes EARLIER as mostly for calculated columns and warns of slow performance; its rank example is COUNTROWS(FILTER(...EARLIER...))+1. Not present elsewhere in Book 4.
+- Write a measure for the average monthly sales in a selected year (average of monthly totals). (stars 2) Standard AVERAGEX over VALUES pattern; Part 4 covers AVERAGEX only conceptually.
+- What does ISINSCOPE do, and how do you use it to show a different calculation at each level of a matrix hierarchy? (stars 1) Learn gives a SWITCH(TRUE(), ISINSCOPE(...)) percent-of-parent example. Differentiator, hence one star.
