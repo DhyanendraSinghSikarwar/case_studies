@@ -1,6 +1,6 @@
 # Book 4 — Power BI & Visualization | Part 6: Visuals, Slicers, Drill-through, Bookmarks, Tooltips 🟢🟡
 
-**Target:** 55 questions | **Actual:** 63 questions
+**Target:** 55 questions | **Actual:** 61 questions
 **Scope:** choosing and formatting visuals, slicers and filters, visual interactions, drill down and drill-through, bookmarks and buttons, tooltips, conditional formatting.
 
 ### Q1 ⭐⭐⭐ 🟢 What is a slicer in Power BI, and how is it different from a filter in the Filters pane?
@@ -60,134 +60,128 @@
 ### Q19 ⭐⭐ 🟢 What is the difference between a card, a multi-row card and a KPI visual?
 <!-- ANSWER_PENDING -->
 
-### Q20 ⭐⭐ 🟢 What is a hierarchy in Power BI, and how do you create one such as Department > Team > Employee?
+### Q20 ⭐⭐ 🟢 What are buttons in Power BI, and what actions can a button perform?
 <!-- ANSWER_PENDING -->
 
-### Q21 ⭐⭐ 🟢 What are buttons in Power BI, and what actions can a button perform?
+### Q21 ⭐⭐ 🟢 What is the Selection pane used for?
 <!-- ANSWER_PENDING -->
 
-### Q22 ⭐⭐ 🟢 What is the Selection pane used for?
+### Q22 ⭐⭐ 🟢 What is the Analytics pane, and how do you add an average line or a target line to a chart?
 <!-- ANSWER_PENDING -->
 
-### Q23 ⭐⭐ 🟢 What is the Analytics pane, and how do you add an average line or a target line to a chart?
+### Q23 ⭐⭐ 🟢 How do you change the number format and display units (thousands, millions) of data labels?
 <!-- ANSWER_PENDING -->
 
-### Q24 ⭐⭐ 🟢 How do you change the number format and display units (thousands, millions) of data labels?
+### Q24 ⭐⭐ 🟢 What are themes in Power BI, and how do you apply one to a report?
 <!-- ANSWER_PENDING -->
 
-### Q25 ⭐⭐ 🟢 What are themes in Power BI, and how do you apply one to a report?
+### Q25 ⭐⭐ 🟡 How do you sort a visual by a different column, for example month names in calendar order instead of alphabetical?
 <!-- ANSWER_PENDING -->
 
-### Q26 ⭐⭐ 🟡 How do you sort a visual by a different column, for example month names in calendar order instead of alphabetical?
+### Q26 ⭐⭐ 🟡 How do you build a report page tooltip, step by step?
 <!-- ANSWER_PENDING -->
 
-### Q27 ⭐⭐ 🟡 How do you build a report page tooltip, step by step?
+### Q27 ⭐⭐ 🟡 What do the Data, Display and Current page options of a bookmark do?
 <!-- ANSWER_PENDING -->
 
-### Q28 ⭐⭐ 🟡 What do the Data, Display and Current page options of a bookmark do?
+### Q28 ⭐⭐ 🟡 How would you let users switch between a chart and a table on the same page using bookmarks?
 <!-- ANSWER_PENDING -->
 
-### Q29 ⭐⭐ 🟡 How would you let users switch between a chart and a table on the same page using bookmarks?
+### Q29 ⭐⭐ 🟡 The Drillthrough option does not appear when you right-click a visual. What do you check?
 <!-- ANSWER_PENDING -->
 
-### Q30 ⭐⭐ 🟡 The Drillthrough option does not appear when you right-click a visual. What do you check?
+### Q30 ⭐⭐ 🟡 How do you create a dynamic visual title that shows the department selected in a slicer?
 <!-- ANSWER_PENDING -->
 
-### Q31 ⭐⭐ 🟡 How do you create a dynamic visual title that shows the department selected in a slicer?
+### Q31 ⭐⭐ 🟡 How do you use a DAX measure to control conditional formatting colours (field value formatting)?
 <!-- ANSWER_PENDING -->
 
-### Q32 ⭐⭐ 🟡 How do you use a DAX measure to control conditional formatting colours (field value formatting)?
+### Q32 ⭐⭐ 🟡 How would you build an attendance heat map for employees by day using a matrix?
 <!-- ANSWER_PENDING -->
 
-### Q33 ⭐⭐ 🟡 How would you build an attendance heat map for employees by day using a matrix?
+### Q33 ⭐⭐ 🟡 A visual has no drill icons even though it uses several fields. Why, and how do you fix it?
 <!-- ANSWER_PENDING -->
 
-### Q34 ⭐⭐ 🟡 A visual has no drill icons even though it uses several fields. Why, and how do you fix it?
+### Q34 ⭐⭐ 🟡 When would you use a combo chart (line and clustered column), and what is the risk of a dual axis?
 <!-- ANSWER_PENDING -->
 
-### Q35 ⭐⭐ 🟡 When would you use a combo chart (line and clustered column), and what is the risk of a dual axis?
+### Q35 ⭐⭐ 🟡 How would you let a manager click a department in a chart and see the list of its employees on another page?
 <!-- ANSWER_PENDING -->
 
-### Q36 ⭐⭐ 🟡 How would you let a manager click a department in a chart and see the list of its employees on another page?
+### Q36 ⭐⭐ 🟡 Which visuals would you use to show attrition by department and by tenure band, and why?
 <!-- ANSWER_PENDING -->
 
-### Q37 ⭐⭐ 🟡 Which visuals would you use to show attrition by department and by tenure band, and why?
+### Q37 ⭐⭐ 🟡 By default, does drilling down in one visual change the other visuals on the page, and how can you change that?
 <!-- ANSWER_PENDING -->
 
-### Q38 ⭐⭐ 🟡 By default, does drilling down in one visual change the other visuals on the page, and how can you change that?
+### Q38 ⭐ 🟢 What is a scatter chart, and when would you use it?
 <!-- ANSWER_PENDING -->
 
-### Q39 ⭐ 🟢 What is a scatter chart, and when would you use it?
+### Q39 ⭐ 🟢 What is the difference between a line chart and an area chart?
 <!-- ANSWER_PENDING -->
 
-### Q40 ⭐ 🟢 What is the difference between a line chart and an area chart?
+### Q40 ⭐ 🟢 How do you lock or hide a filter in the Filters pane?
 <!-- ANSWER_PENDING -->
 
-### Q41 ⭐ 🟢 How do you export the data behind a visual, and what does Show as a table do?
+### Q41 ⭐ 🟢 What are Spotlight and Focus mode in Power BI?
 <!-- ANSWER_PENDING -->
 
-### Q42 ⭐ 🟢 How do you lock or hide a filter in the Filters pane?
+### Q42 ⭐ 🟢 What are custom visuals, where do you get them, and what should you check before using one?
 <!-- ANSWER_PENDING -->
 
-### Q43 ⭐ 🟢 What are Spotlight and Focus mode in Power BI?
+### Q43 ⭐ 🟢 What is the Mobile layout view in Power BI Desktop, and when do you build one?
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐ 🟢 What are custom visuals, where do you get them, and what should you check before using one?
+### Q44 ⭐ 🟢 How do you make a Power BI report more accessible (alt text, tab order, colour choices)?
 <!-- ANSWER_PENDING -->
 
-### Q45 ⭐ 🟢 What is the Mobile layout view in Power BI Desktop, and when do you build one?
+### Q45 ⭐ 🟡 What is a decomposition tree, and when is it useful?
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐ 🟢 How do you make a Power BI report more accessible (alt text, tab order, colour choices)?
+### Q46 ⭐ 🟡 What is the difference between a report bookmark and a personal bookmark?
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐ 🟡 What is a decomposition tree, and when is it useful?
+### Q47 ⭐ 🟡 What are the limitations of bookmarks (for example, visual positions and slicers added later)?
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐ 🟡 What is the difference between a report bookmark and a personal bookmark?
+### Q48 ⭐ 🟡 What does Keep all filters do on a drill-through page?
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐ 🟡 What are the limitations of bookmarks (for example, visual positions and slicers added later)?
+### Q49 ⭐ 🟡 What are the requirements for cross-report drillthrough?
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐ 🟡 What does Keep all filters do on a drill-through page?
+### Q50 ⭐ 🟡 What is the difference between Go to the next level and Expand all down one level in a hierarchy visual?
 <!-- ANSWER_PENDING -->
 
-### Q51 ⭐ 🟡 What are the requirements for cross-report drillthrough?
+### Q51 ⭐ 🟡 What are field parameters, and how would you let users choose which measure a chart shows?
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐ 🟡 What is the difference between Go to the next level and Expand all down one level in a hierarchy visual?
+### Q52 ⭐ 🟡 What does the Select all option in a slicer actually do to the filter?
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐ 🟡 What are field parameters, and how would you let users choose which measure a chart shows?
+### Q53 ⭐ 🟡 What are Apply all slicers and Clear all slicers buttons, and why would you add them?
 <!-- ANSWER_PENDING -->
 
-### Q54 ⭐ 🟡 What does the Select all option in a slicer actually do to the filter?
+### Q54 ⭐ 🟡 How would you build a slicer of top customers without using a Top N filter on the visual (disconnected table approach)?
 <!-- ANSWER_PENDING -->
 
-### Q55 ⭐ 🟡 What are Apply all slicers and Clear all slicers buttons, and why would you add them?
+### Q55 ⭐ 🟡 What are the limitations of report page tooltips?
 <!-- ANSWER_PENDING -->
 
-### Q56 ⭐ 🟡 How would you build a slicer of top customers without using a Top N filter on the visual (disconnected table approach)?
+### Q56 ⭐ 🟡 A category shows as (Blank) in a chart. How do you find out why, and how do you handle it?
 <!-- ANSWER_PENDING -->
 
-### Q57 ⭐ 🟡 What are the limitations of report page tooltips?
+### Q57 ⭐ 🟡 What does Show items with no data do, and when would you turn it on?
 <!-- ANSWER_PENDING -->
 
-### Q58 ⭐ 🟡 A category shows as (Blank) in a chart. How do you find out why, and how do you handle it?
+### Q58 ⭐ 🟡 How would you build a headcount waterfall (opening headcount, hires, exits, closing headcount)?
 <!-- ANSWER_PENDING -->
 
-### Q59 ⭐ 🟡 What does Show items with no data do, and when would you turn it on?
+### Q59 ⭐ 🟡 Can a field parameter be used as a drill-through or tooltip field, and what is the workaround?
 <!-- ANSWER_PENDING -->
 
-### Q60 ⭐ 🟡 How would you build a headcount waterfall (opening headcount, hires, exits, closing headcount)?
+### Q60 ⭐ 🔴 How would you build a report where a slicer filters most visuals but one visual still shows the company-wide total for comparison?
 <!-- ANSWER_PENDING -->
 
-### Q61 ⭐ 🟡 Can a field parameter be used as a drill-through or tooltip field, and what is the workaround?
-<!-- ANSWER_PENDING -->
-
-### Q62 ⭐ 🔴 How would you build a report where a slicer filters most visuals but one visual still shows the company-wide total for comparison?
-<!-- ANSWER_PENDING -->
-
-### Q63 ⭐ 🔴 How would you design one HR page where managers pick the measure (headcount, attrition, average tenure) and the grouping (department, location, grade) and can still drill through to employees?
+### Q61 ⭐ 🔴 How would you design one HR page where managers pick the measure (headcount, attrition, average tenure) and the grouping (department, location, grade) and can still drill through to employees?
 <!-- ANSWER_PENDING -->
