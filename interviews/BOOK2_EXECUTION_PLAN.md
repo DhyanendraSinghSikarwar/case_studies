@@ -22,7 +22,7 @@ Follows plan.md §5 (Book 2 table), §11 (workflow) and style_guide.md. Book 1 i
 | 9 | LLM evaluation | 45 | ✅ (46 Qs) | ✅ | ✅ |
 | 10 | Deployment: vLLM, quantization, latency/cost | 45 | ✅ (49 Qs) | ✅ | ✅ |
 | 11 | LLMOps, security, prompt injection | 40 | ✅ (45 Qs) | ✅ | ✅ |
-| 12 | GenAI system design + coding | 40 | ⬜ | ⬜ | ⬜ |
+| 12 | GenAI system design + coding | 40 | ✅ (40 Qs) | ⬜ | ⬜ |
 
 ## Scope boundaries
 Book 1 Part 9 owns light NLP/transformer intro; Book 4 owns generic MLOps/Docker/K8s; Book 6 owns GenAI scenarios. Book 2 is the deep treatment. Part 1 leaves PagedAttention, speculative decoding and quantization to Part 10, and decoding/sampling to Part 2.
