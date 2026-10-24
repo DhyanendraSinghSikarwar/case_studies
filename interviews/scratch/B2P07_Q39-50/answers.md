@@ -954,3 +954,157 @@ assert all(r["stages"] == [] or r["conf"] >= 0.7 for r in lg)                   
 - *How do you know a stage is worth keeping?* The ablation: gain per query type minus its added latency and cost; retire stages that do not pay.
 
 **Common mistakes:** applying the rewriter to every query; dropping the original query; judging the router only by label accuracy; no confidence threshold or fallback; not logging what each stage did; ablating on the whole set instead of per query type; tuning once and forgetting drift.
+
+### Q49 ⭐ 🔴 Are LLM-based retrievers worth their cost compared with a tuned hybrid-plus-rerank stack? How do you decide?
+**Asked at:** research-leaning teams, GenAI startups, senior roles
+**Say this first (1 line):** I cannot say in general, and I would not quote a paper's result for my data: I treat a tuned hybrid-plus-rerank stack as the baseline, and any LLM-based retriever (LLM embeddings, an LLM reranker, LLM-built index text) must beat it on my own golden set by enough quality per unit of added latency, index cost, storage and update cost, and stay robust, or it does not ship.
+
+**Then explain:**
+- **Scope note:** the question matches a recent paper titled "Are LLM-based retrievers worth their cost?"; I only saw its title, so I quote no findings from it. This answer is a decision framework with assumed numbers.
+- **What counts as "LLM-based":** an LLM-derived embedding model for retrieval; an LLM used as a reranker over the top candidates; an LLM used at index time to enrich chunks (for example the contextual retrieval idea, whose failure-rate reductions are one vendor's reported figures on its own data); an LLM generating queries or hypothetical documents (Q8).
+- **The baseline must be strong first:** tuned chunking, hybrid BM25 plus dense with fusion, a cross-encoder reranker, query handling where useful. Comparing an LLM retriever with untuned dense retrieval is a strawman.
+- **What I measure for each candidate, on my own golden set:**
+  1. Quality: recall@k, MRR or nDCG, and end-answer quality, per query slice (Q45).
+  2. Latency: p50 and p95 added per query, including queueing under load.
+  3. Index cost: one-time LLM or embedding spend, and time to build.
+  4. Storage and memory: larger vectors or extra text per chunk.
+  5. Update cost: re-embedding or re-enriching changed documents each month (a recurring cost, not one-off).
+  6. Robustness: paraphrases, typos, long queries, out-of-domain, adversarial text; variance across runs for LLM components.
+  7. Operational risk: a model deprecation or version change forces re-indexing; dependence on one vendor.
+- **Decision rule:** compute quality gain per added cost over the baseline, drop options dominated on quality and latency, check the budgets (latency SLO, index budget, update budget, storage cap), then pick the best feasible option. Re-run when prices, models or data change.
+- **Where an LLM component tends to pay off (hypotheses to test, not findings):** hard queries where the baseline fails (vague, reasoning-heavy), small high-value corpora where index cost is spread over valuable queries, and index-time enrichment for chunks that lose context. Where it tends not to: identifier and keyword queries, latency-bound paths, and corpora that change constantly.
+
+**Example:** (ASSUMED numbers) against a baseline of hybrid plus cross-encoder (recall@10 0.81 at 260 ms), my table has an LLM reranker at 0.83 and 1,400 ms: it is dominated on the quality-latency frontier by an index-time contextual approach at 0.85 and 270 ms, and gains only 0.18 recall points per extra 100 ms. An LLM-embedding retriever at 0.80 costs 51 more index units and 88 more GB for no gain. The contextual index is the interesting one but breaks the assumed monthly update budget (4.0 against 3.0); with the budget raised to 5.0 it wins. So the answer is a conditional, and the condition is a number I can measure.
+
+**Code:** (executed, standalone, stdlib only; EVERY number is ASSUMED for illustration, and the 0.7 quality and 0.3 robustness weights are a made-up scoring choice)
+```python
+# Standalone, stdlib only. EVERY number is an ASSUMPTION (not a benchmark, not a finding from any paper). It shows HOW to decide, using your own measured numbers.
+OPTIONS = {   # name: (recall@10 on YOUR golden set, p95 latency ms, one-time index cost units, storage GB, monthly update cost units, robustness 0-1 (paraphrase/typo/stress set))
+ "BM25 only":                         (0.62,  40,   1,   2, 0.1, 0.60),
+ "dense only (small encoder)":        (0.68,  60,   8,  30, 0.8, 0.70),
+ "hybrid (BM25+dense, RRF)":          (0.74,  90,   9,  32, 0.9, 0.78),
+ "hybrid + cross-encoder rerank":     (0.81, 260,   9,  32, 0.9, 0.84),   # <- the tuned baseline
+ "hybrid + LLM reranker (top 20)":    (0.83, 1400,  9,  32, 0.9, 0.86),
+ "LLM-embedding retriever":           (0.80, 180,  60, 120, 6.0, 0.82),
+ "contextual index (LLM per chunk)+hybrid+rerank": (0.85, 270, 45, 40, 4.0, 0.88),
+}
+BASE = "hybrid + cross-encoder rerank"
+LAT_SLO, INDEX_BUDGET, MONTHLY_BUDGET, STORAGE_CAP = 600, 50, 3.0, 100       # ASSUMED constraints
+print(f"{'option':48s}{'R@10':>6s}{'ms':>6s}{'index':>7s}{'GB':>5s}{'upd/mo':>8s}{'robust':>8s}")
+for n, (r, l, ix, gb, up, rb) in OPTIONS.items(): print(f"{n:48s}{r:>6.2f}{l:>6d}{ix:>7d}{gb:>5d}{up:>8.1f}{rb:>8.2f}")
+
+# 1) quality-latency frontier: an option is dominated if another has recall >= and latency <= (and is not identical)
+def dominates(a, b):
+    ka = (a[0], -a[1]); kb = (b[0], -b[1])
+    return all(x >= y for x, y in zip(ka, kb)) and ka != kb
+frontier = [n for n, v in OPTIONS.items() if not any(dominates(OPTIONS[m], v) for m in OPTIONS if m != n)]
+print("\nquality-latency frontier (not dominated):", frontier, "| dominated:", [n for n in OPTIONS if n not in frontier])
+
+# 2) incremental value over the tuned baseline: quality gain per added cost
+b = OPTIONS[BASE]
+print(f"\nvs baseline '{BASE}':")
+print(f"{'option':48s}{'dR@10':>7s}{'+ms':>7s}{'R@10 pts per +100ms':>21s}{'+index':>8s}{'+GB':>6s}")
+for n, v in OPTIONS.items():
+    if n == BASE: continue
+    d_r, d_ms = v[0] - b[0], v[1] - b[1]
+    per100 = f"{d_r * 100 / (d_ms / 100):.2f}" if d_ms > 0 else "n/a (faster)"
+    print(f"{n:48s}{d_r:>+7.2f}{d_ms:>+7d}{per100:>21s}{v[2] - b[2]:>+8d}{v[3] - b[3]:>+6d}")
+
+# 3) choose under constraints: maximise a quality score subject to the SLO and budgets
+def feasible(v): return v[1] <= LAT_SLO and v[2] <= INDEX_BUDGET and v[4] <= MONTHLY_BUDGET and v[3] <= STORAGE_CAP
+cands = {n: v for n, v in OPTIONS.items() if feasible(v)}
+best = max(cands, key=lambda n: (0.7 * cands[n][0] + 0.3 * cands[n][5]))             # ASSUMED weighting: 70% quality, 30% robustness
+print(f"\nconstraints: latency<={LAT_SLO}ms, index<={INDEX_BUDGET}, update/mo<={MONTHLY_BUDGET}, storage<={STORAGE_CAP}GB")
+print("feasible:", list(cands)); print("choice (0.7*recall + 0.3*robustness):", best)
+for budget in (3.0, 5.0):                                                            # sensitivity: what if the monthly update budget were larger?
+    c2 = {n: v for n, v in OPTIONS.items() if v[1] <= LAT_SLO and v[2] <= INDEX_BUDGET and v[4] <= budget and v[3] <= STORAGE_CAP}
+    print(f"update budget {budget}: choice ->", max(c2, key=lambda n: 0.7 * c2[n][0] + 0.3 * c2[n][5]))
+assert "hybrid + LLM reranker (top 20)" not in cands and "LLM-embedding retriever" not in cands
+assert best == "hybrid + cross-encoder rerank", best
+# sensitivity: how big must the LLM-retriever's gain be to justify its cost? (break-even recall for the same score)
+needed = (0.7 * b[0] + 0.3 * b[5] - 0.3 * OPTIONS["LLM-embedding retriever"][5]) / 0.7
+print("LLM-embedding retriever would need R@10 >= %.3f to tie the baseline under this scoring (assumed numbers say %.2f)" % (needed, OPTIONS["LLM-embedding retriever"][0]))
+```
+
+**Follow-ups:**
+- *What would change your mind?* A measured gain on the hard slice that matters, within the latency and update budgets, that holds across reruns.
+- *Can you cut the LLM cost?* Apply the LLM only when the first stage is uncertain (Q45, Q48), cache, use a smaller model, or restrict it to the top few candidates.
+- *How do you avoid fooling yourself?* A held-out golden set the tuning never touched, paired comparisons per query, and multiple runs for stochastic components.
+
+**Common mistakes:** comparing against an untuned baseline; reporting quality without latency and update cost; trusting a benchmark average instead of your own slices; ignoring p95 latency and run-to-run variance; forgetting that index-time LLM cost recurs on every update; deciding once and never re-checking as models and prices change.
+
+### Q50 ⭐ 🔴 Late-interaction storage and latency maths: estimate the index size for 10 million passages with token-level vectors and compare it with single-vector and PQ-compressed options.
+**Asked at:** platform teams, search teams, senior roles
+**Say this first (1 line):** Late interaction stores one vector per token, so under my stated assumptions (10 million passages, about 100 tokens each, 128-dimensional vectors) the index is about 256 GB in fp16 against about 31 GB for one 768-d fp32 vector per passage, so I would compress it (int8, 1-bit or residual-style codes), use it on a candidate set instead of scanning everything, and only adopt it if the measured quality gain beats a tuned single-vector-plus-reranker stack.
+
+**Then explain:**
+- **Assumptions (stated, not measured):** 10M passages; 100 token vectors per passage, so 1 billion vectors; 128 dimensions per vector; 32 query token vectors. Sizes below exclude ids, ANN structures, centroid tables and replicas, which add overhead.
+- **Storage maths** (computed in the code below):
+
+| Option | Bytes per passage | Total |
+|---|---|---|
+| Token vectors fp16 (100 x 128 x 2) | 25,600 | 256 GB |
+| Token vectors int8 | 12,800 | 128 GB |
+| Token vectors 1-bit (16 bytes per token) | 1,600 | 16 GB |
+| Residual-style: 2-bit residuals plus a 4-byte centroid id (an assumed layout, from memory, not verified) | 3,600 | 36 GB |
+| LITE-style 0.25 x ColBERT storage (reported in a paper snippet on MS MARCO reranking, not opened) | 6,400 if applied to fp16 | 64 GB |
+| Single vector 768 x 4 bytes | 3,072 | 30.7 GB |
+| Single vector as 96-byte PQ codes | 96 | 0.96 GB |
+
+- **Residual compression (ColBERTv2; from memory, not verified):** the idea is to store, for each token vector, the id of its nearest centroid plus a heavily quantised residual (the small difference from that centroid), which cuts storage by a large factor compared with raw fp16. My 2-bit row is an illustration of that idea, not the paper's exact layout or figure.
+- **Latency maths:** MaxSim for one query and one passage costs query tokens x passage tokens x dimension = 32 x 100 x 128 = 409,600 multiply-adds, about 533 times a single 768-d dot product. Reranking 1,000 candidates is 4.1e8 multiply-adds; scanning all 10M passages exhaustively would be 4.1e12 per query, so you need a candidate stage: an ANN search over token vectors or a first-stage retriever, then MaxSim on the candidates. On this machine (labelled, machine-specific, 1 CPU thread, fp32) a plain MaxSim of 1,000 candidates took about 17 ms; real systems add decompression, memory access and index lookups, which usually dominate, so measure with your own stack. The ColBERT abstract reports two orders of magnitude faster than BERT-based rerankers at competitive effectiveness (reported claim, against cross-encoders, not against a bi-encoder).
+- **Decision:** 256 GB does not fit one ordinary box in memory; 1-bit or residual-style compression brings it to tens of GB (quality loss must be measured, I do not know it for my data); a single vector plus a cross-encoder rerank is about 31 GB and a mature stack (Q5). So: start with the single-vector hybrid baseline, run a compressed late-interaction retriever on a golden-set sample, and adopt it only if recall on the hard slice improves enough to pay for the extra storage, engineering and update complexity (Q49). If storage is the constraint, use compression or a smaller token budget (fewer vectors per passage, lower dimension) before giving up on late interaction.
+- **Update cost:** adding or changing a passage means recomputing and re-compressing its token vectors, and compressed schemes that rely on trained centroids need periodic retraining.
+
+**Example:** I am asked to size a 10M-passage index. I say: 1 billion token vectors, 256 GB fp16, 128 GB int8, 16 GB at 1 bit, versus 30.7 GB for 768-d fp32 single vectors and about 1 GB with 96-byte PQ. Then I add the caveats: overheads, unknown quality loss of low-bit codes, and that I would test on a sample before committing.
+
+**Code:** (executed, standalone, numpy plus torch on CPU with one thread; storage and operation counts are arithmetic on ASSUMED sizes, the residual row uses an assumed layout from memory, the LITE row is a reported ratio, and the one timing is a measurement on this machine only)
+```python
+# Standalone, numpy + torch (CPU, 1 thread). Storage and FLOP maths use ASSUMED sizes; the timing is a measurement on THIS machine only.
+import time, numpy as np, torch
+torch.set_num_threads(1)
+N_PASS, TOK_PER_PASS, DIM = 10_000_000, 100, 128          # ASSUMED corpus and model shape
+Q_TOK = 32                                                 # ASSUMED query length in token vectors
+GB = 1e9
+n_vec = N_PASS * TOK_PER_PASS
+rows = [("ColBERT-style fp16 token vectors",            n_vec * DIM * 2),
+        ("  int8 token vectors",                         n_vec * DIM * 1),
+        ("  1-bit token vectors (sign bits)",            n_vec * DIM / 8),
+        ("  residual-style 2-bit + 4B centroid id (from memory, ASSUMED layout)", n_vec * (DIM * 2 / 8 + 4)),
+        ("  LITE-style 0.25 x fp16 (REPORTED ratio, not opened)", 0.25 * n_vec * DIM * 2),
+        ("single-vector 768-d fp32 (3,072 B/passage)",   N_PASS * 768 * 4),
+        ("single-vector PQ 96-byte codes",               N_PASS * 96)]
+base = rows[0][1]
+print(f"{n_vec:,} token vectors; sizes exclude ids, ANN graph/centroid tables and replicas (add overhead)")
+print(f"{'option':72s}{'bytes/passage':>14s}{'GB':>10s}{'x fp16':>8s}")
+for n, b in rows: print(f"{n:72s}{b / N_PASS:>14,.0f}{b / GB:>10,.2f}{b / base:>8.3f}")
+assert rows[0][1] / GB == 256.0 and rows[1][1] / GB == 128.0 and rows[2][1] / GB == 16.0 and rows[5][1] / N_PASS == 3072 and rows[6][1] / GB == 0.96
+
+# MaxSim cost: for each query token take the max dot product over document tokens, then sum
+per_pair = Q_TOK * TOK_PER_PASS * DIM
+print(f"\nMaxSim per query-passage pair: {Q_TOK} x {TOK_PER_PASS} x {DIM} = {per_pair:,} multiply-adds; single-vector dot: 768 multiply-adds ({per_pair / 768:.0f}x)")
+for cand in (1_000, 10_000):
+    print(f"  rerank {cand:>6,} candidates: {cand * per_pair:,.0f} multiply-adds")
+print(f"  exhaustive MaxSim over all {N_PASS:,} passages: {N_PASS * per_pair:.2e} multiply-adds per query -> needs candidate generation first")
+
+# measured timing for 1000 candidates on THIS machine (CPU, 1 thread, fp32); machine-specific, not a benchmark
+g = torch.Generator().manual_seed(0)
+q = torch.nn.functional.normalize(torch.randn(Q_TOK, DIM, generator=g), dim=-1)
+docs = torch.nn.functional.normalize(torch.randn(1000, TOK_PER_PASS, DIM, generator=g), dim=-1)
+def maxsim(q, docs): return torch.einsum("qd,ntd->nqt", q, docs).max(dim=-1).values.sum(dim=-1)
+maxsim(q, docs); t = time.perf_counter(); reps = 5
+for _ in range(reps): s = maxsim(q, docs)
+ms = (time.perf_counter() - t) / reps * 1000
+print(f"\nmeasured on this machine (labelled, machine-specific): MaxSim for 1,000 candidates, fp32, 1 thread: {ms:.1f} ms; output shape {tuple(s.shape)}")
+chk = max(float((q @ docs[i].T).max(dim=1).values.sum() - s[i]) for i in range(3)); assert abs(chk) < 1e-4
+# toy decision helper
+for name, b in rows:
+    fits = b / GB <= 64; print(f"fits in a 64 GB RAM box? {'yes' if fits else 'no':3s} {name.strip()}")
+```
+
+**Follow-ups:**
+- *Why not just store fewer tokens?* Pruning tokens (stop words, low-value tokens) or using fewer dimensions reduces storage and cost, at a quality cost to measure.
+- *Is late interaction better than a cross-encoder?* It is cheaper per candidate because document vectors are precomputed, but usually less precise than a cross-encoder on a short list; it can also serve as the candidate generator (the ColBERT abstract describes both uses).
+- *Disk or RAM?* Compressed token vectors on SSD with a small in-memory index is a common compromise; measure p95.
+
+**Common mistakes:** quoting storage per passage as if it were one vector; forgetting the 100x token multiplier; ignoring index overheads; assuming compression is lossless; scanning everything instead of generating candidates first; quoting a speedup versus cross-encoders as if it were versus bi-encoders; treating the LITE and residual-compression figures as verified.
