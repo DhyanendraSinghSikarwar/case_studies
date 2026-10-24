@@ -736,3 +736,476 @@ Canonical questions per book. Wave A agents: check this BEFORE adding a question
 ## Book 2 — GenAI / LLM / RAG / Agentic AI
 | Q-ID | Part | Canonical question |
 |---|---|---|
+| B2P01-Q1 | 1 | Explain self-attention step by step (Q, K, V, scaled dot-product, softmax). What does each of Q, K and V represent? |
+| B2P01-Q2 | 1 | Why did transformers replace RNNs/LSTMs? What are the remaining drawbacks of transformers? |
+| B2P01-Q3 | 1 | What is multi-head attention? Why use several heads instead of one big head, and what are the tensor shapes and cost? |
+| B2P01-Q4 | 1 | Encoder-only vs decoder-only vs encoder-decoder models: how do they differ, with examples and when to use each? |
+| B2P01-Q5 | 1 | What is the causal mask? Why can training be parallel over all tokens while generation is sequential? |
+| B2P01-Q6 | 1 | What is the KV cache, why does it speed up generation, and how does its memory grow? |
+| B2P01-Q7 | 1 | Prefill vs decode: what happens in each phase, and why is decode memory-bandwidth-bound while prefill is compute-bound? |
+| B2P01-Q8 | 1 | Why does a transformer need positional information? Compare sinusoidal, learned and rotary (RoPE) encodings. |
+| B2P01-Q9 | 1 | Why is self-attention O(n^2), and how do you cope with long sequences? |
+| B2P01-Q10 | 1 | What are multi-query (MQA) and grouped-query attention (GQA)? How do they shrink the KV cache and what do they cost? |
+| B2P01-Q11 | 1 | What is FlashAttention? Does it change the result, and why is it faster? |
+| B2P01-Q12 | 1 | Walk through a transformer block: residual connections, normalisation, feed-forward network. Pre-LN vs post-LN? |
+| B2P01-Q13 | 1 | Code: implement causal scaled dot-product (multi-head) self-attention from scratch in PyTorch or NumPy. |
+| B2P01-Q14 | 1 | Walk through one forward pass of a decoder-only LLM, from text to next-token probabilities. |
+| B2P01-Q15 | 1 | Live maths: estimate parameter count and KV-cache memory for a Llama-style model (layers, heads, head dim, context, batch). |
+| B2P01-Q16 | 1 | BERT vs GPT: pretraining objectives, attention pattern, typical uses. Why did decoder-only models come to dominate? |
+| B2P01-Q17 | 1 | Why do we divide attention scores by sqrt(d_k)? Give the variance argument. |
+| B2P01-Q18 | 1 | How does RoPE work, and how do position interpolation, NTK-aware scaling and YaRN extend context length? |
+| B2P01-Q19 | 1 | What is the context window, and why is the effective context often shorter than the advertised one ("lost in the middle")? |
+| B2P01-Q20 | 1 | LayerNorm vs RMSNorm: what changes and why do modern LLMs prefer RMSNorm? |
+| B2P01-Q21 | 1 | What does the feed-forward network do in a transformer? Explain GELU vs SwiGLU/gated FFNs and where most parameters live. |
+| B2P01-Q22 | 1 | What is cross-attention, where is it used (T5, Whisper, diffusion, multimodal) and how does it differ from self-attention? |
+| B2P01-Q23 | 1 | Which levers reduce KV-cache memory (GQA, quantised cache, sliding window, eviction)? Compare their trade-offs. |
+| B2P01-Q24 | 1 | What are prompt/prefix caching in LLM APIs, and how do they relate to the KV cache? How do you structure prompts to benefit? |
+| B2P01-Q25 | 1 | Explain input embeddings, the unembedding (LM head) layer and weight tying. How does vocabulary size affect model size and cost? |
+| B2P01-Q26 | 1 | Where do a transformer's parameters live (attention vs FFN vs embeddings)? How is head dimension chosen? |
+| B2P01-Q27 | 1 | Transformers vs state-space models (Mamba), linear attention and hybrid architectures: when would you pick each? |
+| B2P01-Q28 | 1 | Do attention weights explain a model's output? What are induction heads and how do they relate to in-context learning? |
+| B2P01-Q29 | 1 | What are sliding-window, local and sparse attention? What are attention sinks and why do they matter for streaming? |
+| B2P01-Q30 | 1 | What breaks when you go from 8k to 128k–1M context (compute, memory, quality)? What is ring attention / sequence parallelism at a high level? |
+| B2P01-Q31 | 1 | How do multimodal LLMs ingest images (ViT patches, projector, cross-attention vs token concatenation)? |
+| B2P01-Q32 | 1 | Use arithmetic intensity (roofline thinking) to explain why batching helps decode throughput and when it stops helping. |
+| B2P01-Q33 | 1 | What is Multi-head Latent Attention (MLA, as in DeepSeek)? How does it compress the KV cache versus GQA? |
+| B2P01-Q34 | 1 | Explain Mixture-of-Experts layers: routing, load balancing, active vs total parameters, and the serving trade-offs. |
+| B2P01-Q35 | 1 | Code: write a decoding loop with a KV cache and verify it matches the no-cache output. |
+| B2P01-Q36 | 1 | Explain transformers to a non-technical stakeholder in two minutes. |
+| B2P01-Q37 | 1 | Derive the sinusoidal positional encoding and its relative-position property. Why is it rarely used in modern LLMs? |
+| B2P01-Q38 | 1 | ALiBi vs RoPE: how does each handle length extrapolation? |
+| B2P01-Q39 | 1 | What architectural choices do modern open LLMs (Llama, Qwen, DeepSeek) make: RMSNorm, SwiGLU, RoPE, GQA, no biases, tied embeddings? Why? |
+| B2P01-Q40 | 1 | Do attention heads specialise? What does head pruning or head ablation tell you? |
+| B2P01-Q41 | 1 | AI code review: this LLM-written attention snippet has bugs (softmax dim, missing mask, missing scaling, wrong reshape). Find and fix them. |
+| B2P01-Q42 | 1 | Code: implement rotary position embeddings (RoPE) and show that scores depend on relative position. |
+| B2P01-Q43 | 1 | Derive FlashAttention's online softmax and explain how tiling reduces HBM reads/writes. |
+| B2P01-Q44 | 1 | What stability tricks do large transformers use (pre-norm, QK-norm, logit soft-capping, z-loss, warmup)? Why do loss spikes happen? |
+| B2P01-Q45 | 1 | What is multi-token prediction, and how does it relate to speculative decoding? |
+| B2P01-Q46 | 1 | Diffusion language models vs autoregressive LLMs: how do they differ, and what are the trade-offs? |
+| B2P01-Q47 | 1 | Design question: choose the architecture and attention variant for a 32k-context, low-latency chat model that must run on one GPU. |
+| B2P02-Q1 | 2 | Why do LLMs use subword tokenization instead of words or characters? Compare BPE, WordPiece and Unigram/SentencePiece. |
+| B2P02-Q2 | 2 | Greedy decoding vs sampling vs beam search: how does each choose the next token, and when would you use which? |
+| B2P02-Q3 | 2 | What is the pretraining objective of a decoder-only LLM? Write the next-token cross-entropy loss and explain the label shift. |
+| B2P02-Q4 | 2 | Explain temperature, top-k and top-p (nucleus) sampling. What does each do to the distribution and what are sensible values? |
+| B2P02-Q5 | 2 | Token maths: how many tokens is 1,000 words, why do code, JSON and non-English text cost more, and how would you cut token spend? |
+| B2P02-Q6 | 2 | Why do LLMs struggle with counting letters ("strawberry"), arithmetic and string reversal? What does tokenization have to do with it? |
+| B2P02-Q7 | 2 | What is perplexity? How does it relate to cross-entropy loss, and why can't you compare it across models with different tokenizers? |
+| B2P02-Q8 | 2 | Pretraining vs continued pretraining vs fine-tuning: what changes in data, objective, cost and risk, and when do you choose each? |
+| B2P02-Q9 | 2 | Walk through a pretraining data pipeline: sources, cleaning, quality filtering, language ID, PII/toxicity filtering, deduplication and mixing. |
+| B2P02-Q10 | 2 | What are LLM scaling laws? What do loss versus parameters, data and compute look like, and what can you do with them? |
+| B2P02-Q11 | 2 | What did Chinchilla find? Use C ~ 6ND to work out the compute-optimal model size and token count for a given budget. |
+| B2P02-Q12 | 2 | Code: implement a byte-pair-encoding tokenizer (train, encode, decode) with deterministic tie-breaking, and show a round trip. |
+| B2P02-Q13 | 2 | Code: implement temperature, top-k and top-p sampling from a logits vector, and verify it empirically. |
+| B2P02-Q14 | 2 | How do you choose a tokenizer vocabulary size? Discuss sequence length, embedding/softmax cost, rare-token under-training and multilingual coverage. |
+| B2P02-Q15 | 2 | What is byte-level BPE, why does it remove out-of-vocabulary tokens, and what are its trade-offs (UTF-8, byte fallback)? |
+| B2P02-Q16 | 2 | What are special tokens (BOS, EOS, PAD, role/chat tokens) and chat templates? What breaks if the template or padding side is wrong? |
+| B2P02-Q17 | 2 | Why do Indian and other low-resource languages cost more tokens (the "token tax")? What can you do about it? |
+| B2P02-Q18 | 2 | What are glitch or under-trained tokens, why do they exist, and how would you detect them? |
+| B2P02-Q19 | 2 | What are min-p and typical sampling, and in what order should samplers (penalties, temperature, truncation) be applied? |
+| B2P02-Q20 | 2 | Why do LLMs repeat themselves, and how do repetition, frequency and presence penalties work? When do penalties hurt (code, JSON)? |
+| B2P02-Q21 | 2 | Is temperature 0 deterministic? What causes run-to-run differences in LLM output, and how do you get reproducibility? |
+| B2P02-Q22 | 2 | How does generation stop? Explain EOS, stop sequences, max tokens, finish reasons, truncation and streaming. |
+| B2P02-Q23 | 2 | What are logprobs? How can you use token log-probabilities for confidence, classification and calibration, and what is logit bias? |
+| B2P02-Q24 | 2 | Beam search in detail: length normalisation, cost in compute and KV memory, and why it works for translation but not open-ended chat. |
+| B2P02-Q25 | 2 | How do you deduplicate a pretraining corpus (exact vs near-duplicate, MinHash/LSH)? Why does it matter? |
+| B2P02-Q26 | 2 | What does a standard LLM pretraining optimisation recipe look like (AdamW settings, warmup, cosine or WSD decay, weight decay, gradient clipping), and why each piece? |
+| B2P02-Q27 | 2 | Why is bf16 preferred over fp16 for LLM pretraining? Cover exponent range vs mantissa, fp32 master weights and optimizer states, which ops stay in fp32, and what FP8 changes. |
+| B2P02-Q28 | 2 | How do you choose batch size in LLM pretraining (tokens per step, gradient accumulation, critical batch size, learning-rate scaling)? |
+| B2P02-Q29 | 2 | How do you read a pretraining loss curve? What do spikes, divergence, plateaus and a train/validation gap tell you, and what would you do? |
+| B2P02-Q30 | 2 | How do you decontaminate a pretraining corpus against benchmarks (n-gram overlap, canary strings, dynamic test sets) and detect contamination in a finished model? |
+| B2P02-Q31 | 2 | Why do LLMs memorise and regurgitate training data? What makes it worse, and how do you reduce privacy and copyright risk? |
+| B2P02-Q32 | 2 | Why do modern models train far beyond the Chinchilla-optimal token count (e.g. an 8B model on ~15T tokens)? What is inference-aware scaling? |
+| B2P02-Q33 | 2 | Estimate the cost of pretraining a 7B model on 2T tokens: FLOPs, GPU-hours, model FLOPs utilisation (MFU) and rough dollars. |
+| B2P02-Q34 | 2 | Live maths: how much GPU memory does training a 7B model need (weights, gradients, Adam states, activations)? Explain data, tensor and pipeline parallelism and ZeRO/FSDP at a high level. |
+| B2P02-Q35 | 2 | AI code review: this LLM-written sampling function has bugs (top-p off-by-one, wrong order of temperature and softmax, no renormalisation, mutated logits). Find and fix them. |
+| B2P02-Q36 | 2 | How would you extend a tokenizer and model to a new domain or language (new tokens, embedding initialisation, continued pretraining)? What goes wrong? |
+| B2P02-Q37 | 2 | Tokenizer-free and byte-level models (ByT5, byte-latent transformers) and digit tokenisation choices: what are the trade-offs? |
+| B2P02-Q38 | 2 | Data mixtures, curriculum, annealing and synthetic data in pretraining: what helps, and what is model collapse? |
+| B2P02-Q39 | 2 | How many epochs over the same data are acceptable? What do data-constrained scaling results say about repeating data? |
+| B2P02-Q40 | 2 | Are emergent abilities real or an artefact of the metric? How would you test it? |
+| B2P02-Q41 | 2 | What are the limits and critiques of scaling laws (fit uncertainty, extrapolation risk, the data wall, test-time compute)? |
+| B2P02-Q42 | 2 | Decoding-time methods to improve quality: self-consistency, contrastive decoding and DoLa. How do they work and what do they cost? |
+| B2P02-Q43 | 2 | Test-time compute: best-of-n, majority voting and long chain-of-thought sampling. How do cost, latency and accuracy trade off? |
+| B2P02-Q44 | 2 | Design question: choose decoding settings and stop rules for four products (code completion, support chat, creative writing, data extraction) and defend them. |
+| B2P03-Q1 | 3 | What are zero-shot, one-shot and few-shot prompting? Why do examples often beat a longer description, and how do you pick them? |
+| B2P03-Q2 | 3 | System, user and assistant messages: what is each role for, what goes where, and what happens when instructions conflict? |
+| B2P03-Q3 | 3 | What is chain-of-thought prompting? When does it help, what does it cost in latency and tokens, and when does it hurt? |
+| B2P03-Q4 | 3 | How do you structure a complex prompt (sections, delimiters or XML tags, ordering, where to put key instructions, what to do when a condition is not met)? |
+| B2P03-Q5 | 3 | How do you design prompts to reduce hallucinations (grounding, permission to say "I don't know", citations, temperature)? What are the limits of prompting here? |
+| B2P03-Q6 | 3 | How do you iterate on a prompt systematically? How do you know a prompt change did not make things worse (golden set, one change at a time, regression runs)? |
+| B2P03-Q7 | 3 | How do you get reliable JSON from an LLM? Compare prompt-only, JSON mode, schema-based structured outputs, function calling and constrained decoding. |
+| B2P03-Q8 | 3 | Explain function calling end to end: tool definitions, the model emitting a call, your code executing it, returning the result, and the final answer. |
+| B2P03-Q9 | 3 | How do you design good tool or function definitions (names, descriptions, parameter schemas, enums, how many tools)? |
+| B2P03-Q10 | 3 | Your agent returns valid JSON but the numbers are sometimes wrong. Where do you look first? Why is valid not the same as correct? |
+| B2P03-Q11 | 3 | Code: implement a function-calling loop against a mocked model: parse the call, validate arguments, execute, return the result, with a maximum number of steps. |
+| B2P03-Q12 | 3 | Code: validate LLM JSON output against a schema, repair or retry with a bounded budget, and fail closed when retries run out. |
+| B2P03-Q13 | 3 | How do you select and order few-shot examples (coverage, label balance, recency bias, dynamic selection by retrieval)? |
+| B2P03-Q14 | 3 | Zero-shot CoT, few-shot CoT, self-consistency and reasoning models: when does explicit "think step by step" prompting help, and when is it counter-productive? |
+| B2P03-Q15 | 3 | What is ReAct prompting (thought, action, observation) and how does it differ from plain chain-of-thought? |
+| B2P03-Q16 | 3 | Task decomposition and prompt chaining versus one big prompt: when do you split, and how do you choose the decomposition? |
+| B2P03-Q17 | 3 | How should a prompt handle ambiguity and missing information (fallback behaviour, clarifying questions, defaults, missing tool parameters)? |
+| B2P03-Q18 | 3 | What is context engineering? How do you decide what goes into the context window, and how do you manage long-running conversations (rolling summary vs retrieval)? |
+| B2P03-Q19 | 3 | Does role or persona prompting ("you are an expert...") help? How do you control tone and style reliably? |
+| B2P03-Q20 | 3 | Negative constraints and instruction following: why do "do not" instructions fail, how do you resolve conflicting instructions, and what works better? |
+| B2P03-Q21 | 3 | How do you control output length and format (explicit specs, examples, stop sequences, max tokens)? What goes wrong with truncation? |
+| B2P03-Q22 | 3 | What does constrained decoding do at the logit level? How does a schema become a grammar or state machine, and what does it guarantee and not guarantee? |
+| B2P03-Q23 | 3 | What does a provider's strict structured-output mode require of your JSON schema (additionalProperties, required fields, optional fields), and what are the limits of the supported schema subset? |
+| B2P03-Q24 | 3 | Does forcing a structured format hurt answer quality? How do field order and a free-text reasoning field help? |
+| B2P03-Q25 | 3 | What are the tool_choice options (auto, required, forced function, none, allowed tools) and when do you use each? |
+| B2P03-Q26 | 3 | Parallel tool calls: when can the model make several calls in one turn, how do you return results, and when do you disable it? |
+| B2P03-Q27 | 3 | What are the common tool-calling failure modes (wrong tool, hallucinated arguments, unnecessary calls, loops, timeouts) and how do you debug them? |
+| B2P03-Q28 | 3 | Retries, idempotency and side effects in tool calls: how do you avoid duplicate refunds or double writes, and when do you require human approval? |
+| B2P03-Q29 | 3 | How should tool results and errors be returned to the model (compact structured errors, truncating large results, untrusted content)? |
+| B2P03-Q30 | 3 | What happens when an agent has too many tools? Discuss selection accuracy, the token cost of tool definitions, grouping and tool search or deferred loading. |
+| B2P03-Q31 | 3 | JSON mode vs structured outputs vs function calling vs prompt-only: how do they differ in guarantees, and when would you pick each? |
+| B2P03-Q32 | 3 | How do you evaluate prompts (metrics by task type, rubrics for subjective outputs)? What are the limits of LLM-as-judge for this? |
+| B2P03-Q33 | 3 | How do you version, test and roll out prompts in production (prompt store, canary, A/B, rollback)? Where should prompts live? |
+| B2P03-Q34 | 3 | What is prompt injection (direct vs indirect), why do prompt-only defences fall short, and what structural defences help (separation, least privilege)? |
+| B2P03-Q35 | 3 | How sensitive are LLMs to prompt wording, format and example order, and how do you test a prompt's robustness? |
+| B2P03-Q36 | 3 | How do you cut cost and latency through prompt design (shorter prompts, caching-friendly structure, smaller models, routing)? |
+| B2P03-Q37 | 3 | AI code review: this LLM-written tool-calling loop has bugs (no step limit, wrong tool_use_id, unvalidated arguments, ignored stop reason or parallel calls, swallowed exceptions). Find and fix them. |
+| B2P03-Q38 | 3 | Design a reliability stack for an agent that issues refunds or changes account settings (schema validation, business rules, retries, approval, idempotency, audit). |
+| B2P03-Q39 | 3 | When would you choose not to force a strict schema on a model, and what do you do instead? |
+| B2P03-Q40 | 3 | A schema is generated per request and grammar compilation is slow. How do you keep p99 latency acceptable? |
+| B2P03-Q41 | 3 | Design the prompts, tools, guardrails, escalation and evaluation for a production customer-support assistant. |
+| B2P03-Q42 | 3 | Automatic prompt optimisation (DSPy-style compilation, meta-prompting, search over prompts): how does it work and when is it worth it? |
+| B2P03-Q43 | 3 | How does prompting a reasoning model differ from prompting a standard chat model (reasoning effort or budget, less hand-holding, no step-by-step instructions)? |
+| B2P03-Q44 | 3 | How would you evaluate tool use: tool-selection accuracy, argument accuracy, multi-turn calls, public function-calling benchmarks, and an in-house eval set? |
+| B2P04-Q1 | 4 | Prompting vs RAG vs fine-tuning: what is your decision framework, and in what order do you try the adaptation methods? |
+| B2P04-Q2 | 4 | What is supervised fine-tuning (instruction tuning)? What does it teach a model, what does it not teach, and what is the training loss? |
+| B2P04-Q3 | 4 | What is LoRA and how does it work? Why is it parameter-efficient, and what stays frozen? |
+| B2P04-Q4 | 4 | How do you choose LoRA's rank, alpha and dropout? What does the alpha/r scaling do? |
+| B2P04-Q5 | 4 | Which modules should LoRA target (query/value only vs all linear layers including the MLP), and why? |
+| B2P04-Q6 | 4 | What is QLoRA? Explain NF4, double quantization and paged optimizers, and where precision matters during training. |
+| B2P04-Q7 | 4 | Memory maths: how much GPU memory does full fine-tuning, LoRA and QLoRA need for a 7B or 13B model, and can you fine-tune a 13B model on one 40 GB GPU? |
+| B2P04-Q8 | 4 | What is catastrophic forgetting in fine-tuning? How do you detect it, and how do you mitigate it? |
+| B2P04-Q9 | 4 | How do you evaluate a fine-tuned model before shipping (task metric, general-capability regression, human or LLM judging)? |
+| B2P04-Q10 | 4 | How much data do you need for SFT, and what matters more, quality or quantity? How do you build and clean the dataset? |
+| B2P04-Q11 | 4 | In SFT, why do we mask prompt tokens from the loss (train on completions or assistant turns only)? How do label shifting, the ignore index and packing interact? |
+| B2P04-Q12 | 4 | Why do chat templates and the EOS token matter in fine-tuning? What breaks when training and inference templates differ? |
+| B2P04-Q13 | 4 | How do you merge a LoRA adapter into the base model? Why does a merged LoRA add no latency, why can't a QLoRA adapter be merged directly, and when would you keep adapters separate? |
+| B2P04-Q14 | 4 | Code: implement a LoRA linear layer from scratch in PyTorch (frozen weight, A and B initialisation, alpha/r scaling, merge) and verify it against W + BA. |
+| B2P04-Q15 | 4 | Code: implement the SFT loss with prompt masking in PyTorch (shifted labels, ignore index) and check it against F.cross_entropy. |
+| B2P04-Q16 | 4 | Full fine-tuning vs parameter-efficient fine-tuning: when is full fine-tuning justified, and how do learning rates differ? |
+| B2P04-Q17 | 4 | What hyperparameters matter in SFT (learning rate, epochs, batch size, warmup, scheduler, max length), and how do you recognise overfitting? |
+| B2P04-Q18 | 4 | Compare PEFT methods: adapters, prefix tuning, prompt tuning, IA3 and LoRA. When would you use each? |
+| B2P04-Q19 | 4 | What do LoRA variants change (rsLoRA, DoRA, LoRA+, LoftQ initialisation)? When are they worth trying? |
+| B2P04-Q20 | 4 | Does a higher LoRA rank always help? What limits capacity, and how do you decide when LoRA is not enough? |
+| B2P04-Q21 | 4 | How do you create instruction data: human-written, synthetic from a stronger model, self-instruct? What are the quality and licensing risks? |
+| B2P04-Q22 | 4 | What is knowledge distillation? Explain teacher and student, soft targets, temperature and the combined KL plus cross-entropy loss. |
+| B2P04-Q23 | 4 | How does distillation work for LLMs: logit-level (white-box) vs sequence-level or response distillation (black-box)? Does the student need the teacher's tokenizer? |
+| B2P04-Q24 | 4 | Forward vs reverse KL in LLM distillation (MiniLLM): what is the difference, and what does on-policy distillation fix? |
+| B2P04-Q25 | 4 | When do you fine-tune a small model instead of calling a large API model? Work through a cost, latency, privacy and quality break-even. |
+| B2P04-Q26 | 4 | For classification or extraction, would you fine-tune an LLM with SFT, add a classification head, or use a small encoder? How do you choose? |
+| B2P04-Q27 | 4 | How do you mix tasks and general data in SFT (data mixtures, ordering, replay of general data), and what goes wrong with a narrow dataset? |
+| B2P04-Q28 | 4 | How do you fine-tune for structured output or tool calling (dataset format, loss on tool calls, evaluation)? How does it relate to prompting for the same? |
+| B2P04-Q29 | 4 | Continued pretraining vs SFT for a new domain or language: when do you need continued pretraining before SFT? |
+| B2P04-Q30 | 4 | What does SFT overfitting look like (train vs validation loss, memorisation, narrow style), and what are your defences (early stopping, fewer epochs, regularisation, data)? |
+| B2P04-Q31 | 4 | What training-efficiency settings matter in practice (sequence packing, padding-free batches, gradient checkpointing, gradient accumulation, bf16), and what do they cost? |
+| B2P04-Q32 | 4 | How do you serve fine-tuned models: merged weights vs multi-LoRA serving, adapter swapping and versioning? |
+| B2P04-Q33 | 4 | Hosted fine-tuning APIs vs self-hosted fine-tuning: what are the trade-offs in control, data privacy, cost and lock-in? |
+| B2P04-Q34 | 4 | How do you keep PII and benchmark contamination out of fine-tuning data (deduplication, held-out sets, filtering)? |
+| B2P04-Q35 | 4 | A fine-tune did not learn or got worse. Walk through your debugging checklist (template, masking, learning rate, data, evaluation). |
+| B2P04-Q36 | 4 | Should you fine-tune a base or an instruct/chat checkpoint? What are the trade-offs? |
+| B2P04-Q37 | 4 | AI code review: this LLM-written LoRA/SFT training script has bugs (unshifted or unmasked labels, wrong learning rate, merging in 4-bit, dropout left on at eval, wrong target modules). Find and fix them. |
+| B2P04-Q38 | 4 | Why does low-rank adaptation work? Derive the parameter count, the identity initialisation, and the effective scaling of the update. |
+| B2P04-Q39 | 4 | Chain-of-thought and rationale distillation: how do you distil reasoning from a stronger model, and what are the limits and risks? |
+| B2P04-Q40 | 4 | What is the superficial alignment hypothesis (LIMA)? What evidence supports it, and what are its critiques and implications for data curation? |
+| B2P04-Q41 | 4 | How do multi-adapter composition and model merging work (weighted adapters, task arithmetic, TIES-style merging), and what are the risks? |
+| B2P04-Q42 | 4 | Design question: plan a fine-tune of a 13B-70B model on limited GPUs (QLoRA, gradient checkpointing, sharding), including how you validate the plan before spending the compute. |
+| B2P04-Q43 | 4 | Design question: build an end-to-end fine-tuning project for a support-ticket extraction task (data, training, evaluation gates, regression checks, rollout and rollback). |
+| B2P04-Q44 | 4 | Can fine-tuning inject new facts? Why does it often fail compared with retrieval, and what does the evidence say? |
+| B2P04-Q45 | 4 | What are the pitfalls of distillation (capacity gap, exposure bias, evaluation, teacher licensing terms), and when does it fail? |
+| B2P04-Q46 | 4 | How do you handle sequential or continual fine-tuning without forgetting (replay, per-task adapters, EWC-style regularisation, merging)? |
+| B2P04-Q47 | 4 | What is rejection-sampling fine-tuning or self-improvement (RFT, STaR-style): how do you bootstrap SFT data from a model's own verified samples, and what can go wrong? |
+| B2P05-Q1 | 5 | What is RLHF? Walk through the pipeline (SFT, reward model, policy optimisation) and explain why a base LLM needs it. |
+| B2P05-Q2 | 5 | What is the KL penalty in RLHF, why is it needed, and what does the beta coefficient trade off? |
+| B2P05-Q3 | 5 | What is reward hacking? Give examples (length bias, sycophancy) and the standard mitigations. |
+| B2P05-Q4 | 5 | DPO vs PPO-based RLHF: how does DPO work, what does it remove, and when would you pick each? |
+| B2P05-Q5 | 5 | How is a reward model trained? Explain preference pairs, the Bradley-Terry loss and the architecture. |
+| B2P05-Q6 | 5 | Code: implement the DPO loss in PyTorch (log-probability ratios against a reference model, beta, implicit rewards) and test it on toy tensors. |
+| B2P05-Q7 | 5 | How do you collect high-quality preference data (guidelines, annotator agreement, pair sampling, AI feedback)? |
+| B2P05-Q8 | 5 | What are the guardrail layers in an LLM application (input rails, output rails, dialog or topic control, retrieval and tool checks)? |
+| B2P05-Q9 | 5 | Jailbreaks vs prompt injection: what attack families exist and how do you defend in depth? |
+| B2P05-Q10 | 5 | How do you evaluate a post-trained or aligned model (helpfulness, harmlessness, regressions, pairwise human or model judging, win rate)? |
+| B2P05-Q11 | 5 | Your model started refusing benign requests after a safety-training round. What do you investigate and how do you fix it? |
+| B2P05-Q12 | 5 | Code: implement PPO's clipped surrogate objective and the KL-regularised reward in PyTorch and check it on toy tensors. |
+| B2P05-Q13 | 5 | PPO inside RLHF: policy, value head, advantages and GAE, clipping, and why four models (policy, reference, reward, value) are in memory. |
+| B2P05-Q14 | 5 | What are Constitutional AI and RLAIF? How do the two phases work, and what are the benefits and risks of AI feedback? |
+| B2P05-Q15 | 5 | DPO in more detail: the reference model, beta, the implicit reward, data requirements and known failure modes. |
+| B2P05-Q16 | 5 | What do IPO, KTO, ORPO and SimPO change relative to DPO, and when would you consider them? |
+| B2P05-Q17 | 5 | How do reward models fail (overfitting, distribution shift, length bias, over-optimisation), and what do ensembles and process reward models offer? |
+| B2P05-Q18 | 5 | What is sycophancy? Why does RLHF encourage it, and how do you measure and reduce it? |
+| B2P05-Q19 | 5 | What causes length bias and verbosity in aligned models, and how do you measure and mitigate it? |
+| B2P05-Q20 | 5 | What are GRPO and RLVR? How does a group-relative advantage replace the critic, and what are the weaknesses of verifiable rewards? |
+| B2P05-Q21 | 5 | How are reasoning models post-trained (RL on verifiable tasks, test-time compute), and how does that differ from preference-based RLHF? |
+| B2P05-Q22 | 5 | How do you balance helpfulness and harmlessness in safety training? What is the alignment tax and how do you limit it? |
+| B2P05-Q23 | 5 | How do you run a red-team exercise (manual vs automated, coverage, attack success rate, fixing what you find)? |
+| B2P05-Q24 | 5 | How do safety-classifier guardrails (Llama Guard style) work for inputs and outputs: taxonomy, thresholds, latency and limits? |
+| B2P05-Q25 | 5 | What do guardrail frameworks such as NeMo Guardrails provide (self-check rails, dialog flows, third-party integrations), and when would you use a framework instead of custom checks? |
+| B2P05-Q26 | 5 | Guardrails vs alignment: what does each handle, why do you need both, and what does defence in depth look like? |
+| B2P05-Q27 | 5 | How do you build output-side guardrails for PII, secrets and toxicity (regex, NER, classifier) and what are the trade-offs? |
+| B2P05-Q28 | 5 | What do guardrails cost in latency and money, and how do you reduce it (cheap checks first, parallel rails, streaming, caching)? |
+| B2P05-Q29 | 5 | How do you measure guardrail quality (precision and recall per category, thresholds, cost of false positives vs false negatives, evaluation set design)? |
+| B2P05-Q30 | 5 | Online vs offline preference optimisation: DPO on a fixed dataset, iterative or online DPO, and PPO. Why does on-policy data matter? |
+| B2P05-Q31 | 5 | How do you handle annotator disagreement and label noise in preference data (inter-annotator agreement, adjudication, noise-robust training)? |
+| B2P05-Q32 | 5 | How do you evaluate a reward model itself (held-out preference accuracy, agreement with humans, best-of-n probes)? |
+| B2P05-Q33 | 5 | AI code review: this LLM-written DPO/PPO training snippet has bugs (loss sign, reference model gradients, summed vs averaged log-probabilities, KL direction, missing clipping). Find and fix them. |
+| B2P05-Q34 | 5 | Best-of-n with a reward model vs RL fine-tuning: what are the cost, quality and over-optimisation trade-offs? |
+| B2P05-Q35 | 5 | Why do jailbreaks work (competing objectives, mismatched generalisation), and what are the main families (role-play, obfuscation, multi-turn, multimodal)? |
+| B2P05-Q36 | 5 | Derive DPO from the KL-regularised reward-maximisation objective: the optimal policy, the reward reparameterisation and the final loss. |
+| B2P05-Q37 | 5 | Design question: build the post-training pipeline for a coding model (SFT data, preference data from execution tests, RLVR, evaluation, safety). |
+| B2P05-Q38 | 5 | Design question: build a preference-data collection platform with quality control (guidelines, redundancy, adjudication, audits, throughput). |
+| B2P05-Q39 | 5 | Design question: guardrail architecture for a customer-facing assistant that can issue refunds (rails, approvals, escalation, logging, red-team gates). |
+| B2P05-Q40 | 5 | What is scalable oversight, and why does preference-based RLHF struggle on tasks humans cannot easily judge? |
+| B2P05-Q41 | 5 | What are the engineering challenges of distributed PPO for LLMs (generation vs training throughput, four models, staleness), and how do teams address them? |
+| B2P06-Q1 | 6 | What problem does RAG solve that a standalone LLM cannot, and why is it preferred over frequent retraining? |
+| B2P06-Q2 | 6 | Walk through a basic RAG pipeline end to end (offline indexing and online retrieval and generation). |
+| B2P06-Q3 | 6 | What is chunking, and why does chunk size matter for retrieval quality? |
+| B2P06-Q4 | 6 | How do you choose chunk size and overlap? Compare fixed-size, recursive, structure-aware, semantic and parent-document chunking. |
+| B2P06-Q5 | 6 | What is an embedding, why does dense retrieval work, and why must indexing and querying use the same embedding model? |
+| B2P06-Q6 | 6 | How do you choose an embedding model for RAG (domain, language, dimension, max input length, cost, evaluation on your own data)? |
+| B2P06-Q7 | 6 | What does a vector database do, and how do you choose between a dedicated store, pgvector and an in-process library such as FAISS? |
+| B2P06-Q8 | 6 | How do approximate nearest-neighbour indexes work for RAG (HNSW, IVF, product quantization), and what are their recall and latency knobs? |
+| B2P06-Q9 | 6 | Which similarity metric do you use for embeddings (cosine, dot product, L2), and how do you pick top-k or a similarity threshold? |
+| B2P06-Q10 | 6 | How do you evaluate retrieval separately from generation (recall@k, precision@k, MRR, nDCG, a golden set)? |
+| B2P06-Q11 | 6 | A RAG answer is wrong even though the right document exists. How do you debug it? |
+| B2P06-Q12 | 6 | How do you prompt the generator in a RAG system (grounding, permission to say "I don't know", citations, context ordering)? |
+| B2P06-Q13 | 6 | RAG vs fine-tuning vs stuffing everything into a long context: how do you decide for a specific product? |
+| B2P06-Q14 | 6 | Code: build a minimal RAG pipeline from scratch (chunk, embed, retrieve by cosine similarity, assemble the prompt, call a mocked LLM). |
+| B2P06-Q15 | 6 | How do metadata filtering and access control work in RAG? Why does post-filtering fail, and how do you guarantee users never see documents they lack permission for? |
+| B2P06-Q16 | 6 | What pitfalls come with chunk size and overlap in practice (tokens vs characters, boundaries, chunk metadata, duplicated text)? |
+| B2P06-Q17 | 6 | How do you ingest PDFs, tables, scans and HTML for RAG (parsing, OCR, layout-aware extraction, tables as text)? |
+| B2P06-Q18 | 6 | What is parent-document (small-to-big) retrieval, and when does returning a larger context around a hit help? |
+| B2P06-Q19 | 6 | What does a good ingestion pipeline do (cleaning, boilerplate removal, deduplication, versioning, stable chunk IDs)? |
+| B2P06-Q20 | 6 | How do you keep a RAG index fresh (incremental updates, deletes, tombstones), and what happens when deleted documents still surface? |
+| B2P06-Q21 | 6 | What happens when you change the embedding model? How do you migrate an index safely? |
+| B2P06-Q22 | 6 | What are asymmetric query and document embeddings (instruction prefixes, query length, normalisation), and why do they matter? |
+| B2P06-Q23 | 6 | How do embedding dimension, truncation and quantisation affect quality and storage? Work through the storage maths. |
+| B2P06-Q24 | 6 | How do you tune top-k: fixed vs adaptive k, similarity thresholds, deduplicating near-identical chunks, and MMR diversification? |
+| B2P06-Q25 | 6 | How do you assemble the context for the prompt (ordering, token budget, truncation, the lost-in-the-middle effect)? |
+| B2P06-Q26 | 6 | How do you produce reliable citations and attribution in RAG (chunk IDs, span-level citations, verifying that a citation supports the claim)? |
+| B2P06-Q27 | 6 | What should a RAG system do when retrieval finds nothing relevant (abstaining, score thresholds, fallbacks)? |
+| B2P06-Q28 | 6 | How do you handle multi-turn conversations in RAG (standalone query rewriting, limited history, metadata filters)? |
+| B2P06-Q29 | 6 | When does keyword search (BM25) beat dense retrieval in RAG, and why do teams combine them (hybrid search basics)? |
+| B2P06-Q30 | 6 | What does reranking add to RAG (retrieve about 50, rerank to about 5), and what does it cost in latency? |
+| B2P06-Q31 | 6 | What is the latency budget of a RAG request across embedding, search, reranking and generation, and how do caching and streaming help? |
+| B2P06-Q32 | 6 | How do you estimate the cost of a RAG system (indexing, storage, per-query embedding and generation tokens)? Work through an example. |
+| B2P06-Q33 | 6 | Does a 50-million-chunk index fit in memory? Estimate the memory for HNSW vs IVF-PQ and decide. |
+| B2P06-Q34 | 6 | How do you tune recall against latency (efSearch, nprobe) and measure recall for a live index without ground truth? |
+| B2P06-Q35 | 6 | How does multilingual data change a RAG design (multilingual embeddings, per-language indexes, translation)? |
+| B2P06-Q36 | 6 | What is indirect prompt injection through retrieved documents, and what basic defences does a RAG system need? |
+| B2P06-Q37 | 6 | Why can RAG still hallucinate (retrieval miss, ignored context, conflicting documents, over-trust), and how do you reduce it? |
+| B2P06-Q38 | 6 | What should a RAG system do when retrieved documents conflict or are out of date (recency, authority, showing both sides)? |
+| B2P06-Q39 | 6 | How do you evaluate generation in RAG (faithfulness, answer relevance, correctness) and how do these map to retrieval failures? |
+| B2P06-Q40 | 6 | How do you build a golden evaluation set for RAG (real queries, relevance labels, synthetic questions and their pitfalls)? |
+| B2P06-Q41 | 6 | How do you monitor and debug a RAG system in production (retrieved chunk IDs and scores, per-stage latency, feedback loops)? |
+| B2P06-Q42 | 6 | What are the security and privacy risks in enterprise RAG (access control at retrieval, tenant isolation, PII in the index, logging)? |
+| B2P06-Q43 | 6 | AI code review: this LLM-written RAG ingestion and retrieval code has bugs (embedding-model mismatch, missing normalisation, filtering after top-k, deletes that leave vectors, off-by-one chunk overlap). Find and fix them. |
+| B2P06-Q44 | 6 | A strict metadata filter returns only 2 results when the user wanted 10. Why does it happen, and how do you fix it (pre-filtering, post-filtering, filter-aware ANN)? |
+| B2P06-Q45 | 6 | Design question: 800 million vectors and a 200 GB RAM budget. Which index do you choose, and how do you recover recall? |
+| B2P06-Q46 | 6 | Recall is 0.90 and you need 0.97 without changing the embedding model. What do you change, and what does it cost? |
+| B2P06-Q47 | 6 | How do you evaluate chunking strategies empirically (experiment design, retrieval metrics, ablations, confounders)? |
+| B2P06-Q48 | 6 | How does semantic chunking work (similarity breakpoints), and what does the evidence say about when it beats simpler chunking? |
+| B2P06-Q49 | 6 | How do you answer a question that needs information from 10 documents when they do not fit in the context window? |
+| B2P06-Q50 | 6 | Design question: a RAG assistant for customer support over millions of documents with per-user permissions and fresh content. |
+| B2P06-Q51 | 6 | Design question: RAG over financial-report PDFs with tables (parsing pipeline, chunking, retrieval, evaluation). |
+| B2P06-Q52 | 6 | When and how do you fine-tune an embedding model for your domain (contrastive training, hard negatives, evaluation, risks)? |
+| B2P06-Q53 | 6 | What are embedding inversion and related privacy risks in vector stores, and what mitigations exist? |
+| B2P07-Q1 | 7 | Why does basic vector RAG fall short, and what does the standard advanced-RAG stack (hybrid search, reranking, query transformation) add? |
+| B2P07-Q2 | 7 | Hybrid search in depth: how do lexical (BM25), learned-sparse and dense retrievers differ, and how do you fuse their results? |
+| B2P07-Q3 | 7 | Explain reciprocal rank fusion: the formula, the role of k, its strengths and weaknesses, and code it. |
+| B2P07-Q4 | 7 | Weighted (alpha) fusion of retrieval scores: why raw scores cannot be mixed, how do you normalise, and how do you tune alpha? |
+| B2P07-Q5 | 7 | How does cross-encoder reranking work in a RAG pipeline? Cover candidate counts, latency, fine-tuning and how you prove it helps. |
+| B2P07-Q6 | 7 | What is late interaction (ColBERT)? Explain MaxSim, what is precomputed, the storage cost, and when to prefer it over a bi-encoder or a cross-encoder. |
+| B2P07-Q7 | 7 | When does query rewriting help or hurt RAG, and how do you route queries to the right transformation? |
+| B2P07-Q8 | 7 | What is HyDE (hypothetical document embeddings)? How does it work, when does it help, and what does it cost? |
+| B2P07-Q9 | 7 | What are multi-query retrieval and query expansion, and how do you combine the results of several query variants? |
+| B2P07-Q10 | 7 | How do you handle multi-hop questions with query decomposition? Walk through the design, the ordering of sub-questions and the failure modes. |
+| B2P07-Q11 | 7 | What is contextual retrieval? Explain contextual embeddings and contextual BM25, the reported gains, and the cost. |
+| B2P07-Q12 | 7 | What is GraphRAG? When would you choose it over plain vector RAG, and when not? |
+| B2P07-Q13 | 7 | Agentic RAG vs single-pass RAG: when is an agent loop worth its cost, and how do you bound it? |
+| B2P07-Q14 | 7 | How do you evaluate each advanced-RAG component (hybrid, reranker, rewriting) with ablations, and what do you report besides accuracy? |
+| B2P07-Q15 | 7 | Code: implement hybrid retrieval from scratch (BM25 plus a toy dense retriever) with RRF and weighted fusion, and compare them on a toy query set. |
+| B2P07-Q16 | 7 | What does learned sparse retrieval (SPLADE-style) add over BM25, and where does it fit in a hybrid stack? |
+| B2P07-Q17 | 7 | Which score-normalisation methods exist for fusion (min-max, z-score, rank-based), and how does each fail? |
+| B2P07-Q18 | 7 | How do you choose the candidate counts in retrieve-then-rerank (n from the first stage, k after reranking)? What is the recall ceiling? |
+| B2P07-Q19 | 7 | LLM-based rerankers (pointwise, pairwise, listwise) vs cross-encoder rerankers for RAG: quality, cost, position bias and when to use each. |
+| B2P07-Q20 | 7 | How do you train or fine-tune a reranker (hard negatives from the first stage, distillation from an LLM, evaluation)? |
+| B2P07-Q21 | 7 | How do you serve a reranker at production latency (batching, truncation, caching, early exit, hardware)? |
+| B2P07-Q22 | 7 | What is step-back prompting for retrieval, and how does it differ from HyDE and decomposition? |
+| B2P07-Q23 | 7 | How do you route queries to different retrieval strategies (FAQ lookup, multi-hop, global summary), and how do you evaluate the router? |
+| B2P07-Q24 | 7 | Conversational RAG: how do you handle coreference, history compression and query rewriting across turns, and how do you evaluate it? |
+| B2P07-Q25 | 7 | What is index-time enrichment (hypothetical questions per chunk, summaries, entity and keyword extraction, metadata), and what are its trade-offs? |
+| B2P07-Q26 | 7 | Contextual retrieval in practice: how do you generate chunk context cheaply (prompt caching, lighter alternatives) and what can go wrong? |
+| B2P07-Q27 | 7 | What is RAPTOR (hierarchical summary trees)? How is the tree built, how is it queried, and how does it compare with GraphRAG? |
+| B2P07-Q28 | 7 | Walk through the GraphRAG indexing pipeline (text units, entity and relationship extraction, community detection, community summaries) and its cost. |
+| B2P07-Q29 | 7 | What are GraphRAG's query modes (global, local, DRIFT, basic), and which question types suit each? |
+| B2P07-Q30 | 7 | Knowledge-graph retrieval vs GraphRAG-style summaries: when do graph databases, entity linking and text-to-Cypher help, and what are the risks? |
+| B2P07-Q31 | 7 | Multi-hop retrieval strategies: iterative retrieval that interleaves reasoning and search, stopping conditions, and how to avoid drifting off-topic. |
+| B2P07-Q32 | 7 | What are adaptive and self-reflective retrieval (Self-RAG, reflection tokens), and what simpler prompt-based alternatives exist? |
+| B2P07-Q33 | 7 | What is corrective RAG (CRAG)? Explain the retrieval evaluator, the fallback actions, and how production systems approximate it. |
+| B2P07-Q34 | 7 | How do you compress or filter retrieved context (extractive compression, LLM filtering, token budgets), and what is the risk of dropping evidence? |
+| B2P07-Q35 | 7 | How do you answer questions over very long documents or many documents (hierarchical retrieval, map-reduce, iterative refinement)? |
+| B2P07-Q36 | 7 | When is RAG unnecessary because the corpus fits in the context window? Work through the cost and quality trade-off at scale. |
+| B2P07-Q37 | 7 | Build a failure taxonomy for an advanced RAG pipeline: where does each component help, where can it hurt, and how do you attribute an error to a stage? |
+| B2P07-Q38 | 7 | What is the latency and cost budget of an advanced RAG pipeline (rewriting, multiple searches, reranking, contextualisation, agent loops), and how do you control it? |
+| B2P07-Q39 | 7 | How do you keep citations and provenance intact across rewriting, fusion, reranking and compression steps? |
+| B2P07-Q40 | 7 | How do you combine retrieval with structured data (SQL or API tools, tables) in a RAG assistant, and how do you choose between them? |
+| B2P07-Q41 | 7 | Multimodal RAG basics: how do you retrieve over images, charts and slides (captions vs multimodal embeddings), and what changes in evaluation? |
+| B2P07-Q42 | 7 | AI code review: this LLM-written hybrid-plus-rerank pipeline has bugs (RRF rank off by one, mixed score scales, reranking the wrong list, duplicates after fusion, dropping the original query). Find and fix them. |
+| B2P07-Q43 | 7 | Design question: an enterprise assistant that must answer multi-hop analytical questions over many documents, with an agent loop, budgets and fallbacks. |
+| B2P07-Q44 | 7 | Design question: global sensemaking over a corpus of about a million tokens (GraphRAG vs map-reduce vs RAPTOR vs long context). Choose and defend. |
+| B2P07-Q45 | 7 | When does reranking hurt? Discuss calibration, domain shift, truncation, flipping a correct top-1, and how you detect it. |
+| B2P07-Q46 | 7 | How do you evaluate GraphRAG against vector RAG fairly (question types, comprehensiveness and diversity judging, judge bias, cost)? |
+| B2P07-Q47 | 7 | How do you make agentic RAG safe (tool permissions, injection through multi-hop tool results, budgets, audit)? |
+| B2P07-Q48 | 7 | Design question: a query-understanding layer (router, rewriter, decomposer) with fallbacks, and how you measure each part's value. |
+| B2P07-Q49 | 7 | Are LLM-based retrievers worth their cost compared with a tuned hybrid-plus-rerank stack? How do you decide? |
+| B2P07-Q50 | 7 | Late-interaction storage and latency maths: estimate the index size for 10 million passages with token-level vectors and compare it with single-vector and PQ-compressed options. |
+| B2P08-Q1 | 8 | What is an AI agent? Distinguish an agent from a chatbot and from a fixed workflow, describe the agent loop, and say when you should not use an agent. |
+| B2P08-Q2 | 8 | What is ReAct, and why does interleaving reasoning with actions beat reasoning-only or acting-only? Go beyond the prompt format. |
+| B2P08-Q3 | 8 | Workflows vs agents: explain prompt chaining, routing, parallelisation, orchestrator-workers and evaluator-optimizer, and when each is the right choice. |
+| B2P08-Q4 | 8 | How does an agent loop terminate? Cover stop conditions, step and token budgets, loop detection and what to do when the budget runs out. |
+| B2P08-Q5 | 8 | Planning in agents: ReAct vs plan-then-execute vs a hybrid with re-planning checkpoints. What are the trade-offs? |
+| B2P08-Q6 | 8 | How do you design tools for agents (the agent-computer interface): granularity, names, descriptions, error messages, and mistake-proofing? |
+| B2P08-Q7 | 8 | Memory in agents: short-term vs long-term, and episodic, semantic and procedural memory. What is the difference between state, memory and checkpointing? |
+| B2P08-Q8 | 8 | How do you manage context in a long-running agent (summarisation, trimming, offloading to notes or files, tiered memory)? |
+| B2P08-Q9 | 8 | What is the Model Context Protocol (MCP)? Explain the problem it solves, the host-client-server architecture, JSON-RPC messaging and the connection lifecycle. |
+| B2P08-Q10 | 8 | What are MCP's tools, resources and prompts, who controls each, and how do you decide which to use? |
+| B2P08-Q11 | 8 | MCP vs function calling vs a plain REST API: how do they differ and when would you use each? |
+| B2P08-Q12 | 8 | When do you use multiple agents instead of one? Cover orchestrator-worker designs, the token cost, and the main multi-agent failure modes. |
+| B2P08-Q13 | 8 | How do agents handle tool errors, hallucinated tool calls and retries (validation, feeding errors back, retry caps, circuit breakers)? |
+| B2P08-Q14 | 8 | How do you evaluate an agent: outcome vs trajectory, success rate, steps and cost, LLM judges, and where do you start? |
+| B2P08-Q15 | 8 | Code: implement a ReAct agent from scratch (prompt scratchpad, parser, tool registry, stop conditions) with a mocked LLM. |
+| B2P08-Q16 | 8 | What are ReAct's failure modes (format errors, hallucinated observations, loops, bloated scratchpads), and how do you mitigate each? |
+| B2P08-Q17 | 8 | What are Reflexion and self-reflection in agents? How does verbal reinforcement with an episodic memory work, and when does it help or hurt? |
+| B2P08-Q18 | 8 | What is Tree of Thoughts, and when is branching, evaluating and backtracking worth its cost compared with a single chain of thought? |
+| B2P08-Q19 | 8 | How do plan-and-execute agents work (planner, executor, re-planner), and how do you represent, validate and approve a plan? |
+| B2P08-Q20 | 8 | How do you decompose a task into sub-tasks with dependencies, and when can tool calls or sub-agents run in parallel? |
+| B2P08-Q21 | 8 | How do you implement long-term agent memory (what to write, retrieval, deduplication, forgetting, conflicts)? |
+| B2P08-Q22 | 8 | What are the risks of agent memory (poisoning with wrong or injected facts, privacy, staleness), and how do you control them? |
+| B2P08-Q23 | 8 | How do checkpointing and resumability work for agents (persisted state, threads, resuming after a crash or an approval)? |
+| B2P08-Q24 | 8 | How do you design human-in-the-loop controls for agents (approval gates, interrupt and resume, escalation)? |
+| B2P08-Q25 | 8 | Walk through the MCP lifecycle and capability negotiation (initialize, tools/list, tools/call, shutdown) and what the spec requires of implementations. |
+| B2P08-Q26 | 8 | MCP transports: when do you use stdio and when Streamable HTTP, and what is the classic stdio bug? |
+| B2P08-Q27 | 8 | What does an MCP tool definition contain (name, description, input schema, output schema, annotations), and how are errors reported at the protocol and application levels? |
+| B2P08-Q28 | 8 | MCP security: what are tool poisoning, rug pulls and the confused-deputy problem, and how do authorisation and least privilege apply? |
+| B2P08-Q29 | 8 | Code: build a minimal MCP-style server (JSON-RPC handling initialize, tools/list and tools/call) and a client that calls it, in plain Python. |
+| B2P08-Q30 | 8 | How does an MCP host manage many servers (connections, tool aggregation, name collisions, context bloat), and how does deferred tool loading help? |
+| B2P08-Q31 | 8 | A2A vs MCP: what does each connect, what are agent cards and the task lifecycle, and when would you need agent-to-agent communication? |
+| B2P08-Q32 | 8 | When do you use an orchestration framework (LangGraph-style state graphs, CrewAI-style roles) versus plain code? |
+| B2P08-Q33 | 8 | Multi-agent communication patterns: sequential pipeline, hierarchical supervisor, peer-to-peer and blackboard. When does each fit, and supervisor vs router? |
+| B2P08-Q34 | 8 | How do you resolve conflicts between agents (voting, a supervisor, debate with a judge, confidence scores, human escalation), and what can go wrong? |
+| B2P08-Q35 | 8 | Delegation and context passing between agents: why does vague delegation cause duplicated work, and how do you write good task handoffs? |
+| B2P08-Q36 | 8 | Why do multi-agent systems fail (the MAST failure taxonomy: system design, inter-agent misalignment, task verification), and how do you mitigate? |
+| B2P08-Q37 | 8 | How do you control the cost and latency of agents (token budgets, caching, model routing, parallelism)? |
+| B2P08-Q38 | 8 | How do you make agents observable (traces per step, tool calls, tokens, cost, latency, replay) and debug them in production? |
+| B2P08-Q39 | 8 | How do you test and regression-test an agent (mocked tools, golden trajectories, non-determinism, sandboxes)? |
+| B2P08-Q40 | 8 | What guardrails does an agent need (permission tiers, allowlists, sandboxing, output validation), and how do they differ from model-level safety? |
+| B2P08-Q41 | 8 | How do you build agents that write and run code safely (sandboxes, resource limits, filesystem and network isolation, secrets)? |
+| B2P08-Q42 | 8 | Browser and computer-use agents: what are the observation and action spaces, why are they unreliable, and what safety issues arise? |
+| B2P08-Q43 | 8 | Reactive vs proactive and event-driven agents: how do triggers, scheduling and idempotent handlers change the design? |
+| B2P08-Q44 | 8 | AI code review: this LLM-written agent loop has bugs (no step cap, swallowed tool errors, unbounded scratchpad, ignored parse failures, unvalidated tool names, untrusted text written to memory). Find and fix them. |
+| B2P08-Q45 | 8 | Design question: an internal IT-helpdesk agent with read and write tools across chat, ticketing and a database exposed through MCP servers. |
+| B2P08-Q46 | 8 | Design question: a coding agent (repository navigation, edits, a test loop, a sandbox, evaluation and cost control). |
+| B2P08-Q47 | 8 | Design question: a multi-agent deep-research system (orchestrator and parallel sub-agents, citations, budgets, evaluation). |
+| B2P08-Q48 | 8 | An agent loops forever on a failing tool call. Diagnose it, and design detection, budgets and escalation to prevent it. |
+| B2P08-Q49 | 8 | How do you run long-running agents in production (resumability, queues, asynchronous execution, rolling deployments of agent versions)? |
+| B2P08-Q50 | 8 | How would you run MCP in an enterprise (gateway, server registry, authorisation, per-tool scopes, audit, rate limits, supply-chain risk of third-party servers)? |
+| B2P08-Q51 | 8 | How do you build an evaluation suite for a non-deterministic agent (outcome and trajectory graders, repeated runs, variance, cost-aware metrics, small-sample starts)? |
+| B2P08-Q52 | 8 | Design defences for agents that read untrusted tool outputs and tool descriptions (privilege separation, taint tracking, confirmation, dual-model patterns). |
+| B2P09-Q1 | 9 | How do you evaluate an LLM application end to end? Explain why it differs from testing ordinary software, model vs system evaluation, and how offline and online evaluation fit together. |
+| B2P09-Q2 | 9 | How do you build a golden evaluation set from scratch (real queries, coverage of cases, labels, size, versioning, and keeping it free of training or prompt leakage)? |
+| B2P09-Q3 | 9 | Reference-based metrics for generated text: what do exact match, token F1, BLEU, ROUGE and BERTScore measure, when does each fit, and why do they fail for open-ended LLM output? |
+| B2P09-Q4 | 9 | What is LLM-as-a-judge? Explain pointwise, pairwise and reference-based judging, when to use each, and the limits of trusting a judge. |
+| B2P09-Q5 | 9 | What biases do LLM judges show (position, verbosity, self-preference), how do you measure each in your own setup, and how do you mitigate them? |
+| B2P09-Q6 | 9 | How do you calibrate and validate an LLM judge against human labels (agreement, Cohen's kappa, true positive and true negative rate, train/dev/test split of labelled examples)? |
+| B2P09-Q7 | 9 | How do you write a judge prompt and rubric that works (one criterion per judge, binary or small scales, anchored examples, reasoning before the verdict, output format)? |
+| B2P09-Q8 | 9 | RAGAS-style generation metrics in depth: how are faithfulness and answer relevance computed, what do they miss, and why can faithfulness be 0.9 while users still complain? |
+| B2P09-Q9 | 9 | How do you detect hallucinations and measure groundedness (claim decomposition plus entailment checks, citation verification, sampling-consistency checks, abstention rate), and what are the limits of each? |
+| B2P09-Q10 | 9 | Public benchmarks (MMLU, HumanEval, SWE-bench, MT-Bench, Chatbot Arena): what does each measure, and why is a benchmark score not a product evaluation? |
+| B2P09-Q11 | 9 | Your new prompt scores 82% and the old one 80% on 200 test cases. Is it better? Cover confidence intervals, paired comparison, and how much to trust small differences. |
+| B2P09-Q12 | 9 | What is pass@k? Explain the unbiased estimator from the Codex paper, why naive 'best of k' reporting is biased, and how pass@k differs from pass^k (all k succeed). |
+| B2P09-Q13 | 9 | Code: implement the unbiased pass@k estimator (n samples, c correct) from scratch, check it against brute force, and aggregate it over problems. |
+| B2P09-Q14 | 9 | How do you do regression testing and CI gates for prompt or model changes (tiered suites, thresholds, flaky results, blocking vs advisory checks)? |
+| B2P09-Q15 | 9 | How do you do error analysis on an LLM product (read traces, open coding, group into a failure taxonomy, count, prioritise) and turn the findings into evals? |
+| B2P09-Q16 | 9 | Context precision and context recall in depth: how are they computed, what do they need (reference answer or labelled chunks), why is precision rank-aware, and how do you read the four combinations of high and low? |
+| B2P09-Q17 | 9 | A RAG assistant is wrong a third of the time and you only have logs. How do you separate retrieval failures from generation failures, handle unanswerable questions, and decide what to fix first? |
+| B2P09-Q18 | 9 | How do you run pairwise comparisons properly (swap order, ties, win rate with a confidence interval, which judge, when pairwise beats absolute scores)? |
+| B2P09-Q19 | 9 | What did the MT-Bench and Chatbot Arena paper (Judging LLM-as-a-Judge) report: the biases, the agreement with humans, what MT-Bench is, and what does the agreement claim not show? |
+| B2P09-Q20 | 9 | How does Chatbot Arena turn pairwise human votes into a ranking (Elo vs Bradley-Terry, confidence intervals, style control), and what are its blind spots? |
+| B2P09-Q21 | 9 | Benchmark contamination and saturation: how do you detect leakage, what do held-out, dynamic or refreshed benchmarks do (LiveCodeBench-style), and how should you read a leaderboard? |
+| B2P09-Q22 | 9 | What do code benchmarks measure and miss (HumanEval and MBPP functional tests, SWE-bench and SWE-bench Verified), and how can weak tests or saturation mislead you? |
+| B2P09-Q23 | 9 | Perplexity as an evaluation metric: what does it tell you, why does it fail as a measure of an LLM application's quality, and when is it still useful (see Part 2 Q7 for the definition)? |
+| B2P09-Q24 | 9 | How do you design a human evaluation (rubrics, annotation guidelines, calibration rounds, adjudication, sampling, cost and throughput)? |
+| B2P09-Q25 | 9 | Inter-annotator agreement: how do raw agreement, Cohen's kappa, Fleiss' kappa and Krippendorff's alpha differ, what is the kappa paradox, and what do you do when annotators disagree on subjective tasks? |
+| B2P09-Q26 | 9 | How big must an eval set be? Explain sample size and power for detecting a small improvement, and why a few hundred cases may not be enough. |
+| B2P09-Q27 | 9 | How do you handle variance across runs and temperature (repeated trials, seeds, temperature 0 not being fully deterministic, reporting mean and spread)? |
+| B2P09-Q28 | 9 | Which statistical tests suit comparing two LLM systems on the same test set (paired bootstrap, McNemar, paired t-test) and how do you handle many comparisons? |
+| B2P09-Q29 | 9 | How do you run safety and red-team evaluations (attack success rate, curated vs automated attacks such as HarmBench, over-refusal rate, severity weighting, release gates)? See Part 5 Q23 and Q29 for basics. |
+| B2P09-Q30 | 9 | How do you run an A/B test and online monitoring for an LLM feature (primary and guardrail metrics, implicit feedback, sampled production traces scored by a judge, drift)? |
+| B2P09-Q31 | 9 | How do you evaluate long-form generation such as summaries (G-Eval-style scoring, claim-level factuality and coverage checks, human spot checks), and why is it harder than short answers? |
+| B2P09-Q32 | 9 | How do you evaluate structured-output, extraction and classification tasks (schema validity, per-field precision and recall, deterministic checks before any judge)? |
+| B2P09-Q33 | 9 | How do you control evaluation cost (judge cost, sampling strategy, caching, cheaper judge cascades, a panel of smaller judges) without losing signal? |
+| B2P09-Q34 | 9 | How do you evaluate fairly across languages and user slices (Hindi and Telugu vs English, per-segment metrics, small-slice noise)? |
+| B2P09-Q35 | 9 | What eval tooling exists (Ragas, DeepEval, promptfoo, LangSmith, Langfuse, provider eval tools), how do you choose, and when do you write your own harness? |
+| B2P09-Q36 | 9 | Capability evals vs regression evals: how does an eval suite mature over time (graduating cases, saturation, adding harder tasks, eval-driven development)? See Part 8 Q14, Q39 and Q51 for agent evaluation. |
+| B2P09-Q37 | 9 | Code: implement Elo ratings and a Bradley-Terry fit from pairwise battle results, and show why order matters for Elo but not for the Bradley-Terry fit. |
+| B2P09-Q38 | 9 | Code: implement a bootstrap confidence interval for accuracy and a paired bootstrap for the difference between two systems. |
+| B2P09-Q39 | 9 | Code: implement Cohen's kappa to measure agreement between an LLM judge and a human labeller, with TPR and TNR, and test it on toy labels. |
+| B2P09-Q40 | 9 | Code: build a mini evaluation harness (dataset loader, model runner, graders, caching, repeated trials, a report with confidence intervals) with a mocked LLM. |
+| B2P09-Q41 | 9 | AI code review: this LLM-written evaluation script has bugs (test cases leaked into few-shot examples, naive pass@k, no position swap, mean score with no interval, same model as generator and judge, nonzero temperature with one run). Find and fix them. |
+| B2P09-Q42 | 9 | Offline scores keep rising but user complaints are rising too. Diagnose the gap and say what you change in the eval. |
+| B2P09-Q43 | 9 | The model provider quietly updates a model version and quality drops. How do you detect it, attribute it, and protect against it (version pinning, canary evals, rollback)? |
+| B2P09-Q44 | 9 | Design question: an evaluation platform for many teams (datasets, versioned prompts and graders, runs, dashboards, CI integration, human review queues, cost control). |
+| B2P09-Q45 | 9 | Design question: build an LLM judge you can trust (rubric, human calibration set, bias tests, ensembles, drift monitoring, when to retire it). |
+| B2P09-Q46 | 9 | Design question: an evaluation strategy for launching a new LLM assistant, including a high-stakes domain (clinical or financial): launch criteria, red team, human review, staged rollout, and answering 'is it ready?' |
+| B2P10-Q1 | 10 | Prefill vs decode at the serving level: how do the two phases map to TTFT and per-token latency, why are they bottlenecked differently, and what does that change about what you optimise first? (Part 1 Q7 has the mechanism; go to the serving consequences.) |
+| B2P10-Q2 | 10 | Latency and throughput metrics for LLM serving: define TTFT, TPOT/ITL, end-to-end latency, tokens per second (system vs per user), requests per second and goodput. How do percentiles and SLOs apply, and why is the mean misleading? |
+| B2P10-Q3 | 10 | Budget GPU memory for serving: weights, KV cache, activations and runtime overhead. For a 7B and a 70B model on an 80 GB GPU, what fits, what does gpu_memory_utilization control, and how do tensor-parallel shards change the maths? (Part 1 Q15 has the KV formula.) |
+| B2P10-Q4 | 10 | Capacity planning from the KV cache: how many concurrent sequences fit after loading the weights, how do context length, GQA/MQA and cache dtype change that number, and how do you turn it into a replica count using Little's law? |
+| B2P10-Q5 | 10 | What is PagedAttention and how does vLLM's block manager work (fixed-size blocks, block tables, near-zero fragmentation, sharing and copy-on-write)? What problem in earlier systems did it fix? |
+| B2P10-Q6 | 10 | Static vs dynamic vs continuous (in-flight, iteration-level) batching: how does each work, why does continuous batching raise throughput when output lengths vary, and what does it cost (scheduling, memory pressure)? |
+| B2P10-Q7 | 10 | Throughput vs latency: how do batch size and concurrency move TTFT, TPOT and tokens per second, where is the knee of the curve, and how do you pick an operating point for a chat product vs an offline job? |
+| B2P10-Q8 | 10 | Quantization for inference: what do INT8, INT4 and FP8 change (weight-only vs weight-and-activation, memory vs compute), which phase does each speed up, and why is the speedup not simply 'bits halved, speed doubled'? |
+| B2P10-Q9 | 10 | GPTQ vs AWQ vs bitsandbytes (LLM.int8 and NF4): how does each work, what hardware and kernels support them, and how would you choose for serving vs for QLoRA-style fine-tuning? (Part 4 Q6 covers NF4 for training.) |
+| B2P10-Q10 | 10 | How do you validate a quantized model before shipping (task evals, long-context and retrieval checks, calibration data choice, latency re-measurement, rollback plan), and what silently degrades? |
+| B2P10-Q11 | 10 | Speculative decoding: how does a draft model propose and the target verify, why is the output distribution unchanged, how does acceptance rate set the speedup, and when does it not help? |
+| B2P10-Q12 | 10 | Choose a serving stack: compare vLLM, TGI, TensorRT-LLM, SGLang and llama.cpp/Ollama (hardware, features, ops effort, maturity), and say how you decide for a given workload. |
+| B2P10-Q13 | 10 | Cost per million tokens: derive it from GPU price per hour, throughput and utilisation, separate input from output tokens, and explain why low utilisation is the usual reason self-hosting loses. |
+| B2P10-Q14 | 10 | Prefix caching inside an engine (vLLM-style block hashing, LRU eviction) vs a provider's prompt caching: how does each work, what does it save (prefill, not decode), and how do you structure prompts and routing to get hits? (Part 1 Q24 covers API prompt caching.) |
+| B2P10-Q15 | 10 | Code: write a KV-cache size and concurrency calculator (layers, KV heads, head dim, dtype, context, batch, weights, GPU memory) and check it against a hand-worked Llama-style example, including the GQA vs MHA difference. |
+| B2P10-Q16 | 10 | Code: given a log of requests (arrival, first-token and finish times, output tokens), compute TTFT, TPOT and E2E percentiles, throughput and goodput against an SLO. |
+| B2P10-Q17 | 10 | Tensor vs pipeline vs data parallelism for inference: when must you shard, how do they affect latency and throughput, and when are two replicas better than one TP=2 deployment? (Part 2 Q34 covers training parallelism.) |
+| B2P10-Q18 | 10 | Self-host vs call an API: build the break-even (token volume, utilisation, engineering and on-call cost, privacy, quality, latency, lock-in) and say what would change your answer. (Part 4 Q25 covers the fine-tuned-small-model case.) |
+| B2P10-Q19 | 10 | Streaming tokens with SSE: how does the path from engine to browser work, what is backpressure for a slow client, how do you handle cancellation and disconnects so GPU work stops, and how do proxies break streaming? |
+| B2P10-Q20 | 10 | Chunked prefill and scheduling: how does the scheduler mix prefill and decode under a token budget, why does a long prompt stall other users' decoding without chunking, and how do max_num_batched_tokens and max_num_seqs trade TTFT against inter-token latency? |
+| B2P10-Q21 | 10 | Preemption and admission control in an engine: what happens when KV blocks run out (recompute vs swap), what does it do to tail latency, and what do you tune or monitor to avoid it? |
+| B2P10-Q22 | 10 | KV-cache quantization (for example FP8): how much capacity does it add, what does it do to quality and speed, why do scales and calibration matter, and when is it risky? (Part 1 Q23 compares KV levers.) |
+| B2P10-Q23 | 10 | FP8 and W8A8 serving: what are the E4M3 and E5M2 formats, which GPUs support them natively, how do static vs dynamic scaling and SmoothQuant-style outlier handling work, and when do you prefer FP8 over INT4 weight-only? |
+| B2P10-Q24 | 10 | Speculative decoding variants: draft model vs n-gram or prompt lookup vs Medusa heads vs EAGLE feature-level drafting. What does each need (training, memory), and why does speedup fall at high batch sizes? (Part 1 Q45 links multi-token prediction.) |
+| B2P10-Q25 | 10 | Multi-LoRA serving: how do engines keep one base model and many adapters (batched adapter kernels, adapter paging as in S-LoRA and Punica, max loaded adapters, dynamic loading), and what limits latency and adapter count? (Part 4 Q32 covers merged vs unmerged.) |
+| B2P10-Q26 | 10 | What does structured or constrained decoding cost at serving time (grammar compilation, per-token masking, batch interaction, first-request latency), and how do engines such as vLLM and SGLang reduce it? (Part 3 Q22 covers the mechanism; Q40 the p99 problem.) |
+| B2P10-Q27 | 10 | Autoscaling and cold starts for GPU-backed LLM replicas: which signals scale well (queue depth, KV-cache usage, running requests) vs which mislead (GPU utilisation), what dominates cold start (weight download and load), and how do you hedge? (Book 4 owns generic Kubernetes autoscaling.) |
+| B2P10-Q28 | 10 | Model routing and caching to cut cost: explicit routing, classifier routing and cascades, exact-match and semantic response caches, and the quality and safety risks of each. (Part 8 Q37 covers agent cost levers; Part 3 Q36 prompt-level cuts.) |
+| B2P10-Q29 | 10 | Rate limiting and overload protection for an LLM API: why requests-per-minute is a poor limit, token-based limits, queue length and timeouts, 429 and retry-after, load shedding, and priority tiers. |
+| B2P10-Q30 | 10 | Benchmarking an LLM server properly: open-loop (fixed arrival rate, Poisson or bursty) vs closed-loop (fixed concurrency), realistic prompt and output length distributions, warm-up, prefix-cache effects, and which numbers to report. |
+| B2P10-Q31 | 10 | Long-context serving: how do prefill time, KV memory and attention cost grow at 32k to 200k+ tokens, and what helps (chunked prefill, prefix reuse, KV quantization, sliding window or GQA/MLA models, offload, sequence parallelism)? (Part 1 Q30 covers why quality and cost break.) |
+| B2P10-Q32 | 10 | Disaggregated prefill and decode (DistServe, Mooncake, vLLM's disaggregated prefilling): why separate the phases, what does it improve (goodput under TTFT and TPOT SLOs, tail ITL), what does it not improve, and what does the KV transfer cost? |
+| B2P10-Q33 | 10 | Estimate the ceiling for decode speed: using memory bandwidth and bytes read per token, estimate tokens per second at batch 1 for a 7B and a 70B model, then explain MFU/MBU and why nvidia-smi 'GPU utilisation 100%' says little. |
+| B2P10-Q34 | 10 | Offline batch inference vs online serving: how do the objectives, batching, scheduling, cost and failure handling differ (throughput-optimised jobs, spot capacity, checkpointing, length sorting)? |
+| B2P10-Q35 | 10 | Hardware choice for serving: how do GPU memory capacity, memory bandwidth, FP8 support and interconnect decide between options such as L4, A100, H100 and H200-class cards, and when does a smaller or older card win on cost per token? |
+| B2P10-Q36 | 10 | llama.cpp, GGUF and Ollama: what are they for (CPU or Apple Silicon, edge, local development, hybrid CPU-GPU offload), how do GGUF quantization levels differ from GPTQ/AWQ, and where do they stop being the right tool for a server? |
+| B2P10-Q37 | 10 | Replicas behind a load balancer: why does prefix caching and KV reuse need cache-aware routing or sticky sessions, what are the risks (hot spots, uneven load), and what do round-robin and least-loaded routing get wrong for LLMs? |
+| B2P10-Q38 | 10 | Code: write a toy continuous-batching scheduler simulation (arrivals, per-request output lengths, a batch-slot limit) and compare it with static batching on throughput and latency percentiles. |
+| B2P10-Q39 | 10 | Code: write a toy paged KV-block allocator (fixed-size blocks, block tables, reference counts, shared prefixes with copy-on-write, free list) and show fragmentation compared with contiguous allocation. |
+| B2P10-Q40 | 10 | Code: implement INT8 per-tensor and per-channel weight quantize and dequantize in NumPy, measure the error (MSE, max error, output error on a matmul), and show what an outlier channel does. |
+| B2P10-Q41 | 10 | Code: simulate speculative decoding acceptance (draft and target token distributions, the accept-or-resample rule), check that the output distribution matches the target, and compare measured tokens per step with the closed-form formula. |
+| B2P10-Q42 | 10 | Derive the expected speedup of speculative decoding: expected accepted tokens per verification step as a function of acceptance rate and draft length, then include draft cost to find the best draft length. |
+| B2P10-Q43 | 10 | AI code review: this LLM-written serving and benchmark script has bugs (KV size uses attention heads instead of KV heads, ignores dtype bytes, closed-loop benchmark with one repeated prompt, reports only mean latency, model loaded per request, blocking call in an async handler, no max_tokens, gpu memory fraction set to 1.0). Find and fix them. |
+| B2P10-Q44 | 10 | Design question: an LLM serving platform for N requests per second with TTFT and TPOT SLOs (workload assumptions, capacity maths, engine choice, batching and scheduling, caching, autoscaling, routing, observability, failure modes). |
+| B2P10-Q45 | 10 | Design question: cut LLM serving cost by 50% without hurting quality (where to measure first, then quantization, batching and utilisation, caching, routing, smaller or distilled models, spot capacity, and how you prove quality held). |
+| B2P10-Q46 | 10 | Production diagnosis: p99 TTFT doubled after a traffic increase and a deploy while GPU 'utilisation' looks fine. Walk through how you localise the cause (queueing, preemptions, prefix-cache hit rate, prompt template change, long-tail prompts, a noisy tenant) and fix it. |
+| B2P10-Q47 | 10 | Production diagnosis: a replica crashes with CUDA out-of-memory after hours of stable traffic, or fails to start at long context. Explain the causes (KV growth, activation peaks, fragmentation, logits for long prompts, memory settings) and the fixes. |
+| B2P10-Q48 | 10 | Design question: scale a chat product from 8k to 200k-token contexts (memory, prefill latency, cost, caching, model choice, degradation and limits, evaluation of quality at length). |
+| B2P10-Q49 | 10 | Design question: a multi-tenant inference service with priority tiers, per-tenant token budgets, fairness, per-tenant LoRA adapters, noisy-neighbour isolation and SLO reporting. |

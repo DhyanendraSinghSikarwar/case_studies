@@ -1,0 +1,13 @@
+mail me at asha.rao@example.com          found=['asha.rao@example.com']
+call +91 9876543210 tomorrow             found=['+91 9876543210']
+token is sk-AAAABBBBCCCCDDDD1234         found=['sk-AAAABBBBCCCCDDDD1234']
+Ravi Kumar lives at 12 Park Street       found=[]
+order id 9876543210 shipped              found=['9876543210']
+contact: priya (at) example (dot) com    found=[]
+the weather is nice                      found=[]
+reach me on 98765 43210                  found=[]
+TP=3 FP=1 FN=4 precision=0.75 recall=0.43
+entropy 0.00 bits/char  aaaaaaaaaaaaaaaaaaaa
+entropy 3.42 bits/char  hello_world_variable
+entropy 4.32 bits/char  q8Zr3KpL0vXw9TnB2yHd
+mail [EMAIL] or call [PHONE_IN]

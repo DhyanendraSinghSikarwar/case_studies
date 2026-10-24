@@ -1,0 +1,10 @@
+kappa: 0.3478 (hand: 0.3478)
+train flip rate | acc vs TRUE labels | acc vs NOISY test labels
+   0.0        |      0.996         |   0.996
+   0.1        |      0.986         |   0.887
+   0.2        |      0.972         |   0.778
+   0.3        |      0.977         |   0.689
+   0.4        |      0.932         |   0.587
+3-vote majority error: 0.104 vs single 0.2
+loss at margin 5 (confident):  eps=0: 0.0067  eps=0.1: 0.5067
+loss at margin 0.5:            eps=0: 0.4741  eps=0.1: 0.5241

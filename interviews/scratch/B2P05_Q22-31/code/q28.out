@@ -1,0 +1,6 @@
+expected ms per request (assumed numbers):
+  serial, all rails then LLM :  1626.0
+  parallel rails then LLM    :  1600.0
+  tiered + short-circuit     :  1535.1
+  tiered, judge on 5% only   :  1246.0
+streaming: with a 25 ms check per chunk, a flagged chunk at position 3 stops after 75 ms of checks
