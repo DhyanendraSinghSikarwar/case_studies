@@ -1114,3 +1114,49 @@ Canonical questions per book. Wave A agents: check this BEFORE adding a question
 | B2P08-Q50 | 8 | How would you run MCP in an enterprise (gateway, server registry, authorisation, per-tool scopes, audit, rate limits, supply-chain risk of third-party servers)? |
 | B2P08-Q51 | 8 | How do you build an evaluation suite for a non-deterministic agent (outcome and trajectory graders, repeated runs, variance, cost-aware metrics, small-sample starts)? |
 | B2P08-Q52 | 8 | Design defences for agents that read untrusted tool outputs and tool descriptions (privilege separation, taint tracking, confirmation, dual-model patterns). |
+| B2P09-Q1 | 9 | How do you evaluate an LLM application end to end? Explain why it differs from testing ordinary software, model vs system evaluation, and how offline and online evaluation fit together. |
+| B2P09-Q2 | 9 | How do you build a golden evaluation set from scratch (real queries, coverage of cases, labels, size, versioning, and keeping it free of training or prompt leakage)? |
+| B2P09-Q3 | 9 | Reference-based metrics for generated text: what do exact match, token F1, BLEU, ROUGE and BERTScore measure, when does each fit, and why do they fail for open-ended LLM output? |
+| B2P09-Q4 | 9 | What is LLM-as-a-judge? Explain pointwise, pairwise and reference-based judging, when to use each, and the limits of trusting a judge. |
+| B2P09-Q5 | 9 | What biases do LLM judges show (position, verbosity, self-preference), how do you measure each in your own setup, and how do you mitigate them? |
+| B2P09-Q6 | 9 | How do you calibrate and validate an LLM judge against human labels (agreement, Cohen's kappa, true positive and true negative rate, train/dev/test split of labelled examples)? |
+| B2P09-Q7 | 9 | How do you write a judge prompt and rubric that works (one criterion per judge, binary or small scales, anchored examples, reasoning before the verdict, output format)? |
+| B2P09-Q8 | 9 | RAGAS-style generation metrics in depth: how are faithfulness and answer relevance computed, what do they miss, and why can faithfulness be 0.9 while users still complain? |
+| B2P09-Q9 | 9 | How do you detect hallucinations and measure groundedness (claim decomposition plus entailment checks, citation verification, sampling-consistency checks, abstention rate), and what are the limits of each? |
+| B2P09-Q10 | 9 | Public benchmarks (MMLU, HumanEval, SWE-bench, MT-Bench, Chatbot Arena): what does each measure, and why is a benchmark score not a product evaluation? |
+| B2P09-Q11 | 9 | Your new prompt scores 82% and the old one 80% on 200 test cases. Is it better? Cover confidence intervals, paired comparison, and how much to trust small differences. |
+| B2P09-Q12 | 9 | What is pass@k? Explain the unbiased estimator from the Codex paper, why naive 'best of k' reporting is biased, and how pass@k differs from pass^k (all k succeed). |
+| B2P09-Q13 | 9 | Code: implement the unbiased pass@k estimator (n samples, c correct) from scratch, check it against brute force, and aggregate it over problems. |
+| B2P09-Q14 | 9 | How do you do regression testing and CI gates for prompt or model changes (tiered suites, thresholds, flaky results, blocking vs advisory checks)? |
+| B2P09-Q15 | 9 | How do you do error analysis on an LLM product (read traces, open coding, group into a failure taxonomy, count, prioritise) and turn the findings into evals? |
+| B2P09-Q16 | 9 | Context precision and context recall in depth: how are they computed, what do they need (reference answer or labelled chunks), why is precision rank-aware, and how do you read the four combinations of high and low? |
+| B2P09-Q17 | 9 | A RAG assistant is wrong a third of the time and you only have logs. How do you separate retrieval failures from generation failures, handle unanswerable questions, and decide what to fix first? |
+| B2P09-Q18 | 9 | How do you run pairwise comparisons properly (swap order, ties, win rate with a confidence interval, which judge, when pairwise beats absolute scores)? |
+| B2P09-Q19 | 9 | What did the MT-Bench and Chatbot Arena paper (Judging LLM-as-a-Judge) report: the biases, the agreement with humans, what MT-Bench is, and what does the agreement claim not show? |
+| B2P09-Q20 | 9 | How does Chatbot Arena turn pairwise human votes into a ranking (Elo vs Bradley-Terry, confidence intervals, style control), and what are its blind spots? |
+| B2P09-Q21 | 9 | Benchmark contamination and saturation: how do you detect leakage, what do held-out, dynamic or refreshed benchmarks do (LiveCodeBench-style), and how should you read a leaderboard? |
+| B2P09-Q22 | 9 | What do code benchmarks measure and miss (HumanEval and MBPP functional tests, SWE-bench and SWE-bench Verified), and how can weak tests or saturation mislead you? |
+| B2P09-Q23 | 9 | Perplexity as an evaluation metric: what does it tell you, why does it fail as a measure of an LLM application's quality, and when is it still useful (see Part 2 Q7 for the definition)? |
+| B2P09-Q24 | 9 | How do you design a human evaluation (rubrics, annotation guidelines, calibration rounds, adjudication, sampling, cost and throughput)? |
+| B2P09-Q25 | 9 | Inter-annotator agreement: how do raw agreement, Cohen's kappa, Fleiss' kappa and Krippendorff's alpha differ, what is the kappa paradox, and what do you do when annotators disagree on subjective tasks? |
+| B2P09-Q26 | 9 | How big must an eval set be? Explain sample size and power for detecting a small improvement, and why a few hundred cases may not be enough. |
+| B2P09-Q27 | 9 | How do you handle variance across runs and temperature (repeated trials, seeds, temperature 0 not being fully deterministic, reporting mean and spread)? |
+| B2P09-Q28 | 9 | Which statistical tests suit comparing two LLM systems on the same test set (paired bootstrap, McNemar, paired t-test) and how do you handle many comparisons? |
+| B2P09-Q29 | 9 | How do you run safety and red-team evaluations (attack success rate, curated vs automated attacks such as HarmBench, over-refusal rate, severity weighting, release gates)? See Part 5 Q23 and Q29 for basics. |
+| B2P09-Q30 | 9 | How do you run an A/B test and online monitoring for an LLM feature (primary and guardrail metrics, implicit feedback, sampled production traces scored by a judge, drift)? |
+| B2P09-Q31 | 9 | How do you evaluate long-form generation such as summaries (G-Eval-style scoring, claim-level factuality and coverage checks, human spot checks), and why is it harder than short answers? |
+| B2P09-Q32 | 9 | How do you evaluate structured-output, extraction and classification tasks (schema validity, per-field precision and recall, deterministic checks before any judge)? |
+| B2P09-Q33 | 9 | How do you control evaluation cost (judge cost, sampling strategy, caching, cheaper judge cascades, a panel of smaller judges) without losing signal? |
+| B2P09-Q34 | 9 | How do you evaluate fairly across languages and user slices (Hindi and Telugu vs English, per-segment metrics, small-slice noise)? |
+| B2P09-Q35 | 9 | What eval tooling exists (Ragas, DeepEval, promptfoo, LangSmith, Langfuse, provider eval tools), how do you choose, and when do you write your own harness? |
+| B2P09-Q36 | 9 | Capability evals vs regression evals: how does an eval suite mature over time (graduating cases, saturation, adding harder tasks, eval-driven development)? See Part 8 Q14, Q39 and Q51 for agent evaluation. |
+| B2P09-Q37 | 9 | Code: implement Elo ratings and a Bradley-Terry fit from pairwise battle results, and show why order matters for Elo but not for the Bradley-Terry fit. |
+| B2P09-Q38 | 9 | Code: implement a bootstrap confidence interval for accuracy and a paired bootstrap for the difference between two systems. |
+| B2P09-Q39 | 9 | Code: implement Cohen's kappa to measure agreement between an LLM judge and a human labeller, with TPR and TNR, and test it on toy labels. |
+| B2P09-Q40 | 9 | Code: build a mini evaluation harness (dataset loader, model runner, graders, caching, repeated trials, a report with confidence intervals) with a mocked LLM. |
+| B2P09-Q41 | 9 | AI code review: this LLM-written evaluation script has bugs (test cases leaked into few-shot examples, naive pass@k, no position swap, mean score with no interval, same model as generator and judge, nonzero temperature with one run). Find and fix them. |
+| B2P09-Q42 | 9 | Offline scores keep rising but user complaints are rising too. Diagnose the gap and say what you change in the eval. |
+| B2P09-Q43 | 9 | The model provider quietly updates a model version and quality drops. How do you detect it, attribute it, and protect against it (version pinning, canary evals, rollback)? |
+| B2P09-Q44 | 9 | Design question: an evaluation platform for many teams (datasets, versioned prompts and graders, runs, dashboards, CI integration, human review queues, cost control). |
+| B2P09-Q45 | 9 | Design question: build an LLM judge you can trust (rubric, human calibration set, bias tests, ensembles, drift monitoring, when to retire it). |
+| B2P09-Q46 | 9 | Design question: an evaluation strategy for launching a new LLM assistant, including a high-stakes domain (clinical or financial): launch criteria, red team, human review, staged rollout, and answering 'is it ready?' |
