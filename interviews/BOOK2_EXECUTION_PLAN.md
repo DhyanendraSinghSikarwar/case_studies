@@ -21,7 +21,7 @@ Follows plan.md §5 (Book 2 table), §11 (workflow) and style_guide.md. Book 1 i
 | 8 | Agents, tool use, MCP, multi-agent | 50 | ✅ (52 Qs) | ✅ | ✅ |
 | 9 | LLM evaluation | 45 | ✅ (46 Qs) | ✅ | ✅ |
 | 10 | Deployment: vLLM, quantization, latency/cost | 45 | ✅ (49 Qs) | ✅ | ✅ |
-| 11 | LLMOps, security, prompt injection | 40 | ⬜ | ⬜ | ⬜ |
+| 11 | LLMOps, security, prompt injection | 40 | ✅ (45 Qs) | ⬜ | ⬜ |
 | 12 | GenAI system design + coding | 40 | ⬜ | ⬜ | ⬜ |
 
 ## Scope boundaries
