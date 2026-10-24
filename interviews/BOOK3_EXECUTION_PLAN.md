@@ -13,7 +13,7 @@ Per question: `### Qn stars emoji text` / `**Asked at:**` / **Say this first (1 
 ## Part checklist (target Qs from plan.md)
 | Part | Topic | Target | Wave A | Wave B | Wave C |
 |---|---|---|---|---|---|
-| 1 | SELECT, filtering, aggregation, GROUP BY/HAVING | 45 | ✅ (45 Qs) | ⬜ | ⬜ |
+| 1 | SELECT, filtering, aggregation, GROUP BY/HAVING | 45 | ✅ (45 Qs) | ✅ | ✅ |
 | 2 | Joins (all types, self, anti/semi) | 45 | ⬜ | ⬜ | ⬜ |
 | 3 | Subqueries, CTEs | 40 | ⬜ | ⬜ | ⬜ |
 | 4 | Window functions: ranking, top-N per group | 50 | ⬜ | ⬜ | ⬜ |
@@ -35,4 +35,4 @@ Book 1 owns statistics and ML; Book 4 owns data engineering and generic MLOps (f
 - Spend-limit interruptions: resume agents with SendMessage after the reset.
 
 ## Next step
-Part 1 Wave A (create `Book3_SQL/`, research SELECT/filtering/aggregation/GROUP BY/HAVING questions; see pipeline above).
+Part 2 Wave A (joins: all types, self, anti/semi joins; research, freeze the list, then Wave B and review). Per-part scripts: copy scratch/B3P01_merge/merge.py (change the part-file path and B3P01 prefix) and scratch/review_scripts/check_part_template.py, but for Book 3 run only the Code-block program per question (the one containing `import sqlite3`; prose pandas snippets are fenced python too and are not standalone). Wave B brief: scratch/B3_brief.md. Part 1 lessons: several question premises were wrong in SQLite (alias in WHERE accepted; HAVING on a non-grouped column and bare columns run silently; COUNT(DISTINCT a, b) errors); answers say so and hedge strict engines as 'not executed'. pandas differs from SQL on NaN in comparisons, isin, sum of empty groups (needs min_count=1), groupby dropna, and round half-to-even.
