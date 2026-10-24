@@ -1958,3 +1958,536 @@ asserts passed
 - Believing the output because the numbers look plausible.
 - Deduplicating after the window instead of before.
 - Forgetting NULL dates.
+
+### Q9 ⭐⭐⭐ 🟡 Users with a streak of at least N days (LeetCode 1454 Active Users): logins(id, login_date) and accounts(id, name), where logins can contain duplicate rows. Return id and name of users who logged in on 5 or more consecutive days, ordered by id; then generalise to N as a parameter. Include a user with exactly 4 days and one with 5 days split by a gap, and explain why DISTINCT is applied before ranking.
+**Asked at:** public LeetCode-style problem bank (statements known from search snippets and mirrors such as doocs, walkccc and talentd; the leetcode.com pages returned HTTP 403 and were not opened), not candidate reports; analyst, data scientist and data engineer screens at product companies and GCCs
+**Say this first (1 line):** Dedupe to distinct (user, date) first, compute the island key `julianday(login_date) - ROW_NUMBER()` per user, keep users who have any island with `COUNT(*) >= N`, and look up their names in `accounts`; N is just the number in the `HAVING`.
+
+**Schema and sample data:** five accounts and a `logins` table with duplicates, unsorted. Alice has 5 consecutive days (03-01 to 03-05) with 03-03 logged twice. Bob has exactly 4 distinct days (03-01 to 03-04) with 03-04 logged twice, so 5 rows. Carol has 5 days split by a gap (03-01 to 03-03, then 03-05 and 03-06). Dan has two long streaks (6 days, then 5 days). Eve has no logins. Id 6 has a 5-day streak but no row in `accounts`.
+```sql
+CREATE TABLE accounts(id INTEGER PRIMARY KEY, name TEXT);
+INSERT INTO accounts VALUES (1,'Alice'),(2,'Bob'),(3,'Carol'),(4,'Dan'),(5,'Eve');
+CREATE TABLE logins(id INTEGER, login_date TEXT);
+INSERT INTO logins VALUES
+ (1,'2024-03-05'),(1,'2024-03-01'),(1,'2024-03-03'),(1,'2024-03-03'),(1,'2024-03-02'),(1,'2024-03-04'),
+ (2,'2024-03-04'),(2,'2024-03-01'),(2,'2024-03-02'),(2,'2024-03-03'),(2,'2024-03-04'),
+ (3,'2024-03-01'),(3,'2024-03-02'),(3,'2024-03-03'),(3,'2024-03-05'),(3,'2024-03-06'),
+ (4,'2024-03-01'),(4,'2024-03-02'),(4,'2024-03-03'),(4,'2024-03-04'),(4,'2024-03-05'),(4,'2024-03-06'),
+ (4,'2024-03-10'),(4,'2024-03-11'),(4,'2024-03-12'),(4,'2024-03-13'),(4,'2024-03-14'),
+ (6,'2024-03-01'),(6,'2024-03-02'),(6,'2024-03-03'),(6,'2024-03-04'),(6,'2024-03-05');
+```
+
+**SQL answer:** `SQL_MAIN` in the Code block; the `?` is N (bound as 5 for the question, then 1 to 7 for the generalisation):
+```sql
+WITH d AS (
+  SELECT DISTINCT id, login_date
+  FROM logins
+  WHERE login_date IS NOT NULL
+),
+x AS (
+  SELECT id, login_date,
+         julianday(login_date) - ROW_NUMBER() OVER (PARTITION BY id ORDER BY login_date) AS grp
+  FROM d
+)
+SELECT a.id, a.name
+FROM accounts a
+WHERE a.id IN (SELECT id FROM x GROUP BY id, grp HAVING COUNT(*) >= ?)
+ORDER BY a.id
+```
+It uses `IN` rather than a join so that a user with two qualifying streaks (Dan) appears once. `SQL_LAG` in the Code block is a second way that avoids islands: after distinct days, a user has N consecutive days if some row's date is exactly N-1 days after the date N-1 rows earlier, `LAG(login_date, N - 1)`. It also takes N as a bound parameter (SQLite accepted it as the `LAG` offset in my run) and matched the island version for every N from 1 to 7.
+
+**pandas answer:** shown once, identical to the Code block (wrapped in a function of `n`):
+```py
+    d = logins.dropna(subset=["login_date"]).drop_duplicates()
+    d = d.assign(login_date=pd.to_datetime(d["login_date"])).sort_values(["id", "login_date"])
+    d["key"] = d["login_date"] - pd.to_timedelta(d.groupby("id").cumcount() + 1, unit="D")
+    sizes = d.groupby(["id", "key"]).size()
+    ids = sizes[sizes >= n].index.get_level_values("id").unique()
+    out = accounts[accounts["id"].isin(ids)].sort_values("id").reset_index(drop=True)
+    
+```
+
+**Example (by hand):** N = 5.
+- Alice: distinct days 03-01 to 03-05, five in a row: qualifies. The duplicate 03-03 row must not count as a sixth day.
+- Bob: 03-01 to 03-04, four distinct days, one island of 4: does not qualify (a `COUNT(*)` over the five rows would say 5 and wrongly include him).
+- Carol: islands of 3 and 2: no island reaches 5. Five distinct days in total is not five in a row.
+- Dan: islands of 6 and 5: qualifies (once).
+- Eve: no logins, no island. Id 6: 5-day island, but no account, so the join to `accounts` drops it.
+- Result: Alice (1) and Dan (4), ordered by id.
+
+**Code:** run with `python3 -I`. The assert compares SQL and pandas results as lists of `(id, name)` after sorting by `id`, for N from 1 to 7 (SQL `ORDER BY a.id`; pandas `sort_values("id")`).
+```python
+# Q9: users with a streak of at least N days (LeetCode 1454 pattern), duplicates in logins
+import sqlite3
+import pandas as pd
+
+SCHEMA = """
+CREATE TABLE accounts(id INTEGER PRIMARY KEY, name TEXT);
+INSERT INTO accounts VALUES (1,'Alice'),(2,'Bob'),(3,'Carol'),(4,'Dan'),(5,'Eve');
+CREATE TABLE logins(id INTEGER, login_date TEXT);
+INSERT INTO logins VALUES
+ (1,'2024-03-05'),(1,'2024-03-01'),(1,'2024-03-03'),(1,'2024-03-03'),(1,'2024-03-02'),(1,'2024-03-04'),
+ (2,'2024-03-04'),(2,'2024-03-01'),(2,'2024-03-02'),(2,'2024-03-03'),(2,'2024-03-04'),
+ (3,'2024-03-01'),(3,'2024-03-02'),(3,'2024-03-03'),(3,'2024-03-05'),(3,'2024-03-06'),
+ (4,'2024-03-01'),(4,'2024-03-02'),(4,'2024-03-03'),(4,'2024-03-04'),(4,'2024-03-05'),(4,'2024-03-06'),
+ (4,'2024-03-10'),(4,'2024-03-11'),(4,'2024-03-12'),(4,'2024-03-13'),(4,'2024-03-14'),
+ (6,'2024-03-01'),(6,'2024-03-02'),(6,'2024-03-03'),(6,'2024-03-04'),(6,'2024-03-05');
+"""
+SQL_MAIN = """
+WITH d AS (
+  SELECT DISTINCT id, login_date
+  FROM logins
+  WHERE login_date IS NOT NULL
+),
+x AS (
+  SELECT id, login_date,
+         julianday(login_date) - ROW_NUMBER() OVER (PARTITION BY id ORDER BY login_date) AS grp
+  FROM d
+)
+SELECT a.id, a.name
+FROM accounts a
+WHERE a.id IN (SELECT id FROM x GROUP BY id, grp HAVING COUNT(*) >= ?)
+ORDER BY a.id
+"""
+SQL_JOIN_DUPES = """
+WITH d AS (
+  SELECT DISTINCT id, login_date FROM logins WHERE login_date IS NOT NULL
+),
+x AS (
+  SELECT id, login_date,
+         julianday(login_date) - ROW_NUMBER() OVER (PARTITION BY id ORDER BY login_date) AS grp
+  FROM d
+),
+s AS (SELECT id FROM x GROUP BY id, grp HAVING COUNT(*) >= ?)
+SELECT a.id, a.name FROM accounts a JOIN s ON s.id = a.id ORDER BY a.id
+"""
+SQL_NO_DISTINCT = """
+WITH x AS (
+  SELECT id, login_date,
+         julianday(login_date) - ROW_NUMBER() OVER (PARTITION BY id ORDER BY login_date) AS grp
+  FROM logins
+)
+SELECT a.id, a.name
+FROM accounts a
+WHERE a.id IN (SELECT id FROM x GROUP BY id, grp HAVING COUNT(*) >= ?)
+ORDER BY a.id
+"""
+SQL_DENSE_COUNT_STAR = """
+WITH x AS (
+  SELECT id, login_date,
+         julianday(login_date) - DENSE_RANK() OVER (PARTITION BY id ORDER BY login_date) AS grp
+  FROM logins
+)
+SELECT a.id, a.name
+FROM accounts a
+WHERE a.id IN (SELECT id FROM x GROUP BY id, grp HAVING COUNT(*) >= ?)
+ORDER BY a.id
+"""
+SQL_LAG = """
+WITH d AS (
+  SELECT DISTINCT id, login_date FROM logins WHERE login_date IS NOT NULL
+),
+x AS (
+  SELECT id, login_date,
+         LAG(login_date, ? - 1) OVER (PARTITION BY id ORDER BY login_date) AS back
+  FROM d
+)
+SELECT a.id, a.name
+FROM accounts a
+WHERE a.id IN (SELECT id FROM x WHERE julianday(login_date) - julianday(back) = ? - 1)
+ORDER BY a.id
+"""
+
+con = sqlite3.connect(":memory:")
+con.executescript(SCHEMA)
+def pairs(df):
+    return [(int(i), n) for i, n in zip(df["id"], df["name"])]
+
+def rows(sql, *p):
+    return pd.read_sql_query(sql, con, params=p)
+
+sql_df = rows(SQL_MAIN, 5)
+print("accounts with a streak of 5+ days:")
+print(sql_df.to_string(index=False))
+print("\nroster of streak lengths (distinct days) per user:")
+print(pd.read_sql_query("""
+WITH d AS (SELECT DISTINCT id, login_date FROM logins),
+x AS (SELECT id, login_date, julianday(login_date) - ROW_NUMBER() OVER (PARTITION BY id ORDER BY login_date) AS grp FROM d)
+SELECT id, MIN(login_date) AS streak_start, MAX(login_date) AS streak_end, COUNT(*) AS days FROM x GROUP BY id, grp ORDER BY id, streak_start""", con).to_string(index=False))
+print("\nwrong 1, ROW_NUMBER without DISTINCT:", rows(SQL_NO_DISTINCT, 5)["id"].tolist())
+print("wrong 2, DENSE_RANK but COUNT(*):", rows(SQL_DENSE_COUNT_STAR, 5)["id"].tolist())
+print("join instead of IN, Dan has two qualifying streaks:", rows(SQL_JOIN_DUPES, 5)["id"].tolist())
+
+logins = pd.read_sql_query("SELECT * FROM logins", con)
+accounts = pd.read_sql_query("SELECT * FROM accounts", con)
+def pd_active(logins, accounts, n):
+    # pd:main
+    d = logins.dropna(subset=["login_date"]).drop_duplicates()
+    d = d.assign(login_date=pd.to_datetime(d["login_date"])).sort_values(["id", "login_date"])
+    d["key"] = d["login_date"] - pd.to_timedelta(d.groupby("id").cumcount() + 1, unit="D")
+    sizes = d.groupby(["id", "key"]).size()
+    ids = sizes[sizes >= n].index.get_level_values("id").unique()
+    out = accounts[accounts["id"].isin(ids)].sort_values("id").reset_index(drop=True)
+    # pd:end
+    return out
+# compared after sorting by id
+pd.testing.assert_frame_equal(pd_active(logins, accounts, 5), sql_df)
+print("\npandas equals SQL for N=5: True")
+for n in range(1, 8):
+    a = rows(SQL_MAIN, n)
+    b = pd_active(logins, accounts, n)
+    c = rows(SQL_LAG, n, n)
+    assert pairs(b) == pairs(a) == pairs(c)  # lists of (id, name); empty frames differ in dtype, so compare values
+    print("N =", n, "-> ids", a["id"].tolist(), "(ROW_NUMBER, pandas and LAG(N-1) agree)")
+
+# edge cases
+con.execute("INSERT INTO logins VALUES (5, NULL)")
+print("account with only a NULL date, N=1:", rows(SQL_MAIN, 1)["id"].tolist())
+con.execute("DELETE FROM logins")
+print("empty logins, N=5:", rows(SQL_MAIN, 5)["id"].tolist(), "| pandas rows:", len(pd_active(logins.iloc[0:0], accounts, 5)))
+print("asserts passed")
+```
+
+**Output (my run):**
+```text
+accounts with a streak of 5+ days:
+ id  name
+  1 Alice
+  4   Dan
+
+roster of streak lengths (distinct days) per user:
+ id streak_start streak_end  days
+  1   2024-03-01 2024-03-05     5
+  2   2024-03-01 2024-03-04     4
+  3   2024-03-01 2024-03-03     3
+  3   2024-03-05 2024-03-06     2
+  4   2024-03-01 2024-03-06     6
+  4   2024-03-10 2024-03-14     5
+  6   2024-03-01 2024-03-05     5
+
+wrong 1, ROW_NUMBER without DISTINCT: [4]
+wrong 2, DENSE_RANK but COUNT(*): [1, 2, 4]
+join instead of IN, Dan has two qualifying streaks: [1, 4, 4]
+
+pandas equals SQL for N=5: True
+N = 1 -> ids [1, 2, 3, 4] (ROW_NUMBER, pandas and LAG(N-1) agree)
+N = 2 -> ids [1, 2, 3, 4] (ROW_NUMBER, pandas and LAG(N-1) agree)
+N = 3 -> ids [1, 2, 3, 4] (ROW_NUMBER, pandas and LAG(N-1) agree)
+N = 4 -> ids [1, 2, 4] (ROW_NUMBER, pandas and LAG(N-1) agree)
+N = 5 -> ids [1, 4] (ROW_NUMBER, pandas and LAG(N-1) agree)
+N = 6 -> ids [4] (ROW_NUMBER, pandas and LAG(N-1) agree)
+N = 7 -> ids [] (ROW_NUMBER, pandas and LAG(N-1) agree)
+account with only a NULL date, N=1: [1, 2, 3, 4]
+empty logins, N=5: [] | pandas rows: 0
+asserts passed
+```
+
+**Edge cases:**
+- Exactly 4 days (Bob) is excluded and exactly 5 (Alice, and Dan's second streak) is included, so the threshold is `>= N`, not `> N`. N = 4 added Bob, N = 6 left only Dan, N = 7 returned nothing (all in the output).
+- 5 days split by a gap (Carol): excluded, because the key changes at the gap (a step of exactly 2 days).
+- Why `DISTINCT` before ranking: `ROW_NUMBER` on the duplicated rows split Alice's run at the second 03-03 and dropped her (the wrong list printed `[4]`, only Dan). `DENSE_RANK` with `COUNT(*)` fixed the split but counted Bob's duplicate row as a fifth day and wrongly included him (`[1, 2, 4]`). Dedupe first, then count distinct days (see Q8).
+- Join instead of `IN`: Dan appeared twice (`[1, 4, 4]`) because he has two qualifying islands. Use `IN`/`EXISTS` or `DISTINCT`.
+- Users with no account row: id 6 is dropped by the lookup in `accounts`. Whether that is correct depends on the product; the LeetCode problem returns names, so it needs the join.
+- NULL date: an account with only a NULL date had no islands (the output shows N=1 unchanged), because the NULL is filtered.
+- Single-row groups: Eve and a one-day user only appear for N = 1.
+- Unsorted input: handled by the window order and the pandas sort.
+- Empty `logins`: zero rows in SQL, zero in pandas.
+
+**Then explain:**
+- Generalising: only the number in `HAVING COUNT(*) >= ?` changes; the islands are the same for any N. That is the advantage over N-1 self joins.
+- The `LAG(login_date, N - 1)` form answers "does a window of N days exist", which is faster to write but cannot report the streak itself.
+- As I remember LeetCode 1454 (the page is premium and was not opened), the output is id and name ordered by id, and logins can have duplicates, which is why the dedupe step matters.
+- Dialects (not executed here): the bound `?` placeholder style differs by driver (`%s`, `$1`, `@n`); a `LAG` offset that is a parameter may not be allowed in every engine, so use a literal there.
+
+**Follow-ups:**
+- *Active for N consecutive days ending today?* That is the current-streak question (Q15).
+- *How many distinct streaks of at least N?* `COUNT(*)` of the qualifying islands per user.
+- *Activity within a rolling window instead of strict consecutive days?* A different metric (Part 8).
+
+**Common mistakes:**
+- Not removing duplicate rows before numbering, or counting rows instead of distinct days.
+- A join that duplicates users with several qualifying streaks.
+- Treating "5 days in total" as "5 days in a row".
+- Using `> N` instead of `>= N`.
+- Forgetting that a user can have logins but no account row (or the reverse).
+
+### Q10 ⭐⭐⭐ 🟡 Human Traffic of Stadium (LeetCode 601): stadium(id, visit_date, people) with id increasing with visit_date. Return all rows that belong to three or more consecutive ids each with people >= 100, ordered by visit_date. Solve with the id minus ROW_NUMBER over the filtered rows (islands among the qualifying rows), with a three-way self join, and with LAG/LEAD windows; explain why the island method needs the filter before ROW_NUMBER and why the join method must not double count a run of four rows.
+**Asked at:** public LeetCode-style problem bank (statements known from search snippets and mirrors such as doocs, walkccc and talentd; the leetcode.com pages returned HTTP 403 and were not opened), not candidate reports; analyst, data scientist and data engineer screens at product companies and GCCs
+**Say this first (1 line):** Filter to the rows with `people >= 100` first, then compute `id - ROW_NUMBER() OVER (ORDER BY id)` on those rows only, so every run of consecutive ids shares one key; keep the rows whose run has at least three members.
+
+**Schema and sample data:** thirteen days, inserted out of order, with `id` increasing with `visit_date` and one date skipped (no 2017-01-08). Rows with 100 or more people: ids 2-3 (a run of 2), ids 5-8 (a run of four), ids 10-12 (exactly 100 each, a run of exactly 3, at the threshold). Ids 1, 4, 9, 13 are below 100.
+```sql
+CREATE TABLE stadium(id INTEGER PRIMARY KEY, visit_date TEXT, people INTEGER);
+INSERT INTO stadium VALUES
+ (5,'2017-01-05',145),(1,'2017-01-01',10),(2,'2017-01-02',109),(3,'2017-01-03',150),(4,'2017-01-04',99),
+ (6,'2017-01-06',1455),(7,'2017-01-07',199),(8,'2017-01-09',188),(9,'2017-01-10',99),
+ (10,'2017-01-11',100),(11,'2017-01-12',100),(12,'2017-01-13',100),(13,'2017-01-14',99);
+```
+
+**SQL answer:** island method, `SQL_ISLAND` in the Code block. A window `COUNT(*) OVER (PARTITION BY grp)` gives each row its run length, so no join back is needed:
+```sql
+WITH q AS (
+  SELECT id, visit_date, people,
+         id - ROW_NUMBER() OVER (ORDER BY id) AS grp
+  FROM stadium
+  WHERE people >= 100
+),
+r AS (
+  SELECT id, visit_date, people,
+         COUNT(*) OVER (PARTITION BY grp) AS run_len
+  FROM q
+)
+SELECT id, visit_date, people
+FROM r
+WHERE run_len >= 3
+ORDER BY visit_date, id
+```
+Three-way self join (`SQL_JOIN`): find every triple of ids `a, a+1, a+2` that all qualify, then return the rows that belong to any triple. `DISTINCT` is needed:
+```sql
+SELECT DISTINCT t.id, t.visit_date, t.people
+FROM stadium a
+JOIN stadium b ON b.id = a.id + 1
+JOIN stadium c ON c.id = a.id + 2
+JOIN stadium t ON t.id IN (a.id, b.id, c.id)
+WHERE a.people >= 100 AND b.people >= 100 AND c.people >= 100
+ORDER BY t.visit_date, t.id
+```
+LAG/LEAD windows (`SQL_WINDOW`): a qualifying row is in a run of 3 if it is the last, middle or first of three qualifying neighbours:
+```sql
+WITH x AS (
+  SELECT id, visit_date, people,
+         LAG(people, 2)  OVER (ORDER BY id) AS b2,
+         LAG(people, 1)  OVER (ORDER BY id) AS b1,
+         LEAD(people, 1) OVER (ORDER BY id) AS f1,
+         LEAD(people, 2) OVER (ORDER BY id) AS f2
+  FROM stadium
+)
+SELECT id, visit_date, people
+FROM x
+WHERE people >= 100
+  AND ( (b1 >= 100 AND b2 >= 100)
+     OR (b1 >= 100 AND f1 >= 100)
+     OR (f1 >= 100 AND f2 >= 100) )
+ORDER BY visit_date, id
+```
+All three returned the same seven rows. `SQL_FILTER_AFTER` in the Code block is the wrong island order (filter after numbering).
+
+**pandas answer:** shown once, identical to the Code block (wrapped in a function). The `respect_ids` branch breaks a run where the id step is not 1; `people` NaN compares as False:
+```py
+    s = stadium.sort_values("id")
+    ok = s["people"] >= 100
+    key = (ok != ok.shift()).cumsum()
+    if respect_ids:
+        key = key + (s["id"].diff() != 1).cumsum()
+    run_len = ok.groupby(key).transform("size")
+    out = s[ok & (run_len >= 3)].sort_values(["visit_date", "id"]).reset_index(drop=True)
+    
+```
+
+**Example (by hand):** sorted by id, qualifying (people >= 100): ids 2, 3, 5, 6, 7, 8, 10, 11, 12 (ids 1, 4, 9, 13 fail).
+- Row numbers among the qualifying rows: 1..9.
+- `id - row number`: 1, 1, 2, 2, 2, 2, 4, 4, 4.
+- Groups: key 1 = ids 2-3 (size 2, dropped), key 2 = ids 5-8 (size 4, kept), key 4 = ids 10-12 (size 3, kept).
+- Result: ids 5, 6, 7, 8, 10, 11, 12, ordered by visit_date (2017-01-05 to 01-07, 01-09, 01-11 to 01-13). The skipped date 01-08 does not matter, because the runs are by id; id 8 follows id 7 although the date skips a day.
+
+**Code:** run with `python3 -I`. The asserts compare SQL and pandas frames sorted by `visit_date, id` (the SQL has `ORDER BY visit_date, id`).
+```python
+# Q10: Human Traffic of Stadium (LeetCode 601 pattern): island, three-way self join, LAG/LEAD
+import sqlite3
+import pandas as pd
+
+SCHEMA = """
+CREATE TABLE stadium(id INTEGER PRIMARY KEY, visit_date TEXT, people INTEGER);
+INSERT INTO stadium VALUES
+ (5,'2017-01-05',145),(1,'2017-01-01',10),(2,'2017-01-02',109),(3,'2017-01-03',150),(4,'2017-01-04',99),
+ (6,'2017-01-06',1455),(7,'2017-01-07',199),(8,'2017-01-09',188),(9,'2017-01-10',99),
+ (10,'2017-01-11',100),(11,'2017-01-12',100),(12,'2017-01-13',100),(13,'2017-01-14',99);
+"""
+SQL_ISLAND = """
+WITH q AS (
+  SELECT id, visit_date, people,
+         id - ROW_NUMBER() OVER (ORDER BY id) AS grp
+  FROM stadium
+  WHERE people >= 100
+),
+r AS (
+  SELECT id, visit_date, people,
+         COUNT(*) OVER (PARTITION BY grp) AS run_len
+  FROM q
+)
+SELECT id, visit_date, people
+FROM r
+WHERE run_len >= 3
+ORDER BY visit_date, id
+"""
+SQL_FILTER_AFTER = """
+WITH q AS (
+  SELECT id, visit_date, people,
+         id - ROW_NUMBER() OVER (ORDER BY id) AS grp
+  FROM stadium
+),
+r AS (
+  SELECT id, visit_date, people,
+         COUNT(*) OVER (PARTITION BY grp) AS run_len
+  FROM q
+  WHERE people >= 100
+)
+SELECT id, visit_date, people
+FROM r
+WHERE run_len >= 3
+ORDER BY visit_date, id
+"""
+SQL_JOIN = """
+SELECT DISTINCT t.id, t.visit_date, t.people
+FROM stadium a
+JOIN stadium b ON b.id = a.id + 1
+JOIN stadium c ON c.id = a.id + 2
+JOIN stadium t ON t.id IN (a.id, b.id, c.id)
+WHERE a.people >= 100 AND b.people >= 100 AND c.people >= 100
+ORDER BY t.visit_date, t.id
+"""
+SQL_JOIN_NO_DISTINCT = SQL_JOIN.replace("SELECT DISTINCT", "SELECT")
+SQL_WINDOW = """
+WITH x AS (
+  SELECT id, visit_date, people,
+         LAG(people, 2)  OVER (ORDER BY id) AS b2,
+         LAG(people, 1)  OVER (ORDER BY id) AS b1,
+         LEAD(people, 1) OVER (ORDER BY id) AS f1,
+         LEAD(people, 2) OVER (ORDER BY id) AS f2
+  FROM stadium
+)
+SELECT id, visit_date, people
+FROM x
+WHERE people >= 100
+  AND ( (b1 >= 100 AND b2 >= 100)
+     OR (b1 >= 100 AND f1 >= 100)
+     OR (f1 >= 100 AND f2 >= 100) )
+ORDER BY visit_date, id
+"""
+
+con = sqlite3.connect(":memory:")
+con.executescript(SCHEMA)
+q = lambda sql: pd.read_sql_query(sql, con)
+isl = q(SQL_ISLAND)
+print("island method:"); print(isl.to_string(index=False))
+jn, win = q(SQL_JOIN), q(SQL_WINDOW)
+pd.testing.assert_frame_equal(jn, isl)
+pd.testing.assert_frame_equal(win, isl)
+print("\nself join and LAG/LEAD equal the island result: True")
+print("join rows with DISTINCT:", len(jn), "| without DISTINCT:", len(q(SQL_JOIN_NO_DISTINCT)),
+      "(ids 5-8 are a run of four: two triples share rows)")
+print("island with the filter AFTER ROW_NUMBER (wrong):", q(SQL_FILTER_AFTER)["id"].tolist())
+
+stadium = pd.read_sql_query("SELECT * FROM stadium", con)
+def pd_traffic(stadium, respect_ids=False):
+    # pd:main
+    s = stadium.sort_values("id")
+    ok = s["people"] >= 100
+    key = (ok != ok.shift()).cumsum()
+    if respect_ids:
+        key = key + (s["id"].diff() != 1).cumsum()
+    run_len = ok.groupby(key).transform("size")
+    out = s[ok & (run_len >= 3)].sort_values(["visit_date", "id"]).reset_index(drop=True)
+    # pd:end
+    return out
+# compared after sorting by visit_date, id
+pd.testing.assert_frame_equal(pd_traffic(stadium), isl)
+print("pandas equals SQL: True | ids:", pd_traffic(stadium)["id"].tolist())
+
+# NULL people inside a run: unknown is not >= 100, so the run breaks
+con.execute("CREATE TABLE s2 AS SELECT * FROM stadium")
+con.execute("UPDATE s2 SET people = NULL WHERE id = 6")
+sub = lambda sql: sql.replace("FROM stadium", "FROM s2").replace("JOIN stadium", "JOIN s2")
+nul = q(sub(SQL_ISLAND))
+print("\nNULL people at id 6, island:", nul["id"].tolist())
+pd.testing.assert_frame_equal(q(sub(SQL_JOIN)), nul)
+pd.testing.assert_frame_equal(q(sub(SQL_WINDOW)), nul)
+s2 = pd.read_sql_query("SELECT * FROM s2", con)
+print("pandas people dtype with a NULL:", s2["people"].dtype)
+pd.testing.assert_frame_equal(pd_traffic(s2).astype({"people": "int64"}), nul)
+print("NULL case: join, window and pandas agree with island: True (ids 5,7,8 do not form a run of 3)")
+
+# gap in ids: delete id 6, so 5,7,8 are positionally adjacent but ids 5,7,8 are not consecutive
+con.execute("CREATE TABLE s3 AS SELECT * FROM stadium WHERE id <> 6")
+sub3 = lambda sql: sql.replace("FROM stadium", "FROM s3").replace("JOIN stadium", "JOIN s3")
+s3 = pd.read_sql_query("SELECT * FROM s3", con)
+print("\nid 6 deleted:")
+print("  island (id arithmetic):", q(sub3(SQL_ISLAND))["id"].tolist(), "| self join:", q(sub3(SQL_JOIN))["id"].tolist())
+print("  LAG/LEAD (positional):", q(sub3(SQL_WINDOW))["id"].tolist(), "| pandas positional:", pd_traffic(s3)["id"].tolist(),
+      "| pandas respecting ids:", pd_traffic(s3, respect_ids=True)["id"].tolist())
+assert q(sub3(SQL_ISLAND))["id"].tolist() == q(sub3(SQL_JOIN))["id"].tolist() == pd_traffic(s3, respect_ids=True)["id"].tolist()
+assert q(sub3(SQL_WINDOW))["id"].tolist() == pd_traffic(s3)["id"].tolist()
+
+# duplicate visit_date: ordering by visit_date alone would tie, so id is the tie-breaker
+con.execute("CREATE TABLE s4 AS SELECT * FROM stadium")
+con.execute("UPDATE s4 SET visit_date = '2017-01-06' WHERE id IN (5, 6, 7)")
+sub4 = lambda sql: sql.replace("FROM stadium", "FROM s4").replace("JOIN stadium", "JOIN s4")
+print("\nsame date 2017-01-06 on ids 5, 6, 7, ordered by visit_date, id:", q(sub4(SQL_ISLAND))["id"].tolist())
+
+# single row and empty
+con.execute("DELETE FROM s3")
+con.execute("INSERT INTO s3 VALUES (1, '2017-01-01', 500)")
+print("single qualifying row:", q(sub3(SQL_ISLAND))["id"].tolist())
+con.execute("DELETE FROM s3")
+print("empty table:", q(sub3(SQL_ISLAND))["id"].tolist())
+print("asserts passed")
+```
+
+**Output (my run):**
+```text
+island method:
+ id visit_date  people
+  5 2017-01-05     145
+  6 2017-01-06    1455
+  7 2017-01-07     199
+  8 2017-01-09     188
+ 10 2017-01-11     100
+ 11 2017-01-12     100
+ 12 2017-01-13     100
+
+self join and LAG/LEAD equal the island result: True
+join rows with DISTINCT: 7 | without DISTINCT: 9 (ids 5-8 are a run of four: two triples share rows)
+island with the filter AFTER ROW_NUMBER (wrong): [2, 3, 5, 6, 7, 8, 10, 11, 12]
+pandas equals SQL: True | ids: [5, 6, 7, 8, 10, 11, 12]
+
+NULL people at id 6, island: [10, 11, 12]
+pandas people dtype with a NULL: float64
+NULL case: join, window and pandas agree with island: True (ids 5,7,8 do not form a run of 3)
+
+id 6 deleted:
+  island (id arithmetic): [10, 11, 12] | self join: [10, 11, 12]
+  LAG/LEAD (positional): [5, 7, 8, 10, 11, 12] | pandas positional: [5, 7, 8, 10, 11, 12] | pandas respecting ids: [10, 11, 12]
+
+same date 2017-01-06 on ids 5, 6, 7, ordered by visit_date, id: [5, 6, 7, 8, 10, 11, 12]
+single qualifying row: []
+empty table: []
+asserts passed
+```
+
+**Edge cases:**
+- Why the filter must come before `ROW_NUMBER`: ids are consecutive, so `id - ROW_NUMBER() OVER (ORDER BY id)` over all rows is the same for every row (a constant), so every row is "one run". Filtering afterwards then keeps any row with `people >= 100` whose "run" (the whole table) is long, which returned ids 2, 3, 5, 6, 7, 8, 10, 11, 12, including the two-row run 2-3 (printed in the output). Filtering first removes the failing rows, which makes the key jump at each break.
+- Why the join must not double count: a run of four rows (ids 5-8) contains two triples (5,6,7) and (6,7,8) that share rows 6 and 7. Without `DISTINCT` the join returned 9 rows instead of 7. Same for any run longer than 3.
+- Exactly at the threshold: 100 counts (`>=`), so ids 10-12 with exactly 100 qualify; 99 breaks the run (ids 9 and 13).
+- NULL people: `NULL >= 100` is unknown, so the row does not qualify and it breaks the run. With id 6 set to NULL, only ids 10-12 remained, in all three SQL versions and pandas. In pandas the NULL turned `people` into `float64` (printed), so the comparison with SQL needed an integer cast (the NaN rows are filtered out, so the cast is safe).
+- Gaps in ids: the question says `id` increases with date; if an id is missing, id-based methods and positional methods disagree. With id 6 deleted, the island and self-join versions returned only 10-12 (ids 5, 7, 8 are not consecutive ids), while LAG/LEAD and pandas positional returned 5, 7, 8, 10, 11, 12. pandas with the id-step break matched the id-based SQL. State which you mean; LeetCode's statement assumes consecutive ids, as I remember it (not opened).
+- Duplicate dates: `ORDER BY visit_date` alone has ties when several rows share a date; add `id` as a tie-breaker (ids 5-7 sharing a date still returned in id order).
+- Unsorted input: handled by the window orders and the pandas `sort_values("id")`.
+- Single qualifying row and empty table: no output.
+
+**Then explain:**
+- A run of at least three among qualifying rows is a "gaps and islands" problem; the filter turns "not qualifying" rows into gaps.
+- The island method gives the run size directly, so `>= N` is one number to change; the join needs N joins and the LAG/LEAD form needs (2N-1) shifted columns.
+- The `COUNT(*) OVER (PARTITION BY grp)` window avoids a second join back to the table; the other common form is `GROUP BY grp HAVING COUNT(*) >= 3` and a join or `IN`.
+- Dialects (not executed here): as I remember the problem it is written for MySQL; MySQL 5.7 has no window functions, so only the self join works there. MySQL 8, PostgreSQL, BigQuery and Snowflake support the window forms; PostgreSQL could also use `FILTER` or boolean casts, which I did not run.
+
+**Follow-ups:**
+- *Runs of at least N?* Change 3 to N in the island method.
+- *Return one row per run (start date, end date, total people)?* `GROUP BY grp HAVING COUNT(*) >= 3` with `MIN`, `MAX`, `SUM`.
+- *What if dates, not ids, must be consecutive?* Use `julianday(visit_date) - ROW_NUMBER()` as in Q6.
+
+**Common mistakes:**
+- Numbering all rows before filtering.
+- A self join without `DISTINCT` (duplicates for runs longer than three), or only checking one position of the triple so the first or last rows of a run are lost.
+- Using `>` instead of `>=` at the threshold.
+- Ordering by `visit_date` without a tie-breaker.
+- Assuming ids have no gaps without saying so.

@@ -1770,7 +1770,7 @@ asserts passed
 - NULL `free` (seat 10): `free = 1` is not true for NULL, so it is treated as not free everywhere; seat 11 does not qualify through it. In pandas, `.eq(1)` returns False for NaN.
 - Single free seat, empty table, all free (ids 5 to 7): all three SQL versions agreed (`[]`, `[]`, `[5, 6, 7]`).
 - Unsorted input: window `ORDER BY` handles it; pandas sorts first.
-- Duplicate seat ids cannot occur with the primary key; with duplicates, the self join would match a seat with itself only if `ABS(...) = 0`, which it excludes, but the island count would be off, so dedupe first.
+- Duplicate seat ids cannot occur with the primary key; if the real table has them, dedupe first (not tested here).
 - A `free` column stored as text `'1'` does not equal integer 1 in the join; keep the type clean.
 - In pandas, `shift(-1, fill_value=False)` keeps the boolean dtype; a plain `shift()` on an integer column would give float with NaN.
 
@@ -1792,3 +1792,503 @@ asserts passed
 - Using the island trick without filtering to free seats first, so taken seats get row numbers and the group sizes change.
 - Treating NULL as free, or comparing `free` as text.
 - Ordering by anything other than `seat_id`.
+
+### Q19 ⭐⭐ 🟢 Missing dates against a date spine: logins(user_id, login_date) over 2024-03-01 to 2024-03-10. Return for each user the days in the range with no login, building the spine with a recursive CTE (a pointer to Part 9) and a CROSS JOIN of users with the spine LEFT JOINed to logins, plus the compact form as missing ranges. Explain why the NOT EXISTS version and the LEFT JOIN with IS NULL version give the same rows, and the effect of a user with no logins at all.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst, data scientist and data engineer rounds
+**Say this first (1 line):** Build a date spine for the range, `CROSS JOIN` it with the users to get every (user, day) pair that should exist, `LEFT JOIN` the logins and keep the rows where nothing matched; the compact form numbers the missing days per user and groups them with the same date-minus-`ROW_NUMBER` island trick.
+
+**Schema and sample data:** a `users` table (4 users) and a `logins` table, range 2024-03-01 to 2024-03-10 (10 days). User 1 logged in on 01, 02 (twice), 03, 06, 07, 10 (inserted unsorted), so missing are 04, 05, 08, 09. User 2 has no logins at all. User 3 logged in all ten days. User 4 has one in-range login (03-05), two out-of-range logins (02-28 and 03-11) and a NULL date.
+```sql
+CREATE TABLE users(user_id INTEGER PRIMARY KEY);
+CREATE TABLE logins(user_id INTEGER, login_date TEXT);
+INSERT INTO users VALUES (1),(2),(3),(4);
+INSERT INTO logins VALUES
+ (1,'2024-03-06'),(1,'2024-03-01'),(1,'2024-03-02'),(1,'2024-03-02'),(1,'2024-03-03'),(1,'2024-03-07'),(1,'2024-03-10'),
+ (3,'2024-03-01'),(3,'2024-03-02'),(3,'2024-03-03'),(3,'2024-03-04'),(3,'2024-03-05'),
+ (3,'2024-03-06'),(3,'2024-03-07'),(3,'2024-03-08'),(3,'2024-03-09'),(3,'2024-03-10'),
+ (4,'2024-03-05'),(4,'2024-02-28'),(4,'2024-03-11'),(4,NULL);
+```
+
+**SQL answer:** `SQL_LEFT` in the Code block, the date spine as a recursive CTE (it runs on SQLite 3.45.1; recursive CTEs in depth are Part 9) and the anti-join:
+```sql
+WITH RECURSIVE spine(d) AS (
+  SELECT '2024-03-01'
+  UNION ALL
+  SELECT date(d, '+1 day') FROM spine WHERE d < '2024-03-10'
+)
+SELECT u.user_id, s.d AS missing_date
+FROM users u
+CROSS JOIN spine s
+LEFT JOIN logins l ON l.user_id = u.user_id AND l.login_date = s.d
+WHERE l.user_id IS NULL
+ORDER BY u.user_id, s.d
+```
+`SQL_NOTEXISTS` in the Code block is the same with a `NOT EXISTS` subquery:
+```sql
+WITH RECURSIVE spine(d) AS (
+  SELECT '2024-03-01'
+  UNION ALL
+  SELECT date(d, '+1 day') FROM spine WHERE d < '2024-03-10'
+)
+SELECT u.user_id, s.d AS missing_date
+FROM users u
+CROSS JOIN spine s
+WHERE NOT EXISTS (SELECT 1 FROM logins l WHERE l.user_id = u.user_id AND l.login_date = s.d)
+ORDER BY u.user_id, s.d
+```
+The compact form, `SQL_RANGES` in the Code block (the missing days become the "rows" for the island trick):
+```sql
+WITH RECURSIVE spine(d) AS (
+  SELECT '2024-03-01'
+  UNION ALL
+  SELECT date(d, '+1 day') FROM spine WHERE d < '2024-03-10'
+), m AS (
+  SELECT u.user_id, s.d AS missing_date
+  FROM users u
+  CROSS JOIN spine s
+  LEFT JOIN logins l ON l.user_id = u.user_id AND l.login_date = s.d
+  WHERE l.user_id IS NULL
+), g AS (
+  SELECT user_id, missing_date,
+         date(missing_date, '-' || ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY missing_date) || ' days') AS grp
+  FROM m
+)
+SELECT user_id, MIN(missing_date) AS range_start, MAX(missing_date) AS range_end, COUNT(*) AS days_missing
+FROM g
+GROUP BY user_id, grp
+ORDER BY user_id, range_start
+```
+
+**pandas answer:** shown once here and identical to the Code block (`date_range` is the spine, `from_product` the cross join, `merge(..., indicator=True)` plus `left_only` the anti-join):
+```py
+spine = pd.date_range("2024-03-01", "2024-03-10", freq="D")
+grid = pd.MultiIndex.from_product([users["user_id"], spine], names=["user_id", "d"]).to_frame(index=False)
+seen = logins.dropna(subset=["login_date"]).assign(d=lambda x: pd.to_datetime(x["login_date"]))[["user_id", "d"]].drop_duplicates()
+m = grid.merge(seen, on=["user_id", "d"], how="left", indicator=True)
+miss = m[m["_merge"] == "left_only"][["user_id", "d"]].sort_values(["user_id", "d"]).reset_index(drop=True)
+miss["grp"] = (miss["d"] - pd.Timestamp("1970-01-01")).dt.days - miss.groupby("user_id").cumcount()
+ranges = (miss.groupby(["user_id", "grp"], as_index=False)
+              .agg(range_start=("d", "min"), range_end=("d", "max"), days_missing=("d", "size"))
+              .drop(columns="grp"))
+```
+
+**Example:** user 1 in the spine of 10 days has logins on 01, 02, 03, 06, 07, 10, so the unmatched days are 04, 05, 08, 09. Numbering them 1, 2, 3, 4 and subtracting from the day: 04-1, 05-2 are the same group (consecutive), 08-3, 09-4 are the same group, different from the first. Ranges: 04 to 05 (2 days) and 08 to 09 (2 days). User 2: all 10 days missing, one range 03-01 to 03-10. User 3: none. User 4: only 03-05 matched, so ranges 03-01 to 03-04 (4 days) and 03-06 to 03-10 (5 days). The out-of-range dates and the NULL never match a spine day.
+
+**Code:** run with `python3 -I`. The asserts compare the `LEFT JOIN` and `NOT EXISTS` results (equal frames), then pandas with SQL, ordered by `user_id, missing_date` (and `user_id, range_start` for ranges).
+```python
+# Q19: missing dates against a date spine (2024-03-01 to 2024-03-10), anti-join forms, compact ranges
+import sqlite3
+import pandas as pd
+
+SCHEMA = """
+CREATE TABLE users(user_id INTEGER PRIMARY KEY);
+CREATE TABLE logins(user_id INTEGER, login_date TEXT);
+INSERT INTO users VALUES (1),(2),(3),(4);
+INSERT INTO logins VALUES
+ (1,'2024-03-06'),(1,'2024-03-01'),(1,'2024-03-02'),(1,'2024-03-02'),(1,'2024-03-03'),(1,'2024-03-07'),(1,'2024-03-10'),
+ (3,'2024-03-01'),(3,'2024-03-02'),(3,'2024-03-03'),(3,'2024-03-04'),(3,'2024-03-05'),
+ (3,'2024-03-06'),(3,'2024-03-07'),(3,'2024-03-08'),(3,'2024-03-09'),(3,'2024-03-10'),
+ (4,'2024-03-05'),(4,'2024-02-28'),(4,'2024-03-11'),(4,NULL);
+"""
+SQL_LEFT = """
+WITH RECURSIVE spine(d) AS (
+  SELECT '2024-03-01'
+  UNION ALL
+  SELECT date(d, '+1 day') FROM spine WHERE d < '2024-03-10'
+)
+SELECT u.user_id, s.d AS missing_date
+FROM users u
+CROSS JOIN spine s
+LEFT JOIN logins l ON l.user_id = u.user_id AND l.login_date = s.d
+WHERE l.user_id IS NULL
+ORDER BY u.user_id, s.d
+"""
+SQL_NOTEXISTS = """
+WITH RECURSIVE spine(d) AS (
+  SELECT '2024-03-01'
+  UNION ALL
+  SELECT date(d, '+1 day') FROM spine WHERE d < '2024-03-10'
+)
+SELECT u.user_id, s.d AS missing_date
+FROM users u
+CROSS JOIN spine s
+WHERE NOT EXISTS (SELECT 1 FROM logins l WHERE l.user_id = u.user_id AND l.login_date = s.d)
+ORDER BY u.user_id, s.d
+"""
+SQL_RANGES = """
+WITH RECURSIVE spine(d) AS (
+  SELECT '2024-03-01'
+  UNION ALL
+  SELECT date(d, '+1 day') FROM spine WHERE d < '2024-03-10'
+), m AS (
+  SELECT u.user_id, s.d AS missing_date
+  FROM users u
+  CROSS JOIN spine s
+  LEFT JOIN logins l ON l.user_id = u.user_id AND l.login_date = s.d
+  WHERE l.user_id IS NULL
+), g AS (
+  SELECT user_id, missing_date,
+         date(missing_date, '-' || ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY missing_date) || ' days') AS grp
+  FROM m
+)
+SELECT user_id, MIN(missing_date) AS range_start, MAX(missing_date) AS range_end, COUNT(*) AS days_missing
+FROM g
+GROUP BY user_id, grp
+ORDER BY user_id, range_start
+"""
+# traps
+SQL_NOTIN = """
+WITH RECURSIVE spine(d) AS (
+  SELECT '2024-03-01'
+  UNION ALL
+  SELECT date(d, '+1 day') FROM spine WHERE d < '2024-03-10'
+)
+SELECT u.user_id, s.d AS missing_date
+FROM users u CROSS JOIN spine s
+WHERE s.d NOT IN (SELECT l.login_date FROM logins l WHERE l.user_id = u.user_id)
+ORDER BY u.user_id, s.d
+"""
+SQL_USERS_FROM_LOGINS = SQL_LEFT.replace("FROM users u", "FROM (SELECT DISTINCT user_id FROM logins) u")
+assert SQL_USERS_FROM_LOGINS != SQL_LEFT
+
+con = sqlite3.connect(":memory:")
+con.executescript(SCHEMA)
+a = pd.read_sql_query(SQL_LEFT, con)
+b = pd.read_sql_query(SQL_NOTEXISTS, con)
+pd.testing.assert_frame_equal(a, b)
+print("missing days per user (LEFT JOIN ... IS NULL), counts:", a.groupby("user_id").size().to_dict())
+print(a.groupby("user_id")["missing_date"].apply(lambda s: ",".join(x[8:] for x in s)).to_string())
+print("NOT EXISTS gives the same rows: True")
+r = pd.read_sql_query(SQL_RANGES, con)
+print("compact missing ranges:"); print(r.to_string(index=False))
+n = pd.read_sql_query(SQL_NOTIN, con)
+print("NOT IN with a NULL login_date: user_ids returned =", sorted(n.user_id.unique().tolist()),
+      "(user 4 has a NULL date and vanishes)")
+w = pd.read_sql_query(SQL_USERS_FROM_LOGINS, con)
+print("user list taken from logins: user_ids returned =", sorted(w.user_id.unique().tolist()), "(user 2 vanishes)")
+
+logins = pd.read_sql_query("SELECT * FROM logins", con)
+users = pd.read_sql_query("SELECT * FROM users", con)
+# pd:main
+spine = pd.date_range("2024-03-01", "2024-03-10", freq="D")
+grid = pd.MultiIndex.from_product([users["user_id"], spine], names=["user_id", "d"]).to_frame(index=False)
+seen = logins.dropna(subset=["login_date"]).assign(d=lambda x: pd.to_datetime(x["login_date"]))[["user_id", "d"]].drop_duplicates()
+m = grid.merge(seen, on=["user_id", "d"], how="left", indicator=True)
+miss = m[m["_merge"] == "left_only"][["user_id", "d"]].sort_values(["user_id", "d"]).reset_index(drop=True)
+miss["grp"] = (miss["d"] - pd.Timestamp("1970-01-01")).dt.days - miss.groupby("user_id").cumcount()
+ranges = (miss.groupby(["user_id", "grp"], as_index=False)
+              .agg(range_start=("d", "min"), range_end=("d", "max"), days_missing=("d", "size"))
+              .drop(columns="grp"))
+# pd:end
+p_miss = miss.assign(missing_date=miss["d"].dt.strftime("%Y-%m-%d"))[["user_id", "missing_date"]]
+pd.testing.assert_frame_equal(p_miss, a, check_dtype=False)   # ordered by user_id, missing_date
+for c in ("range_start", "range_end"):
+    ranges[c] = ranges[c].dt.strftime("%Y-%m-%d")
+pd.testing.assert_frame_equal(ranges.sort_values(["user_id", "range_start"]).reset_index(drop=True), r, check_dtype=False)
+print("pandas equals SQL (missing days ordered by user_id, missing_date; ranges by user_id, range_start): True")
+print("asserts passed")
+```
+
+**Output (my run):**
+```text
+missing days per user (LEFT JOIN ... IS NULL), counts: {1: 4, 2: 10, 4: 9}
+user_id
+1                      04,05,08,09
+2    01,02,03,04,05,06,07,08,09,10
+4       01,02,03,04,06,07,08,09,10
+NOT EXISTS gives the same rows: True
+compact missing ranges:
+ user_id range_start  range_end  days_missing
+       1  2024-03-04 2024-03-05             2
+       1  2024-03-08 2024-03-09             2
+       2  2024-03-01 2024-03-10            10
+       4  2024-03-01 2024-03-04             4
+       4  2024-03-06 2024-03-10             5
+NOT IN with a NULL login_date: user_ids returned = [1, 2] (user 4 has a NULL date and vanishes)
+user list taken from logins: user_ids returned = [1, 4] (user 2 vanishes)
+pandas equals SQL (missing days ordered by user_id, missing_date; ranges by user_id, range_start): True
+asserts passed
+```
+
+**Edge cases:**
+- Duplicate logins (user 1, 03-02 twice): in the anti-join they only make matched pairs appear twice, and matched pairs are thrown away, so the missing rows are unaffected. They would matter for a count of logins per day, not here.
+- A user with no logins at all (user 2): comes out with all 10 days, but only because the user list comes from the `users` table. In my run, taking the user list from `SELECT DISTINCT user_id FROM logins` made user 2 vanish (only users 1 and 4 returned). If there is no users table, the "who should be here" question has to be answered from somewhere else.
+- A user with all days (user 3): no rows, which is correct and easy to miss when you look for the user in the output.
+- Out-of-range dates (02-28, 03-11) are ignored because they match no spine day; the spine limits the range.
+- NULL `login_date` (user 4): matches no spine day, so it does no harm in `LEFT JOIN ... IS NULL` or `NOT EXISTS`. With `NOT IN (subquery)` it is poison: `d NOT IN (..., NULL)` is never true, so user 4's rows disappeared in my run (only users 1 and 2 returned).
+- Anti-join test column: check a column that is never NULL when matched (`l.user_id`), not a nullable one; testing a nullable column would drop true matches whose value is NULL.
+- Unsorted input: irrelevant for the anti-join; the island step sorts.
+- Spine boundaries: the recursive condition `d < '2024-03-10'` stops after generating 03-10, so the end date is included; checking that the spine has 10 rows is cheap insurance.
+- Time zones and timestamps: if `login_date` came from a timestamp it must be converted to the user's local date first; not covered here.
+
+**Then explain:**
+- Why `NOT EXISTS` and `LEFT JOIN ... IS NULL` give the same rows: both keep exactly the (user, day) pairs for which no login row has that user and that day. The join form creates a NULL-padded row when there is no match; the other form asks directly if one exists. A duplicate matched row cannot add a missing row, and the unmatched side is padded exactly once.
+- Where they can differ in general: a join that multiplies rows (duplicate matches) changes counts after the join, but not the set of unmatched rows; `NOT IN` is different because of NULL (shown above).
+- Spine versus window: `LAG` finds gaps only between existing logins (Q20); the spine finds all missing days including before the first and after the last login, and users with no logins at all.
+- Pointer: the recursive CTE spine is explained in depth in Part 9; the alternative is a calendar table. Engine-specific spine generators (`generate_series` in PostgreSQL, `GENERATE_DATE_ARRAY` in BigQuery) are from memory and not executed here.
+
+**Follow-ups:**
+- Only users who missed at least one day, or the day count per user? Group the result by user.
+- Range crossing the user's signup date (days before signup are not missing)? If `users` had a `signup_date` column (this one does not), add `s.d >= u.signup_date` to the cross join.
+- A longer range, such as a year? I only ran the 10 day spine; for a long range a stored calendar table is the usual alternative (not benchmarked here).
+
+**Common mistakes:**
+- `NOT IN` with a nullable subquery.
+- Building the user list from the logins table and losing users with no activity.
+- Putting the date filter in the `WHERE` instead of the `ON` clause of the `LEFT JOIN`, which turns it into an inner join.
+- Off-by-one on the spine end date.
+- Testing a nullable column for `IS NULL` after the join.
+
+### Q20 ⭐⭐ 🟡 Gaps between consecutive dates larger than one day: logins(user_id, login_date). For each user list every gap as gap_start (the first missing day), gap_end (the last missing day) and days_missing using LEAD or LAG with julianday difference > 1, and also the longest break between two logins per user. Explain the NULL on the last row of each partition, the threshold meaning of exactly 1 day apart (no gap) versus exactly 2 (one missing day), and a user with a single login.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst, data scientist and data engineer rounds
+**Say this first (1 line):** Deduplicate the login days, use `LEAD` to get each user's next login date, and call it a gap when the next date is more than 1 day later; the first missing day is the login date plus 1, the last missing day is the next date minus 1, and the number of missing days is the difference minus 1.
+
+**Definitions I use:** a gap is a stretch of calendar days with no login between two logins of the same user; `days_missing` counts the missing days (so logins on 03-02 and 03-04 leave 1 missing day). "Longest break" is the largest `days_missing` for a user; the days between the two logins is that number plus 1. Say which one you mean; I report the missing-days form and 0 for a user with no gap.
+
+**Schema and sample data:** twelve rows, four users, unsorted. User 1: 03-01, 03-02, 03-04 (twice), 03-10. User 2: a single login (03-05). User 3: three consecutive days, no gap. User 4: 03-01, a NULL date, 03-03. Dates are ISO text.
+```sql
+CREATE TABLE logins(user_id INTEGER, login_date TEXT);
+INSERT INTO logins VALUES
+ (1,'2024-03-10'),(1,'2024-03-04'),(1,'2024-03-01'),(1,'2024-03-04'),(1,'2024-03-02'),
+ (2,'2024-03-05'),
+ (3,'2024-03-03'),(3,'2024-03-01'),(3,'2024-03-02'),
+ (4,'2024-03-01'),(4,NULL),(4,'2024-03-03');
+```
+
+**SQL answer:** `SQL_GAPS` in the Code block:
+```sql
+WITH d AS (
+  SELECT DISTINCT user_id, login_date
+  FROM logins
+  WHERE login_date IS NOT NULL
+), x AS (
+  SELECT user_id, login_date,
+         LEAD(login_date) OVER (PARTITION BY user_id ORDER BY login_date) AS next_date
+  FROM d
+)
+SELECT user_id,
+       date(login_date, '+1 day') AS gap_start,
+       date(next_date, '-1 day') AS gap_end,
+       CAST(ROUND(julianday(next_date) - julianday(login_date)) AS INTEGER) - 1 AS days_missing
+FROM x
+WHERE julianday(next_date) - julianday(login_date) > 1
+ORDER BY user_id, gap_start
+```
+Longest break per user, `SQL_LONGEST` in the Code block, with a `LEFT JOIN` from all users so users without a gap show 0:
+```sql
+WITH d AS (
+  SELECT DISTINCT user_id, login_date
+  FROM logins
+  WHERE login_date IS NOT NULL
+), x AS (
+  SELECT user_id, login_date,
+         LEAD(login_date) OVER (PARTITION BY user_id ORDER BY login_date) AS next_date
+  FROM d
+), gaps AS (
+  SELECT user_id, CAST(ROUND(julianday(next_date) - julianday(login_date)) AS INTEGER) - 1 AS days_missing
+  FROM x
+  WHERE julianday(next_date) - julianday(login_date) > 1
+)
+SELECT u.user_id, COALESCE(MAX(g.days_missing), 0) AS longest_break_days
+FROM (SELECT DISTINCT user_id FROM logins) u
+LEFT JOIN gaps g ON g.user_id = u.user_id
+GROUP BY u.user_id
+ORDER BY u.user_id
+```
+
+**pandas answer:** shown once here and identical to the Code block (`shift(-1)` is `LEAD`):
+```py
+d = logins.dropna(subset=["login_date"]).copy()
+d["login_date"] = pd.to_datetime(d["login_date"])
+d = d.drop_duplicates().sort_values(["user_id", "login_date"]).reset_index(drop=True)
+d["next_date"] = d.groupby("user_id")["login_date"].shift(-1)
+d["diff_days"] = (d["next_date"] - d["login_date"]).dt.days
+g = d[d["diff_days"] > 1]
+gaps = pd.DataFrame({
+    "user_id": g["user_id"],
+    "gap_start": (g["login_date"] + pd.Timedelta(days=1)).dt.strftime("%Y-%m-%d"),
+    "gap_end": (g["next_date"] - pd.Timedelta(days=1)).dt.strftime("%Y-%m-%d"),
+    "days_missing": (g["diff_days"] - 1).astype(int),
+}).reset_index(drop=True)
+longest = (gaps.groupby("user_id")["days_missing"].max()
+               .reindex(logins["user_id"].drop_duplicates().sort_values()).fillna(0).astype(int)
+               .rename("longest_break_days").reset_index())
+```
+
+**Example:** user 1 distinct sorted days: 03-01, 03-02, 03-04, 03-10; next dates: 03-02, 03-04, 03-10, none; differences: 1, 2, 6, NULL.
+- 1 day apart (03-01 to 03-02): consecutive days, no gap, filtered out.
+- 2 days apart (03-02 to 03-04): one missing day, so `gap_start = 03-03`, `gap_end = 03-03`, `days_missing = 1`.
+- 6 days apart (03-04 to 03-10): 03-05 to 03-09, `days_missing = 5`.
+- The last row has no next date, so its difference is NULL and it is not a gap.
+- Longest break for user 1 is 5. User 4: 03-01 and 03-03 give one gap, 03-02, so longest 1. Users 2 and 3: no gap, longest 0.
+
+**Code:** run with `python3 -I`. The asserts compare pandas with SQL for the gap list (ordered by `user_id, gap_start`) and the longest break (ordered by `user_id`). The printed `NaN` in the detail table is pandas showing SQL NULL.
+```python
+# Q20: gaps larger than one day between consecutive logins, and the longest break per user
+import sqlite3
+import datetime as dt
+import pandas as pd
+
+SCHEMA = """
+CREATE TABLE logins(user_id INTEGER, login_date TEXT);
+INSERT INTO logins VALUES
+ (1,'2024-03-10'),(1,'2024-03-04'),(1,'2024-03-01'),(1,'2024-03-04'),(1,'2024-03-02'),
+ (2,'2024-03-05'),
+ (3,'2024-03-03'),(3,'2024-03-01'),(3,'2024-03-02'),
+ (4,'2024-03-01'),(4,NULL),(4,'2024-03-03');
+"""
+SQL_GAPS = """
+WITH d AS (
+  SELECT DISTINCT user_id, login_date
+  FROM logins
+  WHERE login_date IS NOT NULL
+), x AS (
+  SELECT user_id, login_date,
+         LEAD(login_date) OVER (PARTITION BY user_id ORDER BY login_date) AS next_date
+  FROM d
+)
+SELECT user_id,
+       date(login_date, '+1 day') AS gap_start,
+       date(next_date, '-1 day') AS gap_end,
+       CAST(ROUND(julianday(next_date) - julianday(login_date)) AS INTEGER) - 1 AS days_missing
+FROM x
+WHERE julianday(next_date) - julianday(login_date) > 1
+ORDER BY user_id, gap_start
+"""
+SQL_LONGEST = """
+WITH d AS (
+  SELECT DISTINCT user_id, login_date
+  FROM logins
+  WHERE login_date IS NOT NULL
+), x AS (
+  SELECT user_id, login_date,
+         LEAD(login_date) OVER (PARTITION BY user_id ORDER BY login_date) AS next_date
+  FROM d
+), gaps AS (
+  SELECT user_id, CAST(ROUND(julianday(next_date) - julianday(login_date)) AS INTEGER) - 1 AS days_missing
+  FROM x
+  WHERE julianday(next_date) - julianday(login_date) > 1
+)
+SELECT u.user_id, COALESCE(MAX(g.days_missing), 0) AS longest_break_days
+FROM (SELECT DISTINCT user_id FROM logins) u
+LEFT JOIN gaps g ON g.user_id = u.user_id
+GROUP BY u.user_id
+ORDER BY u.user_id
+"""
+SQL_DETAIL = """
+SELECT user_id, login_date,
+       LEAD(login_date) OVER (PARTITION BY user_id ORDER BY login_date) AS next_date,
+       julianday(LEAD(login_date) OVER (PARTITION BY user_id ORDER BY login_date)) - julianday(login_date) AS diff_days
+FROM (SELECT DISTINCT user_id, login_date FROM logins WHERE login_date IS NOT NULL)
+ORDER BY user_id, login_date
+"""
+# no dedupe, to see what duplicates do
+SQL_NODEDUP = SQL_GAPS.replace("SELECT DISTINCT user_id, login_date", "SELECT user_id, login_date")
+assert SQL_NODEDUP != SQL_GAPS
+
+con = sqlite3.connect(":memory:")
+con.executescript(SCHEMA)
+print("LEAD detail (diff_days is NULL on each user's last row):"); print(pd.read_sql_query(SQL_DETAIL, con).to_string(index=False))
+a = pd.read_sql_query(SQL_GAPS, con)
+print("gaps:"); print(a.to_string(index=False))
+l = pd.read_sql_query(SQL_LONGEST, con)
+print("longest break (most missing days in a row between two logins; 0 if none):"); print(l.to_string(index=False))
+nd = pd.read_sql_query(SQL_NODEDUP, con)
+print("without DISTINCT the gap rows are the same as with it:", nd.equals(a))
+
+logins = pd.read_sql_query("SELECT * FROM logins", con)
+# pd:main
+d = logins.dropna(subset=["login_date"]).copy()
+d["login_date"] = pd.to_datetime(d["login_date"])
+d = d.drop_duplicates().sort_values(["user_id", "login_date"]).reset_index(drop=True)
+d["next_date"] = d.groupby("user_id")["login_date"].shift(-1)
+d["diff_days"] = (d["next_date"] - d["login_date"]).dt.days
+g = d[d["diff_days"] > 1]
+gaps = pd.DataFrame({
+    "user_id": g["user_id"],
+    "gap_start": (g["login_date"] + pd.Timedelta(days=1)).dt.strftime("%Y-%m-%d"),
+    "gap_end": (g["next_date"] - pd.Timedelta(days=1)).dt.strftime("%Y-%m-%d"),
+    "days_missing": (g["diff_days"] - 1).astype(int),
+}).reset_index(drop=True)
+longest = (gaps.groupby("user_id")["days_missing"].max()
+               .reindex(logins["user_id"].drop_duplicates().sort_values()).fillna(0).astype(int)
+               .rename("longest_break_days").reset_index())
+# pd:end
+pd.testing.assert_frame_equal(gaps, a, check_dtype=False)        # ordered by user_id, gap_start
+pd.testing.assert_frame_equal(longest, l, check_dtype=False)     # ordered by user_id
+print("pandas equals SQL for gaps and longest break: True")
+
+# julianday on whole dates: exact? compare with unixepoch over 20000 date pairs
+rows, base = [], dt.date(2000, 1, 1)
+for i in range(20000):
+    x = base + dt.timedelta(days=i * 3)
+    y = x + dt.timedelta(days=1 + i % 400)
+    rows.append((x.isoformat(), y.isoformat()))
+con.execute("CREATE TABLE pairs(a TEXT, b TEXT)")
+con.executemany("INSERT INTO pairs VALUES (?, ?)", rows)
+print(con.execute("SELECT COUNT(*), SUM(julianday(b) - julianday(a) = CAST(julianday(b) - julianday(a) AS INTEGER)), "
+                  "SUM((unixepoch(b) - unixepoch(a)) % 86400 = 0), "
+                  "SUM(julianday(b) - julianday(a) = (unixepoch(b) - unixepoch(a)) / 86400) FROM pairs").fetchone(),
+      "<- pairs, julianday diff is a whole number, unixepoch diff is whole days, the two agree")
+print("asserts passed")
+```
+
+**Output (my run):**
+```text
+LEAD detail (diff_days is NULL on each user's last row):
+ user_id login_date  next_date  diff_days
+       1 2024-03-01 2024-03-02        1.0
+       1 2024-03-02 2024-03-04        2.0
+       1 2024-03-04 2024-03-10        6.0
+       1 2024-03-10        NaN        NaN
+       2 2024-03-05        NaN        NaN
+       3 2024-03-01 2024-03-02        1.0
+       3 2024-03-02 2024-03-03        1.0
+       3 2024-03-03        NaN        NaN
+       4 2024-03-01 2024-03-03        2.0
+       4 2024-03-03        NaN        NaN
+gaps:
+ user_id  gap_start    gap_end  days_missing
+       1 2024-03-03 2024-03-03             1
+       1 2024-03-05 2024-03-09             5
+       4 2024-03-02 2024-03-02             1
+longest break (most missing days in a row between two logins; 0 if none):
+ user_id  longest_break_days
+       1                   5
+       2                   0
+       3                   0
+       4                   1
+without DISTINCT the gap rows are the same as with it: True
+pandas equals SQL for gaps and longest break: True
+(20000, 20000, 20000, 20000) <- pairs, julianday diff is a whole number, unixepoch diff is whole days, the two agree
+asserts passed
+```
+
+**Edge cases:**
+- NULL on the last row of each partition: `LEAD` has no next row, so `next_date` is NULL, the difference is NULL, and `NULL > 1` is NULL, which `WHERE` treats as not true, so the last row drops out. That is the wanted behaviour, but it is the NULL logic doing it, not a deliberate filter; in pandas, `NaT` gives a NaN `diff_days` and `NaN > 1` is `False` for the same effect.
+- Exactly 1 day apart means consecutive days, no day missing, so the filter is `> 1`, not `>= 1`. Exactly 2 days apart means one missing day, which is why `days_missing` is the difference minus 1; mixing these up is the classic off-by-one.
+- Single login (user 2): one row, `LEAD` is NULL, no gap; in the longest-break result it shows 0 because of the `LEFT JOIN` and `COALESCE`, it is not missing.
+- Duplicate dates: I dedupe first. In my run, removing the `DISTINCT` gave the same gap rows (the tied rows have a difference of 0, and the second copy still carries the real next date), so it did not create false gaps here; it would matter for any count of days or logins, and for `LAG`/`LEAD` pairs where you test equality, so I still dedupe.
+- NULL date (user 4): removed in the first CTE; without it, the NULL row sorts first in SQLite (it is smaller than any text) and distorts the LEAD pairs.
+- Unsorted input: handled by the window `ORDER BY`.
+- `julianday` on whole dates is fine: in my run over 20000 date pairs the difference was always an exact whole number and equal to the `unixepoch` difference divided by 86400 (unlike timestamps with times in Q11, where `julianday * 1440` came out slightly off). I still wrap it in `ROUND` before the `CAST` because the cast truncates.
+- Only users with 2 or more logins can have a gap; the user with one login contributes no row to the gap list.
+- The break before the first login and after the last (relative to a period) is not a gap between two logins; use a date spine (Q19) for those.
+
+**Then explain:**
+- `LEAD` looks at the next row, `LAG` at the previous one; the gap logic is the same, just anchored on the other row (with `LAG`, `gap_start` is `date(prev_date, '+1 day')` and `gap_end` is `date(login_date, '-1 day')`). Both need the days deduped and sorted.
+- Why `julianday` here: a date has no time part, so day differences are exact; for timestamps use `unixepoch` (Q11).
+- The threshold: difference of 1 is "yesterday to today" and has nothing in between; every difference above 1 has `difference - 1` missing days.
+- Dialects, not executed here: PostgreSQL date subtraction `next_date - login_date` returns an integer number of days; MySQL `DATEDIFF(next_date, login_date)`; BigQuery `DATE_DIFF(next_date, login_date, DAY)`. I did not run these.
+
+**Follow-ups:**
+- Gaps larger than 7 days (churn-style)? Change the threshold to `> 7` in the same query.
+- The first and last gaps in a fixed period, not just between logins? Use the date spine and the missing ranges from Q19.
+- Average time between logins? `AVG(julianday(next_date) - julianday(login_date))` over the same rows including the 1 day differences, not only the gaps.
+
+**Common mistakes:**
+- `>= 1` instead of `> 1`, or forgetting the minus 1 in `days_missing`.
+- Not deduplicating or not filtering NULL dates.
+- Using `LAG`/`LEAD` without `PARTITION BY user_id`, so the first login of a user looks like it follows another user's last login.
+- Treating the NULL on the last row as an error and filling it with today's date.
+- Reporting 0 for a one-login user as if it were missing data, or leaving it out without saying so.

@@ -13,7 +13,7 @@ The coverage figures are `SQL_SUMMARY` in the Code block, which wraps `SQL_MAIN`
 
 **Example:** after clipping (g7 vanishes, g8 is dropped for the NULL end) the intervals are g1 09:00-11:00, g2 10:00-12:00, g3 11:30-11:45, g4 12:00-13:00, g5 14:00-15:00 (twice), g6 16:00-18:00, plus the sentinels 09:00-09:00 and 18:00-18:00.
 - Sorted by start, end: sentinel 09:00, g1 09:00-11:00, g2 10:00-12:00, g3 11:30-11:45, g4 12:00-13:00, g5 14:00, g5 14:00, g6 16:00-18:00, sentinel 18:00.
-- Running max of earlier ends: NULL, 09:00, 11:00, 12:00, 12:00, 12:00 (g3 ended 11:45, so the max stays 12:00, a contained interval cannot shrink it), 13:00, 15:00, 18:00 (g6's end).
+- Running max of the ends of all earlier rows, row by row: NULL (sentinel), 09:00 (for g1), 11:00 (g2), 12:00 (g3), 12:00 (g4; g3 ended at 11:45, so the contained interval did not lower or raise it), 13:00 (first g5), 15:00 (duplicate g5), 15:00 (g6), 18:00 (closing sentinel).
 - New block where start > running max (or NULL): sentinel (first), g1 no (09:00 > 09:00 false), g2 no, g3 no, g4 no (12:00 > 12:00 false, touching merges), g5 yes (14:00 > 13:00), duplicate g5 no, g6 yes (16:00 > 15:00), final sentinel no (18:00 > 18:00 false).
 - Merged blocks: 09:00-13:00, 14:00-15:00, 16:00-18:00. Gaps: 13:00-14:00 and 15:00-16:00, 60 minutes each. Uncovered 120, covered 420 of 540 = 77.8 per cent.
 
