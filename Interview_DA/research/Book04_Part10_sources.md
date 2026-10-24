@@ -25,7 +25,7 @@ Glassdoor, AmbitionBox, Reddit, LinkedIn firsthand reports: not surfaced by sear
 - ⭐ (18): occasional or differentiator items: Public, Mac, Prep, relationships vs joins, RLS, licensing, migration, debugging scenarios.
 
 ## Gap-fills (not seen in any source as phrased)
-About 12 of 43: HR-flavoured attrition/attendance questions (Q13, Q19, Q25, Q43), Power BI-equivalence questions (Q22, Q23, Q28, Q41, Q42), Mac question (Q27), Public data-privacy framing (Q26), "Tableau-only company" learning question (Q40). Others are paraphrases of prep-list items.
+About 12 of 43: HR-flavoured attrition/attendance questions (Q13, Q19, Q25, Q43), Power BI-equivalence questions (Q22, Q23, Q28, Q41), Mac question (Q27), Public data-privacy framing (Q26), "Tableau-only company" learning question (Q40), data-mismatch scenario (Q42). Others are paraphrases of prep-list items.
 
 ## Limitations
 Source set is prep content (no verified candidate reports for Tableau at a Hyderabad/Bengaluru firm beyond summarised Wells Fargo/Indium/LatentView items); 43 questions vs target 40.
