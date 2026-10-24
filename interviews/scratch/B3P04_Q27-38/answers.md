@@ -1471,3 +1471,498 @@ asserts passed: SQL delete (subquery) == SQL delete (CTE) == pandas drop_duplica
 - Ordering by `created_at ASC` and deleting `rn > 1`: that keeps the oldest.
 - Running the `DELETE` without a preview.
 - In pandas, `drop_duplicates(keep="last")` without sorting first, which keeps the last row by position, not by time.
+
+### Q36 ⭐⭐ 🟡 Top 10 percent of customers by spend using CUME_DIST, PERCENT_RANK or NTILE(10): customers(customer_id, name) and orders(order_id, customer_id, amount). Show the three ways of selecting the top decile on 25 customers, why they return different counts (ties, small n, NTILE rounding), and which one you would choose to say 'at least top 10 percent'. Give the pandas rank(pct=True) >= 0.9 and qcut versions and note pandas pct is rank/n, not (rank-1)/(n-1).
+**Asked at:** LetsDataScience SQL window-function interview guide (14 sample questions: top earner per department, nth highest salary, quartiles, top 5 percent per state), not a candidate report; analyst and data scientist screens at product companies and GCCs
+**Say this first (1 line):** On 25 customers the four rules give different answers (`CUME_DIST <= 0.10` returns 2, `NTILE(10) = 1` returns 3, `PERCENT_RANK <= 0.10` returns 4, and `RANK <= ceil(n/10)` returns 4), because CUME_DIST counts the tied peers, NTILE splits ties by position, and PERCENT_RANK uses (rank - 1) / (n - 1); for "at least the top 10 percent, ties included" I use `RANK() <= ceil(n / 10)`; in pandas `rank(pct=True, method="max")` is `CUME_DIST` (rank over n), not `PERCENT_RANK`.
+
+**Schema and sample data:** 25 customers; customer 1 has two orders (3000 + 2000 = 5000), customers 2 to 24 have one order each, customer 25 has none (total 0 through the `LEFT JOIN`). Totals in descending order: 5000, 4800, 4400, 4400, 4000, 3500, 3000, 2800, 2600, 2500, 2400, 2200, 2000, 1800, 1600, 1500, 1400, 1200, 1000, 900, 800, 600, 500, 400, 0. The tie at 4400 (customers 3 and 4) sits right at the cut-off. ```sql
+CREATE TABLE customers(customer_id INTEGER PRIMARY KEY, name TEXT);
+CREATE TABLE orders(order_id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);
+INSERT INTO customers VALUES
+ (1,'C01'),(2,'C02'),(3,'C03'),(4,'C04'),(5,'C05'),(6,'C06'),(7,'C07'),(8,'C08'),(9,'C09'),(10,'C10'),(11,'C11'),(12,'C12'),(13,'C13'),(14,'C14'),(15,'C15'),(16,'C16'),(17,'C17'),(18,'C18'),(19,'C19'),(20,'C20'),(21,'C21'),(22,'C22'),(23,'C23'),(24,'C24'),(25,'C25');
+INSERT INTO orders VALUES
+ (1,1,3000),(2,1,2000),(3,2,4800),(4,3,4400),(5,4,4400),(6,5,4000),(7,6,3500),(8,7,3000),(9,8,2800),(10,9,2600),(11,10,2500),(12,11,2400),(13,12,2200),(14,13,2000),(15,14,1800),(16,15,1600),(17,16,1500),(18,17,1400),(19,18,1200),(20,19,1000),(21,20,900),(22,21,800),(23,22,600),(24,23,500),(25,24,400);
+```
+
+**SQL answer:** `SQL_MAIN` in the Code block aggregates each customer's total (so the ranking is over customers, not order rows), then computes all four measures and the four selection flags. Tie-breaking: `NTILE` orders by `total DESC, customer_id` so the split of the tied customers is reproducible (lower id goes to the better bucket); `CUME_DIST`, `PERCENT_RANK` and `RANK` need no tie-breaker.
+```sql
+WITH spend AS (
+  SELECT c.customer_id, COALESCE(SUM(o.amount), 0) AS total
+  FROM customers c LEFT JOIN orders o ON o.customer_id = c.customer_id
+  GROUP BY c.customer_id),
+scored AS (
+  SELECT customer_id, total,
+         CUME_DIST()    OVER (ORDER BY total DESC)                  AS cd,
+         PERCENT_RANK() OVER (ORDER BY total DESC)                  AS pr,
+         NTILE(10)      OVER (ORDER BY total DESC, customer_id)     AS nt,
+         RANK()         OVER (ORDER BY total DESC)                  AS rk,
+         COUNT(*)       OVER ()                                     AS n
+  FROM spend)
+SELECT customer_id, total, cd, pr, nt, rk,
+       cd <= 0.10                 AS in_cume,
+       pr <= 0.10                 AS in_prank,
+       nt = 1                     AS in_ntile,
+       rk <= (n + 9) / 10         AS in_rank
+FROM scored
+ORDER BY total DESC, customer_id
+```
+
+**pandas answer:** inside `# pd:main` in the Code block. Rows are sorted by `total` descending then `customer_id`, which is the same order as the `NTILE` window.
+```python
+tot = (cust.merge(ords.groupby("customer_id", as_index=False)["amount"].sum(), on="customer_id", how="left")
+           .fillna({"amount": 0}).rename(columns={"amount": "total"}))
+tot = tot.sort_values(["total", "customer_id"], ascending=[False, True]).reset_index(drop=True)
+n = len(tot)
+tot["cd"] = tot["total"].rank(method="max", ascending=False, pct=True)           # = CUME_DIST
+rmin = tot["total"].rank(method="min", ascending=False)
+tot["pr"] = (rmin - 1) / (n - 1)                                                  # = PERCENT_RANK
+q, r = divmod(n, 10)
+pos = np.arange(1, n + 1)                                                         # rows are already in NTILE order
+big = r * (q + 1)
+tot["nt"] = np.where(pos <= big, np.ceil(pos / (q + 1)), r + np.ceil((pos - big) / q)).astype("int64")
+tot["rk"] = rmin.astype("int64")
+tot["in_cume"] = tot["cd"] <= 0.10
+tot["in_prank"] = tot["pr"] <= 0.10
+tot["in_ntile"] = tot["nt"] == 1
+tot["in_rank"] = tot["rk"] <= (n + 9) // 10
+```
+
+**Example:** n = 25, so 10 percent is 2.5 customers.
+- `CUME_DIST` (share of customers with total at or above mine): customer 1 is 1/25 = 0.04, customer 2 is 2/25 = 0.08, customers 3 and 4 are both 4/25 = 0.16 (the tied peers are counted together). `<= 0.10` selects customers 1 and 2: 2 rows, 8 percent, which is less than 10.
+- `PERCENT_RANK` = (rank - 1) / 24: customer 1 is 0, customer 2 is 1/24 = 0.0417, customers 3 and 4 have rank 3 so 2/24 = 0.0833, customer 5 has rank 5 so 4/24 = 0.1667. `<= 0.10` selects customers 1 to 4: 4 rows, 16 percent.
+- `NTILE(10)`: 25 = 10 x 2 + 5, so the first five buckets hold 3 rows. Bucket 1 is customers 1, 2, 3; customer 4 (same total as 3) is in bucket 2. 3 rows, and the tie is split.
+- `RANK <= (25 + 9) / 10 = 3` (integer division, which is ceil(25/10)): customers 1, 2 and the two tied at rank 3: 4 rows (16 percent), ties kept together.
+- `qcut(total, 10)` top bin: 2 rows in my run (it cuts on the 90th percentile value, so it is a different rule again).
+
+**Code:** run with `python3 -I`.
+```python
+# Q36: top 10 percent of customers by spend: CUME_DIST vs PERCENT_RANK vs NTILE(10) vs RANK <= ceil(n/10)
+import sqlite3
+import numpy as np
+import pandas as pd
+
+SCHEMA = """
+CREATE TABLE customers(customer_id INTEGER PRIMARY KEY, name TEXT);
+CREATE TABLE orders(order_id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);
+INSERT INTO customers VALUES
+ (1,'C01'),(2,'C02'),(3,'C03'),(4,'C04'),(5,'C05'),(6,'C06'),(7,'C07'),(8,'C08'),(9,'C09'),(10,'C10'),(11,'C11'),(12,'C12'),(13,'C13'),(14,'C14'),(15,'C15'),(16,'C16'),(17,'C17'),(18,'C18'),(19,'C19'),(20,'C20'),(21,'C21'),(22,'C22'),(23,'C23'),(24,'C24'),(25,'C25');
+INSERT INTO orders VALUES
+ (1,1,3000),(2,1,2000),(3,2,4800),(4,3,4400),(5,4,4400),(6,5,4000),(7,6,3500),(8,7,3000),(9,8,2800),(10,9,2600),(11,10,2500),(12,11,2400),(13,12,2200),(14,13,2000),(15,14,1800),(16,15,1600),(17,16,1500),(18,17,1400),(19,18,1200),(20,19,1000),(21,20,900),(22,21,800),(23,22,600),(24,23,500),(25,24,400);
+"""
+SQL_MAIN = """
+WITH spend AS (
+  SELECT c.customer_id, COALESCE(SUM(o.amount), 0) AS total
+  FROM customers c LEFT JOIN orders o ON o.customer_id = c.customer_id
+  GROUP BY c.customer_id),
+scored AS (
+  SELECT customer_id, total,
+         CUME_DIST()    OVER (ORDER BY total DESC)                  AS cd,
+         PERCENT_RANK() OVER (ORDER BY total DESC)                  AS pr,
+         NTILE(10)      OVER (ORDER BY total DESC, customer_id)     AS nt,
+         RANK()         OVER (ORDER BY total DESC)                  AS rk,
+         COUNT(*)       OVER ()                                     AS n
+  FROM spend)
+SELECT customer_id, total, cd, pr, nt, rk,
+       cd <= 0.10                 AS in_cume,
+       pr <= 0.10                 AS in_prank,
+       nt = 1                     AS in_ntile,
+       rk <= (n + 9) / 10         AS in_rank
+FROM scored
+ORDER BY total DESC, customer_id
+"""
+con = sqlite3.connect(":memory:")
+con.executescript(SCHEMA)
+sql_df = pd.read_sql_query(SQL_MAIN, con)
+print("SQL, top 7 rows:"); print(sql_df.head(7).round(4).to_string(index=False))
+flags = ["in_cume", "in_prank", "in_ntile", "in_rank"]
+print("\nSQL rows selected per rule (n = %d):" % len(sql_df), {f: int(sql_df[f].sum()) for f in flags})
+for f in flags:
+    print(f"  {f:9s}", sql_df.loc[sql_df[f] == 1, "customer_id"].tolist())
+
+cust = pd.read_sql_query("SELECT customer_id FROM customers", con)
+ords = pd.read_sql_query("SELECT * FROM orders", con)
+# pd:main
+tot = (cust.merge(ords.groupby("customer_id", as_index=False)["amount"].sum(), on="customer_id", how="left")
+           .fillna({"amount": 0}).rename(columns={"amount": "total"}))
+tot = tot.sort_values(["total", "customer_id"], ascending=[False, True]).reset_index(drop=True)
+n = len(tot)
+tot["cd"] = tot["total"].rank(method="max", ascending=False, pct=True)           # = CUME_DIST
+rmin = tot["total"].rank(method="min", ascending=False)
+tot["pr"] = (rmin - 1) / (n - 1)                                                  # = PERCENT_RANK
+q, r = divmod(n, 10)
+pos = np.arange(1, n + 1)                                                         # rows are already in NTILE order
+big = r * (q + 1)
+tot["nt"] = np.where(pos <= big, np.ceil(pos / (q + 1)), r + np.ceil((pos - big) / q)).astype("int64")
+tot["rk"] = rmin.astype("int64")
+tot["in_cume"] = tot["cd"] <= 0.10
+tot["in_prank"] = tot["pr"] <= 0.10
+tot["in_ntile"] = tot["nt"] == 1
+tot["in_rank"] = tot["rk"] <= (n + 9) // 10
+# pd:end
+pct_default = tot["total"].rank(ascending=False, pct=True)                        # default method='average'
+qc = pd.qcut(tot["total"], 10, labels=False)
+print("\npandas selected per rule:", {f: int(tot[f].sum()) for f in flags},
+      "| qcut(total, 10) top bin (label 9):", int((qc == 9).sum()))
+print("pandas pct=True default method='average' for ids 3,4 (tied 4400):",
+      pct_default[tot.customer_id.isin([3, 4])].round(4).tolist(), "vs method='max':",
+      tot.loc[tot.customer_id.isin([3, 4]), "cd"].round(4).tolist())
+# compared after sorting both by customer_id
+a = sql_df.sort_values("customer_id").reset_index(drop=True)
+b = tot.rename(columns={}).sort_values("customer_id").reset_index(drop=True)
+for col in ["total", "cd", "pr", "nt", "rk"]:
+    pd.testing.assert_series_equal(a[col].astype(float), b[col].astype(float), check_names=False, check_dtype=False)
+for col in flags:
+    assert a[col].astype(bool).tolist() == b[col].tolist(), col
+print("asserts passed: SQL CUME_DIST/PERCENT_RANK/NTILE/RANK columns and flags == pandas versions")
+```
+
+**Output (my run):**
+```text
+SQL, top 7 rows:
+ customer_id  total   cd     pr  nt  rk  in_cume  in_prank  in_ntile  in_rank
+           1   5000 0.04 0.0000   1   1        1         1         1        1
+           2   4800 0.08 0.0417   1   2        1         1         1        1
+           3   4400 0.16 0.0833   1   3        0         1         1        1
+           4   4400 0.16 0.0833   2   3        0         1         0        1
+           5   4000 0.20 0.1667   2   5        0         0         0        0
+           6   3500 0.24 0.2083   2   6        0         0         0        0
+           7   3000 0.28 0.2500   3   7        0         0         0        0
+
+SQL rows selected per rule (n = 25): {'in_cume': 2, 'in_prank': 4, 'in_ntile': 3, 'in_rank': 4}
+  in_cume   [1, 2]
+  in_prank  [1, 2, 3, 4]
+  in_ntile  [1, 2, 3]
+  in_rank   [1, 2, 3, 4]
+
+pandas selected per rule: {'in_cume': 2, 'in_prank': 4, 'in_ntile': 3, 'in_rank': 4} | qcut(total, 10) top bin (label 9): 2
+pandas pct=True default method='average' for ids 3,4 (tied 4400): [0.14, 0.14] vs method='max': [0.16, 0.16]
+asserts passed: SQL CUME_DIST/PERCENT_RANK/NTILE/RANK columns and flags == pandas versions
+```
+
+**Edge cases:**
+- Ties at the boundary decide everything: here the tie sits exactly at rank 3 and 4, so `NTILE` returns an unfair 3 rows while `RANK` returns both.
+- Small n: with 25 customers a decile is 2.5 customers; `NTILE` rounds by giving the extra rows to early buckets (3), `CUME_DIST <= 0.10` rounds down to 2, and the ceiling rule rounds up to 3 positions (plus ties).
+- `CUME_DIST` can never be 0 (the smallest value is 1/n) and `PERCENT_RANK` always starts at 0 and ends at 1.
+- Customers with no orders: the `LEFT JOIN` + `COALESCE` keeps them as total 0 and they count in n. Drop them in a `WHERE` first if "customers" means buyers only; every percentage changes.
+- `pct=True` default `method="average"` gives the tied pair 0.14, not 0.16 (printed above), so it matches neither `CUME_DIST` nor `PERCENT_RANK`.
+
+**Then explain:**
+- **Definitions:** `CUME_DIST` = rows with value at or before this one in the window order / n. `PERCENT_RANK` = (rank - 1) / (n - 1). `NTILE(k)` = positional bucket.
+- **pandas:** `rank(method="max", ascending=False, pct=True)` is `CUME_DIST` (asserted equal); `(rank(method="min") - 1) / (n - 1)` is `PERCENT_RANK` (asserted); `pct=True` alone is rank over n, never (rank - 1) / (n - 1).
+- **Which to choose:** "at least top 10 percent" means do not under-cover and do not split equals: `RANK() <= ceil(n * 0.10)`. "At most 10 percent" is `CUME_DIST <= 0.10`.
+- **Aggregate first:** compute one total per customer before ranking; ranking order rows would rank orders, not customers.
+- **Dialects:** `CUME_DIST`, `PERCENT_RANK` and `NTILE` exist in PostgreSQL, MySQL 8, BigQuery and Snowflake as I remember (not executed here).
+
+**Follow-ups:**
+- *How do you get "top 5 percent per region"?* Add `PARTITION BY region` to each window and use the same logic per partition.
+- *Do you need a minimum bucket size?* With tiny groups (n = 5) a decile is half a customer; say what you do (return at least one).
+- *Is `NTILE(10) = 1` the same as the 90th-percentile cut?* No; it is positional, and it splits ties.
+
+**Common mistakes:**
+- Ranking order lines instead of customer totals.
+- Using `PERCENT_RANK <= 0.1` and calling it "10 percent of rows".
+- Using `NTILE` for a cut-off when ties matter.
+- In pandas, using `rank(pct=True)` and assuming it is `PERCENT_RANK`.
+
+### Q37 ⭐⭐ 🟡 Outer ORDER BY versus ORDER BY inside OVER: employees(emp_id, name, dept_id, salary). Explain that ORDER BY in OVER controls the numbering and does not order the output rows, so a query with ROW_NUMBER() OVER (ORDER BY salary DESC) and no outer ORDER BY may print rows in any order, and that a tied ORDER BY inside OVER can number tied rows differently between runs. Show a corrected query with both, and the pandas parallel (rank does not reorder rows; sort_values does).
+**Asked at:** techinterview.org window-function gotchas article (ties, RANK = 2 returning nothing, window in WHERE, default frame), a guide and not a candidate report; analyst and data scientist screens
+**Say this first (1 line):** The `ORDER BY` inside `OVER (...)` only decides how the window numbers or ranks rows; it does not promise any order of the output rows, and if it has ties the numbering of tied rows is not defined either, so write a unique tie-break inside `OVER` and a separate outer `ORDER BY`; in pandas `rank` leaves the row order alone and `sort_values` is what reorders.
+
+**Schema and sample data:** six employees; Ben and Chitra tie at 90, Asha and Esha tie at 70.
+```sql
+CREATE TABLE employees(emp_id INTEGER PRIMARY KEY, name TEXT, dept_id INTEGER, salary INTEGER);
+INSERT INTO employees VALUES (1,'Asha',10,70),(2,'Ben',10,90),(3,'Chitra',20,90),
+                             (4,'Dev',20,50),(5,'Esha',10,70),(6,'Farid',20,60);
+```
+
+**SQL answer:** the corrected query is `SQL_MAIN` in the Code block: the unique key `emp_id` ends the window `ORDER BY` (so the two 90s always number the same way: lowest `emp_id` first), and the outer `ORDER BY rn` fixes the output order. The naive forms `SQL_NAIVE` and `SQL_NAIVE_TWO` are run next to it.
+```sql
+SELECT emp_id, name, salary,
+       ROW_NUMBER() OVER (ORDER BY salary DESC, emp_id) AS rn
+FROM employees
+ORDER BY rn
+```
+
+**pandas answer:** inside `# pd:main` in the Code block. `rank(method="first")` assigns positions by salary with ties in row order and does not move any row; `sort_values("rn")` is the step that reorders.
+```python
+ranked = emp.assign(rn=emp["salary"].rank(method="first", ascending=False).astype("int64"))
+pd_df = ranked.sort_values("rn")
+```
+
+**Example:**
+- Naive query `ROW_NUMBER() OVER (ORDER BY salary DESC)` with no outer `ORDER BY`: on SQLite 3.45.1 the rows happened to come back in window order (Ben 1, Chitra 2, Asha 3, Esha 4, Farid 5, Dev 6). That is what the implementation did, not a promise.
+- Same table, same `rn` expression, plus a second window `ROW_NUMBER() OVER (ORDER BY name DESC)` in the select list: the rows came back in a different tie order and the tied employees swapped numbers (Chitra 1, Ben 2; Esha 3, Asha 4). The numbering of tied rows changed because an unrelated expression was added.
+- Fixed query: `ORDER BY salary DESC, emp_id` inside the window and `ORDER BY rn` outside gives Ben 1, Chitra 2, Asha 3, Esha 4, Farid 5, Dev 6, and it stayed identical when I added the second window.
+- pandas: `rank` on the frame in `emp_id` order returns the same six rows in `emp_id` order (1 to 6); `sort_values("rn")` returns them as 2, 3, 1, 5, 6, 4.
+
+**Code:** run with `python3 -I`.
+```python
+# Q37: ORDER BY inside OVER versus the outer ORDER BY
+import sqlite3
+import pandas as pd
+
+SCHEMA = """
+CREATE TABLE employees(emp_id INTEGER PRIMARY KEY, name TEXT, dept_id INTEGER, salary INTEGER);
+INSERT INTO employees VALUES (1,'Asha',10,70),(2,'Ben',10,90),(3,'Chitra',20,90),
+                             (4,'Dev',20,50),(5,'Esha',10,70),(6,'Farid',20,60);
+"""
+SQL_NAIVE = """
+SELECT emp_id, name, salary, ROW_NUMBER() OVER (ORDER BY salary DESC) AS rn
+FROM employees
+"""
+SQL_NAIVE_TWO = """
+SELECT emp_id, name, salary,
+       ROW_NUMBER() OVER (ORDER BY salary DESC) AS rn,
+       ROW_NUMBER() OVER (ORDER BY name DESC)   AS rn_name
+FROM employees
+"""
+SQL_MAIN = """
+SELECT emp_id, name, salary,
+       ROW_NUMBER() OVER (ORDER BY salary DESC, emp_id) AS rn
+FROM employees
+ORDER BY rn
+"""
+SQL_FIXED_TWO = """
+SELECT emp_id, name, salary,
+       ROW_NUMBER() OVER (ORDER BY salary DESC, emp_id) AS rn,
+       ROW_NUMBER() OVER (ORDER BY name DESC)           AS rn_name
+FROM employees
+ORDER BY rn
+"""
+con = sqlite3.connect(":memory:")
+con.executescript(SCHEMA)
+q = lambda s: pd.read_sql_query(s, con)
+naive, naive_two, sql_df, fixed_two = q(SQL_NAIVE), q(SQL_NAIVE_TWO), q(SQL_MAIN), q(SQL_FIXED_TWO)
+print("NAIVE (no outer ORDER BY, no tie-break), rows in the order returned:"); print(naive.to_string(index=False))
+print("\nNAIVE with a second window added (same table, same rn expression):"); print(naive_two.to_string(index=False))
+tied = lambda d: dict(zip(d["name"], d["rn"]))
+print("\nrn of the tied 90s: first query", {k: tied(naive)[k] for k in ("Ben", "Chitra")},
+      "| second query", {k: tied(naive_two)[k] for k in ("Ben", "Chitra")},
+      "| numbering identical across queries:", tied(naive) == tied(naive_two))
+print("\nFIXED (tie-break in OVER, ORDER BY rn outside):"); print(sql_df.to_string(index=False))
+print("\nFIXED with the second window added; rn unchanged:", dict(zip(fixed_two["name"], fixed_two["rn"])) == dict(zip(sql_df["name"], sql_df["rn"])))
+
+emp = pd.read_sql_query("SELECT * FROM employees ORDER BY emp_id", con)
+# pd:main
+ranked = emp.assign(rn=emp["salary"].rank(method="first", ascending=False).astype("int64"))
+pd_df = ranked.sort_values("rn")
+# pd:end
+print("\npandas rank() keeps the row order (emp_id order):", ranked["emp_id"].tolist())
+print("pandas sort_values('rn') returns the rows in ranked order:", pd_df["emp_id"].tolist())
+assert ranked["emp_id"].tolist() == emp["emp_id"].tolist()
+# compared in rn order (both sorted by rn)
+cols = ["emp_id", "name", "salary", "rn"]
+pd.testing.assert_frame_equal(sql_df[cols].reset_index(drop=True), pd_df[cols].reset_index(drop=True), check_dtype=False)
+assert fixed_two["rn"].tolist() == sql_df["rn"].tolist()
+print("asserts passed: SQL (tie-break + outer ORDER BY) == pandas rank(method='first') + sort_values")
+```
+
+**Output (my run):**
+```text
+NAIVE (no outer ORDER BY, no tie-break), rows in the order returned:
+ emp_id   name  salary  rn
+      2    Ben      90   1
+      3 Chitra      90   2
+      1   Asha      70   3
+      5   Esha      70   4
+      6  Farid      60   5
+      4    Dev      50   6
+
+NAIVE with a second window added (same table, same rn expression):
+ emp_id   name  salary  rn  rn_name
+      3 Chitra      90   1        4
+      2    Ben      90   2        5
+      5   Esha      70   3        2
+      1   Asha      70   4        6
+      6  Farid      60   5        1
+      4    Dev      50   6        3
+
+rn of the tied 90s: first query {'Ben': 1, 'Chitra': 2} | second query {'Ben': 2, 'Chitra': 1} | numbering identical across queries: False
+
+FIXED (tie-break in OVER, ORDER BY rn outside):
+ emp_id   name  salary  rn
+      2    Ben      90   1
+      3 Chitra      90   2
+      1   Asha      70   3
+      5   Esha      70   4
+      6  Farid      60   5
+      4    Dev      50   6
+
+FIXED with the second window added; rn unchanged: True
+
+pandas rank() keeps the row order (emp_id order): [1, 2, 3, 4, 5, 6]
+pandas sort_values('rn') returns the rows in ranked order: [2, 3, 1, 5, 6, 4]
+asserts passed: SQL (tie-break + outer ORDER BY) == pandas rank(method='first') + sort_values
+```
+
+**Edge cases:**
+- Ties inside `OVER`: both tied rows satisfy the order, so either can be number 1. In my run the engine's choice changed between two queries on the same data and the same table; I did not test repeated runs of one query on an unchanged database, so I do not claim it changes "each run" on SQLite. Other engines, parallel plans and changed indexes can reorder (not executed).
+- Output order without an outer `ORDER BY`: SQL does not define it. The `ORDER BY` inside `OVER` can influence it in practice, as the first query shows, but that is an implementation side effect.
+- Several windows with different `ORDER BY` keys in one query: the output can follow only one of them (in my second query it followed the salary window, not the name window).
+- Keep the outer `ORDER BY rn` even if the output looked sorted without it; I did not time its cost.
+
+**Then explain:**
+- **Two jobs, two clauses:** the window `ORDER BY` defines position within a partition; the outer `ORDER BY` defines presentation.
+- **Determinism rule:** every ranking used for a decision (top 1, dedup, pagination) needs a unique last key.
+- **In pandas:** `rank()` returns a Series aligned to the original index, so row order is unchanged; `sort_values` is the explicit reorder. `rank(method="first")` breaks ties by current row order, which equals `emp_id` order here only because the frame was read `ORDER BY emp_id`.
+- **Other engines:** PostgreSQL's tutorial says tied rows are numbered in an unspecified order (as read from the page I opened); I have not run PostgreSQL or MySQL here.
+
+**Follow-ups:**
+- *How do you order the output by the rank and then by name?* `ORDER BY rn, name` outside.
+- *Does `ORDER BY` inside a subquery or view guarantee the outer order?* No; only the outermost `ORDER BY` does (general SQL rule).
+- *What about `LIMIT` with a window function?* Add the outer `ORDER BY` first; `LIMIT` without it returns arbitrary rows.
+
+**Common mistakes:**
+- Assuming the output is sorted because the window had an `ORDER BY`.
+- A window `ORDER BY` without a unique tie-break key in a decision query.
+- In pandas, calling `rank()` and expecting the frame to be sorted.
+- Treating the one run that looked sorted as proof.
+
+### Q38 ⭐⭐ 🔴 Median per group using ROW_NUMBER and COUNT (PERCENTILE_CONT is not in SQLite): employees(emp_id, name, dept_id, salary) with even and odd group sizes. Compute the median salary per department with ROW_NUMBER() and COUNT(*) OVER (PARTITION BY dept_id), keeping the middle one or two rows and averaging them. State NULL salaries are filtered first, show PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) as PostgreSQL/Snowflake dialect text (hedged, not executed), and confirm against pandas groupby median.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+**Say this first (1 line):** Drop NULL salaries first, number each department's salaries in order with `ROW_NUMBER()`, count them with `COUNT(*) OVER (PARTITION BY dept_id)`, keep the rows at positions `(cnt + 1) / 2` and `(cnt + 2) / 2` (one middle row for an odd count, two for an even count) and average them; pandas does it with `groupby("salary").median()`.
+
+**Schema and sample data:** five departments: 10 has four real salaries and one NULL (even count), 20 has three (odd, with a tie), 30 has one, 40 is all NULL, 50 has four with a tie in the middle.
+```sql
+CREATE TABLE employees(emp_id INTEGER PRIMARY KEY, name TEXT, dept_id INTEGER, salary INTEGER);
+INSERT INTO employees VALUES
+ (1,'Asha',10,50),(2,'Ben',10,60),(3,'Chitra',10,70),(4,'Dev',10,80),(5,'Esha',10,NULL),
+ (6,'Farid',20,40),(7,'Gita',20,40),(8,'Hari',20,100),
+ (9,'Ila',30,55),
+ (10,'Jay',40,NULL),(11,'Kiran',40,NULL),
+ (12,'Lata',50,10),(13,'Manu',50,20),(14,'Nina',50,20),(15,'Om',50,30);
+```
+
+**SQL answer:** `SQL_MAIN` in the Code block (`SQL_WRONG` is the same query without the NULL filter, run for contrast). Tie-breaking: the window orders by `salary, emp_id`; the median value does not depend on which tied row is numbered first, because tied rows have equal salaries, but the `emp_id` key keeps the numbering reproducible.
+```sql
+WITH ranked AS (
+  SELECT dept_id, salary,
+         ROW_NUMBER() OVER (PARTITION BY dept_id ORDER BY salary, emp_id) AS rn,
+         COUNT(*)     OVER (PARTITION BY dept_id)                         AS cnt
+  FROM employees
+  WHERE salary IS NOT NULL)
+SELECT dept_id, AVG(salary) AS median_salary
+FROM ranked
+WHERE rn IN ((cnt + 1) / 2, (cnt + 2) / 2)
+GROUP BY dept_id
+ORDER BY dept_id
+```
+
+**pandas answer:** inside `# pd:main` in the Code block. `median` skips NaN; a group with no values gives NaN, so I drop those rows to match SQL, which has no row for department 40.
+```python
+med = emp.groupby("dept_id")["salary"].median()
+pd_df = med.dropna().rename("median_salary").reset_index()
+```
+
+**Example:**
+- Department 10, salaries 50, 60, 70, 80 (Esha's NULL removed): cnt = 4, positions (4 + 1) / 2 = 2 and (4 + 2) / 2 = 3 (integer division), the values 60 and 70, average 65.0.
+- Department 20, salaries 40, 40, 100: cnt = 3, positions 2 and 2, so the one row at position 2 (a 40); `AVG` of one value is 40.0.
+- Department 30: cnt = 1, positions 1 and 1, median 55.0.
+- Department 50, salaries 10, 20, 20, 30: positions 2 and 3, both 20, median 20.0.
+- Department 40: all NULL, filtered out, so there is no row (pandas shows NaN).
+- Without the NULL filter (`SQL_WRONG`): department 10 has five rows with the NULL sorted first, so the middle row is position 3, the value 60 instead of 65; department 40 now returns a row with a NULL median.
+
+**Code:** run with `python3 -I`.
+```python
+# Q38: median per group with ROW_NUMBER and COUNT (no PERCENTILE_CONT in SQLite)
+import sqlite3
+import pandas as pd
+
+SCHEMA = """
+CREATE TABLE employees(emp_id INTEGER PRIMARY KEY, name TEXT, dept_id INTEGER, salary INTEGER);
+INSERT INTO employees VALUES
+ (1,'Asha',10,50),(2,'Ben',10,60),(3,'Chitra',10,70),(4,'Dev',10,80),(5,'Esha',10,NULL),
+ (6,'Farid',20,40),(7,'Gita',20,40),(8,'Hari',20,100),
+ (9,'Ila',30,55),
+ (10,'Jay',40,NULL),(11,'Kiran',40,NULL),
+ (12,'Lata',50,10),(13,'Manu',50,20),(14,'Nina',50,20),(15,'Om',50,30);
+"""
+SQL_MAIN = """
+WITH ranked AS (
+  SELECT dept_id, salary,
+         ROW_NUMBER() OVER (PARTITION BY dept_id ORDER BY salary, emp_id) AS rn,
+         COUNT(*)     OVER (PARTITION BY dept_id)                         AS cnt
+  FROM employees
+  WHERE salary IS NOT NULL)
+SELECT dept_id, AVG(salary) AS median_salary
+FROM ranked
+WHERE rn IN ((cnt + 1) / 2, (cnt + 2) / 2)
+GROUP BY dept_id
+ORDER BY dept_id
+"""
+SQL_WRONG = SQL_MAIN.replace("  WHERE salary IS NOT NULL)", "  )")
+con = sqlite3.connect(":memory:")
+con.executescript(SCHEMA)
+sql_df = pd.read_sql_query(SQL_MAIN, con)
+print("SQL median per department (NULL salaries filtered first):"); print(sql_df.to_string(index=False))
+wrong = pd.read_sql_query(SQL_WRONG, con)
+print("\nWRONG (NULL filter removed; NULLs sort first and count in cnt):"); print(wrong.to_string(index=False))
+assert wrong["median_salary"].tolist()[0] == 60.0 and wrong["median_salary"].isna().any()
+print("\nmiddle positions used, for each count:", {c: sorted({(c + 1) // 2, (c + 2) // 2}) for c in (1, 2, 3, 4)})
+
+emp = pd.read_sql_query("SELECT * FROM employees ORDER BY emp_id", con)
+# pd:main
+med = emp.groupby("dept_id")["salary"].median()
+pd_df = med.dropna().rename("median_salary").reset_index()
+# pd:end
+print("\npandas groupby median (all-NaN dept 40 shows NaN):", med.to_dict())
+print("pandas quantile(0.5) default interpolation:", emp.groupby("dept_id")["salary"].quantile(0.5).to_dict())
+print("quantile lower :", emp.groupby("dept_id")["salary"].quantile(0.5, interpolation="lower").dropna().to_dict())
+print("quantile higher:", emp.groupby("dept_id")["salary"].quantile(0.5, interpolation="higher").dropna().to_dict())
+# compared after sorting by dept_id; dept 40 (all NULL) has no SQL row, so NaN rows are dropped from pandas
+pd.testing.assert_frame_equal(sql_df, pd_df.sort_values("dept_id").reset_index(drop=True), check_dtype=False)
+assert med.isna().tolist() == [False, False, False, True, False]
+assert sql_df["median_salary"].tolist() == [65.0, 40.0, 55.0, 20.0]
+print("asserts passed: SQL ROW_NUMBER/COUNT median == pandas groupby median (dept 40 absent in SQL, NaN in pandas)")
+```
+
+**Output (my run):**
+```text
+SQL median per department (NULL salaries filtered first):
+ dept_id  median_salary
+      10           65.0
+      20           40.0
+      30           55.0
+      50           20.0
+
+WRONG (NULL filter removed; NULLs sort first and count in cnt):
+ dept_id  median_salary
+      10           60.0
+      20           40.0
+      30           55.0
+      40            NaN
+      50           20.0
+
+middle positions used, for each count: {1: [1], 2: [1, 2], 3: [2], 4: [2, 3]}
+
+pandas groupby median (all-NaN dept 40 shows NaN): {10: 65.0, 20: 40.0, 30: 55.0, 40: nan, 50: 20.0}
+pandas quantile(0.5) default interpolation: {10: 65.0, 20: 40.0, 30: 55.0, 40: nan, 50: 20.0}
+quantile lower : {10: 60.0, 20: 40.0, 30: 55.0, 50: 20.0}
+quantile higher: {10: 70.0, 20: 40.0, 30: 55.0, 50: 20.0}
+asserts passed: SQL ROW_NUMBER/COUNT median == pandas groupby median (dept 40 absent in SQL, NaN in pandas)
+```
+
+**Edge cases:**
+- NULL salaries: filter first, as the question states; counting them shifts the middle position and the NULLs sort first in SQLite (Q29), as `SQL_WRONG` shows.
+- All-NULL group: SQL returns no row, pandas `median` returns NaN. Decide which you want and say so.
+- Even count with a tie in the middle (department 50): the two middle rows are equal, so the median equals that value.
+- Integer arithmetic: `(cnt + 1) / 2` is integer division in SQLite because both operands are integers. In MySQL `/` returns a decimal and would need `DIV` (from memory, not executed); PostgreSQL integer division also truncates (not executed).
+- `AVG` of integers gives a float in SQLite (65.0); the median of an even count can be a half value.
+
+**Then explain:**
+- **Why two positions:** an odd count has one middle, an even count has two; `(cnt + 1) / 2` and `(cnt + 2) / 2` are the same number when `cnt` is odd and consecutive numbers when it is even, so `rn IN (...)` and `AVG` handle both.
+- **PERCENTILE_CONT (not executed here):** PostgreSQL and Snowflake offer `PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary)` as an ordered-set aggregate (written from memory; SQLite has no such function and I did not run it). SQL Server and some others expose it as a window function and BigQuery as an analytic function; availability differs, so check your engine's documentation.
+- **Interpolation in pandas:** `quantile(0.5)` with the default linear interpolation equals the median (matched here); `interpolation="lower"` gave 60 and `"higher"` gave 70 for department 10, so they are not a median for an even count.
+- **Confirmation:** the SQL median equals pandas `groupby().median()` for all four departments that have values.
+
+**Follow-ups:**
+- *Other percentiles?* Position `ceil(p * cnt)` for a discrete percentile (`PERCENTILE_DISC` idea); a continuous one needs interpolation between two ranked rows.
+- *Is there a version without `COUNT`?* Yes: compare ascending and descending `ROW_NUMBER` and keep rows where they differ by at most 1; same result, two sorts.
+- *Median of a whole table?* Remove the `PARTITION BY`.
+
+**Common mistakes:**
+- Not filtering NULLs before numbering and counting.
+- Using `AVG` of the middle positions with `cnt / 2` and `cnt / 2 + 1`, which is wrong for odd counts.
+- Calling the average of the group the median.
+- Assuming `PERCENTILE_CONT` exists in every engine.

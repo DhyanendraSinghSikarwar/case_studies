@@ -3,13 +3,14 @@ import sqlite3
 import numpy as np
 import pandas as pd
 
-spend_vals = [4800, 4400, 4400, 4000, 3500, 3000, 2800, 2600, 2500, 2400, 2200, 2000, 1800,
-              1600, 1500, 1400, 1200, 1000, 900, 800, 600, 500, 400]   # customers 2..24
-orders = [(1, 1, 3000), (2, 1, 2000)] + [(i + 3, c, v) for i, (c, v) in enumerate(zip(range(2, 25), spend_vals))]
-SCHEMA = ("CREATE TABLE customers(customer_id INTEGER PRIMARY KEY, name TEXT);\n"
-          "CREATE TABLE orders(order_id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);\n"
-          + "".join(f"INSERT INTO customers VALUES ({c}, 'C{c:02d}');\n" for c in range(1, 26))
-          + "".join(f"INSERT INTO orders VALUES {o};\n" for o in orders))
+SCHEMA = """
+CREATE TABLE customers(customer_id INTEGER PRIMARY KEY, name TEXT);
+CREATE TABLE orders(order_id INTEGER PRIMARY KEY, customer_id INTEGER, amount INTEGER);
+INSERT INTO customers VALUES
+ (1,'C01'),(2,'C02'),(3,'C03'),(4,'C04'),(5,'C05'),(6,'C06'),(7,'C07'),(8,'C08'),(9,'C09'),(10,'C10'),(11,'C11'),(12,'C12'),(13,'C13'),(14,'C14'),(15,'C15'),(16,'C16'),(17,'C17'),(18,'C18'),(19,'C19'),(20,'C20'),(21,'C21'),(22,'C22'),(23,'C23'),(24,'C24'),(25,'C25');
+INSERT INTO orders VALUES
+ (1,1,3000),(2,1,2000),(3,2,4800),(4,3,4400),(5,4,4400),(6,5,4000),(7,6,3500),(8,7,3000),(9,8,2800),(10,9,2600),(11,10,2500),(12,11,2400),(13,12,2200),(14,13,2000),(15,14,1800),(16,15,1600),(17,16,1500),(18,17,1400),(19,18,1200),(20,19,1000),(21,20,900),(22,21,800),(23,22,600),(24,23,500),(25,24,400);
+"""
 SQL_MAIN = """
 WITH spend AS (
   SELECT c.customer_id, COALESCE(SUM(o.amount), 0) AS total
