@@ -749,3 +749,373 @@ background doc recall@2: original=2/3  step-back only=3/3  original+step-back (R
 - *How do you evaluate it?* Ablation on the golden set (Q14): recall@k and answer quality with and without, split by query type, plus the added latency.
 
 **Common mistakes:** replacing the original query with the step-back one; using it on every query; quoting blog-level gains as facts; confusing it with HyDE; letting the LLM rewrite drift off-topic without a check.
+
+### Q23 ⭐⭐ 🟡 How do you route queries to different retrieval strategies (FAQ lookup, multi-hop, global summary), and how do you evaluate the router?
+**Asked at:** product, GenAI startups, platform teams
+**Say this first (1 line):** A router looks at the query and picks a pipeline (cheap lookup, multi-step, or whole-corpus summary), with a confidence threshold and a safe default, and you evaluate it both as a classifier (accuracy, confusion matrix) and end to end (answer quality, latency, cost).
+
+**Then explain:**
+- **Why:** expensive techniques (decomposition, agent loops, GraphRAG-style global search) are wasted on a "what is the refund window?" question, and a plain lookup fails on "summarise the main themes". Routing spends compute only where needed (see also Part 7 Q7, and the agent-loop trade-off in Q13).
+- **Router types:** (1) rules (regex, keywords, query length): fast and transparent, brittle; (2) a trained classifier on labelled queries: cheap at serve time, needs labels; (3) an LLM that picks a route: flexible with no training data, but adds latency and cost and can be inconsistent; (4) embedding similarity to route prototypes (average of example queries per route): no training, easy to extend, quality depends on the embedder and the examples.
+- **Routes:** for example FAQ/lookup (hybrid + rerank), multi-hop (decomposition, Q10), global summary (hierarchical or graph-based retrieval, Part 7 Q12, Q27).
+- **Threshold and fallback:** if the best route similarity is below a threshold, or the router is unsure, use a default (typically the robust hybrid-plus-rerank path), not a random route. Log fallbacks to find new route types.
+- **Evaluate:** label a few hundred real queries by route; report per-route precision and recall and the confusion matrix, focusing on costly mistakes (for example global queries sent to a plain lookup). Then run end-to-end ablations: router vs always-default vs always-expensive on answer quality, p95 latency and cost (Q14).
+
+**Example:** TOY, all synthetic. A prototype router with a toy hashed embedding (no semantics) on 96 held-out-phrased queries: 5 FAQ, 4 multi-hop, 4 global templates and 3 off-topic ones ("tell me a joke"), 6 copies each. With no threshold it sends everything to some route (accuracy 0.72; off-topic queries get forced into routes). At threshold 0.35, off-topic all go to the fallback and accuracy is 0.82, but 10 of 30 FAQ queries also fell back (a cost, not an error: they still get an answer from the default path). At 0.6 almost everything falls back (accuracy 0.42). So the threshold is a tuned knob trading precision of routes against how much goes to the default.
+
+**Code:** (run; numpy only; TOY embedder and synthetic queries; accuracy counts "other" as correct only when sent to fallback)
+```python
+import re, zlib
+import numpy as np
+
+def toks(t): return re.findall(r"[a-z0-9]+", t.lower())
+H, DIM = 128, 32
+P = np.random.default_rng(0).normal(size=(H, DIM))
+def emb(text):      # TOY embedding: hashed bag-of-words + random projection (no semantics)
+    v = np.zeros(H)
+    for w in toks(text): v[zlib.crc32(w.encode()) % H] += 1
+    e = v @ P; n = np.linalg.norm(e); return e / n if n else e
+
+ROUTES = ["faq", "multihop", "global"]
+# route prototypes: a few example utterances each (written by hand), averaged into one vector
+PROTO_TEXT = {
+ "faq":      ["what is the refund window", "how do I reset my password", "what is the support phone number"],
+ "multihop": ["who founded the company that acquired the startup", "which supplier of the part used in the product had a recall",
+              "compare the policy before and after the merger for the manager of the team"],
+ "global":   ["summarise the main themes across all documents", "what are the overall trends in the whole collection",
+              "give an overview of the key topics in the corpus"],
+}
+PROTO = {r: np.mean([emb(t) for t in ts], 0) for r, ts in PROTO_TEXT.items()}
+PROTO = {r: v / np.linalg.norm(v) for r, v in PROTO.items()}
+
+# SYNTHETIC labelled queries: templates + random fillers
+rng = np.random.default_rng(1)
+fill = ["billing", "shipping", "warranty", "login", "invoice", "contract", "security", "pricing"]
+templates = {   # held-out phrasing: different wording from the prototypes, partial overlap only
+ "faq":      ["how long do I have to ask for a refund on {}", "where can I reset the {} password", "what number do I call for {} help",
+               "can I change my {} email address", "what is the {} fee"],
+ "multihop": ["who runs the firm that bought the {} startup and what did they say about it",
+              "which supplier of the {} part also had a recall and who owns it",
+              "compare the {} policy before and after the merger for the head of the team",
+              "what did the person who wrote the {} report say about the company that audited it"],
+ "global":   ["give me the big picture of what the {} documents say overall", "what are the recurring themes about {} throughout the corpus",
+              "summarise everything in the collection about {}", "overall what trends appear in the {} files"],
+ "other":    ["hello there how are you", "tell me a joke about {}", "thanks that is all"],   # should fall back
+}
+data = [(t.format(rng.choice(fill)), r) for r, ts in templates.items() for t in ts for _ in range(6)]
+
+def route(q, thr):
+    sims = {r: float(PROTO[r] @ emb(q)) for r in ROUTES}
+    best = max(sims, key=sims.get)
+    return best if sims[best] >= thr else "fallback"   # fallback = default hybrid + rerank path
+
+TRUE = ROUTES + ["other"]; PRED = ROUTES + ["fallback"]
+for thr in (0.0, 0.35, 0.6):
+    M = np.zeros((4, 4), int)
+    for q, y in data: M[TRUE.index(y), PRED.index(route(q, thr))] += 1
+    # correct = right route for real routes; "other" is correct only when sent to fallback
+    ok = np.trace(M[:3, :3]) + M[3, 3]
+    print(f"threshold={thr}: accuracy={ok / M.sum():.2f}  fallback rate={M[:, 3].sum() / M.sum():.2f}")
+    print("  confusion (rows=true, cols=" + ",".join(PRED) + ")")
+    for r, row in zip(TRUE, M): print(f"  {r:9s}", row.tolist())
+```
+Output (my run, toy and synthetic):
+```
+threshold=0.0: accuracy=0.72  fallback rate=0.00
+  confusion (rows=true, cols=faq,multihop,global,fallback)
+  faq       [21, 5, 4, 0]
+  multihop  [0, 24, 0, 0]
+  global    [0, 0, 24, 0]
+  other     [10, 2, 6, 0]
+threshold=0.35: accuracy=0.82  fallback rate=0.29
+  confusion (rows=true, cols=faq,multihop,global,fallback)
+  faq       [13, 3, 4, 10]
+  multihop  [0, 24, 0, 0]
+  global    [0, 0, 24, 0]
+  other     [0, 0, 0, 18]
+threshold=0.6: accuracy=0.42  fallback rate=0.77
+  confusion (rows=true, cols=faq,multihop,global,fallback)
+  faq       [0, 0, 0, 30]
+  multihop  [0, 18, 0, 6]
+  global    [0, 0, 4, 20]
+  other     [0, 0, 0, 18]
+```
+Note: the "accuracy" here treats a real-route query sent to fallback as wrong, although fallback is a safe default; in practice track fallback separately from outright misroutes (the off-diagonal cells inside the first three columns).
+
+**Follow-ups:**
+- *LLM router or embedding router?* Start with prototypes or rules if the routes are few and stable; use an LLM when routes are many or fuzzy, and measure its latency and consistency.
+- *How do you handle a query that needs two routes?* Allow multi-label routing, or send it to the more general strategy; log such cases.
+- *Cost of a misroute?* Weight the confusion matrix by cost: global-as-FAQ gives a poor answer, FAQ-as-multihop only wastes compute.
+
+**Common mistakes:** no fallback; routing without measuring end-to-end quality; training the router on the same templates you test on; ignoring queries that fit no route; a router that costs more than it saves; treating the toy embedder results as evidence about real models.
+
+### Q24 ⭐⭐ 🟡 Conversational RAG: how do you handle coreference, history compression and query rewriting across turns, and how do you evaluate it?
+**Asked at:** product, GenAI startups, customer-facing teams
+**Say this first (1 line):** Rewrite each follow-up into a standalone query (resolve "it", "that", ellipsis) using a compressed history, retrieve with the rewritten query, and evaluate both the rewrite (is it faithful?) and the retrieval (recall with vs without rewriting).
+
+**Then explain:**
+- **Why:** the retriever sees only text. "How much does it cost?" has no entity, so the retriever returns generic cost chunks. Basics are in Part 6 Q28; this answer goes into evaluation and failure modes.
+- **Coreference and ellipsis:** the rewriter must replace pronouns and restore dropped parts ("and the warranty?" becomes "what is the warranty of the Nimbus laptop?"). Resolve to the right entity, which is usually the most recently discussed one, but not always.
+- **History compression:** sending the whole chat is slow and noisy. Options: last N turns, a rolling summary updated each turn, or a small memory of tracked entities and constraints. Summaries can drop details or add errors, so keep recent turns verbatim.
+- **Evaluate the rewrite:** build small dialogues with a human-written standalone gold query. Score fidelity (exact match or token overlap, or an LLM/human judge for meaning), and check it did not add facts that were not in the conversation.
+- **Evaluate retrieval:** recall@k and MRR of the gold chunk, with the raw follow-up, with the rewrite, and with both fused (Q14). Add answer-level checks (Part 9).
+- **Pitfalls:** (1) rewriter hallucination: it invents an entity or detail; (2) wrong referent after a topic switch; (3) over-rewriting a query that was already standalone; (4) added latency and cost for an extra LLM call every turn (skip it for first turns or already-standalone queries); (5) rewriting that drops a user constraint such as a date.
+
+**Example:** MOCK rewriters on six SYNTHETIC dialogues about two products. Without rewriting, retrieval gets the right chunk first for 3 of 6 (the follow-up "What is its battery life" matches the phone and the laptop equally). A recency rule that resolves "it" to the most recently mentioned product gets 6 of 6, with perfect fidelity to the gold standalone query. A buggy rewriter that resolves to the first product mentioned gets 4 of 6 and a fidelity of 0.83: after the user switches from the phone to the laptop it answers about the phone ("How long is the zephyr phone warranty"). That is the topic-switch failure, and only the fidelity check on a topic-switch slice catches it.
+
+**Code:** (run; mock rule-based rewriters, toy corpus, BM25 from scratch; not an LLM)
+```python
+import re, math
+from collections import Counter
+
+STOP = set("a an the of to in on is are was for and or my how what does do with by at it its this that about can i you".split())
+def toks(t): return re.findall(r"[a-z0-9]+", t.lower())
+def ctoks(t): return [w for w in toks(t) if w not in STOP]
+
+docs = {
+ "zephyr_price":  "The Zephyr phone costs 24999 rupees and ships with a charger.",
+ "zephyr_batt":   "The Zephyr phone battery lasts about two days and charges fully in an hour.",
+ "zephyr_wty":    "The Zephyr phone warranty covers one year of defects.",
+ "nimbus_price":  "The Nimbus laptop costs 58999 rupees including a sleeve.",
+ "nimbus_batt":   "The Nimbus laptop battery lasts about ten hours of browsing.",
+ "nimbus_wty":    "The Nimbus laptop warranty covers two years including battery.",
+ "app_dark":      "The mobile app supports dark mode and offline reading.",
+ "delivery":      "Delivery usually takes three to five working days.",
+}
+names = list(docs)
+D = {n: ctoks(t) for n, t in docs.items()}; N = len(D); avg = sum(map(len, D.values())) / N
+df = Counter(w for d in D.values() for w in set(d))
+def search(q, k1=1.5, b=0.75):
+    sc = {}
+    for n, d in D.items():
+        s = 0.0
+        for w in ctoks(q):
+            if w in df:
+                tf = d.count(w); idf = math.log(1 + (N - df[w] + .5) / (df[w] + .5))
+                s += idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * len(d) / avg))
+        sc[n] = s
+    return sorted(names, key=lambda n: -sc[n])
+
+ENTITIES = ["zephyr phone", "nimbus laptop"]
+PRON = r"\b(it|its|that|this one)\b"
+def entities_in(text): return [e for e in ENTITIES if e in text.lower()]
+
+# MOCK rewriters (rule-based stand-ins for an LLM rewriter)
+def rewrite_recent(history, q):      # resolve the pronoun to the MOST RECENT entity mentioned
+    ents = [e for h in history for e in entities_in(h)]
+    if not ents or entities_in(q): return q
+    return re.sub(PRON, "the " + ents[-1], q, count=1, flags=re.I)
+def rewrite_first(history, q):       # buggy: resolves to the FIRST entity (ignores topic switch)
+    ents = [e for h in history for e in entities_in(h)]
+    if not ents or entities_in(q): return q
+    return re.sub(PRON, "the " + ents[0], q, count=1, flags=re.I)
+
+# SYNTHETIC dialogues: (history, follow-up, gold standalone, gold doc)
+dialogs = [
+ (["Tell me about the Zephyr phone"], "How much does it cost", "How much does the Zephyr phone cost", "zephyr_price"),
+ (["Tell me about the Zephyr phone"], "What is its battery life", "What is the Zephyr phone battery life", "zephyr_batt"),
+ (["Tell me about the Zephyr phone", "And the Nimbus laptop?"], "How long is its warranty", "How long is the Nimbus laptop warranty", "nimbus_wty"),
+ (["Tell me about the Zephyr phone", "And the Nimbus laptop?"], "How much does it cost", "How much does the Nimbus laptop cost", "nimbus_price"),
+ (["Tell me about the Nimbus laptop"], "What is its battery life", "What is the Nimbus laptop battery life", "nimbus_batt"),
+ (["Tell me about the Zephyr phone"], "Does the app support dark mode", "Does the app support dark mode", "app_dark"),  # topic switch, no pronoun
+]
+
+def f1(a, b):
+    a, b = Counter(ctoks(a)), Counter(ctoks(b)); ov = sum((a & b).values())
+    if not ov: return 0.0
+    p, r = ov / sum(a.values()), ov / sum(b.values()); return 2 * p * r / (p + r)
+
+for name, rw in [("no rewrite", lambda h, q: q), ("rewrite: most-recent entity", rewrite_recent), ("rewrite: first entity (buggy)", rewrite_first)]:
+    hit = fid = 0
+    for hist, q, gold_q, gold_doc in dialogs:
+        rq = rw(hist, q); hit += search(rq)[0] == gold_doc; fid += f1(rq, gold_q)
+    print(f"{name:30s} recall@1 = {hit}/{len(dialogs)}   mean rewrite fidelity (token F1 vs gold) = {fid/len(dialogs):.2f}")
+print("example:", repr(rewrite_first(dialogs[2][0], dialogs[2][1])), "<- wrong entity carried over")
+```
+Output (my run, mock and synthetic):
+```
+no rewrite                     recall@1 = 3/6   mean rewrite fidelity (token F1 vs gold) = 0.72
+rewrite: most-recent entity    recall@1 = 6/6   mean rewrite fidelity (token F1 vs gold) = 1.00
+rewrite: first entity (buggy)  recall@1 = 4/6   mean rewrite fidelity (token F1 vs gold) = 0.83
+example: 'How long is the zephyr phone warranty' <- wrong entity carried over
+```
+Six dialogues is far too small for real conclusions; it demonstrates the metrics, not a result.
+
+**Follow-ups:**
+- *Rewrite or pass history to the generator only?* Retrieval needs the standalone query; the generator can still see the conversation. Do both.
+- *Rolling summary risks?* Errors compound across turns; keep key entities and user constraints in a structured memory and the last few turns verbatim.
+- *Should you retrieve with both original and rewrite?* Often yes: fuse them (RRF) so that a bad rewrite does not remove the original signal.
+
+**Common mistakes:** rewriting with no evaluation set of dialogues; no topic-switch cases; trusting an LLM rewrite without a fidelity check; rewriting every turn even when standalone; dropping constraints (dates, names) during rewriting; summarising away the entity that the next turn refers to.
+
+### Q25 ⭐⭐ 🟡 What is index-time enrichment (hypothetical questions per chunk, summaries, entity and keyword extraction, metadata), and what are its trade-offs?
+**Asked at:** product, GenAI startups, GCC
+**Say this first (1 line):** Index-time enrichment means paying once, at ingestion, to attach extra text or fields to each chunk (likely questions, a summary, entities, keywords, metadata) so that user queries match it better; the trade-off is index cost, storage, staleness and the risk of wrong generated content.
+
+**Then explain:**
+- **Hypothetical questions per chunk (doc2query-style, from memory, not re-verified here):** an LLM writes questions the chunk could answer, and you index them with the chunk (or as separate vectors pointing back to it). User questions are question-shaped, so they match question text better than statement text. This is related to HyDE (Part 7 Q8) but done offline instead of at query time.
+- **Summaries:** a short summary per chunk or section helps matching for long or dense chunks, and feeds hierarchical retrieval (Q27). The Contextual Retrieval post reported that generic document summaries gave little gain, so test it.
+- **Entities and keywords:** extracted names, IDs and terms support exact matching and filtering (hybrid, Q15).
+- **Metadata:** title, section path, date, source, access tags. Cheap, deterministic, and gives filters and freshness rules. Lighter than LLM-generated context (Q26).
+- **Trade-offs:** one LLM call per chunk at ingestion (the cost multiplies with corpus size and every re-index); more storage (more text and vectors); staleness (when a chunk changes, regenerate its enrichment); hallucinated questions or summaries can attract wrong queries; duplicate questions across chunks hurt precision.
+- **Evaluate as an ablation (Q14):** same golden set with and without each enrichment; check recall, and read a sample of generated text for errors.
+
+**Example:** MOCK and toy. Eight HR-policy chunks and eight user questions phrased differently from the chunk text ("how many vacation days do I get" vs a chunk about "paid leave"). BM25 on chunk text alone gets the right chunk first for 3 of 8 (hit@1 0.38). Adding mock "generated" questions raises it to 8 of 8, but I wrote those mock questions with the test queries in mind, so that lift is an optimistic illustration, not an estimate of what a real LLM gives. When one chunk gets a hallucinated question that belongs to another chunk, hit@1 falls to 0.88 and MRR to 0.94: bad enrichment steals queries. Index text doubled in size (89 to 178 words).
+
+**Code:** (run; BM25 from scratch; the "generated" questions are hand-written MOCK data, no LLM call)
+```python
+import re, math
+from collections import Counter
+
+STOP = set("a an the of to in on is are was for and or my how what does do with by at it its this that about can i you be when where who".split())
+def ctoks(t): return [w for w in re.findall(r"[a-z0-9]+", t.lower()) if w not in STOP]
+
+chunks = [
+ "Employees accrue 1.5 days of paid leave per month, capped at 30 days.",
+ "Reimbursement claims must be filed within 45 days with original receipts.",
+ "The VPN client must be updated to version 5 before connecting from home.",
+ "Laptops are replaced every four years by the IT asset team.",
+ "Notice period for resignation is 60 days for managers.",
+ "Meals during official travel are covered up to 1200 rupees per day.",
+ "Passwords expire every 90 days and cannot reuse the last five.",
+ "Parental leave is 26 weeks for the primary caregiver.",
+]
+# MOCK "LLM" generated questions per chunk (hand-written; stands in for doc2query-style generation, not run on a model)
+mock_questions = {
+ 0: ["How many vacation days do I earn each month", "Is there a limit on leave balance"],
+ 1: ["By when must I submit an expense claim", "What proof do I need to get my money back"],
+ 2: ["What do I need before I can connect to the company network from home"],
+ 3: ["How often do I get a new work computer"],
+ 4: ["How long must I serve after I quit"],
+ 5: ["How much can I spend on food while travelling for work"],
+ 6: ["How often must I change my login secret"],
+ 7: ["How long is maternity leave"],
+}
+# one BAD mock enrichment (hallucinated): chunk 3 gets a question about vacation days it does not answer
+bad_questions = dict(mock_questions); bad_questions[3] = mock_questions[3] + ["How many vacation days do I earn each month"]
+
+queries = [("how many vacation days do I get", 0), ("by when should I submit my expense claim", 1),
+           ("what do I need to connect to the network from home", 2), ("how often do I get a new work computer", 3),
+           ("how long must I serve after I quit", 4), ("how much can I spend on food while travelling", 5),
+           ("how often must I change my login secret", 6), ("how long is maternity leave", 7)]
+# CAUTION: the mock questions were written with these queries in mind, so the lift below is an optimistic illustration, not an estimate
+
+def build(texts):
+    D = [ctoks(t) for t in texts]; N = len(D); avg = sum(map(len, D)) / N
+    df = Counter(w for d in D for w in set(d))
+    def score(q, k1=1.5, b=0.75):
+        out = []
+        for d in D:
+            s = 0.0
+            for w in ctoks(q):
+                if w in df:
+                    tf = d.count(w); idf = math.log(1 + (N - df[w] + .5) / (df[w] + .5))
+                    s += idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * len(d) / avg))
+            out.append(s)
+        return out
+    return score
+
+def evaluate(texts):
+    sc = build(texts); hit1 = rr = 0
+    for q, rel in queries:
+        s = sc(q); order = sorted(range(len(s)), key=lambda i: (-s[i], i))
+        pos = order.index(rel) + 1 if s[rel] > 0 else len(s)   # zero score = not retrieved
+        hit1 += pos == 1; rr += 1 / pos
+    return hit1 / len(queries), rr / len(queries)
+
+plain = chunks
+enriched = [c + " " + " ".join(mock_questions[i]) for i, c in enumerate(chunks)]
+bad = [c + " " + " ".join(bad_questions[i]) for i, c in enumerate(chunks)]
+for name, texts in [("chunk text only", plain), ("chunk + mock questions", enriched), ("chunk + questions incl. 1 hallucinated", bad)]:
+    h, m = evaluate(texts); print(f"{name:40s} hit@1={h:.2f}  MRR={m:.2f}")
+print("index size (words): plain =", sum(len(c.split()) for c in plain), " enriched =", sum(len(c.split()) for c in enriched))
+```
+Output (my run, mock and toy):
+```
+chunk text only                          hit@1=0.38  MRR=0.45
+chunk + mock questions                   hit@1=1.00  MRR=1.00
+chunk + questions incl. 1 hallucinated   hit@1=0.88  MRR=0.94
+index size (words): plain = 89  enriched = 178
+```
+
+**Follow-ups:**
+- *Embed the questions separately?* A common design: one vector per generated question, each pointing back to the parent chunk, so the question text is matched directly. It multiplies vector count; measure whether it beats appending questions to the chunk.
+- *When not to bother?* Small corpus, queries already match chunk wording, or the corpus changes constantly so regeneration cost dominates.
+- *How to control hallucination?* Constrain the prompt to the chunk text, keep questions answerable from the chunk, sample-check, and drop near-duplicates across chunks.
+
+**Common mistakes:** enriching without an ablation; ignoring regeneration cost on updates; letting the LLM add facts that are not in the chunk; writing the test set after seeing the generated questions (leakage); quoting a percentage gain for doc2query from memory; forgetting that enriched text can also dilute exact matching.
+
+### Q26 ⭐⭐ 🟡 Contextual retrieval in practice: how do you generate chunk context cheaply (prompt caching, lighter alternatives) and what can go wrong?
+**Asked at:** product, GenAI startups, platform teams
+**Say this first (1 line):** Generate a short context for every chunk from its whole document, make it cheap by caching the document prompt once across that document's chunks (as the original post describes) or by using lighter options like title and section path, and prove it pays off with an ablation before running it on the full corpus.
+
+**Then explain:**
+- **What the post describes (opened page, Anthropic, Sep 2024):** an LLM reads the whole document plus one chunk and writes a short chunk-specific context (50-100 tokens) that is prepended before embedding and before BM25 indexing (basics and reported gains: Part 7 Q11). Prompt caching lets the document be loaded once and reused for all its chunks, which is what makes this practical. The post's cost estimate depends on its own assumptions; do not treat it as a price.
+- **Caching mechanics:** put the document at the start of the prompt (the cacheable prefix) and the chunk and instruction at the end. Each call then pays a cheap cached read for the document instead of the full input price. Details (cache lifetime, minimum sizes, discount rates) are provider-specific and change: check the current documentation.
+- **Lighter alternatives:** prepend the document title and section path (free, deterministic, no hallucination risk); prepend a short generated document-level summary (one call per document, not per chunk; the post reported that generic summaries gave little gain, so test it); or generate context only for chunk types that need it (tables, numbered clauses, pronoun-heavy text).
+- **Batch generation:** run ingestion as an asynchronous batch job if the provider offers a batch mode, group chunks by document so the cache is reused, and checkpoint so failures do not repeat work.
+- **What goes wrong:** the context hallucinates a fact (it is then indexed and retrieved as if true: sample and review); longer chunks dilute the embedding or push chunks over the embedder's max length; duplicated boilerplate context across chunks makes them look alike; documents change so contexts go stale; cost at 100M chunks is large even with caching (below); very long documents do not fit in the prompt.
+- **Evaluate as an ablation (Q14):** same golden set, with and without context, with context in embeddings only, BM25 only, or both; report recall gain against ingestion cost and index growth.
+
+**Example:** Everything here is ASSUMED. 5M documents, 8,000 tokens each, 20 chunks per document (100M chunks), 400-token chunks, 100-token prompt, 75-token generated context, output priced at 5x input, cache write at 1.25x, cached read at 0.1x. Cost in abstract units (1 unit = one million uncached input tokens): without caching 887,500 units, with caching 213,500 (ratio 0.24), and with an assumed 50% batch discount on top, 106,750. The saving comes from not re-sending the 8,000-token document 20 times. For short documents (1,000 tokens) the ratio is 0.55, so caching matters less. Plug in your provider's rates and your own corpus shape.
+
+**Code:** (run; pure Python; all constants are ASSUMPTIONS, costs are in abstract units, no real prices)
+```python
+# Cost calculator for LLM-generated chunk context. EVERY number below is an ASSUMPTION for illustration.
+# Costs are in abstract "units" where 1 unit = the assumed cost of 1 million uncached input tokens.
+# (No real price is used; plug in your provider's current rates.)
+A = dict(
+    docs=5_000_000,            # ASSUMED number of documents
+    doc_tokens=8_000,          # ASSUMED tokens per document
+    chunks_per_doc=20,         # ASSUMED -> 5M x 20 = 100M chunks
+    chunk_tokens=400,          # ASSUMED tokens per chunk
+    prompt_tokens=100,         # ASSUMED instruction text per call
+    ctx_out_tokens=75,         # ASSUMED generated context length per chunk
+    out_price=5.0,             # ASSUMED output token price = 5x an uncached input token
+    cache_write_mult=1.25,     # ASSUMED premium for writing the document into the cache once
+    cache_read_mult=0.10,      # ASSUMED cached-read price = 10% of an uncached input token
+    batch_mult=0.5,            # ASSUMED discount factor if the provider offers an asynchronous batch mode
+)
+def cost(a, cached, batch=False):
+    chunks = a["docs"] * a["chunks_per_doc"]
+    per_doc_tok = a["doc_tokens"]
+    if cached:   # document written to cache once per document, then read for every chunk of it
+        doc_cost = per_doc_tok * a["cache_write_mult"] + per_doc_tok * a["cache_read_mult"] * (a["chunks_per_doc"] - 1)
+    else:        # whole document re-sent as normal input on every call
+        doc_cost = per_doc_tok * a["chunks_per_doc"]
+    other_in = (a["chunk_tokens"] + a["prompt_tokens"]) * a["chunks_per_doc"]
+    out = a["ctx_out_tokens"] * a["out_price"] * a["chunks_per_doc"]
+    total_per_doc = doc_cost + other_in + out
+    total = total_per_doc * a["docs"] / 1e6
+    return total * (a["batch_mult"] if batch else 1.0)
+
+chunks = A["docs"] * A["chunks_per_doc"]
+print(f"chunks: {chunks:,}")
+for label, c, b in [("no caching", False, False), ("prompt caching", True, False), ("caching + batch discount", True, True)]:
+    print(f"{label:26s} {cost(A, c, b):10,.0f} units")
+print(f"ratio caching / no caching: {cost(A, True) / cost(A, False):.2f}")
+print("lighter alternative: title + section path prepended = 0 LLM calls (string concatenation at ingestion)")
+# sensitivity: shorter documents shrink the benefit of caching
+for dt in (1_000, 8_000, 50_000):
+    a = dict(A, doc_tokens=dt)
+    print(f"doc_tokens={dt:6d}: caching/no-caching = {cost(a, True) / cost(a, False):.2f}")
+```
+Output (my run, assumed inputs):
+```
+chunks: 100,000,000
+no caching                    887,500 units
+prompt caching                213,500 units
+caching + batch discount      106,750 units
+ratio caching / no caching: 0.24
+lighter alternative: title + section path prepended = 0 LLM calls (string concatenation at ingestion)
+doc_tokens=  1000: caching/no-caching = 0.55
+doc_tokens=  8000: caching/no-caching = 0.24
+doc_tokens= 50000: caching/no-caching = 0.17
+```
+
+**Follow-ups:**
+- *Is it worth it?* Only if the ablation shows a recall gain on your golden set that justifies the ingestion cost; the post's reported gains (35%, 49%, 67% fewer failures in its setting) are one vendor's measurements, not a promise.
+- *Under about 200k tokens of knowledge base?* The post suggests putting everything in the prompt and skipping RAG; weigh that against per-query cost and latency (Part 6 Q49).
+- *Re-index cost?* Context depends on the whole document, so any edit to the document invalidates the contexts of its chunks; budget for regeneration.
+
+**Common mistakes:** generating context before running a small ablation; putting the chunk before the document in the prompt (breaks the cacheable prefix); ignoring that the cost scales with documents times chunks per document; no review of generated context for hallucination; forgetting to re-embed and re-index BM25 after adding context; quoting a vendor dollar estimate as a price.
