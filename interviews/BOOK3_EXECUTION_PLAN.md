@@ -14,7 +14,7 @@ Per question: `### Qn stars emoji text` / `**Asked at:**` / **Say this first (1 
 | Part | Topic | Target | Wave A | Wave B | Wave C |
 |---|---|---|---|---|---|
 | 1 | SELECT, filtering, aggregation, GROUP BY/HAVING | 45 | ✅ (45 Qs) | ✅ | ✅ |
-| 2 | Joins (all types, self, anti/semi) | 45 | ⬜ | ⬜ | ⬜ |
+| 2 | Joins (all types, self, anti/semi) | 45 | ✅ (45 Qs) | ⬜ | ⬜ |
 | 3 | Subqueries, CTEs | 40 | ⬜ | ⬜ | ⬜ |
 | 4 | Window functions: ranking, top-N per group | 50 | ⬜ | ⬜ | ⬜ |
 | 5 | Window functions: running totals, LAG/LEAD, moving avg | 45 | ⬜ | ⬜ | ⬜ |
