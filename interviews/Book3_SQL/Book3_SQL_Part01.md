@@ -1,0 +1,192 @@
+# Book 3 — Part 1: SELECT, filtering, aggregation, GROUP BY and HAVING (SQL with pandas equivalents)
+
+**Topic:** SELECT and column expressions, aliases, DISTINCT, WHERE with AND/OR/IN/BETWEEN/LIKE, NULL logic (IS NULL, three-valued logic, the NOT IN trap, COALESCE, NULLIF), ORDER BY with NULLs and ties, LIMIT/OFFSET and top-N basics, CASE WHEN and conditional aggregation, aggregates with NULLs, GROUP BY (multiple columns, expressions, ordinals), HAVING vs WHERE, order of execution, duplicates and data-quality checks, percentage of total with a scalar subquery, and the pandas counterparts (boolean masks, groupby and named aggregation, isna, value_counts, query, nunique, as_index, observed, dropna)
+**Target:** 45  |  **Actual:** 45 (⭐⭐⭐ 18, ⭐⭐ 17, ⭐ 10)  |  **Date:** 2026-10-24  |  **Status:** Questions frozen (Wave A); answers pending (Wave B)
+
+Scope note: this part stops before joins (Part 2), subqueries and CTEs (Part 3: only a scalar subquery and NOT IN/NOT EXISTS appear here), and window functions (Parts 4 and 5: 'second highest salary', top-N per group and running totals are deliberately absent). Pivot and string depth belong to Part 10 and indexes to Part 11. Every query question states its tables and columns so Wave B can build small sample data; answers must run on SQLite 3.45 and compare with pandas 3.0.x, and anything engine-specific (ILIKE, DATE_TRUNC, ROLLUP, PERCENTILE_CONT, FILTER outside SQLite and PostgreSQL, NULL sort order elsewhere) is shown as hedged text labelled 'not executed'.
+
+Verification notes for Wave B: the pandas groupby defaults (as_index=True, dropna=True, sort=True, observed=True since 3.0.0) and the notna/isna, size() vs count() and head/nlargest equivalents were read on the pandas documentation pages; the PostgreSQL NULL ordering rule (NULLs sort as if larger than any value: last for ASC, first for DESC) was read on the PostgreSQL docs. Everything else about other engines (MySQL, SQL Server, Oracle, BigQuery, Snowflake) comes from general knowledge or search snippets and must be hedged or re-checked.
+
+Evidence limits: no candidate-reported SQL questions were found; the search returned prep guides, question banks and documentation. The 'Asked at' tags are source types, and 'expert gap-check' marks questions chosen from practice. Star ratings blend how often a topic appears across guides with judgement. See research_notes/Book3_Part01_sources.md for which pages were opened.
+
+---
+
+### Q1 ⭐⭐⭐ 🟢 Why is SELECT * risky in production queries and interviews? Cover column order and schema changes, extra I/O and network, breaking views and joins with duplicate column names, covering indexes, and when SELECT * is fine (ad hoc exploration with LIMIT). What is the pandas habit that has the same risk (reading every column with read_sql or read_csv instead of usecols)?
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q2 ⭐⭐⭐ 🟢 Explain the logical order of execution of a SELECT statement (FROM, WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, LIMIT/OFFSET). Using orders(order_id, customer_id, amount, status, created_at), explain why 'SELECT amount*1.18 AS gross FROM orders WHERE gross > 500' fails in most engines but 'ORDER BY gross' works, and which engines let you reuse an alias in GROUP BY or HAVING (state this as hedged dialect behaviour).
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q3 ⭐⭐⭐ 🟢 What is the difference between WHERE and HAVING? Using orders(order_id, customer_id, amount, status, created_at), write a query for customers whose completed orders total more than 1,000, and show where the status filter and the total filter each belong. Can a non-aggregate condition go in HAVING, and should it? Give the pandas equivalent (boolean mask before groupby, filter on the aggregated frame after).
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q4 ⭐⭐⭐ 🟢 Explain COUNT(*), COUNT(column), COUNT(DISTINCT column) and SUM/AVG/MIN/MAX with NULLs. Given employees(emp_id, dept, salary, bonus) where bonus is NULL for some people, show what each returns and what AVG(bonus) means versus AVG(COALESCE(bonus,0)). Map to pandas: size() vs count() vs nunique(), and mean() skipping NaN.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q5 ⭐⭐⭐ 🟢 How does NULL behave in comparisons? Explain three-valued logic (TRUE, FALSE, UNKNOWN) with the AND, OR and NOT truth tables, why 'WHERE col = NULL' returns nothing, why 'WHERE status <> ''cancelled''' silently drops rows where status is NULL, and how IS NULL, IS NOT NULL and COALESCE fix it. Contrast with pandas, where NaN != NaN is True and df[df.col != 'x'] keeps NaN rows.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q6 ⭐⭐⭐ 🟢 What do COALESCE and NULLIF do, and when would you use each? Using payments(payment_id, amount, discount, units) show: replacing NULL discount with 0 in a sum, avoiding divide-by-zero in amount/units with NULLIF, and why COALESCE(a,b,c) differs from a CASE expression only in how it is written. Mention IFNULL, NVL and ISNULL as dialect names (hedged) and the pandas counterparts fillna and where.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q7 ⭐⭐⭐ 🟢 Classic interview question: find duplicate emails. Given users(user_id, email, created_at), list each email that appears more than once with its count, then write a DELETE that keeps the lowest user_id per email, and explain why email casing and trailing spaces can hide duplicates. Show pandas duplicated(keep=False), drop_duplicates and groupby().size(). (Window-function dedup is Part 4.)
+**Asked at:** public LeetCode-style problem bank (SQL 50 style problems), not a candidate report; analyst and data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q8 ⭐⭐⭐ 🟡 AND/OR precedence and the filters IN, BETWEEN and LIKE. Given products(product_id, category, price, name), explain why 'WHERE category = ''toys'' OR category = ''games'' AND price > 500' does not mean what people expect, how BETWEEN treats its endpoints (inclusive), how IN differs from chained ORs with NULL, and how LIKE wildcards (% and _) work including a literal percent with ESCAPE. Give the pandas versions (parentheses with &, |, isin, between, str.contains with regex=False).
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q9 ⭐⭐⭐ 🟡 Scenario: orders(order_id, customer_id, amount, status, created_at). Write a query for revenue and order count per month and per status for completed and shipped orders in one calendar year, sorted by month then revenue descending. Show grouping by two columns and by an expression, GROUP BY with an alias or ordinal (and why that is not portable), and the pandas groupby with named aggregation and as_index=False. Hedge the date-truncation dialects (strftime, DATE_TRUNC, DATE_FORMAT, FORMAT_DATE).
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q10 ⭐⭐⭐ 🟡 Conditional aggregation: orders(order_id, customer_id, amount, status, created_at) with status in completed, cancelled, refunded. In one pass per customer, return total orders, completed orders, cancelled orders, cancel rate as a percentage and revenue from completed orders only, using SUM(CASE WHEN ...) and COUNT(CASE WHEN ...). Explain why COUNT(CASE WHEN ... THEN 1 ELSE 0 END) is a bug, and the integer-division trap in the rate. Show the pandas version with agg and boolean sums.
+**Asked at:** interview-prep guide and platform question bank (StrataScratch, DataLemur style), not a candidate report; product-company data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q11 ⭐⭐⭐ 🟡 Find all customers who placed more than 2 orders in 2025 and show their order count and average order value. Using orders(order_id, customer_id, amount, status, created_at), put each condition in the right clause (year filter, count threshold), explain what changes if cancelled orders must be excluded, and show the pandas version with groupby().agg() then a boolean filter or query(). Mention COUNT(*) vs COUNT(DISTINCT order_id) when the table can hold duplicate rows.
+**Asked at:** public LeetCode-style problem bank (SQL 50 style problems), not a candidate report; analyst and data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q12 ⭐⭐⭐ 🟡 Top-N basics: from orders(order_id, customer_id, amount, status, created_at), return the top 3 customers by total completed revenue. Explain ORDER BY ... DESC LIMIT 3, why a tie at rank 3 makes the answer ambiguous, how to make the result deterministic with a tie-breaker column, what 'LIMIT without ORDER BY' guarantees (nothing), and how TOP (SQL Server) and FETCH FIRST differ (hedged). Pandas: sort_values, head, nlargest and its keep parameter. (Ranking with ties via window functions is Part 4.)
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q13 ⭐⭐⭐ 🟡 NOT IN with NULL: customers(customer_id, name) and orders(order_id, customer_id) where orders.customer_id can be NULL for guest checkouts. Write 'customers who have never ordered' with NOT IN and show it returns zero rows when the subquery contains a NULL; explain it with three-valued logic and fix it with NOT EXISTS or a NOT NULL filter in the subquery. (Subqueries are Part 3 and anti-joins Part 2; the point here is the NULL trap.) Show the pandas ~isin result, and what pandas does with NaN in isin.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q14 ⭐⭐⭐ 🟡 ORDER BY with NULLs and ties: employees(emp_id, name, dept, salary) where salary can be NULL. Where do NULLs sort in ascending and descending order in PostgreSQL, MySQL, SQLite, SQL Server and Oracle (state as hedged dialect behaviour; check the engine docs) and how do you force NULLS LAST portably with a CASE or an IS NULL sort key? Explain multi-column ORDER BY, sorting by an expression or ordinal, and why ties make output order non-deterministic. Show pandas sort_values with na_position and a stable sort.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q15 ⭐⭐⭐ 🟡 Translate SQL to pandas. SQL: SELECT dept, COUNT(*) AS n, AVG(salary) AS avg_sal FROM employees WHERE salary IS NOT NULL AND hired >= '2020-01-01' GROUP BY dept HAVING COUNT(*) >= 3 ORDER BY avg_sal DESC LIMIT 5, on employees(emp_id, name, dept, salary, hired). Write the pandas with boolean masks, groupby with named aggregation, query() and sort_values().head(5); explain as_index, reset_index, and how to assert the two results match (same rows, order, dtypes).
+**Asked at:** pandas documentation (Comparison with SQL) and prep guides, not a candidate report; analyst and data scientist rounds that mix SQL and pandas
+<!-- ANSWER_PENDING -->
+
+### Q16 ⭐⭐⭐ 🟡 SQL vs pandas NULL differences in grouping and aggregation. Given orders(order_id, region, amount) where region and amount have NULLs, show what SQL GROUP BY region returns (NULLs form one group) versus pandas groupby('region') (NaN keys dropped unless dropna=False), SUM of an all-NULL group (NULL in SQL, 0 in pandas unless min_count=1), AVG vs mean skipping missing values, COUNT(col) vs count(), and how to make pandas match SQL.
+**Asked at:** pandas documentation (Comparison with SQL) and prep guides, not a candidate report; analyst and data scientist rounds that mix SQL and pandas
+<!-- ANSWER_PENDING -->
+
+### Q17 ⭐⭐⭐ 🟡 Debugging: 'This query returns the wrong totals.' A teammate computes revenue per customer from orders(order_id, customer_id, amount, status) with SELECT customer_id, SUM(DISTINCT amount) ... and gets lower totals for some customers; another version filters status in HAVING and fails. Explain what SUM(DISTINCT) does, why two equal-amount orders vanish, when DISTINCT in an aggregate is legitimate, and give the corrected query plus a pandas check that exposes the bug.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q18 ⭐⭐⭐ 🟡 Debugging: this query errors in PostgreSQL but runs in some MySQL setups: SELECT customer_id, status, SUM(amount) FROM orders GROUP BY customer_id. Explain the rule that every non-aggregated SELECT column must be in GROUP BY (or functionally dependent on it), what MySQL ONLY_FULL_GROUP_BY and SQLite bare columns do instead (hedged), why silent arbitrary values are dangerous, and how to fix it correctly for each intended meaning (group by status too, or aggregate it).
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q19 ⭐⭐ 🟢 What is the difference between SELECT DISTINCT and GROUP BY? Using orders(order_id, customer_id, status, city), show DISTINCT on one and on several columns, how NULLs are treated (collapsed to one value), COUNT(DISTINCT customer_id) versus COUNT(DISTINCT customer_id, city) (multi-column count is not portable; hedge), and when GROUP BY is needed because you also aggregate. Pandas: drop_duplicates, unique, nunique and groupby.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q20 ⭐⭐ 🟢 Column expressions and aliases: given order_items(item_id, order_id, qty, unit_price, discount_pct), write a SELECT with a computed line_total, a rounded value, and a text label built by concatenation (|| versus CONCAT, hedged). Explain alias scope, quoting aliases with spaces, integer division (qty/2 when both are integers) and implicit casting, and how the same is written in pandas with assign and round.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q21 ⭐⭐ 🟢 String filtering basics: customers(customer_id, name, email, city). Write filters for names starting with 'A', emails ending in '@gmail.com', cities in a list, case-insensitive match (ILIKE, LOWER, COLLATE, hedged), and a name containing a literal underscore. Explain why a leading wildcard usually prevents index use (light note; Part 11 has indexes) and the pandas str.startswith, str.contains(case=False, regex=False) and na handling.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q22 ⭐⭐ 🟡 LIMIT and OFFSET for pagination: orders(order_id, created_at, amount). Show page 3 with 10 rows per page, why OFFSET gets slower on deep pages, why pages can overlap or skip rows if the sort key has ties or rows are inserted between requests, and the keyset (seek) alternative with WHERE (created_at, order_id) < (...) (row-value syntax is not available everywhere; hedge). Pandas: iloc slicing and head/tail, nlargest with offset from the pandas docs.
+**Asked at:** interview-prep guide and platform question bank (StrataScratch, DataLemur style), not a candidate report; product-company data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q23 ⭐⭐ 🟡 GROUP BY ordinals and aliases, and ORDER BY ordinals: write 'SELECT status, COUNT(*) FROM orders GROUP BY 1 ORDER BY 2 DESC' and explain what the numbers mean, which dialects accept aliases in GROUP BY (hedged), why ordinals are fragile when the SELECT list changes, and the style used in team code. Include the pandas equivalent value_counts() and groupby().size().sort_values().
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q24 ⭐⭐ 🟡 Group by a CASE bucket: orders(order_id, customer_id, amount). Bucket orders into 'small' (< 500), 'medium' (500 to 1,999) and 'large' (2,000 or more), count orders and total revenue per bucket, and handle NULL amounts explicitly. Explain why you repeat or wrap the CASE (alias in GROUP BY is not portable), how an empty bucket disappears from the output and how you would show it, and the pandas pd.cut with right=False and observed.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q25 ⭐⭐ 🟡 HAVING with several conditions and without GROUP BY: products(product_id, category, price, stock). Return categories with at least 5 products and average price above 1,000, plus the maximum price; then write a query that returns one row only if the whole table has more than 100 products (HAVING without GROUP BY, hedged by dialect). Explain which conditions can go in WHERE for speed, and show the pandas filter after groupby.agg.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q26 ⭐⭐ 🟡 Percentage of total with a scalar subquery: orders(order_id, region, amount). Return each region's revenue and its share of total revenue, rounded to 2 decimals, using (SELECT SUM(amount) FROM orders) as a scalar subquery (subqueries are Part 3; keep it light), explain the integer-division and NULL traps, what happens when a region has NULL amounts, and the pandas version with transform or division by the sum. Note that window functions solve this in Part 5.
+**Asked at:** interview-prep guide and platform question bank (StrataScratch, DataLemur style), not a candidate report; product-company data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q27 ⭐⭐ 🟡 Simple data-quality checks. For a table customers(customer_id, email, phone, signup_date, city) write queries for: total rows, distinct customer_id (is it really a key?), NULL count and NULL percentage per column, empty strings that should be NULL, min and max signup_date to spot impossible dates, and rows with duplicate emails. Show the pandas equivalents (isna().mean(), nunique, duplicated, describe) and say which checks you would automate.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q28 ⭐⭐ 🟡 Users with several kinds of rows: submissions(user_id, type, created_at) with types such as 'refinance', 'in_school', 'mortgage'. Return users who have both 'refinance' and 'in_school' submissions using GROUP BY and HAVING COUNT(DISTINCT type) = 2 (and a SUM(CASE ...) alternative); explain why WHERE type = 'a' AND type = 'b' returns nothing, and how this changes if one type appears twice for a user. Pandas: groupby with nunique or isin then filter.
+**Asked at:** interview-prep guide and platform question bank (StrataScratch, DataLemur style), not a candidate report; product-company data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q29 ⭐⭐ 🟡 AVG pitfalls: employees(emp_id, dept, salary, bonus). Explain integer AVG truncation in some engines (cast to decimal), NULLs skewing or excluding averages, average of group averages versus overall average (weighted by group size), and AVG(DISTINCT). Give a small numeric example where an average of department averages differs from the company average, and the pandas groupby().mean() versus weighted np.average.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q30 ⭐⭐ 🟡 Date filtering without date functions heavy lifting: orders(order_id, amount, created_at) where created_at is a timestamp. Explain why 'created_at BETWEEN ''2025-01-01'' AND ''2025-01-31''' misses most of 31 January, why the half-open range >= start AND < next_start is safer, how timestamps stored as text sort in SQLite (ISO 8601 strings sort correctly), and the time-zone hazard for 'today' (hedged by engine). Pandas: boolean mask on datetime64 and between(inclusive=...).
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q31 ⭐⭐ 🟡 pandas groupby output shape versus SQL: for orders(region, status, amount) explain as_index=True versus as_index=False, reset_index, sort=True (groups are sorted by default, SQL gives no order without ORDER BY), named aggregation syntax agg(total=('amount','sum'), n=('amount','size')), multiple aggregations per column producing MultiIndex columns, and how to flatten them to a SQL-like table.
+**Asked at:** pandas documentation (Comparison with SQL) and prep guides, not a candidate report; analyst and data scientist rounds that mix SQL and pandas
+<!-- ANSWER_PENDING -->
+
+### Q32 ⭐⭐ 🟡 pandas boolean-mask traps against SQL WHERE: explain why df[df.a > 1 and df.b < 5] raises an error, the need for parentheses and & | ~, how NaN behaves in comparisons (False) versus NULL in SQL (UNKNOWN), isin with NaN, between() being inclusive by default, query() with @variable, and chained-assignment and copy-on-write behaviour when you filter then assign (pandas 3). Give a SQL query and the matching mask.
+**Asked at:** pandas documentation (Comparison with SQL) and prep guides, not a candidate report; analyst and data scientist rounds that mix SQL and pandas
+<!-- ANSWER_PENDING -->
+
+### Q33 ⭐⭐ 🟡 Aggregates over an empty set: what do COUNT(*), COUNT(col), SUM, AVG and MAX return when no rows match; why a query with aggregates and no GROUP BY always returns one row while the same query with GROUP BY returns zero rows; how COALESCE(SUM(x),0) fixes a report. Using orders(order_id, customer_id, amount), show the result for a customer with no orders, and compare with pandas sum of an empty Series (0), mean (NaN) and max (NaN).
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q34 ⭐⭐ 🟡 Three ways to count a condition: for orders(order_id, status) count cancelled orders per day with COUNT(CASE WHEN ...), SUM(CASE WHEN ... THEN 1 ELSE 0 END) and the FILTER (WHERE ...) clause (supported in SQLite and PostgreSQL; hedge other engines such as MySQL, which lacks FILTER). Explain which one ignores NULL status and why, and the pandas (status == 'cancelled').sum() and groupby().apply alternatives.
+**Asked at:** interview-prep guide and platform question bank (StrataScratch, DataLemur style), not a candidate report; product-company data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q35 ⭐⭐ 🟡 Frequency table of a column: for orders(order_id, status, amount) return each status with its order count and percentage of all orders, most frequent first, keeping NULL status as its own row. Explain GROUP BY plus COUNT(*), the ordering tie-break, and the pandas value_counts(dropna=False, normalize=True) versus groupby().size(), including why value_counts drops NaN by default and how a percentage that must sum to 100 is checked.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q36 ⭐ 🟡 ROLLUP, CUBE and GROUPING SETS: for sales(region, product, amount) explain what each produces (subtotals and grand total), how GROUPING() tells a real NULL from a subtotal NULL, and emulate ROLLUP with UNION ALL because SQLite lacks it (label the native syntax 'not executed'; support differs in MySQL WITH ROLLUP, PostgreSQL, SQL Server, BigQuery, Snowflake, hedged). Show a pandas version with groupby plus concat, or pivot_table(margins=True).
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q37 ⭐ 🔴 Dialect trap: bare columns in aggregate queries. In SQLite, SELECT name, MAX(salary) FROM employees returns the name from the max row (a documented special case), MySQL without ONLY_FULL_GROUP_BY returns an arbitrary row, and PostgreSQL errors. Explain this on employees(emp_id, name, dept, salary), what happens on ties, why you should not rely on it, and a portable rewrite. Say what you verified by running SQLite versus what is hedged text.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q38 ⭐ 🔴 Median and percentile without window functions: employees(emp_id, dept, salary). Explain why AVG and median differ for skewed pay, how PERCENTILE_CONT / PERCENTILE_DISC / MEDIAN exist in some engines but not SQLite (hedged), and emulate the median in SQLite with ORDER BY, LIMIT and OFFSET (odd and even counts, NULLs removed first). Show pandas median(), quantile(interpolation=...) and check the two agree.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q39 ⭐ 🔴 Case, whitespace and collation in filters and grouping: status values 'Completed', 'completed ', 'COMPLETED' in orders(order_id, status). Explain what GROUP BY and DISTINCT do (separate groups), how collation changes equality (case-sensitive in PostgreSQL by default, case-insensitive in MySQL's default collation, BINARY and NOCASE in SQLite; hedged), cleaning with LOWER and TRIM, and the pandas str.strip().str.lower() with value_counts.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q40 ⭐ 🔴 Money and floating point in aggregates: payments(payment_id, amount) with amounts like 0.1 and 0.2. Show why SUM over floating-point columns can print 0.30000000000000004 or give tiny differences between SQL and pandas, why money should use DECIMAL or integer paise, how ROUND behaves (half-away-from-zero versus banker's rounding in Python and pandas), and how to compare results with a tolerance in tests.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q41 ⭐ 🔴 Null-safe equality: how do you compare two nullable columns so that NULL equals NULL? Show IS DISTINCT FROM / IS NOT DISTINCT FROM (PostgreSQL and others), the SQLite 'IS' operator, MySQL's <=>, and the portable (a = b OR (a IS NULL AND b IS NULL)) form on a table changes(id, old_value, new_value) used to find rows that changed. Contrast with pandas, where NaN != NaN, and show equals() and a mask that treats NaN pairs as equal.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q42 ⭐ 🔴 Distinct users per day versus overall: events(event_id, user_id, event_date). Explain why the sum of daily COUNT(DISTINCT user_id) is not the number of distinct users over the period, show both queries, the pandas nunique per day versus overall, and why a monthly active count cannot be built by adding daily counts. (Part 8 covers DAU/MAU metrics; this is the aggregation fact behind them.)
+**Asked at:** interview-prep guide and platform question bank (StrataScratch, DataLemur style), not a candidate report; product-company data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q43 ⭐ 🔴 pandas groupby with categoricals and empty groups: orders(region as a categorical dtype, amount). Explain observed=True versus False (default True in pandas 3 per the docs), how unobserved categories appear as zero or NaN rows, how that compares with SQL, where empty groups need a LEFT JOIN to a reference table, and how sum versus count versus mean behave on an empty category. Include dropna and sort as well.
+**Asked at:** pandas documentation (Comparison with SQL) and prep guides, not a candidate report; analyst and data scientist rounds that mix SQL and pandas
+<!-- ANSWER_PENDING -->
+
+### Q44 ⭐ 🔴 CASE WHEN subtleties: explain the searched versus simple CASE forms, evaluation order (first match wins), the missing-ELSE NULL, why CASE x WHEN NULL THEN ... never matches, and how mixed result types behave (hedged by engine). Give a bug example from a status mapping on orders(order_id, status) that miscategorises NULL, and show the pandas np.select / Series.map / where equivalents with default and NaN handling.
+**Asked at:** interview-prep guide, not a candidate report; SQL screens and rounds for data analyst and data scientist roles at product companies, GCCs, IT services and startups
+<!-- ANSWER_PENDING -->
+
+### Q45 ⭐ 🔴 Mini case, messy orders table: orders(order_id, customer_id, amount, status, created_at) arrives with duplicate order_ids, NULL amounts, status spelling variants, negative amounts and future dates. Plan the profiling queries in SQL (counts, distinct, null rates, min/max, group by status) and the pandas cleaning steps, state what you would quarantine versus fix versus escalate, and how you would prove that a corrected revenue total reconciles to the source.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
