@@ -1,0 +1,10 @@
+KS fast == brute force on a check sample: OK
+no change              KS=0.025 p~0.955  PSI=0.032
+30% long-doc queries   KS=0.261 p~2.16e-24  PSI=0.432
+true bad rate -> expected judged rate (=FPR+(TPR-FPR)*q) -> simulated -> corrected (Rogan-Gladen)
+  q=0.05  expected=0.135  simulated=0.135  corrected=0.050
+  q=0.10  expected=0.170  simulated=0.166  corrected=0.095
+  q=0.15  expected=0.205  simulated=0.205  corrected=0.150
+power (one-sided z, alpha .05) to see judged-bad 10%->15% true with 200 judged traces per period: 0.23
+power (one-sided z, alpha .05) to see judged-bad 10%->15% true with 1000 judged traces per period: 0.63
+power (one-sided z, alpha .05) to see judged-bad 10%->15% true with 5000 judged traces per period: 1.00

@@ -1,0 +1,9 @@
+no_jitter    requests per 1s slot (first 12): [200, 0, 200, 0, 0, 0, 160, 0, 0, 0, 0, 0]
+             finished=160/200 in 40s, total requests sent=760
+full_jitter  requests per 1s slot (first 12): [200, 200, 84, 47, 53, 7, 7, 11, 5, 6, 1, 1]
+             finished=200/200 in 40s, total requests sent=624
+B retry-after 3s server: ('ok', 2, 3.0)
+B hopeless server      : ('gave_up_attempts', 5, 7.8)
+C breaker: calls sent to provider = 6 | short-circuited = 8 of 14 ticks
+primary parses: {'label': 'refund'}
+fallback FAILS strict json.loads -> needs its own prompt tests or a tolerant parser
