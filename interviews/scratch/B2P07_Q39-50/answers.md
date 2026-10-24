@@ -1,0 +1,613 @@
+### Q39 ⭐⭐ 🟡 How do you keep citations and provenance intact across rewriting, fusion, reranking and compression steps?
+**Asked at:** product, GCC, regulated-industry teams
+**Say this first (1 line):** I make every step pass the chunk id and the source character offsets along with the text, never the text alone, so that at the end each cited sentence can be mapped back to a document, a version and a span, and I check that mapping in code before the answer is shown.
+
+**Then explain:**
+- **The rule:** text is a payload, lineage is the identity. A chunk is `(chunk_id, doc, version, start, end)`. Offsets are absolute positions in the source document, not positions inside the chunk, so they survive re-chunking.
+- **Per step:**
+  - *Rewriting:* log the original and the rewritten queries. Rewriting changes the query, never the chunks, so it cannot break a citation, but keep the original query in the retrieval (Q48).
+  - *Fusion (RRF, Q3):* fuse by chunk id. Keep which retriever returned the id and at what rank, so you can explain why it surfaced. A text-based dedupe is fragile; id-based is exact.
+  - *Reranking:* reorder ids only. If your reranker returns text, map it back to the id immediately.
+  - *Compression:* this is where lineage usually breaks. Extractive compression (keep whole sentences) keeps a span `(start, end)` per sentence, so the mapping is exact. Abstractive compression (an LLM rewrites) produces text with no span; if you must use it, ask the model to return the source sentence ids it used and treat the rewritten text as unverifiable.
+  - *Generation:* the answer cites sentence ids (or chunk id plus span), not free-text "according to the policy".
+- **Verification before display:** for each cited sentence, re-read `doc[start:end]` from the store at the pinned version and check it equals the text in the prompt, and that the answer really contains or supports it. Anything that fails is dropped or the answer is flagged. This is the check in Part 6 Q26 (citation validity) run online. It proves the citation points at real source text; it does not prove the answer is faithful to that text (that needs an entailment check or a judge, Part 9).
+- **Lineage log per answer:** query, rewrite, ids at each stage with ranks, kept spans, document versions, model and prompt versions. It lets you debug a bad answer and answer an audit ("which paragraph of which policy version produced this?").
+- **What breaks it in production:** the source is re-ingested and offsets shift (pin a version or content hash with each span); a compressor that normalises whitespace or fixes typos; a chunk id that is not stable across re-indexing (Part 6 Q19); a cache that returns an answer cited against an old version.
+
+**Example:** a regulated-industry assistant answers "Can damaged items be refunded?" and cites `policy_v3`, characters 47 to 83. An auditor opens the stored version of `policy_v3`, reads those characters and sees "Damaged items are refunded in full." If the policy was edited later, the stored hash will not match and the answer is marked stale instead of silently pointing at the wrong text.
+
+**Code:** (executed, standalone, stdlib only; TOY word-overlap retriever and a MOCK "LLM" that just cites sentence ids; it shows the lineage mechanics, not retrieval quality)
+```python
+# Standalone, stdlib only. TOY pipeline: word-overlap "retriever", mock "LLM". Shows lineage (chunk id + char offsets) surviving every step.
+import re
+from collections import defaultdict
+
+DOCS = {"policy_v3": "Refunds are allowed within 30 days of delivery. Damaged items are refunded in full. "
+                     "Shipping fees are not refunded. Gift cards cannot be refunded.",
+        "faq_v1":    "Delivery takes 3 to 5 days in metros. Refund requests are answered within 2 days. "
+                     "Track your parcel in the app."}
+
+def chunk(doc_id, text, size=2):                      # chunk = group of `size` sentences; keep absolute char offsets in the DOCUMENT
+    sents = [(m.start(), m.end()) for m in re.finditer(r"[^.]+\.", text)]
+    out = []
+    for i in range(0, len(sents), size):
+        grp = sents[i:i + size]
+        out.append({"chunk_id": f"{doc_id}#{i // size}", "doc": doc_id, "start": grp[0][0], "end": grp[-1][1]})
+    return out
+CHUNKS = {c["chunk_id"]: c for d, t in DOCS.items() for c in chunk(d, t)}
+def ctext(c): return DOCS[c["doc"]][c["start"]:c["end"]]
+words = lambda s: set(re.findall(r"[a-z0-9]+", s.lower()))
+
+def retrieve(q, k=3):                                  # toy lexical retriever; returns (chunk_id, rank) lineage, not just text
+    sc = sorted(((len(words(q) & words(ctext(c))), cid) for cid, c in CHUNKS.items()), reverse=True)
+    return [cid for s, cid in sc[:k] if s > 0]
+def rrf(lists, k=60):                                  # fusion keeps ids; no text is copied or changed here
+    s = defaultdict(float)
+    for L in lists:
+        for r, cid in enumerate(L, 1): s[cid] += 1 / (k + r)
+    return sorted(s, key=lambda c: -s[c])
+def rerank(q, ids): return sorted(ids, key=lambda c: -len(words(q) & words(ctext(CHUNKS[c]))))
+def compress(q, ids):                                  # keep only query-relevant sentences; each keeps ABSOLUTE doc offsets
+    keep = []
+    for cid in ids:
+        c = CHUNKS[cid]
+        for m in re.finditer(r"[^.]+\.", ctext(c)):
+            a, b = c["start"] + m.start(), c["start"] + m.end()
+            if words(q) & words(DOCS[c["doc"]][a:b]):
+                keep.append({"sid": f"S{len(keep)+1}", "chunk_id": cid, "doc": c["doc"], "start": a, "end": b,
+                             "text": DOCS[c["doc"]][a:b].strip()})
+    return keep
+def mock_llm(sentences): return [(f"Per policy: {s['text']}", [s["sid"]]) for s in sentences[:2]]   # MOCK: cites sentence ids
+
+def verify(answer_sents, kept):                        # every cited sentence must equal the source span it claims
+    by = {s["sid"]: s for s in kept}; problems = []
+    for text, cites in answer_sents:
+        for sid in cites:
+            s = by.get(sid)
+            if s is None: problems.append((sid, "unknown sentence id")); continue
+            if DOCS[s["doc"]][s["start"]:s["end"]].strip() != s["text"]: problems.append((sid, "span does not match text"))
+            elif s["text"] not in text: problems.append((sid, "answer does not contain the cited sentence"))
+    return problems
+
+q, q_rewritten = "can damaged items be refunded", "refund policy damaged items"
+lists = [retrieve(q), retrieve(q_rewritten)]           # original query kept alongside the rewrite
+fused = rrf(lists); ranked = rerank(q, fused); kept = compress(q, ranked[:2]); ans = mock_llm(kept)
+lineage = {"query": q, "rewrite": q_rewritten, "retrieved": lists, "fused": fused, "reranked": ranked,
+           "kept": [(s["sid"], s["chunk_id"], s["start"], s["end"]) for s in kept]}
+print("lineage log:", lineage)
+print("answer:", ans)
+print("verify (clean):", verify(ans, kept))
+assert verify(ans, kept) == []
+
+bad = [dict(s, text=s["text"].replace("in full", "in part")) for s in kept]          # a compressor that paraphrases / edits
+ans_bad = mock_llm(bad)
+print("verify (edited compressor):", verify(ans_bad, bad))
+assert verify(ans_bad, bad) != []
+DOCS["policy_v3"] = "NEW. " + DOCS["policy_v3"]                                       # source edited after indexing: offsets drift
+print("verify (source changed after indexing):", verify(ans, kept))
+assert verify(ans, kept) != []
+```
+
+What the run printed: the lineage log lists the ids at every stage; the clean answer verifies with no problems; a compressor that edits a sentence ("in full" to "in part") is caught as `span does not match text`; and after the source is edited, both citations fail because the offsets drifted.
+
+**Follow-ups:**
+- *Why offsets and not just chunk ids?* A chunk can hold several sentences, and a cited sentence should point to the exact evidence. Offsets also survive a change of chunking strategy, if you pin the document version.
+- *What about abstractive compression?* Keep the original sentence ids next to each summary, and show the source span to the user, not the summary, as the citation.
+- *Do you verify faithfulness too?* The span check proves the quote is real. Whether the claim follows from it is a separate check (Part 9).
+
+**Common mistakes:** carrying only text through the pipeline; storing offsets relative to the chunk; deduplicating fused results by text; letting a compressor clean up whitespace or wording; not pinning a document version, so re-ingestion silently invalidates citations; thinking a valid span proves the answer is correct.
+
+### Q40 ⭐⭐ 🟡 How do you combine retrieval with structured data (SQL or API tools, tables) in a RAG assistant, and how do you choose between them?
+**Asked at:** product, GCC, enterprise teams
+**Say this first (1 line):** If the answer is a number, a filter or an aggregate over rows (totals, counts, "the latest order status"), call SQL or an API tool; if the answer is in prose (policy, how-to, reasoning), retrieve text; if it needs both, do both and compose; and any generated SQL runs through a guard, a read-only role and a row limit, because the model's SQL is untrusted input.
+
+**Then explain:**
+- **Why not just embed the table rows as text:** a vector search cannot sum, group or join. "Total delivered revenue by region" needs exact arithmetic over every row; top-k chunks give a sample and a confident wrong number. Retrieval is for the "why and how", SQL is for the "how many".
+- **Choosing and routing:**
+
+| Signal in the question | Route |
+|---|---|
+| "how many", "total", "average", "top 5", a date range, an id lookup | SQL or API tool |
+| "what is the policy", "how do I", "why", wording of a document | text retrieval (hybrid, rerank) |
+| both ("refund total this month and is that within policy?") | both, then compose |
+| unclear | ask, or default to text with a low-confidence flag |
+
+  Routing can be a rule list, a small classifier or an LLM call with a few examples. Always log the route and measure it (Q48). Wrong routes are cheap to detect: a text answer containing a made-up number, or a SQL answer to a policy question.
+- **Schema grounding:** give the model only the relevant tables and columns with short descriptions, example values and the join keys ("orders.customer_id = customers.id"), not the whole warehouse. Prefer a curated view or a semantic layer (named metrics such as `net_revenue`) over raw tables, so "revenue" means one agreed thing.
+- **Text-to-SQL risks:**
+  - *Wrong joins or wrong filters:* the query runs and returns a plausible but wrong number. In my toy, joining on the wrong key gave 400.0 instead of 520.0 with no error. Mitigate with views, a few verified example queries, showing the SQL and the row count to the user, and a golden set of questions with known answers.
+  - *Injection and destructive statements:* user text or a retrieved document can steer the model to produce `DELETE` or `DROP`. Mitigate in layers: a read-only database role (the real control), a guard that allows one `SELECT` statement only, a table allowlist, a row limit and a timeout.
+  - *Permissions:* the SQL must run as the asking user, or with row-level security, otherwise the assistant becomes a way around access control (Q47, Part 6 Q42).
+  - *Cost:* an unbounded join can hammer the warehouse; use a timeout, a limit and a read replica.
+- **Composing:** treat the SQL result as a cited source like any chunk (query text, run time, rows), put it in the prompt next to retrieved text, and tell the model to quote numbers only from the SQL result. If the two disagree (policy says 30 days, data shows a 45-day refund), surface it, do not smooth it over.
+- **API tools** follow the same logic: a typed function with validated arguments is safer than free-form SQL, so use a fixed tool (`get_order_status(order_id)`) when the question set is small.
+
+**Example:** "What was total delivered revenue by region, and do shipping fees get refunded?" The router sees an aggregate cue and a policy cue and chooses both. SQL returns north 200.0 and south 240.0; text retrieval returns "Shipping fees are not refunded." The answer states the two numbers, cites the query and the policy sentence, and does not mix them up.
+
+**Code:** (executed, standalone, stdlib `sqlite3` in memory; TOY router, TOY text store, and the "text-to-SQL" is a hand-written template standing in for an LLM; it shows the guard and the write rejection, not SQL generation quality)
+```python
+# Standalone, stdlib only (sqlite3). TOY router + TOY text store; the "text-to-SQL" step is a hand-written template, not an LLM.
+import re, sqlite3
+
+db = sqlite3.connect(":memory:")
+db.executescript("""
+CREATE TABLE customers(id INTEGER PRIMARY KEY, name TEXT, region TEXT);
+CREATE TABLE orders(id INTEGER PRIMARY KEY, customer_id INTEGER, amount REAL, status TEXT, month TEXT);
+INSERT INTO customers VALUES (1,'Asha','south'),(2,'Ravi','north'),(3,'Meera','south');
+INSERT INTO orders VALUES (1,1,120,'delivered','2026-08'),(2,1,80,'refunded','2026-09'),
+                          (3,2,200,'delivered','2026-09'),(4,3,50,'delivered','2026-09'),(5,3,70,'delivered','2026-09');
+""")
+db.commit()
+SCHEMA = {"customers": ["id", "name", "region"], "orders": ["id", "customer_id", "amount", "status", "month"]}   # schema grounding
+TEXTS = {"refund_policy": "Refunds are allowed within 30 days of delivery. Shipping fees are not refunded.",
+         "returns_faq": "To return an item, open the app and choose Return. Pickup happens in 2 days."}
+
+FORBIDDEN = re.compile(r"\b(insert|update|delete|drop|alter|create|attach|pragma|replace|vacuum)\b", re.I)
+def guard(sql):
+    s = sql.strip().rstrip(";")
+    if ";" in s: return False, "multiple statements"
+    if not re.match(r"(?is)^select\b", s): return False, "only SELECT is allowed"
+    if FORBIDDEN.search(s): return False, "forbidden keyword"
+    tables = set(re.findall(r"(?i)\b(?:from|join)\s+([a-z_]+)", s))
+    if not tables <= set(SCHEMA): return False, f"table not in allowlist: {sorted(tables - set(SCHEMA))}"
+    return True, s
+
+def run_sql(sql):
+    ok, s = guard(sql)
+    if not ok: return {"error": s}
+    conn = db
+    conn.execute("PRAGMA query_only = ON")                           # second layer: the connection itself refuses writes
+    try:
+        cur = conn.execute(s + " LIMIT 50"); return {"cols": [d[0] for d in cur.description], "rows": cur.fetchall()}
+    finally: conn.execute("PRAGMA query_only = OFF")
+
+def route(q):                                                        # toy router: numbers/aggregates -> SQL, policy wording -> text
+    ql = q.lower()
+    sql_cues = re.search(r"\b(how many|total|sum|average|count|revenue|top)\b", ql)
+    text_cues = re.search(r"\b(policy|allowed|can i|how do i|why)\b", ql)
+    if sql_cues and text_cues: return "both"
+    return "sql" if sql_cues else "text"
+
+def text_search(q):
+    w = set(re.findall(r"[a-z]+", q.lower()))
+    return max(TEXTS.items(), key=lambda kv: len(w & set(re.findall(r"[a-z]+", kv[1].lower()))))
+
+TEMPLATES = {"total revenue by region": "SELECT c.region, SUM(o.amount) AS total FROM orders o JOIN customers c ON c.id = o.customer_id "
+                                       "WHERE o.status = 'delivered' GROUP BY c.region ORDER BY c.region"}
+def answer(q):
+    r = route(q); out = {"route": r}
+    if r in ("sql", "both"): out["sql"] = run_sql(TEMPLATES.get("total revenue by region" if "revenue" in q.lower() else "", "SELECT 1 WHERE 0"))
+    if r in ("text", "both"): out["text"] = text_search(q)
+    return out
+
+for q in ["total revenue by region", "what is the refund policy for shipping fees", "total refunds allowed by policy revenue"]:
+    print(q, "->", answer(q))
+
+print("--- guard tests ---")
+for bad in ["DELETE FROM orders", "SELECT * FROM orders; DROP TABLE orders", "SELECT * FROM secrets",
+            "UPDATE orders SET amount = 0", "SELECT * FROM orders WHERE id = 1 OR 1=1; --"]:
+    print(repr(bad), "->", run_sql(bad))
+assert db.execute("SELECT COUNT(*) FROM orders").fetchone()[0] == 5      # nothing was changed
+db.execute("PRAGMA query_only = ON")
+try: db.execute("DELETE FROM orders")
+except sqlite3.OperationalError as e: print("engine-level read-only also refuses a write:", e)
+db.execute("PRAGMA query_only = OFF")
+# wrong-join symptom: joining orders to customers on the wrong key silently returns plausible but wrong totals
+wrong = db.execute("SELECT SUM(o.amount) FROM orders o JOIN customers c ON c.id = o.id").fetchone()[0]
+right = db.execute("SELECT SUM(o.amount) FROM orders o JOIN customers c ON c.id = o.customer_id").fetchone()[0]
+print("wrong join total:", wrong, "| right join total:", right)
+```
+
+What the run printed: the three routes (sql, text, both); every write or multi-statement or unknown-table attempt rejected by the guard with a reason; the row count unchanged at 5; the engine-level read-only switch also refusing a delete (SQLite's `query_only`; in production use a database role with SELECT rights only); and the wrong join giving 400.0 against the right 520.0. The keyword guard is a seatbelt, not the lock: it can be fooled by clever SQL, which is why the read-only role is the real control.
+
+**Follow-ups:**
+- *Would you let the LLM write SQL freely?* For internal analysts with a read-only role and a semantic layer, yes with review of the shown SQL; for customer-facing use, prefer fixed parameterised tools.
+- *How do you evaluate it?* A golden set of questions with known numbers, execution-accuracy (does the result match), route accuracy, and a check of every generated query against the guard (Part 9).
+- *Tables in documents (PDFs)?* Extract them into rows or keep each table as one chunk with its caption and headers; do not split a table in the middle.
+
+**Common mistakes:** embedding rows and expecting aggregates; trusting a keyword filter as the only protection; running SQL with the application's admin credentials; exposing the full schema; not showing the SQL, so a wrong join goes unnoticed; letting the model compute a sum in its head from a long result.
+
+### Q41 ⭐⭐ 🟡 Multimodal RAG basics: how do you retrieve over images, charts and slides (captions vs multimodal embeddings), and what changes in evaluation?
+**Asked at:** product, GenAI startups, enterprise teams
+**Say this first (1 line):** There are three ways to retrieve over images, charts and slides: turn them into text (captions plus OCR) and use the normal text stack, embed images and text in one shared space, or keep patch-level vectors of the page image and score them late-interaction style. I start with captions plus OCR because it is cheap and reuses everything, and move to image-aware retrieval only where the golden set shows visual detail is being lost.
+
+**Then explain:**
+
+| Approach | How it works | Strength | Weakness |
+|---|---|---|---|
+| Caption + OCR text | A vision model writes a caption, OCR pulls text out, you index the text with BM25 and dense (hybrid) | Simple, explainable, reuses the whole text pipeline | Loses what the caption does not mention (trend direction, colour, layout); OCR errors break exact matches; caption cost at index time |
+| Joint-space embeddings (CLIP-style) | One model embeds images and text into the same vector space, so a text query is compared directly with image vectors | Handles visual concepts; no caption needed | Coarse for fine detail, charts and small text; the text-image space may be weak on your domain. From memory, not verified |
+| Late interaction over page images (ColPali-style) | A vision-language model produces many patch vectors per page image; the query's token vectors are matched with MaxSim (Q6, Q50) | Works on the page as a picture, skipping OCR and layout parsing; good for slides and scanned PDFs | Heavy storage and compute, newer tooling. From memory, not verified |
+
+- **Practical default:** caption plus OCR plus the surrounding text (slide title, figure caption in the document, alt text), indexed together. Keep a pointer to the image so the answering model can look at the real image, if you use a vision-capable model, instead of trusting only the caption.
+- **What changes in evaluation:**
+  - Relevance is judged on the image or page (the right slide, the right chart), so the golden set needs image or page ids as labels.
+  - Split the questions: text inside the image (OCR territory), visual attributes (trend, colour, layout), and chart reading (needs the numbers, which a caption rarely holds).
+  - Measure OCR quality directly (character or word error rate on a sample), because a retrieval miss can be an OCR miss.
+  - The generator needs checking too: does the answer match the chart? A caption that says "sales" while the chart shows a decline invites a confident wrong answer.
+- **Costs:** captioning every image with a vision model is an index-time cost; image-patch vectors are a storage cost; both grow with corpus size. Decide per content type (a photo library and a deck of financial charts are different problems).
+
+**Example:** a finance team asks "Which slide shows sales falling in Q4?" Two slides have the identical caption "a line chart of sales", one rising and one falling. Caption text cannot separate them; the OCR text on both reads "Sales 2024 Q1 Q2 Q3 Q4". Only something that sees the picture (an image-feature match, or a vision model reading the chart) can. The fix is not a bigger text embedder.
+
+**Code:** (executed, standalone, numpy; TOY. Captions, OCR strings and "image features" are written by hand, and the word-to-feature lexicon stands in for a joint encoder. It shows why caption-only retrieval fails on visual attributes and why OCR errors matter. It cannot show how real CLIP-style or ColPali-style models behave, and the "combined" 100 percent is by construction of a hand-made toy, not evidence of a method)
+```python
+# Standalone, numpy only. TOY: hand-made captions, hand-made OCR strings and hand-made "image feature" vectors.
+# The word->feature lexicon is a stand-in for a joint text-image encoder. It says NOTHING about real CLIP-style or ColPali-style quality.
+import re, numpy as np
+FEATS = ["line_down", "line_up", "pie", "bar", "red", "blue", "table", "photo"]
+#  id: (caption written by a captioner (generic), OCR text (with errors), true visual features)
+ITEMS = {
+ "i1": ("a line chart of sales",            "Sales 2024 Q1 Q2 Q3 Q4",        {"line_down": 1, "red": 1}),
+ "i2": ("a line chart of sales",            "Sales 2024 Q1 Q2 Q3 Q4",        {"line_up": 1, "blue": 1}),
+ "i3": ("a pie chart of market share",      "Market sh@re Acme 61% Other 39%", {"pie": 1, "red": 1}),
+ "i4": ("a bar chart of costs",             "Cost by dept. Opex 4.2 Capex 1.1", {"bar": 1, "blue": 1}),
+ "i5": ("a table of prices",                "Plan Price Basic 499 Pro 999",  {"table": 1}),
+ "i6": ("a photo of a warehouse",           "",                              {"photo": 1}),
+ "i7": ("a pie chart of cost split",        "Cost split R&D 30% Ops 70%",    {"pie": 1, "blue": 1}),
+ "i8": ("a table of sales by region",       "Region Sales South 240 North 200", {"table": 1}),
+}
+LEX = {"falling": {"line_down": 1}, "declining": {"line_down": 1}, "rising": {"line_up": 1}, "growing": {"line_up": 1},
+       "pie": {"pie": 1}, "bar": {"bar": 1}, "red": {"red": 1}, "blue": {"blue": 1}, "table": {"table": 1}, "photo": {"photo": 1}}
+vec = lambda d: np.array([d.get(f, 0.0) for f in FEATS], float)
+IMG = {k: vec(v[2]) for k, v in ITEMS.items()}
+words = lambda s: set(re.findall(r"[a-z0-9]+", s.lower()))
+def qfeat(q):
+    d = {}
+    for w in words(q): d.update(LEX.get(w, {}))
+    return vec(d)
+
+# (query, set of relevant image ids)
+QUERIES = [("pie chart of market share", {"i3"}),               # text-answerable (caption has it)
+           ("table of prices", {"i5"}),                          # text-answerable
+           ("falling sales line chart", {"i1"}),                 # needs visual detail: caption cannot tell i1 from i2
+           ("rising sales line chart", {"i2"}),
+           ("red pie chart", {"i3"}),                            # colour is not in captions
+           ("blue pie chart", {"i7"}),
+           ("Acme 61% share", {"i3"}),                           # text inside the image (OCR territory)
+           ("Opex 4.2", {"i4"})]
+
+def s_caption(q, i): return len(words(q) & words(ITEMS[i][0]))
+def s_ocr(q, i): return len(words(q) & words(ITEMS[i][1]))
+def s_feat(q, i):
+    a, b = qfeat(q), IMG[i]; n = np.linalg.norm(a) * np.linalg.norm(b); return float(a @ b / n) if n else 0.0
+def s_cap_ocr(q, i): return s_caption(q, i) + s_ocr(q, i)
+def s_combo(q, i): return s_cap_ocr(q, i) + 2 * s_feat(q, i)
+
+def hit1(score):                                      # strict top-1: the relevant image must beat every other; a tie counts as a MISS
+    h = []
+    for q, rel in QUERIES:
+        ranked = sorted(ITEMS, key=lambda i: (-score(q, i), i)); h.append(ranked[0] in rel and score(q, ranked[0]) > score(q, ranked[1]))
+    return h
+print(f"{'query':28s}" + "".join(f"{n:>10s}" for n in ["caption", "cap+ocr", "feature", "combined"]))
+res = {n: hit1(f) for n, f in [("caption", s_caption), ("cap+ocr", s_cap_ocr), ("feature", s_feat), ("combined", s_combo)]}
+for k, (q, _) in enumerate(QUERIES): print(f"{q:28s}" + "".join(f"{('ok' if res[n][k] else 'MISS'):>10s}" for n in res))
+print("top-1 hit rate:", {n: round(float(np.mean(h)), 2) for n, h in res.items()})
+
+# OCR noise: one wrong character breaks an exact-token match
+noisy = "Market sh@re Acme 61% Other 39%"
+print("OCR token 'share' found in noisy OCR:", "share" in words(noisy), "| in clean text:", "share" in words("Market share Acme 61%"))
+```
+
+What the run printed (strict top-1, ties count as misses): caption-only 0.38, caption plus OCR 0.5, features-only 0.5 (it misses the pure text queries), combined 1.0. The lesson is the pattern of misses, not the numbers: captions miss trend and colour, features miss text inside the image, and one OCR character (`sh@re`) breaks a token match.
+
+**Follow-ups:**
+- *When is caption-only enough?* When questions are about topics the caption can name ("the warehouse photo") and visual detail rarely decides the answer.
+- *Chart questions that need numbers?* Extract the chart data into a table (a vision model or a chart-to-table step) and answer from the table (Q40); a caption cannot hold the values.
+- *How would you pick between the three?* Run all on a 100-image golden set from real questions and compare hit rate, index cost and storage.
+
+**Common mistakes:** treating the caption as the image; ignoring OCR errors; evaluating only on text-answerable queries; indexing slides as images without the slide title and notes text that is already available; assuming a joint-space model is good on charts and small text without testing on your own images.
+
+### Q42 ⭐ 🟡 AI code review: this LLM-written hybrid-plus-rerank pipeline has bugs (RRF rank off by one, mixed score scales, reranking the wrong list, duplicates after fusion, dropping the original query). Find and fix them.
+**Asked at:** product, big tech, AI-era code-review rounds
+**Say this first (1 line):** I review this pipeline with a checklist: RRF ranks start at 1, scores from different retrievers are normalised or fused by rank (never added raw), the reranker gets the fused list sorted high to low and with enough candidates, ids are deduplicated before and after fusion, and the original query is always searched next to any rewrite. Then I prove each bug on a tiny corpus by its symptom and add a test.
+
+**Then explain:**
+
+| # | Bug in the LLM-written code | Symptom in my toy run |
+|---|---|---|
+| 1 | `enumerate(L)` starts at 0, so the rank-1 item scores `1/k` | With `k=1` the winner flips (A over B); with `k=0` it crashes with `ZeroDivisionError`. With the usual `k=60` the distortion is small but systematic |
+| 2 | Raw BM25 plus cosine added together | BM25 maxed at 2.89, cosine at 0.39, so the "50/50" mix returned exactly the BM25 top 3, ignoring the dense side; the gold doc (a declined card) was second instead of first. Min-max normalising first fixed it |
+| 3 | Reranks the BM25 list instead of the fused list, truncates it to 3, and sorts ascending | The buggy output was `['d4','d8']`: gold `d8` came last (worst first), and `d6`, which only the fused list had, was dropped; the fixed output led with `d8` |
+| 4 | The same id appears twice in a list (two query variants or overlapping chunks) and is counted twice | A mid-quality doc that appeared twice beat the doc ranked first elsewhere; the final context also held the same text twice |
+| 5 | The rewriter output replaces the user's query | Query `ERR-4021` rewritten to a fluent paraphrase returned nothing; the exact identifier was gone. Original plus rewrite found it first |
+
+- **Fixes:** rank from 1 with `enumerate(..., 1)`; normalise (min-max or z-score) per retriever before a weighted sum, or fuse by rank with RRF and skip scores (Q3, Q4); rerank the fused, deduplicated list of about 50 candidates, sort descending, break ties by the fused rank (Q5); deduplicate by chunk id inside each list (keep the best rank) and again on the final list; run the original query and the rewrite and fuse them (Q7, Q48).
+- **How I review LLM-written retrieval code:** I do not trust that it runs. A wrong ranking still returns plausible results. So I check on a toy corpus with known answers: print the scores' ranges, print the lists before and after each stage, assert gold is in the candidates, assert no duplicates, and test each edge (empty list, k, tie).
+- **A hedge:** these are the bugs I would expect to find, not a statistic about how often LLM-written code has them. My toy uses a from-scratch BM25, a hashed bag-of-words "dense" vector with a tiny synonym table (so that dense and BM25 can disagree), and a mock reranker. It shows the mechanism, not real model behaviour.
+
+**Example:** on a support site a teammate's generated pipeline passed the demo queries. Two weeks later the query `ERR-4021` found nothing: the rewriter had turned it into "what does this failure mean" and the original was dropped. The gold doc was only reachable by the exact identifier. The fix was a one-line change to search both and fuse, plus a test with an identifier query.
+
+**Code:** (executed, standalone, numpy plus stdlib; TOY corpus, from-scratch BM25, TOY hashed dense vectors, MOCK reranker; every bug is printed in isolation, then the fixed version is asserted)
+```python
+# Standalone, numpy + stdlib. TOY corpus, from-scratch BM25, TOY hashed dense vectors, MOCK reranker. Each bug is run in isolation, then fixed and tested.
+import math, re, zlib, numpy as np
+DOCS = {"d1": "error code ERR-4021 means payment gateway timeout retry later",
+        "d2": "payment failed troubleshooting guide for card declined and timeout",
+        "d3": "refund policy damaged items within thirty days",
+        "d4": "how to reset your password on the mobile app",
+        "d5": "gateway timeout settings and retry policy for payments api",
+        "d6": "shipping carriers and delivery times",
+        "d7": "card declined reasons issuer bank",
+        "d8": "app login problems and password reset email not arriving"}
+tok = lambda s: re.findall(r"[a-z0-9]+", s.lower())
+N = len(DOCS); AVG = np.mean([len(tok(t)) for t in DOCS.values()])
+DF = {}
+for t in DOCS.values():
+    for w in set(tok(t)): DF[w] = DF.get(w, 0) + 1
+def bm25(q, k1=1.5, b=0.75):                                   # from-scratch BM25 -> raw scores (unbounded scale)
+    out = {}
+    for d, t in DOCS.items():
+        ws = tok(t); s = 0.0
+        for w in set(tok(q)) & set(ws):
+            idf = math.log(1 + (N - DF[w] + .5) / (DF[w] + .5)); f = ws.count(w)
+            s += idf * f * (k1 + 1) / (f + k1 * (1 - b + b * len(ws) / AVG))
+        out[d] = s
+    return out
+CONCEPT = {"credentials": "CRED", "login": "CRED", "password": "CRED", "rejected": "DECL", "declined": "DECL"}   # TOY synonym table
+def dvec(t, dim=256):                                          # TOY dense: hashed bag-of-words plus a tiny synonym table, unit length
+    v = np.zeros(dim)                                          # (it is only here so dense and BM25 can disagree; no real semantics)
+    for w in tok(t):
+        for x in {w, CONCEPT.get(w, w)}: v[zlib.crc32(x.encode()) % dim] += 1
+    return v / (np.linalg.norm(v) or 1)
+DV = {d: dvec(t) for d, t in DOCS.items()}
+def dense(q): qv = dvec(q); return {d: float(DV[d] @ qv) for d in DOCS}
+ranked = lambda sc: [d for d, s in sorted(sc.items(), key=lambda x: (-x[1], x[0])) if s > 0]
+
+# ---------- BUG 1: RRF rank starts at 0 ----------
+def rrf_buggy(lists, k=60):
+    s = {}
+    for L in lists:
+        for r, d in enumerate(L): s[d] = s.get(d, 0) + 1 / (k + r)          # BUG: r starts at 0
+    return sorted(s, key=lambda d: -s[d])
+def rrf(lists, k=60):
+    s = {}
+    for L in lists:
+        for r, d in enumerate(dict.fromkeys(L), 1): s[d] = s.get(d, 0) + 1 / (k + r)   # rank from 1; duplicates inside a list ignored
+    return sorted(s, key=lambda d: (-s[d], d))
+L1, L2 = ["A", "B", "X"], ["Y", "Z", "B"]       # A: rank 1 in one list; B: rank 2 and 3
+print("BUG1 k=1 buggy:", rrf_buggy([L1, L2], k=1)[:2], "| fixed:", rrf([L1, L2], k=1)[:2])
+try: rrf_buggy([["A"]], k=0)
+except ZeroDivisionError: print("BUG1 k=0 with 0-based rank: ZeroDivisionError")
+assert rrf([L1, L2], k=1)[0] == "B" and rrf_buggy([L1, L2], k=1)[0] == "A"
+
+# ---------- BUG 2: mixing raw BM25 and dense scores ----------
+q = "rejected card for the app"
+bm, de = bm25(q), dense(q)
+print("BUG2 score ranges: bm25 max %.2f, dense max %.2f" % (max(bm.values()), max(de.values())))
+mixed = {d: 0.5 * bm[d] + 0.5 * de[d] for d in DOCS}
+print("BUG2 'alpha=0.5' mix top-3:", ranked(mixed)[:3], "| bm25 alone:", ranked(bm)[:3], "| dense alone:", ranked(de)[:3])
+def minmax(sc): lo, hi = min(sc.values()), max(sc.values()); return {d: (s - lo) / (hi - lo) if hi > lo else 0.0 for d, s in sc.items()}
+fixed = {d: 0.5 * minmax(bm)[d] + 0.5 * minmax(de)[d] for d in DOCS}
+print("FIX2 min-max normalised mix top-3:", ranked(fixed)[:3], "(gold = d2: a declined card)")
+assert ranked(mixed)[:3] == ranked(bm)[:3] and ranked(fixed)[0] == "d2"
+
+# ---------- BUG 3: reranking the wrong / truncated / unsorted list ----------
+def mock_reranker(q, d): return len(set(tok(q)) & set(tok(DOCS[d]))) + (0.5 if tok(q)[0] in tok(DOCS[d]) else 0)   # MOCK cross-encoder
+def rerank_buggy(q, bm_hits, fused, n=3):
+    cand = bm_hits[:n]                                          # BUG: reranks the BM25 list, not the fused one, and only n=3
+    return sorted(cand, key=lambda d: mock_reranker(q, d))      # BUG: ascending, worst first
+def rerank(q, fused, n=50):
+    return sorted(fused[:n], key=lambda d: (-mock_reranker(q, d), fused.index(d)))
+q = "reset password login"
+bm_hits, de_hits = ranked(bm25(q)), ranked(dense(q)); fused = rrf([bm_hits, de_hits])
+print("BUG3 gold d8; fused:", fused[:4], "| buggy rerank:", rerank_buggy(q, bm_hits, fused), "| fixed rerank:", rerank(q, fused)[:3])
+assert rerank(q, fused)[0] in ("d4", "d8") and rerank_buggy(q, bm_hits, fused)[0] != rerank(q, fused)[0]
+
+# ---------- BUG 4: duplicates after fusion counted twice ----------
+dup = ["d3", "d3", "d6"]                          # e.g. two multi-query variants returned d3; d6 is the better-placed unique hit elsewhere
+other = ["d6", "d4"]
+def fuse_buggy(lists, k=60):
+    s = {}
+    for L in lists:
+        for r, d in enumerate(L, 1): s[d] = s.get(d, 0) + 1 / (k + r)
+    return sorted(s, key=lambda d: -s[d])
+print("BUG4 buggy fused:", fuse_buggy([dup, other])[:3], "| fixed:", rrf([dup, other])[:3])
+assert fuse_buggy([dup, other])[0] == "d3" and rrf([dup, other])[0] == "d6"
+chunks = ["d1", "d1", "d2"]; assert len(set(chunks)) < len(chunks); final = list(dict.fromkeys(chunks)); assert final == ["d1", "d2"]   # dedupe the final list too
+
+# ---------- BUG 5: dropping the original query when rewriting ----------
+def rewrite(q): return "what does this failure mean"             # MOCK rewriter: fluent but loses the identifier
+def retrieve_buggy(q): return ranked(bm25(rewrite(q)))[:3]
+def retrieve(q): return rrf([ranked(bm25(q))[:10], ranked(bm25(rewrite(q)))[:10]])[:3]   # keep the ORIGINAL query alongside the rewrite
+print("BUG5 buggy (rewrite only):", retrieve_buggy("ERR-4021"), "| fixed (original + rewrite):", retrieve("ERR-4021"))
+assert "d1" not in retrieve_buggy("ERR-4021") and retrieve("ERR-4021")[0] == "d1"
+print("all checks passed")
+```
+
+**Follow-ups:**
+- *Is rank-from-0 really a problem at k=60?* The effect is small there, but it is still a bug, it breaks at `k=0`, and it matters more when k is small or lists are short. Fix it and move on.
+- *Why not just add the scores with a weight?* The weight is meaningless unless both sides are on comparable scales; if you need weights, normalise first and tune alpha on a golden set (Q4).
+- *What test would have caught all five?* A small golden set that includes an identifier query, a synonym query and a duplicate-producing query, run in CI with asserts on candidates, ranks and duplicates.
+
+**Common mistakes:** approving because the demo query worked; reading only the diff and not running the stages separately; tuning alpha on raw scores; reranking only the first 3 candidates; forgetting that the reranker needs the full candidate list; "improving" the query and discarding the original.
+
+### Q43 ⭐ 🔴 Design question: an enterprise assistant that must answer multi-hop analytical questions over many documents, with an agent loop, budgets and fallbacks.
+**Asked at:** senior roles at product companies, GCCs, GenAI startups
+**Say this first (1 line):** I would not give every question an agent loop. A router sends simple lookups down a single-pass hybrid-plus-rerank path and only genuinely multi-hop questions into a planner loop with hard budgets (steps, tokens, time), an independent verifier before the answer, and fallbacks (partial answer, abstain, human handoff), with every step logged and a multi-hop golden set to prove the loop earns its extra cost.
+
+**Then explain:**
+- **Clarify first:** what do "multi-hop analytical" questions look like (compare a metric across years, join facts across documents)? Who asks, how many a day, what latency is tolerable (seconds or minutes?), how costly is a wrong answer (finance or legal, so handoff matters), and what permissions apply (Q47)?
+- **Components:**
+
+| Component | Job |
+|---|---|
+| Router | Classify: simple lookup (single pass), multi-hop (planner), structured/numeric (SQL tool, Q40), out of scope. Cheap and measured (Q48) |
+| Planner | Split the question into sub-questions with dependencies; allowed to revise the plan after seeing evidence, within the step budget |
+| Retrieval tools | Hybrid search with permission filters, a SQL or API tool, optionally a document-fetch tool; every call returns ids and spans for citation (Q39) |
+| Verifier | Independent of the planner: does each sub-question have supporting evidence? Does the final answer follow from it? Do not rely on the same LLM saying "I have enough" |
+| Synthesiser | Writes the answer from verified evidence only, with citations and stated gaps |
+
+- **Budgets (set in config, enforced in code, not in the prompt):** max steps (for example 4 to 6), max total tokens, max wall time, max tool errors, and loop detection (the same sub-query twice). Every run ends with a recorded stop reason.
+- **Fallbacks, in order:** (1) if a budget hits with some evidence, return a clearly labelled partial answer; (2) if the verifier fails, abstain and say what is missing; (3) for high-stakes questions or repeated failure, hand off to a human with the trace attached; (4) if the planner service is down, run the single-pass path.
+- **Observability:** trace per request (route, plan, each tool call with latency and tokens, verifier verdict, stop reason, cost); dashboards for stop-reason mix, steps per question, cost per answered question, abstain and handoff rates.
+- **Evaluation:** a multi-hop golden set with the gold sub-questions and gold documents, scored for end-to-end answer correctness, evidence recall per hop, citation validity and cost. Compare against the single-pass baseline on the same set (Q14, Part 9); the agent is justified only where it wins by enough to pay for its extra calls. Practitioner write-ups report agent loops cost several times more LLM calls than single pass; measure it for your own system.
+- **Failure modes:** a plan that decomposes wrongly (so every hop is confidently irrelevant); loops; tool errors swallowed; the verifier agreeing with the planner; injection through a retrieved document steering the loop (Q47); cost blow-ups on odd questions; a stale document answering an old-vs-new comparison.
+
+**Example:** "What was our claim ratio in 2023 versus 2022?" Router: multi-hop. Planner: fetch 2023 claims and premiums, fetch 2022 claims and premiums. Each retrieval is cited, the verifier checks both years have evidence, and the synthesiser reports both ratios. If the 2022 report is missing, the system returns the 2023 figure labelled partial or abstains with "2022 evidence not found", never a guessed ratio.
+
+**Code:** (executed, standalone, stdlib only, 10 unit tests pass; ALL MOCK: the tools, planner, verifier and synthesiser are canned, and a fake clock stands in for time; it demonstrates routing, budgets, stop reasons and fallbacks, not an LLM agent's quality)
+```python
+# Standalone, stdlib only. ALL MOCK: tools, planner and "LLM" are canned; a fake clock stands in for wall time. Shows the control flow, budgets and fallbacks.
+import unittest
+KB = {"claims_2023": "2023 claims paid: 120 on premiums 1000", "claims_2022": "2022 claims paid: 90 on premiums 1000",
+      "policy": "Claims above 100 need a manager sign-off"}
+class Clock:
+    def __init__(self): self.t = 0.0
+    def tick(self, s): self.t += s
+    def now(self): return self.t
+
+def mock_search(query):                                     # MOCK retrieval tool; returns (doc_id, text) or None; costs fake tokens/time
+    for k, v in KB.items():
+        if all(w in (k + " " + v).lower() for w in query.lower().split()): return {"id": k, "text": v, "tokens": 50, "secs": 1.0}
+    return None
+def mock_plan(question):                                    # MOCK planner: fixed decomposition for one known multi-hop question
+    if question == "claim ratio 2023 vs 2022": return ["claims_2023", "claims_2022"]
+    return [question]
+def route(question): return "multihop" if " vs " in question else "single"
+
+class Agent:
+    def __init__(self, max_steps=4, max_tokens=300, max_secs=10, clock=None, tool=mock_search, high_stakes=False):
+        self.max_steps, self.max_tokens, self.max_secs = max_steps, max_tokens, max_secs
+        self.clock, self.tool, self.high_stakes = clock or Clock(), tool, high_stakes
+        self.log = []                                       # observability: every step and the final stop reason
+    def single_pass(self, q):
+        hit = self.tool(q); return {"status": "partial", "answer": hit["text"] if hit else None, "stop": "fallback_single_pass"} if hit else {"status": "abstain", "answer": None, "stop": "no_evidence"}
+    def run(self, q):
+        if self.high_stakes: return self._end({"status": "handoff", "answer": None, "stop": "high_stakes_human"})
+        if route(q) == "single":
+            r = self.single_pass(q); r["status"] = "answered" if r["answer"] else r["status"]; return self._end(r)
+        t0, tokens, evidence, seen = self.clock.now(), 0, {}, set()
+        for step, sub in enumerate(mock_plan(q), 1):
+            if step > self.max_steps: return self._end(self._fallback(q, evidence, "step_budget"))
+            if tokens >= self.max_tokens: return self._end(self._fallback(q, evidence, "token_budget"))
+            if self.clock.now() - t0 >= self.max_secs: return self._end(self._fallback(q, evidence, "time_budget"))
+            if sub in seen: return self._end(self._fallback(q, evidence, "loop_detected"))
+            seen.add(sub)
+            try: hit = self.tool(sub)
+            except Exception as e: self.log.append({"step": step, "sub": sub, "error": str(e)}); return self._end(self._fallback(q, evidence, "tool_error"))
+            if hit: tokens += hit["tokens"]; self.clock.tick(hit["secs"]); evidence[sub] = hit
+            self.log.append({"step": step, "sub": sub, "found": bool(hit), "tokens": tokens})
+        if not self.verify(evidence): return self._end({"status": "abstain", "answer": None, "stop": "verifier_failed"})
+        return self._end({"status": "answered", "answer": self.synthesise(evidence), "stop": "done", "cites": sorted(evidence)})
+    def verify(self, evidence): return len(evidence) == len(mock_plan("claim ratio 2023 vs 2022")) and all(e["text"] for e in evidence.values())   # MOCK verifier: every sub-question has evidence
+    def synthesise(self, ev): return "claim ratio 2023 = 12%, 2022 = 9% (from " + ", ".join(sorted(ev)) + ")"            # MOCK synthesiser
+    def _fallback(self, q, evidence, why):
+        if len(evidence) >= 1: return {"status": "partial", "answer": "partial: " + "; ".join(e["text"] for e in evidence.values()), "stop": why}
+        return {"status": "abstain", "answer": None, "stop": why}
+    def _end(self, r): self.log.append({"final": r["stop"]}); return r
+
+class T(unittest.TestCase):
+    Q = "claim ratio 2023 vs 2022"
+    def test_happy_path(self):
+        r = Agent().run(self.Q); self.assertEqual((r["status"], r["stop"]), ("answered", "done")); self.assertEqual(r["cites"], ["claims_2022", "claims_2023"])
+    def test_simple_question_uses_single_pass(self): a = Agent(); r = a.run("policy"); self.assertEqual((r["status"], r["stop"]), ("answered", "fallback_single_pass")); self.assertEqual(len(a.log), 1)   # one log line, no planner steps
+    def test_step_budget(self): r = Agent(max_steps=1).run(self.Q); self.assertEqual((r["status"], r["stop"]), ("partial", "step_budget"))
+    def test_token_budget(self): r = Agent(max_tokens=50).run(self.Q); self.assertEqual(r["stop"], "token_budget"); self.assertEqual(r["status"], "partial")
+    def test_time_budget(self): r = Agent(max_secs=1.0).run(self.Q); self.assertEqual(r["stop"], "time_budget")
+    def test_tool_error_falls_back_not_crashes(self):
+        def boom(q): raise RuntimeError("timeout")
+        r = Agent(tool=boom).run(self.Q); self.assertEqual((r["status"], r["stop"]), ("abstain", "tool_error"))
+    def test_missing_evidence_abstains(self):
+        r = Agent(tool=lambda q: mock_search(q) if "2023" in q else None).run(self.Q); self.assertEqual((r["status"], r["stop"]), ("abstain", "verifier_failed"))
+    def test_high_stakes_goes_to_human(self): self.assertEqual(Agent(high_stakes=True).run(self.Q)["status"], "handoff")
+    def test_no_evidence_single(self): self.assertEqual(Agent().run("zzz unknown")["status"], "abstain")
+    def test_every_run_logs_a_stop_reason(self): a = Agent(); a.run(self.Q); self.assertIn("final", a.log[-1])
+if __name__ == "__main__":
+    a = Agent(); print(a.run("claim ratio 2023 vs 2022")); print(a.log)
+    print("budget 1 step ->", Agent(max_steps=1).run("claim ratio 2023 vs 2022"))
+    unittest.main(argv=["x"], verbosity=1)
+```
+
+The tests cover: the happy path, the simple question taking the single path, step, token and time budgets each ending with a labelled partial answer, a tool error falling back instead of crashing, missing evidence causing an abstain, the high-stakes flag handing off, no evidence for a simple question abstaining, and every run recording a stop reason.
+
+**Follow-ups:**
+- *Why not always use the agent?* More calls mean more latency, cost and ways to fail; simple lookups do not benefit. Route, and compare on a golden set.
+- *Fixed pipeline instead of a loop?* A fixed decompose, retrieve-per-part, synthesise pipeline is a middle option with predictable cost; use a loop only where the plan must change after seeing evidence.
+- *Who stops a runaway loop?* The orchestrator code, with budgets and loop detection; the model is never trusted to stop itself.
+
+**Common mistakes:** putting budgets in the prompt; using the same model call as planner and verifier; no stop reason in the logs; returning a confident answer when one hop found nothing; evaluating only the final answer and not each hop; having no single-pass fallback.
+
+### Q44 ⭐ 🔴 Design question: global sensemaking over a corpus of about a million tokens (GraphRAG vs map-reduce vs RAPTOR vs long context). Choose and defend.
+**Asked at:** senior roles at product companies, enterprise and research teams
+**Say this first (1 line):** First I ask what questions people will really ask: if only a few are "what are the main themes across everything", a cheap map-reduce over chunk summaries or even long context is the right start; if global questions are the core product and the corpus changes slowly, a GraphRAG-style index can pay for itself; and in every case I keep normal hybrid retrieval for the local and lookup questions.
+
+**Then explain:**
+- **The problem:** a "global sensemaking" question ("what are the main risks across all these reports?") is about the whole corpus, so top-k chunks only see a sample. The GraphRAG paper (abstract, Edge et al.) frames this as query-focused summarisation, and reports substantial gains over conventional RAG in comprehensiveness and diversity for datasets in the 1-million-token range. That is the authors' claim and the abstract gives no judging details (Q46).
+- **Options:**
+
+| Option | How it works | Index cost | Query cost | Notes |
+|---|---|---|---|---|
+| GraphRAG-style | LLM extracts entities and relations per chunk, groups them into communities, pre-writes community summaries; a global query maps over summaries then reduces (as the paper's abstract describes) | Highest: an LLM call per chunk, plus summaries | Medium: many map calls and one reduce | Strong on themes and connections; costly to build and to refresh (Q12, Q28) |
+| Map-reduce over chunk summaries | Summarise each chunk, summarise groups of summaries up to a top level; answer from the top level or map over a level | Medium: one call per chunk plus a reduce tree | Low to medium | No graph, simpler, loses cross-document entity links |
+| RAPTOR-style tree | Recursively embed, cluster and summarise chunks; retrieve across levels (abstract; its 20 percent QuALITY gain is the authors' claim, on a question-answering benchmark, not global sensemaking) | Medium | Low (retrieval) | Good for multi-level questions; clusters are by similarity, not entities |
+| Long context | Put the corpus in the prompt | None | Highest per query, and the whole corpus every time | Check current model limits (they change); 1M tokens is at or over many limits, quality can drop on very long prompts, and one vendor suggests skipping RAG only under about 200,000 tokens (reported) |
+
+- **How I choose:**
+  - *Question mix:* mostly local or lookup, with rare global ones, means hybrid RAG plus an on-demand map-reduce for the rare global question. Global questions as the main use means a pre-built summary hierarchy (GraphRAG-style or a cheaper tree).
+  - *Update frequency:* a corpus that changes daily makes a graph rebuild painful; summary trees can often be refreshed in part. A static archive favours paying the index cost once.
+  - *Budget:* count tokens and calls (below) and the number of global queries expected; long context wins on cost only at very few queries.
+  - *Quality:* run all candidate options on 30 to 50 real global questions and judge pairwise (Q46). The paper's gains do not automatically transfer to your data, and I have no measured comparison between GraphRAG and map-reduce to quote.
+- **Staged plan:** start with map-reduce summaries as a baseline; adopt a graph only if judged comprehensiveness and diversity gains justify the extra index cost and refresh work.
+
+**Example:** (ASSUMED numbers) a 1M-token corpus, 600-token chunks (1,667 chunks). In my calculator, GraphRAG-style extraction (one extra gleaning pass) takes about 3,500 index calls and 5.2M input plus 1.4M output tokens; map-reduce takes about 1,850 calls and 2.8M input plus 0.29M output tokens, roughly 2.8 times cheaper to build under these assumptions. Per global query, GraphRAG-style costs about 121 calls (map over 120 community summaries, then reduce); map-reduce answering from kept top-level summaries costs one call; long context costs about 1M input tokens each time. With these assumptions GraphRAG-style beats long context on cost after about 14 global queries, and map-reduce is cheapest at every volume tested. That says nothing about quality: if the graph's answers are judged more comprehensive, its extra cost may be worth it.
+
+**Code:** (executed, standalone, stdlib only; EVERY number is an ASSUMPTION, including the unit prices, which are generic placeholders and not any provider's price list)
+```python
+# Standalone, stdlib only. EVERY number below is an ASSUMPTION for a back-of-envelope comparison, not a benchmark or a real price.
+import math
+A = dict(corpus_tok=1_000_000, chunk_tok=600,
+         prompt_overhead=800,            # instructions + few-shot per LLM call (assumed)
+         extract_out=400, gleaning_passes=1,          # GraphRAG-style entity/relation extraction output per chunk; extra "did you miss any" pass(es)
+         comm_frac=0.10,                 # communities ~10% of chunks (assumed); one summary call each
+         comm_in=3000, comm_out=500,
+         mr_sum_out=150, mr_group=10, mr_reduce_out=200,    # map-reduce: chunk summary, group size, reduce output
+         q_global_comm=120, q_map_in=500+300, q_map_out=150, q_reduce_in=6000, q_reduce_out=600,   # per GLOBAL query: map over community summaries then reduce
+         price_in=1.0, price_out=4.0,    # ASSUMED generic units per 1M tokens (not a real price list)
+         ctx_window=1_000_000)           # ASSUMED long-context limit: CHECK current model limits, they change
+n_chunks = math.ceil(A["corpus_tok"] / A["chunk_tok"])
+def cost(tin, tout): return (tin * A["price_in"] + tout * A["price_out"]) / 1e6
+
+# GraphRAG-style index: extraction on every chunk (+gleaning) + community summaries
+calls_ex = n_chunks * (1 + A["gleaning_passes"])
+tin_ex = calls_ex * (A["chunk_tok"] + A["prompt_overhead"]); tout_ex = calls_ex * A["extract_out"]
+n_comm = math.ceil(n_chunks * A["comm_frac"]); tin_c = n_comm * A["comm_in"]; tout_c = n_comm * A["comm_out"]
+g = dict(calls=calls_ex + n_comm, tin=tin_ex + tin_c, tout=tout_ex + tout_c)
+
+# Map-reduce over chunk summaries: summarise each chunk, then reduce in groups until one summary remains
+calls_m, tin_m, tout_m, n = n_chunks, n_chunks * (A["chunk_tok"] + A["prompt_overhead"]), n_chunks * A["mr_sum_out"], n_chunks
+sz = A["mr_sum_out"]
+while n > 1:
+    groups = math.ceil(n / A["mr_group"]); calls_m += groups; tin_m += groups * (A["mr_group"] * sz + A["prompt_overhead"]); tout_m += groups * A["mr_reduce_out"]; n = groups; sz = A["mr_reduce_out"]
+m = dict(calls=calls_m, tin=tin_m, tout=tout_m)
+
+# Per global question
+q_g = dict(calls=A["q_global_comm"] + 1, tin=A["q_global_comm"] * A["q_map_in"] + A["q_reduce_in"], tout=A["q_global_comm"] * A["q_map_out"] + A["q_reduce_out"])
+q_m = dict(calls=1, tin=(n_chunks // A["mr_group"]) * A["mr_reduce_out"] + 500, tout=600)   # map-reduce: answer from the top-level summaries kept at index time (assumed ~170 summaries of 200 tok)
+q_long = dict(calls=1, tin=A["corpus_tok"] + 500, tout=600)                                                       # long context: put the whole corpus in the prompt
+
+print(f"chunks: {n_chunks}, communities: {n_comm}")
+print(f"{'option':22s}{'index calls':>12s}{'index tok in':>14s}{'index tok out':>15s}{'index cost':>12s}{'query calls':>13s}{'query tok in':>14s}{'query cost':>12s}")
+rows = [("GraphRAG-style", g, q_g), ("map-reduce summaries", m, q_m), ("long context (no index)", dict(calls=0, tin=0, tout=0), q_long)]
+for name, i, q in rows:
+    print(f"{name:22s}{i['calls']:>12,d}{i['tin']:>14,d}{i['tout']:>15,d}{cost(i['tin'], i['tout']):>12.2f}{q['calls']:>13,d}{q['tin']:>14,d}{cost(q['tin'], q['tout']):>12.4f}")
+print("(costs in ASSUMED units: 1.0 per 1M input tokens, 4.0 per 1M output tokens)")
+print("fits in assumed context window:", A["corpus_tok"] + 500 <= A["ctx_window"], "(zero headroom: real limits and answer quality at that length must be checked)")
+
+def total(i, q, nq): return cost(i["tin"], i["tout"]) + nq * cost(q["tin"], q["tout"])
+for nq in (10, 100, 1000, 10000):
+    best = min(rows, key=lambda r: total(r[1], r[2], nq)); print(f"{nq:>6d} global queries -> cheapest: {best[0]:22s} totals:", {r[0][:9]: round(total(r[1], r[2], nq), 1) for r in rows})
+for nq in range(1, 100000):
+    if total(g, q_g, nq) < total(dict(calls=0, tin=0, tout=0), q_long, nq): print("GraphRAG-style beats long-context on cost after about", nq, "global queries (with these assumptions)"); break
+chg = 0.05            # ASSUMED: 5% of chunks change per week
+touched = 0.15        # ASSUMED: those edits touch 15% of communities (summaries must be redone)
+r_g = cost(chg * tin_ex + touched * tin_c, chg * tout_ex + touched * tout_c)
+r_m = cost(chg * n_chunks * (A["chunk_tok"] + A["prompt_overhead"]) + 0.10 * tin_m, chg * n_chunks * A["mr_sum_out"] + 0.10 * tout_m)   # changed chunks + ~10% of the reduce path (assumed)
+print("weekly refresh (ASSUMED 5 percent of chunks change):  GraphRAG-style %.2f units | map-reduce %.2f units | long context 0 (no index)" % (r_g, r_m))
+```
+
+**Follow-ups:**
+- *Could the answer change if the corpus doubled?* Index cost scales with chunks for the first two options; long context stops fitting; recompute with your numbers.
+- *Does GraphRAG help local lookups?* The docs note basic vector search is recommended for queries it already handles; GraphRAG also has a local mode for entity-centred questions. Do not send everything through the expensive path.
+- *How do you reduce GraphRAG cost?* Fewer or no gleaning passes, a cheaper model for extraction, larger chunks, tuning extraction prompts on your data (the docs recommend prompt tuning), and incremental updates.
+
+**Common mistakes:** quoting the paper's gains as if they hold on any corpus; comparing options without counting indexing cost and refresh; assuming long context removes the need to design (it still costs per query and quality varies); ignoring the question mix; forgetting that the model's context limit is a number to check today, not to remember.
