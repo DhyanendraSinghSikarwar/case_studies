@@ -17,7 +17,7 @@ Per question: `### Qn stars emoji text` / `**Asked at:**` / **Say this first (1 
 | 2 | Joins (all types, self, anti/semi) | 45 | ✅ (45 Qs) | ✅ | ✅ |
 | 3 | Subqueries, CTEs | 40 | ✅ (40 Qs) | ✅ | ✅ |
 | 4 | Window functions: ranking, top-N per group | 50 | ✅ (50 Qs) | ✅ | ✅ |
-| 5 | Window functions: running totals, LAG/LEAD, moving avg | 45 | ⬜ | ⬜ | ⬜ |
+| 5 | Window functions: running totals, LAG/LEAD, moving avg | 45 | ✅ (46 Qs) | ⬜ | ⬜ |
 | 6 | Date/time: retention, cohorts, MoM/YoY | 45 | ⬜ | ⬜ | ⬜ |
 | 7 | Gaps and islands, streaks, sessionization | 40 | ⬜ | ⬜ | ⬜ |
 | 8 | Funnels, conversion, DAU/MAU, product metrics | 45 | ⬜ | ⬜ | ⬜ |
