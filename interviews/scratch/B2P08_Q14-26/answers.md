@@ -845,3 +845,92 @@ real effects, naive restart: ['charge_card', 'charge_card', 'send_email'] <- car
 - *Where to store?* Anything durable: sqlite or Postgres for a service; keep the thread id in the user session.
 
 **Common mistakes:** restart-from-scratch retries; no idempotency key on external calls; checkpointing before the side effect completes; snapshots holding secrets; never testing a real crash.
+
+### Q24 ⭐⭐ 🟡 How do you design human-in-the-loop controls for agents (approval gates, interrupt and resume, escalation)?
+**Asked at:** product, GCC, regulated-industry teams
+**Say this first (1 line):** I put an approval gate in front of actions by risk tier: reads run freely, small reversible writes run with logging, and destructive, irreversible or regulated actions pause the agent, save a checkpoint, show the human exactly what will change, and resume only on an explicit yes, with timeouts defaulting to no.
+**Then explain:**
+- **Risk tiers:** read (auto), write (auto if small and reversible, approve above a threshold), destructive (always approve). Unknown tools go to the highest tier (fail closed). Where the threshold sits is a business decision.
+- **Interrupt and resume:** the gate is a pause point before the action node. State is persisted (Q23), the run stops, and a later "approve" or "deny" event resumes it. The DEV guide describes LangGraph human-in-the-loop this way (interrupt, save, resume after the decision; API details are snippet-level, check current docs).
+- **Show a diff, not a description:** the reviewer sees `balance 480 -> 180` or "delete account" with the exact arguments. A vague "the agent wants to proceed" invites rubber-stamping.
+- **Timeouts and defaults:** no answer means deny, never allow. Escalate to another approver or a queue instead.
+- **Audit:** log who approved what, when, and with which arguments; approval is bound to those exact arguments, so changed arguments need a new approval.
+- **Avoid approval fatigue:** if everything asks, people click yes blindly. Auto-allow the low tiers, batch similar requests, ask only where the risk is real, and track the approval rate (a 100% approve rate suggests the gate is not doing work or is too noisy).
+- Guardrail layers: Part 5 Q8, Q39. Prompt-injection angle: an approval screen is also a defence against injected actions (Part 11).
+
+**Example:** run below with a mock human. A read and a 20-unit refund run automatically. A 300-unit refund pauses with the diff `balance 480 -> 180` and runs only after approval. Account deletion pauses and gets no answer; at resume time past the 60 s timeout it is denied by default and the account still exists. An unknown tool pauses and is denied. 3 of 5 requests needed a human. Everything is logged.
+
+**Code:** (run with `python3 -I`; stdlib only; MOCK tools and human, simulated time)
+```python
+# Risk-tier policy engine with pause/resume. Tools and the human are MOCKS. Time is simulated in seconds.
+import json, difflib
+TIER = {"read_record": "read", "update_address": "write", "issue_refund": "write", "delete_account": "destructive"}
+def decide(tool, args):
+    t = TIER.get(tool, "destructive")                       # unknown tool = highest tier (fail closed)
+    if t == "read": return "allow"
+    if t == "write": return "approve" if args.get("amount", 0) > 100 else "allow"    # small reversible writes auto-allowed
+    return "approve"
+DB = {"alice": {"address": "12 Park St", "balance": 500}}
+def preview(tool, args):                                    # show a DIFF of what would change
+    if tool not in TIER: return "(unknown tool: no diff available)"
+    before = json.dumps(DB[args["user"]], indent=1).splitlines()
+    after = dict(DB[args["user"]]);
+    if tool == "update_address": after["address"] = args["address"]
+    if tool == "issue_refund": after["balance"] -= args["amount"]
+    if tool == "delete_account": after = {}
+    return "\n".join(l for l in difflib.unified_diff(before, json.dumps(after, indent=1).splitlines(), "now", "after", lineterm="", n=0) if l[0] in "+-" and l[:3] not in ("+++", "---"))
+def apply(tool, args):
+    if tool == "update_address": DB[args["user"]]["address"] = args["address"]
+    if tool == "issue_refund": DB[args["user"]]["balance"] -= args["amount"]
+    if tool == "delete_account": DB.pop(args["user"])
+    return "done"
+PENDING, AUDIT = {}, []                                     # PENDING is the saved checkpoint of paused actions
+def request(pid, tool, args, now):
+    d = decide(tool, args)
+    if d == "allow": AUDIT.append((now, pid, tool, "auto-allowed")); return "ran" if tool == "read_record" else apply(tool, args)
+    PENDING[pid] = dict(tool=tool, args=args, asked_at=now, timeout=60)           # pause: persist and stop
+    AUDIT.append((now, pid, tool, "paused for approval")); return "PAUSED: " + preview(tool, args).replace("\n", " | ")
+def resume(pid, decision, now):                              # decision: 'approve' | 'deny' | None (no answer)
+    p = PENDING.pop(pid)
+    if decision == "approve": AUDIT.append((now, pid, p["tool"], "approved")); return apply(p["tool"], p["args"])
+    why = "denied" if decision == "deny" else "denied (timeout, default deny)"      # no answer is NEVER treated as yes
+    AUDIT.append((now, pid, p["tool"], why)); return "not executed"
+print(request("a1", "read_record", {"user": "alice"}, 0))
+print(request("a2", "issue_refund", {"user": "alice", "amount": 20}, 1), "| balance", DB["alice"]["balance"])
+print(request("a3", "issue_refund", {"user": "alice", "amount": 300}, 2))
+print(request("a4", "delete_account", {"user": "alice"}, 3))
+print(request("a5", "wire_money", {"user": "alice"}, 4))                           # unknown tool: fail closed
+print("resume a3 approve ->", resume("a3", "approve", 10), "| balance", DB["alice"]["balance"])
+print("resume a4 no answer after 100s ->", resume("a4", None, 103), "| account still exists:", "alice" in DB)
+print("resume a5 deny ->", resume("a5", "deny", 105))
+for row in AUDIT: print("audit", row)
+asked = [r for r in AUDIT if r[3].startswith("paused")]; total = len({r[1] for r in AUDIT})
+print(f"approval prompts: {len(asked)} of {total} requests (reads and small writes were auto-allowed)")
+```
+Output (my run):
+```
+ran
+done | balance 480
+PAUSED: - "balance": 480 | + "balance": 180
+PAUSED: -{ | - "address": "12 Park St", | - "balance": 480 | -} | +{}
+PAUSED: (unknown tool: no diff available)
+resume a3 approve -> done | balance 180
+resume a4 no answer after 100s -> not executed | account still exists: True
+resume a5 deny -> not executed
+audit (0, 'a1', 'read_record', 'auto-allowed')
+audit (1, 'a2', 'issue_refund', 'auto-allowed')
+audit (2, 'a3', 'issue_refund', 'paused for approval')
+audit (3, 'a4', 'delete_account', 'paused for approval')
+audit (4, 'a5', 'wire_money', 'paused for approval')
+audit (10, 'a3', 'issue_refund', 'approved')
+audit (103, 'a4', 'delete_account', 'denied (timeout, default deny)')
+audit (105, 'a5', 'wire_money', 'denied')
+approval prompts: 3 of 5 requests (reads and small writes were auto-allowed)
+```
+
+**Follow-ups:**
+- *Approve before or after the action?* Before for irreversible actions; after-the-fact review is only for reversible, low-risk ones.
+- *What if the human takes three days?* The checkpoint holds the state; re-validate the preconditions (is the balance still 480?) at resume.
+- *Who can approve?* Role-based; for regulated actions, separation of duties (not the requester).
+
+**Common mistakes:** gating everything (fatigue) or nothing; default-allow on timeout; approving a summary instead of the actual diff; not binding approval to arguments; no audit trail; no re-check of state after a long pause.
