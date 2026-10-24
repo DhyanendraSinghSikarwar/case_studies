@@ -20,7 +20,7 @@ Per question: `### Qn stars emoji text` / `**Asked at:**` / **Say this first (1 
 | 5 | Window functions: running totals, LAG/LEAD, moving avg | 45 | ✅ (46 Qs) | ✅ | ✅ |
 | 6 | Date/time: retention, cohorts, MoM/YoY | 45 | ✅ (45 Qs) | ✅ | ✅ |
 | 7 | Gaps and islands, streaks, sessionization | 40 | ✅ (40 Qs) | ✅ | ✅ |
-| 8 | Funnels, conversion, DAU/MAU, product metrics | 45 | ⬜ | ⬜ | ⬜ |
+| 8 | Funnels, conversion, DAU/MAU, product metrics | 45 | ✅ (45 Qs) | ⬜ | ⬜ |
 | 9 | Recursive CTEs, hierarchies, graphs | 30 | ⬜ | ⬜ | ⬜ |
 | 10 | Pivot/unpivot, string ops, NULL traps | 40 | ⬜ | ⬜ | ⬜ |
 | 11 | Query optimisation, indexes, execution plans, partitioning | 35 | ⬜ | ⬜ | ⬜ |
