@@ -46,6 +46,5 @@ assert sorted(nt.loc[nt["score"] == 100, "row_num"]) == [1, 2]
 # pandas 'first' follows row order, so it is deterministic only because the frame is in player_id order
 rev = scores.iloc[::-1]
 print("\npandas method='first' on the reversed frame gives the tied pair:",
-      dict(zip(rev["player_id"], rev["score"].rank(method="first", ascending=False).astype(int)))
-      | {})
+      dict(zip(rev["player_id"], rev["score"].rank(method="first", ascending=False).astype(int))))
 print("asserts passed: SQL row_num/rnk/dense_rnk == pandas first/min/dense")
