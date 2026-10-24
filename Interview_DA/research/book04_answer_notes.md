@@ -1,2 +1,4 @@
 - Book 4 Part 5 Q35/Q36 (calculation groups, visual calculations): availability/licensing unverified: check Microsoft Learn before answering.
 - Book 4 Part 10: verify Tableau Desktop OS support, Tableau vs Power BI licensing/pricing and Power BI Desktop Windows-only from official pages before answering; ignore the snippet claiming Tableau uses MDX for measures.
+- Book 4 Part 7: deployment-pipelines licence requirement unconfirmed (sources disagree); refresh limits (8 vs 48/day, 2h vs 5h) and Fabric F64 sharing threshold from 2026 Learn pages: re-fetch and cite.
+- Book 4 Part 9: Mac limitation and free vs Pro/Premium/Fabric licence differences were general knowledge only; HR DAX measure designs (attrition, headcount, tenure, payroll) rest on general knowledge: design by pandas, label DAX "not run here".

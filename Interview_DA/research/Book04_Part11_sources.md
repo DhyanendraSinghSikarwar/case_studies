@@ -1,5 +1,5 @@
 # Book 4 Part 11 sources (Copilot and AI features in Power BI)
-Accessed 2026-10-24. Microsoft Learn pages were fetched in full (WebFetch; the tool returns a model-processed markdown extraction, so wording is the tool's rendering of the page). 6 distinct web searches, 11 page fetches (1 returned HTTP 404). No first-hand Copilot-in-Power-BI interview report was found for any company: Glassdoor/AmbitionBox/Reddit were not surfaced by search and were not fetched. Question wording is therefore topic-derived (Microsoft documentation plus generic prep material), not taken from reported interviews. Copilot features change often: answers (Wave B) must re-check the cited page dates below.
+Accessed 2026-10-24. Microsoft Learn pages were fetched in full (WebFetch; the tool returns a model-processed markdown extraction, so wording is the tool's rendering of the page). 6 distinct web searches, 15 page fetches (14 read, 1 returned HTTP 404). No first-hand Copilot-in-Power-BI interview report was found for any company: Glassdoor/AmbitionBox/Reddit were not surfaced by search and were not fetched. Question wording is therefore topic-derived (Microsoft documentation plus generic prep material), not taken from reported interviews. Copilot features change often: answers (Wave B) must re-check the cited page dates below.
 
 | Source | URL | Used for | Type | Recency | Fetch status |
 |---|---|---|---|---|---|
@@ -31,6 +31,6 @@ Accessed 2026-10-24. Microsoft Learn pages were fetched in full (WebFetch; the t
 - Difficulty is by depth for a 0-3 year analyst: admin, capacity billing and rollout are red.
 
 ## Notes and limitations
-- Sample: 14 Microsoft pages read in full (a 15th returned 404), about 6 non-Microsoft pages seen only as snippets. Small and skewed to vendor documentation.
+- Sample: 14 Microsoft pages read in full (one further fetch returned 404), about 6 non-Microsoft pages seen only as snippets. Small and skewed to vendor documentation.
 - Feature status (GA vs preview) and capacity rules are dated by the page dates above and may change; Q&A retirement date shows February 2027 on the page read, December 2026 elsewhere (unverified).
 - Gap-fills: none of the 27 questions was seen verbatim in a candidate interview report. 5 are pure practical or scenario gap-fills (Q11, Q12, Q23, Q24, Q27); the rest are derived from the Microsoft pages above.
