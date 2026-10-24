@@ -934,3 +934,150 @@ approval prompts: 3 of 5 requests (reads and small writes were auto-allowed)
 - *Who can approve?* Role-based; for regulated actions, separation of duties (not the requester).
 
 **Common mistakes:** gating everything (fatigue) or nothing; default-allow on timeout; approving a summary instead of the actual diff; not binding approval to arguments; no audit trail; no re-check of state after a long pause.
+
+### Q25 ⭐⭐ 🟡 Walk through the MCP lifecycle and capability negotiation (initialize, tools/list, tools/call, shutdown) and what the spec requires of implementations.
+**Asked at:** product, GenAI startups, agent-building teams
+**Say this first (1 line):** An MCP connection has three phases: initialisation (the client and server agree on a protocol version and exchange capabilities), normal operation (tools/list, tools/call and the other methods each side advertised), and shutdown; nothing but the handshake should happen before initialisation completes.
+**Then explain:**
+- **What the opened spec page says (MCP 2025-06-18, base protocol):** the components are the base protocol, lifecycle management, authorisation, server features (resources, prompts, tools), client features (sampling, roots) and utilities. The base protocol and lifecycle management MUST be supported; the other components MAY be. Messages are JSON-RPC 2.0: a request has a non-null unique `id`, a response carries a `result` or an `error` but not both, and a notification has no `id` and gets no reply. Check the current spec version; later versions exist and I only opened this one.
+- **Phases (DataCamp's interview guide describes the three-phase lifecycle):**
+  1. **Initialize:** the client sends an `initialize` request with the protocol version it supports, its capabilities and client info; the server replies with the version it will use, its capabilities and server info; the client then sends an `initialized` notification. If versions do not match, the connection should end with an error.
+  2. **Operation:** both sides use only capabilities that were negotiated. A server that did not advertise `tools` should not get `tools/list`.
+  3. **Shutdown:** close the transport cleanly (for stdio, close the input stream and give the process time to exit; for HTTP, end the connection). The exact steps are from memory: check the spec.
+- **Flagged as from memory:** the exact parameter names (`protocolVersion`, `capabilities`, `clientInfo`, `serverInfo`), the notification name `notifications/initialized`, the error codes, and which methods (like `ping`) are allowed before initialisation. My code is a **simplified** state machine, not full spec compliance.
+- **Why negotiation matters:** it lets old clients talk to new servers and lets each side declare what it supports (tools, resources, prompts, sampling, roots) without guessing.
+
+**Example:** a client that fires `tools/call` right after connecting gets an error from my toy server (`not initialized`). After `initialize` and the `initialized` notification, `tools/list` returns `echo` and `tools/call` runs it; a null id, a second `initialize` and an unknown tool each return an error; an old client version is answered with the version the server supports.
+
+**Code:** (run with `python3 -I`; stdlib only; SIMPLIFIED state machine, tests are the asserts)
+```python
+# SIMPLIFIED MCP-style lifecycle state machine (server side). NOT full spec compliance. Field names and error codes are from memory:
+# check the current MCP specification before relying on them.
+import json
+SUPPORTED = ["2025-06-18"]
+class Server:
+    def __init__(self):
+        self.state = "new"                                   # new -> initializing -> operating -> closed
+        self.caps = {"tools": {}}                            # server capabilities advertised at initialize
+        self.tools = {"echo": lambda a: {"content": [{"type": "text", "text": a.get("text", "")}], "isError": False}}
+    def _err(self, rid, code, msg): return {"jsonrpc": "2.0", "id": rid, "error": {"code": code, "message": msg}}
+    def handle(self, msg):
+        if msg.get("jsonrpc") != "2.0" or "method" not in msg: return self._err(msg.get("id"), -32600, "Invalid Request")
+        method, rid = msg["method"], msg.get("id")
+        is_notification = "id" not in msg                    # JSON-RPC: notifications carry no id and get no response
+        if self.state == "closed": return None if is_notification else self._err(rid, -32600, "connection closed")
+        if not is_notification and rid is None: return self._err(None, -32600, "request id must not be null")
+        if method == "initialize":
+            if self.state != "new": return self._err(rid, -32600, "already initialized")
+            want = msg.get("params", {}).get("protocolVersion")
+            ver = want if want in SUPPORTED else SUPPORTED[-1]          # server answers with a version it supports
+            self.state = "initializing"
+            return {"jsonrpc": "2.0", "id": rid, "result": {"protocolVersion": ver, "capabilities": self.caps,
+                                                            "serverInfo": {"name": "toy-server", "version": "0.1"}}}
+        if method == "notifications/initialized":
+            if self.state == "initializing": self.state = "operating"
+            return None
+        if method == "ping": return {"jsonrpc": "2.0", "id": rid, "result": {}}      # allowed in any state in this toy
+        if self.state != "operating": return self._err(rid, -32600, f"not initialized (state={self.state})")
+        if method == "tools/list":
+            if "tools" not in self.caps: return self._err(rid, -32601, "tools capability not advertised")
+            return {"jsonrpc": "2.0", "id": rid, "result": {"tools": [{"name": n} for n in self.tools]}}
+        if method == "tools/call":
+            p = msg.get("params", {})
+            if p.get("name") not in self.tools: return self._err(rid, -32602, f"unknown tool {p.get('name')}")
+            return {"jsonrpc": "2.0", "id": rid, "result": self.tools[p["name"]](p.get("arguments", {}))}
+        if method == "shutdown_toy": self.state = "closed"; return {"jsonrpc": "2.0", "id": rid, "result": {}}   # NOT an MCP method
+        return self._err(rid, -32601, f"method not found: {method}")
+def req(i, m, **p): return {"jsonrpc": "2.0", "id": i, "method": m, "params": p}
+s = Server()
+r = s.handle(req(1, "tools/call", name="echo", arguments={"text": "hi"})); assert r["error"]["code"] == -32600; print("before init:", r["error"]["message"])
+r = s.handle(req(2, "initialize", protocolVersion="2025-06-18", capabilities={}, clientInfo={"name": "c", "version": "1"}))
+print("initialize ->", r["result"]["protocolVersion"], list(r["result"]["capabilities"]))
+r = s.handle(req(3, "tools/list")); assert "error" in r; print("after initialize, before initialized notification:", r["error"]["message"])
+assert s.handle({"jsonrpc": "2.0", "method": "notifications/initialized"}) is None and s.state == "operating"
+print("tools/list ->", s.handle(req(4, "tools/list"))["result"])
+print("tools/call ->", s.handle(req(5, "tools/call", name="echo", arguments={"text": "hi"}))["result"]["content"][0]["text"])
+print("unknown tool ->", s.handle(req(6, "tools/call", name="nope"))["error"]["message"])
+print("null id ->", s.handle({"jsonrpc": "2.0", "id": None, "method": "ping"})["error"]["message"])
+print("double initialize ->", s.handle(req(7, "initialize", protocolVersion="2025-06-18"))["error"]["message"])
+s.handle(req(8, "shutdown_toy")); assert s.handle(req(9, "tools/list"))["error"]["message"] == "connection closed"
+s2 = Server(); r = s2.handle(req(1, "initialize", protocolVersion="1999-01-01")); print("old client version ->", r["result"]["protocolVersion"])
+print("all tests passed")
+```
+Output (my run):
+```
+before init: not initialized (state=new)
+initialize -> 2025-06-18 ['tools']
+after initialize, before initialized notification: not initialized (state=initializing)
+tools/list -> {'tools': [{'name': 'echo'}]}
+tools/call -> hi
+unknown tool -> unknown tool nope
+null id -> request id must not be null
+double initialize -> already initialized
+old client version -> 2025-06-18
+all tests passed
+```
+
+**Follow-ups:**
+- *Why a separate `initialized` notification?* It tells the server the client is ready, so the server does not send requests too early (as I recall the design; verify).
+- *What are the three error layers?* Per the DataCamp guide: transport errors, protocol (JSON-RPC) errors, and tool results with `isError` set. Tool errors in detail: Q27.
+- *Where do tools, resources and prompts differ?* Q10 (architecture overview in Q9; a fuller server in Q29).
+
+**Common mistakes:** calling tools before initialisation completes; ignoring the negotiated capabilities; reusing or nulling a request id; answering a notification (it has no id); assuming the 2025-06-18 details are the latest; writing logs to the protocol channel (Q26).
+
+### Q26 ⭐⭐ 🟡 MCP transports: when do you use stdio and when Streamable HTTP, and what is the classic stdio bug?
+**Asked at:** product, GenAI startups, platform teams
+**Say this first (1 line):** Use stdio when the server is a local subprocess started by the client (simple, no network, one user); use Streamable HTTP when the server is remote or shared by many clients; and with stdio, stdout is reserved for protocol messages, so any debug print to stdout corrupts the stream and logs must go to stderr.
+**Then explain:**
+- **stdio:** the host launches the server as a child process and talks over stdin and stdout, one JSON-RPC message per line (the DataCamp guide describes this and the stdout bug). Good for local tools such as a filesystem or git server.
+- **Streamable HTTP:** the server runs as an independent web service; clients connect over HTTP, so it fits remote, multi-user and cloud deployments. The DataCamp guide reports it replaced the older HTTP+SSE transport in the 2025-03-26 spec (reported by one guide; I did not verify the version history). How it multiplexes requests and streams responses is from memory: check the current spec.
+- **Auth differs (opened spec page, 2025-06-18):** HTTP-based transports SHOULD follow the authorisation specification, while stdio SHOULD NOT and should instead take credentials from the environment. So a local server gets its API key from an environment variable; a remote one uses a token flow (Q28).
+- **The classic bug:** a stray `print("starting...")` or a library that writes to stdout puts non-JSON text on the protocol channel. The client's JSON parser fails, or the connection hangs. Fix: send logs to stderr (or a log file), and keep stdout for protocol messages only.
+- **Choosing:** local and single-user: stdio. Shared, remote, needs auth, scaling, observability: HTTP. Many teams start local and move to HTTP for a shared deployment.
+- The demo below is a plain subprocess with line-delimited JSON, a simplification of MCP framing, not a spec-compliant client.
+
+**Example:** my toy server logs `debug: got ping`. In the buggy version the line lands on stdout ahead of the JSON reply; the client reads that first line and fails to parse it (`Expecting value`). In the fixed version the same text goes to stderr, the client gets the valid reply, and a human still sees the log.
+
+**Code:** (run with `python3 -I`; stdlib only; local child process, harmless)
+```python
+# The classic stdio bug: a server prints debug text to STDOUT, which carries only protocol messages (one JSON object per line).
+# Child process is a tiny echo server defined inline; stdlib only; everything is local and harmless.
+import subprocess, sys, json
+SERVER = r'''
+import sys, json
+LOG_TO_STDERR = (sys.argv[1] == "fixed")
+for line in sys.stdin:
+    msg = json.loads(line)
+    note = "debug: got " + msg["method"]
+    print(note, file=sys.stderr if LOG_TO_STDERR else sys.stdout, flush=True)    # buggy: debug text on stdout
+    print(json.dumps({"jsonrpc": "2.0", "id": msg["id"], "result": {"ok": True}}), flush=True)
+'''
+def talk(mode):
+    p = subprocess.Popen([sys.executable, "-I", "-c", SERVER, mode], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE, text=True)
+    p.stdin.write(json.dumps({"jsonrpc": "2.0", "id": 1, "method": "ping"}) + "\n"); p.stdin.flush()
+    first = p.stdout.readline()                               # a line-delimited JSON-RPC client reads one line per message
+    try: reply = json.loads(first)
+    except json.JSONDecodeError as e: reply = f"CLIENT CRASH: line was {first.strip()!r} ({e.msg})"
+    p.stdin.close()
+    try: _, err = p.communicate(timeout=10)
+    except subprocess.TimeoutExpired: p.kill(); err = "(timeout)"
+    return reply, err.strip()
+for mode in ("buggy", "fixed"):
+    reply, err = talk(mode)
+    print(f"{mode:5} -> client sees: {reply}\n        stderr (humans only): {err!r}")
+```
+Output (my run):
+```
+buggy -> client sees: CLIENT CRASH: line was 'debug: got ping' (Expecting value)
+        stderr (humans only): ''
+fixed -> client sees: {'jsonrpc': '2.0', 'id': 1, 'result': {'ok': True}}
+        stderr (humans only): 'debug: got ping'
+```
+
+**Follow-ups:**
+- *How do you debug a stdio server then?* Read stderr, write a log file, or use an inspector tool; never print to stdout.
+- *Security difference?* A stdio server runs with the user's local privileges; an HTTP server needs authentication, authorisation, TLS and input validation.
+- *Can a stdio server be remote?* Not directly; you would wrap it behind an HTTP gateway, which adds its own risks.
+
+**Common mistakes:** printing to stdout (including from dependencies or startup banners); logging secrets to stderr; using stdio for a shared multi-user service; skipping auth on an HTTP server because "it is internal".

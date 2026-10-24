@@ -496,3 +496,194 @@ The tests check the end state, not the model's words: the approved write changed
 - *How do you test the permission layer?* Table tests like the ones here, plus red-team prompts that try cross-user access.
 
 **Common mistakes:** a shared admin token for all users; scopes checked only in the prompt; copying ticket history into memory; evaluating the chat reply instead of the ticket state; exposing destructive tools "just in case"; launching write access on day one.
+
+### Q46 ⭐ 🔴 Design question: a coding agent (repository navigation, edits, a test loop, a sandbox, evaluation and cost control).
+**Asked at:** senior roles at product companies, GenAI startups, big tech
+**Say this first (1 line):** A coding agent is a single-agent loop with a few sharp tools (search, read a file range, exact-string edit, run tests), tests as the feedback signal, a sandbox, an iteration budget and tight context control, and I judge it by the share of tasks whose tests pass in a repeatable harness.
+**Then explain:**
+- **Navigation tools:** search by text or symbol, list a directory, read a file range with line numbers. Never dump the whole repository into context (Q8); the agent should fetch what it needs. A repository map (file names and key symbols) helps it choose.
+- **Edit tool:** exact-string replacement with a uniqueness check: `old_str` must appear exactly once, otherwise return a helpful error ("matches 12 places, add context"). Absolute paths are required. Anthropic's agents post (opened) says that requiring absolute file paths removed a relative-path error in its SWE-bench work, and presents it as poka-yoke (mistake-proofing); it is a reported lesson, I quote no numbers (Q6).
+- **Test loop:** run the tests, parse the failing test names and the first assertion message, feed a short summary back, edit, rerun. Tests are the ground truth Anthropic says agents need at each step. If there are no tests, the agent should write a failing test first.
+- **Sandbox and safety:** run commands in an isolated environment with a timeout and resource limits, restricted network and no secrets (Q41). Restrict edits to the repo, and gate destructive commands (Q40).
+- **Budget:** a cap on iterations, tokens and wall time, plus loop detection (the same failing edit repeated). When the budget ends, return the diff so far and a clear status (Q4).
+- **Context management:** keep the task, a plan, the latest test output and the files being edited; drop old tool outputs; summarise long logs (Q8).
+- **Single agent by default:** Anthropic's multi-agent post (opened) says multi-agent systems suit parallelisable work and are less suited to most coding tasks, where parts depend on each other. So I start with one agent (Q12).
+- **Evaluation:** a set of tasks, each with an environment and hidden tests; metric is the resolve rate, the share of tasks whose tests pass, plus cost per solved task, steps and variance over repeated runs (Q51). SWE-bench is the setting Anthropic's post mentions; I do not quote scores. Check for overfitting to the visible tests.
+- **Cost:** tokens grow with every step because the context is re-sent, so cap steps, cache the stable prefix, and prefer cheap search over reading big files.
+
+**Example:** the task is "total() ignores the last item". The agent searches, views lines 1 to 6 of `pricing.py`, runs the tests (two fail), edits `range(len(prices) - 1)` to `range(len(prices))`, and reruns the tests: green. A sloppy edit that tries to replace `s` is rejected because it matches many places.
+
+**Code:** (executed, standalone, stdlib only; a TOY repo in a temp directory that is deleted at the end, a MOCK scripted policy instead of a model, and an ordinary subprocess for the tests, which is not a real sandbox)
+```python
+# Standalone, stdlib only. TOY repo in a temp dir; the "agent" is a MOCK scripted policy (no LLM).
+import os, re, subprocess, sys, tempfile, textwrap
+
+ROOT = tempfile.mkdtemp(prefix="toyrepo_")
+open(f"{ROOT}/pricing.py", "w").write(textwrap.dedent('''\
+    def total(prices, discount_pct):
+        s = 0
+        for i in range(len(prices) - 1):          # bug: skips the last item
+            s += prices[i]
+        return s - s * discount_pct / 100
+
+    def cap(x, hi):
+        return min(x, hi)
+    '''))
+open(f"{ROOT}/test_pricing.py", "w").write(textwrap.dedent('''\
+    import unittest
+    from pricing import total, cap
+    class T(unittest.TestCase):
+        def test_total(self): self.assertEqual(total([10, 20, 30], 10), 54)
+        def test_single(self): self.assertEqual(total([100], 0), 100)
+        def test_cap(self): self.assertEqual(cap(5, 3), 3)
+    '''))
+
+# ---------------- tools ----------------
+def view(path, start=1, end=40):                              # read a line RANGE, never the whole repo
+    if not os.path.isabs(path): return "ERROR: path must be absolute"        # poka-yoke: absolute paths only
+    lines = open(path).read().splitlines()[start - 1:end]
+    return "\n".join(f"{start + i:3d}| {l}" for i, l in enumerate(lines))
+
+def str_replace(path, old, new):
+    if not os.path.isabs(path): return "ERROR: path must be absolute"
+    if not os.path.realpath(path).startswith(os.path.realpath(ROOT) + os.sep): return "ERROR: outside the repo"
+    text = open(path).read(); n = text.count(old)
+    if n == 0: return "ERROR: old_str not found (must match exactly, including whitespace)"
+    if n > 1:  return f"ERROR: old_str matches {n} places; include more context to make it unique"
+    open(path, "w").write(text.replace(old, new)); return "OK: edited"
+
+def run_tests(timeout=20):
+    p = subprocess.run([sys.executable, "-I", "-m", "unittest", "-v"], cwd=ROOT, capture_output=True, text=True, timeout=timeout)
+    out = p.stderr
+    failed = re.findall(r"^(?:FAIL|ERROR): (\w+)", out, re.M)
+    return p.returncode == 0, failed, (re.findall(r"AssertionError: .*", out) or [""])[0]
+
+# ---------------- MOCK policy: scripted proposals, one per step ----------------
+P = f"{ROOT}/pricing.py"
+SCRIPT = [("view", dict(path="pricing.py")),                                             # relative path -> rejected
+          ("view", dict(path=P, start=1, end=6)),
+          ("run_tests", {}),
+          ("str_replace", dict(path=P, old="range(len(prices) - 1)", new="range(len(prices))")),
+          ("str_replace", dict(path=P, old="s", new="t")),                                # ambiguous: many matches -> rejected
+          ("run_tests", {})]
+TOOLS = dict(view=view, str_replace=str_replace, run_tests=run_tests)
+budget, ok = 8, False
+for step, (name, args) in enumerate(SCRIPT, 1):
+    if step > budget: print("iteration budget exhausted"); break
+    r = TOOLS[name](**args); print(f"{step}. {name:11s}", str(r).replace("\n", " / ")[:100])
+    if name == "run_tests" and r[0]: ok = True; break
+assert ok, "mock agent should reach green tests"
+assert str_replace(P, "range(len(prices))", "x").startswith("OK")          # unique now; restore below
+assert str_replace("/etc/hosts", "a", "b") == "ERROR: outside the repo"
+assert view("pricing.py").startswith("ERROR")
+str_replace(P, "range(len(prices))", "range(len(prices) - 1)"); assert run_tests()[0] is False       # bug restored -> red again (test is meaningful)
+import shutil; shutil.rmtree(ROOT)
+print("all checks passed")
+```
+What I saw: the relative path was refused, the range view worked, two tests failed (`test_single`, `test_total`), the ambiguous edit was refused with "matches 12 places", the correct edit applied and the rerun passed. The final asserts restore the bug and confirm the tests fail again, so the tests are meaningful. The counts and messages come from my run.
+
+**Follow-ups:**
+- *Why exact-string edits instead of line numbers?* Line numbers shift after every edit, so a stale number edits the wrong place; an exact string with a uniqueness check fails loudly.
+- *What if tests are weak?* The agent can pass them with a wrong fix. I add held-out tests and review the diff, and I measure over many tasks.
+- *When would you use multiple agents?* For independent subtasks (research in different modules), not for tightly coupled edits.
+
+**Common mistakes:** letting the agent read whole files or the whole repo; fuzzy or regex-based edits with no uniqueness check; no iteration budget; running tests outside any sandbox with the user's secrets; reporting success from the model's claim instead of the test result; evaluating on a handful of hand-picked tasks.
+
+### Q47 ⭐ 🔴 Design question: a multi-agent deep-research system (orchestrator and parallel sub-agents, citations, budgets, evaluation).
+**Asked at:** senior roles at product companies, GenAI startups, big tech
+**Say this first (1 line):** I would copy the orchestrator-worker shape in Anthropic's research-system post: a lead agent plans and saves the plan, spawns parallel sub-agents with clear, non-overlapping tasks, synthesises their findings and decides whether to research more, and a separate citation step attaches sources; I scale effort to the query and budget tokens, because the post reports roughly 15 times more tokens than chat for the multi-agent setup.
+**Then explain:**
+- **Flow (as the post describes it):**
+  1. The lead analyses the query and writes a plan, then saves the plan to memory, because a long run can exceed the context window.
+  2. It spawns sub-agents in parallel, each with a clear objective, an output format, tool guidance and boundaries. Vague delegation caused duplicated work in the post's early versions.
+  3. Each sub-agent searches iteratively (broad queries first, then narrower) and returns findings, not raw pages.
+  4. The lead synthesises and decides whether more research is needed, then loops or stops.
+  5. A citation agent attaches sources to claims.
+- **Scale effort to complexity:** one agent with a few calls for a fact lookup, a few sub-agents for a comparison, many for a broad survey. The post reports that early versions spawned 50 sub-agents for simple queries, so effort rules go into the lead's prompt and into code limits.
+- **When it fits:** valuable questions that parallelise, exceed one context window and use many tools. It is poorly suited to tasks where parts depend on each other or need shared context, which the post says includes most coding tasks (Q46, Q12).
+- **Reported numbers (vendor claims, setting stated):** the post reports a 90.2 percent improvement over a single-agent baseline on an internal research evaluation (size and scoring not described), about 4 times the tokens of chat for agents and about 15 times for multi-agent. It also reports that on BrowseComp token usage alone explained 80 percent of performance variance. Read these as one vendor's results, not general laws.
+- **Evaluation:** an LLM judge with a rubric (accuracy, citation accuracy, completeness, source quality, efficiency), a small starting set of about 20 queries, and human testing for things the judge misses (Q51).
+- **Failure modes:** endless searching, duplicated sub-agent work, bad sources, citations that do not support the claim, a lead that stops early, and cost blowups.
+- **Synchronous bottleneck:** in the post the lead waits for a batch of sub-agents before continuing, so the slowest one sets the pace and the lead cannot steer mid-flight. Asynchronous execution would help but adds coordination, state and error-propagation problems (Q49).
+
+**Example:** "Compare Alpha, Beta and Delta revenue in 2025". The lead writes a plan with three tasks, runs three sub-agents together, finds that Delta has no sources, flags the gap (or schedules one more round) and writes a summary where each claim carries its source id. In my mock run the parallel run took about 0.4 s against 0.8 s sequentially, at the same 200 mock tokens, so parallelism buys time, not cost.
+
+**Code:** (executed, standalone, stdlib only; **MOCK**: scripted lead, sub-agents and citation step, a fake corpus, a fake search tool, fake token costs; no LLM and no web)
+```python
+# Standalone, stdlib only. MOCK deep-research orchestrator: the lead, sub-agents and citation agent are scripted (no LLM, no web).
+import threading, time
+from concurrent.futures import ThreadPoolExecutor
+
+CORPUS = {  # fake documents: id -> text
+ "s1": "Alpha Corp revenue grew 12 percent in 2025.",   "s2": "Alpha Corp opened a Pune data centre in 2025.",
+ "s3": "Beta Ltd revenue fell 3 percent in 2025.",      "s4": "Beta Ltd announced layoffs in 2025.",
+ "s5": "Gamma Inc was founded in 2010.",                "s6": "Weather in Pune is warm."}
+
+class Budget:                                              # shared token accounting across threads
+    def __init__(self, cap): self.cap, self.used, self.lock = cap, 0, threading.Lock()
+    def spend(self, n):
+        with self.lock:
+            if self.used + n > self.cap: return False
+            self.used += n; return True
+
+def search(query, budget):                                 # MOCK search tool: keyword overlap, costs 50 tokens and 0.2 s
+    if not budget.spend(50): return None
+    time.sleep(0.2)
+    words = set(query.lower().split())
+    score = {i: len(words & set(t.lower().replace(".", "").split())) for i, t in CORPUS.items()}
+    return [(i, CORPUS[i]) for i in sorted(score, key=lambda i: -score[i]) if score[i] > 0][:3]      # top 3 by keyword overlap
+
+def sub_agent(task, budget, max_calls):                    # iterates: broad query first, then a narrower one, then returns findings
+    findings = []
+    for q in [task["query"], task["query"] + " 2025"][:max_calls]:
+        hits = search(q, budget)
+        if hits is None: return dict(task=task["name"], findings=findings, status="budget")
+        findings += [(i, t) for i, t in hits if task["entity"].lower() in t.lower() and (i, t) not in findings]
+        if findings: break
+    return dict(task=task["name"], findings=findings, status="ok" if findings else "empty")
+
+def plan(question):                                        # lead: scale effort to complexity; plan saved to MEMORY (survives context limits)
+    entities = [e for e in ("Alpha", "Beta", "Gamma", "Delta") if e.lower() in question.lower()]
+    tasks = [dict(name=f"research {e}", query=e.lower(), entity=e) for e in entities]
+    effort = "simple" if len(tasks) <= 1 else "comparison"
+    return dict(question=question, effort=effort, tasks=tasks, max_calls_per_sub=2 if effort == "comparison" else 3)
+
+def cite(claims, sources):                                 # separate citation step: a claim keeps only sources that really contain it
+    return [(c, [i for i, t in sources if c.rstrip(".") in t]) for c in claims]
+
+def lead(question, cap=600, parallel=True):
+    memory = {"plan": plan(question)}                      # plan persisted
+    budget = Budget(cap); t0 = time.time()
+    tasks = memory["plan"]["tasks"]; m = memory["plan"]["max_calls_per_sub"]
+    if parallel:
+        with ThreadPoolExecutor(len(tasks)) as ex: results = list(ex.map(lambda t: sub_agent(t, budget, m), tasks))
+    else: results = [sub_agent(t, budget, m) for t in tasks]
+    missing = [r["task"] for r in results if not r["findings"]]          # lead decides if more research is needed
+    sources = [f for r in results for f in r["findings"]]
+    claims = [t for _, t in sources]
+    return dict(effort=memory["plan"]["effort"], subagents=len(tasks), missing=missing, cited=cite(claims, sources),
+                tokens=budget.used, seconds=round(time.time() - t0, 2), statuses=[r["status"] for r in results])
+
+q = "Compare Alpha and Beta and Delta revenue in 2025"
+par, seq = lead(q, parallel=True), lead(q, parallel=False)
+print("parallel  :", par["subagents"], "sub-agents", par["tokens"], "tokens", par["seconds"], "s, missing:", par["missing"])
+print("sequential:", seq["subagents"], "sub-agents", seq["tokens"], "tokens", seq["seconds"], "s")
+for c, s in par["cited"]: print("  claim:", c, "<-", s)
+tiny = lead("Compare Alpha and Beta and Delta revenue in 2025", cap=100)
+print("tiny budget statuses:", tiny["statuses"], "tokens:", tiny["tokens"])
+simple = lead("When was Gamma founded?")
+print("simple query:", simple["effort"], simple["subagents"], "sub-agent,", simple["tokens"], "tokens")
+assert par["tokens"] == seq["tokens"] and par["seconds"] < seq["seconds"]          # same cost, less wall time
+assert par["missing"] == ["research Delta"] and all(s for _, s in par["cited"])      # gap detected; every claim has a source
+assert tiny["tokens"] <= 100 and "budget" in tiny["statuses"]
+assert simple["subagents"] == 1 and simple["tokens"] < par["tokens"]
+print("checks passed")
+```
+What I saw: a comparison query spawned 3 sub-agents, used 200 mock tokens and flagged `research Delta` as missing; every claim carried a source that really contains it; with a 100-token cap one sub-agent ended with status `budget` (which one depends on thread timing, so the test only asserts the cap and the status); a simple question used 1 sub-agent and 50 tokens.
+
+**Follow-ups:**
+- *Why a separate citation agent?* Generation and attribution are different jobs; checking each claim against the source text catches unsupported claims. My mock check is a substring match, a real one needs an LLM or entailment check.
+- *How do you stop runaway cost?* Effort rules by query type, a shared token budget, per-sub-agent call caps and a lead that must justify more rounds.
+- *Would you use this for every question?* No. A single agent or plain RAG is cheaper and often enough (Q1, Q3).
+
+**Common mistakes:** spawning many agents for easy questions; vague sub-agent tasks that overlap; no shared budget; trusting a fluent synthesis without citation checks; letting sub-agents return whole pages and flood the lead's context; using multi-agent for tightly coupled work; quoting the 90.2 percent or 15x figures as if they were universal.
