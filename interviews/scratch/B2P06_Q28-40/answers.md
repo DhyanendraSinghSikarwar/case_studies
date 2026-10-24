@@ -714,3 +714,286 @@ The case-sensitive sanitiser catches the plain line but misses the lower-case va
 - *How do you test?* Red-team with canary documents in the corpus and check that no tool call or leak follows; keep the cases as regression tests.
 
 **Common mistakes:** relying on "ignore any instructions in the documents" alone; giving the RAG bot write tools or broad data access; trusting all sources equally; sanitising by a keyword list and calling it solved; letting side-effect actions run without approval.
+
+### Q37 ⭐⭐ 🟡 Why can RAG still hallucinate (retrieval miss, ignored context, conflicting documents, over-trust), and how do you reduce it?
+**Asked at:** all types; product, GCC
+**Say this first (1 line):** RAG gives the model evidence but does not force it to use it, so hallucination can come from retrieval (the right chunk is missing or buried), from the context (irrelevant, conflicting or too long), or from the model (it ignores the context and falls back on its own memory); find which stage fails before fixing anything.
+
+**Then explain:**
+- **Causes:**
+  - **Retrieval miss:** the answer chunk never reached the model, so it guesses.
+  - **Irrelevant or noisy context:** the model grabs a plausible but wrong passage.
+  - **Ignored context / model prior:** the evidence is there but the model answers from pretraining.
+  - **Conflicting or outdated documents:** two versions disagree and the model blends them (Q38).
+  - **Overlong context:** relevant text is in the middle and gets underused (Part 1 Q19).
+  - **Over-trust:** the model states a confident answer from weak evidence because the prompt never allowed "I don't know".
+- **Mitigations:** better retrieval (hybrid, rerank, chunking, filters); smaller k with higher quality; a grounding prompt that says answer only from the context and abstain otherwise; citations so claims are checkable; a verification pass (check each claim against the context, Q39); resolve conflicts before generation; abstain when retrieval scores are low.
+- **Diagnose by stage:** the prep articles use "15% hallucination on legal questions" as an example scenario. I would not start with the model; I would label a sample of the bad answers by first failing stage, then fix the biggest bucket.
+- **Measure it:** per-stage metrics (context recall, faithfulness) beat one end-to-end accuracy number.
+
+**Example:** For the 15% legal scenario, pull about 150 wrong answers. Say a third are retrieval misses (fix chunking and hybrid search), a fifth are ignored context (tighten the prompt, add citation checking). The tally below uses random synthetic cases just to show the procedure: attribute each failure to the first failing stage in pipeline order, and attack the biggest bucket first.
+
+**Code:** (run; SYNTHETIC labelled cases with randomly generated flags, so the percentages mean nothing about real systems)
+```python
+import random
+from collections import Counter
+random.seed(1)
+
+# SYNTHETIC labelled cases: 1,000 questions, ~15% wrong answers (the article's example rate). Flags are random,
+# generated to look plausible; the point is the attribution procedure, not these proportions.
+cases = []
+for i in range(1000):
+    gold_retrieved = random.random() < 0.88          # right chunk in top-k
+    gold_in_prompt = gold_retrieved and random.random() < 0.95   # survived rerank/cut/context assembly
+    conflict = random.random() < 0.06                # a conflicting/outdated chunk also present
+    ctx_tokens = random.choice([2000, 4000, 8000, 16000])
+    supported = random.random() < (0.93 if gold_in_prompt else 0.55) * (0.6 if conflict else 1) * (0.9 if ctx_tokens > 8000 else 1)
+    cases.append(dict(gold_retrieved=gold_retrieved, gold_in_prompt=gold_in_prompt, conflict=conflict,
+                      ctx_tokens=ctx_tokens, supported=supported))
+
+def attribute(c):
+    """First failing stage, in pipeline order."""
+    if c["supported"]: return None
+    if not c["gold_retrieved"]: return "1 retrieval miss"
+    if not c["gold_in_prompt"]: return "2 lost in rerank/cut/assembly"
+    if c["conflict"]: return "3 conflicting/outdated docs"
+    if c["ctx_tokens"] > 8000: return "4 overlong context"
+    return "5 ignored context / model prior"
+
+bad = [c for c in cases if not c["supported"]]
+tally = Counter(attribute(c) for c in bad)
+print(f"unsupported answers: {len(bad)} of {len(cases)} ({len(bad)/len(cases):.1%})")
+for k in sorted(tally): print(f"  {k:<34}{tally[k]:>4}  {tally[k]/len(bad):6.1%}")
+```
+Output (my run):
+```
+unsupported answers: 164 of 1000 (16.4%)
+  1 retrieval miss                    51   31.1%
+  2 lost in rerank/cut/assembly       19   11.6%
+  3 conflicting/outdated docs         21   12.8%
+  4 overlong context                  39   23.8%
+  5 ignored context / model prior     34   20.7%
+```
+"First failing stage" is a simplification; a case can have two problems, and the order of checks changes the buckets. Say so when you present it.
+
+**Follow-ups:**
+- *Can you just lower the temperature?* It reduces randomness, not unsupported claims; grounding and retrieval quality matter more.
+- *Legal domain specifics?* Require citations to clause or section, abstain on low evidence, and keep a human in the loop for high-stakes outputs.
+- *How do you know the fix worked?* Re-run the same labelled set and compare per-stage failure counts, not only the headline rate.
+
+**Common mistakes:** blaming the LLM first; changing the model before checking retrieval; no abstain path; no citations; reporting a single hallucination rate with no breakdown; assuming a longer context window means better grounding.
+
+### Q38 ⭐⭐ 🟡 What should a RAG system do when retrieved documents conflict or are out of date (recency, authority, showing both sides)?
+**Asked at:** product, GCC, enterprise teams
+**Say this first (1 line):** Store effective date, version and authority as metadata, prefer the newest in-force version within the same document lineage, rank authoritative sources over informal ones, and when real conflicts remain, show both with citations instead of silently picking or averaging.
+
+**Then explain:**
+- **Two different problems:** an old version of the same document is outdated (pick the newer). Two different documents that disagree are a conflict (decide by authority, or surface both).
+- **Metadata to keep:** lineage or document id, version, effective date (and end date), source authority (policy beats a forum post), and a deleted/superseded flag. Without these fields the system cannot decide; the embedding does not know which paragraph is current.
+- **Do it before generation:** filter or collapse to the current version per lineage at retrieval time, so the model never sees superseded text. Also drop chunks of deleted documents (a prep guide flags stale deleted or updated documents surfacing as a key failure).
+- **Respect effective dates:** a policy effective next year is not yet in force; use an "as of" date, which also lets you answer questions about a past date.
+- **Real conflicts:** tell the user ("the policy says 30 days, the FAQ says 14; the policy is authoritative"), cite both, or escalate. Never average numbers or merge the two into one confident sentence.
+- **Operational:** keep ingestion in sync (delete on update, re-embed on change), and log conflict rate as a data-quality signal for the content owners.
+
+**Example:** The refund policy has v1 (15 days), v2 (30 days) and a v3 (45 days) effective in 2027, and an older FAQ says 14 days. The toy below, as of 2026-10-24, drops v1 (superseded) and v3 (not yet in force), keeps v2, then flags that the FAQ disagrees and prefers the policy by authority while showing both.
+
+**Code:** (run; TOY records with hand-labelled metadata and facts, not a real extractor)
+```python
+from datetime import date
+# TOY records with metadata. 'topic'/'value' are hand-labelled facts extracted from each chunk.
+chunks = [
+ {"id": "pol_v1", "lineage": "refund_policy", "version": 1, "effective": date(2023, 1, 1), "authority": "policy", "topic": "refund_days", "value": 15},
+ {"id": "pol_v2", "lineage": "refund_policy", "version": 2, "effective": date(2024, 6, 1), "authority": "policy", "topic": "refund_days", "value": 30},
+ {"id": "pol_v3", "lineage": "refund_policy", "version": 3, "effective": date(2027, 1, 1), "authority": "policy", "topic": "refund_days", "value": 45},  # future-dated
+ {"id": "faq_v1", "lineage": "help_faq",      "version": 1, "effective": date(2024, 9, 1), "authority": "faq",    "topic": "refund_days", "value": 14},
+ {"id": "ship_v1","lineage": "shipping",       "version": 1, "effective": date(2024, 2, 1), "authority": "policy", "topic": "ship_days",   "value": 5},
+]
+AS_OF = date(2026, 10, 24)
+RANK = {"policy": 2, "faq": 1}
+
+def latest_per_lineage(cs, as_of):
+    best = {}
+    for c in cs:
+        if c["effective"] > as_of: continue                   # not yet in force
+        cur = best.get(c["lineage"])
+        if cur is None or c["effective"] > cur["effective"]: best[c["lineage"]] = c
+    return list(best.values())
+
+def answer_view(cs, as_of):
+    current = latest_per_lineage(cs, as_of)
+    out = []
+    for topic in sorted({c["topic"] for c in current}):
+        group = [c for c in current if c["topic"] == topic]
+        vals = {c["value"] for c in group}
+        if len(vals) == 1:
+            out.append(f"{topic}: {vals.pop()} [cite {', '.join(c['id'] for c in group)}]")
+        else:   # contradiction across lineages: show both, prefer higher authority, never average
+            top = max(group, key=lambda c: (RANK[c["authority"]], c["effective"]))
+            both = "; ".join(f"{c['id']} ({c['authority']}, {c['effective']}) says {c['value']}" for c in group)
+            out.append(f"{topic}: CONFLICT -> {both}. Preferred by authority: {top['id']} = {top['value']}")
+    return out
+
+print("candidates retrieved:", [c["id"] for c in chunks])
+print("superseded or not yet effective:", [c["id"] for c in chunks if c not in latest_per_lineage(chunks, AS_OF)])
+for line in answer_view(chunks, AS_OF): print(line)
+```
+Output (my run):
+```
+candidates retrieved: ['pol_v1', 'pol_v2', 'pol_v3', 'faq_v1', 'ship_v1']
+superseded or not yet effective: ['pol_v1', 'pol_v3']
+refund_days: CONFLICT -> pol_v2 (policy, 2024-06-01) says 30; faq_v1 (faq, 2024-09-01) says 14. Preferred by authority: pol_v2 = 30
+ship_days: 5 [cite ship_v1]
+```
+
+**Follow-ups:**
+- *Who decides authority?* The content owners; encode it as a source-level ranking, not something the model infers.
+- *How do you detect conflicts in practice?* Compare extracted claims across chunks (an LLM or NLI check) or flag when top chunks from different lineages answer the same topic differently; the toy uses pre-labelled facts.
+- *What if no metadata exists?* Add it at ingestion (file dates, version headers), or at minimum show source and date in citations so the reader can judge.
+
+**Common mistakes:** trusting similarity score to pick the newest; leaving old versions in the index; ignoring future-dated documents; blending conflicting figures into one answer; not showing the source date; forgetting to delete embeddings when a document is withdrawn.
+
+### Q39 ⭐⭐ 🟡 How do you evaluate generation in RAG (faithfulness, answer relevance, correctness) and how do these map to retrieval failures?
+**Asked at:** product, GenAI startups, GCC, evaluation-focused rounds
+**Say this first (1 line):** Score the generator separately from the retriever: faithfulness (is every claim supported by the retrieved context), answer relevance (does it address the question) and correctness (does it match a reference), then read the pattern of scores to see which stage is broken.
+
+**Then explain:**
+- **Faithfulness (groundedness):** break the answer into claims and check each against the retrieved context. A faithful answer can still be wrong if the retrieved context was wrong or incomplete.
+- **Answer relevance:** does the answer actually respond to the question, or does it ramble or answer a neighbouring question?
+- **Correctness:** compare with a reference answer from the golden set (Q40); this needs labels, so it is run on the golden set rather than on all traffic.
+- **Diagnosis map (from the prep article, which uses the RAGAS metric set):**
+
+| Symptom | Likely stage |
+|---|---|
+| Low faithfulness | Model says things beyond the context (hallucination, Q37) |
+| Low context recall | Retrieval misses needed chunks |
+| Low context precision | Retrieved context is noisy (too many irrelevant chunks) |
+| Low answer relevance | Prompt or model drifts from the question |
+
+- **Who scores:** in real systems an LLM judge or an NLI (entailment) model checks claims, which has its own bias and cost; calibrate it against human labels. Metric definitions, judge pitfalls and RAGAS: Part 9.
+- **Also track:** citation accuracy, abstention on unanswerable questions, and p95 latency and cost.
+
+**Example:** A run shows context recall 0.95, context precision 0.9, faithfulness 0.6. Retrieval is fine, so the model is adding unsupported claims; fix the grounding prompt, add citation checks, or use a stricter model. If instead context recall were 0.5, fix retrieval first.
+
+**Code:** (run; a crude LEXICAL-OVERLAP faithfulness proxy on made-up examples; a weak proxy, since real systems use LLM or NLI judges)
+```python
+import re
+# WEAK PROXY: lexical overlap only. Real systems use an LLM or NLI judge (Part 9). Toy examples below.
+STOP = set("a an the is are was were of to in on for and or by with it its be as at that this".split())
+def content_words(t): return {w for w in re.findall(r"[a-z0-9]+", t.lower()) if w not in STOP}
+
+def faithfulness_proxy(answer, context, thresh=0.7):
+    claims = [s.strip() for s in re.split(r"(?<=[.!?])\s+", answer) if s.strip()]
+    ctx = content_words(context)
+    sup = []
+    for c in claims:
+        cw = content_words(c)
+        sup.append(len(cw & ctx) / max(len(cw), 1) >= thresh)
+    return sum(sup) / len(claims), list(zip(claims, sup))
+
+def relevance_proxy(answer, question):
+    q = content_words(question); return len(q & content_words(answer)) / max(len(q), 1)
+
+context = "Refunds are accepted within 30 days of delivery. Items must be unused. Shipping fees are not refunded."
+question = "Within how many days are refunds accepted?"
+cases = {
+  "faithful":        "Refunds are accepted within 30 days of delivery. Shipping fees are not refunded.",
+  "extra claim":     "Refunds are accepted within 30 days of delivery. Gold members get lifetime refunds.",
+  "paraphrase":      "You can return purchases up to a month after they arrive.",            # faithful but low overlap
+  "wrong number":    "Refunds are accepted within 45 days of delivery.",                     # unfaithful but high overlap
+}
+print("proxy faithfulness (fraction of claims whose content words are >=70% in context), answer relevance proxy:")
+for name, ans in cases.items():
+    f, detail = faithfulness_proxy(ans, context)
+    print(f"{name:<13} faithfulness={f:.2f}  relevance={relevance_proxy(ans, question):.2f}  claims={[(c[:28], s) for c, s in detail]}")
+```
+Output (my run):
+```
+proxy faithfulness (fraction of claims whose content words are >=70% in context), answer relevance proxy:
+faithful      faithfulness=1.00  relevance=0.67  claims=[('Refunds are accepted within ', True), ('Shipping fees are not refund', True)]
+extra claim   faithfulness=0.50  relevance=0.67  claims=[('Refunds are accepted within ', True), ('Gold members get lifetime re', False)]
+paraphrase    faithfulness=0.00  relevance=0.00  claims=[('You can return purchases up ', False)]
+wrong number  faithfulness=1.00  relevance=0.67  claims=[('Refunds are accepted within ', True)]
+```
+The proxy catches the added claim but misses the wrong number (45 vs 30 days: words overlap) and marks a correct paraphrase as unsupported. That is exactly why word overlap is not enough and why numeric and entailment checks matter.
+
+**Follow-ups:**
+- *Can high faithfulness still mean a bad answer?* Yes: the context may be outdated or incomplete; check context recall and correctness too.
+- *LLM judge risks?* Position and verbosity bias, drift between judge versions; validate against a human-labelled sample.
+- *Online vs offline?* Offline on the golden set before release; online sampling of traffic with a cheaper judge plus user feedback.
+
+**Common mistakes:** one blended "accuracy" number; scoring faithfulness against the wrong context; trusting an LLM judge without human calibration; ignoring unanswerable questions; treating lexical overlap as a real faithfulness score.
+
+### Q40 ⭐⭐ 🟡 How do you build a golden evaluation set for RAG (real queries, relevance labels, synthetic questions and their pitfalls)?
+**Asked at:** product, GenAI startups, evaluation-focused rounds
+**Say this first (1 line):** Sample real user queries, stratify them by topic and difficulty, label which chunks (not just documents) answer each one, include questions the corpus cannot answer, and keep the set versioned; a few hundred queries is a reported scale, and the confidence interval tells you whether that is enough.
+
+**Then explain:**
+- **Source real queries:** logs or support tickets, anonymised. Stratify by topic, query type (lookup, multi-document, comparison), language (Q35) and difficulty so rare but important cases are not drowned out. Before launch, ask domain experts to write queries.
+- **Label chunks, not only documents:** a document can be 80 pages; the answer lives in one passage. Chunk-level labels let you compute recall@k and MRR (Q10), and re-label (or map labels by text span) when you re-chunk.
+- **Include unanswerable queries:** the correct behaviour is to abstain. Without them you only reward systems that always answer.
+- **Synthetic questions (generated by an LLM from chunks):** cheap and handy for bootstrapping, but they are easier than real ones, they copy the chunk's wording so lexical overlap inflates BM25 and dense scores, and they cover only what exists. Use them to supplement, validate a sample by hand, and never as the only test.
+- **Hygiene:** remove near-duplicate questions, record the corpus and index version, keep a frozen test split, and version the set (label changes are changes to the benchmark). Review disagreements between labellers.
+- **How many:** the prep article reports a few hundred real questions. The numbers below show why: the uncertainty on a recall estimate shrinks slowly with n, and differences smaller than that width are not reliable. Comparing two systems on the same queries (paired) is more sensitive than comparing two separate intervals.
+
+**Example:** An estimate of recall@5 = 0.80 from 50 queries has a 95% Wilson interval of about 0.67 to 0.89. From 300 queries it is about 0.75 to 0.84. So a "+0.03 improvement" seen on 50 queries tells you very little.
+
+**Code:** (run; interval width is pure arithmetic and the questions are SYNTHETIC; it assumes queries are independent, which real logs only roughly satisfy)
+```python
+import math, re
+
+# 1) Width of a 95% Wilson confidence interval for a recall estimate p_hat at various golden-set sizes.
+def wilson(p, n, z=1.96):
+    den = 1 + z * z / n
+    centre = (p + z * z / (2 * n)) / den
+    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / den
+    return centre - half, centre + half
+print("recall estimate 0.80: 95% Wilson interval by number of queries")
+for n in (25, 50, 100, 200, 300, 500, 1000):
+    lo, hi = wilson(0.80, n)
+    print(f"  n={n:>4}: [{lo:.3f}, {hi:.3f}]  width {hi - lo:.3f}")
+print("(a difference of 0.03 between two systems is within noise below a few hundred queries unless paired)")
+
+# 2) Near-duplicate filter on SYNTHETIC questions (token Jaccard >= 0.7 means keep only the first).
+def toks(t): return set(re.findall(r"[a-z0-9]+", t.lower()))
+def dedup(qs, thr=0.7):
+    kept = []
+    for q in qs:
+        if all(len(toks(q) & toks(k)) / len(toks(q) | toks(k)) < thr for k in kept): kept.append(q)
+    return kept
+qs = [
+ "What is the refund window for online orders?",
+ "What is the refund window for online orders",          # exact repeat
+ "What is the refund window for online purchases?",      # near-duplicate
+ "How do I reset my password?",
+ "How can I change my delivery address?",
+ "Does the warranty cover accidental damage?",
+]
+kept = dedup(qs)
+print(f"\nkept {len(kept)} of {len(qs)} questions after near-duplicate filter:")
+for q in kept: print("  -", q)
+```
+Output (my run):
+```
+recall estimate 0.80: 95% Wilson interval by number of queries
+  n=  25: [0.609, 0.911]  width 0.303
+  n=  50: [0.670, 0.888]  width 0.218
+  n= 100: [0.711, 0.867]  width 0.155
+  n= 200: [0.739, 0.850]  width 0.110
+  n= 300: [0.751, 0.841]  width 0.090
+  n= 500: [0.763, 0.833]  width 0.070
+  n=1000: [0.774, 0.824]  width 0.050
+(a difference of 0.03 between two systems is within noise below a few hundred queries unless paired)
+
+kept 4 of 6 questions after near-duplicate filter:
+  - What is the refund window for online orders?
+  - How do I reset my password?
+  - How can I change my delivery address?
+  - Does the warranty cover accidental damage?
+```
+
+**Follow-ups:**
+- *How do you label relevance at scale?* Start with expert labels on a core set; use an LLM to propose candidates and humans to verify; measure inter-annotator agreement.
+- *How do you keep it from going stale?* Add fresh sampled queries on a schedule, retire questions whose answers changed, and re-check metrics after each corpus update.
+- *Can you tune on it?* Hold out a test split you do not tune on; otherwise your numbers will be optimistic.
+
+**Common mistakes:** only synthetic questions; labelling documents instead of chunks; no unanswerable cases; tiny sets with big claims; unversioned labels that silently change the benchmark; keeping duplicates that overweight one topic; leaking test questions into prompts or fine-tuning data.

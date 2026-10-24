@@ -565,7 +565,7 @@ for x, y in [(60, 20), (120, 60)]:
   - Threshold sensitivity: a percentile always creates breaks even in a document with one topic; a fixed threshold depends on the embedder.
   - Embedder dependence: breakpoints come from the same kind of model that you later retrieve with, so errors correlate.
   - Structure ignored: headings, tables and lists already give cleaner boundaries for free (Q4, Q17).
-- **Evidence:** I have seen mixed reports: some experiments show gains on certain datasets and others show no gain or a loss against simple fixed or recursive splitting once cost is counted. I quote no numbers here. The honest answer is "it can help for long, unstructured, multi-topic text, and I would A/B it with the method in Q47".
+- **Evidence (from memory, not verified):** I recall mixed reports: some experiments show gains on certain datasets and others show no gain or a loss against simple fixed or recursive splitting once cost is counted. I quote no numbers here. The honest answer is "it can help for long, unstructured, multi-topic text, and I would A/B it with the method in Q47".
 - **My default:** structure-aware or recursive chunking with sensible size and overlap, and parent-document retrieval (Q18). I try semantic chunking when documents are long unstructured transcripts or emails, and keep it only if span-hit and answer quality improve on the golden set at acceptable cost.
 
 **Example:** a 35-sentence synthetic support text with 4 uneven topic sections (7, 12, 5 and 9 sentences). Fixed 7-sentence chunks cut it at sentences 7, 14, 21, 28: it gets the first boundary right, then slices the 12-sentence section in the middle (F1 0.29, tolerance one sentence). Semantic breakpoints on 3-sentence windows found boundaries 8, 23 and 24 (F1 0.80), and on single sentences 7, 19 and 22 (F1 0.67). Look at the weakness too: the windowed version produced a 1-sentence chunk, which is the unstable-size problem. This is a TOY on bag-of-words vectors with very clean topics; real text is messier.
@@ -608,3 +608,174 @@ fixed = set(range(7, len(sents), 7)); print(f"fixed 7-sentence chunks: boundarie
 - *Alternatives?* Use the document's own structure (headings), a recursive splitter, or an LLM to propose boundaries (expensive).
 
 **Common mistakes:** assuming semantic means better; no min and max chunk size; one global threshold across documents; ignoring ingest cost; comparing on chunk-level metrics that favour whatever creates fewer chunks (Q47); sentence splitting on dots that break abbreviations and numbers.
+
+### Q49 ⭐ 🔴 How do you answer a question that needs information from 10 documents when they do not fit in the context window?
+**Asked at:** product, GenAI startups, senior roles
+**Say this first (1 line):** First retrieve only the relevant spans from the 10 documents; if even that does not fit, use map-reduce (extract or summarise per document with the question in mind, then combine), and fall back to hierarchical summarisation or iterative refinement. I trade cost and latency for coverage and I watch for information loss.
+
+**Then explain:**
+- **Step 0, do I need all ten?** Often the answer sits in a few spans per document. Retrieve and rerank chunks across all ten documents (Q30), then fit the best ones into the budget (Q25). Only go to the next options if the question truly needs whole-document coverage (summaries, comparisons).
+- **Options:**
+
+| Approach | How | Strength | Risk |
+|---|---|---|---|
+| Map-reduce | per-document call that extracts or summarises with the question, then one combine call | parallel, simple, scales to many documents | each map call does not see the other documents, so cross-document links can be lost |
+| Hierarchical or tree summarisation (RAPTOR-style, from memory, not verified: summarise chunks, then summaries of summaries, and retrieve across levels) | multiple levels of summaries | good for "what is the overall theme" | extra ingest cost; summary errors propagate |
+| Iterative refinement | read document 1, write a draft, update it with document 2, and so on | keeps one running answer | sequential, slow; early drafts bias later ones; order effects |
+| Retrieve relevant spans only | search then answer | cheapest, best citations | misses facts that no chunk matches well |
+| Query decomposition | split into sub-questions, retrieve for each, then combine (Part 7) | multi-hop questions | more calls and failure points |
+
+- **Cost and latency:** map-reduce makes (documents + reduce rounds) calls. In my mock it was 16 calls for 10 documents. The map calls run in parallel, so latency is roughly one map call plus the reduce rounds, but cost is at least the reading of all the text once.
+- **Information loss:** each summary drops detail. To limit loss, make the map prompt question-aware ("extract facts relevant to X with the document name and page"), keep source ids so the final answer can cite (Q26), and keep numbers and quotes verbatim.
+- **Always check the budget:** map outputs plus reserve for system prompt, question and answer must fit; add an assertion in code, as below.
+
+**Example:** "Compare the refund terms across these 10 vendor contracts." Retrieval alone may return 3 contracts and miss 7. I use map-reduce: per contract, extract "refund window, fees, exceptions" in a fixed schema with a citation; combine the 10 small records in code or one LLM call, and show a table with sources. Cost is 11 calls and cross-contract reasoning happens only in the final step, which is fine for a comparison table.
+
+**Code:** (executed, standalone, standard library; MOCK summariser that truncates text, no LLM; words stand in for tokens; synthetic documents)
+```python
+# Standalone, standard library only. MOCK summariser (truncates to a word budget); no LLM is called. Word count stands in for tokens.
+CONTEXT = 1000                        # ASSUMED context window in "tokens" (words here)
+def toks(s): return len(s.split())
+def mock_summarise(text, budget): return " ".join(text.split()[:budget])     # MOCK: keeps the first `budget` words (real systems call an LLM)
+
+docs = {f"doc{i}": " ".join(f"d{i}w{j}" for j in range(600)) for i in range(10)}      # 10 synthetic docs, 600 words each
+question = "what changed across all ten documents"
+print("raw total:", sum(toks(t) for t in docs.values()), "words vs context", CONTEXT, "-> does not fit")
+
+calls = 0
+def map_step(question, docs, per_doc):            # MAP: one call per document, extract/summarise with the question in mind
+    global calls; out = {}
+    for k, t in docs.items(): calls += 1; out[k] = f"[{k}] " + mock_summarise(t, per_doc)
+    return out
+def reduce_step(parts, budget):                   # REDUCE: combine; if still too big, reduce hierarchically in groups
+    global calls
+    level = list(parts.values())
+    while sum(toks(p) for p in level) > budget:
+        nxt = []
+        for i in range(0, len(level), 2):
+            group = " ".join(level[i:i + 2]); calls += 1; nxt.append(mock_summarise(group, max(20, toks(group) // 2)))
+        level = nxt
+        if len(level) == 1: break
+    return " ".join(level)
+
+reserve = 300                                     # room for system prompt, question, answer
+parts = map_step(question, docs, per_doc=120)
+print("after map:", sum(toks(p) for p in parts.values()), "words in", len(parts), "partial summaries")
+ctx = reduce_step(parts, CONTEXT - reserve)
+print("final context:", toks(ctx), "words; budget", CONTEXT - reserve, "; LLM calls (mock):", calls + 1)
+assert toks(ctx) + reserve <= CONTEXT, "token budget violated"
+print(f"words kept per document: {120/600:.0%} after map, {toks(ctx)/6000:.0%} of the original in the final context (the mock keeps the first words; a real map step should be question-aware)")
+```
+
+**Follow-ups:**
+- *When is a long-context model enough?* If the 10 documents fit and cost and latency allow (Q13); it still suffers from lost-in-the-middle (Part 1 Q19), so test.
+- *Why not summarise at ingest time?* You can (RAPTOR-style), but summaries go stale and cost ingest tokens; useful for stable corpora.
+- *How do you evaluate it?* Fact-level recall of the gold facts per document, faithfulness and citation checks (Q39).
+
+**Common mistakes:** summarising without the question; dropping source ids; a map step that discards numbers; no check that the combined text fits; refinement order effects ignored; using map-reduce for a question that retrieval alone would answer.
+
+### Q50 ⭐ 🔴 Design question: a RAG assistant for customer support over millions of documents with per-user permissions and fresh content.
+**Asked at:** senior roles at product companies, GCCs, GenAI startups
+**Say this first (1 line):** I clarify the numbers first (documents, update rate, permission model, latency and accuracy targets), then design: event-driven ingestion with stable chunk ids, ACL metadata applied as a pre-filter, hybrid retrieval plus rerank, a grounded prompt with citations, caching scoped by permission, and an evaluation and monitoring loop with a safe rollout.
+
+**Then explain:**
+- **Clarify requirements:** how many documents and chunks; how fast must a new or edited article be searchable (minutes?); how do permissions work (per user, group, product plan, region); languages; latency target (time to first token); is a wrong answer costly (billing, legal) so that abstaining and human handoff are needed; where is the data allowed to live (Q42).
+- **Ingestion (event-driven):** a change event (create, update, delete, permission change) goes to a queue; workers parse, clean, chunk, embed and upsert. Use stable chunk ids (document id + version + position; Q19) so updates replace old chunks and deletes remove them from the vector index, the keyword index and caches (Q20). Handle permission changes as first-class events: they must apply within a stated delay. Keep a periodic full reconcile as a safety net.
+- **Permissions (Q15, Q42):** store ACL or group ids on each chunk, resolve the caller's groups from the verified session, and apply the filter inside the search, not after. Test with an automated leak test. For millions of chunks with highly selective ACLs, watch filter selectivity (Q44) and partition big tenants.
+- **Retrieval (Q29, Q30):** hybrid (BM25 for product names, error codes, ids, plus dense), fuse the lists, rerank the top 50 down to about 5 to 8, and abstain when scores are low (Q27). Query rewriting for multi-turn (Q28).
+- **Generation:** grounded prompt, citations by chunk id, "I don't know" and handoff to an agent when unsupported (Q12, Q26).
+- **Caching:** cache embeddings of frequent queries and retrieval results; any answer cache must be keyed by the caller's ACL scope and the index version, or it is a leak.
+- **Evaluation (Q40) and monitoring (Q41):** a golden set from real tickets, including permission-edge cases and fresh-content cases; retrieval and generation metrics separately (Q10, Q39); online: thumbs, escalation rate, per-stage latency, abstention rate, freshness lag (time from edit to searchable).
+- **SLOs (examples, assumed):** time to first token p95 under 1.5 s, freshness lag p95 under 10 minutes, zero cross-permission leaks (tested), citation validity above a target.
+- **Rollout and rollback:** shadow traffic, then a small percentage of users, compare golden-set and online metrics; keep the old index (alias) so rollback is one switch; version prompt, embedder and index together (Q21).
+- **Failure modes:** stale or deleted content surfacing; permission change lag; one tenant dominating filters; injection through ticket text or help articles (Q36); reranker timeout (fall back to the fused list); embedder outage (fall back to BM25); queue backlog after a bulk import.
+
+**Example:** my capacity sketch uses ASSUMED numbers: 5M documents, 12 chunks each, 60M chunks, 24B corpus tokens. Raw fp32 768-dim vectors would be about 184 GB (about 192 GB with HNSW links), IVF-PQ at 96 bytes about 5.8 GB plus ids, so the memory choice is a real design decision, not a detail. At 2 percent daily churn the pipeline re-embeds 1.2M chunks per day (about 14 chunks per second on average), easy for a small worker pool. At 15 average QPS the LLM reads about 1.6B prompt tokens per day, which dominates cost, so context size, caching and the rerank to 6 matter more than the vector store.
+
+**Code:** (executed, standalone, standard library; capacity arithmetic, EVERY input is ASSUMED, not benchmarked)
+```python
+# Standalone, standard library only. EVERY input is an ASSUMPTION for a capacity sketch, not a measurement or a benchmark.
+docs, chunks_per_doc, tok_per_chunk, dim = 5_000_000, 12, 400, 768
+churn_per_day, peak_qps, avg_qps = 0.02, 60, 15
+topk_retrieve, topk_rerank, prompt_ctx_tok, out_tok = 50, 6, 3000, 350
+n = docs * chunks_per_doc
+print(f"chunks: {n/1e6:.0f}M ; corpus tokens: {n*tok_per_chunk/1e9:.1f}B")
+raw = n * dim * 4; print(f"raw fp32 vectors: {raw/1e9:.0f} GB ; with HNSW links (ASSUMED M=16 -> ~32 links x 4 B): {(raw + n*32*4)/1e9:.0f} GB ; fp16 vectors: {n*dim*2/1e9:.0f} GB")
+print(f"IVF-PQ at 96 B/vector: {n*96/1e9:.1f} GB codes + {n*8/1e9:.1f} GB ids")
+new_chunks = docs * churn_per_day * chunks_per_doc
+print(f"daily churn: {docs*churn_per_day:,.0f} docs -> {new_chunks/1e6:.1f}M chunks to re-embed/day = {new_chunks*tok_per_chunk/1e9:.2f}B tokens/day, {new_chunks/86400:.0f} chunks/s average")
+q_day = avg_qps * 86400 * 0.4                                  # ASSUMED: traffic is busy 40% of the day at avg_qps
+print(f"queries/day ~{q_day/1e6:.2f}M ; LLM prompt tokens/day ~{q_day*prompt_ctx_tok/1e9:.1f}B, output ~{q_day*out_tok/1e9:.2f}B")
+budget = {"auth+ACL lookup": 20, "query embed": 30, f"search top-{topk_retrieve} (filtered)": 60, f"rerank to {topk_rerank}": 120, "LLM time-to-first-token": 700}
+print("ASSUMED latency budget to first token (ms):", budget, "-> total", sum(budget.values()), "ms")
+cache_hit = 0.20
+print(f"if a semantic/answer cache (keyed by ACL scope) hit {cache_hit:.0%} (ASSUMED), LLM prompt tokens/day drop to ~{q_day*(1-cache_hit)*prompt_ctx_tok/1e9:.1f}B")
+print(f"rerank load at peak: {peak_qps*topk_retrieve:,} passages/s scored by the reranker")
+```
+
+**Follow-ups:**
+- *A user loses access to a space at 10:00; the bot answers from it at 10:05. Bug?* It depends on the stated permission-lag SLO. For sensitive content, check ACLs again at query time against the source system for the returned chunk ids (a post-check on top of the pre-filter).
+- *How do you evaluate fresh content?* Add golden cases tied to recent edits and measure the lag; test that old versions are not returned.
+- *How do you control cost?* Fewer, better chunks (rerank), prompt caching where the platform supports it, smaller models for easy intents, abstain early.
+
+**Common mistakes:** starting with the model and vector DB before the requirements; post-filtering ACLs; cache not scoped by permission; no deletion path; no freshness metric; no abstention and handoff; one big quality number with no retrieval/generation split; no rollback.
+
+### Q51 ⭐ 🔴 Design question: RAG over financial-report PDFs with tables (parsing pipeline, chunking, retrieval, evaluation).
+**Asked at:** senior roles at fintech, GCCs, enterprise teams
+**Say this first (1 line):** I parse with a layout-aware tool, keep each table as a unit (caption, units, period, page) and also turn rows into self-contained sentences, chunk the prose by section with company, period and page metadata, retrieve hybrid (BM25 for tickers and exact figures, dense for meaning), do all arithmetic in code, and score numeric questions by exact match with page-level citations.
+
+**Then explain:**
+- **Parsing (Q17):** a plain text extractor flattens tables and loses column alignment. Use a layout-aware parser (text blocks, reading order, table detection), OCR for scanned pages, and check a sample by eye. Tools differ and change fast; check current docs. Keep the page number and bounding box for citations.
+- **Tables as units:** a table chunk must carry its caption, the unit ("Rs crore", "in millions"), the period (FY2025) and the company; a number without these is dangerous. Two forms: the table as markdown or CSV text for the LLM to read, and one sentence per cell or row ("ToyCo Ltd, profit and loss, FY2025: Net profit was 190.0 Rs crore") for retrieval, since dense models match sentences better than grids. Keep footnotes (restated, adjusted) attached.
+- **Chunking prose:** by section (management discussion, risk factors, notes to accounts), with section titles in the chunk text and metadata: company, ticker, period, document type, page (Q4, Q16). Parent-document retrieval to bring the surrounding section (Q18).
+- **Retrieval:** hybrid, since tickers, line-item names and exact figures are where BM25 is strong (Q29); filter by company and period before ranking (Q15, Q44); rerank (Q30). Disambiguate periods in the query ("FY25 vs calendar 2025", restated figures).
+- **Numeric reliability:** language models make arithmetic and unit slips. Retrieve the cells, then compute growth, margin or sums in code or a calculator tool, and let the model explain the result. Show the inputs and the page. Normalise units (1 crore = 10 million).
+- **Evaluation (Q40, Q39):** golden questions with numeric answers (lookups, growth, ratios, cross-year, cross-company), exact-match scoring (with a tolerance rule written down for rounding and units), plus retrieval hit on the right table and page, and citation correctness. Report by question type; the arithmetic questions usually fail differently from the lookup ones.
+- **Citations:** page-level (document, page, table or section) so an analyst can verify in seconds (Q26).
+
+**Example:** "What was the revenue growth of ToyCo (an invented company) from FY2024 to FY2025?" The retriever filters to company ToyCo and finds the two row sentences (1,200.0 and 1,380.0 Rs crore, page 41); code computes (1380 - 1200) / 1200 = 15.0 percent; the answer cites page 41. In my toy run all 4 golden numeric questions matched exactly (4/4). The model never did the division. This is a toy with made-up numbers and a keyword lookup, so it shows the pattern, not the real accuracy.
+
+**Code:** (executed, standalone, standard library; TOY invented table, no PDF parser, no LLM; keyword overlap stands in for retrieval)
+```python
+# Standalone, standard library only. TOY: an invented company and made-up numbers; no PDF parsing, no LLM (a keyword lookup stands in for retrieval).
+import re
+table = {"company": "ToyCo Ltd", "caption": "Consolidated statement of profit and loss", "unit": "Rs crore", "page": 41,
+         "columns": ["FY2024", "FY2025"],
+         "rows": [("Revenue from operations", [1200.0, 1380.0]), ("Operating expenses", [900.0, 1010.0]), ("Net profit", [150.0, 190.0])]}
+
+def row_sentences(t):                                   # one self-contained sentence per (row, period): keeps unit, period, source
+    out = []
+    for name, vals in t["rows"]:
+        for col, v in zip(t["columns"], vals):
+            out.append({"text": f"{t['company']}, {t['caption']}, {col}: {name} was {v:,.1f} {t['unit']}.",
+                        "meta": {"company": t["company"], "period": col, "page": t["page"], "unit": t["unit"], "value": v, "row": name}})
+    return out
+chunks = row_sentences(table)
+print(chunks[0]["text"]); print(chunks[0]["meta"])
+
+def retrieve(q, chunks):                                 # TOY keyword-overlap retrieval (a real system: hybrid BM25 + dense, filtered by company and period)
+    qw = set(re.findall(r"\w+", q.lower()))
+    return max(chunks, key=lambda c: len(qw & set(re.findall(r"\w+", c["text"].lower()))))
+def lookup(row, period):
+    return retrieve(f"{row} {period}", [c for c in chunks if c["meta"]["period"] == period])["meta"]
+def growth_pct(row):                                     # arithmetic done in CODE, not by the language model
+    a, b = lookup(row, "FY2024")["value"], lookup(row, "FY2025")["value"]; return round((b - a) / a * 100, 1)
+
+golden = [("Net profit in FY2025 (Rs crore)?", 190.0, lambda: lookup("Net profit", "FY2025")["value"]),
+          ("Revenue growth FY2024 to FY2025 (%)?", 15.0, lambda: growth_pct("Revenue from operations")),
+          ("Operating expenses FY2024 (Rs crore)?", 900.0, lambda: lookup("Operating expenses", "FY2024")["value"]),
+          ("Net profit margin FY2025 (%)?", 13.8, lambda: round(lookup("Net profit", "FY2025")["value"] / lookup("Revenue from operations", "FY2025")["value"] * 100, 1))]
+def exact(pred, gold, tol=0.0): return abs(pred - gold) <= tol
+ok = 0
+for q, gold, fn in golden:
+    pred = fn(); hit = exact(pred, gold); ok += hit; print(f"{q:42s} gold={gold:7.1f} pred={pred:7.1f} {'OK' if hit else 'MISS'}")
+print(f"numeric exact match: {ok}/{len(golden)}")
+print("unit trap: the same revenue in Rs million is", table['rows'][0][1][1] * 10, "(1 crore = 10 million): a wrong unit looks like a wrong answer")
+```
+
+**Follow-ups:**
+- *Table spans two pages or has merged headers?* Detect and stitch it in parsing, repeat headers on each part; test on such pages specifically because parsers fail there.
+- *How do you handle restated figures?* Keep the filing date and version in metadata and prefer the latest filing unless the question asks for the original.
+- *Charts and images?* Extract the data table if present, or caption it with a vision model and flag it as lower reliability.
+
+**Common mistakes:** extracting tables as flat text; dropping units, period or caption; letting the LLM compute ratios; no company or period filter (so another company's FY2025 appears); scoring numbers by a similarity judge instead of exact match; citing the document without the page.
