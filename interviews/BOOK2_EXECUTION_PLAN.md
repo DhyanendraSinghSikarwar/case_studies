@@ -20,7 +20,7 @@ Follows plan.md §5 (Book 2 table), §11 (workflow) and style_guide.md. Book 1 i
 | 7 | Advanced RAG | 45 | ✅ (50 Qs) | ✅ | ✅ |
 | 8 | Agents, tool use, MCP, multi-agent | 50 | ✅ (52 Qs) | ✅ | ✅ |
 | 9 | LLM evaluation | 45 | ✅ (46 Qs) | ✅ | ✅ |
-| 10 | Deployment: vLLM, quantization, latency/cost | 45 | ⬜ | ⬜ | ⬜ |
+| 10 | Deployment: vLLM, quantization, latency/cost | 45 | ✅ (49 Qs) | ⬜ | ⬜ |
 | 11 | LLMOps, security, prompt injection | 40 | ⬜ | ⬜ | ⬜ |
 | 12 | GenAI system design + coding | 40 | ⬜ | ⬜ | ⬜ |
 
