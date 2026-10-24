@@ -16,7 +16,7 @@ Follows plan.md §5 (Book 2 table), §11 (workflow) and style_guide.md. Book 1 i
 | 3 | Prompting, structured outputs, function calling | 40 | ✅ (44 Qs) | ✅ | ✅ |
 | 4 | Fine-tuning: SFT, LoRA/QLoRA, PEFT, distillation | 45 | ✅ (47 Qs) | ✅ | ✅ |
 | 5 | Alignment: RLHF, DPO, safety, guardrails | 35 | ✅ (41 Qs) | ✅ | ✅ |
-| 6 | RAG basics | 50 | ⬜ | ⬜ | ⬜ |
+| 6 | RAG basics | 50 | ✅ (53 Qs) | ⬜ | ⬜ |
 | 7 | Advanced RAG | 45 | ⬜ | ⬜ | ⬜ |
 | 8 | Agents, tool use, MCP, multi-agent | 50 | ⬜ | ⬜ | ⬜ |
 | 9 | LLM evaluation | 45 | ⬜ | ⬜ | ⬜ |
@@ -32,4 +32,4 @@ Book 1 Part 9 owns light NLP/transformer intro; Book 4 owns generic MLOps/Docker
 - torch/transformers may not be installed; code needing them must be marked `# not executed: <reason>`.
 
 ## Next step
-Part 6 Wave A (RAG basics: chunking, embeddings, vector DBs, retrieval). The user lifted the earlier agent pause with 'continue'. Reminders: apply lead edits AFTER the final scratch-to-file merge because the merge script replaces blocks wholesale; make the Example field mandatory in every Wave B brief; per-agent scratch files avoid concurrent-edit clobbering. Part 3 workflow that worked: each answer agent writes its range to scratch/<part>_Qxx-yy/answers.md and the lead merges by heading with scratch/B2P03_merge/merge.py (adapt the part number), which avoids concurrent-edit clobbering. Lesson from Part 2: parallel answer agents editing one file can clobber a boundary line (Q29 heading); run the heading/continuity check after every wave. WebFetch works now (some sites return 403/429); torch 2.14 CPU installed this session (pip install --index-url https://download.pytorch.org/whl/cpu torch).
+Part 6 Wave B (answers for Q1-Q53; Wave A is done and frozen), then Part 6 review, then Part 7 Wave A. The user lifted the earlier agent pause with 'continue'. Reminders: apply lead edits AFTER the final scratch-to-file merge because the merge script replaces blocks wholesale; make the Example field mandatory in every Wave B brief; per-agent scratch files avoid concurrent-edit clobbering. Part 3 workflow that worked: each answer agent writes its range to scratch/<part>_Qxx-yy/answers.md and the lead merges by heading with scratch/B2P03_merge/merge.py (adapt the part number), which avoids concurrent-edit clobbering. Lesson from Part 2: parallel answer agents editing one file can clobber a boundary line (Q29 heading); run the heading/continuity check after every wave. WebFetch works now (some sites return 403/429); torch 2.14 CPU installed this session (pip install --index-url https://download.pytorch.org/whl/cpu torch).

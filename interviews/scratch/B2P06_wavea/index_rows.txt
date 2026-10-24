@@ -1,0 +1,53 @@
+| B2P06-Q1 | 6 | What problem does RAG solve that a standalone LLM cannot, and why is it preferred over frequent retraining? |
+| B2P06-Q2 | 6 | Walk through a basic RAG pipeline end to end (offline indexing and online retrieval and generation). |
+| B2P06-Q3 | 6 | What is chunking, and why does chunk size matter for retrieval quality? |
+| B2P06-Q4 | 6 | How do you choose chunk size and overlap? Compare fixed-size, recursive, structure-aware, semantic and parent-document chunking. |
+| B2P06-Q5 | 6 | What is an embedding, why does dense retrieval work, and why must indexing and querying use the same embedding model? |
+| B2P06-Q6 | 6 | How do you choose an embedding model for RAG (domain, language, dimension, max input length, cost, evaluation on your own data)? |
+| B2P06-Q7 | 6 | What does a vector database do, and how do you choose between a dedicated store, pgvector and an in-process library such as FAISS? |
+| B2P06-Q8 | 6 | How do approximate nearest-neighbour indexes work for RAG (HNSW, IVF, product quantization), and what are their recall and latency knobs? |
+| B2P06-Q9 | 6 | Which similarity metric do you use for embeddings (cosine, dot product, L2), and how do you pick top-k or a similarity threshold? |
+| B2P06-Q10 | 6 | How do you evaluate retrieval separately from generation (recall@k, precision@k, MRR, nDCG, a golden set)? |
+| B2P06-Q11 | 6 | A RAG answer is wrong even though the right document exists. How do you debug it? |
+| B2P06-Q12 | 6 | How do you prompt the generator in a RAG system (grounding, permission to say "I don't know", citations, context ordering)? |
+| B2P06-Q13 | 6 | RAG vs fine-tuning vs stuffing everything into a long context: how do you decide for a specific product? |
+| B2P06-Q14 | 6 | Code: build a minimal RAG pipeline from scratch (chunk, embed, retrieve by cosine similarity, assemble the prompt, call a mocked LLM). |
+| B2P06-Q15 | 6 | How do metadata filtering and access control work in RAG? Why does post-filtering fail, and how do you guarantee users never see documents they lack permission for? |
+| B2P06-Q16 | 6 | What pitfalls come with chunk size and overlap in practice (tokens vs characters, boundaries, chunk metadata, duplicated text)? |
+| B2P06-Q17 | 6 | How do you ingest PDFs, tables, scans and HTML for RAG (parsing, OCR, layout-aware extraction, tables as text)? |
+| B2P06-Q18 | 6 | What is parent-document (small-to-big) retrieval, and when does returning a larger context around a hit help? |
+| B2P06-Q19 | 6 | What does a good ingestion pipeline do (cleaning, boilerplate removal, deduplication, versioning, stable chunk IDs)? |
+| B2P06-Q20 | 6 | How do you keep a RAG index fresh (incremental updates, deletes, tombstones), and what happens when deleted documents still surface? |
+| B2P06-Q21 | 6 | What happens when you change the embedding model? How do you migrate an index safely? |
+| B2P06-Q22 | 6 | What are asymmetric query and document embeddings (instruction prefixes, query length, normalisation), and why do they matter? |
+| B2P06-Q23 | 6 | How do embedding dimension, truncation and quantisation affect quality and storage? Work through the storage maths. |
+| B2P06-Q24 | 6 | How do you tune top-k: fixed vs adaptive k, similarity thresholds, deduplicating near-identical chunks, and MMR diversification? |
+| B2P06-Q25 | 6 | How do you assemble the context for the prompt (ordering, token budget, truncation, the lost-in-the-middle effect)? |
+| B2P06-Q26 | 6 | How do you produce reliable citations and attribution in RAG (chunk IDs, span-level citations, verifying that a citation supports the claim)? |
+| B2P06-Q27 | 6 | What should a RAG system do when retrieval finds nothing relevant (abstaining, score thresholds, fallbacks)? |
+| B2P06-Q28 | 6 | How do you handle multi-turn conversations in RAG (standalone query rewriting, limited history, metadata filters)? |
+| B2P06-Q29 | 6 | When does keyword search (BM25) beat dense retrieval in RAG, and why do teams combine them (hybrid search basics)? |
+| B2P06-Q30 | 6 | What does reranking add to RAG (retrieve about 50, rerank to about 5), and what does it cost in latency? |
+| B2P06-Q31 | 6 | What is the latency budget of a RAG request across embedding, search, reranking and generation, and how do caching and streaming help? |
+| B2P06-Q32 | 6 | How do you estimate the cost of a RAG system (indexing, storage, per-query embedding and generation tokens)? Work through an example. |
+| B2P06-Q33 | 6 | Does a 50-million-chunk index fit in memory? Estimate the memory for HNSW vs IVF-PQ and decide. |
+| B2P06-Q34 | 6 | How do you tune recall against latency (efSearch, nprobe) and measure recall for a live index without ground truth? |
+| B2P06-Q35 | 6 | How does multilingual data change a RAG design (multilingual embeddings, per-language indexes, translation)? |
+| B2P06-Q36 | 6 | What is indirect prompt injection through retrieved documents, and what basic defences does a RAG system need? |
+| B2P06-Q37 | 6 | Why can RAG still hallucinate (retrieval miss, ignored context, conflicting documents, over-trust), and how do you reduce it? |
+| B2P06-Q38 | 6 | What should a RAG system do when retrieved documents conflict or are out of date (recency, authority, showing both sides)? |
+| B2P06-Q39 | 6 | How do you evaluate generation in RAG (faithfulness, answer relevance, correctness) and how do these map to retrieval failures? |
+| B2P06-Q40 | 6 | How do you build a golden evaluation set for RAG (real queries, relevance labels, synthetic questions and their pitfalls)? |
+| B2P06-Q41 | 6 | How do you monitor and debug a RAG system in production (retrieved chunk IDs and scores, per-stage latency, feedback loops)? |
+| B2P06-Q42 | 6 | What are the security and privacy risks in enterprise RAG (access control at retrieval, tenant isolation, PII in the index, logging)? |
+| B2P06-Q43 | 6 | AI code review: this LLM-written RAG ingestion and retrieval code has bugs (embedding-model mismatch, missing normalisation, filtering after top-k, deletes that leave vectors, off-by-one chunk overlap). Find and fix them. |
+| B2P06-Q44 | 6 | A strict metadata filter returns only 2 results when the user wanted 10. Why does it happen, and how do you fix it (pre-filtering, post-filtering, filter-aware ANN)? |
+| B2P06-Q45 | 6 | Design question: 800 million vectors and a 200 GB RAM budget. Which index do you choose, and how do you recover recall? |
+| B2P06-Q46 | 6 | Recall is 0.90 and you need 0.97 without changing the embedding model. What do you change, and what does it cost? |
+| B2P06-Q47 | 6 | How do you evaluate chunking strategies empirically (experiment design, retrieval metrics, ablations, confounders)? |
+| B2P06-Q48 | 6 | How does semantic chunking work (similarity breakpoints), and what does the evidence say about when it beats simpler chunking? |
+| B2P06-Q49 | 6 | How do you answer a question that needs information from 10 documents when they do not fit in the context window? |
+| B2P06-Q50 | 6 | Design question: a RAG assistant for customer support over millions of documents with per-user permissions and fresh content. |
+| B2P06-Q51 | 6 | Design question: RAG over financial-report PDFs with tables (parsing pipeline, chunking, retrieval, evaluation). |
+| B2P06-Q52 | 6 | When and how do you fine-tune an embedding model for your domain (contrastive training, hard negatives, evaluation, risks)? |
+| B2P06-Q53 | 6 | What are embedding inversion and related privacy risks in vector stores, and what mitigations exist? |
