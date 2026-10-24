@@ -1,0 +1,190 @@
+# Book 3 — Part 6: Date/time: retention, cohorts, month-over-month and year-over-year, with pandas equivalents
+
+**Topic:** storing and truncating dates (TEXT ISO, Unix integers, Julian days; SQLite date(), datetime(), strftime(), julianday(), unixepoch(), modifiers), week-start conventions and ISO week traps, date arithmetic and end-of-month edge cases, timestamps versus dates and time zones, date-filter traps (BETWEEN, half-open ranges, sargability), date spines and calendar tables, gap filling, MoM and YoY (missing months, partial months), month-to-date, fiscal years, cohort analysis (first-order cohorts, retention tables, day-N retention definitions), churn and resurrection, new versus returning, active users per period, lifetime and recency, seasonality, business days, late-arriving data, and the pandas counterparts (to_datetime, dt, resample, Grouper, Period, date_range, DateOffset, tz_localize and tz_convert, pivot_table for cohort matrices).
+**Target:** 45  |  **Actual:** 45 (⭐⭐⭐ 18, ⭐⭐ 16, ⭐ 11)  |  **Date:** 2026-10-24  |  **Status:** Questions frozen (Wave A); answers pending (Wave B)
+
+Scope note: this part covers date and time handling for analytics and cohort retention. Funnels and DAU/MAU metric design (Part 8), gaps and islands, streaks and sessionization (Part 7), ranking and top-N (Part 4) and running-total mechanics (Part 5) are out; where a question touches them it stops at 'present in month m and m+1', LAG on a completed spine, or a cross-reference.
+
+Evidence limits: no candidate-reported SQL questions were found. Sources are the SQLite and pandas documentation (opened), practice-site pages (PracHub, DataDriven; opened), and search snippets of prep guides and LeetCode-style problem banks. PracHub tags one cohort-retention prompt as an Intuit data scientist technical screen; the page cites no primary source, so treat it as site-reported. 'Asked at' tags are source types, and 'expert gap-check' marks questions added from practice rather than from a found source. SQLite engine notes for Wave B (checked on the installed SQLite 3.45.1): strftime %U, %V, %G and %g return NULL, %W works; the 'floor' and 'ceiling' modifiers, 'end of month' and negative 'weekday' arguments (documented as newer additions) return NULL; run, do not assume.
+
+---
+
+### Q1 ⭐⭐⭐ 🟢 Storing dates in SQLite: SQLite has no native date type. Explain the three conventions (TEXT in ISO 8601 such as '2024-03-05' or '2024-03-05 14:30:00', INTEGER Unix seconds, REAL Julian day numbers), and show with a small table events(event_id, event_date) why ISO text sorts and compares correctly while 'DD/MM/YYYY' text does not (ORDER BY and a range filter go wrong). Show date(), datetime() and strftime() on both an ISO text value and a Unix integer (with the 'unixepoch' modifier), what an invalid date string returns (NULL), and the pandas side: pd.to_datetime with format=, errors='coerce' (NaT) and dayfirst.
+**Asked at:** SQLite date and time functions documentation (lang_datefunc, opened), vendor documentation and not a candidate report; engine-behaviour follow-ups in analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q2 ⭐⭐⭐ 🟢 Truncate to day, week, month, quarter and year: orders(order_id, order_ts, amount) with ISO text timestamps. In SQLite return the month bucket two ways, strftime('%Y-%m', order_ts) (text) and date(order_ts, 'start of month') (a date), then a quarter bucket (SQLite has no quarter code, so derive it from the month number) and a year bucket. Give the DATE_TRUNC, EXTRACT and DATE_FORMAT equivalents in PostgreSQL, MySQL, BigQuery and Snowflake as hedged text (not executed), and the pandas versions: dt.to_period('M'), dt.to_period('Q'), dt.to_period('Y'), dt.normalize(), and why dt.floor('MS') is not allowed for calendar months.
+**Asked at:** SQLite date and time functions documentation (lang_datefunc, opened), vendor documentation and not a candidate report; engine-behaviour follow-ups in analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q3 ⭐⭐⭐ 🟢 Extracting parts and counting days between dates: orders(order_id, order_ts). Return year, month, day of month, day of week and day of year with strftime, and the days between two dates with julianday(b) - julianday(a) (a float) versus an integer count. Explain that strftime('%w') has Sunday = 0 while pandas dt.dayofweek has Monday = 0, that pandas (b - a).dt.days truncates while julianday gives a float (so a timestamp pair 36 hours apart is 1.5, not 1), and what rounding or date() wrapping you use to get whole calendar days.
+**Asked at:** SQLite date and time functions documentation (lang_datefunc, opened), vendor documentation and not a candidate report; engine-behaviour follow-ups in analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q4 ⭐⭐⭐ 🟢 The BETWEEN trap with timestamps: orders(order_id, order_ts, amount) where order_ts is 'YYYY-MM-DD HH:MM:SS'. Show that WHERE order_ts BETWEEN '2024-01-01' AND '2024-01-31' silently drops every order after midnight on 31 January, and that BETWEEN '2024-01-01' AND '2024-01-31 23:59:59' still misses fractional seconds. Rewrite with the half-open range order_ts >= '2024-01-01' AND order_ts < '2024-02-01', and show the same bug in pandas (df.loc['2024-01-01':'2024-01-31'] on a DatetimeIndex is inclusive of the whole last day by partial-string indexing, while a boolean mask with <= Timestamp is not). Say why half-open ranges compose with adjacent months.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q5 ⭐⭐⭐ 🟡 Weekly buckets and the week-start trap: orders(order_id, order_ts, amount). Group revenue by week with weeks starting Monday in SQLite using date(order_ts, 'weekday 0', '-6 days') and with weeks starting Sunday, and show a week that spans a month boundary and a year boundary (late December into early January). Compare SQLite strftime('%W') (week 1 begins on the first Monday, days before it are week 00) with %U, and report what SQLite 3.45 does with the ISO codes %V and %G (check the installed version; the SQLite docs list them in newer versions). In pandas show resample('W') (default W-SUN, labelled by the Sunday that ends the week), resample('W-MON', closed='left', label='left') and dt.to_period('W') (Monday to Sunday), and the year-boundary difference of dt.isocalendar().
+**Asked at:** SQLite date and time functions documentation (lang_datefunc, opened), vendor documentation and not a candidate report; engine-behaviour follow-ups in analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q6 ⭐⭐⭐ 🟡 Monthly revenue with missing months: orders(order_id, order_ts, amount) where February 2024 has no orders. A plain GROUP BY month drops February. Build a date spine of months with a recursive CTE in SQLite (WITH RECURSIVE months(m) AS (SELECT '2024-01-01' UNION ALL SELECT date(m, '+1 month') FROM months WHERE m < '2024-04-01')), LEFT JOIN the aggregated orders and COALESCE to 0. Mention generate_series and calendar tables elsewhere as hedged text (not executed). Give pandas: resample('MS').sum() (empty months become 0) versus groupby on to_period('M') (missing month absent) and reindex with pd.date_range(freq='MS') to force the spine.
+**Asked at:** search-result snippets of date-spine and churn guides (Galaxy cohort-churn glossary, a LinkedIn list of time-series SQL topics; not opened), guides and not candidate reports; analyst and data engineer screens
+<!-- ANSWER_PENDING -->
+
+### Q7 ⭐⭐⭐ 🟡 Month-over-month growth: monthly_revenue derived from orders(order_id, order_ts, amount). Compute revenue, the previous month's revenue with LAG, absolute change and percent change ROUND(100.0 * (rev - prev) / NULLIF(prev, 0), 1). Then show the bug: when a month has no orders, LAG compares with the wrong month (two months back) and the report looks fine. Fix by LEFT JOINing onto a month spine first so the empty month has revenue 0 and the next month shows growth from 0 (NULL, not infinity). Give the pandas version (resample('MS').sum(), pct_change(fill_method=None) giving inf on a zero base). Cross-reference Part 5 for LAG mechanics.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q8 ⭐⭐⭐ 🟡 Month arithmetic and end-of-month edge cases: what do date('2024-01-31', '+1 month'), date('2023-01-31', '+1 month') and date('2024-03-31', '-1 month') return in SQLite (overflow into the next month, so 2023-01-31 + 1 month is 2023-03-03), and how do you get the last day of the month safely (date(x, 'start of month', '+1 month', '-1 day'))? Show the pandas behaviour: Timestamp + pd.DateOffset(months=1) clips to the last valid day (2023-02-28), pd.offsets.MonthEnd, and Period arithmetic. Explain why 'one month later' needs a business definition, and give the effect on a subscription renewal on the 31st.
+**Asked at:** SQLite date and time functions documentation (lang_datefunc, opened), vendor documentation and not a candidate report; engine-behaviour follow-ups in analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q9 ⭐⭐⭐ 🟡 First-order (acquisition) cohort assignment: orders(order_id, user_id, order_ts, amount) and users(user_id, signup_date) where some users never ordered. Assign each user's cohort month as the month of their first order (MIN(order_ts) per user), compute cohort size per month, and contrast with a signup-month cohort that includes never-purchasers. Show the pandas version with groupby('user_id')['order_ts'].transform('min') and to_period('M'), and say what each definition does to the denominator.
+**Asked at:** search-result snippets of cohort-retention prep pages (Dataford 'joins for retention rates' Zomato-style first-order-month retention by city, PracHub Amazon-tagged monthly cohort retention, letsdatascience cohort guide, Level Up Gitconnected retention article; not opened, the Dataford page returned HTTP 429 and Level Up returned 403), not candidate reports; analyst and data scientist screens at product companies and GCCs
+<!-- ANSWER_PENDING -->
+
+### Q10 ⭐⭐⭐ 🟡 Cohort retention counts (month 0 to n): orders(order_id, user_id, order_ts). For each first-order cohort month return cohort_month, months_since_first (0, 1, 2, ...) and the number of distinct active users, counting a user once per cohort and month. Compute the month offset as (year difference * 12 + month difference) from strftime, not by subtracting month numbers (December to January breaks the naive form). Show the pandas cohort matrix with pivot_table(index='cohort', columns='period_number', values='user_id', aggfunc='nunique'), and note the 'at least one event in the calendar month' definition used in the PracHub-style prompt.
+**Asked at:** PracHub 'compute cohort retention rate' listing (opened; the page tags it Intuit, Data Scientist, technical screen, but cites no primary source, so treat the attribution as site-reported and unverified); product-company data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q11 ⭐⭐⭐ 🟡 Cohort retention percentage and the triangle: from the cohort counts above return retention % = 100 * active_users / cohort_size (cohort size is the month-0 count) as one row per cohort with columns m0, m1, m2, m3. Explain NULL versus 0 for months that have not happened yet (the triangle) versus months with zero retained users, and why a partial current month understates the latest column. Give SQL with conditional aggregation (SUM(CASE WHEN months_since = 1 ...)) and pandas dividing the pivot by its first column (div(axis=0)).
+**Asked at:** DataDriven 'monthly cohort retention' / 'The Slow Fade' mock-interview page (opened; no company label, medium, L4 seniority), a practice-site problem and not a candidate report; analyst and data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q12 ⭐⭐⭐ 🟡 Day-1 retention (the LeetCode 550 pattern, Game Play Analysis IV): activity(player_id, device_id, event_date, games_played), fraction of players who logged in again on the day after their first login, rounded to 2 decimals. Write it with a first-login CTE and a join on date(first_login, '+1 day') = event_date, counting distinct players, with denominator all players. Show the common wrong answers (counting rows instead of players, counting any later login, dividing by logins). Give the pandas version (groupby transform('min'), merge, nunique).
+**Asked at:** public LeetCode-style problem bank (550 Game Play Analysis IV, 1193 Monthly Transactions I, 197 Rising Temperature and 262 Trips and Users known from search snippets and third-party write-ups, statements not opened), not candidate reports; analyst and data scientist screens at product companies and GCCs
+<!-- ANSWER_PENDING -->
+
+### Q13 ⭐⭐⭐ 🟡 Day-N retention definitions: logins(user_id, login_date) and users(user_id, signup_date). Compute day 1, day 7 and day 30 retention per signup-date cohort three ways, classic (logged in exactly on day N), cumulative (any login from day 1 through N) and rolling (on or after day N), and show on a small table that the three numbers differ and that rolling is unbounded and keeps rising. Explain why a cohort that signed up less than N days ago must be excluded or marked immature (the denominator trap) and which definition to state before writing code.
+**Asked at:** retention-definition guides seen as search snippets (GoPractice day-N versus rolling retention, Linkrunner glossary, Metricgate retention curves; not opened): classic day N, cumulative within N days, rolling on-or-after N; guides and not candidate reports; product analyst and data scientist screens
+<!-- ANSWER_PENDING -->
+
+### Q14 ⭐⭐⭐ 🟡 New versus returning customers per month: orders(order_id, user_id, order_ts, amount). For each month return the count of distinct customers whose first order ever falls in that month (new) and those who ordered in that month but had an earlier first order (returning), plus revenue split. Compare with a version using NOT EXISTS on earlier orders, and the pandas version with transform('min') on the order date and np.where. State what happens to a customer who orders twice in their first month.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q15 ⭐⭐⭐ 🟡 Active users per month and week: events(user_id, event_ts). Count distinct active users per calendar month (MAU as a plain count, not stickiness; DAU/MAU design is Part 8) and per week starting Monday, one row per period. Explain that a user active in two weeks of the same month counts once per month but twice across the two weekly rows, so weekly counts do not add up to the monthly count, and give the pandas versions with groupby(pd.Grouper(key='event_ts', freq='MS'))['user_id'].nunique() and freq='W-MON'.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q16 ⭐⭐⭐ 🟡 Time zones and day boundaries ('my daily counts differ by timezone'): orders(order_id, order_ts_utc, amount) stored as UTC ISO text. An order at 2024-03-05 20:00:00 UTC is already 6 March in India (UTC+5:30). Show daily order counts grouped by the UTC date, then by the IST date with datetime(order_ts_utc, '+5 hours', '+30 minutes') (and why the 'localtime' modifier depends on the server's own time zone and is not a safe way to say IST), and which orders move between days. Give the pandas version: pd.to_datetime(..., utc=True), tz_convert('Asia/Kolkata'), dt.date. State the rule: store UTC, convert at the reporting edge, decide the reporting time zone once.
+**Asked at:** SQLite date and time functions documentation (lang_datefunc, opened), vendor documentation and not a candidate report; engine-behaviour follow-ups in analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q17 ⭐⭐⭐ 🔴 Year-over-year growth with missing months: monthly_revenue(month, revenue) built from orders over 2022-2024 where some months have no sales. Compute same-month-last-year revenue and YoY % per month. Show that LAG(revenue, 12) is wrong when a month is missing or duplicated, and fix with a self join on date(month, '-1 year') or on a completed spine. Handle the first year (NULL, not 0), a zero base (NULLIF), and a partial current month (exclude or compare to the same days of last year). pandas: pct_change(12) after reindexing versus shift(freq='12MS') or a merge on the shifted period.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q18 ⭐⭐⭐ 🔴 Month-over-month retention (active in both months): events(user_id, event_ts). For each month m return the users active in m, the users active in both m and m+1 (a self join or INTERSECT on distinct user-month pairs, only 'present in m and m+1', no streaks), and the retention rate. Also return users active in m but not m+1. Show a user active in months 1 and 3 but not 2 and what the m to m+1 view says about them. Give the pandas version with set operations on groupby sets or merge of the user-month frame with itself shifted by one period.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q19 ⭐⭐ 🟢 Customer lifetime and recency: orders(order_id, user_id, order_ts, amount). For each customer return first order date, last order date, lifetime in days (last minus first), number of orders, and recency in days relative to a fixed as-of date such as '2024-12-31' (not 'now', so the result is reproducible). Explain why a parameterised as-of date matters for tests and backfills, and give the pandas version with groupby agg and a Timedelta .dt.days. Mention a customer with one order (lifetime 0).
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q20 ⭐⭐ 🟡 Time between first and second purchase and repeat purchase rate: orders(order_id, user_id, order_ts, amount). Using ROW_NUMBER per user, return days between order 1 and order 2 for users with at least two orders, the average and the median of that gap (median needs a window or sort trick in SQLite), the repeat purchase rate (users with 2 or more orders divided by users with 1 or more), and the repeat rate within 30 days of the first order. pandas: groupby cumcount, merge, quantile. Mention that orders on the same day need a tie-breaker.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q21 ⭐⭐ 🟡 Monthly Transactions I (the LeetCode 1193 pattern): transactions(id, country, state, amount, trans_date) with state in ('approved','declined'). For each month (YYYY-MM) and country return the number of transactions, approved count, total amount and approved amount, using strftime and conditional aggregation (SUM(CASE ...)). Note the NULL country group and the MySQL DATE_FORMAT version as hedged text, then give the pandas groupby with named aggregation.
+**Asked at:** public LeetCode-style problem bank (550 Game Play Analysis IV, 1193 Monthly Transactions I, 197 Rising Temperature and 262 Trips and Users known from search snippets and third-party write-ups, statements not opened), not candidate reports; analyst and data scientist screens at product companies and GCCs
+<!-- ANSWER_PENDING -->
+
+### Q22 ⭐⭐ 🟡 Rising temperature with date gaps (the LeetCode 197 pattern): weather(id, record_date, temperature). Return the ids of days warmer than the previous calendar day. Solve with a self join on date(w1.record_date, '-1 day') = w2.record_date and with LAG, and show that LAG compares with the previous row, which is wrong when a calendar day is missing, so the self join (or LAG plus a check that the date gap is exactly 1) is the correct one. pandas: shift with a date index and asfreq('D') or merge on shifted dates.
+**Asked at:** public LeetCode-style problem bank (550 Game Play Analysis IV, 1193 Monthly Transactions I, 197 Rising Temperature and 262 Trips and Users known from search snippets and third-party write-ups, statements not opened), not candidate reports; analyst and data scientist screens at product companies and GCCs
+<!-- ANSWER_PENDING -->
+
+### Q23 ⭐⭐ 🟡 Cancellation rate by day (the LeetCode 262 pattern, Trips and Users): trips(id, client_id, driver_id, status, request_at) and users(user_id, banned, role). For request dates between 2013-10-01 and 2013-10-03 return the cancellation rate per day counting only trips whose client and driver are both unbanned, rounded to 2 decimals. Show the date filter (half-open on a timestamp), the double join to users, conditional aggregation, and a day with no trips (absent versus rate 0 versus NULL).
+**Asked at:** public LeetCode-style problem bank (550 Game Play Analysis IV, 1193 Monthly Transactions I, 197 Rising Temperature and 262 Trips and Users known from search snippets and third-party write-ups, statements not opened), not candidate reports; analyst and data scientist screens at product companies and GCCs
+<!-- ANSWER_PENDING -->
+
+### Q24 ⭐⭐ 🟡 Month-to-date versus prior month-to-date: daily_sales(sale_date, amount) and a fixed as-of date such as '2024-03-17'. Return revenue from the first of the as-of month to the as-of date, revenue from the first of the previous month to the same day number (handle a day number that does not exist in the shorter month, such as the 31st), and the percent difference. Show the half-open ranges built with date modifiers, and the pandas version with boolean masks and DateOffset. State why comparing a partial month to a full month is the classic error.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q25 ⭐⭐ 🟡 Fiscal years and quarters (India, April to March): orders(order_id, order_ts, amount). Derive the fiscal year label (FY2024-25 for April 2024 to March 2025), fiscal quarter (Q1 = April to June) and fiscal month number in SQLite with strftime and CASE or arithmetic, then total revenue per fiscal quarter. Give the pandas versions with dt.to_period('Q-MAR') and dt.qyear / dt.quarter, and a check on 31 March versus 1 April. Mention that quarter and DATE_TRUNC fiscal options in other engines differ (hedged, not executed).
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q26 ⭐⭐ 🟡 Seasonality by day-of-week and hour: orders(order_id, order_ts, amount) in UTC. Return the average daily orders per day of week (Monday first), the hourly profile in IST, and weekend versus weekday share. Explain why you average over actual number of days (count distinct dates) rather than count rows (a month has more of some weekdays), the strftime('%w') Sunday = 0 ordering trick (CASE or (w + 6) % 7), and the pandas groupby on dt.dayofweek with day_name().
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q27 ⭐⭐ 🟡 Business days and holidays: tasks(task_id, start_date, end_date) and holidays(holiday_date). Count working days (Monday to Friday, excluding holidays) between start and end inclusive using a recursive CTE calendar and LEFT JOIN or NOT EXISTS on holidays, and show the closed-form day arithmetic and why it fails with holidays. pandas: np.busday_count with holidays=, pd.bdate_range(freq='C', holidays=...), and CustomBusinessDay. State whether the end date is inclusive; that choice changes every answer by one.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q28 ⭐⭐ 🟡 pandas resample details versus SQL grouping: daily_sales(sale_date, amount) with gaps. Show resample('MS') (month start labels, left closed), resample('ME') (month end labels, closed and label right by default) and resample('W') (W-SUN, right closed and labelled), why resample('MS') creates empty months (sum 0, mean NaN) where SQL GROUP BY omits them, and the 'M' alias being gone in pandas 3 (use 'ME'). Reproduce a SQLite monthly sum and assert both frames match after reindexing the SQL result to the pandas spine.
+**Asked at:** pandas time series user guide and DataFrame.resample reference (opened), official documentation and not a candidate report; analyst and data scientist rounds that mix SQL and pandas
+<!-- ANSWER_PENDING -->
+
+### Q29 ⭐⭐ 🟡 SQL versus pandas date gotchas (translation table, each row demonstrated): week start defaults (SQLite %w Sunday = 0 versus pandas Monday = 0), integer versus float day differences (julianday versus Timedelta.days), NULL versus NaT in comparisons and groupby (pandas groupby drops NaT keys by default, SQL groups NULL together), string dates compared as text versus datetime64, ISO week year boundary (isocalendar().year versus calendar year), and Period('2024-01') versus Timestamp('2024-01-01') equality and merging. Run each side by side on a six-row frame.
+**Asked at:** pandas time series user guide and DataFrame.resample reference (opened), official documentation and not a candidate report; analyst and data scientist rounds that mix SQL and pandas
+<!-- ANSWER_PENDING -->
+
+### Q30 ⭐⭐ 🟡 Time zones in pandas: pd.to_datetime(['2024-11-03 01:30'], ...) in America/New_York is ambiguous (clock falls back) and 2024-03-10 02:30 does not exist (spring forward). Show tz_localize raising AmbiguousTimeError and NonExistentTimeError, and the fixes ambiguous='NaT' / True / False array, nonexistent='shift_forward'. Show tz_convert('Asia/Kolkata') (no DST), comparing tz-naive with tz-aware (TypeError), and why timestamps should be stored in UTC. Concept: SQLite has only the 'localtime' and 'utc' modifiers, no named zones.
+**Asked at:** pandas time series user guide and DataFrame.resample reference (opened), official documentation and not a candidate report; analyst and data scientist rounds that mix SQL and pandas
+<!-- ANSWER_PENDING -->
+
+### Q31 ⭐⭐ 🟡 Calendar (date dimension) table: build calendar(cal_date, year, month, quarter, week_start_monday, day_of_week, is_weekend, fiscal_year, fiscal_quarter, is_holiday) for 2023-2024 with a recursive CTE in SQLite, load a small holidays table, and use it to fill zero-sales days and to compute revenue per working day. Explain why a physical calendar table beats generating the spine in every query, and show generate_series and pandas pd.date_range with dt accessors as the equivalents (generate_series hedged, not executed).
+**Asked at:** search-result snippets of date-spine and churn guides (Galaxy cohort-churn glossary, a LinkedIn list of time-series SQL topics; not opened), guides and not candidate reports; analyst and data engineer screens
+<!-- ANSWER_PENDING -->
+
+### Q32 ⭐⭐ 🔴 Fiscal-year-over-year comparison with missing months: monthly_revenue(month, revenue) for FY2023-24 and FY2024-25 where some months are missing. Return for each fiscal month (April = 1 to March = 12) revenue this fiscal year, revenue last fiscal year, and YoY percent, plus fiscal year-to-date for both years up to the latest loaded month only (so a half-loaded FY2024-25 compares to the same months of the prior year, not the full year). Build with a fiscal calendar spine and conditional aggregation; pandas: pivot on fiscal month and fiscal year with reindex 1..12 and cumsum limited by the last loaded month.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q33 ⭐⭐ 🔴 Churn and resurrection by month: events(user_id, event_ts). Classify each user-month transition as new (first ever active month), retained (active in m-1 and m), churned (active in m-1 but not m), and resurrected (active in m, not in m-1, but active in some earlier month). Return counts per month in a reconciling table (previous active = retained + churned; active = new + retained + resurrected). Build from distinct user-month pairs and a first-active-month CTE; pandas with merge and set logic. Streak and island logic is Part 7; stay at the m-1 versus m level.
+**Asked at:** search-result snippets of date-spine and churn guides (Galaxy cohort-churn glossary, a LinkedIn list of time-series SQL topics; not opened), guides and not candidate reports; analyst and data engineer screens
+<!-- ANSWER_PENDING -->
+
+### Q34 ⭐⭐ 🔴 Active subscriptions per month from date ranges: subscriptions(sub_id, user_id, plan_price, start_date, end_date) where end_date is NULL for active subscriptions. For each month return the number of subscriptions active at month end, new, ended, and monthly recurring revenue, using a month spine and a range join (start_date <= month_end AND (end_date IS NULL OR end_date >= month_end)). Discuss inclusive versus exclusive end_date and a subscription that starts and ends in the same month, then give the pandas version with date_range and a cross merge or interval masks.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q35 ⭐ 🟡 Late-arriving data and event time versus processing time: events(event_id, user_id, event_ts, loaded_at). Explain why a daily report for yesterday changes tomorrow, show a query that reports by event_ts and a restated-total comparison versus the figures first published (using loaded_at <= a cut-off), and discuss lookback windows, reprocessing and how cohort retention for the latest month shifts as late rows land. Concept plus a small runnable example; no streaming tooling.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q36 ⭐ 🟡 Dialect map for date functions (hedge everything not run on SQLite 3.45): DATE_TRUNC, EXTRACT, DATE_PART, DATEDIFF argument orders, DATE_ADD and INTERVAL, generate_series, AGE in PostgreSQL, DATE_FORMAT and TIMESTAMPDIFF in MySQL, DATE_TRUNC with TIMESTAMP_TRUNC and DATE_DIFF in BigQuery, DATEADD and DATEDIFF in Snowflake and SQL Server. Pair each with the SQLite expression that is run (strftime, date modifiers, julianday), stress that the sign and order of DATEDIFF arguments differ between engines, and label every non-SQLite line 'not executed'.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q37 ⭐ 🟡 Unix timestamps, milliseconds and subseconds: events(event_id, event_ms) stores epoch milliseconds from an app. Show datetime(event_ms / 1000, 'unixepoch') versus the bug of passing milliseconds as seconds (year about 56000, NULL or nonsense), unixepoch(), the 'auto' modifier and its first-63-days-of-1970 caveat, the subsec modifier and %f, and timediff() (text result, calendar-style). pandas: pd.to_datetime(unit='ms'), the pandas 3 default time unit (us for strings), and float precision loss.
+**Asked at:** SQLite date and time functions documentation (lang_datefunc, opened), vendor documentation and not a candidate report; engine-behaviour follow-ups in analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q38 ⭐ 🟡 Day boundaries and DST in aggregation: hourly metrics for a US/Eastern day with 23 hours (2024-03-10) and 25 hours (2024-11-03). Show with pandas resample('D') on a tz-aware index that the day has 23 or 25 hourly buckets, why daily averages per hour differ, and that UTC date grouping avoids the issue but misaligns with the business day. SQLite cannot do named zones, so show the UTC-offset-by-date emulation (a small offsets table) as the workaround and label real DST rules in other engines as not executed.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q39 ⭐ 🟡 Range joins on dates: promotions(promo_id, start_date, end_date) and orders(order_id, order_ts, amount). Attribute each order to the promotion running on its date with a BETWEEN-style join, show the timestamp trap on an inclusive end_date (an order at 14:00 on the end date), overlapping promotions fanning out rows (double counted revenue) and how to detect it, and the pandas options (merge_asof when ranges do not overlap, IntervalIndex, or a cross merge and filter).
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q40 ⭐ 🟡 Performance of date filters (SQLite runnable, other engines hedged): orders(order_id, order_ts, amount) with 1,000,000 rows conceptually. Compare WHERE strftime('%Y-%m', order_ts) = '2024-03' (function on the column, cannot use an index) with WHERE order_ts >= '2024-03-01' AND order_ts < '2024-04-01' (sargable), run EXPLAIN QUERY PLAN on both with an index on order_ts, and mention an expression index. Cross-reference Part 11 for plans; partitioning by month is a hedged concept.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q41 ⭐ 🔴 Cohort retention by segment with a spine: users(user_id, signup_date, channel) and logins(user_id, login_date). Return one row per (channel, signup month, month offset 0 to 3) including offsets where nobody returned (0, not missing) by cross joining cohorts with an offset spine and LEFT JOINing activity. Explain why an INNER JOIN silently hides the zero cells that matter most and how to avoid mixing channels with different cohort sizes. pandas: reindex a MultiIndex pivot with fill_value=0.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q42 ⭐ 🔴 Cohort lifetime value by month: orders(order_id, user_id, order_ts, amount). For each first-order cohort and months_since_first, return cumulative revenue per cohort user (revenue to date divided by cohort size), with zero-fill for months with no sales so the cumulative line does not break. Cross-reference Part 5 for the running total mechanics and show the pandas version with pivot_table, fillna(0), cumsum(axis=1) and division by cohort size.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q43 ⭐ 🔴 ISO week and year-boundary traps in year-over-year weekly comparison: sales(sale_date, amount). 2024-12-30 belongs to ISO week 1 of 2025 and 2021-01-01 to ISO week 53 of 2020. Show a naive strftime('%Y') plus week grouping splitting or merging weeks, the SQLite %W result, the ISO year emulation with date(d, '-3 days', 'weekday 4') (Thursday of the ISO week determines the ISO year), and pandas isocalendar(). Explain the 52 versus 53 week year problem for same-week-last-year comparisons and the 364-day offset alternative.
+**Asked at:** SQLite date and time functions documentation (lang_datefunc, opened), vendor documentation and not a candidate report; engine-behaviour follow-ups in analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q44 ⭐ 🔴 Tenure survival curve: subscriptions(sub_id, user_id, start_date, end_date) with NULL end_date for active. For each tenure month t (0 to 12) return the share of subscriptions that survived to month t, counting only subscriptions old enough to be observed at t (right-censoring: a subscription started two months ago cannot show month 6). Show the wrong version that treats unobserved as churned, with SQLite date arithmetic from an as-of date, and the pandas version with Timedelta months via DateOffset or period difference.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
+
+### Q45 ⭐ 🔴 Date report fault-finding drill: a monthly revenue report is wrong. List five suspects in the order you would check them (BETWEEN with timestamps, a missing month spine and LAG, a time-zone shift of the day or month boundary, text dates in mixed formats sorting wrongly, join fan-out before aggregation or a partial current month) and for each show a tiny reproducing SQLite query plus the pandas counterpart, finishing with a reconciliation query that proves monthly totals sum to the overall total.
+**Asked at:** expert gap-check from practice, no candidate report found; analyst and data scientist rounds
+<!-- ANSWER_PENDING -->
