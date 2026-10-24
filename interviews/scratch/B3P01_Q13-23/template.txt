@@ -1,0 +1,480 @@
+@@Q13
+**Say this first (1 line):** `NOT IN` returns zero rows as soon as the subquery contains one NULL, because `x NOT IN (1, 2, NULL)` can never be TRUE; use `NOT EXISTS`, or filter the NULLs out of the subquery.
+
+**Schema and sample data:**
+{{SCHEMA:q13}}
+
+**SQL answer:** three queries are in the Code block: `sql_not_in` (the trap), `sql_not_in_filtered` (NOT NULL filter inside the subquery) and `sql_not_exists` (the safe default).
+
+**pandas answer:** `customers.loc[~customers["customer_id"].isin(orders["customer_id"]), "name"]`, shown in the Code block as `p_not_in`.
+
+**Example:** Customers 1 to 4, orders belong to customers 1, 1, 2 and one guest (NULL). The real answer is Chitra (3) and Dev (4). For customer 3 the predicate is `NOT (3 = 1 OR 3 = 2 OR 3 = NULL)`. That is `NOT (FALSE OR FALSE OR UNKNOWN)`, which is `NOT UNKNOWN`, which is UNKNOWN. `WHERE` keeps only TRUE, so Chitra is dropped. Customer 4 is the same. Customers 1 and 2 give FALSE. No row can ever be TRUE, so the result is empty.
+
+**Code:** run with `python3 -I`.
+{{CODE:q13}}
+
+**Output (my run):**
+{{OUT:q13}}
+
+**Edge cases:**
+- The NULL only has to appear once, and it only matters in a `NOT IN` (or `<> ALL`). A positive `IN` still works: `1 IN (1, 2, NULL)` is TRUE, while `3 IN (1, 2, NULL)` is UNKNOWN (not TRUE, so the row is not returned, which happens to be the answer you wanted).
+- If the subquery returns no rows at all, `NOT IN` returns every customer.
+- If the left-hand value is itself NULL, `NULL NOT IN (...)` is UNKNOWN for any non-empty list, so that row is also dropped.
+- Duplicates in the subquery do not matter.
+
+**Then explain:**
+- **Three-valued logic:** comparisons with NULL give UNKNOWN, not FALSE. `NOT UNKNOWN` is UNKNOWN. `WHERE` keeps only TRUE.
+- **Why NOT EXISTS is safe:** the correlated test `o.customer_id = c.customer_id` is UNKNOWN for the guest row, `EXISTS` just sees "no matching row", and `NOT EXISTS` returns TRUE.
+- **Alternatives:** filter the subquery with `WHERE customer_id IS NOT NULL`, or use a LEFT JOIN ... IS NULL anti-join (Part 2). I recommend `NOT EXISTS` because it does not break when someone later adds NULLs.
+- **pandas differs from SQL here:** the SQL query returns nothing, but `~isin` returns Chitra and Dev. `isin` is a plain membership test with no UNKNOWN. In my run the NULL became NaN and the key column became `float64`; that matters only for display, the comparison still works.
+- **NaN in isin:** `isin` treats NaN as equal to NaN (`[1.0, 3.0, NaN].isin([1.0, NaN])` gave `[True, False, True]`). So if the left side contains NaN and the list also has NaN, the row counts as "found", the opposite of SQL, where NULL never matches.
+- All SQL engines I know follow this standard rule, but I only ran SQLite here (not executed on Postgres, MySQL, BigQuery or Snowflake).
+
+**Follow-ups:**
+- *Does `x IN (..., NULL)` have the same problem?* No: it can be TRUE; you only lose the UNKNOWN cases, which were not matches anyway.
+- *Why not just use a LEFT JOIN?* That works too (Part 2), and it is NULL-safe if you test a non-null column of the right table.
+- *How do you make pandas behave like SQL?* Drop NaN from the keys explicitly and decide what NaN on the left should do; do not rely on `isin` to guess.
+
+**Common mistakes:**
+- Blaming the data ("there are no customers without orders") instead of the NULL.
+- Fixing it with `COALESCE(customer_id, 0)`, which invents a customer 0.
+- Believing `NOT IN` and `NOT EXISTS` are always interchangeable.
+- Reading a `float64` key column in pandas as a data problem and casting it away without handling the NaN first.
+
+@@Q14
+**Say this first (1 line):** There is no portable default for where NULLs sort (SQLite and, from memory, MySQL and SQL Server treat NULL as smallest, PostgreSQL and, from memory, Oracle as largest), so when it matters I write the NULL position explicitly with `NULLS LAST` where supported or a `CASE WHEN x IS NULL` sort key where not, and I always add a unique tie-breaker column.
+
+**Schema and sample data:**
+{{SCHEMA:q14}}
+
+**SQL answer:** all queries are in the Code block: plain `ORDER BY salary` (ASC and DESC), `NULLS LAST` / `NULLS FIRST`, the portable `sql_portable` with a CASE key, `sql_multi` for a multi-column sort, an ordinal sort and an expression sort.
+
+**pandas answer:** `df.sort_values(["salary", "emp_id"], ascending=[False, True], na_position="last")`, plus `kind="stable"` for a stable sort; all variants are in the Code block.
+
+**Dialect behaviour of NULL ordering:**
+
+| Engine | NULLs in ASC | NULLs in DESC | NULLS FIRST/LAST keyword | Status |
+|---|---|---|---|---|
+| SQLite 3.45 | first | last | yes (since 3.30, ran it) | executed here |
+| PostgreSQL | last | first | yes | PostgreSQL docs page opened: NULLs sort as if larger |
+| MySQL | first | last | no (use a sort key) | from memory, not opened or executed |
+| SQL Server | first | last | no (use a sort key) | from memory, not opened or executed |
+| Oracle | last | first | yes | from memory, not opened or executed |
+
+Check the engine docs before relying on the last three rows.
+
+**Example:** salaries are Asha 90, Ben NULL, Chitra 70, Dev 90, Esha 70, Farid NULL, Gita 90. `ORDER BY salary, emp_id` in SQLite gives the NULLs first: Ben (2), Farid (6), then the 70s (3, 5), then the 90s (1, 4, 7). `ORDER BY salary DESC, emp_id` gives 1, 4, 7, 3, 5, 2, 6, so NULLs fall to the bottom. The portable `CASE WHEN salary IS NULL THEN 1 ELSE 0 END, salary DESC, emp_id` gives the same list `[1, 4, 7, 3, 5, 2, 6]` on every engine, because the CASE key is a plain 0/1 number that sorts the same everywhere.
+
+**Code:** run with `python3 -I`.
+{{CODE:q14}}
+
+**Output (my run):**
+{{OUT:q14}}
+
+**Edge cases:**
+- Ties: the 90s are tied three ways. Without the `emp_id` tie-breaker the SQL standard allows any order among them; my SQLite run happened to give 1, 4, 7, which is no guarantee on another engine or after the table grows.
+- Multi-column: later keys only break ties of earlier keys, each with its own direction.
+- An expression such as `-salary` keeps NULL as NULL, so NULL placement still follows the engine's rule.
+- Ordinals (`ORDER BY 2, 1`) work in the engines I know but break when the SELECT list changes (Q23).
+- pandas default: `na_position="last"` in both directions. So the pandas default matches SQLite for DESC but not for ASC. I had to pass `na_position="first"` to match SQLite's ASC.
+
+**Then explain:**
+- **Force NULLS LAST portably:** `ORDER BY CASE WHEN salary IS NULL THEN 1 ELSE 0 END, salary DESC`. In several engines you can sort on the boolean `salary IS NULL` directly, but a CASE is the most portable (Oracle has no boolean type, from memory).
+- **Multi-column:** `ORDER BY dept ASC, salary DESC, emp_id ASC`; the first key is the major sort.
+- **Expression or ordinal:** you can sort on any expression; ordinal positions are legal but fragile.
+- **Ties are not stable:** a stable sort is a pandas feature you opt into (`kind="stable"`); SQL gives no such promise, so make the order total with a unique key.
+- **pandas:** `kind="stable"` keeps the original row order among equal keys; in my run `sort_values("salary", ascending=False, kind="stable")` gave 1, 4, 7, 3, 5, 2, 6, ties in original row order. Two stable passes (minor key first) also give a multi-key sort.
+
+**Follow-ups:**
+- *How does `DISTINCT` or `GROUP BY` order output?* Not at all; add `ORDER BY` if you need an order.
+- *What does `ORDER BY salary DESC LIMIT 1` return with a NULL top?* Depends on the engine's default; with NULLs-first-in-DESC (PostgreSQL) the NULL row wins, which is a classic "highest salary" bug.
+- *How do you sort a mixed column of text numbers?* Cast to a number in the sort key (Part 10 has string traps).
+
+**Common mistakes:**
+- Assuming NULLs sort the same way in every database.
+- No tie-breaker, then a flaky test or flaky pagination.
+- Using `salary IS NULL` as a sort key and forgetting that FALSE (0) sorts before TRUE (1) in ASC.
+- Using `na_position` and expecting it to apply to the SQL engine.
+
+@@Q15
+**Say this first (1 line):** `WHERE` becomes a boolean mask, `GROUP BY ... COUNT/AVG` becomes `groupby().agg(n=..., avg_sal=...)` with named aggregation, `HAVING` becomes a second filter (`query` or a mask) on the aggregated frame, and `ORDER BY ... LIMIT` becomes `sort_values().head()`.
+
+**Schema and sample data:**
+{{SCHEMA:q15}}
+
+**SQL answer:** the query is the string `sql` in the Code block, verbatim from the question.
+
+**pandas answer:** `v1` (masks, named aggregation, `query`, `sort_values`, `head(5)`) and `v2` (`query()` for the row filter, then `reset_index()`) in the Code block.
+
+**Example:** after `WHERE salary IS NOT NULL AND hired >= '2020-01-01'`, Eng keeps ids 1, 2, 3 (id 4 has a NULL salary, id 5 was hired in 2019): n = 3, average of 100, 140, 120 = 120. Ops keeps 60, 80, 70: n = 3, avg 70. HR keeps 50, 55, 45 (id 12 hired 2018): n = 3, avg 50. Fin avg 200, Mkt 85, Sales 66, all with n = 3. Legal has only 2 rows, so `HAVING COUNT(*) >= 3` removes it. Six departments pass; sorted by average descending they are Fin 200, Eng 120, Mkt 85, Ops 70, Sales 66, HR 50, and `LIMIT 5` drops HR.
+
+**Code:** run with `python3 -I`.
+{{CODE:q15}}
+
+**Output (my run):**
+{{OUT:q15}}
+
+**Edge cases:**
+- Ties in `avg_sal` at the 5th/6th place make `LIMIT 5` ambiguous in both SQL and pandas; add a tie-breaker (`ORDER BY avg_sal DESC, dept`; in pandas `sort_values(["avg_sal", "dept"], ascending=[False, True])`). Not needed in this data.
+- `COUNT(*)` after the WHERE counts rows (`size`); `COUNT(salary)` would be `count` (here identical, because the mask removes the NULLs).
+- A department with zero surviving rows simply does not appear in either version.
+- `hired` is text in ISO format, so string comparison works. With real dates in pandas I would `pd.to_datetime` first.
+
+**Then explain:**
+- **Order of work is identical:** filter rows, group, aggregate, filter groups, sort, cut.
+- **`as_index`:** `groupby("dept")` makes `dept` the index of the result (my run printed `dept` as the index name); `as_index=False` or `reset_index()` puts it back as a column so it matches the SQL frame.
+- **Named aggregation:** `agg(n=("emp_id", "size"), avg_sal=("salary", "mean"))` names output columns like SQL aliases.
+- **Why HAVING is `query("n >= 3")`:** it runs after aggregation, on the grouped frame, just like HAVING.
+- **How to assert a match:** `pd.testing.assert_frame_equal(sql_df, v1)` checks rows, order, column names and dtypes (here `n` is `int64`, `avg_sal` is `float64`, `dept` is pandas' string dtype on both sides). It passed for both versions. For queries without a total order, sort both sides on all columns first.
+
+**Follow-ups:**
+- *`size` vs `count`?* `size` counts rows (SQL `COUNT(*)`), `count` counts non-null values of a column (SQL `COUNT(col)`).
+- *How would you do it in one chain?* The chain in `v1` is one expression; use `.pipe` if you need to reuse a step.
+- *Why is HAVING not just WHERE?* WHERE runs before grouping and cannot see aggregates; HAVING runs after.
+
+**Common mistakes:**
+- Forgetting `reset_index` and then trying to use `dept` as a column.
+- Putting the `n >= 3` filter before the groupby (that filters rows, not groups).
+- Comparing frames by eye instead of asserting dtypes and order.
+- Using `count` where SQL used `COUNT(*)`.
+
+@@Q16
+**Say this first (1 line):** SQL and pandas disagree by default on four things: SQL keeps a NULL group, pandas drops NaN keys; SQL `SUM` of only NULLs is NULL, pandas gives 0; `COUNT(col)` and `count()` agree (both skip missing values) but `COUNT(*)` is `size()`; and both `AVG` and `mean` skip missing values. Pass `dropna=False` and `min_count=1` to make pandas match.
+
+**Schema and sample data:**
+{{SCHEMA:q16}}
+
+**SQL answer:** the query is `sql` in the Code block (`COUNT(*)`, `COUNT(amount)`, `SUM`, `AVG` per region, NULL region ordered last by `ORDER BY region IS NULL, region`).
+
+**pandas answer:** `matched` in the Code block: `groupby("region", dropna=False)` with `size`, `count`, a `sum(min_count=1)` lambda and `mean`.
+
+**Example:** North has amounts 100, NULL, 50: 3 rows, 2 non-null amounts, sum 150, average 75 (the NULL is skipped, so it is 150/2, not 150/3). South has 2 rows and no amount at all: `SUM` is NULL, `AVG` is NULL, `COUNT(amount)` is 0. The NULL-region rows (orders 6 and 7) form one group: 2 rows, 1 amount, sum 30. East is 20.
+
+**Code:** run with `python3 -I`.
+{{CODE:q16}}
+
+**Output (my run):**
+{{OUT:q16}}
+
+**Edge cases:**
+- All-NULL group: SQL `SUM` gives NULL; SQLite's `TOTAL()` returns 0.0 (SQLite-specific, shown in the run). pandas `sum()` gave 0.0 and `sum(min_count=1)` gave NaN.
+- `mean` of an all-NaN group is NaN in both.
+- Default pandas dropped the NULL-region group entirely and the default result had 3 groups instead of 4.
+- NULL and NaN are shown differently (`None` vs `NaN`), and `assert_frame_equal` treats them as equal missing values.
+- The row-level `n_rows` (`size`) must come from a column that has no gaps (here `order_id`), or use `size()` directly.
+
+**Then explain:**
+- **Grouping:** SQL `GROUP BY` puts all NULLs into one group; pandas `groupby` drops them unless `dropna=False`.
+- **Sum:** pandas treats the sum of nothing as 0; `min_count=1` says "need at least one non-missing value", giving NaN like SQL.
+- **Avg/mean:** both skip missing values, so the denominator is the count of non-null values.
+- **Counting:** `COUNT(*)` is `size()`; `COUNT(col)` is `count()`.
+- **Sorting:** SQLite sorts NULL first in ASC; pandas `sort_values` puts NaN last by default, so I sorted with an explicit `na_position` before comparing.
+- Dialect note: other engines follow the same standard rules for NULL groups and `SUM` (not executed here).
+
+**Follow-ups:**
+- *Why does pandas give 0 for an all-NaN sum?* It defines the empty sum as 0, the additive identity; SQL has no such rule. The behaviour shown is from my pandas 3.0.5 run.
+- *How do you make SQL match pandas?* `COALESCE(SUM(amount), 0)`.
+- *What does `groupby` do to NaN in the value column?* Skips it in `sum`, `mean`, `count`.
+
+**Common mistakes:**
+- Forgetting that pandas silently drops NaN-key rows, so totals no longer reconcile with SQL.
+- Reporting 0 revenue for a group that has no data (should be NULL/"no data").
+- Dividing by `size` instead of `count` for an average.
+
+@@Q17
+**Say this first (1 line):** `SUM(DISTINCT amount)` adds each distinct amount once, so two orders of the same value count once and revenue is understated; the fix is plain `SUM(amount)` with the status filter in `WHERE`, and the status test belongs in `WHERE` (or inside a `CASE`), not `HAVING`.
+
+**Schema and sample data:**
+{{SCHEMA:q17}}
+
+**SQL answer:** `fixed` (and the equivalent `fixed_case`) in the Code block. The buggy queries are `buggy` and `buggy_having`.
+
+**pandas answer:** `distinct_all` (drop duplicates then sum) reproduces the bug, `true_all` (plain sum) is the right figure, and `completed` is the corrected pandas result, in the Code block.
+
+**Premise correction:** the question says the HAVING version "fails". In SQLite it does not fail: it runs and silently returns the wrong thing (my run: totals of all statuses, 250, 500, 120, not the completed-only totals). A strict engine (PostgreSQL, and MySQL with `ONLY_FULL_GROUP_BY`, from memory, not executed) rejects it because `status` is neither grouped nor aggregated. In every engine, `HAVING` filters groups after aggregation, not rows before it.
+
+**Example:** customer 1 has orders 100, 100 (completed) and 50 (cancelled). `SUM(DISTINCT amount)` = 100 + 50 = 150, but the real total is 250 (200 completed). Customer 3 has 40, 40, 40: DISTINCT gives 40 instead of 120 (80 completed). Customer 2 has two different amounts, so DISTINCT happens to be right (500), which is why the bug shows up only for "some customers".
+
+**Code:** run with `python3 -I`.
+{{CODE:q17}}
+
+**Output (my run):**
+{{OUT:q17}}
+
+**Edge cases:**
+- Customers whose amounts are all different look fine, so spot checks on a few rows can pass.
+- A customer with no completed orders disappears from the `WHERE` version, but shows revenue 0 in the `SUM(CASE ...)` version. Choose which one you want.
+- NULL amounts are ignored by both `SUM` and `SUM(DISTINCT)`.
+- Float amounts: two prices that look equal can differ in the last digit, and DISTINCT then does not remove them.
+
+**Then explain:**
+- **What DISTINCT does:** de-duplicates the values, not the rows or the orders. `SUM(DISTINCT amount)` treats amounts as a set.
+- **When DISTINCT in an aggregate is right:** `COUNT(DISTINCT customer_id)` (unique customers). For sums, de-duplicate by key (for example `SELECT DISTINCT order_id, amount` in a subquery, or fix the join that fanned rows out), never by value.
+- **Corrected query:** filter rows with `WHERE status = 'completed'`, then `SUM(amount) ... GROUP BY customer_id`; or `SUM(CASE WHEN status = 'completed' THEN amount ELSE 0 END)`. Both gave 200, 500, 80.
+- **pandas check:** `sum` versus `drop_duplicates().sum()` per customer; the `lost` column (100 and 80) shows exactly which customers were hit, and the buggy SQL equals the drop-duplicates version.
+- **HAVING:** use it only for conditions on aggregates (`HAVING SUM(amount) > 100`).
+
+**Follow-ups:**
+- *How would a join cause a similar problem?* A one-to-many join repeats the amount on each child row, so `SUM` overstates; `DISTINCT` on the amount is the wrong repair (Part 2).
+- *`AVG(DISTINCT x)`?* Same idea: averages the distinct values.
+- *How do you catch this in review?* Reconcile against an independent total (pandas or `SUM` without DISTINCT).
+
+**Common mistakes:**
+- Adding DISTINCT to make a number "look right".
+- Putting a row filter in `HAVING`.
+- Not checking per-group totals against a second method.
+
+@@Q18
+**Say this first (1 line):** Every non-aggregated SELECT column must be in `GROUP BY` or functionally dependent on it; PostgreSQL rejects the query, MySQL with `ONLY_FULL_GROUP_BY` (the default in recent versions, from memory) rejects it, while SQLite accepts it and returns the `status` of one arbitrary row, which is dangerous because it looks like a real answer.
+
+**Schema and sample data:**
+{{SCHEMA:q18}}
+
+**SQL answer:** `bad` is the query from the question; `f1` (group by customer and status) and `f2` (aggregate the status) are the fixes, all in the Code block.
+
+**pandas answer:** `p1` (`groupby(["customer_id", "status"])`) and `p2` (named aggregation with `max`/`nunique`) in the Code block. pandas has no bare columns: a non-key column must go through an explicit function such as `first`.
+
+**Example:** customer 1 has completed 100, cancelled 50, completed 70. The bad query returns one row per customer with total 220, and a status of `completed`, but the query never says which status. For customer 2 (refunded 200, completed 30) it returned `refunded`. If the intent was "total per customer and status", `f1` returns four rows (1/cancelled 50, 1/completed 170, 2/completed 30, 2/refunded 200). If the intent was "total per customer, plus one summary of the status", `f2` makes the choice explicit (`MAX(status)`, number of distinct statuses).
+
+**Code:** run with `python3 -I`.
+{{CODE:q18}}
+
+**Output (my run):**
+{{OUT:q18}}
+
+**Edge cases:**
+- SQLite's documented special case (confirmed by my run): with a single `MAX()` or `MIN()` in the query, bare columns come from the row that holds the max or min (customer 1 gave `completed` with 100, customer 2 `refunded` with 200). With both `MAX` and `MIN` it falls back to an arbitrary row (customer 1 gave `cancelled`). Do not rely on it.
+- Functional dependence: grouping by a primary key lets PostgreSQL (and MySQL 5.7+, from memory) accept other columns of that table.
+- `GROUP BY customer_id` with a `name` column from the same customers table is fine only under that rule.
+
+**Then explain:**
+- **The rule:** after grouping, each output row represents a group; a column with several values per group has no single value to show.
+- **MySQL:** `ONLY_FULL_GROUP_BY` SQL mode rejects the query; when the mode is switched off, MySQL silently picks a value (from memory, not executed here).
+- **Danger:** the result looks valid, passes review and changes when the plan changes.
+- **Fix by intent:** add the column to `GROUP BY`, or aggregate it (`MAX`, `COUNT(DISTINCT)`, `MIN`), or use a window function for "status of the latest order" (Part 4).
+- **pandas:** the equivalent of a bare column is `first()`/`last()`, which is explicit about the choice and depends on row order.
+
+**Follow-ups:**
+- *How do you get the status of the largest order per customer?* Use a ranking window (Part 4); the SQLite `MAX` trick is not portable.
+- *Is `ANY_VALUE` an option?* MySQL and some others have it (from memory, not executed); it states "I do not care which".
+- *Does SELECT DISTINCT have this issue?* No, it applies to the whole row.
+
+**Common mistakes:**
+- "Fixing" the error by adding every column to `GROUP BY` and changing the grain.
+- Disabling `ONLY_FULL_GROUP_BY` to make the query run.
+- Trusting SQLite's output as a model of other engines.
+
+@@Q19
+**Say this first (1 line):** `SELECT DISTINCT` and `GROUP BY` with no aggregate return the same rows; use `GROUP BY` when you also need an aggregate, and note that both treat NULLs as one value, while `COUNT(DISTINCT col)` skips NULLs.
+
+**Schema and sample data:**
+{{SCHEMA:q19}}
+
+**SQL answer:** `d1`, `d2`, `g1`, `agg`, `portable` and `only_complete` in the Code block.
+
+**pandas answer:** `drop_duplicates`, `unique`, `nunique` and `groupby(...).agg(...)` in the Code block.
+
+**Example:** `status` values are paid, paid, paid, refunded, NULL, NULL, paid, paid, so `DISTINCT status` returns NULL, paid, refunded (3 values: the two NULLs collapse into one). `DISTINCT customer_id, city` returns 5 pairs: (NULL, Delhi), (10, Delhi), (10, Pune), (20, Pune), (30, NULL). `COUNT(DISTINCT customer_id)` is 3 (10, 20, 30; the NULL customer is not counted), but counting the `DISTINCT customer_id` subquery rows gives 4 because the NULL is a row there.
+
+**Code:** run with `python3 -I`.
+{{CODE:q19}}
+
+**Output (my run):**
+{{OUT:q19}}
+
+**Edge cases:**
+- Multi-column `COUNT(DISTINCT a, b)` is not valid in SQLite (my run raised `wrong number of arguments to function COUNT()`). MySQL accepts it (and skips rows where any argument is NULL, from memory); PostgreSQL does not accept the comma form (a row-constructor form exists, with its own NULL behaviour); not executed here. The portable form is `SELECT COUNT(*) FROM (SELECT DISTINCT a, b ...)`, which counts a pair with a NULL as a value (5 here), unlike a NULL-skipping multi-column count (3).
+- `DISTINCT` applies to the whole row, not to the first column: `SELECT DISTINCT a, b` is not "distinct a".
+- pandas `nunique()` skips NaN by default (3), `nunique(dropna=False)` counts it (4); `unique()` keeps NaN in the output.
+- `groupby` drops NaN keys unless `dropna=False`; the run used `dropna=False` to match SQL.
+
+**Then explain:**
+- **Equivalence:** `DISTINCT x` is the same result as `GROUP BY x`; engines often plan them the same way (hedged, not checked here).
+- **Choose GROUP BY** when you aggregate (`COUNT(*)`, `COUNT(DISTINCT city)`); choose DISTINCT for a plain unique list.
+- **NULLs:** collapsed into one value by both.
+- **Counting uniques:** `COUNT(DISTINCT col)` ignores NULL; `COUNT(*)` over a DISTINCT subquery does not.
+- **pandas:** `df[["status"]].drop_duplicates()` (keeps first NaN), `Series.unique()` (array, order of appearance), `nunique()` (count), `groupby(...).agg(n=("order_id", "size"))`.
+
+**Follow-ups:**
+- *Is DISTINCT slow?* It needs a sort or hash over the selected columns; use it only when duplicates are real (Part 11).
+- *Why not put DISTINCT in every query?* It hides a join fan-out bug (Part 2) and costs time.
+- *DISTINCT ON?* PostgreSQL-only (from memory, not executed).
+
+**Common mistakes:**
+- Thinking `COUNT(DISTINCT x)` counts NULL as a value.
+- Using DISTINCT to hide a duplicate-producing join.
+- Using a multi-column `COUNT(DISTINCT a, b)` and expecting it to run everywhere.
+
+@@Q20
+**Say this first (1 line):** A SELECT list can hold any expression; an alias names it, but an alias cannot be used in the WHERE clause of standard SQL (SQLite allows it) and dividing two integers truncates, so write `/ 100.0` or cast.
+
+**Schema and sample data:**
+{{SCHEMA:q20}}
+
+**SQL answer:** the query is `sql` in the Code block: `line_total`, a rounded value with a quoted alias containing spaces, and a text label with `||`.
+
+**pandas answer:** `assign(...)` with `round(2)` and string concatenation, in the Code block (`p`).
+
+**Example:** item 1: 3 x 199.99 with 10 per cent off = 3 x 199.99 x 0.9 = 539.973, rounded 539.97. Item 3: 1 x 2.50, no discount = 2.5. Item 4: 2 x 15.25 x 0.75 = 22.875, rounded to 22.88. The label for item 1 is `Item 1 x3`. Now the integer trap: `discount_pct / 100` with `discount_pct = 10` is `0` (integer division), so the discount would vanish (my run: `(10, 0, 0.1)`). `qty / 2` for qty 5 gives 2, not 2.5.
+
+**Code:** run with `python3 -I`.
+{{CODE:q20}}
+
+**Output (my run):**
+{{OUT:q20}}
+
+**Edge cases:**
+- Alias scope: you can use an alias in `ORDER BY`; standard SQL evaluates `WHERE` before the SELECT list, so aliases are not visible there. SQLite accepted `WHERE gross > 100` anyway (shown in the run); PostgreSQL and SQL Server reject it (from memory, not executed). Repeat the expression or use a subquery or CTE.
+- NULL: `'Item ' || NULL` is NULL in SQLite (shown in the run). `CONCAT` ignores NULLs in MySQL and PostgreSQL (from memory, not executed).
+- Rounding of exact halves differs: SQLite `ROUND(2.5)` is 3.0, pandas `Series([2.5, 3.5]).round()` gave `[2.0, 4.0]` (round half to even). In this data the 22.875 case agreed (22.88 in both) and I did not hit a conflict in the two-decimal results, but a half at the rounding digit can differ between engines; a decimal type or integer cents is safer for money.
+- Implicit casting: in SQLite `'5' + 3` gave the integer 8; other engines are stricter or differ (from memory, not executed).
+
+**Then explain:**
+- **Computed column:** `qty * unit_price * (1 - discount_pct / 100.0) AS line_total`.
+- **Quoting an alias with spaces:** double quotes in standard SQL (`"Line Total (rounded)"`); MySQL uses backticks, SQL Server brackets (from memory, not executed). Avoid spaces in real code.
+- **Concatenation:** `||` is standard (SQLite, PostgreSQL, Oracle); `CONCAT()` in MySQL, SQL Server and others; in MySQL `||` is logical OR by default (from memory, not executed).
+- **Integer division:** `qty / 2` with two integers truncates in SQLite (and in PostgreSQL, SQL Server; MySQL's `/` returns a decimal, with `DIV` for integer division; from memory, not executed). Write `qty / 2.0` or `CAST(qty AS REAL) / 2`.
+- **pandas:** `assign(line_total=..., rounded=lambda d: d["line_total"].round(2))`; `/` is true division, `//` matches SQL's truncation for non-negative numbers (for negatives floor and truncation differ).
+
+**Follow-ups:**
+- *Why not alias in WHERE?* The WHERE clause runs before SELECT is computed (execution order: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY).
+- *How do you round money?* Store integer minor units or a decimal type; round at the end.
+- *What about floating-point display?* `0.1 + 0.2` style noise; round for display, not for storage.
+
+**Common mistakes:**
+- `discount_pct / 100` with integers, silently giving no discount.
+- Using an alias in WHERE and having it fail on the next database.
+- Rounding in the middle of a calculation and then summing.
+- Assuming `ROUND` and `numpy.round` agree on halves.
+
+@@Q21
+**Say this first (1 line):** use `LIKE 'A%'` for starts-with, `LIKE '%@gmail.com'` for ends-with, `IN (...)` for lists, `ESCAPE` for a literal `_` or `%`, and `LOWER(col) LIKE LOWER(...)` for a case-insensitive match that works everywhere; remember that `_` is a wildcard and NULL never matches.
+
+**Schema and sample data:**
+{{SCHEMA:q21}}
+
+**SQL answer:** the queries `q_start`, `q_start_cs`, `q_end`, `q_in`, `q_ci`, `q_nocase`, `q_under` and `q_under_wrong` in the Code block.
+
+**pandas answer:** `str.startswith`, `str.endswith`, `isin`, `str.contains(..., case=False, regex=False)` and the lower-cased variants, all with `na=False`, in the Code block.
+
+**Example:** names starting with A (SQLite, case-insensitive `LIKE`): Asha, arjun, A_B Traders, Aman, AxB Co, so ids 1, 2, 4, 6, 8. Emails ending in `@gmail.com`: ids 1, 2 (`@Gmail.com` matches because SQLite's `LIKE` ignores ASCII case), 4 and 7; the NULL email (5) and `aman@gmail.com.fake` (6) are not returned. Cities in (Pune, Delhi): 1, 2, 4, 5, 8; customer 7 has a NULL city, so it never matches. A literal underscore: `name LIKE '%\_%' ESCAPE '\'` returns only id 4. Without the escape, `'A_B%'` returns ids 4 and 8, because `_` matches any single character, so 'AxB Co' matches too.
+
+**Code:** run with `python3 -I`.
+{{CODE:q21}}
+
+**Output (my run):**
+{{OUT:q21}}
+
+**Edge cases:**
+- Case sensitivity is a per-engine surprise: SQLite `LIKE` is case-insensitive for ASCII (shown: 1, 2, 4, 6, 8), `GLOB` and `PRAGMA case_sensitive_like = ON` make it case-sensitive (1, 4, 6, 8). PostgreSQL `LIKE` is case-sensitive and has `ILIKE`; in MySQL and SQL Server it depends on the column collation (all from memory, not executed). `LOWER(col) LIKE ...` is portable. `COLLATE NOCASE` is SQLite-specific syntax (other engines name collations differently).
+- NULL: `NULL LIKE '%x'` is UNKNOWN, so the row is dropped; `NOT LIKE` drops it as well.
+- `IN` with a NULL city: never matches (see Q13 for the NOT IN trap).
+- pandas on NaN: in my pandas 3.0.5 run `str.startswith("a")` returned `False` for the NaN row, but older object-dtype columns returned NaN (from memory), which breaks a boolean mask. Always pass `na=False`.
+- `str.contains` is a substring test, not an ends-with test: `contains("@GMAIL.COM", case=False, regex=False)` also matched id 6 (`aman@gmail.com.fake`), so it returned 1, 2, 4, 6, 7 versus the SQL answer 1, 2, 4, 7.
+
+**Then explain:**
+- **Wildcards:** `%` means any run of characters, `_` means exactly one.
+- **Literal underscore or percent:** `LIKE '%\_%' ESCAPE '\'`; the escape character is chosen by the `ESCAPE` clause in standard SQL.
+- **Leading wildcard and indexes (light note):** `LIKE '%gmail.com'` cannot use an ordinary B-tree index to seek, because the start of the string is unknown; `LIKE 'A%'` often can (hedged: it depends on the engine and collation; Part 11 covers indexes).
+- **pandas:** `str.contains(case=False, regex=False)` treats the pattern literally, which avoids regex metacharacters such as `.` and `_`.
+- **Case-insensitive options:** `LOWER`, `ILIKE` (PostgreSQL), `COLLATE` (engine-specific).
+
+**Follow-ups:**
+- *Regex?* `REGEXP`, `~` or `RLIKE` depending on the engine (not executed here); SQLite needs a user function for REGEXP.
+- *How would you match the domain exactly?* Extract it (for example with `SUBSTR` and `INSTR` after the `@`) and compare for equality, instead of pattern-matching the whole address.
+- *Trim spaces?* Clean with `TRIM` first (Part 10).
+
+**Common mistakes:**
+- Forgetting that `_` is a wildcard.
+- Assuming `LIKE` is case-sensitive (or case-insensitive) in every database.
+- Using `str.contains` with the default `regex=True` and a pattern with `.`, `+` or `(`.
+- No `na=False`, then a mask with NaN fails on indexing.
+
+@@Q22
+**Say this first (1 line):** page N is `ORDER BY ... LIMIT 10 OFFSET (N-1)*10`, which needs a total order (add the unique key) and gets slower on deep pages and unstable when rows arrive; for infinite scroll use keyset pagination, `WHERE (created_at, order_id) < (last_created_at, last_order_id)`.
+
+**Schema and sample data:** 30 orders, two per day so `created_at` has ties: order `i` (1 to 30) has `created_at = '2025-03-' || day` with `day = (i - 1) / 2 + 1` (orders 1 and 2 on 2025-03-01, 3 and 4 on 03-02, ..., 29 and 30 on 03-15) and `amount = 100 + 10 * i`. The Code block creates it with `executemany`.
+```sql
+CREATE TABLE orders(order_id INTEGER PRIMARY KEY, created_at TEXT, amount INTEGER);
+-- 30 rows built by the Python loop in the Code block
+```
+
+**SQL answer:** `page3` (offset form), `keyset_rv` (row-value keyset) and `keyset_or` (expanded keyset) in the Code block.
+
+**pandas answer:** `ordered.iloc[20:30]`, and the pandas-docs idiom `nlargest(30, ...).tail(10)`, in the Code block.
+
+**Example:** sorted newest first with `order_id` as the tie-breaker the list is 30, 29, 28, ..., 1. Page 1 is 30..21, page 2 is 20..11, page 3 (`OFFSET 20 LIMIT 10`) is 10..1. If a new order 31 arrives after the client fetched page 1, page 2 now starts one row lower: my run returned 21..12, so order 21 appears on both pages. Keyset page 2 after order 30..21 uses the last row (2025-03-11, id 21): `(created_at, order_id) < ('2025-03-11', 21)` gives 20..11 again, even after order 31 is inserted.
+
+**Code:** run with `python3 -I`.
+{{CODE:q22}}
+
+**Output (my run):**
+{{OUT:q22}}
+
+**Edge cases:**
+- Ties: with `ORDER BY created_at DESC` alone (no `order_id`), the order inside a day is the engine's choice; my run printed pages `[29, 30, 27]` and `[28, 25, 26]`, which is not even consistent within a day, and rows can skip or repeat across pages.
+- Inserts or deletes between requests shift OFFSET pages (shown: a repeated row).
+- Offset beyond the end returns an empty page.
+- Row-value comparison `(a, b) < (x, y)` ran in SQLite 3.45; PostgreSQL and MySQL support it (from memory); SQL Server does not (from memory, not executed). Where it is missing use the expanded form `created_at < ? OR (created_at = ? AND order_id < ?)`, which I also ran.
+- Row-value comparison against a NULL key is UNKNOWN; keyset needs non-null sort columns.
+- `nlargest` does not work on a text column (my run raised `TypeError`); convert the date first.
+
+**Then explain:**
+- **Page 3 of 10:** `LIMIT 10 OFFSET 20`.
+- **Why deep pages get slow:** the database still has to produce and discard the first 20 (or 20,000) rows before returning the next 10 (a general statement, not timed here).
+- **Why pages shift:** OFFSET counts positions, not rows; a new row at the top moves every later row down by one.
+- **Keyset:** remember the last key and ask for rows after it; cost does not grow with page depth when an index matches the sort order (hedged; Part 11), and it is stable under inserts. Its limits: no jumping to page N, and it needs a unique sort key.
+- **Standard syntax:** `OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY` (SQL Server, Oracle 12c+, PostgreSQL), `LIMIT/OFFSET` in SQLite, PostgreSQL, MySQL (from memory, not executed except SQLite).
+- **pandas:** `iloc[20:30]` after sorting; `head(30).tail(10)`; `nlargest(30, cols).tail(10)` is the pandas docs' LIMIT/OFFSET idiom.
+
+**Follow-ups:**
+- *Does a client see duplicates with keyset pagination?* Not from inserts above the cursor; deletes of the cursor row are fine because you compare on values.
+- *How do you show "page 3 of N"?* `COUNT(*)` separately; or avoid the total.
+- *Total order needs what?* A unique tie-breaker such as the primary key.
+
+**Common mistakes:**
+- `OFFSET` without a unique `ORDER BY`.
+- Using `OFFSET` for million-row exports.
+- Writing the keyset condition only on `created_at`, which skips tied rows.
+- Mixing ascending and descending columns in a row-value comparison (it needs one direction).
+
+@@Q23
+**Say this first (1 line):** `GROUP BY 1 ORDER BY 2 DESC` means group by the first SELECT column and sort by the second; it is a quick shortcut in ad-hoc work, but it silently changes meaning when the SELECT list changes, so team code usually names the columns.
+
+**Schema and sample data:**
+{{SCHEMA:q23}}
+
+**SQL answer:** `q` (ordinals, with a tie-breaker `, 1`) and `q_alias` (names) in the Code block; the assert shows they return the same rows.
+
+**pandas answer:** `value_counts(dropna=False)` and `groupby("status", dropna=False).size()`, each sorted by `n` descending then `status`, as `v` and `g` in the Code block.
+
+**Example:** statuses: completed 3, cancelled 2, NULL 2, refunded 1, pending 1. `GROUP BY 1` groups by `status` (the first SELECT item) and `ORDER BY 2 DESC` sorts by `COUNT(*)`. The result in my run is completed 3, NULL 2, cancelled 2, pending 1, refunded 1. The tie between NULL and cancelled (2 each) and between pending and refunded (1 each) is why I added `, 1` as a tie-breaker; SQLite puts NULL before text in ascending order.
+
+**Code:** run with `python3 -I`.
+{{CODE:q23}}
+
+**Output (my run):**
+{{OUT:q23}}
+
+**Edge cases:**
+- Fragility, run: if you reorder the SELECT list to `COUNT(*), status` and leave `GROUP BY 1`, SQLite raises `aggregate functions are not allowed in the GROUP BY clause`. If a column is inserted before `COUNT(*)` and `ORDER BY 2` stays, there is no error: my run silently sorted by `MIN(order_id)` instead of the count.
+- An ordinal beyond the SELECT list is an error (`1st ORDER BY term out of range`).
+- Alias of an expression in GROUP BY: SQLite accepted `GROUP BY len`. Support elsewhere, from memory and not executed: PostgreSQL, MySQL, BigQuery and Snowflake accept aliases (and ordinals) in GROUP BY; SQL Server does not accept an alias or ordinal in GROUP BY (it does in ORDER BY); Oracle's support varies by version. Treat this as a list to verify.
+- Ties in `n`: `value_counts` and `sort_values` order of ties is not something to depend on; add the key as a second sort column in both.
+- NULLs: SQL keeps the NULL group; `value_counts()` and `groupby().size()` drop NaN by default (the default `value_counts()` printed no NaN entry). I used `dropna=False` to match.
+
+**Then explain:**
+- **Ordinals** are 1-based positions in the SELECT list.
+- **Fragile:** adding, removing or reordering SELECT columns changes the meaning, sometimes without any error.
+- **Team style:** name the columns in `GROUP BY` and `ORDER BY` for production code; ordinals are accepted in exploration. The alias in `ORDER BY` is allowed everywhere, since ORDER BY runs after SELECT.
+- **pandas:** `orders["status"].value_counts()` is the one-liner; `groupby("status").size().sort_values(ascending=False)` is the long form and lets you add more keys.
+
+**Follow-ups:**
+- *Why can ORDER BY use an alias but WHERE cannot?* ORDER BY is evaluated after SELECT.
+- *Does `GROUP BY 1` hurt performance?* No, it is syntax only.
+- *How do you break ties in pandas?* `sort_values(["n", "status"], ascending=[False, True])`.
+
+**Common mistakes:**
+- Editing the SELECT list and forgetting the ordinals.
+- Leaving ties unbroken, then a flaky output order.
+- Forgetting that pandas drops the NULL group by default.
