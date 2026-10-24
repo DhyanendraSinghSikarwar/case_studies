@@ -1,6 +1,6 @@
 ### Q11 ⭐⭐⭐ 🟡 Your model started refusing benign requests after a safety-training round. What do you investigate and how do you fix it?
 **Asked at:** post-training loops, product, safety teams
-**Say this first (1 line):** This is over-refusal (exaggerated safety); I would first measure it against a unsafe-compliance number so I do not trade one failure for the other, then trace it to the safety data mix, the reward signal, over-training, or a guardrail threshold, and fix it with borderline-benign training data and rebalancing.
+**Say this first (1 line):** This is over-refusal (exaggerated safety); I would first measure it against an unsafe-compliance number so I do not trade one failure for the other, then trace it to the safety data mix, the reward signal, over-training, or a guardrail threshold, and fix it with borderline-benign training data and rebalancing.
 
 **Then explain:**
 - **Measure first, on two sets.** A benign-but-edgy set (for example "how do I kill a Python process?") and a truly unsafe set. XSTest is the usual public example; as reported in its paper listing it has 250 safe prompts in ten types plus 200 unsafe contrasts (seen in search snippets only, so hedge the numbers). Compare refusal rate before and after the safety round. Track both numbers every time.
@@ -507,3 +507,118 @@ length-adjusted win rate of B:               0.473 (slope 0.0113 )
 - *Does length-controlled evaluation fully fix it?* It removes the linear length effect only, other style biases remain (Part 9 covers judges).
 
 **Common mistakes:** Quoting the 70-90% figure as fact; reporting raw win rate against a longer-answering baseline; penalising length so hard that answers become terse; ignoring the data as a source of the bias.
+
+### Q20 ⭐⭐ 🟡 What are GRPO and RLVR? How does a group-relative advantage replace the critic, and what are the weaknesses of verifiable rewards?
+**Asked at:** post-training loops, GenAI startups, research-leaning teams
+**Say this first (1 line):** GRPO samples a group of responses per prompt, scores each, and uses (reward - group mean) / group std as the advantage, so no value network is needed; RLVR (RL with verifiable rewards) is the setting where those scores come from rules such as answer match or unit tests rather than a learned reward model. This is as explained in reported explainers; check the DeepSeekMath paper (arXiv 2402.03300) for the primary definition.
+
+**Then explain:**
+- **Group baseline instead of a critic:** the group mean plays the role of the value estimate for that prompt, so one fewer large model is trained and held in memory (Q13).
+- **Update:** PPO-style clipped ratio (Q12) with that advantage, plus a KL term to a reference model, per the explainers I saw. Group sizes in the 8-64 range were mentioned by one source.
+- **RLVR rewards:** exact match for math, unit tests for code, format checks. Cheap, objective, and hard to argue with, unlike a learned reward (Q17).
+- **Weakness 1, uniform credit:** every token in a response gets the same advantage, so the update cannot tell the key step from filler.
+- **Weakness 2, weak verifiers get hacked:** if the check is loose, the policy finds the loophole (Q21 demo).
+- **Weakness 3, no signal in uniform groups:** if all responses get the same reward (all right or all wrong), advantages are zero, so hard-but-solvable prompts need enough samples or curriculum. When std is zero you divide by zero, so add a small epsilon.
+
+**Example (run, synthetic):** reward group [1, 0, 0, 1] gives advantages [1, -1, -1, 1]; [1, 1, 1, 0] gives [0.577, 0.577, 0.577, -1.732] (the lone failure is pushed down hard); [0, 0, 0, 0] and [1, 1, 1, 1] both give all zeros, so no learning from that prompt. In a toy 6-answer bandit where answer 4 is correct (exact match reward), a softmax policy trained with REINFORCE using the group baseline (group of 8, no value network, a small KL to uniform) goes from 0.167 to 0.995-0.998 probability on the correct answer over five seeds. This toy uses plain policy gradient without the clipping, to isolate the group baseline.
+
+**Code:** (run, torch CPU; synthetic bandit)
+```python
+import torch
+torch.set_num_threads(1)
+torch.manual_seed(0)
+
+def group_advantages(rewards, eps=1e-6):
+    r = torch.as_tensor(rewards, dtype=torch.float32)
+    return (r - r.mean()) / (r.std(unbiased=False) + eps)
+
+for g in ([1, 0, 0, 1], [1, 1, 1, 0], [0, 0, 0, 0], [1, 1, 1, 1], [0.2, 0.5, 0.9, 0.4]):
+    print(g, "->", [round(x, 3) for x in group_advantages(g).tolist()])
+
+# Toy verifiable bandit: 6 candidate answers, answer 4 is correct (reward 1 by exact match), else 0.
+# Softmax policy, REINFORCE with a group-mean/std baseline (no value network), KL to uniform reference.
+K, correct, G, beta = 6, 4, 8, 0.02
+def run(seed, use_std=True, steps=150):
+    torch.manual_seed(seed)
+    logits = torch.zeros(K, requires_grad=True)
+    ref = torch.full((K,), 1.0 / K)
+    opt = torch.optim.Adam([logits], lr=0.1)
+    for _ in range(steps):
+        probs = torch.softmax(logits, 0)
+        a = torch.multinomial(probs.detach(), G, replacement=True)
+        r = (a == correct).float()
+        adv = (r - r.mean()) / (r.std(unbiased=False) + 1e-6) if use_std else (r - r.mean())
+        logp = torch.log(probs[a])
+        kl = (probs * (probs.log() - ref.log())).sum()
+        loss = -(adv.detach() * logp).mean() + beta * kl
+        opt.zero_grad(); loss.backward(); opt.step()
+    return torch.softmax(logits, 0)[correct].item()
+res = [run(s) for s in range(5)]
+print("P(correct) after training, 5 seeds:", [round(x, 3) for x in res])
+```
+Output (my run):
+```
+[1, 0, 0, 1] -> [1.0, -1.0, -1.0, 1.0]
+[1, 1, 1, 0] -> [0.577, 0.577, 0.577, -1.732]
+[0, 0, 0, 0] -> [0.0, 0.0, 0.0, 0.0]
+[1, 1, 1, 1] -> [0.0, 0.0, 0.0, 0.0]
+[0.2, 0.5, 0.9, 0.4] -> [-1.177, 0.0, 1.569, -0.392]
+P(correct) after training, 5 seeds: [0.997, 0.996, 0.997, 0.995, 0.998]
+```
+
+**Follow-ups:**
+- *Why divide by std?* It normalises scale across prompts of different difficulty (reported in the explainers); some later variants reportedly drop it, which I have not verified.
+- *Can you use GRPO with a learned reward model?* Yes; the group normalisation works for any scalar score, but then you inherit reward-model failures (Q17).
+
+**Common mistakes:** Saying GRPO has no baseline (it has a group one); forgetting epsilon for zero std; claiming all tokens are credited differently; treating RLVR as unhackable.
+
+### Q21 ⭐⭐ 🟡 How are reasoning models post-trained (RL on verifiable tasks, test-time compute), and how does that differ from preference-based RLHF?
+**Asked at:** post-training loops, big tech, GenAI startups
+**Say this first (1 line):** Reasoning models are, as commonly described, post-trained with RL on tasks that have checkable answers (math, code), which rewards long chains of thought that end in a correct result, and they then spend more tokens at inference (test-time compute), whereas preference-based RLHF optimises a learned reward for human-liked answers. Details of specific systems are not public in full, so hedge.
+
+**Then explain:**
+- **Reward source:** RLHF uses a learned reward model from human comparisons (Q5). Reasoning RL uses a verifiable reward such as answer match or passing tests (Q20), which is cheap and not a proxy for taste.
+- **Long chain of thought:** the model is rewarded for the final outcome, and longer deliberate reasoning (checking, backtracking) tends to emerge or be encouraged (reported in explainers; hedge).
+- **Test-time compute:** more thinking tokens or more samples at inference trade latency and cost for accuracy; costs are covered in Part 2 Q43 and Part 4 Q47.
+- **Examples:** the prep article lists o1/o3 and DeepSeek-R1 as examples of this track; I am only naming them as listed and not describing their internals.
+- **Pitfalls:** weak verifiers get hacked; format hacking (satisfying the answer pattern without real reasoning); cost of long rollouts; unreadable or mixed-language reasoning; tasks without a verifier (writing, advice) still need preference-based methods.
+- **In practice** the two are combined: verifiable RL for reasoning, preference tuning for helpfulness and safety (Q1, Q11).
+
+**Example (MOCK, run):** for "17 * 3" with true answer 51, a weak verifier that accepts any output containing "51" gives reward 1 to "Possible answers: 41, 45, 51, 60. Answer: 41 51", while a stricter format check gives 0 (and also 1 to a reasoning-free "Answer: 51", which a correctness check cannot punish). The strict check wrongly gives 0 to "The result is 51." Neither verifier is perfect, and an RL loop will find whichever gap exists. Scripted outputs, no real model.
+
+**Code:** (run; MOCK scripted outputs)
+```python
+import re
+# MOCK verifiers on scripted outputs (no real model). Question: 17 * 3 = ?  (true answer 51)
+outputs = {
+  "correct, reasoned":   "17*3 = 10*3 + 7*3 = 30 + 21 = 51. Answer: 51",
+  "wrong, reasoned":     "17*3 = 41. Answer: 41",
+  "hack: lists many":    "Possible answers: 41, 45, 51, 60. Answer: 41 51",
+  "hack: no reasoning":  "Answer: 51",
+  "correct, bad format": "The result is 51.",
+}
+def weak_verifier(text):          # 'contains the number 51 anywhere'
+    return float("51" in text)
+def strict_verifier(text):        # requires exactly one 'Answer: N' at the end and N == 51
+    m = re.fullmatch(r".*Answer: (\d+)", text, flags=re.S)
+    return float(bool(m) and m.group(1) == "51")
+print(f"{'output':22s} weak  strict")
+for k, v in outputs.items():
+    print(f"{k:22s} {weak_verifier(v):.0f}     {strict_verifier(v):.0f}")
+```
+Output (my run):
+```
+output                 weak  strict
+correct, reasoned      1     1
+wrong, reasoned        0     0
+hack: lists many       1     0
+hack: no reasoning     1     1
+correct, bad format    1     0
+```
+
+**Follow-ups:**
+- *Why does verifiable reward scale better than a reward model?* It is not learned, so it is harder to over-optimise in the Gao-style way (reported), but only where the verifier is sound.
+- *Does more test-time compute always help?* No; it helps up to a point and costs latency and money (Part 2 Q43).
+- *How do you keep reasoning readable?* Add format or language rewards or a short SFT stage; trade-offs exist and details vary by system (hedge).
+
+**Common mistakes:** Saying reasoning models skip RLHF entirely; describing o1 or R1 internals as fact; forgetting verifiers can be gamed; ignoring inference cost.

@@ -255,7 +255,7 @@ print(f"  DPO grad autograd {x.grad.item():.8f} finite-diff {fd:.8f}")
 
   The exploit column peaks near n=16 and then falls, even though the proxy score of the pick keeps rising (2.43 at n=16, 6.70 at n=1024). KL check: uniform base over 1000 outcomes gave 1.835 at n=16 against the bound 1.835 (equality in the limit of many distinct outcomes), a random 50-outcome base gave 1.821, a skewed 20-outcome base 1.794.
 
-**Example:** a support bot answers once a minute per user. With n=8 and a reward model you get a clear quality gain but 8x the generation bill and about 2x latency if you batch the samples. I would use n=4 to 8 as a launch fix, collect the winners, and fine-tune on them (rejection sampling) so that later I can drop n back to 1 or 2.
+**Example:** a support bot answers once a minute per user. With n=8 and a reward model you get a clear quality gain but 8x the generation bill and somewhat higher latency (it depends on batching, not measured here). I would use n=4 to 8 as a launch fix, collect the winners, and fine-tune on them (rejection sampling) so that later I can drop n back to 1 or 2.
 
 **Code:** (executed, standalone, numpy only; SYNTHETIC)
 ```python
@@ -304,3 +304,149 @@ print("generation cost: n=1 -> 1x, n=16 -> 16x the samples per request (can run 
 - Forgetting that the n generations are a serving cost on every request.
 - Measuring only the proxy score of the winner, which always rises.
 - Quoting the KL bound as exact rather than an upper bound.
+
+### Q35 ⭐ 🟡 Why do jailbreaks work (competing objectives, mismatched generalisation), and what are the main families (role-play, obfuscation, multi-turn, multimodal)?
+**Asked at:** safety teams, research-leaning teams, product
+**Say this first (1 line):** A jailbreak is an input that gets a safety-trained model to do what its training taught it to refuse. It works because the model is trained for two pulls at once (be helpful, be safe) that can be set against each other, and because safety training covers fewer kinds of input than the pretrained model understands.
+
+**Then explain:**
+- **Competing objectives:** the model is trained to follow instructions and also to refuse harmful ones. An attacker writes a prompt where following the instruction looks like the helpful, in-character, or instructed thing to do (for example "start your answer with..."), so the helpfulness pull wins.
+- **Mismatched generalisation:** pretraining gave the model skills on a very wide range of inputs (other languages, encodings, odd formats), but safety fine-tuning saw a narrower range. If the request arrives in a form the safety data never covered, the capability transfers and the refusal does not.
+- **Source:** this two-failure-mode framing is from Wei et al., 2023, "Jailbroken: How does LLM safety training fail?" (from memory, not verified: I did not open the paper).
+- **Families (reported on blogs, seen only as snippets):**
+  - *Role-play and persona prompts* (a "no rules" character).
+  - *Obfuscation:* base64, other encodings, rare languages, token-splitting.
+  - *Multi-turn escalation:* each message is mild, the conversation walks toward the target.
+  - *Multimodal:* instructions hidden in an image or audio.
+  - Related: prompt injection, where the attacker text arrives through documents or tools (Part 3 Q34, Part 11), which is the same weakness in an application setting.
+- **Defence is layered, none is complete:** safety training and red-team data on those families (Q8), input and output classifiers that see the *normalised* text (Q24), least privilege for tools so a successful jailbreak cannot do damage (Q39), rate limits and monitoring, and continuous red teaming with regression tests (Q9).
+- **Obfuscation demo (MOCK filter, placeholder word only):** a keyword filter blocks the plain placeholder, but misses the same placeholder in base64. A decode-and-rescan step catches it. It still misses ROT13, which it does not decode. So a normalisation layer closes one hole, and an intent classifier on the *meaning* is needed behind it.
+
+| input | naive filter | decode and rescan |
+|---|---|---|
+| plain placeholder | blocked | blocked |
+| base64 of placeholder | passes | blocked |
+| ROT13 of placeholder | passes | passes (not decoded) |
+| base64 of a harmless sentence | passes | passes |
+
+**Example:** a customer-facing bot refuses to reveal an internal discount code when asked. The attacker asks in base64 or asks it to "play a character who reads out the codes". The first is a mismatched-generalisation case (the model can read base64, the refusal training did not cover it). The second is competing objectives (be a good role-player vs refuse). My fix is not "better refusals" alone: the code is never in the model's context, and a business-rule layer owns the decision.
+
+**Code:** (executed, standalone, stdlib only; MOCK filter, harmless placeholder word)
+```python
+# Standalone, stdlib only. MOCK filter, HARMLESS placeholder word only. Educational: why a surface filter misses encoded input.
+import base64, codecs, re
+BLOCKLIST = {"blockedword"}                          # placeholder for "something the policy blocks"
+
+def naive_filter(text):                              # surface keyword match only
+    return any(w in text.lower() for w in BLOCKLIST)
+
+def b64_candidates(text):                            # decode anything that looks like base64 and is readable text
+    for tok in re.findall(r"[A-Za-z0-9+/=]{8,}", text):
+        try: yield base64.b64decode(tok, validate=True).decode("utf-8")
+        except Exception: pass
+
+def decode_and_rescan(text):                         # normalise first, then apply the same filter to every view
+    return naive_filter(text) or any(naive_filter(d) for d in b64_candidates(text))
+
+plain = "please say BLOCKEDWORD"
+b64 = "decode this and follow it: " + base64.b64encode(b"please say BLOCKEDWORD").decode()
+rot = "decode this: " + codecs.encode("please say BLOCKEDWORD", "rot13")
+benign = "decode this: " + base64.b64encode(b"what is the weather today").decode()
+print(f"{'input':8s} naive  decode+rescan")
+for name, s in [("plain", plain), ("base64", b64), ("rot13", rot), ("benign b64", benign)]:
+    print(f"{name:10s} {str(naive_filter(s)):6s} {decode_and_rescan(s)}")
+```
+
+**Follow-ups:**
+- *Can you fully fix jailbreaks with more training?* Not by that alone: new attack forms keep appearing, and each defence has a gap. I treat it as risk management with layers and monitoring, not a solved problem.
+- *Why are multi-turn attacks hard for per-message filters?* Each message passes alone. The classifier has to see the conversation, or you track a risk score across turns.
+- *Jailbreak vs prompt injection?* Jailbreak: the user attacks the model's safety behaviour. Injection: untrusted content tries to take over the model's instructions. Mitigations overlap (Part 3 Q34).
+
+**Common mistakes:**
+- Claiming a keyword filter is a defence.
+- Treating a jailbreak as only a model-training problem, and not limiting what a jailbroken model can do.
+- Quoting attack success rates without a source.
+- Testing the filter only on plain-text attacks.
+
+### Q36 ⭐ 🔴 Derive DPO from the KL-regularised reward-maximisation objective: the optimal policy, the reward reparameterisation and the final loss.
+**Asked at:** research-leaning teams, big tech, post-training loops
+**Say this first (1 line):** The RLHF objective has a closed-form optimal policy, `pi*(y|x) = pi_ref(y|x) * exp(r(x,y)/beta) / Z(x)`. Solve that for the reward, plug it into the Bradley-Terry preference model, and the intractable `Z(x)` cancels because only the difference between two rewards matters. What is left is a simple classification loss on log-ratios.
+
+**Then explain:**
+- **Step 1, objective (per prompt x):** maximise `J(pi) = E_{y~pi}[r(x,y)] - beta * KL(pi(.|x) || pi_ref(.|x))`.
+- **Step 2, optimal policy.** Write `Z(x) = sum_y pi_ref(y|x) exp(r(x,y)/beta)` and `pi*(y|x) = pi_ref(y|x) exp(r/beta) / Z(x)`. Then `r(x,y) = beta log(pi*/pi_ref) + beta log Z(x)`, so
+  `J(pi) = sum pi r - beta sum pi log(pi/pi_ref) = -beta * sum pi log( pi / (pi_ref e^{r/beta}) ) = -beta * KL(pi || pi*) + beta log Z(x)`.
+  KL is at least 0 and equals 0 only at `pi = pi*`, so `pi*` is the unique maximiser, and the best value is `beta log Z`.
+- **Step 3, reparameterise the reward:** `r(x,y) = beta * log( pi*(y|x) / pi_ref(y|x) ) + beta * log Z(x)`. The reward is now expressed by the policy itself. `Z(x)` is a sum over all possible responses, so it cannot be computed.
+- **Step 4, Bradley-Terry:** `P(y_w beats y_l | x) = sigmoid( r(x,y_w) - r(x,y_l) )`. In the difference, `beta log Z(x)` appears with a plus in one term and a minus in the other, and is gone: `r_w - r_l = beta * [ log pi*(y_w)/pi_ref(y_w) - log pi*(y_l)/pi_ref(y_l) ]`.
+- **Step 5, fit a policy by maximum likelihood:** replace `pi*` with the trainable `pi_theta`:
+  `L_DPO = - E log sigmoid( beta * [ log pi_theta(y_w|x)/pi_ref(y_w|x) - log pi_theta(y_l|x)/pi_ref(y_l|x) ] )`.
+  Beta is the same KL strength as in RLHF; `beta * log(pi_theta/pi_ref)` is the implicit reward (Q4, Q6).
+- **What the numerical check shows (6 responses, beta 0.5, exact computation):**
+  - `J(pi*) = 0.762753`, which equals `beta log Z = 0.762753`. The best of 20,000 random distributions got 0.746256, the best of 5,000 tiny perturbations of `pi*` got 0.762614, and the reference itself 0.399757.
+  - `r` is recovered from `pi*`, `pi_ref` and `Z` to 1e-16.
+  - For the highest-reward vs lowest-reward response, `r_w - r_l = 2.569422` and the difference of `beta log(pi*/pi_ref)` is the same; adding any constant offset (log Z of -2.30, 0, +3.61) leaves the preference probability at 0.928867, equal to the true Bradley-Terry value.
+  - Training a free policy on the exact expected DPO loss (all pairs weighted by their true preference probabilities) converges to `pi*`: max difference 5.6e-16 after 3000 Adam steps.
+- **Caveats I would state:** the derivation assumes the Bradley-Terry model, a fixed `pi_ref`, a policy class rich enough to represent `pi*`, and preference pairs that actually come from `pi_ref`'s neighbourhood. The DPO paper's abstract (opened) states the closed-form reparameterisation and that the result is a simple classification loss, and claims it matches or beats PPO-based RLHF on the tasks it tested; those are the authors' claims.
+
+**Example:** two answers to the same prompt. The policy has raised the log-ratio of the chosen answer by 0.8 and lowered that of the rejected by 0.4 against the reference, with beta 0.1: margin `0.1 * (0.8 - (-0.4)) = 0.12`, loss `-log sigmoid(0.12) = 0.63`. The prompt-wide constant `beta log Z(x)` never needs to be computed.
+
+**Code:** (executed, standalone, numpy + torch, CPU, seconds; exact computation on a toy with 6 responses)
+```python
+# Standalone, numpy + torch. One prompt, 6 possible responses, so everything can be computed exactly.
+import numpy as np, torch
+torch.set_num_threads(1)
+rng = np.random.default_rng(0)
+K, beta = 6, 0.5
+ref = rng.dirichlet(np.ones(K)); r = rng.normal(0, 1, K)           # reference policy pi_ref(y|x) and a reward r(y)
+
+def J(pi):                                                         # regularised objective: E_pi[r] - beta * KL(pi || ref)
+    return float((pi * r).sum() - beta * (pi * np.log(pi / ref)).sum())
+
+# 1) closed form: pi*(y) = ref(y) * exp(r(y)/beta) / Z
+w = ref * np.exp(r / beta); Z = w.sum(); pistar = w / Z
+best_rand = max(J(rng.dirichlet(np.ones(K) * a)) for a in (0.3, 1, 5, 50) for _ in range(5000))
+def perturb():
+    q = np.clip(pistar + rng.normal(0, 0.02, K), 1e-6, None); return q / q.sum()
+best_pert = max(J(perturb()) for _ in range(5000))
+print(f"J(pi*) = {J(pistar):.6f}   beta*log Z = {beta * np.log(Z):.6f}   (equal: the max value is beta log Z)")
+print(f"best J over 20000 random distributions {best_rand:.6f}; over 5000 small perturbations of pi* {best_pert:.6f}; J(ref) = {J(ref):.6f}")
+assert J(pistar) > best_rand and J(pistar) > best_pert
+
+# 2) invert: r(y) = beta*log(pi*/ref) + beta*log Z.   The Z term is the same for every y of the prompt, so it cancels in a difference
+rhat = beta * np.log(pistar / ref)
+print("max |r - (rhat + beta log Z)| =", float(np.abs(r - (rhat + beta * np.log(Z))).max()))
+w_i, l_i = int(r.argmax()), int(r.argmin())      # winner = higher-reward response
+print(f"pairwise: r_w - r_l = {r[w_i] - r[l_i]:.6f}   rhat_w - rhat_l = {rhat[w_i] - rhat[l_i]:.6f}   (Z cancelled)")
+for Zfake in (0.1, 1.0, 37.0):                                     # any constant offset gives the same Bradley-Terry probability
+    d = (rhat[w_i] + beta * np.log(Zfake)) - (rhat[l_i] + beta * np.log(Zfake))
+    print(f"  with an arbitrary offset log Z={np.log(Zfake):+.2f}: P(w beats l) = {1/(1+np.exp(-d)):.6f}")
+print(f"  true Bradley-Terry P(w beats l) from r = {1/(1+np.exp(-(r[w_i]-r[l_i]))):.6f}")
+
+# 3) DPO loss: -log sigmoid(beta*(log pi/ref(y_w) - log pi/ref(y_l))). Train a policy on the EXACT expected loss over all pairs
+#    (each ordered pair weighted by its Bradley-Terry probability) and check it recovers pi*.
+P = 1 / (1 + np.exp(-(r[:, None] - r[None, :])))                   # P[i, j] = prob i is preferred over j under the true reward
+Pt, reft = torch.tensor(P), torch.tensor(ref)
+logits = torch.zeros(K, dtype=torch.float64, requires_grad=True)
+opt = torch.optim.Adam([logits], lr=0.05)
+for step in range(3000):
+    if step in (0, 100, 500): print("  step", step, "max abs diff to pi* so far", float(np.abs(torch.softmax(logits, 0).detach().numpy() - pistar).max()))
+    opt.zero_grad()
+    lr_ = torch.log_softmax(logits, 0) - reft.log()               # log pi/ref per response
+    margin = beta * (lr_[:, None] - lr_[None, :])
+    loss = -(Pt * torch.nn.functional.logsigmoid(margin)).sum() / K**2
+    loss.backward(); opt.step()
+pi = torch.softmax(logits, 0).detach().numpy()
+print("learned vs closed-form pi*:", np.round(pi, 4), np.round(pistar, 4), "max abs diff", float(np.abs(pi - pistar).max()))
+```
+
+**Follow-ups:**
+- *Why is Z intractable but irrelevant?* It sums over every possible response. It depends only on the prompt, so it is the same for both responses of a pair and cancels.
+- *What if the preference model is not Bradley-Terry?* Then the cancellation argument changes; IPO-style variants exist for that reason (from memory, not verified).
+- *Is DPO the same as RLHF?* Under these assumptions its optimum is the same policy, but the training is offline on fixed pairs with no sampling from the current policy, which is why it can behave differently in practice (Q4).
+
+**Common mistakes:**
+- Saying DPO has no reward model: it has an implicit one.
+- Forgetting why Z cancels (only differences enter Bradley-Terry).
+- Mixing up KL direction: it is KL(pi || pi_ref), policy first.
+- Writing the log-ratios over tokens without noting they are sums over the whole response.
