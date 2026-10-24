@@ -618,6 +618,7 @@ Target: 100 | Actual: 123 | Scope: career-switch, pay, role choice, skills order
 | First filter | Aptitude/online test | SQL screen or analytical test | SQL-heavy online test |
 | SQL difficulty | Basic-medium | Basic-medium | Medium-hard |
 | Case/guesstimate | Rare | Amazon, Novartis | Common |
+
 Pay: verified in-scope JD pay mostly Rs 3.5-9 LPA; GCC/product/finance analytics is the upper part (MS Section 4; 8 of 40 JDs showed pay). No pay shown in 25 GCC/MNC postings (jd_sample_gcc_mnc.md). No reliable data found on pay by company type.
 **What to do:** Prepare for the type you target: aptitude and basic SQL for service firms; SQL screen plus tool depth for GCCs; hard SQL, metrics and cases for startups. Ask each recruiter about rounds and the pay band before the first interview.
 **Example:** (illustrative) Prepare one week of aptitude for a service-firm drive, and two weeks of window functions for a startup screen.

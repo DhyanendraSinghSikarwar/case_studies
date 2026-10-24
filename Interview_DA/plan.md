@@ -49,7 +49,7 @@
 
 | # | Book | Type | Q target |
 |---|---|---|---|
-| 0 | Career Switch & Interview Process Guide (HR → DA) | Guide | Guide + 100 FAQs |
+| 0 | Career Switch & Interview Process Guide (HR → DA) | Guide | Guide + 123 FAQs (target 100) |
 | 1 | Excel for Data Analysts (formulas → Power Query → dashboards) | Q&A + practical | 600 |
 | 2 | SQL (easy → hard, scenario-based) | Q&A + code | 600 |
 | 3 | Python & pandas for Analysts (from zero) | Q&A + code | 600 |
@@ -123,7 +123,7 @@ Each skill book ends with a **"How to Develop This Skill" part**: zero-to-job-re
 | 4 | Round-by-round expectations: online test, SQL live, Excel/Power BI task, case/guesstimate, take-home, HR, GD |
 | 5 | How HR experience is an advantage (people analytics, stakeholder skills, domain) |
 | 6 | 6-month learning roadmap for a non-technical beginner |
-| 7 | 100 FAQs on switching careers |
+| 7 | 100+ FAQs on switching careers (123 delivered) |
 
 ### Book 1 — Excel (600)
 | Part | Topic | Qs |
@@ -466,7 +466,7 @@ interviews/data_analyst/
 | Book | Parts | Questions | Answers | Review |
 |---|---|---|---|---|
 | Phase 0 | — | — | — | ✅ research done (JD sample 186; pending your approval) |
-| 0 | 7 sections | ✅ 123 FAQs + guide outline | ⬜ | ⬜ |
+| 0 | 7 sections | ✅ 123 FAQs + guide outline | ✅ guide (Book00_Guide.md) + 123 FAQ answers | ✅ Wave C done 2026-10-24 (see Book00_CareerSwitch_Process/review_Book00.md; research-based, many items "No reliable data found") |
 | 1 Excel | 12 | ✅ 638 (after removing 11 cross-part duplicates and adding 5 gap-fills; see research/dedupe_log_book01.md) | ✅ 638 (all 12 parts merged; formulas run in LibreOffice 24.2 where supported, 365-only functions/pivots/Power Query/VBA labelled "not run here") | ✅ Wave C done 2026-10-22 (see Book01_Excel/review_Book01.md; never run in real Excel; several Microsoft/Google facts remain unverified) |
 | 2 SQL | 12 | ✅ 664 (after removing 30 cross-part duplicates; see research/dedupe_log_book02.md) | ✅ 664 (all 12 parts merged; code run on SQLite 3.45.1 / pandas 3.0.5; non-SQLite syntax labelled "not run here") | ✅ Wave C done 2026-10-21 (see Book02_SQL/review_Book02.md; dialect claims for non-SQLite engines remain unverified) |
 | 3 Python | 12 | ⬜ | ⬜ | ⬜ |
