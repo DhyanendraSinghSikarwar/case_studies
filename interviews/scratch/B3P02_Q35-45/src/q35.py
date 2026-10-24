@@ -98,4 +98,12 @@ except (ValueError, TypeError) as e:
     print("astype('Int64') on 1.5 ->", type(e).__name__ + ":", e)
 print("astype('Int64') on ['1', ' 2'] without strip:", pd.Series(["1", " 2"]).astype("Int64").tolist(),
       "| to_numeric without strip:", pd.to_numeric(pd.Series(["1", " 2"])).tolist())
+# NaN keys on BOTH sides: pandas matches NaN with NaN (SQL never matches NULL = NULL)
+left_nan = pd.DataFrame({"customer_id": [1.0, None], "name": ["Asha", "Unknown"]})
+right_nan = pd.DataFrame({"customer_id": [None, 3.0], "order_id": [13, 12]})
+both = left_nan.merge(right_nan, on="customer_id", how="inner")
+print("NaN key on both sides, inner merge rows:", both[["name", "order_id"]].values.tolist())
+sql_nan = sqlite3.connect(":memory:").execute(
+    "SELECT COUNT(*) FROM (SELECT NULL AS k) a JOIN (SELECT NULL AS k) b ON a.k = b.k").fetchone()[0]
+print("SQL NULL = NULL join rows:", sql_nan)
 con.close()

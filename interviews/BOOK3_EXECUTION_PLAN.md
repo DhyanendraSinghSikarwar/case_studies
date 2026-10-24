@@ -14,7 +14,7 @@ Per question: `### Qn stars emoji text` / `**Asked at:**` / **Say this first (1 
 | Part | Topic | Target | Wave A | Wave B | Wave C |
 |---|---|---|---|---|---|
 | 1 | SELECT, filtering, aggregation, GROUP BY/HAVING | 45 | ✅ (45 Qs) | ✅ | ✅ |
-| 2 | Joins (all types, self, anti/semi) | 45 | ✅ (45 Qs) | ⬜ | ⬜ |
+| 2 | Joins (all types, self, anti/semi) | 45 | ✅ (45 Qs) | ✅ | ✅ |
 | 3 | Subqueries, CTEs | 40 | ⬜ | ⬜ | ⬜ |
 | 4 | Window functions: ranking, top-N per group | 50 | ⬜ | ⬜ | ⬜ |
 | 5 | Window functions: running totals, LAG/LEAD, moving avg | 45 | ⬜ | ⬜ | ⬜ |
@@ -35,4 +35,4 @@ Book 1 owns statistics and ML; Book 4 owns data engineering and generic MLOps (f
 - Spend-limit interruptions: resume agents with SendMessage after the reset.
 
 ## Next step
-Part 2 Wave A (joins: all types, self, anti/semi joins; research, freeze the list, then Wave B and review). Per-part scripts: copy scratch/B3P01_merge/merge.py (change the part-file path and B3P01 prefix) and scratch/review_scripts/check_part_template.py, but for Book 3 run only the Code-block program per question (the one containing `import sqlite3`; prose pandas snippets are fenced python too and are not standalone). Wave B brief: scratch/B3_brief.md. Part 1 lessons: several question premises were wrong in SQLite (alias in WHERE accepted; HAVING on a non-grouped column and bare columns run silently; COUNT(DISTINCT a, b) errors); answers say so and hedge strict engines as 'not executed'. pandas differs from SQL on NaN in comparisons, isin, sum of empty groups (needs min_count=1), groupby dropna, and round half-to-even.
+Part 3 Wave A (subqueries and CTEs: scalar/correlated/derived-table subqueries, EXISTS, IN, ANY/ALL, CTE vs subquery vs temp table, chained CTEs, readability; no window functions or recursion, those are Parts 4-5 and 9). Then Wave B and review. Per-part tools: copy scratch/B3P02_merge/merge.py (change part-file path and prefix); check with `python3 scratch/review_scripts/check_book3.py Book3_SQL/Book3_SQL_PartNN.md` (verifies structure, labels, and runs the one sqlite3 program per question); Wave B brief: scratch/B3_brief.md plus the Part 2 notes used in the launch prompts (Part 1/2 answers are the format model). Lessons so far: question premises often differ in SQLite (alias in WHERE accepted; HAVING on non-grouped columns and bare columns run silently; COUNT(DISTINCT a,b) errors; RIGHT/FULL JOIN work on 3.45; INTERSECT ALL, MINUS, <=>, LATERAL, ASOF JOIN are syntax errors); pandas differs on NaN keys (merge matches NaN to NaN, isin matches NaN, groupby drops NaN keys, sum of all-NaN is 0 unless min_count=1, round is half-to-even). Hedge other engines as 'not executed'.
