@@ -28,3 +28,9 @@ Star reasoning
 Limitations: sample is guides and docs, not interview transcripts; company-specific claims unverified. Microsoft pages disagree or are unclear on some service-side many-to-many support details, so no answer should assert that without re-checking the live page. Most guides do not state how often questions are asked.
 
 Gap-fills (not seen in any source, added from standard practice or HR relevance): 11 of 60: primary/foreign key; HR data model scenario; semantic model (formerly dataset); sort month by month number; flat Excel to star schema; validating model numbers; naming and documentation habits; tool and Mac limitation; unmatched keys (Unknown member); shared semantic model; employee-manager hierarchy. The Mac limitation (Power BI Desktop is Windows only) should be verified against Microsoft Learn when answers are written.
+
+## Gap-fills added after de-duplication
+Three questions added to reach the 60 target. None was seen as a question in any source listed above; all are standard practice. Topic facts (multi-column keys need a combined key column, relationship line symbols, Assume referential integrity) are covered on the Microsoft Learn relationships page already listed (desktop-relationships-understand), which was fetched; no new pages were fetched for this step.
+- Two-column match (Employee ID plus Month): common practical modelling task; relationships take a single column on each side, so a concatenated or composite key column is needed. Star 2.
+- What the 1, asterisk, arrow and line style mean in Model view: basic reading skill asked in live screen-share tasks; complements Q17. Star 2.
+- Assume Referential Integrity: documented relationship option, mainly DirectQuery performance; differentiator, not in India interview reports seen. Star 1.

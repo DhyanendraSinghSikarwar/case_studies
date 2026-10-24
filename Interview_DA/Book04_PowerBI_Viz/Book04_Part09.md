@@ -1,6 +1,6 @@
 # Book 4 — Power BI & Visualization | Part 9: Scenario Tasks (Build HR/Sales Dashboard, Fix a Slow Report, Reconcile Numbers) 🔴
 
-**Target:** 70 questions | **Actual:** 65 questions
+**Target:** 70 questions | **Actual:** 70 questions
 **Scope:** practical Power BI build, fix and reconcile tasks: HR and sales dashboards, slow-report diagnosis, number mismatches, refresh and sharing problems.
 
 ### Q1 ⭐⭐⭐ 🟢 Walk me through a Power BI dashboard you built, from raw data to published report.
@@ -141,59 +141,74 @@
 ### Q46 ⭐⭐ 🟡 The numbers on the dashboard changed since yesterday though nobody edited the report: what could explain it?
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐⭐ 🔴 Your DirectQuery report is slow: what options do you have?
+### Q47 ⭐⭐ 🟡 Write the DAX for average time to hire (days from application to joining) and show it by department.
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐⭐ 🔴 Power BI revenue is 2 percent off the finance ledger: how do you reconcile it step by step?
+### Q48 ⭐⭐ 🟡 Sales doubled after a colleague saved a corrected copy of a monthly file into the source folder: why, and how do you stop it happening?
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐⭐ 🔴 How do you test that row-level security works before publishing, and where does it not protect the data?
+### Q49 ⭐⭐ 🔴 Your DirectQuery report is slow: what options do you have?
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐ 🟢 How would you plan a dashboard project when the deadline is two weeks?
+### Q50 ⭐⭐ 🔴 Power BI revenue is 2 percent off the finance ledger: how do you reconcile it step by step?
 <!-- ANSWER_PENDING -->
 
-### Q51 ⭐ 🟢 How would you present a new dashboard to non-technical stakeholders and handle change requests?
+### Q51 ⭐⭐ 🔴 How do you test that row-level security works before publishing, and where does it not protect the data?
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐ 🟢 What documentation would you hand over with a report you built for a colleague to maintain?
+### Q52 ⭐⭐ 🔴 You get three raw Excel files of sales, products and customers: build a sales dashboard with a date slicer and a year-over-year comparison, and explain your steps.
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐ 🟢 How would you set an alert in the Power BI service when sales fall below target?
+### Q53 ⭐ 🟢 How would you plan a dashboard project when the deadline is two weeks?
 <!-- ANSWER_PENDING -->
 
-### Q54 ⭐ 🟡 How would you build a what-if parameter to model a salary hike scenario?
+### Q54 ⭐ 🟢 How would you present a new dashboard to non-technical stakeholders and handle change requests?
 <!-- ANSWER_PENDING -->
 
-### Q55 ⭐ 🟡 How would you build a Pareto (80/20) analysis of products in Power BI?
+### Q55 ⭐ 🟢 What documentation would you hand over with a report you built for a colleague to maintain?
 <!-- ANSWER_PENDING -->
 
-### Q56 ⭐ 🟡 Write a DAX measure to count new versus repeat customers per month.
+### Q56 ⭐ 🟢 How would you set an alert in the Power BI service when sales fall below target?
 <!-- ANSWER_PENDING -->
 
-### Q57 ⭐ 🟡 Write DAX for hires and leavers by month using one date table and two date columns.
+### Q57 ⭐ 🟡 How would you build a what-if parameter to model a salary hike scenario?
 <!-- ANSWER_PENDING -->
 
-### Q58 ⭐ 🟡 How would you count employees who joined in the last 90 days and are still on probation?
+### Q58 ⭐ 🟡 How would you build a Pareto (80/20) analysis of products in Power BI?
 <!-- ANSWER_PENDING -->
 
-### Q59 ⭐ 🟡 How would you flag overtime above a threshold in red in a table visual?
+### Q59 ⭐ 🟡 Write a DAX measure to count new versus repeat customers per month.
 <!-- ANSWER_PENDING -->
 
-### Q60 ⭐ 🟡 How would you build an executive summary page with drill-through to employee-level detail?
+### Q60 ⭐ 🟡 Write DAX for hires and leavers by month using one date table and two date columns.
 <!-- ANSWER_PENDING -->
 
-### Q61 ⭐ 🟡 How would you design one report that works on both desktop and phone?
+### Q61 ⭐ 🟡 How would you count employees who joined in the last 90 days and are still on probation?
 <!-- ANSWER_PENDING -->
 
-### Q62 ⭐ 🟡 How would you hide salary details from some users while letting them see the rest of the HR report?
+### Q62 ⭐ 🟡 How would you flag overtime above a threshold in red in a table visual?
 <!-- ANSWER_PENDING -->
 
-### Q63 ⭐ 🟡 How would you decide between a Power BI report and a paginated report for a 40-page monthly pack?
+### Q63 ⭐ 🟡 How would you build an executive summary page with drill-through to employee-level detail?
 <!-- ANSWER_PENDING -->
 
-### Q64 ⭐ 🔴 Refresh became slow because a Power Query step stopped folding: how do you find and fix it?
+### Q64 ⭐ 🟡 How would you design one report that works on both desktop and phone?
 <!-- ANSWER_PENDING -->
 
-### Q65 ⭐ 🔴 How would you build a joiner-cohort retention view showing how many of each month's hires remain after 3, 6 and 12 months?
+### Q65 ⭐ 🟡 How would you hide salary details from some users while letting them see the rest of the HR report?
+<!-- ANSWER_PENDING -->
+
+### Q66 ⭐ 🟡 How would you decide between a Power BI report and a paginated report for a 40-page monthly pack?
+<!-- ANSWER_PENDING -->
+
+### Q67 ⭐ 🟡 How would you show the top 5 customers and group everyone else as Others so the chart still adds up to total sales?
+<!-- ANSWER_PENDING -->
+
+### Q68 ⭐ 🔴 Refresh became slow because a Power Query step stopped folding: how do you find and fix it?
+<!-- ANSWER_PENDING -->
+
+### Q69 ⭐ 🔴 How would you build a joiner-cohort retention view showing how many of each month's hires remain after 3, 6 and 12 months?
+<!-- ANSWER_PENDING -->
+
+### Q70 ⭐ 🔴 The report is fast in Power BI Desktop but users say it is slow in the Service: what do you check?
 <!-- ANSWER_PENDING -->

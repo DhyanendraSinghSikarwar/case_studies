@@ -33,3 +33,11 @@ About 45 of 75 questions are not seen as questions in any source: all HR-flavour
 - Glassdoor, AmbitionBox, Reddit, LinkedIn pages were not fetched (blocked or not surfaced); only search snippets and the repo's earlier research are used for company claims.
 - Sample: 7 searches, 5 full fetches; most scenario-question evidence is blog/community level, not first-hand interview reports.
 - Mac limitation and licence differences (free vs Pro/PPU/Fabric) are from general knowledge in this part, not fetched here: verify against Microsoft Learn in Wave B.
+
+## Gap-fills added after de-duplication
+Part count was 65 against a target of 70; 5 questions added (now 70). None was verified against a specific source and none was seen as a question in a fetched page; all come from standard scenario themes (FanRuan/Medium snippets list sales performance dashboards, inconsistent sources and slow dashboards generally) plus general knowledge. Microsoft Learn was not re-checked for these; verify behaviour in Power BI Desktop/Service at answer-writing time. Checked against Parts 1-8 and Part 9 headings to avoid duplicates (rolling average, text-date locale, Top N, funnel, what-if, column rename, folder combine are already present elsewhere).
+- Sales dashboard from three raw Excel files with a date slicer and YoY (end-to-end build combining Parts 2-5; Q1/Q2 are generic walk-throughs, not this concrete task). Common build task; not seen in a source.
+- Average time to hire in DAX by department (HR measure; hiring funnel exists but not time-to-fill). Written from HR practice; not seen in a source.
+- Sales doubled after a corrected file copy was saved into the combine-folder source (duplicate overlapping files; Part 2 Q12 covers combining, not this failure). Practical failure mode; not seen in a source.
+- Report fast in Desktop but slow in the Service (capacity, shared capacity, RLS, gateway, concurrent users, caching). Related to the optimisation guide fetched above (capacity, gateway, RLS), but the question itself is not seen in a source; 1 star as a differentiator.
+- Top 5 customers plus an Others group that reconciles to total sales (Q14 asks plain Top N only). Not seen in a source; 1 star.

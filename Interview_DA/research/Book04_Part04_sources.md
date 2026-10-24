@@ -28,3 +28,7 @@ Accessed 2026-10-24. 7 distinct web searches and 6 page fetches. Sample is small
 - Gap-fills (not seen in any source, added from standard practice and to meet the target): about 50 of 75, mostly practical measure tasks (attendance %, headcount, payroll, tenure, latest hire date), error questions, version/limit questions, and housekeeping.
 - Unverified for Wave B to check against Microsoft docs: DAX authoring in Power BI Service (web model editing) and Mac limitation (Desktop is Windows-only), DISTINCTCOUNT blank handling, visual calculation and DAX query view availability and licensing, DirectQuery limits beyond CALCULATE in calculated columns/RLS.
 - Part 5 boundary: ALL/ALLEXCEPT, time intelligence and RANKX excluded; only basic percent-of-total appears here.
+
+## Gap-fills added after de-duplication
+Part count was 74 of 75 after cross-part de-duplication; one question added.
+- ⭐⭐ 🟢 "Write a DAX measure that shows Target Met or Below Target by comparing total sales with a sales target." Reason: IF on a measure result (a text-returning KPI status, typical for cards, tables and conditional formatting) was the one basic measure pattern with no question in Part 4, and it does not overlap Part 5 (advanced DAX) or Part 9 (scenarios). Not seen in any fetched source; added from standard practice. Star level is an estimate, not from a frequency count.
