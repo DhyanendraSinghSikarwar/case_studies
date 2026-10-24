@@ -1952,7 +1952,7 @@ asserts passed: SQL ROW_NUMBER/COUNT median == pandas groupby median (dept 40 ab
 
 **Then explain:**
 - **Why two positions:** an odd count has one middle, an even count has two; `(cnt + 1) / 2` and `(cnt + 2) / 2` are the same number when `cnt` is odd and consecutive numbers when it is even, so `rn IN (...)` and `AVG` handle both.
-- **PERCENTILE_CONT (not executed here):** PostgreSQL and Snowflake offer `PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary)` as an ordered-set aggregate (written from memory; SQLite has no such function and I did not run it). SQL Server and some others expose it as a window function and BigQuery as an analytic function; availability differs, so check your engine's documentation.
+- **PERCENTILE_CONT (not executed here):** PostgreSQL and Snowflake offer `PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary)` as an ordered-set aggregate (written from memory; SQLite has no such function and I did not run it). Availability and syntax differ across other engines (not executed here), so check your engine's documentation; MySQL has no such function as far as I remember.
 - **Interpolation in pandas:** `quantile(0.5)` with the default linear interpolation equals the median (matched here); `interpolation="lower"` gave 60 and `"higher"` gave 70 for department 10, so they are not a median for an even count.
 - **Confirmation:** the SQL median equals pandas `groupby().median()` for all four departments that have values.
 
