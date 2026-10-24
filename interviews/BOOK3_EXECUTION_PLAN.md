@@ -15,7 +15,7 @@ Per question: `### Qn stars emoji text` / `**Asked at:**` / **Say this first (1 
 |---|---|---|---|---|---|
 | 1 | SELECT, filtering, aggregation, GROUP BY/HAVING | 45 | ✅ (45 Qs) | ✅ | ✅ |
 | 2 | Joins (all types, self, anti/semi) | 45 | ✅ (45 Qs) | ✅ | ✅ |
-| 3 | Subqueries, CTEs | 40 | ⬜ | ⬜ | ⬜ |
+| 3 | Subqueries, CTEs | 40 | ✅ (40 Qs) | ⬜ | ⬜ |
 | 4 | Window functions: ranking, top-N per group | 50 | ⬜ | ⬜ | ⬜ |
 | 5 | Window functions: running totals, LAG/LEAD, moving avg | 45 | ⬜ | ⬜ | ⬜ |
 | 6 | Date/time: retention, cohorts, MoM/YoY | 45 | ⬜ | ⬜ | ⬜ |
