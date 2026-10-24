@@ -687,3 +687,247 @@ What I saw: a comparison query spawned 3 sub-agents, used 200 mock tokens and fl
 - *Would you use this for every question?* No. A single agent or plain RAG is cheaper and often enough (Q1, Q3).
 
 **Common mistakes:** spawning many agents for easy questions; vague sub-agent tasks that overlap; no shared budget; trusting a fluent synthesis without citation checks; letting sub-agents return whole pages and flood the lead's context; using multi-agent for tightly coupled work; quoting the 90.2 percent or 15x figures as if they were universal.
+
+### Q48 ⭐ 🔴 An agent loops forever on a failing tool call. Diagnose it, and design detection, budgets and escalation to prevent it.
+**Asked at:** senior roles; a Codemia guide for an Amazon agentic-AI loop lists this design prompt (a guide, not a candidate report)
+**Say this first (1 line):** First I confirm it is a loop (the same call repeating, tokens rising, no progress), then I find why: usually a failure that will never succeed, an error message that does not say so, and no cap or detector; the fix is to classify errors as retryable or not, cap retries with backoff, detect repeats, open a circuit breaker, try an alternative or ask the user, and escalate to a human. A Codemia prep guide for an Amazon agentic-AI loop lists this as a design prompt; that is a guide, not a candidate report.
+**Then explain:**
+- **Symptoms:** the trace shows the same tool and arguments again and again; prompt tokens rise each step because the transcript grows; cost and latency climb; the user sees no answer.
+- **Root causes:**
+  - *Unhelpful error text:* `Error: request failed` gives the model nothing to adapt to, so it retries.
+  - *Deterministic failure:* a bad id, a permission error or a schema error will fail every time.
+  - *No retry cap or budget:* nothing forces a stop (Q4).
+  - *Ambiguous success criteria:* the agent does not know when to give up or that "cannot do this" is an acceptable outcome.
+- **Detection:** hash of (tool, normalised arguments) and a count per run; a no-progress metric (no new information or state change for N steps); step, token and time budgets; alerts when a run exceeds a threshold.
+- **Remedies:**
+  - Errors carry a `retryable` flag, a short reason and a suggested next action (Q6, Part 3 Q27).
+  - Retry only retryable errors, with exponential backoff and jitter and a small cap.
+  - A circuit breaker: after N identical failures the call is blocked for the run (and, in production, for the tool for a while).
+  - An alternative tool or cached source when one exists; otherwise ask the user for the missing input; otherwise escalate to a human with the trace.
+  - Add "stop and report" as an allowed outcome in the instructions.
+- **Post-mortem:** record the trace, the root cause, why no guard caught it, then add a test that replays the failing tool, a dashboard for repeated-call counts and a budget alert.
+
+**Example:** an agent calls `get_order(99)` and the tool answers "Error: request failed" because order 99 does not exist. The model decides to try again, forever. In my mock run it reached my 50-step safety cap and the transcript had grown to 3,525 characters. With a structured error (not retryable) the fixed agent made 1 call, asked the user to check the id and the transcript was 95 characters. For a transient timeout both versions recovered in 3 calls: blind retry is fine when the failure really is transient, which is why the classification matters.
+
+**Code:** (executed, standalone, stdlib only; MOCK tool and scripted policy, no LLM; backoff is described in a comment, not slept, to keep the demo fast)
+```python
+# Standalone, stdlib only. MOCK agent policy and MOCK tool; reproduces a retry loop, then fixes it.
+import hashlib, json
+
+class Tool:                                                # MOCK tool: deterministic failure for bad ids, transient failure for flaky ids
+    def __init__(self, mode): self.mode, self.n = mode, 0
+    def __call__(self, order_id):
+        self.n += 1
+        if self.mode == "deterministic": return dict(ok=False, error="Error: request failed")                       # unhelpful, no retryable info
+        if self.mode == "transient" and self.n <= 2: return dict(ok=False, error="timeout", retryable=True)
+        return dict(ok=True, data={"order_id": order_id, "status": "shipped"})
+
+# ---------------- BEFORE: naive loop; the mock model sees "failed" and just tries again ----------------
+def naive(tool, safety_cap=50):
+    transcript, steps = "task: status of order 99\n", 0
+    while steps < safety_cap:                              # the cap is only so my demo ends; the naive design has none
+        steps += 1
+        r = tool(99); transcript += f"call get_order(99) -> {json.dumps(r)}\n"
+        if r["ok"]: return dict(steps=steps, outcome="answered", chars=len(transcript))
+    return dict(steps=steps, outcome="STILL LOOPING at safety cap", chars=len(transcript))
+
+# ---------------- AFTER: structured errors, retry policy, repeat detector, circuit breaker, fallback, escalation ----------------
+def robust(tool, fallback=None, max_retries=3, breaker_after=3):
+    transcript, steps, retries, seen = "task: status of order 99\n", 0, 0, {}
+    while True:
+        steps += 1
+        key = hashlib.sha1(b"get_order:99").hexdigest()[:8]; seen[key] = seen.get(key, 0) + 1     # repeated-action hash
+        if seen[key] > breaker_after:                                    # circuit breaker opens
+            if fallback: return dict(steps=steps, outcome="fallback tool used", chars=len(transcript), data=fallback(99))
+            return dict(steps=steps - 1, outcome="ESCALATED to human: breaker open", chars=len(transcript))
+        r = tool(99); transcript += f"call get_order(99) -> {json.dumps(r)}\n"
+        if r["ok"]: return dict(steps=steps, outcome="answered", chars=len(transcript))
+        if not r.get("retryable"):                                       # non-retryable: do not retry; ask the user / escalate
+            return dict(steps=steps, outcome="ASKED USER: non-retryable error", chars=len(transcript))
+        retries += 1
+        if retries > max_retries: return dict(steps=steps, outcome="ESCALATED: retries exhausted", chars=len(transcript))
+        # backoff would sleep 2**retries seconds here (omitted in the demo)
+
+b_det, b_tr = naive(Tool("deterministic")), naive(Tool("transient"))
+a_det, a_tr = robust(Tool("deterministic")), robust(Tool("transient"))
+for name, r in [("BEFORE deterministic", b_det), ("BEFORE transient", b_tr), ("AFTER  deterministic", a_det), ("AFTER  transient", a_tr)]: print(f"{name:21s}", r)
+# a retryable-but-never-recovering tool: breaker/retry cap must stop it
+class Down(Tool):
+    def __call__(self, order_id): return dict(ok=False, error="503", retryable=True)
+a_down = robust(Down("x")); print("AFTER  tool down     ", a_down)
+a_fb = robust(Down("x"), fallback=lambda i: {"order_id": i, "status": "from cache"}); print("AFTER  down+fallback ", a_fb)
+assert b_det["steps"] == 50 and "STILL LOOPING" in b_det["outcome"]
+assert b_tr["steps"] == 3 and b_tr["outcome"] == "answered"          # blind retry is fine when the failure is transient
+assert a_det["steps"] == 1 and "non-retryable" in a_det["outcome"]
+assert a_tr["steps"] == 3 and a_tr["outcome"] == "answered"
+assert a_down["outcome"].startswith("ESCALATED") and a_down["steps"] <= 4
+assert a_fb["outcome"] == "fallback tool used" and a_fb["data"]["status"] == "from cache"
+print("checks passed")
+```
+Step counts from my run:
+
+| Scenario | Before | After |
+|---|---|---|
+| Deterministic failure | 50 calls (stopped only by my demo cap) | 1 call, then asks the user |
+| Transient failure (recovers on call 3) | 3 calls, answered | 3 calls, answered |
+| Tool down (retryable, never recovers) | not run | 3 calls, then escalates (breaker opens) |
+| Tool down with a fallback source | not run | 3 failed calls, then fallback used |
+
+The mock policy is scripted, so this shows the mechanism; a real model may vary its arguments between tries, so the repeat detector should also look at similar, not only identical, calls.
+
+**Follow-ups:**
+- *What if the model changes the arguments slightly each time?* Normalise arguments, add a no-progress check and a total budget; the hash alone is not enough.
+- *Who sets the breaker threshold?* I start at 3 identical failures and tune from traces; it should be configurable per tool.
+- *Should the circuit breaker be per run or global?* Both: per run to stop this loop, and global per tool so a downed service is not hammered by every agent.
+
+**Common mistakes:** retrying everything; error text that says only "failed"; relying on the model's judgement to stop; a step cap with no explicit outcome for the user; no jitter in backoff, so retries pile up together; silently falling back to a made-up answer instead of saying the tool failed.
+
+### Q49 ⭐ 🔴 How do you run long-running agents in production (resumability, queues, asynchronous execution, rolling deployments of agent versions)?
+**Asked at:** platform teams, senior roles at product companies
+**Say this first (1 line):** Long-running agents should not live inside one request: I run them from a queue on workers, save state after every step so a crashed or redeployed run resumes where it stopped, make every side effect idempotent, set time and budget limits, and release new versions with a rainbow-style rollout that shifts traffic gradually while old runs finish on the version they started with.
+**Then explain:**
+- **Queue-based execution:** the API accepts a job, returns a run id, and workers pull from a queue. This absorbs bursts, allows retries and lets the user poll or get a notification (Q43).
+- **Persisted state and resume:** after each step, write the transcript or a compact state, the plan, tool results and a step counter to a store. Anthropic's research post (opened) reports that its agents can run a long time and be stateful across many tool calls, so minor failures can be disastrous; its answer is to resume from where the agent was when errors occur, with retry logic and regular checkpoints (reported). A checkpoint is not the same as memory (Q7).
+- **Asynchronous execution:** the post reports benefits (more parallelism, sub-agents that do not wait for each other) and challenges: coordination between agents, state consistency and error propagation (reported). Start synchronous per step, async where it pays (Q47).
+- **Rainbow deployments:** the post describes these as gradually shifting traffic from the old version to the new while both run, so running agents are not disrupted (reported). A normal swap would restart or break runs that are halfway through.
+- **Versioning:** version the prompt, the tool schemas and the code together; stamp each run with its version and pin it, so its resumed steps use the same tools it started with. Store the version in the trace.
+- **Time limits and idempotency:** a maximum run time and step budget, a heartbeat or lease so a dead worker's run is picked up by another, and idempotency keys on every write, since a resumed step may repeat a call that already happened (Part 3 Q28).
+- **Operations:** a health gate on the new version (success rate, cost, latency) that can pause or reverse the shift, a kill switch, and full tracing (Part 11).
+
+**Example:** a research run is 12 minutes in when we deploy a new prompt. A hard restart would kill it. With pinning, the run finishes on v1 while new runs go 5 percent, then 25 percent, then 50 percent to v2; if v2's failure rate climbs, the controller sends traffic back to v1 and v1 is never taken down while it still has runs in flight.
+
+**Code:** (executed, standalone, stdlib only; **TOY simulation**: random run lengths, a fixed seed, no real agents; the numbers describe this one seeded run only)
+```python
+# Standalone, stdlib + random. TOY simulation (no real agents): runs last several ticks, are pinned to the version they started on,
+# traffic shifts gradually, a bad v2 is rolled back, and v1 is only retired when nothing is in flight on it.
+import random
+rnd = random.Random(1)
+
+def simulate(v2_bad, schedule, ticks=60, arrivals=3):
+    inflight, done, split, log = [], [], 0.0, []           # split = share of NEW runs sent to v2
+    next_id = 0
+    for t in range(ticks):
+        split = schedule(t, split, done)                  # rollout controller decides traffic share each tick
+        for _ in range(arrivals):                         # new runs are assigned a version ONCE, at start
+            v = "v2" if rnd.random() < split else "v1"
+            inflight.append(dict(id=next_id, version=v, left=rnd.randint(3, 8), start=t)); next_id += 1
+        for r in list(inflight):                          # in-flight runs keep their pinned version until they finish
+            r["left"] -= 1
+            if r["left"] == 0:
+                bad = (r["version"] == "v2" and v2_bad and rnd.random() < 0.3)
+                done.append(dict(r, ok=not bad, end=t)); inflight.remove(r)
+        log.append((t, round(split, 2), sum(r["version"] == "v1" for r in inflight), sum(r["version"] == "v2" for r in inflight)))
+    return inflight, done, log
+
+STEPS = [0.05, 0.25, 0.5, 1.0]
+def make_controller(check_every=10):
+    st = {"stage": -1, "rolled_back": False}
+    def ctl(t, split, done):
+        if st["rolled_back"]: return 0.0
+        if t % check_every == 0:
+            v2 = [d for d in done if d["version"] == "v2" and d["end"] >= t - check_every]
+            if len(v2) >= 5 and sum(not d["ok"] for d in v2) / len(v2) > 0.15:    # health gate on v2's finished runs
+                st["rolled_back"] = True; return 0.0
+            st["stage"] = min(st["stage"] + 1, len(STEPS) - 1)
+        return STEPS[st["stage"]] if st["stage"] >= 0 else 0.0
+    return ctl
+
+# good v2: gradual shift to 100 percent
+inf, done, log = simulate(False, make_controller())
+print("good v2  traffic share by tick 0/10/20/30/59:", [log[i][1] for i in (0, 10, 20, 30, 59)])
+print("         in-flight (v1, v2) at tick 10:", log[10][2:], "| at tick 30:", log[30][2:], "| at tick 59:", log[59][2:])
+assert [log[i][1] for i in (0, 10, 20, 30)] == [0.05, 0.25, 0.5, 1.0] and log[59][2] == 0
+# pinning: no run ever changed version (each run has a single version field); v1 runs started before the shift still completed
+v1_late = [d for d in done if d["version"] == "v1" and d["end"] >= 30]
+print("         v1 runs still completing after traffic hit 100 percent v2:", len(v1_late))
+assert len(v1_late) > 0 and all(d["ok"] for d in done)
+# bad v2: health gate trips, traffic returns to v1, in-flight v2 runs still finish
+inf, done, log = simulate(True, make_controller())
+bad_ct = sum(not d["ok"] for d in done); v2_total = sum(d["version"] == "v2" for d in done)
+rb = next(i for i, l in enumerate(log) if i > 0 and l[1] == 0.0)
+print(f"bad v2   rolled back at tick {rb}; v2 runs finished: {v2_total}, failed: {bad_ct}; total runs finished: {len(done)}")
+assert rb < 40 and v2_total < 0.4 * len(done)
+# blast radius vs an all-at-once switch
+inf, done_all, _ = simulate(True, lambda t, s, d: 1.0 if t >= 5 else 0.0)
+print("all-at-once: v2 runs finished:", sum(d["version"] == "v2" for d in done_all), "failed:", sum(not d["ok"] for d in done_all))
+assert sum(not d["ok"] for d in done_all) > 3 * bad_ct
+print("checks passed")
+```
+What I saw in my run: with a good v2 the traffic share to v2 went 0.05, 0.25, 0.5, 1.0 at ticks 0, 10, 20, 30, and 5 v1 runs were still finishing after the share reached 100 percent, which a hard swap would have killed. With a bad v2 (30 percent failure on its runs) the health gate tripped at tick 20 and sent traffic back to v1, so 12 v2 runs finished and 3 failed; an all-at-once switch at tick 5 ended with 151 v2 runs and 46 failures. Run lengths and failure rates are made up, so only the shape is meaningful.
+
+**Follow-ups:**
+- *What if the new version needs a different state format?* Write a migration that can read old checkpoints, or let old runs finish on the old version, which pinning allows.
+- *What about a run that is stuck for hours?* A maximum lifetime and a lease; after that it is failed with its partial output or escalated.
+- *Why not just pause everything during deploys?* For long runs that means long outages; gradual shifting avoids the pause.
+
+**Common mistakes:** keeping run state only in a worker's memory; resuming without idempotency keys, so side effects repeat; swapping the prompt under an in-flight run; changing tool schemas without versioning; no health gate on the new version; no time or budget limit on background runs.
+
+### Q50 ⭐ 🔴 How would you run MCP in an enterprise (gateway, server registry, authorisation, per-tool scopes, audit, rate limits, supply-chain risk of third-party servers)?
+**Asked at:** platform teams, security-conscious teams, senior roles
+**Say this first (1 line):** In an enterprise I would put an MCP gateway in front of all servers for central authentication, per-tool authorisation, rate limits and audit logs, allow only registered and version-pinned servers, run remote servers behind OAuth with least-privilege scopes, and treat local stdio servers and third-party servers as code running with someone's privileges. Only the MCP 2025-06-18 base-protocol page was opened for this answer; the gateway, OAuth 2.1 and later-spec points below come from a prep guide or from memory, so verify against the current spec.
+**Then explain:**
+- **What the opened spec page says:** MCP uses JSON-RPC 2.0; HTTP transports SHOULD follow the authorisation specification, while stdio SHOULD NOT and should take credentials from the environment. So a local stdio server has no protocol-level login: it runs as the user who started it.
+- **Gateway (a design pattern, not a spec feature, from memory):** one choke point does authentication, checks (user, server, tool, scope), enforces rate limits, redacts or classifies data and writes the audit log. Clients and agents never talk to servers directly.
+- **Server registry or allowlist:** only reviewed servers are reachable, each entry with an owner, a version and a hash, the data class it touches and its tools with required scopes. Unregistered "shadow" servers are blocked.
+- **Authorisation:** per-tool scopes (read separate from write, sensitive reads separate again); the user's identity flows through so the server acts on behalf of the user, not as a super-user (Q45). For HTTP servers a prep guide (DataCamp) describes OAuth 2.1 with least-privilege scopes; I treat that as reported guidance.
+- **Local stdio servers:** they run with the user's privileges: files, SSH keys, tokens. Run them in a sandbox or container with limited mounts, and only from the approved list (Q41).
+- **Supply chain:** third-party servers are code plus tool descriptions the model reads. Pin versions and hashes, review the code and the descriptions, watch for changes after approval (a tool description can change later, often called a rug pull), sandbox, and keep secrets out of reach. Tool poisoning is covered in Q52.
+- **Audit and data classification:** log who called which tool with which arguments, the decision and the result size, to a tamper-resistant store. Label each server with a data class and compare to the user's clearance, so confidential data cannot flow to a tool of a lower class.
+- **Rate limits:** per user and per server, to contain runaway agents and abuse (Q48).
+- **Later-version claims:** a guide mentions newer spec versions and enterprise authorisation extensions; I cannot confirm them from the page I opened, so I would check the current specification before relying on them.
+
+**Example:** an internal company-data server, as the DataCamp scenario frames it (reported guidance): one server per domain (HR, finance, wiki), OAuth 2.1, least-privilege scopes, audit logging. At the gateway, an intern's agent asks the HR server for headcount: denied for missing scope. A compromised third-party "formatter" server is blocked because it is not in the registry; if a registered server's build hash changes after review, calls are denied until it is re-reviewed.
+
+**Code:** (executed, standalone, stdlib only; **TOY** gateway policy check with made-up servers, versions and scopes; not the MCP SDK and not a production gateway)
+```python
+# Standalone, stdlib only. TOY gateway policy check; names, versions and scopes are made up. Not the MCP SDK and not a real gateway.
+import hashlib, json, time
+
+REGISTRY = {   # server allowlist: only registered servers, pinned version and content hash, a data class, and per-tool scopes
+ "hr-data":    dict(version="1.4.2", sha=hashlib.sha256(b"hr-data-1.4.2").hexdigest(), data_class="confidential",
+                    tools={"get_headcount": "hr:read", "get_salary": "hr:sensitive"}),
+ "wiki":       dict(version="0.9.0", sha=hashlib.sha256(b"wiki-0.9.0").hexdigest(), data_class="internal",
+                    tools={"search_pages": "wiki:read", "edit_page": "wiki:write"}),
+}
+CLEARANCE = {"public": 0, "internal": 1, "confidential": 2}
+USERS = {"asha": dict(scopes={"wiki:read", "wiki:write", "hr:read"}, clearance="confidential"),
+         "intern": dict(scopes={"wiki:read"}, clearance="internal")}
+AUDIT, WINDOW = [], {}                                  # audit log; per (user, server) call timestamps for the rate limit
+
+def gateway(user, server, tool, now, deployed_sha=None, limit=3, per=60):
+    def log(decision, why): AUDIT.append(dict(t=now, user=user, server=server, tool=tool, decision=decision, why=why)); return decision == "allow"
+    reg = REGISTRY.get(server)
+    if reg is None:                                      return log("deny", "server not in registry")
+    if deployed_sha and deployed_sha != reg["sha"]:      return log("deny", "server build does not match pinned hash")   # supply chain / rug-pull check
+    scope = reg["tools"].get(tool)
+    if scope is None:                                    return log("deny", "tool not registered")
+    u = USERS.get(user)
+    if u is None or scope not in u["scopes"]:            return log("deny", f"missing scope {scope}")
+    if CLEARANCE[u["clearance"]] < CLEARANCE[reg["data_class"]]: return log("deny", "clearance below data class")
+    w = WINDOW.setdefault((user, server), []); w[:] = [x for x in w if now - x < per]
+    if len(w) >= limit:                                  return log("deny", "rate limit")
+    w.append(now);                                       return log("allow", "ok")
+
+assert gateway("asha", "wiki", "search_pages", 0)
+assert not gateway("asha", "wiki", "delete_page", 1)                       # unregistered tool
+assert not gateway("asha", "shadow-it-server", "anything", 2)             # unregistered server
+assert not gateway("intern", "hr-data", "get_headcount", 3)              # no scope
+assert not gateway("asha", "hr-data", "get_salary", 4)                    # scope not granted even though she has other hr scopes
+assert gateway("asha", "hr-data", "get_headcount", 5)
+assert not gateway("asha", "wiki", "search_pages", 6, deployed_sha="deadbeef")      # server binary changed after review
+USERS["intern"]["scopes"].add("hr:read"); assert not gateway("intern", "hr-data", "get_headcount", 7)   # scope alone is not enough: clearance
+r = [gateway("asha", "wiki", "search_pages", 10 + i) for i in range(5)]
+assert r == [True, True, False, False, False]      # 3 calls per 60 s window, one was used at t=0
+assert gateway("asha", "wiki", "search_pages", 200)                       # window slid, allowed again
+for a in AUDIT[:8]: print(a["user"], a["server"], a["tool"], a["decision"], "-", a["why"])
+print("denials:", sum(a["decision"] == "deny" for a in AUDIT), "of", len(AUDIT), "| every call logged:", all("why" in a for a in AUDIT))
+print("all gateway checks passed")
+```
+My run printed the audit rows (allow or deny with a reason) and ended with 9 denials out of 14 logged calls, every one carrying a reason. The checks cover an unregistered server, an unregistered tool, a missing scope, a hash mismatch, a clearance mismatch even when the scope is held, and a rate limit of 3 calls per 60 seconds that resets when the window slides.
+
+**Follow-ups:**
+- *Gateway or direct connections?* Direct is fine for a prototype; at enterprise scale I want one place for policy and audit. The cost is another component that must be highly available.
+- *Does OAuth solve prompt injection?* No. It controls who may call what; it does not stop a permitted call from being steered by injected text (Q52).
+- *How do you review a third-party server?* Read the code and the tool descriptions, run it in a sandbox with no secrets and no network, pin the version, and re-review on every upgrade.
+
+**Common mistakes:** letting developers install any MCP server from the internet; running stdio servers on laptops with full access; one shared service account for all users; scopes that are read-write by default; no audit trail; trusting a server because its name looks official; not pinning versions.
