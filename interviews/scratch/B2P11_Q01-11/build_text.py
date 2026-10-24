@@ -17,7 +17,7 @@ q(1, "stdlib only; virtual clock, mock model, SYNTHETIC prices; field names are 
 """One refund question produces 3 spans (request, retrieve, llm_call). In the run below the LLM span has 80 input and 60 output tokens; with a SYNTHETIC price table of 0.50 and 1.50 units per million tokens, cost = (80 x 0.50 + 60 x 1.50) / 1e6 = 0.00013 units, which matches the printed value. With raw logging off, the trace still has the prompt length (115 characters), a 12-character hash, the tokens and the cost, so you can group, count and bill without storing the customer's text.""",
 """- *Why a hash and not the text?* It lets you spot repeated prompts and join traces to a replay set without storing content. It is not anonymisation for short or guessable inputs, since a hash of a guessable string can be brute-forced.
 - *Where does user feedback go?* As a separate event with the trace id, attached later, so the trace is not held open.
-- *Sampling?* Keep all errors and slow traces, sample the rest; the rate is a cost and privacy decision.""",
+- *Sampling?* Keep all errors and slow traces, sample the rest; the rate is a cost and privacy decision (Q19).""",
 "treating HTTP 200 as success; logging only the final answer and no retrieval or tool spans; no prompt version on the span (so a regression cannot be attributed); storing raw prompts by default with no retention or access plan; putting trace export on the request path; calling a hash 'anonymised'.")
 
 q(2, "stdlib only; virtual clock, SYNTHETIC durations; attribute names are illustrative, not the OpenTelemetry names",
@@ -43,9 +43,9 @@ q(3, "numpy + stdlib; SYNTHETIC traffic and assumed rates; exact binomial tail c
 - **Choosing thresholds:** start from a baseline window, not a guess. Pick the number from a false-alarm budget with a statistic that matches the metric (for an error rate with n requests per window, a binomial tail), and check the alert on historical data. Also decide the window: short windows detect big incidents fast but are noisy, long windows are quiet but slow.
 - **What the run shows (SYNTHETIC: 100 requests per minute, 1% baseline errors, incident at 3%):** I chose, for each window, the smallest k such that a baseline window reaches k errors with probability at most 1e-3. The 5-minute window (k=14) alerted at a median of 5 minutes; the 1-minute window (k=6) took a median of 10 minutes because one minute rarely has 6 errors at an incident mean of 3 per minute. Even with per-window alpha of 1e-3, the baseline sat above k for about 1 to 2 minutes a day, because sliding windows overlap and there are 1440 of them per day. Per-window alpha is not an alarm rate per day.
 - **Closed form check:** exact P(X >= 10) for Binomial(500, 0.01) is 0.03110; simulation gave 0.03072.""",
-"""Rule: page if errors in the last 5 minutes >= 14 (about 500 requests). At 1% baseline errors you expect 5, so 14 is well above noise; at the 3% incident you expect 15, so it fires within about one window. A single bad minute (6 errors) is not enough on its own at this traffic level. The same logic with a 0.5-second slowdown in p99 latency or a cost per request that doubles gives you the same structure: baseline, window, false-alarm budget, then test on history.""",
+"""Rule: page if errors in the last 5 minutes >= 14 (about 500 requests). At 1% baseline errors you expect 5, so 14 is well above noise; at the 3% incident you expect 15, so it fires within about one window. A single bad minute (6 errors) is not enough on its own at this traffic level. The same logic for a p99 latency rise or a doubled cost per request has the same structure: baseline, window, false-alarm budget, then test on history.""",
 """- *Why not alert on every thumbs-down?* Too rare and noisy per window; trend them and use a count-based or burn-rate rule.
-- *Alert fatigue?* Require the breach to persist across two checks, dedupe alerts, and link every page to a runbook step (Q19 in this part covers incident response if it is asked).
+- *Alert fatigue?* Require the breach to persist across two checks, dedupe alerts, and link every page to a runbook step (Q21 covers incident response).
 - *Low traffic features?* Use longer windows or count-based rules; a rate on 20 requests per hour is mostly noise.""",
 "thresholds picked by feel; paging on judge scores from 30 samples; one global threshold for all tenants and features; only alerting on increases; confusing a per-window false-alarm rate with a per-day one; no runbook behind the page.")
 
@@ -66,7 +66,7 @@ q(4, "numpy + stdlib; SYNTHETIC drift data; KS checked against brute force; judg
 q(5, "stdlib only; TOY registry with a virtual clock",
 "Treat prompts as versioned artifacts: immutable versions, movable labels such as staging and production, an audit log, restricted rights to move the production label, a client cache with a known TTL, and the name@version stamped on every trace.",
 """- **Prompts as code vs a registry:** in the repo you get code review, tests and one deploy path, but every prompt tweak needs a release. A registry or config store lets product or domain people iterate and lets you roll back by moving a label, at the cost of a second change path that must be governed. Many teams do both: prompts live in files for review, and a release step publishes them to the registry.
-- **Model for a registry (as Langfuse's docs describe it):** versions, labels (production and latest are built in) and client-side caching; rollback is moving the label to an older version; fetching a missing label returns a 404; protected labels exist but are plan-dependent, so check yours. I read the prompt-management pages, not the trace-link pages for other tools.
+- **Model for a registry (as Langfuse's docs describe it):** versions, labels (production and latest are built in) and client-side caching; rollback is moving the label to an older version; fetching a missing label returns a 404; protected labels exist but are plan-dependent, so check yours.
 - **Controls I would add:** versions are immutable (new text = new version), a content hash, an author, a diff view, an audit log of who moved which label, and approval rules for the production label.
 - **Link to traces:** stamp `name@version` (and the hash) on the LLM span so you can group quality, cost and errors by version (Q1, Q2).
 - **Caching is a rollout detail:** the app should not call the registry per request, so it caches. After a label move, each client keeps the old version until its TTL expires, so rollback time = TTL (plus the poll interval) unless you push invalidation.
@@ -84,7 +84,7 @@ q(6, "numpy + stdlib; SYNTHETIC canary with a mock quality judge; all rates assu
 - **What to compare:** guardrail metrics first (errors, timeouts, format failures, cost per request, latency, refusals), then quality (thumbs, judge pass rate). Decide the rollback rules before the rollout.
 - **Automatic rollback triggers:** a hard rule (error rate or cost per request above a limit) and a statistical rule on pass rate with a minimum sample. A fixed rule checked repeatedly inflates false rollbacks.
 - **Rollback when the change is a label:** move production back to the old version (Q5); the cache TTL sets how fast it lands. For a model change behind a feature flag, flip the flag; for a pinned model id (Q17), revert the id.
-- **What the run shows (SYNTHETIC: 200 requests per minute, baseline pass rate 0.90, a candidate that is truly 0.84, one-sided z-test with z < -2.33 checked every 15 minutes with at least 150 candidate requests; 300 simulations each):** all arms rolled back a truly worse candidate, at a median of 45 minutes for a 2% canary, 30 minutes for 5% and 15 minutes for 20%. But for an equal candidate (0.90), 14, 18 and 22 of 300 runs rolled back by mistake (about 5 to 7%) because the test is looked at 16 times; a one-sided 1% cut-off at a single look would give about 1%.""",
+- **What the run shows (SYNTHETIC: 200 requests per minute, baseline pass rate 0.90, a candidate that is truly 0.84, one-sided z-test with z < -2.33 checked every 15 minutes with at least 150 candidate requests; 300 simulations each):** all arms rolled back a truly worse candidate, at a median of 45 minutes for a 2% canary, 30 minutes for 5% and 15 minutes for 20%. But for an equal candidate (0.90), 14, 18 and 22 of 300 runs rolled back by mistake (about 5 to 7%) because the test is looked at 16 times; a one-sided z cut-off of -2.33 is nominally 1% at a single look.""",
 """A 5% canary on 200 requests per minute sends 10 requests per minute to the candidate. After 15 minutes that is 150 requests, the minimum for the first look. A drop from 0.90 to 0.84 is not obvious on 150 requests, so the run needed 30 minutes at the median. The trade-off: a bigger canary decides faster but exposes more users to a bad prompt for the same time. A 2% canary is safe but slow.""",
 """- *Shadow vs canary?* Shadow has no user risk but no user feedback; canary has real feedback but real exposure.
 - *Why not A/B directly?* You can, but the offline gate and a canary first limit harm; A/B is for measuring benefit.
@@ -112,8 +112,84 @@ q(8, "stdlib only; the ten names are OWASP 2025, the scores are MY assumptions f
 - **My four for a RAG chatbot with tools:** **LLM01 Prompt Injection** (retrieved documents and tool results are untrusted input, Part 6 Q36), **LLM06 Excessive Agency** (limits what a hijacked model can do, Part 8 Q40), **LLM02 Sensitive Information Disclosure** (RAG puts private documents in context; access control at retrieval, Part 6 Q15 and Q42), **LLM05 Improper Output Handling** (answers rendered as HTML or markdown, or fed to SQL or shell, Q12).
 - **Honest toss-up for the fourth:** in the run, LLM01, LLM06 and LLM02 stayed in the top four in 95.7%, 89.2% and 79.2% of 5000 perturbed scorings, but LLM05 (35.9%) and LLM09 Misinformation (32.2%) were close. A different product (no tools, public data) would reorder this. Defend the reasoning, not the list.
 - **Runners-up I would still handle:** LLM10 (rate limits and budgets, Q16), LLM08 (embedding store access and poisoning in the index), LLM03 (pin and scan models, libraries and datasets).""",
-"""Toy scoring (1 to 5 each, ASSUMED by me for: RAG over internal docs, tools that can email and call internal APIs, hosted model): LLM01 4 x 5 = 20, LLM06 5 x 4... the run prints likelihood x impact: LLM01 20, LLM06 20, LLM02 16, LLM05 12 (tied with LLM09 at 12; the toy broke the tie by name), LLM03/04/08/10 at 9, LLM07 at 8. The numbers are an argument aid, not OWASP data; what matters is that you justify them for the system in front of you.""",
+"""Toy scoring (1 to 5 each, ASSUMED by me for: RAG over internal docs, tools that can email and call internal APIs, hosted model): LLM01 likelihood 5 x impact 4 = 20, LLM06 4 x 5 = 20. The full run prints likelihood x impact: LLM01 20, LLM06 20, LLM02 16, LLM05 12 (tied with LLM09 at 12; the toy broke the tie by name), LLM03/04/08/10 at 9, LLM07 at 8. The numbers are an argument aid, not OWASP data; what matters is that you justify them for the system in front of you.""",
 """- *Is the list ranked?* Treat it as a catalogue; for your system build your own ranking, as above.
 - *Where does RAG poisoning go?* Under LLM04 and LLM08 depending on whether the poison is in data or in the vector store.
 - *Which are 'model' problems vs 'app' problems?* Most of the top four are app-design problems, which is why architecture controls beat prompt tweaks.""",
 "reciting the list with no prioritisation; picking items without tying them to the system's data and tools; treating a prompt as the control for LLM06; assuming the 2025 list is the latest without checking; presenting made-up scores as OWASP's.")
+
+q(9, "stdlib only; tool list and leg tags are a made-up SYNTHETIC design; the 95% filter rate is ASSUMED",
+"The lethal trifecta is the dangerous combination of an agent that can read private data, is exposed to untrusted content, and can communicate externally; if all three are present an attacker can trick it into leaking the data, so review a design by checking the three legs and remove one, which is deterministic, instead of hoping a filter catches every attack.",
+"""- **Source:** Simon Willison's post (2025-06-16, 'the lethal trifecta') defines it. His argument, as I read it: if one agent has all three, an attacker who can put text in front of it can steer it to read the private data and send it out. Avoid combining the three.
+- **How to review a design:** list every tool and data source, tag each with the legs it gives (private data, untrusted content, external communication), union the tags per agent or per session. Count 'external communication' broadly: sending email, calling webhooks, fetching a URL with data in the query string, rendering a markdown image (Q12).
+- **Break one leg:** remove or split the untrusted-content tools from the one that holds private data; remove outbound channels (or force human approval and an allowlist); or give the agent only the data of the user who is asking. Splitting into two agents helps only if the one that reads untrusted text cannot pass free-form instructions to the one with the data (Part 8 Q52, and CaMeL in Q45 of this part).
+- **Why a smarter filter loses:** a filter is probabilistic and the attacker retries. Willison's post says guardrail products that catch about 95% are failing as a defence. In the run (the 95% is ASSUMED, attempts assumed independent) an attacker with 10 variants gets at least one through with probability 0.401 (closed form 1 - 0.95^10 = 0.401, simulated 0.405), and with 50 variants 0.923.
+- **What the run shows (SYNTHETIC design with 9 tools):** 378 of the 512 possible tool subsets contain all three legs (brute force equals an inclusion-exclusion count). A design with eight of the tools has all three legs, no single-tool removal fixes it, and the smallest fix is removing three tools: the untrusted-input tools (read_inbox, search_web, fetch_url) or the outbound ones (send_email, render_markdown_images, fetch_url).""",
+"""Review of an 'inbox assistant' that can read email (private data and untrusted content, in one tool), search the web (untrusted), and send email (external). All three legs are present. Options: make it read-only (drop send_email, and drop image rendering and URL fetching), or keep sending but require the user to approve every outgoing message with the recipient shown, or run the web search in a separate session that has no access to the inbox. Each choice costs a feature; that is the honest trade-off.""",
+"""- *Does a human approval count as breaking the leg?* Partly: it works if the human sees the real recipient and content and does not approve by habit.
+- *Is it only about exfiltration?* The trifecta is about leaking private data; untrusted content plus powerful write tools (delete, pay) is a different harm, covered by least privilege (Q24).
+- *What if I need all three?* Then sandbox and approve, treat the residual risk as accepted by an owner, and monitor (Q10).""",
+"believing a better system prompt or classifier closes it; counting only 'send email' as external communication; reviewing tools one by one instead of the union per session; forgetting that tools combine across MCP servers or plugins; quoting the 95% as a measured figure (it is an assumption in the demo).")
+
+q(10, "numpy + stdlib; every catch rate is ASSUMED, nothing here is measured on a real system",
+"Defence in depth stacks probabilistic layers (input screening, delimiting and instruction hierarchy, output filtering, monitoring) with deterministic ones (least-privilege tools, allowlists, sandboxing, human approval), and the honest residual risk is that the probabilistic layers fail together on the hardest attacks, so only the deterministic layers give you a bound.",
+"""- **Layers named in vendor guidance:** Anthropic's jailbreak and prompt-injection page lists harmlessness screens, input validation, treating tool results as untrusted content, JSON-encoding untrusted text, least privilege, screening tool output, handling repeat offenders, monitoring and red-teaming; OpenAI's safety guide lists red-teaming, limiting input length, human in the loop, input and output validation and moderation. (Both as read on 2026-10-24; they change.)
+- **Probabilistic (model or heuristic decides):** input screens and classifiers, delimiters and 'treat this as data' instructions, instruction hierarchy, output filters, LLM-based monitors. They reduce rates but give no guarantee and can be probed.
+- **Deterministic (code decides):** tool allowlists, per-user credentials and read-only scopes, egress allowlists, no auto-execution of model output, sandboxing, rate and budget limits, human approval for risky actions (as strong as the reviewer's attention). These bound what a hijacked model can do, whatever the text says.
+- **Layers are not independent.** What fools one model-based layer tends to fool the others. The run (ASSUMED catch rates 0.80, 0.70, 0.70): independent layers let 1.80% of attacks through (0.2 x 0.3 x 0.3 = 0.018). If attacks vary in subtlety and subtle ones evade every layer more often, the share getting past all three rose to 8.56% at one setting and 25.43% at a stronger one, and the subtlest tenth passed 36.7% and 100% of the time. Same nominal catch rates, very different protection.
+- **Deterministic layer in the same toy:** an egress allowlist applied to the assumed 60% of attacks that need an outside address brought the residual to 3.46% (from the 8.56% case). It does not touch misuse inside the allowed tools, so you still need least privilege and approvals for those.
+- **Honest residual risk:** not zero. I would say it plainly: we reduce likelihood with filters, cap the blast radius with deterministic controls, monitor, and name an owner for what remains. Some research (CaMeL, arXiv 2503.18813) separates control flow from data flow to give stronger guarantees; the authors report 77% of AgentDojo tasks solved with provable security versus 84% undefended, in their setup (see Q45).""",
+"""Support agent that reads tickets and can issue refunds. Probabilistic: a screen on ticket text, delimiting of ticket content, an output check. Deterministic: refund tool capped at a fixed amount per ticket per day, refund only to the original payment method, anything above the cap needs a human, no outbound email to addresses outside the customer's record. If an injection fools all three model-based layers, the worst case is still a capped refund to the original payer, not an arbitrary transfer. (Part 5 Q8, Q9 and Part 8 Q40 have the guardrail layers in general.)""",
+"""- *Which layer first?* Deterministic scoping (least privilege), because it holds when everything else fails.
+- *Is input screening useless?* No, it cuts the easy attacks and gives monitoring signals, but it is not the control.
+- *How do you measure residual risk?* Red-team and a regression suite (Q28, Q44); report results against your own attack corpus, not a universal rate.""",
+"counting layer catch rates as independent and multiplying them; presenting a classifier as the boundary; no deterministic layer for write actions; approval prompts that users click through; claiming zero residual risk.")
+
+q(11, "stdlib only; SYNTHETIC text with fake names, a standard test card number and .example.test addresses; regex and checksum only",
+"Minimise what reaches the provider and the logs: redact or tokenise personal data before the prompt leaves your boundary, mask it again in traces, keep retention short and access narrow, read the provider's data-use and regional terms for your plan, and treat all of this as engineering principles that legal and security teams must confirm, not legal advice.",
+"""- **Before the prompt:** decide what the task actually needs. Remove or replace identifiers (email, phone, card, account numbers, government ids, names) with placeholders such as `<EMAIL_1>`, keep the placeholder-to-value map in your own store, and re-insert values in the answer only where needed. Regex plus a checksum (Luhn for cards) catches structured data well; names and free-text identifiers need an NER model or review and are still missed.
+- **What to log:** redacted prompts and outputs, lengths, token counts, versions, a hash; raw text only for a small, flagged, short-retention slice (Q1). Mask in the trace pipeline too, because traces are a second copy of your data and often have wider access than the product database.
+- **Retention and access:** set a retention period per data class, role-based access to traces, an audit of who viewed them, and a delete path for deletion requests (general principle; the legal basis and time limits are for counsel).
+- **Provider terms:** whether the provider stores prompts, for how long, whether they can be used for training, and what changes by plan or by zero-retention arrangement all differ by provider and plan; I did not check any live terms, so read them for your account and put the result in the data-flow diagram.
+- **Regional residency:** where the data is processed and stored (the model API, the vector store, the trace store, backups). Some regimes or contracts restrict cross-border transfer; I will not state specifics of EU or Indian law here, those need counsel. In the design: pick a region for each store and check whether the provider offers regional processing.
+- **Prompt injection link:** redaction also shrinks what an exfiltration can steal (Q9).
+- **What the run shows (SYNTHETIC, 4 messages):** emails 3 of 3, card 1 of 1, phone 1 of 2, names 0 of 2. The 16-digit order id that fails Luhn was correctly left alone, but the phone written as '98765 43210' and both names were missed.""",
+"""Message: 'Hi, I am Priya Nair. Card 4111 1111 1111 1111, mail priya.n@example.test' becomes 'Hi, I am Priya Nair. Card <CARD_1>, mail <EMAIL_1>'. The card and email are gone, but the name is still there. So the policy must say what is acceptable to send (here, a name may be fine for a support reply; a card never is), and the redactor's recall per type must be measured on labelled data, not assumed. The 4-message run is only an illustration, not a benchmark.""",
+"""- *Redact on the way in and out?* Both: input to the provider, output before logging or display if the model may echo data.
+- *Can I reverse the tokens?* Yes with a vault held on your side, with its own access control and retention.
+- *Does a hash make logs anonymous?* No, for short guessable values it can be reversed by guessing (Q1).""",
+"saying 'we use an enterprise provider so it is fine' without reading the terms; logging raw prompts in a trace tool with broad access; trusting regex for names; one retention setting for everything; redacting only the prompt and not the trace; giving specifics of a law you have not read.")
+
+# ---------- assemble ----------
+out = []
+for n in range(1, 12):
+    m = re.search(r"^(### Q%d .*)\n(\*\*Asked at:\*\*.*)\n" % n, part, re.M)
+    head, asked = m.group(1), m.group(2)
+    codeline, say, explain, example, follow, mist = T[n]
+    code = (base / "code" / f"q{n:02d}.py").read_text().rstrip("\n")
+    outp = (base / "code" / f"q{n:02d}.out").read_text().rstrip("\n")
+    assert "```" not in code and "```" not in outp
+    out.append(f"""{head}
+{asked}
+**Say this first (1 line):** {say}
+
+**Then explain:**
+{explain}
+
+**Example:** {example}
+
+**Code:** (run with `python3 -I`; {codeline})
+```python
+{code}
+```
+**Output (my run):**
+```
+{outp}
+```
+
+**Follow-ups:**
+{follow}
+
+**Common mistakes:** {mist}
+""")
+(base / "answers.md").write_text("\n".join(out))
