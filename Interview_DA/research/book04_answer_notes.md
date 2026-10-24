@@ -1,1 +1,2 @@
 - Book 4 Part 5 Q35/Q36 (calculation groups, visual calculations): availability/licensing unverified: check Microsoft Learn before answering.
+- Book 4 Part 10: verify Tableau Desktop OS support, Tableau vs Power BI licensing/pricing and Power BI Desktop Windows-only from official pages before answering; ignore the snippet claiming Tableau uses MDX for measures.

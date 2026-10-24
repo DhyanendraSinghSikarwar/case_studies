@@ -1,0 +1,31 @@
+# Book 4 Part 7 sources (Power BI Service: publishing, refresh, gateways, incremental refresh, RLS, workspaces, licensing)
+Accessed 2026-10-24. Searches: 8 attempted (7 returned results; 1 failed with a rate-limit error and its text answer was model knowledge, not used as a source). Page fetches: 6 Microsoft Learn pages, fetched via WebFetch (converted to markdown and summarised by a small model; the RLS, roles, licence-type, gateway and incremental-refresh overview pages came back in full, the refresh-data page came back as a 57 KB file and was grepped for key facts, not read end to end). No first-hand Hyderabad/Bengaluru 2025-26 interview report specific to the Power BI Service was found; company attributions below come only from the existing `research/interview_processes.md` and are unverified single anecdotes.
+
+| Source | URL | Used for | Type | Recency |
+|---|---|---|---|---|
+| Incremental refresh overview (fetched) | https://learn.microsoft.com/en-us/power-bi/connect-data/incremental-refresh-overview | RangeStart/RangeEnd rules, query folding, Detect data changes, Only refresh complete days, 2h/5h limits, plans supported, no re-download of PBIX | official docs | page dated 2025-09, updated 2026-07 |
+| Data refresh in Power BI (fetched, partly read) | https://learn.microsoft.com/en-us/power-bi/connect-data/refresh-data | 8 scheduled refreshes on shared capacity, 48 on Premium/PPU/Fabric, 2h limit, refresh-now, failure emails, pause after 2 months inactivity, gateway requirement | official docs | updated 2026-10 |
+| RLS with Power BI (fetched) | https://learn.microsoft.com/en-us/fabric/security/service-admin-row-level-security | roles/DAX filters, dynamic RLS, USERNAME vs USERPRINCIPALNAME, RLS applies only to Viewers, test as role, B2B guests, limits, groups | official docs | dated 2026-05 |
+| On-premises data gateways in Power BI (fetched) | https://learn.microsoft.com/en-us/power-bi/connect-data/service-gateway-onprem | standard vs personal vs VNet gateway, outbound connections | official docs | updated 2026-09 |
+| Roles in workspaces (fetched) | https://learn.microsoft.com/en-us/power-bi/collaborate-share/service-roles-new-workspaces | Admin/Member/Contributor/Viewer capabilities, licence needs, Viewer for RLS | official docs | dated 2025-12 |
+| Service features by licence type (fetched) | https://learn.microsoft.com/en-us/power-bi/fundamentals/service-features-license-type | Free/Pro/PPU/capacity sharing rules, F64 note | official docs | dated 2026-08 |
+| Adaface Power BI interview questions (snippet only) | https://adaface.com/blog/power-bi-interview-questions | gateway, RLS and refresh-type question themes | vendor prep page | undated |
+| ConsoleFlare 73 Power BI questions (snippet only) | https://blog.consoleflare.com/p/power-bi-interview-questions-and-answers | gateway modes, refresh types, 8 vs 48 refreshes | prep blog | 2025 |
+| Withum licensing guide 2026 (snippet only) | https://www.withum.com/resources/power-bi-licensing-where-do-i-begin/ | Pro/PPU/Fabric licensing as interview topic | consultancy blog | 2026 |
+| Microsoft Learn dynamic RLS module (snippet only) | https://learn.microsoft.com/en-us/training/modules/row-level-security-power-bi/3-dynamic-method | dynamic RLS pattern | official training | undated |
+| RADACAD workspace roles best practice (snippet only) | https://radacad.com/best-practice-for-power-bi-workspace-roles-setup/ | Member vs Contributor practice | expert blog | undated |
+| Deployment pipelines results (snippet only): Microsoft Learn get-started, kanerika, ecosire, databear | https://learn.microsoft.com/en-au/fabric/cicd/deployment-pipelines/get-started-with-deployment-pipelines | Dev/Test/Prod stages, deployment rules; licence requirement not confirmed (sources disagree) | official + vendor blogs | mixed |
+| Power BI on Mac results (snippet only): Parallels, gauravtiwari.org | https://www.parallels.com/apps/power-bi/ | Desktop is Windows-only; browser alternative; vendor-biased | vendor blogs | 2026 |
+| Existing repo research | research/interview_processes.md | Deloitte USI Hyderabad round on RLS, optimisation, SUM vs SUMX (Sept 2025 Glassdoor, mapping unverified); Wipro DAX report (2023); Cognizant 2022 RLS; incremental refresh and gateways listed as service-MNC topics | prior research | 2025-26 |
+| Existing repo research | research/market_skills_2026.md, research/jd_sample_*.md | Power BI in about 32.5% of 0-2 yr JDs; JDs list Power BI/dashboards but none lists gateways, RLS or refresh explicitly | prior research | 2026 |
+
+## Star reasoning
+- Three stars (9): RLS (definition, steps, static vs dynamic), publishing, scheduled refresh, workspace, gateway, refresh troubleshooting, incremental refresh. RLS appears in the Deloitte, Cognizant and Wipro-class reports and every generic prep list; incremental refresh and gateways are named in interview_processes.md as recurring topics.
+- Two stars: licences, roles, apps, sharing, DAX for RLS filters, role testing, USERNAME vs USERPRINCIPALNAME, refresh limits, gateway types; commonly in prep lists, practical for a live task.
+- One star: Fabric, deployment pipelines, dataflows, OLS, sensitivity labels, Direct Lake, B2B guests, hierarchy RLS; differentiators for 0-3 years, not in any entry-level JD read.
+- Difficulty: RLS DAX and incremental refresh set-up are yellow; hierarchy RLS, bi-directional RLS and guest-user RLS are red.
+
+## Limitations and unverified items
+- Not accessible or not surfaced: Glassdoor, AmbitionBox, GfG, Reddit first-hand Service-specific reports (none returned; nothing fetched). No company claim in the question list is independently verified.
+- Facts to re-check when writing answers: refresh limits (8 vs 48) and time limits (2h vs 5h) are from Microsoft Learn dated 2026; Fabric F64 sharing threshold and licence names change often. The deployment-pipelines licence requirement was not confirmed from an official page.
+- Gap-fills: about 40 of the 65 questions were added from standard practice and the official docs rather than seen as questions in a source (the RLS, gateway, refresh, workspace and licence topics are source-backed themes; exact wording is mine). Questions on hierarchy RLS, guest users, Direct Lake, Large semantic model, audit and the HR scenarios are pure gap-fills.
