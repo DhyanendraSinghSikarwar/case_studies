@@ -43,3 +43,7 @@ Date: 2026-10-24. Band per plan.md: Rs 30-80 LPA roles; no salary figures used. 
 - pandas 3.0.5: pivot_table dropna and observed defaults, crosstab normalize with NaN keys, value_counts dropna, nunique with NaN, groupby dropna, merge on NaN keys, cumulative-funnel idioms: run, do not assume. rolling().nunique absence: run to confirm.
 - Other engines (Postgres DATE_TRUNC, generate_series, FILTER, percentile_cont, MySQL DATEDIFF, BigQuery COUNTIF, Snowflake QUALIFY): general knowledge, not executed.
 - Apple Mail Privacy Protection prefetch inflating opens (used in the notification question): general knowledge, not sourced here; hedge.
+
+
+## Wave B/C correction (2026-10-25)
+- The Wave A question text for Q42 said rolling().nunique does not exist in pandas. Running pandas 3.0.5 showed Series.rolling(3).nunique() exists (docstring: added in 3.0.0) and works; the Q42 question text and answer were corrected. It yields values only at rows that exist, so a date spine or reindex is still needed for days with no events. Older pandas versions were not tested.
