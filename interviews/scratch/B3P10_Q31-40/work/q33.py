@@ -58,7 +58,8 @@ print(sql_clean.to_string(index=False))
 # 6) pandas
 s = pd.Series([r[1] for r in rows], index=[r[0] for r in rows], name="name")
 print("pandas dtype:", s.dtype)
-print("strip removes NBSP:", repr(" x  ".join([""])) and pd.Series([" x ", "\tx\t"]).str.strip().tolist())
+print("pandas strip on NBSP-x-NBSP and tab-x-tab:", pd.Series(["\u00a0x\u00a0", "\tx\t"]).str.strip().tolist())
+print("strip leaves the zero-width space: length of 'Dev'+U+200B after strip =", pd.Series(["Dev\u200b"]).str.strip().str.len()[0])
 same = (s.str.len().values == sql_df["len"].values)
 print("pandas len equals SQL length on rows:", [int(i) for i in sql_df["id"][same]], "| differs on:", [int(i) for i in sql_df["id"][~same]])
 assert list(sql_df["id"][~same]) == [10]

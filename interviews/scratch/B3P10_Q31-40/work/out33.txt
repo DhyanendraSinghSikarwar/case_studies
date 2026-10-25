@@ -20,7 +20,8 @@ suspect code points (id, position, code point): [(1, 5, 160), (2, 1, 9), (3, 4, 
   3  Chi tra
   4      Dev
 pandas dtype: str
-strip removes NBSP: ['x', 'x']
+pandas strip on NBSP-x-NBSP and tab-x-tab: ['x', 'x']
+strip leaves the zero-width space: length of 'Dev'+U+200B after strip = 4
 pandas len equals SQL length on rows: [1, 2, 3, 4, 5, 6, 7, 8, 9] | differs on: [10]
 NFC makes 5 == 6: True | raw: False
 casefold('Straße') = strasse | upper('ß') = SS | lower('İ') length = 2
