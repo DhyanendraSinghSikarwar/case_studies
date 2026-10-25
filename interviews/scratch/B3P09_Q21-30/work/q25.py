@@ -111,4 +111,7 @@ pd_same = len(employees.merge(employees, on="manager_id"))
 pd_same_fixed = len(employees.dropna(subset=["manager_id"]).merge(employees.dropna(subset=["manager_id"]), on="manager_id"))
 print("same-manager pairs (a.manager_id = b.manager_id): SQL", sql_same, "| pandas merge", pd_same, "| pandas after dropna", pd_same_fixed)
 assert pd_same == sql_same + 1 and pd_same_fixed == sql_same
+leaf, mleaf = subtree(employees, 10)
+assert len(leaf) == 0 and list(leaf.columns) == ["emp_id", "level"]
+print("empty case: subtree of leaf 10 ->", len(leaf), "rows, columns", list(leaf.columns), ",", mleaf, "merges")
 print("asserts passed")

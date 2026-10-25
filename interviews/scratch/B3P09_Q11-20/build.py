@@ -23,5 +23,5 @@ for n in range(11, 21):
     md = md.replace("{{SQL}}", sql).replace("{{PD}}", pd_).replace("{{CODE}}", py.rstrip("\n")).replace("{{OUT}}", r.stdout.rstrip("\n"))
     assert "```" not in sql + pd_ + py + r.stdout
     out.append(h + "\n" + a + "\n" + md)
-(here / "answers.md").write_text("\n\n---\n\n".join(out) + "\n")
+(here / "answers.md").write_text("\n\n".join(out) + "\n")
 print("built")

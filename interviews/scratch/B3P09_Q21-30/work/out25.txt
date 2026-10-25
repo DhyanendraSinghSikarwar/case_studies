@@ -15,4 +15,5 @@ all pairs: 29 rows equal to SQL after sorting by ancestor, descendant; 4 merges
 cycle 6<->7 (8 under 7), subtree of 6, visited-set loop: [6, 7, 8] after 2 merges; SQL UNION: [6, 7, 8]
 no visited filter, frontier size after each of 8 merges: [2, 1, 2, 1, 2, 1, 2, 1] (never reaches 0)
 same-manager pairs (a.manager_id = b.manager_id): SQL 19 | pandas merge 20 | pandas after dropna 19
+empty case: subtree of leaf 10 -> 0 rows, columns ['emp_id', 'level'] , 0 merges
 asserts passed

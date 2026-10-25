@@ -237,8 +237,6 @@ Honest notes from the run: the path-guard version shows user 4 reachable by 4 si
 - Counting mutual friends with `COUNT(*)` on data that has duplicate edge rows.
 - Taking friends of friends as "distance 2 or less" and so suggesting existing friends, or forgetting to exclude the user themself.
 
----
-
 ### Q12 ⭐⭐⭐ 🔴 Cumulative sum that resets once it passes a threshold: txns(acct_id, txn_id, amount) ordered by txn_id. Keep a running total and, when it reaches or exceeds 100, emit a flag and restart from 0 on the next row (so the total depends on where earlier resets happened). Show why a window function cannot do it (the group key depends on the output of the previous row), solve with a recursive CTE that carries (acct_id, rn, running, reset_flag) and joins to the next row number, and compare with the easy variant that resets on a stored flag (Part 7 Q24, solved there with a running SUM of is_reset as group key). Give the pandas loop version with an assert and say that a recursive CTE here is a row-by-row loop in disguise.
 **Asked at:** threshold-reset running total threads (search snippets only, not opened: SQLServerCentral 'reset running total', Microsoft Q&A 'Reset sum() OVER PARTITION BY for condition' saying there is no set-based form and a recursive CTE is the workaround, a recursive running total that 'forgets' after two rows); forum posts, not candidate reports; the deferred problem from Part 7 Q24; data engineer and analyst rounds
 **Say this first (1 line):** A window function cannot do it, because whether row n starts a new group depends on the running total of row n-1, which is itself the output; so I carry the state (running total and reset flag) in a recursive CTE that walks the rows in order, and I say plainly that it is a row-by-row loop written in SQL.
@@ -480,8 +478,6 @@ Honest notes from the run:
 - Ending the recursion with an unbounded long account on an engine with a default recursion cap.
 - Starting the next group with the old running total instead of the new amount.
 
----
-
 ### Q13 ⭐⭐ 🟢 Category tree and breadcrumbs: categories(category_id, parent_id, name) and products(product_id, category_id). Return for each category its breadcrumb ('Electronics > Phones > Android'), its depth, and the number of products in it including all descendant categories (a roll-up to every ancestor). Show the top-down recursion building the breadcrumb, the closure-pair recursion for the roll-up, why a product count by category_id alone misses the descendants, and how to list only leaf categories.
 **Asked at:** employee-manager hierarchy guides: jdsatpathy Substack 'Find All Managers of an Employee Up to the CEO' (opened; anchor at the employee, join employee to manager, no cycle guard, UNION ALL), DataVidhya recursive hierarchy pattern page (opened; reports under a manager, ancestors of a category, paths in a dependency graph, depth tracking and cycle detection), and search snippets of datadriven.io and a Medium recursive CTE interview post (not opened); guides, not candidate reports; analyst and data engineer rounds at product companies, GCCs and consulting firms
 **Say this first (1 line):** Walk the tree top-down from the roots to build the breadcrumb and depth, build the ancestor-descendant pairs (including each category paired with itself) with a second recursion, join products to the descendant side and `GROUP BY ancestor` for the roll-up, and a leaf is a category that nobody lists as a parent.
@@ -697,8 +693,6 @@ asserts passed
 - Anchoring the closure without the self pair, so a category's own products are not counted.
 - Counting a product twice at an ancestor when it belongs to two descendants and using `COUNT(*)` instead of `COUNT(DISTINCT ...)`.
 - Aggregating inside the recursive member.
-
----
 
 ### Q14 ⭐⭐ 🟢 Recursive CTE versus self-join versus window: employees(emp_id, manager_id, name). For a company known to have at most three levels return each employee with manager and grand-manager names using LEFT JOINs, then the recursive version for unknown depth. State when each is right (fixed known depth and a tiny table versus unknown depth), why window functions (LAG, SUM OVER) cannot follow parent pointers by themselves, and one case where a window function beats recursion (a running total with no state dependence). Compare the readability, the query plan shape and the failure mode when the org gets a fourth level.
 **Asked at:** LeetCode 1270 All People Report to the Given Manager (doocs mirror opened: head is employee 1, chain at most three managers, two self-joins; the 'given manager' framing at Hello Interview and DataVidhya seen only as search snippets, so a general version is an expert extension); public problem bank, not a candidate report; analyst and data scientist screens
@@ -940,8 +934,6 @@ The query plan lines are what SQLite 3.45.1 printed here; other versions may wor
 - Trying `LAG` or `SUM OVER` to climb parent pointers.
 - Writing the top boss as the last non-NULL in a fixed chain and not noticing when the chain is longer.
 - No depth cap or visited check when the data may contain loops.
-
----
 
 ### Q15 ⭐⭐ 🟡 Cycles, orphans and multiple roots in hierarchy data: employees(emp_id, manager_id, name) loaded from an HR export. Write queries that find (a) orphans (manager_id not NULL and not in the table), (b) self-managed rows, (c) rows with more than one root or no root, (d) employees whose upward chain loops (cycle membership, using a path or depth guard), and (e) employees unreachable from the CEO by a top-down walk. Explain why NOT IN with a NULL manager_id is a trap, why a cycle has no root and so is invisible to a top-down query, and give a data-quality summary row per problem type.
 **Asked at:** cycle-handling guides (search snippets only, not opened: manual path string or array of visited ids with a flag, the itprotoday 'Cycling with CTEs' article, Oracle NOCYCLE and CONNECT_BY_ISCYCLE docs, PostgreSQL CYCLE); the opened PostgreSQL page says UNION cannot stop a cycle when a depth column makes every row unique; guides and documentation, not candidate reports; data engineer and analyst rounds
@@ -1200,8 +1192,6 @@ In the run, the unguarded upward walk from employee 7 (UNION ALL, no step cap) p
 - No step cap on the upward walk, so the check query itself never ends on the bad data it is meant to find.
 - Counting roots with `COUNT(manager_id)`, which ignores NULLs and so counts non-roots.
 
----
-
 ### Q16 ⭐⭐ 🟡 Graph reachability and connected components: edges(a, b) lists undirected edges between nodes 1 to 9 forming three clusters and an isolated node listed in nodes(node_id). Return for every node its component id as the smallest node id it can reach, and the component sizes. Show the symmetric edge list, the reachability recursion with UNION to stop cycles, and MIN(reached) per start node as the component label. Explain why this is O(nodes x reachable) and not suitable for big graphs, and compare with networkx connected_components (installed in this environment, version stated in the answer) and a plain Python union-find.
 **Asked at:** SQLite lang_with documentation (opened: compound SELECT with a non-recursive initial select, UNION discards rows already queued and stops cycles, UNION ALL needs little memory, LIMIT on the recursive select, ORDER BY in the recursive select as queue order for breadth-first or depth-first, no aggregates or windows in the recursive select, queue algorithm) plus PostgreSQL WITH queries documentation (opened: working table and intermediate table evaluation); official documentation, not candidate reports; analyst, data scientist and data engineer rounds
 **Say this first (1 line):** Make the edge list symmetric, compute for every start node the set of nodes it can reach with a recursive CTE using plain `UNION` (so already-seen (start, node) pairs are dropped and cycles stop by themselves), and the component id of a node is the minimum node id it can reach; sizes are a count per component. It costs about the sum of component size squared, so it is a teaching and small-graph answer, not a big-graph one.
@@ -1433,8 +1423,6 @@ The environment has networkx 3.6.1; scipy is not installed, so no `scipy.sparse.
 - Taking `MIN(reached)` without the self row (a node with no edges then has no label).
 - Believing the query scales; it enumerates every reachable pair.
 
----
-
 ### Q17 ⭐⭐ 🟡 Flight routes with connections and total cost: flights(src, dst, cost). Return every route from 'DEL' to 'BLR' with at most 3 legs, the list of stops, the number of legs and the total cost, then the cheapest and the fewest-legs route. Guard against revisiting an airport with a path string, explain why the cost is added row by row in the recursive member and aggregated outside, and what changes if two flights exist between the same pair of cities (parallel edges multiply the number of routes). State the number of routes as the graph grows to show the combinatorial growth.
 **Asked at:** expert gap-check from practice, no candidate report found; analyst, data scientist and data engineer rounds at product companies and GCCs; tested on SQLite 3.45.1
 **Say this first (1 line):** Walk out from 'DEL' with a recursive CTE that carries the current city, the number of legs, the running cost and the path string, add each flight's cost in the recursive member, refuse a flight to an airport already in the path, stop at 3 legs, keep the rows that end in 'BLR', and pick the cheapest and the fewest-legs route outside the recursion.
@@ -1636,8 +1624,6 @@ Honest notes from the run:
 - Matching the path with a bare `LIKE '%BOM%'` when names can be substrings of each other.
 - Forgetting that parallel flights are separate routes.
 - Not stopping at the destination, so routes continue through it.
-
----
 
 ### Q18 ⭐⭐ 🟡 Compound interest and loan amortisation schedule: accounts(acct_id, balance, annual_rate) and loans(loan_id, principal, annual_rate, months). (a) Grow each account balance monthly for 12 months with a recursive CTE and compare with the closed form balance * (1 + r/12)^n, (b) build the full amortisation schedule for a 10000 loan at 12 percent annual over 6 months (month, opening balance, interest, principal paid, closing balance, constant EMI computed in the query with power or a documented workaround), with the last-row rounding fix. Explain why rounding each month differs from the closed form by a few paise, that SQLite has power and exp here only when math functions are compiled in (hedge for other engines), and the pandas loop check with asserts.
 **Asked at:** expert gap-check from practice, no candidate report found; analyst, data scientist and data engineer rounds at product companies and GCCs; tested on SQLite 3.45.1
@@ -1903,8 +1889,6 @@ Honest notes from the run:
 - Rounding only at the end and then not reconciling with the statement.
 - Forgetting the cap `month < months`, so the recursion keeps producing rows past the term.
 
----
-
 ### Q19 ⭐⭐ 🟡 Other state-dependent running calculations: daily_prices(day, close) and assets(asset_id, cost, life_years, rate). Compute (a) an exponentially weighted moving average s_t = a * x_t + (1 - a) * s_(t-1) with a = 0.3 using a recursive CTE, (b) a declining-balance depreciation schedule (book value times a fixed rate each year, floored at a salvage value), and (c) show with a short argument why neither is a plain window function. Verify (a) with pandas ewm(alpha=0.3, adjust=False).mean() and assert equality, and note the rounding and first-row (seed) conventions that make a result differ by the adjust parameter.
 **Asked at:** expert gap-check from practice, no candidate report found; analyst, data scientist and data engineer rounds at product companies and GCCs; tested on SQLite 3.45.1
 **Say this first (1 line):** Both are "this period's value depends on last period's value", so a recursive CTE carries the previous value; but a premise check first: neither is strictly impossible as a non-recursive query (EWMA has a weighted-sum closed form that overflows on long series, and the floored declining balance is just `MAX(salvage, cost * (1 - rate)^year)`), what is true is that no built-in window function does either one, and the recursion is the transparent, numerically safe way.
@@ -2154,7 +2138,7 @@ Honest notes from the run:
 - Floor already above cost, rate 0, or salvage 0: handled by the formula (book never goes below the floor; rate 0 keeps the book value).
 - Duplicate days: `ROW_NUMBER` would number them arbitrarily; deduplicate first.
 
-**Then explain (c), why neither is a plain window function:**
+**Then explain:** (part c, why neither is a plain window function)
 - A window function computes an aggregate over a frame of input values with fixed or running weights. An EWMA has weights that decay with distance, and the built-in aggregates (`SUM`, `AVG`, ...) have no weight parameter, so the engine gives you nothing that applies `0.7^k`. The declining balance multiplies by a constant each year, which is not an aggregate either.
 - The recursive member is the natural expression because the next value is a function of the previous output. That is a "fold", and recursion is how SQL expresses a fold.
 - Closed forms exist (shown and asserted): EWMA as a weighted running sum scaled by powers, depreciation as `MAX(salvage, cost * (1-rate)^year)`. The depreciation closed form is better than recursion where it applies. A truly state-dependent variant that would still need recursion is the switch-to-straight-line rule (change method when straight-line depreciation exceeds the declining balance), which I did not run.
@@ -2171,8 +2155,6 @@ Honest notes from the run:
 - Comparing floats with `==` instead of a tolerance.
 - Letting book value fall below the salvage value, or depreciating past the useful life.
 - Using the weighted-sum closed form on long series and getting NULL or garbage from huge powers.
-
----
 
 ### Q20 ⭐⭐ 🟡 Delete or move a subtree with a recursive CTE: categories(category_id, parent_id, name, path) and employees(emp_id, manager_id). Delete category 5 and everything under it with DELETE ... WHERE category_id IN (WITH RECURSIVE ... SELECT ...), show the rows before and after, then move subtree 8 under parent 2 and rebuild the materialised path of all descendants, and prevent a move that would create a cycle (the new parent must not be a descendant of the moved node). State what a foreign key with ON DELETE CASCADE does instead, and which statements are portable (SQL Server needs the CTE before the DELETE, MySQL 8 supports CTE with DELETE, both hedged, not executed).
 **Asked at:** expert gap-check from practice, no candidate report found; analyst, data scientist and data engineer rounds at product companies and GCCs; tested on SQLite 3.45.1
