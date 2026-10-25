@@ -81,7 +81,8 @@ max_step = ev["event_name"].map({s: i + 1 for i, s in enumerate(steps)}).groupby
 cum = pd.DataFrame({"step": range(1, 5), "step_name": steps,
                     "users_cumulative": [int((max_step >= k).sum()) for k in range(1, 5)]})
 skipped = flags[flags["purchase"] & ~(flags["cart"] & flags["checkout"])]
-skip_pd = skipped.astype(int).rename(columns={"cart": "has_cart", "checkout": "has_checkout"})[["has_cart", "has_checkout"]].reset_index()
+skip_pd = (skipped.astype(int).rename(columns={"cart": "has_cart", "checkout": "has_checkout"})
+           [["has_cart", "has_checkout"]].rename_axis(columns=None).reset_index())
 # pd:end
 print(cum.to_string(index=False))
 pd.testing.assert_frame_equal(sql_df.sort_values("step").reset_index(drop=True), cum, check_dtype=False)

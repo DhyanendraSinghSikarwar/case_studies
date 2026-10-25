@@ -1,0 +1,22 @@
+new_signups            3.0
+wau                    5.0
+orders                 5.0
+gmv                 1150.0
+aov                  230.0
+refund_amount        680.0
+net_revenue          470.0
+paying_users           4.0
+paid_conversion        0.6
+revenue_per_active   230.0
+big join, same week: (8, 1700.0, 4, 8) (joined_rows, GMV, correct order count, wrong order count)
+new_signups            3.0
+wau                    5.0
+orders                 5.0
+gmv                 1150.0
+aov                  230.0
+refund_amount        680.0
+net_revenue          470.0
+paying_users           4.0
+paid_conversion        0.6
+revenue_per_active   230.0
+hand counts match; asserts passed

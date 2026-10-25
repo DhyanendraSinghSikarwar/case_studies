@@ -54,7 +54,7 @@ FROM r
 SQL_ACTIVE = SQL_TEMPLATE.replace("{JOIN}", "JOIN")
 SQL_ALL = SQL_TEMPLATE.replace("{JOIN}", "LEFT JOIN")
 SQL_DECILES = """
-SELECT user_id, COUNT(e.event_id) AS n,
+SELECT us.user_id, COUNT(e.event_id) AS n,
        NTILE(10) OVER (ORDER BY COUNT(e.event_id) DESC, us.user_id) AS decile
 FROM users us LEFT JOIN events e ON e.user_id = us.user_id
      AND e.event_ts >= '2024-03-01' AND e.event_ts < '2024-04-01'

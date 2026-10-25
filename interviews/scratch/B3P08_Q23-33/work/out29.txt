@@ -1,0 +1,17 @@
+SQL:
+     category      name  units  revenue  share_pct  rnk
+        Books     Novel      3     60.0      54.55    1
+        Books  Notebook      5     50.0      45.45    2
+  Electronics     Phone      2   1000.0      68.97    1
+  Electronics     Cable      2    200.0      13.79    2
+  Electronics      Case      4    200.0      13.79    2
+         Home      Lamp      2     80.0     100.00    1
+Uncategorised Gift card      1     30.0     100.00    1
+SQL wrong (order total on every item row), Electronics:
+   name  wrong_revenue  line_revenue
+  Cable          880.0         200.0
+   Case          800.0         200.0
+Charger          200.0          50.0
+  Phone         1260.0        1000.0
+pandas rows: 7 ; SQL rows: 7
+asserts passed
