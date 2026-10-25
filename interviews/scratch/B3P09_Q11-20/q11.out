@@ -1,0 +1,25 @@
+SQL (user 1, within 3 hops, mutual friends for distance 2):
+ user_id  dist  mutual_friends
+       2     1               0
+       3     1               0
+       4     2               2
+       5     2               1
+       6     3               0
+path-guard version (simple_paths = distinct routes found):
+ user_id  dist  simple_paths
+       2     1             3
+       3     1             3
+       4     2             4
+       5     2             2
+       6     3             3
+no guard, UNION ALL, stopped by LIMIT 1000: (1000, 7)
+pandas result equal to SQL
+duplicate edge rows (1,2) and (3,5): result unchanged = True
+same query with COUNT(x.dst) on the duplicated table:
+ user_id  dist  mutual_friends
+       4     2               3
+       5     2               2
+user 99 (no friends): []
+users in the table but not within 3 hops of user 1: [7, 8, 11, 12] (7 and 8 are 4 and 5 hops away, 11 and 12 are a separate component)
+pandas for user 99: 0 rows
+asserts passed

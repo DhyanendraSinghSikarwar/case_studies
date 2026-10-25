@@ -1,0 +1,22 @@
+SQLite 3.45.1 | pandas 3.0.5 (all timings are from this machine and this run only)
+tree: (50000, 6) (rows, deepest level); 8 children per node
+
+Subtree of manager 2 on the 50,000-row table:
+  plan: ['CO-ROUTINE s', 'SETUP', 'SEARCH emp USING INTEGER PRIMARY KEY (rowid=?)', 'RECURSIVE STEP', 'SCAN s', 'BLOOM FILTER ON e (manager_id=?)', 'SEARCH e USING AUTOMATIC COVERING INDEX (manager_id=?)', 'SCAN s']
+  plan: ['CO-ROUTINE s', 'SETUP', 'SEARCH emp USING INTEGER PRIMARY KEY (rowid=?)', 'RECURSIVE STEP', 'SCAN s', 'SCAN e', 'SCAN s']
+  plan: ['CO-ROUTINE s', 'SETUP', 'SEARCH emp USING INTEGER PRIMARY KEY (rowid=?)', 'RECURSIVE STEP', 'SCAN s', 'SEARCH e USING COVERING INDEX emp_mgr (manager_id=?)', 'SCAN s']
+  default (automatic index allowed, no explicit index): people=17232, max_level=5, best time 0.012 s
+  automatic_index OFF, no index on manager_id: people=17232, max_level=5, best time 20.345 s
+  explicit index on manager_id: people=17232, max_level=5, best time 0.007 s
+Whole company (root 1) with the index: people=50000, max_level=6, best time 0.020 s
+pandas frontier merge, subtree of 2: people=17232, max_level=5, 6 merges, 0.015 s
+
+Chain of 2,000 nodes (depth 1999), with an index on manager_id:
+  people=2000, max_level=1999, best time 0.001 s (no recursion limit in SQLite; a depth cap of 5000 was set by me)
+  with the usual depth cap of 100 the answer is silently truncated: people=101, max_level=100
+
+Lattice DAG: 2 nodes per level, every node links to both nodes of the next level; start at 0_0
+  10 levels: UNION ALL made 2047 rows, 1024 paths to the last level (2^10), 0.001 s | UNION reached 21 nodes, 0.0000 s
+  15 levels: UNION ALL made 65535 rows, 32768 paths to the last level (2^15), 0.031 s | UNION reached 31 nodes, 0.0001 s
+  20 levels: UNION ALL made 2097151 rows, 1048576 paths to the last level (2^20), 1.005 s | UNION reached 41 nodes, 0.0001 s
+asserts passed

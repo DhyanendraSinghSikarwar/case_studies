@@ -1,0 +1,20 @@
+SQLite 3.45.1 | pandas 3.0.5
+ emp_id  name  level                path  is_leaf
+      3  Hari      0                Hari        0
+      7  Asha      1         Hari > Asha        0
+     12  Nina      2  Hari > Asha > Nina        1
+      4 Shyam      1        Hari > Shyam        0
+     10   Ram      2  Hari > Shyam > Ram        1
+     11  Zoya      2 Hari > Shyam > Zoya        1
+pandas frontier loop equals the SQLite recursive CTE: 6 rows, 3 merges (the last one finds nothing)
+
+Probes on SQLite 3.45.1 (each statement was run):
+  FAIL CYCLE clause (PostgreSQL 14+ syntax): OperationalError: near "CYCLE": syntax error
+  FAIL SEARCH DEPTH FIRST clause (PostgreSQL 14+ syntax): OperationalError: near "SEARCH": syntax error
+  FAIL generate_series: OperationalError: no such table: generate_series
+  FAIL CTE referenced twice in the recursive member: OperationalError: multiple recursive references: t
+  FAIL aggregate in the recursive member: OperationalError: recursive aggregate queries not supported
+  OK   'a' + 'b' (SQL Server style concatenation): [(0,)]
+  OK   CAST in the anchor as MySQL needs it: length of the final path: [(17,)]
+  OK   no default recursion cap: count to 1,000,000: [(1000000, 1000000)]
+asserts passed

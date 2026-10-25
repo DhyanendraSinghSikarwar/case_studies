@@ -1,0 +1,16 @@
+ category_id                     breadcrumb  depth  products_incl_descendants  is_leaf
+           1                    Electronics      0                          8        0
+           2           Electronics > Phones      1                          6        0
+           3 Electronics > Phones > Android      2                          3        1
+           4     Electronics > Phones > iOS      2                          2        1
+           5          Electronics > Laptops      1                          2        1
+           6                          Books      0                          4        0
+           7                Books > Fiction      1                          4        1
+           8          Electronics > Tablets      1                          0        1
+direct count only (GROUP BY category_id): {1: 0, 2: 1, 3: 3, 4: 2, 5: 2, 6: 0, 7: 4, 8: 0}
+pandas equal to SQL; leaf categories: ['Electronics > Phones > Android', 'Electronics > Phones > iOS', 'Electronics > Laptops', 'Books > Fiction', 'Electronics > Tablets']
+products not counted anywhere (NULL category or unknown category): [(113,), (114,)]
+NOT IN version of the leaf filter returns: 0 rows (NULL parent_id of the roots poisons it)
+total rollup of roots: 12 = products with a valid category: 12
+no root rows (anchor returns nothing) -> 0 rows
+asserts passed

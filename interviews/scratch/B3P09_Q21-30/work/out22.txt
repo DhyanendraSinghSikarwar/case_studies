@@ -1,0 +1,38 @@
+DAG: tasks with no stage: []
+DAG, stage = longest chain below the task (paths_seen = rows the CTE produced for it):
+task_id  stage  paths_seen
+      A      0           1
+      F      0           1
+      B      1           1
+      C      1           1
+      G      1           1
+      D      2           3
+      E      3           4
+pandas layer loop equals SQL
+graphlib batches and networkx topological_generations equal the SQL stages
+
+tasks_cyc: stages from the recursive CTE (depth cap 50)
+task_id  stage  paths_seen
+      A      0           1
+      B      1           1
+  tasks with no stage (SQL_NOSTAGE): ['X', 'Y', 'Z']
+  tasks that reach themselves: ['X', 'Y']
+  pandas layer loop stages: {'A': 0, 'B': 1}
+  graphlib CycleError, cycle found: ['X', 'Y', 'X']
+  networkx NetworkXUnfeasible: Graph contains a cycle or graph changed during iteration
+  networkx find_cycle: [('Y', 'X'), ('X', 'Y')]
+
+tasks_mix: stages from the recursive CTE (depth cap 50)
+task_id  stage  paths_seen
+      A      0           1
+      B      1           1
+      X     49          25
+      Z     49          24
+      Y     50          25
+  tasks with no stage (SQL_NOSTAGE): []
+  tasks that reach themselves: ['X', 'Y']
+  pandas layer loop stages: {'A': 0, 'B': 1}
+  graphlib CycleError, cycle found: ['X', 'Y', 'X']
+  networkx NetworkXUnfeasible: Graph contains a cycle or graph changed during iteration
+  networkx find_cycle: [('X', 'Y'), ('Y', 'X')]
+asserts passed

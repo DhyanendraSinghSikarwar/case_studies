@@ -1,0 +1,29 @@
+(a) 12 months of monthly compounding, rounded to 2 decimals each month, versus the closed form:
+ acct_id  monthly_rounded  closed_form  difference
+       1          1126.84      1126.83      0.0150
+       2          2694.08      2694.08     -0.0015
+       3           106.76       106.75      0.0083
+       4           800.00       800.00      0.0000
+       5              NaN          NaN         NaN
+(b) amortisation schedules (loan 1 is 10000 at 12 percent for 6 months):
+ loan_id  month  opening  interest  principal_paid  payment  closing
+       1      1 10000.00    100.00         1625.48  1725.48  8374.52
+       1      2  8374.52     83.75         1641.73  1725.48  6732.79
+       1      3  6732.79     67.33         1658.15  1725.48  5074.64
+       1      4  5074.64     50.75         1674.73  1725.48  3399.91
+       1      5  3399.91     34.00         1691.48  1725.48  1708.43
+       1      6  1708.43     17.08         1708.43  1725.51     0.00
+       2      1  5000.00      0.00         1250.00  1250.00  3750.00
+       2      2  3750.00      0.00         1250.00  1250.00  2500.00
+       2      3  2500.00      0.00         1250.00  1250.00  1250.00
+       2      4  1250.00      0.00         1250.00  1250.00     0.00
+       3      1  1200.00     18.00         1200.00  1218.00     0.00
+EMI per loan: {1: 1725.48, 3: 1218.0}
+without the last-row fix, closing balance after the last month: {1: 0.03, 2: 0.0, 3: 0.0}
+with the fix: {1: 0.0, 2: 0.0, 3: 0.0}
+pandas/Python growth loop equals SQL (rounded balance and closed form) for the 4 accounts with a rate; account 5 (NULL rate) stays NULL in SQL: True
+pandas schedule equal to SQL; principal paid sums to the loan amount; last closing balance is 0
+total interest on loan 1: 352.91 | total paid: 10352.91
+zero-rate formula without the CASE: (None,) (division by zero gives NULL in SQLite)
+exp/ln check of power():  (1.1268250301, 1.1268250301)
+asserts passed
