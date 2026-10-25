@@ -22,7 +22,7 @@ Per question: `### Qn stars emoji text` / `**Asked at:**` / **Say this first (1 
 | 7 | Gaps and islands, streaks, sessionization | 40 | ✅ (40 Qs) | ✅ | ✅ |
 | 8 | Funnels, conversion, DAU/MAU, product metrics | 45 | ✅ (45 Qs) | ✅ | ✅ |
 | 9 | Recursive CTEs, hierarchies, graphs | 30 | ✅ (30 Qs) | ✅ | ✅ |
-| 10 | Pivot/unpivot, string ops, NULL traps | 40 | ⬜ | ⬜ | ⬜ |
+| 10 | Pivot/unpivot, string ops, NULL traps | 40 | ✅ (40 Qs) | ⬜ | ⬜ |
 | 11 | Query optimisation, indexes, execution plans, partitioning | 35 | ⬜ | ⬜ | ⬜ |
 | 12 | Company-style mixed mock sets (FAANG, fintech, e-com) | 40 | ⬜ | ⬜ | ⬜ |
 
