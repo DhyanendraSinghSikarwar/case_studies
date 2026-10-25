@@ -1,0 +1,22 @@
+days                 31.0000
+user_days            12.0000
+avg_dau               0.3871
+mau_calendar          5.0000
+stickiness_avg_dau    0.0774
+dau_last_day          3.0000
+mau_trailing_30       4.0000
+stickiness_last_day   0.7500
+wrong, no spine (average only over days that have events):
+ avg_dau_active_days_only  days_counted
+                      2.0             6
+days                 31.0000
+user_days            12.0000
+avg_dau               0.3871
+mau_calendar          5.0000
+stickiness_avg_dau    0.0774
+dau_last_day          3.0000
+mau_trailing_30       4.0000
+stickiness_last_day   0.7500
+pandas without the spine reindex, mean over active days only: 2.0
+days with DAU > 0: {'03-01': 3, '03-02': 2, '03-03': 1, '03-10': 2, '03-15': 1, '03-31': 3}
+asserts passed

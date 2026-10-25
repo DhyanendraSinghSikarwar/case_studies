@@ -1,0 +1,28 @@
+ view_users  cart_users  purchase_users
+          5           4               4
+ viewers  then_cart  then_purchase
+       5          4              2
+channel  view  cart  purchase  conv_pct
+    ads     3     2         2      66.7
+organic     2     1         1      50.0
+unknown     1     1         1     100.0
+{'user_id': dtype('float64'), 'event_ts': <StringDtype(storage='python', na_value=nan)>, 'event_name': <StringDtype(storage='python', na_value=nan)>, 'channel': <StringDtype(storage='python', na_value=nan)>}
+channel  view  cart  purchase  conv_pct
+    ads     3     2         2      66.7
+organic     2     1         1      50.0
+unknown     1     1         1     100.0
+--- behaviours demonstrated ---
+nunique skips NaN: 5 | nunique(dropna=False): 6 | len(set(...)): 6
+groupby default drops the NaN channel: {'ads': 9, 'organic': 4}
+groupby(dropna=False) keeps it: {'ads': 9, 'organic': 4, nan: 3}
+SQL GROUP BY keeps a NULL group: [(None, 3), ('ads', 9), ('organic', 4)]
+pivot_table on raw channel (default dropna=True), index: ['ads', 'organic']
+pivot_table(dropna=False), index: ['ads', 'organic', nan]
+pivot_table with the default aggfunc='mean' on user_id:
+event_name      cart  purchase  view
+channel                             
+ads         2.333333       2.0   3.0
+organic     2.000000       5.0   3.5
+merge on NaN keys matches NaN with NaN: 1 | SQL join on NULL keys: 0
+total of channel view rows: 6 vs distinct viewers: 5
+asserts passed
