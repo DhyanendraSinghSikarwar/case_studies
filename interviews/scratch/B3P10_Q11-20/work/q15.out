@@ -1,0 +1,38 @@
+pandas 3.0.5 | SQLite 3.45.1
+
+inferred dtypes: Series str | DataFrame column str | string: string | object: object
+str    : ['a', nan, nan, 'B', '']  (None became NaN)
+string : ['a', <NA>, <NA>, 'B', '']
+object : ['a', None, nan, 'B', '']
+isna   str/string/object: [False, True, True, False, False] [False, True, True, False, False] [False, True, True, False, False]
+== 'a' str   : [True, False, False, False, False]
+== 'a' string: [True, <NA>, <NA>, False, False]
+!= 'a' str   : [False, True, True, True, True] <- missing counts as 'not equal'
+!= 'a' string: [False, <NA>, <NA>, True, True] <- missing stays missing
+s == s (NaN with itself): [True, False, False, True, True] | t == t: [True, <NA>, <NA>, True, True]
+.str.len() str: [1.0, nan, nan, 1.0, 0.0] float64 | string: [1, <NA>, <NA>, 1, 0] Int64
+.str.upper() str: ['A', nan, nan, 'B', ''] | object: ['A', None, nan, 'B', '']
+s + '!' str: ['a!', nan, nan, 'B!', '!'] | string: ['a!', <NA>, <NA>, 'B!', '!']
+str.cat(sep='|') skips missing: 'a|B|'
+
+NaN == NaN: False | None == None: True | pd.NA == pd.NA: <NA>
+bool(pd.NA) -> TypeError: boolean value of NA is ambiguous
+pd.isna of None, NaN, pd.NA, '', 'NaN': [True, True, True, False, False]
+
+mixed ['a', 1, None] dtype: object | .str.upper(): ['A', nan, None] (the integer 1 becomes NaN, not '1')
+ints .str -> AttributeError: Can only use .str accessor with string values, not integer
+
+astype(str) on the str Series      : ['a', nan, nan, 'B', ''] str
+astype(str) on float [1.0, NaN]    : ['1.0', nan]
+astype(str) on object ['a', None]  : ['a', nan]
+.map(str) on object ['a', None]    : ['a', 'None']
+numpy astype(str) on [a, None, nan]: ['a', 'None', 'nan']
+f-string / str() on NaN            : ['a', 'None', 'nan', 'B', '']
+
+SQL x IS NULL      : [0, 1, 1, 0, 0]
+SQL x = 'a'        : [1, None, None, 0, 0] (Python None = SQL NULL)
+SQL WHERE x <> 'a' : ids [3, 4] (NULL rows are not returned)
+SQL LENGTH(x)      : [1, None, None, 1, 0]
+SQL NULL = NULL, NULL IS NULL, IS NOT DISTINCT FROM, 'a'||NULL: (None, 1, 1, None)
+
+asserts passed (compared in id order: isna flags, '<>' rows, '=' flags, lengths)

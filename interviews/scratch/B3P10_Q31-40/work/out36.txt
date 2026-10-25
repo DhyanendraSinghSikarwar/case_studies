@@ -1,0 +1,38 @@
+SELECT 'phone' AS column_name,
+  COUNT(*) AS total_rows,
+  COUNT(*) - COUNT("phone") AS null_count,
+  SUM("phone" = '') AS empty_count,
+  SUM("phone" IS NOT NULL AND "phone" <> '' AND trim("phone") = '') AS whitespace_only,
+  SUM("phone" IS NOT NULL AND upper(trim("phone")) IN ('N/A','NA','NULL','NONE','-')) AS placeholder_count,
+  COUNT(DISTINCT "phone") AS distinct_count,
+  SUM("phone" IS NULL OR trim("phone") = '' OR upper(trim("phone")) IN ('N/A','NA','NULL','NONE','-')) AS effectively_missing,
+  round(100.0 * SUM("phone" IS NULL OR trim("phone") = '' OR upper(trim("phone")) IN ('N/A','NA','NULL','NONE','-')) / COUNT(*), 1) AS pct_missing
+FROM customers
+column_name  total_rows  null_count  empty_count  whitespace_only  placeholder_count  distinct_count  effectively_missing  pct_missing
+customer_id           8           0            0                0                  0               8                    0          0.0
+       name           8           1            0                1                  0               7                    2         25.0
+      email           8           1            0                0                  1               6                    2         25.0
+      phone           8           1            1                1                  1               7                    4         50.0
+       city           8           0            1                0                  1               6                    2         25.0
+signup_date           8           1            1                0                  1               7                    3         37.5
+phone: COUNT(*)-COUNT(phone) = 1 | effectively missing = 4
+duplicate customer_id: []
+duplicate emails (lower+trim, missing excluded): [('asha@x.com', '1,8'), ('dev@x.com', '4,5')]
+pandas audit equals SQL audit
+column_name              metric  value
+customer_id effectively_missing    0.0
+       name effectively_missing    2.0
+      email effectively_missing    2.0
+      phone effectively_missing    4.0
+       city effectively_missing    2.0
+signup_date effectively_missing    3.0
+customer_id         pct_missing    0.0
+       name         pct_missing   25.0
+      email         pct_missing   25.0
+      phone         pct_missing   50.0
+       city         pct_missing   25.0
+signup_date         pct_missing   37.5
+NBSP-only phone: SQL trim = 1 (not whitespace), pandas strip -> ''
+printf('%.0f') of 12.5, 2.5, 2.9, 3.5, 100.6: ('12', '2', '2', '3', '100')
+round() of the same: (13.0, 3.0, 3.0, 4.0, 101.0) | printf('%.0f', round(x)): ('3', '101') | Python '%.0f' % 2.5, 3.5, 2.9: ['2', '4', '3']
+asserts passed

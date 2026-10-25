@@ -1,0 +1,25 @@
+distinct months seen: ['2024-01', '2024-02', '2024-03', '2024-04', None, '', '2023-12', "x'; DROP TABLE sales;--"]
+columns that get their own column: ['2024-02', '2024-03', '2024-04']
+SELECT region,
+  SUM(CASE WHEN month = ? THEN amount END) AS "2024-02",
+  SUM(CASE WHEN month = ? THEN amount END) AS "2024-03",
+  SUM(CASE WHEN month = ? THEN amount END) AS "2024-04",
+  SUM(CASE WHEN month IS NULL OR month NOT IN (?,?,?) THEN amount END) AS other,
+  SUM(amount) AS total
+FROM sales
+GROUP BY region ORDER BY region
+params: ['2024-02', '2024-03', '2024-04', '2024-02', '2024-03', '2024-04']
+region  2024-02  2024-03  2024-04  other  total
+  East      NaN      NaN        1     11     12
+ North     20.0      5.0        7     10     42
+ South     30.0      NaN        8     10     48
+other with NOT IN only: 27 | other with IS NULL OR NOT IN: 31
+region  2024-02  2024-03  2024-04  other  total
+  East      NaN      NaN      1.0   11.0     12
+ North     20.0      5.0      7.0   10.0     42
+ South     30.0      NaN      8.0   10.0     48
+quote_ident(evil): "x'; DROP TABLE sales;--"
+spliced raw -> OperationalError unrecognized token: "x'; DROP TABLE sales;--"
+sales still has 11 rows
+SQLite limits: columns = 2000 | bound parameters = 250000
+asserts passed
