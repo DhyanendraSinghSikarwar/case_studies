@@ -31,6 +31,12 @@ print("INTEGER PRIMARY KEY got id:", con.execute("SELECT id FROM u_pk_int").fetc
       "| NULL rows in u_unique:", con.execute("SELECT COUNT(*) FROM u_unique WHERE email IS NULL").fetchone()[0],
       "| NULL rows in u_pk:", con.execute("SELECT COUNT(*) FROM u_pk WHERE code IS NULL").fetchone()[0])
 
+# allow at most one NULL: a partial unique index on a constant for the NULL rows
+con.executescript("CREATE TABLE u_one(email TEXT); CREATE UNIQUE INDEX u_one_null ON u_one((email IS NULL)) WHERE email IS NULL;")
+attempt("u_one NULL (1)", "INSERT INTO u_one VALUES (NULL)")
+attempt("u_one NULL (2)", "INSERT INTO u_one VALUES (NULL)")
+attempt("u_one 'a' then 'a' again", "INSERT INTO u_one VALUES ('a'),('a')")
+
 con.executescript("""
 CREATE TABLE users(user_id INTEGER PRIMARY KEY, is_active INTEGER);          -- 1, 0 or NULL
 INSERT INTO users VALUES (1,1),(2,1),(3,0),(4,NULL),(5,NULL);

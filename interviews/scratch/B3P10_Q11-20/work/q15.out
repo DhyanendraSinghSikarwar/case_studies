@@ -35,4 +35,7 @@ SQL WHERE x <> 'a' : ids [3, 4] (NULL rows are not returned)
 SQL LENGTH(x)      : [1, None, None, 1, 0]
 SQL NULL = NULL, NULL IS NULL, IS NOT DISTINCT FROM, 'a'||NULL: (None, 1, 1, None)
 
+sort_values() default puts missing last: ['', 'B', 'a', nan, nan] | na_position='first': [nan, nan, '', 'B', 'a']
+read_sql_query x dtype: str | after convert_dtypes(): string ['a', <NA>, <NA>, 'B', '']
+
 asserts passed (compared in id order: isna flags, '<>' rows, '=' flags, lengths)

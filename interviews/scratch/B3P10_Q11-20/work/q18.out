@@ -1,0 +1,50 @@
+SQLite 3.45.1 | pandas 3.0.5
+UPPER('é') = é | LOWER('É') = É | UPPER('ß') = ß
+INITCAP -> no such function: INITCAP
+
+LeetCode 1667 formula applied to every row (right only for one-word names):
+ customer_id             name
+           1     Rahul sharma
+           2         Asha rao
+           3             Asha
+           4 Anil kumar singh
+           5         Mcdonald
+           6       De la cruz
+           7    élodie dupont
+           8        JosÉ ruiz
+           9           O'neil
+          10              NaN
+
+recursive CTE: proper case and initials:
+ customer_id        full_name      proper_name initials
+           1     RAHUL sharma     Rahul Sharma     R.S.
+           2         asha rao         Asha Rao     A.R.
+           3             ASHA             Asha       A.
+           4 anil kumar singh Anil Kumar Singh   A.K.S.
+           5         mcDONALD         Mcdonald       M.
+           6       de la cRUZ       De La Cruz   D.L.C.
+           7    élodie dupont    élodie Dupont     é.D.
+           8        JOSÉ ruiz        JosÉ Ruiz     J.R.
+           9           o'neil           O'neil       O.
+          10              NaN              NaN      NaN
+
+pandas str.capitalize, str.title and initials:
+       full_name       capitalize            title initials
+    RAHUL sharma     Rahul sharma     Rahul Sharma     R.S.
+        asha rao         Asha rao         Asha Rao     A.R.
+            ASHA             Asha             Asha       A.
+anil kumar singh Anil kumar singh Anil Kumar Singh   A.K.S.
+        mcDONALD         Mcdonald         Mcdonald       M.
+      de la cRUZ       De la cruz       De La Cruz   D.L.C.
+   élodie dupont    Élodie dupont    Élodie Dupont     É.D.
+       JOSÉ ruiz        José ruiz        José Ruiz     J.R.
+          o'neil           O'neil           O'Neil       O.
+             NaN              NaN              NaN      NaN
+pandas dtype: str | title of "o'neil": ["O'Neil"] | capitalize: ["O'neil"] | title of '3rd floor': ['3Rd Floor']
+
+SQL versus pandas title on the awkward rows (SQL, pandas): {7: ('élodie Dupont', 'Élodie Dupont'), 8: ('JosÉ Ruiz', 'José Ruiz'), 9: ("O'neil", "O'Neil")}
+asserts passed: rows 1-6 and the NULL row match; rows 7-9 differ as shown
+
+extra rows, SQL proper_name: ['', 'Anil Kumar', 'Anne-marie', "It's Ok"] initials: ['', 'A.K.', 'A.', 'I.O.']
+extra rows, pandas title   : ['', '  Anil   Kumar ', 'Anne-Marie', "It'S Ok"]
+asserts passed (extra rows)

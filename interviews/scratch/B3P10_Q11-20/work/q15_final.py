@@ -64,6 +64,10 @@ print("SQL WHERE x <> 'a' :", "ids", sql_ne_rows, "(NULL rows are not returned)"
 print("SQL LENGTH(x)      :", sql_len)
 print("SQL NULL = NULL, NULL IS NULL, IS NOT DISTINCT FROM, 'a'||NULL:", sql_scalar)
 
+print("\nsort_values() default puts missing last:", s.sort_values().tolist(), "| na_position='first':", s.sort_values(na_position="first").tolist())
+back = pd.read_sql_query("SELECT * FROM v ORDER BY id", con)
+print("read_sql_query x dtype:", back["x"].dtype, "| after convert_dtypes():", back["x"].convert_dtypes().dtype, back["x"].convert_dtypes().tolist())
+
 # comparisons (rows in id order)
 assert [int(v) for v in s.isna()] == sql_isnull
 assert [int(v) for v in t.isna()] == sql_isnull

@@ -312,7 +312,7 @@ asserts passed (SQL == pandas for the three orderings)
 - **Cross-type order:** with no conversion a number is always smaller than text (`10 < '9'` is 1).
 - **Fix:** best is to load numbers into INTEGER or REAL columns (or `CAST` while loading). Use `CAST` in the query when you cannot change the table; use `LENGTH(x), x` only for non-negative integers; use a natural-sort key for mixed codes.
 - **Casting garbage:** `CAST('abc' AS REAL)` is 0.0, not an error, so a failed cast hides bad data (Q24 has the same trap for dates). Use `GLOB '*[^0-9]*'` or a round-trip check to find bad rows.
-- **pandas:** pandas never converts silently when you compare a `str` column with a number (it raises or returns False), but `read_csv` infers dtypes for you, so check `dtypes` after loading. Sorting `str` values is lexicographic, exactly like SQLite's text order.
+- **pandas:** `read_csv` infers dtypes for you, so check `dtypes` after loading. Sorting `str` values is lexicographic, exactly like SQLite's text order.
 - Other engines are stricter (they usually raise an error on `'abc' < 5` or convert by their own rules); I did not execute any of them here.
 
 **Follow-ups:**
@@ -443,7 +443,7 @@ asserts passed (SQL == pandas on every cell, except the two documented differenc
 ```
 
 **Edge cases:**
-- **Rounding differs by tool (my run):** `ROUND(703.125, 2)` and `PRINTF('%.2f', 703.125)` both gave 703.13 (SQLite rounds the exact tie up); Python's `round` and f-string gave 703.12; `Series.round(2)` gave 703.12 for 703.125, **2.68** for 2.675 (SQLite and Python both gave 2.67) and 0.12 for 0.125. So even pandas and Python round differently on 2.675. The binary value of 2.675 is just below the tie, so 2.67 is the right answer for the stored double, and pandas' 2.68 comes from its own scaling. Compare money in integer cents, or use `decimal`.
+- **Rounding differs by tool (my run):** `ROUND(703.125, 2)` and `PRINTF('%.2f', 703.125)` both gave 703.13 (SQLite rounds the exact tie up); Python's `round` and f-string gave 703.12; `Series.round(2)` gave 703.12 for 703.125, **2.68** for 2.675 (SQLite and Python both gave 2.67) and 0.12 for 0.125. So even pandas and Python round differently on 2.675. The stored double for 2.675 is just below the tie, so 2.67 is the exact answer; pandas' 2.68 presumably comes from scaling by 100 before rounding (I did not verify the mechanism). Compare money in integer cents, or use `decimal`.
 - **`PRINTF('%.0f')` truncates in this SQLite build:** `0.6`, `1.6` and `2.6` printed `0`, `1`, `2`, and after `ROUND` first they printed `1`, `2`, `3`. The Wave A note guessed half-to-even rounding; the run shows truncation, so round first.
 - **NULL:** `'N:' || NULL` is NULL, but `PRINTF('%s', NULL)` is an empty string and `PRINTF('%d', NULL)` is `0`; `PRINTF('%,.2f', NULL)` printed `0.00`, which looks like a real amount. Guard with `CASE WHEN amount IS NULL THEN NULL ELSE ... END`. pandas keeps NaN.
 - **Longer than the pad:** `%05d` and `zfill` do not cut; `SUBSTR(..., -5)` does.
@@ -452,13 +452,13 @@ asserts passed (SQL == pandas on every cell, except the two documented differenc
 
 **Then explain:**
 - **Why `SUBSTR(..., -5)` works:** a negative start counts from the right, so it takes the last 5 characters. It is only safe when the number is known to have at most 5 digits and is not negative.
-- **Left-justify and truncate:** `%-10s` pads on the right; for truncation use `SUBSTR` with an ellipsis (here a single character, so the total is 10). `LENGTH` counts characters, `OCTET_LENGTH` counts bytes (Q31 of the Part 10 list covers that).
+- **Left-justify and truncate:** `%-10s` pads on the right; for truncation use `SUBSTR` with an ellipsis (here a single character, so the total is 10). `LENGTH` counts characters, `OCTET_LENGTH` counts bytes.
 - **Rounded strings:** `PRINTF('%.2f', x)` returns text, `ROUND(x, 2)` returns a number; do the arithmetic before formatting.
 - **Other engines (not executed here):** `LPAD`/`RPAD` exist in PostgreSQL, MySQL and Oracle; SQL Server has `FORMAT` and `RIGHT('00000' || ...)`-style tricks; `TO_CHAR(n, 'FM00000')` in PostgreSQL and Oracle; MySQL also has `FORMAT(x, 2)`. I wrote these from memory.
 - **pandas:** `zfill`, `pad`, `ljust` and f-strings match the SQL on every cell I asserted; the only differences are the 703.125 tie and the NULL row (asserted in the Code block).
 
 **Follow-ups:**
-- *How do you pad on the right with a custom character?* `n || SUBSTR('XXXXX', LENGTH(n) + 1)` style tricks in SQLite (not shown here), `str.pad(width, side="right", fillchar="x")` in pandas.
+- *How do you pad on the right with a custom character?* `SUBSTR(n || 'XXXXX', 1, 5)`-style tricks in SQLite (not run here), `str.pad(width, side="right", fillchar="x")` in pandas.
 - *Why not `FORMAT` in SQLite?* `FORMAT` exists as an alias of `PRINTF` in this build, but other engines' `FORMAT` has different codes.
 - *Should the invoice code be stored?* Store the integer and format on output; a padded string sorts correctly only while the width is fixed.
 
@@ -610,16 +610,15 @@ asserts passed (SQL CASE parse == pandas per-shape parse, ordered by id)
 - The same string parsed two ways: `format="%m/%d/%Y"` gave 2024-05-03 and `format="%d/%m/%Y"` gave 2024-03-05.
 
 **Then explain:**
-- **ISO is the only shape SQLite date functions read** (with the quirk above); store dates as `YYYY-MM-DD` text (Part 6 Q1 covers storage).
+- **ISO is the shape to rely on for SQLite date functions** (with the quirk above); store dates as `YYYY-MM-DD` text (Part 6 Q1 covers storage).
 - **Detect failures:** `DATE(x) IS NULL AND x <> ''`, plus the round-trip test to catch normalised days.
 - **Fix known shapes explicitly:** `GLOB` guard, then `SUBSTR` rebuild, then validate.
 - **Other engines (not executed here, from memory):** `TO_DATE` (PostgreSQL, Oracle) and `STR_TO_DATE` (MySQL) take a format string; `TRY_CONVERT` (SQL Server) and `SAFE.PARSE_DATE` (BigQuery) return NULL instead of raising an error. Some of them raise errors on invalid input, unlike SQLite.
 - **pandas:** be explicit with `format=`; `errors="coerce"` hides failures, so count the `NaT` rows against the input afterwards (`d.notna() & parsed.isna()`).
 
 **Follow-ups:**
-- *How do you handle two-digit years?* Not shown here; the rule must be agreed with the source (pandas `%y` pivots at 69).
 - *How would you report the bad rows?* `WHERE DATE(x) IS NULL AND x <> ''` plus the round-trip mismatch, with a count per shape.
-- *Why not `CAST(x AS DATE)`?* SQLite has no date type; `CAST(... AS NUMERIC)` of a date string gives the leading number (2024), which looks fine and is wrong.
+- *Why not `CAST(x AS DATE)`?* SQLite has no date type; `CAST('2024-03-05' AS INTEGER)` and `AS NUMERIC` both gave 2024 in my check, which looks fine and is wrong.
 
 **Common mistakes:**
 - Believing `DATE()` returns NULL for every impossible date.
@@ -739,14 +738,14 @@ asserts passed (set operations and group counts equal; pandas merge equals the n
 - `COUNT(DISTINCT)` is 2 but `SELECT DISTINCT` returns 3 rows: the NULL row is a row, but not a value.
 - `UNION ALL` keeps every NULL (4 of them here).
 - Duplicates: `UNION`, `INTERSECT` and `EXCEPT` also de-duplicate; `UNION ALL` does not.
-- Empty strings are not NULL: `''` is a value that groups separately (Q35 style audits belong to the data-quality questions of this part).
+- Empty strings are not NULL: `''` is a value that groups separately.
 - **pandas surprises (my run):** `merge` matched NaN with NaN (6 rows, equal to the null-safe SQL join, not to the `=` join); `isin` treats NaN as found (`[nan, 1.0].isin([nan])` gave `[True, False]`) while `==` does not (`False`); `nunique()` defaults to `dropna=True` (2) and `nunique(dropna=False)` gives 3; `groupby` drops the NaN group by default (2 groups against 3).
 
 **Then explain:**
 - **Interview line:** "comparison operators say unknown, set operators say same."
 - **Why:** `=`, `IN` and joins need a TRUE, and `NULL = NULL` is UNKNOWN. `DISTINCT`, `GROUP BY`, `UNION`, `INTERSECT` and `EXCEPT` use "not distinct from" semantics, so two NULLs are the same.
 - **Safer anti-join:** `EXCEPT` or `NOT EXISTS` do not break on NULLs the way `NOT IN` does. Which one you want depends on whether a NULL should count as "present in B".
-- **Null-safe equality:** `IS` in SQLite (and `IS NOT DISTINCT FROM`, which also ran on 3.45.1) is the SQL way to match NULLs; Part 1 Q41 covers it.
+- **Null-safe equality:** `IS` in SQLite (and `IS DISTINCT FROM`, which also ran on 3.45.1) is the SQL way to match NULLs; Part 1 Q41 covers it.
 - **Other engines:** the standard behaviour is the same in the engines I know, but I did not run Postgres, MySQL, BigQuery or Snowflake here (not executed).
 - **Cross-references:** Part 1 Q16 for aggregation basics, Part 3 Q3 for `NOT IN`.
 
@@ -820,6 +819,12 @@ print("INTEGER PRIMARY KEY got id:", con.execute("SELECT id FROM u_pk_int").fetc
       "| NULL rows in u_unique:", con.execute("SELECT COUNT(*) FROM u_unique WHERE email IS NULL").fetchone()[0],
       "| NULL rows in u_pk:", con.execute("SELECT COUNT(*) FROM u_pk WHERE code IS NULL").fetchone()[0])
 
+# allow at most one NULL: a partial unique index on a constant for the NULL rows
+con.executescript("CREATE TABLE u_one(email TEXT); CREATE UNIQUE INDEX u_one_null ON u_one((email IS NULL)) WHERE email IS NULL;")
+attempt("u_one NULL (1)", "INSERT INTO u_one VALUES (NULL)")
+attempt("u_one NULL (2)", "INSERT INTO u_one VALUES (NULL)")
+attempt("u_one 'a' then 'a' again", "INSERT INTO u_one VALUES ('a'),('a')")
+
 con.executescript("""
 CREATE TABLE users(user_id INTEGER PRIMARY KEY, is_active INTEGER);          -- 1, 0 or NULL
 INSERT INTO users VALUES (1,1),(2,1),(3,0),(4,NULL),(5,NULL);
@@ -879,6 +884,9 @@ print("asserts passed (SQL counts and IS NOT TRUE rows == pandas, ordered by use
   FAIL : WITHOUT ROWID PK, NULL -> NOT NULL constraint failed: u_pk_wr.code
   ok   : INTEGER PRIMARY KEY, NULL
 INTEGER PRIMARY KEY got id: 1 | NULL rows in u_unique: 2 | NULL rows in u_pk: 2
+  ok   : u_one NULL (1)
+  FAIL : u_one NULL (2) -> UNIQUE constraint failed: index 'u_one_null'
+  ok   : u_one 'a' then 'a' again
  user_id  is_active  eq0  not_flag  is_true  is_false  is_not_true  is_null
        1        1.0  0.0       0.0        1         0            0        0
        2        1.0  0.0       0.0        1         0            0        0
@@ -902,7 +910,7 @@ asserts passed (SQL counts and IS NOT TRUE rows == pandas, ordered by user_id)
 
 **Edge cases:**
 - `NULL IS TRUE` is 0, `NULL IS NOT TRUE` is 1, `NOT NULL` is NULL (my run: `(0, 1, None)`).
-- Values other than 0 and 1 (for example 2) are true in SQLite; only a CHECK on the flag would stop them, so add `CHECK (is_active IN (0, 1))`: a NULL still passes that CHECK too.
+- Values other than 0 and 1 (for example 2) can be stored (not run here); only a CHECK on the flag would stop them, so add `CHECK (is_active IN (0, 1))`: a NULL still passes that CHECK too.
 - A foreign key with a NULL column is not checked, for the same UNKNOWN reason (not run here).
 - **pandas:** `read_sql` returned the flag as `float64` with NaN (ints plus NULL), where `!= 1` is True for NaN (pandas differs from SQL, which gives unknown) and `== 0` matches only the real zero. With the nullable boolean dtype, `== False` gives `<NA>` for the unknown rows, `bool(pd.NA)` raises `TypeError` (`boolean value of NA is ambiguous`), and using the NA mask to filter rows (`u[flag == False]`) treats NA as False, so it returns user 3 only.
 
@@ -915,7 +923,7 @@ asserts passed (SQL counts and IS NOT TRUE rows == pandas, ordered by user_id)
 - **pandas:** use the nullable `boolean` dtype so that NA stays NA instead of turning into False or NaN.
 
 **Follow-ups:**
-- *How do you allow only one NULL in SQLite?* A partial unique index on a constant expression, for example `CREATE UNIQUE INDEX ... ON t((email IS NULL)) WHERE email IS NULL` (not run here).
+- *How do you allow only one NULL in SQLite?* A partial unique index: `CREATE UNIQUE INDEX u_one_null ON u_one((email IS NULL)) WHERE email IS NULL` (in the Code block: the second NULL failed with `UNIQUE constraint failed: index 'u_one_null'`, while repeated `'a'` values were still allowed).
 - *What does `COUNT(*)` give per state?* `GROUP BY is_active` returns three groups: 1, 0 and NULL.
 - *Should the flag be nullable at all?* Only if "unknown" is a real business state.
 
@@ -1244,7 +1252,7 @@ asserts passed (UNION ALL == melt, wide_to_long == 2-branch UNION ALL, SUM(CASE)
 - **Asserts:** UNION ALL equals `melt`, the 2-branch UNION ALL equals `wide_to_long`, and `SUM(CASE)` equals `unstack`, all ordered by student (then subject, year).
 
 **Follow-ups:**
-- *How do you unpivot in SQL without writing every column?* Generate the `UNION ALL` text from a column list (Q31 covers dynamic SQL at concept level).
+- *How do you unpivot in SQL without writing every column?* Generate the `UNION ALL` text from a column list (the dynamic pivot question later in this part).
 - *What does `ignore_index` do in `melt`?* With `ignore_index=False` the original index is kept (not run here).
 - *When is `pivot_table` better than `pivot`?* When there can be duplicate keys.
 
@@ -1434,7 +1442,7 @@ asserts passed (rows marked same agree; rows marked DIFF are the documented diff
 **Edge cases:**
 - **NULL and `LIKE`:** SQL `name LIKE 'a%'` is NULL for a NULL name; pandas `str.startswith` returns False for NaN in the `str` dtype. The Code block compares the `COALESCE(..., 0)` form and the raw form.
 - **`na` argument of `contains` (my run, email column with one NaN):** `str` dtype default gave `[True, True, False, True, False]`; object dtype gave `nan` for the missing row; `string` dtype gave `<NA>`; `na=True` gave `True`. SQL gave NULL for that row.
-- **Case:** SQLite's `LIKE` is case-insensitive for ASCII only, and `PRAGMA case_sensitive_like = 1` made `'Asha' LIKE 'a%'` return 0 in my run. pandas `contains(case=False)` handles Unicode case folding differently from SQLite (see Q35-style Unicode notes in this part).
+- **Case:** SQLite's `LIKE` is case-insensitive for ASCII only, and `PRAGMA case_sensitive_like = 1` made `'Asha' LIKE 'a%'` return 0 in my run. I did not test pandas `case=False` on non-ASCII text.
 - **Concatenation:** `||` and `+` both propagate missing values; `CONCAT_WS` skips NULLs (it ran on 3.45.1), and the pandas equivalent is a row-wise join of the non-missing values, not `na_rep=''`.
 - **Length:** `str.len()` returns `float64` when NaN is present; `LENGTH` returns an integer or NULL.
 - **Title case:** SQLite has no `INITCAP`; `str.title()` gave `O'Neil` for `o'neil` and `Mc Donald` for `mc donald`, but `They'Re` for `they're`, so it is not a safe name formatter.
@@ -1449,7 +1457,7 @@ asserts passed (rows marked same agree; rows marked DIFF are the documented diff
 **Follow-ups:**
 - *How do you do a regex match in SQLite?* Register a Python function with `create_function("regexp", 2, fn)` (it worked in the Wave A check), or avoid regex with `GLOB`/`LIKE`.
 - *What is the pandas twin of `GLOB`?* `str.fullmatch` or `str.match` with a regex (not run here).
-- *How do you reverse a string in SQLite?* Not built in; a recursive CTE, or do it in pandas (`s.str[::-1]`).
+- *How do you reverse a string in SQLite?* Not built in; a recursive CTE, or do it in Python.
 
 **Common mistakes:**
 - Using `str.replace(" +", " ")` and expecting it to collapse spaces.
