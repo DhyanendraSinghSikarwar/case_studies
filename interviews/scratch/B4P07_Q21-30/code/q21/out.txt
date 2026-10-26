@@ -1,0 +1,12 @@
+$ python3 -I repo_lint.py good/
+result: PASS (0 problem(s))
+exit=0
+$ python3 -I repo_lint.py bad/
+FAIL missing required file: configs/gates.yaml
+FAIL missing required file: serving/deployment.yaml
+FAIL missing required file: CODEOWNERS
+FAIL .github/workflows/ci.yml:8: gate threshold hard-coded in workflow
+FAIL .github/workflows/ci.yml:10: secret-like string
+FAIL .github/workflows/ci.yml:11: secret-like string
+result: FAIL (6 problem(s))
+exit=1

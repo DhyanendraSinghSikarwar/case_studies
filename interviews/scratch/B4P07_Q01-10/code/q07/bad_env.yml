@@ -1,0 +1,9 @@
+name: bad
+on: workflow_dispatch
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      nme: production
+    steps:
+      - run: echo hi

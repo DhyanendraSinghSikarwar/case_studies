@@ -1,0 +1,41 @@
+name: model-release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: model-release
+  cancel-in-progress: false
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python train.py --out model.joblib
+      - uses: actions/upload-artifact@v4
+        with: {name: model, path: model.joblib}
+  evaluate:
+    needs: train
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: {name: model}
+      - run: python gate.py --candidate metrics.json --champion champion.json | tee gate_report.txt
+      - run: cat gate_report.txt >> "$GITHUB_STEP_SUMMARY"     # reviewer sees this
+      - uses: actions/upload-artifact@v4
+        with: {name: gate-report, path: gate_report.txt}
+  deploy-staging:
+    needs: evaluate
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - run: python deploy.py --env staging --alias challenger
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production            # required reviewers + branch rule are set in repo settings
+      url: https://ml.example.com/churn
+    steps:
+      - run: python deploy.py --env production --alias champion

@@ -1,0 +1,19 @@
+name: report-safe
+on:
+  pull_request:
+    types: [opened, edited]
+permissions:
+  contents: read
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print title safely
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: echo "PR title is $PR_TITLE"
+      - name: Call registry
+        env:
+          REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+        run: |
+          curl -H "Authorization: Bearer $REGISTRY_TOKEN" https://registry.example.com/ping

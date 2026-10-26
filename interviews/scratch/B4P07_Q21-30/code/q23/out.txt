@@ -1,0 +1,9 @@
+$ pytest -q -p no:cacheprovider test_data_checks.py
+....                                                                     [100%]
+4 passed in 0.48s
+corrupted frame ->
+  FAIL customer_id not unique
+  FAIL age out of range 18-100
+  FAIL monthly_spend negative
+  FAIL monthly_spend null rate 33% > 10%
+  FAIL plan has unknown values: ['gold']

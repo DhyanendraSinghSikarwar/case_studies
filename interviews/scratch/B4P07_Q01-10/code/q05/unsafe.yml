@@ -1,0 +1,12 @@
+name: report-unsafe
+on:
+  pull_request:
+    types: [opened, edited]
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "PR title is ${{ github.event.pull_request.title }}"
+      - run: |
+          curl -H "Authorization: Bearer ${{ secrets.REGISTRY_TOKEN }}" https://registry.example.com/ping
+      - run: echo "branch is ${{ github.head_ref }}"

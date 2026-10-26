@@ -1,0 +1,26 @@
+pipeline {
+  agent { docker { image 'python:3.12-slim' } }
+  stages {
+    stage('Train') {
+      steps {
+        sh 'python train.py --out model.pkl'
+        stash name: 'model', includes: 'model.pkl'
+      }
+    }
+    stage('Test') {
+      steps {
+        unstash 'model'
+        sh 'python gate.py --model model.pkl'
+      }
+    }
+    stage('Promote') {
+      when { branch 'main' }
+      steps {
+        input message: 'Promote to champion?'
+        withCredentials([string(credentialsId: 'mlflow-uri', variable: 'MLFLOW_TRACKING_URI')]) {
+          sh 'python promote.py --alias champion'
+        }
+      }
+    }
+  }
+}

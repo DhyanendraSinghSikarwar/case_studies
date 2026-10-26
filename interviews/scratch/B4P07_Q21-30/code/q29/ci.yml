@@ -1,0 +1,55 @@
+name: ci
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      model: ${{ steps.diff.outputs.model }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: diff
+        run: |
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -qE '^(models/|configs/|train/)'; then
+            echo "model=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "model=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install ruff && ruff check .
+
+  model-gate:
+    needs: changes
+    if: needs.changes.outputs.model == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python gate.py --config configs/gates.yaml
+
+  ci-ok:
+    # The ONLY check marked "required" in branch protection.
+    if: always()
+    needs: [lint, model-gate]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any needed job failed or was cancelled (skipped is fine)
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "a required job did not pass"
+          exit 1
+      - run: echo "all needed jobs passed or were skipped"

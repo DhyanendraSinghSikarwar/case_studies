@@ -1,0 +1,10 @@
+name: model-tests
+on:
+  pull_request:
+    paths: ["models/**", "configs/**"]   # docs-only PR: workflow never starts
+jobs:
+  model-gate:                              # required check name stays "Expected - Waiting"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python gate.py

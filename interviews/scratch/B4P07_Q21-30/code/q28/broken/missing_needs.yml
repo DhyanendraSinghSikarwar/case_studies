@@ -1,0 +1,12 @@
+name: missing-needs
+on: [push]
+jobs:
+  deploy:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo deploying
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo building
