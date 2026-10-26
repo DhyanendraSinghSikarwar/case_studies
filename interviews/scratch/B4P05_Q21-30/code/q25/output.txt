@@ -1,0 +1,18 @@
+INFO    | Task run 'fetch-541' - Task run failed with exception: ConnectionError('flaky source, first call fails') - Retry 1/2 will start immediately
+INFO    | Task run 'fetch-541' - Finished in state Completed()
+INFO    | Flow run 'perky-mosquito' - best: {'model': 'gbm', 'score': 2.5}
+INFO    | Flow run 'perky-mosquito' - Finished in state Completed()
+INFO    | Task run 'fetch-51c' - Finished in state Cached(type=COMPLETED)
+INFO    | Flow run 'mighty-echidna' - best: {'model': 'gbm', 'score': 2.5}
+INFO    | Flow run 'mighty-echidna' - Finished in state Completed()
+INFO    | Task run 'fetch-734' - Finished in state Completed()
+INFO    | Flow run 'ultra-mastiff' - best: {'model': 'gbm', 'score': 2.5}
+INFO    | Flow run 'ultra-mastiff' - Finished in state Completed()
+ERROR   | Flow run 'quaint-scallop' - Encountered exception during execution: ValueError('lr must be > 0, got 0.0')
+INFO    | Flow run 'quaint-scallop' - ON_FAILURE hook: flow run 'quaint-scallop' ended in Failed: Flow run encountered an exception: ValueError: lr must be
+INFO    | Flow run 'quaint-scallop' - Finished in state Failed('Flow run encountered an exception: ValueError: lr must be > 0, got 0.0')
+RESULT 1: {'model': 'gbm', 'score': 2.5}
+RESULT 2: {'model': 'gbm', 'score': 2.5}
+RESULT 3: {'model': 'gbm', 'score': 2.5}
+fetch body ran 3 times in total
+RESULT 4 (bad param): ValueError: lr must be > 0, got 0.0
