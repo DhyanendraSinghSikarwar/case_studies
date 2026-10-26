@@ -16,7 +16,7 @@ print("  nvcc on PATH:", bool(shutil.which("nvcc")))
 
 def choose(team_size, needs_gpu_libs, deploys_to_cluster, mixed_os_laptops):
     """Decision rule used in the answer. Returns a short recommendation."""
-    if deploys_to_cluster or needs_gpu_libs and team_size > 10:
+    if deploys_to_cluster or (needs_gpu_libs and team_size > 10):
         return "Docker image for deploy and CI; devs may still use venv/conda locally"
     if mixed_os_laptops and needs_gpu_libs:
         return "conda (or Docker dev container) so CUDA libs match; lock it"
