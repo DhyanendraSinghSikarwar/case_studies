@@ -1,0 +1,27 @@
+services:
+  llm:
+    image: vllm/vllm-openai:${VLLM_TAG:?set VLLM_TAG to a pinned release tag}   # never :latest
+    command: ["--model", "${MODEL_ID:?set MODEL_ID}", "--max-model-len", "8192"]
+    ipc: host                          # or shm_size: "16gb"; some runtimes need large shared memory
+    environment:
+      HF_TOKEN:                        # no value here: taken from the shell at runtime
+      HF_HOME: /models/hf
+    volumes:
+      - hf_cache:/models/hf            # weights live in a volume, not in the image
+    ports: ["127.0.0.1:8000:8000"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 600s               # weights download + load can take minutes
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+volumes:
+  hf_cache:

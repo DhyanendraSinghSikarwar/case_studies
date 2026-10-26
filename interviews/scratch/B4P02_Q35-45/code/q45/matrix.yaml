@@ -1,0 +1,7 @@
+# Compatibility matrix: owned by the platform team. Versions are EXAMPLES, check vendor docs.
+fleet_driver_min_cuda: "12.4"        # newest CUDA the oldest driver in the fleet supports
+bases:
+  "2026.10": {cuda: "12.4", python: "3.12", torch_cuda: "12.4", status: current}
+  "2026.09": {cuda: "12.4", python: "3.12", torch_cuda: "12.4", status: previous}
+  "2026.04": {cuda: "11.8", python: "3.10", torch_cuda: "11.8", status: deprecated}
+  "2026.07": {cuda: "12.6", python: "3.12", torch_cuda: "12.6", status: current}

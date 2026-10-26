@@ -1,0 +1,11 @@
+platform-images/                  # owned by the platform team
+  base/
+    Dockerfile                    # CUDA runtime + python + pinned common libs
+    constraints.txt               # pinned versions shared by everyone
+    tests/smoke_test.py           # imports, torch.cuda check on a GPU runner
+  matrix.yaml                     # allowed bases, CUDA/python/torch combos, status
+  scripts/check_matrix.py
+  .github/workflows/base.yml      # monthly rebuild + test + promote
+projects/                         # one repo or folder per team
+  fraud/Dockerfile                # FROM .../ml-base:2026.10 (pinned tag, digest in lock)
+  fraud/requirements.in + requirements.lock
