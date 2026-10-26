@@ -1,0 +1,4 @@
+q17/review_target.py:12:10: RUF059 Unpacked variable `Xte` is never used
+q17/review_target.py:12:20: RUF059 Unpacked variable `yte` is never used
+Found 2 errors.
+No fixes available (2 hidden fixes can be enabled with the `--unsafe-fixes` option).
