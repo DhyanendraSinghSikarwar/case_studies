@@ -1,0 +1,37 @@
+name: ml-dev-alice
+cloud: azure
+machine: Standard_NC24ads_A100_v4
+gpu_count: 1
+idle_shutdown_minutes: 60
+public_ip: false
+ssh_public_access: false
+identity: {principal: "uami-ml-notebooks", roles: ["Storage Blob Data Reader"]}
+owner_label: alice
+schedule_stop: "20:00"
+---
+name: gpu-bob-forever
+cloud: azure
+machine: Standard_ND96asr_v4
+gpu_count: 8
+public_ip: true
+ssh_public_access: true
+identity: {roles: ["Contributor"]}
+---
+name: wb-carol
+cloud: gcp
+machine: a2-highgpu-8g
+gpu_count: 8
+idle_shutdown_minutes: 180
+public_ip: false
+identity: {principal: "nb-sa@demo-proj.iam.gserviceaccount.com", roles: ["roles/editor"]}
+owner_label: carol
+---
+name: wb-dev-ok
+cloud: gcp
+machine: n1-standard-8
+gpu_count: 1
+idle_shutdown_minutes: 90
+public_ip: false
+identity: {principal: "nb-sa@demo-proj.iam.gserviceaccount.com", roles: ["roles/storage.objectViewer"]}
+owner_label: dev
+schedule_stop: "21:00"

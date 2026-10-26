@@ -1,0 +1,4 @@
+model_data: s3://acme-ml-models/churn/v7/model.tar.gz
+instance_type: ml.m5.xlarge
+env:
+  AWS_DEFAULT_REGION: ap-south-1

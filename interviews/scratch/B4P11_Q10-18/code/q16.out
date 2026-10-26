@@ -1,0 +1,5 @@
+azure-ai-ml 1.35.2
+loaded: churn-train 3 | image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu22.04 | conda_file type: dict
+docker env: churn-docker | build context: ./docker-context | image: None
+q16/conda.yml -> FAIL unpinned: ['pip:pandas']
+q16/conda_good.yml -> OK all pinned

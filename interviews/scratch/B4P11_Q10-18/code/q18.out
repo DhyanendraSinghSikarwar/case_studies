@@ -1,0 +1,5 @@
+ComputeInstance: ci-alice Standard_DS3_v2 idle_min: 60 node_public_ip: False ssh_public: False
+ml-dev-alice           azure   PASS
+gpu-bob-forever        azure   FAIL: no idle shutdown; public IP enabled; SSH open to internet; no dedicated identity (falls back to default/user); broad role Contributor; 8-GPU machine with no scheduled stop; no owner label (cannot tell whose it is)
+wb-carol               gcp     FAIL: idle shutdown 180 min is long (policy max 120); broad role roles/editor; 8-GPU machine with no scheduled stop
+wb-dev-ok              gcp     PASS

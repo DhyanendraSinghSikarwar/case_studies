@@ -1,0 +1,7 @@
+azure-ai-ml 1.35.2 | blobs: ['churn/2026-10/part-0.csv']
+round trip: b'id,y\n1,0\n2,1\n'
+datastore: churn_blob DatastoreType.AZURE_BLOB devstoreaccount1 train-data | credentials: NoneCredentialConfiguration
+Data churn-raw v1 uri_folder azureml://datastores/churn_blob/paths/churn/2026-10/
+Data churn-raw v2 uri_file azureml://datastores/churn_blob/paths/churn/2026-10/part-0.csv
+Input mode: ro_mount -> azureml:churn-raw:1
+Input mode: download -> azureml:churn-raw:1

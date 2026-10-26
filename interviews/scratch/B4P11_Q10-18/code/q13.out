@@ -1,0 +1,8 @@
+2026/10/26 18:14:09 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/26 18:14:09 INFO mlflow.store.db.utils: Updating database tables
+2026/10/26 18:14:11 INFO mlflow.tracking.fluent: Experiment with name 'churn-demo' does not exist. Creating a new experiment.
+mlflow 3.17.2 | tracking uri scheme: sqlite
+params: {'lr': '0.1'} | metrics: {'auc': 0.85, 'loss': 0.3} | tags(git_sha): abc1234
+2026/10/26 18:14:14 INFO mlflow.agent.hint: Load the `instrumenting-with-mlflow-tracing` skill at /tmp/claude-0/b11p11/az/lib/python3.13/site-packages/mlflow/assistant/skills/instrumenting-with-mlflow-tracing/SKILL.md before writing any tracing code; it ships with this MLflow install. Set MLFLOW_DISABLE_AGENT_HINT=1 to silence this.
+mlflow 3.17.2 | tracking uri scheme: azureml
+azureml URI accepted by the client; NO experiment/run call made (would reach management.azure.com)

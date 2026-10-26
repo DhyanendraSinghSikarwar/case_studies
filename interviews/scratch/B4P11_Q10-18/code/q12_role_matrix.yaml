@@ -1,0 +1,11 @@
+# One training job per cloud. Role names are examples; check current docs for exact built-in roles.
+azure_ml:
+  job_creator:        {identity: "service principal (CI) or user, Entra ID", role: "AzureML Data Scientist", scope: workspace}
+  job_runs_as:        {identity: "compute cluster user-assigned managed identity", role: "Storage Blob Data Reader", scope: "storage account or container"}
+  image_pull:         {identity: "workspace or compute managed identity", role: "AcrPull", scope: container registry}
+  output_write:       {identity: "compute cluster user-assigned managed identity", role: "Storage Blob Data Contributor", scope: "output container"}
+google_vertex:
+  job_creator:        {identity: "deployer service account", role: "roles/aiplatform.user", scope: project, extra: "roles/iam.serviceAccountUser on the job service account"}
+  job_runs_as:        {identity: "job service account (custom)", role: "roles/storage.objectViewer", scope: "input bucket"}
+  image_pull:         {identity: "job service account or Vertex service agent", role: "roles/artifactregistry.reader", scope: "repository"}
+  output_write:       {identity: "job service account (custom)", role: "roles/storage.objectAdmin", scope: "output bucket"}
