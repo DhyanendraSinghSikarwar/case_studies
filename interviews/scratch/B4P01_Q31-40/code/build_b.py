@@ -121,7 +121,7 @@ A[34] = f"""**Say this first (1 line):** Branch protection plus required reviews
 **Follow-ups:**
 - *How do you enforce it for admins too?* Turn on the "include administrators" style option or use organisation rulesets (check current docs).
 - *Does CODEOWNERS replace reviews?* No, it only decides who must review.
-- *Who owns the feature code if two teams share it?* List both owners on the line, as in the demo, so either-or review is not enough only if you require approval from each (check how your host counts).
+- *Who owns code that two teams share?* List both owners on the line, as in the demo. Check how your host counts approvals: by default one owner may be enough, so ask for per-team approval if you need both.
 
 **Common mistakes:**
 - Creating a CODEOWNERS file but not switching on "require code owner review".
