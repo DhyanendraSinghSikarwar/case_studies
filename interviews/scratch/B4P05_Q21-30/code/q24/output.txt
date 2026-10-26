@@ -1,0 +1,17 @@
+--- (1) local runs, no server configured (ephemeral API inside the process)
+14:33:03.593 | INFO    | Flow run 'lime-pony' - rows=5 lr=0.1 dry_run=False
+14:33:04.728 | INFO    | Flow run 'dark-kingfisher' - rows=12 lr=0.01 dry_run=False
+14:33:05.828 | INFO    | Flow run 'vagabond-robin' - rows=3 lr=0.1 dry_run=True
+trained on 5 rows
+trained on 12 rows
+skipped
+bad parameter -> ParameterTypeError Flow run received invalid parameters:
+--- (2) server + flow.serve
+Created flow run 'tomato-binturong'.
+└── Parameters: {'rows': 7, 'dry_run': True}
+14:33:37.357 | INFO    | Flow run 'tomato-binturong' - rows=7 lr=0.1 dry_run=True
+14:33:38.459 | INFO    | Flow run 'tomato-binturong' - Finished in state Completed()
+                'cron': '0 2 * * *',
+    'parameters': {'rows': 10},
+    'tags': ['ml'],
+    'work_pool_name': None,
