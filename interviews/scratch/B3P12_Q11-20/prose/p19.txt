@@ -1,0 +1,46 @@
+**Say this first (1 line):** Order each user's events by time, take the gap to the previous event in whole seconds, flag a new session when there is no previous event or the gap is at least 1800 seconds, take a running sum of the flags as the session id, then count sessions and events per user.
+
+**Schema and sample data:** (assumption: timeout rule = a gap of 30:00 or more starts a new session, so exactly 30:00 is a new session and 29:59 is not; the average is events (rows) per session, rounded to 2 decimals; duplicate timestamps count as separate events.)
+@@SCHEMA@@
+
+**SQL answer:** `sql` in the Code block: `l` computes the gap with `strftime('%s', event_ts) - strftime('%s', LAG(event_ts) OVER (PARTITION BY user_id ORDER BY event_ts))` (whole seconds, so there is no floating point rounding at the boundary), `f` makes the flag, `s` runs `SUM(new_sess) OVER (... ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)`, `per` counts events per session, and the final query counts sessions and averages.
+
+**pandas answer:** sort by user and time, `gap = groupby('user_id')['ts'].diff()`, `new_sess = gap.isna() | (gap >= pd.Timedelta(minutes=30))`, `groupby('user_id')['new_sess'].cumsum()` for the session id, then size per (user, session) and aggregate.
+
+**Example:** by hand.
+- User 1: 09:00, 09:10 (gap 10 min, same session), 09:40 (gap exactly 30:00, new session), 09:50 (10 min, same), 10:30 (40 min, new). Sessions: {09:00, 09:10}, {09:40, 09:50}, {10:30} = 3 sessions, 5 events, 5/3 = 1.67.
+- User 2: 10:00, 10:00 (gap 0, same), 10:29:59 (29:59 after 10:00, same), 11:00:00 (30:01, new). Sessions: {3 events}, {1 event} = 2 sessions, 4 events, 2.00.
+- User 3: one event: 1 session, 1 event, 1.00.
+
+**Code:** run with `python3 -I`.
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- **Exactly 30:00 (user 1, 09:10 to 09:40):** counts as a new session because the test is `>= 1800`. The last line of the output shows that a strict `>` rule would give user 1 only 2 sessions. Say which rule you use; the prompt fixes it.
+- **29:59 (user 2):** stays in the session.
+- **Single event (user 3):** `LAG` is NULL, so the flag is 1; one session of one event.
+- **Duplicate timestamps (user 2):** gap 0, same session; the `ROWS` frame (not the default `RANGE`) makes the running sum count each row once. With the default frame and `ORDER BY event_ts`, peers with the same timestamp would get the same running total, which here is harmless for the session id but would be wrong for any running count.
+- **Out-of-order rows:** the window sorts them; sort first in pandas as well.
+- **Events from several days:** a gap across midnight is handled the same way; sessions are not cut at midnight unless the product says so.
+- **NULL timestamps:** would sort first and break the gap; filter them.
+
+**Then explain:**
+- **Why integer seconds:** `julianday` differences are floating point, so a boundary test such as `(julianday(b) - julianday(a)) * 1440 >= 30` is fragile at exactly 30:00 (I did not test whether it misfires on this data). Seconds from `strftime('%s', ...)` are integers, so the boundary is exact.
+- **Average events per session:** total events divided by total sessions per user (not an average of per-day averages). Rounded half away from zero in SQLite's `ROUND` and to even in pandas, which only matters on exact halves; none occur in this data.
+- **Dialects (not executed here):** PostgreSQL would compute the gap as `event_ts - LAG(event_ts) OVER (...) >= INTERVAL '30 minutes'` on timestamp columns; MySQL uses `TIMESTAMPDIFF(SECOND, prev, ts)`; BigQuery `TIMESTAMP_DIFF(ts, prev, SECOND)`.
+- **Scoring note (Set F2, Q3 of 5, 20 pts):** about 8 points for the right sessions and averages on the seed, 4 for the boundary and single-event handling (30:00 is new, 29:59 is not), 4 for pandas asserted equal, 2 for stating the rule and rounding, 2 for a check (the events column sums to the table's row count, 10).
+
+**Follow-ups:**
+- *Session length and duration?* `MIN` and `MAX` of `event_ts` per session; single-event sessions have zero duration, so say how you treat them.
+- *Also cap sessions at 4 hours?* Add a second flag when the time since the session start exceeds the cap; that is harder in plain SQL (it needs a recursive CTE), so mention it as a limit.
+- *Why not a self join?* It is quadratic; `LAG` is one ordered pass.
+
+**Common mistakes:**
+- Using `>` instead of `>=` at the boundary.
+- Float date arithmetic that misses the exact boundary.
+- A default `RANGE` frame for the running flag.
+- Averaging per-session counts incorrectly (average of averages).
+- Forgetting the first event of each user (NULL gap).

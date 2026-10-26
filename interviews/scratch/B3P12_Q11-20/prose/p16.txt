@@ -32,7 +32,7 @@
 **Then explain:**
 - **Why the trick works:** within a run of consecutive days, the day number and the row number rise together, so their difference is constant; a gap makes the day jump while the row number goes up by one, changing the constant.
 - **pandas vs SQL:** both use the same idea; pandas `cumsum` of "starts a new run" is the common alternative to subtracting a row number.
-- **Dialects (not executed here):** PostgreSQL can write `d - ROW_NUMBER() OVER (...)::int` directly with dates; MySQL uses `DATE_SUB(d, INTERVAL n DAY)`; the `ROW_NUMBER` tie rule is standard.
+- **Dialects (not executed here):** from memory, PostgreSQL can subtract an integer from a date directly (`d - (ROW_NUMBER() OVER (...))::int`); MySQL uses `DATE_SUB(d, INTERVAL n DAY)`; the `ROW_NUMBER` tie rule is standard.
 - **Scoring note (Set F2, Q4 of 5, 25 pts):** about 10 points for the five right run rows, 5 for the seeded edge cases (the same-day duplicates handled by distinct days, the tie rule, the month crossing), 5 for pandas asserted equal, 2.5 for stating "day counts if at least one search" and the tie rule, 2.5 for a check such as "the run length never exceeds the user's number of distinct days". Counting search rows instead of days is the usual way to lose most points here.
 
 **Follow-ups:**
