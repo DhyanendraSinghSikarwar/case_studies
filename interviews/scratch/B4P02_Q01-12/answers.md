@@ -769,7 +769,7 @@ ENV MODEL_PATH=/models/model.pt
 CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-```text
+```gitignore
 # ---- .dockerignore ----
 .git
 data/
@@ -952,3 +952,568 @@ hadolint exit code: 1
 - Pinning the tag only (`python:3.11.9`): tags can still move.
 - Claiming 'Docker makes ML reproducible' with unseeded training and unversioned data.
 - Using `latest` for the *model* image too.
+
+### Q9 ⭐⭐⭐ 🟡 Secrets in Docker builds and runtime. A Dockerfile has ARG PIP_TOKEN and uses it to install from a private index, and the token shows in docker history. Explain why ARG and ENV leak into image metadata and layers, how RUN --mount=type=secret keeps a secret out of the final image, why a later RUN rm does not help, how runtime secrets should be passed (env at run time, mounted files, a secret manager), and why .env must be in .dockerignore. Show the fixed Dockerfile and a script that scans a Dockerfile for suspicious ARG or ENV names.
+**Asked at:** Docker BuildKit references (BuildKit syntax.md, Docker Hub dockerfile frontend page, OneUptime and Opstree BuildKit articles, a 2026 CI cache-invalidation checklist; search snippets only, not opened); documentation and blogs, not interview reports; MLOps and platform engineer rounds
+**Say this first (1 line):** ARG and ENV values are stored in the image metadata and in the layers that used them, so anyone with the image can read them from docker history; use RUN --mount=type=secret for build-time secrets and pass runtime secrets at run time, never in the image.
+
+**Then explain:**
+- **Why ARG leaks.** `docker history` and `docker inspect` show the build steps and ENV values. A build `ARG` used in a `RUN` is recorded in that step's command text and can end up in the layer or in provenance data. An `ENV` is stored in the image config permanently and every container sees it.
+- **Why a later `RUN rm` fails.** Layers are append-only. The file or token was written in an earlier layer; the `rm` layer only hides it. Anyone can read the earlier layer from the image tarball.
+- **Build-time fix.** BuildKit secret mounts: `RUN --mount=type=secret,id=pip_token ...` makes the secret available as a file (default `/run/secrets/<id>`) for that one `RUN` only. It is not written into a layer. Supply it with `docker build --secret id=pip_token,env=PIP_TOKEN` or `src=file`. Needs BuildKit, the default in current Docker; check current docs.
+- **Runtime secrets.** Pass at run time: environment variables from `--env-file` or the orchestrator, mounted secret files, or fetched from a secret manager (cloud IAM-based) at start. Env vars can still leak via `docker inspect` or crash dumps, so files or a manager are safer. Never bake keys into the image or the repo.
+- **`.dockerignore` must list `.env`**, keys and credentials: `COPY . .` would otherwise copy them into a layer.
+- **Failure modes:** a secret echoed in build logs; a token in a `pip.conf` copied into the image; secrets in the build context sent to a remote builder; rotating a leaked secret is the only real fix once an image is pushed.
+
+**Example:** `Dockerfile.leaky` has `ARG PIP_TOKEN`, `ENV API_KEY=sk-live-123456` and a `RUN rm`. The scanner finds four problems; the fixed file finds none, and hadolint (DL3064) agrees on the leaky one. The `sk-live` value is a made-up string.
+
+**Code:**
+```dockerfile
+# ---- Dockerfile.leaky ----
+FROM python:3.11-slim-bookworm
+ARG PIP_TOKEN
+ENV API_KEY=sk-live-123456
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir --extra-index-url https://user:${PIP_TOKEN}@pypi.example.com/simple -r requirements.txt
+RUN rm -f ~/.netrc
+COPY src/ src/
+CMD ["python", "-m", "src.serve"]
+
+# ---- Dockerfile.fixed ----
+# syntax=docker/dockerfile:1
+FROM python:3.11-slim-bookworm
+WORKDIR /app
+COPY requirements.txt .
+# secret exists only for this RUN, mounted at /run/secrets/pip_token, never stored in a layer
+RUN --mount=type=secret,id=pip_token \
+    PIP_EXTRA_INDEX_URL="https://user:$(cat /run/secrets/pip_token)@pypi.example.com/simple" \
+    pip install --no-cache-dir -r requirements.txt
+COPY src/ src/
+CMD ["python", "-m", "src.serve"]
+```
+
+```python
+# ---- scan_secrets.py ----
+"""Scan a Dockerfile for ARG/ENV names that look like secrets, and secret-looking literal values."""
+import re, sys
+SUSPECT = re.compile(r"(TOKEN|SECRET|PASSWORD|PASSWD|API_?KEY|PRIVATE_?KEY|CREDENTIAL|AWS_SECRET)", re.I)
+VALUE = re.compile(r"(sk-[A-Za-z0-9-]{6,}|AKIA[0-9A-Z]{8,}|ghp_[A-Za-z0-9]{10,})")
+found = 0
+for path in sys.argv[1:]:
+    for n, line in enumerate(open(path), 1):
+        s = line.strip()
+        if re.match(r"(ARG|ENV)\s", s, re.I):
+            name = re.split(r"[\s=]", s.split(None, 1)[1])[0]
+            if SUSPECT.search(name):
+                print(f"{path}:{n}: suspicious {s.split()[0]} name '{name}' (visible in docker history / inspect)"); found += 1
+        if VALUE.search(s):
+            print(f"{path}:{n}: secret-looking literal value"); found += 1
+        if re.search(r"\brm\b.*(netrc|token|\.env|credentials)", s, re.I):
+            print(f"{path}:{n}: rm of a secret does not remove it from the earlier layer"); found += 1
+print(f"{found} finding(s)")
+sys.exit(1 if found else 0)
+```
+
+```bash
+# ---- build_and_run.sh ----
+# NOT EXECUTED here (no daemon).
+docker build --secret id=pip_token,env=PIP_TOKEN -t myorg/model:1.0 .     # from an env var
+docker build --secret id=pip_token,src=$HOME/.pip_token -t myorg/model:1.0 .   # or from a file
+docker history --no-trunc myorg/model:1.0 | grep -i token                 # should print nothing
+docker run --rm --env-file runtime.env myorg/model:1.0                   # runtime secret, not baked in
+```
+
+**Output (my run):**
+`docker build --secret`, `docker history` and `docker run --env-file` are **not executed** (no daemon), so I did not show a real leak in a real history. What ran: the Dockerfile scanner (a simple name and pattern check; it will miss secrets with innocent names) and hadolint 2.15.1 on both files; `bash -n` on the shell script was silent.
+
+```text
+$ python3 -I scan_secrets.py Dockerfile.leaky; echo "exit=$?"
+Dockerfile.leaky:2: suspicious ARG name 'PIP_TOKEN' (visible in docker history / inspect)
+Dockerfile.leaky:3: suspicious ENV name 'API_KEY' (visible in docker history / inspect)
+Dockerfile.leaky:3: secret-looking literal value
+Dockerfile.leaky:7: rm of a secret does not remove it from the earlier layer
+4 finding(s)
+exit=1
+
+$ python3 -I scan_secrets.py Dockerfile.fixed; echo "exit=$?"
+0 finding(s)
+exit=0
+
+$ hadolint Dockerfile.leaky; echo "hadolint exit code: $?"
+Dockerfile.leaky:2 DL3064 warning: Potentially sensitive data should not be used in the `ARG` or `ENV` commands
+Dockerfile.leaky:3 DL3064 warning: Potentially sensitive data should not be used in the `ARG` or `ENV` commands
+Dockerfile.leaky:7 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.
+hadolint exit code: 1
+
+$ hadolint Dockerfile.fixed; echo "hadolint exit code: $?"
+hadolint exit code: 0
+```
+
+**Follow-ups:**
+- *Is `ENV` set only for the build safe?* `ARG` is not stored as a runtime env, but it still appears in history; use secret mounts.
+- *SSH key for a private git dependency?* `RUN --mount=type=ssh` with `docker build --ssh default`.
+- *Already pushed a leaked image?* Rotate the secret first, then delete the image; deleting alone is not enough.
+
+**Common mistakes:**
+- `ARG TOKEN` then `RUN rm`.
+- `ENV` for API keys.
+- Forgetting `.env` in `.dockerignore`.
+- Printing the token in a build log, or `pip install -v` with credentials in the URL.
+
+### Q10 ⭐⭐⭐ 🟡 Hardening a model-serving container. List what you change in a Dockerfile and run command to make a container safer: a non-root USER with a fixed UID, minimal base, no secrets in layers, --read-only with tmpfs for scratch, --cap-drop ALL, --security-opt no-new-privileges, pinned base, image scan in CI, no docker.sock mount, and not running with --privileged. Explain what each protects against, one thing that breaks under a read-only filesystem for an ML app (model cache, /tmp, matplotlib or HF cache dirs), and how you fix it.
+**Asked at:** Editorial Docker interview guides (Techoral 'Docker Interview Questions 2026', Cloud Soft Solutions 2026 guide, KodeKloud, Adaface, MentorCruise; search snippets only, not opened); guides, not verified candidate reports; DevOps, MLOps and ML engineer screens, including IT-services and GCC hiring
+**Say this first (1 line):** Run as a non-root user on a minimal pinned image, drop all capabilities, block privilege escalation, make the filesystem read-only with a tmpfs for scratch, keep secrets and the Docker socket out, and scan the image in CI.
+
+**Then explain:**
+- **Non-root `USER` (fixed UID, e.g. 10001).** If the app is exploited, the attacker is not root in the container. Fixed UID lets volume permissions and Kubernetes policies match.
+- **Minimal pinned base, no secrets in layers** (Q4, Q8, Q9). Fewer packages mean fewer CVEs; pinning stops surprise changes.
+- **`--read-only` with `--tmpfs /tmp`.** Attackers cannot drop files or modify code on the root filesystem. Scratch goes to memory-backed tmpfs.
+- **`--cap-drop ALL`**, add back only what you need (a model API needs none, binding port 8000 needs none). **`--security-opt no-new-privileges`** stops setuid tricks gaining rights.
+- **Never `--privileged`** (nearly full host access) and never mount `/var/run/docker.sock` (whoever has it controls the host Docker).
+- **Image scan in CI** (Trivy, Grype or your registry's scanner; check current docs) fails the build on high severity findings. Scanning finds known CVEs only.
+- **What breaks under read-only for ML apps:** libraries that write caches on first use: matplotlib config dir, Hugging Face / transformers cache, torch hub, `~/.cache`, pip, joblib temp, `__pycache__`, and `/tmp`. Symptom: `OSError: [Errno 30] Read-only file system`. Fix: point cache env vars at a tmpfs path (`MPLCONFIGDIR`, `HF_HOME`, `XDG_CACHE_HOME`), set `PYTHONDONTWRITEBYTECODE=1`, and mount the model directory read-only from a volume. Size the tmpfs: it counts against memory.
+- **Failure modes:** a non-root user cannot bind port 80 (use 8000+); volume owned by root so the app cannot read it; `cap-drop ALL` breaks something needing `NET_BIND_SERVICE`.
+
+**Example:** The compose file sets every control. The audit script reads it back and prints PASS or FAIL per control. I made a bad copy (`read_only: false`, `privileged: true`) and it reports two failures. `docker compose config` normalised the file (it drops `privileged: false` because that is the default).
+
+**Code:**
+```dockerfile
+# ---- Dockerfile ----
+FROM python:3.11-slim-bookworm
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
+    HOME=/home/app XDG_CACHE_HOME=/tmp/cache MPLCONFIGDIR=/tmp/mpl \
+    HF_HOME=/tmp/hf TRANSFORMERS_CACHE=/tmp/hf
+RUN groupadd --gid 10001 app && useradd --uid 10001 --gid 10001 --create-home app
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=10001:10001 src/ src/
+USER 10001:10001
+EXPOSE 8000
+CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+```yaml
+# ---- compose.yaml ----
+services:
+  model:
+    image: myorg/model:1.0
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    privileged: false
+    ports: ["8000:8000"]
+    volumes:
+      - model_vol:/models:ro
+volumes:
+  model_vol: {}
+```
+
+```python
+# ---- audit_compose.py ----
+"""Audit a compose file for hardening settings."""
+import sys, yaml
+doc = yaml.safe_load(open(sys.argv[1]))
+bad = 0
+for name, s in doc["services"].items():
+    checks = {
+      "non-root user": str(s.get("user", "0")).split(":")[0] not in ("0", "root"),
+      "read_only rootfs": s.get("read_only") is True,
+      "tmpfs scratch": bool(s.get("tmpfs")),
+      "cap_drop ALL": "ALL" in (s.get("cap_drop") or []),
+      "no-new-privileges": any(str(o).startswith("no-new-privileges") for o in s.get("security_opt", [])),
+      "not privileged": not s.get("privileged", False),
+      "no docker.sock": not any("docker.sock" in str(v) for v in s.get("volumes", [])),
+    }
+    for k, ok in checks.items():
+        print(f"{name}: {'PASS' if ok else 'FAIL'} {k}"); bad += (not ok)
+print("failures:", bad)
+sys.exit(1 if bad else 0)
+```
+
+```bash
+# ---- run_hardened.sh ----
+# NOT EXECUTED here (no daemon). Equivalent docker run:
+docker run -d --name model --user 10001:10001 --read-only --tmpfs /tmp:rw,size=256m \
+  --cap-drop ALL --security-opt no-new-privileges:true \
+  -v model_vol:/models:ro -p 8000:8000 myorg/model:1.0
+# CI (names are examples; check current docs for your scanner):  trivy image --exit-code 1 --severity HIGH,CRITICAL myorg/model:1.0
+# NEVER:  -v /var/run/docker.sock:/var/run/docker.sock   --privileged
+```
+
+**Output (my run):**
+`docker run` with these flags, the read-only failure itself, and an image scan are **not executed** (no daemon; Trivy and Grype not installed here). What ran: the compose audit (checks only that the settings are present in the file), `docker compose config` (validates and normalises the YAML) and hadolint 2.15.1 (clean).
+
+```text
+$ python3 -I audit_compose.py compose.yaml; echo "exit=$?"
+model: PASS non-root user
+model: PASS read_only rootfs
+model: PASS tmpfs scratch
+model: PASS cap_drop ALL
+model: PASS no-new-privileges
+model: PASS not privileged
+model: PASS no docker.sock
+failures: 0
+exit=0
+
+$ sed 's/read_only: true/read_only: false/; s/privileged: false/privileged: true/' compose.yaml > /tmp/c_bad.yaml; python3 -I audit_compose.py /tmp/c_bad.yaml | grep -E 'FAIL|failures'
+model: FAIL read_only rootfs
+model: FAIL not privileged
+failures: 2
+
+$ docker compose -f compose.yaml config | sed -n '1,20p'
+name: q10
+services:
+  model:
+    cap_drop:
+      - ALL
+    image: myorg/model:1.0
+    networks:
+      default: null
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    user: 10001:10001
+    volumes:
+      - type: volume
+        source: model_vol
+        target: /models
+        read_only: true
+        volume: {}
+
+$ hadolint Dockerfile; echo "hadolint exit code: $?"
+hadolint exit code: 0
+```
+
+**Follow-ups:**
+- *Read-only root but the model needs to download?* Pre-load the model into a mounted volume, or point the cache at tmpfs and accept re-download on restart.
+- *What does `no-new-privileges` stop?* A process gaining more privilege through setuid binaries or file capabilities.
+- *Rootless Docker or user namespaces?* Extra layers; check current docs.
+
+**Common mistakes:**
+- Running as root 'because it works'.
+- Mounting `docker.sock` for convenience.
+- `--read-only` with no tmpfs, then the app crashes on first request.
+- Treating a clean scan as proof of safety.
+
+### Q11 ⭐⭐⭐ 🟡 CMD versus ENTRYPOINT, exec form versus shell form, and PID 1. Explain how they combine, how runtime arguments override CMD and --entrypoint overrides ENTRYPOINT, why the shell form makes sh PID 1 so SIGTERM never reaches uvicorn or gunicorn, how docker stop works (SIGTERM then SIGKILL after a grace period) and how that affects in-flight predictions and checkpoint saving, and when you need tini or --init. Show a Dockerfile and a small Python signal handler test you can run locally without a daemon.
+**Asked at:** Editorial Docker interview guides (Techoral 'Docker Interview Questions 2026', Cloud Soft Solutions 2026 guide, KodeKloud, Adaface, MentorCruise; search snippets only, not opened); guides, not verified candidate reports; DevOps, MLOps and ML engineer screens, including IT-services and GCC hiring
+**Say this first (1 line):** ENTRYPOINT is the fixed command and CMD is its default arguments; use exec form (JSON array) so your Python process is PID 1 and gets SIGTERM, because shell form makes sh PID 1 and it does not pass the signal on.
+
+**Then explain:**
+- **How they combine.** Final command is ENTRYPOINT plus CMD. `docker run image ARGS` replaces CMD only. `docker run --entrypoint X image` replaces ENTRYPOINT (and CMD is then X's arguments, unless you also pass args). If ENTRYPOINT is absent, CMD is the whole command.
+- **Exec form** `CMD ["uvicorn", "app:app"]`: runs the program directly, no shell, no variable expansion. **Shell form** `CMD uvicorn app:app`: runs `/bin/sh -c "..."`; sh becomes PID 1 and your server is its child.
+- **Signals.** `docker stop` sends SIGTERM to PID 1, waits (default 10 s, `-t` to change), then SIGKILL. PID 1 is special on Linux: a signal with no handler is ignored (no default kill). So sh as PID 1 does not forward SIGTERM and does not die: your app never hears it, then gets killed hard.
+- **Effect on ML.** Hard kill means in-flight predictions are dropped (clients see resets), and a training run does not save its checkpoint or flush metrics. Fix: exec form, `exec` in entrypoint scripts, a SIGTERM handler that stops accepting work, drains and saves, and a stop timeout longer than your drain time (`docker stop -t`, `stop_grace_period`, or Kubernetes `terminationGracePeriodSeconds`).
+- **tini or `--init`.** A tiny init as PID 1 forwards signals and reaps zombie children. Needed when your app spawns subprocesses (gunicorn workers, dataloader workers that become orphans), or runs a shell script that cannot `exec`. `docker run --init` injects one; or install tini in the image.
+- **Uvicorn/gunicorn:** both handle SIGTERM for graceful shutdown when they are PID 1 or are reached by the signal; the failure is almost always shell form or an entrypoint script without `exec`.
+
+**Example:** The test below uses `unshare --pid --fork` (works here as root) so each launcher really is PID 1 of its own PID namespace, then sends SIGTERM from outside, as `docker stop` does. Exec form and an entrypoint that ends in `exec` handled it. `sh -c 'python3 server.py; true'` and an entrypoint without `exec` never delivered it. A Python app with no handler also ignored it, because PID 1 has no default kill action.
+
+**Code:**
+```dockerfile
+# ---- Dockerfile ----
+FROM python:3.11-slim-bookworm
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY src/ src/
+COPY entrypoint_generic.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+# exec form for both. ENTRYPOINT = the fixed part, CMD = default args that `docker run image ARGS` replaces
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]
+STOPSIGNAL SIGTERM
+```
+
+```python
+# ---- server.py ----
+import signal, sys, time, os
+def on_term(signum, frame):
+    print(f"[pid {os.getpid()}] got SIGTERM, finishing in-flight work, saving checkpoint", flush=True)
+    sys.exit(0)
+signal.signal(signal.SIGTERM, on_term)
+print(f"[pid {os.getpid()}] server ready", flush=True)
+while True: time.sleep(0.1)
+
+# ---- signal_test.py ----
+"""Launch each style as PID 1 of a new PID namespace (unshare --pid --fork), send SIGTERM from outside
+like `docker stop` does, wait a short grace period, then SIGKILL. Needs root + unshare (works in this sandbox)."""
+import subprocess, signal, time, os
+HERE = os.path.dirname(os.path.abspath(__file__))
+GRACE = 1.5
+def run(name, argv):
+    p = subprocess.Popen(["unshare", "--pid", "--fork", "--mount-proc"] + argv, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT, text=True, cwd=HERE, start_new_session=True)
+    time.sleep(1.0)
+    # unshare --fork makes the command PID 1 in the namespace; signal the namespace's init (child of unshare)
+    kids = subprocess.run(["pgrep", "-P", str(p.pid)], capture_output=True, text=True).stdout.split()
+    init = int(kids[0]); os.kill(init, signal.SIGTERM)
+    deadline = time.time() + GRACE
+    while time.time() < deadline and p.poll() is None: time.sleep(0.05)
+    if p.poll() is None:
+        os.kill(init, signal.SIGKILL); verdict = f"still alive after {GRACE}s grace -> SIGKILL (like docker stop after timeout)"
+    else: verdict = f"stopped by SIGTERM, rc={p.returncode}"
+    out, _ = p.communicate()
+    got = "got SIGTERM" in out
+    print(f"--- {name}\n    {verdict}\n    app handler ran: {got}")
+run("exec form: CMD [python3, server.py]", ["python3", "server.py"])
+run("shell form: sh -c 'python3 server.py; true'", ["sh", "-c", "python3 server.py; true"])
+run("entrypoint script WITHOUT exec", ["./entrypoint_noexec.sh", "server.py"])
+run("entrypoint script WITH exec", ["./entrypoint.sh", "server.py"])
+run("exec form but app has NO SIGTERM handler (PID 1 gets no default action)", ["python3", "server_nohandler.py"])
+```
+
+```bash
+# ---- entrypoint.sh ----
+#!/bin/sh
+set -e
+echo "entrypoint: warming up"
+exec python3 "$@"
+
+# ---- entrypoint_noexec.sh ----
+#!/bin/sh
+echo "entrypoint: warming up"
+python3 "$@"
+
+# ---- entrypoint_generic.sh ----
+#!/bin/sh
+set -e
+echo "entrypoint: starting"
+exec "$@"
+
+# ---- docker_cmds.sh ----
+# NOT EXECUTED here (no daemon)
+docker run myorg/model:1.0                         # entrypoint.sh uvicorn src.api:app ...
+docker run myorg/model:1.0 python -m src.train     # CMD replaced, ENTRYPOINT kept
+docker run --entrypoint sh -it myorg/model:1.0     # ENTRYPOINT replaced (CMD becomes args to sh)
+docker run --init myorg/model:1.0                  # tini as PID 1: forwards signals, reaps zombies
+docker stop -t 30 model                            # SIGTERM, wait 30 s, then SIGKILL
+```
+
+**Output (my run):**
+Real `docker run` and `docker stop` are **not executed** (no daemon). What ran: the signal test with real Linux PID namespaces (`unshare`), which reproduces the PID 1 behaviour but is not Docker itself, so the grace period was shortened to 1.5 s; and hadolint 2.15.1 on the Dockerfile. `tini` is not installed here, so `--init` was not tested. Note: a plain `sh -c 'python3 server.py'` with one command may be optimised by some shells into an exec; I did not rely on that and tested the `; true` form that cannot be.
+
+```text
+$ python3 -I signal_test.py
+--- exec form: CMD [python3, server.py]
+    stopped by SIGTERM, rc=0
+    app handler ran: True
+--- shell form: sh -c 'python3 server.py; true'
+    still alive after 1.5s grace -> SIGKILL (like docker stop after timeout)
+    app handler ran: False
+--- entrypoint script WITHOUT exec
+    still alive after 1.5s grace -> SIGKILL (like docker stop after timeout)
+    app handler ran: False
+--- entrypoint script WITH exec
+    stopped by SIGTERM, rc=0
+    app handler ran: True
+--- exec form but app has NO SIGTERM handler (PID 1 gets no default action)
+    still alive after 1.5s grace -> SIGKILL (like docker stop after timeout)
+    app handler ran: False
+
+$ hadolint Dockerfile; echo "hadolint exit code: $?"
+hadolint exit code: 0
+```
+
+**Follow-ups:**
+- *Where do I trap SIGTERM in FastAPI?* Uvicorn handles it and runs shutdown events; add cleanup in the lifespan handler.
+- *Why exec in the entrypoint?* `exec` replaces the shell with your process, so it becomes PID 1.
+- *STOPSIGNAL?* Dockerfile instruction to change the stop signal (e.g. SIGINT); default is SIGTERM.
+
+**Common mistakes:**
+- Shell-form CMD with a pipe or `&&` chain.
+- Entrypoint script that starts the server without `exec`.
+- Default 10 s stop timeout with a 60 s checkpoint save.
+- Handling SIGTERM in code but forgetting that the signal never arrives.
+
+### Q12 ⭐⭐⭐ 🟡 HEALTHCHECK for a model server. A container is 'running' but the model is still loading for 90 seconds and requests fail. Explain the Dockerfile HEALTHCHECK options (interval, timeout, start-period, retries), the difference between liveness (process alive) and readiness (model loaded and able to predict), a health endpoint that checks the model object, why curl may be missing in a slim image (use python or a tiny script), and how Compose depends_on with condition: service_healthy uses it. Say what Kubernetes probes replace (only a pointer; Kubernetes is a later part). Validate the compose file by script.
+**Asked at:** Editorial Docker interview guides (Techoral 'Docker Interview Questions 2026', Cloud Soft Solutions 2026 guide, KodeKloud, Adaface, MentorCruise; search snippets only, not opened); guides, not verified candidate reports; DevOps, MLOps and ML engineer screens, including IT-services and GCC hiring
+**Say this first (1 line):** Liveness says the process is alive; readiness says the model is loaded and can predict; a Docker HEALTHCHECK should test readiness with a start period longer than model load, and Compose can then wait for it with depends_on condition: service_healthy.
+
+**Then explain:**
+- **HEALTHCHECK options.** `--interval` how often to run; `--timeout` when one check counts as failed; `--start-period` grace time at start where failures do not count toward retries; `--retries` consecutive failures before the status becomes `unhealthy`. States: `starting`, `healthy`, `unhealthy`.
+- **Liveness versus readiness.** Liveness: should this process be restarted? Readiness: should it get traffic? A model server loading for 90 s is alive but not ready. Docker has one HEALTHCHECK, so choose readiness for it, or run both endpoints and let the orchestrator use each.
+- **Good readiness endpoint:** returns 503 until the model object exists, then 200 after a tiny real predict. Do not make it call a slow or expensive path, and do not depend on downstream services, or one outage marks every replica unhealthy.
+- **No curl in slim.** Use a tiny `healthcheck.py` with `urllib` (stdlib), or install curl on purpose. Use exec-form `CMD [...]` in HEALTHCHECK.
+- **Compose.** `depends_on: model: condition: service_healthy` makes the gateway wait until the model service reports healthy. The model service must define a healthcheck, or Compose errors. It only orders start-up; it does not restart or reroute later.
+- **Kubernetes.** Docker HEALTHCHECK is ignored there; use `livenessProbe`, `readinessProbe` and `startupProbe` instead (Kubernetes part). Docker's `unhealthy` status does not restart a container by itself outside Swarm.
+- **Failure modes:** `start-period` shorter than load time (container flagged unhealthy while loading); `timeout` too short under load; health check that loads the model again; health passing but predictions broken (add a canary predict).
+
+**Example:** The stub server loads its 'model' for 3 s. Polling every 0.5 s shows `/live` returns 0 from the start while `/ready` returns 1 (fail) until about 3.5 s, then 0. In the real 90 s case set `start_period` above 90 s (the Dockerfile uses 120 s). The validator rejects a compose file where `gateway` waits on a service with no healthcheck.
+
+**Code:**
+```dockerfile
+# ---- Dockerfile ----
+FROM python:3.11-slim-bookworm
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY src/ src/
+COPY healthcheck.py .
+RUN useradd --uid 10001 app
+USER 10001
+EXPOSE 8000
+# start-period: failures during the first 120 s do not count toward retries (model loads ~90 s)
+HEALTHCHECK --interval=15s --timeout=3s --start-period=120s --retries=3 \
+  CMD ["python", "/app/healthcheck.py", "http://127.0.0.1:8000/ready"]
+CMD ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+```yaml
+# ---- compose.yaml ----
+services:
+  model:
+    build: .
+    ports: ["8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "/app/healthcheck.py", "http://127.0.0.1:8000/ready"]
+      interval: 15s
+      timeout: 3s
+      start_period: 120s
+      retries: 3
+  gateway:
+    image: myorg/gateway:1.0
+    depends_on:
+      model:
+        condition: service_healthy
+```
+
+```python
+# ---- health_server.py ----
+"""Stdlib model server stub: /live = process alive, /ready = model loaded. Load time is configurable."""
+import json, sys, threading, time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+class State: model = None
+def load_model(seconds):
+    time.sleep(seconds)               # stands in for reading weights
+    State.model = lambda x: x * 2     # "model object"
+
+class H(BaseHTTPRequestHandler):
+    def _send(self, code, body):
+        b = json.dumps(body).encode(); self.send_response(code)
+        self.send_header("Content-Type", "application/json"); self.send_header("Content-Length", str(len(b)))
+        self.end_headers(); self.wfile.write(b)
+    def do_GET(self):
+        if self.path == "/live": return self._send(200, {"alive": True})
+        if self.path == "/ready":
+            if State.model is None: return self._send(503, {"ready": False, "reason": "model loading"})
+            try: ok = State.model(1) == 2        # real predict on a tiny input, not just 'is not None'
+            except Exception as e: return self._send(503, {"ready": False, "reason": str(e)})
+            return self._send(200 if ok else 503, {"ready": ok})
+        self._send(404, {})
+    def log_message(self, *a): pass
+
+def serve(port, load_seconds):
+    threading.Thread(target=load_model, args=(load_seconds,), daemon=True).start()
+    srv = ThreadingHTTPServer(("127.0.0.1", port), H); srv.serve_forever()
+
+if __name__ == "__main__": serve(int(sys.argv[1]), float(sys.argv[2]))
+
+# ---- healthcheck.py ----
+"""Used by HEALTHCHECK: exit 0 if /ready returns 200, else 1. No curl needed."""
+import sys, urllib.request
+url = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8000/ready"
+try:
+    sys.exit(0 if urllib.request.urlopen(url, timeout=2).status == 200 else 1)
+except Exception:
+    sys.exit(1)
+
+# ---- timeline_test.py ----
+"""Start the stub with a 3 s 'model load' and run healthcheck.py every 0.5 s: shows start-period idea."""
+import subprocess, sys, time, os
+HERE = os.path.dirname(os.path.abspath(__file__))
+srv = subprocess.Popen([sys.executable, "-I", os.path.join(HERE, "health_server.py"), "8765", "3"])
+t0 = time.time(); first_ok = None
+try:
+    while time.time() - t0 < 5:
+        live = subprocess.run([sys.executable, "-I", os.path.join(HERE, "healthcheck.py"), "http://127.0.0.1:8765/live"]).returncode
+        ready = subprocess.run([sys.executable, "-I", os.path.join(HERE, "healthcheck.py"), "http://127.0.0.1:8765/ready"]).returncode
+        t = time.time() - t0
+        print(f"t={t:3.1f}s live_rc={live} ready_rc={ready}")
+        if ready == 0 and first_ok is None: first_ok = t
+        time.sleep(0.5)
+finally:
+    srv.terminate(); srv.wait()
+print("ready first seen at about", round(first_ok, 1), "s (load takes 3 s)")
+
+# ---- validate_compose.py ----
+"""Validate: every depends_on with service_healthy points to a service that defines a healthcheck."""
+import sys, yaml
+doc = yaml.safe_load(open(sys.argv[1])); svcs = doc["services"]; errors = []
+for name, s in svcs.items():
+    deps = s.get("depends_on", {})
+    if isinstance(deps, list): deps = {d: {"condition": "service_started"} for d in deps}
+    for dep, cfg in deps.items():
+        if dep not in svcs: errors.append(f"{name}: depends_on unknown service {dep}"); continue
+        if cfg.get("condition") == "service_healthy" and "healthcheck" not in svcs[dep]:
+            errors.append(f"{name}: waits for {dep} to be healthy but {dep} has no healthcheck")
+    hc = s.get("healthcheck")
+    if hc:
+        if "curl" in str(hc.get("test")): errors.append(f"{name}: healthcheck uses curl; slim images often lack it")
+        for k in ("interval", "timeout", "start_period", "retries"):
+            if k not in hc: errors.append(f"{name}: healthcheck missing {k}")
+print("OK" if not errors else "\n".join(errors)); sys.exit(1 if errors else 0)
+```
+
+**Output (my run):**
+A real container, the `HEALTHCHECK` status transitions and `docker compose up` ordering are **not executed** (no daemon). What ran: the stdlib health server and `healthcheck.py` in a timed loop (a Python simulation of the readiness idea, not Docker's scheduler), the compose validator (my script) on a good and a bad file, `docker compose config` (which normalised `start_period: 120s` to `2m0s`) and hadolint 2.15.1 (clean). The image's `src.api` module is not provided; the stub server stands in for it.
+
+```text
+$ python3 -I timeline_test.py
+t=0.2s live_rc=0 ready_rc=1
+t=0.9s live_rc=0 ready_rc=1
+t=1.5s live_rc=0 ready_rc=1
+t=2.2s live_rc=0 ready_rc=1
+t=2.9s live_rc=0 ready_rc=1
+t=3.6s live_rc=0 ready_rc=0
+t=4.3s live_rc=0 ready_rc=0
+t=4.9s live_rc=0 ready_rc=0
+ready first seen at about 3.6 s (load takes 3 s)
+
+$ python3 -I validate_compose.py compose.yaml; echo "exit=$?"
+OK
+exit=0
+
+$ python3 -c "import yaml;d=yaml.safe_load(open('compose.yaml'));del d['services']['model']['healthcheck'];yaml.safe_dump(d,open('/tmp/c12_bad.yaml','w'))"; python3 -I validate_compose.py /tmp/c12_bad.yaml; echo "exit=$?"
+gateway: waits for model to be healthy but model has no healthcheck
+exit=1
+
+$ docker compose -f compose.yaml config | sed -n '/healthcheck/,/start_period/p;/depends_on/,/required/p'
+    depends_on:
+      model:
+        condition: service_healthy
+        required: true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - /app/healthcheck.py
+        - http://127.0.0.1:8000/ready
+      timeout: 3s
+      interval: 15s
+      retries: 3
+      start_period: 2m0s
+
+$ hadolint Dockerfile; echo "hadolint exit code: $?"
+hadolint exit code: 0
+```
+
+**Follow-ups:**
+- *Why not curl?* Slim images do not ship it; Python stdlib is already there. Alpine/busybox may have wget but see Q4.
+- *Health check hits the model on every interval?* Keep it cheap: check the object and one tiny input, or a cached 'last ok' flag.
+- *Does Compose restart unhealthy containers?* Not by itself; use `restart` policies with care, or an orchestrator.
+
+**Common mistakes:**
+- No start-period, so a slow model load looks like a crash loop.
+- A readiness check that only returns 200 from `/`.
+- `depends_on` without `condition`, which only waits for the container to *start*.
+- Health checks that call the database or other services.

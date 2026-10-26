@@ -174,7 +174,7 @@ explain="""
 - **Also:** pull time is about the sum of *new* layers on that node, so stable base layers and a thin app layer make rollouts fast. Registry layer compression and lazy pulling exist; check your registry docs.
 """,
 example="""Sample history table below totals 9.84 GB: pip layer 4.10 GB (41.7%), `COPY . /app` 3.20 GB (32.5%), model download 1.80 GB (18.3%), apt 0.61 GB. Stopping the baked model and adding a `.dockerignore` already removes about 5 GB of the 9.84 GB, before touching pip. (The table is made-up sample data for the script, not a real image.)""",
-code=[("python", ["rank_layers.py"]), ("dockerfile", ["Dockerfile.slim"]), ("text", [".dockerignore"])],
+code=[("python", ["rank_layers.py"]), ("dockerfile", ["Dockerfile.slim"]), ("gitignore", [".dockerignore"])],
 cmds=["cat history.txt", "python3 -I rank_layers.py history.txt", HC.format(f="Dockerfile.slim")],
 notrun="Building images, real `docker history` and measuring actual savings are **not executed** (no daemon); the layer table is a hand-written sample and no real size claims are made. What ran: the ranking script on that sample and hadolint on the slim Dockerfile.",
 followups="""
