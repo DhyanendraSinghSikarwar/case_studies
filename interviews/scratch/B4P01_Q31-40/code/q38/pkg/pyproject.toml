@@ -1,0 +1,9 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[project]
+name = "teamlib"
+version = "1.2.0"
+dependencies = []
+[tool.hatch.build.targets.wheel]
+packages = ["src/teamlib"]

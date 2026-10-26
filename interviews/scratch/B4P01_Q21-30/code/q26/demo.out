@@ -1,0 +1,57 @@
+pre-commit installed at .git/hooks/pre-commit
+$ git commit -m "add eda"      # should be BLOCKED
+strip notebook outputs...................................................Failed
+- hook id: nbstripout
+- files were modified by this hook
+block files larger than 5 MB.............................................Failed
+- hook id: no-big-files
+- exit code: 1
+big.bin: 6.0 MB > 5 MB (use DVC or Git LFS instead)
+block obvious secrets (regex, not a real scanner)........................Failed
+- hook id: no-secrets
+- exit code: 1
+config.py:1: looks like a secret
+ruff lint................................................................Failed
+- hook id: ruff
+- exit code: 1
+F401 [*] `os` imported but unused
+ --> train.py:1:8
+  |
+1 | import os
+  |        ^^
+2 | print('hi')
+  |
+help: Remove unused import: `os`
+  |
+  - import os
+1 | print('hi')
+  |
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
+
+--- fix each problem ---
+$ git commit -m "add eda"      # second try
+strip notebook outputs...................................................Passed
+block files larger than 5 MB.............................................Passed
+block obvious secrets (regex, not a real scanner)........................Passed
+ruff lint................................................................Passed
+[main 6772647] add eda
+ 3 files changed, 20 insertions(+)
+ create mode 100644 config.py
+ create mode 100644 eda.ipynb
+ create mode 100644 train.py
+
+--- bypass is possible: git commit --no-verify. So CI runs the same hooks: ---
+$ pre-commit run --all-files   # same config, run in CI
+strip notebook outputs...................................................Passed
+block files larger than 5 MB.............................................Passed
+block obvious secrets (regex, not a real scanner)........................Passed
+ruff lint................................................................Passed
+6772647 add eda
+3f5b50f add hooks
+add eda
+
+ config.py |  2 ++
+ eda.ipynb | 17 +++++++++++++++++
+ train.py  |  1 +
+outputs in the committed notebook: []

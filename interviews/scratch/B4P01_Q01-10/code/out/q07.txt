@@ -1,0 +1,50 @@
+=== RAW notebook: diff after a plain re-run (no code change)
+ eda.ipynb | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+diff lines: 40, diff bytes: 28133
+
+=== STRIPPED: nbstripout on both versions
+size raw=14562 bytes, stripped=566 bytes
+diff lines between stripped v1 and stripped v2: 0  (re-run noise gone)
+
+=== install as a git filter so you cannot forget (writes .git/config + .git/info/attributes)
+[filter "nbstripout"]
+	clean = \"/usr/bin/python3\" -m nbstripout
+	smudge = cat
+	required = true
+*.ipynb filter=nbstripout
+*.zpln filter=nbstripout
+*.ipynb diff=ipynb
+
+=== JUPYTEXT: pair with a .py file, review the .py
+[jupytext] Updating eda.py
+[jupytext] Unchanged eda.py
+ M eda.ipynb
+?? a.ipynb
+?? b.ipynb
+?? eda.py
+?? s1.ipynb
+?? s2.ipynb
+# ---
+# jupyter:
+#   jupytext:
+#     formats: ipynb,py:percent
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.19.6
+#   kernelspec:
+#     display_name: Python 3
+#     language: python
+#     name: python3
+# ---
+
+# %%
+import numpy as np
+x = np.arange(5)
+x.mean()
+
+# %%
+plot()
+py size=363 bytes vs ipynb=14617 bytes

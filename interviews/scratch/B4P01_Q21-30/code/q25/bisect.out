@@ -1,0 +1,29 @@
+baseline: accuracy=0.885
+HEAD:     accuracy=0.615
+
+$ git bisect start HEAD v1.0 && git bisect run ./check.sh
+running ./check.sh
+Bisecting: 5 revisions left to test after this (roughly 3 steps)
+running ./check.sh
+Bisecting: 3 revisions left to test after this (roughly 2 steps)
+running ./check.sh
+Bisecting: 1 revision left to test after this (roughly 1 step)
+running ./check.sh
+Bisecting: 0 revisions left to test after this (roughly 0 steps)
+running ./check.sh
+<sha> is the first bad commit
+    c9
+commits tested by the script (one of them skipped): 5
+# bad:  c12
+# good:  v1.0 baseline
+# skip:  c6
+# good:  c3
+# good:  c8
+# bad:  c10
+# bad:  c9
+
+--- a flaky check blames the wrong commit (deterministic demo: it lies once, on its 3rd call) ---
+<sha> is the first bad commit
+    c8
+bisect found first bad commit
+git version 2.43.0

@@ -1,0 +1,17 @@
+
+Coverage XML written to file coverage.xml
+1 passed in 0.14s
+$ diff-cover coverage.xml --compare-branch=main~1 --fail-under=80
+-------------
+Diff Coverage
+Diff: main~1...HEAD, staged and unstaged changes
+-------------
+lib.py (25.0%): Missing lines 5-7
+-------------
+Total:   4 lines
+Missing: 3 lines
+Coverage: 25%
+-------------
+
+Failure. Coverage is below 80%.
+exit=1

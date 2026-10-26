@@ -1,0 +1,8 @@
+[tool.ruff]
+line-length = 88
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+[tool.mypy]
+disallow_untyped_defs = true
+[tool.pytest.ini_options]
+markers = ["slow: slow tests, skipped in the fast gate"]

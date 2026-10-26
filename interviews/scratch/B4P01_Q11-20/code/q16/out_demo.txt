@@ -1,0 +1,17 @@
+--- branches:
+* main
+--- tags:
+exp/2026-10-wide-features
+release-1.0
+release-1.1
+release-1.1.1
+--- history:
+* 5e01680 (HEAD -> main, tag: release-1.1.1) hotfix: null guard
+* 5cf9ead (tag: release-1.1) turn the flag on
+*   08755dc merge: ranker behind flag
+|\  
+| * 4ea5443 add new ranker behind flag (off)
+|/  
+* 250572a (tag: release-1.0) model v1
+--- experiment still reachable:
+0ce7287 experiment: 400 wide features, metric not better

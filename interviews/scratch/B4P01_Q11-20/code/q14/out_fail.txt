@@ -1,0 +1,4 @@
+E       AssertionError: 5.6% predictions flipped
+E       assert np.float64(0.05555555555555555) <= 0.02
+FAILED test_model.py::test_invariance_to_irrelevant_feature - AssertionError:...
+1 failed, 5 passed in 1.45s

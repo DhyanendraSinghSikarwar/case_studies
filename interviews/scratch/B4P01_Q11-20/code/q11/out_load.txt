@@ -1,0 +1,4 @@
+loading with scikit-learn 1.9.1
+warning: InconsistentVersionWarning | Trying to unpickle estimator LogisticRegression from version 1.6.1 when using version 1.9.1.
+loaded: LogisticRegression | version warnings: 1
+GUARD: artifact built with 1.6.1, runtime has 1.9.1 -> refuse to serve, retrain or re-export

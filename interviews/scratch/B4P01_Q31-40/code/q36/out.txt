@@ -1,0 +1,4 @@
+baseline.json: {'metric': 'roc_auc', 'auc': 0.874, 'n_rows': 5000, 'allowed_drop': 0.01}
+small drop  AUC 0.869 vs 0.874 delta -0.0050  95% CI [-0.0124, +0.0026] (includes 0)  -> WARN: drop not shown to exceed margin; flag for review
+real drop   AUC 0.845 vs 0.874 delta -0.0290  95% CI [-0.0329, -0.0254] (excludes 0)  -> FAIL: drop plausibly bigger than 0.01
+Pearson corr of scores, base vs small: 0.859  base vs real: 0.97

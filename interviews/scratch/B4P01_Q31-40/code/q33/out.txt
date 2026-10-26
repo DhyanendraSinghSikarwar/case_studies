@@ -1,0 +1,22 @@
+--- mid-edit: tracked change + new untracked file ---
+ M train.py
+?? notes.txt
+--- stash without -u leaves the untracked file behind ---
+?? notes.txt
+stash@{0}: WIP on main: 9ec38ca base
+--- stash -u takes it too ---
+0
+ M train.py
+?? notes.txt
+--- worktree: second directory, run in the first is untouched ---
+<tmp>/proj         9ec38ca [main]
+<tmp>/proj-hotfix  9ec38ca [hotfix-null]
+main working dir still has the experiment:
+lr = 0.01  # experiment
+hotfix branch log:
+524555b hotfix: fill nulls
+9ec38ca base
+--- cleanup ---
+1
+--- same branch cannot be checked out twice ---
+fatal: 'hotfix-null' is already used by worktree at '<tmp>/w2'
