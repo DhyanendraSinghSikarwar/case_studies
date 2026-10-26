@@ -21,8 +21,8 @@ share of 'placed': 2.98 %
 three.db [('ix_a', 1615), ('ix_b', 2107), ('ix_c', 2763)]
 apc.db [('ix_a', 1615), ('ix_c', 2763), ('ix_p', 43)]
 --- write cost: insert 100,000 more rows with k secondary indexes ---
-  0 indexes                  VM steps  1,600,006   time     288 ms (machine-specific)
-  ix_a                       VM steps  2,300,006   time     473 ms (machine-specific)
-  ix_a, ix_b                 VM steps  2,900,006   time     959 ms (machine-specific)
-  ix_a, ix_b, ix_c           VM steps  3,600,006   time    1415 ms (machine-specific)
-  ix_a, ix_c, partial ix_p   VM steps  3,512,022   time    1462 ms (machine-specific)
+  0 indexes                  VM steps  1,600,006   time     397 ms (machine-specific)
+  ix_a                       VM steps  2,300,006   time     481 ms (machine-specific)
+  ix_a, ix_b                 VM steps  2,900,006   time     915 ms (machine-specific)
+  ix_a, ix_b, ix_c           VM steps  3,600,006   time    1636 ms (machine-specific)
+  ix_a, ix_c, partial ix_p   VM steps  3,512,022   time    1219 ms (machine-specific)

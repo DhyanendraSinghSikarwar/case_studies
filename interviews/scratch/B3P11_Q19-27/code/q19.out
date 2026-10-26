@@ -1,0 +1,44 @@
+tiny naive      : [(1, 2, 400, 8), (2, 1, 70, 2), (3, 0, None, None)]
+tiny derived    : [(1, 2, 150, 8), (2, 1, 70, 2), (3, 0, 0, 0)]
+tiny cte        : [(1, 2, 150, 8), (2, 1, 70, 2), (3, 0, 0, 0)]
+grain: orders per (order_id) max = 1 ; items per order_id max = 3
+true SUM(order_total) over orders : 25505616
+naive three-table SUM(order_total): 103626730 (over-count x4.06)
+naive COUNT(DISTINCT order_id) total: 100000 (correct only because of DISTINCT); orders rows: 100000
+rows after the join (fan-out):  407514 vs 100,000 orders and 400,000 items
+naive           VM steps   7782137
+derived tables  VM steps   6848055
+CTE             VM steps   9116103
+asserts passed: both fixed forms equal the pandas groupby (sorted by customer_id); total revenue 25505616
+
+PLAN naive
+   SCAN c
+   SEARCH o USING INDEX ix_o_cust (customer_id=?) LEFT-JOIN
+   SEARCH i USING INDEX ix_i_order (order_id=?) LEFT-JOIN
+   USE TEMP B-TREE FOR count(DISTINCT)
+
+PLAN derived tables
+   MATERIALIZE oa
+   SCAN orders USING INDEX ix_o_cust
+   MATERIALIZE ia
+   SCAN o USING COVERING INDEX ix_o_cust
+   SEARCH i USING INDEX ix_i_order (order_id=?)
+   SCAN c
+   BLOOM FILTER ON oa (customer_id=?)
+   SEARCH oa USING AUTOMATIC COVERING INDEX (customer_id=?) LEFT-JOIN
+   BLOOM FILTER ON ia (customer_id=?)
+   SEARCH ia USING AUTOMATIC COVERING INDEX (customer_id=?) LEFT-JOIN
+
+PLAN CTE
+   MATERIALIZE per_customer
+   MATERIALIZE item_per_order
+   SCAN order_items USING INDEX ix_i_order
+   SCAN o USING INDEX ix_o_cust
+   BLOOM FILTER ON ipo (order_id=?)
+   SEARCH ipo USING AUTOMATIC COVERING INDEX (order_id=?) LEFT-JOIN
+   SCAN c
+   BLOOM FILTER ON p (customer_id=?)
+   SEARCH p USING AUTOMATIC COVERING INDEX (customer_id=?) LEFT-JOIN
+no FK indexes, naive           VM steps  11125387
+no FK indexes, derived tables  VM steps   9448060
+no FK indexes, CTE             VM steps  11716107

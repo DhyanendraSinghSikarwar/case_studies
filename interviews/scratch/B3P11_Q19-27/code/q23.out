@@ -1,0 +1,23 @@
+journal_mode = delete | synchronous = 2 (2 = FULL)
+
+-- commit granularity (default journal_mode, synchronous=FULL)
+1. execute + commit per row, 2,000 rows only         rows   2000  progress steps     42000  wall   2179.2 ms
+2. execute in a loop, one transaction, 100,000 rows  rows 100000  progress steps   1500006  wall    341.6 ms
+3. executemany, one transaction, 100,000 rows        rows 100000  progress steps   1500006  wall    306.0 ms
+3b. multi-row INSERT VALUES (500 rows per statement) rows 100000  progress steps   1401606  wall    257.4 ms
+3c. execute with string formatting (not safe), one txn rows 100000  progress steps   1500006  wall    593.3 ms
+per-row commit costs 1.09 ms per row; executemany costs 0.0031 ms per row (machine-specific)
+
+-- three secondary indexes before versus after the load (executemany, one transaction)
+4a. indexes created BEFORE loading                   rows 100000  progress steps   3100168  wall    985.8 ms
+4b. indexes created AFTER loading                    rows 100000  progress steps   4200168  wall    719.9 ms
+
+-- per-row commits under other settings (2,000 rows, machine-specific)
+5. per-row commit, journal_mode=WAL, synchronous=FULL rows   2000  progress steps     42000  wall    575.1 ms
+5. per-row commit, journal_mode=WAL, synchronous=NORMAL rows   2000  progress steps     42000  wall     46.9 ms
+5. per-row commit, journal_mode=DELETE, synchronous=OFF rows   2000  progress steps     42000  wall     99.5 ms
+
+formatted SQL with a quote in the value -> near "s": syntax error
+bound parameters store it safely: it's
+compile option for the bound-variable limit: [('MAX_VARIABLE_NUMBER=250000',)]
+asserts passed: every load produced the same row count and SUM(user_id) as the pandas frame

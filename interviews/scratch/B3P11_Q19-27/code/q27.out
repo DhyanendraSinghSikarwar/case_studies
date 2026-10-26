@@ -1,0 +1,27 @@
+database file: 17.6 MB, 500,000 rows
+tiny: [('2024-01', 150, 2), ('2024-02', 70, 1)]
+(a) read whole table: rows transferred 500000, memory_usage(deep) 70.3 MB, load 1249 ms + filter/groupby 251 ms
+    dtypes: {'order_id': 'int64', 'customer_id': 'int64', 'order_date': 'str', 'status': 'str', 'amount': 'int64'}
+(b) WHERE + GROUP BY in SQL: rows transferred 12, memory_usage(deep) 996 bytes, 155 ms
+(c) chunksize=50,000, aggregate per chunk: rows transferred 500000, peak chunk memory 7.0 MB, 1492 ms
+(d) only 3 needed columns, filter in pandas: rows transferred 500000, memory_usage(deep) 62.3 MB, 787 ms + 284 ms
+(e) WHERE pushed down, 2 columns, aggregate in pandas: rows transferred 174908, memory_usage(deep) 11.7 MB, 316 ms
+asserts passed: (a), (c), (d), (e) equal (b); compared sorted by month; revenue and n_orders as int64
+  month  revenue  n_orders
+2024-01 37025467     14746
+2024-02 36307646     14513
+2024-03 37027482     14744
+2024-04 36358880     14419
+2024-05 37196747     14761
+2024-06 36614750     14526
+2024-07 36298940     14510
+2024-08 36623888     14588
+2024-09 36100832     14392
+2024-10 36491865     14610
+2024-11 36228945     14444
+2024-12 36541770     14655
+timings are machine-specific single runs: a=1500 ms, b=155 ms, c=1492 ms, d=1071 ms, e=316 ms
+
+median of delivered amounts: true 2511.0; mean of the 50,000-row chunk medians 2511.0 (equal here only because every chunk is a random sample of the same distribution)
+counterexample: true median of all 8 values 4.5, mean of the two chunk medians 3.5
+mean from decomposed (sum, count): 2507.8495; direct mean: 2507.8495
