@@ -1,0 +1,20 @@
+$ cat requirements.in
+scikit-learn==1.9.1
+pandas>=2.0
+
+$ uv pip compile requirements.in -o requirements.txt --no-header   # then:
+direct lines in .in: 2, pinned lines in requirements.txt: 11
+$ cat requirements.txt (first 12 lines)
+cloudpickle==3.1.2
+    # via joblib
+joblib==1.6.0
+    # via scikit-learn
+narwhals==2.27.1
+    # via scikit-learn
+numpy==2.5.4
+    # via
+    #   pandas
+    #   scikit-learn
+    #   scipy
+pandas==3.1.0
+$ uv lock  ->  packages in uv.lock (all platforms, incl. dev group): 29

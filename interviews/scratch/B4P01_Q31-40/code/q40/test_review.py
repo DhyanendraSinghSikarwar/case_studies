@@ -15,8 +15,12 @@ def test_same_input_same_result():
 
 def test_model_file_really_written(tmp_path):
     X, y = make_data()
-    train(X, y, str(tmp_path / "missing_dir" / "m.joblib"))     # directory does not exist
-    assert (tmp_path / "missing_dir" / "m.joblib").exists(), "save failed silently"
+    target = tmp_path / "missing_dir" / "m.joblib"              # directory does not exist
+    try:
+        train(X, y, str(target))
+    except OSError:
+        return                                                   # failing LOUDLY is acceptable
+    assert target.exists(), "save failed silently"
 
 def test_invented_parameters_do_not_exist():
     # check the claim against the installed library, never against the LLM's confidence

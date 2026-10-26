@@ -1,21 +1,11 @@
-accuracy 0.70  <- reported (the labels are coin flips)
-E       AssertionError: mean accuracy 0.85 on noise labels = leakage
-E       AssertionError: two runs differ (0.800 vs 0.700): no seed
->       assert (tmp_path / "missing_dir" / "m.joblib").exists(), "save failed silently"
+accuracy 0.93  <- reported (the labels are coin flips)
+E       AssertionError: mean accuracy 0.81 on noise labels = leakage
+E       AssertionError: two runs differ (0.767 vs 0.867): no seed
+>       assert target.exists(), "save failed silently"
 E       AssertionError: save failed silently
 FAILED test_review.py::test_no_leakage_on_pure_noise - AssertionError: mean a...
 FAILED test_review.py::test_same_input_same_result - AssertionError: two runs...
 FAILED test_review.py::test_model_file_really_written - AssertionError: save ...
-3 failed, 1 passed in 1.50s
+3 failed, 1 passed in 1.52s
 --- fixed version ---
-    joblib.dump(model, out_path)         # let a failed save raise
-                raise ValueError(
-                    "(compress method, compress level), you passed {}".format(compress)
-            raise ValueError(LZ4_NOT_INSTALLED_ERROR)
-            raise ValueError(
-            raise ValueError(
-            raise ValueError(
-E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-root/pytest-9/test_model_file_really_written0/missing_dir/m.joblib'
-/usr/local/lib/python3.13/dist-packages/joblib/numpy_pickle.py:605: FileNotFoundError
-FAILED test_review.py::test_model_file_really_written - FileNotFoundError: [E...
-1 failed, 3 passed in 1.58s
+4 passed in 1.47s
