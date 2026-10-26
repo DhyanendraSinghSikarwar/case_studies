@@ -1,0 +1,26 @@
+true counts: {'delivered': 195952, 'placed': 1990, 'returned': 1067, 'cancelled': 991} | shares %: {'delivered': 97.98, 'placed': 1.0, 'returned': 0.53, 'cancelled': 0.5}
+sqlite_stat1 (status): 200000 50000 -> 'rows, average rows per distinct status', not per value
+--- one estimate for every value; real counts differ ---
+  status = 'cancelled' (planner)               steps     9,000 rows      991 | SEARCH orders USING INDEX ix_status (status=?)
+  status = 'cancelled' NOT INDEXED             steps   606,024 rows      991 | SCAN orders
+  status = 'cancelled' unary +                 steps   606,024 rows      991 | SCAN orders
+  status = 'delivered' (planner)               steps 1,763,649 rows  195,952 | SEARCH orders USING INDEX ix_status (status=?)
+  status = 'delivered' NOT INDEXED             steps 1,775,790 rows  195,952 | SCAN orders
+  status = 'delivered' unary +                 steps 1,775,790 rows  195,952 | SCAN orders
+--- INDEXED BY and NOT INDEXED as hints; when INDEXED BY errors ---
+  INDEXED BY ix_nosuch: error: no such index: ix_nosuch
+  INDEXED BY ix_cust, filter on status: ok, 991 rows | plan SCAN orders USING INDEX ix_cust
+  INDEXED BY ix_status, filter on customer: ok, 9 rows | plan SCAN orders USING INDEX ix_status
+  INDEXED BY a partial index the WHERE does not imply: error: no query solution
+--- a cardinality error shows up as a join order ---
+  planner's order                              steps   105,434 rows        1 | SEARCH c USING COVERING INDEX ix_city (city=?) | SEARCH o USING INDEX ix_cust (customer_id=?)
+  forced: orders first                         steps    71,254 rows        1 | SEARCH o USING INDEX ix_status (status=?) | BLOOM FILTER ON c (customer_id=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+  forced: customers first                      steps   105,436 rows        1 | SEARCH c USING COVERING INDEX ix_city (city=?) | SEARCH o USING INDEX ix_cust (customer_id=?)
+pandas merge count: 82
+--- a bulk update changes the distribution; statistics are not refreshed ---
+true counts now: {'cancelled': 99002, 'delivered': 97941, 'placed': 1990, 'returned': 1067} | stat still: 200000 50000
+  status = 'cancelled' (stale stats)           steps   891,097 rows   99,002 | SEARCH orders USING INDEX ix_status (status=?)
+  status = 'cancelled' NOT INDEXED             steps 1,194,090 rows   99,002 | SCAN orders
+after ANALYZE (still 4 distinct values, so the average is unchanged): 200000 50000
+after splitting 'delivered' into 40 labels, stat1 not refreshed: 200000 50000
+after ANALYZE: 200000 8696 | distinct statuses: 23

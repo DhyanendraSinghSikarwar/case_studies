@@ -1,0 +1,23 @@
+=== NO index, SMALL 2,000 customers / 20,000 orders (300 customers without orders)
+NOT IN      steps    102911 rows    300  plan: SCAN customers | LIST SUBQUERY 1 | SCAN orders
+NOT EXISTS  steps  35474856 rows    300  plan: SCAN c | CORRELATED SCALAR SUBQUERY 1 | SCAN o
+LEFT JOIN   steps    238412 rows    300  plan: SCAN c | BLOOM FILTER ON o (customer_id=?) | SEARCH o USING AUTOMATIC COVERING INDEX (customer_id=?) LEFT-JOIN
+=== index ix_cust, FULL 20,000 / 200,000 (3,000 customers without orders)
+NOT IN      steps    129011 rows   3000  plan: SCAN customers | USING INDEX ix_cust FOR IN-OPERATOR
+NOT EXISTS  steps    223009 rows   3000  plan: SCAN c | CORRELATED SCALAR SUBQUERY 1 | SEARCH o USING COVERING INDEX ix_cust (customer_id=?)
+LEFT JOIN   steps   1130011 rows   3000  plan: SCAN c | SEARCH o USING COVERING INDEX ix_cust (customer_id=?) LEFT-JOIN
+rows (customers with no orders): 3000
+=== NO index, FULL size (NOT EXISTS skipped)
+NOT IN      steps   1029013 rows   3000  plan: SCAN customers | LIST SUBQUERY 1 | SCAN orders
+NOT EXISTS  (not run: too slow at this size)
+LEFT JOIN   steps   2384014 rows   3000  plan: SCAN c | BLOOM FILTER ON o (customer_id=?) | SEARCH o USING AUTOMATIC COVERING INDEX (customer_id=?) LEFT-JOIN
+
+=== after inserting 3 orders with customer_id NULL (index ix_cust present)
+NOT IN      steps    132011 rows      0  plan: SCAN customers | USING INDEX ix_cust FOR IN-OPERATOR
+NOT EXISTS  steps    223009 rows   3000  plan: SCAN c | CORRELATED SCALAR SUBQUERY 1 | SEARCH o USING COVERING INDEX ix_cust (customer_id=?)
+LEFT JOIN   steps   1130011 rows   3000  plan: SCAN c | SEARCH o USING COVERING INDEX ix_cust (customer_id=?) LEFT-JOIN
+NOT IN + IS NOT NULL steps   1029015 rows   3000  plan: SCAN customers | LIST SUBQUERY 1 | SEARCH orders USING COVERING INDEX ix_cust (customer_id>?)
+
+pandas orders.customer_id dtype with NULLs: float64
+pandas ~isin and merge(indicator) return 3000 rows with NULLs present (same as NOT EXISTS / LEFT JOIN, not NOT IN)
+asserts passed (compared after sorting by customer_id)

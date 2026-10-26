@@ -1,0 +1,22 @@
+{'a': dtype('int64'), 'b': dtype('float64'), 's': <StringDtype(storage='python', na_value=nan)>}
+machine-specific timings in ms (best of 3 where cheap, one run for apply and iterrows):
+   numpy arrays               0.5
+   vectorised a*b             0.6
+   Series.map(lambda)        26.2
+   zip loop                  27.3
+   itertuples                99.9
+   apply(axis=1)           1075.2
+   iterrows                4539.7
+ratios vs vectorised: apply x1801, iterrows x7603, itertuples x167
+--- iterrows builds a Series per row and upcasts ---
+   row dtype: object | row['i'] = 1 int
+   itertuples keeps types: ['int', 'float', 'str']
+   numeric-only iterrows: row dtype float64 (int 1 became float)
+--- when you cannot vectorise a formula, push the branching into numpy ---
+   np.select 3.8 ms | python loop 49.7 ms | np.vectorize 44.8 ms (np.vectorize is a loop, not speed)
+--- strings: .str.upper vs map(str.upper) vs apply ---
+   .str.upper 35.1 | map(str.upper) 29.2 | apply(lambda) 26.2 | category rename 0.2  (ms)
+--- SQL pushes the same arithmetic into the engine ---
+SQL a*b equals pandas a*b for all 200000 rows
+--- eval/query ---
+   mask 2.4 ms | query 4.1 ms (200,000 rows, machine-specific)

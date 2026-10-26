@@ -1,0 +1,15 @@
+distinct created_at: 19999 of 200000 rows
+ page  OFFSET steps  keyset steps
+    1           151           128
+ 5000       200,111           255
+ 9000       360,111           405
+OFFSET plan: ['SCAN feed USING COVERING INDEX ix_feed']
+keyset plan: ['SEARCH feed USING COVERING INDEX ix_feed (created_at<?)']
+--- keyset with a NON-unique key only (created_at) ---
+created_at < ?  : fetched 160,876 rows in 8,044 pages, 39,124 rows never returned
+page 1 last row: (20641, '2024-03-10 10:30') | ties with that timestamp in the table: 12
+page 2 via '<'  : repeats 0 | true page-2 rows missing: 2
+page 2 via '<=' : repeats 10 | true page-2 rows missing: 10
+--- stable under inserts ---
+OFFSET 20 page 2: rows shifted by 5 new posts; overlap with the old page 2: 15 of 20
+keyset page 2 after the inserts equals the old page 2: True

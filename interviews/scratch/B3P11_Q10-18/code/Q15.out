@@ -1,0 +1,33 @@
+pandas result (rows, sum qty): (59861, 179764)
+1. primary keys only
+   plan : SCAN i | SEARCH o USING INTEGER PRIMARY KEY (rowid=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   steps: 4,379,599   result: (59861, 179764)
+2. same, PRAGMA automatic_index = OFF
+   plan : SCAN i | SEARCH o USING INTEGER PRIMARY KEY (rowid=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   steps: 4,379,599   result: (59861, 179764)
+3. indexes on orders(customer_id), order_items(order_id), NO statistics yet
+   plan : SCAN i | SEARCH o USING INTEGER PRIMARY KEY (rowid=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   steps: 4,379,599   result: (59861, 179764)
+3b. same indexes, CROSS JOIN customers -> orders pins customers as the outer loop
+   plan : SCAN c | SEARCH o USING COVERING INDEX ix_o_cust (customer_id=?) | SEARCH i USING INDEX ix_i_ord (order_id=?)
+   steps: 502,826   result: (59861, 179764)
+4. after ANALYZE
+   plan : SCAN c | SEARCH o USING COVERING INDEX ix_o_cust (customer_id=?) | SEARCH i USING INDEX ix_i_ord (order_id=?)
+   steps: 502,823   result: (59861, 179764)
+5. after ANALYZE, CROSS JOIN customers -> orders (same plan as 4)
+   plan : SCAN c | SEARCH o USING COVERING INDEX ix_o_cust (customer_id=?) | SEARCH i USING INDEX ix_i_ord (order_id=?)
+   steps: 502,826   result: (59861, 179764)
+6. indexes dropped again, stats cleared
+   plan : SCAN i | SEARCH o USING INTEGER PRIMARY KEY (rowid=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   steps: 4,379,599   result: (59861, 179764)
+7. CROSS JOIN order forced to items -> orders -> customers, no FK indexes
+   plan : SCAN i | SEARCH o USING INTEGER PRIMARY KEY (rowid=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   steps: 4,379,601   result: (59861, 179764)
+--- automatic index and BLOOM FILTER: other orders of the same customer (self join, no index on customer_id) ---
+automatic_index ON
+   plan : SEARCH a USING INTEGER PRIMARY KEY (rowid<?) | BLOOM FILTER ON b (customer_id=?) | SEARCH b USING AUTOMATIC COVERING INDEX (customer_id=?)
+   steps: 1,207,357   result: 973
+automatic_index OFF
+   plan : SEARCH a USING INTEGER PRIMARY KEY (rowid<?) | SCAN b
+   steps: 80,004,607   result: 973
+pandas self-merge count: 973

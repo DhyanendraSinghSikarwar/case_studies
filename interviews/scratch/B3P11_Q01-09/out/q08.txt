@@ -1,0 +1,25 @@
+=== NO index on orders(customer_id), SMALL data 2,000 customers / 20,000 orders
+IN             steps     73950 rows   1124  plan: SEARCH customers USING INTEGER PRIMARY KEY (rowid=?) | LIST SUBQUERY 1 | SCAN orders
+EXISTS         steps 105265768 rows   1124  plan: SCAN c | CORRELATED SCALAR SUBQUERY 1 | SCAN o
+JOIN+DISTINCT  steps     73492 rows   1124  plan: SCAN o | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR DISTINCT
+JOIN+GROUP BY  steps    102942 rows   1124  plan: SCAN o | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY
+plain JOIN     steps     70119 rows   2022  (distinct customers in those rows: 1124)
+=== index ix_cust(customer_id), FULL data 20,000 customers / 200,000 orders
+IN             steps    737690 rows  11080  plan: SEARCH customers USING INTEGER PRIMARY KEY (rowid=?) | LIST SUBQUERY 1 | SCAN orders
+EXISTS         steps    782251 rows  11080  plan: SCAN c | CORRELATED SCALAR SUBQUERY 1 | SEARCH o USING INDEX ix_cust (customer_id=?)
+JOIN+DISTINCT  steps    733441 rows  11080  plan: SCAN o | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR DISTINCT
+JOIN+GROUP BY  steps   1024595 rows  11080  plan: SCAN o | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY
+plain JOIN     steps    700200 rows  20038  (distinct customers in those rows: 11080)
+=== index ix_cs(customer_id, status), FULL data
+IN             steps    737691 rows  11080  plan: SEARCH customers USING INTEGER PRIMARY KEY (rowid=?) | LIST SUBQUERY 1 | SCAN orders USING COVERING INDEX ix_cs
+EXISTS         steps    255412 rows  11080  plan: SCAN c | CORRELATED SCALAR SUBQUERY 1 | SEARCH o USING COVERING INDEX ix_cs (customer_id=? AND status=?)
+JOIN+DISTINCT  steps    733442 rows  11080  plan: SCAN o USING COVERING INDEX ix_cs | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR DISTINCT
+JOIN+GROUP BY  steps   1024596 rows  11080  plan: SCAN o USING COVERING INDEX ix_cs | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY
+plain JOIN     steps    700201 rows  20038  (distinct customers in those rows: 11080)
+=== NO index, FULL data (EXISTS not run: it rescans 200,000 rows per customer)
+IN             steps    737692 rows  11080  plan: SEARCH customers USING INTEGER PRIMARY KEY (rowid=?) | LIST SUBQUERY 1 | SCAN orders
+JOIN+DISTINCT  steps    733442 rows  11080  plan: SCAN o | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR DISTINCT
+JOIN+GROUP BY  steps   1024596 rows  11080  plan: SCAN o | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY
+
+pandas merge rows (duplicates): 20038 | isin rows: 11080 | merge + drop_duplicates: 11080
+asserts passed: all SQL forms, pandas isin and merge+drop_duplicates equal after sorting by customer_id; rows = 11080

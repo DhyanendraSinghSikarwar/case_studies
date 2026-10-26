@@ -1,0 +1,21 @@
+Query 1: SELECT order_id, amount FROM orders WHERE status = 'shipped' AND order_date >= '2024-06-01' AND order_date < '2024-07-01' ORDER BY order_date LIMIT 50
+                                 index                                                                                plan  vm_steps  rows
+                                  none                                          SCAN orders | USE TEMP B-TREE FOR ORDER BY    780147    50
+                              (status)             SEARCH orders USING INDEX ixc (status=?) | USE TEMP B-TREE FOR ORDER BY    329996    50
+                          (order_date)                       SEARCH orders USING INDEX ixc (order_date>? AND order_date<?)      1217    50
+                  (order_date, status)                       SEARCH orders USING INDEX ixc (order_date>? AND order_date<?)      2812    50
+                  (status, order_date)          SEARCH orders USING INDEX ixc (status=? AND order_date>? AND order_date<?)       421    50
+(status, order_date, amount, order_id) SEARCH orders USING COVERING INDEX ixc (status=? AND order_date>? AND order_date<?)       370    50
+matching rows without LIMIT: 4182 (SQL and pandas agree)
+first 50 dates only span: 2024-06-01 to 2024-06-01 -> ties on order_date mean LIMIT 50 is ambiguous without a tiebreaker
+
+Query 2: SELECT * FROM orders WHERE customer_id = 5 ORDER BY order_date DESC LIMIT 10
+                    index                                                                         plan  vm_steps  rows
+                     none                                   SCAN orders | USE TEMP B-TREE FOR ORDER BY    600181    10
+            (customer_id) SEARCH orders USING INDEX ixc (customer_id=?) | USE TEMP B-TREE FOR ORDER BY       212    10
+(customer_id, order_date)                                SEARCH orders USING INDEX ixc (customer_id=?)       120    10
+             (order_date)                                                  SCAN orders USING INDEX ixc    770763    10
+
+range column is not the sort column, index (status, order_date, amount): SEARCH orders USING COVERING INDEX ixc (status=? AND order_date>? AND order_date<?) | USE TEMP B-TREE FOR ORDER BY 34323
+index (status, amount, order_date): SEARCH orders USING COVERING INDEX ixc (status=?) 3193
+pandas sort_values + head(50) gives the same 50 dates as SQL (ties broken by order_id)

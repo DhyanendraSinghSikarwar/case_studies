@@ -1,0 +1,27 @@
+import sqlite3, random, tempfile
+import numpy as np
+import pandas as pd
+
+WORK = tempfile.mkdtemp()          # file databases: every plan and step count uses a FRESH connection
+
+def plan(path, sql, params=()):
+    """EXPLAIN QUERY PLAN detail lines, read on a fresh connection (a reused connection can show a stale plan)."""
+    c = sqlite3.connect(path)
+    try:
+        return [r[3] for r in c.execute("EXPLAIN QUERY PLAN " + sql, params)]
+    finally:
+        c.close()
+
+def steps(path, sql, params=()):
+    """(VM steps, rows) for one statement: set_progress_handler(cb, 1) fires once per VM opcode."""
+    c = sqlite3.connect(path)
+    n = [0]
+    def tick():
+        n[0] += 1
+        return 0
+    c.set_progress_handler(tick, 1)
+    rows = c.execute(sql, params).fetchall()
+    c.set_progress_handler(None, 0)
+    c.close()
+    return n[0], rows
+

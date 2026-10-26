@@ -1,0 +1,33 @@
+distinct user_id: 20000 | event_type counts: {'view': 209785, 'click': 87163, 'purchase': 3052}
+sqlite_stat1 before ANALYZE: None
+--- plans before ANALYZE ---
+  user_id = 5                                          steps       152 rows     12 | SEARCH events USING INDEX ix_user (user_id=?)
+  event_type = 'purchase' (rare)                       steps    27,512 rows  3,052 | SEARCH events USING INDEX ix_type (event_type=?)
+  event_type = 'view' (common)                         steps 1,888,108 rows 209,785 | SEARCH events USING INDEX ix_type (event_type=?)
+  event_time = '2024-03-05 10:00' (2nd column only)    steps   900,253 rows     35 | SCAN events
+  country = 'IN' AND event_type = 'purchase'           steps   304,127 rows    609 | SEARCH events USING INDEX ix_country_time (country=?)
+sqlite_stat1 after ANALYZE: {'ix_country_time': '300000 60000 8', 'ix_type': '300000 100000', 'ix_user': '300000 15'}
+--- plans after ANALYZE ---
+  user_id = 5                                          steps       180 rows     12 | SEARCH events USING INDEX ix_user (user_id=?)
+  event_type = 'purchase' (rare)                       steps    27,540 rows  3,052 | SEARCH events USING INDEX ix_type (event_type=?)
+  event_type = 'view' (common)                         steps 1,888,136 rows 209,785 | SEARCH events USING INDEX ix_type (event_type=?)
+  event_time = '2024-03-05 10:00' (2nd column only)    steps       423 rows     35 | SEARCH events USING INDEX ix_country_time (ANY(country) AND event_time=?)
+  country = 'IN' AND event_type = 'purchase'           steps   304,155 rows    609 | SEARCH events USING INDEX ix_country_time (country=?)
+--- the planner's pick for country AND event_type is a heuristic, not a guarantee ---
+  planner's choice     steps   304,155 rows 609 | SEARCH events USING INDEX ix_country_time (country=?)
+  INDEXED BY ix_type   steps    18,989 rows 609 | SEARCH events USING INDEX ix_type (event_type=?)
+--- selectivity by hand (rows / distinct values) ---
+  ix_user          stat '300000 15'            by hand [300000, 15]
+  ix_type          stat '300000 100000'        by hand [300000, 100000]
+  ix_country_time  stat '300000 60000 8'       by hand [300000, 60000, 8]
+  actual rows for event_type values: {'view': 209785, 'click': 87163, 'purchase': 3052} (stat says 100000 for every value)
+--- statistics are a snapshot: add 100,000 rows of one new user ---
+stat1 unchanged: 300000 15 | true rows for user 999999: 100000
+PRAGMA optimize(0x03) dry run (lists the ANALYZE it would run): []
+PRAGMA optimize(0x02) runs it: []
+stat1 after optimize: 300000 15 | sqlite_stat1 rows: 3
+PRAGMA analysis_limit=400 then ANALYZE -> (400,) {'ix_country_time': '426466 401 8', 'ix_type': '361380 401', 'ix_user': '398400 15'}
+--- PRAGMA optimize on a table whose size changed a lot (1,000 -> 51,000 rows) ---
+stat1 now: [('a', 'ia', '1000 10')]
+PRAGMA optimize(0x03) says: [('ANALYZE "main"."a"',)]
+stat1 after PRAGMA optimize: [('a', 'ia', '51000 510')]

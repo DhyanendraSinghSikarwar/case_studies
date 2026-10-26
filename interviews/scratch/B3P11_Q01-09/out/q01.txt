@@ -1,0 +1,23 @@
+-- BEFORE CREATE INDEX
+A  filter -> ['SCAN orders']
+B  covering -> ['SCAN orders']
+C  order by amt -> ['SCAN orders', 'USE TEMP B-TREE FOR ORDER BY']
+D  distinct -> ['SCAN orders', 'USE TEMP B-TREE FOR DISTINCT']
+E  group by -> ['SCAN orders', 'USE TEMP B-TREE FOR GROUP BY']
+F  order by cust -> ['SCAN orders', 'USE TEMP B-TREE FOR ORDER BY']
+
+-- AFTER CREATE INDEX ix_cust ON orders(customer_id)
+A  filter -> ['SEARCH orders USING INDEX ix_cust (customer_id=?)']
+B  covering -> ['SEARCH orders USING COVERING INDEX ix_cust (customer_id=?)']
+C  order by amt -> ['SEARCH orders USING INDEX ix_cust (customer_id=?)', 'USE TEMP B-TREE FOR ORDER BY']
+D  distinct -> ['SCAN orders', 'USE TEMP B-TREE FOR DISTINCT']
+E  group by -> ['SCAN orders', 'USE TEMP B-TREE FOR GROUP BY']
+F  order by cust -> ['SCAN orders USING INDEX ix_cust']
+
+raw row: [(3, 0, 0, 'SEARCH orders USING INDEX ix_cust (customer_id=?)')]
+join: (4, 0, 0, 'SCAN c')
+join: (8, 0, 0, 'SEARCH o USING INDEX ix_cust (customer_id=?)')
+
+VM steps scan: 600071  with index: 99  rows: 9 9
+asserts passed (SQL rows, boolean mask and indexed loc equal after sorting by order_id)
+distinct statuses: ['cancelled', 'delivered', 'placed', 'shipped'] vs SQL: ['cancelled', 'delivered', 'placed', 'shipped']
