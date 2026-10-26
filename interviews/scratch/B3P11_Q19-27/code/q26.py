@@ -91,10 +91,16 @@ print("correlated IN + LIMIT, index:           rows %d VM steps %9d" % (len(rows
 for l in plan(big, INL): print("       ", l)
 print("(correlated COUNT not run at 300,000 rows: it needs about n*rows-per-region/2 index entries, see the growth table)")
 
-print("\n== an extra ORDER BY on another key (sale_date) after the window, 300,000 rows, index present")
-rows, n = steps(big, WIN_EXTRA)
-print("rows %d VM steps %d" % (len(rows), n))
-pl = plan(big, WIN_EXTRA)
-for l in pl: print("       ", l)
-print("temp b-tree lines in this plan:", sum("TEMP B-TREE" in l for l in pl), "; in the WIN plan:", sum("TEMP B-TREE" in l for l in plan(big, WIN)))
+print("\n== where the sorts come from, 300,000 rows (index present)")
+WIN_NOORD = WIN.replace(" ORDER BY region, amount DESC, sale_id", "")
+for nm, q in (("window, NO outer ORDER BY", WIN_NOORD), ("window, outer ORDER BY region, amount DESC, sale_id", WIN),
+              ("window, outer ORDER BY sale_date (another key)", WIN_EXTRA)):
+    rows, n = steps(big, q)
+    pl = plan(big, q)
+    print("%-52s rows %d VM steps %9d temp b-trees %d" % (nm, len(rows), n, sum("TEMP B-TREE" in l for l in pl)))
+    for l in pl: print("       ", l)
+big.execute("DROP INDEX ix_reg_amt"); big.commit()
+for nm, q in (("NO index, no outer ORDER BY", WIN_NOORD), ("NO index, outer ORDER BY", WIN)):
+    pl = plan(big, q)
+    print("%-52s temp b-trees %d" % (nm, sum("TEMP B-TREE" in l for l in pl)))
 print("asserts passed: all forms equal the pandas sort + groupby.head(3) (compared in order region, amount desc, sale_id)")
