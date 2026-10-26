@@ -7,7 +7,7 @@ import onnxruntime as ort
 import skops.io as sio
 from safetensors.torch import save_file, load_file
 
-tmp = pathlib.Path(tempfile.mkdtemp(prefix="q09_"))
+_td = tempfile.TemporaryDirectory(prefix="q09_", dir="/tmp/claude-0/b6_q1_12"); tmp = pathlib.Path(_td.name)
 
 # 1. Harmless "attack": unpickling runs a function chosen by whoever made the file.
 class Evil:

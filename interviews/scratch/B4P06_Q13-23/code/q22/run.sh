@@ -9,5 +9,5 @@ echo "livez: $(curl -s -o /dev/null -w '%{http_code}' localhost:8222/livez)  rea
 echo -n "predict [6.7,3.0,5.2,2.3] -> "; curl -s -XPOST localhost:8222/predict -H 'content-type: application/json' -d '{"features":[6.7,3.0,5.2,2.3]}'; echo
 echo -n "bad input (a string instead of a list), HTTP status -> "; curl -s -o /dev/null -w '%{http_code}' -XPOST localhost:8222/predict -H 'content-type: application/json' -d '{"features":"oops"}'; echo
 kill $SRV; wait $SRV 2>/dev/null; echo "server stopped"
-echo '--- bentoml build'; $BIN/bentoml build -f bentofile.yaml 2>&1 | grep -vE "^\s*$" | tail -14
+echo '--- bentoml build'; $BIN/bentoml build -f bentofile.yaml 2>&1 | grep -E "Successfully|containerize"
 echo '--- bentoml list'; $BIN/bentoml list 2>&1 | tail -4

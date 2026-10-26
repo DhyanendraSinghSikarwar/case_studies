@@ -1,0 +1,2 @@
+structure problems: none
+after two deliberate typos: ['kind must be InferenceService', 'canaryTrafficPercent must be 0..100']

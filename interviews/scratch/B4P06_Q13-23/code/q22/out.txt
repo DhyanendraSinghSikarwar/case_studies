@@ -1,0 +1,11 @@
+livez: 200  readyz: 200
+predict [6.7,3.0,5.2,2.3] -> 2
+bad input (a string instead of a list), HTTP status -> 400
+server stopped
+--- bentoml build
+Successfully built Bento(tag="iris:zczkhlgrlow3wax4").
+* Containerize your Bento with `bentoml containerize`:
+    $ bentoml containerize iris:zczkhlgrlow3wax4 
+--- bentoml list
+ Tag                    Size       Model Size  Creation Time       
+ iris:zczkhlgrlow3wax4  19.49 KiB  0.00 B      2026-10-26 16:39:16 

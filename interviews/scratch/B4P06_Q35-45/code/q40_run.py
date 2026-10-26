@@ -1,8 +1,9 @@
 import asyncio, os, subprocess, sys, time, pathlib, statistics, httpx
 HERE = str(pathlib.Path(__file__).parent); PORT = 8406; URL = f"http://127.0.0.1:{PORT}"
-RATE, SECONDS = 330, 6      # open loop: 330 requests/s arrive no matter how slow the server is
+SECONDS = 5; RATE = 150     # open loop: requests arrive at RATE per second no matter how slow the server is
 def pct(v, q): v = sorted(v); return v[min(len(v) - 1, int(q * len(v)))] * 1000
-async def run(path, timeout=None, fallback=False):
+async def run(path, timeout=None, fallback=False, RATE=None):
+    RATE = RATE or globals()['RATE']
     lat, shed, fell = [], 0, 0
     async with httpx.AsyncClient(limits=httpx.Limits(max_connections=2000), timeout=30) as c:
         async def one():
@@ -27,11 +28,12 @@ try:
     for _ in range(100):
         try: httpx.get(URL + "/openapi.json", timeout=1); break
         except Exception: time.sleep(0.1)
-    asyncio.run(run("/predict"))   # warm-up pass (not reported)
-    print("capacity: 4 slots; average work about 8.9 ms => ~450 requests/s max, offered 330/s (utilisation ~0.73)")
-    show("A. light load check (no tail) skipped", (0, 0, 0, 0, 0)) if False else None
-    show("A. baseline, 2% slow path, unbounded queue", asyncio.run(run("/predict")))
-    show("B. client timeout 60 ms + fallback", asyncio.run(run("/predict", timeout=0.060, fallback=True)))
-    show("C. server concurrency cap (shed above 8 waiting)", asyncio.run(run("/predict_capped")))
+    asyncio.run(run("/predict", RATE=50))   # warm-up pass (not reported)
+    print("4 slots; mean work about 8.9 ms => roughly 450 requests/s max on paper. Open-loop arrivals.")
+    for rate in (150, 330):
+        print(f"--- offered load {rate} requests/s for {SECONDS}s ---")
+        show("A. baseline, 2% slow path, unbounded queue", asyncio.run(run("/predict", RATE=rate)))
+        show("B. client timeout 60 ms + fallback", asyncio.run(run("/predict", timeout=0.060, fallback=True, RATE=rate)))
+        show("C. server cap (shed above 8 waiting)", asyncio.run(run("/predict_capped", RATE=rate)))
 finally:
     p.terminate(); p.wait(timeout=10); print("server stopped:", p.poll() is not None)
