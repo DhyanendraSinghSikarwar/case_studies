@@ -1,0 +1,20 @@
+tick= 1 consumers=1 produced= 10 committed=  4 lag=  6 dlq=0
+tick= 2 consumers=1 produced= 20 committed=  8 lag= 12 dlq=1
+tick= 3 consumers=1 produced= 30 committed= 12 lag= 18 dlq=1
+tick= 4 consumers=1 produced= 40 committed= 16 lag= 24 dlq=2
+tick= 5 consumers=1 produced= 50 committed= 20 lag= 30 dlq=3
+tick= 6 consumers=2 produced= 60 committed= 28 lag= 32 dlq=4
+tick= 7 consumers=2 produced= 70 committed= 36 lag= 34 dlq=5
+tick= 8 consumers=2 produced= 80 committed= 44 lag= 36 dlq=8
+tick= 9 consumers=2 produced= 80 committed= 52 lag= 28 dlq=9
+tick=10 consumers=2 produced= 80 committed= 60 lag= 20 dlq=12
+tick=11 consumers=2 produced= 80 committed= 68 lag= 12 dlq=13
+tick=12 consumers=2 produced= 80 committed= 76 lag=  4 dlq=16
+tick=13 consumers=2 produced= 80 committed= 80 lag=  0 dlq=18
+tick=14 consumers=2 produced= 80 committed= 80 lag=  0 dlq=18
+processed ok: 62 | in DLQ: 18 | flaky ones that succeeded after retry: 3
+{'topic': 'tx', 'partition': 0, 'offset': 7, 'error': 'schema_mismatch: amt not number', 'attempts': 0, 'payload': '{"card": "c2", "amt": "x"}', 'tick': 2}
+{'topic': 'tx', 'partition': 0, 'offset': 12, 'error': 'null_key', 'attempts': 0, 'payload': '{"card": null, "amt": 5}', 'tick': 4}
+{'topic': 'tx', 'partition': 0, 'offset': 17, 'error': 'null_key', 'attempts': 0, 'payload': '{"card": null, "amt": 5}', 'tick': 5}
+{'topic': 'tx', 'partition': 0, 'offset': 24, 'error': 'null_key', 'attempts': 0, 'payload': '{"card": null, "amt": 5}', 'tick': 6}
+DLQ by reason: {'null_key': 9, 'parse_error': 4, 'retries_exhausted': 1, 'schema_mismatch': 4}

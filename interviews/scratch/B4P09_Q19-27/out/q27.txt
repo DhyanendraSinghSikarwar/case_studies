@@ -1,0 +1,27 @@
+feast 0.67.0 pandas 2.3.3
+Materializing 3 feature views from 2026-10-25 17:43:08+00:00 to 2026-10-26 17:43:08+00:00 into the sqlite online store.
+
+user_feats:
+merchant_feats:
+device_feats:
+features requested: 40 over 3 entities
+check: values returned = 40 of 40
+pattern                                                    median_ms  p90_ms   (sandbox only)
+A 40 calls, 1 feature each, 1 request                           6.1      7.4
+B 3 calls, one per entity, 1 request                            0.6      0.7
+C 1 call, 40 features, 1 request                                0.4      0.5
+D1 1 call, 40 features, 50 requests                             8.8     11.2
+D2 50 calls of C (50 requests)                                 29.1     29.1
+unknown merchant -> {'merchant_id': [99999], 'device_id': [3], 'user_f0': [0.6470673084259033], 'user_f1': [0.8951604962348938], 'merchant_f0': [None]}
+with default + missing flag: 0.0 | merchant_missing = True
+hot-key demo: 3000 requests, LRU cache of 50 merchants, hit rate = 74% (traffic skew is an assumption)
+
+budget (ms)                                            allotted
+network in+out                                           8
+request parsing + validation                             3
+feature fetch (all 3 entities, one batched call)        15
+model inference                                         16
+slack for tail / GC                                      8
+sum                                                     50  (budget 50 ms, sum matches: True; slack row is the headroom)
+measured in-process lookup C (median) = 0.4 ms vs allotted 15 ms (no network; a remote store adds a round trip per call)
+ASSUMED remote store, 3 sequential round trips of 4 ms each: 12 ms vs one batched trip: 4 ms

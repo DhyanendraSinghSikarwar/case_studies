@@ -1,0 +1,8 @@
+pyspark 4.2.0
+tiny    : partitions(dirs)= 6  parquet files= 144
+compact : partitions(dirs)= 6  parquet files= 6
+row counts: 12000 12000 | sum of feature equal: True
+-- scan line for day = 2025-03-04
+   +- FileScan parquet [user_id#7L,txn_30d#8,day#9] Batched: true, DataFilters: [], Format: P ... PartitionFilters:  [isnotnull(day#9), (day#9 = 2025-03-04)]
+rows for that day: 2000 (expected 2000)
+-- filter on user_id (not a partition column): PartitionFilters:  [] | DataFilters:  [isnotnull(user_id#7L), (user_id#7L = 7)]
