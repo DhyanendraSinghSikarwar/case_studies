@@ -3,3 +3,7 @@ loaded: churn-train 3 | image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu22.0
 docker env: churn-docker | build context: ./docker-context | image: None
 q16/conda.yml -> FAIL unpinned: ['pip:pandas']
 q16/conda_good.yml -> OK all pinned
+exit=1
+$ python3 -I q16_env_check.py q16/conda_good.yml
+q16/conda_good.yml -> OK all pinned
+exit=0

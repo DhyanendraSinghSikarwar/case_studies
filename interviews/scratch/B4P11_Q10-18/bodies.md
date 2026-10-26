@@ -102,7 +102,7 @@ Not executed: no role assignment, IAM binding or token exchange happened on eith
 
 **Then explain:**
 - **Same:** `mlflow.set_experiment`, `start_run`, `log_param`, `log_metric`, tags. Your code does not care where the server is.
-- **Local:** a sqlite URI (`sqlite:///ml.db`) works for development. In MLflow 3.17.2 I used the sqlite backend (a file-based store is in maintenance mode, check current docs for your version).
+- **Local:** a sqlite URI (`sqlite:///ml.db`) works for development. I used the sqlite backend with MLflow 3.17.2. The Wave A run found the plain file store refused unless opted in (not re-run here; check current docs for your version).
 - **Azure ML:** with the `azureml-mlflow` plugin the tracking URI starts with `azureml://` and points at the workspace. Auth is an Entra token (for example from `DefaultAzureCredential`). Inside an Azure ML job the URI is normally set for you (check current docs). Artifacts go to the workspace's default storage.
 - **Vertex AI Experiments:** not MLflow by default. You call `aiplatform.init(experiment=...)` then the SDK's run and logging calls, which use Vertex ML Metadata. So a script that is portable keeps logging behind a thin function, or uses MLflow on both sides with a server you run.
 - **Do not hard-code:** the tracking URI, experiment name per environment, artifact path, any key or token, the workspace id.
