@@ -1,0 +1,13 @@
+accuracy, correct pipeline: 0.702
+accuracy, skewed pipeline : 0.47
+
+Check 1: compare logged serving features with training features
+  height     train mean=    1.70  serve mean=  170.05  KS D=1.000  ratio=99.90
+  plan_code  train mean=    0.70  serve mean=    1.30  KS D=0.305  ratio=1.85
+
+Check 2: parity test, same raw rows through both code paths
+  max abs diff per column: [178.7, 2.0] (expect 0, 0)
+
+Check 3: categorical code mapping must be identical
+  train mapping: {'basic': 0, 'plus': 1, 'pro': 2}
+  serve mapping: {'basic': 2, 'plus': 1, 'pro': 0}

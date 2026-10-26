@@ -1,0 +1,11 @@
+prediction-day accuracy (truth, nobody can see this yet) vs what is visible
+seen on day  true acc, last 7 pred days   matured acc (labels in hand)  score-based estimate
+         50                       0.766                          0.772                 0.774
+         70                       0.509                          0.775                 0.774
+         85                       0.528                          0.788                 0.775
+         89                       0.516                          0.795                 0.777
+         95                       0.511                          0.555                 0.778
+        110                       0.523                          0.518                 0.774
+        119                       0.543                          0.516                 0.777
+
+baseline acc 0.781; drift began day 60; matured accuracy first shows a 5-point drop on day 91 (lag 31 days)

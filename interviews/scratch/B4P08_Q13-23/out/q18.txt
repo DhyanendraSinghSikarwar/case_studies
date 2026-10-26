@@ -1,0 +1,16 @@
+
+NO drift: 200 runs, n=500 per window
+  raw p<0.05                           runs with an alert: 200/200
+  Bonferroni                           runs with an alert:   6/200
+  Benjamini-Hochberg                   runs with an alert:   6/200
+  share rule (>=10% drifted)           runs with an alert:   4/200
+  effect floor (p<0.05 and D>=0.15)    runs with an alert:   1/200
+
+5 of 100 features truly drifted by 0.3 sigma: 200 runs, n=500 per window
+  raw p<0.05                           runs with an alert: 200/200 | avg share of the 5 true drifts caught 0.99
+  Bonferroni                           runs with an alert: 198/200 | avg share of the 5 true drifts caught 0.70
+  Benjamini-Hochberg                   runs with an alert: 199/200 | avg share of the 5 true drifts caught 0.83
+  share rule (>=10% drifted)           runs with an alert:  96/200 | avg share of the 5 true drifts caught 0.48
+  effect floor (p<0.05 and D>=0.15)    runs with an alert: 180/200 | avg share of the 5 true drifts caught 0.42
+
+expected false alarms per run at 5% x 100 features: 5.0

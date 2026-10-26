@@ -1,0 +1,23 @@
+PSI by scenario (10 quantile bins)
+  no shift       0.0005
+  mean +0.5      0.2494
+  variance x1.5  0.2029
+  tail only      0.0111
+
+PSI vs number of bins
+  bins               5      10      20
+  no shift      0.0001  0.0005  0.0018
+  mean +0.5     0.2297  0.2494  0.2560
+  variance x1.5  0.1243  0.2029  0.2494
+  tail only     0.0048  0.0111  0.0197
+
+No true shift, mean PSI over 200 repeats (10 bins, reference n=5000)
+  current n=100    mean=0.0994  max=0.2922
+  current n=500    mean=0.0210  max=0.0514
+  current n=5000   mean=0.0033  max=0.0083
+  current n=50000  mean=0.0019  max=0.0032
+
+Categorical PSI (A/B/C share 50/30/20 -> 40/30/30), with a new category D
+  shares move : 0.0629
+  new category: 0.3436
+  hand check  : 0.0629

@@ -1,0 +1,25 @@
+route:
+  receiver: ml-platform-ticket
+  group_by: [alertname, model]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    - matchers: ['severity="page"', 'owner="data-engineering"']
+      receiver: data-eng-pager
+    - matchers: ['severity="page"', 'owner="data-science"']
+      receiver: data-science-pager
+    - matchers: ['owner="data-engineering"']
+      receiver: data-eng-ticket
+    - matchers: ['owner="data-science"']
+      receiver: data-science-ticket
+inhibit_rules:
+  - source_matchers: ['alertname="UpstreamFeedDown"']
+    target_matchers: ['alertname=~"DriftScoreSustained|FeatureNullRateHigh|ScoreDistributionShift"']
+    equal: [model]
+receivers:
+  - name: ml-platform-ticket
+  - name: data-eng-pager
+  - name: data-science-pager
+  - name: data-eng-ticket
+  - name: data-science-ticket

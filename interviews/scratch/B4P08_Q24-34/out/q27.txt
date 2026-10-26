@@ -1,0 +1,13 @@
+catalogue.yaml: 5 alerts, OK
+catalogue_bad.yaml: 2 alerts, 4 error(s)
+  - DriftScoreSustained: owner 'nobody' is not a known team
+  - DriftScoreSustained: severity must be one of ['page', 'ticket']
+  - DriftScoreSustained: runbook must be an https link
+  - ModelStale: missing or empty 'action'
+receivers defined but unused: none
+routes pointing to unknown receiver: none
+FeatureNullRateHigh      -> data-eng-pager
+DriftScoreSustained      -> data-science-ticket
+LabelJoinLagHigh         -> data-eng-ticket
+ModelStale               -> ml-platform-ticket
+ScoreDistributionShift   -> data-science-pager

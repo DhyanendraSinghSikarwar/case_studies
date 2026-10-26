@@ -1,0 +1,26 @@
+alerts:
+  - name: FeatureNullRateHigh
+    owner: data-engineering
+    severity: page
+    runbook: https://wiki.example.com/runbooks/feature-null-rate
+    action: "Check the upstream feed job; if the feed is broken, switch the model to the fallback rule."
+  - name: DriftScoreSustained
+    owner: data-science
+    severity: ticket
+    runbook: https://wiki.example.com/runbooks/drift-sustained
+    action: "Confirm on the dashboard, compare with a known campaign or seasonal event, open a retrain review."
+  - name: LabelJoinLagHigh
+    owner: data-engineering
+    severity: ticket
+    runbook: https://wiki.example.com/runbooks/label-lag
+    action: "Check the label pipeline; matured-label metrics are stale until it is fixed."
+  - name: ModelStale
+    owner: ml-platform
+    severity: ticket
+    runbook: https://wiki.example.com/runbooks/model-stale
+    action: "Check the last retrain run; trigger it by hand if the scheduler skipped it."
+  - name: ScoreDistributionShift
+    owner: data-science
+    severity: page
+    runbook: https://wiki.example.com/runbooks/score-shift
+    action: "Compare the score histogram with the reference; if the shape moved, fall back to the previous model."

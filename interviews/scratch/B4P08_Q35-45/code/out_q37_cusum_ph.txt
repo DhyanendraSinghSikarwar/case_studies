@@ -1,0 +1,5 @@
+noise-only: 600 points. step run: +1 sd (0.02) at t=300. 200 seeds.
+CUSUM k=0.5 h=5            false alarms (noise-only)= 94/200  alarmed before step= 56/200  detected after step=144/200  median delay=8.0 points
+CUSUM k=0.5 h=8            false alarms (noise-only)=  5/200  alarmed before step=  3/200  detected after step=197/200  median delay=14.0 points
+PageHinkley d=0.5 lam=8    false alarms (noise-only)=  6/200  alarmed before step=  3/200  detected after step=197/200  median delay=15.0 points
+PageHinkley d=0.5 lam=15   false alarms (noise-only)=  0/200  alarmed before step=  0/200  detected after step=200/200  median delay=31.5 points

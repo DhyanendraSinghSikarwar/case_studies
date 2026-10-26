@@ -1,0 +1,10 @@
+shift (sd)        n       D         p   naive(p<.05) rule(p<.001 and D>=0.1)
+0.02            200   0.060    0.8655   False        False
+0.02           2000   0.032    0.2742   False        False
+0.02         200000   0.010    0.0000   True         False
+0.3             200   0.150    0.0221   True         False
+0.3            2000   0.146    0.0000   True         True
+0.3          200000   0.119    0.0000   True         True
+
+False alarms with no shift: 500 daily checks at p<0.05, n=2000 each
+  naive alarms: 21 of 500 (about 5 percent is expected by construction)

@@ -1,0 +1,2 @@
+after 50 calls: {"n": 50, "error_rate": 0.06, "p50_ms": 266, "p95_ms": 390, "mean_resp_len": 46.1, "feedback_n": 16, "thumbs_up_rate": 0.562}
+after 80 calls: {"n": 50, "error_rate": 0.08, "p50_ms": 362, "p95_ms": 853, "mean_resp_len": 46.0, "feedback_n": 16, "thumbs_up_rate": 0.812}

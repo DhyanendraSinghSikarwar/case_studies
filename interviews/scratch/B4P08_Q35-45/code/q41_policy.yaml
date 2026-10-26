@@ -1,0 +1,35 @@
+# Illustrative monitoring policy for a regulated credit-scoring model.
+# Numbers are placeholders for the model-risk team to set; regulator expectations are NOT quoted here.
+model:
+  id: credit_score_v3
+  owner: retail-risk-analytics
+  risk_tier: high
+  inventory_ref: MRM-0042
+  intended_use: unsecured personal loan underwriting
+validation:
+  independent_validation_before_go_live: true
+  periodic_revalidation_months: 12
+monitoring:
+  cadence: monthly
+  checks:
+    - {name: input_psi_max, level: warn, threshold: 0.10, action: notify_owner}
+    - {name: input_psi_max, level: breach, threshold: 0.25, action: open_review}
+    - {name: score_psi, level: breach, threshold: 0.20, action: open_review}
+    - {name: gini_matured_cohort_drop, level: breach, threshold: 0.05, action: open_review}
+    - {name: approval_rate_change_abs, level: warn, threshold: 0.05, action: notify_owner}
+    - {name: missing_rate_any_feature, level: breach, threshold: 0.02, action: block_scoring_and_page}
+  thresholds_status: calibrated_on_history   # see Q38; backtest on past incidents
+challenger:
+  enabled: true
+  mode: shadow
+  promote_requires: [independent_validation, committee_approval, rollback_plan]
+audit:
+  log_fields: [request_id, model_version, feature_hash, score, decision, reason_codes, timestamp]
+  retain_years: TBD_by_compliance
+  pii_policy: hash_or_omit
+explainability:
+  on_request: true
+  method: reason_codes_from_contributions
+change_control:
+  retrain_requires: [ticket, validation_report, approver_not_author]
+  rollback_to: previous_registered_version

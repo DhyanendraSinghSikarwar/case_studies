@@ -1,0 +1,4 @@
+rows written: 1000 | first line:
+{"schema_version":1,"request_id":"r00000","ts":"2026-10-01T10:00:00Z","model_version":"7","feature_pipeline":"2026.10.1","features_raw":{"age":53,"income":172000.0},"features_model":{"age_z":1.083,"income_log":12.055},"score":0.7974,"prediction":1}
+matured labels: 700 of 1000 (70%); accuracy on matured subset: 0.669
+duplicate request ids: 0

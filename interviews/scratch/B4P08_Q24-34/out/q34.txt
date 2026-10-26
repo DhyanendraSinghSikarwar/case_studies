@@ -1,0 +1,12 @@
+time to first human notice (from fault start)        55.2 h  (2.3 d)
+time to detect by ML team (from fault start)         81.3 h  (3.4 d)
+time to mitigate (detect to fallback)                 0.8 h  (0.0 d)
+time to mitigate (from fault start)                  82.1 h  (3.4 d)
+time to resolve (fault start to switched back)      103.0 h  (4.3 d)
+handoff delay (notice to ML ticket)                  25.4 h  (1.1 d)
+bad predictions served for 81.6 hours
+
+                                                            gap                                                               action            owner        due
+                         No input range or unit check on income     Add a range and null check at feature ingestion; page on failure data-engineering 2026-03-20
+Drift alert was not wired to a page or a ticket; dashboard only   Alert on income mean and PSI-style score with a runbook (Q27, Q30)      ml-platform 2026-03-27
+            No contract or change notice with the upstream team Schema and unit contract test in the feed's CI; change announcements    upstream-team 2026-04-10

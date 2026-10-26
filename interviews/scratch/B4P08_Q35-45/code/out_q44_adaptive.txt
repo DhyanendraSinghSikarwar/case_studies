@@ -1,0 +1,4 @@
+block threshold on score: 0.80 (feature x=1.55)
+feature KS D=0.134  score KS D=0.134  block rate 0.0605 -> 0.0524
+week 8 vs week 0: {'below_band_ref': 0.0326, 'below_band_cur': 0.122, 'band_ratio': 3.74, 'below_over_above': 4.79, 'alert': True}
+control (no attacker): {'below_band_ref': 0.0326, 'below_band_cur': 0.0304, 'band_ratio': 0.93, 'below_over_above': 1.03, 'alert': False}

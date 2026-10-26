@@ -1,0 +1,11 @@
+layers parsed: 7
+need labels : ['performance', 'fairness', 'business_outcome']
+no labels   : ['serving_health', 'data_quality', 'feature_drift', 'prediction_drift']
+realtime or per-batch or hourly (no labels): ['serving_health', 'data_quality', 'prediction_drift']
+serving_health    realtime   owner=platform/SRE
+data_quality      per batch  owner=data eng
+feature_drift     daily      owner=ML eng
+prediction_drift  hourly     owner=ML eng
+performance       weekly     owner=DS / ML eng
+fairness          monthly    owner=DS + risk
+business_outcome  weekly     owner=product

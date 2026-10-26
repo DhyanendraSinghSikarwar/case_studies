@@ -1,0 +1,5 @@
+great_expectations 1.24.1 pandas 3.1.0
+non-null age       success=False unexpected_count=1 values=[nan] idx=[2]
+age range 18-100   success=False unexpected_count=2 values=[17.0, 130.0] idx=[3, 4]
+status allowed     success=False unexpected_count=1 values=['paid'] idx=[3]
+row count 100+     success=False unexpected_count=5 values= idx=

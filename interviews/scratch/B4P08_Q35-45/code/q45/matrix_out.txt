@@ -1,0 +1,6 @@
+fault                  null    drift    range   volume category   (fraction of 200 seeds where the monitor fired)
+none                   0.00     0.00     0.00     0.00     0.00
+null_spike             1.00     0.00     0.00     0.00     0.00
+unit_change            0.00     1.00     1.00     0.00     0.00
+mean_shift             0.00     1.00     0.00     0.00     0.00
+dropped_partition      0.00     0.00     0.00     0.00     1.00
