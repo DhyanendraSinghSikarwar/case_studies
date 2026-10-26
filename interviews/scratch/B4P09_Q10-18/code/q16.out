@@ -1,0 +1,4 @@
+seq check=False: sent=1000 log_size=1243 duplicates=243 dropped_by_broker=0 in_order=True
+seq check=True : sent=1000 log_size=1000 duplicates=0 dropped_by_broker=243 in_order=True
+read_uncommitted: {'A': ['x1', 'x2'], 'B': ['y1', 'y2']}
+read_committed  : {'A': ['x1'], 'B': ['y1']}

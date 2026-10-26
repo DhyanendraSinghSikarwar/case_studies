@@ -1,0 +1,8 @@
+fastavro 1.13.1 | bytes written with OLD schema: 11
+new reader, field with default     -> {'card': 'c1', 'amount': 12.5, 'channel': 'unknown'}
+new reader, field NO default       -> FAIL SchemaResolutionError: No default value for field channel in Txn
+reader renamed card->card_id       -> FAIL SchemaResolutionError: No default value for field card_id in Txn
+reader retyped amount->string      -> FAIL SchemaResolutionError: Schema mismatch: double is not string
+old reader of NEW data (forward)   -> {'card': 'c2', 'amount': 3.0}
+reader removes amount field        -> {'card': 'c1'}
+int -> long promotion              -> {'x': 7}
