@@ -16,3 +16,5 @@ sleep 12
 grep -E "rows=|Finished in state Completed\(\)" serve.log | grep "Flow run" | cut -c1-160
 $P/prefect deployment inspect train/nightly 2>&1 | grep -E "'cron'|'parameters': \{'rows'|'tags'|'work_pool_name'"
 kill $SERVE $SERVER 2>/dev/null; sleep 3; kill -9 $SERVE $SERVER 2>/dev/null
+echo "--- (3) prefect.yaml parses and its entrypoint points at a real function (nothing deployed)"
+cp $HERE/prefect.yaml $HERE/check_yaml.py $D/; cd $D && python3 -I check_yaml.py

@@ -13,9 +13,9 @@ for name, t in sorted(spec["root"]["dag"]["tasks"].items()):
     print(f"  root.{name}: dependentTasks={t.get('dependentTasks', [])} trigger={t.get('triggerPolicy', {}).get('strategy')}")
 def walk(d, path=""):
     for name, t in d["dag"]["tasks"].items():
-        extra = {k: t[k] for k in ("parameterIterator", "triggerPolicy") if k in t}
-        if "parameterIterator" in t: print(f"  {path}{name}: parameterIterator items={t['parameterIterator']['items']}")
-        if "triggerPolicy" in t: print(f"  {path}{name}: condition={t['triggerPolicy']['condition']}")
+        if "parameterIterator" in t: print(f"  {path}{name}: parameterIterator items={t['parameterIterator']['items']} iteratorPolicy={t.get('iteratorPolicy')}")
+        if name == "pick-best": print(f"  {path}{name}: dependentTasks={t['dependentTasks']} scores<-{t['inputs']['parameters']['scores']['taskOutputParameter']}")
+        if "triggerPolicy" in t: print(f"  {path}{name}: triggerPolicy={t['triggerPolicy']}")
         ref = t.get("componentRef", {}).get("name")
         if ref in spec["components"] and "dag" in spec["components"][ref]:
             walk(spec["components"][ref], path + name + "/")

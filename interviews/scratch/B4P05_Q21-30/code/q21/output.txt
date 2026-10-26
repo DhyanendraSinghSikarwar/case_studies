@@ -20,3 +20,14 @@ keys has execution_date: False | has logical_date: True
 DagRun Finished: dag_id=old3_train state=success
 run for 2026-10-01 00:00:00+00:00
 DagRun Finished: dag_id=new_train state=success
+--- ruff ruff 0.16.9 migration rules (AIR3) on the old files
+old/old_dag.py:7:12: airflow3-suggested-update: [*] `airflow.datasets.Dataset` is removed in Airflow 3.0; It still works in Airflow 3.0 but is expected to be removed in a futu
+old/old_dag.py:12:6: airflow3-suggested-update: `airflow.DAG` is removed in Airflow 3.0; It still works in Airflow 3.0 but is expected to be removed in a future version.
+old/old_dag.py:12:23: airflow3-removal: [*] `schedule_interval` is removed in Airflow 3.0
+old/old_dag.py:13:5: airflow3-suggested-to-move-to-provider: `airflow.operators.python.PythonOperator` is deprecated and moved into `standard` provider in Airflow 3.0; It stil
+old2/old2_dag.py:6:6: airflow3-suggested-update: `airflow.DAG` is removed in Airflow 3.0; It still works in Airflow 3.0 but is expected to be removed in a future version.
+old2/old2_dag.py:6:24: airflow3-removal: [*] `schedule_interval` is removed in Airflow 3.0
+old2/old2_dag.py:7:6: airflow3-suggested-update: `airflow.decorators.task` is removed in Airflow 3.0; It still works in Airflow 3.0 but is expected to be removed in a future v
+old2/old2_dag.py:8:15: airflow3-removal: `execution_date` is removed in Airflow 3.0
+Found 8 errors.
+[*] 3 fixable with the `--fix` option (4 hidden fixes can be enabled with the `--unsafe-fixes` option).

@@ -12,3 +12,5 @@ echo "--- dags test"
 for p in old3:old3_train new:new_train; do
   AIRFLOW__CORE__DAGS_FOLDER=$D/${p%%:*} $A/airflow dags test ${p##*:} 2026-10-01 2>&1 | grep -E "^(keys has|run for)|DagRun Finished" | sed -E 's/.*DagRun Finished: (dag_id=[a-z0-9_]+).*(state=[a-z]+), run_type.*/DagRun Finished: \1 \2/' 
 done
+echo "--- ruff $(ruff --version) migration rules (AIR3) on the old files"
+cd $D && ruff check --preview --select AIR3 --no-cache --output-format concise old/old_dag.py old2/old2_dag.py 2>&1 | cut -c1-175

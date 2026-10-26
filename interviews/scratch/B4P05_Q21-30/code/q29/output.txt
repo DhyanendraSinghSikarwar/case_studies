@@ -1,0 +1,5 @@
+first line: # PIPELINE DEFINITION
+top-level keys: ['components', 'defaultPipelineRoot', 'deploymentSpec', 'pipelineInfo', 'root', 'schemaVersion', 'sdkVersion']
+schemaVersion: 2.1.0 | sdkVersion: kfp-2.17.3
+pipelineInfo: {'name': 'vertex-demo'} | default pipeline_root: gs://YOUR_BUCKET/pipeline_root
+states: ['Train', 'Good?', 'Register', 'Stop'] | missing targets: none | unreachable: none

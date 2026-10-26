@@ -1,0 +1,21 @@
+# What a KFP step pod roughly asks Kubernetes for (hand-written sketch of the failure-prone settings, not KFP output)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: train-step-sketch
+spec:
+  serviceAccountName: pipeline-runner        # must be allowed to read/write the artifact bucket
+  imagePullSecrets:
+    - name: registry-cred                    # missing or wrong => ImagePullBackOff
+  nodeSelector:
+    pool: gpu
+  tolerations:
+    - key: nvidia.com/gpu
+      operator: Exists
+      effect: NoSchedule
+  containers:
+    - name: main
+      image: registry.example.com/team/train:1.4.2
+      resources:
+        requests: {cpu: "2", memory: 4Gi}
+        limits: {memory: 4Gi, nvidia.com/gpu: 1}   # data bigger than 4Gi in memory => OOMKilled (exit 137)
