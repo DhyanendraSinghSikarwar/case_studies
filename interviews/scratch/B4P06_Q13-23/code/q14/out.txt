@@ -1,0 +1,17 @@
+model_repository
+model_repository/iris_onnx
+model_repository/iris_onnx/1
+model_repository/iris_onnx/1/model.onnx
+model_repository/iris_onnx/config.pbtxt
+PASS config name equals folder name (iris_onnx)
+PASS version folders are numeric: ['1']
+PASS default ONNX file name is <version>/model.onnx
+PASS backend onnxruntime
+PASS input X: ONNX [-1, 4] = batch dim + config dims [4]
+PASS output label: ONNX [-1], config dims [1]
+PASS output probabilities: ONNX [-1, 3], config dims [3]
+PASS instance_group kind KIND_CPU
+ALL OK
+--- broken copy (config dims 5 instead of 4):
+FAIL input X: ONNX [-1, 4] = batch dim + config dims [5]
+PROBLEMS

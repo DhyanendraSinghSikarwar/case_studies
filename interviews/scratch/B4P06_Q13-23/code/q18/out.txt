@@ -1,0 +1,4 @@
+test_holder.py::test_not_ready_before_lifespan PASSED                    [ 33%]
+test_holder.py::test_reload_never_shows_half_loaded_model PASSED         [ 66%]
+test_holder.py::test_naive_in_place_reload_is_caught PASSED              [100%]
+============================== 3 passed in 1.11s ===============================
