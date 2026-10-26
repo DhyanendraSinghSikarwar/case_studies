@@ -14,7 +14,7 @@ dvc params diff 2>&1; dvc metrics diff 2>&1
 echo "--- dvc dag"; dvc dag 2>&1 | head -12
 echo "--- registry"; python -I -c "
 import mlflow; mlflow.set_tracking_uri('sqlite:///mlflow.db'); c = mlflow.tracking.MlflowClient()
-for v in c.search_model_versions(\"name='demo-clf'\"): print('demo-clf v'+v.version, 'aliases:', v.aliases)
+for v in c.search_model_versions(\"name='demo-clf'\"): print('demo-clf v'+str(v.version), 'aliases:', v.aliases)
 print('alias candidate ->', c.get_model_version_by_alias('demo-clf','candidate').version)" 2>&1 | grep -v INFO
 echo "--- wandb offline run dirs"; ls wb/wandb | sed -E 's/offline-run-[0-9_]+-/offline-run-<ts>-/'
 echo "--- model card"; cat MODEL_CARD.md

@@ -1,0 +1,42 @@
+1 file pushed
+=== branch data-v2: new rows in data.csv
+Running stage 'train':
+1 file pushed
+--- what the PR shows (git diff main..data-v2, hashes only):
+ data.csv.dvc | 4 ++--
+ dvc.lock     | 6 +++---
+ metrics.json | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+--- a/data.csv.dvc
++++ b/data.csv.dvc
+@@ -2,2 +2,2 @@ outs:
+-- md5: 868bbdf0aa96a4077dc358bd5668340a
+-  size: 3419
++- md5: 4437d833347b0d9630b06fa43c7424f6
++  size: 3435
+Running stage 'train':
+=== merge params-c01 into main
+CONFLICT (content): Merge conflict in dvc.lock
+CONFLICT (content): Merge conflict in metrics.json
+Automatic merge failed; fix conflicts and then commit the result.
+--- conflict markers in dvc.lock:
+dvc.lock
+metrics.json
+20:<<<<<<< HEAD
+22:=======
+24:>>>>>>> params-c01
+=== resolve: take one side of the generated files, let DVC recompute them
+Updated 2 paths from the index
+Updating lock file 'dvc.lock'
+lock params: {'train.C': 0.1} | data md5: 4437d833347b0d9630b06fa43c7424f6
+- md5: 4437d833347b0d9630b06fa43c7424f6
+  hash: md5
+0.1000,0.2000,1
+=== CI check: someone commits a data change but forgets dvc push
+	new:                data.csv
+exit=0
+{"data.csv": "new"}
+exit=0
+1 file pushed
+Cache and remote 'loc' are in sync.
+exit=0
