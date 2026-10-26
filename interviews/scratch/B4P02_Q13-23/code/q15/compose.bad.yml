@@ -1,0 +1,12 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DB_URL: postgresql://user:pw@localhost:5432/app
+    network_mode: host
+  db:
+    image: postgres:16
+    ports:
+      - "5432:5432"

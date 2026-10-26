@@ -1,0 +1,8 @@
+.git
+data/
+checkpoints/
+*.ckpt
+*.pt
+notebooks/
+__pycache__/
+.env

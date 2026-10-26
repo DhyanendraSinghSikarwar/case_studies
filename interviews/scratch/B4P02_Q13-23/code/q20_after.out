@@ -1,0 +1,4 @@
+# after (with the ignore comment):
+(no findings, exit 0)
+# after, ignore comment removed:
+/tmp/Dockerfile.noignore:4 DL3008 warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`

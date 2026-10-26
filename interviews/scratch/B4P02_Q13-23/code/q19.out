@@ -1,0 +1,4 @@
+cgroup v1: limit=UNLIMITED, current=2388 MiB, events=None
+/dev/shm size: 16091 MiB (Docker default for a container is 64 MiB)
+host-visible RAM from /proc/meminfo (what many libs wrongly trust): 16091 MiB
+python returncode: -9 -> shell/docker would report 137

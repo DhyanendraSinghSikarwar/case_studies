@@ -1,0 +1,36 @@
+Haskell Dockerfile Linter 2.15.1
+--- bad Dockerfile
+Dockerfile.bad:1 DL3007 warning: Using latest is prone to errors if the image will ever update. Pin the version explicitly to a release tag
+Dockerfile.bad:2 DL3064 warning: Potentially sensitive data should not be used in the `ARG` or `ENV` commands
+Dockerfile.bad:3 DL3020 error: Use COPY instead of ADD for files and folders
+Dockerfile.bad:5 DL3009 info: Delete the apt lists (/var/lib/apt/lists) after installing something
+Dockerfile.bad:6 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.
+Dockerfile.bad:6 DL3008 warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+Dockerfile.bad:6 DL3015 info: Avoid additional packages by specifying `--no-install-recommends`
+Dockerfile.bad:7 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.
+Dockerfile.bad:7 DL3013 warning: Pin versions in pip. Instead of `pip install <package>` use `pip install <package>==<version>` or `pip install --requirement <requirements file>`
+Dockerfile.bad:7 DL3042 warning: Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`
+Dockerfile.bad:8 DL3002 warning: Last USER should not be root
+Dockerfile.bad:8 DL3066 info: Non-numeric user-id may not be resolvable by host system
+Dockerfile.bad:9 DL3025 warning: Use arguments JSON notation for CMD and ENTRYPOINT arguments
+exit=1
+--- good Dockerfile (no config)
+exit=0
+--- bad Dockerfile with repo config (DL3059 ignored, so fewer lines)
+Dockerfile.bad:1 DL3007 warning: Using latest is prone to errors if the image will ever update. Pin the version explicitly to a release tag
+Dockerfile.bad:2 DL3064 warning: Potentially sensitive data should not be used in the `ARG` or `ENV` commands
+Dockerfile.bad:3 DL3020 error: Use COPY instead of ADD for files and folders
+Dockerfile.bad:5 DL3009 info: Delete the apt lists (/var/lib/apt/lists) after installing something
+Dockerfile.bad:6 DL3015 info: Avoid additional packages by specifying `--no-install-recommends`
+Dockerfile.bad:6 DL3008 warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+Dockerfile.bad:7 DL3013 warning: Pin versions in pip. Instead of `pip install <package>` use `pip install <package>==<version>` or `pip install --requirement <requirements file>`
+Dockerfile.bad:7 DL3042 warning: Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`
+Dockerfile.bad:8 DL3002 warning: Last USER should not be root
+Dockerfile.bad:8 DL3066 info: Non-numeric user-id may not be resolvable by host system
+Dockerfile.bad:9 DL3025 warning: Use arguments JSON notation for CMD and ENTRYPOINT arguments
+--- good Dockerfile with repo config
+exit=0
+--- yaml parse of pre-commit and CI fragments
+.pre-commit-config.yaml parses, top keys: ['repos']
+ci_fragment.yml parses, top keys: ['jobs']
+cfg/hadolint.yaml parses, top keys: ['failure-threshold', 'ignored']

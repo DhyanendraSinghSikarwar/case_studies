@@ -1,0 +1,14 @@
+--- docker compose config (needs env vars; no daemon needed)
+              driver: nvidia
+              count: 1
+    shm_size: "8589934592"
+    user: 1001:1001
+        source: /home/user/case_studies/interviews/scratch/B4P02_Q24-34/code/q25
+        source: ds-home
+        source: /data/shared
+        read_only: true
+        host_ip: 127.0.0.1
+        published: "8888"
+--- missing token must fail
+error while interpolating services.jupyter.environment.JUPYTER_TOKEN: required variable JUPYTER_TOKEN is missing a value: set a token
+--- pyyaml check

@@ -1,0 +1,11 @@
+services:
+  model:
+    image: myorg/model-gpu:1.0
+    ports: ["8000:8000"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

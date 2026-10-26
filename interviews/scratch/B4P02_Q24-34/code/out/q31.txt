@@ -1,0 +1,17 @@
+--- docker compose version
+Docker Compose version v5.6.1
+--- docker compose config (base only), GPU part
+          devices:
+            - capabilities:
+                - gpu
+              driver: nvidia
+              count: 1
+--- check.py
+dev  services (no profile):       ['api']
+dev  services (+dev,monitoring):  ['api', 'notebook', 'prometheus']
+prod services:                    ['api']
+dev: restart='no' gpu_reserved=True ports=[('*', '8000')] mem_limit=17179869184
+prod: restart='always' gpu_reserved=True ports=[('127.0.0.1', '8000')] mem_limit=25769803776
+assertions OK: prod keeps GPU reservation, restarts always, publishes on localhost only
+--- up was not run:
+failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory

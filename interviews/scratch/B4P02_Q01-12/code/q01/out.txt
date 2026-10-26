@@ -1,0 +1,6 @@
+c1 sees model: v2-retrained
+c2 sees model: v1 (same image, own writable layer)
+docker diff c1: ['D /app/config.yaml', 'C /app/model.pkl', 'A /tmp/pred.log']
+image layer ids unchanged: True
+after rm + run again, model: v1
+commit -> layers: 2 -> 3 | new top layer: {'/app/model.pkl': 'v2-retrained'}

@@ -1,0 +1,39 @@
+=== BAD ===
+after editing serve.py:
+  CACHED   FROM python:3.11-slim
+  CACHED   WORKDIR /app
+  REBUILD  COPY . /app
+  REBUILD  RUN pip install --no-cache-dir -r requirements.txt
+  REBUILD  RUN python -c "print('download 500 MB model here')"
+  REBUILD  CMD ["python", "serve.py"]
+after editing requirements.txt:
+  CACHED   FROM python:3.11-slim
+  CACHED   WORKDIR /app
+  REBUILD  COPY . /app
+  REBUILD  RUN pip install --no-cache-dir -r requirements.txt
+  REBUILD  RUN python -c "print('download 500 MB model here')"
+  REBUILD  CMD ["python", "serve.py"]
+=== GOOD ===
+after editing serve.py:
+  CACHED   FROM python:3.11-slim
+  CACHED   WORKDIR /app
+  CACHED   COPY requirements.txt .
+  CACHED   RUN pip install --no-cache-dir -r requirements.txt
+  CACHED   COPY download_model.py .
+  CACHED   RUN python download_model.py
+  REBUILD  COPY serve.py .
+  REBUILD  CMD ["python", "serve.py"]
+after editing requirements.txt:
+  CACHED   FROM python:3.11-slim
+  CACHED   WORKDIR /app
+  REBUILD  COPY requirements.txt .
+  REBUILD  RUN pip install --no-cache-dir -r requirements.txt
+  REBUILD  COPY download_model.py .
+  REBUILD  RUN python download_model.py
+  REBUILD  COPY serve.py .
+  REBUILD  CMD ["python", "serve.py"]
+ARG GIT_SHA early, new commit:
+  CACHED   FROM python:3.11-slim
+  REBUILD  ARG GIT_SHA
+  REBUILD  COPY requirements.txt .
+  REBUILD  RUN pip install -r requirements.txt

@@ -1,0 +1,12 @@
+--- hadolint on both variants
+pip variant exit=0
+uv variant exit=0
+--- uv version
+uv 0.11.32 (x86_64-unknown-linux-gnu)
+--- uv pip compile --generate-hashes (a real lockfile with hashes, tiny example)
+packaging==26.3 \
+    --hash=sha256:94edc256424a... \
+    --hash=sha256:d7193f7c8e4e...
+    # via -r requirements.in
+--- pip's own check that hashes are enforced: wrong hash must fail
+ERROR: THESE PACKAGES DO NOT MATCH THE HASHES FROM THE REQUIREMENTS FILE. If you have updated the package versions, please update the hashes. Otherwise, examine the package contents carefully; someone may have tampered with them.

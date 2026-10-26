@@ -1,0 +1,9 @@
+FROM python:3.11-slim-bookworm
+ARG PIP_TOKEN
+ENV API_KEY=sk-live-123456
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir --extra-index-url https://user:${PIP_TOKEN}@pypi.example.com/simple -r requirements.txt
+RUN rm -f ~/.netrc
+COPY src/ src/
+CMD ["python", "-m", "src.serve"]

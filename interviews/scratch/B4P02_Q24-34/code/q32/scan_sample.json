@@ -1,0 +1,17 @@
+{
+  "note": "HAND-WRITTEN SAMPLE shaped like a Trivy JSON report. IDs and packages are invented.",
+  "Results": [
+    {"Target": "model-api:1.4.0 (debian 12.5)", "Class": "os-pkgs",
+     "Vulnerabilities": [
+       {"VulnerabilityID": "CVE-0000-1001", "PkgName": "libfoo", "Severity": "CRITICAL", "FixedVersion": "1.2.4"},
+       {"VulnerabilityID": "CVE-0000-1002", "PkgName": "libbar", "Severity": "HIGH", "FixedVersion": ""},
+       {"VulnerabilityID": "CVE-0000-1003", "PkgName": "libbaz", "Severity": "HIGH", "FixedVersion": "3.0.1"},
+       {"VulnerabilityID": "CVE-0000-1004", "PkgName": "libqux", "Severity": "MEDIUM", "FixedVersion": "2.2"}
+     ]},
+    {"Target": "Python", "Class": "lang-pkgs",
+     "Vulnerabilities": [
+       {"VulnerabilityID": "CVE-0000-2001", "PkgName": "somewebpkg", "Severity": "CRITICAL", "FixedVersion": "9.1.0"},
+       {"VulnerabilityID": "CVE-0000-2002", "PkgName": "otherpkg", "Severity": "HIGH", "FixedVersion": "0.9.2"}
+     ]}
+  ]
+}

@@ -1,0 +1,8 @@
+model: PASS non-root user
+model: PASS read_only rootfs
+model: PASS tmpfs scratch
+model: PASS cap_drop ALL
+model: PASS no-new-privileges
+model: PASS not privileged
+model: PASS no docker.sock
+failures: 0

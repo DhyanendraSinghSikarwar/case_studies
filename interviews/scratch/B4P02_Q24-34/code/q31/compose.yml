@@ -1,0 +1,30 @@
+services:
+  api:
+    image: registry.example.com/team/model-api:${TAG:-dev}
+    restart: unless-stopped
+    environment:
+      MODEL_PATH: /models/current
+    volumes:
+      - models:/models:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8000/ready')"]
+      interval: 15s
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 16g
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    profiles: ["monitoring"]          # only starts with --profile monitoring
+  notebook:
+    image: jupyter-gpu:dev
+    profiles: ["dev"]
+volumes:
+  models:

@@ -1,0 +1,5 @@
+Dockerfile:3 DL3008 warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+Dockerfile:8 DL3045 warning: `COPY` to a relative destination without `WORKDIR` set.
+Dockerfile:15 DL3013 warning: Pin versions in pip. Instead of `pip install <package>` use `pip install <package>==<version>` or `pip install --requirement <requirements file>`
+Dockerfile:16 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.
+Dockerfile:19 DL3008 warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`

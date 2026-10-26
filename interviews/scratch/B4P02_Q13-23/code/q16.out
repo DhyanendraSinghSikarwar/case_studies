@@ -1,0 +1,10 @@
+flaky store, good checksum:
+  attempt 1: HTTP Error 503: Service Unavailable
+  attempt 2: HTTP Error 503: Service Unavailable
+  ok after 3 attempt(s)
+ready file present: True | leftover .part files: []
+corrupt file:
+  attempt 1: checksum mismatch 52948119 != bc53979a
+  attempt 2: checksum mismatch 52948119 != bc53979a
+  giving up: container exits non-zero, orchestrator restarts it, NOT ready
+bad.bin exists: False
