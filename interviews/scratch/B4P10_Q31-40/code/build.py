@@ -9,6 +9,7 @@ for i, l in enumerate(lines):
     m = re.match(r"### Q(\d+) ", l)
     if m and 31 <= int(m.group(1)) <= 40:
         assert lines[i + 1].startswith("**Asked at:**"); head[int(m.group(1))] = (l, lines[i + 1])
+sys.path.insert(0, HERE)
 from texts import A
 out = []
 for n in range(31, 41):
