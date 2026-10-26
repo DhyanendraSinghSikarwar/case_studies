@@ -27,6 +27,8 @@ metrics.json
 24:>>>>>>> params-c01
 === resolve: take one side of the generated files, let DVC recompute them
 Updated 2 paths from the index
+'data.csv.dvc' didn't change, skipping
+Stage 'train' is cached - skipping run, checking out outputs
 Updating lock file 'dvc.lock'
 lock params: {'train.C': 0.1} | data md5: 4437d833347b0d9630b06fa43c7424f6
 - md5: 4437d833347b0d9630b06fa43c7424f6
@@ -34,9 +36,4 @@ lock params: {'train.C': 0.1} | data md5: 4437d833347b0d9630b06fa43c7424f6
 0.1000,0.2000,1
 === CI check: someone commits a data change but forgets dvc push
 	new:                data.csv
-exit=0
-{"data.csv": "new"}
-exit=0
-1 file pushed
-Cache and remote 'loc' are in sync.
 exit=0

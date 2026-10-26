@@ -4,6 +4,7 @@ printf 'hello\n' > a.txt; cp a.txt b.txt; printf 'other\n' > c.txt
 dvc add a.txt b.txt c.txt >/dev/null 2>&1
 echo "--- cache after dvc add (a.txt and b.txt are identical): 2 objects for 3 files"; find .dvc/cache -type f | sort
 echo "--- a.txt.dvc"; cat a.txt.dvc
+echo "--- inode of a.txt vs its cache object (same inode = link, different = copy)"; stat -c '%i %n' a.txt .dvc/cache/files/md5/b1/946ac92492d2347c6235b4d2611184
 git add -A >/dev/null; git commit -qm v1
 echo "--- dvc status -c BEFORE push (cache vs remote)"; dvc status -c 2>&1 | grep -v '^$'
 dvc push 2>&1 | tail -1

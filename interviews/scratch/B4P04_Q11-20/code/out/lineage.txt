@@ -1,0 +1,16 @@
+=== lineage for churn v1
+model        : churn v1  (run f66c32dd)
+git commit   : a745da060a  dirty=False
+data md5 tag : bd1cba7e3a139900c201e9cbd437e476
+data md5 git : bd1cba7e3a139900c201e9cbd437e476   match=True
+params       : {'C': '1.0'}
+logged input : [('train-data', '987c1572')]
+=== change params -> new model version
+Running stage 'train':
+Updating lock file 'dvc.lock'
+model        : churn v2  (run ea4fafd0)
+git commit   : 77a413c584  dirty=True
+data md5 tag : bd1cba7e3a139900c201e9cbd437e476
+data md5 git : bd1cba7e3a139900c201e9cbd437e476   match=True
+params       : {'C': '0.1'}
+logged input : [('train-data', '987c1572')]

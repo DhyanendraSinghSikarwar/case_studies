@@ -8,11 +8,11 @@ Queued experiment 'q-10' for future execution.
 | Experiment            | Created   | State   | Executor   | cv_acc   | train.C   | train.py                         |
 |-----------------------|-----------|---------|------------|----------|-----------|----------------------------------|
 | workspace             | -         | -       | -          | 0.55     | 100       | e432cd949a5aabf26917012707d00db0 |
-| master                | 02:12 PM  | -       | -          | 0.6      | 1         | e432cd949a5aabf26917012707d00db0 |
-| ├── e745620 [q-10]    | 02:12 PM  | Success | Dvc-task   | 0.5667   | 10        | e432cd949a5aabf26917012707d00db0 |
-| ├── 24b0bff [q-01]    | 02:12 PM  | Success | Dvc-task   | 0.6583   | 0.1       | e432cd949a5aabf26917012707d00db0 |
-| ├── e9ac01c [c-big]   | 02:12 PM  | -       | -          | 0.55     | 100       | e432cd949a5aabf26917012707d00db0 |
-| └── 8c2a8ba [c-small] | 02:12 PM  | -       | -          | 0.7      | 0.01      | e432cd949a5aabf26917012707d00db0 |
+| master                | 02:13 PM  | -       | -          | 0.6      | 1         | e432cd949a5aabf26917012707d00db0 |
+| ├── 9838557 [q-10]    | 02:14 PM  | Success | Dvc-task   | 0.5667   | 10        | e432cd949a5aabf26917012707d00db0 |
+| ├── 37f5b71 [q-01]    | 02:14 PM  | Success | Dvc-task   | 0.6583   | 0.1       | e432cd949a5aabf26917012707d00db0 |
+| ├── b201e58 [c-big]   | 02:13 PM  | -       | -          | 0.55     | 100       | e432cd949a5aabf26917012707d00db0 |
+| └── aac3f78 [c-small] | 02:13 PM  | -       | -          | 0.7      | 0.01      | e432cd949a5aabf26917012707d00db0 |
 
 === dvc exp diff c-small c-big
 Path          Metric    c-small    c-big    Change
@@ -20,15 +20,15 @@ metrics.json  cv_acc    0.7        0.55     -0.15
 
 Path         Param    c-small    c-big    Change
 params.yaml  train.C  0.01       100      99.99
-=== git sees nothing: branch still clean, refs hidden
+=== workspace holds the last run (dirty); experiments live in hidden refs, no new branches
  M dvc.lock
  M metrics.json
  M params.yaml
 * master
-refs/exps/b5/41afde41c1fd0453ea90c330faa6288145cb68/c-big
-refs/exps/b5/41afde41c1fd0453ea90c330faa6288145cb68/c-small
-refs/exps/b5/41afde41c1fd0453ea90c330faa6288145cb68/q-01
-refs/exps/b5/41afde41c1fd0453ea90c330faa6288145cb68/q-10
+refs/exps/15/f9217004002bc91fe4994074ee3cbad64a0006/c-big
+refs/exps/15/f9217004002bc91fe4994074ee3cbad64a0006/c-small
+refs/exps/15/f9217004002bc91fe4994074ee3cbad64a0006/q-01
+refs/exps/15/f9217004002bc91fe4994074ee3cbad64a0006/q-10
 refs/exps/exec/EXEC_HEAD
 === promote: apply c-small, then commit
 Changes for experiment 'c-small' have been applied to your current workspace.
@@ -36,9 +36,9 @@ Changes for experiment 'c-small' have been applied to your current workspace.
  metrics.json | 2 +-
  params.yaml  | 2 +-
  3 files changed, 4 insertions(+), 4 deletions(-)
-e7bc308 adopt C=0.01
-b541afd baseline run
-58bec75 base
+6db050b adopt C=0.01
+15f9217 baseline run
+85078d0 base
 === or branch from another experiment
 Git branch 'try-big' has been created from experiment 'c-big'.
 To switch to the new branch run:

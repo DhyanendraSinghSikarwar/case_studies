@@ -23,7 +23,7 @@ echo "=== merge params-c01 into main"
 git merge params-c01 2>&1 | grep -i conflict
 echo "--- conflict markers in dvc.lock:"; git diff --name-only --diff-filter=U; grep -n -e '<<<<<<<' -e '=======' -e '>>>>>>>' dvc.lock
 echo "=== resolve: take one side of the generated files, let DVC recompute them"
-git checkout --ours dvc.lock metrics.json; dvc repro 2>&1 | grep -e Running -e Updating
+git checkout --ours dvc.lock metrics.json; dvc repro 2>&1 | grep -v -e "^$" -e autostage -e "git add" -e "To track" -e "To enable" -e "dvc push"
 git add dvc.lock metrics.json; git commit -qm "merge params-c01; dvc repro"
 python -I -c "
 import yaml; l=yaml.safe_load(open('dvc.lock'))['stages']['train']

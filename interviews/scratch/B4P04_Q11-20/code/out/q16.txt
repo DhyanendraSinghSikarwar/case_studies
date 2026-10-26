@@ -7,9 +7,12 @@ outs:
   size: 6
   hash: md5
   path: a.txt
+--- inode of a.txt vs its cache object (same inode = link, different = copy)
+1130612 a.txt
+1131781 .dvc/cache/files/md5/b1/946ac92492d2347c6235b4d2611184
 --- dvc status -c BEFORE push (cache vs remote)
-	new:                b.txt
 	new:                c.txt
+	new:                b.txt
 2 files pushed
 --- dvc status -c AFTER push
 Cache and remote 'loc' are in sync.
@@ -23,7 +26,7 @@ hello
 cache objects: 3
 --- dvc gc -w --dry (dry run)
 WARNING: This will remove all cache except items used in the workspace of the current repo.
-Removing /tmp/wr.0hms/part1/.dvc/cache/files/md5/ba/7790b1708b71cb2b61b1a30d824712
+Removing /tmp/wr.zI7J/part1/.dvc/cache/files/md5/ba/7790b1708b71cb2b61b1a30d824712
 Removed 1 objects from repo cache.
 No unused 'legacy' cache to remove.
 cache objects after dry run: 3

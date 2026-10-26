@@ -13,7 +13,7 @@ dvc exp run --queue -S train.C=10 -n q-10 2>&1 | grep -i queued
 dvc exp run --run-all 2>&1 | grep -ie "experiment results" -e error | head
 echo "=== dvc exp show"; dvc exp show --no-pager --md 2>&1
 echo "=== dvc exp diff c-small c-big"; dvc exp diff c-small c-big 2>&1
-echo "=== git sees nothing: branch still clean, refs hidden"; git status --short; git branch; git for-each-ref | awk '{print $3}' | head -5
+echo "=== workspace holds the last run (dirty); experiments live in hidden refs, no new branches"; git status --short; git branch; git for-each-ref | awk '{print $3}' | head -5
 echo "=== promote: apply c-small, then commit"
 dvc exp apply c-small 2>&1 | tail -1; git diff --stat; git commit -qam "adopt C=0.01"; git log --oneline | head -3
 echo "=== or branch from another experiment"
