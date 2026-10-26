@@ -1,5 +1,6 @@
 # Q25: days-past-due buckets as of 2025-06-30.
 import sqlite3
+import numpy as np
 import pandas as pd
 
 AS_OF = "2025-06-30"
@@ -43,10 +44,10 @@ as_of = pd.Timestamp("2025-06-30")
 due = pd.to_datetime(loans["due_date"])
 paid = pd.to_datetime(loans["paid_date"])
 dpd = (as_of - due).dt.days
-bucket = pd.cut(dpd, bins=[-10**6, 0, 30, 60, 10**6],
-                labels=["CURRENT", "DPD_1_30", "DPD_31_60", "DPD_61_PLUS"]).astype(object)
-bucket = bucket.where(paid.isna(), other=pd.Series(["PAID_LATE"] * len(loans)))
-bucket = bucket.where(~(paid.notna() & (paid <= due)), other="PAID_ON_TIME")
+cut = pd.cut(dpd, bins=[-10**6, 0, 30, 60, 10**6],
+             labels=["CURRENT", "DPD_1_30", "DPD_31_60", "DPD_61_PLUS"]).astype(object)
+bucket = np.select([paid.notna() & (paid <= due), paid.notna()],
+                   ["PAID_ON_TIME", "PAID_LATE"], default=cut)
 p = loans[["loan_id", "due_date", "paid_date"]].copy()
 p["dpd"] = dpd.where(paid.isna())
 p["bucket"] = bucket

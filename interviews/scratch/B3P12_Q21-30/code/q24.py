@@ -60,6 +60,6 @@ pd.testing.assert_frame_equal(s, p, check_dtype=False)
 print("\nasserts passed (compared after sorting by later_id)")
 
 allp = pd.read_sql(SQL_ALL_PAIRS, con)
-print("\nself join on every earlier match returns", len(allp), "pairs:", list(map(tuple, allp.values)))
+print("\nself join on every earlier match returns", len(allp), "pairs:", [(int(a), int(b)) for a, b in allp.values])
 print("payment 4 is 6:00 after payment 3, so it is not flagged; gap in seconds:",
       con.execute("SELECT CAST(strftime('%s','2025-06-01 10:10:30') AS INTEGER) - CAST(strftime('%s','2025-06-01 10:04:30') AS INTEGER)").fetchone()[0])

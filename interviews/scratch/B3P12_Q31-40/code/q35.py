@@ -26,7 +26,7 @@ WHERE c.customer_id NOT IN (SELECT customer_id FROM orders
                             WHERE order_date >= '2025-01-01' AND order_date < '2026-01-01')
 ORDER BY c.customer_id
 """
-sql_not_in_fixed = sql_not_in.replace("FROM orders\n", "FROM orders\n").replace(
+sql_not_in_fixed = sql_not_in.replace(
     "WHERE order_date >= '2025-01-01'", "WHERE customer_id IS NOT NULL AND order_date >= '2025-01-01'")
 got = pd.read_sql(sql_answer, con)
 print("NOT EXISTS"); print(got.to_string(index=False))
