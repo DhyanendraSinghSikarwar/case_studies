@@ -1,0 +1,8 @@
+azure-ai-ml 1.35.2
+Sweep | sampling: bayesian | goal: maximize | metric: auc
+limits: total 20 concurrent 4
+search space: {'lr': 'Uniform', 'depth': 'Choice'}
+sweep2: random + BanditPolicy slack 0.1
+parallel= 1: results seen by trial 5=4, trial 10=9, trial 20=19, trials proposed blind=1
+parallel= 4: results seen by trial 5=1, trial 10=6, trial 20=16, trials proposed blind=4
+parallel=20: results seen by trial 5=0, trial 10=0, trial 20=0, trials proposed blind=20

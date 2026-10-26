@@ -1,0 +1,11 @@
+google-cloud-aiplatform 1.165.1
+{"bigQuerySource": {"uri": "bq://my-proj.fs_demo.user_features", "entityIdColumns": ["user_id"]}, "syncConfig": {"cron": "0 */6 * * *"}, "name": "", "etag": "", "labels": {}, "serviceAgentType": 0, "serviceAccountEmail": "", "satisfiesPzs": false, "satisfiesPzi": false}
+2026-01-01 legacy_featurestore -> LOW: not deprecated yet by the snippet dates
+2026-10-26 legacy_featurestore -> HIGH: no new features expected, plan the migration this quarter
+2027-03-01 legacy_featurestore -> BLOCKER: past the snippet sunset date, migrate now
+2026-01-01 bigtable -> ok: not on the legacy services (still check current docs)
+2026-10-26 bigtable -> ok: not on the legacy services (still check current docs)
+2027-03-01 bigtable -> ok: not on the legacy services (still check current docs)
+2026-01-01 optimized_online_serving -> LOW: not deprecated yet by the snippet dates
+2026-10-26 optimized_online_serving -> HIGH: no new features expected, plan the migration this quarter
+2027-03-01 optimized_online_serving -> BLOCKER: past the snippet sunset date, migrate now

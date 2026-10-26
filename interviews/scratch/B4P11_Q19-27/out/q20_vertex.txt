@@ -1,0 +1,4 @@
+google-cloud-aiplatform 1.165.1
+sample_rate 0.2 | emails ['mlops@example.com']
+skew thresholds: {'age': 0.3}
+types: ModelDeploymentMonitoringObjectiveConfig ModelMonitoringObjectiveConfig
