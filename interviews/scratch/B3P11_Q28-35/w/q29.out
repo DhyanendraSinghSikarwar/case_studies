@@ -1,0 +1,71 @@
+rows: 20000 300000 900000 | pandas correct top row: ('City16', '2025-01', np.int64(692032), np.int64(226)) | inflated top row: ('City34', '2025-04', np.int64(2564927), np.int64(218))
+
+== 0 baseline (primary keys only)
+VM steps: 10,171,722   top row: ('City34', '2025-04', 2564927, 218)
+   plan: SCAN i
+   plan: SEARCH o USING INTEGER PRIMARY KEY (rowid=?)
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== 1 sargable date range instead of strftime on the column
+VM steps: 9,987,603   top row: ('City34', '2025-04', 2564927, 218)
+   plan: SCAN i
+   plan: SEARCH o USING INTEGER PRIMARY KEY (rowid=?)
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== 2 add FK indexes order_items(order_id), orders(customer_id)
+VM steps: 5,668,997   top row: ('City34', '2025-04', 2564927, 218)
+   plan: SCAN o
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: SEARCH i USING COVERING INDEX ix_items_order (order_id=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== 3 drop the order_items join (fan-out), still FK indexes
+VM steps: 2,828,660   top row: ('City16', '2025-01', 692032, 226)
+   plan: SCAN o
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== 3b same as 3 but the join selects o.*, c.name, c.segment through a derived table
+VM steps: 2,828,660   top row: ('City16', '2025-01', 692032, 226)
+   plan: SCAN o
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== 4 covering index orders(status, order_date, customer_id, amount)
+VM steps: 1,569,085   top row: ('City16', '2025-01', 692032, 226)
+   plan: SEARCH o USING COVERING INDEX ix_orders_sd (status=? AND order_date>? AND order_date<?)
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== 5 pre-aggregate per customer and month, then join customers
+VM steps: 2,865,064   top row: ('City16', '2025-01', 692032, 226)
+   plan: CO-ROUTINE m
+   plan: SEARCH orders USING COVERING INDEX ix_orders_sd (status=? AND order_date>? AND order_date<?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: SCAN m
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+summary (VM steps, ratio to baseline):
+    10,171,722   1.0000  0 baseline (primary keys only)
+     9,987,603   0.9819  1 sargable date range instead of strftime on the column
+     5,668,997   0.5573  2 add FK indexes order_items(order_id), orders(customer_id)
+     2,828,660   0.2781  3 drop the order_items join (fan-out), still FK indexes
+     2,828,660   0.2781  3b same as 3 but the join selects o.*, c.name, c.segment through a derived table
+     1,569,085   0.1543  4 covering index orders(status, order_date, customer_id, amount)
+     2,865,064   0.2817  5 pre-aggregate per customer and month, then join customers
