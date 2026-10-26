@@ -1,0 +1,7 @@
+tags.mlflow.runName params.lr params.features  metrics.val_auc
+      all20-lr0.001     0.001           all20         0.852303
+     all20-lr0.0001    0.0001           all20         0.851813
+        all20-lr1.0       1.0           all20         0.844176
+child runs: 15
+best params: {'lr': '0.001', 'features': 'all20'} val_auc=0.8523
+test_auc (used once) = 0.8716

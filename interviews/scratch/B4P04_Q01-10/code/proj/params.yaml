@@ -1,0 +1,5 @@
+prepare:
+  seed: 7
+  test_frac: 0.25
+train:
+  C: 1.0

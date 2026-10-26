@@ -1,0 +1,38 @@
+Successfully registered model 'iris_card'.
+# Model card: iris_card (v1, alias champion)
+
+## Intended use
+- Classify iris species from 4 measurements. Demo only, not for botanical decisions. (hand-written field)
+
+## Training data
+- data_version: md5:abc123 (demo)
+- code: git deadbeef (demo)
+
+## Parameters
+- C: 1.0
+- max_iter: 300
+- seed: 0
+- test_size: 0.3
+
+## Metrics
+| metric | value |
+|---|---|
+| acc_slice_long_petal | 1.000 |
+| acc_slice_short_petal | 1.000 |
+| test_acc | 1.000 |
+
+## Inputs
+| name | type |
+|---|---|
+| sepal length (cm) | double |
+| sepal width (cm) | double |
+| petal length (cm) | double |
+| petal width (cm) | double |
+
+## Limitations
+- Only 150 rows; slice metrics rest on few test rows, check the counts before trusting them. (hand-written field)
+- Owner: team-risk
+- Run: f616288f7b38446391fa08fba2e99e41
+
+fields missing: none
+slice sizes in the test set: short petal = 15 , long petal = 30

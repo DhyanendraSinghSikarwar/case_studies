@@ -1,0 +1,19 @@
+artifact_location fixed at creation: file:///tmp/claude-0/b4q24_art_root
+run artifact_uri: file:///tmp/claude-0/b4q24_art_root/09ab9c5dedff4590a99061ca4384dda8/artifacts
+listing:
+cfg/
+  cfg/config.json
+notes/
+  notes/readme.txt
+outputs/
+  outputs/preds.csv
+plots/
+  plots/curve.png
+shards/
+  shards/part0.txt
+  shards/part1.txt
+tables/
+  tables/eval.json
+downloaded -> dl/config.json {'lr': 0.1, 'features': ['a', 'b']}
+csv back: {'id': [1, 2], 'pred': [0.2, 0.9]}
+text back: hello run

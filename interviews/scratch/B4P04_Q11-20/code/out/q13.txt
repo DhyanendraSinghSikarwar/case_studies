@@ -1,0 +1,19 @@
+=== Git LFS (local only, no host, no push)
+Tracking "*.bin"
+--- .gitattributes
+*.bin filter=lfs diff=lfs merge=lfs -text
+--- what Git stores (the pointer)
+version https://git-lfs.github.com/spec/v1
+oid sha256:bcf7f9d1b4311c3352e60502255ce09a6744df84e8f2c89f79c4b5d74933a95a
+size 2000000
+bcf7f9d1b4 * big.bin
+=== DVC
+To enable auto staging, run:
+--- big.bin.dvc
+outs:
+- md5: 2a915e52d86d42e58e580f4073120a6b
+  size: 2000000
+  hash: md5
+  path: big.bin
+--- cache
+.dvc/cache/files/md5/2a/915e52d86d42e58e580f4073120a6b

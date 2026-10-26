@@ -1,0 +1,10 @@
+good config  -> OK
+broken config ->
+   - metric.name 'val_acc' is never logged by train.py (known: ['train_loss', 'val_auc', 'val_loss'])
+   - lr: min 0.5 must be < max 0.1
+   - lr: grid search needs discrete values, not a range
+   - dropout: unknown distribution 'normalish'
+   - dropout: grid search needs discrete values, not a range
+grid blow-up check: 5 lr values * 5 dropout values * 3 batch sizes * 2 optimizers = 150 runs
+--- wandb.sweep with no account (WANDB_MODE=offline) ---
+UsageError: No API key configured. Use `wandb login` to log in.

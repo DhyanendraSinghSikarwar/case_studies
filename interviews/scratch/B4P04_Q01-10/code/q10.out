@@ -1,0 +1,24 @@
+=== A. plain file store, default settings
+mlflow.exceptions.MlflowException: The filesystem tracking backend (e.g., './mlruns') is in maintenance mode and will not receive further updates. Please migrate to a database backend (e.g., 'sqlite:///mlflow.db') to access the latest MLflow features. The `mlflow migrate-filestore` tool migrates your existing data losslessly. Se
+=== B. file store with MLFLOW_ALLOW_FILE_STORE=true
+ok: runs = 1 | artifacts: ['a.txt']
+artifact_uri: file://<cwd>/fs2/713620244018705718/<run_id>/artifacts
+    layout:
+.
+./.trash
+./0
+./0/meta.yaml
+./<exp_id>
+./<exp_id>/fc9d10d4e598427f9f2439725e9ca0ec
+=== C. sqlite backend
+ok: runs = 1 | artifacts: ['a.txt']
+artifact_uri: <cwd>/mlruns/1/<run_id>/artifacts
+    tables (sample):
+['alembic_version', 'assessments', 'budget_policies', 'datasets', 'endpoint_bindings', 'endpoint_model_mappings', 'endpoint_tags', 'endpoints', 'entity_associations'] ... total 65
+runs in db: 1
+=== D. local tracking server on localhost:5081
+    /health -> OK
+ok: runs = 1 | artifacts: ['a.txt']
+artifact_uri: <cwd>/art/1/<run_id>/artifacts
+    artifact files on server disk:
+    art/1/26a13aecd49645eeba86e757b8e9d1b1/artifacts/a.txt

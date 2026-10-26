@@ -1,0 +1,13 @@
+2026/10/26 14:07:07 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/26 14:07:07 INFO mlflow.store.db.utils: Updating database tables
+2026/10/26 14:07:08 INFO mlflow.tracking.fluent: Experiment with name 'q6-demo' does not exist. Creating a new experiment.
+second log_param error: Changing param values is not allowed. Param with key='lr' was already logged with value='0.1' for run ID='9daa6370edd54baa8be7bf9a4777cd2d'. Attempted
+artifact_uri: <cwd>/mlruns/1/9daa6370edd54baa8be7bf9a4777cd2d/artifacts
+params: {'lr': '0.1', 'epochs': '3', 'model': 'logreg'}
+metrics (latest): {'loss': 0.45, 'val_acc': 0.81}
+tags data_version: v1
+loss history: [(0, 0.9), (1, 0.6), (2, 0.45)]
+artifacts: ['meta.json', 'notes']
+  run_id   status params.lr  metrics.val_acc tags.data_version
+9daa6370 FINISHED       0.1             0.81                v1
+files: ['mlflow.db', 'mlruns']

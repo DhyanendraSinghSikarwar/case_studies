@@ -1,0 +1,19 @@
+Successfully registered model 'iris_gov'.
+champion now v 2 | rollback = move it back:
+champion after rollback: v 1
+version history
+v1 created 14:07:56Z aliases=['champion'] run=b03d93f0
+    data_version = md5:abc123
+    owner = team-risk
+    promoted_at = 2026-10-26T14:08:02+00:00
+    promoted_by = asha
+    promotion_note = champion: v2 -> v1; rollback, v2 latency regression
+    validation_status = pending
+v2 created 14:08:01Z aliases=[] run=9c75ad41
+    data_version = md5:abc123
+    owner = team-risk
+    promoted_at = 2026-10-26T14:08:02+00:00
+    promoted_by = dev
+    promotion_note = champion: v1 -> v2; better CV score
+    validation_status = approved
+model description: Iris classifier (demo). Owner: team-risk. | aliases map: {'champion': 1}
