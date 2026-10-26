@@ -23,8 +23,8 @@ Per question: `### Qn stars emoji text` / `**Asked at:**` / **Say this first (1 
 | 8 | Funnels, conversion, DAU/MAU, product metrics | 45 | ✅ (45 Qs) | ✅ | ✅ |
 | 9 | Recursive CTEs, hierarchies, graphs | 30 | ✅ (30 Qs) | ✅ | ✅ |
 | 10 | Pivot/unpivot, string ops, NULL traps | 40 | ✅ (40 Qs) | ✅ | ✅ |
-| 11 | Query optimisation, indexes, execution plans, partitioning | 35 | ✅ (35 Qs) | ⬜ | ⬜ |
-| 12 | Company-style mixed mock sets (FAANG, fintech, e-com) | 40 | ⬜ | ⬜ | ⬜ |
+| 11 | Query optimisation, indexes, execution plans, partitioning | 35 | ✅ (35 Qs) | ✅ | ✅ |
+| 12 | Company-style mixed mock sets (FAANG, fintech, e-com) | 40 | ✅ (40 Qs) | ⬜ | ⬜ |
 
 ## Scope boundaries
 Book 1 owns statistics and ML; Book 4 owns data engineering and generic MLOps (feature stores, Kafka/Spark); Book 6 owns product/business scenarios (Book 3 Part 8 covers only the SQL of metrics, not metric design). Book 3 Part 11 stays on SQL engine behaviour (EXPLAIN on SQLite is executed; other engines are hedged). Keep parts non-overlapping: Part 4 = ranking/top-N windows, Part 5 = running aggregates and LAG/LEAD.
