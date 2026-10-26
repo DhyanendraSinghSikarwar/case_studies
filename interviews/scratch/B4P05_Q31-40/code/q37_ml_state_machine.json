@@ -1,0 +1,36 @@
+{
+  "Comment": "train, evaluate, register if good (sketch, not deployed)",
+  "StartAt": "Train",
+  "States": {
+    "Train": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sagemaker:createTrainingJob.sync",
+      "Parameters": {"TrainingJobName.$": "$.job_name", "RoleArn.$": "$.role_arn"},
+      "ResultPath": "$.train",
+      "Retry": [{"ErrorEquals": ["States.TaskFailed"], "IntervalSeconds": 60, "MaxAttempts": 2, "BackoffRate": 2.0}],
+      "Catch": [{"ErrorEquals": ["States.ALL"], "ResultPath": "$.error", "Next": "NotifyFailure"}],
+      "Next": "Evaluate"
+    },
+    "Evaluate": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {"FunctionName": "evaluate-model", "Payload.$": "$"},
+      "ResultSelector": {"auc.$": "$.Payload.auc"},
+      "ResultPath": "$.eval",
+      "Next": "GoodEnough"
+    },
+    "GoodEnough": {
+      "Type": "Choice",
+      "Choices": [{"Variable": "$.eval.auc", "NumericGreaterThanEquals": 0.85, "Next": "RegisterModel"}],
+      "Default": "RejectModel"
+    },
+    "RegisterModel": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {"FunctionName": "register-model", "Payload.$": "$"},
+      "End": true
+    },
+    "RejectModel": {"Type": "Succeed", "Comment": "ran fine, model not good enough"},
+    "NotifyFailure": {"Type": "Fail", "Error": "TrainingFailed", "Cause": "see $.error"}
+  }
+}

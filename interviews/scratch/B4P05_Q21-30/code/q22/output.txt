@@ -1,0 +1,12 @@
+import_errors: {}
+build_features     timetable=CronTriggerTimetable   schedule='0 2 * * *'
+                   task outlets: ['s3://ml-bucket/features/daily']
+train_on_features  timetable=AssetTriggeredTimetable schedule=assets ['s3://ml-bucket/features/daily']
+train_or_weekly    timetable=AssetOrTimeSchedule    schedule=AssetOrTimeSchedule
+--- dags test build_features (producer only; no scheduler running)
+wrote features/daily/ ; asset event emitted when this task succeeds
+DagRun Finished: dag_id=build_features state=success
+--- asset tables in the metadata DB
+asset rows: [('s3://ml-bucket/features/daily/', 's3://ml-bucket/features/daily')]
+asset events: 1
+consumer dag run rows: 0

@@ -1,0 +1,22 @@
+# NOT executed: dagster is not installed here. Written from memory of the asset API; check current docs.
+from dagster import asset, Definitions, ScheduleDefinition, define_asset_job
+
+
+@asset
+def raw() -> str:
+    return "s3://b/raw"
+
+
+@asset
+def model(raw: str) -> str:
+    return "model"
+
+
+@asset
+def score(model: str) -> float:
+    return 0.9
+
+
+job = define_asset_job("ml_pipe", selection="*")
+defs = Definitions(assets=[raw, model, score], jobs=[job],
+                   schedules=[ScheduleDefinition(job=job, cron_schedule="0 0 * * *")])

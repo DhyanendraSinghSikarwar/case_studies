@@ -1,0 +1,18 @@
+14:31:16.922 | INFO    | prefect - Starting temporary server on http://127.0.0.1:8500
+See https://docs.prefect.io/v3/concepts/server#how-to-guides for more information on running a dedicated Prefect server.
+14:31:21.514 | INFO    | Flow run 'imperial-griffin' - Beginning flow run 'imperial-griffin' for flow 'train-flow'
+14:31:21.550 | INFO    | Task run 'flaky_fetch-8fd' - Task run failed with exception: ConnectionError('try 1 failed') - Retry 1/2 will start immediately
+14:31:21.553 | INFO    | Task run 'flaky_fetch-8fd' - Task run failed with exception: ConnectionError('try 2 failed') - Retry 2/2 will start immediately
+14:31:21.557 | INFO    | Task run 'flaky_fetch-8fd' - Finished in state Completed()
+14:31:21.557 | INFO    | Flow run 'imperial-griffin' - training data-2026-10-02 for 5 epochs
+14:31:22.547 | INFO    | Flow run 'imperial-griffin' - Finished in state Completed()
+14:31:22.631 | ERROR   | prefect.flows - Parameter validation failed for flow 'train-flow': [{'type': 'int_parsing', 'loc': ('epochs',), 'msg': 'Input should be a valid integer, unable to parse string as an integer', 'input': 'many', 'url': 'https://errors.pydantic.dev/2.14/v/int_parsing'}]
+Parameters: {'day': 'x', 'epochs': 'many'}
+14:31:22.631 | ERROR   | prefect.engine - Validation of flow parameters failed with error: Flow run received invalid parameters:
+ - epochs: Input should be a valid integer, unable to parse string as an integer
+14:31:22.675 | INFO    | prefect.engine - Finished in state Failed('Validation of flow parameters failed with error: ParameterTypeError: Flow run received invalid parameters:\n - epochs: Input should be a valid integer, unable to parse string as an integer')
+RETURN: ok calls: 3
+VALIDATION: ParameterTypeError Flow run received invalid parameters:
+PLAIN TASK .fn: data-2026-10-03
+PLAIN FLOW .fn: MissingContextError - There is no active flow or task run context.
+14:31:22.692 | INFO    | prefect - Stopping temporary server on http://127.0.0.1:8500

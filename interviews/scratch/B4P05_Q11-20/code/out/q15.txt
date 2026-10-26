@@ -1,0 +1,35 @@
+--- cron week 1
+[cron] start
+[cron] extract ok
+[cron] build_features ok
+[cron] train crashed -> script dies; next run is next week; nobody is told
+--- cron week 2
+[cron] start
+[cron] extract ok
+[cron] build_features ok
+[cron] train ok
+[cron] evaluate ok
+[cron] register ok
+models registered after 2 weeks: 1 (one week of stale model, no alert)
+
+--- orchestrated run, train fails once
+extract: success (attempt 1)
+build_features: success (attempt 1)
+train: attempt 1 failed: GPU node preempted
+train: success (attempt 2)
+evaluate: success (attempt 1)
+register: success (attempt 1)
+run ok: True | registered: 1
+--- same run again (rerun / duplicate trigger)
+extract: skipped (already success)
+build_features: skipped (already success)
+train: skipped (already success)
+evaluate: skipped (already success)
+register: skipped (already success)
+registered after rerun: 1
+--- permanent failure
+train: attempt 1 failed: GPU node preempted
+train: attempt 2 failed: GPU node preempted
+train: attempt 3 failed: GPU node preempted
+ALERT: train failed after 3 attempts
+run ok: False | registered: 0

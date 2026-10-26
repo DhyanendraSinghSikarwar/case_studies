@@ -1,0 +1,4 @@
+good          -> trained on 8 rows
+many nulls    -> BLOCKED: amount null rate 0.38 > 0.1
+schema drift  -> BLOCKED: amount is text, expected float
+too few rows  -> BLOCKED: row count 3 outside [5, 1000]

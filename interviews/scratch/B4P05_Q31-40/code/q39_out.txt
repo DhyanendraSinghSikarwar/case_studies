@@ -1,0 +1,14 @@
+{
+ "run_date": "2026-10-01",
+ "snapshot_id": "snap-0042",
+ "git_sha": "55c44d849e893181416b055ac49f7e91b3c59cc2",
+ "params": {
+  "lr": 0.1
+ },
+ "image": "registry.example.com/ml/train@sha256:abababababababababababababababababababababababababababababababab",
+ "manifest_id": "5585053da754"
+}
+same manifest, same inputs: True | same id: True
+new snapshot, different inputs: True | ids: 5585053da754 de231616adc5
+rejected: pin the snapshot id and use an image digest, not 'latest' or a moving tag
+rejected: pin the snapshot id and use an image digest, not 'latest' or a moving tag
