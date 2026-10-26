@@ -56,6 +56,9 @@ print("SQL FULL OUTER JOIN (SQLite 3.45):"); print(s.to_string(index=False)); pr
 print("naive join without deduping bank_file, txn_ids that fan out:"); print(pd.read_sql(naive_sql, con).to_string(index=False)); print()
 pd.testing.assert_frame_equal(s, e, check_dtype=False)
 
+print("NULL trap in the compare:", con.execute("SELECT CASE WHEN 5 <> NULL THEN 'AMOUNT_MISMATCH' ELSE 'MATCHED' END, "
+      "CASE WHEN 5 IS NOT NULL THEN 'AMOUNT_MISMATCH' ELSE 'MATCHED' END").fetchone(), "(<> vs IS NOT)"); print()
+
 # pandas
 ledger = pd.read_sql("SELECT * FROM ledger", con); bank = pd.read_sql("SELECT * FROM bank_file", con)
 b = bank.groupby("txn_id", as_index=False).agg(n_bank=("bank_ref", "size"), bank_paise=("amount_paise", "min"))

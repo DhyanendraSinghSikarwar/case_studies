@@ -1,0 +1,47 @@
+**Say this first (1 line):** Aggregate each child table to the order grain first (item total per order, refund total per order), then join the two one-row-per-order results to `orders`; a direct three-table join repeats an item's line total once for every return row of that item and overstates revenue.
+
+**Schema and sample data:** (assumption: net revenue = sum of `qty * unit_price` minus the sum of `refund_amount`, shipping excluded; "orders with any return" counts orders that have at least one return row.)
+@@SCHEMA@@
+
+**SQL answer:** `naive` (the broken three-table join), `sql` (pre-aggregated: CTE `item_tot` per order, CTE `ret_tot` per order through `order_items`, then two `LEFT JOIN`s from `orders` with `COALESCE`) and `share` (an `EXISTS` per order) are in the Code block.
+
+**pandas answer:** the Code block computes the line value per item, `groupby('order_id').sum()` for items, merges `returns` to `order_items` to find each return's order, `groupby('order_id').sum()` for refunds, and left-merges both onto the orders frame with `fillna(0)`.
+
+**Example:** by hand.
+- Order 1: item 1 is 2 x 100 = 200, item 2 is 1 x 200 = 200, so items = 400. Item 1 has two partial returns of 100 each, so refunds = 200 and net = 200.
+- Order 2: 1 x 100 = 100, no return, net 100.
+- Order 3: 3 x 50 + 1 x 200 = 350, one refund of 50, net 300.
+- Order 4: 100 with a full refund of 100, net 0. Order 5: 4 x 25 = 100, net 100.
+- Total net = 200 + 100 + 300 + 0 + 100 = 700. Orders with a return: 1, 3, 4, so 3 of 5 = 0.6.
+- The naive join has two rows for item 1 (one per return), so item 1's 200 appears twice: order 1 shows items = 600 and net 400, and the total net is 900 instead of 700, an overstatement of exactly 200.
+
+**Code:** run with `python3 -I`.
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- **Two returns on one item:** the case that breaks the naive join. The refund sum is right in the naive join (each refund appears once); the item total is what multiplies. A bug that hides because one of the two sums is correct.
+- **Orders without items or returns:** `LEFT JOIN` plus `COALESCE(...,0)` keeps them. Without the `LEFT JOIN`, order 2 would vanish from the refunds side.
+- **Refund larger than the item value, or a refund row with 0 amount:** a return row with a 0 refund still counts as "an order with a return" here (existence of a row). If your definition is "refund greater than 0", filter first.
+- **NULL refund_amount:** `SUM` skips NULLs; if every refund is NULL the sum is NULL, hence the `COALESCE`.
+- **Shipping:** excluded on purpose; if it were included and refunded it is a business rule to confirm.
+
+**Then explain:**
+- **Why fan-out happens:** joining order to items gives one row per item, and joining returns then gives one row per (item, return). Anything that lives at the item or order level is repeated per return row.
+- **Fix pattern:** aggregate child tables to the grain you report (order), then join; or sum in a subquery. A `DISTINCT` on line items would be wrong, because two different items can have equal values.
+- **The check:** the one-line sanity test is that the sum of item totals (1050 here) does not change when you join the returns table in; the naive join reports 1250.
+- **Dialects (not executed here):** the same query runs on PostgreSQL, MySQL, BigQuery and Snowflake; `EXISTS` returns a boolean in those engines, so `SUM(EXISTS(...))` is a SQLite and MySQL habit; use `SUM(CASE WHEN EXISTS (...) THEN 1 ELSE 0 END)` or a join to the pre-aggregated `ret_tot` to be portable.
+- **Scoring note (Set E1, Q4 of 5, 25 pts):** about 10 points for the correct per-order net and the 0.6 share, 5 for the fan-out explanation shown on the seed (the 900 versus 700 contrast), 5 for pandas asserted equal, 2.5 for stating that shipping is excluded and how a return is defined, 2.5 for a reconciliation check (1050 items, 350 refunds). Quoting the naive total but not saying why it is wrong gets partial credit only.
+
+**Follow-ups:**
+- *What if refunds are recorded per order, not per item?* Then join `returns` to `orders` directly; the same rule holds: aggregate it to one row per order before joining.
+- *How would you get net revenue per product?* Aggregate returns per item, join to items, then group by product. Orders are no longer the grain.
+- *Why not `COUNT(DISTINCT order_id)` and be done?* That fixes counts but not sums; sums double-count the repeated line.
+
+**Common mistakes:**
+- Summing item values after joining returns.
+- `INNER JOIN` to returns, which drops every order without a return.
+- Dividing the number of return rows (4 here) by orders instead of orders with a return (3 of 5).
+- Letting a NULL refund turn net revenue NULL.

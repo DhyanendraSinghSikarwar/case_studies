@@ -45,6 +45,9 @@ FROM flights GROUP BY advertiser_id ORDER BY advertiser_id
 """
 strict_sql = merged_sql.replace("date(prev_max_end, '+1 day')", "prev_max_end")   # touching NOT merged (overlap only)
 
+lag_sql = merged_sql.replace("MAX(end_date) OVER (PARTITION BY advertiser_id ORDER BY start_date, campaign_id\n                                ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING)",
+                             "LAG(end_date) OVER (PARTITION BY advertiser_id ORDER BY start_date, campaign_id)")
+assert lag_sql != merged_sql
 s_m = pd.read_sql(merged_sql, con)
 s_d = pd.read_sql(days_sql, con)
 print("SQL merged ranges (touching merged):"); print(s_m.to_string(index=False)); print()
@@ -52,6 +55,9 @@ print("SQL live days per advertiser:"); print(s_d.to_string(index=False)); print
 print("naive sum of campaign lengths (double counts overlaps):"); print(pd.read_sql(naive_sql, con).to_string(index=False)); print()
 print("overlap-only rule (touching NOT merged), advertiser 2:")
 print(pd.read_sql(strict_sql, con).query("advertiser_id == 2").to_string(index=False)); print()
+
+print("wrong variant, LAG(end_date) instead of the running max, advertiser 1:")
+print(pd.read_sql(lag_sql, con).query("advertiser_id == 1").to_string(index=False)); print()
 
 # pandas
 fl = pd.read_sql("SELECT * FROM flights", con, parse_dates=["start_date", "end_date"])

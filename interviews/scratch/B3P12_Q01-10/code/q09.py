@@ -51,6 +51,9 @@ WHERE t.txn_date BETWEEN date('2025-06-30', '-29 days') AND '2025-06-30'
   AND NOT EXISTS (SELECT 1 FROM customers c WHERE c.customer_id = t.customer_id)
 GROUP BY t.customer_id
 """
+off = pd.read_sql(sql.replace("'-29 days'", "'-30 days'"), con)
+print("off-by-one check, window start minus 30 days (31 days): customer 2 amount =",
+      int(off.loc[off.customer_id == 2, "amount_30d"].iloc[0]), "instead of 150"); print()
 s = pd.read_sql(sql, con); so = pd.read_sql(orphan_sql, con)
 print("SQL risk table:"); print(s.to_string(index=False)); print()
 pd.testing.assert_frame_equal(s, p[s.columns], check_dtype=False)

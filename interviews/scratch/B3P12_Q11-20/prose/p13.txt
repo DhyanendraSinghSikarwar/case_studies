@@ -1,0 +1,44 @@
+**Say this first (1 line):** Take a running sum of `qty_change` per sku ordered by `(move_date, move_id)`, then per sku return the earliest date among rows where the running total is below zero (NULL if none) and the minimum running total.
+
+**Schema and sample data:** (assumption: moves on the same day are applied in `move_id` order, so a sale logged before a receipt on the same day is a real dip; the end-of-day view is a different question, shown for contrast. "Below zero" means strictly less than 0, so a stock of exactly 0 is fine.)
+@@SCHEMA@@
+
+**SQL answer:** `sql` in the Code block: a CTE `r` with `SUM(qty_change) OVER (PARTITION BY sku ORDER BY move_date, move_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)`, then `MIN(CASE WHEN stock < 0 THEN move_date END)` and `MIN(stock)` grouped by sku. `eod` is the end-of-day variant.
+
+**pandas answer:** sort by `sku, move_date, move_id`, `groupby('sku')['qty_change'].cumsum()`, then the minimum `move_date` among rows with `stock < 0` and the minimum `stock`, put side by side with `concat` (so skus that never went negative still get a row, with NaN).
+
+**Example:** by hand.
+- A: +10, -4, -8, +20 gives running 10, 6, -2, 18. The -8 on 2025-01-02 is the first move that takes it below zero, so the first negative date is 2025-01-02 and the lowest is -2.
+- B: +5 on 01-01, then -7 (move 6) and +10 (move 7) both on 01-02. In move_id order the running totals are 5, -2, 8, so the stock dips below zero on 01-02 with lowest -2. By end of day the balance on 01-02 is 8, so the end-of-day variant says NULL and lowest 5.
+- C: +3 then -3 gives 3, 0: it hits zero but never below, so NULL and lowest 0.
+
+**Code:** run with `python3 -I`.
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- **Same-day ordering:** the result for B depends on it. If the receipt (move 7) were logged first, B would never go negative. This is a business assumption, so state it and, if the timestamps exist, use them rather than `move_id`.
+- **Exactly zero (C):** not below zero; the lowest running stock is 0.
+- **Never negative:** the `CASE` returns NULL for every row, `MIN` of all-NULL is NULL, and the sku is still returned. In pandas the filtered frame has no rows for C, so `concat` creates NaN (the Code block compares after turning NaN and NULL into None).
+- **Frame choice:** the frame is explicit `ROWS`; the default frame with an `ORDER BY` is `RANGE` and treats equal sort keys as peers (here the key is two columns and unique, but the habit is the safer one; see Part 5 Q6).
+- **Dates as text:** `MIN` on ISO `YYYY-MM-DD` text sorts correctly; other formats would not.
+- **Opening stock:** if there is an opening balance not in the moves table, add it as a first move or start the running sum from it.
+
+**Then explain:**
+- **First negative date, not first negative move:** the filter plus `MIN(move_date)` gives the date; to also return the move, use `ROW_NUMBER` over the negative rows.
+- **Why not `HAVING stock < 0`:** window results cannot be filtered in the same `SELECT`'s `WHERE`; that is why the running sum is a CTE and the filter sits in a `CASE`.
+- **Dialects (not executed here):** the SQL is standard and runs unchanged on PostgreSQL, MySQL 8, BigQuery and Snowflake; SQL Server needs the window with `ROWS` as written.
+- **Scoring note (Set E2, Q5 of 5, 25 pts):** about 10 points for the right first dates and lows on the seed (A: 01-02 and -2, B: 01-02 and -2, C: NULL and 0), 5 for a correct treatment of the seeded edge cases (the same-day tie and the exact zero), 5 for pandas asserted equal, 2.5 for stating the same-day assumption, 2.5 for a one-line check (the final running stock equals the plain `SUM`). Dropping sku C from the result, or returning 0 or an empty string instead of NULL, loses the edge-case points.
+
+**Follow-ups:**
+- *How long was it negative?* Find the first date back at or above zero with a second window; use islands (Part 7) on the negative flag.
+- *What if you only want end-of-day balances?* Aggregate to one row per sku and day first (`eod` in the Code block) and then run the cumulative sum; the answer for B changes.
+- *Which index helps?* `(sku, move_date, move_id)` lets the window read in order without a sort (Part 11); not tested here.
+
+**Common mistakes:**
+- Leaving out `move_id` in the order, so same-day rows run in an arbitrary order.
+- Using `<= 0` for "below zero".
+- Filtering the running total in `WHERE` and dropping skus that never went negative.
+- Comparing a date-ordered running sum with a plain cumsum on unsorted data in pandas.
