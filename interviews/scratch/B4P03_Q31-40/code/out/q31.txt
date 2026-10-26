@@ -1,0 +1,15 @@
+A: 4 DS, no platform team, on AWS
+   -> managed service (SageMaker / Vertex / Azure ML)
+   because: no one to run a cluster
+B: 8 DS, platform team, DAGs only
+   -> plain Jobs + Argo or Airflow (or KFP alone)
+   because: only pipelines needed: take Argo / Airflow / KFP alone, not the platform
+C: 40 DS, platform team, notebooks
+   -> Kubeflow pieces (Notebooks + Training Operator + Katib + KServe)
+   because: many users, notebooks, search and serving on one cluster
+D: 6 DS, platform team, nightly job
+   -> plain Kubernetes Jobs (+ a scheduler)
+   because: small scope, simple batch training
+
+kubernetes-validate --strict q31_job.yaml (exit 0 )
+INFO /home/user/case_studies/interviews/scratch/B4P03_Q31-40/code/q31_job.yaml passed for resource job/train-churn-001 against version 1.37

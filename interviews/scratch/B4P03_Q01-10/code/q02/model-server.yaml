@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: model-server
+  template:
+    metadata:
+      labels:
+        app: model-server
+    spec:
+      containers:
+        - name: server
+          image: registry.example.com/ml/model-server:2.1.0
+          resources:
+            requests:
+              cpu: "1"
+              memory: 3Gi
+            limits:
+              cpu: "2"
+              memory: 3Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: model-server-guaranteed
+spec:
+  containers:
+    - name: server
+      image: registry.example.com/ml/model-server:2.1.0
+      resources:
+        requests:
+          cpu: "2"
+          memory: 3Gi
+        limits:
+          cpu: "2"
+          memory: 3Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: batch-helper-besteffort
+spec:
+  containers:
+    - name: helper
+      image: registry.example.com/ml/helper:1.0.0

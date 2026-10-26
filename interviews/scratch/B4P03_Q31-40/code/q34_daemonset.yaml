@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gpu-node-agent
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels: {app: gpu-node-agent}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate: {maxUnavailable: 1}
+  template:
+    metadata:
+      labels: {app: gpu-node-agent}
+    spec:
+      nodeSelector:
+        node-pool: gpu          # only nodes with this label get a pod
+      tolerations:
+      - {key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}   # GPU nodes are tainted
+      priorityClassName: system-node-critical
+      containers:
+      - name: agent
+        image: registry.example.com/gpu-node-agent:0.3.0
+        resources:
+          requests: {cpu: 50m, memory: 64Mi}
+          limits: {memory: 128Mi}

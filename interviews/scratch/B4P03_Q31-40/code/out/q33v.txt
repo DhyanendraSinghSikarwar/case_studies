@@ -1,0 +1,2 @@
+INFO q33_statefulset.yaml passed for resource service/vecdb against version 1.37
+INFO q33_statefulset.yaml passed for resource statefulset/vecdb against version 1.37

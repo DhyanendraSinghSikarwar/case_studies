@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: churn-stable
+spec:
+  replicas: 9
+  selector:
+    matchLabels:
+      app: churn
+      track: stable
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: churn
+        track: stable
+    spec:
+      containers:
+        - name: api
+          image: registry.example.com/ml/churn:1.0.0
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: churn-canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: churn
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: churn
+        track: canary
+    spec:
+      containers:
+        - name: api
+          image: registry.example.com/ml/churn:1.1.0
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: churn
+spec:
+  selector:
+    app: churn                  # no 'track' key: both Deployments sit behind one Service
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

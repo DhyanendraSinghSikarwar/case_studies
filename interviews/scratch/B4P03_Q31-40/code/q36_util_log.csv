@@ -1,0 +1,16 @@
+hour,pod,gpu_util_pct
+0,infer-a,2
+0,infer-b,0
+1,infer-a,1
+1,infer-b,0
+2,infer-a,0
+2,infer-b,0
+9,infer-a,60
+9,infer-b,55
+10,infer-a,70
+10,infer-b,65
+11,infer-a,5
+11,infer-b,3
+12,train-x,95
+13,train-x,92
+14,train-x,0

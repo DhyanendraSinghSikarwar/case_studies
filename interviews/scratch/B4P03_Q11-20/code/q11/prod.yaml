@@ -1,0 +1,7 @@
+replicaCount: 3
+gpu:
+  enabled: true
+  count: 1
+resources:
+  limits:
+    memory: 8Gi

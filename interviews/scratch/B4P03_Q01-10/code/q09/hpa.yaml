@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infer-cpu
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: infer-cpu
+  template:
+    metadata:
+      labels:
+        app: infer-cpu
+    spec:
+      containers:
+        - name: server
+          image: registry.example.com/ml/infer-cpu:1.0.0
+          resources:
+            requests:
+              cpu: "1"                 # utilisation % is measured against THIS
+              memory: 2Gi
+            limits:
+              memory: 2Gi
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: infer-cpu
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: infer-cpu
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60

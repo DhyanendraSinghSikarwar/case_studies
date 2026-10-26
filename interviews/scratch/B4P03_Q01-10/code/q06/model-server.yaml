@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: model-server
+  template:
+    metadata:
+      labels:
+        app: model-server
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: server
+          image: registry.example.com/ml/model-server:2.1.0
+          ports:
+            - name: http
+              containerPort: 8000
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+            failureThreshold: 36        # 36 x 5 s = 180 s budget for a 90 s load
+          livenessProbe:
+            httpGet:
+              path: /healthz            # process-only check, never the model
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /ready              # 200 only when weights are loaded and a tiny predict works
+              port: http
+            periodSeconds: 5
+            failureThreshold: 2
+            timeoutSeconds: 2

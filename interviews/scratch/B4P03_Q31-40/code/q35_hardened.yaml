@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: infer-hardened
+  labels: {app: infer}
+spec:
+  automountServiceAccountToken: false
+  serviceAccountName: infer-sa
+  imagePullSecrets:
+  - name: regcred
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile: {type: RuntimeDefault}
+  containers:
+  - name: server
+    image: registry.example.com/infer@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities: {drop: ["ALL"]}
+    env:
+    - {name: HF_HOME, value: /cache/hf}
+    - {name: TMPDIR, value: /tmp}
+    resources:
+      requests: {cpu: "2", memory: 8Gi}
+      limits: {memory: 8Gi, nvidia.com/gpu: 1}
+    volumeMounts:
+    - {name: tmp, mountPath: /tmp}
+    - {name: cache, mountPath: /cache}
+    - {name: shm, mountPath: /dev/shm}
+  volumes:
+  - {name: tmp, emptyDir: {}}
+  - {name: cache, emptyDir: {sizeLimit: 10Gi}}
+  - {name: shm, emptyDir: {medium: Memory, sizeLimit: 2Gi}}

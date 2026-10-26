@@ -1,0 +1,12 @@
+# KServe CRD: field names from memory of the docs; check current KServe docs. Not schema-validated here.
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: churn
+spec:
+  predictor:
+    canaryTrafficPercent: 10
+    model:
+      modelFormat:
+        name: sklearn
+      storageUri: s3://example-bucket/models/churn/v2

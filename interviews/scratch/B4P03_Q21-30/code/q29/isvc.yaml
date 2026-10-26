@@ -1,0 +1,23 @@
+# KServe InferenceService, v1beta1 schema as commonly shown in KServe docs.
+# CHECK CURRENT DOCS: field names and defaults vary by KServe version and deployment mode.
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: fraud-sklearn
+  namespace: ml-serving
+  annotations:
+    serving.kserve.io/deploymentMode: Serverless     # Knative-backed; RawDeployment = plain Deployment + HPA
+spec:
+  predictor:
+    minReplicas: 1                 # 0 allows scale-to-zero in Serverless mode
+    maxReplicas: 5
+    scaleMetric: concurrency       # Knative-style: in-flight requests per pod
+    scaleTarget: 10
+    canaryTrafficPercent: 10       # 10% to the newest revision, 90% to the previous good one
+    model:
+      modelFormat:
+        name: sklearn
+      storageUri: s3://models-prod/fraud/4/    # new version being rolled out
+      resources:
+        requests: {cpu: "1", memory: 2Gi}
+        limits: {memory: 2Gi}

@@ -1,0 +1,51 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: serving-high
+value: 100000
+globalDefault: false
+preemptionPolicy: PreemptLowerPriority
+description: "Online inference. May evict batch pods when the cluster is full."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: batch-low
+value: 1000
+globalDefault: false
+preemptionPolicy: Never
+description: "Batch scoring and training. Never preempts others."
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ranker
+spec:
+  replicas: 3
+  selector:
+    matchLabels: {app: ranker}
+  template:
+    metadata:
+      labels: {app: ranker}
+    spec:
+      priorityClassName: serving-high
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule      # hard: pod stays Pending rather than break the spread
+          labelSelector:
+            matchLabels: {app: ranker}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:   # soft: try one pod per node
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels: {app: ranker}
+      containers:
+        - name: server
+          image: registry.example.com/ranker:2.0
+          resources:
+            requests: {cpu: "1", memory: 2Gi}
+            limits: {memory: 2Gi}
