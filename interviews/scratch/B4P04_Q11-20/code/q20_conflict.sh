@@ -17,8 +17,8 @@ dvc repro >/dev/null 2>&1; git add -A; git commit -qm base; dvc push 2>&1 | tail
 echo "=== branch data-v2: new rows in data.csv"
 git checkout -q -b data-v2; echo "0.1000,0.2000,1" >> data.csv; dvc repro 2>&1 | grep Running; git add -A; git commit -qm "more data"; dvc push 2>&1 | tail -1
 echo "--- what the PR shows (git diff main..data-v2, hashes only):"; git diff main..data-v2 --stat; git diff main..data-v2 -U0 -- data.csv.dvc | grep -v -e '^diff' -e '^index'
-git checkout -q main; git checkout -q -b params-c01; sed -i 's/C: 1.0/C: 0.1/' params.yaml; dvc repro 2>&1 | grep Running; git add -A; git commit -qm "C=0.1"
-git checkout -q main; git merge -q data-v2 -m "merge data-v2" 2>&1 | tail -1
+git checkout -q main; dvc checkout >/dev/null 2>&1; git checkout -q -b params-c01; sed -i 's/C: 1.0/C: 0.1/' params.yaml; dvc repro 2>&1 | grep Running; git add -A; git commit -qm "C=0.1"
+git checkout -q main; dvc checkout >/dev/null 2>&1; git merge -q data-v2 -m "merge data-v2" 2>&1 | tail -1; dvc checkout >/dev/null 2>&1
 echo "=== merge params-c01 into main"
 git merge params-c01 2>&1 | grep -i conflict
 echo "--- conflict markers in dvc.lock:"; git diff --name-only --diff-filter=U; grep -n -e '<<<<<<<' -e '=======' -e '>>>>>>>' dvc.lock

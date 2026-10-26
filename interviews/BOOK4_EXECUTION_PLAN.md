@@ -23,7 +23,7 @@ Per question, in order: `### Qn stars emoji text` / `**Asked at:**` / **Say this
 | 1 | Git, code quality, packaging, testing ML code | 40 | ✅ (40 Qs) | ✅ | ✅ |
 | 2 | Docker (images, layers, multi-stage, GPU) | 45 | ✅ (45 Qs) | ✅ | ✅ |
 | 3 | Kubernetes basics for ML, Helm, autoscaling | 40 | ✅ (40 Qs) | ✅ | ✅ |
-| 4 | Data and model versioning: DVC, MLflow, W&B | 40 | ⬜ | ⬜ | ⬜ |
+| 4 | Data and model versioning: DVC, MLflow, W&B | 40 | ✅ (40 Qs) | ✅ | ✅ |
 | 5 | Pipelines/orchestration: Airflow, Kubeflow, Prefect | 40 | ⬜ | ⬜ | ⬜ |
 | 6 | Serving: FastAPI, batch vs real-time, Triton, BentoML | 45 | ⬜ | ⬜ | ⬜ |
 | 7 | CI/CD for ML, GitHub Actions, model registry | 40 | ⬜ | ⬜ | ⬜ |
@@ -37,4 +37,4 @@ Per question, in order: `### Qn stars emoji text` / `**Asked at:**` / **Say this
 Split Wave B into agents of about 10 questions; tell agents to stop and report (not retry) at a spend limit and to keep files in their own scratch folders; commit and push WIP often (a stop hook demands it); run Part N Wave A for the next part in parallel with Part N-1 Wave B when budget allows.
 
 ## Next step
-Part 4 Wave A (data and model versioning: DVC, MLflow, W&B; target 40). Check whether pip can install dvc and mlflow (local file store, no server) and record exactly what ran; W&B needs an account/network so it is 'not executed' (wandb offline mode may be tried). Part 3 lessons: kubernetes-validate --strict works offline; no helm/kubectl; Part 2 lessons: hadolint-py and docker compose config work without a daemon. Part 1 lessons: pip works through the proxy (pytest, scikit-learn, ruff, mypy, uv installed); WebFetch fails (snippet-only sources); delete __pycache__ before committing.
+Part 5 Wave A (pipelines and orchestration: Airflow, Kubeflow Pipelines, Prefect; target 40). Test pip install apache-airflow / prefect / kfp (airflow may be heavy: try `airflow dags test` with SQLite, DAG parsing via DagBag; prefect local flow runs; kfp compile to YAML without a cluster) and record exactly what ran; servers/clusters are 'not executed'. Part 4 lessons: dvc, mlflow, wandb(offline) install and run in a venv (/tmp/claude-0/ven/v may exist); set MLFLOW_DISABLE_TELEMETRY=true; agents must not write outside their dirs. Part 3 lessons: kubernetes-validate --strict works offline; no helm/kubectl; Part 2 lessons: hadolint-py and docker compose config work without a daemon. Part 1 lessons: pip works through the proxy (pytest, scikit-learn, ruff, mypy, uv installed); WebFetch fails (snippet-only sources); delete __pycache__ before committing.
