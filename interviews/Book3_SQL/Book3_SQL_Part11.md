@@ -2389,7 +2389,7 @@ assert m.equals(q)
 print(f"   mask {tm:.1f} ms | query {tq:.1f} ms (200,000 rows, machine-specific)")
 ```
 
-**Output (my run, one run on this machine):**
+**Output (my run):** one run on this machine.
 ```text
 {'a': dtype('int64'), 'b': dtype('float64'), 's': <StringDtype(storage='python', na_value=nan)>}
 machine-specific timings in ms (best of 3 where cheap, one run for apply and iterrows):
