@@ -105,6 +105,8 @@ print("naive COUNT(DISTINCT order_id) total:", int(naive["n_orders"].sum()), "(c
 print("rows after the join (fan-out): ", con.execute("SELECT COUNT(*) FROM customers c LEFT JOIN orders o ON o.customer_id=c.customer_id LEFT JOIN order_items i ON i.order_id=o.order_id").fetchone()[0],
       "vs 100,000 orders and 400,000 items")
 
+print("customers with no orders:", con.execute("SELECT COUNT(*) FROM customers c WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id=c.customer_id)").fetchone()[0],
+      "; orders with no items:", con.execute("SELECT COUNT(*) FROM orders o WHERE NOT EXISTS (SELECT 1 FROM order_items i WHERE i.order_id=o.order_id)").fetchone()[0])
 res = {}
 for name, sql in (("naive", NAIVE), ("derived tables", FIX_DERIVED), ("CTE", FIX_CTE)):
     rows, n = steps(con, sql)

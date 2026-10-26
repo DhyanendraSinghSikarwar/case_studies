@@ -30,6 +30,8 @@ def make(n, Q):
     h, a = head(n)
     code = open("code/q%d.py" % n, encoding="utf-8").read()
     out = open("code/q%d.out" % n, encoding="utf-8").read()
+    if isinstance(Q.get("sql"), str):
+        Q["sql_text"] = Q.pop("sql")
     if Q.get("sql_text"):
         for ln in Q["sql_text"].split("\n"):
             if ln.strip():
