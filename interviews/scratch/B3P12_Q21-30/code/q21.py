@@ -56,3 +56,4 @@ short = orders[orders["order_date"] < "2025-05-01"].set_index("order_date")["amo
 print("resample without reindex, orders before May only: rows", len(short), "ending at", short.index.max().strftime("%Y-%m"))
 # naive growth without NULLIF would divide by zero
 print("SQLite 100.0*(120-0)/0 gives (NULL, no error in SQLite):", con.execute("SELECT 100.0*(120-0)/0").fetchone()[0])
+print("pandas 120.0 / 0.0 gives:", (pd.Series([120.0]) / pd.Series([0.0])).iloc[0], "(inf, not NaN, so the zero must be masked)")

@@ -41,8 +41,8 @@ con = sqlite3.connect(":memory:")
 con.executescript(DDL)
 raw = pd.read_sql("SELECT * FROM wallet_topups", con)
 
+# PANDAS START
 def pandas_version(raw, as_of):
-    # PANDAS START
     as_of = pd.Timestamp(as_of)
     d = raw.assign(m=pd.to_datetime(raw["topup_date"]).dt.to_period("M"))
     d = d[pd.to_datetime(raw["topup_date"]) <= as_of][["customer_id", "m"]].drop_duplicates()
@@ -55,13 +55,21 @@ def pandas_version(raw, as_of):
             done = (c + off).end_time.normalize() <= as_of
             rows.append((str(c), off, int(counts.get((c, off), 0)) if done else None))
     return pd.DataFrame(rows, columns=["cohort_month", "month_offset", "active"])
-    # PANDAS END
+# PANDAS END
 
-for as_of in ("2025-04-30", "2025-03-31"):
+def run(as_of, raw):
     s = pd.read_sql(SQL, con, params={"as_of": as_of})
     p = pandas_version(raw, as_of)
     s["active"] = s["active"].astype("Float64"); p["active"] = p["active"].astype("Float64")
-    print("as of", as_of)
     print(s.to_string(index=False))
     pd.testing.assert_frame_equal(s, p, check_dtype=False)
     print("asserts passed (ordered by cohort_month, month_offset)\n")
+
+print("as of 2025-04-30 (both cohorts fully observable)")
+run("2025-04-30", raw)
+print("as of 2025-03-31 (February cohort is too young for offset 2)")
+run("2025-03-31", raw)
+con.execute("DELETE FROM wallet_topups WHERE customer_id IN (1, 4)")
+raw2 = pd.read_sql("SELECT * FROM wallet_topups", con)
+print("as of 2025-04-30 after deleting customers 1 and 4 (nobody active in February from the January cohort)")
+run("2025-04-30", raw2)
