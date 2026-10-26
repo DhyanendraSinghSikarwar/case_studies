@@ -1,0 +1,9 @@
+name: churn-ci-local
+on:
+  pull_request:
+jobs:
+  ci:
+    uses: ./.github/workflows/ml-ci.yml
+    with:
+      python-version: "3.11"
+    secrets: inherit

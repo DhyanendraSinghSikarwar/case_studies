@@ -1,0 +1,4 @@
+{"id": "g1", "input": "Refund for order 118?", "must_contain": ["refund"], "expect_json_keys": ["answer", "source"]}
+{"id": "g2", "input": "Reset my password", "must_contain": ["reset"], "expect_json_keys": ["answer", "source"]}
+{"id": "g3", "input": "Delivery time to Pune?", "must_contain": ["days"], "expect_json_keys": ["answer", "source"]}
+{"id": "g4", "input": "Cancel subscription", "must_contain": ["cancel"], "expect_json_keys": ["answer", "source"]}

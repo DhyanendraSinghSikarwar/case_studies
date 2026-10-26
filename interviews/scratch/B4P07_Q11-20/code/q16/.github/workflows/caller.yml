@@ -1,0 +1,14 @@
+name: churn-ci
+on:
+  pull_request:
+jobs:
+  ci:
+    uses: acme-ml/shared-workflows/.github/workflows/ml-ci.yml@v1
+    with:
+      python-version: "3.11"
+    secrets: inherit
+  report:
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "coverage was ${{ needs.ci.outputs.coverage }}"

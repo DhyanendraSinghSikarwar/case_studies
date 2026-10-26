@@ -1,0 +1,73 @@
+name: weekly-retrain-credit-risk
+on:
+  schedule:
+    - cron: "30 20 * * 5"          # UTC; runs from the default branch only
+  workflow_dispatch:
+    inputs:
+      data_version:
+        description: frozen data snapshot id
+        required: true
+concurrency:
+  group: credit-risk-release
+  cancel-in-progress: false         # never cancel a half-finished promotion
+permissions:
+  contents: read
+jobs:
+  data-tests:
+    runs-on: [self-hosted, linux, train]     # private runner inside the bank network (concept)
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          SNAPSHOT: ${{ inputs.data_version || vars.LATEST_SNAPSHOT }}
+        run: python -m ci.data_tests --snapshot "$SNAPSHOT"
+  train:
+    needs: data-tests
+    runs-on: [self-hosted, linux, train]
+    outputs:
+      version: ${{ steps.reg.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - env:
+          SNAPSHOT: ${{ inputs.data_version || vars.LATEST_SNAPSHOT }}
+        run: python -m train --snapshot "$SNAPSHOT"
+      - id: reg
+        run: python -m register --name credit-risk >> "$GITHUB_OUTPUT"
+  gate:
+    needs: train
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Floor, champion regression, stability (PSI), fairness slices
+        run: python -m gates --candidate "${{ needs.train.outputs.version }}" --policy policy/gates.yaml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate-report
+          path: gate_report.json
+  staging:
+    needs: [train, gate]
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      id-token: write                # OIDC to the cloud; no stored keys
+    steps:
+      - run: python -m promote --version "${{ needs.train.outputs.version }}" --alias staging
+  shadow-canary:
+    needs: [train, staging]
+    runs-on: ubuntu-latest
+    environment: shadow
+    steps:
+      - run: python -m rollout_check --version "${{ needs.train.outputs.version }}" --stages shadow,canary5
+  production:
+    needs: [train, shadow-canary]
+    runs-on: ubuntu-latest
+    environment: production           # required reviewers: model risk, not the author
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m promote --version "${{ needs.train.outputs.version }}" --alias champion --require-approver
+      - name: Open the GitOps PR (the cluster controller does the deploy)
+        run: python -m open_gitops_pr --version "${{ needs.train.outputs.version }}"
