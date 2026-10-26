@@ -21,7 +21,7 @@ Per question, in order: `### Qn stars emoji text` / `**Asked at:**` / **Say this
 | Part | Topic | Target | Wave A | Wave B | Wave C |
 |---|---|---|---|---|---|
 | 1 | Git, code quality, packaging, testing ML code | 40 | ✅ (40 Qs) | ✅ | ✅ |
-| 2 | Docker (images, layers, multi-stage, GPU) | 45 | ⬜ | ⬜ | ⬜ |
+| 2 | Docker (images, layers, multi-stage, GPU) | 45 | ✅ (45 Qs) | ✅ | ✅ |
 | 3 | Kubernetes basics for ML, Helm, autoscaling | 40 | ⬜ | ⬜ | ⬜ |
 | 4 | Data and model versioning: DVC, MLflow, W&B | 40 | ⬜ | ⬜ | ⬜ |
 | 5 | Pipelines/orchestration: Airflow, Kubeflow, Prefect | 40 | ⬜ | ⬜ | ⬜ |
@@ -37,4 +37,4 @@ Per question, in order: `### Qn stars emoji text` / `**Asked at:**` / **Say this
 Split Wave B into agents of about 10 questions; tell agents to stop and report (not retry) at a spend limit and to keep files in their own scratch folders; commit and push WIP often (a stop hook demands it); run Part N Wave A for the next part in parallel with Part N-1 Wave B when budget allows.
 
 ## Next step
-Part 2 Wave A (Docker: images, layers, multi-stage, GPU; target 45). Docker daemon is NOT available (CLI only), so builds are 'not executed'; Dockerfile parsing/lint by script is fine. Part 1 lessons: pip works through the proxy (pytest, scikit-learn, ruff, mypy, uv installed); WebFetch fails (snippet-only sources); delete __pycache__ before committing.
+Part 3 Wave A (Kubernetes basics for ML, Helm, autoscaling; target 40). No kubectl/helm/cluster here: manifests are validated by YAML parsing/schema scripts (try pip install kubernetes-validate or kubeconform-like tools, helm via download if proxy allows; else 'not executed'). Part 2 lessons: hadolint-py and docker compose config work without a daemon. Part 1 lessons: pip works through the proxy (pytest, scikit-learn, ruff, mypy, uv installed); WebFetch fails (snippet-only sources); delete __pycache__ before committing.
