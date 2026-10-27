@@ -64,7 +64,7 @@ B[36] = """**Say this first (1 line):** At 10x the first things to break are usu
 **Then explain:**
 - What breaks first: hot keys and read throughput on the feature store (Part 9 Q35), then ranking compute per request (candidates times model cost), then embedding refresh time, then log volume and its storage. In my toy model the feature reads dominate.
 - Levers: cache popular feature reads, precompute user and item embeddings on a schedule, shrink the candidate set (500 to 200), sample logs but keep full logs for a trace percentage.
-- Test before launch (Part 6 Q16): replay a load profile at 10x in staging, watch tail latency and saturation, and repeat the test after each lever. Autoscaling limits and quotas (Part 3 Q36) must be checked too.
+- Test before launch (Part 6 Q16): replay a load profile at 10x in staging, watch tail latency and saturation, and repeat the test after each lever. Kubernetes cost controls and limits (Part 3 Q36) must be checked too.
 - Keep cost per thousand requests flat: report it as a metric with a target, review per release.
 - Stop optimising when the next saving hurts relevance; then negotiate: fewer candidates, slower refresh for cold users, smaller feed page. Numbers in this model are invented abstract units.
 - Failure modes: cache hit rate collapsing after a catalogue refresh, stale embeddings after a skipped refresh, logging so heavy it becomes the top cost.
@@ -93,7 +93,7 @@ B[36] = """**Say this first (1 line):** At 10x the first things to break are usu
 B[37] = """**Say this first (1 line):** I present one governed path from data zone to decommissioning, and I answer the examiner with evidence I can produce on demand: reason codes for a decline, a tamper-evident change log, and a signed independent validation.
 
 **Then explain:**
-- Design in order: restricted data zone with residency tags and customer-managed encryption keys; feature store with single definitions (Part 4 Q25 style lineage); training that records data hash, code commit and seed; independent validation in a separate team; registry with approvals (Part 4 Q29); deployment behind authentication on a private network; monitoring; an append-only audit log; a retirement checklist. Cloud depth is in Part 10 Q39 and Part 11 Q35. Regulatory points (RBI model-risk and localisation expectations) are from adviser summaries: check the regulator's site and current law.
+- Design in order: restricted data zone with residency tags and customer-managed encryption keys; feature store with single definitions (registry governance as in Part 4 Q25); training that records data hash, code commit and seed; independent validation in a separate team; registry with approvals (Part 4 Q29); deployment behind authentication on a private network; monitoring; an append-only audit log; a retirement checklist. Cloud depth is in Part 10 Q39 and Part 11 Q35. Regulatory points (RBI model-risk and localisation expectations) are from adviser summaries: check the regulator's site and current law.
 - Probe 1, why declined: store reason codes with each decision and the model and feature versions; I show the top negative contributors. Probe 2, who changed prod last quarter: query the hash-chained promotion log and show the chain verifies. Probe 3, independent validation: show the signed validation memo from a person outside the build team, linked to the model version.
 - Failure modes: reasons not stored at decision time, registry edits outside the log, validator who reports to the builder, a retired model still scoring.
 - Scoring note [Set C, Q4 of 4, 15 min, 40 pts]: about 12 for scoping assumptions (who the examiner is, which decisions are covered), 12 for a design with the controls, 8 for failures and residency, 4 for the table check, 4 for the summary. Partial: architecture drawn, but no evidence for the probes.
@@ -179,7 +179,7 @@ B[40] = """**Say this first (1 line):** Anything shipped to a device can be extr
 
 **Then explain:**
 - Model protection and its limits: obfuscation and encryption slow an attacker but the model must be decrypted to run; hardware key stores raise the bar; a model whose theft is costly stays server-side. Be honest: no on-device scheme is unbreakable.
-- Update channel: sign a manifest holding the version and the file hash with a private key held in a key service; the app ships only the public key. See Part 7 Q32 for model signing in CI and Part 6 Q39 for edge deployment.
+- Update channel: sign a manifest holding the version and the file hash with a private key held in a key service; the app ships only the public key. See Part 7 Q32 for SBOM, signing and provenance and Part 6 Q39 for model API security.
 - App attestation (concept only, check platform docs): the platform vouches that the request comes from a genuine app on a genuine device; use it to gate the fallback API with per-device quotas.
 - Cost: telemetry and updates across 100,000 devices; delta updates and sampling cut traffic.
 - Failure modes: replay of an old valid manifest (rollback attack), key leakage, a cloned app burning the fallback budget.
@@ -266,10 +266,10 @@ B[42] = """**Say this first (1 line):** Measure what is actually read and by who
 B[43] = """**Say this first (1 line):** I pick the design by the loss I can accept: active-active loses least but costs headroom and needs a residency check, active-passive is cheaper but slower to recover, per-region independent has no stale state but no cover for a region's users.
 
 **Then explain:**
-- Active-passive: warm standby, async replication; recovery time includes detection and switch (Part 11 Q33 for cross-cloud and Region concepts, Part 6 Q38 for serving rollout). Stale window equals replication lag.
+- Active-passive: warm standby, async replication; recovery time includes detection and switch (Part 11 Q33 for multi-cloud architecture trade-offs, Part 6 Q38 for zero-downtime deploys). Stale window equals replication lag.
 - Active-active: both Regions serve; the failed Region's half sees errors until health checks react; features replicated asynchronously.
 - Per-Region independent: no cross-Region state so no lag, but a Region loss takes its users down unless traffic can move.
-- State: feature store replication and its lag (Part 9 Q32), registry artefacts copied ahead of time, decision log per Region with a merge for audit. Residency may forbid replicating some data to another Region; check the law and your policy.
+- State: feature store replication and its lag (Part 9 Q32 covers pipeline effects end to end), registry artefacts copied ahead of time, decision log per Region with a merge for audit. Residency may forbid replicating some data to another Region; check the law and your policy.
 - Test failover on a schedule; a plan never exercised is not a plan. Idle capacity is the cost of the faster designs.
 - Scoring note [Not a timed set]: full marks need the three designs, the numbers from the simulation and the residency caveat; partial for a table with no consistency discussion.
 
@@ -296,7 +296,7 @@ B[43] = """**Say this first (1 line):** I pick the design by the loss I can acce
 B[44] = """**Say this first (1 line):** I give each agent its own identity with the smallest scopes, make write actions go through human approval, and enforce those limits in the platform, not in the prompt.
 
 **Then explain:**
-- Boundary: per-agent identity and scopes (Part 10 Q3, Part 10 Q8), human approval for write actions, sandboxed code execution, egress allow-lists, secrets never placed in the model context, rate and spend limits, audit logs of every tool call (Part 11 Q31 for the other clouds' equivalents).
+- Boundary: per-agent identity and scopes (Part 10 Q3, Part 10 Q8), human approval for write actions, sandboxed code execution, egress allow-lists, secrets never placed in the model context, rate and spend limits, audit logs of every tool call (Part 11 Q31 for the LLM boundary on Azure and GCP).
 - Technique of injection is Book 2; here I only assume the agent may be steered, so its credentials cannot do harm.
 - Failure modes: one shared service identity for all agents, tools with wildcard actions, a secret pasted into a prompt or a log, approval fatigue (users click yes always).
 - Evaluator limits: my sketch handles allow, deny, wildcards, boundaries, SCPs and session policies; it does not model NotAction, policy variables or all cross-account rules. Check current docs and use a real policy simulator for production.
