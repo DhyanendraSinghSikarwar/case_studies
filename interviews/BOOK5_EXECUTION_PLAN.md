@@ -21,7 +21,7 @@ Per question, in order: `### Qn stars emoji text` / `**Asked at:**` / **Pattern:
 ## Part checklist (targets from plan.md)
 | Part | Pattern | Target | Wave A | Wave B | Wave C |
 |---|---|---|---|---|---|
-| 1 | Arrays and hashing | 50 | ⬜ | ⬜ | ⬜ |
+| 1 | Arrays and hashing | 50 | ✅ (50 Qs) | ✅ | ✅ |
 | 2 | Two pointers and sliding window | 45 | ⬜ | ⬜ | ⬜ |
 | 3 | Strings | 40 | ⬜ | ⬜ | ⬜ |
 | 4 | Stack, queue, monotonic stack | 40 | ⬜ | ⬜ | ⬜ |
@@ -40,4 +40,4 @@ Per question, in order: `### Qn stars emoji text` / `**Asked at:**` / **Pattern:
 Split Wave B into agents of about 10-12 questions; tell agents to stop and report (not retry) at a spend limit; commit and push WIP often (a stop hook demands it); after each part's merge run the lead re-run of all code blocks; Part 14 includes timed mock sets with scoring like Book 3 Part 12 and Book 4 Part 12 (cross-reference by checked headings).
 
 ## Next step
-Part 1 Wave A (arrays and hashing; target 50).
+Part 2 Wave A (two pointers and sliding window; target 45). Part 1 lessons: WebFetch fails (snippet-only sources); prompt examples were hand-checked but never run, so Wave B must run every example and say plainly when one is wrong; `scratch/B5_check.py <part file>` re-runs every python block and checks template order, star order and fences (the lead runs it at Wave C); agents write per-question files plus build.py early; commit and push WIP often.
