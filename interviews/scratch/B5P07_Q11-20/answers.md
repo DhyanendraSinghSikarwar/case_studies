@@ -504,7 +504,7 @@ chain 5000 inorder: True | bounds recursive: RecursionError
 - A chain of 5000 nodes: recursive bounds hits `RecursionError` at the default limit of 1000; use the iterative inorder (or an explicit stack of `(node, low, high)`).
 
 **Follow-ups:**
-- Allow duplicates on the left only? Change one comparison: left bound becomes `<=` allowed (`val > high` fails instead of `>=`). Say the rule out loud first.
+- Allow duplicates on the left only? Say the rule out loud first, then make the bound inclusive on that side only: the left-going `high` rejects `val > high` instead of `val >= high`, and the right side stays strict.
 - Which is better? Same big-O. Inorder is shorter to write iteratively and stops early; bounds also generalises to "each node must lie in a range".
 - Why is checking only inorder sortedness enough? A tree is a BST exactly when its inorder sequence is strictly increasing, and the code tests that directly.
 
@@ -512,7 +512,7 @@ chain 5000 inorder: True | bounds recursive: RecursionError
 - Comparing each node only with its parent.
 - Using `<` where `<=` is needed (accepting duplicates).
 - Sentinels `-2**31` and `2**31 - 1`.
-- Keeping a single global `prev` in a recursive inorder but forgetting it must be initialised to None, not 0 or `-inf` with `<`.
+- Starting an inorder `prev` at 0 or a sentinel instead of None.
 
 ### Q13 ⭐⭐⭐ 🟡 Lowest common ancestor of a binary tree. Nodes are `TreeNode(val, left, right)`; examples write a tree as a level-order array with null for a missing child (the children of a null are not listed). The tree is an ordinary binary tree with DISTINCT values, 2 <= n <= 10^5 nodes; p and q are two different values that both exist. Return the value of their lowest common ancestor (a node may be its own descendant). Give the recursive post-order solution (return the node if it matches, else combine the two child results), explain why returning early at a match is correct when both nodes exist, and say what changes if either value may be missing (a second pass or counting found nodes). Example: root=[3, 5, 1, 6, 2, 0, 8, null, null, 7, 4], p=5, q=1 -> 3; root=[3, 5, 1, 6, 2, 0, 8, null, null, 7, 4], p=5, q=4 -> 5; root=[3, 5, 1, 6, 2, 0, 8, null, null, 7, 4], p=6, q=4 -> 5; root=[3, 5, 1, 6, 2, 0, 8, null, null, 7, 4], p=7, q=8 -> 3; root=[1, 2], p=1, q=2 -> 1.
 **Asked at:** Tree interview-pattern guides on techinterview.org (binary-tree patterns, traversal patterns, advanced tree patterns, depth of a binary tree; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND) | Candidate-reported rounds (Naukri Code360: a Flipkart November 2021 online coding round with a vertical order traversal question, an Amazon March 2022 SDE-2 online round with LCA of a binary tree; a Glassdoor Flipkart September-October 2025 report of LCA in a coding round; a LeetCode discuss Facebook intern report listing serialize/deserialize, LCA and smallest subtree with the deepest nodes; snippets only, not opened; self-reported, unverified) | Blind 75 / NeetCode 150 pattern lists and their GitHub copies (search snippets only, not opened; the snippets confirm a Trees category and Validate BST in Blind 75, the rest of the tree list is editor knowledge)

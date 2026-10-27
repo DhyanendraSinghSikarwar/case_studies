@@ -30,7 +30,7 @@
 - A chain of 5000 nodes: recursive bounds hits `RecursionError` at the default limit of 1000; use the iterative inorder (or an explicit stack of `(node, low, high)`).
 
 **Follow-ups:**
-- Allow duplicates on the left only? Change one comparison: left bound becomes `<=` allowed (`val > high` fails instead of `>=`). Say the rule out loud first.
+- Allow duplicates on the left only? Say the rule out loud first, then make the bound inclusive on that side only: the left-going `high` rejects `val > high` instead of `val >= high`, and the right side stays strict.
 - Which is better? Same big-O. Inorder is shorter to write iteratively and stops early; bounds also generalises to "each node must lie in a range".
 - Why is checking only inorder sortedness enough? A tree is a BST exactly when its inorder sequence is strictly increasing, and the code tests that directly.
 
@@ -38,4 +38,4 @@
 - Comparing each node only with its parent.
 - Using `<` where `<=` is needed (accepting duplicates).
 - Sentinels `-2**31` and `2**31 - 1`.
-- Keeping a single global `prev` in a recursive inorder but forgetting it must be initialised to None, not 0 or `-inf` with `<`.
+- Starting an inorder `prev` at 0 or a sentinel instead of None.
