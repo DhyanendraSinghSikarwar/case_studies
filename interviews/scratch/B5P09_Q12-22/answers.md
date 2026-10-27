@@ -481,7 +481,7 @@ n=1000 path plus closing edge ok
 
 ---
 
-### Q15 ⭐⭐⭐ 🔴 Word ladder: shortest transformation length. `begin` and `end` are lowercase words of the same length L (1 <= L <= 10) and `word_list` a list of distinct lowercase words of length L (1 <= len <= 5000). One move changes exactly one letter and the new word must be in `word_list` (`begin` itself need not be). Return the number of words on the shortest sequence from `begin` to `end` counting both ends, or 0 if impossible (also 0 when `end` is not in `word_list`). Build neighbours by trying the 26 letters at each position (or with wildcard buckets such as 'h*t') instead of comparing all pairs, and give the complexity of each approach. Example: begin='hit', end='cog', word_list=['hot', 'dot', 'dog', 'lot', 'log', 'cog'] -> 5; begin='hit', end='cog', word_list=['hot', 'dot', 'dog', 'lot', 'log'] -> 0; begin='a', end='c', word_list=['a', 'b', 'c'] -> 2.
+### Q15 ⭐⭐⭐ 🔴 Word ladder: shortest transformation length. `begin` and `end` are lowercase words of the same length L (1 <= L <= 10) and `word_list` a list of distinct lowercase words of length L (1 <= len <= 5000). One move changes exactly one letter and the new word must be in `word_list` (`begin` itself need not be). Return the number of words on the shortest sequence from `begin` to `end` counting both ends, or 0 if impossible (also 0 when `end` is not in `word_list`; when `begin` equals `end` and `end` is in `word_list`, return 1). Build neighbours by trying the 26 letters at each position (or with wildcard buckets such as 'h*t') instead of comparing all pairs, and give the complexity of each approach. Example: begin='hit', end='cog', word_list=['hot', 'dot', 'dog', 'lot', 'log', 'cog'] -> 5; begin='hit', end='cog', word_list=['hot', 'dot', 'dog', 'lot', 'log'] -> 0; begin='a', end='c', word_list=['a', 'b', 'c'] -> 2.
 **Asked at:** Candidate-reported rounds on Naukri Code360 and GeeksforGeeks (a Flipkart 2021 report with number of islands, a Flipkart 2025 online assessment and a GeeksforGeeks on-campus 2020 report with word ladder; search-result summaries only, pages not opened; self-reported, unverified) | Graph pattern guides and lists (techinterview.org graph interview patterns and comprehensive graph guides, DesignGurus common graph-traversal questions, Techie Delight graph practice list; search snippets only, not opened)
 
 **Pattern:** BFS on an implicit, unweighted graph. Words are nodes, two words are linked if they differ in exactly one letter. Shortest path in edges plus 1 equals the word count.
@@ -1257,5 +1257,490 @@ clone is a real cycle: c.neighbors[0].neighbors[0] is c -> True
 - Appending the original neighbour into the copy's list.
 - Creating the clone only when a node is popped, so a neighbour's clone does not exist yet when you want to append it.
 - Forgetting the `None` case.
+
+---
+
+### Q20 ⭐⭐ 🟡 Walls and gates (multi-source BFS). `rooms` is an m x n grid (1 <= m, n <= 100) where -1 is a wall, 0 is a gate and 2147483647 stands for an empty room (infinity). Return a new grid in which every empty room holds the number of steps (up, down, left, right moves, not through walls) to its nearest gate, and stays 2147483647 if no gate can be reached. Explain why one BFS started from all gates at once beats one BFS per room, and give both complexities. Example: rooms=[[2147483647, -1, 0, 2147483647], [2147483647, 2147483647, 2147483647, -1], [2147483647, -1, 2147483647, -1], [0, -1, 2147483647, 2147483647]] -> [[3, -1, 0, 1], [2, 2, 1, -1], [1, -1, 2, -1], [0, -1, 3, 4]]; rooms=[[2147483647]] -> [[2147483647]]; rooms=[[0, -1, 2147483647]] -> [[0, -1, 2147483647]].
+**Asked at:** Graph pattern guides and lists (techinterview.org graph interview patterns and comprehensive graph guides, DesignGurus common graph-traversal questions, Techie Delight graph practice list; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Multi-source BFS. Put every source in the queue at distance 0 and run one BFS; each cell gets the distance to its nearest source.
+
+**Say this first (1 line):** "Reverse the question: instead of searching from each room for a gate, start from all gates together; the first time BFS reaches a room is its nearest-gate distance."
+
+**Brute force:** For every empty room run its own BFS until it hits a gate. One BFS is O(mn), there are up to mn rooms, so O((mn)^2) = 10^8 for 100 x 100. On a 30 x 30 grid with one gate in the corner the run below counts 596,584 queue pops against 900 for the right method.
+
+**Optimal:**
+- Copy the grid (the prompt wants a new grid). Queue = all cells equal to 0.
+- Pop `(x, y)`. For each of 4 neighbours in bounds that still holds 2147483647: set it to `g[x][y] + 1` and enqueue.
+- The sentinel value does two jobs: "unvisited" and "still unreachable". Walls (-1) and gates (0) are never overwritten.
+- Why it works: this is the same as adding a virtual super-source joined to every gate by a zero-cost edge. BFS pops cells in order of distance from that super-source, so the first writer of a cell is its nearest gate.
+- Rooms never reached keep 2147483647, exactly the required output.
+
+**Complexity:**
+- Multi-source BFS: each cell enqueued at most once, 4 neighbour checks each, so O(mn) time and O(mn) space (queue plus copied grid).
+- One BFS per room: O(mn) rooms times O(mn) each, O((mn)^2) time.
+
+**Dry run:** the 1 x 3 grid `[0, -1, INF]`.
+- Queue [(0,0)]. Pop it: neighbour (0,1) is a wall (-1, not INF), skip. Queue empty.
+- (0,2) was never written, stays INF. Result `[0, -1, INF]`, as expected.
+- On the 4 x 4 example the gates at (0,2) and (3,0) both start in the queue; the cell (1,2) is reached from (0,2) at distance 1 and keeps that value even though (3,0) would give a longer one.
+
+**Code:**
+
+```python
+import itertools, random
+from collections import deque
+random.seed(20)
+INF = 2147483647
+D4 = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+def walls_and_gates(rooms):
+    m, n = len(rooms), len(rooms[0])
+    g = [row[:] for row in rooms]              # new grid, input untouched
+    q = deque((i, j) for i in range(m) for j in range(n) if g[i][j] == 0)   # ALL gates start together
+    while q:
+        x, y = q.popleft()
+        for dx, dy in D4:
+            a, b = x + dx, y + dy
+            if 0 <= a < m and 0 <= b < n and g[a][b] == INF:   # INF doubles as "unvisited"
+                g[a][b] = g[x][y] + 1
+                q.append((a, b))
+    return g
+
+def brute(rooms, work=None):                   # one BFS per empty room, stop at the nearest gate
+    m, n = len(rooms), len(rooms[0])
+    g = [row[:] for row in rooms]
+    for i in range(m):
+        for j in range(n):
+            if rooms[i][j] != INF:
+                continue
+            dist = {(i, j): 0}
+            q = deque([(i, j)])
+            found = INF
+            while q:
+                x, y = q.popleft()
+                if work is not None: work[0] += 1
+                if rooms[x][y] == 0:
+                    found = dist[(x, y)]
+                    break
+                for dx, dy in D4:
+                    a, b = x + dx, y + dy
+                    if 0 <= a < m and 0 <= b < n and rooms[a][b] != -1 and (a, b) not in dist:
+                        dist[(a, b)] = dist[(x, y)] + 1
+                        q.append((a, b))
+            g[i][j] = found
+    return g
+
+ex1 = [[INF, -1, 0, INF], [INF, INF, INF, -1], [INF, -1, INF, -1], [0, -1, INF, INF]]
+assert walls_and_gates(ex1) == [[3, -1, 0, 1], [2, 2, 1, -1], [1, -1, 2, -1], [0, -1, 3, 4]]
+assert walls_and_gates([[INF]]) == [[INF]]
+assert walls_and_gates([[0, -1, INF]]) == [[0, -1, INF]]
+print("examples ok")
+
+cnt = 0
+for m, n in ((1, 1), (1, 4), (2, 3), (3, 3)):
+    for cells in itertools.product((-1, 0, INF), repeat=m * n):
+        g = [list(cells[i * n:(i + 1) * n]) for i in range(m)]
+        snap = [r[:] for r in g]
+        assert walls_and_gates(g) == brute(g)
+        assert g == snap                         # input not modified
+        cnt += 1
+print("exhaustive: all %d grids of sizes 1x1, 1x4, 2x3, 3x3 agree with one-BFS-per-room" % cnt)
+
+for _ in range(300):
+    m, n = random.randint(1, 7), random.randint(1, 7)
+    g = [[random.choice([-1, 0, INF, INF]) for _ in range(n)] for _ in range(m)]
+    assert walls_and_gates(g) == brute(g)
+print("300 random grids up to 7x7 agree")
+
+# work comparison on a 30 x 30 grid with one gate in a corner (BFS pops counted)
+m = n = 30
+g = [[INF] * n for _ in range(m)]; g[0][0] = 0
+w = [0]; brute(g, w)
+q = deque([(0, 0)]); popped = 0; seen = {(0, 0)}
+while q:
+    x, y = q.popleft(); popped += 1
+    for dx, dy in D4:
+        a, b = x + dx, y + dy
+        if 0 <= a < m and 0 <= b < n and (a, b) not in seen: seen.add((a, b)); q.append((a, b))
+print("30x30, one gate in a corner: multi-source pops = %d, per-room BFS pops = %d (cells = %d)" % (popped, w[0], m * n))
+assert popped == m * n and w[0] > 100 * popped
+
+# full size
+m = n = 100
+g = [[random.choice([-1, 0, INF, INF, INF, INF]) for _ in range(n)] for _ in range(m)]
+r = walls_and_gates(g)
+print("100x100 random grid: max finite distance", max(v for row in r for v in row if v != INF), "| unreachable rooms", sum(v == INF for row in r for v in row))
+```
+
+**Output (my run):**
+
+```text
+examples ok
+exhaustive: all 20496 grids of sizes 1x1, 1x4, 2x3, 3x3 agree with one-BFS-per-room
+300 random grids up to 7x7 agree
+30x30, one gate in a corner: multi-source pops = 900, per-room BFS pops = 596584 (cells = 900)
+100x100 random grid: max finite distance 7 | unreachable rooms 7
+```
+
+**Edge cases:**
+- No gates: nothing is queued, the grid comes back unchanged.
+- 1 x 1 grid: return as is.
+- Rooms walled off from every gate stay at 2147483647 (not -1).
+- Gate next to gate: both stay 0, no overwrite.
+- Do not overwrite walls or gates; the check `== INF` takes care of it.
+
+**Follow-ups:**
+- Rotting oranges is the same pattern with levels counted per minute (a sibling question in this part).
+- Different step costs per cell? Then it is Dijkstra from all sources (push all sources with distance 0).
+- Return which gate is nearest? Store the gate id along with the distance in the queue.
+
+**Common mistakes:**
+- BFS from every room (times out).
+- Starting from one gate at a time and keeping the minimum (that is also O(gates * mn)).
+- Using `0` as the unvisited marker, so gates look unvisited.
+- Mutating the input when a new grid is required.
+- Checking `g[a][b] != -1` only, which lets BFS overwrite already-set smaller distances.
+
+---
+
+### Q21 ⭐⭐ 🟡 Is the graph bipartite? `graph` is an adjacency list of an undirected graph on nodes 0..n-1 (1 <= n <= 10^5): `graph[u]` lists the neighbours of u, the lists are symmetric, with no self loops and no repeated neighbours; the graph may be disconnected. Return True if the nodes can be split into two sets such that every edge joins the two sets. Use BFS two-colouring, restart from every unseen node, and state the link to odd cycles (the full theory of bipartite graphs and matching belongs to Part 14, this question is the colouring check only). Example: graph=[[1, 3], [0, 2], [1, 3], [0, 2]] -> True; graph=[[1, 2], [0, 2], [0, 1]] -> False; graph=[[], []] -> True; graph=[[1], [0], [3], [2]] -> True.
+**Asked at:** Graph pattern guides and lists (techinterview.org graph interview patterns and comprehensive graph guides, DesignGurus common graph-traversal questions, Techie Delight graph practice list; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Two-colouring a graph with BFS (or DFS). A graph is bipartite exactly when it has no odd cycle, and the colouring check finds one if it exists.
+
+**Say this first (1 line):** "Colour a start node 0, give every neighbour the other colour, and if an edge ever joins two nodes of the same colour it is not bipartite; restart from every unseen node because the graph may be disconnected."
+
+**Brute force:** Try all 2^n assignments of side 0 or 1 and test every edge. O(2^n * E). Only usable for n <= 20; it is my checker.
+
+**Optimal:**
+- `color = [-1] * n`. For each `s` with `color[s] == -1`: colour it 0, BFS.
+- For `u` popped and each neighbour `v`: if `v` is uncoloured, give it `1 - color[u]` and enqueue; else if `color[v] == color[u]`, return False.
+- If every component finishes cleanly, return True.
+- Link to odd cycles: in BFS every edge joins nodes whose depths differ by 0 or 1. A same-colour edge means equal depths, and the two paths back to their common ancestor plus that edge form an odd cycle. Conversely an odd cycle can never be coloured with 2 colours (colours must alternate around it). So "no conflict found" is equivalent to "no odd cycle".
+- The run checks this equivalence on all 1099 graphs with up to 5 nodes, against both the 2^n brute force and a separate BFS-layer odd-cycle test.
+- A node with no edges is its own component and always fine.
+
+**Complexity:** O(V + E) time (each node queued once, each adjacency entry read once), O(V) space for colours and the queue. All iterative: V is 10^5, so a recursive DFS would exceed CPython's recursion limit of 1000.
+
+**Dry run:** `[[1,2],[0,2],[0,1]]` (a triangle).
+- Colour 0 -> 0. Neighbours 1 and 2 get colour 1; queue [1, 2].
+- Pop 1: neighbour 0 has colour 0 != 1, fine; neighbour 2 has colour 1 == colour of 1: conflict, return False.
+- A 4-cycle `[[1,3],[0,2],[1,3],[0,2]]` colours 0,1,0,1 with no conflict: True.
+
+**Code:**
+
+```python
+import itertools, random
+from collections import deque
+random.seed(21)
+
+def is_bipartite(graph):
+    n = len(graph)
+    color = [-1] * n                           # -1 unseen, 0 / 1 the two sides
+    for s in range(n):                         # restart from every unseen node: the graph may be disconnected
+        if color[s] != -1:
+            continue
+        color[s] = 0
+        q = deque([s])
+        while q:
+            u = q.popleft()
+            for v in graph[u]:
+                if color[v] == -1:
+                    color[v] = 1 - color[u]
+                    q.append(v)
+                elif color[v] == color[u]:     # an edge inside one side: an odd cycle exists
+                    return False
+    return True
+
+def brute(graph):                              # try every 2-colouring
+    n = len(graph)
+    return any(all(c[u] != c[v] for u in range(n) for v in graph[u]) for c in itertools.product((0, 1), repeat=n))
+
+def has_odd_cycle(graph):                      # independent test: BFS layers; an edge inside a layer means an odd cycle
+    n = len(graph); dist = [-1] * n
+    for s in range(n):
+        if dist[s] != -1: continue
+        dist[s] = 0; q = deque([s])
+        while q:
+            u = q.popleft()
+            for v in graph[u]:
+                if dist[v] == -1: dist[v] = dist[u] + 1; q.append(v)
+    return any(dist[u] == dist[v] for u in range(n) for v in graph[u])
+
+assert is_bipartite([[1, 3], [0, 2], [1, 3], [0, 2]]) is True
+assert is_bipartite([[1, 2], [0, 2], [0, 1]]) is False
+assert is_bipartite([[], []]) is True
+assert is_bipartite([[1], [0], [3], [2]]) is True
+print("examples ok: True False True True")
+
+cnt = tot_false = 0
+for n in range(1, 6):
+    pairs = list(itertools.combinations(range(n), 2))
+    for mask in range(1 << len(pairs)):
+        g = [[] for _ in range(n)]
+        for k, (a, b) in enumerate(pairs):
+            if mask >> k & 1:
+                g[a].append(b); g[b].append(a)
+        r = is_bipartite(g)
+        assert r == brute(g) == (not has_odd_cycle(g))
+        cnt += 1; tot_false += not r
+print("exhaustive: all %d graphs on n <= 5 nodes agree with brute force and the odd-cycle test (%d not bipartite)" % (cnt, tot_false))
+
+for _ in range(300):
+    n = random.randint(1, 10)
+    es = {(a, b) for a, b in (sorted(random.sample(range(n), 2)) for _ in range(random.randint(0, 12)) if n > 1)}
+    g = [[] for _ in range(n)]
+    for a, b in es:
+        g[a].append(b); g[b].append(a)
+    assert is_bipartite(g) == brute(g)
+print("300 random n <= 10 graphs ok")
+
+# disconnected: a bipartite component first, an odd cycle in a later component
+assert is_bipartite([[1], [0], [3, 4], [2, 4], [2, 3]]) is False
+
+# scale: n = 1e5, iterative
+n = 10**5
+path = [[] for _ in range(n)]
+for i in range(n - 1):
+    path[i].append(i + 1); path[i + 1].append(i)
+assert is_bipartite(path) is True
+odd = [[] for _ in range(n)]
+m = n - 1                                      # cycle on 99,999 nodes (odd), one isolated node
+for i in range(m):
+    j = (i + 1) % m
+    odd[i].append(j); odd[j].append(i)
+assert is_bipartite(odd) is False
+even = [[] for _ in range(n)]
+for i in range(n):
+    j = (i + 1) % n
+    even[i].append(j); even[j].append(i)
+assert is_bipartite(even) is True
+print("n=1e5: path True, odd cycle (99999) False, even cycle (100000) True")
+```
+
+**Output (my run):**
+
+```text
+examples ok: True False True True
+exhaustive: all 1099 graphs on n <= 5 nodes agree with brute force and the odd-cycle test (672 not bipartite)
+300 random n <= 10 graphs ok
+n=1e5: path True, odd cycle (99999) False, even cycle (100000) True
+```
+
+**Edge cases:**
+- Disconnected graph: the outer loop must restart. One odd cycle in a later component makes the answer False even when the first component is fine.
+- Isolated nodes (empty lists): True.
+- Single node: True.
+- Even cycle: True; odd cycle of length 99,999: False (checked at full size in the run).
+- No self loops by the prompt (a self loop would make it False immediately).
+
+**Follow-ups:**
+- Return the two sets? Collect nodes by colour.
+- Possible bipartition (dislike pairs)? The same problem with edges as "dislikes".
+- Find the odd cycle itself? Store parents; on a conflict walk both nodes up to their common ancestor.
+- Matching and flow on bipartite graphs are in Part 14.
+
+**Common mistakes:**
+- Colouring only from node 0 (misses other components).
+- Comparing with the parent only; any visited neighbour with the same colour is a conflict, not just the parent.
+- Marking colour on dequeue instead of enqueue, which lets a node be given two colours.
+- Recursive DFS on a 10^5 path: RecursionError.
+
+---
+
+### Q22 ⭐⭐ 🟡 Cycle detection in an undirected graph, including repeated edges. `n` nodes 0..n-1 (1 <= n <= 10^5) and `edges` a list of [u, v] (up to 2*10^5). The edges may include self loops and repeated pairs, and each of those counts as a cycle (a self loop is a cycle of length 1, two copies of [u, v] a cycle of length 2). Return True if any cycle exists. Use an iterative DFS that tracks the edge it arrived by (the edge index, not the parent node), and explain when tracking only the parent node misses a repeated edge (it does with set- or dict-based adjacency that collapses repeated pairs into one entry, but not with list adjacency that stores every edge at both ends) and why the edge index is correct for any storage. Sizes are chosen so that a recursive DFS would exceed CPython's default recursion limit of 1000, so an iterative method (queue or explicit stack) is required. Example: n=4, edges=[[0, 1], [1, 2], [2, 3]] -> False; n=3, edges=[[0, 1], [1, 2], [2, 0]] -> True; n=2, edges=[[0, 1], [1, 0]] -> True; n=2, edges=[[1, 1]] -> True.
+**Asked at:** Graph pattern guides and lists (techinterview.org graph interview patterns and comprehensive graph guides, DesignGurus common graph-traversal questions, Techie Delight graph practice list; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Cycle detection in an undirected multigraph with an iterative DFS. A cycle exists when a traversal reaches an already-seen node by an edge other than the one it arrived by.
+
+**Say this first (1 line):** "Iterative DFS where each stack entry carries the index of the edge I came by; I skip only that exact edge, and any other edge to a seen node is a cycle. Self loops and repeated pairs are cycles automatically."
+
+**Brute force:** For each edge, remove it and check with a DFS whether its two ends are still connected; a self loop counts at once. O(E * (V + E)), about 6 * 10^10 at the limits. It is my checker.
+
+**Optimal:**
+- Adjacency lists of `(neighbour, edge_index)`, each edge stored at both ends (a self loop lands twice in the same list).
+- For each unseen start: mark it, push `(start, -1)`.
+- Pop `(u, arrived_by)`. For each `(v, i)` in `adj[u]`: if `i == arrived_by` skip (that is the edge we just walked). Else if `v` is seen, return True. Else mark `v`, push `(v, i)`.
+- Why this is correct: in a forest, a DFS only ever meets a seen node through the tree edge it arrived by. Any other edge to a seen node closes a cycle, including a parallel edge (a different index, same endpoints) and a self loop (a different index leading to the node itself).
+- Why the edge index and not the parent node: skipping "the parent node" skips every edge to the parent, so a second copy of that edge is skipped too. The run shows what happens in practice. With list adjacency, the parent's own loop still meets the second copy later and finds the node seen, so the cycle is reported anyway. The bug is real when repeated edges are collapsed: with a `set` or `dict` of neighbours (very common) the second copy is gone and `[[0, 1], [0, 1]]` is wrongly called acyclic. Tracking the edge index makes the answer right for any storage that keeps each edge.
+- A union-find alternative also works: an edge whose ends already share a root closes a cycle, and a repeated edge or self loop does so trivially.
+
+**Complexity:** O(V + E) time with the DFS (each node pushed once, each adjacency entry read once), O(V + E) space. The explicit stack replaces recursion: a path of 10^5 nodes is deeper than CPython's limit of 1000 and would raise RecursionError (the run shows it at 5000).
+
+**Dry run:** `n=2, edges=[[0,1],[1,0]]`.
+- adj[0] = [(1,0),(1,1)], adj[1] = [(0,0),(0,1)]. Start 0, stack [(0,-1)].
+- Pop (0,-1): (1,0): 1 unseen, mark it, push (1,0). (1,1): 1 is seen and 1 != -1: return True.
+- With a set-based "parent node" version adj[0] = {1}: only one entry, no cycle found: wrong.
+
+**Code:**
+
+```python
+import itertools, random, sys
+random.seed(22)
+
+def has_cycle(n, edges):
+    adj = [[] for _ in range(n)]
+    for i, (u, v) in enumerate(edges):
+        adj[u].append((v, i))                 # remember the edge index, not just the neighbour
+        adj[v].append((u, i))                 # a self loop is stored twice at u, which is fine
+    seen = [False] * n
+    for s in range(n):
+        if seen[s]:
+            continue
+        seen[s] = True
+        stack = [(s, -1)]                     # (node, index of the edge we arrived by)
+        while stack:
+            u, arrived_by = stack.pop()
+            for v, i in adj[u]:
+                if i == arrived_by:           # do not walk back along the same edge
+                    continue
+                if seen[v]:                   # reached by a different edge: a cycle
+                    return True
+                seen[v] = True
+                stack.append((v, i))
+    return False
+
+def has_cycle_uf(n, edges):                   # second method: an edge joining two already-joined nodes closes a cycle
+    p = list(range(n))
+    def find(x):
+        while p[x] != x:
+            p[x] = p[p[x]]; x = p[x]
+        return x
+    for u, v in edges:
+        a, b = find(u), find(v)
+        if a == b:
+            return True
+        p[a] = b
+    return False
+
+def has_cycle_parent_only(n, edges, use_set):   # the tempting version: skip the parent NODE
+    adj = [set() if use_set else [] for _ in range(n)]
+    for u, v in edges:
+        if use_set:
+            adj[u].add(v); adj[v].add(u)         # a set (or dict) collapses a repeated edge into one entry
+        else:
+            adj[u].append(v); adj[v].append(u)
+    seen = [False] * n
+    for s in range(n):
+        if seen[s]: continue
+        seen[s] = True; stack = [(s, -1)]
+        while stack:
+            u, par = stack.pop()
+            for v in adj[u]:
+                if v == par: continue
+                if seen[v]: return True
+                seen[v] = True; stack.append((v, u))
+    return False
+
+def brute(n, edges):                          # remove each edge in turn: does its end still reach its start?
+    for i, (u, v) in enumerate(edges):
+        if u == v:
+            return True
+        adj = [[] for _ in range(n)]
+        for j, (a, b) in enumerate(edges):
+            if j != i:
+                adj[a].append(b); adj[b].append(a)
+        seen, st = {u}, [u]
+        while st:
+            x = st.pop()
+            for y in adj[x]:
+                if y not in seen:
+                    seen.add(y); st.append(y)
+        if v in seen:
+            return True
+    return False
+
+assert has_cycle(4, [[0, 1], [1, 2], [2, 3]]) is False
+assert has_cycle(3, [[0, 1], [1, 2], [2, 0]]) is True
+assert has_cycle(2, [[0, 1], [1, 0]]) is True
+assert has_cycle(2, [[1, 1]]) is True
+print("examples ok: False True True True")
+
+# exhaustive over ALL edge lists (order and endpoint direction included): n=3 up to 4 edges, n=4 up to 3 edges
+cnt = true_n = 0
+for n, maxe in ((1, 3), (2, 4), (3, 4), (4, 3)):
+    ordered = [[u, v] for u in range(n) for v in range(n)]
+    for k in range(maxe + 1):
+        for es in itertools.product(ordered, repeat=k):
+            es = [list(e) for e in es]
+            r = has_cycle(n, es)
+            assert r == brute(n, es) == has_cycle_uf(n, es), (n, es)
+            cnt += 1; true_n += r
+print("exhaustive: %d edge lists (n<=4, <=4 edges), DFS == brute == union-find; %d contain a cycle" % (cnt, true_n))
+
+# the parent-node idea: how often is it wrong over every edge list with n <= 3 and <= 3 edges?
+wrong = {False: 0, True: 0}; first = {False: None, True: None}
+for n in (1, 2, 3):
+    ordered = [[u, v] for u in range(n) for v in range(n)]
+    for k in range(4):
+        for es in itertools.product(ordered, repeat=k):
+            es = [list(e) for e in es]
+            truth = brute(n, es)
+            for use_set in (False, True):
+                if has_cycle_parent_only(n, es, use_set) != truth:
+                    wrong[use_set] += 1
+                    if first[use_set] is None or len(es) < len(first[use_set]): first[use_set] = es
+print("parent-node skip with LIST adjacency: wrong on", wrong[False], "lists (the parent's own loop still meets the second copy of a repeated edge)")
+print("parent-node skip with SET adjacency: wrong on", wrong[True], "lists; smallest failing edges:", first[True])
+assert wrong[False] == 0 and wrong[True] > 0
+
+for _ in range(500):
+    n = random.randint(1, 8)
+    es = [[random.randrange(n), random.randrange(n)] for _ in range(random.randint(0, 9))]
+    assert has_cycle(n, es) == brute(n, es)
+print("500 random multigraphs with self loops ok")
+
+# deep paths: iterative copes with 2e5 nodes; a recursive DFS dies at the default limit
+n = 200000
+path = [[i, i + 1] for i in range(n - 1)]
+assert has_cycle(n, path) is False and has_cycle(n, path + [[n - 1, 0]]) is True
+assert has_cycle(n, path + [[7, 7]]) is True and has_cycle(n, path + [[7, 8]]) is True
+def rec_cycle(n, edges):
+    adj = [[] for _ in range(n)]
+    for i, (u, v) in enumerate(edges): adj[u].append((v, i)); adj[v].append((u, i))
+    seen = [False] * n
+    def dfs(u, pe):
+        seen[u] = True
+        for v, i in adj[u]:
+            if i == pe: continue
+            if seen[v] or dfs(v, i): return True
+        return False
+    return any(not seen[s] and dfs(s, -1) for s in range(n))
+try:
+    rec_cycle(5000, path[:4999])
+except RecursionError:
+    print("recursive DFS on a 5000-node path: RecursionError (limit %d); iterative handled n=200000" % sys.getrecursionlimit())
+```
+
+**Output (my run):**
+
+```text
+examples ok: False True True True
+exhaustive: 12095 edge lists (n<=4, <=4 edges), DFS == brute == union-find; 11159 contain a cycle
+parent-node skip with LIST adjacency: wrong on 0 lists (the parent's own loop still meets the second copy of a repeated edge)
+parent-node skip with SET adjacency: wrong on 192 lists; smallest failing edges: [[0, 1], [0, 1]]
+500 random multigraphs with self loops ok
+recursive DFS on a 5000-node path: RecursionError (limit 1000); iterative handled n=200000
+```
+
+**Edge cases:**
+- Self loop `[u, u]`: True (found at the first look at `u`'s list).
+- Two copies of `[u, v]` (either order, `[1, 0]` is the same pair as `[0, 1]`): True.
+- Disconnected graph: the outer loop restarts from every unseen node; a cycle in a later component counts.
+- No edges, single node: False.
+- A path of 200,000 nodes: False; plus an extra edge anywhere: True (checked above).
+
+**Follow-ups:**
+- Directed graph? Different problem: you need three states (unseen, on the stack, done), or Kahn's algorithm (see Part 9 cycle-in-directed-graph question).
+- Which edge closes the cycle? Union-find returns it directly (see the redundant connection question in this part).
+- Count the independent cycles? E - V + C (edges, nodes, components), the cyclomatic number.
+
+**Common mistakes:**
+- Skipping the parent node instead of the arrival edge, then storing neighbours in a set or dict.
+- Recursion on large inputs.
+- Treating a self loop as harmless.
+- Running only from node 0.
+- Using the "directed" three-colour logic on an undirected graph, which reports the tree edge back to the parent as a cycle.
 
 ---

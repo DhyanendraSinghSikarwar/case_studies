@@ -1,0 +1,47 @@
+**Pattern:** Minimum spanning tree by Kruskal's greedy algorithm, with union-find to test "does this edge close a cycle?".
+
+**Say this first (1 line):** "Sort edges by weight, take an edge if it joins two different components, skip it otherwise. If I end with fewer than n-1 edges, the graph is disconnected, so -1."
+
+**Brute force:** Try every subset of n-1 edges, keep the ones that are acyclic (n-1 edges with no cycle on n nodes is a spanning tree), take the cheapest. That is C(E, n-1) subsets, only usable on tiny graphs. It is a checker in the code.
+
+**Optimal:**
+- Sort edges by weight (`sorted(..., key=...)`; ties in any order).
+- Union-find with an iterative `find` (path halving) and union by size. For each edge: if `find(u) == find(v)` skip it (a cycle, and this also skips self loops and repeated edges); else union, add `w`, count it.
+- Stop early at n-1 edges. At the end, `used == n-1` means connected: return the total, else -1. For n = 1 there is nothing to add: 0.
+- Why greedy works (cut property, informally): the cheapest edge crossing any cut between two parts of the nodes belongs to some MST. When Kruskal looks at an edge that joins two components, it is the cheapest edge leaving one of them that has not been considered, so it is safe to take. Skipped edges would close a cycle in which they are the heaviest edge seen so far, so they are safe to drop. The full proof, Borůvka and second-best trees belong to Part 14.
+- Ties: several different trees can have the same minimum weight, and which one Kruskal returns depends on the order of equal-weight edges. The code counts 3 minimum trees in the all-equal triangle. The checker only accepts the total, which is unique.
+- Prim's algorithm is the heap-based alternative: start from one node, repeatedly pop the cheapest edge leaving the current tree from a heap (lazy deletion of edges to already-visited nodes). Total cost is O(E log V). It wins on dense graphs and when the graph is given as adjacency lists; Kruskal wins when edges are already a list or easy to sort. The code runs both and they agree on every case.
+
+**Complexity:** Sorting: O(E log E). Union-find: O(E * alpha(V)) with path compression and union by size (alpha is the inverse Ackermann function, at most 4 or so here). Total O(E log E), which equals O(E log V) since E <= V^2. Space O(V + E): parent and size arrays, plus the sorted copy of the edges.
+
+**Dry run:** `n=4, edges=[[0,1,1],[1,2,2],[0,2,3],[2,3,4],[1,3,5]]`.
+- Sorted by weight: (0,1,1), (1,2,2), (0,2,3), (2,3,4), (1,3,5).
+- (0,1,1): different components, take it, total 1.
+- (1,2,2): take, total 3. Now {0,1,2}.
+- (0,2,3): both in {0,1,2}, skip (cycle).
+- (2,3,4): 3 is alone, take, total 7, used = 3 = n-1: stop.
+- Answer 7.
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- Disconnected graph: fewer than n-1 usable edges, return -1 (example 2). Do not return a spanning forest weight.
+- `n = 1` and no edges: 0.
+- Self loops: `find(u) == find(u)`, always skipped (the weight-1 self loop in example 4 is never counted).
+- Repeated edges between the same pair: the cheaper one is processed first; the second then closes a cycle and is skipped.
+- Many equal weights: any order gives the same total (checked exhaustively against the brute force).
+
+**Follow-ups:**
+- Maximum spanning tree? Sort descending, or negate the weights.
+- Is the MST path also the minimax (bottleneck) path between two nodes? Yes. That is the idea behind the minimum-effort grid question (Q26 in this part), where union-find over sorted edges is the alternative solution.
+- Kruskal or Prim for 10^4 nodes and 10^5 edges? Either; the sort in Kruskal runs in C and is fast in Python. For a complete graph given as points (about n^2/2 edges), Prim with an O(n^2) array avoids materialising the edges (Q37).
+
+**Common mistakes:**
+- Not handling disconnected graphs (returning the sum of what was joined).
+- Comparing `u != v` instead of components (misses cycles of length 3 and more).
+- Recursive `find` without compression on a path-shaped union order.
+- Claiming the MST itself is unique: only the weight is, unless all weights are distinct.

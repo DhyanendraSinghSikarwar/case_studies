@@ -457,7 +457,7 @@ n=10^5, E=2*10^5: reached 79852 pushes 85195 <= E + 1 = 200001 | stale 5343 == p
 - Zero-weight edges and zero-weight cycles (third example): the strict `<` stops infinite pushing, the count stays 3.
 - Parallel edges and self loops: a self loop never improves anything with weight >= 0.
 - `n = 1`: `[[0], 1, 0]`.
-- Negative weights break the "first pop is final" claim and the counting argument (see Part 9's Bellman-Ford question, Q28).
+- Negative weights break the "first pop is final" claim and the counting argument (Q28 and Q42 in this part).
 
 **Follow-ups:**
 - Why not skip the stale check? The result stays correct for non-negative weights, but each stale entry re-scans its edges. The code counts 34279 edge scans against 1770 on a 60-node graph.
@@ -1006,11 +1006,218 @@ edge asserts passed (n=1, negative and positive self loops)
 
 **Follow-ups:**
 - Which nodes are on the cycle, or which distances are -infinity? Run one more n rounds, mark every node that still improves, and propagate the mark along edges (everything reachable from a marked node is -infinity).
-- Cheapest flights within K stops: Bellman-Ford with exactly K+1 rounds, but each round must read the previous round's array (a copy), or the in-place version lets a path use more edges than allowed (see the cheapest flights question in this part).
+- Cheapest flights within K stops: Bellman-Ford with exactly K+1 rounds, but each round must read the previous round's array (a copy), or the in-place version lets a path use more edges than allowed (Q34 in this part).
 - Faster in practice? SPFA (queue-based) often wins, but its worst case is still O(V * E) and it can be attacked.
 
 **Common mistakes:**
-- Running only n-2 or n rounds the wrong way, or checking cycles before the rounds are finished.
+- Running too few rounds (n-2), or checking for a cycle before the n-1 rounds are done.
 - Dropping the `d[u] != INF` guard with an integer sentinel (false negative-cycle alarms).
 - Reporting a cycle if any edge is negative.
 - Forgetting the early exit, or using it before the detection round.
+
+### Q29 ⭐⭐ 🟡 Minimum spanning tree weight with Kruskal. `n` nodes 0..n-1 (1 <= n <= 10^4) and `edges` a list of undirected [u, v, w] with 1 <= w <= 10^5 (up to 10^5 edges; repeats and self loops possible). Return the total weight of a minimum spanning tree, or -1 if the graph is disconnected. Several different trees can tie, but their total weight is the same, and the checker accepts only that number. Sort edges by weight and join components with union-find; state the complexity (O(E log E)) and name Prim's algorithm as the heap-based alternative (cut property, Borůvka and second-best trees belong to Part 14). Example: n=4, edges=[[0, 1, 1], [1, 2, 2], [0, 2, 3], [2, 3, 4], [1, 3, 5]] -> 7; n=3, edges=[[0, 1, 2]] -> -1; n=1, edges=[] -> 0; n=3, edges=[[0, 0, 1], [0, 1, 2], [1, 2, 2], [0, 2, 2]] -> 4.
+**Asked at:** Graph pattern guides and lists (techinterview.org graph interview patterns and comprehensive graph guides, DesignGurus common graph-traversal questions, Techie Delight graph practice list; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Minimum spanning tree by Kruskal's greedy algorithm, with union-find to test "does this edge close a cycle?".
+
+**Say this first (1 line):** "Sort edges by weight, take an edge if it joins two different components, skip it otherwise. If I end with fewer than n-1 edges, the graph is disconnected, so -1."
+
+**Brute force:** Try every subset of n-1 edges, keep the ones that are acyclic (n-1 edges with no cycle on n nodes is a spanning tree), take the cheapest. That is C(E, n-1) subsets, only usable on tiny graphs. It is a checker in the code.
+
+**Optimal:**
+- Sort edges by weight (`sorted(..., key=...)`; ties in any order).
+- Union-find with an iterative `find` (path halving) and union by size. For each edge: if `find(u) == find(v)` skip it (a cycle, and this also skips self loops and repeated edges); else union, add `w`, count it.
+- Stop early at n-1 edges. At the end, `used == n-1` means connected: return the total, else -1. For n = 1 there is nothing to add: 0.
+- Why greedy works (cut property, informally): the cheapest edge crossing any cut between two parts of the nodes belongs to some MST. When Kruskal looks at an edge that joins two components, it is the cheapest edge leaving one of them that has not been considered, so it is safe to take. Skipped edges would close a cycle in which they are the heaviest edge seen so far, so they are safe to drop. The full proof, Borůvka and second-best trees belong to Part 14.
+- Ties: several different trees can have the same minimum weight, and which one Kruskal returns depends on the order of equal-weight edges. The code counts 3 minimum trees in the all-equal triangle. The checker only accepts the total, which is unique.
+- Prim's algorithm is the heap-based alternative: start from one node, repeatedly pop the cheapest edge leaving the current tree from a heap (lazy deletion of edges to already-visited nodes). Total cost is O(E log V). It wins on dense graphs and when the graph is given as adjacency lists; Kruskal wins when edges are already a list or easy to sort. The code runs both and they agree on every case.
+
+**Complexity:** Sorting: O(E log E). Union-find: O(E * alpha(V)) with path compression and union by size (alpha is the inverse Ackermann function, at most 4 or so here). Total O(E log E), which equals O(E log V) since E <= V^2. Space O(V + E): parent and size arrays, plus the sorted copy of the edges.
+
+**Dry run:** `n=4, edges=[[0,1,1],[1,2,2],[0,2,3],[2,3,4],[1,3,5]]`.
+- Sorted by weight: (0,1,1), (1,2,2), (0,2,3), (2,3,4), (1,3,5).
+- (0,1,1): different components, take it, total 1.
+- (1,2,2): take, total 3. Now {0,1,2}.
+- (0,2,3): both in {0,1,2}, skip (cycle).
+- (2,3,4): 3 is alone, take, total 7, used = 3 = n-1: stop.
+- Answer 7.
+
+**Code:**
+```python
+import heapq
+import itertools
+import random
+
+random.seed(29)
+
+def kruskal(n, edges):
+    """Sort by weight, add an edge iff it joins two different components. Iterative find, path halving, union by size."""
+    parent = list(range(n))
+    size = [1] * n
+    def find(x):
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+    total = used = 0
+    for u, v, w in sorted(edges, key=lambda e: e[2]):
+        a, b = find(u), find(v)
+        if a == b:                                  # self loops and cycle-forming edges are skipped here
+            continue
+        if size[a] < size[b]:
+            a, b = b, a
+        parent[b] = a
+        size[a] += size[b]
+        total += w
+        used += 1
+        if used == n - 1:
+            break
+    return total if used == n - 1 else -1
+
+def prim(n, edges):
+    """Heap-based alternative: grow one tree from node 0 by the cheapest edge leaving it (lazy heap)."""
+    adj = [[] for _ in range(n)]
+    for u, v, w in edges:
+        if u != v:
+            adj[u].append((w, v))
+            adj[v].append((w, u))
+    seen = [False] * n
+    seen[0] = True
+    heap = list(adj[0])
+    heapq.heapify(heap)
+    total, cnt = 0, 1
+    while heap and cnt < n:
+        w, v = heapq.heappop(heap)
+        if seen[v]:
+            continue
+        seen[v] = True
+        total += w
+        cnt += 1
+        for item in adj[v]:
+            if not seen[item[1]]:
+                heapq.heappush(heap, item)
+    return total if cnt == n else -1
+
+def mst_brute(n, edges):
+    """Try every (n-1)-edge subset: it is a spanning tree iff it has no cycle. Take the cheapest."""
+    if n == 1:
+        return 0
+    best = None
+    for sub in itertools.combinations(edges, n - 1):
+        p = list(range(n))
+        def find(x):
+            while p[x] != x:
+                x = p[x]
+            return x
+        ok = True
+        for u, v, w in sub:
+            a, b = find(u), find(v)
+            if a == b:
+                ok = False
+                break
+            p[a] = b
+        if ok:
+            t = sum(e[2] for e in sub)
+            best = t if best is None or t < best else best
+    return -1 if best is None else best
+
+def count_min_trees(n, edges):
+    """How many distinct (n-1)-edge spanning trees have the optimal weight? (tiny graphs; shows that the tree is not unique)"""
+    best, cnt = None, 0
+    for sub in itertools.combinations(range(len(edges)), n - 1):
+        p = list(range(n))
+        def find(x):
+            while p[x] != x:
+                x = p[x]
+            return x
+        ok = True
+        for i in sub:
+            u, v, _ = edges[i]
+            a, b = find(u), find(v)
+            if a == b:
+                ok = False
+                break
+            p[a] = b
+        if ok:
+            t = sum(edges[i][2] for i in sub)
+            if best is None or t < best:
+                best, cnt = t, 1
+            elif t == best:
+                cnt += 1
+    return best, cnt
+
+for n, e, want in [(4, [[0, 1, 1], [1, 2, 2], [0, 2, 3], [2, 3, 4], [1, 3, 5]], 7), (3, [[0, 1, 2]], -1), (1, [], 0),
+                   (3, [[0, 0, 1], [0, 1, 2], [1, 2, 2], [0, 2, 2]], 4)]:
+    got = kruskal(n, e)
+    assert got == want == prim(n, e) == mst_brute(n, e), (n, e, got, want)
+    print(n, e, '->', got)
+
+# ---- ties: several different trees, one weight
+n, e = 3, [[0, 1, 2], [1, 2, 2], [0, 2, 2]]
+print('triangle with all weights 2: (weight, number of minimum trees) =', count_min_trees(n, e), '-> only the weight is unique')
+n, e = 3, [[0, 0, 1], [0, 1, 2], [1, 2, 2], [0, 2, 2]]
+print('example 4: (weight, number of minimum trees) =', count_min_trees(n, e), '; the weight-1 self loop is never usable')
+
+# ---- exhaustive: all multisets of up to 4 edges on 3 nodes (weights 1..3, self loops included), and up to 4 edges on 4 nodes (weights 1..2)
+cnt = 0
+for n, W, K in [(3, 3, 4), (4, 2, 4)]:
+    opts = [(u, v, w) for u in range(n) for v in range(n) for w in range(1, W + 1)]
+    for k in range(K + 1):
+        for combo in itertools.combinations_with_replacement(opts, k):
+            edges = [list(x) for x in combo]
+            r = kruskal(n, edges)
+            assert r == prim(n, edges) == mst_brute(n, edges), (n, edges)
+            cnt += 1
+print('exhaustive on', cnt, 'multigraphs: Kruskal == Prim == best spanning subset')
+
+for _ in range(500):
+    n = random.randint(1, 8)
+    edges = [[random.randrange(n), random.randrange(n), random.randint(1, 9)] for _ in range(random.randint(0, 12))]
+    assert kruskal(n, edges) == prim(n, edges), (n, edges)
+print('500 seeded random graphs: Kruskal == Prim (n up to 8)')
+
+# ---- max size: n = 10^4, E = 10^5 with repeats and self loops; connected by a spine so the answer is not -1
+n = 10 ** 4
+edges = [[i, i + 1, random.randint(1, 10 ** 5)] for i in range(n - 1)]
+edges += [[random.randrange(n), random.randrange(n), random.randint(1, 10 ** 5)] for _ in range(10 ** 5 - len(edges))]
+k, p = kruskal(n, edges), prim(n, edges)
+assert k == p and k != -1
+print('n=10^4, E=10^5: Kruskal', k, '== Prim', p)
+assert kruskal(n, [e for e in edges if e[0] != 5000 and e[1] != 5000]) == -1    # isolating one node disconnects the graph
+print('removing every edge at node 5000 -> -1 (disconnected)')
+assert kruskal(1, [[0, 0, 5]]) == 0
+print('edge asserts passed')
+```
+
+**Output (my run):**
+```
+4 [[0, 1, 1], [1, 2, 2], [0, 2, 3], [2, 3, 4], [1, 3, 5]] -> 7
+3 [[0, 1, 2]] -> -1
+1 [] -> 0
+3 [[0, 0, 1], [0, 1, 2], [1, 2, 2], [0, 2, 2]] -> 4
+triangle with all weights 2: (weight, number of minimum trees) = (4, 3) -> only the weight is unique
+example 4: (weight, number of minimum trees) = (4, 3) ; the weight-1 self loop is never usable
+exhaustive on 90370 multigraphs: Kruskal == Prim == best spanning subset
+500 seeded random graphs: Kruskal == Prim (n up to 8)
+n=10^4, E=10^5: Kruskal 58934380 == Prim 58934380
+removing every edge at node 5000 -> -1 (disconnected)
+edge asserts passed
+```
+
+**Edge cases:**
+- Disconnected graph: fewer than n-1 usable edges, return -1 (example 2). Do not return a spanning forest weight.
+- `n = 1` and no edges: 0.
+- Self loops: `find(u) == find(u)`, always skipped (the weight-1 self loop in example 4 is never counted).
+- Repeated edges between the same pair: the cheaper one is processed first; the second then closes a cycle and is skipped.
+- Many equal weights: any order gives the same total (checked exhaustively against the brute force).
+
+**Follow-ups:**
+- Maximum spanning tree? Sort descending, or negate the weights.
+- Is the MST path also the minimax (bottleneck) path between two nodes? Yes. That is the idea behind the minimum-effort grid question (Q26 in this part), where union-find over sorted edges is the alternative solution.
+- Kruskal or Prim for 10^4 nodes and 10^5 edges? Either; the sort in Kruskal runs in C and is fast in Python. For a complete graph given as points (about n^2/2 edges), Prim with an O(n^2) array avoids materialising the edges (Q37).
+
+**Common mistakes:**
+- Not handling disconnected graphs (returning the sum of what was joined).
+- Comparing `u != v` instead of components (misses cycles of length 3 and more).
+- Recursive `find` without compression on a path-shaped union order.
+- Claiming the MST itself is unique: only the weight is, unless all weights are distinct.
