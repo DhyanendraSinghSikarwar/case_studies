@@ -1,0 +1,7 @@
+1500 random cases: earliest-finish greedy == brute force
+shortest first: failing lists with 1, 2, 3 activities = 0, 0, 34; order-independent failing 3-sets = 1, e.g. [[0, 3], [2, 4], [3, 6]]
+earliest start first: failing lists with 1, 2, 3 activities = 0, 0, 1218; order-independent failing 3-sets = 112, e.g. [[0, 3], [1, 2], [2, 3]]
+earliest finish first: 0 failures on the same exhaustive set
+shortest first on [[0,3],[2,4],[3,6]]: 1 vs optimal 2
+earliest start on [[0,10],[1,2],[3,4]]: 1 vs optimal 2
+n=100000 -> 53755 activities
