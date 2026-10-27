@@ -1,0 +1,9 @@
+baseline: 300 RPS / (30 x 0.7) -> 15 replicas
+lever                replicas saved effort saved/effort  risk
+dynamic batching            5    10      2         5.00  adds wait for the batch to fill (p99)
+right-size replica         12     3      1         3.00  less headroom for bursts
+response cache             10     5      2         2.50  stale answers; privacy of cached keys
+move to batch               4    11      5         2.20  answers no longer real-time; 25% of traffic assumed movable
+quantisation               10     5      3         1.67  small accuracy loss, needs re-validation
+cache + batching together: 4 replicas (saved 11)
+availability floor: never below 2 replicas, so the plan is 4

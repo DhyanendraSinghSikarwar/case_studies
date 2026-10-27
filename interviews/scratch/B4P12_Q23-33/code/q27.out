@@ -1,0 +1,10 @@
+policy                          storage retrieval   total
+all hot                           465.0       0.0   465.0
+IA>30d, archive>120d              144.6      14.7   159.3
+IA>30d only (no archive)          253.7       2.1   255.8
+aggressive: archive>30d           105.9      21.0   126.9
+oracle (knows future reads)       101.0       0.0   101.0
+archived-then-read objects: 28 TB: 14.0 retrieval units: 14.0
+cross-Region read of one 60 TB snapshot: 36.0 units; 12 runs a month: 432.0 units; copy once, then read local: 36.0 units
+break-even monthly read probability: archive beats IA only if P(read) < 0.35 ; IA beats hot if P(read) < 5.0 (above 1 means always)
+total TB: 465.0

@@ -1,0 +1,13 @@
+rows ok: 8
+- raw bureau + application data  | exfiltration / over-broad access       | evidence: access review export + KMS key policy
+- feature store                  | training-serving skew, unauthorised read | evidence: feature registry commit log
+- training pipeline              | untracked data or code change          | evidence: run record (Part 4 Q25 style)
+- validation report              | self-approval by developer             | evidence: signed validation memo with reviewer id
+- model registry                 | unapproved model promoted              | evidence: hash-chained promotion log
+- serving endpoint               | stolen model via API, unauthorised caller | evidence: gateway access logs
+- decision log                   | tampering, missing reason codes        | evidence: chain verification output
+- decommissioned model           | zombie endpoint keeps scoring          | evidence: CMDB retirement ticket
+FAIL: assets without control/evidence: shadow notebook copy
+probe 2 (who changed prod):  ['ana:promote:pd_v3', 'ana:promote:pd_v4'] chain valid: True
+after tamper, chain valid: False
+probe 1 (reason codes, top 2 negative): ['bureau_score', 'income_to_emi']

@@ -1,0 +1,5 @@
+good: ACCEPT
+tampered model: REJECT hash mismatch
+rollback manifest edited: REJECT bad signature
+old valid manifest signature ok: ACCEPT -> app must also require version > installed: False
+update traffic units: full 4800000 MB-units, delta 960000 (20%)

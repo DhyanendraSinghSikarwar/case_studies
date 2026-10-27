@@ -1,0 +1,14 @@
+# Who owns what at the hosted-LLM boundary (invented team names)
+owners: [platform, book2_app]
+responsibilities:
+  - {name: identity_and_sso,         owner: platform}
+  - {name: private_network_path,     owner: platform}
+  - {name: quota_and_rate_limits,    owner: platform}
+  - {name: request_logging_redaction, owner: platform}
+  - {name: provider_model_version_pin, owner: platform}
+  - {name: cost_attribution_by_team, owner: platform}
+  - {name: fallback_and_timeouts,    owner: platform}
+  - {name: prompt_design,            owner: book2_app}
+  - {name: retrieval_and_grounding,  owner: book2_app}
+  - {name: answer_quality_evaluation, owner: book2_app}
+  - {name: prompt_injection_defence_in_app, owner: book2_app}
