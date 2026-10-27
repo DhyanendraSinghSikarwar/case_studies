@@ -968,7 +968,7 @@ Output prints `None` where the prompt writes `null`. The builder turns the array
 - Assuming the answer is O(log n); it is O(log^2 n).
 - Using it on a tree that is merely balanced, not complete.
 
-### Q35 ⭐⭐ 🟡 Deep skewed trees and the recursion limit. Nodes are `TreeNode(val, left, right)`; examples write a tree as a level-order array with null for a missing child (the children of a null are not listed). Build a skewed tree of n nodes (shape 'left': every node has only a left child; shape 'right': only a right child), then compute its depth two ways: with a plain recursive function and with an explicit stack. Return the pair (recursive_result, iterative_result) where recursive_result is the string 'RecursionError' if Python's default limit (1000) stops it. Build the tree iteratively too, since recursive construction fails the same way. Explain why raising the limit with `sys.setrecursionlimit` is not a fix for 10^5 nodes (the C stack can overflow), what a depth of n costs in memory, and which iterative template (Part 4 Q25; for linked lists Part 6 Q26) you would use. Do not hard-code the exact failing depth: it depends on the interpreter, and the examples use n = 500 and n = 2000, far from it. Example: n=500, shape='left' -> (500, 500); n=2000, shape='right' -> ('RecursionError', 2000); n=1, shape='left' -> (1, 1); n=0, shape='left' -> (0, 0).
+### Q35 ⭐⭐ 🟡 Deep skewed trees and the recursion limit. Nodes are `TreeNode(val, left, right)`; examples write a tree as a level-order array with null for a missing child (the children of a null are not listed). Build a skewed tree of n nodes (shape 'left': every node has only a left child; shape 'right': only a right child), then compute its depth two ways: with a plain recursive function and with an explicit stack. Return the pair (recursive_result, iterative_result) where recursive_result is the string 'RecursionError' if Python's default limit (1000) stops it. Build the tree iteratively too, since recursive construction fails the same way. Explain what raising the limit with `sys.setrecursionlimit` does and does not fix for 10^5 nodes (the result is version and call-path dependent: some call paths such as `lru_cache` have a separate C-level limit, older interpreters can crash, and memory still grows with depth), what a depth of n costs in memory, and which iterative template (Part 4 Q25; for linked lists Part 6 Q26) you would use. Do not hard-code the exact failing depth: it depends on the interpreter, and the examples use n = 500 and n = 2000, far from it. Example: n=500, shape='left' -> (500, 500); n=2000, shape='right' -> ('RecursionError', 2000); n=1, shape='left' -> (1, 1); n=0, shape='left' -> (0, 0).
 **Asked at:** Python recursion-limit explainers (techinterview.org depth-of-a-tree page, a OneUptime guide, DataCamp DFS tutorial; snippets only, not opened: default limit 1000, raising it risks a crash, explicit stack preferred) | Tree interview-pattern guides on techinterview.org (binary-tree patterns, traversal patterns, advanced tree patterns, depth of a binary tree; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND)
 
 **Pattern:** Recursion depth equals tree height, and Python's call stack is small. A skewed tree has height n, so use an explicit stack.
@@ -1927,3 +1927,522 @@ Output prints `None` where the prompt writes `null` (that is the array input, no
 - Trimming trailing `#` on one side only.
 - Using `str.split` with a space or character by character, breaking multi-digit and negative values.
 - Using `list.pop(0)` as the queue instead of `deque.popleft()`.
+
+### Q39 ⭐⭐ 🔴 Recover a BST with two swapped values. Nodes are `TreeNode(val, left, right)`; examples write a tree as a level-order array with null for a missing child (the children of a null are not listed). Exactly two nodes of a BST with distinct values (2 <= n <= 1000) had their VALUES swapped by mistake. Restore the BST by swapping the two values back, without changing the shape, and return the root. Find the two nodes from the inorder sequence: the first descent gives the first node (the larger, earlier one) and the last descent gives the second (the smaller, later one); when the swapped values are adjacent in inorder there is only one descent. Do it with O(h) space, and then mention the O(1)-space version with Morris traversal. The pair to swap back is unique, which the tests check exhaustively on all small trees. Example: root=[1, 3, null, null, 2] -> [3, 1, null, null, 2]; root=[3, 1, 4, null, null, 2] -> [2, 1, 4, null, null, 3]; root=[2, 3, 1] -> [2, 1, 3]; root=[1, 2, 3] -> [2, 1, 3].
+**Asked at:** Recover-BST write-ups (neetcode, vultr, doocs, a jointaro Amazon-tagged page, hellointerview community, a CodeChef editorial; snippets only, not opened: first and second out-of-order nodes in inorder, O(1) space via Morris) | Blind 75 / NeetCode 150 pattern lists and their GitHub copies (search snippets only, not opened; the snippets confirm a Trees category and Validate BST in Blind 75, the rest of the tree list is editor knowledge)
+
+**Pattern:** The inorder traversal of a BST is strictly increasing. Two swapped values show up as "descents" in that sequence. Find them in one inorder pass, then swap the values back.
+
+**Say this first (1 line):** "I run an inorder walk keeping the previous node. Where prev is bigger than the current node, that is a descent. The first descent gives the first culprit (prev), the last descent gives the second (the current node). Swap their values. If there is only one descent, the swapped pair was adjacent."
+
+**Brute force:** Inorder into a list, sort the values, write them back in inorder. O(n log n) time, O(n) space. It does restore the BST, but it is more work than needed and does not tell you which two nodes were wrong.
+
+**Optimal:**
+- Take the sorted inorder `1 2 3 4 5` and swap two entries.
+  - Non-adjacent, e.g. positions 1 and 4: `1 5 3 4 2`. Two descents: `5 > 3` and `4 > 2`. The first node is the earlier element of the FIRST descent (5), the second is the later element of the LAST descent (2).
+  - Adjacent, e.g. `1 3 2 4 5`: a single descent `3 > 2`. The first node is its earlier element, the second is its later element, the same rule with one descent.
+- So: `first` = the earlier node of the first descent, `second` = the later node of the last descent. Always update `second` on every descent and set `first` only once.
+- The pair is unique. Swapping any other pair cannot give a sorted inorder (a sorted order of distinct values is unique, and a transposition identifies its pair). The tests check this exhaustively.
+- Space: the stack version holds O(h) nodes. Morris traversal gets O(1): before going left from `cur`, find its inorder predecessor `pred` (rightmost node of the left subtree), set `pred.right = cur` as a temporary thread and go left. When the thread is found again, remove it, visit `cur`, go right. Every thread is removed, so the tree ends exactly as it began. Do not exit early, or a thread stays and creates a cycle.
+
+**Complexity:** Time O(n) for the stack and Morris versions (Morris touches each edge a constant number of times, so still O(n)). Space O(h) for the stack version, O(1) extra for Morris. The tree shape never changes, only two values.
+
+**Dry run:** `[3,1,4,null,null,2]` (inorder 1, 3, 2, 4).
+- Walk inorder: 1, then 3 (fine), then 2. Prev is 3, current is 2, and 3 > 2 is a descent: first = 3, second = 2.
+- Next 4: 2 < 4, no descent. Swap the values of the two nodes: the tree becomes `[2,1,4,null,null,3]`, inorder 1, 2, 3, 4.
+
+**Code:**
+```python
+import random
+import sys
+from collections import deque
+
+class TreeNode:
+    __slots__ = ("val", "left", "right")
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def build(arr):
+    """Level-order array with None for a missing child (children of a None are not listed)."""
+    if not arr or arr[0] is None:
+        return None
+    root = TreeNode(arr[0])
+    q = deque([root])
+    i = 1
+    while q and i < len(arr):
+        nd = q.popleft()
+        if i < len(arr) and arr[i] is not None:
+            nd.left = TreeNode(arr[i]); q.append(nd.left)
+        i += 1
+        if i < len(arr) and arr[i] is not None:
+            nd.right = TreeNode(arr[i]); q.append(nd.right)
+        i += 1
+    return root
+
+def nodes_of(root, cap=10**6):
+    """Every node, iterative preorder. A visited-id guard turns a cycle or a shared node into an AssertionError."""
+    out, seen, st = [], set(), ([root] if root else [])
+    while st:
+        n = st.pop()
+        assert id(n) not in seen, "cycle or aliasing"
+        seen.add(id(n)); out.append(n)
+        assert len(out) <= cap, "runaway tree"
+        if n.right: st.append(n.right)
+        if n.left: st.append(n.left)
+    return out
+
+def to_arr(root):
+    """Trimmed level-order array (the input format used by the examples)."""
+    nodes_of(root)
+    out, q = [], deque([root] if root else [])
+    while q:
+        nd = q.popleft()
+        if nd is None:
+            out.append(None); continue
+        out.append(nd.val); q.append(nd.left); q.append(nd.right)
+    while out and out[-1] is None:
+        out.pop()
+    return out
+
+def same(a, b):
+    """Structure and values equal, iterative (no recursion limit)."""
+    st = [(a, b)]
+    while st:
+        x, y = st.pop()
+        if x is None or y is None:
+            if x is not y: return False
+            continue
+        if x.val != y.val: return False
+        st.append((x.left, y.left)); st.append((x.right, y.right))
+    return True
+
+# ---- exhaustive shapes: a shape is None or (left_shape, right_shape)
+_sh = {0: [None]}
+def shapes(n):
+    if n not in _sh:
+        _sh[n] = [(L, R) for l in range(n) for L in shapes(l) for R in shapes(n - 1 - l)]
+    return _sh[n]
+
+def label(shape, mode, step=1):
+    """mode 'in': inorder labels 0, step, 2*step... (so the tree is a BST); 'pre': preorder labels."""
+    c = [0]
+    def go(s):
+        if s is None: return None
+        if mode == "pre":
+            v = c[0]; c[0] += step; L = go(s[0]); R = go(s[1]); return (v, L, R)
+        L = go(s[0]); v = c[0]; c[0] += step; R = go(s[1]); return (v, L, R)
+    return go(shape)
+
+def from_tup(t):
+    return None if t is None else TreeNode(t[0], from_tup(t[1]), from_tup(t[2]))
+
+def height(root):
+    h, level = 0, ([root] if root else [])
+    while level:
+        h += 1
+        level = [c for n in level for c in (n.left, n.right) if c]
+    return h
+
+def inorder_nodes(root):
+    out, st, cur = [], [], root
+    while st or cur:
+        while cur: st.append(cur); cur = cur.left
+        cur = st.pop(); out.append(cur); cur = cur.right
+    return out
+
+# ---------- brute force: sort the values and write them back in inorder (O(n log n) time, O(n) space) ----------
+def recover_brute(root):
+    ns = inorder_nodes(root)
+    for node, v in zip(ns, sorted(n.val for n in ns)):
+        node.val = v
+    return root
+
+# ---------- optimal: iterative inorder with a prev pointer, O(h) space; descents = places where prev.val > cur.val ----------
+def recover_stack(root, info=None):
+    st, cur, prev, first, second, descents = [], root, None, None, None, 0
+    while st or cur:
+        while cur: st.append(cur); cur = cur.left
+        cur = st.pop()
+        if prev is not None and prev.val > cur.val:
+            descents += 1
+            if first is None: first = prev       # first descent: the earlier (larger) node is the culprit
+            second = cur                         # last descent: the later (smaller) node is the other one
+        prev, cur = cur, cur.right
+    if info is not None: info.append(descents)
+    first.val, second.val = second.val, first.val
+    return root
+
+# ---------- O(1) extra space: Morris traversal (temporary threads from each predecessor to its successor) ----------
+def recover_morris(root):
+    cur, prev, first, second = root, None, None, None
+    def visit(node):
+        nonlocal prev, first, second
+        if prev is not None and prev.val > node.val:
+            if first is None: first = prev
+            second = node
+        prev = node
+    while cur:
+        if cur.left is None:
+            visit(cur); cur = cur.right
+        else:
+            pred = cur.left
+            while pred.right is not None and pred.right is not cur: pred = pred.right
+            if pred.right is None:
+                pred.right = cur; cur = cur.left            # make the thread, go left
+            else:
+                pred.right = None; visit(cur); cur = cur.right   # remove the thread, visit, go right
+    first.val, second.val = second.val, first.val           # must finish the whole walk so no thread stays
+    return root
+
+def run(fn, arr):
+    return to_arr(fn(build(arr)))
+
+for arr in ([1, 3, None, None, 2], [3, 1, 4, None, None, 2], [2, 3, 1], [1, 2, 3]):
+    a, b, c = run(recover_brute, arr), run(recover_stack, arr), run(recover_morris, arr)
+    assert a == b == c
+    print(f"root={arr} -> {a}")
+
+def is_bst(root):
+    v = [n.val for n in inorder_nodes(root)]
+    return all(x < y for x, y in zip(v, v[1:]))
+
+# exhaustive: every BST shape with 2..8 nodes, EVERY pair of nodes whose values were swapped
+cases = adjacent = 0
+for n in range(2, 9):
+    for sh in shapes(n):
+        t = label(sh, "in")
+        for i in range(n):
+            for j in range(i + 1, n):
+                orig = from_tup(t)
+                ns = inorder_nodes(orig)
+                broken = from_tup(t)
+                bn = inorder_nodes(broken)
+                bn[i].val, bn[j].val = bn[j].val, bn[i].val
+                assert not is_bst(broken)
+                # uniqueness: swapping values of exactly ONE pair of nodes restores a BST
+                fixes = 0
+                for a in range(n):
+                    for b in range(a + 1, n):
+                        bn[a].val, bn[b].val = bn[b].val, bn[a].val
+                        fixes += is_bst(broken)
+                        bn[a].val, bn[b].val = bn[b].val, bn[a].val
+                assert fixes == 1, (n, i, j)
+                for fn in (recover_brute, recover_stack, recover_morris):
+                    copy = from_tup(t); cn = inorder_nodes(copy); cn[i].val, cn[j].val = cn[j].val, cn[i].val
+                    ids = [id(x) for x in nodes_of(copy)]
+                    out = fn(copy)
+                    assert same(out, orig)                              # values back, shape unchanged
+                    assert [id(x) for x in nodes_of(out)] == ids        # same node objects, no thread left behind
+                info = []
+                cp = from_tup(t); cn = inorder_nodes(cp); cn[i].val, cn[j].val = cn[j].val, cn[i].val
+                recover_stack(cp, info)
+                assert info[0] == (1 if j == i + 1 else 2)              # adjacent swap: one descent; otherwise two
+                adjacent += (j == i + 1)
+                cases += 1
+print("exhaustive swaps ok:", cases, "(adjacent in inorder:", adjacent, ")")
+```
+
+**Output (my run):**
+```
+root=[1, 3, None, None, 2] -> [3, 1, None, None, 2]
+root=[3, 1, 4, None, None, 2] -> [2, 1, 4, None, None, 3]
+root=[2, 3, 1] -> [2, 1, 3]
+root=[1, 2, 3] -> [2, 1, 3]
+exhaustive swaps ok: 51550 (adjacent in inorder: 13466 )
+```
+
+Output prints `None` where the prompt writes `null`. The exhaustive test covers every BST shape with 2 to 8 nodes and every pair of nodes whose values were swapped (51550 cases, 13466 of them adjacent in inorder). For each: all three versions restore the original with the same node objects and no thread left behind (checked by node identity and by the cycle guard), the descent count is 1 if adjacent and 2 otherwise, and exactly one swap of two node values makes the tree a BST again. No problem found with the stated claims.
+
+**Edge cases:**
+- n = 2: the only case is one adjacent swap with one descent.
+- The swapped nodes are parent and child: the descent is adjacent in inorder; the rule still holds.
+- The swap involves the root: nothing special; the traversal is order-based.
+- Do NOT stop at the first descent: a non-adjacent swap has a second one, and the second node comes from it.
+- Morris: every thread must be removed, or later code walking the tree loops forever.
+
+**Follow-ups:**
+- More than two swapped values? The two-descent trick no longer works; sort the values back (the brute force).
+- Only validate, not fix? Check that inorder is increasing, as in the "validate a BST" question in this part.
+- Why compare with the previous node and not with the parent? A violation can be between a node and a distant ancestor. The inorder predecessor is the right neighbour to compare.
+
+**Common mistakes:**
+- Taking `second = cur` at the first descent only, or `first` at the last one.
+- Comparing a node with its parent instead of the inorder predecessor.
+- Relinking nodes when the question only asks you to swap two values back: far more pointer work, no benefit.
+- Leaving a Morris thread in place.
+
+### Q40 ⭐ 🟢 N-ary tree basics. A node is `Node(val, children)` with `children` a list. Examples give an N-ary tree as a level-order array: the root, then null, then for each node in queue order the list of its children followed by null (a node with no children contributes just its null; trailing nulls may be omitted), so [1,null,3,2,4,null,5,6] is root 1 with children 3, 2, 4 and node 3 has children 5 and 6. Return the tuple (preorder, postorder, level_order, max_depth) for a tree with 0 <= n <= 10^4 nodes (level_order is a list of lists; depth counts nodes and is 0 for an empty tree). Explain where the binary-tree traversals change (a loop over children replaces left and right; inorder has no single meaning) and give the explicit-stack versions. Example: arr=[1, null, 3, 2, 4, null, 5, 6] -> ([1, 3, 5, 6, 2, 4], [5, 6, 3, 2, 4, 1], [[1], [3, 2, 4], [5, 6]], 3); arr=[] -> ([], [], [], 0); arr=[7] -> ([7], [7], [[7]], 1).
+**Asked at:** Tree interview-pattern guides on techinterview.org (binary-tree patterns, traversal patterns, advanced tree patterns, depth of a binary tree; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Same traversals as a binary tree, with a loop over `children` in place of "left then right".
+
+**Say this first (1 line):** "Preorder visits a node then each child; postorder visits each child then the node; level order is a queue; depth is the number of levels. I'll use explicit stacks so a deep tree cannot hit the recursion limit."
+
+**Brute force:** Plain recursion for each traversal. It is correct and O(n) time, but a 10^4-node chain needs 10^4 frames and fails at Python's default limit of 1000 (shown in the output). The code keeps it as the cross-check.
+
+**Optimal:**
+- Reading the input: the array is the root, `None`, then for every node in queue order its children followed by `None`. Keep a queue of nodes, and for each popped node take children until the next `None`.
+- Where binary-tree logic changes: a loop over `node.children` replaces the two recursive calls. Inorder has no single meaning, because with k children there is no one place "between" the left and right (you could visit after the first child, but that is a convention, not the tree's).
+- Preorder, explicit stack: pop a node, record it, push its children in REVERSE so the first child pops next.
+- Postorder, explicit stack, the short trick: pop a node, record it, push its children in order. That produces root, then the last child's subtree first, and so on: the reverse of postorder. Reverse the list at the end.
+- Level order: a list per level. `cur = [children of every node in cur]` until it is empty. The number of lists is the max depth (counted in nodes), 0 for an empty tree.
+
+**Complexity:** Time O(n): every node is pushed and popped once, and each child is visited once. Space O(n) for the result, plus O(width) for the level list (a bushy tree) or O(h) for the stack. Recursion would add O(h) frames.
+
+**Dry run:** `[1,null,3,2,4,null,5,6]`. Root 1 has children 3, 2, 4; node 3 has children 5, 6.
+- Preorder: pop 1, push 4, 2, 3. Pop 3, push 6, 5. Pop 5, 6, then 2, 4. Result `[1, 3, 5, 6, 2, 4]`.
+- Postorder: the reversed-preorder pass records 1, 4, 2, 3, 6, 5. Reversed: `[5, 6, 3, 2, 4, 1]`.
+- Levels: `[1]`, `[3, 2, 4]`, `[5, 6]`, so depth 3.
+
+**Code:**
+```python
+import random
+import sys
+from collections import deque
+
+class TreeNode:
+    __slots__ = ("val", "left", "right")
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def build(arr):
+    """Level-order array with None for a missing child (children of a None are not listed)."""
+    if not arr or arr[0] is None:
+        return None
+    root = TreeNode(arr[0])
+    q = deque([root])
+    i = 1
+    while q and i < len(arr):
+        nd = q.popleft()
+        if i < len(arr) and arr[i] is not None:
+            nd.left = TreeNode(arr[i]); q.append(nd.left)
+        i += 1
+        if i < len(arr) and arr[i] is not None:
+            nd.right = TreeNode(arr[i]); q.append(nd.right)
+        i += 1
+    return root
+
+def nodes_of(root, cap=10**6):
+    """Every node, iterative preorder. A visited-id guard turns a cycle or a shared node into an AssertionError."""
+    out, seen, st = [], set(), ([root] if root else [])
+    while st:
+        n = st.pop()
+        assert id(n) not in seen, "cycle or aliasing"
+        seen.add(id(n)); out.append(n)
+        assert len(out) <= cap, "runaway tree"
+        if n.right: st.append(n.right)
+        if n.left: st.append(n.left)
+    return out
+
+def to_arr(root):
+    """Trimmed level-order array (the input format used by the examples)."""
+    nodes_of(root)
+    out, q = [], deque([root] if root else [])
+    while q:
+        nd = q.popleft()
+        if nd is None:
+            out.append(None); continue
+        out.append(nd.val); q.append(nd.left); q.append(nd.right)
+    while out and out[-1] is None:
+        out.pop()
+    return out
+
+def same(a, b):
+    """Structure and values equal, iterative (no recursion limit)."""
+    st = [(a, b)]
+    while st:
+        x, y = st.pop()
+        if x is None or y is None:
+            if x is not y: return False
+            continue
+        if x.val != y.val: return False
+        st.append((x.left, y.left)); st.append((x.right, y.right))
+    return True
+
+# ---- exhaustive shapes: a shape is None or (left_shape, right_shape)
+_sh = {0: [None]}
+def shapes(n):
+    if n not in _sh:
+        _sh[n] = [(L, R) for l in range(n) for L in shapes(l) for R in shapes(n - 1 - l)]
+    return _sh[n]
+
+def label(shape, mode, step=1):
+    """mode 'in': inorder labels 0, step, 2*step... (so the tree is a BST); 'pre': preorder labels."""
+    c = [0]
+    def go(s):
+        if s is None: return None
+        if mode == "pre":
+            v = c[0]; c[0] += step; L = go(s[0]); R = go(s[1]); return (v, L, R)
+        L = go(s[0]); v = c[0]; c[0] += step; R = go(s[1]); return (v, L, R)
+    return go(shape)
+
+def from_tup(t):
+    return None if t is None else TreeNode(t[0], from_tup(t[1]), from_tup(t[2]))
+
+def height(root):
+    h, level = 0, ([root] if root else [])
+    while level:
+        h += 1
+        level = [c for n in level for c in (n.left, n.right) if c]
+    return h
+
+class Node:
+    __slots__ = ("val", "children")
+    def __init__(self, val=0, children=None):
+        self.val = val
+        self.children = children if children is not None else []
+
+def build_nary(arr):
+    """[root, None, children of root..., None, children of next node in queue order..., None, ...]; trailing Nones optional."""
+    if not arr:
+        return None
+    root = Node(arr[0])
+    q, i = deque([root]), 2
+    while q and i <= len(arr):
+        node = q.popleft()
+        while i < len(arr) and arr[i] is not None:
+            c = Node(arr[i]); node.children.append(c); q.append(c); i += 1
+        i += 1                                       # skip the None that ends this node's children
+    return root
+
+def encode_nary(root, trim=True):
+    if root is None:
+        return []
+    out, q = [root.val, None], deque([root])
+    while q:
+        node = q.popleft()
+        for c in node.children:
+            out.append(c.val); q.append(c)
+        out.append(None)
+    while trim and out and out[-1] is None:
+        out.pop()
+    return out
+
+# ---------- brute force: plain recursion ----------
+def traversals_rec(root):
+    if root is None:
+        return ([], [], [], 0)
+    pre, post = [], []
+    def go(n):
+        pre.append(n.val)
+        for c in n.children: go(c)
+        post.append(n.val)
+    go(root)
+    levels, cur = [], [root]
+    def lv(nodes):
+        if not nodes: return
+        levels.append([n.val for n in nodes]); lv([c for n in nodes for c in n.children])
+    lv(cur)
+    return (pre, post, levels, len(levels))
+
+# ---------- optimal: explicit stacks and a level loop, no recursion ----------
+def traversals(root):
+    if root is None:
+        return ([], [], [], 0)
+    pre, st = [], [root]
+    while st:                                        # preorder: pop, record, push children right to left
+        n = st.pop(); pre.append(n.val)
+        st.extend(reversed(n.children))
+    rev, st = [], [root]                             # postorder: (node, then children left to right) reversed
+    while st:
+        n = st.pop(); rev.append(n.val)
+        st.extend(n.children)
+    post = rev[::-1]
+    levels, cur = [], [root]
+    while cur:                                       # level order: one list per level
+        levels.append([n.val for n in cur])
+        cur = [c for n in cur for c in n.children]
+    return (pre, post, levels, len(levels))
+
+for arr in ([1, None, 3, 2, 4, None, 5, 6], [], [7]):
+    root = build_nary(arr)
+    res = traversals(root)
+    assert res == traversals_rec(root)
+    print(f"arr={arr} -> {res}")
+
+# exhaustive: every ordered tree with 1..7 nodes as (val, [children]), preorder-labelled; encode -> decode -> compare
+def forests(m):                                      # all ordered lists of trees holding m nodes in total
+    if m == 0: return [[]]
+    out = []
+    for first in range(1, m + 1):
+        for t in trees(first):
+            for rest in forests(m - first): out.append([t] + rest)
+    return out
+_tc = {}
+def trees(n):                                        # shapes only: a tree is a tuple of child shapes
+    if n not in _tc: _tc[n] = [tuple(f) for f in forests(n - 1)]
+    return _tc[n]
+def realise(shape, counter):
+    node = Node(counter[0]); counter[0] += 1
+    node.children = [realise(s, counter) for s in shape]
+    return node
+def same_nary(a, b):
+    return a.val == b.val and len(a.children) == len(b.children) and all(same_nary(x, y) for x, y in zip(a.children, b.children))
+count = 0
+for n in range(1, 8):
+    for sh in trees(n):
+        root = realise(sh, [0])
+        for trim in (True, False):
+            back = build_nary(encode_nary(root, trim))
+            assert same_nary(back, root)
+        assert traversals(root) == traversals_rec(root)
+        count += 1
+print("exhaustive ordered trees ok:", count)
+
+# random trees up to 200 nodes with arbitrary fan-out, cross-checked against the recursive brute force
+random.seed(9)
+for _ in range(300):
+    n = random.randint(1, 200)
+    root = Node(0); pool = [root]
+    for i in range(1, n):
+        p = random.choice(pool); c = Node(i); p.children.append(c); pool.append(c)
+    assert traversals(root) == traversals_rec(root)
+    assert same_nary(build_nary(encode_nary(root)), root)
+print("300 random N-ary trees ok")
+
+# n = 10^4 chain: iterative is fine, recursion is not (limit 1000)
+chain_arr = [1, None]
+for v in range(2, 10**4 + 1): chain_arr += [v, None]
+root = build_nary(chain_arr)
+pre, post, levels, depth = traversals(root)
+assert depth == 10**4 and pre == list(range(1, 10**4 + 1)) and post == pre[::-1]
+try:
+    traversals_rec(root); rec = "recursive ok"
+except RecursionError:
+    rec = "recursive RecursionError"
+print(f"10^4-node chain: iterative depth {depth}; {rec}")
+```
+
+**Output (my run):**
+```
+arr=[1, None, 3, 2, 4, None, 5, 6] -> ([1, 3, 5, 6, 2, 4], [5, 6, 3, 2, 4, 1], [[1], [3, 2, 4], [5, 6]], 3)
+arr=[] -> ([], [], [], 0)
+arr=[7] -> ([7], [7], [[7]], 1)
+exhaustive ordered trees ok: 197
+300 random N-ary trees ok
+10^4-node chain: iterative depth 10000; recursive RecursionError
+```
+
+Output prints `None` where the prompt writes `null`. The exhaustive test covers every ordered tree with 1 to 7 nodes (197 shapes): encode with and without the trailing `None`s, decode, compare, and match the recursive brute force. 300 seeded random trees (up to 200 nodes, any fan-out) are cross-checked too.
+
+**Edge cases:**
+- Empty array: empty results and depth 0.
+- Single node `[7]`: no trailing `None` is needed to parse it.
+- A node with no children contributes just its `None`, so a run of `None, None` means two leaves in a row.
+- Chain of 10^4 nodes: iterative works, recursion raises `RecursionError`.
+- A star (one root, 10^4 children): the level list is wide but the stack is still fine.
+
+**Follow-ups:**
+- Why is the postorder trick right? Pushing children left to right makes the stack visit the last child first, so the recorded order is the mirror of "children then node"; reversing gives the real postorder.
+- Can you get postorder with one pass and no reversal? Yes, with `(node, next_child_index)` pairs on the stack, which is the version for a binary tree with a visited flag.
+- N-ary with parent pointers or random access to children by index? Only the container changes; the traversals do not.
+
+**Common mistakes:**
+- Pushing children in forward order for preorder, which visits the last child first.
+- Counting depth in edges when the question says nodes (an empty tree is 0, a single node is 1).
+- Parsing the input as if every node had exactly two entries; the `None` separators mark the end of each node's child list.
+- Trying to define inorder for N-ary trees.

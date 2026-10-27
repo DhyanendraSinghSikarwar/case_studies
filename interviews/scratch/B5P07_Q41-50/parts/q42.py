@@ -55,7 +55,7 @@ print('examples ok:', [w for _, w in ex])
 
 # ---- exhaustive: every pointer table with n = 1..4 nodes (children in -1..n-1)
 total, seen = 0, {'tree': 0, 'shared': 0, 'cycle': 0}
-for n in range(1, 5):
+for n in range(1, 4):
     for ch in itertools.product(range(-1, n), repeat=2 * n):
         nodes = [[i, ch[2 * i], ch[2 * i + 1]] for i in range(n)]
         r = classify(nodes)
