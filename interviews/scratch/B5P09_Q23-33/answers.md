@@ -1221,3 +1221,190 @@ edge asserts passed
 - Comparing `u != v` instead of components (misses cycles of length 3 and more).
 - Recursive `find` without compression on a path-shaped union order.
 - Claiming the MST itself is unique: only the weight is, unless all weights are distinct.
+
+### Q30 ⭐⭐ 🟡 Open the lock (BFS over an implicit graph). A lock has four wheels, each showing a digit 0-9; one move turns one wheel one step up or down and 9 and 0 wrap around. It starts at '0000'. `deadends` is a list of up to 500 four-digit strings that jam the lock (if you reach one you cannot continue from it) and `target` is a four-digit string. Return the minimum number of moves to reach `target`, or -1 if impossible (also -1 if '0000' itself is a dead end; if `target` is a dead end it is unreachable). Describe the implicit graph (10^4 states, 8 neighbours each) and why you do not build it up front. Example: deadends=['0201', '0101', '0102', '1212', '2002'], target='0202' -> 6; deadends=['8888'], target='0009' -> 1; deadends=['0000'], target='8888' -> -1; deadends=['8887', '8889', '8878', '8898', '8788', '8988', '7888', '9888'], target='8888' -> -1.
+**Asked at:** Graph pattern guides and lists (techinterview.org graph interview patterns and comprehensive graph guides, DesignGurus common graph-traversal questions, Techie Delight graph practice list; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Shortest path in an unweighted implicit graph: BFS where a state is a string and neighbours are computed on demand.
+
+**Say this first (1 line):** "Each four-digit combination is a node, each single-wheel turn is an edge, every edge costs one move, so BFS from '0000' gives the fewest moves. Dead ends are nodes I refuse to enter."
+
+**Brute force:** DFS or enumerating all move sequences is exponential and finds a path, not the shortest. A level-by-level BFS using sets (no queue, no distance dictionary) is a second, independent implementation, and is used as the checker in the code, together with a bidirectional BFS.
+
+**Optimal:**
+- Nodes: the 10^4 strings `'0000'..'9999'`. Edges: 4 wheels times 2 directions, so exactly 8 neighbours per state; for example `'0000'` goes to `'1000'`, `'9000'`, `'0100'`, `'0900'` and so on. The code checks that all 10^4 states have 8 distinct neighbours (so 40000 undirected edges) and that all are reachable.
+- Why not build it up front: the neighbours follow from a rule in two lines, so a generator function is shorter than an adjacency table, needs no memory for edges, and generalises to states where the graph is too large to store (sliding puzzle, Q32 in this part). With only 10^4 states, building it would also work here; the habit is the point.
+- Algorithm: if `'0000'` is a dead end, return -1. Queue of `(state, moves)`, `seen = {'0000'}`. Pop; if it is the target, return its moves; for each neighbour not dead and not seen, mark seen and push (mark on push, so a state is queued once).
+- Dead ends are simply never entered. The target being a dead end means it is never reached, so the answer is -1 without a special case, but the start being dead needs the explicit check (the start is added to `seen` before any dead-end test; the code shows the bug returning 8 instead of -1).
+- BFS correctness: all edges cost 1, so the first time a state is popped its distance is minimal.
+- Without dead ends the answer is the sum over wheels of `min(digit, 10 - digit)`; the code confirms it on 1429 sampled targets, and the farthest state `5555` is 20 moves away.
+
+**Complexity:** Time O(S * 8) with S = 10^4 states, so at most 80000 neighbour visits; each costs O(1) string building (4 characters) and set lookups. Space O(S) for `seen` and the queue. With the 500 dead ends of the prompt only fewer states are visited.
+
+**Dry run:** `deadends=['8888'], target='0009'`.
+- Start `'0000'`, 0 moves. Neighbours: `'1000'`, `'9000'`, `'0100'`, `'0900'`, `'0010'`, `'0090'`, `'0001'`, `'0009'` (all 1 move).
+- The target `'0009'` is one of them (the last wheel turned down from 0 to 9 by wrap-around). Pop it at 1 move: answer 1.
+- Example 1 (answer 6): the shortest route is 0000 -> 1000 -> 1100 -> 1200 -> 1201 -> 0201 is dead, so the path goes around; BFS finds a length 6 route by trying all neighbours level by level (the code confirms 6).
+
+**Code:**
+```python
+import random
+from collections import deque
+
+random.seed(30)
+
+def neighbours(s):
+    """The implicit graph: 8 neighbours computed on demand (4 wheels x up/down, with wrap-around)."""
+    for i in range(4):
+        d = int(s[i])
+        for step in (1, 9):                               # +1 and -1 mod 10
+            yield s[:i] + str((d + step) % 10) + s[i + 1:]
+
+def open_lock(deadends, target):
+    dead = set(deadends)
+    if '0000' in dead:
+        return -1
+    seen = {'0000'}
+    q = deque([('0000', 0)])
+    while q:
+        s, d = q.popleft()
+        if s == target:
+            return d
+        for t in neighbours(s):
+            if t not in dead and t not in seen:           # mark on PUSH so no state is queued twice
+                seen.add(t)
+                q.append((t, d + 1))
+    return -1
+
+def open_lock_levels(deadends, target):
+    """Independent brute force: expand one whole level at a time with sets (no queue, no per-node distance)."""
+    dead = set(deadends)
+    if '0000' in dead:
+        return -1
+    level, seen, d = {'0000'}, {'0000'}, 0
+    while level:
+        if target in level:
+            return d
+        nxt = set()
+        for s in level:
+            for t in neighbours(s):
+                if t not in dead and t not in seen:
+                    nxt.add(t)
+        seen |= nxt
+        level, d = nxt, d + 1
+    return -1
+
+def open_lock_bidirectional(deadends, target):
+    """Follow-up: grow the smaller frontier from each end; meet in the middle."""
+    dead = set(deadends)
+    if '0000' in dead or target in dead:
+        return -1
+    if target == '0000':
+        return 0
+    a, b, seen_a, seen_b, d = {'0000'}, {target}, {'0000'}, {target}, 0
+    while a and b:
+        if len(a) > len(b):
+            a, b, seen_a, seen_b = b, a, seen_b, seen_a
+        nxt = set()
+        d += 1
+        for s in a:
+            for t in neighbours(s):
+                if t in seen_b:
+                    return d
+                if t not in dead and t not in seen_a:
+                    seen_a.add(t)
+                    nxt.add(t)
+        a = nxt
+    return -1
+
+def open_lock_no_start_check(deadends, target):
+    """Bug: forget that '0000' itself may be jammed."""
+    dead = set(deadends)
+    seen = {'0000'}
+    q = deque([('0000', 0)])
+    while q:
+        s, d = q.popleft()
+        if s == target:
+            return d
+        for t in neighbours(s):
+            if t not in dead and t not in seen:
+                seen.add(t)
+                q.append((t, d + 1))
+    return -1
+
+for de, tg, want in [(['0201', '0101', '0102', '1212', '2002'], '0202', 6), (['8888'], '0009', 1),
+                     (['0000'], '8888', -1), (['8887', '8889', '8878', '8898', '8788', '8988', '7888', '9888'], '8888', -1)]:
+    got = open_lock(de, tg)
+    assert got == want == open_lock_levels(de, tg) == open_lock_bidirectional(de, tg), (de, tg, got, want)
+    print(de, tg, '->', got)
+print("forgetting the '0000' dead-end check on example 3 ->", open_lock_no_start_check(['0000'], '8888'), '(should be -1)')
+
+# ---- the graph itself: 10^4 states, every state has exactly 8 distinct neighbours, all reachable, distance = sum of wheel distances
+states = [f'{i:04d}' for i in range(10 ** 4)]
+assert all(len(set(neighbours(s))) == 8 for s in states)
+dist = {'0000': 0}
+q = deque(['0000'])
+while q:
+    s = q.popleft()
+    for t in neighbours(s):
+        if t not in dist:
+            dist[t] = dist[s] + 1
+            q.append(t)
+assert len(dist) == 10 ** 4
+assert all(dist[s] == sum(min(int(c), 10 - int(c)) for c in s) for s in states)
+print('states', len(states), '| neighbours each 8 | edges', 8 * len(states) // 2, '| farthest state', max(dist, key=dist.get), 'at', max(dist.values()), 'moves')
+
+# ---- every possible target with no dead ends equals the wheel-distance formula
+for s in states[::7]:
+    assert open_lock([], s) == dist[s]
+print('open_lock([], target) == sum of per-wheel distances on', len(states[::7]), 'sampled targets')
+
+# ---- seeded random cross-check with up to 500 dead ends
+def rnd():
+    return f'{random.randrange(10 ** 4):04d}'
+for _ in range(300):
+    de = [rnd() for _ in range(random.choice([0, 5, 50, 500, 2000]))]
+    tg = rnd()
+    r = open_lock(de, tg)
+    assert r == open_lock_levels(de, tg) == open_lock_bidirectional(de, tg), (de[:5], tg)
+print('300 seeded random cases: queue BFS == level-set BFS == bidirectional BFS')
+
+# ---- edge cases
+assert open_lock([], '0000') == 0
+assert open_lock(['0000'], '0000') == -1
+assert open_lock(['0001'], '0001') == -1                  # target is a dead end
+assert open_lock(['1000', '9000', '0100', '0900', '0010', '0090', '0001', '0009'], '5555') == -1   # all 8 neighbours of the start jammed
+print('edge asserts passed')
+```
+
+**Output (my run):**
+```
+['0201', '0101', '0102', '1212', '2002'] 0202 -> 6
+['8888'] 0009 -> 1
+['0000'] 8888 -> -1
+['8887', '8889', '8878', '8898', '8788', '8988', '7888', '9888'] 8888 -> -1
+forgetting the '0000' dead-end check on example 3 -> 8 (should be -1)
+states 10000 | neighbours each 8 | edges 40000 | farthest state 5555 at 20 moves
+open_lock([], target) == sum of per-wheel distances on 1429 sampled targets
+300 seeded random cases: queue BFS == level-set BFS == bidirectional BFS
+edge asserts passed
+```
+
+**Edge cases:**
+- Target `'0000'` and not dead: 0 moves.
+- `'0000'` dead: -1 at once, even if the target is `'0000'`.
+- Target dead: -1.
+- Start enclosed by 8 dead neighbours: BFS exhausts and returns -1 (the last example, and the 4th prompt example).
+- Duplicate dead ends in the list: a set handles them.
+- 9 to 0 and 0 to 9 wrap, so `'0009'` is one move away.
+
+**Follow-ups:**
+- Faster in the worst case? Bidirectional BFS (in the code) searches from both ends and cuts the work from about b^d to 2 * b^(d/2); here the graph is small, so the gain is modest.
+- Return the actual sequence? Store a parent dictionary and walk it back from the target.
+- Many targets from one start? One BFS gives all distances; the code builds the full distance table that way.
+
+**Common mistakes:**
+- Marking states visited when popped (queues duplicates, up to 8 times more work).
+- Forgetting the wrap-around (`(d + 1) % 10`, `(d + 9) % 10`).
+- Not checking the start against the dead ends.
+- Using a list for `deadends` lookups (O(500) per check instead of O(1)); convert to a set once.
