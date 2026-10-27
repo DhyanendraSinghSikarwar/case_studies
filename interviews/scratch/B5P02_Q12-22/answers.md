@@ -788,7 +788,7 @@ order change example: [4, 2, 3, 1] (stable would give [2, 4, 1, 3])
 
 **Dry run:** `a=[1,2,2,3,4]`, `b=[2,2,2,4,5]`
 - 1 < 2: i=1. 2 == 2: out [2], i=2, j=1. 2 == 2: out [2,2], i=3, j=2.
-- 3 > 2 is false: a[3]=3 > b[2]=2, so j=3. 3 < 4: i=4. 4 == 4: out [2,2,4], i=5. Stop.
+- a[3]=3 > b[2]=2: j=3. a[3]=3 < b[3]=4: i=4. a[4]=4 == b[3]=4: out [2,2,4], i=5. Stop.
 - Result `[2, 2, 4]`.
 
 **Code:**
@@ -873,5 +873,319 @@ print(optimal([1, 2, 2, 3, 4], [2, 2, 2, 4, 5]), optimal([1, 3], [2, 4]))
 - On a match, advancing only one pointer, which reports too many copies.
 - Using a set, which drops multiplicity.
 - Not skipping with the right comparison direction (moving the larger pointer).
+
+---
+
+### Q20 ⭐⭐ 🟡 Valid palindrome II. Given a lowercase string `s` (len <= 10^5), decide whether it can become a palindrome by deleting at most one character. Walk two pointers inward; at the first mismatch try skipping the left or the right character and check the rest with plain palindrome checks. Say why trying both skips is enough and why the total is still O(n). Example: 'aba' -> True; 'abca' -> True; 'abc' -> False.
+**Asked at:** Public pattern lists (NeetCode 150 style 'Two Pointers' and 'Sliding Window' sections as mirrored in a LeetCode discuss post and GitHub roadmap repos; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); community lists, not verified company reports | Pattern guides (techinterview.org two-pointer and sliding-window guides, a LeetCode discuss 'Summary of Sliding Window Patterns' post and a '10 Variations of Two Pointers' post, Hello Interview two-pointers page; search snippets only, not opened); prep content, not company reports | Standard-problem lists and solution sites (Educative and Grokking-style pattern courses, algo.monster and similar solution libraries; search snippets only, not opened); problem lists, not verified company reports
+
+**Pattern:** Two pointers moving inward, with one allowed "repair" at the first mismatch. After the repair it is just two plain palindrome checks.
+
+**Say this first (1 line):** I walk inward from both ends; at the first mismatch I try dropping the left character or the right one and check whether the rest is a palindrome, and the whole thing is O(n).
+
+**Brute force:** Try deleting each index, build the string, test it: O(n) deletions times O(n) check = O(n^2) time and O(n) extra for each copy. Too slow at 10^5.
+
+**Optimal:**
+- `l = 0`, `r = n - 1`. While `l < r` and `s[l] == s[r]`, move inward.
+- At the first mismatch return `is_pal(s, l+1, r) or is_pal(s, l, r-1)`.
+- Why both skips are needed: we do not know which of the two mismatching characters is the "extra" one. `deeee` needs the left one removed; `eeeed` needs the right one.
+- Why trying only these two is enough: any palindrome obtained by one deletion must delete either `s[l]` or `s[r]`. Deleting some other character leaves the same mismatched pair facing each other. The prefix and suffix already matched are unchanged.
+- No deeper recursion: the "one deletion" budget is spent at the first mismatch, so the two checks are plain.
+
+**Complexity:** Time O(n): the outer walk is at most n/2 steps, then at most two more scans of at most n characters. Space O(1) (indices only, no slicing).
+
+**Dry run:** `'abca'`
+- l=0 (a), r=3 (a): equal, l=1, r=2.
+- l=1 (b), r=2 (c): mismatch.
+- Skip left: check `s[2..2]` = 'c', a palindrome, so True. (Skip right would check 'b' as well.)
+- Answer True (delete 'b' or 'c' gives 'aca' or 'aba').
+- For `'abc'`: mismatch at l=0, r=2: skip left -> 'bc' not palindrome; skip right -> 'ab' not. False.
+
+**Code:**
+```python
+import random
+
+def brute(s):
+    if s == s[::-1]:
+        return True
+    return any((t := s[:i] + s[i + 1:]) == t[::-1] for i in range(len(s)))
+
+def is_pal(s, l, r):
+    while l < r:
+        if s[l] != s[r]:
+            return False
+        l += 1
+        r -= 1
+    return True
+
+def optimal(s):
+    l, r = 0, len(s) - 1
+    while l < r:
+        if s[l] != s[r]:
+            # one deletion allowed: skip the left char or the right char
+            return is_pal(s, l + 1, r) or is_pal(s, l, r - 1)
+        l += 1
+        r -= 1
+    return True
+
+assert optimal('aba') is True
+assert optimal('abca') is True
+assert optimal('abc') is False
+assert optimal('') is True
+assert optimal('a') is True
+assert optimal('ab') is True
+assert optimal('abca') is True
+assert optimal('deeee') is True            # delete the leading d
+assert optimal('eeeed') is True            # delete the trailing d
+assert optimal('abcdeba') is False
+
+rng = random.Random(20)
+for _ in range(1500):
+    s = ''.join(rng.choice('abc') for _ in range(rng.randint(0, 9)))
+    assert optimal(s) == brute(s), s
+print("1500 random cases agree with brute force")
+print(optimal('aba'), optimal('abca'), optimal('abc'))
+# the greedy trap: only skipping one side is wrong
+def left_only(s):
+    l, r = 0, len(s) - 1
+    while l < r:
+        if s[l] != s[r]:
+            return is_pal(s, l + 1, r)
+        l += 1; r -= 1
+    return True
+print("skip-left-only on 'eeeed':", left_only('eeeed'), "(true answer True)")
+```
+
+**Output (my run):**
+```
+1500 random cases agree with brute force
+True True False
+skip-left-only on 'eeeed': False (true answer True)
+```
+
+**Edge cases:**
+- Already a palindrome: zero deletions is within "at most one", so True.
+- Empty or single character: True.
+- Two characters: always True (delete one).
+- Mismatch at the very ends (`deeee`, `eeeed`): both skips matter.
+- A string that needs two deletions: False.
+
+**Follow-ups:**
+- *At most k deletions?* Then it becomes DP (longest palindromic subsequence, n - LPS <= k), Part 11.
+- *Why not slice and compare?* Slicing copies, O(n) each; index-based check keeps O(1) space.
+- *Return the index to delete?* Return which skip worked.
+
+**Common mistakes:**
+- Trying only the left skip (the demo above shows the wrong answer for `'eeeed'`).
+- Using `s[l+1:r+1]` slices inside the helper, which is correct but hides copying cost.
+- Recursing with a counter and re-entering the mismatch loop, which can blow up if not limited to one deletion.
+- Off-by-one in the helper bounds (`l+1..r` versus `l..r-1`, both inclusive).
+
+---
+
+### Q21 ⭐⭐ 🟡 Remove duplicates from a sorted array, allowing at most two copies. `nums` is sorted non-decreasing. Rewrite it in place so each value appears at most twice, keep the order, and return the new length k; only the first k slots matter. Use a write pointer and compare with the element two slots behind the write position, and say how this generalises to 'at most m copies'. (Part 1 Q6 covers the keep-one version.) Example: [1,1,1,2,2,3] -> k=5, first 5 slots [1,1,2,2,3]; [0,0,1,1,1,1,2,3,3] -> k=7, first 7 slots [0,0,1,1,2,3,3].
+**Asked at:** Pattern guides (techinterview.org two-pointer and sliding-window guides, a LeetCode discuss 'Summary of Sliding Window Patterns' post and a '10 Variations of Two Pointers' post, Hello Interview two-pointers page; search snippets only, not opened); prep content, not company reports | Standard-problem lists and solution sites (Educative and Grokking-style pattern courses, algo.monster and similar solution libraries; search snippets only, not opened); problem lists, not verified company reports | Indian online-assessment style prep (a search for TCS NQT, Infosys and Wipro sliding-window questions returned only generic guides, nothing company-specific; the fixed-window max-sum and 'longest subarray with sum <= k' tasks are the typical easy-tier shape in such sheets; indicative only, no company attribution)
+
+**Pattern:** Read pointer and write pointer (fast and slow) over a sorted array, in place. Sortedness puts equal values side by side, so "how many copies have I kept" can be read off one slot behind the write head.
+
+**Say this first (1 line):** I scan once with a write index `k`, and I keep a value only if fewer than two items are kept yet or it differs from the value two slots behind the write position.
+
+**Brute force:** Build a new list, keeping a value only if its count in the output is below two (`out.count(v)` each time is O(n), so O(n^2)), or a Counter for O(n) time and O(n) space. The prompt wants it in place.
+
+**Optimal:**
+- `k = 0` is the next write slot. For each value `x` in order:
+  - If `k < 2` or `x != nums[k - 2]`: write `nums[k] = x`, `k += 1`.
+  - Otherwise skip it.
+- Why compare with `nums[k-2]` (the output, not the input): the first `k` slots already hold the result so far, sorted. If `x == nums[k-2]` then, because the output is sorted and `x` is not smaller than anything in it, `nums[k-2] == nums[k-1] == x`: two copies are already kept, so `x` would be a third.
+- Generalising to at most `m` copies: `if k < m or x != nums[k - m]`. `m = 1` is the keep-one version in Part 1 Q6.
+- Only the first `k` slots matter; the tail is garbage and the caller must not read it.
+
+**Complexity:** Time O(n): one pass. Space O(1): one index.
+
+**Dry run:** `[1,1,1,2,2,3]`, `m = 2`
+- x=1: k=0 < 2, write, k=1. x=1: k=1 < 2, write, k=2.
+- x=1: k=2, `nums[0]=1 == x`, skip.
+- x=2: `nums[0]=1 != 2`, write at 2, k=3. x=2: `nums[1]=1 != 2`, write, k=4.
+- x=3: `nums[2]=2 != 3`, write, k=5.
+- Result k=5, first 5 slots `[1,1,2,2,3]`.
+
+**Code:**
+```python
+import random
+
+def brute(nums, m=2):
+    out = []
+    for v in nums:
+        if out.count(v) < m:        # keeps first m copies; O(n) count per element
+            out.append(v)
+    return len(out), out
+
+def optimal(nums, m=2):
+    k = 0                                    # write position
+    for x in nums:
+        if k < m or x != nums[k - m]:        # compare with the slot m behind the write head
+            nums[k] = x
+            k += 1
+    return k
+
+def run(a, m=2):
+    b = list(a)
+    k = optimal(b, m)
+    return k, b[:k]
+
+assert run([1, 1, 1, 2, 2, 3]) == (5, [1, 1, 2, 2, 3])
+assert run([0, 0, 1, 1, 1, 1, 2, 3, 3]) == (7, [0, 0, 1, 1, 2, 3, 3])
+assert run([]) == (0, [])
+assert run([7]) == (1, [7])
+assert run([5, 5, 5, 5, 5]) == (2, [5, 5])
+assert run([1, 2, 3]) == (3, [1, 2, 3])
+assert run([-1, -1, -1, 0, 0, 0]) == (4, [-1, -1, 0, 0])
+assert run([1, 1, 1, 2, 2, 3], m=1) == (3, [1, 2, 3])        # generalises to m = 1
+assert run([1, 1, 1, 1, 2], m=3) == (4, [1, 1, 1, 2])         # and m = 3
+
+rng = random.Random(21)
+for _ in range(1000):
+    a = sorted(rng.randint(-3, 3) for _ in range(rng.randint(0, 12)))
+    for m in (1, 2, 3):
+        assert run(a, m) == brute(a, m), (a, m)
+print("1000 random sorted lists, m in (1, 2, 3): agree with brute force")
+print(run([1, 1, 1, 2, 2, 3]), run([0, 0, 1, 1, 1, 1, 2, 3, 3]))
+```
+
+**Output (my run):**
+```
+1000 random sorted lists, m in (1, 2, 3): agree with brute force
+(5, [1, 1, 2, 2, 3]) (7, [0, 0, 1, 1, 2, 3, 3])
+```
+
+**Edge cases:**
+- Empty list: return 0.
+- Length one or two: everything kept.
+- All equal: keep exactly `m` of them.
+- No duplicates: nothing skipped.
+- Negatives: no issue (compare by equality only).
+- Unsorted input breaks the logic; the problem guarantees sorted.
+
+**Follow-ups:**
+- *At most m copies?* Replace 2 with m, as above (tested for m = 1 and 3).
+- *Can it be unsorted?* Then use a Counter and a write pointer, O(n) space.
+- *Why compare against the output slot, not the input?* The input slot `nums[i-2]` may have been overwritten. Comparing with `nums[k-2]` uses the result built so far, which is always valid.
+
+**Common mistakes:**
+- Mixing up the read index `i` and the write index `k`: the check is against `nums[k - 2]`.
+- Returning the list instead of the length, or reading past `k`.
+- Starting the check at index 2 but leaving `k` at 0.
+
+---
+
+### Q22 ⭐⭐ 🟡 Backspace string compare in O(1) space. Two strings `s` and `t` consist of lowercase letters and '#', where '#' deletes the previous typed character (it does nothing on an empty text). Decide whether the final texts are equal without building the two results, by scanning both strings from the right with a skip counter. Example: s='ab#c', t='ad#c' -> True (both 'ac'); s='a#c', t='b' -> False; s='a##c', t='#a#c' -> True (both 'c').
+**Asked at:** Standard-problem lists and solution sites (Educative and Grokking-style pattern courses, algo.monster and similar solution libraries; search snippets only, not opened); problem lists, not verified company reports | Pattern guides (techinterview.org two-pointer and sliding-window guides, a LeetCode discuss 'Summary of Sliding Window Patterns' post and a '10 Variations of Two Pointers' post, Hello Interview two-pointers page; search snippets only, not opened); prep content, not company reports
+
+**Pattern:** Two pointers scanning from the right with a skip counter. A '#' only affects characters to its left, so processing right to left tells us at once whether a letter is erased.
+
+**Say this first (1 line):** Scanning right to left, a '#' adds one to a skip counter and each letter either consumes a skip (it is erased) or survives; I advance both strings to their next surviving letter and compare, using O(1) extra space.
+
+**Brute force:** Build both final texts with a stack (push letters, pop on '#', ignore '#' on empty), then compare. O(n + m) time, O(n + m) space. Correct, and it is the checker in the code.
+
+**Optimal:**
+- Helper `next_valid(x, i)`: `skip = 0`; walk `i` leftwards. On '#': `skip += 1`. On a letter: if `skip > 0`, `skip -= 1` (erased), else return `i` (it survives). Return -1 when we run off the start.
+- Main loop: `i = len(s) - 1`, `j = len(t) - 1`. Find the next surviving index in each. Both -1: equal, True. Exactly one -1: different lengths, False. Different letters: False. Else step both left and repeat.
+- Each string is scanned once, right to left, so the skip counter state never has to be shared.
+
+**Complexity:** Time O(n + m): every index of each string is visited once (the helper resumes from where it stopped, because `i` is moved past the returned index). Space O(1): a few integers.
+
+**Dry run:** `s='ab#c'`, `t='ad#c'`
+- s: from i=3, 'c' survives, index 3. t: from j=3, 'c', index 3. Equal. Step to i=2, j=2.
+- s: i=2 is '#', skip 1; i=1 'b' erased (skip 0); i=0 'a' survives, index 0. t: '#', 'd' erased, 'a' survives, index 0. Equal. Step to -1, -1.
+- Both exhausted: True (both texts are `ac`).
+- For `'a#c'` vs `'b'`: s gives 'c', t gives 'b', not equal: False.
+
+**Code:**
+```python
+import random
+
+def brute(s, t):
+    def build(x):
+        st = []
+        for ch in x:
+            if ch == '#':
+                if st:
+                    st.pop()
+            else:
+                st.append(ch)
+        return st
+    return build(s) == build(t)
+
+def next_valid(x, i):
+    """Index of the next surviving character at or left of i, or -1."""
+    skip = 0
+    while i >= 0:
+        if x[i] == '#':
+            skip += 1
+        elif skip > 0:
+            skip -= 1          # this letter is erased by a later '#'
+        else:
+            return i           # a surviving letter
+        i -= 1
+    return -1
+
+def optimal(s, t):
+    i, j = len(s) - 1, len(t) - 1
+    while True:
+        i = next_valid(s, i)
+        j = next_valid(t, j)
+        if i < 0 and j < 0:
+            return True
+        if i < 0 or j < 0:
+            return False
+        if s[i] != t[j]:
+            return False
+        i -= 1
+        j -= 1
+
+assert optimal('ab#c', 'ad#c') is True
+assert optimal('a#c', 'b') is False
+assert optimal('a##c', '#a#c') is True
+assert optimal('', '') is True
+assert optimal('#', '') is True
+assert optimal('###', 'a#') is True
+assert optimal('a', 'a#') is False
+assert optimal('ab', 'a') is False           # different lengths after deletion
+assert optimal('abc', 'abc') is True
+assert optimal('bxj##tw', 'bxj###tw') is False
+assert optimal('xy#z', 'xzz#') is True
+
+rng = random.Random(22)
+for _ in range(2000):
+    s = ''.join(rng.choice('ab#') for _ in range(rng.randint(0, 9)))
+    t = ''.join(rng.choice('ab#') for _ in range(rng.randint(0, 9)))
+    assert optimal(s, t) == brute(s, t), (s, t)
+print("2000 random cases agree with the stack brute force")
+print(optimal('ab#c', 'ad#c'), optimal('a#c', 'b'), optimal('a##c', '#a#c'))
+```
+
+**Output (my run):**
+```
+2000 random cases agree with the stack brute force
+True False True
+```
+
+**Edge cases:**
+- '#' on empty text does nothing: leading `#` characters are skipped with a skip count that never meets a letter (`'###'` equals `''`).
+- All characters erased on one side: that side returns -1 first, the other must also be -1.
+- Extra '#' beyond the letters (`'a##c'` vs `'#a#c'`) both reduce to `'c'`.
+- Equal raw strings: True quickly.
+- Empty strings: True.
+
+**Follow-ups:**
+- *Why not scan left to right?* A letter's fate depends on later '#' characters, so you would need a stack, which is O(n) space.
+- *Same trick elsewhere?* Any "later marker cancels earlier item" problem, such as removing adjacent pairs (Part 4 stack family) when the structure is simple.
+- *Cursor keys, not just backspace?* Then the right-to-left skip counter no longer works; use a stack or a gap structure.
+
+**Common mistakes:**
+- Treating each '#' as deleting exactly one letter when the previous character is also '#': the counter must accumulate.
+- Not resetting `skip` between the two strings or between helper calls (it is local to the helper).
+- Comparing characters without first moving both pointers to survivors.
+- Returning False when only one side is exhausted but not checking the other for a survivor.
 
 ---

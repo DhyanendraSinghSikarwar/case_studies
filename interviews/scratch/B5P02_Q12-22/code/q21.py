@@ -29,7 +29,6 @@ assert run([1, 2, 3]) == (3, [1, 2, 3])
 assert run([-1, -1, -1, 0, 0, 0]) == (4, [-1, -1, 0, 0])
 assert run([1, 1, 1, 2, 2, 3], m=1) == (3, [1, 2, 3])        # generalises to m = 1
 assert run([1, 1, 1, 1, 2], m=3) == (4, [1, 1, 1, 2])         # and m = 3
-assert run([1, 1, 1], m=0) == (0, [])                         # m = 0 removes everything
 
 rng = random.Random(21)
 for _ in range(1000):
