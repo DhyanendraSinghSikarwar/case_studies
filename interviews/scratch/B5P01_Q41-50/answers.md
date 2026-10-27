@@ -696,3 +696,135 @@ Both examples in the prompt are correct (8 and 16; in the second, products 10 an
 - Using C(c, 2) on ordered pairs, double counting.
 - Applying the formula when values repeat.
 - Counting a pair against itself.
+
+---
+
+### Q47 ⭐ 🔴 Insert, delete and getRandom with duplicates. Extend a randomised collection to a multiset: insert(x) returns True if x was not present, remove(x) deletes one occurrence, getRandom returns an element with probability proportional to its multiplicity, all in average O(1). Maintain a list plus a dict from value to a set of indices and handle the swap with last when the removed slot is the last one. Example: insert 1, insert 1, insert 2, remove 1, getRandom -> 1 with prob 1/2.
+**Asked at:** Public pattern lists (NeetCode 150 / Blind 75 style 'Arrays & Hashing' sections as mirrored on a Scribd copy, a dev.to prep-sheet post and GitHub roadmap repos; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); community lists, not verified company reports | Company-tagged and product-company prep lists (Weekday 'DSA interview questions 2026: 60 must-know problems with patterns' post, Naukri Code360 must-do list for product-based companies; snippets only, not opened); commercial prep content, not verified candidate reports
+**Pattern:** Dense array plus index map. The list gives uniform random access; the dict gives O(1) lookup by value; swap-with-last gives O(1) delete. Duplicates mean the dict stores a set of indices per value.
+
+**Say this first (1 line):** Keep a list of all elements and a dict value -> set of positions; to remove, overwrite the removed slot with the last element, update the moved element's index set, and pop the list.
+
+**Brute force:** A plain list. insert is O(1), getRandom is O(1), remove is O(n) (`list.remove` scans and shifts). `insert` returning "was it absent" is also O(n) with `count`.
+
+**Optimal:**
+- `a`: list of every element, duplicates included. `random.choice(a)` is uniform over elements, so a value with multiplicity m has probability m/len(a).
+- `pos[v]`: set of indices where v sits in `a`.
+- insert(x): `new = not pos[x]`, append, add the index. Return `new`.
+- remove(x): if no indices, return False. Pop any index i of x. Let `last = len(a) - 1`. If i != last, move `a[last]` into slot i and fix its index set (add i, discard last). Pop the list. Delete empty sets.
+- Order of the two set updates matters: add the new index first, then discard the old one. This also works when the last element has the same value as x.
+- The special case i == last needs no move; just pop.
+
+**Complexity:** Each operation does O(1) average list and hash-set work. Space O(n) for the list plus the index sets.
+
+**Dry run:** insert 1, 1, 2 gives a = [1, 1, 2], pos = {1: {0, 1}, 2: {2}}.
+- remove(1): pop index 0 from pos[1] (say), last = 2, y = 2. Set pos[2] = {0, 2} then discard 2 -> {0}. a[0] = 2, pop -> a = [2, 1]. pos = {1: {1}, 2: {0}}.
+- getRandom: 1 and 2 each with probability 1/2.
+
+**Code:**
+```python
+import random
+from collections import Counter, defaultdict
+
+class BruteMultiset:                               # list only: remove is O(n)
+    def __init__(self, seed=0): self.a, self.rng = [], random.Random(seed)
+    def insert(self, x): self.a.append(x); return self.a.count(x) == 1
+    def remove(self, x):
+        if x not in self.a: return False
+        self.a.remove(x); return True
+    def getRandom(self): return self.rng.choice(self.a)
+
+class RandomizedCollection:                        # average O(1) for all three operations
+    def __init__(self, seed=0):
+        self.a = []                                # values, dense, so random index is uniform over elements
+        self.pos = defaultdict(set)                # value -> set of indices where it sits in self.a
+        self.rng = random.Random(seed)
+    def insert(self, x):
+        new = not self.pos[x]
+        self.pos[x].add(len(self.a)); self.a.append(x)
+        return new
+    def remove(self, x):
+        if not self.pos.get(x): return False
+        i = self.pos[x].pop()                      # any slot holding x
+        last = len(self.a) - 1
+        if i != last:
+            y = self.a[last]
+            self.pos[y].add(i)                     # add the new slot FIRST ...
+            self.pos[y].discard(last)              # ... then drop the old one (works when y == x too)
+            self.a[i] = y
+        self.a.pop()
+        if not self.pos[x]: del self.pos[x]
+        return True
+    def getRandom(self): return self.rng.choice(self.a)
+
+# prompt example
+rc = RandomizedCollection(seed=47)
+print("insert 1:", rc.insert(1), "| insert 1:", rc.insert(1), "| insert 2:", rc.insert(2))
+print("remove 1:", rc.remove(1), "| remaining list:", sorted(rc.a))
+draws = Counter(rc.getRandom() for _ in range(10_000))
+print("getRandom over 10,000 draws:", dict(sorted(draws.items())), "(expect about 5000 / 5000)")
+
+# the "last slot" trap: remove a value whose only/last copy is at the end, and a value equal to the last
+t = RandomizedCollection()
+for v in (5, 7, 7): t.insert(v)
+assert t.remove(7) and sorted(t.a) == [5, 7] and t.pos[7] == {t.a.index(7)} and t.pos[5] == {0}
+assert t.remove(7) and t.a == [5] and 7 not in t.pos
+assert not t.remove(7)
+
+# seeded randomized cross-check against Counter model, with invariant checks
+rng = random.Random(471)
+for trial in range(300):
+    rc, model = RandomizedCollection(trial), Counter()
+    for _ in range(60):
+        x = rng.randint(0, 4)
+        if rng.random() < 0.55:
+            assert rc.insert(x) == (model[x] == 0); model[x] += 1
+        else:
+            assert rc.remove(x) == (model[x] > 0)
+            if model[x] > 0: model[x] -= 1
+        assert Counter(rc.a) == +model                                   # same multiset
+        for v, s in rc.pos.items():
+            assert s and all(rc.a[i] == v for i in s) and len(s) == model[v]   # index sets exact
+        assert sum(len(s) for s in rc.pos.values()) == len(rc.a)
+        if rc.a: assert rc.getRandom() in model and model[rc.getRandom()] > 0
+print("300 seeded trials x 60 ops: multiset, index sets and return values all consistent")
+
+# edge cases
+e = RandomizedCollection()
+assert e.remove(3) is False
+assert e.insert(3) is True and e.insert(3) is False
+assert e.remove(3) and e.remove(3) and not e.remove(3) and e.a == []
+try: e.getRandom(); raise SystemExit("should fail")
+except IndexError: print("getRandom on empty raises IndexError (the problem guarantees non-empty)")
+print("edge asserts passed")
+```
+
+**Output (my run):**
+```text
+insert 1: True | insert 1: False | insert 2: True
+remove 1: True | remaining list: [1, 2]
+getRandom over 10,000 draws: {1: 4993, 2: 5007} (expect about 5000 / 5000)
+300 seeded trials x 60 ops: multiset, index sets and return values all consistent
+getRandom on empty raises IndexError (the problem guarantees non-empty)
+edge asserts passed
+```
+
+The prompt's example (1 with probability 1/2) is correct: the run shows 4993 versus 5007 over 10,000 draws with a seeded generator, which is sampling noise around 50%, not a proof of uniformity.
+
+**Edge cases:**
+- Remove a value that is absent: return False, change nothing.
+- Remove the element sitting in the last slot (i == last): no swap.
+- Removed value equals the last element's value: the add-then-discard order keeps the set correct.
+- Last copy removed: delete the key so `insert` returns True next time.
+- getRandom on empty: the problem guarantees non-empty; `random.choice` would raise IndexError.
+
+**Follow-ups:**
+- Why a set of indices, not a list? Removing a specific index from a list is O(n); a set gives O(1).
+- Why is `pos[x].pop()` fine? Any occurrence of x is interchangeable for a multiset.
+- Why not a Counter alone? getRandom would need O(number of distinct values) to sample by weight.
+
+**Common mistakes:**
+- Discarding the old index before adding the new one when both values are equal, which loses the index.
+- Forgetting the i == last case and corrupting the sets.
+- Leaving empty sets in the dict so `insert` wrongly returns False.
+- Returning "was present" instead of "was absent" from insert.

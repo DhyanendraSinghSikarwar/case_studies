@@ -42,18 +42,21 @@ print("heap  :", sorted(topk_heap([1, 1, 1, 2, 2, 3], 2)), "(expected [1, 2])")
 print("bucket:", sorted(topk_bucket([1, 1, 1, 2, 2, 3], 2)), "(expected [1, 2])")
 
 random.seed(10)
+cases = 0
 for _ in range(1000):
     n = random.randint(1, 14)
     a = [random.randint(-4, 4) for _ in range(n)]
     cnt = Counter(a)
     # prompt guarantees a unique answer: frequency of k-th and (k+1)-th must differ
     freqs = sorted(cnt.values(), reverse=True)
+    
     k = random.randint(1, len(freqs))
     if k < len(freqs) and freqs[k - 1] == freqs[k]:
         continue
+    cases += 1
     exp = sorted(topk_brute(a, k))
     assert sorted(topk_heap(a, k)) == exp == sorted(topk_bucket(a, k)) == sorted(topk_nlargest(a, k)), (a, k)
-print("cross-check: seeded unique-answer cases agree")
+print("cross-check: %d seeded unique-answer cases agree" % cases)
 
 assert topk_heap([1], 1) == [1] == topk_bucket([1], 1)
 assert sorted(topk_bucket([4, 4, 4, 4], 1)) == [4]

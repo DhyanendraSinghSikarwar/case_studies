@@ -849,7 +849,7 @@ Both prompt examples are correct as written.
 | Sum | O(n) | O(1) |
 
 **Overflow point:**
-- In C, C++ or Java with 32-bit ints, n(n+1)/2 exceeds 2^31 - 1 once n is about 65,535, and the n * (n+1) product overflows even earlier. The run above shows n = 10^5: the true sum 5,000,050,000 wraps to 705,082,704 as an int32.
+- In C, C++ or Java with 32-bit ints, n(n+1)/2 exceeds 2^31 - 1 once n reaches about 65,536, and the n * (n+1) product overflows even earlier (about n = 46,341). The run above shows n = 10^5: the true sum 5,000,050,000 wraps to 705,082,704 as an int32.
 - Fixes there: use 64-bit, or accumulate `missing ^= i ^ nums[i]` (XOR, no overflow) or `missing += i - nums[i]` starting from n (the differences stay small and cancel as you go).
 - Python ints have arbitrary precision, so the sum is exact at any size (cost: big ints are slower and larger than machine ints, but at this size, irrelevant).
 
@@ -941,3 +941,279 @@ Both prompt examples are correct as written ([3,0,1] gives 2, [0,1] gives 2).
 - Assuming the range is 1..n when it is 0..n.
 - Forgetting the answer can be n (sorted scan falls through).
 - Saying the sum trick fails in Python; it does not.
+
+### Q9 ⭐⭐⭐ 🟡 Group anagrams. Given a list of lowercase strings, group together the strings that are anagrams of one another; output order does not matter. Compare keying a dict by the sorted string against keying by a 26-count tuple and state the cost of each in terms of word length L. Example: ['eat','tea','tan','ate','nat','bat'] -> [['eat','tea','ate'],['tan','nat'],['bat']] in any order.
+**Asked at:** Public pattern lists (NeetCode 150 / Blind 75 style 'Arrays & Hashing' sections as mirrored on a Scribd copy, a dev.to prep-sheet post and GitHub roadmap repos; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); community lists, not verified company reports | Company-tagged and product-company prep lists (Weekday 'DSA interview questions 2026: 60 must-know problems with patterns' post, Naukri Code360 must-do list for product-based companies; snippets only, not opened); commercial prep content, not verified candidate reports
+
+**Pattern:** Hash-key design. Find a canonical form that is the same for all anagrams and use it as the dict key.
+
+**Say this first (1 line):** "Key a dict by a canonical form of each word: the sorted string costs O(L log L), the 26-count tuple costs O(L); append each word to its key's list. Total O(n x L log L) or O(n x L)."
+
+**Brute force:** For each word, compare against the first word of every existing group by sorting both. Worst case n groups, so O(n^2 x L log L).
+
+**Optimal:**
+- Two interchangeable keys:
+  - Sorted string: `"".join(sorted(w))`. "eat", "tea", "ate" all give "aet".
+  - Count tuple: 26 counts. Must be a tuple (hashable), not a list.
+- `defaultdict(list)` collects words per key. Return `list(d.values())`.
+- Invariant: two words share a key if and only if they have identical letter multisets, so each dict value is exactly one anagram class.
+- Why not a sum or product of letters as the key: different words collide ("ad" vs "bc").
+
+**Complexity (n words, max length L):**
+| Key | Per word | Total time | Space |
+|---|---|---|---|
+| Sorted string | O(L log L) to sort | O(n L log L) | O(n L) for keys and groups |
+| 26-count tuple | O(L) to count + O(26) to hash | O(n (L + 26)) = O(n L) | O(n L) for groups plus O(26 n) for keys |
+
+- The count key wins asymptotically for long words. For short words (L under about 10 to 20) sorting is often faster in CPython, because `sorted` and `join` run in C while the counting loop is Python-level. The two sandbox timing lines above show both sides (long words: count key faster; short words: sorted key faster). They are sandbox measurements, not proof; the big-O comes from the code.
+- The count key only works because the alphabet is fixed at 26. For Unicode use `tuple(sorted(Counter(w).items()))` or just the sorted string.
+
+**Dry run:** `['eat','tea','tan','ate','nat','bat']`
+| word | key (sorted) | dict after |
+|---|---|---|
+| eat | aet | aet:[eat] |
+| tea | aet | aet:[eat,tea] |
+| tan | ant | + ant:[tan] |
+| ate | aet | aet:[eat,tea,ate] |
+| nat | ant | ant:[tan,nat] |
+| bat | abt | + abt:[bat] |
+
+**Code:**
+```python
+import random
+import string
+from collections import defaultdict
+
+
+def group_brute(words):
+    # O(n^2 * L log L): compare each word against each existing group's first word
+    groups = []
+    for w in words:
+        for g in groups:
+            if sorted(g[0]) == sorted(w):
+                g.append(w)
+                break
+        else:
+            groups.append([w])
+    return groups
+
+
+def group_sorted_key(words):
+    d = defaultdict(list)
+    for w in words:
+        d["".join(sorted(w))].append(w)  # O(L log L) per word
+    return list(d.values())
+
+
+def group_count_key(words):
+    d = defaultdict(list)
+    for w in words:
+        cnt = [0] * 26
+        for ch in w:  # O(L) per word to build, O(26) to hash the tuple
+            cnt[ord(ch) - 97] += 1
+        d[tuple(cnt)].append(w)  # a list is unhashable, a tuple is fine
+    return list(d.values())
+
+
+def norm(groups):
+    return sorted(sorted(g) for g in groups)
+
+
+ex = ["eat", "tea", "tan", "ate", "nat", "bat"]
+print("sorted key:", group_sorted_key(ex))
+print("count key :", group_count_key(ex))
+print("example ok (any order):", norm(group_sorted_key(ex)) == norm([["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]))
+
+random.seed(9)
+for _ in range(1000):
+    ws = ["".join(random.choice("abc") for _ in range(random.randint(0, 4))) for _ in range(random.randint(0, 8))]
+    e = norm(group_brute(ws))
+    assert norm(group_sorted_key(ws)) == e == norm(group_count_key(ws)), ws
+print("cross-check: 1000 seeded cases agree")
+
+assert group_sorted_key([]) == []
+assert norm(group_sorted_key([""])) == [[""]]
+assert norm(group_count_key(["a"])) == [["a"]]
+assert norm(group_sorted_key(["", ""])) == [["", ""]]
+assert norm(group_count_key(["ab", "ba", "ab"])) == [["ab", "ab", "ba"]]
+assert norm(group_sorted_key(["abc", "def"])) == [["abc"], ["def"]]
+# duplicates kept, not merged
+assert sum(len(g) for g in group_sorted_key(["x", "x", "x"])) == 3
+print("edge asserts passed")
+
+# sandbox-only timing, long words (big-O comes from the code, not from this)
+import time
+L = 20000
+words = ["".join(random.choice(string.ascii_lowercase) for _ in range(L)) for _ in range(50)]
+for f in (group_sorted_key, group_count_key):
+    t = time.perf_counter()
+    f(words)
+    print(f.__name__, "50 words of length 20000 (sandbox only): %.3fs" % (time.perf_counter() - t))
+short = ["".join(random.choice(string.ascii_lowercase) for _ in range(6)) for _ in range(100000)]
+for f in (group_sorted_key, group_count_key):
+    t = time.perf_counter()
+    f(short)
+    print(f.__name__, "100000 words of length 6 (sandbox only): %.3fs" % (time.perf_counter() - t))
+```
+
+**Output (my run):**
+```text
+sorted key: [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]
+count key : [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']]
+example ok (any order): True
+cross-check: 1000 seeded cases agree
+edge asserts passed
+group_sorted_key 50 words of length 20000 (sandbox only): 0.095s
+group_count_key 50 words of length 20000 (sandbox only): 0.035s
+group_sorted_key 100000 words of length 6 (sandbox only): 0.061s
+group_count_key 100000 words of length 6 (sandbox only): 0.169s
+```
+
+The prompt example is correct: the groups are [eat, tea, ate], [tan, nat], [bat], with groups appearing in first-seen order here (the prompt says any order is fine).
+
+**Edge cases:**
+- Empty list: empty result. Empty string: it is its own group (key is empty).
+- Repeated words stay in the output (a group may contain the same word twice).
+- Words of different lengths never share a key.
+- A list as a dict key raises `TypeError: unhashable type`.
+
+**Follow-ups:**
+- Unicode or large alphabet? Sorted string, or a sorted tuple of (char, count).
+- Reduce key size? A string like "1a0b..." or a tuple with only the non-zero entries, a sparse count.
+- Do I need to sort the count tuple? No, the fixed-position 26-tuple is already canonical.
+
+**Common mistakes:**
+- Using a list as the key.
+- Using sum of ords as the key (collisions).
+- Calling the sorted-string key O(n L) without the log factor.
+- Claiming the count key is always faster in practice.
+
+### Q10 ⭐⭐⭐ 🟡 Top K frequent elements. Given integers `nums` and k, return the k most frequent values (any order; the answer is unique). Beat O(n log n) by giving both a heap solution (O(n log k)) and a bucket-by-frequency solution (O(n)). Example: nums=[1,1,1,2,2,3], k=2 -> [1,2].
+**Asked at:** Public pattern lists (NeetCode 150 / Blind 75 style 'Arrays & Hashing' sections as mirrored on a Scribd copy, a dev.to prep-sheet post and GitHub roadmap repos; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); community lists, not verified company reports | Company-tagged and product-company prep lists (Weekday 'DSA interview questions 2026: 60 must-know problems with patterns' post, Naukri Code360 must-do list for product-based companies; snippets only, not opened); commercial prep content, not verified candidate reports
+
+**Pattern:** Frequency counting, then top-k selection: a size-k min-heap, or bucket sort by frequency because a frequency is at most n.
+
+**Say this first (1 line):** "Count with a Counter, then either keep a min-heap of size k over the distinct values for O(n log k), or drop values into buckets indexed by frequency and read from the top for O(n)."
+
+**Brute force:** Count, then sort the distinct values by frequency and take k. O(n log n) in the worst case (all values distinct). It is correct and often fine; the prompt asks to beat it.
+
+**Optimal:**
+- Step 1, both versions: `Counter(nums)`, O(n).
+- Heap: push `(freq, value)` for each distinct value; when the heap holds k and a new item has a higher frequency than the root, `heapreplace`. `heapq` is a min-heap, so the root is the weakest of the current top k. At the end the heap holds the k most frequent. Cost: O(m log k) for m distinct values, m <= n.
+- Bucket: `buckets[f]` = values with frequency f, for f in 1..n. Scan f from n down to 1 and collect until you have k. Frequency is an integer in 1..n, so no comparison sort is needed.
+- Invariant (bucket): after the scan from n down to f, the output holds the most frequent values in descending frequency order.
+- `heapq.nlargest(k, cnt, key=cnt.get)` is the one-line heap version.
+
+**Complexity:**
+| Version | Time | Space |
+|---|---|---|
+| Sort | O(n log n) | O(m) |
+| Heap of size k | O(n + m log k) | O(m) for the Counter plus O(k) heap |
+| Bucket | O(n) | O(n) |
+
+Both need the Counter (O(m)). The heap adds only O(k); the bucket list adds O(n) slots.
+
+**Dry run:** `nums=[1,1,1,2,2,3]`, k=2
+- Counter: {1:3, 2:2, 3:1}.
+- Buckets: [ [], [3], [2], [1], [], [], [] ] (index 0 to 6).
+- Scan f = 6 down: empty until f = 3 gives 1, f = 2 gives 2. Now 2 items collected, stop. Answer [1, 2].
+- Heap version: push (3,1), push (2,2); then (1,3) does not beat the root (2,2); result {1,2}.
+
+**Code:**
+```python
+import heapq
+import random
+from collections import Counter
+
+
+def topk_brute(nums, k):
+    # sort distinct values by frequency: O(n log n)
+    return [v for v, _ in sorted(Counter(nums).items(), key=lambda p: -p[1])[:k]]
+
+
+def topk_heap(nums, k):
+    cnt = Counter(nums)
+    h = []  # min-heap of (freq, value), size <= k: the root is the weakest of the current top k
+    for v, c in cnt.items():
+        if len(h) < k:
+            heapq.heappush(h, (c, v))
+        elif c > h[0][0]:
+            heapq.heapreplace(h, (c, v))
+    return [v for _, v in h]
+
+
+def topk_bucket(nums, k):
+    cnt = Counter(nums)
+    buckets = [[] for _ in range(len(nums) + 1)]  # index = frequency, 1..n
+    for v, c in cnt.items():
+        buckets[c].append(v)
+    out = []
+    for c in range(len(nums), 0, -1):
+        for v in buckets[c]:
+            out.append(v)
+            if len(out) == k:
+                return out
+    return out
+
+
+def topk_nlargest(nums, k):
+    cnt = Counter(nums)
+    return heapq.nlargest(k, cnt, key=cnt.get)
+
+
+print("heap  :", sorted(topk_heap([1, 1, 1, 2, 2, 3], 2)), "(expected [1, 2])")
+print("bucket:", sorted(topk_bucket([1, 1, 1, 2, 2, 3], 2)), "(expected [1, 2])")
+
+random.seed(10)
+cases = 0
+for _ in range(1000):
+    n = random.randint(1, 14)
+    a = [random.randint(-4, 4) for _ in range(n)]
+    cnt = Counter(a)
+    # prompt guarantees a unique answer: frequency of k-th and (k+1)-th must differ
+    freqs = sorted(cnt.values(), reverse=True)
+    
+    k = random.randint(1, len(freqs))
+    if k < len(freqs) and freqs[k - 1] == freqs[k]:
+        continue
+    cases += 1
+    exp = sorted(topk_brute(a, k))
+    assert sorted(topk_heap(a, k)) == exp == sorted(topk_bucket(a, k)) == sorted(topk_nlargest(a, k)), (a, k)
+print("cross-check: %d seeded unique-answer cases agree" % cases)
+
+assert topk_heap([1], 1) == [1] == topk_bucket([1], 1)
+assert sorted(topk_bucket([4, 4, 4, 4], 1)) == [4]
+assert sorted(topk_heap([-1, -1, 2, 2, 2, 3], 1)) == [2]
+assert sorted(topk_bucket([5, 6, 7, 5, 6, 5], 3)) == [5, 6, 7]
+# k equal to number of distinct values returns everything, even with ties
+assert sorted(topk_heap([1, 2, 3], 3)) == [1, 2, 3] == sorted(topk_bucket([1, 2, 3], 3))
+print("edge asserts passed")
+```
+
+**Output (my run):**
+```text
+heap  : [1, 2] (expected [1, 2])
+bucket: [1, 2] (expected [1, 2])
+cross-check: 502 seeded unique-answer cases agree
+edge asserts passed
+```
+
+The prompt example is correct as written.
+
+**Edge cases:**
+- k equals the number of distinct values: return everything.
+- All values equal: one bucket entry.
+- Ties at the boundary make the answer non-unique; the prompt rules that out. In an interview, ask what to do on ties.
+- Negative values: they are only dict keys, so fine.
+- n = 1.
+
+**Follow-ups:**
+- Top k from a stream or very large data? Count-min sketch or Space-Saving for approximate counts; exact needs all counts in memory or external aggregation.
+- Why is bucket O(n) and not O(n log n)? Because the sort key is a small integer (at most n); this is a counting sort.
+- Return the k least frequent? Same code, scan buckets upward or use a max-heap.
+
+**Common mistakes:**
+- Pushing every element (not every distinct value) onto the heap.
+- Using `heapq` as if it were a max-heap (it is a min-heap): keep a min-heap of size k and compare against the root.
+- Making `n` buckets and indexing with frequency n (off-by-one: need n + 1).
+- Calling `Counter.most_common(k)` "O(n)": it uses `heapq.nlargest` for a given k, so it is O(n log k)-ish, not linear.

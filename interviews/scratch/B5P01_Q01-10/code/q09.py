@@ -67,3 +67,8 @@ for f in (group_sorted_key, group_count_key):
     t = time.perf_counter()
     f(words)
     print(f.__name__, "50 words of length 20000 (sandbox only): %.3fs" % (time.perf_counter() - t))
+short = ["".join(random.choice(string.ascii_lowercase) for _ in range(6)) for _ in range(100000)]
+for f in (group_sorted_key, group_count_key):
+    t = time.perf_counter()
+    f(short)
+    print(f.__name__, "100000 words of length 6 (sandbox only): %.3fs" % (time.perf_counter() - t))
