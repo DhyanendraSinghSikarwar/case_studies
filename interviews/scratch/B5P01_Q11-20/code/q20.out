@@ -1,0 +1,3 @@
+one direction only on ('badc','baba'): True (wrong, truth False)
+1000 random + 256 exhaustive cases agree
+True False False
