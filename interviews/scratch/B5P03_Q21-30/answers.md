@@ -672,7 +672,7 @@ All four prompt examples are correct.
 **Brute force:** For `L` from `n-1` down to 1, test `s[:L] == s[-L:]`. The first success is the answer. O(n^2) because each test costs O(L).
 
 **Optimal:**
-- Compute `pi` in O(n) (Q23).
+- Compute `pi` in O(n) (Part 3 Q23).
 - Return `s[:pi[n-1]]`.
 - Why it is exactly the border you want: `pi[i]` is defined as the longest proper prefix of `s[:i+1]` that is also a suffix of `s[:i+1]`. At `i = n-1` the string is all of `s`. "Proper" excludes the whole string, "non-empty" is `pi[n-1] > 0`.
 - Z view: a border of length `L` means `s[n-L:]` equals `s[:L]`, so `Z[n-L] == L`, i.e. `i + Z[i] == n` with `i = n - L`. The longest border is the smallest such `i >= 1`.
@@ -1071,7 +1071,7 @@ All nineteen prompt examples are correct (nine valid, ten invalid).
 - `counts(s) = (len(s), len(s.encode('utf-8')), len(s.encode('utf-16-le')) // 2)`.
 - Use `utf-16-le` (no BOM). Plain `'utf-16'` adds a 2-byte byte-order mark, so the length is off by one unit.
 - UTF-8 uses 1 byte up to U+007F, 2 up to U+07FF, 3 up to U+FFFF, 4 above. UTF-16 uses 1 unit up to U+FFFF and a surrogate pair (2 units) above. JavaScript and Java `length` is this UTF-16 count.
-- `len('e\u0301') == 2` and `len('\u00e9') == 1` for the same visible letter: one is a base letter plus a combining accent, the other a precomposed letter. NFC normalisation joins them where a precomposed form exists (Q30).
+- `len('e\u0301') == 2` and `len('\u00e9') == 1` for the same visible letter: one is a base letter plus a combining accent, the other a precomposed letter. NFC normalisation joins them where a precomposed form exists (Part 3 Q30).
 - A flag (two regional-indicator letters) and a family emoji (several people joined by zero-width joiners) are several code points but look like one symbol.
 - Slicing, indexing and reversing work on code points, so they can cut a grapheme in the middle: split the accent from its letter, or reverse a flag into a different flag.
 - The standard library has no grapheme segmenter. Third-party options include the `regex` module (`\X`), the `grapheme` package, `uniseg`, and PyICU. None of these is installed in my sandbox, so I did not run them.
@@ -1191,7 +1191,7 @@ All three prompt examples are correct. Python 3.13 behaviour is as observed abov
 - Combining marks, zero-width joiners and flags: code points that are not characters on their own.
 
 **Follow-ups:**
-- *How would you count graphemes?* Use a segmenter per Unicode UAX #29 (the `regex` module's `\X`, or `grapheme`/`uniseg`/ICU). Do not use `len` or a combining-mark check; the latter covers accents only (Q31).
+- *How would you count graphemes?* Use a segmenter per Unicode UAX #29 (the `regex` module's `\X`, or `grapheme`/`uniseg`/ICU). Do not use `len` or a combining-mark check; the latter covers accents only (Part 3 Q31).
 - *What does `len(b'...')` count?* Bytes. A `bytes` object has no characters; decoding is the step that creates code points.
 - *Why do databases and APIs report different "lengths"?* Each counts a different unit: bytes (UTF-8), UTF-16 units (JS, Java), or code points (Python). Check which one a limit means.
 

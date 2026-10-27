@@ -23,7 +23,7 @@ Per question, in order: `### Qn stars emoji text` / `**Asked at:**` / **Pattern:
 |---|---|---|---|---|---|
 | 1 | Arrays and hashing | 50 | ✅ (50 Qs) | ✅ | ✅ |
 | 2 | Two pointers and sliding window | 45 | ✅ (45 Qs) | ✅ | ✅ |
-| 3 | Strings | 40 | ⬜ | ⬜ | ⬜ |
+| 3 | Strings | 40 | ✅ (40 Qs) | ✅ | ✅ |
 | 4 | Stack, queue, monotonic stack | 40 | ⬜ | ⬜ | ⬜ |
 | 5 | Binary search (incl. on answer) | 40 | ⬜ | ⬜ | ⬜ |
 | 6 | Linked lists | 35 | ⬜ | ⬜ | ⬜ |
@@ -40,4 +40,4 @@ Per question, in order: `### Qn stars emoji text` / `**Asked at:**` / **Pattern:
 Split Wave B into agents of about 10-12 questions; tell agents to stop and report (not retry) at a spend limit; commit and push WIP often (a stop hook demands it); after each part's merge run the lead re-run of all code blocks; Part 14 includes timed mock sets with scoring like Book 3 Part 12 and Book 4 Part 12 (cross-reference by checked headings).
 
 ## Next step
-Part 3 Wave A (strings; target 40: palindromes, anagrams at string level, parsing and tokenising, string building, KMP/Z/rolling hash (Rabin-Karp), longest common prefix, string compression, encode/decode, Unicode and bytes pitfalls, regex vs manual matching, edit-distance-adjacent only at concept level (DP belongs to Part 11), tries only at concept level (Part 12)). Part 2 lessons: Wave A should run every prompt example (a `check_examples.py` against brute force worked well); cross-reference earlier parts by build.py-verified headings; 4 agents of 11-12 Qs; `scratch/B5_check.py <part file>` is the Wave C re-run.
+Part 4 Wave A (stack, queue, monotonic stack; target 40: valid parentheses and bracket matching, min stack, evaluate RPN, basic calculator with stacks, next greater element, daily temperatures, largest rectangle in histogram, trapping rain water via stack, stock span, decode string, simplify path, queue via stacks and stack via queues, circular queue, deque and monotonic deque (window maximum, shortest subarray with sum at least k), BFS-level queue idioms at concept level (graphs belong to Part 9), parsing with a stack, undo/redo and browser-history design at concept level (Part 14), Python specifics: list as stack, collections.deque vs list.pop(0), queue.Queue vs deque, recursion limit vs explicit stack). Cross-reference Part 1-3 only by build.py-verified headings. Part 3 lessons: Wave A check_examples.py caught one bad example; exhaustive checks over small alphabets are a strong cross-check; state Python 3.13 observations as observed.
