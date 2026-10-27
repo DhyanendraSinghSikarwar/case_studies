@@ -18,7 +18,7 @@
 - Versus split-array (Q13): same binary search, same predicate. Only difference is that this prompt has to say -1 for m > n; split-array promised k <= n.
 - "At most m" vs "exactly m": if greedy uses fewer than m students and m <= n, split a block further. Splitting never raises the maximum, and there are enough books to give everyone one. So both give the same answer.
 
-**Complexity:** Time O(n log(sum)): each `ok` is one O(n) pass; the range has at most sum(pages) values, so about log2(sum) rounds. With n = 10^5 and pages up to 10^4, sum <= 10^9, so about 30 rounds. Space O(1).
+**Complexity:** Time O(n log(sum)): each `ok` is one O(n) pass; the range has at most sum(pages) values, so about log2(sum) rounds. With n = 10^5 and, for example, pages up to 10^4, sum <= 10^9, so about 30 rounds. Space O(1).
 
 **Dry run:** `[12, 34, 67, 90]`, m = 2. Range [90, 203].
 | lo | hi | mid | students at cap mid | action |
@@ -126,7 +126,7 @@ All five examples in the prompt are correct. The random check also asserts the "
 - m = n: every student gets one book, answer is `max(pages)`.
 - m = 1: answer is `sum(pages)`.
 - One huge book: it sets the floor, extra students cannot reduce it.
-- n = 10^5: pure Python handles ~30 passes of 10^5 comfortably; the prompt's range keeps sums within 10^9.
+- n = 10^5: about 30 passes of 10^5 steps; the edge asserts run n = 10^5 with 10^4-page books (sum 10^9).
 
 **Follow-ups:**
 - *Painter's partition?* Same code with "boards" and "painters". Time per unit just multiplies the sum.
@@ -274,7 +274,7 @@ The three examples in the prompt are correct. The step counts are the worst I pr
 
 **Follow-ups:**
 - *Count how many entries are <= v?* The same staircase from the bottom-left, adding a whole column segment per step. See Q26.
-- *Can you do better than O(m + n)?* There is an Omega(min(m,n) * log(max(m,n)/min(m,n))) style lower bound; for interviews, say staircase is the standard answer and per-row bisect is the alternative.
+- *Can you beat O(m + n)?* Yes when the shape is lopsided: the combined form O(min(m,n) * log(max(m,n))) shown in the code. For a roughly square matrix the staircase is the standard answer.
 - *Binary search the shorter side?* Yes, that is the combined form shown in the code.
 
 **Common mistakes:**
@@ -298,7 +298,7 @@ The three examples in the prompt are correct. The step counts are the worst I pr
 - Why left first: every index on the left slope is smaller than every index on the right slope. A value that appears on both slopes (like 2 in `[1, 5, 2, ...]`) must be reported at its left position. On each slope values are distinct, so a slope has at most one match.
 - The peak belongs to the left search (it is the last element of the increasing part). Searching only up to `peak - 1` would miss a target equal to the peak.
 - Budget: n <= 10^4 gives ceil(log2 n) = 14. The peak search costs 2 gets per round, so about 28; each slope search is at most about 14. Total about 4 * 14 = 56 in the worst case. The prompt's "about 3 * ceil(log2 n)" counts the peak search as one call per round; with two calls per round (as coded, no caching) the honest worst case is about 4 * ceil(log2 n). Either way it is well under 100. You could cache `get` results to save calls.
-- Wait, why does the budget matter at all? Interviewers use it to rule out the linear scan and also the "binary search both slopes without finding the peak" mistakes.
+- The budget rules out the linear scan, and it also rules out sloppy variants such as searching both slopes blindly.
 
 **Complexity:** Time O(log n) `get` calls: measured worst 54 in my runs (budget 100). Space O(1).
 
@@ -714,7 +714,7 @@ All five examples in the prompt are correct. The exhaustive check built every so
 
 **Complexity:** Time O(n log(max - min)): about 31 rounds for values within 2 * 10^9, each O(n). Space O(1). For n = 300 that is a few thousand operations per round.
 
-**Dry run:** `[[1,5,9],[10,11,13],[12,13,15]]`, k=8. Range [1, 15]. mid=8: count=3 (1, 5, and nothing else... 1, 5 only: count_le(8)=2). Let the code decide; the key steps: count(8)=2 < 8, lo=9; mid=12: count=6 < 8, lo=13; mid=14: count=8 >= 8, hi=14; mid=13: count=8 >= 8, hi=13. Answer 13, which is an entry. Sorted flat list is [1,5,9,10,11,12,13,13,15], the 8th element is 13.
+**Dry run:** `[[1,5,9],[10,11,13],[12,13,15]]`, k=8. Range [1, 15]. mid=8: count_le(8) = 2 (just 1 and 5) < 8, lo=9. mid=12: count 6 < 8, lo=13. mid=14: count 8 >= 8, hi=14. mid=13: count 8 >= 8, hi=13. Answer 13, which is an entry. Sorted flat list is [1,5,9,10,11,12,13,13,15], the 8th element is 13.
 
 **Code:**
 ```python
@@ -810,7 +810,7 @@ All four examples in the prompt are correct. The random check generates valid ma
 
 **Follow-ups:**
 - *Why can't I binary search the cells?* There is no total order along any path through a matrix with only row/column order.
-- *Faster?* There is an O(n) algorithm (Frederickson-Johnson style); not expected in interviews.
+- *Faster?* There are more specialised selection algorithms for sorted matrices; the value search is the expected answer.
 - *Median of a row-sorted matrix?* Same value search with per-row bisect (Q37).
 
 **Common mistakes:**
@@ -920,7 +920,7 @@ All five examples in the prompt are correct. The random check also verifies that
 **Common mistakes:**
 - Floor mid with `lo = mid` (infinite loop).
 - Starting `lo = 1` and then returning 1 when nothing is feasible (prompt wants 0).
-- Using `hi = max(logs) + 1` and calling `pieces` at an L that is not needed (harmless but wasteful).
+- Searching only L >= 1 and returning `lo = 1` when nothing is feasible, instead of checking pieces(1) first.
 
 ### Q28 ⭐⭐ 🟡 The bisect module and the key= parameter (Python 3.10+). A list of (name, age) tuples `people` is already sorted by age. Using `bisect` with `key=lambda t: t[1]`: (a) count the people younger than 30 with `bisect_left`, (b) insert ('zed', 30) after all existing age-30 entries with `insort_right`, and (c) binary search on the answer by running `bisect_left(range(100), 50, key=lambda v: v * v)` to get the smallest v with v*v >= 50. State precisely where key is applied: to the list elements in `bisect_left`/`bisect_right`, and to the search value x as well in `insort_left`/`insort_right`. Explain why `insort` is O(n) in total even though the search is O(log n), and what the pre-3.10 workaround (a parallel list of keys) looks like. Example: people=[('ann',22),('bob',30),('cy',30),('di',41)] -> (a) 1, (b) [('ann',22),('bob',30),('cy',30),('zed',30),('di',41)], (c) 8. (A prefix-count use of sorted-list bisect is in Part 3 Q36.)
 **Asked at:** Python documentation mirrors for bisect (docs.python.org 3.10 and current .rst source: key added in 3.10, key not applied to the search value in bisect_left/bisect_right, insort is O(n) overall; snippets only, direct fetch failed with ENOTFOUND; behaviour re-verified in the sandbox) | Binary-search pattern guides (techinterview.org binary-search patterns, advanced patterns and rotated-array/search-on-answer pages, DEV Community binary-search patterns series; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports
@@ -1041,7 +1041,7 @@ All three results in the prompt (a) 1, (b) the list with zed after cy, (c) 8 are
 - Python older than 3.10: `key=` raises TypeError; use the parallel list.
 
 **Follow-ups:**
-- *Why not sort by key then bisect on plain tuples?* Tuples compare by name first, so ordering by age alone would not hold unless age is the first element.
+- *Why not bisect the tuples directly?* Tuples compare by name first, but the list is ordered by age, so the comparisons would be meaningless.
 - *Many inserts?* `sortedcontainers.SortedList` amortises the shifting; in an interview say it and explain the idea (blocks).
 - *Prefix counts with a sorted list?* See Part 3 Q36.
 
@@ -1362,4 +1362,4 @@ All four examples in the prompt are correct. The bound `calls <= 2 * bit_length(
 - Starting hi at 0.
 - Treating the sentinel as a real element and returning its index.
 - Binary searching `[0, 2147483647]` directly (31 calls, always, and the sentinel region wastes them).
-- Forgetting that the window's lower bound is the previous hi, not 0 (it is still correct, only slower).
+- Letting the binary-search step read `get(hi)` again after doubling (an extra call for no reason; the closed loop already covers it).
