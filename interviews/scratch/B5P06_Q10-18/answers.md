@@ -1374,6 +1374,34 @@ random cross-check ok (500 cases)
 
 **Asked at:** Candidate-reported rounds on Naukri Code360 (an Amazon on-campus March 2021 entry listing flatten of a multilevel list with child pointers; an Amazon December 2021 entry tied to adding two numbers held as lists; Flipkart 2020 and 2021 entries naming reverse linked list, one with an O(n) time O(1) space follow-up and one solved first with a stack; plus a LeetCode discuss Flipkart SDE-1 June 2024 report of a Reverse Linked List II variant given node values instead of positions; snippets only, not opened; candidate-reported, unverified, not evidence of current practice) | Linked-list pattern guides and question roundups (techinterview.org linked-list patterns page covering reverse, merge, cycle detection, fast-slow pointers and dummy nodes; a Substack linked-list prep post; techiedelight linked-list question list; a Questions100 linked-list category; DEV Community linked-list posts; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports
 
+**Pattern:** In-place sublist reversal with head insertion. A dummy node guarantees a node exists before position `left`, even when `left` is 1.
+
+**Say this first (1 line):** "Walk to the node before `left`. Then `right - left` times, take the node after the current tail of the reversed part and insert it right after that 'before' node. One pass, O(1) space."
+
+**Brute force:** Copy values to a Python list, reverse the slice `arr[left-1:right]`, rebuild. O(n) time, O(n) space, new nodes (or overwriting values). Another baseline: cut the sublist out, reverse it with Q1's function, and splice it back; that works but needs more pointers to save and reconnect.
+
+**Optimal:**
+- `dummy -> head`. Move `before` forward `left - 1` times, so `before.next` is the node at position `left`.
+- `tail = before.next`. This node starts the reversed part at the front and ends up at its back, because everything is inserted in front of it.
+- Repeat `right - left` times:
+  - `moved = tail.next`
+  - `tail.next = moved.next` (unlink `moved`)
+  - `moved.next = before.next` (point it at the current front of the reversed part)
+  - `before.next = moved` (make it the new front)
+- Why it is one pass: you only walk to `left`, then do `right - left` constant-time moves, so the work is `right` steps. Why O(1): pointers only. There is no recursion and no list copy.
+- Why the end reconnects by itself: `tail` is never moved, and its `next` is always the node after the part (the node at `right + 1`, or None). So the tail of the part is linked to the rest of the list at every step.
+- `left == right`: the loop runs zero times, so nothing changes and the original head is returned.
+- Values variant (candidate-reported Flipkart variant: the two boundaries are given as node values instead of positions): the reversal is the same. Only the first step changes: instead of counting `left - 1` steps, walk the list until you find the node holding the first value, and stop on the node before it; the end is found when the second value is seen (or you count `right - left` by walking to it first). The code finds the two positions by one walk and reuses the same function, assuming the values are distinct.
+
+**Complexity:** Time O(right) which is at most O(n), one pass. Space O(1).
+
+**Dry run:** [1,2,3,4,5], left=2, right=4. `before` = node 1, `tail` = node 2.
+- Step 1: moved = 3. tail.next = 4. 3.next = 2 (before.next). before.next = 3. List: 1 -> 3 -> 2 -> 4 -> 5.
+- Step 2: moved = 4. tail.next = 5. 4.next = 3. before.next = 4. List: 1 -> 4 -> 3 -> 2 -> 5.
+- Done after right - left = 2 steps.
+
+**Code:**
+```python
 import random
 
 class ListNode:
@@ -1485,7 +1513,12 @@ for _ in range(300):
 print('value variant and random cross-check ok (300 cases)')
 head, _ = from_array(list(range(500)))
 assert to_array(reverse_between(head, 1, 500)) == list(range(499, -1, -1))
-print('n = 500, whole list ok')[1, 2, 3, 4, 5] 2 4 -> [1, 4, 3, 2, 5]
+print('n = 500, whole list ok')
+```
+
+**Output (my run):**
+```
+[1, 2, 3, 4, 5] 2 4 -> [1, 4, 3, 2, 5]
 [5] 1 1 -> [5]
 [3, 5] 1 2 -> [5, 3]
 [1, 2, 3] 1 3 -> [3, 2, 1]
@@ -1493,3 +1526,22 @@ print('n = 500, whole list ok')[1, 2, 3, 4, 5] 2 4 -> [1, 4, 3, 2, 5]
 exhaustive (length, left, right) triples ok: 165
 value variant and random cross-check ok (300 cases)
 n = 500, whole list ok
+```
+
+**Edge cases:**
+- `left == right`: no-op.
+- `left == 1`: the head changes; the dummy handles it.
+- `right == len`: `tail.next` becomes None at the end; no special case.
+- Single node.
+- Whole list (`left = 1`, `right = len`): same as a full reverse.
+
+**Follow-ups:**
+- Why not the standard three-pointer reversal? You can: reverse the part and then reconnect `before` and the node after. It needs two extra saved pointers. Head insertion keeps the invariant simple.
+- Recursive version? Possible, but depth is about `right`, so it hits the recursion limit on long lists (Q26 in this part).
+- k-group reversal? That is Q13 in this part; it applies this idea repeatedly.
+
+**Common mistakes:**
+- Walking `left` steps instead of `left - 1`, so `before` lands on the first node of the part.
+- Inserting after `tail` instead of after `before` (that does not reverse).
+- Updating `before.next` before saving `moved.next`.
+- Forgetting the dummy and special-casing `left == 1`.
