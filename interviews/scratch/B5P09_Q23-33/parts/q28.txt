@@ -1,0 +1,48 @@
+**Pattern:** Single-source shortest paths with negative edge weights: Bellman-Ford (relax every edge V-1 times), plus one more round as a negative-cycle detector.
+
+**Say this first (1 line):** "Dijkstra is out because of the negative edges. Bellman-Ford relaxes every edge n-1 times, since a shortest path has at most n-1 edges; if an edge still improves in round n, a negative cycle reachable from the source exists."
+
+**Brute force:** Floyd-Warshall on all pairs, O(n^3) (125 million steps at n = 500, too slow in Python), then declare a cycle if some node k reachable from `src` has `f[k][k] < 0`. It is the independent checker in the code.
+
+**Optimal:**
+- `d = [INF]*n`, `d[src] = 0`.
+- Repeat n-1 times: for every edge `(u, v, w)`, if `d[u] != INF and d[u] + w < d[v]`, set `d[v] = d[u] + w`. Stop early if a whole round changes nothing.
+- One more round: if any edge with `d[u] != INF` still improves, return `None`.
+- Why n-1 rounds suffice: with no negative cycle, some shortest path to each node is simple, so it has at most n-1 edges. By induction, after round k every node whose shortest path has at most k edges holds its correct distance, because round k relaxes the k-th edge of that path after the (k-1)-th was fixed. The worst case is edges listed against the path direction: each round then advances one edge, and the code shows n-2 rounds are not enough on a path of 8 nodes (the check round fires although there is no cycle).
+- Why the detector only counts reachable cycles: a negative cycle that `src` cannot reach never gets finite distances, and the answer for the reachable part is still well defined. The guard `d[u] != INF` keeps unreached nodes out of the arithmetic. If you represent INF by a big integer and skip the guard, `INF - 1 < INF` is true for the unreachable cycle in example 3, and the code returns `None` wrongly (the code prints it, and counts 110 of 1000 random graphs wrong).
+- Why one extra round finds a reachable negative cycle: going around such a cycle lowers some distance on every lap, so after any number of rounds at least one edge of the cycle can still relax. Conversely, if no negative cycle is reachable, all distances are final after n-1 rounds and nothing improves.
+- With `float('inf')`, `inf + w < inf` is already false, so the guard is implicit; with an integer sentinel it is mandatory. The explicit test is the safe habit.
+
+**Complexity:** Time O(V * E) worst case (500 * 5000 = 2.5 million relaxations at the limits, fine); early exit often makes it much faster. Space O(V) for `d` plus the edge list. Dijkstra's O((V + E) log V) needs non-negative weights.
+
+**Dry run:** `n=3, edges=[[0,1,1],[1,2,-3],[2,1,1]], src=0`.
+- Start `d = [0, INF, INF]`.
+- Round 1: 0->1 gives d1 = 1. 1->2: 1 - 3 = -2, d2 = -2. 2->1: -2 + 1 = -1 < 1, d1 = -1.
+- Round 2 (n-1 = 2): 1->2: -1 - 3 = -4, d2 = -4. 2->1: -4 + 1 = -3, d1 = -3.
+- Check round: 1->2 would give -6 < -4. An edge still improves, so return `None`.
+- Example 1 for contrast: `[0, 2, 5, 4]` settles in 2 rounds with no improvement in the check round (the path 0 -> 2 -> 1 uses the negative edge 2 -> 1 and beats the direct edge).
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- Negative cycle not reachable from `src` (example 3): distances for the reachable part (just `src`) are returned, unreachable nodes `None`, no error.
+- Negative self loop (`[0,0,-1]`): a one-edge negative cycle, `None`; a positive self loop is ignored.
+- A negative edge that is not on a cycle is fine (example 1).
+- A zero-weight cycle does not improve anything: no detection, correct distances.
+- `n = 1`, no edges: `[0]`.
+- Undirected graph with a negative edge is itself a negative cycle (go back and forth); treat each undirected edge as two directed ones and Bellman-Ford returns `None`.
+
+**Follow-ups:**
+- Which nodes are on the cycle, or which distances are -infinity? Run one more n rounds, mark every node that still improves, and propagate the mark along edges (everything reachable from a marked node is -infinity).
+- Cheapest flights within K stops: Bellman-Ford with exactly K+1 rounds, but each round must read the previous round's array (a copy), or the in-place version lets a path use more edges than allowed (Q34 in this part).
+- Faster in practice? SPFA (queue-based) often wins, but its worst case is still O(V * E) and it can be attacked.
+
+**Common mistakes:**
+- Running too few rounds (n-2), or checking for a cycle before the n-1 rounds are done.
+- Dropping the `d[u] != INF` guard with an integer sentinel (false negative-cycle alarms).
+- Reporting a cycle if any edge is negative.
+- Forgetting the early exit, or using it before the detection round.
