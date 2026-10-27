@@ -610,11 +610,11 @@ list as stack: top is st[-1], pop() returns the newest
 deque(maxlen=3) after appending 1..6 -> [4, 5, 6]
 random cross-check passed: 500 command lists
 Python 3.13.17
-n=  25000: list.pop(0)   0.047s   deque.popleft   0.003s
-n=  50000: list.pop(0)   0.202s   deque.popleft   0.008s
-n= 100000: list.pop(0)   0.796s   deque.popleft   0.013s
-n= 200000: list.pop(0)   2.999s   deque.popleft   0.025s
-2000 middle lookups of 200000 items: list 0.0001s   deque 0.0049s
+n=  25000: list.pop(0)   0.057s   deque.popleft   0.003s
+n=  50000: list.pop(0)   0.200s   deque.popleft   0.006s
+n= 100000: list.pop(0)   0.772s   deque.popleft   0.013s
+n= 200000: list.pop(0)   3.099s   deque.popleft   0.027s
+2000 middle lookups of 200000 items: list 0.0001s   deque 0.0057s
 ```
 Observed on Python 3.13 in this sandbox. The timing lines will differ on another machine and from run to run, but at 200000 items the list version was far slower than the deque version, and the gap widened as n grew. The prompt example is correct.
 
@@ -1332,3 +1332,144 @@ All five prompt examples are correct. The `normpath` line is observed on Python 
 - Popping from an empty stack on `..` at the root.
 - Returning `''` for the root instead of `'/'`.
 - Leaving a trailing slash, or only collapsing double slashes with `replace` (which misses `///`).
+
+### Q10 ⭐⭐⭐ 🟡 Next greater element in a circular array. `nums` is circular (after the last element comes the first), 1 <= len <= 10^4, values may repeat. For each index return the first strictly greater value met when walking forward around the circle at most once, or -1. Loop over indices 0..2n-1 with `i % n` while keeping a decreasing stack of indices, pushing only during the first pass; explain why one extra lap is enough and why a later pass must not push. Example: [1,2,1] -> [2,-1,2]; [1,2,3,4,3] -> [2,3,4,-1,4]; [5,5] -> [-1,-1].
+**Asked at:** Monotonic-stack pattern guides and practice lists (techinterview.org monotonic-stack pages, Hello Interview monotonic stack page, talentd.in monotonic-stack topic list, a Scribd stack-and-queue list; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial and list content, not verified company reports | Stack and queue question roundups (igotanoffer.com stacks-and-queues list naming bracket balancing and max stack, interviewing.io queue page, educative stack-queue chapter; search snippets only, not opened); prep content, not company reports
+
+**Pattern:** Monotonic stack, with the array treated as circular by looping over indices `0..2n-1` and using `i % n`. Same "first greater to the right" idea as the subset version, but the right side wraps around.
+
+**Say this first (1 line):** "Walk the array twice; push indices only on the first walk; the second walk only resolves the elements that still wait."
+
+**Brute force:** For each `i`, look at the next `n - 1` elements around the circle until one is greater. O(n^2) (n = 10^4 gives about 10^8 steps worst case). It is my checker.
+
+**Optimal:**
+- Keep a stack of indices whose values are non-increasing from bottom to top (they are the elements still waiting for a greater value).
+- For `i` from 0 to `2n - 1`: let `v = nums[i % n]`. While the top index has `nums[top] < v`, pop it and set its answer to `v`. Strict `<`, so equal values do not count as greater.
+- Push `i` only when `i < n`.
+- Why two laps are enough: the first greater element after position `j`, going around, is at most `n - 1` steps away, so it appears before you return to `j`. Looking at positions `j+1 .. j+n-1` covers every other element once. Two laps cover that window for every start `j`.
+- Why the second lap must not push: every index is already on the stack or resolved after lap one. Pushing again adds copies that can never get a new answer (the same values are seen again), costs extra memory, and if you store the raw loop index `i >= n` you would write `res[i]` out of range. The code stores only indices from the first pass, so `res[stack.pop()]` is always valid.
+- Invariant: after position `i`, the stack holds the (first-pass) indices that have no greater value among elements seen so far, in non-increasing value order.
+
+**Complexity:** Time O(n): at most n pushes, hence at most n pops, plus 2n loop steps. Space O(n) for the stack and output.
+
+**Dry run:** `[1, 2, 1]`, `n = 3`.
+| i | v | pops (answer) | stack after |
+|---|---|---|---|
+| 0 | 1 | | [0] |
+| 1 | 2 | pop 0, ans[0] = 2 | [1] |
+| 2 | 1 | | [1, 2] |
+| 3 (idx 0) | 1 | none (1 < 1 is false); no push | [1, 2] |
+| 4 (idx 1) | 2 | pop 2, ans[2] = 2 (the next top, index 1, has 2 < 2 false) | [1] |
+| 5 (idx 2) | 1 | none | [1] |
+Index 1 (value 2, the maximum) stays -1. Result `[2, -1, 2]`.
+
+**Code:**
+```python
+import random
+
+
+def nge_circ_brute(nums):
+    n = len(nums)
+    res = []
+    for i in range(n):
+        ans = -1
+        for step in range(1, n):                 # at most one trip around, excluding i itself
+            v = nums[(i + step) % n]
+            if v > nums[i]:
+                ans = v
+                break
+        res.append(ans)
+    return res
+
+
+def nge_circ(nums, depth=None):
+    n = len(nums)
+    res = [-1] * n
+    stack = []                                   # indices with no greater value found yet
+    for i in range(2 * n):
+        v = nums[i % n]
+        while stack and nums[stack[-1]] < v:
+            res[stack.pop()] = v
+        if i < n:                                # push only in the first pass
+            stack.append(i)
+        if depth is not None:
+            depth.append(len(stack))
+    return res
+
+
+def nge_circ_pushall(nums, depth=None):
+    # pushes in both passes: still correct here (duplicate entries only re-write the same value),
+    # but the stack can hold up to 2n entries and the second pass resolves nothing new
+    n = len(nums)
+    res = [-1] * n
+    stack = []
+    for i in range(2 * n):
+        v = nums[i % n]
+        while stack and nums[stack[-1] % n] < v:
+            res[stack.pop() % n] = v
+        stack.append(i)
+        if depth is not None:
+            depth.append(len(stack))
+    return res
+
+
+examples = [([1, 2, 1], [2, -1, 2]), ([1, 2, 3, 4, 3], [2, 3, 4, -1, 4]), ([5, 5], [-1, -1])]
+for nums, want in examples:
+    assert nge_circ(nums) == nge_circ_brute(nums) == want, nums
+    print(nums, "->", nge_circ(nums))
+
+# edge cases
+assert nge_circ([7]) == [-1]                              # single element: itself is not greater than itself
+assert nge_circ([3, 3, 3]) == [-1, -1, -1]                # all equal
+assert nge_circ([3, 2, 1]) == [-1, 3, 3]                  # decreasing: wraps to the front
+assert nge_circ([1, 5, 1, 1]) == [5, -1, 5, 5]            # duplicates around the maximum
+n = 10_000
+assert nge_circ(list(range(n, 0, -1)))[1:] == [n] * (n - 1)       # max size
+assert nge_circ(list(range(n))) == list(range(1, n)) + [-1]
+
+# why a second pass must not push: measure the stack depth on a decreasing array
+dec = list(range(1000, 0, -1))
+d1, d2 = [], []
+nge_circ(dec, d1)
+nge_circ_pushall(dec, d2)
+print("max stack size, push in pass 1 only:", max(d1), "; push in both passes:", max(d2))
+assert max(d1) == 1000 and max(d2) >= max(d1)
+print("pushes: pass-1-only", 1000, "vs both passes", 2000, "(the extra 1000 can never resolve anything new)")
+
+# seeded randomised cross-check (small range for many ties)
+rng = random.Random(17)
+for _ in range(3000):
+    nums = [rng.randint(-3, 5) for _ in range(rng.randint(1, 10))]
+    assert nge_circ(nums) == nge_circ_brute(nums), nums
+    assert nge_circ_pushall(nums) == nge_circ_brute(nums), nums   # same answers, just wasteful
+print("random cross-check passed: 3000 cases")
+```
+
+**Output (my run):**
+```
+[1, 2, 1] -> [2, -1, 2]
+[1, 2, 3, 4, 3] -> [2, 3, 4, -1, 4]
+[5, 5] -> [-1, -1]
+max stack size, push in pass 1 only: 1000 ; push in both passes: 1001
+pushes: pass-1-only 1000 vs both passes 2000 (the extra 1000 can never resolve anything new)
+random cross-check passed: 3000 cases
+```
+All three prompt examples are correct. The measurement shows that pushing during the second lap only adds entries without changing the answers.
+
+**Edge cases:**
+- One element: `[-1]`. Its own value is not greater than itself.
+- All equal: all -1 (strict comparison).
+- The maximum value: always -1, even if it appears more than once.
+- Decreasing array: after the first lap everything is on the stack; the second lap resolves all but the maximum.
+- Duplicates: `[1, 5, 1, 1]` gives `[5, -1, 5, 5]`.
+
+**Follow-ups:**
+- *Why not copy the array (`nums + nums`)?* It also works, but the `i % n` trick avoids O(n) extra memory.
+- *Circular daily-temperatures distance?* Same loop, store `(i - j)` for pops, and cap at `n - 1`.
+- *Previous greater, circular?* Walk backwards, or run the same loop on the reversed array.
+
+**Common mistakes:**
+- Pushing during the second lap.
+- Using `<=` when popping, so equal values count as greater.
+- Looping only `n` times, which misses answers that wrap around.
+- Forgetting `i % n` and indexing past the end.

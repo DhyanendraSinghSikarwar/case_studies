@@ -917,7 +917,7 @@ All four examples in the prompt are correct.
 - Forgetting that after a pop the previous run may continue with the next letter.
 - Trying to "fix" order by processing right to left; it is not needed.
 
-### Q17 ⭐⭐ 🟡 Minimum removals to make parentheses valid. `s` has lowercase letters and '(' and ')' (len <= 10^5). Remove the fewest parentheses so the rest is balanced and return the resulting string. Match brackets with a stack of indices: a ')' with an empty stack is dropped, and openers left on the stack at the end are dropped; the set of dropped indices is unique, so the answer is unique. Also say how the count-only variant needs no stack, only two counters. Example: 'lee(t(c)o)de)' -> 'lee(t(c)o)de'; 'a)b(c)d' -> 'ab(c)d'; '))((' -> ''; '(a(b(c)d)' -> 'a(b(c)d)'.
+### Q17 ⭐⭐ 🟡 Minimum removals to make parentheses valid. `s` has lowercase letters and '(' and ')' (len <= 10^5). Remove the fewest parentheses so the rest is balanced and return the resulting string. Match brackets with a stack of indices: a ')' with an empty stack is dropped, and openers left on the stack at the end are dropped; the stack gives one valid answer, but several valid minimal answers can exist (for example 'lee(t(c)o)de)' has three), so any result with the minimum number of removals is accepted and only the removal count is unique. Also say how the count-only variant needs no stack, only two counters. Example: 'lee(t(c)o)de)' -> 'lee(t(c)o)de'; 'a)b(c)d' -> 'ab(c)d'; '))((' -> ''; '(a(b(c)d)' -> 'a(b(c)d)'.
 **Asked at:** Stack and queue question roundups (igotanoffer.com stacks-and-queues list naming bracket balancing and max stack, interviewing.io queue page, educative stack-queue chapter; search snippets only, not opened); prep content, not company reports | Standard-problem lists known to the editor (not found as an opened page; included on the editor's knowledge of widely circulated problem sets; indicative only, no company attribution)
 
 **Pattern:** Bracket matching with a stack of indices. Match as you go; whatever cannot be matched is exactly what you must delete.
@@ -1343,3 +1343,125 @@ Both examples in the prompt are correct.
 - Popping with `>=` and setting `nxt[j] = i` for equal values: then `nxt` is "smaller or equal", wrong for strict.
 - Resolving links left to right (the target is not final yet).
 - Using -1 for "no next" instead of `n`, or the other way round.
+
+### Q20 ⭐⭐ 🟡 Remove k digits. `num` is a string of digits (len <= 10^5, no leading zero unless it is '0') and k is an integer with 0 <= k <= len. Remove exactly k digits so the remaining number is as small as possible; return it without leading zeros, and '0' if nothing remains. Greedy with an increasing stack: while the top is larger than the incoming digit and removals remain, pop; afterwards trim extra from the end and strip leading zeros. Explain why a local pop is globally safe. Example: ('1432219', 3) -> '1219'; ('10200', 1) -> '200'; ('10', 2) -> '0'; ('9', 1) -> '0'; ('112', 1) -> '11'.
+**Asked at:** Monotonic-stack pattern guides and practice lists (techinterview.org monotonic-stack pages, Hello Interview monotonic stack page, talentd.in monotonic-stack topic list, a Scribd stack-and-queue list; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial and list content, not verified company reports | Stack and queue question roundups (igotanoffer.com stacks-and-queues list naming bracket balancing and max stack, interviewing.io queue page, educative stack-queue chapter; search snippets only, not opened); prep content, not company reports
+
+**Pattern:** Greedy with an increasing (non-decreasing) monotonic stack. The earliest place where a digit is bigger than the digit after it is the best digit to delete.
+
+**Say this first (1 line):** "Scan left to right with a stack of kept digits. While I still owe deletions and the top is bigger than the new digit, pop it. Push the digit. Leftover deletions come off the end. Strip leading zeros, return '0' if empty. O(n)."
+
+**Brute force:** Try every way to keep `len - k` digits (`itertools.combinations`), convert each to a number, take the minimum. C(n, k) candidates, exponential. It is my checker (comparing as integers handles leading zeros).
+
+**Optimal:**
+- With the same number of digits, the smaller number is the one whose first differing digit is smaller. So the leftmost digits matter most.
+- Scanning left to right: if the top of the stack is bigger than the incoming digit `d`, then deleting that top makes position `top` hold something smaller (`d` or smaller) than before. That is always at least as good as any deletion further right.
+- So: `while k and stack and stack[-1] > d: pop; k -= 1`. Then push `d`.
+- Why a local pop is globally safe (exchange argument): suppose an optimal answer keeps the top digit `t` but deletes some digit later. Instead delete `t` and keep that later digit. The first position where the two results differ now holds `d` or smaller instead of `t`, so the new result is no larger. Repeating the swap turns any optimal answer into the greedy one.
+- If the scan ends with `k > 0`, the stack is non-decreasing, so the largest digits are at the end: drop `k` digits from the end.
+- Leading zeros: `lstrip("0")`; if nothing is left, the answer is `'0'`. A zero is never popped for being a zero (it is smaller than anything, so it pops bigger digits before it, never itself).
+- Equal digits are not popped (`>`, not `>=`), because deleting one copy of an equal pair gains nothing.
+
+**Complexity:** Time O(n): each digit is pushed once and popped at most once, so the inner while loop is amortised. The final strip and join are O(n). Space O(n) for the stack.
+
+**Dry run:** `('1432219', 3)`
+| digit | pops (k left) | stack after |
+|---|---|---|
+| 1 | none (3) | 1 |
+| 4 | none (3) | 1 4 |
+| 3 | pop 4 (2) | 1 3 |
+| 2 | pop 3 (1) | 1 2 |
+| 2 | none (1) | 1 2 2 |
+| 1 | pop 2 (0) | 1 2 1 |
+| 9 | none (0) | 1 2 1 9 |
+
+`k = 0`, nothing to trim from the end. Answer `'1219'`.
+
+**Code:**
+```python
+import itertools
+import random
+
+
+def remove_k_brute(num, k):
+    # reference: try every way to keep len - k digits, take the smallest NUMBER
+    keep = len(num) - k
+    if keep == 0:
+        return "0"
+    best = min(int("".join(c)) for c in itertools.combinations(num, keep))
+    return str(best)
+
+
+def remove_k(num, k):
+    stack = []
+    for d in num:
+        while k and stack and stack[-1] > d:   # a bigger digit before a smaller one: delete it
+            stack.pop()
+            k -= 1
+        stack.append(d)
+    if k:
+        stack = stack[: len(stack) - k]        # still owe deletions: drop from the end
+    return "".join(stack).lstrip("0") or "0"   # no leading zeros, '0' if nothing is left
+
+
+examples = [(("1432219", 3), "1219"), (("10200", 1), "200"), (("10", 2), "0"), (("9", 1), "0"), (("112", 1), "11")]
+for (num, k), want in examples:
+    got = remove_k(num, k)
+    assert got == remove_k_brute(num, k) == want, (num, k, got)
+    print((num, k), "->", repr(got))
+
+assert remove_k("0", 0) == "0"
+assert remove_k("123", 0) == "123"                     # k = 0: unchanged
+assert remove_k("123", 3) == "0"                       # k = len: nothing left
+assert remove_k("12345", 2) == "123"                   # increasing: trim from the end
+assert remove_k("54321", 2) == "321"                   # decreasing: pops everything it can
+assert remove_k("100", 1) == "0"                       # leading zeros stripped
+assert remove_k("1000", 2) == "0"
+assert remove_k("10001", 4) == "0"
+assert remove_k("22222", 2) == "222"                   # all equal: nothing pops, trim the end
+assert remove_k("9" * 100000, 50000) == "9" * 50000    # max size
+assert remove_k("1" + "0" * 99999, 1) == "0"
+
+rng = random.Random(20)
+cases = 0
+for _ in range(3000):
+    n = rng.randint(1, 9)
+    num = str(rng.randint(1, 9)) + "".join(rng.choice("0123456789" if rng.random() < .5 else "0129") for _ in range(n - 1))
+    if rng.random() < 0.05:
+        num = "0"
+    k = rng.randint(0, len(num))
+    assert remove_k(num, k) == remove_k_brute(num, k), (num, k)
+    cases += 1
+print("random cross-check passed:", cases, "cases")
+```
+
+**Output (my run):**
+```
+('1432219', 3) -> '1219'
+('10200', 1) -> '200'
+('10', 2) -> '0'
+('9', 1) -> '0'
+('112', 1) -> '11'
+random cross-check passed: 3000 cases
+```
+All five examples in the prompt are correct.
+
+**Edge cases:**
+- `k = 0`: unchanged. `k = len`: nothing left, return `'0'`.
+- Non-decreasing digits (`12345`, `22222`): nothing pops, so the `k` deletions come off the end.
+- Leading zero after a deletion (`10200`, k = 1 gives `'0200'`, stripped to `'200'`).
+- Result all zeros (`'1000'`, k = 2 gives `'00'`, stripped to empty, so return `'0'`).
+- Trimming from the end with `stack[:-k]` when `k == 0` would empty the stack: use `stack[: len(stack) - k]`.
+- Max size 10^5: Python ints are not used for the result, only strings.
+
+**Follow-ups:**
+- *Why not convert to int and compare?* Up to 10^5 digits; the greedy never needs it, and brute force over subsets is exponential anyway.
+- *Largest number instead?* Flip the pop condition to `<`.
+- *Related problem?* Remove duplicate letters (a later question in this part) uses the same pop-while-better idea, with an extra "does it occur again?" check.
+
+**Common mistakes:**
+- Forgetting to trim leftover `k` from the end.
+- Using `stack[:-k]` when `k` is 0.
+- Forgetting to strip leading zeros, or returning an empty string instead of `'0'`.
+- Popping with `>=` (harmless for the value here, but it is not needed and hides intent).
+- Popping without checking `k > 0`.

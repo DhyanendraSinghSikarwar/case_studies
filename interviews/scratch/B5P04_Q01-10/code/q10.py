@@ -66,7 +66,8 @@ d1, d2 = [], []
 nge_circ(dec, d1)
 nge_circ_pushall(dec, d2)
 print("max stack size, push in pass 1 only:", max(d1), "; push in both passes:", max(d2))
-assert max(d1) == 1000 and max(d2) == 1000 + 0 or max(d2) > max(d1) or max(d2) == max(d1)
+assert max(d1) == 1000 and max(d2) >= max(d1)
+print("pushes: pass-1-only", 1000, "vs both passes", 2000, "(the extra 1000 can never resolve anything new)")
 
 # seeded randomised cross-check (small range for many ties)
 rng = random.Random(17)
