@@ -86,6 +86,7 @@ def deep_ok(f, *args):
         return f(*args)
     except RecursionError:
         return "RecursionError"
+
 import itertools
 
 CALLS = 0
@@ -157,6 +158,17 @@ print("markers but no delimiters:", repr(ser_no_delim(build_tree([12]))), "vs", 
       "-> substring test says", ser_no_delim(build_tree([2])) in ser_no_delim(build_tree([12])), "(wrong)")
 print("with delimiters:", repr(ser(build_tree([12]))), "vs", repr(ser(build_tree([2]))),
       "-> substring test says", ser(build_tree([2])) in ser(build_tree([12])))
+
+def ser_no_marker(root):                               # delimiters but NO null markers
+    out, st = [], [root]
+    while st:
+        n = st.pop()
+        if n:
+            out.append("," + str(n.val)); st.append(n.right); st.append(n.left)
+    return "".join(out)
+a_, b_ = build_tree([1, None, 2]), build_tree([1, 2])
+print("delimiters but no markers: root [1,null,2] gives", repr(ser_no_marker(a_)), "and sub [1,2] gives", repr(ser_no_marker(b_)),
+      "-> substring test says", ser_no_marker(b_) in ser_no_marker(a_), "(wrong, the trees differ)")
 
 # exhaustive: all trees with 1..4 nodes (all shapes, values in {1, 2}) as both root and sub
 trees = []

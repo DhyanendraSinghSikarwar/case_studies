@@ -87,6 +87,7 @@ def deep_ok(f, *args):
     except RecursionError:
         return "RecursionError"
 
+
 # ---------- BFS: the last node of every level ----------
 def right_view_bfs(root):
     out, q = [], deque([root] if root else [])

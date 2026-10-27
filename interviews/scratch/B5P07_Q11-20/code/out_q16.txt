@@ -1,0 +1,19 @@
+pre=[3, 9, 20, 15, 7] in=[9, 3, 15, 20, 7] -> [3, 9, 20, None, None, 15, 7]
+pre=[-1] in=[-1] -> [-1]
+pre=[1, 2] in=[2, 1] -> [1, 2]
+pre=[1, 2] in=[1, 2] -> [1, None, 2]
+exhaustive ok: 625 shapes; every (preorder, inorder) pair is distinct, so the pair identifies the tree
+n=1: 1 shapes, 1 distinct preorder sequence(s)
+n=2: 2 shapes, 1 distinct preorder sequence(s)
+n=3: 5 shapes, 1 distinct preorder sequence(s)
+n=4: 14 shapes, 1 distinct preorder sequence(s)
+n=5: 42 shapes, 1 distinct preorder sequence(s)
+n=6: 132 shapes, 1 distinct preorder sequence(s)
+n=7: 429 shapes, 1 distinct preorder sequence(s)
+two trees, same preorder [1, 2]: [1, 2] and [1, None, 2]
+random ok: 300 relabelled trees
+right chain 3000 recursive: RecursionError | iterative nodes: 3000
+left chain 3000 iterative nodes: 3000
+slicing copies on a chain of n=100: 9900 (about n^2 = 10000)
+slicing copies on a chain of n=200: 39800 (about n^2 = 40000)
+slicing copies on a chain of n=400: 159600 (about n^2 = 160000)

@@ -87,6 +87,7 @@ def deep_ok(f, *args):
     except RecursionError:
         return "RecursionError"
 
+
 # ---------- brute force: full inorder list, index k - 1 ----------
 def kth_brute(root, k):
     out, st, cur = [], [], root

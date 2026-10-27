@@ -87,6 +87,7 @@ def deep_ok(f, *args):
     except RecursionError:
         return "RecursionError"
 
+
 # ---------- brute force: root-to-node paths, longest common prefix ----------
 def path_to(root, val):
     st = [(root, [root])]

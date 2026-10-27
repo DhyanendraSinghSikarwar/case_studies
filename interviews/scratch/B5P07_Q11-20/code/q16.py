@@ -87,6 +87,7 @@ def deep_ok(f, *args):
     except RecursionError:
         return "RecursionError"
 
+
 # ---------- brute force: slice the lists and use list.index (O(n^2)) ----------
 def build_slow(pre, ino):
     if not pre:

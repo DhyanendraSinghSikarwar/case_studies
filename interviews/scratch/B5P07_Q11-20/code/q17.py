@@ -86,6 +86,7 @@ def deep_ok(f, *args):
         return f(*args)
     except RecursionError:
         return "RecursionError"
+
 import itertools
 
 # ---------- brute force: try every pair of nodes, sum the unique tree path between them ----------

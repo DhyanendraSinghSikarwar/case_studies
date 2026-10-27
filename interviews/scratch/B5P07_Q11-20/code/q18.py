@@ -87,6 +87,7 @@ def deep_ok(f, *args):
     except RecursionError:
         return "RecursionError"
 
+
 NULL = "#"
 
 # ---------- preorder with a null marker for every missing child, comma delimiter ----------

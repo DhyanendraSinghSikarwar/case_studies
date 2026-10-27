@@ -87,6 +87,7 @@ def deep_ok(f, *args):
     except RecursionError:
         return "RecursionError"
 
+
 # ---------- brute force: compare every node with ALL nodes of its two subtrees ----------
 def is_bst_brute(root):
     for n in all_nodes(root):
