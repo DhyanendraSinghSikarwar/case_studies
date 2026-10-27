@@ -364,15 +364,15 @@ for n in range(14, 23):
 True
 None
 n   regex (a+)+ on a*n+'b'   manual
-14     0.0005s          0.0000008s
-15     0.0010s   x2.0   0.0000012s
-16     0.0020s   x2.0   0.0000010s
-17     0.0068s   x3.5   0.0000036s
-18     0.0098s   x1.4   0.0000036s
-19     0.0165s   x1.7   0.0000036s
-20     0.0348s   x2.1   0.0000035s
-21     0.0777s   x2.2   0.0000194s
-22     0.1401s   x1.8   0.0000080s
+14     0.0005s          0.0000009s
+15     0.0009s   x2.0   0.0000011s
+16     0.0020s   x2.1   0.0000010s
+17     0.0038s   x1.9   0.0000010s
+18     0.0077s   x2.0   0.0000010s
+19     0.0152s   x2.0   0.0000012s
+20     0.0306s   x2.0   0.0000033s
+21     0.0628s   x2.1   0.0000061s
+22     0.1220s   x1.9   0.0000056s
 ```
 Both prompt examples are correct (`aaaa` matches, `aaab` gives `None`). Timings are sandbox-only: they depend on the machine and the CPython build and they will differ on every run. In this run each extra letter about doubled the time, which fits 2^n; that is a consistent shape, not a proof (the proof is the splitting argument above). With n = 22 it was around 0.12 s here; each +10 on n would multiply that about 1000 times, so n = 50 would be far beyond waiting for. I did not run that.
 
@@ -1093,3 +1093,168 @@ All six prompt examples are correct. The 6000 random cases (strings and patterns
 - Forgetting to skip trailing stars after `s` ends.
 - Remembering the first star instead of the last.
 - Treating wildcard `*` as the regex quantifier.
+
+---
+
+### Q39 ⭐ 🔴 Manacher's algorithm. Explain how Manacher finds the longest palindromic substring in O(n): transform with separators ('#') so every palindrome has odd length, keep the centre and right edge of the rightmost palindrome found so far, initialise each radius from its mirror position, and expand only past the right edge, which gives an amortised linear bound. Implement it, return the leftmost longest palindrome, and also derive the count of all palindromic substrings from the radii. Concept level: you must be able to explain the mirror trick and the amortisation, not memorise the code. Example: 'babad' -> 'bab'; 'abacdfgdcaba' -> 'aba'; count for 'aaa' -> 6.
+**Asked at:** Pattern-matching tutorials and guides (techinterview.org string-algorithm patterns pages, a dev.to Z/KMP/Rabin-Karp article, HackerEarth exact-matching notes; search snippets only, not opened); tutorial content, not company reports | Standard-problem lists known to the editor (not found as an opened page; included on the editor's knowledge of widely circulated problem sets; indicative only, no company attribution)
+**Pattern:** Reuse of work by symmetry. A palindrome is its own mirror image, so inside a big palindrome the small ones on the right are copies of the ones on the left. Concept level: explain the mirror trick and the amortisation; do not memorise the code.
+
+**Say this first (1 line):** "Insert `#` between characters so every palindrome has odd length. Keep the palindrome that reaches furthest right. For a new centre inside it, start from its mirror's radius, capped at the right edge, and only expand beyond the edge."
+
+**Brute force:** Expand around each of the 2n-1 centres, O(n) each, so O(n^2) worst case (for `'aaaa...'`). Counting palindromes by testing every substring is O(n^3). Both are the checkers. Expand-around-centre is fine for most interviews; Manacher is the "can you go linear" follow-up.
+
+**Optimal:**
+- Transform: `s = 'aba'` becomes `t = '#a#b#a#'`. Now every palindrome, even or odd in `s`, has a single centre in `t`, and a palindrome of radius r in `t` is a palindrome of length r in `s`.
+- State: `centre` and `right`, the centre and right edge of the palindrome that extends furthest right so far. `rad[i]` is the radius at `i`.
+- For a new `i < right`: its mirror is `m = 2*centre - i`. The window `[centre-R, centre+R]` is a palindrome, so what lies around `m` is reflected around `i`. Therefore `rad[i] >= min(rad[m], right - i)`. The `min` caps it at the edge because we know nothing beyond `right`.
+- If `rad[m]` ends strictly inside the window, the radius at `i` is exactly `rad[m]` and the expansion test fails at once. If it reaches or passes the edge, only then can we expand, starting from `right - i`.
+- After expanding, if `i + rad[i] > right`, update `centre` and `right`.
+- Answer: the largest radius gives the longest palindrome. Take the smallest `i` among ties to return the leftmost. Start in `s` is `(i - rad[i]) // 2`.
+- Count of palindromic substrings: a centre with radius `r` in `t` contributes `ceil(r / 2)` palindromes in `s` (lengths r, r-2, ... down to 1 or 2). Sum `(r + 1) // 2` over all `i`.
+- Amortisation: the `while` loop only runs successful steps when it pushes the right edge forward, and `right` never moves back. So total successful expansions are at most the length of `t`, 2n+1. Each of the `n` centres adds O(1) other work. Total O(n).
+
+**Complexity:** Time O(n) (reasoning above), space O(n) for `t` and `rad`. Expand-around-centre is O(n^2) time, O(1) space.
+
+**Dry run:** `s = 'aba'`, `t = '#a#b#a#'`, indices 0..6.
+| i | t[i] | mirror cap | expand | rad | right |
+|---|---|---|---|---|---|
+| 0 | # | none | no | 0 | 0 |
+| 1 | a | none | `#`=`#` yes | 1 | 2 |
+| 2 | # | mirror rad[0]=0 | a vs b no | 0 | 2 |
+| 3 | b | none (i>=right) | `#`,`a`... expands to radius 3 | 3 | 6 |
+| 4 | # | mirror rad[2]=0, cap 2 | stays | 0 | 6 |
+| 5 | a | mirror rad[1]=1, cap 1 | edge reached, stop | 1 | 6 |
+| 6 | # | mirror rad[0]=0 | stop | 0 | 6 |
+`rad = [0,1,0,3,0,1,0]` (the program prints exactly this). Largest 3 at i=3, start (3-3)//2 = 0, so `'aba'`. Count: (0+1+0+3+0+1+0 with `(r+1)//2` each) = 0+1+0+2+0+1+0 = 4: `a`, `b`, `a`, `aba`.
+
+**Code:**
+```python
+import random
+
+
+def brute_longest(s):
+    """Leftmost longest palindromic substring, expand-around-centre, O(n^2)."""
+    best = ""
+    for c in range(2 * len(s) - 1):
+        l, r = c // 2, c // 2 + c % 2
+        while l >= 0 and r < len(s) and s[l] == s[r]:
+            l -= 1
+            r += 1
+        cand = s[l + 1:r]
+        if len(cand) > len(best):          # strict '>' keeps the leftmost on ties
+            best = cand
+    return best
+
+
+def brute_count(s):
+    return sum(1 for i in range(len(s)) for j in range(i + 1, len(s) + 1)
+               if s[i:j] == s[i:j][::-1])
+
+
+def manacher(s):
+    """Returns (leftmost longest palindrome, count of palindromic substrings, radii)."""
+    if not s:
+        return "", 0, []
+    t = "#" + "#".join(s) + "#"          # every palindrome in t has odd length
+    n = len(t)
+    rad = [0] * n                         # rad[i] = palindrome radius at centre i in t
+    centre = right = 0                    # rightmost palindrome found: centre, and its right edge
+    for i in range(n):
+        if i < right:
+            rad[i] = min(right - i, rad[2 * centre - i])   # start from the mirror's radius
+        # expand only when we may have reached or passed the right edge
+        while (i - rad[i] - 1 >= 0 and i + rad[i] + 1 < n
+               and t[i - rad[i] - 1] == t[i + rad[i] + 1]):
+            rad[i] += 1
+        if i + rad[i] > right:            # new rightmost palindrome
+            centre, right = i, i + rad[i]
+    # radius in t equals palindrome length in s
+    best_len, best_c = max((r, -i) for i, r in enumerate(rad))   # ties: smallest i => leftmost
+    best_c = -best_c
+    start = (best_c - best_len) // 2
+    count = sum((r + 1) // 2 for r in rad)   # palindromes centred at i: ceil(r / 2)
+    return s[start:start + best_len], count, rad
+
+
+for s in ["babad", "abacdfgdcaba"]:
+    print(s, "->", manacher(s)[0])
+print("count 'aaa' ->", manacher("aaa")[1])
+print("radii of 'aba' in '#a#b#a#':", manacher("aba")[2])
+assert manacher("babad")[0] == "bab"
+assert manacher("abacdfgdcaba")[0] == "aba"
+assert manacher("aaa")[1] == 6
+assert manacher("") == ("", 0, [])
+assert manacher("a")[:2] == ("a", 1)
+assert manacher("ab")[:2] == ("a", 2)          # leftmost on ties
+assert manacher("abba")[:2] == ("abba", 6)
+assert manacher("cbbd")[0] == "bb"
+assert manacher("a" * 1000)[1] == 1000 * 1001 // 2
+assert manacher("abc" * 100)[0] == "a"
+
+rng = random.Random(39)
+for _ in range(4000):
+    s = "".join(rng.choice("ab" if rng.random() < 0.6 else "abc") for _ in range(rng.randint(0, 14)))
+    got, cnt, _ = manacher(s)
+    assert got == brute_longest(s), (s, got, brute_longest(s))
+    assert cnt == brute_count(s), s
+print("random cross-check passed: 4000 cases")
+
+
+# amortisation evidence: count inner while-loop expansions (successful extra matches)
+def expansions(s):
+    t = "#" + "#".join(s) + "#"
+    n = len(t)
+    rad = [0] * n
+    centre = right = 0
+    work = 0
+    for i in range(n):
+        if i < right:
+            rad[i] = min(right - i, rad[2 * centre - i])
+        while (i - rad[i] - 1 >= 0 and i + rad[i] + 1 < n
+               and t[i - rad[i] - 1] == t[i + rad[i] + 1]):
+            rad[i] += 1
+            work += 1
+        if i + rad[i] > right:
+            centre, right = i, i + rad[i]
+    return work, n
+
+
+for name, s in [("a*1000", "a" * 1000), ("ab*500", "ab" * 500), ("random", "".join(rng.choice("ab") for _ in range(1000)))]:
+    w, n = expansions(s)
+    print(f"{name}: len(t)={n}, successful expansions={w}, bound 'right edge moves only forward' => <= {n}")
+    assert w <= n
+```
+
+**Output (my run):**
+```text
+babad -> bab
+abacdfgdcaba -> aba
+count 'aaa' -> 6
+radii of 'aba' in '#a#b#a#': [0, 1, 0, 3, 0, 1, 0]
+random cross-check passed: 4000 cases
+a*1000: len(t)=2001, successful expansions=1999, bound 'right edge moves only forward' => <= 2001
+ab*500: len(t)=2001, successful expansions=1998, bound 'right edge moves only forward' => <= 2001
+random: len(t)=2001, successful expansions=1998, bound 'right edge moves only forward' => <= 2001
+```
+All three prompt examples are correct. The last three lines count successful expansions: for a 1000-letter string they are about 2000 each (a run of one letter, `ab` repeated, and a seeded random string), never above `len(t) = 2001`. That matches the amortised argument (the right edge only moves forward by one per expansion); it is an illustration of the argument, not a proof, and it is a count of loop steps, not timing.
+
+**Edge cases:**
+- Empty string: return empty and 0.
+- One character: itself and 1.
+- No repeated letters: the leftmost single character; count equals n.
+- All the same letter: the whole string; count n(n+1)/2.
+- Ties: strict comparison on the radius, with the smallest centre kept, to return the leftmost.
+- Even-length palindromes such as `'abba'`: centred on a `#` in `t`.
+
+**Follow-ups:**
+- *Why does the mirror radius not just copy blindly?* If the mirror's palindrome sticks out past the left edge of the big one, the matching part on the right is cut off at `right`, and beyond it we have no information. Hence `min(..., right - i)` and the expansion.
+- *Alternatives?* Expand-around-centre O(n^2); DP O(n^2) time and space (Part 11); suffix structures with reversed-string LCP; and rolling hash plus binary search, which is O(n log n) and has collision risk.
+- *Does it handle both parities?* Yes, that is what the separators are for.
+
+**Common mistakes:**
+- Forgetting the `min(right - i, ...)` cap and trusting the mirror radius beyond the edge.
+- Wrong index back to `s`: the start is `(centre - radius) // 2`, not `centre - radius`.
+- Off-by-one with the sentinels: not bounds-checking the `while` when `t` has no outer sentinel.
+- Counting palindromes as `r` instead of `ceil(r / 2)` per centre.
+- Updating `centre` and `right` on every `i` instead of only when `i + rad[i] > right`.

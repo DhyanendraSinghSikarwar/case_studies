@@ -1,0 +1,5 @@
+'babad' -> 'bab'
+'cbbd' -> 'bb'
+'a' -> 'a'
+'abacdfgdcaba' -> 'aba'
+random cross-check passed: 6000 cases
