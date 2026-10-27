@@ -1,0 +1,8 @@
+WARNING:root:Please consider to run pre-processing before quantization. Refer to example: https://github.com/microsoft/onnxruntime-inference-examples/blob/main/quantization/image_classification/cpu/ReadMe.md 
+torch version 2.14.1+cu130, onnxruntime 1.31.0, onnx 1.23.2
+fp32: 1291 KiB  acc=0.9395  2000-row run 20.7 ms (sandbox CPU only)
+int8: 329 KiB  acc=0.9390  2000-row run 10.5 ms (sandbox CPU only)
+size ratio int8/fp32 = 0.25; accuracy change = -0.0005; prediction agreement = 0.9985
+gate: accuracy drop <= 0.01 -> PASS
+manifest verifies: True
+tampered file verifies: False

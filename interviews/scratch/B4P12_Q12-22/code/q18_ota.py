@@ -13,13 +13,15 @@ for label, frac in (("delta patch 25% of size", 0.25),):
     print(f"{label}: {total_gb*frac:,.0f} GB, {sec*frac/60:.1f} min per device")
 # retries: link drops; with resumable downloads only the lost chunks resend; without, restart
 import random; random.seed(18)
-def sim(resume, n=2000, drop_p=0.15, chunks=60):
+def sim(resume, n=3000, drop_p=0.01, chunks=60):
+    """Each chunk can drop the connection with probability drop_p. Resume: redo only that chunk. Restart: begin again from chunk 0."""
     sent = 0
     for _ in range(n):
         done = 0
         while done < chunks:
-            if random.random() < drop_p and not resume: sent += random.randint(1, chunks - done) ; done = 0; continue
-            sent += 1; done += 1
-            if random.random() < drop_p and resume: sent += 0  # resumes from the last chunk
+            sent += 1
+            if random.random() < drop_p:
+                if not resume: done = 0
+            else: done += 1
     return sent / (n * chunks)
-print(f"bytes sent / model size, restart-on-drop: {sim(False):.2f}x ; resumable chunks: {sim(True):.2f}x  (toy loss model)")
+print(f"bytes sent / model size, restart-on-drop: {sim(False):.2f}x ; resumable chunks: {sim(True):.2f}x  (toy loss model, 1% drop per chunk)")

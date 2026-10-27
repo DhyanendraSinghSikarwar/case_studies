@@ -1,0 +1,5 @@
+shards: 2400  largest/smallest shard ratio: 31.8
+full retrain + score nightly     core-hours=    83.3  min workers for 4.0h window (incl 0.3h fixed steps)=23  makespan=3.93h
+rescore only (weekly retrain)    core-hours=    16.7  min workers for 4.0h window (incl 0.3h fixed steps)=5  makespan=3.63h
+
+weekly core-hours: nightly full=583.3  weekly retrain + nightly rescore=183.3  relative=0.31
