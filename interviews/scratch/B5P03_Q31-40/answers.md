@@ -364,15 +364,15 @@ for n in range(14, 23):
 True
 None
 n   regex (a+)+ on a*n+'b'   manual
-14     0.0005s          0.0000009s
-15     0.0009s   x2.0   0.0000011s
-16     0.0020s   x2.1   0.0000010s
-17     0.0038s   x1.9   0.0000010s
-18     0.0077s   x2.0   0.0000010s
-19     0.0152s   x2.0   0.0000012s
-20     0.0306s   x2.0   0.0000033s
-21     0.0628s   x2.1   0.0000061s
-22     0.1220s   x1.9   0.0000056s
+14     0.0005s          0.0000007s
+15     0.0010s   x2.1   0.0000011s
+16     0.0020s   x2.0   0.0000009s
+17     0.0040s   x2.0   0.0000014s
+18     0.0080s   x2.0   0.0000022s
+19     0.0157s   x1.9   0.0000011s
+20     0.0313s   x2.0   0.0000032s
+21     0.0665s   x2.1   0.0000045s
+22     0.1266s   x1.9   0.0000082s
 ```
 Both prompt examples are correct (`aaaa` matches, `aaab` gives `None`). Timings are sandbox-only: they depend on the machine and the CPython build and they will differ on every run. In this run each extra letter about doubled the time, which fits 2^n; that is a consistent shape, not a proof (the proof is the splitting argument above). With n = 22 it was around 0.12 s here; each +10 on n would multiply that about 1000 times, so n = 50 would be far beyond waiting for. I did not run that.
 
@@ -1121,12 +1121,12 @@ All six prompt examples are correct. The 6000 random cases (strings and patterns
 |---|---|---|---|---|---|
 | 0 | # | none | no | 0 | 0 |
 | 1 | a | none | `#`=`#` yes | 1 | 2 |
-| 2 | # | mirror rad[0]=0 | a vs b no | 0 | 2 |
+| 2 | # | none (i is not below right) | a vs b no | 0 | 2 |
 | 3 | b | none (i>=right) | `#`,`a`... expands to radius 3 | 3 | 6 |
 | 4 | # | mirror rad[2]=0, cap 2 | stays | 0 | 6 |
 | 5 | a | mirror rad[1]=1, cap 1 | edge reached, stop | 1 | 6 |
 | 6 | # | mirror rad[0]=0 | stop | 0 | 6 |
-`rad = [0,1,0,3,0,1,0]` (the program prints exactly this). Largest 3 at i=3, start (3-3)//2 = 0, so `'aba'`. Count: (0+1+0+3+0+1+0 with `(r+1)//2` each) = 0+1+0+2+0+1+0 = 4: `a`, `b`, `a`, `aba`.
+`rad = [0,1,0,3,0,1,0]` (the program prints exactly this). Largest 3 at i=3, start (3-3)//2 = 0, so `'aba'`. Count: `(r+1)//2` per centre gives 0+1+0+2+0+1+0 = 4: `a`, `b`, `a`, `aba`.
 
 **Code:**
 ```python
@@ -1258,3 +1258,167 @@ All three prompt examples are correct. The last three lines count successful exp
 - Off-by-one with the sentinels: not bounds-checking the `while` when `t` has no outer sentinel.
 - Counting palindromes as `r` instead of `ceil(r / 2)` per centre.
 - Updating `centre` and `right` on every `i` instead of only when `i + rad[i] > right`.
+
+---
+
+### Q40 ⭐ 🔴 Longest repeated substring (rolling hash plus binary search). Given `s` (2 <= len <= 3*10^4, lowercase), return the length of the longest substring that occurs at least twice (occurrences may overlap), or 0. If a length L repeats then every shorter length repeats, so binary search on L and test each L with a rolling hash over all windows in a set, verifying actual substrings on any hash hit to rule out collisions. Give the O(n log n) expected time and the O(n^2) per-length cost of the naive test, and name suffix arrays as the exact alternative. Example: 'banana' -> 3 ('ana'); 'abcd' -> 0; 'aaaaa' -> 4; 'abcabcabc' -> 6.
+**Asked at:** Pattern-matching tutorials and guides (techinterview.org string-algorithm patterns pages, a dev.to Z/KMP/Rabin-Karp article, HackerEarth exact-matching notes; search snippets only, not opened); tutorial content, not company reports | Standard-problem lists known to the editor (not found as an opened page; included on the editor's knowledge of widely circulated problem sets; indicative only, no company attribution)
+**Pattern:** Binary search on the answer, with a rolling hash as the feasibility test. The predicate "some substring of length L occurs twice" is monotone: if length L repeats, every shorter length repeats (cut the same characters off both ends of the two copies).
+
+**Say this first (1 line):** "Binary search the length L. To test L, slide a rolling hash over every window, keep hashes in a dict, and on a hit compare the real substrings so a collision cannot fool me."
+
+**Brute force:** For each L from n-1 down, put all n-L+1 substrings of length L into a set and stop at the first duplicate. Each slice and hash costs O(L), so one length costs O(n * L), up to O(n^2), and all lengths O(n^3) in the worst case. With n = 3*10^4 that is far too slow. This is the checker.
+
+**Optimal:**
+- Monotone, so binary search `L` in `[0, n-1]`: if `has_repeat(L)` then `lo = mid` else `hi = mid - 1`. About log2(n) = 15 rounds.
+- `has_repeat(L)` with a polynomial rolling hash modulo a large prime (2^61 - 1):
+  - Hash of the first window: `h = sum(ord(c) * base^(L-1-k))`.
+  - Slide: remove the leftmost character `ord(s[i-1]) * base^(L-1)`, multiply by `base`, add the new one. O(1) per step.
+  - Store `hash -> list of start indexes`. On a hit, compare the actual substrings `s[j:j+L] == s[i:i+L]` for the stored starts. Only an equal pair returns True.
+- Why verify: two different substrings can share a hash. Without the check a collision gives a false "repeat" and the answer can be too big. In the output below I set the modulus to 5 on purpose: the unverified version returns 4 for `'abcdefgh'` whose true answer is 0, while the verified version stays correct on every test.
+- Overlap is allowed, which is why `'aaaaa'` gives 4 (`aaaa` at positions 0 and 1).
+
+**Complexity:** Each round is O(n) expected for the hashing plus the occasional verification. With a 61-bit modulus a false hit is very unlikely, so verifications are almost all true repeats, and the round stops at the first one. Total O(n log n) expected time, O(n) space for the dict. Worst case is higher: if collisions are frequent (like my modulus-5 demo), the verification lists get long and a round can cost O(n * L). The naive per-length test builds O(n) slices of length up to L, so O(n^2) per length in the worst case.
+
+**Exact alternative:** a suffix array. Sort all suffixes, compute the LCP (longest common prefix) array of neighbours, and the answer is the maximum LCP. Any repeated substring is a common prefix of two suffixes, and two suffixes with a long common prefix sort near each other. Construction is O(n log n) with the doubling method (or O(n) with SA-IS), and Kasai's algorithm builds LCP in O(n). No randomness, no collisions. Suffix automaton and suffix tree also work.
+
+**Dry run:** `s = 'banana'`, n = 6. Search `[0, 5]`.
+| lo, hi | mid | repeat of length mid? | next |
+|---|---|---|---|
+| 0, 5 | 3 | `ana` at 1 and 3: yes | lo = 3 |
+| 3, 5 | 4 | `bana, anan, nana`: all distinct, no | hi = 3 |
+Answer 3. For `'abcd'`: mid = 2, `ab, bc, cd` distinct, hi = 1; mid = 1, four distinct letters, hi = 0. Answer 0.
+
+**Code:**
+```python
+import random
+
+
+def lrs_brute(s):
+    """Longest length L such that some substring of length L occurs twice (overlap allowed). O(n^2) per
+    length set-building, O(n^3) overall via checking every length from the top."""
+    n = len(s)
+    for L in range(n - 1, 0, -1):
+        seen = set()
+        for i in range(n - L + 1):
+            w = s[i:i + L]
+            if w in seen:
+                return L
+            seen.add(w)
+    return 0
+
+
+MOD = (1 << 61) - 1          # large prime modulus
+BASE = 911382323
+
+
+def has_repeat(s, L, base=BASE, mod=MOD):
+    """Does some substring of length L occur at least twice? Rolling hash, verify on hit."""
+    n = len(s)
+    if L == 0:
+        return True
+    top = pow(base, L - 1, mod)
+    h = 0
+    for k in range(L):
+        h = (h * base + ord(s[k])) % mod
+    seen = {h: [0]}                           # hash -> starts with that hash
+    for i in range(1, n - L + 1):
+        h = ((h - ord(s[i - 1]) * top) * base + ord(s[i + L - 1])) % mod
+        if h in seen:
+            for j in seen[h]:                 # verify real substrings: rules out collisions
+                if s[j:j + L] == s[i:i + L]:
+                    return True
+            seen[h].append(i)
+        else:
+            seen[h] = [i]
+    return False
+
+
+def lrs(s, base=BASE, mod=MOD):
+    lo, hi = 0, len(s) - 1                    # answer is in [0, n-1]; monotone predicate
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if has_repeat(s, mid, base, mod):
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo
+
+
+for s in ["banana", "abcd", "aaaaa", "abcabcabc"]:
+    print(s, "->", lrs(s))
+assert lrs("banana") == 3 and lrs("abcd") == 0 and lrs("aaaaa") == 4 and lrs("abcabcabc") == 6
+assert lrs("aa") == 1 and lrs("ab") == 0 and lrs("abab") == 2
+assert lrs("a" * 30000) == 29999
+assert lrs("abcdefghijklmnopqrstuvwxyz" * 2) == 26
+assert lrs("ab" * 5 + "c") == 8
+
+# worst-case collisions: a tiny modulus forces hash hits, and the verification must keep the answer right
+bad = lrs("abcabcabcxyz", base=7, mod=5)
+print("with modulus 5 (heavy collisions):", bad, "expected", lrs_brute("abcabcabcxyz"))
+assert bad == lrs_brute("abcabcabcxyz")
+
+
+def lrs_no_verify(s, base=7, mod=5):
+    """Deliberately WRONG: trusts the hash. Shows why verification matters."""
+    def rep(L):
+        h = 0
+        hs = set()
+        for i in range(len(s) - L + 1):
+            h = sum(ord(c) * pow(base, L - 1 - k, mod) for k, c in enumerate(s[i:i + L])) % mod
+            if h in hs:
+                return True
+            hs.add(h)
+        return False
+    lo, hi = 0, len(s) - 1
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if rep(mid):
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo
+
+
+print("no verification, modulus 5:", lrs_no_verify("abcdefgh"), "true answer", lrs_brute("abcdefgh"))
+assert lrs_no_verify("abcdefgh") != lrs_brute("abcdefgh")
+
+rng = random.Random(40)
+for _ in range(1500):
+    s = "".join(rng.choice("ab" if rng.random() < 0.5 else "abc") for _ in range(rng.randint(2, 16)))
+    assert lrs(s) == lrs_brute(s), s
+    assert lrs(s, base=7, mod=11) == lrs_brute(s), s       # tiny modulus: verification keeps it exact
+print("random cross-check passed: 1500 cases (default and tiny modulus)")
+```
+
+**Output (my run):**
+```text
+banana -> 3
+abcd -> 0
+aaaaa -> 4
+abcabcabc -> 6
+with modulus 5 (heavy collisions): 6 expected 6
+no verification, modulus 5: 4 true answer 0
+random cross-check passed: 1500 cases (default and tiny modulus)
+```
+All four prompt examples are correct. The tiny-modulus runs (modulus 5 and 11) cross-check against brute force on the seeded random strings, and all agree because verification catches every collision; the deliberately unverified variant returns a wrong answer, as shown.
+
+**Edge cases:**
+- `'aa'`: length 1 repeats, answer 1. `'ab'`: 0.
+- All the same letter: n-1 (maximal overlap).
+- No repeated letter at all: 0 (the binary search must end with `lo = 0`, so keep length 0 and 1 both handled).
+- A periodic string like `'abcabcabc'`: 6, the overlap case; a version requiring non-overlap would give 4.
+- Upper search bound is n-1, because a length-n substring occurs once.
+
+**Follow-ups:**
+- *Non-overlapping occurrences only?* Keep the earliest start per hash and require `i - j >= L` on a hit; the binary search stays valid.
+- *Return the substring, not the length?* Remember the start index from the last successful `has_repeat`.
+- *Avoid the randomised risk?* Use a suffix array plus LCP, or pick a random base at run time so no input can be crafted against a fixed one.
+- *Why not a set of the substrings?* It works and is simplest, but building the slices costs O(L) each and memory O(n * L).
+
+**Common mistakes:**
+- Not verifying on a hash hit.
+- A wrong sliding update: forgetting to multiply the outgoing character by `base^(L-1)`, or a negative number from the subtraction (Python's `%` makes the result non-negative, but in C-like languages it needs care).
+- Searching `[0, n]` with an unguarded window that does not exist (length n has one window only).
+- Using a small base or modulus and claiming O(n log n) without the collision caveat.
+- Assuming the search needs monotonicity of the hash. It is the length predicate that is monotone.

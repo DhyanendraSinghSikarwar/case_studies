@@ -565,7 +565,7 @@ All three prompt examples are correct. The hit counts above depend on the seed a
 - `i = 0`, `j = 1`, `k = 0`.
 - While `i, j, k < n`: compare `a = s[(i+k) % n]` and `b = s[(j+k) % n]`.
   - Equal: `k += 1`.
-  - `a > b`: candidate `i` loses, and so do `i+1 .. i+k` (each is a longer-prefix copy of a start that already lost), so `i += k + 1`.
+  - `a > b`: candidate `i` loses, and so do `i+1 .. i+k`, so `i += k + 1`.
   - `a < b`: symmetric, `j += k + 1`.
   - After a jump, if `i == j`, bump `j += 1`; set `k = 0`.
 - Answer start: `min(i, j)`. Result string: `s[start:] + s[:start]`.
@@ -926,3 +926,435 @@ All four prompt examples are correct.
 - Mirroring the wrong part: prepend `reverse(s[L:])`, not `reverse(s[:L])`.
 - Treating `L = 0` as an error for the empty string.
 - Believing it is a DP (Part 11) or backtracking (Part 12) problem; it is a border problem.
+
+
+### Q28 ⭐⭐ 🔴 Valid number. Decide whether a string (len <= 20, no spaces) is a valid decimal number under this grammar: an optional sign '+' or '-', then either digits optionally followed by '.' and more digits (so '4.' is valid) or '.' followed by at least one digit, then an optional exponent 'e' or 'E' followed by an optional sign and at least one digit. Parse it left to right with explicit stages (sign, integer digits, dot, fraction digits, exponent) and no regex in your main answer; mention the regex alternative and the finite-automaton view. Example: each of '2', '0089', '-0.1', '+3.14', '4.', '-.9', '2e10', '3e+7', '53.5e93' -> True; each of 'abc', '1a', '1e', 'e3', '99e2.5', '--6', '-+3', '95a54e53', '.', '+.' -> False.
+**Asked at:** Public pattern lists (NeetCode 150 style lists as mirrored in a LeetCode discuss post, GitHub roadmap repos and a freeCodeCamp guide; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); community lists, not verified company reports | Community string-problem roundups (a LeetCode discuss post 'Most Common String Interview Problems' and similar; search snippet only, not opened); prep content, not company reports
+
+**Pattern:** Staged scanner (a small hand-made finite automaton). Walk left to right once and move through fixed stages: sign, integer digits, dot, fraction digits, exponent, exponent sign, exponent digits.
+
+**Say this first (1 line):** "I scan once with a position pointer. I count digits before and after the dot, and the mantissa is valid only if there is at least one digit on either side. Then an optional exponent needs at least one digit. If the pointer ends at the end of the string, it is valid."
+
+**Brute force:** A regex, `[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)?` with `fullmatch`. It is correct and I use it as the checker, but it is a black box in an interview and hides the stages. `float(s)` is wrong here: it accepts `'inf'`, `'nan'`, `'1_0'` and surrounding spaces.
+
+**Optimal:**
+- Stage 1: one optional `+` or `-`.
+- Stage 2: count digits `a` (characters `'0'..'9'`).
+- Stage 3: one optional `.`, then count digits `b`.
+- The mantissa is valid iff `a + b > 0`. That one test covers `'4.'` (a=1), `'.9'` (b=1), and rejects `'.'` and `'+.'`.
+- Stage 4: if the next character is `e` or `E`: skip it, one optional sign, count digits `c`; need `c > 0`.
+- Finish: valid iff the pointer is at the end. This rejects `'99e2.5'` (a dot after the exponent) and `'1a'`.
+- The automaton view: states `start, sign, int, dot-after-int, dot-no-int, frac, e, e-sign, e-digits`; accepting states are `int`, `dot-after-int`, `frac`, `e-digits`.
+
+**Complexity:** Time O(n), space O(1), one pass, no backtracking.
+
+**Dry run:** `'-.9'`
+- `-`: sign, `i = 1`.
+- digits before dot: none, `a = 0`.
+- `.`: consumed, `i = 2`; digits after: `9`, `b = 1`, `i = 3`.
+- `a + b = 1 > 0`, ok. No `e`. `i == n`: True.
+
+`'99e2.5'`: `a = 2`, no dot, `e` consumed, exponent digits `2`, stop at `.`: `i = 4 != 6`: False.
+
+**Code:**
+```python
+import itertools
+import re
+
+PATTERN = re.compile(r'[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)?')
+
+
+def is_number_regex(s):
+    return PATTERN.fullmatch(s) is not None
+
+
+def is_digit(c):
+    return '0' <= c <= '9'                      # not c.isdigit(): that accepts Unicode digits
+
+
+def is_number(s):
+    n, i = len(s), 0
+    if i < n and s[i] in '+-':
+        i += 1
+    a = 0
+    while i < n and is_digit(s[i]):
+        i += 1
+        a += 1
+    b = 0
+    if i < n and s[i] == '.':
+        i += 1
+        while i < n and is_digit(s[i]):
+            i += 1
+            b += 1
+    if a + b == 0:
+        return False
+    if i < n and s[i] in 'eE':
+        i += 1
+        if i < n and s[i] in '+-':
+            i += 1
+        c = 0
+        while i < n and is_digit(s[i]):
+            i += 1
+            c += 1
+        if c == 0:
+            return False
+    return i == n
+
+
+yes = ['2', '0089', '-0.1', '+3.14', '4.', '-.9', '2e10', '3e+7', '53.5e93']
+no = ['abc', '1a', '1e', 'e3', '99e2.5', '--6', '-+3', '95a54e53', '.', '+.']
+for s in yes:
+    assert is_number(s), s
+for s in no:
+    assert not is_number(s), s
+print('yes ->', [is_number(s) for s in yes])
+print('no  ->', [is_number(s) for s in no])
+assert not is_number('') and not is_number('+') and not is_number('e') and not is_number('.e1')
+assert is_number('0') and is_number('.5e-3') and is_number('5.e3') and is_number('-0')
+assert not is_number(' 1') and not is_number('1 ') and not is_number('1e5e5')
+
+# Exhaustive cross-check: every string up to length 7 over this alphabet, against the regex.
+count = valid = 0
+for n in range(0, 8):
+    for tup in itertools.product('+-.eE1', repeat=n):
+        s = ''.join(tup)
+        r = is_number(s)
+        assert r == is_number_regex(s), s
+        count += 1
+        valid += r
+print('exhaustive cross-check passed:', count, 'strings,', valid, 'valid')
+
+# The Unicode trap: isdigit and a bare \d accept more than ASCII digits.
+print('\u0663'.isdigit(), '\u00b2'.isdigit(), bool(re.fullmatch(r'\d+', '\u0663')), is_number('\u0663'))
+print(float('1_0'), float(' 1e3 '), float('inf'))
+```
+
+**Output (my run):**
+```
+yes -> [True, True, True, True, True, True, True, True, True]
+no  -> [False, False, False, False, False, False, False, False, False, False]
+exhaustive cross-check passed: 335923 strings, 488 valid
+True True True False
+10.0 1000.0 inf
+```
+All nineteen prompt examples are correct (nine valid, ten invalid).
+
+**Edge cases:**
+- `'4.'` is valid and `'.'` is not: the "digits on either side" rule.
+- `'1e'`, `'e3'`, `'.e1'`: exponent without digits, or no mantissa.
+- `'1e5e5'`, `'99e2.5'`: second exponent or dot after the exponent.
+- Spaces: the grammar here has none, so `' 1'` is invalid (real `float` strips them).
+- Unicode digits: `'\u0663'` (Arabic-Indic three) is `isdigit()`, and a bare `\d` in `re` matches it too, so compare against `'0'..'9'` or use `re.ASCII`.
+
+**Follow-ups:**
+- *Only integers, or also `inf`/`nan`?* A different grammar; extend the stage list, or special-case words.
+- *Write it as a table-driven DFA?* A dict `state -> {char_class: next_state}`, same O(n). It is the right answer if the grammar keeps growing.
+- *Why not `try: float(s)`?* It accepts extra forms (`'inf'`, `'nan'`, underscores, whitespace) and is not the specified grammar.
+
+**Common mistakes:**
+- Requiring digits on both sides of the dot (`'4.'` and `'.5'` are both valid).
+- Allowing an exponent with no digits, or a dot inside the exponent.
+- Using `str.isdigit`, which says yes to superscripts and non-ASCII digits.
+- Treating a bare sign or a bare dot as valid.
+
+
+### Q29 ⭐ 🟡 Bytes, code points and graphemes. Explain the difference between bytes, code points and user-perceived characters (graphemes) in Python and write `counts(s)` returning (number of code points, number of UTF-8 bytes, number of UTF-16 code units) for a str. State what `len(s)` counts, why the same visible 'e-acute' can be 1 or 2 code points, why a flag or family emoji is several code points, and why slicing, indexing and reversal can cut a grapheme (the standard library has no grapheme segmenter; name the third-party options). Example: counts('a\u00e9\U0001F600') -> (3, 7, 4); len('e\u0301') -> 2 but len('\u00e9') -> 1; len('\U0001F600'.encode('utf-8')) -> 4.
+**Asked at:** Unicode and Python text-handling docs and tutorials (pandas and xarray str.normalize pages and the pyunormalize project surfaced by search; snippets only, the official Python unicodedata and str docs were not opened, so claims about casefold and grapheme clusters rest on editor knowledge and the sandbox run) | Standard-problem lists known to the editor (not found as an opened page; included on the editor's knowledge of widely circulated problem sets; indicative only, no company attribution)
+
+**Pattern:** Three different "lengths" of the same text. A **byte** is what is stored or sent (depends on the encoding). A **code point** is one Unicode number, and it is what Python's `str` indexes. A **grapheme** is what a person sees as one character, and it can be several code points.
+
+**Say this first (1 line):** "`len(s)` counts code points, not bytes and not what the eye sees. Bytes depend on the encoding, UTF-16 counts surrogate pairs as two units, and a visible character like an accented letter, a flag or a family emoji can be several code points."
+
+**Brute force:** There is no algorithmic brute force here, but there is a second way to count that I use as a checker: take the UTF-8 bytes, count the bytes that are not continuation bytes (`b & 0xC0 != 0x80`) to get code points, and give each code point 1 UTF-16 unit, or 2 if it is above `0xFFFF`.
+
+**Optimal:**
+- `counts(s) = (len(s), len(s.encode('utf-8')), len(s.encode('utf-16-le')) // 2)`.
+- Use `utf-16-le` (no BOM). Plain `'utf-16'` adds a 2-byte byte-order mark, so the length is off by one unit.
+- UTF-8 uses 1 byte up to U+007F, 2 up to U+07FF, 3 up to U+FFFF, 4 above. UTF-16 uses 1 unit up to U+FFFF and a surrogate pair (2 units) above. JavaScript and Java `length` is this UTF-16 count.
+- `len('e\u0301') == 2` and `len('\u00e9') == 1` for the same visible letter: one is a base letter plus a combining accent, the other a precomposed letter. NFC normalisation joins them where a precomposed form exists (Q30).
+- A flag (two regional-indicator letters) and a family emoji (several people joined by zero-width joiners) are several code points but look like one symbol.
+- Slicing, indexing and reversing work on code points, so they can cut a grapheme in the middle: split the accent from its letter, or reverse a flag into a different flag.
+- The standard library has no grapheme segmenter. Third-party options include the `regex` module (`\X`), the `grapheme` package, `uniseg`, and PyICU. None of these is installed in my sandbox, so I did not run them.
+- Python 3.13 detail, as observed: a `str` is stored per object with 1, 2 or 4 bytes per character depending on the widest character (PEP 393), so `sys.getsizeof` grows by 1, 1, 2 and 4 bytes per character for `'a'`, `'\u00e9'`, a CJK character and an emoji. That is an implementation detail, not a language promise.
+
+**Complexity:** `len` is O(1). `counts` is O(n) because it encodes. Space O(n) for the temporary byte strings.
+
+**Dry run:** `'a\u00e9\U0001F600'`
+| char | code point | UTF-8 bytes | UTF-16 units |
+|---|---|---|---|
+| a | U+0061 | 1 | 1 |
+| e-acute | U+00E9 | 2 | 1 |
+| grinning face | U+1F600 | 4 | 2 |
+| total | 3 | 7 | 4 |
+
+**Code:**
+```python
+import random
+import sys
+import unicodedata
+
+
+def counts(s):
+    return len(s), len(s.encode('utf-8')), len(s.encode('utf-16-le')) // 2
+
+
+def counts_by_bytes(s):                         # brute force, built from the raw UTF-8 bytes
+    b = s.encode('utf-8')
+    cps = sum(1 for x in b if x & 0xC0 != 0x80)
+    units = 0
+    i = 0
+    while i < len(b):
+        lead = b[i]
+        if lead < 0x80:
+            step, units = 1, units + 1
+        elif lead < 0xE0:
+            step, units = 2, units + 1
+        elif lead < 0xF0:
+            step, units = 3, units + 1
+        else:
+            step, units = 4, units + 2
+        i += step
+    return cps, len(b), units
+
+
+print(counts('a\u00e9\U0001F600'))
+assert counts('a\u00e9\U0001F600') == (3, 7, 4)
+assert counts('') == (0, 0, 0) and counts('abc') == (3, 3, 3)
+print(len('e\u0301'), len('\u00e9'), len('\U0001F600'.encode('utf-8')))
+assert len('e\u0301') == 2 and len('\u00e9') == 1 and len('\U0001F600'.encode('utf-8')) == 4
+
+rng = random.Random(29)
+cases = 0
+for _ in range(3000):
+    chars = []
+    for _ in range(rng.randint(0, 8)):
+        lo, hi = rng.choice([(0, 0x7F), (0x80, 0x7FF), (0x800, 0xD7FF), (0xE000, 0xFFFF), (0x10000, 0x10FFFF)])
+        chars.append(chr(rng.randint(lo, hi)))
+    s = ''.join(chars)
+    assert counts(s) == counts_by_bytes(s), s
+    cases += 1
+print('random cross-check passed:', cases, 'cases')
+
+# A visible character as 1 or 2 code points; NFC joins them where a precomposed form exists.
+decomposed, precomposed = 'e\u0301', '\u00e9'
+print(decomposed == precomposed, unicodedata.normalize('NFC', decomposed) == precomposed)
+
+# A flag is two regional indicators; reversing the string gives a different flag.
+flag = '\U0001F1EE\U0001F1F3'
+print(len(flag), counts(flag), [unicodedata.name(c).split()[-1] for c in flag])
+print([unicodedata.name(c).split()[-1] for c in flag[::-1]])
+
+# A family emoji: three people joined by two zero-width joiners.
+family = '\U0001F468\u200d\U0001F469\u200d\U0001F467'
+print(len(family), counts(family))
+
+# Slicing cuts a grapheme: the accent is left behind.
+print(repr('cafe\u0301'[:4]), repr('cafe\u0301'[:5]))
+
+# Plain 'utf-16' adds a byte-order mark; lone surrogates cannot be encoded to UTF-8 by default.
+print(len('a'.encode('utf-16')), len('a'.encode('utf-16-le')))
+try:
+    '\ud800'.encode('utf-8')
+except UnicodeEncodeError as e:
+    print(type(e).__name__)
+
+# CPython storage width per character (observed in this run; an implementation detail).
+for ch in ('a', '\u00e9', '\u4e2d', '\U0001F600'):
+    print(hex(ord(ch)), sys.getsizeof(ch * 200) - sys.getsizeof(ch * 100), 'bytes per 100 chars')
+print(sys.version.split()[0])
+```
+
+**Output (my run):**
+```
+(3, 7, 4)
+2 1 4
+random cross-check passed: 3000 cases
+False True
+2 (2, 8, 4) ['I', 'N']
+['N', 'I']
+5 (5, 18, 8)
+'cafe' 'café'
+4 2
+UnicodeEncodeError
+0x61 100 bytes per 100 chars
+0xe9 100 bytes per 100 chars
+0x4e2d 200 bytes per 100 chars
+0x1f600 400 bytes per 100 chars
+3.13.17
+```
+All three prompt examples are correct. Python 3.13 behaviour is as observed above, including that `'a'.encode('utf-16')` is 4 bytes (2 BOM plus 2).
+
+**Edge cases:**
+- Empty string: `(0, 0, 0)`.
+- Lone surrogate (`'\ud800'`): a legal `str` in Python but not encodable to UTF-8 by default; use `errors='surrogatepass'` if you must.
+- Characters above U+FFFF: 4 UTF-8 bytes, 2 UTF-16 units (a surrogate pair).
+- Combining marks, zero-width joiners and flags: code points that are not characters on their own.
+
+**Follow-ups:**
+- *How would you count graphemes?* Use a segmenter per Unicode UAX #29 (the `regex` module's `\X`, or `grapheme`/`uniseg`/ICU). Do not use `len` or a combining-mark check; the latter covers accents only (Q31).
+- *What does `len(b'...')` count?* Bytes. A `bytes` object has no characters; decoding is the step that creates code points.
+- *Why do databases and APIs report different "lengths"?* Each counts a different unit: bytes (UTF-8), UTF-16 units (JS, Java), or code points (Python). Check which one a limit means.
+
+**Common mistakes:**
+- Assuming `len(s)` equals bytes, or equals what the user sees.
+- Using `'utf-16'` (with BOM) when counting units.
+- Truncating by slicing at a byte or code-point boundary in the middle of a grapheme.
+- Sorting or comparing without normalising, so `'e\u0301'` and `'\u00e9'` differ.
+
+
+### Q30 ⭐ 🟡 Normalisation and case-folding. Write `same_text(a, b, compat=False)` that decides whether two strings are 'the same text' for a username or search key: apply casefold (not lower) and Unicode normalisation, in the order that is safe (normalise, casefold, normalise again), using NFC or NFD canonical form by default and NFKC/NFKD compatibility form when `compat` is True. Explain the difference between canonical and compatibility equivalence, why 'ss' matches the German sharp s under casefold but not under lower, and one security reason for normalising before comparing. Example: same_text('Stra\u00dfe','STRASSE') -> True; same_text('e\u0301','\u00e9') -> True; same_text('\u2460','1') -> False; same_text('\u2460','1', compat=True) -> True.
+**Asked at:** Unicode and Python text-handling docs and tutorials (pandas and xarray str.normalize pages and the pyunormalize project surfaced by search; snippets only, the official Python unicodedata and str docs were not opened, so claims about casefold and grapheme clusters rest on editor knowledge and the sandbox run) | Standard-problem lists known to the editor (not found as an opened page; included on the editor's knowledge of widely circulated problem sets; indicative only, no company attribution)
+
+**Pattern:** Canonical key for text equality: normalise, case-fold, normalise again, then compare. Python's `unicodedata` and `str.casefold` do the work.
+
+**Say this first (1 line):** "Equal-looking text can be different code points, so I compare a canonical form. `casefold` handles case (stronger than `lower`), normalisation handles composed versus decomposed forms, and I normalise again because casefolding can produce new combining sequences."
+
+**Brute force:** `a.lower() == b.lower()` or `a == b`. Both fail: `'Stra\u00dfe'.lower()` stays `'stra\u00dfe'` (the sharp s has no lowercase change), and `'e\u0301' != '\u00e9'`. A second reference method I use as a checker: the Unicode Standard's own definitions of caseless matching, which are `NFD(casefold(NFD(x)))` for canonical matching and `NFKD(casefold(NFKD(casefold(NFD(x)))))` for compatibility matching.
+
+**Optimal:**
+- `form = 'NFKC' if compat else 'NFC'`.
+- `key(x) = normalize(form, normalize(form, x).casefold())`.
+- `same_text(a, b, compat) = key(a) == key(b)`.
+- Canonical versus compatibility equivalence:
+  - Canonical: same abstract character, different encoding (`'e' + U+0301` and `U+00E9`). NFC and NFD only reorder and compose or decompose; they do not change meaning.
+  - Compatibility: similar characters that differ in form (circled one `U+2460` and `'1'`, the fi ligature, fullwidth letters, superscripts). NFKC and NFKD fold these, and that loses information, so use it for search keys, not for storing the original text.
+- `casefold` versus `lower`: `casefold` is for caseless comparison and maps `'\u00df'` to `'ss'`, so `'Stra\u00dfe'` matches `'STRASSE'`. `lower` keeps `'\u00df'`.
+- Why normalise again after the casefold: casefold can output a sequence that is not normalised. The code below counts them: in Python 3.13's Unicode data (15.1) there are 26 single code points (for example U+01F0, j with caron, which folds to `'j'` plus a combining caron) where `casefold` returns text that NFC changes. So the second normalise is not decoration.
+- Reference check: the code compares this three-step key with the Unicode Standard's caseless-matching formulas on a pool of tricky strings, and on every single code point. Observed: zero disagreements (pool and single code points) in both modes.
+- Security reason: without normalising, two usernames can look the same but be different strings (precomposed versus decomposed), so one person can register a look-alike account, or a blocklist and a uniqueness check can be bypassed. Normalisation fixes canonical look-alikes only. It does not fix homoglyphs from other scripts: Cyrillic `'\u0430'` and Latin `'a'` stay different; that needs a confusables check.
+- Two caveats: casefold is locale-independent (Turkish dotless and dotted i are not handled specially), and normalisation form choice must be fixed and documented when keys are stored.
+
+**Complexity:** O(n) time and space in the length of the strings (normalisation and casefold are linear passes; a rare long combining sequence needs reordering, which is still linear in practice).
+
+**Dry run:** `same_text('Stra\u00dfe', 'STRASSE')`
+- `'Stra\u00dfe'` NFC is unchanged, casefold gives `'strasse'`, NFC unchanged.
+- `'STRASSE'` NFC unchanged, casefold `'strasse'`.
+- Keys equal: True.
+
+`same_text('\u2460', '1')`
+- NFC leaves circled one alone, casefold leaves it alone: key `'\u2460'` against `'1'`: False.
+- With `compat=True`: NFKC maps circled one to `'1'`: True.
+
+**Code:**
+```python
+import random
+import unicodedata
+
+N = unicodedata.normalize
+
+
+def same_text(a, b, compat=False):
+    form = 'NFKC' if compat else 'NFC'
+    key = lambda x: N(form, N(form, x).casefold())
+    return key(a) == key(b)
+
+
+def same_text_standard(a, b, compat=False):     # reference: the Unicode Standard's formulas
+    if compat:
+        key = lambda x: N('NFKD', N('NFKD', N('NFD', x).casefold()).casefold())
+    else:
+        key = lambda x: N('NFD', N('NFD', x).casefold())
+    return key(a) == key(b)
+
+
+def same_text_naive(a, b):
+    return a.lower() == b.lower()
+
+
+print(same_text('Stra\u00dfe', 'STRASSE'))
+print(same_text('e\u0301', '\u00e9'))
+print(same_text('\u2460', '1'))
+print(same_text('\u2460', '1', compat=True))
+assert same_text('Stra\u00dfe', 'STRASSE') is True
+assert same_text('e\u0301', '\u00e9') is True
+assert same_text('\u2460', '1') is False
+assert same_text('\u2460', '1', compat=True) is True
+
+print('lower vs casefold:', 'Stra\u00dfe'.lower(), 'Stra\u00dfe'.casefold(), same_text_naive('Stra\u00dfe', 'STRASSE'))
+print('raw equality of e-acute forms:', 'e\u0301' == '\u00e9', len('e\u0301'), len('\u00e9'))
+print('homoglyph (Cyrillic a vs Latin a):', same_text('\u0430', 'a'), same_text('\u0430', 'a', compat=True))
+print('dotted capital I:', ascii('\u0130'.casefold()), same_text('\u0130', 'i'))
+print('ligature fi:', same_text('\ufb01', 'fi'))
+print('fullwidth A:', same_text('\uff21', 'a'), same_text('\uff21', 'a', compat=True))
+print('unidata version in this Python:', unicodedata.unidata_version)
+
+assert same_text('', '') and not same_text('a', '')
+assert same_text('\u00c5', 'A\u030a') and same_text('\u212b', '\u00e5')   # angstrom sign, A-ring
+assert same_text('a\u0323\u0301', 'a\u0301\u0323')                          # mark order is normalised
+assert same_text('\u03c2', '\u03a3') and same_text('\u00b2', '2', compat=True)
+
+pool = ['a', 'A', 'e', 'E', 's', 'S', 'i', 'I', 'k', 'K', '1', '\u00e9', '\u00c9', 'e\u0301', 'E\u0301',
+        '\u00df', '\u1e9e', 'ss', 'SS', '\u2460', '\ufb01', 'fi', '\uff21', '\u0130', '\u03c3', '\u03c2', '\u03a3',
+        '\u212a', '\u212b', '\u00e5', 'a\u030a', '\u0345', '\u1f80', '\u2126', '\u03c9', '\u01c5', '\u00b2', '2']
+rng = random.Random(30)
+cases = diff_compat = 0
+for _ in range(6000):
+    a = ''.join(rng.choice(pool) for _ in range(rng.randint(0, 3)))
+    b = ''.join(rng.choice(pool) for _ in range(rng.randint(0, 3)))
+    for compat in (False, True):
+        assert same_text(a, b, compat) == same_text_standard(a, b, compat), (a, b, compat)
+    assert same_text(a, a) and same_text(a, a, True)                    # reflexive
+    assert same_text(a, b) == same_text(b, a)                           # symmetric
+    if same_text(a, b):
+        assert same_text(a, b, True)                                    # canonical match implies compat match
+    else:
+        diff_compat += same_text(a, b, True)
+    cases += 1
+print('pool cross-check against the standard formulas passed:', cases, 'cases;',
+      'compat matched where canonical did not:', diff_compat > 0)
+
+# Exhaustive over single code points (about 1.1 million), both modes.
+# (The comparison below pits NFC/NFKC of the 3-step key against the standard's NFD/NFKD formulas, normalised the same way.)
+bad = 0
+for cp in range(0x110000):
+    if 0xD800 <= cp < 0xE000:
+        continue
+    c = chr(cp)
+    if N('NFC', N('NFC', c).casefold()) != N('NFC', N('NFD', N('NFD', c).casefold())):
+        bad += 1
+    if N('NFKC', N('NFKC', c).casefold()) != N('NFKC', N('NFKD', N('NFKD', N('NFD', c).casefold()).casefold())):
+        bad += 1
+print('single code points where the 3-step key and the standard disagree:', bad)
+
+# Is the second normalise needed? Count code points where casefold output is not already normalised.
+need = sum(1 for cp in range(0x110000) if not 0xD800 <= cp < 0xE000
+           and N('NFC', N('NFC', chr(cp)).casefold()) != N('NFC', chr(cp)).casefold())
+print('code points where casefold output changes under a second NFC:', need)
+```
+
+**Output (my run):**
+```
+True
+True
+False
+True
+lower vs casefold: straße strasse False
+raw equality of e-acute forms: False 2 1
+homoglyph (Cyrillic a vs Latin a): False False
+dotted capital I: 'i\u0307' False
+ligature fi: True
+fullwidth A: False True
+unidata version in this Python: 15.1.0
+pool cross-check against the standard formulas passed: 6000 cases; compat matched where canonical did not: True
+single code points where the 3-step key and the standard disagree: 0
+code points where casefold output changes under a second NFC: 26
+```
+All four prompt examples are correct. The line `same_text('\u0130', 'i')` shows casefold turning dotted capital I into `'i'` plus a combining dot, so it is not equal to plain `'i'`; no locale rules apply.
+
+**Edge cases:**
+- Empty strings.
+- Strings with multiple combining marks (order matters; normalisation puts them in canonical order, so `'a\u0323\u0301'` and `'a\u0301\u0323'` become equal).
+- Final sigma `'\u03c2'` versus `'\u03c3'` and capital `'\u03a3'`: casefold maps all three to the same lowercase sigma.
+- Compatibility mode is lossy: `'\u00b2'` (superscript two) equals `'2'`. Do not use it where `x2` and `x` squared must stay different.
+- Unicode version: the answers for new or rare characters depend on the Unicode data in your Python build (here 15.1).
+
+**Follow-ups:**
+- *Why not `str.upper()` for comparison?* Same issue as `lower`; `casefold` is the tool designed for caseless matching.
+- *Should I store the folded key or the original?* Store the original for display and a normalised, case-folded key for uniqueness checks and lookups.
+- *Is that enough to stop spoofing?* No: homoglyphs from other scripts, zero-width characters and bidirectional controls need extra checks (confusables detection, restricting scripts).
+
+**Common mistakes:**
+- Using `lower()` for caseless matching.
+- Normalising only one side, or comparing different forms (NFC on one, NFD on the other).
+- Applying compatibility normalisation to data you will later display or store as the user's real text.
+- Forgetting that normalisation does not touch homoglyphs.
