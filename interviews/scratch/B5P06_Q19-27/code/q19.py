@@ -74,7 +74,9 @@ def swap_values(head):                   # the WRONG answer for this question: m
 def wrong_order(head):                   # step 2 before step 1: loses the rest of the list
     dummy = ListNode(0, head)
     prev = dummy
-    while prev.next and prev.next.next:
+    for _ in range(10):                  # step cap: the bug would loop forever
+        if not (prev.next and prev.next.next):
+            break
         a = prev.next
         b = a.next
         b.next = a                       # b's old next (the rest) is gone

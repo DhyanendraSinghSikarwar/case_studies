@@ -13,7 +13,8 @@ for n in range(10, 19):
     body_p = os.path.join(HERE, 'code', f'q{n}_body.py')
     md_p = os.path.join(HERE, 'md', f'q{n}.md')
     if not (os.path.exists(body_p) and os.path.exists(md_p)): print('missing Q', n); continue
-    code = pre + '\n' + open(body_p).read()
+    body = open(body_p).read()
+    code = body if body.startswith('# NOPRE') else pre + '\n' + body
     cp = os.path.join(HERE, 'code', f'q{n}.py'); open(cp, 'w').write(code)
     r = subprocess.run([sys.executable, '-I', cp], capture_output=True, text=True, timeout=300)
     if r.returncode != 0: print('Q', n, 'FAILED\n', r.stderr[-1500:]); continue

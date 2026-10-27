@@ -911,6 +911,26 @@ random cross-check ok (300 cases)
 
 **Asked at:** Linked-list pattern guides and question roundups (techinterview.org linked-list patterns page covering reverse, merge, cycle detection, fast-slow pointers and dummy nodes; a Substack linked-list prep post; techiedelight linked-list question list; a Questions100 linked-list category; DEV Community linked-list posts; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports | Standard-problem lists known to the editor (not found as an opened page; included on the editor's knowledge of widely circulated problem sets; indicative only, no company attribution)
 
+**Pattern:** One pointer walking a sorted list and comparing a node with its successor. Because the list is sorted, equal values sit in one run, so duplicates are always adjacent.
+
+**Say this first (1 line):** "Sorted means duplicates are neighbours. I compare `cur` with `cur.next`; if equal I unlink the successor and stay put, otherwise I advance."
+
+**Brute force:** Copy values into a Python list, build `[k for k, _ in groupby(arr)]`, and make a new list. O(n) time, O(n) space, new nodes. For an unsorted list you would need a set (Q27 in this part).
+
+**Optimal:**
+- `cur = head`. While `cur and cur.next`:
+  - if `cur.val == cur.next.val`: `cur.next = cur.next.next` (delete the successor, keep the FIRST node of the run). Do not advance: the new successor may be another copy.
+  - else `cur = cur.next`.
+- Why only the successor: sorted order means any later copy of `cur.val` is in the same run right after `cur`.
+- Why no dummy: the first node of the first run is never deleted, so the head never changes. For "remove all duplicated values" (Q24 in this part) the head itself may go, so a dummy is needed.
+- Not advancing after a delete matters: with [5,5,5], advancing after the first delete leaves [5,5] (the output shows this bug).
+
+**Complexity:** Time O(n): each step either advances `cur` or removes a node, so at most 2n steps. Space O(1).
+
+**Dry run:** [1,1,2,3,3]. cur=1, next=1 equal: unlink, list 1,2,3,3. cur=1, next=2 differ: advance. cur=2, next=3: advance. cur=3, next=3 equal: unlink. cur=3, next None: stop. Result [1,2,3].
+
+**Code:**
+```python
 import random
 
 class ListNode:
@@ -1002,7 +1022,12 @@ for _ in range(300):
     arr = sorted(random.randint(-5, 5) for _ in range(random.randint(0, 40)))
     assert run(arr) == brute(arr)
 assert run([7] * 300) == [7]
-print('random cross-check ok (300 cases + 300 equal values)')[1, 1, 2] -> [1, 2]
+print('random cross-check ok (300 cases + 300 equal values)')
+```
+
+**Output (my run):**
+```
+[1, 1, 2] -> [1, 2]
 [1, 1, 2, 3, 3] -> [1, 2, 3]
 [5, 5, 5] -> [5]
 [] -> []
@@ -1010,11 +1035,53 @@ print('random cross-check ok (300 cases + 300 equal values)')[1, 1, 2] -> [1, 2]
 exhaustive sorted lists ok: 330
 buggy version on [5, 5, 5]: [5, 5]
 random cross-check ok (300 cases + 300 equal values)
+```
+
+**Edge cases:**
+- Empty list and single node: loop does not run.
+- All equal (one long run): one node survives, and it is the first one.
+- No duplicates: nothing changes.
+- Duplicates at the end: `cur.next` becomes None and the loop ends.
+
+**Follow-ups:**
+- Keep none of the duplicated values? Q24 in this part: dummy plus `prev` that trails the last kept node.
+- Unsorted input? Use a set of seen values, or O(n^2) scanning (Q27 in this part).
+- Keep the LAST of each run? Skip forward through the run and keep the last node, relinking the previous kept node to it; the head may change, so use a dummy.
+
+**Common mistakes:**
+- Advancing after deleting.
+- Writing `while cur.next` without checking `cur` (crash on an empty list).
+- Comparing nodes with `==`; compare `.val`.
+- Calling it "O(1) time" because no extra structure is used; it is O(n) time.
 
 ### Q16 ⭐⭐ 🟢 The dummy (sentinel) node technique: remove all nodes with a given value. Nodes are `ListNode(val, next)`. Given a list (0 <= len <= 10^4) and an integer `val`, delete every node whose value equals `val` and return the head, in place. Write it with a dummy node in front, and then without one (a head-skipping loop followed by the main loop) and compare how much special-case code each needs. State what a dummy node costs (one extra node, O(1)) and name two other list problems where it removes a head case. Example: [1,2,6,3,4,5,6], val=6 -> [1,2,3,4,5]; [], val=1 -> []; [7,7,7], val=7 -> []; [1,2], val=3 -> [1,2]; [6,1], val=6 -> [1].
 
 **Asked at:** Linked-list pattern guides and question roundups (techinterview.org linked-list patterns page covering reverse, merge, cycle detection, fast-slow pointers and dummy nodes; a Substack linked-list prep post; techiedelight linked-list question list; a Questions100 linked-list category; DEV Community linked-list posts; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports | Standard-problem lists known to the editor (not found as an opened page; included on the editor's knowledge of widely circulated problem sets; indicative only, no company attribution)
 
+**Pattern:** Dummy (sentinel) node. A fake node in front of the head turns "delete the head" into the same operation as "delete any other node".
+
+**Say this first (1 line):** "I put a dummy before the head, keep `prev` on the node before the one I am testing, and return `dummy.next`. The head case disappears."
+
+**Brute force:** Collect the values that are not `val` into a Python list and rebuild: O(n) time, O(n) space, new nodes. Or the no-dummy in-place version below, which is correct but needs a special loop.
+
+**Optimal (dummy):**
+- `dummy = ListNode(0, head)`, `prev = dummy`.
+- While `prev.next`: if `prev.next.val == val`, set `prev.next = prev.next.next` (do not advance); else `prev = prev.next`.
+- Return `dummy.next`. If the head was removed, `dummy.next` already points to the new head.
+
+**Without a dummy:**
+- Loop 1: `while head and head.val == val: head = head.next` (skip matching heads).
+- Loop 2: `cur = head`; `while cur and cur.next:` same test on `cur.next`.
+- It is two loops, and the empty result needs the `cur and` guard. The dummy version is one loop and one return.
+
+**Cost of the dummy:** one extra node, so O(1) space. It is created once and is not part of the result.
+
+**Complexity:** Time O(n), one pass. Space O(1). Both versions reuse the nodes (the code checks identity).
+
+**Dry run:** [6,1], val=6. dummy -> 6 -> 1. prev=dummy, prev.next is 6: match, dummy.next = 1. prev.next is 1: no match, prev = node 1. prev.next is None: stop. Return dummy.next = node 1. Result [1].
+
+**Code:**
+```python
 import random
 
 class ListNode:
@@ -1099,9 +1166,330 @@ for _ in range(500):
     for f in (remove_with_dummy, remove_without_dummy):
         assert run(f, arr, val) == brute(arr, val)
 assert run(remove_with_dummy, [9] * 10**4, 9) == [] and run(remove_without_dummy, [9] * 10**4, 9) == []
-print('random cross-check ok (500 cases + 10^4 equal values)')[1, 2, 6, 3, 4, 5, 6] remove 6 -> [1, 2, 3, 4, 5]
+print('random cross-check ok (500 cases + 10^4 equal values)')
+```
+
+**Output (my run):**
+```
+[1, 2, 6, 3, 4, 5, 6] remove 6 -> [1, 2, 3, 4, 5]
 [] remove 1 -> []
 [7, 7, 7] remove 7 -> []
 [1, 2] remove 3 -> [1, 2]
 [6, 1] remove 6 -> [1]
 random cross-check ok (500 cases + 10^4 equal values)
+```
+
+**Edge cases:**
+- Empty list: return None.
+- Every node matches: result is empty (`dummy.next` is None).
+- Matches at the head, in the middle, at the tail.
+- No match.
+- Long run of matches (10^4): iteration, not recursion, so no stack trouble.
+
+**Follow-ups:**
+- Other problems where a dummy removes a head case? Merge two sorted lists (Q3), remove the n-th from the end (Q5), remove all duplicated values (Q24), partition (Q21), all in this part.
+- Recursive version? `head.next = f(head.next, val); return head.next if head.val == val else head`; neat, but depth n (see Q26 in this part).
+- Is the dummy always worth it? If the head can never change (Q15), you can skip it.
+
+**Common mistakes:**
+- Advancing `prev` after a delete, which skips the next node when matches are adjacent.
+- Returning `head` instead of `dummy.next`.
+- Forgetting the dummy when the head can be deleted.
+- In the no-dummy version, testing `cur.val` instead of `cur.next.val` in loop 2, so you cannot unlink.
+
+### Q17 ⭐⭐ 🟢 Python specifics: the node class, identity versus equality, building and printing lists. Write `ListNode` with `__slots__ = ('val', 'next')` and helper functions `from_array(arr)` (returns the head, building from the back or with a dummy), `to_array(head)` and a cycle-safe `show(head)`. Explain what `__slots__` removes (the per-instance `__dict__`, so no new attributes can be added) and why it saves memory; show that `a == b` is False for two nodes with equal values (default equality is identity) and say what `is` tests; explain why a `show` that loops `while node:` hangs on a cyclic list and how a set of visited ids or a step cap fixes it. `show` must print values joined by ' -> ' and end with ' -> None' for a normal list, 'None' for an empty list, and for a cycle stop at the repeated node and end with ' -> (cycle to index k)' where k is the index of the repeated node. Example: show of [1,2,3] -> '1 -> 2 -> 3 -> None'; show of [] -> 'None'; show of [1,2,3] with the tail pointing back to index 1 -> '1 -> 2 -> 3 -> (cycle to index 1)'; to_array(from_array([4,5])) -> [4,5].
+
+**Asked at:** Python recursion-limit explainers (note.nkmk.me, educative.io, DEV Community recursion-limit posts; snippets only, not opened: default limit 1000, raising it risks crashes, iteration preferred); __slots__ behaviour not found in any snippet and was verified by running Python 3.13 in the sandbox | Linked-list pattern guides and question roundups (techinterview.org linked-list patterns page covering reverse, merge, cycle detection, fast-slow pointers and dummy nodes; a Substack linked-list prep post; techiedelight linked-list question list; a Questions100 linked-list category; DEV Community linked-list posts; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports
+
+**Pattern:** Python housekeeping for list problems: a lean node class, identity versus equality, and test helpers that cannot hang. This is the toolkit every other question in this part uses.
+
+**Say this first (1 line):** "`__slots__` drops the per-instance dict, `==` on plain objects is identity, and any print or compare on a list that might have a cycle needs a visited set or a step cap."
+
+**Brute force:** A plain class (`self.val = val; self.next = next`) with a `show` that loops `while node:`. It works for normal lists and hangs forever on a cycle. Wrong for test helpers.
+
+**Optimal:**
+- `ListNode` with `__slots__ = ('val', 'next')`. Each instance has fixed storage for those two fields and no `__dict__`, so instances are smaller and a typo such as `node.nxt = x` raises `AttributeError` instead of silently creating an attribute.
+- `from_array(arr)`: build from the back (`head = ListNode(v, head)` for v in reversed order), so there is no dummy and no tail pointer.
+- `to_array(head)`: walk and collect, with a length cap so a cycle fails loudly instead of hanging.
+- `show(head)`: walk with a dict `id(node) -> index`. When a node repeats, stop and print `-> (cycle to index k)` with k from the dict. Otherwise end with `-> None`. Empty list prints `None`.
+- Equality: a class without `__eq__` inherits identity equality, so two nodes with the same value are not `==`. `is` tests whether two names refer to the same object. `a == a` is True. That is why tests for in-place algorithms compare `id(node)` (or `is`), and compare values separately.
+- A step cap works too (stop after a known maximum length), but it needs a bound you trust. The visited dict needs no bound and also gives the index. An O(1)-space alternative uses Floyd's algorithm to find the cycle start index (Q6 in this part), shown in the code as `show_o1`.
+- Memory numbers in the output are from this sandbox and include the int object and the list slot. Use them as a rough comparison, not as a guarantee.
+
+**Complexity:** `from_array`, `to_array`, `show`: O(n) time. `show` uses O(n) space for the dict; `show_o1` uses O(1).
+
+**Dry run:** `show` on 1 -> 2 -> 3 with 3 pointing back to 2 (index 1). Visit 1 (index 0), 2 (index 1), 3 (index 2), then the next node is node 2, which is in the dict with index 1. Output `1 -> 2 -> 3 -> (cycle to index 1)`.
+
+**Code:**
+```python
+# NOPRE (this question defines its own node class and helpers)
+import random, sys, tracemalloc
+
+class ListNode:
+    __slots__ = ('val', 'next')            # no per-instance __dict__; only these two attributes exist
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def from_array(arr):                       # build from the back: no dummy needed, returns the head
+    head = None
+    for v in reversed(arr):
+        head = ListNode(v, head)
+    return head
+
+def to_array(head, cap=10**6):
+    out = []
+    while head is not None:
+        out.append(head.val)
+        head = head.next
+        assert len(out) <= cap, "cycle or runaway list"
+    return out
+
+def show(head):                            # cycle-safe: remember the index of each node seen
+    if head is None:
+        return 'None'
+    seen, parts, i = {}, [], 0
+    while head is not None:
+        if id(head) in seen:
+            return ' -> '.join(parts) + f' -> (cycle to index {seen[id(head)]})'
+        seen[id(head)] = i
+        parts.append(str(head.val))
+        head = head.next
+        i += 1
+    return ' -> '.join(parts) + ' -> None'
+
+def show_o1(head):                         # same output with O(1) extra space: Floyd, then find mu
+    slow = fast = head
+    while fast and fast.next:
+        slow, fast = slow.next, fast.next.next
+        if slow is fast:
+            mu, a = 0, head
+            while a is not slow:
+                a, slow, mu = a.next, slow.next, mu + 1
+            lam, p = 1, a.next
+            while p is not a:
+                p, lam = p.next, lam + 1
+            vals, p = [], head
+            for _ in range(mu + lam):
+                vals.append(str(p.val)); p = p.next
+            return ' -> '.join(vals) + f' -> (cycle to index {mu})'
+    return show(head)                      # no cycle: plain printing is safe
+
+def with_cycle(arr, pos):
+    head = from_array(arr)
+    nodes, p = [], head
+    while p:
+        nodes.append(p); p = p.next
+    nodes[-1].next = nodes[pos]
+    return head
+
+assert show(from_array([1, 2, 3])) == '1 -> 2 -> 3 -> None'
+assert show(None) == 'None'
+assert show(with_cycle([1, 2, 3], 1)) == '1 -> 2 -> 3 -> (cycle to index 1)'
+assert to_array(from_array([4, 5])) == [4, 5]
+print(show(from_array([1, 2, 3])))
+print(show(from_array([])))
+print(show(with_cycle([1, 2, 3], 1)))
+print(to_array(from_array([4, 5])))
+
+# identity versus equality
+a, b = ListNode(1), ListNode(1)
+print('a == b:', a == b, '| a is b:', a is b, '| a == a:', a == a)
+assert (a == b) is False and (a is b) is False
+
+# __slots__ behaviour
+class Plain:                               # same fields, ordinary class
+    def __init__(self, val=0, next=None):
+        self.val, self.next = val, next
+print('slots node has __dict__:', hasattr(a, '__dict__'), '| plain node has __dict__:', hasattr(Plain(), '__dict__'))
+try:
+    a.extra = 5
+except AttributeError as e:
+    print('new attribute on slots node:', type(e).__name__)
+
+# memory, sandbox-only numbers (they vary by Python version and platform)
+def bytes_per_node(cls, n=50_000):
+    tracemalloc.start()
+    nodes = [cls(i) for i in range(n)]
+    cur = tracemalloc.get_traced_memory()[0]
+    tracemalloc.stop()
+    return cur / n
+print('bytes per node incl. its int and list slot (sandbox only): slots %.0f, plain %.0f' % (bytes_per_node(ListNode), bytes_per_node(Plain)))
+assert bytes_per_node(ListNode) < bytes_per_node(Plain)
+
+# a naive loop never ends on a cycle: stop it by hand after 10**4 steps
+p, steps = with_cycle([1, 2, 3], 1), 0
+while p is not None and steps < 10**4:
+    p = p.next; steps += 1
+print('naive while node: still walking after', steps, 'steps')
+
+# seeded random cross-check: show vs show_o1 vs a brute-force string, over lists with and without cycles
+random.seed(17)
+for _ in range(500):
+    n = random.randint(0, 12)
+    arr = [random.randint(0, 3) for _ in range(n)]
+    if n and random.random() < 0.6:
+        pos = random.randint(0, n - 1)
+        head = with_cycle(arr, pos)
+        want = ' -> '.join(map(str, arr)) + f' -> (cycle to index {pos})'
+    else:
+        head = from_array(arr)
+        want = ' -> '.join(map(str, arr + [None])) if n else 'None'
+    assert show(head) == show_o1(head) == want
+print('random cross-check ok (500 cases)')
+```
+
+**Output (my run):**
+```
+1 -> 2 -> 3 -> None
+None
+1 -> 2 -> 3 -> (cycle to index 1)
+[4, 5]
+a == b: False | a is b: False | a == a: True
+slots node has __dict__: False | plain node has __dict__: True
+new attribute on slots node: AttributeError
+bytes per node incl. its int and list slot (sandbox only): slots 89, plain 129
+naive while node: still walking after 10000 steps
+random cross-check ok (500 cases)
+```
+
+**Edge cases:**
+- Empty list: `from_array([])` is None and `show` prints `None`.
+- Self-loop (single node pointing to itself): prints `1 -> (cycle to index 0)`.
+- Cycle that returns to the head (index 0).
+- Equal values everywhere: only identity can detect the cycle, never values.
+
+**Follow-ups:**
+- Why not `str(node)` for printing? The default repr is an address; write `show`.
+- Does `__slots__` help with subclasses or weak references? A subclass without its own `__slots__` gets a `__dict__` again; weak references need `'__weakref__'` in the slots.
+- Why does equality matter for tests? To assert "in place" you compare node identities before and after; comparing values would pass even when the algorithm built a new list.
+
+**Common mistakes:**
+- `while node:` printing with no guard.
+- Using `==` on nodes and expecting value equality.
+- Detecting a cycle by comparing values.
+- Building the list front-to-back with `head.next.next...` chains instead of a tail pointer or building from the back.
+
+### Q18 ⭐⭐ 🟡 Reverse a sublist between positions. Nodes are `ListNode(val, next)`. Given a list (1 <= len <= 500) and 1-based positions left <= right <= len, reverse only the nodes from position left to position right, in place, in one pass, and return the head. Use a dummy node, walk to the node before position left, then repeatedly move the node after the current tail of the reversed part to the front of that part ('head insertion'); explain why it is one pass and O(1) space, and why left == right is a no-op. Also say how the node-VALUES variant of the same problem (a candidate-reported Flipkart variant) changes the first step. Example: [1,2,3,4,5], left=2, right=4 -> [1,4,3,2,5]; [5], 1, 1 -> [5]; [3,5], 1, 2 -> [5,3]; [1,2,3], 1, 3 -> [3,2,1]; [1,2,3], 2, 2 -> [1,2,3].
+
+**Asked at:** Candidate-reported rounds on Naukri Code360 (an Amazon on-campus March 2021 entry listing flatten of a multilevel list with child pointers; an Amazon December 2021 entry tied to adding two numbers held as lists; Flipkart 2020 and 2021 entries naming reverse linked list, one with an O(n) time O(1) space follow-up and one solved first with a stack; plus a LeetCode discuss Flipkart SDE-1 June 2024 report of a Reverse Linked List II variant given node values instead of positions; snippets only, not opened; candidate-reported, unverified, not evidence of current practice) | Linked-list pattern guides and question roundups (techinterview.org linked-list patterns page covering reverse, merge, cycle detection, fast-slow pointers and dummy nodes; a Substack linked-list prep post; techiedelight linked-list question list; a Questions100 linked-list category; DEV Community linked-list posts; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports
+
+import random
+
+class ListNode:
+    __slots__ = ('val', 'next')
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def from_array(arr, pos=-1):
+    """Build a list from an array. Returns (head, nodes). pos >= 0 links the tail back to nodes[pos]."""
+    dummy = tail = ListNode()
+    nodes = []
+    for v in arr:
+        tail.next = ListNode(v)
+        tail = tail.next
+        nodes.append(tail)
+    if pos >= 0:
+        tail.next = nodes[pos]
+    return dummy.next, nodes
+
+def to_array(head, cap=10**5):
+    """Values from head; the cap guards against a cycle."""
+    out = []
+    while head is not None:
+        out.append(head.val)
+        head = head.next
+        assert len(out) <= cap, "cycle or runaway list"
+    return out
+
+def node_ids(head, cap=10**5):
+    """Identities of the nodes from head; the cap guards against a cycle."""
+    out = []
+    while head is not None:
+        out.append(id(head))
+        head = head.next
+        assert len(out) <= cap, "cycle or runaway list"
+    return out
+
+
+def brute(arr, left, right):           # slice reversal on a Python list
+    return arr[:left - 1] + arr[left - 1:right][::-1] + arr[right:]
+
+def reverse_between(head, left, right):    # one pass, O(1) space, in place
+    dummy = ListNode(0, head)
+    before = dummy
+    for _ in range(left - 1):          # stop on the node just before position left
+        before = before.next
+    tail = before.next                 # the node at position left; it ends up at the END of the reversed part
+    for _ in range(right - left):      # head insertion: move tail.next to the front of the part
+        moved = tail.next
+        tail.next = moved.next         # unlink moved
+        moved.next = before.next       # put it in front of the reversed part
+        before.next = moved
+    return dummy.next
+
+def reverse_between_values(head, a, b):
+    """Variant: reverse from the node holding value a to the node holding value b (values distinct, a before b).
+    Only the first step changes: find the positions by walking, then reuse the same function."""
+    pos, left, right, p = 1, None, None, head
+    while p:
+        if p.val == a and left is None:
+            left = pos
+        if p.val == b:
+            right = pos
+            break
+        p, pos = p.next, pos + 1
+    return reverse_between(head, left, right)
+
+def run(arr, left, right):
+    head, nodes = from_array(arr)
+    r = reverse_between(head, left, right)
+    ids = node_ids(r)
+    want_nodes = nodes[:left - 1] + nodes[left - 1:right][::-1] + nodes[right:]
+    assert ids == [id(n) for n in want_nodes]           # same objects, exactly this order
+    return to_array(r)
+
+for arr, l, r, want in (([1, 2, 3, 4, 5], 2, 4, [1, 4, 3, 2, 5]), ([5], 1, 1, [5]), ([3, 5], 1, 2, [5, 3]),
+                        ([1, 2, 3], 1, 3, [3, 2, 1]), ([1, 2, 3], 2, 2, [1, 2, 3])):
+    assert run(arr, l, r) == want == brute(arr, l, r)
+    print(arr, l, r, '->', want)
+
+# exhaustive: every length 1..9 and every 1 <= left <= right <= len
+count = 0
+for n in range(1, 10):
+    arr = list(range(10, 10 + n))
+    for l in range(1, n + 1):
+        for r in range(l, n + 1):
+            assert run(arr, l, r) == brute(arr, l, r)
+            count += 1
+print('exhaustive (length, left, right) triples ok:', count)
+
+# no-op when left == right: the very same list comes back
+head, nodes = from_array([1, 2, 3])
+assert reverse_between(head, 2, 2) is head and node_ids(head) == [id(n) for n in nodes]
+
+# value variant: [1,2,3,4,5], from value 2 to value 4
+head, _ = from_array([1, 2, 3, 4, 5])
+assert to_array(reverse_between_values(head, 2, 4)) == [1, 4, 3, 2, 5]
+random.seed(18)
+for _ in range(300):
+    n = random.randint(1, 30)
+    arr = random.sample(range(100), n)
+    i = random.randint(0, n - 1); j = random.randint(i, n - 1)
+    head, _ = from_array(arr)
+    assert to_array(reverse_between_values(head, arr[i], arr[j])) == brute(arr, i + 1, j + 1)
+    l = random.randint(1, n); r = random.randint(l, n)
+    dup = [random.randint(0, 3) for _ in range(n)]
+    assert run(dup, l, r) == brute(dup, l, r)
+print('value variant and random cross-check ok (300 cases)')
+head, _ = from_array(list(range(500)))
+assert to_array(reverse_between(head, 1, 500)) == list(range(499, -1, -1))
+print('n = 500, whole list ok')[1, 2, 3, 4, 5] 2 4 -> [1, 4, 3, 2, 5]
+[5] 1 1 -> [5]
+[3, 5] 1 2 -> [5, 3]
+[1, 2, 3] 1 3 -> [3, 2, 1]
+[1, 2, 3] 2 2 -> [1, 2, 3]
+exhaustive (length, left, right) triples ok: 165
+value variant and random cross-check ok (300 cases)
+n = 500, whole list ok

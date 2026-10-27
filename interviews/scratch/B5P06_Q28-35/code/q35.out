@@ -1,0 +1,7 @@
+[[7, None], [13, 0], [11, 4], [10, 2], [1, 0]] -> copy [[7, None], [13, 0], [11, 4], [10, 2], [1, 0]] | input after: [[7, None], [13, 0], [11, 4], [10, 2], [1, 0]]
+[[1, 1], [2, 1]] -> copy [[1, 1], [2, 1]] | input after: [[1, 1], [2, 1]]
+[[5, 0]] -> copy [[5, 0]] | input after: [[5, 0]]
+[] -> copy [] | input after: []
+self random: copy.random is copy -> True
+800 random lists: map copy and O(1) copy both give equal structure, no shared nodes, input restored by identity
+1000 nodes OK
