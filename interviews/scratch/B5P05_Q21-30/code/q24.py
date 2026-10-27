@@ -24,11 +24,11 @@ for arr, k, x, want in examples:
     assert k_closest(arr, k, x) == k_closest_brute(arr, k, x) == want, (arr, k, x)
     print(arr, "k =", k, "x =", x, "->", k_closest(arr, k, x))
 
-# Exhaustive uniqueness test. Three different tie-break rules must give the same VALUE list:
-#   (1) distance then smaller value, (2) distance then smaller index, (3) distance then LARGER index.
-# Equal values at equal distance are interchangeable, so the list of values is unique.
+# Exhaustive uniqueness test. The stated rule is: distance, then smaller value. Three ways to apply it must give
+# the same VALUE list: (1) the value-keyed sort above, (2) distance then smaller INDEX (same thing on a sorted list),
+# (3) distance, then value, then LARGER index (equal values at equal distance are interchangeable).
 def by_index(arr, k, x, reverse_index):
-    order = sorted(range(len(arr)), key=lambda i: (abs(arr[i] - x), -i if reverse_index else i))
+    order = sorted(range(len(arr)), key=(lambda i: (abs(arr[i] - x), arr[i], -i)) if reverse_index else (lambda i: (abs(arr[i] - x), i)))
     return sorted(arr[i] for i in order[:k])
 
 

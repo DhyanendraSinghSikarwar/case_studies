@@ -68,8 +68,9 @@ for _ in range(200):
     assert row == sorted(row, reverse=True)
 print("monotone check: can_place(d) is True then False in d (200 seeded cases)")
 
-print("lower mid + lo = mid never finishes on [1,2], c=2:", stuck_with_lower_mid([1, 2], 2))
-assert stuck_with_lower_mid([1, 2], 2) is True
+print("lower mid + lo = mid never finishes on [1,2,3,4,9], c=2:", stuck_with_lower_mid([1, 2, 3, 4, 9], 2))
+assert stuck_with_lower_mid([1, 2, 3, 4, 9], 2) is True
+assert aggressive_cows([1, 2, 3, 4, 9], 2) == 8
 
 # edge cases
 assert aggressive_cows([1, 2], 2) == 1

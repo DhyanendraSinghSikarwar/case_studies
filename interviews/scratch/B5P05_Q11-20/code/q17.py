@@ -64,12 +64,10 @@ for n in (100, 1000, 5000):
     found, steps = search_rot_dup([1] * n, 2)
     print("all ones, n=%d, target 2: found=%s, loop steps=%d" % (n, found, steps))
     assert not found and steps == (n + 1) // 2
-# another bad shape: one odd element hidden away from mid
-n = 5000
-nums = [1] * n
-nums[1] = 0                                 # rotated [0,1,1,...] style with the 0 near the front
-found, steps = search_rot_dup(nums, 0)
-print("5000 ones with a 0 at index 1, target 0: found=%s, loop steps=%d" % (found, steps))
+# one odd element (a 0) in a sea of ones, target 0 present: worst position over all placements
+n = 1000
+worst = max(search_rot_dup([1] * p + [0] + [1] * (n - 1 - p), 0)[1] for p in range(n))
+print("1000 ones with one 0, target 0 present: worst loop steps over all positions =", worst)
 # distinct values: log steps
 found, steps = search_rot_dup(list(range(2500, 5000)) + list(range(2500)), 7777)
 print("5000 distinct rotated, absent target: steps =", steps)

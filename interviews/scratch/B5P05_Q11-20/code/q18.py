@@ -60,7 +60,7 @@ print("seeded random check: 500 cases agree")
 for n in (1000, 5000):
     print("all equal, n=%d: loop steps = %d" % (n, find_min_dup([4] * n)[1]))
     assert find_min_dup([4] * n)[1] == n - 1
-nums = [1] * 4999 + [0] if False else [10] * 5000
+nums = [10] * 5000
 nums[2500] = 1
 print("5000 tens with one 1 hidden mid-array: min, steps =", find_min_dup(nums))
 print("5000 distinct rotated: steps =", find_min_dup(list(range(2500, 5000)) + list(range(2500)))[1])
