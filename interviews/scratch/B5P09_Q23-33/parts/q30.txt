@@ -17,7 +17,7 @@
 **Dry run:** `deadends=['8888'], target='0009'`.
 - Start `'0000'`, 0 moves. Neighbours: `'1000'`, `'9000'`, `'0100'`, `'0900'`, `'0010'`, `'0090'`, `'0001'`, `'0009'` (all 1 move).
 - The target `'0009'` is one of them (the last wheel turned down from 0 to 9 by wrap-around). Pop it at 1 move: answer 1.
-- Example 1 (answer 6): the direct 4-move routes to `'0202'` all pass through `'0201'` or `'0102'`, which are dead (and `'0101'` blocks the diagonal). One shortest route found by BFS is 0000, 1000, 1100, 1200, 1201, 1202, 0202: six moves.
+- Example 1 (answer 6): each of the six 4-move routes to `'0202'` hits a dead end (`'0101'`, `'0102'` or `'0201'`). One shortest route found by BFS is 0000, 1000, 1100, 1200, 1201, 1202, 0202: six moves.
 
 **Code:**
 @@CODE@@

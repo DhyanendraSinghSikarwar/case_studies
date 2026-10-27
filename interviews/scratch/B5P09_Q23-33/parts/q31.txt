@@ -1,0 +1,52 @@
+**Pattern:** Topological sort by depth-first search: reverse postorder, with three colours (new, on the path, finished) for cycle detection. Iterative, because the input is deep.
+
+**Say this first (1 line):** "A node is appended after everything reachable from it has finished, so reversing that finish order puts every node before its successors. An edge into a node still on the current path is a cycle. The DFS must be iterative: a 10^5-node chain breaks CPython's recursion limit of 1000."
+
+**Brute force:** The textbook recursive DFS gives the same list (it is the specification in the code), but a path of 5000 nodes already raises `RecursionError`, so it fails the stated sizes. Another brute force is to try every permutation of the nodes and check all edges, O(n! * E), used mentally for n <= 8. For the cycle test the code also compares with Kahn's algorithm.
+
+**Optimal:**
+- `color`: 0 new, 1 on the current DFS path, 2 finished. `post` is the list of finished nodes.
+- For each start node `s` in ascending order: if new, mark 1 and push a frame `(s, iterator over adj[s])`.
+- Loop on the top frame. Take the next out-neighbour `v` from its iterator:
+  - `color[v] == 1`: back edge, so there is a cycle: return `[]`. This includes a self loop.
+  - `color[v] == 0`: mark 1, push a frame for `v`, `break` out of the `for` (go deeper). The iterator keeps its position, so when `v` finishes we continue with the next edge.
+  - `color[v] == 2`: already finished, ignore.
+- If the iterator is exhausted (the `for ... else` branch), `u` is finished: mark 2, append to `post`, pop the frame.
+- Return `post[::-1]`.
+- Why reverse postorder is topological: take an edge `u -> v` in an acyclic graph. When DFS first examines the edge, `v` is either new (then `v` finishes before `u` does, since `u` is still open), or already finished (so `v` finished before `u`). A third possibility, `v` on the path, is a cycle and has been excluded. So in every case `v` is finished before `u`, and in the reversed list `u` comes before `v`.
+- Why the order generally differs from Kahn's: Kahn emits nodes as their in-degrees reach 0, which is a breadth-first flavour, ascending by label here; DFS order depends on the visiting order and ends with the last start node first (the empty graph gives `[2, 1, 0]`, Kahn gives `[0, 1, 2]`). Both are valid topological orders. The code counts the graphs where they differ (364 of the 572 acyclic graphs tested).
+- The checker accepts exactly this list, so the deterministic rules matter: start nodes ascending, out-edges in input order, post appended on finish, final reversal.
+
+**Complexity:** Time O(V + E): each node gets one frame and each edge is examined once through the iterator. Space O(V + E) for the adjacency lists, colours, the explicit stack (up to V frames) and `post`.
+
+**Dry run:** `n=4, edges=[[0,1],[0,2],[1,3],[2,3]]`.
+- Start 0: colour 1. Edges of 0: 1, then 2. Go to 1 (colour 1).
+- Node 1: edge to 3, new, go to 3. Node 3 has no edges: finish, `post=[3]`.
+- Back in 1: no more edges, finish, `post=[3,1]`.
+- Back in 0: next edge to 2, new, go to 2. Edge 2->3: 3 is finished, ignore. Finish 2: `post=[3,1,2]`. Finish 0: `post=[3,1,2,0]`.
+- Starts 1, 2, 3 are already done. Reverse: `[0,2,1,3]`, the prompt's answer. Kahn would give `[0,1,2,3]`.
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- Self loop: the neighbour is the node itself with colour 1, so `[]`.
+- No edges: all nodes isolated, order `[n-1, ..., 0]` (reverse of the start order).
+- A cycle that is only reachable from a later start node is still found, since every unvisited node becomes a start.
+- A cycle that sits next to a valid part (the 3-cycle example) returns `[]`, not a partial order.
+- Repeated edges: the second one sees colour 2 or 1 and behaves correctly (tested with repeats on 3 nodes).
+- Deep chains (2 * 10^5 nodes, both directions) run without recursion.
+
+**Follow-ups:**
+- Can I raise the recursion limit instead? `sys.setrecursionlimit` lets the interpreter try deeper, but each frame still uses C stack and a very deep chain can crash the process; the explicit stack is the safe fix. Part 7 Q35 covers the same trap for skewed trees.
+- Why two colours are not enough: a visited flag cannot tell a back edge (cycle) from an edge to an already finished node (harmless cross or forward edge). Both look "visited".
+- DFS or Kahn? Kahn gives levels (used in Q24) and the cycle check is a count; DFS gives a canonical order and generalises to strongly connected components (Part 14).
+
+**Common mistakes:**
+- Appending to `post` when a node is pushed instead of when it finishes.
+- Forgetting to reverse.
+- A single `visited` set for cycle detection (false cycles on diamonds like 0->1, 0->2, 1->3, 2->3).
+- Processing the stack as plain "pop and push all neighbours": that gives a different order and does not know when a node finishes.

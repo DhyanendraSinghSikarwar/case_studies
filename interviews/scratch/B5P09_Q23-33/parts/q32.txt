@@ -1,0 +1,43 @@
+**Pattern:** State-space BFS: each configuration is a node, each legal move is an edge, all edges cost one move.
+
+**Say this first (1 line):** "Flatten the board to a tuple so it is hashable, BFS from the start to the goal with a visited set. There are only 720 boards, so it is instant, and exactly half of them cannot reach the goal."
+
+**Brute force:** DFS or random walks do not give the minimum and can loop forever without a visited set. A second exact method is one BFS backwards from the goal over all boards: moves are reversible, so the distance from the goal to a board equals the distance from the board to the goal. That gives the whole answer table at once, and it is the checker in the code (all 720 boards agree).
+
+**Optimal:**
+- State: the board read row by row as a 6-tuple, for example `(4, 1, 2, 5, 0, 3)`. Goal: `(1, 2, 3, 4, 5, 0)`.
+- Neighbours of the blank: a precomputed table of adjacent positions for the 2 x 3 shape (position 0 touches 1 and 3, position 1 touches 0, 2 and 4, and so on). Swap the blank with each neighbour to get the next board.
+- BFS with a `deque` of `(state, moves)` and a `seen` set. First time the goal appears, its move count is the minimum, because every move costs 1. If the queue empties without the goal, return -1.
+- Why 720 states: the 6 cells hold 6 distinct values, so 6! = 720 boards.
+- Why exactly half are unreachable: look at the 5 numbered tiles read row by row and count inversions (pairs in the wrong order). Sliding a tile horizontally does not change the reading order. Sliding a tile vertically jumps it over exactly 2 other tiles on a 3-wide board, which changes the inversion count by 0 or +-2, so the parity never changes. The goal has 0 inversions (even), so only even-inversion boards are reachable. The code verifies on all 720 boards that "reachable" and "even inversions" are the same set: 360 and 360. Example 2 (`1 2 3 5 4`, one inversion) is therefore -1.
+- Bigger boards: 3 x 3 has 9! = 362,880 boards (181,440 reachable); BFS still fits in memory (the code runs it, hardest board 31 moves). 4 x 4 has 16! = about 2 * 10^13 boards, so plain BFS is hopeless: use A* or IDA* with the Manhattan-distance heuristic (or pattern databases), which explores only promising boards.
+
+**Complexity:** Time O(S * b) with S <= 720 states and branching factor b <= 3, so at most 2160 successor checks; each builds a 6-tuple, O(6). Space O(S) for `seen` and the queue. For an n x m board: S = (nm)!, so factorial growth.
+
+**Dry run:** `[[4,1,2],[5,0,3]]` -> flat `(4,1,2,5,0,3)`, answer 5.
+- Blank at position 4. One shortest route (found by the BFS): slide 5 right -> `(4,1,2,0,5,3)`; slide 4 down -> `(0,1,2,4,5,3)`; slide 1 left -> `(1,0,2,4,5,3)`; slide 2 left -> `(1,2,0,4,5,3)`; slide 3 up -> `(1,2,3,4,5,0)`.
+- That is 5 moves. BFS tries all boards at distance 1, 2, ..., and the goal first appears at level 5.
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- Already solved: 0 moves (checked before the loop, so no queue work).
+- One move away: 1.
+- Unsolvable (odd inversions): the search exhausts all 360 reachable boards and returns -1.
+- Hardest solvable board: 21 moves. The code lists how many boards sit at each distance.
+- Input as lists of lists: convert to a tuple, lists are not hashable and cannot go in a set.
+
+**Follow-ups:**
+- Print the moves? Store a parent pointer per state and walk it back from the goal.
+- Test solvability without search? The inversion parity rule for odd width (this 2 x 3 board and the 3 x 3 puzzle); for even width the blank's row also matters.
+- Bidirectional BFS? Meets in the middle and cuts nodes explored; on 720 states it is not needed, on larger ones it helps.
+
+**Common mistakes:**
+- Using a list as the state (unhashable) or mutating a shared list between neighbours (copy before swapping).
+- Marking states seen when popped, which queues duplicates.
+- Swapping the wrong pair: the blank swaps with a neighbour, never two tiles with each other.
+- Hard-coding the answer to -1 when the queue drains, but forgetting the case where the start already equals the goal.

@@ -1244,7 +1244,7 @@ edge asserts passed
 **Dry run:** `deadends=['8888'], target='0009'`.
 - Start `'0000'`, 0 moves. Neighbours: `'1000'`, `'9000'`, `'0100'`, `'0900'`, `'0010'`, `'0090'`, `'0001'`, `'0009'` (all 1 move).
 - The target `'0009'` is one of them (the last wheel turned down from 0 to 9 by wrap-around). Pop it at 1 move: answer 1.
-- Example 1 (answer 6): the shortest route is 0000 -> 1000 -> 1100 -> 1200 -> 1201 -> 0201 is dead, so the path goes around; BFS finds a length 6 route by trying all neighbours level by level (the code confirms 6).
+- Example 1 (answer 6): each of the six 4-move routes to `'0202'` hits a dead end (`'0101'`, `'0102'` or `'0201'`). One shortest route found by BFS is 0000, 1000, 1100, 1200, 1201, 1202, 0202: six moves.
 
 **Code:**
 ```python
@@ -1408,3 +1408,219 @@ edge asserts passed
 - Forgetting the wrap-around (`(d + 1) % 10`, `(d + 9) % 10`).
 - Not checking the start against the dead ends.
 - Using a list for `deadends` lookups (O(500) per check instead of O(1)); convert to a set once.
+
+### Q31 ⭐⭐ 🟡 Topological sort by DFS (reverse postorder). `n` nodes 0..n-1 (1 <= n <= 10^5) and `edges` a list of directed [u, v] (0 <= len <= 2*10^5; self loops possible). Run an iterative three-colour DFS: loop over start nodes 0, 1, ..., n-1 in ascending order, explore each node's out-edges in input order, append a node to `post` when it finishes, and return `post` reversed. If any edge reaches a node currently on the DFS path, return []. This order is deterministic, and the checker accepts exactly this list. Explain why reverse postorder puts every edge u -> v with u before v, and why the order generally differs from Kahn's. Sizes are chosen so that a recursive DFS would exceed CPython's default recursion limit of 1000, so an iterative method (queue or explicit stack) is required. Example: n=4, edges=[[0, 1], [0, 2], [1, 3], [2, 3]] -> [0, 2, 1, 3]; n=3, edges=[[0, 1], [1, 2], [2, 0]] -> []; n=3, edges=[] -> [2, 1, 0]; n=5, edges=[[3, 1], [4, 1], [4, 0], [2, 3]] -> [4, 2, 3, 1, 0].
+**Asked at:** Graph pattern guides and lists (techinterview.org graph interview patterns and comprehensive graph guides, DesignGurus common graph-traversal questions, Techie Delight graph practice list; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Topological sort by depth-first search: reverse postorder, with three colours (new, on the path, finished) for cycle detection. Iterative, because the input is deep.
+
+**Say this first (1 line):** "A node is appended after everything reachable from it has finished, so reversing that finish order puts every node before its successors. An edge into a node still on the current path is a cycle. The DFS must be iterative: a 10^5-node chain breaks CPython's recursion limit of 1000."
+
+**Brute force:** The textbook recursive DFS gives the same list (it is the specification in the code), but a path of 5000 nodes already raises `RecursionError`, so it fails the stated sizes. Another brute force is to try every permutation of the nodes and check all edges, O(n! * E), used mentally for n <= 8. For the cycle test the code also compares with Kahn's algorithm.
+
+**Optimal:**
+- `color`: 0 new, 1 on the current DFS path, 2 finished. `post` is the list of finished nodes.
+- For each start node `s` in ascending order: if new, mark 1 and push a frame `(s, iterator over adj[s])`.
+- Loop on the top frame. Take the next out-neighbour `v` from its iterator:
+  - `color[v] == 1`: back edge, so there is a cycle: return `[]`. This includes a self loop.
+  - `color[v] == 0`: mark 1, push a frame for `v`, `break` out of the `for` (go deeper). The iterator keeps its position, so when `v` finishes we continue with the next edge.
+  - `color[v] == 2`: already finished, ignore.
+- If the iterator is exhausted (the `for ... else` branch), `u` is finished: mark 2, append to `post`, pop the frame.
+- Return `post[::-1]`.
+- Why reverse postorder is topological: take an edge `u -> v` in an acyclic graph. When DFS first examines the edge, `v` is either new (then `v` finishes before `u` does, since `u` is still open), or already finished (so `v` finished before `u`). A third possibility, `v` on the path, is a cycle and has been excluded. So in every case `v` is finished before `u`, and in the reversed list `u` comes before `v`.
+- Why the order generally differs from Kahn's: Kahn emits nodes as their in-degrees reach 0, which is a breadth-first flavour, ascending by label here; DFS order depends on the visiting order and ends with the last start node first (the empty graph gives `[2, 1, 0]`, Kahn gives `[0, 1, 2]`). Both are valid topological orders. The code counts the graphs where they differ (364 of the 572 acyclic graphs tested).
+- The checker accepts exactly this list, so the deterministic rules matter: start nodes ascending, out-edges in input order, post appended on finish, final reversal.
+
+**Complexity:** Time O(V + E): each node gets one frame and each edge is examined once through the iterator. Space O(V + E) for the adjacency lists, colours, the explicit stack (up to V frames) and `post`.
+
+**Dry run:** `n=4, edges=[[0,1],[0,2],[1,3],[2,3]]`.
+- Start 0: colour 1. Edges of 0: 1, then 2. Go to 1 (colour 1).
+- Node 1: edge to 3, new, go to 3. Node 3 has no edges: finish, `post=[3]`.
+- Back in 1: no more edges, finish, `post=[3,1]`.
+- Back in 0: next edge to 2, new, go to 2. Edge 2->3: 3 is finished, ignore. Finish 2: `post=[3,1,2]`. Finish 0: `post=[3,1,2,0]`.
+- Starts 1, 2, 3 are already done. Reverse: `[0,2,1,3]`, the prompt's answer. Kahn would give `[0,1,2,3]`.
+
+**Code:**
+```python
+import itertools
+import random
+import sys
+from collections import deque
+
+random.seed(31)
+
+def dfs_topo(n, edges):
+    """Iterative three-colour DFS. 0 = new, 1 = on the current path, 2 = finished. Returns reverse postorder or [] on a cycle."""
+    adj = [[] for _ in range(n)]
+    for u, v in edges:
+        adj[u].append(v)
+    color = [0] * n
+    post = []
+    for s in range(n):                                   # start nodes in ascending order
+        if color[s]:
+            continue
+        color[s] = 1
+        stack = [(s, iter(adj[s]))]                      # each frame remembers how far we got in its edge list
+        while stack:
+            u, it = stack[-1]
+            for v in it:                                 # resumes where it left off
+                if color[v] == 1:                        # edge to a node on the path: cycle (also catches self loops)
+                    return []
+                if color[v] == 0:
+                    color[v] = 1
+                    stack.append((v, iter(adj[v])))
+                    break                                # go deeper; come back to this frame later
+            else:                                        # edge list exhausted: u is finished
+                color[u] = 2
+                post.append(u)
+                stack.pop()
+    return post[::-1]
+
+def dfs_topo_recursive(n, edges):
+    """Textbook recursive version: the specification for the order (small n only, or it hits the recursion limit)."""
+    adj = [[] for _ in range(n)]
+    for u, v in edges:
+        adj[u].append(v)
+    color = [0] * n
+    post = []
+    cyc = [False]
+    def go(u):
+        color[u] = 1
+        for v in adj[u]:
+            if color[v] == 1:
+                cyc[0] = True
+            elif color[v] == 0:
+                go(v)
+        color[u] = 2
+        post.append(u)
+    for s in range(n):
+        if color[s] == 0:
+            go(s)
+    return [] if cyc[0] else post[::-1]
+
+def kahn(n, edges):
+    adj = [[] for _ in range(n)]
+    indeg = [0] * n
+    for u, v in edges:
+        adj[u].append(v)
+        indeg[v] += 1
+    q = deque(i for i in range(n) if indeg[i] == 0)
+    out = []
+    while q:
+        u = q.popleft()
+        out.append(u)
+        for v in adj[u]:
+            indeg[v] -= 1
+            if indeg[v] == 0:
+                q.append(v)
+    return out if len(out) == n else []
+
+def is_topological(n, edges, order):
+    pos = {x: i for i, x in enumerate(order)}
+    return len(order) == n and len(pos) == n and all(pos[u] < pos[v] for u, v in edges)
+
+for n, e, want in [(4, [[0, 1], [0, 2], [1, 3], [2, 3]], [0, 2, 1, 3]), (3, [[0, 1], [1, 2], [2, 0]], []),
+                   (3, [], [2, 1, 0]), (5, [[3, 1], [4, 1], [4, 0], [2, 3]], [4, 2, 3, 1, 0])]:
+    got = dfs_topo(n, e)
+    assert got == want == dfs_topo_recursive(n, e), (n, e, got, want)
+    print(n, e, '->', got, '| Kahn gives', kahn(n, e))
+
+# ---- the recursion limit: a 5000-node path
+n = 5000
+path = [[i, i + 1] for i in range(n - 1)]
+try:
+    dfs_topo_recursive(n, path)
+except RecursionError:
+    print('recursive DFS on a', n, 'node path -> RecursionError (limit', sys.getrecursionlimit(), ')')
+assert dfs_topo(n, path) == list(range(n))
+n = 2 * 10 ** 5
+path = [[i, i + 1] for i in range(n - 1)]
+assert dfs_topo(n, path) == list(range(n))
+assert dfs_topo(n, [[i + 1, i] for i in range(n - 1)]) == list(range(n - 1, -1, -1))
+assert dfs_topo(n, path + [[n - 1, 0]]) == []                           # one back edge closes the cycle
+print('iterative: 2*10^5-node path, its reverse, and the path closed into a cycle all handled')
+
+# ---- exhaustive: every edge SET on n <= 4 (self loops included for n <= 3), plus ordered edge lists with repeats on n = 3
+cnt = cyc = differs = 0
+for n, loops in [(1, True), (2, True), (3, True), (4, False)]:
+    pairs = [(a, b) for a in range(n) for b in range(n) if loops or a != b]
+    for mask in range(1 << len(pairs)):
+        e = [list(p) for i, p in enumerate(pairs) if mask >> i & 1]
+        r = dfs_topo(n, e)
+        assert r == dfs_topo_recursive(n, e), (n, e)
+        k = kahn(n, e)
+        assert (r == []) == (k == []), (n, e)                           # both detect exactly the cyclic graphs
+        if r:
+            assert is_topological(n, e, r) and is_topological(n, e, k)
+            differs += r != k
+        else:
+            cyc += 1
+        cnt += 1
+print('exhaustive on', cnt, 'graphs:', cyc, 'cyclic ->', '[]; every acyclic one gives a valid order equal to the recursive DFS;',
+      'DFS order differs from Kahn order on', differs)
+opts = [(a, b) for a in range(3) for b in range(3)]
+for k in range(4):
+    for combo in itertools.product(opts, repeat=k):
+        e = [list(p) for p in combo]
+        assert dfs_topo(3, e) == dfs_topo_recursive(3, e)
+print('ordered edge lists with repeats on 3 nodes also match the recursive version')
+
+# ---- seeded random DAGs and cyclic graphs
+for _ in range(500):
+    n = random.randint(1, 9)
+    perm = list(range(n))
+    random.shuffle(perm)
+    e = [[perm[min(a, b)], perm[max(a, b)]] for a, b in ((random.randrange(n), random.randrange(n)) for _ in range(random.randint(0, 14))) if a != b]
+    r = dfs_topo(n, e)
+    assert r == dfs_topo_recursive(n, e) and is_topological(n, e, r)
+print('500 seeded random DAGs: valid order, equal to the recursive DFS')
+
+# ---- big: 10^5 nodes, 2*10^5 edges, random DAG over a shuffled labelling
+n, E = 10 ** 5, 2 * 10 ** 5
+perm = list(range(n))
+random.shuffle(perm)
+e = []
+while len(e) < E:
+    a, b = random.randrange(n), random.randrange(n)
+    if a != b:
+        e.append([perm[min(a, b)], perm[max(a, b)]])
+r = dfs_topo(n, e)
+assert is_topological(n, e, r)
+print('n=10^5, E=2*10^5 random DAG: valid topological order of length', len(r))
+assert dfs_topo(1, [[0, 0]]) == []
+print('self loop -> []')
+```
+
+**Output (my run):**
+```
+4 [[0, 1], [0, 2], [1, 3], [2, 3]] -> [0, 2, 1, 3] | Kahn gives [0, 1, 2, 3]
+3 [[0, 1], [1, 2], [2, 0]] -> [] | Kahn gives []
+3 [] -> [2, 1, 0] | Kahn gives [0, 1, 2]
+5 [[3, 1], [4, 1], [4, 0], [2, 3]] -> [4, 2, 3, 1, 0] | Kahn gives [2, 4, 3, 0, 1]
+recursive DFS on a 5000 node path -> RecursionError (limit 1000 )
+iterative: 2*10^5-node path, its reverse, and the path closed into a cycle all handled
+exhaustive on 4626 graphs: 4054 cyclic -> []; every acyclic one gives a valid order equal to the recursive DFS; DFS order differs from Kahn order on 364
+ordered edge lists with repeats on 3 nodes also match the recursive version
+500 seeded random DAGs: valid order, equal to the recursive DFS
+n=10^5, E=2*10^5 random DAG: valid topological order of length 100000
+self loop -> []
+```
+
+**Edge cases:**
+- Self loop: the neighbour is the node itself with colour 1, so `[]`.
+- No edges: all nodes isolated, order `[n-1, ..., 0]` (reverse of the start order).
+- A cycle that is only reachable from a later start node is still found, since every unvisited node becomes a start.
+- A cycle that sits next to a valid part (the 3-cycle example) returns `[]`, not a partial order.
+- Repeated edges: the second one sees colour 2 or 1 and behaves correctly (tested with repeats on 3 nodes).
+- Deep chains (2 * 10^5 nodes, both directions) run without recursion.
+
+**Follow-ups:**
+- Can I raise the recursion limit instead? `sys.setrecursionlimit` lets the interpreter try deeper, but each frame still uses C stack and a very deep chain can crash the process; the explicit stack is the safe fix. Part 7 Q35 covers the same trap for skewed trees.
+- Why two colours are not enough: a visited flag cannot tell a back edge (cycle) from an edge to an already finished node (harmless cross or forward edge). Both look "visited".
+- DFS or Kahn? Kahn gives levels (used in Q24) and the cycle check is a count; DFS gives a canonical order and generalises to strongly connected components (Part 14).
+
+**Common mistakes:**
+- Appending to `post` when a node is pushed instead of when it finishes.
+- Forgetting to reverse.
+- A single `visited` set for cycle detection (false cycles on diamonds like 0->1, 0->2, 1->3, 2->3).
+- Processing the stack as plain "pop and push all neighbours": that gives a different order and does not know when a node finishes.
