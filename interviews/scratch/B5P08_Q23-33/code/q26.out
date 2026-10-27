@@ -1,0 +1,3 @@
+2000 random cases match brute force
+bricks-first on ([1, 3, 4, 5], 2, 1) -> 2 vs heap greedy 3
+n=100000: 99999 (iterative, heap size <= 51)

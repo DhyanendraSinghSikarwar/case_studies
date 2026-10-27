@@ -1,0 +1,13 @@
+n=1: max bottom-up swaps over all 1! permutations = 0 = n - popcount(n) = 0
+n=2: max bottom-up swaps over all 2! permutations = 1 = n - popcount(n) = 1
+n=3: max bottom-up swaps over all 3! permutations = 1 = n - popcount(n) = 1
+n=4: max bottom-up swaps over all 4! permutations = 3 = n - popcount(n) = 3
+n=5: max bottom-up swaps over all 5! permutations = 3 = n - popcount(n) = 3
+n=6: max bottom-up swaps over all 6! permutations = 4 = n - popcount(n) = 4
+n=7: max bottom-up swaps over all 7! permutations = 4 = n - popcount(n) = 4
+n=8: max bottom-up swaps over all 8! permutations = 7 = n - popcount(n) = 7
+sum of node heights == n - popcount(n) for n = 1..300
+n=255: descending input, bottom-up swaps 247, one-by-one swaps 1538
+n=1023: descending input, bottom-up swaps 1013, one-by-one swaps 8194
+n=4095: descending input, bottom-up swaps 4083, one-by-one swaps 40962
+heappush layout == one-by-one in 2000 of 2000; heapify layout == textbook bottom-up in 1555 of 2000 (both always valid heaps)
