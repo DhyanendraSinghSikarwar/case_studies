@@ -546,3 +546,332 @@ n = 100000, k = 500 windows: 99501
 - Using `list.pop(0)` instead of a deque: `list.pop(0)` is O(n) and turns the solution into O(n*k).
 
 ---
+
+### Q17 ⭐⭐ 🟢 Is subsequence. Given strings `s` and `t` (len(s) <= 100, len(t) <= 10^4), decide whether `s` can be obtained from `t` by deleting some characters without reordering. Use one pointer into each string. Then answer the follow-up: if there are billions of different `s` queries against one `t`, what would you precompute? Example: s='ace', t='abcde' -> True; s='aec', t='abcde' -> False; s='', t='x' -> True.
+**Asked at:** Standard-problem lists and solution sites (Educative and Grokking-style pattern courses, algo.monster and similar solution libraries; search snippets only, not opened); problem lists, not verified company reports | Pattern guides (techinterview.org two-pointer and sliding-window guides, a LeetCode discuss 'Summary of Sliding Window Patterns' post and a '10 Variations of Two Pointers' post, Hello Interview two-pointers page; search snippets only, not opened); prep content, not company reports
+
+**Pattern:** Two pointers over two sequences (a "greedy match"). Matching each character of `s` at its earliest possible place in `t` can never hurt.
+
+**Say this first (1 line):** I walk through `t` once and advance a pointer in `s` each time the characters match; if the `s` pointer reaches the end, it is a subsequence.
+
+**Brute force:** Recursion: either match `s[i]` with `t[j]` or skip `t[j]`. Exponential without memo, O(len(s) * len(t)) with memo. Used below only as the checker.
+
+**Optimal:**
+- `i` points into `s`. Loop over each `ch` in `t`.
+- If `i < len(s)` and `s[i] == ch`, do `i += 1`.
+- Answer: `i == len(s)`.
+- Greedy is safe because taking the earliest match leaves the longest possible remainder of `t` for the rest of `s`. An exchange argument: any valid matching can be shifted left to the earliest one without losing validity.
+- Follow-up, billions of queries on one `t`: build `pos[ch]` = sorted list of indices of `ch` in `t` once. For each query keep `prev` (index of the last matched char) and binary search `pos[ch]` for the first index `> prev`. Query cost O(len(s) * log len(t)) instead of O(len(t)). (Part 5 owns binary search; here it is just `bisect_left`.) You can also build a `next[i][c]` table of size len(t)*26 for O(len(s)) per query, trading memory for speed.
+
+**Complexity:** Single query: time O(len(t)) (one pass over `t`, a pointer into `s`), space O(1). Indexed version: preprocessing O(len(t)), each query O(len(s) log len(t)), space O(len(t)).
+
+**Dry run:** `s='ace'`, `t='abcde'`
+- ch='a': matches s[0], i=1.
+- ch='b': s[1]='c' no.
+- ch='c': match, i=2.
+- ch='d': s[2]='e' no.
+- ch='e': match, i=3. i == 3 == len(s): True.
+- For `'aec'`: a matches (i=1), then 'e' is needed but t gives b, c, d first (no match), then e matches (i=2), end of t with s[2]='c' unmatched: False.
+
+**Code:**
+```python
+import random
+from bisect import bisect_left
+from collections import defaultdict
+
+def brute(s, t):
+    # try every way: recursive match
+    def go(i, j):
+        if i == len(s):
+            return True
+        if j == len(t):
+            return False
+        return (s[i] == t[j] and go(i + 1, j + 1)) or go(i, j + 1)
+    return go(0, 0)
+
+def optimal(s, t):
+    i = 0
+    for ch in t:
+        if i < len(s) and s[i] == ch:
+            i += 1
+    return i == len(s)
+
+class Index:
+    """Follow-up: many queries against one t. Precompute positions per letter."""
+    def __init__(self, t):
+        self.pos = defaultdict(list)
+        for i, ch in enumerate(t):
+            self.pos[ch].append(i)
+
+    def is_subsequence(self, s):
+        prev = -1                      # index in t of the last matched character
+        for ch in s:
+            lst = self.pos.get(ch)
+            if not lst:
+                return False
+            k = bisect_left(lst, prev + 1)     # first occurrence strictly after prev
+            if k == len(lst):
+                return False
+            prev = lst[k]
+        return True
+
+assert optimal('ace', 'abcde') is True
+assert optimal('aec', 'abcde') is False
+assert optimal('', 'x') is True
+assert optimal('', '') is True
+assert optimal('a', '') is False
+assert optimal('abc', 'abc') is True
+assert optimal('abcd', 'abc') is False      # s longer than t
+assert optimal('aa', 'a') is False          # each char of t used once
+assert optimal('aa', 'aba') is True
+
+rng = random.Random(17)
+for _ in range(1000):
+    s = ''.join(rng.choice('abc') for _ in range(rng.randint(0, 5)))
+    t = ''.join(rng.choice('abc') for _ in range(rng.randint(0, 9)))
+    want = brute(s, t)
+    assert optimal(s, t) == want, (s, t)
+    assert Index(t).is_subsequence(s) == want, (s, t)
+print("1000 random cases: two pointers, binary-search index and brute force agree")
+idx = Index('abcde')
+print(optimal('ace', 'abcde'), optimal('aec', 'abcde'), optimal('', 'x'))
+print([idx.is_subsequence(q) for q in ('ace', 'aec', '', 'z')])
+```
+
+**Output (my run):**
+```
+1000 random cases: two pointers, binary-search index and brute force agree
+True False True
+[True, False, True, False]
+```
+
+**Edge cases:**
+- Empty `s` is always a subsequence (even of an empty `t`).
+- Non-empty `s` and empty `t`: False.
+- `s` longer than `t`: False (the code gets there naturally, or return early).
+- Repeated letters: each character of `t` can be used once, so `'aa'` is not a subsequence of `'a'`.
+- Subsequence is not substring: gaps are allowed.
+
+**Follow-ups:**
+- *Billions of queries?* Precompute letter positions (or a next-occurrence table) once and answer each query with binary search. Shown above.
+- *Early exit?* Stop when `i == len(s)`. Also reject if `len(s) > len(t)`.
+- *Which one is it if it is a stream?* Same pointer, update per arriving character of `t`.
+
+**Common mistakes:**
+- Advancing the `s` pointer when it does not match, or advancing both always.
+- Forgetting the `i < len(s)` guard, which raises IndexError once `s` is fully matched.
+- In the indexed version, searching from `prev` instead of `prev + 1`, which reuses the same character.
+
+---
+
+### Q18 ⭐⭐ 🟢 Partition an array by parity. Rearrange the list `nums` in place so every even value comes before every odd value, in O(n) time and O(1) space with opposite-ends pointers; any order within each group is acceptable, so a test must check the property, not one exact output. Say how this differs from the stable version in Part 1 Q5 (Move zeroes), and why swapping gives fewer writes but loses order. Example: [3,1,2,4] -> one valid result is [4,2,1,3] (evens 4,2 first, odds 1,3 after).
+**Asked at:** Pattern guides (techinterview.org two-pointer and sliding-window guides, a LeetCode discuss 'Summary of Sliding Window Patterns' post and a '10 Variations of Two Pointers' post, Hello Interview two-pointers page; search snippets only, not opened); prep content, not company reports | Standard-problem lists and solution sites (Educative and Grokking-style pattern courses, algo.monster and similar solution libraries; search snippets only, not opened); problem lists, not verified company reports | Indian online-assessment style prep (a search for TCS NQT, Infosys and Wipro sliding-window questions returned only generic guides, nothing company-specific; the fixed-window max-sum and 'longest subarray with sum <= k' tasks are the typical easy-tier shape in such sheets; indicative only, no company attribution)
+
+**Pattern:** Two pointers from opposite ends, partition in place. It applies because we only need a split into two classes, not a full order.
+
+**Say this first (1 line):** One pointer from the left skips evens, one from the right skips odds, and when the left sits on an odd and the right on an even I swap them, so everything is placed with at most n/2 swaps in one pass.
+
+**Brute force:** Build two lists (evens, odds) and concatenate: O(n) time, O(n) space, and it is stable. Or sort with a parity key: O(n log n). The prompt wants O(1) space.
+
+**Optimal:**
+- `l = 0`, `r = n - 1`.
+- While `l < r`:
+  - `nums[l]` even: `l += 1`.
+  - else `nums[r]` odd: `r -= 1`.
+  - else (left odd, right even): swap, `l += 1`, `r -= 1`.
+- Invariant: `nums[:l]` all even, `nums[r+1:]` all odd, `nums[l..r]` unchecked. When the pointers meet, the unchecked region is empty (or one element, which is already in an acceptable place).
+- Testing the property (a test must check this, not one exact output): same multiset as before, and once an odd appears no even follows.
+
+**Complexity:** Time O(n): each iteration moves at least one pointer inward. Space O(1). Swaps: at most n/2, each swap fixes two positions.
+
+**Dry run:** `[3,1,2,4]`
+- l=0 (3 odd), r=3 (4 even): swap -> [4,1,2,3], l=1, r=2.
+- l=1 (1 odd), r=2 (2 even): swap -> [4,2,1,3], l=2, r=1. Stop.
+- Result `[4,2,1,3]`: evens first, then odds. A different valid answer is `[2,4,1,3]`.
+
+**Code:**
+```python
+import random
+from collections import Counter
+
+def brute(nums):
+    # stable reference: evens then odds, any order inside is allowed so only the property is checked
+    return [x for x in nums if x % 2 == 0] + [x for x in nums if x % 2 == 1]
+
+def optimal(nums):
+    l, r = 0, len(nums) - 1
+    while l < r:
+        if nums[l] % 2 == 0:
+            l += 1
+        elif nums[r] % 2 == 1:
+            r -= 1
+        else:                      # left is odd, right is even: swap them
+            nums[l], nums[r] = nums[r], nums[l]
+            l += 1
+            r -= 1
+    return nums
+
+def valid(before, after):
+    if Counter(before) != Counter(after):
+        return False
+    seen_odd = False
+    for x in after:
+        if x % 2 == 1:
+            seen_odd = True
+        elif seen_odd:
+            return False
+    return True
+
+def run(a):
+    b = list(a)
+    optimal(b)
+    assert valid(a, b), (a, b)
+    return b
+
+print("example result:", run([3, 1, 2, 4]))
+run([]); run([7]); run([2]); run([2, 4, 6]); run([1, 3, 5]); run([1, 2]); run([2, 1])
+run([0, 0, 1]); run([-3, -2, 5, 8])      # negatives: use x % 2 (Python gives 0 or 1 for negatives)
+run([3, 1, 2, 4])
+rng = random.Random(18)
+for _ in range(1000):
+    a = [rng.randint(-6, 9) for _ in range(rng.randint(0, 12))]
+    run(a)
+    assert valid(a, brute(a))
+print("1000 random cases satisfy the parity property")
+print("order change example:", run([1, 2, 3, 4]), "(stable would give [2, 4, 1, 3])")
+```
+
+**Output (my run):**
+```
+example result: [4, 2, 1, 3]
+1000 random cases satisfy the parity property
+order change example: [4, 2, 3, 1] (stable would give [2, 4, 1, 3])
+```
+
+**Edge cases:**
+- Empty, single element: loop never runs.
+- All even or all odd: no swaps.
+- Negatives: use `x % 2` in Python (always 0 or 1). In C or Java `-3 % 2` is -1, so test `!= 0` there.
+- Zero is even.
+- Duplicates: no issue.
+
+**Follow-ups:**
+- *Difference from Part 1 Q5 (Move zeroes)?* Move zeroes must keep the order of the non-zeros, so it uses a write pointer that copies forward (stable, more writes). Here order inside each group is free, so swapping from both ends does fewer writes but is not stable.
+- *Need it stable?* Use the write-pointer approach for one class and keep the order of the other, or stable partition in O(n log n) in place, or O(n) extra space.
+- *Three classes?* That is the Dutch flag (Q13).
+
+**Common mistakes:**
+- Checking one exact expected output in a test, when many answers are valid.
+- Swapping when both are the same parity.
+- Using `while l <= r`, which can swap an element with itself or miscount.
+- Assuming `x % 2 == 1` identifies odds in languages where negatives give -1.
+
+---
+
+### Q19 ⭐⭐ 🟢 Intersection of two sorted lists, keeping multiplicity. `a` and `b` are sorted non-decreasing integer lists. Return, as a sorted list, each value as many times as it appears in both (the minimum of its two counts) using two pointers and no hash map, in O(len(a)+len(b)). Compare with the hash-map approach when one list is far smaller than the other. Example: a=[1,2,2,3,4], b=[2,2,2,4,5] -> [2,2,4]; a=[1,3], b=[2,4] -> [].
+**Asked at:** Standard-problem lists and solution sites (Educative and Grokking-style pattern courses, algo.monster and similar solution libraries; search snippets only, not opened); problem lists, not verified company reports | Pattern guides (techinterview.org two-pointer and sliding-window guides, a LeetCode discuss 'Summary of Sliding Window Patterns' post and a '10 Variations of Two Pointers' post, Hello Interview two-pointers page; search snippets only, not opened); prep content, not company reports
+
+**Pattern:** Two pointers merging two sorted lists. Sortedness lets us decide, by comparing the two current values, which pointer can safely move.
+
+**Say this first (1 line):** Walk both lists together: move the pointer with the smaller value, and when the values are equal emit one copy and move both, which gives exactly the minimum count of each value.
+
+**Brute force:** For each element of `a`, search `b` for an unused equal value: O(len(a) * len(b)). Or count both lists in dictionaries and take the minimum per key: O(len(a) + len(b)) time, O(distinct) space. The prompt bans the hash map to show the pointer version.
+
+**Optimal:**
+- `i = j = 0`.
+- `a[i] < b[j]`: `a[i]` has no partner at or after `j` (everything in `b` from `j` on is >= `b[j]`), so `i += 1`.
+- `a[i] > b[j]`: symmetric, `j += 1`.
+- Equal: output the value, `i += 1`, `j += 1`. Using up one copy from each side is what makes the count the minimum of the two counts. For `[2,2]` vs `[2,2,2]` it matches twice, then `a` runs out.
+- Output is sorted because inputs are.
+
+**Complexity:** Time O(len(a) + len(b)): each step advances at least one pointer. Space O(1) beyond the output.
+
+**Dry run:** `a=[1,2,2,3,4]`, `b=[2,2,2,4,5]`
+- 1 < 2: i=1. 2 == 2: out [2], i=2, j=1. 2 == 2: out [2,2], i=3, j=2.
+- 3 > 2 is false: a[3]=3 > b[2]=2, so j=3. 3 < 4: i=4. 4 == 4: out [2,2,4], i=5. Stop.
+- Result `[2, 2, 4]`.
+
+**Code:**
+```python
+import random
+from bisect import bisect_left
+from collections import Counter
+
+def brute(a, b):
+    ca, cb = Counter(a), Counter(b)
+    out = []
+    for v in sorted(ca):
+        out += [v] * min(ca[v], cb.get(v, 0))
+    return out
+
+def optimal(a, b):
+    i = j = 0
+    out = []
+    while i < len(a) and j < len(b):
+        if a[i] < b[j]:
+            i += 1
+        elif a[i] > b[j]:
+            j += 1
+        else:                  # equal: take it once, advance both (this keeps min count)
+            out.append(a[i])
+            i += 1
+            j += 1
+    return out
+
+def by_search(small, big):
+    # when small is far shorter: for each value binary search in big, resuming after the last hit
+    out, lo = [], 0
+    for x in small:
+        k = bisect_left(big, x, lo)
+        if k < len(big) and big[k] == x:
+            out.append(x)
+            lo = k + 1
+        else:
+            lo = k
+    return out
+
+assert optimal([1, 2, 2, 3, 4], [2, 2, 2, 4, 5]) == [2, 2, 4]
+assert optimal([1, 3], [2, 4]) == []
+assert optimal([], [1, 2]) == []
+assert optimal([1, 2], []) == []
+assert optimal([2, 2], [2, 2]) == [2, 2]
+assert optimal([5], [5]) == [5]
+assert optimal([1, 1, 1], [1]) == [1]
+assert optimal([-3, -3, 0, 7], [-3, 0, 0, 9]) == [-3, 0]
+assert optimal([1, 2, 3], [4, 5, 6]) == []
+
+rng = random.Random(19)
+for _ in range(1000):
+    a = sorted(rng.randint(-4, 5) for _ in range(rng.randint(0, 10)))
+    b = sorted(rng.randint(-4, 5) for _ in range(rng.randint(0, 10)))
+    assert optimal(a, b) == brute(a, b), (a, b)
+    assert by_search(a, b) == brute(a, b), (a, b)
+print("1000 random cases: two pointers and binary-search variant agree with the Counter reference")
+print(optimal([1, 2, 2, 3, 4], [2, 2, 2, 4, 5]), optimal([1, 3], [2, 4]))
+```
+
+**Output (my run):**
+```
+1000 random cases: two pointers and binary-search variant agree with the Counter reference
+[2, 2, 4] []
+```
+
+**Edge cases:**
+- Either list empty: empty result.
+- No common values: empty result.
+- Heavy duplicates on one side only: the minimum count rule handles it.
+- Negatives and zero: nothing special.
+- Identical lists: result equals the input.
+
+**Follow-ups:**
+- *One list is tiny?* Use the hash map of the small list or, since both are sorted, binary search each small value in the big one: O(small * log big), better than O(small + big) when small is very small. Shown as `by_search` above. If `b` is on disk and cannot fit in memory, stream `b` with the two-pointer walk and keep only `a` in memory (or the reverse, keep the smaller one).
+- *Unsorted input?* Sort first (O(n log n)) or use the Counter approach.
+- *Distinct intersection only?* Skip duplicates after a match, or use sets.
+- *Both huge and on disk?* External sort, then the same merge walk.
+
+**Common mistakes:**
+- On a match, advancing only one pointer, which reports too many copies.
+- Using a set, which drops multiplicity.
+- Not skipping with the right comparison direction (moving the larger pointer).
+
+---
