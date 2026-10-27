@@ -1,0 +1,12 @@
+default recursion limit: 1000
+recursive reverse of [1,2,3,4,5] -> [5, 4, 3, 2, 1]
+recursive reverse, 100 nodes works: True
+recursive reverse, 2000 nodes RecursionError: True
+iterative reverse, 100000 nodes ok: [99999, 99998, 99997] ...
+iterative reverse, 2000 nodes ok: [1999, 1998, 1997] ...
+recursive length, 2000 nodes fails: True
+recursive merge, 2000 vs 2000 fails: True
+list unchanged after the failed call: True
+smallest failing length here: 999 (limit 1000 minus frames already in use)
+limit 10000, 5000 nodes works: True
+limit restored to 1000

@@ -612,7 +612,8 @@ for n in range(0, 9):                    # every k in 0..3n for each length
     for k in range(3 * n + 1):
         assert run(list(range(n)), k) == brute(list(range(n)), k)
 big = list(range(500))
-assert run(big, 2 * 10**9) == big[-(2 * 10**9 % 500):] + big[:-(2 * 10**9 % 500)] if 2 * 10**9 % 500 else True
+r = (2 * 10**9 + 7) % 500
+assert run(big, 2 * 10**9 + 7) == big[-r:] + big[:-r]
 print("cross-check ok")
 ```
 
@@ -642,7 +643,7 @@ cross-check ok
 - Forgetting `k %= n` (a loop to k, or walking off the end).
 - Off-by-one in the walk: `n - k - 1` steps from the head, not `n - k`.
 - Leaving the ring closed when `k % n == 0`.
-- Using `a[-k:]` with `k = 0` on a Python list (returns the whole list at the front: still correct by luck for `a[-0:] + a[:-0]`? It gives `a + []`; fine here, but `a[:-0]` is empty, so the tail part vanishes: handle `k == 0` explicitly).
+- On a Python list, `a[-k:] + a[:-k]` with `k = 0` gives `a[-0:]` (the whole list) plus `a[:-0]` (empty), which happens to be right here, but with `k == n` after reduction you must still reduce first; handle `k % n == 0` explicitly.
 
 ### Q23 ⭐⭐ 🟡 Add two numbers stored in forward order. Nodes are `ListNode(val, next)`. Two non-empty lists (1 <= len <= 100, digits 0-9, no leading zeros except 0 itself) hold non-negative integers with the MOST significant digit first. Return their sum as a new list in the same order WITHOUT reversing the inputs. Give two ways: push the digits on two stacks (Python lists) and add from the end building the result by head insertion, and reverse-add-reverse (which mutates the inputs unless you restore them); say which preserves the inputs and what each costs in space. Example: [7,2,4,3] and [5,6,4] -> [7,8,0,7] (7243 + 564 = 7807); [2,4,3] and [5,6,4] -> [8,0,7]; [0] and [0] -> [0]; [9,9] and [1] -> [1,0,0].
 **Asked at:** Linked-list pattern guides and question roundups (techinterview.org linked-list patterns page covering reverse, merge, cycle detection, fast-slow pointers and dummy nodes; a Substack linked-list prep post; techiedelight linked-list question list; a Questions100 linked-list category; DEV Community linked-list posts; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports | Candidate-reported rounds on Naukri Code360 (an Amazon on-campus March 2021 entry listing flatten of a multilevel list with child pointers; an Amazon December 2021 entry tied to adding two numbers held as lists; Flipkart 2020 and 2021 entries naming reverse linked list, one with an O(n) time O(1) space follow-up and one solved first with a stack; plus a LeetCode discuss Flipkart SDE-1 June 2024 report of a Reverse Linked List II variant given node values instead of positions; snippets only, not opened; candidate-reported, unverified, not evidence of current practice)
@@ -974,3 +975,539 @@ remove all dups: [2, 3]
 - Skipping only the later copies and keeping the first.
 - No dummy, and crashing when the head is deleted.
 - Forgetting the `cur and` guard in the inner loop.
+
+### Q25 ⭐⭐ 🟡 Sort a list with merge sort in O(1) extra space. Nodes are `ListNode(val, next)`. Sort a list (0 <= len <= 5*10^4) ascending, stably (equal values keep their original order, tests check by identity), in O(n log n) time. Give the top-down merge sort (find the middle with slow and fast, cut, sort both halves, merge) and state its stack depth; then the BOTTOM-UP version with O(1) extra space: merge runs of size 1, 2, 4, ... using a `split(head, size)` helper that cuts off `size` nodes and a merge that returns head and tail. Say why arrays-style quicksort and index-based heap sort do not fit a list and why sorting a Python list copy is a valid but different answer (O(n) space). Example: [4,2,1,3] -> [1,2,3,4]; [-1,5,3,4,0] -> [-1,0,3,4,5]; [] -> []; [2,2,1,1] -> [1,1,2,2]; [1] -> [1].
+**Asked at:** Linked-list pattern guides and question roundups (techinterview.org linked-list patterns page covering reverse, merge, cycle detection, fast-slow pointers and dummy nodes; a Substack linked-list prep post; techiedelight linked-list question list; a Questions100 linked-list category; DEV Community linked-list posts; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports | Standard-problem lists known to the editor (not found as an opened page; included on the editor's knowledge of widely circulated problem sets; indicative only, no company attribution)
+
+**Pattern:** Merge sort on a linked list: split by slow/fast pointers (or by run size), merge two sorted lists (Q3). Lists do merge for free, no shifting and no auxiliary array.
+
+**Say this first (1 line):** "Merge sort: cut in the middle, sort both halves, merge them stably; for O(1) extra space I do it bottom-up with run sizes 1, 2, 4, and so on."
+
+**Brute force:** Copy values into a Python list, `sorted()`, write back or rebuild. O(n log n) time, O(n) space. Valid, but a different answer: it does not rearrange the nodes unless you also sort node references (`sorted(nodes, key=...)`, still O(n) extra).
+
+**Optimal (top-down):**
+- Base case: 0 or 1 node.
+- Find the middle with `slow = head`, `fast = head.next`; the loop leaves `slow` on the FIRST middle. Using `fast = head` would put `slow` on the second middle for even lengths and a 2-node list could split into 2 and 0, which recurses forever.
+- Cut with `slow.next = None`, sort both halves, merge.
+- Stability: the merge takes the left node unless the right value is strictly smaller.
+- Stack depth: the recursion halves the list each time, so depth is about log2 n (the code prints 17 for 50000 nodes). Extra space is O(log n), not O(1).
+
+**Optimal (bottom-up, O(1) extra):**
+- Measure the length n. For `size = 1, 2, 4, ...` while `size < n`: walk the list once, repeatedly taking two runs of `size` nodes.
+- `split(head, size)` keeps `size` nodes in the part starting at `head`, cuts, and returns the start of the rest.
+- `merge(a, b)` returns the merged head AND tail, so the next merged run can be attached to `prev`.
+- Why a tail is returned: re-walking to find it each time would be fine for the total (each merge costs its length anyway) but returning it is cleaner.
+- Invariant after the pass with `size`: every block of `2 * size` consecutive nodes (the last one may be shorter) is sorted.
+
+**Complexity:** Time O(n log n) for both: log n levels, each level merges n nodes in total. Space: bottom-up O(1); top-down O(log n) stack. The 50000-node bound is far below the recursion limit for top-down, since depth is about 17.
+
+**Why not the array algorithms:** Heap sort needs index arithmetic (`2i + 1`) and O(1) random access. Quicksort's swap-based partition needs two-ended index access; a stable list partition exists (Q21) but picking a good pivot needs a walk, and the worst case is O(n^2). Merge sort needs only sequential access.
+
+**Dry run:** [4,2,1,3], n = 4, bottom-up.
+- size 1: runs (4)(2) -> 2,4; (1)(3) -> 1,3. List 2,4,1,3.
+- size 2: runs (2,4)(1,3) -> 1,2,3,4. size 4 is not less than n: stop.
+
+**Code:**
+```python
+import random
+
+class ListNode:
+    __slots__ = ('val', 'next')
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def from_array(arr):
+    dummy = tail = ListNode()
+    for v in arr:
+        tail.next = ListNode(v)
+        tail = tail.next
+    return dummy.next
+
+def to_array(head, cap=10**6):          # cap: a bug that makes a cycle fails instead of hanging
+    out = []
+    while head is not None:
+        out.append(head.val)
+        head = head.next
+        assert len(out) <= cap, "cycle or runaway list"
+    return out
+
+def node_ids(head, cap=10**6):          # identities of the nodes, in list order
+    out = []
+    while head is not None:
+        out.append(id(head))
+        head = head.next
+        assert len(out) <= cap, "cycle or runaway list"
+    return out
+
+def is_acyclic(head):                   # Floyd, O(1) space
+    slow = fast = head
+    while fast and fast.next:
+        slow, fast = slow.next, fast.next.next
+        if slow is fast:
+            return False
+    return True
+
+import sys
+
+def merge(a, b):                         # stable: ties take a (the earlier part) first; returns (head, tail)
+    dummy = tail = ListNode()
+    while a and b:
+        if b.val < a.val:
+            tail.next = b; b = b.next
+        else:
+            tail.next = a; a = a.next
+        tail = tail.next
+    tail.next = a or b
+    while tail.next:                     # walk to the true tail (needed by the bottom-up caller)
+        tail = tail.next
+    return dummy.next, tail
+
+depth_seen = 0
+def sort_top_down(head, depth=1):
+    global depth_seen
+    depth_seen = max(depth_seen, depth)
+    if head is None or head.next is None:
+        return head
+    slow, fast = head, head.next         # slow ends on the FIRST middle, so both halves shrink
+    while fast and fast.next:
+        slow, fast = slow.next, fast.next.next
+    right = slow.next
+    slow.next = None                     # cut
+    return merge(sort_top_down(head, depth + 1), sort_top_down(right, depth + 1))[0]
+
+def split(head, size):                   # keep `size` nodes in head's part, return the rest
+    for _ in range(size - 1):
+        if head is None:
+            break
+        head = head.next
+    if head is None:
+        return None
+    rest = head.next
+    head.next = None
+    return rest
+
+def sort_bottom_up(head):
+    n, p = 0, head
+    while p:
+        n += 1
+        p = p.next
+    dummy = ListNode(0, head)
+    size = 1
+    while size < n:
+        prev, cur = dummy, dummy.next
+        while cur:
+            left = cur
+            right = split(left, size)
+            cur = split(right, size)     # split(None, size) is None
+            h, t = merge(left, right)
+            prev.next = h
+            prev = t
+        size *= 2
+    return dummy.next
+
+def run(fn, arr):
+    head = from_array(arr)
+    before = node_ids(head)
+    res = fn(head)
+    assert is_acyclic(res)
+    order = sorted(range(len(arr)), key=lambda i: arr[i])      # Python's sort is stable
+    assert node_ids(res) == [before[i] for i in order], "stable and in place"
+    assert to_array(res) == sorted(arr)
+    return to_array(res)
+
+for arr in ([4, 2, 1, 3], [-1, 5, 3, 4, 0], [], [2, 2, 1, 1], [1]):
+    assert run(sort_top_down, arr) == run(sort_bottom_up, arr)
+    print(arr, "->", run(sort_bottom_up, arr))
+
+random.seed(25)
+for _ in range(600):
+    arr = [random.randint(-5, 5) for _ in range(random.randint(0, 70))]   # many ties
+    run(sort_top_down, arr); run(sort_bottom_up, arr)
+for n in range(0, 9):                    # all 0/1/2 lists up to length 8
+    for t in range(3 ** n):
+        arr = [(t // 3 ** i) % 3 for i in range(n)]
+        run(sort_bottom_up, arr); run(sort_top_down, arr)
+print("cross-check ok")
+
+big = [random.randint(0, 10**6) for _ in range(50000)]
+depth_seen = 0
+run(sort_top_down, big)
+print("top-down recursion depth on 50000 nodes:", depth_seen, "(about log2 n + 1)")
+run(sort_bottom_up, big)
+print("bottom-up on 50000 nodes ok, no recursion")
+print("default recursion limit:", sys.getrecursionlimit())
+```
+
+**Output (my run):**
+```
+[4, 2, 1, 3] -> [1, 2, 3, 4]
+[-1, 5, 3, 4, 0] -> [-1, 0, 3, 4, 5]
+[] -> []
+[2, 2, 1, 1] -> [1, 1, 2, 2]
+[1] -> [1]
+cross-check ok
+top-down recursion depth on 50000 nodes: 17 (about log2 n + 1)
+bottom-up on 50000 nodes ok, no recursion
+default recursion limit: 1000
+```
+
+**Edge cases:**
+- Empty list and single node: `n < 2`, the loop is skipped.
+- Already sorted or reversed input: same cost.
+- All equal values: the identity check confirms stability (nodes keep order).
+- A last run shorter than `size`: `split` returns `None` for the missing partner and `merge` just returns the single run.
+
+**Follow-ups:**
+- Why is the merge stable? On a tie it takes the left node; left nodes came earlier in the original list.
+- Natural merge sort? Start from existing ascending runs; O(n) on sorted input.
+- Sort a list of 10^6 nodes? Bottom-up avoids the recursion question (Q26).
+
+**Common mistakes:**
+- `fast = head` in top-down: infinite recursion on a 2-node list.
+- Forgetting `slow.next = None`, so the left half still contains everything.
+- Not reconnecting `prev.next` in the bottom-up passes.
+- Using `<=` in the merge test (`b.val <= a.val` takes the right node on ties and breaks stability).
+- Calling top-down "O(1) space".
+
+### Q26 ⭐⭐ 🟡 Why a recursive list algorithm fails on long lists in Python. The recursive reverse `def rev(h): ... rev(h.next) ...` works on a list of 100 nodes but raises `RecursionError` on a list of 2000 nodes under the default recursion limit, while the iterative version handles 10^5 nodes. Write both, demonstrate the failure, and explain: Python's default limit (1000 frames; read it with `sys.getrecursionlimit()`), that the depth equals the list length here, why raising it with `sys.setrecursionlimit` is a risk to weigh (stack use, crashes) rather than a fix to rely on, and why the same applies to recursive printing, recursive length and recursive merge. State which common list algorithms are naturally recursive-friendly only for short inputs. Example: recursive reverse of [1,2,3,4,5] -> [5,4,3,2,1]; recursive reverse of a 100-node list works; recursive reverse of a 2000-node list under the default limit -> RecursionError; iterative reverse of a 2000-node list -> works.
+**Asked at:** Python recursion-limit explainers (note.nkmk.me, educative.io, DEV Community recursion-limit posts; snippets only, not opened: default limit 1000, raising it risks crashes, iteration preferred); __slots__ behaviour not found in any snippet and was verified by running Python 3.13 in the sandbox | Linked-list pattern guides and question roundups (techinterview.org linked-list patterns page covering reverse, merge, cycle detection, fast-slow pointers and dummy nodes; a Substack linked-list prep post; techiedelight linked-list question list; a Questions100 linked-list category; DEV Community linked-list posts; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports
+
+**Pattern:** Recursion depth equals list length. Python does not optimise tail calls, so each node costs one stack frame; the iterative loop costs none.
+
+**Say this first (1 line):** "Recursive reverse needs one frame per node, and Python stops at about 1000 frames, so for long lists I use the loop."
+
+**Brute force / baseline:** Recursive reverse: base case on `None` or the last node, `new_head = rev(h.next)`, then `h.next.next = h; h.next = None`. Time O(n), stack space O(n). Correct and short, and works for 100 nodes.
+
+**Optimal:**
+- Iterative reverse with `prev`, `cur`, `nxt`: time O(n), space O(1), no depth limit. The code runs it on 100,000 nodes.
+- Why the recursive one fails: `sys.getrecursionlimit()` is 1000 by default (the code prints it). Depth reached is n plus the frames already in use, so a 2000-node list raises `RecursionError`. The code finds the smallest failing length in this sandbox; that number is environment-specific, not a constant.
+- The failure happens on the way down, before any link is changed, so the list is left intact (the code checks).
+- `sys.setrecursionlimit(n)`: it only raises the interpreter's own guard. The risks: memory for every frame, and in older or C-heavy paths a real stack overflow that crashes the process with no exception. It is a tuning knob you must justify, not a fix. (The code raises it to 10000 for a 5000-node demo and restores it.)
+- Other recursive list code has the same wall: recursive printing, recursive length, recursive merge (code shows length and merge failing at 2000), recursive swap in pairs, recursive palindrome check, recursive k-group reverse (depth n/k), recursive list copy.
+- Recursion-friendly only for short inputs: reverse, length, print, merge two lists, swap pairs, remove duplicates, and similar one-frame-per-node designs. Depth is fine when it is O(log n), as in top-down merge sort (Q25) and balanced tree recursion (Part 7).
+
+**Complexity:** Recursive: O(n) time, O(n) stack. Iterative: O(n) time, O(1) space. Sizes in the demo are tests, not proof; the proof is the one-frame-per-node argument.
+
+**Dry run:** rev([1,2,3]) calls rev([2,3]) calls rev([3]) which returns 3. Back in rev([2,3]): 3.next = 2, 2.next = None, return 3. Back in rev([1,2,3]): 2.next = 1, 1.next = None, return 3. Result 3 -> 2 -> 1; three frames deep. For 2000 nodes, frame 1001 raises.
+
+**Code:**
+```python
+import random
+
+class ListNode:
+    __slots__ = ('val', 'next')
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def from_array(arr):
+    dummy = tail = ListNode()
+    for v in arr:
+        tail.next = ListNode(v)
+        tail = tail.next
+    return dummy.next
+
+def to_array(head, cap=10**6):          # cap: a bug that makes a cycle fails instead of hanging
+    out = []
+    while head is not None:
+        out.append(head.val)
+        head = head.next
+        assert len(out) <= cap, "cycle or runaway list"
+    return out
+
+def node_ids(head, cap=10**6):          # identities of the nodes, in list order
+    out = []
+    while head is not None:
+        out.append(id(head))
+        head = head.next
+        assert len(out) <= cap, "cycle or runaway list"
+    return out
+
+def is_acyclic(head):                   # Floyd, O(1) space
+    slow = fast = head
+    while fast and fast.next:
+        slow, fast = slow.next, fast.next.next
+        if slow is fast:
+            return False
+    return True
+
+import sys
+
+def rev_it(head):
+    prev = None
+    while head:
+        nxt = head.next
+        head.next = prev
+        prev = head
+        head = nxt
+    return prev
+
+def rev_rec(head):
+    if head is None or head.next is None:
+        return head
+    new_head = rev_rec(head.next)        # one frame per node on the way down
+    head.next.next = head
+    head.next = None
+    return new_head
+
+def length_rec(head):
+    return 0 if head is None else 1 + length_rec(head.next)
+
+def merge_rec(a, b):                     # recursive merge of two sorted lists
+    if a is None: return b
+    if b is None: return a
+    if b.val < a.val:
+        b.next = merge_rec(a, b.next); return b
+    a.next = merge_rec(a.next, b); return a
+
+def fails(fn, n):
+    try:
+        fn(from_array(list(range(n))))
+        return False
+    except RecursionError:
+        return True
+
+print("default recursion limit:", sys.getrecursionlimit())
+
+# correctness first, with identity, on short lists
+random.seed(26)
+for _ in range(400):
+    arr = [random.randint(-9, 9) for _ in range(random.randint(0, 60))]
+    h = from_array(arr); before = node_ids(h)
+    r1 = rev_rec(h)
+    assert to_array(r1) == arr[::-1] and node_ids(r1) == before[::-1]
+    h = from_array(arr); before = node_ids(h)
+    r2 = rev_it(h)
+    assert to_array(r2) == arr[::-1] and node_ids(r2) == before[::-1]
+print("recursive reverse of [1,2,3,4,5] ->", to_array(rev_rec(from_array([1, 2, 3, 4, 5]))))
+print("recursive reverse, 100 nodes works:", not fails(rev_rec, 100))
+print("recursive reverse, 2000 nodes RecursionError:", fails(rev_rec, 2000))
+big = from_array(list(range(100000)))
+print("iterative reverse, 100000 nodes ok:", to_array(rev_it(big))[:3], "...")
+print("iterative reverse, 2000 nodes ok:", to_array(rev_it(from_array(list(range(2000)))))[:3], "...")
+
+# the same wall for other recursive list code (2000 nodes)
+print("recursive length, 2000 nodes fails:", fails(length_rec, 2000))
+print("recursive merge, 2000 vs 2000 fails:", end=" ")
+try:
+    merge_rec(from_array(list(range(0, 4000, 2))), from_array(list(range(1, 4000, 2))))
+    print(False)
+except RecursionError:
+    print(True)
+
+# a failed descent changes nothing: the mutation happens on the way back
+h = from_array(list(range(2000)))
+try:
+    rev_rec(h)
+except RecursionError:
+    pass
+print("list unchanged after the failed call:", to_array(h) == list(range(2000)))
+
+# where the wall is (sandbox, Python 3.13, called from module level; varies with caller depth)
+n = 900
+while not fails(rev_rec, n):
+    n += 1
+print("smallest failing length here:", n, "(limit", sys.getrecursionlimit(), "minus frames already in use)")
+
+# raising the limit works but is a risk to weigh
+old = sys.getrecursionlimit()
+sys.setrecursionlimit(10000)
+print("limit 10000, 5000 nodes works:", not fails(rev_rec, 5000))
+sys.setrecursionlimit(old)
+print("limit restored to", sys.getrecursionlimit())
+```
+
+**Output (my run):**
+```
+default recursion limit: 1000
+recursive reverse of [1,2,3,4,5] -> [5, 4, 3, 2, 1]
+recursive reverse, 100 nodes works: True
+recursive reverse, 2000 nodes RecursionError: True
+iterative reverse, 100000 nodes ok: [99999, 99998, 99997] ...
+iterative reverse, 2000 nodes ok: [1999, 1998, 1997] ...
+recursive length, 2000 nodes fails: True
+recursive merge, 2000 vs 2000 fails: True
+list unchanged after the failed call: True
+smallest failing length here: 999 (limit 1000 minus frames already in use)
+limit 10000, 5000 nodes works: True
+limit restored to 1000
+```
+
+**Edge cases:**
+- Empty list and single node: both versions return at once.
+- Exactly at the limit: the failing length depends on how deep the caller already is (a test runner adds frames).
+- Catching `RecursionError` leaves a recoverable program; a hard stack overflow does not.
+- Cyclic list: the recursive versions never reach the base case and fail on any limit.
+
+**Follow-ups:**
+- Convert any recursion to a loop? Use an explicit stack (a Python list), or find the pointer-rewiring form as in reverse.
+- Does tail recursion help? Not in CPython; there is no tail-call elimination.
+- What about a thread with a bigger stack? `threading.stack_size` plus a higher limit is possible but fragile; prefer iteration.
+
+**Common mistakes:**
+- Raising the recursion limit as the first move.
+- Claiming that 1000 is a hard constant: it is the default and can be read or set.
+- Testing only on 5-node lists, so the depth failure is never seen.
+- Writing the recursive version when the question says "up to 10^5 nodes".
+
+### Q27 ⭐ 🟡 Remove duplicates from an UNSORTED list. Nodes are `ListNode(val, next)`. Given a list of integers (0 <= len <= 2000, unsorted, values may repeat), keep only the FIRST occurrence of each value and return the head, in place. Give the O(n) time, O(n) space version with a `set` of seen values, and the O(1)-space O(n^2) version that for each node scans the rest of the list to unlink later copies; explain the trade-off and why sorting first changes the surviving order. Example: [1,2,1,3,2,4] -> [1,2,3,4]; [5,5,5] -> [5]; [] -> []; [3,1,2] -> [3,1,2]; [2,1,2,1] -> [2,1].
+**Asked at:** Linked-list pattern guides and question roundups (techinterview.org linked-list patterns page covering reverse, merge, cycle detection, fast-slow pointers and dummy nodes; a Substack linked-list prep post; techiedelight linked-list question list; a Questions100 linked-list category; DEV Community linked-list posts; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); tutorial content, not verified company reports | Standard-problem lists known to the editor (not found as an opened page; included on the editor's knowledge of widely circulated problem sets; indicative only, no company attribution)
+
+**Pattern:** Dedupe in place with a `seen` set (time for space), or with a nested scan (space for time). The first occurrence survives.
+
+**Say this first (1 line):** "With a set of seen values it is one pass and O(n) space; without extra space I scan the rest for each node, which is O(n^2)."
+
+**Brute force:** For each node, scan the rest of the list and unlink later copies of its value. O(n^2) time, O(1) space. This is also the no-extra-memory answer.
+
+**Optimal (time):**
+- One pass with `prev` (last kept node) and `cur`. If `cur.val` is in `seen`, set `prev.next = cur.next` (do not move `prev`); else add it to `seen` and set `prev = cur`.
+- No dummy is needed: the head is never a repeat, so `prev` is not `None` when an unlink happens.
+- Expected O(n) time (hash lookups are O(1) on average), O(n) space for the set.
+- The first occurrence is kept because the walk goes front to back.
+
+**Optimal (space), nested scan:**
+- For each `cur`, a `runner` starts at `cur` and checks `runner.next`: on a match, unlink it and do NOT advance the runner; otherwise advance.
+- O(n^2) time, O(1) space; at 2000 nodes that is about 2 million steps, fine.
+
+**Trade-off:** Set version: faster, more memory, values must be hashable (ints here). Nested version: no extra memory, works with only equality comparison, slow for large n.
+
+**Why sorting first changes the order:** Sorting makes duplicates adjacent so you can use the sorted-list dedupe (Q15) in O(n log n) time and O(1) extra space for a merge-sorted list. But the result is in sorted order, not in the original first-occurrence order ([2,1,2,1] gives [1,2], but the required answer is [2,1]). To keep the original order you would have to sort pairs with the original index and sort back, which costs O(n) extra space again.
+
+**Complexity:** Set: O(n) expected time, O(n) space. Nested scan: O(n^2) time, O(1) space.
+
+**Dry run:** [2,1,2,1]. seen = {}. 2: new, keep, seen {2}. 1: new, keep, seen {1,2}. Second 2: in seen, prev (the 1) points past it to the last 1. Second 1: in seen, prev (the 1 at position 2) skips it. Result 2 -> 1.
+
+**Code:**
+```python
+import random
+
+class ListNode:
+    __slots__ = ('val', 'next')
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def from_array(arr):
+    dummy = tail = ListNode()
+    for v in arr:
+        tail.next = ListNode(v)
+        tail = tail.next
+    return dummy.next
+
+def to_array(head, cap=10**6):          # cap: a bug that makes a cycle fails instead of hanging
+    out = []
+    while head is not None:
+        out.append(head.val)
+        head = head.next
+        assert len(out) <= cap, "cycle or runaway list"
+    return out
+
+def node_ids(head, cap=10**6):          # identities of the nodes, in list order
+    out = []
+    while head is not None:
+        out.append(id(head))
+        head = head.next
+        assert len(out) <= cap, "cycle or runaway list"
+    return out
+
+def is_acyclic(head):                   # Floyd, O(1) space
+    slow = fast = head
+    while fast and fast.next:
+        slow, fast = slow.next, fast.next.next
+        if slow is fast:
+            return False
+    return True
+
+
+def brute_keep(arr):                     # indices of first occurrences
+    seen, keep = set(), []
+    for i, v in enumerate(arr):
+        if v not in seen:
+            seen.add(v)
+            keep.append(i)
+    return keep
+
+def dedup_set(head):
+    seen = set()
+    prev = None
+    cur = head
+    while cur:
+        if cur.val in seen:
+            prev.next = cur.next         # unlink cur (prev exists: the head is never a repeat)
+        else:
+            seen.add(cur.val)
+            prev = cur
+        cur = cur.next
+    return head
+
+def dedup_n2(head):
+    cur = head
+    while cur:
+        runner = cur                     # scan the rest, unlink later copies of cur.val
+        while runner.next:
+            if runner.next.val == cur.val:
+                runner.next = runner.next.next
+            else:
+                runner = runner.next
+        cur = cur.next
+    return head
+
+def run(fn, arr):
+    head = from_array(arr)
+    before = node_ids(head)
+    res = fn(head)
+    assert is_acyclic(res)
+    keep = brute_keep(arr)
+    assert node_ids(res) == [before[i] for i in keep], "first occurrences, same node objects"
+    assert to_array(res) == [arr[i] for i in keep]
+    return to_array(res)
+
+for arr in ([1, 2, 1, 3, 2, 4], [5, 5, 5], [], [3, 1, 2], [2, 1, 2, 1]):
+    assert run(dedup_set, arr) == run(dedup_n2, arr)
+    print(arr, "->", run(dedup_set, arr))
+
+random.seed(27)
+for _ in range(800):
+    arr = [random.randint(-4, 4) for _ in range(random.randint(0, 40))]
+    assert run(dedup_set, arr) == run(dedup_n2, arr)
+for n in range(0, 9):                    # all lists of length <= 8 over {0,1,2}
+    for t in range(3 ** n):
+        arr = [(t // 3 ** i) % 3 for i in range(n)]
+        run(dedup_set, arr); run(dedup_n2, arr)
+arr = [random.randint(0, 1000) for _ in range(2000)]
+assert run(dedup_set, arr) == run(dedup_n2, arr)
+print("cross-check ok")
+
+# sorting first changes which order survives
+arr = [2, 1, 2, 1]
+print("first-occurrence order:", run(dedup_set, arr), "| sort first, then dedupe:", sorted(set(arr)))
+```
+
+**Output (my run):**
+```
+[1, 2, 1, 3, 2, 4] -> [1, 2, 3, 4]
+[5, 5, 5] -> [5]
+[] -> []
+[3, 1, 2] -> [3, 1, 2]
+[2, 1, 2, 1] -> [2, 1]
+cross-check ok
+first-occurrence order: [2, 1] | sort first, then dedupe: [1, 2]
+```
+
+**Edge cases:**
+- Empty list and a single node.
+- All equal ([5,5,5]): every node after the first is unlinked.
+- No duplicates: the list is unchanged.
+- Negative values and zero: valid set members.
+
+**Follow-ups:**
+- Keep the LAST occurrence? Reverse first (or use a count pass, then keep when the remaining count hits 0).
+- Remove all values that repeat (unsorted)? Count with a dict, then drop any node with count above 1; contrast with Q24 for the sorted case.
+- Values that are not hashable? Use the O(n^2) scan, or key by a hashable form.
+
+**Common mistakes:**
+- Advancing the runner after an unlink and skipping a node.
+- Moving `prev` after unlinking, so it points at a removed node.
+- Using a set of nodes rather than values (every node is distinct, nothing is removed).
+- Deduplicating by sorting and claiming the original order is preserved.

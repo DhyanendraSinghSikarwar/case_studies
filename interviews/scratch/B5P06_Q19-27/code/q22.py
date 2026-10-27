@@ -88,5 +88,6 @@ for n in range(0, 9):                    # every k in 0..3n for each length
     for k in range(3 * n + 1):
         assert run(list(range(n)), k) == brute(list(range(n)), k)
 big = list(range(500))
-assert run(big, 2 * 10**9) == big[-(2 * 10**9 % 500):] + big[:-(2 * 10**9 % 500)] if 2 * 10**9 % 500 else True
+r = (2 * 10**9 + 7) % 500
+assert run(big, 2 * 10**9 + 7) == big[-r:] + big[:-r]
 print("cross-check ok")
