@@ -55,7 +55,7 @@ print('examples ok:', [w for _, w in ex])
 
 # ---- exhaustive: every pointer table with n = 1..4 nodes (children in -1..n-1)
 total, seen = 0, {'tree': 0, 'shared': 0, 'cycle': 0}
-for n in range(1, 4):
+for n in range(1, 5):
     for ch in itertools.product(range(-1, n), repeat=2 * n):
         nodes = [[i, ch[2 * i], ch[2 * i + 1]] for i in range(n)]
         r = classify(nodes)
@@ -87,6 +87,4 @@ def count_visits(r):
         st += [c for c in (n.left, n.right) if c is not None]
     return k
 print('visits for a 1-root tree with the same child twice:', count_visits(root), '(3 visits, only 2 distinct nodes)')
-x.left = root                                       # now add a cycle: x points back at the root
-print('classify as a pointer table ->', classify([[1, 1, 1], [5, 0, -1]]))
-assert count_visits(TreeNode(1, x, None)) > 0 or True   # NOT run on the cyclic graph: it would loop forever
+print('table with a back edge, capped visited-set walk ->', classify([[1, 1, 1], [5, 0, -1]]), '(it stops; a plain recursive or stack walk on cyclic nodes would loop forever)')

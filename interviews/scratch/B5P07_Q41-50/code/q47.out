@@ -1,0 +1,5 @@
+examples ok: [[2, 7, 4], [1], [2], [1, 2, 3]]
+shapes checked exhaustively (1..9 nodes): 6917
+400 random trees ok
+LCA of the deepest-leaf set gives the same node on 200 random trees
+chain of 500: the answer is the single leaf 499
