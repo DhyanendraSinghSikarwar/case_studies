@@ -1624,3 +1624,397 @@ self loop -> []
 - Forgetting to reverse.
 - A single `visited` set for cycle detection (false cycles on diamonds like 0->1, 0->2, 1->3, 2->3).
 - Processing the stack as plain "pop and push all neighbours": that gives a different order and does not know when a node finishes.
+
+### Q32 ⭐⭐ 🔴 Sliding puzzle (state-space BFS). The board is a 2 x 3 grid holding the numbers 0-5 once each, where 0 is the blank. One move slides a tile that is up, down, left or right of the blank into it. Return the minimum number of moves to reach [[1,2,3],[4,5,0]], or -1 if it is unreachable. Treat each board as one node (flatten it to a tuple) and BFS; state the number of states (720), why exactly half of them are unreachable, and why the same code on a bigger board needs a smarter search. Example: board=[[1, 2, 3], [4, 0, 5]] -> 1; board=[[1, 2, 3], [5, 4, 0]] -> -1; board=[[4, 1, 2], [5, 0, 3]] -> 5; board=[[1, 2, 3], [4, 5, 0]] -> 0.
+**Asked at:** Graph pattern guides and lists (techinterview.org graph interview patterns and comprehensive graph guides, DesignGurus common graph-traversal questions, Techie Delight graph practice list; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** State-space BFS: each configuration is a node, each legal move is an edge, all edges cost one move.
+
+**Say this first (1 line):** "Flatten the board to a tuple so it is hashable, BFS from the start to the goal with a visited set. There are only 720 boards, so it is instant, and exactly half of them cannot reach the goal."
+
+**Brute force:** DFS or random walks do not give the minimum and can loop forever without a visited set. A second exact method is one BFS backwards from the goal over all boards: moves are reversible, so the distance from the goal to a board equals the distance from the board to the goal. That gives the whole answer table at once, and it is the checker in the code (all 720 boards agree).
+
+**Optimal:**
+- State: the board read row by row as a 6-tuple, for example `(4, 1, 2, 5, 0, 3)`. Goal: `(1, 2, 3, 4, 5, 0)`.
+- Neighbours of the blank: a precomputed table of adjacent positions for the 2 x 3 shape (position 0 touches 1 and 3, position 1 touches 0, 2 and 4, and so on). Swap the blank with each neighbour to get the next board.
+- BFS with a `deque` of `(state, moves)` and a `seen` set. First time the goal appears, its move count is the minimum, because every move costs 1. If the queue empties without the goal, return -1.
+- Why 720 states: the 6 cells hold 6 distinct values, so 6! = 720 boards.
+- Why exactly half are unreachable: look at the 5 numbered tiles read row by row and count inversions (pairs in the wrong order). Sliding a tile horizontally does not change the reading order. Sliding a tile vertically jumps it over exactly 2 other tiles on a 3-wide board, which changes the inversion count by 0 or +-2, so the parity never changes. The goal has 0 inversions (even), so only even-inversion boards are reachable. The code verifies on all 720 boards that "reachable" and "even inversions" are the same set: 360 and 360. Example 2 (`1 2 3 5 4`, one inversion) is therefore -1.
+- Bigger boards: 3 x 3 has 9! = 362,880 boards (181,440 reachable); BFS still fits in memory (the code runs it, hardest board 31 moves). 4 x 4 has 16! = about 2 * 10^13 boards, so plain BFS is hopeless: use A* or IDA* with the Manhattan-distance heuristic (or pattern databases), which explores only promising boards.
+
+**Complexity:** Time O(S * b) with S <= 720 states and branching factor b <= 3, so at most 2160 successor checks; each builds a 6-tuple, O(6). Space O(S) for `seen` and the queue. For an n x m board: S = (nm)!, so factorial growth.
+
+**Dry run:** `[[4,1,2],[5,0,3]]` -> flat `(4,1,2,5,0,3)`, answer 5.
+- Blank at position 4. One shortest route (found by the BFS): slide 5 right -> `(4,1,2,0,5,3)`; slide 4 down -> `(0,1,2,4,5,3)`; slide 1 left -> `(1,0,2,4,5,3)`; slide 2 left -> `(1,2,0,4,5,3)`; slide 3 up -> `(1,2,3,4,5,0)`.
+- That is 5 moves. BFS tries all boards at distance 1, 2, ..., and the goal first appears at level 5.
+
+**Code:**
+```python
+import itertools
+import math
+from collections import Counter, deque
+
+GOAL = (1, 2, 3, 4, 5, 0)
+# neighbours of each flat position on a 2 x 3 board: index = 3 * row + col
+NB = {0: (1, 3), 1: (0, 2, 4), 2: (1, 5), 3: (0, 4), 4: (1, 3, 5), 5: (2, 4)}
+
+def sliding_puzzle(board):
+    """BFS over boards. A node is the whole board flattened to a tuple (hashable, so it can live in a set)."""
+    start = tuple(x for row in board for x in row)
+    if start == GOAL:
+        return 0
+    seen = {start}
+    q = deque([(start, 0)])
+    while q:
+        s, d = q.popleft()
+        z = s.index(0)
+        for j in NB[z]:                                   # slide the tile at j into the blank
+            l = list(s)
+            l[z], l[j] = l[j], l[z]
+            t = tuple(l)
+            if t not in seen:
+                if t == GOAL:
+                    return d + 1
+                seen.add(t)
+                q.append((t, d + 1))
+    return -1
+
+def distance_table():
+    """Independent method: one BFS BACKWARDS from the goal over all boards. Moves are reversible, so distance is symmetric."""
+    dist = {GOAL: 0}
+    frontier = [GOAL]
+    while frontier:
+        nxt = []
+        for s in frontier:
+            z = s.index(0)
+            for j in NB[z]:
+                l = list(s)
+                l[z], l[j] = l[j], l[z]
+                t = tuple(l)
+                if t not in dist:
+                    dist[t] = dist[s] + 1
+                    nxt.append(t)
+        frontier = nxt
+    return dist
+
+def inversions_even(flat):
+    tiles = [x for x in flat if x]
+    inv = sum(1 for i in range(len(tiles)) for j in range(i + 1, len(tiles)) if tiles[i] > tiles[j])
+    return inv % 2 == 0
+
+for b, want in [([[1, 2, 3], [4, 0, 5]], 1), ([[1, 2, 3], [5, 4, 0]], -1), ([[4, 1, 2], [5, 0, 3]], 5), ([[1, 2, 3], [4, 5, 0]], 0)]:
+    got = sliding_puzzle(b)
+    assert got == want, (b, got, want)
+    print(b, '->', got)
+
+# ---- all 720 boards: forward BFS equals the backward table, and exactly half are unreachable
+table = distance_table()
+boards = list(itertools.permutations(range(6)))
+assert len(boards) == 720
+res = {}
+for p in boards:
+    b = [list(p[:3]), list(p[3:])]
+    res[p] = sliding_puzzle(b)
+    assert res[p] == table.get(p, -1), p
+reach = sum(v >= 0 for v in res.values())
+print('boards', len(boards), '| reachable', reach, '| unreachable', len(boards) - reach, '| hardest board needs', max(res.values()), 'moves')
+print('boards per distance:', sorted(Counter(v for v in res.values() if v >= 0).items()))
+
+# ---- why exactly half: a move never changes the parity of inversions among the 5 tiles (read row by row), and the goal has 0 inversions
+assert all((res[p] >= 0) == inversions_even(p) for p in boards)
+print('reachable  <=>  even number of inversions among tiles 1..5: holds for all 720 boards')
+# a horizontal slide keeps the reading order of the tiles; a vertical slide jumps one tile over exactly 2 others (3-wide board), an even change
+unsolvable = [[1, 2, 3], [5, 4, 0]]
+print('example 2 has tiles read 1 2 3 5 4: one inversion (odd) ->', sliding_puzzle(unsolvable))
+
+# ---- the state space grows too fast for the same code on bigger boards
+print('states: 2x3', math.factorial(6), 'reachable', math.factorial(6) // 2, '| 3x3', math.factorial(9), 'reachable', math.factorial(9) // 2,
+      '| 4x4', math.factorial(16), 'reachable', math.factorial(16) // 2)
+
+# ---- the same BFS code does handle the 3x3 (8-puzzle) in memory, to show where the limit starts
+def bfs_count_3x3():
+    goal = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+    seen = {goal}
+    fr = [goal]
+    depth = 0
+    while True:
+        nxt = []
+        for s in fr:
+            z = s.index(0)
+            r, c = divmod(z, 3)
+            for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                a, b = r + dr, c + dc
+                if 0 <= a < 3 and 0 <= b < 3:
+                    j = 3 * a + b
+                    l = list(s)
+                    l[z], l[j] = l[j], l[z]
+                    t = tuple(l)
+                    if t not in seen:
+                        seen.add(t)
+                        nxt.append(t)
+        if not nxt:
+            return len(seen), depth
+        fr, depth = nxt, depth + 1
+n3, depth3 = bfs_count_3x3()
+assert n3 == math.factorial(9) // 2
+print('3x3 BFS from the goal visits', n3, 'boards, hardest needs', depth3, 'moves; 4x4 would need about 10^13 (use A* or IDA* with a heuristic)')
+
+# ---- edge asserts
+assert sliding_puzzle([[1, 2, 3], [4, 5, 0]]) == 0
+assert sliding_puzzle([[1, 2, 3], [4, 0, 5]]) == 1
+assert sliding_puzzle([[0, 1, 2], [3, 4, 5]]) == table[(0, 1, 2, 3, 4, 5)] == 15
+print('edge asserts passed')
+```
+
+**Output (my run):**
+```
+[[1, 2, 3], [4, 0, 5]] -> 1
+[[1, 2, 3], [5, 4, 0]] -> -1
+[[4, 1, 2], [5, 0, 3]] -> 5
+[[1, 2, 3], [4, 5, 0]] -> 0
+boards 720 | reachable 360 | unreachable 360 | hardest board needs 21 moves
+boards per distance: [(0, 1), (1, 2), (2, 3), (3, 5), (4, 6), (5, 7), (6, 10), (7, 12), (8, 12), (9, 16), (10, 23), (11, 25), (12, 28), (13, 39), (14, 44), (15, 40), (16, 29), (17, 21), (18, 18), (19, 12), (20, 6), (21, 1)]
+reachable  <=>  even number of inversions among tiles 1..5: holds for all 720 boards
+example 2 has tiles read 1 2 3 5 4: one inversion (odd) -> -1
+states: 2x3 720 reachable 360 | 3x3 362880 reachable 181440 | 4x4 20922789888000 reachable 10461394944000
+3x3 BFS from the goal visits 181440 boards, hardest needs 31 moves; 4x4 would need about 10^13 (use A* or IDA* with a heuristic)
+edge asserts passed
+```
+
+**Edge cases:**
+- Already solved: 0 moves (checked before the loop, so no queue work).
+- One move away: 1.
+- Unsolvable (odd inversions): the search exhausts all 360 reachable boards and returns -1.
+- Hardest solvable board: 21 moves. The code lists how many boards sit at each distance.
+- Input as lists of lists: convert to a tuple, lists are not hashable and cannot go in a set.
+
+**Follow-ups:**
+- Print the moves? Store a parent pointer per state and walk it back from the goal.
+- Test solvability without search? The inversion parity rule for odd width (this 2 x 3 board and the 3 x 3 puzzle); for even width the blank's row also matters.
+- Bidirectional BFS? Meets in the middle and cuts nodes explored; on 720 states it is not needed, on larger ones it helps.
+
+**Common mistakes:**
+- Using a list as the state (unhashable) or mutating a shared list between neighbours (copy before swapping).
+- Marking states seen when popped, which queues duplicates.
+- Swapping the wrong pair: the blank swaps with a neighbour, never two tiles with each other.
+- Forgetting the start-equals-goal case (answer 0), or returning from the loop before the goal check on the first board.
+
+### Q33 ⭐⭐ 🔴 Alien dictionary (topological order from constraints). `words` is a list of 1 to 100 non-empty lowercase words (length <= 100) claimed to be sorted in an alien alphabet's lexicographic order (a proper prefix comes before the longer word). Return a string containing each distinct letter that appears in `words` exactly once, in an order under which `words` is sorted, or '' if no such order exists (a cycle among the constraints, or a longer word placed before its own prefix). Many alphabets can be valid: the checker accepts any string that contains each letter once and under which the list is sorted, and accepts '' only if no ordering of the letters works; the example shows one accepted answer. Explain how the first differing letters of adjacent words give edges, and why only adjacent pairs are needed. Example: words=['wrt', 'wrf', 'er', 'ett', 'rftt'] -> 'wertf'; words=['z', 'x', 'z'] -> ''; words=['abc', 'ab'] -> ''; words=['a', 'b', 'a'] -> ''; words=['ab'] -> 'ab'.
+**Asked at:** Graph pattern guides and lists (techinterview.org graph interview patterns and comprehensive graph guides, DesignGurus common graph-traversal questions, Techie Delight graph practice list; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Topological sort on a graph built from constraints: letters are nodes, "this letter comes before that letter" is an edge.
+
+**Say this first (1 line):** "Compare each adjacent pair of words, find the first position where they differ, and that gives one edge: the letter in the first word comes before the letter in the second. Then topologically sort the letters; a cycle, or a longer word before its own prefix, means there is no valid alphabet."
+
+**Brute force:** Try every permutation of the distinct letters and test whether the word list is sorted under it. That is up to 26! orders, so it only works for at most 7 or 8 letters. It is the checker in the code: it decides when `''` is a correct answer.
+
+**Optimal:**
+- Nodes: every distinct letter in any word (including letters that get no constraint: they must still appear exactly once in the answer).
+- For each adjacent pair `(a, b)`: scan for the first index where `a[i] != b[i]`. If found, add the edge `a[i] -> b[i]` (once per distinct pair; a repeated edge must not double-count the in-degree) and stop looking at this pair. If no difference is found, one word is a prefix of the other: fine if `a` is the shorter or they are equal, impossible if `len(a) > len(b)` (for example `abc` before `ab`): return `''`.
+- Kahn's algorithm: queue of in-degree-0 letters, pop, output, decrease the successors. If the output has fewer letters than the alphabet, there is a cycle: return `''`.
+- Why only adjacent pairs: the list is sorted, so for `i < j` the order of `words[i]` and `words[j]` follows from the chain `words[i] <= words[i+1] <= ... <= words[j]` by transitivity. Any constraint from a non-adjacent pair is implied by the adjacent ones. Using all pairs would add up to 4950 candidate pairs and the same answer. The code checks it: on all 22,620 small word lists plus 400 random ones, the all-pairs version is impossible exactly when the adjacent-only version is.
+- Why only the first difference counts: after the first differing letters the rest of the words says nothing about the order.
+- Many answers are valid when the constraints leave letters unordered. The code's validator accepts any string containing each letter once under which the list is sorted, and accepts `''` only when the exhaustive permutation search finds no order. The prompt's `'wertf'` is accepted and so is our output.
+
+**Complexity:** Let L be the total length of all words (up to 100 * 100 = 10^4) and K the alphabet size (up to 26). Building edges: O(L) (each adjacent pair is scanned once, up to the shorter length). Kahn: O(K + number of edges), and the edges are at most min(99, K^2). Total O(L + K). Space O(K + edges).
+
+**Dry run:** `['wrt','wrf','er','ett','rftt']`.
+- wrt vs wrf: first difference at index 2, t vs f: edge t -> f.
+- wrf vs er: index 0, w vs e: edge w -> e.
+- er vs ett: index 1, r vs t: edge r -> t.
+- ett vs rftt: index 0, e vs r: edge e -> r.
+- Graph: w -> e -> r -> t -> f. In-degrees: only w is 0. Kahn outputs w, e, r, t, f: `'wertf'`.
+- Example `['z','x','z']`: z -> x, x -> z: a cycle, nothing has in-degree 0, output empty, so `''`.
+
+**Code:**
+```python
+import itertools
+import random
+from collections import deque
+
+random.seed(33)
+
+def alien_order(words):
+    """Edges from the first differing letters of ADJACENT words, then Kahn's algorithm. '' if impossible."""
+    letters = sorted({c for w in words for c in w})
+    adj = {c: set() for c in letters}
+    indeg = {c: 0 for c in letters}
+    for a, b in zip(words, words[1:]):
+        for x, y in zip(a, b):
+            if x != y:
+                if y not in adj[x]:                       # one edge per distinct ordered pair
+                    adj[x].add(y)
+                    indeg[y] += 1
+                break
+        else:                                             # no differing letter: one word is a prefix of the other
+            if len(a) > len(b):                           # longer word first is impossible
+                return ''
+    q = deque(c for c in letters if indeg[c] == 0)
+    out = []
+    while q:
+        u = q.popleft()
+        out.append(u)
+        for v in sorted(adj[u]):
+            indeg[v] -= 1
+            if indeg[v] == 0:
+                q.append(v)
+    return ''.join(out) if len(out) == len(letters) else ''   # fewer than all letters: a cycle
+
+def sorted_under(words, order):
+    rank = {c: i for i, c in enumerate(order)}
+    key = lambda w: [rank[c] for c in w]                  # list comparison: a proper prefix is smaller
+    return all(key(a) <= key(b) for a, b in zip(words, words[1:]))
+
+def valid(words, got):
+    """The checker the prompt states: each letter exactly once and the list sorted under it; '' only if NO ordering works."""
+    letters = sorted({c for w in words for c in w})
+    if got == '':
+        return not any(sorted_under(words, p) for p in itertools.permutations(letters))
+    return sorted(got) == letters and sorted_under(words, got)
+
+def alien_brute(words):
+    letters = sorted({c for w in words for c in w})
+    for p in itertools.permutations(letters):
+        if sorted_under(words, p):
+            return ''.join(p)
+    return ''
+
+def alien_all_pairs(words):
+    """Same algorithm but with constraints from EVERY pair i < j: shows adjacent pairs already imply all of them."""
+    letters = sorted({c for w in words for c in w})
+    adj = {c: set() for c in letters}
+    for i in range(len(words)):
+        for j in range(i + 1, len(words)):
+            a, b = words[i], words[j]
+            for x, y in zip(a, b):
+                if x != y:
+                    adj[x].add(y)
+                    break
+            else:
+                if len(a) > len(b):
+                    return ''
+    indeg = {c: 0 for c in letters}
+    for u in letters:
+        for v in adj[u]:
+            indeg[v] += 1
+    q = deque(c for c in letters if indeg[c] == 0)
+    out = []
+    while q:
+        u = q.popleft()
+        out.append(u)
+        for v in sorted(adj[u]):
+            indeg[v] -= 1
+            if indeg[v] == 0:
+                q.append(v)
+    return ''.join(out) if len(out) == len(letters) else ''
+
+def alien_no_prefix_check(words):
+    """Bug: ignore the 'longer word before its own prefix' case."""
+    letters = sorted({c for w in words for c in w})
+    adj = {c: set() for c in letters}
+    indeg = {c: 0 for c in letters}
+    for a, b in zip(words, words[1:]):
+        for x, y in zip(a, b):
+            if x != y:
+                if y not in adj[x]:
+                    adj[x].add(y)
+                    indeg[y] += 1
+                break
+    q = deque(c for c in letters if indeg[c] == 0)
+    out = []
+    while q:
+        u = q.popleft()
+        out.append(u)
+        for v in adj[u]:
+            indeg[v] -= 1
+            if indeg[v] == 0:
+                q.append(v)
+    return ''.join(out) if len(out) == len(letters) else ''
+
+for w, shown in [(['wrt', 'wrf', 'er', 'ett', 'rftt'], 'wertf'), (['z', 'x', 'z'], ''), (['abc', 'ab'], ''), (['a', 'b', 'a'], ''), (['ab'], 'ab')]:
+    got = alien_order(w)
+    assert valid(w, got) and valid(w, shown), (w, got, shown)
+    print(w, '->', repr(got), '| prompt shows', repr(shown), '| both accepted')
+
+print("no prefix check on ['abc','ab'] ->", repr(alien_no_prefix_check(['abc', 'ab'])), '(wrongly accepted: no differing letter, so no edge)')
+
+# ---- exhaustive: every list of 1..4 words over {a,b,c}, lengths 1..2 (12 possible words): our answer is accepted by the validator,
+# '' appears exactly when no permutation works, and adjacent-pair edges agree with all-pair edges
+words_all = [''.join(p) for L in (1, 2) for p in itertools.product('abc', repeat=L)]
+cnt = empties = 0
+for k in range(1, 5):
+    for combo in itertools.product(words_all, repeat=k):
+        w = list(combo)
+        got = alien_order(w)
+        assert valid(w, got), (w, got)
+        assert (got == '') == (alien_brute(w) == ''), w
+        assert (alien_all_pairs(w) == '') == (got == ''), w
+        empties += got == ''
+        cnt += 1
+print('exhaustive on', cnt, 'word lists:', empties, 'impossible; all answers accepted by the validator, adjacent pairs == all pairs')
+
+# ---- seeded random lists over 5 letters: sample from a hidden alphabet order so most are solvable, then corrupt some
+for t in range(400):
+    alpha = random.sample('abcde', 5)
+    rank = {c: i for i, c in enumerate(alpha)}
+    ws = [''.join(random.choice('abcde') for _ in range(random.randint(1, 4))) for _ in range(random.randint(1, 8))]
+    ws.sort(key=lambda s: [rank[c] for c in s])
+    if t % 3 == 0 and len(ws) > 1:
+        i, j = random.sample(range(len(ws)), 2)
+        ws[i], ws[j] = ws[j], ws[i]                      # may break sortedness
+    got = alien_order(ws)
+    assert valid(ws, got), (ws, got)
+    assert (alien_all_pairs(ws) == '') == (got == '')
+print('400 seeded random lists (5 letters): accepted by the validator; adjacent == all pairs')
+
+# ---- letters with no constraint must still appear exactly once
+r = alien_order(['x', 'y', 'q'])
+assert sorted(alien_order(['ab', 'cd'])) == list('abcd') and sorted(r) == list('qxy') and valid(['x', 'y', 'q'], r)
+print("unconstrained letters: ['ab','cd'] ->", alien_order(['ab', 'cd']))
+
+# ---- max size: 100 words of length 100 over 26 letters in one hidden order; plus a 26-letter chain
+alpha = random.sample('abcdefghijklmnopqrstuvwxyz', 26)
+rank = {c: i for i, c in enumerate(alpha)}
+ws = sorted((''.join(random.choice(alpha) for _ in range(100)) for _ in range(100)), key=lambda s: [rank[c] for c in s])
+got = alien_order(ws)
+assert got != '' and sorted(got) == sorted(set(''.join(ws))) and sorted_under(ws, got)
+print('100 words of length 100: letters', len(got), 'ordering accepted')
+chain = [alpha[i] for i in range(26)]
+assert alien_order(chain) == ''.join(alpha) and alien_order(['a']) == 'a'
+print('edge asserts passed')
+```
+
+**Output (my run):**
+```
+['wrt', 'wrf', 'er', 'ett', 'rftt'] -> 'wertf' | prompt shows 'wertf' | both accepted
+['z', 'x', 'z'] -> '' | prompt shows '' | both accepted
+['abc', 'ab'] -> '' | prompt shows '' | both accepted
+['a', 'b', 'a'] -> '' | prompt shows '' | both accepted
+['ab'] -> 'ab' | prompt shows 'ab' | both accepted
+no prefix check on ['abc','ab'] -> 'abc' (wrongly accepted: no differing letter, so no edge)
+exhaustive on 22620 word lists: 16140 impossible; all answers accepted by the validator, adjacent pairs == all pairs
+400 seeded random lists (5 letters): accepted by the validator; adjacent == all pairs
+unconstrained letters: ['ab','cd'] -> abdc
+100 words of length 100: letters 26 ordering accepted
+edge asserts passed
+```
+
+**Edge cases:**
+- One word: the letters of the word, in any order that keeps each once; there are no constraints (the prompt shows `'ab'`, but `'ba'` is equally valid, and the validator accepts both).
+- Prefix cases: `['ab','abc']` is fine (no edge); `['abc','ab']` is impossible. Missing this check is the most common bug: the code shows it returning `'abc'`.
+- Identical adjacent words: no difference, lengths equal, no constraint.
+- A cycle across non-adjacent words (`['a','b','a']`): transitive through adjacent edges, found as the cycle a -> b -> a.
+- Letters that never get an edge still count: they must be in the output once. Compare the output's sorted letters with the alphabet.
+- Deduplicate edges: two adjacent pairs giving the same letter pair must not add 2 to the in-degree and then decrement once.
+
+**Follow-ups:**
+- Return all valid orders or count them? That is counting topological orders, exponential in general; for ties, Kahn with a lexicographic-smallest heap gives a unique canonical answer.
+- Is the order unique? Only if the Kahn queue never holds two letters at once (a Hamiltonian path in the constraint DAG). The code's `['ab','cd']` example has several.
+- DFS version? Same edges, reverse postorder with a three-colour cycle check (Q31 in this part).
+
+**Common mistakes:**
+- Adding edges for every differing position instead of only the first.
+- Omitting the prefix check.
+- Counting a duplicate edge twice in the in-degree.
+- Building the graph only from letters that appear in an edge, so unconstrained letters vanish from the answer.
+- Comparing with the example string and expecting `'wertf'`: other valid answers exist when constraints do not pin the order.

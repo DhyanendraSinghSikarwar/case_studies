@@ -40,4 +40,4 @@
 - Using a list as the state (unhashable) or mutating a shared list between neighbours (copy before swapping).
 - Marking states seen when popped, which queues duplicates.
 - Swapping the wrong pair: the blank swaps with a neighbour, never two tiles with each other.
-- Hard-coding the answer to -1 when the queue drains, but forgetting the case where the start already equals the goal.
+- Forgetting the start-equals-goal case (answer 0), or returning from the loop before the goal check on the first board.
