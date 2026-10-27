@@ -20,12 +20,12 @@ print(sort_freq([1, 1, 2, 2, 2, 3]), sort_freq([2, 3, 1, 3, 2]))
 assert sort_freq([1, 1, 2, 2, 2, 3]) == [2, 2, 2, 1, 1, 3]
 assert sort_freq([2, 3, 1, 3, 2]) == [2, 2, 3, 3, 1]
 
-# stability alone breaks ties by first position, not by value
+# stability alone keeps first-position order inside a tie: equal-count values interleave
 t = [3, 2, 2, 3, 1]
 print("explicit tie-break  :", sort_freq(t))
-print("stability only      :", sort_freq_no_tiebreak(t), "(3s before 2s: wrong)")
+print("stability only      :", sort_freq_no_tiebreak(t), "(tied values interleaved: wrong)")
 assert sort_freq(t) == [2, 2, 3, 3, 1]
-assert sort_freq_no_tiebreak(t) == [3, 3, 2, 2, 1]
+assert sort_freq_no_tiebreak(t) == [3, 2, 2, 3, 1]
 
 # --- edge cases
 assert sort_freq([]) == []

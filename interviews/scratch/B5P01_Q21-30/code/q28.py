@@ -31,7 +31,7 @@ def find_binary(nums):
 
 def find_floyd(nums):
     """Index i points to nums[i]. The repeated value is the cycle entrance."""
-    slow = fast = nums[0]
+    slow = fast = 0                      # node 0 is the head: no value equals 0
     while True:
         slow = nums[slow]
         fast = nums[nums[fast]]

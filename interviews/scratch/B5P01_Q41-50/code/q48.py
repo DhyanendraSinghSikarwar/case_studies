@@ -48,5 +48,6 @@ assert buckets([-1, 1], 1, 1) is False
 assert buckets([0, 10**9 * 2], 1, 10**9 * 2) is True
 assert buckets([1, 3], 1, -1) is False            # negative valueDiff
 assert buckets([8, 4, 12], 2, 3) is False and buckets([8, 4, 12], 2, 4) is True
-assert buckets(list(range(0, 10**5, 7)), 5, 6) is True
+big = list(range(0, 10**5, 7))                     # neighbours differ by exactly 7
+assert buckets(big, 5, 6) is False and buckets(big, 5, 7) is True
 print("edge asserts passed")

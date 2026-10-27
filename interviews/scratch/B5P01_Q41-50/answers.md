@@ -828,3 +828,352 @@ The prompt's example (1 with probability 1/2) is correct: the run shows 4993 ver
 - Forgetting the i == last case and corrupting the sets.
 - Leaving empty sets in the dict so `insert` wrongly returns False.
 - Returning "was present" instead of "was absent" from insert.
+
+---
+
+### Q48 ⭐ 🔴 Contains duplicate III. Given `nums` and integers indexDiff and valueDiff, decide whether there exist i != j with |i - j| <= indexDiff and |nums[i] - nums[j]| <= valueDiff. Solve with bucketing (bucket width valueDiff+1) in O(n), keeping only the last indexDiff elements; mention sortedcontainers.SortedList as the alternative at O(n log k). Example: nums=[1,2,3,1], indexDiff=3, valueDiff=0 -> True; nums=[1,5,9,1,5,9], indexDiff=2, valueDiff=3 -> False.
+**Asked at:** Public pattern lists (NeetCode 150 / Blind 75 style 'Arrays & Hashing' sections as mirrored on a Scribd copy, a dev.to prep-sheet post and GitHub roadmap repos; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); community lists, not verified company reports | Company-tagged and product-company prep lists (Weekday 'DSA interview questions 2026: 60 must-know problems with patterns' post, Naukri Code360 must-do list for product-based companies; snippets only, not opened); commercial prep content, not verified candidate reports
+**Pattern:** Bucketing (pigeonhole) over a sliding window of the last k indices. Bucket width t+1 means two values in the same bucket are always within t, and only adjacent buckets can hold other close values.
+
+**Say this first (1 line):** Put each value in bucket x // (t+1), keep only the last k values in a dict of buckets, and on each new value check its own bucket and the two neighbours.
+
+**Brute force:** For each i compare with the next k elements: O(n * k) time, O(1) space. Too slow when both n and k are around 10^5.
+
+**Optimal:**
+- Width w = valueDiff + 1. Bucket id = x // w. Python floor division works for negatives (-1 // 3 is -1), so negative values bucket correctly. In C or Java the truncating division needs a fix.
+- Same bucket as an existing value: the gap is at most w - 1 = t, so return True.
+- Neighbour bucket b-1 or b+1: the stored value may or may not be within t, so compare the actual gap.
+- Buckets two or more apart differ by at least w + 1 > t, so they cannot match.
+- Invariant: each bucket holds at most one value (a second one would have returned True). After adding index i, evict nums[i-k] so only the last k values remain.
+- Guard: indexDiff <= 0 or valueDiff < 0 means False.
+- Alternative: a `SortedList` window. For x, bisect for the first stored value >= x - t and test it is <= x + t. O(n log k) time. `sortedcontainers` is third party; I use it only here, as the question says.
+
+**Complexity:** Buckets: O(n) average time (each element does a constant number of dict operations), O(min(n, k)) space. SortedList: O(n log k) time, O(k) space.
+
+**Dry run:** nums = [1, 5, 9, 1, 5, 9], k = 2, t = 3, so w = 4.
+- 1 -> bucket 0, store. 5 -> bucket 1: neighbour bucket 0 holds 1, gap 4 > 3, no. Store.
+- 9 -> bucket 2: neighbour bucket 1 holds 5, gap 4 > 3, no. Store. Evict nums[0] = 1 (bucket 0).
+- 1 -> bucket 0: bucket 1 holds 5, gap 4, no. Evict 5. And so on: every adjacent gap is exactly 4, never within 3, so the answer is False.
+
+**Code:**
+```python
+import random
+from sortedcontainers import SortedList
+
+def brute(nums, k, t):                             # O(n * k)
+    n = len(nums)
+    return any(abs(nums[i] - nums[j]) <= t for i in range(n) for j in range(i + 1, min(n, i + k + 1)))
+
+def buckets(nums, k, t):                           # O(n) average time, O(min(n, k)) space
+    if k <= 0 or t < 0: return False
+    w, box = t + 1, {}                             # bucket id = x // w; two values in one bucket differ by <= t
+    for i, x in enumerate(nums):
+        b = x // w                                 # floor division: correct for negatives in Python
+        if b in box: return True                   # same bucket
+        if b - 1 in box and x - box[b - 1] <= t: return True    # neighbour buckets: check the actual gap
+        if b + 1 in box and box[b + 1] - x <= t: return True
+        box[b] = x                                 # at most one value per bucket (else we would have returned)
+        if i >= k: del box[nums[i - k] // w]       # keep only the last k values
+    return False
+
+def sorted_list(nums, k, t):                       # O(n log k)
+    if k <= 0 or t < 0: return False
+    sl = SortedList()
+    for i, x in enumerate(nums):
+        j = sl.bisect_left(x - t)                  # first stored value >= x - t
+        if j < len(sl) and sl[j] <= x + t: return True
+        sl.add(x)
+        if i >= k: sl.remove(nums[i - k])
+    return False
+
+for args, want in [(([1, 2, 3, 1], 3, 0), True), (([1, 5, 9, 1, 5, 9], 2, 3), False)]:
+    assert brute(*args) == buckets(*args) == sorted_list(*args) == want
+print("examples:", buckets([1, 2, 3, 1], 3, 0), buckets([1, 5, 9, 1, 5, 9], 2, 3))
+
+rng = random.Random(48)
+for _ in range(2000):
+    n = rng.randint(0, 12)
+    a = [rng.randint(-15, 15) for _ in range(n)]
+    k, t = rng.randint(0, 5), rng.randint(0, 6)
+    r = brute(a, k, t)
+    assert buckets(a, k, t) == r == sorted_list(a, k, t), (a, k, t)
+print("2000 seeded cross-checks passed (brute == buckets == SortedList)")
+
+assert buckets([], 3, 0) is False and buckets([5], 3, 0) is False
+assert buckets([1, 1], 0, 5) is False              # indexDiff 0: i != j impossible
+assert buckets([1, 1], 1, 0) is True
+assert buckets([-1, 1], 1, 2) is True              # negatives straddle zero: -1//3=-1, 1//3=0, neighbour check
+assert buckets([-1, 1], 1, 1) is False
+assert buckets([0, 10**9 * 2], 1, 10**9 * 2) is True
+assert buckets([1, 3], 1, -1) is False            # negative valueDiff
+assert buckets([8, 4, 12], 2, 3) is False and buckets([8, 4, 12], 2, 4) is True
+big = list(range(0, 10**5, 7))                     # neighbours differ by exactly 7
+assert buckets(big, 5, 6) is False and buckets(big, 5, 7) is True
+print("edge asserts passed")
+```
+
+**Output (my run):**
+```text
+examples: True False
+2000 seeded cross-checks passed (brute == buckets == SortedList)
+edge asserts passed
+```
+
+Both prompt examples are correct (True and False).
+
+**Edge cases:**
+- indexDiff = 0: no two distinct indices are allowed, so False even for equal values.
+- valueDiff = 0: width 1, only equal values match.
+- Negative values and values straddling zero: floor division handles them; neighbour check catches -1 and 1 with t = 2.
+- Very large values: Python ints, no overflow (in fixed-width languages the subtraction can overflow).
+- Window eviction must use the bucket of the old value, `nums[i-k] // w`.
+
+**Follow-ups:**
+- Why must the neighbour check compare actual values? Adjacent buckets only guarantee a gap below 2w, not below t.
+- Why evict after insert with `i >= k`? After inserting index i, the window must hold indices i-k+1..i, so i-k leaves.
+- Which would you pick in an interview? Bucket if you can explain the pigeonhole in a minute; SortedList if the width idea is not coming, since the logic is shorter.
+
+**Common mistakes:**
+- Bucket width t instead of t+1 (breaks t = 0 with a divide by zero).
+- Using truncating division for negatives.
+- Evicting the wrong bucket or forgetting to evict.
+- Storing a list per bucket rather than noticing one value suffices.
+- Forgetting the guards for k <= 0 and t < 0.
+
+---
+
+### Q49 ⭐ 🔴 Max points on a line. Given distinct 2D integer points, return the maximum number of them lying on one straight line, in O(n^2). Hash the slope from each anchor as a reduced fraction using gcd and normalised sign, never as a float, and handle vertical lines. Example: [[1,1],[2,2],[3,3]] -> 3; [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]] -> 4.
+**Asked at:** Public pattern lists (NeetCode 150 / Blind 75 style 'Arrays & Hashing' sections as mirrored on a Scribd copy, a dev.to prep-sheet post and GitHub roadmap repos; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); community lists, not verified company reports | Company-tagged and product-company prep lists (Weekday 'DSA interview questions 2026: 60 must-know problems with patterns' post, Naukri Code360 must-do list for product-based companies; snippets only, not opened); commercial prep content, not verified candidate reports
+**Pattern:** Anchor plus hashed direction. Fix a point, hash the direction to every other point in a canonical exact form, and the biggest bucket plus the anchor is the best line through that anchor.
+
+**Say this first (1 line):** For each anchor, count the other points by reduced (dx, dy) with a fixed sign, never by float slope; answer is 1 plus the biggest count over all anchors.
+
+**Brute force:** For every pair define the line, then count points with zero cross product (dx1*dy2 == dx2*dy1): O(n^3), exact.
+
+**Optimal:**
+- For anchor i, for every other point compute dx, dy.
+- Divide both by g = gcd(dx, dy). Equal directions then give identical pairs.
+- Normalise the sign so the opposite direction maps to the same key: if dx < 0, or dx == 0 and dy < 0, negate both. This makes vertical lines (0, 1) and horizontal lines (1, 0) work with no special case and no division by zero.
+- Count with a Counter; best through this anchor = 1 + max count.
+- Points on the same line through the anchor share the same direction key, and any two lines through the anchor have different keys, so it counts exactly.
+- Floats are wrong: slopes like (n-1)/n and n/(n+1) differ by about 1e-18, below double precision (shown in the run).
+
+**Complexity:** n anchors times n points times a gcd on numbers up to the coordinate range (about log of the value, treat as small): O(n^2 log C) time, O(n) space for one Counter at a time. People say O(n^2); the gcd factor is small for 32-bit-size coordinates.
+
+**Dry run:** points (1,1), (3,2), (5,3), (4,1), (2,3), (1,4); anchor (4,1).
+- To (1,1): (-3, 0) -> (3, 0)/3 = (1, 0) after sign flip. To (3,2): (-1, 1) -> (1, -1). To (5,3): (1, 2). To (2,3): (-2, 2) -> (2, -2)/2 = (1, -1). To (1,4): (-3, 3) -> (1, -1).
+- Direction (1, -1) has count 3, so 1 + 3 = 4: the points (4,1), (3,2), (2,3), (1,4).
+
+**Code:**
+```python
+from math import gcd
+from collections import Counter
+import random
+
+def brute(pts):                                    # O(n^3): for each pair, count points with zero cross product
+    n = len(pts)
+    if n <= 2: return n
+    best = 2
+    for i in range(n):
+        for j in range(i + 1, n):
+            (x1, y1), (x2, y2) = pts[i], pts[j]
+            c = sum((x2 - x1) * (y - y1) == (y2 - y1) * (x - x1) for x, y in pts)
+            best = max(best, c)
+    return best
+
+def direction(dx, dy):                             # reduced, sign-normalised slope as an integer pair
+    g = gcd(dx, dy)                                # gcd >= 0, and > 0 for distinct points
+    dx, dy = dx // g, dy // g
+    if dx < 0 or (dx == 0 and dy < 0): dx, dy = -dx, -dy
+    return (dx, dy)                                # vertical line is (0, 1); horizontal is (1, 0)
+
+def optimal(pts):                                  # O(n^2) time, O(n) space (distinct points)
+    n = len(pts)
+    if n <= 2: return n
+    best = 1
+    for i, (x0, y0) in enumerate(pts):
+        c = Counter(direction(x - x0, y - y0) for j, (x, y) in enumerate(pts) if j != i)
+        best = max(best, 1 + max(c.values()))      # anchor + the most common direction
+    return best
+
+for p, want in [([[1, 1], [2, 2], [3, 3]], 3),
+                ([[1, 1], [3, 2], [5, 3], [4, 1], [2, 3], [1, 4]], 4)]:
+    assert brute(p) == optimal(p) == want
+print("examples:", optimal([[1, 1], [2, 2], [3, 3]]), optimal([[1, 1], [3, 2], [5, 3], [4, 1], [2, 3], [1, 4]]))
+
+# why not floats: slopes (n-1)/n and n/(n+1) differ by about 1e-18, far below double precision
+n = 10**9
+fp = [[0, 0], [n, n - 1], [n + 1, n]]
+print("not collinear: exact max =", brute(fp), "| optimal =", optimal(fp),
+      "| float slopes equal:", (n - 1) / n == n / (n + 1))
+
+rng = random.Random(49)
+for _ in range(500):
+    n = rng.randint(0, 10)
+    s = set()
+    while len(s) < n: s.add((rng.randint(-4, 4), rng.randint(-4, 4)))
+    pts = [list(t) for t in s]
+    assert brute(pts) == optimal(pts), pts
+print("500 seeded cross-checks passed")
+
+assert optimal([]) == 0 and optimal([[1, 1]]) == 1 and optimal([[1, 1], [2, 5]]) == 2
+assert optimal([[3, 0], [3, 1], [3, 2], [4, 4]]) == 3              # vertical line
+assert optimal([[0, 5], [1, 5], [2, 5], [-7, 5]]) == 4             # horizontal line, negative x
+assert optimal([[0, 0], [1, 1], [-1, -1], [2, 2]]) == 4            # opposite directions share a normalised key
+assert optimal([[0, 0], [1, 2], [2, 1], [3, 3]]) == 2              # two parallel-ish pairs, no triple
+assert direction(-2, -4) == direction(2, 4) == (1, 2) and direction(0, -5) == (0, 1)
+print("edge asserts passed")
+```
+
+**Output (my run):**
+```text
+examples: 3 4
+not collinear: exact max = 2 | optimal = 2 | float slopes equal: True
+500 seeded cross-checks passed
+edge asserts passed
+```
+
+Both prompt examples are correct (3 and 4). The prompt says points are distinct; with duplicate points gcd(0, 0) = 0 would divide by zero, so you would count duplicates separately per anchor.
+
+**Edge cases:**
+- 0, 1 or 2 points: answer is n.
+- Vertical line (dx = 0): key (0, 1), no divide by zero.
+- Horizontal line: key (1, 0).
+- Opposite directions from the anchor (left and right on the same line): sign normalisation merges them.
+- Negative coordinates: `gcd` ignores sign, `//` on exact multiples is exact.
+- Duplicate points (outside the stated constraints) need a duplicate counter.
+
+**Follow-ups:**
+- Why is the brute force exact but slow? Cross product is integer arithmetic, but it checks n points for each of n^2 pairs.
+- Could you use `Fraction`? Yes (it normalises for you); it is slower per operation, and you still need vertical handled separately.
+- Only look at points after the anchor? Yes, for j > i, since lines through earlier anchors were already counted; it halves the work.
+
+**Common mistakes:**
+- Float slope `dy / dx`: wrong for near-equal slopes and a crash at dx = 0.
+- Not reducing by gcd, so (2, 4) and (1, 2) are different keys.
+- Not normalising sign, so (-1, -2) and (1, 2) are different keys.
+- Forgetting to add the anchor itself (answer off by one).
+- Returning 0 or 1 for n = 2.
+
+---
+
+### Q50 ⭐ 🔴 Number of submatrices that sum to target. Given an m x n integer matrix (negatives allowed) and an integer target, count submatrices (contiguous rectangles) whose elements sum to target, in O(m^2 * n). Fix a pair of rows, collapse to a 1D array of column sums and reuse the subarray-sum-equals-k hashmap. Example: matrix=[[0,1,0],[1,1,1],[0,1,0]], target=0 -> 4.
+**Asked at:** Public pattern lists (NeetCode 150 / Blind 75 style 'Arrays & Hashing' sections as mirrored on a Scribd copy, a dev.to prep-sheet post and GitHub roadmap repos; search snippets only, not opened; WebFetch failed with getaddrinfo ENOTFOUND); community lists, not verified company reports | Company-tagged and product-company prep lists (Weekday 'DSA interview questions 2026: 60 must-know problems with patterns' post, Naukri Code360 must-do list for product-based companies; snippets only, not opened); commercial prep content, not verified candidate reports
+**Pattern:** Reduce 2D to 1D. Fix the top and bottom rows, collapse the rows between them into one array of column sums, then count subarrays summing to target with the prefix-sum hashmap (Subarray Sum Equals K).
+
+**Say this first (1 line):** For each pair of rows keep running column sums, and run the 1D "count subarrays with sum k" hashmap on that array: O(m^2 * n).
+
+**Brute force:** Build a 2D prefix-sum table, then test every rectangle with four corner lookups: O(m^2 n^2) time, O(mn) space.
+
+**Optimal:**
+- For each top row, start a column-sum array of zeros.
+- For each bottom row from top downward, add that row into the column sums (O(n)).
+- Now every rectangle with these top and bottom rows is a contiguous subarray of the column sums. Count subarrays with sum = target using a Counter of prefix sums seeded with {0: 1}: add `seen[pre - target]`, then record `pre`.
+- The hashmap is needed because negatives break sliding windows and monotonic assumptions, same as the 1D problem.
+- Pick the smaller dimension for the row pair loops: loop over pairs of the shorter side, so the cost is min(m, n)^2 * max(m, n).
+
+**Complexity:** O(m^2 * n) time: m^2/2 row pairs, each does O(n) work for the update and O(n) average dict operations. Space O(n) for the column sums and the map. Brute is O(m^2 n^2).
+
+**Dry run:** matrix [[0,1,0],[1,1,1],[0,1,0]], target 0.
+- top=0, bottom=0: col = [0,1,0]. Start seen = {0: 1}.
+  - v=0: pre=0, add seen[0] = 1 (subarray [0]); seen[0] becomes 2.
+  - v=1: pre=1, add seen[1] = 0.
+  - v=0: pre=1, add seen[1] = 1 (the last [0]). Count 2.
+- Rows with a 1 in every column sum or any range crossing the middle column give sums >= 1: 0 more.
+- top=2, bottom=2: col = [0,1,0] again: 2.
+- Total 4: the four corner zeros.
+
+**Code:**
+```python
+from collections import Counter
+import random
+
+def brute(mat, target):                            # O(m^2 n^2) with a 2D prefix-sum table
+    m, n = len(mat), len(mat[0]) if mat else 0
+    P = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m):
+        for j in range(n):
+            P[i + 1][j + 1] = mat[i][j] + P[i][j + 1] + P[i + 1][j] - P[i][j]
+    cnt = 0
+    for r1 in range(m):
+        for r2 in range(r1, m):
+            for c1 in range(n):
+                for c2 in range(c1, n):
+                    s = P[r2 + 1][c2 + 1] - P[r1][c2 + 1] - P[r2 + 1][c1] + P[r1][c1]
+                    cnt += s == target
+    return cnt
+
+def subarray_sum_k(arr, k):                        # the 1D hashmap routine: count subarrays with sum k
+    seen, pre, cnt = Counter({0: 1}), 0, 0
+    for v in arr:
+        pre += v
+        cnt += seen[pre - k]
+        seen[pre] += 1
+    return cnt
+
+def optimal(mat, target):                          # O(m^2 * n) time, O(n) extra space (plus O(n) map)
+    if not mat or not mat[0]: return 0
+    m, n = len(mat), len(mat[0])
+    total = 0
+    for top in range(m):
+        col = [0] * n                              # column sums of rows top..bottom
+        for bottom in range(top, m):
+            for j in range(n): col[j] += mat[bottom][j]
+            total += subarray_sum_k(col, target)
+    return total
+
+ex = [[0, 1, 0], [1, 1, 1], [0, 1, 0]]
+assert brute(ex, 0) == optimal(ex, 0) == 4
+print("example target 0:", optimal(ex, 0), "| same matrix target 1:", optimal(ex, 1), "(brute", brute(ex, 1), ")")
+ex2 = [[1, -1], [-1, 1]]
+print("[[1,-1],[-1,1]] target 0:", optimal(ex2, 0), "(brute", brute(ex2, 0), ")")
+
+rng = random.Random(50)
+for _ in range(500):
+    m, n = rng.randint(1, 5), rng.randint(1, 5)
+    mat = [[rng.randint(-3, 3) for _ in range(n)] for _ in range(m)]
+    t = rng.randint(-4, 4)
+    assert brute(mat, t) == optimal(mat, t), (mat, t)
+print("500 seeded cross-checks passed (negatives included)")
+
+assert optimal([], 0) == 0 and optimal([[]], 0) == 0
+assert optimal([[5]], 5) == 1 and optimal([[5]], 4) == 0
+assert optimal([[0] * 4 for _ in range(4)], 0) == (4 * 5 // 2) ** 2     # all zeros: every rectangle counts
+assert optimal([[1, 2, 3]], 6) == 1                                       # single row degenerates to 1D
+assert optimal([[1], [2], [3]], 5) == 1                                   # single column
+assert optimal([[-1, -1], [-1, -1]], -2) == 4                             # negatives: 2 horizontal, 2 vertical
+big = [[(i * 7 + j * 3) % 5 - 2 for j in range(60)] for i in range(60)]
+print("60x60 pattern matrix, target 0:", optimal(big, 0))
+print("edge asserts passed")
+```
+
+**Output (my run):**
+```text
+example target 0: 4 | same matrix target 1: 17 (brute 17 )
+[[1,-1],[-1,1]] target 0: 5 (brute 5 )
+500 seeded cross-checks passed (negatives included)
+60x60 pattern matrix, target 0: 1577556
+edge asserts passed
+```
+
+The prompt example is correct (4).
+
+**Edge cases:**
+- Empty matrix or empty rows: 0.
+- Single row or column: reduces to the 1D problem.
+- All zeros with target 0: every rectangle counts, (m(m+1)/2) * (n(n+1)/2).
+- Negatives: handled by the hashmap; no window shrinking.
+- Target not reachable: 0.
+
+**Follow-ups:**
+- Why seed the Counter with {0: 1}? So subarrays that start at index 0 are counted.
+- Can you do better than O(m^2 n)? Not by this approach for general integers with negatives; it is the standard answer.
+- What if values are non-negative? You can use a two-pointer window per row pair and skip the hash, still O(m^2 n).
+- Space-time choice? 2D prefix sums are easier to explain, but O(m^2 n^2) and O(mn) space.
+
+**Common mistakes:**
+- Forgetting the {0: 1} seed.
+- Updating the Counter before querying `pre - target` (wrong when target is 0).
+- Rebuilding column sums from scratch for every row pair (O(m^3 n)).
+- Looping over the longer dimension for pairs.
+- Counting only maximal rectangles instead of all.
