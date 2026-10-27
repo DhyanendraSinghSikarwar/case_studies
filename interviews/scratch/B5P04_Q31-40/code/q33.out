@@ -1,0 +1,11 @@
+valid_fast([1,2,3,4,5],[4,5,3,2,1]) -> True
+valid_fast([1,2,3,4,5],[4,3,5,1,2]) -> False
+n=0: valid pop orders = 1
+n=1: valid pop orders = 1
+n=2: valid pop orders = 2
+n=3: valid pop orders = 5
+n=4: valid pop orders = 14
+n=5: valid pop orders = 42
+n=6: valid pop orders = 132
+n=7: valid pop orders = 429
+400 seeded random cases agree with the exhaustive interleaving search

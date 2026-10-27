@@ -1,0 +1,3 @@
+[True, True, True, False, 2, True, True, True, 4]
+(-1) % 3 = 2 in Python (a C-style % would give -1)
+2000 seeded random op sequences match the deque-based reference

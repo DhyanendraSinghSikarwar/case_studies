@@ -1,0 +1,4 @@
+StackOneQueue -> [None, None, 2, 2, False, 1, True]
+StackTwoQueues -> [None, None, 2, 2, False, 1, True]
+random cross-check passed: 1500 operation sequences
+queue ops for one push when n items are present (one-queue version): [(0, 1), (1, 3), (10, 21), (100, 201)]
