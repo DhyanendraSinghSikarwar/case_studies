@@ -1147,7 +1147,7 @@ Reading the output:
 - Then `(0, 0)` has candidates 2 and 6 (two options): try 2 first.
 - Then `(0, 2)` has one candidate, 4; `(0, 5)` has 5 and 8; `(1, 4)` has 1 and 9; `(1, 6)` has only 9.
 - Whenever some cell has no candidate the search backs out immediately (the `bk == 0` return).
-- It finishes after 54 calls (48 placements plus 6 guesses that were undone). Reading order with the same masks needs 522 calls on the same board.
+- It finishes after 54 calls for 48 empty cells: a call is made per placement plus one at the end, so at most a few calls went into undone guesses. Reading order with the same masks needs 522 calls on the same board.
 
 **Code:**
 ```python
@@ -1362,3 +1362,381 @@ Reading the output:
 - Forgetting to undo all three masks and the grid cell on backtrack.
 - Mixing digit `d` and bit `d - 1` conventions between placing and reading.
 - Picking the first empty cell (no fail-first rule): same answer, far more calls.
+
+### Q26 ⭐⭐ 🔴 Maximum XOR of two numbers (binary trie). `nums` has 2 <= len <= 3*10^4 integers in 0..2^31 - 1. Return the maximum of `nums[i] ^ nums[j]` over pairs i < j. Build a binary trie of the 31-bit patterns (bit 30 first), and for each number walk the trie choosing, at each bit, the child with the OPPOSITE bit when it exists (greedy: a higher bit outweighs all lower bits together). Insert each number after querying so that i < j holds. State the cost O(31 * n) against O(n^2) for all pairs, and the memory of the trie (up to 31 * n nodes). A hash-set-of-prefixes approach is the follow-up. Note that Python integers are not capped at 31 bits, so the bit width is a constraint of this question, not of the language. In the answer include a dry run on the first example and a seeded random cross-check of your solution against an O(n^2) loop over all pairs on small inputs. Example: nums=[12, 5, 9, 21, 7] -> 28; nums=[0, 0] -> 0; nums=[7, 7, 7] -> 0; nums=[2147483647, 0] -> 2147483647; nums=[8, 1] -> 9.
+**Asked at:** A Teamblind discussion of a bit-based trie question, plus the techinterview.org trie posts (search snippets only, not opened)
+
+**Pattern:** Binary trie over fixed-width bit patterns, with a greedy walk that prefers the opposite bit at each level.
+
+**Say this first (1 line):** "A higher bit outweighs all the lower bits together, so for each number I walk the trie from bit 30 down and take the child with the opposite bit whenever it exists. That is the best partner among the stored numbers, found in 31 steps."
+
+**Brute force:** XOR every pair `i < j` and take the maximum: O(n^2). At `n = 30000` that is 449,985,000 pairs, far too slow in Python. It is the oracle for small `n`.
+
+**Optimal:**
+- The trie has one level per bit, bit 30 first (31 levels, matching values in `0..2^31 - 1`). A number is a path of 31 edges, each labelled 0 or 1. The code stores the two children in parallel lists `c0`, `c1` (index 0 means missing; node 0 is the root).
+- Query for `x`: at bit `b`, if the child for `1 - bit_b(x)` exists, go there and set bit `b` of the result; otherwise follow the child for `bit_b(x)`, which must exist (every stored number is a full-length path), and the result bit stays 0.
+- Why greedy is right: the XOR bit at position `b` is worth `2^b`, and `2^b` is greater than the sum of all lower bits `2^b - 1`. So whenever a partner can give a 1 at bit `b`, every partner that gives 0 there is worse, whatever happens below.
+- Order: for each number, query first, then insert, so only numbers earlier in the list are partners (`i < j`). (Inserting first would also give the correct answer: the extra self-pair gives 0, which never beats a real pair; the code checks this.)
+- The bit width: Python integers are not capped at 31 bits. The width 31 is a rule of this question. A negative input would read sign bits forever (`(-1 >> 30) & 1 == 1`, and the same for every higher bit in Python 3.13), so the walk would be meaningless; the constraints rule negatives out. If they were allowed you would have to mask to a width first (`x & 0xFFFFFFFF`).
+- Follow-up approach, a hash set of prefixes: build the answer bit by bit from the top; at bit `b` the candidate answer is `ans | 1 << b`; collect the set of all `x >> b`; the candidate is possible if some `p` in the set has `p ^ candidate_prefix` also in the set. 31 passes of O(n), no trie memory. The code implements it and checks it.
+
+**Complexity:** Time O(31 * n) = O(n * B) for `B = 31` bits: one insert and one query per number, 31 steps each. Against O(n^2) for all pairs. Space: up to `31 * n + 1` nodes (930,001 at `n = 30000`; the random test built 516,727 nodes because the top bits are shared). Each node is two list slots in this encoding. The prefix-set approach uses O(n) space.
+
+**Dry run:** `nums = [12, 5, 9, 21, 7]`, 5-bit view so the paths fit on a line (the real code uses 31 bits; the leading zeros do not change the answer).
+- Insert 12 (`01100`).
+- Query 5 (`00101`) against `{12}`: the only partner is 12, xor 9. Query 9 (`01001`) against `{12, 5}`: at bit 3 take the child with a 0 (that is 5), and at bit 2 take the child with a 1 (5 again), so the xor is `01100` = 12, partner 5.
+- Query 21 (`10101`) against `{12, 5, 9}`: bit 4: x has 1, opposite child 0 exists (all three stored numbers have 0 at bit 4), take it; bit 3: x has 0, take 1 (12 and 9 have it); bit 2: x has 1, take 0 (only 9 remains with 0 here); bit 1 and bit 0: no choice. Partner 9, xor `11100` = 28.
+- Query 7 (`00111`) against `{12, 5, 9, 21}`: best is 21, xor 18.
+- Results 9, 12, 28, 18. Maximum 28.
+
+**Code:**
+```python
+import random, itertools, time
+
+random.seed(26)
+BITS = 31                                   # the question's width: values are in 0..2^31 - 1, bit 30 is the top bit
+
+def max_xor(nums, bits=BITS, stats=None):
+    """Binary trie in two parallel lists (child 0, child 1). Query each number, THEN insert it, so only i < j pairs are seen."""
+    c0 = [0]; c1 = [0]                      # node 0 is the root; child index 0 means 'missing'
+    children = (c0, c1)
+    best = 0
+    def insert(x):
+        nd = 0
+        for b in range(bits - 1, -1, -1):
+            bit = x >> b & 1
+            nxt = children[bit][nd]
+            if not nxt:
+                c0.append(0); c1.append(0); nxt = len(c0) - 1; children[bit][nd] = nxt
+            nd = nxt
+    def query(x):
+        nd = 0; got = 0
+        for b in range(bits - 1, -1, -1):
+            bit = x >> b & 1
+            want = children[bit ^ 1][nd]    # the child with the OPPOSITE bit
+            if want: got |= 1 << b; nd = want
+            else: nd = children[bit][nd]    # forced to follow the same bit (it must exist: the trie is a union of full paths)
+        return got
+    insert(nums[0])
+    for x in nums[1:]:
+        best = max(best, query(x)); insert(x)
+    if stats is not None: stats['nodes'] = len(c0)
+    return best
+
+def prefix_set(nums, bits=BITS):
+    """Follow-up: hash set of prefixes. Grow the answer bit by bit; keep a bit if two prefixes XOR to the candidate."""
+    ans = 0
+    for b in range(bits - 1, -1, -1):
+        pref = {x >> b for x in nums}
+        cand = (ans >> b) | 1
+        if any(p ^ cand in pref for p in pref): ans |= 1 << b
+    return ans
+
+def brute(nums): return max(a ^ b for a, b in itertools.combinations(nums, 2))
+
+for nums, exp in [([12, 5, 9, 21, 7], 28), ([0, 0], 0), ([7, 7, 7], 0), ([2147483647, 0], 2147483647), ([8, 1], 9)]:
+    a, b, c = max_xor(nums), brute(nums), prefix_set(nums)
+    assert a == b == c == exp, nums
+    print('example', nums, '->', a)
+
+# the greedy walk for 21 against {12, 5, 9} using 5 bits so the path fits on a line
+def show_walk(x, stored, bits=5):
+    print(f'query {x} = {x:0{bits}b}, stored {stored} = {[format(y, "0%db" % bits) for y in stored]}')
+    path = 0; got = 0
+    for b in range(bits - 1, -1, -1):
+        bit = x >> b & 1
+        have = {y >> b for y in stored if (y >> (b + 1)) == path}        # next-bit prefixes present below the current node
+        want = path << 1 | (bit ^ 1)
+        if want in have: got |= 1 << b; path = want; print(f'  bit {b}: x has {bit}, opposite child exists -> take {bit ^ 1}, xor bit = 1')
+        else: path = path << 1 | bit; print(f'  bit {b}: x has {bit}, opposite child missing -> take {bit}, xor bit = 0')
+    print('  xor =', got, f'= {got:0{bits}b}, partner = {path}')
+    return got
+show_walk(5, [12], 5); show_walk(9, [12, 5], 5)
+g = show_walk(21, [12, 5, 9], 5); assert g == 28
+g2 = show_walk(7, [12, 5, 9, 21], 5); assert max(9, 12, 28, 18) == 28; print('results of the four queries: 9, 12, 28, 18 -> maximum 28')
+
+# trie size: nodes <= 31 * n + 1
+st = {}; nums = [random.randrange(1 << 31) for _ in range(30000)]
+r = max_xor(nums, stats=st)
+print('30000 random 31-bit numbers: trie nodes', st['nodes'], '<= bound 31 * 30000 + 1 =', 31 * 30000 + 1)
+assert st['nodes'] <= 31 * 30000 + 1
+st2 = {}; max_xor(list(range(1000)), stats=st2); print('1000 consecutive numbers 0..999: nodes', st2['nodes'], '(shared prefixes: far fewer than 31000)')
+t0 = time.time(); max_xor(nums); t1 = time.time() - t0
+t0 = time.time(); r2 = prefix_set(nums); t2 = time.time() - t0
+assert r == r2
+print(f'sandbox timing only: trie {t1:.2f} s, prefix-set {t2:.2f} s for n = 30000 (not a proof of big-O)')
+
+# n^2 for n = 30000 would be about 4.5 * 10^8 pair XORs: not run
+print('pairs at the maximum size:', 30000 * 29999 // 2)
+
+# claim: inserting BEFORE querying would also be right here, because the self-pair x ^ x = 0 never beats a real pair
+def insert_first(nums):
+    return max(x ^ y for x in nums for y in nums)           # includes i == j pairs
+for _ in range(300):
+    nums = [random.randrange(64) for _ in range(random.randint(2, 8))]
+    assert max_xor(nums) == brute(nums) == insert_first(nums)
+print('300 random lists: the maximum over i <= j equals the maximum over i < j (the self-pair only adds 0)')
+
+# negative numbers are outside the constraints; show what Python does so nobody 'fixes' it with a 31-bit loop
+print('Python 3.13: (-1 >> 30) & 1 =', (-1 >> 30) & 1, ' (-1 >> 31) & 1 =', (-1 >> 31) & 1, ' -> a negative input reads sign bits forever; the 31-bit width is the question\'s rule, not the language')
+print('Python ints are not capped: (2**31 - 1) ^ 0 =', (2**31 - 1) ^ 0, ', 2**40 ^ 1 =', 2**40 ^ 1)
+
+# seeded random cross-check
+for _ in range(400):
+    n = random.randint(2, 12); hi = random.choice([2, 8, 100, 2 ** 31])
+    nums = [random.randrange(hi) for _ in range(n)]
+    assert max_xor(nums) == brute(nums) == prefix_set(nums), nums
+print('400 seeded random cases agree (trie, prefix-set, O(n^2))')
+
+# edge asserts
+assert max_xor([7, 7]) == 0 and max_xor([0, 2147483647]) == 2147483647 and max_xor([5, 5, 5, 5]) == 0
+assert max_xor([1, 2]) == 3 and max_xor([2 ** 30, 2 ** 30 - 1]) == 2 ** 31 - 1
+print('edge asserts passed')
+```
+
+**Output (my run):**
+```
+example [12, 5, 9, 21, 7] -> 28
+example [0, 0] -> 0
+example [7, 7, 7] -> 0
+example [2147483647, 0] -> 2147483647
+example [8, 1] -> 9
+query 5 = 00101, stored [12] = ['01100']
+  bit 4: x has 0, opposite child missing -> take 0, xor bit = 0
+  bit 3: x has 0, opposite child exists -> take 1, xor bit = 1
+  bit 2: x has 1, opposite child missing -> take 1, xor bit = 0
+  bit 1: x has 0, opposite child missing -> take 0, xor bit = 0
+  bit 0: x has 1, opposite child exists -> take 0, xor bit = 1
+  xor = 9 = 01001, partner = 12
+query 9 = 01001, stored [12, 5] = ['01100', '00101']
+  bit 4: x has 0, opposite child missing -> take 0, xor bit = 0
+  bit 3: x has 1, opposite child exists -> take 0, xor bit = 1
+  bit 2: x has 0, opposite child exists -> take 1, xor bit = 1
+  bit 1: x has 0, opposite child missing -> take 0, xor bit = 0
+  bit 0: x has 1, opposite child missing -> take 1, xor bit = 0
+  xor = 12 = 01100, partner = 5
+query 21 = 10101, stored [12, 5, 9] = ['01100', '00101', '01001']
+  bit 4: x has 1, opposite child exists -> take 0, xor bit = 1
+  bit 3: x has 0, opposite child exists -> take 1, xor bit = 1
+  bit 2: x has 1, opposite child exists -> take 0, xor bit = 1
+  bit 1: x has 0, opposite child missing -> take 0, xor bit = 0
+  bit 0: x has 1, opposite child missing -> take 1, xor bit = 0
+  xor = 28 = 11100, partner = 9
+query 7 = 00111, stored [12, 5, 9, 21] = ['01100', '00101', '01001', '10101']
+  bit 4: x has 0, opposite child exists -> take 1, xor bit = 1
+  bit 3: x has 0, opposite child missing -> take 0, xor bit = 0
+  bit 2: x has 1, opposite child missing -> take 1, xor bit = 0
+  bit 1: x has 1, opposite child exists -> take 0, xor bit = 1
+  bit 0: x has 1, opposite child missing -> take 1, xor bit = 0
+  xor = 18 = 10010, partner = 21
+results of the four queries: 9, 12, 28, 18 -> maximum 28
+30000 random 31-bit numbers: trie nodes 516727 <= bound 31 * 30000 + 1 = 930001
+1000 consecutive numbers 0..999: nodes 2022 (shared prefixes: far fewer than 31000)
+sandbox timing only: trie 0.33 s, prefix-set 0.07 s for n = 30000 (not a proof of big-O)
+pairs at the maximum size: 449985000
+300 random lists: the maximum over i <= j equals the maximum over i < j (the self-pair only adds 0)
+Python 3.13: (-1 >> 30) & 1 = 1  (-1 >> 31) & 1 = 1  -> a negative input reads sign bits forever; the 31-bit width is the question's rule, not the language
+Python ints are not capped: (2**31 - 1) ^ 0 = 2147483647 , 2**40 ^ 1 = 1099511627777
+400 seeded random cases agree (trie, prefix-set, O(n^2))
+edge asserts passed
+```
+
+Reading the output:
+- All five examples agree across the trie, the prefix-set method and the O(n^2) loop. Note `[7, 7, 7]` gives 0: every pair is equal.
+- The printed walks follow the dry run bit by bit; the last walk (`21`) shows three consecutive opposite-bit takes giving `11100`.
+- Node counts: 516,727 nodes for 30,000 random 31-bit numbers, under the bound of 930,001. For the numbers 0..999 only 2,022 nodes: shared prefixes cost nothing.
+- Timings (sandbox only): the trie takes a fraction of a second for `n = 30000`, the prefix-set method is faster in Python because it uses sets and no per-bit node walking. Not a proof of big-O.
+- 400 seeded random lists (value ranges 2, 8, 100 and 2^31) agree, and 300 more confirm that the `i <= j` maximum equals the `i < j` maximum.
+
+**Edge cases:**
+- Two numbers: one query.
+- All equal (`[7,7,7]`, `[0,0]`): answer 0.
+- Largest value with 0: `2^31 - 1`.
+- Two numbers differing at the top bit only (`2^30` and `2^30 - 1`): all 31 bits set.
+- Duplicates inside a larger list: they share the whole path, no extra nodes.
+
+**Follow-ups:**
+- "Memory?" Use the prefix-set method, or compress the trie. Or a sorted array with two pointers on the top bit and recursion on groups.
+- "Maximum XOR of a number with a subarray XOR?" Combine with prefix XORs (Part 1 Q36 uses prefix XORs for counting).
+- "Queries with a limit (XOR with `x` while the partner is at most `m`)?" Offline: sort queries by `m`, insert numbers up to `m`, then query.
+
+**Common mistakes:**
+- Starting at bit 31 or at 32: extra levels of zeros, harmless but wasteful; starting at 29 loses the top bit.
+- Following the SAME bit by default, which finds the minimum XOR instead of the maximum.
+- Taking `bit ^ 1` without checking the child exists (`None` or index 0 error).
+- Using the same walk on negative numbers: infinite sign bits (see the output); mask first or rule them out.
+- Rebuilding the trie per query.
+
+### Q27 ⭐ 🟡 Map sum pairs. Implement a key-value store over lowercase string keys. `ops` is a list (1 <= len <= 5000) of `['insert', key, val]` (set `key` to the integer `val`, 0 <= val <= 1000, replacing any earlier value of that key, key length 1 to 20) or `['sum', prefix]` (the sum of the values of all keys that currently start with the non-empty `prefix`; 0 if none). Return one entry per operation: `null` (None) for insert and the sum for sum. Keep a running sum at every trie node and, on insert, add `new - old` along the whole path (this is why a replaced key does not double count); compare with scanning every key for every `sum`. State the cost per operation in terms of the key length. The trie itself is Q3. In the answer include a dry run on the first example and a seeded random cross-check of your solution against a plain dict scanned with `startswith` on small inputs. Example: ops=[['insert', 'apple', 3], ['sum', 'ap'], ['insert', 'app', 2], ['sum', 'ap'], ['insert', 'apple', 5], ['sum', 'app'], ['sum', 'b']] -> [null, 3, null, 5, null, 7, 0]; ops=[['sum', 'a']] -> [0]; ops=[['insert', 'a', 0], ['sum', 'a'], ['insert', 'a', 7], ['sum', 'a']] -> [null, 0, null, 7].
+**Asked at:** Trie pattern guides (techinterview.org trie and prefix-tree interview patterns posts: autocomplete, word search, wildcard, maximum XOR; search snippets only, not opened)
+
+**Pattern:** Trie with an aggregate at every node (a running sum of the values below it), kept right on updates by adding the difference `new - old`. The plain trie is Q3; the new idea is the aggregate.
+
+**Say this first (1 line):** "Each node stores the sum of all values under that prefix. Insert walks the key and adds `new - old` at every node, so replacing a key does not double count; sum walks the prefix and reads one number."
+
+**Brute force:** Keep a dict `key -> value`; for each `sum(prefix)`, scan every key with `startswith(prefix)` and add the values. Insert is O(1), but each sum costs O(K * L) for `K` live keys of length up to `L`, so a few thousand sums over a few thousand keys is millions of comparisons. Used as the oracle.
+
+**Optimal:**
+- Keep a plain dict `vals` (key to current value) and a trie whose nodes (dicts of children) carry a `'#'` sum.
+- `insert(key, val)`: `delta = val - vals.get(key, 0)`; set `vals[key] = val`; walk the key and add `delta` to the `'#'` of every node on the path (every proper prefix and the whole key). A new key has old value 0, so `delta = val`. A repeated key adds only the change.
+- `sum(prefix)`: walk; a missing child gives 0; otherwise return the node's `'#'`.
+- Why it is right: node `n` for prefix `p` always holds the sum of `vals[k]` over keys with prefix `p`; an insert changes exactly one key's value by `delta`, and exactly the nodes of the prefixes of that key include that key.
+- Value 0 and no-op replacements are fine: a key with value 0 adds 0, and `delta = 0` changes nothing.
+
+**Complexity:** Each insert and each sum is O(L), the key (or prefix) length, independent of the number of keys: at most 20 steps here, 5000 operations at most. A scan costs O(K * L) per sum. Space: one node per distinct prefix, at most the total letters of the distinct keys (20 * 5000 = 100,000 nodes worst case), plus the `vals` dict.
+
+**Dry run:** example 1 (the code prints the node sums after each insert).
+- `insert apple 3`: `a`, `ap`, `app`, `appl`, `apple` all become 3. `sum ap` = 3.
+- `insert app 2` (new key, delta 2): `a`, `ap`, `app` become 5; `appl` and `apple` stay 3. `sum ap` = 5.
+- `insert apple 5` (old value 3, delta +2, not +5): `a`, `ap`, `app` become 7; `appl`, `apple` become 5. `sum app` = 7. `sum b`: no child `b`, so 0.
+- Outputs: `[null, 3, null, 5, null, 7, 0]`. The demo of the bug (adding `val` instead of the delta) gives 10 for `sum app`, which counts `apple` as 3 + 5.
+
+**Code:**
+```python
+import random
+
+random.seed(27)
+
+class MapSum:
+    """Trie where every node keeps the sum of the values of all keys at or below it."""
+    def __init__(self):
+        self.root = {}            # node: dict of child letter -> node, plus the key '#' holding the running sum
+        self.vals = {}            # key -> current value (needed to compute new - old)
+        self.steps = 0            # trie steps taken, to compare with a scan
+    def insert(self, key, val):
+        delta = val - self.vals.get(key, 0)           # replacing a key adds only the DIFFERENCE
+        self.vals[key] = val
+        nd = self.root
+        for ch in key:
+            nd = nd.setdefault(ch, {}); self.steps += 1
+            nd['#'] = nd.get('#', 0) + delta
+    def sum(self, prefix):
+        nd = self.root
+        for ch in prefix:
+            nd = nd.get(ch); self.steps += 1
+            if nd is None: return 0
+        return nd['#']
+
+def solve(ops):
+    m = MapSum(); res = []
+    for op in ops:
+        if op[0] == 'insert': m.insert(op[1], op[2]); res.append(None)
+        else: res.append(m.sum(op[1]))
+    return res
+
+def brute(ops):
+    d = {}; res = []
+    for op in ops:
+        if op[0] == 'insert': d[op[1]] = op[2]; res.append(None)
+        else: res.append(sum(v for k, v in d.items() if k.startswith(op[1])))
+    return res
+
+def wrong_add_not_delta(ops):
+    """The tempting bug: add val instead of new - old, so a replaced key counts twice."""
+    m = MapSum(); res = []
+    for op in ops:
+        if op[0] == 'insert':
+            nd = m.root
+            for ch in op[1]:
+                nd = nd.setdefault(ch, {}); nd['#'] = nd.get('#', 0) + op[2]
+            res.append(None)
+        else: res.append(m.sum(op[1]))
+    return res
+
+N = None
+for ops, exp in [([['insert', 'apple', 3], ['sum', 'ap'], ['insert', 'app', 2], ['sum', 'ap'], ['insert', 'apple', 5], ['sum', 'app'], ['sum', 'b']], [N, 3, N, 5, N, 7, 0]),
+                 ([['sum', 'a']], [0]),
+                 ([['insert', 'a', 0], ['sum', 'a'], ['insert', 'a', 7], ['sum', 'a']], [N, 0, N, 7])]:
+    got = solve(ops)
+    assert got == exp == brute(ops)
+    print('example ->', got)
+
+# trace of example 1: node sums after each insert
+m = MapSum()
+def snap(label):
+    parts = []
+    for pre in ['a', 'ap', 'app', 'appl', 'apple']:
+        nd = m.root
+        for ch in pre: nd = nd[ch]
+        parts.append(f'{pre}={nd["#"]}')
+    print(f'  after {label}: ' + ', '.join(parts))
+m.insert('apple', 3); snap("insert apple 3")
+m.insert('app', 2); snap("insert app 2")
+m.insert('apple', 5); snap("insert apple 5 (delta +2, not +5)")
+print('  sum(ap) =', m.sum('ap'), ' sum(app) =', m.sum('app'), ' sum(b) =', m.sum('b'))
+ops1 = [['insert', 'apple', 3], ['sum', 'ap'], ['insert', 'app', 2], ['sum', 'ap'], ['insert', 'apple', 5], ['sum', 'app'], ['sum', 'b']]
+print('the add-val-not-delta bug on example 1 gives', wrong_add_not_delta(ops1), '(expected 3, 5, 7, 0 at the sum positions)')
+assert wrong_add_not_delta(ops1) != solve(ops1)
+
+# cost: trie steps vs keys scanned by the baseline
+rnd = random.Random(270)
+keys = [''.join(rnd.choice('abcd') for _ in range(rnd.randint(1, 12))) for _ in range(1500)]
+ops = []
+for i in range(5000):
+    if rnd.random() < .5: ops.append(['insert', rnd.choice(keys), rnd.randint(0, 1000)])
+    else: ops.append(['sum', rnd.choice(keys)[:rnd.randint(1, 6)]])
+mm = MapSum(); got = []
+scanned = 0; live = {}
+for op in ops:
+    if op[0] == 'insert': mm.insert(op[1], op[2]); live[op[1]] = op[2]
+    else: got.append(mm.sum(op[1])); scanned += len(live)
+assert [x for x in solve(ops) if x is not None] == got
+print('5000 mixed operations, keys of length <= 12: trie steps in total', mm.steps, '| keys a scan-per-sum would have examined', scanned)
+
+# seeded random cross-check vs dict + startswith, including repeated replacement and value 0
+for _ in range(500):
+    ks = [''.join(random.choice('ab') for _ in range(random.randint(1, 4))) for _ in range(5)]
+    ops = []
+    for _ in range(random.randint(1, 30)):
+        if random.random() < .55: ops.append(['insert', random.choice(ks), random.randint(0, 5)])
+        else: ops.append(['sum', ''.join(random.choice('ab') for _ in range(random.randint(1, 3)))])
+    assert solve(ops) == brute(ops), ops
+print('500 seeded random operation lists agree with the dict scanned with startswith')
+
+# edge asserts
+assert solve([['sum', 'a']]) == [0]
+assert solve([['insert', 'a', 5], ['insert', 'a', 5], ['sum', 'a']]) == [None, None, 5]
+assert solve([['insert', 'ab', 9], ['insert', 'ab', 0], ['sum', 'a'], ['sum', 'ab'], ['sum', 'abc']]) == [None, None, 0, 0, 0]
+assert solve([['insert', 'z' * 20, 1000], ['sum', 'z'], ['sum', 'z' * 20], ['sum', 'z' * 21]]) == [None, 1000, 1000, 0]
+print('edge asserts passed')
+```
+
+**Output (my run):**
+```
+example -> [None, 3, None, 5, None, 7, 0]
+example -> [0]
+example -> [None, 0, None, 7]
+  after insert apple 3: a=3, ap=3, app=3, appl=3, apple=3
+  after insert app 2: a=5, ap=5, app=5, appl=3, apple=3
+  after insert apple 5 (delta +2, not +5): a=7, ap=7, app=7, appl=5, apple=5
+  sum(ap) = 7  sum(app) = 7  sum(b) = 0
+the add-val-not-delta bug on example 1 gives [None, 3, None, 5, None, 10, 0] (expected 3, 5, 7, 0 at the sum positions)
+5000 mixed operations, keys of length <= 12: trie steps in total 23558 | keys a scan-per-sum would have examined 1531573
+500 seeded random operation lists agree with the dict scanned with startswith
+edge asserts passed
+```
+
+Reading the output:
+- All three examples match the dict-and-`startswith` oracle (insert prints `None`, the Python form of `null`).
+- The printed node sums are the ones in the dry run. The bug demo returns 10 where 7 is right.
+- Cost: on 5000 mixed operations over 1500 keys of length up to 12, the trie made 23,558 steps in total; a scan per `sum` would have examined 1,531,573 keys. (Step counts, not timings.)
+- 500 seeded random operation lists (small alphabet so keys collide and are replaced often, values 0..5) agree with the oracle.
+
+**Edge cases:**
+- `sum` before any insert: 0.
+- Insert with value 0, then `sum`: 0, and a later replacement by 7 gives 7.
+- Same key inserted twice with the same value: unchanged.
+- Prefix longer than any key (`'z' * 21`): 0.
+- Prefix equal to a whole key: that key's value counts.
+- Replacing a value with a smaller one: `delta` is negative, which is fine.
+
+**Follow-ups:**
+- "Delete a key?" `insert(key, 0)` leaves a zero-valued key; to really delete, subtract its value along the path and drop empty nodes.
+- "Count of keys under a prefix?" A second counter, or the same code with `val = 1` for new keys (Part 7 Q41 counts words per prefix).
+- "Memory of dict nodes?" Each dict is heavy (Q33 measures it); use arrays of 26 or a compressed trie if memory matters.
+
+**Common mistakes:**
+- Adding `val` instead of `new - old`: a replaced key counts twice.
+- Not storing the old values separately (a trie holds sums, not per-key values), so `old` cannot be found.
+- Returning `None` instead of 0 for a missing prefix.
+- Scanning all keys for every `sum`.

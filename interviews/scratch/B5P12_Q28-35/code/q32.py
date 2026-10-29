@@ -118,5 +118,6 @@ for _ in range(600):
     w = "".join(random.choice(al) for _ in range(random.randint(1, min(8, 2 * r * c))))
     assert exist_iter(b, w) == exist_rec(b, w), (b, w)
 print("600 seeded random boards: iterative == recursive")
+assert not exist_iter(["abc", "xxx"], "abcb") and not exist_rec(["abc", "xxx"], "abcb")
 assert exist_iter(["a"], "a") and not exist_iter(["a"], "aa") and not exist_iter(["ab"], "ba" + "a")
 print("edge asserts ok")
