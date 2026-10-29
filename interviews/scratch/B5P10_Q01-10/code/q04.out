@@ -1,0 +1,13 @@
+4 prompt examples ok
+day price hold free   (prices [7, 1, 5, 3, 6, 4])
+  0     7   -7    0
+  1     1   -1    0
+  2     5   -1    4
+  3     3   -1    4
+  4     6   -1    5
+  5     4   -1    5
+1000 seeded random lists (len 0..12, values 0..20): two-state == all-pairs == min-so-far
+exhaustive len 0..6 values 0..4: 19531 lists ok
+hold_i == -(min price so far) and free_i == best profit on the prefix: verified on 300 seeded lists
+n = 10^5 -> 10000
+edge asserts ok: empty, flat, strictly rising

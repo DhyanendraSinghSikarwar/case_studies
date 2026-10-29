@@ -1,0 +1,9 @@
+4 prompt examples ok
+nums       [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+ends at i  [-2, 1, -2, 4, 3, 5, 6, 1, 5]
+answer = max over i = 6  (last state is 5 )
+1000 seeded random lists (len 1..12, values -10..10): Kadane == enumeration
+exhaustive len 1..6 values -3..2: 55986 lists ok
+last state != answer on 10427 of 19607 lists (len 1..5, values -3..3)
+all-negative lists: answer = max element (200 seeded lists)
+n = 10^5 -> 781145 (agrees with the prefix-sum minus smallest earlier prefix method)

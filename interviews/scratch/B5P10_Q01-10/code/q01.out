@@ -1,0 +1,14 @@
+5 prompt examples ok (n = 0, 1, 5, 45, 100000)
+table n=5: i   [0, 1, 2, 3, 4, 5]
+           dp  [1, 1, 2, 3, 5, 8]
+cross-check vs plain recursion: all n in 0..20 and 300 seeded draws agree
+ways(n) == Fibonacci(n+1) for n in 0..299 (F(1)=F(2)=1); n=45: F(46) = 1836311903 -> mod = 836311896
+fast doubling == linear loop on 50 seeded n up to 10^5
+plain recursion n=10: 177 calls (2*F(n+1) - 1 = 177)
+plain recursion n=20: 21891 calls (2*F(n+1) - 1 = 21891)
+plain recursion n=25: 242785 calls (2*F(n+1) - 1 = 242785)
+default recursion limit: 1000
+memoised n=500: ok
+memoised n=5000: RecursionError
+memoised n=100000: RecursionError
+bottom-up n=100000 -> 967618232
