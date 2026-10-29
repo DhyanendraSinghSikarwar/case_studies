@@ -54,10 +54,17 @@ print('unhappy cycle:', cyc, '| checked every n < 200000: happy => cycle 1, unha
 # why the sequence cannot grow: f(n) < n for n >= 1000 (checked), and the 10-digit bound
 assert all(f(n) < n for n in range(1000, 300000))
 assert all(81 * k < 10 ** (k - 1) for k in range(4, 40))
-big = max(f(n) for n in [2 ** 31 - 1, 1999999999, 1099999999, 1999999999 // 2])
 print('81*d < 10^(d-1) for every d >= 4; 10-digit bound 10*81 = 810; f(2^31-1) =', f(2 ** 31 - 1),
       ', f(1999999999) =', f(1999999999))
 assert f(2 ** 31 - 1) <= 810 and max(f(n) for n in range(10 ** 9, 10 ** 9 + 1000)) <= 810
+
+# longest run before a value repeats, over every n < 100000
+def run_len(n):
+    seen, v = set(), n
+    while v not in seen:
+        seen.add(v); v = f(v)
+    return len(seen)
+print('longest run before a repeat for n < 100000:', max(run_len(n) for n in range(1, 100000)), 'values')
 
 # seeded random cross-check on large values too
 for _ in range(500):

@@ -73,5 +73,6 @@ print('length of title(2^31-1) =', len(number_to_title(2 ** 31 - 1)), '; next ti
 
 # edge asserts
 assert number_to_title(26) == 'Z' and number_to_title(27) == 'AA' and number_to_title(52) == 'AZ' and number_to_title(53) == 'BA'
+assert number_to_title(703) == 'AAA'
 assert title_to_number('Z') == 26 and title_to_number('AA') == 27 and title_to_number('ZZ') == 702 and number_to_title(702) == 'ZZ'
 print('edge asserts ok')
