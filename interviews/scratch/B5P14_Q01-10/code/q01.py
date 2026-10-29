@@ -8,15 +8,16 @@ class Clock:
 class HitCounter:                      # optimal: deque of [second, count] + running total
     def __init__(self, clock):
         self.clock = clock; self.q = deque(); self.total = 0
+    def _expire(self, now):
+        while self.q and self.q[0][0] <= now - 300:   # exactly 300 old is expired
+            self.total -= self.q.popleft()[1]
     def hit(self):
-        now = self.clock()
+        now = self.clock(); self._expire(now)         # expire here too, so hit-only traffic stays bounded
         if self.q and self.q[-1][0] == now: self.q[-1][1] += 1
         else: self.q.append([now, 1])
         self.total += 1
     def getHits(self):
-        now = self.clock()
-        while self.q and self.q[0][0] <= now - 300:   # exactly 300 old is expired
-            self.total -= self.q.popleft()[1]
+        self._expire(self.clock())
         return self.total
 
 class RingHitCounter:                  # variant: 300 buckets keyed by second % 300, stale check by stamp
@@ -68,6 +69,6 @@ clk = Clock(); h = HitCounter(clk); clk.t = 9
 for _ in range(10**6): h.hit()                                            # a million hits in one second
 assert h.getHits() == 10**6 and len(h.q) == 1
 clk.t = 9 + 1000
-for s in range(9 + 1000, 9 + 1000 + 5000): clk.t = s; h.hit(); h.getHits()
-assert len(h.q) <= 300
-print("1,000,000 hits in one second -> deque length", 1, "; after 5000 busy seconds deque length <= 300:", len(h.q))
+for s in range(9 + 1000, 9 + 1000 + 5000): clk.t = s; h.hit()       # hits only, never getHits
+assert len(h.q) <= 300 and h.total <= 300
+print("1,000,000 hits in one second -> 1 deque entry; after 5000 hit-only seconds the deque holds", len(h.q), "entries")

@@ -94,3 +94,29 @@ comp, cnt, cross = tarjan_iter(N, path(N))
 assert cnt == N and cross == N - 1 and comp[0] == N - 1 and comp[N - 1] == 0
 print('iterative 10^5 path ok: components', cnt, 'condensation edges', cross)
 print('first example:', tarjan_iter(5, [[0, 1], [1, 2], [2, 0], [1, 3], [3, 4]]))
+
+# the on-stack test matters: without it a finished component can be glued onto the current one
+def tarjan_no_on_stack(n, edges):
+    g = [[] for _ in range(n)]
+    for u, v in edges: g[u].append(v)
+    idx = [-1] * n; low = [0] * n; comp = [-1] * n; st = []; box = [0, 0]
+    def dfs(u):
+        idx[u] = low[u] = box[0]; box[0] += 1; st.append(u)
+        for v in g[u]:
+            if idx[v] == -1: dfs(v); low[u] = min(low[u], low[v])
+            else: low[u] = min(low[u], idx[v])               # BUG: also fires for finished components
+        if low[u] == idx[u]:
+            while True:
+                w = st.pop(); comp[w] = box[1]
+                if w == u: break
+            box[1] += 1
+    for s in range(n):
+        if idx[s] == -1: dfs(s)
+    return comp
+for _ in range(5000):
+    n = random.randint(2, 5)
+    edges = [[random.randrange(n), random.randrange(n)] for _ in range(random.randint(1, 7))]
+    if tarjan_no_on_stack(n, edges) != tarjan_iter(n, edges)[0]:
+        print('without the on-stack test:', n, edges, '->', tarjan_no_on_stack(n, edges), 'instead of', tarjan_iter(n, edges)[0]); break
+else:
+    raise SystemExit('no counterexample found')

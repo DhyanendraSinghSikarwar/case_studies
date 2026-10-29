@@ -92,8 +92,8 @@ for _ in range(600):
 print('random queries compared (both tie rules):', checked)
 
 # --- the two tie rules really differ ---
-persons, times = [1, 0], [1, 2]            # after time 2: 1 and 0 tied 1-1
-print('tie 1 vs 0 at t=2: newest-voter ->', TopVotedCandidate(persons, times).q(2),
+persons, times = [0, 1], [1, 2]            # after time 2: 0 and 1 tied 1-1
+print('tie 0 vs 1 at t=2: newest-voter ->', TopVotedCandidate(persons, times).q(2),
       '| smallest-id ->', TopVotedSmallestId(persons, times).q(2))
 
 # --- edge cases ---

@@ -50,11 +50,9 @@ def oracle(n, edges):                         # delete each node and recount com
     base = comps(n, edges)
     out = []
     for v in range(n):
-        alone = all(u == v and w == v for u, w in edges if u == v or w == v)
-        c = comps(n, edges, v)
-        # removing v removes one component only when v was isolated; otherwise compare with base
-        expected = base - 1 if not any(u != v and w == v or w != v and u == v for u, w in edges) else base
-        if c > expected:
+        isolated = not any((u == v) != (w == v) for u, w in edges)   # no edge to another node
+        expected = base - 1 if isolated else base                     # removing it explains this much
+        if comps(n, edges, v) > expected:
             out.append(v)
     return out
 
