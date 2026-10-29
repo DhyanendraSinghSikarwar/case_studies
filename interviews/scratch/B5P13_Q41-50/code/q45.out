@@ -5,6 +5,6 @@ str(F(30000)) -> ValueError
 int('9' * 5000) -> ValueError
 hex works (power-of-two base): 5209 characters; bit_length 20827
 with the limit lifted str() gives the same 6270 digits and lead 19042; limit restored to 4300
-n = 100000: [911435502, 20899, '25974'] , digits by length-estimate method;  (sandbox timing) doubling 0.0026 s, addition loop 0.0818 s
+n = 100000: [911435502, 20899, '25974'] , digits by length-estimate method;  (sandbox timing) doubling 0.0026 s, addition loop 0.0798 s
 float Binet first differs from the exact value at n = 71
 edge asserts ok

@@ -351,7 +351,7 @@ edge asserts ok
 
 **Say this first (1 line):** "Every shift in insertion sort removes exactly one inversion, so shifts equal inversions and comparisons are about n plus inversions; merge sort ignores the order; Timsort looks for runs first, so a sorted or strictly descending list costs n - 1 comparisons."
 
-**Brute force:** Count inversions with the double loop (O(n^2)); simulate each algorithm with a counter. The `Timsort` count is not simulated: it is measured by sorting objects whose `__lt__` increments a counter (this is observed CPython 3.13 behaviour, and a plain int list may use a faster internal comparison that bypasses `__lt__`, which is why wrapper objects are used).
+**Brute force:** Count inversions with the double loop (O(n^2)); simulate each algorithm with a counter. The `Timsort` count is not simulated: it is measured by sorting objects whose `__lt__` increments a counter (this is observed CPython 3.13 behaviour, and a plain int list is, from editor knowledge that I did not test, sorted with a faster internal comparison that bypasses `__lt__`, which is why wrapper objects are used).
 
 **Optimal:**
 - Insertion sort: for each i take x = a[i] and shift larger items to the right until a smaller or equal one appears. The array keeps a sorted prefix.
@@ -530,9 +530,7 @@ edge asserts ok
 
 ### Q44 ⭐ 🟡 Timsort ingredients: minrun and natural runs (editor-level description of CPython's algorithm, labelled as such: this exact description was not checked against the CPython source here). `nums` has 1 <= len <= 10^5 integers. Let n = len(nums). Compute `minrun(n)`: `r = 0; while n >= 64: r |= n & 1; n >>= 1` and return `n + r` (so for n < 64 it returns n). A natural run starting at position lo is the longest stretch that is either non-decreasing (a[i] >= a[i-1]) or strictly descending (a[i] < a[i-1]), decided by comparing a[lo + 1] with a[lo]; a run starting at the last position has length 1. Timsort scans from the left: the next run starts at lo and has length max(natural run length at lo, min(minrun, n - lo)) (short runs are extended to minrun by insertion sort), and the following run starts right after it. Return `[minrun, runs]`: the minrun value for n = len(nums) and the list of these run lengths in order. Explain why minrun lies between 32 and 64 for n >= 64 (and why, with s the number of right shifts the loop performs, n <= minrun * 2^s and minrun * 2^(s-1) < n, so n / minrun is never above a power of two and the merges stay balanced), why a strictly descending run is reversed (and why it must be STRICTLY descending to keep stability), and what the merge step with galloping adds. In the answer include a dry run on the first example and a seeded random cross-check of your solution against a recursive scan that rebuilds the run boundaries on small inputs. Example: nums=[30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133] -> [32, [32, 32]]; nums=[9] -> [1, [1]]; nums=[4, 4, 4, 3] -> [4, [4]]; nums=[1, 2, 3, 2, 1, 0, 5, 6] -> [8, [8]].
 **Asked at:** Sorting interview guides (techinterview.org sorting-algorithm posts, Techie Delight sorting list, GeeksforGeeks sorting problems page; search snippets only, not opened)
-**Label (read this first):** this is an editor-level description of CPython's Timsort. I tested my own implementation of the description (minrun and run scan) and claims about minrun for every n up to 10^5, but I did NOT check the description against the CPython source (`listobject.c`). Treat the galloping and merge-stack remarks below as interview-level knowledge, not verified facts.
-
-**Pattern:** Run detection plus a minimum run length, the first stage of Timsort: find the existing order in the data, pad short runs, then merge runs of balanced size.
+**Pattern:** (Label: this answer is an editor-level description of CPython's Timsort. I tested my own implementation of the description (minrun and run scan) and claims about minrun for every n up to 10^5, but I did NOT check the description against the CPython source (`listobject.c`). Treat the galloping and merge-stack remarks below as interview-level knowledge, not verified facts.) Run detection plus a minimum run length, the first stage of Timsort: find the existing order in the data, pad short runs, then merge runs of balanced size.
 
 **Say this first (1 line):** "Timsort scans for natural runs, a non-decreasing stretch or a strictly descending one it can reverse; anything shorter than minrun, a value between 32 and 64 chosen from n, is padded up to minrun by insertion sort; then runs are merged so that the number of runs is about a power of two."
 
@@ -820,7 +818,7 @@ str(F(30000)) -> ValueError
 int('9' * 5000) -> ValueError
 hex works (power-of-two base): 5209 characters; bit_length 20827
 with the limit lifted str() gives the same 6270 digits and lead 19042; limit restored to 4300
-n = 100000: [911435502, 20899, '25974'] , digits by length-estimate method;  (sandbox timing) doubling 0.0026 s, addition loop 0.0818 s
+n = 100000: [911435502, 20899, '25974'] , digits by length-estimate method;  (sandbox timing) doubling 0.0026 s, addition loop 0.0798 s
 float Binet first differs from the exact value at n = 71
 edge asserts ok
 ```
@@ -1329,3 +1327,277 @@ edge asserts ok
 - Taking the prefix sum of only one direction.
 - Putting the - marks at (r2, c2 + 1) instead of (r2 + 1, c2 + 1).
 - Applying the prefix passes after reading values (they are destructive, so work on a copy if you need the marks again).
+
+---
+
+### Q49 ⭐ 🔴 Rotate every layer of a matrix counter-clockwise (a classic from an online coding platform). `matrix` is an m x n list of lists of integers with 2 <= m, n <= 300 and min(m, n) even, and `r` is an integer with 0 <= r <= 10^9. Think of the matrix as nested rectangular rings (the outer ring is layer 0; because min(m, n) is even every layer is a real ring). Rotate each ring r times by one position counter-clockwise (every value moves one step along its ring in the counter-clockwise direction per rotation), the rings independently, and return the new matrix. For the 4 x 4 matrix of 1..16 and r = 2 the result is [[3,4,8,12],[2,11,10,16],[1,7,6,15],[5,9,13,14]]. List the cells of a ring clockwise starting at its top-left corner; the ring of length L rotated r times counter-clockwise puts the value of ring position idx at position (idx - r) mod L; reduce r modulo L first, since r can be 10^9 while a ring has at most 2 * (m + n) - 4 cells. Explain why you must not simulate r single steps, the O(m * n) total time, and why odd min(m, n) (a middle row or column that is not a ring) is excluded. In the answer include a dry run on the first example and a seeded random cross-check of your solution against a deque rotation of each ring with positions taken independently on small inputs. Example: matrix=[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]], r=2 -> [[3, 4, 8, 12], [2, 11, 10, 16], [1, 7, 6, 15], [5, 9, 13, 14]]; matrix=[[1, 2], [3, 4]], r=1 -> [[2, 4], [1, 3]]; matrix=[[1, 2, 3, 4], [5, 6, 7, 8]], r=3 -> [[4, 8, 7, 6], [3, 2, 1, 5]].
+**Asked at:** HackerRank matrix-layer-rotation problem (snippets of third-party solution write-ups; the HackerRank page itself returned only a login notice, not opened) | Matrix coding-question lists and guides (Educative matrix questions blog, Techie Delight matrix list, talentd.in matrix topic pages, labuladong matrix-traversal notes; search snippets only, not opened)
+**Pattern:** Layer-by-layer matrix traversal: unroll each ring into a flat list, rotate the list with modular arithmetic, write it back. Reduce r modulo the ring length first.
+
+**Say this first (1 line):** "Each ring is an independent cycle; I list its cells clockwise from the top-left, and rotating it counter-clockwise r times just means the value at position idx + r (mod L) lands on idx, so there is no need to simulate r steps."
+
+**Brute force:** Rotate every ring one step, r times. With r up to 10^9 and 90,000 cells that is far too slow. It stays in the code as a checker for small r (r <= 40), next to a second independent version that finds ring cells by walking with direction vectors and rotates with `collections.deque`.
+
+**Optimal:**
+- Layers `k = 0 .. min(m, n) // 2 - 1`. Ring k has top row k, bottom row m-1-k, left column k, right column n-1-k.
+- Cells clockwise from the top-left corner: top row left to right; right column downwards (excluding the corner already listed); bottom row right to left (excluding the corner); left column upwards (excluding both corners). Ring length `L = 2 * (h + w) - 4` with h, w the ring's height and width.
+- Counter-clockwise by one step: every value moves to the previous position in the clockwise list. After r steps the value from position idx lands at `(idx - r) mod L`, equivalently the new value at position p is the old value at `(p + r) mod L`.
+- `r % L` first: r can be 10^9, the ring has at most 2 * (300 + 300) - 4 = 1196 cells, and a rotation by L is the identity (checked).
+- Rings are independent and every cell is in exactly one ring when min(m, n) is even (checked for all 2 <= m, n <= 10).
+- Why odd min(m, n) is excluded: the innermost layer is then a single row or a single column (or one cell), not a cycle. The ring generator lists the same cell twice there (`[(1, 1), (1, 2), (1, 1)]` for 3 x 4), so "move one step along the ring" has no clear meaning. The question avoids that case.
+
+**Complexity:**
+- Each cell is read and written once: O(m * n) time, independent of r. The modulo is O(1) per ring. Extra space O(m * n) for the output copy plus O(L) for one ring's values.
+- Simulating steps would cost O(r * m * n).
+- Sandbox timing, not proof: about 0.02 s for 300 x 300 with r = 10^9.
+
+**Dry run:** the 4 x 4 matrix of 1..16 with r = 2.
+- Ring 0, clockwise from the top-left: `1 2 3 4 8 12 16 15 14 13 9 5`, L = 12, shift 2. New value at position p = old value at p + 2: `3 4 8 12 16 15 14 13 9 5 1 2`. Written back in the same cell order: top row `3 4 8 12`, then (1,3) = 16, (2,3) = 15, (3,3) = 14, then the bottom row right to left (3,2) = 13, (3,1) = 9, (3,0) = 5, then going up (2,0) = 1, (1,0) = 2.
+- Ring 1: `6 7 11 10`, L = 4, shift 2: `11 10 6 7` at cells (1,1), (1,2), (2,2), (2,1).
+- Result: row 0 `[3, 4, 8, 12]`, row 1 `[2, 11, 10, 16]`, row 2 `[1, 7, 6, 15]`, row 3 `[5, 9, 13, 14]`. It matches the given result.
+
+**Code:**
+```python
+import random, collections, time
+random.seed(49)
+
+# ---- optimal: cells of each ring in clockwise order from the top-left corner, rotate the flat list by r % L
+def ring_cells(m, n, k):
+    t, b, l, r = k, m - 1 - k, k, n - 1 - k
+    return ([(t, j) for j in range(l, r + 1)] + [(i, r) for i in range(t + 1, b + 1)]
+            + [(b, j) for j in range(r - 1, l - 1, -1)] + [(i, l) for i in range(b - 1, t, -1)])
+
+def rotate_layers(matrix, r):
+    m, n = len(matrix), len(matrix[0]); out = [row[:] for row in matrix]
+    for k in range(min(m, n) // 2):
+        cells = ring_cells(m, n, k); L = len(cells)
+        vals = [matrix[i][j] for i, j in cells]; s = r % L
+        for idx, (i, j) in enumerate(cells):
+            out[i][j] = vals[(idx + s) % L]        # the value at position idx + s moves to position idx
+    return out
+
+# ---- independent check 1: ring positions found by WALKING (direction vectors), values rotated with a deque
+def rotate_walk(matrix, r):
+    m, n = len(matrix), len(matrix[0]); out = [row[:] for row in matrix]
+    for k in range(min(m, n) // 2):
+        h, w = m - 2 * k, n - 2 * k; L = 2 * (h + w) - 4
+        pos = []; i = j = k
+        for di, dj, steps in ((0, 1, w - 1), (1, 0, h - 1), (0, -1, w - 1), (-1, 0, h - 1)):
+            for _ in range(steps): pos.append((i, j)); i += di; j += dj
+        assert len(pos) == L and len(set(pos)) == L and (i, j) == (k, k)
+        dq = collections.deque(matrix[a][b] for a, b in pos); dq.rotate(-(r % L))   # counter-clockwise by r
+        for (a, b), v in zip(pos, dq): out[a][b] = v
+    return out
+
+# ---- independent check 2: simulate r single steps (only for small r)
+def rotate_steps(matrix, r):
+    cur = [row[:] for row in matrix]
+    for _ in range(r): cur = rotate_layers(cur, 1)
+    return cur
+
+# ---- examples
+g4 = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]
+assert rotate_layers(g4, 2) == [[3, 4, 8, 12], [2, 11, 10, 16], [1, 7, 6, 15], [5, 9, 13, 14]]
+assert rotate_layers([[1, 2], [3, 4]], 1) == [[2, 4], [1, 3]]
+assert rotate_layers([[1, 2, 3, 4], [5, 6, 7, 8]], 3) == [[4, 8, 7, 6], [3, 2, 1, 5]]
+print('examples ok:', rotate_layers(g4, 2), rotate_layers([[1, 2], [3, 4]], 1), rotate_layers([[1, 2, 3, 4], [5, 6, 7, 8]], 3))
+
+# ---- seeded random cross-check: walk + deque version, and single-step simulation for r <= 40
+def rand_grid(m, n): return [[random.randint(0, 99) for _ in range(n)] for _ in range(m)]
+for _ in range(1500):
+    m, n = random.randint(2, 9), random.randint(2, 9)
+    while min(m, n) % 2: m, n = random.randint(2, 9), random.randint(2, 9)
+    g = rand_grid(m, n); r = random.choice([0, 1, 2, 3, 7, 40, random.randint(0, 10**9)])
+    a = rotate_layers(g, r); assert a == rotate_walk(g, r)
+    if r <= 40: assert a == rotate_steps(g, r)
+print('1500 random even-min grids: flat-list rotation == walk + deque == r single steps (r <= 40)')
+
+# ---- structural claims, checked
+for m in range(2, 11):
+    for n in range(2, 11):
+        if min(m, n) % 2: continue
+        cells = [c for k in range(min(m, n) // 2) for c in ring_cells(m, n, k)]
+        assert len(cells) == m * n == len(set(cells))                        # the rings partition the matrix exactly
+print('even min(m, n): rings cover every cell of every grid with 2 <= m, n <= 10 exactly once')
+dup = ring_cells(3, 4, 1)
+print('odd min (3 x 4): layer 1 is a single row; the generator lists', dup, '-> the cell (1, 1) appears twice, so it is not a ring')
+g = rand_grid(6, 4); L = 2 * (6 + 4) - 4
+assert rotate_layers(g, L * 5) == g and rotate_layers(rotate_layers(g, 3), 4) == rotate_layers(g, 7)
+print('rotating by the ring length is the identity; rotating by 3 then 4 equals rotating by 7 (ring lengths differ per layer: here 16 and 8)')
+
+# ---- maximum size, r = 10^9: never simulate r steps
+big = [[i * 300 + j for j in range(300)] for i in range(300)]
+t = time.perf_counter(); res = rotate_layers(big, 10**9); dt = time.perf_counter() - t
+assert sorted(v for row in res for v in row) == list(range(90000))
+print('300 x 300 with r = 10^9: a permutation of the values, rings of length 1196 down to 4 (sandbox timing about %.2f s)' % dt)
+
+# ---- edge asserts
+assert rotate_layers([[1, 2], [3, 4]], 0) == [[1, 2], [3, 4]]
+assert rotate_layers([[1, 2], [3, 4]], 4) == [[1, 2], [3, 4]]
+assert rotate_layers([[1, 2], [3, 4], [5, 6], [7, 8]], 1) == [[2, 4], [1, 6], [3, 8], [5, 7]]
+print('edge asserts ok')
+```
+
+**Output (my run):**
+```text
+examples ok: [[3, 4, 8, 12], [2, 11, 10, 16], [1, 7, 6, 15], [5, 9, 13, 14]] [[2, 4], [1, 3]] [[4, 8, 7, 6], [3, 2, 1, 5]]
+1500 random even-min grids: flat-list rotation == walk + deque == r single steps (r <= 40)
+even min(m, n): rings cover every cell of every grid with 2 <= m, n <= 10 exactly once
+odd min (3 x 4): layer 1 is a single row; the generator lists [(1, 1), (1, 2), (1, 1)] -> the cell (1, 1) appears twice, so it is not a ring
+rotating by the ring length is the identity; rotating by 3 then 4 equals rotating by 7 (ring lengths differ per layer: here 16 and 8)
+300 x 300 with r = 10^9: a permutation of the values, rings of length 1196 down to 4 (sandbox timing about 0.01 s)
+edge asserts ok
+```
+
+**Edge cases:**
+- r = 0 or r a multiple of every ring length: the matrix is unchanged.
+- 2 x 2: one ring of 4 cells.
+- A thin matrix such as 4 x 2 or 2 x 4: min is 2, one ring that is the whole matrix (L = 8).
+- Different rings have different lengths, so r % L is per ring, not one shift for all.
+- Inputs with odd min(m, n) are outside the stated limits.
+
+**Follow-ups:**
+- Clockwise instead of counter-clockwise? Use `(idx - s) % L`.
+- In place with O(1) extra space? Possible with a reverse trick per ring, but it is fiddly; for an interview a flat list per ring is acceptable.
+- How is this different from rotating the whole matrix by 90 degrees? That is transpose plus reverse and moves whole rows; this rotates each ring along itself by a few steps.
+
+**Common mistakes:**
+- Simulating r single steps.
+- Reducing r modulo the matrix size or one common length instead of per ring.
+- Listing the corner cells twice when walking the ring.
+- Rotating in the wrong direction (check the 2 x 2 example).
+- Reading values from a matrix that you are already overwriting (the code reads from the original and writes to a copy).
+
+---
+
+### Q50 ⭐ 🔴 Maximum gap in linear time. `nums` has 0 <= len <= 10^5 integers with 0 <= value <= 10^9. Return the largest difference between two consecutive elements of the SORTED list (0 if len < 2, and 0 if all values are equal), in O(n) time without a comparison sort. Use the pigeonhole idea: with lo = min, hi = max and n items there are n - 1 gaps that sum to hi - lo, so the maximum gap is at least ceil((hi - lo) / (n - 1)); split the range into buckets of size `max(1, (hi - lo) // (n - 1))`, keep only the minimum and maximum of each non-empty bucket, and the answer is the largest `min(next non-empty bucket) - max(previous non-empty bucket)`. Explain why the maximum gap can never lie inside a single bucket, why storing only min and max per bucket is enough, and why this beats an O(n log n) sort for large n (radix sort with the counting passes of Q37 is the other linear answer). In the answer include a dry run on the first example and a seeded random cross-check of your solution against sorted() and adjacent differences on small inputs. Example: nums=[3, 6, 9, 1] -> 3; nums=[10] -> 0; nums=[5, 5, 5] -> 0; nums=[1, 10000000] -> 9999999.
+**Asked at:** Sorting interview guides (techinterview.org sorting-algorithm posts, Techie Delight sorting list, GeeksforGeeks sorting problems page; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+**Pattern:** Pigeonhole bucketing: if the answer is at least some bound g, buckets narrower than g cannot contain the answer inside them, so only bucket boundaries matter. It beats comparison sorting because the lower bound in Q46 does not apply to bucket and radix methods.
+
+**Say this first (1 line):** "With n values spread over a range hi - lo there are n - 1 gaps adding up to hi - lo, so some gap is at least ceil((hi - lo) / (n - 1)); I use buckets slightly narrower than that, so the biggest gap must cross a bucket boundary, and I only need the min and max of each bucket."
+
+**Brute force:** `sorted(nums)` and the maximum of adjacent differences: O(n log n) time. It is what the code uses as the checker.
+
+**Optimal:**
+- n < 2 or all values equal: return 0.
+- `lo, hi = min, max`; bucket width `size = max(1, (hi - lo) // (n - 1))`; bucket index `(v - lo) // size`; number of buckets `(hi - lo) // size + 1`.
+- Keep only the minimum and maximum of each bucket. Scan the buckets in order: for each non-empty bucket, candidate gap = its min minus the max of the previous non-empty bucket. Answer = the largest candidate.
+- Why the maximum gap is never inside a bucket: the n - 1 gaps sum to hi - lo, so the largest is at least ceil((hi - lo) / (n - 1)) >= size. Two values in the same bucket differ by at most size - 1, which is smaller than that gap. (Checked exhaustively on 66,384 small lists, including that every pair achieving the maximum gap straddles two buckets.)
+- Why min and max are enough: a gap that crosses buckets starts at the largest value of some bucket and ends at the smallest value of the next non-empty one, because everything else in those buckets lies between them and would split the gap. Empty buckets in between make the gap longer; skipping them handles that.
+- Why width is at least 1: if hi - lo < n - 1 then (hi - lo) // (n - 1) is 0; the `max(1, ...)` gives one bucket per value, and then the answer is found by the same scan.
+- Bucket count: at most 2n (asserted exhaustively for small lists; with width 1 it is hi - lo + 1 <= 2(n - 1), and it was 100000 buckets for n = 10^5 in the run), so space is O(n).
+- Compared with sorting: this is O(n) in the number of operations (no comparison sort, so no n log n lower bound). Radix sort with the counting passes of Q37 is the other linear answer. In CPython practice the C-level `sorted` is very fast, and in my run the two took about the same time at n = 10^5, so the claim here is about complexity, not about speed.
+
+**Complexity:**
+- Time O(n): one pass for min and max, one to fill buckets, one over at most 2n buckets.
+- Space O(n) for the two bucket arrays.
+- Python ints have no overflow, values up to 10^9 and differences fit anyway.
+- Sandbox timing, not proof: about 0.02 s for each method at n = 10^5 (see the output; it varies from run to run).
+
+**Dry run:** nums = [3, 6, 9, 1].
+- n = 4, lo = 1, hi = 9, range 8, n - 1 = 3 gaps, so some gap is at least ceil(8 / 3) = 3. Width = 8 // 3 = 2, buckets = 8 // 2 + 1 = 5.
+- Bucket index (v - 1) // 2: 1 -> 0, 3 -> 1, 6 -> 2, 9 -> 4, bucket 3 is empty.
+- Scan: bucket 0 (min 1, max 1), bucket 1 (3): gap 3 - 1 = 2, bucket 2 (6): gap 6 - 3 = 3, bucket 3 empty, bucket 4 (9): gap 9 - 6 = 3. Answer 3.
+
+**Code:**
+```python
+import random, itertools, time, math
+random.seed(50)
+
+# ---- optimal: bucket by value, keep min and max per bucket, scan the buckets once
+def max_gap(nums):
+    n = len(nums)
+    if n < 2: return 0
+    lo, hi = min(nums), max(nums)
+    if lo == hi: return 0
+    size = max(1, (hi - lo) // (n - 1))               # bucket width: never above the guaranteed minimum gap
+    nb = (hi - lo) // size + 1
+    mins = [None] * nb; maxs = [None] * nb
+    for v in nums:
+        b = (v - lo) // size
+        if mins[b] is None or v < mins[b]: mins[b] = v
+        if maxs[b] is None or v > maxs[b]: maxs[b] = v
+    best = 0; prev_max = None
+    for b in range(nb):
+        if mins[b] is None: continue                   # empty bucket: skip it, the gap spans over it
+        if prev_max is not None: best = max(best, mins[b] - prev_max)
+        prev_max = maxs[b]
+    return best
+
+# ---- brute force: comparison sort and adjacent differences
+def brute(nums):
+    s = sorted(nums)
+    return max((y - x for x, y in zip(s, s[1:])), default=0)
+
+# ---- examples
+assert max_gap([3, 6, 9, 1]) == 3 and max_gap([10]) == 0 and max_gap([5, 5, 5]) == 0 and max_gap([1, 10000000]) == 9999999
+print('examples ok:', max_gap([3, 6, 9, 1]), max_gap([10]), max_gap([5, 5, 5]), max_gap([1, 10000000]))
+
+# ---- seeded random cross-check against sorted()
+for _ in range(5000):
+    n = random.randint(0, 30); m = random.choice([3, 10, 100, 10**9])
+    t = [random.randint(0, m) for _ in range(n)]
+    assert max_gap(t) == brute(t), t
+print('5000 random lists (n <= 30, values up to 3, 10, 100 or 10^9): equal to sorted() + adjacent differences')
+
+# ---- the pigeonhole claims, checked exhaustively on small inputs: every list of length 2..5 over values 0..8
+checked = 0
+for n in range(2, 6):
+    for t in itertools.product(range(9), repeat=n):
+        lo, hi = min(t), max(t)
+        if lo == hi: continue
+        g = brute(t); size = max(1, (hi - lo) // (n - 1))
+        assert g >= -(-(hi - lo) // (n - 1))                                  # max gap >= ceil((hi - lo) / (n - 1))
+        assert size - 1 < g                                                   # two values in one bucket differ by at most size - 1 < the max gap
+        s = sorted(t)
+        for x, y in zip(s, s[1:]):
+            if y - x == g: assert (x - lo) // size != (y - lo) // size        # a maximum gap pair never shares a bucket
+        assert (hi - lo) // size + 1 <= 2 * n                                 # at most 2n buckets, so O(n) space
+        checked += 1
+print('exhaustive on', checked, 'lists: max gap >= ceil(range/(n-1)); bucket width - 1 < max gap; every maximum-gap pair straddles buckets; buckets <= 2n')
+
+# ---- bucket count for large n (the 2n bound is checked above only on small lists; here is the actual number)
+n = 10**5; big = [random.randint(0, 10**9) for _ in range(n)]
+lo, hi = min(big), max(big); size = max(1, (hi - lo) // (n - 1))
+print('n = 100000, values up to 10^9: bucket width', size, ', buckets', (hi - lo) // size + 1)
+t = time.perf_counter(); r = max_gap(big); t1 = time.perf_counter() - t
+t = time.perf_counter(); r2 = brute(big); t2 = time.perf_counter() - t
+assert r == r2
+print('max gap =', r, '; (sandbox timing, varies run to run) bucket method %.3f s, sorted() + differences %.3f s' % (t1, t2))
+
+# ---- edge asserts
+assert max_gap([]) == 0 and max_gap([7]) == 0 and max_gap([1, 1]) == 0
+assert max_gap([0, 10**9]) == 10**9 and max_gap([1, 2, 3, 4, 5]) == 1
+assert max_gap([1, 3]) == 2 and max_gap([0, 5, 5, 10]) == 5
+assert max_gap([0, 1, 100]) == 99 and max_gap([100, 0, 1]) == 99
+print('edge asserts ok')
+```
+
+**Output (my run):**
+```text
+examples ok: 3 0 0 9999999
+5000 random lists (n <= 30, values up to 3, 10, 100 or 10^9): equal to sorted() + adjacent differences
+exhaustive on 66384 lists: max gap >= ceil(range/(n-1)); bucket width - 1 < max gap; every maximum-gap pair straddles buckets; buckets <= 2n
+n = 100000, values up to 10^9: bucket width 10000 , buckets 100000
+max gap = 130321 ; (sandbox timing, varies run to run) bucket method 0.027 s, sorted() + differences 0.024 s
+edge asserts ok
+```
+
+**Edge cases:**
+- Empty list, single item: 0. Two items: their difference. All equal: 0 (lo == hi would give a zero width).
+- Duplicates: they fall into the same bucket and change nothing.
+- Range smaller than n - 1 (many repeats): width 1, one bucket per value.
+- Huge range with few items: [0, 10^9] has width 10^9 and 2 buckets.
+- Unsorted input with the extreme values anywhere: min and max come from the first pass.
+
+**Follow-ups:**
+- Can you do it by radix sort? Yes: sort with LSD radix (Q37) in O(d (n + base)) and scan adjacent pairs.
+- Does it work for negative numbers? Yes, after shifting by lo (the code already subtracts lo).
+- Why not a bucket per value? The range is up to 10^9, too much memory.
+
+**Common mistakes:**
+- Taking the difference between neighbours inside a bucket.
+- Storing every element per bucket instead of min and max.
+- Using a width of 0 when hi - lo < n - 1.
+- Forgetting empty buckets, comparing each bucket with the one right before it even if that one is empty.
+- Making the width larger than the guaranteed gap (for example 2 * ceil(range / (n - 1))): then the biggest gap can hide inside one bucket.

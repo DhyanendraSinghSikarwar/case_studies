@@ -1,0 +1,30 @@
+# Book 5 Part 13 review (Wave C)
+
+Date: 2026-10-29. Reviewer: lead session (independent of the five answer agents). Scope: 50 questions, Q1-Q50 (DSA in Python, Extra I: prefix sums, matrices and grids, math and number theory, randomised algorithms, sorting internals). Band per plan.md: Rs 30-80 LPA; no salary figures.
+
+## Process
+Five agents answered Q1-10, Q11-20, Q21-30, Q31-40, Q41-50; merged by heading: 50 of 50 merged, 0 skipped, 0 pending. No spend-limit stops. Wave A tested every "why" sentence against the exact claim and corrected seven before freezing (Q2 Euclid worst-case pair needs the smaller number first; Q7 spiral duplicates only for a 1xn layer with n >= 2 or an mx1 layer with m >= 3; Q6 odd n keeps the centre cell; Q31 sum() of floats; Q36 sorted([None, None]) vs key version; Q13 bisect_left wrong only with at least two weights; Q44 n <= minrun*2^s). Each answer agent re-ran the examples and tested stated claims exhaustively.
+
+## Checks (scripted by the lead, `scratch/B5_check.py`)
+| Check | Result |
+|---|---|
+| ANSWER_PENDING | 0 |
+| Numbering continuous Q1-Q50; star order and counts 17 / 22 / 11 | pass |
+| All 11 template labels present and in order; code fences balanced | pass for all 50 |
+| One python block per answer, re-run standalone with `python3 -I` by the lead | 50 of 50 exit 0 |
+| Cross-references (Part 1 Q11, Q13, Q31, Q35, Q47, Q50; Part 8 Q28, Q36; header refs Part 5 Q10, Q22, Part 6 Q25) | verified by Wave A's build.py |
+
+## Correction made during review (frozen prompt)
+Q19 (Excel column title) said plain base 26 would turn 26 into "'A0'-style nonsense". The Q11-20 agent ran it: the naive `divmod(n, 26)` with `chr(64 + d)` gives 'A@' for 26 and 'B@' for 52. The prompt now says exactly that; the lead applied it to the part file, the agent's heading, the Wave A sources (`draft.py`, `qs.py`) and the question_index rows.
+
+## Findings kept in the text (observed on Python 3.13.17)
+- Randomised algorithms verified by enumerating all random-choice sequences: Fisher-Yates for n <= 5 gives n! sequences producing n! distinct permutations, each exactly once; the swap-with-any loop for n = 3 gives 27 sequences over 6 permutations with counts 4,5,5,5,4,4, and the most-to-least likely ratio is 1.25, 1.875, 2.94, 4.97 for n = 3..6 (Q11, Q32); reservoir sampling keeps every item in k/n of the sequences and all C(n,k) subsets equally often for n <= 7 (Q12, Q33); rand7 from rand5 has equal counts for every m in 2..10 and expected calls 162/41, about 3.95 (Q34); random pick of an occurrence holds each occurrence (c-1)! times (Q35). The installed `random.shuffle` source has `reversed(range(1, len(x)))` and `randbelow(i + 1)`.
+- Sorting: three-way quicksort with a last-element pivot is not immune to sorted input (n(n+1)/2 - 1 comparisons on 1..n, 14 for n = 5 against Lomuto's 10) and recursive Lomuto raises RecursionError at n = 1500 (Q16, Q42); Timsort used 541 comparisons against 304 for plain insertion sort on a 300-item list with 5 adjacent swaps, so adaptive does not always mean cheaper (Q43, observed 3.13); minrun satisfies 32 <= minrun <= 64 for n >= 64 and n <= minrun*2^s for every n up to 10^5 (Q44); the lower-bound table gives info bound and exhaustive optimum 0, 1, 3, 5, 7 for n = 1..5 while merge sort and binary insertion need 8 at n = 5, and Ford-Johnson merge insertion shows 7 constructively (Q46); counting after the merge instead of before is wrong on 385 of 500 cases (Q47); heap sort uses about 1.75 n log2 n comparisons (Q38); every one of 3,000 mixed-type lists raised in plain `sorted` (Q36); the repeat-to-20 key agrees with the `a+b > b+a` comparator on all 65,536 string pairs with 0 strict disagreements and transitivity holds on 59,319 triples (Q39).
+- Math: Euclid's worst case for 1..100 is (55, 89) with 10 steps while (89, 55) takes 9 (Q2); trailing zeroes v2 >= v5 (Q3); Fermat's `a^(m-2)` was wrong for 7,436 coprime pairs with composite m below 200 (Q29); 1/99989 has a 99,988-digit repeating block (Q30); trial division takes at most isqrt(n) - 1 steps, equality for every prime (Q28); float `round(.,2)` differs from exact half-even on 4,800 of 10,000 strings x.xx5 (Q22); `sum([0.1]*10)` gives 1.0 on 3.13 while a plain loop gives 0.9999999999999999, `fsum` is exact only for the doubles (Q31); `int()`/`str()` of numbers above 4,300 digits raises ValueError on 3.13 while `hex` works (Q2, Q45); float Binet first goes wrong at n = 71 (Q45).
+- Matrices: the marker trap fails on 42 of 512 binary 3x3 matrices, e.g. `[[1,1,1],[0,1,1],[1,0,1]]` (Q25); a single-pass overwrite without the encoding is wrong on 417 of 512 3x3 Life boards (Q26); the spiral guard matters for 36 of 81 shapes up to 9x9 (Q7); `pow(a, -1, m)` exists exactly when gcd = 1 (Q29).
+
+## Not run / hedged
+Editor knowledge labelled as such: `math.lcm` (3.9), the digit limit arriving in 3.11, `pow(a, -1, m)` (3.8), `math.comb` (3.8), the 3.12 change of `sum()`, plain int lists bypassing `__lt__`, galloping and the merge-stack invariant, cache-behaviour explanations, introsort remarks, why `cmp_to_key` exists, A-Res and Algorithm L, and that merge insertion is not optimal for some n (Q38, Q43, Q44, Q46). Q44's run description is editor-level, not checked against CPython source. One sandbox timing line each in Q4, Q37 and Q50 (the Python bucket method and `sorted()` took about the same time at n = 10^5, so only big-O is claimed). Q32 prints one 60,000-draw sampling line, labelled "picture only"; the proof is the exact enumeration. Q3's "loop rounds for n = 10^18" is ambiguous (largest k with 5^k <= n is 25, a `while n: n //= 5` loop passes 26 times; the answer states both).
+
+## Evidence limits
+No company-reported problems found; every WebFetch failed (6 searches, snippets only); Game of Life, trailing zeroes, happy number, Pascal, Excel column, fraction to decimal, maximum gap, count of range sum and increment submatrices come from editor knowledge, not a found page. See research_notes/Book5_Part13_sources.md.
