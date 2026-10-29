@@ -95,7 +95,7 @@ assert cnt == N and cross == N - 1 and comp[0] == N - 1 and comp[N - 1] == 0
 print('iterative 10^5 path ok: components', cnt, 'condensation edges', cross)
 print('first example:', tarjan_iter(5, [[0, 1], [1, 2], [2, 0], [1, 3], [3, 4]]))
 
-# the on-stack test matters: without it a finished component can be glued onto the current one
+# the on-stack test matters: without it a cross edge into a finished component corrupts low and the answer is wrong
 def tarjan_no_on_stack(n, edges):
     g = [[] for _ in range(n)]
     for u, v in edges: g[u].append(v)
