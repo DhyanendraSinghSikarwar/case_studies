@@ -771,3 +771,460 @@ n = 10**5 random lengths (non-decreasing, strict): 628 628
 - `bisect_right` for strict, which counts equal values as extending.
 - Returning `tails` as if it were the subsequence.
 - Starting with `tails = [nums[0]]` and crashing on the empty list.
+
+### Q36 ⭐ 🟡 Number of dice rolls with a target sum (counting with a modulus). You roll `n` dice, each with faces 1..k (1 <= n, k <= 30), and `target` is 0 <= target <= 1000. Return the number of ordered outcomes (sequences of n faces) whose sum is exactly `target`, modulo 10^9 + 7; 0 if impossible. Roll the table over dice with a single 1D array (a new array per die, no in-place hazards), say what the state is and why the answer is 0 outside n..n*k, and where the modulus is applied. In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against an enumeration of all k^n outcomes (k^n <= 10^5) on small inputs. Example: n=1, k=6, target=3 -> 1; n=2, k=6, target=7 -> 6; n=30, k=30, target=500 -> 222616187; n=2, k=5, target=1 -> 0.
+**Asked at:** DP pattern guides and lists (techinterview.org 1D dynamic-programming interview patterns and DP recurrence guides, DesignGurus common DP questions, IGotAnOffer DP interview questions; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Counting DP over a rolling 1D array. The state is "dice thrown so far, sum so far", and one die is one layer.
+
+**Say this first (1 line):** "`dp[s]` is the number of ordered outcomes of the dice thrown so far with sum s; each die builds a new array by adding faces 1..k, and I take the modulus on every addition."
+
+**Brute force:** Enumerate all k^n sequences of faces and count those with the right sum. Exponential; fine only when k^n <= 10^5. It is the oracle.
+
+**Optimal:**
+- State: after j dice, `dp_j[s]` = the number of ordered sequences of j faces (each 1..k) that add to s.
+- Base: `dp_0[0] = 1` (the empty sequence), every other `dp_0[s] = 0`.
+- Transition: `dp_j[s] = sum over f = 1..k of dp_{j-1}[s - f]` (the last die shows f). Written "forward": for each s with `dp[s] != 0`, for each f, add `dp[s]` into `new[s + f]`.
+- Answer: `dp_n[target]`, modulo 10^9 + 7.
+- Rolling: only `dp_{j-1}` is needed for `dp_j`, so two 1D arrays of length `target + 1`. A NEW array per die is the safe form: updating one array in place would let a die's contribution be read again by the same die (the same hazard that breaks the upward 0/1 knapsack loop in Q37; here it would let one die show several faces).
+- Why 0 outside n..n*k: each die contributes at least 1 and at most k, so n dice give a sum in `[n, n*k]`. Nothing can reach a target below n or above n*k, and the table never gets a nonzero entry there. I checked this for 4 dice with 6 faces: zero outside 4..24, positive inside. Target 0 gives 0 because n >= 1.
+- Where the modulus goes: on every addition into `new[s + f]`, so every stored value stays below 10^9 + 7. Reducing only at the end also gives the right value in Python (big ints), but the numbers grow to about 43 digits for n = k = 30 (I measured) and larger for bigger inputs. In a fixed-width language the per-step reduction is mandatory.
+- Faster: the sum over f is a sliding window of width k over `dp_{j-1}`, so one die costs O(target) instead of O(target * k). The code has that version and it matches on every case.
+- Why no `dp[s]` for `s > target`: a partial sum above target can never come back down (faces are positive), so I do not store them.
+
+**Complexity:** Time O(n * target * k) for the plain version, up to 30 * 1000 * 30 = 900000 steps (about 10^6); O(n * target) with the sliding window. Space O(target) for two arrays.
+
+**Dry run (n = 1, k = 6, target = 3, then the table for n = 2):**
+- One die: `dp_0 = [1,0,0,0]`; the die adds 1..6 but only sums up to 3 matter: `dp_1 = [0,1,1,1]`. `dp_1[3] = 1`. Matches the prompt.
+- n = 2, k = 6, target = 7 (columns are sums 0..7):
+
+| dice | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 1 | 0 | 1 | 1 | 1 | 1 | 1 | 1 | 0 |
+| 2 | 0 | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+
+- Row 2, sum 7: `dp_2[7] = dp_1[1] + ... + dp_1[6] = 6` (the six pairs (1,6) ... (6,1)). Row 1, sum 7 is 0 because one six-sided die cannot show 7.
+- n = 2, k = 5, target = 1: row 2, sum 1 is 0 (two dice sum to at least 2).
+
+**Code:**
+```python
+import itertools
+import random
+
+random.seed(36)
+MOD = 10**9 + 7
+
+def dice(n, k, target):
+    """dp[s] = number of ordered outcomes of the dice thrown so far with sum s (s <= target)."""
+    dp = [0] * (target + 1)
+    dp[0] = 1                                   # zero dice: the empty sequence has sum 0
+    for _ in range(n):
+        nd = [0] * (target + 1)                 # a NEW array per die: no in-place hazard
+        for s in range(target + 1):
+            if dp[s]:
+                for f in range(1, min(k, target - s) + 1):
+                    nd[s + f] = (nd[s + f] + dp[s]) % MOD
+        dp = nd
+    return dp[target]
+
+def dice_prefix(n, k, target):
+    """Same answer in O(n * target) with a sliding window sum instead of the inner loop over faces."""
+    dp = [1] + [0] * target
+    for _ in range(n):
+        nd = [0] * (target + 1)
+        window = 0
+        for s in range(1, target + 1):
+            window += dp[s - 1]
+            if s - 1 - k >= 0:
+                window -= dp[s - 1 - k]
+            nd[s] = window % MOD
+            window %= MOD
+        dp = nd
+    return dp[target]
+
+def brute(n, k, target):
+    return sum(1 for r in itertools.product(range(1, k + 1), repeat=n) if sum(r) == target) % MOD
+
+# ---- examples from the prompt
+assert dice(1, 6, 3) == 1
+assert dice(2, 6, 7) == 6
+assert dice(30, 30, 500) == 222616187
+assert dice(2, 5, 1) == 0
+print('examples ok')
+
+# ---- table for n = 2, k = 6, target = 7 (rows = dice thrown, columns = sums 0..7)
+dp = [1] + [0] * 7
+print('sum:      ', list(range(8)))
+print('0 dice:   ', dp)
+for d in (1, 2):
+    nd = [0] * 8
+    for s in range(8):
+        for f in range(1, 7):
+            if s + f <= 7:
+                nd[s + f] += dp[s]
+    dp = nd
+    print(f'{d} dice:   ', dp)
+assert dp[7] == 6
+
+# ---- seeded cross-check against the enumeration of all k^n outcomes (k^n <= 10^5)
+cases = 0
+for _ in range(400):
+    k = random.randint(1, 8)
+    n = random.randint(1, 30)
+    while k ** n > 10**5:
+        n -= 1
+    n = max(n, 1)
+    t = random.randint(0, n * k + 3)
+    exp = brute(n, k, t)
+    assert dice(n, k, t) == exp == dice_prefix(n, k, t), (n, k, t)
+    cases += 1
+for n in range(1, 6):                      # exhaustive tiny sweep
+    for k in range(1, 6):
+        for t in range(0, n * k + 3):
+            assert dice(n, k, t) == brute(n, k, t) == dice_prefix(n, k, t)
+            cases += 1
+print('cross-check passed on', cases, 'cases')
+
+# ---- 0 outside n..n*k, and the modulus matters at the full size
+assert all(dice(4, 6, t) == 0 for t in list(range(0, 4)) + list(range(25, 40)))
+assert all(dice(4, 6, t) > 0 for t in range(4, 25))
+assert dice(30, 30, 1000) == 0 and dice(30, 30, 30) == 1 and dice(30, 30, 900) == 1
+big = dice(30, 30, 465)
+exact = [1] + [0] * 465
+for _ in range(30):                          # same DP with Python big ints and no modulus
+    nd = [0] * 466
+    for t in range(466):
+        for f in range(1, 31):
+            if t - f >= 0:
+                nd[t] += exact[t - f]
+    exact = nd
+print('n=30, k=30, target=465: mod answer', big, '| exact count has', len(str(exact[465])), 'digits')
+assert exact[465] % MOD == big and exact[465] > MOD
+assert dice_prefix(30, 30, 465) == big
+print('edge cases ok')
+```
+
+**Output (my run):**
+```
+examples ok
+sum:       [0, 1, 2, 3, 4, 5, 6, 7]
+0 dice:    [1, 0, 0, 0, 0, 0, 0, 0]
+1 dice:    [0, 1, 1, 1, 1, 1, 1, 0]
+2 dice:    [0, 0, 1, 2, 3, 4, 5, 6]
+cross-check passed on 700 cases
+n=30, k=30, target=465: mod answer 252370474 | exact count has 43 digits
+edge cases ok
+```
+
+**Edge cases:**
+- `target < n` or `target > n*k`: 0, with no special-case code needed.
+- `k = 1`: exactly one outcome, the sum n.
+- `target = 0`: 0 (n >= 1).
+- Large n, k with the modulus: the exact count has 43 digits for n = k = 30, target 465, so the modulus really does bite.
+- Use `[0] * (target + 1)` per die, not `[[0]*...]*...` aliasing (Q31).
+
+**Follow-ups:**
+- *Remove the factor k?* Sliding-window or prefix sums, as in the code, O(n * target).
+- *Probability instead of a count?* Divide by k^n (use floats, or modular inverse for a modulus).
+- *n up to 10^9?* Use the generating function `(x + ... + x^k)^n` with polynomial exponentiation (outside this part).
+
+**Common mistakes:**
+- Updating one array in place.
+- Forgetting the modulus inside the inner loop (correct in Python but slow and unsafe elsewhere).
+- Indexing `new[s + f]` past `target` (IndexError) without a bound.
+- Using `dp[0] = 0` as the base, which makes everything 0.
+
+### Q37 ⭐ 🟡 0/1 knapsack: which items (reconstruction with a tie rule). `weights` and `values` have equal length 1 <= len <= 100 (1 <= weight <= 100, 1 <= value <= 1000) and `cap` is 0 <= cap <= 1000. Return `[best, items]`: the maximum value and the list of chosen item indices in ascending order. If several subsets reach the maximum, return the one whose ascending index list is lexicographically smallest (a list that is a prefix of another is smaller). Explain why a 1D table cannot rebuild the items (you need the 2D table, or a bit per item and capacity) and how the table is read backwards. In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against an enumeration of all subsets with the same tie rule (len <= 12) on small inputs. Example: weights=[1, 3, 4, 5], values=[1, 4, 5, 7], cap=7 -> [9, [1, 2]]; weights=[5], values=[10], cap=4 -> [0, []]; weights=[2, 2, 3], values=[3, 3, 5], cap=4 -> [6, [0, 1]]; weights=[1, 1, 1], values=[4, 4, 4], cap=2 -> [8, [0, 1]].
+**Asked at:** DP pattern guides and lists (techinterview.org 1D dynamic-programming interview patterns and DP recurrence guides, DesignGurus common DP questions, IGotAnOffer DP interview questions; search snippets only, not opened) | Candidate-reported Flipkart rounds (a 2024 on-campus LeetCode Discuss post with a coin change discussion, a Naukri Code360 2020 report with a longest-decreasing-subsequence assessment, a GeeksforGeeks 2017 intern report with a 0-1 knapsack and a space-optimisation follow-up, a 2021 report with an unbounded-knapsack-like question; search-result summaries only, pages not opened; self-reported, unverified)
+
+**Pattern:** 0/1 knapsack with reconstruction. Value-only needs a 1D array; recovering the items needs the full 2D table (or a bit per item and capacity).
+
+**Say this first (1 line):** "I build `f[i][c]` = best value from items i..n-1 with capacity c, from the right, then walk it left to right taking item i whenever taking it still reaches `f[i][c]`; that gives the lexicographically smallest index list."
+
+**Brute force:** Try all 2^n subsets, keep those within capacity, take the highest value and, among ties, the smallest index list (Python list comparison, where a prefix is smaller). O(2^n * n), n <= 12. It is the oracle.
+
+**Optimal:**
+- State: `f[i][c]` = maximum value using only items `i..n-1` with capacity c.
+- Base: `f[n][c] = 0` for all c (no items left).
+- Transition: `f[i][c] = max(f[i+1][c], values[i] + f[i+1][c - weights[i]])` where the second option exists only if `weights[i] <= c`. Skip or take.
+- Answer value: `f[0][cap]`.
+- Why from the right: so the walk goes forward through the items, and "the smallest index first" is just "decide item 0 first".
+- Reconstruction walk: with `c = cap`, for i from 0: if `f[i][c] == 0` stop (all values are at least 1, so nothing more is worth taking, and stopping gives the shorter prefix); else if `weights[i] <= c` and `values[i] + f[i+1][c - weights[i]] == f[i][c]`, take i and reduce c. Otherwise skip.
+- Why the tie rule works: among optimal subsets, the one with the smallest first index takes the first item that can start an optimal set. Taking i when it is feasible for the optimum gives a list starting with i, which beats every list starting with a larger index; the skip branch can only produce lists starting with larger indices. Same argument at every later step.
+- Why a 1D table cannot rebuild: `dp[c]` after the last item says only the best value for capacity c. Each cell was overwritten by earlier items, so which item caused it is lost. Choices: keep the 2D table (O(n*cap) memory, here 100 * 1000 = 10^5 cells, fine), or store one bit per (item, capacity) saying whether item i was taken at c (the same size in bits).
+- The 1D value-only version has the capacity loop DOWNWARD (`for c in range(cap, w-1, -1)`): `dp[c]` reads `dp[c - w]`, which must still hold the value from before this item. Going upward would reuse the item (unbounded knapsack). The code uses it only to cross-check the value.
+
+**Complexity:** Time O(n * cap) (100 * 1001 about 10^5). Space O(n * cap) for the 2D table; the value alone needs O(cap). The enumeration oracle is O(2^n).
+
+**Dry run (first example):** weights `[1,3,4,5]`, values `[1,4,5,7]`, cap 7. Row i uses items i..3.
+
+| from item \ cap | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 0 | 1 | 1 | 4 | 5 | 7 | 8 | 9 |
+| 1 | 0 | 0 | 0 | 4 | 5 | 7 | 7 | 9 |
+| 2 | 0 | 0 | 0 | 0 | 5 | 7 | 7 | 7 |
+| 3 | 0 | 0 | 0 | 0 | 0 | 7 | 7 | 7 |
+| 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+- Value `f[0][7] = 9`.
+- Walk: c = 7. i = 0: take it? `1 + f[1][6] = 1 + 7 = 8`, not 9: skip. i = 1: `4 + f[2][4] = 4 + 5 = 9`, equals `f[1][7] = 9`: take, c = 4. i = 2: `5 + f[3][0] = 5`, equals `f[2][4] = 5`: take, c = 0. i = 3: `f[3][0] = 0`, stop. Items `[1, 2]`, value 9.
+- Tie check, third example `[2,2,3]` values `[3,3,5]`, cap 4: items 0 and 1 give 6 and item 2 alone gives 5, so `[0, 1]`.
+
+**Code:**
+```python
+import itertools
+import random
+
+random.seed(37)
+
+def best_1d(weights, values, cap):
+    """Value only, O(cap) space. Capacity loop goes DOWNWARD so each item is used at most once."""
+    dp = [0] * (cap + 1)
+    for w, v in zip(weights, values):
+        for c in range(cap, w - 1, -1):
+            dp[c] = max(dp[c], dp[c - w] + v)
+    return dp[cap]
+
+def knapsack(weights, values, cap):
+    """f[i][c] = best value using items i..n-1 with capacity c. Built from the right so the walk reads left to right."""
+    n = len(weights)
+    f = [[0] * (cap + 1) for _ in range(n + 1)]
+    for i in range(n - 1, -1, -1):
+        for c in range(cap + 1):
+            f[i][c] = f[i + 1][c]                                   # skip item i
+            if weights[i] <= c:
+                f[i][c] = max(f[i][c], values[i] + f[i + 1][c - weights[i]])   # take item i
+    items, c = [], cap
+    for i in range(n):
+        if f[i][c] == 0:                      # values >= 1: nothing more is worth taking; stop (shorter prefix wins)
+            break
+        if weights[i] <= c and values[i] + f[i + 1][c - weights[i]] == f[i][c]:
+            items.append(i)                   # taking i can still reach the optimum; i is the smallest such index
+            c -= weights[i]
+    return [f[0][cap], items], f
+
+def brute(weights, values, cap):
+    n = len(weights)
+    cands = []
+    for L in range(n + 1):
+        for comb in itertools.combinations(range(n), L):
+            if sum(weights[i] for i in comb) <= cap:
+                cands.append((sum(values[i] for i in comb), list(comb)))
+    mv = max(v for v, _ in cands)
+    return [mv, min(c for v, c in cands if v == mv)]       # list comparison: prefix is smaller
+
+def solve(weights, values, cap):
+    return knapsack(weights, values, cap)[0]
+
+# ---- examples from the prompt
+assert solve([1, 3, 4, 5], [1, 4, 5, 7], 7) == [9, [1, 2]]
+assert solve([5], [10], 4) == [0, []]
+assert solve([2, 2, 3], [3, 3, 5], 4) == [6, [0, 1]]
+assert solve([1, 1, 1], [4, 4, 4], 2) == [8, [0, 1]]
+print('examples ok')
+
+# ---- the table of the first example (rows i = items i..n-1 allowed, columns = capacity 0..7)
+res, f = knapsack([1, 3, 4, 5], [1, 4, 5, 7], 7)
+print('cap       ', list(range(8)))
+for i in range(5):
+    print(f'from item {i}', f[i])
+print('result', res)
+
+# ---- seeded cross-check against the subset enumeration with the same tie rule
+cases = 0
+for _ in range(600):
+    n = random.randint(1, 10)
+    ws = [random.randint(1, 6) for _ in range(n)]
+    vs = [random.randint(1, 9) for _ in range(n)]
+    cap = random.randint(0, 20)
+    got = solve(ws, vs, cap)
+    assert got == brute(ws, vs, cap), (ws, vs, cap, got)
+    assert best_1d(ws, vs, cap) == got[0]
+    assert sum(ws[i] for i in got[1]) <= cap and sum(vs[i] for i in got[1]) == got[0]
+    cases += 1
+print('cross-check passed on', cases, 'cases')
+
+# ---- why the 1D table cannot rebuild the items: dp[c] forgets which items made it
+dp = [0] * 8
+for w, v in zip([1, 3, 4, 5], [1, 4, 5, 7]):
+    for c in range(7, w - 1, -1):
+        dp[c] = max(dp[c], dp[c - w] + v)
+print('1D table after all items:', dp, '-> value', dp[7], 'but nothing says WHICH items')
+
+# ---- edge cases and full size
+assert solve([3], [5], 3) == [5, [0]]
+assert solve([1, 1], [1, 1], 0) == [0, []]
+assert solve([2, 2], [3, 3], 2) == [3, [0]]                  # tie: smallest index list
+W = [random.randint(1, 100) for _ in range(100)]
+V = [random.randint(1, 1000) for _ in range(100)]
+r = solve(W, V, 1000)
+assert r[0] == best_1d(W, V, 1000) and sum(W[i] for i in r[1]) <= 1000
+print('n = 100, cap = 1000 ok: value', r[0], 'with', len(r[1]), 'items')
+```
+
+**Output (my run):**
+```
+examples ok
+cap        [0, 1, 2, 3, 4, 5, 6, 7]
+from item 0 [0, 1, 1, 4, 5, 7, 8, 9]
+from item 1 [0, 0, 0, 4, 5, 7, 7, 9]
+from item 2 [0, 0, 0, 0, 5, 7, 7, 7]
+from item 3 [0, 0, 0, 0, 0, 7, 7, 7]
+from item 4 [0, 0, 0, 0, 0, 0, 0, 0]
+result [9, [1, 2]]
+cross-check passed on 600 cases
+1D table after all items: [0, 1, 1, 4, 5, 7, 8, 9] -> value 9 but nothing says WHICH items
+n = 100, cap = 1000 ok: value 27115 with 42 items
+```
+
+**Edge cases:**
+- `cap = 0` or every weight above cap: `[0, []]`.
+- Ties between equal-value subsets (`[1,1,1]` values 4, cap 2): `[0, 1]`, not `[1, 2]`.
+- Exact fit (`weight == cap`) must be allowed (`<=`, not `<`).
+- All items fit: every index in ascending order.
+- Zero value does not occur (values >= 1); if it could, the stop-at-zero rule would need changing.
+
+**Follow-ups:**
+- *Memory-lean reconstruction?* Store one bitmask per capacity (the same information as the 2D table, packed).
+- *Unbounded version?* Loop capacity upward, one 1D array (Q20 in this part).
+- *Space for value only?* One array with a downward loop, as in `best_1d`.
+
+**Common mistakes:**
+- Looping capacity upward in the 1D table (reuses items).
+- Building the table from item 0 and walking back, where the tie rule is awkward to get right; building from the right makes it a simple left-to-right scan.
+- Not stopping at `f == 0`, then adding useless items that happen to fit.
+- Returning item values instead of indices.
+
+### Q38 ⭐ 🟡 Minimum cost for tickets. You will travel on the days listed in `days` (1 <= len <= 365, strictly increasing integers in 1..365). A 1-day pass costs `costs[0]`, a 7-day pass `costs[1]` and a 30-day pass `costs[2]` (1 <= each <= 1000); a d-day pass bought on day t covers days t..t+d-1. Return the minimum total cost to cover every travel day. Define `dp[d]` over calendar days (cost to cover all travel days up to d) and give the transition for travel and non-travel days. In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against a plain recursion over the next uncovered travel day on small inputs. Example: days=[1, 4, 6, 7, 8, 20], costs=[2, 7, 15] -> 11; days=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31], costs=[2, 7, 15] -> 17; days=[5], costs=[3, 2, 1] -> 1; days=[1, 30], costs=[5, 6, 7] -> 7.
+**Asked at:** DP pattern guides and lists (techinterview.org 1D dynamic-programming interview patterns and DP recurrence guides, DesignGurus common DP questions, IGotAnOffer DP interview questions; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** 1D DP over calendar days with "buy a pass that ends today" choices. Think of it as a small unbounded-style cover problem on a line.
+
+**Say this first (1 line):** "`dp[d]` is the cheapest cost to cover every travel day up to day d; a non-travel day copies `dp[d-1]`, and a travel day takes the best of a 1-day, 7-day or 30-day pass ending today, looking back 1, 7 or 30 days (clamped at 0)."
+
+**Brute force:** Recursion over the next uncovered travel day: from travel day `days[i]`, try each pass, skip to the first travel day it does not cover, add its cost. Without a cache it is up to 3^n. With n <= 9 in the cross-check it is fine; with a cache on `i` it becomes O(n) states times 3 choices, the second DP form.
+
+**Optimal:**
+- State: `dp[d]` = minimum cost to cover all travel days that are `<= d`, for calendar day d in 0..last travel day.
+- Base: `dp[0] = 0`.
+- Non-travel day d: `dp[d] = dp[d-1]` (nothing needs covering on d, and any pass that covered up to d-1 is enough).
+- Travel day d: `dp[d] = min(dp[d-1] + costs[0], dp[max(0, d-7)] + costs[1], dp[max(0, d-30)] + costs[2])`.
+- Why the look-back is right: a pass that covers day d and is bought as late as possible covers `d-d_len+1 .. d`. Everything before that window must be covered by something else, and `dp[d - d_len]` is exactly the cost for everything up to `d - d_len`. The `max(0, ...)` clamp handles windows that start before day 1.
+- Why "the pass ends today" is enough: when the pass covering day d is chosen, the days it can usefully cover are those up to d (anything later is handled by later states). Among the passes that cover d, the one that covers the most earlier days is the one ending on d. A pass that really ends later covers the same earlier days, so the DP loses nothing by pretending it ends on d.
+- Answer: `dp[last]` where `last = days[-1]`.
+- Costs need not be monotone (a 7-day pass may cost more than a 30-day pass). The min over the three options handles that; I tested random costs in 1..12 without forcing order.
+- Space: `dp` is O(last) = O(365). A sliding window of 30 values would also do, but 365 is tiny.
+- Variant on the days list: the same DP indexed by travel day (`dp[i]` and a pointer for each pass length) is O(n); the calendar form is simpler to explain.
+
+**Complexity:** Time O(last) = O(365) steps, each with three lookups. Space O(last). The recursion oracle is up to O(3^n).
+
+**Dry run (first example):** `days = [1,4,6,7,8,20]`, costs `[2,7,15]`.
+
+| day | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9..19 | 20 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| travel? | | yes | | | yes | | yes | yes | yes | | yes |
+| dp | 0 | 2 | 2 | 2 | 4 | 4 | 6 | 7 | 9 | 9 | 11 |
+
+- Day 1: `min(0+2, 0+7, 0+15) = 2`. Days 2, 3: copy 2. Day 4: `min(2+2, dp[0]+7, dp[0]+15) = 4`. Day 5: copy 4. Day 6: `min(4+2, 0+7, 0+15) = 6`.
+- Day 7: `min(6+2 = 8, dp[0]+7 = 7, ...) = 7`: one 7-day pass bought on day 1 covers days 1, 4, 6, 7.
+- Day 8: `min(7+2 = 9, dp[1]+7 = 9, dp[0]+15 = 15) = 9`. Days 9..19 copy 9.
+- Day 20: `min(9+2 = 11, dp[13]+7 = 16, dp[0]+15 = 15) = 11`. Answer 11.
+
+**Code:**
+```python
+import random
+import sys
+
+random.seed(38)
+
+def min_cost(days, costs):
+    """dp[d] = minimum cost to cover every travel day <= d. Calendar days 0..last."""
+    travel = set(days)
+    last = days[-1]
+    dp = [0] * (last + 1)                       # dp[0] = 0: nothing to cover yet
+    for d in range(1, last + 1):
+        if d not in travel:
+            dp[d] = dp[d - 1]                   # a non-travel day costs nothing extra
+        else:
+            dp[d] = min(dp[d - 1] + costs[0],              # 1-day pass covers d only
+                        dp[max(0, d - 7)] + costs[1],      # 7-day pass covers d-6..d
+                        dp[max(0, d - 30)] + costs[2])     # 30-day pass covers d-29..d
+    return dp[last], dp
+
+def rec(days, costs):
+    """Plain recursion over the next uncovered travel day (index into days)."""
+    n = len(days)
+    def f(i):
+        if i >= n:
+            return 0
+        best = float('inf')
+        for span, c in zip((1, 7, 30), costs):
+            j = i
+            while j < n and days[j] < days[i] + span:    # the pass bought on days[i] covers these
+                j += 1
+            best = min(best, c + f(j))
+        return best
+    return f(0)
+
+# ---- examples from the prompt
+assert min_cost([1, 4, 6, 7, 8, 20], [2, 7, 15])[0] == 11
+assert min_cost([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31], [2, 7, 15])[0] == 17
+assert min_cost([5], [3, 2, 1])[0] == 1
+assert min_cost([1, 30], [5, 6, 7])[0] == 7
+print('examples ok')
+
+# ---- table for the first example
+ans, dp = min_cost([1, 4, 6, 7, 8, 20], [2, 7, 15])
+print('day :', list(range(len(dp))))
+print('dp  :', dp)
+print('answer', ans)
+
+# ---- seeded cross-check against the plain recursion
+cases = 0
+for _ in range(600):
+    n = random.randint(1, 9)
+    days = sorted(random.sample(range(1, random.choice([10, 40, 80]) + 1), n))
+    costs = [random.randint(1, 12) for _ in range(3)]          # not forced to be monotone
+    assert min_cost(days, costs)[0] == rec(days, costs), (days, costs)
+    cases += 1
+print('cross-check passed on', cases, 'cases')
+
+# ---- edge cases and full size
+assert min_cost([1], [1, 1, 1])[0] == 1
+assert min_cost([365], [1000, 1000, 1000])[0] == 1000
+full = min_cost(list(range(1, 366)), [2, 7, 15])[0]
+print('every day of the year with costs [2, 7, 15]:', full)
+assert full == 12 * 15 + 7                                  # twelve 30-day passes (360 days) + one 7-day pass for 5 days
+assert min_cost([1, 8, 15], [10, 1, 1])[0] == 1              # one cheap 30-day pass covers all three
+assert min_cost([1, 8, 15], [10, 5, 1])[0] == 1
+print('edge cases ok')
+```
+
+**Output (my run):**
+```
+examples ok
+day : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+dp  : [0, 2, 2, 2, 4, 4, 6, 7, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 11]
+answer 11
+cross-check passed on 600 cases
+every day of the year with costs [2, 7, 15]: 187
+edge cases ok
+```
+
+**Edge cases:**
+- One travel day: the cheapest of the three costs (`days=[5]`, costs `[3,2,1]` gives 1: a 30-day pass is the cheapest ticket).
+- Look-back below day 1: clamp with `max(0, ...)`, otherwise a negative index silently reads the END of the list.
+- Day 365 with the longest pass: no day beyond 365 is needed; the pass just covers extra days.
+- Costs not monotone: take the min over all three, do not assume the longer pass is cheaper per day.
+- Every day of the year with costs [2,7,15]: twelve 30-day passes (360 days) plus a 7-day pass for the last 5 days, 187 (checked in the code).
+
+**Follow-ups:**
+- *Why not greedy (always the cheapest per day)?* The pass cost per day is not enough: partial coverage and gaps matter, and the DP shows 7 beating 2+2+2+2 at day 7.
+- *More pass types?* Add another term to the min; time O(last * types).
+- *Very large day range?* Index by travel day and use pointers, O(n).
+
+**Common mistakes:**
+- `dp[d-7]` with d < 7 (negative index) instead of the clamp.
+- Forgetting the non-travel copy case, which makes the min apply to every day and overcounts.
+- Reading "7-day pass bought on day t covers t..t+6" and looking back 6 or 8 days; the window ending at d is `d-6..d`, so the look-back is `dp[d-7]`.

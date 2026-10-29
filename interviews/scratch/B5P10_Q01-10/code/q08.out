@@ -1,0 +1,9 @@
+4 prompt examples ok
+s = leetcode, words = [leet, code]; dp[0..8] = [True, False, False, False, True, False, False, False, True]
+s = catsandog, words = [cats, dog, sand, and, cat]; dp[0..9] = [True, False, False, True, True, False, False, True, False, False]
+1500 seeded random cases: DP == plain recursion == memo (729 True, 771 False)
+substring checks <= n * (distinct word lengths) on 300 seeded cases with n up to 200, 100 words
+worst case n=200, 20 word lengths: result False , checks = 3810 , bound n * 20 = 4000
+plain recursion on a^22 b with [a, aa, aaa]: 900140 calls
+memoised depth is at most len(s) = 200; limit 1000 -> True
+memo n=5000 (outside the stated limits): RecursionError

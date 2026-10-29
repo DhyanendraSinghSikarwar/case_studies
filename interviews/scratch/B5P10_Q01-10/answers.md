@@ -879,3 +879,545 @@ memoised amount 500 -> 100 == bottom-up 100
 - Using `amount + 1` as infinity and forgetting to map it to -1 (fine if you map it, a bug if you return it).
 - `dp[0] = 1` (that counts the empty set as a coin).
 - Memoised recursion at amount 10^4 hitting RecursionError.
+
+### Q7 ⭐⭐⭐ 🟡 Longest increasing subsequence, O(n^2) and O(n log n). `nums` has 0 <= len <= 10^5 integers (|value| <= 10^9, repeats allowed). A subsequence keeps the original order but may skip elements; it is strictly increasing. Return `[length, tails]` where `tails` is the final array of the patience-sorting method: `tails[k]` is the smallest possible last value of any strictly increasing subsequence of length k + 1, maintained by replacing the first entry that is >= x using `bisect_left` (see Part 5 Q11 for bisect semantics). Return `[0, []]` for an empty list. Give the O(n^2) DP only for len <= 2500 as a cross-check, explain why `tails` stays sorted (the patience-sorting argument: why the number of piles equals the length), and note that `tails` itself is generally NOT an LIS. In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against all subsequences enumerated for len <= 12 (length, and the smallest last value for each length) on small inputs. Example: nums=[10, 9, 2, 5, 3, 7, 101, 18] -> [4, [2, 3, 7, 18]]; nums=[0, 1, 0, 3, 2, 3] -> [4, [0, 1, 2, 3]]; nums=[7, 7, 7] -> [1, [7]]; nums=[] -> [0, []]; nums=[4, 10, 4, 3, 8, 9] -> [3, [3, 8, 9]].
+**Asked at:** DP pattern guides and lists (techinterview.org 1D dynamic-programming interview patterns and DP recurrence guides, DesignGurus common DP questions, IGotAnOffer DP interview questions; search snippets only, not opened) | Candidate-reported Flipkart rounds (a 2024 on-campus LeetCode Discuss post with a coin change discussion, a Naukri Code360 2020 report with a longest-decreasing-subsequence assessment, a GeeksforGeeks 2017 intern report with a 0-1 knapsack and a space-optimisation follow-up, a 2021 report with an unbounded-knapsack-like question; search-result summaries only, pages not opened; self-reported, unverified)
+
+**Pattern:** LIS as a 1D DP (O(n^2)), then the patience-sorting speed-up: keep, for each length, the smallest possible tail, and find the slot by binary search (Part 5 Q11 for `bisect_left`).
+
+**Say this first (1 line):** "O(n^2): dp[i] is the longest increasing subsequence ending at i. O(n log n): tails[k] is the smallest last value of any increasing subsequence of length k+1; for each x, bisect_left on tails and overwrite or append; the length is len(tails)."
+
+**Brute force:** Enumerate all 2^n subsequences, keep the strictly increasing ones, and record for each length the smallest last value (n <= 12). The O(n^2) DP is the mid-level reference (used for n up to 2500).
+
+**Optimal:**
+- O(n^2) state: `dp[i]` = length of the longest strictly increasing subsequence ending exactly at i. `dp[i] = 1 + max(dp[j])` over j < i with `nums[j] < nums[i]` (or 1). Answer: the max of all dp[i], not the last one. Base: every `dp[i] >= 1`.
+- Faster state: `tails[k]` = smallest possible last value of a strictly increasing subsequence of length k+1.
+- Why `tails` is strictly increasing: if a subsequence of length k+2 ends at value v, drop its last element to get one of length k+1 ending at something smaller than v. So `tails[k] < tails[k+1]`. Sorted means we can binary search.
+- Update for x: find the first index i with `tails[i] >= x` using `bisect_left`.
+  - If none, x extends the longest subsequence: append.
+  - Else x is a smaller (or equal) ending for length i+1: overwrite `tails[i] = x`.
+  - `bisect_left` (not `bisect_right`) is what makes equal values replace instead of extend, so the result is strictly increasing.
+- Patience sorting argument: deal cards left to right, each onto the leftmost pile whose top is >= x, else start a new pile. Pile tops are exactly `tails` (the code checks this). If a comes before b and a < b, then when b arrives the top of a's pile is <= a < b (tops only decrease), so b lands on a strictly later pile. Hence an increasing subsequence uses strictly increasing pile numbers: length <= piles. Conversely, linking each card to the top of the previous pile at the time it was placed gives an increasing subsequence through every pile, of length = piles. So piles = LIS length.
+- Warning: `tails` is generally NOT an LIS. It mixes values from different times. On `[2, 5, 3, 1]` it ends as `[1, 3]`, but 1 comes after 3 in the input. The code counts 441 of 2000 seeded lists where `tails` is not even a subsequence. Only `len(tails)` is trusted as an answer; the oracle confirms each `tails[k]` is the smallest last value for length k+1.
+- Recursion: a memoised "LIS ending at i" recursion can nest n deep; on an increasing list of 1500 it raises `RecursionError` at the default limit of 1000 (fine at 300). The recursion depth depends on the call order, so do not rely on it; the loop versions have no such risk.
+
+**Complexity:** O(n^2) time and O(n) space for the DP. The tails method is O(n log n) time (one `bisect_left` per element) and O(n) space.
+
+**Dry run:** `nums = [10, 9, 2, 5, 3, 7, 101, 18]`.
+
+| x | 10 | 9 | 2 | 5 | 3 | 7 | 101 | 18 |
+|---|---|---|---|---|---|---|---|---|
+| tails after x | [10] | [9] | [2] | [2, 5] | [2, 3] | [2, 3, 7] | [2, 3, 7, 101] | [2, 3, 7, 18] |
+
+The O(n^2) table of "LIS ending at i" is `[1, 1, 1, 2, 2, 3, 4, 4]`, max 4. Answer `[4, [2, 3, 7, 18]]`; here 2, 3, 7, 18 is a real subsequence by luck, in general not (see above).
+
+**Code:**
+```python
+import random
+import sys
+from bisect import bisect_left
+from functools import cache
+
+random.seed(107)
+
+def lis_tails(nums):
+    """Patience sorting. tails[k] = smallest last value of a strictly increasing subsequence of length k+1.
+    Replace the first entry >= x (bisect_left), or append when x is bigger than all."""
+    tails = []
+    for x in nums:
+        i = bisect_left(tails, x)
+        if i == len(tails):
+            tails.append(x)
+        else:
+            tails[i] = x
+    return [len(tails), tails]
+
+def lis_n2(nums):
+    """O(n^2) DP: dp[i] = length of the longest strictly increasing subsequence ENDING at i."""
+    n = len(nums)
+    dp = [1] * n
+    for i in range(n):
+        for j in range(i):
+            if nums[j] < nums[i] and dp[j] + 1 > dp[i]:
+                dp[i] = dp[j] + 1
+    return max(dp, default=0), dp
+
+def lis_memo(nums):
+    n = len(nums)
+    @cache
+    def f(i):                                   # LIS ending at i
+        best = 1
+        for j in range(i - 1, -1, -1):
+            if nums[j] < nums[i]:
+                best = max(best, f(j) + 1)
+        return best
+    return max((f(i) for i in range(n - 1, -1, -1)), default=0)   # start from the end: deepest chain first
+
+def brute(nums):
+    """Enumerate every subsequence (len <= 12). For each strictly increasing one, record the smallest last value per length."""
+    n = len(nums)
+    best_last = {}                              # length -> smallest last value
+    for mask in range(1, 1 << n):
+        sub = [nums[i] for i in range(n) if mask >> i & 1]
+        if all(sub[k] < sub[k + 1] for k in range(len(sub) - 1)):
+            L = len(sub)
+            if L not in best_last or sub[-1] < best_last[L]:
+                best_last[L] = sub[-1]
+    if not best_last:
+        return [0, []]
+    L = max(best_last)
+    return [L, [best_last[k] for k in range(1, L + 1)]]
+
+def piles(nums):
+    """Patience sorting as cards: put x on the leftmost pile whose top is >= x, else open a new pile."""
+    tops = []
+    for x in nums:
+        for k, t in enumerate(tops):
+            if t >= x:
+                tops[k] = x; break
+        else:
+            tops.append(x)
+    return tops
+
+def is_subseq(sub, nums):
+    it = iter(nums)
+    return all(any(x == y for y in it) for x in sub)
+
+for a, want in [([10, 9, 2, 5, 3, 7, 101, 18], [4, [2, 3, 7, 18]]), ([0, 1, 0, 3, 2, 3], [4, [0, 1, 2, 3]]),
+                ([7, 7, 7], [1, [7]]), ([], [0, []]), ([4, 10, 4, 3, 8, 9], [3, [3, 8, 9]])]:
+    assert lis_tails(a) == brute(a) == want, a
+    assert lis_n2(a)[0] == want[0] == lis_memo(a)
+print('5 prompt examples ok')
+
+a = [10, 9, 2, 5, 3, 7, 101, 18]
+t = []
+print('x     tails after x   (nums =', a, ')')
+for x in a:
+    i = bisect_left(t, x)
+    if i == len(t): t.append(x)
+    else: t[i] = x
+    print(f'{x:<5} {t}')
+print('O(n^2) table (LIS ending at i):', lis_n2(a)[1])
+
+for _ in range(500):
+    n = random.randint(0, 12)
+    a = [random.randint(-6, 6) for _ in range(n)]
+    got = lis_tails(a)
+    assert got == brute(a), a
+    assert lis_n2(a)[0] == got[0] == lis_memo(a)
+    assert all(got[1][k] < got[1][k + 1] for k in range(len(got[1]) - 1))      # tails strictly increasing
+    assert piles(a) == got[1]                                                   # piles == tails
+    # prefix property: tails after every prefix equals the brute force on that prefix
+    for p in range(0, n + 1, 4):
+        assert lis_tails(a[:p]) == brute(a[:p])
+print('500 seeded random lists (len 0..12, values -6..6): tails, length, piles, O(n^2) DP, memo all agree with subsequence enumeration')
+
+# tails itself is generally NOT a subsequence of nums, hence not an LIS
+cnt = 0; tot = 0; ex = None
+for _ in range(2000):
+    a = [random.randint(0, 9) for _ in range(random.randint(1, 8))]
+    tot += 1
+    tl = lis_tails(a)[1]
+    if not is_subseq(tl, a):
+        cnt += 1
+        ex = ex or a
+print(f'tails is not a subsequence of nums in {cnt} of {tot} seeded lists; first example {ex} -> tails {lis_tails(ex)[1]}')
+assert lis_tails([2, 5, 3, 1]) == [2, [1, 3]]       # 1 comes after 3 in nums, so [1, 3] is not a subsequence
+
+# larger: O(n^2) vs O(n log n) lengths
+for _ in range(5):
+    a = [random.randint(-10**9, 10**9) for _ in range(2500)]
+    assert lis_tails(a)[0] == lis_n2(a)[0]
+print('5 seeded lists of length 2500 (O(n^2) DP vs O(n log n) length): equal')
+
+# sorted input is the O(n) piles / worst depth case
+for n_ in (10**5,):
+    inc = list(range(n_)); dec = list(range(n_, 0, -1))
+    assert lis_tails(inc)[0] == n_ and lis_tails(dec)[0] == 1 and lis_tails(dec)[1] == [1]
+big = [random.randint(-10**9, 10**9) for _ in range(10**5)]
+print('n = 10^5 random: LIS length', lis_tails(big)[0], ', strictly increasing 0..99999 -> 100000, strictly decreasing -> 1')
+
+# recursion limit for the memoised O(n^2) version
+print('default recursion limit:', sys.getrecursionlimit())
+for n_ in (300, 1500):
+    try:
+        lis_memo(list(range(n_)))
+        print(f'memoised LIS on increasing list n={n_}: ok')
+    except RecursionError:
+        print(f'memoised LIS on increasing list n={n_}: RecursionError')
+```
+
+**Output (my run):**
+```
+5 prompt examples ok
+x     tails after x   (nums = [10, 9, 2, 5, 3, 7, 101, 18] )
+10    [10]
+9     [9]
+2     [2]
+5     [2, 5]
+3     [2, 3]
+7     [2, 3, 7]
+101   [2, 3, 7, 101]
+18    [2, 3, 7, 18]
+O(n^2) table (LIS ending at i): [1, 1, 1, 2, 2, 3, 4, 4]
+500 seeded random lists (len 0..12, values -6..6): tails, length, piles, O(n^2) DP, memo all agree with subsequence enumeration
+tails is not a subsequence of nums in 441 of 2000 seeded lists; first example [7, 7, 2, 5, 4, 3, 0] -> tails [0, 3]
+5 seeded lists of length 2500 (O(n^2) DP vs O(n log n) length): equal
+n = 10^5 random: LIS length 624 , strictly increasing 0..99999 -> 100000, strictly decreasing -> 1
+default recursion limit: 1000
+memoised LIS on increasing list n=300: ok
+memoised LIS on increasing list n=1500: RecursionError
+```
+
+**Edge cases:**
+- `[]` returns `[0, []]`; `[7, 7, 7]` returns `[1, [7]]` (strict increase, equals replace).
+- Strictly increasing 0..99999 gives 100000; strictly decreasing gives 1.
+- Negatives and values up to 10^9 are fine: only comparisons are used.
+- n = 10^5 with the tails method is about 10^5 binary searches; the O(n^2) DP would be 5 * 10^9 steps, hence the 2500 cap.
+
+**Follow-ups:**
+- Non-decreasing variant? Use `bisect_right` so equal values extend (`bisect_left` would give the strict length; wrong here).
+- Recover one actual LIS? Also record, per element, the index of the tail it replaced's predecessor, and walk back.
+- Count all LIS? Needs the O(n^2) DP with counts (or a Fenwick tree), not the tails method.
+
+**Common mistakes:**
+- `bisect_right` for the strict version, which lets equal values extend.
+- Returning `tails` as the subsequence.
+- Answering `dp[-1]` instead of `max(dp)` in the O(n^2) DP.
+- Using the O(n^2) DP at n = 10^5.
+
+### Q8 ⭐⭐⭐ 🟡 Word break. `s` is a non-empty lowercase string (1 <= len <= 200) and `word_dict` a list of 1 to 100 distinct non-empty lowercase words (each of length <= 20). Return True if `s` can be split into a sequence of dictionary words (words may be reused), else False. Define `dp[i]` = 'the first i characters can be segmented', give the transition, and state the number of substring checks (at most n times the number of distinct word lengths), noting that each check also slices and hashes up to 20 characters. In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against a plain recursion over prefixes with no memo on small inputs. Example: s='leetcode', word_dict=['leet', 'code'] -> True; s='catsandog', word_dict=['cats', 'dog', 'sand', 'and', 'cat'] -> False; s='aaaa', word_dict=['a', 'aa'] -> True; s='x', word_dict=['y'] -> False.
+**Asked at:** DP pattern guides and lists (techinterview.org 1D dynamic-programming interview patterns and DP recurrence guides, DesignGurus common DP questions, IGotAnOffer DP interview questions; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** 1D DP over prefixes: "can the first i characters be built?" Each cell looks back by the length of a dictionary word.
+
+**Say this first (1 line):** "dp[i] means the first i characters can be segmented; dp[0] is True; dp[i] is True if for some word length L, dp[i-L] is True and s[i-L:i] is in the set. At most n times the number of distinct word lengths checks."
+
+**Brute force:** Recursion over prefixes with no memo: `f(rest)` is True if some word is a prefix of `rest` and `f(rest[len(word):])` is True. Without a cache this is exponential: on `'a' * 22 + 'b'` with words `[a, aa, aaa]` it makes 900,140 calls (the code prints this).
+
+**Optimal:**
+- State: `dp[i]` = True iff `s[:i]` is a concatenation of dictionary words (words reusable).
+- Base: `dp[0] = True` (the empty prefix is a valid, empty segmentation).
+- Transition: the last word has some length L <= i, so `dp[i] = OR over L of (dp[i - L] and s[i - L:i] in words)`. Only L values that equal some word's length matter, so loop over the sorted distinct lengths and stop when `L > i`.
+- Answer: `dp[n]`.
+- Use a `set` for words: membership is O(1) on average after hashing the slice.
+- Substring-check count: for each of the n positions we try at most D distinct word lengths, so at most `n * D` checks (the code asserts this on 300 seeded cases, and in a worst case with nothing matching, n = 200 and 20 lengths gives 3,810 against the bound 4,000). Each check also builds a slice and hashes up to 20 characters, so the work is O(n * D * maxlen) character operations, here at most 200 * 20 * 20.
+- Early `break` once `dp[i]` is True saves work but does not change the bound.
+- Recursion: the memoised top-down version `f(i)` (can `s[i:]` be segmented) nests at most `len(s)` frames, so at the stated n <= 200 it stays far below the default limit of 1000 and works. It would raise `RecursionError` only for sizes outside this prompt (n = 5000 in the code). The bottom-up loop is still the safer default.
+
+**Complexity:** Time O(n * D * m) where D = distinct word lengths (<= 20) and m = max word length (<= 20); space O(n + total word size).
+
+**Dry run:** `s = 'leetcode'`, words `leet`, `code`.
+
+| i | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|---|---|
+| prefix | "" | l | le | lee | leet | leetc | leetco | leetcod | leetcode |
+| dp[i] | T | F | F | F | T | F | F | F | T |
+
+dp[4] is True because dp[0] is True and `s[0:4] = 'leet'` is a word. dp[8] is True because dp[4] is True and `s[4:8] = 'code'` is a word. For `catsandog` the table is T F F T T F F T F F: dp[9] is False because the only way to cover `og` is missing, so the answer is False.
+
+**Code:**
+```python
+import random
+import string
+import sys
+from functools import cache
+
+random.seed(108)
+
+def word_break(s, word_dict, counter=None):
+    """dp[i] = True if s[:i] can be segmented. dp[0] = True (empty prefix).
+    dp[i] = any(dp[i - L] and s[i-L:i] in words) over the DISTINCT word lengths L <= i."""
+    words = set(word_dict)
+    lengths = sorted({len(w) for w in words})
+    n = len(s)
+    dp = [False] * (n + 1)
+    dp[0] = True
+    for i in range(1, n + 1):
+        for L in lengths:
+            if L > i:
+                break
+            if counter is not None:
+                counter[0] += 1
+            if dp[i - L] and s[i - L:i] in words:
+                dp[i] = True
+                break
+    return dp[n]
+
+def dp_row(s, word_dict):
+    words = set(word_dict); dp = [True] + [False] * len(s)
+    for i in range(1, len(s) + 1):
+        dp[i] = any(i >= len(w) and dp[i - len(w)] and s[i - len(w):i] == w for w in words)
+    return dp
+
+def memo(s, word_dict):
+    words = set(word_dict)
+    @cache
+    def f(i):                      # can s[i:] be segmented?
+        if i == len(s):
+            return True
+        return any(s.startswith(w, i) and f(i + len(w)) for w in words)
+    return f(0)
+
+def brute(s, word_dict):
+    """Plain recursion over prefixes, no memo."""
+    words = set(word_dict)
+    def f(rest):
+        if rest == '':
+            return True
+        return any(rest.startswith(w) and f(rest[len(w):]) for w in words)
+    return f(s)
+
+for s, wd, want in [('leetcode', ['leet', 'code'], True), ('catsandog', ['cats', 'dog', 'sand', 'and', 'cat'], False),
+                    ('aaaa', ['a', 'aa'], True), ('x', ['y'], False)]:
+    assert word_break(s, wd) == brute(s, wd) == memo(s, wd) == want
+print('4 prompt examples ok')
+
+print('s = leetcode, words = [leet, code]; dp[0..8] =', dp_row('leetcode', ['leet', 'code']))
+print('s = catsandog, words = [cats, dog, sand, and, cat]; dp[0..9] =', dp_row('catsandog', ['cats', 'dog', 'sand', 'and', 'cat']))
+
+yes = 0
+for _ in range(1500):
+    alpha = 'ab' if random.random() < 0.7 else 'abc'
+    words = sorted({''.join(random.choice(alpha) for _ in range(random.randint(1, 4))) for _ in range(random.randint(1, 5))})
+    if random.random() < 0.5:                          # build a segmentable string half of the time
+        s = ''.join(random.choice(words) for _ in range(random.randint(1, 5)))
+        if random.random() < 0.4:
+            s = s[:-1] + random.choice(alpha) if len(s) else s
+    else:
+        s = ''.join(random.choice(alpha) for _ in range(random.randint(1, 12)))
+    s = s[:14] or 'a'
+    a = word_break(s, words)
+    assert a == brute(s, words) == memo(s, words) == dp_row(s, words)[-1], (s, words)
+    yes += a
+print(f'1500 seeded random cases: DP == plain recursion == memo ({yes} True, {1500 - yes} False)')
+
+# check-count claim: at most n * (#distinct word lengths); count them, worst case = all false so no early break
+for _ in range(300):
+    n = random.randint(1, 200)
+    words = sorted({''.join(random.choice('ab') for _ in range(random.randint(1, 20))) for _ in range(random.randint(1, 100))})
+    s = ''.join(random.choice('ab') for _ in range(n))
+    c = [0]; word_break(s, words, c)
+    dl = len({len(w) for w in words})
+    assert c[0] <= n * dl
+print('substring checks <= n * (distinct word lengths) on 300 seeded cases with n up to 200, 100 words')
+
+# worst case: nothing ever matches (early break never fires), 20 distinct word lengths: every position tries every length
+n = 200; words = ['a' * k for k in range(1, 21)]; s = 'b' * n
+c = [0]; r = word_break(s, words, c)
+print('worst case n=200, 20 word lengths: result', r, ', checks =', c[0], ', bound n * 20 =', n * 20)
+assert r is False and c[0] <= n * 20
+# plain recursion blows up on the same input family (count calls on a smaller one)
+calls = [0]
+def counted(rest, words):
+    calls[0] += 1
+    return rest == '' or any(rest.startswith(w) and counted(rest[len(w):], words) for w in words)
+counted('a' * 22 + 'b', ['a', 'aa', 'aaa']); print('plain recursion on a^22 b with [a, aa, aaa]:', calls[0], 'calls')
+
+# recursion depth: memo depth <= len(s) <= 200, below the limit of 1000, so no RecursionError here
+print('memoised depth is at most len(s) = 200; limit', sys.getrecursionlimit(), '->', memo('a' * 200, ['a']))
+try:
+    memo('a' * 5000, ['a']); print('memo n=5000: ok')
+except RecursionError:
+    print('memo n=5000 (outside the stated limits): RecursionError')
+assert word_break('a' * 200, ['a']) is True
+```
+
+**Output (my run):**
+```
+4 prompt examples ok
+s = leetcode, words = [leet, code]; dp[0..8] = [True, False, False, False, True, False, False, False, True]
+s = catsandog, words = [cats, dog, sand, and, cat]; dp[0..9] = [True, False, False, True, True, False, False, True, False, False]
+1500 seeded random cases: DP == plain recursion == memo (729 True, 771 False)
+substring checks <= n * (distinct word lengths) on 300 seeded cases with n up to 200, 100 words
+worst case n=200, 20 word lengths: result False , checks = 3810 , bound n * 20 = 4000
+plain recursion on a^22 b with [a, aa, aaa]: 900140 calls
+memoised depth is at most len(s) = 200; limit 1000 -> True
+memo n=5000 (outside the stated limits): RecursionError
+```
+
+**Edge cases:**
+- `s = 'x'`, words `['y']` returns False; `'aaaa'` with `['a', 'aa']` returns True.
+- Word longer than the string is skipped (`L > i`).
+- A string that can be segmented only by not taking the first matching word (`'aaaab'`-style traps) shows greedy longest-match is wrong; the DP tries all.
+- Duplicate words are absent by the prompt, but a `set` makes them harmless anyway.
+
+**Follow-ups:**
+- Return one segmentation or all? Keep parent pointers (one) or backtrack with the dp table as a filter (all; the count of answers can be exponential).
+- A trie instead of a set? Walk the trie forward from each True position; avoids slicing and hashing.
+- Count the segmentations? Replace the boolean with a sum: `dp[i] += dp[i - L]`.
+
+**Common mistakes:**
+- Forgetting `dp[0] = True`, so nothing is ever True.
+- Looping over every word per position and slicing with no length filter (works, but slower), or allowing `L > i` and indexing out of range.
+- Plain recursion with no memo (exponential).
+- Claiming the check count is O(n^2) when word lengths are bounded; with a set it is bounded by n * D.
+
+### Q9 ⭐⭐⭐ 🟡 Decode ways. A string `s` of digits (1 <= len <= 100) encodes letters with 1 -> A, 2 -> B, ..., 26 -> Z; a code has no leading zero, so '0' alone and '06' are invalid. Return the number of ways to split `s` into valid codes, or 0 if there are none. Python integers are unbounded, so no modulus is needed at this size. Give `dp[i]`, the two conditions (the last one digit is 1..9, the last two digits are 10..26), the base cases dp[0] = 1, and the handling of zeros. In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against a plain recursion that tries one or two digits on small inputs. Example: s='12' -> 2; s='226' -> 3; s='06' -> 0; s='10' -> 1; s='2101' -> 1; s='11111111111111111111111111111111111111111111111111' -> 20365011074.
+**Asked at:** DP pattern guides and lists (techinterview.org 1D dynamic-programming interview patterns and DP recurrence guides, DesignGurus common DP questions, IGotAnOffer DP interview questions; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** 1D counting DP over prefixes with two look-back options (one digit or two digits). Same shape as climbing stairs, but each option is gated by a validity test.
+
+**Say this first (1 line):** "dp[i] is the number of ways to decode the first i digits; add dp[i-1] if the last digit is 1..9, add dp[i-2] if the last two digits are 10..26; dp[0] = 1; zeros only survive inside 10 or 20."
+
+**Brute force:** Recursion: at each position, if the digit is '0' return 0; otherwise take one digit, and also two digits when they form 10..26. No memo, so it re-solves suffixes: exponential. Used as the checker for len <= 14.
+
+**Optimal:**
+- State: `dp[i]` = number of ways to decode the prefix `s[:i]`.
+- Base: `dp[0] = 1` (the empty prefix has one empty decoding). This is what makes `dp[1]` and `dp[2]` come out right.
+- Transition: the last code is either one digit `s[i-1]` or two digits `s[i-2:i]`.
+  - One digit counts only if it is `'1'..'9'` (a lone '0' is invalid): `dp[i] += dp[i-1]`.
+  - Two digits count only if the number is 10..26 (this also rules out leading zeros like '06'): `dp[i] += dp[i-2]`.
+- Zeros: a '0' cannot stand alone, so it must pair with the digit before it as 10 or 20. `'30'`, `'00'` and a leading '0' give 0 (the code checks these).
+- Answer: `dp[n]`. Two variables are enough.
+- No modulus: Python ints are exact, and the largest value at length 100 is the all-ones string, 573147844013817084101 (Fibonacci(101)); the code confirms all-ones is the maximum for every length up to 7 over the digits that matter, and the 50-ones prompt example gives 20365011074 = Fibonacci(51).
+- Recursion: top-down depth is at most `len(s) <= 100`, far below the default limit of 1000, so memoisation is fine here (the code runs it at 100). It would hit `RecursionError` only at sizes outside this prompt (5000 in the code).
+
+**Complexity:** Time O(n), space O(1) (O(n) with the table). The recursion without memo is O(2^n) in the worst case.
+
+**Dry run:** `s = '226'`.
+
+| i | 0 | 1 | 2 | 3 |
+|---|---|---|---|---|
+| prefix | "" | 2 | 22 | 226 |
+| one digit valid? | | 2: yes (+dp[0]) | 2: yes (+dp[1]) | 6: yes (+dp[2]) |
+| two digits valid? | | | 22: yes (+dp[0]) | 26: yes (+dp[1]) |
+| dp[i] | 1 | 1 | 2 | 3 |
+
+Answer 3 (2-2-6, 22-6, 2-26). For `'2101'` the table is `[1, 1, 2, 1, 1]`: at i = 2 ('21' and '1') gives 2; at i = 3 the digit is 0, so only '10' counts, dp[3] = dp[1] = 1; at i = 4 only the single '1' counts, since '01' is invalid, so dp[4] = dp[3] = 1. For `'06'` it is `[1, 0, 0]`.
+
+**Code:**
+```python
+import random
+import sys
+from functools import cache
+
+random.seed(109)
+
+def decode_ways(s):
+    """dp[i] = ways to decode s[:i]. dp[0] = 1.
+    + dp[i-1] if s[i-1] is '1'..'9' ; + dp[i-2] if s[i-2:i] is '10'..'26'. Two variables."""
+    prev, cur = 0, 1                      # dp[i-2] (placeholder), dp[i-1] = dp[0]
+    for i in range(1, len(s) + 1):
+        new = 0
+        if s[i - 1] != '0':
+            new += cur
+        if i >= 2 and '10' <= s[i - 2:i] <= '26':
+            new += prev
+        prev, cur = cur, new
+    return cur
+
+def table(s):
+    dp = [1] + [0] * len(s)
+    for i in range(1, len(s) + 1):
+        if s[i - 1] != '0':
+            dp[i] += dp[i - 1]
+        if i >= 2 and 10 <= int(s[i - 2:i]) <= 26:
+            dp[i] += dp[i - 2]
+    return dp
+
+def memo(s):
+    @cache
+    def f(i):
+        if i == len(s):
+            return 1
+        if s[i] == '0':
+            return 0
+        r = f(i + 1)
+        if i + 1 < len(s) and 10 <= int(s[i:i + 2]) <= 26:
+            r += f(i + 2)
+        return r
+    return f(0)
+
+def brute(s):
+    """Plain recursion: take one digit or two digits."""
+    def f(rest):
+        if rest == '':
+            return 1
+        if rest[0] == '0':
+            return 0
+        r = f(rest[1:])
+        if len(rest) >= 2 and 10 <= int(rest[:2]) <= 26:
+            r += f(rest[2:])
+        return r
+    return f(s)
+
+ex = [('12', 2), ('226', 3), ('06', 0), ('10', 1), ('2101', 1), ('1' * 50, 20365011074)]
+for s, want in ex:
+    assert decode_ways(s) == memo(s) == table(s)[-1] == want, (s, decode_ways(s))
+    if len(s) <= 25:
+        assert brute(s) == want
+print('6 prompt examples ok (the 50-digit one: 20365011074 = Fibonacci(51))')
+
+print('s = 226  dp[0..3] =', table('226'))
+print('s = 2101 dp[0..4] =', table('2101'))
+print('s = 06   dp[0..2] =', table('06'))
+
+for _ in range(1500):
+    n = random.randint(1, 14)
+    s = ''.join(random.choice('0123456789' if random.random() < 0.5 else '0126') for _ in range(n))
+    assert decode_ways(s) == brute(s) == memo(s) == table(s)[-1], s
+print('1500 seeded random digit strings (len 1..14): DP == plain recursion == memo == table')
+
+# exhaustive: every digit string over {0,1,2,3,6,7} up to length 7 (the digits that matter for 10..26 boundaries)
+import itertools
+cnt = 0
+for n in range(1, 8):
+    top = 0
+    for t in itertools.product('012367', repeat=n):
+        s = ''.join(t)
+        d = decode_ways(s)
+        assert d == brute(s); cnt += 1
+        top = max(top, d)
+    assert top == decode_ways('1' * n)          # the all-ones string has the most decodings
+print('exhaustive over alphabet 0,1,2,3,6,7 up to length 7:', cnt, 'strings ok; the all-ones string is the maximum at every length')
+
+# claim: no modulus needed up to len 100: max is F(101) (all ones), about 5.7e20, python ints are exact
+mx = decode_ways('1' * 100)
+print('len 100 all ones ->', mx, '(exact big integer; no modulus needed)')
+assert mx == 573147844013817084101
+assert max(decode_ways(''.join(random.choice('12') for _ in range(100))) for _ in range(200)) <= mx
+
+# zero handling
+assert decode_ways('0') == 0 and decode_ways('00') == 0 and decode_ways('100') == 0 and decode_ways('30') == 0
+assert decode_ways('27') == 1 and decode_ways('20') == 1 and decode_ways('1') == 1 and decode_ways('101') == 1
+print('zero cases ok: 0, 00, 100, 30 -> 0;  20, 27, 101 -> 1')
+
+# memoised depth <= len(s) <= 100, far below the limit; outside the limits it fails
+print('memo on len 100 ->', memo('1' * 100) == mx, '; default limit', sys.getrecursionlimit())
+try:
+    memo('1' * 5000); print('memo len 5000: ok')
+except RecursionError:
+    print('memo len 5000 (outside the stated limit): RecursionError')
+```
+
+**Output (my run):**
+```
+6 prompt examples ok (the 50-digit one: 20365011074 = Fibonacci(51))
+s = 226  dp[0..3] = [1, 1, 2, 3]
+s = 2101 dp[0..4] = [1, 1, 2, 1, 1]
+s = 06   dp[0..2] = [1, 0, 0]
+1500 seeded random digit strings (len 1..14): DP == plain recursion == memo == table
+exhaustive over alphabet 0,1,2,3,6,7 up to length 7: 335922 strings ok; the all-ones string is the maximum at every length
+len 100 all ones -> 573147844013817084101 (exact big integer; no modulus needed)
+zero cases ok: 0, 00, 100, 30 -> 0;  20, 27, 101 -> 1
+memo on len 100 -> True ; default limit 1000
+memo len 5000 (outside the stated limit): RecursionError
+```
+
+**Edge cases:**
+- `'0'`, `'00'`, `'06'`, `'30'`, `'100'` all return 0.
+- `'10'` and `'20'` return 1; `'27'` returns 1 (27 is not a code).
+- A single digit `'1'` returns 1.
+- Comparing the two digits as strings (`'10' <= t <= '26'`) is safe for exactly two characters, because equal-length digit strings order like numbers.
+
+**Follow-ups:**
+- Decode ways II (with `*` wildcards)? Same DP with multipliers and a modulus.
+- Print all decodings? Backtracking guided by the dp table; the count can be exponential.
+- Why does a '0' only allow the two-digit branch? Because no letter maps to 0 and no code has a leading zero.
+
+**Common mistakes:**
+- Treating '0' as valid on its own, or '06' as 6.
+- Allowing 27..99 or 0X in the two-digit test.
+- `dp[0] = 0`.
+- Reading `s[i-2]` at i = 1 (negative index wraps around in Python and silently gives a wrong answer).

@@ -1,0 +1,10 @@
+6 prompt examples ok (the 50-digit one: 20365011074 = Fibonacci(51))
+s = 226  dp[0..3] = [1, 1, 2, 3]
+s = 2101 dp[0..4] = [1, 1, 2, 1, 1]
+s = 06   dp[0..2] = [1, 0, 0]
+1500 seeded random digit strings (len 1..14): DP == plain recursion == memo == table
+exhaustive over alphabet 0,1,2,3,6,7 up to length 7: 335922 strings ok; the all-ones string is the maximum at every length
+len 100 all ones -> 573147844013817084101 (exact big integer; no modulus needed)
+zero cases ok: 0, 00, 100, 30 -> 0;  20, 27, 101 -> 1
+memo on len 100 -> True ; default limit 1000
+memo len 5000 (outside the stated limit): RecursionError
