@@ -95,8 +95,7 @@ for _ in range(300):
     assert ways_ordered(cs, am) == compositions(cs, am)
 print('amount-outer version == number of ORDERED sequences (checked on 300 seeded cases)')
 
-# same optimiser skeleton as Q6, min vs +
-print('Q6 vs Q10 on [1, 2, 5], 11: min coins uses min, here ways =', ways_combinations([1, 2, 5], 11))
+print('coins [1, 2, 5], amount 11: combinations =', ways_combinations([1, 2, 5], 11), '(Q6 asks the min coins, 3, for the same input)')
 
 # edge and large cases
 assert ways_combinations([10], 0) == 1 and ways_combinations([7], 5) == 0 and ways_combinations([1], 5000) == 1

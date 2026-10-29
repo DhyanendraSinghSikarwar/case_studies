@@ -1228,3 +1228,283 @@ edge cases ok
 - `dp[d-7]` with d < 7 (negative index) instead of the clamp.
 - Forgetting the non-travel copy case, which makes the min apply to every day and overcounts.
 - Reading "7-day pass bought on day t covers t..t+6" and looking back 6 or 8 days; the window ending at d is `d-6..d`, so the look-back is `dp[d-7]`.
+
+### Q39 ⭐ 🔴 Ones and zeroes (a knapsack with two capacities). `strs` is a list of 1 <= len <= 100 non-empty binary strings (each of length <= 100), and `m`, `n` are 0 <= m, n <= 100. Return the size of the largest subset of strings that uses at most m zeros and at most n ones in total. The table has two capacity axes and each string is an item taken at most once, so both loops run downward. This is the concept edge of 2D DP (grids and strings are Part 11); say what the state is, the transition, and the time O(len * m * n). In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against an enumeration of all subsets (len <= 12) on small inputs. Example: strs=['10', '0001', '111001', '1', '0'], m=5, n=3 -> 4; strs=['10', '0', '1'], m=1, n=1 -> 2; strs=['0'], m=0, n=5 -> 0.
+**Asked at:** DP pattern guides and lists (techinterview.org 1D dynamic-programming interview patterns and DP recurrence guides, DesignGurus common DP questions, IGotAnOffer DP interview questions; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** 0/1 knapsack with TWO capacities (zeros and ones), each string an item of weight `(zeros, ones)` and value 1. This is the concept edge of 2D DP; grids and string DPs are Part 11.
+
+**Say this first (1 line):** "`dp[a][b]` is the most strings I can take using at most a zeros and b ones; for each string I update the table with both loops going downward, so a string is used at most once; time is O(len * m * n)."
+
+**Brute force:** Try all 2^len subsets, keep those whose total zeros are at most m and total ones at most n, return the largest size. O(2^len * total length). len <= 12 in the cross-check.
+
+**Optimal:**
+- State: after processing some strings, `dp[a][b]` = the maximum number of those strings that can be chosen with total zeros `<= a` and total ones `<= b`. The table has `(m + 1) x (n + 1)` cells and it is "at most", so `dp[a][b]` is non-decreasing in both a and b.
+- Base: all zeros (the empty subset is always allowed).
+- Transition for a string with `z` zeros and `o` ones: `dp[a][b] = max(dp[a][b], dp[a - z][b - o] + 1)` for `a >= z` and `b >= o`. Skip (keep the old value) or take (one more string, paying `z` and `o`).
+- Why both loops go downward: `dp[a - z][b - o]` must still be the value from BEFORE this string. In the downward order, cell `(a - z, b - o)` is smaller in both coordinates, so it has not been updated yet for this string. In the upward order it has, and the string is counted again. A string with `z = 0` or `o = 0` makes it obvious: the code shows `['0']`, m = 3, n = 0 gives 3 with the upward loops, but the true answer is 1. The upward version was wrong on 329 of 500 random cases.
+- Order of the two loops among themselves does not matter (any order where each inner index goes down is fine), as long as both are downward and the item loop is outermost.
+- Same idea as the 1D 0/1 knapsack (Q37 value-only form), one dimension more.
+- The state cannot be a single number because two budgets can bind independently; both must be tracked.
+
+**Complexity:** Time O(len * m * n) = up to 100 * 100 * 100 = 10^6 updates. Space O(m * n) = 10^4 cells (the item dimension is rolled away by the downward loops). Counting zeros per string is O(total length).
+
+**Dry run (first example):** strings `10, 0001, 111001, 1, 0`, m = 5 zeros, n = 3 ones. Items as `(zeros, ones)`: `(1,1)`, `(3,1)`, `(2,4)`, `(0,1)`, `(1,0)`.
+- `111001` has 4 ones, more than n = 3, so it can never be taken: the table does not change for it (the loop range for b is empty).
+- After `10` (1,1): every cell with `a >= 1`, `b >= 1` is 1.
+- After `0001` (3,1): cells with `a >= 4`, `b >= 2` become 2 (take both): for example `dp[4][2] = dp[1][1] + 1 = 2`.
+- After `1` (0,1): `dp[4][3]` becomes `dp[4][2] + 1 = 3`.
+- After `0` (1,0): `dp[5][3] = dp[4][3] + 1 = 4`.
+- Answer `dp[5][3] = 4`: take `10`, `0001`, `1`, `0` (zeros 1 + 3 + 0 + 1 = 5, ones 1 + 1 + 1 + 0 = 3). The printed table after each string is in the output below (rows are zeros allowed 0..5, columns ones allowed 0..3).
+
+**Code:**
+```python
+import itertools
+import random
+
+random.seed(39)
+
+def ones_zeroes(strs, m, n):
+    """dp[a][b] = largest subset of the strings seen so far using at most a zeros and b ones."""
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for s in strs:
+        z = s.count('0')
+        o = len(s) - z
+        for a in range(m, z - 1, -1):              # both loops DOWNWARD: each string is used at most once
+            for b in range(n, o - 1, -1):
+                dp[a][b] = max(dp[a][b], dp[a - z][b - o] + 1)
+    return dp[m][n]
+
+def upward_bug(strs, m, n):
+    """WRONG: upward loops let a string be reused (it behaves like an unbounded item)."""
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for s in strs:
+        z = s.count('0')
+        o = len(s) - z
+        for a in range(z, m + 1):
+            for b in range(o, n + 1):
+                dp[a][b] = max(dp[a][b], dp[a - z][b - o] + 1)
+    return dp[m][n]
+
+def brute(strs, m, n):
+    k, best = len(strs), 0
+    for mask in range(1 << k):
+        ch = [strs[i] for i in range(k) if mask >> i & 1]
+        if sum(s.count('0') for s in ch) <= m and sum(s.count('1') for s in ch) <= n:
+            best = max(best, len(ch))
+    return best
+
+# ---- examples from the prompt
+assert ones_zeroes(['10', '0001', '111001', '1', '0'], 5, 3) == 4
+assert ones_zeroes(['10', '0', '1'], 1, 1) == 2
+assert ones_zeroes(['0'], 0, 5) == 0
+print('examples ok')
+
+# ---- table for the first example: dp after each string (rows a = zeros allowed 0..5, columns b = ones allowed 0..3)
+strs = ['10', '0001', '111001', '1', '0']
+m, n = 5, 3
+dp = [[0] * (n + 1) for _ in range(m + 1)]
+for s in strs:
+    z = s.count('0'); o = len(s) - z
+    for a in range(m, z - 1, -1):
+        for b in range(n, o - 1, -1):
+            dp[a][b] = max(dp[a][b], dp[a - z][b - o] + 1)
+    print(f'after {s!r} (zeros {z}, ones {o}):', dp)
+assert dp[m][n] == 4
+
+# ---- seeded cross-check against the enumeration of all subsets (len <= 12)
+cases = diff_upward = 0
+for _ in range(500):
+    k = random.randint(1, 12)
+    strs = [''.join(random.choice('01') for _ in range(random.randint(1, 5))) for _ in range(k)]
+    m, n = random.randint(0, 8), random.randint(0, 8)
+    assert ones_zeroes(strs, m, n) == brute(strs, m, n), (strs, m, n)
+    if upward_bug(strs, m, n) != ones_zeroes(strs, m, n):
+        diff_upward += 1
+    cases += 1
+print('cross-check passed on', cases, 'cases; the upward-loop version was wrong on', diff_upward)
+print("upward on ['0'], m=3, n=0:", upward_bug(['0'], 3, 0), '(true answer', ones_zeroes(['0'], 3, 0), ')')
+
+# ---- edge cases and full size
+assert ones_zeroes(['0'], 0, 5) == 0 and ones_zeroes(['1'], 5, 0) == 0 and ones_zeroes(['01'], 1, 1) == 1
+assert ones_zeroes(['0', '0', '0'], 2, 0) == 2
+big = [''.join(random.choice('01') for _ in range(random.randint(1, 100))) for _ in range(100)]
+print('len = 100, m = n = 100:', ones_zeroes(big, 100, 100))
+print('edge cases ok')
+```
+
+**Output (my run):**
+```
+examples ok
+after '10' (zeros 1, ones 1): [[0, 0, 0, 0], [0, 1, 1, 1], [0, 1, 1, 1], [0, 1, 1, 1], [0, 1, 1, 1], [0, 1, 1, 1]]
+after '0001' (zeros 3, ones 1): [[0, 0, 0, 0], [0, 1, 1, 1], [0, 1, 1, 1], [0, 1, 1, 1], [0, 1, 2, 2], [0, 1, 2, 2]]
+after '111001' (zeros 2, ones 4): [[0, 0, 0, 0], [0, 1, 1, 1], [0, 1, 1, 1], [0, 1, 1, 1], [0, 1, 2, 2], [0, 1, 2, 2]]
+after '1' (zeros 0, ones 1): [[0, 1, 1, 1], [0, 1, 2, 2], [0, 1, 2, 2], [0, 1, 2, 2], [0, 1, 2, 3], [0, 1, 2, 3]]
+after '0' (zeros 1, ones 0): [[0, 1, 1, 1], [1, 2, 2, 2], [1, 2, 3, 3], [1, 2, 3, 3], [1, 2, 3, 3], [1, 2, 3, 4]]
+cross-check passed on 500 cases; the upward-loop version was wrong on 329
+upward on ['0'], m=3, n=0: 3 (true answer 1 )
+len = 100, m = n = 100: 20
+edge cases ok
+```
+
+**Edge cases:**
+- A string with more ones than n or more zeros than m can never be taken; the loop range is empty and the table is untouched.
+- `m = 0` or `n = 0`: only strings made entirely of the other digit can be taken (`['0']`, m = 0, n = 5 gives 0; with m = 1 it gives 1).
+- Identical strings are separate items (`['0','0','0']`, m = 2 gives 2).
+
+**Follow-ups:**
+- *Memory?* Already O(m * n); the item dimension is gone.
+- *Maximise total length instead of count?* Use value `len(s)` instead of 1.
+- *Why is this a Part 11 concept?* Two capacity axes make the table 2D; Part 11 covers grids, strings and intervals, where the table axes are positions rather than budgets.
+
+**Common mistakes:**
+- Upward loops on either axis (reuses strings).
+- Putting the item loop inside the capacity loops (the table then mixes items; the item loop must be outermost).
+- Counting ones as `s.count('1')` and zeros as `len(s) - ones` is fine; mixing the two up swaps m and n.
+- Forgetting that `dp` is "at most", so the answer is `dp[m][n]`, not a max over cells.
+
+### Q40 ⭐ 🔴 Russian doll envelopes (LIS with a sort trick). `envelopes` is a list of 0 <= len <= 10^5 pairs [w, h] (1 <= w, h <= 10^9). One envelope fits inside another only if BOTH its width and its height are strictly smaller. Return the maximum number of envelopes in a nesting chain (0 for an empty list). Sort by width ascending and, for equal widths, height DESCENDING, then take the strict LIS of the heights with `bisect_left` (Part 5 Q11); explain why the descending tie-break stops two envelopes of equal width from chaining. In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against an O(n^2) DP over pairs that checks both dimensions strictly on small inputs. Example: envelopes=[[5, 4], [6, 4], [6, 7], [2, 3]] -> 3; envelopes=[[1, 1], [1, 1], [1, 1]] -> 1; envelopes=[] -> 0; envelopes=[[4, 5], [4, 6], [6, 7], [2, 3], [1, 1]] -> 4.
+**Asked at:** DP pattern guides and lists (techinterview.org 1D dynamic-programming interview patterns and DP recurrence guides, DesignGurus common DP questions, IGotAnOffer DP interview questions; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** A two-dimensional "both strictly smaller" chain reduced to a 1D strict LIS by sorting one dimension. The tie-break on the sorted dimension is the whole trick.
+
+**Say this first (1 line):** "Sort by width ascending and, for equal widths, height DESCENDING, then take the strict LIS of the heights with `bisect_left`; the descending tie-break makes it impossible to pick two envelopes of the same width in one increasing run."
+
+**Brute force:** Sort, then `dp[i]` = longest chain ending at envelope i = 1 + the best `dp[j]` over earlier `j` with BOTH width and height strictly smaller. O(n^2) time, O(n) space. Correct, but 10^10 pair checks at n = 10^5. It is the oracle.
+
+**Optimal:**
+- After sorting by width, widths never decrease along the list, so the width condition holds automatically between envelopes with different widths (earlier is smaller or equal). What remains is the height condition and the equal-width exception.
+- Take the heights in sorted order and compute the strictly increasing LIS with the patience method (Q7): `tails[k]` is the smallest possible last height of a chain of length k + 1; `bisect_left` finds the position, so an equal height replaces rather than extends.
+- Why heights DESCENDING on equal width: two envelopes with the same width cannot nest (width must be strictly smaller). If the equal-width group were sorted ascending by height, say `(4,5)` then `(4,6)`, the heights `5, 6` would form an increasing step and the LIS could use both. Sorted descending, `6` comes before `5`, and no strictly increasing run can take two heights from one descending group, so at most one envelope per width is picked.
+- Why that loses nothing: if a chain uses one envelope of width w, any envelope of width w with the same or better height works equally; the LIS picks the best one on its own.
+- Counterexample (verified): `[[4,5],[4,6],[6,7],[2,3],[1,1]]`. Ascending tie-break gives heights `1,3,5,6,7` and LIS 5, which is wrong. The true answer is 4 (for example `(1,1),(2,3),(4,5),(6,7)`). Descending gives heights `1,3,6,5,7`, strict LIS 4. On 600 random small inputs the ascending tie-break was wrong 282 times (the exact count varies with the seed).
+- Equal envelopes `[[1,1],[1,1],[1,1]]`: same width, so they are in one group and a chain of 1 results. And with `bisect_left`, equal heights from different widths do not chain either (height must be strictly smaller): `[[1,5],[2,5],[3,5]]` gives 1.
+
+**Complexity:** Time O(n log n): the sort is O(n log n) and each of the n heights does one binary search. Space O(n) for the sorted copy and `tails`. For n = 10^5 that is about 1.7 million binary-search steps plus the sort.
+
+**Dry run (first example):** `[[5,4],[6,4],[6,7],[2,3]]`.
+- Sort by (width asc, height desc): `[2,3], [5,4], [6,7], [6,4]`. Heights: `3, 4, 7, 4`.
+
+| h | `bisect_left(tails, h)` | action | tails |
+|---|---|---|---|
+| 3 | 0 | append | [3] |
+| 4 | 1 | append | [3, 4] |
+| 7 | 2 | append | [3, 4, 7] |
+| 4 | 1 | replace the 4 | [3, 4, 7] |
+
+- Answer 3: `[2,3] -> [5,4] -> [6,7]`. The last 4 (width 6) could not extend anything, and it cannot follow `[5,4]` because the height 4 is not strictly larger than 4.
+
+**Code:**
+```python
+import bisect
+import random
+
+random.seed(40)
+
+def lis_strict(heights):
+    tails = []
+    for h in heights:
+        p = bisect.bisect_left(tails, h)       # strict: an equal height replaces, never extends
+        if p == len(tails):
+            tails.append(h)
+        else:
+            tails[p] = h
+    return len(tails)
+
+def russian_doll(envelopes):
+    order = sorted(envelopes, key=lambda e: (e[0], -e[1]))     # width up, height DOWN on equal width
+    return lis_strict([h for _, h in order])
+
+def ascending_tiebreak_bug(envelopes):
+    order = sorted(envelopes, key=lambda e: (e[0], e[1]))      # WRONG tie-break
+    return lis_strict([h for _, h in order])
+
+def brute(envelopes):
+    """O(n^2) DP over pairs, checking BOTH dimensions strictly."""
+    es = sorted(envelopes)
+    n = len(es)
+    dp = [1] * n
+    for i in range(n):
+        for j in range(i):
+            if es[j][0] < es[i][0] and es[j][1] < es[i][1]:
+                dp[i] = max(dp[i], dp[j] + 1)
+    return max(dp, default=0)
+
+# ---- examples from the prompt
+assert russian_doll([[5, 4], [6, 4], [6, 7], [2, 3]]) == 3
+assert russian_doll([[1, 1], [1, 1], [1, 1]]) == 1
+assert russian_doll([]) == 0
+assert russian_doll([[4, 5], [4, 6], [6, 7], [2, 3], [1, 1]]) == 4
+print('examples ok')
+
+# ---- walk-through of the first example
+env = [[5, 4], [6, 4], [6, 7], [2, 3]]
+order = sorted(env, key=lambda e: (e[0], -e[1]))
+print('sorted (w asc, h desc):', order)
+tails = []
+for _, h in order:
+    p = bisect.bisect_left(tails, h)
+    tails[p:p + 1] = [h]
+    print(f'  h={h}: position {p}, tails = {tails}')
+print('answer', len(tails))
+
+# ---- why descending: with an ascending tie-break equal widths chain
+E2 = [[4, 5], [4, 6], [6, 7], [2, 3], [1, 1]]
+print('ascending tie-break on', E2, '->', ascending_tiebreak_bug(E2), '| correct', russian_doll(E2))
+assert ascending_tiebreak_bug(E2) == 5 and brute(E2) == 4
+
+# ---- seeded cross-check against the O(n^2) pair DP
+cases = bad_asc = 0
+for _ in range(600):
+    n = random.randint(0, 14)
+    es = [[random.randint(1, 6), random.randint(1, 6)] for _ in range(n)]
+    got = russian_doll(es)
+    assert got == brute(es), es
+    if ascending_tiebreak_bug(es) != got:
+        bad_asc += 1
+    cases += 1
+print('cross-check passed on', cases, 'cases; the ascending tie-break was wrong on', bad_asc)
+
+# ---- edge cases and full size
+assert russian_doll([[3, 3]]) == 1
+assert russian_doll([[1, 5], [1, 6], [1, 7]]) == 1             # same width never nests
+assert russian_doll([[1, 5], [2, 5], [3, 5]]) == 1             # same height never nests
+assert russian_doll([[i, i] for i in range(1, 101)]) == 100
+big = [[random.randint(1, 10**9), random.randint(1, 10**9)] for _ in range(10**5)]
+print('n = 10**5 random envelopes, chain length:', russian_doll(big))
+print('edge cases ok')
+```
+
+**Output (my run):**
+```
+examples ok
+sorted (w asc, h desc): [[2, 3], [5, 4], [6, 7], [6, 4]]
+  h=3: position 0, tails = [3]
+  h=4: position 1, tails = [3, 4]
+  h=7: position 2, tails = [3, 4, 7]
+  h=4: position 1, tails = [3, 4, 7]
+answer 3
+ascending tie-break on [[4, 5], [4, 6], [6, 7], [2, 3], [1, 1]] -> 5 | correct 4
+cross-check passed on 600 cases; the ascending tie-break was wrong on 282
+n = 10**5 random envelopes, chain length: 611
+edge cases ok
+```
+
+**Edge cases:**
+- Empty list: 0.
+- All identical envelopes: 1.
+- Same width, many heights: 1 (descending tie-break).
+- Same height, many widths: 1 (`bisect_left` replaces equal heights).
+- A perfect chain `(i, i)`: n.
+- Widths and heights up to 10^9: only comparisons are used.
+
+**Follow-ups:**
+- *Recover the actual chain?* Keep predecessor pointers as in Q34; the descending tie-break does not change that.
+- *Three dimensions (boxes)?* This sort trick does not extend directly; the usual answer is the O(n^2) DP over sorted triples or a CDQ divide and conquer (beyond this part).
+- *Can the sort be by height instead?* Yes, by symmetry.
+
+**Common mistakes:**
+- Ascending tie-break on height (counts equal-width envelopes as nesting).
+- `bisect_right` for the LIS (counts equal heights as nesting).
+- Sorting by width only, leaving the order of equal widths arbitrary.
+- Applying the O(n^2) DP at n = 10^5 and timing out.

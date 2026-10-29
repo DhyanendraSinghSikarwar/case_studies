@@ -1421,3 +1421,183 @@ memo len 5000 (outside the stated limit): RecursionError
 - Allowing 27..99 or 0X in the two-digit test.
 - `dp[0] = 0`.
 - Reading `s[i-2]` at i = 1 (negative index wraps around in Python and silently gives a wrong answer).
+
+### Q10 ⭐⭐⭐ 🟡 Coin change II, number of combinations. `coins` has 1 <= len <= 12 distinct positive integers (each <= 5000) and `amount` is 0 <= amount <= 5000. Count the multisets of coins (order does not matter, each coin reusable) that sum to `amount`; amount 0 has exactly 1 (the empty multiset). Return the exact integer. Explain why the coin loop must be the OUTER loop to count combinations, and why this is a counting DP where the optimising version (Q6) uses min instead of +. Sizes go well past 1000, so a memoised top-down recursion can nest deeper than CPython's default recursion limit of 1000 and fail with RecursionError; a bottom-up (iterative) solution is required (do not rely on raising the limit). In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against a recursion by coin index (take another copy or move to the next coin) on small inputs. Example: coins=[1, 2, 5], amount=5 -> 4; coins=[2], amount=3 -> 0; coins=[10], amount=0 -> 1; coins=[1, 2, 3], amount=4 -> 4.
+**Asked at:** DP pattern guides and lists (techinterview.org 1D dynamic-programming interview patterns and DP recurrence guides, DesignGurus common DP questions, IGotAnOffer DP interview questions; search snippets only, not opened) | Candidate-reported Flipkart rounds (a 2024 on-campus LeetCode Discuss post with a coin change discussion, a Naukri Code360 2020 report with a longest-decreasing-subsequence assessment, a GeeksforGeeks 2017 intern report with a 0-1 knapsack and a space-optimisation follow-up, a 2021 report with an unbounded-knapsack-like question; search-result summaries only, pages not opened; self-reported, unverified)
+
+**Pattern:** Unbounded knapsack, counting version. Same table as Q6 (coin change, minimum coins), but the cell holds a count, so the update is `+=` and the loop order decides what is counted.
+
+**Say this first (1 line):** "dp[a] is the number of multisets summing to a, dp[0] = 1; for each coin in the OUTER loop, for a from c up to amount do dp[a] += dp[a - c]; coin-outer counts combinations, amount-outer would count ordered sequences. O(amount * k) time, O(amount) space."
+
+**Brute force:** Recursion by coin index: `f(i, rem)` = ways using coins `i..` to make `rem`; take another copy of coin i (`f(i, rem - coin)`) or move on (`f(i+1, rem)`). With no memo it is exponential. As a second, independent oracle the code also enumerates every count vector of the coins with `itertools.product`.
+
+**Optimal:**
+- State: after processing the first j coins, `dp[a]` = number of multisets of those coins summing to a.
+- Base: `dp[0] = 1`, the empty multiset; all other cells start at 0.
+- Transition when coin c is introduced: `dp[a] += dp[a - c]` for a = c..amount, amounts going UP. A multiset using c has a last copy of c removed, leaving a multiset (of the first j coins) that sums to `a - c`. Going upward lets `dp[a - c]` already include copies of c, which is what unbounded reuse means.
+- Why the coin loop must be OUTER: each coin is introduced once and only extends combinations built from earlier coins, so every multiset is built in exactly one canonical order (all coin-1 copies, then coin-2 copies, ...). Putting the amount loop outside lets any coin come last at every amount, so 1+2 and 2+1 are both counted: you count ordered sequences. For `[1, 2, 5]` and amount 5 that gives 9, against 4 correct; over 600 seeded random cases the swapped loop differs on 219, and it equals the number of ordered sequences on all 300 checked.
+- Counting versus optimising: Q6 uses `min(dp[a - c] + 1)` and infinity as the "impossible" value; here the combine is `+` and the "impossible" value is 0. With min, loop order does not matter; with a sum it does.
+- Space: one array of amount + 1 big ints. Counts grow large (12 coins and amount 5000 gives 23303034594533, still exact in Python), no modulus is requested.
+- Recursion: the memoised index recursion nests about `amount` deep (taking copies of coin 1), so at amount 5000 it raises `RecursionError` under the default limit of 1000 (shown in the code; it works at amount 300). A bottom-up loop is required.
+
+**Complexity:** Time O(amount * k), space O(amount). Plain recursion: exponential.
+
+**Dry run:** `coins = [1, 2, 5]`, amount 5, `dp[0..5]` after each coin is processed.
+
+| after | dp[0] | dp[1] | dp[2] | dp[3] | dp[4] | dp[5] |
+|---|---|---|---|---|---|---|
+| start | 1 | 0 | 0 | 0 | 0 | 0 |
+| coin 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| coin 2 | 1 | 1 | 2 | 2 | 3 | 3 |
+| coin 5 | 1 | 1 | 2 | 2 | 3 | 4 |
+
+Example: with coin 2, `dp[4] = old dp[4] + dp[2] = 1 + 2 = 3` (1111, 112, 22). Answer `dp[5] = 4`: 11111, 1112, 122, 5.
+
+**Code:**
+```python
+import itertools
+import random
+import sys
+from functools import cache
+
+random.seed(110)
+
+def ways_combinations(coins, amount):
+    """dp[a] = number of multisets summing to a. Coin loop OUTER: each coin is introduced once, so a multiset
+    is built in one fixed coin order (all 1s, then 2s, ...) and counted once."""
+    dp = [1] + [0] * amount
+    for c in coins:                       # outer: coins
+        for a in range(c, amount + 1):    # inner: amounts upward (a coin may repeat)
+            dp[a] += dp[a - c]
+    return dp[amount]
+
+def ways_ordered(coins, amount):
+    """Amount OUTER, coin inner: counts ORDERED sequences (compositions). Wrong for this question."""
+    dp = [1] + [0] * amount
+    for a in range(1, amount + 1):
+        for c in coins:
+            if c <= a:
+                dp[a] += dp[a - c]
+    return dp[amount]
+
+def table_after_each_coin(coins, amount):
+    dp = [1] + [0] * amount; rows = []
+    for c in coins:
+        for a in range(c, amount + 1):
+            dp[a] += dp[a - c]
+        rows.append((c, dp[:]))
+    return rows
+
+def by_index(coins, amount):
+    """Oracle: ways(i, rem) = take another copy of coin i, or move to coin i+1. No memo."""
+    def f(i, rem):
+        if rem == 0:
+            return 1
+        if i == len(coins) or rem < 0:
+            return 0
+        return f(i, rem - coins[i]) + f(i + 1, rem)
+    return f(0, amount)
+
+def by_index_memo(coins, amount):
+    @cache
+    def f(i, rem):
+        if rem == 0:
+            return 1
+        if i == len(coins) or rem < 0:
+            return 0
+        return f(i, rem - coins[i]) + f(i + 1, rem)
+    return f(0, amount)
+
+def enumerate_multisets(coins, amount):
+    """Independent oracle: enumerate counts of each coin with itertools."""
+    ranges = [range(amount // c + 1) for c in coins]
+    return sum(1 for ks in itertools.product(*ranges) if sum(k * c for k, c in zip(ks, coins)) == amount)
+
+for cs, am, want in [([1, 2, 5], 5, 4), ([2], 3, 0), ([10], 0, 1), ([1, 2, 3], 4, 4)]:
+    assert ways_combinations(cs, am) == by_index(cs, am) == enumerate_multisets(cs, am) == want
+print('4 prompt examples ok')
+
+print('coins [1, 2, 5], amount 5: dp[0..5] after each coin')
+print('  start       ', [1, 0, 0, 0, 0, 0])
+for c, row in table_after_each_coin([1, 2, 5], 5):
+    print(f'  after coin {c}:', row)
+print('  ordered (amount-outer) answer for the same input:', ways_ordered([1, 2, 5], 5), '(compositions, not multisets)')
+
+for _ in range(1000):
+    k = random.randint(1, 4)
+    cs = random.sample(range(1, 9), k)
+    am = random.randint(0, 14)
+    a = ways_combinations(cs, am)
+    assert a == by_index(cs, am) == by_index_memo(cs, am) == enumerate_multisets(cs, am), (cs, am)
+    # coin order must not matter for the count
+    sh = cs[:]; random.shuffle(sh)
+    assert ways_combinations(sh, am) == a
+print('1000 seeded random (<= 4 coins in 1..8, amount 0..14): DP == index recursion == itertools enumeration; coin order irrelevant')
+
+# the loop-order claim, measured
+diff = same = 0
+for _ in range(600):
+    cs = random.sample(range(1, 9), random.randint(1, 4)); am = random.randint(0, 14)
+    if ways_combinations(cs, am) != ways_ordered(cs, am): diff += 1
+    else: same += 1
+print(f'swapped loop order (amount outer) differs from the combination count on {diff} of 600 seeded cases')
+# the swapped version counts ordered sequences: verify against a direct composition count
+def compositions(cs, am):
+    @cache
+    def g(r):
+        return 1 if r == 0 else sum(g(r - c) for c in cs if c <= r)
+    return g(am)
+for _ in range(300):
+    cs = random.sample(range(1, 9), random.randint(1, 4)); am = random.randint(0, 14)
+    assert ways_ordered(cs, am) == compositions(cs, am)
+print('amount-outer version == number of ORDERED sequences (checked on 300 seeded cases)')
+
+print('coins [1, 2, 5], amount 11: combinations =', ways_combinations([1, 2, 5], 11), '(Q6 asks the min coins, 3, for the same input)')
+
+# edge and large cases
+assert ways_combinations([10], 0) == 1 and ways_combinations([7], 5) == 0 and ways_combinations([1], 5000) == 1
+big_coins = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000]
+big = ways_combinations(big_coins, 5000)
+print('12 coins, amount 5000 ->', big, '(an exact big integer, no modulus)')
+try:
+    by_index_memo([1, 2, 5], 5000)
+    print('memoised by-index amount 5000: ok')
+except RecursionError:
+    print('memoised by-index amount 5000: RecursionError (default limit', sys.getrecursionlimit(), ')')
+print('memoised by-index amount 300 ->', by_index_memo([1, 2, 5], 300), '== bottom-up', ways_combinations([1, 2, 5], 300))
+```
+
+**Output (my run):**
+```
+4 prompt examples ok
+coins [1, 2, 5], amount 5: dp[0..5] after each coin
+  start        [1, 0, 0, 0, 0, 0]
+  after coin 1: [1, 1, 1, 1, 1, 1]
+  after coin 2: [1, 1, 2, 2, 3, 3]
+  after coin 5: [1, 1, 2, 2, 3, 4]
+  ordered (amount-outer) answer for the same input: 9 (compositions, not multisets)
+1000 seeded random (<= 4 coins in 1..8, amount 0..14): DP == index recursion == itertools enumeration; coin order irrelevant
+swapped loop order (amount outer) differs from the combination count on 219 of 600 seeded cases
+amount-outer version == number of ORDERED sequences (checked on 300 seeded cases)
+coins [1, 2, 5], amount 11: combinations = 11 (Q6 asks the min coins, 3, for the same input)
+12 coins, amount 5000 -> 23303034594533 (an exact big integer, no modulus)
+memoised by-index amount 5000: RecursionError (default limit 1000 )
+memoised by-index amount 300 -> 4621 == bottom-up 4621
+```
+
+**Edge cases:**
+- `amount = 0` returns 1 for any coins (`[10]`, 0 -> 1).
+- Impossible amount (`[2]`, 3) returns 0, not -1.
+- A coin larger than the amount never enters the inner loop (its range is empty).
+- Coin order in the list does not change the count (checked by shuffling).
+
+**Follow-ups:**
+- Count ordered sequences (combination sum IV)? Swap the loops: amount outer, coin inner.
+- Each coin used at most once (0/1 version)? Iterate amounts downward, as in the 0/1 knapsack.
+- Need an answer modulo 10^9 + 7? Reduce at each addition.
+
+**Common mistakes:**
+- Amount as the outer loop, which counts ordered sequences (9 instead of 4 on the first example).
+- `dp[0] = 0`, which makes everything 0.
+- Inner loop running downward, which allows each coin only once.
+- Memoised recursion at amount 5000 hitting RecursionError.
