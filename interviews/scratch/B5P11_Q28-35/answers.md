@@ -654,7 +654,7 @@ dp[0][5] options, split m: m=1: 0+12, m=2: 3+6, m=3: 7+3, m=4: 10+0; best + 7 = 
 random cross-check: 400 cases agree with every-order brute force
 first example: 24 orders cost between 16 and 20
 greedy middle-cut differs from the optimum on 32 of 400 random cases
-100 cuts, n=10^6: 6035974 (memo agrees, depth <= 102) [sandbox time 0.01s]
+100 cuts, n=10^6: 6035974 (memo agrees, depth <= 102) [sandbox time 0.03s]
 edge cases OK; limit 1000
 ```
 
@@ -873,7 +873,7 @@ exhaustive: 19939 small matrices agree
 greedy gives a worse total on 206 of 300 random 5x5 matrices
 n=12:    49,152 transitions, best 2234  [sandbox time 0.00s]
 n=15:   491,520 transitions, best 1420  [sandbox time 0.04s]
-n=18: 4,718,592 transitions, best 1289  [sandbox time 0.48s]
+n=18: 4,718,592 transitions, best 1289  [sandbox time 0.42s]
 n=20 would be 20,971,520 transitions and a table of 1,048,576 entries; n=25 gives 838,860,800
 edge cases OK; limit 1000
 ```
@@ -1068,7 +1068,7 @@ triangulation counts for n = 3..8: [1, 2, 5, 14, 42, 132]
 random cross-check: 500 polygons agree with the apex recursion
 enumerate-all-triangulations check: 100 polygons agree
 fan from the smallest label differs from the optimum on 78 of 500 random polygons
-n=100: 273789 (memoised version agrees, recursion depth <= 100) [sandbox time 0.03s]
+n=100: 273789 (memoised version agrees, recursion depth <= 100) [sandbox time 0.02s]
 edge cases OK; limit 1000
 ```
 
@@ -1109,7 +1109,7 @@ edge cases OK; limit 1000
 - Memoised version: `f(i, j)` with `lru_cache`, depth <= n <= 100 (each call shrinks the range), so there is no recursion-limit problem at this size; bottom-up is shown as the main solution.
 - Space: `dp` reads cells inside `[i, j]` for the same i and larger i, so the full triangle is kept: O(n^2).
 
-**Complexity:** Time O(n^3): n^2/2 cells, each scanning up to n values of k (at n = 100 that is about 166,000 inner steps). Space O(n^2). With the 26-letter random string of length 100, the code takes a hundredth of a second (sandbox only).
+**Complexity:** Time O(n^3): n^2/2 cells, each scanning up to n values of k (at n = 100 that is about 166,000 inner steps). Space O(n^2). The code's random 26-letter string of length 100 runs in a blink (sandbox only).
 
 **Dry run:**
 - `aaabbb` collapses to `ab`: `dp[0][0] = 1`, `dp[1][1] = 1`, `dp[0][1] = dp[0][0] + 1 = 2` (the letters differ, so no sharing). Answer 2.
@@ -1122,7 +1122,7 @@ edge cases OK; limit 1000
 | 2 (a) |  |  | 1 |
 
 `dp[0][2]`: candidate one is `dp[0][1] + 1 = 3`. Candidate two uses k = 0 (t[0] == t[2] == a): `dp[0][0] + dp[1][1] = 1 + 1 = 2`. So print `aaa` first, then `b` over the middle. Answer 2.
-- `abcabc` -> 5 (the run prints that 6 x 6 table; `dp[0][5] = 5` comes from sharing the last c with the earlier c and so on).
+- `abcabc` -> 5 (the run prints that 6 x 6 table; `dp[0][5] = 5`: printing the last c alone gives `dp[0][4] + 1 = 5`, sharing it with the c at k = 2 gives `dp[0][2] + dp[3][4] = 3 + 2 = 5`, a tie).
 
 **Code:**
 ```python
@@ -1301,10 +1301,9 @@ edge cases OK; limit 1000
 - One letter, or a single repeated letter (`aaa`, 100 a's): 1.
 - All letters different (26 distinct): n turns, nothing to share.
 - Alternating `abab...` of length 100: 51 (the code asserts it): one stroke of a across everything, then 50 strokes of b.
-- No-op strokes: the oracle allows any letter and range, so "print over something already correct" is available to it and does not change the minimum.
 
 **Follow-ups:**
-- Why O(n^3) and not better? n^2 states, O(n) transitions: n is only 100, so that is fine; there are O(n^2) refinements only for special structure, not needed here.
+- Why O(n^3) and not better? n^2 states with O(n) transitions each; with n <= 100 that is about 166,000 steps, so nothing faster is needed.
 - How would you recover the strokes? Store which candidate won per cell and replay: stroke (k..j) of letter t[j] first, then the middle.
 - How does it differ from burst balloons / cut a stick? Same interval shape; here the split condition is "equal letters" instead of "any split point", so only the matching k are tried.
 
@@ -1313,3 +1312,505 @@ edge cases OK; limit 1000
 - Using `dp[k+1][j]` instead of `dp[k+1][j-1]`: the letter t[j] is already painted by the shared stroke.
 - Forgetting the base for an empty middle range (`k + 1 > j - 1` must give 0).
 - Only splitting into independent halves: it never shares a stroke and is wrong on `aba`.
+
+### Q34 ⭐ 🔴 Cherry pickup (two walkers, concept level). `grid` is an n x n list of lists (1 <= n <= 50) with 0 (empty), 1 (one cherry) and -1 (thorns, impassable). Go from the top-left to the bottom-right moving only right or down, then back to the top-left moving only left or up, picking each cherry you pass over (a picked cherry cell becomes empty). Return the maximum cherries, or 0 if no path exists from the top-left to the bottom-right. Explain why the return trip is the same as a second walker going down-right at the same time, so the state is (step k, row of walker 1, row of walker 2) with the columns implied, give the transition over the four previous-state choices, how a cell shared by both walkers is counted once, and why two separate greedy trips fail. In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against enumerating every pair of right/down paths (n <= 5) on small inputs. Example: grid=[[0, 1, -1], [1, 0, -1], [1, 1, 1]] -> 5; grid=[[1, 1, -1], [1, -1, 1], [-1, 1, 1]] -> 0; grid=[[1]] -> 1; grid=[[0, 0], [0, 0]] -> 0.
+**Asked at:** 2D DP pattern guides and lists (techinterview.org two-dimensional DP interview patterns, a LeetCode Discuss '13 DP patterns' post, codemia 2D DP and DP on strings and intervals; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** DP over time with two agents moving in lock-step. Two walkers that move at the same pace share a "step number" k, so their columns follow from their rows and the state is (k, r1, r2).
+
+**Say this first (1 line):** "The trip back is the same as a second walker going down-right at the same time, so run both at once: `dp[k][r1][r2]` is the most cherries the pair has picked after k moves, with columns `k - r1` and `k - r2`; four predecessor choices, a shared cell counts once, O(n^3)."
+
+**Brute force:** Enumerate every right/down path (C(2n-2, n-1) of them, 70 for n = 5), keep those without thorns, and for every pair of paths add the cherries on the **union** of their cells (a shared cell once). The code also checks, for n <= 3, the statement read literally: pick a path, remove its cherries, then pick the best return path, and shows the two readings agree. Oracle for n <= 5.
+
+**Optimal:**
+- Why the return trip is a second down-right walker: a left/up path from the bottom-right to the top-left, read backwards, is a right/down path from the top-left to the bottom-right. Picking the cherries "on the way back" is then picking the cherries of a second right/down path, with the rule that a cherry already picked (a cell on both paths) is counted once. So the answer is the best union over a pair of right/down paths.
+- State: after k moves each (k = 0..2n-2), walker 1 is at row r1 and column `k - r1`, walker 2 at row r2 and column `k - r2`. `dp[k][r1][r2]` = max cherries picked by the pair so far, or -infinity if the pair cannot be there (thorn, off-grid or unreachable).
+- Base: `dp[0][0][0] = grid[0][0]` (0 or 1; -1 means no path and the answer is 0).
+- Transition: each walker came from above (row - 1, same k - 1) or from the left (same row at k - 1). Four predecessor pairs: `(r1, r2)`, `(r1-1, r2)`, `(r1, r2-1)`, `(r1-1, r2-1)` at step k - 1. So `dp[k][r1][r2] = max(four predecessors) + grid[r1][k-r1] + (grid[r2][k-r2] if r1 != r2 else 0)`; skip any pair that stands on a thorn.
+- Shared cell: when `r1 == r2` the columns are equal too (same k), so the walkers are on the same cell; add its cherry once.
+- Answer: `max(0, dp[2n-2][n-1][n-1])`: if no pair arrives (thorns cut every path) the value is -infinity and the answer is 0.
+- Symmetry: swapping the two walkers changes nothing, so only `r1 <= r2` is stored (about half the states); the code does this.
+- Space: step k reads only step k - 1, so two n x n layers suffice: O(n^2) (the code keeps one rolling layer).
+- Memoised version: `f(k, r1, r2)` = best from here to the end, depth 2n - 1 = 99 at n = 50, which is below the default limit of 1000, so memoisation is safe (the code runs n = 50 both ways). Bottom-up is still preferred.
+- Why two separate greedy trips fail: taking the best single trip first can use up cherries and force a poor return. The smallest counterexample the code found: `[[0,1,0],[0,1,1],[1,1,0]]`: the greedy two-trip total is 4 but the best is 5. It is wrong on 34 of 500 random small grids.
+
+**Complexity:** Time O(n^3): 2n - 1 steps times at most n^2/2 row pairs, 4 predecessors each. Space O(n^2) with rolling layers. At n = 50 that is about 99 * 1,250 * 4 operations.
+
+**Dry run:** `grid = [[0,1,-1],[1,0,-1],[1,1,1]]`, pairs `(r1, r2)` kept with r1 <= r2 (the run prints this):
+
+| k | reachable pairs (r1, r2): value | note |
+|---|---|---|
+| 0 | (0,0): 0 | start cell value 0 |
+| 1 | (0,0): 1, (0,1): 2, (1,1): 1 | (0,0) means both on cell (0,1), counted once; (0,1) means one on (0,1), one on (1,0): 1 + 1 |
+| 2 | (1,1): 2, (1,2): 3, (2,2): 2 | (0,2) is a thorn, so no pair uses row 0; (1,2) = cells (1,1)=0 and (2,0)=1 on top of the best earlier 2 |
+| 3 | (2,2): 4 | cell (2,1) = 1; (1,2) is a thorn; best predecessor 3 |
+| 4 | (2,2): 5 | cell (2,2) = 1 counted once |
+
+Answer 5. The pair of paths: down, down, right, right and right, down, down, right (so both pass (2,1)). The second example has thorns that cut every route: no pair reaches k = 4, so the answer is 0.
+
+**Code:**
+```python
+import itertools, random, sys, time
+from functools import lru_cache
+
+random.seed(3401)
+NEG = float("-inf")
+
+
+def solve(grid, trace=None):
+    """State (k, r1, r2): both walkers have made k right/down moves, so their columns are k - r1, k - r2.
+    dp[r1][r2] = most cherries collected by the pair so far; NEG = unreachable. Rolls over k: O(n^2) space."""
+    n = len(grid)
+    dp = [[NEG] * n for _ in range(n)]
+    if grid[0][0] == -1:
+        return 0
+    dp[0][0] = grid[0][0]
+    if trace is not None:
+        trace.append((0, {(0, 0): dp[0][0]}))
+    for k in range(1, 2 * n - 1):
+        nd = [[NEG] * n for _ in range(n)]
+        for r1 in range(max(0, k - n + 1), min(n, k + 1)):
+            c1 = k - r1
+            if grid[r1][c1] == -1:
+                continue
+            for r2 in range(r1, min(n, k + 1)):          # r2 >= r1 by symmetry: swapping walkers changes nothing
+                c2 = k - r2
+                if r2 < max(0, k - n + 1) or grid[r2][c2] == -1:
+                    continue
+                best = max(dp[a][b] for a in (r1, r1 - 1) for b in (r2, r2 - 1)
+                           if a >= 0 and b >= 0 and (a <= b))    # previous row pair, kept in r1 <= r2 form
+                if best == NEG:
+                    continue
+                gain = grid[r1][c1] + (grid[r2][c2] if r2 != r1 else 0)   # a shared cell counts once
+                nd[r1][r2] = best + gain
+        dp = nd
+        if trace is not None:
+            trace.append((k, {(a, b): dp[a][b] for a in range(n) for b in range(n) if dp[a][b] != NEG}))
+    return 0 if dp[n - 1][n - 1] == NEG else dp[n - 1][n - 1]
+
+
+def solve_memo(grid):
+    """Top-down version: depth 2n - 1 <= 99 for n <= 50, so memoisation is safe."""
+    n = len(grid)
+
+    @lru_cache(maxsize=None)
+    def f(k, r1, r2):                                    # best total from step k to the end, walkers at rows r1, r2
+        c1, c2 = k - r1, k - r2
+        if r1 >= n or r2 >= n or c1 >= n or c2 >= n or grid[r1][c1] == -1 or grid[r2][c2] == -1:
+            return NEG
+        gain = grid[r1][c1] + (grid[r2][c2] if r1 != r2 else 0)
+        if k == 2 * n - 2:
+            return gain
+        nxt = max(f(k + 1, r1 + a, r2 + b) for a in (0, 1) for b in (0, 1))
+        return NEG if nxt == NEG else gain + nxt
+
+    r = f(0, 0, 0)
+    return 0 if r == NEG else r
+
+
+def all_paths(n):
+    for downs in itertools.combinations(range(2 * n - 2), n - 1):
+        d = set(downs)
+        i = j = 0
+        cells = [(0, 0)]
+        for s in range(2 * n - 2):
+            if s in d:
+                i += 1
+            else:
+                j += 1
+            cells.append((i, j))
+        yield cells
+
+
+def brute(grid):
+    """Every pair of right/down paths; cherries on the union of cells (a shared cell once)."""
+    n = len(grid)
+    ps = [p for p in all_paths(n) if all(grid[a][b] != -1 for a, b in p)]
+    best = 0
+    for p in ps:
+        for q in ps:
+            best = max(best, sum(grid[a][b] for a, b in set(p) | set(q)))
+    return best
+
+
+def literal_trip(grid):
+    """The statement read literally (tiny n): walk down-right picking cherries, then walk back up-left
+    over the same grid with those cherries gone. Tests the 'second walker' reduction itself."""
+    n = len(grid)
+    best = 0
+    for p in all_paths(n):
+        if any(grid[a][b] == -1 for a, b in p):
+            continue
+        got = sum(grid[a][b] for a, b in p)
+        g2 = [row[:] for row in grid]
+        for a, b in p:
+            g2[a][b] = 0 if g2[a][b] == 1 else g2[a][b]
+        # return trip: left/up moves from (n-1, n-1) to (0, 0) = a right/down path read backwards
+        back = 0
+        for q in all_paths(n):
+            if any(g2[a][b] == -1 for a, b in q):
+                continue
+            back = max(back, sum(g2[a][b] for a, b in q))
+        best = max(best, got + back)
+    return best
+
+
+def greedy_two_trips(grid):
+    """Wrong: take the best single trip, clear it, then take the best second trip."""
+    n = len(grid)
+    ps = [p for p in all_paths(n) if all(grid[a][b] != -1 for a, b in p)]
+    if not ps:
+        return 0
+    first = max(ps, key=lambda p: sum(grid[a][b] for a, b in p))
+    g2 = [row[:] for row in grid]
+    for a, b in first:
+        g2[a][b] = 0 if g2[a][b] == 1 else g2[a][b]
+    return sum(grid[a][b] for a, b in first) + max(sum(g2[a][b] for a, b in p) for p in ps)
+
+
+# ---- prompt examples
+ex = [([[0, 1, -1], [1, 0, -1], [1, 1, 1]], 5), ([[1, 1, -1], [1, -1, 1], [-1, 1, 1]], 0),
+      ([[1]], 1), ([[0, 0], [0, 0]], 0)]
+for g, want in ex:
+    assert solve(g) == solve_memo(g) == brute(g) == want, g
+print("prompt examples OK")
+
+# ---- walk-through of the first example: reachable (r1, r2) pairs per step (r1 <= r2), value = cherries so far
+g = ex[0][0]
+tr = []
+solve(g, tr)
+print("grid", g)
+for k, cells in tr:
+    print(f"  k={k}:", {f"r1={a},r2={b} (c={k - a},{k - b})": v for (a, b), v in cells.items()})
+print("answer dp[k=4][2][2] =", solve(g))
+
+# ---- seeded cross-check: DP vs every pair of paths (n <= 5); small n also vs the literal go-and-return reading
+cnt = zero = 0
+for _ in range(500):
+    n = random.randint(1, 5)
+    p_thorn = random.choice([0.0, 0.15, 0.3])
+    g = [[(-1 if random.random() < p_thorn else random.randint(0, 1)) for _ in range(n)] for _ in range(n)]
+    g[0][0] = random.choice([g[0][0], 0, 1]) if random.random() < 0.8 else g[0][0]
+    want = brute(g)
+    assert solve(g) == solve_memo(g) == want, (g, want)
+    if n <= 3:
+        assert literal_trip(g) == want, g
+    cnt += 1
+    zero += want == 0
+print("random cross-check:", cnt, "grids agree with the pair-of-paths brute force;", zero, "have answer 0")
+
+# ---- the reduction itself: literal go-and-return reading equals the pair of paths (exhaustive, n <= 3, no thorns)
+c = 0
+for n in (1, 2, 3):
+    for flat in itertools.product((0, 1), repeat=n * n):
+        g = [list(flat[i * n:(i + 1) * n]) for i in range(n)]
+        assert literal_trip(g) == brute(g) == solve(g)
+        c += 1
+print("exhaustive 0/1 grids n <= 3:", c, "agree, literal reading included")
+
+# ---- two separate greedy trips fail
+bad = 0
+rg = random.Random(3402)
+example = None
+for _ in range(500):
+    n = rg.randint(3, 5)
+    g = [[rg.choice((0, 0, 1, 1, 1, -1)) for _ in range(n)] for _ in range(n)]
+    g[0][0] = g[n - 1][n - 1] = 0
+    want = brute(g)
+    if greedy_two_trips(g) != want:
+        bad += 1
+        if example is None or n < len(example[0]):
+            example = (g, greedy_two_trips(g), want)
+print("two greedy trips wrong on", bad, "of 500 random grids; smallest:", example)
+assert bad > 0
+
+# ---- largest size n = 50 (2n-1 steps, about n^2 / 2 row pairs each), sandbox time only
+rb = random.Random(3403)
+n = 50
+big = [[(-1 if rb.random() < 0.08 else rb.randint(0, 1)) for _ in range(n)] for _ in range(n)]
+big[0][0] = big[n - 1][n - 1] = 0
+t0 = time.perf_counter()
+res = solve(big)
+dt = time.perf_counter() - t0
+assert res == solve_memo(big)
+print("n=50 random:", res, "(memo agrees, recursion depth 99)", f"[sandbox time {dt:.2f}s]")
+
+# ---- edge cases
+assert solve([[-1]]) == 0 and solve([[0]]) == 0
+assert solve([[1, 1], [1, 1]]) == 4
+assert solve([[0, -1], [-1, 0]]) == 0                # both ways blocked
+assert solve([[1] * 4 for _ in range(4)]) == 12 == brute([[1] * 4 for _ in range(4)])   # 2*7 cells - the 2 shared ends
+print("edge cases OK; limit", sys.getrecursionlimit())
+```
+
+**Output (my run):**
+```
+prompt examples OK
+grid [[0, 1, -1], [1, 0, -1], [1, 1, 1]]
+  k=0: {'r1=0,r2=0 (c=0,0)': 0}
+  k=1: {'r1=0,r2=0 (c=1,1)': 1, 'r1=0,r2=1 (c=1,0)': 2, 'r1=1,r2=1 (c=0,0)': 1}
+  k=2: {'r1=1,r2=1 (c=1,1)': 2, 'r1=1,r2=2 (c=1,0)': 3, 'r1=2,r2=2 (c=0,0)': 2}
+  k=3: {'r1=2,r2=2 (c=1,1)': 4}
+  k=4: {'r1=2,r2=2 (c=2,2)': 5}
+answer dp[k=4][2][2] = 5
+random cross-check: 500 grids agree with the pair-of-paths brute force; 167 have answer 0
+exhaustive 0/1 grids n <= 3: 530 agree, literal reading included
+two greedy trips wrong on 34 of 500 random grids; smallest: ([[0, 1, 0], [0, 1, 1], [1, 1, 0]], 4, 5)
+n=50 random: 161 (memo agrees, recursion depth 99) [sandbox time 0.03s]
+edge cases OK; limit 1000
+```
+
+**Edge cases:**
+- n = 1: the cell value if it is not a thorn (the walkers are the same cell, counted once), else 0.
+- Thorn at the start or the end: 0.
+- Thorns that disconnect the corners: 0, never a negative number.
+- All zeros: 0.
+- All ones: the two paths share only the corners, so 4n - 4 for n >= 2 (12 for n = 4), not the sum of two full paths (the code asserts it).
+- A cell on both paths counted twice is the standard bug: only when `r1 == r2`.
+
+**Follow-ups:**
+- Why does only the row pair matter, not the columns? Same step count k makes `c = k - r` for both walkers.
+- Return the actual two paths? Keep the full 3D table (or a parent choice per state) and walk back from `(2n-2, n-1, n-1)`.
+- Why not just rows and columns of both walkers (four coordinates)? The step number ties them together, so one coordinate per walker is redundant: n^4 states drop to n^3.
+
+**Common mistakes:**
+- Running the best path twice (greedy) and removing the cherries between trips.
+- Counting a shared cell twice (add the second cherry only when `r1 != r2`).
+- Allowing a walker to step on a thorn, or treating -infinity as 0 and returning a positive total for an unreachable end.
+- Returning -infinity instead of 0 when no path exists.
+
+### Q35 ⭐ 🔴 Travelling salesman with a small number of cities (bitmask DP basics). `dist` is an n x n matrix (1 <= n <= 12) of non-negative integers (at most 1000; `dist[a][b]` may differ from `dist[b][a]`, `dist[a][a]` = 0). Start at city 0, visit every other city exactly once and return to city 0; return the minimum total distance (0 for n = 1). Define `f[mask][last]` = minimum cost of a path that starts at 0, visits exactly the cities in `mask` and ends at `last`, give the transition, the answer `min(f[full][last] + dist[last][0])`, and the time O(2^n * n^2) and space O(2^n * n). Say why the (n-1)! permutation search is hopeless beyond n around 11 and what the DP buys. In the answer include a table walk-through on the first example and a seeded random cross-check of your solution against trying every permutation of the other cities (n <= 8) on small inputs. Example: dist=[[0, 10, 15, 20], [10, 0, 35, 25], [15, 35, 0, 30], [20, 25, 30, 0]] -> 80; dist=[[0]] -> 0; dist=[[0, 3], [5, 0]] -> 8; dist=[[0, 1, 9], [9, 0, 1], [1, 9, 0]] -> 3.
+**Asked at:** Advanced DP pattern guides covering bitmask DP (techinterview.org advanced and optimisation DP pattern posts; search snippets only, not opened) | Standard-problem lists known to the editor (not found as an opened page; indicative only, no company attribution)
+
+**Pattern:** Bitmask DP basics (Held-Karp). The set of visited cities is an integer mask; the state adds the current city; transitions extend the path by one unvisited city.
+
+**Say this first (1 line):** "`f[mask][last]` is the cheapest path that starts at city 0, visits exactly the cities in mask and ends at last; extend by one unvisited city, close the tour back to 0 at the end: O(2^n * n^2) time, O(2^n * n) space, against (n-1)! for trying all orders."
+
+**Brute force:** Try every permutation of cities 1..n-1 as the visiting order, add the distances along `0 -> p1 -> ... -> p(n-1) -> 0` and take the minimum: (n-1)! tours (5,040 for n = 8, the oracle size). Distances may be asymmetric, so a tour and its reverse can differ and both are tried.
+
+**Optimal:**
+- State: bit c of `mask` is 1 when city c is visited; bit 0 is always set (the tour starts there). `f[mask][last]` = minimum cost of a path that starts at 0, visits exactly the cities in `mask` and ends at `last`.
+- Base: `f[1][0] = 0` (only city 0, standing on it). Everything else is infinity until reached.
+- Transition: from `(mask, last)` go to any city `nxt` not in the mask: `f[mask | 1<<nxt][nxt] = min(..., f[mask][last] + dist[last][nxt])`. Masks are processed in increasing numeric order, and a target mask is always larger than its source, so every state is final when it is read.
+- Answer: close the tour: `min over last != 0 of f[full][last] + dist[last][0]`, where `full = 2^n - 1`. For n = 1 the answer is 0.
+- Why O(2^n * n^2): there are 2^n masks times n values of `last` (about 2^(n-1) * n states reached) and each tries up to n next cities. Space O(2^n * n) for the table.
+- Space reduction: city 0 is always in the mask, so leave it out and index by the other n - 1 cities (2^(n-1) masks instead of 2^n); the code does this as a second solver and checks it. Reconstructing a tour needs the whole table, the code recovers one tour by walking the table backwards.
+- Memoised version: `g(mask, last)` = cheapest way to finish from here (the other direction), depth at most n <= 12, so no recursion-limit issue, and it agrees in the code.
+- Why (n-1)! is hopeless beyond n around 11: the number of tours grows factorially. In the table printed by the run: 8 cities give 5,040 tours, 10 give 362,880, 11 give 3,628,800, 12 give 39,916,800, 13 give 479,001,600 and 15 give about 8.7 * 10^10. The DP step count at the same sizes is 16,384, 102,400, 247,808, 589,824, 1,384,448 and 7,372,800. In the sandbox the permutation search took 0.35 s at n = 10 against a few milliseconds for the DP (timings are sandbox-only, not proof; the growth is reasoned from the counts above). The cutoff of "about 11" is relative to an interview time limit of roughly a second or so; the DP handles n = 12 as a trivial case.
+- What the DP buys: it notices that two different orders of the same set ending at the same city have the same future, so only the cheaper one is kept: subsets and an endpoint replace whole orders.
+
+**Complexity:** Time O(2^n * n^2), space O(2^n * n) (halved by dropping city 0 from the mask). For n = 12: 4,096 masks * 12 endpoints = 49,152 states, under 600,000 transitions.
+
+**Dry run:** `dist = [[0,10,15,20],[10,0,35,25],[15,35,0,30],[20,25,30,0]]`. Masks list the visited cities, always including 0; entry = cost ending at the given city (the run prints all of them):
+
+| mask (cities) | f by ending city |
+|---|---|
+| {0} | 0 at city 0 |
+| {0,1} | city 1: 10 |
+| {0,2} | city 2: 15 |
+| {0,3} | city 3: 20 |
+| {0,1,2} | city 1: 15 + 35 = 50 (via 2); city 2: 10 + 35 = 45 (via 1) |
+| {0,1,3} | city 1: 20 + 25 = 45; city 3: 10 + 25 = 35 |
+| {0,2,3} | city 2: 20 + 30 = 50; city 3: 15 + 30 = 45 |
+| {0,1,2,3} | city 1: 70 (from {0,2,3} ending 3: 45 + 25; ending 2 would give 50 + 35 = 85); city 2: 65 (from {0,1,3} ending 3: 35 + 30; ending 1 gives 45 + 35 = 80); city 3: 75 (from {0,1,2} ending 1: 50 + 25, or ending 2: 45 + 30, a tie) |
+
+Closing the tour: ending at 1: 70 + 10 = 80; at 2: 65 + 15 = 80; at 3: 75 + 20 = 95. The minimum is 80, as in the prompt. One optimal tour is 0 -> 2 -> 3 -> 1 -> 0 (15 + 30 + 25 + 10).
+
+**Code:**
+```python
+import itertools, math, random, sys, time
+from functools import lru_cache
+
+random.seed(3501)
+INF = float("inf")
+
+
+def tsp(dist):
+    """f[mask][last] = cheapest path that starts at 0, visits exactly the cities in mask (bit 0 always set)
+    and ends at last. Masks are filled in increasing order, so every predecessor mask is already final."""
+    n = len(dist)
+    if n == 1:
+        return 0, None
+    f = [[INF] * n for _ in range(1 << n)]
+    f[1][0] = 0                                           # only city 0 visited, standing at 0
+    for mask in range(1, 1 << n, 2):                      # odd masks = contain city 0
+        for last in range(n):
+            cur = f[mask][last]
+            if cur == INF:
+                continue
+            for nxt in range(1, n):
+                if not mask >> nxt & 1:
+                    nm = mask | 1 << nxt
+                    v = cur + dist[last][nxt]
+                    if v < f[nm][nxt]:
+                        f[nm][nxt] = v
+    full = (1 << n) - 1
+    return min(f[full][last] + dist[last][0] for last in range(1, n)), f
+
+
+def tsp_halved(dist):
+    """Same DP with city 0 left out of the mask: 2^(n-1) masks instead of 2^n (half the table)."""
+    n = len(dist)
+    if n == 1:
+        return 0
+    m = n - 1                                             # cities 1..n-1 get bits 0..m-1
+    f = [[INF] * m for _ in range(1 << m)]
+    for c in range(m):
+        f[1 << c][c] = dist[0][c + 1]
+    for mask in range(1, 1 << m):
+        for last in range(m):
+            cur = f[mask][last]
+            if cur == INF:
+                continue
+            for nxt in range(m):
+                if not mask >> nxt & 1:
+                    nm = mask | 1 << nxt
+                    v = cur + dist[last + 1][nxt + 1]
+                    if v < f[nm][nxt]:
+                        f[nm][nxt] = v
+    return min(f[(1 << m) - 1][last] + dist[last + 1][0] for last in range(m))
+
+
+def tsp_memo(dist):
+    """Top-down, the other direction: g(mask, last) = cheapest way to finish from here. Depth n <= 12."""
+    n = len(dist)
+    full = (1 << n) - 1
+
+    @lru_cache(maxsize=None)
+    def g(mask, last):
+        if mask == full:
+            return dist[last][0]
+        return min(dist[last][c] + g(mask | 1 << c, c) for c in range(n) if not mask >> c & 1)
+
+    return 0 if n == 1 else g(1, 0)
+
+
+def tsp_route(dist):
+    """Follow-up: recover one optimal tour by walking the table backwards (ties: smallest previous city)."""
+    n = len(dist)
+    if n == 1:
+        return 0, [0, 0]
+    best, f = tsp(dist)
+    full = (1 << n) - 1
+    last = min((l for l in range(1, n) if f[full][l] + dist[l][0] == best))
+    route, mask = [0], full
+    while mask != 1:
+        route.append(last)
+        pm = mask ^ (1 << last)
+        prev = next(p for p in range(n) if pm >> p & 1 and f[pm][p] + dist[p][last] == f[mask][last])
+        mask, last = pm, prev
+    route.append(0)
+    route.reverse()
+    return best, route
+
+
+def brute(dist):
+    n = len(dist)
+    if n == 1:
+        return 0
+    return min(sum(dist[a][b] for a, b in zip((0,) + p, p + (0,))) for p in itertools.permutations(range(1, n)))
+
+
+# ---- prompt examples
+ex = [([[0, 10, 15, 20], [10, 0, 35, 25], [15, 35, 0, 30], [20, 25, 30, 0]], 80),
+      ([[0]], 0), ([[0, 3], [5, 0]], 8), ([[0, 1, 9], [9, 0, 1], [1, 9, 0]], 3)]
+for d, want in ex:
+    assert tsp(d)[0] == tsp_halved(d) == tsp_memo(d) == brute(d) == want, d
+print("prompt examples OK")
+
+# ---- hand table, first example: f[mask][last] (mask lists cities visited, city 0 always in it)
+d = ex[0][0]
+best, f = tsp(d)
+print("f[mask][last]  (cities in mask, ending at last)")
+for mask in range(1, 16, 2):
+    cities = [c for c in range(4) if mask >> c & 1]
+    cells = {l: f[mask][l] for l in range(4) if f[mask][l] != INF}
+    print(f"  mask {mask:04b} {cities}: {cells}")
+full = 15
+print("closing:", {l: f"{f[full][l]}+{d[l][0]}={f[full][l] + d[l][0]}" for l in range(1, 4)}, "-> best", best)
+print("one optimal tour:", tsp_route(d))
+
+# ---- seeded cross-check against every permutation (n <= 8), asymmetric distances, many ties
+cnt = 0
+for _ in range(300):
+    n = random.randint(1, 8)
+    hi = random.choice([2, 10, 1000])
+    d = [[0 if a == b else random.randint(0, hi) for b in range(n)] for a in range(n)]
+    want = brute(d)
+    assert tsp(d)[0] == tsp_halved(d) == tsp_memo(d) == want, (d, want)
+    cost, route = tsp_route(d)
+    assert cost == want and sorted(route[:-1]) == list(range(n)) and route[0] == route[-1] == 0
+    if n > 1:
+        assert sum(d[a][b] for a, b in zip(route, route[1:])) == want
+    cnt += 1
+print("random cross-check:", cnt, "matrices agree (also the half-size table, the memo and the recovered tour)")
+
+# ---- the permutation search against the DP
+print(" n | (n-1)! tours | 2^n * n^2 DP steps")
+for n in (8, 10, 11, 12, 13, 15):
+    print(f"{n:>2} | {math.factorial(n - 1):>13,} | {(1 << n) * n * n:>12,}")
+rg = random.Random(3502)
+for n in (9, 10):
+    d = [[0 if a == b else rg.randint(0, 1000) for b in range(n)] for a in range(n)]
+    t0 = time.perf_counter(); a = brute(d); t_b = time.perf_counter() - t0
+    t0 = time.perf_counter(); b = tsp(d)[0]; t_d = time.perf_counter() - t0
+    assert a == b
+    print(f"n={n}: permutations {t_b:.2f}s, DP {t_d:.3f}s  [sandbox time only]")
+d = [[0 if a == b else rg.randint(0, 1000) for b in range(12)] for a in range(12)]
+t0 = time.perf_counter(); r12 = tsp(d)[0]; t_d = time.perf_counter() - t0
+assert r12 == tsp_halved(d) == tsp_memo(d)
+print(f"n=12: DP {t_d:.2f}s -> {r12}; 11! = {math.factorial(11):,} tours would need the permutation loop to run that many times (not run)")
+
+# ---- edge cases
+assert tsp([[0]])[0] == 0 and tsp([[0, 7], [2, 0]])[0] == 9
+assert tsp([[0] * 5 for _ in range(5)])[0] == 0
+assert tsp([[0 if a == b else 1000 for b in range(12)] for a in range(12)])[0] == 12000
+print("edge cases OK; limit", sys.getrecursionlimit())
+```
+
+**Output (my run):**
+```
+prompt examples OK
+f[mask][last]  (cities in mask, ending at last)
+  mask 0001 [0]: {0: 0}
+  mask 0011 [0, 1]: {1: 10}
+  mask 0101 [0, 2]: {2: 15}
+  mask 0111 [0, 1, 2]: {1: 50, 2: 45}
+  mask 1001 [0, 3]: {3: 20}
+  mask 1011 [0, 1, 3]: {1: 45, 3: 35}
+  mask 1101 [0, 2, 3]: {2: 50, 3: 45}
+  mask 1111 [0, 1, 2, 3]: {1: 70, 2: 65, 3: 75}
+closing: {1: '70+10=80', 2: '65+15=80', 3: '75+20=95'} -> best 80
+one optimal tour: (80, [0, 2, 3, 1, 0])
+random cross-check: 300 matrices agree (also the half-size table, the memo and the recovered tour)
+ n | (n-1)! tours | 2^n * n^2 DP steps
+ 8 |         5,040 |       16,384
+10 |       362,880 |      102,400
+11 |     3,628,800 |      247,808
+12 |    39,916,800 |      589,824
+13 |   479,001,600 |    1,384,448
+15 | 87,178,291,200 |    7,372,800
+n=9: permutations 0.03s, DP 0.001s  [sandbox time only]
+n=10: permutations 0.32s, DP 0.003s  [sandbox time only]
+n=12: DP 0.02s -> 911; 11! = 39,916,800 tours would need the permutation loop to run that many times (not run)
+edge cases OK; limit 1000
+```
+
+**Edge cases:**
+- n = 1: 0, no travel (the code special-cases it, since there is no `last != 0`).
+- n = 2: `dist[0][1] + dist[1][0]` (`[[0,3],[5,0]]` gives 8: the matrix is asymmetric).
+- Asymmetric distances: the direction matters; `[[0,1,9],[9,0,1],[1,9,0]]` gives 3 by going 0 -> 1 -> 2 -> 0 and would be 27 the other way round (0 -> 2 -> 1 -> 0: 9 + 9 + 9).
+- All distances 0 or all equal: the answer is 0 or n * d.
+- Zero-cost edges are fine (costs are only required to be non-negative by the prompt).
+- Mask must always contain bit 0; starting from `f[0][0]` or a mask without bit 0 breaks the closing step.
+
+**Follow-ups:**
+- Print the tour? Walk the table backwards from the best `last` (the code does it): at each step find the previous city whose value plus the edge equals the current value.
+- Dropping the return to city 0 (Hamiltonian path)? Answer `min over last of f[full][last]` and let every city be the start.
+- n = 20? 2^20 * 20^2 = 4.2 * 10^8 steps is too slow in plain Python; use bit tricks or another language, or a heuristic when exactness is not required.
+
+**Common mistakes:**
+- Forgetting to add `dist[last][0]` for the return leg.
+- Letting `last` equal 0 in the closing minimum for n > 1 (a path that visited everything must not end at 0 before closing).
+- Iterating masks in the wrong order: transitions go to a larger mask, so ascending order is correct.
+- Assuming symmetry: `dist[a][b] != dist[b][a]` is allowed.
