@@ -1,0 +1,10 @@
+examples ok: [55, 2, '55'] [0, 1, '0'] [687995182, 21, '35422'] [393965141, 6270, '19042']
+460 values of n (0..399 and 60 random up to 20000): doubling == addition loop; digits and leading digits agree with chunked division
+default limit: 4300 ; F(30000) has 6270 digits
+str(F(30000)) -> ValueError
+int('9' * 5000) -> ValueError
+hex works (power-of-two base): 5209 characters; bit_length 20827
+with the limit lifted str() gives the same 6270 digits and lead 19042; limit restored to 4300
+n = 100000: [911435502, 20899, '25974'] , digits by length-estimate method;  (sandbox timing) doubling 0.0028 s, addition loop 0.1340 s
+float Binet first differs from the exact value at n = 71
+edge asserts ok

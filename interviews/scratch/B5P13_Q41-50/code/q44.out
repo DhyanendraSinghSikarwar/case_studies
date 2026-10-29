@@ -1,0 +1,8 @@
+examples ok: [32, [32, 32]] [1, [1]] [4, [4]] [8, [8]]
+3000 random inputs: scan == recursive rebuild; run lengths sum to n; every run but the last is >= minrun
+every n in 1..100000: n < 64 -> minrun = n; n >= 64 -> 32 <= minrun <= 64, n <= minrun * 2^s and minrun * 2^(s-1) < n
+examples of minrun: {63: 63, 64: 32, 65: 33, 127: 64, 128: 32, 1000: 63, 2048: 32, 2049: 33, 100000: 49}
+n / minrun for some n (always <= the next power of two, here 2, 2, 16, 64, 2048): {65: 1.97, 127: 1.984, 1000: 15.873, 2049: 62.091, 100000: 2040.816}
+random 100000 items: minrun 49 , number of runs 2041 , first runs [49, 49, 49] , last run 40
+sorted 100000 items: runs [100000]
+edge asserts ok
