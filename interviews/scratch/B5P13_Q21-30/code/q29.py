@@ -49,7 +49,7 @@ for args, want in examples:
 
 # dry run: 3 mod 7 by hand (search), by Fermat, by extended Euclid; C(5,2) from tables mod 7-free formula
 print('3 * 5 =', 3 * 5, '=', 15 % 7, '(mod 7)  -> inverse of 3 is 5')
-print('Fermat 3^(7-2) mod 7 =', pow(3, 5, 7), '; ext_gcd(3, 7) =', ext_gcd(3, 7), '(3*5 + 7*(-2) = 1)')
+print('Fermat 3^(7-2) mod 7 =', pow(3, 5, 7), '; ext_gcd(3, 7) =', ext_gcd(3, 7), '(3*(-2) + 7*1 = 1, and -2 % 7 = 5)')
 print('C(5,2) = 5! * inv(2!) * inv(3!) =', 120, '*', pow(2, -1, MOD), '*', pow(6, -1, MOD), 'mod p =', 120 * pow(2, -1, MOD) * pow(6, -1, MOD) % MOD)
 
 # seeded random cross-check on small values against a scan and math.comb

@@ -820,7 +820,7 @@ str(F(30000)) -> ValueError
 int('9' * 5000) -> ValueError
 hex works (power-of-two base): 5209 characters; bit_length 20827
 with the limit lifted str() gives the same 6270 digits and lead 19042; limit restored to 4300
-n = 100000: [911435502, 20899, '25974'] , digits by length-estimate method;  (sandbox timing) doubling 0.0028 s, addition loop 0.1340 s
+n = 100000: [911435502, 20899, '25974'] , digits by length-estimate method;  (sandbox timing) doubling 0.0026 s, addition loop 0.0818 s
 float Binet first differs from the exact value at n = 71
 edge asserts ok
 ```
@@ -842,3 +842,490 @@ edge asserts ok
 - Using `len(str(...))` after setting the limit to 0 for untrusted input (the limit exists to stop denial of service on parsing).
 - Using floats for the digit count and trusting them without an exact check.
 - Reducing mod in the middle and then trying to read digits from the reduced value.
+
+---
+
+### Q46 ⭐ 🟡 The comparison-sort lower bound, measured for tiny n. `n` is an integer with 1 <= n <= 5. Return `[info_bound, merge_worst, insertion_worst, optimal]`: `info_bound` = ceil(log2(n!)), the information-theoretic lower bound on comparisons for any comparison sort in the worst case; `merge_worst` = the largest number of comparisons the top-down merge sort of Q15 (keys compared with `<=`) makes over all n! orderings of n distinct keys; `insertion_worst` = the largest number of comparisons of binary insertion sort (insert the next item into the sorted prefix by binary search with `lo = 0, hi = len(prefix)`, `mid = (lo + hi) // 2`, one comparison `x < a[mid]` per probe: if true `hi = mid` else `lo = mid + 1`) over all orderings; `optimal` = the true minimum worst-case number of comparisons of ANY comparison-based sorting strategy for n items, found by exhaustive search over decision trees. Explain the decision-tree argument (n! leaves, a binary tree of depth d has at most 2^d leaves, so d >= log2(n!), which is Theta(n log n) by Stirling) and that for n = 5 the bound is met only by a cleverer algorithm than merge or binary insertion (seven comparisons suffice). Say what this does not cover: counting sort and radix sort are not comparison sorts, so the bound does not apply to them. In the answer include a dry run on the first example and a seeded random cross-check of your solution against closed-form worst-case recurrences and a table of the known optimal values on small inputs. Example: n=3 -> [3, 3, 3, 3]; n=4 -> [5, 5, 5, 5]; n=5 -> [7, 8, 8, 7].
+**Asked at:** Sorting interview guides (techinterview.org sorting-algorithm posts, Techie Delight sorting list, GeeksforGeeks sorting problems page; search snippets only, not opened)
+**Pattern:** Decision-tree argument (information theory) for a lower bound, plus exhaustive search over tiny cases to see how close real algorithms get.
+
+**Say this first (1 line):** "A comparison sort is a binary decision tree with n! leaves, a tree of depth d has at most 2^d leaves, so some input needs at least ceil(log2(n!)) comparisons, which is Theta(n log n); for n = 5 that is 7, and merge sort and binary insertion need 8, but a cleverer algorithm does it in 7."
+
+**Brute force:** Compute every number by running the algorithms over all n! orderings (n <= 5 means at most 120 inputs): the worst case of merge sort and of binary insertion sort are max over all permutations. The optimal value is found by exhaustive search over decision trees: a state is the set of permutations still consistent with the answers so far; `can(S, L)` asks whether some comparison splits S into two non-empty parts that both can be finished in L - 1 more comparisons. Prune with "a tree of depth L has at most 2^L leaves". Try L = 0, 1, 2, ... until the full set works.
+
+**Optimal:** (the computed table, every number from the run below)
+| n | n! | info bound ceil(log2 n!) | merge sort worst | binary insertion worst | optimal (exhaustive) |
+|---|---|---|---|---|---|
+| 1 | 1 | 0 | 0 | 0 | 0 |
+| 2 | 2 | 1 | 1 | 1 | 1 |
+| 3 | 6 | 3 | 3 | 3 | 3 |
+| 4 | 24 | 5 | 5 | 5 | 5 |
+| 5 | 120 | 7 | 8 | 8 | 7 |
+- The argument: every comparison sort, run on distinct keys, must reach a different leaf for each of the n! orderings (otherwise two orderings would get the same output, and one is wrong). A binary tree of depth d has at most 2^d leaves, so 2^d >= n!, d >= log2(n!). Stirling gives log2(n!) = n log2 n - n log2 e + O(log n), so Theta(n log n).
+- For n <= 4 merge sort and binary insertion already hit the bound. For n = 5 the bound is 7 and the true optimum is 7 (exhaustive search), but both simple algorithms need 8.
+- The gap is closed by a cleverer algorithm. I implemented merge insertion (Ford-Johnson) in the code: pair up items, sort the larger of each pair recursively, insert the small partners by binary search in a special (Jacobsthal) order. Its worst case over all permutations is 0, 1, 3, 5, 7, 10, 13 for n = 1..7. That is a constructive proof that 7 comparisons sort 5 items.
+- What it does not cover: counting sort and radix sort are not comparison sorts (they read key digits and index arrays), so Omega(n log n) does not apply to them. The bound is also a worst-case bound over inputs with distinct keys; with many equal keys or special structure (nearly sorted, Q43) fewer comparisons suffice.
+- Closed forms used as a cross-check: merge sort worst `W(n) = W(n // 2) + W(n - n // 2) + n - 1` (gives 0, 1, 3, 5, 8); binary insertion worst = sum over i = 1..n-1 of ceil(log2(i + 1)) = sum of `bit_length(i)` (gives 0, 1, 3, 5, 8). For larger n the same formulas give merge worst 11, 17, 25, 33 against the info bound 10, 16, 22, 29 at n = 6, 8, 10, 12; those are formulas, not searches (the exhaustive optimum was computed only for n <= 5).
+
+**Complexity:**
+- The lower bound: Omega(n log n) comparisons, since log2(n!) >= (n / 2) log2(n / 2) (half of the factors are at least n / 2).
+- My exhaustive search is only for tiny n: 5! = 120 permutations, states are subsets of them, and the number of subsets that can appear grows very fast with n, so I ran it only for n <= 5 (well under a second here) and claim nothing about its cost or results beyond that.
+- Merge sort: O(n log n), binary insertion: O(n log n) comparisons but O(n^2) element moves with a list.
+
+**Dry run:** n = 3. There are 6 orderings, so the tree needs 6 leaves; depth 2 gives only 4 leaves, depth 3 gives 8, so the bound is 3.
+- Merge sort on 3 items: split [a] and [b, c]; sorting [b, c] costs 1 comparison; merging [a] with the sorted pair costs at most 2: worst case 3.
+- Binary insertion: the second item costs 1 probe; the third is inserted into 2 items with 2 probes at most: 3.
+- Optimal is 3: nothing can be below the bound 3, and the exhaustive search finds a depth-3 strategy. So the row is `[3, 3, 3, 3]`.
+
+**Code:**
+```python
+import itertools, math, functools, random
+random.seed(46)
+
+# ---- one comparison counter shared by the sorters below
+def merge_sort_cmps(perm):                    # top-down merge sort of Q15: split at n // 2, `<=` on ties
+    c = 0
+    def sort(x):
+        nonlocal c
+        if len(x) <= 1: return x
+        m = len(x) // 2; L, R = sort(x[:m]), sort(x[m:]); out = []; i = j = 0
+        while i < len(L) and j < len(R):
+            c += 1
+            if L[i] <= R[j]: out.append(L[i]); i += 1
+            else: out.append(R[j]); j += 1
+        return out + L[i:] + R[j:]
+    sort(list(perm)); return c
+
+def binary_insertion_cmps(perm):              # exactly the probe rule of the question
+    a = []; c = 0
+    for x in perm:
+        lo, hi = 0, len(a)
+        while lo < hi:
+            mid = (lo + hi) // 2; c += 1
+            if x < a[mid]: hi = mid
+            else: lo = mid + 1
+        a.insert(lo, x)
+    assert a == sorted(perm)
+    return c
+
+# ---- optimal: exhaustive search over decision trees.
+# State = the set of permutations (as indices) still consistent with the answers so far.
+# can(S, L): can some comparison strategy of depth <= L identify the permutation inside S?
+def optimal(n):
+    perms = list(itertools.permutations(range(n)))
+    pos = [[p.index(v) for v in range(n)] for p in perms]          # pos[k][v] = place of value v in permutation k
+    pairs = list(itertools.combinations(range(n), 2))
+    @functools.lru_cache(None)
+    def can(S, L):
+        if len(S) == 1: return True
+        if L == 0 or len(S) > 2 ** L: return False                  # a tree of depth L has at most 2^L leaves
+        for i, j in pairs:
+            yes = frozenset(k for k in S if pos[k][i] < pos[k][j]); no = S - yes
+            if yes and no and can(yes, L - 1) and can(no, L - 1): return True
+        return False
+    L = 0; full = frozenset(range(len(perms)))
+    while not can(full, L): L += 1
+    return L
+
+def solve(n):
+    perms = list(itertools.permutations(range(n)))
+    return [math.ceil(math.log2(math.factorial(n))), max(merge_sort_cmps(p) for p in perms),
+            max(binary_insertion_cmps(p) for p in perms), optimal(n)]
+
+# ---- examples
+assert solve(3) == [3, 3, 3, 3] and solve(4) == [5, 5, 5, 5] and solve(5) == [7, 8, 8, 7]
+print('examples ok')
+
+# ---- the computed table
+print(' n  n!   info_bound  merge_worst  insertion_worst  optimal')
+table = {}
+for n in range(1, 6):
+    table[n] = solve(n)
+    print(f'{n:2} {math.factorial(n):4} {table[n][0]:10} {table[n][1]:12} {table[n][2]:16} {table[n][3]:8}')
+assert [table[n][0] for n in range(1, 6)] == [0, 1, 3, 5, 7] and [table[n][3] for n in range(1, 6)] == [0, 1, 3, 5, 7]
+
+# ---- cross-check 1: closed-form worst cases
+W = {0: 0, 1: 0}
+for n in range(2, 13): W[n] = W[n // 2] + W[n - n // 2] + n - 1                 # merge sort worst-case recurrence
+for n in range(1, 6):
+    assert table[n][1] == W[n]
+    assert table[n][2] == sum(i.bit_length() for i in range(1, n))              # inserting into a prefix of i items needs ceil(log2(i+1)) = i.bit_length() probes
+    assert table[n][3] >= table[n][0]                                           # nobody beats the information bound
+print('closed forms agree: merge worst W(n) = W(n//2) + W(n - n//2) + n - 1, binary insertion worst = sum of bit_length(i), i < n')
+
+# ---- cross-check 2: a real algorithm that reaches the optimum for n = 5 (Ford-Johnson merge insertion, editor-implemented)
+def ford_johnson(perm):
+    c = 0
+    def less(x, y):
+        nonlocal c; c += 1; return x < y
+    def fj(items):
+        n = len(items)
+        if n <= 1: return list(items)
+        big, small = [], {}
+        for i in range(0, n - 1, 2):
+            x, y = items[i], items[i + 1]
+            if less(x, y): x, y = y, x               # x is the larger of the pair
+            big.append(x); small[x] = y
+        rest = items[-1] if n % 2 else None
+        chain = fj(big)                              # sort the larger elements recursively
+        main = [small[chain[0]]] + chain             # b1 < a1 < a2 ...
+        pend = [small[a] for a in chain[1:]] + ([rest] if rest is not None else [])   # b2, b3, ...
+        bound = {small[a]: a for a in chain[1:]}      # b_j must be inserted below its partner a_j
+        done, t_prev, k = 0, 1, 1
+        # Jacobsthal numbers 1, 3, 5, 11, 21 ... give the insertion order: b_t, b_{t-1}, ..., b_{t_prev + 1}
+        jac = [1, 3, 5, 11, 21, 43]
+        order = []; prev = 1
+        for t in jac[1:]:
+            t = min(t, len(pend) + 1)
+            order += list(range(t, prev, -1))
+            prev = t
+            if t >= len(pend) + 1: break
+        for j in order:                              # j is 2-based: pend[j - 2] is b_j
+            b = pend[j - 2]
+            hi = main.index(bound[b]) if b in bound else len(main)
+            lo = 0
+            while lo < hi:
+                mid = (lo + hi) // 2
+                if less(b, main[mid]): hi = mid
+                else: lo = mid + 1
+            main.insert(lo, b)
+        return main
+    out = fj(list(perm)); assert out == sorted(perm), (perm, out)
+    return c
+fj_worst = {n: max(ford_johnson(p) for p in itertools.permutations(range(n))) for n in range(1, 8)}
+print('Ford-Johnson merge insertion, worst case over all permutations, n = 1..7:', [fj_worst[n] for n in range(1, 8)])
+assert [fj_worst[n] for n in range(1, 6)] == [0, 1, 3, 5, 7]
+print('so seven comparisons really do sort 5 items (matches the exhaustive optimum 7), while merge sort and binary insertion need 8')
+
+# ---- information bound for larger n (formula only; no search is claimed beyond n = 5)
+print('n: info_bound / merge_worst (closed forms) :', {n: (math.ceil(math.log2(math.factorial(n))), W[n]) for n in (6, 8, 10, 12)})
+
+# ---- edge asserts
+assert solve(1) == [0, 0, 0, 0] and solve(2) == [1, 1, 1, 1]
+assert math.factorial(5) == 120 and 2 ** 6 < 120 <= 2 ** 7
+print('edge asserts ok')
+```
+
+**Output (my run):**
+```text
+examples ok
+ n  n!   info_bound  merge_worst  insertion_worst  optimal
+ 1    1          0            0                0        0
+ 2    2          1            1                1        1
+ 3    6          3            3                3        3
+ 4   24          5            5                5        5
+ 5  120          7            8                8        7
+closed forms agree: merge worst W(n) = W(n//2) + W(n - n//2) + n - 1, binary insertion worst = sum of bit_length(i), i < n
+Ford-Johnson merge insertion, worst case over all permutations, n = 1..7: [0, 1, 3, 5, 7, 10, 13]
+so seven comparisons really do sort 5 items (matches the exhaustive optimum 7), while merge sort and binary insertion need 8
+n: info_bound / merge_worst (closed forms) : {6: (10, 11), 8: (16, 17), 10: (22, 25), 12: (29, 33)}
+edge asserts ok
+```
+
+**Edge cases:**
+- n = 1: no comparisons, all four values 0. n = 2: one comparison.
+- n = 5 is the first size where simple algorithms miss the bound. For n = 6 the formulas give merge worst 11 against bound 10 (formula only, not searched).
+- Equal keys can make some leaves identical, so the bound above is for distinct keys.
+- ceil(log2(n!)) needs an exact computation: `(n! - 1).bit_length()` avoids float rounding; the code uses `math.log2`, which is fine at this size.
+
+**Follow-ups:**
+- Is the bound ever tight for large n? Not exactly; merge-insertion is close and was conjectured optimal for a long time, but it is known not to be optimal for some n (editor knowledge, not checked here).
+- How do counting and radix sort beat n log n? They are not comparison-based: O(n + k) and O(d (n + k)) (Q37).
+- What about the average case? The same argument gives log2(n!) on average too, since a balanced tree has leaves at depth about log2(n!) (editor-level).
+
+**Common mistakes:**
+- Saying "n log n is a lower bound for sorting" without "comparison-based".
+- Forgetting that a tree of depth d has at most 2^d leaves, not d.
+- Thinking merge sort is optimal at every n (it is not at n = 5).
+- Using floats for ceil(log2(n!)) at large n.
+
+---
+
+### Q47 ⭐ 🔴 Count of range sums with merge sort. `nums` has 1 <= len <= 5*10^4 integers (|value| <= 10^9) and `lo <= hi` are integers with |lo|, |hi| <= 10^14. Return the number of pairs (i, j) with 0 <= i <= j < len(nums) such that the sum nums[i] + ... + nums[j] lies in [lo, hi]. Turn it into pairs of prefix sums `pre[a] < pre[b]` positions a < b with lo <= pre[b] - pre[a] <= hi (with `pre[0] = 0`), then count them while merge sorting the prefix array: for every left-half value count the right-half values within [v + lo, v + hi] using two moving pointers on the already sorted right half, in O(n log n). Explain why the counting step must happen before the merge of the two halves, why each of the two pointers only moves forward, and why a Fenwick tree over coordinate-compressed prefix sums (Part 14) is the other standard answer. Recursion depth is about 17. In the answer include a dry run on the first example and a seeded random cross-check of your solution against the O(n^2) double loop over subarrays on small inputs. Example: nums=[-2, 5, -1], lo=-2, hi=2 -> 3; nums=[0], lo=0, hi=0 -> 1; nums=[1, 2, 3], lo=3, hi=5 -> 3.
+**Asked at:** Prefix-sum and difference-array pattern guides (techinterview.org prefix-sum and difference-array posts, a LeetCode Discuss study guide on range questions, talentd.in prefix-sum topic lists; search snippets only, not opened) | Sorting interview guides (techinterview.org sorting-algorithm posts, Techie Delight sorting list, GeeksforGeeks sorting problems page; search snippets only, not opened)
+**Pattern:** Prefix sums turn "subarray sum in a range" into "pairs of prefix values in a range"; merge sort counts such pairs while sorting (the same skeleton as counting inversions). Part 14 shows the Fenwick-tree alternative.
+
+**Say this first (1 line):** "With pre[0] = 0 a subarray sum is pre[b] - pre[a] for a < b, so I count position-ordered pairs whose difference is in [lo, hi]; in a merge sort I count for each left value the right values in [v + lo, v + hi] with two forward-moving pointers, before merging."
+
+**Brute force:** Double loop with a running sum: O(n^2). For n = 5 * 10^4 that is about 1.25 * 10^9 sums: too slow in Python. It is in the code as the checker.
+
+**Optimal:**
+- `pre = [0] + accumulate(nums)`, length n + 1.
+- Merge sort on `pre`. At each node the left half holds earlier positions (smaller a), the right half later ones (larger b). Both halves are already sorted by value.
+- Counting step: for each v in the sorted left half, the wanted right values lie in [v + lo, v + hi]. Two pointers on the sorted right half: `x` = first index with `R[x] - v >= lo`, `y` = first index with `R[y] - v > hi`; add `y - x`.
+- Why the pointers only move forward: the left half is processed in ascending order, so v grows, so both thresholds v + lo and v + hi grow, and the first index satisfying a "value >= threshold" condition on a sorted list can only move right.
+- Why count BEFORE merging: counting needs to know which values came from the left (earlier positions) and which from the right. After merging they are interleaved, and the pair (a, b) with a < b is no longer distinguishable. My wrong version that counts after the merge gave a wrong answer on 385 of 500 random cases. Pairs inside one half are counted at deeper levels, and every pair (a, b) is counted exactly once, at the node where the two positions are split into different halves.
+- Fenwick alternative (Part 14, only named): scan the prefix sums left to right, coordinate-compress them, and ask a Fenwick tree for how many earlier prefix values lie in [pre - hi, pre - lo]. Same O(n log n).
+
+**Complexity:**
+- Each level of the recursion does O(n) pointer movement and O(n) merging, there are about log2(n + 1) = 16 levels for n = 5 * 10^4 (so recursion depth is about 17 and safe), so O(n log n) time.
+- Space O(n) for the slices (this version creates new lists at each level; an index-based merge with one buffer would keep it at O(n) with a smaller constant).
+- Python ints have no overflow, so sums up to 5 * 10^13 and bounds up to 10^14 are no problem (in a fixed-width language they need 64 bits).
+- Sandbox timing, not proof: about 0.2 s for n = 50000.
+
+**Dry run:** nums = [-2, 5, -1], lo = -2, hi = 2. `pre = [0, -2, 3, 2]`.
+- Split into left `[0, -2]` and right `[3, 2]`.
+- Left node: halves `[0]` and `[-2]`. For v = 0 look for R values in [-2, 2]: -2 qualifies, count 1 (subarray [-2]). Merge to `[-2, 0]`.
+- Right node: `[3]` and `[2]`. For v = 3 look in [1, 5]: 2 qualifies, count 1 (subarray [-1]). Merge to `[2, 3]`.
+- Root: L = `[-2, 0]`, R = `[2, 3]`. v = -2 wants [-4, 0]: none. v = 0 wants [-2, 2]: the value 2 qualifies, count 1 (the whole array, sum 2).
+- Total 3.
+
+**Code:**
+```python
+import random, itertools, bisect, time
+random.seed(47)
+
+# ---- optimal: prefix sums + merge sort; count BEFORE merging, with two forward-only pointers
+def count_range_sum(nums, lo, hi):
+    pre = [0] + list(itertools.accumulate(nums))        # pre[b] - pre[a] = sum of nums[a:b]
+    count = 0
+    def sort(a):                                         # returns the sorted list; depth about log2(n + 1)
+        nonlocal count
+        if len(a) <= 1: return a
+        mid = len(a) // 2
+        L, R = sort(a[:mid]), sort(a[mid:])             # L holds EARLIER positions than R
+        x = y = 0
+        for v in L:                                      # L is sorted ascending, so v + lo and v + hi only increase
+            while x < len(R) and R[x] - v < lo: x += 1  # x: first R item with R - v >= lo
+            while y < len(R) and R[y] - v <= hi: y += 1 # y: first R item with R - v > hi
+            count += y - x                               # R[x:y] all lie in [v + lo, v + hi]
+        out = []; i = j = 0                              # now merge (positions no longer matter above this level)
+        while i < len(L) and j < len(R):
+            if L[i] <= R[j]: out.append(L[i]); i += 1
+            else: out.append(R[j]); j += 1
+        return out + L[i:] + R[j:]
+    sort(pre)
+    return count
+
+# ---- brute force: every subarray with a running sum, O(n^2)
+def brute(nums, lo, hi):
+    c = 0
+    for i in range(len(nums)):
+        s = 0
+        for j in range(i, len(nums)):
+            s += nums[j]
+            if lo <= s <= hi: c += 1
+    return c
+
+# ---- second independent method: sorted list + bisect (counts earlier prefix sums in [pre - hi, pre - lo]); O(n^2) inserts but tiny n
+def with_bisect(nums, lo, hi):
+    seen = [0]; s = 0; c = 0
+    for v in nums:
+        s += v
+        c += bisect.bisect_right(seen, s - lo) - bisect.bisect_left(seen, s - hi)
+        bisect.insort(seen, s)
+    return c
+
+# ---- a WRONG version: merge first, then count (positions are lost, so it counts pairs in the wrong order)
+def wrong_count_after_merge(nums, lo, hi):
+    pre = [0] + list(itertools.accumulate(nums)); count = 0
+    def sort(a):
+        nonlocal count
+        if len(a) <= 1: return a
+        mid = len(a) // 2; L, R = sort(a[:mid]), sort(a[mid:])
+        merged = sorted(L + R)                           # merge first ...
+        x = y = 0
+        for v in L:                                      # ... then the pointers see a mixed list
+            while x < len(merged) and merged[x] - v < lo: x += 1
+            while y < len(merged) and merged[y] - v <= hi: y += 1
+            count += y - x
+        return merged
+    sort(pre); return count
+
+# ---- examples
+assert count_range_sum([-2, 5, -1], -2, 2) == 3
+assert count_range_sum([0], 0, 0) == 1
+assert count_range_sum([1, 2, 3], 3, 5) == 3
+print('examples ok:', count_range_sum([-2, 5, -1], -2, 2), count_range_sum([0], 0, 0), count_range_sum([1, 2, 3], 3, 5))
+
+# ---- seeded random cross-check against the O(n^2) double loop (and the bisect method)
+for _ in range(3000):
+    n = random.randint(1, 12); m = random.choice([1, 3, 10])
+    nums = [random.randint(-m, m) for _ in range(n)]
+    lo = random.randint(-3 * m, 3 * m); hi = lo + random.randint(0, 4 * m)
+    r = count_range_sum(nums, lo, hi)
+    assert r == brute(nums, lo, hi) == with_bisect(nums, lo, hi), (nums, lo, hi)
+print('3000 random cases: merge-sort count == double loop == bisect count')
+wrong = 0
+for _ in range(500):
+    nums = [random.randint(-5, 5) for _ in range(random.randint(2, 8))]
+    lo = random.randint(-6, 3); hi = lo + random.randint(0, 6)
+    wrong += wrong_count_after_merge(nums, lo, hi) != brute(nums, lo, hi)
+print('counting AFTER the merge was wrong on', wrong, 'of 500 random cases')
+
+# ---- maximum size: n = 50000, values up to 1e9, bounds up to 1e14
+nums = [random.randint(-10**9, 10**9) for _ in range(50000)]
+t = time.perf_counter(); r = count_range_sum(nums, -10**14, 10**14); dt = time.perf_counter() - t
+assert r == 50000 * 50001 // 2                         # every subarray sum is within +-5*10^13, so all pairs count
+t = time.perf_counter(); r2 = count_range_sum(nums, 10**14 - 1, 10**14); dt2 = time.perf_counter() - t
+assert r2 == 0
+r3 = count_range_sum(nums, -10**9, 10**9); assert r3 == with_bisect(nums, -10**9, 10**9)
+print('n = 50000:', r, 'pairs counted (all of them, the bounds cover every sum); a window above every sum counts', r2, '; (sandbox timing) about %.2f s' % dt)
+print('window [-1e9, 1e9] on the same 50000 values:', r3, '(agrees with the bisect method)')
+
+# ---- edge asserts
+assert count_range_sum([5], 6, 7) == 0 and count_range_sum([5], 5, 5) == 1
+assert count_range_sum([0, 0, 0], 0, 0) == 6            # all 3 + 2 + 1 subarrays have sum 0
+assert count_range_sum([-1, -1], -2, -1) == 3
+assert count_range_sum([1, -1, 1], 0, 0) == 2          # [1, -1] and [-1, 1]
+print('edge asserts ok')
+```
+
+**Output (my run):**
+```text
+examples ok: 3 1 3
+3000 random cases: merge-sort count == double loop == bisect count
+counting AFTER the merge was wrong on 385 of 500 random cases
+n = 50000: 1250025000 pairs counted (all of them, the bounds cover every sum); a window above every sum counts 0 ; (sandbox timing) about 0.19 s
+window [-1e9, 1e9] on the same 50000 values: 26095082 (agrees with the bisect method)
+edge asserts ok
+```
+
+**Edge cases:**
+- Single element: prefix sums are [0, x]; the only pair is (pre[0], pre[1]), so nums = [0] with lo = hi = 0 gives 1.
+- All zeros with [0, 0]: all 6 subarrays of three zeros count.
+- lo = hi: exact sum counting.
+- Bounds wider than any sum: every one of n(n+1)/2 pairs counts (1250025000 for n = 50000).
+- Negative values: the prefix sums are not monotone, which is why a sort (not a plain two-pointer scan) is needed.
+
+**Follow-ups:**
+- Why not a sliding window? Negative numbers break monotonicity (Part 1 Q13 uses a hash map for equality, here we need a range).
+- Can I use a sorted list with bisect for the same count? Yes (the code does, as a cross-check): bisect over earlier prefix sums, O(n) per insert on a list, so O(n^2) in the worst case without a balanced structure.
+- What if you needed pairs counted only for exact equality? Hash map of prefix counts, O(n) (Part 1 Q13).
+
+**Common mistakes:**
+- Merging before counting.
+- Counting empty subarrays, that is pairing pre[a] with itself (sum 0): the merge sort never does this because it counts only pairs split across halves, but a hand-written double loop over prefix sums can.
+- Resetting the pointers for each v instead of moving them forward (turns O(n log n) into O(n^2)).
+- Using `<` instead of `<=` at the upper bound (the range is inclusive on both ends).
+
+---
+
+### Q48 ⭐ 🔴 Add one to many rectangles with a 2D difference array. `n` is an integer with 1 <= n <= 500 and `queries` has up to 10^4 items [r1, c1, r2, c2] with 0 <= r1 <= r2 < n and 0 <= c1 <= c2 < n. Start from an n x n matrix of zeros; each query adds 1 to every cell of the rectangle with corners (r1, c1) and (r2, c2), both included. Return the final matrix. Use a (n + 1) x (n + 1) difference matrix: `d[r1][c1] += 1`, `d[r1][c2 + 1] -= 1`, `d[r2 + 1][c1] -= 1`, `d[r2 + 1][c2 + 1] += 1`, then take a running sum along every row and then along every column; the total time is O(n^2 + len(queries)). Explain why the four corner updates turn into exactly the rectangle after the two prefix passes (the 2D analogue of the 1D range-add trick), why the order of the two passes does not matter, and compare with O(len(queries) * n^2) direct updates. In the answer include a dry run on the first example and a seeded random cross-check of your solution against applying every rectangle cell by cell on small inputs. Example: n=3, queries=[[1, 1, 2, 2], [0, 0, 1, 1]] -> [[1, 1, 0], [1, 2, 1], [0, 1, 1]]; n=2, queries=[[0, 0, 1, 1]] -> [[1, 1], [1, 1]]; n=1, queries=[] -> [[0]].
+**Asked at:** Prefix-sum and difference-array pattern guides (techinterview.org prefix-sum and difference-array posts, a LeetCode Discuss study guide on range questions, talentd.in prefix-sum topic lists; search snippets only, not opened)
+**Pattern:** 2D difference array: record only the four corners of each rectangle, then recover the matrix with prefix sums. It is the 2D version of the 1D range-add trick (add at l, subtract at r + 1, then take a running sum).
+
+**Say this first (1 line):** "Instead of touching every cell of every rectangle, I mark four corners in an (n+1) x (n+1) difference matrix, then one running sum along rows and one along columns turns those marks back into the rectangles."
+
+**Brute force:** For each query loop over all its cells and add 1: O(len(queries) * n^2) in the worst case. For n = 500 and 10^4 queries my random test below needs 159,593,686 cell updates (see the output), and the worst case (every query the full matrix) is 10^4 * 250000 = 2.5 * 10^9. Too slow. It is the checker in the code.
+
+**Optimal:**
+- Matrix `d` of size (n + 1) x (n + 1), all zeros. For each query: `d[r1][c1] += 1`, `d[r1][c2+1] -= 1`, `d[r2+1][c1] -= 1`, `d[r2+1][c2+1] += 1`. The extra row and column absorb the updates that fall off the edge.
+- Row pass: `d[i][j] += d[i][j-1]`. After it, row r1 holds 1 on columns c1..c2 (the +1 starts it, the -1 at c2 + 1 ends it) and row r2 + 1 holds the opposite, -1 on columns c1..c2. All other rows are 0.
+- Column pass: `d[i][j] += d[i-1][j]`. The row r1 profile (1 on columns c1..c2) is carried down; at row r2 + 1 the opposite profile cancels it exactly. So the rectangle rows r1..r2 get 1 on columns c1..c2, and everything else is 0.
+- Why the order of the two passes does not matter: both passes are linear and the 2D prefix sum is `sum over i' <= i, j' <= j` of d, which does not care in which order the double sum is taken (the code runs both orders and they agree).
+- Linearity also gives queries combined: sums of rectangles are the sum of their difference matrices, so overlapping queries just add up.
+- Finally drop the extra row and column.
+
+**Complexity:**
+- Corner updates O(len(queries)), the two passes O(n^2), so O(n^2 + len(queries)): about 2 * 501^2 + 4 * 10^4 = 542,002 operations for the maximum input.
+- Space O(n^2) for the matrix (it is also the output size).
+- The direct method is O(len(queries) * n^2) in the worst case.
+- Sandbox timing, not proof: about 0.04 s for n = 500 and 10^4 queries.
+
+**Dry run:** n = 3, queries `[1,1,2,2]` and `[0,0,1,1]`. The matrix `d` has 4 x 4 cells.
+Corner marks after both queries:
+| | c0 | c1 | c2 | c3 |
+|---|---|---|---|---|
+| r0 | 1 | 0 | -1 | 0 |
+| r1 | 0 | 1 | 0 | -1 |
+| r2 | -1 | 0 | 1 | 0 |
+| r3 | 0 | -1 | 0 | 1 |
+Row pass gives rows `[1,1,0,0]`, `[0,1,1,0]`, `[-1,-1,0,0]`, `[0,-1,-1,0]`. Column pass gives rows `[1,1,0,0]`, `[1,2,1,0]`, `[0,1,1,0]`, `[0,0,0,0]`. Drop the last row and column: `[[1,1,0],[1,2,1],[0,1,1]]`. Matches the example.
+
+**Code:**
+```python
+import random, time
+random.seed(48)
+
+# ---- optimal: (n+1) x (n+1) difference matrix, four corner updates per query, then two prefix passes
+def add_rectangles(n, queries, rows_first=True):
+    d = [[0] * (n + 1) for _ in range(n + 1)]
+    for r1, c1, r2, c2 in queries:
+        d[r1][c1] += 1; d[r1][c2 + 1] -= 1; d[r2 + 1][c1] -= 1; d[r2 + 1][c2 + 1] += 1
+    def rows():
+        for i in range(n + 1):
+            for j in range(1, n + 1): d[i][j] += d[i][j - 1]
+    def cols():
+        for j in range(n + 1):
+            for i in range(1, n + 1): d[i][j] += d[i - 1][j]
+    if rows_first: rows(); cols()
+    else: cols(); rows()
+    return [row[:n] for row in d[:n]]
+
+# ---- brute force: touch every cell of every rectangle
+def brute(n, queries):
+    a = [[0] * n for _ in range(n)]
+    for r1, c1, r2, c2 in queries:
+        for i in range(r1, r2 + 1):
+            for j in range(c1, c2 + 1): a[i][j] += 1
+    return a
+
+# ---- examples
+assert add_rectangles(3, [[1, 1, 2, 2], [0, 0, 1, 1]]) == [[1, 1, 0], [1, 2, 1], [0, 1, 1]]
+assert add_rectangles(2, [[0, 0, 1, 1]]) == [[1, 1], [1, 1]]
+assert add_rectangles(1, []) == [[0]]
+print('examples ok:', add_rectangles(3, [[1, 1, 2, 2], [0, 0, 1, 1]]), add_rectangles(2, [[0, 0, 1, 1]]), add_rectangles(1, []))
+
+# ---- seeded random cross-check against cell-by-cell updates, both pass orders
+def rand_query(n):
+    r1 = random.randrange(n); r2 = random.randint(r1, n - 1); c1 = random.randrange(n); c2 = random.randint(c1, n - 1)
+    return [r1, c1, r2, c2]
+for _ in range(2000):
+    n = random.randint(1, 8); qs = [rand_query(n) for _ in range(random.randint(0, 10))]
+    want = brute(n, qs)
+    assert add_rectangles(n, qs, True) == want and add_rectangles(n, qs, False) == want
+print('2000 random cases: difference matrix == cell-by-cell, and rows-first == columns-first')
+
+# ---- the single-corner picture: one rectangle leaves exactly the rectangle after the passes
+n = 6
+for _ in range(200):
+    q = rand_query(n); m = add_rectangles(n, [q])
+    r1, c1, r2, c2 = q
+    assert all(m[i][j] == (1 if r1 <= i <= r2 and c1 <= j <= c2 else 0) for i in range(n) for j in range(n))
+print('one rectangle at a time: the matrix is 1 inside and 0 outside, 200 cases')
+
+# ---- maximum size: n = 500, 10^4 queries; count the work instead of running the brute force
+n = 500; qs = [rand_query(n) for _ in range(10000)]
+cells = sum((r2 - r1 + 1) * (c2 - c1 + 1) for r1, c1, r2, c2 in qs)
+t = time.perf_counter(); res = add_rectangles(n, qs); dt = time.perf_counter() - t
+assert sum(map(sum, res)) == cells                     # the total added equals the total area of all rectangles
+ops_fast = 4 * len(qs) + 2 * (n + 1) ** 2
+print('n = 500, 10000 random rectangles: cell updates by brute force =', cells, '; difference-matrix operations about', ops_fast)
+print('(sandbox timing for the difference matrix: about %.2f s)' % dt)
+
+# ---- edge asserts
+assert add_rectangles(3, [[0, 0, 2, 2]]) == [[1] * 3] * 3           # corners on the border: d[n][*] and d[*][n] are written, then dropped
+assert add_rectangles(3, [[2, 2, 2, 2]]) == [[0, 0, 0], [0, 0, 0], [0, 0, 1]]
+assert add_rectangles(2, [[0, 0, 0, 0]] * 3) == [[3, 0], [0, 0]]    # repeated query
+assert add_rectangles(4, [[0, 1, 3, 1]]) == [[0, 1, 0, 0]] * 4      # a full-height column
+print('edge asserts ok')
+```
+
+**Output (my run):**
+```text
+examples ok: [[1, 1, 0], [1, 2, 1], [0, 1, 1]] [[1, 1], [1, 1]] [[0]]
+2000 random cases: difference matrix == cell-by-cell, and rows-first == columns-first
+one rectangle at a time: the matrix is 1 inside and 0 outside, 200 cases
+n = 500, 10000 random rectangles: cell updates by brute force = 159593686 ; difference-matrix operations about 542002
+(sandbox timing for the difference matrix: about 0.04 s)
+edge asserts ok
+```
+
+**Edge cases:**
+- A rectangle that touches the last row or column: the "- 1" marks land in row n or column n, which exist only for this purpose.
+- A single cell: all four marks close together.
+- No queries: all zeros.
+- Repeated identical queries: the marks add up (3 stays 3).
+- n = 1.
+
+**Follow-ups:**
+- What if updates and reads interleave? Then a difference array does not work (reads need the prefix sums); use a 2D Fenwick tree (Part 14).
+- What if the added value is v instead of 1? Add v and -v at the corners.
+- How is this related to the 2D range sum query? It is the inverse operation: prefix sum answers many rectangle reads after a static build; the difference array handles many rectangle writes before one read.
+
+**Common mistakes:**
+- Using an n x n difference matrix and then going out of range at c2 + 1 or r2 + 1.
+- Taking the prefix sum of only one direction.
+- Putting the - marks at (r2, c2 + 1) instead of (r2 + 1, c2 + 1).
+- Applying the prefix passes after reading values (they are destructive, so work on a copy if you need the marks again).

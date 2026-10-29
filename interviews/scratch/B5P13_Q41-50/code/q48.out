@@ -1,0 +1,6 @@
+examples ok: [[1, 1, 0], [1, 2, 1], [0, 1, 1]] [[1, 1], [1, 1]] [[0]]
+2000 random cases: difference matrix == cell-by-cell, and rows-first == columns-first
+one rectangle at a time: the matrix is 1 inside and 0 outside, 200 cases
+n = 500, 10000 random rectangles: cell updates by brute force = 159593686 ; difference-matrix operations about 542002
+(sandbox timing for the difference matrix: about 0.04 s)
+edge asserts ok
