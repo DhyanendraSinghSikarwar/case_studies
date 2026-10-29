@@ -1121,4 +1121,244 @@ Reading the output:
 - Storing only the best 3 at the leaf and forgetting the inner nodes.
 - Updating only the leaf when a count changes, leaving stale copies on the path.
 - Mutating the stored list when answering (return a copy of the words).
-- Using a sorted structure of all words per node: the memory is quadratic in word length.
+- Keeping every word at every node: that is one entry per word per prefix (about `W * L` entries) instead of at most 3 per node.
+
+### Q25 ⭐⭐ 🔴 Sudoku solver. `board` is a list of 9 strings of 9 characters each: '1'..'9' for a given digit and '.' for an empty cell. The puzzle has exactly one solution. Return the solved board in the same format (list of 9 strings of digits). Fill empty cells by backtracking, keeping a bitmask per row, per column and per 3 x 3 box (`rows[r]`, `cols[c]`, `boxes[(r // 3) * 3 + c // 3]`), compute the candidates of a cell as the digits not set in the OR of its three masks, extract a candidate with `low = m & -m` and its digit with `low.bit_length() - 1`, and choose the empty cell with the fewest candidates first. Explain why the search is exponential in theory but fast on real puzzles, and what each of the three masks prunes. (Part 1 Q15 only validates a partly filled board; this question solves it.) The recursion depth equals the number of empty cells, at most 81. In the answer include a dry run on the first example and a seeded random cross-check of your solution against a plain cell-by-cell solver without the heuristic, plus a validity check of the result on small inputs. Example: board=['.1....3..', '.586.3.24', '..92..5..', '.4.1...5.', '..6.24.17', '.8...94.2', '8.5...74.', '471...2..', '.....7..5'] -> ['214785369', '758693124', '639241578', '342178956', '596324817', '187569432', '865932741', '471856293', '923417685'].
+**Asked at:** Backtracking pattern guides and lists (techinterview.org backtracking and recursion patterns posts, designgurus backtracking interview questions, a DEV Community backtracking-patterns post; search snippets only, not opened)
+
+**Pattern:** Backtracking with constraint propagation by bitmasks and a most-constrained-cell-first rule (fail-first). Three integers per row, column and box replace three scans.
+
+**Say this first (1 line):** "One 9-bit mask per row, column and box records the digits used; a cell's candidates are the digits not set in the OR of its three masks; I always fill the empty cell with the fewest candidates, so dead ends show up early."
+
+**Brute force:** Cell by cell in reading order, try `'1'..'9'`, check the row, column and box by scanning (about 27 comparisons per try), recurse, undo on failure. Correct, and exponential in theory. It can run for millions of nodes on a puzzle with few givens. Used as the oracle (it also counts solutions, to check that test puzzles are unique).
+
+**Optimal:**
+- Masks: digit `d` is bit `d` (bits 1..9, so `FULL = 0x3FE`). `rows[r]`, `cols[c]`, `boxes[(r // 3) * 3 + c // 3]` hold the digits already placed.
+- Candidates of a cell: `~(rows[r] | cols[c] | boxes[b]) & FULL`. Python integers are unbounded and `~x` is `-x - 1`, a NEGATIVE number with infinitely many leading 1 bits (observed: `~m = -39` for `m = 0b100110`). So the `& FULL` mask is not optional: without it you would get candidates for bit 0 and for bits 10 and above, and `while m:` would never terminate on a negative number.
+- Extract a candidate: `low = m & -m` isolates the lowest set bit (for positive `m`, `-m` is two's complement in Python's infinite-width view, so `m & -m` is exactly the lowest 1). The digit is `low.bit_length() - 1`. Clear it with `m ^= low`. Place and undo by `|= low` and `^= low`.
+- Choose the empty cell with the fewest candidates (`m.bit_count()`; `bin(m).count('1')` on older Python; `int.bit_count` was added in 3.10, editor knowledge). Stop scanning at a cell with 0 or 1 candidates. Zero candidates means this branch is dead: return at once.
+- What each mask prunes: the row mask removes digits already in that row, the column mask the same for the column, the box mask for the 3 x 3 box. A candidate must pass all three, so the OR is the set of forbidden digits.
+- Why exponential in theory but fast in practice: Sudoku solving is NP-complete when generalised to `n^2 x n^2` boards, and a 9 x 9 board with few givens can still need many guesses. On real puzzles propagation (forced single candidates) plus fail-first leaves very few real choices: the example below needs 54 calls for 48 empty cells.
+
+**Complexity:** Worst case exponential: up to 9 branches per empty cell, so O(9^k) for `k` empty cells (a loose bound; real puzzles are far smaller). Each call costs O(k) to scan for the best cell (k <= 81) and O(1) for the mask work per candidate. Space O(k) for the recursion (depth = empty cells, at most 81, far below the limit of 1000) and the masks.
+
+**Dry run:** the first example has 48 empty cells. The code prints the first choices:
+- Cell `(1, 0)` has exactly one candidate, 7: forced; place it.
+- Then `(0, 0)` has candidates 2 and 6 (two options): try 2 first.
+- Then `(0, 2)` has one candidate, 4; `(0, 5)` has 5 and 8; `(1, 4)` has 1 and 9; `(1, 6)` has only 9.
+- Whenever some cell has no candidate the search backs out immediately (the `bk == 0` return).
+- It finishes after 54 calls (48 placements plus 6 guesses that were undone). Reading order with the same masks needs 522 calls on the same board.
+
+**Code:**
+```python
+import random
+
+random.seed(25)
+FULL = 0x3FE            # bits 1..9 set: digit d is bit d. Python's ~ gives a NEGATIVE number, so we always mask with FULL.
+
+def digits_of(m):
+    return [i for i in range(1, 10) if m >> i & 1]
+
+def solve_mrv(board, trace=None):
+    """Bitmask backtracking, most-constrained empty cell first. Returns (solution rows, nodes)."""
+    g = [[0 if ch == '.' else int(ch) for ch in row] for row in board]
+    rows = [0] * 9; cols = [0] * 9; boxes = [0] * 9; empties = []
+    for r in range(9):
+        for c in range(9):
+            if g[r][c]:
+                b = 1 << g[r][c]; rows[r] |= b; cols[c] |= b; boxes[r // 3 * 3 + c // 3] |= b
+            else: empties.append((r, c))
+    nodes = 0
+    def solve():
+        nonlocal nodes
+        nodes += 1
+        if not empties: return True
+        best = -1; bm = 0; bk = 10
+        for idx, (r, c) in enumerate(empties):
+            m = ~(rows[r] | cols[c] | boxes[r // 3 * 3 + c // 3]) & FULL        # candidates of this cell
+            k = m.bit_count()
+            if k < bk:
+                best, bm, bk = idx, m, k
+                if k <= 1: break                                                 # a forced cell (or a dead end) cannot be beaten
+        if bk == 0: return False                                                 # some cell has no candidate: prune
+        empties[best], empties[-1] = empties[-1], empties[best]
+        r, c = empties.pop(); bi = r // 3 * 3 + c // 3
+        if trace is not None and len(trace) < 6: trace.append(((r, c), digits_of(bm)))
+        while bm:
+            low = bm & -bm; bm ^= low; v = low.bit_length() - 1                   # lowest candidate bit, then its digit
+            g[r][c] = v; rows[r] |= low; cols[c] |= low; boxes[bi] |= low
+            if solve(): return True
+            rows[r] ^= low; cols[c] ^= low; boxes[bi] ^= low; g[r][c] = 0
+        empties.append((r, c)); empties[best], empties[-1] = empties[-1], empties[best]
+        return False
+    assert solve(), 'no solution'
+    return [''.join(map(str, row)) for row in g], nodes
+
+def solve_fixed_order(board, cap=None):
+    """Same masks, same candidate extraction, but cells in reading order (no heuristic). Returns (rows or None, nodes)."""
+    g = [[0 if ch == '.' else int(ch) for ch in row] for row in board]
+    rows = [0] * 9; cols = [0] * 9; boxes = [0] * 9; empties = []
+    for r in range(9):
+        for c in range(9):
+            if g[r][c]:
+                b = 1 << g[r][c]; rows[r] |= b; cols[c] |= b; boxes[r // 3 * 3 + c // 3] |= b
+            else: empties.append((r, c))
+    nodes = 0
+    def go(i):
+        nonlocal nodes
+        nodes += 1
+        if cap and nodes > cap: raise OverflowError
+        if i == len(empties): return True
+        r, c = empties[i]; bi = r // 3 * 3 + c // 3
+        m = ~(rows[r] | cols[c] | boxes[bi]) & FULL
+        while m:
+            low = m & -m; m ^= low; v = low.bit_length() - 1
+            g[r][c] = v; rows[r] |= low; cols[c] |= low; boxes[bi] |= low
+            if go(i + 1): return True
+            rows[r] ^= low; cols[c] ^= low; boxes[bi] ^= low
+        return False
+    try: ok = go(0)
+    except OverflowError: return None, nodes
+    return ([''.join(map(str, row)) for row in g] if ok else None), nodes
+
+def plain(board, limit=1):
+    """Oracle: cell by cell, tries '1'..'9', checks row, column and box by scanning; counts solutions up to `limit`."""
+    g = [list(r) for r in board]; found = []
+    def ok(r, c, ch):
+        if any(g[r][k] == ch or g[k][c] == ch for k in range(9)): return False
+        br, bc = r // 3 * 3, c // 3 * 3
+        return all(g[br + i][bc + j] != ch for i in range(3) for j in range(3))
+    def go(pos):
+        if len(found) >= limit: return
+        while pos < 81 and g[pos // 9][pos % 9] != '.': pos += 1
+        if pos == 81: found.append([''.join(r) for r in g]); return
+        r, c = divmod(pos, 9)
+        for ch in '123456789':
+            if ok(r, c, ch): g[r][c] = ch; go(pos + 1); g[r][c] = '.'
+    go(0); return found
+
+def valid(rows):
+    if len(rows) != 9 or any(len(r) != 9 for r in rows): return False
+    want = set('123456789')
+    for i in range(9):
+        if set(rows[i]) != want or set(rows[j][i] for j in range(9)) != want: return False
+        if {rows[3 * (i // 3) + a][3 * (i % 3) + b] for a in range(3) for b in range(3)} != want: return False
+    return True
+
+EX = ['.1....3..', '.586.3.24', '..92..5..', '.4.1...5.', '..6.24.17', '.8...94.2', '8.5...74.', '471...2..', '.....7..5']
+EXP = ['214785369', '758693124', '639241578', '342178956', '596324817', '187569432', '865932741', '471856293', '923417685']
+trace = []
+sol, n_mrv = solve_mrv(EX, trace)
+assert sol == EXP == plain(EX, 2)[0] and len(plain(EX, 2)) == 1 and valid(sol)
+print('example solved:', sol)
+print('empty cells:', sum(r.count('.') for r in EX), '| search calls with most-constrained cell first:', n_mrv)
+for (rc, cands) in trace: print(f'  step: choose cell {rc} with candidates {cands}')
+
+# the Python negative-integer point, as observed on Python 3.13
+m = 0b0000100110
+print('~m =', ~m, '(negative); ~m & FULL =', bin(~m & FULL), '-> digits', digits_of(~m & FULL))
+x = 0b101000
+print('x & -x =', bin(x & -x), '(lowest set bit);  (x & -x).bit_length() - 1 =', (x & -x).bit_length() - 1)
+print('digit d as a bit: 1 << 7 =', bin(1 << 7), '; row mask with 5 and 9 set =', bin((1 << 5) | (1 << 9)))
+
+# search cost of the heuristic: same masks, reading-order cells
+sol2, n_fixed = solve_fixed_order(EX)
+assert sol2 == EXP
+print('same example, reading-order cells with the same masks:', n_fixed, 'calls (against', n_mrv, 'with the heuristic)')
+
+# a puzzle with 17 givens and an empty first row: hard for reading order
+HARD = ['.........', '.....3.85', '..1.2....', '...5.7...', '..4...1..', '.9.......', '5......73', '..2.1....', '....4...9']
+h_sol, n_h = solve_mrv(HARD)
+assert valid(h_sol) and all(a == '.' or a == b for ra, rb in zip(HARD, h_sol) for a, b in zip(ra, rb))
+r_fixed, n_f = solve_fixed_order(HARD, cap=3_000_000)
+print('hard puzzle (17 givens):', 'heuristic', n_h, 'calls;', ('reading order ' + str(n_f) + ' calls') if r_fixed else 'reading order gave up after ' + str(n_f) + ' calls (cap 3,000,000)')
+assert r_fixed is None or r_fixed == h_sol
+
+# seeded random puzzles with a unique solution; compare with the plain oracle and check validity
+def random_full(rnd):
+    g = [['.'] * 9 for _ in range(9)]
+    def ok(r, c, ch):
+        if any(g[r][k] == ch or g[k][c] == ch for k in range(9)): return False
+        br, bc = r // 3 * 3, c // 3 * 3
+        return all(g[br + i][bc + j] != ch for i in range(3) for j in range(3))
+    def go(pos):
+        if pos == 81: return True
+        r, c = divmod(pos, 9); ds = list('123456789'); rnd.shuffle(ds)
+        for ch in ds:
+            if ok(r, c, ch):
+                g[r][c] = ch
+                if go(pos + 1): return True
+                g[r][c] = '.'
+        return False
+    go(0); return [''.join(r) for r in g]
+def make_puzzle(rnd, remove):
+    full = random_full(rnd); g = [list(r) for r in full]
+    cells = [(r, c) for r in range(9) for c in range(9)]; rnd.shuffle(cells); removed = 0
+    for r, c in cells:
+        if removed >= remove: break
+        keep = g[r][c]; g[r][c] = '.'
+        if len(plain([''.join(x) for x in g], 2)) == 1: removed += 1
+        else: g[r][c] = keep
+    return [''.join(x) for x in g], full
+rnd = random.Random(250)
+nm = []; nf = []
+for i in range(40):
+    puz, full = make_puzzle(rnd, rnd.randint(30, 50))
+    s1, a = solve_mrv(puz); assert s1 == full == plain(puz, 1)[0] and valid(s1)
+    assert all(p == '.' or p == q for rp, rq in zip(puz, s1) for p, q in zip(rp, rq))
+    s2, b = solve_fixed_order(puz); assert s2 == full
+    nm.append(a); nf.append(b)
+print('40 seeded random puzzles with a unique solution: all agree with the plain solver and are valid grids')
+print('  calls with heuristic: total', sum(nm), 'max', max(nm), '| reading order: total', sum(nf), 'max', max(nf))
+
+# edge asserts: an already solved board, one empty cell
+assert solve_mrv(EXP)[0] == EXP
+one = [EXP[0][:4] + '.' + EXP[0][5:]] + EXP[1:]
+assert solve_mrv(one)[0] == EXP
+print('edge asserts passed (solved board; one empty cell); recursion depth = empty cells <= 81')
+```
+
+**Output (my run):**
+```
+example solved: ['214785369', '758693124', '639241578', '342178956', '596324817', '187569432', '865932741', '471856293', '923417685']
+empty cells: 48 | search calls with most-constrained cell first: 54
+  step: choose cell (1, 0) with candidates [7]
+  step: choose cell (0, 0) with candidates [2, 6]
+  step: choose cell (0, 2) with candidates [4]
+  step: choose cell (0, 5) with candidates [5, 8]
+  step: choose cell (1, 4) with candidates [1, 9]
+  step: choose cell (1, 6) with candidates [9]
+~m = -39 (negative); ~m & FULL = 0b1111011000 -> digits [3, 4, 6, 7, 8, 9]
+x & -x = 0b1000 (lowest set bit);  (x & -x).bit_length() - 1 = 3
+digit d as a bit: 1 << 7 = 0b10000000 ; row mask with 5 and 9 set = 0b1000100000
+same example, reading-order cells with the same masks: 522 calls (against 54 with the heuristic)
+hard puzzle (17 givens): heuristic 17918 calls; reading order gave up after 3000001 calls (cap 3,000,000)
+40 seeded random puzzles with a unique solution: all agree with the plain solver and are valid grids
+  calls with heuristic: total 1629 max 67 | reading order: total 18763 max 9383
+edge asserts passed (solved board; one empty cell); recursion depth = empty cells <= 81
+```
+
+Reading the output:
+- The solved board equals the expected one, and the plain solver finds exactly one solution for it.
+- The mask demo shows `~m` negative and the `& FULL` result giving digits 3, 4, 6, 7, 8, 9 for a row that has 1, 2 and 5 placed. `x & -x` isolates bit 3 and `bit_length() - 1` turns it into 3. Observed on Python 3.13.
+- Node counts: 54 calls with the heuristic against 522 with the same masks in reading order. On a 17-given puzzle with an empty first row the heuristic needs 17,918 calls while reading order did not finish within a cap of 3,000,000 calls (a limit of the demo, not a proof it could not finish).
+- 40 seeded random puzzles (each with a unique solution, checked by the plain solver) give valid grids that keep all the givens and match the oracle. Total calls: 1629 with the heuristic (max 67) against 18,763 in reading order (max 9,383).
+
+**Edge cases:**
+- Already solved board: no empties, returns at once.
+- One empty cell: forced.
+- A puzzle with no solution: the search ends with `False` (the prompt guarantees exactly one solution, so the code asserts).
+- Several solutions: returns the first found (the prompt rules this out).
+- Contradictory givens: some mask makes a cell's candidates empty and the search fails at the root.
+
+**Follow-ups:**
+- "Validity only?" Part 1 Q15 validates a partly filled board with the same row, column and box idea.
+- "Count solutions or prove uniqueness?" Do not return at the first solution; stop at two.
+- "Faster?" Add naked and hidden singles propagation, or exact cover with dancing links. The idea here is already the dominant gain.
+
+**Common mistakes:**
+- Using `~mask` without `& FULL`: negative numbers and bit 0 give phantom candidates and the loop does not end.
+- Box index `r // 3 + c // 3` instead of `(r // 3) * 3 + c // 3`.
+- Forgetting to undo all three masks and the grid cell on backtrack.
+- Mixing digit `d` and bit `d - 1` conventions between placing and reading.
+- Picking the first empty cell (no fail-first rule): same answer, far more calls.

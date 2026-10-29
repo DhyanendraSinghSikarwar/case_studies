@@ -1,4 +1,4 @@
-import random, time
+import random
 
 random.seed(25)
 FULL = 0x3FE            # bits 1..9 set: digit d is bit d. Python's ~ gives a NEGATIVE number, so we always mask with FULL.
@@ -113,12 +113,12 @@ sol2, n_fixed = solve_fixed_order(EX)
 assert sol2 == EXP
 print('same example, reading-order cells with the same masks:', n_fixed, 'calls (against', n_mrv, 'with the heuristic)')
 
-# a puzzle that is hard for reading order (empty-heavy first row; unique solution)
+# a puzzle with 17 givens and an empty first row: hard for reading order
 HARD = ['.........', '.....3.85', '..1.2....', '...5.7...', '..4...1..', '.9.......', '5......73', '..2.1....', '....4...9']
 h_sol, n_h = solve_mrv(HARD)
 assert valid(h_sol) and all(a == '.' or a == b for ra, rb in zip(HARD, h_sol) for a, b in zip(ra, rb))
-t0 = time.time(); r_fixed, n_f = solve_fixed_order(HARD, cap=3_000_000); t1 = time.time() - t0
-print('hard puzzle (17 givens):', 'heuristic', n_h, 'calls;', ('reading order ' + str(n_f) + ' calls') if r_fixed else 'reading order gave up after ' + str(n_f) + ' calls (cap 3,000,000)', f'(sandbox timing of that run {t1:.1f} s)')
+r_fixed, n_f = solve_fixed_order(HARD, cap=3_000_000)
+print('hard puzzle (17 givens):', 'heuristic', n_h, 'calls;', ('reading order ' + str(n_f) + ' calls') if r_fixed else 'reading order gave up after ' + str(n_f) + ' calls (cap 3,000,000)')
 assert r_fixed is None or r_fixed == h_sol
 
 # seeded random puzzles with a unique solution; compare with the plain oracle and check validity

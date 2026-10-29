@@ -60,6 +60,13 @@ for n in range(-3000, 0):
     for _ in range(64): m >>= 1
     assert m == -1                              # every negative n ends at -1, never at 0
 print("every negative n in [-3000, -1] is -1 after 64 shifts: a 'while n' loop would never end")
+def reverse_loop_nomask(n):
+    r = 0
+    for _ in range(32):
+        r = (r << 1) | (n & 1); n >>= 1
+    return r
+assert all(reverse_loop_nomask(n) == brute(n) for n in range(-5000, 5000))
+print("a fixed 32-round loop with no mask also gives the right answer on [-5000, 5000] (n & 1 and >> are arithmetic); the mask makes it explicit")
 # seeded random + exhaustive-style checks
 for _ in range(2000):
     n = random.choice([random.randint(-2 ** 31, 2 ** 32 - 1), random.randint(-8, 8), 1 << random.randint(0, 31)])
