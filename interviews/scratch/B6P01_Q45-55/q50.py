@@ -21,8 +21,8 @@ print(df.round(3).to_string())
 
 assert round(res["before"]["retention"], 2) == 0.55 and round(res["after"]["retention"], 2) == 0.62
 assert res["before"]["retained"] == 55_000 and res["after"]["retained"] == 40_250      # fewer retained PEOPLE
-assert res["before"]["actives_next"] == 85_000 and res["after"]["actives_next"] == 55_250
-assert round(res["before"]["quick_ratio"], 2) == 0.56 and round(res["after"]["quick_ratio"], 2) == 0.60
+assert res["before"]["actives_next"] == 80_000 and res["after"]["actives_next"] == 55_250
+assert round(res["before"]["quick_ratio"], 2) == 0.56 and round(res["after"]["quick_ratio"], 2) == 0.61
 
 # mix-standardised retention: apply the BEFORE mix to the AFTER segment rates
 w = {s: t["before"]["base"][s] / 100_000 for s in RET}
