@@ -686,3 +686,106 @@ leaky 'retention' with resurrected users in the numerator: 0.727
 - Could the rise ever be real? Yes, if segment rates themselves went up. The standardised rate tells you.
 
 **Common mistakes:** Treating the rate as the whole story. No counts. Letting the "active" definition change without a restatement. Mixing resurrected into the numerator. Comparing blended rates across periods with different base mixes.
+
+### Q51 ⭐ 🔴 For a group-chat product, the value of the app to one user depends on their friends being active. Explain how you would define engagement and success metrics when users are interconnected, why simple per-user averages can mislead, and what you would add to track network health.
+**Asked at:** Metric trade-off ('one metric up, another down') guides (Interview Query metric trade-offs path, Exponent analytical-execution course, a Facebook product-execution write-up on Substack); commonly reported in public guides; search snippets only, not opened
+**Say this first (1 line):** In a group product the unit of value is the group, not the user, so I measure engagement and health at the group and connection level, because a per-user average can rise while the network is breaking up.
+
+**Clarifying questions:**
+- What is the core action: sending a message, getting a reply, or a conversation with at least two people? It defines "value delivered".
+- What is a group in the data: explicit chat groups, or friend graphs? It defines the unit I aggregate to.
+- Are users in many groups, or one? Overlap makes group metrics double count people.
+- Is growth driven by invites? Invited users bring their group with them, so the spread matters.
+- What is the goal: more groups, deeper groups, or more messages? I do not want to optimise one at the expense of the others.
+
+**Approach:**
+1. Define the unit of value: a conversation that involves two or more people and gets a reply. A message with no reader is not value.
+2. Per-user metrics stay, but I pair them with group metrics: active groups per week, share of healthy groups (for example 3 or more active members this week), median group size, reply rate within an hour, and the share of users with at least 2 active friends.
+3. Look at structure, not only averages: size distribution of components, share of users in the largest connected component, and the share of groups below the healthy threshold.
+4. Track dependency: probability that a member stays active as a function of how many group members are active. This shows a tipping point, below which groups decay.
+5. Success metric: healthy-group retention (a group stays healthy over 4 weeks), with messages per active user as secondary, never the headline.
+6. Experiments: a per-user test leaks because friends see each other. Randomise by group or cluster of connected users, and measure spillover (see Book 1 Part 10, Q12, heading: "Explain network effects / interference (SUTVA violation). How do you run experiments on a social product or a two-sided marketplace?").
+
+**Metrics:**
+- Healthy-group share = groups with >= 3 active members in the week / groups with any activity.
+- Healthy-group 4-week survival = groups healthy in week 1 that are still healthy in week 4 / groups healthy in week 1.
+- Reply rate within 1 hour = messages answered in an hour / messages sent that expect an answer.
+- Friends-active ratio = for each user, active friends / friends; report the median and the share below 0.2.
+- Guardrails: invite spam rate, mute or leave-group rate, block rate.
+
+**Risks:**
+- Per-user averages: when weak groups shrink, the remaining few chat more, so messages per active user can go up while the network degrades.
+- Cannibalisation: new groups can pull activity from old ones.
+- Heavy groups dominate sums. Use medians and distributions, not just means.
+- A group threshold (3 members) is a choice. Check the result with 2 and 4.
+- Spillover: a test on some users changes others' behaviour. Control users are contaminated.
+
+**What the interviewer scores:**
+- Strong: moves the unit from user to group or connection and shows how the average misleads.
+- Strong: names health and dependency metrics, such as healthy-group share and active-friend ratio, and says how to test with cluster randomisation.
+- Weak: DAU and messages per DAU only.
+- Weak: lists graph jargon but no metric a team could compute.
+
+**Example:** Illustrative numbers. Week 1: 20 groups of 5, everyone active, 10 messages each. DAU 100, messages 1,000, 10.0 messages per active user, 100% of groups healthy. Week 2: 10 groups unchanged, and 10 groups where only 2 of 5 members are active, but those two message 14 times each.
+- DAU 70, messages 780, so 11.14 messages per active user, up 11%. Healthy-group share dropped to 50%.
+- In a seeded simulation (leave chance 5% per week in a healthy group and 30% in a weak one), after 8 weeks a group that started with 5 active members averages 3.16 active, and one that started with 2 averages 0.12. Weak groups are not a stable state, they are a decline.
+- Reply rate within an hour by group: 80%, 90%, 70%, 20%, 10%, so the mean 54% hides two broken groups.
+- Weak answer: "Messages per user is up 11%, engagement is healthy." Strong answer: "Half of the groups fell below 3 active members and those do not recover. The per-user average is the survivors chatting more."
+
+**Code:**
+```python
+# Q51: group-chat metrics when users depend on each other (illustrative numbers + a seeded simulation)
+import numpy as np
+rng = np.random.default_rng(51)
+
+# Week 1: 20 groups of 5, everyone active, 10 messages each.
+# Week 2: 10 groups stay intact; 10 groups have only 2 of 5 members active, and those 2 message 14 each.
+w1 = dict(groups=[(5, 10)] * 20)                       # (active members, messages per active member)
+w2 = dict(groups=[(5, 10)] * 10 + [(2, 14)] * 10)
+
+def summarize(groups):
+    dau = sum(a for a, _ in groups)
+    msgs = sum(a * m for a, m in groups)
+    healthy = sum(1 for a, _ in groups if a >= 3)      # a group is "healthy" if >= 3 members active
+    return dau, msgs, msgs / dau, healthy / len(groups)
+
+for name, w in (("week 1", w1), ("week 2", w2)):
+    dau, msgs, per_user, healthy = summarize(w["groups"])
+    print(f"{name}: DAU {dau}, messages {msgs}, messages per active user {per_user:.2f}, healthy-group share {healthy:.0%}")
+s1, s2 = summarize(w1["groups"]), summarize(w2["groups"])
+assert s1[:3] == (100, 1000, 10.0) and s2[:2] == (70, 780) and round(s2[2], 2) == 11.14
+assert s1[3] == 1.0 and s2[3] == 0.5
+
+# Why the weak groups matter: leaving depends on how many friends are still active.
+def simulate(start_active, weeks=8, n_groups=2000, size=5):
+    active = np.full(n_groups, start_active)
+    for _ in range(weeks):
+        # chance an active member leaves this week: 5% if >=3 active in the group, 30% otherwise
+        p = np.where(active >= 3, 0.05, 0.30)
+        active = active - rng.binomial(active, p)
+    return active.mean()
+healthy_end = simulate(5)
+weak_end = simulate(2)
+print(f"after 8 weeks, mean active members: group that started with 5 = {healthy_end:.2f}, started with 2 = {weak_end:.2f}")
+assert weak_end < 0.5 and healthy_end > 3.0 and weak_end < healthy_end / 5
+
+# Edge-level metric: share of messages answered within an hour (reciprocity), per-user vs per-group
+replied = np.array([8, 9, 7, 2, 1])                    # per group of 5 chats, replies within 1h out of 10 messages each
+print("reply-within-1h rate by group:", (replied / 10).tolist(), "mean", replied.mean() / 10)
+assert replied.mean() / 10 == 0.54
+```
+
+**Output (my run):**
+```text
+week 1: DAU 100, messages 1000, messages per active user 10.00, healthy-group share 100%
+week 2: DAU 70, messages 780, messages per active user 11.14, healthy-group share 50%
+after 8 weeks, mean active members: group that started with 5 = 3.16, started with 2 = 0.12
+reply-within-1h rate by group: [0.8, 0.9, 0.7, 0.2, 0.1] mean 0.54
+```
+
+**Follow-ups:**
+- How would you test a new feature in this product? Randomise by group or friend cluster, and measure group-level metrics. A per-user split underestimates network effects because treated and control users talk to each other.
+- How do you pick the healthy threshold? From the data: where the next-week retention curve bends against active-member count.
+- What about a growth metric? Invites sent that lead to an active member in a group, not signups alone.
+
+**Common mistakes:** Aggregating at the user level only. Treating more messages as more value. Ignoring the dependency between users. Randomising users inside the same group. Reporting a mean when the distribution is bimodal.
