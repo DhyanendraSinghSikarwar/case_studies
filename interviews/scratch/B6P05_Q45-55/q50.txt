@@ -1,0 +1,52 @@
+**Say this first (1 line):** Annual margin goes from 9.94 million to 11.23 million if the retailer keeps the 4.00 fee, or to 10.53 million if the fee is ignored (illustrative), and the policy breaks even only if orders fall by about 14.2% (or 8.5% without the fee income), against the 3% expected.
+
+**Clarifying questions:**
+- Does the 4.00 go to the retailer as income, or does it just cover a cost? The prompt does not say, so I show both. It moves the break-even drop from 14.2% to 8.5%.
+- Is the return fall to 18% measured or hoped for? It is the biggest lever.
+- Will the 3% order drop be spread evenly? Losing high-margin repeat buyers costs more than 3% of margin.
+- Is the 8 handling cost only warehouse work? Refund processing and resale discount also matter.
+- Does the fee apply to all returns or only some categories (for example fashion)?
+
+**Approach:**
+1. Before: 1,000,000 orders. Returned 220,000, kept 780,000. Margin = 780,000 x 15 - 220,000 x 8 = 11,700,000 - 1,760,000 = 9,940,000. Per order: 9.94.
+2. After: orders = 970,000. Returns at 18% = 174,600. Kept = 795,400. Kept margin = 11,931,000. Handling = 1,396,800.
+3. With fee income: + 174,600 x 4 = 698,400. Margin = 11,232,600, a gain of 1,292,600.
+4. Without fee income: 10,534,200, a gain of 594,200.
+5. Break-even drop in orders: per-order margin after is 11.58 (with fee) or 10.86 (without). Orders can fall until 11.58 x N = 9.94 million. N = 858,377, a relative fall of 14.16%. Without fee: 915,285 orders, a fall of 8.47%.
+6. Sensitivity (fee kept, 3% fewer orders): returns at 20% give 10,864,000; returns unchanged at 22% give 10,495,400, still above 9,940,000 only because of fee income. Without fee income, unchanged returns would be a clear loss. So the gain depends on the fee income and on the return rate falling.
+7. Test: randomise the fee by user or region and measure orders, return rate, and 6-month repeat purchase.
+
+**Metrics:**
+- Margin per original order = (kept orders x 15 - returned orders x 8 + returned orders x fee) / original orders.
+- Return rate = returned orders / orders. Order retention = orders after / orders before.
+- Guardrails: conversion, repeat rate, customer-service contacts, share of lost orders that were low-return buyers.
+
+**Risks:**
+- Selection: the 3% of lost orders may be the customers with high return rates (good for margin) or loyal ones (bad).
+- Customers may switch to a rival, with long-run effects beyond a year.
+- Some of the return fall is mix shift (buyers who return a lot now order less), so the 18% and the 3% are linked.
+- Fee could cause chargebacks or complaints.
+
+**What the interviewer scores:**
+- Strong: separates kept, returned, and fee income, and states the fee assumption. Weak: multiplies orders by 15 only.
+- Strong: solves break-even for the order drop with per-order margins. Weak: tries a fixed table by trial and error.
+- Strong: proposes a randomised test and a long window. Weak: trusts the forecast.
+
+**Example:** Illustrative numbers. Before 9,940,000. After with fee 11,232,600. Break-even order drop 14.2%. Weak: "Returns fall 4 points, so margin rises." Strong: "It rises by 1.29 million if the fee is income, but the real risk is lost loyal buyers, so I would test it on a sample first."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why does the 4 point fall matter so much?* Each avoided return turns a cost of 8 into a kept order worth 15, a swing of 23 per order.
+- *What if only high-return categories are charged?* The fee hits the buyers who cost most, and order loss is probably smaller.
+- *Free returns elsewhere?* Part 5 Q20 shows per-order contribution in the same way.
+
+**Common mistakes:**
+- Ignoring the 8 handling cost on returned orders.
+- Applying the order drop only to kept orders.
+- Mixing up the 4 point absolute fall with a relative one.
+- Not saying whether the fee is income.

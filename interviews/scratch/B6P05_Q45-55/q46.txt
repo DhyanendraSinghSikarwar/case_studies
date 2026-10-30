@@ -1,0 +1,51 @@
+**Say this first (1 line):** Vendor nets 3.30 million over 3 years, in-house nets 3.76 million, so in-house looks 460,000 better (illustrative), but it wins only if it really prevents more than about 68.3% of losses and ships on time.
+
+**Clarifying questions:**
+- Is the 76% measured on our data or a forecast? A forecast from a build plan is usually optimistic.
+- How long until the in-house model is live? The 500,000 in year 1 may buy no protection for months.
+- Does 150,000 a year cover retraining, monitoring, on-call and labelling? Run cost is the usual hole.
+- Does the vendor price rise at renewal? That moves the comparison the other way.
+- Are the two prevention rates measured on the same transactions and the same false-positive cost? A model that prevents more but blocks more good customers is not comparable.
+
+**Approach:**
+1. Benefit per year = prevention rate x 2,000,000. Vendor 1,400,000. In-house 1,520,000.
+2. Net each year = benefit - cost. Sum 3 years.
+3. Vendor: 3 x (1,400,000 - 300,000) = 3,300,000.
+4. In-house: 3 x 1,520,000 - (500,000 + 150,000 + 150,000) = 4,560,000 - 800,000 = 3,760,000.
+5. Difference: 460,000 in favour of in-house.
+6. Stress it: find the in-house prevention rate that only ties the vendor, then delay, run-cost and prevention scenarios.
+7. Decide: the difference is about 14% of the vendor net, which is small next to the uncertainty. Pilot the vendor, then build only if the in-house shadow test beats it on our data.
+
+**Metrics:**
+- Net benefit = losses prevented - total cost, summed over the horizon. Prevention rate = fraud loss stopped / fraud loss without a model.
+- Guardrails: false-positive rate and customer friction, time to live, and discounted values if the horizon were longer (no discounting used here).
+
+**Risks:**
+- Year-1 delay: if in-house is live for half of year 1, its net falls to 3.0 million and it loses to the vendor by 300,000.
+- Prevention is the biggest lever: 1 point of prevention is worth 60,000 over 3 years, so a 7.7 point miss (460,000 / 60,000) erases the 460,000 lead.
+- Fraud losses of 2,000,000 are themselves an estimate, and fraudsters adapt.
+- Staff cost, key-person risk, and the vendor's data advantage across many clients.
+
+**What the interviewer scores:**
+- Strong: correct arithmetic, finds the break-even prevention rate, names delay and run cost. Weak: quotes 460,000 as fact.
+- Strong: asks for a shadow test on our data. Weak: trusts both rates.
+- Strong: mentions risk, lock-in and option value, not only total. Weak: pure cost comparison.
+
+**Example:** Illustrative numbers. Vendor 3.3 million, in-house 3.76 million. If in-house prevents only 70%, its net is 3.4 million and the lead is 100,000. If it also goes live 6 months late, in-house loses. Weak: "In-house is 460k better, build it." Strong: "It is better only if prevention stays above 68.3% and it ships on time. I would shadow-test first."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Would discounting change it?* Slightly. In-house costs are front-loaded, so discounting hurts it a little.
+- *Hybrid?* Buy now, build in parallel, switch when the in-house model beats the vendor in shadow mode.
+- *What if the vendor prevention is 70% on its own data, not ours?* Then both numbers need re-measuring on our traffic.
+
+**Common mistakes:**
+- Ignoring the build timeline.
+- Leaving out the maintenance cost.
+- Comparing prevention rates without comparing false positives.
+- Treating the 460,000 difference as precise.
