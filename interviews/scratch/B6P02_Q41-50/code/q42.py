@@ -43,3 +43,8 @@ assert abs((2*retrain_cost/k2)**0.5 - T_star/2**0.5) < 1e-9
 # cost rises 4x if retrain costs 24: T* doubles
 print(f"retrain cost 4x: T* = {(2*24/k)**0.5:.2f} weeks")
 assert abs((2*24/k)**0.5 - 2*T_star) < 1e-9
+# slope uncertainty: 0.2 and 0.4 pp per week
+for slope in (0.2, 0.4):
+    kk = slope*value_per_pp
+    print(f"slope {slope} pp/week: T* = {(2*retrain_cost/kk)**0.5:.2f} weeks")
+assert abs((2*retrain_cost/(0.2*4))**0.5 - 3.873) < 0.001 and abs((2*retrain_cost/(0.4*4))**0.5 - 2.739) < 0.001
