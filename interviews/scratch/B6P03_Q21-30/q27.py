@@ -41,3 +41,4 @@ def hm_se(A, n1, n0):
 print(f"Hanley-McNeil SE for rural AUC with {yr.sum()} defaults: {hm_se(a_r, yr.sum(), len(yr)-yr.sum()):.3f}")
 print(f"defaults needed in rural for SE about 0.01: {int(next(n for n in range(100,5000,25) if hm_se(0.71, n, 16*n) < 0.01))}")
 assert 0.015 < hm_se(a_r, yr.sum(), len(yr) - yr.sum()) < 0.03
+assert next(n for n in range(100, 5000, 25) if hm_se(0.71, n, 16 * n) < 0.01) == 900 and 900 / 0.06 == 15_000

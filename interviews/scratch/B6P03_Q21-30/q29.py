@@ -13,6 +13,11 @@ r = audit_hit / audit_n
 hidden = r * (total - reviewed)
 print(f"audit fraud rate in unreviewed {r:.2%} -> about {hidden:,.0f} hidden frauds; recall of the old rules about {confirmed/(confirmed+hidden):.1%}")
 assert abs(hidden - 2_940) < 1e-6 and round(confirmed / (confirmed + hidden), 3) == 0.338
+print(f"weight per audited row {(total-reviewed)/audit_n:.0f}")
+assert round((total - reviewed) / audit_n) == 327
+need_n = 1.96 ** 2 * 0.003 * 0.997 / 0.001 ** 2
+print(f"audited rows needed for +-0.1 points at a 0.3% rate: {need_n:,.0f}")
+assert 11_400 < need_n < 11_600
 half = 1.96 * (r * (1 - r) / audit_n) ** 0.5
 print(f"audit rate 95% interval about {r-half:.2%} to {r+half:.2%}")
 

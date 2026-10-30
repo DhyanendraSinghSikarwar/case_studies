@@ -42,3 +42,5 @@ lo, hi = np.percentile(bs, [2.5, 97.5])
 print(f"bootstrap 95% CI for the pooled AUC: {lo:.2f} to {hi:.2f} (width {hi-lo:.2f})")
 assert hi - lo > 0.1
 assert np.std(rep) < 0.02
+
+assert 8 * 72 == 576 and 1 / 8 == 0.125
