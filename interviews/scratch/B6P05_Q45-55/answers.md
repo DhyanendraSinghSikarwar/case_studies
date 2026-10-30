@@ -857,3 +857,120 @@ with 2% noise in each arm, the 'optimal' take rate ranges 0.16 to 0.91 (5th to 9
 - Forgetting that revenue is take rate x GMV, not GMV alone.
 - Treating two test arms as a fitted model with a confidence interval.
 - Measuring only the short run.
+
+### Q53 ⭐ 🔴 A shop stocks 100 units a day and sells out on 40% of days, selling 70 units on average on the other 60%, so average sales are 82 units a day. The planner uses 82 as mean demand with a critical ratio of 0.8. Explain why average sales is a biased estimate of mean demand and why even the 70 is biased, and say how you would estimate the demand distribution before choosing the stock level.
+**Asked at:** Forecasting and inventory material (PracHub retail demand-forecasting and inventory-and-stockout concept pages, a Dataford supermarket demand-forecasting page attributed in its title to a BCG data scientist interview but unverified, a PyCon DE 2025 talk on stockouts in retail forecasting); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
+
+**Say this first (1 line):** Sales are demand capped at the 100 units on the shelf, so 82 understates demand, and even the 70 on non-stockout days is too low because it only averages the days when demand happened to be below 100 (illustrative).
+
+**Clarifying questions:**
+- Is the stock always exactly 100, or does it vary? Varying stock gives free information about the demand curve.
+- Do the sell-out days come at random, or on busy days (weekends, promotions)? If they cluster, demand is also different on those days.
+- Can we see when during the day it sold out? Time of sell-out tells us how much demand was lost.
+- Is there any record of lost sales, such as store-pickup requests or search views? That is direct evidence of demand above 100.
+- Do customers switch to substitutes when it sells out? Then lost demand is partly recaptured.
+
+**Approach:**
+1. Check the arithmetic: 0.4 x 100 + 0.6 x 70 = 82. Correct, but this is mean sales, not mean demand.
+2. Why 82 is too low: on 40% of days demand was at least 100, and we recorded exactly 100. Every one of those days is truncated from above.
+3. Why 70 is also biased: on the other 60% of days we only keep days when demand was below 100. The average of demand conditional on being below 100 is below the average of demand. Dropping the sell-out days is not neutral.
+4. Fix: treat sales as censored data. Fit a demand distribution using two facts: P(demand at or above 100) = 40% and mean of the rest = 70. With a normal, this gives mean 91.5 and sd 33.4 (illustrative). With a lognormal the mean is 98.5 and the 80th percentile 129.5. The model choice matters, so say so.
+5. The 80th percentile from the normal fit is 119.7. A planner using sales mean and sd gets about 100 and keeps stocking 100, which is self-reinforcing.
+6. Better data: vary stock on purpose, record time of sell-out, count lost-sale signals (searches, store enquiries), and use a Tobit-style or survival-style censored model by day type.
+7. Then choose stock at the critical-ratio quantile of the fitted distribution, and keep testing it.
+
+**Metrics:**
+- Sell-out share = days with stock-out / all days (40%).
+- Censored-mean demand estimate = fitted mean of the demand distribution that matches both the sell-out share and observed sales.
+- Guardrails: waste (unsold units), lost margin on sell-out days, fit check on a day type where stock was higher.
+
+**Risks:**
+- The shape of demand (normal, lognormal, or other) decides the answer: 91.5 vs 98.5 mean here.
+- Day-of-week and promotion effects can mimic or hide censoring.
+- Substitution reduces apparent lost demand.
+- Raising stock may raise waste if the fit is too high.
+
+**What the interviewer scores:**
+- Strong: explains both biases (capped sales, and a conditional mean for non-stockout days), fits a censored model, and tests the shape sensitivity. Weak: says "sales are not demand" and adds 10%.
+- Strong: proposes a way to learn (stock experiment, lost-sales signals). Weak: no new data.
+- Strong: connects to the critical ratio and says why the stock level stays stuck at 100. Weak: just quotes the formula.
+
+**Example:** Illustrative numbers. 0.4 x 100 + 0.6 x 70 = 82. Fitted normal demand: mean 91.5, 80th percentile 119.7. A planner using 82 and the sales sd of 21.8 stocks about 100, so it never escapes. Weak: "Mean demand is 82; stock at the 80th percentile." Strong: "82 is censored. I would fit demand using the sell-out share, then test a higher stock level for a few weeks."
+
+**Code:**
+```python
+import numpy as np
+from scipy import stats, optimize
+stock=100; p_out=0.40; mean_in=70
+avg_sales=p_out*stock+(1-p_out)*mean_in
+print("average sales:",avg_sales)
+assert abs(avg_sales-82)<1e-9
+
+# Model 1: demand ~ Normal(mu, sigma). Unknowns solved from: P(D>=100)=0.4 and E[D | D<100]=70
+a=stats.norm.ppf(1-p_out)       # (100-mu)/sigma
+lam=stats.norm.pdf(a)/stats.norm.cdf(a)
+# mu - sigma*lam = 70 and mu = 100 - a*sigma
+sigma=(stock-mean_in)/(a+lam); mu=stock-a*sigma
+print(f"Normal fit: mu={mu:.1f}, sigma={sigma:.1f}")
+assert abs(mu-91.5)<0.1 and abs(sigma-33.4)<0.1
+chk_out=1-stats.norm.cdf(stock,mu,sigma)
+chk_in=stats.truncnorm.mean(-np.inf,(stock-mu)/sigma,loc=mu,scale=sigma)
+chk_sales=p_out*stock+(1-p_out)*chk_in
+print(f"  check: P(sell out) {chk_out:.3f}, mean of non-stockout days {chk_in:.1f}, mean sales {chk_sales:.1f}")
+assert abs(chk_out-0.4)<1e-9 and abs(chk_in-70)<1e-6 and abs(chk_sales-82)<1e-6
+q80=stats.norm.ppf(0.8,mu,sigma)
+print(f"  mean demand {mu:.1f} (vs 82 from sales); 80th percentile {q80:.1f}")
+assert mu>82 and q80>stock
+
+# Model 2: lognormal demand, same two facts
+def eqs(x):
+    m,s=x
+    d=stats.lognorm(s,scale=np.exp(m))
+    p=d.sf(stock)-p_out
+    # E[D | D<100] = integral of x f(x) dx / cdf
+    k=(np.log(stock)-m-s*s)/s
+    tm=np.exp(m+s*s/2)*stats.norm.cdf(k)/d.cdf(stock)
+    return [p,tm-mean_in]
+sol=optimize.fsolve(eqs,[4.4,0.4])
+m,s=sol; d=stats.lognorm(s,scale=np.exp(m))
+print(f"Lognormal fit: mean demand {d.mean():.1f}, 80th percentile {d.ppf(0.8):.1f}")
+assert max(abs(np.array(eqs(sol))))<1e-6 and d.mean()>82
+
+# Simulation: what a planner who uses sales as demand does
+rng=np.random.default_rng(5)
+D=rng.normal(mu,sigma,400_000); D=D[D>=0]
+S=np.minimum(D,stock)
+print(f"\nSimulated: sell-out share {(D>=stock).mean():.3f}, mean sales {S.mean():.1f}, mean of non-stockout days {D[D<stock].mean():.1f}, true mean demand {D.mean():.1f}")
+assert abs(S.mean()-82)<0.6 and abs(D[D<stock].mean()-70)<0.6
+# stock level for critical ratio 0.8: planner (mean 82, same sigma) vs censored fit
+plan=S.mean()+stats.norm.ppf(0.8)*S.std()
+print(f"stock for CR 0.8: planner using sales mean and sd {plan:.0f} (about today's 100) vs fitted 80th percentile {q80:.0f}")
+assert abs(plan-100)<2 and plan<q80
+# and the 'sales-only' sample sigma is also too small
+print("sd of sales (capped at 100):",round(S.std(),1),"vs true demand sd",round(D.std(),1))
+assert S.std()<D.std()
+```
+
+**Output (my run):**
+```
+average sales: 82.0
+Normal fit: mu=91.5, sigma=33.4
+  check: P(sell out) 0.400, mean of non-stockout days 70.0, mean sales 82.0
+  mean demand 91.5 (vs 82 from sales); 80th percentile 119.7
+Lognormal fit: mean demand 98.5, 80th percentile 129.5
+
+Simulated: sell-out share 0.402, mean sales 82.3, mean of non-stockout days 70.4, true mean demand 91.9
+stock for CR 0.8: planner using sales mean and sd 101 (about today's 100) vs fitted 80th percentile 120
+sd of sales (capped at 100): 21.8 vs true demand sd 33.0
+```
+
+**Follow-ups:**
+- *Why is 70 biased?* It is the mean of D given D below 100, which is lower than the mean of D.
+- *What if stock varies day to day?* Then each day has its own cap, and the censored likelihood uses it directly.
+- *Related?* Part 5 Q22 treats the simpler case where demand on out-of-stock days is assumed equal to in-stock days, and Part 5 Q7 uses the critical ratio.
+
+**Common mistakes:**
+- Using average sales as demand.
+- Dropping sell-out days from the data (a common fix that is also biased).
+- Using sales variance as demand variance.
+- Assuming a normal without testing a second shape.
