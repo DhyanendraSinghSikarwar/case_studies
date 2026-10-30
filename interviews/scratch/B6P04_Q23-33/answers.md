@@ -391,3 +391,227 @@ so the user-level A/B overstates the rollout effect by about 2.0 x in this toy
 - What would you tell the finance team? A range: the user-level +10% as an upper bound, the market-level figure as the planning number, margin after the discount.
 
 **Common mistakes:** Quoting +10% as the rollout effect. Looking only at the rider side. Ignoring that control wait time moved. Randomizing neighbouring zones that share drivers and calling them independent. Forgetting the cost of the discount in the decision.
+
+### Q27 ⭐⭐ 🟡 A social app wants to test a feed change with graph-cluster randomization, using clusters of about 50 users with an intra-cluster correlation of 0.02, and the user-level design needed 100,000 users per arm. The design effect is 1 + (50 - 1) x 0.02 = 1.98. Explain what this means for sample size, how cluster size trades bias against variance, and what you would do if traffic is limited.
+**Asked at:** Marketplace, interference and switchback material (Dataford 'interference in marketplace experiments', 'marketplace experiment with interference' and 'choose switchback for marketplace dispatch' pages, a DoorDash careers blog post, an arXiv 2022 paper on switchbacks and interference bias, a Statsig marketplace-experimentation page); company practice is described only as the snippets reported it; search snippets only, not opened
+**Say this first (1 line):** A design effect of 1.98 means I need about twice the users, 198,000 per arm instead of 100,000, because a cluster of 50 users carries only about 25 users' worth of information; I would pick the smallest cluster that still contains most friend links.
+
+**Clarifying questions:**
+- Where does the ICC of 0.02 come from (the metric, the clusters, a past test)? ICC depends on the metric and the clustering, so I must use the one for this metric and these clusters.
+- Are clusters all about 50, or very uneven? Unequal sizes make the design effect larger than 1.98.
+- What share of friend links cross clusters? That is the leftover interference bias.
+- Is traffic really limited, or is the limit the test duration? Time can buy sample.
+- What is the smallest lift worth detecting? That sets the sample need.
+
+**Approach:**
+1. Compute it. Design effect = 1 + (m - 1) x ICC = 1 + 49 x 0.02 = 1.98. Users needed per arm = 100,000 x 1.98 = 198,000, which is 198,000 / 50 = 3,960 clusters per arm. The "effective" sample of 198,000 users is 100,000.
+2. Explain it in plain words: users in a cluster look alike, so the 50th user adds less than a fresh independent user would.
+3. The trade-off. Bigger clusters keep more friend links inside the same arm, so less leakage (interference bias), but the design effect rises with m. Smaller clusters do the opposite. In my toy friend graph a cluster of 10 cuts 55% of links and has a design effect of 1.18; size 50 cuts 11% and costs 1.98; size 200 cuts 2.8% but costs 4.98.
+4. Choose the smallest cluster size where the cut share is tolerable, and use a modularity-based graph clustering so clusters are real communities. A true social graph is more clusterable than my ring toy.
+5. If traffic is limited: (a) accept a larger minimum detectable effect, which grows with sqrt(1.98) = 1.41; (b) use CUPED with pre-period activity to shrink variance; (c) stratify or pair clusters on size and baseline activity; (d) run longer; (e) measure a more sensitive metric; (f) use ego-network or other designs if clusters are too leaky. Book 1 Part 10 Q51 covers the cluster theory.
+6. Analyse at the cluster level (cluster means) or with cluster-robust standard errors. Do not treat users as independent.
+
+**Metrics:**
+- Design effect = 1 + (m - 1) x ICC, with m the average cluster size (use the unequal-size version if sizes vary a lot).
+- Required users per arm = users per arm for an independent design x design effect.
+- Cluster cut share = friend links between clusters / all links.
+- Guardrails: SRM at the cluster level, covariate balance of cluster size and baseline activity between arms.
+
+**Risks:**
+- Under-estimating the ICC. A larger ICC drives the design effect up quickly.
+- Unequal cluster sizes: one giant cluster dominates the arm.
+- Residual leakage across cut links still biases the effect toward zero.
+- Treating the 198,000 users as 198,000 independent users in the analysis, which gives false confidence.
+
+**What the interviewer scores:**
+- Strong: computes 198,000 and 3,960 clusters, and says the information is about the same as 100,000 independent users. Weak: repeats the formula only.
+- Strong: explains cluster size as a bias versus variance dial. Weak: says "use bigger clusters" without cost.
+- Strong: lists practical levers when traffic is limited (MDE, CUPED, pairing, time). Weak: "get more traffic".
+- Strong: says to analyse at the cluster level. Weak: ignores the dependence.
+
+**Example:** illustrative numbers. Independent design: 100,000 users per arm. Clusters of 50, ICC 0.02.
+- Weak: "We need 100,000 users per arm, and clusters just make it a little noisier."
+- Strong: "DE = 1.98, so 198,000 users per arm, 3,960 clusters per arm. If I only have 100,000 per arm, my MDE is 1.41 times larger."
+- In my run, simulated clusters of 50 with ICC 0.02 give a variance ratio of 2.05 against independent users (formula 1.98; sampling noise). In the toy ring graph, going from cluster size 10 to 400 cuts links from 55% to 1.4% while the design effect goes from 1.18 to 8.98.
+
+**Code:**
+```python
+# Q27: cluster randomization, design effect and the cluster-size trade-off (illustrative, seeded)
+import numpy as np
+
+rng = np.random.default_rng(27)
+m, rho = 50, 0.02
+de = 1 + (m - 1) * rho
+print("design effect:", de, "; users per arm needed:", 100_000 * de, "; clusters per arm:", 100_000 * de / m)
+assert abs(de - 1.98) < 1e-9 and abs(100_000 * de - 198_000) < 1e-6
+
+# check by simulation: variance of a mean over clusters with ICC 0.02 versus independent users
+n_clusters, reps = 400, 4000
+sd_between, sd_within = np.sqrt(rho), np.sqrt(1 - rho)
+means = np.empty(reps)
+for r in range(reps):
+    cl = rng.normal(0, sd_between, (n_clusters, 1)) + rng.normal(0, sd_within, (n_clusters, m))
+    means[r] = cl.mean()
+var_cluster = means.var()
+var_iid = 1 / (n_clusters * m)
+print(f"simulated variance ratio (clustered / independent) = {var_cluster/var_iid:.2f}")
+assert abs(var_cluster / var_iid - de) < 0.15
+print("MDE grows by sqrt(DE) =", round(np.sqrt(de), 3))
+
+# trade-off: ring-lattice 'friend graph' (each user linked to 10 neighbours on each side), contiguous clusters
+k = 10
+print("cluster size | edges cut (share) | design effect")
+cuts = {}
+for size in (10, 25, 50, 100, 200, 400):
+    cut = 0; tot = 0
+    for d in range(1, k + 1):                    # edge from i to i+d crosses a boundary if i%size + d >= size
+        i = np.arange(size)
+        cut += (i + d >= size).sum() / size; tot += 1
+    cuts[size] = cut / tot
+    print(f"{size:12d} | {cuts[size]:.3f}             | {1 + (size - 1) * rho:.2f}")
+assert cuts[400] < cuts[50] < cuts[10] and 1 + 399 * rho > 1 + 49 * rho
+```
+
+**Output (my run):**
+```text
+design effect: 1.98 ; users per arm needed: 198000.0 ; clusters per arm: 3960.0
+simulated variance ratio (clustered / independent) = 2.05
+MDE grows by sqrt(DE) = 1.407
+cluster size | edges cut (share) | design effect
+          10 | 0.550             | 1.18
+          25 | 0.220             | 1.48
+          50 | 0.110             | 1.98
+         100 | 0.055             | 2.98
+         200 | 0.028             | 4.98
+         400 | 0.014             | 8.98
+```
+
+**Follow-ups:**
+- What if clusters differ in size? Use 1 + ((CV^2 + 1) x mean size - 1) x ICC, where CV is the coefficient of variation of cluster sizes; it is larger than 1.98.
+- What if I cannot afford the sample? Test a bigger effect, accept a lower power, or pick a design with less leakage cost, such as a market or geo test.
+- How do I report? The effect, the cluster-robust interval, the cut-edge share and the assumption that the leakage is small.
+
+**Common mistakes:** Using 1.98 on the wrong base (applying it to clusters rather than users). Taking the ICC from another metric. Analysing at user level. Choosing the cluster size only on variance, or only on leakage. Ignoring uneven cluster sizes.
+
+### Q28 ⭐⭐ 🟡 A delivery marketplace runs a switchback test on dispatch logic, flipping the whole market between old and new every 30 minutes for 14 days (672 periods, 336 per arm), with about 900 deliveries per period. An analyst computes a z-test on all 604,800 deliveries as if independent. Explain the right analysis unit, the carryover and time-of-day issues, and how you would randomize the periods.
+**Asked at:** Marketplace, interference and switchback material (Dataford 'interference in marketplace experiments', 'marketplace experiment with interference' and 'choose switchback for marketplace dispatch' pages, a DoorDash careers blog post, an arXiv 2022 paper on switchbacks and interference bias, a Statsig marketplace-experimentation page); company practice is described only as the snippets reported it; search snippets only, not opened
+**Say this first (1 line):** The analysis unit is the time period, not the delivery: I have 672 periods, 336 per arm, not 604,800 independent orders; I would randomize the periods inside each day, analyse period-level with time-of-day controls, and drop or test for carryover.
+
+**Clarifying questions:**
+- Is the whole market flipped (one arm at a time), so there are no two arms live in the same period? That is the switchback premise.
+- How long does the effect of a dispatch rule linger (couriers repositioning, queue backlog)? That sets period length and burn-in.
+- Is demand strongly tied to time of day and day of week? That drives the randomization blocks and the controls.
+- What are the primary metrics (delivery time, cost per delivery, orders completed)? They must be defined per period.
+- Can the market be treated as one unit? If several markets exist, I can add them for more power.
+
+**Approach:**
+1. Analysis unit. The treatment varies by period, and all 900 deliveries in a period share the same market conditions (weather, demand surge, courier supply). So the deliveries are not independent. The sample size is closer to 672 period means than to 604,800 orders (Book 1 Part 10 Q29 covers switchback pitfalls).
+2. Test at period level. Compute the average outcome per period (or a ratio of sums), remove the time-of-day pattern, and compare arms. One safe way is a difference per day, then a t-test over 14 days; another is a period-level regression with time-of-day fixed effects and standard errors that allow serial correlation (HAC) or a randomization test.
+3. Randomization. Do not use strict alternation. Randomize within each day (24 new, 24 old out of 48 slots), or within day-of-week by slot blocks, so each hour of day appears in both arms. Fix the schedule in advance.
+4. Carryover. Switching leaves traces in the next period. Options: longer periods, a burn-in (discard the first 5 to 10 minutes of each period for the metric), or add the previous period's arm to the model. With random assignment the plain contrast estimates the direct effect but misses the lingering part.
+5. Time of day. Use slot-of-day and day-of-week controls so peak periods do not decide the result.
+6. Report with an interval from the period-level analysis, plus the carryover check.
+
+**Metrics:**
+- Period mean delivery time = total delivery minutes in the period / deliveries completed in the period (or a ratio-of-sums at day level).
+- Effect = mean over new periods - mean over old periods (after removing the slot-of-day mean).
+- Effective n = 672 periods, 336 per arm; not 604,800.
+- Guardrails: order volume per period, cancellations, courier hours (carryover or demand shifts).
+
+**Risks:**
+- Carryover: the effect at the start of a period is partly from the previous arm.
+- Time-of-day confounding if the schedule is not balanced.
+- Strict alternation can alias with any half-hour rhythm in demand (orders bunch just after the hour and half hour).
+- Serial correlation between neighbouring periods understates noise further.
+- Novelty or learning for couriers when they notice the rule flips.
+
+**What the interviewer scores:**
+- Strong: says the unit is the period and that the effective sample is hundreds, not hundreds of thousands. Weak: reports a tiny p-value from 604,800 orders.
+- Strong: gives a randomization scheme with blocks by time of day. Weak: "alternate old, new, old, new".
+- Strong: names carryover and gives a fix (burn-in, longer periods, lag term). Weak: ignores it.
+- Strong: controls for time of day and uses an inference method that respects the correlation. Weak: plain z-test.
+
+**Example:** illustrative numbers. 14 days x 48 half-hour periods = 672 periods; 672 x 900 = 604,800 deliveries. One delivery has SD 12 minutes; a market-wide shock per period has SD 1.5 minutes.
+- Weak: "z-test on 604,800 deliveries, p tiny, new dispatch wins."
+- Strong: "The 604,800 are 672 correlated period means. I randomize 24 of 48 periods each day, remove time-of-day, and test over 14 daily differences."
+- In my run with NO true effect, the order-level z-test claims a significant result in 76.0% of experiments (it should be 5%). The day-level period test is at 4.9%. Strict alternation reads +1.000 minute when the truth is zero (it is aliased with the half-hour rhythm) while day-level random assignment reads +0.005. With carryover of half the effect into the next period, the random switchback reads -0.99 for a direct effect of -1.0, while a full rollout would give -1.5.
+
+**Code:**
+```python
+# Q28: switchback, 672 half-hour periods, ~900 deliveries each (illustrative simulation, seeded)
+import numpy as np
+
+rng = np.random.default_rng(28)
+P, PER_DAY, DELIV = 672, 48, 900
+print("periods:", P, "deliveries:", P * DELIV, "periods per arm:", P // 2)
+assert P == 14 * 48 and P * DELIV == 604_800
+
+slot = np.arange(P) % PER_DAY                    # half-hour slot of the day
+tod = 3.0 * np.sin(2 * np.pi * slot / PER_DAY)   # time-of-day pattern in delivery minutes (peak and off-peak)
+SD_ORDER, SD_SHOCK, PHI = 12.0, 1.5, 0.6         # SD of one delivery; SD of a market-wide period shock; shock persistence
+
+def shocks():
+    e = np.zeros(P); e[0] = rng.normal(0, SD_SHOCK)
+    for t in range(1, P): e[t] = PHI * e[t - 1] + rng.normal(0, SD_SHOCK * np.sqrt(1 - PHI**2))
+    return e
+
+def assign_day():                               # random 24/24 split of the 48 periods inside each day
+    a = np.zeros(P, int)
+    for d in range(14):
+        a[d * PER_DAY + rng.permutation(PER_DAY)[:PER_DAY // 2]] = 1
+    return a
+alt = np.tile([0, 1], P // 2)                    # strict A,B,A,B...
+
+PAR = 1.0 * (slot % 2)                           # a half-hour rhythm: e.g. orders bunch just after the hour/half-hour
+
+def test(assign, effect=0.0):
+    y = tod + PAR + shocks() + effect * assign + rng.normal(0, SD_ORDER / np.sqrt(DELIV), P)   # period mean minutes
+    diff = y[assign == 1].mean() - y[assign == 0].mean()
+    se_naive = SD_ORDER * np.sqrt(2 / (DELIV * P / 2))                      # z-test treating 604,800 orders as independent
+    # right unit: the period; remove the slot-of-day mean, then use one difference per day (14 days) and a t-test
+    ys = y.reshape(14, PER_DAY); a2 = assign.reshape(14, PER_DAY)
+    res = ys - ys.mean(axis=0)
+    dday = np.array([res[d][a2[d] == 1].mean() - res[d][a2[d] == 0].mean() for d in range(14)])
+    t = dday.mean() / (dday.std(ddof=1) / np.sqrt(14))
+    return diff, abs(diff / se_naive) > 1.96, abs(t) > 2.160                # 2.160 = t critical, 13 df
+
+# a) under NO effect: false-positive rate of the naive order-level z-test vs the day-level period test
+R = 1500
+fp = np.array([test(assign_day())[1:] for _ in range(R)]).mean(axis=0)
+print(f"false positives, no effect: order-level z-test {fp[0]:.3f}; day-level period test {fp[1]:.3f}")
+assert fp[0] > 0.15 and 0.02 < fp[1] < 0.09
+print(f"naive SE {SD_ORDER*np.sqrt(2/(DELIV*P/2)):.4f} min for the arm difference")
+
+# b) strict alternation is aliased with any half-hour rhythm; random assignment is not
+d_alt = np.array([test(alt)[0] for _ in range(300)])
+d_blk = np.array([test(assign_day())[0] for _ in range(300)])
+print(f"no effect, mean estimated difference: alternation {d_alt.mean():+.3f} min; day-random {d_blk.mean():+.3f} min")
+assert abs(d_alt.mean()) > 0.8 and abs(d_blk.mean()) < 0.1
+
+# c) carryover: each period keeps a share phi of the previous period's effect
+tau, phi = -1.0, 0.5
+est = []
+for _ in range(600):
+    a = assign_day()
+    prev = np.r_[0, a[:-1]]
+    y = tod + PAR + shocks() + tau * (a + phi * prev) + rng.normal(0, SD_ORDER / np.sqrt(DELIV), P)
+    est.append(y[a == 1].mean() - y[a == 0].mean())
+print(f"carryover test: true direct effect {tau}, full-rollout effect {tau*(1+phi)}, switchback estimate {np.mean(est):+.2f}")
+assert abs(np.mean(est) - tau) < 0.15
+```
+
+**Output (my run):**
+```text
+periods: 672 deliveries: 604800 periods per arm: 336
+false positives, no effect: order-level z-test 0.760; day-level period test 0.049
+naive SE 0.0309 min for the arm difference
+no effect, mean estimated difference: alternation +1.000 min; day-random +0.005 min
+carryover test: true direct effect -1.0, full-rollout effect -1.5, switchback estimate -0.99
+```
+
+**Follow-ups:**
+- How many periods do I need? Power depends on the period-level SD, not the number of orders. Use pilot period variances; more periods or more markets help, more orders per period barely do.
+- Why not randomize by courier or order? Orders and couriers share the same dispatch pool, so the rule changes everyone's options (interference); that is why we flip the market.
+- Does randomization remove the need for time-of-day controls? It protects against bias, but blocking and controls reduce noise.
+
+**Common mistakes:** Treating deliveries as independent. Strict alternation. Ignoring carryover. Letting the first minutes of a period count. Using a pooled z-test and reporting p < 0.0001. Not checking that each hour of day appears in both arms.
