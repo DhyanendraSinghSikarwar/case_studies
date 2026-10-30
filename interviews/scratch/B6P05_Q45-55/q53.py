@@ -42,9 +42,9 @@ S=np.minimum(D,stock)
 print(f"\nSimulated: sell-out share {(D>=stock).mean():.3f}, mean sales {S.mean():.1f}, mean of non-stockout days {D[D<stock].mean():.1f}, true mean demand {D.mean():.1f}")
 assert abs(S.mean()-82)<0.6 and abs(D[D<stock].mean()-70)<0.6
 # stock level for critical ratio 0.8: planner (mean 82, same sigma) vs censored fit
-plan=82+stats.norm.ppf(0.8)*sigma
-print(f"stock for CR 0.8: planner (mean 82, same sigma) {plan:.0f} vs fitted 80th percentile {q80:.0f}")
-assert plan<q80
+plan=S.mean()+stats.norm.ppf(0.8)*S.std()
+print(f"stock for CR 0.8: planner using sales mean and sd {plan:.0f} (about today's 100) vs fitted 80th percentile {q80:.0f}")
+assert abs(plan-100)<2 and plan<q80
 # and the 'sales-only' sample sigma is also too small
 print("sd of sales (capped at 100):",round(S.std(),1),"vs true demand sd",round(D.std(),1))
 assert S.std()<D.std()
