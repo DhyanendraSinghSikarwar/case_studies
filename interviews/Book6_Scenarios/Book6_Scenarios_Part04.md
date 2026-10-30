@@ -10,7 +10,7 @@
 
 ---
 
-### Q1 ⭐⭐⭐ 🟢 A test meant to split 100,000 users 50/50 ended with 52,000 in control and 48,000 in treatment. Treatment shows conversion of 5.0% against 4.8% for control (0.2 percentage points absolute, about 4% relative to control's 4.8%) with p = 0.03, and the product manager wants to ship today. Explain what you check first and what you tell the manager.
+### Q1 ⭐⭐⭐ 🟢 A test meant to split 100,000 users 50/50 ended with 52,000 in control and 48,000 in treatment. Treatment shows conversion of 5.1% against 4.8% for control (0.3 percentage points absolute, about 6% relative to control's 4.8%) with p = 0.03, and the product manager wants to ship today. Explain what you check first and what you tell the manager.
 **Asked at:** A/B-testing pitfall guides (Dataford pages on pitfalls such as peeking, novelty effects, network interference and sample ratio mismatch, tagged in snippets to companies such as Lattice, Carvana and Arm; a datainterview.com A/B testing interview list; PracHub A/B testing topic pages); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
@@ -38,7 +38,7 @@
 **Asked at:** Guardrail and ship-decision material (a Dataford 'primary vs guardrail metrics' page, a Spotify Confidence guardrail-metric glossary and blog post, PracHub analytics-and-experimentation question pages, a Dataford 'non significant test PM wants launch' page); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q8 ⭐⭐⭐ 🟡 A team measures click-through rate as total clicks divided by total impressions and runs a two-proportion z-test over 2,000,000 impressions per arm, getting p < 0.001 for a lift from 4.00% to 4.05%. Those impressions come from only 100,000 users per arm (20 per user on average), and the user-level analysis gives p = 0.12. Explain why the two disagree and how you would analyse the metric properly.
+### Q8 ⭐⭐⭐ 🟡 A team measures click-through rate as total clicks divided by total impressions and runs a two-proportion z-test over 2,000,000 impressions per arm, getting p = 0.01 for a lift from 4.00% to 4.05%. Those impressions come from only 100,000 users per arm (20 per user on average), and the user-level analysis gives p = 0.12. Explain why the two disagree and how you would analyse the metric properly.
 **Asked at:** Ratio-metric, delta-method and variance-reduction material (Spotify Confidence ratio-metric RFP and variance-reduction docs, MetricGate CUPED and delta-method pages, a TechPrep '66 Variance Reduction Interview Questions' page); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
