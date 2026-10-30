@@ -789,7 +789,7 @@ true company-wide lift from the pool: 0%, yet the test reads 6.2%: interference
 
 **Common mistakes:** Shipping on week one. Reading the treated arm alone when supply is shared. Holdouts too small. Blaming seasonality without a check. Not saying what to do.
 
-### Q48 ⭐ 🔴 A company keeps 2% of traffic permanently on a frozen old model so it can measure model decay and the value of retraining, but finance says this costs about 2% of the model's revenue benefit. Explain the case for and against a permanent holdout, how you would size it, and cheaper alternatives for measuring decay.
+### Q48 ⭐ 🔴 A company keeps 2% of traffic permanently on a frozen old model so it can measure model decay and the value of retraining, but finance says this costs up to about 2% of the model's revenue benefit. Explain the case for and against a permanent holdout, how you would size it, and cheaper alternatives for measuring decay.
 **Asked at:** No public page found, editor-designed from standard production-ML judgement themes that the degradation guides describe in general terms; search snippets only, not opened
 **Say this first (1 line):** A permanent frozen holdout is insurance that measures decay directly, and it is worth it when the model carries a lot of value; but 2% is rarely the cheapest design, so I would size it to the smallest effect I need to detect and consider a rotating or smaller holdout first.
 

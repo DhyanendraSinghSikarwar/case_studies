@@ -805,7 +805,7 @@ In this simulation covariate shift alone moves precision by about 5 points and l
 - Weak: "use more data" with no check of label quality, or "retrain again next week".
 - Cross-reference: Book 4 Part 7 has "Continuous training triggers and their guardrails" and Book 4 Part 8 has "Retraining pitfalls and feedback loops".
 
-**Example:** (illustrative numbers) 28 weeks of data, 400 rows a day, a training window of the last 4 weeks (28 days, 11,200 rows). Five outage days in the window have a positive rate of 79%, against 31% on normal days. Those 5 days are 5/28 = 17.9% of the window (the run prints the same). The naive retrain predicts 14% too many positives on the clean test weeks (ratio 1.143) while the old model is at 0.974. Weak answer: "The new model is worse, so keep the old one forever." Strong answer: "The four-week window is dominated by an outage and a promo. I would train on 28 weeks, drop or relabel the outage days, add a promo flag, and promote only if it beats the champion on a clean later holdout."
+**Example:** (illustrative numbers) 30 weeks of data (210 days), 400 rows a day, a training window of the last 4 weeks (28 days, 11,200 rows). Five outage days in the window have a positive rate of 79%, against 31% on normal days. Those 5 days are 5/28 = 17.9% of the window (the run prints the same). The naive retrain predicts 14% too many positives on the clean test weeks (ratio 1.143) while the old model is at 0.974. Weak answer: "The new model is worse, so keep the old one forever." Strong answer: "The four-week window is dominated by an outage and a promo. I would train on 28 weeks, drop or relabel the outage days, add a promo flag, and promote only if it beats the champion on a clean later holdout."
 
 **Code:**
 ```python
@@ -898,3 +898,348 @@ In this run the ranking (AUC) is the same for every model (about 0.797); the dam
 - What if the promotion repeats monthly? Then keep promo rows and keep the promo flag, and test the model on past promotions.
 
 **Common mistakes:** Validating on a random split of the same four weeks. Training on rows from an outage unchanged. Dropping promo days when promos are part of normal business. Judging the retrain on AUC alone. No event calendar.
+
+### Q38 ⭐⭐ 🔴 A moderation model only gets true labels for items a human reviewer sees, which are mostly those the model already scored as risky. Reported recall has stayed at 90% while user reports of missed harmful content are rising. Explain the selection bias in the monitoring metric and how you would obtain an unbiased estimate, for example with random sampling.
+**Asked at:** No public page found, editor-designed from standard production-ML judgement themes that the degradation guides describe in general terms; search snippets only, not opened
+**Say this first (1 line):** Recall computed only on items humans reviewed is biased, because reviewers mostly see what the model already flagged, so the metric cannot see what the model misses; I would label a random (or stratified, probability-weighted) sample of all items and estimate recall from that.
+
+**Clarifying questions:**
+- How do items reach reviewers (model flag, user report, random, policy list)? Why: each path has a different selection probability, and I need them to weight correctly.
+- How is "recall" computed today: harmful items the model flagged / harmful items reviewed? Why: if the denominator is reviewed items only, it is biased by construction.
+- How much review capacity do we have, and what does one review cost? Why: it bounds the size of the sample.
+- Is harm prevalence low (for example 1 to 3%)? Why: rare harm makes a simple random sample expensive.
+- Are the new user reports about a new kind of harm? Why: it suggests the model's blind spot is a specific type or region.
+
+**Approach:**
+1. Name the bias. Reviewers see flagged items plus a few borderline ones. Among reviewed harmful items almost all were flagged, so "flagged and harmful / reviewed and harmful" is close to 1 whatever the model misses. Harmful items with low scores are rarely reviewed, so they are missing from the denominator. That is selection bias. In the simulation: reported recall 89.4%, true recall 56.5%.
+2. Corroborate with independent signals: user reports of missed content, appeals, reports by trust-and-safety staff, external audits. These are also biased, but they point in a direction (rising reports plus flat recall is the contradiction).
+3. Get an unbiased estimate with a random sample: draw items uniformly from everything that was posted (including unflagged), have them reviewed blind, and compute recall as flagged-and-harmful / harmful in the sample, with a confidence interval.
+4. Make it cheaper with stratified sampling and inverse-probability weights: sample the strata (flagged, borderline, low score) at different rates and weight each sampled item by 1 / its sampling probability. With the same 20,000 reviews, stratified sampling gave a standard deviation of 1.8 points versus 2.5 for simple random sampling in the run.
+5. Keep it running: a small standing random sample (for example a fixed daily quota) so recall is tracked over time, by content type, region and language, and so the next retrain gets unbiased labels.
+6. Use the result: find which harm types sit in the missed set, add them to training, and set thresholds using the corrected recall and precision.
+
+**Metrics:**
+- True recall = harmful items the model flagged / all harmful items, estimated from a probability sample: sum of weights of flagged harmful sampled items / sum of weights of harmful sampled items.
+- Precision stays measurable on flagged items (all are reviewed).
+- Reviewed-only recall (the biased one) is reported alongside, labelled as a diagnostic.
+- Sample size for a 95% interval of plus or minus 3 points: about 1,049 harmful items in the sample, which is about 52,000 items at a 2% prevalence for simple random sampling (the run computes this).
+
+**Risks:**
+- Reviewers who know the model's score label differently: review blind.
+- Rare harm: a small random sample may contain few harmful items and give a wide interval.
+- Wrong weights: if the reviewed set mixes several routes, compute each item's selection probability correctly.
+- Review cost and reviewer exposure to harmful content: cap and support reviewers.
+- Time delay: harm reported later changes the label of earlier items.
+
+**What the interviewer scores:**
+- Strong: explains why the denominator is biased and that the contradiction (flat recall, rising reports) is a symptom of that.
+- Strong: gives an unbiased estimate and its cost (sample size computed), and improves it with stratification and weights.
+- Strong: adds a standing process and uses the sample to improve the model.
+- Weak: "label more data" with no sampling design, or trusting the 90% figure.
+- Cross-reference: Book 4 Part 8 has "Canary labels and label budgets" and "Retraining pitfalls and feedback loops"; Book 1 Part 7 has "Selection bias and counterfactual evaluation" (inverse propensity scoring).
+
+**Example:** (illustrative numbers) 1,000,000 items, 2% harmful = 20,000 harmful. The model catches 56.5% of them (11,300), and misses 8,700. Reviewers see all 11,300 flagged harmful items plus a slice of borderline items that contain only about 1,350 harmful ones, so reported recall is about 11,300 / (11,300 + 1,350) = 89%. A random sample of 20,000 items finds about 400 harmful, of which 56% were flagged: recall about 56% with a standard deviation of 2.5 points. Weak answer: "Recall is 90%, so users are wrong." Strong answer: "The 90% is computed on items the model already likes. I would take a random blind sample, weight it properly, and find the real recall is about 56%."
+
+**Code:**
+```python
+# Q38: moderation recall measured only on reviewed items is biased (illustrative simulation)
+import numpy as np
+
+rng = np.random.default_rng(38)
+N = 1_000_000
+harm = rng.random(N) < 0.02                       # 2% harmful
+new_type = harm & (rng.random(N) < 0.45)          # a new kind of harm the model has not seen (45% of harm)
+# model score: old-type harm scores high, new-type harm scores like ordinary content, ordinary items score low
+score = np.where(harm & ~new_type, rng.beta(8, 1.5, N), np.where(new_type, rng.beta(2, 4, N), rng.beta(1.2, 6, N)))
+flagged = score >= 0.6
+true_recall = (flagged & harm).sum() / harm.sum()
+
+# Review policy: all flagged items go to reviewers, plus 30% of items with score 0.3-0.6 (borderline)
+mid = (score >= 0.3) & (score < 0.6)
+reviewed = flagged | (mid & (rng.random(N) < 0.30))
+rep_recall = (reviewed & flagged & harm).sum() / (reviewed & harm).sum()
+print(f"true recall {true_recall:.3f}   reported recall (reviewed items only) {rep_recall:.3f}   reviewed {reviewed.sum():,} of {N:,}")
+assert rep_recall > true_recall + 0.25 and 0.88 < rep_recall < 0.91
+
+caught = (flagged & harm).sum(); extra = (reviewed & ~flagged & harm).sum()
+print(f"harmful total {harm.sum():,}  flagged harmful {caught:,}  harmful seen by reviewers but not flagged {extra:,}")
+assert abs(caught - 11_300) < 300 and abs(extra - 1_350) < 150
+# Unbiased estimate 1: simple random sample of 20,000 items, reviewed by humans
+def srs_estimate(n, seed):
+    r = np.random.default_rng(seed); idx = r.choice(N, n, replace=False)
+    h = harm[idx]; f = flagged[idx]
+    return (f & h).sum() / h.sum(), h.sum()
+ests = [srs_estimate(20_000, s) for s in range(200)]
+e = np.array([x[0] for x in ests]); nh = np.mean([x[1] for x in ests])
+print(f"SRS 20,000: mean harmful found {nh:.0f}; recall estimate mean {e.mean():.3f}, sd across repeats {e.std():.3f}")
+assert abs(e.mean() - true_recall) < 0.01
+
+# Unbiased estimate 2: stratified sample with the same budget (20,000), inverse-probability weights
+strata = {"flagged": flagged, "mid": mid, "low": score < 0.3}
+alloc = {"flagged": 3_000, "mid": 5_000, "low": 12_000}
+def strat_estimate(seed):
+    r = np.random.default_rng(seed); caught = 0.0; harm_tot = 0.0
+    for k, m in strata.items():
+        idx = np.flatnonzero(m); take = r.choice(idx, alloc[k], replace=False)
+        w = len(idx) / alloc[k]
+        h = harm[take]
+        harm_tot += w * h.sum()
+        if k == "flagged": caught += w * h.sum()
+    return caught / harm_tot
+es = np.array([strat_estimate(s) for s in range(200)])
+print(f"stratified 20,000: recall estimate mean {es.mean():.3f}, sd across repeats {es.std():.3f}")
+assert abs(es.mean() - true_recall) < 0.01 and es.std() < e.std()
+
+# How many items does a +-3 point 95% interval need under simple random sampling?
+prev = harm.mean()
+n_harm = 1.96 ** 2 * true_recall * (1 - true_recall) / 0.03 ** 2
+print(f"harmful items needed {n_harm:.0f}; sampled items needed {n_harm / prev:,.0f}")
+assert 1000 < n_harm < 1100
+```
+
+**Output (my run):**
+```text
+true recall 0.565   reported recall (reviewed items only) 0.894   reviewed 62,333 of 1,000,000
+harmful total 20,038  flagged harmful 11,323  harmful seen by reviewers but not flagged 1,337
+SRS 20,000: mean harmful found 399; recall estimate mean 0.566, sd across repeats 0.025
+stratified 20,000: recall estimate mean 0.565, sd across repeats 0.018
+harmful items needed 1049; sampled items needed 52,352
+```
+The run reproduces the prompt's pattern in a simulation: reported recall 0.894 against true recall 0.565; the simple random sample (20,000 items, about 399 harmful) recovers 0.566; the stratified design recovers 0.565 with a smaller spread (0.018 versus 0.025); and about 52,000 items would be needed for plus or minus 3 points by simple random sampling.
+
+**Follow-ups:**
+- Cheaper than 52,000 reviews? Stratify by model score and oversample the low-score stratum; or run the random sample only for a few strata at a time (rolling by content type).
+- Can I fix the biased metric by weighting only the reviewed items? Only if every item has a known, non-zero chance of being reviewed; items with probability zero cannot be recovered, so keep some random review for everyone.
+- What if the harm is very rare? Use stratification and sample size by harmful counts (about 1,000 harmful items for plus or minus 3 points), and report the interval honestly.
+
+**Common mistakes:** Computing recall only on reviewed items. Reviewing a random sample but showing reviewers the model score. Using the sample unweighted after a stratified draw. Treating user reports as an unbiased measure. Skipping the interval.
+
+### Q39 ⭐⭐ 🔴 In one week three things changed together: a model release, a large marketing campaign that brought in new users, and an upstream schema update. The conversion model's metric fell 5% and everyone blames a different cause. Explain how you would attribute the drop, which analyses and rollbacks you would use to isolate each cause, and how you would run the incident.
+**Asked at:** Production-degradation question banks (Dataford pages such as 'if a model's performance drops in production, what is your step-by-step diagnostic process', a Prepfully 'diagnose and fix a model deployed to production that underperformed' answer page, a TryExponent production-ML course page); commonly reported in public guides for data scientist and ML engineer loops; search snippets only, not opened
+**Say this first (1 line):** I would freeze further changes, decompose the 5% by who (mix) and where (platform, version, feature), and then test each suspect with a targeted experiment: a holdback on the old model for the release, a segment comparison for the campaign, and null-rate checks for the schema change; only then roll back what the evidence blames.
+
+**Clarifying questions:**
+- What exactly fell: conversion rate, or a model metric such as AUC or precision? And is "5%" relative or percentage points? Why: it sets the arithmetic and the owner. I would treat it as conversion rate down 5% relative (4.00% to 3.80%).
+- What are the exact timestamps of the three changes, and did they roll out gradually or at once? Why: staggered timing separates them; a simultaneous rollout needs a holdback.
+- Is there a holdback, shadow traffic or a feature flag for the model release? Why: it is the cleanest way to isolate the model.
+- How were campaign users acquired, and can I tag them (channel, campaign id, install date)? Why: mix effects need a cohort label.
+- Which fields did the schema update change, and which features use them? Why: it points to a null-rate or unit check.
+
+**Approach:**
+1. Run it as an incident: one owner, a shared channel, a freeze on other changes, a timeline of the three changes, and a decision deadline. Rolling back a safe, reversible change early is fine if it is cheap.
+2. Decompose the metric into who and what. Split users into existing and new (campaign) users and into platform and version. Mix effect: new users with a different base rate change the average with no change in the model. Rate effect: the same type of user converting differently. The identity is: change = rate change among existing + share of new x (new rate minus existing rate).
+3. Isolate the model release: compare old versus new model on the same users in the same week, using a holdback or a shadow run. Use paired or randomised comparison, not before and after.
+4. Isolate the schema update: null rate, unit and category changes per feature before and after; compare conversion for rows with and without the affected feature, and check training-serving skew on those features.
+5. Isolate the campaign: compare campaign users with comparable organic users, and existing users before and after. If existing users are flat, the campaign is a mix effect, not a model failure.
+6. Act on evidence: fix or roll back the schema issue, keep the model if the holdback is clean, and accept (and re-baseline) the mix change; then re-measure. Write a short blameless postmortem with the evidence table.
+
+**Metrics:**
+- Conversion = conversions / eligible sessions (or users); report overall and by segment.
+- Contribution to change by cause, in percentage points, adding to the total (mix + existing-user rate; within rate, by platform).
+- Model effect = conversion with new model minus conversion with old model in a concurrent holdback, with a confidence interval.
+- Schema health: null rate and distribution per feature, rows with the feature versus null.
+- Guardrails: revenue per session, latency, error rate.
+
+**Risks:**
+- Before-and-after comparisons confound all three changes.
+- Simpson-like mix effects: every segment can look fine while the total drops.
+- A holdback that is too small gives a confidence interval wide enough to blame anything (see Code).
+- Rolling back several things at once: you learn nothing and may revert a good change.
+- Attribution is not additive if the causes interact; say so.
+- Blame culture: people defend their change instead of sharing data.
+
+**What the interviewer scores:**
+- Strong: a decomposition that adds up, with numbers, then a targeted test per suspect.
+- Strong: knows a holdback or shadow run is the cleanest isolation and states the sample-size limit.
+- Strong: runs the incident (owner, freeze, timeline, decision rule, postmortem).
+- Weak: rolls back everything, or picks the most likely cause by gut.
+- Cross-reference: Book 6 Part 1 has "A 12% drop in orders is concentrated in one metro city and started on a Tuesday" (Q15 in Part 1) for the metric-drop side, and Book 4 Part 8 has "Scenario: your drift dashboard fires an alert for feature X. What do you do, in order?".
+
+**Example:** (illustrative numbers) Conversion fell from 4.00% to 3.80%. Before: 50% iOS at 4.40% and 50% Android at 3.60%. After: 35% existing iOS at 4.40%, 35% existing Android at 3.50%, 30% new campaign users at 3.45%. Existing users average 3.95% versus 4.00% before: a -0.05 point rate effect. New users convert 0.50 points below the existing average on 30% of traffic: -0.15 points mix effect. Total -0.20 points (75% mix, 25% rate). The whole rate effect is Android: 20% of Android rows have a null feature and convert at 3.0%; Android rows with the feature are flat at about 3.6%. A 10% holdback on the old model shows no difference (-0.02 points, interval -0.15 to +0.11). Weak answer: "The model release did it, roll it back." Strong answer: "Three quarters is campaign mix, a quarter is the schema bug on Android, the model is clean; I fix the null feature, keep the model, and set a campaign-specific baseline."
+
+**Code:**
+```python
+# Q39: three changes in one week, conversion metric -5% (illustrative numbers, hand-checkable)
+import numpy as np
+
+# Segment table: (share, conversion %) before and after
+before = {"existing iOS": (0.50, 4.40), "existing Android": (0.50, 3.60)}
+after = {"existing iOS": (0.35, 4.40), "existing Android": (0.35, 3.50), "new campaign users": (0.30, 3.45)}
+tot = lambda d: sum(s * r for s, r in d.values())
+b, a = tot(before), tot(after)
+print(f"overall conversion {b:.2f}% -> {a:.2f}%  ({a / b - 1:+.1%})")
+assert round(b, 2) == 4.00 and round(a, 2) == 3.80 and round(a / b - 1, 3) == -0.05
+
+# Decomposition: existing-user rate change + new-user mix effect
+ex_b = (0.50 * 4.40 + 0.50 * 3.60) / 1.0
+ex_a = (0.35 * 4.40 + 0.35 * 3.50) / 0.70
+new = 3.45; s_new = 0.30
+rate_effect = ex_a - ex_b                       # existing users, same people-type, before vs after
+mix_effect = s_new * (new - ex_a)               # replacing 30% of traffic by users who convert lower
+print(f"existing-user rate effect {rate_effect:+.3f} pp, new-user mix effect {mix_effect:+.3f} pp, sum {rate_effect + mix_effect:+.3f} pp")
+assert abs(rate_effect + mix_effect - (a - b)) < 1e-9
+assert abs(rate_effect - (-0.05)) < 1e-9 and abs(mix_effect - (-0.15)) < 1e-9
+print(f"share of the drop: mix {mix_effect / (a - b):.0%}, existing-user rate {rate_effect / (a - b):.0%}")
+
+# Where is the existing-user rate effect? By platform: iOS flat, Android -0.10 pp
+android_drop = 3.50 - 3.60
+print(f"existing Android change {android_drop:+.2f} pp; existing iOS change {4.40 - 4.40:+.2f} pp")
+assert abs(0.5 * android_drop - rate_effect) < 1e-9     # all of it sits in Android
+
+# Schema suspect: a feature became null for part of Android. Conversion with feature vs null rows
+null_share, rate_null, rate_ok = 0.20, 3.00, 3.625
+android_after = (1 - null_share) * rate_ok + null_share * rate_null
+print(f"Android after = {android_after:.3f}% = 80% x {rate_ok}% + 20% null rows x {rate_null}%")
+assert abs(android_after - 3.50) < 1e-9
+print(f"Android rows WITH the feature: {rate_ok}% vs {3.60}% before (flat within noise); the drop sits in null rows")
+
+# Model release: a 10% holdback of existing users stayed on the old model during the same week
+rng = np.random.default_rng(39)
+n_old, n_new, p = 100_000, 900_000, 0.0395             # true rate identical in both arms
+c_old = rng.binomial(n_old, p) / n_old; c_new = rng.binomial(n_new, p) / n_new
+se = np.sqrt(c_old * (1 - c_old) / n_old + c_new * (1 - c_new) / n_new)
+d = c_new - c_old
+print(f"holdback test: new model minus old model {d * 100:+.3f} pp, 95% CI [{(d - 1.96 * se) * 100:+.3f}, {(d + 1.96 * se) * 100:+.3f}] pp")
+assert abs(d) < 0.001 and (d - 1.96 * se) < 0 < (d + 1.96 * se)
+```
+
+**Output (my run):**
+```text
+overall conversion 4.00% -> 3.80%  (-5.0%)
+existing-user rate effect -0.050 pp, new-user mix effect -0.150 pp, sum -0.200 pp
+share of the drop: mix 75%, existing-user rate 25%
+existing Android change -0.10 pp; existing iOS change +0.00 pp
+Android after = 3.500% = 80% x 3.625% + 20% null rows x 3.0%
+Android rows WITH the feature: 3.625% vs 3.6% before (flat within noise); the drop sits in null rows
+holdback test: new model minus old model -0.023 pp, 95% CI [-0.150, +0.105] pp
+```
+
+**Follow-ups:**
+- What if there is no holdback? Use a staged rollback or a canary now (roll the model back for a random 10% of traffic), and use pre-period comparisons only as a hint.
+- What if the effects interact (the new model is worse on new users)? Estimate the model effect separately for new and existing users in the holdback and report the interaction.
+- What do you put in the postmortem? Timeline, evidence table, contribution by cause, what we changed in the release process (no simultaneous risky changes, holdbacks by default, schema contract tests).
+
+**Common mistakes:** Rolling back all three. Comparing only before and after. Reading a segment's percentage change instead of its contribution. Ignoring mix. Letting each owner defend their own change without a shared dashboard.
+
+### Q40 ⭐ 🟡 A fraud model's decisions block flagged transactions, so only the flagged ones gain a quick label. Meanwhile its apparent precision rises over time while missed fraud found by other channels also rises. Explain how to run a small randomised exploration slice to measure the truth, how large it needs to be, and how you would justify its cost to the business.
+**Asked at:** No interview question page located for this exact scenario; practitioner fraud and retraining guides (a Firstsource fraud-model post, a datainterview.com 'when to retrain' course page) describe the retrain-versus-rollback and adaptive-fraud themes, so editor-designed; search snippets only, not opened
+**Say this first (1 line):** If only flagged transactions get quick labels, the model's own metrics look better as it gets narrower, so I would add two small randomised slices: a labelled audit of unflagged traffic (to measure recall and missed fraud) and a capped release of a few flagged transactions (to measure true precision), sized by simple interval maths and priced against the fraud they uncover.
+
+**Clarifying questions:**
+- How do labels arise: analyst review of flagged items, customer disputes, chargebacks (with weeks of delay)? Why: it defines who is labelled quickly and who is not.
+- Is the model's score the only gate, or do rules and other channels also block or flag? Why: it changes what "unflagged" means.
+- What is the average loss per fraud transaction, the cost of one manual review, and the cost of a wrongly blocked good customer? Why: the exploration slice must be priced.
+- What are the legal, risk and customer-experience limits on letting a flagged transaction through (amount caps, step-up authentication, per-customer limits)? Why: they decide the design of the release slice.
+- How much traffic and how many weekly flagged cases do we have? Why: it sets how big a slice is feasible.
+
+**Approach:**
+1. Name the loop. The model is trained and judged on labels it chose, and fraud that it does not flag only shows up late through other channels. Better-looking precision on flagged cases can come with falling recall (in the run: precision 58% to 71%, recall 85% to 51%, missed fraud 768 to 2,510 a week).
+2. Slice 1, audit of unflagged traffic: draw a random sample of transactions the model did not flag, label them (review, or follow-up with the customer, no extra block or release), and estimate the fraud rate among unflagged. Recall = flagged fraud / (flagged fraud + estimated unflagged fraud). This costs review time but no extra fraud loss.
+3. Slice 2, capped release: for a random small share of flagged transactions, let them through (with amount caps, step-up checks or velocity limits) and record the true outcome. This gives true precision and unbiased training labels for the region the model usually blocks. It costs fraud loss, so keep it small, capped, and approved by risk.
+4. Size them. Audit: n = 1.96^2 x (1-p) / (relative error^2 x p). With p = 0.25% missed-fraud rate and plus or minus 20% relative error you need about 38,000 labelled unflagged transactions. Release: n = 1.96^2 x precision x (1-precision) / 0.05^2, about 319 releases for plus or minus 5 points at 71% precision (8.6% of the 3,713 flagged that week; spread it over weeks).
+5. Reduce cost: stratify the audit by score band and weight the estimate; rotate the audit across segments; start with a pilot on one segment; use step-up authentication so a released transaction still has a safety check.
+6. Use the output: a recall and missed-fraud dashboard, honest thresholds, and training data that includes the unflagged and released outcomes (with their inverse sampling weights).
+7. Justify the cost: compare it with the loss it measures (in the run, the slices cost about 19% of one week of missed fraud, once, and the audit can then shrink to a standing small slice).
+
+**Metrics:**
+- Audit fraud rate = fraud found in audited unflagged transactions / audited unflagged transactions; missed fraud per week = rate x unflagged volume.
+- Recall = flagged fraud / (flagged fraud + estimated missed fraud).
+- True precision = fraud among released flagged transactions / released flagged transactions.
+- Cost of exploration = releases x precision x average loss + audited transactions x cost per review. Benefit = losses found and avoided, plus better thresholds.
+- Guardrails: customer complaints, chargeback rate on the released slice, a per-customer cap.
+
+**Risks:**
+- Delay: fraud labels from disputes arrive over weeks, so recent audits are incomplete; use matured windows or follow up directly.
+- Released fraud is a real loss and a regulatory and customer risk; cap amounts and use step-up checks.
+- Fraudsters learn that a random slice passes; keep the sampling secret and random per transaction, not per user rule.
+- Small slices give wide intervals (the sizes above are the minimum).
+- Weights: forgetting to weight the exploration data when retraining re-introduces bias.
+
+**What the interviewer scores:**
+- Strong: identifies the feedback loop, with the counter-intuitive pair (precision up, recall down).
+- Strong: sizes both slices with formulas and separates the cost-free audit from the costly release.
+- Strong: speaks about money, risk approval and a cap, and about using the data for retraining with weights.
+- Weak: "just label more data" or "retrain on more fraud", or a design with no cost estimate.
+- Cross-reference: Book 4 Part 8 has "Retraining pitfalls and feedback loops" and "Design question: the monitoring system for a card-fraud model with chargeback labels that arrive 30 to 90 days late"; Book 4 Part 8 also has "Canary labels and label budgets".
+
+**Example:** (illustrative numbers) 1,000,000 transactions a week, 0.5% fraud (about 5,000). In week 12 the model flags 3,713, of which about 2,620 are fraud (precision 70.6%) and 2,510 fraud transactions go unflagged (recall 51%). Missed-fraud rate among unflagged = 2,510 / 996,287 = 0.25%. A random audit of about 38,000 unflagged transactions finds around 96 fraud and pins the rate to within about plus or minus 20%. Weak answer: "Precision went up, so the model is improving." Strong answer: "Flagged-only labels flatter the model. I would audit a random 38,000 unflagged transactions and release a few hundred capped flagged ones, measure real recall and precision, and show that this costs about a fifth of one week of what we are missing."
+
+**Code:**
+```python
+# Q40: a fraud model that only learns from what it flags; random exploration slices (illustrative simulation)
+import math
+import numpy as np
+
+rng = np.random.default_rng(40)
+weeks, N = 12, 1_000_000
+fraud_rate = 0.005
+share_B = np.linspace(0.10, 0.50, weeks)          # new evasive fraud pattern grows
+fp_rate = np.linspace(0.003, 0.001, weeks)        # model gets sharper on the easy cases
+catch_A, catch_B = 0.92, 0.10
+
+rows = []
+for w in range(weeks):
+    n_fraud = rng.binomial(N, fraud_rate)
+    nB = rng.binomial(n_fraud, share_B[w]); nA = n_fraud - nB
+    tpA = rng.binomial(nA, catch_A); tpB = rng.binomial(nB, catch_B)
+    fp = rng.binomial(N - n_fraud, fp_rate[w])
+    tp = tpA + tpB; flagged = tp + fp
+    rows.append((n_fraud, tp, fp, flagged))
+rows = np.array(rows)
+prec = rows[:, 1] / rows[:, 3]; rec = rows[:, 1] / rows[:, 0]
+print("week  apparent precision  true recall   missed fraud")
+for w in (0, 5, 11):
+    print(f"{w:>4}  {prec[w]:>17.1%}  {rec[w]:>11.1%}  {rows[w, 0] - rows[w, 1]:>12,}")
+assert prec[-1] > prec[0] + 0.10 and rec[-1] < rec[0] - 0.25
+assert (rows[-1, 0] - rows[-1, 1]) > 2 * (rows[0, 0] - rows[0, 1])
+
+# Exploration 1: a random audit of unflagged transactions (label only, no extra fraud loss)
+w = 11
+unflag = N - rows[w, 3]; missed = rows[w, 0] - rows[w, 1]; p_u = missed / unflag
+def n_for_rel_error(p, rel): return 1.96 ** 2 * (1 - p) / (rel ** 2 * p)
+n_aud = n_for_rel_error(p_u, 0.20)
+print(f"week 12 missed-fraud rate among unflagged {p_u:.4%}; audit size for +-20% relative error: {n_aud:,.0f} labels")
+assert 35_000 < n_aud < 45_000
+# repeat the audit many times at that size to check the claim
+est = np.array([rng.binomial(round(n_aud), p_u) / round(n_aud) for _ in range(2000)])
+cover = (np.abs(est - p_u) / p_u < 0.20).mean()
+print(f"share of audits within +-20% of the truth: {cover:.1%}")
+assert 0.93 < cover < 0.97
+# recall estimate = TP / (TP + estimated missed)
+rec_hat = rows[w, 1] / (rows[w, 1] + est.mean() * unflag)
+print(f"recall estimate {rec_hat:.3f} vs true {rec[w]:.3f}")
+assert abs(rec_hat - rec[w]) < 0.02
+
+# Exploration 2: release a random share of flagged transactions (with a cap) to measure true precision
+flagged = rows[w, 3]; tp = rows[w, 1]
+n_rel = 1.96 ** 2 * prec[w] * (1 - prec[w]) / 0.05 ** 2
+print(f"flagged {flagged:,}; releases needed for +-5 points on precision: {n_rel:,.0f} ({n_rel / flagged:.1%} of flagged)")
+avg_loss = 3_000                                    # Rs per fraud transaction (illustrative)
+cost_release = n_rel * prec[w] * avg_loss
+cost_audit_review = n_aud * 20                      # Rs 20 per review (illustrative)
+loss_week = missed * avg_loss
+print(f"cost of releases Rs {cost_release:,.0f}; cost of audit reviews Rs {cost_audit_review:,.0f}; weekly missed-fraud loss Rs {loss_week:,.0f}")
+assert (cost_release + cost_audit_review) < 0.25 * loss_week
+print(f"exploration cost is {(cost_release + cost_audit_review) / loss_week:.1%} of one week of missed fraud")
+```
+
+**Output (my run):**
+```text
+week  apparent precision  true recall   missed fraud
+   0              58.1%        84.8%           768
+   5              61.4%        68.5%         1,559
+  11              70.6%        51.1%         2,510
+week 12 missed-fraud rate among unflagged 0.2519%; audit size for +-20% relative error: 38,025 labels
+share of audits within +-20% of the truth: 95.7%
+recall estimate 0.511 vs true 0.511
+flagged 3,713; releases needed for +-5 points on precision: 319 (8.6% of flagged)
+cost of releases Rs 675,370; cost of audit reviews Rs 760,497; weekly missed-fraud loss Rs 7,530,000
+exploration cost is 19.1% of one week of missed fraud
+```
+
+**Follow-ups:**
+- Could the audit be smaller? Yes, if you accept a wider interval, or stratify by score and oversample the high-risk unflagged band; the formula shows the size is driven by the rarity of fraud.
+- How do you use exploration data in retraining? Weight each item by 1 / its sampling probability, and keep a flag for "exploration" so you can check the model on it separately.
+- What if risk will not allow releasing flagged transactions? Use the audit for recall, use step-up authentication or delayed settlement for the release slice, or release only low-amount, low-risk-tier flagged cases.
+
+**Common mistakes:** Trusting precision on flagged cases alone. Sampling "randomly" by customer segment instead of by transaction. Not weighting exploration data. Pricing the slice with no comparison to the loss. Making the slice so small that the interval is useless.

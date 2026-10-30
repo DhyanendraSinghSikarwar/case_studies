@@ -40,6 +40,3 @@ se = np.sqrt(c_old * (1 - c_old) / n_old + c_new * (1 - c_new) / n_new)
 d = c_new - c_old
 print(f"holdback test: new model minus old model {d * 100:+.3f} pp, 95% CI [{(d - 1.96 * se) * 100:+.3f}, {(d + 1.96 * se) * 100:+.3f}] pp")
 assert abs(d) < 0.001 and (d - 1.96 * se) < 0 < (d + 1.96 * se)
-
-# Cost of being wrong: rolling back the model would have recovered about 0.00 pp of the -0.20 pp
-print("rollback of the model would recover about", round(d * 100, 2), "pp of the 0.20 pp drop (within noise)")

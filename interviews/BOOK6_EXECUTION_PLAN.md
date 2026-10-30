@@ -22,7 +22,7 @@ Per question, in order: `### Qn stars emoji scenario` / `**Asked at:**` / **Say 
 | Part | Topic | Target | Wave A | Wave B | Wave C |
 |---|---|---|---|---|---|
 | 1 | Product metrics and metric drops ("DAU fell 10%") | 55 | ✅ (55 Qs) | ✅ | ✅ |
-| 2 | Model performance degraded in production | 50 | ⬜ | ⬜ | ⬜ |
+| 2 | Model performance degraded in production | 50 | ✅ (50 Qs) | ✅ | ✅ |
 | 3 | Imbalanced / noisy / missing data situations | 50 | ⬜ | ⬜ | ⬜ |
 | 4 | Experiment design and ambiguous A/B results | 55 | ⬜ | ⬜ | ⬜ |
 | 5 | Business case studies (pricing, churn, fraud, supply chain) | 55 | ⬜ | ⬜ | ⬜ |
@@ -36,4 +36,4 @@ Per question, in order: `### Qn stars emoji scenario` / `**Asked at:**` / **Say 
 Tell agents to stop and report (not retry) at a spend limit; commit and push WIP often (a stop hook demands it); frozen-prompt corrections are applied identically in the part file, the agent's answers.md heading, Wave A scripts and question_index.md before merge; WebFetch is unavailable (snippet-only sources, label them); lessons from Book 5: test every "why" sentence, state tie rules and conventions, fix wording that does not match observed output.
 
 ## Next step
-Part 2 Wave A (model performance degraded in production, target 50): accuracy or precision falling, silent drift, label delay, training/serving skew, feedback loops, data pipeline bugs, seasonality, a metric fine offline but bad online, threshold and calibration decay, segment-level degradation, retraining decisions, rollback versus retrain, monitoring without labels, AI-era twists. Part 1 lessons: ambiguous prompt wording is answered through clarifying questions; fix prompt numbers that do not add up (Q1, Q53) identically in the part file, agent heading, qs.py, question_index.md and index_rows.txt before merge; every numeric Example backed by a code block with asserts; cross-reference Book 1 Part 10 and other parts only by checked headings.
+Part 3 Wave A (imbalanced / noisy / missing data situations, target 50): extreme class imbalance (fraud, churn, rare disease), resampling and class weights and their pitfalls (leakage via SMOTE before split), threshold and metric choice, noisy and wrong labels, label noise estimation, missing data mechanisms (MCAR/MAR/MNAR) and imputation traps, missingness as signal, outliers, duplicates, sampling bias, small data, delayed/partial labels, data drift in features, units/encoding bugs, data quality gates, AI-era twists (synthetic data, LLM-labelled data). Lessons so far: fix prompt numbers that do not add up identically in the part file, agent heading, qs.py, question_index.md, index_rows.txt before merge; ambiguous wording is handled by clarifying questions; every numeric Example backed by a code block with asserts; cross-reference only by checked headings.
