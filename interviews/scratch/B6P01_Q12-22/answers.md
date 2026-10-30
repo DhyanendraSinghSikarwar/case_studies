@@ -665,3 +665,388 @@ ARPU at old mix with new country ARPUs: 118.9 (vs 112.0 last period)
 - Using a share of revenue instead of a share of users as the weight.
 - Forgetting that currency moves can fake the within effect.
 - Presenting the blended fall as a product failure.
+
+### Q19 ⭐⭐ 🟢 Define 'active user' for a ride-hailing app and for a B2B analytics tool, and explain why the two definitions should differ. For each, say what action qualifies, over what window, and which fake-activity cases you would exclude.
+**Asked at:** Product-sense and metric-design question banks (Dataford north-star and guardrail prompts, Prachub product-metrics pages, datainterview.com and Interview Query product-metrics guides); commonly reported in public guides for product-company and GCC analytics loops; search snippets only, not opened
+**Say this first (1 line):** "Active" should mean the user got the core value of the product, so for ride-hailing it is a completed, genuine ride in a short window, and for a B2B analytics tool it is a real person doing a key analysis action, counted per account, over a weekly window.
+
+**Clarifying questions:**
+- What is the core value event for each product (a completed trip, a saved query or shared dashboard)? "Active" must point at it.
+- How often should a healthy user come back? Frequency sets the window: a daily commute and a monthly report are different.
+- Who is the customer: the rider (B2C) or the company that pays (B2B)? In B2B I count accounts as well as users.
+- What fake activity exists (bots, emulators, internal staff, scheduled jobs, auto-refresh)? They must be excluded by rule.
+- Is this metric for a growth target, an exec dashboard or a billing seat count? The purpose can change the definition.
+
+**Approach:**
+1. Start from value: list user actions, rank by closeness to value, pick the one that cannot happen by accident.
+2. Pick the window from natural frequency: weekly or 28-day for rides (people ride a few times a month), weekly for a B2B tool with accounts as the unit.
+3. Ride-hailing: active rider = at least one completed, paid ride in the last 28 days (and a weekly active version with 7 days). An app open alone is "visitor", not "active".
+4. B2B analytics: active user = a real (non-service-account) user who ran a query or viewed a shared dashboard in the week. Active account = at least 2 distinct such users in the week, because one user alone may be a champion with no team adoption.
+5. Exclusions: rides cancelled within seconds, bot or emulator devices (GPS spoofing, device farms), staff test accounts, duplicate accounts per device; for B2B, scheduled jobs and service accounts, logins with no action, auto-refresh dashboards.
+6. Publish the definition with its owner and version, and keep a "visitors" metric next to it so reach is not lost.
+
+**Metrics:**
+- Ride-hailing 28-day active riders = distinct rider_ids with at least one completed, paid, non-test ride in the trailing 28 days.
+- Stickiness = daily active riders / 28-day active riders.
+- B2B weekly active accounts = accounts with at least 2 distinct real users who ran a key action in the week; weekly active users = distinct such users.
+- Guardrails: share of activity removed by filters (a sudden jump means a filter bug), and the ratio of active to visitors.
+
+**Risks:**
+- A too-loose definition (app open) inflates numbers and hides churn.
+- A too-strict one (only paid rides) hides engagement in a market where rides are rare.
+- The window is arbitrary and moves the plateau and growth rates.
+- Fraud filters can drop genuine users in some regions.
+
+**What the interviewer scores:**
+- Strong: defines by value event, window, unit, exclusions, and says why they differ. Weak: "any login".
+- Strong: gives different windows for different natural frequencies. Weak: uses 30 days for everything.
+- Strong: lists specific fake-activity cases. Weak: "bots".
+- Strong: mentions versioning and reach alongside active.
+
+**Example:** (illustrative) Toy log of 7 riders over 28 days: u1 two clean rides, u2 only opened the app, u3 a ride cancelled in 20 seconds, u4 clean ride, u5 a device-farm ride, u6 an employee test ride, u7 clean ride. Any event counts 7 users. Completed and clean counts 3 (u1, u4, u7). B2B toy week: four accounts have events; acme (2 users run a query or open a dashboard) and delta (2 users run queries) are active; beta has only one user and a login; gamma has only a scheduled service account. Active accounts are 2, not 4. Weak answer: "Anyone who logs in." Strong answer: "Completed clean ride in 28 days; accounts with two real users doing key actions in a week."
+
+**Code:**
+```python
+# Toy 28-day log. Each row: (user, kind, detail)
+ride_events = [
+ ("u1", "ride_completed", "ok"), ("u1", "ride_completed", "ok"),
+ ("u2", "app_open", ""),                          # only opened the app
+ ("u3", "ride_completed", "cancel_in_20s"),       # cancelled almost at once, still logged
+ ("u4", "ride_completed", "ok"),                
+ ("u5", "ride_completed", "device_farm"),         # emulator / GPS-spoof pattern
+ ("u6", "ride_completed", "employee_test"),
+ ("u7", "ride_completed", "ok"),
+]
+naive_ride = {u for u, k, d in ride_events}                                  # any event
+good_ride  = {u for u, k, d in ride_events if k == "ride_completed" and d == "ok"}
+print("ride, any event       :", len(naive_ride))
+print("ride, completed+clean :", len(good_ride), sorted(good_ride))
+assert len(naive_ride) == 7 and good_ride == {"u1", "u4", "u7"}
+# B2B tool: weekly active ACCOUNT = at least 2 distinct users ran a saved query or opened a shared dashboard
+b2b = [
+ ("acme", "u1", "run_query", "2026-10-05"), ("acme", "u2", "view_dashboard", "2026-10-06"),
+ ("beta", "u3", "login", "2026-10-05"),                       # login only
+ ("beta", "u3", "run_query", "2026-10-06"),                   # one user only
+ ("gamma", "svc", "run_query", "2026-10-07"),                 # scheduled job, not a person
+ ("gamma", "svc", "run_query", "2026-10-08"),
+ ("delta", "u9", "run_query", "2026-10-07"), ("delta", "u10", "run_query", "2026-10-07"),
+]
+service = {"svc"}
+valid = {"run_query", "view_dashboard"}
+from collections import defaultdict
+users = defaultdict(set)
+for acct, u, act, day in b2b:
+    if act in valid and u not in service:
+        users[acct].add(u)
+active = sorted(a for a, us in users.items() if len(us) >= 2)
+print("B2B weekly active accounts (>=2 real users, key action):", active)
+assert active == ["acme", "delta"]
+print("accounts with any login/event:", len({a for a, *_ in b2b}))
+assert len({a for a, *_ in b2b}) == 4
+```
+
+**Output (my run):**
+```text
+ride, any event       : 7
+ride, completed+clean : 3 ['u1', 'u4', 'u7']
+B2B weekly active accounts (>=2 real users, key action): ['acme', 'delta']
+accounts with any login/event: 4
+```
+
+**Follow-ups:**
+- Why a threshold of two users for accounts? One user can be a champion without adoption; two means a team uses it. The threshold is a choice; test it against renewal.
+- Should the definition change when the product changes? Yes, but version it and backfill; see Book 6 Part 1 Q14.
+- Seat-based billing active user? That is a different definition (billing), do not reuse it for engagement.
+
+**Common mistakes:**
+- Using the same window for products with different natural frequency.
+- Counting app opens, logins or page views as activity.
+- No exclusion rules, so bots and internal users inflate the base.
+- Counting B2B only by user, never by account.
+
+### Q20 ⭐⭐ 🟢 A retention curve for a new app flattens at 12% after day 30, while a competitor's guide quotes a higher plateau. Explain what a flattening curve means, what you would compare (cohorts, channels, definitions) before concluding anything, and what a curve that never flattens would imply.
+**Asked at:** Product-sense and metric-design question banks (Dataford north-star and guardrail prompts, Prachub product-metrics pages, datainterview.com and Interview Query product-metrics guides); commonly reported in public guides for product-company and GCC analytics loops; search snippets only, not opened
+**Say this first (1 line):** A curve that flattens at 12% means a stable core of users who found lasting value; before I compare it to a competitor's number I check that the cohorts, channels and the definition of "retained" are the same.
+
+**Clarifying questions:**
+- Is retention "opened on exactly day N" (classic) or "opened any time in the days after" (bracket or range)? The same users give very different numbers.
+- Which cohorts, and how many users? A 12% on a small cohort has a wide interval.
+- What does the competitor's guide measure (installs versus signups versus activated users, which category, which market)? Different denominators.
+- Which channels brought the users (organic, paid, referral)? Paid cohorts usually retain worse.
+- What counts as retained: any open, or a meaningful action?
+
+**Approach:**
+1. Read the curve: the drop up to about day 7 is mostly casual users leaving; the flat part is the loyal core. The plateau is the share who stuck.
+2. Make sure it is flat in the data: look at the last few points, with confidence intervals, and use enough cohort age (not a cohort that has only 30 days of data).
+3. Compare like with like: same definition (classic vs range), same denominator (installs vs activated), same period, same market and category.
+4. Split by cohort (signup week), channel, platform and country. A blend can hide a good organic cohort and a poor paid cohort.
+5. Check the stability of the plateau across cohorts. A rising plateau means the product is improving; a falling one means newer cohorts are worse.
+6. Use the plateau and the drop speed: early drop = onboarding problem, plateau height = long-term fit.
+7. Conclude only on the like-for-like comparison, and say what would change the view.
+
+**Metrics:**
+- Classic day-N retention = users active on day N / users in the cohort. Bracket retention = users active in days N to N+6 / users in the cohort.
+- Plateau = value at which the curve stops falling (compare points a few weeks apart).
+- Cohort size n and the interval: 12% +/- 1.96 x sqrt(0.12 x 0.88 / n).
+- Guardrail: activation rate (the denominator), so "retention" is not improved by a stricter denominator.
+
+**Risks:**
+- Quoting competitor numbers from guides: different definitions, markets and audiences.
+- Averaging cohorts that differ in channel mix (see Book 6 Part 1 Q26).
+- Calling a slow decline a plateau when the cohort is too young.
+- Survivorship: flat only because the base is already the loyal core.
+
+**What the interviewer scores:**
+- Strong: explains the curve in words (core and casual users) and tests flatness. Weak: "12% is low/high" with no comparison.
+- Strong: raises definition and cohort differences before judging. Weak: accepts the competitor figure.
+- Strong: knows a never-flattening curve implies no durable core. Weak: says it means "retention is falling" only.
+- Strong: gives intervals for small cohorts.
+
+**Example:** (illustrative model) 20% of users are "core" and open the app on 60% of days forever; 80% are casual and fade out with a 5-day time constant. Classic retention is 44.7% on day 1, 21.9% on day 7, 14.4% on day 14, 12.1% on day 30 and 12.0% on day 60 and 90. The same users under a 7-day bracket definition show a plateau of 20.0%. So a competitor quoting 20% may measure the same quality with a different ruler. Sampling: 12% on 1,000 users is +/- 2.0 points, on 10,000 users +/- 0.6 points. A curve with no core group (decay only) falls to 11.2% at day 30, 2.5% at day 60 and 0.6% at day 90 in the model. Weak answer: "The competitor is better." Strong answer: "Same product, bracket definition gives 20%; I compare like with like first."
+
+**Code:**
+```python
+from math import sqrt, exp
+# Illustrative mixture: 20% 'core' users who return on 60% of days forever; 80% casual who fade out (decay 5 days)
+core, p_core = 0.20, 0.60
+casual, p_cas, tau = 0.80, 0.50, 5.0
+def classic(day):            # opened the app ON day N
+    return core * p_core + casual * p_cas * exp(-day / tau)
+def bracket(day):            # opened ANY day in N..N+6
+    return core * (1 - (1 - p_core) ** 7) + casual * (1 - (1 - p_cas * exp(-day / tau)) ** 7)
+print("day  classic  7-day-bracket")
+for d in (1, 7, 14, 30, 60, 90):
+    print(f"{d:>3}  {classic(d):6.1%}  {bracket(d):6.1%}")
+assert round(classic(30), 3) == 0.121 and round(classic(90), 3) == 0.120
+assert round(bracket(30), 3) == 0.207 and round(bracket(60), 3) == 0.200
+print(f"plateau classic {core * p_core:.1%}, bracket {core * (1 - 0.4 ** 7):.1%}")
+assert round(core * p_core, 3) == 0.12 and round(core * (1 - 0.4 ** 7), 3) == 0.200
+# sampling noise on a 12% number
+for n in (1_000, 10_000):
+    h = 1.96 * sqrt(0.12 * 0.88 / n)
+    print(f"n={n:>6}: 12% +/- {h * 100:.1f} pts")
+assert round(1.96 * sqrt(0.12 * 0.88 / 1000) * 100, 1) == 2.0
+assert round(1.96 * sqrt(0.12 * 0.88 / 10000) * 100, 1) == 0.6
+# a curve that never flattens: no core group
+def no_core(day): return 0.5 * exp(-day / 20)
+print("no-core curve day 30/60/90:", [f"{no_core(d):.1%}" for d in (30, 60, 90)])
+assert no_core(90) < no_core(60) < no_core(30)
+```
+
+**Output (my run):**
+```text
+day  classic  7-day-bracket
+  1   44.7%   98.0%
+  7   21.9%   68.1%
+ 14   14.4%   35.5%
+ 30   12.1%   20.7%
+ 60   12.0%   20.0%
+ 90   12.0%   20.0%
+plateau classic 12.0%, bracket 20.0%
+n=  1000: 12% +/- 2.0 pts
+n= 10000: 12% +/- 0.6 pts
+no-core curve day 30/60/90: ['11.2%', '2.5%', '0.6%']
+```
+
+**Follow-ups:**
+- What does a curve that never flattens imply? No durable habit: every cohort drains to zero, so growth needs constant acquisition and unit economics usually fail.
+- How do you raise the plateau? Only product value does it; onboarding changes raise early points but often not the plateau (Book 6 Part 1 Q33 covers an early lift that fades).
+- Are retention curves safe for a new app with 30 days of data? Only up to day 30; do not extrapolate the plateau without older cohorts.
+
+**Common mistakes:**
+- Comparing across definitions or denominators.
+- Reading a small cohort as precise.
+- Mixing channels and calling the blend "the product".
+- Calling a curve flat because it looks flat on a long log axis.
+
+### Q21 ⭐⭐ 🟢 The order cancellation rate on a delivery app rose from 4% to 6% over two weeks. List how you would break it down (who cancels, at what stage, for what reason) and which one or two cuts would most quickly separate a supply problem from a customer problem.
+**Asked at:** Indian consumer-internet analyst guides (Interview Query Swiggy, Flipkart and Meesho analyst guides, AmbitionBox and Dataford interview pages) that list revenue-drop, order-drop and AOV-drop cases; community-posted, not confirmed company questions; search snippets only, not opened
+**Say this first (1 line):** I break cancellations down by who cancelled and at what stage, then use two cuts, initiator by stage and supply tightness by zone and hour, to see in minutes whether the extra 2 points come from not having partners (supply) or from customers changing their minds (customer).
+
+**Clarifying questions:**
+- Is the rate cancelled orders / placed orders, and did the definition of "placed" change? A changed denominator moves the rate.
+- Do cancellations carry a reason code and initiator (customer, restaurant, system, support)? Without them I must infer.
+- Did the two weeks include rain, a festival, a strike, or a policy change (fees, ETA display)? Context for the cut.
+- Is the rise spread evenly across cities or concentrated? Concentration points to local supply.
+- What does the customer see at cancellation (a "no partner found" message, a long ETA)? It tells me whether the product caused it.
+
+**Approach:**
+1. Confirm it is real: same definition, same denominator, daily series, no data lag.
+2. Who cancels: customer, restaurant, system (no partner assigned), support or payment.
+3. At what stage: before restaurant accepts, after accept (preparing), after pickup (in transit).
+4. Why: reason codes, and the quoted ETA and fee at the time of order.
+5. Where and when: city, zone, hour, restaurant, new versus returning customers.
+6. The two fast cuts:
+   - Initiator x stage: shows which cell moved. "System / no partner assigned" points to supply. "Customer / before accept" points to the customer or product side (price, fee, ETA).
+   - Cancel rate by supply tightness (orders per available partner in the zone-hour). If the rise is only in tight zone-hours it is supply. If it is spread evenly across loose and tight zones it is customer or product.
+7. Confirm with timing: did the rise start on a date (fee change, ETA display change, partner payout cut)?
+
+**Metrics:**
+- Cancellation rate = cancelled orders / placed orders, in the same period.
+- Contribution of a cell = (after count - before count) / total rise in cancellations.
+- Partner pressure = orders placed / partners online in the zone-hour.
+- Guardrails: delivery time, refund rate, repeat order rate (cancellation hurts repeat).
+
+**Risks:**
+- Reason codes are self-reported (customers pick "changed my mind" when the ETA was long).
+- Supply and demand are linked: a strike raises ETAs, which makes customers cancel; the initiator column says "customer" but the root cause is supply.
+- Mix: a growth in new users or a cheap category may change the base rate.
+- Late-arriving cancellation records, so the last days look better.
+
+**What the interviewer scores:**
+- Strong: three-way breakdown plus two decisive cuts. Weak: a long list of cuts with no priority.
+- Strong: notices the link between supply and customer cancellations. Weak: takes reason codes at face value.
+- Strong: quantifies contribution to the 2-point rise. Weak: "some in each".
+- Strong: suggests actions per cause (incentivise partners, change ETA display, fix stock).
+
+**Example:** (illustrative numbers) 100,000 orders in each fortnight. Cancellations rise from 4,000 to 6,000 (4.0% to 6.0%). The cell "system / no delivery partner assigned" rises from 900 to 2,650, which is 1,750 of the 2,000 extra cancellations, or 88%. The others each rise by about 50 to 100. Second cut: 20,000 orders sit in tight-supply zone-hours, where the cancel rate goes from 7.5% to 19.0%; the 80,000 balanced orders go from 3.1% to 2.8%. So it is a supply problem in specific zone-hours. Weak answer: "Customers are cancelling more, improve the app." Strong answer: "88% of the rise is no partner assigned, all in tight zone-hours; fix partner supply, then re-measure."
+
+**Code:**
+```python
+# Illustrative: 100,000 orders per fortnight. Cancellation counts by initiator and stage.
+rows = [  # (initiator, stage, before, after)
+ ("customer",   "before restaurant accepts",       1_300, 1_350),
+ ("customer",   "after pickup (wrong/late)",         400,   450),
+ ("restaurant", "after accept (item out of stock)",  900,   950),
+ ("system",     "no delivery partner assigned",      900, 2_650),
+ ("support",    "payment/other",                     500,   600),
+]
+n = 100_000
+b = sum(r[2] for r in rows); a = sum(r[3] for r in rows)
+print(f"cancel rate {b / n:.1%} -> {a / n:.1%}")
+assert b == 4_000 and a == 6_000
+print(f"{'initiator / stage':<46}{'before':>8}{'after':>8}{'delta pts':>10}{'share of rise':>15}")
+for who, stage, x, y in rows:
+    print(f"{who + ' / ' + stage:<46}{x / n:>8.1%}{y / n:>8.1%}{(y - x) / n * 100:>+10.2f}{(y - x) / (a - b):>15.0%}")
+assert (2_650 - 900) / (a - b) == 0.875
+# second cut: same orders by partner supply at the time of order (orders per available partner in zone-hour)
+cut = {"tight supply (>=3 orders/partner)": (20_000, 1_500, 3_800),
+       "balanced (<3)":                    (80_000, 2_500, 2_200)}   # (orders in each period, cancels before, cancels after); 20k/80k split assumed same both periods
+for k, (m, c0, c1) in cut.items():
+    print(f"{k:<36} orders {m:>6,}  cancel rate {c0 / m:.1%} -> {c1 / m:.1%}")
+assert sum(v[1] for v in cut.values()) == 4_000 and sum(v[2] for v in cut.values()) == 6_000
+assert round(1_500 / 20_000, 3) == 0.075 and round(3_800 / 20_000, 3) == 0.190 and round(2_200 / 80_000, 4) == 0.0275
+```
+
+**Output (my run):**
+```text
+cancel rate 4.0% -> 6.0%
+initiator / stage                               before   after delta pts  share of rise
+customer / before restaurant accepts              1.3%    1.4%     +0.05             2%
+customer / after pickup (wrong/late)              0.4%    0.4%     +0.05             2%
+restaurant / after accept (item out of stock)     0.9%    0.9%     +0.05             2%
+system / no delivery partner assigned             0.9%    2.6%     +1.75            88%
+support / payment/other                           0.5%    0.6%     +0.10             5%
+tight supply (>=3 orders/partner)    orders 20,000  cancel rate 7.5% -> 19.0%
+balanced (<3)                        orders 80,000  cancel rate 3.1% -> 2.8%
+```
+
+**Follow-ups:**
+- What if it is a customer problem? Then look at fee, ETA shown, price changes, and first-time customers; test with an experiment on the display.
+- How fast can you tell? Both cuts come from one table grouped by initiator, stage, zone and hour, so within the first hour.
+- What action for supply? Surge payout, rider onboarding, batching, or limiting orders in tight zone-hours so promised ETAs are honest.
+
+**Common mistakes:**
+- Using only reason codes without checking stage and timing.
+- Averaging across zones so the local supply spike disappears.
+- Forgetting the denominator (orders placed may have changed).
+- Treating the "customer cancelled" label as a customer problem.
+
+### Q22 ⭐⭐ 🟢 A funnel for a lending app shows visit to signup 40%, signup to KYC 55%, KYC to approval 70%, approval to disbursal 80%. Disbursal volume fell 10% month over month. Explain how you would find which step changed, and why step conversion and absolute counts need to be read together.
+**Asked at:** Funnel and checkout-conversion case pages (a Prachub Amazon checkout-conversion root-cause page, funnel guides from Amplitude, Hackle and Datadog); commonly reported in public guides; search snippets only, not opened
+**Say this first (1 line):** I compare each step's rate and absolute count month against month, because a fall in disbursals can come from fewer people entering, a worse step conversion, or a change in who enters, and rates alone or counts alone each hide one of these.
+
+**Clarifying questions:**
+- Are the funnel steps cohort-based (the same people followed through) or period-based (events in the month)? Lags between steps (KYC today, approval next week) mix cohorts in a period view.
+- Did anything change in policy: credit rules, KYC vendor, approval thresholds, disbursal partners? Approval and disbursal steps are rule-driven.
+- Did traffic sources change (more paid, new partner channel)? A new audience changes every rate.
+- What is the typical time lag between steps? It sets whether this month's disbursals come from last month's approvals.
+- Are the counts de-duplicated by user, and is the 10% in count or in rupees disbursed? Rupees add loan-size effects.
+
+**Approach:**
+1. Write the funnel for both months with counts and rates: visits, signups, KYC done, approved, disbursed. Overall visit to disbursal here is 0.40 x 0.55 x 0.70 x 0.80 = 12.32%.
+2. Compute the change in each step ratio and in each absolute count. Since overall = product of step rates x visits, a 10% fall must come from visits or from one or more step rates; a log split attributes it.
+3. Read rates and counts together:
+   - Rates unchanged, counts down everywhere: the top of the funnel shrank (traffic).
+   - One rate down, upstream counts unchanged: a step problem (KYC vendor, policy).
+   - A rate down but upstream counts up: a mix change (cheap traffic brought low-quality users); the rate fall is not a product failure.
+4. Use cohort view with lags: follow the same signup cohort to disbursal so timing does not fake a step change.
+5. Segment the step that moved: channel, device, KYC method, city, loan product.
+6. Pair with rupees disbursed, since average loan size can offset counts.
+
+**Metrics:**
+- Step rate = users reaching step k+1 / users reaching step k (same cohort, same window).
+- Overall conversion = disbursed / visits. Disbursal volume = overall conversion x visits.
+- Contribution of a step to the fall = ln(rate ratio) / ln(disbursal ratio).
+- Guardrails: approval rate quality (default rate of newly approved), KYC rejection reasons, time between steps.
+
+**Risks:**
+- Period-based funnels with lags show a step change that is only timing.
+- A rate that fell because of traffic mix gets "fixed" by a product change.
+- Comparing counts with different traffic volumes.
+- Rule changes (tighter credit policy) lower approval on purpose; the fix may be to leave it.
+
+**What the interviewer scores:**
+- Strong: separates count, rate and mix, and says which is which. Weak: "KYC is the biggest drop-off, fix KYC".
+- Strong: uses cohorts and lags. Weak: month totals only.
+- Strong: notes that the largest drop-off step is not necessarily the one that changed.
+- Strong: asks about policy changes and risk quality.
+
+**Example:** (illustrative numbers) Last month: 1,000,000 visits, 400,000 signups, 220,000 KYC done, 154,000 approved, 123,200 disbursed (12.32%). This month all three of these scenarios give 110,880 disbursals (-10.0%):
+- A: visits fall 10% to 900,000, all rates the same. Rates show nothing, counts show it.
+- B: KYC to approval falls from 70% to 63%, counts above that step are unchanged. The rate shows it.
+- C: cheap traffic brings 1,250,000 visits (+25%), visit to signup falls to 28.8%. Every count from signup down is lower and the rate fell, but visits rose.
+Each needs a different action: marketing, credit or KYC operations, and channel quality. Weak answer: "KYC to approval is 70%, the lowest, so fix it." Strong answer: "Which rate or count moved? Rates are unchanged in A, so it is traffic."
+
+**Code:**
+```python
+rates0 = [0.40, 0.55, 0.70, 0.80]
+names = ["visit>signup", "signup>KYC", "KYC>approval", "approval>disbursal"]
+def run(visits, rates):
+    c = [visits]
+    for r in rates: c.append(c[-1] * r)
+    return c
+base = run(1_000_000, rates0)
+print("last month counts:", [round(x) for x in base])
+overall = 1
+for r in rates0: overall *= r
+print(f"overall visit>disbursal {overall:.2%}")
+assert round(overall, 4) == 0.1232 and round(base[-1]) == 123_200
+scen = {
+ "A: traffic -10%, all rates same":      run(900_000, rates0),
+ "B: KYC>approval 70% -> 63%":           run(1_000_000, [0.40, 0.55, 0.63, 0.80]),
+ "C: cheap traffic +25%, signup 28.8%":  run(1_250_000, [0.288, 0.55, 0.70, 0.80]),
+}
+for k, c in scen.items():
+    r = [c[i + 1] / c[i] for i in range(4)]
+    print(k)
+    print("   counts:", [round(x) for x in c], f"disbursal {c[-1] / base[-1] - 1:+.1%}")
+    print("   rates :", [f"{x:.1%}" for x in r])
+    assert round(c[-1]) == 110_880
+```
+
+**Output (my run):**
+```text
+last month counts: [1000000, 400000, 220000, 154000, 123200]
+overall visit>disbursal 12.32%
+A: traffic -10%, all rates same
+   counts: [900000, 360000, 198000, 138600, 110880] disbursal -10.0%
+   rates : ['40.0%', '55.0%', '70.0%', '80.0%']
+B: KYC>approval 70% -> 63%
+   counts: [1000000, 400000, 220000, 138600, 110880] disbursal -10.0%
+   rates : ['40.0%', '55.0%', '63.0%', '80.0%']
+C: cheap traffic +25%, signup 28.8%
+   counts: [1250000, 360000, 198000, 138600, 110880] disbursal -10.0%
+   rates : ['28.8%', '55.0%', '70.0%', '80.0%']
+```
+
+**Follow-ups:**
+- What if both traffic and one rate changed? Use the log split to give each its share, and confirm with a cohort for each channel.
+- How do you handle the lag? Follow signup cohorts weekly to disbursal and compare cohorts of the same age.
+- Should you worry that approval is lower? Check the default rate of approved loans before pushing approval up; a lower approval rate may be intended risk control.
+
+**Common mistakes:**
+- Optimising the biggest drop-off step without checking it changed.
+- Reading rates when the mix changed.
+- Reading counts without the denominator.
+- Ignoring lags between funnel steps.
