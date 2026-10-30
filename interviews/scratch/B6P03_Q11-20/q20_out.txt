@@ -1,0 +1,12 @@
+age sentinel rows: 12000 = 4.0%
+age min / mean with sentinel: -999.0 -1.43  mean without: 40.14
+income tokens that failed to parse:
+income
+N/A        9024
+null       5983
+<empty>    3069
+income unparsable: 6.03%
+quick (-999 left in)   test AUC 0.608
+cleaned + flags        test AUC 0.645
+age coefficient quick: -0.0012  cleaned: -0.0296  (truth -0.03)
+event rate: age missing 21.3% vs present 7.7%

@@ -1,0 +1,15 @@
+training rows 109,000, training fraud share 9.17%, true base rate 1.00%
+score 0.50 -> 0.0909
+odds view: 0.50 is odds 1.0; times beta 0.1 gives odds 0.1; prob 0.0909
+simulated population fraud rate: 1.005%
+training rows: 109316  fraud share: 9.20%
+fitted intercept -4.102  true intercept -6.407  shift 2.305  ln(1/beta)= 2.303
+mean score on the full population: raw 6.309%  corrected 1.004%  truth 1.005%
+band        n        raw_mean  corrected_mean  actual
+0.0-0.1    829,507   0.021     0.002         0.002
+0.1-0.3    118,433   0.172     0.021         0.021
+0.3-0.5     31,825   0.384     0.060         0.059
+0.5-0.7     13,461   0.587     0.128         0.123
+0.7-0.9      5,953   0.784     0.279         0.288
+0.9-1.0        821   0.936     0.607         0.609
+raw scores near 0.50: corrected 0.09  actual fraud rate 0.087

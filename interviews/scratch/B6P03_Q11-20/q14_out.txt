@@ -1,0 +1,8 @@
+approved 60000 rejected 40000
+default rate: approved 1.79%   rejected (unseen by the lender) 20.82%
+approved-only model: AUC on approved 0.625
+new band: predicted default 4.88%  actual 6.79%
+riskiest 5,000: predicted 22.41%  actual 78.84%
+exploration sample: 1200 loans = 3% of rejected
+with weighted exploration: new band predicted 7.28%  actual 6.79%; riskiest 5,000 predicted 76.32%
+tail error (percentage points): approved-only 56.4  with exploration 2.5

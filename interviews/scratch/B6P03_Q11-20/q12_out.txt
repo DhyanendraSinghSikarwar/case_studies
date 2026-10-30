@@ -1,0 +1,10 @@
+partner share: 18%
+median reported/straight: partner 0.808  others 1.300  ratio 0.621
+row screen (ratio<1.0): catches 100.0% of partner rows, false alarms 0.0% of others
+KS partner vs others: raw 0.311  after fix 0.005
+MAE minutes on partner rows: trained on broken 8.76 | fixed data 3.18
+MAE minutes on other rows:   trained on broken 3.52 | fixed data 3.20
+MAE overall (test):          broken 4.46 | fixed 3.20
+slope per km: broken 4.47 fixed 4.5
+check partner : (0.621, True)
+check others  : (1.0, False)

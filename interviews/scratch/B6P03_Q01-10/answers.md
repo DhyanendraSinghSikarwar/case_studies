@@ -1018,3 +1018,131 @@ random split with a 50% test set: AUC=0.814
 - How big a gap between train and test? At least as long as the label delay or the longest look-ahead window of any feature.
 
 **Common mistakes:** Random split on time-ordered data. Thinking more test rows reduce bias. Final test period with immature labels. Tuning on the final test months. Forgetting the entity leak on top of the time leak.
+
+### Q10 ⭐⭐⭐ 🟡 Chargebacks take up to 60 days to arrive, and in the table of the latest 60 days the confirmed-fraud rate is 0.3% while older, fully matured months settle near 1.0%. An engineer wants to retrain weekly on the most recent three months. Explain what this does to the labels, how you would build a training set and an evaluation window, and what you would do about the recent weeks.
+**Asked at:** Delayed-label, positive-unlabelled and selection-bias literature (Bekker and Davis PU survey, an arXiv paper on PU survival data, an arXiv paper on PU data under selection bias); no interview page for the exact prompt, so editor-designed from the literature; search snippets only, not opened
+**Say this first (1 line):** The recent weeks are not cleaner, they are just unlabelled yet; training on them as they stand teaches the model that many frauds are good, so I would train and evaluate only on matured transactions and treat the last 60 days with a maturity curve.
+
+**Clarifying questions:**
+- What is the delay distribution of chargebacks (how many arrive by day 15, 30, 45, 60)? That is the maturity curve and decides the cut-off.
+- Are there faster signals (customer disputes, analyst confirmations, card blocks) that could label some recent frauds early? They can fill part of the gap, but they are a biased subset.
+- Does the product need to react to new fraud patterns within weeks? If yes, recent data matters and we need a way to use it.
+- Is the 1.0% rate stable over months? If the true rate moves, matured months lag reality.
+- Are chargeback labels the only truth, or are some frauds never charged back? That is a permanent false-negative floor.
+
+**Approach:**
+1. Name the problem: delayed labels make recent negatives "not yet known", not "good". A "no chargeback yet" row is censored. In my run the last-90-day window hides 45% of its true frauds as "good".
+2. Build the training set with a label cut-off: only transactions old enough that their label has matured (age of 60 days or more), or build each training snapshot "as of" its date, using only labels that were known then. See Book 1 Part 3 Q34 (labels arrive late: how does this affect training and evaluation, and how do you split the data).
+3. Build the evaluation window the same way: a fully matured time window, strictly after the training window in transaction time, for example transactions aged 60 to 90 days. Keep a gap so no label that was learned in training leaks into evaluation.
+4. For the last 60 days, do not use them as negatives. Options: monitor them with a maturity-adjusted rate (observed rate divided by the share of labels expected by that age), use fast proxy labels with caution, or give immature rows a lower weight or exclude them. Use the maturity curve for monitoring (Book 6 Part 2 Q4, labels that arrive 45 to 60 days after the transaction).
+5. Retrain weekly if you wish, but weekly means "re-fit on the same matured rows plus the newly matured week", not "include the last three months as they stand". Check that new data arrives with the same feature definitions.
+
+**Metrics:**
+- Label maturity at age a = share of eventual fraud labels already seen for transactions aged a days (from the delay curve).
+- Observed fraud rate by age band = confirmed frauds / transactions in the band.
+- Maturity-adjusted rate = observed rate / average maturity of the rows.
+- Share of true frauds hidden as "good" in the training window = (true frauds - labelled positives) / true frauds (only known in a simulation or from the delay curve).
+- Guardrails: mean predicted probability versus observed rate on matured data, AUC on a matured test window.
+
+**Risks:**
+- Training on immature rows lowers predicted probabilities and fills the positive class with noisy negatives.
+- Monitoring the recent rate as "improving fraud" (it is label delay).
+- Fast proxy labels cover only certain fraud types, so using only them skews the training set.
+- Matured-only training reacts to new fraud patterns about 60 days late.
+
+**What the interviewer scores:**
+- Strong: recognises censoring and quantifies the maturity curve. Weak: "recent data is more relevant, so use it".
+- Strong: label cut-off for training and a matured, later evaluation window. Weak: random split of the latest three months.
+- Strong: gives a plan for the recent weeks (adjusted monitoring, proxy labels). Weak: ignores them or drops them silently.
+- Strong: notes the trade-off with reaction speed. Weak: no trade-off.
+
+**Example:** (illustrative simulation, my run) Daily 2,000 transactions for 210 days, fraud labels arrive after a late-heavy delay of up to 60 days. True fraud rate is about 0.94%. Observed rate in the last 60 days is 0.271% (matured older rows: 0.943%). By age band the observed rate is 0.003% (0-15 days), 0.113% (15-30), 0.310% (30-45), 0.657% (45-60) and 0.983% (60-90). In the last-90-day window 1,666 are true frauds but only 915 are labelled, so 751 (45%) sit in the data as "good". The average maturity of the last-60-day rows is 0.29, so 0.271% / 0.29 gives a maturity-adjusted rate of 0.919%, close to 0.943%. Model A trained on the last 90 days as labelled predicts a mean of 0.0051 against an observed 0.0095 on a matured test window (AUC 0.815). Model B trained on matured rows aged 60-150 days predicts 0.0095 (AUC 0.816). So the ranking is similar here, but the probabilities from A are about half of the truth, which breaks thresholds and expected-loss use.
+- Weak: "Retrain weekly on the last three months, as the data is fresher."
+- Strong: "The last 60 days are censored, so I train on matured rows, evaluate on a later matured window, and monitor the recent weeks with a maturity-adjusted rate."
+
+**Code:**
+```python
+# Q10 chargebacks arrive up to 60 days late: recent weeks look cleaner than they are (illustrative simulation)
+import numpy as np
+from scipy.stats import rankdata
+
+rng = np.random.default_rng(10)
+def sig(x): return 1 / (1 + np.exp(-x))
+def auc(y, s):
+    r = rankdata(s); n1 = y.sum(); n0 = len(y) - n1
+    return (r[y == 1].sum() - n1 * (n1 + 1) / 2) / (n1 * n0)
+def fit(A, y, iters=25):
+    b = np.zeros(A.shape[1])
+    for _ in range(iters):
+        p = sig(A @ b); g = A.T @ (p - y); H = (A * (p * (1 - p))[:, None]).T @ A + 1e-6 * np.eye(len(b))
+        b -= np.linalg.solve(H, g)
+    return b
+
+DAYS, PER_DAY, MAXD = 210, 2_000, 60
+day = np.repeat(np.arange(DAYS), PER_DAY); n = len(day)            # day 0 oldest, day 209 = today
+X = rng.normal(size=(n, 3))
+true_fraud = rng.random(n) < sig(-5.45 + X @ np.array([1.0, 0.7, 0.4]))
+true_fraud = true_fraud.astype(int)
+# Chargeback delay in days: confirmed fraud shows up by age a with probability (a/60)^2.3 for a <= 60 (late-heavy, invented)
+delay = MAXD * rng.random(n) ** (1 / 2.3)
+age = DAYS - 1 - day
+label_seen = (true_fraud == 1) & (delay <= age)                     # fraud confirmed so far
+y_obs = label_seen.astype(int)
+
+recent = age < 60; older = age >= 60
+print(f"true fraud rate, last 60 days={true_fraud[recent].mean():.3%}; older={true_fraud[older].mean():.3%}")
+print(f"observed rate:  last 60 days={y_obs[recent].mean():.3%}; older (fully matured)={y_obs[older].mean():.3%}")
+assert abs(y_obs[older].mean() - true_fraud[older].mean()) < 1e-12     # nothing is pending after 60 days
+assert 0.0024 < y_obs[recent].mean() < 0.0036 and 0.009 < y_obs[older].mean() < 0.0112
+
+# Labelled-as-clean frauds inside a 'last three months' training window
+win = age < 90
+missed = (true_fraud[win] == 1) & (y_obs[win] == 0)
+print(f"last-90-day window: true frauds={true_fraud[win].sum()}, labelled positive={y_obs[win].sum()}, hidden as 'good'={missed.sum()} ({missed.sum()/true_fraud[win].sum():.0%} of frauds)")
+assert missed.sum() / true_fraud[win].sum() > 0.4
+
+# Maturity curve by age band and a maturity-adjusted estimate of the recent rate
+bands = [(0, 15), (15, 30), (30, 45), (45, 60), (60, 90)]
+print("age band (days) | observed rate | share of final labels seen")
+for lo, hi in bands:
+    m = (age >= lo) & (age < hi)
+    print(f"  {lo:2d}-{hi:2d}          | {y_obs[m].mean():.3%}        | {min(y_obs[m].mean() / true_fraud[older].mean(), 1):.0%}")
+mat = np.clip((age[recent] / MAXD) ** 2.3, 0, 1).mean()             # average share of labels already in for the last 60 days
+adj = y_obs[recent].mean() / mat
+print(f"average maturity of last-60-day rows={mat:.2f}; maturity-adjusted rate={adj:.3%} (vs matured {y_obs[older].mean():.3%})")
+assert abs(adj - y_obs[older].mean()) < 0.0015
+
+# Train two models: (A) last 90 days as labelled today, (B) only rows aged 60-150 days (fully matured)
+A = np.c_[np.ones(n), X]
+old_win = (age >= 60) & (age < 150)
+test = (age >= 150)                                                  # older, fully matured, evaluation window
+bA = fit(A[win], y_obs[win]); bB = fit(A[old_win], y_obs[old_win])
+for name, b in (("A: last 90 days, labels as they are", bA), ("B: matured rows aged 60-150 days   ", bB)):
+    p = sig(A[test] @ b)
+    print(f"{name}: matured-test AUC={auc(y_obs[test], p):.3f}; mean predicted={p.mean():.4f} vs observed {y_obs[test].mean():.4f}")
+pA = sig(A[test] @ bA); pB = sig(A[test] @ bB)
+assert pA.mean() < 0.6 * y_obs[test].mean() and abs(pB.mean() - y_obs[test].mean()) < 0.002
+```
+
+**Output (my run):**
+```text
+true fraud rate, last 60 days=0.897%; older=0.943%
+observed rate:  last 60 days=0.271%; older (fully matured)=0.943%
+last-90-day window: true frauds=1666, labelled positive=915, hidden as 'good'=751 (45% of frauds)
+age band (days) | observed rate | share of final labels seen
+   0-15          | 0.003%        | 0%
+  15-30          | 0.113%        | 12%
+  30-45          | 0.310%        | 33%
+  45-60          | 0.657%        | 70%
+  60-90          | 0.983%        | 100%
+average maturity of last-60-day rows=0.29; maturity-adjusted rate=0.919% (vs matured 0.943%)
+A: last 90 days, labels as they are: matured-test AUC=0.815; mean predicted=0.0051 vs observed 0.0095
+B: matured rows aged 60-150 days   : matured-test AUC=0.816; mean predicted=0.0095 vs observed 0.0095
+```
+
+**Follow-ups:**
+- How do you react to a new fraud pattern faster? Use fast proxy labels (disputes, analyst reviews) as extra signals and as a separate fast model or rules layer, and keep the matured model as the calibrated base.
+- Can you use the immature rows at all? Yes, as unlabelled data (positive-unlabelled style), with a lower weight, or as features for drift monitoring. Not as clean negatives.
+- Does a PU method help? It can, if you know the label delay curve. Treat it as a second step, after the cut-off fix (Book 1 Part 3 Q46, positive-unlabeled learning).
+
+**Common mistakes:** Treating "no chargeback yet" as good. Evaluating on the latest weeks. Reading a falling recent fraud rate as a real improvement. Retraining on immature rows and then using the probabilities for decisions. Not leaving a gap between training and evaluation windows.

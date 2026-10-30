@@ -789,6 +789,7 @@ def hm_se(A, n1, n0):
 print(f"Hanley-McNeil SE for rural AUC with {yr.sum()} defaults: {hm_se(a_r, yr.sum(), len(yr)-yr.sum()):.3f}")
 print(f"defaults needed in rural for SE about 0.01: {int(next(n for n in range(100,5000,25) if hm_se(0.71, n, 16*n) < 0.01))}")
 assert 0.015 < hm_se(a_r, yr.sum(), len(yr) - yr.sum()) < 0.03
+assert next(n for n in range(100, 5000, 25) if hm_se(0.71, n, 16 * n) < 0.01) == 900 and 900 / 0.06 == 15_000
 ```
 
 **Output (my run):**
@@ -823,7 +824,7 @@ defaults needed in rural for SE about 0.01: 900
 - What error would hurt most (a missed positive or a false alarm)? It gives the metric beyond AUC.
 
 **Approach:**
-1. Explain the spread: each fold has 8 positives and 72 negatives, so each fold AUC rests on 8 x 72 = 576 positive-negative pairs, and a single positive shifts it by about 0.014.
+1. Explain the spread: each fold has 8 positives and 72 negatives, so each fold AUC rests on 8 x 72 = 576 positive-negative pairs, and one positive moving from above every negative to below every negative shifts the fold AUC by 1/8 = 0.125.
 2. Quantify uncertainty: pooled out-of-fold AUC over all 400 rows, with a bootstrap confidence interval (resampling rows, or patients if grouped).
 3. Repeated stratified cross-validation (for example 5-fold, repeated 10 times) smooths the split noise, but it does not remove the noise of having only 40 positives; say so.
 4. Select models with nested cross-validation (inner loop picks, outer loop scores) or a very small search space; keep the final model simple and regularised.
@@ -834,7 +835,7 @@ defaults needed in rural for SE about 0.01: 900
 **Metrics:**
 - AUC = probability a random positive is scored above a random negative.
 - Pooled out-of-fold AUC with a 95% bootstrap interval; fold range as a diagnostic only.
-- Hanley-McNeil style standard error depends on the positive count (about 0.04 for 40 positives at AUC near 0.76, in my simulation 0.039).
+- The standard error of the pooled AUC depends mainly on the positive count: about 0.04 for 40 positives at an AUC near 0.76 (standard deviation 0.039 across simulated datasets).
 - Secondary: precision at a review budget, calibration slope and intercept.
 - Guardrail: no model-selection step touches the outer test folds.
 
@@ -901,6 +902,8 @@ lo, hi = np.percentile(bs, [2.5, 97.5])
 print(f"bootstrap 95% CI for the pooled AUC: {lo:.2f} to {hi:.2f} (width {hi-lo:.2f})")
 assert hi - lo > 0.1
 assert np.std(rep) < 0.02
+
+assert 8 * 72 == 576 and 1 / 8 == 0.125
 ```
 
 **Output (my run):**
@@ -984,6 +987,11 @@ r = audit_hit / audit_n
 hidden = r * (total - reviewed)
 print(f"audit fraud rate in unreviewed {r:.2%} -> about {hidden:,.0f} hidden frauds; recall of the old rules about {confirmed/(confirmed+hidden):.1%}")
 assert abs(hidden - 2_940) < 1e-6 and round(confirmed / (confirmed + hidden), 3) == 0.338
+print(f"weight per audited row {(total-reviewed)/audit_n:.0f}")
+assert round((total - reviewed) / audit_n) == 327
+need_n = 1.96 ** 2 * 0.003 * 0.997 / 0.001 ** 2
+print(f"audited rows needed for +-0.1 points at a 0.3% rate: {need_n:,.0f}")
+assert 11_400 < need_n < 11_600
 half = 1.96 * (r * (1 - r) / audit_n) ** 0.5
 print(f"audit rate 95% interval about {r-half:.2%} to {r+half:.2%}")
 
@@ -1020,6 +1028,8 @@ assert recall_at(w_true, audit, fraud) > recall_at(w_naive, audit, fraud) + 0.05
 ```text
 reviewed share 2.0%; confirmed precision of the old rules 7.5%; unreviewed rows 980,000
 audit fraud rate in unreviewed 0.30% -> about 2,940 hidden frauds; recall of the old rules about 33.8%
+weight per audited row 327
+audited rows needed for +-0.1 points at a 0.3% rate: 11,490
 audit rate 95% interval about 0.10% to 0.50%
 true frauds 4028, confirmed 436 (10.8% of all frauds); precision of rule 5.5%
 coefficients (x1, x2, x3): naive [3.24 1.21 0.9 ] | true labels [0.99 1.27 0.89]

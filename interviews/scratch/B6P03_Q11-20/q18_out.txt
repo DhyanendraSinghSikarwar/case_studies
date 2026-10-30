@@ -1,0 +1,7 @@
+both urgent 210  A only 90  B only 90  neither 610
+observed 0.820  chance 0.580  kappa 0.571
+agreement on 'urgent' 0.70, on 'not urgent' 0.87
+bootstrap 95% interval for kappa: 0.52 to 0.63
+5% urgent each, 92% raw agreement: chance 0.905, kappa 0.158
+rows to adjudicate: 180 = 18% of the sample; extra labels needed: 180
+expected wrong labels if we pick a random annotator on the disagreements: 90
