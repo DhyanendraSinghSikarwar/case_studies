@@ -10,7 +10,7 @@
 
 ---
 
-### Q1 ⭐⭐⭐ 🟢 Daily active users fell 10% week over week. The dashboard shows 1.00 million DAU two weeks ago, 0.98 million last week and 0.90 million this week, with no release notes anywhere. Walk through how you would find out whether the drop is real and what caused it, and what you would check in the first hour.
+### Q1 ⭐⭐⭐ 🟢 Daily active users fell 10% over two weeks (8.2% in the latest week). The dashboard shows 1.00 million DAU two weeks ago, 0.98 million last week and 0.90 million this week, with no release notes anywhere. Walk through how you would find out whether the drop is real and what caused it, and what you would check in the first hour.
 **Asked at:** Metric-drop and root-cause question banks (an Interview Query metrics-drop guide, Prachub root-cause pages, Codemia 'Diagnose a drop in DAU' practice problems); commonly reported in public guides for data scientist and product analyst loops at global tech and Indian product companies; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
@@ -30,7 +30,7 @@
 **Asked at:** Indian consumer-internet analyst guides (Interview Query Swiggy, Flipkart and Meesho analyst guides, AmbitionBox and Dataford interview pages) that list revenue-drop, order-drop and AOV-drop cases; community-posted, not confirmed company questions; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q6 ⭐⭐⭐ 🟡 Checkout conversion dropped from 3.1% to 2.6% and the drop appears only on Android, starting the day version 8.4 shipped, while the crash rate is flat. Describe how you would narrow the cause, what you would compare by app version, and how you would decide between a product bug and a measurement bug.
+### Q6 ⭐⭐⭐ 🟡 Android checkout conversion dropped from 3.1% to 2.6% while iOS is flat, starting the day version 8.4 shipped, while the crash rate is flat. Describe how you would narrow the cause, what you would compare by app version, and how you would decide between a product bug and a measurement bug.
 **Asked at:** Funnel and checkout-conversion case pages (a Prachub Amazon checkout-conversion root-cause page, funnel guides from Amplitude, Hackle and Datadog); commonly reported in public guides; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 

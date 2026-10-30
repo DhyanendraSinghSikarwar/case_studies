@@ -1,4 +1,4 @@
-### Q1 ⭐⭐⭐ 🟢 Daily active users fell 10% week over week. The dashboard shows 1.00 million DAU two weeks ago, 0.98 million last week and 0.90 million this week, with no release notes anywhere. Walk through how you would find out whether the drop is real and what caused it, and what you would check in the first hour.
+### Q1 ⭐⭐⭐ 🟢 Daily active users fell 10% over two weeks (8.2% in the latest week). The dashboard shows 1.00 million DAU two weeks ago, 0.98 million last week and 0.90 million this week, with no release notes anywhere. Walk through how you would find out whether the drop is real and what caused it, and what you would check in the first hour.
 **Asked at:** Metric-drop and root-cause question banks (an Interview Query metrics-drop guide, Prachub root-cause pages, Codemia 'Diagnose a drop in DAU' practice problems); commonly reported in public guides for data scientist and product analyst loops at global tech and Indian product companies; search snippets only, not opened
 **Say this first (1 line):** First I check the number is real (pipeline, definition, a one-off day), then I split the drop by platform, country, version, user type and day, and the segment that holds most of the drop tells me where to dig.
 
@@ -458,7 +458,7 @@ weeks 2-3 settle back to pre-sale level (108, 103 vs 101): hangover, not decline
 
 **Common mistakes:** Comparing to the peak. One baseline only. Reporting week 1 as the conclusion. Ignoring that a deep discount can train customers to wait for the next sale.
 
-### Q6 ⭐⭐⭐ 🟡 Checkout conversion dropped from 3.1% to 2.6% and the drop appears only on Android, starting the day version 8.4 shipped, while the crash rate is flat. Describe how you would narrow the cause, what you would compare by app version, and how you would decide between a product bug and a measurement bug.
+### Q6 ⭐⭐⭐ 🟡 Android checkout conversion dropped from 3.1% to 2.6% while iOS is flat, starting the day version 8.4 shipped, while the crash rate is flat. Describe how you would narrow the cause, what you would compare by app version, and how you would decide between a product bug and a measurement bug.
 **Asked at:** Funnel and checkout-conversion case pages (a Prachub Amazon checkout-conversion root-cause page, funnel guides from Amplitude, Hackle and Datadog); commonly reported in public guides; search snippets only, not opened
 **Say this first (1 line):** I narrow it by version, step and source: if the backend order table also fell on 8.4, it is a product bug; if only the app event fell, it is a measurement bug.
 
