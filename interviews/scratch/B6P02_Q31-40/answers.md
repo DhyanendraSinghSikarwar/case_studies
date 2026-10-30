@@ -765,3 +765,136 @@ In this simulation covariate shift alone moves precision by about 5 points and l
 - How do you tell prior shift from the others? Compare base rates and calibration by region; prior shift changes precision but leaves TPR and FPR alone.
 
 **Common mistakes:** Not checking the base rate first. Reweighting without clipping. Fine-tuning on 200 rows. Reading one precision number from a small sample as proof. Forgetting to check the original cities after the fix.
+
+### Q37 ⭐⭐ 🔴 A team retrained a model on the last four weeks of data and it performed worse than the old one. Those four weeks included a payment outage and a heavy promotion. Explain how training-window choice, unusual events and label quality could explain this, and how you would design the retraining dataset and validation to avoid repeating it.
+**Asked at:** No interview question page located for this exact scenario; practitioner fraud and retraining guides (a Firstsource fraud-model post, a datainterview.com 'when to retrain' course page) describe the retrain-versus-rollback and adaptive-fraud themes, so editor-designed; search snippets only, not opened
+**Say this first (1 line):** The last four weeks were not normal weeks, so the retrain learned the outage and the promotion as if they were the new normal; I would retrain on a longer window with the outage rows removed or relabelled and the promotion marked, and validate on a time-ordered clean holdout against the old model before shipping.
+
+**Clarifying questions:**
+- How are labels defined, and what did the outage do to them (failed payments looking like defaults or abandonment)? Why: this is the likeliest way the window got corrupted.
+- Which metric got worse (ranking, calibration, a business metric at a threshold), and on which holdout? Why: AUC can stay flat while the score level moves.
+- How was the retrain validated: random split inside the four weeks, or a later period? Why: a random split inside the same four weeks hides the problem.
+- Will promotions and outages recur (a calendar, a known event list)? Why: if the promotion recurs, the model should know about it, not forget it.
+- How much older data is usable (schema, definitions stable)? Why: it sets how long the window can be.
+
+**Approach:**
+1. Diagnose before changing anything. Compare the retrain with the old model on a later clean period, by slice and by day. Check mean predicted versus observed rate, positive rate by day in the training window, feature distributions on promo and outage days.
+2. Window choice. Four weeks is short and every unusual day is a large share of it. Use a longer window (for example 6 to 12 months, or all stable history), with recency weights if the relationship drifts, so one odd month cannot dominate.
+3. Unusual events. Outage days: drop the rows, or relabel them if the cause is known (a failed payment is not a default). Promotion days: keep them but add a promo indicator (or an event feature), so the model can separate "promo behaviour" from "normal behaviour" and the indicator is off on normal days.
+4. Label quality. Look at positive rate by day (the outage days show a spike), at label delay (recent weeks have immature labels), and at how labels are created. Only train on matured labels.
+5. Validation. Time-ordered split with a clean future holdout, a second holdout that includes a past promotion, slice checks, and a champion-challenger run on live traffic. The new model must beat or match the old one on log loss, calibration and the business metric at the threshold.
+6. Guardrails for the pipeline: an event calendar (outages, promos, launches), an automated check that flags days whose label rate or feature distribution is far from normal, and a rule that a retrain cannot ship if it loses to the champion.
+
+**Metrics:**
+- Log loss and Brier score (calibration-sensitive), AUC (ranking), and precision and recall at the live threshold.
+- Mean predicted / mean observed rate on the holdout.
+- Positive rate by day in the training window (spot corrupted days).
+- Business guardrail: cost or approval rate at the live threshold.
+
+**Risks:**
+- Too long a window hides a real, recent change (concept drift): use recency weights and a drift check.
+- Dropping outage days removes information about outage behaviour; mark them or relabel instead if the system must handle outages.
+- A promo indicator that is set differently at serving than in training.
+- The holdout shares the same unusual days (leakage in time).
+- Immature labels in the most recent days.
+
+**What the interviewer scores:**
+- Strong: connects each of the three clues (window, events, labels) to a specific mechanism and shows it in data.
+- Strong: a validation design that mirrors production (time split, clean future holdout, champion versus challenger).
+- Strong: builds a repeatable process (event calendar, label-rate alerts), not a one-off patch.
+- Weak: "use more data" with no check of label quality, or "retrain again next week".
+- Cross-reference: Book 4 Part 7 has "Continuous training triggers and their guardrails" and Book 4 Part 8 has "Retraining pitfalls and feedback loops".
+
+**Example:** (illustrative numbers) 28 weeks of data, 400 rows a day, a training window of the last 4 weeks (28 days, 11,200 rows). Five outage days in the window have a positive rate of 79%, against 31% on normal days. Those 5 days are 5/28 = 17.9% of the window (the run prints the same). The naive retrain predicts 14% too many positives on the clean test weeks (ratio 1.143) while the old model is at 0.974. Weak answer: "The new model is worse, so keep the old one forever." Strong answer: "The four-week window is dominated by an outage and a promo. I would train on 28 weeks, drop or relabel the outage days, add a promo flag, and promote only if it beats the champion on a clean later holdout."
+
+**Code:**
+```python
+# Q37: retrain on the last 4 weeks, which had a payment outage and a heavy promotion (illustrative simulation)
+import numpy as np
+from scipy.stats import rankdata
+
+rng = np.random.default_rng(37)
+sig = lambda z: 1 / (1 + np.exp(-z))
+def auc(y, s):
+    r = rankdata(s); n1 = y.sum(); n0 = len(y) - n1
+    return (r[y == 1].sum() - n1 * (n1 + 1) / 2) / (n1 * n0)
+def fit(X, y, steps=30, l2=1e-3):
+    Xb = np.c_[np.ones(len(X)), X]; w = np.zeros(Xb.shape[1])
+    for _ in range(steps):
+        p = sig(Xb @ w); g = Xb.T @ (p - y) + l2 * w
+        H = (Xb * (p * (1 - p))[:, None]).T @ Xb + l2 * np.eye(len(w)); w -= np.linalg.solve(H, g)
+    return w
+pred = lambda w, X: sig(np.c_[np.ones(len(X)), X] @ w)
+def logloss(y, p): p = np.clip(p, 1e-6, 1 - 1e-6); return -(y * np.log(p) + (1 - y) * np.log(1 - p)).mean()
+
+# 30 weeks of daily data, 700 rows a day. Weeks 25-28 = the last four weeks used for the retrain.
+days, per = 210, 400
+beta = np.array([1.0, -0.8, 0.5]); b0 = -1.0
+rows = []
+for d in range(days):
+    wk = d // 7
+    promo = 24 <= wk <= 27 and (d % 7) in (2, 3, 4)           # promo days in the 4-week window
+    outage = wk == 26 and (d % 7) in (0, 1, 2, 3, 4)                  # payment outage days
+    X = rng.normal(0, 1, (per, 3))
+    if promo: X[:, 0] += 1.5                                  # promo-driven shift in feature 0
+    y = (rng.random(per) < sig(b0 + X @ beta)).astype(float)
+    if outage:                                                # failed payments mislabelled as the positive class
+        flip = rng.random(per) < 0.6
+        y = np.where(flip, 1.0, y)
+    rows.append((np.full(per, d), X, y, np.full(per, promo), np.full(per, outage)))
+D = np.concatenate([r[0] for r in rows]); X = np.concatenate([r[1] for r in rows])
+Y = np.concatenate([r[2] for r in rows]); P = np.concatenate([r[3] for r in rows]); O = np.concatenate([r[4] for r in rows])
+print(f"outage days: {len(np.unique(D[O]))}, promo days: {len(np.unique(D[P]))}, share of training-window rows on outage days: {O[(D >= 168) & (D < 196)].mean():.1%}")
+
+assert abs(O[(D >= 168) & (D < 196)].mean() - 5 / 28) < 1e-9
+# Clean test: the next 2 weeks (days 196-209 are normal; train data end before day 196)
+test = D >= 196; Xt, Yt = X[test], Y[test]
+window = (D >= 168) & (D < 196)
+old_w = fit(X[D < 168], Y[D < 168])                       # old model: weeks 1-24
+models = {
+    "old model (weeks 1-24)": old_w,
+    "retrain: last 4 weeks, as is": fit(X[window], Y[window]),
+    "retrain: last 4 weeks, outage days dropped": fit(X[window & ~O], Y[window & ~O]),
+    "retrain: 28 weeks, outage dropped, promo flag": None,
+}
+# 28 weeks with outage days dropped, promo flag as a feature (set to 0 at serving on normal days)
+tr = (D < 196) & ~O
+Xf = np.c_[X, P.astype(float)]
+w_flag = fit(Xf[tr], Y[tr])
+res = {}; ratio_ = {}
+for k, w in models.items():
+    if w is None: p = pred(w_flag, np.c_[Xt, np.zeros(len(Xt))])
+    else: p = pred(w, Xt)
+    res[k] = (auc(Yt, p), logloss(Yt, p))
+    print(f"{k:48} AUC {res[k][0]:.4f}  log loss {res[k][1]:.4f}  mean pred/observed {p.mean() / Yt.mean():.3f}")
+    ratio_[k] = p.mean() / Yt.mean()
+a_old = res["old model (weeks 1-24)"]; a_bad = res["retrain: last 4 weeks, as is"]
+a_fix = res["retrain: 28 weeks, outage dropped, promo flag"]
+assert a_bad[1] > a_old[1]                      # the naive retrain is worse than the old model on log loss
+assert a_fix[1] <= a_old[1] + 0.003             # a careful retrain is at least as good
+assert res["retrain: last 4 weeks, outage days dropped"][1] < a_bad[1]
+print(f"naive retrain minus old model: log loss {a_bad[1] - a_old[1]:+.4f}")
+assert ratio_["retrain: last 4 weeks, as is"] > ratio_["old model (weeks 1-24)"] + 0.02   # inflated base rate
+# in the 4-week window the outage and promo days differ from normal days:
+print(f"positive rate: normal window days {Y[window & ~O & ~P].mean():.3f}, outage days {Y[window & O].mean():.3f}, test {Yt.mean():.3f}")
+assert Y[window & O].mean() > Y[window & ~O & ~P].mean() + 0.1
+```
+
+**Output (my run):**
+```text
+outage days: 5, promo days: 12, share of training-window rows on outage days: 17.9%
+old model (weeks 1-24)                           AUC 0.7968  log loss 0.5015  mean pred/observed 0.974
+retrain: last 4 weeks, as is                     AUC 0.7969  log loss 0.5082  mean pred/observed 1.143
+retrain: last 4 weeks, outage days dropped       AUC 0.7969  log loss 0.5026  mean pred/observed 0.945
+retrain: 28 weeks, outage dropped, promo flag    AUC 0.7968  log loss 0.5015  mean pred/observed 0.971
+naive retrain minus old model: log loss +0.0068
+positive rate: normal window days 0.309, outage days 0.793, test 0.330
+```
+In this run the ranking (AUC) is the same for every model (about 0.797); the damage is in calibration: the naive four-week retrain over-predicts by 14.3% and has the worst log loss (0.5082 versus 0.5015), and the careful retrain matches the old model.
+
+**Follow-ups:**
+- Why did AUC not move? The outage corrupted the level of the labels (the base rate), not the order of the features' effects; that is why a calibration check belongs next to AUC.
+- Should the old model stay forever? No; keep it as the champion until a challenger wins a clean comparison, then retrain on a schedule with the event checks.
+- What if the promotion repeats monthly? Then keep promo rows and keep the promo flag, and test the model on past promotions.
+
+**Common mistakes:** Validating on a random split of the same four weeks. Training on rows from an outage unchanged. Dropping promo days when promos are part of normal business. Judging the retrain on AUC alone. No event calendar.

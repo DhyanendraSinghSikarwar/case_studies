@@ -33,8 +33,9 @@ for d in range(days):
     rows.append((np.full(per, d), X, y, np.full(per, promo), np.full(per, outage)))
 D = np.concatenate([r[0] for r in rows]); X = np.concatenate([r[1] for r in rows])
 Y = np.concatenate([r[2] for r in rows]); P = np.concatenate([r[3] for r in rows]); O = np.concatenate([r[4] for r in rows])
-print(f"outage days: {len(np.unique(D[O]))}, promo days: {len(np.unique(D[P]))}, share of the 4-week window with a flipped-label risk: {O[D >= 168].mean():.1%}")
+print(f"outage days: {len(np.unique(D[O]))}, promo days: {len(np.unique(D[P]))}, share of training-window rows on outage days: {O[(D >= 168) & (D < 196)].mean():.1%}")
 
+assert abs(O[(D >= 168) & (D < 196)].mean() - 5 / 28) < 1e-9
 # Clean test: the next 2 weeks (days 196-209 are normal; train data end before day 196)
 test = D >= 196; Xt, Yt = X[test], Y[test]
 window = (D >= 168) & (D < 196)
