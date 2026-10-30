@@ -206,7 +206,7 @@
 **Asked at:** Promotion and incrementality material (Talon.One and Uniqodo pages on promotion ROI and incrementality, an INFORMS Management Science paper on whether coupons expand or cannibalise revenue, an incrmntal post on promos and ad spend); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐ 🟡 A retailer with 1,000,000 orders a year and a 22% return rate (of orders) plans to charge 4.00 for returns. It expects returns to fall to 18% of orders (4 points absolute) and orders to fall by 3% relative to today. A kept order earns 15 of margin, and a returned order earns nothing and costs 8 to handle. Compute annual margin before and after, and the relative order drop at which the change breaks even.
+### Q50 ⭐ 🟡 A retailer with 1,000,000 orders a year and a 22% return rate (of orders) plans to charge 4.00 for returns, which it keeps as income on each returned order. It expects returns to fall to 18% of orders (4 points absolute) and orders to fall by 3% relative to today. A kept order earns 15 of margin, and a returned order earns nothing and costs 8 to handle. Compute annual margin before and after, and the relative order drop at which the change breaks even.
 **Asked at:** No public page found, editor-designed from the standard business-case themes (unit economics, break-even, decision under uncertainty) that the guides above describe in general terms; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
@@ -214,7 +214,7 @@
 **Asked at:** No public page found, editor-designed from the standard business-case themes (unit economics, break-even, decision under uncertainty) that the guides above describe in general terms; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐ 🔴 A marketplace tested take rates of 10% and 12% and saw GMV fall by 2.5 points of today's GMV for each 1 point of take rate (absolute). Fitting a line, GMV equals today's GMV times (1 - 2.5 x (take rate - 0.10)). Compute the revenue-maximising take rate and the revenue gain relative to today's revenue, then explain why extrapolating beyond the tested range is dangerous.
+### Q52 ⭐ 🔴 A marketplace tested take rates of 10% and 12% and saw GMV fall by 2.5 points of today's GMV for each 1 point of take rate (absolute). A line through the two tested points gives GMV equal to today's GMV times (1 - 2.5 x (take rate - 0.10)). Compute the revenue-maximising take rate and the revenue gain relative to today's revenue, then explain why extrapolating beyond the tested range is dangerous.
 **Asked at:** Marketplace and take-rate material (an inpractise take-rate course page, a Codemia Thumbtack data scientist guide describing a marketplace case round, ibinterviewquestions and hackingthecaseinterview marketplace and supply-demand pages); general marketplace guides, nothing specific to Uber, DoorDash or Swiggy loops; commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 

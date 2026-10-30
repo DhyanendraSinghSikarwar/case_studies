@@ -8,7 +8,7 @@ rel = rpu_m / rpu_p - 1
 inc_rev = (rpu_m - rpu_p) * users
 inc_margin = inc_rev * margin
 net = inc_margin - cost
-print(f"revenue per user +{rpu_m-rpu_p:.1f} = +{rel*100:.2f}% relative to 39.0 (the prompt's 2.5% is 1/40; against 39.0 it is 2.56%)")
+print(f"revenue per user +{rpu_m-rpu_p:.1f} = +{rel*100:.2f}% relative to 39.0 (base is 39.0, the popularity list)")
 print(f"incremental revenue {inc_rev:,.0f}; incremental margin {inc_margin:,.0f}; cost {cost:,}; net value {net:,.0f}")
 assert abs(rel - 0.02564) < 1e-4 and inc_rev == 2_000_000 and inc_margin == 600_000 and net == 350_000
 

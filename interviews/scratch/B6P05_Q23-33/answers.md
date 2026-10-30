@@ -209,14 +209,14 @@ with 1%/month discounting, constant 5% churn: LTV 117.8
 
 **Clarifying questions:**
 - Was the holdout randomised at user level, and were both arms the same size? Without that, +1.0 is not causal.
-- Is the 2,000,000 the number of users in the whole test or per arm? I assume it is the population the model would serve, and the +1.0 per user applies to all of them.
+- Does the +1.0 per user hold for all 2,000,000 users the model serves? I assume yes; a lift measured on a sample may not carry over to every user.
 - Is "revenue per user" over the 4 weeks, and is it net of returns and cancellations? Gross revenue can include later refunds.
 - Is the 30% margin the contribution on revenue after variable costs? It sets the break-even.
 - What happens to the lift after the novelty fades? A 4-week test can overstate the long-run effect.
 
 **Approach:**
 1. Start from the right metric: revenue (then margin) per randomised user, intention to treat. Not clicks.
-2. Lift: 40.0 - 39.0 = +1.0 per user. Relative to the popularity list this is 1 / 39 = +2.56% (the prompt rounds it to 2.5%, which is 1 / 40).
+2. Lift: 40.0 - 39.0 = +1.0 per user. Relative to the popularity list this is 1 / 39 = +2.56%.
 3. Incremental revenue = 1.0 x 2,000,000 = 2,000,000. Incremental margin = 2,000,000 x 0.30 = 600,000.
 4. Net value = 600,000 - 250,000 = 350,000 for the 4 weeks.
 5. Break-even: the model needs only 250,000 / (2,000,000 x 0.30) = 0.417 of revenue per user, a 1.07% lift.
@@ -238,7 +238,7 @@ with 1%/month discounting, constant 5% churn: LTV 117.8
 **What the interviewer scores:**
 - Strong: computes 600,000 and 350,000 and the 0.417 break-even. Weak: celebrates "+60% CTR".
 - Strong: says why clicks overstate value (baseline clicks, cannibalisation, non-buying clicks). Weak: "CTR is a vanity metric" with no mechanism.
-- Strong: spots the 2.5% versus 2.56% base slip and asks about the sample. Weak: repeats numbers uncritically.
+- Strong: uses the right base (39.0, the popularity list) and asks about the sample. Weak: divides by the wrong base or repeats numbers uncritically.
 - Strong: asks for the interval and the horizon. Weak: treats a point estimate as certain.
 
 **Example:** illustrative numbers.
@@ -258,7 +258,7 @@ rel = rpu_m / rpu_p - 1
 inc_rev = (rpu_m - rpu_p) * users
 inc_margin = inc_rev * margin
 net = inc_margin - cost
-print(f"revenue per user +{rpu_m-rpu_p:.1f} = +{rel*100:.2f}% relative to 39.0 (the prompt's 2.5% is 1/40; against 39.0 it is 2.56%)")
+print(f"revenue per user +{rpu_m-rpu_p:.1f} = +{rel*100:.2f}% relative to 39.0 (base is 39.0, the popularity list)")
 print(f"incremental revenue {inc_rev:,.0f}; incremental margin {inc_margin:,.0f}; cost {cost:,}; net value {net:,.0f}")
 assert abs(rel - 0.02564) < 1e-4 and inc_rev == 2_000_000 and inc_margin == 600_000 and net == 350_000
 
@@ -281,7 +281,7 @@ assert abs(rel / 0.6 - 0.0427) < 1e-3
 **Output (my run):**
 ```text
 CTR 5% -> 8%: +3 points absolute, +60% relative
-revenue per user +1.0 = +2.56% relative to 39.0 (the prompt's 2.5% is 1/40; against 39.0 it is 2.56%)
+revenue per user +1.0 = +2.56% relative to 39.0 (base is 39.0, the popularity list)
 incremental revenue 2,000,000; incremental margin 600,000; cost 250,000; net value 350,000
 break-even lift in revenue per user = 0.417 (1.07% of 39.0)
 assumed sd 30: SE of the difference 0.042; observed 1.0 is 23.6 SEs; break-even 0.417 is 13.7 SEs below it
@@ -721,7 +721,7 @@ expected monthly profit if 12% and 22% are equally likely: +90,000
 
 ### Q30 ⭐⭐ 🟡 A food platform takes 100,000 orders a day. Promising the median predicted delivery time makes 50% of orders late (50,000), and promising the 80th percentile makes 20% of the remaining orders late (19,800) but the longer promise cuts orders by 1% relative to 100,000, at a margin of 1.50 per order. A late order costs 3.00 in refunds and lost goodwill. Compute the daily difference between the two promises and say which input is least certain.
 **Asked at:** Delivery, ETA and routing material (an AlgoMaster ETA-prediction design walkthrough, a DoorDash careers post and an Uber Eats ETA write-up as described in snippets, an Appinventiv case study using an asymmetric loss, a quantile-regression delivery-time slide deck); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
-**Say this first (1 line):** The 80th-percentile promise is better by about 89,000 a day (88,500 using the prompt's rounded 20,000 late orders), because the median promise earns 150,000 of margin and pays 150,000 in late costs; the least certain input is the 3.00 late cost, with the 1% order loss second.
+**Say this first (1 line):** The 80th-percentile promise is better by 89,100 a day, because the median promise earns 150,000 of margin and pays 150,000 in late costs; the least certain input is the 3.00 late cost, with the 1% order loss second.
 
 **Clarifying questions:**
 - How was the 3.00 per late order built: refunds (hard number) plus goodwill (soft number)? The goodwill part is the guess.
@@ -732,8 +732,8 @@ expected monthly profit if 12% and 22% are equally likely: +90,000
 
 **Approach:**
 1. Median promise (A): margin 100,000 x 1.50 = 150,000. Late orders 50,000 x 3.00 = 150,000. Net 0.
-2. 80th percentile (B): orders 99,000, margin 99,000 x 1.50 = 148,500. Late 20% x 99,000 = 19,800 (the prompt says 20,000, which is 20% of the original 100,000), cost 59,400. Net 89,100. With the prompt's 20,000: 60,000 and net 88,500.
-3. Difference: B - A = +89,100 a day (+88,500 with the rounded figure). Per order, A nets 0.00 and B nets 0.90.
+2. 80th percentile (B): orders 99,000, margin 99,000 x 1.50 = 148,500. Late 20% x 99,000 = 19,800, cost 59,400. Net 89,100.
+3. Difference: B - A = +89,100 a day. Per order, A nets 0.00 and B nets 0.90.
 4. Sensitivity: B stays ahead unless the late cost falls below about 0.05. If the late cost were 1.00, B is ahead by 28,700. At 3.00, even a 50% order loss leaves B ahead by 45,000; at 1.00 the order loss that wipes out the gain is 23%.
 5. So the late cost drives the answer, and the order loss is second. I would measure both: late cost from refund data and a repeat-rate analysis, order loss from a randomised promise-length test.
 6. Recommend: promise a high percentile, display it honestly, and also work on actually reducing the time (so the percentile itself falls). A later step is to choose the percentile that maximises net value (an asymmetric loss), by segment and time of day.
@@ -752,7 +752,7 @@ expected monthly profit if 12% and 22% are equally likely: +90,000
 - Ignoring that fewer late orders also improves retention.
 
 **What the interviewer scores:**
-- Strong: gets A = 0 and B near +89,000 and notices that 20,000 late is a rounding of 19,800. Weak: ignores the lost orders.
+- Strong: gets A = 0 and B = +89,100, applying the 20% to the 99,000 remaining orders. Weak: ignores the lost orders.
 - Strong: runs the sensitivity and names the late cost as the swing input. Weak: names demand only.
 - Strong: links to quantile (asymmetric) loss and calibration. Weak: says "use the mean prediction".
 - Strong: proposes the randomised promise test. Weak: relies on the 1% as fact.
@@ -771,13 +771,12 @@ lateA = 0.50 * orders
 netA = orders * margin - lateA * late_cost
 # B: 80th percentile promise, 1% fewer orders
 ordersB = orders * 0.99
-lateB_prompt = 20_000                 # the prompt's figure: 20% of the ORIGINAL 100,000
-lateB_exact = 0.20 * ordersB          # 20% of the orders that remain
-for name, lb in (("prompt's 20,000", lateB_prompt), ("exact 20% of 99,000", lateB_exact)):
+lateB_exact = 0.20 * ordersB          # 20% of the orders that remain = 19,800
+for name, lb in (("20% of 99,000 = 19,800", lateB_exact),):
     netB = ordersB * margin - lb * late_cost
     print(f"B with {name}: margin {ordersB*margin:,.0f} - refunds {lb*late_cost:,.0f} = {netB:,.0f}; A = {netA:,.0f}; B - A = {netB-netA:+,.0f}")
 assert netA == 0 and ordersB * margin == 148_500
-assert abs((ordersB * margin - lateB_prompt * late_cost) - 88_500) < 1e-6
+assert abs(lateB_exact - 19_800) < 1e-9
 assert abs((ordersB * margin - lateB_exact * late_cost) - 89_100) < 1e-6
 
 # per-order view
@@ -804,8 +803,7 @@ assert abs(d_flip - 0.2308) < 1e-3 and net(0.2, 0.30, 3.0) > net(0.5, 0, 3.0)
 
 **Output (my run):**
 ```text
-B with prompt's 20,000: margin 148,500 - refunds 60,000 = 88,500; A = 0; B - A = +88,500
-B with exact 20% of 99,000: margin 148,500 - refunds 59,400 = 89,100; A = 0; B - A = +89,100
+B with 20% of 99,000 = 19,800: margin 148,500 - refunds 59,400 = 89,100; A = 0; B - A = +89,100
 per order: A 0.00; B 0.90
 late cost c: B-A
   c=3.00: +89,100
@@ -1039,7 +1037,7 @@ with lead-time sd 1 day: sd of lead-time demand 53.9; safety stock 88.6
 **Say this first (1 line):** Average ROAS is 5.00 at 100,000 and 3.25 at 200,000, but the extra 100,000 of spend buys 150,000 of revenue, a marginal ROAS of 1.5, which is 60,000 of margin for 100,000 of spend: a loss of 40,000 a month at the margin.
 
 **Clarifying questions:**
-- Is the 500,000 and 650,000 total revenue from all sources, or revenue attributed to paid search? The prompt gives total revenue, so "average ROAS" here is total revenue per unit of spend, which includes revenue that would arrive with no search spend.
+- Is the 500,000 and 650,000 total revenue from all sources, or revenue attributed to paid search? The figures are total revenue (all sources), so "average ROAS" here is total revenue per unit of spend, which includes revenue that would arrive with no search spend.
 - Was spend ever really at 200,000 in the three years, or is that point an extrapolation? Predictions outside the observed range are weak.
 - Is the 40% gross margin before or after variable costs such as shipping, returns and payment fees?
 - Did spend move with demand (more budget in peak weeks)? If so, the model confuses cause and effect.

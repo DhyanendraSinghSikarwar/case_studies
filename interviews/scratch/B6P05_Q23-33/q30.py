@@ -5,13 +5,12 @@ lateA = 0.50 * orders
 netA = orders * margin - lateA * late_cost
 # B: 80th percentile promise, 1% fewer orders
 ordersB = orders * 0.99
-lateB_prompt = 20_000                 # the prompt's figure: 20% of the ORIGINAL 100,000
-lateB_exact = 0.20 * ordersB          # 20% of the orders that remain
-for name, lb in (("prompt's 20,000", lateB_prompt), ("exact 20% of 99,000", lateB_exact)):
+lateB_exact = 0.20 * ordersB          # 20% of the orders that remain = 19,800
+for name, lb in (("20% of 99,000 = 19,800", lateB_exact),):
     netB = ordersB * margin - lb * late_cost
     print(f"B with {name}: margin {ordersB*margin:,.0f} - refunds {lb*late_cost:,.0f} = {netB:,.0f}; A = {netA:,.0f}; B - A = {netB-netA:+,.0f}")
 assert netA == 0 and ordersB * margin == 148_500
-assert abs((ordersB * margin - lateB_prompt * late_cost) - 88_500) < 1e-6
+assert abs(lateB_exact - 19_800) < 1e-9
 assert abs((ordersB * margin - lateB_exact * late_cost) - 89_100) < 1e-6
 
 # per-order view

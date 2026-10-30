@@ -526,7 +526,7 @@ measured incremental share of redeemers: 0.811 (design value 0.800); non-increme
 - Estimating the non-incremental share from redeemers versus non-redeemers.
 - Ignoring abuse.
 
-### Q50 ⭐ 🟡 A retailer with 1,000,000 orders a year and a 22% return rate (of orders) plans to charge 4.00 for returns. It expects returns to fall to 18% of orders (4 points absolute) and orders to fall by 3% relative to today. A kept order earns 15 of margin, and a returned order earns nothing and costs 8 to handle. Compute annual margin before and after, and the relative order drop at which the change breaks even.
+### Q50 ⭐ 🟡 A retailer with 1,000,000 orders a year and a 22% return rate (of orders) plans to charge 4.00 for returns, which it keeps as income on each returned order. It expects returns to fall to 18% of orders (4 points absolute) and orders to fall by 3% relative to today. A kept order earns 15 of margin, and a returned order earns nothing and costs 8 to handle. Compute annual margin before and after, and the relative order drop at which the change breaks even.
 **Asked at:** No public page found, editor-designed from the standard business-case themes (unit economics, break-even, decision under uncertainty) that the guides above describe in general terms; search snippets only, not opened
 
 **Say this first (1 line):** Annual margin goes from 9.94 million to 11.23 million if the retailer keeps the 4.00 fee, or to 10.53 million if the fee is ignored (illustrative), and the policy breaks even only if orders fall by about 14.2% (or 8.5% without the fee income), against the 3% expected.
@@ -749,7 +749,7 @@ loss ratio after repricing: 0.8148
 - Ignoring the 90,000 profitable policies.
 - Using the repriced premium for lapsed policies.
 
-### Q52 ⭐ 🔴 A marketplace tested take rates of 10% and 12% and saw GMV fall by 2.5 points of today's GMV for each 1 point of take rate (absolute). Fitting a line, GMV equals today's GMV times (1 - 2.5 x (take rate - 0.10)). Compute the revenue-maximising take rate and the revenue gain relative to today's revenue, then explain why extrapolating beyond the tested range is dangerous.
+### Q52 ⭐ 🔴 A marketplace tested take rates of 10% and 12% and saw GMV fall by 2.5 points of today's GMV for each 1 point of take rate (absolute). A line through the two tested points gives GMV equal to today's GMV times (1 - 2.5 x (take rate - 0.10)). Compute the revenue-maximising take rate and the revenue gain relative to today's revenue, then explain why extrapolating beyond the tested range is dangerous.
 **Asked at:** Marketplace and take-rate material (an inpractise take-rate course page, a Codemia Thumbtack data scientist guide describing a marketplace case round, ibinterviewquestions and hackingthecaseinterview marketplace and supply-demand pages); general marketplace guides, nothing specific to Uber, DoorDash or Swiggy loops; commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 
 **Say this first (1 line):** On the fitted line revenue is largest at a 25% take rate, 56.25% above today (illustrative), but the line was tested only between 10% and 12%, so 25% is an extrapolation I would not trust.
