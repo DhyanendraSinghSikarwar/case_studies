@@ -1,0 +1,3 @@
+progress: started; plan code/qNN.py -> out/qNN.txt; body/qNN.md with {{CODE}} {{OUTPUT}}; build.py assembles
+q11-q16 code done
+all code q11-q20 done and run; next: body/qNN.md + build.py

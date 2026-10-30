@@ -1,0 +1,11 @@
+600,000 predictions over 21 days = 28,571 per day
+approved/flagged live 0.394 vs with correct feature 0.262
+decisions that change on re-score: 98,672 of 600,000 (16.4%)
+  flagged wrongly (live yes, true no): 89,135;  missed (live no, true yes): 9,537
+AUC live 0.791 vs corrected 0.822
+revisit queue: all flips 98,672; first 10,000 by score gap cover 10.1% of flips, mean gap 0.607
+share of this month's training rows with the bad feature = 75%
+retrain on logged (bug included)     AUC on clean holdout 0.7850   coef spend 0.43
+retrain on recomputed-from-raw       AUC on clean holdout 0.8206   coef spend 1.20
+retrain on clean rows only           AUC on clean holdout 0.8206   coef spend 1.19
+old model on clean holdout                 AUC 0.8206
