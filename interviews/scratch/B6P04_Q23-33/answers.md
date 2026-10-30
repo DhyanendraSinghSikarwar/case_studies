@@ -974,7 +974,7 @@ capped lift is read lower than the true +3% because whales' extra spend above th
 
 **Approach:**
 1. Check the arithmetic: 8% of users x 1.25% = 0.1% overall. So the two numbers agree, if the non-reaching users are unaffected.
-2. Explain the dilution. The ITT (intention-to-treat, all assigned users) is the honest business number but 92% of users add noise and zero effect. Power for the diluted effect is about 1 / 0.08^2 = 156 times worse per user than for the 8% alone, adjusted for shares: for the same power the all-users test needs 12.5 times as many assigned users as the triggered test needs triggered users divided by 0.08.
+2. Explain the dilution. The ITT (intention-to-treat, all assigned users) is the honest business number, but 92% of users add noise and zero effect. The diluted effect is 12.5 times smaller (0.1% against 1.25%), so the all-users test needs 156 times as many users as the triggered test needs triggered users (12.5 squared). Because only 8% of assigned users trigger, the net cost is 156 x 0.08 = 12.5 times as many assigned users.
 3. Triggered analysis. Compare users who reached the page in treatment against users who would have reached it in control. Requirements for the trigger: (a) defined on behaviour before the treatment difference appears; (b) logged in both arms by the same rule; (c) not influenced by the treatment; (d) all triggered users counted, including those who then did not use the feature.
 4. Check for symmetry: the triggered share should be about equal in both arms (a built-in SRM check on triggered users).
 5. Report: the ITT (+0.1%, not significant), the triggered lift (+1.25% with interval), the triggered share (8%) and the implied revenue impact.
@@ -1053,8 +1053,104 @@ no true effect: asymmetric trigger reads +329%; symmetric trigger reads -1.4%
 ```
 
 **Follow-ups:**
-- Why is the ratio 12.5? The effect is 12.5 times smaller diluted, so the sample needed per user is 156 times larger, but the triggered test only has 8% of users, so the net ratio on assigned users is 1 / 0.08 = 12.5 (the noise from non-triggered users is the same size as signal there).
+- Why is the ratio 12.5? The all-users test needs 156 times the triggered count (12.5 squared): 156 x 100,466 = 15.7 million assigned. The triggered test needs 100,466 / 0.08 = 1.26 million assigned. 15.7 / 1.26 = 12.5 (my run: 15,697,759 against 1,255,821).
 - What if I cannot log control triggers? Use the all-users test, or CUPED, or run longer; do not substitute "users who used the feature".
 - Does 1.25% scale to the whole base? Only for users who reach the page; effect on others is assumed zero.
 
 **Common mistakes:** Filtering to feature users (selection). Using the triggered number as a company-wide lift. Hiding the ITT result. Changing the trigger after seeing results. Not checking the triggered share per arm.
+
+### Q33 ⭐⭐ 🟡 A team shipped 12 experiments over a year, each measured at about +1% on revenue, so adding them up gives about 12.7% (1.01 to the power 12). A long-term holdout group kept on the year-start experience shows +5.5% relative. Explain why the two differ and how you would report cumulative impact.
+**Asked at:** No public page found, editor-designed from the standard experimentation judgement themes that the guides above describe in general terms; search snippets only, not opened
+**Say this first (1 line):** The holdout is the better number: individual tests overstate their lifts (winner's curse, novelty), the launches overlap and cannibalise each other, so 12 x +1% does not add up to 12.7%; I would report the holdout with its interval and treat the sum as an upper bound.
+
+**Clarifying questions:**
+- How big is the holdout and how long has it been held (users, months)? That gives the holdout's own interval.
+- Was the holdout clean (same users all year, no leakage, same logging)? A leaky holdout understates the effect.
+- How were the 12 experiments chosen: the significant ones out of how many run? That sizes the winner's curse.
+- Which metric: revenue per user, and over what window? The tests may have used a shorter window than the holdout.
+- Did anything else change for everybody (pricing, seasonality, marketing)? The holdout is exposed to it too, so those drop out of the difference.
+
+**Approach:**
+1. Check the arithmetic: 1.01^12 = 1.1268, so 12.7% if effects compound. In log points 12 x ln(1.01) = 0.1194 against ln(1.055) = 0.0535: the holdout shows only 45% of the promise.
+2. Reasons for the gap, in order:
+   - Winner's curse: we ship the tests that came out significant, and their measured lifts are inflated by selection. Shipped tests measure about +1% while their true lifts are lower.
+   - Novelty and decay: a two-week test captures a peak that fades. The holdout measures the long run.
+   - Overlap and cannibalisation: two features that both nudge the same checkout step do not add; the second one has less room.
+   - Interference and interaction: tests run on the same users at the same time, so lifts are measured against different baselines.
+   - Different measurement: window, population, metric definition.
+3. Do not try to split the gap by arithmetic. Say what is plausible and measure what you can: re-run a few launches as reverse tests (holdback) to estimate decay.
+4. Report the cumulative impact as the holdout estimate with its interval (the primary number) and the sum of individual tests as a ceiling. Present the realisation ratio (holdout / sum) so the next year's plan uses a discount.
+5. Process fixes: confirm big winners with a second test, track long-term holdouts for every quarter, keep a ledger of shipped lifts, apply shrinkage to new results (Book 1 Part 10 Q24 explains long-term holdouts).
+
+**Metrics:**
+- Cumulative lift = mean revenue per user (shipped experience) / mean revenue per user (holdout) - 1, same window and same population.
+- Naive sum = product of (1 + measured lift) over shipped experiments - 1 = 1.01^12 - 1.
+- Realisation ratio = log(1 + holdout lift) / sum of log(1 + individual lifts) = 0.0535 / 0.1194.
+- Guardrails: holdout is a random user slice, same logging, no leakage, SRM against the intended share.
+
+**Risks:**
+- A holdout that is too small gives a wide interval. With 5% of users the interval is still narrow here (see example).
+- Holdout users who leak into the new experience (shared accounts, other devices).
+- Holdout users get a worse product for a year (cost, fairness, user churn).
+- Treating the gap as proof that tests are useless. They are still valid for direction, not for magnitude.
+- Compounding assumption: not all effects multiply.
+
+**What the interviewer scores:**
+- Strong: checks 1.01^12 = 12.7% and names winner's curse, novelty and overlap as separate causes. Weak: "the holdout is probably wrong".
+- Strong: says which number to report and why (holdout with CI, sum as ceiling). Weak: reports 12.7%.
+- Strong: gives the holdout's interval. Weak: treats 5.5% as exact.
+- Strong: proposes process changes (confirm winners, shrinkage, rotating holdouts). Weak: stops at the diagnosis.
+
+**Example:** illustrative numbers. 600 candidate ideas, true lifts average +0.30% with SD 0.45%, tests with SE 0.30%, ship the significant ones.
+- Weak: "12 launches at +1% each, so we added 12.7% revenue."
+- Strong: "The holdout says 5.5% (95% interval about 4.6 to 6.4). The sum is a ceiling because of selection, decay and overlap; the realisation is about 45% in log terms."
+- In my run: of 600 ideas, 195 are shipped; their average measured lift is 0.91% but their average true lift is 0.71%. An illustrative chain (0.71% true, 75% remains after novelty, 90% after overlap) gives 0.478% per launch and 5.9% over twelve, in the range of the holdout. The decomposition is invented, only to show that plausible discounts can explain the gap. With a 5% holdout (500,000 users) the +5.5% has SE 0.44 points, interval about 4.6% to 6.4%, so 12.7% is far outside it.
+
+**Code:**
+```python
+# Q33: 12 shipped +1% experiments vs a +5.5% holdout (illustrative simulation, seeded)
+import numpy as np
+
+rng = np.random.default_rng(33)
+print("compounded sum of twelve +1%:", round(1.01**12 - 1, 4), "; log-points:", round(12 * np.log(1.01), 4), "vs holdout", round(np.log(1.055), 4))
+assert abs(1.01**12 - 1 - 0.1268) < 5e-4
+print(f"holdout shows {np.log(1.055)/(12*np.log(1.01))*100:.0f}% of the compounded promise")
+
+# Reason 1: winner's curse. 600 candidate ideas, true lifts mostly small; each test has noise; ship only significant wins.
+K, SE = 600, 0.003
+true = rng.normal(0.0030, 0.0045, K)
+meas = true + rng.normal(0, SE, K)
+ship = meas / SE > 1.96
+print(f"shipped {ship.sum()} of {K}: average MEASURED lift {meas[ship].mean()*100:.2f}%, average TRUE lift {true[ship].mean()*100:.2f}%")
+assert meas[ship].mean() > true[ship].mean() + 0.001 and 0.008 < meas[ship].mean() < 0.012
+
+# Reason 2 and 3 (illustrative factors, to be measured not assumed): novelty fades; overlapping tests cannibalise each other.
+true_each = true[ship].mean(); persist = 0.75; overlap = 0.90
+per = true_each * persist * overlap
+cum = (1 + per) ** 12 - 1
+print(f"illustrative chain: {true_each*100:.2f}% true x {persist} still there after novelty x {overlap} after overlap = {per*100:.3f}% each; twelve compounded = {cum*100:.1f}%")
+assert 0.045 < cum < 0.065
+
+# Reason 4: the holdout has its own noise. 5% holdout of 10M users, revenue per user CV = 3
+N_H, N_L, CV = 500_000, 9_500_000, 3.0
+se_rel = CV * np.sqrt(1 / N_H + 1 / N_L)
+lo, hi = 1.055 - 1.96 * se_rel * 1.055, 1.055 + 1.96 * se_rel * 1.055
+print(f"holdout 5.5% has SE {se_rel*100:.2f} points; 95% CI about {100*(lo-1):.1f}% to {100*(hi-1):.1f}%; 12.7% is far outside")
+assert hi - 1 < 0.08
+```
+
+**Output (my run):**
+```text
+compounded sum of twelve +1%: 0.1268 ; log-points: 0.1194 vs holdout 0.0535
+holdout shows 45% of the compounded promise
+shipped 195 of 600: average MEASURED lift 0.91%, average TRUE lift 0.71%
+illustrative chain: 0.71% true x 0.75 still there after novelty x 0.9 after overlap = 0.478% each; twelve compounded = 5.9%
+holdout 5.5% has SE 0.44 points; 95% CI about 4.6% to 6.4%; 12.7% is far outside
+```
+
+**Follow-ups:**
+- Which number goes on the company slide? The holdout figure with its interval, and the footnote that it is measured against the year-start experience.
+- Is the holdout always right? It has its own noise and leakage risk. It is the best available estimate of the cumulative effect, not a perfect one.
+- How do I stop the gap next year? Confirm winners with a second test, shrink estimates, run shorter holdbacks to measure decay, and avoid stacking tests on the same funnel step.
+
+**Common mistakes:** Adding or compounding test lifts and calling it the annual impact. Believing a decomposition built by arithmetic. Using a tiny holdout. Not stating the holdout's interval. Forgetting that the holdout is a cost to users. Ignoring the order and overlap of launches.

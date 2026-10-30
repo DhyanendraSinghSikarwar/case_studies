@@ -39,5 +39,8 @@ et_itt = np.where(kt, et, 0.0)
 itt_zero = et_itt.mean() / ec.mean() - 1
 print(f"naive per logged user lift = {naive:+.2%} (true effect 0)")
 print(f"analysis on ALL assigned users, lost users counted as zero: {itt_zero:+.2%}")
+se_rel = np.sqrt(et[kt].var()/kt.sum() + ec[kc].var()/kc.sum()) / ec[kc].mean()
+print(f"sampling noise (1 SE) of that lift = {se_rel:.2%}")
+assert se_rel < 0.002
 assert 0.015 < naive < 0.022 and abs(itt_zero) < 0.01
 print("all asserts passed")

@@ -1,0 +1,9 @@
+chi-square = 100, p = 1.5e-23
+share of treatment users missing (if assigned 505,000 each): 1.98%
+maximum possible inflation (dropped users engage 0): +2.02%
+if only 5,000 were missing of 500,000: max inflation +1.01%
+logged users: control 505,000, treatment 495,073
+naive per logged user lift = +2.15% (true effect 0)
+analysis on ALL assigned users, lost users counted as zero: +0.14%
+sampling noise (1 SE) of that lift = 0.15%
+all asserts passed

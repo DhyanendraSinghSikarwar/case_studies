@@ -639,3 +639,104 @@ all asserts passed
 - What if the team wants a rule for subgroup claims? Pre-register a short list of segments, test the interaction, correct for the list size, and mark everything else as exploratory.
 - Does the overall flat result mean no segment matters? No; it means no average effect. Segments can offset each other, but find that with planned analysis, not a scan.
 **Common mistakes:** Using the 1% level inside the segment and ignoring the 40 chances. Confusing "significant in the segment" with "different from the other segments". Reporting the unshrunk effect as the expected launch gain. Forgetting that the real number of looks was larger.
+
+### Q18 ⭐⭐⭐ 🔴 A test meant to split 1,000,000 users 50/50 has 495,000 in treatment and 505,000 in control. The treatment build crashes at launch on some older phones so those sessions never log events, treatment shows engagement per logged user up 2%, and the product manager says a 1% imbalance is small enough to ignore. Explain what is wrong and what the 2% means.
+**Asked at:** A/B-testing pitfall guides (Dataford pages on pitfalls such as peeking, novelty effects, network interference and sample ratio mismatch, tagged in snippets to companies such as Lattice, Carvana and Arm; a datainterview.com A/B testing interview list; PracHub A/B testing topic pages); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
+**Say this first (1 line):** A 495,000 versus 505,000 split is a sample ratio mismatch (chi-square 100, p about 1e-23), not a small imbalance; the build that crashes removes users from treatment who are not random, so the +2% per logged user is a survivor effect, and it cannot be read as the feature's effect.
+**Clarifying questions:**
+- How many users were assigned in each arm according to the assignment service (not the event logs)? The gap between assigned and logged counts the lost users.
+- Which phones and OS versions crash, and how do those users behave in control (engagement, spend)? It tells me the direction of the bias.
+- Do the crashed users come back (after an update) or are they gone for good? Gone means a real harm of the feature, not only a measurement issue.
+- Is the split exactly 50/50 by design? An SRM check is against the planned ratio.
+- Can I get a server-side measure for these users (logins, orders)? It lets me measure them without the client logs.
+**Approach:**
+1. Compute the SRM test: expected 500,000 each, observed 495,000 and 505,000. Chi-square = 5,000^2 / 500,000 x 2 = 100, p about 1e-23. A random split would almost never do this.
+2. Say what it means: the arms no longer hold the same kind of people. Treatment lost users who crash, so the comparison is between survivors in treatment and everyone in control. The estimate is biased and the usual p-values are not valid. Book 1 Part 10, Q6 (What is a Sample Ratio Mismatch (SRM)?) lists the causes and tests.
+3. Bound the bias with a quick calculation: if f of the treatment arm is missing and the missing users engage at a share r of the average, the survivor mean is (1 - f r) / (1 - f) times the arm mean. With f about 2% and r near 0, the inflation can be about +2%, the same size as the reported lift.
+4. Confirm the cause: count users by device model and OS version in each arm; the missing ones should sit in the older phones. The 1% imbalance is that 1 point of the split; the size of the lost group is about 2% of the treatment arm.
+5. Do what the data allows: analyse on the assignment log (all users assigned, intention-to-treat) using server-side outcomes; or compare only the unaffected devices (by pre-defined device filter in both arms); or fix the crash and re-run.
+6. Tell the manager: the +2% is not a result, the crash is a real product bug that harms some users, and the test restarts after the fix.
+**Metrics:**
+- SRM chi-square = sum over arms of (observed - expected)^2 / expected; p-value from a chi-square with 1 degree of freedom.
+- Lost share = (assigned - logged) / assigned in treatment.
+- Engagement per assigned user (all assigned users in the denominator) from server-side data; compare with engagement per logged user.
+- Guardrails: crash-free sessions, device-model mix per arm, app-store rating.
+**Risks:**
+- Reading the result on logged users only: survivors look better.
+- Dropping the affected devices from only one arm and not the other.
+- Fixing the crash mid-test and mixing two regimes.
+- Assuming the bias goes up: it depends on whether the lost users are heavy or light users. Here they are older-phone users, who typically engage less in this illustration, but check it in control.
+**What the interviewer scores:**
+- Strong: computes the SRM test and rejects "1% is small". Weak: "50.5% versus 49.5% is close enough".
+- Strong: explains the mechanism (non-random loss, survivor bias) and bounds the effect. Weak: lists causes without linking to the 2%.
+- Strong: distinguishes the measurement problem from the real product harm. Weak: only data cleaning.
+- Strong: gives a path (analyse on assignment, fix, re-run). Weak: stops at "invalid".
+**Example:** Illustrative numbers. Assume 505,000 users were assigned to each arm and 10,000 treatment users never log (1.98% of the arm). If the true effect is zero and the lost users engage at 5% of normal, the logged-user lift comes out at about +2.15% in my simulation; the upper limit with lost users at 0 engagement is +2.02% in expectation (the simulated number can sit slightly above it because of sampling noise, about 0.1 points). If only 5,000 were missing of 500,000 each, the limit would be +1.01%, so the 2% needs the larger loss.
+- Weak answer: "The imbalance is only 1%, and treatment is up 2%, so ship."
+- Strong answer: "That split is not random. The lost users are the ones the build crashes on. The 2% is mostly who remains. I would analyse on all assigned users with server-side data and fix the crash first."
+**Code:**
+```python
+# Q18: SRM from a crash on older phones and the '+2% per logged user' (illustrative simulation)
+import numpy as np
+from scipy.stats import chisquare
+
+# 1) SRM test on the observed counts
+obs = np.array([495_000, 505_000])
+exp = np.array([500_000, 500_000])
+chi2, p = chisquare(obs, exp)
+print(f"chi-square = {chi2:.0f}, p = {p:.1e}")
+assert round(chi2) == 100 and p < 1e-20
+
+# 2) Largest bias that dropping f of the arm can create: survivors vs the whole arm
+#    survivor mean / whole-arm mean = (1 - f*r)/(1 - f), where r = mean of dropped users / overall mean
+assigned_c = 505_000
+logged_t = 495_000
+f = (assigned_c - logged_t) / assigned_c       # assumes both arms were assigned 505,000
+print(f"share of treatment users missing (if assigned 505,000 each): {f:.2%}")
+print(f"maximum possible inflation (dropped users engage 0): {f/(1-f):+.2%}")
+assert abs(f - 0.0198) < 0.0001 and abs(f/(1-f) - 0.0202) < 0.0002
+f_small = 5_000 / 500_000                       # if each arm was assigned 500,000
+print(f"if only 5,000 were missing of 500,000: max inflation {f_small/(1-f_small):+.2%}")
+assert f_small / (1 - f_small) < 0.0102
+
+# 3) Simulation: true treatment effect is ZERO; dropped users are older-phone users who engage less
+rng = np.random.default_rng(18)
+n = 505_000
+def make_arm(drop):
+    old = rng.random(n) < 0.0198                       # older phones
+    base = rng.gamma(2.0, 5.0, n)                      # engagement per user, mean 10
+    eng = np.where(old, base * 0.05, base)             # older-phone users engage at 5% of normal
+    keep = ~(old & drop)                               # in treatment their sessions never log
+    return eng, keep
+ec, kc = make_arm(False)
+et, kt = make_arm(True)
+print(f"logged users: control {kc.sum():,}, treatment {kt.sum():,}")
+naive = et[kt].mean() / ec[kc].mean() - 1
+itt = et.mean() / ec.mean() - 1     # all assigned users, missing sessions counted as the engagement they have (0 if lost)
+et_itt = np.where(kt, et, 0.0)
+itt_zero = et_itt.mean() / ec.mean() - 1
+print(f"naive per logged user lift = {naive:+.2%} (true effect 0)")
+print(f"analysis on ALL assigned users, lost users counted as zero: {itt_zero:+.2%}")
+se_rel = np.sqrt(et[kt].var()/kt.sum() + ec[kc].var()/kc.sum()) / ec[kc].mean()
+print(f"sampling noise (1 SE) of that lift = {se_rel:.2%}")
+assert se_rel < 0.002
+assert 0.015 < naive < 0.022 and abs(itt_zero) < 0.01
+print("all asserts passed")
+```
+**Output (my run):**
+```text
+chi-square = 100, p = 1.5e-23
+share of treatment users missing (if assigned 505,000 each): 1.98%
+maximum possible inflation (dropped users engage 0): +2.02%
+if only 5,000 were missing of 500,000: max inflation +1.01%
+logged users: control 505,000, treatment 495,073
+naive per logged user lift = +2.15% (true effect 0)
+analysis on ALL assigned users, lost users counted as zero: +0.14%
+sampling noise (1 SE) of that lift = 0.15%
+all asserts passed
+```
+**Follow-ups:**
+- Would reweighting the survivors fix it? Only if the lost users are like the survivors given observed device features; the crash selects on something unobserved too (how much they use the app). Reweighting is a sensitivity check, not a fix.
+- How do you catch this earlier? An automatic SRM alert on day 1 and a crash-rate guardrail in both arms.
+- Can the effect be bounded without the lost users? Yes, with worst-case or trimming bounds: assume the lost users would have engaged at the lowest and highest plausible level and report the range.
+**Common mistakes:** Treating the SRM as a rounding issue. Computing engagement per logged user. Dropping older phones from treatment only. Not telling the product team about the crash.
