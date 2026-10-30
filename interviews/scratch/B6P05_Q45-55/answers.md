@@ -748,3 +748,112 @@ loss ratio after repricing: 0.8148
 - Treating the average claims of the group as the claims of those who stay.
 - Ignoring the 90,000 profitable policies.
 - Using the repriced premium for lapsed policies.
+
+### Q52 ⭐ 🔴 A marketplace tested take rates of 10% and 12% and saw GMV fall by 2.5 points of today's GMV for each 1 point of take rate (absolute). Fitting a line, GMV equals today's GMV times (1 - 2.5 x (take rate - 0.10)). Compute the revenue-maximising take rate and the revenue gain relative to today's revenue, then explain why extrapolating beyond the tested range is dangerous.
+**Asked at:** Marketplace and take-rate material (an inpractise take-rate course page, a Codemia Thumbtack data scientist guide describing a marketplace case round, ibinterviewquestions and hackingthecaseinterview marketplace and supply-demand pages); general marketplace guides, nothing specific to Uber, DoorDash or Swiggy loops; commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
+
+**Say this first (1 line):** On the fitted line revenue is largest at a 25% take rate, 56.25% above today (illustrative), but the line was tested only between 10% and 12%, so 25% is an extrapolation I would not trust.
+
+**Clarifying questions:**
+- Were 10% and 12% tested at random on sellers, or compared across time or regions? If not random, the slope is confounded.
+- How long did the test run? Sellers move volume off-platform slowly, so a short test understates the long-run fall.
+- Was GMV measured per seller or marketplace-wide? Buyers may react too.
+- Are there only two points? Two points give a line with no error bar.
+- Does take rate matter at the seller-category level? A single rate for all categories is a strong simplification.
+
+**Approach:**
+1. Write the model with today's GMV as 1. GMV(t) = 1 - 2.5 x (t - 0.10). Check: at 12%, GMV = 0.95, a fall of 5%.
+2. Revenue R(t) = t x GMV(t) = 1.25t - 2.5t squared.
+3. Set the derivative to zero: 1.25 - 5t = 0, so t = 0.25.
+4. R(0.25) = 0.25 x 0.625 = 0.15625. Today R = 0.10. Gain = 56.25%. At 12% the gain is 14%.
+5. Look at what the optimum implies: GMV falls by 37.5%, over 7 times the 5% fall actually observed.
+6. Show that the answer depends on the curve shape. A constant-elasticity curve through the same two points (elasticity 0.28) gives revenue that keeps rising at 25% and 40%. The linear one falls back to today's level at 40%. Two curves through the same data, two different stories.
+7. Show noise: with 2% noise on GMV in each arm, the "optimal" rate swings from 0.16 to 0.91 (5th to 95th percentile).
+8. Recommend: move in steps (for example to 12%, then 14%), measuring GMV, seller exits and off-platform leakage at each step, and stop when the revenue gain per step shrinks.
+
+**Metrics:**
+- Revenue = take rate x GMV. Take rate = platform revenue / GMV.
+- GMV retention vs control = GMV treated / GMV control.
+- Guardrails: active sellers, seller churn, buyer repeat rate, off-platform leakage (proxy: share of repeat buyer-seller pairs that disappear).
+
+**Risks:**
+- Extrapolation beyond 12%: sellers have a threshold (when the fee exceeds their margin they leave in bulk).
+- Long-run response is bigger than the short-run one.
+- Competitors react.
+- Two points, no uncertainty: the slope could be flatter or steeper.
+- Revenue maximum is not the business goal: liquidity and growth matter too.
+
+**What the interviewer scores:**
+- Strong: correct optimum and gain, then immediately questions the extrapolation with a reason and a plan. Weak: reports 25% as the answer.
+- Strong: shows another curve shape or noise to prove the point. Weak: says "it may be non-linear" with nothing more.
+- Strong: proposes a staged rollout with stop rules. Weak: runs one big increase.
+
+**Example:** Illustrative numbers. At 12%: 0.12 x 0.95 = 0.114, up 14%. At 25%: 0.25 x 0.625 = 0.156, up 56%. But the test never saw GMV below 0.95. Weak: "Set 25% and earn 56% more." Strong: "The model says 25%; I trust it up to about 12 to 14% and would step up from there."
+
+**Code:**
+```python
+import numpy as np
+# GMV(t) = G0*(1 - 2.5*(t-0.10)),  revenue R(t) = t*GMV(t),  G0 = 1 (index)
+g=lambda t:1-2.5*(t-0.10)
+R=lambda t:t*g(t)
+# check the fit reproduces the tested points
+assert abs(g(0.12)-0.95)<1e-12 and abs(g(0.10)-1)<1e-12
+topt=1.25/5      # R = 1.25t - 2.5t^2 ; dR/dt = 1.25 - 5t = 0
+print("revenue-maximising take rate:",topt)
+assert abs(topt-0.25)<1e-12
+print("revenue index at 10%, 12%, 25%:",round(R(0.10),5),round(R(0.12),5),round(R(topt),5))
+gain=R(topt)/R(0.10)-1
+print(f"gain vs today: {gain:.4f}; at 12%: {R(0.12)/R(0.10)-1:.4f}")
+assert round(gain,4)==0.5625 and round(R(0.12)/R(0.10)-1,3)==0.14
+# numeric check of the optimum
+ts=np.linspace(0.05,0.45,40001); assert abs(ts[np.argmax(R(ts))]-0.25)<1e-4
+print(f"GMV at the optimum: {g(topt):.3f} of today (a {1-g(topt):.1%} fall, 7.5x the 5% fall actually seen at 12%)")
+assert round(1-g(topt),3)==0.375
+# another curve through the same two points: constant elasticity GMV = (t/0.10)^(-e)
+e=-np.log(0.95)/np.log(1.2)
+print(f"constant-elasticity curve through (10%,1) and (12%,0.95): e={e:.4f}")
+Rc=lambda t:t*(t/0.10)**(-e)
+for t in (0.10,0.12,0.25,0.40):
+    print(f"  take {t:.0%}: linear revenue {R(t):.4f}  vs constant-elasticity {Rc(t):.4f}  GMV linear {g(t):.3f} vs {(t/0.10)**(-e):.3f}")
+assert Rc(0.40)>Rc(0.25)>Rc(0.12)   # no interior optimum here: revenue keeps rising
+assert R(0.40)<R(0.25)
+# the line through two points: how sensitive is the slope to noise in the 12% test?
+rng=np.random.default_rng(3)
+sd=0.02   # illustrative: 2% noise on measured GMV index in each arm
+slopes=[]
+for _ in range(20000):
+    g0=1+rng.normal(0,sd); g1=0.95+rng.normal(0,sd)
+    slopes.append((g1/g0-1)/0.02)       # fall per unit of take rate (here -2.5 at truth)
+slopes=np.array(slopes)
+# optimum for slope s (GMV=1+s*(t-0.10)): R=t+s t^2-0.1 s t -> t*=(0.1*s-1)/(2*s)
+s=slopes; tstar=(0.1*s-1)/(2*s)
+tstar=tstar[s<0]
+lo,hi=np.percentile(tstar,[5,95])
+print(f"with 2% noise in each arm, the 'optimal' take rate ranges {lo:.2f} to {hi:.2f} (5th to 95th percentile)")
+assert hi-lo>0.1
+```
+
+**Output (my run):**
+```
+revenue-maximising take rate: 0.25
+revenue index at 10%, 12%, 25%: 0.1 0.114 0.15625
+gain vs today: 0.5625; at 12%: 0.1400
+GMV at the optimum: 0.625 of today (a 37.5% fall, 7.5x the 5% fall actually seen at 12%)
+constant-elasticity curve through (10%,1) and (12%,0.95): e=0.2813
+  take 10%: linear revenue 0.1000  vs constant-elasticity 0.1000  GMV linear 1.000 vs 1.000
+  take 12%: linear revenue 0.1140  vs constant-elasticity 0.1140  GMV linear 0.950 vs 0.950
+  take 25%: linear revenue 0.1562  vs constant-elasticity 0.1932  GMV linear 0.625 vs 0.773
+  take 40%: linear revenue 0.1000  vs constant-elasticity 0.2708  GMV linear 0.250 vs 0.677
+with 2% noise in each arm, the 'optimal' take rate ranges 0.16 to 0.91 (5th to 95th percentile)
+```
+
+**Follow-ups:**
+- *What if the effect is different by seller size?* Fit separate slopes. Large sellers can leave more easily (see Part 5 Q28).
+- *How do you estimate off-platform leakage?* Look at repeat buyer-seller pairs that vanish from the platform after the rise.
+- *Is revenue maximisation the right goal?* Usually not alone. Add a floor on GMV or active sellers.
+
+**Common mistakes:**
+- Taking the vertex of the parabola as a recommendation.
+- Forgetting that revenue is take rate x GMV, not GMV alone.
+- Treating two test arms as a fitted model with a confidence interval.
+- Measuring only the short run.

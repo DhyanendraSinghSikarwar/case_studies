@@ -31,7 +31,6 @@ for _ in range(20000):
     g0=1+rng.normal(0,sd); g1=0.95+rng.normal(0,sd)
     slopes.append((g1/g0-1)/0.02)       # fall per unit of take rate (here -2.5 at truth)
 slopes=np.array(slopes)
-opt=np.where(slopes<0,(1-slopes*(-0.10))*0 ,0)  # placeholder removed below
 # optimum for slope s (GMV=1+s*(t-0.10)): R=t+s t^2-0.1 s t -> t*=(0.1*s-1)/(2*s)
 s=slopes; tstar=(0.1*s-1)/(2*s)
 tstar=tstar[s<0]
