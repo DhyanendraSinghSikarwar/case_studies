@@ -584,3 +584,105 @@ net per original active user if light is not served: Rs 0.42
 - Does cheaper always win? No. A cheaper path that cuts the uplift can destroy net value. Test the cheaper path as its own arm.
 
 **Common mistakes:** Using total completions instead of incremental. Dividing cost by all users instead of the same denominator on both sides. Averaging across segments and stopping. Segmenting on post-launch behaviour. Setting a cost cap with no quality guardrail.
+
+### Q50 ⭐ 🔴 Retention is reported as the share of last month's active users who are active this month, and it rose from 55% to 62%. Explain how survivorship, resurrected users and a shrinking base could make this look good while growth is stalling, and what companion metrics you would add.
+**Asked at:** Statistics-trap and Simpson's-paradox question banks (Codemia and Prachub Simpson's paradox prompts, an Educative data-science course page, a KDnuggets traps article); commonly reported in public guides for global tech loops; search snippets only, not opened
+**Say this first (1 line):** A higher month-over-month retention rate can come from who is left in the base, not from users liking the product more, so I break it by segment and add count-based metrics: retained users, new and resurrected users, churned users and net change in actives.
+
+**Clarifying questions:**
+- Exactly how is it computed: users active in both months divided by last month's actives? Does "active" mean the same thing in both months? It decides what resurrected users do to the number.
+- Did the base size change? A smaller denominator moves a percentage a lot.
+- Did acquisition change (a marketing cut, a new channel, a changed onboarding)? Fewer casual signups makes the base more loyal and the rate higher.
+- Did the definition of "active" change (a stricter bar removes casual users from the base)? That alone lifts retention.
+- Is total monthly active users up, flat or down? It shows whether the rate is helping.
+- Is retention by tenure or segment available? I need it to check whether any single group got better.
+
+**Approach:**
+1. Write the identity. This month's actives = retained + new + resurrected. Retention only tells me about the retained slice divided by the base.
+2. Check the base: size and composition (new, tenured, casual, core). Survivorship: months of churn have already removed weak users, so a base of survivors retains well.
+3. Mix-standardise. Keep last period's segment weights and apply this period's segment retention. If it stays at 55%, the rise is pure mix.
+4. Check resurrected users. They are not in last month's base, so they cannot raise this ratio if it is computed correctly. A leaky definition (counting them in the numerator) does inflate it.
+5. Add counts: retained users, new users, resurrected users, churned users, net adds, and a quick ratio = (new + resurrected) / churned.
+6. Show cohort retention curves by signup month, and retention by tenure, so a single blended percentage is never the headline.
+
+**Metrics:**
+- MoM retention = users active in both month t-1 and month t / users active in t-1.
+- Net adds = actives(t) - actives(t-1). Quick ratio = (new + resurrected) / churned.
+- Mix-standardised retention = sum over segments of (last period's share x this period's segment retention).
+- Guardrails: base size, share of new users in the base, active count.
+
+**Risks:**
+- Mix shift: the rate rises while every segment is unchanged (Simpson-style; see Book 1 Part 10, Q10, heading: "What is Simpson's paradox? Give an A/B-test example where the variant wins overall but loses in every segment.").
+- Survivorship: only survivors are measured (Book 1 Part 10, Q42, heading: "Explain selection bias and survivorship bias with experiment or observational examples.").
+- Resurrected users hide a weak acquisition engine. Activity count looks fine, but it is old users coming back.
+- A definition leak (resurrected in the numerator) can push a ratio near or above plausible limits.
+
+**What the interviewer scores:**
+- Strong: gives the identity, tests mix versus real improvement with standardisation, and adds counts, not only another ratio.
+- Strong: points out that a rising rate and a shrinking base can both be true.
+- Weak: celebrates 62%, or just says "retention is a lagging metric".
+- Weak: adds companion metrics that are also ratios on the same shrunken base.
+
+**Example:** Illustrative numbers. Two segments with unchanged monthly retention: core 85%, casual 25%.
+- Before: base 100,000 (50,000 core, 50,000 casual). Retained 42,500 + 12,500 = 55,000, so 55%. With 20,000 new and 5,000 resurrected, actives next month are 80,000.
+- After: acquisition was cut, casual users thinned out. Base 65,000 (40,000 core, 25,000 casual). Retained 34,000 + 6,250 = 40,250, so 61.9%, reported as 62%. With 8,000 new and 7,000 resurrected, actives next month are 55,250.
+- The rate rose 7 points and retained users fell from 55,000 to 40,250. Standardised to last period's mix, retention is still 55%.
+- Quick ratio: 0.56 before, 0.61 after. Both below 1, so the product is shrinking.
+- Leaky definition: adding the 7,000 resurrected users to the numerator gives 72.7%.
+- Weak answer: "Retention improved 7 points, great." Strong answer: "Same segment rates, fewer people. I would report retained users and the quick ratio next to the rate."
+
+**Code:**
+```python
+# Q50: month-over-month retention rises 55% -> 62% while the product is not growing (illustrative)
+import pandas as pd
+
+# Two month-to-month transitions. Within each segment, retention is IDENTICAL in both.
+RET = {"core": 0.85, "casual": 0.25}
+t = {
+  "before": dict(base={"core": 50_000, "casual": 50_000}, new=20_000, resurrected=5_000),
+  "after":  dict(base={"core": 40_000, "casual": 25_000}, new=8_000,  resurrected=7_000),
+}
+res = {}
+for k, v in t.items():
+    base = sum(v["base"].values())
+    retained = sum(v["base"][s] * RET[s] for s in RET)
+    actives_next = retained + v["new"] + v["resurrected"]
+    churned = base - retained
+    res[k] = dict(base=base, retained=retained, retention=retained / base, actives_next=actives_next,
+                  churned=churned, quick_ratio=(v["new"] + v["resurrected"]) / churned,
+                  core_share=v["base"]["core"] / base)
+df = pd.DataFrame(res).T
+print(df.round(3).to_string())
+
+assert round(res["before"]["retention"], 2) == 0.55 and round(res["after"]["retention"], 2) == 0.62
+assert res["before"]["retained"] == 55_000 and res["after"]["retained"] == 40_250      # fewer retained PEOPLE
+assert res["before"]["actives_next"] == 80_000 and res["after"]["actives_next"] == 55_250
+assert round(res["before"]["quick_ratio"], 2) == 0.56 and round(res["after"]["quick_ratio"], 2) == 0.61
+
+# mix-standardised retention: apply the BEFORE mix to the AFTER segment rates
+w = {s: t["before"]["base"][s] / 100_000 for s in RET}
+std_after = sum(w[s] * RET[s] for s in RET)
+print("after, holding last period's mix:", round(std_after, 3), "(unchanged: the rise is pure mix)")
+assert round(std_after, 2) == 0.55
+
+# a leaky definition: counting resurrected users in the numerator of "last month's actives"
+leak = (res["after"]["retained"] + t["after"]["resurrected"]) / res["after"]["base"]
+print("leaky 'retention' with resurrected users in the numerator:", round(leak, 3))
+assert round(leak, 3) == 0.727
+```
+
+**Output (my run):**
+```text
+            base  retained  retention  actives_next  churned  quick_ratio  core_share
+before  100000.0   55000.0      0.550       80000.0  45000.0        0.556       0.500
+after    65000.0   40250.0      0.619       55250.0  24750.0        0.606       0.615
+after, holding last period's mix: 0.55 (unchanged: the rise is pure mix)
+leaky 'retention' with resurrected users in the numerator: 0.727
+```
+
+**Follow-ups:**
+- What is a resurrected user? Active this month, inactive last month, but seen before. Track them separately from new users.
+- Which one chart do you show leadership? Active users split into retained, new and resurrected, stacked by month, with the retention rate as a line.
+- Could the rise ever be real? Yes, if segment rates themselves went up. The standardised rate tells you.
+
+**Common mistakes:** Treating the rate as the whole story. No counts. Letting the "active" definition change without a restatement. Mixing resurrected into the numerator. Comparing blended rates across periods with different base mixes.
