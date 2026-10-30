@@ -530,7 +530,7 @@ In this run the break day is recovered exactly (33), the paired change is about 
 - Strong: separates "what we reported" from "what is true" and states the exposure window.
 - Strong: gives an interim plan for the live system (rollback or fallback, thresholds) before the long fix.
 - Weak: "retrain the model" without recognising the feature cannot exist at serving time.
-- Cross-reference: Book 4 Part 9 has "Point-in-time correct joins. Explain label leakage from joining the latest feature value to old labels, the as-of..." for the feature-store mechanics, and Book 4 Part 1 has "Write tests that catch data leakage" for the test.
+- Cross-reference: Book 4 Part 9 has "Point-in-time correct joins" for the feature-store mechanics, and Book 4 Part 1 has "Write tests that catch data leakage" for the test.
 
 **Example:** (illustrative numbers) Offline: AUC 0.96 with the leaky feature. Without it: 0.705, the same as live (0.705 in the run). A tiny as-of join case: user 1 has feature values 100 (day 10), 200 (day 20) and 300 (day 30); the prediction is at day 22. "Latest value ever" gives 300 (a future value); as-of gives 200. Weak answer: "Retrain and hope live improves." Strong answer: "The feature is written after the outcome, so the true AUC is about 0.70. I roll back to the previous model, rebuild training with an as-of join and a time split, add a timestamp check to CI, and recalibrate thresholds."
 
@@ -624,3 +624,144 @@ The run shows the pattern in the prompt in a simulation: offline 0.961 and live-
 - Is it still useful as a signal? Only if a version exists at prediction time; otherwise drop it.
 
 **Common mistakes:** Random train-test split on time-ordered data. "Latest value" joins. Filling the missing feature with zero and moving on. Reporting 0.95 for a month after the review. Fixing the threshold instead of the model.
+
+### Q36 ⭐⭐ 🔴 A model trained on metro-city customers is launched in smaller cities and its precision falls from 62% to 48% in the new region, while the original cities hold steady. Explain how you would test whether covariate shift or a different relationship to the outcome is responsible, and whether you would reweight, add regional features, fine-tune or build a separate model.
+**Asked at:** No public page found, editor-designed from standard production-ML judgement themes that the degradation guides describe in general terms; search snippets only, not opened
+**Say this first (1 line):** First I would check how much of 62% to 48% a lower base rate alone explains, then use a small labelled sample from the new region to test whether reweighting the metro data to look like the new region reproduces the new precision (covariate shift) or leaves a gap (a different relationship); the answer picks the fix.
+
+**Clarifying questions:**
+- Is "precision" at a fixed threshold, and are labels in the new region defined and delayed the same way as in the metro cities? Why: a different label process looks like a different relationship.
+- Do we have any labelled rows from the new region, and how many? Why: without them I can only test covariate shift, not the relationship.
+- What differs in the new region: customer mix, product, channels, income, language, data sources, device? Why: it suggests features that carry the shift.
+- Is the base rate of the outcome different in the new region? Why: precision falls when prevalence falls even if the model is unchanged.
+- How many smaller regions are planned, and are they alike? Why: it decides one regional model versus per-region handling.
+
+**Approach:**
+1. Arithmetic first. Precision odds equal (TPR / FPR) times prevalence odds. If TPR and FPR did not change, 62% to 48% means prevalence odds fell by a factor 0.566, for example a base rate of 20% falling to 12.4%. So check the base rate before blaming the model.
+2. Test covariate shift. Train a domain classifier (metro versus new region) on the features. If it separates them well, the feature distributions differ. Reweight metro rows with weights p/(1-p) from that classifier and compute the reweighted metro precision.
+3. Read the result. If the reweighted metro precision is close to the actual new-region precision, the cause is covariate shift (the model is fine, the mix changed). If a gap remains, the relationship between features and outcome is different (concept shift), or the labels differ. In the simulation: scenario A (covariate shift only) leaves a 1.7-point gap, scenario B (different relationship) leaves 13.4 points.
+4. Choose the fix:
+   - Covariate shift only: reweight training, add or recalibrate features that carry the shift, and re-pick the threshold for the new mix; no new model needed.
+   - Different relationship with a few labels: add a region flag or regional offset to the shared model, or recalibrate (cheap, uses all the data).
+   - Different relationship with plenty of labels: fine-tune on the new region or build a separate model; with too few rows a separate model is worse than the metro model (the run shows 200 rows lose).
+5. Check on a held-out new-region sample and confirm the metro cities do not regress; then canary.
+6. Monitor per region from now on: precision on a rolling label sample, base rate, score distribution.
+
+**Metrics:**
+- Precision = true positives / flagged, per region at the same threshold; also recall and flag rate.
+- Base rate = positives / cases, per region.
+- Domain-classifier AUC (how separable the regions are); reweighted metro precision minus actual new-region precision (the unexplained gap).
+- Log loss or calibration on the new region; guardrail: metro precision.
+
+**Risks:**
+- Importance weights can explode when regions barely overlap; clip them and check the effective sample size.
+- Small labelled samples in the new region: a precision of 48% from 100 flagged cases has an interval of roughly plus or minus 10 points.
+- Reweighting only fixes shift in the features you observe; unobserved differences look like concept shift.
+- Different labelling (a slower or stricter review) can mimic a changed relationship.
+- Both effects can be present at once.
+
+**What the interviewer scores:**
+- Strong: separates prior (base rate), covariate and concept shift, and tests them in a fixed order with cheap checks.
+- Strong: names a concrete test (domain classifier plus reweighted evaluation) and what each outcome means.
+- Strong: picks the fix by data availability (few labels: offset or recalibration; many: fine-tune or separate model).
+- Weak: "just retrain on the new region's data" with no diagnosis and no thought about how many labels exist.
+- Cross-reference: Book 4 Part 8 has "Label (prior) shift versus covariate shift in practice" and "Detecting concept drift" for the monitoring side.
+
+**Example:** (illustrative numbers) Metro base rate 20%, new region 12.4%, same TPR and FPR: precision falls from 62% to 48% with no change in model quality. Now suppose the base rates match. You label 300 flagged cases in the new region and find 49% precision; the metro cases reweighted to look like the new region's features score 62%. The 13-point gap is a different relationship, so a regional offset or fine-tune is needed. Weak answer: "Precision fell, retrain on the new region." Strong answer: "First check the base rate, then reweight and compare; if reweighted metro still beats actual by more than the noise, the relationship differs and I add a region offset or fine-tune depending on label counts."
+
+**Code:**
+```python
+# Q36: precision 62% -> 48% in smaller cities: covariate shift or a different relationship? (illustrative simulation)
+import numpy as np
+
+rng = np.random.default_rng(36)
+
+# 0. Arithmetic first: how much of 62% -> 48% could a lower base rate explain alone?
+odds = lambda p: p / (1 - p)
+ratio = odds(0.48) / odds(0.62)
+print(f"precision odds ratio 0.48 vs 0.62: {ratio:.3f}")
+# precision odds = (TPR / FPR) x (prevalence odds); if TPR and FPR are fixed, prevalence odds must fall by that ratio
+prev_new = lambda prev_old: (odds(prev_old) * ratio) / (1 + odds(prev_old) * ratio)
+print(f"a base rate of 20% falling to {prev_new(0.20):.1%} gives the same precision drop")
+assert abs(prev_new(0.20) - 0.1239) < 0.001
+
+def sig(z): return 1 / (1 + np.exp(-z))
+def fit(X, y, steps=30, l2=1e-3):
+    Xb = np.c_[np.ones(len(X)), X]; w = np.zeros(Xb.shape[1])
+    for _ in range(steps):
+        p = sig(Xb @ w); g = Xb.T @ (p - y) + l2 * w
+        H = (Xb * (p * (1 - p))[:, None]).T @ Xb + l2 * np.eye(len(w)); w -= np.linalg.solve(H, g)
+    return w
+pred = lambda w, X: sig(np.c_[np.ones(len(X)), X] @ w)
+
+def world(shift_x, shift_rel, n=60_000):
+    """metro: x ~ N(0,1) two features, y depends on x. new: x shifted (covariate) and/or coefficients changed (concept)."""
+    beta = np.array([1.2, 0.8]); b0 = -2.2
+    Xm = rng.normal(0, 1, (n, 2)); ym = rng.random(n) < sig(b0 + Xm @ beta)
+    Xn = rng.normal(shift_x, 1, (n, 2))
+    beta_n = beta * shift_rel[0]; b0n = b0 + shift_rel[1]
+    yn = rng.random(n) < sig(b0n + Xn @ beta_n)
+    return Xm, ym.astype(float), Xn, yn.astype(float)
+
+def diagnose(name, shift_x, shift_rel, keep=False):
+    Xm, ym, Xn, yn = world(shift_x, shift_rel)
+    global LAST; LAST = (Xm, ym, Xn, yn)
+    w = fit(Xm[:40_000], ym[:40_000]); th = 0.5
+    flag_m = pred(w, Xm[40_000:]) > th; flag_n = pred(w, Xn) > th
+    prec_m = ym[40_000:][flag_m].mean(); prec_n = yn[flag_n].mean()
+    # domain classifier: can x tell the two regions apart?
+    Xd = np.r_[Xm[:20_000], Xn[:20_000]]; yd = np.r_[np.zeros(20_000), np.ones(20_000)]
+    wd = fit(Xd, yd); dp = pred(wd, Xd)
+    # importance weights for metro rows, then reweighted metro precision on the flagged rows
+    pm = pred(wd, Xm[40_000:]); wgt = pm / (1 - pm); wgt = np.clip(wgt, 0, 20)
+    prec_rw = (wgt[flag_m] * ym[40_000:][flag_m]).sum() / wgt[flag_m].sum()
+    print(f"{name:34} metro {prec_m:.1%}  new {prec_n:.1%}  metro reweighted to new covariates {prec_rw:.1%}")
+    return prec_m, prec_n, prec_rw
+
+a = diagnose("A covariate shift only", -1.0, (1.0, 0.0))
+b = diagnose("B different relationship", 0.0, (0.85, -0.25))
+# A: reweighting explains most of the new precision; B: reweighting does not
+gap_a = abs(a[2] - a[1]); gap_b = abs(b[2] - b[1])
+print(f"unexplained gap after reweighting: A {gap_a:.3f}, B {gap_b:.3f}")
+assert gap_a < 0.03 and gap_b > 0.10
+
+# Fix options for world B, using a small labelled sample from the new region (2,000 rows)
+Xm, ym, Xn, yn = LAST
+def logloss(y, p): p = np.clip(p, 1e-6, 1 - 1e-6); return -(y * np.log(p) + (1 - y) * np.log(1 - p)).mean()
+Xn_tr, yn_tr, Xn_te, yn_te = Xn[:2000], yn[:2000], Xn[2000:], yn[2000:]
+w_metro = fit(Xm, ym)
+w_region = fit(np.c_[np.r_[Xm, Xn_tr], np.r_[np.zeros(len(Xm)), np.ones(2000)]], np.r_[ym, yn_tr])   # region flag
+w_newonly = fit(Xn_tr, yn_tr)
+w_new200 = fit(Xn_tr[:200], yn_tr[:200])
+res = {
+    "metro model as is": logloss(yn_te, pred(w_metro, Xn_te)),
+    "metro + region flag (2,000 new rows)": logloss(yn_te, pred(w_region, np.c_[Xn_te, np.ones(len(Xn_te))])),
+    "new-region only, 2,000 rows": logloss(yn_te, pred(w_newonly, Xn_te)),
+    "new-region only, 200 rows": logloss(yn_te, pred(w_new200, Xn_te)),
+}
+for k, v in res.items(): print(f"  log loss on new region, {k:38} {v:.4f}")
+assert res["metro + region flag (2,000 new rows)"] < res["metro model as is"]
+assert res["new-region only, 2,000 rows"] < res["metro model as is"]
+assert res["new-region only, 200 rows"] > res["metro model as is"]   # too few rows: worse than the metro model
+```
+
+**Output (my run):**
+```text
+precision odds ratio 0.48 vs 0.62: 0.566
+a base rate of 20% falling to 12.4% gives the same precision drop
+A covariate shift only             metro 64.5%  new 59.0%  metro reweighted to new covariates 60.7%
+B different relationship           metro 62.6%  new 49.2%  metro reweighted to new covariates 62.6%
+unexplained gap after reweighting: A 0.017, B 0.134
+  log loss on new region, metro model as is                      0.3230
+  log loss on new region, metro + region flag (2,000 new rows)   0.3167
+  log loss on new region, new-region only, 2,000 rows            0.3156
+  log loss on new region, new-region only, 200 rows              0.3370
+```
+In this simulation covariate shift alone moves precision by about 5 points and leaves a 1.7-point gap after reweighting, while a changed relationship moves it by about 13 points and leaves a 13.4-point gap. The metro-plus-region-flag and new-region-only models (2,000 rows) beat the metro model on new-region log loss; 200 rows are not enough.
+
+**Follow-ups:**
+- What if there are no labels from the new region? You can test covariate shift and prior shift only; collect a small labelled sample first (a few hundred reviewed cases is the start) and use a conservative threshold meanwhile.
+- When a separate model? When the relationship differs a lot, there are enough labels (thousands), and you will maintain it; otherwise a shared model with regional features is simpler.
+- How do you tell prior shift from the others? Compare base rates and calibration by region; prior shift changes precision but leaves TPR and FPR alone.
+
+**Common mistakes:** Not checking the base rate first. Reweighting without clipping. Fine-tuning on 200 rows. Reading one precision number from a small sample as proof. Forgetting to check the original cities after the fix.

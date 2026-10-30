@@ -1,0 +1,10 @@
+wait for retrain: lose 28.0 lakh over 14 days
+patch: protected 13 days, net 0.80 lakh/day, benefit after build cost = 8.90 lakh
+break-even recovery fraction: 0.158
+recovery  net benefit (lakh)
+     10%     -1.50
+     20%      1.10
+     30%      3.70
+     50%      8.90
+     70%     14.10
+worst case (20% recovery, side cost 0.4/day): -1.50 lakh

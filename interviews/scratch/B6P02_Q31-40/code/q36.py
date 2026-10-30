@@ -30,8 +30,9 @@ def world(shift_x, shift_rel, n=60_000):
     yn = rng.random(n) < sig(b0n + Xn @ beta_n)
     return Xm, ym.astype(float), Xn, yn.astype(float)
 
-def diagnose(name, shift_x, shift_rel):
+def diagnose(name, shift_x, shift_rel, keep=False):
     Xm, ym, Xn, yn = world(shift_x, shift_rel)
+    global LAST; LAST = (Xm, ym, Xn, yn)
     w = fit(Xm[:40_000], ym[:40_000]); th = 0.5
     flag_m = pred(w, Xm[40_000:]) > th; flag_n = pred(w, Xn) > th
     prec_m = ym[40_000:][flag_m].mean(); prec_n = yn[flag_n].mean()
@@ -44,10 +45,28 @@ def diagnose(name, shift_x, shift_rel):
     print(f"{name:34} metro {prec_m:.1%}  new {prec_n:.1%}  metro reweighted to new covariates {prec_rw:.1%}")
     return prec_m, prec_n, prec_rw
 
-a = diagnose("A covariate shift only", 0.5, (1.0, 0.0))
-b = diagnose("B different relationship (coefs/base)", 0.0, (0.5, -0.6))
+a = diagnose("A covariate shift only", -1.0, (1.0, 0.0))
+b = diagnose("B different relationship", 0.0, (0.85, -0.25))
 # A: reweighting explains most of the new precision; B: reweighting does not
 gap_a = abs(a[2] - a[1]); gap_b = abs(b[2] - b[1])
 print(f"unexplained gap after reweighting: A {gap_a:.3f}, B {gap_b:.3f}")
-assert gap_a < 0.03 and gap_b > 0.08
-assert a[0] > a[1] or True
+assert gap_a < 0.03 and gap_b > 0.10
+
+# Fix options for world B, using a small labelled sample from the new region (2,000 rows)
+Xm, ym, Xn, yn = LAST
+def logloss(y, p): p = np.clip(p, 1e-6, 1 - 1e-6); return -(y * np.log(p) + (1 - y) * np.log(1 - p)).mean()
+Xn_tr, yn_tr, Xn_te, yn_te = Xn[:2000], yn[:2000], Xn[2000:], yn[2000:]
+w_metro = fit(Xm, ym)
+w_region = fit(np.c_[np.r_[Xm, Xn_tr], np.r_[np.zeros(len(Xm)), np.ones(2000)]], np.r_[ym, yn_tr])   # region flag
+w_newonly = fit(Xn_tr, yn_tr)
+w_new200 = fit(Xn_tr[:200], yn_tr[:200])
+res = {
+    "metro model as is": logloss(yn_te, pred(w_metro, Xn_te)),
+    "metro + region flag (2,000 new rows)": logloss(yn_te, pred(w_region, np.c_[Xn_te, np.ones(len(Xn_te))])),
+    "new-region only, 2,000 rows": logloss(yn_te, pred(w_newonly, Xn_te)),
+    "new-region only, 200 rows": logloss(yn_te, pred(w_new200, Xn_te)),
+}
+for k, v in res.items(): print(f"  log loss on new region, {k:38} {v:.4f}")
+assert res["metro + region flag (2,000 new rows)"] < res["metro model as is"]
+assert res["new-region only, 2,000 rows"] < res["metro model as is"]
+assert res["new-region only, 200 rows"] > res["metro model as is"]   # too few rows: worse than the metro model
