@@ -789,3 +789,418 @@ reply-within-1h rate by group: [0.8, 0.9, 0.7, 0.2, 0.1] mean 0.54
 - What about a growth metric? Invites sent that lead to an active member in a group, not signups alone.
 
 **Common mistakes:** Aggregating at the user level only. Treating more messages as more value. Ignoring the dependency between users. Randomising users inside the same group. Reporting a mean when the distribution is bimodal.
+
+### Q52 ⭐ 🔴 A notification team lifted push click-through rate by 25% using more urgent wording, and its own bonus is tied to that number. Explain how this metric can be gamed, which counter-metrics and holdouts would expose it, and how you would redesign the metric system so incentives line up.
+**Asked at:** Metric trade-off ('one metric up, another down') guides (Interview Query metric trade-offs path, Exponent analytical-execution course, a Facebook product-execution write-up on Substack); commonly reported in public guides; search snippets only, not opened
+**Say this first (1 line):** Click-through rate on pushes is easy to game and says nothing about value, so I would judge the team on incremental sessions and long-term retention against a no-push holdout, with opt-outs and uninstalls as hard counter-metrics.
+
+**Clarifying questions:**
+- Is CTR clicks divided by pushes sent, or by pushes delivered or seen? Sending fewer pushes to better people raises CTR with no gain.
+- Is the +25% from a randomised test of wording alone, or did volume and targeting change too? It decides whether wording is the cause.
+- Is there a holdout that gets no pushes? Without it I cannot measure incremental value.
+- What is the notification meant to achieve: a return visit, a purchase, a message read? It defines the real success metric.
+- How many pushes per user per week, and is there a frequency cap? Volume is the easiest lever to pull.
+- How is the bonus computed, and over what period? A quarterly bonus on CTR rewards short-term tactics.
+
+**Approach:**
+1. List how CTR can be gamed: urgent or clickbait wording that clicks and disappoints; fewer sends to likely clickers only (a higher ratio, fewer total clicks); sending at the moment a user would open the app anyway (steals the click, adds no session); changing the denominator (delivered versus sent); counting accidental or auto-dismissed taps.
+2. Measure incremental value with a holdout: a small share of users get no pushes (or the old wording). Compare sessions per user, retention and downstream actions.
+3. Counter-metrics, all reported with CTR: opt-out or disable-notifications rate, uninstall rate, post-click engagement (bounce within 10 seconds, session depth, conversion), push volume per user, complaint rate.
+4. Evaluate over a longer window than the bonus period: cumulative value per starting user, because opt-outs shrink reach.
+5. Redesign the metric system: the team's goal becomes incremental sessions or conversions per 1,000 users in the holdout comparison, with opt-out rate as a gate (a result that breaches the gate does not count).
+6. Governance: a global per-user notification budget so teams cannot trade each other's reach for their own CTR.
+
+**Metrics:**
+- CTR = push opens / pushes sent (state the denominator).
+- Incremental sessions per user per week = sessions(push arm) - sessions(holdout).
+- Opt-out rate = users turning push off in the week / users with push on at the start of the week.
+- Value per starting user over T weeks = sum over weeks of sends x CTR x value per click x remaining reach.
+- Guardrails: opt-out rate, uninstalls, bounce after click, pushes per user per week.
+
+**Risks:**
+- Holdouts cost some value in the short term. Keep them small and rotate.
+- Long-run effects need long tests. Use a long-term holdout (Book 1 Part 10, Q24, heading: "What is a holdout / long-term holdout group and why would a company keep one?").
+- Goodhart: any metric tied to a bonus gets optimised. Rotating or paired metrics help.
+- Value per click is an assumption. Show a range.
+
+**What the interviewer scores:**
+- Strong: gives at least three specific ways to game CTR, and the metric that exposes each.
+- Strong: asks for a holdout and talks about incremental value and opt-outs as a gate.
+- Weak: "add a guardrail" with no name, no number, no action.
+- Weak: blames the team instead of redesigning the incentive.
+
+**Example:** Illustrative numbers. Old wording CTR 4.0%, urgent wording 5.0% (+25%). 100,000 users in each of three arms (holdout, old, urgent).
+- Sessions per user per week: old is +0.283 over the holdout, urgent is +0.305 (my run). Urgent beats old by only +0.022 (95% CI about +/- 0.016), under 1% of a baseline near 3.3 sessions, for a 25% CTR gain.
+- Assume weekly opt-out is 0.3% with the old wording and 1.0% with urgent, 5 pushes per week, and urgent clicks are 15% shallower. Cumulative value per starting user: after 4 weeks urgent is 1.05 times old, after 12 weeks 1.02, after 52 weeks 0.90 and after 104 weeks 0.77. Urgent falls behind after week 19.
+- The team's bonus is paid in the quarter where urgent looks better.
+- Weak answer: "CTR up 25%, ship it." Strong answer: "CTR is up but incremental sessions are about flat and opt-outs triple. I would pay the team on holdout-measured incremental sessions with opt-out as a gate."
+
+**Code:**
+```python
+# Q52: push CTR +25% from urgent wording. Does it help? (illustrative numbers, seeded)
+import numpy as np
+rng = np.random.default_rng(52)
+
+# 1) CTR is a ratio on pushes SENT, not value. 3 arms, 100k users each, 4 weeks.
+N = 100_000
+ctr_old, ctr_new = 0.040, 0.050
+assert round(ctr_new / ctr_old - 1, 2) == 0.25
+
+# incremental sessions per user per week: holdout (no push) vs old wording vs urgent wording
+base_rate = 3.0                                 # sessions/user/week with no push
+sess_h = rng.poisson(base_rate, N)
+sess_a = rng.poisson(base_rate + 0.30, N)       # old wording adds 0.30 sessions
+sess_b = rng.poisson(base_rate + 0.32, N)       # urgent wording: CTR up 25% but only +0.02 more incremental sessions
+def diff_ci(x, y):
+    d = x.mean() - y.mean()
+    se = np.sqrt(x.var(ddof=1)/len(x) + y.var(ddof=1)/len(y))
+    return d, 1.96 * se
+for name, a, b in (("old vs holdout", sess_a, sess_h), ("urgent vs holdout", sess_b, sess_h), ("urgent vs old", sess_b, sess_a)):
+    d, h = diff_ci(a, b)
+    print(f"{name}: {d:+.3f} sessions/user/week, 95% CI +/- {h:.3f}")
+d_ba, h_ba = diff_ci(sess_b, sess_a)
+assert abs(d_ba) < 0.1 and diff_ci(sess_a, sess_h)[0] > 0.25          # pushes add sessions; urgency adds little beyond that
+
+# 2) what the CTR hides: opt-outs shrink reach over time
+sends_per_week = 5
+d_old, d_new = 0.003, 0.010                      # weekly share of users who turn pushes off
+value_per_click_old, value_per_click_new = 1.00, 0.85   # urgent-click sessions are shallower (assumption)
+def cum_value(ctr, drop, vpc, weeks):
+    reach = (1 - drop) ** np.arange(weeks)
+    return float(np.sum(sends_per_week * ctr * vpc * reach))
+for w in (4, 12, 52, 104):
+    a = cum_value(ctr_old, d_old, value_per_click_old, w)
+    b = cum_value(ctr_new, d_new, value_per_click_new, w)
+    print(f"{w:>3} weeks: value per starting user old {a:6.2f}, urgent {b:6.2f}, urgent/old {b/a:.2f}")
+cross = next(w for w in range(1, 600) if cum_value(ctr_new, d_new, value_per_click_new, w) < cum_value(ctr_old, d_old, value_per_click_old, w))
+print("urgent wording falls behind cumulatively after week", cross)
+assert cum_value(ctr_new, d_new, value_per_click_new, 4) > cum_value(ctr_old, d_old, value_per_click_old, 4)
+assert cum_value(ctr_new, d_new, value_per_click_new, 104) < cum_value(ctr_old, d_old, value_per_click_old, 104)
+```
+
+**Output (my run):**
+```text
+old vs holdout: +0.283 sessions/user/week, 95% CI +/- 0.016
+urgent vs holdout: +0.305 sessions/user/week, 95% CI +/- 0.016
+urgent vs old: +0.022 sessions/user/week, 95% CI +/- 0.016
+  4 weeks: value per starting user old   0.80, urgent   0.84, urgent/old 1.05
+ 12 weeks: value per starting user old   2.36, urgent   2.41, urgent/old 1.02
+ 52 weeks: value per starting user old   9.64, urgent   8.65, urgent/old 0.90
+104 weeks: value per starting user old  17.89, urgent  13.78, urgent/old 0.77
+urgent wording falls behind cumulatively after week 19
+```
+
+**Follow-ups:**
+- Which single metric would you give them? Incremental sessions (or conversions) per 1,000 users versus holdout, gated by opt-out rate.
+- How big a holdout? Large enough to detect the smallest worthwhile effect. In this run 100,000 users per arm gave about +/- 0.016 on sessions per week.
+- What if the team says the holdout costs them reach? Rotate a small holdout (a few percent) and share the learning, since it is the only way to know the value.
+
+**Common mistakes:** Trusting CTR with no denominator. No holdout. Measuring over four weeks when opt-outs build over months. Setting a counter-metric with no threshold. Tying a bonus to a ratio that is easy to move.
+
+### Q53 ⭐ 🔴 Revenue grew from Rs 100 crore to Rs 112 crore. Volume rose 6%, like-for-like price within each tier rose 2%, and the mix moved toward a premium tier. Show how you would split the change into volume, price and mix effects with a small numeric table, state the assumption behind the order of the split, and explain what you would tell leadership.
+**Asked at:** Indian consumer-internet analyst guides (Interview Query Swiggy, Flipkart and Meesho analyst guides, AmbitionBox and Dataford interview pages) that list revenue-drop, order-drop and AOV-drop cases; community-posted, not confirmed company questions; search snippets only, not opened
+**Say this first (1 line):** I split the Rs 12 crore into volume, mix and price using a fixed order. In my illustrative table that gives Rs 6.0 crore from volume, Rs 3.8 crore from mix and Rs 2.2 crore from price, and I tell leadership that half of the growth is volume and only a fifth is price.
+
+**Clarifying questions:**
+- Is "+2% price" the like-for-like price of each tier, or the change in blended average price? The wording matters, see the risks. The numbers only add up to Rs 112 crore if it is like-for-like.
+- What is a "unit" and are tiers comparable (same pack, same product)? Mix is only meaningful across defined tiers.
+- Is revenue gross or net of discounts and returns? A price effect can be a discount effect.
+- How many tiers, and is the premium tier new this year? New tiers have no base price.
+- Same period last year or the previous period? Seasonal mix can move the comparison.
+- Who uses the answer: pricing, sales, or finance? It decides how much detail.
+
+**Approach:**
+1. Define the pieces. Revenue = sum over tiers of units x price.
+2. Volume effect: change in total units valued at the base average price (base mix, base prices).
+3. Mix effect: with total units fixed at the new level, move from the base mix to the new mix, valued at base prices.
+4. Price effect: the rest, price changes valued at new volume and new mix.
+5. State the order and check that the three add to the total change (Rs 12 crore here).
+6. Re-run with the opposite order to see how much the split moves. Report the range and the interaction, and do not present one order as truth.
+7. Tell leadership what is driving growth, how repeatable it is, and what to watch.
+
+**Metrics:**
+- Volume effect = (V1 - V0) x average revenue per unit at base (R0 / V0).
+- Mix effect = revenue of the new units at base tier prices - V1 x R0 / V0.
+- Price effect = R1 - revenue of the new units at base tier prices.
+- Check: volume + mix + price = R1 - R0.
+- Guardrails: premium share of units, units by tier, discount rate, margin by tier.
+
+**Risks:**
+- Order of the split changes the answer. Volume first, then mix, then price gives 6.00 / 3.80 / 2.20. Price first, then volume, then mix gives price 2.00, volume 6.12, mix 3.88. The total is the same, the story is not.
+- Wording problem: if +2% were the blended average price, 6% volume and 2% price would give only Rs 108.12 crore, so Rs 3.88 crore would be unexplained. With mix shifting toward premium, the blended average price rose 5.66% (Rs 105.66 per unit against Rs 100), so mix is already inside the blended number. I use +2% as like-for-like.
+- Tier definitions: if tiers are too coarse, mix inside a tier hides in price.
+- Premium mix can be bought with discounts, and the revenue may carry less margin.
+
+**What the interviewer scores:**
+- Strong: gives the formulas, shows a table that adds up, states the order assumption and checks it with the opposite order.
+- Strong: translates it for leadership: how much is repeatable, what to watch, and notes the ambiguity in the prompt.
+- Weak: "6% + 2% = 8%, so mix must be 4%." (Multiplicative, not additive; also ignores order.)
+- Weak: a table with no check that the parts sum to the total.
+
+**Example:** Illustrative numbers. Two tiers. Base: standard 75 lakh units at Rs 80 (Rs 60 crore), premium 25 lakh at Rs 160 (Rs 40 crore). Total 100 lakh units, Rs 100 crore, average Rs 100. New: total units 106 lakh (+6%), each tier's price +2% (Rs 81.6 and Rs 163.2), premium share of units rises from 25.0% to 29.5% (standard 74.75, premium 31.25 lakh). Revenue Rs 112.0 crore.
+
+| Step (order: volume, mix, price) | Calculation | Rs crore |
+|---|---|---|
+| Volume | 6 lakh extra units x Rs 100 average / 100 | 6.00 |
+| Mix | new units at base prices = 74.75x80 + 31.25x160 = Rs 109.80 crore, minus 106 x 100 / 100 = Rs 106.00 crore | 3.80 |
+| Price | Rs 112.00 - Rs 109.80 | 2.20 |
+| Total | | 12.00 |
+
+- Opposite order (price first, then volume, then mix): 2.00 / 6.12 / 3.88. Same total. Volume moves by Rs 0.12 crore, mix by Rs 0.08 crore and price by Rs 0.20 crore.
+- Leadership message: about half the growth is volume (6.0 of 12), about a third is a richer mix (3.8), under a fifth is price (2.2). The mix gain depends on premium share staying near 29.5%, and the price gain is a one-off step.
+- Weak answer: "Revenue grew 12%, mostly price and volume." Strong answer: "6.0 volume, 3.8 mix, 2.2 price, in that order; the other order moves mix to 3.88; the Rs 112 crore only reconciles if the 2% is like-for-like."
+
+**Code:**
+```python
+# Q53: volume / price / mix split of a Rs 100 crore -> Rs 112 crore revenue change (illustrative numbers)
+# units in lakh, price in Rs per unit, revenue crore = lakh units x Rs / 100
+tiers = ["standard", "premium"]
+u0 = {"standard": 75.0, "premium": 25.0}          # base units
+p0 = {"standard": 80.0, "premium": 160.0}         # base price
+R = lambda u, p: sum(u[t] * p[t] for t in tiers) / 100
+V0 = sum(u0.values()); R0 = R(u0, p0)
+assert V0 == 100.0 and R0 == 100.0
+
+V1 = V0 * 1.06                                     # volume +6%
+price_up = 1.02                                    # like-for-like price +2% in every tier
+p1 = {t: p0[t] * price_up for t in tiers}
+# choose the new premium share so that revenue is exactly 112 crore
+s = (112 * 100 / V1) / p1["standard"] - 1          # avg price = p_std1 * (1 + s) since premium = 2x standard
+u1 = {"standard": V1 * (1 - s), "premium": V1 * s}
+R1 = R(u1, p1)
+print(f"new units: standard {u1['standard']:.2f}, premium {u1['premium']:.2f} lakh; premium share {s:.1%} (was 25.0%); revenue {R1:.3f} crore")
+assert abs(R1 - 112) < 1e-9 and abs(s - 0.2948) < 5e-4
+
+# ORDER 1: volume (at base mix and base price) -> mix (at base prices) -> price (at new volume and mix)
+vol1 = (V1 - V0) * R0 / V0
+mix1 = R(u1, p0) - V1 * R0 / V0
+price1 = R1 - R(u1, p0)
+print(f"order 1 volume, mix, price: {vol1:.2f}  {mix1:.2f}  {price1:.2f}  total {vol1+mix1+price1:.2f}")
+assert round(vol1, 2) == 6.00 and round(mix1, 2) == 3.80 and round(price1, 2) == 2.20
+assert abs(vol1 + mix1 + price1 - 12) < 1e-9
+
+# ORDER 2: price (at base volume and mix) -> volume (at new price) -> mix (the rest)
+price2 = R(u0, p1) - R0
+vol2 = (V1 - V0) * R(u0, p1) / V0
+mix2 = (R1 - R0) - price2 - vol2
+print(f"order 2 price, volume, mix: {price2:.2f}  {vol2:.2f}  {mix2:.2f}  total {price2+vol2+mix2:.2f}")
+assert round(price2, 2) == 2.00 and round(vol2, 2) == 6.12 and round(mix2, 2) == 3.88
+
+# the wording check: if "+2%" were the BLENDED average price, volume x price alone gives:
+print("volume x blended price only:", round(100 * 1.06 * 1.02, 2), "crore (not 112)")
+assert round(100 * 1.06 * 1.02, 2) == 108.12
+print("realised average price change:", round((R1 / V1) / (R0 / V0) - 1, 4))
+assert round((R1 / V1) / (R0 / V0) - 1, 4) == 0.0566
+```
+
+**Output (my run):**
+```text
+new units: standard 74.75, premium 31.25 lakh; premium share 29.5% (was 25.0%); revenue 112.000 crore
+order 1 volume, mix, price: 6.00  3.80  2.20  total 12.00
+order 2 price, volume, mix: 2.00  6.12  3.88  total 12.00
+volume x blended price only: 108.12 crore (not 112)
+realised average price change: 0.0566
+```
+
+**Follow-ups:**
+- Why does order matter? Because volume, price and mix multiply. The cross terms have to be given to one effect, and the order decides which one.
+- How do you remove the order issue? Use averages of the two orders, or a symmetric method, and say so. The aim is a stable story, not a perfect split.
+- Is mix good news? Only if the premium tier is profitable and not bought with discounts. Check margin by tier.
+
+**Common mistakes:** Adding percentages instead of compounding. Using blended average price and mix together (double counting). Not saying the order. A table whose parts do not add up. Telling leadership "price drove growth" when price is under 20% of it.
+
+### Q54 ⭐ 🔴 An AI support agent reports a 70% deflection rate (conversations not handed to a human), but complaints about the same issues are rising. Explain why deflection can overstate success, how you would measure true resolution with sampling and human labelling, and which guardrails you would add.
+**Asked at:** GenAI and AI-feature metric guides (a Substack AI product-manager interview post on measuring a chatbot, a Prachub generative-AI north-star page, a Dataford GenAI-chatbot metrics page, Galileo and dscout blog posts); AI-era twist reported in public guides, not tied to a named employer; search snippets only, not opened
+**Say this first (1 line):** Deflation only counts conversations that did not reach a human, so a customer who gave up counts as a success. I would measure true resolution with human labels on a stratified sample, and put guardrails on recontact, complaints and how easily people can reach a human.
+
+**Clarifying questions:**
+- What exactly counts as deflated: no human handoff in the session, or no human contact within 7 days? Short windows overstate it.
+- Can the user reach a human easily, or is the button hidden? A hard-to-find handoff raises deflation by itself.
+- Which issues are the complaints about, and do they match the topics the agent handles? It points me to the strata to sample.
+- Is there a satisfaction question and who answers it? Unhappy people rarely answer.
+- How are conversations sampled, and is there a way for people to label them (support leads, QA team)? Labelling capacity sets the sample size.
+- Was the deflation target set as a goal for the team? Targets bend the number.
+
+**Approach:**
+1. Say why deflation overstates success: it counts abandonment, wrong answers that the user did not notice, the user giving up and going to another channel, and hidden handoffs as wins. It measures cost avoided, not problems solved.
+2. Define the real metric: AI resolution rate = conversations where the issue was actually solved by the agent / all conversations that started with the agent.
+3. Measure it by sampling. Stratify by topic and by outcome type (handoff or not, complaint risk), sample a few hundred conversations per stratum, and have trained humans label with a fixed rubric: resolved, partly resolved, wrong answer, abandoned. Double-label a subset to measure agreement.
+4. Reweight by stratum size to estimate the overall rate, with a confidence interval.
+5. Add behavioural signals that do not need labels: recontact on the same issue within 7 days, repeat complaints, channel switching, thumbs, and time to a human when asked.
+6. Guardrails: complaint rate per 1,000 conversations, recontact rate, wrong-answer rate from sampled labels, share of users who asked for a human and did not get one, and CSAT on deflated conversations.
+7. Report deflation next to resolution, never alone.
+
+**Metrics:**
+- Deflation rate = conversations not handed to a human / conversations started with the agent.
+- True resolution rate = labelled resolved conversations (reweighted) / conversations started with the agent.
+- Recontact rate (7 days) = issue-matched returns within 7 days / conversations in the group.
+- Wrong-answer rate = sampled conversations labelled wrong / sampled conversations.
+- Guardrails: complaints per 1,000 conversations, time to human, CSAT.
+
+**Risks:**
+- Labelling is slow and costly. Keep the sample small but stratified, and use the labels also to calibrate cheaper signals.
+- Label noise. Measure labeller agreement and refresh the rubric.
+- An LLM used as a judge can be biased and needs validating against human labels first (see Book 1 Part 10, Q56 heading: "AI-era: How do you validate an LLM-as-judge metric before using it as an experiment outcome (bias, agreement with humans, variance)?").
+- Making handoff easy lowers deflation and raises the real quality. Expect the headline number to fall.
+
+**What the interviewer scores:**
+- Strong: explains how deflation can be inflated and gives a measurable replacement with a sampling design and an interval.
+- Strong: guardrails with names and actions, and an honest statement that the headline will drop.
+- Weak: "ask users for ratings".
+- Weak: more automated metrics with no human labels.
+
+**Example:** Illustrative numbers. 100,000 conversations, 70,000 deflated. Two topics among the deflated: billing 28,000 conversations (45% truly resolved) and FAQ 42,000 (70% truly resolved), so 60% of deflated are resolved, and 42% of all conversations are resolved by the agent. A labelled sample of 200 per topic estimates 61.3% resolved among deflated (+/- 4.6 points), so about 43% of all conversations (+/- 3.2 points) in my run.
+- Reported 70%, estimated true resolution 43%.
+- Recontact within 7 days: 28% for deflated conversations versus 10% for human-handled (assumed figures), a 2.8x gap that supports the complaints.
+- Weak answer: "70% deflation, great." Strong answer: "70% is the share that avoided a human. About 43% were actually solved. Billing is the weak topic, I would fix that and keep a visible path to a human."
+
+**Code:**
+```python
+# Q54: deflation 70% vs true resolution, estimated by stratified human labelling (illustrative, seeded)
+import numpy as np
+rng = np.random.default_rng(54)
+
+N = 100_000
+deflated = 70_000                                  # 70% not handed to a human
+assert deflated / N == 0.70
+# truth (unknown to the analyst): by topic, share of deflated conversations really resolved
+topics = {"billing": dict(n=28_000, p_resolved=0.45), "faq": dict(n=42_000, p_resolved=0.70)}
+assert sum(t["n"] for t in topics.values()) == deflated
+true_resolved = sum(t["n"] * t["p_resolved"] for t in topics.values())
+print("true resolved among deflated:", true_resolved / deflated, "| true resolution rate over all conversations:", true_resolved / N)
+assert true_resolved / deflated == 0.60 and true_resolved / N == 0.42
+
+# human labelling: 200 per topic, stratified, then reweight by topic size
+est = 0.0; var = 0.0
+for name, t in topics.items():
+    k = rng.binomial(200, t["p_resolved"])
+    p = k / 200
+    w = t["n"] / deflated
+    est += w * p
+    var += w * w * p * (1 - p) / 200
+half = 1.96 * np.sqrt(var)
+print(f"labelled estimate among deflated: {est:.3f} +/- {half:.3f}  -> resolution rate over all: {est*0.70:.3f} +/- {half*0.70:.3f}")
+assert abs(est - 0.60) < 3 * np.sqrt(var)
+assert half < 0.05
+
+# reported vs real
+print(f"reported deflation {deflated/N:.0%} vs estimated true resolution about {est*0.70:.0%}")
+
+# a second signal: recontact within 7 days on the same issue
+recontact_deflated, recontact_human = 0.28, 0.10
+print("recontact within 7 days: deflated", recontact_deflated, "vs human-handled", recontact_human)
+assert round(recontact_deflated / recontact_human, 1) == 2.8
+```
+
+**Output (my run):**
+```text
+true resolved among deflated: 0.6 | true resolution rate over all conversations: 0.42
+labelled estimate among deflated: 0.613 +/- 0.046  -> resolution rate over all: 0.429 +/- 0.032
+reported deflation 70% vs estimated true resolution about 43%
+recontact within 7 days: deflated 0.28 vs human-handled 0.1
+```
+
+**Follow-ups:**
+- How many to label? Enough for a half-width you can act on. 200 per stratum gave about 4.6 points here. Use more for topics with more weight or risk.
+- Why stratify? Topics differ a lot. A simple random sample would under-sample the weak small topics.
+- What if leadership likes the deflation target? Keep it as a cost metric and make resolution rate and recontact the quality gate for the same team.
+
+**Common mistakes:** Treating "no handoff" as "solved". Asking only happy users for ratings. Labelling without a rubric. One average for all topics. Making handoff hard to raise deflation. Reporting only the number that improved.
+
+### Q55 ⭐ 🔴 A platform-wide policy change (for example a new OS permission prompt) permanently resets a core metric's baseline in one week, so trend comparisons break. Explain how you would document the break, estimate what the metric would have been without it, and keep exec reporting honest for the next year.
+**Asked at:** No public page located for this exact scenario; editor-designed from standard metric-diagnosis patterns (measurement validity, definitions, segmentation) that the metric-drop guides describe in general terms; search snippets only, not opened
+**Say this first (1 line):** I mark the break on every chart, split the series into before and after versions of the metric, estimate the step with a counterfactual from an unaffected group or the pre-trend, publish a bridge factor with an error range, and report year-over-year on a bridged basis for the next 12 months.
+
+**Clarifying questions:**
+- Is the change in measurement (we now see fewer events) or in real behaviour (fewer people grant permission)? A bridge is only for the first. For the second the drop is real.
+- Which users are affected: one OS, one version, one country? An unaffected group gives me a control.
+- Did the change land on one date for everyone, or roll out in stages? A staged rollout gives a natural experiment.
+- Is any old and new definition collected in parallel for a while? A parallel run gives an exact bridge.
+- Who consumes the metric, and is it in targets or bonuses? Targets must be re-based before the next period.
+- Which downstream metrics (revenue, ads) were also hit? It tells me whether the break is local or ripples outward.
+
+**Approach:**
+1. Document the break the same day: date, cause, affected segments, owner. Put it in the metric dictionary and annotate every chart. Version the metric (v1 before, v2 after).
+2. Separate cause types: instrumentation change (the metric reads lower), or behaviour change (the world is lower). They are reported differently.
+3. Estimate the counterfactual with more than one method:
+   - Unaffected group (difference-in-differences): compare the affected series with an unaffected one before and after.
+   - Interrupted time series: fit the pre-break trend and seasonality, project it, and compare with actual.
+   - Staged rollout or parallel run: the cleanest, if it exists.
+4. Report the step as a range, not a point, and say which assumptions each method needs (parallel trends; trend and seasonality unchanged).
+5. Publish a bridge: restated history = old values x (1 + step), or restated new values = new / (1 + step), with the range. Use it for year-over-year, targets and forecasts for the next 12 months.
+6. Governance: executive reports show a break marker and a bridged line next to the raw line. Targets are re-based. When the break is 12 months old, the raw year-over-year becomes comparable again and the footnote can go.
+
+**Metrics:**
+- Step = actual level after the break / counterfactual level - 1.
+- Bridged value = new-definition value / (1 + step).
+- Bridged YoY = bridged current / prior-year value - 1.
+- Guardrails: width of the step estimate, parallel-trend check before the break, share of reports that carry the break annotation.
+
+**Risks:**
+- Trend or seasonality changes at the same time as the break, so the pre-trend projection is wrong.
+- The control group is also partly affected (spillover).
+- Choosing the method that gives the preferred answer. Report all of them.
+- A bridge factor assumes the same proportional effect everywhere. It can differ by segment.
+- Quietly dropping the break marker after a few quarters.
+
+**What the interviewer scores:**
+- Strong: distinguishes measurement change from real change, offers two or more estimation methods with their assumptions, and gives an uncertainty range.
+- Strong: a practical reporting rule for the next year: annotations, bridged lines, re-based targets, an end date for the footnote.
+- Weak: "adjust the numbers by x%" with no method.
+- Weak: leaves exec dashboards raw and hopes people remember.
+
+**Example:** Illustrative simulation, weekly series, break in week 40 on the affected platform (true step -15%), steady growth of 0.3% a week, mild seasonality, 1% noise, and an unaffected platform for comparison.
+- Estimates of the step in my run: naive last-8-weeks versus first-8-weeks -13.8% (it hides growth), interrupted time series -17.1%, difference-in-differences -16.1%. Both model-based estimates land within about two points of the true -15%, and both overshoot a little. Say the range, not the point.
+- Year-over-year at week 60: raw -0.9% (looks flat), bridged +19.6%. The underlying growth over the 52 weeks is +16.9%. So without a bridge, leadership would read the year as flat when it grew.
+- Weak answer: "The drop is the OS change, ignore it." Strong answer: "The step is about -16% (range about -14% to -17%); I publish a bridged line and re-base the targets, and for twelve months year-over-year is shown on both bases."
+
+**Code:**
+```python
+# Q55: a platform change resets a metric's baseline in week 40; estimate the counterfactual (illustrative, seeded)
+import numpy as np
+rng = np.random.default_rng(55)
+
+T = 80; BREAK = 40; TRUE_DROP = 0.15; GROWTH = 0.003
+t = np.arange(T)
+season = 1 + 0.02 * np.sin(2 * np.pi * t / 52)
+def series(level, affected):
+    y = level * (1 + GROWTH) ** t * season * rng.normal(1, 0.01, T)
+    if affected: y = np.where(t >= BREAK, y * (1 - TRUE_DROP), y)
+    return y
+ios = series(100, True)         # affected platform (new permission prompt)
+andr = series(150, False)       # unaffected platform, same underlying trend
+
+# 1) naive: last 8 pre weeks vs first 8 post weeks on the affected series
+naive = ios[BREAK:BREAK+8].mean() / ios[BREAK-8:BREAK].mean() - 1
+# 2) interrupted time series: fit log-linear trend on pre-break weeks only, project, compare
+X = np.c_[np.ones(BREAK), t[:BREAK], np.sin(2*np.pi*t[:BREAK]/52), np.cos(2*np.pi*t[:BREAK]/52)]
+beta = np.linalg.lstsq(X, np.log(ios[:BREAK]), rcond=None)[0]
+Xp = np.c_[np.ones(8), t[BREAK:BREAK+8], np.sin(2*np.pi*t[BREAK:BREAK+8]/52), np.cos(2*np.pi*t[BREAK:BREAK+8]/52)]
+its = np.mean(ios[BREAK:BREAK+8] / np.exp(Xp @ beta)) - 1
+# 3) difference-in-differences against the unaffected platform (in logs)
+did = np.exp((np.log(ios[BREAK:BREAK+8]).mean() - np.log(ios[BREAK-8:BREAK]).mean())
+             - (np.log(andr[BREAK:BREAK+8]).mean() - np.log(andr[BREAK-8:BREAK]).mean())) - 1
+print(f"true step {-TRUE_DROP:+.1%} | naive pre/post {naive:+.1%} | interrupted time series {its:+.1%} | diff-in-diff {did:+.1%}")
+assert abs(its + TRUE_DROP) < 0.03 and abs(did + TRUE_DROP) < 0.03
+
+# 4) bridge factor and honest YoY at week 60 (4-week averages)
+factor = 1 + its                                      # estimated level step
+raw_yoy = ios[56:60].mean() / ios[4:8].mean() - 1                  # compares post-break with pre-break
+bridged_yoy = (ios[56:60].mean() / factor) / ios[4:8].mean() - 1   # restate to the old definition
+true_yoy = (1 + GROWTH) ** 52 - 1
+print(f"year-over-year at week 60: raw {raw_yoy:+.1%} | bridged {bridged_yoy:+.1%} | underlying growth {true_yoy:+.1%}")
+assert abs(raw_yoy) < 0.06 and 0.10 < bridged_yoy < 0.24 and abs(true_yoy - 0.169) < 0.002
+```
+
+**Output (my run):**
+```text
+true step -15.0% | naive pre/post -13.8% | interrupted time series -17.1% | diff-in-diff -16.1%
+year-over-year at week 60: raw -0.9% | bridged +19.6% | underlying growth +16.9%
+```
+
+**Follow-ups:**
+- Which method is best? A parallel run beats a control group, which beats a pure time-series projection. Use two and compare. Book 1 Part 10, Q28 covers difference-in-differences (heading: "Explain difference-in-differences. What is the parallel-trends assumption and how do you test it?").
+- What if no control exists? Use interrupted time series, widen the range, and say the assumption (no other change at the same time).
+- How do you stop people comparing raw numbers across the break? A permanent annotation, a bridged series by default, and a retired raw series after 12 months.
+
+**Common mistakes:** Comparing post-break to pre-break without a trend. One method, no range. Applying one factor to all segments. Forgetting to re-base targets. Dropping the annotation after a quarter. Treating a real behaviour change as a measurement fix.

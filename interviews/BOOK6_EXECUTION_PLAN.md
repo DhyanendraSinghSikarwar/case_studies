@@ -21,7 +21,7 @@ Per question, in order: `### Qn stars emoji scenario` / `**Asked at:**` / **Say 
 ## Part checklist (targets from plan.md)
 | Part | Topic | Target | Wave A | Wave B | Wave C |
 |---|---|---|---|---|---|
-| 1 | Product metrics and metric drops ("DAU fell 10%") | 55 | ⬜ | ⬜ | ⬜ |
+| 1 | Product metrics and metric drops ("DAU fell 10%") | 55 | ✅ (55 Qs) | ✅ | ✅ |
 | 2 | Model performance degraded in production | 50 | ⬜ | ⬜ | ⬜ |
 | 3 | Imbalanced / noisy / missing data situations | 50 | ⬜ | ⬜ | ⬜ |
 | 4 | Experiment design and ambiguous A/B results | 55 | ⬜ | ⬜ | ⬜ |
@@ -36,4 +36,4 @@ Per question, in order: `### Qn stars emoji scenario` / `**Asked at:**` / **Say 
 Tell agents to stop and report (not retry) at a spend limit; commit and push WIP often (a stop hook demands it); frozen-prompt corrections are applied identically in the part file, the agent's answers.md heading, Wave A scripts and question_index.md before merge; WebFetch is unavailable (snippet-only sources, label them); lessons from Book 5: test every "why" sentence, state tie rules and conventions, fix wording that does not match observed output.
 
 ## Next step
-Part 1 Wave A (product metrics and metric drops, target 55): scenarios such as DAU/WAU/MAU drops, conversion or retention drops, a metric that rose while another fell, Simpson's paradox in a rollup, a metric definition change, seasonality, instrumentation bugs, new-versus-existing users, mix shift, a notification or ranking change, success metrics for a new feature, north-star and guardrail metrics, diagnosing with a decomposition tree; every numeric scenario backed by a Code block that reproduces the numbers.
+Part 2 Wave A (model performance degraded in production, target 50): accuracy or precision falling, silent drift, label delay, training/serving skew, feedback loops, data pipeline bugs, seasonality, a metric fine offline but bad online, threshold and calibration decay, segment-level degradation, retraining decisions, rollback versus retrain, monitoring without labels, AI-era twists. Part 1 lessons: ambiguous prompt wording is answered through clarifying questions; fix prompt numbers that do not add up (Q1, Q53) identically in the part file, agent heading, qs.py, question_index.md and index_rows.txt before merge; every numeric Example backed by a code block with asserts; cross-reference Book 1 Part 10 and other parts only by checked headings.
