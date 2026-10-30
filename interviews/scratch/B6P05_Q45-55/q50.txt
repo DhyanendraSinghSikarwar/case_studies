@@ -1,7 +1,7 @@
-**Say this first (1 line):** Annual margin goes from 9.94 million to 11.23 million if the retailer keeps the 4.00 fee, or to 10.53 million if the fee is ignored (illustrative), and the policy breaks even only if orders fall by about 14.2% (or 8.5% without the fee income), against the 3% expected.
+**Say this first (1 line):** Annual margin goes from 9.94 million to 11.23 million, a gain of 1.29 million (illustrative), and the policy breaks even only if orders fall by about 14.2%, against the 3% expected.
 
 **Clarifying questions:**
-- Does the 4.00 go to the retailer as income, or does it just cover a cost? The prompt does not say, so I show both. It moves the break-even drop from 14.2% to 8.5%.
+- Is the 4.00 collected on every return, and is any of it passed on (payment or shipping pass-through)? The prompt says the retailer keeps it as income. Check that holds in practice.
 - Is the return fall to 18% measured or hoped for? It is the biggest lever.
 - Will the 3% order drop be spread evenly? Losing high-margin repeat buyers costs more than 3% of margin.
 - Is the 8 handling cost only warehouse work? Refund processing and resale discount also matter.
@@ -10,10 +10,10 @@
 **Approach:**
 1. Before: 1,000,000 orders. Returned 220,000, kept 780,000. Margin = 780,000 x 15 - 220,000 x 8 = 11,700,000 - 1,760,000 = 9,940,000. Per order: 9.94.
 2. After: orders = 970,000. Returns at 18% = 174,600. Kept = 795,400. Kept margin = 11,931,000. Handling = 1,396,800.
-3. With fee income: + 174,600 x 4 = 698,400. Margin = 11,232,600, a gain of 1,292,600.
-4. Without fee income: 10,534,200, a gain of 594,200.
-5. Break-even drop in orders: per-order margin after is 11.58 (with fee) or 10.86 (without). Orders can fall until 11.58 x N = 9.94 million. N = 858,377, a relative fall of 14.16%. Without fee: 915,285 orders, a fall of 8.47%.
-6. Sensitivity (fee kept, 3% fewer orders): returns at 20% give 10,864,000; returns unchanged at 22% give 10,495,400, still above 9,940,000 only because of fee income. Without fee income, unchanged returns would be a clear loss. So the gain depends on the fee income and on the return rate falling.
+3. Add fee income: + 174,600 x 4 = 698,400. Margin = 11,232,600, a gain of 1,292,600.
+4. Sensitivity: if the fee brought in no income at all, margin would be 10,534,200 and the break-even order drop would be 8.47%. So fee income is a large part of the gain.
+5. Break-even drop in orders: per-order margin after is 11.58. Orders can fall until 11.58 x N = 9.94 million. N = 858,377, a relative fall of 14.16%.
+6. Sensitivity (fee kept, 3% fewer orders): returns at 20% give 10,864,000; returns unchanged at 22% give 10,495,400, still above 9,940,000 only because of fee income. So the gain depends on the fee income and on the return rate falling.
 7. Test: randomise the fee by user or region and measure orders, return rate, and 6-month repeat purchase.
 
 **Metrics:**
