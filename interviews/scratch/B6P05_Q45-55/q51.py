@@ -35,3 +35,5 @@ assert tot_safe>port
 # lapse sensitivity at 1100
 for l in (0.0,0.4,0.8):
     st=risky_n*(1-l); print(f"  lapse {l:.0%}: portfolio {st*p_stay+tot_safe:,.0f}")
+print("loss ratio after repricing:",round(risky_claims/new_prem,4))
+assert round(risky_claims/new_prem,3)==0.815
