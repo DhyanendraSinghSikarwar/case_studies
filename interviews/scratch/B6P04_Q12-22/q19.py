@@ -32,4 +32,8 @@ assert abs(h0.mean() - 2.0) < 0.1 and abs(h9.mean() - 2.0) < 0.2 and np.mean(h9 
 bad = np.mean(np.abs(rng.standard_normal(200_000) / 0.7) > 1.96)
 print(f"if the SE were understated by 30%, the false positive rate would be {bad:.3f} (not 0.05)")
 assert bad > 0.15
+from scipy.stats import norm
+n_needed = (norm.isf(0.025) * np.sqrt(0.05 * 0.95) + norm.isf(0.2) * np.sqrt(0.07 * 0.93)) ** 2 / 0.02 ** 2
+print(f"run-metric pairs to tell a 5% rate from 7% (one-sample, 80% power): {n_needed:,.0f}")
+assert 950 < n_needed < 1100
 print("all asserts passed")
