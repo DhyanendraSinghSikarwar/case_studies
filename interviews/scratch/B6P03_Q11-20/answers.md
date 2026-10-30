@@ -712,7 +712,7 @@ outage hour: 819 missing of 2000 -> alarm True
 3. Class weights: nearly free, no extra rows, no leakage risk. A weight near negatives / positives (199 here) is a starting point; lower weights are worth a try.
 4. Undersampling: keep all 300 positives and, say, ten negatives per positive (3,000), so the training set is 3,300 rows. This cuts training time sharply. Repeat with several random negative samples (bagging) to lose less information.
 5. SMOTE: only if the above leave a gap. Apply it inside each training fold only (never before the split), tune k, and check against weights. It needs numeric, well-scaled features and gets awkward with categoricals.
-6. Compare on the same folds and seeds and keep the simplest method inside the noise. If probabilities are needed, correct or recalibrate on full-rate validation data (see the calibration question below).
+6. Compare on the same folds and seeds and keep the simplest method inside the noise. If probabilities are needed, correct or recalibrate on full-rate validation data (Book 1 Part 3 "Does class weighting, SMOTE or undersampling break probability calibration?").
 7. Cross-reference: Book 1 Part 3 covers the concepts in "Class weights vs resampling (over/under-sampling): trade-offs, and which would you try first?", "PR-AUC: what is its random baseline" and "Where in the pipeline do you apply SMOTE or resampling?".
 
 **Metrics:**

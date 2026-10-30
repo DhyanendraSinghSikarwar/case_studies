@@ -8,3 +8,6 @@ q38 code done
 q39 code done
 q40 code done
 q31 body done
+q32 body done
+q33 body done
+q34 body done
