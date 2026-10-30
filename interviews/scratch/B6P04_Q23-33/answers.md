@@ -839,3 +839,222 @@ users per arm to see a 3% (0.3 sessions) drop in ONE week's per-user average if 
 - What if the dip stays but revenue rises? Make the decision on the pre-agreed primary metric and guardrails, and report the trade.
 
 **Common mistakes:** Averaging all days into one number. Plotting by calendar day. Declaring "novelty" with no slope test. Stopping at the first significant reading. Ignoring the 20% new users. Not saying how long and why.
+
+### Q31 ⭐⭐ 🟡 Revenue per user averages 20, with the top 0.1% of users contributing 25% of revenue, and a t-test shows treatment up 3% relative to control with p = 0.2 and a confidence interval wider than the effect. Explain your options for heavy-tailed metrics, what each trades away and how you would report the result.
+**Asked at:** Bot and outlier contamination material (Algolia engineering and docs pages on outliers in A/B tests, a Peakhour post on bots corrupting A/B data; the latter is vendor marketing); mostly practitioner pages, so scenario is partly editor-designed; search snippets only, not opened
+**Say this first (1 line):** A few whales dominate the variance, so +3% with p = 0.2 means "unknown", not "no effect"; I would use a pre-registered cap, CUPED and a longer run, and report the capped and uncapped estimates side by side.
+
+**Clarifying questions:**
+- Are the top 0.1% real customers or bots, test accounts and fraud? Bots are removed, real whales are kept (cap or model them).
+- Is the metric revenue per user over a fixed window, and is there pre-period revenue per user? A pre-period metric enables CUPED.
+- Does the business care about total revenue (whales matter) or typical user value? That picks the estimand.
+- Did the treatment plausibly change whale behaviour (for example a bulk-purchase feature)? Then capping hides the effect.
+- Was the cap or transformation fixed before looking? A cap chosen after peeking is a fishing step.
+
+**Approach:**
+1. First check the data: remove bots and duplicates, look at the top 20 users per arm. One account can swing the mean (Book 1 Part 10 Q25 covers outliers and heavy tails).
+2. Options, with what each trades away:
+   - Winsorize or cap at a fixed percentile (for example p99.9, set before looking). Cuts variance sharply; changes the estimand to "revenue up to the cap", so real whale gains are partly thrown away.
+   - Log or other transform (log(1 + x)). Stable, but it tests a ratio-like quantity, not the average revenue the business cares about.
+   - Rank test (Mann-Whitney). Robust, but it answers "is one distribution shifted", not "how many rupees".
+   - CUPED: subtract the part of revenue predicted by pre-period revenue. Keeps the estimand and cuts variance; needs a pre-period and works only as well as the correlation.
+   - Bootstrap for the interval. Honest about shape, does not shrink variance.
+   - Two-part model (probability of buying x amount if buying) or conversion plus average order value. Explains where the effect comes from.
+   - More users or more time. Always valid, slow.
+3. Choose one primary rule in advance (for example capped revenue with CUPED) and keep the uncapped mean as a sensitivity result.
+4. Report: effect with interval for the capped primary, the uncapped estimate with its wider interval, and the plain statement "we cannot rule out 0% or a few percent".
+
+**Metrics:**
+- Revenue per user = total revenue in the window / users assigned (include zeros).
+- Capped revenue per user = sum(min(revenue, cap)) / users assigned, with cap = pooled p99.9 fixed beforehand.
+- CUPED-adjusted metric = Y - theta x (X_pre - mean(X_pre)), theta = cov(Y, X_pre) / var(X_pre).
+- Guardrails: share of revenue above the cap per arm, number of whales per arm (SRM-like check on the tail), refund rate.
+
+**Risks:**
+- Capping biases the lift down if the treatment raises whale spend.
+- A cap chosen after seeing the result.
+- Few whales per arm: random imbalance in the number of whales decides the result.
+- Winsorizing within each arm separately (different caps) biases the comparison.
+- Transforming then converting back to rupees without care.
+
+**What the interviewer scores:**
+- Strong: names several options and says what each gives up. Weak: "remove outliers" with no reasoning.
+- Strong: separates bots (remove) from real whales (cap or model). Weak: deletes all the top users.
+- Strong: commits to a rule in advance and reports a sensitivity result. Weak: picks whichever method gives p < 0.05.
+- Strong: says "p = 0.2 means we do not know" and gives the interval. Weak: "no effect".
+
+**Example:** illustrative numbers. Population: 80% spend nothing, 19.9% are ordinary buyers, 0.1% are whales. Mean revenue 20; top 0.1% hold 24.7% of revenue. True effect +3% on everybody's spend; 100,000 users per arm, 300 simulated tests.
+- Weak: "p = 0.2, so there is no effect; drop it."
+- Strong: "The test cannot see a 3% effect with this tail. Capped and CUPED versions give more power; I report both with intervals and plan a longer run."
+- In my run the share of top 0.1% matches the prompt (24.7% against about 25%, mean 20.0). Power at +3%: raw mean 0.11, capped at p99.9 0.40, CUPED 0.18, log(1+x) 0.16. Estimated lift: raw 3.72% (SD 5.80 across tests), capped 2.82% (SD 1.70), CUPED 3.32% (SD 3.51). The cap gives lower variance but reads a bit under 3% because spend above the cap is discarded.
+
+**Code:**
+```python
+# Q31: heavy-tailed revenue per user (illustrative simulation, seeded)
+import numpy as np
+from scipy import stats
+
+rng = np.random.default_rng(31)
+def population(n):
+    """80% buy nothing, 19.9% ordinary buyers (lognormal), 0.1% whales (lognormal, very large)."""
+    kind = rng.choice(3, n, p=[0.80, 0.199, 0.001])
+    lvl = np.where(kind == 1, rng.lognormal(np.log(55), 0.8, n), np.where(kind == 2, rng.lognormal(np.log(3650), 0.8, n), 0.0))
+    return lvl
+big = population(4_000_000)
+srt = np.sort(big)[::-1]
+top_share = srt[:4000].sum() / big.sum()
+print(f"mean revenue per user {big.mean():.1f}; top 0.1% of users hold {top_share*100:.1f}% of revenue; p99.9 = {np.quantile(big, .999):.0f}")
+assert abs(big.mean() - 20) < 2 and abs(top_share - 0.25) < 0.04
+
+N, REPS, LIFT = 100_000, 300, 0.03
+def trial():
+    L0 = population(2 * N)                           # each user's spend level
+    pre = L0 * rng.gamma(4, 0.25, 2 * N)              # pre-period revenue, correlated with post
+    post = L0 * rng.gamma(4, 0.25, 2 * N)
+    arm = np.r_[np.zeros(N, int), np.ones(N, int)]
+    post = post * (1 + LIFT * arm)
+    cap = np.quantile(post, 0.999)                   # cap set from pooled data, blind to arm
+    res = {}
+    for name, y in (("raw mean", post), ("capped at p99.9", np.minimum(post, cap))):
+        d = y[arm == 1].mean() - y[arm == 0].mean()
+        se = np.sqrt(y[arm == 1].var(ddof=1) / N + y[arm == 0].var(ddof=1) / N)
+        res[name] = (d / y[arm == 0].mean(), abs(d / se) > 1.96)
+    th = np.cov(post, pre)[0, 1] / pre.var()          # CUPED
+    adj = post - th * (pre - pre.mean())
+    d = adj[arm == 1].mean() - adj[arm == 0].mean()
+    se = np.sqrt(adj[arm == 1].var(ddof=1) / N + adj[arm == 0].var(ddof=1) / N)
+    res["CUPED (pre revenue)"] = (d / adj[arm == 0].mean(), abs(d / se) > 1.96)
+    res["log(1+x)"] = (None, abs(stats.ttest_ind(np.log1p(post[arm == 1]), np.log1p(post[arm == 0])).statistic) > 1.96)
+    return res
+R = [trial() for _ in range(REPS)]
+print(f"true effect +3% on every user's revenue, {N:,} users per arm, {REPS} simulated tests")
+print(f"{'method':22s} {'power':>6s} {'mean est. lift':>15s} {'sd of est.':>11s}")
+pw = {}
+for k in R[0]:
+    power = np.mean([r[k][1] for r in R])
+    pw[k] = power
+    if R[0][k][0] is None:
+        print(f"{k:22s} {power:6.2f} {'(log scale)':>15s}"); continue
+    e = np.array([r[k][0] for r in R])
+    print(f"{k:22s} {power:6.2f} {e.mean()*100:14.2f}% {e.std()*100:10.2f}")
+assert pw["CUPED (pre revenue)"] > pw["raw mean"]
+assert pw["raw mean"] < 0.3 and pw["capped at p99.9"] > pw["raw mean"]
+print("capped lift is read lower than the true +3% because whales' extra spend above the cap is thrown away: the cap changes the estimand")
+```
+
+**Output (my run):**
+```text
+mean revenue per user 20.0; top 0.1% of users hold 24.7% of revenue; p99.9 = 843
+true effect +3% on every user's revenue, 100,000 users per arm, 300 simulated tests
+method                  power  mean est. lift  sd of est.
+raw mean                 0.11           3.72%       5.80
+capped at p99.9          0.40           2.82%       1.70
+CUPED (pre revenue)      0.18           3.32%       3.51
+log(1+x)                 0.16     (log scale)
+capped lift is read lower than the true +3% because whales' extra spend above the cap is thrown away: the cap changes the estimand
+```
+
+**Follow-ups:**
+- Is p = 0.2 evidence of no effect? No. The interval is wider than the effect; the test is underpowered for a 3% change.
+- When is a rank test right? When the question is "do typical users spend more", not "how much total revenue".
+- Which cap percentile? A pre-registered, stable one (p99 to p99.9); show sensitivity to the cap.
+
+**Common mistakes:** Deleting the top users after seeing the result. Different caps per arm. Reporting the capped number as the revenue lift without saying so. Treating p = 0.2 as proof of no effect. Ignoring CUPED. Forgetting to exclude bots first.
+
+### Q32 ⭐⭐ 🟡 A settings-page feature is seen by only 8% of users, and across all assigned users revenue per user is up 0.1% relative to control, not significant. Among users who reach the page, the lift is +1.25% relative. Explain how you analyse a test with low exposure, what the triggering rule must satisfy, and what you report.
+**Asked at:** Underpowered-test and MDE material (a Towards Data Science 'what to do when an A/B test result is not significant' article, a Dataford 'non significant test PM wants launch' page, a HackerNoon 'running A/B tests you can't measure' post, a Statsig power-analysis page); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
+**Say this first (1 line):** I would analyse the triggered users, those who actually reached the page, with a trigger rule defined the same way in both arms, and report both the diluted all-users number and the triggered number; the triggered +1.25% is a statement about the 8%, not the whole base.
+
+**Clarifying questions:**
+- Can I log "would have reached the page" in the control arm too (a counterfactual trigger)? Without it, the triggered comparison is not like with like.
+- Does the feature change the chance of reaching the page (a new link, a prompt)? If yes, triggering is itself an outcome and the clean analysis is all users.
+- Is the 0.1% across all assigned users measured over the whole population, with the same variance? It decides the power calculation.
+- Will the 8% share stay stable after launch? The business impact is the lift times the exposed share.
+- What decision hangs on it? A small, cheap feature can ship on a triggered result; a risky one needs more.
+
+**Approach:**
+1. Check the arithmetic: 8% of users x 1.25% = 0.1% overall. So the two numbers agree, if the non-reaching users are unaffected.
+2. Explain the dilution. The ITT (intention-to-treat, all assigned users) is the honest business number but 92% of users add noise and zero effect. Power for the diluted effect is about 1 / 0.08^2 = 156 times worse per user than for the 8% alone, adjusted for shares: for the same power the all-users test needs 12.5 times as many assigned users as the triggered test needs triggered users divided by 0.08.
+3. Triggered analysis. Compare users who reached the page in treatment against users who would have reached it in control. Requirements for the trigger: (a) defined on behaviour before the treatment difference appears; (b) logged in both arms by the same rule; (c) not influenced by the treatment; (d) all triggered users counted, including those who then did not use the feature.
+4. Check for symmetry: the triggered share should be about equal in both arms (a built-in SRM check on triggered users).
+5. Report: the ITT (+0.1%, not significant), the triggered lift (+1.25% with interval), the triggered share (8%) and the implied revenue impact.
+6. If a counterfactual trigger cannot be logged, use ITT and plan a bigger or longer test, or use CUPED to cut variance (Book 1 Part 10 Q1 lists the sample-size steps).
+
+**Metrics:**
+- ITT lift = mean(revenue per user, all treatment-assigned) / mean(all control-assigned) - 1. Denominator: all assigned users.
+- Triggered lift = mean(revenue, triggered treatment users) / mean(revenue, triggered control users) - 1.
+- Triggered share = triggered users / assigned users, per arm (should match).
+- Guardrails: SRM at the assigned level and at the triggered level.
+
+**Risks:**
+- Asymmetric trigger: in treatment you count users who clicked the new setting, in control you count everybody. Engaged users self-select and produce a huge fake lift.
+- A trigger that the feature itself changes (a prompt that sends more users to the page).
+- Reading +1.25% as the effect on all users.
+- Multiplying 1.25% by the 8% and ignoring how much the share might change.
+
+**What the interviewer scores:**
+- Strong: connects 1.25% x 8% = 0.1% and explains dilution. Weak: "not significant, so no effect".
+- Strong: lists the trigger rules (symmetric, pre-treatment, unaffected by treatment). Weak: "filter to users who used the feature".
+- Strong: quantifies the sample saving. Weak: "triggered is better".
+- Strong: reports both ITT and triggered. Weak: only the number that looks better.
+
+**Example:** illustrative numbers. Revenue per user 20, SD 20. Triggered lift +1.25% means +0.25 per triggered user; ITT +0.1% means +0.02 per assigned user.
+- Weak: "Across all users it is +0.1%, not significant, drop it."
+- Strong: "Only 8% can feel it. For the triggered 8% the effect is +1.25%, and a triggered analysis needs about 100,000 triggered users per arm for 80% power."
+- In my run: 80% power needs 100,466 triggered users per arm (1,255,821 assigned) for the triggered analysis against 15,697,759 per arm for the all-users analysis, a ratio of 12.5. With 1.25 million assigned users per arm, power is 0.13 for all users and 0.80 for triggered-only. If the feature does nothing but the trigger is asymmetric (treatment counts only the most engaged 8%, control counts everybody), the test reads +329%; a symmetric trigger reads -1.4%.
+
+**Code:**
+```python
+# Q32: 8% exposure, diluted ITT vs triggered analysis (illustrative simulation, seeded)
+import numpy as np
+from scipy import stats
+
+rng = np.random.default_rng(32)
+SHARE, ITT_REL, MU, SD = 0.08, 0.001, 20.0, 20.0
+print("triggered lift implied by the prompt:", ITT_REL / SHARE * 100, "%")
+assert abs(ITT_REL / SHARE - 0.0125) < 1e-12
+
+z = stats.norm.ppf(0.975) + stats.norm.ppf(0.80)
+n_trig = 2 * z**2 * SD**2 / (MU * 0.0125) ** 2
+n_itt = 2 * z**2 * SD**2 / (MU * 0.001) ** 2
+print(f"users per arm for 80% power: triggered analysis {n_trig:,.0f} triggered (= {n_trig/SHARE:,.0f} assigned); all-users analysis {n_itt:,.0f}; ratio {n_itt/(n_trig/SHARE):.2f}")
+assert abs(n_itt / n_trig - 1 / SHARE**2) < 1e-6
+
+# simulate 2,000 tests with 1.25M assigned users per arm; group means drawn from their exact sampling distribution
+N, R = 1_250_000, 2000
+def one():
+    k_t, k_c = rng.binomial(N, SHARE, 2)                       # triggered users per arm
+    # triggered users: control mean MU, treatment mean MU*1.0125; the other users: MU in both arms
+    t_trig = rng.normal(MU * 1.0125, SD / np.sqrt(k_t)); c_trig = rng.normal(MU, SD / np.sqrt(k_c))
+    t_non = rng.normal(MU, SD / np.sqrt(N - k_t)); c_non = rng.normal(MU, SD / np.sqrt(N - k_c))
+    t_all = (k_t * t_trig + (N - k_t) * t_non) / N; c_all = (k_c * c_trig + (N - k_c) * c_non) / N
+    se_all = SD * np.sqrt(2 / N); se_trig = SD * np.sqrt(1 / k_t + 1 / k_c)
+    return (t_all - c_all) / se_all, (t_trig - c_trig) / se_trig
+zs = np.array([one() for _ in range(R)])
+pw = (np.abs(zs) > 1.96).mean(axis=0)
+print(f"power with 1.25M assigned per arm: all-users {pw[0]:.2f}; triggered-only {pw[1]:.2f}")
+assert pw[0] < 0.2 and 0.7 < pw[1] < 0.9
+
+# the trigger rule must be symmetric. Feature does NOTHING here. Spend ~ heavy-tailed; 'treatment users who clicked the new setting' are engaged users.
+M = 400_000
+spend_t = rng.lognormal(2.5, 1.0, M); spend_c = rng.lognormal(2.5, 1.0, M)
+asym = spend_t[spend_t > np.quantile(spend_t, 1 - SHARE)].mean() / spend_c.mean() - 1                 # treated: 'engaged', control: everybody
+sym = spend_t[rng.random(M) < SHARE].mean() / spend_c[rng.random(M) < SHARE].mean() - 1               # same rule on both arms (would-have-reached)
+print(f"no true effect: asymmetric trigger reads {asym*100:+.0f}%; symmetric trigger reads {sym*100:+.1f}%")
+assert asym > 1.0 and abs(sym) < 0.05
+```
+
+**Output (my run):**
+```text
+triggered lift implied by the prompt: 1.25 %
+users per arm for 80% power: triggered analysis 100,466 triggered (= 1,255,821 assigned); all-users analysis 15,697,759; ratio 12.50
+power with 1.25M assigned per arm: all-users 0.13; triggered-only 0.80
+no true effect: asymmetric trigger reads +329%; symmetric trigger reads -1.4%
+```
+
+**Follow-ups:**
+- Why is the ratio 12.5? The effect is 12.5 times smaller diluted, so the sample needed per user is 156 times larger, but the triggered test only has 8% of users, so the net ratio on assigned users is 1 / 0.08 = 12.5 (the noise from non-triggered users is the same size as signal there).
+- What if I cannot log control triggers? Use the all-users test, or CUPED, or run longer; do not substitute "users who used the feature".
+- Does 1.25% scale to the whole base? Only for users who reach the page; effect on others is assumed zero.
+
+**Common mistakes:** Filtering to feature users (selection). Using the triggered number as a company-wide lift. Hiding the ITT result. Changing the trigger after seeing results. Not checking the triggered share per arm.

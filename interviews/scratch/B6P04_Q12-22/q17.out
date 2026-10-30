@@ -1,0 +1,9 @@
+P(at least one of 40 null segments has p <= 0.01) = 1 - 0.99^40 = 0.331
+simulated: 0.331 of null experiments show at least one segment with p <= 0.01
+Bonferroni threshold 0.05/40 = 0.00125; p = 0.01 passes? False
+BH threshold for rank 1 = 0.00125; p = 0.01 passes? False
+SE implied for the segment = 3.5% relative; its 95% CI is +2.2% to +15.8%
+best segment: mean estimate +8.0%, mean true effect +0.64%, picked a truly null segment 68% of the time
+replication estimate of the chosen segments: +0.63% (the first-look estimate was +8.0%)
+pass rate of a replication at one-sided 5% for chosen segments: 7.9%
+all asserts passed

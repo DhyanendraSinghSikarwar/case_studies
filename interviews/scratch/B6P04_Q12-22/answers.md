@@ -456,7 +456,7 @@ all asserts passed
 - Strong: proposes both a process rule and a statistical fix. Weak: only statistical or only "do not look".
 - Strong: respects the business need (early stop for harm or big wins). Weak: says "never stop early".
 - Strong: runs or describes the A/A simulation. Weak: only recalls Bonferroni (Bonferroni is too conservative for correlated looks).
-**Example:** Illustrative numbers. 500 users per arm per day, 14 days, no true difference. One look on day 14: 5.0% false wins. Stop at the first p below 0.05 across 14 daily looks: 21.8% (about 1 in 4.6). The share of runs that first cross on day 1 is 5.1%, on day 2 about 3.2%, and so on down to about 0.6% on day 14. With the constant boundary of 2.62 the overall error is back to 5%.
+**Example:** Illustrative numbers. 500 users per arm per day, 14 days, no true difference. One look on day 14: 5.0% false wins. Stop at the first p below 0.05 across 14 daily looks: 21.8% (about 1 in 4.6). The share of runs that first cross on day 1 is 5.1%, on day 2 about 3.2%, and so on down to about 0.6% on day 14. With the constant boundary of 2.62 the overall error is back to 5%. The price of the O'Brien-Fleming-style rule is small: for a true effect of 0.04 sd, power is 0.64 with early stopping allowed against 0.66 for the single day-14 test.
 - Weak answer: "The p-value is 0.04 on day 6 so it is significant; ship."
 - Strong answer: "With 14 daily looks, that rule gives a false winner about once in five A/A runs. I would pre-set the end date, or use a boundary that spends alpha across looks."
 **Code:**
@@ -538,3 +538,104 @@ all asserts passed
 - Can a Bayesian look as often as they like? Not for free. A posterior-probability stopping rule also inflates false wins unless it is calibrated; check it with an A/A simulation.
 - What about stopping for harm? Use a one-sided guardrail rule with its own boundary; it spends a small part of the error budget.
 **Common mistakes:** Saying "it is just 5% per look so fine". Applying Bonferroni blindly. Changing the end date after seeing the data. Reporting the raw estimate after an early stop without shrinkage.
+
+### Q17 ⭐⭐⭐ 🔴 A test with no overall effect (+0.3% relative to control, not significant) is sliced into 40 segments by country, device and tenure, and one segment, new Android users in one country, shows +9% relative with p = 0.01. If none of the 40 segment effects were real, the chance that at least one reaches p <= 0.01 would be about 33%. The product manager wants to launch for that segment, so explain what you do.
+**Asked at:** A/B-testing pitfall guides (Dataford pages on pitfalls such as peeking, novelty effects, network interference and sample ratio mismatch, tagged in snippets to companies such as Lattice, Carvana and Arm; a datainterview.com A/B testing interview list; PracHub A/B testing topic pages); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
+**Say this first (1 line):** I would not launch on one segment out of 40: with no real effects anywhere, about 33% of experiments show at least one segment at p of 0.01 or below, and the +9% is the best of 40 noisy estimates, so I treat it as a hypothesis to confirm with a fresh test.
+**Clarifying questions:**
+- Were the 40 segments (and the cut by country, device and tenure) planned before the test or chosen after the result? Only planned cuts have a fair error rate.
+- How many cuts did the team look at in total, including those not reported? The real number is usually larger than 40.
+- Is there a reason to expect this segment to differ (a bug on that device, a local feature, a language issue)? A mechanism makes the claim stronger; none makes it weaker.
+- How big is the segment (users, revenue)? A small segment gives a noisy and also small win.
+- Is it cheap to launch to only that segment and keep a holdout? That changes the risk.
+**Approach:**
+1. State the base rate: 40 independent chances at the 1% level give 1 - 0.99^40 = 33% for at least one hit. (Segments overlap, so the true chance differs a little; the message is the same.)
+2. Apply a correction and see what happens: Bonferroni needs p at or below 0.05 / 40 = 0.00125; Benjamini-Hochberg (BH) for the smallest p needs the same 0.00125. The segment at p = 0.01 passes neither. Book 1 Part 10, Q9 (the multiple-testing problem and Bonferroni, BH) has the methods.
+3. Read the interval, not the p: a +9% estimate with p = 0.01 has a standard error of about 3.5%, so its 95% CI is about +2% to +16%, and the best of 40 is biased upward (winner's curse).
+4. Ask whether the segment effect really differs from the rest: run an interaction test (does the treatment effect vary by this segment?) rather than a test inside the segment alone. Book 1 Part 10, Q47 (heterogeneous treatment effects) covers the danger of post-hoc subgroups.
+5. Confirm: pre-register this one segment and run a new test on fresh traffic, or keep a holdout inside a segment launch.
+6. Tell the product manager the cost and the date: a confirmation takes N days, and it protects a launch that may do nothing.
+**Metrics:**
+- Segment effect = (metric per user in treatment / metric per user in control) - 1, inside the segment; users in segment arm as denominator.
+- Family-wise error rate (chance of any false hit across the 40) and false discovery rate (share of hits that are false).
+- Adjusted p-value (Bonferroni: p x 40, capped at 1; here 0.4).
+- Replication estimate on new data: the number I trust.
+**Risks:**
+- Subgroup hunting after the result (the garden of forking paths): the number of looks is larger than the reported 40.
+- A segment that is a truly broken experience is real, but the estimate is then still noisy.
+- Selection and winner's curse make the launch decision look better than it is.
+- Launching on an unproven segment starts a story ("it works on Android in country X") that is hard to retire.
+**What the interviewer scores:**
+- Strong: computes 33% and the corrected thresholds. Weak: "it is significant at 0.01".
+- Strong: separates exploration from confirmation and proposes the confirmatory test. Weak: refuses with no path forward.
+- Strong: mentions winner's curse and the interaction test. Weak: applies Bonferroni only.
+- Strong: proposes a low-regret launch (segment holdout). Weak: either launches or kills.
+**Example:** Illustrative numbers. 40 segments, no real effect anywhere. The chance of at least one at p of 0.01 or below is 33.1% (simulated: 33.1%). Bonferroni threshold 0.00125, adjusted p for the hit 0.4. In a simulation where 5 of 40 segments have a real +2% and the rest are 0 (standard error 3.5%), the best-looking segment shows +8.0% on average, its true effect is +0.6% on average, and it is a truly null segment 68% of the time. Re-tested on fresh data it shows +0.6%.
+- Weak answer: "New Android users in that country is up 9% at p = 0.01, so launch there."
+- Strong answer: "One in three flat tests shows such a segment. I would confirm it with a new test on that segment alone, then launch."
+**Code:**
+```python
+# Q17: one 'winning' segment out of 40 after a flat overall test (simulation, illustrative numbers)
+import numpy as np
+from scipy.stats import norm
+
+rng = np.random.default_rng(17)
+m, alpha1 = 40, 0.01
+print(f"P(at least one of {m} null segments has p <= {alpha1}) = 1 - 0.99^{m} = {1 - 0.99**m:.3f}")
+assert abs((1 - 0.99**m) - 0.331) < 0.001
+
+# Simulate: every segment has a true effect of exactly 0; z ~ N(0,1) in each segment
+reps = 200_000
+z = rng.standard_normal((reps, m))
+p = 2 * norm.sf(np.abs(z))
+any_001 = np.mean((p <= alpha1).any(axis=1))
+print(f"simulated: {any_001:.3f} of null experiments show at least one segment with p <= 0.01")
+assert abs(any_001 - 0.331) < 0.005
+
+# What corrections say about p = 0.01 when it is the smallest of 40
+bonf = 0.05 / m
+print(f"Bonferroni threshold 0.05/{m} = {bonf:.5f}; p = 0.01 passes? {0.01 <= bonf}")
+# Benjamini-Hochberg: smallest p is compared with 0.05 * 1/40
+bh = 0.05 * 1 / m
+print(f"BH threshold for rank 1 = {bh:.5f}; p = 0.01 passes? {0.01 <= bh}")
+assert 0.01 > bonf and 0.01 > bh
+
+# A segment with +9% and p = 0.01 has an SE of about 9% / 2.576
+se = 0.09 / norm.isf(0.005)
+print(f"SE implied for the segment = {se:.1%} relative; its 95% CI is {0.09 - 1.96*se:+.1%} to {0.09 + 1.96*se:+.1%}")
+assert 0.034 < se < 0.036
+
+# Winner's curse: 5 of 40 segments have a real +2%, others 0, SE 3.5%. Pick the segment with the best estimate.
+se_seg, true = 0.035, np.zeros(m); true[:5] = 0.02
+est = true + se_seg * rng.standard_normal((reps, m))
+best = est.argmax(axis=1)
+sel_est = est[np.arange(reps), best]
+sel_true = true[best]
+print(f"best segment: mean estimate {sel_est.mean():+.1%}, mean true effect {sel_true.mean():+.2%}, picked a truly null segment {np.mean(sel_true == 0):.0%} of the time")
+assert sel_est.mean() > 0.07 and sel_true.mean() < 0.01 and 0.6 < np.mean(sel_true == 0) < 0.75
+
+# Replication on fresh data for the chosen segment (a confirmatory test with a new sample)
+new = true[best] + se_seg * rng.standard_normal(reps)
+print(f"replication estimate of the chosen segments: {new.mean():+.2%} (the first-look estimate was {sel_est.mean():+.1%})")
+assert new.mean() < 0.01
+# Chance that a truly null chosen segment passes a one-sided replication at 5%
+print("pass rate of a replication at one-sided 5% for chosen segments:", f"{np.mean(new / se_seg > norm.isf(0.05)):.1%}")
+print("all asserts passed")
+```
+**Output (my run):**
+```text
+P(at least one of 40 null segments has p <= 0.01) = 1 - 0.99^40 = 0.331
+simulated: 0.331 of null experiments show at least one segment with p <= 0.01
+Bonferroni threshold 0.05/40 = 0.00125; p = 0.01 passes? False
+BH threshold for rank 1 = 0.00125; p = 0.01 passes? False
+SE implied for the segment = 3.5% relative; its 95% CI is +2.2% to +15.8%
+best segment: mean estimate +8.0%, mean true effect +0.64%, picked a truly null segment 68% of the time
+replication estimate of the chosen segments: +0.63% (the first-look estimate was +8.0%)
+pass rate of a replication at one-sided 5% for chosen segments: 7.9%
+all asserts passed
+```
+**Follow-ups:**
+- What if the segment had a clear reason to benefit (a device-specific fix)? Then the prior is higher, the claim is a planned hypothesis, and I would still confirm, with a smaller, faster test.
+- What if the team wants a rule for subgroup claims? Pre-register a short list of segments, test the interaction, correct for the list size, and mark everything else as exploratory.
+- Does the overall flat result mean no segment matters? No; it means no average effect. Segments can offset each other, but find that with planned analysis, not a scan.
+**Common mistakes:** Using the 1% level inside the segment and ignoring the 40 chances. Confusing "significant in the segment" with "different from the other segments". Reporting the unshrunk effect as the expected launch gain. Forgetting that the real number of looks was larger.
