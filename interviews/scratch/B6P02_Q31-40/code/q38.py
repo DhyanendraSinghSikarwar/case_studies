@@ -6,17 +6,20 @@ N = 1_000_000
 harm = rng.random(N) < 0.02                       # 2% harmful
 new_type = harm & (rng.random(N) < 0.45)          # a new kind of harm the model has not seen (45% of harm)
 # model score: old-type harm scores high, new-type harm scores like ordinary content, ordinary items score low
-score = np.where(harm & ~new_type, rng.beta(8, 1.5, N), rng.beta(1.2, 6, N))
+score = np.where(harm & ~new_type, rng.beta(8, 1.5, N), np.where(new_type, rng.beta(2, 4, N), rng.beta(1.2, 6, N)))
 flagged = score >= 0.6
 true_recall = (flagged & harm).sum() / harm.sum()
 
-# Review policy: all flagged items go to reviewers, plus 10% of items with score 0.3-0.6 (borderline)
+# Review policy: all flagged items go to reviewers, plus 30% of items with score 0.3-0.6 (borderline)
 mid = (score >= 0.3) & (score < 0.6)
-reviewed = flagged | (mid & (rng.random(N) < 0.10))
+reviewed = flagged | (mid & (rng.random(N) < 0.30))
 rep_recall = (reviewed & flagged & harm).sum() / (reviewed & harm).sum()
 print(f"true recall {true_recall:.3f}   reported recall (reviewed items only) {rep_recall:.3f}   reviewed {reviewed.sum():,} of {N:,}")
-assert rep_recall > true_recall + 0.10
+assert rep_recall > true_recall + 0.25 and 0.88 < rep_recall < 0.91
 
+caught = (flagged & harm).sum(); extra = (reviewed & ~flagged & harm).sum()
+print(f"harmful total {harm.sum():,}  flagged harmful {caught:,}  harmful seen by reviewers but not flagged {extra:,}")
+assert abs(caught - 11_300) < 300 and abs(extra - 1_350) < 150
 # Unbiased estimate 1: simple random sample of 20,000 items, reviewed by humans
 def srs_estimate(n, seed):
     r = np.random.default_rng(seed); idx = r.choice(N, n, replace=False)
@@ -47,4 +50,4 @@ assert abs(es.mean() - true_recall) < 0.01 and es.std() < e.std()
 prev = harm.mean()
 n_harm = 1.96 ** 2 * true_recall * (1 - true_recall) / 0.03 ** 2
 print(f"harmful items needed {n_harm:.0f}; sampled items needed {n_harm / prev:,.0f}")
-assert 800 < n_harm < 1000
+assert 1000 < n_harm < 1100
