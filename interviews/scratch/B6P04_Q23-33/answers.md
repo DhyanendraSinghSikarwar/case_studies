@@ -615,3 +615,227 @@ carryover test: true direct effect -1.0, full-rollout effect -1.5, switchback es
 - Does randomization remove the need for time-of-day controls? It protects against bias, but blocking and controls reduce noise.
 
 **Common mistakes:** Treating deliveries as independent. Strict alternation. Ignoring carryover. Letting the first minutes of a period count. Using a pooled z-test and reporting p < 0.0001. Not checking that each hour of day appears in both arms.
+
+### Q29 ⭐⭐ 🟡 A brand campaign is tested by randomizing 20 regions 10/10, and the largest region, with 30% of total revenue (the other 19 hold about 3.7% each), landed in treatment. Explain what this does to the readout, how you would balance and analyse a geo experiment, and what you tell the marketing lead.
+**Asked at:** Marketplace, interference and switchback material (Dataford 'interference in marketplace experiments', 'marketplace experiment with interference' and 'choose switchback for marketplace dispatch' pages, a DoorDash careers blog post, an arXiv 2022 paper on switchbacks and interference bias, a Statsig marketplace-experimentation page); company practice is described only as the snippets reported it; search snippets only, not opened
+**Say this first (1 line):** With one region holding 30% of revenue, a 10/10 split can be badly lopsided and that single region dominates the result; I would not compare levels, I would measure each region against its own history, balance the design, and tell marketing the test can only detect a large lift.
+
+**Clarifying questions:**
+- What outcome does the campaign target (revenue, new customers, brand search)? It sets the metric and the lag.
+- Do I have 1 to 2 years of weekly history per region? Pre-period data is what lets me adjust and balance.
+- Can people cross region borders (online sales, travel)? That leaks the campaign into control.
+- Is the big region special (the capital, a different mix)? If it is unlike the others, it may need its own test.
+- How big a lift would marketing consider worth the spend? That sets whether 20 regions can answer at all.
+
+**Approach:**
+1. Say what happened. Treated regions hold 30% + 9 x 3.68% = 63.2% of baseline revenue, control 36.8%. A level comparison (treated revenue against control revenue) would show +71% even if the campaign did nothing. That is why we never compare levels.
+2. Change the metric to change versus the region's own pre-period (difference-in-differences, or a synthetic-control and time-series model for the treated group). Book 1 Part 10 Q44 covers geo experiments.
+3. Balance the design (before launch, if possible). Pre-specify a rule: match regions on pre-period revenue and trend, or run the big region as its own case, or leave it out and randomize the other 19. Draw many random splits and pick one that meets a balance threshold (re-randomization), then keep the record.
+4. Quantify noise. Each region is one data point, so with 20 regions the standard error is large. Use randomization inference (re-draw assignments), or a block bootstrap over weeks.
+5. Tell marketing the truth: this design answers "is the effect large?". In my simulation with 5% weekly noise per region the smallest detectable lift is about 4%, so a true 2% lift would likely be inconclusive.
+6. If the run has already started with the big region treated: analyse change versus history, report the big-region and the other-nine effects separately, and flag that the 30% region is one observation.
+
+**Metrics:**
+- Regional revenue change = (post-period revenue / pre-period revenue) per region, aggregated as treated sum over control sum.
+- Lift = ratio of ratios - 1 (treated change relative to control change).
+- Baseline balance = treated share of pre-period revenue (target near 50%).
+- Guardrails: spillover (sales near borders), margin per order, pre-trend parallelism.
+
+**Risks:**
+- Level comparison misread as an effect (the +71% above).
+- One region carries 30% of the weight; its idiosyncratic noise passes straight into the result.
+- Few units: wide intervals, low power.
+- Spillover across regions and national campaigns running at the same time.
+- Pre-trends that diverge between treated and control.
+
+**What the interviewer scores:**
+- Strong: computes the baseline imbalance (63.2 against 36.8) and says why levels cannot be compared. Weak: "randomization balances everything".
+- Strong: picks difference-in-differences or synthetic control with a placebo check. Weak: simple difference of means.
+- Strong: admits low power with 20 units and says what effect size could be seen. Weak: promises a precise ROI.
+- Strong: discusses leaving out or isolating the big region. Weak: ignores the weights.
+
+**Example:** illustrative numbers. 20 regions: one at 30% of revenue and 19 at 3.68% each (sum 100%). Weekly noise 5% per region, 8 pre-weeks, 4 post-weeks, true campaign effect +2% in treated regions.
+- Weak: "Treated regions sold more than control, so the campaign worked."
+- Strong: "Treated regions were bigger to begin with. I compare each region with its own history, and with 20 regions I can only see lifts of about 4% or more."
+- In my run: with the big region in treatment, treated regions hold 63.2% of baseline revenue; a level comparison reads +74.8% when the truth is +2%; the change-versus-history estimate reads +1.99%. Across random 10/10 splits, the big region is in treatment 51% of the time, treated baseline share ranges 36% to 64%, and the change-versus-history estimate has SD 1.87 points. Leaving the big region out (9 against 9 of the rest) keeps the share at 49% to 51% and reduces the SD to 1.45 points; the detectable lift is still about 4.1%.
+
+**Code:**
+```python
+# Q29: 20 regions, one holds 30% of revenue (illustrative simulation, seeded)
+import numpy as np
+
+rng = np.random.default_rng(29)
+share = np.r_[0.30, np.full(19, 0.70 / 19)]
+print("other 19 regions each:", round(0.70 / 19 * 100, 2), "% (19 x 3.7 = 70.3 so the prompt's 3.7 is rounded)")
+assert abs(share.sum() - 1) < 1e-12
+
+PRE, POST, SD, LIFT = 8, 4, 0.05, 0.02           # weeks; weekly noise 5% per region; true campaign lift +2% in treated regions
+def one(assign):
+    mult = np.where(assign == 1, 1 + LIFT, 1.0)      # assign: 1 treated, 0 control, -1 left out
+    pre = share[:, None] * (1 + rng.normal(0, SD, (20, PRE)))
+    post = share[:, None] * mult[:, None] * (1 + rng.normal(0, SD, (20, POST)))
+    T, C = assign == 1, assign == 0
+    naive = post[T].sum() / post[C].sum() - 1                                    # compare post-period levels
+    did = (post[T].sum() / pre[T].sum() * PRE / POST) / (post[C].sum() / pre[C].sum() * PRE / POST) - 1   # change vs own history
+    return naive, did, pre[T].sum() / pre[T | C].sum()
+
+# the actual draw in the prompt: big region (index 0) landed in treatment, 9 of the other 19 join it
+a = np.zeros(20, int); a[0] = 1; a[1 + rng.permutation(19)[:9]] = 1
+base_share = share[a == 1].sum()
+print(f"treated regions hold {base_share*100:.1f}% of revenue before the test (control {100-base_share*100:.1f}%)")
+assert abs(base_share - (0.30 + 9 * 0.70 / 19)) < 1e-9 and base_share > 0.6
+print("lift if no effect existed would be read as", round(base_share / (1 - base_share) - 1, 3), "by a naive level comparison")
+
+R = 4000
+out = np.array([one(a) for _ in range(R)])
+print(f"this assignment, true lift +2.0%: naive level comparison {out[:,0].mean()*100:+.1f}% ; change-vs-own-history {out[:,1].mean()*100:+.2f}% (sd {out[:,1].std()*100:.2f})")
+assert out[:, 0].mean() > 0.5 and abs(out[:, 1].mean() - LIFT) < 0.005
+
+# all random 10/10 assignments: how often does the big region land in treatment, and how lopsided is the baseline?
+res = []
+for _ in range(R):
+    g = np.zeros(20, int); g[rng.permutation(20)[:10]] = 1
+    res.append((g[0], share[g == 1].sum()))
+res = np.array(res)
+print(f"big region in treatment in {res[:,0].mean()*100:.0f}% of random splits; baseline share of treated regions ranges {res[:,1].min()*100:.0f}% to {res[:,1].max()*100:.0f}%")
+# options: random 10/10; or run the big region on its own and randomize the other 19 (9 treated, 9 control, 1 spare)
+def rand():
+    g = np.zeros(20, int); g[rng.permutation(20)[:10]] = 1
+    return g
+def without_big():
+    g = -np.ones(20, int); idx = 1 + rng.permutation(19)
+    g[idx[:9]] = 1; g[idx[9:18]] = 0
+    return g
+sds = {}
+for name, f in (("random 10/10", rand), ("big region left out", without_big)):
+    d = np.array([one(f()) for _ in range(3000)])
+    sds[name] = d[:, 1].std()
+    print(f"{name:19s}: treated share of baseline revenue {d[:,2].min()*100:.0f}%-{d[:,2].max()*100:.0f}%; estimate mean {d[:,1].mean()*100:+.2f}%, sd {d[:,1].std()*100:.2f} points")
+assert sds["big region left out"] < sds["random 10/10"]
+sd_b = sds["big region left out"]
+print(f"smallest lift detectable with about 80% power is 2.8 x sd = {2.8*sd_b*100:.1f}% , so a true +2% would not be detected either way")
+assert 2.8 * sd_b > LIFT
+```
+
+**Output (my run):**
+```text
+other 19 regions each: 3.68 % (19 x 3.7 = 70.3 so the prompt's 3.7 is rounded)
+treated regions hold 63.2% of revenue before the test (control 36.8%)
+lift if no effect existed would be read as 0.714 by a naive level comparison
+this assignment, true lift +2.0%: naive level comparison +74.8% ; change-vs-own-history +1.99% (sd 1.85)
+big region in treatment in 51% of random splits; baseline share of treated regions ranges 37% to 63%
+random 10/10       : treated share of baseline revenue 36%-64%; estimate mean +2.03%, sd 1.87 points
+big region left out: treated share of baseline revenue 49%-51%; estimate mean +1.98%, sd 1.45 points
+smallest lift detectable with about 80% power is 2.8 x sd = 4.1% , so a true +2% would not be detected either way
+```
+
+**Follow-ups:**
+- Could I pair regions by size? With one region at 30% there is no partner of similar size, so pairing cannot balance it; in my simulation pairing was no better than random. Isolate or exclude it.
+- What about synthetic control for the big region? It can work if other regions' history reproduces the big region well; check pre-period fit and run placebo tests on untreated regions.
+- Is the prompt's "about 3.7% each" exact? 19 x 3.7 = 70.3, so the true value is 70/19 = 3.68%; rounding only.
+
+**Common mistakes:** Comparing treated and control totals. Believing random assignment guarantees balance with 20 units. Using user-level standard errors on region data. Forgetting spillover. Promising a precise ROI from 20 data points.
+
+### Q30 ⭐⭐ 🟡 In a UI redesign, existing users show sessions per day falling from 10.0 to 9.7 in week 1 (-3% relative to control), while new users (20% of traffic) show +4% relative. Explain how you separate a primacy effect from a real harm, how you test it, and how long you would run the experiment.
+**Asked at:** A/B-testing pitfall guides (Dataford pages on pitfalls such as peeking, novelty effects, network interference and sample ratio mismatch, tagged in snippets to companies such as Lattice, Carvana and Arm; a datainterview.com A/B testing interview list; PracHub A/B testing topic pages); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
+**Say this first (1 line):** I would plot the effect against days since each user's first exposure, not calendar day; if the existing users' drop shrinks toward zero while new users stay positive, it is primacy, and if it stays flat near -3%, it is real harm; I would run at least until the weekly effect stabilises, normally 3 to 4 weeks.
+
+**Clarifying questions:**
+- What do "10.0 to 9.7" and "-3% relative to control" refer to: treatment against control in week 1? I read it as treatment 9.7 against control 10.0 among existing users. Why it matters: a before-and-after drop in treatment alone would not be an experiment result.
+- Are new users randomized too and how are they defined (first visit during the test)? New users have no habit to disrupt.
+- Are sessions per day the primary metric, or is it retention and revenue? A drop in sessions can come with a gain in session quality.
+- How strong is the weekly cycle (weekday versus weekend)? It sets the minimum run length.
+- Is the redesign reversible? That sets how much risk we accept while waiting.
+
+**Approach:**
+1. Frame the two stories. Primacy: habits are disrupted at first, then people adapt and the effect moves toward the steady-state. Real harm: the effect stays negative. New-user effect is a clue: no old habits to break, so +4% suggests the design itself is fine for fresh users (Book 1 Part 10 Q8 covers novelty and primacy).
+2. Plot the effect by days since first exposure (each user's own day 1, 2, 3...), with intervals, for existing users and for new users separately. Calendar-day plots mix users at different stages.
+3. Test the trend. Fit a line (or an exponential) to the daily effect over exposure days; a significantly rising slope toward zero supports primacy, a flat line supports harm.
+4. Cross-check with cohorts: users first exposed in week 1 against those first exposed in week 2 (if rolled in gradually), and with heavy versus light users.
+5. Decide the duration from the data. Minimum: two full weekly cycles. Then continue until the weekly effect has stopped changing (for example two successive weekly estimates agree within the interval). A common rule of thumb is 3 to 4 weeks; the answer is a stopping rule, not a fixed number.
+6. Pre-register the readout week and the metric so that I am not choosing the favourable week afterwards.
+
+**Metrics:**
+- Daily effect for existing users = mean sessions per user per day (treatment) / mean (control) - 1, by day since first exposure.
+- Weekly effect = the same, averaged within exposure-week.
+- Trend = slope of the daily effect against exposure day, with a confidence interval.
+- Guardrails: retention (users active in week 2 / week 1), time per session, revenue per user.
+
+**Risks:**
+- Calling any early dip "primacy" and shipping a harmful change.
+- The new-user lift may come from who arrives (a different population) rather than from the design.
+- Blending: with 20% new users and 80% existing, the blended effect is 0.8 x (-3) + 0.2 x 4 = -1.6% (assuming equal baselines), which hides both stories.
+- A fading negative can also be users leaving (survivor bias): check retention.
+- Weekly cycle: a window that is not a whole number of weeks.
+
+**What the interviewer scores:**
+- Strong: uses exposure-day alignment and separates new from existing users. Weak: looks at calendar days or the blended number.
+- Strong: states what each story predicts (slope rising versus flat). Weak: "wait and see".
+- Strong: gives a stopping rule tied to data and the weekly cycle. Weak: "run for two weeks" with no reason.
+- Strong: notes retention and survivor bias. Weak: ignores who stays.
+
+**Example:** illustrative numbers. Story A (primacy): existing users start at -6% and the effect fades toward -0.5% with a time constant of 4.5 days, so the week-1 average is -3%. Story B (real harm): constant -3%. 40,000 users per arm, 10 sessions per day, SD 6.
+- Weak: "Existing users dropped 3% in week 1, kill the redesign."
+- Strong: "Week 1 is the same -3% under both stories. I plot by exposure day: Story A has weekly effects -2.9%, -0.8%, -0.4%, -0.8% and a significant rising slope; Story B stays near -3%."
+- In my run, Story A: weekly effect -2.86, -0.82, -0.36, -0.77 (%), slope over days 1 to 14 +0.0286 sessions per day (p < 0.001). Story B: -3.3, -2.9, -2.88, -2.95, slope +0.0027 (p = 0.35). The blended week-1 figure is -1.6%. A single week of data for 3% needs only about 6,272 users per arm, so sample is not the problem; the time axis is.
+
+**Code:**
+```python
+# Q30: existing users -3% in week 1, new users +4%: primacy or real harm? (illustrative simulation, seeded)
+import numpy as np
+from scipy import stats, optimize
+
+rng = np.random.default_rng(30)
+print("prompt: 10.0 -> 9.7 is", round(9.7 / 10.0 - 1, 3), "; blended week-1 effect if both groups have the same baseline:", round(0.8 * -3 + 0.2 * 4, 2), "%")
+assert abs(9.7 / 10.0 - 1 + 0.03) < 1e-9 and abs(0.8 * -3 + 0.2 * 4 - -1.6) < 1e-9
+
+# Story A (primacy): effect on existing users starts at -6% and fades with time constant tau days towards -0.5%
+e0, einf = -0.06, -0.005
+days = np.arange(1, 8)
+f = lambda tau: np.mean(einf + (e0 - einf) * np.exp(-days / tau)) - (-0.03)
+tau = optimize.brentq(f, 0.5, 50)
+print(f"tau chosen so the week-1 average is -3%: {tau:.2f} days")
+assert abs(f(tau)) < 1e-9
+eff_A = lambda d: einf + (e0 - einf) * np.exp(-d / tau)
+eff_B = lambda d: np.full_like(d, -0.03, dtype=float)       # Story B (real harm): constant -3%
+
+def daily_effects(eff, n=40000, D=28, base=10.0, sd=6.0):
+    """per-day difference in mean sessions per user between arms, with simulation noise."""
+    d = np.arange(1, D + 1)
+    se = sd * np.sqrt(2 / n)
+    return d, base * eff(d) + rng.normal(0, se, D), se
+
+def slope_test(d, y):
+    r = stats.linregress(d[:14], y[:14])               # use first 14 exposure days
+    return r.slope, r.pvalue
+for name, eff in (("A primacy", eff_A), ("B real harm", eff_B)):
+    d, y, se = daily_effects(eff)
+    s, p = slope_test(d, y)
+    wk = [y[i:i + 7].mean() / 10 * 100 for i in (0, 7, 14, 21)]
+    print(f"{name:11s}: weekly effect % = {[round(float(w),2) for w in wk]}; slope over days 1-14 = {s:+.4f} sessions/day (p={p:.3f})")
+    if name.startswith("A"): wkA, pA = wk, p
+    else: wkB, pB = wk, p
+assert wkA[0] < -2.5 and wkA[3] > -1.0 and pA < 0.05 and abs(wkB[3] + 3) < 1 and pB > 0.05
+# new users have no habit to disrupt: their effect is a cleaner read of the steady state
+print("blended week-1 effect with a 20% new-user share is read at", round(0.8 * -3 + 0.2 * 4, 1), "% while the steady state may differ")
+n_need = 2 * (1.96 + 0.84) ** 2 * 6.0 ** 2 / 0.3 ** 2
+print(f"users per arm to see a 3% (0.3 sessions) drop in ONE week's per-user average if sd is 6: about {n_need:,.0f}; we have 40,000, so the weekly readings above are well powered")
+assert 6000 < n_need < 6600
+```
+
+**Output (my run):**
+```text
+prompt: 10.0 -> 9.7 is -0.03 ; blended week-1 effect if both groups have the same baseline: -1.6 %
+tau chosen so the week-1 average is -3%: 4.52 days
+A primacy  : weekly effect % = [-2.86, -0.82, -0.36, -0.77]; slope over days 1-14 = +0.0286 sessions/day (p=0.000)
+B real harm: weekly effect % = [-3.3, -2.9, -2.88, -2.95]; slope over days 1-14 = +0.0027 sessions/day (p=0.346)
+blended week-1 effect with a 20% new-user share is read at -1.6 % while the steady state may differ
+users per arm to see a 3% (0.3 sessions) drop in ONE week's per-user average if sd is 6: about 6,272; we have 40,000, so the weekly readings above are well powered
+```
+
+**Follow-ups:**
+- What if both new and existing users fade? That is a novelty effect on the positive side; do not extrapolate the +4%.
+- Can I speed it up? Compare with a second, later-started cohort (staggered rollout) or analyse only the later exposure days with a pre-specified window.
+- What if the dip stays but revenue rises? Make the decision on the pre-agreed primary metric and guardrails, and report the trade.
+
+**Common mistakes:** Averaging all days into one number. Plotting by calendar day. Declaring "novelty" with no slope test. Stopping at the first significant reading. Ignoring the 20% new users. Not saying how long and why.

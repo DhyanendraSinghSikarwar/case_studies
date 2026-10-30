@@ -7,8 +7,9 @@ K, reps, per_day = 14, 100_000, 500          # 14 daily looks, 500 users per arm
 z95 = norm.ppf(0.975)
 
 # A/A: both arms have the same distribution. Look k uses all data up to day k.
-d = rng.normal(0, 1, (reps, K, 2, per_day))
-cum = d.sum(axis=3).cumsum(axis=1)           # (reps, K, 2) running sums per arm
+# the sum of 500 N(0,1) values is N(0, 500), so draw each day's arm total directly (same statistics, much faster)
+d = rng.normal(0, np.sqrt(per_day), (reps, K, 2))
+cum = d.cumsum(axis=1)                       # (reps, K, 2) running sums per arm
 n_k = per_day * np.arange(1, K + 1)
 diff = cum[:, :, 1] / n_k[None, :] - cum[:, :, 0] / n_k[None, :]
 z = diff / np.sqrt(2 / n_k[None, :])
@@ -48,8 +49,8 @@ assert bound_obf[-1] < 2.2 and bound_obf[0] > 6
 
 # Power cost of the fix: true effect 0.04 sd, 14 looks, compare fixed-sample test at day 14
 eff = 0.04
-d2 = rng.normal(0, 1, (20_000, K, 2, per_day)); d2[:, :, 1, :] += eff
-cum2 = d2.sum(axis=3).cumsum(axis=1)
+d2 = rng.normal(0, np.sqrt(per_day), (20_000, K, 2)); d2[:, :, 1] += eff * per_day
+cum2 = d2.cumsum(axis=1)
 diff2 = cum2[:, :, 1] / n_k[None, :] - cum2[:, :, 0] / n_k[None, :]
 z2 = diff2 / np.sqrt(2 / n_k[None, :])
 pw_fixed = np.mean(z2[:, -1] > z95)

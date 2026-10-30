@@ -1,13 +1,13 @@
-### Q1 ⭐⭐⭐ 🟢 A test meant to split 100,000 users 50/50 ended with 52,000 in control and 48,000 in treatment. Treatment shows conversion of 5.0% against 4.8% for control (0.2 percentage points absolute, about 4% relative to control's 4.8%) with p = 0.03, and the product manager wants to ship today. Explain what you check first and what you tell the manager.
+### Q1 ⭐⭐⭐ 🟢 A test meant to split 100,000 users 50/50 ended with 52,000 in control and 48,000 in treatment. Treatment shows conversion of 5.1% against 4.8% for control (0.3 percentage points absolute, about 6% relative to control's 4.8%) with p = 0.03, and the product manager wants to ship today. Explain what you check first and what you tell the manager.
 **Asked at:** A/B-testing pitfall guides (Dataford pages on pitfalls such as peeking, novelty effects, network interference and sample ratio mismatch, tagged in snippets to companies such as Lattice, Carvana and Arm; a datainterview.com A/B testing interview list; PracHub A/B testing topic pages); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
-**Say this first (1 line):** I do not ship today, because a 52,000 / 48,000 split of a 50/50 test is a sample ratio mismatch (SRM, the arm sizes do not match the design), so the assignment or logging is broken and the 0.2-point gap cannot be trusted.
+**Say this first (1 line):** I do not ship today, because a 52,000 / 48,000 split of a 50/50 test is a sample ratio mismatch (SRM, the arm sizes do not match the design), so the assignment or logging is broken and the 0.3-point gap cannot be trusted.
 
 **Clarifying questions:**
 - Was the intended split exactly 50/50, and did it change mid-test? A ramp or a config change makes a ratio mismatch expected, not a bug.
 - Are the counts users assigned or users who triggered or loaded the page? Losing users after assignment (crash, slow load, redirect) is the classic SRM cause.
 - Is the mismatch the same every day? A constant mismatch points to a code path. A one-day jump points to a deployment or an outage.
 - Does the split differ by platform, country or browser? It tells me where the loss happens.
-- How was the p-value of 0.03 computed (which test, which counts)? I want to reproduce it before I defend or reject it (see the prompt note below).
+- How was the p-value of 0.03 computed (which test, which counts)? I want to reproduce it (it checks out: z = 2.19) so that the discussion is about validity, not arithmetic.
 
 **Approach:**
 1. Say it plainly to the manager: "The test failed a validity check. The result is not readable yet."
@@ -24,19 +24,17 @@
 
 **Risks:**
 - The users who disappeared are usually different from the ones who stayed (for example, slow-device users in the heavy arm). That biases the lift in an unknown direction.
-- "The effect is small, so the bias is small" is wrong. A 2,000-user hole can wipe out a 0.2-point gap.
+- "The effect is small, so the bias is small" is wrong. A 2,000-user hole can halve a 0.3-point gap and push it out of significance.
 - Fixing the ratio by deleting users from the bigger arm just hides the bug.
 - Pressure to ship because the p-value looks good.
 
 **What the interviewer scores:**
-- Strong: names SRM first and runs the chi-square before reading any lift. Weak: starts discussing whether 4% relative is big enough.
+- Strong: names SRM first and runs the chi-square before reading any lift. Weak: starts discussing whether a 6% relative lift is big enough.
 - Strong: gives a list of causes and a way to localise them (by day, platform, path). Weak: "rerun the test" with no diagnosis.
 - Strong: explains why the gap is untrustworthy (differential loss, selection). Weak: "the sample is still big, so it is fine."
 - Strong: tells the manager something clear and non-blocking: what I will do and by when. Weak: a lecture on p-values.
 
-**Example:** (illustrative numbers) The design is 50,000 per arm. Observed is 52,000 control and 48,000 treatment: chi-square = 2 x 2,000^2 / 50,000 = 160. Now suppose a bug dropped 2,000 treated users who convert at only 1% (slow-device users). Add them back and treatment is (2,400 + 20) / 50,000 = 4.84%, against control 4.80%: the gap shrinks from 0.20 to 0.04 points. Weak answer: "p = 0.03, 4% lift, ship it." Strong answer: "SRM fails at p near 1e-36, so I do not read the lift until I find where 4,000 users went."
-
-**Prompt note (Q1):** the prompt says treatment 5.0% against control 4.8% gives p = 0.03. Recomputed from the stated counts (2,400 of 48,000 against 2,496 of 52,000), the two-sided p is 0.143 and the one-sided p is 0.072. So the p = 0.03 does not follow from these numbers. The answer does not change (SRM comes first), but I would tell the manager that even ignoring SRM the gap is not significant.
+**Example:** (illustrative numbers) The design is 50,000 per arm. Observed is 52,000 control and 48,000 treatment: chi-square = 2 x 2,000^2 / 50,000 = 160. Now suppose a bug dropped 2,000 treated users who convert at only 1% (slow-device users). Add them back and treatment is (2,448 + 20) / 50,000 = 4.94%, against control 4.80%: the gap shrinks from 0.30 to about 0.14 points and p rises to about 0.3 (see Code). Weak answer: "p = 0.03, 6% lift, ship it." Strong answer: "SRM fails at p near 1e-36, so I do not read the lift until I find where 4,000 users went."
 
 **Code:**
 ```python
@@ -45,7 +43,7 @@ from scipy import stats
 
 # Illustrative numbers from the prompt
 n_c, n_t = 52_000, 48_000
-x_c, x_t = round(0.048 * n_c), round(0.050 * n_t)   # conversions: 2496 and 2400
+x_c, x_t = round(0.048 * n_c), round(0.051 * n_t)   # conversions: 2496 and 2448
 
 # 1) SRM check: expected 50/50
 exp = 50_000
@@ -61,8 +59,8 @@ se = np.sqrt(pool * (1 - pool) * (1 / n_c + 1 / n_t))
 z = (p_t - p_c) / se
 p_two = 2 * stats.norm.sf(abs(z))
 print(f"conversion control {p_c:.4f}, treatment {p_t:.4f}, diff {p_t-p_c:.4f}")
-print(f"z = {z:.2f}, two-sided p = {p_two:.3f}, one-sided p = {stats.norm.sf(z):.3f}")
-assert p_two > 0.10          # the prompt's p = 0.03 does NOT follow from these counts
+print(f"z = {z:.2f}, two-sided p = {p_two:.3f}")
+assert round(p_two, 2) == 0.03 and abs((p_t / p_c - 1) - 0.0625) < 1e-9   # about 6% relative
 
 # 3) Chance that a fair 50/50 split ever looks like 52,000 / 48,000
 print("P(|diff| >= 2000 under fair split) =", 2 * stats.binom.cdf(48_000, 100_000, 0.5))
@@ -70,19 +68,22 @@ print("P(|diff| >= 2000 under fair split) =", 2 * stats.binom.cdf(48_000, 100_00
 # 4) Why the SRM matters. The treatment arm is 2,000 short of 50,000. Suppose those 2,000
 #    were low converters (illustrative: 1.0%) dropped by a bug. Treatment with them restored:
 lost = 2_000
-rate_full = (x_t + lost * 0.01) / (n_t + lost)
+x_full, n_full = x_t + lost * 0.01, n_t + lost
+rate_full = x_full / n_full
 gap = rate_full - p_c
-print(f"treatment rate with the 2,000 restored: {rate_full:.4f}; gap to control: {gap*100:.2f} points")
-assert abs(gap) < 0.0005     # the 0.2-point gap shrinks to about 0.04 points
+pool2 = (x_c + x_full) / (n_c + n_full)
+z2 = gap / np.sqrt(pool2 * (1 - pool2) * (1 / n_c + 1 / n_full))
+print(f"treatment rate with the 2,000 restored: {rate_full:.4f}; gap {gap*100:.2f} points; p = {2*stats.norm.sf(z2):.2f}")
+assert 0.0012 < gap < 0.0016 and 2 * stats.norm.sf(z2) > 0.05   # gap halves and is no longer significant
 ```
 
 **Output (my run):**
 ```text
 SRM chi2 = 160.0  p = 1.1314837902433038e-36
-conversion control 0.0480, treatment 0.0500, diff 0.0020
-z = 1.46, two-sided p = 0.143, one-sided p = 0.072
+conversion control 0.0480, treatment 0.0510, diff 0.0030
+z = 2.19, two-sided p = 0.029
 P(|diff| >= 2000 under fair split) = 1.1530938666727834e-36
-treatment rate with the 2,000 restored: 0.0484; gap to control: 0.04 points
+treatment rate with the 2,000 restored: 0.0494; gap 0.14 points; p = 0.31
 ```
 
 **Follow-ups:**
@@ -681,7 +682,7 @@ breach of the 5% limit is clear: True
 - Ignoring uncertainty on a percentile.
 - Overriding the rule after seeing the win.
 
-### Q8 ⭐⭐⭐ 🟡 A team measures click-through rate as total clicks divided by total impressions and runs a two-proportion z-test over 2,000,000 impressions per arm, getting p < 0.001 for a lift from 4.00% to 4.05%. Those impressions come from only 100,000 users per arm (20 per user on average), and the user-level analysis gives p = 0.12. Explain why the two disagree and how you would analyse the metric properly.
+### Q8 ⭐⭐⭐ 🟡 A team measures click-through rate as total clicks divided by total impressions and runs a two-proportion z-test over 2,000,000 impressions per arm, getting p = 0.01 for a lift from 4.00% to 4.05%. Those impressions come from only 100,000 users per arm (20 per user on average), and the user-level analysis gives p = 0.12. Explain why the two disagree and how you would analyse the metric properly.
 **Asked at:** Ratio-metric, delta-method and variance-reduction material (Spotify Confidence ratio-metric RFP and variance-reduction docs, MetricGate CUPED and delta-method pages, a TechPrep '66 Variance Reduction Interview Questions' page); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 **Say this first (1 line):** The two tests disagree because the impression-level test treats 2,000,000 correlated impressions as independent, when the real independent units are the 100,000 users; I would analyse at user level (or with the delta method), and trust the p = 0.12.
 
@@ -694,7 +695,7 @@ breach of the 5% limit is clear: True
 
 **Approach:**
 1. Name the problem: pseudo-replication. The same user's 20 impressions share the user's taste, so they are not 20 independent draws. The effective sample is closer to 100,000 than 2,000,000.
-2. Measure the inflation: with intra-user correlation rho and 20 impressions per user, the variance inflates by the design effect 1 + (m - 1) x rho. A user-level p of 0.12 against a pooled p near 0.011 implies a design effect of about 2.7 (rho about 0.09), see Code.
+2. Measure the inflation: with intra-user correlation rho and 20 impressions per user, the variance inflates by the design effect 1 + (m - 1) x rho. A user-level p of 0.12 against a pooled p of 0.011 implies a design effect of about 2.7 (rho about 0.09), see Code.
 3. Prove it with an A/A simulation: with this correlation, the impression-level test rejects at 5% about 22% of the time on pure noise, while the user-level test rejects about 5%.
 4. Do the right analysis. For equal impressions per user, a t-test on per-user CTR is fine. With unequal impressions, the metric is a ratio of sums, so use the delta method (linearise the ratio: residual = clicks - R x impressions, then take the variance across users) or a user-level bootstrap.
 5. Report the estimate with an interval at the user level, and call the +0.05-point lift "not distinguishable from zero," not "proven."
@@ -717,9 +718,7 @@ breach of the 5% limit is clear: True
 - Strong: checks with an A/A or simulation. Weak: argues from theory only.
 - Strong: concludes honestly (not significant). Weak: reports both p-values as equally valid.
 
-**Example:** (illustrative numbers) 100,000 users per arm, 20 impressions each. Control 4.00%, treatment 4.05%: the pooled z-test gives z = 2.54, p = 0.011. A user-level p of 0.12 means z = 1.55, so the variance is (2.54 / 1.55)^2 = 2.7 times larger than the pooled test assumed. With rho = 0.09, that matches 1 + 19 x 0.088. Weak answer: "p < 0.001, ship it." Strong answer: "The pooled test pretends that impressions are independent. At user level, it is not significant."
-
-**Prompt note (Q8):** the prompt says the pooled impression-level test gives p < 0.001. For 4.00% against 4.05% on 2,000,000 impressions per arm the pooled two-proportion z-test gives z = 2.54 and p = 0.011, not below 0.001. The conclusion is unchanged (the pooled p is too small and the user-level p = 0.12 is the right one), but the quoted pooled p is wrong.
+**Example:** (illustrative numbers) 100,000 users per arm, 20 impressions each. Control 4.00%, treatment 4.05%: the pooled z-test gives z = 2.54, p = 0.011. A user-level p of 0.12 means z = 1.55, so the variance is (2.54 / 1.55)^2 = 2.7 times larger than the pooled test assumed. With rho = 0.09, that matches 1 + 19 x 0.088. Weak answer: "p = 0.01 on two million rows, ship it." Strong answer: "The pooled test pretends that impressions are independent. At user level, it is not significant."
 
 **Code:**
 ```python
@@ -735,7 +734,7 @@ se = np.sqrt(pool * (1 - pool) * 2 / N)
 z = (pt - pc) / se
 p_naive = 2 * stats.norm.sf(z)
 print(f"pooled impression-level z = {z:.2f}, p = {p_naive:.4f}")
-assert 0.005 < p_naive < 0.02            # NOT p < 0.001 as the prompt says
+assert round(p_naive, 2) == 0.01 and round(z, 2) == 2.54 
 
 # 2) Back out the design effect implied by the user-level p = 0.12
 z_user = stats.norm.isf(0.12 / 2)
@@ -799,7 +798,7 @@ same data: impression-level z = 1.48, delta-method z = 0.89
 **Common mistakes:**
 - Using impressions as the sample size when users were randomised.
 - Computing a per-user CTR but a ratio-of-sums variance (mixing the two).
-- Treating "p < 0.001" with millions of rows as strong evidence.
+- Treating a small p-value on millions of rows as strong evidence.
 - Dropping heavy users to make the test pass.
 
 ### Q9 ⭐⭐⭐ 🟡 A teammate says that because a user's pre-experiment spend has a correlation of 0.7 with their in-experiment spend, CUPED will cut the required sample size by 70%, and the test currently needs 100,000 users per arm. Explain whether the claim is right, what reduction you expect, and how you would choose and validate the covariate.

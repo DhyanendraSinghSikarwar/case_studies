@@ -1,0 +1,8 @@
+one look at day 14: false positive rate = 0.050
+stop at first p<0.05 over 14 daily looks: 0.218  (about 1 in 4.6)
+share of false wins by first day (1..14): [0.051 0.032 0.024 0.019 0.015 0.013 0.012 0.01  0.009 0.009 0.007 0.007
+ 0.006 0.006]
+constant boundary |z| > 2.62 at every look -> overall alpha 0.050
+OBF-style: c = 2.11; |z| bounds day 1 7.89, day 7 2.98, day 14 2.11 -> overall alpha 0.050
+power, effect 0.04 sd: fixed day-14 test 0.66; OBF with early stopping allowed 0.64
+all asserts passed

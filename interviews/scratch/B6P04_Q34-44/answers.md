@@ -981,7 +981,6 @@ The latent-engagement model and noise sizes are invented. The bias formula (effe
 **Say this first (1 line):** The overall split is exactly 50/50, but the platform mix is 40% iOS in control and 32% in treatment, which is a very large sample-ratio mismatch inside platforms, so the experiment is broken and I would not read any result until I find the cause.
 
 **Clarifying questions:**
-- Wording check: do the arms hold 100,000 users each, or 50,000 each? Why: the platform numbers add to 50,000 per arm (100,000 in all), so the prompt's "100,000 users per arm" does not match; I would confirm which is true, since the logic below does not change.
 - Was assignment designed to be 50/50 within each platform, or only overall? Why: it decides what the expected counts are in each cell.
 - Where does a user get counted: at assignment, or at the first event after exposure? Why: counting on the first event lets a platform-specific crash or logging gap remove users from one arm.
 - Did the treatment ship in a different app version, or a different build for iOS? Why: a version split is a common cause.
@@ -1024,7 +1023,7 @@ from scipy import stats
 ctl = {"iOS": 20_000, "Android": 30_000}
 trt = {"iOS": 16_000, "Android": 34_000}
 nc, nt = sum(ctl.values()), sum(trt.values())
-print("users per arm: control", nc, " treatment", nt, " (the prompt says 100,000 per arm; these add to 50,000 per arm, 100,000 in all)")
+print("users per arm: control", nc, " treatment", nt)
 assert nc == 50_000 and nt == 50_000
 
 def srm(c, t):
@@ -1059,7 +1058,7 @@ assert 2.0 < abs((pt - pc) / se) < 2.5
 
 **Output (my run):**
 ```text
-users per arm: control 50000  treatment 50000  (the prompt says 100,000 per arm; these add to 50,000 per arm, 100,000 in all)
+users per arm: control 50000  treatment 50000
 overall: chi2 = 0.0 p = 1.000
 iOS: 20000 vs 16000  chi2 = 444.4  p = 1.17e-98
 Android: 30000 vs 34000  chi2 = 250.0  p = 2.60e-56

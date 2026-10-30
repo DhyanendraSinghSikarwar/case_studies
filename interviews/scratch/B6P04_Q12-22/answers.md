@@ -424,3 +424,117 @@ all asserts passed
 - How do you narrow the interval? Variance reduction (CUPED) or more users: half the width needs about four times the users.
 - What if the 3 engineer-months are already spent? Then only the upkeep matters for the decision (sunk cost); I would still count it.
 **Common mistakes:** Mixing statistical and practical significance. Using the upper end of the interval as the expected gain. Ignoring maintenance. Forgetting the break-even depends on the base the lift applies to.
+
+### Q16 ⭐⭐⭐ 🔴 A team looks at the experiment every day for 14 days and stops the first time p < 0.05, and an A/A simulation with that rule declares a 'winner' in roughly one run in five. Explain why, what you change in the process, and how you handle the business demand to be able to stop early.
+**Asked at:** A/B-testing pitfall guides (Dataford pages on pitfalls such as peeking, novelty effects, network interference and sample ratio mismatch, tagged in snippets to companies such as Lattice, Carvana and Arm; a datainterview.com A/B testing interview list; PracHub A/B testing topic pages); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
+**Say this first (1 line):** Checking daily and stopping at the first p below 0.05 gives a false winner in about one run in five (22% in my simulation) when nothing is different, because each look is another chance to cross the line; the fix is to fix the end date, or to use sequential boundaries that spend the 5% error budget across the looks.
+**Clarifying questions:**
+- Why does the business want to stop early: to ship a winner sooner, or to stop a harmful test? The first needs a boundary for wins; the second needs a guardrail rule.
+- How many looks do they really need (daily, weekly)? Fewer looks cost less alpha.
+- Is a wrong win costly or cheap to undo? It sets how strict the early boundary should be.
+- Does the platform support sequential or always-valid p-values? If yes, use them; if no, plan the looks in advance.
+- Is the metric stable by day of week? Early looks on partial weeks are biased.
+**Approach:**
+1. Explain why in one line: p-values are valid for one pre-planned look. With 14 looks the chance that at least one crosses 1.96 under no effect is about 22%, not 5%.
+2. Show it: run an A/A simulation with the same stopping rule (my run below). A demo convinces a manager faster than theory. Book 1 Part 10, Q7 (the PM wants to stop after 3 days) has the basic argument.
+3. Process fix A: fix the sample size and the end date before the start; look at guardrails daily but read the primary metric only at the end.
+4. Process fix B, when early stopping is a real need: pre-register the number of looks and use group-sequential boundaries. A constant boundary needs |z| above about 2.62 at every look; an O'Brien-Fleming-style boundary is very strict early (about 7.9 on day 1) and about 2.11 on day 14.
+5. Or use an always-valid method (mixture sequential probability ratio test, SPRT). It keeps the error rate at any stopping time, at some cost in power.
+6. Tell the business what they get: early stop for large effects or clear harm, and a clean decision date otherwise.
+**Metrics:**
+- False positive rate under A/A = runs that declare a winner at any look / total A/A runs.
+- Overall alpha of a sequential design = chance that any look crosses its boundary under no effect (target 5%).
+- Power = chance of declaring a win when the true effect exists, with early stopping allowed.
+- Average sample number (users used on average) to show the early-stopping benefit.
+**Risks:**
+- Peeking at secondary metrics and picking one is the same problem (see Q4).
+- A win declared early overstates the effect (winner's curse); report a shrunk estimate.
+- Boundaries assume the looks are planned; unplanned extra looks break them.
+- Early days are not representative (weekday mix, novelty).
+**What the interviewer scores:**
+- Strong: gives the reason (multiple looks, correlated tests) and a number near 20%. Weak: "peeking is bad" with no number.
+- Strong: proposes both a process rule and a statistical fix. Weak: only statistical or only "do not look".
+- Strong: respects the business need (early stop for harm or big wins). Weak: says "never stop early".
+- Strong: runs or describes the A/A simulation. Weak: only recalls Bonferroni (Bonferroni is too conservative for correlated looks).
+**Example:** Illustrative numbers. 500 users per arm per day, 14 days, no true difference. One look on day 14: 5.0% false wins. Stop at the first p below 0.05 across 14 daily looks: 21.8% (about 1 in 4.6). The share of runs that first cross on day 1 is 5.1%, on day 2 about 3.2%, and so on down to about 0.6% on day 14. With the constant boundary of 2.62 the overall error is back to 5%.
+- Weak answer: "The p-value is 0.04 on day 6 so it is significant; ship."
+- Strong answer: "With 14 daily looks, that rule gives a false winner about once in five A/A runs. I would pre-set the end date, or use a boundary that spends alpha across looks."
+**Code:**
+```python
+# Q16: daily peeking in an A/A test, and a fix with group-sequential boundaries (simulation)
+import numpy as np
+from scipy.stats import norm
+
+rng = np.random.default_rng(16)
+K, reps, per_day = 14, 100_000, 500          # 14 daily looks, 500 users per arm per day
+z95 = norm.ppf(0.975)
+
+# A/A: both arms have the same distribution. Look k uses all data up to day k.
+# the sum of 500 N(0,1) values is N(0, 500), so draw each day's arm total directly (same statistics, much faster)
+d = rng.normal(0, np.sqrt(per_day), (reps, K, 2))
+cum = d.cumsum(axis=1)                       # (reps, K, 2) running sums per arm
+n_k = per_day * np.arange(1, K + 1)
+diff = cum[:, :, 1] / n_k[None, :] - cum[:, :, 0] / n_k[None, :]
+z = diff / np.sqrt(2 / n_k[None, :])
+
+single = np.mean(np.abs(z[:, -1]) > z95)
+naive = np.mean((np.abs(z) > z95).any(axis=1))
+print(f"one look at day 14: false positive rate = {single:.3f}")
+print(f"stop at first p<0.05 over 14 daily looks: {naive:.3f}  (about 1 in {1/naive:.1f})")
+assert abs(single - 0.05) < 0.005 and 0.18 < naive < 0.28
+
+# when do the false wins occur?
+first = np.where((np.abs(z) > z95).any(axis=1), (np.abs(z) > z95).argmax(axis=1) + 1, 0)
+print("share of false wins by first day (1..14):", np.round(np.bincount(first, minlength=15)[1:] / reps, 3))
+
+# Fix 1: one constant (Pocock-style) boundary for all 14 looks
+def alpha_for(boundary):
+    return np.mean((np.abs(z) > boundary[None, :]).any(axis=1))
+
+lo_c, hi_c = 2.0, 3.5
+for _ in range(30):
+    mid = (lo_c + hi_c) / 2
+    if alpha_for(np.full(K, mid)) > 0.05: lo_c = mid
+    else: hi_c = mid
+c_poc = hi_c
+# Fix 2: O'Brien-Fleming-style boundary c*sqrt(K/k): strict early, near 1.96 at the end
+lo_c, hi_c = 1.5, 3.0
+for _ in range(30):
+    mid = (lo_c + hi_c) / 2
+    if alpha_for(mid * np.sqrt(K / np.arange(1, K + 1))) > 0.05: lo_c = mid
+    else: hi_c = mid
+c_obf = hi_c
+bound_obf = c_obf * np.sqrt(K / np.arange(1, K + 1))
+print(f"constant boundary |z| > {c_poc:.2f} at every look -> overall alpha {alpha_for(np.full(K, c_poc)):.3f}")
+print(f"OBF-style: c = {c_obf:.2f}; |z| bounds day 1 {bound_obf[0]:.2f}, day 7 {bound_obf[6]:.2f}, day 14 {bound_obf[-1]:.2f} -> overall alpha {alpha_for(bound_obf):.3f}")
+assert 2.5 < c_poc < 2.9 and abs(alpha_for(np.full(K, c_poc)) - 0.05) < 0.006
+assert bound_obf[-1] < 2.2 and bound_obf[0] > 6
+
+# Power cost of the fix: true effect 0.04 sd, 14 looks, compare fixed-sample test at day 14
+eff = 0.04
+d2 = rng.normal(0, np.sqrt(per_day), (20_000, K, 2)); d2[:, :, 1] += eff * per_day
+cum2 = d2.cumsum(axis=1)
+diff2 = cum2[:, :, 1] / n_k[None, :] - cum2[:, :, 0] / n_k[None, :]
+z2 = diff2 / np.sqrt(2 / n_k[None, :])
+pw_fixed = np.mean(z2[:, -1] > z95)
+pw_obf = np.mean((z2 > bound_obf[None, :]).any(axis=1))
+print(f"power, effect 0.04 sd: fixed day-14 test {pw_fixed:.2f}; OBF with early stopping allowed {pw_obf:.2f}")
+assert pw_obf < pw_fixed and pw_fixed - pw_obf < 0.1
+print("all asserts passed")
+```
+**Output (my run):**
+```text
+one look at day 14: false positive rate = 0.050
+stop at first p<0.05 over 14 daily looks: 0.218  (about 1 in 4.6)
+share of false wins by first day (1..14): [0.051 0.032 0.024 0.019 0.015 0.013 0.012 0.01  0.009 0.009 0.007 0.007
+ 0.006 0.006]
+constant boundary |z| > 2.62 at every look -> overall alpha 0.050
+OBF-style: c = 2.11; |z| bounds day 1 7.89, day 7 2.98, day 14 2.11 -> overall alpha 0.050
+power, effect 0.04 sd: fixed day-14 test 0.66; OBF with early stopping allowed 0.64
+all asserts passed
+```
+**Follow-ups:**
+- Is Bonferroni over 14 looks right? It is valid but too strict because looks are positively correlated (the same data keeps being reused). Group-sequential boundaries are tighter.
+- Can a Bayesian look as often as they like? Not for free. A posterior-probability stopping rule also inflates false wins unless it is calibrated; check it with an A/A simulation.
+- What about stopping for harm? Use a one-sided guardrail rule with its own boundary; it spends a small part of the error budget.
+**Common mistakes:** Saying "it is just 5% per look so fine". Applying Bonferroni blindly. Changing the end date after seeing the data. Reporting the raw estimate after an early stop without shrinkage.
