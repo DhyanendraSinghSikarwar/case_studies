@@ -21,17 +21,12 @@ for base in (0, 350_000):
     print(f"  baseline {base:,}: attributable ROAS {(r0-base)/s0:.2f} at 100k, {(r1-base)/s1:.2f} at 200k")
 assert (500_000 - 350_000) / 100_000 == 1.5 and (650_000 - 350_000) / 200_000 == 1.5
 
-# the curve is only pinned by two points: two different curves through them give opposite advice at 150k
+# the 1.5 is an average over the 100k to 200k stretch; a diminishing-returns curve through the same two points
+# (R = a + b*sqrt(S)) has a higher marginal ROAS at 100k and a lower one at 200k
 import numpy as np
-# diminishing-returns (square-root-type) curve through the 2 points, R = a + b*sqrt(S)
-b = (r1 - r0) / (np.sqrt(s1) - np.sqrt(s0)); a = r0 - b * np.sqrt(s0)
-# linear through the same points
-slope = mroas
-rev_sqrt = a + b * np.sqrt(150_000); rev_lin = r0 + slope * 50_000
-print(f"revenue at 150k: sqrt curve {rev_sqrt:,.0f}, straight line {rev_lin:,.0f}")
-m_sqrt = b / (2 * np.sqrt(150_000))
-print(f"marginal ROAS at 150k: sqrt curve {m_sqrt:.2f} (profit {m_sqrt*gm-1:+.2f}), straight line {slope:.2f} (profit {slope*gm-1:+.2f})")
-assert abs(rev_sqrt - 580_000) < 15_000 and abs(m_sqrt - 1.5) < 0.9
-# uncertainty: if the true marginal ROAS is 1.5 +/- 0.5, share of that range above the 2.5 break-even
-print("a marginal ROAS of 2.5 needs the fitted +150k to be +250k, 67% higher")
-assert abs(250_000 / 150_000 - 1 - 0.667) < 1e-3
+b = (r1 - r0) / (np.sqrt(s1) - np.sqrt(s0))
+for s_ in (100_000, 150_000, 200_000):
+    m = b / (2 * np.sqrt(s_))
+    print(f"  sqrt curve, marginal ROAS at {s_:,}: {m:.2f} -> marginal profit per 1 spent {m*gm-1:+.2f}")
+assert b / (2 * np.sqrt(100_000)) > 1.5 > b / (2 * np.sqrt(200_000))
+assert b / (2 * np.sqrt(100_000)) * gm - 1 < 0          # even the best point on that curve is below break-even 2.5
