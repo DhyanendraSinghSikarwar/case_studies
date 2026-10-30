@@ -5,7 +5,7 @@ from scipy import stats
 ctl = {"iOS": 20_000, "Android": 30_000}
 trt = {"iOS": 16_000, "Android": 34_000}
 nc, nt = sum(ctl.values()), sum(trt.values())
-print("users per arm: control", nc, " treatment", nt, " (the prompt says 100,000 per arm; these add to 50,000 per arm, 100,000 in all)")
+print("users per arm: control", nc, " treatment", nt)
 assert nc == 50_000 and nt == 50_000
 
 def srm(c, t):

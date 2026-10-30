@@ -976,7 +976,7 @@ The latent-engagement model and noise sizes are invented. The bias formula (effe
 
 **Common mistakes:** Choosing the covariate by correlation alone. Using data from after assignment. Not comparing adjusted and unadjusted estimates. Trusting a narrower interval as proof the method worked. Not A/A testing the pipeline.
 
-### Q43 ⭐⭐ 🔴 In an experiment with 100,000 users per arm the overall split is exactly 50/50, so the SRM check passes. By platform, control has 20,000 iOS and 30,000 Android users while treatment has 16,000 iOS and 34,000 Android users. Explain what this means, why the overall check missed it, and what you do with the result.
+### Q43 ⭐⭐ 🔴 In an experiment with 50,000 users per arm the overall split is exactly 50/50, so the SRM check passes. By platform, control has 20,000 iOS and 30,000 Android users while treatment has 16,000 iOS and 34,000 Android users. Explain what this means, why the overall check missed it, and what you do with the result.
 **Asked at:** A/B-testing pitfall guides (Dataford pages on pitfalls such as peeking, novelty effects, network interference and sample ratio mismatch, tagged in snippets to companies such as Lattice, Carvana and Arm; a datainterview.com A/B testing interview list; PracHub A/B testing topic pages); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 **Say this first (1 line):** The overall split is exactly 50/50, but the platform mix is 40% iOS in control and 32% in treatment, which is a very large sample-ratio mismatch inside platforms, so the experiment is broken and I would not read any result until I find the cause.
 

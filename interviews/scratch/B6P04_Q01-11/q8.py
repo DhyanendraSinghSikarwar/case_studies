@@ -10,7 +10,7 @@ se = np.sqrt(pool * (1 - pool) * 2 / N)
 z = (pt - pc) / se
 p_naive = 2 * stats.norm.sf(z)
 print(f"pooled impression-level z = {z:.2f}, p = {p_naive:.4f}")
-assert 0.005 < p_naive < 0.02            # NOT p < 0.001 as the prompt says
+assert round(p_naive, 2) == 0.01 and round(z, 2) == 2.54   # matches the prompt's p = 0.01
 
 # 2) Back out the design effect implied by the user-level p = 0.12
 z_user = stats.norm.isf(0.12 / 2)
