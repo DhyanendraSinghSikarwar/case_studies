@@ -974,3 +974,231 @@ sd of sales (capped at 100): 21.8 vs true demand sd 33.0
 - Dropping sell-out days from the data (a common fix that is also biased).
 - Using sales variance as demand variance.
 - Assuming a normal without testing a second shape.
+
+### Q54 ⭐ 🔴 A support bot answers 1,000,000 queries a month. A large model costs 0.020 a query and is right 92% of the time, while a small model costs 0.002 and is right 80% of the time. A cascade tries the small model first and escalates 35% of queries to the large one, with the small model right 90% of the time on the 65% it keeps and the large model right 88% on the 35% it receives. A wrong answer costs 0.30. Compute total cost per query for large-only, small-only and the cascade, and say what you would validate.
+**Asked at:** AI-era support and GenAI cost material (2026 vendor and practitioner pages from Lorikeet, Twig, Voiceflow, aitimejournal, CloudZero, nOps, tianpan.co and a Gartner press-release headline on inference costs); mostly vendor-sourced, an emerging interview theme rather than a confirmed bank; commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
+
+**Say this first (1 line):** Per query the large model costs 0.0440, the small one 0.0620 and the cascade 0.0411, so the cascade saves 2,900 a month on a million queries (6.6%), but it is less accurate than the large model (89.3% vs 92%) and loses its edge once a wrong answer costs more than about 0.41 (illustrative).
+
+**Clarifying questions:**
+- How is the 0.30 cost of a wrong answer measured (refund, repeat contact, churn)? The cascade's edge depends on it.
+- Does the cascade also pay for the router or confidence check? Here I assume no extra cost.
+- Is the small model run on every query first, so its cost is always paid? Yes, I assume 0.002 on all queries.
+- How were the 90% and 88% accuracies measured? On a labelled sample from live traffic or on a benchmark?
+- Are some query types high-risk (money, safety)? Those should skip the small model.
+
+**Approach:**
+1. Cost per query = inference cost + (1 - accuracy) x 0.30.
+2. Large-only: 0.020 + 0.08 x 0.30 = 0.020 + 0.024 = 0.0440.
+3. Small-only: 0.002 + 0.20 x 0.30 = 0.002 + 0.060 = 0.0620.
+4. Cascade inference: small model on all (0.002) plus large model on 35% (0.35 x 0.020 = 0.007) = 0.0090.
+5. Cascade accuracy: 0.65 x 0.90 + 0.35 x 0.88 = 0.585 + 0.308 = 0.893. Error cost = 0.107 x 0.30 = 0.0321. Total = 0.0411.
+6. Monthly on 1,000,000 queries: 44,000, 62,000, 41,100. The cascade saves 2,900 against large-only, 6.6%.
+7. Break-even wrong-answer cost: 0.009 + 0.107w = 0.020 + 0.08w gives w = 0.4074. Above that, large-only is cheaper.
+8. Validate: accuracy on each slice from labelled live samples, the accuracy of the router (does it send the right queries up?), and tail harm.
+9. Consistency check: the stated numbers imply the small model is only 61.4% right on the queries it escalates, and the large model 94.2% right on the 65% it never sees. Plausible, since escalated queries are harder, but check it.
+
+**Metrics:**
+- Cost per query = (model costs + wrong answers x 0.30) / queries.
+- Accuracy = correct answers / queries (human-judged sample). Escalation rate = escalated / all (35%).
+- Guardrails: accuracy on high-risk topics, latency (two model calls on 35% of queries), wrong-and-confident rate for kept answers.
+
+**Risks:**
+- Wrong-answer cost is the swing factor, and it is not constant: some mistakes cost far more than 0.30.
+- Accuracy on the 65% kept may drift when the query mix changes.
+- Cascade adds latency and complexity.
+- Accuracy labels from a small sample have wide error bars: 1 point on 1,000,000 queries is 3,000 a month.
+
+**What the interviewer scores:**
+- Strong: counts the small model's cost on every query, includes error cost, notices that the cascade is less accurate than large-only. Weak: compares inference prices only.
+- Strong: finds the break-even wrong-answer cost. Weak: gives three numbers and no decision rule.
+- Strong: validates router quality and tail risk. Weak: trusts the 90% and 88%.
+
+**Example:** Illustrative numbers. Large 0.0440, small 0.0620, cascade 0.0411. At wrong-answer cost 0.50 the cascade is 0.0625 and large 0.0600, so large wins. Weak: "Cascade is cheapest so ship it." Strong: "Cascade saves 6.6% only because wrong answers are cheap. If a wrong answer costs above 0.41 or accuracy matters more, I keep large-only for those queries."
+
+**Code:**
+```python
+N=1_000_000; wrong=0.30
+big_c,big_acc=0.020,0.92
+small_c,small_acc=0.002,0.80
+esc=0.35; keep=1-esc
+small_keep_acc=0.90; big_esc_acc=0.88
+def total(c,acc): return c+(1-acc)*wrong
+large=total(big_c,big_acc); small=total(small_c,small_acc)
+inf_c=small_c+esc*big_c           # small model runs on every query; large model only on escalated
+casc_acc=keep*small_keep_acc+esc*big_esc_acc
+casc=total(inf_c,casc_acc)
+print(f"large-only: infer {big_c:.4f} + error {(1-big_acc)*wrong:.4f} = {large:.4f} per query")
+print(f"small-only: infer {small_c:.4f} + error {(1-small_acc)*wrong:.4f} = {small:.4f} per query")
+print(f"cascade:    infer {inf_c:.4f} + error {(1-casc_acc)*wrong:.4f} = {casc:.4f} per query; accuracy {casc_acc:.4f}")
+assert round(large,4)==0.0440 and round(small,4)==0.0620 and round(inf_c,4)==0.0090
+assert round(casc_acc,3)==0.893 and round(casc,4)==0.0411
+print("per month:",round(large*N),round(small*N),round(casc*N),"; cascade saves vs large:",round((large-casc)*N),f"({(large-casc)/large:.1%})")
+assert round((large-casc)*N)==2900
+# break-even cost of a wrong answer
+w=(inf_c-big_c)/((1-big_acc)-(1-casc_acc))  # inf_c+(1-casc_acc)w = big_c+(1-big_acc)w
+print(f"wrong-answer cost at which cascade = large-only: {w:.4f}")
+assert round(w,4)==0.4074
+for ww in (0.2,0.3,w,0.5,1.0):
+    l=big_c+(1-big_acc)*ww; c=inf_c+(1-casc_acc)*ww
+    print(f"  wrong costs {ww:.4f}: large {l:.4f}, cascade {c:.4f}, cheaper: {'cascade' if c<l-1e-9 else 'large' if l<c-1e-9 else 'tie'}")
+assert (inf_c+(1-casc_acc)*0.5)>(big_c+(1-big_acc)*0.5)
+# implied accuracy of each model on the other slice (consistency with the overall rates)
+small_on_esc=(small_acc-keep*small_keep_acc)/esc
+big_on_keep=(big_acc-esc*big_esc_acc)/keep
+print(f"\nimplied small-model accuracy on escalated queries: {small_on_esc:.3f}; large on kept queries: {big_on_keep:.3f}")
+assert 0<small_on_esc<big_esc_acc and big_on_keep<1
+print("value of 1 accuracy point per month:",round(0.01*wrong*N))
+assert round(0.01*wrong*N)==3_000
+print("slice accuracy sum check:",round(keep*small_keep_acc,3),round(esc*big_esc_acc,3))
+assert round(small_on_esc,3)==0.614 and round(big_on_keep,3)==0.942
+```
+
+**Output (my run):**
+```
+large-only: infer 0.0200 + error 0.0240 = 0.0440 per query
+small-only: infer 0.0020 + error 0.0600 = 0.0620 per query
+cascade:    infer 0.0090 + error 0.0321 = 0.0411 per query; accuracy 0.8930
+per month: 44000 62000 41100 ; cascade saves vs large: 2900 (6.6%)
+wrong-answer cost at which cascade = large-only: 0.4074
+  wrong costs 0.2000: large 0.0360, cascade 0.0304, cheaper: cascade
+  wrong costs 0.3000: large 0.0440, cascade 0.0411, cheaper: cascade
+  wrong costs 0.4074: large 0.0526, cascade 0.0526, cheaper: tie
+  wrong costs 0.5000: large 0.0600, cascade 0.0625, cheaper: large
+  wrong costs 1.0000: large 0.1000, cascade 0.1160, cheaper: large
+
+implied small-model accuracy on escalated queries: 0.614; large on kept queries: 0.942
+value of 1 accuracy point per month: 3000
+slice accuracy sum check: 0.585 0.308
+```
+
+**Follow-ups:**
+- *How would you lower the cost further?* Send high-risk topics straight to the large model and let the small model keep only easy, low-risk ones, then re-measure.
+- *Why include the error cost?* Because the cheapest model is not the cheapest system; the error cost here is bigger than inference cost for every option.
+- *What does a 1-point accuracy change cost?* 0.01 x 0.30 x 1,000,000 = 3,000 a month, about the same as the whole cascade saving.
+
+**Common mistakes:**
+- Forgetting the small model's cost on escalated queries.
+- Comparing only inference cost.
+- Using the benchmark accuracy (80%, 92%) for the slices.
+- Ignoring that the cascade's accuracy is below the large model's.
+
+### Q55 ⭐ 🔴 Two ad channels have revenue curves of 6 x sqrt(s) and 3 x sqrt(s) million, where s is spend in millions, and the 10 million budget is split 5 and 5 today. Compute revenue at the 5 and 5 split and at the equal-marginal-return split of 8 and 2, and say what such fitted curves cannot tell you when they come from observational data.
+**Asked at:** Marketing measurement material (a datainterview.com paid-social incrementality case, an aitrainer.work marketing data scientist question page, Triple Whale and Eppo GeoLift pages, a Medium post on geo-experiments, a PyData Boston 2025 talk description); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
+
+**Say this first (1 line):** Revenue is 20.13 million at 5 and 5 and 21.21 million at 8 and 2, a gain of 1.09 million or 5.4% (illustrative), but that gain exists only if the fitted curves are causal and valid outside the spend range we have seen, and observational data cannot promise either.
+
+**Clarifying questions:**
+- Is the 6 and 3 estimated from history of spend and revenue, or from experiments? Observational fits can be confounded.
+- Over what spend range did each channel actually vary? Channel B at 2 million may be far outside the data.
+- Is revenue incremental, or total revenue attributed to the channel? A curve through zero spend assumes no organic revenue.
+- Is the objective revenue or margin, and is there a minimum spend (contracts, brand presence)?
+- Are the channels independent? Search spend often depends on what display and social already created.
+
+**Approach:**
+1. Revenue at 5 and 5: 6 x sqrt(5) + 3 x sqrt(5) = 9 x 2.236 = 20.125.
+2. Marginal return of 6 x sqrt(s) is 3 / sqrt(s); of 3 x sqrt(s) it is 1.5 / sqrt(s). At 5 and 5 they are 1.342 and 0.671. Channel A returns twice as much per extra unit, so shift money to A.
+3. Equal marginal return: 3 / sqrt(s1) = 1.5 / sqrt(s2). So sqrt(s1) = 2 x sqrt(s2), s1 = 4 x s2. With s1 + s2 = 10 this gives 8 and 2. Both marginal returns are 1.061.
+4. Revenue at 8 and 2: 6 x 2.828 + 3 x 1.414 = 16.971 + 4.243 = 21.213. Gain 1.089 million, 5.4%.
+5. Why it may not be real, and how to say so:
+   - Confounding: spend rises when demand is high (holidays, launches), so the curve credits ads for demand that was coming anyway.
+   - Extrapolation: the 8/2 move takes A up 60% and B down 60%. If B was never run near 2 million, the curve there is a guess.
+   - Shared audience and attribution overlap: the two curves are not independent.
+   - Noise: if each fitted coefficient has 20% error, in my simulation about 19% of re-fitted "optimal" splits earn less than 5 and 5 on the true curves. If both channels truly had equal returns, moving to 8/2 would lose about 1.03 million.
+6. Plan: move a part of the way (for example 6.5 and 3.5), measure with a geo holdout or a switchback by region (see Part 5 Q11 and Part 4 Q29), refit the curves with the experimental points, and iterate.
+
+**Metrics:**
+- Incremental revenue per channel = revenue with spend minus revenue without, from a holdout. Marginal ROAS = change in incremental revenue / change in spend.
+- Equal marginal return condition: marginal return of channel A = marginal return of channel B at the chosen split.
+- Guardrails: total revenue, margin after spend, brand and baseline traffic, overlap between channels.
+
+**Risks:**
+- Fitted curves fit history, not causality.
+- Optimum depends on the ratio of coefficients, which is noisy.
+- Square-root shape is an assumption; the real curve may saturate faster or have a threshold.
+- Short-term revenue ignores brand and lagged effects.
+
+**What the interviewer scores:**
+- Strong: correct revenues, derivation of the equal-marginal-return rule, and a clear statement that confounding and extrapolation limit the claim. Weak: computes 8/2 and stops.
+- Strong: proposes experiments to estimate marginal returns, with a staged shift. Weak: "gather more data" with no design.
+- Strong: gives a quantified sense of noise risk. Weak: just says "uncertain".
+
+**Example:** Illustrative numbers. 5/5 earns 20.125. 8/2 earns 21.213. If both channels truly earn the same, 8/2 earns 19.092 against 20.125 and loses 1.03 million. Weak: "Move to 8 and 2, it adds 5%." Strong: "The maths says 8/2, but I would move to 6.5/3.5 first and run a geo test on each channel."
+
+**Code:**
+```python
+import numpy as np
+from scipy import optimize
+a1,a2=6.0,3.0
+rev=lambda s1,s2: a1*np.sqrt(s1)+a2*np.sqrt(s2)
+B=10
+r55=rev(5,5); r82=rev(8,2)
+print(f"revenue at 5/5: {r55:.3f}  at 8/2: {r82:.3f}  gain {r82-r55:.3f} ({r82/r55-1:.2%})")
+assert round(r55,2)==20.12 and round(r82,2)==21.21 and round(r82-r55,2)==1.09
+# marginal returns
+m=lambda a,s: a/(2*np.sqrt(s))
+print(f"marginal return at 5/5: A {m(a1,5):.3f}, B {m(a2,5):.3f}")
+print(f"marginal return at 8/2: A {m(a1,8):.3f}, B {m(a2,2):.3f}")
+assert abs(m(a1,8)-m(a2,2))<1e-12 and m(a1,5)>m(a2,5)
+# derive the split: s1/s2=(a1/a2)^2
+ratio=(a1/a2)**2; s1=B*ratio/(1+ratio)
+print("optimal split from s1/s2=(a1/a2)^2:",s1,B-s1)
+assert abs(s1-8)<1e-12
+res=optimize.minimize_scalar(lambda x:-rev(x,B-x),bounds=(0,B),method='bounded',options={'xatol':1e-10})
+print("numeric optimum for channel A:",round(res.x,4))
+assert abs(res.x-8)<1e-3
+# average ROAS at each point
+print(f"average return per unit spend at 8/2: A {rev(8,0)/8:.3f}, B {a2*np.sqrt(2)/2:.3f}  (equal because both curves are k x sqrt(s) with s1/s2 = 4)")
+assert abs(6*np.sqrt(8)/8-3*np.sqrt(2)/2)<1e-12
+
+# If the true curves are equal (observational data gave channel A a better-looking fit because it is bought on high-demand days)
+true_a=(4.5,4.5)
+loss=(true_a[0]*(np.sqrt(5)+np.sqrt(5))) - (true_a[0]*np.sqrt(8)+true_a[1]*np.sqrt(2))
+print(f"\nIf both channels truly have coefficient 4.5: revenue at 5/5 {4.5*2*np.sqrt(5):.3f}, at 8/2 {4.5*(np.sqrt(8)+np.sqrt(2)):.3f}; moving loses {loss:.3f}")
+assert loss>0.9
+
+# noise in the fitted coefficients: how often does the 8/2 move lose money?
+rng=np.random.default_rng(2)
+trials=20000
+# illustrative: truth is a1=5, a2=3.5 (ratio 1.43); fitted ratio is noisy, say 20% relative error on each coefficient
+t1,t2=5.0,3.5
+f1=t1*(1+rng.normal(0,0.2,trials)); f2=t2*(1+rng.normal(0,0.2,trials))
+f1=np.clip(f1,0.1,None); f2=np.clip(f2,0.1,None)
+r=(f1/f2)**2; s1h=B*r/(1+r); s2h=B-s1h
+true_rev=t1*np.sqrt(s1h)+t2*np.sqrt(s2h)
+true_55=t1*np.sqrt(5)+t2*np.sqrt(5)
+worse=(true_rev<true_55).mean()
+print(f"With 20% noise on each fitted coefficient, {worse:.1%} of re-fitted 'optimal' splits earn less than 5/5 on the true curves")
+print(f"Typical (median) true gain vs 5/5: {np.median(true_rev-true_55):.3f}")
+assert 0<worse<1
+# extrapolation: channel B was never run near 2 or channel A near 8
+print("\nspend ranges implied: A rises 60% (5 to 8), B falls 60% (5 to 2); the data may not cover those ranges")
+assert abs(8/5-1-0.6)<1e-12 and abs(1-2/5-0.6)<1e-12
+```
+
+**Output (my run):**
+```
+revenue at 5/5: 20.125  at 8/2: 21.213  gain 1.089 (5.41%)
+marginal return at 5/5: A 1.342, B 0.671
+marginal return at 8/2: A 1.061, B 1.061
+optimal split from s1/s2=(a1/a2)^2: 8.0 2.0
+numeric optimum for channel A: 8.0
+average return per unit spend at 8/2: A 2.121, B 2.121  (equal because both curves are k x sqrt(s) with s1/s2 = 4)
+
+If both channels truly have coefficient 4.5: revenue at 5/5 20.125, at 8/2 19.092; moving loses 1.033
+With 20% noise on each fitted coefficient, 19.2% of re-fitted 'optimal' splits earn less than 5/5 on the true curves
+Typical (median) true gain vs 5/5: 0.215
+
+spend ranges implied: A rises 60% (5 to 8), B falls 60% (5 to 2); the data may not cover those ranges
+```
+
+**Follow-ups:**
+- *Why equal marginal returns?* If one channel's extra unit earns more, moving money there raises revenue until the two are equal.
+- *What if there is a minimum spend on B?* Then the optimum is constrained; compute it with that bound.
+- *Why not equal average ROAS?* Marginal, not average, tells where the next unit should go. Here both happen to match at 8/2 only because both curves are the same shape.
+
+**Common mistakes:**
+- Equalising average ROAS across channels.
+- Taking an optimum from observational curves as fact.
+- Ignoring that the new spend lies outside the observed range.
+- Forgetting the revenue-to-margin step.

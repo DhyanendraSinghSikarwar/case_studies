@@ -1,0 +1,55 @@
+**Say this first (1 line):** Revenue is 20.13 million at 5 and 5 and 21.21 million at 8 and 2, a gain of 1.09 million or 5.4% (illustrative), but that gain exists only if the fitted curves are causal and valid outside the spend range we have seen, and observational data cannot promise either.
+
+**Clarifying questions:**
+- Is the 6 and 3 estimated from history of spend and revenue, or from experiments? Observational fits can be confounded.
+- Over what spend range did each channel actually vary? Channel B at 2 million may be far outside the data.
+- Is revenue incremental, or total revenue attributed to the channel? A curve through zero spend assumes no organic revenue.
+- Is the objective revenue or margin, and is there a minimum spend (contracts, brand presence)?
+- Are the channels independent? Search spend often depends on what display and social already created.
+
+**Approach:**
+1. Revenue at 5 and 5: 6 x sqrt(5) + 3 x sqrt(5) = 9 x 2.236 = 20.125.
+2. Marginal return of 6 x sqrt(s) is 3 / sqrt(s); of 3 x sqrt(s) it is 1.5 / sqrt(s). At 5 and 5 they are 1.342 and 0.671. Channel A returns twice as much per extra unit, so shift money to A.
+3. Equal marginal return: 3 / sqrt(s1) = 1.5 / sqrt(s2). So sqrt(s1) = 2 x sqrt(s2), s1 = 4 x s2. With s1 + s2 = 10 this gives 8 and 2. Both marginal returns are 1.061.
+4. Revenue at 8 and 2: 6 x 2.828 + 3 x 1.414 = 16.971 + 4.243 = 21.213. Gain 1.089 million, 5.4%.
+5. Why it may not be real, and how to say so:
+   - Confounding: spend rises when demand is high (holidays, launches), so the curve credits ads for demand that was coming anyway.
+   - Extrapolation: the 8/2 move takes A up 60% and B down 60%. If B was never run near 2 million, the curve there is a guess.
+   - Shared audience and attribution overlap: the two curves are not independent.
+   - Noise: if each fitted coefficient has 20% error, in my simulation about 19% of re-fitted "optimal" splits earn less than 5 and 5 on the true curves. If both channels truly had equal returns, moving to 8/2 would lose about 1.03 million.
+6. Plan: move a part of the way (for example 6.5 and 3.5), measure with a geo holdout or a switchback by region (see Part 5 Q11 and Part 4 Q29), refit the curves with the experimental points, and iterate.
+
+**Metrics:**
+- Incremental revenue per channel = revenue with spend minus revenue without, from a holdout. Marginal ROAS = change in incremental revenue / change in spend.
+- Equal marginal return condition: marginal return of channel A = marginal return of channel B at the chosen split.
+- Guardrails: total revenue, margin after spend, brand and baseline traffic, overlap between channels.
+
+**Risks:**
+- Fitted curves fit history, not causality.
+- Optimum depends on the ratio of coefficients, which is noisy.
+- Square-root shape is an assumption; the real curve may saturate faster or have a threshold.
+- Short-term revenue ignores brand and lagged effects.
+
+**What the interviewer scores:**
+- Strong: correct revenues, derivation of the equal-marginal-return rule, and a clear statement that confounding and extrapolation limit the claim. Weak: computes 8/2 and stops.
+- Strong: proposes experiments to estimate marginal returns, with a staged shift. Weak: "gather more data" with no design.
+- Strong: gives a quantified sense of noise risk. Weak: just says "uncertain".
+
+**Example:** Illustrative numbers. 5/5 earns 20.125. 8/2 earns 21.213. If both channels truly earn the same, 8/2 earns 19.092 against 20.125 and loses 1.03 million. Weak: "Move to 8 and 2, it adds 5%." Strong: "The maths says 8/2, but I would move to 6.5/3.5 first and run a geo test on each channel."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why equal marginal returns?* If one channel's extra unit earns more, moving money there raises revenue until the two are equal.
+- *What if there is a minimum spend on B?* Then the optimum is constrained; compute it with that bound.
+- *Why not equal average ROAS?* Marginal, not average, tells where the next unit should go. Here both happen to match at 8/2 only because both curves are the same shape.
+
+**Common mistakes:**
+- Equalising average ROAS across channels.
+- Taking an optimum from observational curves as fact.
+- Ignoring that the new spend lies outside the observed range.
+- Forgetting the revenue-to-margin step.

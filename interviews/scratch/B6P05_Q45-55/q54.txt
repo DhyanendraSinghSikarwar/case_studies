@@ -1,0 +1,54 @@
+**Say this first (1 line):** Per query the large model costs 0.0440, the small one 0.0620 and the cascade 0.0411, so the cascade saves 2,900 a month on a million queries (6.6%), but it is less accurate than the large model (89.3% vs 92%) and loses its edge once a wrong answer costs more than about 0.41 (illustrative).
+
+**Clarifying questions:**
+- How is the 0.30 cost of a wrong answer measured (refund, repeat contact, churn)? The cascade's edge depends on it.
+- Does the cascade also pay for the router or confidence check? Here I assume no extra cost.
+- Is the small model run on every query first, so its cost is always paid? Yes, I assume 0.002 on all queries.
+- How were the 90% and 88% accuracies measured? On a labelled sample from live traffic or on a benchmark?
+- Are some query types high-risk (money, safety)? Those should skip the small model.
+
+**Approach:**
+1. Cost per query = inference cost + (1 - accuracy) x 0.30.
+2. Large-only: 0.020 + 0.08 x 0.30 = 0.020 + 0.024 = 0.0440.
+3. Small-only: 0.002 + 0.20 x 0.30 = 0.002 + 0.060 = 0.0620.
+4. Cascade inference: small model on all (0.002) plus large model on 35% (0.35 x 0.020 = 0.007) = 0.0090.
+5. Cascade accuracy: 0.65 x 0.90 + 0.35 x 0.88 = 0.585 + 0.308 = 0.893. Error cost = 0.107 x 0.30 = 0.0321. Total = 0.0411.
+6. Monthly on 1,000,000 queries: 44,000, 62,000, 41,100. The cascade saves 2,900 against large-only, 6.6%.
+7. Break-even wrong-answer cost: 0.009 + 0.107w = 0.020 + 0.08w gives w = 0.4074. Above that, large-only is cheaper.
+8. Validate: accuracy on each slice from labelled live samples, the accuracy of the router (does it send the right queries up?), and tail harm.
+9. Consistency check: the stated numbers imply the small model is only 61.4% right on the queries it escalates, and the large model 94.2% right on the 65% it never sees. Plausible, since escalated queries are harder, but check it.
+
+**Metrics:**
+- Cost per query = (model costs + wrong answers x 0.30) / queries.
+- Accuracy = correct answers / queries (human-judged sample). Escalation rate = escalated / all (35%).
+- Guardrails: accuracy on high-risk topics, latency (two model calls on 35% of queries), wrong-and-confident rate for kept answers.
+
+**Risks:**
+- Wrong-answer cost is the swing factor, and it is not constant: some mistakes cost far more than 0.30.
+- Accuracy on the 65% kept may drift when the query mix changes.
+- Cascade adds latency and complexity.
+- Accuracy labels from a small sample have wide error bars: 1 point on 1,000,000 queries is 3,000 a month.
+
+**What the interviewer scores:**
+- Strong: counts the small model's cost on every query, includes error cost, notices that the cascade is less accurate than large-only. Weak: compares inference prices only.
+- Strong: finds the break-even wrong-answer cost. Weak: gives three numbers and no decision rule.
+- Strong: validates router quality and tail risk. Weak: trusts the 90% and 88%.
+
+**Example:** Illustrative numbers. Large 0.0440, small 0.0620, cascade 0.0411. At wrong-answer cost 0.50 the cascade is 0.0625 and large 0.0600, so large wins. Weak: "Cascade is cheapest so ship it." Strong: "Cascade saves 6.6% only because wrong answers are cheap. If a wrong answer costs above 0.41 or accuracy matters more, I keep large-only for those queries."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *How would you lower the cost further?* Send high-risk topics straight to the large model and let the small model keep only easy, low-risk ones, then re-measure.
+- *Why include the error cost?* Because the cheapest model is not the cheapest system; the error cost here is bigger than inference cost for every option.
+- *What does a 1-point accuracy change cost?* 0.01 x 0.30 x 1,000,000 = 3,000 a month, about the same as the whole cascade saving.
+
+**Common mistakes:**
+- Forgetting the small model's cost on escalated queries.
+- Comparing only inference cost.
+- Using the benchmark accuracy (80%, 92%) for the slices.
+- Ignoring that the cascade's accuracy is below the large model's.

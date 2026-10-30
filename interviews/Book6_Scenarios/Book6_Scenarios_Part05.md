@@ -106,7 +106,7 @@
 **Asked at:** Lifetime-value and CAC material (a Dataford 'calculate customer lifetime value' product-growth-analyst page, Hacking the Case Interview, Road to Offer and MBB Prep pages on CLV and CAC, Count.co and FourWeekMBA CAC-payback pages); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q25 ⭐⭐ 🟢 A recommender raised click-through on its carousel to 8% from 5% of impressions (3 points absolute). A 4-week holdout over 2,000,000 users shows revenue per user of 40.0 with the model against 39.0 with a popularity list (+2.5% relative to the popularity list), at a 30% margin. The model and its team cost 250,000 for the 4 weeks. Compute the incremental margin and net value, and explain why the click-through lift overstates the value.
+### Q25 ⭐⭐ 🟢 A recommender raised click-through on its carousel to 8% from 5% of impressions (3 points absolute). A 4-week holdout shows, for the 2,000,000 users the model serves, revenue per user of 40.0 with the model against 39.0 with a popularity list (+2.6% relative to the popularity list), at a 30% margin. The model and its team cost 250,000 for the 4 weeks. Compute the incremental margin and net value, and explain why the click-through lift overstates the value.
 **Asked at:** Recommender and personalisation business-value material (a Jannach and Jugovac arXiv survey on the business value of recommenders, a Smart Insights personalisation case, vendor case studies from Blast Analytics and Recolize that report self-claimed ROI); vendor numbers are upper bounds; commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
@@ -126,7 +126,7 @@
 **Asked at:** Credit-risk material (a Dataford 'optimal cut-off score to maximise profit' page, an Interview Query auto-lending data scientist guide, a quintedge credit-risk interview page, academic papers on profit-maximising cut-offs); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q30 ⭐⭐ 🟡 A food platform takes 100,000 orders a day. Promising the median predicted delivery time makes 50% of orders late (50,000), and promising the 80th percentile makes 20% late (20,000) but the longer promise cuts orders by 1% relative to 100,000, at a margin of 1.50 per order. A late order costs 3.00 in refunds and lost goodwill. Compute the daily difference between the two promises and say which input is least certain.
+### Q30 ⭐⭐ 🟡 A food platform takes 100,000 orders a day. Promising the median predicted delivery time makes 50% of orders late (50,000), and promising the 80th percentile makes 20% of the remaining orders late (19,800) but the longer promise cuts orders by 1% relative to 100,000, at a margin of 1.50 per order. A late order costs 3.00 in refunds and lost goodwill. Compute the daily difference between the two promises and say which input is least certain.
 **Asked at:** Delivery, ETA and routing material (an AlgoMaster ETA-prediction design walkthrough, a DoorDash careers post and an Uber Eats ETA write-up as described in snippets, an Appinventiv case study using an asymmetric loss, a quantile-regression delivery-time slide deck); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
@@ -138,7 +138,7 @@
 **Asked at:** Forecasting and inventory material (PracHub retail demand-forecasting and inventory-and-stockout concept pages, a Dataford supermarket demand-forecasting page attributed in its title to a BCG data scientist interview but unverified, a PyCon DE 2025 talk on stockouts in retail forecasting); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q33 ⭐⭐ 🟡 Marketing-mix modelling on three years of weekly data says that raising paid-search spend from 100,000 to 200,000 a month raises monthly revenue from 500,000 to 650,000, and gross margin is 40% of revenue. Compute the average ROAS at each spend level, the marginal ROAS and the marginal profit, and list what could make the fitted curve wrong.
+### Q33 ⭐⭐ 🟡 Marketing-mix modelling on three years of weekly data says that raising paid-search spend from 100,000 to 200,000 a month raises total monthly revenue (all sources) from 500,000 to 650,000, and gross margin is 40% of revenue. Compute the average ROAS at each spend level, the marginal ROAS and the marginal profit, and list what could make the fitted curve wrong.
 **Asked at:** Marketing measurement material (a datainterview.com paid-social incrementality case, an aitrainer.work marketing data scientist question page, Triple Whale and Eppo GeoLift pages, a Medium post on geo-experiments, a PyData Boston 2025 talk description); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
