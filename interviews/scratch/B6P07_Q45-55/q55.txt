@@ -12,7 +12,7 @@
 1. Expected cost per question = P(answer) x P(wrong | answered) x wrong cost + P(escalate) x escalation cost + correct answers x 0.
 2. Threshold 0.7: answers 80%. Wrong = 0.80 x 0.08 = 0.064 per question, cost 0.064 x 20 = 1.28. Escalated = 20%, cost 0.20 x 4 = 0.80. Total = 2.08.
 3. Threshold 0.9: answers 55%. Wrong = 0.55 x 0.03 = 0.0165, cost 0.33. Escalated = 45%, cost 1.80. Total = 2.13.
-4. So 0.7 is cheaper by 0.05 per question (2.3%).
+4. So 0.7 is cheaper by 0.05 per question (about 2.4% of 2.08).
 5. Sensitivity to the wrong cost w: cost at 0.7 = 0.064w + 0.8; at 0.9 = 0.0165w + 1.8. Equal when 0.0475w = 1.0, so w = 21.05. Below that 0.7 wins; above it 0.9 wins. At w = 30 the costs are 2.72 and 2.30, so 0.9 wins by 0.42.
 6. Why it is so close: the extra 25% of questions answered at 0.7 (the band between thresholds) are right 81% of the time and wrong 19%. Answering is worth it when the wrong rate is below 4 / 20 = 20%. At 19% we are almost exactly at the line.
 7. Sensitivity to accuracy: if accuracy at 0.7 is really 91% (not 92%), its cost is 2.24 and 0.9 becomes better. So both inputs matter.
