@@ -1,0 +1,56 @@
+**Say this first (1 line):** The valid rate is 78% with a 95% Wilson interval of about 68.9% to 85.0%, so roughly 345 to 425 of the 500 are valid (about 354 to 418 if I count the 78 already confirmed), and I would use the set as a cheap regression and smoke test, after removing invalid items, never as the headline quality number.
+
+**Clarifying questions:**
+- How were the 100 picked, truly at random from the 500? A hand-picked 100 breaks the interval.
+- What did "valid" mean to the reviewers (answerable from the document, unambiguous, single correct answer)? A loose definition inflates the rate.
+- Did two reviewers check, and how often did they agree? One reviewer's judgement is a noisy label.
+- Which question types did the LLM make (lookup, multi-hop, numeric)? Valid rate usually differs by type.
+- What will the set be used for: ranking retrieval variants, regression tests, or reporting accuracy to leadership?
+
+**Approach:**
+1. Sample rate = 78 / 100 = 0.78.
+2. Wilson 95% interval: 0.689 to 0.850. (Wilson behaves better than the plain normal interval at this size.)
+3. Naive projection to 500: 500 x 0.689 to 500 x 0.850 = 345 to 425 valid, so 75 to 155 invalid.
+4. A better projection uses the fact that the 100 reviewed are known: 78 + 400 x (0.689 to 0.850) = 354 to 418. The sample is 20% of the whole, which also trims the true uncertainty by a factor of about 0.89.
+5. Use of the set: review or auto-filter the invalid ones. Cheapest route: have people review the remaining 400 for a large set (or a second LLM filter checked on the reviewed 100) and keep only valid items.
+6. Stratify by question type and report valid rate by type. Low-validity types get dropped or rewritten.
+7. Use the set for comparing variants on the same questions (A versus B), where shared flaws cancel, and for regression. Do not report its accuracy as production accuracy: synthetic questions tend to reuse the document's wording, so they can be easier than real ones (state this as a risk to test, not a fact).
+8. Keep a separate small set from real user logs or written by domain experts as the anchor, and compare the model's score on both. A big gap tells you how unrepresentative the synthetic set is.
+
+**Metrics:**
+- Valid rate = questions judged valid / questions reviewed = 78 / 100, with a Wilson interval.
+- Reviewer agreement = share of questions where two reviewers agree (and kappa).
+- Score gap = accuracy on the synthetic set - accuracy on the real-log set.
+- Guardrail: coverage across documents and question types after filtering.
+
+**Risks:**
+- Selection: reviewers label the first 100 they see, not a random 100.
+- The generator and the system under test are the same model family, so the questions can match what the model finds easy.
+- Valid but trivial questions pass review yet do not discriminate between systems.
+- Duplicates and near-duplicates inflate the set size.
+
+**What the interviewer scores:**
+- Strong: gives the interval, converts it to counts, and says what the interval does not cover (bias, definition of valid). Weak: "78% valid, so 390 valid".
+- Strong: notes the 100 reviewed are part of the 500. Weak: ignores it (minor).
+- Strong: a use that fits the weakness (relative comparison, regression), plus a real-log anchor. Weak: reports synthetic accuracy as quality.
+- Strong: asks about reviewer agreement.
+
+**Example:** Illustrative. 500 questions, 78 of 100 valid. Weak: "78% valid, so 390 valid questions. Ship the eval." Strong: "About 345 to 425 valid. I would filter out the invalid ones, compare retrieval variants on the same questions, and keep 100 real questions as the check that the synthetic score means something."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *How many more questions should we review?* With 400 reviewed in total the interval is about 8 points wide (it is 16 now). Review more if decisions depend on the count.
+- *Can an LLM do the review?* As a filter yes, if checked against human labels on a sample (agreement, kappa); see Book 2 Part 9 Q6.
+- *Why Wilson and not the normal interval?* Wilson stays inside 0 to 1 and covers better for moderate n and extreme rates.
+
+**Common mistakes:**
+- Using synthetic accuracy as the product's accuracy.
+- Not checking randomness of the reviewed sample.
+- Ignoring that the reviewed 100 are part of the 500.
+- One reviewer, no agreement check.
+- Keeping invalid questions in the set.

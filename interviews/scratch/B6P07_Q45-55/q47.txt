@@ -1,0 +1,55 @@
+**Say this first (1 line):** Overall accuracy is (92 + 71 + 85) / 3 = 82.7%, the middle is 21 points worse than the start, that gap is far too big for noise, so I would put the best passages first (and last), send fewer passages, and use long context only when retrieval truly cannot find the answer.
+
+**Clarifying questions:**
+- Are the 100 questions in each position the same questions moved around, or different questions? Same questions give a paired test and a cleaner result.
+- How long is the context, and how many distractor passages are there? The effect depends on length and clutter.
+- Which model and settings? The pattern can differ between models and versions, so I would re-test on mine rather than assume (this is a test I would run, not a general fact).
+- Is accuracy graded by a judge or exact match? Grader noise adds to the spread.
+- In production, where does the answer passage usually fall after retrieval and reranking? The test only matters if the real distribution looks like it.
+
+**Approach:**
+1. Overall accuracy = mean of the three, because each position has 100 questions: (92 + 71 + 85) / 3 = 82.67%. If the production mix is not equal, weight by the real mix.
+2. Gap, middle versus start = 92 - 71 = 21 points.
+3. Is it real? Two-proportion z = 3.97 and a 95% CI of about 10.6 to 31.4 points (unpaired approximation). Yes, it is real. Start versus end (7 points, z = 1.56, CI -1.8 to 15.8) is not separable at n = 100.
+4. Change the pipeline: rerank, then put the strongest passages at the start and the second strongest at the end, and weak ones in the middle. Cut the number of passages (top 5 to 8 instead of 30).
+5. Compare against long context on cost. Illustrative: 100,000 tokens at 3 per million input tokens is 0.300 per call. Retrieval with 4,000 tokens is 0.012, 25 times less.
+6. Use long context only for tasks that need the whole document (summarise, cross-reference many sections) or when recall of retrieval is too low. If used, repeat the test at the real context length, and put the question and key instructions where the model attends best (test it; do not assume).
+7. Re-run the same test after the change, and also test with the answer passage ranked second and third by the reranker, since in production it is not always first.
+
+**Metrics:**
+- Accuracy by position = correct answers at that position / 100.
+- Position gap = accuracy(start) - accuracy(middle), in points, with a CI.
+- End-to-end answer accuracy on real retrieved contexts, split by the rank of the gold passage.
+- Cost per correct answer = cost per call / accuracy. Guardrail: latency and context length.
+
+**Risks:**
+- The test puts exactly one answer passage in a sea of distractors; real questions may need two passages.
+- Position effects can change with model version. Treat the numbers as a regression test, not a law.
+- Reordering helps only if the reranker is good; a wrong first passage is worse than a middle one.
+- Cutting passages can drop recall.
+
+**What the interviewer scores:**
+- Strong: correct 82.7% and 21 points, plus a significance check. Weak: says "middle is lower" without sizes.
+- Strong: a concrete reordering and fewer-passages plan, tested. Weak: "use a bigger context window".
+- Strong: cost comparison between long context and retrieval. Weak: ignores cost.
+- Strong: notes the 7-point start-versus-end gap is not clearly real at n = 100. Weak: calls it a U-shape as a fact.
+
+**Example:** Illustrative. The best passage is at the start 70% of the time and at the end 30% of the time after reranking: expected accuracy 0.7 x 92% + 0.3 x 85% = 89.9%, versus 82.7% with a random spread. This is a planning number from the test, not a promise. Weak: "I would use a 1M-token model so it fits everything." Strong: "I would rerank, put the top passage first and the next last, send five passages not thirty, and keep long context for tasks that really need the whole document, because it is 25 times costlier per call in my example."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why not just sort passages by score?* Descending sort puts the second-best passage at position 2, which can sit in the weak zone; a first-and-last layout is a test worth running.
+- *Does prompt caching change the long-context cost argument?* It cuts the cost of repeated prefixes, so re-test the comparison; see Book 2 Part 1 Q24 (prefix caching).
+- *Where can I read more about this effect?* Book 2 Part 1 Q19 ("What is the context window, and why is the effective context often shorter than the advertised one?").
+
+**Common mistakes:**
+- Averaging unequal groups without weights.
+- Calling a 7-point gap at n = 100 a pattern.
+- Assuming the effect holds for every model.
+- Ignoring cost and latency of long context.
+- Putting the question first or last without testing.

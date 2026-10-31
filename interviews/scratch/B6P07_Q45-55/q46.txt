@@ -1,0 +1,56 @@
+**Say this first (1 line):** The answers did not change, only the judge did, so the 0.4 drop is judge drift by construction; product drift is a separate question I answer with an anchor set, and I keep the series comparable by pinning judge versions and bridging every change.
+
+**Clarifying questions:**
+- Were the 300 answers exactly the saved ones (same text, same prompts)? If yes, product drift is ruled out for this comparison.
+- Are scores integers on 1 to 5? If so, "changed by one point or more" just means "changed", and I can read the full change distribution.
+- Is the judge prompt, temperature and rubric identical, with only the model version different? If the prompt also changed, I cannot say which caused it.
+- Do we have human labels on part of the 300? They tell me which judge is closer to truth.
+- Is the dashboard used for decisions (release gates), or only for trends? Gates need a harder fix.
+
+**Approach:**
+1. Say what the experiment shows. Same answers, two judges: mean 4.2 to 3.8, a shift of -0.4. All of that is judge change, not product change.
+2. Check the size of the effect. A shift of -0.4 on 300 answers is far larger than noise if the paired changes behave like the invented ones below (95% CI -0.475 to -0.325).
+3. Check judge noise. Re-run the old judge twice on the same 300 answers. If it changes only a few answers and the mean stays put, judge noise is small and the shift is a real new-judge effect.
+4. Look at the shape of the change. All answers shift a bit (a harsher scale) or a subset shifts a lot (the new judge penalises something, such as length or missing citations). Read 20 of the 90 changed answers.
+5. Check against humans. Have people label 100 of the 300 blind. The judge that agrees better (kappa or agreement rate) is closer to the truth; neither is "correct" by default.
+6. Keep the series comparable. Pin the judge version in every record. When the judge changes: run both judges for an overlap period, rescore a fixed anchor set with both, and report a break in the series with a bridge (offset or mapping).
+7. Separate product drift. Keep a frozen anchor set of answers (fixed text) scored every week: if the anchor mean moves, the judge moved. Score fresh traffic on the same judge: if fresh moves and the anchor does not, the product moved.
+
+**Metrics:**
+- Judge shift = mean(new judge score) - mean(old judge score) on identical answers, with a paired CI.
+- Changed share = answers with any change / 300 = 90/300 = 30%.
+- Judge test-retest = answers that differ across two runs of the same judge / 300.
+- Agreement with humans = exact agreement or Cohen's kappa (see Book 2 Part 9 Q6) on a labelled subset.
+- Guardrails: score by slice (length, topic, language), so a shift that hits one slice is not hidden.
+
+**Risks:**
+- Silent judge version changes at the provider. Pin versions where possible and record them; check the anchor set weekly.
+- Bridging with a single offset hides a non-uniform shift (it may hit long answers more).
+- Overfitting to the anchor set if the product team sees it.
+- Judge bias (position, verbosity, self-preference; see Book 2 Part 9 Q5) may differ between versions.
+
+**What the interviewer scores:**
+- Strong: notes that identical answers mean the change is the judge, and gives the anchor-set design. Weak: asks whether quality really fell.
+- Strong: asks for judge test-retest and a human check. Weak: trusts the newer judge because it is newer.
+- Strong: version pinning, overlap period, bridge, and a marked break in the chart. Weak: continues the line as if nothing happened.
+- Bonus: notices that on integer scores, 90 answers moving by exactly one point would give only -0.3, so some answers moved by two or more.
+
+**Example:** Illustrative. Last month, old judge: 4.2. Rescoring the same 300 with the new judge: 3.8, so offset -0.4. This week's fresh traffic scored by the new judge: 3.9. Weak: "Score fell from 4.2 to 3.9, quality is down." Strong: "On the old scale this week is about 4.3, so the product is flat to slightly better; the drop is the judge. I will plot the new judge from now on with a break, and keep both scores for a month."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Which judge is right?* Neither until humans label a sample. Pick the one that agrees better and is stable on retest.
+- *Can you just rescore all history with the new judge?* Often yes if cost allows and answers were saved; that is the cleanest way to keep one series. Save answers, not only scores.
+- *What if you cannot keep the old judge?* Keep the frozen anchor set and human labels, and fit the bridge on them.
+
+**Common mistakes:**
+- Calling a judge change a product regression (or the reverse).
+- Not saving the answer text, so history cannot be rescored.
+- Not recording the judge version.
+- Fixing with one offset without checking slices.
+- Using the same anchor set for tuning the product.

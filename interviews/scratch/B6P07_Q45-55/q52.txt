@@ -1,0 +1,55 @@
+**Say this first (1 line):** The node costs 2.78 per million output tokens at full load and 9.26 at 30% utilisation, against 15 for the API, and it breaks even at 18.5% utilisation, but that is a floor, because staff, a second node for redundancy and spiky traffic push the real break-even higher.
+
+**Clarifying questions:**
+- Is the 2,000 tokens per second measured on our prompt mix and our latency target, or a benchmark peak? Throughput at full load is often higher than throughput at an acceptable latency.
+- Does the 20 per hour include everything (GPU, hosting, network), or only the GPU rental?
+- How much of the load is input tokens (prefill)? They use capacity too, and the API bills them separately.
+- Is the self-hosted model as good for our task as the API model? A cheaper model that fails more is not cheaper.
+- What is the traffic shape across the day? Average utilisation is what pays the bill.
+- Do we need a second node for failover?
+
+**Approach:**
+1. Tokens per hour at 100% = 2,000 x 3,600 = 7.2 million.
+2. Cost per million at 100% = 20 / 7.2 = 2.778. At 30% = 20 / (7.2 x 0.3) = 20 / 2.16 = 9.259.
+3. API price 15 per million. Self-host saves 81.5% at full load and 38.3% at 30%.
+4. Break-even: 20 / (7.2 x u) = 15, so u = 20 / 108 = 0.1852, which is 18.5%. Check: at 18.5% the node makes 1.333 million tokens an hour, and 20 / 1.333 = 15.
+5. Stress the answer (all illustrative): with two nodes for failover and 5 an hour of staff time, hourly cost is 45 for 14.4 million tokens of capacity, so break-even rises to 20.8% of total capacity. If the traffic is 6 hours at peak and 18 hours at 20%, average utilisation is 40%, so it passes the test, with less room than 30% looks like.
+6. Decide on more than cost per token: quality on our task, security, uptime, engineering time, and the option to use the API for spikes and the node for the base load.
+
+**Metrics:**
+- Cost per million output tokens = hourly cost / (tokens per second x 3,600 x utilisation / 1,000,000).
+- Utilisation = tokens actually generated / tokens the node could generate at the latency target, averaged over a month.
+- Break-even utilisation = hourly cost / (capacity per hour in millions x API price).
+- Guardrails: p95 latency, error rate, answer quality versus the API model.
+
+**Risks:**
+- The 2,000 tokens per second is the best case. At the latency users accept, real throughput can be lower, which moves the break-even up.
+- Costs that do not scale: staff, monitoring, security, upgrades.
+- Utilisation falls at night and on weekends; you pay for idle time.
+- The model may be worse than the API model on the task.
+- The API price can fall, which shrinks the case.
+
+**What the interviewer scores:**
+- Strong: 2.78, 9.26 and 18.5% correct, and says the break-even is a floor. Weak: stops at the arithmetic, or says "self-hosting is always cheaper".
+- Strong: notes that the 2,000 tokens per second is at full load, and asks what it is at the latency target.
+- Strong: hybrid design (node for base load, API for peaks). Weak: all or nothing.
+- Strong: counts staff and redundancy.
+
+**Example:** Illustrative. A node serving 40% average utilisation costs 20 / (7.2 x 0.4) = 6.94 per million, less than half the API price. At 15% it would cost 18.52, more than the API. Weak: "The node costs 2.78, which is much cheaper than 15, so self-host." Strong: "That is at 100%. At our real 30% it is 9.26, so we win by about 38% before staff and failover. I would run the base load on the node and send peaks to the API."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *How do you raise utilisation?* Batch more requests, route to the node from several services, move offline jobs to quiet hours. See Book 2 Part 1 Q6 (the KV cache) for why batching is limited by memory.
+- *What if the API price halves?* Break-even utilisation doubles to 37%.
+- *Would you compare input tokens too?* Yes, if the API charges for input; our node pays for prefill in capacity.
+
+**Common mistakes:**
+- Using the full-load number as the operating cost.
+- Leaving out staff, redundancy and idle hours.
+- Comparing cost per token without comparing quality.
+- Treating break-even as a target rather than a floor.
