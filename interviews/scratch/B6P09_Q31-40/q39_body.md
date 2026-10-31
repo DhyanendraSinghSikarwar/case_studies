@@ -1,7 +1,7 @@
 **Say this first (1 line):** If the 4% drop is uniform, video drives about 4,000,000 of the 100,000,000 sales (4%), four times the 1,000,000 that last-click credits; this is a projection from 10 regions, so I would report a range and the assumptions, not a point.
 
 **Clarifying questions:**
-- Is the 100,000,000 the with-video level in all 50 regions, and is the 4% measured against the kept regions' level (2,000,000 each)? I read it that way; another base changes the answer slightly (4.17% of the no-video level).
+- Is the 100,000,000 the with-video level in all 50 regions? The prompt fixes the 4% against the kept regions' 2,000,000 each; as a share of the no-video level the same gap is 4.17%.
 - How were the 10 regions chosen, and were pre-period sales compared? Random choice helps, but 10 of 50 can still be unbalanced.
 - How long was the pause, and how long do video effects last? A short test misses lagged effects.
 - Do regions leak (people travel, national media, shared online audiences)? Leakage shrinks the measured gap.

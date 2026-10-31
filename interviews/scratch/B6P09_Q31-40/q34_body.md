@@ -4,7 +4,7 @@
 - Is the 4.5% measured on the same 12-month window and the same default definition used in training? A changed definition makes a model look wrong without being wrong.
 - Is the portfolio mix the same as in development (new products, channels, score bands)? A mix shift changes the average PD even if the model is fine.
 - Were macro conditions different this year? One year is one draw of the economy, so a common shock can move all defaults together.
-- Is the 50% loss given default an assumption, a policy number or an observed value? The loss figures use it only as an input.
+- Is the 50% loss given default a policy number or something we have observed on recoveries? The loss figures use it only as an input, so realised recoveries should be checked separately.
 - What does the model feed (approval cut-off, pricing, provisioning)? It sets urgency and who has to sign off.
 
 **Approach:**
