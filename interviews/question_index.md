@@ -3445,3 +3445,53 @@ Canonical questions per book. Wave A agents: check this BEFORE adding a question
 | B9P01-Q48 | 1 | Staff level: tell me about a time you influenced a decision across several teams that did not report to you, with no formal authority. |
 | B9P01-Q49 | 1 | Staff level: tell me about a time you stopped or cut back a long-running project or programme. How did you decide and how did you communicate it? |
 | B9P01-Q50 | 1 | Staff level: tell me about a time you defined a strategy or roadmap for an area that was ambiguous, and how you decided what not to work on. |
+| B9P02-Q1 | 2 | Explain to a non-technical executive how a random forest or gradient-boosted tree model makes a prediction, in about a minute and without equations. |
+| B9P02-Q2 | 2 | A product manager's fraud model flags transactions. Explain precision and recall to them in plain words, and say which one you would worry about first. |
+| B9P02-Q3 | 2 | Explain a p-value to a non-technical colleague in under a minute, and say what it does not mean. |
+| B9P02-Q4 | 2 | A marketing manager wants to say the campaign caused last month's sales rise because the two moved together. Explain correlation versus causation to them. |
+| B9P02-Q5 | 2 | A senior leader stops you in a corridor and asks what you are working on. Give a thirty-second answer that tells them why it matters. |
+| B9P02-Q6 | 2 | How do you open a presentation of an analysis to a senior audience, and what do you say in the first minute? |
+| B9P02-Q7 | 2 | An A/B test shows a lift with a confidence interval, and the product manager only wants to know whether to ship. How do you explain the result? |
+| B9P02-Q8 | 2 | A business owner asks how accurate your model is and how often it will be wrong. How do you answer without hiding behind one number? |
+| B9P02-Q9 | 2 | You found that churn is concentrated in one customer segment. How would you structure the story for leadership, from first sentence to recommendation? |
+| B9P02-Q10 | 2 | What goes into the executive summary of an analysis, in what order, and how long should it be? |
+| B9P02-Q11 | 2 | A stakeholder asks you to 'look into why sales are down'. How do you turn that vague request into a clear analysis question? |
+| B9P02-Q12 | 2 | How do you say no, or push back, on a request that is not feasible, while keeping the relationship intact? |
+| B9P02-Q13 | 2 | Your experiment found no detectable effect and the team was hoping for a win. How do you present the result? |
+| B9P02-Q14 | 2 | Your project will slip by two weeks because of data problems. How do you tell the stakeholder, and what do you bring with you? |
+| B9P02-Q15 | 2 | Write a short weekly status update for a project that is partly on track and partly at risk. What does it contain? |
+| B9P02-Q16 | 2 | Two dashboards show different numbers for the same metric in a leadership meeting. How do you handle it in the room and afterwards? |
+| B9P02-Q17 | 2 | A senior leader says in a meeting that your analysis is wrong. How do you defend it without getting defensive, and how do you tell if they are right? |
+| B9P02-Q18 | 2 | How do you choose a chart for a message to leadership, and what would make you pick a table or plain number instead? |
+| B9P02-Q19 | 2 | Explain overfitting to a non-technical colleague with an everyday analogy, and say how you would tell them you are guarding against it. |
+| B9P02-Q20 | 2 | A business partner reads a regression output and asks what a coefficient means for their decision. How do you explain it, and what caution do you add? |
+| B9P02-Q21 | 2 | Write a short email to a stakeholder that shares a result, states how sure you are and asks for a decision. What do you put in it? |
+| B9P02-Q22 | 2 | How do you document the assumptions and caveats of an analysis so that a reader a year later does not misuse it? |
+| B9P02-Q23 | 2 | Explain customer clustering to a marketing team that wants to use the segments, including what the segments are not. |
+| B9P02-Q24 | 2 | An executive asks whether a neural network is a black box and whether that is a problem. How do you explain it? |
+| B9P02-Q25 | 2 | Explain what a large language model is to a non-technical executive who is about to buy an AI product built on one. |
+| B9P02-Q26 | 2 | Explain AUC to a non-technical manager, and tell them when it can mislead. |
+| B9P02-Q27 | 2 | A model says a customer has a 30 percent chance of leaving. How do you explain probability forecasts and uncertainty to people who want a yes or no? |
+| B9P02-Q28 | 2 | A model works worse for one group of customers. How do you explain bias and fairness to leadership and what do you ask them to decide? |
+| B9P02-Q29 | 2 | Before a launch, how do you explain a model's limitations and likely failure modes to the people who will rely on it? |
+| B9P02-Q30 | 2 | You get one slide to update executives on a project. What is on it, and what do you leave out? |
+| B9P02-Q31 | 2 | How do you write a README or handover note for a model or analysis that someone else will have to run and explain? |
+| B9P02-Q32 | 2 | Engineering and product disagree on priorities for a data feature and both look to you. How do you bring them to one plan? |
+| B9P02-Q33 | 2 | Six teams send you requests and you can do two this quarter. How do you prioritise, and how do you tell the other four? |
+| B9P02-Q34 | 2 | How do you get a decision out of busy leaders who keep postponing it? |
+| B9P02-Q35 | 2 | A launched model or dashboard is in use. How do you follow up with stakeholders, and what do you report back? |
+| B9P02-Q36 | 2 | During your presentation someone interrupts repeatedly and then asks a hostile question. How do you respond? |
+| B9P02-Q37 | 2 | A business owner plans to put an LLM chatbot in front of customers. How do you explain the hallucination risk and what you would put in place? |
+| B9P02-Q38 | 2 | A model failure reached customers. Write the incident report summary: what do you include, and how do you word cause and blame? |
+| B9P02-Q39 | 2 | You used AI tools to help with an analysis and a stakeholder asks how much you can trust it. How do you explain what the AI did and what you checked? |
+| B9P02-Q40 | 2 | You must present your results over a video call to people you cannot see. What do you change compared with presenting in a room? |
+| B9P02-Q41 | 2 | Write a Slack message escalating a blocker to a senior person. What makes it easy to act on? |
+| B9P02-Q42 | 2 | You are asked to explain a model on a whiteboard to a mixed group of engineers and business people. How do you structure it? |
+| B9P02-Q43 | 2 | Your live demo fails in front of the stakeholders. What do you do in the next two minutes? |
+| B9P02-Q44 | 2 | You are told halfway through that your slot is cut from thirty minutes to ten. How do you adapt? |
+| B9P02-Q45 | 2 | How do you summarise a long technical design document for executives, while keeping it accurate for the engineers? |
+| B9P02-Q46 | 2 | Your manager asks whether AI wrote your analysis. How do you describe your use of AI tools honestly, and what policy questions do you check first? |
+| B9P02-Q47 | 2 | You have one result that must go to executives, engineers and operations staff. How do you tailor it for each group without changing the facts? |
+| B9P02-Q48 | 2 | The CFO wants a single number from your forecast. How do you communicate the range, and what do you do if they insist on one number? |
+| B9P02-Q49 | 2 | An LLM feature gave a customer a confidently wrong answer and it became a public complaint. How do you explain what happened to executives? |
+| B9P02-Q50 | 2 | A colleague sends you an AI-written analysis for review. What do you check, and how do you word your feedback so they learn from it? |
