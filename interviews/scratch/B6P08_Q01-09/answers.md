@@ -716,7 +716,7 @@ parity test mismatches: 300
 
 **Clarifying questions:**
 - Is v18 the intended, validated version? If v18 is the suspect one, the right move is the other direction (restart the 6 pods back to v17), so confirm which version is the safe one first.
-- What does the 0.08 mean: a mean absolute difference per request, or a signed shift? I read it as a mean absolute difference per request; a signed shift would change the fleet figure.
+- Is the 0.08 stable across segments? It is a mean absolute difference per request; the gap may be larger for some customer groups, so I would check the distribution, not only the mean.
 - Do users or sessions need consistent scores across requests (credit offers, rankings)? Mixed versions give the same user different answers.
 - Can I see which version each pod holds without restarting it (a version endpoint, a log line at startup, a metric label)? Today the logs show only the alias name, so the answer is no, which is the design bug.
 - Is any experiment or monitor reading these scores right now? A 60/40 mix quietly contaminates an A/B test and every drift metric.
@@ -761,7 +761,7 @@ pods = ["v18"] * 6 + ["v17"] * 4
 stale = pods.count("v17") / len(pods)
 assert stale == 0.4
 
-# Interpretation: the 0.08 is the mean ABSOLUTE per-request score difference between versions.
+# The prompt gives 0.08 as the mean ABSOLUTE per-request score difference between versions.
 # The fleet-wide expected deviation from the intended model is then 0.4 x 0.08.
 fleet_dev = stale * 0.08
 print("expected mean |score deviation| over all traffic =", round(fleet_dev, 3))
