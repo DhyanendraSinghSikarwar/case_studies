@@ -304,7 +304,7 @@ Daily split: 40% coding (DSA/SQL), 35% ML/GenAI theory + design, 25% scenarios/b
 | 4 | 12 / 12 (Part 1: 40 Qs; Part 2: 45 Qs; Part 3: 40 Qs; Part 4: 40 Qs; Part 5: 40 Qs; Part 6: 45 Qs; Part 7: 40 Qs; Part 8: 45 Qs; Part 9: 35 Qs; Part 10: 50 Qs; Part 11: 35 Qs; Part 12: 45 Qs; total 500 Qs; Questions ✅ Answers ✅ Review ✅; see review_notes/Book4_PartNN_review.md) |
 | 5 | 14 / 14, complete: 600 Qs (Part 1: 50 Qs; Part 2: 45 Qs; Part 3: 40 Qs; Part 4: 40 Qs; Part 5: 40 Qs; ... Part 13: 50 Qs; Part 14: 50 Qs; see review_notes/Book5_PartNN_review.md) |
 | 6 | 10 / 10 (Part 1: 55 Qs; Part 2: 50 Qs; Part 3: 50 Qs; Part 4: 55 Qs; Part 5: 55 Qs; Part 6: 45 Qs; Part 7: 55 Qs; Part 8: 45 Qs; Part 9: 50 Qs; Part 10: 40 Qs; total 500 Qs; Questions ✅ Answers ✅ Review ✅; see review_notes/Book6_PartNN_review.md) |
-| 7 | 2 / 4 (Part 1: 10 companies; Part 2: 10 companies; see review_notes/Book7_PartNN_review.md) |
+| 7 | 3 / 4 (Part 1: 10 companies; Part 2: 10 companies; Part 3: 10 companies; see review_notes/Book7_PartNN_review.md) |
 | 8 | 0 / 3 |
 | 9 | 0 / 5 |
 
