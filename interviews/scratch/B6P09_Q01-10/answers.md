@@ -752,3 +752,109 @@ simulated events reached under random response: mean 9.96
 - What if the ward can add staff? Then the capacity changes and the middle threshold may be right; recompute with the new capacity and agree it with nursing.
 
 **Common mistakes:** Choosing by sensitivity alone. Ignoring the capacity. Reading 4% precision without the subset assumption. Treating a replay as live performance. Deciding alone.
+
+### Q9 ⭐⭐⭐ 🟡 Ads: A campaign has a daily budget of 24,000 and without pacing it spends 15,000 by 09:00 at a cost per conversion of 30, while the remaining 9,000 is spent after 09:00 at a cost per conversion of 20 (measured yesterday). Moving 6,000 of the early spend to the later period would change conversions by how many if the later cost per conversion stayed at 20, which is an optimistic upper bound? Say why that cost might not stay at 20 and how a pacing controller would use feedback.
+**Asked at:** Ad-serving system-design material (techinterview.org ad serving and real-time bidding pages, a Dataford question on budget pacing and frequency capping, machinelearningatscale.com on frequency capping; feedback-controller pacing, per-user counters and credits for invalid clicks appear in the snippets); prep-site material; commonly reported in public guides for data scientist and ML engineer loops; search snippets only, not opened
+**Say this first (1 line):** Moving 6,000 from a cost per conversion of 30 to 20 loses 200 conversions and gains 300, so +100 (950 to 1,050, +10.5%), but that is an optimistic upper bound because 20 is an average over spend that was already won, not the price of the next 6,000; a pacing controller would steer spend by feedback and I would measure the marginal cost rather than assume it.
+
+**Clarifying questions:**
+- Is the 20 an average over all 9,000 spent after 09:00, or the price at the margin? Extra spend buys the next-best traffic, which costs more.
+- Is there enough later inventory to absorb 15,000 instead of 9,000? If demand after 09:00 is limited, the budget cannot be spent.
+- Is the 30 early cost per conversion driven by the first hours of expensive traffic? If the 6,000 removed was the worst early spend, we lose fewer than 200 conversions.
+- Are conversions delayed? If they arrive hours or days later, yesterday's 20 and 30 are incomplete and feedback is slow.
+- Does the advertiser care about total conversions or a cost target? It changes whether a rise in cost per conversion is acceptable.
+
+**Approach:**
+1. Baseline: 15,000 / 30 = 500 conversions early plus 9,000 / 20 = 450 later = 950.
+2. Move 6,000: early 9,000 / 30 = 300, later 15,000 / 20 = 750, total 1,050. Net +100, +10.5%.
+3. Break-even rule: moving pays only if the later marginal cost per conversion is below the early marginal cost. At 25 the gain is 240 (net +40), at 30 net zero, at 35 net -29.
+4. Say why 20 may not hold: diminishing returns in the same audience, more competition for the same traffic, a different audience mix at a later hour, and the platform's learning. Also the removed early 6,000 was probably the most expensive part of the 30, which helps the case.
+5. Pacing controller: choose a planned spend curve from the expected traffic and conversion value by hour; every few minutes compare actual cumulative spend with the plan; adjust the bid multiplier or the share of auctions entered (throttle) in proportion to the gap; clip changes and add a hard stop at the budget.
+6. Feedback on cost per conversion is slower, so control spend fast and adjust the plan's shape slowly from measured conversion rates by hour.
+7. Verify with an A/B test of pacing against no pacing on whole campaigns, reading conversions, cost per conversion and budget use.
+
+**Metrics:**
+- Conversions = spend / cost per conversion, by period. Marginal cost per conversion = extra spend / extra conversions.
+- Pacing error = actual cumulative spend - planned cumulative spend; budget used = total spend / daily budget.
+- Guardrails: share of budget unspent, cost per conversion against the target, and delivery of impressions and conversions by hour.
+
+**Risks:**
+- Treating an average as a marginal price; the 1,050 can turn into a loss.
+- Underspend: later hours may not absorb the money (my toy model leaves 553 unspent).
+- A controller can oscillate if the gain is high, and delayed conversions mean it reacts to old information.
+- Early hours may convert better for some products; a flat plan is not always best.
+
+**What the interviewer scores:**
+- Strong: 950, 1,050, +100, and the break-even logic "later marginal cost must be below early marginal cost". Weak: stops at +100.
+- Strong: lists specific reasons 20 will not hold. Weak: "it will be similar".
+- Strong: describes a feedback loop (target curve, error, bid multiplier or throttle, clipping, stop). Weak: "spread the budget evenly".
+- Strong: separates fast control (spend) from slow outcomes (conversions).
+
+**Example:** (illustrative numbers)
+- Weak: "Move 6,000 and we gain 100 conversions."
+- Strong: "950 now, at most 1,050 after, but only if the next 6,000 buys at 20. If the marginal cost later is 30 we gain nothing, and at 35 we lose 29. In my toy simulation a controller that holds 9,000 by 09:00 reaches 1,023 when the cost never moves, but only 878 when cost per conversion rises with the bid, so I would test it with a holdout and read the marginal cost."
+
+**Code:**
+```python
+import numpy as np
+# Part A: prompt arithmetic (illustrative, measured yesterday)
+early_spend, late_spend, cpa_e, cpa_l, move = 15_000, 9_000, 30, 20, 6_000
+conv0 = early_spend / cpa_e + late_spend / cpa_l
+lost = move / cpa_e
+gained = move / cpa_l
+conv1 = conv0 - lost + gained
+print(f"unpaced conversions {conv0:.0f}; move {move:,}: lose {lost:.0f} at 30, gain {gained:.0f} at 20, net {gained-lost:+.0f} -> {conv1:.0f} ({(conv1/conv0-1):.1%})")
+for x in (20, 25, 30, 35):
+    print(f"  later marginal CPA {x}: gain {move/x:.0f}, net {move/x - lost:+.0f}")
+for e in (30, 40):
+    print(f"  early marginal CPA of the removed spend {e}: lose {move/e:.0f}; break-even later marginal CPA {e}")
+assert conv0 == 950 and lost == 200 and gained == 300 and conv1 == 1050 and round(conv1 / conv0 - 1, 4) == 0.1053
+assert round(move / 25) == 240 and round(move / 35) == 171 and move / 40 == 150 and early_spend + late_spend == 24_000
+
+# Part B: a feedback pacing controller on an invented hourly day. Unpaced spend = 15,000 in hours 0-8 and 9,000 in hours 9-23.
+budget = 24_000
+base = np.array([15_000 / 9] * 9 + [9_000 / 15] * 15)
+cpa_base = np.array([30.0] * 9 + [20.0] * 15)
+plan = np.arange(1, 25) * budget / 24              # even-spend plan: 1,000 per hour, so 9,000 by 09:00 (6,000 moved)
+def day(k_cpa, gain=0.15, k_spend=1.5):
+    m = 1.0; spent = 0.0; conv = 0.0; by9 = 0.0
+    for h in range(24):
+        err = (plan[h] - spent) / (budget / 24)    # hours of spend we are behind plan (negative = ahead)
+        m = float(np.clip(m * (1 + gain * err), 0.3, 3.0))
+        s = min(base[h] * m ** k_spend, budget - spent)   # invented: spend grows as m^1.5
+        c = s / (cpa_base[h] * m ** k_cpa)                # invented: CPA grows as m^k_cpa (0 = CPA never moves)
+        spent += s; conv += c
+        if h == 8: by9 = spent
+    return by9, spent, conv
+rows = {k: day(k) for k in (0.0, 0.3, 0.6, 1.0)}
+for k, (b9, sp, cv) in rows.items():
+    print(f"CPA elasticity {k:.1f}: spent by 09:00 {b9:,.0f}, day spend {sp:,.0f}, conversions {cv:,.0f}")
+print("takeaway: the 1,050 bound needs the later CPA to stay at 20 AND the later hours to absorb 15,000; otherwise pacing can lose conversions")
+assert all(8_500 < r[0] < 9_500 for r in rows.values())            # controller does hold early spend near 9,000
+assert rows[0.0][2] > 950                                          # with a flat CPA, moving spend helps
+assert rows[0.0][2] < 1050 + 1e-6                                  # but never above the optimistic bound
+assert rows[0.0][2] > rows[0.3][2] > rows[0.6][2] > rows[1.0][2]   # a rising CPA eats the gain
+assert rows[0.6][2] < 950 < 1050                                   # at this elasticity pacing loses conversions
+```
+
+**Output (my run):**
+```text
+unpaced conversions 950; move 6,000: lose 200 at 30, gain 300 at 20, net +100 -> 1050 (10.5%)
+  later marginal CPA 20: gain 300, net +100
+  later marginal CPA 25: gain 240, net +40
+  later marginal CPA 30: gain 200, net +0
+  later marginal CPA 35: gain 171, net -29
+  early marginal CPA of the removed spend 30: lose 200; break-even later marginal CPA 30
+  early marginal CPA of the removed spend 40: lose 150; break-even later marginal CPA 40
+CPA elasticity 0.0: spent by 09:00 8,981, day spend 23,447, conversions 1,023
+CPA elasticity 0.3: spent by 09:00 8,981, day spend 23,447, conversions 928
+CPA elasticity 0.6: spent by 09:00 8,981, day spend 23,447, conversions 878
+CPA elasticity 1.0: spent by 09:00 8,981, day spend 23,447, conversions 869
+takeaway: the 1,050 bound needs the later CPA to stay at 20 AND the later hours to absorb 15,000; otherwise pacing can lose conversions
+```
+
+**Follow-ups:**
+- Why throttle instead of raising bids? Throttling keeps cost per auction fixed but may lose good traffic; bid shading keeps reach but raises price. A mix is common, chosen by testing.
+- What if conversions arrive days later? Pace on spend, forecast conversions with a lag model, and use a proxy (clicks, add-to-cart) for fast feedback.
+
+**Common mistakes:** Using an average cost as a marginal cost. Forgetting that the budget may not be spendable later in the day. Controlling on delayed conversions only. A controller with no clipping or stop rule. Calling +10.5% a forecast.

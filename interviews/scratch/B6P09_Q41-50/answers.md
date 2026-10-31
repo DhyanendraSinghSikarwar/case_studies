@@ -298,7 +298,7 @@ users per arm to detect 0.5% GMV change: 10046672
 **Say this first (1 line):** "Lactate was measured" is a record of a clinician's worry, not of the patient, so its meaning and its frequency change with each hospital's ordering habits; I would stop treating it as a plain feature, test the model with and without it at hospital B, and not switch it on until B's own validation passes.
 
 **Clarifying questions:**
-- Are the two AUCs on comparable patients (same ward types, same outcome definition, same prediction time)? A 0.85 versus 0.74 gap mixes feature effects with case mix and prevalence, so I cannot blame the feature alone.
+- The two AUCs are on different patient populations, so the 0.85 versus 0.74 gap mixes feature effects with case mix and prevalence. Do the outcome definition and prediction time also match? I cannot blame the feature alone.
 - How does hospital B decide to order lactate (protocol, sepsis pathway, cost, lab turnaround)? It tells me what "ordered" means there.
 - What is the prediction time? If lactate is ordered after the worry already began, the model uses the clinician's judgement as input and may be copying it.
 - What action does the alert trigger? If it only helps clinicians who were already worried, the added value is small.
@@ -331,7 +331,7 @@ users per arm to detect 0.5% GMV change: 10046672
 - Weak: "impute the missing lactate with the mean and move on".
 - Weak: "just retrain on hospital B", with no thought about what B does not measure.
 
-**Example:** (illustrative) Hospital A orders lactate for 60% of patients, hospital B for 20%. A model trained at A scores 0.85 at A and 0.74 at B (the prompt's numbers).
+**Example:** (illustrative) Hospital A orders lactate for 60% of patients, hospital B for 20%. A model trained at A scores 0.85 at A and 0.74 at B (the prompt's numbers, measured on different patient populations).
 - Weak: "The model is overfit; retrain it."
 - Strong: "At B most patients have no lactate, so the model loses its strongest input and the ordered flag means something different there. I will compare full, no-flag and no-lactate versions at B, check sensitivity at a fixed alert rate and calibration, and run it silently before any live alert."
 
@@ -412,7 +412,7 @@ This is a synthetic simulation (invented severity, ordering and outcome model), 
 - Is there a minimum exposure rule (brand or contract)? It limits how far we can concentrate.
 
 **Approach:**
-1. Compare the differences, not the single rates. The prompt's 0.35-point standard error is B's own; the B minus A standard error is sqrt(0.025 x 0.975 / 2000 + 0.02 x 0.98 / 2000) = 0.47 points, so the 0.5-point lead is z about 1.07, inside noise. B minus C is z about 0.41.
+1. Compare the differences, not the single rates. The 0.35-point standard error is B's own; the B minus A standard error (about 0.47 points, as the prompt states) is sqrt(0.025 x 0.975 / 2000 + 0.02 x 0.98 / 2000) = 0.47 points, so the 0.5-point lead is z about 1.07, inside noise. B minus C is z about 0.41.
 2. Treat it as a bandit problem: keep a Beta posterior per creative (1 + clicks, 1 + non-clicks) and allocate impressions in proportion to the probability each one is best (Thompson-style).
 3. Keep a floor of exploration (for example at least 5% per arm) so a good creative with bad early luck can recover and fatigue is noticed.
 4. Why not simply pick B? A 61% chance of being best means a 39% chance it is not; the cost of exploring a day is small compared to locking in the wrong creative.
@@ -509,9 +509,9 @@ The 3% per day fatigue rate is invented, only to show the mechanics.
 **Say this first (1 line):** The 0.05 AUC lift (0.66 to 0.71) is a back-test number on matured loans for the 70% of applicants who have the features, so the lift across all thin-file applicants is smaller (about 0.03 in my simulation); before rollout I would test stability and gaming, ask compliance about proxy risk and consent, and ship in stages with monitoring.
 
 **Clarifying questions:**
-- Is the 0.05 measured on the 70% with features only, or on everyone? The overall lift is diluted by the 30% who have nothing new.
+- The 0.05 is measured among the 70% with features only, so the overall lift across all thin-file applicants is diluted by the 30% who have nothing new. What does the lender want quoted?
 - Who are the 70% (who granted permission, who owns an app-capable phone)? Coverage that depends on consent or device is itself a selected group.
-- Matured loans are only people who were approved before. How is the back-test corrected for applicants who were rejected and never observed?
+- The back-test covers approved applicants only (as the prompt says). How would we learn about rejected applicants who were never observed?
 - What exactly are the phone-usage features (call patterns, app lists, recharge behaviour)? That decides the proxy and gaming risk.
 - Does the model make decisions or only support a manual underwriter? It changes how strict the explainability need is; ask compliance.
 
@@ -601,7 +601,7 @@ This is a binormal simulation with invented parameters; the exact diluted lift d
 
 ### Q47 ⭐ 🔴 Fintech: A fraud model's flagged transactions have a chargeback 50% of the time (500 of 1,000 flagged, measured), but an audit finds 30% of chargebacks are friendly fraud, where the genuine cardholder disputes a purchase they made. Compute the minimum share of flagged transactions that are true fraud (treating the 500 flags without a chargeback as not fraud) if the 30% applies to the 500 flagged chargebacks, and explain how label noise from chargebacks affects training, evaluation and customer treatment.
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to chargeback labels and friendly fraud in payments material; related topics appear in public guides; no page for the exact framing; search snippets only, not opened
-**Say this first (1 line):** If 30% of the 500 chargebacks are friendly fraud, then 350 of the 1,000 flagged transactions are true fraud, a 35% share, not the 50% the chargeback rate suggests, and that 35% is a floor because the 500 flagged transactions with no chargeback are unobserved, not known to be clean.
+**Say this first (1 line):** If 30% of the 500 chargebacks are friendly fraud, then 350 of the 1,000 flagged transactions are true fraud, a 35% minimum share (treating the 500 no-chargeback flags as not fraud), not the 50% the chargeback rate suggests, and it is only a floor because the 500 flagged transactions with no chargeback are unobserved, not known to be clean.
 
 **Clarifying questions:**
 - Were flagged transactions blocked or only reviewed? A blocked transaction cannot produce a chargeback, so the labels for blocked cases do not exist; this is a selective-label problem.
@@ -787,18 +787,18 @@ The 25 and 40 per-customer figures are invented to show the break-even calculati
 
 ### Q49 ⭐ 🔴 Healthcare: A deployed model's sensitivity was 0.82 on its locked test set. A retrained version shows 0.80 on the same set with 400 positives, a standard error of about 0.02 for the new sensitivity alone (the square root of 0.8 times 0.2 over 400), and the team wants to ship it because its calibration is better. The comparison is paired on the same patients: the old model caught 20 positives that the new one missed, and the new one caught 12 that the old one missed. How do you decide whether this is acceptable, what margin and evidence would you pre-specify, and what would you ask the regulatory team about classifying the change?
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to model updates and change control in clinical AI, regulatory humility; related topics appear in public guides; no page for the exact framing; search snippets only, not opened
-**Say this first (1 line):** Better calibration does not pay for lost sensitivity, so I would not accept 0.80 versus 0.82 on a "looks close" basis; I would compute the paired difference (8 fewer true positives out of 400) with a pre-specified non-inferiority margin, and note that the 0.02 standard error in the prompt is for the new model alone, not for the paired difference.
+**Say this first (1 line):** Better calibration does not pay for lost sensitivity, so I would not accept 0.80 versus 0.82 on a "looks close" basis; I would compute the paired difference (8 fewer true positives out of 400) with a pre-specified non-inferiority margin, and use the stated discordant pairs (20 and 12) for the paired standard error of 0.014, not the 0.02 for the new model alone.
 
 **Clarifying questions:**
 - What does a missed positive cost clinically, and who sets the acceptable sensitivity loss? The margin is a clinical decision, not a statistical one.
-- How many patients does the new model catch that the old one missed, and vice versa (the discordant pairs)? The paired standard error depends on them, and the prompt does not give them.
+- The discordant pairs are given: the old model caught 20 positives the new one missed, the new caught 12 the old one missed. Is the test set also used for threshold tuning? The paired standard error uses these counts.
 - Was the threshold chosen on this locked test set? If the set was reused for tuning, the 0.80 and 0.82 are optimistic.
 - Is the comparison at the same alert rate or the same threshold? Sensitivity depends on it; a better-calibrated model may sit at a different operating point.
 - Does the retrained model change anything else (inputs, intended use)? It decides how the change is classified.
 
 **Approach:**
 1. Do the arithmetic: old catches 0.82 x 400 = 328, new catches 320, difference -8, which is -2.0 points.
-2. Use the paired comparison. Let b be positives only the old model catches and c positives only the new model catches, with c - b = -8. The paired standard error is sqrt(b + c - (c - b)^2 / 400) / 400. It depends on b + c: with 32 discordant pairs it is 0.014 (the CI for the difference is about -4.8 to +0.8 points); with 112 it is 0.026.
+2. Use the paired comparison. Here b = 20 (only the old model catches) and c = 12 (only the new model catches), so c - b = -8. The paired standard error is sqrt(b + c - (c - b)^2 / 400) / 400. With the stated 32 discordant pairs it is 0.014 (CI about -4.8 to +0.8 points); with more discordance (112 pairs) it would be 0.026.
 3. Pre-specify a non-inferiority margin before looking (for example, 3 points of sensitivity, set by clinicians) and the rule: ship only if the lower confidence bound of the difference is above minus the margin. With the numbers here and a 3-point margin, the lower bound is below -3 points in every scenario I tried, so non-inferiority is not shown.
 4. Check at matched operating points: sensitivity at the same specificity or alert rate, plus the net benefit or decision-curve view. If calibration improved, show which decisions improve and by how much.
 5. Check subgroups (sex, age bands, site) for sensitivity drops hidden in the average.
@@ -812,18 +812,18 @@ The 25 and 40 per-customer figures are invented to show the break-even calculati
 - Guardrails: false-alarm burden, missed-case count per 1,000 patients.
 
 **Risks:**
-- Treating overlapping individual error bars as a test (the prompt's 0.02 alone invites this).
+- Treating overlapping individual error bars as a test (the 0.02 for one model alone invites this).
 - Margin chosen after seeing the data.
 - Re-using a locked set many times: it stops being locked.
 - Better calibration with lower sensitivity at the chosen threshold means a different trade-off, not a free improvement.
 
 **What the interviewer scores:**
-- Strong: states the paired design, asks for discordant counts, computes a CI for the difference and uses a pre-set margin.
+- Strong: states the paired design, uses the stated discordant counts, computes a CI for the difference and uses a pre-set margin.
 - Strong: separates calibration from sensitivity, checks matched operating points, and asks the regulatory team about classification.
 - Weak: "0.80 is within one standard error of 0.82, so they are the same".
 - Weak: "calibration is better, ship it".
 
-**Example:** (illustrative; discordant counts invented, c - b = -8 as the prompt requires) Suppose the old model alone catches 20 positives and the new alone catches 12. The difference is -2.0 points, SE 1.41 points, 95% CI -4.8 to +0.8. With a 3-point margin the one-sided lower bound is about -4.3, below -3, so we cannot claim non-inferiority yet.
+**Example:** (the prompt's discordant counts; the 3-point margin is illustrative) The old model alone catches 20 positives and the new alone catches 12. The difference is -2.0 points, SE 1.41 points, 95% CI -4.8 to +0.8. With a 3-point margin the one-sided lower bound is about -4.3, below -3, so we cannot claim non-inferiority yet.
 - Weak: "0.80 versus 0.82 is within noise; it is calibrated better, ship it."
 - Strong: "That is 8 fewer true positives of 400. The 0.02 error is for one model; the comparison is paired, so I need the discordant pairs. With 20 and 12 the CI is -4.8 to +0.8 points, and against a pre-set 3-point margin I cannot show non-inferiority. I would compare at the same alert rate, look at subgroups, collect more evidence, and ask the regulatory team how the change is classified."
 
@@ -876,7 +876,7 @@ discordant b=60 c=52: diff -0.020 SE 0.0264 95% CI [-0.072, +0.032] one-sided lo
 positives needed (true diff 0, discordance 8%, margin 3 pts): 550
 ```
 
-The discordant counts and the 3- and 5-point margins are invented for illustration; the clinical team sets the real margin.
+The 20 and 12 are the prompt's discordant counts; the other discordance scenarios in the code, the 8% rate and the 3- and 5-point margins are invented for illustration; the clinical team sets the real margin.
 
 **Follow-ups:**
 - Why not just use the unpaired SE? It ignores that both models score the same patients, so it is too wide here or too narrow elsewhere depending on discordance; use McNemar-type paired methods.

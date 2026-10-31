@@ -90,7 +90,7 @@ with medium every 4y and low at 0.05: 27.9 (still above 24)
 **Say this first (1 line):** The claim is 80,000 x 5 points = 4,000 avoided returns x 150 = 600,000, but it is probably overstated because widget users chose to use it and not everyone will, so I would run a randomised test before banking it.
 
 **Clarifying questions:**
-- Who uses the widget today: everyone who sees it, or people who click it? If clicking is voluntary, the 8% group is self-selected.
+- Use is voluntary, so the 8% group is self-selected. Is there any variation in who sees the widget that I could use as a natural experiment?
 - Is the 150 per avoided return a full cost (shipping both ways, handling, resale loss) or just shipping? It sets the value, and the number could be lower or higher.
 - Are returns "for size reasons" coded by the customer or by an agent? Reason codes are noisy and a widget can change how people pick a reason.
 - Does the widget change conversion (people buying less when told the fit is bad)? A lower return rate bought with lost sales is not a pure saving.
@@ -188,7 +188,7 @@ orders per arm to detect 13% -> 12%: 17,165
 **Say this first (1 line):** The top bucket is 9.0% confirmed, the middle 0.8% and the bottom 0.15%, and the top two buckets (6,000 alerts, exactly the review capacity) hold 294 of 300 confirmed cases, 98%; for the bottom 4,000 I would propose a lighter-touch process and a sampled audit, and leave the decision to stop reviewing to compliance.
 
 **Clarifying questions:**
-- How were the "retrospective counts" produced: were all 10,000 alerts reviewed last month, or only some? If the bottom bucket was never reviewed, its 6 cases came from somewhere else and the 0.15% rate may be an undercount.
+- Given all 10,000 alerts were reviewed last month, how stable is the split month to month? Retrospective labels on a fully reviewed month are clean, but a prospective shadow run is the real test.
 - What does "confirmed suspicious" mean: a filed report, an analyst opinion or a closed case? Label definition changes the rates.
 - Is the model's score computed from the same signals that triggered the alert? If so, it may just be re-ranking rules.
 - What is the cost of a missed case, and who owns it? I do not decide that, compliance does.
@@ -282,7 +282,7 @@ alerts to sample for 95% chance of seeing one case at 0.15%: 1,996
 **Say this first (1 line):** The reminder created 600 - 500 = 100 extra orders per 10,000, worth 100 x 200 = 20,000 of margin, but if all 600 buyers use the 80 discount that costs 48,000, so the offer loses about 28,000 per 10,000 abandoners.
 
 **Clarifying questions:**
-- How many buyers actually redeem the code? "All 600 use it" is the worst case for cost; redemption below 100% changes the answer (the net is -28,000 at 100% and -4,000 at 50%, and only turns positive below about 42% redemption).
+- How many buyers actually redeem the code? The prompt assumes all 600 use it, which is the worst case for cost; redemption below 100% changes the answer (the net is -28,000 at 100% and -4,000 at 50%, and only turns positive below about 42% redemption).
 - Are the 800 order value and 25% margin the same for incremental buyers as for baseline buyers? Discount-driven buyers may buy smaller baskets.
 - Does the reminder alone (without a code) already lift purchase? The test mixes reminder and discount, so I cannot separate them.
 - Is there a long-run effect: do buyers learn to abandon and wait for a code? One 30-day window may miss it.
@@ -601,8 +601,8 @@ stopped after 2500 new impressions, posterior mean 0.750%, P(CTR<1.0%)=0.94, spe
 **Say this first (1 line):** Of 2,000 frauds the bands stop 1,200 + 480 = 1,680 (84%), 320 get through (120 past step-up, 200 in the pass band), 800 genuine customers are blocked and 1,740 genuine customers are lost at step-up; I would set the edges by cost per band, not by a round score.
 
 **Clarifying questions:**
-- How were the fraud counts in each band measured? Blocked transactions never produce a chargeback, so the 1,200 in the block band must come from review or customer reports; if it is a model-based guess, the whole table moves.
-- Does "10% abandon" apply to the 17,400 genuine customers (600 are fraud) or to all 18,000? I use 17,400, giving 1,740; using 18,000 would give 1,800.
+- How were the fraud counts in each band measured? Blocked transactions never produce a chargeback, and the prompt says the block-band counts come from review and customer reports. How complete is that review? Missed fraud there would move the table.
+- The 10% abandonment applies to the 17,400 genuine customers, giving 1,740. Does it also apply to fraudsters who give up? That would only raise fraud stopped.
 - What does a missed fraud cost on average, and what does a blocked or lost genuine customer cost (support, churn, lost margin)? The edges depend on this ratio.
 - Is step-up capacity limited (OTP delivery, call centre)? Capacity can cap the band size.
 - Do fraudsters adapt to the step-up (for example pass it with stolen devices)? The 80% is an assumption to monitor.
@@ -633,7 +633,7 @@ stopped after 2500 new impressions, posterior mean 0.750%, P(CTR<1.0%)=0.94, spe
 - Edges tuned on one day (counts of 200 and 600 are small).
 
 **What the interviewer scores:**
-- Strong: 1,680, 320, 800 and 1,740, shown with the 17,400. Weak: confuses 1,800 and 1,740 or leaves out the 120.
+- Strong: 1,680, 320, 800 and 1,740, shown with the 17,400. Weak: applies 10% to all 18,000 or leaves out the 120.
 - Strong: sets edges with a cost ratio and break-even probability. Weak: "pick a threshold at the elbow".
 - Strong: flags that blocked-band labels are censored. Weak: trusts "measured" counts without question.
 - Strong: includes a holdout to keep learning. Weak: retrains only on outcomes the policy allowed.
@@ -704,7 +704,7 @@ break-even p: block above 5.7%, step-up above 2.70%
 - What if step-up capacity is 10,000 a day? Shrink the band to the top 10,000 by score and recompute the table; lower fraud stopped.
 - How would you set the pass edge? Where the marginal fraud probability equals the break-even for step-up, checked per segment.
 
-**Common mistakes:** Counting 18,000 as genuine. Omitting the 200 frauds in the pass band. Judging a band by recall only. Forgetting censored labels. Reporting counts without amounts.
+**Common mistakes:** Counting all 18,000 as genuine. Omitting the 200 frauds in the pass band. Judging a band by recall only. Forgetting censored labels. Reporting counts without amounts.
 
 ### Q28 ⭐⭐ 🟡 E-commerce: 400,000 of 2,000,000 listings (20%) lack a colour attribute. A model can fill it, with a measured accuracy of 97% on a 1,000-item audit for the 280,000 listings where its confidence is at least 0.9 and 78% on a 1,000-item audit for the other 120,000. Compute the expected wrong colours when filling only the confident ones and when filling all, treating the audit accuracies as projections, and say how you would decide, given that wrong colours drive returns.
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to catalogue attribute quality and extraction in e-commerce material; related topics appear in public guides; no page for the exact framing; search snippets only, not opened
@@ -817,7 +817,7 @@ review of the rest at 80% error catch: wrong falls from 26,400 to 5,280
 
 **Approach:**
 1. Minimum patients for an expected 100 events: hospital 3 is 100 / 0.04 = 2,500; hospital 2 is 100 / 0.025 = 4,000.
-2. Be honest that expected is not guaranteed: with 2,500 patients at 4% the chance of at least 100 events is about 51%. For a 95% chance, plan for about 2,916 (hospital 3) and 4,671 (hospital 2).
+2. The prompt asks for 100 expected events, so 2,500 and 4,000 are the answer. State the stricter option too: with 2,500 patients at 4% the chance of at least 100 events is about 51%. For a 95% chance, plan for about 2,916 (hospital 3) and 4,671 (hospital 2).
 3. Say what 100 events buys: sensitivity of 0.70 is known only within about plus-or-minus 9 points, and an AUC of 0.79 within about plus-or-minus 5 points. Treat it as a floor for checking calibration, not as a precise estimate.
 4. Read the shifts: AUC 0.88 to 0.79 means worse ranking at hospital 2; slope 0.6 means predicted risks are too extreme (high predictions are overstated), so the same score does not mean the same risk. Hospital 3 at 0.84 is a smaller drop.
 5. Recalibrate locally first: fit an intercept and slope on the first local data (a logistic recalibration), check calibration by bin, and set the threshold from the local alert capacity.
@@ -840,7 +840,7 @@ review of the rest at 80% error catch: wrong falls from 26,400 to 5,280
 - Alert burden: at a plausible operating point, 161 alerts per 1,000 patients with PPV about 9% is a lot.
 
 **What the interviewer scores:**
-- Strong: 2,500 and 4,000 right, and notes expected versus guaranteed events. Weak: stops at the division or adds the two numbers.
+- Strong: 2,500 and 4,000 right, and offers the 95%-chance figures as a stricter option. Weak: stops at the division or adds the two numbers.
 - Strong: reads calibration slope 0.6 correctly (too extreme). Weak: reads only AUC.
 - Strong: concrete stop rules and silent mode before go-live. Weak: "monitor drift".
 - Strong: says clinical owners decide. Weak: states what a regulator requires.
@@ -913,7 +913,7 @@ slope 0.6 pivoting at the mean: a predicted 20% risk is recalibrated to about 9.
 **Say this first (1 line):** The platform reports 40,000 / 4,000 = 10 per conversion, but only 4,000 - 3,500 = 500 conversions are incremental, so the incremental cost is 40,000 / 500 = 80, eight times higher, because 87.5% of the reported conversions would have happened anyway.
 
 **Clarifying questions:**
-- Was the held-out group drawn at random from the same lookalike audience before ads were served? The prompt says "similar users", and the whole result depends on that being a true random holdout and not a look-alike comparison group.
+- Was the held-out group drawn at random from the same lookalike audience before ads were served? The prompt says it was, and the result depends on that, so I would confirm it in the data (pre-period balance).
 - Did the held-out group see other ads from the same advertiser or channel? That changes what "no exposure" means.
 - What counts as a conversion and over what window? A long window picks up more organic conversions in both arms.
 - What is a conversion worth (first order value, lifetime value)? Cost per conversion only means something against value.
