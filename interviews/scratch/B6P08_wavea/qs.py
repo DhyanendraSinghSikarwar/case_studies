@@ -52,23 +52,23 @@ assert 1000000+1000000 == 2000000
 add(3, '🟡', "A daily scoring job that appends to its output table was retried by the scheduler after a timeout at minute 55, but the first run was still alive and also finished. The table now holds 2,000,000 rows for 1,000,000 customers for that date, and a downstream campaign job has already read it. How do you clean up, and how do you redesign the job so a duplicate run is harmless?", 'D')
 # 10 units change
 assert 850*100 == 85000 and 2/90 > 0.022 and 2/90 < 0.0223
-add(3, '🟡', "An upstream team changed order_value from rupees to paise, a factor of 100, so a typical value of 850 became 85,000, and nobody told the ML team. The change ran for 2 days before it was caught, and the training table keeps 90 days, so those 2 days are about 2.2% of its days. What do you do about served predictions and the training table, and what contract would have caught it?", 'D')
+add(3, '🟡', "An upstream team changed order_value from rupees to paise, a factor of 100, so a typical value of 850 became 85,000, and nobody told the ML team. The change ran for 2 days before it was caught, and the training table keeps 90 days, so those 2 days are about 2.2% of its days (about 2.2% of rows if volume per day is equal). What do you do about served predictions and the training table, and what contract would have caught it?", 'D')
 # 11 error budget
 bud = 0.005*30*24*60
 assert round(bud) == 216 and 70+95+40 == 205 and round(bud)-205 == 11
 add(3, '🟡', "A model API has a 99.5% availability objective over a 30-day month, which is 216 minutes of allowed downtime. Two outages have used 70 and 95 minutes, and the current one has run for 40 minutes so far and is still going. Counting the current outage, how much budget is left, and what do you decide about the release schedule and about the fix you are about to ship?", 'ED:error budgets and SLOs in SRE and MLOps material')
 # 12 LLM provider outage
 assert 40*0.25 == 10 and 1000*0.25 == 250
-add(3, '🟡', "Your LLM provider starts returning rate-limit or server errors on 25% of calls at a traffic of 40 calls per second, which is 10 failed calls per second. The client retries immediately up to 3 times, and a second provider is wired as a fallback but has never been used in production. What do you do in the first 30 minutes, and what could go wrong with the fallback itself?", 'L')
+add(3, '🟡', "Your LLM provider starts returning rate-limit or server errors on 25% of calls at a traffic of 40 original requests per second, which is 10 failed calls per second. The client retries immediately up to 3 times, and a second provider is wired as a fallback but has never been used in production. What do you do in the first 30 minutes, and what could go wrong with the fallback itself?", 'L')
 # 13 feedback loop
 add(3, '🔴', "A recommender retrains weekly on clicks from its own recommendations. Over six weeks the share of impressions going to the top 1% of items rose from 35% to 52% (absolute points, of all impressions), while click-through on the whole page is flat. Explain the loop, how you would prove it with the data you have, and what you would change in logging and training. Which metric would you track from now on?", 'ED:feedback loops and exposure bias in ML system design material')
 # 14 canary stats
 zc = z2(9, 2000, 76, 38000)
 assert 2000+38000 == 40000 and abs(9/2000-0.0045) < 1e-12 and 76/38000 == 0.002 and 2.0 < zc < 2.5, zc
-add(3, '🔴', "A canary takes 5% of 40,000 requests in its first hour, which is 2,000 requests, with 9 errors (0.45%), while the control's 38,000 requests had 76 errors (0.2%). Compute whether the gap is bigger than sampling noise, and say what you do at this point and what you would have wanted written down before the canary started. How does the answer change if the errors are all in one customer segment?", 'T')
+add(3, '🔴', "A canary takes 5% of 40,000 requests in its first hour, which is 2,000 requests, with only 9 errors (0.45%), while the control's 38,000 requests had 76 errors (0.2%). Compute whether the gap is bigger than sampling noise, and say what you do at this point and what you would have wanted written down before the canary started. How does the answer change if the errors are all in one customer segment?", 'T')
 # 15 reproducibility
 assert round(0.842-0.829, 3) == 0.013
-add(3, '🔴', "Retraining the same commit on the same table gave an AUC of 0.842 on the 10,000-row holdout in March and 0.829 in September, an absolute gap of 0.013, and an auditor asks you to reproduce the March model. Nobody pinned the library versions, the table is refreshed in place, and seeds were not logged. How do you find out how much of the gap is noise, what changed and what is unrecoverable, and what do you record from now on?", 'X')
+add(3, '🔴', "Retraining the same commit on the same table gave an AUC of 0.842 on the 10,000-row holdout (10% positives, 1,000 rows) in March and 0.829 in September, an absolute gap of 0.013, and an auditor asks you to reproduce the March model. Nobody pinned the library versions, the table is refreshed in place, and seeds were not logged. How do you find out how much of the gap is noise, what changed and what is unrecoverable, and what do you record from now on?", 'X')
 
 # ================= 2 stars =================
 # 16 drift never fires
@@ -76,7 +76,7 @@ assert 26*0.03 == 0.78
 add(2, '🟡', "A drift monitor compares each week's feature distribution to the previous week, and its weekly population stability index stayed below 0.03 for 26 straight weeks, so it never fired. Over the same 26 weeks the labelled AUC slid from 0.84 to 0.78. Explain how a monitor can stay quiet while the model decays, and how you would redesign the reference windows and the alert rules.", 'A')
 # 17 shadow mismatch
 assert 500000*0.032 == 16000
-add(2, '🟢', "During a shadow run the candidate's score differs from the production score by more than 0.05 on 3.2% of 500,000 requests, which is 16,000 requests. The product owner asks whether it is safe to switch. What can a shadow run tell you and what can it not tell you, and how would you look at those 16,000 requests?", 'T')
+add(2, '🟢', "During a shadow run the candidate's score differs from the production score by more than 0.05 on 3.2% of 500,000 requests, which is 16,000 requests, and the decision threshold is 0.5. The product owner asks whether it is safe to switch. What can a shadow run tell you and what can it not tell you, and how would you look at those 16,000 requests?", 'T')
 # 18 blue-green cold start
 assert 120 == 120 and 2400/120 == 20
 add(2, '🟡', "After a blue/green switch, the 99th-percentile latency went from 120 ms to 2,400 ms (20 times the old value) for about 3 minutes because the green pods loaded a multi-gigabyte model after receiving traffic. Health checks only tested that the process was up. What do you change in the readiness checks and in the switch procedure, and what would you watch during the next switch?", 'G')

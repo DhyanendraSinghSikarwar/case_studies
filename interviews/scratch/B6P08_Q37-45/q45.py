@@ -23,7 +23,9 @@ rev_weighted_alert = 0.05              # same threshold on a revenue-weighted er
 print("revenue-weighted error rate:", rev_share, "-> alert fires:", rev_share >= rev_weighted_alert)
 assert rev_share >= rev_weighted_alert
 # detection delay if checked every 5 min on the weighted metric, with a 3-point window: <= 10 min
-print("detection delay hourly dashboard vs 5-min weighted alert: up to 60 vs ~10 min")
+check_min, consecutive = 5, 2
+print("detection delay: hourly dashboard up to 60 min vs 5-min check needing", consecutive, "breaches =", check_min * consecutive, "min")
+assert check_min * consecutive == 10
 
 # Option cost, remaining loss at the same 50% loss rate (invented ETAs)
 per_min = at_risk_per_hour * loss_frac / 60
