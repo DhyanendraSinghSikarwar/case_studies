@@ -99,7 +99,7 @@ Best regards, [your name]
 - Burning the bridge with the hiring manager who backed you.
 
 ### Q23 ⭐⭐ 🟢 How do you ask for a later start date so you can finish your handover properly?
-**Asked at:** Career guides list start date among non-pay terms to ask about (one candidate checklist in a search summary); India HR-round guides stress giving a specific last working day (jobrise and similar, third-party); editor-designed wording; search snippets only, not opened
+**Asked at:** No public page found for this exact framing, editor-designed; related notice-period and joining-date guidance appears on HR-advice pages (search snippets only, not opened)
 **Say this first (1 line):** I would like to start on [date], so I can complete a proper handover; here is what I will have finished by then.
 
 **Structure:**

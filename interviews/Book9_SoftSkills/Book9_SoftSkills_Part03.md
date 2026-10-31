@@ -107,7 +107,7 @@ How to use the convention: before any call, fill each bracket with your own rese
 <!-- ANSWER_PENDING -->
 
 ### Q23 ⭐⭐ 🟢 How do you ask for a later start date so you can finish your handover properly?
-**Asked at:** Career guides list start date among non-pay terms to ask about (one candidate checklist in a search summary); India HR-round guides stress giving a specific last working day (jobrise and similar, third-party); editor-designed wording; search snippets only, not opened
+**Asked at:** No public page found for this exact framing, editor-designed; related notice-period and joining-date guidance appears on HR-advice pages (search snippets only, not opened)
 <!-- ANSWER_PENDING -->
 
 ### Q24 ⭐⭐ 🟢 How would you describe your work style, and what kind of manager and team bring out your best?
