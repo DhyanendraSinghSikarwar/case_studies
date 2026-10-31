@@ -19,7 +19,7 @@ for p in (0.5, 0.6):
     tp = review_cap * p
     print(f"precision {p:.0%}: {tp:,.0f} true found, recall {tp/viol:.1%}")
 max_p = viol / review_cap
-print(f"even a perfect-recall queue of 12,000 has precision at most {max_p:.1%}")
+print(f"a 12,000 queue that caught every violation would have precision {max_p:.1%}")
 assert viol == 8_000 and must_flag == 7_200 and min_prec == 0.60
 assert k == 200 and round(lo_r, 5) == 0.00345 and round(hi_r, 5) == 0.00455
 assert round(uploads * lo_r * 0.9 / review_cap, 3) == 0.517 and round(uploads * hi_r * 0.9 / review_cap, 3) == 0.683

@@ -768,3 +768,336 @@ max one-step change: 1.2 | max price: 200.0 | minutes at cap: 13
 - Running user-level A/B tests where supply is shared.
 - Learning elasticity only from the price range already used.
 
+### Q18 ⭐⭐ 🟢 Anomaly detection for operations: An operations team monitors 20,000 metrics at 1-minute resolution, and the on-call engineer can triage at most 15 false alerts a day. Design the anomaly detection and alerting system, and compute the data points a day and the largest false-alert probability per data point that keeps expected false alerts within 15 a day, and say how grouping alerts would change the answer.
+**Asked at:** Operations and platform design material (a Codemia anomaly-detection pipeline prompt attributed to ServiceNow, Codemia A/B-testing platform prompts attributed to a DoorDash onsite, a PracHub feature-store data-quality and backfill prompt attributed to a Faire onsite, datadriven.io and techinterview.org MLOps guides); prep-site material; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
+**Say this first (1 line):** 20,000 metrics x 1,440 minutes = 28,800,000 points a day, so 15 false alerts a day means a false-alert probability of at most 15 / 28,800,000 = 5.2 in ten million per point; that is a very strict threshold, so I would alert on persistent, grouped, business-relevant deviations, not on single points.
+
+**Clarifying questions:**
+- What does a "false alert" mean to on-call: a spike that self-heals, a real anomaly nobody needs to act on, or noise? Only actionable alerts count against the 15.
+- Which metrics matter most (customer-facing, revenue, errors) and which are noise? Tiering lets the strict budget go to the right ones.
+- Are metrics seasonal (daily and weekly cycles, deploys, campaigns)? Seasonality is the main source of false alerts.
+- Are metrics correlated (one outage moves hundreds)? It decides how alerts should be grouped.
+- Is there labelled incident history? Without it I can only estimate false alerts by replay and on-call feedback.
+
+**Approach:**
+1. Clarify and frame. Goal: catch incidents that need a human, within 15 false alerts a day, across 20,000 metrics. Separate detection (score each point) from alerting (decide who is paged).
+2. Metrics and guardrails. Precision of pages (actionable pages / pages), recall of known incidents, time to detect, false pages per day. Guardrail: the 15 a day budget and missed severe incidents.
+3. Data and labels. Collect past incidents, on-call acknowledgements and "not actionable" marks. Few metrics have labels, so evaluate on a sample of important metrics and by replay of history.
+4. Baseline first. Static thresholds plus a same-hour-last-week comparison with robust scale (median and median absolute deviation). Measure false pages by replay.
+5. Model and trade-offs. Per-metric forecast with seasonality, residual scoring, a persistence rule, then grouping by service or time. Budget maths: 28,800,000 points, so a per-point false probability of 5.2e-7, roughly a 4.9 sigma Gaussian threshold (see the code); real residuals have heavier tails and autocorrelation, so I would calibrate thresholds on history rather than trust the Gaussian. Trade-off: stricter thresholds cut false pages but delay or miss small real anomalies.
+6. Evaluation. Offline replay on 3 to 6 months: false pages per day, recall of past incidents, detection delay. Online: shadow alerts to a channel before paging, then page only the tiered top metrics.
+7. Launch and experiment plan. Shadow for 2 to 4 weeks, tune thresholds per tier, page on tier 1 first. Review every false page weekly.
+8. Monitoring, retraining and risks. Track false pages per day against 15, refit forecasts on schedule, add holiday and deploy calendars, suppress alerts during known maintenance.
+
+Indicative pacing for a 45-minute round (minutes per step 1 to 8): 4, 4, 5, 5, 11, 6, 5, 5.
+
+**Metrics:**
+- Points a day = metrics x points per metric = 20,000 x 1,440 = 28,800,000.
+- Maximum per-point false-alert probability = allowed false alerts / points = 15 / 28,800,000 = 5.2083e-7 (this is expected value, which needs no independence).
+- Precision of pages = actionable pages / all pages; recall = incidents caught / incidents that occurred.
+- Detection delay = time from incident start to page; false pages per day.
+- Guardrail: false pages per day under 15.
+
+**Risks:**
+- Alert fatigue: if on-call stops trusting pages, real incidents get missed.
+- Autocorrelation and bursts: false alerts arrive in clusters (one noisy hour), so the day-to-day count varies more than the average suggests.
+- Seasonality and deploys cause predictable false positives.
+- A very strict threshold may miss small but real degradations.
+- Correlated failures produce alert storms; grouping is essential.
+
+**What the interviewer scores:**
+- Strong: 28.8 million points and 5.2e-7 per point, noticing how strict it is.
+- Strong: persistence rules, tiering, grouping, seasonal baselines, and replay evaluation.
+- Strong: says grouping raises the allowed per-point probability but the budget is really per page.
+- Weak: "train an autoencoder on all metrics" with no alert budget or evaluation.
+
+**Example:** Illustrative numbers from the question. Weak versus strong:
+- Weak: "Flag anything beyond 3 standard deviations."
+- Strong: "20,000 metrics a minute is 28.8 million points a day, so to stay at 15 false alerts the per-point false rate must be near 5 in ten million. Three sigma would page thousands of times, so I would use seasonal forecasts, require persistence over several minutes, group by service so one outage is one page, tier the metrics, and tune on replayed history with on-call feedback."
+
+**Code:**
+```python
+import math
+from statistics import NormalDist
+import numpy as np
+
+# Prompt arithmetic
+metrics, per_day, budget = 20_000, 24 * 60, 15
+points = metrics * per_day
+p_max = budget / points
+assert points == 28_800_000 and abs(p_max - 5.2083e-7) < 1e-10
+print("data points a day:", points, "| max false-alert probability per point:", f"{p_max:.4e}")
+
+# What threshold does that imply for a Gaussian residual? one-sided z
+z = NormalDist().inv_cdf(1 - p_max)
+print("one-sided z threshold for a Gaussian residual:", round(z, 2))
+assert 4.8 < z < 5.0
+
+# Check by simulation (chunked): count exceedances of z over one simulated day of independent Gaussian points
+rng = np.random.default_rng(18)
+hits = 0
+for _ in range(29):
+    hits += int((rng.standard_normal(1_000_000)[:] > z).sum())
+print("simulated false alerts over 29,000,000 independent points (expected about 15):", hits)
+assert 3 <= hits <= 35
+
+# Persistence rule: alert only if k consecutive points exceed a looser per-point threshold (independence assumed, so optimistic)
+q = 1e-3
+for k in (1, 2, 3):
+    print(f"per-point tail {q} needed k={k} in a row -> false chance per point {q ** k:.1e}; alerts/day {points * q ** k:.3g}")
+assert points * q ** 3 < budget < points * q ** 2
+# Grouping: if correlated metrics fire together and count as one alert
+groups_of = 20
+print("if 20 metrics fail together as one alert, budget per group-event:", budget, "alerts -> point-level budget can be up to", budget * groups_of / points)
+assert abs(budget * groups_of / points - 1.0417e-5) < 1e-8
+p3 = 1 - NormalDist().cdf(3)
+print("3-sigma one-sided tail:", round(p3, 5), "-> false alerts a day:", round(points * p3))
+assert round(p3, 5) == 0.00135 and 38_800 < points * p3 < 38_900
+```
+
+**Output (my run):**
+```
+data points a day: 28800000 | max false-alert probability per point: 5.2083e-07
+one-sided z threshold for a Gaussian residual: 4.88
+simulated false alerts over 29,000,000 independent points (expected about 15): 16
+per-point tail 0.001 needed k=1 in a row -> false chance per point 1.0e-03; alerts/day 2.88e+04
+per-point tail 0.001 needed k=2 in a row -> false chance per point 1.0e-06; alerts/day 28.8
+per-point tail 0.001 needed k=3 in a row -> false chance per point 1.0e-09; alerts/day 0.0288
+if 20 metrics fail together as one alert, budget per group-event: 15 alerts -> point-level budget can be up to 1.0416666666666666e-05
+3-sigma one-sided tail: 0.00135 -> false alerts a day: 38877
+```
+
+**Follow-ups:**
+- How does grouping change the answer? The budget applies to pages, not points; if 20 correlated metrics become one page, the per-point probability can be about 20 times higher for the same page count (1.04e-5), but only if they really fail together and are grouped reliably.
+- What does a 3-sigma rule cost? A one-sided 3-sigma tail is about 0.00135 per point, which is about 38,900 false alerts a day on 28.8 million independent Gaussian points, far above 15.
+- How do you handle new metrics? Start in shadow with a longer warm-up and a looser tier until history exists.
+
+**Common mistakes:**
+- Forgetting to multiply by 1,440 points per metric per day.
+- Assuming independent Gaussian noise and trusting the resulting z threshold.
+- Counting alerts per metric instead of per page.
+- Tuning thresholds on only the incidents, with no replay for false alerts.
+
+### Q19 ⭐⭐ 🟡 Low-bandwidth personalisation: A marketplace app in tier-2 and tier-3 cities sees many sessions on connections that deliver about 400 kilobits per second, and the home screen must load in 3 seconds. Take 1 kilobyte as 1,000 bytes and ignore latency overheads. Design a personalised home feed under this constraint, and compute the largest payload in kilobytes and how you would shrink it.
+**Asked at:** Indian-market material (a Let's Data Science / NPCI item on AI for UPI fraud and multilingual voice, an Elastic and Sarvam multilingual voice-agent blog, a SquadStack voice-bot page on noise and accents, Razorpay, Delhivery and Shiprocket pages on cash-on-delivery return-to-origin risk scoring, a Blinkit candidate report of a delivery-time debugging case); vendor and blog material, no confirmed interview round for these exact designs; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
+**Say this first (1 line):** 400 kilobits a second for 3 seconds is 1,200 kilobits = 150 kilobytes, but that is a ceiling with zero overhead, so I would budget about 50 to 75 kB for the first screen, send ranked ids and small text first, and fetch images lazily.
+
+**Clarifying questions:**
+- Is "about 400 kilobits per second" the median or a low percentile? If it is the median, half of sessions are slower, so I design for a lower percentile.
+- Does "load in 3 seconds" mean first usable content or everything? I would define it as the first screen of ranked items.
+- What is cached on the device (app shell, previous feed)? Cached content does not count against the payload.
+- Which features need fresh data (price, stock) versus can be a few hours old? It decides what to precompute.
+- What share of sessions are new users with no history? They need a non-personalised fallback.
+
+**Approach:**
+1. Clarify and frame. Goal: a personalised first screen that is usable in 3 seconds on a slow link. Constraint first: payload ceiling 150 kB, realistic budget 50 to 75 kB.
+2. Metrics and guardrails. Time to first usable screen (p75 and p90 on slow links), click and add-to-cart rate, bounce rate, bytes per session. Guardrail: no loss in conversion on fast links.
+3. Data and labels. Click, add-to-cart and purchase logs, with network type and bandwidth recorded, so slow-link users can be evaluated separately. Labels from slow users are biased (they see fewer items), so I would check exposure.
+4. Baseline first. A popularity-by-city feed cached on the device, then a lightly personalised re-order of the cached list. Measure load time and conversion.
+5. Model and trade-offs. Rank on the server with a small model; send only ids, short text and tiny thumbnails; compress with gzip or similar; use a smaller image format and low-resolution placeholders; page the feed 6 items at a time. The trade-off is richness versus speed: each extra 10 kB costs 0.2 s at 400 kbps (see the code). Optionally rank on-device from cached candidates to avoid a round trip.
+6. Evaluation. Offline ranking metrics as usual, plus byte and latency accounting per response. Online: A/B test with analysis split by connection speed.
+7. Launch and experiment plan. Ship the byte-budgeted feed to slow-link sessions first, since they gain most; then everyone if fast-link conversion holds.
+8. Monitoring, retraining and risks. Monitor payload size per response (alert on regressions in CI and in production), time to first screen by network class, conversion by network class.
+
+Indicative pacing for a 45-minute round (minutes per step 1 to 8): 4, 4, 5, 5, 10, 7, 5, 5.
+
+**Metrics:**
+- Payload ceiling (kB) = bit rate (kbit/s) x seconds / 8 = 400 x 3 / 8 = 150 kB, with 1 kB = 1,000 bytes and no overhead.
+- Time to first usable screen = time from tap to first ranked items visible; report p75 and p90 by network class.
+- Bytes per session; conversion rate = orders / sessions, by network class.
+- Guardrails: fast-link conversion, error rate, stale price or stock complaints.
+
+**Risks:**
+- The 150 kB is an upper bound; handshakes, retries and slower phases shrink it (1 second of overhead leaves 100 kB; half the rate leaves 75 kB).
+- Averages hide slow tails; many users are slower than the 400 kbps figure.
+- Heavy personalisation features can bloat payloads silently.
+- Stale cached data (prices, stock) shown as current.
+- Collecting device and network data: ask compliance and legal about consent and privacy.
+
+**What the interviewer scores:**
+- Strong: 150 kB as a ceiling, then a smaller realistic budget and a plan to hit it.
+- Strong: ids first, lazy images, caching, paging, on-device re-ranking.
+- Strong: evaluates by network class, not only overall.
+- Weak: computes 150 kB and then designs a rich, image-heavy feed anyway.
+
+**Example:** Illustrative numbers from the question. Weak versus strong:
+- Weak: "Use a deep model to personalise and send 40 big product images."
+- Strong: "400 kilobits for 3 seconds is 150 kilobytes at most. After connection overhead and slower moments I would budget 60 to 75 kB: ranked ids, short compressed text and small thumbnails for the first 6 items, the rest loaded as the user scrolls. I would test it against the current feed and read conversion separately for slow connections."
+
+**Code:**
+```python
+# Prompt arithmetic: bits to bytes
+kbps, seconds = 400, 3
+kbit = kbps * seconds
+kB = kbit / 8
+assert kbit == 1200 and kB == 150
+print("kilobits in 3 s:", kbit, "| ceiling payload (kB):", kB)
+
+# That ceiling ignores latency, handshakes and slow phases; show how fast it shrinks
+for overhead_s in (0.0, 0.5, 1.0):
+    avail = seconds - overhead_s
+    print(f"with {overhead_s} s of fixed overhead -> payload ceiling {kbps * avail / 8:.0f} kB")
+assert kbps * (3 - 1.0) / 8 == 100
+# If the typical session gets only half the nominal rate (assumed), the ceiling halves
+assert kB / 2 == 75
+
+# Illustrative payload budget for a home screen (kB), compared with the ceiling at 1 s overhead and half rate
+budget = {"layout + app shell (cached after first load)": 0, "feed ids and scores for 20 items": 1.0,
+          "20 item cards, text only, compressed": 14.0, "20 thumbnails at 3 kB each": 60.0}
+uncached = sum(budget.values())
+print("illustrative uncached payload kB:", uncached, "| fits 75 kB ceiling:", uncached <= 75)
+assert uncached == 75.0
+
+# Image shrink options (assumed starting sizes): 20 images of 30 kB each
+imgs, start = 20, 30
+raw = imgs * start
+print("uncompressed-size images kB:", raw, "| at 10 kB each:", imgs * 10, "| only 6 above-the-fold images at 10 kB:", 6 * 10)
+assert raw == 600 and raw / 150 == 4.0
+assert imgs * 10 == 200 > 150 and 6 * 10 == 60 < 75
+# Time to download 75 kB at 400 and at 200 kbps
+for r in (400, 200):
+    print(f"75 kB at {r} kbps takes {75 * 8 / r:.2f} s")
+assert 75 * 8 / 400 == 1.5 and 75 * 8 / 200 == 3.0
+assert 10 * 8 / 400 == 0.2
+print("each extra 10 kB costs seconds at 400 kbps:", 10 * 8 / 400)
+```
+
+**Output (my run):**
+```
+kilobits in 3 s: 1200 | ceiling payload (kB): 150.0
+with 0.0 s of fixed overhead -> payload ceiling 150 kB
+with 0.5 s of fixed overhead -> payload ceiling 125 kB
+with 1.0 s of fixed overhead -> payload ceiling 100 kB
+illustrative uncached payload kB: 75.0 | fits 75 kB ceiling: True
+uncompressed-size images kB: 600 | at 10 kB each: 200 | only 6 above-the-fold images at 10 kB: 60
+75 kB at 400 kbps takes 1.50 s
+75 kB at 200 kbps takes 3.00 s
+each extra 10 kB costs seconds at 400 kbps: 0.2
+```
+
+**Follow-ups:**
+- Would you rank on the device? For re-ranking a cached candidate list, yes: no round trip and small model; keep the heavy model on the server for the candidate list.
+- How do you test improvements for slow users? Randomise by user, record network class at session start, and report the effect within the slow class, with enough users in that class.
+- What would you cut first? Images above the fold are largest; shrink or delay them before cutting text signals.
+
+**Common mistakes:**
+- Mixing bits and bytes (dividing by 8 is the whole step).
+- Treating 150 kB as the budget rather than the ceiling.
+- Measuring only on office wifi.
+- Reporting averages instead of slow-link percentiles.
+
+### Q20 ⭐⭐ 🟡 Cash-on-delivery risk: A shop platform ships 100,000 cash-on-delivery orders a day, and 25% come back as return-to-origin (a measured 90-day average), costing 90 rupees each in shipping. A model flags the 20% of orders with the highest risk, and the flagged group contains 50% of all return-to-origin orders (a back-test projection). A verification call costs 6 rupees and, in a pilot of 2,000 orders, rescued 40% of would-be returns (a sample), and assume each rescued order saves the full 90 rupees. Design the programme, and compute the daily net saving of calling every flagged order and the precision of the flag.
+**Asked at:** Indian-market material (a Let's Data Science / NPCI item on AI for UPI fraud and multilingual voice, an Elastic and Sarvam multilingual voice-agent blog, a SquadStack voice-bot page on noise and accents, Razorpay, Delhivery and Shiprocket pages on cash-on-delivery return-to-origin risk scoring, a Blinkit candidate report of a delivery-time debugging case); vendor and blog material, no confirmed interview round for these exact designs; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
+**Say this first (1 line):** Flagging 20,000 orders that hold 12,500 of the 25,000 returns gives a precision of 62.5%, and calling them nets 450,000 - 120,000 = 330,000 rupees a day, but the 40% rescue rate comes from a small pilot and the benefit is the shipping saving only, so I would size the gain with an interval and expand calls only where the risk exceeds 16.7%.
+
+**Clarifying questions:**
+- Was the 2,000-order pilot on high-risk orders or random ones, and how many were would-be returns? A rescue rate from random orders may not hold on the flagged group, and the number of would-be returns sets the pilot's uncertainty.
+- What does "rescued" mean: the customer confirmed and the parcel was delivered and paid? Define it so a confirmation that later fails is not counted.
+- Is 90 rupees the whole cost of a return, or only forward and return shipping? Packaging, handling and lost inventory time could raise it.
+- Are there other actions besides a call (messages, prepaid discount, address check)? Cheaper actions change the break-even.
+- Do customers dislike calls, and does the call delay dispatch? Both are guardrails.
+
+**Approach:**
+1. Clarify and frame. Goal: lower return-to-origin cost by intervening on risky cash-on-delivery orders before dispatch. The decision is whom to call, not only who is risky.
+2. Metrics and guardrails. Net saving per day, precision of the flag (returns / flagged), recall (share of returns flagged), rescue rate, delivery delay. Guardrails: conversion of good orders, customer complaints, dispatch delay, share of customers called repeatedly.
+3. Data and labels. Label = order returned to origin, observed after delivery attempts (a delay of days, so use matured cohorts). Features: pincode history, order value, customer history, time, address quality. Careful: the pilot's outcomes are changed by the call itself, so train on pre-intervention or randomised holdout orders.
+4. Baseline first. Rules by pincode and order value; a simple logistic model. Compare precision at 20% flagged.
+5. Model and trade-offs. Gradient-boosted trees or logistic regression with calibrated probabilities. Call when probability x rescue rate x 90 > 6, i.e. risk above 6 / (0.40 x 90) = 16.7% (see the code). The unflagged group runs at 15.6%, below that, so calling it loses money (marginal value -30,000 per day). The trade-off is call volume versus returns prevented.
+6. Evaluation. Offline: precision and recall at the cut, lift by decile, calibration; check the projected 50% capture on a recent matured period. Online: randomise a holdout (some flagged orders not called) to measure the true rescue effect, which is the number the business case needs.
+7. Launch and experiment plan. Start with the top decile, widen to the top 20% if the randomised rescue rate holds; keep a 5% holdout permanently.
+8. Monitoring, retraining and risks. Monitor precision by pincode, rescue rate, call cost; retrain monthly on matured labels; watch for customers gaming the process.
+
+Indicative pacing for a 45-minute round (minutes per step 1 to 8): 4, 4, 6, 4, 10, 7, 5, 5.
+
+**Metrics:**
+- Return-to-origin orders = 100,000 x 25% = 25,000; flagged = 20,000; returns in flagged = 12,500.
+- Precision of the flag = returns among flagged / flagged = 12,500 / 20,000 = 62.5%. Recall = 12,500 / 25,000 = 50%.
+- Net saving per day = rescued orders x 90 - calls x 6 = (12,500 x 0.40 x 90) - (20,000 x 6) = 450,000 - 120,000 = 330,000 rupees.
+- Break-even return probability for a call = call cost / (rescue rate x saving per rescue) = 6 / (0.40 x 90) = 16.7%.
+- Guardrails: good-order conversion, complaint rate, dispatch delay.
+
+**Risks:**
+- Sample versus projection: the 40% rescue rate is a pilot sample and the 50% capture is a back-test projection. With 500 would-be returns in the pilot (my assumption) the rescue interval is about 36% to 44%, so net ranges about 282,000 to 378,000.
+- Selection: calling changes behaviour and hides what would have happened; only a randomised holdout measures it.
+- Saving only shipping: ignoring lost sales from friction or complaints from customers who did not want a call.
+- Drift: pincode risk changes with festivals, couriers and weather.
+- Calling customers and using personal data: ask compliance and legal about consent and rules for calls and profiling.
+
+**What the interviewer scores:**
+- Strong: 62.5% precision, 330,000 net, and checks the marginal call against a 16.7% break-even.
+- Strong: separates sample (pilot rescue) from projection (50% capture), and asks for a randomised holdout.
+- Strong: guardrails for good-order conversion and customer experience.
+- Weak: "flag the risky orders and call them all" with no break-even, no uncertainty, no holdout.
+
+**Example:** Illustrative numbers from the question. Weak versus strong:
+- Weak: "A model flags 20% of orders; we call them and save money."
+- Strong: "25,000 of 100,000 orders return, the flag holds 12,500 of them, so precision is 62.5%. Calling 20,000 costs 120,000 and rescues 5,000 orders worth 450,000, net 330,000 a day. The 40% rescue is from a pilot sample, so I would show a range, and a call only pays when return risk is above 16.7%, so I would not call the other 80,000 whose risk is 15.6%. I would keep a randomised holdout to measure the real effect."
+
+**Code:**
+```python
+import math
+
+orders, rto_rate, ship, flag_share, flag_rto_share = 100_000, 0.25, 90, 0.20, 0.50
+call, rescue = 6, 0.40
+rto = round(orders * rto_rate)
+flagged = round(orders * flag_share)
+rto_flagged = round(rto * flag_rto_share)
+assert (rto, flagged, rto_flagged) == (25_000, 20_000, 12_500)
+precision = rto_flagged / flagged
+assert precision == 0.625
+cost = flagged * call
+saved = rto_flagged * rescue * ship
+net = saved - cost
+assert cost == 120_000 and round(saved) == 450_000 and round(net) == 330_000
+print("RTO orders:", rto, "| flagged:", flagged, "| RTO in flagged:", rto_flagged, "| precision:", precision)
+print("call cost:", cost, "| saved:", round(saved), "| net per day:", round(net))
+
+# Unflagged group and the marginal call
+unf, unf_rto = orders - flagged, rto - rto_flagged
+unf_rate = unf_rto / unf
+breakeven = call / (rescue * ship)
+print("unflagged orders:", unf, "RTO rate:", round(unf_rate, 4), "| break-even RTO probability for a call:", round(breakeven, 4))
+assert round(unf_rate, 4) == 0.1562 and round(breakeven, 4) == 0.1667 and unf_rate < breakeven
+net_all = rto * rescue * ship - orders * call
+print("net if every order is called:", round(net_all), "| marginal value of calling the unflagged 80,000:", round(net_all - net))
+assert round(net_all) == 300_000 and round(net_all - net) == -30_000
+
+# The 40% rescue rate comes from a pilot sample. Pilot size 2,000; assume 25% would-be returns -> 500 (my assumption)
+n_rto_pilot = round(2000 * rto_rate)
+se = math.sqrt(rescue * (1 - rescue) / n_rto_pilot)
+lo, hi = rescue - 1.96 * se, rescue + 1.96 * se
+print("pilot would-be returns (assumed):", n_rto_pilot, "| rescue 95% interval:", round(lo, 3), "to", round(hi, 3))
+for r in (lo, rescue, hi):
+    print(f"  rescue {r:.3f} -> net per day {round(rto_flagged * r * ship - cost)}")
+assert 0.35 < lo < 0.36 and 0.44 < hi < 0.45
+assert round(rto_flagged * lo * ship - cost) < 285_000 < round(rto_flagged * hi * ship - cost)
+# Rescue rate at which the flagged programme breaks even
+be_rescue = cost / (rto_flagged * ship)
+print("break-even rescue rate for the flagged group:", round(be_rescue, 4))
+assert round(be_rescue, 4) == 0.1067
+```
+
+**Output (my run):**
+```
+RTO orders: 25000 | flagged: 20000 | RTO in flagged: 12500 | precision: 0.625
+call cost: 120000 | saved: 450000 | net per day: 330000
+unflagged orders: 80000 RTO rate: 0.1562 | break-even RTO probability for a call: 0.1667
+net if every order is called: 300000 | marginal value of calling the unflagged 80,000: -30000
+pilot would-be returns (assumed): 500 | rescue 95% interval: 0.357 to 0.443
+  rescue 0.357 -> net per day 281691
+  rescue 0.400 -> net per day 330000
+  rescue 0.443 -> net per day 378309
+break-even rescue rate for the flagged group: 0.1067
+```
+
+**Follow-ups:**
+- Should you call everyone at 16.7% or above, not just the top 20%? Yes, call by calibrated probability, not by a fixed 20%; the top 20% is a convenient cut, and the exact cut should come from the marginal rule with a safety margin for uncertainty.
+- What if the rescue rate is only 10%? Below the 10.7% break-even for the flagged group, calling loses money; switch to cheaper actions such as a message or prepaid nudge.
+- How would you check the 50% capture claim? Recompute capture on a recent matured period out of time and compare; it was a back-test, so it can be optimistic.
+
+**Common mistakes:**
+- Treating the pilot's 40% as a fixed fact.
+- Forgetting that the 90-rupee saving ignores other costs and benefits.
+- Calling a group below the break-even risk.
+- Training on outcomes that were changed by the intervention.
+

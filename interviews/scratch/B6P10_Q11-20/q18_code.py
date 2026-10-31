@@ -31,3 +31,6 @@ assert points * q ** 3 < budget < points * q ** 2
 groups_of = 20
 print("if 20 metrics fail together as one alert, budget per group-event:", budget, "alerts -> point-level budget can be up to", budget * groups_of / points)
 assert abs(budget * groups_of / points - 1.0417e-5) < 1e-8
+p3 = 1 - NormalDist().cdf(3)
+print("3-sigma one-sided tail:", round(p3, 5), "-> false alerts a day:", round(points * p3))
+assert round(p3, 5) == 0.00135 and 38_800 < points * p3 < 38_900

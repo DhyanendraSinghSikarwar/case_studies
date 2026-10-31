@@ -27,3 +27,4 @@ print(f"Bonferroni z={z:.3f}, n per language={nb}, total={langs*nb}, remaining={
 nu = math.ceil(2 * (1.96 * 0.5 / 0.025) ** 2)
 assert nu == 3074
 print(f"unpaired comparison of two systems at same precision: {nu} per language per system")
+assert langs * n * price == 49_184 and left - 1_600 * langs == 4_904 and left * price == 70_816
