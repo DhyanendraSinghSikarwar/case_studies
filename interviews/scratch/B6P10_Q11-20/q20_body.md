@@ -1,7 +1,7 @@
 **Say this first (1 line):** Flagging 20,000 orders that hold 12,500 of the 25,000 returns gives a precision of 62.5%, and calling them nets 450,000 - 120,000 = 330,000 rupees a day, but the 40% rescue rate comes from a small pilot and the benefit is the shipping saving only, so I would size the gain with an interval and expand calls only where the risk exceeds 16.7%.
 
 **Clarifying questions:**
-- Was the 2,000-order pilot on high-risk orders or random ones, and how many were would-be returns? A rescue rate from random orders may not hold on the flagged group, and the number of would-be returns sets the pilot's uncertainty.
+- Does the pilot's 40% (200 of 500 flagged would-be returns) hold for the whole flagged 20%, including its lower-risk end? A small sample from the top of the list may not generalise.
 - What does "rescued" mean: the customer confirmed and the parcel was delivered and paid? Define it so a confirmation that later fails is not counted.
 - Is 90 rupees the whole cost of a return, or only forward and return shipping? Packaging, handling and lost inventory time could raise it.
 - Are there other actions besides a call (messages, prepaid discount, address check)? Cheaper actions change the break-even.
@@ -27,7 +27,7 @@ Indicative pacing for a 45-minute round (minutes per step 1 to 8): 4, 4, 6, 4, 1
 - Guardrails: good-order conversion, complaint rate, dispatch delay.
 
 **Risks:**
-- Sample versus projection: the 40% rescue rate is a pilot sample and the 50% capture is a back-test projection. With 500 would-be returns in the pilot (my assumption) the rescue interval is about 36% to 44%, so net ranges about 282,000 to 378,000.
+- Sample versus projection: the 40% rescue rate is a pilot sample and the 50% capture is a back-test projection. With 500 flagged would-be returns in the pilot (200 rescued) the rescue interval is about 36% to 44%, so net ranges about 282,000 to 378,000.
 - Selection: calling changes behaviour and hides what would have happened; only a randomised holdout measures it.
 - Saving only shipping: ignoring lost sales from friction or complaints from customers who did not want a call.
 - Drift: pincode risk changes with festivals, couriers and weather.

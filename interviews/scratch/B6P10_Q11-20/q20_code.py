@@ -25,11 +25,11 @@ net_all = rto * rescue * ship - orders * call
 print("net if every order is called:", round(net_all), "| marginal value of calling the unflagged 80,000:", round(net_all - net))
 assert round(net_all) == 300_000 and round(net_all - net) == -30_000
 
-# The 40% rescue rate comes from a pilot sample. Pilot size 2,000; assume 25% would-be returns -> 500 (my assumption)
-n_rto_pilot = round(2000 * rto_rate)
+# The 40% rescue rate comes from a pilot sample: 500 flagged would-be returns (from the question)
+n_rto_pilot = 500
 se = math.sqrt(rescue * (1 - rescue) / n_rto_pilot)
 lo, hi = rescue - 1.96 * se, rescue + 1.96 * se
-print("pilot would-be returns (assumed):", n_rto_pilot, "| rescue 95% interval:", round(lo, 3), "to", round(hi, 3))
+print("pilot flagged would-be returns:", n_rto_pilot, "| rescue 95% interval:", round(lo, 3), "to", round(hi, 3))
 for r in (lo, rescue, hi):
     print(f"  rescue {r:.3f} -> net per day {round(rto_flagged * r * ship - cost)}")
 assert 0.35 < lo < 0.36 and 0.44 < hi < 0.45

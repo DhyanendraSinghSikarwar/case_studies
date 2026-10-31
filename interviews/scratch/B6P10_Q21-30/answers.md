@@ -103,10 +103,10 @@ if urgency is 3%: hits needed=855, precision floor=28.5%
 
 ### Q22 ⭐⭐ 🟡 Experimentation platform: 40 product teams will run 120 concurrent experiments on an app with 12,000,000 daily users, organised in 10 layers where every user is in every layer and the 12 experiments inside a layer split its users evenly. Assignment lookups must answer in 5 ms at the 99th percentile at 20,000 requests per second. Design the platform, and compute the daily users each experiment sees if all users are eligible and compare it with a need of 800,000 distinct users across two arms over the run.
 **Asked at:** Operations and platform design material (a Codemia anomaly-detection pipeline prompt attributed to ServiceNow, Codemia A/B-testing platform prompts attributed to a DoorDash onsite, a PracHub feature-store data-quality and backfill prompt attributed to a Faire onsite, datadriven.io and techinterview.org MLOps guides); prep-site material; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
-**Say this first (1 line):** 12,000,000 users split 12 ways in each layer gives 1,000,000 users per experiment, which covers the 800,000 needed with 200,000 (25%) to spare, but only if every user is eligible and the 800,000 means distinct users over the run, so I would design for eligibility rules and a layer-by-layer capacity check.
+**Say this first (1 line):** 12,000,000 users split 12 ways in each layer gives 1,000,000 users per experiment, which covers the 800,000 needed with 200,000 (25%) to spare, but only if every user is eligible, so I would design for eligibility rules and a layer-by-layer capacity check.
 
 **Clarifying questions:**
-- Is the 800,000 a total of distinct users over the whole run, or per day? One million "daily users" are mostly the same people tomorrow, so a multi-day run adds few new users.
+- Confirm the 800,000 means distinct users over the run. One million "daily users" are mostly the same people tomorrow, so a multi-day run adds few new users.
 - What share of users is eligible for a typical experiment (new users only, one country, one platform)? At 30% eligible, each experiment sees 300,000 and the plan breaks.
 - What metrics, and what effect size must be detectable? The 800,000 is only a need if someone derived it; I would re-derive it (for a 5% baseline, 400,000 per arm detects about 0.14 points).
 - Which experiments must be mutually exclusive (same screen, same ranking model) and which can overlap? That decides what goes into one layer.
@@ -124,27 +124,27 @@ if urgency is 3%: hits needed=855, precision floor=28.5%
 
 **Metrics:**
 - Users per experiment per day = users in the layer / experiments in the layer = 12,000,000 / 12 = 1,000,000.
-- Sample coverage = users the experiment sees over its run / users needed (target at least 1.0; here 1,000,000 / 800,000 = 1.25 if the need is per day-cohort).
+- Sample coverage = users the experiment sees over its run / users needed (target at least 1.0; here 1,000,000 / 800,000 = 1.25).
 - Sample-ratio mismatch rate = experiments whose observed arm split differs from plan by a chi-square test at a strict threshold / all running experiments.
 - Assignment latency p99 in ms (target 5) and error rate of the lookup.
 - Guardrail: the false-positive rate of A/A tests, which should be near the chosen alpha.
 
 **Risks:**
-- "Daily users" and "distinct users over the run" are different bases. Say which one 800,000 is.
+- Daily users and distinct users over the run are different bases; the 800,000 is distinct users over the run, and a longer run adds few new ones.
 - Eligibility filters cut each experiment's sample sharply.
 - Layers are independent only if each has its own salt; shared salts correlate assignments (the code checks this).
 - Many experiments on one user can interact (two ranking changes in different layers).
 - Peeking at results daily inflates false positives.
 
 **What the interviewer scores:**
-- Strong: 120 / 10 = 12 and 1,000,000 immediately, then immediately asks about eligibility and the base of the 800,000. Weak: stops at "enough users".
+- Strong: 120 / 10 = 12 and 1,000,000 immediately, then immediately asks about eligibility and how many distinct users a run really accumulates. Weak: stops at "enough users".
 - Strong: hash-based assignment, so lookups are computation, not a database. Weak: a table lookup per call with no capacity thought.
 - Strong: sample-ratio mismatch and A/A tests as platform health checks. Weak: only the dashboard.
 - Strong: a baseline first plan, one layer then more. Weak: builds everything at once.
 
 **Example:** Illustrative numbers. One experiment limited to 30% eligible users sees 300,000 users, so it needs about 2.7 times the share of users (or a longer run, which helps only as new users arrive), while another that is open to everyone sees 1,000,000.
 - Weak: "We have 12 million users and the test needs 800,000, so we are fine."
-- Strong: "Each layer splits 12 million users 12 ways, so every experiment gets 1 million. That clears 800,000 by 25%, but only if all users are eligible and the 800,000 means distinct users over the run. With 30% eligibility it falls to 300,000, so the platform should check eligible users against the needed sample before an experiment is allowed to launch."
+- Strong: "Each layer splits 12 million users 12 ways, so every experiment gets 1 million. That clears 800,000 by 25%, but only if all users are eligible. With 30% eligibility it falls to 300,000, so the platform should check eligible users against the needed sample before an experiment is allowed to launch."
 
 **Code:**
 ```python
@@ -219,7 +219,7 @@ layer-0 experiment 0 across layer-1 buckets: [827, 844, 822, 859, 840, 802, 806,
 **Say this first (1 line):** 1,500 tables x 6 checks is 9,000 scans, 360,000 GB, so 180,000 rupees a day with full scans (1.8 times the 100,000 budget) and 90,000 with a 50% sample, but a sample only helps if the engine really reads half the data and it must not touch checks that look for rare or exact defects.
 
 **Clarifying questions:**
-- Does a 50% row sample really halve the bytes scanned? In many columnar layouts a row sample still reads most of the data, and only partition or file-level sampling saves cost. This decides if the 90,000 is real.
+- The prompt assumes scan cost is proportional to rows read. In many columnar layouts a row sample still reads most of the data; only partition or file-level sampling saves cost. I would verify that before promising the 90,000.
 - What are the six checks per table today (freshness, row count, schema, null rate, uniqueness, distribution)? Some can be answered from metadata at almost no cost.
 - Which tables feed models or finance reports, and which are scratch? Criticality sets check depth and who gets paged.
 - Are tables partitioned by date, so a daily check can scan only the new partition? That is usually a bigger saving than sampling.
@@ -729,7 +729,7 @@ unpaired comparison of two systems at same precision: 3074 per language per syst
 **Say this first (1 line):** As described the assistant uses 5,000 x 2.4 x 6,000 = 72 million tokens a day, 18,000 rupees a day, 540,000 a month, which is 9 times the 60,000 budget, so I design for a 9x cost cut first (route most calls to a small model and shrink the context) and treat quality and data access as the other two fixed constraints.
 
 **Clarifying questions:**
-- Is 6,000 tokens per call or per question? I read it per call (14,400 per question); if it is per question, the cost is 225,000 a month, 3.75 times over. It changes how hard the cut is.
+- Tokens are 6,000 per call (14,400 per question), as the prompt says; I would confirm this against real logs, because if it were per question the bill would be 225,000 a month, 3.75 times over.
 - What kinds of questions arrive (look up a number, build a chart, explain a trend)? Simple look-ups can use a cheap path.
 - Which data may each employee see? Row-level and column-level access must follow the user, not the assistant. I ask the data-governance owner; I assume nothing.
 - How wrong may an answer be? A wrong number in a board deck is worse than a refusal, so I set a wrong-answer ceiling before choosing models.
@@ -764,7 +764,7 @@ unpaired comparison of two systems at same precision: 3074 per language per syst
 - Strong: 72 million, 540,000 and 9x in seconds, then levers with numbers. Weak: "use a cheaper model" with no figure.
 - Strong: access follows the user, queries run under the user's rights. Weak: one shared database login.
 - Strong: accuracy measured on a real question set before and after cost cuts. Weak: only cost.
-- Strong: spots the ambiguity in 6,000 tokens per call. Weak: silently picks one.
+- Strong: checks token counts against real logs. Weak: trusts the estimate.
 
 **Example:** Illustrative numbers. Routing 80% of calls to a model at one tenth of the price gives 0.2 + 0.08 = 0.28 of the cost (3.57x cheaper); cutting 6,000 tokens to 2,000 gives 3x; together 10.7x, so 540,000 becomes about 50,400.
 - Weak: "That is expensive, so I would switch to a smaller model."
@@ -820,7 +820,7 @@ if 6,000 tokens were per question: 225,000 per month, 3.75x over
 - How do you stop a user from seeing data they should not? Run queries with the user's identity and the database's row and column permissions, log every query. I ask security and data governance how access is defined.
 - How would you keep cost from creeping? Per-user and per-team quotas, a daily spend alert, and a monthly review of the top query types.
 
-**Common mistakes:** Quoting cost per token and not per question. Cutting cost without an accuracy check. One shared service account. Forgetting caches need permission-aware keys. Not stating the per-call versus per-question reading.
+**Common mistakes:** Quoting cost per token and not per question. Cutting cost without an accuracy check. One shared service account. Forgetting caches need permission-aware keys. Not checking token counts against real logs.
 
 ### Q29 ⭐⭐ 🔴 Vision identity verification: A lender's app runs 40,000 selfie-and-ID checks a day, and 0.1% are spoof attempts (a projection from last quarter's investigations). A liveness model catches 95% of spoofs on a test set of known attack types (a sample), and new attack types are expected. Design the verification flow end to end with fallback and human review, compute the spoofs a day and how many pass liveness if the 95% also held for new attack types (a best case), and say what you would ask compliance.
 **Asked at:** Healthcare and vision design material (a Dataford prompt on end-to-end ML for medical signal or image data, behind a sign-up wall, and an arXiv technology-readiness paper noting trust as a barrier in regulated fields; no triage-specific interview page was found); commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened

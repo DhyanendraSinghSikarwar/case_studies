@@ -4,7 +4,7 @@
 - Is the 60% and 90% profile stable across merchants, countries and attack types? A single maturity curve is the whole basis of any correction.
 - Besides chargebacks, are there faster labels (customer disputes, issuer confirmations, manual reviews)? They let me react before day 30.
 - What do we do on a flagged transaction (block, step-up check, review)? Blocked fraud never produces a chargeback, so labels are censored by our own decisions.
-- Is the 0.2% a measured rate or a planning figure? The question calls it a projection; I would treat it as an assumption to be checked on mature cohorts.
+- Is the 0.2% a measured rate or a planning figure? The question gives it as an assumption; I would check it on mature cohorts.
 - What are the loss per missed fraud and the cost per false decline? They fix the threshold and the value of waiting for labels.
 
 **Approach:**
