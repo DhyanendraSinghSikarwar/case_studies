@@ -1,7 +1,7 @@
 **Say this first (1 line):** 3 million listings x 1,000 tokens is 3 billion tokens, 150,000 seconds or 41.67 cluster-hours, so two clusters meet the 24-hour deadline at 87% utilisation with little room for reruns.
 
 **Clarifying questions:**
-- Does the 1,000 tokens include the prompt and the listing text, or only the generated output? Generation is the slow part, so I treat all 1,000 as generated (conservative).
+- Is the 20,000 tokens per second a generation rate, and is the prompt extra? The prompt states 1,000 generated tokens per listing; prompt processing is faster but I would still measure it (editor knowledge).
 - What does enrichment produce (attributes, translated titles, descriptions), and is a wrong attribute worse than a missing one? It sets the quality bar.
 - Is 24 hours a one-off backfill or a recurring job? One-off can use spare capacity; recurring needs a steady-state design.
 - Which languages and what review capacity do I have per language? Quality varies by language.
@@ -42,7 +42,7 @@
 <<OUTPUT>>
 
 **Follow-ups:**
-- *What if the prompt tokens are separate from the 1,000?* Then input is processed faster than output; measure both rates (editor knowledge).
+- *What about the prompt tokens?* They are extra work on top of the 1,000 generated; input is usually processed faster, so measure both rates (editor knowledge).
 - *How do you cut cost?* Use a smaller model for easy attributes and cache repeated listing templates; compare quality first.
 
 **Common mistakes:** Forgetting to round up clusters. No redo allowance. One accuracy figure for all languages. No staged rollout.

@@ -273,7 +273,7 @@ rare from random 24.0 from enriched at 30% 360.0 total 384.0
 2. Metrics and guardrails: expected cost = 20 x unsold + 30 x missed sales, fill rate, waste share, forecast calibration.
 3. Data and labels: daily sales per store and item, with stock-out flags, promotions, weekday, weather; correct for censoring.
 4. Baseline first: same weekday last week or a seven-day average, with an error-based standard deviation.
-5. Model and trade-offs: a model for the mean (gradient boosting or a simple regression) and a calibrated spread; or a direct 0.6 quantile model. Critical ratio 30 / 50 = 0.6, z = 0.2533, stock 105.07. Stock 105 or 106 differs by under a rupee a day in expected cost; round to what the pack size allows. Compare with stocking the mean: expected cost 398.94 against 386.34, about 12.6 rupees a day better (illustrative).
+5. Model and trade-offs: a model for the mean (gradient boosting or a simple regression) and a calibrated spread; or a direct 0.6 quantile model. Critical ratio 30 / 50 = 0.6, z = 0.2533, stock 105.07. To the nearest whole unit the stock is 105 (the continuous rule that rounds up gives 106; the cost difference is under a rupee a day, and pack size may decide). Compare with stocking the mean: expected cost 398.94 against 386.34, about 12.6 rupees a day better (illustrative).
 6. Evaluation: backtest the whole decision (cost with the rule against cost with the baseline), and check that demand stays below stock on about 60% of days.
 7. Launch: A/B across stores, perhaps 10% of stores first, compare waste and fill rate; keep a manual override.
 8. Monitoring and cost: weekly calibration of the 0.6 quantile, drift in demand spread, shrink the model back to the baseline if it loses.
@@ -290,7 +290,7 @@ rare from random 24.0 from enriched at 30% 360.0 total 384.0
 - Substitution: when this item is out, demand moves to another.
 
 **What the interviewer scores:**
-- Strong: 0.6, z = 0.2533, 105, and explains why the answer is above the mean.
+- Strong: 0.6, z = 0.2533, 105 (nearest whole unit), and explains why the answer is above the mean.
 - Strong: raises censoring and calibrates a quantile, then tests the decision, not just forecast error.
 - Weak: stocks the mean or the mean plus a safety factor with no cost logic.
 
@@ -356,7 +356,7 @@ stock if sd were 30: 107.6
 **Say this first (1 line):** 3 million listings x 1,000 tokens is 3 billion tokens, 150,000 seconds or 41.67 cluster-hours, so two clusters meet the 24-hour deadline at 87% utilisation with little room for reruns.
 
 **Clarifying questions:**
-- Does the 1,000 tokens include the prompt and the listing text, or only the generated output? Generation is the slow part, so I treat all 1,000 as generated (conservative).
+- Is the 20,000 tokens per second a generation rate, and is the prompt extra? The prompt states 1,000 generated tokens per listing; prompt processing is faster but I would still measure it (editor knowledge).
 - What does enrichment produce (attributes, translated titles, descriptions), and is a wrong attribute worse than a missing one? It sets the quality bar.
 - Is 24 hours a one-off backfill or a recurring job? One-off can use spare capacity; recurring needs a steady-state design.
 - Which languages and what review capacity do I have per language? Quality varies by language.
@@ -431,7 +431,7 @@ n 385 worst-case 95% margin 0.05
 ```
 
 **Follow-ups:**
-- *What if the prompt tokens are separate from the 1,000?* Then input is processed faster than output; measure both rates (editor knowledge).
+- *What about the prompt tokens?* They are extra work on top of the 1,000 generated; input is usually processed faster, so measure both rates (editor knowledge).
 - *How do you cut cost?* Use a smaller model for easy attributes and cache repeated listing templates; compare quality first.
 
 **Common mistakes:** Forgetting to round up clusters. No redo allowance. One accuracy figure for all languages. No staged rollout.
@@ -452,7 +452,7 @@ n 385 worst-case 95% margin 0.05
 2. Metrics and guardrails: feature age p99, missing-feature rate, scoring p99, fraud recall at a fixed false-decline rate.
 3. Data and labels: chargebacks arrive late, so label with a delay and use confirmed reports for fast signals.
 4. Baseline first: rules on a few velocity counts (card used in N places in 10 minutes), then a model.
-5. Pipeline and trade-offs: events into a log, a stream job updating windowed counters, a keyed online store; the same definitions write to an offline store for training. Memory: 3,200,000,000 B = 3.2 GB (2.98 GiB), 3 copies with an assumed 1.5x overhead is 14.4 GB. Window: 25,000 x 5 = 125,000 events, at most 1.25% of cards touched per window. A 1-hour counter in 5-second buckets is 720 buckets per card per counter, which is why you keep a few counters, not many.
+5. Pipeline and trade-offs: events into a log, a stream job updating windowed counters, a keyed online store; the same definitions write to an offline store for training. Memory: 3,200,000,000 B = 3.2 decimal GB (2.98 GiB), 3 copies with an assumed 1.5x overhead is 14.4 GB. Window: 25,000 x 5 = 125,000 events, at most 1.25% of cards touched per window. A 1-hour counter in 5-second buckets is 720 buckets per card per counter, which is why you keep a few counters, not many.
 6. Evaluation: offline with point-in-time features (no leakage), then shadow scoring on live traffic to measure feature age and score agreement.
 7. Launch: shadow, then a small share of traffic with a human review band, with a fail-safe if freshness slips.
 8. Monitoring and cost: feature age, null rate, distribution drift against training, store memory growth, reprocessing plan for late events.
@@ -704,7 +704,7 @@ n 2000 lower bound at 98% observed 0.9729 above break-even: True
 **Say this first (1 line):** With 12 counterparties each, a sender has 12 one-hop and 144 two-hop neighbours (156 within two hops), so fetching them per payment is 780,000 lookups a second at 5,000 payments a second, which is why I would precompute neighbourhood features and fetch one vector per account.
 
 **Clarifying questions:**
-- Does "two-hop neighbourhood" mean exactly two hops (144) or within two hops (156)? I state the 156 and show 144 as the other reading.
+- Is the 12 an average, and do accounts overlap? The prompt says no overlap, so 156 within two hops (12 + 144); if you count only exactly-two-hop accounts it is 144 and 720,000 lookups a second.
 - Are the 12 counterparties an average, and what are the maximum degrees (hubs)? Hubs make fan-out explode.
 - What is the score latency budget and how fresh must graph features be? It decides batch versus streaming for graph features.
 - How many confirmed mule accounts exist and how late are they labelled? It sets how supervised the model can be.

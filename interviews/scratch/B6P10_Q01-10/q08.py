@@ -32,4 +32,4 @@ assert hi == 900_000 and lo == 2_100_000 and each == 2.0
 assert round(even) == 39_600 and hi_push == 2_700_000 and rest == 3_300_000
 assert round(lo_each, 3) == 1.571 and lo_each < cap
 assert round(targeted) == 50_400 and round(targeted - even) == 10_800 and round(targeted / even - 1, 3) == 0.273
-assert round(se * 100, 2) == 0.20 and round(t2 - e2) == 6_300
+assert round(se * 100, 2) == 0.28 and round(1.96 * se * 100, 2) == 0.55 and round(t2 - e2) == 6_300

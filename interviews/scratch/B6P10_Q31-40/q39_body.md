@@ -1,7 +1,7 @@
 **Say this first (1 line):** With 12 counterparties each, a sender has 12 one-hop and 144 two-hop neighbours (156 within two hops), so fetching them per payment is 780,000 lookups a second at 5,000 payments a second, which is why I would precompute neighbourhood features and fetch one vector per account.
 
 **Clarifying questions:**
-- Does "two-hop neighbourhood" mean exactly two hops (144) or within two hops (156)? I state the 156 and show 144 as the other reading.
+- Is the 12 an average, and do accounts overlap? The prompt says no overlap, so 156 within two hops (12 + 144); if you count only exactly-two-hop accounts it is 144 and 720,000 lookups a second.
 - Are the 12 counterparties an average, and what are the maximum degrees (hubs)? Hubs make fan-out explode.
 - What is the score latency budget and how fresh must graph features be? It decides batch versus streaming for graph features.
 - How many confirmed mule accounts exist and how late are they labelled? It sets how supervised the model can be.

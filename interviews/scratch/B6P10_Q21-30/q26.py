@@ -29,3 +29,7 @@ se = (ctr_explore * (1 - ctr_explore) / imp) ** 0.5
 lo, hi = ctr_explore - 1.96 * se, ctr_explore + 1.96 * se
 assert abs(lo - 0.00961) < 1e-4 and abs(hi - 0.02039) < 1e-4
 print(f"1.5% from {imp} impressions: 95% interval {lo:.2%} to {hi:.2%}")
+# Example: 60,000 new users x 20 impressions (invented)
+imps = 60_000 * 20
+assert imps == 1_200_000 and round(imps * (ctr_policy - (with_exp / 100))) == 1_800
+print(f"daily clicks lost at {imps:,} impressions: {imps*(ctr_policy-with_exp/100):,.0f}")

@@ -17,7 +17,7 @@ assert math.ceil(math.log(3) / math.log(1.2)) == 7
 # Step down is not the mirror: -20% three times from 207.36
 down = 207.36 * 0.8 ** 3
 print("207.36 after three -20% steps:", round(down, 2))
-assert abs(down - 106.17216) < 1e-6
+assert abs(down - 106.16832) < 1e-6
 
 # Guardrail check on a noisy raw price proposal: smoothing plus clip to +-20% and absolute cap
 import numpy as np

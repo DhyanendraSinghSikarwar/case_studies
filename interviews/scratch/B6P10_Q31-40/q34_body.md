@@ -12,7 +12,7 @@
 2. Metrics and guardrails: expected cost = 20 x unsold + 30 x missed sales, fill rate, waste share, forecast calibration.
 3. Data and labels: daily sales per store and item, with stock-out flags, promotions, weekday, weather; correct for censoring.
 4. Baseline first: same weekday last week or a seven-day average, with an error-based standard deviation.
-5. Model and trade-offs: a model for the mean (gradient boosting or a simple regression) and a calibrated spread; or a direct 0.6 quantile model. Critical ratio 30 / 50 = 0.6, z = 0.2533, stock 105.07. Stock 105 or 106 differs by under a rupee a day in expected cost; round to what the pack size allows. Compare with stocking the mean: expected cost 398.94 against 386.34, about 12.6 rupees a day better (illustrative).
+5. Model and trade-offs: a model for the mean (gradient boosting or a simple regression) and a calibrated spread; or a direct 0.6 quantile model. Critical ratio 30 / 50 = 0.6, z = 0.2533, stock 105.07. To the nearest whole unit the stock is 105 (the continuous rule that rounds up gives 106; the cost difference is under a rupee a day, and pack size may decide). Compare with stocking the mean: expected cost 398.94 against 386.34, about 12.6 rupees a day better (illustrative).
 6. Evaluation: backtest the whole decision (cost with the rule against cost with the baseline), and check that demand stays below stock on about 60% of days.
 7. Launch: A/B across stores, perhaps 10% of stores first, compare waste and fill rate; keep a manual override.
 8. Monitoring and cost: weekly calibration of the 0.6 quantile, drift in demand spread, shrink the model back to the baseline if it loses.
@@ -29,7 +29,7 @@
 - Substitution: when this item is out, demand moves to another.
 
 **What the interviewer scores:**
-- Strong: 0.6, z = 0.2533, 105, and explains why the answer is above the mean.
+- Strong: 0.6, z = 0.2533, 105 (nearest whole unit), and explains why the answer is above the mean.
 - Strong: raises censoring and calibrates a quantile, then tests the decision, not just forecast error.
 - Weak: stocks the mean or the mean plus a safety factor with no cost logic.
 

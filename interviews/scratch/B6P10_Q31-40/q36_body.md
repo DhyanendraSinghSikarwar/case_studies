@@ -12,7 +12,7 @@
 2. Metrics and guardrails: feature age p99, missing-feature rate, scoring p99, fraud recall at a fixed false-decline rate.
 3. Data and labels: chargebacks arrive late, so label with a delay and use confirmed reports for fast signals.
 4. Baseline first: rules on a few velocity counts (card used in N places in 10 minutes), then a model.
-5. Pipeline and trade-offs: events into a log, a stream job updating windowed counters, a keyed online store; the same definitions write to an offline store for training. Memory: 3,200,000,000 B = 3.2 GB (2.98 GiB), 3 copies with an assumed 1.5x overhead is 14.4 GB. Window: 25,000 x 5 = 125,000 events, at most 1.25% of cards touched per window. A 1-hour counter in 5-second buckets is 720 buckets per card per counter, which is why you keep a few counters, not many.
+5. Pipeline and trade-offs: events into a log, a stream job updating windowed counters, a keyed online store; the same definitions write to an offline store for training. Memory: 3,200,000,000 B = 3.2 decimal GB (2.98 GiB), 3 copies with an assumed 1.5x overhead is 14.4 GB. Window: 25,000 x 5 = 125,000 events, at most 1.25% of cards touched per window. A 1-hour counter in 5-second buckets is 720 buckets per card per counter, which is why you keep a few counters, not many.
 6. Evaluation: offline with point-in-time features (no leakage), then shadow scoring on live traffic to measure feature age and score agreement.
 7. Launch: shadow, then a small share of traffic with a human review band, with a fail-safe if freshness slips.
 8. Monitoring and cost: feature age, null rate, distribution drift against training, store memory growth, reprocessing plan for late events.

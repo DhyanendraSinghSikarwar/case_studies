@@ -551,3 +551,220 @@ bytes ratio in the test: 4.0
 - Putting fairness only at the end, or stating legal rules as facts.
 - Ignoring hard filters and going straight to nearest neighbours.
 
+### Q16 ⭐⭐ 🟢 Document processing: A firm gets 50,000 scanned invoices a day, averaging 2.2 pages, in mixed Hindi and English, and wants straight-through processing for 85% of them. OCR takes 0.8 seconds per page on one core, the batch must finish inside a 6-hour window, and you plan 50% core utilisation. Design the extraction pipeline, and compute the cores needed and, if the other 15% need 90 seconds of human review each at 7 productive hours per person per day, the reviewers needed.
+**Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to invoice and document extraction with OCR (no page found in these searches); search snippets only, not opened
+**Say this first (1 line):** OCR load is 110,000 pages x 0.8 s = 88,000 core-seconds, which at 50% utilisation over 6 hours needs 9 cores, and if only 85% go straight through, the other 7,500 invoices need 187.5 review hours, so 27 reviewers; the real design question is which fields are trusted without a person.
+
+**Clarifying questions:**
+- Which fields matter (invoice number, date, amount, tax identifier, line items) and what does a wrong amount cost? Error cost sets the confidence thresholds.
+- Is the 85% straight-through target a goal or a measured rate? It is a goal; the reviewer count depends directly on it.
+- What are the layouts and image quality (phone photos, scans, handwriting, Hindi and English mixed)? Quality drives recognition errors.
+- Is there a purchase order or vendor master to validate against? Cross-checks catch errors OCR cannot.
+- What is the arrival pattern: all at once, or spread through the day? A 6-hour batch window needs all files to have arrived.
+
+**Approach:**
+1. Clarify and frame. Goal: turn scans into validated records with 85% going straight through and the rest reviewed quickly. Define "straight through": all required fields above confidence and passing validation, with no human touch.
+2. Metrics and guardrails. Field-level accuracy, invoice-level exact match, straight-through rate, review time per invoice, cost per invoice. Guardrail: wrong amount posted automatically (the costly error), and turnaround time.
+3. Data and labels. Sample invoices across vendors, languages and quality; have people key the fields once (a gold set), and keep reviewer corrections as ongoing labels. Plan the labelling budget per layout family so rare vendors are covered.
+4. Baseline first. Existing OCR plus regular expressions and vendor templates for the top vendors; measure field accuracy on the gold set.
+5. Model and trade-offs. OCR (0.8 s a page on one core), then a layout-aware extractor for fields, then validation (totals add up, tax maths, date format, vendor match, duplicate check). Capacity: 88,000 core-seconds, 9 cores at 50% utilisation (see the code), plus the reviewer load. Trade-off: a higher confidence threshold cuts errors but lowers the straight-through rate and raises reviewer count.
+6. Evaluation. Offline field accuracy and invoice-level exact match by vendor and language; calibration of confidence scores. Online: shadow mode where people key as usual and the system is compared, then partial automation on low-value invoices.
+7. Launch and experiment plan. Start with the top vendors and lower-value invoices, expand by layout family; ramp straight-through share as audits stay clean.
+8. Monitoring, retraining and risks. Weekly audit of a random sample of auto-posted invoices (598 clean audits bound the error rate below 0.5% at 95%, see the code), drift alerts on confidence scores and new layouts, retrain on reviewer corrections.
+
+Indicative pacing for a 45-minute round (minutes per step 1 to 8): 4, 4, 6, 4, 11, 6, 5, 5.
+
+**Metrics:**
+- Pages = invoices x pages per invoice = 50,000 x 2.2 = 110,000; core-seconds = pages x 0.8 = 88,000.
+- Cores = ceil(core-seconds / (window seconds x utilisation)) = ceil(88,000 / 10,800) = ceil(8.15) = 9.
+- Straight-through rate = invoices posted with no human touch / all invoices.
+- Reviewers = ceil(invoices to review x seconds per review / 3,600 / productive hours per person) = ceil(7,500 x 90 / 3,600 / 7) = ceil(26.8) = 27.
+- Field accuracy = fields correct / fields; guardrail: auto-posted wrong-amount rate.
+
+**Risks:**
+- Silent errors (a misread digit in an amount) in auto-posted invoices; validation rules and audits are the control.
+- The 85% target may not hold on poor scans or new vendors; the reviewer count moves by about 1.8 people per point.
+- Mixed Hindi and English text and stamps reduce recognition; test per language.
+- Peaks: a 6-hour window with uneven arrivals needs more than the average capacity.
+- Personal and financial data in documents; ask compliance and legal about retention and access.
+
+**What the interviewer scores:**
+- Strong: 110,000 pages, 88,000 core-seconds, 9 cores, 187.5 review hours, 27 people, with the OCR applied to every page.
+- Strong: confidence thresholds, validation rules and audit sampling for auto-posted records.
+- Strong: sees the trade-off between straight-through rate and reviewer cost.
+- Weak: "use a good OCR model", with no validation, no human loop and no capacity maths.
+
+**Example:** Illustrative numbers from the question. Weak versus strong:
+- Weak: "OCR plus a language model reads the invoices and we are done."
+- Strong: "50,000 invoices at 2.2 pages is 110,000 pages, so 88,000 core-seconds. At 50% utilisation over 6 hours, a core gives 10,800 seconds, so 9 cores. If 15% need review, that is 7,500 invoices, 187.5 hours, 27 reviewers. Each point of straight-through rate moves the team by about two people, so I would set the confidence threshold by the cost of a wrong amount, validate totals and vendors, and audit a random sample of auto-posted invoices every week."
+
+**Code:**
+```python
+import math
+
+# OCR sizing. OCR runs on every page, whether or not the invoice later goes straight through.
+invoices, pages_per, ocr_s, window_h, util = 50_000, 2.2, 0.8, 6, 0.50
+pages = invoices * pages_per
+core_s = pages * ocr_s
+usable_per_core = window_h * 3600 * util
+assert round(pages) == 110_000 and round(core_s) == 88_000 and usable_per_core == 10_800
+cores = math.ceil(core_s / usable_per_core)
+assert cores == 9
+print("pages:", round(pages), "| core-seconds:", round(core_s), "| usable seconds per core:", usable_per_core,
+      "| cores (exact):", round(core_s / usable_per_core, 2), "-> cores:", cores)
+
+# Human review of the non-straight-through share
+stp, review_s, hours_per_person = 0.85, 90, 7
+manual = round(invoices * (1 - stp))
+review_hours = manual * review_s / 3600
+people = math.ceil(review_hours / hours_per_person)
+assert round(manual) == 7_500 and review_hours == 187.5 and people == 27
+print("invoices to review:", round(manual), "| review hours:", review_hours, "| reviewers (exact):",
+      round(review_hours / hours_per_person, 2), "-> reviewers:", people)
+
+# Sensitivity: each 1 point of straight-through rate changes review load by 500 invoices = 12.5 hours = 1.8 people
+per_point = round(invoices * 0.01)
+assert per_point == 500 and per_point * review_s / 3600 == 12.5
+print("1 point of straight-through rate = invoices:", per_point, "= hours:", per_point * review_s / 3600,
+      "= people:", round(per_point * review_s / 3600 / hours_per_person, 2))
+for r in (0.75, 0.80, 0.85, 0.90):
+    n = math.ceil(invoices * (1 - r) * review_s / 3600 / hours_per_person)
+    print(f"straight-through {r:.0%} -> reviewers {n}")
+assert math.ceil(invoices * 0.25 * 90 / 3600 / 7) == 45 and math.ceil(invoices * 0.10 * 90 / 3600 / 7) == 18
+
+# Sample size to check the straight-through error rate: 0 errors in n audited gives 95% upper bound about 3/n
+n_audit = math.ceil(math.log(0.05) / math.log(1 - 0.005))
+print("clean audited invoices to bound field-level error under 0.5% at 95%:", n_audit)
+assert n_audit == 598
+```
+
+**Output (my run):**
+```
+pages: 110000 | core-seconds: 88000 | usable seconds per core: 10800.0 | cores (exact): 8.15 -> cores: 9
+invoices to review: 7500 | review hours: 187.5 | reviewers (exact): 26.79 -> reviewers: 27
+1 point of straight-through rate = invoices: 500 = hours: 12.5 = people: 1.79
+straight-through 75% -> reviewers 45
+straight-through 80% -> reviewers 36
+straight-through 85% -> reviewers 27
+straight-through 90% -> reviewers 18
+clean audited invoices to bound field-level error under 0.5% at 95%: 598
+```
+
+**Follow-ups:**
+- What if straight-through is only 75%? Reviewers rise to 45; consider better templates for top vendors, a second-pass model for low-confidence fields only, or a longer SLA.
+- Could you skip OCR for digital invoices? Yes, if some arrive as text PDFs or structured files; that is a cheap win and cuts the core count.
+- How do you set the confidence threshold? From the cost of a wrong auto-posted amount versus the cost of a review, using calibrated scores on the gold set.
+
+**Common mistakes:**
+- Computing OCR cores only for the straight-through 85%.
+- Ignoring utilisation (running cores at 100%).
+- Counting reviewers in people without productive hours.
+- Treating the 85% target as a measured rate.
+
+### Q17 ⭐⭐ 🟢 Dynamic pricing: A cab app reprices each of its 100 zones every 60 seconds and wants a rule that never changes a price by more than 20% of the previous price in one update. The base fare is 100 rupees. Design the pricing system and its guardrails, and compute the number of price decisions a day and the highest fare reachable after 5 consecutive 20% increases, and say how that informs an absolute cap.
+**Asked at:** ETA, forecasting and pricing design material (a CleverPrep Lyft ML engineer page listing real-time pricing, city-level demand forecasting with cold start and ETA-with-traffic prompts, an AlgoMaster ETA design page, Codemia demand-forecasting pipeline prompts and an AI Engineering Insider dynamic-pricing piece); prep-site material; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
+**Say this first (1 line):** 100 zones x 1,440 minutes = 144,000 price decisions a day, and five +20% steps take 100 rupees to 248.83, so a per-update cap limits speed but not level; I would add an absolute cap, a rate limit over longer windows and a human override, and confirm with the business and legal what price limits apply.
+
+**Clarifying questions:**
+- What is the objective: revenue, trips completed, driver supply balance? A price that clears the market is not always the profit-maximising one.
+- Who may see and complain about prices, and are there fare limits we must respect? Ask compliance and legal; I do not assume the rules.
+- Is demand data per zone available in near real time, and how noisy is it? Noisy inputs make prices jump.
+- Do drivers see the same multiplier? Supply response matters for balance.
+- Can we run randomised tests by zone or by time? It decides how we measure effect.
+
+**Approach:**
+1. Clarify and frame. Goal: balance supply and demand per zone every minute without price shocks. Pricing is a control problem: forecast, price, observe, adjust.
+2. Metrics and guardrails. Completed trips per request, ride-request fill rate, driver utilisation, revenue per hour, wait time. Guardrails: price complaint rate, share of time at the cap, price volatility (steps over 10% in a row), cancellation rate.
+3. Data and labels. Logged requests, available drivers, prices shown, accept and cancel outcomes, per zone and minute. Prices were set by past rules, so demand response is only learned in the range of prices tried (limited price variation); add randomised small price nudges if allowed.
+4. Baseline first. A rule on the ratio of requests to available drivers in each zone, smoothed over a few minutes, with the 20% step cap. Measure fill rate and revenue against it.
+5. Model and trade-offs. Demand forecast per zone and a price-response (elasticity) estimate. Optimise a price in a range, then apply guardrails: the +-20% step cap (limits speed), an absolute cap (limits level; 5 steps give 248.83, 4 steps already pass 2x base at 207.36, see the code), smoothing across neighbouring zones to avoid cliffs, and a manual kill switch.
+6. Evaluation. Offline: forecast error by zone and hour, replay of logged data with the guardrails. Online: zone-level or time-slice randomisation (switchback) because riders and drivers interact across zones, which breaks simple user-level tests.
+7. Launch and experiment plan. Start in a few zones, keep a share of zones on the old rule, ramp when fill rate and revenue improve without more complaints.
+8. Monitoring, retraining and risks. Alerts on price volatility, time at the cap, forecast bias per zone; retrain the forecast frequently; review festival and weather events manually.
+
+Indicative pacing for a 45-minute round (minutes per step 1 to 8): 4, 5, 5, 4, 10, 7, 5, 5.
+
+**Metrics:**
+- Price decisions a day = zones x decisions per zone per day = 100 x 1,440 = 144,000.
+- Maximum price after n capped increases = base x 1.2^n: 100 x 1.2^5 = 248.832 rupees.
+- Fill rate = requests matched to a driver / requests; revenue per hour per zone.
+- Steps to a multiple m of base = ceil(ln m / ln 1.2): 4 steps for 2x, 7 steps for 3x.
+- Guardrails: share of time at the absolute cap, complaint rate, cancellation rate.
+
+**Risks:**
+- A per-update cap does not stop a gradual climb: 2x base is reached in 4 minutes at a 60-second interval.
+- Feedback loops: higher prices reduce demand, which lowers the signal that justified the price.
+- Interference across zones makes simple A/B tests biased; use switchback or zone-level designs.
+- Fairness and public trust (surge during emergencies); agree policy with the business, and ask compliance and legal about limits.
+- Elasticity learned from narrow past price ranges may not hold outside it.
+
+**What the interviewer scores:**
+- Strong: 144,000 decisions and 248.83, and notes that a step cap is not a level cap.
+- Strong: rule-based baseline, forecast plus elasticity, guardrails, switchback testing.
+- Strong: raises fairness and legal limits as questions for the right team.
+- Weak: "reinforcement learning to maximise revenue" with no guardrails, baseline or test design.
+
+**Example:** Illustrative numbers from the question. Weak versus strong:
+- Weak: "The model sets the price each minute and the 20% rule keeps it safe."
+- Strong: "That is 144,000 decisions a day. A 20% step cap sounds safe, but five steps take 100 to 248.83 and four already pass 2x, so I would add an absolute cap chosen with the business and check with legal what limits apply. I would start with a smoothed demand-to-supply rule, test against it with a switchback design by zone and time, and watch complaint rate and time at the cap."
+
+**Code:**
+```python
+import math
+
+# Prompt arithmetic
+zones, interval_s, base, cap_step = 100, 60, 100.0, 0.20
+decisions = zones * (24 * 3600 // interval_s)
+assert decisions == 144_000
+print("price decisions a day:", decisions)
+price5 = base * (1 + cap_step) ** 5
+assert abs(price5 - 248.832) < 1e-9
+print("fare after 5 consecutive +20% steps:", round(price5, 3), "| multiple of base:", round(price5 / base, 3))
+# The per-update cap limits speed, not level: how long to reach 2x or 3x base?
+for mult in (2, 3):
+    steps = math.ceil(math.log(mult) / math.log(1 + cap_step))
+    print(f"steps to reach at least {mult}x base: {steps} (= {steps} minutes at a 60 s interval); price after: {base * 1.2 ** steps:.2f}")
+assert math.ceil(math.log(2) / math.log(1.2)) == 4 and abs(100 * 1.2 ** 4 - 207.36) < 1e-9
+assert math.ceil(math.log(3) / math.log(1.2)) == 7
+# Step down is not the mirror: -20% three times from 207.36
+down = 207.36 * 0.8 ** 3
+print("207.36 after three -20% steps:", round(down, 2))
+assert abs(down - 106.16832) < 1e-6
+
+# Guardrail check on a noisy raw price proposal: smoothing plus clip to +-20% and absolute cap
+import numpy as np
+rng = np.random.default_rng(17)
+raw = base * np.exp(np.cumsum(rng.normal(0.08, 0.15, 30)))        # volatile model proposals (illustrative)
+cap_abs = 2.0 * base                                                # illustrative absolute cap (business decision)
+p, path = base, []
+for r in raw:
+    step = min(max(r, p * (1 - cap_step)), p * (1 + cap_step))
+    p = min(step, cap_abs)
+    path.append(p)
+path = np.array(path)
+ratios = path[1:] / path[:-1]
+assert ratios.max() <= 1.2 + 1e-9 and ratios.min() >= 0.8 - 1e-9 and path.max() <= cap_abs + 1e-9
+print("max one-step change:", round(float(ratios.max()), 3), "| max price:", round(float(path.max()), 2), "| minutes at cap:", int((path >= cap_abs - 1e-9).sum()))
+```
+
+**Output (my run):**
+```
+price decisions a day: 144000
+fare after 5 consecutive +20% steps: 248.832 | multiple of base: 2.488
+steps to reach at least 2x base: 4 (= 4 minutes at a 60 s interval); price after: 207.36
+steps to reach at least 3x base: 7 (= 7 minutes at a 60 s interval); price after: 358.32
+207.36 after three -20% steps: 106.17
+max one-step change: 1.2 | max price: 200.0 | minutes at cap: 13
+```
+
+**Follow-ups:**
+- How do you choose the absolute cap? From the business's tolerance, observed price response and complaint data, and legal or policy limits (ask compliance); I would start low and raise it only with evidence.
+- Why not a user-level A/B test? Riders in a zone share the same supply, so treatment spills over; time-slice or zone randomisation handles it better.
+- What about a downward step? Dropping 20% three times from 207.36 only gets to 106.17, so recovery is slow too; consider asymmetric limits.
+
+**Common mistakes:**
+- Treating 20% per step as a 20% limit overall.
+- Forgetting the price may be applied every minute for 24 hours (144,000 decisions).
+- Running user-level A/B tests where supply is shared.
+- Learning elasticity only from the price range already used.
+
