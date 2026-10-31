@@ -1,0 +1,50 @@
+| B9P01-Q1 | 1 | Tell me about yourself: give me a two-minute walk through your background in data, ML or GenAI work and what you are doing now. |
+| B9P01-Q2 | 1 | Why do you want this role and this team, and what about the work makes it a good fit for you? |
+| B9P01-Q3 | 1 | What are your two biggest strengths and one real weakness as a data or ML practitioner, and what are you doing about the weakness? |
+| B9P01-Q4 | 1 | Tell me about a project you are proud of. What was the problem, what did you personally do, and what changed because of it? |
+| B9P01-Q5 | 1 | Tell me about a time you had to learn a new tool, method or domain quickly to deliver something. How did you go about it? |
+| B9P01-Q6 | 1 | At the end of the interview we ask what questions you have for us. Which two or three questions would you ask, and why those? |
+| B9P01-Q7 | 1 | Tell me about a mistake you made in an analysis or model. How did you find it, what did you do, and what do you do differently now? |
+| B9P01-Q8 | 1 | Tell me about a time you had a conflict with a teammate. What was it about and how did it end? |
+| B9P01-Q9 | 1 | Tell me about a time you disagreed with a stakeholder about what the data showed or what to do next, and how you handled it. |
+| B9P01-Q10 | 1 | Tell me about a time you were given a vague or shifting problem. How did you decide what to work on first? |
+| B9P01-Q11 | 1 | Tell me about a time you worked closely with engineers or product managers to ship something. What did each side need from you? |
+| B9P01-Q12 | 1 | Tell me about a time you had to deliver under a tight deadline or heavy pressure. What did you cut, protect or escalate? |
+| B9P01-Q13 | 1 | Tell me about a time you received critical feedback. What was it, how did you react, and what changed afterwards? |
+| B9P01-Q14 | 1 | You had five requests from different people and time for two. Tell me about a time like that and how you chose. |
+| B9P01-Q15 | 1 | Tell me about a time a model, pipeline or analysis you owned failed or underperformed in production. How did you diagnose it, who did you tell, and what did you change? |
+| B9P01-Q16 | 1 | Tell me about a time the data contradicted your intuition or a belief your team held. What did you do with the finding? |
+| B9P01-Q17 | 1 | How do you use AI tools such as coding assistants or LLM chat in your work, and tell me about a time one gave you a wrong or risky output that you caught. |
+| B9P01-Q18 | 1 | Why are you looking to leave your current role, or why did you leave your last one? |
+| B9P01-Q19 | 1 | Where do you want your career to be in three to five years, and how does this role help you get there? |
+| B9P01-Q20 | 1 | What kind of work energises you, and what kind of work drains you, in data or ML? |
+| B9P01-Q21 | 1 | Describe the team and manager style in which you do your best work, and one situation where you adapted to a different style. |
+| B9P01-Q22 | 1 | How do you keep up with fast-moving ML and GenAI developments, and tell me about one thing you learned recently that you then used? |
+| B9P01-Q23 | 1 | Tell me about a time you helped a teammate succeed on something that was not your own deliverable. |
+| B9P01-Q24 | 1 | Tell me about a time you changed your mind about a technical approach or a conclusion. What made you change it? |
+| B9P01-Q25 | 1 | Tell me about a time you gave a colleague difficult feedback, such as on code, an analysis or their working habits. How did you say it and what happened? |
+| B9P01-Q26 | 1 | Tell me about a time you mentored or coached someone more junior. What did you do, and how did you know it was working? |
+| B9P01-Q27 | 1 | Tell me about a time you got people to act on your recommendation when you had no authority over them. |
+| B9P01-Q28 | 1 | Tell me about a time you worked with a non-technical partner who was sceptical of data or ML work. How did you build trust? |
+| B9P01-Q29 | 1 | Tell me about a time you worked with teammates in other time zones or on a mostly remote team. What broke down, and what did you change? |
+| B9P01-Q30 | 1 | Tell me about a time you noticed an ethical, privacy or fairness concern in a data or ML project. What did you do about it? |
+| B9P01-Q31 | 1 | Tell me about a time you took initiative to fix a process, tool or recurring problem that nobody had asked you to fix. |
+| B9P01-Q32 | 1 | Tell me about a time you caught a data quality problem before it reached a model or a decision. How did you find it and who did you tell? |
+| B9P01-Q33 | 1 | Tell me about a time a teammate was struggling or underdelivering and it affected your work. What did you do? |
+| B9P01-Q34 | 1 | Tell me about a time your first approach did not work and you had to change course part-way through a project. |
+| B9P01-Q35 | 1 | Tell me about a cross-functional project that went well. What was your part in making it work? |
+| B9P01-Q36 | 1 | Tell me about a time you worked with someone whose working style was very different from yours. How did you make it work? |
+| B9P01-Q37 | 1 | Tell me about a time you disagreed with your manager's decision, you did not get your way, and you still had to carry it out. What did you do afterwards? |
+| B9P01-Q38 | 1 | Tell me about a time you were under pressure to ship or report something you were not fully comfortable with. What did you do? |
+| B9P01-Q39 | 1 | Tell me about a time you had to give your manager or a team bad news about a result, a delay or an error. How did you do it? |
+| B9P01-Q40 | 1 | Junior level: tell me about an academic, internship or personal project where you worked with messy data. What did you do and what would you do differently? |
+| B9P01-Q41 | 1 | Junior level: tell me about a time you were stuck. How long did you try on your own, when did you ask for help, and who did you ask? |
+| B9P01-Q42 | 1 | Mid level: tell me about a project you owned from problem definition to delivery with little supervision. What decisions were yours? |
+| B9P01-Q43 | 1 | Mid level: tell me about a time you pushed back on a request from a more senior person and what came of it. |
+| B9P01-Q44 | 1 | A teammate relied heavily on AI-generated code or analysis and it contained errors. Tell me about a time something like this happened and how you handled it. |
+| B9P01-Q45 | 1 | You moved into data, ML or GenAI work from another field or role. Tell me why you made that move and what you did to close the gaps. |
+| B9P01-Q46 | 1 | Senior level: tell me about a time you set the technical direction for a team and had to bring sceptical people along. |
+| B9P01-Q47 | 1 | Senior level: tell me about how you have grown other people's skills across a team, beyond one-to-one mentoring. |
+| B9P01-Q48 | 1 | Staff level: tell me about a time you influenced a decision across several teams that did not report to you, with no formal authority. |
+| B9P01-Q49 | 1 | Staff level: tell me about a time you stopped or cut back a long-running project or programme. How did you decide and how did you communicate it? |
+| B9P01-Q50 | 1 | Staff level: tell me about a time you defined a strategy or roadmap for an area that was ambiguous, and how you decided what not to work on. |
