@@ -34,7 +34,7 @@ Pacing for a 45-minute round (indicative): clarify 5, metrics 5, data and labels
 - A feature fetched stale at serving time but fresh in training (training-serving skew) gives great offline and weak live results.
 - Capacity sized on a projected peak: if the real peak is 2x higher, 4 instances fail. Add autoscaling and a rules fallback.
 - Adaptive fraudsters after you start blocking.
-- Headroom wording: 40% above peak is 420 rps; if the team means 60% target utilisation, it is 500 rps and 5 instances. Say which one you used.
+- The 1.4x rule means 420 rps; a 60% utilisation target would instead give 500 rps and 5 instances, so I state which rule I use.
 
 **What the interviewer scores:**
 - Strong: frames the decision and cost ratio before models, and gets 4 (or 5 with N+1) from 420 / 120. Weak: names Kafka and a neural net and never sizes anything.
@@ -95,7 +95,7 @@ break-even precision to block: 1.96%
 - How do you evaluate with delayed labels? See Book 6 Part 2 Q4 (card-fraud model, delayed chargeback labels); use matured windows and an early proxy such as confirmed disputes, labelled as a proxy.
 - Latency theory for the tail: Book 4 Part 6 Q6 (latency, throughput and percentiles for a model API).
 
-**Common mistakes:** Sizing on the average 58 rps instead of the peak. Dividing by 0.6 and by 1.4 interchangeably without saying which. Optimising accuracy on a 0.05% base rate. No fallback when the model is down. Training on unmatured labels.
+**Common mistakes:** Sizing on the average 58 rps instead of the peak. Dividing by 0.6 when the rule is 1.4 times the peak, without saying so. Optimising accuracy on a 0.05% base rate. No fallback when the model is down. Training on unmatured labels.
 
 ### Q2 ⭐⭐⭐ 🟢 Feed ranking: A short-video app has 2,000,000 daily active users who open the feed 5 times a day on average (10,000,000 feed requests a day), and the end-to-end budget for each request is 150 ms. Assume the peak is 5 times the daily average request rate and each request ranks 500 retrieved candidates. Design the feed recommender from retrieval to ranking and launch, and compute the peak requests per second and item scores per second the ranker must handle.
 **Asked at:** General ML system-design prep material (Educative's 6-step ML design framework and fraud-detection mock interview, DesignGurus, techinterview.org, PracHub's 2026 ML system design bank and a DEV Community guide describe open prompts such as feed or recommendation, search ranking and ad prediction, and one guide quotes a search prompt with 1,000 queries per second and 200 ms); commercial prep sites, so example numbers are treated as examples only; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
@@ -288,8 +288,8 @@ random 20,000 would hold 800 churners; break-even save rate 312% (impossible)
 **Say this first (1 line):** I would build a retrieval-grounded assistant with a guardrail and a human handoff, and the cost is 4 x 0.30 + 0.3 x 1.20 = 1.56 rupees per chat, 93,600 a day, leaving 0.44 rupees (22% of the 2.00 ceiling) for retries, reranking and safety calls.
 
 **Clarifying questions:**
-- Is "4,000 input tokens and 300 output tokens" per whole chat or per turn? A multi-turn chat resends history, so a per-turn figure multiplies the cost.
-- Does "4 seconds to the first answer" mean the first streamed token or the complete reply? A 300-token reply at an assumed 60 tokens per second takes 5 seconds on its own, so only the first reading is feasible.
+- Are the 4,000 input and 300 output tokens summed over all turns of a chat? The prompt says per chat; I would still check how many turns that is, because history is resent each turn.
+- The budget is to the first token. A 300-token reply at an assumed 60 tokens per second takes 5 seconds on its own, so the full reply cannot fit in 4 seconds; I would confirm streaming is allowed.
 - What may the assistant do: answer from articles only, or also take actions such as blocking a card? It sets the autonomy level and the guardrails.
 - What is the cost of a wrong answer, and how is it handed to a human? A bank needs a conservative abstain-and-escalate path.
 - How often does the knowledge base change? It sets re-indexing frequency and the staleness risk.
@@ -474,7 +474,7 @@ labelling 50,000 pairs at 5/min = 167 rater-hours
 **Say this first (1 line):** By Little's law the orders in flight are arrival rate times time in system, 11.11 orders per second x 2,100 seconds = about 23,300, so refreshing every 30 seconds is 778 requests per second, 98.6% of the roughly 789 total with checkout calls.
 
 **Clarifying questions:**
-- Do the other 80% of daily orders also arrive during the lunch window? The prompt spreads only the 20% across the peak; background orders would add to the in-flight count.
+- Do orders outside the lunch window overlap the peak? The prompt says to ignore them, so I do, and I name the effect as a caveat.
 - What is the ETA used for: a promise shown at checkout, rider dispatch, or both? A promise needs calibrated, slightly conservative estimates.
 - How costly is under-promising (lost orders) versus over-promising (late, refunds)? It decides whether the target is the median or a high quantile.
 - Must the refresh be polled every 30 seconds, or can the app be pushed an update only when the ETA changes? It decides the load.
@@ -500,7 +500,7 @@ Pacing for a 45-minute round (indicative): clarify 5, metrics 5, data 5, baselin
 - Late rate and MAE in minutes, per segment; guardrails: conversion at checkout, p99 service latency.
 
 **Risks:**
-- The prompt counts only the 20% peak arrivals. If background orders continue at 320,000 / 79,200 s = 4.04 per second, in flight is about 31,800 and total load about 1,076 rps (illustrative).
+- Only the 20% peak arrivals are counted, as instructed. If background orders continued at 320,000 / 79,200 s = 4.04 per second, in flight would be about 31,800 and total load about 1,076 rps (illustrative).
 - Little's law assumes steady state; the peak lasts 120 minutes against a 35-minute dwell, which is long enough.
 - A promise that is too optimistic raises conversion but also lateness and refunds.
 - Polling dominates: 98.6% of requests are refreshes of orders whose ETA did not change.
@@ -660,7 +660,7 @@ if intermittent cost 2x, blended rate 7.14/s -> workers 16
 **Say this first (1 line):** With a binding budget of 6,000,000 pushes, sending 3 pushes to every high-uplift user first and the rest to others gives 50,400 extra opens a week against 39,600 for an even spread, 10,800 more (27.3%), provided the measured gains hold and do not fade with each extra push.
 
 **Clarifying questions:**
-- Is "1.5 percentage points of opens per push" the extra chance a push is opened, compared with no push? I treat it as the incremental open probability per push, which is what uplift means.
+- The gain is the incremental open probability per push versus no push. Was it estimated on the same holdout used to pick the top 30%? If so it is optimistic.
 - Is an open the goal, or is it a proxy for sessions, orders or retention? Opens can be gamed by urgent wording and do not guarantee value.
 - Does the gain per push really stay constant for the second and third push in a week? The prompt says assume so; real fatigue usually lowers it.
 - What is the cost of a push that annoys (uninstalls, muted notifications)? It needs a guardrail.
@@ -859,7 +859,7 @@ a 12,000 queue that caught every violation would have precision 66.7%
 
 **Clarifying questions:**
 - What exactly is the label: 90 days past due within a fixed 4-month window, or ever? A fixed window means loans from 4 months ago are not fully comparable with older ones.
-- What does "thin-file" mean here, and are all 3,000 monthly loans thin-file? It decides how many rows are relevant.
+- All 3,000 monthly loans are thin-file and approved loans, so labels exist only for approved applicants; how were declined applicants handled? It drives selection bias.
 - How were past applicants approved and which were rejected? Labels exist only for approved loans (selection bias).
 - Which features may be used (device, phone data, alternative data) and which are barred? Ask compliance and legal; do not assume.
 - What is the decision: approve or decline, a limit, a price? It sets the cost matrix.
