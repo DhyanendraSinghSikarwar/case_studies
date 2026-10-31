@@ -31,10 +31,10 @@ Header (title, scope, target, actual, date, status, evidence limits, how to read
 ## Part checklist
 | Part | Coverage | Companies | Status |
 |---|---|---|---|
-| 1 | Big Tech: Google, Microsoft, Amazon, Meta, Apple, Netflix, Uber, LinkedIn, Adobe, Salesforce | 10 | ⬜ |
+| 1 | Big Tech: Google, Microsoft, Amazon, Meta, Apple, Netflix, Uber, LinkedIn, Adobe, Salesforce | 10 | ✅ (evidence: 7 Medium, 3 Thin) |
 | 2 | Indian product/unicorns: Flipkart, Swiggy, Zomato, PhonePe, Razorpay, CRED, Meesho, Ola, Paytm, Myntra | 10 | ⬜ |
 | 3 | GCCs/MNCs in India: Walmart, Target, JPMorgan, Goldman Sachs, American Express, Visa, Mastercard, Intuit, Atlassian, Optum | 10 | ⬜ |
 | 4 | Europe/global: Spotify, Zalando, Booking.com, Klarna, SAP, Delivery Hero, Revolut, Wise, Grab, Shopee | 10 | ⬜ |
 
 ## Next step
-Part 1 Wave A+B: five agents (Google+Microsoft, Amazon+Meta, Apple+Netflix, Uber+LinkedIn, Adobe+Salesforce). Then merge and check, review note, tracker; then Parts 2-4 the same way. Books 8 and 9 follow with their own execution plans.
+Part 2 Wave A+B: five agents (Flipkart+Swiggy, Zomato+PhonePe, Razorpay+CRED, Meesho+Ola, Paytm+Myntra); Zomato's listed parent is Eternal, say so in the profile if sources do. Part 1 lessons: no company got a High evidence rating because official pages appear only as snippets; every claim needs a tag that exists in the profile's source list; the checker now enforces that; keep India-specific evidence separate from global process claims; label candidate AI-tool policies by source quality; use the same source-list format as Part 1 (`- S1: URL . Supports: ... Seen date. Snippet only.`); where sources are thin say so rather than pad.

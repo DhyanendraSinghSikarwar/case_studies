@@ -14,6 +14,10 @@ for b in bl:
     src=b.split('**Sources:**')[1].split('**Confidence')[0] if '**Sources:**' in b else ''
     urls=re.findall(r'https?://[^\s)>\]]+',src)
     if len(urls)<2: bad.append((n,'few source urls',len(urls)))
+
+    have=set(re.findall(r'(?m)^\s*(?:[-*]|\d+\.)?\s*S(\d+)\s*[.:]',src))
+    used=set(re.findall(r'S(\d+)',' '.join(re.findall(r'\[[^\]]*\]',body))))
+    if used-have: bad.append((n,'tags without a source',sorted(used-have)))
     sq=b.split('**Sample questions (illustrative):**')[1].split('\n**')[0] if '**Sample questions (illustrative):**' in b else ''
     items=[l for l in sq.split('\n') if re.match(r'\s*(?:[-*]|\d+\.)\s',l)]
     if not 5<=len(items)<=8: bad.append((n,'sample question count',len(items)))
