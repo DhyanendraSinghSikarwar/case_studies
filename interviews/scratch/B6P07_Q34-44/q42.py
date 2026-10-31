@@ -48,3 +48,15 @@ def sim_power(n, rho, reps=4000):
 pw = sim_power(330, 0.7)
 print(f"simulated power, paired, rho 0.7, n 330: {pw:.2f}")
 assert 0.75 < pw < 0.86
+
+# Example in the text: 160 and 150 passes out of 200 paired prompts, b = 15, c = 5
+assert 160 - 15 + 5 == 150
+z_mc = (15 - 5) / math.sqrt(15 + 5)
+pool_e = (160 + 150) / 400
+z_unp = (160 / 200 - 150 / 200) / math.sqrt(pool_e * (1 - pool_e) * 2 / 200)
+print(f"example: McNemar z = {z_mc:.2f} (p = {2*stats.norm.sf(z_mc):.3f}); unpaired z = {z_unp:.2f} (p = {2*stats.norm.sf(z_unp):.2f})")
+assert round(z_mc, 2) == 2.24 and round(z_unp, 1) == 1.2
+# follow-up: a 2-point drop needs about (5/2)^2 times more prompts per version
+n2 = (za + zb) ** 2 * (0.80 * 0.20 + 0.78 * 0.22) / 0.02 ** 2
+print("unpaired n per version for 80% -> 78%:", math.ceil(n2))
+assert 6_500 < n2 < 7_200
