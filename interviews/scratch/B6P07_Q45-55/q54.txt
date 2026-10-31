@@ -1,0 +1,56 @@
+**Say this first (1 line):** With zero successes in 300 attacks, the 95% upper bound on the per-attempt success rate is about 1.0% by the rule of three (3 / 300) and 0.994% by the exact formula, so I can say "on this attack set, probably under 1% per attempt", but not "it is safe" or "it cannot be jailbroken".
+
+**Clarifying questions:**
+- Are the 300 attacks independent, or are they variants of a few attack families? Near-duplicates give far less evidence than 300 independent attempts.
+- Were the attacks written before or after hardening? If the hardening was tuned on these same attacks, the result is a training score, not a test score.
+- What counts as success (any policy violation, harmful content, tool misuse)? The definition changes the rate.
+- Who judged success, and how? A weak judge can miss successes.
+- What is the threat model: casual users, or an attacker who tries many times and adapts?
+- What risk level does the committee want to certify (for example 1 in 1,000)?
+
+**Approach:**
+1. Rule of three: with 0 events in n trials, the 95% upper bound is about 3 / n = 3 / 300 = 1.0%.
+2. Exact formula: find p so that the chance of zero successes in 300 tries is 5%: (1 - p)^300 = 0.05, so p = 1 - 0.05^(1/300) = 0.00994, which is 0.994%. The rule of three is a close approximation.
+3. Other versions: the two-sided Clopper-Pearson upper bound is 1.22%, and the Wilson upper bound is 1.26%. Say which one you used.
+4. What I can claim: if the 300 attacks are a fair sample of the attacks we expect, and each is independent, then we have 95% confidence that the per-attempt success rate on that kind of attack is at most about 1%.
+5. What I cannot claim: no vulnerability exists; the rate is zero; the system resists new attack types; the system resists an adaptive attacker. A 1% rate per attempt means a persistent attacker making 100 tries succeeds at least once with probability 63%, and with 1,000 tries almost certainly.
+6. To certify 0.1% you need about 2,995 attacks with zero successes; for 0.01%, about 29,956. That is the cost of a tighter claim.
+7. What I would give the committee: the bound with its assumptions, the attack categories covered, the rate by category, and a plan: continuous red teaming with fresh attacks, a held-out set that was never used to harden, monitoring in production, rate limits and layered controls (not only the model).
+
+**Metrics:**
+- Attack success rate = successful attacks / attempts, with a one-sided 95% upper bound = 1 - 0.05^(1/n) when there are 0 successes.
+- Coverage = attack categories tested / categories in the threat model.
+- Time to detect and fix a new successful attack.
+- Guardrail: false refusal rate on benign prompts (a model can reach zero attacks by refusing everything).
+
+**Risks:**
+- The bound depends on the 300 being independent draws; 30 families times 10 variants would give an effective sample near 30 and an upper bound near 9.5%.
+- Tuning on the test attacks makes the result optimistic.
+- Attackers adapt; a fixed suite does not.
+- Over-refusal can hide behind a low attack success rate.
+
+**What the interviewer scores:**
+- Strong: both numbers (1.0% and 0.994%), and the 63% chance over 100 tries. Weak: "zero failures, so the risk is zero".
+- Strong: separates what is claimed (this suite, this confidence) from what is not. Weak: either overclaims or refuses to claim anything.
+- Strong: asks about independence and whether the attacks were used for tuning.
+- Strong: proposes ongoing testing and layered controls.
+
+**Example:** Illustrative. Weak: "We ran 300 jailbreaks and none worked, so the assistant is secure." Strong: "On this suite we can say the per-attempt success rate is under about 1% with 95% confidence. That is not the same as secure: an attacker with 100 tries at 1% would succeed 63% of the time. We will add a held-out set, fresh attacks each month and production monitoring."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why does the rule of three work?* The exact bound solves (1 - p)^n = 0.05. For small p, ln(1 - p) is about -p, so p is about -ln(0.05) / n = 2.996 / n, which is about 3 / n.
+- *What if one attack succeeds?* The bound rises (about 4.7 / n for the 95% one-sided exact bound with one event; a statistics package gives the exact figure) and you fix that attack and its family.
+- *Is the bound valid against adaptive attackers?* No; it describes the sampled attack distribution.
+
+**Common mistakes:**
+- Reading zero successes as zero risk.
+- Counting near-duplicate attacks as independent.
+- Testing on the attacks used to harden.
+- Forgetting the persistent attacker's repeated tries.
+- Ignoring over-refusal.

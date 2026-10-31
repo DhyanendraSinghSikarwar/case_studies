@@ -20,3 +20,7 @@ assert off == 4.0 and abs(on - 0.8) < 1e-9
 deff = 2.0
 print(f"with design effect {deff:.0f}: online SE {se*math.sqrt(deff)*100:.2f} pts, CI upper {(d+1.96*se*math.sqrt(deff))*100:.2f}")
 assert round(se * math.sqrt(deff) * 100, 2) == 0.69
+# Online sample size to see +1 point at 60% (80% power, 5% two-sided).
+n_arm = 2 * 0.6 * 0.4 * (1.96 + 0.84) ** 2 / 0.01 ** 2
+print(f"conversations per arm to detect +1 point at 60%: {n_arm:,.0f}")
+assert round(n_arm) == 37_632

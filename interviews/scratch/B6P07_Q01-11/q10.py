@@ -1,4 +1,4 @@
-PIN, POUT = 3.0, 15.0          # illustrative, per million tokens
+PIN, POUT = 3, 15          # illustrative, per million tokens
 tin, tout = 2000, 400          # millions of tokens per month
 api = tin*PIN + tout*POUT
 print(f"API bill: input {tin*PIN:,.0f} + output {tout*POUT:,.0f} = {api:,.0f} per month")
@@ -15,7 +15,7 @@ print(f"if API prices fall {cut:.0%}: bill {api_cut:,.0f}, break-even {be_cut:.2
 assert round(api_cut) == 8400 and round(be_cut, 2) == 1.79 and be_cut < cap
 # Peak vs average: if peak traffic is 3x average, capacity '2x current volume' (average) may not cover peaks
 avg_cap_ok = 2.0; peak_ratio = 3.0
-print(f"capacity covers {avg_cap_ok:.0f}x of today's average; if peak/average is {peak_ratio:.0f}x, today's peak already uses {peak_ratio/avg_cap_ok:.0%} of it")
+print(f"if capacity is sized on AVERAGE volume (2x) and peak/average is {peak_ratio:.0f}x, today's peak needs {peak_ratio/avg_cap_ok:.0%} of it")
 assert peak_ratio/avg_cap_ok == 1.5
 # Utilisation view: self-host only wins above 1.25x; what share of the 2x capacity is that?
 print(f"break-even utilisation of capacity: {be/cap:.1%}"); assert round(be/cap, 4) == 0.625

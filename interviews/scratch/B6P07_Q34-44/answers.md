@@ -686,6 +686,9 @@ assert need == 3000
 week = 7_000
 print("P(at least one wrong write in a week at 2.6%):", 1 - (1 - lo) ** week)
 assert 1 - (1 - lo) ** week > 0.999999
+
+# Example numbers quoted in the text (illustrative cost of 20 per wrong write)
+assert round(p * monthly) * 20 == 24_000 and round(residual) * 20 == 2_400
 ```
 
 **Output (my run):**
@@ -708,3 +711,102 @@ P(at least one wrong write in a week at 2.6%): 1.0
 - Treating the staged rate as the production rate.
 - Putting the verifier in the same model and context as the actor.
 - Adding approvals everywhere until reviewers stop reading.
+
+### Q41 ⭐⭐ 🔴 A user exercises a right to have personal data deleted. It sits in raw chat logs, in 3,000 of 2,000,000 chunks in a vector index, in an evaluation dataset and in 35-day rolling backups, and your internal deletion target is 30 days. Compute the share of the index affected and the gap between the target and the backup retention, and lay out a deletion plan that is honest about what cannot be erased immediately.
+**Asked at:** PII and compliance material (tianpan, Kunal Ganglani, Gravitee and barkingiguana pages on logs, retention, redaction and data residency, and a vendor piece on DPDP readiness for LLM traffic); vendor and practitioner pages, not regulator guidance or an interview bank; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
+**Say this first (1 line):** The vector index is only 0.15% affected (3,000 of 2,000,000 chunks), and backups outlast the 30-day target by 5 days on paper and more in practice, so I would delete from every live store quickly, verify it, and tell the user and the privacy owner honestly that backups age out later.
+
+**Clarifying questions:**
+- Which law or contract drives the request and its deadline? I do not give legal advice. The data protection officer or counsel confirms the obligation and whether the 30 days is an internal target or a legal limit.
+- How is data linked to the person: a user id on every row, or only in free text? Chunks and chat text may contain the name without the id.
+- Was the data used to train or fine-tune any model, or to build eval sets? Deleting a row does not remove what a model already learned.
+- Can backups be restored selectively, or only whole? That decides whether a suppression list is enough.
+- Is data copied elsewhere (analytics, a vendor's logs, caches, exports)? A deletion plan is only as good as the data map.
+
+**Approach:**
+1. Build a data map for this user: raw chat logs, vector index (the 3,000 chunks), evaluation dataset, backups, plus caches, analytics and the vendor API's own logs and retention.
+2. Size the index work: 3,000 / 2,000,000 = 0.15% of chunks. Delete by user id (or by source document id) and also search text for chunks without the id. Many index types mark deleted vectors and remove them later, so run compaction and verify with queries that the chunks no longer return.
+3. Logs: delete by user id; confirm downstream copies (warehouse, trace store).
+4. Evaluation dataset: remove or redact the rows and re-export; note any model already evaluated on them.
+5. Backups (35 days against a 30-day target, a 5-day gap on paper): backups are usually immutable, so you cannot edit them. Be honest: the copy expires when the last backup that held it expires. If live data is deleted on day d, the last backup copy expires on day d + 35: day 36 for deletion on day 1, and day 65 for deletion on day 30. Fix going forward: keep a suppression list of deleted user ids and re-apply deletion on any restore; and consider shortening backup retention to 30 days or less if the policy requires erasure in 30.
+6. Verify and record: run checks (queries return nothing), keep a deletion record without the personal data (request id, dates, systems), and reply to the user with what was deleted and when the backups expire.
+7. Prevent repeats: tag data with a user id at ingestion; avoid putting personal data into evaluation sets; minimise retention of raw logs.
+
+**Metrics:**
+- Share of index affected = chunks for the user / total chunks (0.15%).
+- Time to delete per store (days from request), against the 30-day target; deletion verification pass rate = stores verified clean / stores in the data map.
+- Residual exposure window = last backup expiry day minus target day (5 in the prompt's simplification; at least 6 in the timeline of Code).
+- Guardrails: number of restores that re-applied the suppression list; requests completed on time / all requests.
+
+**Risks:**
+- Missing a copy (cache, vendor logs, analytics) means the deletion claim is false.
+- Telling the user "everything is deleted" when backups still hold the data is an honesty and compliance problem.
+- A restore from backup silently brings the data back.
+- Personal data inside text chunks that carry no user id is easy to miss.
+- A model fine-tuned on the data may still reproduce it; that needs a separate decision with the privacy owner.
+
+**What the interviewer scores:**
+- Strong: lists every store and an action and date for each, including backups. Weak: "delete the user's rows".
+- Strong: says plainly what cannot be erased immediately, and the suppression list. Weak: promises full deletion by day 30.
+- Strong: sends the legal question to the privacy owner and counsel. Weak: quotes legal rules from memory.
+- Strong: thinks about the index mechanics (delete, compact, verify). Weak: ignores the vector store.
+
+**Example:** (illustrative numbers) Day 3 logs deleted, day 7 index chunks deleted and verified, day 10 evaluation rows removed. Backups are frozen: with deletion on day 1 the last copy ages out on day 36, six days after the target. Weak answer: "All deleted within 30 days, no problem." Strong answer: "Live stores are clean by day 10. Backups keep the data until day 36, so I would tell the user that, add the user to a suppression list so a restore cannot bring the data back, and ask the privacy owner whether to shorten backup retention."
+
+**Code:**
+```python
+# Illustrative numbers from the prompt
+chunks_total, chunks_user = 2_000_000, 3_000
+share = chunks_user / chunks_total
+print(f"share of index affected: {share:.2%} ({chunks_user} of {chunks_total})")
+assert share == 0.0015
+
+target, backup = 30, 35
+gap = backup - target
+print("backup retention minus target:", gap, "days")
+assert gap == 5
+
+# Honest timeline. Day 0 = request. Live stores are deleted on day d (d <= 30).
+# Any backup taken up to day d still holds the data, and expires 35 days after it was taken.
+for d in (1, 7, 30):
+    last_copy_expires = d + backup
+    print(f"live deletion on day {d:2d}: last backup copy expires on day {last_copy_expires} (target day {target}, over by {last_copy_expires - target})")
+assert [d + backup for d in (1, 7, 30)] == [36, 42, 65]
+
+# Plan table: store -> action -> day it is done (invented schedule, illustrative)
+plan = [
+    ("raw chat logs", "delete by user id, verify by query", 3),
+    ("vector index", "delete 3,000 chunks by user id, compact index, verify by query", 7),
+    ("evaluation dataset", "remove or redact the rows, re-export without them", 10),
+    ("backups", "cannot edit; suppression list re-applied on any restore; expire by day d + 35", 36),
+]
+for s, a, day in plan:
+    print(f"{s:20s} day {day:3d}  {a}")
+within = [s for s, a, day in plan if day <= target]
+outside = [s for s, a, day in plan if day > target]
+assert within == ["raw chat logs", "vector index", "evaluation dataset"] and outside == ["backups"]
+```
+
+**Output (my run):**
+```text
+share of index affected: 0.15% (3000 of 2000000)
+backup retention minus target: 5 days
+live deletion on day  1: last backup copy expires on day 36 (target day 30, over by 6)
+live deletion on day  7: last backup copy expires on day 42 (target day 30, over by 12)
+live deletion on day 30: last backup copy expires on day 65 (target day 30, over by 35)
+raw chat logs        day   3  delete by user id, verify by query
+vector index         day   7  delete 3,000 chunks by user id, compact index, verify by query
+evaluation dataset   day  10  remove or redact the rows, re-export without them
+backups              day  36  cannot edit; suppression list re-applied on any restore; expire by day d + 35
+```
+
+**Follow-ups:**
+- Can you cut the backup problem completely? Shorter retention, or encrypting per user and deleting the key (crypto-shredding), is a design choice with costs; discuss it with the privacy owner.
+- What about the embeddings themselves? Embeddings can leak information about the text, so delete them with the chunk.
+- What if the chunks have no user id? Search by content, ask the user for identifiers, and log what was searched.
+
+**Common mistakes:**
+- Forgetting backups, caches, vendor logs and evaluation sets.
+- Saying "deleted" when the index only marked the vectors.
+- Quoting legal rules from memory.
+- Computing the gap as 5 days and stopping there.

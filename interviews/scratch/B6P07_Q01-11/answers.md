@@ -834,3 +834,95 @@ lag: re-index minutes to hours; monthly retrain up to 30 days (plus eval time)
 - Forgetting a full re-index when the embedding model changes.
 - Giving no conditions under which the recommendation would change.
 - Quoting invented costs as real.
+
+### Q10 ⭐⭐⭐ 🟡 A company sends 2,000 million input and 400 million output tokens a month to an API priced at illustrative 3 and 15 per million tokens. A self-hosted option costs a fixed 15,000 a month for GPUs and staff and can absorb up to twice the current volume. Compute the API bill and the break-even volume as a multiple of today's, and list the non-cost questions you would raise.
+**Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to vendor-API versus self-host and LLM cost material; related topics appear in public guides for data scientist, ML engineer and GenAI engineer loops; no page for the exact framing; search snippets only, not opened
+**Say this first (1 line):** The API bill is 2,000 x 3 + 400 x 15 = 12,000 a month, the fixed self-host cost of 15,000 breaks even at 1.25 times today's volume, and before moving I would raise quality, peak capacity, staffing, security, vendor-price and lock-in questions, because the cost gap alone is small and fragile.
+
+**Clarifying questions:**
+- Is volume growing, flat or seasonal? At today's volume self-hosting costs 3,000 more a month; it only wins if volume grows by more than 25%.
+- Does the self-hosted model meet the quality bar on our tasks? A cheaper bill with worse answers is not a saving.
+- Is the capacity "twice current volume" sized on average or on peak traffic? Peaks decide whether it really fits.
+- Does the 15,000 include on-call, security, upgrades and a spare for failure? Hidden operations cost is the usual surprise.
+- Are there data-residency, privacy or contract reasons to self-host regardless of cost? Then cost is not the deciding factor.
+
+**Approach:**
+1. API bill: input 2,000 million x 3 = 6,000; output 400 million x 15 = 6,000; total 12,000 a month.
+2. Break-even volume = fixed cost / API bill at today's volume = 15,000 / 12,000 = 1.25x. It is below the 2x capacity, so a window exists.
+3. Show the window: at 1.25x both cost 15,000. At 2x volume the API would cost 24,000 against 15,000, a saving of 9,000. Today, self-host costs 3,000 more.
+4. Sensitivity: if API prices fall 30%, the bill is 8,400 and break-even moves to 1.79x, almost at the capacity limit. The case depends on a price that the vendor controls.
+5. Non-cost questions (listed below), then a pilot: run the self-hosted model on a shadow copy of real traffic and compare quality, latency and failure rate.
+6. Decide on total cost of ownership over 12 to 24 months, with a trigger: self-host only when sustained volume is above, say, 1.5x for three months.
+
+**Metrics:**
+- API bill = (input tokens x input price + output tokens x output price) per month.
+- Break-even multiple = fixed self-host cost / API bill at current volume.
+- Cost per million tokens (blended): API 12,000 / 2,400 = 5.00; self-host 6.25 at today's volume, 3.12 at 2x.
+- Utilisation = actual volume / capacity (break-even is at 62.5% of the 2x capacity).
+- Guardrails: quality on a fixed eval, p95 latency, availability, and engineer hours per month.
+
+**Risks:**
+- Capacity: a box sized for 2x average volume may not cover peaks.
+- Fixed cost is paid even if volume falls.
+- API prices move down over time (illustrative 30% cut moves the break-even from 1.25x to 1.79x).
+- Staff cost and attention: the model stack needs upgrades, security patches and monitoring.
+- Quality gap: the open model may need extra prompt work or fine-tuning.
+
+**What the interviewer scores:**
+- Strong: both numbers (12,000 and 1.25x) and an honest reading (today it costs more, the window is 1.25x to 2x). Weak: "self-hosting is cheaper".
+- Strong: tests sensitivity to price, volume and peaks. Weak: single-point comparison.
+- Strong: a list of non-cost questions with reasons. Weak: only cost.
+- Strong: a staged decision with a trigger. Weak: a one-time yes or no.
+
+**Example:** (illustrative numbers) Blended cost per million tokens: API 5.00. Self-host 15,000 / 2,400 = 6.25 at today's volume, 3.12 at twice the volume. Non-cost questions I would raise: (1) quality on our tasks, measured on a held-out set; (2) peak-to-average traffic and what happens when capacity is full (fallback to the API?); (3) who is on call and what happens when the GPUs fail; (4) data privacy, residency and contract terms, which may favour self-hosting or the vendor; (5) the model upgrade path and how long migration takes; (6) vendor price cuts and committed-use discounts; (7) lock-in and the cost of switching back; (8) latency and context-length needs. Weak answer: "The API costs 12,000 and self-host 15,000, so stay on the API." Strong answer: "The API is 12,000 a month. Self-hosting breaks even at 1.25 times today's volume and saves up to 9,000 at twice. But a 30 percent API price cut moves break-even to 1.79 times, and I would check quality, peak capacity and the real operations cost first, so I would pilot on shadow traffic and set a volume trigger."
+
+**Code:**
+```python
+PIN, POUT = 3, 15          # illustrative, per million tokens
+tin, tout = 2000, 400          # millions of tokens per month
+api = tin*PIN + tout*POUT
+print(f"API bill: input {tin*PIN:,.0f} + output {tout*POUT:,.0f} = {api:,.0f} per month")
+assert (tin*PIN, tout*POUT, api) == (6000, 6000, 12000)
+fixed, cap = 15_000, 2.0
+be = fixed / api
+print(f"break-even volume: {fixed:,}/{api:,} = {be:.2f}x today's; capacity limit {cap:.0f}x")
+assert be == 1.25 and be < cap
+print(f"today: self-host costs {fixed-api:,} more than API; at 2x volume API would cost {2*api:,} vs {fixed:,} -> saves {2*api-fixed:,}")
+assert fixed - api == 3000 and 2*api - fixed == 9000
+# Sensitivity: API price falls 30% (illustrative)
+cut = 0.30; api_cut = api*(1-cut); be_cut = fixed/api_cut
+print(f"if API prices fall {cut:.0%}: bill {api_cut:,.0f}, break-even {be_cut:.2f}x (above the {cap:.0f}x capacity? {be_cut > cap})")
+assert round(api_cut) == 8400 and round(be_cut, 2) == 1.79 and be_cut < cap
+# Peak vs average: if peak traffic is 3x average, capacity '2x current volume' (average) may not cover peaks
+avg_cap_ok = 2.0; peak_ratio = 3.0
+print(f"if capacity is sized on AVERAGE volume (2x) and peak/average is {peak_ratio:.0f}x, today's peak needs {peak_ratio/avg_cap_ok:.0%} of it")
+assert peak_ratio/avg_cap_ok == 1.5
+# Utilisation view: self-host only wins above 1.25x; what share of the 2x capacity is that?
+print(f"break-even utilisation of capacity: {be/cap:.1%}"); assert round(be/cap, 4) == 0.625
+# Cost per million tokens at various volumes (blended: 2400 M tokens => 12000, 5.0 per M)
+blend = api/(tin+tout); print(f"API blended price {blend:.2f} per million; self-host at 1x: {fixed/(tin+tout):.2f}, at 2x: {fixed/(2*(tin+tout)):.2f}")
+assert blend == 5.0 and round(fixed/(tin+tout), 2) == 6.25 and round(fixed/(2*(tin+tout)), 2) == 3.12
+```
+
+**Output (my run):**
+```text
+API bill: input 6,000 + output 6,000 = 12,000 per month
+break-even volume: 15,000/12,000 = 1.25x today's; capacity limit 2x
+today: self-host costs 3,000 more than API; at 2x volume API would cost 24,000 vs 15,000 -> saves 9,000
+if API prices fall 30%: bill 8,400, break-even 1.79x (above the 2x capacity? False)
+if capacity is sized on AVERAGE volume (2x) and peak/average is 3x, today's peak needs 150% of it
+break-even utilisation of capacity: 62.5%
+API blended price 5.00 per million; self-host at 1x: 6.25, at 2x: 3.12
+```
+
+**Follow-ups:**
+- What if volume doubles beyond capacity? Then I need a second node or hybrid: self-host the base load and spill the rest to the API.
+- Would you negotiate with the vendor instead? Yes, a volume discount or committed use changes the break-even, and it takes no engineering. I compare the new break-even before building anything.
+- What if quality is slightly lower? Quantify it in cost per resolved task, not per token, and decide whether routing only the easy traffic to the self-hosted model gets most of the saving.
+
+**Common mistakes:**
+- Comparing price per token and ignoring staff, spare capacity and operations.
+- Assuming the vendor price stays fixed.
+- Forgetting that the self-host cost is paid even at low volume.
+- Sizing on average, not peak, traffic.
+- Skipping a quality test on real tasks.
