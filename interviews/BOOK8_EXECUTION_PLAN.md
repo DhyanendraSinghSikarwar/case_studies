@@ -30,9 +30,9 @@ Header (title, scope, target, actual, date, status, evidence limits, how to read
 ## Part checklist
 | Part | Coverage | Profiles | Status |
 |---|---|---|---|
-| 1 | Europe: Sweden, Germany, Netherlands, Ireland, UK, Switzerland | 6 | ⬜ |
+| 1 | Europe: Sweden, Germany, Netherlands, Ireland, UK, Switzerland | 6 | ✅ (evidence: 1 Medium, 1 Medium-Thin, 1 Thin-Medium, 3 Thin) |
 | 2 | North America: USA, Canada | 2 | ⬜ |
 | 3 | SEA and Middle East: Singapore, Malaysia, Indonesia, UAE, plus the India baseline and the India comparison and relocation preparation guide | 5 | ⬜ |
 
 ## Next step
-Part 1: three agents (Sweden+Germany, Netherlands+Ireland, UK+Switzerland). Then merge, check, comparison table, review, tracker; then Parts 2 and 3. Book 9 follows with its own execution plan.
+Part 2: two agents (USA; Canada), one region each because the US is broad (note employer types: big tech, finance, startups, healthcare; do not generalise one segment to the whole market). Part 1 lessons: the checker flags false positives for visa-digit near source tags (review manually); Book 9 is planned and not written, so any reference to it must say so; discard national-character claims; record conflicting CV conventions as disagreements; aim for 8-10 searches per region from different angles. Part 3 afterwards: Singapore, Malaysia, Indonesia, UAE plus the India baseline and the closing India comparison and relocation preparation guide (lead-written, process-level, official-source pointers only).

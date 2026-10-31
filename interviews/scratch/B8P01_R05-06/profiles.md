@@ -61,7 +61,7 @@
 - Book 1 Part 12 (NumPy/pandas/sklearn live-coding & AI-code-review rounds) for live coding with ML questions [S10][S9].
 - Book 1 Part 11 (ML system design) and Book 4 Part 12 (cost, scaling, security, MLOps system design) for ML engineer and research-engineer deep dives [S19][G].
 - Book 6 Part 5 (business case studies) and Book 6 Part 10 ("design a solution end-to-end" open scenarios) for take-home and case-study rounds [S2][S4].
-- Book 6 Part 6 (stakeholder conflicts & trade-off decisions) and Book 9 Part 1 (STAR/CARL framework) for competency interviews [S17][S18].
+- Book 6 Part 6 (stakeholder conflicts & trade-off decisions) and Book 9 Part 1 (STAR/CARL framework; Book 9 is planned, not yet written) for competency interviews [S17][S18].
 - Book 2 Part 12 (GenAI system design + coding) for GenAI roles [G].
 - Book 7 Part 4 (Europe/global company processes) for company-level detail, not repeated here [G].
 
@@ -181,7 +181,7 @@
 - Book 1 Part 3 (classification metrics, imbalance, calibration, thresholding) for calibration questions [S4].
 - Book 1 Part 11 (ML system design) and Book 4 Part 6 (serving: FastAPI, batch vs real-time, Triton, BentoML) for deploying-models questions [S1][S2].
 - Book 6 Part 5 (business case studies) and Book 6 Part 9 (domain sets: fintech, e-commerce, healthcare, ads) for take-home case studies at banks and pharma [S18][S19].
-- Book 6 Part 6 (stakeholder conflicts & trade-off decisions) and Book 9 Part 1 (STAR/CARL framework) for behavioural rounds [S1][S2].
+- Book 6 Part 6 (stakeholder conflicts & trade-off decisions) and Book 9 Part 1 (STAR/CARL framework; Book 9 is planned, not yet written) for behavioural rounds [S1][S2].
 - Book 7 Part 4 (Europe/global company processes) for company-level detail [G].
 
 **Preparation checklist (2 weeks):**

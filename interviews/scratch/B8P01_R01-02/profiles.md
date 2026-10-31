@@ -65,7 +65,7 @@
 - Book 1 Part 10 (A/B testing, causal inference, experimentation) and Book 6 Part 1 (product metrics and metric drops) for product-metrics cases [S1].
 - Book 1 Part 12 (NumPy/pandas/sklearn live-coding) and Book 5 Part 1 (arrays and hashing) for coding screens [G].
 - Book 7 Part 4 (Spotify) for a company example; do not repeat its claims here.
-- Book 9 for behavioural stories [G].
+- Book 9 for behavioural stories (planned, not yet written) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: write a short CV and a half-page tailored letter [S4][S5].
@@ -180,7 +180,7 @@
 - Book 3 Parts 3-6 (subqueries and CTEs; window functions; date/time) for data screens [G].
 - Book 1 Part 11 (ML system design) for ML engineer roles [G].
 - Book 7 Part 4 (Zalando, Delivery Hero, SAP) for company examples; do not repeat their claims here.
-- Book 9 for communication and presentation skills [G].
+- Book 9 for communication and presentation skills (planned, not yet written) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: build a tabular CV, a one-page cover letter and a document set [S4].
