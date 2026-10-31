@@ -245,7 +245,7 @@ counterfactual lost if fallbacks are heavy users 520
 **Say this first (1 line):** 20 minutes at 50,000 a minute is 1,000,000 duplicates, up to +33% on a 3,000,000-event hourly total; I stop the damage first, rebuild the feature from the raw log with a dedupe on event ID, and make the job safe by design so a replay changes nothing.
 
 **Clarifying questions:**
-- Is orders_last_hour a true event-time sliding window or a running counter? A true 60-minute window heals itself within an hour of the restart, so a feature still inflated after two hours means the duplicates sit in state that never expires. This changes the repair.
+- Is the running counter keyed per customer, and what resets it? It decides the repair scope (a true 60-minute event-time window would have healed itself within an hour, but a counter that never expires old events keeps the duplicates until it is rebuilt).
 - Does every event have a stable unique ID? It decides whether dedupe is possible at all.
 - Is the raw log (immutable, replayable) still retained for the affected range? It is the source of truth for the repair.
 - Does the offline training table read the same stream? If yes, training data is poisoned too.
@@ -287,7 +287,7 @@ counterfactual lost if fallbacks are heavy users 520
 - Re-scoring changes decisions people already acted on; the owner decides.
 
 **What the interviewer scores:**
-- Strong: gets 1,000,000 and the 33% bound, and asks whether the window is event-time. Weak: restarts the job and hopes.
+- Strong: gets 1,000,000 and the 33% bound, and sees that a non-expiring counter will not self-heal. Weak: restarts the job and hopes.
 - Strong: repair from the raw log with dedupe, versioned write, cache clear. Weak: subtracts a constant from the store.
 - Strong: design fix (idempotency, dedupe state, reconciliation). Weak: "do not restart the job".
 - Strong: ordered actions with stop-gap criteria. Weak: a flat list.
@@ -765,7 +765,7 @@ lease, run-scoped paths and promotion checks passed
 **Say this first (1 line):** The monitor is not wrong, it is answering the wrong question: with 2,000,000 rows the smallest KS statistic that is "significant" at 0.001 is about 0.002, so a real but tiny shift of 0.02 is 10 times past it; I would alert on effect size, calibrated on history and on feature importance, not on p-values.
 
 **Clarifying questions:**
-- How big is the reference set? Critical D depends on both sample sizes (0.0063 with a 100,000-row reference against 0.00195 with 2,000,000).
+- Is the reference fixed at 2,000,000 rows, and how often is it refreshed? Critical D depends on both sample sizes (0.00195 at 2,000,000 against 2,000,000, but 0.0063 if the reference were only 100,000 rows), so a smaller or stale reference changes the reading.
 - Are the features continuous or discrete or heavy with ties? KS p-values are only exact for continuous data; with ties they are conservative, and the statistic can be driven by one common value.
 - How much does week-to-week variation (seasonality, pay cycles, promotions) move D normally? That sets the threshold.
 - Which features matter to the model (importance, or a measured effect on the score)? Alerts should weigh by that.
