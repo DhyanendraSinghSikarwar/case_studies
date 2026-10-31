@@ -1,4 +1,0 @@
-drain with 8 pods (1000/s): 420 s
-drain with 10 pods (1250/s): 120 s
-served 45000 queued 1000 shed 35000 shed share 0.432
-standby cost/day 960 loss per spike 1750.0 break-even spikes/day 0.55

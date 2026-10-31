@@ -108,10 +108,10 @@ assert (900-500)*90 == 36000
 add(2, '🟡', "A GPU service handles 400 requests per second against a capacity of 500, and traffic jumps to 900 per second. New pods need 90 seconds to load the model, and the autoscaler reacts to CPU, which stays low because the work is GPU-bound. Compute the backlog that builds in the 90 seconds before new capacity arrives, and say what you scale on instead and how you protect users meanwhile.", 'G')
 # 27 fallback
 assert 1000000*0.04 == 40000 and round(40000*(0.05-0.035)) == 600 and round((0.05-0.035)/0.05, 2) == 0.30
-add(2, '🟡', "A ranking model with a 150 ms timeout falls back to a popularity list on 4% of 1,000,000 hourly requests, which is 40,000 requests. Conversion is 5% on the model and 3.5% on the fallback, so the fallback is 30% lower relative to 5%. Compute the conversions lost per hour due to fallbacks, and decide whether to raise the timeout, add capacity or improve the fallback.", 'L')
+add(2, '🟡', "A ranking model with a 150 ms timeout falls back to a popularity list on 4% of 1,000,000 hourly requests, which is 40,000 requests. Conversion is 5% on the model and 3.5% on the fallback, so the fallback is 30% lower relative to 5%. Estimate the conversions lost per hour due to fallbacks (and say how reliable that estimate is), and decide whether to raise the timeout, add capacity or improve the fallback.", 'L')
 # 28 streaming idempotency
 assert 20*50000 == 1000000
-add(2, '🟡', "A streaming job restarted and replayed the last 20 minutes from its committed offset at 50,000 events per minute, so 1,000,000 events were counted twice in the orders_last_hour feature. The model has been reading inflated counts for two hours. How do you repair the feature values, and how do you make replays safe by design?", 'D')
+add(2, '🟡', "A streaming job restarted and replayed the last 20 minutes from its committed offset at 50,000 events per minute, so 1,000,000 events were counted twice in the orders_last_hour feature. The model has been reading inflated counts for two hours, and the feature is a running counter that does not expire old events. How do you repair the feature values, and how do you make replays safe by design?", 'D')
 # 29 secrets leak
 assert 14 > 0
 add(2, '🔴', "A training notebook containing a cloud access key was pushed to a public repository and a secret scanner flagged it 3 hours later. The key can read a bucket with 2,100,000 customer records, and the access logs show 14 downloads from addresses nobody recognises. What do you do in the first hour, in order, and what do you tell security, legal and the business?", 'ED:secrets and data leakage in ML repositories')
@@ -133,7 +133,7 @@ assert 7.5-6 == 1.5 and 24//6 == 4
 add(2, '🟡', "A training job takes 7.5 hours, and after a schedule edit it starts every 6 hours, so the second run starts 1.5 hours before the first finishes. Both write to the same registry name and the same checkpoint folder. How do you find out what has already been overwritten, what can the scheduler do to prevent overlap, and how do you make the training job safe if it does overlap?", 'D')
 # 35 KS flags everything
 assert 38/40 == 0.95
-add(2, '🟡', "A two-sample KS test comparing this week's 2,000,000 rows to the reference flags 38 of 40 features (95% of them) with p-values below 0.001, while the largest KS statistic is only 0.02 and the model's labelled AUC is unchanged. Explain why the monitor fires constantly, and how you would change the test, the effect-size threshold and the alert rule.", 'A')
+add(2, '🟡', "A two-sample KS test comparing this week's 2,000,000 rows to a reference of 2,000,000 rows flags 38 of 40 features (95% of them) with p-values below 0.001, while the largest KS statistic is only 0.02 and the model's labelled AUC is unchanged. Explain why the monitor fires constantly, and how you would change the test, the effect-size threshold and the alert rule.", 'A')
 
 # ================= 1 star =================
 # 36 rate limits

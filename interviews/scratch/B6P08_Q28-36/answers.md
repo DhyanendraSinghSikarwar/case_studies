@@ -119,7 +119,7 @@ standby cost/day 960 loss per spike 1750.0 break-even spikes/day 0.55
 
 **Common mistakes:** Using capacity (500) as the drain rate instead of the surplus. Forgetting detection lag. Scaling on CPU for a GPU-bound job. Unbounded queues. Retries without jitter. Blaming a person in the postmortem.
 
-### Q29 ⭐⭐ 🟡 A ranking model with a 150 ms timeout falls back to a popularity list on 4% of 1,000,000 hourly requests, which is 40,000 requests. Conversion is 5% on the model and 3.5% on the fallback, so the fallback is 30% lower relative to 5%. Compute the conversions lost per hour due to fallbacks, and decide whether to raise the timeout, add capacity or improve the fallback.
+### Q29 ⭐⭐ 🟡 A ranking model with a 150 ms timeout falls back to a popularity list on 4% of 1,000,000 hourly requests, which is 40,000 requests. Conversion is 5% on the model and 3.5% on the fallback, so the fallback is 30% lower relative to 5%. Estimate the conversions lost per hour due to fallbacks (and say how reliable that estimate is), and decide whether to raise the timeout, add capacity or improve the fallback.
 **Asked at:** LLM-serving resilience pages (getmaxim, TrueFoundry, tianpan and Statsig pages on retries, 429 handling, fallbacks, circuit breakers and cost during failover; one snippet notes that silent quality degradation is invisible to HTTP success rates); practitioner material, no confirmed interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 **Say this first (1 line):** The naive loss is 40,000 x (5.0% - 3.5%) = 600 conversions an hour (1.2% of the 50,000 an all-model hour would give); I would first split why requests time out, then fix the biggest cause, usually capacity, before touching the timeout or the fallback list.
 
@@ -240,7 +240,7 @@ counterfactual lost if fallbacks are heavy users 520
 
 **Common mistakes:** Applying 30% to the request count. Calling a measured rate a certainty. Ignoring selection bias. Raising the timeout without a latency guardrail. Fixing before measuring why requests time out.
 
-### Q30 ⭐⭐ 🟡 A streaming job restarted and replayed the last 20 minutes from its committed offset at 50,000 events per minute, so 1,000,000 events were counted twice in the orders_last_hour feature. The model has been reading inflated counts for two hours. How do you repair the feature values, and how do you make replays safe by design?
+### Q30 ⭐⭐ 🟡 A streaming job restarted and replayed the last 20 minutes from its committed offset at 50,000 events per minute, so 1,000,000 events were counted twice in the orders_last_hour feature. The model has been reading inflated counts for two hours, and the feature is a running counter that does not expire old events. How do you repair the feature values, and how do you make replays safe by design?
 **Asked at:** Data-pipeline pages (luminousmen on avoidable backfills and non-idempotent jobs, DZone on silent upstream schema change, HackerNoon and Seattle Data Guy on silent pipeline failures, DataExpert on schema drift and idempotent replays, DataVidhya on measuring detection latency in postmortems); practitioner blogs rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 **Say this first (1 line):** 20 minutes at 50,000 a minute is 1,000,000 duplicates, up to +33% on a 3,000,000-event hourly total; I stop the damage first, rebuild the feature from the raw log with a dedupe on event ID, and make the job safe by design so a replay changes nothing.
 
@@ -760,7 +760,7 @@ lease, run-scoped paths and promotion checks passed
 
 **Common mistakes:** Queueing overlapped runs (lag grows forever). Only fixing the schedule and not the shared paths. Not checking the registry and alias history. Resuming from "latest". Deleting checkpoints before auditing. Blaming the person who edited the schedule.
 
-### Q34 ⭐⭐ 🟡 A two-sample KS test comparing this week's 2,000,000 rows to the reference flags 38 of 40 features (95% of them) with p-values below 0.001, while the largest KS statistic is only 0.02 and the model's labelled AUC is unchanged. Explain why the monitor fires constantly, and how you would change the test, the effect-size threshold and the alert rule.
+### Q34 ⭐⭐ 🟡 A two-sample KS test comparing this week's 2,000,000 rows to a reference of 2,000,000 rows flags 38 of 40 features (95% of them) with p-values below 0.001, while the largest KS statistic is only 0.02 and the model's labelled AUC is unchanged. Explain why the monitor fires constantly, and how you would change the test, the effect-size threshold and the alert rule.
 **Asked at:** Alerting and drift-monitor material (an ICLR 2026 listing on false-alarm rates of drift detectors, an MLflow alerts playbook, GeoSurge, LeadDev and Rootly pages on thresholds, monitoring debt and alert fatigue); research and practitioner pages rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 **Say this first (1 line):** The monitor is not wrong, it is answering the wrong question: with 2,000,000 rows the smallest KS statistic that is "significant" at 0.001 is about 0.002, so a real but tiny shift of 0.02 is 10 times past it; I would alert on effect size, calibrated on history and on feature importance, not on p-values.
 
@@ -1037,3 +1037,127 @@ full-copy equivalents downloaded: 1.5
 - Does the 3-hour delay change the answer? It widens the window and shifts weight to prevention: push-time scanning shrinks it to minutes.
 
 **Common mistakes:** Deleting rather than disabling the key. Cleaning the repo first. Multiplying downloads by records. Telling customers before legal agrees. Not rotating the other secrets in the same file. Blaming the engineer.
+
+### Q36 ⭐ 🟢 The drift job itself failed 12 days ago because of an expired credential, and the dashboard kept showing the last computed values as if they were current. Nobody noticed until a model issue made someone check. How do you monitor the monitor, and what do you do about the 12 days with no coverage?
+**Asked at:** Alerting and drift-monitor material (an ICLR 2026 listing on false-alarm rates of drift detectors, an MLflow alerts playbook, GeoSurge, LeadDev and Rootly pages on thresholds, monitoring debt and alert fatigue); research and practitioner pages rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
+**Say this first (1 line):** I monitor the monitor with a freshness stamp on the dashboard, a dead-man alert that fires when no successful run has landed in 1.5 intervals (36 hours instead of 12 days), and a nightly self-test; then I backfill the 12 missing days from retained logs before they expire.
+
+**Clarifying questions:**
+- How long are input and prediction logs retained? If 14 days, the first uncovered day expires in 2 days; if 30, in 18. This sets how fast the backfill must start.
+- Did anything else fail with the same credential (other jobs, the model's own data feeds)? One expired credential rarely breaks one thing.
+- Is the job idempotent per day partition? It decides whether I can safely re-run 12 days.
+- Who owns the drift job and who gets its failure alert? If nobody was paged on failure, that is the root cause.
+- What happened to the model in these 12 days (retrain, deploy, upstream change, labels)? It shapes the retroactive review.
+
+**Approach:**
+1. First 15 minutes: renew the credential, re-run the latest day, confirm the dashboard updates. Put a visible banner on the dashboard that says "no coverage from day X to day Y". Tell consumers of the dashboard, in one line, that the numbers were stale.
+2. Check what else the credential touched, and whether the expiry broke other jobs silently.
+3. Backfill, first day: re-run the job for each of the 12 daily partitions (idempotent, one partition at a time), then read the daily results. In my illustrative simulation, drift began on gap day 6 and the KS statistic first passed a 0.10 threshold on day 8, so 5 days of drift were unwatched. Treat this as a retroactive incident if drift shows up: check the model's labelled performance for those days and the decisions made.
+4. If the logs are gone, record the gap as unrecoverable, use labels when they arrive to check performance for the period, and say so in the postmortem. Do not fill the gap with the last value.
+5. Monitor the monitor (design):
+   - Freshness stamp: the dashboard shows "computed at, covering up to" and turns red when the age is over 1.5 intervals (36 hours for a daily job). A dashboard that shows the last value without its age is the failure here.
+   - Dead-man alert: pages when no successful run is recorded within 36 hours. Worst-case detection delay is 36 hours, not 288 (8x better), and at most 1 run missed before the first alert.
+   - Failure alerts routed to a person, not a log.
+   - Credential expiry alert at 14 days: it would have fired 26 days before today.
+   - Self-test: inject a known shift (0.5 standard deviations in my test, D of 0.2) and require the alert, and a no-shift case that must stay quiet (D of 0.004). Run nightly and on every deploy of the monitor.
+   - An independent watcher: a second, simpler check (or another team's job) that only looks at heartbeat timestamps.
+6. First day (continued): add all of the above, put the credential in a rotation system, and write the runbook.
+7. Next quarter: a quarterly "break the monitor on purpose" drill (expire a test credential, kill the job), an alert inventory with owners, and a rule that every dashboard shows data age.
+8. Blameless postmortem: the monitor was part of the system and had no monitor. Timeline from expiry to discovery (12 days), why a failure produced no page, why a stale chart looked current. Findings and action items with owners; the person who found it by chance is thanked, not questioned.
+
+**Rollback and escalation criteria (illustrative):**
+- Page the owner if no successful run in 36 hours; page the platform lead at 72 hours.
+- Escalate to the model owner if the backfill shows daily D of at least 0.10 on important features, or labelled performance outside its noise in the gap.
+- If the backfill cannot finish before the oldest log expires, escalate to extend retention for the affected range first.
+- Roll back the new alert if it pages more than twice a month for non-failures.
+
+**Metrics:**
+- Monitor freshness = now - time of last successful run (hours). Target under 36 for a daily job.
+- Coverage = days with a successful drift result / days in the period. 12 days missing is a coverage hole.
+- Detection delay = time from first missed run to first page (target 36 hours or less; actual 288).
+- Self-test pass = injected shifts detected / injected shifts, and quiet cases that stayed quiet / quiet cases.
+- Guardrails: alert volume, days to credential expiry.
+
+**Risks:**
+- A dead-man alert that depends on the same credential can fail silently too; send heartbeats from a different path.
+- Backfilling against a reference that moved in the meantime gives misleading D values; use the reference that was current at the time.
+- A noisy new alert gets muted; keep the dead-man alert separate and rare.
+- Backfill load on the warehouse; run partitions one at a time.
+
+**What the interviewer scores:**
+- Strong: freshness stamp, dead-man alert, expiry alert, self-test with numbers. Weak: "add a failure email".
+- Strong: handles the 12-day hole (backfill, retention clock, retroactive check). Weak: ignores the gap.
+- Strong: notes the heartbeat must be independent of the thing it watches. Weak: monitors with the same credential.
+- Strong: ordered actions and escalation times. Weak: flat list.
+- Strong: blameless; thanks the person who noticed. Weak: asks who forgot to renew the credential.
+
+**Example:** Illustrative numbers. Weak: "I would renew the credential and add an alert if the job fails." Strong: "A failure alert only works if the job runs. I add a dead-man alert on the last success timestamp, 36 hours for a daily job instead of 12 days, plus an expiry warning 14 days ahead. For the 12 days, I backfill each partition now, because with 14-day retention the first day expires in 2 days, then look for when drift began."
+
+**Code:**
+```python
+# Illustrative numbers only. Detection delay for a silent monitor, retention clock for the backfill, and a monitor self-test.
+import numpy as np
+from scipy import stats
+interval_h = 24
+gap_days = 12
+missed = gap_days                                         # one missed daily run per day
+print('missed daily runs:', missed)
+assert missed == 12
+# Dead-man switch: alert if the newest successful run is older than 1.5 x interval.
+threshold_h = 1.5 * interval_h
+worst_detect_h = threshold_h                              # failure right after a success; first alert when age passes the threshold
+print('worst-case detection delay with a dead-man switch (h):', worst_detect_h, 'vs actual', gap_days * 24)
+assert worst_detect_h == 36 and gap_days * 24 == 288 and gap_days * 24 / worst_detect_h == 8.0
+missed_with_switch = int(worst_detect_h // interval_h)    # runs missed before the first alert
+assert missed_with_switch == 1
+# Expiry warning would have fired well before the failure.
+warn_days_before = 14
+print('days before today that a 14-day expiry warning fires:', gap_days + warn_days_before)
+assert gap_days + warn_days_before == 26
+# Retention clock: can the gap still be backfilled? Prediction and input logs kept N days (illustrative).
+for retention in (30, 14):
+    oldest_age = gap_days                                 # age in days of the first uncovered day
+    left = retention - oldest_age
+    print(f'retention {retention} d: first uncovered day expires in {left} days')
+assert 30 - gap_days == 18 and 14 - gap_days == 2
+# Self-test of the monitor: inject a known shift, require the alert; run on every deploy and nightly.
+def monitor(ref, cur, thr=0.10):
+    d = stats.ks_2samp(ref, cur).statistic
+    return d >= thr, d
+rng = np.random.default_rng(36)
+ref = rng.standard_normal(50_000)
+fires, d_inj = monitor(ref, rng.standard_normal(50_000) + 0.5)          # synthetic shift of 0.5 sd
+quiet, d_null = monitor(ref, rng.standard_normal(50_000))
+print('injected shift D', round(d_inj, 3), 'fires', bool(fires), '| no shift D', round(d_null, 4), 'fires', bool(quiet))
+assert fires and not quiet
+# Backfill: re-run the job per day partition (idempotent), find when drift actually began inside the gap.
+days = np.arange(1, gap_days + 1)
+shift = np.where(days >= 6, 0.1 * (days - 5), 0.0)                       # drift began on gap day 6 and grew (invented)
+Ds = [stats.ks_2samp(ref[:20_000], rng.standard_normal(20_000) + s).statistic for s in shift]
+first = int(days[[d >= 0.10 for d in Ds].index(True)])
+print('daily D over the gap:', [round(float(d), 2) for d in Ds])
+print('first day over the 0.10 threshold:', first, '-> days of unwatched drift:', gap_days - first + 1)
+assert first == 8 and gap_days - first + 1 == 5
+# Dashboard: show 'as of' and turn red when stale.
+def banner(age_h): return 'STALE' if age_h > threshold_h else 'ok'
+assert banner(12) == 'ok' and banner(48) == 'STALE' and banner(288) == 'STALE'
+```
+
+**Output (my run):**
+```text
+missed daily runs: 12
+worst-case detection delay with a dead-man switch (h): 36.0 vs actual 288
+days before today that a 14-day expiry warning fires: 26
+retention 30 d: first uncovered day expires in 18 days
+retention 14 d: first uncovered day expires in 2 days
+injected shift D 0.2 fires True | no shift D 0.0043 fires False
+daily D over the gap: [0.01, 0.01, 0.01, 0.01, 0.01, 0.05, 0.08, 0.12, 0.16, 0.2, 0.24, 0.27]
+first day over the 0.10 threshold: 8 -> days of unwatched drift: 5
+```
+
+**Follow-ups:**
+- Why 1.5 intervals and not 1? A run can be a few hours late without being broken; 1.5 avoids a page for normal jitter.
+- Who monitors the dead-man alert? A second, simple check owned by a different team, or a managed heartbeat service, with a weekly test page.
+- What do you tell stakeholders about the gap? The dates, what was recovered by backfill, what could not be, and what changed.
+
+**Common mistakes:** Showing last-known values with no age. Relying only on job-failure alerts. Using the same credential for the monitor and its watcher. Ignoring the retention clock on the backfill. Filling the gap with the last value. Hunting for the person who missed the renewal.

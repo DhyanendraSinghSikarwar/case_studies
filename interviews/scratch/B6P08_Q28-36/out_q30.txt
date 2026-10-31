@@ -1,5 +1,0 @@
-peak inflation of the hourly total 0.3333
-last minute after restart with inflated total: 59
-users flagged correctly 386 flagged with inflated counts 645 flips 259
-worst-case detection delay with a 10 minute reconciliation: 10 min vs 120 min actual
-recompute event-time range (minutes relative to restart): -80 to 120

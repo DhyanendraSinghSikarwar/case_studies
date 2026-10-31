@@ -1,9 +1,0 @@
-critical D at n=m=2,000,000, alpha=0.001: 0.00195
-observed D=0.02 is 10.3 x the critical value
-critical D if the reference has only 100,000 rows: 0.0063
-critical D for 5,000 rows each: 0.039
-2,000,000 rows, shift 0.05 sd: D 0.0207 p 0.0
-flagged 38 of 40 ( 0.95 ), max D 0.0235
-AUC before 0.7765 after the shift 0.776
-week-over-week D: median 0.0085 99th percentile 0.0244
-expected flags per week under no change at p<0.001: 0.04 ; P(at least one): 0.0392
