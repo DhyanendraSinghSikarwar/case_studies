@@ -327,7 +327,7 @@ If asked about pay or notice terms: "I would like to understand the whole packag
 - Memorising an AI-written line that does not sound like you.
 
 ### Q19 ⭐⭐ 🟢 Where do you want your career to be in three to five years, and how does this role help you get there?
-**Asked at:** General HR-style questions listed on aggregator pages (Glassdoor data science question pages, Prepfully and InterviewPal job-change-reason pages, an edX data-industry sample list); commonly reported in public guides; behavioural rounds appear in the Book 7 Part 1 profiles (Google, Microsoft, Amazon, Meta; see those profiles for their evidence tags and caveats); search snippets only, not opened
+**Asked at:** No public page found for this exact wording, editor-designed; HR-style career and motivation questions of this kind appear on aggregator lists (Glassdoor data science question pages, Prepfully and InterviewPal pages, an edX data-industry sample list); commonly reported in public guides; see the Book 7 Part 1 profiles for company-specific process evidence and caveats.
 **Say this first (1 line):** I want to grow into deeper ownership of data or ML work that people use, and this role is a good next step because of the scope it offers.
 
 **Structure:** Three beats, not STAR.
@@ -374,7 +374,7 @@ I would also like to contribute by [what you can give the team].
 - Copying an AI or website answer that does not match your real CV.
 
 ### Q20 ⭐⭐ 🟢 What kind of work energises you, and what kind of work drains you, in data or ML?
-**Asked at:** General HR-style questions listed on aggregator pages (Glassdoor data science question pages, Prepfully and InterviewPal job-change-reason pages, an edX data-industry sample list); commonly reported in public guides; behavioural rounds appear in the Book 7 Part 1 profiles (Google, Microsoft, Amazon, Meta; see those profiles for their evidence tags and caveats); search snippets only, not opened
+**Asked at:** No public page found for this exact wording, editor-designed; HR-style career and motivation questions of this kind appear on aggregator lists (Glassdoor data science question pages, Prepfully and InterviewPal pages, an edX data-industry sample list); commonly reported in public guides; see the Book 7 Part 1 profiles for company-specific process evidence and caveats.
 **Say this first (1 line):** I am energised by solving open problems with data and seeing people use the result, and drained by work with no clear purpose or no feedback, and I know how to manage that.
 
 **Structure:** Use a short pattern, not STAR.
