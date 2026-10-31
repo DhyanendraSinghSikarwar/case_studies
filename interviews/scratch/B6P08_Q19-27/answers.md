@@ -3,7 +3,7 @@
 **Say this first (1 line):** The alert compares a Sunday to a Wednesday, so I give it a seasonal baseline (same hour, same day type, last 4 weeks, with a holiday calendar), a deep tier that pages at once and a mild tier that needs two hours, and I do not re-enable the page until a backtest shows the 2 real outages still fire.
 
 **Clarifying questions:**
-- What exactly is the baseline: the same hour one week ago, or the mean of the last 7 days? Why it matters: a same-hour-last-week rule would not page on ordinary weekends, so 9 weekend pages tell me the baseline mixes weekdays and weekends (the simulation below uses that reading; confirm it).
+- The baseline is the mean of the same hour over the previous 7 days, so it mixes weekdays and weekends. Why it matters: that is exactly why ordinary weekends page (a same-hour-last-week baseline would not); the simulation below uses this baseline.
 - Does volume fall because traffic fell, or because our service stopped answering? Why: a quiet Sunday and a broken load balancer look the same on this one chart, so I want an upstream request count or an error rate beside it.
 - How fast must a real outage page us, and what did the 2 real ones cost? Why: this sets how much delay I may add for noise filtering.
 - Who keeps a holiday calendar, and are there promotions or launches that move volume on purpose? Why: scheduled events are the other big source of false pages.
@@ -361,10 +361,10 @@ The warm-up decay curve is an assumption; the exposure arithmetic is exact for t
 
 ### Q22 ⭐⭐ 🟡 You must write automatic rollback criteria for a model whose error rate is about 2% at baseline, with 10,000 canary requests available before a ramp. The standard error of an error rate of 2% on 10,000 requests is about 0.14 points, so a rise to 2.5% (0.5 points absolute, 25% relative to 2%) is about 3.6 standard errors if the 2% baseline is treated as exactly known (about 2.4 against a concurrent control of 10,000 requests). What rule do you write, and how do you handle small segments that this volume cannot see?
 **Asked at:** MLOps interview guides (startup.jobs, Hyring, kore1, refresh.cv, wecreateproblems and Yardstick pages list rollback, canary versus blue/green versus shadow, and 'tell me about an urgent production incident' prompts, and one 2026 guide says the strongest questions test custody of a live model); practitioner and prep-site material rather than a confirmed employer round; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
-**Say this first (1 line):** I write the rule in numbers before the canary starts: compare to a concurrent control, roll back on a z of 3 or more (checked in fixed steps) or on a hard error cap, hold the ramp in a grey zone, and give small segments their own count-based rule plus a longer bake. One correction to the prompt: 3.6 standard errors assumes the 2% baseline is exactly known.
+**Say this first (1 line):** I write the rule in numbers before the canary starts: compare to a concurrent control, roll back on a z of 3 or more (checked in fixed steps) or on a hard error cap, hold the ramp in a grey zone, and give small segments their own count-based rule plus a longer bake. Note that 3.6 standard errors holds only if the 2% baseline is treated as exactly known.
 
 **Clarifying questions:**
-- Is the 2% baseline measured on a control running at the same time, or taken from history? Why: the prompt's 3.6 treats it as known; against a concurrent control of the same size the same 0.5-point rise is about 2.4 standard errors.
+- Is the 2% baseline measured on a control running at the same time, or taken from history? Why: 3.6 treats it as known; against a concurrent control of 10,000 requests the same 0.5-point rise is about 2.4 standard errors.
 - What rise in error rate is actually harmful: 0.5 points, 1 point? Why: it sets the effect to detect, and with 10,000 requests a 0.5-point rise is caught only part of the time.
 - Which segments matter (customer tier, region, device, language)? Why: a segment with 2% of traffic has only 200 canary requests.
 - Is an automatic rollback acceptable, or should it page a human first? Why: some rollbacks have side effects.
@@ -392,7 +392,7 @@ The warm-up decay curve is an assumption; the exposure arithmetic is exact for t
 - Error rate misses a wrong-but-successful model; add a score-distribution check.
 
 **What the interviewer scores:**
-- Strong: catches that "3.6 standard errors" depends on a known baseline and gives the concurrent-control value. Weak: repeats the number as proof.
+- Strong: knows that "3.6 standard errors" depends on a known baseline and gives the concurrent-control value. Weak: repeats the number as proof.
 - Strong: pre-registered thresholds with a grey zone and a hard guard. Weak: "roll back if it looks bad".
 - Strong: explains peeking and gives a tested false-rollback rate. Weak: one threshold at 2 sigma.
 - Strong: honest about small segments and what to do about them.
@@ -709,7 +709,7 @@ The data are synthetic; the two ablation numbers will differ on real tables.
 ### Q25 ⭐⭐ 🟡 A feature pipeline was broken for 9 daily partitions. Each partition takes 40 minutes, the cluster can run 4 partitions at once, and a rolling 7-day feature may make each day depend on the stored output of the previous day. Compute the backfill wall-clock time if the days were independent and if they must run in order, and say how you would order the work, protect live jobs and validate the result.
 **Asked at:** Data-pipeline pages (luminousmen on avoidable backfills and non-idempotent jobs, DZone on silent upstream schema change, HackerNoon and Seattle Data Guy on silent pipeline failures, DataExpert on schema drift and idempotent replays, DataVidhya on measuring detection latency in postmortems); practitioner blogs rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 **Say this first (1 line):** If the 9 days were independent it is 3 waves of 40 minutes, 120 minutes; if each day must wait for the previous one it is 9 x 40 = 360 minutes and extra slots do not help; so I first check whether the rolling feature really reads yesterday's output or can be rebuilt from raw daily data.
-(Correction to the framing: "a rolling 7-day feature" does not by itself force an order. A window computed from raw events is independent per day; only an incremental feature that reads the stored output of the previous day needs the chain.)
+(A rolling 7-day feature only forces an order if it reads the stored output of the previous day; a window computed from raw events is independent per day.)
 
 **Clarifying questions:**
 - Does day d read raw data for d-6 to d, or the stored feature output of d-1? Why: this is the difference between 120 and 360 minutes.
