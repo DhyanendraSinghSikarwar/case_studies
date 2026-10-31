@@ -1,0 +1,16 @@
+**Weak response:** Defend yourself immediately with every piece of missing context, or go quiet, agree to everything with a tight smile and then complain afterwards to colleagues. Either way the team sees a reaction instead of a plan.
+
+**Strong response:** In the moment, listen, do not argue, and acknowledge the fair part in one sentence. Ask one clarifying question about what "hard to follow" meant, so you get something you can act on. Say you will come back with a concrete plan. Do not litigate context in front of the team. Afterwards, ask your manager for a short private conversation: share the context neutrally (for example, what changed in scope or when data arrived), ask for two or three examples of what was unclear, and agree on what good looks like for the next analysis. Then follow through and show the change. If you feel the way it was delivered was a problem, raise that separately and calmly in the one-to-one.
+
+**Why it works:** Public pushback rarely wins and teaches the team that feedback is risky. Taking the fair part and asking for specifics shows maturity, while the private follow-up gives you a safe place for context. Honest effort afterwards is the proof.
+
+**What the interviewer scores:** Emotional control, separating fair from unfair without blame, curiosity about specifics, a private follow-up, and a visible change. For the story form of this question, see Book 9 Part 1 Q13.
+
+**Say it like this:**
+```
+"Thanks for saying that. You are right that the last two were late and harder to follow than they should have been. Could you give me one example of where it lost you? I would like to fix that. I will come to you after this with a plan for the next analysis, and I have a bit of context on the timing that I would like to share with you privately."
+```
+
+**If they push back:** If the interviewer asks "what if the feedback was simply unfair?", say you would still take the useful part, then explain the facts calmly in private with evidence such as dates and messages. If it keeps happening, you would ask for clearer expectations in writing, and involve HR only for a pattern of treatment, not one bad meeting. Do not claim you never make mistakes.
+
+**Common mistakes:** Justifying at length. Blaming other teams in public. Crying "context" as an excuse. Agreeing to everything then doing nothing. Venting about the manager to colleagues.

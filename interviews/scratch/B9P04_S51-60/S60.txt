@@ -1,0 +1,16 @@
+**Weak response:** Say yes to the date and hope nothing goes wrong, or refuse flatly and say it is unsafe without offering any alternative. Staying silent and shipping while privately worried is the worst.
+
+**Strong response:** Take the business pressure seriously and turn the argument into a risk decision with facts. Summarise what testing has found: the types of harmful answers, how often, and how serious. Offer options: delay as planned; launch to a small group or internal users first; launch with narrower scope, tighter guardrails, human review or an easy off switch; or launch with clear conditions to continue testing. State your recommendation and what you would need to see to be comfortable. If the decision owner still wants to go live, make sure the risk is written down and accepted by the right person, and raise it through your company's proper channel, such as the responsible-AI, security or compliance contact, if one exists. Do not decide alone, and do not hide the findings. Check your company's policy; for the technical side of evaluation and guardrails, see Book 2.
+
+**Why it works:** You respect the competitor pressure while keeping the decision informed. Options give leadership a path other than yes or no, and the written record protects customers and the team.
+
+**What the interviewer scores:** Judgement under pressure, courage with tact, risk framing, practical options, and use of proper escalation. Whether you can say what would change your mind.
+
+**Say it like this:**
+```
+"I understand why this week matters. Our tests so far found [number] harmful answers of [type], and the testing is not finished. I suggest three options: wait as planned, release to [small group] with a human check and a quick off switch, or release a narrower version. My recommendation is [option]. If we go live sooner, I would like the risks written down and approved by [owner], and I will raise it with [responsible-AI or compliance contact]."
+```
+
+**If they push back:** If told "the competitor will win", say you would help speed the safe parts, such as automating tests, but you cannot call it safe without results. If the leader overrules, say you would make sure the decision and risks are recorded, escalate through the proper channel, and keep monitoring after launch. Do not claim legal or regulatory conclusions; ask compliance.
+
+**Common mistakes:** Pure refusal. Silent compliance. Exaggerating the risk. Going over the leader's head first. Treating a few harmful answers as unimportant.

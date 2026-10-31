@@ -1,0 +1,16 @@
+**Weak response:** Ignore it because it is not your job, or take the colleague's work on silently for weeks. A third version is to tell the manager everything the colleague said in private, without asking them first.
+
+**Strong response:** Start with the person. Ask them privately how they are doing and what would help, and offer something small you can really give, such as a second pair of eyes on reviews for two weeks. Do not diagnose them. Encourage them to talk to their manager, HR or the company's employee support service if there is one. Tell them you are willing to be there if they want to raise it. Share their private words with the manager only if they agree, or if quality is putting customers or the team at real risk. In that case say what you observed in the work, not what they confided. Keep your own limits: you cannot carry their workload indefinitely.
+
+**Why it works:** It treats the colleague as an adult who owns their own situation, and it separates a private confidence from observable work problems. It also protects the team's quality through a concrete and time-boxed action rather than quiet resentment.
+
+**What the interviewer scores:** Empathy without overstepping, respect for confidence, a bias toward a direct conversation before escalation, sensible routing to the manager or HR, and awareness of your own capacity.
+
+**Say it like this:**
+```
+"I have noticed this has been a heavy few weeks, and you mentioned being exhausted. How are you doing? I can look over your reviews for the next two weeks if that helps. I think it could be worth telling [manager name] what is going on, or using [support channel] if the company has one. I will not share what you told me unless you want me to. If you would like, I can come with you."
+```
+
+**If they push back:** If the interviewer asks "what if they refuse to tell the manager?", say you respect that for now, keep helping within limits, and revisit if errors start affecting customers or deadlines. At that point you would tell the manager about the work impact only, and say so to the colleague first. If asked "is that your business?", say you are not their manager, but you share the team's quality and you care about a colleague.
+
+**Common mistakes:** Playing therapist or guessing a cause. Breaking the confidence at once. Silently doing their work until you burn out too. Treating it as a performance issue only. Making it sound like you would never involve anyone.

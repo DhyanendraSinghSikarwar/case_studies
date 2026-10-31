@@ -1,0 +1,16 @@
+**Weak response:** Stay silent and let "the data team" take the blame, or loudly announce in the review that it was your fault and the manager's advice was wrong. The first is dishonest by omission, the second ignores how to handle it well.
+
+**Strong response:** Own it, and do it in the proper way. First, talk to your manager and explain that you think the review should be accurate, because the team learns from facts and an unnamed blame hurts the whole group. Offer to add a factual, blameless description yourself: what the change was, what it triggered, what checks would have caught it. Then do it. Name your commit as the trigger without self-punishing language, and put the weight on process gaps such as missing tests, review or rollout checks, with owners and dates. If your manager still objects, say you will still correct the facts, and you will tell them first. If the review process has an owner, bring it to them. Do not hide the facts to avoid making waves.
+
+**Why it works:** Accurate reviews prevent the next outage, and a vague "data team" label spreads blame without learning. Owning it early builds more trust than being found out later. Blameless language protects people while keeping facts.
+
+**What the interviewer scores:** Integrity, ownership without drama, respectful handling of a manager's advice, focus on system fixes. For writing the incident summary, see Book 9 Part 2 Q38 and do not repeat the wording guide here.
+
+**Say it like this:**
+```
+"I would like the review to be accurate. The change that triggered the outage was my commit on [date]. I do not want to make this about people. The real gaps were [missing test], [no staged rollout] and [review step]. I would like to add that to the document with an owner and a date for each fix. I wanted to tell you first, and I think it will help the whole team."
+```
+
+**If they push back:** If asked "but your manager told you not to?", say you would explain your reasoning and try to persuade, because accuracy matters; you would not falsify anything, and you would tell the manager what you plan. If the culture punishes honesty, say you would still correct the record, and then think about the team. Check your company's incident process.
+
+**Common mistakes:** Hiding behind "the team". Over-apologising publicly. Blaming the manager. Naming other people. Offering no fixes.
