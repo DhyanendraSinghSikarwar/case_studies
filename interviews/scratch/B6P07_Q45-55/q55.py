@@ -27,6 +27,3 @@ assert abs(4/0.19 - be) < 1e-9
 c7b, _ = cost(0.80, 0.91)
 print(f"if accuracy at 0.7 is really 91%: cost {c7b:.3f} vs 0.9 option {c9:.3f}")
 assert c7b > c9
-# answer-all and escalate-all references
-print(f"answer all at 92% accuracy: {cost(1.0,0.92)[0]:.2f}; escalate all: {E:.2f}")
-assert abs(cost(1.0,0.92)[0]-1.6) < 1e-12

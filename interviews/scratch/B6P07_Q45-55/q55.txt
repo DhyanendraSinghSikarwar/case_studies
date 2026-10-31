@@ -1,0 +1,57 @@
+**Say this first (1 line):** Expected cost per question is 2.08 at threshold 0.7 and 2.13 at 0.9, so 0.7 is cheaper by only 0.05, and the choice flips when the wrong-answer cost passes about 21.05, so a 5% error in that one number reverses the decision and I would not treat it as settled.
+
+**Clarifying questions:**
+- Is the cost of 20 for a wrong answer measured (refunds, complaints, rework) or guessed? It is the number that decides the choice.
+- Is the accuracy of 92% and 97% measured on enough answered questions to trust? With a few hundred, each carries a few points of error.
+- Is the confidence score calibrated, so 0.7 means roughly 70% likely right? If not, thresholds do not mean what they say.
+- What does an escalation really cost, and can humans handle 45% of the volume? Capacity can be the real limit.
+- Do human escalations get everything right, or do they also make mistakes?
+- Are some questions high stakes, where a wrong answer costs far more than 20?
+
+**Approach:**
+1. Expected cost per question = P(answer) x P(wrong | answered) x wrong cost + P(escalate) x escalation cost + correct answers x 0.
+2. Threshold 0.7: answers 80%. Wrong = 0.80 x 0.08 = 0.064 per question, cost 0.064 x 20 = 1.28. Escalated = 20%, cost 0.20 x 4 = 0.80. Total = 2.08.
+3. Threshold 0.9: answers 55%. Wrong = 0.55 x 0.03 = 0.0165, cost 0.33. Escalated = 45%, cost 1.80. Total = 2.13.
+4. So 0.7 is cheaper by 0.05 per question (2.3%).
+5. Sensitivity to the wrong cost w: cost at 0.7 = 0.064w + 0.8; at 0.9 = 0.0165w + 1.8. Equal when 0.0475w = 1.0, so w = 21.05. Below that 0.7 wins; above it 0.9 wins. At w = 30 the costs are 2.72 and 2.30, so 0.9 wins by 0.42.
+6. Why it is so close: the extra 25% of questions answered at 0.7 (the band between thresholds) are right 81% of the time and wrong 19%. Answering is worth it when the wrong rate is below 4 / 20 = 20%. At 19% we are almost exactly at the line.
+7. Sensitivity to accuracy: if accuracy at 0.7 is really 91% (not 92%), its cost is 2.24 and 0.9 becomes better. So both inputs matter.
+8. What I would do: collect the real cost of a wrong answer, put confidence intervals on the accuracies, and look at a middle threshold such as 0.8, since the cost curve is flat here. Also use different thresholds by topic: strict for high-stakes topics, looser for low-stakes ones.
+
+**Metrics:**
+- Expected cost per question = answer rate x (1 - accuracy among answered) x wrong cost + (1 - answer rate) x escalation cost.
+- Coverage = answered / all questions. Selective accuracy = correct among answered / answered.
+- Break-even wrong cost = (cost difference of escalations) / (difference in wrong answers per question) = 1.0 / 0.0475 = 21.05.
+- Guardrails: escalation volume per day versus human capacity, wrong-answer rate by topic, calibration of the confidence score.
+
+**Risks:**
+- Confidence scores that are not calibrated; the same threshold behaves differently after a model or prompt change.
+- Measured accuracies have error; a 1-point error flips the decision.
+- Wrong answers are not equal: a few costly ones can dominate.
+- Escalation capacity: 45% escalation might not be handleable at the assumed cost of 4.
+- Users who get "I don't know" 45% of the time may stop using the product (not in the cost).
+
+**What the interviewer scores:**
+- Strong: 2.08 and 2.13 correct, with the break-even at 21.05 and the message that it is close to a tie. Weak: picks 0.9 because it has higher accuracy.
+- Strong: explains the marginal band (19% wrong against a 20% line). Weak: only plugs in numbers.
+- Strong: asks where the 20 comes from and about calibration. Weak: takes the inputs as facts.
+- Strong: proposes thresholds by topic and tests intermediate values.
+
+**Example:** Illustrative. At a wrong cost of 20, threshold 0.7 costs 2.08 and 0.9 costs 2.13. At 30, 0.7 costs 2.72 and 0.9 costs 2.30. Weak: "0.9 is 97% accurate, so 0.9." Strong: "The two are within 2% at a wrong cost of 20 and they cross at 21. I would first measure the true cost of a wrong answer, then maybe use 0.7 for low-stakes topics and 0.9 for high-stakes ones."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *How would you pick the threshold with a continuous curve?* Compute expected cost at many thresholds on a labelled validation set, and choose the minimum, with a bootstrap interval for the cost.
+- *What if wrong answers have different costs by topic?* Use a threshold per topic, or per risk class, from each topic's own cost.
+- *What about the 45% escalation load?* Add a capacity constraint, or the cost of waiting time for the human queue.
+
+**Common mistakes:**
+- Choosing the highest accuracy without pricing coverage.
+- Treating the wrong-answer cost as exact.
+- Forgetting that accuracy is measured among answered questions only.
+- Ignoring calibration and escalation capacity.

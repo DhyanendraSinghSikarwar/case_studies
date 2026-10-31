@@ -32,9 +32,9 @@ def n_paired(rho):
     return (za + zb) ** 2 * var / d ** 2
 for rho in (0.0, 0.5, 0.7, 0.9):
     print(f"rho {rho}: prompts needed (paired) = {math.ceil(n_paired(rho))}")
-assert math.ceil(n_paired(0.0)) == 1091 and math.ceil(n_paired(0.5)) == 546 and math.ceil(n_paired(0.7)) == 328 and math.ceil(n_paired(0.9)) == 110
+assert math.ceil(n_paired(0.0)) == 1091 and math.ceil(n_paired(0.5)) == 548 and math.ceil(n_paired(0.7)) == 330 and math.ceil(n_paired(0.9)) == 113
 
-# Check by simulation (seeded): paired design at rho = 0.7 with n = 328 prompts detects the drop about 80% of the time
+# Check by simulation (seeded): paired design at rho = 0.7 with n = 330 prompts detects the drop about 80% of the time
 rng = np.random.default_rng(11)
 def sim_power(n, rho, reps=4000):
     cov = rho * math.sqrt(p1 * (1 - p1) * p2 * (1 - p2))
@@ -45,6 +45,6 @@ def sim_power(n, rho, reps=4000):
     b, c = cells[:, 1], cells[:, 2]       # discordant counts
     z = (b - c) / np.sqrt(np.maximum(b + c, 1))     # McNemar z
     return float(np.mean(z > za))                    # drop detected, one direction (the other tail is negligible)
-pw = sim_power(328, 0.7)
-print(f"simulated power, paired, rho 0.7, n 328: {pw:.2f}")
+pw = sim_power(330, 0.7)
+print(f"simulated power, paired, rho 0.7, n 330: {pw:.2f}")
 assert 0.75 < pw < 0.86

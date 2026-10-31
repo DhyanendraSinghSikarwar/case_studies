@@ -564,7 +564,7 @@ detector recall 60%: implied true PII conversations ~16,667
 - Giving legal conclusions in the interview.
 - Wide access "for convenience".
 
-### Q18 ⭐⭐⭐ 🔴 Over three releases the offline pass rate on a 1,000-question set rose from 82% to 86% (4 points absolute), but the online resolution rate stayed at 61% then 61.5% across 20,000 conversations a month. List the reasons the two can diverge, say which check you do first, and how you would build an online metric you trust.
+### Q18 ⭐⭐⭐ 🔴 Over three releases the offline pass rate on a 1,000-question set rose from 82% to 86% (4 points absolute), but the online resolution rate moved only from 61% before the three releases to 61.5% after, on 20,000 conversations a month in each period. List the reasons the two can diverge, say which check you do first, and how you would build an online metric you trust.
 **Asked at:** LLM-evaluation pages (Manning's AI model evaluation chapter and an arXiv judge-bias study listing position, verbosity and self-preference bias, Arize and Langfuse pages on offline versus online evaluation, an LLM-as-judge survey); practitioner and academic material rather than an interview bank; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
 **Say this first (1 line):** The offline +4 points and the online +0.5 points disagree even after noise (the online interval tops out near +1.5), so I would first check whether the offline set matches live traffic, then build an online metric from outcomes I trust.
 

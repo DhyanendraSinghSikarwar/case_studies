@@ -80,7 +80,7 @@ add(3, '🔴', "A semantic cache with a similarity threshold of 0.92 serves 35% 
 assert 500000*0.02 == 10000
 add(3, '🔴', "Conversation logs store full prompts for 400 days, and a scan of 500,000 stored conversations finds phone numbers or emails in 2% of them, which is 10,000 conversations. Support staff and an analytics vendor can read the logs. What do you do now, what do you change in the logging design, and how do you handle the 10,000 existing conversations?", 'P')
 # A18 offline vs online
-add(3, '🔴', "Over three releases the offline pass rate on a 1,000-question set rose from 82% to 86% (4 points absolute), but the online resolution rate stayed at 61% then 61.5% across 20,000 conversations a month. List the reasons the two can diverge, say which check you do first, and how you would build an online metric you trust.", 'E')
+add(3, '🔴', "Over three releases the offline pass rate on a 1,000-question set rose from 82% to 86% (4 points absolute), but the online resolution rate moved only from 61% before the three releases to 61.5% after, on 20,000 conversations a month in each period. List the reasons the two can diverge, say which check you do first, and how you would build an online metric you trust.", 'E')
 
 # ================= 2 stars =================
 # temperature
