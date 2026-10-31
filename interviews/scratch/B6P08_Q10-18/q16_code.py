@@ -4,7 +4,7 @@ n, share = 500_000, 0.032
 diff_n = round(n * share)
 assert diff_n == 16_000
 rng = np.random.default_rng(16)
-thr = 0.50                                         # ASSUMED decision threshold (not in the prompt)
+thr = 0.50                                         # decision threshold, as stated
 prod = rng.beta(2, 5, n)                           # production scores
 cand = prod.copy()
 idx = rng.choice(n, diff_n, replace=False)

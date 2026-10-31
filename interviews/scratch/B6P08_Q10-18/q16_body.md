@@ -1,7 +1,7 @@
 **Say this first (1 line):** A shadow run shows how the candidate behaves on real inputs (errors, latency, score differences, decision flips) but not what happens to outcomes or users, so 3.2% differing is a list to investigate, not a yes or no on the switch.
 
 **Clarifying questions:**
-- What is the decision threshold, and what does a score of 0.05 mean in decisions? Scores that differ without crossing the threshold may change nothing; this prompt does not give the threshold, so I assume 0.5.
+- What is the decision threshold, and what does a score of 0.05 mean in decisions? Scores that differ without crossing the threshold may change nothing (0.5 here).
 - Do we have delayed labels for the shadow period? If so we can compare accuracy, not just agreement.
 - Is the shadow traffic the full mix (peak hours, all segments, edge cases)? A quiet weekday hides the bad cases.
 - What is the cost of a wrong decision in each direction? It tells which flips matter.

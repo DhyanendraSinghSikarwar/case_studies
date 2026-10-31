@@ -562,10 +562,10 @@ segment A p 4.8e-10 | rest of traffic: canary errors 0 vs 3.8 expected from cont
 
 ### Q15 ⭐⭐⭐ 🔴 Retraining the same commit on the same table gave an AUC of 0.842 on the 10,000-row holdout (10% positives, 1,000 rows) in March and 0.829 in September, an absolute gap of 0.013, and an auditor asks you to reproduce the March model. Nobody pinned the library versions, the table is refreshed in place, and seeds were not logged. How do you find out how much of the gap is noise, what changed and what is unrecoverable, and what do you record from now on?
 **Asked at:** Leakage and reproducibility material (arXiv 2207.07048 and 2311.04179 on leakage, an Omdena post on silent ML failures and label timing, an arXiv 2025 paper on reproducible ML infrastructure); research and practitioner pages rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
-**Say this first (1 line):** A 0.013 AUC gap on a 10,000-row holdout is about 1.2 standard errors if the holdouts differ (assuming 10% positives), so first measure seed and sampling noise; then recover what you can (lockfile history, image digests, warehouse snapshots), say plainly what is unrecoverable, and record everything from now on.
+**Say this first (1 line):** A 0.013 AUC gap on a 10,000-row holdout is about 1.2 standard errors if the holdouts differ (1,000 positives), so first measure seed and sampling noise; then recover what you can (lockfile history, image digests, warehouse snapshots), say plainly what is unrecoverable, and record everything from now on.
 
 **Clarifying questions:**
-- How many positives are in the holdout, and is it the same 10,000 rows in March and September? Standard error depends on positives (I assume 1,000, a 10% rate; the prompt does not say), and the same rows allow a paired comparison.
+- How many positives are in the holdout, and is it the same 10,000 rows in March and September? Standard error depends on positives (1,000 here, a 10% rate), and the same rows allow a paired comparison.
 - Does the auditor need the exact model or evidence the process was controlled? These are different deliverables.
 - Is there any snapshot: warehouse time travel, backups, exported training files, or a feature log? It decides what is recoverable.
 - Do we still have the container image, CI logs, or a `pip freeze` somewhere? Library versions can often be rebuilt from those.
@@ -598,7 +598,7 @@ segment A p 4.8e-10 | rest of traffic: canary errors 0 vs 3.8 expected from cont
 - Strong: concrete record list and a test that would catch the problem.
 - Weak: "set the seed and rerun" or "the model degraded"; claiming exact reproduction.
 
-**Example:** Illustrative: AUC 0.842 in March, 0.829 in September, gap 0.013, 1,000 positives assumed. Weak versus strong:
+**Example:** Illustrative: AUC 0.842 in March, 0.829 in September, gap 0.013, 1,000 positives. Weak versus strong:
 - Weak: "The September model is worse; I will retrain with a fixed seed to get March back."
 - Strong: "With 1,000 positives the standard error of the gap is about 0.011, so this is about 1.2 standard errors. I would rerun with 20 seeds on a frozen snapshot to see the seed spread, rebuild the old library versions from CI logs, and tell the auditor which parts I can reproduce and which, like the in-place table and the unlogged seeds, I cannot. From now on each run stores a data snapshot id, lockfile, image digest and seed."
 
@@ -608,7 +608,7 @@ import numpy as np
 
 assert round(0.842 - 0.829, 3) == 0.013
 rng = np.random.default_rng(15)
-n, pos_rate = 10_000, 0.10                     # ASSUMED 10% positives (the prompt does not say)
+n, pos_rate = 10_000, 0.10                     # 10% positives, as stated
 npos = int(n * pos_rate); nneg = n - npos
 assert (npos, nneg) == (1000, 9000)
 
@@ -679,7 +679,7 @@ so a 0.013 gap is about 1.2 SE: not strong evidence of real change from the data
 **Say this first (1 line):** A shadow run shows how the candidate behaves on real inputs (errors, latency, score differences, decision flips) but not what happens to outcomes or users, so 3.2% differing is a list to investigate, not a yes or no on the switch.
 
 **Clarifying questions:**
-- What is the decision threshold, and what does a score of 0.05 mean in decisions? Scores that differ without crossing the threshold may change nothing; this prompt does not give the threshold, so I assume 0.5.
+- What is the decision threshold, and what does a score of 0.05 mean in decisions? Scores that differ without crossing the threshold may change nothing (0.5 here).
 - Do we have delayed labels for the shadow period? If so we can compare accuracy, not just agreement.
 - Is the shadow traffic the full mix (peak hours, all segments, edge cases)? A quiet weekday hides the bad cases.
 - What is the cost of a wrong decision in each direction? It tells which flips matter.
@@ -724,7 +724,7 @@ n, share = 500_000, 0.032
 diff_n = round(n * share)
 assert diff_n == 16_000
 rng = np.random.default_rng(16)
-thr = 0.50                                         # ASSUMED decision threshold (not in the prompt)
+thr = 0.50                                         # decision threshold, as stated
 prod = rng.beta(2, 5, n)                           # production scores
 cand = prod.copy()
 idx = rng.choice(n, diff_n, replace=False)

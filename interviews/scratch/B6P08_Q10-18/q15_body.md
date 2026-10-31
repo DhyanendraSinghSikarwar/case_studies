@@ -1,7 +1,7 @@
-**Say this first (1 line):** A 0.013 AUC gap on a 10,000-row holdout is about 1.2 standard errors if the holdouts differ (assuming 10% positives), so first measure seed and sampling noise; then recover what you can (lockfile history, image digests, warehouse snapshots), say plainly what is unrecoverable, and record everything from now on.
+**Say this first (1 line):** A 0.013 AUC gap on a 10,000-row holdout is about 1.2 standard errors if the holdouts differ (1,000 positives), so first measure seed and sampling noise; then recover what you can (lockfile history, image digests, warehouse snapshots), say plainly what is unrecoverable, and record everything from now on.
 
 **Clarifying questions:**
-- How many positives are in the holdout, and is it the same 10,000 rows in March and September? Standard error depends on positives (I assume 1,000, a 10% rate; the prompt does not say), and the same rows allow a paired comparison.
+- How many positives are in the holdout, and is it the same 10,000 rows in March and September? Standard error depends on positives (1,000 here, a 10% rate), and the same rows allow a paired comparison.
 - Does the auditor need the exact model or evidence the process was controlled? These are different deliverables.
 - Is there any snapshot: warehouse time travel, backups, exported training files, or a feature log? It decides what is recoverable.
 - Do we still have the container image, CI logs, or a `pip freeze` somewhere? Library versions can often be rebuilt from those.
@@ -34,7 +34,7 @@
 - Strong: concrete record list and a test that would catch the problem.
 - Weak: "set the seed and rerun" or "the model degraded"; claiming exact reproduction.
 
-**Example:** Illustrative: AUC 0.842 in March, 0.829 in September, gap 0.013, 1,000 positives assumed. Weak versus strong:
+**Example:** Illustrative: AUC 0.842 in March, 0.829 in September, gap 0.013, 1,000 positives. Weak versus strong:
 - Weak: "The September model is worse; I will retrain with a fixed seed to get March back."
 - Strong: "With 1,000 positives the standard error of the gap is about 0.011, so this is about 1.2 standard errors. I would rerun with 20 seeds on a frozen snapshot to see the seed spread, rebuild the old library versions from CI logs, and tell the auditor which parts I can reproduce and which, like the in-place table and the unlogged seeds, I cannot. From now on each run stores a data snapshot id, lockfile, image digest and seed."
 

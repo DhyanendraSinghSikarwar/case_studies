@@ -2,7 +2,7 @@ import numpy as np
 
 assert round(0.842 - 0.829, 3) == 0.013
 rng = np.random.default_rng(15)
-n, pos_rate = 10_000, 0.10                     # ASSUMED 10% positives (the prompt does not say)
+n, pos_rate = 10_000, 0.10                     # 10% positives, as stated
 npos = int(n * pos_rate); nneg = n - npos
 assert (npos, nneg) == (1000, 9000)
 
