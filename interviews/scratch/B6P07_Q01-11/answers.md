@@ -926,3 +926,105 @@ API blended price 5.00 per million; self-host at 1x: 6.25, at 2x: 3.12
 - Forgetting that the self-host cost is paid even at low volume.
 - Sizing on average, not peak, traffic.
 - Skipping a quality test on real tasks.
+
+### Q11 ⭐⭐⭐ 🟡 A new prompt version v12 is canaried on 1,000 requests while the old version v11 serves 9,000, and JSON parse failures are 15 of 1,000 (1.5%) on v12 and 36 of 9,000 (0.4%) on v11. Compute whether the difference is larger than sampling noise, and state your rollback rule and who decides.
+**Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to prompt versioning and rollout topics in LLMOps material; related topics appear in public guides for data scientist, ML engineer and GenAI engineer loops; no page for the exact framing; search snippets only, not opened
+**Say this first (1 line):** The difference of 1.1 points (1.5% versus 0.4%) is far larger than sampling noise (two-proportion z of about 4.6, p about 0.000004), so v12 is worse on parse failures and I roll it back under a rule written before the canary, which the prompt owner can trigger without asking.
+
+**Clarifying questions:**
+- Were the 1,000 requests assigned to v12 at random, or by customer, route or time of day? Non-random assignment can make v12 look worse for reasons unrelated to the prompt.
+- What counts as a parse failure, and is it measured the same way on both versions? A different parser or retry logic invalidates the comparison.
+- Are failures clustered, for example by one long-input customer? Repeated requests from the same user are not independent.
+- What does a parse failure cost: a retry, a user-visible error, or a wrong action? It sets the rollback threshold.
+- Does v12 improve anything (accuracy, cost, tone) that I should weigh against the failures?
+
+**Approach:**
+1. Compute the rates: v12 15 / 1,000 = 1.5%, v11 36 / 9,000 = 0.4%, difference +1.1 points.
+2. Test the difference with a two-proportion z-test. Pooled rate = 51 / 10,000 = 0.51%. Standard error = sqrt(0.0051 x 0.9949 x (1/1,000 + 1/9,000)) = 0.0024. z = 0.011 / 0.0024 = 4.63. Cross-check with a Fisher exact test (p about 0.00009) and a count check: if v12 were as good as v11 we would expect 4 failures in 1,000, and seeing 15 or more has probability about 0.00002.
+3. Check the design: random assignment, same parser, no clustering by user. Look at the 15 failures: what do they have in common (long input, a certain field, missing closing bracket)?
+4. Apply the rollback rule (below). Here it fires, so route 100% back to v11.
+5. Fix the prompt, add a schema or constrained output (editor knowledge: availability depends on the provider and library), add a retry with repair, and re-canary.
+
+**Metrics:**
+- Parse-failure rate = responses that fail JSON parsing / responses served, per version.
+- Difference in rates with a Wilson interval for each: v12 about 0.91% to 2.46%, v11 about 0.29% to 0.55%. The intervals do not overlap.
+- z = (p12 - p11) / SE with the pooled standard error.
+- Guardrails (checked together): retries per request, task success, latency, cost per request.
+- Impact: extra failures per day if rolled out fully. At 200,000 requests a day (invented), 1.1 points is 2,200 extra failures a day.
+
+**Risks:**
+- Peeking: checking after every few requests inflates false alarms, so I fix the checkpoints and use a stricter threshold for early looks.
+- Non-independence: failures cluster by user or document type, so the real uncertainty is larger than the formula says.
+- Small canary: with 1,000 requests, a rare failure type could show nothing.
+- Making the rule after seeing the data tempts me to pick whatever fits.
+
+**What the interviewer scores:**
+- Strong: correct z (about 4.6) with the formula, the pooled rate and an exact-test cross-check. Weak: "1.5 is more than 0.4, so it is worse".
+- Strong: a pre-agreed rollback rule with both a statistical and a size condition. Weak: "we will see how it goes".
+- Strong: names a decision owner and a speed: rollback is cheap, promotion is deliberate. Weak: "the team decides".
+- Strong: checks randomisation, clustering and parser parity. Weak: trusts the raw counts.
+
+**Example:** (illustrative numbers) Rule written before the canary: check at 250, 500, 750 and 1,000 requests; roll back if z is at least 3 against v11 and the v12 rate is at least 0.5 points above the v11 rate; also roll back at once if parse failures exceed 3% in any 100 requests. A possible path: 4 failures at 250 requests (z 2.85, no action), 7 at 500 (z 3.24, rollback), 11 at 750 (z 4.05), 15 at 1,000 (z 4.63). So the rule would have fired at 500 requests. Who decides: the prompt owner (the engineer on call for this service) can roll back alone, at any time, no approval needed, because it is the low-risk move. Promoting v12 beyond the canary needs the prompt owner and the product owner, and a written note of the eval result. Weak answer: "1.5 percent versus 0.4 percent, it looks worse, let us watch it." Strong answer: "Z is 4.6, well beyond noise, v12 has about 4 times the failure odds. My rule says roll back when z is 3 or more with at least a half-point gap, so I roll back now, the owner does it on their own, and we fix the prompt and canary again."
+
+**Code:**
+```python
+import math
+from scipy import stats
+def wilson(k, n, z=1.96):
+    p = k / n; d = 1 + z*z/n; c = (p + z*z/(2*n)) / d
+    h = z * math.sqrt(p*(1-p)/n + z*z/(4*n*n)) / d
+    return c - h, c + h
+k1, n1, k0, n0 = 15, 1000, 36, 9000
+p1, p0 = k1/n1, k0/n0
+assert (p1, p0) == (0.015, 0.004)
+pp = (k1 + k0) / (n1 + n0)
+se = math.sqrt(pp*(1-pp)*(1/n1 + 1/n0))
+z = (p1 - p0) / se
+p_two = 2*(1 - stats.norm.cdf(z))
+print(f"v12 {p1:.2%} (Wilson {wilson(k1,n1)[0]:.2%} to {wilson(k1,n1)[1]:.2%}); v11 {p0:.2%} (Wilson {wilson(k0,n0)[0]:.2%} to {wilson(k0,n0)[1]:.2%})")
+print(f"difference {p1-p0:+.2%}; pooled SE {se:.4f}; z = {z:.2f}; two-sided p = {p_two:.1e}")
+assert round(se, 4) == 0.0024 and round(z, 2) == 4.63 and p_two < 1e-4
+# Exact check: Fisher
+odds, pf = stats.fisher_exact([[k1, n1-k1], [k0, n0-k0]])
+print(f"Fisher exact p = {pf:.1e}; odds ratio {odds:.2f}"); assert pf < 1e-3
+# If v12 were as good as v11, expected failures in 1,000 requests and chance of seeing 15 or more
+exp = n1*p0; tail = stats.binom.sf(k1-1, n1, p0)
+print(f"expected {exp:.1f} failures if equal; P(>=15) = {tail:.1e}"); assert round(exp, 1) == 4.0 and tail < 1e-4
+# Sequential peeking: how large must the difference be after only 100 canary requests to roll back? Using z >= 3 as a stop rule
+# Pre-registered rule (illustrative): checkpoints every 250 requests; roll back if z >= 3 vs v11 AND v12 rate >= 0.4% + 0.5 points
+def decide(kv, nv, kb=36, nb=9000):
+    p_v = kv/nv; p_b = kb/nb; pooled = (kv+kb)/(nv+nb)
+    s = math.sqrt(pooled*(1-pooled)*(1/nv+1/nb)); zz = (p_v-p_b)/s if s else 0
+    return round(zz, 2), (zz >= 3 and p_v - p_b >= 0.005)
+for kv, nv in [(4, 250), (7, 500), (11, 750), (15, 1000)]:
+    print(f"checkpoint {nv:4d}: v12 failures {kv:2d} -> z, rollback = {decide(kv, nv)}")
+assert decide(15, 1000)[1] is True and decide(4, 250)[1] is False
+# Extra bad outputs if v12 went to 100% of 200,000 requests/day
+extra = (p1 - p0) * 200_000
+print(f"extra parse failures per day at 100% rollout of 200,000/day: {extra:,.0f}"); assert round(extra) == 2200
+```
+
+**Output (my run):**
+```text
+v12 1.50% (Wilson 0.91% to 2.46%); v11 0.40% (Wilson 0.29% to 0.55%)
+difference +1.10%; pooled SE 0.0024; z = 4.63; two-sided p = 3.6e-06
+Fisher exact p = 9.0e-05; odds ratio 3.79
+expected 4.0 failures if equal; P(>=15) = 1.9e-05
+checkpoint  250: v12 failures  4 -> z, rollback = (2.85, False)
+checkpoint  500: v12 failures  7 -> z, rollback = (3.24, True)
+checkpoint  750: v12 failures 11 -> z, rollback = (4.05, True)
+checkpoint 1000: v12 failures 15 -> z, rollback = (4.63, True)
+extra parse failures per day at 100% rollout of 200,000/day: 2,200
+```
+
+**Follow-ups:**
+- Is z of 4.6 too good to trust with only 1,000 requests? The test accounts for the sample size, and the Fisher and binomial checks agree. The bigger worry is design (non-random assignment or clustering), not size.
+- What if v12 improves answer quality by 2 points? I weigh them with a cost for each failure. If a parse failure triggers a retry that costs little, a quality gain may justify it; if it breaks an action, it does not. I would fix the parse issue and keep the gain.
+- How long do you canary? Until the pre-set sample is reached and across a full weekday cycle, so that day-of-week patterns are covered.
+
+**Common mistakes:**
+- Comparing percentages without a test, or running a test but ignoring the size of the difference.
+- Checking continuously and stopping at the first scary number with no rule.
+- Non-random canary assignment.
+- Deciding the rollback rule after seeing the result.
+- Nobody owns the rollback, so it waits for a meeting.
