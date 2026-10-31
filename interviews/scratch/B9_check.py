@@ -3,7 +3,7 @@ kind=sys.argv[1]; f=sys.argv[2]
 t=open(f,encoding='utf-8').read()
 H={'q':r'### Q\d+ ','s':r'### S\d+ ','p':r'### P\d+ '}[kind]
 bl=re.split(r'(?m)^(?='+H+')',t)[1:]
-LABS={'q':['Say this first','Structure','Strong sample answer (spoken)','Weak version (and why it fails)','What the interviewer scores','Make it yours','Follow-ups','Common mistakes'],
+LABS={'q':['Say this first (1 line)','Structure','Strong sample answer (spoken)','Weak version (and why it fails)','What the interviewer scores','Make it yours','Follow-ups','Common mistakes'],
  's':['Situation','Weak response','Strong response','Why it works','What the interviewer scores','Say it like this','If they push back','Common mistakes'],
  'p':['What good looks like','Self-assessment','Daily and weekly practice','30-day plan','Resources','How to show it in interviews','Common traps','Measures of progress']}[kind]
 bad=[];long_=[]
