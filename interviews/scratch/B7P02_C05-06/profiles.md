@@ -34,7 +34,7 @@
 - How would you take a model from notebook to production and monitor drift? [S3] Book 1 Part 11 and Book 4 Part 12.
 - Explain a past project: what alternatives did you reject and what did you measure? [S4] Book 6 Part 6 (stakeholder and project stories).
 - Design an A/B test for a new checkout flow with a small base of merchants. [illustrative] Book 1 Part 10 (A/B testing) and Book 6 Part 4.
-- Build a retrieval-augmented assistant for merchant support: chunking, evaluation, failure modes. [illustrative] Book 2 Part 9 (RAG).
+- Build a retrieval-augmented assistant for merchant support: chunking, evaluation, failure modes. [illustrative] Book 2 Part 6 (RAG basics) and Book 2 Part 9 (LLM evaluation).
 
 **What they score:**
 - Role fit, communication and collaboration, ownership, and use of AI in problem solving, as reported from the careers framing (Role Fit, Synergy, AI Edge) [S4][S5].
@@ -116,8 +116,8 @@
 - Build a credit-risk or repayment propensity model with limited bad-loan labels; choose metrics. [illustrative] Book 1 Part 3 (metrics) and Book 1 Part 4.
 - Write SQL for month-over-month retention of members who paid a card bill. [illustrative] Book 3 Part 5 and Part 6 (cohorts).
 - Design an experiment for a reward-offer change and name guardrail metrics. [illustrative] Book 1 Part 10 (A/B testing).
-- How would you improve CRED if you got this job? [S2] Book 6 Part 6 (product and stakeholder framing).
-- Design an LLM-based support assistant for card and payments queries with an evaluation plan. [illustrative] Book 2 Part 9 (RAG) and Book 2 Part 12.
+- How would you improve CRED if you got this job? [S2] Book 6 Part 1 (product metrics) and Book 6 Part 6 (stakeholder conflicts and trade-offs).
+- Design an LLM-based support assistant for card and payments queries with an evaluation plan. [illustrative] Book 2 Part 6 (RAG basics), Book 2 Part 9 (LLM evaluation) and Book 2 Part 12.
 - Explain a model you shipped and how you monitored it. [illustrative] Book 1 Part 11 and Book 4 Part 12.
 
 **What they score:**

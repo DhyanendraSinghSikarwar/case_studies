@@ -34,11 +34,11 @@
 - DSA is heavily reported for freshers and 0-2 years in a generic Noida prep blog [S11].
 
 **Sample questions (illustrative):**
-- Describe a situation where you had to debug a model that was underperforming in production. [S1] Book 4 Part 12 (production ML monitoring) and Book 6 Part 5 (business case reasoning).
+- Describe a situation where you had to debug a model that was underperforming in production. [S1] Book 4 Part 8 (monitoring) and Book 6 Part 2 (model performance degraded in production).
 - Build a fraud or risk model for payment transactions with very few positive labels. Which metric do you optimise? [illustrative] Book 1 Part 1 (ML fundamentals) and Book 1 Part 3 (imbalanced data and metrics).
 - Write SQL for each merchant's rolling 7-day transaction count and flag a drop of more than 30 percent. [illustrative] Book 3 Part 5 (running totals, moving averages).
 - Design a pipeline that scores transactions in near real time and falls back safely if the model is slow. [S3] Book 1 Part 11 (ML system design) and Book 4 Part 12.
-- Walk me through the hardest ML project on your resume, including what you would change. [S1] Book 6 Part 10 (project narratives).
+- Walk me through the hardest ML project on your resume, including what you would change. [S1] Book 6 Part 10 (end-to-end open scenarios).
 - Design an A/B test for a new cashback offer where users interact with each other. [illustrative] Book 1 Part 10 (A/B testing) and Book 6 Part 4 (experiment design).
 - Explain how you would evaluate an LLM assistant that answers payment-support queries. [illustrative] Book 2 Part 9 (RAG evaluation) and Book 2 Part 12.
 

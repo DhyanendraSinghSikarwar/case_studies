@@ -32,9 +32,9 @@ Header (title, scope, target, actual, date, status, evidence limits, how to read
 | Part | Coverage | Companies | Status |
 |---|---|---|---|
 | 1 | Big Tech: Google, Microsoft, Amazon, Meta, Apple, Netflix, Uber, LinkedIn, Adobe, Salesforce | 10 | ✅ (evidence: 7 Medium, 3 Thin) |
-| 2 | Indian product/unicorns: Flipkart, Swiggy, Zomato, PhonePe, Razorpay, CRED, Meesho, Ola, Paytm, Myntra | 10 | ⬜ |
+| 2 | Indian product/unicorns: Flipkart, Swiggy, Zomato, PhonePe, Razorpay, CRED, Meesho, Ola, Paytm, Myntra | 10 | ✅ (evidence: 10 Thin) |
 | 3 | GCCs/MNCs in India: Walmart, Target, JPMorgan, Goldman Sachs, American Express, Visa, Mastercard, Intuit, Atlassian, Optum | 10 | ⬜ |
 | 4 | Europe/global: Spotify, Zalando, Booking.com, Klarna, SAP, Delivery Hero, Revolut, Wise, Grab, Shopee | 10 | ⬜ |
 
 ## Next step
-Part 2 Wave A+B: five agents (Flipkart+Swiggy, Zomato+PhonePe, Razorpay+CRED, Meesho+Ola, Paytm+Myntra); Zomato's listed parent is Eternal, say so in the profile if sources do. Part 1 lessons: no company got a High evidence rating because official pages appear only as snippets; every claim needs a tag that exists in the profile's source list; the checker now enforces that; keep India-specific evidence separate from global process claims; label candidate AI-tool policies by source quality; use the same source-list format as Part 1 (`- S1: URL . Supports: ... Seen date. Snippet only.`); where sources are thin say so rather than pad.
+Part 3 Wave A+B: five agents (Walmart+Target, JPMorgan+Goldman Sachs, American Express+Visa, Mastercard+Intuit, Atlassian+Optum), India-based GCC/captive-centre focus (say which entity a source refers to: global company versus India centre versus a different business unit). Part 2 lessons: run the tag-integrity checker; verify Book/Part parentheticals against plan.md titles after merge (scan all 'Book N Part M (...)' pairs); aim for the brief's 6-10 searches per company even when results repeat, and try different angles (role titles, 'GCC', 'Bangalore', 'Hyderabad', 'applied scientist', 'Glassdoor interview', 'AmbitionBox'); keep entity notes at the top of profiles where a company has several legal entities or business units; evidence level Thin is acceptable and expected.
