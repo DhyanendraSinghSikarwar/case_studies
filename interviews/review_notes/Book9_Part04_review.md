@@ -17,7 +17,7 @@ Six agents answered S1-10, 11-20, 21-30, 31-40, 41-50, 51-60; merged by heading 
 | Cross-references to Book 9 Parts 1-3 and Book 6 Part 6 by question number | each agent verified its question numbers by grep (for example Part 1 Q5, Q6, Q7, Q10, Q13, Q17, Q26, Q27, Q33, Q35, Q38, Q39, Q48; Part 2 Q11, Q15, Q17, Q32, Q33, Q36, Q38, Q39, Q40, Q41, Q45; Book 6 Part 6 Q1, Q13, Q26, Q28, Q42, Q43) |
 
 ## Corrections made before merge
-- Four internal "Editor note for Wave B" sentences that had leaked into Asked-at lines (S25, S35-area items, S39, S40) were removed from the part file and the agents' files, and the resulting punctuation was tidied (`;` and separator artefacts) by `scratch/B9P04_clean.py`.
+- Four internal "Editor note for Wave B" sentences that had leaked into Asked-at lines (S18, S25, S39, S40) were removed from the part file and the agents' files, and the resulting punctuation was tidied (`;` and separator artefacts) by `scratch/B9P04_clean.py`.
 - S19's unverified "Book 4 covers the monitoring mechanics" was replaced by "Book 4 Part 8 (monitoring) covers the mechanics" (Part 8 is titled Monitoring in plan.md); S27's vague "Book 6 covers the technical trade-offs" was replaced by "Book 6 Part 6 covers data-science trade-offs with numbers".
 - S29's loose Book 6 Part 6 Q28 pointer (headline-metric choice) was kept as a loose pointer, as the agent suggested.
 
