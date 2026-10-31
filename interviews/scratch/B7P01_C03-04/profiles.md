@@ -41,7 +41,7 @@
 5. When would you use RAG instead of fine-tuning, and how would you evaluate the result? [S8] Book 2 Part 6 (RAG basics), Book 2 Part 4 (fine-tuning), Book 2 Part 9 (LLM evaluation).
 6. Solve an array/hash problem and state time and space complexity. [illustrative] Book 5 Part 1 (arrays and hashing).
 7. Tell me about a time you disagreed with a stakeholder and what you did. [illustrative] Book 6 Part 6 (stakeholder conflicts and trade-off decisions).
-8. Delivery of a metric dropped 10% week over week; how do you investigate? [illustrative] Book 6 Part 1 (product metrics and metric drops).
+8. A key metric dropped 10% week over week; how do you investigate? [illustrative] Book 6 Part 1 (product metrics and metric drops).
 
 **What they score:**
 - Leadership Principles evidence, with the panel debriefing against LPs and role requirements [S2]. Each interviewer is reported to own specific principles [S2 snippet, third-party part].
