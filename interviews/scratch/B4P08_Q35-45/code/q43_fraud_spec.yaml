@@ -1,0 +1,36 @@
+# Illustrative monitoring spec for a card-fraud model (concept; thresholds are placeholders to calibrate, see Q38)
+model: {id: card_fraud_v7, serving: real_time, volume: millions_per_day}
+logging:
+  fields: [event_id, ts, model_version, feature_snapshot_ref, score, decision]
+  pii: {card_number: tokenised, raw_text: not_logged}
+  sampling: {features: full_for_aggregates, raw_rows: one_percent_plus_all_flagged}
+data_quality_gates:       # run before drift; a failed gate pages the data owner, not the model owner
+  - {check: null_rate, max: 0.02}
+  - {check: schema_match, required: true}
+  - {check: freshness_minutes, max: 15}
+  - {check: volume_vs_same_weekday, min_ratio: 0.7, max_ratio: 1.4}
+drift:
+  features: {test: psi_calibrated, window: daily, per_feature_alpha: bonferroni}
+  score: {test: ks_and_band_pileup, window: hourly}
+performance:
+  label_source: chargeback
+  label_delay_days: {min: 30, max: 90}
+  matured_cohort_days: 90
+  early_proxy: [analyst_feedback_labels, alert_rate, estimated_precision_from_scores]
+  metric: [recall_at_fixed_review_capacity, precision_at_threshold]
+fairness:
+  segments: [region, card_type, customer_age_band]
+  check: false_positive_rate_gap
+  cadence: monthly
+alert_tiers:
+  - {tier: page, when: [data_quality_gate_failed, score_distribution_collapse], route: oncall}
+  - {tier: ticket, when: [feature_drift_persistent_3_days, matured_cohort_metric_drop], route: ml_team}
+  - {tier: info, when: [single_day_feature_drift], route: dashboard}
+retraining:
+  policy: hybrid
+  schedule: monthly
+  triggers: [matured_cohort_metric_drop, persistent_drift_with_label_confirmation]
+  gate: [offline_backtest, shadow_challenger_14_days, approver_sign_off]
+  rollback: previous_registered_version
+shadow_challenger: {enabled: true, compare: [score_correlation, flagged_overlap, matured_metrics]}
+concept_only: [fairness, shadow_challenger, analyst_feedback_labels, oncall_routing]

@@ -1,0 +1,11 @@
+None | warehouse | postgres  | None        | db.internal | analytics | etl_user | S3cretPassw0rd | 5432 | True         | True               | {}      
+     |           |           |             |             |           |          |                |      |              |                    |         
+                                                                                                                                                      
+CONN host= db.internal login= etl_user type= postgres
+LEAK_TEST password printed: S3cretPassw0rd
+LEAK_TEST in f-string: postgresql://etl_user:S3cretPassw0rd@db.internal
+LEAK_TEST via logger: password=S3cretPassw0rd [airflow.task] loc=q20_secrets_dag.py:17
+LEAK_TEST after mask_secret print: S3cretPassw0rd
+LEAK_TEST after mask_secret logger: password=S3cretPassw0rd [airflow.task] loc=q20_secrets_dag.py:20
+LEAK_TEST api key: sk-demo-123456789 | region: ap-south-1
+raw secret anywhere in log? 6

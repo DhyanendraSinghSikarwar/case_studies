@@ -1,0 +1,4 @@
+models found: ['classifier', 'pipeline', 'postprocess', 'preprocess']
+wiring problems: none
+preprocess/1/model.py: class TritonPythonModel, methods ['initialize', 'execute', 'finalize']
+after introducing a typo: ['step 2: tensor features_typo is consumed before anything produces it']

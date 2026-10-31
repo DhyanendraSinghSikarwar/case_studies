@@ -1,0 +1,25 @@
+=== 1. merge (merge commit, history kept as it happened)
+*   badcc03 Merge feature
+|\  
+| * 44f35b8 F3 add tests
+| * ce2219f F2 fix typo
+| * b8b618d F1 add feature
+* | c6bd3a4 M1 teammate lands on main
+|/  
+* 6fe3137 A base
+
+=== 2. rebase feature onto main, then fast-forward (linear, commits rewritten)
+* 304dcb0 F3 add tests
+* 7d39549 F2 fix typo
+* 7399d91 F1 add feature
+* fcaa03f M1 teammate lands on main
+* e7b2410 A base
+(F1-F3 got new hashes; originals are no longer on any branch)
+
+=== 3. squash merge (one new commit, feature commits not in main history)
+Automatic merge went well; stopped before committing as requested
+Squash commit -- not updating HEAD
+* 12c2b68 Add feature (squashed F1-F3)
+* 731e5dc M1 teammate lands on main
+* 8b5af45 A base
+feature branch still points at its own 3 commits: 3 not in main

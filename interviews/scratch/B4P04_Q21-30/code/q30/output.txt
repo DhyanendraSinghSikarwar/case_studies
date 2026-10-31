@@ -1,0 +1,7 @@
+v0 rows: 2 | v1 rows: 3 | v2 rows: 3
+as of timestamp 'mid' -> [1, 2] (version 0 )
+train snapshot = version 1 ids/amt: [(1, 10), (2, 20), (3, 30)]
+vacuum keeping only the latest version deletes: ['data-v0-0.json']
+latest still fine: [(3, 30), (1, 10), (2, 25)]
+time travel to v1 -> version 1 needs data-v0-0.json, which was vacuumed
+time travel to v0 -> version 0 needs data-v0-0.json, which was vacuumed

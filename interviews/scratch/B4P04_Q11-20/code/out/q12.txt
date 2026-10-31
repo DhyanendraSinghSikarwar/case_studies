@@ -1,0 +1,10 @@
+mode: offline | project: demo-proj | entity:  | run id: g7jqtbto
+./wandb/offline-run-20261026_141334-g7jqtbto/files/output.log
+./wandb/offline-run-20261026_141334-g7jqtbto/files/requirements.txt
+./wandb/offline-run-20261026_141334-g7jqtbto/logs/debug-internal.log
+./wandb/offline-run-20261026_141334-g7jqtbto/logs/debug.log
+./wandb/offline-run-20261026_141334-g7jqtbto/run-g7jqtbto.wandb
+debug-internal.log
+debug.log
+latest-run
+offline-run-20261026_141334-g7jqtbto

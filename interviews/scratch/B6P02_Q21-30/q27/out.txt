@@ -1,0 +1,7 @@
+mean score last month 0.300, this month 0.220, change -0.080
+mix effect -0.042 (52%), within-segment effect -0.038 (48%)
+  prime      mean 0.120 -> 0.092  (-0.028)
+  near_prime mean 0.300 -> 0.260  (-0.040)
+  subprime   mean 0.540 -> 0.480  (-0.060)
+within-segment contributions: [-0.014, -0.012, -0.012]
+asserts passed

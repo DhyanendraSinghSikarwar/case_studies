@@ -1,0 +1,18 @@
+--- 1 consumer(s), 6 partitions
+ range       {'c0': [0, 1, 2, 3, 4, 5]}
+ round-robin {'c0': [0, 1, 2, 3, 4, 5]}
+ idle consumers: []
+--- 3 consumer(s), 6 partitions
+ range       {'c0': [0, 1], 'c1': [2, 3], 'c2': [4, 5]}
+ round-robin {'c0': [0, 3], 'c1': [1, 4], 'c2': [2, 5]}
+ idle consumers: []
+--- 8 consumer(s), 6 partitions
+ range       {'c0': [0], 'c1': [1], 'c2': [2], 'c3': [3], 'c4': [4], 'c5': [5], 'c6': [], 'c7': []}
+ round-robin {'c0': [0], 'c1': [1], 'c2': [2], 'c3': [3], 'c4': [4], 'c5': [5], 'c6': [], 'c7': []}
+ idle consumers: ['c6', 'c7']
+--- consumer c1 leaves a group of 3 (range before, then rebalance)
+ before       {'c0': [0, 1], 'c1': [2, 3], 'c2': [4, 5]}
+ eager after  {'c0': [0, 1, 2], 'c2': [3, 4, 5]} -> partitions revoked from everyone first: [0, 1, 2, 3, 4, 5]
+ coop after   {'c0': [0, 1, 2], 'c2': [4, 5, 3]} -> only moved: [2, 3]
+--- lag per partition = log end offset - committed offset
+ lag {0: 0, 1: 18, 2: 150, 3: 0, 4: 1, 5: 0} total 169 max partition 2

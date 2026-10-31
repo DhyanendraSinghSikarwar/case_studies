@@ -1,0 +1,29 @@
+SQLite 3.45.1
+PIVOT keyword in SQLite -> OperationalError: near "(": syntax error
+
+SUM(CASE ...) pivot:
+region   Jan   Feb  Mar
+  East 150.0 200.0  NaN
+ North  10.0   NaN  NaN
+  West   NaN  70.0 30.0
+FILTER (WHERE ...) form returns the identical table
+pandas pivot_table equals the SQL pivot (rows by region, columns Jan Feb Mar)
+
+after inserting an Apr row: pivot columns add up to 460.0 but SUM(amount) is 960
+audit query, months the fixed pivot does not cover: [('Apr', 500)]
+
+generated SQL text:
+SELECT region,
+       SUM(CASE WHEN month = 'Jan' THEN amount END) AS "Jan",
+       SUM(CASE WHEN month = 'Feb' THEN amount END) AS "Feb",
+       SUM(CASE WHEN month = 'Mar' THEN amount END) AS "Mar",
+       SUM(CASE WHEN month = 'Apr' THEN amount END) AS "Apr"
+FROM sales GROUP BY region ORDER BY region
+region   Jan   Feb  Mar   Apr
+  East 150.0 200.0  NaN 500.0
+ North  10.0   NaN  NaN   NaN
+  West   NaN  70.0 30.0   NaN
+generated pivot equals pandas pivot_table with Apr included (rows by region)
+month value with a quote still produces valid SQL:
+SUM(CASE WHEN month = 'X'' OR 1=1 --' THEN amount END) AS "X' OR 1=1 --",
+GROUPING SETS in SQLite -> OperationalError: near "SETS": syntax error

@@ -1,0 +1,14 @@
+contract: txn_events
+version: 1.2.0
+owner: payments-platform-team      # producer team owns it
+consumers: [fraud-features, risk-reporting]
+freshness_max_minutes: 15
+expected_rows_per_hour: {min: 1000, max: 500000}
+change_policy: additive-only-within-major   # removals/renames/type changes need a new major version
+fields:
+  - {name: txn_id,     type: string,   nullable: false, doc: "unique id"}
+  - {name: user_id,    type: string,   nullable: false}
+  - {name: amount_inr, type: float,    nullable: false, unit: INR, min: 0.01, doc: "rupees, not paise"}
+  - {name: event_time, type: datetime, nullable: false, doc: "UTC, when it happened"}
+  - {name: channel,    type: string,   nullable: false, allowed: [UPI, CARD, NETBANKING]}
+  - {name: device_id,  type: string,   nullable: true}

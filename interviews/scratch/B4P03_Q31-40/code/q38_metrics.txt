@@ -1,0 +1,11 @@
+# HELP http_request_duration_seconds Request latency
+# TYPE http_request_duration_seconds histogram
+http_request_duration_seconds_bucket{route="/predict",le="0.05"} 600
+http_request_duration_seconds_bucket{route="/predict",le="0.1"} 850
+http_request_duration_seconds_bucket{route="/predict",le="0.25"} 940
+http_request_duration_seconds_bucket{route="/predict",le="0.5"} 985
+http_request_duration_seconds_bucket{route="/predict",le="+Inf"} 1000
+http_request_duration_seconds_count{route="/predict"} 1000
+http_requests_total{route="/predict",code="200"} 970
+http_requests_total{route="/predict",code="500"} 30
+model_prediction_score_mean 0.61

@@ -1,0 +1,7 @@
+examples ok: [([1, 3, 2], 4), ([1, 2, 3, 4, 5, 6, 7], 10), ([], 0), ([3, 2, 1], 5)]
+shapes checked (0..9 nodes): 6918 - loop count = n + L, tree restored by identity, predecessor steps <= 2n
+largest (predecessor steps) / n over all shapes up to 9 nodes: 1.556
+300 random trees ok
+after an exception at value 3, pointers restored? False
+nodes that had no right child but now point to one (value, target) - the thread left behind: [(3, 4)]
+left chain of 20000 nodes: first values [19999, 19998, 19997] , loop iterations = 39999 (n + L = 20000 + 19999)

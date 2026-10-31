@@ -1,0 +1,7 @@
+{
+  "image_digest": "sha256:abababababababababababababababababababababababababababababababab",
+  "git_commit": "9f2c1e7",
+  "data_version": "dvc:rev-2026-10",
+  "model_sha256": "9a129038d9a00aed",
+  "note": "repeatable behaviour needs seeds + data version too, not only the image"
+}

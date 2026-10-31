@@ -1,0 +1,62 @@
+name: train-eval-promote
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    outputs:
+      run_id: ${{ steps.t.outputs.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - id: t
+        run: |
+          python train.py --out out/
+          echo "run_id=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-${{ steps.t.outputs.run_id }}
+          path: |
+            out/model.joblib
+            out/metrics.json
+          retention-days: 7
+          if-no-files-found: error
+  evaluate:
+    needs: train
+    runs-on: ubuntu-latest
+    outputs:
+      passed: ${{ steps.g.outputs.passed }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: model-${{ needs.train.outputs.run_id }}
+          path: in/
+      - id: g
+        run: |
+          if python gate.py --candidate in/metrics.json --champion baseline/metrics.json; then
+            echo "passed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "passed=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+  promote:
+    needs: [train, evaluate]
+    if: needs.evaluate.outputs.passed == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: model-${{ needs.train.outputs.run_id }}
+          path: in/
+      - name: Register durable copy and move alias
+        env:
+          MLFLOW_TRACKING_URI: ${{ vars.MLFLOW_TRACKING_URI }}
+        run: python register_and_promote.py --model in/model.joblib --metrics in/metrics.json

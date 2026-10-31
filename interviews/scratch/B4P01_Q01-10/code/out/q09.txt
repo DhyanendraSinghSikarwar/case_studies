@@ -1,0 +1,12 @@
+-m unit:    1 passed, 5 deselected in 0.11s
+-m data:    2 passed, 4 deselected in 0.14s
+-m model:   2 passed, 4 deselected in 0.21s
+-m integration:1 passed, 5 deselected in 0.19s
+all:        6 passed in 0.95s
+--- per-PR selection: -m 'unit or data'
+3 passed, 3 deselected in 0.11s
+--- silent data change: monthly_spend arrives in paise (x100); no exception anywhere in the code
+FAILED test_pyramid.py::test_schema_ranges_and_nulls - assert np.float64(1.0)...
+FAILED test_pyramid.py::test_spend_unit_did_not_change - assert np.float64(59...
+2 failed, 4 deselected in 0.25s
+unit tests, same broken data: 1 passed, 5 deselected in 0.12s

@@ -1,0 +1,3 @@
+800 random cases: two-pointer, prefix/suffix and brute force agree
+6 9
+n = 20000 two-pointer equals prefix/suffix: 9976140

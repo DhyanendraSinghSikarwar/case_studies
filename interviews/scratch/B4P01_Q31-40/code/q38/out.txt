@@ -1,0 +1,9 @@
+--- form 1: git URL pinned to a tag (local path used here instead of a hosted remote) ---
+teamlib 1.2.0
+--- form 3: shared directory of wheels, no network, no index ---
+teamlib 1.2.0
+--- tests (pytest.warns) ---
+..                                                                       [100%]
+2 passed in 0.01s
+--- how the old call looks to a user ---
+<string>:1: DeprecationWarning: build_features() is deprecated since 1.2 and will be removed in 2.0; use make_features()

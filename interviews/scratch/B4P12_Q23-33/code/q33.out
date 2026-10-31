@@ -1,0 +1,7 @@
+good RACI: no errors | activities: 9 | metrics: 5
+bad RACI: feature_and_model_code: A must be ONE role, got list ['product_ds', 'platform']
+bad RACI: training_pipeline_template: nobody is Responsible
+bad RACI: team_pipeline_using_template: unknown role data_wizard in C
+bad RACI: platform_oncall: no accountable owner
+bad RACI: security_standards_and_scans: a role appears in more than one of R, C, I
+tickets/week in=16.0 out=12 -> utilisation 1.33; with self-service handling 70% of requests: in=4.8, utilisation 0.40

@@ -1,0 +1,7 @@
+name: bad
+on: pull_request
+jobs:
+  ci:
+    uses: ./.github/workflows/ml-ci.yml
+    with:
+      python_version: "3.11"

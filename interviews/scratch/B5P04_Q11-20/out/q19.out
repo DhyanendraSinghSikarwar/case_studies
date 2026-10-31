@@ -1,0 +1,5 @@
+[4, 5, 2, 10, 8] -> prev [-1, 0, -1, 2, 2] nxt [2, 2, 5, 4, 5]
+[3, 3, 3] -> prev [-1, -1, -1] nxt [3, 3, 3]
+next strictly smaller        for [3,3,3]: [3, 3, 3]
+next smaller-or-equal        for [3,3,3]: [1, 2, 3]
+random cross-check passed: 4000 cases

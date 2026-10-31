@@ -1,0 +1,45 @@
+**Pattern:** Union-find (disjoint sets) for grouping by shared keys. The shared email is the link, so the emails are the nodes.
+
+**Say this first (1 line):** "Names are not identities, emails are. I union all emails inside one account, then group emails by root, attach the name, sort."
+
+**Brute force:** Keep a list of (name, email set). Find any two sets that intersect, merge them, restart. Repeat until no pair intersects. Each pass is O(A^2) set intersections and there can be O(A) passes, so O(A^2 * rounds) with big constants. It is the checker in the code.
+
+**Optimal:**
+- Nodes: every distinct email string. Not accounts (two accounts can be linked only through a third) and not names (two different people can be called "sam").
+- For each account, `union(email_j, first_email)` for the other emails. Also record `name[email] = account name` (one email maps to one name, so overwriting is safe).
+- After all unions, bucket every email by `find(email)`. Each bucket is one person. Output `[name, *sorted(bucket)]`, then sort the outer list.
+- Chains work for free: A shares with B, B shares with C, so A and C end in one set although they share nothing directly.
+- `find` is iterative with path halving, so no recursion limit problem on a chain of 1000 accounts.
+
+**Complexity:** Let N be the total number of emails over all accounts (at most about 1000 times the longest account). Unions and finds: O(N * alpha(N)) with union by rank, and about O(N log N) worst case with path halving alone (what the code does; either is tiny). Sorting: O(N log N) for the emails inside buckets plus the sort of the result lists. Space O(N) for the parent map and groups.
+
+**Dry run:** `[['john','a@x','b@x'], ['john','c@x'], ['john','b@x','d@x'], ['mary','e@x']]`.
+- Account 1: parent has a, b. Union b into a's set: {a, b}.
+- Account 2: c alone: {c}.
+- Account 3: b already exists; d is new; union d with b's root: {a, b, d}.
+- Account 4: {e}.
+- Buckets: {a, b, d} named john, {c} named john, {e} named mary. Sorted: `[['john','a@x','b@x','d@x'], ['john','c@x'], ['mary','e@x']]`.
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- Duplicate email inside one account (`['kim','k@x','k@x']`): union of a node with itself is a no-op, and the output has one copy.
+- Same name, no shared email: stay separate (the second example).
+- Same email in two accounts with the same name only: merges; one email maps to one name, so there is no name conflict to resolve.
+- One account, one email: trivial group.
+- Output ordering: sorting `[name, emails...]` lists compares the name first, then the first email, so ties between two people with the same name are broken by their smallest email. That is why the answer is unique.
+
+**Follow-ups:**
+- Why not nodes = accounts? You would need a map from email to the first account that owned it, then union accounts. It works too, but the email version has fewer moving parts.
+- Why not DFS on an email graph? Also O(N), but you must build adjacency lists first, and with 1000 accounts you can still hit deep recursion; union-find does not.
+- Online version (accounts arrive one at a time)? Union-find handles it directly; the group lists are rebuilt only when queried.
+
+**Common mistakes:**
+- Merging by name (the code prints the wrong answer for two sams).
+- Forgetting to sort the emails or the final list.
+- Recursive `find` without a depth guard on a long chain.
+- Using the root's account name when roots are emails: fine, but only because one email has one name; do not take the name from an arbitrary account of the group if the statement allowed conflicts.

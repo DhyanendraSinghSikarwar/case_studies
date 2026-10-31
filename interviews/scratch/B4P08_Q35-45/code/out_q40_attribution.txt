@@ -1,0 +1,5 @@
+AUC reference window: 0.933   AUC current window: 0.511
+per-feature KS p-values ref vs cur: [0.52, 0.58, 0.75] (all quiet)
+perm importance (AUC drop) ref: [ 0.413 -0.     0.018]  cur: [-0.001  0.002  0.013]
+importance change cur-ref     : [-0.414  0.002 -0.005]
+mean predicted prob ref 0.498 cur 0.500 (score drift quiet too)

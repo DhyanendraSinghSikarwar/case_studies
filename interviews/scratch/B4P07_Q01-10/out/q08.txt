@@ -1,0 +1,12 @@
+$ actionlint cache.yml
+actionlint exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows cache.yml
+ok -- validation done
+$ python -I cache_key.py
+run 1      : pip-Linux-8e29c22523e0
+run 2 same : pip-Linux-8e29c22523e0 (hit)
+whitespace : pip-Linux-886945d98da1 (miss: any byte change is a new key)
+pin bumped : pip-Linux-53adf6aa3d16 (miss -> fresh install)
+changed    : True
+stale key  : pip-Linux-v1 never changes -> old wheels forever
+noisy key  : pip-Linux-<run_id> changes every run -> never hits

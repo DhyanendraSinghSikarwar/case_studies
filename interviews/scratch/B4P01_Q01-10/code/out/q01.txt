@@ -1,0 +1,32 @@
+--- git status --short (what Git sees)
+?? .env.example
+?? .gitignore
+?? notebooks/
+?? params.yaml
+?? requirements.txt
+?? src/
+--- git check-ignore -v (which rule hides each file)
+.gitignore:2:.env	.env
+.gitignore:6:data/	data/train.parquet
+.gitignore:7:models/	models/model.pkl
+.gitignore:11:__pycache__/	__pycache__/a.pyc
+--- commit, then show tracked files
+.env.example
+.gitignore
+notebooks/eda.ipynb
+params.yaml
+requirements.txt
+src/train.py
+--- the Git LFS alternative: track patterns, writes .gitattributes
+Tracking "*.parquet"
+Tracking "*.pkl"
+*.parquet filter=lfs diff=lfs merge=lfs -text
+*.pkl filter=lfs diff=lfs merge=lfs -text
+--- secret already committed: simulate the mistake
+710aba9 oops add key
+--- rewrite history with git filter-repo (on a fresh clone, as the tool requires)
+HEAD is now at db0bfee initial: code, params, gitignore
+Completely finished after 0.07 seconds.
+file in history after rewrite:
+0
+(rotate the key anyway: anyone who pulled earlier still has it)

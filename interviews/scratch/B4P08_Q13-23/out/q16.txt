@@ -1,0 +1,34 @@
+# HELP model_feature_null_ratio Share of nulls in last window
+# TYPE model_feature_null_ratio gauge
+model_feature_null_ratio{feature="age",model="churn"} 0.0
+model_feature_null_ratio{feature="income",model="churn"} 0.02
+model_feature_null_ratio{feature="city",model="churn"} 0.0
+# HELP model_feature_drift_score Drift score (PSI) vs reference
+# TYPE model_feature_drift_score gauge
+model_feature_drift_score{feature="age",model="churn"} 0.03
+model_feature_drift_score{feature="income",model="churn"} 0.31
+model_feature_drift_score{feature="city",model="churn"} 0.05
+# HELP model_positive_rate Share of positive predictions in window
+# TYPE model_positive_rate gauge
+model_positive_rate{model="churn"} 0.118
+# HELP model_label_join_lag_seconds Age of newest matured label batch
+# TYPE model_label_join_lag_seconds gauge
+model_label_join_lag_seconds{model="churn"} 172800.0
+# HELP model_prediction_score Prediction score distribution
+# TYPE model_prediction_score histogram
+model_prediction_score_bucket{le="0.1",model="churn"} 1.0
+model_prediction_score_bucket{le="0.25",model="churn"} 3.0
+model_prediction_score_bucket{le="0.5",model="churn"} 4.0
+model_prediction_score_bucket{le="0.75",model="churn"} 5.0
+model_prediction_score_bucket{le="0.9",model="churn"} 5.0
+model_prediction_score_bucket{le="+Inf",model="churn"} 6.0
+model_prediction_score_count{model="churn"} 6.0
+model_prediction_score_sum{model="churn"} 2.4000000000000004
+# HELP model_prediction_score_created Prediction score distribution
+# TYPE model_prediction_score_created gauge
+model_prediction_score_created{model="churn"} 1.7930350282762375e+09
+# HELP model_build_info Model and feature pipeline version
+# TYPE model_build_info gauge
+model_build_info{feature_pipeline="2026.10.1",model="churn",model_version="7"} 1.0
+
+YAML parsed; groups: 1 rules: ['FeatureDriftHigh', 'FeatureNullRateHigh', 'PositiveRateOutOfBand', 'LabelsStale']

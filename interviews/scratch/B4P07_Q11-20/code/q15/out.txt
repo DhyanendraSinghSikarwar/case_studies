@@ -1,0 +1,40 @@
+$ pytest -q
+......                                                                   [100%]
+6 passed in 0.01s
+
+$ release 1: first model, label input-schema-change
+0.0.0 + ['input-schema-change'] -> 1.0.0   id=1.0.0+data.20260901.git.1906d7f
+$ release 2: retrain on new data
+1.0.0 + ['retrain-new-data'] -> 1.1.0   id=1.1.0+data.20261001.git.ee5f524
+$ release 3: retrain again
+1.1.0 + ['retrain-new-data'] -> 1.2.0   id=1.2.0+data.20261015.git.7a5d364
+$ release 4: preprocessing bug fix
+1.2.0 + ['preprocessing-bugfix'] -> 1.2.1   id=1.2.1+data.20261015.git.6d8dcb5
+$ release 5: new input column plus retrain
+1.2.1 + ['input-schema-change', 'retrain-new-data'] -> 2.0.0   id=2.0.0+data.20261020.git.27cfb98
+
+$ git tag --sort=-v:refname
+model-v2.0.0
+model-v1.2.1
+model-v1.2.0
+model-v1.1.0
+model-v1.0.0
+$ git describe --tags  (at HEAD)
+model-v2.0.0
+$ git describe --tags  (one commit later)
+model-v2.0.0-1-g<sha>
+$ git tag -n1 model-v1.1.0
+model-v1.1.0    release 1.1.0+data.20261001.git.ee5f524; labels=retrain-new-data
+
+--- why sort by version, not by name: add a throw-away tag model-v1.10.0
+$ git tag --sort=refname | head -4
+model-v1.0.0
+model-v1.1.0
+model-v1.10.0
+model-v1.2.0
+$ git tag --sort=v:refname | head -4
+model-v1.0.0
+model-v1.1.0
+model-v1.2.0
+model-v1.2.1
+Deleted tag 'model-v1.10.0' (was b86e966)

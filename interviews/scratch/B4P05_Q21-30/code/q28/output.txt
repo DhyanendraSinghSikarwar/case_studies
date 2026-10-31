@@ -1,0 +1,6 @@
+kind: Workflow
+good workflow: templates=['evaluate', 'main', 'train'] errors=none
+kind: CronWorkflow
+cron schedule: 0 2 * * * | concurrencyPolicy: Forbid
+cron workflowSpec: templates=['train'] errors=none
+broken workflow: templates=['evaluate', 'main', 'train'] errors=["task evaluate: unknown dependency 'trian'", 'template train: uses inputs.parameters.epochs but does not declare it']

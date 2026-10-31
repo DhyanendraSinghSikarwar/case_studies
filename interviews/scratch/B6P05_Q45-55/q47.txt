@@ -1,0 +1,52 @@
+**Say this first (1 line):** On delivery savings alone the dark store needs about 72,727 orders a month, which is 3.03 times the 24,000 forecast, and at forecast it loses 53,600 a month (illustrative), so it needs another source of value to be justified.
+
+**Clarifying questions:**
+- Is the 1.10 saved a true marginal saving, or an average that includes costs that will not really go away? A saving only counts if the cost leaves.
+- Is the 80,000 all fixed, including staff shifts? If staff scale with orders, break-even changes.
+- Are the 24,000 orders new orders or orders that would have come from the old stores anyway? Moved orders add only the saving, new orders add margin too.
+- What is the order margin before delivery cost? Needed to value extra orders.
+- How fast does volume ramp, and for how long can we fund losses?
+
+**Approach:**
+1. Contribution per order = saving = 3.20 - 2.10 = 1.10.
+2. Break-even orders = fixed cost / contribution = 80,000 / 1.10 = 72,727.3 a month.
+3. Result at forecast = 24,000 x 1.10 - 80,000 = 26,400 - 80,000 = -53,600 a month.
+4. Frame the gap: fixed cost per forecast order is 3.33 against a 1.10 saving. The saving would need to be 3.33 per order, or volume 3x.
+5. Ask what else changes: faster delivery lifting order frequency and basket, fewer late orders and refunds, stock availability, a lower promo need, strategic coverage, option value for growth.
+6. Value those with a test or a similar existing store, not by assertion. If extra margin on incremental orders is, for example, 2.23 per forecast order, it would close the gap. That is the number to test.
+7. Recommend: do not open on savings alone. Open only if the extra effects are shown, or if the volume forecast is raised with evidence.
+
+**Metrics:**
+- Break-even orders = monthly fixed cost / contribution per order.
+- Monthly result = orders x contribution - fixed cost.
+- Guardrails: delivery time, late rate, order growth in the zone, cannibalisation of nearby stores.
+
+**Risks:**
+- Volume forecast and saving per order are both uncertain; the answer is very sensitive to volume.
+- Saving per order may fall if the store is under-used (couriers idle).
+- Ramp-up: months of losses before volume arrives. At 5% monthly growth it takes 23 months to reach 72,727.
+- Cannibalising an existing profitable store.
+
+**What the interviewer scores:**
+- Strong: says plainly it does not break even at forecast and quantifies the gap. Weak: computes break-even and says "we will grow into it".
+- Strong: separates incremental orders from moved orders. Weak: counts all 24,000 as new.
+- Strong: proposes what to test (pilot zone, volume ramp). Weak: lists benefits with no numbers.
+
+**Example:** Illustrative numbers. Break-even 72,727. Forecast 24,000. Result -53,600 a month. Weak: "Break-even is 72,727 orders, so we need to grow." Strong: "At forecast it loses 53,600 a month. It needs 3.03x volume, or about 2.23 extra margin per order from other effects. I would pilot before committing."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *How would you cut the break-even?* Lower fixed cost (smaller store, shared staff), raise saving per order (batching), or raise margin per order.
+- *Would you open it anyway?* Only if the strategic value is stated and capped, for example a fixed budget for a fixed number of months.
+- *What is the single most important number?* Volume, since break-even is 3 times the forecast.
+
+**Common mistakes:**
+- Stopping at the break-even number without comparing it to the forecast.
+- Counting moved orders as incremental.
+- Treating average cost savings as marginal.
+- Ignoring the ramp period.

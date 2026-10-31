@@ -1,0 +1,5 @@
+points above threshold (naive alerts): 74 | first 10 at t = [3, 28, 50, 54, 58, 59, 102, 119, 120, 121]
+designed-rule alerts: 1 | fired at t = [121]
+real shift starts t=120; naive first alert at/after 120: 120 | designed first alert at/after 120: 121
+false alerts before t=120: naive 8 | designed 0
+alert-rule YAML parsed; rules checked: ['FeatureDriftSustained', 'PositiveRateCollapse'] (promtool not installed, not executed)

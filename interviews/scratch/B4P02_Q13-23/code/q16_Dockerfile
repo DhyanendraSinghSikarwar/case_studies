@@ -1,0 +1,12 @@
+# Variant B: download at start (small image). Weights fetched by entrypoint into a volume.
+FROM python:3.12-slim-bookworm
+RUN useradd --uid 10001 --create-home app
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=10001:10001 app/ ./app/
+ENV MODEL_DIR=/models MODEL_URL="" MODEL_SHA256=""
+VOLUME ["/models"]
+USER 10001
+HEALTHCHECK --start-period=300s CMD ["python", "-c", "import urllib.request as u; u.urlopen('http://localhost:8000/ready')"]
+ENTRYPOINT ["python", "-m", "app.fetch_then_serve"]

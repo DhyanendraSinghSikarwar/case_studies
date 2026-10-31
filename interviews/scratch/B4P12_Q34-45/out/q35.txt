@@ -1,0 +1,11 @@
+freshness before any drill: False
+freshness after drill in month 10: True
+freshness 3 months later: False -> page the owner
+false-positive rate on genuine txns: healthy model 0.0 | broken features 1.0 | rules_only after switch 0.0
+100 card_present -> ('allow', 'fail_open')
+15000 card_present -> ('step_up', 'fail_closed')
+100 card_not_present -> ('step_up', 'fail_closed')
+auto-rollback  cost   2 avoided  40 ratio  20.0
+monthly drill  cost   1 avoided  25 ratio  25.0
+extra region   cost  30 avoided  20 ratio   0.7
+shadow rules   cost   4 avoided  30 ratio   7.5

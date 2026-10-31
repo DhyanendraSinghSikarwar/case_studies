@@ -1,0 +1,26 @@
+--- tools present?
+trivy: not installed
+grype: not installed
+syft: not installed
+cosign: not installed
+docker: unknown command: docker scout
+--- policy check, today = 2026-10-26
+BLOCKING:
+  CVE-0000-1001 CRITICAL libfoo fix=1.2.4 [no waiver]
+  CVE-0000-2001 CRITICAL somewebpkg fix=9.1.0 [no waiver]
+  CVE-0000-2002 HIGH otherpkg fix=0.9.2 [waiver EXPIRED]
+OK / waived:
+  CVE-0000-1002 HIGH libbar: allowed (no fix yet)
+  CVE-0000-1003 HIGH libbaz: WAIVED until 2026-12-31 by platform-team (only reachable via a feature we do not enable)
+  CVE-0000-1004 MEDIUM libqux: allowed (below threshold)
+RESULT: FAIL
+exit=1
+--- same report with an empty waiver list
+BLOCKING:
+  CVE-0000-1001 CRITICAL libfoo fix=1.2.4 [no waiver]
+  CVE-0000-1003 HIGH libbaz fix=3.0.1 [no waiver]
+  CVE-0000-2001 CRITICAL somewebpkg fix=9.1.0 [no waiver]
+  CVE-0000-2002 HIGH otherpkg fix=0.9.2 [no waiver]
+RESULT: FAIL
+--- bash -n commands.sh
+OK

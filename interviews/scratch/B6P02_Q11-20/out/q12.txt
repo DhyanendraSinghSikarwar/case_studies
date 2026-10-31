@@ -1,0 +1,5 @@
+hand-check PSI = 0.2408
+PSI age=0.699 city=0.547 score=0.004
+AUC reference=0.824 current=0.824
+reweighted-reference AUC (expected under new mix) = 0.826; observed current = 0.824
+concept drift contrast: PSI age=0.000, AUC=0.697

@@ -1,0 +1,8 @@
+missed daily runs: 12
+worst-case detection delay with a dead-man switch (h): 36.0 vs actual 288
+days before today that a 14-day expiry warning fires: 26
+retention 30 d: first uncovered day expires in 18 days
+retention 14 d: first uncovered day expires in 2 days
+injected shift D 0.2 fires True | no shift D 0.0043 fires False
+daily D over the gap: [0.01, 0.01, 0.01, 0.01, 0.01, 0.05, 0.08, 0.12, 0.16, 0.2, 0.24, 0.27]
+first day over the 0.10 threshold: 8 -> days of unwatched drift: 5

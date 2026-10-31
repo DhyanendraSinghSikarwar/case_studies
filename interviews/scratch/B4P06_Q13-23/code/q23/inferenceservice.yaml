@@ -1,0 +1,18 @@
+# Example only. Field names follow the KServe v1beta1 InferenceService as I know it; check the current KServe docs.
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: iris
+  namespace: ml-serving
+spec:
+  predictor:
+    minReplicas: 1
+    maxReplicas: 5
+    canaryTrafficPercent: 10          # send 10% to the newest revision, the rest to the previous good one
+    model:
+      modelFormat:
+        name: onnx
+      storageUri: s3://example-bucket/models/iris/   # placeholder, not a real bucket
+      resources:
+        requests: {cpu: "1", memory: 1Gi}
+        limits: {cpu: "2", memory: 2Gi}

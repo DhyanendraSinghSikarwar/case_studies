@@ -1,0 +1,5 @@
+['flower', 'flow', 'flight'] -> 'fl'
+['dog', 'racecar', 'car'] -> ''
+['a'] -> 'a'
+['', 'b'] -> ''
+random cross-check passed: 3000 cases

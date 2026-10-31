@@ -1,0 +1,49 @@
+SQLite 3.45.1 | pandas 3.0.5
+
+1. GROUP_CONCAT(name, ', ') with no ORDER BY (order is whatever the scan gave):
+ dept                 names
+  Eng Zoya, Asha, Ben, Asha
+   HR                   NaN
+Sales                   Dev
+
+2. DISTINCT:
+   GROUP_CONCAT(DISTINCT name)       -> Zoya,Asha,Ben
+   GROUP_CONCAT(DISTINCT name, ', ') -> DatabaseError: Execution failed on sql 'SELECT GROUP_CONCAT(DISTINCT name, ', ') FROM employees': DISTINCT aggregates must have exactly one argument
+
+3. GROUP_CONCAT(name, ', ' ORDER BY name):
+ dept                 names
+  Eng Asha, Asha, Ben, Zoya
+   HR                   NaN
+Sales                   Dev
+   same with DISTINCT applied in a subquery:
+ dept           names
+  Eng Asha, Ben, Zoya
+   HR             NaN
+Sales             Dev
+   per date, distinct products sorted (LeetCode 1484 shape):
+ sell_date  num_sold                     products
+2020-05-30         3 Basketball,Headphone,T-Shirt
+2020-06-01         2                 Bible,Pencil
+2020-06-02         1                         Mask
+   STRING_AGG(name, ', ' ORDER BY name) equals GROUP_CONCAT version: True
+   older subquery ORDER BY trick (no guarantee, but it happened to match here): True
+   GROUP_CONCAT(DISTINCT name ORDER BY name) (default ',') -> Asha,Ben,Zoya
+
+4. NULL names are skipped; an all-NULL group returns NULL, not ''; Eng has 5 rows, 4 names:
+ dept  rows_  names_                     g            g_or_empty
+  Eng      5       4 Asha, Asha, Ben, Zoya Asha, Asha, Ben, Zoya
+   HR      1       0                   NaN                      
+Sales      1       1                   Dev                   Dev
+   NULL separator row-wise: 'a' || NULL -> None | concat('a', NULL, 'b') -> ab
+
+pandas groupby + join:
+ dept                 names
+  Eng Asha, Asha, Ben, Zoya
+   HR                   NaN
+Sales                   Dev
+ sell_date  num_sold                     products
+2020-05-30         3 Basketball,Headphone,T-Shirt
+2020-06-01         2                 Bible,Pencil
+2020-06-02         1                         Mask
+agg(', '.join) on a column with NaN -> TypeError: sequence item 4: expected str instance, float found
+asserts passed (SQL and pandas equal, ordered by dept / sell_date; the pandas '' became None for the all-NULL group)

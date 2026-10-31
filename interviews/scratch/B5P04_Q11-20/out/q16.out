@@ -1,0 +1,5 @@
+(a) 'abbaca' -> 'ca'
+(a) 'azxxzy' -> 'ay'
+(b) ('deeedbbcccbdaa', 3) -> 'aa'
+(b) ('pbbcggttciiippooaais', 2) -> 'ps'
+random cross-check passed: 3000 cases (3 random removal orders each)

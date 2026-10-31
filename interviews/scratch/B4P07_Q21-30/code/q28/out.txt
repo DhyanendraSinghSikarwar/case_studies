@@ -1,0 +1,45 @@
+=== broken/bad_event.yml
+$ actionlint broken/bad_event.yml
+broken/bad_event.yml:3:3: unknown Webhook event "pull_requests". see https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#webhook-events for list of all Webhook event names [events]
+  |
+3 |   pull_requests:
+  |   ^~~~~~~~~~~~~~
+exit=1
+$ check-jsonschema --builtin-schema vendor.github-workflows broken/bad_event.yml
+Schema validation errors were encountered.
+  broken/bad_event.yml::$.on: {'pull_requests': {'branches': ['main']}} is not valid under any of the given schemas
+  Underlying errors caused this.
+
+  Best Match:
+    $.on: {'pull_requests': {'branches': ['main']}} is not of type 'string'
+
+  3 other errors were produced. Use '--verbose' to see all errors.
+exit=1
+=== broken/missing_needs.yml
+$ actionlint broken/missing_needs.yml
+broken/missing_needs.yml:4:3: job "deploy" needs job "test" which does not exist in this workflow [job-needs]
+  |
+4 |   deploy:
+  |   ^~~~~~~
+exit=1
+$ check-jsonschema --builtin-schema vendor.github-workflows broken/missing_needs.yml
+ok -- validation done
+exit=0
+=== broken/unknown_label.yml
+$ actionlint broken/unknown_label.yml
+broken/unknown_label.yml:5:28: label "gpu" is unknown. available labels are "windows-latest", "windows-latest-8-cores", "windows-2025", "windows-2025-vs2026", "windows-2022", "windows-11-arm", "ubuntu-slim", "ubuntu-latest", "ubuntu-latest-4-cores", "ubuntu-latest-8-cores", "ubuntu-latest-16-cores", "ubuntu-24.04", "ubuntu-24.04-arm", "ubuntu-22.04", "ubuntu-22.04-arm", "macos-latest", "macos-latest-xlarge", "macos-latest-large", "macos-26-intel", "macos-26-xlarge", "macos-26-large", "macos-26", "macos-15-intel", "macos-15-xlarge", "macos-15-large", "macos-15", "macos-14-xlarge", "macos-14-large", "macos-14", "self-hosted", "x64", "arm", "arm64", "linux", "macos", "windows". if it is a custom label for self-hosted runner, set list of labels in actionlint.yaml config file [runner-label]
+  |
+5 |     runs-on: [self-hosted, gpu]
+  |                            ^~~~
+exit=1
+$ check-jsonschema --builtin-schema vendor.github-workflows broken/unknown_label.yml
+ok -- validation done
+exit=0
+=== good_dispatch.yml
+$ actionlint good_dispatch.yml
+exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows good_dispatch.yml
+ok -- validation done
+exit=0
+$ python3 -I -c "import yaml;print(list(yaml.safe_load(open(\"pre-commit-config.yaml\"))))"
+['https://github.com/rhysd/actionlint', 'https://github.com/python-jsonschema/check-jsonschema']

@@ -1,0 +1,15 @@
+name: bad
+on:
+  push:
+    branch: [main]
+  schedule:
+    - cron: "61 25 * * *"
+  workflow_dispatch:
+    inputs:
+      full:
+        type: boolean
+        default: "yes"
+jobs:
+  x:
+    runs-on: ubuntu-latest
+    steps: [{run: "echo hi"}]

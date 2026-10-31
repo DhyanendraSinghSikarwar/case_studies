@@ -1,0 +1,36 @@
+# Pre-launch checklist: hosted foundation model (Azure OpenAI or Gemini on Vertex AI). Platform side only.
+# Prompting, RAG, agents, LLM evaluation design: Book 2.
+service: support-assistant
+provider: azure_openai          # or gemini_on_vertex
+owner: ml-platform-team
+mlops_owns:
+  - id: identity
+    check: Workload uses a managed identity or service account, not a shared API key in code
+    evidence: role assignment / IAM binding listed
+  - id: network
+    check: Private endpoint or PSC decided; public access state recorded
+    evidence: network diagram or config export
+  - id: quota_region
+    check: Quota and Region requested and approved for peak traffic; fallback Region decided
+    evidence: quota screenshot or ticket (check current docs for limits)
+  - id: model_version
+    check: Model name and version pinned; retirement date tracked with an alert before it
+    evidence: calendar entry or ticket (dates change; check current docs)
+  - id: eval_gate
+    check: A release is blocked unless the Book 2 eval suite passes on the pinned version
+    evidence: CI job link
+  - id: logging
+    check: Request logging policy set (what is stored, who reads it, retention) and PII handling agreed
+    evidence: policy link
+  - id: cost_attribution
+    check: Calls tagged per team or feature so spend can be split; budget alert set
+    evidence: tag scheme
+  - id: fallback
+    check: Timeout, retry with backoff and a degraded answer path exist
+    evidence: runbook section
+book2_owns:
+  - prompting
+  - rag
+  - agents
+  - llm_evaluation_design
+called_real_endpoint: false

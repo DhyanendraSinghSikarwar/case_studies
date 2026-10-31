@@ -1,0 +1,6 @@
+[3, 2, 0, -4] pos = 1 -> cut at index 3 , list [3, 2, 0, -4]
+[1, 2] pos = 0 -> cut at index 1 , list [1, 2]
+[1, 2, 3] pos = 2 -> cut at index 2 , list [1, 2, 3]
+[1] pos = -1 -> cut at index None , list [1]
+325 exhaustive (n, pos) cases, n up to 24, repeated values: both match, cut index is always n - 1
+empty list -> None

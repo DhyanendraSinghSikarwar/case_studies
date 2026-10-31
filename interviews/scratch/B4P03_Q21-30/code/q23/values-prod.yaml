@@ -1,0 +1,14 @@
+replicaCount: 3
+image:
+  tag: "1.4.2"
+resources:
+  requests: {cpu: "2", memory: 4Gi}
+  limits: {memory: 6Gi}
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 12
+gpu:
+  count: 1
+  type: a100          # key exists only in prod: drift
+modelUri: s3://models-prod/fraud/3

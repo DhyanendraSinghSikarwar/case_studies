@@ -1,0 +1,4 @@
+[7, 17, 0]
+1500 seeded cases: deque DP == O(nk) DP == path enumeration
+300 larger cases with many ties: ok
+n=3000, k=100 deque DP == O(nk) DP: 2133

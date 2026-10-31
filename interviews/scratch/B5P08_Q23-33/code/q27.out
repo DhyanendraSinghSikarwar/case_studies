@@ -1,0 +1,3 @@
+2000 random cases: valid output, sums equal brute force (pairs may differ on ties)
+TypeError on tied sums with dict payload: '<' not supported between instances of 'dict' and 'dict'
+n=100000, k=10000: last sum 537 first [0, -7]

@@ -1,0 +1,1 @@
+policy OK: sections ['audit', 'challenger', 'change_control', 'explainability', 'model', 'monitoring', 'validation'] | checks 6 | names with both levels: ['input_psi_max']

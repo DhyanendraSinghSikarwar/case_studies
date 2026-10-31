@@ -1,0 +1,5 @@
+postgres  published: none
+minio     published: ['127.0.0.1:9001:9001']
+mlflow    published: ['127.0.0.1:5000:5000']
+api       published: ['8000:8000']
+all checks passed

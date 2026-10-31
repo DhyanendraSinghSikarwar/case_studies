@@ -1,0 +1,26 @@
+$ python3 -I train.py --config config.yaml
+resolved config: {"data_path": "data/train.csv", "epochs": 5, "features": ["age", "income", "tenure"], "learning_rate": 0.01, "seed": 42}
+config hash: ac04e83152fd (log this with the run, e.g. as an MLflow param or a JSON file)
+exit=0
+
+$ TRAIN_EPOCHS=20 python3 -I train.py --config config.yaml   # env overrides file
+resolved config: {"data_path": "data/train.csv", "epochs": 20, "features": ["age", "income", "tenure"], "learning_rate": 0.01, "seed": 42}
+config hash: 92680eff27c1 (log this with the run, e.g. as an MLflow param or a JSON file)
+exit=0
+
+$ TRAIN_EPOCHS=20 python3 -I train.py --config config.yaml --epochs 3 --learning-rate 0.5   # CLI wins
+resolved config: {"data_path": "data/train.csv", "epochs": 3, "features": ["age", "income", "tenure"], "learning_rate": 0.5, "seed": 42}
+config hash: 37d87f7fbb73 (log this with the run, e.g. as an MLflow param or a JSON file)
+exit=0
+
+$ python3 -I train.py --config bad_config.yaml
+CONFIG ERROR (2 problem(s)):
+  - learning_rate: Input should be a valid number, unable to parse string as a number (got 'fast')
+  - epoch: Extra inputs are not permitted (got 5)
+exit=2
+
+$ TRAIN_EPOCHS=0 python3 -I train.py --config config.yaml
+CONFIG ERROR (1 problem(s)):
+  - epochs: Input should be greater than or equal to 1 (got 0)
+exit=2
+pydantic 2.13.5 pyyaml 6.0.1

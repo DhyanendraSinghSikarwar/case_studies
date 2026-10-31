@@ -1,0 +1,5 @@
+learning_rate: 0.01
+epochs: 5
+data_path: data/train.csv
+features: [age, income, tenure]
+seed: 42

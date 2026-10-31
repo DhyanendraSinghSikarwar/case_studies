@@ -1,0 +1,6 @@
+case                                W (raw units)  W/ref sd  JS (base 2)
+age +2 years (mean shift)                    2.00     0.251        0.106
+age sd 8 -> 12 (spread change)               3.22     0.403        0.228
+income +2000 rupees                       2066.71     0.139        0.062
+income +10000 rupees                     10095.37     0.677        0.277
+JS distance with an empty bin in p: 0.329 | KL(q||p) would divide by zero

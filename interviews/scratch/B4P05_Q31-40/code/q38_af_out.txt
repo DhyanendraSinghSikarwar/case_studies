@@ -1,0 +1,4 @@
+airflow dags test gate: exit code 1
+ValueError: data contract broken: {'rows': 3, 'null_rate': 0.4}
+Marking run <DagRun gate  ... > failed
+lines containing 'TRAINING STARTED': 0

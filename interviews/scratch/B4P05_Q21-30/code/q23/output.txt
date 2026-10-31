@@ -1,0 +1,14 @@
+--- pure checks
+fresh  -> None
+stale  -> stale: 1 day, 16:00:00 old, limit 1 day, 2:00:00
+empty  -> no data at all
+rows=0 -> only 0 rows, need at least 1
+rows=3 -> None
+--- DagBag parse
+import_errors: {} | deadline alerts attached: 1
+dag-level on_failure_callback in default_args: on_failure
+--- dags test (check task is expected to fail)
+ValueError: data check failed: only 0 rows, need at least 1; stale: 2 days, 12:00:00 old, limit 1 day, 2:00:00
+ValueError: data check failed: only 0 rows, need at least 1; stale: 2 days, 12:00:00 old, limit 1 day, 2:00:00
+ALERT: task health_demo.check failed on try 2: ValueError('data check failed: only 0 rows, need at least 1; stale: 2 days, 12:00:00 old, limit 1 day, 2:00:00')
+DagRun Finished: dag_id=health_demo state=failed

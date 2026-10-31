@@ -1,0 +1,21 @@
+raw table: duplicates [3] | orphans [5] | roots [1] | members of a loop [6, 7]
+SQL UNION ALL from the NULL root (rows, people, salary): (5, 4, 260) | true salary of root 1's tree is 220
+SQL anchor written as manager_id = NULL: (0, 0, None)
+SQL from the loop (anchor emp 6), result rows: {'UNION ALL, depth cap 5': 6, 'UNION ALL, no guard, outer LIMIT 8': 8, 'UNION ALL, path guard': 2, 'UNION on (emp_id, salary), no level column': 2, 'UNION with a level column, cap 10': 11}
+
+pandas merge loop from the NaN root, no guard: (5, 4, 260) (same as SQL UNION ALL)
+pandas with visited set + drop_duplicates: (4, 4, 220)
+pandas employees.manager_id == np.nan selects 0 rows; isna() selects 1
+pandas from the loop: no guard, cap 5 -> 6 rows; visited set -> 2 rows
+same-manager pairs: SQL 13 | pandas merge 14 | pandas after dropna 13
+
+cleaned table (SQL and pandas identical after sorting by emp_id):
+ emp_id  manager_id  salary
+      1        <NA>     100
+      2           1      50
+      3           1      40
+      4           2      30
+      6        <NA>      20
+      7           6      25
+after cleaning, UNION ALL roll-up from all roots: SQL (6, 6, 265) | pandas (6, 6, 265) no guard needed
+asserts passed

@@ -1,0 +1,8 @@
+[
+ {"name": "scorer-1", "status": {"phase": "Running", "containerStatuses": [{"name": "app", "restartCount": 3,
+   "lastState": {"terminated": {"exitCode": 137, "reason": "OOMKilled"}}}]}},
+ {"name": "scorer-2", "status": {"phase": "Failed", "reason": "Evicted",
+   "message": "The node was low on resource: memory. Container app was using 1900Mi, request is 512Mi, has larger consumption of memory than requested.",
+   "containerStatuses": []}},
+ {"name": "scorer-3", "status": {"phase": "Running", "containerStatuses": [{"name": "app", "restartCount": 0, "lastState": {}}]}}
+]

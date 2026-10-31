@@ -1,0 +1,13 @@
+== pytest
+5 passed in 0.01s
+== no-permissions.yml
+actionlint exit=0
+ok -- validation done
+== with-permissions.yml
+actionlint exit=0
+ok -- validation done
+== two live diagnoses
+repo:acme/churn:ref:refs/heads/main
+  -> sub 'repo:acme/churn:ref:refs/heads/main' is a ref token for another branch or tag than the trust allows ['repo:acme/churn:environment:production']
+repo:acme/churn:pull_request
+  -> sub 'repo:acme/churn:pull_request' is a pull_request token; trust only allows ['repo:acme/churn:environment:production'] (usually correct: PRs should not assume deploy roles)

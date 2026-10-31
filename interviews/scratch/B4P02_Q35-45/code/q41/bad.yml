@@ -1,0 +1,4 @@
+services:
+  model:
+    image: registry.example.com/ml/model:2.0.1
+    restrat: unless-stopped

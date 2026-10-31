@@ -1,0 +1,8 @@
+A could-not-select-device-driver
+  - could not select device driver 'gpu': run nvidia-ctk runtime configure, restart docker.
+B smi ok, torch False (cpu wheel)
+  - torch is a CPU wheel: is_available() is False even with a working GPU.
+C wheel newer than driver
+  - Wheel needs CUDA 12.4 but driver supports up to 11.8: upgrade driver or use older wheel.
+D image older than driver (fine)
+  - No issue found by these rules; check NVIDIA_DRIVER_CAPABILITIES and run with --gpus.

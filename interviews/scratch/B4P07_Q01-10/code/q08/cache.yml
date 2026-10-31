@@ -1,0 +1,24 @@
+name: ci-cache
+on: pull_request
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Option A: let setup-python manage the pip cache (simple, keyed on the requirements file)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      # Option B: explicit cache, for a tool setup-python does not know (here: ruff's cache)
+      - uses: actions/cache@v4
+        with:
+          path: .ruff_cache
+          key: ruff-${{ runner.os }}-${{ hashFiles('requirements.txt', 'pyproject.toml') }}
+          restore-keys: |
+            ruff-${{ runner.os }}-
+      - run: pip install -r requirements.txt
+      - run: ruff check . && pytest -m "not slow" -q

@@ -1,0 +1,16 @@
+predicate                                                              plan COUNT(*)                                                     plan SELECT *  vm_steps  count
+ strftime                                   SCAN events USING COVERING INDEX ix_time                                                       SCAN events   1225359  25345
+   substr                                   SCAN events USING COVERING INDEX ix_time                                                       SCAN events   1225360  25345
+   date()                                   SCAN events USING COVERING INDEX ix_time                                                       SCAN events   1200828    815
+     LIKE                                   SCAN events USING COVERING INDEX ix_time                                                       SCAN events   1225358  25345
+ COALESCE                                   SCAN events USING COVERING INDEX ix_time                                                       SCAN events   1200013      0
+user_id+0                                   SCAN events USING COVERING INDEX ix_user                                                       SCAN events   1200072     58
+user_id=5                     SEARCH events USING COVERING INDEX ix_user (user_id=?)                     SEARCH events USING INDEX ix_user (user_id=?)       187     58
+    range SEARCH events USING COVERING INDEX ix_time (event_time>? AND event_time<?) SEARCH events USING INDEX ix_time (event_time>? AND event_time<?)     76054  25345
+March counts equal: 25345 25345 25345
+one day: function form (1200826, 815) range form (2464, 815) plan: SEARCH events USING COVERING INDEX ix_time (event_time>? AND event_time<?)
+BETWEEN '2024-03-05' AND '2024-03-05' count: 0
+with expression index: SEARCH events USING INDEX ix_month (<expr>=?) (101395, 25345)
+same idea, different expression (substr): SCAN events USING COVERING INDEX ix_time
+strftime('%Y', ...) with the month index: SCAN events USING COVERING INDEX ix_time
+pandas: mask, to_datetime+strftime and searchsorted all give 25345

@@ -1,0 +1,10 @@
+pod       gpu-hours  idle  idle %
+infer-a           6     4      67
+infer-b           6     4      67
+train-x           3     1      33
+TOTAL            15     9      60   (idle = util < 10%)
+
+Always-on vs scale-to-zero (made-up: 2 GPU replicas, traffic 6 h/day, cold start 3 min)
+always-on    : 48 GPU-h/day
+scale-to-zero: 12.2 GPU-h/day  (saves 35.8, 75%)
+price of it  : first request after idle waits about 3 min unless one replica is kept warm

@@ -1,0 +1,63 @@
+**Say this first (1 line):** About 3,600 prompts a day carry personal data (18% of 20,000; the sample interval gives roughly 2,980 to 4,320), so I would redact before sending as the first control, add a regional endpoint or contract terms for what remains, and get legal to say what is allowed before choosing, because I cannot decide the legal question from engineering.
+
+**Clarifying questions:**
+- What counts as personal data in the 90 hits (names, phone numbers, account numbers, health or financial details)? Sensitive classes need stricter handling.
+- Whose data is it: customers, employees, or third parties mentioned by users? It changes the legal basis.
+- Which law or contract applies (country rules, sector rules, customer contracts)? This is for legal; I will not guess.
+- Does the vendor store prompts, train on them, or keep logs, and for how long? Retention often matters more than transit.
+- Can the product work with redacted text (replace names with tokens), or does it need the real values?
+- What latency, quality and budget limits apply to each option?
+
+**Approach:**
+1. Size the exposure. 18% of 20,000 = 3,600 prompts a day, about 1.3 million a year. The 95% Wilson interval on 90 of 500 is 14.9% to 21.6%, so 2,976 to 4,322 a day.
+2. Quantify the leak after redaction. Redaction is never perfect: at 95% recall, 180 prompts a day still carry personal data. At 99%, 36. Measure the real recall on a labelled sample of your own prompts.
+3. Compare options:
+
+| Option | What it fixes | Cost and limits |
+|---|---|---|
+| Redaction before the call | Removes most personal data from what leaves | Misses some items; may hurt answer quality; needs ongoing tuning |
+| Regional endpoint at the vendor | Keeps processing in an agreed region | Depends on vendor offering; model choice and price may differ; storage and support access still need checking |
+| Self-hosting | Data stays in your control | Highest cost and effort; you own security, scaling and model quality |
+| Contract terms (no training, short retention, listed sub-processors, breach duty) | Sets obligations and remedies | A promise, not a technical control; needs audit and trust |
+
+4. Recommended order: redact now (fast), add contract terms (parallel), and use a regional endpoint if it exists and passes legal review. Self-host only if the data class or volume justifies it.
+5. What I need from legal: whether sending this data abroad is allowed and under what conditions; what notice or consent is required; which data classes are barred outright; the vendor contract requirements (processing terms, sub-processors, retention, deletion, breach notice); and the log retention and deletion duties for our own logs.
+6. Also fix our side: do not log raw prompts longer than needed, restrict access, and set a deletion period.
+7. Re-sample monthly (another 500) to check the 18% and the redaction recall.
+
+**Metrics:**
+- Personal-data prompt rate = prompts with personal data / prompts sampled = 90 / 500 = 18%, with a Wilson interval.
+- Redaction recall = personal data items removed / personal data items present, on a labelled sample. Residual leak per day = 3,600 x (1 - recall).
+- Answer quality with redaction versus without, on the same prompts.
+- Guardrails: retention days, number of vendors and sub-processors, access-log audit results.
+
+**Risks:**
+- A sample of 500 can miss rare but serious data types (a 0.5%-rare type is missed 8.2% of the time in 500 prompts).
+- Redaction can break the task (an address, a name the answer depends on).
+- Regional endpoints may still send logs or support data elsewhere. Check this in writing.
+- Engineering cannot settle the legal question. Do not claim compliance.
+
+**What the interviewer scores:**
+- Strong: 3,600 per day, an interval, and a residual leak after redaction. Weak: "18% is a lot".
+- Strong: a table of options with the limits of each, a recommended order, and a clear list for legal. Weak: picks self-hosting immediately or says "legal will handle it".
+- Strong: separates transit, storage and retention. Weak: only talks about the network path.
+- Strong: does not claim legal conclusions.
+
+**Example:** Illustrative. 20,000 prompts a day, 18% carry personal data, so 3,600. Redaction recall of 95% leaves 180 a day. Weak: "Use a regional endpoint and we are compliant." Strong: "Redact first, which cuts 3,600 to roughly 180 if recall is 95%, then ask legal whether the regional endpoint and contract terms are enough for the remaining data, and measure recall every month."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Can you avoid sending personal data at all?* Sometimes: replace values with placeholders, and put the real values back after the answer comes back.
+- *Does self-hosting remove the issue?* It removes the third-party transfer; you still need access control, retention and deletion.
+- *How do you handle logs?* Redact before logging, set a short retention, and restrict who can read them.
+
+**Common mistakes:**
+- Treating the sample rate as exact.
+- Assuming redaction is perfect.
+- Claiming the architecture is compliant without legal review.
+- Ignoring vendor retention and our own logs.

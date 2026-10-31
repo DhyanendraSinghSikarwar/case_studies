@@ -1,0 +1,18 @@
+5 prompt examples ok
+x     tails after x   (nums = [10, 9, 2, 5, 3, 7, 101, 18] )
+10    [10]
+9     [9]
+2     [2]
+5     [2, 5]
+3     [2, 3]
+7     [2, 3, 7]
+101   [2, 3, 7, 101]
+18    [2, 3, 7, 18]
+O(n^2) table (LIS ending at i): [1, 1, 1, 2, 2, 3, 4, 4]
+500 seeded random lists (len 0..12, values -6..6): tails, length, piles, O(n^2) DP, memo all agree with subsequence enumeration
+tails is not a subsequence of nums in 441 of 2000 seeded lists; first example [7, 7, 2, 5, 4, 3, 0] -> tails [0, 3]
+5 seeded lists of length 2500 (O(n^2) DP vs O(n log n) length): equal
+n = 10^5 random: LIS length 624 , strictly increasing 0..99999 -> 100000, strictly decreasing -> 1
+default recursion limit: 1000
+memoised LIS on increasing list n=300: ok
+memoised LIS on increasing list n=1500: RecursionError

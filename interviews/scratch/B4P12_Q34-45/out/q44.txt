@@ -1,0 +1,8 @@
+agent (read grant)   dynamodb:GetItem       -> ('Allow', 'identity or resource policy allows (same account)')
+agent (read grant)   dynamodb:PutItem       -> ('Deny', 'implicit deny: nothing allows')
+agent (read grant)   dynamodb:DeleteItem    -> ('Deny', 'implicit deny: outside permissions boundary')
+approval-flow role   dynamodb:GetItem       -> ('Allow', 'identity or resource policy allows (same account)')
+approval-flow role   dynamodb:PutItem       -> ('Allow', 'identity or resource policy allows (same account)')
+approval-flow role   dynamodb:DeleteItem    -> ('Deny', 'implicit deny: outside permissions boundary')
+with explicit deny guard, even an admin-ish allow: ('Deny', 'explicit deny')
+secret in context? True -> block call

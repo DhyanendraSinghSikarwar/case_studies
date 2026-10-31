@@ -1,0 +1,14 @@
+$ python3 -I check_pipelines.py
+github keys: ['name', True, 'jobs']
+github 'on' key present as string: False | as boolean True: True
+github jobs: {'train': None, 'test': 'train', 'promote': 'test'}
+gitlab stages: ['train', 'test', 'promote']
+gitlab job train: stage=train needs=[]
+gitlab job test: stage=test needs=['train']
+gitlab job promote: stage=promote needs=['test']
+gitlab references all valid
+$ actionlint github-workflow.yml
+exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows github-workflow.yml
+ok -- validation done
+exit=0

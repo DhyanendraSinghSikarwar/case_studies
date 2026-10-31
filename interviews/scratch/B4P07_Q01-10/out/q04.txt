@@ -1,0 +1,51 @@
+== ci.yml
+$ actionlint ci.yml
+actionlint exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows ci.yml
+ok -- validation done
+schema exit=0
+== train.yml
+$ actionlint train.yml
+actionlint exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows train.yml
+ok -- validation done
+schema exit=0
+== after_ci.yml
+$ actionlint after_ci.yml
+actionlint exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows after_ci.yml
+ok -- validation done
+schema exit=0
+== risky_target.yml
+$ actionlint risky_target.yml
+actionlint exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows risky_target.yml
+ok -- validation done
+schema exit=0
+== bad_triggers.yml
+$ actionlint bad_triggers.yml
+bad_triggers.yml:4:5: unexpected key "branch" for "push" section. expected one of "branches", "branches-ignore", "paths", "paths-ignore", "tags", "tags-ignore", "types", "workflows" [syntax-check]
+  |
+4 |     branch: [main]
+  |     ^~~~~~~
+bad_triggers.yml:6:13: invalid CRON format "61 25 * * *" in schedule event: end of range (61) above maximum (59): 61 [events]
+  |
+6 |     - cron: "61 25 * * *"
+  |             ^~~
+bad_triggers.yml:11:18: type of "full" input is "boolean". its default value "yes" must be "true" or "false" [events]
+   |
+11 |         default: "yes"
+   |                  ^~~~~
+actionlint exit=1
+$ check-jsonschema --builtin-schema vendor.github-workflows bad_triggers.yml
+Schema validation errors were encountered.
+  bad_triggers.yml::$.on: {'push': {'branch': ['main']}, 'schedule': [{'cron': '61 25 * * *'}], 'workflow_dispatch': {'inputs': {'full': {'type': 'boolean', 'default': 'yes'}}}} is not valid under any of the given schemas
+  Underlying errors caused this.
+
+  Best Match:
+    $.on: {'push': {'branch': ['main']}, 'schedule': [{'cron': '61 25 * * *'}], 'workflow_dispatch': {'inputs': {'full': {'type': 'boolean', 'default': 'yes'}}}} is not of type 'string'
+  Best Deep Match:
+    $.on.push: {'branch': ['main']} is not of type 'null'
+
+  4 other errors were produced. Use '--verbose' to see all errors.
+schema exit=1

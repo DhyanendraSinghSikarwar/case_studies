@@ -1,0 +1,52 @@
+$ pytest -q -p no:cacheprovider
+......                                                                   [100%]
+6 passed in 0.02s
+$ python -I gate.py --candidate candidate_pass.json --champion champion.json
+check                   result  reason
+metrics present         PASS    all required keys found
+auc floor               PASS    0.853 vs floor 0.8
+latency budget          PASS    p95 38 ms vs 50.0
+size budget             PASS    92 MB vs 200.0
+slice floor             PASS    worst slice new_users=0.790 vs 0.7
+vs champion auc         PASS    drop -0.003 (max 0.005)
+signature               PASS    inputs match champion
+GATE: PASSED
+exit=0
+$ python -I gate.py --candidate candidate_regress.json --champion champion.json
+check                   result  reason
+metrics present         PASS    all required keys found
+auc floor               PASS    0.830 vs floor 0.8
+latency budget          PASS    p95 38 ms vs 50.0
+size budget             PASS    92 MB vs 200.0
+slice floor             PASS    worst slice new_users=0.790 vs 0.7
+vs champion auc         FAIL    drop +0.020 (max 0.005)
+signature               PASS    inputs match champion
+GATE: BLOCKED (1 failed)
+exit=1
+$ python -I gate.py --candidate candidate_missing.json --champion champion.json
+check                   result  reason
+metrics present         FAIL    candidate missing: p95_ms
+GATE: BLOCKED (1 failed)
+exit=1
+$ python -I gate.py --candidate candidate_pass.json --champion no_such_file.json
+check                   result  reason
+metrics present         PASS    all required keys found
+auc floor               PASS    0.853 vs floor 0.8
+latency budget          PASS    p95 38 ms vs 50.0
+size budget             PASS    92 MB vs 200.0
+slice floor             PASS    worst slice new_users=0.790 vs 0.7
+champion metrics        FAIL    none found; fail closed (use --allow-no-champion for the first release)
+GATE: BLOCKED (1 failed)
+exit=1
+$ python -I gate.py --candidate candidate_pass.json --champion no_such_file.json --allow-no-champion
+check                   result  reason
+metrics present         PASS    all required keys found
+auc floor               PASS    0.853 vs floor 0.8
+latency budget          PASS    p95 38 ms vs 50.0
+size budget             PASS    92 MB vs 200.0
+slice floor             PASS    worst slice new_users=0.790 vs 0.7
+champion metrics        PASS    none found; first release, relative checks skipped
+GATE: PASSED
+exit=0
+$ actionlint gate_step.yml
+actionlint exit=0

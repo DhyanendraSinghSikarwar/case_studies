@@ -1,0 +1,15 @@
+$ pytest -q -p no:cacheprovider test_approve.py
+  /tmp/claude-0/b7p07/v/lib/python3.13/site-packages/mlflow/store/tracking/sqlalchemy_store.py:327: SADeprecationWarning: The ``noload`` loader strategy is deprecated and will be removed in a future release.  This option produces incorrect results by returning ``None`` for related items. (deprecated since: 2.1)
+    sqlalchemy.orm.configure_mappers()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+4 passed, 1 warning in 8.03s
+$ python3 -I demo.py
+registered churn v1 author=asha
+REFUSED: approver 'asha' is the author; a second person must approve
+  approved_at = <utc timestamp>
+  approved_by = ravi
+  author = asha
+  gate_report = https://ci.example/gate-report/55
+  workflow_run_id = 9001
+champion -> 1

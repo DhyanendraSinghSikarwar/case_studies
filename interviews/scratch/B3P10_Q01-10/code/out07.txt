@@ -1,0 +1,24 @@
+a_literal_percent        [1]
+a_unescaped_percent      [1, 8]
+a_backslash_no_escape    []
+b_literal_underscore     [2]
+b_unescaped_underscore   [2, 6]
+c_like_default           [1, 2, 3, 4, 5, 6, 7, 8]
+c_glob                   [2, 5, 6, 7]
+d_prefix_or_word         [1, 2, 3, 4, 5, 6, 7, 8]
+d_whole_word             [1, 3, 4, 5, 6, 8]
+
+with PRAGMA case_sensitive_like = ON, LIKE '%cotton%': [2, 5, 6, 7]
+after turning it OFF again:                        [1, 2, 3, 4, 5, 6, 7, 8]
+plan for name = 'COTTON'  ['SEARCH products USING COVERING INDEX ix_name (name=?)']
+plan for LIKE '%cotton%'  ['SCAN products']
+
+pandas str.contains('100%') regex=True also works because % is not special: True
+pandas a_literal_percent        [1]
+pandas b_literal_underscore     [2]
+pandas b_unescaped_underscore   [2, 6]
+pandas c_like_default           [1, 2, 3, 4, 5, 6, 7, 8]
+pandas c_glob                   [2, 5, 6, 7]
+pandas d_prefix_or_word         [1, 2, 3, 4, 5, 6, 7, 8]
+pandas d_whole_word             [1, 3, 4, 5, 6, 8]
+asserts passed (id lists compared in product_id order)

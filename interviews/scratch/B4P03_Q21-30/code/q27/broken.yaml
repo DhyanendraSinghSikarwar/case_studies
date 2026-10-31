@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-api
+spec:
+  selector: {app: model-api}          # BUG 1: pods are labelled app=modelapi
+  ports:
+    - port: 80
+      targetPort: 8000                # BUG 2: container listens on 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: modelapi}
+  template:
+    metadata:
+      labels: {app: modelapi}
+    spec:
+      containers:
+        - name: server
+          image: registry.example.com/model-api:1.4.2
+          args: ["serve", "--host", "127.0.0.1", "--port", "8080"]   # BUG 3: loopback only
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet: {path: /ready, port: 9090}                      # BUG 4: nothing listens on 9090

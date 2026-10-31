@@ -1,0 +1,54 @@
+SQL, every order kept (NULL tag = NULL or missing list; '' = empty element):
+ order_id  tag  position
+        1  red       1.0
+        1 blue       2.0
+        1 sale       3.0
+        2  red       1.0
+        2 sale       2.0
+        3  NaN       NaN
+        4            1.0
+        5    a       1.0
+        5            2.0
+        5    b       3.0
+        6 sale       1.0
+        6 sale       2.0
+
+SQL, empty and NULL dropped deliberately:
+ order_id  tag  position
+        1  red         1
+        1 blue         2
+        1 sale         3
+        2  red         1
+        2 sale         2
+        5    a         1
+        5    b         3
+        6 sale         1
+        6 sale         2
+
+SQL, orders per tag:
+ tag  orders  mentions
+sale       3         4
+ red       2         2
+   a       1         1
+   b       1         1
+blue       1         1
+
+pandas str.split + explode (raw):
+ order_id  tag  position
+        1  red         1
+        1 blue         2
+        1 sale         3
+        2  red         1
+        2 sale         2
+        3  NaN         1
+        4              1
+        5    a         1
+        5              2
+        5    b         3
+        6 sale         1
+        6 sale         2
+tags dtype: str | NaN row after explode: [nan]
+
+asserts passed: all-rows, cleaned rows and per-tag counts match (sorted by order_id, position / orders desc, tag)
+without appending ',' (order 1): ['red', 'blue'] -> 'sale' is lost
+explode on NaN/'': [nan, '', 'a', 'b']

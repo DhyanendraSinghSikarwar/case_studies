@@ -1,0 +1,31 @@
+$ git log --pretty=format:%s model-v3.0.0..model-v4.0.0 > commits.txt
+Retrain on October data
+Add tenure feature
+$ python3 -I release_notes.py old_metrics.json new_metrics.json model-v3.0.0 model-v4.0.0 --commits commits.txt
+# churn v4 (model-v4.0.0)
+
+| Field | Value |
+|---|---|
+| Model version | 4 |
+| Data version | customers-2026-10 (was customers-2026-09) |
+| Git SHA | e4f5a6b |
+| Rollback target | churn v3 (model-v3.0.0) |
+
+## Metrics versus previous champion
+
+| Metric | Old | New | Change | Verdict |
+|---|---|---|---|---|
+| auc | 0.842 | 0.851 | +0.009 | better |
+| brier | 0.121 | 0.118 | -0.003 | better |
+| p95_latency_ms | 38.000 | 41.500 | +3.500 | WORSE |
+| recall_at_10pct | 0.410 | 0.432 | +0.022 | better |
+
+## What changed (model-v3.0.0..model-v4.0.0)
+
+- Retrain on October data
+- Add tenure feature
+
+## Known limitations
+
+- Weak on customers under 30 days old
+- Not validated for the business plan

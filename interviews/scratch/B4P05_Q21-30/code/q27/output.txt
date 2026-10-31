@@ -1,0 +1,11 @@
+INFO step_pod.yaml passed for resource pod/train-step-sketch against version 1.37
+kubernetes-validate exit: 0
+retryPolicy: {'backoffDuration': '60s', 'backoffFactor': 2.0, 'backoffMaxDuration': '3600s', 'maxRetryCount': 2}
+cachingOptions: {} | displayName: add-one
+Client.create_experiment: exists
+Client.run_pipeline: exists
+Client.create_run_from_pipeline_package: exists
+Client.create_recurring_run: exists
+Client.list_runs: exists
+Client.get_run: exists
+create_recurring_run args: ['self', 'experiment_id', 'job_name', 'description', 'start_time', 'end_time', 'interval_second', 'cron_expression', 'max_concurrency', 'no_catchup', 'params', 'pipeline_package_path']

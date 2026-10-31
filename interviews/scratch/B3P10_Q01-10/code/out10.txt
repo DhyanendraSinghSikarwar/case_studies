@@ -1,0 +1,37 @@
+plain SUM(amount): 420
+
+teammate pivot (jan + feb + mar):
+region  jan  feb  mar  total
+  East  100 50.0  NaN    NaN
+ North   60  NaN  NaN    NaN
+  West   15 25.0 40.0   80.0
+sum of the teammate total column: 80.0 vs SUM(amount) above
+distinct month labels: [None, ' Feb', 'Apr', 'Feb', 'Jan', 'Mar', 'jan']
+
+fixed pivot with other and a direct SUM(amount) total:
+region  jan  feb  mar  other  total
+  East  130 50.0  NaN    NaN    180
+ North   60  NaN  NaN    NaN     60
+  West   15 95.0 40.0   30.0    180
+pivot grand total: 420 | sum of the five parts: 420.0
+
+self-check on the teammate's pivot (parts vs total, no 'other'): [('East', 150, 180), ('West', 80, 180), ('GRAND', 290, 420)]
+self-check on the fixed pivot returns: []
+what lands in other (month label, rows, amount): [(None, 1, 10), ('Apr', 1, 20)]
+
+pandas pivot_table on the raw labels, margins=True:
+month    Feb   Apr   Feb    Jan   Mar   jan  total
+region                                            
+East     NaN   NaN  50.0  100.0   0.0  30.0  180.0
+North    NaN   NaN   0.0   60.0   NaN   NaN   60.0
+West    70.0  20.0  25.0   15.0  40.0   NaN  170.0
+total   70.0  20.0  75.0  175.0  40.0  30.0  410.0
+pandas grand total cell: 410.0 vs df.amount.sum(): 420.0 (rows with a NaN month key are dropped from the pivot)
+
+pandas fixed pivot (margins=True):
+region   jan  feb  mar  other  total
+  East 130.0 50.0  0.0    NaN  180.0
+ North  60.0  0.0  NaN    NaN   60.0
+  West  15.0 95.0 40.0   30.0  180.0
+East/Mar: SQL nan | pandas 0.0
+asserts passed (compared after sorting by region, NULL/NaN filled with 0 on both sides)

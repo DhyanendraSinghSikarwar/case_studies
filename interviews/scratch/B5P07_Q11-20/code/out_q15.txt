@@ -1,0 +1,7 @@
+[3, 1, 4, None, 2] k=1 -> 1
+[5, 3, 6, 2, 4, None, None, 1] k=3 -> 3
+[5, 3, 6, 2, 4, None, None, 1] k=6 -> 6
+[1] k=1 -> 1
+exhaustive ok: 4081 (BST, k) cases; pops == k and stack <= h every time
+random ok: 200 BSTs, sizes kept correct across inserts
+chain 10000, k=10000 -> 10000 | k=1 -> 1

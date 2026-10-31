@@ -1,0 +1,13 @@
+# Container probe block (Kubernetes pod spec fragment). Not applied to a cluster here.
+startupProbe:
+  httpGet: {path: /startupz, port: 8000}
+  periodSeconds: 5
+  failureThreshold: 60        # up to 5 min to download and load the model
+livenessProbe:
+  httpGet: {path: /livez, port: 8000}
+  periodSeconds: 10
+  failureThreshold: 3
+readinessProbe:
+  httpGet: {path: /readyz, port: 8000}
+  periodSeconds: 5
+  failureThreshold: 2

@@ -1,0 +1,9 @@
+q24 exit 0
+q21 exit 0
+q22 exit 0
+q25 exit 0
+q23 exit 0
+q27 exit 0
+q20 exit 0
+q19 exit 0
+q26 exit 0

@@ -1,0 +1,39 @@
+--- A. ORDER BY amount LIMIT 10 ---
+no index
+   plan : SCAN orders | USE TEMP B-TREE FOR ORDER BY
+   steps: 1,600,363   rows: 10
+index on amount (rowid is the hidden last column, so the order_id tie-break is free)
+   plan : SCAN orders USING COVERING INDEX ix_amt
+   steps: 88   rows: 10
+no LIMIT, index on amount
+   plan : SCAN orders USING COVERING INDEX ix_amt
+   steps: 1,000,028   rows: 200000
+LIMIT 10 but ORDER BY amount DESC, order_id
+   plan : SCAN orders USING COVERING INDEX ix_amt | USE TEMP B-TREE FOR RIGHT PART OF ORDER BY
+   steps: 225   rows: 10
+--- B. ORDER BY order_date DESC LIMIT 10 (index read backwards) ---
+no index on order_date
+   plan : SCAN orders | USE TEMP B-TREE FOR ORDER BY
+   steps: 1,401,933   rows: 10
+index on order_date
+   plan : SCAN orders USING COVERING INDEX ix_dt
+   steps: 85   rows: 10
+ORDER BY order_date DESC, order_id ASC (mixed direction)
+   plan : SCAN orders USING COVERING INDEX ix_dt | USE TEMP B-TREE FOR RIGHT PART OF ORDER BY
+   steps: 7,968   rows: 10
+--- C. WHERE customer_id = ? ORDER BY order_date ---
+index on customer_id only
+   plan : SEARCH orders USING INDEX ix_cust (customer_id=?) | USE TEMP B-TREE FOR ORDER BY
+   steps: 194   rows: 12
+plus index on (customer_id, order_date)
+   plan : SEARCH orders USING COVERING INDEX ix_cust_dt (customer_id=?)
+   steps: 115   rows: 12
+--- D. LIMIT without ORDER BY is arbitrary ---
+no index on amount
+   plan : SCAN orders
+   steps: 597   rows: 3
+after CREATE INDEX on amount (same SQL text)
+   plan : SEARCH orders USING COVERING INDEX ix_amt (amount>?)
+   steps: 48   rows: 3
+   first run : [(125, 499.04), (129, 497.11), (140, 496.76)]
+   second run: [(39725, 495.01), (78384, 495.01), (138241, 495.01)]

@@ -1,0 +1,38 @@
+name: ml-stage-map
+on: [pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps: [{run: ruff check .}]
+  unit:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps: [{run: pytest tests/unit}]
+  data-tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps: [{run: pytest tests/data}]
+  smoke-train:
+    needs: [unit, data-tests]
+    runs-on: ubuntu-latest
+    steps: [{run: python train.py --smoke}]
+  full-train:
+    needs: smoke-train
+    runs-on: ubuntu-latest
+    steps: [{run: python train.py --full}]
+  evaluate:
+    needs: full-train
+    runs-on: ubuntu-latest
+    steps: [{run: python evaluate.py}]
+  register:
+    needs: evaluate
+    runs-on: ubuntu-latest
+    steps: [{run: python register.py}]
+  gate:
+    needs: register
+    runs-on: ubuntu-latest
+    steps: [{run: python gate.py}]
+  deploy:
+    needs: gate
+    runs-on: ubuntu-latest
+    steps: [{run: python deploy.py}]

@@ -1,0 +1,7 @@
+team-vision    wants 1 borrow=False -> ADMIT: 1 of 1 free quota GPUs
+team-vision    wants 2 borrow=False -> QUEUE/DENY: wants 2, quota free 1 (hard limit 4)
+team-vision    wants 2 borrow=True  -> ADMIT as preemptible: 1 in quota + 1 borrowed (spare=7)
+team-nlp       wants 1 borrow=False -> QUEUE/DENY: wants 1, quota free 0 (hard limit 5)
+team-nlp       wants 1 borrow=True  -> ADMIT as preemptible: 0 in quota + 1 borrowed (spare=7)
+team-ghost     wants 1 borrow=False -> DENY: unknown team
+team-speech    wants 0 borrow=False -> DENY: request must be positive

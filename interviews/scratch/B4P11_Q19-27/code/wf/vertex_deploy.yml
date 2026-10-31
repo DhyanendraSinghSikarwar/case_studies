@@ -1,0 +1,35 @@
+name: vertex-train-and-deploy
+on:
+  push:
+    branches: [main]
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2     # Workload Identity Federation: no key file
+        with:
+          workload_identity_provider: projects/123456789/locations/global/workloadIdentityPools/gh-pool/providers/gh-provider
+          service_account: vertex-deployer@demo-proj.iam.gserviceaccount.com
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: >
+          gcloud ai custom-jobs create --region=asia-south1 --display-name=train-${{ github.sha }}
+          --config=jobs/custom_job.yaml
+  deploy-prod:
+    needs: train
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/123456789/locations/global/workloadIdentityPools/gh-pool/providers/gh-provider
+          service_account: vertex-prod-deployer@demo-prod.iam.gserviceaccount.com
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: >
+          gcloud ai endpoints deploy-model ENDPOINT_ID --region=asia-south1
+          --model=MODEL_ID --display-name=green --machine-type=n1-standard-4
+          --min-replica-count=1 --max-replica-count=2

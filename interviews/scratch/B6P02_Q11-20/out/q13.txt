@@ -1,0 +1,16 @@
+approval rate 0.619; default rate among approved 0.027; true default rate among ALL applicants 0.125
+approved book: mean predicted PD 0.027 vs observed 0.027 (looks calibrated)
+AUC on approved (what monitoring sees) = 0.709
+AUC on the rejected region (unobserved)  = 0.798
+x-bin            n   mean predicted PD   true PD
+[ -3.5, -2.0)    9058   0.639               0.905
+[ -2.0, -1.2)   37146   0.341               0.511
+[ -1.2, -0.7)   50684   0.173               0.203
+[ -0.7, -0.3)   55440   0.097               0.099
+exploration slice of 1000 loans: 95% half-width on a ~30% default rate = +/-2.8 points
+measured default rate in explored slice = 0.267 (true default rate among rejects = 0.283)
+expected exploration cost (losses only, ignoring interest earned) = Rs 160.2 lakh
+same slice with a Rs 10,000 loan cap: Rs 16.0 lakh
+slice is 0.66% of rejected applicants (152434 rejects)
+naive reject-inference refit: mean PD in the unseen bin = 0.155 vs true 0.511
+refit with weighted exploration slice: mean PD in the unseen bin = 0.481 vs true 0.511

@@ -1,0 +1,9 @@
+google-cloud-aiplatform 1.165.1
+{"displayName": "churn-ep", "deployedModels": [{"id": "a", "model": "projects/demo-proj/locations/asia-south1/models/111", "displayName": "churn-v1", "dedicatedResources": {"machineSpec": {"machineType": "n1-standard-4"}, "minReplicaCount": 1, "maxReplicaCount": 3}, "modelVersionId": "1"}, {"id": "b", "model": "projects/demo-proj/locations/asia-south1/models/111", "displayName": "churn-v2", "dedicatedResources": {"machineSpec": {"machineType": "n1-standard-4"}, "minReplicaCount": 1, "maxReplicaCount": 3}, "modelVersionId": "2"}], "trafficSplit": {"b": 10, "a": 90}, "dedicatedEndpointEnabled": true}
+{'a': 90, 'b': 10} -> ok
+{'a': 90, 'b': 20} -> BAD sum is 110, need 100
+{'a': 50, 'c': 50} -> BAD unknown deployed model id(s): ['c']
+nightly-gcs | in: {'instances_format': 'jsonl', 'gcs_source': {'uris': ['gs://demo-bkt/in/part-*.jsonl']}} | out: {'predictions_format': 'jsonl', 'gcs_destination': {'output_uri_prefix': 'gs://demo-bkt/out/'}}
+nightly-bq | in: {'instances_format': 'bigquery', 'bigquery_source': {'input_uri': 'bq://demo-proj.sales.to_score'}} | out: {'predictions_format': 'bigquery', 'bigquery_destination': {'output_uri': 'bq://demo-proj.sales_out'}}
+replicas: 2 -> 4
+SDK classes present: Endpoint BatchPredictionJob Model | Model.deploy and Model.batch_predict exist: True True

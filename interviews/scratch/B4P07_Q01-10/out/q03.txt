@@ -1,0 +1,10 @@
+$ pytest -m 'not slow' -q -p no:cacheprovider
+.                                                                        [100%]
+1 passed, 1 deselected in 1.35s
+$ pytest -m slow -q -p no:cacheprovider
+.                                                                        [100%]
+1 passed, 1 deselected in 1.75s
+$ actionlint ci.yml
+actionlint exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows ci.yml
+ok -- validation done

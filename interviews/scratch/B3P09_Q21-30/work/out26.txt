@@ -1,0 +1,23 @@
+depth/path, roll-up and direct-report counts equal the SQL results
+ emp_id  depth                      path  subtree_size  subtree_salary  direct_reports
+      1      0                       Tim            12             590             2.0
+      2      1                 Tim/Radha             7             315             1.0
+      3      2            Tim/Radha/Hari             6             235             2.0
+      4      3      Tim/Radha/Hari/Shyam             3             103             2.0
+      5      1                 Tim/Meera             4             175             2.0
+      6      2           Tim/Meera/Kiran             2              70             1.0
+      7      3       Tim/Radha/Hari/Asha             2              72             1.0
+      8      3       Tim/Meera/Kiran/Dev             1              30             NaN
+      9      2            Tim/Meera/Isha             1              35             NaN
+     10      4  Tim/Radha/Hari/Shyam/Ram             1              25             NaN
+     11      4 Tim/Radha/Hari/Shyam/Zoya             1              28             NaN
+     12      4  Tim/Radha/Hari/Asha/Nina             1              27             NaN
+
+exploded pairs for Ram (10): [10, 4, 3, 2, 1] | descendants list of Hari (3): [3, 4, 7, 10, 11, 12]
+Tim: direct reports = 2 but subtree_size = 12 (includes Tim himself)
+
+rows in the pairs frame (self rows included); int64 payload computed as rows x 2 columns x 8 bytes, not allocated:
+  toy tree      : 12 nodes -> 41 rows, deep memory 984 bytes
+  balanced 8-ary : 50000 nodes -> 307202 rows, about 4.9 MB
+  straight chain : 2000 nodes -> 2001000 rows, about 32.0 MB
+asserts passed

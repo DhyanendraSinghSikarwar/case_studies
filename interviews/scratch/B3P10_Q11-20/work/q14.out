@@ -1,0 +1,73 @@
+pandas 3.0.5 | SQLite 3.45.1
+dtypes: {'region': 'str', 'product': 'str', 'month': 'str', 'amount': 'float64'} | NaN product: 1 | NaN amount: 2
+
+SQL SUM(CASE) pivot with Total (NULL = no non-NULL amount):
+          Jan   Feb   Mar  Total
+region                          
+East    350.0   NaN   NaN  350.0
+North     NaN   NaN   NaN    NaN
+West     40.0  70.0  30.0  140.0
+
+pivot with duplicates -> ValueError: Index contains duplicate entries, cannot reshape
+min_count=1 with default dropna: regions kept = ['East', 'West'] (North is gone)
+mean with default dropna: regions kept = ['East', 'West']
+
+pivot_table sum (default), columns come out alphabetical:
+month    Feb    Jan   Mar
+region                   
+East     0.0  350.0   NaN
+North    NaN    0.0   NaN
+West    70.0   40.0  30.0
+cells that differ from SQL after reindexing the months: [('East', 'Feb'), ('North', 'Jan')] (pandas 0.0 where SQL has NULL)
+
+sum with min_count=1 and dropna=False:
+          Jan   Feb   Mar
+region                   
+East    350.0   NaN   NaN
+North     NaN   NaN   NaN
+West     40.0  70.0  30.0
+
+margins=True, margins_name='Total':
+          Jan   Feb   Mar  Total
+region                          
+East    350.0   NaN   NaN  350.0
+North     NaN   NaN   NaN    NaN
+West     40.0  70.0  30.0  140.0
+Total   390.0  70.0  30.0  490.0
+
+mean:
+            Jan   Feb   Mar
+region                     
+East    116.667   NaN   NaN
+North       NaN   NaN   NaN
+West     40.000  70.0  30.0
+
+count of non-NaN amounts, fill_value=0:
+        Jan  Feb  Mar
+region               
+East      3    0    0
+North     0    0    0
+West      1    1    1
+
+crosstab (row counts):
+        Jan  Feb  Mar
+region               
+East      3    1    0
+North     1    0    0
+West      1    1    1
+
+asserts passed: sum, mean, count, crosstab and margins match the SQL pivot (rows by region, columns Jan Feb Mar)
+groupby(['region','month'])['amount'].sum(min_count=1).unstack() also equals the SQL sum pivot (North kept)
+default sum margins, North Total: dropna=True -> nan | dropna=False -> 0.0 (SQL SUM is NULL)
+
+aggfunc=['sum','mean'] columns: [('sum', 'Feb'), ('sum', 'Jan'), ('sum', 'Mar')] ...
+aggfunc={'amount': ['sum','count']} column levels: 2
+fill_value=0 on the default sum turns every NaN cell into 0: [[0.0, 350.0, 0.0], [0.0, 0.0, 0.0], [70.0, 40.0, 30.0]]
+
+index='product' (default): labels ['Book', 'Pen'] | total 450.0 (the NaN-product 40 vanished; region total is 490)
+index='product', dropna=False: labels ['Book', 'Pen', nan] | total 490.0
+crosstab on product default rows: ['Book', 'Pen'] | dropna=False: ['Book', 'Pen', nan]
+SQL GROUP BY product keeps the NULL group: [(None, 40), ('Book', 230), ('Pen', 220)]
+
+categorical month with unused 'Apr': default columns ['Jan', 'Feb', 'Mar'] | observed=False columns ['Jan', 'Feb', 'Mar', 'Apr'] | Apr cells: [0.0, 0.0, 0.0]
+asserts passed (categorical)

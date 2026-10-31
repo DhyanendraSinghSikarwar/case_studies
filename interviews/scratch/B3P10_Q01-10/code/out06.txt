@@ -1,0 +1,21 @@
+ user_id  q1    q2    q3
+       1 Yes    No Maybe
+       2  No   NaN   Yes
+       3 NaN Maybe   NaN
+       4 Yes   Yes   NaN
+
+duplicate (user, question) pairs: [(4, 'q1', 2)]
+same query with MIN, user 4 q1: No (MAX gave Yes)
+
+pivot with duplicates -> ValueError: Index contains duplicate entries, cannot reshape
+pivot on the clean rows:
+ user_id  q1    q2    q3
+       1 Yes    No Maybe
+       2  No   NaN   Yes
+       3 NaN Maybe   NaN
+
+pivot_table aggfunc='first', user 4 q1: No (first row in the data: 'No')
+pivot_table aggfunc='max',   user 4 q1: Yes
+columns.name after pivot (before rename_axis): question
+user 3 has no q1 and no q3 -> missing cells: [nan, 'Maybe', nan]
+asserts passed (compared in user_id order)

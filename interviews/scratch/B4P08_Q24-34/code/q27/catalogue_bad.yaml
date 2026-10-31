@@ -1,0 +1,10 @@
+alerts:
+  - name: DriftScoreSustained
+    owner: nobody
+    severity: warn
+    runbook: wiki/drift
+    action: "look"
+  - name: ModelStale
+    owner: ml-platform
+    severity: page
+    runbook: https://wiki.example.com/runbooks/model-stale

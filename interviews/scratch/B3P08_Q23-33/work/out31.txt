@@ -1,0 +1,51 @@
+sqlite 3.45.1 pandas 3.0.5 numpy 2.5.3
+
+Row 1: distinct count with a missing user id (column u: 10, NULL, 10, NULL, 20)
+  SQL COUNT(DISTINCT u): 2 | SQL COUNT(*): 5 | SQL COUNT(u): 3
+  pandas nunique(): 2 | nunique(dropna=False): 3 | len(set(series)): 4 | len(df['u'].unique()): 3
+  SQL DISTINCT rows incl NULL group: 3
+
+Row 2: grouping on a key with a missing value (k: a, a, NULL, NULL, b)
+  SQL GROUP BY k: [(None, 2), ('a', 2), ('b', 1)]
+  pandas groupby default: {'a': 2, 'b': 1}
+  pandas groupby dropna=False: {'a': 2, 'b': 1, nan: 2}
+  value_counts default: {'a': 2, 'b': 1} | dropna=False: {'a': 2, nan: 2, 'b': 1}
+
+Row 3: integer division and sign
+  SQLite 3 / 2 = 1 | 3 / 2.0 = 1.5 | -3 / 2 = -1 | 3 * 1.0 / 2 = 1.5
+  Python 3 / 2 = 1.5 | 3 // 2 = 1 | -3 // 2 = -2 | int(-3 / 2) = -1
+  pandas Series([3]) / 2 = 1.5 | // 2 = 1 | Series([-3]) // 2 = -2
+
+Row 4: rounding (SQLite ROUND versus Python round, numpy and pandas)
+  SQLite ROUND(x): [1.0, 2.0, 3.0, -3.0]
+  Python round(x): [0, 2, 2, -2]
+  numpy np.round(x): [0.0, 2.0, 2.0, -2.0]
+  pandas Series.round(): [0.0, 2.0, 2.0, -2.0]
+  to 2 places: [0.125, 0.375, 2.675, 1.005]
+  SQLite ROUND(x, 2): [0.13, 0.38, 2.67, 1.0]
+  Python round(x, 2): [0.12, 0.38, 2.67, 1.0]
+  numpy np.round(x, 2): [0.12, 0.38, 2.68, 1.0]
+  pandas Series.round(2): [0.12, 0.38, 2.68, 1.0]
+
+Row 5: division by an empty or zero denominator
+  SQLite 1 / 0 = None | 1.0 / 0 = None | 0.0 / 0 = None | 1 / NULLIF(0, 0) = None
+  SQLite SUM over zero rows: None | COUNT over zero rows: 0 | AVG over zero rows: None
+  pandas float Series 1/0, 0/0, 5/5: [inf, nan, 1.0]
+  pandas int Series [1, 0] / [0, 0]: [inf, nan]
+  Python 1 / 0 raises ZeroDivisionError: division by zero
+  pandas sum of empty: 0.0 | mean of empty: nan | count: 0
+
+Row 6: merge / join on keys that contain a missing value
+  SQL INNER JOIN on k: [('a', 1, 10)]
+  SQL LEFT JOIN on k: [('a', 1, 10), (None, 2, None)]
+  pandas merge inner on k:
+  k  lv  rv
+  a   1  10
+NaN   2  20
+  SQL NULL = NULL: None | NULL IS NULL: 1
+
+Row 7: rolling().nunique
+  hasattr(Series.rolling(2), 'nunique'): True
+  hasattr(Series.rolling(2), 'count'): True
+
+asserts passed

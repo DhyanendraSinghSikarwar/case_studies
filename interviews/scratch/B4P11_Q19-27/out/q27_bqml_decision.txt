@@ -1,0 +1,6 @@
+bqml              <- weekly churn scores, data in BQ, logistic regression: data already in the warehouse, model family is built in; batch scoring in SQL is enough
+vertex_custom_job <- image model on GPUs: needs custom code, framework or GPU beyond built-in model types
+vertex_custom_job <- fraud score at 50 ms online, no export plan: tight online latency: score outside the warehouse (or export and host)
+bqml              <- same fraud case but plan to export model: data already in the warehouse, model family is built in; register to Vertex Model Registry so governance is shared (check current docs)
+vertex_custom_job <- data lives in Blob storage, not BQ: default: data not in warehouse or model family unsupported
+5 cases, all as expected

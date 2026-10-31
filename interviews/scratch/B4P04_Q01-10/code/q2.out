@@ -1,0 +1,40 @@
+Setting 'localstore' as a default remote.
+--- .dvc/config
+[core]
+    remote = localstore
+['remote "localstore"']
+    url = /tmp/tmp.FsmPbO2God/store
+['remote "s3demo"']
+    url = s3://my-bucket/dvcstore
+--- push 1
+1 file pushed
+--- push 2
+Everything is up to date.
+--- remote layout
+./files/md5/c5/3f3d80faae72f979df2dd3730349c2
+--- add a secret-ish setting to local config
+--- .dvc/config after region edit
+[core]
+    remote = localstore
+['remote "localstore"']
+    url = /tmp/tmp.FsmPbO2God/store
+['remote "s3demo"']
+    url = s3://my-bucket/dvcstore
+    region = us-east-1
+--- .dvc/config.local
+['remote "s3demo"']
+    access_key_id = FAKE_KEY_FOR_DEMO
+--- gitignore in .dvc
+/config.local
+/tmp
+/cache
+--- delete workspace file and cache
+data.csv.dvc
+--- dvc status -c
+	deleted:            data.csv
+--- pull
+A       data.csv
+1 file fetched and 1 file added
+data.csv
+data.csv.dvc
+501 data.csv

@@ -1,0 +1,31 @@
+name: bump-deploy-config
+on:
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: image digest, e.g. sha256:...
+        required: true
+      model_version:
+        description: registry model version
+        required: true
+permissions:
+  contents: read
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: example-org/ml-deploy-config
+          token: ${{ secrets.CONFIG_REPO_TOKEN }}   # narrow token for the config repo only
+      - name: Edit values and open a PR
+        env:
+          DIGEST: ${{ inputs.digest }}
+          MODEL_VERSION: ${{ inputs.model_version }}
+          GH_TOKEN: ${{ secrets.CONFIG_REPO_TOKEN }}
+        run: |
+          python scripts/bump_values.py values.yaml "$DIGEST" "$MODEL_VERSION"
+          git switch -c "bump-model-$MODEL_VERSION"
+          git commit -am "deploy: churn model $MODEL_VERSION"
+          git push origin HEAD
+          gh pr create --fill

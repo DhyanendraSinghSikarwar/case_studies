@@ -1,0 +1,44 @@
+**Pattern:** Shortest path with edge weights only 0 or 1: 0-1 BFS on a deque. Stepping into an obstacle cell costs 1, into an empty cell costs 0.
+
+**Say this first (1 line):** "It is Dijkstra where the heap only ever holds two distances, d and d+1, so a deque replaces it: free moves go to the front, paid moves to the back."
+
+**Brute force:** Bellman-Ford over the grid: sweep every cell and neighbour, relax, and repeat until nothing changes. Up to O((mn)^2) in the worst case. Plain Dijkstra with `heapq` is the middle option, O(mn log(mn)). Both are checkers in the code.
+
+**Optimal:**
+- `dist[0][0] = 0`, deque `[(0,0)]`. Pop from the left. For each neighbour with cost `w = grid[nb]` (cost of stepping INTO it): if `dist[cell] + w < dist[nb]`, update; `w == 0` -> `appendleft`, `w == 1` -> `append`.
+- Invariant: the deque is always sorted by distance and holds at most two different values, d and d+1. Popping from the left takes the smallest. A 0-move produces distance d, which belongs in front of the d+1 entries; a 1-move produces d+1, which belongs at the back. The code asserts the invariant before every pop on all small grids.
+- Why a cell can be queued more than once: it may first be reached with d+1 and later with d. The strict `<` allows that improvement. Since only two values exist at a time, a cell improves at most about twice, so total work stays O(mn). A stale copy is harmless: when popped, its relaxations all fail.
+- Why ordinary BFS fails: BFS finalises a cell when it is first enqueued and assumes every edge costs one step. With costs 0 and 1 the first route found (fewest steps) is not the cheapest route (fewest obstacles). The code counts the plain version wrong on 12914 of the 17557 exhaustively tested grids; example 1 gives 3 instead of 2.
+- Versus Dijkstra: same relaxations, but a heap push/pop costs O(log) and the deque costs O(1), because the "priority" only takes two consecutive values.
+
+**Complexity:** Time O(mn): each cell is queued a constant number of times (at most twice per improvement level) and scans 4 neighbours. Space O(mn) for `dist` and the deque. The log factor of Dijkstra disappears.
+
+**Dry run:** `[[0,1,1],[1,1,0],[1,1,0]]`.
+- Start (0,0), dist 0. Right (0,1): cost 1, dist 1, append. Down (1,0): cost 1, dist 1, append. Deque: (0,1), (1,0).
+- Pop (0,1) (dist 1): right (0,2) cost 1 -> 2, append; down (1,1) cost 1 -> 2, append.
+- Pop (1,0) (dist 1): down (2,0) -> 2, append; right (1,1) 2 is not less than 2, no change.
+- Pop (0,2) dist 2: down (1,2) cost 0 -> 2, appendleft. Pop (1,2): down (2,2) cost 0 -> 2, appendleft. Pop (2,2).
+- dist[2][2] = 2.
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- 1 x 1 grid: 0.
+- Start and end are guaranteed free, so the start cell's own value is never paid.
+- A grid that is one long row or column of obstacles: answer is the number of obstacles in the middle; sizes up to 10^5 cells are fine because the loop is iterative.
+- A free corridor that is longer than a path through one obstacle: still the corridor wins (cost 0). Example 2 shows it.
+
+**Follow-ups:**
+- Cost on edges rather than cells (a weight 0 or 1 per edge)? Same algorithm; the cost is read from the edge.
+- Weights 0..K? Dial's algorithm: K + 1 buckets instead of a deque.
+- Why not a visited set instead of the strict distance check? With a visited-on-pop set it also works (skip a cell that was already finalised), but then you must set it on pop, never on push.
+
+**Common mistakes:**
+- Marking a cell visited when it is enqueued (the BFS bug above).
+- Pushing the 0-cost neighbour to the back, which breaks the sorted invariant.
+- Adding the cost of the cell you leave instead of the one you enter (the start would be charged).
+- Using `<=` in the relaxation and re-queueing forever on zero-cost cycles.

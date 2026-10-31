@@ -1,0 +1,5 @@
+'abc' -> 3
+'aaa' -> 6
+'abba' -> 6
+'a'*1000 -> 500500 = n(n+1)/2
+random cross-check passed: 5000 cases

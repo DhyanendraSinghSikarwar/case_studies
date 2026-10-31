@@ -1,0 +1,10 @@
+azure-ai-ml 1.35.2
+endpoint: churn-batch | deployment: v1 -> churn-batch
+settings: {'mini_batch_size': 1, 'instance_count': 4, 'max_concurrency': 2, 'output_action': 'append_row', 'retries': 3, 'timeout_s': 300}
+files=200 mini_batches=200 parallel_workers=8 waves=25
+1. ensure input data asset (uri_folder of part files) is registered/versioned: churn-input:<date>
+2. az ml batch-endpoint invoke --name churn-batch --deployment-name v1 --input azureml:churn-input:<date>   (returns a job)
+3. poll the returned job until Completed (or Failed/Canceled); alert on Failed
+4. read predictions.csv from the job's output location; row count must equal 2,000,000 (APPEND_ROW)
+5. publish only after the count check; keep the job name in the run log
+6. rollback = set default deployment back (no traffic split on batch)

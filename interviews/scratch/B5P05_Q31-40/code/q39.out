@@ -1,0 +1,9 @@
+m = 3 n = 3 k = 5 -> 3  brute: 3
+m = 2 n = 3 k = 6 -> 6  brute: 6
+m = 1 n = 5 k = 4 -> 4  brute: 4
+m = 3 n = 3 k = 9 -> 9  brute: 9
+m = 3 n = 3 k = 1 -> 1  brute: 1
+exhaustive (m, n, k) cases checked: 2025
+row-major 3 x 3: [1, 2, 3, 2, 4, 6, 3, 6, 9]
+m = n = 3*10**4, k = 4*10**8 -> 139742112
+all checks passed

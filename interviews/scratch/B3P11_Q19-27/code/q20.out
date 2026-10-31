@@ -1,0 +1,58 @@
+tiny A correlated [3]
+tiny B derived join [3]
+tiny C window [3]
+tiny dept avgs: [(10, 200.0), (20, 50.0), (30, 70.0)]
+
+Correlated form WITHOUT an index, VM steps by table size (200 departments):
+  n=  500  steps    1010385  steps/n^2 = 4.04
+  n= 1000  steps    4025775  steps/n^2 = 4.03
+  n= 2000  steps   16071237  steps/n^2 = 4.02
+  plan: ['SCAN e', 'CORRELATED SCALAR SUBQUERY 1', 'SCAN x']
+  extrapolated to 50,000 rows by steps/n^2 (an estimate, NOT run): about 1.0e+10 steps
+
+50,000 employees, 200 departments, pandas answer rows: 24915
+--- index on (dept_id, salary): False
+  A correlated    not run at 50,000 rows without an index (quadratic, see above)
+  B derived join  rows 24915  VM steps    1404036
+  C window        rows 24915  VM steps    2426239
+  PLAN A correlated
+      SCAN e
+      CORRELATED SCALAR SUBQUERY 1
+      SCAN x
+  PLAN B derived join
+      CO-ROUTINE d
+      SCAN employees
+      USE TEMP B-TREE FOR GROUP BY
+      SCAN e
+      BLOOM FILTER ON d (dept_id=?)
+      SEARCH d USING AUTOMATIC COVERING INDEX (dept_id=?)
+  PLAN C window
+      CO-ROUTINE (subquery-1)
+      CO-ROUTINE (subquery-3)
+      SCAN employees
+      USE TEMP B-TREE FOR ORDER BY
+      SCAN (subquery-3)
+      SCAN (subquery-1)
+      USE TEMP B-TREE FOR ORDER BY
+--- index on (dept_id, salary): True
+  A correlated    rows 24915  VM steps   51076033
+  B derived join  rows 24915  VM steps     628860
+  C window        rows 24915  VM steps    2026237
+  PLAN A correlated
+      SCAN e
+      CORRELATED SCALAR SUBQUERY 1
+      SEARCH x USING COVERING INDEX ix_dept_sal (dept_id=?)
+  PLAN B derived join
+      CO-ROUTINE d
+      SCAN employees USING COVERING INDEX ix_dept_sal
+      SCAN d
+      SEARCH e USING COVERING INDEX ix_dept_sal (dept_id=? AND salary>?)
+      USE TEMP B-TREE FOR ORDER BY
+  PLAN C window
+      CO-ROUTINE (subquery-1)
+      CO-ROUTINE (subquery-3)
+      SCAN employees USING COVERING INDEX ix_dept_sal
+      SCAN (subquery-3)
+      SCAN (subquery-1)
+      USE TEMP B-TREE FOR ORDER BY
+asserts passed: every form run returned the pandas rows (compared sorted by emp_id)

@@ -1,0 +1,32 @@
+name: train
+on:
+  workflow_call:
+    inputs:
+      data_version:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      data_version:
+        description: "Data tag to train on"
+        type: string
+        default: "latest"
+      full:
+        description: "Full training (not smoke)"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "30 20 * * *"
+  repository_dispatch:
+    types: [new-data]
+permissions:
+  contents: read
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    env:
+      DATA_VERSION: ${{ inputs.data_version || github.event.client_payload.data_version || 'latest' }}
+      FULL: ${{ inputs.full || github.event_name == 'schedule' }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python train.py --data "$DATA_VERSION" --full "$FULL"

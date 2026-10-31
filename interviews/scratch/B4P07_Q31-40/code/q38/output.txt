@@ -1,0 +1,14 @@
+== actionlint, no config
+weekly-retrain.yml:17:35: label "train" is unknown. available labels are "windows-latest", "windows-latest-8-c
+   |
+17 |     runs-on: [self-hosted, linux, train]     # private runner inside the bank network (concept)
+   |                                   ^~~~~~
+weekly-retrain.yml:25:35: label "train" is unknown. available labels are "windows-latest", "windows-latest-8-c
+   |
+25 |     runs-on: [self-hosted, linux, train]
+   |                                   ^~~~~~
+== actionlint with actionlint.yaml (label train declared)
+exit=0
+ok -- validation done
+jobs: data-tests, train, gate, staging, shadow-canary, production
+top-level key types: ['str', 'bool', 'str', 'str', 'str']

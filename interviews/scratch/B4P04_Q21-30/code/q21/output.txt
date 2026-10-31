@@ -1,0 +1,11 @@
+mlflow, version 3.17.2
+2026/10/26 14:04:55 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/26 14:04:55 INFO mlflow.store.db.utils: Updating database tables
+2026/10/26 14:04:56 INFO mlflow.projects: 'proj' does not exist. Creating a new experiment
+2026/10/26 14:04:57 INFO mlflow.projects.utils: === Created directory /tmp/tmphd8_4623 for downloading remote URIs passed to arguments of type 'path' ===
+2026/10/26 14:04:57 INFO mlflow.projects.backend.local: === Running command 'python train.py --C 0.5 --max_iter 100' in run with ID '6a339424d9384e18a3522ffe9215c585' === 
+2026/10/26 14:05:00 INFO mlflow.projects: === Run (ID '6a339424d9384e18a3522ffe9215c585') succeeded ===
+1 run; status FINISHED
+{'params.C': '0.5', 'params.max_iter': '100', 'metrics.test_acc': np.float64(0.9778)}
+['tags.mlflow.project.backend', 'tags.mlflow.project.entryPoint', 'tags.mlflow.runName', 'tags.mlflow.source.name', 'tags.mlflow.source.type', 'tags.mlflow.user']
+source.name: /tmp/claude-0/b4q21.Kn4c | source.type: PROJECT

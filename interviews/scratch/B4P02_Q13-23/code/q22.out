@@ -1,0 +1,19 @@
+1.14.0                           valid=True
+1.14.0-g9f3c2a1                  valid=True
+sha-9f3c2a1b7d4e                 valid=True
+1.14.0-churn-m23                 valid=True
+20261026-m23                     valid=True
+staging                          valid=True
+invalid examples: [('churn:v1', False), ('my tag', False), ('-lead', False), ('xxxxxxxxxxxx', False)]
+
+# NOT EXECUTED (no registry, no daemon):
+docker build -t registry.example.com/ml/churn-api:1.14.0-g9f3c2a1 --label org.opencontainers.image.revision=9f3c2a1b7d4e5f60 --label ml.model.version=23 --label ml.run.id=run-8841 .
+docker tag registry.example.com/ml/churn-api:1.14.0-g9f3c2a1 registry.example.com/ml/churn-api:1.14.0
+docker tag registry.example.com/ml/churn-api:1.14.0-g9f3c2a1 registry.example.com/ml/churn-api:sha-9f3c2a1b7d4e
+docker tag registry.example.com/ml/churn-api:1.14.0-g9f3c2a1 registry.example.com/ml/churn-api:1.14.0-churn-m23
+docker tag registry.example.com/ml/churn-api:1.14.0-g9f3c2a1 registry.example.com/ml/churn-api:20261026-m23
+docker tag registry.example.com/ml/churn-api:1.14.0-g9f3c2a1 registry.example.com/ml/churn-api:staging
+docker push --all-tags registry.example.com/ml/churn-api
+
+after release 1.14.0, 'latest' -> sha256:bbb2 | what was running before? unknown unless you recorded the digest
+rollback by tag 1.13.0 -> sha256:aaa1 (still there)

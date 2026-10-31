@@ -1,0 +1,6 @@
+night-1 normal       PASS
+night-2 truncated    FAIL
+    - input rows 4100 vs last run 10000
+night-3 shifted      FAIL
+    - score distribution moved vs last run (KS D=0.58)
+    - score distribution moved vs reference (KS D=0.58)

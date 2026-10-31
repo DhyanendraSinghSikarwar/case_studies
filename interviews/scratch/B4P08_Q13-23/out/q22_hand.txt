@@ -1,0 +1,4 @@
+('non-null age', [2])
+('age range 18-100', [3, 4])
+('status allowed', [3])
+('row count >= 100', [5])

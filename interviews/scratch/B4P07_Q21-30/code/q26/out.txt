@@ -1,0 +1,15 @@
+$ pytest -q -p no:cacheprovider test_rollout.py
+........                                                                 [100%]
+8 passed in 0.02s
+$ python3 -I demo.py
+== good candidate
+  staging  advance  smoke ok
+  shadow   advance  metrics within limits
+  canary5  wait     only 400 requests (< 1000)
+  canary5  advance  metrics within limits
+  final: full done
+== bad canary
+  staging  advance  smoke ok
+  shadow   advance  metrics within limits
+  canary5  abort    p99 480ms > 250.0ms
+  final: canary5 aborted

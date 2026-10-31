@@ -1,0 +1,22 @@
+$ pytest -v -p no:cacheprovider
+============================= test session starts ==============================
+platform linux -- Python 3.13.17, pytest-9.1.1, pluggy-1.7.0 -- /tmp/claude-0/b7p07/v/bin/python3
+rootdir: /tmp/claude-0/b7_q01_10/work/q09
+plugins: anyio-4.15.1
+collecting ... collected 9 items
+
+test_router.py::test_docs_only_runs_nothing PASSED                       [ 11%]
+test_router.py::test_code_only_change PASSED                             [ 22%]
+test_router.py::test_serving_change_rebuilds_image PASSED                [ 33%]
+test_router.py::test_model_only_change_does_not_rebuild_image PASSED     [ 44%]
+test_router.py::test_data_pointer_triggers_training_only PASSED          [ 55%]
+test_router.py::test_alias_move_is_pointer_only PASSED                   [ 66%]
+test_router.py::test_dependency_bump_hits_everything PASSED              [ 77%]
+test_router.py::test_unknown_path_fails_safe PASSED                      [ 88%]
+test_router.py::test_mixed_change_unions PASSED                          [100%]
+
+============================== 9 passed in 0.03s ===============================
+$ python -I router.py src/training/loss.py data/train.csv.dvc
+['code_ci', 'model_ct']
+$ python -I router.py deploy/alias.yaml
+['promote_pointer']

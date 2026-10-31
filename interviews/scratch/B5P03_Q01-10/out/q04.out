@@ -1,0 +1,7 @@
+('sadbutsad', 'sad') -> 0
+('leetcode', 'leeto') -> -1
+('mississippi', 'issip') -> 4
+('abc', '') -> 0
+adversarial: result -1 | comparisons 25005000 | (n-m+1)*m = 25005000
+sandbox-only timing: str.find 0.00001 s, naive Python loop 1.11 s
+random cross-check passed: 5000 cases

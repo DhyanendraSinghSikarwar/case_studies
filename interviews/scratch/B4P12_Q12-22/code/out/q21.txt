@@ -1,0 +1,7 @@
+verify after in-place edit of row 7 with re-hash only that row -> first bad row 8
+restored; chain intact: True rows: 400
+edit decision in row 100 -> first bad row 100
+delete row 50 -> first bad row 50
+edit the LAST row -> first bad row 399 (an attacker who edits the tail and rehashes it is only caught if the head hash is anchored elsewhere)
+top reason unchanged under +-2% noise on continuous inputs: 100.0%  (release gate: >= 95%)
+approval rate by slice: {'A': '52.2% (n=205)', 'B': '58.5% (n=195)'}  ratio low/high = 0.89

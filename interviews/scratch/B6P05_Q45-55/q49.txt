@@ -1,0 +1,52 @@
+**Say this first (1 line):** Voucher cost is 25,000 x 6 = 150,000; with 20,000 incremental customers that is 7.50 per incremental customer, and the net is 20,000 x 9 - 150,000 = +30,000 (illustrative), but it turns negative once more than a third of redeemers would have ordered anyway.
+
+**Clarifying questions:**
+- How was the 20% "would have ordered anyway" estimated? If by survey or by matching, it is shaky. A randomised holdout is the proper answer.
+- Is the 9 of 90-day margin net of delivery, support and fraud? It must be contribution, not revenue.
+- Do the 5,000 non-incremental redeemers still get the 6? Yes, and that cost is already in the 150,000.
+- Is there any value after day 90? A 90-day window ignores later orders and also ignores later churn.
+- Was there voucher abuse (multiple accounts)? Abuse inflates both redemptions and "new" customers.
+
+**Approach:**
+1. Cost: redeemed x value = 25,000 x 6 = 150,000. Unredeemed vouchers cost nothing.
+2. Incremental customers: 25,000 x (1 - 0.20) = 20,000.
+3. Cost per incremental customer = 150,000 / 20,000 = 7.50, against 9 of margin each.
+4. Net = 20,000 x 9 - 150,000 = +30,000. Only incremental customers count for margin; the 5,000 would have ordered anyway so their margin is not caused by the voucher.
+5. Break-even: 150,000 / 9 = 16,667 incremental customers, which is 66.7% of redeemers. So the non-incremental share can be up to 33.3% before the net is zero.
+6. At 40% non-incremental the net is -15,000. The decision is sensitive to a number we only estimated.
+7. Measure the share: randomise vouchers (for example 50% eligible, 50% not), compare first-order rates, and count the incremental share as (treated rate - control rate) x eligible / redeemers. Run it long enough to see pull-forward and later retention.
+
+**Metrics:**
+- Cost per incremental customer = total voucher cost / (treated first-order customers - control first-order customers, scaled to group size).
+- Net value = incremental customers x contribution margin - voucher cost.
+- Guardrails: later repeat rate, abuse flags, margin after the voucher period.
+
+**Risks:**
+- Audit estimate of 20% is soft; the net swings from +75,000 (0%) to -60,000 (60%).
+- Pull-forward: users who would have ordered next week order now.
+- Voucher-hunters churn after the voucher.
+- Unequal groups if the audit compares redeemers with non-redeemers (selection).
+
+**What the interviewer scores:**
+- Strong: costs only redeemed vouchers, counts margin only for incremental customers, gives break-even share. Weak: 100,000 x 6 as cost, or counts margin from all 25,000.
+- Strong: proposes a randomised holdout and explains how to read it. Weak: "ask users in a survey".
+- Strong: mentions long-run value and abuse. Weak: stops at day 90.
+
+**Example:** Illustrative numbers. 20,000 x 9 = 180,000 margin, minus 150,000 cost, gives +30,000. At 40% non-incremental, 15,000 x 9 = 135,000, a loss of 15,000. Weak: "30% redemption... fine." Strong: "It pays only while at least two thirds of redeemers are truly new. I would randomise the next voucher wave to measure that."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why not compare redeemers with non-redeemers?* Redeemers are the keen ones, so the gap overstates the effect. Compare the whole eligible group with a randomised control.
+- *What if margin includes later orders?* Extend the window and discount it; the break-even share moves up.
+- *Is there a cheaper design?* A smaller voucher or a threshold (for example spend 30 to get 6) can cut the non-incremental redeemers.
+
+**Common mistakes:**
+- Costing all 100,000 vouchers.
+- Counting margin from non-incremental redeemers.
+- Estimating the non-incremental share from redeemers versus non-redeemers.
+- Ignoring abuse.

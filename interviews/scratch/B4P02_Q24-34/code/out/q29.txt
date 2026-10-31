@@ -1,0 +1,26 @@
+container  status      exit restarts  diagnosis
+/api-1     restarting   137        6  OOM kill: raise --memory, shrink batch/workers, check for a leak (docker logs will look like it just stopped)
+/api-2     exited       127        0  command not found: binary or script not in PATH/image
+/api-3     created      128        0  entrypoint path missing, OR script has CRLF line endings so the shebang interpreter is not found, OR wrong WORKDIR
+/api-4     exited       126        0  found but not executable: missing chmod +x, or a directory, or noexec mount
+/api-5     exited       143        0  stopped by SIGTERM (normal for docker stop); only a problem if nobody asked it to stop
+/api-6     exited         1        3  app error: read `docker logs` for the traceback (import error, bad config, missing file)
+/api-7     created      128        0  wrong CPU architecture: image built for arm64 run on amd64 or the reverse (see Q26)
+
+--- CRLF script:
+crlf_demo.sh: line 6: ./crlf.sh: cannot execute: required file not found
+exit=127
+--- missing x bit:
+crlf_demo.sh: line 7: ./noexec.sh: Permission denied
+exit=126
+--- not in PATH:
+crlf_demo.sh: line 8: nosuchcmd: command not found
+exit=127
+--- fixed CRLF (tr -d '\r'):
+hello
+exit=0
+--- what file/od shows for the CRLF script:
+0000000   #   !   /   b   i   n   /   s   h  \r  \n   e   c   h   o    
+0000020   h   e   l   l   o  \r  \n
+--- bash -n commands.sh
+OK

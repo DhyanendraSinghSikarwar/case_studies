@@ -1,0 +1,4 @@
+azure-ai-ml 1.35.2
+task: TaskType.CLASSIFICATION | metric: ClassificationPrimaryMetrics.AUC_WEIGHTED | target: churned
+limits: {'timeout_minutes': 60, 'trial_timeout_minutes': 10, 'max_trials': 20, 'max_concurrent_trials': 2, 'early': True}
+allowed algos: [<ClassificationModels.LIGHT_GBM: 'LightGBM'>, <ClassificationModels.LOGISTIC_REGRESSION: 'LogisticRegression'>] | onnx: True

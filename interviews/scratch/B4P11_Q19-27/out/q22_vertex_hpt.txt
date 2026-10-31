@@ -1,0 +1,5 @@
+google-cloud-aiplatform 1.165.1
+HyperparameterTuningJob | max_trials 20 | parallel 4
+metrics: [('auc', 'MAXIMIZE')]
+params: [('lr', 'UNIT_LOG_SCALE'), ('depth', 'SCALE_TYPE_UNSPECIFIED')]
+algorithm (unset = service default): ALGORITHM_UNSPECIFIED

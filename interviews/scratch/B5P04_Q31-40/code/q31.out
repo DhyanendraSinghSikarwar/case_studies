@@ -1,0 +1,9 @@
+put_nowait(3) -> queue.Full
+get() -> 1 | full: False | qsize: 1
+deque(maxlen=2) after 1,2,3 -> deque([2, 3], maxlen=2)
+Queue().get(timeout=0.05) on empty -> queue.Empty after waiting
+deque().popleft() on empty -> IndexError immediately: pop from an empty deque
+150 seeded Queue pipelines: every item delivered exactly once
+two threads, if-d-then-popleft -> ['1', 'IndexError']
+asyncio.Queue pipeline -> [0, 1, 2, 3, 4]
+Python 3.13.17 | Queue has shutdown(): True

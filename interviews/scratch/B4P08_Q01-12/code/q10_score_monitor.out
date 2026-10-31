@@ -1,0 +1,6 @@
+reference: positive rate at 0.5 = 0.197, true prevalence = 0.262
+event                score PSI  pos rate  max feat PSI  replay-v1 PSI  model tag
+no event                 0.001     0.198         0.002          0.001         v1
+A feature outage         0.411     0.078         8.283          0.411         v1
+B prevalence rise        0.083     0.299         0.057          0.083         v1
+C model swap to v2       0.271     0.375         0.002          0.001         v2

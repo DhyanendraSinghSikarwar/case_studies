@@ -1,0 +1,54 @@
+**Say this first (1 line):** On the fitted line revenue is largest at a 25% take rate, 56.25% above today (illustrative), but the line was tested only between 10% and 12%, so 25% is an extrapolation I would not trust.
+
+**Clarifying questions:**
+- Were 10% and 12% tested at random on sellers, or compared across time or regions? If not random, the slope is confounded.
+- How long did the test run? Sellers move volume off-platform slowly, so a short test understates the long-run fall.
+- Was GMV measured per seller or marketplace-wide? Buyers may react too.
+- Are there only two points? Two points give a line with no error bar.
+- Does take rate matter at the seller-category level? A single rate for all categories is a strong simplification.
+
+**Approach:**
+1. Write the model with today's GMV as 1. GMV(t) = 1 - 2.5 x (t - 0.10). Check: at 12%, GMV = 0.95, a fall of 5%.
+2. Revenue R(t) = t x GMV(t) = 1.25t - 2.5t squared.
+3. Set the derivative to zero: 1.25 - 5t = 0, so t = 0.25.
+4. R(0.25) = 0.25 x 0.625 = 0.15625. Today R = 0.10. Gain = 56.25%. At 12% the gain is 14%.
+5. Look at what the optimum implies: GMV falls by 37.5%, over 7 times the 5% fall actually observed.
+6. Show that the answer depends on the curve shape. A constant-elasticity curve through the same two points (elasticity 0.28) gives revenue that keeps rising at 25% and 40%. The linear one falls back to today's level at 40%. Two curves through the same data, two different stories.
+7. Show noise: with 2% noise on GMV in each arm, the "optimal" rate swings from 0.16 to 0.91 (5th to 95th percentile).
+8. Recommend: move in steps (for example to 12%, then 14%), measuring GMV, seller exits and off-platform leakage at each step, and stop when the revenue gain per step shrinks.
+
+**Metrics:**
+- Revenue = take rate x GMV. Take rate = platform revenue / GMV.
+- GMV retention vs control = GMV treated / GMV control.
+- Guardrails: active sellers, seller churn, buyer repeat rate, off-platform leakage (proxy: share of repeat buyer-seller pairs that disappear).
+
+**Risks:**
+- Extrapolation beyond 12%: sellers have a threshold (when the fee exceeds their margin they leave in bulk).
+- Long-run response is bigger than the short-run one.
+- Competitors react.
+- Two points, no uncertainty: the slope could be flatter or steeper.
+- Revenue maximum is not the business goal: liquidity and growth matter too.
+
+**What the interviewer scores:**
+- Strong: correct optimum and gain, then immediately questions the extrapolation with a reason and a plan. Weak: reports 25% as the answer.
+- Strong: shows another curve shape or noise to prove the point. Weak: says "it may be non-linear" with nothing more.
+- Strong: proposes a staged rollout with stop rules. Weak: runs one big increase.
+
+**Example:** Illustrative numbers. At 12%: 0.12 x 0.95 = 0.114, up 14%. At 25%: 0.25 x 0.625 = 0.156, up 56%. But the test never saw GMV below 0.95. Weak: "Set 25% and earn 56% more." Strong: "The model says 25%; I trust it up to about 12 to 14% and would step up from there."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *What if the effect is different by seller size?* Fit separate slopes. Large sellers can leave more easily (see Part 5 Q28).
+- *How do you estimate off-platform leakage?* Look at repeat buyer-seller pairs that vanish from the platform after the rise.
+- *Is revenue maximisation the right goal?* Usually not alone. Add a floor on GMV or active sellers.
+
+**Common mistakes:**
+- Taking the vertex of the parabola as a recommendation.
+- Forgetting that revenue is take rate x GMV, not GMV alone.
+- Treating two test arms as a fitted model with a confidence interval.
+- Measuring only the short run.

@@ -1,0 +1,16 @@
+services:
+  model:
+    image: myorg/model:1.0
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    privileged: false
+    ports: ["8000:8000"]
+    volumes:
+      - model_vol:/models:ro
+volumes:
+  model_vol: {}

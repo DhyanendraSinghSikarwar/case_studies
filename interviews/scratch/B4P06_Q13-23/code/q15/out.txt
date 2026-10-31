@@ -1,0 +1,8 @@
+......                                                                   [100%]
+6 passed in 0.01s
+{"status":"ready"}
+concurrency  1:     352 req/s, p99     6.2 ms, errors 0
+concurrency  4:     555 req/s, p99    17.0 ms, errors 0
+concurrency 16:     333 req/s, p99   226.6 ms, errors 0
+concurrency 64:     143 req/s, p99  2000.3 ms, errors 0
+server stopped

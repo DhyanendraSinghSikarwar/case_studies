@@ -1,0 +1,13 @@
+network client->gateway            5 ms
+gateway + auth                     3 ms
+request parse + validation         2 ms
+feature lookup (cache/store)      12 ms
+model inference                   10 ms
+response + serialisation           2 ms
+network back                       5 ms
+sum of hops                       39 ms
+reserve                            5 ms
+target                            50 ms
+budget OK: hops + reserve <= target, headroom 6 ms
+replicas: 25 (2000 / (150*0.6) = 22.2 -> 23, +2 spare)
+feature store at 25 ms -> over budget by 7 ms

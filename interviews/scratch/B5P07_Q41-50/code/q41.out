@@ -1,0 +1,6 @@
+examples ok: ([2, 3, 1, 0], 13) ([2, 0], 1)
+600 random cases ok; nodes always between longest word and total letters
+edge asserts ok
+lookups for a 10-letter query with 10 words: 10 ; with 10000 words: 10
+10000 words, 100000 letters in total -> trie nodes = 62780 (shared prefixes are stored once)
+a set of the strings stores 100000 letters and still scans all 10000 words for a prefix query

@@ -1,0 +1,49 @@
+**Pattern:** Topological sort on a graph built from constraints: letters are nodes, "this letter comes before that letter" is an edge.
+
+**Say this first (1 line):** "Compare each adjacent pair of words, find the first position where they differ, and that gives one edge: the letter in the first word comes before the letter in the second. Then topologically sort the letters; a cycle, or a longer word before its own prefix, means there is no valid alphabet."
+
+**Brute force:** Try every permutation of the distinct letters and test whether the word list is sorted under it. That is up to 26! orders, so it only works for at most 7 or 8 letters. It is the checker in the code: it decides when `''` is a correct answer.
+
+**Optimal:**
+- Nodes: every distinct letter in any word (including letters that get no constraint: they must still appear exactly once in the answer).
+- For each adjacent pair `(a, b)`: scan for the first index where `a[i] != b[i]`. If found, add the edge `a[i] -> b[i]` (once per distinct pair; a repeated edge must not double-count the in-degree) and stop looking at this pair. If no difference is found, one word is a prefix of the other: fine if `a` is the shorter or they are equal, impossible if `len(a) > len(b)` (for example `abc` before `ab`): return `''`.
+- Kahn's algorithm: queue of in-degree-0 letters, pop, output, decrease the successors. If the output has fewer letters than the alphabet, there is a cycle: return `''`.
+- Why only adjacent pairs: the list is sorted, so for `i < j` the order of `words[i]` and `words[j]` follows from the chain `words[i] <= words[i+1] <= ... <= words[j]` by transitivity. Any constraint from a non-adjacent pair is implied by the adjacent ones. Using all pairs would add up to 4950 candidate pairs and the same answer. The code checks it: on all 22,620 small word lists plus 400 random ones, the all-pairs version is impossible exactly when the adjacent-only version is.
+- Why only the first difference counts: after the first differing letters the rest of the words says nothing about the order.
+- Many answers are valid when the constraints leave letters unordered. The code's validator accepts any string containing each letter once under which the list is sorted, and accepts `''` only when the exhaustive permutation search finds no order. The prompt's `'wertf'` is accepted and so is our output.
+
+**Complexity:** Let L be the total length of all words (up to 100 * 100 = 10^4) and K the alphabet size (up to 26). Building edges: O(L) (each adjacent pair is scanned once, up to the shorter length). Kahn: O(K + number of edges), and the edges are at most min(99, K^2). Total O(L + K). Space O(K + edges).
+
+**Dry run:** `['wrt','wrf','er','ett','rftt']`.
+- wrt vs wrf: first difference at index 2, t vs f: edge t -> f.
+- wrf vs er: index 0, w vs e: edge w -> e.
+- er vs ett: index 1, r vs t: edge r -> t.
+- ett vs rftt: index 0, e vs r: edge e -> r.
+- Graph: w -> e -> r -> t -> f. In-degrees: only w is 0. Kahn outputs w, e, r, t, f: `'wertf'`.
+- Example `['z','x','z']`: z -> x, x -> z: a cycle, nothing has in-degree 0, output empty, so `''`.
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- One word: the letters of the word, in any order that keeps each once; there are no constraints (the prompt shows `'ab'`, but `'ba'` is equally valid, and the validator accepts both).
+- Prefix cases: `['ab','abc']` is fine (no edge); `['abc','ab']` is impossible. Missing this check is the most common bug: the code shows it returning `'abc'`.
+- Identical adjacent words: no difference, lengths equal, no constraint.
+- A cycle across non-adjacent words (`['a','b','a']`): transitive through adjacent edges, found as the cycle a -> b -> a.
+- Letters that never get an edge still count: they must be in the output once. Compare the output's sorted letters with the alphabet.
+- Deduplicate edges: two adjacent pairs giving the same letter pair must not add 2 to the in-degree and then decrement once.
+
+**Follow-ups:**
+- Return all valid orders or count them? That is counting topological orders, exponential in general; for ties, Kahn with a lexicographic-smallest heap gives a unique canonical answer.
+- Is the order unique? Only if the Kahn queue never holds two letters at once (a Hamiltonian path in the constraint DAG). The code's `['ab','cd']` example has several.
+- DFS version? Same edges, reverse postorder with a three-colour cycle check (Q31 in this part).
+
+**Common mistakes:**
+- Adding edges for every differing position instead of only the first.
+- Omitting the prefix check.
+- Counting a duplicate edge twice in the in-degree.
+- Building the graph only from letters that appear in an edge, so unconstrained letters vanish from the answer.
+- Comparing with the example string and expecting `'wertf'`: other valid answers exist when constraints do not pin the order.

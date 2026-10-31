@@ -1,0 +1,29 @@
+--- A) clean backport
+[release/2.3 e6a0f4c] fix: null amount no longer crashes score()
+e6a0f4c fix: null amount no longer crashes score()
+d9019fa 2.3 scoring service
+--- same change, different hash on each branch:
+17a9415 fix: null amount no longer crashes score()
+e6a0f4c fix: null amount no longer crashes score()
+--- -x records where it came from:
+(cherry picked from commit 17a9415780dc094663046937b4612ff5b3347e29)
+
+--- git cherry: '-' = an equivalent patch is already on release, '+' = not yet:
++ e74237da1751b966478b19db4c6dc4dcf4518323 2.4: new feature set
+- 17a9415780dc094663046937b4612ff5b3347e29 fix: null amount no longer crashes score()
+--- B) conflicting backport: a second fix on main touches the same line that release changed differently
+CONFLICT (content): Merge conflict in score.py
+error: could not apply 4cb52c9... fix: score never negative
+UU score.py
+--- conflict markers in the file:
+def score(row):
+<<<<<<< HEAD
+    return round((row["amount"] or 0) * 0.1, 2)
+=======
+    return max((row["amount"] or 0) * 0.1, 0.0)
+>>>>>>> 4cb52c9 (fix: score never negative)
+--- resolve by hand (keep both ideas), then continue
+accbc72 fix: score never negative
+13c6680 2.3.1: round score
+e6a0f4c fix: null amount no longer crashes score()
+d9019fa 2.3 scoring service

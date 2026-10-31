@@ -1,0 +1,36 @@
+$ actionlint q02_good.yml
+exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows q02_good.yml
+ok -- validation done
+exit=0
+$ actionlint q02_bad.yml
+q02_bad.yml:3:3: unknown Webhook event "pull_requests". see https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#webhook-events for list of all Webhook event names [events]
+  |
+3 |   pull_requests:
+  |   ^~~~~~~~~~~~~~
+q02_bad.yml:9:33: "github.event.pull_request.title" is potentially untrusted. avoid using it directly in inline scripts. instead, pass it through an environment variable. see https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks for more details [expression]
+  |
+9 |       - run: echo "title is ${{ github.event.pull_request.title }}"
+  |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+q02_bad.yml:10:3: job "report" needs job "tests" which does not exist in this workflow [job-needs]
+   |
+10 |   report:
+   |   ^~~~~~~
+exit=1
+$ check-jsonschema --builtin-schema vendor.github-workflows q02_bad.yml
+Schema validation errors were encountered.
+  q02_bad.yml::$.on: {'pull_requests': {'branches': ['main']}} is not valid under any of the given schemas
+  Underlying errors caused this.
+
+  Best Match:
+    $.on: {'pull_requests': {'branches': ['main']}} is not of type 'string'
+
+  3 other errors were produced. Use '--verbose' to see all errors.
+exit=1
+$ python -I q02_on_trap.py
+{True: 'push'}
+keys: ['name', True, 'permissions', 'concurrency', 'jobs']
+wf.get('on'): None
+wf.get(True): {'pull_request': {'paths': ['src/**', 'tests/**', 'requirements*.txt']}}
+safe reader: {'pull_request': {'paths': ['src/**', 'tests/**', 'requirements*.txt']}}
+quoted key: ['on']

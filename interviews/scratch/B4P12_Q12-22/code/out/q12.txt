@@ -1,0 +1,17 @@
+train reads train data                           Allow identity or resource policy allows (same account)
+train writes model                               Allow identity or resource policy allows (same account)
+train reads models (missing allow)               Deny  implicit deny: nothing allows
+train deletes model (explicit deny)              Deny  explicit deny
+train over plain http (explicit deny)            Deny  explicit deny
+serve reads model                                Allow identity or resource policy allows (same account)
+serve reads train data (missing allow)           Deny  implicit deny: nothing allows
+CI passes serving role to SageMaker              Allow identity or resource policy allows (same account)
+CI passes admin role (missing allow)             Deny  implicit deny: nothing allows
+CI passes serving role to ec2 (condition fails)  Deny  implicit deny: nothing allows
+OLD role passes admin role                       Allow identity or resource policy allows (same account)
+11 cases pass
+old grant families: s3:*, sagemaker:*, kms:*, iam:PassRole on * (every action in each family)
+ci-role: used 3 distinct actions -> ['iam:PassRole', 'sagemaker:CreateModel', 'sagemaker:UpdateEndpoint']
+serve-role: used 2 distinct actions -> ['kms:Decrypt', 's3:GetObject']
+train-role: used 5 distinct actions -> ['kms:Decrypt', 'kms:GenerateDataKey', 's3:GetObject', 's3:ListBucket', 's3:PutObject']
+replay: every observed action is still allowed by the candidate policies

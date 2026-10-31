@@ -1,0 +1,9 @@
+[batch 1: three in-order events]
+   input rows=3 max_event_time=2026-03-01T10:01:05.000Z watermark_used=1970-01-01T00:00:00.000Z
+   update rows emitted this batch (window start, count): [('10:00', 2), ('10:01', 1)]
+[batch 2: 10:00:55 (late but inside watermark) and 10:05:20 (moves the clock)]
+   input rows=2 max_event_time=2026-03-01T10:05:20.000Z watermark_used=2026-03-01T10:00:05.000Z
+   update rows emitted this batch (window start, count): [('10:00', 3), ('10:05', 1)]
+[batch 3: 10:00:30 (behind watermark, dropped) and 10:04:50 (ahead of it, kept)]
+   input rows=2 max_event_time=2026-03-01T10:04:50.000Z watermark_used=2026-03-01T10:04:20.000Z
+   update rows emitted this batch (window start, count): [('10:04', 1)]

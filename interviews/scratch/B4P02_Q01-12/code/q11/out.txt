@@ -1,0 +1,15 @@
+--- exec form: CMD [python3, server.py]
+    stopped by SIGTERM, rc=0
+    app handler ran: True
+--- shell form: sh -c 'python3 server.py; true'
+    still alive after 1.5s grace -> SIGKILL (like docker stop after timeout)
+    app handler ran: False
+--- entrypoint script WITHOUT exec
+    still alive after 1.5s grace -> SIGKILL (like docker stop after timeout)
+    app handler ran: False
+--- entrypoint script WITH exec
+    stopped by SIGTERM, rc=0
+    app handler ran: True
+--- exec form but app has NO SIGTERM handler (PID 1 gets no default action)
+    still alive after 1.5s grace -> SIGKILL (like docker stop after timeout)
+    app handler ran: False

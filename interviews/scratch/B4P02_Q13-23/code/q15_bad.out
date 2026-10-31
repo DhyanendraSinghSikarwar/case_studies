@@ -1,0 +1,6 @@
+q15/Dockerfile.bad: server binds 127.0.0.1 inside the container; -p will not reach it, use 0.0.0.0
+q15/Dockerfile.bad: app listens on 8001 but EXPOSE says [8000] (EXPOSE is only documentation)
+q15/compose.bad.yml: api.DB_URL points at localhost; inside a container that is the container itself, use the service name
+q15/compose.bad.yml: api uses network_mode: host AND ports; ports are ignored with host networking
+q15/compose.bad.yml: db publishes 5432:5432 on all host interfaces; use 127.0.0.1:5432:5432 or drop it
+5 finding(s)

@@ -1,0 +1,9 @@
+== PR gate: pytest -m "not quarantine"
+3 passed, 1 deselected in 1.40s
+== nightly: pytest -m quarantine (this run happened to fail; it is the known-flaky test)
+FAILED test_flaky.py::test_quarantined_example - assert 0.9333333333333333 >=...
+1 failed, 3 deselected in 1.17s
+== repeat.sh, 50 fresh pytest processes each (took about 5 minutes)
+test_flaky_exact_threshold: 13 failures in 50 runs
+test_fixed_seeded_and_range: 0 failures in 50 runs
+test_fixed_statistical: 0 failures in 50 runs

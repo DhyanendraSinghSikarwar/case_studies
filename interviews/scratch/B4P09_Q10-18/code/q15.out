@@ -1,0 +1,16 @@
+feast 0.67.0
+--- registry contents
+entity       card_id | owner: risk-platform@example.com
+feature view card_velocity_v1 | owner: fraud-ml@example.com | ttl: 1 day, 0:00:00 | entities: ['card_id']
+   tags: {'status': 'active', 'freshness_slo': '5m', 'team': 'fraud', 'pii': 'false', 'transform_version': '1'}
+   feature: avg_amt_24h Float32 | Mean amount, last 24h
+   feature: card_id Int64 | 
+   feature: txn_count_1h Int64 | Transactions in last 1h, event time, window (t-1h, t]
+   source: data/card_stats.parquet
+--- find by tag (client-side filter)
+['card_velocity_v1']
+--- version bump: change window semantics, new name card_velocity_v2, keep v1 for old models
+[('card_velocity_v1', '1', 'active'), ('card_velocity_v2', '2', 'active')]
+after deprecating v1: [('card_velocity_v1', 'deprecated'), ('card_velocity_v2', 'active')]
+(without full_feature_names=True Feast 0.67 raises FeatureNameCollisionError: same short name in two views)
+both still servable offline: [{'card_id': 1, 'event_timestamp': Timestamp('2026-03-01 01:00:00+0000', tz='UTC'), 'card_velocity_v1__txn_count_1h': 3, 'card_velocity_v2__txn_count_1h': 3}]

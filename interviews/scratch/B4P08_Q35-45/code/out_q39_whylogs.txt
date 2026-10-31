@@ -1,0 +1,6 @@
+whylogs 1.6.4 | pandas 3.1.0
+merged rows (count of amount): 150000
+day1           {'amount': (0.003, 'ks', 'NO_DRIFT'), 'age': (0.006, 'ks', 'NO_DRIFT'), 'channel_code': (0.003, 'ks', 'NO_DRIFT')}
+day3           {'amount': (0.236, 'ks', 'DRIFT'), 'age': (0.005, 'ks', 'NO_DRIFT'), 'channel_code': (0.004, 'ks', 'NO_DRIFT')}
+merged 3 days  {'age': (0.005, 'ks', 'NO_DRIFT'), 'amount': (0.078, 'ks', 'DRIFT'), 'channel_code': (0.003, 'ks', 'NO_DRIFT')}
+raw bytes in memory (3 days): 3600396 | merged profile file bytes: 61818 | ratio raw/profile: 58

@@ -1,0 +1,5 @@
+examples ok: ['tree', 'shared', 'cycle', 'shared', 'tree']
+exhaustive tables checked: 394806 {'tree': 20551, 'shared': 4258, 'cycle': 369997}
+a == b: False | same_tree(a, b): True | id sets disjoint: True
+visits for a 1-root tree with the same child twice: 3 (3 visits, only 2 distinct nodes)
+table with a back edge, capped visited-set walk -> cycle (it stops; a plain recursive or stack walk on cyclic nodes would loop forever)

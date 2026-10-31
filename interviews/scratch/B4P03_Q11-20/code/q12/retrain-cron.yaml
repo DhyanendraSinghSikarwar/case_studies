@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: churn-nightly-retrain
+spec:
+  schedule: "30 1 * * *"          # 01:30 every day
+  timeZone: "Asia/Kolkata"        # without this the schedule uses the controller's time zone
+  concurrencyPolicy: Forbid       # skip a run if last night's is still going
+  startingDeadlineSeconds: 1800   # if the run could not start within 30 min of its time, skip it
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 18000
+      ttlSecondsAfterFinished: 172800
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: retrain
+              image: registry.example.com/ml/churn-train:2.3.0
+              command: ["python", "train.py", "--data", "/data/latest"]
+              resources:
+                requests: {cpu: "4", memory: 16Gi}
+                limits: {memory: 16Gi, nvidia.com/gpu: 1}
+              volumeMounts:
+                - {name: data, mountPath: /data, readOnly: true}
+          volumes:
+            - name: data
+              persistentVolumeClaim: {claimName: training-data, readOnly: true}

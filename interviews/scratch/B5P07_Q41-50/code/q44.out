@@ -1,0 +1,7 @@
+examples ok: [[8, 5, 10, 1, 7, None, 12], [1], [3, 1, None, None, 2], [1, None, 2, None, 3]]
+BST shapes 1..8 nodes: all three builders recover the tree; 2055 distinct preorders (preorder is injective)
+valid preorders among all permutations of n<=7 = number of shapes (1,2,5,14,42,132,429)
+invalid preorder [1, 2, 0] -> built a tree whose inorder is [1, 0, 2] (not sorted: garbage in, garbage out)
+400 random cases ok
+inorder of a BST is sorted(pre): [0, 1, 2, 3, 4, 5]
+build_bound on 3000 ascending values: RecursionError (default limit 1000); build_stack is fine

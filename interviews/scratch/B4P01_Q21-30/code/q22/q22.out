@@ -1,0 +1,16 @@
+1) scaler fitted before the split
+  leaky: 1 test(s) FAIL
+     - scaler stats: scaler mean != train mean
+  fixed: all tests pass
+2) duplicate rows across train/test
+  leaky: 1 test(s) FAIL
+     - id overlap: 41 ids in both train and test
+  fixed: all tests pass
+   RandomForest AUC leaky=0.841 fixed=0.576
+3) target-derived feature
+  leaky: 1 test(s) FAIL
+     - score alarm: AUC 1.000 >= 0.9: too good for this problem, look for leakage
+  fixed: all tests pass
+   LogisticRegression AUC leaky=1.000 fixed=0.708
+1b) scaler-leak AUC leaky=0.708 fixed=0.708  (the stats test catches it even when the score barely moves)
+seed 0 numpy 2.5.3 pandas 3.0.5 sklearn 1.9.1

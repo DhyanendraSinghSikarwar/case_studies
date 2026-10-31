@@ -1,0 +1,26 @@
+(a) order level:
+ mature_purchasers  repeaters  repeat_pct
+                 7          4        57.1
+(a) day level:
+ mature_purchasers  repeaters  repeat_pct
+                 7          2        28.6
+(b) buckets:
+                    bucket  users  pct_of_signups
+                  same day      2            18.2
+                  1-7 days      3            27.3
+                 8-30 days      2            18.2
+              over 30 days      1             9.1
+                     never      2            18.2
+before signup (data issue)      1             9.1
+ mature_purchasers  repeaters  repeat_pct
+                 7          4        57.1
+ mature_purchasers  repeaters  repeat_pct
+                 7          2        28.6
+                    bucket  users  pct_of_signups
+                  same day      2            18.2
+                  1-7 days      3            27.3
+                 8-30 days      2            18.2
+              over 30 days      1             9.1
+                     never      2            18.2
+before signup (data issue)      1             9.1
+asserts passed

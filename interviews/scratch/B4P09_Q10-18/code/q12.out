@@ -1,0 +1,3 @@
+commit_then_process  sink rows=9 duplicates=0 missing=['m4']
+process_then_commit  sink rows=11 duplicates=1 missing=[]
+process_then_commit + idempotent sink keyed (partition, offset): rows=10 missing=[]

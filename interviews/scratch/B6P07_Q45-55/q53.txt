@@ -1,0 +1,64 @@
+**Say this first (1 line):** English is 91% (95% Wilson 83.8% to 95.2%) and Hindi is 78% (68.9% to 85.0%), the 13-point gap is statistically visible (z about 2.6, difference CI about 2.9 to 23 points) but too wide to size, and with different graders I cannot say the gap comes from the language, so I would fix the grading first.
+
+**Clarifying questions:**
+- Are the Hindi questions translations of the English ones, or different questions? Different questions mean different difficulty, and the gap is not a clean language effect.
+- Who graded each set, and with what rubric? If graders differ in strictness, they can create or hide the whole gap.
+- Is the Hindi in Devanagari, romanised, or mixed? Real users often write romanised Hindi, which models and tokenizers may handle worse.
+- What did "correct" mean for free-text answers (exact string, key facts, or judge score)?
+- How were the 100 questions chosen? Random from real traffic, or hand-picked?
+- What decision depends on this: a launch gate, a fine-tuning budget, or a note in a report?
+
+**Approach:**
+1. Wilson intervals: English 0.838 to 0.952; Hindi 0.689 to 0.850. They overlap a little (about 1.2 points).
+2. Overlap is not a test. Do the difference test: gap 13 points, standard error 5.0 points, z = 2.58, p about 0.01. Newcombe 95% CI for the gap: 2.9 to 23.0 points.
+3. Say it plainly: there is a gap in these graded numbers, probably not zero, but anywhere from about 3 to 23 points is consistent with the data, and with 100 questions each we cannot be precise.
+4. List the confounds (below), because the gap mixes language, grader, questions and scoring.
+5. Redesign the comparison: use the same questions translated by a person (paired design), the same bilingual grader or the same judge model with a rubric validated against humans in both languages, graders blind to language, and at least 300 to 400 per language for a tighter estimate.
+6. Run McNemar on the paired results: only the questions where the two languages differ matter.
+7. Add slices: question type, answer length, romanised versus Devanagari input, so that I know where the loss is.
+
+**Confounds:**
+- Different graders (strictness, language skills, rubric). A few points of grader difference can explain a large part of 13.
+- Different questions (difficulty, topic, ambiguity) unless they are translations.
+- Translation quality (a translated question can change meaning).
+- Output language of the answer, and whether code-mixed answers count.
+- Script (Devanagari or romanised) and tokenization (longer token sequences for Hindi; see Book 2 Part 2 Q17 on the token tax).
+- Small samples: 100 each, so an interval of about 15 points per language.
+- Multiple slicing later: the more splits, the more false findings.
+
+**Metrics:**
+- Accuracy by language = correct / 100, with Wilson intervals.
+- Gap = English accuracy - Hindi accuracy, with a Newcombe interval (unpaired) or a McNemar-based interval (paired).
+- Grader agreement = Cohen's kappa between graders on a shared 50-item sample (see Book 2 Part 9 Q6).
+- Guardrail: same-grader gap after the fix.
+
+**Risks:**
+- Reporting 13 points as "the Hindi penalty" and spending a budget on it.
+- Reporting "no difference, the intervals overlap".
+- A Hindi grader who is stricter or more lenient than the English one.
+- Fixing the model for formal Hindi when users write romanised text.
+
+**What the interviewer scores:**
+- Strong: both intervals, a proper difference test, and the plain statement of what is and is not supported. Weak: "intervals overlap, so no difference" or "13 points, definitely worse".
+- Strong: a list of confounds led by the grader difference. Weak: only sample size.
+- Strong: a redesign (paired, same grader, bigger n). Weak: "get more data".
+- Strong: asks about script and tokenization.
+
+**Example:** Illustrative. If the Hindi grader was stricter and wrongly failed 6 correct answers, Hindi would be 84%, and the gap would be 7 points. Weak: "Hindi is 13 points worse, we need a Hindi fine-tune." Strong: "There is a gap, probably 3 to 23 points, but two graders and possibly different questions mean I cannot say the model is the cause. I will translate the same questions, grade them with one rubric, and use 300 per language."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why not just test whether the intervals overlap?* Overlapping intervals can still hide a real difference. The difference test is the one to use, and here it points to a gap.
+- *How big a sample do you need?* For a 13-point gap at these rates, about 100 each gives p about 0.01 for the unpaired test. To measure it within about 5 points you need several hundred per language.
+- *Can an LLM judge both languages?* Only after checking it against human labels in each language.
+
+**Common mistakes:**
+- Using overlap of intervals as the test.
+- Calling the gap a language effect with different graders.
+- Ignoring script and translation quality.
+- Comparing percentages without the sample sizes.

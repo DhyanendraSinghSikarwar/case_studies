@@ -1,0 +1,15 @@
+SENT to daemon:
+  .env.example  (100 B)
+  models/tiny_test.pt  (100 B)
+  requirements.txt  (100 B)
+  src/app.py  (100 B)
+EXCLUDED:
+  .env  <- .env
+  .git/HEAD  <- .git
+  Dockerfile  <- Dockerfile*
+  data/raw/big.csv  <- data/
+  models/big.pt  <- **/*.pt
+  nb/eda.ipynb  <- **/*.ipynb
+  notes.pem  <- **/*.pem
+  src/__pycache__/app.cpython-312.pyc  <- **/*.pyc
+context: 400 B sent, 800 B kept out

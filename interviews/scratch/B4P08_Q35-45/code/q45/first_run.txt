@@ -1,0 +1,6 @@
+E            +  where 30 = len(range(0, 30))
+
+/home/user/case_studies/interviews/scratch/B4P08_Q35-45/code/q45/test_monitors.py:16: AssertionError
+=========================== short test summary info ============================
+FAILED test_monitors.py::test_fault_detected[dropped_partition] - AssertionEr...
+1 failed, 5 passed in 1.86s

@@ -1,0 +1,30 @@
+name: churn-ci-and-deploy
+on:
+  pull_request:
+  push:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "tests"
+  promote:
+    if: github.event_name == 'push'
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency:
+      group: promote-churn           # one promotion at a time, shared across workflows
+      cancel-in-progress: false      # never kill a half-finished promotion
+    env:
+      MLFLOW_TRACKING_URI: ${{ vars.MLFLOW_TRACKING_URI }}
+      VERSION: ${{ vars.CANDIDATE_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: python cas_promote.py --uri "$MLFLOW_TRACKING_URI" --name churn --version "$VERSION"

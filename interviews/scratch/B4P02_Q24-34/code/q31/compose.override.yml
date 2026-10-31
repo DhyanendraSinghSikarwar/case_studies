@@ -1,0 +1,11 @@
+# picked up automatically by `docker compose up` next to compose.yml: DEV settings
+services:
+  api:
+    build: .
+    restart: "no"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src                # live code edits
+    environment:
+      LOG_LEVEL: debug

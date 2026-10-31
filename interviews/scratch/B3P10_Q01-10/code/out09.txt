@@ -1,0 +1,20 @@
+ order_id  customer_name  len  bytes                  hex  last_cp  fifth_cp
+      101    'Asha Rao '    9      9   417368612052616F20       32        32
+      102     'asha rao'    8      8     617368612072616F      111        32
+      103  'Asha\xa0Rao'    8      9   41736861C2A052616F      111       160
+      104     'Asha Rao'    8      8     417368612052616F      111        32
+      105 'Asha Rao\xa0'    9     10 417368612052616FC2A0      160        32
+
+exact equality join      : [104]
+TRIM + LOWER on both     : [101, 102, 104] (103 and 105 still missing)
+TRIM('Asha Rao' || NBSP) length: 9 (unchanged, 9)
+TRIM with NBSP listed    : 8 (8)
++ REPLACE char(160) first: [101, 102, 103, 104, 105]
+revenue for Asha: exact join 400 | after cleaning 890 | all orders 890
+plan for customer_name = 'Asha Rao'         ['SEARCH orders USING INDEX ix_cust_name (customer_name=?)']
+plan for LOWER(TRIM(customer_name)) = ...   ['SCAN orders']
+
+str.strip().str.casefold() only, keys: ["'asha rao'", "'asha rao'", "'asha\\xa0rao'", "'asha rao'", "'asha rao'"]
+str.strip removes the trailing NBSP of 105 but not the NBSP inside 103
+pandas matched order ids: [101, 102, 103, 104, 105] | revenue: 890
+asserts passed (order ids compared sorted)

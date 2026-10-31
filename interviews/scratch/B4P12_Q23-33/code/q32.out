@@ -1,0 +1,17 @@
+fraud-api         ALLOW 
+scratch-notebook  REJECT (6 violations) 
+      FAIL required_tag - missing tag cost_center
+      FAIL required_tag - missing tag data_classification
+      FAIL required_tag - missing tag env
+      FAIL allowed_region - region us-1 not allowed
+      FAIL registry - image docker.io/library/python:latest not from an approved registry
+      FAIL digest - image not pinned by digest
+big-train-job     ALLOW (with 1 waived)
+    waived max_gpus - 16 GPUs > 4  [waived by platform-lead until 2026-11-30]
+eu-pilot          REJECT (1 violations) 
+      FAIL allowed_region - region eu-1 not allowed  [exception EXPIRED 2026-09-01]
+leaky-scorer      REJECT (2 violations) 
+      FAIL digest - image not pinned by digest
+      FAIL public_endpoint - restricted data behind a public endpoint
+bad-types         REJECT (schema)
+    - ('gpus',) Input should be a valid integer, unable to parse string as an integer

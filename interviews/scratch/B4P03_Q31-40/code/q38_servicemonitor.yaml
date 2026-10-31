@@ -1,0 +1,13 @@
+# Prometheus Operator CRD (monitoring.coreos.com/v1). Needs the operator installed: not executed. Check current docs for fields.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: model-api
+  labels: {release: prometheus}      # must match the Prometheus' serviceMonitorSelector
+spec:
+  selector:
+    matchLabels: {app: model-api}    # selects the Service, not the Pods
+  endpoints:
+  - port: http                       # NAME of the Service port
+    path: /metrics
+    interval: 15s

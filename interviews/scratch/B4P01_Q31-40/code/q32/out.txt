@@ -1,0 +1,19 @@
+--- step 1: git rm is not enough ---
+file in working tree: train.py 
+still in history: 2 commits touch model.pkl
+size of .git: 20M
+--- step 2: rewrite in a throwaway clone ---
+size-pack: 19.08 MiB
+before: 6 commits, tip 0e87794
+Completely finished after 0.09 seconds.
+size-pack: 2.19 KiB
+after:  4 commits (empty commits c2 and c6 dropped), tip e1f5c65  (every hash changed)
+model.pkl anywhere in history: 0
+e1f5c65 c5 tweak
+169b08d c4 tweak
+ad85148 c3 tweak
+8790b4d c1 train script
+--- step 3: filter-repo drops the remote on purpose; re-add and force push is a deliberate act ---
+0
+--- step 4: a teammate with the old history sees diverged branches ---
+6	4

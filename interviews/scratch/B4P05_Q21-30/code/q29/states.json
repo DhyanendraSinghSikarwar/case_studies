@@ -1,0 +1,10 @@
+{
+  "Comment": "retrain then register, concept sketch",
+  "StartAt": "Train",
+  "States": {
+    "Train": {"Type": "Task", "Resource": "arn:aws:states:::sagemaker:createTrainingJob.sync", "Parameters": {"TrainingJobName.$": "$.job_name"}, "Retry": [{"ErrorEquals": ["States.TaskFailed"], "MaxAttempts": 1}], "Next": "Good?"},
+    "Good?": {"Type": "Choice", "Choices": [{"Variable": "$.auc", "NumericGreaterThan": 0.8, "Next": "Register"}], "Default": "Stop"},
+    "Register": {"Type": "Task", "Resource": "arn:aws:states:::lambda:invoke", "End": true},
+    "Stop": {"Type": "Succeed"}
+  }
+}

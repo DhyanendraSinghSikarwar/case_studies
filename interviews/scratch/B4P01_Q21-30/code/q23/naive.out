@@ -1,0 +1,93 @@
+$ IMPL=impl_naive python3 -I -m pytest -q -p no:cacheprovider --tb=short test_props.py
+F.FFF.                                                                   [100%]
+=================================== FAILURES ===================================
+_________________________ test_minmax_in_unit_interval _________________________
+test_props.py:11: in test_minmax_in_unit_interval
+    @given(arrays)
+                   
+test_props.py:15: in test_minmax_in_unit_interval
+    assert np.all((out >= 0) & (out <= 1)), out          # also fails on NaN
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: array([nan])
+E   assert np.False_
+E    +  where np.False_ = <function all at 0x7f94e3b718b0>((array([nan]) >= 0 & array([nan]) <= 1))
+E    +    where <function all at 0x7f94e3b718b0> = np.all
+E   Failing test case: test_minmax_in_unit_interval(
+E       xs=[0.0],
+E   )
+_______________ test_minmax_rejects_non_finite_or_returns_finite _______________
+test_props.py:26: in test_minmax_rejects_non_finite_or_returns_finite
+    @given(st.lists(st.sampled_from([float("nan"), float("inf"), -float("inf"), 1.0, 2.0]), min_size=1, max_size=5))
+                   ^^^
+test_props.py:32: in test_minmax_rejects_non_finite_or_returns_finite
+    assert np.isfinite(out).all(), out                  # never hand NaN downstream silently
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: array([nan])
+E   assert np.False_
+E    +  where np.False_ = <built-in method all of numpy.ndarray object at 0x7f94d713dc50>()
+E    +    where <built-in method all of numpy.ndarray object at 0x7f94d713dc50> = array([False]).all
+E    +      where array([False]) = <ufunc 'isfinite'>(array([nan]))
+E    +        where <ufunc 'isfinite'> = np.isfinite
+E   Failing test case: test_minmax_rejects_non_finite_or_returns_finite(
+E       xs=[nan],
+E   )
+____________________ test_split_sizes_add_up_no_loss_no_dup ____________________
+test_props.py:37: in test_split_sizes_add_up_no_loss_no_dup
+    @given(**split_args)
+                   ^^^
+test_props.py:40: in test_split_sizes_add_up_no_loss_no_dup
+    assert len(tr) + len(te) == n, (len(tr), len(te))
+E   AssertionError: (9, 7)
+E   assert (9 + 7) == 15
+E    +  where 9 = len(array([ 2,  3,  5,  6,  8, 10, 11, 13, 14]))
+E    +  and   7 = len(array([12,  9,  7,  4,  4,  0,  1]))
+E   Failing test case: test_split_sizes_add_up_no_loss_no_dup(
+E       n=15,
+E       frac=0.5,
+E       seed=0,
+E   )
+E   Explanation:
+E       These lines were always and only run by failing test cases:
+E           /usr/local/lib/python3.13/dist-packages/numpy/_core/arrayprint.py:1316
+E           /usr/local/lib/python3.13/dist-packages/numpy/_core/arrayprint.py:1317
+_______________________ test_split_both_sides_non_empty ________________________
+test_props.py:44: in test_split_both_sides_non_empty
+    @given(**split_args)
+                   ^^^
+test_props.py:47: in test_split_both_sides_non_empty
+    assert len(tr) > 0 and len(te) > 0
+E   assert (2 > 0 and 0 > 0)
+E    +  where 2 = len(array([0, 1]))
+E    +  and   0 = len(array([], dtype=int64))
+E   Failing test case: test_split_both_sides_non_empty(
+E       n=2,
+E       frac=0.25,
+E       seed=0,  # or any other generated value
+E   )
+E   Explanation:
+E       These lines were always and only run by failing test cases:
+E           /usr/local/lib/python3.13/dist-packages/numpy/_core/arrayprint.py:1316
+E           /usr/local/lib/python3.13/dist-packages/numpy/_core/arrayprint.py:1317
+E           /usr/local/lib/python3.13/dist-packages/numpy/lib/_arraysetops_impl.py:825
+=============================== warnings summary ===============================
+test_props.py: 24 warnings
+  /home/user/case_studies/interviews/scratch/B4P01_Q21-30/code/q23/impl_naive.py:5: RuntimeWarning: invalid value encountered in divide
+    return (x - x.min()) / (x.max() - x.min())          # constant column -> 0/0
+
+test_props.py: 12 warnings
+  /home/user/case_studies/interviews/scratch/B4P01_Q21-30/code/q23/impl_naive.py:5: RuntimeWarning: invalid value encountered in subtract
+    return (x - x.min()) / (x.max() - x.min())          # constant column -> 0/0
+
+test_props.py::test_minmax_rejects_non_finite_or_returns_finite
+test_props.py::test_minmax_rejects_non_finite_or_returns_finite
+  /home/user/case_studies/interviews/scratch/B4P01_Q21-30/code/q23/impl_naive.py:5: RuntimeWarning: invalid value encountered in scalar subtract
+    return (x - x.min()) / (x.max() - x.min())          # constant column -> 0/0
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test_props.py::test_minmax_in_unit_interval - AssertionError: array([n...
+FAILED test_props.py::test_minmax_rejects_non_finite_or_returns_finite - Asse...
+FAILED test_props.py::test_split_sizes_add_up_no_loss_no_dup - AssertionError...
+FAILED test_props.py::test_split_both_sides_non_empty - assert (2 > 0 and 0 > 0)
+4 failed, 2 passed, 38 warnings in 2.60s
+hypothesis 6.170.11 pytest 9.1.1 numpy 2.5.3

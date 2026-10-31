@@ -1,0 +1,6 @@
+MISSING in new: churn.csv
+EXTRA in new: extra.csv
+scores.csv: row count old=3 new=4
+scores.csv: key 4 only in new
+scores.csv: key 2 col score old=0.7 new=0.71
+diffs: 5

@@ -1,0 +1,6 @@
+# Not built here (no Docker daemon). Check current docs for the Lambda base image tags and size limits.
+FROM public.ecr.aws/lambda/python:3.12
+COPY requirements.txt ${LAMBDA_TASK_ROOT}/
+RUN pip install --no-cache-dir -r requirements.txt
+COPY handler.py model.json ${LAMBDA_TASK_ROOT}/
+CMD ["handler.handler"]

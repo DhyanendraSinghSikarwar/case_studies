@@ -1,0 +1,63 @@
+stages:
+  train:
+    cmd: python train.py
+    deps:
+    - data.csv
+    - train.py
+    params:
+    - train.C
+    metrics:
+    - metrics.json:
+        cache: false
+=== dvc repro
+Successfully registered model 'churn'.
+Created version '1' of model 'churn'.
+run f66c32dd3324418eb28e3d986c1eee0f -> churn v1
+Generating lock file 'dvc.lock'
+Updating lock file 'dvc.lock'
+To enable auto staging, run:
+Use `dvc push` to send your updates to remote storage.
+=== dvc.lock
+schema: '2.0'
+stages:
+  train:
+    cmd: python train.py
+    deps:
+    - path: data.csv
+      hash: md5
+      md5: bd1cba7e3a139900c201e9cbd437e476
+      size: 12390
+    - path: train.py
+      hash: md5
+      md5: c9ec64cf03ab10b677bfb27a5cf3e7d6
+      size: 1618
+    params:
+      params.yaml:
+        train.C: 1.0
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: fa2191aa5a98b12125eea68d9ebea253
+      size: 18
+=== mlflow run (search_runs)
+params.C = 1.0
+metrics.cv_acc = 0.8666666666666666
+tags.git_sha = a745da060a18ab1edddb3c0267f4d1de52f1862f
+tags.git_dirty = False
+tags.dvc_data_md5 = bd1cba7e3a139900c201e9cbd437e476
+=== lineage for churn v1
+model        : churn v1  (run f66c32dd)
+git commit   : a745da060a  dirty=False
+data md5 tag : bd1cba7e3a139900c201e9cbd437e476
+data md5 git : bd1cba7e3a139900c201e9cbd437e476   match=True
+params       : {'C': '1.0'}
+logged input : [('train-data', '987c1572')]
+=== change params -> new model version
+Running stage 'train':
+Updating lock file 'dvc.lock'
+model        : churn v2  (run ea4fafd0)
+git commit   : 77a413c584  dirty=True
+data md5 tag : bd1cba7e3a139900c201e9cbd437e476
+data md5 git : bd1cba7e3a139900c201e9cbd437e476   match=True
+params       : {'C': '0.1'}
+logged input : [('train-data', '987c1572')]

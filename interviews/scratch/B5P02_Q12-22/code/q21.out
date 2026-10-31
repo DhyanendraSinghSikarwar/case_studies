@@ -1,0 +1,2 @@
+1000 random sorted lists, m in (1, 2, 3): agree with brute force
+(5, [1, 1, 2, 2, 3]) (7, [0, 0, 1, 1, 2, 3, 3])

@@ -1,0 +1,17 @@
+# prefect.yaml sketch (keys as I know them from Prefect 3 docs; check current docs). Not deployed: needs a server and a work pool.
+name: ml-flows
+prefect-version: 3.9.0
+pull:
+  - prefect.deployments.steps.git_clone:
+      repository: https://example.com/team/ml-flows.git
+      branch: main
+deployments:
+  - name: train-nightly
+    entrypoint: train_flow.py:train
+    parameters: {rows: 10, lr: 0.1}
+    schedules:
+      - cron: "0 2 * * *"
+        timezone: Asia/Kolkata
+    work_pool:
+      name: k8s-pool          # a Kubernetes work pool; created with `prefect work-pool create`
+      job_variables: {image: registry.example.com/team/train:1.4.2}

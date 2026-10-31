@@ -1,0 +1,15 @@
+model    cost/mo   cost per 1k preds
+m1       60177.9              1.2036
+m2       23012.0              4.6024
+m3       50136.8              0.2507
+m4       14508.0             14.5080
+m5       29186.7              1.4593
+total/month 177021.3
+year budget (no spike) 2398850; with spike 2766917; spike month 565705
+budget alert threshold per month: 229889.8 | anomaly rule: month > 1.5 x trailing 3-mo mean
+  month 6: ALERT cost 565705 (budget flag True, anomaly True)
+sensitivity of total/month to: idle +20pts / people +20% / compute/1k +50%
+  idle        1.412 x base
+  people      1.015 x base
+  compute/1k  1.461 x base
+worth-its-cost: ask Book 6 owner for value per prediction, then value_per_pred > cost_per_pred

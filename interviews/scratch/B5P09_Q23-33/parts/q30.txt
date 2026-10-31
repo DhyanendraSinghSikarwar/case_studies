@@ -1,0 +1,45 @@
+**Pattern:** Shortest path in an unweighted implicit graph: BFS where a state is a string and neighbours are computed on demand.
+
+**Say this first (1 line):** "Each four-digit combination is a node, each single-wheel turn is an edge, every edge costs one move, so BFS from '0000' gives the fewest moves. Dead ends are nodes I refuse to enter."
+
+**Brute force:** DFS or enumerating all move sequences is exponential and finds a path, not the shortest. A level-by-level BFS using sets (no queue, no distance dictionary) is a second, independent implementation, and is used as the checker in the code, together with a bidirectional BFS.
+
+**Optimal:**
+- Nodes: the 10^4 strings `'0000'..'9999'`. Edges: 4 wheels times 2 directions, so exactly 8 neighbours per state; for example `'0000'` goes to `'1000'`, `'9000'`, `'0100'`, `'0900'` and so on. The code checks that all 10^4 states have 8 distinct neighbours (so 40000 undirected edges) and that all are reachable.
+- Why not build it up front: the neighbours follow from a rule in two lines, so a generator function is shorter than an adjacency table, needs no memory for edges, and generalises to states where the graph is too large to store (sliding puzzle, Q32 in this part). With only 10^4 states, building it would also work here; the habit is the point.
+- Algorithm: if `'0000'` is a dead end, return -1. Queue of `(state, moves)`, `seen = {'0000'}`. Pop; if it is the target, return its moves; for each neighbour not dead and not seen, mark seen and push (mark on push, so a state is queued once).
+- Dead ends are simply never entered. The target being a dead end means it is never reached, so the answer is -1 without a special case, but the start being dead needs the explicit check (the start is added to `seen` before any dead-end test; the code shows the bug returning 8 instead of -1).
+- BFS correctness: all edges cost 1, so the first time a state is popped its distance is minimal.
+- Without dead ends the answer is the sum over wheels of `min(digit, 10 - digit)`; the code confirms it on 1429 sampled targets, and the farthest state `5555` is 20 moves away.
+
+**Complexity:** Time O(S * 8) with S = 10^4 states, so at most 80000 neighbour visits; each costs O(1) string building (4 characters) and set lookups. Space O(S) for `seen` and the queue. With the 500 dead ends of the prompt only fewer states are visited.
+
+**Dry run:** `deadends=['8888'], target='0009'`.
+- Start `'0000'`, 0 moves. Neighbours: `'1000'`, `'9000'`, `'0100'`, `'0900'`, `'0010'`, `'0090'`, `'0001'`, `'0009'` (all 1 move).
+- The target `'0009'` is one of them (the last wheel turned down from 0 to 9 by wrap-around). Pop it at 1 move: answer 1.
+- Example 1 (answer 6): each of the six 4-move routes to `'0202'` hits a dead end (`'0101'`, `'0102'` or `'0201'`). One shortest route found by BFS is 0000, 1000, 1100, 1200, 1201, 1202, 0202: six moves.
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- Target `'0000'` and not dead: 0 moves.
+- `'0000'` dead: -1 at once, even if the target is `'0000'`.
+- Target dead: -1.
+- Start enclosed by 8 dead neighbours: BFS exhausts and returns -1 (the last example, and the 4th prompt example).
+- Duplicate dead ends in the list: a set handles them.
+- 9 to 0 and 0 to 9 wrap, so `'0009'` is one move away.
+
+**Follow-ups:**
+- Faster in the worst case? Bidirectional BFS (in the code) searches from both ends and cuts the work from about b^d to 2 * b^(d/2); here the graph is small, so the gain is modest.
+- Return the actual sequence? Store a parent dictionary and walk it back from the target.
+- Many targets from one start? One BFS gives all distances; the code builds the full distance table that way.
+
+**Common mistakes:**
+- Marking states visited when popped (queues duplicates, up to 8 times more work).
+- Forgetting the wrap-around (`(d + 1) % 10`, `(d + 9) % 10`).
+- Not checking the start against the dead ends.
+- Using a list for `deadends` lookups (O(500) per check instead of O(1)); convert to a set once.

@@ -1,0 +1,4 @@
+# repo-level policy. Say WHY each rule is relaxed.
+failure-threshold: warning     # info-level findings are printed but do not fail the build
+ignored:
+  - DL3059                     # consecutive RUN is fine in our long ML installs; readability over layer count

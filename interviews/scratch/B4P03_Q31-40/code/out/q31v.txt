@@ -1,0 +1,1 @@
+INFO q31_job.yaml passed for resource job/train-churn-001 against version 1.37

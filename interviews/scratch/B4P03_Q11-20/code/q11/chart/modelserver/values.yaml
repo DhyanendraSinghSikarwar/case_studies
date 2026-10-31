@@ -1,0 +1,21 @@
+replicaCount: 2
+image:
+  repository: registry.example.com/ml/churn-model
+  tag: "1.4.1"
+service:
+  port: 80
+  targetPort: 8080
+readiness:
+  path: /ready
+resources:
+  requests:
+    cpu: "500m"
+    memory: 1Gi
+  limits:
+    memory: 2Gi
+gpu:
+  enabled: false
+  count: 1
+config:
+  MODEL_NAME: churn
+  LOG_LEVEL: info

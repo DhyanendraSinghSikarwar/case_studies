@@ -1,0 +1,13 @@
+     method  view_rows  cart_rows  purchases  purchasers  per_purchaser
+        raw          3          5          5           2            2.5
+ a_event_id          3          4          4           2            2.0
+b_user_step          3          2          2           2            1.0
+   c_5s_lag          3          2          3           2            1.5
+SELECT DISTINCT * rows: 12 | rows: 13 | distinct event_id: 11
+cart rows kept by (c) for user 2 (event_ids): [6]
+     method  view_rows  cart_rows  purchases  purchasers  per_purchaser
+        raw          3          5          5           2            2.5
+ a_event_id          3          4          4           2            2.0
+b_user_step          3          2          2           2            1.0
+   c_5s_lag          3          2          3           2            1.5
+asserts passed

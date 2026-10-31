@@ -1,0 +1,21 @@
+pre-commit installed at .git/hooks/pre-commit
+== 1. normal commit
+ruff lint................................................................Failed
+src/train.py:4:23: B006 Do not use mutable data structures for argument defaults
+src/train.py:6:5: F841 Local variable `unused` is assigned to but never used
+ruff format --check......................................................Failed
+mypy.....................................................................Failed
+src/train.py:4: error: Function is missing a type annotation  [no-untyped-def]
+src/train.py:10: error: Incompatible return value type (got "str", expected "int")  [return-value]
+git commit exit code: 1 (blocked)
+== 2. same commit with --no-verify
+git commit exit code: 0  (hooks skipped, bad file is now in history)
+== 3. CI-style run of the same checks
+src/train.py:1:1: E401 [*] Multiple imports on one line
+src/train.py:1:1: I001 [*] Import block is un-sorted or un-formatted
+src/train.py:1:8: F401 [*] `os` imported but unused
+src/train.py:1:11: F401 [*] `sys` imported but unused
+src/train.py:2:17: F401 [*] `numpy` imported but unused
+src/train.py:4:23: B006 Do not use mutable data structures for argument defaults
+src/train.py:6:5: F841 Local variable `unused` is assigned to but never used
+ruff exit: 1

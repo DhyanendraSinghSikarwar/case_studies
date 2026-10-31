@@ -1,0 +1,13 @@
+--- docker version (client part works; no server here)
+Client: Docker Engine - Community
+ Version:           29.9.2
+failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory
+--- find_sock.py
+pod_bad.yaml: FOUND docker.sock hostPath in volume ['dockersock']
+pod_ok.yaml: no docker.sock mount
+--- oci_types.py
+older docker v2 manifest   -> Docker schema 2; layers are tar+gzip: True
+OCI manifest               -> OCI; layers are tar+gzip: True
+A CRI runtime (containerd, CRI-O) pulls and runs both; the 'Docker' in the image format is just a format.
+--- bash -n commands.sh
+OK

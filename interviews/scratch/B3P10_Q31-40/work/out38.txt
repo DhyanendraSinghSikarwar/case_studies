@@ -1,0 +1,37 @@
+ metric quarter   val
+   cost      q1  60.0
+   cost      q2  70.0
+   cost      q3   NaN
+   cost      q4  90.0
+ rating      q1   4.5
+ rating      q2   4.0
+ rating      q3   4.2
+ rating      q4   4.8
+revenue      q1 100.0
+revenue      q2 120.0
+revenue      q3 130.0
+revenue      q4 150.0
+quarter  revenue  cost  rating
+     q1      100  60.0     4.5
+     q2      120  70.0     4.0
+     q3      130   NaN     4.2
+     q4      150  90.0     4.8
+typeof of the revenue/cost/rating cells in the long table: [('cost', 'integer,null'), ('rating', 'real'), ('revenue', 'integer')]
+quarter  revenue status
+     q1      100     ok
+     q2      120     ok
+     q3      130   late
+     q4      150     ok | pandas dtypes: {'quarter': 'str', 'revenue': 'int64', 'status': 'str'}
+what a single column mixing both gives for MAX: ('ok', 4.5) (text sorts above numbers)
+quarter  revenue  cost  rating
+     q1    100.0  60.0     4.5
+     q2    120.0  70.0     4.0
+     q3    130.0   NaN     4.2
+     q4    150.0  90.0     4.8
+df.T dtypes: {'quarter': 'str', 'revenue': 'float64', 'cost': 'float64', 'rating': 'float64'}
+NaN cells: 220 of 4000
+stack() default      -> 4000 rows
+stack(future_stack=False) -> 3780 rows; Pandas4Warning
+stack().dropna()     -> 3780 rows (matches legacy: True )
+stack(dropna=False) -> dropna must be unspecified as the new implementation does not introduce rows of NA values. This argument will be removed in a future version of pandas.
+asserts passed

@@ -1,0 +1,17 @@
+ mature_viewers  converted_7d  conversion_pct
+              7             3            42.9
+ user_id          first_view          window_end  mature first_purchase_after_view  secs_after_view
+       1 2024-03-01 10:00:00 2024-03-08 10:00:00       1       2024-03-08 10:00:00         604800.0
+       2 2024-03-01 10:00:00 2024-03-08 10:00:00       1       2024-03-08 10:01:00         604860.0
+       3 2024-03-01 10:00:00 2024-03-08 10:00:00       1                       NaN              NaN
+       4 2024-03-02 08:00:00 2024-03-09 08:00:00       1       2024-03-03 08:00:00          86400.0
+       5 2024-03-20 12:00:00 2024-03-27 12:00:00       1                       NaN              NaN
+       6 2024-03-28 12:00:00 2024-04-04 12:00:00       0       2024-03-29 12:00:00          86400.0
+       7 2024-03-05 09:00:00 2024-03-12 09:00:00       1       2024-03-13 09:00:00         691200.0
+       8 2024-03-10 10:00:00 2024-03-17 10:00:00       1       2024-03-12 10:00:00         172800.0
+latest-view anchor: [{'mature_viewers': 7, 'converted_latest_view_anchor': 4}]
+julianday check, user 1 (exactly 7 days): [(1, 604800.0, 1)]
+ mature_viewers  converted_7d  conversion_pct
+              7             3            42.9
+no maturity rule: viewers 8 converted 4 rate 50.0
+asserts passed

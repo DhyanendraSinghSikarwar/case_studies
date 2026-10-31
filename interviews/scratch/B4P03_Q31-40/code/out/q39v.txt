@@ -1,0 +1,1 @@
+INFO q39_quota.yaml passed for resource resourcequota/gpu-quota against version 1.37

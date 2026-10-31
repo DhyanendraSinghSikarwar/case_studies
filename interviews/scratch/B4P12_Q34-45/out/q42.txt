@@ -1,0 +1,4 @@
+features 20, read by anyone 8, unused 12
+unused: ['f007', 'f008', 'f009', 'f012', 'f013', 'f014', 'f015', 'f016', 'f017', 'f018', 'f019', 'f020']
+undeclared consumers: {'f003': ['promo_svc'], 'f011': ['fin_report', 'promo_svc']}
+delete first (no readers): ['f007', 'f008', 'f009', 'f012', 'f013'] ...; DO NOT delete f003/f011 until promo_svc/fin_report declared

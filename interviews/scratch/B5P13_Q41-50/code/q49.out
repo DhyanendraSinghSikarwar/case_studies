@@ -1,0 +1,7 @@
+examples ok: [[3, 4, 8, 12], [2, 11, 10, 16], [1, 7, 6, 15], [5, 9, 13, 14]] [[2, 4], [1, 3]] [[4, 8, 7, 6], [3, 2, 1, 5]]
+1500 random even-min grids: flat-list rotation == walk + deque == r single steps (r <= 40)
+even min(m, n): rings cover every cell of every grid with 2 <= m, n <= 10 exactly once
+odd min (3 x 4): layer 1 is a single row; the generator lists [(1, 1), (1, 2), (1, 1)] -> the cell (1, 1) appears twice, so it is not a ring
+rotating by the ring length is the identity; rotating by 3 then 4 equals rotating by 7 (ring lengths differ per layer: here 16 and 8)
+300 x 300 with r = 10^9: a permutation of the values, rings of length 1196 down to 4 (sandbox timing about 0.01 s)
+edge asserts ok

@@ -1,0 +1,49 @@
+$ IMPL=impl_naive python3 -I -m pytest -q -p no:cacheprovider --tb=short test_props.py
+F.FFF.                                                                   [100%]
+=================================== FAILURES ===================================
+_________________________ test_minmax_in_unit_interval _________________________
+test_props.py:11: in test_minmax_in_unit_interval
+test_props.py:15: in test_minmax_in_unit_interval
+    assert np.all((out >= 0) & (out <= 1)), out          # also fails on NaN
+E   AssertionError: array([nan])
+E   assert np.False_
+E   Failing test case: test_minmax_in_unit_interval(
+E       xs=[0.0],
+E   )
+_______________ test_minmax_rejects_non_finite_or_returns_finite _______________
+test_props.py:26: in test_minmax_rejects_non_finite_or_returns_finite
+test_props.py:32: in test_minmax_rejects_non_finite_or_returns_finite
+    assert np.isfinite(out).all(), out                  # never hand NaN downstream silently
+E   AssertionError: array([nan])
+E   assert np.False_
+E   Failing test case: test_minmax_rejects_non_finite_or_returns_finite(
+E       xs=[nan],
+E   )
+____________________ test_split_sizes_add_up_no_loss_no_dup ____________________
+test_props.py:37: in test_split_sizes_add_up_no_loss_no_dup
+test_props.py:40: in test_split_sizes_add_up_no_loss_no_dup
+    assert len(tr) + len(te) == n, (len(tr), len(te))
+E   AssertionError: (9, 7)
+E   assert (9 + 7) == 15
+E   Failing test case: test_split_sizes_add_up_no_loss_no_dup(
+E       n=15,
+E       frac=0.5,
+E       seed=0,
+E   )
+_______________________ test_split_both_sides_non_empty ________________________
+test_props.py:44: in test_split_both_sides_non_empty
+test_props.py:47: in test_split_both_sides_non_empty
+    assert len(tr) > 0 and len(te) > 0
+E   assert (2 > 0 and 0 > 0)
+E   Failing test case: test_split_both_sides_non_empty(
+E       n=2,
+E       frac=0.25,
+E       seed=0,  # or any other generated value
+E   )
+=========================== short test summary info ============================
+FAILED test_props.py::test_minmax_in_unit_interval - AssertionError: array([n...
+FAILED test_props.py::test_minmax_rejects_non_finite_or_returns_finite - Asse...
+FAILED test_props.py::test_split_sizes_add_up_no_loss_no_dup - AssertionError...
+FAILED test_props.py::test_split_both_sides_non_empty - assert (2 > 0 and 0 > 0)
+4 failed, 2 passed, 38 warnings in 2.60s
+hypothesis 6.170.11 pytest 9.1.1 numpy 2.5.3

@@ -1,0 +1,51 @@
+**Say this first (1 line):** The pool is 40,000 x 12% x 25% x 2,400 = 2.88 million a year (illustrative), and the input I would check first is the adoption rate, because it is the least known and moves the answer 4x between 10% and 40%.
+
+**Clarifying questions:**
+- Is "firms" all registered firms or active ones? Many registered firms are dormant, so the base could be too high.
+- Is the 25% adoption at the end of year 3, or an average over 3 years? It changes whether 2.88 million is a year-3 run rate or a 3-year average.
+- Is 2,400 a year the list price or what firms actually pay after discounts? Revenue pool should use paid price.
+- Do firms with 50 staff or fewer matter at all? If they would buy a cheaper tier, the pool is understated.
+- Is this the pool for the whole market or the share we could win? A pool is not our revenue.
+
+**Approach:**
+1. Write the chain: firms x share in scope x adoption x price.
+2. Compute: 40,000 x 12% = 4,800 firms. 25% of 4,800 = 1,200 adopters. 1,200 x 2,400 = 2,880,000 a year.
+3. Sweep adoption 10% to 40%: 1,152,000 to 4,608,000. Revenue is linear in adoption, so 40% gives exactly 4x the 10% case.
+4. Rank inputs by uncertainty times leverage. Each input is a straight multiplier, so a 10% relative error in any of them gives a 10% error in revenue. The input with the widest plausible range is the one to validate.
+5. Name data for it: a pilot conversion rate, win/loss from sales calls, a survey with real purchase intent, adoption of a similar tool in a neighbouring market.
+6. Present a range, not one number, and say what we would do at the low end.
+
+**Metrics:**
+- Revenue pool = firms in scope x adoption rate x annual price. Numerator: money paid per year. Denominator: not a ratio.
+- Adoption rate = adopting in-scope firms / all in-scope firms (1,200 / 4,800 = 25%).
+- Guardrail: compare against a top-down check, for example spend per firm on all software. If 2,400 is a large share of that, adoption is probably too high.
+
+**Risks:**
+- Stated intent in surveys overstates real purchases.
+- The 12% size share may count branches or shells as firms.
+- The pool is a ceiling for the product, not a forecast for our revenue.
+- One year-3 snapshot hides the ramp: years 1 and 2 earn less.
+
+**What the interviewer scores:**
+- Strong: clean chain, arithmetic right, a range, picks the input to validate and says why with data named. Weak: gives one number and says "adoption is uncertain" with no way to test it.
+- Strong: separates market pool from our share. Weak: treats the pool as our revenue.
+- Strong: notes the linear structure, so each input is equally sensitive per percent. Weak: ranks inputs by gut.
+
+**Example:** Illustrative numbers. 4,800 big firms x 25% = 1,200 adopters x 2,400 = 2.88 million. At 10% adoption: 1.152 million. At 40%: 4.608 million. Weak: "about 3 million, looks good." Strong: "2.9 million at 25%, but 1.2 to 4.6 million across adoption of 10% to 40%, so I would run a paid pilot with 50 firms before investing."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Which input would you validate if adoption were already known?* The price, through a willingness-to-pay test on real quotes.
+- *How do you turn the pool into our revenue?* Multiply by an achievable share and a ramp over the years. Part 5 Q19 shows break-even logic for the investment decision.
+- *Top-down check?* Compare 2,400 a year against what a firm of that size spends in total on similar tools.
+
+**Common mistakes:**
+- Treating 25% as certain.
+- Forgetting the 12% filter, or applying it twice.
+- Calling the pool "our revenue".
+- Sweeping adoption but leaving price and size fixed and calling it a sensitivity analysis.

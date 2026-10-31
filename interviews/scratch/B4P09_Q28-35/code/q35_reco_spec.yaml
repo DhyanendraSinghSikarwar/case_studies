@@ -1,0 +1,34 @@
+feature_views:
+  - name: user_profile_batch
+    entity: user_id
+    freshness: batch_daily
+    store: [offline, online]
+    ttl: 7d
+    features: {age_bucket: string, top_categories_30d: "list[string]", user_embedding_v5: "list[float32]"}
+    cold_start: {fallback: segment_default, segment_keys: [city_tier, device_type]}
+  - name: item_stats_nrt
+    entity: item_id
+    freshness: near_real_time_5m
+    store: [offline, online]
+    ttl: 1d
+    features: {ctr_1h: float, view_count_1h: int, stock_status: string}
+    cold_start: {fallback: category_prior, min_impressions_before_trust: 100}
+  - name: session_stream
+    entity: session_id
+    freshness: streaming
+    store: [online]                 # offline copy comes from LOGGED values, see training_set
+    ttl: 30m
+    features: {last_5_items: "list[string]", clicks_in_session: int, session_start_ts: timestamp}
+  - name: context_request
+    entity: request_id
+    freshness: per_request          # computed at request time, never stored
+    store: []
+    features: {hour_of_day: int, device_type: string, surface: string, is_weekend: bool}
+retrieval_index:                    # NOT the feature store
+  kind: ann
+  holds: item_embedding_v5
+  rebuilt: daily
+training_set:
+  source: impression_log            # request_id, user_id, item_id, position, shown_ts, clicked, served_feature_snapshot
+  join: logged_features_first       # reuse what was served; backfill with as-of join on event time only for new features
+  exclude: [position_debias_needed, popularity_boosted_slots]

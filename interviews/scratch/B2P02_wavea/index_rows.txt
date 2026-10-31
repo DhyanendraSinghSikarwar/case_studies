@@ -1,0 +1,44 @@
+| B2P02-Q1 | 2 | Why do LLMs use subword tokenization instead of words or characters? Compare BPE, WordPiece and Unigram/SentencePiece. |
+| B2P02-Q2 | 2 | Greedy decoding vs sampling vs beam search: how does each choose the next token, and when would you use which? |
+| B2P02-Q3 | 2 | What is the pretraining objective of a decoder-only LLM? Write the next-token cross-entropy loss and explain the label shift. |
+| B2P02-Q4 | 2 | Explain temperature, top-k and top-p (nucleus) sampling. What does each do to the distribution and what are sensible values? |
+| B2P02-Q5 | 2 | Token maths: how many tokens is 1,000 words, why do code, JSON and non-English text cost more, and how would you cut token spend? |
+| B2P02-Q6 | 2 | Why do LLMs struggle with counting letters ("strawberry"), arithmetic and string reversal? What does tokenization have to do with it? |
+| B2P02-Q7 | 2 | What is perplexity? How does it relate to cross-entropy loss, and why can't you compare it across models with different tokenizers? |
+| B2P02-Q8 | 2 | Pretraining vs continued pretraining vs fine-tuning: what changes in data, objective, cost and risk, and when do you choose each? |
+| B2P02-Q9 | 2 | Walk through a pretraining data pipeline: sources, cleaning, quality filtering, language ID, PII/toxicity filtering, deduplication and mixing. |
+| B2P02-Q10 | 2 | What are LLM scaling laws? What do loss versus parameters, data and compute look like, and what can you do with them? |
+| B2P02-Q11 | 2 | What did Chinchilla find? Use C ~ 6ND to work out the compute-optimal model size and token count for a given budget. |
+| B2P02-Q12 | 2 | Code: implement a byte-pair-encoding tokenizer (train, encode, decode) with deterministic tie-breaking, and show a round trip. |
+| B2P02-Q13 | 2 | Code: implement temperature, top-k and top-p sampling from a logits vector, and verify it empirically. |
+| B2P02-Q14 | 2 | How do you choose a tokenizer vocabulary size? Discuss sequence length, embedding/softmax cost, rare-token under-training and multilingual coverage. |
+| B2P02-Q15 | 2 | What is byte-level BPE, why does it remove out-of-vocabulary tokens, and what are its trade-offs (UTF-8, byte fallback)? |
+| B2P02-Q16 | 2 | What are special tokens (BOS, EOS, PAD, role/chat tokens) and chat templates? What breaks if the template or padding side is wrong? |
+| B2P02-Q17 | 2 | Why do Indian and other low-resource languages cost more tokens (the "token tax")? What can you do about it? |
+| B2P02-Q18 | 2 | What are glitch or under-trained tokens, why do they exist, and how would you detect them? |
+| B2P02-Q19 | 2 | What are min-p and typical sampling, and in what order should samplers (penalties, temperature, truncation) be applied? |
+| B2P02-Q20 | 2 | Why do LLMs repeat themselves, and how do repetition, frequency and presence penalties work? When do penalties hurt (code, JSON)? |
+| B2P02-Q21 | 2 | Is temperature 0 deterministic? What causes run-to-run differences in LLM output, and how do you get reproducibility? |
+| B2P02-Q22 | 2 | How does generation stop? Explain EOS, stop sequences, max tokens, finish reasons, truncation and streaming. |
+| B2P02-Q23 | 2 | What are logprobs? How can you use token log-probabilities for confidence, classification and calibration, and what is logit bias? |
+| B2P02-Q24 | 2 | Beam search in detail: length normalisation, cost in compute and KV memory, and why it works for translation but not open-ended chat. |
+| B2P02-Q25 | 2 | How do you deduplicate a pretraining corpus (exact vs near-duplicate, MinHash/LSH)? Why does it matter? |
+| B2P02-Q26 | 2 | What does a standard LLM pretraining optimisation recipe look like (AdamW settings, warmup, cosine or WSD decay, weight decay, gradient clipping), and why each piece? |
+| B2P02-Q27 | 2 | Why is bf16 preferred over fp16 for LLM pretraining? Cover exponent range vs mantissa, fp32 master weights and optimizer states, which ops stay in fp32, and what FP8 changes. |
+| B2P02-Q28 | 2 | How do you choose batch size in LLM pretraining (tokens per step, gradient accumulation, critical batch size, learning-rate scaling)? |
+| B2P02-Q29 | 2 | How do you read a pretraining loss curve? What do spikes, divergence, plateaus and a train/validation gap tell you, and what would you do? |
+| B2P02-Q30 | 2 | How do you decontaminate a pretraining corpus against benchmarks (n-gram overlap, canary strings, dynamic test sets) and detect contamination in a finished model? |
+| B2P02-Q31 | 2 | Why do LLMs memorise and regurgitate training data? What makes it worse, and how do you reduce privacy and copyright risk? |
+| B2P02-Q32 | 2 | Why do modern models train far beyond the Chinchilla-optimal token count (e.g. an 8B model on ~15T tokens)? What is inference-aware scaling? |
+| B2P02-Q33 | 2 | Estimate the cost of pretraining a 7B model on 2T tokens: FLOPs, GPU-hours, model FLOPs utilisation (MFU) and rough dollars. |
+| B2P02-Q34 | 2 | Live maths: how much GPU memory does training a 7B model need (weights, gradients, Adam states, activations)? Explain data, tensor and pipeline parallelism and ZeRO/FSDP at a high level. |
+| B2P02-Q35 | 2 | AI code review: this LLM-written sampling function has bugs (top-p off-by-one, wrong order of temperature and softmax, no renormalisation, mutated logits). Find and fix them. |
+| B2P02-Q36 | 2 | How would you extend a tokenizer and model to a new domain or language (new tokens, embedding initialisation, continued pretraining)? What goes wrong? |
+| B2P02-Q37 | 2 | Tokenizer-free and byte-level models (ByT5, byte-latent transformers) and digit tokenisation choices: what are the trade-offs? |
+| B2P02-Q38 | 2 | Data mixtures, curriculum, annealing and synthetic data in pretraining: what helps, and what is model collapse? |
+| B2P02-Q39 | 2 | How many epochs over the same data are acceptable? What do data-constrained scaling results say about repeating data? |
+| B2P02-Q40 | 2 | Are emergent abilities real or an artefact of the metric? How would you test it? |
+| B2P02-Q41 | 2 | What are the limits and critiques of scaling laws (fit uncertainty, extrapolation risk, the data wall, test-time compute)? |
+| B2P02-Q42 | 2 | Decoding-time methods to improve quality: self-consistency, contrastive decoding and DoLa. How do they work and what do they cost? |
+| B2P02-Q43 | 2 | Test-time compute: best-of-n, majority voting and long chain-of-thought sampling. How do cost, latency and accuracy trade off? |
+| B2P02-Q44 | 2 | Design question: choose decoding settings and stop rules for four products (code completion, support chat, creative writing, data extraction) and defend them. |

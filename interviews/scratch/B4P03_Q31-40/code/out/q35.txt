@@ -1,0 +1,12 @@
+== q35_hardened.yaml: 10/10
+== q35_bad.yaml: 0/10
+   FAIL automountServiceAccountToken false (token mounted by default)
+   FAIL no hostNetwork/hostPID/hostIPC 
+   FAIL pod seccomp RuntimeDefault 
+   FAIL server: runAsNonRoot 
+   FAIL server: not privileged 
+   FAIL server: allowPrivilegeEscalation false 
+   FAIL server: readOnlyRootFilesystem 
+   FAIL server: drop ALL capabilities 
+   FAIL server: image pinned (digest or non-latest tag) 
+   FAIL server: memory limit set 

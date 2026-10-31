@@ -1,0 +1,21 @@
+start: score 0/12, level 0
+Q1 step on registry: score 1/12, level 0
+    do: Part 4 Q25 style: log runs and register models in a tracker; stop the shared folder
+    indicator: 100% of prod models have a registered version id
+Q1 step on training: score 2/12, level 0
+    do: move notebook to a script with fixed seed and pinned deps (Part 1)
+    indicator: one command reproduces last model
+Q2 step on deploy: score 3/12, level 0
+    do: one CI job: tests + build + deploy to staging (Part 7 Q9)
+    indicator: manual deploys per month falls to 0 for staging
+Q1 step on tests: score 4/12, level 0
+    do: add 5 unit tests for feature code and one data-schema check (Part 1)
+    indicator: CI red on a deliberately broken column
+Q2 step on data_versioning: score 5/12, level 1
+    do: pin training data by hash or snapshot id (Part 4)
+    indicator: every model record names its data version
+Q2 step on monitoring: score 6/12, level 1
+    do: replace spreadsheet with 3 automated checks and one alert (Part 8 Q2)
+    indicator: time-to-detect drops from days to hours
+trap: no feature store or Kubeflow until every dimension is at 1 and the pain is named
+final: (6, 1)

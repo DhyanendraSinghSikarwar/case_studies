@@ -1,0 +1,9 @@
+spark 4.2.0 | AQE disabled on purpose for the demo
+repartition by merchant (hash)     {0: 85057, 1: 6647, 2: 3466, 3: 4830}
+repartition by merchant#salt       {0: 34967, 1: 14996, 2: 24618, 3: 25419}
+salted two-stage top3: [('m_hot', 80060, 1961332), ('m5', 240, 5909), ('m66', 227, 5598)]
+plain groupBy   top3: [('m_hot', 80060, 1961332), ('m5', 240, 5909), ('m66', 227, 5598)]
+same answer: True
+broadcast join plan has BroadcastHashJoin: True
+joined rows: 100000
+defaults: {'spark.sql.adaptive.skewJoin.enabled': 'true', 'spark.sql.adaptive.skewJoin.skewedPartitionFactor': '5.0'}

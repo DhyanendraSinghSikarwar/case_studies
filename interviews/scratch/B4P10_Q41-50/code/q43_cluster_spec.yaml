@@ -1,0 +1,22 @@
+# Spec for a multi-node training cluster. Field names are OUR schema, mapped to EC2 API fields in the checker.
+# Instance type, EFA support and capacity are examples only: check current docs and your account quotas.
+cluster:
+  name: ft-7b-cluster
+  region: ap-south-1
+  availability_zone: ap-south-1a        # one AZ: placement group and EFA traffic stay inside it
+placement_group:
+  name: ft-7b-pg
+  strategy: cluster                     # cluster | partition | spread
+launch_template:
+  name: ft-7b-lt
+  instance_type: p4d.24xlarge           # example of a GPU training family; verify availability in your Region
+  image_id: ami-0123456789abcdef0       # Deep Learning AMI id (placeholder)
+  efa: true                             # elastic fabric adapter network interface
+  ebs_gb: 500
+  capacity:
+    market: capacity-block              # on-demand | spot | capacity-block | odcr
+    nodes: 4
+training_io:
+  data_prefix: s3://ml-data/train/
+  checkpoint_prefix: s3://ml-data/ckpt/ft-7b/
+  checkpoint_every_minutes: 30          # a trade-off, not a rule

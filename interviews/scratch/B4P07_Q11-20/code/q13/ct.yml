@@ -1,0 +1,39 @@
+name: continuous-training
+on:
+  schedule:
+    - cron: "17 2 * * 1"          # weekly safety net, Monday 02:17 UTC
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why are we retraining by hand
+        required: true
+        type: string
+  repository_dispatch:
+    types: [drift-alert]          # sent by the monitoring system
+concurrency:
+  group: ct-churn
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  decide:
+    runs-on: ubuntu-latest
+    outputs:
+      go: ${{ steps.d.outputs.go }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - id: d
+        env:
+          EVENT: ${{ github.event_name }}
+        run: python trigger.py --event "$EVENT" --state state.json >> "$GITHUB_OUTPUT"
+  train:
+    needs: decide
+    if: needs.decide.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120          # cost cap on one run
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "train, evaluate, register a CANDIDATE. Promotion is a separate gated job."

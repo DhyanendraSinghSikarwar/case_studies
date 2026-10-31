@@ -1,0 +1,7 @@
+lost/hour 600 share of ideal 0.012
+lost value/hour 24000 per 30 days 17280000
+95% interval for fallback rate 0.0332 0.0368
+lost range 528 672
+capacity 420 timeout 225 better fallback 280
+capacity gain value 16800 cost 30
+counterfactual lost if fallbacks are heavy users 520

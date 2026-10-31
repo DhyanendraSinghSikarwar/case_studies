@@ -1,0 +1,2 @@
+best of 30 val AUC: 0.576
+same pick on fresh test AUC: 0.440

@@ -1,0 +1,6 @@
+libc: ('glibc', '2.39')
+cp313 platform tags accepted here (first 6): ['linux_x86_64', 'manylinux1_x86_64', 'manylinux2010_x86_64', 'manylinux2014_x86_64', 'manylinux_2_10_x86_64', 'manylinux_2_11_x86_64']
+manylinux tags: True | musllinux tags: False
+alpine example: cp311-cp311-musllinux_1_2_x86_64 -> a wheel tagged manylinux2014_x86_64 would NOT match
+manylinux wheel (examplepkg) installable on alpine: False
+same wheel installable on a glibc distro (emulated tags): True

@@ -1,0 +1,8 @@
+rows 400 churn rate 0.538
+{"accuracy": 0.8375, "n_train": 320, "n_test": 80}
+{"accuracy": 0.8375, "n_train": 320, "n_test": 80}
+..                                                                       [100%]
+2 passed in 1.06s
+mean (all 400 rows, notebook): [37.415, 57.454, 1.988]
+mean (320 train rows, fixed) : [38.219, 57.492, 2.059]
+max abs gap in std units: 0.054

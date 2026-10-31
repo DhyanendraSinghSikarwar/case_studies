@@ -1,0 +1,14 @@
+name: ci-bad
+on:
+  pull_requests:
+    branches: [main]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "title is ${{ github.event.pull_request.title }}"
+  report:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo done

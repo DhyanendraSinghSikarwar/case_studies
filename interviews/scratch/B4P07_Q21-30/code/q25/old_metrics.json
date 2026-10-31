@@ -1,0 +1,2 @@
+{"model": "churn", "version": 3, "data_version": "customers-2026-09", "git_sha": "a1b2c3d",
+ "metrics": {"auc": 0.842, "recall_at_10pct": 0.410, "p95_latency_ms": 38.0, "brier": 0.121}}

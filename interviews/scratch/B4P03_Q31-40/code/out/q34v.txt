@@ -1,0 +1,1 @@
+INFO q34_daemonset.yaml passed for resource daemonset/gpu-node-agent against version 1.37
