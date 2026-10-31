@@ -309,7 +309,7 @@ blended recall 0.688 -> 0.760 (gain 7.2 points)
 - Comparing two query sets of different difficulty and calling it a script effect.
 - Assuming one correct romanisation exists.
 
-### Q37 ⭐⭐ 🟡 A chat product resends the whole history on every turn, with a 1,000-token system prompt and 300 new tokens added per turn, and the input at turn t counts the system prompt plus the t-1 earlier turns. Over a 20-turn conversation compute the total input tokens sent and their cost at an illustrative 3 per million, compare with 20,000 tokens if no history were resent, and propose a context-management policy.
+### Q37 ⭐⭐ 🟡 A chat product resends the whole history on every turn, with a 1,000-token system prompt and 300 new tokens added per turn, and the input at turn t counts the system prompt plus the 300 new tokens of each of the t turns so far, including the current one. Over a 20-turn conversation compute the total input tokens sent and their cost at an illustrative 3 per million, compare with 26,000 tokens (system prompt plus only the new 300 tokens each turn, no history resent), and propose a context-management policy.
 **Asked at:** LLM cost and routing pages (getmaxim cost and semantic-cache guides, tianpan and system-design.space pages on routing and cascades, a Towards Data Science article on saving tokens in agentic AI, a Towards AI piece on AI system-design interview patterns); practitioner material, no confirmed interview bank; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
 **Say this first (1 line):** Resending history makes the total grow with the square of the turn count: 77,000 input tokens over 20 turns, costing 0.231 per conversation at the illustrative 3 per million, and I would cap it with a sliding window, a running summary and prefix caching.
 
@@ -712,7 +712,7 @@ P(at least one wrong write in a week at 2.6%): 1.0
 - Putting the verifier in the same model and context as the actor.
 - Adding approvals everywhere until reviewers stop reading.
 
-### Q41 ⭐⭐ 🔴 A user exercises a right to have personal data deleted. It sits in raw chat logs, in 3,000 of 2,000,000 chunks in a vector index, in an evaluation dataset and in 35-day rolling backups, and your internal deletion target is 30 days. Compute the share of the index affected and the gap between the target and the backup retention, and lay out a deletion plan that is honest about what cannot be erased immediately.
+### Q41 ⭐⭐ 🔴 A user exercises a right to have personal data deleted. It sits in raw chat logs, in 3,000 of 2,000,000 chunks in a vector index, in an evaluation dataset and in 35-day rolling backups, and your internal deletion target is 30 days. Compute the share of the index affected, the gap between the target and the backup retention, and the day the last backup copy expires if the live data is deleted on day 1, and lay out a deletion plan that is honest about what cannot be erased immediately.
 **Asked at:** PII and compliance material (tianpan, Kunal Ganglani, Gravitee and barkingiguana pages on logs, retention, redaction and data residency, and a vendor piece on DPDP readiness for LLM traffic); vendor and practitioner pages, not regulator guidance or an interview bank; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
 **Say this first (1 line):** The vector index is only 0.15% affected (3,000 of 2,000,000 chunks), and backups outlast the 30-day target by 5 days on paper and more in practice, so I would delete from every live store quickly, verify it, and tell the user and the privacy owner honestly that backups age out later.
 
@@ -931,7 +931,7 @@ unpaired n per version for 80% -> 78%: 6507
 ```
 
 **Follow-ups:**
-- What if the drop is 2 points, not 5? The sample grows with 1 / d^2: 2.5 times smaller d needs 6.25 times more prompts, so about 6,800 per version unpaired. Use paired design and a bigger, targeted suite.
+- What if the drop is 2 points, not 5? The sample grows with 1 / d^2: 2.5 times smaller d needs about 6 times more prompts: 80% to 78% needs about 6,500 per version unpaired (Code). Use paired design and a bigger, targeted suite.
 - Why not just run each prompt 10 times? That averages out the model's sampling noise, but the 200 prompts remain 200 draws from the real mix, so the prompt-sampling error stays.
 - What do you do when you cannot reach the sample size? State the minimum detectable drop for the suite you have, and use canary traffic and online metrics as a second check.
 
@@ -940,3 +940,218 @@ unpaired n per version for 80% -> 78%: 6507
 - Using an unpaired test on paired data (loses power) or a paired test on separate samples.
 - Forgetting two-sided versus one-sided.
 - Reporting "no significant difference" as "no difference".
+
+### Q43 ⭐⭐ 🔴 An LLM judge costs 0.01 per scored answer, and production makes 1,000,000 answers a month at 0.012 each. A failure mode hits 2% of answers. Compute the cost of scoring a 5% random sample, the expected number of failures in that sample, and how many answers you must score to expect at least 100 failures, and say what you would sample instead of a plain random draw.
+**Asked at:** LLM-evaluation pages (Manning's AI model evaluation chapter and an arXiv judge-bias study listing position, verbosity and self-preference bias, Arize and Langfuse pages on offline versus online evaluation, an LLM-as-judge survey); practitioner and academic material rather than an interview bank; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
+**Say this first (1 line):** Judging a 5% random sample costs 500 a month (about 4% of the 12,000 generation spend) and catches about 1,000 failures, but 100 failures need only about 5,000 judged answers (cost 50, and about 5,850 to be 95% sure), so I would spend the budget on targeted, weighted samples and not only on a plain random draw.
+
+**Clarifying questions:**
+- Is the 2% failure rate known or a guess? It sets every count here; if it is really 0.5%, you need four times the sample for the same number of failures.
+- What is the goal: estimate the overall failure rate, find examples to fix, or alert on a rise? Each needs a different sample.
+- How good is the judge (agreement with humans, bias)? A cheap judge that is wrong 15% of the time gives a biased failure count; I would calibrate it on human labels.
+- Which signals exist to target (low model confidence, user thumbs-down, long answers, new intents, a flagged topic)? Targeting needs a signal that correlates with failure.
+- Is 0.01 per scored answer all-in (tokens, retries, storage)? A judge call often uses long prompts.
+
+**Approach:**
+1. Cost of 5%: 1,000,000 x 5% = 50,000 answers x 0.01 = 500. Generation spend is 1,000,000 x 0.012 = 12,000, so the judge is 4.2% on top. Cheap enough to run continuously.
+2. Expected failures in that sample: 50,000 x 2% = 1,000, which is plenty to estimate the rate (95% half-width about 0.12 points).
+3. For at least 100 failures: 100 / 0.02 = 5,000 answers, cost 50. But 5,000 is the expectation, not a guarantee: the chance of actually seeing 100 or more is about 51%. For 95% confidence of at least 100 you need about 5,841 answers (cost about 58). This is the number to quote if someone needs the failure examples to exist.
+4. Do not sample only at random. Use stratified or targeted sampling: oversample strata likely to fail (low-confidence answers, thumbs-down, new intents, long contexts, languages with weaker quality, risky topics), plus a smaller uniform sample for an unbiased overall rate. Weight each stratum by its share of traffic when estimating the total (Code, invented strata: 10% of traffic with a 12.5% failure rate and the rest 0.83%).
+5. With the same 5,000 judged answers, a 50/50 split across those two strata finds about 333 failures against 100 for uniform, which gives far more examples to analyse, and the weighted estimate stays unbiased (std error 0.0018 against 0.0020, only a small gain for the overall rate).
+6. Add a verifier layer: sample 100 or so judged answers each week for human review to track the judge's error, and calibrate the judge's counts with those labels.
+7. Alert on the weighted rate with an interval, and on each stratum separately (a fall in one language can hide inside a good average).
+
+**Metrics:**
+- Judged failure rate = judged failures / judged answers (weighted by stratum share when sampling is unequal), with a 95% interval.
+- Judge cost = judged answers x 0.01; as a share of generation spend = judge cost / (answers x 0.012).
+- Failure examples collected per week (the count needed to learn something).
+- Judge agreement with humans (for example, Cohen's kappa or accuracy on 100 labelled answers), measured regularly.
+
+**Risks:**
+- Judge bias (verbosity, position, self-preference) makes the counts wrong in a consistent direction.
+- Targeting without weighting overstates the failure rate; always weight when strata are sampled unevenly.
+- Selecting on the model's own confidence misses confident failures; keep a uniform slice to measure them.
+- The 2% may move; the sample size must be recomputed.
+
+**What the interviewer scores:**
+- Strong: 500, 1,000 and 5,000 correct, and notes that 5,000 is the expectation, with about 51% chance of reaching 100. Weak: "5,000" with no uncertainty.
+- Strong: proposes stratified or targeted samples with weights. Weak: "score everything" or "just 5%".
+- Strong: mentions judge calibration against human labels. Weak: trusts the judge.
+- Strong: relates cost to generation spend (4.2%). Weak: doesn't.
+
+**Example:** (illustrative numbers) 5,000 judged answers drawn at random give about 100 failures: all you have to study. Drawing 2,500 from low-confidence answers (12.5% fail) and 2,500 from the rest (0.83% fail) gives about 333 failures. To report the overall rate you weight: 0.10 x (rate in the low-confidence stratum) + 0.90 x (rate in the rest). Weak answer: "Score 5% at random, it costs 500, fine." Strong answer: "Random 5% is affordable, but for finding failures I would oversample risky strata, weight the estimate, keep a small uniform slice, and calibrate the judge on human labels."
+
+**Code:**
+```python
+import math
+import numpy as np
+from scipy import stats
+
+# Illustrative numbers from the prompt
+judge, answers, gen, rate = 0.01, 1_000_000, 0.012, 0.02
+sample = 0.05 * answers
+cost = sample * judge
+print(f"5% sample = {sample:.0f} answers, judge cost {cost:.0f}; generation spend {answers*gen:.0f}; judge is {cost/(answers*gen):.1%} of it")
+assert sample == 50_000 and round(cost) == 500 and round(answers * gen) == 12_000 and round(cost / (answers * gen), 3) == 0.042
+
+exp_fail = sample * rate
+print("expected failures in the 5% sample:", exp_fail)
+assert round(exp_fail) == 1_000
+
+n_exp = 100 / rate
+print(f"to expect 100 failures: {n_exp:.0f} answers, cost {n_exp*judge:.0f}; P(actually >= 100) = {stats.binom.sf(99, int(n_exp), rate):.2f}")
+assert n_exp == 5_000 and round(n_exp * judge) == 50
+assert 0.50 < stats.binom.sf(99, 5000, rate) < 0.53
+
+n = next(n for n in range(5000, 8000) if stats.binom.sf(99, n, rate) >= 0.95)
+print(f"to be 95% sure of at least 100 failures: {n} answers, cost {n*judge:.1f}")
+assert n == 5841
+
+# Rate precision from a plain sample (Wilson half-width) at 5,000 and 50,000
+def hw(k, m, z=1.96):
+    p = k / m; d = 1 + z * z / m
+    return z * math.sqrt(p * (1 - p) / m + z * z / (4 * m * m)) / d
+print("95%% half-width on the rate: n=5,000 -> %.2f points; n=50,000 -> %.2f points" % (100 * hw(100, 5000), 100 * hw(1000, 50000)))
+assert 0.38 < 100 * hw(100, 5000) < 0.42 and 0.11 < 100 * hw(1000, 50000) < 0.13
+
+# Stratified sampling (invented strata): 10% of traffic is low-confidence with failure rate 12.5%, the rest 0.8333%, overall 2%
+wA, rA = 0.10, 0.125
+wB = 1 - wA; rB = (rate - wA * rA) / wB
+assert abs(wA * rA + wB * rB - rate) < 1e-12
+budget = 5_000
+unif_found = budget * rate
+strat_found = 2_500 * rA + 2_500 * rB
+se_unif = math.sqrt(rate * (1 - rate) / budget)
+se_strat = math.sqrt(wA**2 * rA * (1 - rA) / 2_500 + wB**2 * rB * (1 - rB) / 2_500)
+print(f"same budget of {budget}: failures found uniform {unif_found:.0f} vs 50/50 stratified {strat_found:.0f}; std error of overall rate {se_unif:.4f} vs {se_strat:.4f}")
+assert round(strat_found) == 333 and se_strat < se_unif
+# the weighted estimate stays unbiased (check by simulation, seeded)
+rng = np.random.default_rng(5)
+est = [wA * rng.binomial(2_500, rA) / 2_500 + wB * rng.binomial(2_500, rB) / 2_500 for _ in range(4000)]
+print("simulated mean of weighted estimate: %.4f, sd %.4f" % (np.mean(est), np.std(est)))
+assert abs(np.mean(est) - rate) < 0.0005 and abs(np.std(est) - se_strat) < 0.0003
+assert answers * judge == 10_000 and round(answers * judge / (answers * gen), 2) == 0.83
+```
+
+**Output (my run):**
+```text
+5% sample = 50000 answers, judge cost 500; generation spend 12000; judge is 4.2% of it
+expected failures in the 5% sample: 1000.0
+to expect 100 failures: 5000 answers, cost 50; P(actually >= 100) = 0.51
+to be 95% sure of at least 100 failures: 5841 answers, cost 58.4
+95% half-width on the rate: n=5,000 -> 0.39 points; n=50,000 -> 0.12 points
+same budget of 5000: failures found uniform 100 vs 50/50 stratified 333; std error of overall rate 0.0020 vs 0.0018
+simulated mean of weighted estimate: 0.0200, sd 0.0018
+```
+
+**Follow-ups:**
+- Why not score 100%? It would cost 1,000,000 x 0.01 = 10,000 a month, 83% on top of the 12,000 generation spend, and add judge latency if run inline. Sampling is the cheaper default; score everything only for high-risk intents.
+- How do you catch a failure mode that is only 0.1% of answers? A 5% sample has 50 of them; to see the rate properly use targeted sampling on the signals tied to that mode, or rule-based detectors on all traffic.
+- What if the judge is wrong 10% of the time? Observed failure rate = true rate x sensitivity + (1 - true rate) x false-positive rate; estimate those on human labels and correct the count.
+
+**Common mistakes:**
+- Treating "expected 100" as "at least 100".
+- Reporting a stratified sample's raw failure share as the production rate.
+- Never checking the judge against humans.
+- Sampling only thumbs-down answers (they are biased toward vocal users).
+
+### Q44 ⭐ 🟢 On 200 prompts that contain a false premise, an assistant corrects the premise in 90 (45%) and goes along with it in the rest. After a prompt change it corrects 140 of the same 200 (70%). Compute the change in percentage points and the number of extra corrected prompts, and say why a thumbs-up signal might reward the old behaviour.
+**Asked at:** Eval-contamination and feedback-bias material (a tianpan post on eval-set contamination and production leakage, an arXiv paper on contamination in closed-source LLMs, an RLHF survey and the sycophancy literature summarised in secondary pages); research and practitioner pages rather than an interview bank; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
+**Say this first (1 line):** Correction of false premises rose from 45% to 70%, a gain of 25 percentage points (50 extra prompts of 200, a 56% relative rise), which is large compared with noise, but a thumbs-up signal can reward the old, agreeable behaviour, so I would judge it on labelled outcomes and not on thumbs.
+
+**Clarifying questions:**
+- Who decided that a prompt "corrects the premise", and how (human labels, a rubric, an LLM judge)? Both measurements must use the same labelling.
+- Were the 200 prompts used while tuning the prompt change? If yes, the 70% is optimistic. I want a held-out set.
+- Is the 200 a mix of easy and hard false premises, and does it cover the real mix? A premise like "since the 2030 Olympics" is easy to catch; subtle ones are not.
+- What happens on prompts with a true premise? A prompt that corrects everything would score 100% here and be useless.
+- What do users see after a correction: a short, polite fix and the answer, or a refusal to proceed?
+
+**Approach:**
+1. Compute the change: 90 / 200 = 45%, 140 / 200 = 70%. Difference 25 percentage points (not "25%"); extra corrected prompts 140 - 90 = 50; relative change 25 / 45 = 56%.
+2. Check noise. Wilson 95% intervals: 38.3% to 51.9% before and 63.3% to 75.9% after; they do not overlap. Because the same 200 prompts were used, do a paired test: look at how many changed in each direction (invented split: 10 corrected before but not after, 60 the reverse; 90 - 10 + 60 = 140; McNemar z about 6). Report the real split from your run. Even unpaired, z is about 5.1.
+3. Check for harm: run the same change on true-premise prompts (the model should not "correct" correct statements) and on ordinary prompts (no drop in helpfulness, no extra refusals).
+4. Check generalisation: hold out a set the prompt change never saw, written by different people, and include subtle premises; 200 prompts of one style can mislead.
+5. Explain the thumbs-up issue: users often prefer answers that agree with them (sycophancy), so correcting a premise can earn fewer thumbs-up, even when it is the better answer. An optimiser or dashboard that tracks thumbs would prefer the old behaviour. In the Code (invented rates: 70% thumbs-up when the answer goes along, 55% when it corrects) the thumbs-up rate falls from 63.25% to 59.5% while correction rises 25 points.
+6. Decision metrics: correction rate on labelled false-premise prompts, false-correction rate on true-premise prompts, and an expert-reviewed sample of answer quality; use thumbs only as a secondary, biased signal, and look at who clicks (thumbs are given by a small, non-random share of users).
+
+**Metrics:**
+- Premise-correction rate = prompts whose answer corrects the false premise / false-premise prompts (45% and 70%).
+- Change in percentage points = rate after - rate before (25); extra corrected = count after - count before (50).
+- False-correction rate = true-premise prompts wrongly corrected / true-premise prompts (guardrail).
+- Thumbs-up rate = thumbs-up / answers rated (with the response rate stated); judge agreement with humans on a sample.
+
+**Risks:**
+- Overfitting to the 200 prompts (the same set that guided the change).
+- Over-correction: the model challenges true statements or lectures users.
+- Judge bias: an LLM judge may count a hedge ("some people say...") as a correction.
+- Thumbs-up bias: a feedback signal that favours agreement can pull a later fine-tune back toward sycophancy.
+
+**What the interviewer scores:**
+- Strong: 25 points and 50 extra, and distinguishes points from percent (56% relative). Weak: "25% better".
+- Strong: asks for the true-premise guardrail and a held-out set. Weak: celebrates the number.
+- Strong: explains why thumbs may reward agreeing (users like confirmation) and uses labelled outcomes. Weak: "thumbs-up is the user's voice, trust it".
+- Strong: pairs the comparison on the same prompts. Weak: treats them as separate samples.
+
+**Example:** (illustrative numbers) A user writes "Since Mumbai is the capital of India, how do I plan a trip to the capital?" (invented false premise). Old answer: "Great, here is a three-day plan for Mumbai..." Weak review: "User gave it a thumbs-up, so keep it." Strong review: "The old answer goes along with the premise and so it fails the correction check. The new one says 'that premise is not right' and then answers usefully. Thumbs-up is lower for it, but it is the better answer; I judge on the labelled correction rate and the true-premise guardrail."
+
+**Code:**
+```python
+import math
+from scipy import stats
+
+def wilson(k, n, z=1.96):
+    p = k / n; d = 1 + z * z / n; c = (p + z * z / (2 * n)) / d
+    h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
+    return c - h, c + h
+
+# Illustrative numbers from the prompt
+n, k0, k1 = 200, 90, 140
+r0, r1 = k0 / n, k1 / n
+print(f"corrected: {r0:.0%} -> {r1:.0%}; change {100*(r1-r0):.0f} percentage points; extra corrected prompts {k1-k0}; relative change {r1/r0-1:.0%}")
+assert r0 == 0.45 and r1 == 0.70 and round(100 * (r1 - r0)) == 25 and k1 - k0 == 50
+
+lo0, hi0 = wilson(k0, n); lo1, hi1 = wilson(k1, n)
+print(f"Wilson 95%: before [{lo0:.3f}, {hi0:.3f}], after [{lo1:.3f}, {hi1:.3f}]")
+assert hi0 < lo1   # intervals do not overlap
+
+# Paired view on the same 200 prompts. Net change +50 = c - b where b = corrected before but not after, c = the reverse.
+# Invented split of the discordant prompts: b = 10, c = 60.
+b, c = 10, 60
+assert k0 - b + c == k1 and c - b == 50
+z = (c - b) / math.sqrt(b + c)
+print(f"McNemar z = {z:.2f}, two-sided p = {2*stats.norm.sf(z):.1e} (b = {b}, c = {c})")
+assert z > 5
+# Without the paired counts, the unpaired comparison is already clear for a 25-point gain
+pool = (k0 + k1) / (2 * n)
+zu = (r1 - r0) / math.sqrt(pool * (1 - pool) * 2 / n)
+print(f"unpaired z = {zu:.2f}")
+assert zu > 5
+
+# Why thumbs-up can reward the old behaviour. Invented rates: users thumbs-up 70% of answers that go along
+# with their premise and 55% of answers that correct it.
+up_agree, up_correct = 0.70, 0.55
+before = r0 * up_correct + (1 - r0) * up_agree
+after = r1 * up_correct + (1 - r1) * up_agree
+print(f"thumbs-up rate before {before:.4f}, after {after:.4f}: change {100*(after-before):.2f} points while correction rose 25 points")
+assert round(before, 4) == 0.6325 and round(after, 4) == 0.595 and after < before
+```
+
+**Output (my run):**
+```text
+corrected: 45% -> 70%; change 25 percentage points; extra corrected prompts 50; relative change 56%
+Wilson 95%: before [0.383, 0.519], after [0.633, 0.759]
+McNemar z = 5.98, two-sided p = 2.3e-09 (b = 10, c = 60)
+unpaired z = 5.06
+thumbs-up rate before 0.6325, after 0.5950: change -3.75 points while correction rose 25 points
+```
+
+**Follow-ups:**
+- How would you stop the thumbs signal from training the model to agree? Do not use raw thumbs as a reward; weight by labelled correctness, add false-premise examples to the training or eval mix, and audit the feedback with human review.
+- Is 200 prompts enough? For a 25-point change, yes; for a 3-point change, no (see Q42 for the sample size).
+- What if the model corrects too often? Measure the false-correction rate on true-premise prompts and add them to the regression suite.
+
+**Common mistakes:**
+- Calling a 25-point rise "25% better".
+- Testing only on the prompts used to tune the change.
+- Ignoring the true-premise side of the trade.
+- Treating thumbs-up as ground truth.

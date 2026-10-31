@@ -146,7 +146,7 @@ add(2, '🟡', "A retrieval system answers Hindi queries, and recall at 5 is 160
 # conversation growth
 tot_in = sum(1000 + 300*(t-1) for t in range(1, 21))
 assert tot_in == 77000 and round(tot_in*PIN/1e6, 3) == 0.231 and 20*1000 == 20000
-add(2, '🟡', "A chat product resends the whole history on every turn, with a 1,000-token system prompt and 300 new tokens added per turn, and the input at turn t counts the system prompt plus the t-1 earlier turns. Over a 20-turn conversation compute the total input tokens sent and their cost at an illustrative 3 per million, compare with 20,000 tokens if no history were resent, and propose a context-management policy.", 'C')
+add(2, '🟡', "A chat product resends the whole history on every turn, with a 1,000-token system prompt and 300 new tokens added per turn, and the input at turn t counts the system prompt plus the 300 new tokens of each of the t turns so far, including the current one. Over a 20-turn conversation compute the total input tokens sent and their cost at an illustrative 3 per million, compare with 26,000 tokens (system prompt plus only the new 300 tokens each turn, no history resent), and propose a context-management policy.", 'C')
 # streaming guardrail
 assert round(400/40 + 0.1, 1) == 10.1 and round(50/40 + 0.1, 2) == 1.35
 add(2, '🟡', "An output PII filter must see text before the user does. Answers average 400 tokens at 40 tokens per second, the filter takes 0.1 seconds per check, and you can ignore the time to first token. Compute when the first text appears if the whole answer is buffered and if it is checked in 50-token chunks, and describe the risk you accept with chunking.", 'ED:output guardrail and streaming topics in GenAI guides')
@@ -158,7 +158,7 @@ lo, hi = wil(20, 500); assert 20/500 == 0.04 and 0.025 < lo < 0.027 and 0.060 < 
 add(2, '🔴', "In 500 staged runs, each with one write action, an agent took a wrong write action in 20 (4%, a measured sample). Production will make 30,000 write actions a month. Compute a 95% Wilson interval for the wrong-action rate and the implied monthly range, and say which permissions, approvals and rollback you would add.", 'ED:agent wrong-action and tool-permission topics in GenAI guides')
 # deletion
 assert 3000/2000000 == 0.0015 and 35-30 == 5
-add(2, '🔴', "A user exercises a right to have personal data deleted. It sits in raw chat logs, in 3,000 of 2,000,000 chunks in a vector index, in an evaluation dataset and in 35-day rolling backups, and your internal deletion target is 30 days. Compute the share of the index affected and the gap between the target and the backup retention, and lay out a deletion plan that is honest about what cannot be erased immediately.", 'P')
+add(2, '🔴', "A user exercises a right to have personal data deleted. It sits in raw chat logs, in 3,000 of 2,000,000 chunks in a vector index, in an evaluation dataset and in 35-day rolling backups, and your internal deletion target is 30 days. Compute the share of the index affected, the gap between the target and the backup retention, and the day the last backup copy expires if the live data is deleted on day 1, and lay out a deletion plan that is honest about what cannot be erased immediately.", 'P')
 # regression n
 n_req = math.ceil((1.959964 + 0.841621)**2 * (0.8*0.2 + 0.75*0.25) / 0.05**2)
 assert 1090 <= n_req <= 1092
