@@ -398,7 +398,7 @@ Open questions: [what we are still investigating].
 - Blaming the tool for an error.
 
 ### Q40 ⭐ 🟢 You must present your results over a video call to people you cannot see. What do you change compared with presenting in a room?
-**Asked at:** General presentation guidance on hostile and hard questions (HighSpark, a board-presentation guide and other training pages, none data-science specific); no public data-science interview list found for this prompt, so it is editor-designed; search snippets only, not opened
+**Asked at:** General presentation and virtual-meeting guidance; no public data-science list found for this exact wording, editor-designed; search snippets only, not opened
 **Say this first (1 line):** I make it more interactive and more explicit: shorter, with the answer first, simple slides, planned pauses for questions, and a clear way to hear from people I cannot see.
 
 **Structure:** What to change (editor guidance [G]; general presentation advice, no data-science source).

@@ -124,7 +124,7 @@ For the worked numeric version, see Book 6 Part 6, "Q25" (the CEO and the 30 per
 - Treating the cut-off as a pass or fail line.
 
 ### Q4 ⭐⭐⭐ 🟢 A marketing manager wants to say the campaign caused last month's sales rise because the two moved together. Explain correlation versus causation to them.
-**Asked at:** Public statistics question banks list explain-a-p-value and explain-a-confidence-interval prompts for lay audiences (an Interview Query p-value page, a TryExponent confidence-interval page, Dataford statistics lists); commonly reported in public guides; search snippets only, not opened
+**Asked at:** No public page found for this exact framing, editor-designed; adjacent to general data-communication and statistics question banks that cover correlation versus causation for lay audiences; search snippets only, not opened
 **Say this first (1 line):** Sales and the campaign moving together is a good reason to look closer, but it does not yet show the campaign caused the rise, because something else may have moved sales too.
 
 **Structure:** (pattern: answer first, one picture, say what it does not mean)

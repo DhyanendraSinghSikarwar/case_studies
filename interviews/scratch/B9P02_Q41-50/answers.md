@@ -50,7 +50,7 @@ Details: [link]. If I do not hear back by [time], I will [fallback].
 - Escalating before trying the owner of the problem.
 
 ### Q42 ⭐ 🟡 You are asked to explain a model on a whiteboard to a mixed group of engineers and business people. How do you structure it?
-**Asked at:** General presentation guidance on hostile and hard questions (HighSpark, a board-presentation guide and other training pages, none data-science specific); no public data-science interview list found for this prompt, so it is editor-designed; search snippets only, not opened
+**Asked at:** Editor-designed; related public guidance covers presenting technical work and handling live questions (general training and interview-prep pages); search snippets only, not opened
 **Say this first (1 line):** I would draw the whole thing as three boxes, inputs, model and decision, answer the business question first, then add one layer of detail at a time so engineers can go deeper without losing the others.
 
 **Structure:** Layered whiteboard (editor guidance [G]; see also the pattern section "A pattern for explaining anything to a non-technical person" above).
@@ -139,7 +139,7 @@ I will send the working version by [time]."
 - Never following up after the meeting.
 
 ### Q44 ⭐ 🟡 You are told halfway through that your slot is cut from thirty minutes to ten. How do you adapt?
-**Asked at:** General presentation guidance on hostile and hard questions (HighSpark, a board-presentation guide and other training pages, none data-science specific); no public data-science interview list found for this prompt, so it is editor-designed; search snippets only, not opened
+**Asked at:** Editor-designed; related public guidance covers presenting technical work and handling live questions (general training and interview-prep pages); search snippets only, not opened
 **Say this first (1 line):** I would give the decision and recommendation first, then the two or three points that support it, move the rest to an appendix or a follow-up note, and ask the most senior person what they most want from the time left.
 
 **Structure:** Cut by purpose, not by speed (editor guidance [G]).
@@ -312,7 +312,7 @@ to reproduce it: [link]. Is there a policy I should follow for notes?"
 - Sending versions at different times without cross-links.
 
 ### Q48 ⭐ 🔴 The CFO wants a single number from your forecast. How do you communicate the range, and what do you do if they insist on one number?
-**Asked at:** Public statistics question banks list explain-a-p-value and explain-a-confidence-interval prompts for lay audiences (an Interview Query p-value page, a TryExponent confidence-interval page, Dataford statistics lists); commonly reported in public guides; search snippets only, not opened
+**Asked at:** Editor-designed; related public guidance covers explaining uncertainty and confidence intervals to lay audiences (TryExponent confidence-interval page, Dataford statistics lists, Interview Query p-value page); no public list found for the CFO single-number framing; search snippets only, not opened
 **Say this first (1 line):** I would give the CFO a point estimate with a range and what drives it, and if they still need one number I would give the planning figure, say what it is and what it is not, and say what would make me change it.
 
 **Structure:** Number, range, drivers, decision (editor guidance [G]).
