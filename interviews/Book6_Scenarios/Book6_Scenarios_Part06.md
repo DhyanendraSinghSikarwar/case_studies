@@ -178,11 +178,11 @@
 **Asked at:** Ethics and fairness material (Yardstick data-ethics question page asking how bias was handled without disrupting the business, a University of Virginia online-ethics case on whether to keep a sensitive attribute in a model, a Data Science Newsletter ethics page, pre-screening pages on unethical data requests); practitioner pages rather than a confirmed interview bank; commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q43 ⭐ 🔴 You are asked to retire a legacy scorecard that a powerful VP relies on, because your new model is 2 AUC points better. The VP's team built the scorecard and fears losing visibility and influence. How do you plan the transition, and what do you do if the VP refuses?
+### Q43 ⭐ 🔴 You are asked to retire a legacy scorecard that a powerful VP relies on, because your new model has an AUC 0.02 higher on a holdout, with a paired bootstrap interval that excludes zero. The VP's team built the scorecard and fears losing visibility and influence. How do you plan the transition, and what do you do if the VP refuses?
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to stakeholder-management and trade-off prompt pages (Dataford and PracHub families) but no located page for this specific framing
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐ 🔴 Legal, growth and trust-and-safety each want a different moderation threshold on 100,000 items with 2,000 true violations. Threshold X gives 60% recall at 90% precision and threshold Y gives 80% recall at 70% precision, and a missed violation costs 50 against 5 for a wrongly flagged item. Compute the cost of each, and say how you would get the three groups to agree.
+### Q44 ⭐ 🔴 Legal, growth and trust-and-safety each want a different moderation threshold on 100,000 items with 2,000 true violations. Threshold X gives 60% recall at 80% precision and threshold Y gives 75% recall at 75% precision, and a missed violation costs 50 against 5 for a wrongly flagged item. Compute the cost of each, and say how you would get the three groups to agree.
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to stakeholder-management and trade-off prompt pages (Dataford and PracHub families) but no located page for this specific framing
 <!-- ANSWER_PENDING -->
 
