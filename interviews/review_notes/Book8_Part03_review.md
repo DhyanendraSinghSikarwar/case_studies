@@ -30,3 +30,6 @@ No page was opened (WebFetch fails in this environment). Nothing here replaces t
 
 # Book 8 overall note
 All 13 profiles (Parts 1-3) share the same evidence method and checker. No profile is rated High. Medium or better: Netherlands, and the US for big-tech loops and CV conventions; Germany is Medium for CV conventions only. Use the book as a map of what to prepare and what to verify, not as a description of the current process anywhere.
+
+## Update after Book 9 was written
+The Book 9 mentions flagged above as planned now point to the written Book 9 parts (Part 1 behavioural interviews and STAR/CARL, Part 2 communication, Part 3 leadership, negotiation process and the HR round, Part 4 scenarios, Part 5 playbooks); the profile text and the part file were updated, with the same evidence tags.

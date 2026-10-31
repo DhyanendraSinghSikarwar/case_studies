@@ -6,7 +6,7 @@
 
 **Scope note:** same profile layout as Part 1. The United States profile is split by employer segment (big tech, finance, healthcare, consulting, research labs, start-ups, government) and every claim carries a segment tag, because no segment describes the whole market. The Canada profile names the hub where a source does (Toronto, Montreal, and so on). Pay is out of scope. Work authorisation sections only name the official authority to consult and what to verify there: nothing in this book states a visa, work-permit, immigration, tax or employment-law rule, threshold, fee or timeline. Items that touch law (Quebec language rules for job ads, Ontario's "Canadian experience" posting change, AI-disclosure rules) are reported only as things candidates may see in coverage, tagged unverified, with no legal claim. Comparisons with India are about process, never about people.
 
-**How to read the evidence tags:** `[S1]`, `[S2]`... point to the numbered sources at the end of the same profile; `[G]` is a general pattern, not specific to the country; `[U]` is unverified or weakly sourced and should be checked. "Anecdotal" means a single candidate report, which is never the norm. Book 9 is planned and not yet written; the profiles say so wherever they mention it.
+**How to read the evidence tags:** `[S1]`, `[S2]`... point to the numbered sources at the end of the same profile; `[G]` is a general pattern, not specific to the country; `[U]` is unverified or weakly sourced and should be checked. "Anecdotal" means a single candidate report, which is never the norm. Book 9 (soft skills) is written; the profiles point to its parts where relevant.
 
 **Evidence limits:** WebFetch does not work in this environment, so no page was opened; every source is a WebSearch result snippet or summary. Evidence levels: United States Medium for big-tech loops and CV conventions, Thin for every other segment; Canada Thin to Medium (solid on resume conventions, thin on interview evidence, which is mostly single Toronto reports). Several Glassdoor and similar details come from search summaries of more than one page, so some source lines say the page-to-detail match is approximate. AI-policy statements for candidates conflict across blogs and secondary reporting and are flagged. Confirm everything on the employer's own pages and the official sources named in each profile. See `scratch/B8P02_R*/sources.md` and `review_notes/Book8_Part02_review.md`.
 
@@ -103,7 +103,7 @@ Candidate reports are anecdotal; a single report is not the norm for the segment
 - Book 2 Part 12 (GenAI system design + coding) for GenAI roles [G].
 - Book 6 Part 9 (domain sets: fintech, e-commerce, healthcare, ads) for finance and healthcare segments [S10][S11].
 - Book 6 Part 6 (stakeholder conflicts & trade-off decisions) for behavioural rounds [G].
-- Book 9 (soft skills) for STAR stories and presentation: planned, not yet written [G].
+- Book 9 Parts 1 and 2 (STAR stories, communication) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: One-page plain CV without photo or personal details; list people in your network who could refer you [S19][S20][S22].
@@ -248,7 +248,7 @@ Anecdotal throughout; a single review is not the norm, and one source notes some
 - Book 1 Part 11 (ML system design) and Book 2 Part 12 (GenAI system design + coding) for design and GenAI roles [S4][G].
 - Book 6 Part 5 (business case studies) and Part 6 (stakeholder conflicts & trade-off decisions) for presentation and behavioural rounds [S1][G].
 - Book 7 Part 1 (Amazon, Meta, Microsoft, Google) and Part 4 (Booking.com, Klarna) for company examples; do not repeat their claims here.
-- Book 9 for behavioural stories (planned, not yet written) [G].
+- Book 9 Part 1 (behavioural stories) and Part 4 (scenarios) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: one-to-two-page photo-free resume, a one-page tailored letter, and a project list [S14].

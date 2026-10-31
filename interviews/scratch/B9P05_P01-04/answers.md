@@ -295,7 +295,7 @@ For data-science trade-off scenarios with numbers, see Book 6 Part 6, "Stakehold
 - You can give one specific example of a disagreement and how it ended.
 
 ### P4 ⭐⭐⭐ 🔴 Business acumen
-**Asked at:** Business-case and business-impact questions for data scientists are covered by Towards Data Science and Interview Query guide results and a DataTalks.Club episode and a Dice article (snippets: understand the industry, its metrics and strategy; explain model impact in business terms); practitioner opinion, snippets only, not opened; search snippets only, not opened
+**Asked at:** Business-case and business-impact questions for data scientists are covered by Towards Data Science guide results and a DataTalks.Club episode and a Dice article (snippets: understand the industry, its metrics and strategy; explain model impact in business terms); practitioner opinion, snippets only, not opened
 **Scope:** How to connect data work to the metrics, costs and strategy of a business (earnings calls, metric trees, business-case drills); tested in business-case, product-sense and senior behavioural rounds.
 **What good looks like:**
 Business acumen means you understand how the company makes and spends money, who its customers are, what its metrics are and how your work moves them. Good looks like:

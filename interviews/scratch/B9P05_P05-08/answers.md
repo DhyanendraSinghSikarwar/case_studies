@@ -1,5 +1,5 @@
 ### P5 ⭐⭐⭐ 🔴 Influencing and negotiation
-**Asked at:** Influence-without-authority questions appear in a Yardstick page and a ClimbTheLadder question list; principled-negotiation theory (interests not positions, BATNA) appears in Harvard ombuds and Getting-to-Yes summary results; mixed-quality sources, process only, snippets only, not opened; search snippets only, not opened
+**Asked at:** Influence-without-authority questions appear in a Yardstick page and a ClimbTheLadder question list; principled-negotiation theory (interests not positions, BATNA) appears in Harvard ombuds and Getting-to-Yes summary results; mixed-quality sources, process only, snippets only, not opened
 **Scope:** The process of influencing without authority and of principled negotiation (interests, options, alternatives, pre-wiring); no pay figures here; tested in behavioural, hiring-manager and offer-stage conversations.
 
 **What good looks like:**
@@ -88,7 +88,7 @@ Observable signals, not statistics.
 - You said "I will think about it and come back" at least once instead of agreeing or refusing on the spot.
 
 ### P6 ⭐⭐⭐ 🟡 Presentation and public speaking
-**Asked at:** Filler-word and public-speaking practice advice is common (Harvard Extension, Storytelling with Data, LinkedIn Learning, Mental Floss, CSUSB tip-sheet results; snippets say to record yourself, slow down, pause instead of filling and ask for feedback); general speaking advice, not data-science interview rubrics, snippets only, not opened; search snippets only, not opened
+**Asked at:** Filler-word and public-speaking practice advice is common (Harvard Extension, Storytelling with Data, LinkedIn Learning, Mental Floss, CSUSB tip-sheet results; snippets say to record yourself, slow down, pause instead of filling and ask for feedback); general speaking advice, not data-science interview rubrics, snippets only, not opened
 **Scope:** How to build, rehearse and deliver a talk or demo with pace, pauses and fewer fillers (recording, meetups, internal demos); tested in onsite presentation rounds, panels and executive Q&A.
 
 **What good looks like:**

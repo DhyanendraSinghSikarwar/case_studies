@@ -25,3 +25,6 @@ Two agents researched one region each (15 and 13 WebSearch searches, snippet-onl
 
 ## Not done
 No page was opened (WebFetch fails in this environment). Nothing here replaces the employer's own pages and the official government sources named in each profile.
+
+## Update after Book 9 was written
+The Book 9 mentions flagged above as planned now point to the written Book 9 parts (Part 1 behavioural interviews and STAR/CARL, Part 2 communication, Part 3 leadership, negotiation process and the HR round, Part 4 scenarios, Part 5 playbooks); the profile text and the part file were updated, with the same evidence tags.

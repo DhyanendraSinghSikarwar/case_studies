@@ -4,7 +4,7 @@
 
 **Target:** 5 profiles plus 1 closing guide  |  **Actual:** 5 profiles (Singapore, Malaysia, Indonesia, United Arab Emirates, India baseline) and the guide  |  **Date:** 2026-10-31  |  **Status:** Complete (profiles merged, checked, reviewed)
 
-**Scope note:** same profile layout as Parts 1-2. R5 is the India baseline: for it, the section "Process differences for candidates coming from India's process" lists the baseline features that the other 12 profiles compare against, and the work-authorisation section says it is not applicable to domestic candidates. Pay is out of scope. Work authorisation sections only name official authorities to consult and what to verify: nothing in this book states a visa, work-permit, immigration, tax or employment-law rule, threshold, fee or timeline. Comparisons with India are about process, never about people. Book 9 is planned and not yet written; the profiles say so wherever they mention it.
+**Scope note:** same profile layout as Parts 1-2. R5 is the India baseline: for it, the section "Process differences for candidates coming from India's process" lists the baseline features that the other 12 profiles compare against, and the work-authorisation section says it is not applicable to domestic candidates. Pay is out of scope. Work authorisation sections only name official authorities to consult and what to verify: nothing in this book states a visa, work-permit, immigration, tax or employment-law rule, threshold, fee or timeline. Comparisons with India are about process, never about people. Book 9 (soft skills) is written; the profiles point to its parts where relevant.
 
 **How to read the evidence tags:** `[S1]`, `[S2]`... point to the numbered sources at the end of the same profile; `[G]` is a general pattern, not specific to the country; `[U]` is unverified or weakly sourced and should be checked. "Anecdotal" means a single candidate report, which is never the norm.
 
@@ -92,7 +92,7 @@ Patterns across these profiles, each supported where tagged: online coding tests
 - Book 1 Part 11 (ML system design) for ranking-style design prompts [S2].
 - Book 2 Part 6 (RAG basics) and Part 12 (GenAI system design + coding) for GenAI roles [S12][G].
 - Book 3 Part 3 (subqueries and CTEs) and Part 4 (window functions: ranking, top-N per group) for SQL screens [G].
-- Book 9 for behavioural stories and presentation skills (planned, not yet written) [G].
+- Book 9 Parts 1 and 2 (behavioural stories, communication) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: one- to two-page CV, minimal personal details, decide on photo after checking the employer [S4].
@@ -205,7 +205,7 @@ Patterns across these profiles, each supported where tagged: online coding tests
 - Book 6 Part 9 (domain sets: fintech, e-commerce, healthcare, ads) for bank and platform employers [G].
 - Book 6 Part 6 (stakeholder conflicts & trade-off decisions) for manager and director rounds [S1][G].
 - Book 2 Part 6 (RAG basics) and Part 12 (GenAI system design + coding) for GenAI roles [G].
-- Book 9 for behavioural stories (planned, not yet written) [G].
+- Book 9 Part 1 (behavioural stories) and Part 4 (scenarios) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: one- to two-page CV, minimal personal details, short one-page letter [S4].
@@ -321,7 +321,7 @@ Anecdotal throughout; candidate reports vary by company, year and role.
 - Book 6 Part 5 (business case studies) and Book 6 Part 9 (domain sets: fintech, e-commerce, healthcare, ads) for case rounds at marketplace and fintech employers [S5][G].
 - Book 6 Part 1 (product metrics and metric drops) for root-cause questions [S6].
 - Book 7 for company examples where a profile exists; do not repeat its claims here.
-- Book 9 for behavioural stories (planned, not yet written) [G].
+- Book 9 Part 1 (behavioural stories) and Part 4 (scenarios) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: Prepare a CV (photo and personal details decision made per advert) and a short cover letter, in English and, if needed, Bahasa Indonesia [S8][S9][S15].
@@ -450,7 +450,7 @@ Anecdotal throughout; one reviewer is not the norm.
 - Book 5 Part 1 (arrays and hashing) and Book 5 Part 2 (two pointers and sliding window) for algorithm problems [S9][G].
 - Book 2 Part 6 (RAG basics) and Book 2 Part 8 (agents: ReAct, tool use, planning, memory, MCP, multi-agent) for GenAI roles listing RAG and agents [S26].
 - Book 6 Part 9 (domain sets: fintech, e-commerce, healthcare, ads) for ride-hailing, banking and e-commerce employers [G].
-- Book 9 for behavioural and culture-fit stories (planned, not yet written) [G].
+- Book 9 Parts 1 and 3 (behavioural stories, HR round) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: Two-page CV with a decision on photo and personal details per employer; English cover letter [S10][S11][S12].
@@ -588,7 +588,7 @@ This section lists the baseline features the other profiles compare against.
 - Book 6 Part 1 (product metrics and metric drops) and Book 6 Part 5 (business case studies) for case rounds at product companies [S21].
 - Book 1 Part 11 (ML system design) and Book 2 Part 12 (GenAI system design plus coding) for senior and GenAI roles [G].
 - Book 6 Part 6 (stakeholder conflicts and trade-off decisions) for managerial rounds [S1].
-- Book 7 Parts 2 and 3 for company examples; do not repeat their claims here [G]. Book 9 is planned and not yet written; it is intended for behavioural and HR-round stories [G].
+- Book 7 Parts 2 and 3 for company examples; do not repeat their claims here [G]. Book 9 Parts 1 to 4 cover behavioural, communication, HR-round and scenario practice [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: write a one- to two-page reverse-chronological CV; decide on personal details by employer type [S14][S15].
@@ -681,7 +681,7 @@ Write down your own Indian process first: stages you are used to (online assessm
 5. **Check the language line** of every job advert and prepare an English version of everything; if local language is requested, ask how much is expected.
 6. **Collect the documents the profile mentions** (certificates, references, employment letters) as a paperwork list to confirm with the employer, not as a requirement.
 7. **Use company profiles (Book 7)** for named employers in that market: they carry their own evidence tags and caveats and the same rule that nothing replaces the recruiter's current description.
-8. **Behavioural stories:** Book 9 is planned and not yet written; until then use the STAR-style examples approach described in the profiles and Book 6 Part 6 (stakeholder conflicts and trade-offs).
+8. **Behavioural stories:** Use Book 9 Part 1 (behavioural interviews and the STAR/CARL framework), Book 9 Part 4 (scenarios) and Book 6 Part 6 (stakeholder conflicts and trade-offs).
 
 ### 4. Questions to ask the recruiter (to turn the thin evidence into facts)
 - How many stages are there for this role, in what order, and how long does each take? Is there a take-home, and how long do I get?

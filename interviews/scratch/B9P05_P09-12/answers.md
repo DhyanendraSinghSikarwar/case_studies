@@ -1,5 +1,5 @@
 ### P9 ⭐⭐ 🟢 Handling feedback
-**Asked at:** Feedback-question families appear (a Huntr list of 50 feedback questions; coaching pages on closing the loop and a four-column feedback-log idea in a Sociocs and a Buteau post); mostly workplace-coaching and customer-feedback content rather than interview rubrics, snippets only, not opened; search snippets only, not opened
+**Asked at:** Feedback-question families appear (a Huntr list of 50 feedback questions; coaching pages on closing the loop and a four-column feedback-log idea in a Sociocs and a Buteau post); mostly workplace-coaching and customer-feedback content rather than interview rubrics, snippets only, not opened
 **Scope:** How to receive, act on and close the loop on feedback (feedback log, follow-up conversation); tested in behavioural rounds on criticism, growth and coachability.
 
 **What good looks like:** Good feedback handling is a loop, not a feeling. You listen without defending, you ask one clarifying question, you say back what you heard, you pick one or two changes, you do them, and you go back to the person to show what changed. In an interview that loop is your story: "I was told X, I changed Y, and here is how I know it worked." Interviewers are not looking for someone who never gets criticised. They are looking for someone who turns criticism into visible change without getting hurt or defensive.
@@ -69,7 +69,7 @@ Total out of 50. Under 25: start with questions 1 to 5 only. 25 to 38: the gap i
 - You asked for feedback unprompted at least three times this month, and someone's reply changed something you did.
 
 ### P10 ⭐⭐ 🟡 Cross-cultural communication
-**Asked at:** Process guidance on cross-border and async teams appears in Talaera pages and practitioner posts (snippets: writing carries more risk than live talk, explicit deadlines, pre-reads, team communication charters, and a warning against national stereotypes); practitioner blogs, snippets only, not opened; search snippets only, not opened
+**Asked at:** Process guidance on cross-border and async teams appears in Talaera pages and practitioner posts (snippets: writing carries more risk than live talk, explicit deadlines, pre-reads, team communication charters, and a warning against national stereotypes); practitioner blogs, snippets only, not opened
 **Scope:** Process-level habits for global teams: agendas and pre-reads, written-first updates, explicit deadlines, safe ways to disagree in writing; tested in remote-team and global-role behavioural rounds.
 
 **What good looks like:** Good cross-cultural communication here is a set of habits that work for any mixed group: say what you mean in plain words, put key points in writing, state deadlines and owners explicitly, share agendas and pre-reads, and ask people how they prefer to work instead of guessing. It is about process, not about predicting what a person is like because of where they are from. People differ widely inside every country and team, so the habit is: ask, agree, write it down. In an interview the signal is that you can make a distributed team run smoothly with clear formats and no drama.
@@ -138,7 +138,7 @@ Under 25: begin with questions 1, 2 and 8. 25 to 38: add agendas and notes (3, 4
 - You can tell a distributed-team story in two minutes with a process change and an outcome, with no group generalisations.
 
 ### P11 ⭐ 🔴 Mentoring and leadership
-**Asked at:** Mentoring questions for data roles appear in Dataford question pages, a PracHub concept page and a DesignGurus page (snippets: context-task-actions-result framing, weekly code-review sessions, pairing); question banks and prep blogs, not rubrics, snippets only, not opened; search snippets only, not opened
+**Asked at:** Mentoring questions for data roles appear in Dataford question pages, a PracHub concept page and a DesignGurus page (snippets: context-task-actions-result framing, weekly code-review sessions, pairing); question banks and prep blogs, not rubrics, snippets only, not opened
 **Scope:** How to coach juniors, review code and lead small initiatives; tested in senior, staff and manager-track rounds and in mentoring behavioural questions.
 
 **What good looks like:** Good mentoring is making someone else more capable, not doing their work for them. You set a clear goal with them, give small tasks with context, review their work with specific and kind comments, let them struggle a little before stepping in, and measure success by what they can now do alone. Leadership at this level is similar: you make a small initiative clear, share ownership and give credit. Interviewers for senior, staff and manager-track roles listen for one concrete person, what you did, and how that person changed.
@@ -208,7 +208,7 @@ Under 25: you may need more opportunities; use the volunteer routes below. 25 to
 - Your two-minute story passes follow-ups such as "What would you do differently?" and "What if they had pushed back?".
 
 ### P12 ⭐ 🟡 Composure under pressure
-**Asked at:** Staying calm and recovering from a blank or mistake is covered by coaching pages (DesignGurus, AlgoCademy, Educative, ThinkInsights, Techwell results; snippets: think aloud, admit gaps, acknowledge and correct errors, rehearse recovery lines, mock interviews may not reproduce real stress); general coaching advice, snippets only, not opened; search snippets only, not opened
+**Asked at:** Staying calm and recovering from a blank or mistake is covered by coaching pages (DesignGurus, AlgoCademy, Educative, Techwell, Techwell results; snippets: think aloud, admit gaps, acknowledge and correct errors, rehearse recovery lines, mock interviews may not reproduce real stress); general coaching advice, snippets only, not opened
 **Scope:** How to stay calm and recover in the moment (mock interviews, think-aloud practice, recovery phrases, breathing and pacing); tested in every live round, above all coding, panel and stress-style rounds.
 
 **What good looks like:** Composure does not mean feeling calm. It means that when you go blank, make an error or get pushed back on, you can slow down, say something useful and keep going. Good looks like thinking aloud, pausing for a breath, asking a clarifying question, admitting a gap without apology spirals, and correcting a mistake plainly. Interviewers watch how you recover, because that is what you will do at work.

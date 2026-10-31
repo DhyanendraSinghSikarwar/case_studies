@@ -94,7 +94,7 @@ Patterns across several of these profiles, each supported where tagged in the pr
 - Book 1 Part 10 (A/B testing, causal inference, experimentation) and Book 6 Part 1 (product metrics and metric drops) for product-metrics cases [S1].
 - Book 1 Part 12 (NumPy/pandas/sklearn live-coding) and Book 5 Part 1 (arrays and hashing) for coding screens [G].
 - Book 7 Part 4 (Spotify) for a company example; do not repeat its claims here.
-- Book 9 for behavioural stories (planned, not yet written) [G].
+- Book 9 Part 1 (behavioural stories) and Part 4 (scenarios) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: write a short CV and a half-page tailored letter [S4][S5].
@@ -209,7 +209,7 @@ Patterns across several of these profiles, each supported where tagged in the pr
 - Book 3 Parts 3-6 (subqueries and CTEs; window functions; date/time) for data screens [G].
 - Book 1 Part 11 (ML system design) for ML engineer roles [G].
 - Book 7 Part 4 (Zalando, Delivery Hero, SAP) for company examples; do not repeat their claims here.
-- Book 9 for communication and presentation skills (planned, not yet written) [G].
+- Book 9 Part 2 (communication) and Part 5 (playbooks) [G].
 
 **Preparation checklist (2 weeks):**
 - Days 1-2: build a tabular CV, a one-page cover letter and a document set [S4].
@@ -549,7 +549,7 @@ Anecdotal throughout; one Indeed report cites more than 8 interviewers, which is
 - Book 1 Part 12 (NumPy/pandas/sklearn live-coding & AI-code-review rounds) for live coding with ML questions [S10][S9].
 - Book 1 Part 11 (ML system design) and Book 4 Part 12 (cost, scaling, security, MLOps system design) for ML engineer and research-engineer deep dives [S19][G].
 - Book 6 Part 5 (business case studies) and Book 6 Part 10 ("design a solution end-to-end" open scenarios) for take-home and case-study rounds [S2][S4].
-- Book 6 Part 6 (stakeholder conflicts & trade-off decisions) and Book 9 Part 1 (STAR/CARL framework; Book 9 is planned, not yet written) for competency interviews [S17][S18].
+- Book 6 Part 6 (stakeholder conflicts & trade-off decisions) and Book 9 Part 1 (behavioural interviews and the STAR/CARL framework) for competency interviews [S17][S18].
 - Book 2 Part 12 (GenAI system design + coding) for GenAI roles [G].
 - Book 7 Part 4 (Europe/global company processes) for company-level detail, not repeated here [G].
 
@@ -669,7 +669,7 @@ Anecdotal throughout; one Indeed report cites more than 8 interviewers, which is
 - Book 1 Part 3 (classification metrics, imbalance, calibration, thresholding) for calibration questions [S4].
 - Book 1 Part 11 (ML system design) and Book 4 Part 6 (serving: FastAPI, batch vs real-time, Triton, BentoML) for deploying-models questions [S1][S2].
 - Book 6 Part 5 (business case studies) and Book 6 Part 9 (domain sets: fintech, e-commerce, healthcare, ads) for take-home case studies at banks and pharma [S18][S19].
-- Book 6 Part 6 (stakeholder conflicts & trade-off decisions) and Book 9 Part 1 (STAR/CARL framework; Book 9 is planned, not yet written) for behavioural rounds [S1][S2].
+- Book 6 Part 6 (stakeholder conflicts & trade-off decisions) and Book 9 Part 1 (behavioural interviews and the STAR/CARL framework) for behavioural rounds [S1][S2].
 - Book 7 Part 4 (Europe/global company processes) for company-level detail [G].
 
 **Preparation checklist (2 weeks):**
