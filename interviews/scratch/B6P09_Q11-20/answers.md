@@ -873,3 +873,223 @@ fake per 100 reviews checked: flagged 36.0 random 12.0
 - Taking down flagged reviews with no review or appeal.
 - Using flagged-only data to estimate the fake share.
 
+### Q19 ⭐⭐ 🟢 Healthcare: A model was trained on 120,000 patient records and 15,000 patients (12.5% of the records) later withdrew consent for research use. Retraining from scratch takes 3 days of compute plus a clinical re-validation, and the product team asks whether the deployed model can keep running. What do you tell them, what questions do you take to the privacy and compliance teams, and how would you design the pipeline so withdrawals are cheap to honour next time?
+**Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to consent withdrawal and data lineage in health-data privacy material; related topics appear in public guides; no page for the exact framing; search snippets only, not opened
+**Say this first (1 line):** Whether the deployed model may keep running is not my call or the product team's: I would tell them it is a question for the privacy and compliance teams, bring them the facts they need (which records, which models, what retraining costs), prepare the retrain without the 15,000 patients now, and build a consent ledger so the next withdrawal is a filter, not a project.
+
+**Clarifying questions:**
+- What exactly was consented to, and what does withdrawal cover: future use, deletion of the raw records, or also models and derived data? That wording is for the privacy officer and legal to interpret.
+- Does the model contain identifiable information (could it memorise records), or only aggregate patterns? It affects the risk discussion; I would ask the privacy team how they treat it.
+- Where else do the 15,000 patients' data live: feature tables, embeddings, validation sets, logs, backups, vendors? We need an inventory.
+- Is the 12.5% a one-off or a trend? A trend changes how we design the pipeline.
+- Does the clinical safety side tolerate running the current model while the retrain is validated, or is switching it off safer for patients? That is for the clinical owner to decide.
+
+**Approach:**
+1. Do the arithmetic. 15,000 / 120,000 = 12.5%, so 105,000 records remain. The retrain is 3 days of compute plus a clinical re-validation; that is the cost of compliance, not a reason to delay the question.
+2. Tell product plainly: I cannot say it is fine or not. I will take the options to privacy, compliance and the clinical owner this week, and give them a decision memo: (a) keep running until a retrained model is validated, with a stated end date; (b) switch to the previous model if one was trained without these patients; (c) pause the service. Each has a patient-safety cost and a privacy position; they choose.
+3. Do the technical work in parallel. Start the retrain on the 105,000 now, in a staging area, so no time is lost whatever the decision is. Compare it with the current model on the validation set (also with withdrawn patients removed) to measure the performance change; with 87.5% of the data, a small change is plausible but must be measured.
+4. Answer the data-side questions. List all copies and derived artefacts of the 15,000 patients' data, and the model versions trained on them. Questions to take to privacy and compliance: what must be deleted and by when, whether trained models count, what to tell clinicians and patients, what to record as evidence, and whether past analyses stay valid.
+5. Design for cheap withdrawals. Keep a consent ledger (patient, purpose, status, effective date). Build the training table by joining that ledger at build time, record the manifest hash of each training set in the model registry, and keep lineage from raw data to features to model. A withdrawal then triggers a filter and a scheduled retrain, not an investigation.
+6. Plan the retrain cadence. Retrain on a fixed schedule (for example monthly or quarterly) so that withdrawals are absorbed in routine releases, with the validation pack automated. Sharding the training data can reduce retrain work for rare withdrawals, but not for a batch like this (see the run).
+
+**Metrics:**
+- Withdrawn share = withdrawn records / training records = 12.5%.
+- Time to honour = time from withdrawal request to the first deployed model without that patient (target set with the privacy team).
+- Lineage coverage = records with consent status and lineage / all records (target 100%).
+- Retrain performance delta = metric(retrained) - metric(current) on the same validation set, with an interval.
+- Guardrails: no withdrawn id in any training manifest (checked by test), and clinical validation sign-off before release.
+
+**Risks:**
+- Assuming that removing rows from a table also removes their influence on a trained model; whether that is acceptable is a policy question.
+- Missed copies: validation sets, exports and backups still containing the patients.
+- Retraining quickly without re-validation, which trades a privacy risk for a safety risk.
+- Hard-coding the answer ("keep running") when the rule might say otherwise.
+
+**What the interviewer scores:**
+- Strong: separates decisions (privacy, compliance, clinical) from the engineering work, and says so without stating rules as facts.
+- Strong: gets 12.5% and 105,000, starts the retrain in parallel and measures the performance change.
+- Strong: proposes a consent ledger joined at build time, manifest hashes and lineage.
+- Weak: "it is fine, the model is anonymous", or "we must shut it down" with no questions asked.
+
+**Example:** Illustrative. Weak versus strong:
+- Weak: "The model does not store patient data, so it can keep running. I would just remove them next time."
+- Strong: "I cannot decide that; the privacy and compliance teams and the clinical owner do. I will give them the options and the facts: 15,000 of 120,000 records, 12.5%, a 3-day retrain plus validation, and an inventory of every copy. I start the retrain on the 105,000 records now so we lose no time, and I will build a consent ledger joined at training time so a withdrawal is a filter and a scheduled retrain."
+
+**Code:**
+```python
+import hashlib
+import numpy as np
+
+total, withdrawn = 120_000, 15_000
+share = withdrawn / total
+remaining = total - withdrawn
+assert share == 0.125 and remaining == 105_000
+print("withdrawn share", share, "remaining records", remaining)
+
+# Consent ledger joined at training-table build time
+rng = np.random.default_rng(19)
+ids = np.arange(total)
+w_ids = rng.choice(ids, withdrawn, replace=False)
+status = np.full(total, "active", dtype=object)
+status[w_ids] = "withdrawn"
+train_ids = ids[status == "active"]
+assert train_ids.size == remaining and not np.isin(train_ids, w_ids).any()
+
+def manifest_hash(a):
+    return hashlib.sha256(np.sort(a).tobytes()).hexdigest()[:12]
+print("old manifest", manifest_hash(ids), "new manifest", manifest_hash(train_ids))
+assert manifest_hash(ids) != manifest_hash(train_ids)
+
+# Sharded training (K shards, each model trained on one shard): how many shards must be retrained?
+K = 20
+def expected_shards_touched(w, K=K):
+    return K * (1 - (1 - 1 / K) ** w)
+for w in (1, 10, 100, 15_000):
+    print("withdrawals", w, "expected shards to retrain of", K, ":", round(expected_shards_touched(w), 2))
+assert round(expected_shards_touched(1), 2) == 1.0
+assert round(expected_shards_touched(10), 2) == 8.03
+assert round(expected_shards_touched(15_000), 2) == 20.0   # a 12.5% batch touches every shard: sharding gives no saving
+
+# Cost of waiting: retrain is 3 days compute; if withdrawals arrive weekly and we batch them
+retrain_days = 3
+batch_weekly_share = withdrawn / total / 52
+print("if the same share arrived evenly over a year, weekly share:", round(batch_weekly_share * 100, 3), "%")
+assert retrain_days == 3 and round(batch_weekly_share * 100, 3) == 0.24
+```
+
+**Output (my run):**
+```
+withdrawn share 0.125 remaining records 105000
+old manifest be0eeae2d5b5 new manifest 4a77392a8266
+withdrawals 1 expected shards to retrain of 20 : 1.0
+withdrawals 10 expected shards to retrain of 20 : 8.03
+withdrawals 100 expected shards to retrain of 20 : 19.88
+withdrawals 15000 expected shards to retrain of 20 : 20.0
+if the same share arrived evenly over a year, weekly share: 0.24 %
+```
+
+**Follow-ups:**
+- Can you "unlearn" instead of retraining? Approximate unlearning methods exist in the research literature (editor knowledge, not tested here); whether any is acceptable is a question for privacy and compliance, and validation is still needed.
+- What if the retrained model is clearly worse? Report the delta to the clinical owner; options include more data from consented sources, or accepting a shorter-lived model; they decide.
+- What do you log for audit? The ledger entry, the manifest hash of each training set, the model version, and the date of the deployed model that excludes the patient.
+
+**Common mistakes:**
+- Treating a privacy question as an engineering call.
+- Deleting rows but leaving copies in features, validation sets or backups.
+- Not recording which model was trained on which manifest.
+- Planning for one withdrawal, not for a flow of them.
+
+### Q20 ⭐⭐ 🟢 Ads: For a retail campaign, the measured incremental conversion probability per user from the 1st, 2nd, 3rd and 4th impression in a week is 0.50%, 0.30%, 0.15% and 0.05%. A conversion is worth 20 and each impression costs 0.05. Compute the net value of each impression and the best weekly cap, and explain how you would check that these incremental numbers are causal.
+**Asked at:** Ad-serving system-design material (techinterview.org ad serving and real-time bidding pages, a Dataford question on budget pacing and frequency capping, machinelearningatscale.com on frequency capping; feedback-controller pacing, per-user counters and credits for invalid clicks appear in the snippets); prep-site material; commonly reported in public guides for data scientist and ML engineer loops; search snippets only, not opened
+**Say this first (1 line):** The net value per impression is +0.05, +0.01, -0.02 and -0.04, so the best weekly cap is 2 (cumulative net 0.06 per user), but the second impression clears break-even by only 0.05 points, so I would confirm the numbers with a randomised frequency test before setting the cap.
+
+**Clarifying questions:**
+- How were the incremental probabilities measured: randomised holdout, ghost ads, or observational attribution? Only the first two are causal.
+- Is a conversion worth a flat 20, or does value vary by customer? Variable value changes the break-even per user.
+- Is the 0.05 cost an average? Costs may differ by placement or auction, and later impressions may be cheaper.
+- Are the probabilities conditional on a user reaching that impression? Users who reach the 4th are a selected group.
+- Within what window is the conversion counted (the same week, 7 or 30 days)? A longer window changes later impressions' value.
+
+**Approach:**
+1. Compute net value per impression = incremental probability x 20 - 0.05. First: 0.005 x 20 = 0.10, minus 0.05 = +0.05. Second: 0.003 x 20 = 0.06, so +0.01. Third: 0.0015 x 20 = 0.03, so -0.02. Fourth: 0.0005 x 20 = 0.01, so -0.04.
+2. Choose the cap by the cumulative sum, which is 0.05, 0.06, 0.04, 0.00 per user for caps 1 to 4. The maximum is at cap 2. Equivalent rule: keep adding impressions while incremental probability exceeds cost / value = 0.05 / 20 = 0.25%. The first two impressions (0.50% and 0.30%) pass; the third (0.15%) does not.
+3. Note how thin the margin is. The second impression is at 0.30% against a 0.25% threshold, so if its true effect is 17% lower it is worth nothing. Treat cap 2 as the best estimate, not a certainty. Cap 1 loses only 0.01 per user compared with cap 2, so there is a cheap fallback.
+4. Check causality. The numbers should come from randomisation: assign users at random to cap 1, 2, 3 and 4 (or to a holdout), then incremental probability of the k-th impression = conversion rate under cap k minus under cap k-1. Observational comparisons are confounded: heavy-exposure users are more active and more likely to buy anyway. In a simulation with zero ad effect, users who saw 4 impressions converted at 0.83% against 0.38% for 1 and 0.28% for 0 (see the run).
+5. Size the test. To separate 0.30% from 0.25% at a 1% baseline conversion takes about 620,000 users per arm (80% power, 5% two-sided, illustrative); to see the full 0.30-point effect takes about 17,000 per arm. If that is too large, test cap 1 versus cap 2 first and use the confidence interval to decide.
+6. Implement and monitor. Enforce the cap with a per-user counter (including across devices where identity allows), watch spend, reach and conversions, and revisit when creative, season or audience changes; repeat the test periodically.
+
+**Metrics:**
+- Incremental probability of impression k = P(convert | cap k) - P(convert | cap k-1), from randomised arms.
+- Net value per impression = incremental probability x value - cost per impression; cumulative net per user by cap.
+- Break-even incremental probability = cost / value = 0.25%.
+- Guardrails: reach (share of target users with at least one impression), total conversions, and spend per incremental conversion.
+
+**Risks:**
+- Confounding by user intent if the numbers are observational.
+- Selection: the effect of a fourth impression is measured on those the auction reached.
+- A flat value of 20 hides the mix of customers; a higher-value customer may justify a higher cap.
+- Cross-device counting misses impressions, so the cap is enforced loosely.
+- Cap interacts with creative fatigue and the auction; a result for one campaign may not carry over.
+
+**What the interviewer scores:**
+- Strong: gets +0.05, +0.01, -0.02, -0.04, cap 2, and the 0.25% break-even rule.
+- Strong: points out the margin is thin and sets up a randomised test, with a sample-size estimate.
+- Strong: explains why exposure-level comparisons are confounded.
+- Weak: choosing the cap by conversion rate alone, or taking the observational lift as causal.
+
+**Example:** Using the question's numbers. Weak versus strong:
+- Weak: "Conversion keeps rising with each impression, so I would cap at 4."
+- Strong: "Break-even is 0.25%, so only the first two impressions pay: +0.05 and +0.01 net, then -0.02 and -0.04. Cap 2 gives 0.06 per user. The second impression is only just above break-even, so I would run a randomised test across cap levels with several hundred thousand users per arm, because comparing heavy and light viewers measures their intent, not the ads."
+
+**Code:**
+```python
+from fractions import Fraction as F
+import numpy as np
+
+inc = [F(5, 1000), F(3, 1000), F(15, 10000), F(5, 10000)]   # 0.50%, 0.30%, 0.15%, 0.05%
+value, cost = 20, F(5, 100)
+net = [p * value - cost for p in inc]
+print("net value per impression:", [float(x) for x in net])
+assert [float(x) for x in net] == [0.05, 0.01, -0.02, -0.04]
+cum, run = [], F(0)
+for x in net:
+    run += x; cum.append(run)
+print("cumulative net per user by cap 1..4:", [float(x) for x in cum])
+assert [float(x) for x in cum] == [0.05, 0.06, 0.04, 0.0]
+best = max(range(4), key=lambda i: cum[i]) + 1
+assert best == 2
+breakeven = cost / value
+print("break-even incremental probability per impression:", float(breakeven))
+assert float(breakeven) == 0.0025
+# Margin: impression 2 clears break-even by 0.05 points; how far can its true probability fall?
+margin = float(inc[1] - breakeven)
+print("impression 2 margin over break-even (probability points):", round(margin * 100, 3))
+assert round(margin * 100, 3) == 0.05
+
+# Sample size to tell 0.30% from 0.25% in a two-arm randomised comparison (cap 2 vs cap 1 arms)
+# Both arms convert at roughly 1% (illustrative baseline), so the variance per user is ~ p(1-p).
+p0 = 0.010
+za, zb = 1.96, 0.84
+delta = 0.0005
+n_per_arm = 2 * (za + zb) ** 2 * p0 * (1 - p0) / delta ** 2
+print("users per arm to detect a 0.05-point gap at 1% baseline (80% power):", round(n_per_arm))
+assert 600_000 < n_per_arm < 650_000
+# And to detect the full 0.30-point effect of the 2nd impression versus zero
+n_full = 2 * (za + zb) ** 2 * p0 * (1 - p0) / 0.003 ** 2
+print("users per arm to detect the 0.30-point effect:", round(n_full))
+assert 15_000 < n_full < 20_000
+
+# Selection check: users who reach 4 impressions are more active. Illustrative simulation.
+rng = np.random.default_rng(20)
+n = 400_000
+activity = rng.gamma(2, 0.5, n)                 # latent intent, mean 1
+imps = np.minimum(rng.poisson(1.2 * activity), 4)
+base = 0.004 * activity                        # conversion without ads depends on intent
+conv = rng.random(n) < base                    # zero true ad effect
+r1 = conv[imps == 1].mean(); r4 = conv[imps == 4].mean(); r0 = conv[imps == 0].mean()
+print("sim with ZERO ad effect: conversion rate by impressions seen 0/1/4:", round(float(r0), 4), round(float(r1), 4), round(float(r4), 4))
+assert r4 > r1 > r0                             # observational 'dose-response' appears without any causal effect
+```
+
+**Output (my run):**
+```
+net value per impression: [0.05, 0.01, -0.02, -0.04]
+cumulative net per user by cap 1..4: [0.05, 0.06, 0.04, 0.0]
+break-even incremental probability per impression: 0.0025
+impression 2 margin over break-even (probability points): 0.05
+users per arm to detect a 0.05-point gap at 1% baseline (80% power): 620928
+users per arm to detect the 0.30-point effect: 17248
+sim with ZERO ad effect: conversion rate by impressions seen 0/1/4: 0.0028 0.0038 0.0083
+```
+
+**Follow-ups:**
+- What if impression costs fall for later impressions? Recompute net value with the actual cost per impression; the rule is the same (incremental probability times value above cost).
+- What if conversion value varies by user? Set caps per segment, using the expected value for that segment.
+- Is a cap per week the right unit? Test a per-day cap and a spacing rule too; the effect of the second impression may depend on gap.
+
+**Common mistakes:**
+- Using total conversion rate by exposure count as incremental.
+- Forgetting the cost term, so every impression looks positive.
+- Ignoring the 0.05-point margin of the second impression.
+- Treating a cap as a purely statistical choice, not a spend and reach decision.
+

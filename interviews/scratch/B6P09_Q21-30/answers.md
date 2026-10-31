@@ -85,7 +85,7 @@ with medium every 4y and low at 0.05: 27.9 (still above 24)
 
 **Common mistakes:** Treating all models the same. Forgetting that 24 - 18 leaves only 6. Stating regulatory cadences as facts. Ignoring that light reviews also cost time. No early-review triggers.
 
-### Q22 ⭐⭐ 🟢 E-commerce: Of 100,000 apparel orders, 12,000 (12%) are returned for size reasons, and a size widget was used on 20,000 orders: the size-return rate is 8% for widget orders and 13% for the 80,000 others (measured). The team claims that rolling the widget out would close the 5-point gap on all 80,000 other orders and save 150 per avoided return. Compute that claimed saving and explain why it is probably overstated and how you would test it.
+### Q22 ⭐⭐ 🟢 E-commerce: Of 100,000 apparel orders, 12,000 (12%) are returned for size reasons, and a size widget (use was voluntary) was used on 20,000 orders: the size-return rate is 8% for widget orders and 13% for the 80,000 others (measured). The team claims that rolling the widget out would close the 5-point gap on all 80,000 other orders and save 150 per avoided return. Compute that claimed saving and explain why it is probably overstated and how you would test it.
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to size recommendation and returns in fashion e-commerce material; related topics appear in public guides; no page for the exact framing; search snippets only, not opened
 **Say this first (1 line):** The claim is 80,000 x 5 points = 4,000 avoided returns x 150 = 600,000, but it is probably overstated because widget users chose to use it and not everyone will, so I would run a randomised test before banking it.
 
@@ -183,7 +183,7 @@ orders per arm to detect 13% -> 12%: 17,165
 
 **Common mistakes:** Multiplying the gap by all remaining orders. Treating users who chose the widget as a control. Forgetting take-up and conversion. Using sessions as the denominator.
 
-### Q23 ⭐⭐ 🟡 Fintech: A monitoring system raises 10,000 alerts a month and analysts confirm 300 of them as suspicious (3%), with capacity to review 6,000 alerts. A model splits the alerts into three buckets: the top 3,000 alerts hold 270 confirmed cases, the middle 3,000 hold 24 and the bottom 4,000 hold 6 (retrospective counts). Compute the confirmed rate in each bucket and the share of confirmed cases found by reviewing the top two buckets, and explain what you would propose for the bottom bucket given that compliance owns any decision to stop reviewing alerts.
+### Q23 ⭐⭐ 🟡 Fintech: A monitoring system raises 10,000 alerts a month and analysts confirm 300 of them as suspicious (3%), with capacity to review 6,000 alerts. A model splits the alerts into three buckets: the top 3,000 alerts hold 270 confirmed cases, the middle 3,000 hold 24 and the bottom 4,000 hold 6 (retrospective counts from a month in which all 10,000 alerts were reviewed). Compute the confirmed rate in each bucket and the share of confirmed cases found by reviewing the top two buckets, and explain what you would propose for the bottom bucket given that compliance owns any decision to stop reviewing alerts.
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to KYC and AML alert triage in fintech material; related topics appear in public guides; no page for the exact framing; search snippets only, not opened
 **Say this first (1 line):** The top bucket is 9.0% confirmed, the middle 0.8% and the bottom 0.15%, and the top two buckets (6,000 alerts, exactly the review capacity) hold 294 of 300 confirmed cases, 98%; for the bottom 4,000 I would propose a lighter-touch process and a sampled audit, and leave the decision to stop reviewing to compliance.
 
@@ -277,7 +277,7 @@ alerts to sample for 95% chance of seeing one case at 0.15%: 1,996
 
 **Common mistakes:** Calling 98% "recall of fraud" when it is recall of confirmed alerts in last month's data. Forgetting that the overall base rate is 3%. Dropping a bucket without compliance. Assuming 5% sampling measures a 0.15% rate.
 
-### Q24 ⭐⭐ 🟡 E-commerce: In a randomised test, 10,000 cart abandoners received a reminder with a 10% discount code and 6.0% purchased, against 5.0% of 10,000 randomly held-out abandoners, and the average order value is 800 with a 25% margin before any discount. Compute the incremental orders per 10,000 abandoners, then compare the margin on them with the discount given if all 600 purchasing recipients use the code. What would you change about the offer and the targeting?
+### Q24 ⭐⭐ 🟡 E-commerce: In a randomised test, 10,000 cart abandoners received a reminder with a 10% discount code and 6.0% purchased, against 5.0% of 10,000 randomly held-out abandoners, and the average order value is 800 with a 25% margin before any discount. Compute the incremental orders per 10,000 abandoners, then compare the margin on them with the discount given if we assume all 600 purchasing recipients use the code. What would you change about the offer and the targeting?
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to cart abandonment and discount incrementality in e-commerce material; related topics appear in public guides; no page for the exact framing; search snippets only, not opened
 **Say this first (1 line):** The reminder created 600 - 500 = 100 extra orders per 10,000, worth 100 x 200 = 20,000 of margin, but if all 600 buyers use the 80 discount that costs 48,000, so the offer loses about 28,000 per 10,000 abandoners.
 
@@ -596,7 +596,7 @@ stopped after 2500 new impressions, posterior mean 0.750%, P(CTR<1.0%)=0.94, spe
 
 **Common mistakes:** Using the raw rate. Using the category average as truth. No spend cap. Stopping on a fixed time rather than evidence. Forgetting that the prior's weight is an assumption.
 
-### Q27 ⭐⭐ 🟡 Fintech: In one day of 1,000,000 transactions a model sends 2,000 to a block band, 18,000 to a step-up band (an extra confirmation) and lets 980,000 pass, with measured fraud counts of 1,200 in the block band, 600 in the step-up band and 200 in the pass band. Assume blocking stops every fraud in its band, the step-up stops 80% of fraud in its band and 10% of genuine customers in the step-up band abandon. Compute the fraud stopped, the fraud that still gets through, the genuine customers blocked and the genuine customers lost at step-up, and discuss how you would set the band edges.
+### Q27 ⭐⭐ 🟡 Fintech: In one day of 1,000,000 transactions a model sends 2,000 to a block band, 18,000 to a step-up band (an extra confirmation) and lets 980,000 pass, with measured fraud counts of 1,200 in the block band, 600 in the step-up band and 200 in the pass band. Assume blocking stops every fraud in its band, the step-up stops 80% of fraud in its band and 10% of the 17,400 genuine customers in the step-up band abandon. The fraud counts in the block band come from review and customer reports. Compute the fraud stopped, the fraud that still gets through, the genuine customers blocked and the genuine customers lost at step-up, and discuss how you would set the band edges.
 **Asked at:** Payments-fraud material (2025 SciTePress, Atlantis Press and SDMIMD papers and student projects on UPI fraud detection frame false alerts, class imbalance and retraining on confirmed fraud and false-positive reports); academic and self-published material, no interview bank for this exact framing; commonly reported in public guides for data scientist and ML engineer loops; search snippets only, not opened
 **Say this first (1 line):** Of 2,000 frauds the bands stop 1,200 + 480 = 1,680 (84%), 320 get through (120 past step-up, 200 in the pass band), 800 genuine customers are blocked and 1,740 genuine customers are lost at step-up; I would set the edges by cost per band, not by a round score.
 
@@ -804,7 +804,7 @@ review of the rest at 80% error catch: wrong falls from 26,400 to 5,280
 
 **Common mistakes:** Mixing the two audits into one blended accuracy. Calling projections facts. Ignoring that a blank is cheaper than a wrong value. Using the model's confidence without an audit. Ignoring category differences.
 
-### Q29 ⭐⭐ 🟡 Healthcare: A sepsis model was built at hospital 1 with an AUC of 0.88 and external tests give an AUC of 0.79 at hospital 2 and 0.84 at hospital 3, with a calibration slope of 0.6 at hospital 2 (1.0 is ideal). The sepsis rate is 4% at hospital 3 and 2.5% at hospital 2, and your team wants at least 100 events at each site before trusting its numbers. Compute the minimum patients needed per site and describe a rollout plan with local recalibration, monitoring and stop rules.
+### Q29 ⭐⭐ 🟡 Healthcare: A sepsis model was built at hospital 1 with an AUC of 0.88 and external tests give an AUC of 0.79 at hospital 2 and 0.84 at hospital 3, with a calibration slope of 0.6 at hospital 2 (1.0 is ideal). The sepsis rate is 4% at hospital 3 and 2.5% at hospital 2, and your team wants at least 100 expected events at each site before trusting its numbers. Compute the minimum patients needed per site and describe a rollout plan with local recalibration, monitoring and stop rules.
 **Asked at:** Clinical-AI external-validation coverage (Fierce Healthcare, MedCity News and JAMA Internal Medicine pages on the external validation of a widely deployed sepsis model, which reported low sensitivity, a modest positive predictive value, alerts on a large share of patients and a billing-code outcome definition; a newsletter piece on local validation and tracking override patterns); published news and research, not an interview bank; commonly reported in public guides for data scientist and ML engineer loops; search snippets only, not opened
 **Say this first (1 line):** At 100 expected events you need 100 / 0.04 = 2,500 patients at hospital 3 and 100 / 0.025 = 4,000 at hospital 2, but that is only about even odds of actually reaching 100, so I would plan for roughly 2,900 and 4,700, then roll out in silent mode with local recalibration, monitoring and written stop rules.
 
@@ -907,4 +907,112 @@ slope 0.6 pivoting at the mean: a predicted 20% risk is recalibrated to about 9.
 - How do you handle the calibration slope without enough data? Pool a few months of silent-mode data, and keep the intercept and slope as monitored parameters.
 
 **Common mistakes:** Dividing 100 by the rate and stopping. Treating AUC as the only metric. Deploying without local calibration. Using a billing code as truth without checking. No pre-agreed stop rules.
+
+### Q30 ⭐⭐ 🟡 Ads: A lookalike audience built from 10,000 past converters was shown ads, reaching 500,000 users of whom 0.80% converted (4,000), while a group of 500,000 similar users, held out at random from the same lookalike audience before serving, saw none and 0.70% of them converted (3,500). The platform report attributes all 4,000 conversions to the campaign, which spent 40,000. Compute the reported and the incremental cost per conversion, and explain what the gap means and how you would improve the audience and the test.
+**Asked at:** Ads measurement material (an eMarketer 2026 FAQ separating incrementality, multi-touch attribution and marketing mix modelling, Google ads-measurement data scientist postings asking for causal inference and attribution work, a Dataford incremental-lift question, a Remerge incrementality write-up); job postings and prep material rather than a confirmed interview round; commonly reported in public guides for data scientist and ML engineer loops; search snippets only, not opened
+**Say this first (1 line):** The platform reports 40,000 / 4,000 = 10 per conversion, but only 4,000 - 3,500 = 500 conversions are incremental, so the incremental cost is 40,000 / 500 = 80, eight times higher, because 87.5% of the reported conversions would have happened anyway.
+
+**Clarifying questions:**
+- Was the held-out group drawn at random from the same lookalike audience before ads were served? The prompt says "similar users", and the whole result depends on that being a true random holdout and not a look-alike comparison group.
+- Did the held-out group see other ads from the same advertiser or channel? That changes what "no exposure" means.
+- What counts as a conversion and over what window? A long window picks up more organic conversions in both arms.
+- What is a conversion worth (first order value, lifetime value)? Cost per conversion only means something against value.
+- Does the audience exclude existing customers? Lookalikes built from converters often include people already converting.
+
+**Approach:**
+1. Reported cost per conversion: 40,000 / 4,000 = 10.
+2. Incremental conversions: 4,000 - 3,500 = 500 (0.80% minus 0.70% is 0.10 points on 500,000 users). Incremental cost: 40,000 / 500 = 80.
+3. Meaning of the gap: the platform credits every conversion among exposed users, including those who would have converted anyway. The audience was built from people who convert, so its natural conversion rate is high (0.70% with no ads).
+4. Is the lift real? The 95% interval on incremental conversions is about 331 to 669, so the cost per incremental conversion is roughly 60 to 121. The lift is clearly above zero (z about 5.8) but the cost is uncertain by a factor of two. I report the range, not only 80.
+5. Improve the audience: exclude existing customers and recent converters, target by predicted uplift (who converts because of the ad) rather than by similarity to converters, and test different seed sets and sizes.
+6. Improve the test: randomise at the user level from the same audience before serving, use a holdout or ghost-ad or public service announcement control so exposure is comparable, pre-register the window and the metric, and check balance on pre-period behaviour.
+7. Size the test from the effect you care about: detecting 0.80% versus 0.70% needs about 117,000 users per arm, so 500,000 per arm is ample for that lift; a lift half as large would need about four times more users.
+8. Judge by incremental return: incremental conversions x value / spend, compared with other channels and with the margin, and keep a standing small holdout.
+
+**Metrics:**
+- Reported cost per conversion = spend / platform-attributed conversions (10).
+- Incremental conversions = exposed-group conversions - holdout conversions, with equal group sizes (500).
+- Cost per incremental conversion = spend / incremental conversions (80), with an interval.
+- Relative lift = (0.80% - 0.70%) / 0.70% = 14.3%.
+- Guardrails: reach and frequency, conversion window, balance of pre-period conversion rates between arms.
+
+**Risks:**
+- A non-random holdout makes the lift meaningless.
+- Contamination: holdout users still see the advertiser elsewhere, understating the lift.
+- Conversion windows or attribution differences between the platform and the test.
+- Winner's curse if you pick the best of many audiences from one test.
+- Applying 80 to a different audience or season.
+
+**What the interviewer scores:**
+- Strong: 10, 500 and 80 and the 87.5% anyway share, all hand-checkable. Weak: "incremental is lower" with no number.
+- Strong: asks whether the holdout was randomised from the same audience. Weak: assumes it was.
+- Strong: gives an interval and notes cost is uncertain. Weak: quotes 80 as precise.
+- Strong: improves audience through uplift, exclusions and a standing holdout. Weak: "make the audience bigger".
+
+**Example:** 4,000 exposed conversions against 3,500 in the holdout. Reported cost 40,000 / 4,000 = 10. Incremental cost 40,000 / 500 = 80. If the true incremental count is 331 to 669 the cost is about 121 to 60.
+- Weak: "10 per conversion is great, scale it."
+- Strong: "Ten is the platform's attributed number. The holdout shows 500 extra conversions, so it is 80 per incremental conversion, and the interval is roughly 60 to 121. Whether that is good depends on conversion value, so I would compare it to margin, exclude existing customers and test an uplift-targeted audience against this one."
+
+**Code:**
+```python
+# Q30 lookalike campaign: reported vs incremental cost per conversion (illustrative numbers)
+from math import sqrt
+n_t = n_c = 500_000
+conv_t, conv_c = 4_000, 3_500
+assert conv_t / n_t == 0.008 and conv_c / n_c == 0.007
+spend = 40_000
+reported = spend / conv_t
+assert reported == 10.0
+incr = conv_t - conv_c
+assert incr == 500
+incr_cost = spend / incr
+assert incr_cost == 80.0
+print(f"reported cost per conversion {reported:.0f}; incremental {incr_cost:.0f}; ratio {incr_cost/reported:.0f}x")
+print(f"share of reported conversions that would have happened anyway: {conv_c/conv_t:.1%}")
+assert conv_c / conv_t == 0.875
+
+# Interval on the lift (two-proportion, unpooled SE)
+p_t, p_c = conv_t / n_t, conv_c / n_c
+se = sqrt(p_t*(1-p_t)/n_t + p_c*(1-p_c)/n_c)
+lo, hi = (p_t - p_c) - 1.96*se, (p_t - p_c) + 1.96*se
+inc_lo, inc_hi = lo * n_t, hi * n_t
+print(f"incremental conversions 95% interval {inc_lo:.0f} to {inc_hi:.0f}; cost per incremental {spend/inc_hi:.0f} to {spend/inc_lo:.0f}")
+assert 325 < inc_lo < 335 and 665 < inc_hi < 675
+z = (p_t - p_c) / sqrt((p_t+p_c)/2 * (1-(p_t+p_c)/2) * 2 / n_t)
+assert 5.5 < z < 6.0
+print(f"z = {z:.1f}")
+
+# Relative lift and what a better audience could do (invented): same spend, same reach, lift doubles
+rel = (p_t - p_c) / p_c
+assert abs(rel - 1/7) < 1e-9
+print(f"relative lift {rel:.1%}")
+better = spend / 1000
+print(f"if lift were 1,000 incremental conversions at the same spend: cost per incremental {better:.0f}")
+assert better == 40.0
+
+# Holdout sizing: control needed to detect a 0.1-point lift on a 0.7% base, per arm (alpha .05, power .8)
+from statistics import NormalDist
+zz = NormalDist().inv_cdf
+n = (zz(.975)+zz(.8))**2 * (0.008*0.992 + 0.007*0.993) / 0.001**2
+print(f"users per arm to detect 0.80% vs 0.70%: {n:,.0f}")
+assert 100_000 < n < 120_000
+```
+
+**Output (my run):**
+```text
+reported cost per conversion 10; incremental 80; ratio 8x
+share of reported conversions that would have happened anyway: 87.5%
+incremental conversions 95% interval 331 to 669; cost per incremental 60 to 121
+z = 5.8
+relative lift 14.3%
+if lift were 1,000 incremental conversions at the same spend: cost per incremental 40
+users per arm to detect 0.80% vs 0.70%: 116,846
+```
+
+**Follow-ups:**
+- What if the platform will not give you a holdout? Use a geo test or a conversion-lift study offered by the platform, and say the control is less clean.
+- Is the platform's number wrong? It answers a different question (conversions after exposure); both numbers can be correct for their own definition.
+- How do you combine this with attribution and mix models? Use the experiment to calibrate them; the experiment is the anchor for the incremental effect on this campaign.
+
+**Common mistakes:** Quoting platform-attributed cost as the return. Treating the holdout as valid without checking randomisation. Ignoring the uncertainty of a difference of two proportions. Choosing the audience by similarity to converters only.
 
