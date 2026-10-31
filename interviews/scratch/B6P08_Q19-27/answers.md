@@ -705,3 +705,114 @@ The data are synthetic; the two ablation numbers will differ on real tables.
 - What about features that proxy the label (for example a refund-approved flag)? Same test: not available before the decision means drop.
 
 **Common mistakes:** Checking correlation only. Blaming the teammate. Forgetting the earlier releases. Treating the fix as complete while a 0.03 gap remains. Not building an automated gate.
+
+### Q25 ⭐⭐ 🟡 A feature pipeline was broken for 9 daily partitions. Each partition takes 40 minutes, the cluster can run 4 partitions at once, and a rolling 7-day feature means each day depends on the previous days' output. Compute the backfill wall-clock time if the days were independent and if they must run in order, and say how you would order the work, protect live jobs and validate the result.
+**Asked at:** Data-pipeline pages (luminousmen on avoidable backfills and non-idempotent jobs, DZone on silent upstream schema change, HackerNoon and Seattle Data Guy on silent pipeline failures, DataExpert on schema drift and idempotent replays, DataVidhya on measuring detection latency in postmortems); practitioner blogs rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
+**Say this first (1 line):** If the 9 days were independent it is 3 waves of 40 minutes, 120 minutes; if each day must wait for the previous one it is 9 x 40 = 360 minutes and extra slots do not help; so I first check whether the rolling feature really reads yesterday's output or can be rebuilt from raw daily data.
+(Correction to the framing: "a rolling 7-day feature" does not by itself force an order. A window computed from raw events is independent per day; only an incremental feature that reads the stored output of the previous day needs the chain.)
+
+**Clarifying questions:**
+- Does day d read raw data for d-6 to d, or the stored feature output of d-1? Why: this is the difference between 120 and 360 minutes.
+- Is the raw input for the 9 days healthy, or was the input the thing that broke? Why: if raw data is bad, the backfill must wait for the source to be repaired.
+- Who reads this feature now, and what happens to models and scores built on the 9 bad days? Why: it decides whether downstream jobs need to be re-run after the backfill.
+- How much of the 4-slot cluster can the backfill use without hurting live jobs? Why: capping at 2 slots turns 120 minutes into 200.
+- Is the job idempotent (overwrite a partition, not append)? Why: a backfill that appends doubles rows.
+
+**Approach:**
+1. First 15 minutes. Stop the bleeding: freeze or flag the 9 bad partitions so models and dashboards do not read them as good (or make readers fall back to the last good value). Fix the root cause first or the backfill will break again.
+2. First day. Establish the dependency: read the job logic. Plan A (independent): compute 9 daily aggregates in parallel in 3 waves (120 minutes), then the 7-day window per day as a cheap second stage (about 138 minutes if each merge takes 2 minutes, which is an assumption). Plan B (incremental): run strictly in date order, 360 minutes, and use the time to shrink what must run (for example start from the last good day).
+3. Order the work: oldest broken day first when order matters; when independent, run in date order anyway so a failure leaves a clean prefix of fixed days.
+4. Protect live jobs: put the backfill in its own queue or pool, cap at 2 of 4 slots (200 minutes for independent days), lower priority than the daily live run, and run when load is low. Throttle on cluster load, not on a fixed clock.
+5. Write to a staging location per partition and swap in only after validation (atomic partition swap), so readers never see half a repair. Make every partition idempotent: overwrite by date.
+6. Validate the result: row counts inside a band around healthy neighbours (illustration in the code catches an empty and a tiny partition), null rates and distributions against neighbours, recompute one healthy day and check it matches the stored value exactly, and compare a few known customers by hand.
+7. After validation: tell downstream owners which dates changed and re-run anything built on them (training sets, scores, reports).
+8. Next quarter: add a freshness and volume check on every partition (the 9 days should have been caught on day 1, not at day 9), a documented backfill runbook with the dependency type, and a periodic backfill drill. Measure detection delay: time from first broken partition to alert.
+9. Escalation: if validation fails twice or the live jobs miss their SLO during the backfill, stop, cap lower and page the data platform owner. Blameless angle: record that nothing checked partition volume, not who pushed the change that broke it.
+
+**Metrics:**
+- Backfill wall-clock = ceil(partitions / slots) x duration for independent days (ceil(9/4) x 40 = 120), or partitions x duration for a chain (9 x 40 = 360).
+- Live job impact: delay of the live run versus its normal finish time while the backfill runs (guardrail).
+- Validation pass rate per partition, and the detection delay (days the data was broken before alert).
+- Share of downstream consumers re-run.
+
+**Risks:**
+- Assuming independence wrongly: a backfill that reads half-fixed outputs gives silently wrong values.
+- Appending instead of overwriting duplicates data.
+- Backfill saturating the cluster and starving the live run.
+- Fixing the pipeline but leaving models trained on the bad 9 days.
+- Durations are not constant under contention; 40 minutes may stretch when 4 jobs run at once.
+
+**What the interviewer scores:**
+- Strong: both numbers (120 and 360), and challenges whether the dependency is real. Weak: only multiplies 9 by 40.
+- Strong: idempotent, staged, validated, swapped in. Weak: "rerun the DAG".
+- Strong: protects live work with a cap and shows the cost (200 minutes). Weak: ignores the live jobs.
+- Strong: asks why 9 days went unnoticed and adds a check.
+
+**Example:** Illustrative numbers. Independent: 9 partitions on 4 slots finish as waves of 4, 4 and 1 partitions, 3 x 40 = 120 minutes. Strict chain: 9 x 40 = 360 minutes. Capped at 2 slots for the live jobs: waves of 2,2,2,2,1, 5 x 40 = 200 minutes.
+- Weak answer: "It is 9 times 40, so 6 hours; I will start the backfill now."
+- Strong answer: "That is 6 hours only if each day reads yesterday's output. If the window is computed from raw data it is 120 minutes on 4 slots, or 200 if I leave half the cluster for live jobs. I would check that first, then validate row counts and swap partitions in only when they pass."
+
+**Code:**
+```python
+# Q25: backfill wall-clock time for 9 partitions. Exact scheduling arithmetic, illustrative durations.
+import heapq, math
+DUR, N_PART = 40, 9
+def makespan(n_parts, slots, deps):
+    """List scheduling: deps[i] = set of partitions that must finish before i starts. Returns (finish time, per-partition finish)."""
+    done, running, t = {}, [], 0
+    pending = list(range(n_parts))
+    while pending or running:
+        started = True
+        while started:
+            started = False
+            for i in list(pending):
+                if len(running) < slots and all(d in done and done[d] <= t for d in deps[i]):
+                    heapq.heappush(running, (t + DUR, i)); pending.remove(i); started = True
+        fin, i = heapq.heappop(running)
+        t = fin; done[i] = fin
+        while running and running[0][0] == fin:
+            _, j = heapq.heappop(running); done[j] = fin
+    return t, done
+indep = {i: set() for i in range(N_PART)}
+chain = {i: ({i - 1} if i else set()) for i in range(N_PART)}
+t_ind4, _ = makespan(N_PART, 4, indep)
+t_ord4, _ = makespan(N_PART, 4, chain)
+print(f"independent, 4 slots: {t_ind4} min = {t_ind4/60:.1f} h   (waves: {math.ceil(N_PART/4)})")
+print(f"strict chain, 4 slots: {t_ord4} min = {t_ord4/60:.1f} h   (extra slots do not help)")
+assert t_ind4 == 3 * 40 == 120 and t_ord4 == 9 * 40 == 360
+# live jobs need room: cap the backfill at 2 slots (independent case) or 1
+t_ind2, _ = makespan(N_PART, 2, indep); t_ind1, _ = makespan(N_PART, 1, indep)
+print(f"independent, capped at 2 slots: {t_ind2} min; at 1 slot: {t_ind1} min")
+assert t_ind2 == 5 * 40 == 200 and t_ind1 == 360
+# a rolling 7-day window computed from RAW daily data does not need the chain: compute 9 daily aggregates in parallel, then window
+t_roll_cheap = 3 * DUR + 9 * 2          # 9 cheap window merges of 2 minutes each, run serially after the aggregates
+print(f"two-stage plan: 9 daily aggregates (120 min) + 9 window merges of 2 min each = {t_roll_cheap} min (merge cost is an assumption)")
+assert t_roll_cheap == 138
+# only an INCREMENTAL feature (day d reads the stored output of day d-1) forces the chain
+assert t_ord4 / t_ind4 == 3.0
+# validation: partition row counts must sit inside a band around the healthy neighbours (illustrative counts)
+healthy = [1_000_400, 998_900, 1_001_700, 999_300]
+rebuilt = [1_000_900, 999_500, 0, 1_002_000, 7_300]          # 0 and 7,300 are suspicious
+lo, hi = 0.95 * min(healthy), 1.05 * max(healthy)
+bad = [i for i, n in enumerate(rebuilt) if not lo <= n <= hi]
+print("partitions failing the row-count band:", bad)
+assert bad == [2, 4]
+```
+
+**Output (my run):**
+```text
+independent, 4 slots: 120 min = 2.0 h   (waves: 3)
+strict chain, 4 slots: 360 min = 6.0 h   (extra slots do not help)
+independent, capped at 2 slots: 200 min; at 1 slot: 360 min
+two-stage plan: 9 daily aggregates (120 min) + 9 window merges of 2 min each = 138 min (merge cost is an assumption)
+partitions failing the row-count band: [2, 4]
+```
+
+Slot durations are taken as constant 40 minutes, so real runs on a busy cluster can be longer.
+
+**Follow-ups:**
+- How do you shorten a true chain? Checkpoint the state at day boundaries, or rewrite the feature so a day is computed from raw data and a cheap merge; only then can days run in parallel.
+- What if one partition fails mid-backfill? Because each partition is idempotent and swapped in on its own, you re-run only that date.
+- How do you decide the cap for live jobs? Measure the live job's headroom; start at half the slots and watch its delay.
+
+**Common mistakes:** Multiplying 9 by 40 without checking the dependency. Appending rather than overwriting. Using all slots and starving live jobs. Publishing before validation. Forgetting to re-run models built on the bad days.
