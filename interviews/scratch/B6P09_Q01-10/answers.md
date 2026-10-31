@@ -467,7 +467,7 @@ detect 0.45% relative drop on 5% conversion: about 14.7 million sessions per arm
 
 **Clarifying questions:**
 - What default rate do thin-file customers show today, and on what definition (90 days past due within 12 months)? The break-even of 23.1% means little without the expected rate.
-- Is the 4,000 loss per defaulter after partial drawing and recovery, or a gross figure? The prompt's bound uses 5,000 (the full limit), so the two numbers disagree on how much is recovered; I would ask which one finance uses.
+- Is the 4,000 loss per defaulter after partial drawing and recovery, or a gross figure? The balances-at-risk bound assumes no recovery and the 8,000,000 maximum loss uses the stated 4,000, so I would ask finance how much is drawn and recovered.
 - Which data can lift thin-file ranking (rent, utilities, bank transaction history, income verification), and is each allowed to be used? Ask compliance.
 - What is the risk appetite: the maximum monthly loss the business accepts for a pilot?
 - How long until outcomes mature? A 12-month default definition means the pilot reads out slowly, so which early signals does the risk team trust?
@@ -563,7 +563,7 @@ defaulters caught in the riskiest 20% of applicants: AUC 0.82 -> 61%, AUC 0.66 -
 **Say this first (1 line):** Reserving 5% of 10,000,000 impressions gives up about 5,000 orders a day, 1.67% of the 300,000 the normal ranking would produce, if new listings really convert at 2.0% against 3.0%; I would pay that as an information budget, run it as a capped adaptive explore on a randomised slice, and judge it on whether the seller-side and long-run gains beat the cost.
 
 **Clarifying questions:**
-- Is the 5% in addition to the 2% new sellers already get, or does it include it? If it includes it, only 3 points are extra and the cost falls to about 3,000 orders (1.0%).
+- Does exploration keep the existing 2% for new sellers? The prompt says the 5% is in addition, so the full 500,000 impressions are extra; I would still confirm how it is logged.
 - Where does the 2.0% come from? It is a projection; at 1.5% the cost is 7,500 orders (2.5%) and at 2.5% it is 2,500 (0.83%).
 - How many new listings per day and how fast do they get a first sale? It sets how deep each listing can be explored.
 - Are the lost orders really lost, or does the buyer buy a similar item elsewhere on the site? Gross versus net.
@@ -571,7 +571,7 @@ defaulters caught in the riskiest 20% of applicants: AUC 0.82 -> 61%, AUC 0.66 -
 
 **Approach:**
 1. The cost: 5% x 10,000,000 = 500,000 impressions. At 2.0% they give 10,000 orders; at the normal 3.0% they would give 15,000. Lost = 5,000 orders a day, 5,000 / 300,000 = 1.67% relative.
-2. State the ambiguity: baseline orders of 300,000 assume all impressions at 3.0%; the 2% already going to new sellers makes the true baseline slightly lower (298,000 under the other reading).
+2. State the base: 300,000 orders assumes all 10,000,000 impressions convert at 3.0%; the true baseline is slightly lower because the 2% already going to new sellers converts less.
 3. Gross is not net: the 10,000 orders from exploration are real orders for sellers, and some lost orders are substituted by other purchases.
 4. Run it as an adaptive explore, not a flat lottery: show a new listing in a limited number of impressions, update its conversion estimate with a prior, and give more to those that look good (Thompson-style sampling). A cap per listing stops waste.
 5. Randomise it: explore on a random slice of queries or users, keep a holdout, and place new listings at a limited set of positions so lift can be read cleanly.
@@ -589,14 +589,14 @@ defaulters caught in the riskiest 20% of applicants: AUC 0.82 -> 61%, AUC 0.66 -
 - Sellers may game the exploration slot with fresh listings.
 
 **What the interviewer scores:**
-- Strong: 5,000 orders, 1.67%, with the 3.0% base stated, plus the other reading (3,000, 1.0%). Weak: "it costs 5%".
+- Strong: 5,000 orders, 1.67%, with the 3.0% base stated. Weak: "it costs 5%".
 - Strong: states that cost is not the same as value and names what is bought. Weak: no benefit measure.
 - Strong: adaptive exploration with a cap per listing and a randomised holdout. Weak: "boost all new listings".
 - Strong: labels 2.0% as a projection and shows a range.
 
 **Example:** (illustrative numbers)
 - Weak: "Exploration costs 5% of impressions, so 5% fewer orders."
-- Strong: "500,000 impressions at 2.0% give 10,000 orders instead of 15,000. That is 5,000 a day, 1.67% of the 300,000 we would make, and it falls to 3,000 if the 5% includes the 2% new sellers already get. In my simulation, Thompson-style allocation gave about 26% more orders from the same exploration budget than uniform allocation and picked better listings. I would run it with caps on a randomised slice and judge it on first sales and seller retention."
+- Strong: "500,000 impressions at 2.0% give 10,000 orders instead of 15,000. That is 5,000 a day, 1.67% of the 300,000 we would make. In my simulation, Thompson-style allocation gave about 26% more orders from the same exploration budget than uniform allocation and picked better listings. I would run it with caps on a randomised slice and judge it on first sales and seller retention."
 
 **Code:**
 ```python
@@ -671,7 +671,7 @@ uniform: 10,139 orders, mean true rate of picked top 200 0.0458; Thompson-style:
 **Say this first (1 line):** The current threshold has sensitivity 75% and positive predictive value 10% but raises 600 alerts for a capacity of 100; the strict one has sensitivity 50% and PPV 40% with 100 alerts, and the extra 500 alerts are only 4% precise (20 events), so I would recommend the strict threshold for interrupting alerts plus a quiet lower tier, subject to sign-off from clinical safety, nursing and ward clinicians.
 
 **Clarifying questions:**
-- Is the stricter alert set a subset of the current one (the same score, a higher cutoff)? The 4% precision of the extra 500 assumes yes.
+- The prompt makes the stricter alerts a subset of the current ones (same score, higher cutoff); is that how the replay was run? The 4% precision of the extra 500 depends on it.
 - What happens to the 40 events the strict threshold misses: are they caught by existing early-warning scores or clinical rounds? The real cost of a miss is what the ward does not already catch.
 - How is a "real event" defined, and how much lead time do alerts give? An alert 10 minutes before an event is worth far less than one 6 hours before.
 - Is the 100-alert capacity per day for the whole ward, per nurse, or per shift? It sets the real cap.
@@ -692,7 +692,7 @@ uniform: 10,139 orders, mean true rate of picked top 200 0.0458; Thompson-style:
 - Guardrails: median time from alert to action, share of alerts acted on, missed events reviewed by clinicians, response time for the top-priority alerts, and nurse-reported alert burden.
 
 **Risks:**
-- Subset assumption: if the strict alerts are not nested in the current ones, the 4% number is wrong.
+- The 4% number holds only because the strict alerts are a subset of the current ones; a different model would change it.
 - A retrospective replay is optimistic; live PPV is usually lower (alerts change behaviour, which itself changes outcomes).
 - Missing 40 of 80 events a day is a large clinical cost if nothing else catches them.
 - Alert fatigue: at 10% PPV nurses learn to ignore alerts, and the real events in the list are lost too.
@@ -701,7 +701,7 @@ uniform: 10,139 orders, mean true rate of picked top 200 0.0458; Thompson-style:
 - Strong: 75%, 10%, 50%, 40% and 4% correctly, and the capacity point (6 times over). Weak: picks "higher sensitivity" without noticing capacity.
 - Strong: a recommendation with a safety net (tiers, silent mode, review of misses). Weak: "tune the threshold".
 - Strong: names the owners (clinical safety, nursing, governance, compliance) and does not decide alone.
-- Strong: asks about nesting and lead time.
+- Strong: asks about lead time and how the replay was run.
 
 **Example:** (illustrative numbers)
 - Weak: "The current threshold catches 60 events and the strict one only 40, so keep the current one."
@@ -753,7 +753,7 @@ simulated events reached under random response: mean 9.96
 - How would you pick a threshold without the 100 cap? Price a missed event against a nurse action and pick where the marginal value of an alert equals its cost.
 - What if the ward can add staff? Then the capacity changes and the middle threshold may be right; recompute with the new capacity and agree it with nursing.
 
-**Common mistakes:** Choosing by sensitivity alone. Ignoring the capacity. Reading 4% precision without the subset assumption. Treating a replay as live performance. Deciding alone.
+**Common mistakes:** Choosing by sensitivity alone. Ignoring the capacity. Reading 4% precision without remembering it relies on nested thresholds. Treating a replay as live performance. Deciding alone.
 
 ### Q9 ⭐⭐⭐ 🟡 Ads: A campaign has a daily budget of 24,000 and without pacing it spends 15,000 by 09:00 at a cost per conversion of 30, while the remaining 9,000 is spent after 09:00 at a cost per conversion of 20 (measured yesterday). Moving 6,000 of the early spend to the later period would change conversions by how many if the later cost per conversion stayed at 20, which is an optimistic upper bound? Say why that cost might not stay at 20 and how a pacing controller would use feedback.
 **Asked at:** Ad-serving system-design material (techinterview.org ad serving and real-time bidding pages, a Dataford question on budget pacing and frequency capping, machinelearningatscale.com on frequency capping; feedback-controller pacing, per-user counters and credits for invalid clicks appear in the snippets); prep-site material; commonly reported in public guides for data scientist and ML engineer loops; search snippets only, not opened

@@ -14,7 +14,7 @@
 4. Size the benefit: fixing half the spelling group puts 12,000 searches a day back to having results and lowers the zero-result rate from 6.0% to 4.8%; fixing 80% gives 4.08%.
 5. Measure with an A/B test on searches that would have returned zero results: randomise users, compare search-to-click, add-to-cart and orders per search, revenue per search. Zero-result rate alone is a vanity metric because a correction that returns junk lowers it too.
 6. Guardrails: relevance judged by a labelled sample of corrected searches (wrong correction rate), reformulation rate, latency, and bounce or exit rate.
-7. Missing-product signal for sellers: normalise and cluster the 12,000-a-day group by intent, publish only terms searched by at least K distinct users (K = 20 in my toy example, which kept three terms and dropped a one-user term that looked like a person's name), exclude personal or sensitive queries and prohibited items, and verify the product is truly missing (not out of stock or mis-categorised).
+7. Missing-product signal for sellers: normalise and cluster the 12,000-a-day group by intent, publish only terms searched by at least K distinct users (K = 20 in my toy example, which kept three terms and dropped two small ones, one of them a one-user term that looked like a person's name), exclude personal or sensitive queries and prohibited items, and verify the product is truly missing (not out of stock or mis-categorised).
 8. Present to sellers as weekly demand gaps: term cluster, searches per day, trend, and the category. Check with the trust and policy team and legal or privacy about what can be shown to sellers. Measure the effect by gaps filled and sales on newly listed items.
 
 **Metrics:**
