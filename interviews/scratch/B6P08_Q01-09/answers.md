@@ -360,7 +360,7 @@ continue solo, update channel every 10 min
 
 **Common mistakes:** Checking only the release calendar. Not confirming the metric is real. Loosening the threshold to make the graph look normal. Waking no one, or everyone. Writing "human error" as the root cause.
 
-### Q4 ⭐⭐⭐ 🟢 A drift monitor runs a per-feature test on 40 features every hour at a 5% false-positive level, and the on-call engineer is paged almost every day without a real incident. Assuming independent features and no real change, compute the expected false alerts per day and the probability that at least one feature alerts in a given hour. What would you change so the page means something?
+### Q4 ⭐⭐⭐ 🟢 A drift monitor runs a per-feature test on 40 features every hour at a 5% false-positive level, and the on-call engineer is paged several times a day, nearly every hour, without a real incident. Assuming independent features and no real change, compute the expected false alerts per day and the probability that at least one feature alerts in a given hour. What would you change so the page means something?
 **Asked at:** Alerting and drift-monitor material (an ICLR 2026 listing on false-alarm rates of drift detectors, an MLflow alerts playbook, GeoSurge, LeadDev and Rootly pages on thresholds, monitoring debt and alert fatigue); research and practitioner pages rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 **Say this first (1 line):** 40 features times 24 hourly checks is 960 tests a day, so at 5% I expect 48 false alerts a day, and the chance that at least one feature fires in any given hour is 1 - 0.95^40 = 87%; the monitor is built to cry wolf, so I change what pages a human, not just the threshold.
 
@@ -710,7 +710,7 @@ parity test mismatches: 300
 
 **Common mistakes:** Fixing the wrong side. Estimating damage by score points instead of decisions. Treating a 6% sample figure as exact. Trusting that two teams share a convention. Having no test that runs the same raw row through both paths.
 
-### Q7 ⭐⭐⭐ 🟡 At 10:00 the registry alias 'champion' was moved from version 17 to version 18, but 4 of the 10 serving pods (40%) cached version 17 at startup and never re-resolved the alias. The two versions differ by an average of 0.08 in score, and the logs show only the alias name. How do you detect this today, fix it, and change the design so the served version is always provable?
+### Q7 ⭐⭐⭐ 🟡 At 10:00 the registry alias 'champion' was moved from version 17 to version 18, but 4 of the 10 serving pods (40%) cached version 17 at startup and never re-resolved the alias. The two versions differ by a mean absolute difference of 0.08 in score per request, and the logs show only the alias name. How do you detect this today, fix it, and change the design so the served version is always provable?
 **Asked at:** Model-registry and rollback pages (oneuptime and mljar rollback runbooks that move a 'champion' alias or demote a Production stage, a Towards AI piece on registries as the source of truth); secondary practitioner material, no located public incident; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 **Say this first (1 line):** Today I detect it by reading the model version out of every response and counting versions per pod, fix it with a rolling restart of the 4 stale pods, and change the design so deployments pin a numeric version, the alias is read only by the promotion job, and every response carries a version I can prove.
 
@@ -831,3 +831,245 @@ detected by 10:15
 - Book 4 link: "MLflow Model Registry: registered models, versions, aliases and the deprecated stages" in Book4_MLOps_Part04.md for alias basics.
 
 **Common mistakes:** Only restarting without adding visibility. Assuming one alias move means one version served. Forgetting that mixed versions break per-user consistency and experiments. Not checking that v18 is the right target. Treating 0.08 as a fleet-wide shift instead of a per-request difference on the affected share.
+
+### Q8 ⭐⭐⭐ 🟡 A feature table due at 06:00 landed at 09:30, which is 210 minutes late, and the 07:00 scoring job quietly read the previous day's partition, so 1,000,000 customers were scored on features one day old. The job exited with success. What do you do now for the 1,000,000 scores, and what checks make a stale input fail loudly next time?
+**Asked at:** Data-pipeline pages (luminousmen on avoidable backfills and non-idempotent jobs, DZone on silent upstream schema change, HackerNoon and Seattle Data Guy on silent pipeline failures, DataExpert on schema drift and idempotent replays, DataVidhya on measuring detection latency in postmortems); practitioner blogs rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
+**Say this first (1 line):** I rescore the 1,000,000 customers now from the 09:30 table, mark the stale scores so nothing new reads them, trace who already used them, and change the job so a missing or old input partition fails the run instead of falling back silently.
+
+**Clarifying questions:**
+- Who reads the scores, and when? A campaign that already ran at 08:00 is a different problem from a dashboard nobody opened yet.
+- How different are yesterday's and today's features for these customers? If I can compute it, I size the damage; if not, I rescore everything.
+- How long does a full rescore take and does it hold up the next day's run? Illustrative: 25 minutes.
+- Why did the job read the previous partition: an explicit "latest partition" fallback, a default date, a missing dependency? That is the actual defect.
+- Is a late table normal (a known SLA slip) or new? It sets how loud the alert is.
+
+**Approach:**
+1. First 15 minutes. Stop consumers: pause any downstream job that reads the score table, and label the 07:00 run's output as stale (set a flag or rename the partition). Confirm the 09:30 table is complete (row counts, null rates versus yesterday).
+2. Rescore. Run the scoring job against today's partition (illustrative 25 minutes, done at 10:00 in my run), overwriting the same output partition so there is one set of scores. Verify row count equals customers and every row carries today's feature date.
+3. Damage trace. List what read the stale scores and when: campaigns, limits, dashboards. For each, decide whether the decision changes enough to redo. Measure it: diff stale versus fresh scores per customer. As a guide, in my simulation with an assumed day-to-day correlation of 0.95, about 43,840 customers (4.4%) change top-10% membership; the real figure comes from the diff, not from my assumed correlation.
+4. Rollback and escalation criteria. If the fresh table fails its checks (row count below 99% of customers, null rate far above yesterday), do not rescore; keep yesterday's scores flagged as stale and escalate to the table owner. Escalate to the business owner at once if a decision with customer impact (a credit limit, an offer) used the stale scores.
+5. First day. Fix the job: compute the expected partition from the run date; if it is missing, fail with a clear message (my run shows the failure). Add a feature_date column to the output and an assertion that all rows match the run date. Add a sensor with a grace period: if the table has not landed by 06:30, page the data owner.
+6. Next quarter. Define data contracts with the table's owner (landing time, completeness, how lateness is signalled); add a freshness metric per input to the dashboard; run a game day where an input is withheld and the job must refuse. Keep an explicit, logged "allow stale up to N days" switch for the cases where staleness is acceptable, so it is a decision, not an accident.
+7. Blameless postmortem. The job did what it was written to do: take the latest partition. The failure was that "latest" was treated as "correct". Questions: who knew the table was late at 06:00, and did anything tell the scoring job? Action items are the contract, the sensor and the freshness assertion.
+
+**Metrics:**
+- Staleness = scoring date minus feature date, in days (1 here); share of rows with feature_date not equal to run date (100% of the 1,000,000 rows).
+- Lateness = landing time minus due time = 09:30 - 06:00 = 210 minutes; scoring ran 150 minutes before the data landed.
+- Exposure time of stale scores = from 07:00 to the end of the rescore, 180 minutes in my illustrative timeline.
+- Damage = customers whose decision changes between stale and fresh scores / customers (measure with the diff).
+- Guardrails: input freshness by table, row count versus customers, null rate versus yesterday.
+
+**Risks:**
+- Rescoring from a table that is itself incomplete, replacing bad scores with worse ones. Check the table first.
+- Overwriting the output while a consumer is reading it; coordinate or write-then-swap.
+- Hiding the staleness by deleting evidence. Keep the stale run's metadata for the postmortem.
+- My top-10% simulation assumes a correlation (0.95, invented). A different correlation gives a different count (2.0% at 0.99, 8.7% at 0.80 in my run).
+
+**What the interviewer scores:**
+- Strong: stops consumers first, then repairs, then traces impact. Weak: "rerun the job" and nothing else.
+- Strong: names the real defect (silent fallback to the latest partition). Weak: blames the late upstream team.
+- Strong: checks fail loudly (expected-partition assertion, feature_date column, landing sensor). Weak: "monitor the job".
+- Strong: blameless and gives a contract. Weak: "ask the upstream team to be on time".
+
+**Example:** Illustrative numbers. Weak answer: "The table was late, so I would tell the upstream team to deliver on time and rerun the job." Strong answer: "I pause the readers, rescore the 1,000,000 customers from the 09:30 table so the new scores are in place by about 10:00, and check who already read the 07:00 scores. Then the job gets an expected-partition check so it fails with 'partition missing' instead of reading yesterday, a feature_date on every row, and a sensor that pages at 06:30 if the table has not landed."
+
+**Code:**
+```python
+# Q8: feature table 210 minutes late; the scoring job silently used yesterday's partition. Illustrative; seeded.
+from datetime import date, datetime, timedelta
+import numpy as np
+
+# prompt arithmetic
+due, landed, scored = datetime(2026, 10, 31, 6, 0), datetime(2026, 10, 31, 9, 30), datetime(2026, 10, 31, 7, 0)
+late_min = (landed - due) / timedelta(minutes=1)
+assert late_min == 210
+print("late by", int(late_min), "min; scoring ran", int((due + timedelta(hours=1) - due) / timedelta(minutes=1)), "min after the due time but", int((landed - scored) / timedelta(minutes=1)), "min before the data existed")
+assert (landed - scored) / timedelta(minutes=1) == 150
+
+# illustrative recovery timeline: rescoring takes 25 min for 1,000,000 customers; start 5 min after landing
+rescore_start = landed + timedelta(minutes=5); rescore_end = rescore_start + timedelta(minutes=25)
+exposure_min = (rescore_end - scored) / timedelta(minutes=1)
+print("stale scores existed from 07:00 to", rescore_end.strftime("%H:%M"), "=", int(exposure_min), "min")
+assert rescore_end.strftime("%H:%M") == "10:00" and exposure_min == 180
+
+# how different are one-day-old features? Simulate scores with day-to-day correlation rho (an ASSUMPTION; measure it for real)
+rng = np.random.default_rng(8)
+N = 1_000_000
+for rho in (0.99, 0.95, 0.80):
+    s_old = rng.normal(size=N)
+    s_new = rho * s_old + np.sqrt(1 - rho**2) * rng.normal(size=N)
+    top_old = s_old >= np.quantile(s_old, 0.90); top_new = s_new >= np.quantile(s_new, 0.90)
+    wrong = int((top_old != top_new).sum())          # customers wrongly in or out of the top 10% target list
+    print(f"rho={rho}: customers whose top-10% membership differs = {wrong:,} ({wrong/N:.1%})")
+    if rho == 0.95: w95 = wrong
+assert 20_000 < w95 < 70_000        # a 'small' 1-day lag still misplaces tens of thousands of customers at rho 0.95
+
+# what makes it fail loudly: freshness assertion on the INPUT, and lineage on the OUTPUT
+def pick_partition(available, run_date):
+    if run_date not in available:
+        raise RuntimeError(f"feature partition {run_date} missing (latest is {max(available)}); refusing to score")
+    return run_date
+today, yday = date(2026, 10, 31), date(2026, 10, 30)
+try:
+    pick_partition({yday}, today); raise SystemExit("must fail")
+except RuntimeError as e:
+    print("job now fails:", e)
+assert pick_partition({yday, today}, today) == today
+
+def check_output(rows, expected_date, expected_n, tol=0.01):
+    bad = [r for r in rows if r["feature_date"] != expected_date]
+    assert not bad, f"{len(bad)} rows carry stale feature_date"
+    assert abs(len(rows) - expected_n) / expected_n <= tol, "row count off"
+    return "ok"
+good = [{"customer": i, "feature_date": today} for i in range(1000)]
+stale = [{"customer": i, "feature_date": yday} for i in range(1000)]
+assert check_output(good, today, 1000) == "ok"
+try: check_output(stale, today, 1000); raise SystemExit("must fail")
+except AssertionError as e: print("output check:", e)
+
+# sensor alert: table not landed by 06:30 (30 min grace) pages the data owner; shows detection at 06:30 instead of 09:30+
+alert_at = due + timedelta(minutes=30)
+print("alert time:", alert_at.strftime("%H:%M"), "-> alert fires", int((landed - alert_at) / timedelta(minutes=1)), "min before the table lands")
+assert alert_at.strftime("%H:%M") == "06:30"
+```
+
+**Output (my run):**
+```text
+late by 210 min; scoring ran 60 min after the due time but 150 min before the data existed
+stale scores existed from 07:00 to 10:00 = 180 min
+rho=0.99: customers whose top-10% membership differs = 19,850 (2.0%)
+rho=0.95: customers whose top-10% membership differs = 43,840 (4.4%)
+rho=0.8: customers whose top-10% membership differs = 87,474 (8.7%)
+job now fails: feature partition 2026-10-31 missing (latest is 2026-10-30); refusing to score
+output check: 1000 rows carry stale feature_date
+alert time: 06:30 -> alert fires 180 min before the table lands
+```
+
+**Follow-ups:**
+- Should the job wait for the table instead of failing? A bounded wait is fine (poll until a cutoff), then fail; waiting forever hides the problem and delays everything behind it.
+- What if yesterday's features are acceptable for some uses? Make that an explicit setting with a logged maximum age, not a default.
+- Book 4 link: "Idempotency in pipeline tasks" and "Backfills and catchup" in Book4_MLOps_Part05.md cover safe reruns.
+
+**Common mistakes:** Rerunning without checking the new table. Leaving the stale scores readable. Treating a green exit code as correct output. Having no feature_date in the output. Asking another team to "be on time" as the whole fix.
+
+### Q9 ⭐⭐⭐ 🟡 A daily scoring job that appends to its output table was retried by the scheduler after a timeout at minute 55, but the first run was still alive and also finished. The table now holds 2,000,000 rows for 1,000,000 customers for that date, and a downstream campaign job has already read it. How do you clean up, and how do you redesign the job so a duplicate run is harmless?
+**Asked at:** Data-pipeline pages (luminousmen on avoidable backfills and non-idempotent jobs, DZone on silent upstream schema change, HackerNoon and Seattle Data Guy on silent pipeline failures, DataExpert on schema drift and idempotent replays, DataVidhya on measuring detection latency in postmortems); practitioner blogs rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
+**Say this first (1 line):** I freeze the table for readers, prove the two runs agree, build a clean copy with one row per customer and swap it in, check what the campaign already did with 2,000,000 rows, and redesign the write so a second run replaces the partition instead of appending to it.
+
+**Clarifying questions:**
+- Did the two runs use the same model version and the same feature partition? If yes the duplicates are identical and either row is safe; if not, I need a rule for which score is right.
+- What did the campaign do with the rows: send, queue, or only read? Duplicate rows could mean duplicate contacts, up to 1,000,000 here.
+- Is the output table a plain append table or does it support overwrite by partition or merge by key? That is a platform fact I would check, not assume.
+- Why did the scheduler retry while the first run was alive: a timeout that did not kill the process? That is the second defect.
+- Who owns the downstream job and can it dedupe on its side?
+
+**Approach:**
+1. First 15 minutes. Pause the downstream readers of the table, and snapshot it (so I can undo my own cleanup). Count rows and distinct keys: 2,000,000 rows and 1,000,000 customers, so 50% of the rows are duplicates.
+2. Prove the runs agree. Join run A and run B on customer id and compare scores. In my run all 1,000,000 scores match, so keeping either row is safe. If some differ, keep the row from the run that used the intended model and features and log each difference; do not pick "the latest" blindly.
+3. Clean on a copy. Build a deduplicated table (one row per customer and run date), validate row count equals customers and keys are unique, and swap it in as one step. Never delete in place before the check passes.
+4. Downstream. With the campaign owner, establish what was sent. Worst case, one contact per row read, so up to 1,000,000 customers were contacted twice. Stop pending sends, suppress the second send, and decide on an apology or compensation only if contact policy was breached.
+5. Rollback and escalation criteria. If the cleaned table fails validation (row count not equal to customers, keys not unique), restore the snapshot and keep readers paused. Escalate to the campaign owner immediately if any send already went out, and to compliance if contact-frequency rules apply (check the company policy).
+6. First day. Make the job idempotent: write by overwriting the date partition from a staged copy, or merge by key (customer id plus date), so a second run replaces the first. Stop the old run when a retry starts: take a lease with a token and let a run commit only if its token is current (my run shows the old run rejected and the retry allowed). Idempotent-write features such as overwrite or merge depend on the table format and are editor knowledge here, not tested.
+7. Next quarter. Add a downstream readiness gate (distinct keys equal expected rows) so readers refuse a duplicated table; make the campaign job dedupe on its own key; replay duplicate runs in a test (run twice, assert the same table); set timeouts that kill the process, not just mark it failed.
+8. Blameless postmortem. A retry is a normal, designed behaviour of a scheduler, and an append job is not safe under it. The failure sits in the design, not in the person who set the timeout. Action items: idempotent write, lease or lock, downstream gate, kill-on-timeout.
+
+**Metrics:**
+- Duplicate rate = (rows - distinct keys) / rows = (2,000,000 - 1,000,000) / 2,000,000 = 50%. Duplicates per customer = rows / distinct keys = 2.0.
+- Score disagreement = customers whose two scores differ / customers (0 in my run).
+- Downstream impact = customers contacted more than once / customers contacted (from the campaign log).
+- Guardrails: rows equal distinct keys on every run, run count per partition per day (must be 1 committed), time from duplicate to detection.
+
+**Risks:**
+- Deleting the wrong copy when the runs differ. Prove agreement first.
+- Cleanup in place with no snapshot; a mistake then has no undo.
+- A lease that expires while the run is still working can still allow two writers; a fencing token on the commit is what blocks the late one.
+- Overwrite can briefly show an empty or partial partition to readers; swap atomically or gate readers.
+- The 1,000,000 duplicate contacts is a worst case; the campaign log gives the real figure.
+
+**What the interviewer scores:**
+- Strong: stops readers, snapshots, proves the runs agree, then cleans. Weak: "delete duplicates" at once.
+- Strong: asks what the campaign did and treats it as part of the incident. Weak: fixes the table and forgets the customers.
+- Strong: redesign makes a duplicate run harmless (overwrite or merge plus a lease), and states that the detail depends on the platform. Weak: "make sure the job never runs twice".
+- Strong: blameless and kill-on-timeout. Weak: blames the scheduler or the engineer.
+
+**Example:** Illustrative numbers. Weak answer: "I would delete the extra rows and ask the scheduler team to stop retrying." Strong answer: "I pause the readers and snapshot the table. The 2,000,000 rows are 1,000,000 customers twice, so I compare both runs; they match, so I keep one row each, validate, and swap. Then I check with the campaign team whether anyone got two messages, which could be up to a million customers. The job becomes a partition overwrite with a lease, so a retry replaces rather than adds, and downstream refuses a table where rows differ from distinct keys."
+
+**Code:**
+```python
+# Q9: appended twice -> 2,000,000 rows for 1,000,000 customers. Illustrative; seeded.
+import numpy as np
+import pandas as pd
+
+N = 1_000_000
+rng = np.random.default_rng(9)
+score = rng.random(N)
+run_a = pd.DataFrame({"customer_id": np.arange(N), "run_date": "2026-10-31", "score": score, "run_id": "A"})
+# run B is a retry: same model and features -> identical scores here; (a real retry may differ slightly)
+run_b = run_a.assign(run_id="B")
+table = pd.concat([run_a, run_b], ignore_index=True)
+
+# 1) detect and size the damage
+rows, distinct = len(table), table["customer_id"].nunique()
+dups = rows - distinct
+print(f"rows={rows:,} distinct customers={distinct:,} duplicate rows={dups:,} ({dups/rows:.0%} of the table)")
+assert rows == 2_000_000 and distinct == 1_000_000 and dups == 1_000_000 and dups / rows == 0.5
+
+# 2) before deleting anything: do the two runs agree?
+m = run_a.merge(run_b, on="customer_id", suffixes=("_a", "_b"))
+n_diff = int((m["score_a"] != m["score_b"]).sum())
+print("customers whose two scores differ:", n_diff)
+assert len(m) == N and n_diff == 0       # identical here, so keeping either row is safe. If not, pick by rule and log it.
+
+# 3) clean up on a COPY, then swap (never delete in place first)
+clean = table.sort_values(["customer_id", "run_id"]).drop_duplicates(["customer_id", "run_date"], keep="last")
+assert len(clean) == N and clean["customer_id"].is_unique and (clean["run_id"] == "B").all()
+print("clean table rows:", len(clean))
+
+# 4) downstream: the campaign read 2,000,000 rows. Worst case each duplicated customer was contacted twice.
+contacts_worst = rows                     # one contact per row read, if the campaign has no dedupe of its own
+print("worst case contacts:", f"{contacts_worst:,}", "for", f"{N:,}", "customers -> up to", f"{contacts_worst-N:,}", "duplicate contacts")
+assert contacts_worst - N == 1_000_000
+
+# 5) redesign A: partition overwrite keyed by run date, staged then swapped (dict stands in for a table)
+store = {}
+def write_partition(store, run_date, df, run_id):
+    staged = df.assign(run_id=run_id).drop_duplicates("customer_id")     # staged copy
+    assert staged["customer_id"].is_unique
+    store[run_date] = staged                                             # swap in as one step (atomic in a real system)
+write_partition(store, "2026-10-31", run_a, "A")
+write_partition(store, "2026-10-31", run_b, "B")                         # the duplicate run is harmless
+assert len(store["2026-10-31"]) == N
+print("after two runs, rows for the date:", len(store["2026-10-31"]))
+
+# 6) redesign B: a lease with a fencing token so the old run cannot write after the retry started
+class Lease:
+    def __init__(self): self.token = 0
+    def acquire(self): self.token += 1; return self.token
+    def check(self, t): return t == self.token
+lease = Lease(); t1 = lease.acquire(); t2 = lease.acquire()               # retry took the lease at minute 55
+assert lease.check(t2) and not lease.check(t1)
+print("old run may commit:", lease.check(t1), "| retry may commit:", lease.check(t2))
+
+# 7) final gate: downstream checks distinct keys == expected before reading
+def readiness(df, expected): return len(df) == expected and df["customer_id"].is_unique
+assert not readiness(table, N) and readiness(clean, N)
+print("readiness: duplicated table =", readiness(table, N), "| clean table =", readiness(clean, N))
+```
+
+**Output (my run):**
+```text
+rows=2,000,000 distinct customers=1,000,000 duplicate rows=1,000,000 (50% of the table)
+customers whose two scores differ: 0
+clean table rows: 1000000
+worst case contacts: 2,000,000 for 1,000,000 customers -> up to 1,000,000 duplicate contacts
+after two runs, rows for the date: 1000000
+old run may commit: False | retry may commit: True
+readiness: duplicated table = False | clean table = True
+```
+
+**Follow-ups:**
+- Why not just add a unique constraint? It turns the second write into a loud failure, which is good, but the job then fails on a retry instead of succeeding quietly; pair it with overwrite or merge so the retry succeeds harmlessly.
+- Merge or overwrite? Overwrite of a whole partition is simplest when each run recomputes everything; merge by key suits incremental updates. Both need a stable key.
+- Book 4 link: "Idempotency in pipeline tasks" in Book4_MLOps_Part05.md.
+
+**Common mistakes:** Deleting in place without a snapshot. Assuming both runs produced identical scores. Ignoring the downstream campaign. Relying on "the scheduler will not retry". Using append for a job that a scheduler is allowed to rerun.

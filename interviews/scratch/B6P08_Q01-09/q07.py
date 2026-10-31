@@ -7,7 +7,7 @@ pods = ["v18"] * 6 + ["v17"] * 4
 stale = pods.count("v17") / len(pods)
 assert stale == 0.4
 
-# Interpretation: the 0.08 is the mean ABSOLUTE per-request score difference between versions.
+# The prompt gives 0.08 as the mean ABSOLUTE per-request score difference between versions.
 # The fleet-wide expected deviation from the intended model is then 0.4 x 0.08.
 fleet_dev = stale * 0.08
 print("expected mean |score deviation| over all traffic =", round(fleet_dev, 3))

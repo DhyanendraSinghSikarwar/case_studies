@@ -34,7 +34,7 @@ add(3, '🟢', "At 02:10 you are paged because the fraud model's approval rate i
 # 4 alert fatigue arithmetic
 chk = 24*40; fa = chk*0.05; ph = 1-0.95**40
 assert chk == 960 and fa == 48 and 0.87 < ph < 0.88
-add(3, '🟢', "A drift monitor runs a per-feature test on 40 features every hour at a 5% false-positive level, and the on-call engineer is paged almost every day without a real incident. Assuming independent features and no real change, compute the expected false alerts per day and the probability that at least one feature alerts in a given hour. What would you change so the page means something?", 'A')
+add(3, '🟢', "A drift monitor runs a per-feature test on 40 features every hour at a 5% false-positive level, and the on-call engineer is paged several times a day, nearly every hour, without a real incident. Assuming independent features and no real change, compute the expected false alerts per day and the probability that at least one feature alerts in a given hour. What would you change so the page means something?", 'A')
 # 5 CI mocked store outage
 assert 600*12*60 == 432000 and 12+6 == 18
 add(3, '🟢', "A model deploy passed every CI test, but the integration test used a mocked feature store, and in production the new model returned errors for 100% of requests for 12 minutes before an engineer rolled back, taking 6 further minutes to finish. At 600 requests per second, compute the failed requests in the first 12 minutes and name which tests and gates were missing. Which of them would you add first?", 'T')
@@ -43,7 +43,7 @@ assert 300/5000 == 0.06
 add(3, '🟡', "The training pipeline switched to filling a null income with the training mean of 48,000, while the serving service still fills it with 0. In a sample of 5,000 live requests, 300 (6% of the sample) have a null income. How do you confirm the skew, estimate its damage, and fix it, and which control makes this class of change impossible to ship unnoticed?", 'S')
 # 7 wrong version served
 assert 4/10 == 0.4
-add(3, '🟡', "At 10:00 the registry alias 'champion' was moved from version 17 to version 18, but 4 of the 10 serving pods (40%) cached version 17 at startup and never re-resolved the alias. The two versions differ by an average of 0.08 in score, and the logs show only the alias name. How do you detect this today, fix it, and change the design so the served version is always provable?", 'R')
+add(3, '🟡', "At 10:00 the registry alias 'champion' was moved from version 17 to version 18, but 4 of the 10 serving pods (40%) cached version 17 at startup and never re-resolved the alias. The two versions differ by a mean absolute difference of 0.08 in score per request, and the logs show only the alias name. How do you detect this today, fix it, and change the design so the served version is always provable?", 'R')
 # 8 late pipeline
 assert (9*60+30)-(6*60) == 210 and 1000000*1 == 1000000
 add(3, '🟡', "A feature table due at 06:00 landed at 09:30, which is 210 minutes late, and the 07:00 scoring job quietly read the previous day's partition, so 1,000,000 customers were scored on features one day old. The job exited with success. What do you do now for the 1,000,000 scores, and what checks make a stale input fail loudly next time?", 'D')
@@ -83,7 +83,7 @@ add(2, '🟡', "After a blue/green switch, the 99th-percentile latency went from
 # 19 rollback criteria power
 se = math.sqrt(0.02*0.98/10000)
 assert abs(se-0.0014) < 0.00001 and abs(0.005/se-3.57) < 0.02 and 0.005/0.02 == 0.25
-add(2, '🟡', "You must write automatic rollback criteria for a model whose error rate is about 2% at baseline, with 10,000 canary requests available before a ramp. The standard error of an error rate of 2% on 10,000 requests is about 0.14 points, so a rise to 2.5% (0.5 points absolute, 25% relative to 2%) is about 3.6 standard errors. What rule do you write, and how do you handle small segments that this volume cannot see?", 'T')
+add(2, '🟡', "You must write automatic rollback criteria for a model whose error rate is about 2% at baseline, with 10,000 canary requests available before a ramp. The standard error of an error rate of 2% on 10,000 requests is about 0.14 points, so a rise to 2.5% (0.5 points absolute, 25% relative to 2%) is about 3.6 standard errors if the 2% baseline is treated as exactly known (about 2.4 against a concurrent control of 10,000 requests). What rule do you write, and how do you handle small segments that this volume cannot see?", 'T')
 # 20 feature store stale
 assert 7+1 == 8
 add(2, '🟡', "A streaming job feeding the online store lagged by 7 hours, so the feature clicks_last_hour served to the model actually described the hour that ended 7 hours earlier, while offline training always used the live hour. The lag lasted 5 hours before anyone noticed, and the model returned normal-looking scores throughout. How do you detect this kind of staleness, what do you serve when a feature is stale, and how do you assess the damage?", 'S')
@@ -93,7 +93,7 @@ add(2, '🟡', "A retrained refund-risk model scored an offline AUC of 0.93 agai
 # 22 backfill planning
 import math as m
 assert m.ceil(9/4) == 3 and m.ceil(9/4)*40 == 120 and 9*40 == 360
-add(2, '🟡', "A feature pipeline was broken for 9 daily partitions. Each partition takes 40 minutes, the cluster can run 4 partitions at once, and a rolling 7-day feature means each day depends on the previous days' output. Compute the backfill wall-clock time if the days were independent and if they must run in order, and say how you would order the work, protect live jobs and validate the result.", 'D')
+add(2, '🟡', "A feature pipeline was broken for 9 daily partitions. Each partition takes 40 minutes, the cluster can run 4 partitions at once, and a rolling 7-day feature may make each day depend on the stored output of the previous day. Compute the backfill wall-clock time if the days were independent and if they must run in order, and say how you would order the work, protect live jobs and validate the result.", 'D')
 # 23 registry mix-up lineage
 assert 41-38 == 3
 add(2, '🟡', "An engineer promoted version 38 of a model, out of 41 registered versions, believing it came from the full-data experiment, but it was trained on a 5% sample and nobody noticed for two days. The registry only stores a name, a version number and a metric. What metadata and promotion checks would you require, who can promote, and how do you find any other mislabelled versions?", 'R')
@@ -124,7 +124,7 @@ assert 2000000*0.15 == 300000
 add(2, '🟢', "Dashboards show normal latency and a 0.1% error rate, but a feature lookup timeout makes the service return the default score 0.5 for 15% of 2,000,000 daily requests, which is 300,000 requests. No alert fired because the service returns success. What monitoring was missing, and how would you detect and count these degraded responses from now on?", 'ED:monitoring gaps in model-serving platforms')
 # 32 volume alert
 assert round(2/11, 3) == 0.182 and 11-9 == 2
-add(2, '🟢', "A static alert fires when hourly prediction volume falls 20% below the previous week, and over one month it paged 11 times, of which 9 were weekends and holidays and only 2 were real outages, a precision of about 18% (2 of 11). The on-call engineer now mutes it. How do you redesign the alert so the 2 real outages still page, and what do you check before re-enabling the page?", 'A')
+add(2, '🟢', "A static alert fires when hourly prediction volume falls 20% below the mean of the same hour over the previous 7 days, and over one month it paged 11 times, of which 9 were weekends and holidays and only 2 were real outages, a precision of about 18% (2 of 11). The on-call engineer now mutes it. How do you redesign the alert so the 2 real outages still page, and what do you check before re-enabling the page?", 'A')
 # 33 blast radius
 assert 40+25+15+10+6+4 == 100
 add(2, '🟡', "A new pricing-model threshold is about to roll out to 6 regions whose traffic shares are 40%, 25%, 15%, 10%, 6% and 4% of all requests. Order and size the rollout waves, say what you watch at each wave, and explain how you limit the blast radius if the threshold has a bug that only shows at a particular hour or customer type.", 'ED:blast radius and progressive delivery in release engineering')

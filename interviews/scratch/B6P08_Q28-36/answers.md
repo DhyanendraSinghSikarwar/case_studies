@@ -759,3 +759,141 @@ lease, run-scoped paths and promotion checks passed
 - Related reading: Book 4 Part 5, Q3 "Idempotency in pipeline tasks".
 
 **Common mistakes:** Queueing overlapped runs (lag grows forever). Only fixing the schedule and not the shared paths. Not checking the registry and alias history. Resuming from "latest". Deleting checkpoints before auditing. Blaming the person who edited the schedule.
+
+### Q34 ⭐⭐ 🟡 A two-sample KS test comparing this week's 2,000,000 rows to the reference flags 38 of 40 features (95% of them) with p-values below 0.001, while the largest KS statistic is only 0.02 and the model's labelled AUC is unchanged. Explain why the monitor fires constantly, and how you would change the test, the effect-size threshold and the alert rule.
+**Asked at:** Alerting and drift-monitor material (an ICLR 2026 listing on false-alarm rates of drift detectors, an MLflow alerts playbook, GeoSurge, LeadDev and Rootly pages on thresholds, monitoring debt and alert fatigue); research and practitioner pages rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
+**Say this first (1 line):** The monitor is not wrong, it is answering the wrong question: with 2,000,000 rows the smallest KS statistic that is "significant" at 0.001 is about 0.002, so a real but tiny shift of 0.02 is 10 times past it; I would alert on effect size, calibrated on history and on feature importance, not on p-values.
+
+**Clarifying questions:**
+- How big is the reference set? Critical D depends on both sample sizes (0.0063 with a 100,000-row reference against 0.00195 with 2,000,000).
+- Are the features continuous or discrete or heavy with ties? KS p-values are only exact for continuous data; with ties they are conservative, and the statistic can be driven by one common value.
+- How much does week-to-week variation (seasonality, pay cycles, promotions) move D normally? That sets the threshold.
+- Which features matter to the model (importance, or a measured effect on the score)? Alerts should weigh by that.
+- Who gets paged and for what? That sets the alert rule and who owns it.
+
+**Approach:**
+1. First 15 minutes (the page itself): check the AUC and score distribution on recent labelled data, which here is unchanged, then acknowledge, tag as a known false alert, and do not roll anything back. Escalate only if an important feature shows a large effect size or the score distribution moves.
+2. Explain why it fires: under no change, 40 features at p below 0.001 would give about 0.04 flags a week. Getting 38 means these are 38 real but small differences (the sample is so large that any real difference is detected). In my simulation a 0.05 standard-deviation shift gives D about 0.02 at 2,000,000 rows, with a p-value that underflows to zero, and a 5,000-row subsample would not flag it (its critical D is 0.039).
+3. Change the test: report the statistic (D, or a PSI or Wasserstein distance scaled by the feature spread) with a bootstrap interval, and decide on size, not on p. Optionally subsample to a fixed size so power is comparable across weeks, but the real fix is the threshold below.
+4. Calibrate the effect-size threshold: take 26 weeks of week-over-week D under normal conditions. In my illustrative simulation with a seasonal wobble of 0.03 standard deviations, median D is 0.0085 and the 99th percentile is 0.0244, bigger than the 0.02 that fired. So 0.02 is inside natural variation. Pick a threshold several times above that (0.10 here, more than 3 x 0.0244), then check it against past incidents that did hurt the model.
+5. Change the alert rule (illustrative): page when D is at least 0.10 on at least 2 of the 10 most important features, two weeks in a row. Everything else goes to a weekly digest, not a page. Add a model-output check (score distribution, and AUC or calibration on labels when they arrive) as the page for "the model is affected".
+6. First day: ship the rule, re-send the last 8 weeks through it to count pages (should be near zero) and confirm that known past incidents would still page.
+7. Next quarter: review the threshold every quarter against incidents, add a drift-to-impact mapping (how much AUC loss per unit of D, per feature), and delete alerts nobody acts on.
+8. Blameless postmortem for alert fatigue: whoever set p<0.001 used the textbook default. Findings: no effect-size threshold, no owner, no review. Action items with owners.
+
+**Rollback and escalation criteria (illustrative):**
+- Escalate (page) on D of at least 0.10 on 2 or more important features for two weeks, or any move of the score distribution above its own threshold.
+- Roll back the new alert rule if it misses a replayed historical incident, or if it pages more than once a month without a real issue.
+- Treat any AUC or calibration drop beyond its own noise (use the labelled sample size) as an incident whatever the drift monitor says.
+
+**Metrics:**
+- KS statistic D = largest absolute difference between the two empirical cumulative distributions, on a 0 to 1 scale. Not a p-value.
+- Flag share = features with p below 0.001 / features tested (38 / 40 = 95%). Misleading at this sample size.
+- Alert precision = pages that were real issues / all pages. Target above 50%.
+- Detection delay = time from a real shift to the page.
+- Guardrails: AUC or calibration on the labelled sample, score distribution shift, pages per week.
+
+**Risks:**
+- A threshold set too high hides a slow decay, so watch cumulative drift over many weeks too.
+- Ties and discrete features break the usual KS reading.
+- A shift in several features each below threshold can still move the score; check the score itself.
+- A constant reference goes stale; refresh it on a schedule with sign-off.
+
+**What the interviewer scores:**
+- Strong: explains sample size drives p to zero and quotes the critical D. Weak: "the data is drifting, retrain".
+- Strong: separates statistical from practical significance, effect-size threshold calibrated on history. Weak: lowers p to 0.00001.
+- Strong: weighs features by importance and checks model outputs. Weak: treats all 40 features alike.
+- Strong: alert rule with consecutive weeks, owner and a review. Weak: no owner.
+- Strong: blameless alert-fatigue postmortem. Weak: blames the monitoring engineer.
+
+**Example:** Illustrative numbers. Weak: "38 of 40 features drifted, so I would retrain and tighten the p-value." Strong: "At 2,000,000 rows the critical D is 0.002, so D of 0.02 is 10 times critical but only a 0.05 standard-deviation shift. Normal week-to-week D reaches 0.024 in my history. I alert at D of 0.10 on two important features two weeks running, and I page on the score distribution and AUC, which are unchanged."
+
+**Code:**
+```python
+# Illustrative numbers only. Why KS at 2,000,000 rows flags tiny shifts, and a calibrated effect-size alert rule.
+import math, numpy as np
+from scipy import stats
+rng = np.random.default_rng(34)
+n = 2_000_000
+shift = 0.05
+# 1. Critical KS statistic: smallest D that is "significant" at alpha = 0.001.
+def d_crit(n1, n2, alpha=0.001):
+    return math.sqrt(-math.log(alpha / 2) / 2) * math.sqrt((n1 + n2) / (n1 * n2))
+dc = d_crit(n, n)
+print('critical D at n=m=2,000,000, alpha=0.001:', round(dc, 5))
+assert round(dc, 5) == 0.00195
+print('observed D=0.02 is', round(0.02 / dc, 1), 'x the critical value')
+assert 10 < 0.02 / dc < 11
+print('critical D if the reference has only 100,000 rows:', round(d_crit(n, 100_000), 4))
+assert round(d_crit(n, 100_000), 4) == 0.0063
+print('critical D for 5,000 rows each:', round(d_crit(5000, 5000), 4))
+assert d_crit(5000, 5000) > 0.02        # a 5,000-row subsample would NOT flag D=0.02
+# 2a. One feature at the full 2,000,000 rows: a 0.05 sd shift gives D near 0.02 and a p-value that underflows to zero.
+one = stats.ks_2samp(rng.standard_normal(n), rng.standard_normal(n) + 0.05)
+print('2,000,000 rows, shift 0.05 sd: D', round(one.statistic, 4), 'p', one.pvalue)
+assert 0.018 < one.statistic < 0.022 and one.pvalue < 0.001
+# 2b. Scan of 40 features (300,000 rows each to keep the run short): 38 shifted by 0.05 sd, 2 untouched.
+k = 300_000
+flag, Ds = 0, []
+for j in range(40):
+    cur = rng.standard_normal(k) + (shift if j < 38 else 0.0)
+    r = stats.ks_2samp(rng.standard_normal(k), cur)
+    Ds.append(r.statistic); flag += r.pvalue < 0.001
+print('flagged', flag, 'of 40 (', flag / 40, '), max D', round(max(Ds), 4))
+assert flag == 38 and flag / 40 == 0.95 and max(Ds) < 0.03
+# 3. Does a 0.05 sd shift hurt the model? Fixed logistic score on 5 features, labels from the true relation.
+m = 200_000
+w = np.array([0.8, 0.6, 0.5, 0.4, 0.3])
+def auc(score, y):
+    r = stats.rankdata(score); n1 = y.sum(); n0 = len(y) - n1
+    return (r[y == 1].sum() - n1 * (n1 + 1) / 2) / (n1 * n0)
+X0 = rng.standard_normal((m, 5)); X1 = rng.standard_normal((m, 5)) + shift
+y0 = (rng.random(m) < 1 / (1 + np.exp(-(X0 @ w)))).astype(int)
+y1 = (rng.random(m) < 1 / (1 + np.exp(-(X1 @ w)))).astype(int)
+a0, a1 = auc(X0 @ w, y0), auc(X1 @ w, y1)
+print('AUC before', round(a0, 4), 'after the shift', round(a1, 4))
+assert abs(a1 - a0) < 0.005
+# 4. Calibrate the effect-size threshold from history: 26 weeks of week-over-week D with natural wobble.
+hist = []
+base = rng.standard_normal(200_000)
+for wk in range(26):
+    mu = rng.normal(0, 0.03)                       # seasonal wobble in standard deviations
+    hist.append(stats.ks_2samp(base, rng.standard_normal(200_000) + mu).statistic)
+q99 = float(np.quantile(hist, 0.99))
+print('week-over-week D: median', round(float(np.median(hist)), 4), '99th percentile', round(q99, 4))
+thr = 0.10                                          # chosen effect-size threshold, several times the natural wobble
+assert thr > 3 * q99 and max(Ds) < thr
+# 5. Alert rule (illustrative): D >= thr on at least 2 of the 10 most important features, two weeks running.
+def alert(weekly_D, imp_top10, k=2, weeks=2):
+    hits = [sum(weekly_D[f] >= thr for f in imp_top10) >= k for weekly_D in weekly_D_history]
+    return len(hits) >= weeks and all(hits[-weeks:])
+weekly_D_history = [Ds, Ds]
+assert not alert(None, range(10))                    # this week's D=0.02 does not alert
+weekly_D_history = [[0.12] * 40, [0.15] * 40]
+assert alert(None, range(10))
+# 6. These are not chance false positives: under NO change, 40 features at p<0.001 give about 0.04 flags a week.
+expected_null_flags = 40 * 0.001
+print('expected flags per week under no change at p<0.001:', expected_null_flags, '; P(at least one):', round(1 - 0.999 ** 40, 4))
+assert expected_null_flags == 0.04 and round(1 - 0.999 ** 40, 3) == 0.039
+# 38 flags therefore mean 38 real but tiny differences; the fix is an effect-size rule, not a smaller p-value.
+```
+
+**Output (my run):**
+```text
+critical D at n=m=2,000,000, alpha=0.001: 0.00195
+observed D=0.02 is 10.3 x the critical value
+critical D if the reference has only 100,000 rows: 0.0063
+critical D for 5,000 rows each: 0.039
+2,000,000 rows, shift 0.05 sd: D 0.0207 p 0.0
+flagged 38 of 40 ( 0.95 ), max D 0.0235
+AUC before 0.7765 after the shift 0.776
+week-over-week D: median 0.0085 99th percentile 0.0244
+expected flags per week under no change at p<0.001: 0.04 ; P(at least one): 0.0392
+```
+
+**Follow-ups:**
+- Why not just subsample? It restores a sensible p-value but throws away data and still has no notion of "big enough to matter". Use it with an effect-size threshold.
+- How do you map D to impact? Perturb each feature by a known amount on a validation set and measure the AUC or score change, then set per-feature thresholds.
+- Is the labelled AUC being unchanged proof of no harm? It means no harm large enough to see with that labelled sample size; compute its noise before relying on it.
+
+**Common mistakes:** Treating p below 0.001 as "important". Using one threshold for all features. No effect-size floor. Ignoring ties in KS. Comparing to a stale or small reference. Paging on a statistic nobody has linked to model quality.

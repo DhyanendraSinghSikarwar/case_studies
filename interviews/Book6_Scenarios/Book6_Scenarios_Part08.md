@@ -22,7 +22,7 @@
 **Asked at:** MLOps interview guides (startup.jobs, Hyring, kore1, refresh.cv, wecreateproblems and Yardstick pages list rollback, canary versus blue/green versus shadow, and 'tell me about an urgent production incident' prompts, and one 2026 guide says the strongest questions test custody of a live model); practitioner and prep-site material rather than a confirmed employer round; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q4 ⭐⭐⭐ 🟢 A drift monitor runs a per-feature test on 40 features every hour at a 5% false-positive level, and the on-call engineer is paged almost every day without a real incident. Assuming independent features and no real change, compute the expected false alerts per day and the probability that at least one feature alerts in a given hour. What would you change so the page means something?
+### Q4 ⭐⭐⭐ 🟢 A drift monitor runs a per-feature test on 40 features every hour at a 5% false-positive level, and the on-call engineer is paged several times a day, nearly every hour, without a real incident. Assuming independent features and no real change, compute the expected false alerts per day and the probability that at least one feature alerts in a given hour. What would you change so the page means something?
 **Asked at:** Alerting and drift-monitor material (an ICLR 2026 listing on false-alarm rates of drift detectors, an MLflow alerts playbook, GeoSurge, LeadDev and Rootly pages on thresholds, monitoring debt and alert fatigue); research and practitioner pages rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
@@ -34,7 +34,7 @@
 **Asked at:** Feature-store and skew material (techinterview.org pages on point-in-time joins, drift and feature stores and MLOps pipelines, DesignGurus and barkingiguana pages on training-serving skew; one snippet gives a mean-imputation versus zero-fill skew incident as a template); prep and course material rather than a documented real incident; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q7 ⭐⭐⭐ 🟡 At 10:00 the registry alias 'champion' was moved from version 17 to version 18, but 4 of the 10 serving pods (40%) cached version 17 at startup and never re-resolved the alias. The two versions differ by an average of 0.08 in score, and the logs show only the alias name. How do you detect this today, fix it, and change the design so the served version is always provable?
+### Q7 ⭐⭐⭐ 🟡 At 10:00 the registry alias 'champion' was moved from version 17 to version 18, but 4 of the 10 serving pods (40%) cached version 17 at startup and never re-resolved the alias. The two versions differ by a mean absolute difference of 0.08 in score per request, and the logs show only the alias name. How do you detect this today, fix it, and change the design so the served version is always provable?
 **Asked at:** Model-registry and rollback pages (oneuptime and mljar rollback runbooks that move a 'champion' alias or demote a Production stage, a Towards AI piece on registries as the source of truth); secondary practitioner material, no located public incident; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
@@ -82,7 +82,7 @@
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to monitoring gaps in model-serving platforms; related topics appear in public MLOps guides; no page for the exact framing; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q19 ⭐⭐ 🟢 A static alert fires when hourly prediction volume falls 20% below the previous week, and over one month it paged 11 times, of which 9 were weekends and holidays and only 2 were real outages, a precision of about 18% (2 of 11). The on-call engineer now mutes it. How do you redesign the alert so the 2 real outages still page, and what do you check before re-enabling the page?
+### Q19 ⭐⭐ 🟢 A static alert fires when hourly prediction volume falls 20% below the mean of the same hour over the previous 7 days, and over one month it paged 11 times, of which 9 were weekends and holidays and only 2 were real outages, a precision of about 18% (2 of 11). The on-call engineer now mutes it. How do you redesign the alert so the 2 real outages still page, and what do you check before re-enabling the page?
 **Asked at:** Alerting and drift-monitor material (an ICLR 2026 listing on false-alarm rates of drift detectors, an MLflow alerts playbook, GeoSurge, LeadDev and Rootly pages on thresholds, monitoring debt and alert fatigue); research and practitioner pages rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
@@ -94,7 +94,7 @@
 **Asked at:** GPU-serving and autoscaling pages (apxml and system-design.space on autoscaling and serving architecture; vendor pages from regolo.ai and lyceum.technology on cold starts and capacity, treated as vendor claims); no public postmortem located; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q22 ⭐⭐ 🟡 You must write automatic rollback criteria for a model whose error rate is about 2% at baseline, with 10,000 canary requests available before a ramp. The standard error of an error rate of 2% on 10,000 requests is about 0.14 points, so a rise to 2.5% (0.5 points absolute, 25% relative to 2%) is about 3.6 standard errors. What rule do you write, and how do you handle small segments that this volume cannot see?
+### Q22 ⭐⭐ 🟡 You must write automatic rollback criteria for a model whose error rate is about 2% at baseline, with 10,000 canary requests available before a ramp. The standard error of an error rate of 2% on 10,000 requests is about 0.14 points, so a rise to 2.5% (0.5 points absolute, 25% relative to 2%) is about 3.6 standard errors if the 2% baseline is treated as exactly known (about 2.4 against a concurrent control of 10,000 requests). What rule do you write, and how do you handle small segments that this volume cannot see?
 **Asked at:** MLOps interview guides (startup.jobs, Hyring, kore1, refresh.cv, wecreateproblems and Yardstick pages list rollback, canary versus blue/green versus shadow, and 'tell me about an urgent production incident' prompts, and one 2026 guide says the strongest questions test custody of a live model); practitioner and prep-site material rather than a confirmed employer round; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
@@ -106,7 +106,7 @@
 **Asked at:** Leakage and reproducibility material (arXiv 2207.07048 and 2311.04179 on leakage, an Omdena post on silent ML failures and label timing, an arXiv 2025 paper on reproducible ML infrastructure); research and practitioner pages rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 
-### Q25 ⭐⭐ 🟡 A feature pipeline was broken for 9 daily partitions. Each partition takes 40 minutes, the cluster can run 4 partitions at once, and a rolling 7-day feature means each day depends on the previous days' output. Compute the backfill wall-clock time if the days were independent and if they must run in order, and say how you would order the work, protect live jobs and validate the result.
+### Q25 ⭐⭐ 🟡 A feature pipeline was broken for 9 daily partitions. Each partition takes 40 minutes, the cluster can run 4 partitions at once, and a rolling 7-day feature may make each day depend on the stored output of the previous day. Compute the backfill wall-clock time if the days were independent and if they must run in order, and say how you would order the work, protect live jobs and validate the result.
 **Asked at:** Data-pipeline pages (luminousmen on avoidable backfills and non-idempotent jobs, DZone on silent upstream schema change, HackerNoon and Seattle Data Guy on silent pipeline failures, DataExpert on schema drift and idempotent replays, DataVidhya on measuring detection latency in postmortems); practitioner blogs rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 <!-- ANSWER_PENDING -->
 

@@ -1,4 +1,4 @@
-### Q19 ⭐⭐ 🟢 A static alert fires when hourly prediction volume falls 20% below the previous week, and over one month it paged 11 times, of which 9 were weekends and holidays and only 2 were real outages, a precision of about 18% (2 of 11). The on-call engineer now mutes it. How do you redesign the alert so the 2 real outages still page, and what do you check before re-enabling the page?
+### Q19 ⭐⭐ 🟢 A static alert fires when hourly prediction volume falls 20% below the mean of the same hour over the previous 7 days, and over one month it paged 11 times, of which 9 were weekends and holidays and only 2 were real outages, a precision of about 18% (2 of 11). The on-call engineer now mutes it. How do you redesign the alert so the 2 real outages still page, and what do you check before re-enabling the page?
 **Asked at:** Alerting and drift-monitor material (an ICLR 2026 listing on false-alarm rates of drift detectors, an MLflow alerts playbook, GeoSurge, LeadDev and Rootly pages on thresholds, monitoring debt and alert fatigue); research and practitioner pages rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 **Say this first (1 line):** The alert compares a Sunday to a Wednesday, so I give it a seasonal baseline (same hour, same day type, last 4 weeks, with a holiday calendar), a deep tier that pages at once and a mild tier that needs two hours, and I do not re-enable the page until a backtest shows the 2 real outages still fire.
 
@@ -359,7 +359,7 @@ The warm-up decay curve is an assumption; the exposure arithmetic is exact for t
 
 **Common mistakes:** Treating process up as ready. Switching 100% at once with no abort rule. Tearing down blue immediately. Warming with synthetic inputs unlike real traffic. Not checking which model version loaded.
 
-### Q22 ⭐⭐ 🟡 You must write automatic rollback criteria for a model whose error rate is about 2% at baseline, with 10,000 canary requests available before a ramp. The standard error of an error rate of 2% on 10,000 requests is about 0.14 points, so a rise to 2.5% (0.5 points absolute, 25% relative to 2%) is about 3.6 standard errors. What rule do you write, and how do you handle small segments that this volume cannot see?
+### Q22 ⭐⭐ 🟡 You must write automatic rollback criteria for a model whose error rate is about 2% at baseline, with 10,000 canary requests available before a ramp. The standard error of an error rate of 2% on 10,000 requests is about 0.14 points, so a rise to 2.5% (0.5 points absolute, 25% relative to 2%) is about 3.6 standard errors if the 2% baseline is treated as exactly known (about 2.4 against a concurrent control of 10,000 requests). What rule do you write, and how do you handle small segments that this volume cannot see?
 **Asked at:** MLOps interview guides (startup.jobs, Hyring, kore1, refresh.cv, wecreateproblems and Yardstick pages list rollback, canary versus blue/green versus shadow, and 'tell me about an urgent production incident' prompts, and one 2026 guide says the strongest questions test custody of a live model); practitioner and prep-site material rather than a confirmed employer round; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 **Say this first (1 line):** I write the rule in numbers before the canary starts: compare to a concurrent control, roll back on a z of 3 or more (checked in fixed steps) or on a hard error cap, hold the ramp in a grey zone, and give small segments their own count-based rule plus a longer bake. One correction to the prompt: 3.6 standard errors assumes the 2% baseline is exactly known.
 
@@ -706,7 +706,7 @@ The data are synthetic; the two ablation numbers will differ on real tables.
 
 **Common mistakes:** Checking correlation only. Blaming the teammate. Forgetting the earlier releases. Treating the fix as complete while a 0.03 gap remains. Not building an automated gate.
 
-### Q25 ⭐⭐ 🟡 A feature pipeline was broken for 9 daily partitions. Each partition takes 40 minutes, the cluster can run 4 partitions at once, and a rolling 7-day feature means each day depends on the previous days' output. Compute the backfill wall-clock time if the days were independent and if they must run in order, and say how you would order the work, protect live jobs and validate the result.
+### Q25 ⭐⭐ 🟡 A feature pipeline was broken for 9 daily partitions. Each partition takes 40 minutes, the cluster can run 4 partitions at once, and a rolling 7-day feature may make each day depend on the stored output of the previous day. Compute the backfill wall-clock time if the days were independent and if they must run in order, and say how you would order the work, protect live jobs and validate the result.
 **Asked at:** Data-pipeline pages (luminousmen on avoidable backfills and non-idempotent jobs, DZone on silent upstream schema change, HackerNoon and Seattle Data Guy on silent pipeline failures, DataExpert on schema drift and idempotent replays, DataVidhya on measuring detection latency in postmortems); practitioner blogs rather than an interview bank; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
 **Say this first (1 line):** If the 9 days were independent it is 3 waves of 40 minutes, 120 minutes; if each day must wait for the previous one it is 9 x 40 = 360 minutes and extra slots do not help; so I first check whether the rolling feature really reads yesterday's output or can be rebuilt from raw daily data.
 (Correction to the framing: "a rolling 7-day feature" does not by itself force an order. A window computed from raw events is independent per day; only an incremental feature that reads the stored output of the previous day needs the chain.)
@@ -816,3 +816,226 @@ Slot durations are taken as constant 40 minutes, so real runs on a busy cluster 
 - How do you decide the cap for live jobs? Measure the live job's headroom; start at half the slots and watch its delay.
 
 **Common mistakes:** Multiplying 9 by 40 without checking the dependency. Appending rather than overwriting. Using all slots and starving live jobs. Publishing before validation. Forgetting to re-run models built on the bad days.
+
+### Q26 ⭐⭐ 🟡 An engineer promoted version 38 of a model, out of 41 registered versions, believing it came from the full-data experiment, but it was trained on a 5% sample and nobody noticed for two days. The registry only stores a name, a version number and a metric. What metadata and promotion checks would you require, who can promote, and how do you find any other mislabelled versions?
+**Asked at:** Model-registry and rollback pages (oneuptime and mljar rollback runbooks that move a 'champion' alias or demote a Production stage, a Towards AI piece on registries as the source of truth); secondary practitioner material, no located public incident; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
+**Say this first (1 line):** First I move the alias back to the last version whose training I can prove, then I require lineage metadata (code, data, rows, sampling fraction, holdout) for every version, let only the pipeline plus a second person promote, and audit the other 40 versions from the experiment-tracking runs.
+
+**Clarifying questions:**
+- Is version 38 serving traffic now, and what is the last version with known lineage? Why: it decides whether I roll back this minute.
+- Does an experiment-tracking run (logs, parameters, row counts) exist for each version even though the registry does not hold them? Why: that is where the audit gets its facts.
+- How was the 5% sample used (a dev shortcut left on)? Why: it shows which control was missing, for example an unreviewed config flag.
+- Who can promote today, and is any approval recorded? Why: it defines the access change.
+- What decisions were made on version 38's metric during the two days? Why: the harm may be in reports, not only in traffic.
+
+**Approach:**
+1. First 15 minutes. Check live metrics for version 38 (error rate, score distribution, business metric). If the model is worse or unverifiable, move the serving alias back to the last version with proven lineage (rollback is moving the alias, so it is quick; Book 4, Part 4 has "MLflow Model Registry: registered models, versions, aliases and the deprecated stages" for the mechanics). Page the model owner. Freeze promotions for the model name.
+2. First day. Audit: for all 41 versions pull training row count, data snapshot ID, code commit and config from the experiment-tracking runs; flag any version trained on far fewer rows than the median (the simulation flags versions 12 and 38) and any version with no run attached. Mark flagged versions in the registry (tag, not delete). Estimate exposure: at an illustrative 100 requests per second, 48 hours is 17,280,000 requests.
+3. First day. Postmortem, blameless: the registry accepted "name, number, metric" and a human's belief; a sampled config was one flag away from production; promotion needed one person. Timeline, contributing causes, actions.
+4. Next quarter. Required metadata on every version: git commit, data version, train_rows, sampling_fraction, evaluation holdout ID and metric, training config hash, trainer, approver, environment. Promotion checks (automated, in CI): all fields present; sampling_fraction equals 1.0 (or a documented exception); train_rows within 80% of the expected size; metric measured on the frozen holdout, not the training set; metric not worse than the current champion by more than a stated tolerance; trainer is not the approver.
+5. Who promotes: the pipeline service account moves the alias after the checks pass and one named approver (model owner) signs; engineers cannot move the production alias by hand; every move is logged with who, when, and from which version (Book 4, Part 4 has "Governing the model registry beyond aliases" for tags, permissions and the audit question).
+6. Escalation: a version that fails lineage after being promoted is rolled back at once; tell product and risk owners if decisions were made on its output.
+7. Find other mislabelled versions: the audit in step 2, then a monthly job that re-verifies lineage for every Production and Staging version.
+
+**Metrics:**
+- Lineage completeness = versions with all required fields / all versions (today 0 of 41, target 100%).
+- Train-rows ratio = train_rows / expected full rows (version 38: 200,000 / 4,000,000 = 5%).
+- Exposure = requests served by an unverified version.
+- Time to detect = promotion time to detection (two days here).
+- Guardrail: promotions blocked by the gate that were legitimate (so the gate does not become something people bypass).
+
+**Risks:**
+- The metric hid the problem: by construction in the simulation, the 5% model's metric sits in the same band as the others.
+- Metadata typed by hand can lie; fill it from the pipeline, not from a form.
+- A gate with too many manual exceptions becomes noise.
+- Flagging by row count misses a mislabelled version trained on stale rather than small data; check data version too.
+- Deleting suspect versions destroys evidence; tag them.
+
+**What the interviewer scores:**
+- Strong: rolls back first, audits the rest, then fixes process. Weak: only fixes version 38.
+- Strong: lists specific fields and checks, ties them to this failure (sampling fraction, row count). Weak: "add more documentation".
+- Strong: separation of duties and automated promotion. Weak: "tell people to be careful".
+- Strong: blameless language about a registry that stores a number but not a provenance.
+
+**Example:** Illustrative numbers. 41 versions, the full dataset has about 4,000,000 rows. Version 38 trained on 200,000 (5%). The audit flags any version below half the median training size and finds 38, and also a forgotten 1% smoke test, version 12. At 100 requests per second, 48 hours of serving is 17,280,000 requests.
+- Weak answer: "I would ask the team to be careful which experiment they promote and add a note to the registry."
+- Strong answer: "I roll back to the last version I can prove, then I audit all 41 versions from the run logs, and I make promotion fail unless commit, data version, row count and sampling fraction are recorded and a second person approves."
+
+**Code:**
+```python
+# Q26: promotion gate and registry audit. Plain Python, illustrative numbers; not tied to any registry product.
+import random
+random.seed(26)
+FULL_ROWS = 4_000_000
+# 41 registered versions; row counts come from the experiment-tracking run, not from the registry (the registry only has name, number, metric)
+versions = []
+for v in range(1, 42):
+    rows = int(FULL_ROWS * random.uniform(0.9, 1.05))
+    versions.append({"version": v, "metric": round(random.uniform(0.80, 0.84), 3), "rows": rows})
+versions[37]["rows"] = int(FULL_ROWS * 0.05)           # version 38: the 5% sample
+versions[11]["rows"] = int(FULL_ROWS * 0.01)           # version 12: a 1% smoke-test run nobody else knew about
+assert versions[37]["version"] == 38 and versions[37]["rows"] == 200_000
+# 1) audit: any version trained on far fewer rows than the median
+rows_sorted = sorted(v["rows"] for v in versions)
+median = rows_sorted[len(rows_sorted) // 2]
+flagged = [v["version"] for v in versions if v["rows"] < 0.5 * median]
+print(f"median training rows = {median:,}; flagged versions (below 50% of median): {flagged}")
+assert flagged == [12, 38]
+# 2) exposure of the mistake: two days at an illustrative 100 requests per second
+exposed = 100 * 48 * 3600
+print(f"requests served by version 38 in 48 hours at 100 rps: {exposed:,}")
+assert exposed == 17_280_000
+# 3) the promotion gate: required metadata, sanity bounds, separation of duties
+REQUIRED = ["git_commit", "data_version", "train_rows", "sampling_fraction", "holdout_id", "holdout_metric", "trainer", "approver"]
+def gate(meta, expected_rows=FULL_ROWS):
+    errs = [f"missing {k}" for k in REQUIRED if meta.get(k) in (None, "")]
+    if errs: return errs
+    if meta["sampling_fraction"] < 1.0: errs.append("trained on a sample")
+    if meta["train_rows"] < 0.8 * expected_rows: errs.append("train_rows below 80% of expected")
+    if meta["trainer"] == meta["approver"]: errs.append("trainer cannot approve own promotion")
+    return errs
+good = dict(git_commit="a1b2c3", data_version="d41", train_rows=4_020_000, sampling_fraction=1.0, holdout_id="h7",
+            holdout_metric=0.83, trainer="asha", approver="ravi")
+v38 = dict(good, train_rows=200_000, sampling_fraction=0.05)
+legacy = {"name": "m", "version": 38, "metric": 0.81}            # what the registry stores today
+print("good candidate:", gate(good))
+print("version 38 as it should have been recorded:", gate(v38))
+print("version 38 as the registry stores it:", gate(legacy)[:3], "...", len(gate(legacy)), "missing fields")
+assert gate(good) == [] and "trained on a sample" in gate(v38) and len(gate(legacy)) == 8
+assert gate(dict(good, approver="asha")) == ["trainer cannot approve own promotion"]
+# 4) a green metric on the old holdout is not evidence of the training data: same metric range for both
+print("metric alone cannot find it: v38 metric", versions[37]["metric"], "vs median metric", sorted(v["metric"] for v in versions)[20])
+assert 0.80 <= versions[37]["metric"] <= 0.84
+```
+
+**Output (my run):**
+```text
+median training rows = 3,913,644; flagged versions (below 50% of median): [12, 38]
+requests served by version 38 in 48 hours at 100 rps: 17,280,000
+good candidate: []
+version 38 as it should have been recorded: ['trained on a sample', 'train_rows below 80% of expected']
+version 38 as the registry stores it: ['missing git_commit', 'missing data_version', 'missing train_rows'] ... 8 missing fields
+metric alone cannot find it: v38 metric 0.819 vs median metric 0.822
+```
+
+Registry products differ; no product-specific feature was run here. All row counts and metrics are invented.
+
+**Follow-ups:**
+- Can a model signature or metric hash prove the data? No; it proves the artifact, not what it was trained on. Record the data snapshot ID.
+- What about an alias that moves automatically? Gate the move: the pipeline moves it, and only when the checks pass.
+- How do you stop a sampled config reaching production? Put sampling behind an explicit flag that the gate reads, and make the default full data.
+
+**Common mistakes:** Trusting a metric as provenance. Deleting the bad version rather than tagging it. Fixing only version 38. Letting the trainer approve their own model. Relying on a wiki page for metadata.
+
+### Q27 ⭐⭐ 🟡 A postmortem for a bad model deploy lists 14 action items and 11 of them (79% of the 14) say 'be more careful' or 'add a review'. The manager wants the engineer who merged the change named in the report. How do you run the meeting, what makes an action item good, and how do you turn the 11 into changes that do not rely on people remembering?
+**Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to blameless postmortems and incident-review practice; related topics appear in public MLOps guides; no page for the exact framing; search snippets only, not opened
+**Say this first (1 line):** I run it as a blameless review that names the change and the roles, not the person, and I turn each "be more careful" into a check that a machine enforces, with an owner, a date and a test for done.
+(Note on the numbers: 11 of 14 is 78.6%, which the prompt rounds to 79%.)
+
+**Clarifying questions:**
+- What did the bad deploy cost and how long did it last? Why: it sets the severity and how many action items are justified (the numbers in the Example are illustrative).
+- What does the manager actually need: accountability, a performance conversation, or confidence it will not recur? Why: each has a better home than the postmortem report.
+- Was the engineer following the documented process? Why: if yes, the process failed, not the person.
+- What did the engineer say at the time, and was anyone else in the chain (reviewer, approver)? Why: it tests whether the system relied on one pair of eyes.
+- Who owns the action items and has capacity to do them? Why: unowned items do not get done.
+
+**Approach:**
+1. Before the meeting (day 1-2). Build the timeline from logs and chat: deploy at 14:00, detected at 14:47 (47 minutes), rollback finished at 15:05 (18 minutes after detection), total harm window 65 minutes (illustrative numbers, computed in the code). Share it in advance. Talk to the engineer first, privately, so there are no surprises.
+2. The meeting (60 minutes, a facilitator who is not the manager). Rules said out loud: we describe what happened and what made it seem reasonable at the time; we look at conditions, not character. Walk the timeline, ask "what did we know, what did the tools tell us, what was missing", and list contributing factors (no gate, no canary, alert late). Stop each "why" chain at something we can change.
+3. The manager's request. Do not name the engineer in the report as the cause. Name the change (pull request or commit ID) and the roles ("the author", "the reviewer"). Explain why: naming people teaches everyone to hide near-misses; it does not fix the cause, and the next engineer would have merged the same change. Offer what the manager really needs: a clear owner for each fix (accountability for the repair), a separate and private performance route if there was a real conduct issue, and visible progress on the fixes.
+4. Action items, what makes one good: it fixes a condition, it names an owner (a role or person who agreed), a due date, a mechanism (a check, a gate, an alert, a limit), and a "done when" test someone can run. Keep to a few high-value items; 14 is too many to finish.
+5. Turn the 11: for each "be more careful" ask what check would have stopped it, then build it: CI gates, required checks and code owners, schema and unit contracts, rollout tool with fixed stage sizes, auto-rollback rules, alert thresholds as code with replay tests, a registry of data sources. The code shows the 11 rewritten items, each with a mechanism and a done-when line that contains none of the vague wording. Keep a "review" only where it is cheap and has a checklist and the reviewer sees the evidence (a diff, the gate report).
+6. First day after: owners and dates on the tracker. Next quarter: a review of how many items closed, and whether any new incident repeated an old cause. Track it.
+7. Rollback and escalation, written down: auto-rollback at the stated error or latency thresholds; the on-call can roll back without asking; escalate to the service owner if not restored within 15 minutes.
+
+**Metrics:**
+- Action-item closure rate = closed on time / total, per quarter.
+- Share of items with a mechanism, owner, date, done-when test (11 of 14 start with none; target 100%).
+- Repeat-cause rate = incidents whose cause matches an earlier postmortem / all incidents.
+- Detection delay (47 minutes) and time to mitigate (18 minutes) per incident.
+- Guardrail: near-miss reports per quarter; falling to zero after naming someone is a warning sign.
+
+**Risks:**
+- A blame-free meeting that ends with "no one was responsible" gives no ownership. Owners for fixes are the accountability.
+- Too many items; the team closes the easy ones.
+- New gates people bypass because they are slow; measure bypass.
+- Naming the engineer anyway because the manager insists; escalate to a senior engineer or director with the reasoning.
+
+**What the interviewer scores:**
+- Strong: names the change, not the person, and explains why in terms of what gets fixed. Weak: either gives in to the manager or lectures about blame.
+- Strong: turns "be careful" into automated checks with owners and dates. Weak: "assign a reviewer".
+- Strong: handles the manager with a better offer (ownership of fixes), not a refusal. Weak: confrontational.
+- Strong: timeline and numbers (detection delay, time to mitigate).
+
+**Example:** Illustrative numbers. 14 items; 11 are vague (78.6%). "Add a review for schema changes" becomes "ingest fails when a column type, range or unit changes; owner data engineering; due in 30 days; done when a test changes a column type and the pipeline stops".
+- Weak answer: "Fine, I will put the engineer's name in the report and add that everyone should be more careful."
+- Strong answer: "I will write that PR 482 shipped without a gate, list the roles involved, and give you an owner and a date for every fix. Naming the person tells everyone to hide the next near-miss. If there is a conduct issue, that is a separate private conversation."
+
+**Code:**
+```python
+# Q27: classify postmortem action items and rewrite the vague ones. Illustrative items, plain Python.
+vague_words = ("be more careful", "add a review", "remind", "double-check", "pay more attention")
+items = [
+ "Be more careful when changing feature code",
+ "Add a review for every model deploy",
+ "Remind the team to check the holdout before promoting",
+ "Double-check the config before merge",
+ "Add a review for schema changes",
+ "Be more careful with the canary percentage",
+ "Add a review step for rollback decisions",
+ "Pay more attention to the dashboard after a deploy",
+ "Add a review of alert thresholds",
+ "Be more careful to run the replay test",
+ "Add a review for data-source changes",
+ "Block promotion in CI when holdout AUC is more than 0.02 below the champion (owner: MLOps, due 2026-11-30)",
+ "Auto-rollback when the canary error z-score is 3 or more (owner: platform, due 2026-12-15)",
+ "Alert when feature null-rate changes by more than 5 points in an hour (owner: data eng, due 2026-11-20)",
+]
+vague = [i for i in items if any(w in i.lower() for w in vague_words)]
+print(f"{len(vague)} of {len(items)} items are vague = {len(vague)/len(items):.1%}")
+assert len(items) == 14 and len(vague) == 11 and round(100 * 11 / 14) == 79
+# rewrite table: vague item -> mechanism that does not depend on memory
+rewrite = {
+ 0:  ("Contract test on the feature code in CI", "CI blocks merge when feature definitions differ between train and serve"),
+ 1:  ("Required status check plus CODEOWNERS on deploy config", "merge button disabled without model-owner approval and a green gate"),
+ 2:  ("Promotion pipeline step compares holdout AUC with champion", "promotion fails if AUC is more than 0.02 below champion"),
+ 3:  ("Config schema validation in CI", "unknown or out-of-range keys fail the build"),
+ 4:  ("Schema and unit contract check on upstream tables", "ingest fails loudly on a changed type, range or unit"),
+ 5:  ("Rollout tool enforces stage sizes", "stages fixed at 5, 25, 50, 100 percent; larger jumps rejected"),
+ 6:  ("Written rollback rule in the runbook and the deploy tool", "rollback triggers fire automatically on the stated thresholds"),
+ 7:  ("Post-deploy watch as an automatic 30-minute gate", "deploy marked complete only after dashboards stay green for 30 minutes"),
+ 8:  ("Alert thresholds stored as code with tests", "a threshold change needs a replay of 8 weeks of history in CI"),
+ 9:  ("Shadow replay test runs on every release candidate", "release candidate blocked if replay differs by more than a stated tolerance"),
+ 10: ("Data-source registry with owners and change notices", "unregistered source in a pipeline fails validation"),
+}
+def good(item):
+    """An action item is good when it has an owner, a date, a mechanism and a way to check it is done."""
+    return all(k in item for k in ("owner", "due", "mechanism", "done_when"))
+rewritten = []
+for idx, (mech, done_when) in rewrite.items():
+    rewritten.append({"from": items[idx], "owner": "role: platform/MLOps/data eng", "due": "within 90 days", "mechanism": mech, "done_when": done_when})
+assert len(rewritten) == 11 and all(good(r) for r in rewritten)
+assert not any(w in r["mechanism"].lower() + r["done_when"].lower() for r in rewritten for w in vague_words)
+assert not any(good({"item": i}) for i in vague)                  # the vague wording alone fails the test
+print(f"after rewrite: {len(rewritten)} items now have an owner role, a date, a mechanism and a done-when test")
+# an illustrative timeline: detection delay and time to mitigate
+deploy, detect, rollback_start, rollback_done = 14*60, 14*60+47, 14*60+52, 15*60+5     # minutes after midnight
+print(f"detection delay {detect-deploy} min, decision to rollback done {rollback_done-detect} min, total harm window {rollback_done-deploy} min")
+assert (detect - deploy, rollback_done - detect, rollback_done - deploy) == (47, 18, 65)
+```
+
+**Output (my run):**
+```text
+11 of 14 items are vague = 78.6%
+after rewrite: 11 items now have an owner role, a date, a mechanism and a done-when test
+detection delay 47 min, decision to rollback done 18 min, total harm window 65 min
+```
+
+All items and times are invented for illustration.
+
+**Follow-ups:**
+- Is blameless the same as no accountability? No: accountability moves from "who caused it" to "who owns the fix".
+- When is a human review right? When the reviewer gets evidence and a checklist, the review is fast, and it backs an automated gate rather than replacing it.
+- What if the same engineer repeats mistakes? That is a coaching or performance matter handled privately, after checking the system was not at fault.
+
+**Common mistakes:** Naming the engineer in the report. Closing with "be more careful". Items with no owner or date. Fourteen items and no priority. Adding a slow review instead of an automatic check. Skipping the private conversation with the engineer first.

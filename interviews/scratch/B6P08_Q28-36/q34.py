@@ -3,6 +3,7 @@ import math, numpy as np
 from scipy import stats
 rng = np.random.default_rng(34)
 n = 2_000_000
+shift = 0.05
 # 1. Critical KS statistic: smallest D that is "significant" at alpha = 0.001.
 def d_crit(n1, n2, alpha=0.001):
     return math.sqrt(-math.log(alpha / 2) / 2) * math.sqrt((n1 + n2) / (n1 * n2))
@@ -15,16 +16,19 @@ print('critical D if the reference has only 100,000 rows:', round(d_crit(n, 100_
 assert round(d_crit(n, 100_000), 4) == 0.0063
 print('critical D for 5,000 rows each:', round(d_crit(5000, 5000), 4))
 assert d_crit(5000, 5000) > 0.02        # a 5,000-row subsample would NOT flag D=0.02
-# 2. Simulate: 40 features, 38 shifted by 0.05 sd (gives D about 0.02), 2 untouched.
-shift = 0.05
+# 2a. One feature at the full 2,000,000 rows: a 0.05 sd shift gives D near 0.02 and a p-value that underflows to zero.
+one = stats.ks_2samp(rng.standard_normal(n), rng.standard_normal(n) + 0.05)
+print('2,000,000 rows, shift 0.05 sd: D', round(one.statistic, 4), 'p', one.pvalue)
+assert 0.018 < one.statistic < 0.022 and one.pvalue < 0.001
+# 2b. Scan of 40 features (300,000 rows each to keep the run short): 38 shifted by 0.05 sd, 2 untouched.
+k = 300_000
 flag, Ds = 0, []
-ref_all = [rng.standard_normal(n) for _ in range(40)]
 for j in range(40):
-    cur = rng.standard_normal(n) + (shift if j < 38 else 0.0)
-    r = stats.ks_2samp(ref_all[j], cur)
+    cur = rng.standard_normal(k) + (shift if j < 38 else 0.0)
+    r = stats.ks_2samp(rng.standard_normal(k), cur)
     Ds.append(r.statistic); flag += r.pvalue < 0.001
 print('flagged', flag, 'of 40 (', flag / 40, '), max D', round(max(Ds), 4))
-assert flag == 38 and flag / 40 == 0.95 and 0.019 < max(Ds) < 0.021
+assert flag == 38 and flag / 40 == 0.95 and max(Ds) < 0.03
 # 3. Does a 0.05 sd shift hurt the model? Fixed logistic score on 5 features, labels from the true relation.
 m = 200_000
 w = np.array([0.8, 0.6, 0.5, 0.4, 0.3])
