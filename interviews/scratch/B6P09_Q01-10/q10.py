@@ -51,3 +51,4 @@ print(f"call the top 3,000 ranked by P(pay): {g_p:.0f} incremental payments, net
 print(f"call the top 3,000 ranked by estimated uplift: {g_u:.0f} incremental payments, net {n_u:,.0f} (oracle {g_o:.0f})")
 assert g_u > g_p * 1.3 and n_u > n_p
 assert g_u > 0.85 * g_o
+assert round(g_u / g_p, 1) == 3.7

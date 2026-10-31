@@ -38,3 +38,4 @@ print(f"propensity at pos5 relative to pos1 {prop[4]:.2f}; position-1-equivalent
 assert abs(rand_ratio - 3.0) < 0.15          # randomisation recovers the true examination ratio
 assert naive_ratio > rand_ratio + 0.5        # logged ratio is inflated because the ranker puts relevant items first
 assert abs(ips_rel_vs_pos1 - 0.12) < 0.01
+assert round(naive_ratio, 1) == 11.6

@@ -168,6 +168,7 @@ print(f"propensity at pos5 relative to pos1 {prop[4]:.2f}; position-1-equivalent
 assert abs(rand_ratio - 3.0) < 0.15          # randomisation recovers the true examination ratio
 assert naive_ratio > rand_ratio + 0.5        # logged ratio is inflated because the ranker puts relevant items first
 assert abs(ips_rel_vs_pos1 - 0.12) < 0.01
+assert round(naive_ratio, 1) == 11.6
 ```
 
 **Output (my run):**
@@ -534,6 +535,7 @@ assert round(be, 4) == 0.2308 and abs(pilot_profit(be)) < 1e-6
 assert round(pilot_profit(0.05)) == 1_880_000 and round(pilot_profit(0.10)) == 1_360_000 and round(pilot_profit(0.20)) == 320_000
 assert round(pilot_profit(0.30)) == -720_000 and round(se * 100, 2) == 0.67
 assert c82 > c66 + 0.15
+assert round(c82, 2) == 0.61 and round(c66, 2) == 0.37
 ```
 
 **Output (my run):**
@@ -835,6 +837,7 @@ assert rows[0.0][2] > 950                                          # with a flat
 assert rows[0.0][2] < 1050 + 1e-6                                  # but never above the optimistic bound
 assert rows[0.0][2] > rows[0.3][2] > rows[0.6][2] > rows[1.0][2]   # a rising CPA eats the gain
 assert rows[0.6][2] < 950 < 1050                                   # at this elasticity pacing loses conversions
+assert round(rows[0.0][2]) == 1023 and round(rows[0.6][2]) == 878 and round(budget - rows[0.6][1]) == 553
 ```
 
 **Output (my run):**
@@ -858,3 +861,118 @@ takeaway: the 1,050 bound needs the later CPA to stay at 20 AND the later hours 
 - What if conversions arrive days later? Pace on spend, forecast conversions with a lag model, and use a proxy (clicks, add-to-cart) for fast feedback.
 
 **Common mistakes:** Using an average cost as a marginal cost. Forgetting that the budget may not be spendable later in the day. Controlling on delayed conversions only. A controller with no clipping or stop rule. Calling +10.5% a forecast.
+
+### Q10 ⭐⭐⭐ 🟡 Fintech: A collections team can call 3,000 of 10,000 delinquent accounts a day, and the model ranks accounts by probability of payment. Among 3,000 called top-ranked accounts, 1,200 (40%) paid within 14 days, while among a random holdout of 300 top-ranked accounts that were not called, 105 (35%) paid on their own. An incremental payment is worth 8,000 and a call costs 150, so compute the incremental payments in the called group and the net value, and explain why the model should be built for the effect of calling rather than for payment probability.
+**Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to collections prioritisation and uplift modelling in credit-risk material; related topics appear in public guides; no page for the exact framing; search snippets only, not opened
+**Say this first (1 line):** Calling lifted payment from 35% to 40%, so about 3,000 x 5% = 150 incremental payments, worth 1,200,000 against 450,000 of call cost, a net of 750,000; but the 300-account holdout makes the 5 points noisy (95% interval about -0.7 to +10.7 points), and the model should be built to predict the effect of a call, not the chance of payment, because high-probability payers would often pay anyway.
+
+**Clarifying questions:**
+- Was the 300-account holdout chosen at random from the same top-ranked pool and kept uncalled for the full 14 days? Without that, the 35% is not a valid comparison.
+- Are there other contacts (SMS, email, app notifications) reaching the holdout? Then 35% includes other treatment.
+- Does an incremental payment also include the timing effect (paying earlier) or only paying at all? Value per payment depends on it.
+- Is 150 per call the full cost, including agent time and any customer complaint cost?
+- Is there a contact-policy limit on the number of calls an account may receive? The collections team should say what is allowed and who owns that policy; I would ask them rather than assume.
+
+**Approach:**
+1. Called group: 3,000 x 40% = 1,200 paid. Holdout: 300 x 35% = 105 paid.
+2. Uplift = 40% - 35% = 5 points. Incremental payments among the called = 3,000 x 0.05 = 150. The other 1,050 would have paid anyway.
+3. Value = 150 x 8,000 = 1,200,000. Cost = 3,000 x 150 = 450,000. Net = 750,000, or 250 per call.
+4. Break-even uplift = 150 / 8,000 = 1.875 points. The observed 5 points clears it, but only just once noise is shown.
+5. Noise: standard error = sqrt(0.4 x 0.6 / 3,000 + 0.35 x 0.65 / 300) = 2.90 points, so 95% interval about -0.7 to +10.7 points: incremental payments from about -20 to 320, net from about -612,000 to 2,112,000. A holdout of 300 cannot confirm the gain.
+6. Why model the effect: the model ranks by probability of payment, so it sends calls to accounts that pay anyway (35% do). Money is made on accounts where the call changes the outcome: the persuadables. Rank by predicted uplift = P(pay | call) - P(pay | no call).
+7. How: keep a randomised holdout of 10% to 30% of the call-eligible pool permanently, train two models or an uplift model on randomised data, evaluate with an uplift or Qini curve on a random test slice, and refresh.
+
+**Metrics:**
+- Uplift = payment rate (called) - payment rate (not called). Incremental payments = called x uplift.
+- Net value = incremental payments x value - calls x cost. Break-even uplift = cost per call / value per incremental payment.
+- Guardrails: complaints per 1,000 calls, contact-policy breaches, payment size and timing, and the holdout's size and balance.
+
+**Risks:**
+- Small holdout: 105 of 300 can easily be 95 or 115 by chance.
+- The holdout is among top-ranked accounts only, so 5 points does not say what a call does to lower-ranked ones.
+- Calls change who pays when: pull-forward is not a new payment.
+- Uplift models are noisy; with few accounts they can rank worse than a simple rule.
+
+**What the interviewer scores:**
+- Strong: 150, 1,200,000, 450,000, 750,000 and the break-even uplift. Weak: counts all 1,200 payments as the call's benefit.
+- Strong: puts an interval on the 5 points and says 300 is small. Weak: no uncertainty.
+- Strong: explains persuadables versus sure-things in plain words and says how to train on randomised data. Weak: "use a better classifier".
+- Strong: asks the collections and compliance teams about contact rules.
+
+**Example:** (illustrative numbers)
+- Weak: "1,200 accounts paid, so calls earned 9.6 million."
+- Strong: "35% would have paid anyway, so only 5 points, about 150 accounts, are ours. That is 1.2 million of value for 450,000 of calls, net 750,000, but the interval on 5 points is wide because the holdout has 300 accounts. In my simulation, ranking by uplift found about 3.7 times as many incremental payments as ranking by payment probability for the same 3,000 calls. I would keep a bigger permanent holdout and rank by uplift."
+
+**Code:**
+```python
+import numpy as np
+# Part A: prompt arithmetic (illustrative). Called 3,000 -> 40% paid; random holdout of 300 not called -> 35% paid.
+nc, pc, nh, ph = 3_000, 0.40, 300, 0.35
+paid_called = nc * pc
+paid_hold = nh * ph
+uplift = pc - ph
+incr = nc * uplift
+value, cost = 8_000, 150
+net = incr * value - nc * cost
+be_uplift = cost / value
+se = (pc * (1 - pc) / nc + ph * (1 - ph) / nh) ** 0.5
+lo, hi = uplift - 1.96 * se, uplift + 1.96 * se
+print(f"paid called {paid_called:.0f}, paid holdout {paid_hold:.0f}; uplift {uplift:.1%}; incremental payments {incr:.0f}")
+print(f"value {incr*value:,.0f} - call cost {nc*cost:,} = net {net:,.0f}; break-even uplift {be_uplift:.3%}")
+print(f"SE of the 5-point gap {se*100:.2f} points; 95% interval {lo*100:.1f} to {hi*100:.1f} points -> incremental payments {nc*lo:.0f} to {nc*hi:.0f}, net {nc*lo*value-nc*cost:,.0f} to {nc*hi*value-nc*cost:,.0f}")
+learn_cost = nh * uplift * value - nh * cost   # expected value given up by not calling the 300 (value of their uplift minus calls saved)
+print(f"expected cost of keeping 300 uncalled: {learn_cost:,.0f}")
+assert paid_called == 1200 and paid_hold == 105 and round(uplift, 6) == 0.05 and round(incr) == 150
+assert round(incr * value) == 1_200_000 and nc * cost == 450_000 and round(net) == 750_000 and round(be_uplift, 5) == 0.01875
+assert round(se * 100, 2) == 2.90 and lo < 0 < hi
+assert round(nc * lo) == -20 and round(nc * hi) == 320 and round(learn_cost) == 75_000
+
+# Part B: rank by P(pay) versus rank by uplift on synthetic accounts (seeded). Random calls on half the accounts give the training data.
+rng = np.random.default_rng(21)
+N, K = 10_000, 3_000
+x1 = rng.random(N)                              # 'ability to pay' (drives baseline payment)
+x2 = rng.random(N)                              # 'persuadability' (drives the effect of a call)
+base_p = 0.05 + 0.75 * x1 ** 2                 # sure-things at high x1
+eff = 0.30 * np.exp(-6 * (x1 - 0.35) ** 2) * x2  # calls matter most at middling x1 and high x2 (invented)
+p_call = np.clip(base_p + eff, 0, 0.97)
+# training data: 200,000 randomised past accounts, called with probability 0.5
+M = 200_000
+t1, t2 = rng.random(M), rng.random(M)
+tb = 0.05 + 0.75 * t1 ** 2; te = 0.30 * np.exp(-6 * (t1 - 0.35) ** 2) * t2
+tr = rng.random(M) < 0.5
+pay = rng.random(M) < np.clip(tb + te * tr, 0, 0.97)
+g = 10
+cell = (np.minimum((t1 * g).astype(int), g - 1)) * g + np.minimum((t2 * g).astype(int), g - 1)
+est_up = np.zeros(g * g); est_p = np.zeros(g * g)
+for c in range(g * g):
+    m = cell == c
+    est_up[c] = pay[m & tr].mean() - pay[m & ~tr].mean()          # T-learner by cell
+    est_p[c] = pay[m & tr].mean()                                 # what a P(pay | called) model learns
+acell = (np.minimum((x1 * g).astype(int), g - 1)) * g + np.minimum((x2 * g).astype(int), g - 1)
+def evaluate(score):
+    top = np.argsort(-score)[:K]
+    gain = (p_call[top] - base_p[top]).sum()                      # expected incremental payments (true effect)
+    return gain, gain * value - K * cost
+g_p, n_p = evaluate(est_p[acell]); g_u, n_u = evaluate(est_up[acell]); g_o, n_o = evaluate(eff)
+print(f"call the top 3,000 ranked by P(pay): {g_p:.0f} incremental payments, net {n_p:,.0f}")
+print(f"call the top 3,000 ranked by estimated uplift: {g_u:.0f} incremental payments, net {n_u:,.0f} (oracle {g_o:.0f})")
+assert g_u > g_p * 1.3 and n_u > n_p
+assert g_u > 0.85 * g_o
+assert round(g_u / g_p, 1) == 3.7
+```
+
+**Output (my run):**
+```text
+paid called 1200, paid holdout 105; uplift 5.0%; incremental payments 150
+value 1,200,000 - call cost 450,000 = net 750,000; break-even uplift 1.875%
+SE of the 5-point gap 2.90 points; 95% interval -0.7 to 10.7 points -> incremental payments -20 to 320, net -611,996 to 2,111,996
+expected cost of keeping 300 uncalled: 75,000
+call the top 3,000 ranked by P(pay): 156 incremental payments, net 797,209
+call the top 3,000 ranked by estimated uplift: 572 incremental payments, net 4,129,306 (oracle 584)
+```
+
+**Follow-ups:**
+- What does a holdout cost? Not calling 300 accounts gives up about 15 incremental payments (120,000) and saves 45,000 of calls, an expected cost of 75,000, which is the price of knowing the truth.
+- What if calls sometimes hurt (accounts that get angry)? Uplift can be negative; an uplift model finds them and stops calling them.
+
+**Common mistakes:** Crediting all payments to the call. Ranking by P(pay) and calling it optimal. A tiny holdout and no interval. Training uplift on non-random call history. Ignoring the call cost per account.

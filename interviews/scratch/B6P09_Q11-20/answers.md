@@ -1,16 +1,16 @@
 ### Q11 ⭐⭐⭐ 🟡 Healthcare: In a pilot, 1,000 high-risk alerts were raised and clinicians overrode 700 of them. Of the 700 overridden alerts, 35 were followed by a deterioration event, and of the 300 acted-on alerts, 90 were followed by one (counts from a measured pilot). Compute the share of all alerts followed by an event and the share of alert-followed events that were in acted-on alerts, and explain why you should not conclude that clinicians are simply right or wrong, and what you would do about trust.
 **Asked at:** Clinical-ML deployment material (a physician-oriented dataset-shift article, an arXiv paper on what clinicians want from explainable ML, a JMIR paper on alarm fatigue and a circEWS slide deck on calibration and prevalence); research and secondary sources rather than interview banks; commonly reported in public guides for data scientist and ML engineer loops; search snippets only, not opened
-**Say this first (1 line):** 12.5% of alerts were followed by an event and 72% of those events sat in acted-on alerts, but override versus event is confounded by selection and by treatment, so I would not call clinicians right or wrong; I would compare within risk strata, read the overridden cases with clinicians, and fix the alert itself.
+**Say this first (1 line):** 12.5% of alerts were followed by an event and 72% of alert-followed events sat in acted-on alerts, but override versus event is confounded by selection and by treatment, so I would not call clinicians right or wrong; I would compare within risk strata, read the overridden cases with clinicians, and fix the alert itself.
 
 **Clarifying questions:**
 - What counts as an event, and over what window (6, 12, 24 hours)? A longer window makes every rate larger and blurs cause.
 - What does "acted on" mean (a documented intervention, a call, a bedside review)? If it is not logged, "acted" is partly inferred.
-- Were events with no alert at all counted? The 72% is only among alerted events; events the model missed are not in these counts.
+- Are there events with no alert at all? The 72% is among alert-followed events; events the model missed are not in these counts, so track them separately.
 - Did clinicians see the risk score or a reason? An override with no information about why is hard to learn from.
 - Is there a fixed threshold, or do some wards get different alerts? Alert volume per nurse drives overrides.
 
 **Approach:**
-1. Do the arithmetic. 90 + 35 = 125 events in 1,000 alerts, so 12.5% of alerts were followed by an event. 90 / 125 = 72% of those events were in acted-on alerts. Event rate was 30% in acted alerts and 5% in overridden ones.
+1. Do the arithmetic. 90 + 35 = 125 events in 1,000 alerts, so 12.5% of alerts were followed by an event. 90 / 125 = 72% of alert-followed events were in acted-on alerts. Event rate was 30% in acted alerts and 5% in overridden ones.
 2. Say what these do not show. Clinicians choose which alerts to act on, so acted alerts are the sicker-looking ones (selection). Acting also tries to prevent the event, so the 30% is already after treatment (contamination). Both push in opposite directions. The 5% in overridden alerts may be clinicians correctly spotting false alarms, or luck.
 3. Compare like with like. Group alerts by model risk band, vital signs and ward. Within a band, compare event rate for acted versus overridden. If overridden alerts in the same band have the same event rate as acted ones, the override looks like noise. If they are clearly lower, clinicians add information the model lacks.
 4. Review a sample. Have clinicians read 35 overridden alerts followed by an event (the possible misses) and a random 35 of the 665 that were not (the correct overrides). Tag the reasons: already on treatment, known patient condition, wrong patient context, alert too late.
@@ -19,7 +19,7 @@
 
 **Metrics:**
 - Alert event rate = alerts followed by an event / all alerts = 125 / 1,000 = 12.5%.
-- Share of alerted events in acted alerts = 90 / 125 = 72%.
+- Share of alert-followed events in acted alerts = 90 / 125 = 72%.
 - Event rate by action = events / alerts in that group: acted 30%, overridden 5%.
 - Within-band event rate by action (the fair comparison); override rate by ward and by hour.
 - Guardrails: events with no alert (the model's misses), time from alert to action, and alerts per nurse per shift.
@@ -31,7 +31,7 @@
 - Training the next model on "event after alert" as the label inflates the harm of treatment: treated patients look healthier.
 
 **What the interviewer scores:**
-- Strong: gets 12.5% and 72%, and notes the 72% is only among alerted events.
+- Strong: gets 12.5% and 72%, and reads the 72% as a share of alert-followed events.
 - Strong: names selection and treatment contamination, and proposes a within-band comparison.
 - Strong: treats trust as a product problem (reasons, volume, feedback loop), with the clinical owner deciding.
 - Weak: "clinicians override 70% so the model is bad", or "events were low in overrides so clinicians are right".
@@ -100,7 +100,7 @@ sim: acted-group event rate had nobody acted (untreated risk): 0.353
 
 **Common mistakes:**
 - Dividing events by 700 or 300 and calling the result "accuracy".
-- Quoting 72% as "share of all deterioration events" when missed events are unknown.
+- Quoting 72% as the share of all deterioration events when missed events are unknown.
 - Ignoring that treated patients are the ones the model flagged most strongly.
 - Pushing a threshold change without the clinicians who carry the alerts.
 
@@ -109,7 +109,7 @@ sim: acted-group event rate had nobody acted (untreated risk): 0.353
 **Say this first (1 line):** Raw clicks mix real users with invalid traffic, so a model trained on them learns a blended conversion rate of 1.8% instead of the 2.0% on valid clicks, and it learns a publisher's invalid share as if it were user behaviour; I would train on valid-only labels that have matured past the 3-day delay and tell the account team which numbers are provisional.
 
 **Clarifying questions:**
-- Who pays for invalid clicks: do we pay first and get a credit after 3 days, or are they filtered before billing? It decides whether the right bid uses 1.8% or 2.0%.
+- Is the credit complete and automatic (as stated), including for late flags? It confirms the bid should use the valid rate of 2.0%.
 - Is the invalid flag a rule, a vendor score or manual review? Late, model-based flags change over time and need versioning.
 - Does the 3-day delay apply to the invalid label only, or also to conversions (which usually arrive later)? Both censor the newest data.
 - Does the invalid share differ by publisher, placement or hour? A shared share is a small bias; a varying share distorts ranking between publishers.
@@ -117,7 +117,7 @@ sim: acted-group event rate had nobody acted (untreated risk): 0.353
 
 **Approach:**
 1. Do the arithmetic. 10% invalid, conversion 2.0% on valid, 0% on invalid: blended = 0.9 x 2.0% = 1.8%. With an illustrative value of 50 per conversion, the raw bid per click is 0.90 and the valid-only bid is 1.00, a 10% underbid.
-2. Say which direction the bias goes. If invalid clicks are credited back, we are only paying for valid ones, so the right value of a billed click is the valid rate (2.0%). A raw-trained model underbids by 10% on average. If they are not credited, the blended 1.8% is the true value of what we pay for, and the fix is to push for filtering, not to adjust the model. Ask billing which case holds.
+2. Say which direction the bias goes. Invalid clicks are credited back, so we effectively pay only for valid ones and the right value of a click is the valid rate (2.0%). A raw-trained model underbids by 10% on average. Sensitivity in one line: if they were not credited, the blended 1.8% would be the value of what we pay for.
 3. Publisher differences matter more than the average. A publisher with 2% invalid shows 1.96%, one with 30% shows 1.4%, with the same real users. The raw model punishes the second publisher for traffic quality, which is acceptable if you are billed for it and wrong if you are credited.
 4. Handle the delay. A click from today has no invalid flag yet, so it looks valid and unconverted when it is invalid. Recent days therefore show a lower conversion rate than matured days (in the run, 1.71% versus 1.96% on the same traffic mix). Train on matured clicks only (age at least 3 days, plus the conversion window), or train two models: P(invalid) from matured data, and P(convert | valid).
 5. Combine at serving. Expected value per click = P(valid) x P(convert | valid) x value, where P(valid) comes from a publisher and placement model. Use a conservative P(valid) for new sources.
@@ -137,14 +137,14 @@ sim: acted-group event rate had nobody acted (untreated risk): 0.353
 - Sample rates (2.0%, 10%) are from a sample; check their interval before quoting them to a publisher.
 
 **What the interviewer scores:**
-- Strong: derives 1.8% from 90% x 2.0% and links the bid error to the billing treatment.
+- Strong: derives 1.8% from 90% x 2.0% and links the bid error to the credit-back treatment.
 - Strong: names label delay as a censoring problem and trains on matured data or models the flag.
 - Strong: separates invalid-traffic share (a source property) from user conversion behaviour.
 - Weak: "just remove the bots"; ignoring the delay; saying the bias is always 10% for every publisher.
 
 **Example:** Illustrative numbers, value 50 per conversion. Weak versus strong:
 - Weak: "I would filter out invalid clicks and retrain on the full data."
-- Strong: "On raw clicks the model sees 1.8% and bids 0.90; the valid-only rate is 2.0%, so bid 1.00, assuming invalid clicks are credited back, which I would confirm with billing. The last 3 days are not yet flagged, so I train on matured clicks, and I model the chance a click is valid per publisher. I would tell the account team that recent numbers are provisional and that bids on a high-invalid publisher will be lower until its flags settle."
+- Strong: "On raw clicks the model sees 1.8% and bids 0.90; the valid-only rate is 2.0%, so bid 1.00, since invalid clicks are credited back. The last 3 days are not yet flagged, so I train on matured clicks, and I model the chance a click is valid per publisher. I would tell the account team that recent numbers are provisional and that bids on a high-invalid publisher will be lower until its flags settle."
 
 **Code:**
 ```python
@@ -219,7 +219,7 @@ recent naive / P(valid): 0.019
 - Training on the most recent days and treating missing flags as "valid".
 - Assuming the bias is the same for every publisher.
 - Reporting 1.8% to the publisher as their conversion quality without separating invalid share.
-- Forgetting to ask who bears the cost of invalid clicks.
+- Using the blended rate for the bid when invalid clicks are credited back.
 
 ### Q13 ⭐⭐⭐ 🔴 Fintech: A lender approved 30,000 of 100,000 applicants last year (30%) and 1,200 of the approved (4%) defaulted within 12 months, measured on matured outcomes. A new model is trained only on the approved applicants and the 70,000 rejected applicants have no outcome. If rejects defaulted at 3 times the approved rate, the population default rate would be 9.6%, which is one scenario and not a measurement. Explain the bias, the reject-inference options and their limits, and what low-risk experiment would give you real outcomes on rejects.
 **Asked at:** Fintech and credit-scoring material (a codemia Capital One data scientist guide and Interview Query fintech and lender guides list thin-file features, alternative data, class imbalance, regulatory limits on features and false-positive versus false-negative cost trade-offs; Altair, RiskSpan, SAS and HAL pages describe reject inference); prep and practitioner material rather than a confirmed employer round; commonly reported in public guides for data scientist and ML engineer loops; search snippets only, not opened

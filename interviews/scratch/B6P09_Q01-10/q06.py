@@ -28,3 +28,4 @@ assert round(be, 4) == 0.2308 and abs(pilot_profit(be)) < 1e-6
 assert round(pilot_profit(0.05)) == 1_880_000 and round(pilot_profit(0.10)) == 1_360_000 and round(pilot_profit(0.20)) == 320_000
 assert round(pilot_profit(0.30)) == -720_000 and round(se * 100, 2) == 0.67
 assert c82 > c66 + 0.15
+assert round(c82, 2) == 0.61 and round(c66, 2) == 0.37

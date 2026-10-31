@@ -37,3 +37,4 @@ assert rows[0.0][2] > 950                                          # with a flat
 assert rows[0.0][2] < 1050 + 1e-6                                  # but never above the optimistic bound
 assert rows[0.0][2] > rows[0.3][2] > rows[0.6][2] > rows[1.0][2]   # a rising CPA eats the gain
 assert rows[0.6][2] < 950 < 1050                                   # at this elasticity pacing loses conversions
+assert round(rows[0.0][2]) == 1023 and round(rows[0.6][2]) == 878 and round(budget - rows[0.6][1]) == 553
