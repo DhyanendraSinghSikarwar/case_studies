@@ -810,3 +810,133 @@ backups              day  36  cannot edit; suppression list re-applied on any re
 - Saying "deleted" when the index only marked the vectors.
 - Quoting legal rules from memory.
 - Computing the gap as 5 days and stopping there.
+
+### Q42 ⭐⭐ 🔴 You want a regression suite to detect a drop in pass rate from 80% to 75% (5 points absolute) with 95% confidence and 80% power, using separate prompt samples for the two versions. Compute the number of prompts needed per version with the normal approximation, compare it with your 200-prompt suite, and say how scoring both versions on the same prompts would help.
+**Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to regression-suite sizing in LLM evaluation pages; related topics appear in public guides for data scientist, ML engineer and GenAI engineer loops; no page for the exact framing; search snippets only, not opened
+**Say this first (1 line):** To detect 80% to 75% with 95% confidence and 80% power on separate prompt samples I need about 1,091 prompts per version, so a 200-prompt suite (18% of that) has only about 22% power; scoring both versions on the same prompts cuts the need a lot when their outcomes are correlated.
+
+**Clarifying questions:**
+- Two-sided or one-sided? I assume two-sided at 5%, the standard choice. A one-sided test (only drops matter) needs 860 per version.
+- Is 80% the true pass rate on the same prompt mix production sees? The sample size depends on the baseline (variance p x (1-p)).
+- What is the smallest drop worth catching? 5 points is the prompt's choice. Halving it roughly quadruples the sample.
+- How many times will I run each prompt? Repeated runs reduce sampling noise from the model but not the prompt-sampling noise (the prompts are still only 200).
+- Are pass/fail labels cheap, or are humans needed? That limits the suite size.
+
+**Approach:**
+1. Formula (normal approximation, two proportions): n per group = (z_alpha/2 + z_power)^2 x (p1 x (1-p1) + p2 x (1-p2)) / d^2.
+2. Numbers: z_alpha/2 = 1.960, z_power = 0.842, variance sum = 0.16 + 0.1875 = 0.3475, d = 0.05. n = (2.802)^2 x 0.3475 / 0.0025 = 1,090.x, so 1,091 per version.
+3. Compare with 200: 200 / 1,091 = 18%. The power of a 200-prompt unpaired comparison for a true 5-point drop is about 22% (Code): most real 5-point drops would go unnoticed, and a "no significant change" result would be uninformative.
+4. Paired design: score both versions on the same prompts. Hard prompts are hard for both, so the per-prompt outcomes are correlated, and the variance of the difference shrinks: variance = 0.3475 - 2 x rho x sqrt(0.16 x 0.1875). With the correlation rho = 0.5, 0.7, 0.9 (illustrative; measure it on a pilot) the prompts needed are 548, 330 and 113 (Code). At rho = 0 there is no gain (1,091).
+5. Analyse with a paired test (McNemar: only prompts where the versions disagree count, b = pass-to-fail, c = fail-to-pass; z = (b - c) / sqrt(b + c)). A simulation (seeded, rho 0.7, 330 prompts) detects the drop in about 81% of runs, consistent with 80% power.
+6. Practical suite: grow it toward a few hundred paired prompts, stratified by intent so you can read segments, with fixed seeds or temperature 0 and repeated runs for noisy tasks; add a tolerance rule (a drop of more than 3 points on the interval's upper bound triggers review).
+
+**Metrics:**
+- Pass rate = prompts passed / prompts scored, with Wilson 95% interval; difference with an interval from the paired counts.
+- Power = probability that the test flags a true 5-point drop at 5% significance (22% for 200 unpaired, about 80% for 330 paired at rho 0.7).
+- Discordant counts b and c per version pair.
+
+**Risks:**
+- The rho of 0.7 is invented; real correlation may be lower (a rewritten prompt may change many outcomes) and the saving shrinks.
+- Normal approximation is rough near the edges and for small counts; use exact McNemar for small b + c.
+- A suite that is not like production gives a precise answer to the wrong question.
+- Many versions compared to the same suite inflate false alarms; choose one decision metric per release.
+
+**What the interviewer scores:**
+- Strong: gives the formula and 1,091 per version, and the power of 200 (about 22%). Weak: "200 is probably enough".
+- Strong: explains why pairing helps (correlated outcomes; variance of the difference). Weak: "pairing is just better".
+- Strong: states the two-sided and 95%/80% assumptions. Weak: skips them.
+- Strong: includes stratification and a decision rule. Weak: only a number.
+
+**Example:** (illustrative numbers) On a pilot of 200 paired prompts, v1 passes 160, v2 passes 150. Among the 200, 15 pass in v1 and fail in v2 (b = 15) and 5 fail in v1 and pass in v2 (c = 5). Check: 160 - 15 + 5 = 150. McNemar z = (15 - 5) / sqrt(20) = 2.24, a significant drop at 5%. Treating the same two scores as independent samples gives z about 1.2 and no significance. Weak answer: "75 against 80, 200 prompts, not significant, ship." Strong answer: "With 200 unpaired prompts the test has 22% power, so a null result means nothing. Score the same prompts and read the paired counts: 15 against 5 is a real drop."
+
+**Code:**
+```python
+import math
+import numpy as np
+from scipy import stats
+
+# Illustrative numbers from the prompt
+p1, p2, alpha, power, n_suite = 0.80, 0.75, 0.05, 0.80, 200
+d = p1 - p2
+za, zb = stats.norm.ppf(1 - alpha / 2), stats.norm.ppf(power)
+var_unpaired = p1 * (1 - p1) + p2 * (1 - p2)          # variance of (x1 - x2) per prompt if independent
+n_per = (za + zb) ** 2 * var_unpaired / d ** 2
+print(f"z_alpha/2 = {za:.3f}, z_power = {zb:.3f}, variance sum = {var_unpaired:.4f}")
+print(f"unpaired n per version = {n_per:.1f} -> {math.ceil(n_per)}; suite of {n_suite} is {n_suite/math.ceil(n_per):.0%} of that")
+assert round(var_unpaired, 4) == 0.3475 and math.ceil(n_per) == 1091 and round(n_suite / 1091, 2) == 0.18
+
+# Power of the 200-prompt suite for the same 5-point drop (unpaired, two-sided)
+se200 = math.sqrt(var_unpaired / n_suite)
+pw200 = stats.norm.sf(za - d / se200) + stats.norm.cdf(-za - d / se200)
+print(f"power of a {n_suite}-prompt unpaired comparison: {pw200:.2f}")
+assert 0.20 < pw200 < 0.25
+
+# One-sided test (only care about drops) needs fewer
+za1 = stats.norm.ppf(1 - alpha)
+n_one = (za1 + zb) ** 2 * var_unpaired / d ** 2
+print("one-sided n per version:", math.ceil(n_one))
+assert math.ceil(n_one) == 860
+
+# Paired: same prompts for both versions. Variance of the per-prompt difference falls with the correlation rho
+# between the two versions' pass/fail on a prompt (rho is invented; measure it on a pilot).
+def n_paired(rho):
+    cov = rho * math.sqrt(p1 * (1 - p1) * p2 * (1 - p2))
+    var = var_unpaired - 2 * cov
+    return (za + zb) ** 2 * var / d ** 2
+for rho in (0.0, 0.5, 0.7, 0.9):
+    print(f"rho {rho}: prompts needed (paired) = {math.ceil(n_paired(rho))}")
+assert math.ceil(n_paired(0.0)) == 1091 and math.ceil(n_paired(0.5)) == 548 and math.ceil(n_paired(0.7)) == 330 and math.ceil(n_paired(0.9)) == 113
+
+# Check by simulation (seeded): paired design at rho = 0.7 with n = 330 prompts detects the drop about 80% of the time
+rng = np.random.default_rng(11)
+def sim_power(n, rho, reps=4000):
+    cov = rho * math.sqrt(p1 * (1 - p1) * p2 * (1 - p2))
+    # joint distribution of (pass_v1, pass_v2)
+    p11 = p2 * 0 + (p1 * p2 + cov)
+    p10 = p1 - p11; p01 = p2 - p11; p00 = 1 - p11 - p10 - p01
+    cells = rng.multinomial(n, [p11, p10, p01, p00], size=reps)
+    b, c = cells[:, 1], cells[:, 2]       # discordant counts
+    z = (b - c) / np.sqrt(np.maximum(b + c, 1))     # McNemar z
+    return float(np.mean(z > za))                    # drop detected, one direction (the other tail is negligible)
+pw = sim_power(330, 0.7)
+print(f"simulated power, paired, rho 0.7, n 330: {pw:.2f}")
+assert 0.75 < pw < 0.86
+
+# Example in the text: 160 and 150 passes out of 200 paired prompts, b = 15, c = 5
+assert 160 - 15 + 5 == 150
+z_mc = (15 - 5) / math.sqrt(15 + 5)
+pool_e = (160 + 150) / 400
+z_unp = (160 / 200 - 150 / 200) / math.sqrt(pool_e * (1 - pool_e) * 2 / 200)
+print(f"example: McNemar z = {z_mc:.2f} (p = {2*stats.norm.sf(z_mc):.3f}); unpaired z = {z_unp:.2f} (p = {2*stats.norm.sf(z_unp):.2f})")
+assert round(z_mc, 2) == 2.24 and round(z_unp, 1) == 1.2
+# follow-up: a 2-point drop needs about (5/2)^2 times more prompts per version
+n2 = (za + zb) ** 2 * (0.80 * 0.20 + 0.78 * 0.22) / 0.02 ** 2
+print("unpaired n per version for 80% -> 78%:", math.ceil(n2))
+assert 6_500 < n2 < 7_200
+```
+
+**Output (my run):**
+```text
+z_alpha/2 = 1.960, z_power = 0.842, variance sum = 0.3475
+unpaired n per version = 1091.0 -> 1091; suite of 200 is 18% of that
+power of a 200-prompt unpaired comparison: 0.22
+one-sided n per version: 860
+rho 0.0: prompts needed (paired) = 1091
+rho 0.5: prompts needed (paired) = 548
+rho 0.7: prompts needed (paired) = 330
+rho 0.9: prompts needed (paired) = 113
+simulated power, paired, rho 0.7, n 330: 0.81
+example: McNemar z = 2.24 (p = 0.025); unpaired z = 1.20 (p = 0.23)
+unpaired n per version for 80% -> 78%: 6507
+```
+
+**Follow-ups:**
+- What if the drop is 2 points, not 5? The sample grows with 1 / d^2: 2.5 times smaller d needs 6.25 times more prompts, so about 6,800 per version unpaired. Use paired design and a bigger, targeted suite.
+- Why not just run each prompt 10 times? That averages out the model's sampling noise, but the 200 prompts remain 200 draws from the real mix, so the prompt-sampling error stays.
+- What do you do when you cannot reach the sample size? State the minimum detectable drop for the suite you have, and use canary traffic and online metrics as a second check.
+
+**Common mistakes:**
+- Treating 200 prompts as enough because "it is a lot of prompts".
+- Using an unpaired test on paired data (loses power) or a paired test on separate samples.
+- Forgetting two-sided versus one-sided.
+- Reporting "no significant difference" as "no difference".
