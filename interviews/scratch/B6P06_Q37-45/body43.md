@@ -2,7 +2,7 @@
 
 **Clarifying questions:**
 - What does the VP actually use the scorecard for (decisions, reports, team status)? Why: that is what I must preserve.
-- Is "2 AUC points" 0.02 absolute, and is it significant? Why: a gap that may be noise is a weak reason to retire anything.
+- Does the 0.02 AUC gap hold on a fresh holdout, with a paired bootstrap interval that excludes zero? Why: a gap that may be noise is a weak reason to retire anything.
 - What does 0.02 mean in the business metric? Why: the VP will respond to catches, not AUC.
 - Who decides retirement and what rules apply (model risk, regulator)? Why: sets the authority path.
 - Can the scorecard's reasoning be explained to the same level by the model? Why: loss of explainability is a legitimate objection.
@@ -26,9 +26,9 @@
 - Strong: empathy, evidence in business terms, parallel run, shared ownership, clean escalation.
 - Weak: "the numbers are better, retire it", or quietly going to the VP's boss.
 
-**Example:** Illustrative simulation of 20,000 customers with 1,999 positives: old AUC 0.776, new 0.802, gap 0.026, interval [0.020, 0.034]. In the top 10% the old scorecard catches 683 and the new model 755, an extra 72.
+**Example:** Illustrative simulation of 20,000 customers with 1,999 positives: old AUC 0.776, new 0.796, gap 0.020, interval [0.014, 0.028], which excludes zero. In the top 10% the old scorecard catches 683 and the new model 737, an extra 54.
 - Weak: "Your scorecard is out of date, we are switching on Monday."
-- Strong: "Your team built the scorecard that set the standard. In parallel, the model catches 72 more per 20,000. Let us run both for a quarter, and your team keeps the review and the dashboards."
+- Strong: "Your team built the scorecard that set the standard. In parallel, the model catches 54 more per 20,000. Let us run both for a quarter, and your team keeps the review and the dashboards."
 
 **Code:**
 {{CODE}}

@@ -252,7 +252,7 @@ middle option capturing half the gap: 150,000
 - Ignoring uncertainty on a 0.4 point difference.
 - Treating compliance as an opponent.
 
-### Q4 ⭐⭐⭐ 🟡 A ranking model A gives +1.2% relative click-through over model B, but its p95 latency is 80 ms against 25 ms for B and the product budget is 50 ms. A past latency test showed each extra 10 ms costs 0.3% of relative conversions, linear over this range. Compute the net effect of choosing A and explain how you would decide with the ML lead and the product owner.
+### Q4 ⭐⭐⭐ 🟡 A ranking model A gives +1.2% relative click-through over model B, but its p95 latency is 80 ms against 25 ms for B and the product budget is 50 ms. A past latency test showed each extra 10 ms costs 0.3% of relative conversions, linear over this range. Compute the net effect of choosing A, assuming the click-through gain passes through to conversions one for one, and explain how you would decide with the ML lead and the product owner.
 **Asked at:** Trade-off prompt pages (Dataford pages on accuracy versus interpretability and on accuracy versus latency and resource constraints, an Interview Query 2026 ML engineer guide that advises reasoning about interpretability versus performance and latency versus accuracy, Hyring and other 2026 guides that mention latency budgets and quantization); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 **Say this first (1 line):** Model A gives +1.2% CTR but its 55 ms of extra latency costs 1.65% of conversions, so the net is about -0.45% and it also breaks the 50 ms budget; I would not ship A as is.
 

@@ -469,7 +469,7 @@ shortfall = 2292 positives
 
 **Clarifying questions:**
 - What does the VP actually use the scorecard for (decisions, reports, team status)? Why: that is what I must preserve.
-- Is "2 AUC points" 0.02 absolute, and is it significant? Why: a gap that may be noise is a weak reason to retire anything.
+- Does the 0.02 AUC gap hold on a fresh holdout, with a paired bootstrap interval that excludes zero? Why: a gap that may be noise is a weak reason to retire anything.
 - What does 0.02 mean in the business metric? Why: the VP will respond to catches, not AUC.
 - Who decides retirement and what rules apply (model risk, regulator)? Why: sets the authority path.
 - Can the scorecard's reasoning be explained to the same level by the model? Why: loss of explainability is a legitimate objection.
@@ -493,9 +493,9 @@ shortfall = 2292 positives
 - Strong: empathy, evidence in business terms, parallel run, shared ownership, clean escalation.
 - Weak: "the numbers are better, retire it", or quietly going to the VP's boss.
 
-**Example:** Illustrative simulation of 20,000 customers with 1,999 positives: old AUC 0.776, new 0.802, gap 0.026, interval [0.020, 0.034]. In the top 10% the old scorecard catches 683 and the new model 755, an extra 72.
+**Example:** Illustrative simulation of 20,000 customers with 1,999 positives: old AUC 0.776, new 0.796, gap 0.020, interval [0.014, 0.028], which excludes zero. In the top 10% the old scorecard catches 683 and the new model 737, an extra 54.
 - Weak: "Your scorecard is out of date, we are switching on Monday."
-- Strong: "Your team built the scorecard that set the standard. In parallel, the model catches 72 more per 20,000. Let us run both for a quarter, and your team keeps the review and the dashboards."
+- Strong: "Your team built the scorecard that set the standard. In parallel, the model catches 54 more per 20,000. Let us run both for a quarter, and your team keeps the review and the dashboards."
 
 **Code:**
 ```python
@@ -510,7 +510,7 @@ def auc(y, s):
     return (r[y == 1].sum() - npos * (npos + 1) / 2) / (npos * nneg)
 shared = rng.normal(size=n)
 old = 1.04 * y + 0.9 * shared + np.sqrt(0.19) * rng.normal(size=n)   # about 0.77
-new = 1.17 * y + 0.9 * shared + np.sqrt(0.19) * rng.normal(size=n)   # about 0.80
+new = 1.14 * y + 0.9 * shared + np.sqrt(0.19) * rng.normal(size=n)   # about 0.80
 a_old, a_new = auc(y, old), auc(y, new)
 diffs = []
 for _ in range(500):
@@ -530,8 +530,8 @@ assert c_new > c_old
 
 **Output (my run):**
 ```text
-old AUC 0.776, new AUC 0.802, gap 0.026, 95% CI [0.020, 0.034]
-positives total 1999; caught in top 10%: old 683, new 755, extra 72
+old AUC 0.776, new AUC 0.796, gap 0.020, 95% CI [0.014, 0.028]
+positives total 1999; caught in top 10%: old 683, new 737, extra 54
 ```
 
 **Follow-ups:**
@@ -542,21 +542,21 @@ positives total 1999; caught in top 10%: old 683, new 755, extra 72
 
 ### Q44 ⭐ 🔴 Legal, growth and trust-and-safety each want a different moderation threshold on 100,000 items with 2,000 true violations. Threshold X gives 60% recall at 80% precision and threshold Y gives 75% recall at 75% precision, and a missed violation costs 50 against 5 for a wrongly flagged item. Compute the cost of each, and say how you would get the three groups to agree.
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to stakeholder-management and trade-off prompt pages (Dataford and PracHub families) but no located page for this specific framing
-**Say this first (1 line):** At the stated 50-to-5 costs, threshold Y costs about 23,429 and threshold X about 40,667, so Y wins unless a miss costs less than about 1.4 times a false flag, and I would get the three groups to agree on the cost matrix first.
+**Say this first (1 line):** At the stated 50-to-5 costs, threshold Y costs 27,500 and threshold X 41,500, so Y wins unless a miss costs less than two thirds of a false flag, and I would get the three groups to agree on the cost matrix first.
 
 **Clarifying questions:**
-- Where do the 50 and 5 come from, and does Legal see harm in wrongful flags that 5 understates? Why: the answer flips if false flags are costlier.
-- What is the human review capacity? Why: Y flags about 2,286 items versus 1,333 for X.
+- Where do the 50 and 5 come from, and does Legal see harm in wrongful flags that 5 understates? Why: if a false flag costs more than a miss, the choice flips.
+- What is the human review capacity? Why: Y flags 2,000 items versus 1,500 for X.
 - Can action be tiered (auto remove, review, leave)? Why: tiers beat one threshold.
-- Is the 2,000 violation count and the precision and recall measured on a fresh sample? Why: errors in them move the cost.
+- Are precision and recall measured on a fresh labelled sample, and how big? Why: errors in them move the cost.
 - Who decides if the groups still disagree? Why: needs an owner.
 
 **Approach:**
-1. Compute: X has 1,200 caught, 800 missed, about 133 wrongly flagged. Y has 1,600 caught, 400 missed, about 686 wrongly flagged.
-2. Cost = misses x 50 + false flags x 5. X is 40,666.67; Y is 23,428.57; Y is cheaper by 17,238.
-3. Compute the break-even miss-to-false-flag cost ratio (1.381) and show the groups how far their views are from it.
-4. Get Legal, growth and trust-and-safety to agree one cost matrix, with ranges for each team's view.
-5. Run sensitivity: at what cost does the choice change?
+1. Compute: X catches 1,200 of 2,000, misses 800, flags 1,500 (1,200 / 0.8), so 300 are false. Y catches 1,500, misses 500, flags 2,000, so 500 are false.
+2. Cost = misses x 50 + false flags x 5. X is 800 x 50 + 300 x 5 = 41,500. Y is 500 x 50 + 500 x 5 = 27,500. Y is cheaper by 14,000.
+3. Compute the break-even miss-to-false-flag cost ratio: 200 extra false flags buy 300 fewer misses, so ratio 200 / 300 = 0.667.
+4. Get Legal, growth and trust-and-safety to agree one cost matrix, with a range for each team's view.
+5. Run sensitivity: if a false flag cost 100 and a miss 50 (ratio 0.5), X costs 70,000 and Y 75,000, so X wins.
 6. Offer a tiered policy: high score auto-actioned, middle band to review, within capacity.
 
 **Metrics:** Cost = FN x 50 + FP x 5. FN = positives x (1 - recall). FP = TP / precision - TP. Review load = flagged items. Guardrails: review capacity, appeal rate on wrongful flags.
@@ -570,13 +570,13 @@ positives total 1999; caught in top 10%: old 683, new 755, extra 72
 - Strong: correct arithmetic, break-even ratio, capacity check, a decision process.
 - Weak: arithmetic errors, or picking by who shouts loudest.
 
-**Example:** X: recall 0.6 on 2,000 gives TP 1,200 and FN 800. Flagged = 1,200/0.9 = 1,333.33 so FP 133.33. Cost 800 x 50 + 133.33 x 5 = 40,666.67. Y: TP 1,600, FN 400, flagged 2,285.71, FP 685.71, cost 20,000 + 3,428.57 = 23,428.57. Fractions of items arise because 90% and 70% do not divide evenly; rounded, they are 40,665 and 23,430. The 100,000 total items is not needed.
-- Weak: "Y has lower precision so X is better."
-- Strong: "Y costs 17,238 less. It only loses if a miss costs under 1.4 times a false flag. Let us agree the cost matrix and what capacity we have."
+**Example:** X: TP 1,200, FN 800, flagged 1,500, FP 300, cost 40,000 + 1,500 = 41,500. Y: TP 1,500, FN 500, flagged 2,000, FP 500, cost 25,000 + 2,500 = 27,500. The 100,000 total items does not enter the cost.
+- Weak: "X has higher precision so X is better."
+- Strong: "Y costs 14,000 less. It only loses if a miss costs under two thirds of a false flag. Let us agree the cost matrix and our review capacity."
 
 **Code:**
 ```python
-# Q44: cost of thresholds X and Y (prompt numbers; fractions of items rounded at the end)
+# Q44: cost of thresholds X and Y (prompt numbers)
 pos = 2000
 cost_fn, cost_fp = 50, 5
 def cost(recall, precision, rnd=False):
@@ -586,36 +586,37 @@ def cost(recall, precision, rnd=False):
     fp = flagged - tp
     if rnd: fn, fp, flagged = round(fn), round(fp), round(flagged)
     return fn, fp, flagged, fn * cost_fn + fp * cost_fp
-for name, r, p in (("X", 0.60, 0.90), ("Y", 0.80, 0.70)):
+for name, r, p in (("X", 0.60, 0.80), ("Y", 0.75, 0.75)):
     fn, fp, fl, c = cost(r, p)
     print(f"{name}: FN {fn:.0f}, FP {fp:.2f}, flagged {fl:.2f}, cost {c:,.2f}")
-    fn2, fp2, fl2, c2 = cost(r, p, rnd=True)
-    print(f"   rounded: FN {fn2}, FP {fp2}, flagged {fl2}, cost {c2:,}")
-cx, cy = cost(0.6, 0.9)[3], cost(0.8, 0.7)[3]
-assert abs(cx - 40666.67) < 0.01 and abs(cy - 23428.57) < 0.01
-assert cost(0.6, 0.9, True)[3] == 40665 and cost(0.8, 0.7, True)[3] == 23430
-print(f"Y is cheaper by {cx-cy:,.2f}")
+cx, cy = cost(0.6, 0.8)[3], cost(0.75, 0.75)[3]
+assert cost(0.6, 0.8)[:3] == (800, 300, 1500) and cx == 41_500
+assert cost(0.75, 0.75)[:3] == (500, 500, 2000) and cy == 27_500
+print(f"Y is cheaper by {cx-cy:,.0f}")
 # break-even miss:false-flag cost ratio r (FP cost fixed at 5)
-fnx, fpx, _, _ = cost(0.6, 0.9); fny, fpy, _, _ = cost(0.8, 0.7)
+fnx, fpx, _, _ = cost(0.6, 0.8); fny, fpy, _, _ = cost(0.75, 0.75)
 r = (fpy - fpx) / (fnx - fny)
 print(f"break-even FN:FP cost ratio = {r:.3f} (prompt ratio is 10)")
-assert abs(r - 1.381) < 0.001 and 50 / 5 > r
-print("review load: X flags", round(cost(0.6,0.9)[2]), "items, Y flags", round(cost(0.8,0.7)[2]))
+assert abs(r - 2/3) < 1e-9 and 50 / 5 > r
+print("review load: X flags", round(cost(0.6,0.8)[2]), "items, Y flags", round(cost(0.75,0.75)[2]))
+# sensitivity: if a false flag cost 100 and a miss 50 (ratio 0.5), X wins
+def total(fn, fp, cfn, cfp): return fn*cfn + fp*cfp
+assert total(800, 300, 50, 100) == 70_000 and total(500, 500, 50, 100) == 75_000
+print("false flag 100, miss 50: X", total(800,300,50,100), "Y", total(500,500,50,100))
 ```
 
 **Output (my run):**
 ```text
-X: FN 800, FP 133.33, flagged 1333.33, cost 40,666.67
-   rounded: FN 800, FP 133, flagged 1333, cost 40,665
-Y: FN 400, FP 685.71, flagged 2285.71, cost 23,428.57
-   rounded: FN 400, FP 686, flagged 2286, cost 23,430
-Y is cheaper by 17,238.10
-break-even FN:FP cost ratio = 1.381 (prompt ratio is 10)
-review load: X flags 1333 items, Y flags 2286
+X: FN 800, FP 300.00, flagged 1500.00, cost 41,500.00
+Y: FN 500, FP 500.00, flagged 2000.00, cost 27,500.00
+Y is cheaper by 14,000
+break-even FN:FP cost ratio = 0.667 (prompt ratio is 10)
+review load: X flags 1500 items, Y flags 2000
+false flag 100, miss 50: X 70000 Y 75000
 ```
 
 **Follow-ups:**
-- What if Legal says a false flag costs 50? Then FP weight rises: X would cost 800 x 50 + 133.33 x 50 = 46,667 and Y 400 x 50 + 685.71 x 50 = 54,286, so X wins.
+- What if Legal says a false flag costs 100 against a miss of 50? Then X costs 70,000 and Y 75,000, so X wins.
 - Could a third threshold be better? Possibly. Sweep the curve, and see Book 1 Part 03, Q41: "Derive the Bayes-optimal threshold for a given cost matrix and explain why it needs calibrated probabilities."
 
 **Common mistakes:** Using the 100,000 in the cost. Ignoring review capacity. Using one cost for all groups. Presenting a winner without sensitivity.

@@ -625,7 +625,7 @@ max recall with 1,000 contacts: 20%
 - Ignoring the cost per contact.
 - Claiming the 300 were "saved".
 
-### Q26 ⭐⭐ 🟡 A PM has changed the churn target definition three times in one 20-day sprint, from 30 to 60 to 90 days of inactivity, and each change costs you 3 days of relabelling and retraining. The 9 lost days are 45% of the sprint. What do you do about it, and how do you stop it happening again?
+### Q26 ⭐⭐ 🟡 A PM has used three churn target definitions in one 20-day sprint, 30, then 60, then 90 days of inactivity, and each relabel-and-retrain costs you 3 days. The 9 days are 45% of the sprint (6 days, 30%, if the first build was planned work). What do you do about it, and how do you stop it happening again?
 **Asked at:** Stakeholder-conflict prompt pages (Dataford pages on a PM or business expert requesting something that conflicts with model limitations, on stakeholders disagreeing with your findings, on conflicting stakeholder feedback and on cross-functional conflict, plus codemia and Yardstick pushback and persuasion question pages); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 **Say this first (1 line):** I would show the PM that each definition change costs 3 days of a 20-day sprint, ask for one churn definition agreed in writing with the decision owner, and make my pipeline cheap to relabel so a later change does not cost days.
 

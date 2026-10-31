@@ -271,7 +271,7 @@ spare weeks with best: 2 -> C (3 weeks) does not fit; value lost to greedy: 10
 - Forgetting support and meeting time.
 - Saying "later" with no date.
 
-### Q13 ⭐⭐⭐ 🔴 A loan model approves 60% of applicants in group A and 42% in group B, a ratio of 0.7 against the common four-fifths guideline of 0.8. The business head says the gap simply reflects different repayment risk and wants to ship this week. How do you test his claim, what options do you put on the table, and when do you escalate?
+### Q13 ⭐⭐⭐ 🔴 A loan model approves 60% of applicants in group A and 42% in group B, a ratio of 0.7 against a four-fifths style screening heuristic of 0.8. The business head says the gap simply reflects different repayment risk and wants to ship this week. How do you test his claim, what options do you put on the table, and when do you escalate?
 **Asked at:** Ethics and fairness material (Yardstick data-ethics question page asking how bias was handled without disrupting the business, a University of Virginia online-ethics case on whether to keep a sensitive attribute in a model, a Data Science Newsletter ethics page, pre-screening pages on unethical data requests); practitioner pages rather than a confirmed interview bank; commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 **Say this first (1 line):** The ratio is 42 / 60 = 0.70, below the 0.8 guideline, so I would not ship this week on assertion; I would test his claim by comparing approvals and defaults within risk bands, and escalate if the gap is not explained.
 
@@ -365,7 +365,7 @@ World 2 (not explained): B with A's own mix: 0.42 ratio 0.7
 - Removing the attribute and declaring victory.
 - Escalating with no analysis, or never escalating.
 
-### Q14 ⭐⭐⭐ 🔴 Your demand model forecast 118,000 units for a month in which 100,000 were sold, and the 18,000 excess units cost 25 each in markdowns and holding. The supply-chain head is angry and asks in front of the group who approved the model. Say what you do in the first hour, the first week and the next quarter, including how you own your part.
+### Q14 ⭐⭐⭐ 🔴 Your demand model forecast 118,000 units for a month in which 100,000 were sold, and, if supply ordered to the forecast, the 18,000 excess units cost up to 25 each in markdowns and holding (450,000 at most). The supply-chain head is angry and asks in front of the group who approved the model. Say what you do in the first hour, the first week and the next quarter, including how you own your part.
 **Asked at:** Project-conflict prompts (PracHub pages on ML project milestones, scope and conflict, on stakeholder conflict under a compressed delivery timeline and on cross-functional pushback on an analysis; one is tagged to a large marketplace and one to a social platform on the page, unverified); commonly reported in public guides for data scientist, product analyst and ML engineer loops; search snippets only, not opened
 **Say this first (1 line):** I would not defend or hide; in the first hour I would say "the forecast was 18% high, that cost up to 450,000, I own the model's part, and I will bring a root cause in a week."
 
@@ -454,7 +454,7 @@ order at demand quantile 0.615
 - Blaming the approver.
 - Promising it will never happen again.
 
-### Q15 ⭐⭐⭐ 🔴 Leadership wants an LLM agent to answer every internal analytics question, and a pilot answered 94% of 500,000 monthly questions correctly. A wrong answer costs about 20 in rework or bad decisions, so the 30,000 wrong answers cost 600,000 a month. How do you push back constructively, and where would you accept the risk versus add review?
+### Q15 ⭐⭐⭐ 🔴 Leadership wants an LLM agent to answer every internal analytics question, and a pilot sample was 94% correct, which at 500,000 monthly questions projects 30,000 wrong answers. A wrong answer costs about 20 in rework or bad decisions, so that projects to 600,000 a month. How do you push back constructively, and where would you accept the risk versus add review?
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to AI-era build-versus-buy and hallucination-risk material (2026 vendor and CTO-guide pages such as ThirstySprout and TKMX AI on API versus self-host and LLM cost, an InfoQ LLM-adoption article); no interview page for the leadership-pressure framing was found
 **Say this first (1 line):** 94% of 500,000 questions is 30,000 wrong answers, about 600,000 a month at 20 each, so I would not say no to the agent; I would say yes by tier: accept the risk where wrong answers are cheap and add review where they are costly.
 

@@ -34,7 +34,7 @@ assert 30000*0.04 == 1200 and 30000*0.036 == 1080 and 1200-1080 == 120 and 120*2
 add(3, '🟢', "A bank's compliance team wants a logistic regression with reason codes for loan declines, while the data scientist prefers a gradient-boosted model. At a fixed 60% approval rate on 50,000 applications (30,000 approved), the logistic model approves loans with a 4.0% default rate and the boosted model 3.6%, and each default costs 2,500. Compute the defaults and loss avoided by the boosted model and say how you would settle the disagreement.", 'T')
 # latency vs accuracy
 assert round(55*0.03, 2) == 1.65 and round(1.2-1.65, 2) == -0.45
-add(3, '🟡', "A ranking model A gives +1.2% relative click-through over model B, but its p95 latency is 80 ms against 25 ms for B and the product budget is 50 ms. A past latency test showed each extra 10 ms costs 0.3% of relative conversions, linear over this range. Compute the net effect of choosing A and explain how you would decide with the ML lead and the product owner.", 'T')
+add(3, '🟡', "A ranking model A gives +1.2% relative click-through over model B, but its p95 latency is 80 ms against 25 ms for B and the product budget is 50 ms. A past latency test showed each extra 10 ms costs 0.3% of relative conversions, linear over this range. Compute the net effect of choosing A, assuming the click-through gain passes through to conversions one for one, and explain how you would decide with the ML lead and the product owner.", 'T')
 # speed vs rigour
 assert 6000*50 == 300000 and 200000*50 == 10000000 and 300000/10000000 == 0.03
 add(3, '🟡', "The CEO wants a revenue number for Friday's board deck, but you have just found that 3% of 200,000 order rows (6,000 rows) are duplicates, and cleaning and re-running takes two more days. The average order is 50, so gross revenue as currently computed is 10,000,000. What do you tell the CEO's chief of staff, and what exactly do you send by Friday?", 'P')
@@ -67,13 +67,13 @@ assert v == 470 and order == ['B', 'C', 'A', 'D']
 add(3, '🟡', "Four stakeholders each want a data-science project, and the team has 10 weeks of capacity. Project A is worth 280 (in thousands of one unit) and takes 6 weeks, B is worth 200 and takes 2, C is worth 150 and takes 3 and D is worth 120 and takes 5. Rank them by value per week, then find the best combination that fits in 10 weeks, and say how you tell the losers.", 'R')
 # ethics
 assert 42/60 == 0.7
-add(3, '🔴', "A loan model approves 60% of applicants in group A and 42% in group B, a ratio of 0.7 against the common four-fifths guideline of 0.8. The business head says the gap simply reflects different repayment risk and wants to ship this week. How do you test his claim, what options do you put on the table, and when do you escalate?", 'E')
+add(3, '🔴', "A loan model approves 60% of applicants in group A and 42% in group B, a ratio of 0.7 against a four-fifths style screening heuristic of 0.8. The business head says the gap simply reflects different repayment risk and wants to ship this week. How do you test his claim, what options do you put on the table, and when do you escalate?", 'E')
 # failed model
 assert 118000-100000 == 18000 and 18000*25 == 450000
-add(3, '🔴', "Your demand model forecast 118,000 units for a month in which 100,000 were sold, and the 18,000 excess units cost 25 each in markdowns and holding. The supply-chain head is angry and asks in front of the group who approved the model. Say what you do in the first hour, the first week and the next quarter, including how you own your part.", 'P')
+add(3, '🔴', "Your demand model forecast 118,000 units for a month in which 100,000 were sold, and, if supply ordered to the forecast, the 18,000 excess units cost up to 25 each in markdowns and holding (450,000 at most). The supply-chain head is angry and asks in front of the group who approved the model. Say what you do in the first hour, the first week and the next quarter, including how you own your part.", 'P')
 # LLM for everything
 assert 500000*0.06 == 30000 and 30000*20 == 600000
-add(3, '🔴', "Leadership wants an LLM agent to answer every internal analytics question, and a pilot answered 94% of 500,000 monthly questions correctly. A wrong answer costs about 20 in rework or bad decisions, so the 30,000 wrong answers cost 600,000 a month. How do you push back constructively, and where would you accept the risk versus add review?", 'A')
+add(3, '🔴', "Leadership wants an LLM agent to answer every internal analytics question, and a pilot sample was 94% correct, which at 500,000 monthly questions projects 30,000 wrong answers. A wrong answer costs about 20 in rework or bad decisions, so that projects to 600,000 a month. How do you push back constructively, and where would you accept the risk versus add review?", 'A')
 
 # ---------- 2 stars ----------
 add(2, '🟢', "A marketing manager asks you for a churn model, but when you ask what decision it feeds she says she wants to see weekly churn by plan and region. A dashboard would take 2 weeks and a model about 10, five times as long. How do you handle the request, and when would you still build the model?", 'N')
@@ -96,7 +96,7 @@ add(2, '🟡', "A compliance officer asks you to show why the credit model decli
 assert 300/1000 == 0.3 and 0.05*100000 == 5000 and 300/5000 == 0.06
 add(2, '🟡', "The CEO asks why the churn model's precision is only 30 percent. It flags 1,000 customers, 300 of whom really churn, out of 100,000 customers with a 5% churn rate (5,000 churners), so recall is 6%. How do you explain these numbers to him, and what do you recommend he use them for?", 'M')
 assert 3*3 == 9 and 9/20 == 0.45
-add(2, '🟡', "A PM has changed the churn target definition three times in one 20-day sprint, from 30 to 60 to 90 days of inactivity, and each change costs you 3 days of relabelling and retraining. The 9 lost days are 45% of the sprint. What do you do about it, and how do you stop it happening again?", 'S')
+add(2, '🟡', "A PM has used three churn target definitions in one 20-day sprint, 30, then 60, then 90 days of inactivity, and each relabel-and-retrain costs you 3 days. The 9 days are 45% of the sprint (6 days, 30%, if the first build was planned work). What do you do about it, and how do you stop it happening again?", 'S')
 assert 1000000*0.004 == 4000 and 4000*20 == 80000
 add(2, '🟡', "Marketing wants to use customers' location history in a propensity model, which would add 0.4 percentage points of conversion across 1,000,000 customers, or 4,000 extra conversions worth 20 each (80,000). The privacy team says the consent terms do not cover this use. How do you weigh the 80,000 against the risk, and what do you propose?", 'E')
 assert round(1-0.95**5, 4) == 0.2262
