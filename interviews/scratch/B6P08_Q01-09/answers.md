@@ -709,3 +709,125 @@ parity test mismatches: 300
 - Book 4 link: "Training-serving skew from the code side" in Book4_MLOps_Part01.md.
 
 **Common mistakes:** Fixing the wrong side. Estimating damage by score points instead of decisions. Treating a 6% sample figure as exact. Trusting that two teams share a convention. Having no test that runs the same raw row through both paths.
+
+### Q7 ⭐⭐⭐ 🟡 At 10:00 the registry alias 'champion' was moved from version 17 to version 18, but 4 of the 10 serving pods (40%) cached version 17 at startup and never re-resolved the alias. The two versions differ by an average of 0.08 in score, and the logs show only the alias name. How do you detect this today, fix it, and change the design so the served version is always provable?
+**Asked at:** Model-registry and rollback pages (oneuptime and mljar rollback runbooks that move a 'champion' alias or demote a Production stage, a Towards AI piece on registries as the source of truth); secondary practitioner material, no located public incident; commonly reported in public guides for ML engineer, MLOps and data scientist loops; search snippets only, not opened
+**Say this first (1 line):** Today I detect it by reading the model version out of every response and counting versions per pod, fix it with a rolling restart of the 4 stale pods, and change the design so deployments pin a numeric version, the alias is read only by the promotion job, and every response carries a version I can prove.
+
+**Clarifying questions:**
+- Is v18 the intended, validated version? If v18 is the suspect one, the right move is the other direction (restart the 6 pods back to v17), so confirm which version is the safe one first.
+- What does the 0.08 mean: a mean absolute difference per request, or a signed shift? I read it as a mean absolute difference per request; a signed shift would change the fleet figure.
+- Do users or sessions need consistent scores across requests (credit offers, rankings)? Mixed versions give the same user different answers.
+- Can I see which version each pod holds without restarting it (a version endpoint, a log line at startup, a metric label)? Today the logs show only the alias name, so the answer is no, which is the design bug.
+- Is any experiment or monitor reading these scores right now? A 60/40 mix quietly contaminates an A/B test and every drift metric.
+
+**Approach:**
+1. First 15 minutes. Ask each pod which version it holds (a version endpoint, a model hash in the health check, or the startup logs of each pod). Count the versions: 6 pods on v18, 4 on v17. Post it in the channel. Alias behaviour of registries is editor knowledge here, not tested: an alias is a movable pointer, and a client that resolves it once at startup keeps the version it got.
+2. Decide the target. If v18 is the intended and validated version, do a rolling restart of the 4 stale pods one at a time (illustrative 90 seconds each, 6 minutes in total, my run). If v18 is in doubt, roll the 6 back to v17 and investigate.
+3. Rollback and escalation criteria. Stop and roll back to the previous version if error rate or p95 latency of any pod rises above the guardrail after the restart. Escalate to the platform owner if pods keep picking up the old version after restart (which would mean the cache lives somewhere other than the pod).
+4. Impact. With a 60/40 mix, the expected mean absolute deviation from the intended model is 0.4 x 0.08 = 0.032 per request, and a user making 5 requests has a 91.2% chance of being served by both versions (my run, random load balancing). Find the decisions that crossed a cut-off during the window if the score drives a decision.
+5. First day. Add model_version and model_hash as a response header and a log field, and a metric labelled by version per pod. Alert when more than one version is served after a grace period of 10 minutes following a promotion (my run: alias moved at 10:00, alert by 10:15).
+6. Next quarter. Deployments resolve the alias once, at deploy time, and write the numeric version into the manifest; pods never resolve aliases themselves. Promotion becomes a pipeline step: move alias, update the manifest, roll the fleet, verify the version count, all in one run. Add a post-promotion check that fails if the versions served differ from the expected one.
+7. Blameless postmortem. The system let two valid readings of "champion" exist at once, and the logs could not tell them apart. Action items are the version header, the single-version alert and the pinned manifest, not "remember to restart pods after promotion".
+
+**Metrics:**
+- Share of traffic on the wrong version = requests served by v17 / requests = 40% (4 of 10 pods, assuming even load per pod).
+- Mean absolute score deviation from intended = share on wrong version x mean absolute difference = 0.4 x 0.08 = 0.032.
+- Time to detect = time the alias moved to the first alert (here 15 minutes with the new rule; today it is open-ended); time to converge = rolling restart time.
+- Guardrails: number of distinct versions served per service (must be 1 after the grace period), error rate and p95 during the restart.
+
+**Risks:**
+- Restarting all pods at once drops capacity; keep max unavailable at 1.
+- If the pods re-resolve the alias at startup and someone moves the alias mid-restart, the fleet could split again; pin the version first, then restart.
+- A version header proves what was loaded, not that the artifact is the right one; add the model hash from the registry.
+- The 0.032 is a projection from the prompt's 0.08 and an even pod share; the simulation in my run gave 0.0308 because clipping scores to [0, 1] slightly shrinks the difference.
+
+**What the interviewer scores:**
+- Strong: gets 6 versus 4 visible with a concrete signal (header, label, hash), not just "check the logs". Weak: "restart everything and hope".
+- Strong: asks which version is the safe one before acting. Weak: assumes v18 is right.
+- Strong: design fix removes the class of bug (pin at deploy, one version proof). Weak: "restart pods after every promotion".
+- Strong: quantifies the impact (0.032, user-level 91%) and blameless framing. Weak: no numbers, blames the promoter.
+
+**Example:** Illustrative numbers. Weak answer: "I would restart the pods and tell people to restart after moving the alias in future." Strong answer: "I would ask every pod for its model version: 6 say 18, 4 say 17. Version 18 is the validated one, so I restart the 4 pods one at a time, about 6 minutes. Expected deviation was 0.4 times 0.08, so 0.032 per request, and most users saw both versions. After that I pin the number 18 into the deployment, return the version in every response, and alert if two versions are served 10 minutes after a promotion."
+
+**Code:**
+```python
+# Q7: alias 'champion' moved 17 -> 18 but 4 of 10 pods cached 17. Illustrative; seeded.
+import math
+from collections import Counter
+import numpy as np
+
+pods = ["v18"] * 6 + ["v17"] * 4
+stale = pods.count("v17") / len(pods)
+assert stale == 0.4
+
+# Interpretation: the 0.08 is the mean ABSOLUTE per-request score difference between versions.
+# The fleet-wide expected deviation from the intended model is then 0.4 x 0.08.
+fleet_dev = stale * 0.08
+print("expected mean |score deviation| over all traffic =", round(fleet_dev, 3))
+assert round(fleet_dev, 3) == 0.032
+
+rng = np.random.default_rng(7)
+N = 200_000
+s18 = rng.beta(2, 5, N)
+sd = 0.08 * math.sqrt(math.pi / 2)                       # normal noise with mean absolute value 0.08
+s17 = np.clip(s18 + rng.normal(0, sd, N), 0, 1)           # (clipping makes the mean slightly smaller)
+pod_idx = rng.integers(0, 10, N)                          # random load balancing
+served_v17 = np.array([pods[i] == "v17" for i in pod_idx])
+served = np.where(served_v17, s17, s18)
+dev = np.abs(served - s18).mean()
+print(f"simulated share on v17 = {served_v17.mean():.3f}; mean |deviation| from intended = {dev:.4f}")
+assert abs(served_v17.mean() - 0.4) < 0.005 and 0.028 < dev < 0.034
+
+# a user making 5 requests sees both versions with probability:
+p_mixed = 1 - 0.6**5 - 0.4**5
+print("P(a user sees both versions in 5 requests) =", round(p_mixed, 4))
+assert round(p_mixed, 4) == 0.912
+
+# detection TODAY: every response carries model_version (header) and a metric labelled by version.
+logs = Counter(pods[i] for i in pod_idx[:5000])
+print("version counts in 5,000 logged responses:", dict(logs))
+def check_versions(counter, expected, minutes_since_promotion, grace=10):
+    extra = [v for v in counter if v != expected]
+    if minutes_since_promotion >= grace and extra:
+        return f"ALERT: serving {sorted(counter)} but expected {expected}"
+    return "ok"
+msg = check_versions(logs, "v18", 15); print(msg)
+assert msg.startswith("ALERT") and check_versions(Counter({"v18": 10}), "v18", 15) == "ok"
+assert check_versions(logs, "v18", 3) == "ok"            # inside the grace period, no alert
+
+# fix: rolling restart one pod at a time; illustrative 90 s to load and pass readiness
+stale_pods, per_pod_s, max_unavailable = 4, 90, 1
+restart_min = stale_pods * per_pod_s / max_unavailable / 60
+print("rolling restart time (minutes):", restart_min)
+assert restart_min == 6.0
+
+# design: deployments pin a numeric version; the alias is only read by the promotion job
+def resolve_at_deploy(alias_table, alias): return alias_table[alias]    # returns 18, written into the manifest
+manifest = {"model": "fraud", "version": resolve_at_deploy({"champion": 18}, "champion")}
+assert manifest["version"] == 18
+print("manifest pins:", manifest)
+
+# detection delay example: alias moved 10:00, alert rule with 10 min grace + 5 min metric window -> 10:15
+detect = 10 + 5
+print("detected by 10:%02d" % detect); assert detect == 15
+```
+
+**Output (my run):**
+```text
+expected mean |score deviation| over all traffic = 0.032
+simulated share on v17 = 0.400; mean |deviation| from intended = 0.0308
+P(a user sees both versions in 5 requests) = 0.912
+version counts in 5,000 logged responses: {'v18': 2990, 'v17': 2010}
+ALERT: serving ['v17', 'v18'] but expected v18
+rolling restart time (minutes): 6.0
+manifest pins: {'model': 'fraud', 'version': 18}
+detected by 10:15
+```
+
+**Follow-ups:**
+- Why not make pods re-resolve the alias every minute? It removes the stale cache but replaces "provable" with "eventually consistent"; a pinned version plus a deliberate rollout is easier to prove and to roll back.
+- How do you roll back? Move the pinned version in the manifest to the previous number and roll the fleet; the alias follows afterwards, not before.
+- Book 4 link: "MLflow Model Registry: registered models, versions, aliases and the deprecated stages" in Book4_MLOps_Part04.md for alias basics.
+
+**Common mistakes:** Only restarting without adding visibility. Assuming one alias move means one version served. Forgetting that mixed versions break per-user consistency and experiments. Not checking that v18 is the right target. Treating 0.08 as a fleet-wide shift instead of a per-request difference on the affected share.
