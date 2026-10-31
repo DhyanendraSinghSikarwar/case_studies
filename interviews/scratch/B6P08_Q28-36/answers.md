@@ -897,3 +897,143 @@ expected flags per week under no change at p<0.001: 0.04 ; P(at least one): 0.03
 - Is the labelled AUC being unchanged proof of no harm? It means no harm large enough to see with that labelled sample size; compute its noise before relying on it.
 
 **Common mistakes:** Treating p below 0.001 as "important". Using one threshold for all features. No effect-size floor. Ignoring ties in KS. Comparing to a stale or small reference. Paging on a statistic nobody has linked to model quality.
+
+### Q35 ⭐⭐ 🔴 A training notebook containing a cloud access key was pushed to a public repository and a secret scanner flagged it 3 hours later. The key can read a bucket with 2,100,000 customer records, and the access logs show 14 downloads from addresses nobody recognises. What do you do in the first hour, in order, and what do you tell security, legal and the business?
+**Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to secrets and data leakage in ML repositories; related topics appear in public MLOps guides; no page for the exact framing; search snippets only, not opened
+**Say this first (1 line):** Treat it as a confirmed data breach: in the first hour I disable the key, preserve evidence, scope what the logs show, lock the bucket, and bring security and legal in at minute zero, because unknown addresses reading customer data is a SEV1 whatever the cause.
+
+**Clarifying questions:**
+- Can the key do anything besides read that bucket (IAM policy, other buckets, create users or keys)? A key that can write or create access is a bigger incident.
+- What do the access logs list per download: object, bytes, source address, time? That is what turns "14 downloads" into an exposure number.
+- Are the records personal data of regulated people (national IDs, financial data)? It sets the legal clock and who must be told.
+- Who is the security on-call and who is the privacy or legal contact? Reaching them in the first minutes is part of the answer.
+- Is the repository's host able to purge the commit and cached copies, and is the notebook output also public? Both are exposure paths.
+
+**Approach (first hour, in order, illustrative minute marks):**
+1. Minute 0: declare a SEV1, page security on-call and the privacy or legal contact, start a written timeline with names, times and decisions.
+2. Minute 5: disable the key (deactivate, do not delete, so the logs and the record of what it did stay). Copy the repo and the notebook before any history rewrite. Rotating the key comes before cleaning the repo, because the key is already in the public history, forks and caches.
+3. Minute 15: confirm the key no longer works. Read the key's permissions. Check the logs for anything it did beyond reads: new users, new keys, policy changes, writes or deletes. Any of those means a larger incident.
+4. Minute 25: export access logs for the window from the push to now, with who, from where, which objects and how many bytes.
+5. Minute 40: lock the bucket (deny by default except named roles) and rotate every other secret that was in the same notebook or repo.
+6. Minute 50: make the repo private or take the notebook down, ask the host to purge cached copies, and scan the repo history for other secrets.
+7. Minute 60: first written update, even if short: what is known, what is not, and when the next update comes.
+
+**What I tell each audience (one line each, facts only):**
+- Security: timeline, key permissions, logs exported, indicators (addresses, user agents), what I need from them (forensics, blocking addresses, review of other keys).
+- Legal and privacy: what data, how many records at most (2,100,000), the exposure window (at least 3 hours before the flag plus time to revoke, 200 minutes at a 20-minute response), what the logs show so far. Regulatory and contractual notification clocks may start at awareness, so I ask them to decide now. Which law and which deadline applies is their call, and I do not state it myself.
+- Business: customers may be affected, we have stopped the access, we are working out how many, the next update is at a stated time. No speculation and no promise before the numbers.
+
+**First day:**
+- Finish the log analysis: which objects each download read. Count unique records exposed as the union of objects read, never downloads times records. 14 x 2,100,000 = 29,400,000 is impossible because only 2,100,000 exist. In my illustrative log the 14 events read 14 of 21 equal objects, so 1,400,000 records at most for that log; if any event read the whole bucket the bound is 2,100,000.
+- Work with legal on notification, and with security on blocking and monitoring.
+- Review other keys in use by the team; rotate those with the same permissions.
+
+**Next quarter:**
+- No long-lived keys in notebooks: use short-lived credentials or a secret manager, and least-privilege roles with a network allowlist.
+- Pre-commit and server-side secret scanning that blocks the push (scanners that block at push time exist in some platforms; that is editor knowledge, not tested here), a notebook template that strips outputs and secrets, and access alerts on unusual bulk reads.
+- A tabletop exercise for exactly this incident, and a timed target for key revocation after a flag.
+
+**Blameless postmortem:** The question is not who pasted the key. It is why a person could hold a key with that much power, why nothing stopped the push, and why the scanner took 3 hours. Findings: long-lived key, wide permission, scan after the push, no bulk-read alert. Action items each get an owner and a date. The engineer is a source of facts, not the subject.
+
+**Rollback and escalation criteria (illustrative):**
+- Treat it as SEV1 at once if logs show unknown addresses reading personal data (the case here).
+- Escalate to the cloud account owner if the key cannot be disabled within 15 minutes.
+- Raise to an integrity incident if any write, delete or permission change by that key appears.
+- Close the incident only when the key is dead, access is locked down, the exposed-record count is final, and legal has recorded its decision.
+
+**Metrics:**
+- Exposure window = time from the push to the key being disabled (200 minutes at a 20-minute response).
+- Detection delay = push to flag (3 hours here); target under 5 minutes with push-time scanning.
+- Time to revoke = flag to key disabled; target under 20 minutes.
+- Unique records exposed = records in the union of objects read by unknown addresses / total records (an upper bound until logs are reconciled).
+- Guardrails: number of live long-lived keys, share of keys with least-privilege roles.
+
+**Risks:**
+- Deleting the key or rewriting history before copying evidence.
+- Counting downloads times records, which exaggerates, or counting only one event, which understates.
+- Cleaning up the repo and forgetting forks, caches and the notebook output.
+- Public statements before legal and security agree.
+- Other keys in the same notebook still live.
+
+**What the interviewer scores:**
+- Strong: revoke first, evidence preserved, legal and security at minute 0. Weak: starts by deleting the repo.
+- Strong: scopes by logs and counts unique records. Weak: "all 2.1 million are gone" or "14 downloads is small".
+- Strong: tells each audience facts, unknowns and next update time. Weak: vague or over-confident.
+- Strong: prevention (short-lived credentials, least privilege, push-time scan). Weak: "tell people to be careful".
+- Strong: blameless on process and tooling. Weak: names and blames the engineer.
+
+**Example:** Illustrative numbers. Weak: "I would remove the notebook from GitHub and tell the team not to do that again." Strong: "First I disable the key and page security and legal, and I save the logs. The key was exposed at least 3 hours, so the unknown downloads are real. I count unique records from the objects the logs show, 2.1 million at most, not 14 times 2.1 million, and I give legal that number and the window so they can decide on notification."
+
+**Code:**
+```python
+# Illustrative numbers only. Exposure window, record counts (unique, not downloads x records), and the first-hour order.
+import random
+push_to_flag_min = 3 * 60
+flag_to_revoke_min = 20                      # target: key disabled within 20 minutes of the flag
+window = push_to_flag_min + flag_to_revoke_min
+print('exposure window (push to revoke), minutes:', window)
+assert window == 200
+downloads, records = 14, 2_100_000
+rate = downloads / (push_to_flag_min / 60)   # if all 14 happened before the flag (the log will say)
+print('downloads per hour if all before the flag:', round(rate, 2), '; per extra 10 minutes of delay:', round(rate / 6, 2))
+assert round(rate, 2) == 4.67
+# WRONG way to count: downloads x records. RIGHT way: union of objects actually read.
+naive = downloads * records
+assert naive == 29_400_000 and naive > records            # impossible: only 2,100,000 records exist
+# Illustrative bucket: 21 objects x 100,000 records. 14 download events listing which objects were read.
+rnd = random.Random(35)
+objects = {f'part-{i:02d}': 100_000 for i in range(21)}
+assert sum(objects.values()) == records
+events = [rnd.sample(sorted(objects), rnd.choice([1, 2, 3, 4])) for _ in range(downloads)]
+touched = set(k for ev in events for k in ev)
+unique_records = sum(objects[k] for k in touched)
+print('objects touched:', len(touched), 'of', len(objects), '-> unique records exposed (upper bound for this log):', unique_records)
+assert unique_records <= records and unique_records >= max(len(ev) for ev in events) * 100_000
+# If any one event listed the whole bucket (21 objects), the bound is the whole bucket.
+full_copy_events = sum(1 for ev in events if len(ev) == 21)
+assert (full_copy_events > 0) == (unique_records == records)
+print('events that read the whole bucket:', full_copy_events, '-> exposed records:', unique_records)
+# Bytes check: total bytes downloaded divided by bucket size says how many full copies left.
+bucket_gb, downloaded_gb = 2.1, 3.15
+print('full-copy equivalents downloaded:', downloaded_gb / bucket_gb)
+assert downloaded_gb / bucket_gb == 1.5
+# First hour, ordered, with minute marks (illustrative). Each step has a deadline and an owner.
+plan = [
+    (0,  'declare incident (SEV1), page security on-call + privacy/legal contact; start a timeline doc'),
+    (5,  'DISABLE the key (do not delete); preserve logs and the repo copy before any history rewrite'),
+    (15, 'confirm the key no longer works; list what else the key could reach (IAM policy), check for new users/keys/roles'),
+    (25, 'export access logs for the window: who, from where, which objects, how many bytes'),
+    (40, 'lock the bucket path (deny by default except named roles); rotate related secrets in the same notebook/repo'),
+    (50, 'take the notebook down or make the repo private; ask host to purge cached copies; scan history for other secrets'),
+    (60, 'first written update to security, legal and the business: known, unknown, next update time'),
+]
+mins = [m for m, _ in plan]
+assert mins == sorted(mins) and mins[-1] == 60 and mins[1] <= 5
+for m, a in plan: print(f'{m:>3} min  {a}')
+# Escalation rules (illustrative)
+rules = {'unknown_ip_reads_personal_data': 'SEV1 now', 'any_write_or_delete_in_logs': 'SEV1 plus integrity review', 'cannot_disable_key_in_15_min': 'escalate to cloud account owner'}
+assert rules['unknown_ip_reads_personal_data'] == 'SEV1 now'
+```
+
+**Output (my run):**
+```text
+exposure window (push to revoke), minutes: 200
+downloads per hour if all before the flag: 4.67 ; per extra 10 minutes of delay: 0.78
+objects touched: 14 of 21 -> unique records exposed (upper bound for this log): 1400000
+events that read the whole bucket: 0 -> exposed records: 1400000
+full-copy equivalents downloaded: 1.5
+  0 min  declare incident (SEV1), page security on-call + privacy/legal contact; start a timeline doc
+  5 min  DISABLE the key (do not delete); preserve logs and the repo copy before any history rewrite
+ 15 min  confirm the key no longer works; list what else the key could reach (IAM policy), check for new users/keys/roles
+ 25 min  export access logs for the window: who, from where, which objects, how many bytes
+ 40 min  lock the bucket path (deny by default except named roles); rotate related secrets in the same notebook/repo
+ 50 min  take the notebook down or make the repo private; ask host to purge cached copies; scan history for other secrets
+ 60 min  first written update to security, legal and the business: known, unknown, next update time
+```
+
+**Follow-ups:**
+- Should we force-push to remove the key from history? Only after copying the evidence, and it is not a fix: the key must already be dead, because forks and caches remain.
+- What if the logs are incomplete? Say so, treat the whole bucket as exposed for the unmonitored period, and let legal decide.
+- Does the 3-hour delay change the answer? It widens the window and shifts weight to prevention: push-time scanning shrinks it to minutes.
+
+**Common mistakes:** Deleting rather than disabling the key. Cleaning the repo first. Multiplying downloads by records. Telling customers before legal agrees. Not rotating the other secrets in the same file. Blaming the engineer.
