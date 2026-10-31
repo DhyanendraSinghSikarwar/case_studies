@@ -9,7 +9,7 @@ def auc(y, s):
     return (r[y == 1].sum() - npos * (npos + 1) / 2) / (npos * nneg)
 shared = rng.normal(size=n)
 old = 1.04 * y + 0.9 * shared + np.sqrt(0.19) * rng.normal(size=n)   # about 0.77
-new = 1.17 * y + 0.9 * shared + np.sqrt(0.19) * rng.normal(size=n)   # about 0.80
+new = 1.14 * y + 0.9 * shared + np.sqrt(0.19) * rng.normal(size=n)   # about 0.80
 a_old, a_new = auc(y, old), auc(y, new)
 diffs = []
 for _ in range(500):

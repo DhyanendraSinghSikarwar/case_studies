@@ -10,6 +10,6 @@ print(f"lift needed over random at top-{calls_per_week}: {be_prec/unhappy_rate:.
 assert round(be_prec/unhappy_rate, 2) == 2.78
 # value per week at precision 40%
 for prec in (0.08, be_prec, 0.40):
-    v = calls_per_week * (prec * value_save * save_rate - cost_call)
+    v = round(calls_per_week * (prec * value_save * save_rate - cost_call), 6) + 0.0
     print(f"precision {prec:.1%}: net per week {v:,.0f}")
 assert round(60*(0.4*600*0.3-40)) == 1920
