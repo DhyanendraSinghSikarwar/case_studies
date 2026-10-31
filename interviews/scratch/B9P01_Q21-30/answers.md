@@ -1,6 +1,6 @@
 ### Q21 ⭐⭐ 🟢 Describe the team and manager style in which you do your best work, and one situation where you adapted to a different style.
 **Asked at:** No public page found for this exact framing, editor-designed; the theme is adjacent to prompts in general behavioural guides; search snippets only, not opened
-**Say this first (1 line):** I do my best work with a manager who sets clear goals and leaves me room on the method, and I have learned to adapt when the style is different by asking for what I need instead of waiting.
+**Say this first:** I do my best work with a manager who sets clear goals and leaves me room on the method, and I have learned to adapt when the style is different by asking for what I need instead of waiting.
 
 **Structure:** Use CARL; the learning is what this question is really about (see the STAR and CARL section above).
 - Part one, my best conditions (about 30 seconds): two or three concrete things, such as goal clarity, how often I want check-ins, how I like feedback and how I work with peers. Say what each looks like in practice.
@@ -42,7 +42,7 @@ What I learned is that a style that feels tight often has a reason. Now with any
 
 ### Q22 ⭐⭐ 🟢 How do you keep up with fast-moving ML and GenAI developments, and tell me about one thing you learned recently that you then used?
 **Asked at:** 2026 AI-era behavioural guides (TheInterviewGuys, TechInterview.org, Tredence, PrachHub and FacePrep pages list daily AI-tool use, catching AI mistakes and judgement on when to use AI; PrachHub attributes one set to Amazon engineering loops, which is secondhand); commonly reported in public guides; search snippets only, not opened
-**Say this first (1 line):** I follow a small, steady set of sources and I only count something as learned when I have tried it on a real problem; here is one example.
+**Say this first:** I follow a small, steady set of sources and I only count something as learned when I have tried it on a real problem; here is one example.
 
 **Structure:** Use CARL (see the STAR and CARL section above), with the habit first.
 - Habit (about 25 seconds): two or three specific sources or routines, and how you filter noise.
@@ -88,7 +88,7 @@ The habit I take from it: I try the idea on our data before I recommend it, and 
 
 ### Q23 ⭐⭐ 🟢 Tell me about a time you helped a teammate succeed on something that was not your own deliverable.
 **Asked at:** Public data science behavioural guides (Analytics Vidhya, DataLemur, Interview Query and Coursera guides list teamwork, conflict, ambiguity, failure and influencing-without-authority prompts); commonly reported in public guides; behavioural rounds appear in the Book 7 Part 1 profiles (Google, Microsoft, Amazon, Meta; see those profiles for their evidence tags and caveats); search snippets only, not opened
-**Say this first (1 line):** I will tell you about a time a teammate was stuck on something that was not mine, what I did to help without taking over, and how it went for them.
+**Say this first:** I will tell you about a time a teammate was stuck on something that was not mine, what I did to help without taking over, and how it went for them.
 
 **Structure:** Use STAR (see the STAR and CARL section above). The key is that the success belongs to your teammate.
 - Situation and Task: who was stuck, why it mattered, and why it was not your own deliverable.
@@ -133,7 +133,7 @@ What I took away is that asking questions helps more than fixing, and that the t
 
 ### Q24 ⭐⭐ 🟡 Tell me about a time you changed your mind about a technical approach or a conclusion. What made you change it?
 **Asked at:** Public data science behavioural guides (Analytics Vidhya, DataLemur, Interview Query and Coursera guides list teamwork, conflict, ambiguity, failure and influencing-without-authority prompts); commonly reported in public guides; behavioural rounds appear in the Book 7 Part 1 profiles (Google, Microsoft, Amazon, Meta; see those profiles for their evidence tags and caveats); search snippets only, not opened
-**Say this first (1 line):** I changed my mind when the evidence changed, and I will describe what made me test my own view and what I did after I was wrong.
+**Say this first:** I changed my mind when the evidence changed, and I will describe what made me test my own view and what I did after I was wrong.
 
 **Structure:** Use CARL; it fits because the learning is the point (see the STAR and CARL section above).
 - Context: what you believed and why it was a reasonable belief.
@@ -178,7 +178,7 @@ Now I build the simple baseline first and treat the complex model as something t
 
 ### Q25 ⭐⭐ 🟡 Tell me about a time you gave a colleague difficult feedback, such as on code, an analysis or their working habits. How did you say it and what happened?
 **Asked at:** Public data science behavioural guides (Analytics Vidhya, DataLemur, Interview Query and Coursera guides list teamwork, conflict, ambiguity, failure and influencing-without-authority prompts); commonly reported in public guides; behavioural rounds appear in the Book 7 Part 1 profiles (Google, Microsoft, Amazon, Meta; see those profiles for their evidence tags and caveats); search snippets only, not opened
-**Say this first (1 line):** I give difficult feedback early, in private, about specific work, and with an offer to help; here is a real case and how it went.
+**Say this first:** I give difficult feedback early, in private, about specific work, and with an offer to help; here is a real case and how it went.
 
 **Structure:** Use STAR (see the STAR and CARL section above), with the wording of the feedback inside Action.
 - Situation and Task: who, what was the problem, why it needed saying (impact on team or users).
@@ -228,7 +228,7 @@ The errors stopped, and he later asked me to look at his work again. I now give 
 
 ### Q26 ⭐⭐ 🟡 Tell me about a time you mentored or coached someone more junior. What did you do, and how did you know it was working?
 **Asked at:** Level-specific behavioural guidance (Taro level-specific expectations, a Towards Data Science data scientist hierarchy piece, an Interview Kickstart senior data scientist guide, a MentorCruise senior and staff story workshop page, which is promotional); level framing in public guides is opinion, not a company rubric; Book 7 Part 1 notes the Meta and Microsoft level evidence with caveats; search snippets only, not opened
-**Say this first (1 line):** I mentored a junior by setting a goal with them, giving them a real piece of work with support, and checking progress by what they could do on their own.
+**Say this first:** I mentored a junior by setting a goal with them, giving them a real piece of work with support, and checking progress by what they could do on their own.
 
 **Structure:** Use STAR (see the STAR and CARL section above); this question is level-sensitive, so see the leadership row in the level table: informal help is expected at mid level, open mentoring at senior level.
 - Situation and Task: who the junior was, what they needed to grow in, how the mentoring began (asked or assigned).
@@ -273,7 +273,7 @@ One thing that did not work was my long written notes; she preferred a short tal
 
 ### Q27 ⭐⭐ 🟡 Tell me about a time you got people to act on your recommendation when you had no authority over them.
 **Asked at:** Public data science behavioural guides (Analytics Vidhya, DataLemur, Interview Query and Coursera guides list teamwork, conflict, ambiguity, failure and influencing-without-authority prompts); commonly reported in public guides; behavioural rounds appear in the Book 7 Part 1 profiles (Google, Microsoft, Amazon, Meta; see those profiles for their evidence tags and caveats); search snippets only, not opened
-**Say this first (1 line):** Without authority, I get action by making the benefit clear to the people who must act, lowering their effort and bringing evidence they can check.
+**Say this first:** Without authority, I get action by making the benefit clear to the people who must act, lowering their effort and bringing evidence they can check.
 
 **Structure:** Use STAR (see the STAR and CARL section above); this is the senior-level pattern in the level table (decided, aligned people, handled the fall-out).
 - Situation and Task: the recommendation, who had to act, and why they had no reason to follow you.
@@ -318,7 +318,7 @@ I learned to start from their goal, and to make the first step small."
 
 ### Q28 ⭐⭐ 🟡 Tell me about a time you worked with a non-technical partner who was sceptical of data or ML work. How did you build trust?
 **Asked at:** Public data science behavioural guides (an Analytics Vidhya list and a Coursera guide frame stakeholder, explanation and business-decision stories; a KDNuggets piece says the technical reasoning should stay visible inside the story); commonly reported in public guides; search snippets only, not opened
-**Say this first (1 line):** I build trust with a sceptic by starting from their decision, not my model, by showing small checks they can verify, and by being open about what the model cannot do.
+**Say this first:** I build trust with a sceptic by starting from their decision, not my model, by showing small checks they can verify, and by being open about what the model cannot do.
 
 **Structure:** Use STAR (see the STAR and CARL section above). For numeric stakeholder-conflict scenarios with a live meeting, see Book 6 Part 6 (Stakeholder Conflicts and Trade-off Decisions); this question is a general story, not a calculation.
 - Situation and Task: who the partner was, why they doubted data or ML (a past failure, a gut feeling, a fear of replacement), and what you needed from them.
@@ -363,7 +363,7 @@ By the end she was bringing me cases where her view and the forecast differed. S
 
 ### Q29 ⭐⭐ 🟡 Tell me about a time you worked with teammates in other time zones or on a mostly remote team. What broke down, and what did you change?
 **Asked at:** No public page found for this exact framing, editor-designed; a search on cross-time-zone collaboration returned only generic remote-work pages (Data Science Dojo remote jobs guides), so no question list was located; search snippets only, not opened
-**Say this first (1 line):** On a distributed team I learned that most breakdowns come from silence and delay, so I made decisions and handoffs written and explicit; here is one case.
+**Say this first:** On a distributed team I learned that most breakdowns come from silence and delay, so I made decisions and handoffs written and explicit; here is one case.
 
 **Structure:** Use CARL; the change you made is the core (see the STAR and CARL section above). This is process-level; time zones and team size differ, so use your own facts.
 - Context: where the team was spread, how the work moved between people, one clear breakdown.
@@ -408,7 +408,7 @@ I learned to make everything readable without me in the room."
 
 ### Q30 ⭐⭐ 🟡 Tell me about a time you noticed an ethical, privacy or fairness concern in a data or ML project. What did you do about it?
 **Asked at:** Public guides list data-ethics behavioural prompts (Yardstick data-ethics page, Dataford ethics questions); commonly reported in public guides; search snippets only, not opened
-**Say this first (1 line):** When I saw a concern about privacy or fairness, I raised it early, with specifics, to the people who could decide, and I helped find a safer option rather than only saying no.
+**Say this first:** When I saw a concern about privacy or fairness, I raised it early, with specifics, to the people who could decide, and I helped find a safer option rather than only saying no.
 
 **Structure:** Use STAR (see the STAR and CARL section above), and keep the process visible.
 - Situation and Task: the project, what you noticed (for example sensitive fields, a group with worse error rates, data used beyond its stated purpose), and why you were the one who saw it.

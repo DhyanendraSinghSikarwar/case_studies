@@ -6,6 +6,6 @@ for n in range(11,21):
     f=os.path.join(d,'item_%02d.md'%n)
     if not os.path.exists(f): continue
     m=re.search(r'(?m)^(### Q%d .*)\n(\*\*Asked at:\*\*.*)\n'%n,part)
-    out.append(m.group(1)+'\n'+m.group(2)+'\n'+open(f,encoding='utf-8').read().strip()+'\n')
+    out.append(m.group(1)+'\n'+m.group(2)+'\n'+'\n'[:0]+open(f,encoding='utf-8').read().strip()+'\n')
 open(os.path.join(d,'answers.md'),'w',encoding='utf-8').write('\n'.join(out))
 print(len(out),'items')
