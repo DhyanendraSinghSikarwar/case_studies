@@ -5,7 +5,7 @@
 **Clarifying questions:**
 - Is the 50,000 requests per second the fleet peak, and is the 80 ms the whole ad path (retrieval, scoring, auction, response)? It sets how many milliseconds the click model really gets.
 - Which auction (first or second price) and which objective (clicks, conversions, revenue)? Calibration matters most when bids are multiplied by predicted rates.
-- Is "50,000 predictions per second per server at full load" measured with the production model and batch size, at the 99th percentile latency? A throughput figure without a latency figure is not a capacity number.
+- Is the 50,000 predictions per second per server measured with the production model and batch size? The question ties it to the latency budget; I would still verify it by load test.
 - Are there advertiser budgets, pacing and brand-safety rules that run before or after scoring? They shrink the candidate list and add latency.
 - Is click or conversion delay long? It decides how fresh labels can be and how often to retrain.
 
@@ -119,7 +119,7 @@ share of true top-5 ads kept by a 0.7-correlation prefilter (illustrative): 0.78
 - Is the 60% and 90% profile stable across merchants, countries and attack types? A single maturity curve is the whole basis of any correction.
 - Besides chargebacks, are there faster labels (customer disputes, issuer confirmations, manual reviews)? They let me react before day 30.
 - What do we do on a flagged transaction (block, step-up check, review)? Blocked fraud never produces a chargeback, so labels are censored by our own decisions.
-- Is the 0.2% a measured rate or a planning figure? The question calls it a projection; I would treat it as an assumption to be checked on mature cohorts.
+- Is the 0.2% a measured rate or a planning figure? The question gives it as an assumption; I would check it on mature cohorts.
 - What are the loss per missed fraud and the cost per false decline? They fix the threshold and the value of waiting for labels.
 
 **Approach:**
@@ -325,7 +325,7 @@ clean runs needed to bound wrong-refund rate below 1% at 95%: 299
 
 ### Q14 ⭐⭐⭐ 🔴 Multilingual voice assistant: A bank's voice bot takes 100,000 calls a day, 60% of them inside an 8-hour window (assume evenly spread), and a call lasts 3 minutes on average. One streaming speech-and-language server holds 25 concurrent calls, and the budget per spoken reply is 1.5 seconds. Design the assistant for Hindi, Tamil and mixed-language callers, and use Little's law to compute mean concurrent calls in the window and the servers needed at full load.
 **Asked at:** Indian-market material (a Let's Data Science / NPCI item on AI for UPI fraud and multilingual voice, an Elastic and Sarvam multilingual voice-agent blog, a SquadStack voice-bot page on noise and accents, Razorpay, Delhivery and Shiprocket pages on cash-on-delivery return-to-origin risk scoring, a Blinkit candidate report of a delivery-time debugging case); vendor and blog material, no confirmed interview round for these exact designs; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
-**Say this first (1 line):** Little's law gives 60,000 calls over 8 hours = 2.08 calls a second x 180 seconds = 375 concurrent calls, which is 15 servers at full load, but I would plan about 18 to 22 because arrivals are random and the evenly-spread assumption hides a real peak.
+**Say this first (1 line):** Little's law gives 60,000 calls over 8 hours = 2.08 calls a second x 180 seconds = 375 mean concurrent calls, which is 15 servers at full load, but I would plan about 18 to 22 because arrivals are random and the evenly-spread assumption hides a real peak.
 
 **Clarifying questions:**
 - Which tasks must the bot do (balance, card block, loan enquiry) and which must go to a human? Scope decides how risky an error is.
@@ -991,7 +991,7 @@ each extra 10 kB costs seconds at 400 kbps: 0.2
 **Say this first (1 line):** Flagging 20,000 orders that hold 12,500 of the 25,000 returns gives a precision of 62.5%, and calling them nets 450,000 - 120,000 = 330,000 rupees a day, but the 40% rescue rate comes from a small pilot and the benefit is the shipping saving only, so I would size the gain with an interval and expand calls only where the risk exceeds 16.7%.
 
 **Clarifying questions:**
-- Was the 2,000-order pilot on high-risk orders or random ones, and how many were would-be returns? A rescue rate from random orders may not hold on the flagged group, and the number of would-be returns sets the pilot's uncertainty.
+- Does the pilot's 40% (200 of 500 flagged would-be returns) hold for the whole flagged 20%, including its lower-risk end? A small sample from the top of the list may not generalise.
 - What does "rescued" mean: the customer confirmed and the parcel was delivered and paid? Define it so a confirmation that later fails is not counted.
 - Is 90 rupees the whole cost of a return, or only forward and return shipping? Packaging, handling and lost inventory time could raise it.
 - Are there other actions besides a call (messages, prepaid discount, address check)? Cheaper actions change the break-even.
@@ -1017,7 +1017,7 @@ Indicative pacing for a 45-minute round (minutes per step 1 to 8): 4, 4, 6, 4, 1
 - Guardrails: good-order conversion, complaint rate, dispatch delay.
 
 **Risks:**
-- Sample versus projection: the 40% rescue rate is a pilot sample and the 50% capture is a back-test projection. With 500 would-be returns in the pilot (my assumption) the rescue interval is about 36% to 44%, so net ranges about 282,000 to 378,000.
+- Sample versus projection: the 40% rescue rate is a pilot sample and the 50% capture is a back-test projection. With 500 flagged would-be returns in the pilot (200 rescued) the rescue interval is about 36% to 44%, so net ranges about 282,000 to 378,000.
 - Selection: calling changes behaviour and hides what would have happened; only a randomised holdout measures it.
 - Saving only shipping: ignoring lost sales from friction or complaints from customers who did not want a call.
 - Drift: pincode risk changes with festivals, couriers and weather.
@@ -1062,11 +1062,11 @@ net_all = rto * rescue * ship - orders * call
 print("net if every order is called:", round(net_all), "| marginal value of calling the unflagged 80,000:", round(net_all - net))
 assert round(net_all) == 300_000 and round(net_all - net) == -30_000
 
-# The 40% rescue rate comes from a pilot sample. Pilot size 2,000; assume 25% would-be returns -> 500 (my assumption)
-n_rto_pilot = round(2000 * rto_rate)
+# The 40% rescue rate comes from a pilot sample: 500 flagged would-be returns (from the question)
+n_rto_pilot = 500
 se = math.sqrt(rescue * (1 - rescue) / n_rto_pilot)
 lo, hi = rescue - 1.96 * se, rescue + 1.96 * se
-print("pilot would-be returns (assumed):", n_rto_pilot, "| rescue 95% interval:", round(lo, 3), "to", round(hi, 3))
+print("pilot flagged would-be returns:", n_rto_pilot, "| rescue 95% interval:", round(lo, 3), "to", round(hi, 3))
 for r in (lo, rescue, hi):
     print(f"  rescue {r:.3f} -> net per day {round(rto_flagged * r * ship - cost)}")
 assert 0.35 < lo < 0.36 and 0.44 < hi < 0.45
@@ -1083,7 +1083,7 @@ RTO orders: 25000 | flagged: 20000 | RTO in flagged: 12500 | precision: 0.625
 call cost: 120000 | saved: 450000 | net per day: 330000
 unflagged orders: 80000 RTO rate: 0.1562 | break-even RTO probability for a call: 0.1667
 net if every order is called: 300000 | marginal value of calling the unflagged 80,000: -30000
-pilot would-be returns (assumed): 500 | rescue 95% interval: 0.357 to 0.443
+pilot flagged would-be returns: 500 | rescue 95% interval: 0.357 to 0.443
   rescue 0.357 -> net per day 281691
   rescue 0.400 -> net per day 330000
   rescue 0.443 -> net per day 378309

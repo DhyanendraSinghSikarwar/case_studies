@@ -3,7 +3,7 @@
 **Clarifying questions:**
 - Is the 50,000 requests per second the fleet peak, and is the 80 ms the whole ad path (retrieval, scoring, auction, response)? It sets how many milliseconds the click model really gets.
 - Which auction (first or second price) and which objective (clicks, conversions, revenue)? Calibration matters most when bids are multiplied by predicted rates.
-- Is "50,000 predictions per second per server at full load" measured with the production model and batch size, at the 99th percentile latency? A throughput figure without a latency figure is not a capacity number.
+- Is the 50,000 predictions per second per server measured with the production model and batch size? The question ties it to the latency budget; I would still verify it by load test.
 - Are there advertiser budgets, pacing and brand-safety rules that run before or after scoring? They shrink the candidate list and add latency.
 - Is click or conversion delay long? It decides how fresh labels can be and how often to retrain.
 
