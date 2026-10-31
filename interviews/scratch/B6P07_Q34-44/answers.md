@@ -311,21 +311,21 @@ blended recall 0.688 -> 0.760 (gain 7.2 points)
 
 ### Q37 ⭐⭐ 🟡 A chat product resends the whole history on every turn, with a 1,000-token system prompt and 300 new tokens added per turn, and the input at turn t counts the system prompt plus the 300 new tokens of each of the t turns so far, including the current one. Over a 20-turn conversation compute the total input tokens sent and their cost at an illustrative 3 per million, compare with 26,000 tokens (system prompt plus only the new 300 tokens each turn, no history resent), and propose a context-management policy.
 **Asked at:** LLM cost and routing pages (getmaxim cost and semantic-cache guides, tianpan and system-design.space pages on routing and cascades, a Towards Data Science article on saving tokens in agentic AI, a Towards AI piece on AI system-design interview patterns); practitioner material, no confirmed interview bank; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
-**Say this first (1 line):** Resending history makes the total grow with the square of the turn count: 77,000 input tokens over 20 turns, costing 0.231 per conversation at the illustrative 3 per million, and I would cap it with a sliding window, a running summary and prefix caching.
+**Say this first (1 line):** Resending history makes the total grow with the square of the turn count: 83,000 input tokens over 20 turns, costing 0.249 per conversation at the illustrative 3 per million, and I would cap it with a sliding window, a running summary and prefix caching.
 
 **Clarifying questions:**
-- Is the input at turn t exactly system prompt plus the t-1 earlier turns (the prompt's rule), and are replies counted in the 300 tokens? If replies are long, the 300 is too low.
-- Does the 300 include the current user message? The prompt's formula does not add it to turn t, and I note below why that matters.
+- Is the input at turn t exactly the system prompt plus the 300 new tokens of each of the t turns so far, including the current one (the prompt's rule), and are replies counted in the 300 tokens? If replies are long, the 300 is too low.
+- Is the 300 the same every turn? Real turns vary, and long pasted documents dominate the bill.
 - Are conversations really 20 turns, or is the tail much longer? Cost grows with the square, so the long conversations dominate the bill.
 - Does the provider offer prefix caching, and at what discount and minimum length? (Book 2 Part 01, Q24 covers how prefix caching works.)
 - What must the model remember: exact wording, facts the user stated, or only the task state? That sets what a summary may drop.
 
 **Approach:**
-1. Per turn: input_t = 1,000 + 300 x (t-1). Turn 1 is 1,000, turn 10 is 3,700, turn 20 is 6,700.
-2. Total = 20 x 1,000 + 300 x (0 + 1 + ... + 19) = 20,000 + 300 x 190 = 77,000 tokens. Cost = 77,000 x 3 / 1,000,000 = 0.231.
-3. Compare with 20,000 as the prompt asks: 77,000 / 20,000 = 3.85 times. But 20,000 is only the system prompt repeated 20 times. If no history were resent, each turn would still send its own 300 new tokens: 20 x 1,300 = 26,000, so the like-for-like ratio is 2.96 times. State both, and say which you use. (If the current user message is also added to turn t, the total is 83,000; see the note on the prompt.)
-4. Growth is quadratic: 40 turns costs 274,000 tokens, 3.56 times the 20-turn conversation for twice the length.
-5. Policy, in this order: (a) cache the stable prefix (system prompt and early turns); (b) keep a sliding window of recent turns, for example the last 5, which here gives 45,500 tokens (59% of full); (c) summarise older turns into a short running summary and pin key facts (name, order id, constraints) as structured memory; (d) retrieve old turns only when the user refers back; (e) trim long tool outputs and quote only the needed lines.
+1. Per turn: input_t = 1,000 + 300 x t. Turn 1 is 1,300, turn 10 is 4,000, turn 20 is 7,000.
+2. Total = 20 x 1,000 + 300 x (1 + 2 + ... + 20) = 20,000 + 300 x 210 = 83,000 tokens. Cost = 83,000 x 3 / 1,000,000 = 0.249.
+3. Compare with 26,000 as the prompt asks: if no history were resent, each turn would send the system prompt plus its own 300 new tokens, 20 x 1,300 = 26,000. The ratio is 83,000 / 26,000 = 3.19 times.
+4. Growth is quadratic: 40 turns costs 286,000 tokens, 3.45 times the 20-turn conversation for twice the length.
+5. Policy, in this order: (a) cache the stable prefix (system prompt and early turns); (b) keep a sliding window of recent turns, for example the last 5, which here gives 47,000 tokens (57% of full); (c) summarise older turns into a short running summary and pin key facts (name, order id, constraints) as structured memory; (d) retrieve old turns only when the user refers back; (e) trim long tool outputs and quote only the needed lines.
 6. Test the policy on real conversations: answer quality with window or summary against full history, because dropping context causes wrong answers.
 
 **Metrics:**
@@ -341,67 +341,62 @@ blended recall 0.688 -> 0.760 (gain 7.2 points)
 - Averages hide long conversations, which drive the cost.
 
 **What the interviewer scores:**
-- Strong: derives the 77,000 from a sum, not a guess, and says it grows quadratically. Weak: "it is about 6,700 x 20".
-- Strong: notices the 20,000 baseline leaves out the new tokens. Weak: repeats 3.85 times without comment.
+- Strong: derives the 83,000 from a sum, not a guess, and says it grows quadratically. Weak: "it is about 7,000 x 20".
+- Strong: compares with a like-for-like baseline (26,000) and says 3.19 times. Weak: compares with the system prompt alone.
 - Strong: lists window, summary, caching and retrieval, with a quality test. Weak: "use a bigger context window".
 - Strong: ties the policy to what the model must remember. Weak: truncates blindly.
 
-**Example:** (illustrative numbers) Turn 20 sends 6,700 tokens, of which 1,000 is the system prompt and 5,700 is history. With a window of 5 turns it sends 1,000 + 1,500 = 2,500. Over 20 turns the window policy sends 45,500 tokens against 77,000. With prefix caching on the earlier tokens at 10% of the rate, the effective tokens fall to 13,730, 18% of uncached (ignoring any cache-write charge). Weak answer: "Conversations get expensive, so I would reduce the number of turns." Strong answer: "77,000 tokens, quadratic in turns. I would cache the prefix, keep the last five turns plus a pinned summary, and check on labelled chats that answers do not get worse."
+**Example:** (illustrative numbers) Turn 20 sends 7,000 tokens, of which 1,000 is the system prompt and 6,000 is the 20 turns of new tokens (the history plus the current message). With a window of the last 5 turns it sends 1,000 + 1,500 = 2,500. Over 20 turns the window policy sends 47,000 tokens against 83,000. With prefix caching on the earlier tokens at 10% of the rate, the effective tokens fall to 14,600, 18% of uncached (ignoring any cache-write charge). Weak answer: "Conversations get expensive, so I would reduce the number of turns." Strong answer: "83,000 tokens, 3.19 times the 26,000 with no history, and quadratic in turns. I would cache the prefix, keep the last five turns plus a pinned summary, and check on labelled chats that answers do not get worse."
 
 **Code:**
 ```python
 # Illustrative numbers from the prompt (price is illustrative, not a vendor price)
 SYS, NEW, TURNS, PRICE = 1000, 300, 20, 3.0   # tokens, tokens/turn, turns, price per million input tokens
 
-inp = [SYS + NEW * (t - 1) for t in range(1, TURNS + 1)]   # prompt's formula: system + (t-1) earlier turns
+inp = [SYS + NEW * t for t in range(1, TURNS + 1)]   # system prompt + the new tokens of each of the t turns so far
 total = sum(inp)
 print("input at turn 1, 10, 20:", inp[0], inp[9], inp[19])
 print("total input tokens:", total, "| cost:", round(total * PRICE / 1e6, 4))
-assert inp[0] == 1000 and inp[9] == 3700 and inp[19] == 6700
-assert total == 20 * SYS + NEW * sum(range(20)) == 20_000 + 300 * 190 == 77_000
-assert round(total * PRICE / 1e6, 3) == 0.231
+assert inp[0] == 1300 and inp[9] == 4000 and inp[19] == 7000
+assert total == 20 * SYS + NEW * sum(range(1, 21)) == 20_000 + 300 * 210 == 83_000
+assert round(total * PRICE / 1e6, 3) == 0.249
 
-# The prompt compares with 20,000 (system prompt only). That baseline leaves out the 300 new tokens
-# each turn actually has to send. Like-for-like "no history resent": system + the turn's own 300 tokens.
-base_prompt = TURNS * SYS
-base_fair = TURNS * (SYS + NEW)
-print(f"vs prompt baseline 20,000: x{total/base_prompt:.2f}; vs like-for-like {base_fair}: x{total/base_fair:.2f}")
-assert base_prompt == 20_000 and base_fair == 26_000
-assert round(total / base_prompt, 2) == 3.85 and round(total / base_fair, 2) == 2.96
+base = TURNS * (SYS + NEW)   # no history resent: system prompt plus the turn's own 300 tokens
+print(f"no-history baseline {base}; ratio {total/base:.2f}")
+assert base == 26_000 and round(total / base, 2) == 3.19
 
-# Growth is quadratic in turns: doubling the conversation length
-total40 = sum(SYS + NEW * (t - 1) for t in range(1, 41))
+# Growth is quadratic in turns
+total40 = sum(SYS + NEW * t for t in range(1, 41))
 print("40 turns:", total40, "tokens, x%.2f of 20 turns" % (total40 / total))
-assert total40 == 40 * 1000 + 300 * 780 and round(total40 / total, 2) == 3.56
+assert total40 == 40 * 1000 + 300 * 820 == 286_000 and round(total40 / total, 2) == 3.45
 
-# Policy A: keep the system prompt plus only the last 5 turns
+# Policy A: keep the system prompt plus only the last 5 turns (including the current one)
 K = 5
-win = sum(SYS + NEW * min(t - 1, K) for t in range(1, TURNS + 1))
+win = sum(SYS + NEW * min(t, K) for t in range(1, TURNS + 1))
 print("sliding window (last 5 turns):", win, "tokens,", f"{win/total:.0%} of full history")
-assert win == 20_000 + 300 * (sum(range(1, 6)) + 14 * 5) == 45_500 and round(win / total, 2) == 0.59
+assert win == 20_000 + 300 * (sum(range(1, 6)) + 15 * 5) == 47_000 and round(win / total, 2) == 0.57
 
 # Policy B: prefix caching, previously sent tokens billed at 10% of the input rate (illustrative)
 CACHE = 0.10
-eff = inp[0] + sum(CACHE * inp[t - 2] + NEW for t in range(2, TURNS + 1))   # turn t re-reads input of turn t-1 as prefix
+eff = inp[0] + sum(CACHE * inp[t - 2] + NEW for t in range(2, TURNS + 1))   # turn t re-reads turn t-1's input as prefix
 eff_cost = eff * PRICE / 1e6
 print(f"with prefix cache: effective tokens {eff:.0f}, cost {eff_cost:.4f} ({eff/total:.0%} of uncached)")
-assert round(eff) == 13_730 and round(eff / total, 2) == 0.18
+assert round(eff) == 14_600 and round(eff / total, 2) == 0.18
 
 # Other numbers quoted in the text
-alt_total = sum(SYS + NEW * t for t in range(1, TURNS + 1))   # if the current message is also counted
-print("if the current message is also counted:", alt_total, "| 20 x last turn:", 20 * inp[19], "| turn 20 with window:", SYS + NEW * K)
-assert alt_total == 83_000 and 20 * inp[19] == 134_000 and SYS + NEW * K == 2_500 and inp[19] - SYS == 5_700
+print("20 x last turn:", 20 * inp[19], "| turn 20 with window:", SYS + NEW * K)
+assert 20 * inp[19] == 140_000 and SYS + NEW * K == 2_500 and inp[19] - SYS == 6_000
 ```
 
 **Output (my run):**
 ```text
-input at turn 1, 10, 20: 1000 3700 6700
-total input tokens: 77000 | cost: 0.231
-vs prompt baseline 20,000: x3.85; vs like-for-like 26000: x2.96
-40 turns: 274000 tokens, x3.56 of 20 turns
-sliding window (last 5 turns): 45500 tokens, 59% of full history
-with prefix cache: effective tokens 13730, cost 0.0412 (18% of uncached)
-if the current message is also counted: 83000 | 20 x last turn: 134000 | turn 20 with window: 2500
+input at turn 1, 10, 20: 1300 4000 7000
+total input tokens: 83000 | cost: 0.249
+no-history baseline 26000; ratio 3.19
+40 turns: 286000 tokens, x3.45 of 20 turns
+sliding window (last 5 turns): 47000 tokens, 57% of full history
+with prefix cache: effective tokens 14600, cost 0.0438 (18% of uncached)
+20 x last turn: 140000 | turn 20 with window: 2500
 ```
 
 **Follow-ups:**
@@ -410,8 +405,8 @@ if the current message is also counted: 83000 | 20 x last turn: 134000 | turn 20
 - What changes if replies are long? Replies join the history, so the 300 is too low and growth is faster. Cap the stored reply or summarise it.
 
 **Common mistakes:**
-- Multiplying the last turn's input by the number of turns (6,700 x 20 = 134,000 overstates it).
-- Comparing with a baseline that omits the new tokens of each turn.
+- Multiplying the last turn's input by the number of turns (7,000 x 20 = 140,000 overstates it).
+- Comparing with a baseline that omits the new tokens of each turn (the system prompt alone, 20,000).
 - Forgetting output tokens and tool outputs.
 - Summarising without a test for dropped facts.
 
@@ -714,7 +709,7 @@ P(at least one wrong write in a week at 2.6%): 1.0
 
 ### Q41 ⭐⭐ 🔴 A user exercises a right to have personal data deleted. It sits in raw chat logs, in 3,000 of 2,000,000 chunks in a vector index, in an evaluation dataset and in 35-day rolling backups, and your internal deletion target is 30 days. Compute the share of the index affected, the gap between the target and the backup retention, and the day the last backup copy expires if the live data is deleted on day 1, and lay out a deletion plan that is honest about what cannot be erased immediately.
 **Asked at:** PII and compliance material (tianpan, Kunal Ganglani, Gravitee and barkingiguana pages on logs, retention, redaction and data residency, and a vendor piece on DPDP readiness for LLM traffic); vendor and practitioner pages, not regulator guidance or an interview bank; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
-**Say this first (1 line):** The vector index is only 0.15% affected (3,000 of 2,000,000 chunks), and backups outlast the 30-day target by 5 days on paper and more in practice, so I would delete from every live store quickly, verify it, and tell the user and the privacy owner honestly that backups age out later.
+**Say this first (1 line):** The vector index is only 0.15% affected (3,000 of 2,000,000 chunks), and backups outlast the 30-day target by 5 days (35 against 30), with the last backup copy expiring on day 36 if live data is deleted on day 1, so I would delete from every live store quickly, verify it, and tell the user and the privacy owner honestly that backups age out later.
 
 **Clarifying questions:**
 - Which law or contract drives the request and its deadline? I do not give legal advice. The data protection officer or counsel confirms the obligation and whether the 30 days is an internal target or a legal limit.
@@ -728,14 +723,14 @@ P(at least one wrong write in a week at 2.6%): 1.0
 2. Size the index work: 3,000 / 2,000,000 = 0.15% of chunks. Delete by user id (or by source document id) and also search text for chunks without the id. Many index types mark deleted vectors and remove them later, so run compaction and verify with queries that the chunks no longer return.
 3. Logs: delete by user id; confirm downstream copies (warehouse, trace store).
 4. Evaluation dataset: remove or redact the rows and re-export; note any model already evaluated on them.
-5. Backups (35 days against a 30-day target, a 5-day gap on paper): backups are usually immutable, so you cannot edit them. Be honest: the copy expires when the last backup that held it expires. If live data is deleted on day d, the last backup copy expires on day d + 35: day 36 for deletion on day 1, and day 65 for deletion on day 30. Fix going forward: keep a suppression list of deleted user ids and re-apply deletion on any restore; and consider shortening backup retention to 30 days or less if the policy requires erasure in 30.
+5. Backups (35 days against a 30-day target, a 5-day gap in retention): backups are usually immutable, so you cannot edit them. Be honest: the copy expires when the last backup that held it expires. If live data is deleted on day d, the last backup copy expires on day d + 35: day 36 for deletion on day 1, and day 65 for deletion on day 30. Fix going forward: keep a suppression list of deleted user ids and re-apply deletion on any restore; and consider shortening backup retention to 30 days or less if the policy requires erasure in 30.
 6. Verify and record: run checks (queries return nothing), keep a deletion record without the personal data (request id, dates, systems), and reply to the user with what was deleted and when the backups expire.
 7. Prevent repeats: tag data with a user id at ingestion; avoid putting personal data into evaluation sets; minimise retention of raw logs.
 
 **Metrics:**
 - Share of index affected = chunks for the user / total chunks (0.15%).
 - Time to delete per store (days from request), against the 30-day target; deletion verification pass rate = stores verified clean / stores in the data map.
-- Residual exposure window = last backup expiry day minus target day (5 in the prompt's simplification; at least 6 in the timeline of Code).
+- Residual exposure window = last backup expiry day minus target day (5 days between retention and target; 6 days over the target, day 36, when live data is deleted on day 1).
 - Guardrails: number of restores that re-applied the suppression list; requests completed on time / all requests.
 
 **Risks:**
@@ -809,7 +804,7 @@ backups              day  36  cannot edit; suppression list re-applied on any re
 - Forgetting backups, caches, vendor logs and evaluation sets.
 - Saying "deleted" when the index only marked the vectors.
 - Quoting legal rules from memory.
-- Computing the gap as 5 days and stopping there.
+- Computing the 5-day retention gap and stopping there, without the day the last copy expires.
 
 ### Q42 ⭐⭐ 🔴 You want a regression suite to detect a drop in pass rate from 80% to 75% (5 points absolute) with 95% confidence and 80% power, using separate prompt samples for the two versions. Compute the number of prompts needed per version with the normal approximation, compare it with your 200-prompt suite, and say how scoring both versions on the same prompts would help.
 **Asked at:** No public page found for this exact scenario, editor-designed; the theme is adjacent to regression-suite sizing in LLM evaluation pages; related topics appear in public guides for data scientist, ML engineer and GenAI engineer loops; no page for the exact framing; search snippets only, not opened
