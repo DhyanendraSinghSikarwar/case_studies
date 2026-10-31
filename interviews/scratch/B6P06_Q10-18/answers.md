@@ -276,7 +276,7 @@ spare weeks with best: 2 -> C (3 weeks) does not fit; value lost to greedy: 10
 **Say this first (1 line):** The ratio is 42 / 60 = 0.70, below the 0.8 guideline, so I would not ship this week on assertion; I would test his claim by comparing approvals and defaults within risk bands, and escalate if the gap is not explained.
 
 **Clarifying questions:**
-- Which law and policy govern this product, and who owns fair-lending review? The four-fifths rule is an employment-selection guideline often borrowed as a screening heuristic; for lending, the compliance team decides which test applies (check with legal).
+- Which law and policy govern this product, and who owns fair-lending review? The 0.8 four-fifths figure is a screening heuristic borrowed from employment selection, not a lending test; the compliance team decides which test applies (check with legal).
 - What defines groups A and B, and is the attribute used by the model or only known later? It decides whether you can measure at all.
 - How many applicants per group, and what is the repayment history? Small samples make the ratio noisy.
 - Which features drive the score, and are any proxies for the group (location, device, surname-based)? Proxies can hide the problem.
@@ -391,7 +391,7 @@ World 2 (not explained): B with A's own mix: 0.42 ratio 0.7
 
 **Risks:**
 - Taking all the blame, or none. Both lose trust.
-- The 450,000 is an upper bound; quoting it as fact in a heated room can be wrong in either direction.
+- The 450,000 is at most the cost (it holds only if supply ordered to the forecast); quoting it as the actual loss in a heated room overstates it, and shortage costs sit on top.
 - Fixing one month by over-correcting, which flips the error to shortages.
 - Public blame leaves supply and data science working apart.
 
@@ -484,7 +484,7 @@ order at demand quantile 0.615
 - Graders may be lenient or model-based; the 94% may be inflated.
 - Reviewers rubber-stamp when volume is high, so measure review quality.
 - Cost per error is an estimate; the bad cases (a wrong number in a board deck) are not 20.
-- The prompt's 94% sounds like a measured result on 500,000 questions; it is more likely a pilot rate projected to that volume.
+- The 30,000 and 600,000 are projections from a pilot sample, so they carry the sample's uncertainty and any bias in which questions were piloted.
 
 **What the interviewer scores:**
 - Strong: correct arithmetic, then asks how 94% was measured and gives an interval. Weak: accepts or rejects 94%.

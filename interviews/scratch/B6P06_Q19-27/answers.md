@@ -637,7 +637,7 @@ max recall with 1,000 contacts: 20%
 
 **Approach:**
 1. Do the arithmetic: 3 relabel-and-retrain cycles x 3 days = 9 days = 45% of 20.
-2. Note a precision point: 30 to 60 to 90 is three definitions but two changes. If the first was planned work, the avoidable loss is 6 days (30%). Say 9 only if all three are counted as cost.
+2. Split the cost honestly: three definitions, each cycle 3 days. If the first build was planned work, the avoidable loss is 6 days (30%); the full 9 days (45%) is the total spent.
 3. Do not blame the PM: show the cost privately, then a one-slide compare of 30, 60, 90 on the same data: churn rate, share who return later, and what each means for the intervention.
 4. Propose a decision rule: pick the window that matches how long the retention action takes to work, or where reactivation drops off.
 5. Make labels parametric: one pass builds the inactivity gap, and labels for 30, 60 and 90 are columns. A new definition then costs about half a day, not 3 (illustrative).
@@ -655,21 +655,21 @@ max recall with 1,000 contacts: 20%
 - Locking a definition too early may lock a poor one; keep the version history.
 
 **What the interviewer scores:**
-- Strong: quantifies the cost and corrects the count honestly. Weak: complains the PM is indecisive.
+- Strong: quantifies the cost and separates total from avoidable days. Weak: complains the PM is indecisive.
 - Strong: fixes the process (single owner, spec, change control, parametric labels). Weak: just absorbs the changes.
 - Strong: gives the PM a data comparison to decide with. Weak: argues from preference.
 - Strong: calm, collaborative tone. Weak: escalates immediately.
 
-**Example:** (illustrative numbers) A simulated gap table gives churn rates of 42.0% at 30 days, 18.6% at 60 and 9.7% at 90, so the three definitions are three different targets, not tweaks. Weak answer: "I keep changing the label whenever you ask." Strong answer: "Each change costs me 3 days, 45% of the sprint if we count all three. Here is how 30, 60 and 90 compare. Can we pick one by Friday and write it down? I will also make the label a parameter so a later change takes half a day."
+**Example:** (illustrative numbers) A simulated gap table gives churn rates of 42.0% at 30 days, 18.6% at 60 and 9.7% at 90, so the three definitions are three different targets, not tweaks. Weak answer: "I keep changing the label whenever you ask." Strong answer: "Each definition costs me 3 days; the three cycles are 9 days, 45% of the sprint, and 6 days (30%) of that was avoidable. Here is how 30, 60 and 90 compare. Can we pick one by Friday and write it down? I will also make the label a parameter so a later change takes half a day."
 
 **Code:**
 ```python
 import numpy as np
 sprint, per_change, changes = 20, 3, 3
 lost = per_change * changes
-print(f"as stated: {changes} relabel-and-retrain cycles x {per_change} days = {lost} days = {lost/sprint:.0%} of {sprint}")
+print(f"total: {changes} relabel-and-retrain cycles x {per_change} days = {lost} days = {lost/sprint:.0%} of {sprint}")
 assert lost == 9 and lost/sprint == 0.45
-# 30 -> 60 -> 90 is three definitions but two changes; if the first build was needed anyway
+# three definitions; if the first build was planned work anyway, only two cycles are avoidable
 avoidable = per_change * 2
 print(f"if the first definition was planned work, avoidable loss = {avoidable} days = {avoidable/sprint:.0%}")
 assert avoidable == 6 and avoidable/sprint == 0.30
@@ -687,7 +687,7 @@ assert 3*param_cost == 1.5
 
 **Output (my run):**
 ```text
-as stated: 3 relabel-and-retrain cycles x 3 days = 9 days = 45% of 20
+total: 3 relabel-and-retrain cycles x 3 days = 9 days = 45% of 20
 if the first definition was planned work, avoidable loss = 6 days = 30%
 {30: '42.0%', 60: '18.6%', 90: '9.7%'}
 three definitions with a parametrised label: 1.5 days instead of 9
@@ -696,7 +696,7 @@ three definitions with a parametrised label: 1.5 days instead of 9
 **Follow-ups:**
 - What if the PM still changes it? Apply change control: it goes into the next sprint unless the owner accepts the cost.
 - Which definition do you recommend? The one where most returners have returned (reactivation curve flattens), and that matches the action window.
-- Prompt wording: is "changed it three times" right? No, see the note: two changes, three definitions.
+- Is the loss 9 days or 6? 9 days is the total spent on three cycles; 6 days (30%) is the avoidable part if the first build was planned work.
 
 **Common mistakes:**
 - Counting the original build as lost time.

@@ -1,9 +1,9 @@
 import numpy as np
 sprint, per_change, changes = 20, 3, 3
 lost = per_change * changes
-print(f"as stated: {changes} relabel-and-retrain cycles x {per_change} days = {lost} days = {lost/sprint:.0%} of {sprint}")
+print(f"total: {changes} relabel-and-retrain cycles x {per_change} days = {lost} days = {lost/sprint:.0%} of {sprint}")
 assert lost == 9 and lost/sprint == 0.45
-# 30 -> 60 -> 90 is three definitions but two changes; if the first build was needed anyway
+# three definitions; if the first build was planned work anyway, only two cycles are avoidable
 avoidable = per_change * 2
 print(f"if the first definition was planned work, avoidable loss = {avoidable} days = {avoidable/sprint:.0%}")
 assert avoidable == 6 and avoidable/sprint == 0.30
