@@ -159,7 +159,7 @@ Thanks for telling me how you see it. I can tell it matters to you. I do not thi
 **Common mistakes:** Agreeing with both. Passing messages. Gossiping to others. Playing therapist. Ignoring the issue until it hurts the delivery.
 
 ### S39 ⭐⭐ 🟡 Ethics and judgement: a product manager wants to join datasets in a way customers were not told about
-**Asked at:** Privacy-concern prompts appear in ethics and responsible-AI interview lists in the results (hirevire, vintti, Yardstick; snippets); no public page found for this case, editor-designed. Editor note for Wave B: route through the proper internal channel and ask compliance or HR; no legal advice.; search snippets only, not opened
+**Asked at:** Privacy-concern prompts appear in ethics and responsible-AI interview lists in the results (hirevire, vintti, Yardstick; snippets); no public page found for this case, editor-designed; search snippets only, not opened
 **Situation:** A product manager wants to link purchase data with contact details collected for a different purpose, to target messages. You are the person who would run the join. You are not sure customers agreed to this use.
 **Weak response:** Run the join because the product manager asked and you only execute queries. Or refuse flatly and lecture about privacy without checking anything.
 
@@ -179,7 +179,7 @@ Before I run this, I want to check one thing. These contact details were collect
 **Common mistakes:** Silently complying. Silently refusing. Accusing the product manager of bad intent. Making legal claims you cannot support. Going outside the company first.
 
 ### S40 ⭐⭐ 🟡 Ethics and judgement: a teammate pastes customer data into a public AI chatbot
-**Asked at:** No public page found, editor-designed; AI-tool policy and disclosure are AI-era themes in this series (Book 9 Part 1 Q17 covers how you use AI tools; Part 2 Q39 how you disclose use); policy claims are by source quality; search snippets only, not opened Editor note for Wave B: route through the proper internal channel and ask compliance or HR; no legal advice.
+**Asked at:** No public page found, editor-designed; AI-tool policy and disclosure are AI-era themes in this series (Book 9 Part 1 Q17 covers how you use AI tools; Part 2 Q39 how you disclose use); policy claims are by source quality; search snippets only, not opened
 **Situation:** You see a colleague paste a customer support export into a public AI chat tool to speed up an analysis. Company policy, as you understand it, says not to do that. They are senior to you and in a hurry.
 **Weak response:** Say nothing because they are senior and busy, or confront them loudly in front of others. Another weak move is to join in because everyone does it.
 

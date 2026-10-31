@@ -79,7 +79,7 @@ I would not brush them off, because they are new and nervous. I would say: "I am
 **Common mistakes:** Showing annoyance; over-explaining to fill silence; rushing past key points; assuming you have failed; complaining about the interviewer to others in the room; making a remark about their phone.
 
 ### S25 ⭐⭐ 🟡 Interview room: the interviewer asks about your family plans
-**Asked at:** Guides on inappropriate interview questions exist (Welcome to the Jungle, UMass Humanities and Arts career guide; snippets suggest staying calm, answering only what you are comfortable with or asking what they want to learn); this book makes no legal claim. Editor note for Wave B: decide afterwards whether to raise it with the recruiter; no legal advice.; search snippets only, not opened
+**Asked at:** Guides on inappropriate interview questions exist (Welcome to the Jungle, UMass Humanities and Arts career guide; snippets suggest staying calm, answering only what you are comfortable with or asking what they want to learn); this book makes no legal claim; search snippets only, not opened
 **Situation:** Near the end of a friendly chat the interviewer asks whether you plan to have children soon. The question has nothing to do with the work. You feel your answer might matter.
 **Weak response:** Either answer in detail because you fear what silence will cost you, or snap back that the question is inappropriate. The first shares more than you wish to and the second can make the room tense.
 
@@ -119,7 +119,7 @@ I would not brush them off, because they are new and nervous. I would say: "I am
 **Common mistakes:** Silently over-delivering; doing less without saying so; sounding aggrieved; asking for help with the solution itself; using AI to produce the whole answer and then being unable to explain it live.
 
 ### S27 ⭐⭐ 🟡 Interview room: the interviewer pushes back hard on the solution you just proposed
-**Asked at:** A live-coding results summary advised stating a decision, defending it briefly and changing your mind gracefully with new information (snippet; no dedicated source found); the case is editor-designed; Book 6 covers the technical trade-offs; search snippets only, not opened
+**Asked at:** A live-coding results summary advised stating a decision, defending it briefly and changing your mind gracefully with new information (snippet; no dedicated source found); the case is editor-designed; Book 6 Part 6 covers data-science trade-offs with numbers; search snippets only, not opened
 **Situation:** You propose a gradient-boosted model with a simple monitoring plan. The interviewer says the approach is too complicated and suggests a rule-based baseline. You still think your approach is better for the case.
 **Weak response:** Either cave at once ("you are right, rules are better") or defend yourself repeatedly without listening. Caving shows no judgement, and defending shows you cannot be coached.
 

@@ -140,7 +140,7 @@ Then to the manager: "The report is due [date]. Their half isn't yet started to 
 **Common mistakes:** Saying nothing. Publicly declaring the design flawed. Being vague ("something feels off"). Offering no solution. Pressing the point repeatedly after it has been answered.
 
 ### S18 ⭐⭐⭐ 🟡 Ethics and judgement: you notice customer emails in a notebook open to the whole company
-**Asked at:** Data-leak and privacy prompts appear in responsible-AI and ethics question lists in the results (hirevire, vintti, Yardstick pages; snippets, not employer rubrics); the shared-drive case is editor-designed. Editor note for Wave B: route through the proper internal channel and ask compliance or HR; no legal advice.; search snippets only, not opened
+**Asked at:** Data-leak and privacy prompts appear in responsible-AI and ethics question lists in the results (hirevire, vintti, Yardstick pages; snippets, not employer rubrics); the shared-drive case is editor-designed; search snippets only, not opened
 **Situation:** While browsing a shared drive you find a notebook with a table of customer email addresses and purchase history, visible to everyone in the company. It was saved by a colleague last month. You are not sure whether this is allowed.
 **Weak response:** Ignore it because it is not your notebook. Or message the whole company, delete the file yourself, or ask the colleague in public chat.
 
@@ -160,7 +160,7 @@ Then to the manager: "The report is due [date]. Their half isn't yet started to 
 **Common mistakes:** Doing nothing. Downloading the data as "evidence". Posting about it in a public channel. Blaming the colleague. Giving a confident opinion about legal consequences.
 
 ### S19 ⭐⭐⭐ 🔴 Failure and ownership: a production model starts giving odd predictions on a Friday evening
-**Asked at:** Incident ownership is a theme in MLOps and behavioural lists; no public page found for this exact on-call framing, editor-designed; Book 4 covers the monitoring mechanics and Book 9 Part 2 Q38 the incident write-up; search snippets only, not opened
+**Asked at:** Incident ownership is a theme in MLOps and behavioural lists; no public page found for this exact on-call framing, editor-designed; Book 4 Part 8 (monitoring) covers the mechanics and Book 9 Part 2 Q38 the incident write-up; search snippets only, not opened
 **Situation:** You are the one on call. Alerts show a sharp shift in scores for a model that feeds a customer-facing feature, and you cannot reach the model's usual owner. Your manager's phone is off.
 **Weak response:** Wait for the owner to call back before touching anything, or make a large unreviewed change such as retraining or rewriting the model on your own at night.
 
