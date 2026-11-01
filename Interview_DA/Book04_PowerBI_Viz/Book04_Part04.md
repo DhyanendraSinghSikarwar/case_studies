@@ -2657,7 +2657,7 @@ for dep in ["HR","IT"]:
     v = q[q.Dept==dep].Dept.unique(); print(dep, v[0] if len(v)==1 else "Multiple")
 print("Multiple" if q.Dept.nunique()>1 else q.Dept.iloc[0])
 ```
-Output: `HR`, `IT`, `Multiple` (the last line stands for the alternate result, "all departments").
+Output: `HR HR`, `IT IT`, `Multiple` (each line shows the slicer value, then what SELECTEDVALUE returns; the last line stands for the alternate result, "all departments").
 **Version / licensing note:** from memory, unverified (Microsoft Learn SELECTEDVALUE page not reachable here).
 **Edge cases:** Selecting two departments returns the alternate result. Cross-filtering from a relationship can leave one value even without a slicer.
 **Likely follow-ups:** 1) *vs MAX?* MAX gives a number even with many values. 2) *With multi-select?* Use CONCATENATEX.

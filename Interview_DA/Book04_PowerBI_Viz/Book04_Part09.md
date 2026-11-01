@@ -52,6 +52,7 @@
 - **Access:** do regional managers see only their region (row-level security)?
 - **Delivery:** deadline, device (laptop or phone), and how success is measured.
 **Example:** A manager says "show sales". Your questions reveal she means net revenue by region by invoice month versus target, refreshed daily at 8 am, with each regional head seeing only their region. That is a very different build from one total.
+**DAX / Steps:** Not applicable (a process answer, nothing run).
 **Alternative:** Use a one-page requirements checklist or a quick mock-up in PowerPoint and get a sign-off.
 **Version / licensing note:** Not applicable beyond: sharing to many viewers needs the right licence (from memory, unverified).
 **Edge cases:** Conflicting definitions between sales and finance; agree one and write it down (see Q50).
@@ -270,6 +271,15 @@ Table `Product` (dimension):
 | P2 | Chair | Furniture |
 
 **DAX / Steps:** Not run here. Model view > drag Product[ProductID] onto Sales[ProductID] (or Home > Manage relationships > New) > cardinality One to many, cross filter Single > mark Date table (Table tools > Mark as date table).
+**Result:** Reproduced with pandas (the relationship itself not run): slicing by Category through Product gives Electronics 9,000 and Furniture 3,000; total 12,000 equals Sales total.
+**Pandas check:**
+```python
+import pandas as pd
+sales=pd.DataFrame({"OrderID":[1001,1002,1003],"ProductID":["P1","P2","P1"],"Amount":[5000,3000,4000]})
+prod=pd.DataFrame({"ProductID":["P1","P2"],"Category":["Electronics","Furniture"]})
+print(sales.merge(prod,on="ProductID").groupby("Category").Amount.sum()); print("Total:",sales.Amount.sum())
+```
+Printed Electronics 9000, Furniture 3000, Total 12000.
 **Alternative:** One wide flat table is quicker for tiny data but repeats text, bloats size and breaks easily; use only for quick prototypes.
 **Version / licensing note:** From memory, unverified.
 **Edge cases:** Duplicate IDs in a dimension block one-to-many; unmatched IDs create a (Blank) category (Q35); avoid both-direction filters unless needed.
@@ -354,7 +364,7 @@ Printed 3 rows: (Asha, 2024-03-01, P, 8.5), (Ravi, 2024-03-02, A, NaN), (Meena, 
 - Stages sort alphabetically by default, so give each stage a **sort order column** and sort by it.
 - **Conversion %:** stage count divided by the previous stage (or by Applied).
 - If each candidate has one row with a current stage, you need counts of "reached at least this stage"; a stage-history table makes it simple.
-**Example:** 1,000 applied, 36 joined: overall conversion 3.6%. The biggest drop is Applied to Screened (40%), the weakest stage is Offered to Joined at 80% (offer drop-outs).
+**Example:** 1,000 applied, 36 joined: overall conversion 3.6%. The lowest stage-to-stage conversion is Interviewed to Offered at 30%; Offered to Joined is 80%, so 9 of 45 offers did not join (offer drop-outs).
 **Sample data:** Table `Funnel`:
 
 | Stage | Order | Candidates |
@@ -389,7 +399,7 @@ f["% of Applied"]=(f.Cand/1000*100).round(1); f["% of prev"]=(f.Cand/f.Cand.shif
 ```
 Printed the values listed above.
 **Version / licensing note:** From memory, unverified.
-**Edge cases:** Candidates who skip a stage; the first stage has no previous (blank); filter by role or source will re-scale the percentages.
+**Edge cases:** Candidates who skip a stage; the first stage has no previous (blank); filter by role or source will re-scale the percentages. On the total row (no single stage in context) MAX of Order is 5, so `% of Previous Stage` would compare against stage 4; hide it there or wrap it in `IF ( HASONEVALUE ( Funnel[Stage] ), ... )`.
 **Likely follow-ups:** 1) *Time between stages?* Needs dates per stage (Q47). 2) *Funnel vs bar?* Bars compare better.
 **Common mistakes:** Stages alphabetically sorted; dividing by wrong base; counting current stage instead of reached-stage.
 
@@ -418,6 +428,7 @@ Printed the values listed above.
 
 **DAX / Steps:** Not run here. Click-path: Visualizations > Clustered bar chart > Axis = Product, Values = Sales > Filters pane > Product > Filter type Top N > Show items Top 5 > By value Sales > Apply filter.
 ```dax
+Total Sales = SUM ( ProductSales[Sales] )
 Product Rank = RANKX ( ALL ( ProductSales[Product] ), [Total Sales] )
 Top 5 Sales = CALCULATE ( [Total Sales], FILTER ( VALUES ( ProductSales[Product] ), [Product Rank] <= 5 ) )
 ```
@@ -590,7 +601,7 @@ Printed values as listed.
 - Pinned dashboard tiles can show cached data; refresh the browser.
 **Example:** Report shows Monday data on Wednesday: refresh history shows failures since Tuesday because the data-source password changed.
 **DAX / Steps:** Not run here. Click-path: Service > Workspace > semantic model > Refresh > Refresh history; Settings > Scheduled refresh; Manage gateways.
-**Alternative:** Add a "Last refreshed" card from a Power Query step using DateTime.LocalNow().
+**Alternative:** Add a "Last refreshed" card from a Power Query step using DateTime.LocalNow(). In the Service this is believed to return the service's time (UTC), not India time, so add 5.5 hours or label it UTC (from memory, unverified).
 **Version / licensing note:** From memory, unverified.
 **Edge cases:** Time zone differences; a different copy of the report (not the published one); filter on date set to last year.
 **Likely follow-ups:** 1) *Fix?* Update credentials and refresh. 2) *Prevent?* Failure email alerts.
@@ -1170,9 +1181,9 @@ Table `Sales`:
 
 **DAX / Steps (not run here):**
 ```dax
-Sales = SUM ( Sales[Amount] )
-Share of Company = DIVIDE ( [Sales], CALCULATE ( [Sales], ALL ( Sales ) ) )
-Share of Selection = DIVIDE ( [Sales], CALCULATE ( [Sales], ALLSELECTED ( Sales ) ) )
+Total Sales = SUM ( Sales[Amount] )
+Share of Company = DIVIDE ( [Total Sales], CALCULATE ( [Total Sales], ALL ( Sales ) ) )
+Share of Selection = DIVIDE ( [Total Sales], CALCULATE ( [Total Sales], ALLSELECTED ( Sales ) ) )
 ```
 **Alternative:** Use DAX query view or DAX Studio to evaluate the measure with a hard-coded filter and compare to your expectation.
 **Result (reproduced with pandas, not a DAX engine):** With Region = North: share of company 50.0%, share of selection 100.0%. With nothing selected both give North 50%, South 30%, West 20%. Reproduced with pandas.
@@ -1206,6 +1217,7 @@ Share with nothing selected (both give): {'North': 50.0, 'South': 30.0, 'West': 
 **Say this in the interview:** "Numbers inflate when two tables are joined on a column that repeats in both. I add a small dimension (for example Region) with unique values, relate both tables to it as one-to-many, and filter from the dimension. If needed I use TREATAS inside a measure."
 **Explain simply:**
 - A relationship is the link that lets a filter on one table affect another.
+- Premise check: with no relationship at all, Power BI does not multiply anything; the inflation appears when targets are merged onto every order row (a flat table) or linked many-to-many, as in the pandas join below.
 - If both tables have repeated values in the linking column (many-to-many), one target row gets matched to every order, so targets add up many times.
 - Fix: create a dimension table with one row per value (Region), relate Sales and Targets to it, and use the dimension in visuals and slicers.
 - TREATAS lets a measure "pretend" a column from one table filters another; good for a quick fix, but a proper model is better.
@@ -1338,10 +1350,11 @@ Null keys in Sales: 1
 **Explain simply:**
 - A date table is a separate table listing each calendar day once, so months and years sort and filter properly.
 - Rules (from memory, unverified): unique dates, no blanks, no gaps, and it should cover full years. Mark it with Table tools > Mark as date table.
-- Without it, functions such as TOTALYTD or SAMEPERIODLASTYEAR give wrong or blank results, and months sort alphabetically (April before January).
+- Without a proper date table, functions such as TOTALYTD or SAMEPERIODLASTYEAR can give wrong or blank results (from memory, unverified), and month names sort alphabetically (April before January).
 - Build it once in DAX (CALENDAR), or Power Query, and relate Date[Date] to Sales[OrderDate] (one-to-many). Use Sort by column for month names.
 - Turn off Auto date/time so you do not get hidden duplicate tables.
 **Example:** Sales from Jan 2025 to Dec 2026: the calendar has 730 rows, one per day, with unique and contiguous dates; Year, Month, YearMonth and DayOfWeek columns.
+**Sample data:** One column, `Sales[OrderDate]`, with orders from 1 Jan 2025 to 31 Dec 2026 (illustrative; the pandas check builds the calendar directly).
 **DAX / Steps (not run here):**
 ```dax
 Date =
@@ -1353,12 +1366,12 @@ ADDCOLUMNS (
     "Year", YEAR ( [Date] ),
     "MonthNo", MONTH ( [Date] ),
     "Month", FORMAT ( [Date], "MMM" ),
-    "YearMonth", FORMAT ( [Date], "YYYY-MM" )
+    "YearMonth", FORMAT ( [Date], "yyyy-MM" )
 )
 ```
 **Click-path:** 1. Modeling > New table > paste DAX. 2. Select Month, Sort by column > MonthNo. 3. Model view: drag Date[Date] to Sales[OrderDate]. 4. Select the table > Table tools > Mark as date table > choose Date. (Click-path not run here.)
 **Alternative:** CALENDARAUTO() builds the range from the whole model but may extend to odd dates; or create the table in Power Query with List.Dates and import it.
-**Result (reproduced with pandas, not a DAX engine):** 730 rows (2025 and 2026), dates unique, no nulls, contiguous; first rows 2025-01-01, 2025-02-01, 2026-01-01. Reproduced with pandas.
+**Result (reproduced with pandas, not a DAX engine):** 730 rows (2025 and 2026), dates unique, no nulls, contiguous; the rows at positions 0, 31 and 365 are 2025-01-01, 2025-02-01 and 2026-01-01. Reproduced with pandas.
 **Pandas check:**
 ```python
 import pandas as pd
@@ -1394,6 +1407,7 @@ Contiguous (every gap = 1 day): True
 - TOTALYTD and DATESYTD accept an optional year-end date such as "3/31" so YTD resets on 1 April.
 - Same logic works for HR (headcount by FY, attrition per FY).
 **Example:** 1 April 2026 is month 1 of FY2026-27; 10 January 2027 is month 10 of FY2026-27; 31 March 2026 belongs to FY2025-26. Sales of 570 from April 2026 to 28 Feb 2027 is the FY YTD, not the 120 you would get from calendar 2027.
+**Sample data:** Five dates (31-Mar-2026, 1-Apr-2026, 15-Dec-2026, 10-Jan-2027, 31-Mar-2027) and `Sales` rows: 10-Apr-2026 100, 5-Jun-2026 150, 20-Dec-2026 200, 14-Feb-2027 120, 2-Apr-2027 90.
 **DAX / Steps (not run here):**
 ```dax
 -- Calculated columns in 'Date'
@@ -1705,10 +1719,14 @@ Metric = DATATABLE ( "Metric", STRING, { { "Sales" }, { "Profit" }, { "Quantity"
 Selected Metric =
 SWITCH (
     SELECTEDVALUE ( Metric[Metric], "Sales" ),
-    "Sales",    [Sales],
-    "Profit",   [Profit],
-    "Quantity", [Quantity]
+    "Sales",    [Total Sales],
+    "Profit",   [Total Profit],
+    "Quantity", [Total Quantity]
 )
+
+Total Sales = SUM ( Sales[Sales] )
+Total Profit = SUM ( Sales[Profit] )
+Total Quantity = SUM ( Sales[Qty] )
 ```
 **Click-path:** Field parameter: Modeling tab > New parameter > Fields > add Sales, Profit, Quantity > tick "Add slicer to this page". Then use the parameter field in the visual. (Click-path not run here; the ribbon location may differ by build.)
 **Alternative:** Field parameters are the easier route in current Desktop; SWITCH is the older, fully controllable one, and works in any version.
@@ -1744,6 +1762,7 @@ Quantity {'Bag': 5, 'Book': 10, 'Pen': 25}
 - For the Service, the folder must be reachable: a local or network path needs an on-premises gateway; SharePoint or OneDrive folders work with the SharePoint folder connector (from memory, unverified).
 - All files must share the same columns; otherwise one file can break the refresh.
 **Example:** Monthly attendance files `Attendance_2026-01.xlsx`, `Attendance_2026-02.xlsx`... The report grows by one month when February's file lands.
+**Sample data:** Folder `C:\HR\Attendance` holds `Attendance_2026-01.xlsx` (2 rows), `Attendance_2026-02.xlsx` (3 rows) and a lock file `~$Attendance_2026-02.xlsx` that Excel creates while the file is open (3 rows, to be ignored).
 **DAX / Steps (Power Query M, not run here):**
 ```m
 // Power Query (Home > Get data > Folder), not run here
@@ -1756,6 +1775,16 @@ let
 in Expand
 ```
 **Alternative:** Use the built-in Combine > Combine and Transform dialog (generates the helper query and function for you) or ask IT to land the files in a database table.
+**Result:** Reproduced with pandas (the M code not run): 5 rows after combining, 2 from January and 3 from February; the lock file is skipped.
+**Pandas check:**
+```python
+import pandas as pd
+jan=pd.DataFrame({"EmpID":["E1","E2"],"Status":["P","A"]}); feb=pd.DataFrame({"EmpID":["E1","E2","E3"],"Status":["P","P","P"]})
+files={"Attendance_2026-01.xlsx":jan,"Attendance_2026-02.xlsx":feb,"~$Attendance_2026-02.xlsx":feb}
+allr=pd.concat([v.assign(Name=k) for k,v in files.items() if not k.startswith("~$")],ignore_index=True)
+print(allr.groupby("Name").size()); print("Total rows:",len(allr))
+```
+Printed January 2, February 3, total 5.
 **Version / licensing note:** Connector, gateway and scheduled-refresh facts: Microsoft Learn was unreachable from this session (one fetch of learn.microsoft.com was refused by the network proxy; not retried), so no Microsoft page was read. Everything here is from memory, unverified.
 **Edge cases:** Different sheet names across files, extra header rows, files open (lock files starting with ~$), duplicates or corrected re-sends of the same month (see the doubled sales question). Columns added later in new files are dropped unless expanded.
 **Likely follow-ups:** 1) What if one file has a different column? That file errors or loses a column; standardise or select columns defensively. 2) Can it refresh online? Yes with the right gateway or SharePoint source.
@@ -1771,6 +1800,7 @@ in Expand
 - Make it tolerant: Table.RenameColumns with MissingField.Ignore, or Table.SelectColumns with MissingField.UseNull.
 - Where possible agree a stable layout with the data owner or add an alert if headers change.
 **Example:** The HR system renames "Emp Code" to "Employee ID". The query step Changed Type fails. We add a rename back to "EmpID" at the top and refresh succeeds without touching any measure.
+**Sample data:** Last month's file has columns `Emp Code`, `Dept`; this month's file has `Employee ID`, `Dept` (same data, one header renamed).
 **DAX / Steps (Power Query M, not run here):**
 ```m
 // not run here
@@ -1780,6 +1810,15 @@ let
     Renamed = Table.RenameColumns(Source, {{"Employee ID", "EmpID"}, {"Emp Code", "EmpID"}}, MissingField.Ignore)
 in Renamed
 ```
+**Result:** Reproduced with pandas (the M code not run): both the old and the new file end with columns `EmpID`, `Dept`, so the rest of the query and the measures see no change.
+**Pandas check:**
+```python
+import pandas as pd
+m={"Employee ID":"EmpID","Emp Code":"EmpID"}   # unknown names are ignored, like MissingField.Ignore
+new=pd.DataFrame({"Employee ID":["E1"],"Dept":["IT"]}); old=pd.DataFrame({"Emp Code":["E3"],"Dept":["IT"]})
+print(list(new.rename(columns=m).columns), list(old.rename(columns=m).columns))
+```
+Printed `['EmpID', 'Dept'] ['EmpID', 'Dept']`.
 **Alternative:** Position-based promote headers and rename by position (`Table.ToColumns`), or reading the data via a view in the database so the report never sees source renames.
 **Version / licensing note:** M behaviour of MissingField options is from memory, unverified; Microsoft Learn was unreachable from this session (one fetch of learn.microsoft.com was refused by the network proxy; not retried), so no Microsoft page was read. Everything here is from memory, unverified.
 **Edge cases:** Both names missing: the step still fails (or gives null with UseNull); watch for type changes caused by renamed columns. If the renamed column feeds a relationship the key must keep its model name.
@@ -1815,6 +1854,7 @@ in Renamed
 - Other causes: a model or gateway change by someone else, a sensitivity/RLS change, or a different user's view (RLS).
 - Method: check refresh history times, compare a snapshot, filter by load date, and look at changed rows.
 **Example:** Headcount fell from 1,204 to 1,198 overnight. Refresh history shows a 6 am refresh; HR corrected six exits dated last week. The report did not change, the data did.
+**DAX / Steps:** Not applicable (a diagnosis answer; nothing run here). Click-path to start: Service > Workspace > semantic model > Refresh history, then compare row counts and sums by load date.
 **Alternative:** Keep a daily snapshot table (date, headcount) so past numbers are fixed, and show "data as of" on the report.
 **Version / licensing note:** Refresh behaviour and history: Microsoft Learn was unreachable from this session (one fetch of learn.microsoft.com was refused by the network proxy; not retried), so no Microsoft page was read. Everything here is from memory, unverified.
 **Edge cases:** Time zone: the service runs in UTC but users in India; an end-of-day cut-off shifts. A different person opened it with RLS applied. Dashboard tiles cache and can show older values than the report.
@@ -1851,12 +1891,12 @@ Table `Hires`:
 ```dax
 Avg Time to Hire (Days) =
 AVERAGEX (
-    FILTER ( Hires, NOT ISBLANK ( Hires[JoinedDate] ) && NOT ISBLANK ( Hires[AppliedDate] ) ),
-    DATEDIFF ( Hires[AppliedDate], Hires[JoinedDate], DAY )
+    FILTER ( Hires, NOT ISBLANK ( Hires[Joined] ) && NOT ISBLANK ( Hires[Applied] ) ),
+    DATEDIFF ( Hires[Applied], Hires[Joined], DAY )
 )
 ```
 **Alternative:** Add a calculated column `DaysToHire = DATEDIFF(...)` then a plain `AVERAGE(Hires[DaysToHire])`; simpler to read, slightly bigger model.
-**Result (reproduced with pandas, not a DAX engine):** HR 37.5, IT 46.7, Sales 36.0 days; overall 41.0 days (7 joined candidates; the 8th has no joining date). Reproduced with pandas (column names in the DAX are Hires[AppliedDate] and Hires[JoinedDate]; the pandas frame uses shorter names).
+**Result (reproduced with pandas, not a DAX engine):** HR 37.5, IT 46.7, Sales 36.0 days; overall 41.0 days (7 joined candidates; the 8th has no joining date). Reproduced with pandas.
 **Pandas check:**
 ```python
 import pandas as pd
@@ -1916,8 +1956,8 @@ Overall: 41.0 (mean of rows, skips the not-yet-joined row)
 
 **DAX / Steps:** (Power Query M and DAX, not run here)
 ```m
-// last step of the combined query: keep the last row per OrderID
-// (rows are in file-name order; sort by file modified date first if the newest file must win)
+// last step of the combined query: Table.Distinct keeps the FIRST row it meets per Order
+// (to let the newest file win, sort by Date modified descending and Table.Buffer before this step)
 = Table.Distinct(PreviousStep, {"Order"})
 ```
 ```dax
@@ -1978,20 +2018,22 @@ Output (run): Feb 8000, Jan 3000, Mar 3000, total 14000; deduped total 10000.
 - Step 5, model causes: duplicates (see Q48), filters left on a visual, bad relationships, rows dropped in Power Query, blank dates falling outside the date table, rounding.
 - Step 6, document the reconciliation and add a permanent check measure (Power BI total minus ledger total).
 **Example:** Ledger 1,000,000; Power BI 980,000, so a gap of 20,000 (2%). By month the gap is all in March; by invoice, 12 credit notes totalling 20,000 were excluded by a Power Query filter "Amount > 0".
-**DAX / Steps:** (not run here)
+**Sample data:** Illustrative only: ledger revenue 1,000,000; Power BI revenue 980,000; gap in March, from 12 credit notes totalling 20,000.
+**DAX / Steps:** (not run here; `[Power BI Revenue]` and `[Ledger Revenue]` stand for your two total measures)
 ```dax
 Variance = [Power BI Revenue] - [Ledger Revenue]
 Variance % = DIVIDE([Variance], [Ledger Revenue])
 ```
 **Alternative:** Reverse the direction: start from the ledger and check which invoices exist in Power BI with an anti-join in Power Query (Merge > Left Anti).
-**Result:** arithmetic only: 1,000,000 x 98% = 980,000; gap 20,000 (checked with Python: 980000.0 and 20000).
+**Result:** arithmetic only: 1,000,000 x 98% = 980,000; gap 20,000, which is 2.0% (checked with Python).
+**Pandas check:** `print(1_000_000-980_000, (1_000_000-980_000)/1_000_000*100)` printed `20000 2.0` (plain arithmetic; no DataFrame needed).
 **Version / licensing note:** no version dependency; from memory, unverified.
 **Edge cases:** Rounding on thousands of small lines can explain a tiny gap; timing differences (ledger posts later) move revenue between months; multi-currency uses different rates.
 **Likely follow-ups:** 1) *What if both are right?* Then the definitions differ; document and show both. 2) *How to prevent it?* A reconciliation page showing both totals.
 **Common mistakes:** Changing measures until the number matches; not agreeing definitions first; ignoring credit notes and returns.
 
 ### Q51 ⭐⭐ 🔴 How do you test that row-level security works before publishing, and where does it not protect the data?
-**Asked at:** Row-level security (RLS) was reportedly asked in a Cognizant and a Deloitte round (research/interview_processes.md, Glassdoor snippets, unverified). This exact testing question: no company-specific report found.
+**Asked at:** Row-level security (RLS) was reportedly asked in a Deloitte round (Sept 2025) and in an older Cognizant report from 2022 (research/interview_processes.md, Glassdoor snippets, unverified). This exact testing question: no company-specific report found.
 **What the interviewer is checking:** Do you know View as, dynamic RLS testing, and the limits of RLS (owners, exports, Build permission)?
 **Say this in the interview:** "I use View as roles in Desktop with a test user, then test again in the Service after publishing and assigning members. RLS only filters rows in the model; people with edit or Build rights, workspace Admins/Members/Contributors, or those who see the raw file, are not restricted the same way."
 **Explain simply:**
@@ -2026,7 +2068,7 @@ Variance % = DIVIDE([Variance], [Ledger Revenue])
 - Visuals: KPI cards, line chart by month with both years, bar by category, Date slicer (Between or relative date) from the Date table column, not the raw sales column.
 - Check: reconcile card total with the Excel total.
 **Example:** 2024 revenue 220 and 2025 revenue 280 (in lakhs) gives YoY of 27.3%.
-**Sample data:** Table `Sales` (simplified, quarterly totals):
+**Sample data:** Table `Sales` (simplified, quarterly totals; a real Sales table would carry an order date related to the Date table, which SAMEPERIODLASTYEAR needs):
 
 | Year | Quarter | Revenue |
 |---|---|---|
@@ -2046,7 +2088,7 @@ YoY % = DIVIDE([Total Sales] - [Sales LY], [Sales LY])
 2. Home > Close & Apply; Model view: drag Products[ProductID] to Sales[ProductID], same for customers and Date.
 3. Table tools > Mark as date table.
 4. Visualizations: slicer with Date[Date] (Between), card, line chart (Month on axis).
-**Alternative:** Year-to-date comparison with TOTALYTD, or DATEADD(‘Date’[Date], -1, YEAR).
+**Alternative:** Year-to-date comparison with TOTALYTD, or DATEADD('Date'[Date], -1, YEAR).
 **Result:** reproduced with pandas: 2024 = 220, 2025 = 280, YoY = 27.3%. The DAX itself is not run here.
 **Pandas check:**
 ```python
@@ -2163,7 +2205,7 @@ Output (run): `{2024: 220, 2025: 280} 27.3`
 
 **DAX / Steps:** (not run here)
 1. Modeling tab > New parameter > Numeric range: name `Hike %`, minimum 0, maximum 20, increment 1, Add slicer.
-2. Power BI creates `Hike %[Hike % Value]` automatically: `Hike % Value = SELECTEDVALUE('Hike %'[Hike %], 0)`.
+2. Power BI creates a table `Hike %` and a measure `Hike % Value` automatically (from memory, unverified), roughly `Hike % Value = SELECTEDVALUE('Hike %'[Hike %], 0)`.
 ```dax
 Current Payroll = SUM(Employees[Salary])
 Projected Payroll = SUMX(Employees, Employees[Salary] * (1 + [Hike % Value] / 100))
@@ -2208,7 +2250,7 @@ Output (run): `0 2400000.0 0.0`, `5 2520000.0 120000.0`, `10 2640000.0 240000.0`
 
 **DAX / Steps:** (not run here)
 ```dax
-Total Sales = SUM(Sales[Amount])
+Total Sales = SUM(Products[Sales])   -- Sales column of the sample table
 All Sales = CALCULATE([Total Sales], ALLSELECTED(Products[Product]))
 Cum % =
 VAR cur = [Total Sales]
@@ -2228,7 +2270,7 @@ p["Class"]=np.where(p["cum"]-p.Sales<0.8*p.Sales.sum(),"A","Tail"); print(p.to_s
 ```
 Output (run): cum% 50.0, 80.0, 88.0, 93.0, 96.0, 98.0, 99.2, 100.0; Class A for A and B, Tail for the rest.
 **Version / licensing note:** from memory, unverified (Microsoft Learn unreachable).
-**Edge cases:** Products with equal sales get the same cumulative number (ties); add a tiebreaker such as product ID. Filters change the percentages, which is usually wanted.
+**Edge cases:** The class test compares fractions like 0.88 - 0.08 with 0.8, where decimal rounding can flip a borderline product; compare in sales units or add a tiny tolerance. Products with equal sales get the same cumulative number (ties); add a tiebreaker such as product ID. Filters change the percentages, which is usually wanted.
 **Likely follow-ups:** 1) *Why ALLSELECTED not ALL?* It respects slicers but ignores the visual's row filter. 2) *80/20 literally?* No, it is a pattern, not a law.
 **Common mistakes:** Not sorting the visual; using ALL so slicers are ignored; a cumulative percent that exceeds 100% from ties.
 
@@ -2257,7 +2299,8 @@ Output (run): cum% 50.0, 80.0, 88.0, 93.0, 96.0, 98.0, 99.2, 100.0; Class A for 
 
 **DAX / Steps:** (not run here)
 ```dax
--- calculated column on table Customers (relationship Customers -> Orders)
+-- assumes a Customers table (one row per customer) related one-to-many to Orders, and Date[Date] related to Orders[Date]
+-- calculated column on table Customers
 FirstOrderDate = CALCULATE(MIN(Orders[Date]))
 
 Active Customers = DISTINCTCOUNT(Orders[Cust])
@@ -2358,7 +2401,7 @@ RETURN CALCULATE(
     Employees[JoinDate] > AsOf - 90,
     Employees[JoinDate] <= AsOf,
     Employees[Status] = "Probation",
-    Employees[LeaveDate] = BLANK()
+    Employees[Left] = "No"
 )
 ```
 **Alternative:** Add a calculated column `IsNewProbation` in Power Query and sum it; or use DATESINPERIOD on the date table for a date-slicer-aware version.
@@ -2419,7 +2462,7 @@ Then use Format style: Field value, based on `Overtime Colour`.
 4. Hide the page (right-click tab > Hide page).
 5. On the summary page, right-click a bar > Drill through.
 **Alternative:** Report page tooltips for a quick preview, or bookmarks for navigation buttons.
-**Version / licensing note:** from memory, unverified (Microsoft Learn unreachable). The research notes say a "Keep all filters" toggle exists but is not described on the fetched page, so confirm in Desktop.
+**Version / licensing note:** from memory, unverified (Microsoft Learn unreachable). A "Keep all filters" toggle exists in the drill-through settings (from memory, unverified), so confirm in Desktop.
 **Edge cases:** The drill-through field must exist in the detail visuals' filter context; cross-report drill-through is a separate setup; RLS still applies.
 **Likely follow-ups:** 1) *Drill-down vs drill-through?* Drill-down stays on the same visual; drill-through jumps to another page. 2) *How do users find it?* Use a visible hint or button.
 **Common mistakes:** Cluttered summary; no Back button; exposing salaries on detail pages for everyone.
@@ -2445,7 +2488,7 @@ Then use Format style: Field value, based on `Overtime Colour`.
 **Common mistakes:** Shrinking the full desktop page; too many visuals; tiny fonts.
 
 ### Q65 ⭐ 🟡 How would you hide salary details from some users while letting them see the rest of the HR report?
-**Asked at:** RLS in general was reportedly asked in Cognizant and Deloitte rounds (research/interview_processes.md, unverified); this exact question: no company-specific report found.
+**Asked at:** RLS in general was reportedly asked in a Deloitte round (Sept 2025) and an older Cognizant report from 2022 (research/interview_processes.md, unverified); this exact question: no company-specific report found.
 **What the interviewer is checking:** Row-level security vs object-level security vs designing the report to avoid exposure.
 **Say this in the interview:** "RLS hides rows, so for a column I would use object-level security to hide the Salary column from a role, set up in Tabular Editor. If that is not available, I split salary into a separate report or dataset with its own access."
 **Explain simply:**
@@ -2556,7 +2599,7 @@ Output (run): A 900, B 700, Others 600, C 500, D 400, E 300; 3400 3400.
 **Alternative:** Incremental refresh to refresh only recent partitions; it requires foldable filters on RangeStart and RangeEnd (from the research notes' summary of the incremental refresh page, not re-fetched).
 **Version / licensing note:** from memory, unverified (Microsoft Learn unreachable). Folding applies to relational sources and some others, not to Excel or CSV files.
 **Edge cases:** Folding depends on the source; Excel files cannot fold. Query Diagnostics can show timings.
-**Likely follow-ups:** 1) *Why does it matter?* Less data transferred and faster refresh. 2) *Can I force it?* Not really; write SQL with the native query (but that blocks later steps from folding).
+**Likely follow-ups:** 1) *Why does it matter?* Less data transferred and faster refresh. 2) *Can I force it?* Not really; you can write the SQL yourself as a native query, but later steps may then not fold, depending on the connector (from memory, unverified).
 **Common mistakes:** Not checking each step; filtering late; assuming Excel sources fold.
 
 ### Q69 ⭐ 🔴 How would you build a joiner-cohort retention view showing how many of each month's hires remain after 3, 6 and 12 months?
@@ -2571,7 +2614,7 @@ Output (run): A 900, B 700, Others 600, C 500, D 400, E 300; 3400 3400.
 **Example:** January 2025 cohort of 4: 3 remain after 3 months, 3 after 6, 2 after 12.
 **Sample data:** Table `Employees` (as-of 2026-03-31):
 
-| Emp | Join | Leave |
+| Emp | JoinDate | LeaveDate |
 |---|---|---|
 | 1 | 2025-01-10 | 2025-03-15 |
 | 2 | 2025-01-20 | blank |

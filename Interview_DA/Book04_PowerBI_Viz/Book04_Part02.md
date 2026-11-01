@@ -1029,9 +1029,20 @@ Table.Group(Employees, {"Dept"}, {
 **Result:** Reproduced with pandas (not run in Power Query): HR 3 / 130000, IT 1 / 60000, Sales 2 / 85000.
 **Pandas check:**
 ```python
-emp.groupby("Dept").agg(Headcount=("EmpID","count"),TotalSalary=("Salary","sum")).reset_index()
+import pandas as pd
+emp = pd.DataFrame({"EmpID":[101,102,103,104,105,106],
+                    "Dept":["Sales","Sales","HR","HR","HR","IT"],
+                    "Salary":[40000,45000,38000,42000,50000,60000]})
+out = emp.groupby("Dept").agg(Headcount=("EmpID","count"), TotalSalary=("Salary","sum")).reset_index()
+print(out.to_string(index=False))
 ```
-Printed: `HR 3 130000`, `IT 1 60000`, `Sales 2 85000`.
+Real printed output (pandas 3.0.5):
+```text
+ Dept  Headcount  TotalSalary
+   HR          3       130000
+   IT          1        60000
+Sales          2        85000
+```
 **Version / licensing note:** Group By exists in Power Query in Desktop and the Service dataflows; menu names from memory, unverified (learn.microsoft.com could not be reached from this session).
 **Edge cases:** Blank department values form their own group (null); Count Rows counts rows, Count Distinct counts unique values; Group By on a folding source usually folds to SQL GROUP BY (from memory, unverified).
 **Likely follow-ups:** (1) "Count Rows vs Count Distinct?" Rows counts every row; Distinct counts unique values of a chosen column. (2) "Group By or DAX?" DAX if the report should slice it; Group By if you want a smaller table.
@@ -1082,9 +1093,21 @@ Table.AddColumn(Hires, "DayName", each Date.DayOfWeekName([JoinDate]), type text
 **Result:** Reproduced with pandas: 2025-01-15 = 2025, January, Wednesday; 2024-07-04 = 2024, July, Thursday; 2023-12-31 = 2023, December, Sunday (Sunday-first numbering 0).
 **Pandas check:**
 ```python
-d["Year"]=d.JoinDate.dt.year; d["MonthName"]=d.JoinDate.dt.month_name(); d["DayName"]=d.JoinDate.dt.day_name()
+import pandas as pd
+d = pd.DataFrame({"EmpID":[101,102,103], "JoinDate":pd.to_datetime(["2025-01-15","2024-07-04","2023-12-31"])})
+d["Year"] = d.JoinDate.dt.year
+d["MonthName"] = d.JoinDate.dt.month_name()
+d["DayName"] = d.JoinDate.dt.day_name()
+d["DayOfWeek_SundayFirst0"] = (d.JoinDate.dt.dayofweek + 1) % 7   # pandas Monday=0; shift so Sunday=0
+print(d.to_string(index=False))
 ```
-Printed: `2025 January Wednesday / 2024 July Thursday / 2023 December Sunday`.
+Real printed output (pandas 3.0.5):
+```text
+ EmpID   JoinDate  Year MonthName   DayName  DayOfWeek_SundayFirst0
+   101 2025-01-15  2025   January Wednesday                       3
+   102 2024-07-04  2024      July  Thursday                       4
+   103 2023-12-31  2023  December    Sunday                       0
+```
 **Version / licensing note:** From memory, unverified (Microsoft Learn not reachable here). Month and day names follow the Power Query culture setting, from memory, unverified.
 **Edge cases:** Text dates (Q41) fail until converted; nulls stay null; month names sort alphabetically in a report unless you add a month-number column and use Sort by Column.
 **Likely follow-ups:** (1) "Why sort by month number?" Otherwise April comes before January. (2) "Fiscal year?" Add a custom column with a rule.
@@ -1122,10 +1145,32 @@ Table.UnpivotOtherColumns(Wide, {"Emp"}, "Month", "Leaves")
 **Result:** Reproduced with pandas: pivot gives Asha 2/1, Ravi 0/3; unpivot returns the 4 long rows back. With a duplicate row (Asha, Jan: 2 and 1) the Sum aggregation gives 3.
 **Pandas check:**
 ```python
-w = long.pivot(index="Emp", columns="Month", values="Leaves"); w.reset_index().melt(id_vars="Emp")
-dup.pivot_table(index="Emp", columns="Month", values="Leaves", aggfunc="sum")
+import pandas as pd
+long = pd.DataFrame({"Emp":["Asha","Asha","Ravi","Ravi"],"Month":["Jan","Feb","Jan","Feb"],"Leaves":[2,1,0,3]})
+w = long.pivot(index="Emp", columns="Month", values="Leaves")[["Jan","Feb"]]   # keep Jan, Feb order
+print(w)
+back = w.reset_index().melt(id_vars="Emp", var_name="Month", value_name="Leaves")
+print("unpivot rows:", len(back))
+dup = pd.concat([long, pd.DataFrame({"Emp":["Asha"],"Month":["Jan"],"Leaves":[1]})], ignore_index=True)
+print(dup.pivot_table(index="Emp", columns="Month", values="Leaves", aggfunc="sum")[["Jan","Feb"]])
+try:
+    dup.pivot(index="Emp", columns="Month", values="Leaves")
+except ValueError as e:
+    print("no aggregation ->", type(e).__name__)
 ```
-Printed: wide table as above; melt returns 4 rows; duplicate case `Asha 3`.
+Real printed output (pandas 3.0.5):
+```text
+Month  Jan  Feb
+Emp            
+Asha     2    1
+Ravi     0    3
+unpivot rows: 4
+Month  Jan  Feb
+Emp            
+Asha     3    1
+Ravi     0    3
+no aggregation -> ValueError
+```
 **Version / licensing note:** Both are core Power Query transforms; menu names from memory, unverified. Unpivot options are described on the Microsoft Learn "Unpivot columns" page (per sources file, fetched in the research wave).
 **Edge cases:** Pivot with duplicates and no aggregation raises an error; null cells are dropped on unpivot.
 **Likely follow-ups:** (1) "Which is better for a model?" Long. (2) "What happens to blanks?" Unpivot drops null values.
@@ -1162,9 +1207,18 @@ Table.ExpandTableColumn(Merged, "Departments", {"DeptName"}, {"DeptName"})
 **Result:** Reproduced with pandas: EmpID 1 Sales, 2 HR, 3 null (no match).
 **Pandas check:**
 ```python
-e.merge(dp, on="DeptID", how="left")
+import pandas as pd
+e = pd.DataFrame({"EmpID":[1,2,3],"DeptID":[10,20,30]})
+dp = pd.DataFrame({"DeptID":[10,20],"DeptName":["Sales","HR"]})
+print(e.merge(dp, on="DeptID", how="left").to_string(index=False))
 ```
-Printed: `1 10 Sales`, `2 20 HR`, `3 30 NaN`.
+Real printed output (pandas 3.0.5):
+```text
+ EmpID  DeptID DeptName
+     1      10    Sales
+     2      20       HR
+     3      30      NaN
+```
 **Version / licensing note:** Per the Merge queries overview page (in sources file, fetched in the research wave): six join kinds, matching types, expand or aggregate. UI wording from memory, unverified.
 **Edge cases:** Duplicate keys in the right table multiply rows; a null result means no match (check Q33).
 **Likely follow-ups:** (1) "Why did my row count grow?" Duplicate keys on the right. (2) "Aggregate vs expand?" Aggregate keeps one row per left row.
@@ -1182,7 +1236,7 @@ Printed: `1 10 Sales`, `2 20 HR`, `3 30 NaN`.
 **DAX / Steps:** **Not run here.** In the Power Query Editor, right-click the query in the left Queries pane > untick Enable load (also under Include in report refresh). Close & Apply.
 **Alternative:** Delete the query if no other query uses it; or keep it loaded for debugging, then hide the table in the model view.
 **Version / licensing note:** From memory, unverified (Microsoft Learn not reachable here); the sources file marks the exact "Enable load" menu name as unconfirmed.
-**Edge cases:** Disabling load on a query used in a relationship or measure breaks them; a disabled query can still be the target of "Include in report refresh".
+**Edge cases:** Disabling load on a query used in a relationship or measure breaks them; Enable load and Include in report refresh are separate options on the same right-click menu (their exact interaction: from memory, unverified).
 **Likely follow-ups:** (1) "Staging pattern?" See Q59. (2) "Hide vs disable load?" Hiding keeps the table in the model; disabling removes it.
 **Common mistakes:** Loading every helper query and bloating the model; disabling a query that visuals depend on.
 
@@ -1206,10 +1260,15 @@ Table.TransformColumnTypes(Payroll, {{"Salary", Currency.Type}, {"Days", Int64.T
 ```python
 from decimal import Decimal
 print(0.1+0.2, Decimal("0.1")+Decimal("0.2"))
+print(round(1234.56789, 4))   # Fixed Decimal keeps 4 places
 ```
-Printed: `0.30000000000000004 0.3`.
+Real printed output (pandas 3.0.5):
+```text
+0.30000000000000004 0.3
+1234.5679
+```
 **Version / licensing note:** From memory, unverified.
-**Edge cases:** Fixed decimal truncates beyond four decimals (e.g., 1234.56789 becomes 1234.5679); exchange-rate columns needing more precision should be Decimal Number.
+**Edge cases:** Fixed decimal keeps only four decimals (e.g., 1234.56789 becomes 1234.5679, reproduced above with Python's round; Power Query's own rounding rule: from memory, unverified); exchange-rate columns needing more precision should be Decimal Number.
 **Likely follow-ups:** (1) "Which for IDs?" Text, not number, if leading zeros matter. (2) "Percentages?" Decimal, formatted as percent.
 **Common mistakes:** Whole Number for averages; Decimal Number for money; numbers stored as text.
 
@@ -1254,12 +1313,25 @@ Table.UnpivotOtherColumns(Attendance_Wide, {"EmpID", "Name"}, "Day", "Status")
 **Result:** Reproduced with pandas: 6 rows: Asha P/A/P, Ravi P/P/L.
 **Pandas check:**
 ```python
-att.melt(id_vars=["EmpID","Name"], var_name="Day", value_name="Status")
+import pandas as pd
+att = pd.DataFrame({"EmpID":[1,2],"Name":["Asha","Ravi"],"D1":["P","P"],"D2":["A","P"],"D3":["P","L"]})
+out = att.melt(id_vars=["EmpID","Name"], var_name="Day", value_name="Status")
+print(out.sort_values(["EmpID","Day"]).to_string(index=False)); print("rows:", len(out))
 ```
-Printed 6 rows: `1 Asha D1 P`, `D2 A`, `D3 P`, `2 Ravi D1 P`, `D2 P`, `D3 L`.
+Real printed output (pandas 3.0.5):
+```text
+ EmpID Name Day Status
+     1 Asha  D1      P
+     1 Asha  D2      A
+     1 Asha  D3      P
+     2 Ravi  D1      P
+     2 Ravi  D2      P
+     2 Ravi  D3      L
+rows: 6
+```
 **Version / licensing note:** Unpivot options and their refresh behaviour with new columns: per Microsoft Learn "Unpivot columns" (summarised in research/Book04_Part02_sources.md, fetched in the research wave). Menu names from memory.
 **Edge cases:** Null cells are removed in unpivot (absent days could vanish); header text like "01-Jan" must be converted to dates; merged header cells or top rows must be cleaned first (Q15).
-**Likely follow-ups:** (1) "How to count absences?" `COUNTROWS(FILTER(...Status="A"))` in DAX. (2) "Why not leave it wide?" Hard to slice by date.
+**Likely follow-ups:** (1) "How to count absences?" `COUNTROWS(FILTER(Attendance_Long, Attendance_Long[Status] = "A"))` in DAX (not run here), where `Attendance_Long` is the unpivoted table. (2) "Why not leave it wide?" Hard to slice by date.
 **Common mistakes:** Picking the day columns and unpivoting only those, which misses next month's columns; forgetting to rename Attribute/Value.
 
 ### Q31 ⭐⭐ 🟡 What is the difference between Unpivot Columns, Unpivot Other Columns and Unpivot Only Selected Columns?
@@ -1287,10 +1359,21 @@ Table.Unpivot(Leaves_Wide, {"Jan","Feb"}, "Month", "Days")
 **Result:** Reproduced with pandas: today both give 4 rows. After a Mar column is added: Other Columns gives 6 rows (Mar included); Only Selected [Jan, Feb] gives 4 rows and Mar stays as a separate column.
 **Pandas check:**
 ```python
-a.melt(id_vars=["EmpID","Name"])                                  # Other Columns
-a.melt(id_vars=["EmpID","Name","Mar"], value_vars=["Jan","Feb"])   # Only selected
+import pandas as pd
+a = pd.DataFrame({"EmpID":[1,2],"Name":["Asha","Ravi"],"Jan":[20,22],"Feb":[19,21]})
+print("today, other columns:", a.melt(id_vars=["EmpID","Name"]).shape)
+print("today, only selected:", a.melt(id_vars=["EmpID","Name"], value_vars=["Jan","Feb"]).shape)
+a["Mar"] = [18, 20]                                                   # next month a column is added
+print("after Mar, Other Columns  :", a.melt(id_vars=["EmpID","Name"]).shape)                          # (6, 4)
+print("after Mar, Only Selected  :", a.melt(id_vars=["EmpID","Name","Mar"], value_vars=["Jan","Feb"]).shape)  # (4, 5)
 ```
-Printed shapes: `(6, 4)` and `(4, 5)`.
+Real printed output (pandas 3.0.5):
+```text
+today, other columns: (4, 4)
+today, only selected: (4, 4)
+after Mar, Other Columns  : (6, 4)
+after Mar, Only Selected  : (4, 5)
+```
 **Version / licensing note:** Per Microsoft Learn "Unpivot columns" (via research/Book04_Part02_sources.md, fetched in the research wave): three options and refresh behaviour with new columns. I did not re-read the page.
 **Edge cases:** If a selected column is renamed or removed at the source, Only Selected breaks (see Q48).
 **Likely follow-ups:** (1) "Which is the default for a monthly file?" Other Columns. (2) "Does it keep nulls?" No, nulls are dropped.
@@ -1347,9 +1430,20 @@ Table.TransformColumns(Master, {{"EmpID", each Text.Upper(Text.Trim(_)), type te
 **Result:** Reproduced with pandas: before cleaning only E001 and E004 match (E002 and e003 get null); after Trim + Upper all four match (20, 18, 22, 19). A text "101" compared with number 101 is not equal (False).
 **Pandas check:**
 ```python
-m["EmpID"] = m.EmpID.str.strip().str.upper(); m.merge(at, on="EmpID", how="left")
+import pandas as pd
+m = pd.DataFrame({"EmpID":["E001","E002 ","e003","E004"],"Name":["A","B","C","D"]})
+at = pd.DataFrame({"EmpID":["E001","E002","E003","E004"],"Days":[20,18,22,19]})
+print("before cleaning:", m.merge(at, on="EmpID", how="left")["Days"].tolist())
+m["EmpID"] = m.EmpID.str.strip().str.upper()
+print("after Trim + Upper:", m.merge(at, on="EmpID", how="left")["Days"].tolist())
+print('text "101" == number 101 ?', "101" == 101)
 ```
-Printed: Days 20, 18, 22, 19 after cleaning (`20.0, NaN, NaN, 19.0` before).
+Real printed output (pandas 3.0.5):
+```text
+before cleaning: [20.0, nan, nan, 19.0]
+after Trim + Upper: [20, 18, 22, 19]
+text "101" == number 101 ? False
+```
 **Version / licensing note:** Merge type and matching rules per Microsoft Learn "Merge queries overview" (via sources file, fetched in the research wave); case-sensitivity detail from memory, unverified.
 **Edge cases:** Leading zeros lost when numbers were typed as whole numbers ("007" vs 7); duplicate keys multiply rows.
 **Likely follow-ups:** (1) "How to see mismatches?" Left anti join (Q37). (2) "Is the match case-sensitive?" Yes by default.
@@ -1383,9 +1477,25 @@ Table.Combine({Hyd, Table.RenameColumns(Pune, {{"Department","Dept"}})})
 **Result:** Reproduced with pandas: without renaming, 3 rows and separate `Dept`/`Department` columns with nulls; after renaming, one `Dept` column: HR, IT, Sales, and `City` null for the first two.
 **Pandas check:**
 ```python
-pd.concat([q1, q2.rename(columns={"Department":"Dept"})], ignore_index=True)
+import pandas as pd
+q1 = pd.DataFrame({"EmpID":[1,2],"Dept":["HR","IT"]})
+q2 = pd.DataFrame({"EmpID":[3],"Department":["Sales"],"City":["Pune"]})
+print("no rename:"); print(pd.concat([q1, q2], ignore_index=True).to_string(index=False))
+print("after rename:"); print(pd.concat([q1, q2.rename(columns={"Department":"Dept"})], ignore_index=True).to_string(index=False))
 ```
-Printed: `1 HR NaN`, `2 IT NaN`, `3 Sales Pune`.
+Real printed output (pandas 3.0.5):
+```text
+no rename:
+ EmpID Dept Department City
+     1   HR        NaN  NaN
+     2   IT        NaN  NaN
+     3  NaN      Sales Pune
+after rename:
+ EmpID  Dept City
+     1    HR  NaN
+     2    IT  NaN
+     3 Sales Pune
+```
 **Version / licensing note:** From memory, unverified. Folder-combine structure requirement per the Folder connector page in the sources file (same structure needed).
 **Edge cases:** Different data types in the same column turn it to Any or cause errors; column-name case differences also count as different names.
 **Likely follow-ups:** (1) "Append vs merge?" Rows vs columns. (2) "Many files?" Use the folder connector (Q12).
@@ -1461,18 +1571,26 @@ Table.NestedJoin(HR_Master, {"EmpID"}, Attendance, {"EmpID"}, "Att", JoinKind.Le
 **Result:** Reproduced with pandas: missing = 103 and 105. The full outer check also shows 106 only in attendance.
 **Pandas check:**
 ```python
-hr[~hr.EmpID.isin(at.EmpID)]
+import pandas as pd
+hr = pd.DataFrame({"EmpID":[101,102,103,104,105]})
+at = pd.DataFrame({"EmpID":[101,102,104,104,106]})
+print("left anti (in master, not in attendance):", hr[~hr.EmpID.isin(at.EmpID)].EmpID.tolist())
+print("right anti (in attendance, not in master):", sorted(set(at.EmpID) - set(hr.EmpID)))
 ```
-Printed: `103`, `105`.
+Real printed output (pandas 3.0.5):
+```text
+left anti (in master, not in attendance): [103, 105]
+right anti (in attendance, not in master): [106]
+```
 **Version / licensing note:** Six join kinds including left anti per Microsoft Learn "Merge queries overview" (via sources file, fetched in the research wave).
-**Edge cases:** Duplicate attendance rows (104 twice) do not matter for anti join; blanks in EmpID never match.
+**Edge cases:** Duplicate attendance rows (104 twice) do not matter for anti join; a blank (null) EmpID matches only another blank, so clean blanks first.
 **Likely follow-ups:** (1) "Right Anti?" Attendance IDs not in master. (2) "Why not relationship?" Relationships do not list non-matches directly.
 **Common mistakes:** Using Inner join; putting tables in the wrong order.
 
 ### Q38 ⭐⭐ 🟡 When would you use Merge Queries in Power Query instead of a relationship in the data model?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you know when to physically combine tables and when to keep them separate.
-**Say this in the interview:** "I use a relationship for normal star-schema reporting: it is lighter and filters flow both ways dynamically. I merge when I need the columns physically in one table, to flatten a small lookup, to find non-matches with anti joins, to filter one table by another, or when there is no usable key for a relationship."
+**Say this in the interview:** "I use a relationship for normal star-schema reporting: it is lighter and filters flow dynamically from the lookup table (for example Department) to the data table. I merge when I need the columns physically in one table, to flatten a small lookup, to find non-matches with anti joins, to filter one table by another, or when there is no usable key for a relationship."
 **Explain simply:**
 - Relationship: tables stay separate; the model joins them at report time and filter context flows from the dimension to the fact table.
 - Merge: a one-time join at refresh that creates a wider table (more columns, maybe more memory).
@@ -1514,11 +1632,20 @@ Click-path to inspect: select column > Home > Keep Rows > Keep Errors.
 **Result:** Reproduced with pandas: naive conversion makes N/A and 50,000 errors (2 errors, sum of valid = 97,000); after removing commas only N/A is left null, giving 45000, null, 52000, 50000 (sum 147,000).
 **Pandas check:**
 ```python
-pd.to_numeric(raw.Salary.str.replace(",",""), errors="coerce")
+import pandas as pd
+raw = pd.DataFrame({"EmpID":[1,2,3,4],"Salary":["45000","N/A","52000","50,000"]})
+naive = pd.to_numeric(raw.Salary, errors="coerce")
+print("naive:", naive.tolist(), "errors:", int(naive.isna().sum()), "sum of valid:", naive.sum())
+fixed = pd.to_numeric(raw.Salary.str.replace(",",""), errors="coerce")
+print("after removing commas:", fixed.tolist(), "sum:", fixed.sum())
 ```
-Printed: `45000.0, NaN, 52000.0, 50000.0`.
+Real printed output (pandas 3.0.5):
+```text
+naive: [45000.0, nan, 52000.0, nan] errors: 2 sum of valid: 97000.0
+after removing commas: [45000.0, nan, 52000.0, 50000.0] sum: 147000.0
+```
 **Version / licensing note:** try/otherwise per Microsoft Learn "Error handling" (via sources file, fetched in the research wave).
-**Edge cases:** Errors in rows that are filtered out do not fail the refresh; errors in rows loaded to the model do show as errors in the Service and can stop visuals.
+**Edge cases:** Errors in rows that are filtered out do not fail the refresh; errors in rows loaded to the model stay as error cells (how the Service and visuals then behave: from memory, unverified), so fix or count them before loading.
 **Likely follow-ups:** (1) "Replace with 0?" Only if 0 is meaningful. (2) "Locale issue?" See Q41.
 **Common mistakes:** Replacing errors with 0 and hiding bad data; ignoring the Keep Errors check.
 
@@ -1552,10 +1679,23 @@ then Add Column > Conditional Column: Band = "0-1" if TenureYears < 1, "1-3" if 
 **Result:** Reproduced with pandas (not run in Power Query): years 0.13, 1.08, 3.34, 0.00, 5.81, bands 0-1, 1-3, 3+, 0-1, 3+.
 **Pandas check:**
 ```python
-j["Years"]=(asof-j.JoinDate).dt.days/365.25
-j["Band"]=np.select([j.Years<1,j.Years<3],["0-1","1-3"],"3+")
+import pandas as pd, numpy as np
+j = pd.DataFrame({"EmpID":[1,2,3,4,5],
+                  "JoinDate":pd.to_datetime(["2025-09-15","2024-10-01","2022-06-30","2025-11-01","2020-01-10"])})
+asof = pd.Timestamp("2025-11-01")
+j["Years"] = ((asof - j.JoinDate).dt.days/365.25).round(2)
+j["Band"] = np.select([j.Years<1, j.Years<3], ["0-1","1-3"], "3+")
+print(j.to_string(index=False))
 ```
-Printed bands: `0-1, 1-3, 3+, 0-1, 3+`.
+Real printed output (pandas 3.0.5):
+```text
+ EmpID   JoinDate  Years Band
+     1 2025-09-15   0.13  0-1
+     2 2024-10-01   1.08  1-3
+     3 2022-06-30   3.34   3+
+     4 2025-11-01   0.00  0-1
+     5 2020-01-10   5.81   3+
+```
 **Version / licensing note:** From memory, unverified (Microsoft Learn not reachable here).
 **Edge cases:** Null JoinDate gives a null band; future joining dates give negative tenure; leap years make days/365.25 approximate; exit dates for leavers should replace the as-of date.
 **Likely follow-ups:** (1) "Power Query or DAX?" Power Query for a fixed band, DAX if as-of date should respond to filters. (2) "Why 365.25?" Averages leap years.
@@ -1583,13 +1723,20 @@ Printed bands: `0-1, 1-3, 3+, 0-1, 3+`.
 ```m
 Table.TransformColumnTypes(Source, {{"JoinText", type date}}, "en-GB")
 ```
-**Alternative:** Split by "/" and rebuild with `#date(year, month, day)`, or change the project's Regional Settings (File > Options > Regional Settings), but that affects the whole file.
+**Alternative:** Split by "/" and rebuild with `#date(year, month, day)`, or change the project's Regional Settings (File > Options > Regional Settings), but that affects the whole file (File > Options and settings > Options > Current File > Regional Settings; path from memory, unverified).
 **Result:** Reproduced with pandas: parsing day-first gives 2025-12-31, 2025-01-05, 2025-02-01; parsing month-first gives NaT (error), 2025-05-01, 2025-01-02, which shows the silent swap.
 **Pandas check:**
 ```python
-pd.to_datetime(t, format="%d/%m/%Y"); pd.to_datetime(t, format="%m/%d/%Y", errors="coerce")
+import pandas as pd
+t = pd.Series(["31/12/2025","05/01/2025","1/2/2025"])
+print("day-first  :", pd.to_datetime(t, format="%d/%m/%Y").dt.strftime("%Y-%m-%d").tolist())
+print("month-first:", pd.to_datetime(t, format="%m/%d/%Y", errors="coerce").dt.strftime("%Y-%m-%d").tolist())
 ```
-Printed as described above.
+Real printed output (pandas 3.0.5):
+```text
+day-first  : ['2025-12-31', '2025-01-05', '2025-02-01']
+month-first: [nan, '2025-05-01', '2025-01-02']
+```
 **Version / licensing note:** The menu name "Using Locale" is listed as unconfirmed in the sources file; from memory, unverified.
 **Edge cases:** Mixed formats in one column; two-digit years; ambiguous dates that parse without an error but give the wrong date (05/01).
 **Likely follow-ups:** (1) "Which dates fail loudly?" Those with day over 12. (2) "Could DAX fix it?" Only awkwardly; do it in Power Query.
@@ -1626,13 +1773,21 @@ For a database, type the parameter name in the Server box of the SQL Server dial
 **Result:** Reproduced with pandas (M not run): pointing the "parameter" at the dev folder reads 2 rows, at the prod folder reads 5 rows. Same logic, different source.
 **Pandas check:**
 ```python
-import pandas as pd, os
-def load(folder): return pd.read_csv(os.path.join(folder, "employees.csv"))
-for p in ["src_dev", "src_prod"]:
+import pandas as pd, os, tempfile
+base = tempfile.mkdtemp()
+for folder, n in [("src_dev", 2), ("src_prod", 5)]:      # make two small test folders
+    os.makedirs(os.path.join(base, folder))
+    pd.DataFrame({"EmpID": range(1, n+1)}).to_csv(os.path.join(base, folder, "employees.csv"), index=False)
+def load(folder): return pd.read_csv(os.path.join(base, folder, "employees.csv"))
+for p in ["src_dev", "src_prod"]:                         # p plays the role of the parameter FolderPath
     print(p, len(load(p)), "rows")
 ```
-Printed: `src_dev 2 rows` / `src_prod 5 rows`.
-**Version / licensing note:** Parameters work in Power Query in Excel and Power BI Desktop; multi-value (list) parameters are only in Power Query Online (Microsoft Learn: Parameters - Power Query, updated 2026-04). Parameter used in a data source call is trimmed by the privacy firewall so it does not cause Formula.Firewall errors (Microsoft Learn: Behind the scenes of the Data Privacy Firewall).
+Real printed output (pandas 3.0.5):
+```text
+src_dev 2 rows
+src_prod 5 rows
+```
+**Version / licensing note:** Parameters work in Power Query in Excel and Power BI Desktop; multi-value (list) parameters are only in Power Query Online (Microsoft Learn: Parameters - Power Query, updated 2026-04). The claim that a parameter used in a data source call does not trigger Formula.Firewall errors is from memory, unverified.
 **Edge cases:** A parameter holding a path breaks if the new machine uses a different drive letter. After publishing, scheduled refresh still needs the service to reach that path (gateway; Part 7).
 **Likely follow-ups:** 1) *Parameter vs query?* A parameter is one constant value you can edit in a dialog; a query returns a table. 2) *Can a parameter feed a custom function?* Yes (Q55).
 **Common mistakes:** Leaving the type as Any; typing the path with a missing trailing backslash so `FolderPath & "file.csv"` joins wrongly.
@@ -1665,13 +1820,24 @@ Table.AddColumn(Bonus_Raw, "Bonus", each try Number.From([BonusText]) otherwise 
 **Result:** Reproduced with pandas (M not run): 5000, 0, 7500, null, 0.
 **Pandas check:**
 ```python
+import pandas as pd
+df = pd.DataFrame({"Emp":["Asha","Ravi","Meena","Karan","Divya"],"BonusText":["5000","N/A","7500",None,"abc"]})
 def try_otherwise(x):
-    if x is None: return None
+    if x is None: return None          # assumption: Number.From(null) = null
     try: return float(x)
     except ValueError: return 0.0
 df["Bonus"] = df.BonusText.map(try_otherwise)
+print(df.to_string(index=False))
 ```
-Printed: Bonus = 5000.0, 0.0, 7500.0, NaN, 0.0. I assumed `Number.From(null)` returns null (not an error); I did not verify that on a Microsoft page.
+Real printed output (pandas 3.0.5):
+```text
+  Emp BonusText  Bonus
+ Asha      5000 5000.0
+ Ravi       N/A    0.0
+Meena      7500 7500.0
+Karan       NaN    NaN
+Divya       abc    0.0
+```
 **Version / licensing note:** Syntax from Microsoft Learn: Error handling - Power Query (2025-07). Works in all Power Query hosts.
 **Edge cases:** `otherwise` only fires on errors, not on nulls or on wrong-but-valid values. Silent defaulting to 0 can hide bad data, so count how many rows fell back.
 **Likely follow-ups:** 1) *try vs Remove Errors?* Remove Errors deletes rows; try keeps them with a fallback. 2) *Where is the error text?* Use catch and read the Message field.
@@ -1695,7 +1861,15 @@ Printed: Bonus = 5000.0, 0.0, 7500.0, NaN, 0.0. I assumed `Number.From(null)` re
 **Result:** Reproduced with pandas: a sort placed before the filter works on 8 rows, after the filter on 5. At scale this is the saving, but real timings were not measured here.
 **Pandas check:**
 ```python
-print(len(n), (n.Status=='Active').sum())   # 8 5
+import pandas as pd
+n = pd.DataFrame({"Emp":range(1,9),"Status":["Active","Left","Active","Active","Left","Active","Left","Active"]})
+print("rows:", len(n), "active:", (n.Status=="Active").sum())
+print("sort before filter sorts", len(n), "rows; sort after filter sorts", len(n[n.Status=="Active"]), "rows")
+```
+Real printed output (pandas 3.0.5):
+```text
+rows: 8 active: 5
+sort before filter sorts 8 rows; sort after filter sorts 5 rows
 ```
 **Version / licensing note:** Folding, "filter early", "expensive operations last" and the folding indicators (Power Query Online only) are from Microsoft Learn: Understanding Query Evaluation and Query Folding; Best Practices When Working with Power Query. Refresh time limits (2 h Pro, 5 h Premium) are from Microsoft Learn: Configure incremental refresh (2026-07).
 **Edge cases:** Merging a folded SQL table with a CSV can force Power Query to pull the whole SQL table locally. Privacy levels can force buffering (Q57).
@@ -1718,9 +1892,18 @@ print(len(n), (n.Status=='Active').sum())   # 8 5
 **Result:** Reproduced with pandas: keep top 2 by Emp (desc) then filter Active returns only Emp 8. Filter Active then keep top 2 returns Emp 8 and 6.
 **Pandas check:**
 ```python
+import pandas as pd
+n = pd.DataFrame({"Emp":range(1,9),"Status":["Active","Left","Active","Active","Left","Active","Left","Active"]})
 s = n.sort_values("Emp", ascending=False)
-a = s.head(2); a = a[a.Status=="Active"]       # Emp 8
-b = s[s.Status=="Active"].head(2)              # Emp 8, 6
+a = s.head(2); a = a[a.Status=="Active"]          # keep top 2, THEN filter
+b = s[s.Status=="Active"].head(2)                 # filter, THEN keep top 2
+print("keep top 2 then filter:", a.Emp.tolist())
+print("filter then keep top 2:", b.Emp.tolist())
+```
+Real printed output (pandas 3.0.5):
+```text
+keep top 2 then filter: [8]
+filter then keep top 2: [8, 6]
 ```
 **Version / licensing note:** Streaming vs sort behaviour from Microsoft Learn: Best Practices When Working with Power Query. Step reordering by the engine from Microsoft Learn: Understanding Query Evaluation and Query Folding.
 **Edge cases:** Moving a step can break later steps that depend on a column created earlier (error). Filtering on a computed column early can stop folding.
@@ -1759,14 +1942,22 @@ in
 (Select column > Transform > Format > Trim, then Capitalize Each Word.)
 **Alternative:** A DAX calculated column, which works but leaves the dirty column in the model:
 ```dax
-Dept Clean = TRIM(Employee[Dept])
+Dept Clean = TRIM(Employees_Raw[Dept])
 ```
 (not run here; TRIM only removes extra spaces, not case differences, per Microsoft Learn: TRIM function (DAX)).
 **Result:** Reproduced with pandas: 7 raw rows give 7 distinct Dept values, after Trim + Title case only 3 (Sales 3, Human Resources 3, Finance 1).
 **Pandas check:**
 ```python
+import pandas as pd
+r = pd.DataFrame({"Emp":range(1,8),"Dept":["Sales"," sales","SALES","Human Resources","human resources ","HUMAN RESOURCES","Finance"]})
 r["DeptClean"] = r.Dept.str.strip().str.title()
-print(r.Dept.nunique(), r.DeptClean.nunique())   # 7 3
+print(r.Dept.nunique(), r.DeptClean.nunique())
+print(r.DeptClean.value_counts().to_dict())
+```
+Real printed output (pandas 3.0.5):
+```text
+7 3
+{'Sales': 3, 'Human Resources': 3, 'Finance': 1}
 ```
 **Version / licensing note:** The Power Query = prepare, DAX = calculate split is from memory, unverified on a fetched page. Folding of early steps is from Microsoft Learn: Understanding Query Evaluation and Query Folding. `Text.Proper` and `Text.Trim` pages were not fetched.
 **Edge cases:** DAX cannot change a column's type before load; a text date in the model must be converted with a formula. Non-breaking spaces (character 160) survive TRIM in DAX (Microsoft Learn: TRIM).
@@ -1779,8 +1970,8 @@ print(r.Dept.nunique(), r.DeptClean.nunique())   # 7 3
 **Say this in the interview:** "I group by employee ID and for each group take the row with the maximum effective date, then expand that row. I check for ties, because two records on the same date make 'latest' ambiguous, so I add a tie-breaker like RecordID."
 **Explain simply:**
 - Group By EmpID; the aggregation returns a whole row, not just a number.
-- `Table.Max(_, "EffectiveDate")` returns the largest row in each group.
-- Alternative: sort descending, then Remove Duplicates on EmpID. Microsoft warns there is no guarantee which duplicate stays unless you buffer the table first.
+- `Table.Max(_, {"EffectiveDate", "RecordID"})` returns the largest row in each group: latest date first, and RecordID breaks a tie (passing a list of columns as the comparison rule: from memory, unverified).
+- Alternative: sort descending, then Remove Duplicates on EmpID. Microsoft warns there is no guarantee which duplicate stays; buffering the sorted table first is a widely used workaround (a forum recommendation in the sources file, not a Microsoft guarantee).
 - Always test for ties.
 **Example:** Salary history: employee 103 has two records on the same date.
 **Sample data:** Table `Salary_History`.
@@ -1798,7 +1989,7 @@ print(r.Dept.nunique(), r.DeptClean.nunique())   # 7 3
 **DAX / Steps (not run here):** Home > Group By (Advanced), or in M:
 ```m
 let
-    Grouped = Table.Group(Salary_History, {"EmpID"}, {{"Latest", each Table.Max(_, "EffectiveDate"), type record}}),
+    Grouped = Table.Group(Salary_History, {"EmpID"}, {{"Latest", each Table.Max(_, {"EffectiveDate", "RecordID"}), type record}}),
     Expanded = Table.ExpandRecordColumn(Grouped, "Latest", {"RecordID","EffectiveDate","Dept","Salary"})
 in
     Expanded
@@ -1811,12 +2002,25 @@ let
 in
     Latest
 ```
-**Result:** Reproduced with pandas (M not run): EmpID 101 gets RecordID 3 (52000), 102 gets 5 (38000), 103 has 2 rows at the max date, so the tie-break on RecordID chooses 7 (61000). Which row `Table.Max` returns on a tie is not stated on the Microsoft page I read, so check ties explicitly.
+**Result:** Reproduced with pandas (M not run): EmpID 101 gets RecordID 3 (52000), 102 gets 5 (38000), 103 has 2 rows at the max date, so the tie-break on RecordID chooses 7 (61000). Both M versions are written to give this result; neither was run. Without the RecordID in the rule, which row `Table.Max` returns on a tie is not stated, so check ties explicitly.
 **Pandas check:**
 ```python
+import pandas as pd
+h = pd.DataFrame({"RecordID":range(1,8),"EmpID":[101,101,101,102,102,103,103],
+  "EffectiveDate":pd.to_datetime(["2024-04-01","2025-04-01","2025-10-01","2023-04-01","2025-04-01","2025-06-01","2025-06-01"]),
+  "Dept":["Sales","Sales","Marketing","HR","HR","Finance","Finance"],"Salary":[40000,44000,52000,35000,38000,60000,61000]})
 lat = h.sort_values(["EmpID","EffectiveDate","RecordID"], ascending=[True,False,False]).drop_duplicates("EmpID")
+print(lat[["EmpID","RecordID","Dept","Salary"]].to_string(index=False))
 mx = h.groupby("EmpID").EffectiveDate.transform("max")
-print(h[h.EffectiveDate==mx].groupby("EmpID").size().to_dict())  # {101: 1, 102: 1, 103: 2}
+print("rows at the max date per employee:", h[h.EffectiveDate==mx].groupby("EmpID").size().to_dict())
+```
+Real printed output (pandas 3.0.5):
+```text
+ EmpID  RecordID      Dept  Salary
+   101         3 Marketing   52000
+   102         5        HR   38000
+   103         7   Finance   61000
+rows at the max date per employee: {101: 1, 102: 1, 103: 2}
 ```
 **Version / licensing note:** Table.Max, Table.Group, Table.Sort, Table.Distinct, Table.ExpandRecordColumn semantics from their Microsoft Learn PowerQuery M pages (fetched). Grouping with Table.Max may not fold on database sources (not verified).
 **Edge cases:** Ties on date; null dates (how nulls sort); employees with a single record; text dates sorting alphabetically (convert to date first).
@@ -1830,7 +2034,7 @@ print(h[h.EffectiveDate==mx].groupby("EmpID").size().to_dict())  # {101: 1, 102:
 **Explain simply:**
 - Steps like Changed Type, Remove Columns and Rename store column names as text in M.
 - Error wording is close to `Expression.Error: The column 'Dept' of the table wasn't found.` (exact text from memory).
-- Defence: Choose Columns / `Table.SelectColumns(..., MissingField.UseNull)`, `Table.RenameColumns(..., MissingField.Ignore)`, `Table.TransformColumnTypes` with a culture record containing `MissingField`.
+- Defence: Choose Columns / `Table.SelectColumns(..., MissingField.UseNull)`, `Table.RenameColumns(..., MissingField.Ignore)`, `Table.TransformColumnTypes` with a culture record containing `MissingField` (from memory, unverified).
 - Unpivot Other Columns / selected columns copes with new columns better than hard-coded unpivot lists.
 **Example:** HR sends monthly headcount files. In October the "Dept" column becomes "Department".
 **Sample data:** Table `Headcount_Oct` (renamed column).
@@ -1852,9 +2056,23 @@ in
 **Result:** Reproduced with pandas: selecting `["EmpID","Name","Dept","Salary"]` on the new file raises KeyError for Dept. Renaming first gives Dept = HR, Finance. Without the rename, `UseNull` style gives Dept = NaN for both rows.
 **Pandas check:**
 ```python
-new[want]                        # KeyError: ['Dept'] not in index
-new.reindex(columns=want)        # Dept NaN (like MissingField.UseNull)
-new.rename(columns={"Department":"Dept"})[want]
+import pandas as pd
+new = pd.DataFrame({"EmpID":[101,102],"Name":["Asha","Ravi"],"Department":["HR","Finance"],"Salary":[40000,35000]})
+want = ["EmpID","Name","Dept","Salary"]
+try: new[want]
+except KeyError as e: print("KeyError:", e)
+print(new.reindex(columns=want).to_string(index=False))                       # like MissingField.UseNull
+print(new.rename(columns={"Department":"Dept"})[want].to_string(index=False))  # rename first
+```
+Real printed output (pandas 3.0.5):
+```text
+KeyError: "['Dept'] not in index"
+ EmpID Name  Dept  Salary
+   101 Asha   NaN   40000
+   102 Ravi   NaN   35000
+ EmpID Name    Dept  Salary
+   101 Asha      HR   40000
+   102 Ravi Finance   35000
 ```
 **Version / licensing note:** MissingField behaviour from Microsoft Learn: Table.SelectColumns, Table.RenameColumns, Table.TransformColumnTypes. Resilience table (Choose columns, Remove bottom rows, unpivot selected) from Microsoft Learn: Best Practices When Working with Power Query.
 **Edge cases:** `UseNull` hides the problem: the report loads with blank departments. Add a check, for example count of nulls. A changed header row position also breaks Promote Headers.
@@ -1884,7 +2102,17 @@ new.rename(columns={"Department":"Dept"})[want]
 **Result:** Expected output reproduced with pandas: Location = HYD, BLR, HYD. The exact M that Power Query would infer was not run here.
 **Pandas check:**
 ```python
+import pandas as pd
+e = pd.DataFrame({"Code":["EMP-1042-HYD","EMP-1043-BLR","EMP-1050-HYD"]})
 e["Location"] = e.Code.str.split("-").str[2]
+print(e.to_string(index=False))
+```
+Real printed output (pandas 3.0.5):
+```text
+        Code Location
+EMP-1042-HYD      HYD
+EMP-1043-BLR      BLR
+EMP-1050-HYD      HYD
 ```
 **Version / licensing note:** Location, top-100-row limit and supported transformation list from Microsoft Learn: Add a column from examples - Power Query (2026-06).
 **Edge cases:** Only the first 100 rows are examined, so a pattern that changes later may be wrong. Review the formula it writes.
@@ -1915,11 +2143,20 @@ e["Location"] = e.Code.str.split("-").str[2]
 **Result:** Reproduced with pandas as a graph walk: if `Stg_Employees` changes, Dim_Dept, Dim_Employee and Fact_Attendance are affected; if `Raw_Attendance` changes, only Fact_Attendance.
 **Pandas check:**
 ```python
+deps = {"Stg_Employees":["Raw_HR_Export"], "Dim_Employee":["Stg_Employees"], "Dim_Dept":["Stg_Employees"],
+        "Fact_Attendance":["Raw_Attendance","Dim_Employee"]}
 def downstream(q):
-    out=set()
-    for k,v in deps.items():
-        if q in v: out|={k}|downstream(k)
+    out = set()
+    for k, v in deps.items():
+        if q in v: out |= {k} | downstream(k)
     return out
+print("Stg_Employees  ->", sorted(downstream("Stg_Employees")))
+print("Raw_Attendance ->", sorted(downstream("Raw_Attendance")))
+```
+Real printed output (pandas 3.0.5):
+```text
+Stg_Employees  -> ['Dim_Dept', 'Dim_Employee', 'Fact_Attendance']
+Raw_Attendance -> ['Fact_Attendance']
 ```
 **Version / licensing note:** The Desktop menu location is from memory, unverified. Diagram view is "only available in Power Query Online" per Microsoft Learn: Diagram view - Power Query (2026-06).
 **Edge cases:** Disabled-load queries still appear. Reference chains can make refresh evaluate a base query more than once (from memory, unverified).
@@ -1934,11 +2171,11 @@ def downstream(q):
 - Microsoft's table lists the M engine and Power Query Desktop in both Excel (Windows and Mac) and Power BI.
 - Power BI also has Power Query Online and dataflows; Excel desktop does not.
 - Microsoft states connectors, authentication, destinations and capabilities can differ by host.
-- Power BI Desktop runs on Windows only (Windows 10 or later per Microsoft); Excel for Mac has Power Query, but privacy levels are not supported on Excel for Mac.
+- Power BI Desktop runs on Windows only (as in Q1: from memory, unverified; the sources file has this only from vendor blogs, not Microsoft); Excel for Mac has Power Query, but privacy levels are not supported on Excel for Mac.
 **Example:** An HR analyst cleans a joiners list in Excel for a quick pivot; the same query pasted into Power BI feeds a shared dashboard.
 **DAX / Steps (not run here):** Excel: Data tab > Get Data > Launch Power Query Editor. Power BI Desktop: Home > Transform data. M code can be copied via Advanced Editor.
 **Alternative:** Use Dataflows (Q60) when many reports need the same prepared data.
-**Version / licensing note:** Hosts, Online vs Desktop, dataflows table from Microsoft Learn: What Is Power Query? (2026-09-30). Windows 10 or later and "free" from Microsoft Learn: Download Power BI Desktop (2026-10-09). Excel Mac privacy levels from Microsoft Learn: Privacy Levels in Power Query (2026-08).
+**Version / licensing note:** Hosts, Online vs Desktop, dataflows table from Microsoft Learn: What Is Power Query? (2026-09-30). "Free" from Microsoft Learn: Download Power BI Desktop (2026-10-09); the Windows 10 or later requirement: from memory, unverified. Excel Mac privacy levels from Microsoft Learn: Privacy Levels in Power Query (2026-08).
 **Edge cases:** Some connectors exist in one host only. A query copied between hosts may need credential setup and different privacy settings.
 **Likely follow-ups:** 1) *Can I copy queries between them?* Yes via Advanced Editor or copy/paste. 2) *Does Excel refresh on a schedule?* Not on its own; Microsoft names Power BI as a product with scheduled refresh.
 **Common mistakes:** Believing they use different languages; assuming every connector exists in both.
@@ -1969,9 +2206,19 @@ Table.TransformColumnTypes(Promoted, {{"EmpID", type text}, {"Joined", type date
 **Result:** Reproduced with pandas: EmpID as number gives 123, 456, 1789 (zeros lost). Bonus gives 5000, error/NaN, 7500. Month-first dates give 6 May 2025, an error for 31/12/2025, 2 Oct 2024; day-first gives 5 Jun 2025, 31 Dec 2025, 10 Feb 2024.
 **Pandas check:**
 ```python
-pd.to_numeric(raw.EmpID).tolist()
-pd.to_datetime(raw.Joined, format="%m/%d/%Y", errors="coerce")
-pd.to_datetime(raw.Joined, format="%d/%m/%Y")
+import pandas as pd
+raw = pd.DataFrame({"EmpID":["00123","00456","01789"],"Joined":["05/06/2025","31/12/2025","10/02/2024"],"Bonus":["5000","N/A","7500"]})
+print(pd.to_numeric(raw.EmpID).tolist())
+print(pd.to_numeric(raw.Bonus, errors="coerce").tolist())
+print(pd.to_datetime(raw.Joined, format="%m/%d/%Y", errors="coerce").dt.strftime("%Y-%m-%d").tolist())
+print(pd.to_datetime(raw.Joined, format="%d/%m/%Y").dt.strftime("%Y-%m-%d").tolist())
+```
+Real printed output (pandas 3.0.5):
+```text
+[123, 456, 1789]
+[5000.0, nan, 7500.0]
+['2025-05-06', nan, '2024-10-02']
+['2025-06-05', '2025-12-31', '2024-02-10']
 ```
 **Version / licensing note:** 200-row detection, settings path and locale behaviour from Microsoft Learn: Data Types in Power Query (2026-08). Desktop only for the options path.
 **Edge cases:** Only the first 200 rows are inspected, so later bad values error at refresh. Extra Changed Type steps pile up if you keep adding them.
@@ -1984,7 +2231,7 @@ pd.to_datetime(raw.Joined, format="%d/%m/%Y")
 **Say this in the interview:** "Fuzzy matching lets a merge join text that is similar rather than identical, for example 'Hydrabad' with 'Hyderabad'. I use it for free-typed fields such as city or company names, check the similarity score, and tune the threshold or add a transformation table for stubborn cases."
 **Explain simply:**
 - Tick "Use fuzzy matching to perform the merge" in the Merge dialog; only for text columns.
-- Power Query uses Jaccard similarity; the default similarity threshold is 0.80, where 1.00 is exact.
+- Power Query uses Jaccard similarity (how much two words overlap in the small pieces they share); the default similarity threshold is 0.80, where 1.00 is exact.
 - Options: Ignore case, Match by combining text parts, Show similarity scores, Number of matches, Transformation table.
 - Review results; fuzzy joins can match wrongly.
 **Example:** A candidate form where city is free text; match to a master list of cities.
@@ -1996,15 +2243,31 @@ pd.to_datetime(raw.Joined, format="%d/%m/%Y")
 | Hydrabad | Hyderabad | 0.67 | Hyderabad |
 | Bangalore | Bengaluru | 0.23 | no match |
 | Mumbay | Mumbai | 0.67 | Mumbai |
-| Pune | (none) | 0.00 | no match |
+| Pune | (none close; best is Hyderabad) | 0.00 | no match |
 
 **DAX / Steps (not run here):** Home > Merge Queries > pick both tables and the text columns > tick the fuzzy option > Fuzzy matching options. "Bangalore" would need a transformation table (From Bangalore, To Bengaluru).
 **Alternative:** Clean the text first (Trim, Proper, Replace Values) or use a mapping table with a normal merge.
 **Result:** Illustration only, reproduced with pandas using bigram Jaccard (my own approximation, Power Query's exact algorithm and scores differ): close spellings match, Bangalore does not.
 **Pandas check:**
 ```python
-def bg(s): s=s.lower(); return {s[i:i+2] for i in range(len(s)-1)}
-def jac(a,b): A,B=bg(a),bg(b); return len(A&B)/len(A|B)
+import pandas as pd
+def bg(s): s = s.lower(); return {s[i:i+2] for i in range(len(s)-1)}
+def jac(a, b): A, B = bg(a), bg(b); return len(A & B)/len(A | B)
+master = ["Hyderabad","Bengaluru","Mumbai"]
+rows = []
+for x in ["Hyderabad","Hydrabad","Bangalore","Mumbay","Pune"]:
+    best = max(master, key=lambda m: jac(x, m)); sc = jac(x, best)
+    rows.append((x, best, round(sc, 2), best if sc >= 0.5 else "no match"))
+print(pd.DataFrame(rows, columns=["Input","Best master","Score","Matched at 0.5"]).to_string(index=False))
+```
+Real printed output (pandas 3.0.5):
+```text
+    Input Best master  Score Matched at 0.5
+Hyderabad   Hyderabad   1.00      Hyderabad
+ Hydrabad   Hyderabad   0.67      Hyderabad
+Bangalore   Bengaluru   0.23       no match
+   Mumbay      Mumbai   0.67         Mumbai
+     Pune   Hyderabad   0.00       no match
 ```
 **Version / licensing note:** Options, 0.80 default, text-only and Jaccard from Microsoft Learn: Fuzzy merge - Power Query (page dated 2024).
 **Edge cases:** Lower threshold means more false matches; performance cost on big tables; blanks.
@@ -2051,8 +2314,21 @@ Then Table tools > Mark as date table in the model (path from memory, unverified
 **Result:** Reproduced with pandas: 365 rows, first 2025-01-01 (FY2024-25), 2025-04-01 is the first FY2025-26 day.
 **Pandas check:**
 ```python
+import pandas as pd
 cal = pd.DataFrame({"Date": pd.date_range("2025-01-01", periods=365)})
 cal["FYStart"] = cal.Date.dt.year.where(cal.Date.dt.month>=4, cal.Date.dt.year-1)
+cal["FY"] = "FY" + cal.FYStart.astype(str) + "-" + (cal.FYStart+1).astype(str).str[-2:]
+print("rows:", len(cal), "| first:", cal.Date.min().date(), "| last:", cal.Date.max().date())
+print(cal[cal.Date.isin(pd.to_datetime(["2025-01-01","2025-03-31","2025-04-01","2025-12-31"]))][["Date","FY"]].to_string(index=False))
+```
+Real printed output (pandas 3.0.5):
+```text
+rows: 365 | first: 2025-01-01 | last: 2025-12-31
+      Date        FY
+2025-01-01 FY2024-25
+2025-03-31 FY2024-25
+2025-04-01 FY2025-26
+2025-12-31 FY2025-26
 ```
 **Version / licensing note:** Functions from Microsoft Learn pages List.Dates, Table.FromList, Duration.Days, Date.Year, Date.Month, Date.MonthName, Table.AddColumn. `Text.From`, `Text.End` not individually fetched.
 **Edge cases:** Calendar must cover all fact dates; leap years; week start day; the date column must be date type, not datetime with time.
@@ -2092,7 +2368,24 @@ Then in Employees: `Table.AddColumn(Employees, "Band", each fnTenureBand([Years]
 **Result:** Reproduced with pandas: <1 yr, 1-3 yrs, 1-3 yrs, 3-5 yrs, 5+ yrs.
 **Pandas check:**
 ```python
+import pandas as pd
+def tenure_band(y):
+    if y < 1: return "<1 yr"
+    if y < 3: return "1-3 yrs"
+    if y < 5: return "3-5 yrs"
+    return "5+ yrs"
+t = pd.DataFrame({"Emp":["Asha","Ravi","Meena","Karan","Divya"],"Years":[0.5,1.0,2.9,4.2,7.0]})
 t["Band"] = t.Years.map(tenure_band)
+print(t.to_string(index=False))
+```
+Real printed output (pandas 3.0.5):
+```text
+  Emp  Years    Band
+ Asha    0.5   <1 yr
+ Ravi    1.0 1-3 yrs
+Meena    2.9 1-3 yrs
+Karan    4.2 3-5 yrs
+Divya    7.0  5+ yrs
 ```
 **Version / licensing note:** Create Function / Invoke Custom Function and the warning that editing a function directly stops auto-updates from its sample query: Microsoft Learn: Use custom functions in Power Query (2026-04). Works in Power BI Desktop and Excel for Windows per that page.
 **Edge cases:** Nulls in the input; changing a function's arguments breaks earlier invoke steps; functions invoked per row on a database source may not fold (not verified).
@@ -2131,8 +2424,25 @@ Home > Manage Parameters > New: RangeStart, RangeEnd, type Date/Time. Then right
 **Result:** Reproduced with pandas: RangeStart 22 Oct, RangeEnd 25 Oct returns C, D, E, F (4 rows, 32 hours). With both ends inclusive, two adjacent partitions return 7 rows but only 6 distinct, so 25 Oct is counted twice.
 **Pandas check:**
 ```python
-w = a[(a.Date>=RS)&(a.Date<RE)]
-len(pd.concat([both,both2]).drop_duplicates())   # 6 of 7
+import pandas as pd
+a = pd.DataFrame({"Emp":list("ABCDEFGH"),
+                  "Date":pd.to_datetime(["2026-10-20","2026-10-21","2026-10-22","2026-10-22","2026-10-23","2026-10-24","2026-10-25","2026-10-26"]),
+                  "Hours":[8,8,9,7,8,8,6,8]})
+RS, RE = pd.Timestamp("2026-10-22"), pd.Timestamp("2026-10-25")
+w = a[(a.Date>=RS)&(a.Date<RE)]                       # start inclusive, end exclusive
+print(w.Emp.tolist(), "rows:", len(w), "hours:", w.Hours.sum())
+p1 = a[(a.Date>=RS)&(a.Date<=RE)]                     # partition 1: 22-25 Oct, both ends inclusive
+p2 = a[(a.Date>=RE)&(a.Date<=pd.Timestamp("2026-10-26"))]   # partition 2: 25-26 Oct, both ends inclusive
+both = pd.concat([p1, p2])
+print("both inclusive:", len(both), "rows,", len(both.drop_duplicates()), "distinct")
+q1 = a[(a.Date>=RS)&(a.Date<RE)]; q2 = a[(a.Date>=RE)&(a.Date<pd.Timestamp("2026-10-27"))]
+print("start inclusive/end exclusive:", len(pd.concat([q1,q2])), "rows,", len(pd.concat([q1,q2]).drop_duplicates()), "distinct")
+```
+Real printed output (pandas 3.0.5):
+```text
+['C', 'D', 'E', 'F'] rows: 4 hours: 32
+both inclusive: 7 rows, 6 distinct
+start inclusive/end exclusive: 6 rows, 6 distinct
 ```
 **Version / licensing note:** From Microsoft Learn: Configure incremental refresh and real-time data (2026-07): reserved case-sensitive names, Date/Time type, manual filter, supported on Pro, PPU, Premium and Embedded; real-time DirectQuery partition Premium only; refresh limits 2 h Pro, 5 h Premium; "current date" is UTC unless a time zone is configured.
 **Edge cases:** If the filter does not fold, import-mode refresh may fetch all rows and filter locally, defeating the purpose; the table needs a reliable date column; the model cannot be downloaded back as .pbix after publishing.
@@ -2145,7 +2455,7 @@ len(pd.concat([both,both2]).drop_duplicates())   # 6 of 7
 **Say this in the interview:** "Privacy levels tell Power Query how sensitive each source is so it does not leak data from one source to another when it folds queries. A Formula.Firewall error appears when one step mixes sources with incompatible levels, or reads another query and a data source in the same step. I fix it by setting correct levels or restructuring queries, and I avoid ignoring privacy unless the data is safe."
 **Explain simply:**
 - Private: sensitive; data can't fold into other sources. Organizational: trusted group; can fold into Private and other Organizational, not Public. Public: anyone can see.
-- The firewall splits queries into partitions; a partition may access compatible sources or reference other partitions, not both.
+- The firewall splits queries into partitions (groups of steps checked together); a partition may access compatible sources or reference other partitions, not both.
 - Within one partition, two sources are compatible only if both Public or both Organizational (per the firewall page).
 - Fix: set levels, combine/rework steps, or the "Ignore privacy levels" (Fast Combine) option, with risk.
 **Example:** Merging an employee-review workbook (Private) with a SQL table (Organizational) in one step blocks.
@@ -2155,6 +2465,7 @@ len(pd.concat([both,both2]).drop_duplicates())   # 6 of 7
 |---|---|---|
 | Private | Private | error |
 | Private | Organizational | error |
+| Private | Public | error |
 | Organizational | Organizational | OK |
 | Organizational | Public | error |
 | Public | Public | OK |
@@ -2164,10 +2475,26 @@ len(pd.concat([both,both2]).drop_duplicates())   # 6 of 7
 **Result:** Rule table reproduced with pandas from the firewall page; no Power Query run.
 **Pandas check:**
 ```python
-"OK" if x==y and x!="Private" else "Formula.Firewall error"
+import pandas as pd
+levels = ["Private","Organizational","Public"]
+rows = []
+for i, x in enumerate(levels):
+    for y in levels[i:]:
+        rows.append((x, y, "OK" if x==y and x!="Private" else "Formula.Firewall error"))
+print(pd.DataFrame(rows, columns=["Source A","Source B","Same step"]).to_string(index=False))
+```
+Real printed output (pandas 3.0.5):
+```text
+      Source A       Source B              Same step
+       Private        Private Formula.Firewall error
+       Private Organizational Formula.Firewall error
+       Private         Public Formula.Firewall error
+Organizational Organizational                     OK
+Organizational         Public Formula.Firewall error
+        Public         Public                     OK
 ```
 **Version / licensing note:** From Microsoft Learn: Behind the scenes of the Data Privacy Firewall (page notes privacy levels are unavailable in Power Platform dataflows; says some products relax a restriction) and Privacy Levels in Power Query (2026-08). The two pages describe folding at different levels of detail (privacy-levels page says Organizational can fold into Private; firewall page's same-partition rule requires both Public or both Organizational), so I treat the firewall page as the rule for the error. "Ignore" option does not apply to published semantic models per the privacy-levels page. The status of dataflows in Power BI service was not stated.
-**Edge cases:** Parameters are trimmed so they don't trigger the error; Excel for Mac does not support privacy levels.
+**Edge cases:** Parameters reportedly do not trigger the error (from memory, unverified); Excel for Mac does not support privacy levels.
 **Likely follow-ups:** 1) *What is Fast Combine?* Ignore privacy levels. 2) *Why buffer?* Prevents further folding across zones.
 **Common mistakes:** Turning off privacy to make the error vanish with sensitive data; marking everything Public.
 
@@ -2179,7 +2506,7 @@ len(pd.concat([both,both2]).drop_duplicates())   # 6 of 7
 - Get Data > SQL Server database > Advanced options > SQL statement.
 - Microsoft says query folding on native queries via the dialog is limited, subsequent steps do not benefit.
 - `Value.NativeQuery(Source, sql, null, [EnableFolding=true])` keeps folding for supported connectors (Redshift, Dataverse enhanced compute, BigQuery, PostgreSQL, SAP HANA, Snowflake, SQL Server).
-- DDL (DROP, CREATE, ALTER) is not supported; you may be prompted to approve queries.
+- DDL (commands that create, change or delete tables, such as DROP, CREATE, ALTER) is not supported; you may be prompted to approve queries.
 **Example:** `SELECT EmpID, Name, Dept FROM emp WHERE Status='Active'`, then filter Dept = HR.
 **Sample data:** Table `emp` (6 rows, 4 Active).
 **DAX / Steps (not run here):**
@@ -2195,7 +2522,22 @@ in
 **Result:** The SQL ran for real in SQLite here: native query returns 4 rows; wrapping a later filter as a subquery returns 2 (Asha, Meena); done locally it pulls 4 rows then keeps 2. Power Query itself was not run.
 **Pandas check:**
 ```python
-pd.read_sql("select * from (select EmpID,Name,Dept from emp where Status='Active') where Dept='HR'", con)
+import sqlite3, pandas as pd
+con = sqlite3.connect(":memory:")
+pd.DataFrame({"EmpID":[1,2,3,4,5,6],"Name":["Asha","Ravi","Meena","Karan","Priya","Dev"],
+              "Dept":["HR","IT","HR","Sales","IT","HR"],
+              "Status":["Active","Active","Active","Active","Left","Left"]}).to_sql("emp", con, index=False)
+native = pd.read_sql("select EmpID,Name,Dept from emp where Status='Active'", con)
+print("native query rows:", len(native))
+wrapped = pd.read_sql("select * from (select EmpID,Name,Dept from emp where Status='Active') where Dept='HR'", con)
+print("filter pushed into SQL (folded):", wrapped.Name.tolist())
+print("filter done locally:", native[native.Dept=="HR"].Name.tolist(), "(after pulling", len(native), "rows)")
+```
+Real printed output (pandas 3.0.5):
+```text
+native query rows: 4
+filter pushed into SQL (folded): ['Asha', 'Meena']
+filter done locally: ['Asha', 'Meena'] (after pulling 4 rows)
 ```
 **Version / licensing note:** From Microsoft Learn: Import data from a database using native database query (2025-08) and Query folding on native queries (2026-06). Incremental refresh page shows a non-folding native query with range parameters in SQL.
 **Edge cases:** Approval prompts for new query text; DDL unsupported; SQL injection risk when concatenating parameters.
@@ -2214,22 +2556,42 @@ pd.read_sql("select * from (select EmpID,Name,Dept from emp where Status='Active
 **Example:** Monthly attendance export.
 **Sample data:** Staging `Stg_Attendance` (5 rows) -> `Dim_Employee` (3), `Dim_Dept` (2), `Fact_Attendance` (5).
 
-| EmpID | DeptKey | Month | DaysPresent |
-|---|---|---|---|
-| 101 | 1 | 2026-08 | 21 |
-| 101 | 1 | 2026-09 | 20 |
-| 102 | 2 | 2026-08 | 22 |
-| 102 | 2 | 2026-09 | 19 |
-| 103 | 1 | 2026-09 | 18 |
+| EmpID | Name | Dept | Month | DaysPresent |
+|---|---|---|---|---|
+| 101 | Asha | HR | 2026-08 | 21 |
+| 101 | Asha | HR | 2026-09 | 20 |
+| 102 | Ravi | Finance | 2026-08 | 22 |
+| 102 | Ravi | Finance | 2026-09 | 19 |
+| 103 | Meena | HR | 2026-09 | 18 |
+
+`Dim_Dept` gives each department a key: HR = 1, Finance = 2.
 
 **DAX / Steps (not run here):** Right-click Stg_Attendance > Reference; rename to Dim_Employee; Choose Columns EmpID, Name, Dept; Remove Duplicates. Repeat for Dim_Dept. Fact: reference staging, merge Dept to get DeptKey, keep EmpID, DeptKey, Month, DaysPresent. Right-click Stg_Attendance > uncheck Enable load.
 **Alternative:** A single wide table (simple, but repeats text and is harder to filter).
 **Result:** Reproduced with pandas: 5 raw rows split into 3 employees, 2 departments, 5 fact rows; all fact EmpIDs exist in Dim_Employee.
 **Pandas check:**
 ```python
+import pandas as pd
+stg = pd.DataFrame({"EmpID":[101,101,102,102,103],"Name":["Asha","Asha","Ravi","Ravi","Meena"],
+                    "Dept":["HR","HR","Finance","Finance","HR"],
+                    "Month":["2026-08","2026-09","2026-08","2026-09","2026-09"],"DaysPresent":[21,20,22,19,18]})
 dim_emp = stg[["EmpID","Name","Dept"]].drop_duplicates()
+dim_dept = pd.DataFrame({"Dept":stg.Dept.drop_duplicates().tolist()}); dim_dept["DeptKey"] = range(1, len(dim_dept)+1)
 fact = stg.merge(dim_dept, on="Dept")[["EmpID","DeptKey","Month","DaysPresent"]]
-fact.EmpID.isin(dim_emp.EmpID).all()   # True
+print("Dim_Employee:", len(dim_emp), "| Dim_Dept:", len(dim_dept), "| Fact_Attendance:", len(fact))
+print("all fact EmpIDs in Dim_Employee:", fact.EmpID.isin(dim_emp.EmpID).all())
+print(fact.to_string(index=False))
+```
+Real printed output (pandas 3.0.5):
+```text
+Dim_Employee: 3 | Dim_Dept: 2 | Fact_Attendance: 5
+all fact EmpIDs in Dim_Employee: True
+ EmpID  DeptKey   Month  DaysPresent
+   101        1 2026-08           21
+   101        1 2026-09           20
+   102        2 2026-08           22
+   102        2 2026-09           19
+   103        1 2026-09           18
 ```
 **Version / licensing note:** Split queries (Extract Previous), groups, Reference from Microsoft Learn: Best Practices When Working with Power Query and Diagram view (describes Enable load for Online; Desktop right-click is from memory, unverified).
 **Edge cases:** Many references from one base source can read it multiple times at refresh (from memory, unverified); keys must be unique in dimensions; privacy firewall issues when mixing sources across references (Q57).
@@ -2250,7 +2612,7 @@ fact.EmpID.isin(dim_emp.EmpID).all()   # True
 **Alternative:** Keep Power Query inside each .pbix (simple, but duplicated logic).
 **Version / licensing note:** From Microsoft Learn: Introduction to Dataflows and Self-service Data Prep (legacy) (2025-10): Gen1 is legacy; Premium customers with Fabric access are pointed to Gen2; Pro/PPU can continue Gen1. Microsoft Learn: Differences between Dataflow Gen1 and Dataflow Gen2 (2026-08): Gen2 requires Fabric capacity, a Fabric trial or Power BI Premium capacity; Gen1 stores in internal storage, Gen2 supports multiple destinations; Gen1 supports DirectQuery via the connector, Gen2 does not. Microsoft Learn: What Is Power Query? lists Power BI dataflows as Power Query Online hosts.
 **Edge cases:** Privacy levels are stated as unavailable in Power Platform dataflows (the page does not say about Power BI dataflows). Gen1 vs Gen2 availability by licence changes.
-**Likely follow-ups:** 1) *Dataflow vs semantic model?* Dataflow prepares data; the model defines relationships and measures. 2) *Dataflow vs staging query?* Dataflow is shared across files.
+**Likely follow-ups:** 1) *Dataflow vs semantic model (the Power BI data model)?* Dataflow prepares data; the model defines relationships and measures. 2) *Dataflow vs staging query?* Dataflow is shared across files.
 **Common mistakes:** Treating dataflows as a replacement for modelling; using Gen2 on a Pro-only tenant without capacity.
 
 ### Q61 ⭐ 🔴 What does Table.Buffer do, and when might you use it?
@@ -2277,7 +2639,22 @@ in
 **Result:** Analogy only, reproduced with pandas: an unbuffered source referenced twice is read 2 times; buffered once. This models the idea, not Power Query's actual engine behaviour, which I did not verify.
 **Pandas check:**
 ```python
-buf = source().copy()   # one read, reused
+import pandas as pd
+reads = 0
+def source():                      # stands for a slow source that is re-read every time it is evaluated
+    global reads; reads += 1
+    return pd.DataFrame({"EmpID":[1,2,3]})
+a = source(); b = source()         # unbuffered: referenced twice, read twice
+print("unbuffered reads:", reads)
+reads = 0
+buf = source().copy()              # buffered: one read, reused
+a, b = buf, buf
+print("buffered reads:", reads)
+```
+Real printed output (pandas 3.0.5):
+```text
+unbuffered reads: 2
+buffered reads: 1
 ```
 **Version / licensing note:** From Microsoft Learn: Table.Buffer (updated 2026-04), Table.StopFolding, Table.Distinct, Table.Sort, and the privacy-firewall page (buffering as a firewall tool). Works in all Power Query hosts.
 **Edge cases:** Large tables exhaust memory; buffering early blocks folding for every later step; buffering is shallow (nested tables, lists, records stay as-is).

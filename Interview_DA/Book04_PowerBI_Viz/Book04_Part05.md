@@ -1024,7 +1024,7 @@ VAR s = Employees[Salary]
 RETURN
     COUNTROWS ( FILTER ( Employees, Employees[Dept] = d && Employees[Salary] > s ) ) + 1
 ```
-**Alternative:** A measure with `RANKX ( ALLSELECTED ( Employees ), [Salary], , DESC )` per department (see Q16 and Q17).
+**Alternative:** A measure with Name and Dept on the visual rows: `RANKX ( CALCULATETABLE ( VALUES ( Employees[Name] ), ALLEXCEPT ( Employees, Employees[Dept] ) ), SUM ( Employees[Salary] ), , DESC )`, which ranks only within the current department (reasoned, not run; ranking over ALLSELECTED ( Employees ) would rank across all departments; see Q16 and Q17).
 **Result (reproduced with pandas, not run in Power BI):** Asha 1, Ravi 2, Meena 2 (tie), Karan 3, Neha 1, Ola 2.
 **Pandas check:**
 ```python
@@ -1122,7 +1122,14 @@ avg over all 12 months (blank = 0): 120.83
 - First year of data has no prior year, so blank is correct there.
 - Divide with DIVIDE so a zero or blank denominator gives blank, not an error.
 **Example:** Sales 2023 blank, 2024 1,200, 2025 1,500: YoY for 2025 = 25%. 2025 YTD to March (310) vs 2024 full year (1,200) gives -74.2%; vs the same three months (290) it is +6.9%.
-**Sample data:** Table `YearlySales` (year totals) and `Q1` (months) as listed in the example.
+**Sample data:** Year totals (table `YearlySales`) and the first three months (table `Q1`):
+
+| Year | Sales (full year) | Jan | Feb | Mar |
+|---|---|---|---|---|
+| 2023 | none | none | none | none |
+| 2024 | 1,200 | 80 | 100 | 110 |
+| 2025 | 1,500 | 100 | 120 | 90 |
+
 **DAX / Steps (not run here):**
 1. Add two plain measures: `[Total Sales]` and `PY Sales = CALCULATE ( [Total Sales], SAMEPERIODLASTYEAR ( Dates[Date] ) )` and put them in a table by month.
 2. Model view: is Dates marked as date table (Table tools > Mark as date table)? Is the relationship Dates[Date] to Sales[OrderDate] active, one-to-many, single direction?
@@ -1268,12 +1275,12 @@ Output:
 ### Q30 ⭐ 🟡 How do you write a closing-balance (semi-additive) measure using LASTDATE or LASTNONBLANK?
 **Asked at:** commonly asked (no company-specific report found); gap-fill question.
 **What the interviewer is checking:** Do you know balances (stock, headcount, leave) must not be summed over time, and how to take the last value?
-**Say this in the interview:** "A balance is semi-additive: add across employees but not across months. For a quarter I take the balance on the last date that has data. LASTDATE returns the last calendar date and is blank if there is no row that day, so I use LASTNONBLANK, which finds the last date that actually has data."
+**Say this in the interview:** "A balance is semi-additive: add across employees but not across months. For a quarter I take the balance on the last date that has data. LASTDATE returns the last calendar date of the period even if no snapshot exists on that day, so the measure comes back blank, which is why I use LASTNONBLANK, which finds the last date that actually has data."
 **Explain simply:**
 - **Semi-additive**: summable across some dimensions (people), not across time.
 - `LASTDATE ( Dates[Date] )` = last date in the current filter, found in the date table.
 - `LASTNONBLANK ( column, expression )` = last value of the column where the expression is not blank.
-- If the snapshot did not run on 31 March, LASTDATE gives blank.
+- If the snapshot did not run on 31 March, the LASTDATE measure gives blank, because no balance row exists on that date.
 **Example:** Leave balance snapshots on 31 Jan, 28 Feb and 30 Mar (31 Mar missing).
 **Sample data:** Table `Balances`.
 
@@ -1363,7 +1370,7 @@ Output:
 Big orders (>1000), North: 4000
 Big orders (>1000), all regions: 5200
 ```
-**Version / licensing note:** From memory, unverified (learn.microsoft.com not reachable). The size of the speed gain depends on table size and model; measure it (Q32).
+**Version / licensing note:** From memory, unverified (learn.microsoft.com not reachable). The size of the speed gain depends on table size and model; on recent engine versions the difference is often small (from memory, unverified), so measure it (Q32).
 **Edge cases:** A condition that compares two columns or uses a measure needs FILTER; then iterate a small table such as `VALUES ( column )`.
 **Likely follow-ups:** 1) *How to measure?* Q32. 2) *Is FILTER bad?* No, only on a large table when avoidable.
 **Common mistakes:** FILTER over the fact table out of habit; assuming both forms are always equal.
@@ -1421,7 +1428,7 @@ YoY %   = DIVIDE ( SELECTEDMEASURE ( ) - CALCULATE ( SELECTEDMEASURE ( ), SAMEPE
                    CALCULATE ( SELECTEDMEASURE ( ), SAMEPERIODLASTYEAR ( Dates[Date] ) ) )
 ```
 Click-path (from memory): Model view > Home > Calculation group > rename group and column > add items > paste the expressions.
-**Alternative:** Write separate measures per view, or build the 2-3 time views as field parameters; fewer measures, less flexible.
+**Alternative:** Write separate measures per view, or a small disconnected slicer table with a SWITCH measure per base measure (still one measure per base measure, so less reusable).
 **Result (reproduced with pandas, not run in Power BI):** Sales YTD 130, 270, 420; PY 100, 110, 120; Orders YTD 13, 27, 42; PY 10, 11, 12.
 **Pandas check:**
 ```python
@@ -1476,7 +1483,7 @@ Moving Avg 3  = MOVINGAVERAGE ( [Total Sales], 3 )
 Prev Month    = PREVIOUS ( [Total Sales] )
 ```
 **Alternative:** The measure form of a running total (Q15), reusable in any visual.
-**Result (reproduced with pandas, not run in Power BI):** Running sum 100, 220, 310, 420, 550; 3-month moving avg (partial window at start) 100.0, 110.0, 103.3, 106.7, 110.0; previous blank, 100, 120, 90, 110.
+**Result (reproduced with pandas, not run in Power BI):** Running sum 100, 220, 310, 420, 550; 3-month moving avg 100.0, 110.0, 103.3, 106.7, 110.0 (the first two values assume the window shrinks at the start; the pandas line uses `min_periods=1` for that, and real MOVINGAVERAGE edge behaviour is unverified); previous blank, 100, 120, 90, 110.
 **Pandas check:**
 ```python
 import pandas as pd
