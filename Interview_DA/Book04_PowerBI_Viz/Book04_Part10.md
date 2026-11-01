@@ -58,7 +58,8 @@
 - **Discrete (blue):** each value is its own box, like Department names or the month name "Jan".
 - **Continuous (green):** values run along a scale, like salary or a true date line.
 - A date can be either: "Month" (the name, blue) gives one bar per month; "Month" as a continuous date (green) gives a smooth line along a time axis.
-- Right-click a pill and choose Discrete or Continuous to switch.
+- A **pill** is the coloured field box you drag onto Rows or Columns. Right-click a pill and choose Discrete or Continuous to switch.
+- Careful (from memory, unverified): the date menu offers two kinds of "Month". The first (date part, shows "January") folds all years together; the second (date truncation, shows "January 2024") is the one that can be made green and drawn as a timeline.
 **Example:** Dragging Join Date to Columns as blue Month gives 12 separate columns across years merged by month name; as green Month gives a continuous timeline Jan 2024 ... Dec 2025.
 **Version / licensing note:** from memory, unverified.
 **Edge cases:** Blue pills in the Rows/Columns create headers; green pills create axes. A green measure with SUM is the usual case, but a measure can be made discrete (then it acts like a label).
@@ -155,7 +156,7 @@ Sales      3     1   33.3
 ```
 **Version / licensing note:** from memory, unverified.
 **Edge cases:** NULL in `[Status]` goes to ELSE (0), which undercounts if the real value is unknown. Division by zero in aggregate formulas when a department has no employees.
-**Likely follow-ups:** 1) *Row-level vs aggregate?* Aggregates cannot mix with row-level unless wrapped in ATTR/LOD. 2) *Table calc?* Q20.
+**Likely follow-ups:** 1) *Row-level vs aggregate?* Aggregates cannot mix with row-level unless wrapped in ATTR (returns the value only when there is just one) or an LOD. 2) *Table calc?* Q20.
 **Common mistakes:** Mixing aggregated and non-aggregated arguments (the "cannot mix aggregate and non-aggregate" error).
 
 ### Q9 ⭐⭐ 🟢 What is the difference between a filter and a parameter in Tableau?
@@ -226,7 +227,7 @@ Sales      3     1   33.3
 - **Attrition %** = employees who left / total employees in the group.
 - Use the calculated field from Q8 so the percentage is correct per department.
 - Avoid pie charts: the slices are hard to compare.
-- Add a reference line (Q31) at the company average (3 of 8 = 37.5%).
+- Add a reference line (Q31) at the company rate (3 of 8 = 37.5%); the plain average of the three bars is 38.9% (see step 6).
 **Example:** Using the Q8 table: HR 50.0%, IT 33.3%, Sales 33.3%; company average 37.5%. HR stands out.
 **Sample data:** Same `Employees` table as Q8.
 **DAX / Steps:** Tableau click-path (not run here).
@@ -235,9 +236,9 @@ Sales      3     1   33.3
 3. Drag Department to Rows and Attrition % to Columns.
 4. Sort descending (toolbar sort icon).
 5. Format Attrition % as a percentage; add labels (Marks > Label).
-6. Analytics pane > drag Reference Line > Per Pane > Average.
+6. Analytics pane > drag Reference Line > Per Pane > Average. Note: this averages the bars, so it draws 38.9% (mean of 50.0, 33.3, 33.3), not the true company rate of 37.5%. For 37.5% use a table-wide field `{ AVG([Left Flag]) }` (no dimension, one value for the whole table) and put the reference line on that.
 **Alternative:** A bar chart of `Left` and `Active` counts stacked, but the percentage is easier to compare when team sizes differ.
-**Result:** Reproduced with pandas (Q8): HR 50.0, IT 33.3, Sales 33.3 percent.
+**Result:** Reproduced with pandas (Q8): HR 50.0, IT 33.3, Sales 33.3 percent; company rate 37.5%; mean of the three department percentages 38.9%.
 **Pandas check:** same code and output as Q8.
 **Version / licensing note:** from memory, unverified.
 **Edge cases:** Tiny departments produce wild percentages (1 of 2 = 50%); show headcount in a tooltip. Average of department percentages is not the company rate unless sizes are equal.
@@ -265,7 +266,7 @@ Sales      3     1   33.3
 **Say this in the interview:** "A dual-axis chart overlays two measures on one view with separate left and right axes, for example headcount as bars and attrition % as a line. I put both measures on Rows, right-click the second and choose Dual Axis, then change mark types and synchronise axes only if the scales mean the same thing."
 **Explain simply:**
 - Useful when two measures have very different scales (hundreds of people vs a percentage).
-- Each measure keeps its own Marks card, so one can be a bar and the other a line.
+- Each measure keeps its own Marks card (the panel that sets how its points are drawn: bar, line, colour, label), so one can be a bar and the other a line.
 - **Synchronise axis** forces both to use the same scale; do this only for same-unit measures.
 - Power BI parallel: Line and clustered column chart.
 **Example:** Monthly closing headcount (bars) and attrition % (line) for Jan-Apr.
@@ -341,15 +342,16 @@ Printed: Attr% = 3.03, 2.00, 4.94, 2.48; Close = 196, 205, 200, 203.
 2. Drag Region to Filters, choose South.
 3. Right-click Region in Filters > Add to Context.
 4. Right-click Rep > Filter > Top tab > By field > Top 3 by SUM(Revenue).
-**Alternative:** Calculated-field Top N with an INCLUDE LOD or a parameter; or rank with a table calculation (which runs after filters).
+**Alternative:** Rank with a table calculation filtered to <= 3 (runs after the Region filter), or a set built on Rep.
 **Result:** Reproduced with pandas: top 3 overall A, B, C; then South leaves B; context first gives B, D, F.
 **Pandas check:**
 ```python
+# r = the Reps table above, with the Revenue column named Rev
 top=r.nlargest(3,"Rev"); top[top.Region=="South"].Rep.tolist()   # ['B']
 r[r.Region=="South"].nlargest(3,"Rev").Rep.tolist()               # ['B','D','F']
 ```
 Printed: `['A','B','C']`, `['B']`, `['B','D','F']`.
-**Version / licensing note:** from memory, unverified.
+**Version / licensing note:** from memory, unverified (including the temporary-table remark above).
 **Edge cases:** Too many context filters hurt performance; only one dimension filter needs promoting in most cases.
 **Likely follow-ups:** 1) *Does context affect LODs?* Yes, FIXED sees context-filtered rows. 2) *Alternative to context?* Table calcs.
 **Common mistakes:** Making every filter a context filter "just in case".
@@ -507,9 +509,9 @@ emp.groupby("Dept").Salary.mean()                    # ALLEXCEPT Dept
 emp[emp.Region=="South"].groupby("Dept").Salary.mean()  # visual filtered to South
 ```
 Printed: all-region `HR 42000, IT 100000, Sales 60000`; South-only `HR 40000, IT 95000, Sales 50000`.
-**Version / licensing note:** from memory, unverified: DAX functions named here are long-standing; calculation groups and visual calculations were not checked.
+**Version / licensing note:** from memory, unverified: the DAX functions named here are long-standing, except REMOVEFILTERS, which is newer than ALL/ALLEXCEPT (from memory); calculation groups and visual calculations were not checked.
 **Edge cases:** In DAX, a slicer on Region changes a plain AVERAGE; with ALLEXCEPT on a table it removes slicer filters on that table's other columns, which may surprise report users.
-**Likely follow-ups:** 1) *Equivalent of context filter?* Roughly, filters applied first via CALCULATE/KEEPFILTERS (loose analogy). 2) *Which is easier?* LODs read like a sentence; DAX is more flexible.
+**Likely follow-ups:** 1) *Equivalent of context filter?* No direct one: DAX has no filter-order stages, only filter context; treat any comparison as a loose analogy (from memory). 2) *Which is easier?* LODs read like a sentence; DAX is more flexible.
 **Common mistakes:** Using ALL(Employees) when only one column should be cleared; forgetting the model relationship direction.
 
 ### Q23 ⭐⭐ 🟡 How do Tableau's calculated fields differ from Power BI's DAX measures and Power Query steps?
@@ -527,6 +529,11 @@ Printed: all-region `HR 42000, IT 100000, Sales 60000`; South-only `HR 40000, IT
 Attrition % = DIVIDE ( SUM ( Leavers[Count] ), AVERAGE ( Headcount[Employees] ) )
 ```
 Tableau: right-click the Data pane > Create Calculated Field > `SUM([Leavers]) / AVG([Headcount])`. Power Query: Home > Transform data > Applied Steps pane.
+**Sample data / Result:** January: 6 leavers, opening 200, closing 196. Reproduced with pandas: 6 / ((200+196)/2) = 3.03%. (DAX and Tableau not run here; this assumes the headcount column holds the monthly average, 198.)
+**Pandas check:**
+```python
+round(6/((200+196)/2)*100,2)   # 3.03
+```
 **Alternative:** For one-off fixes, do it upstream in SQL; only calculations that must react to slicers belong in DAX or Tableau.
 **Version / licensing note:** from memory, unverified (help.tableau.com and learn.microsoft.com were unreachable in this session).
 **Edge cases:** Divide by zero (use DIVIDE in DAX, `IF` in Tableau); a calculation placed in Power Query is fixed at refresh and ignores slicers.
@@ -564,7 +571,7 @@ Avg Salary Zero = AVERAGEX ( Employees, COALESCE ( Employees[Salary], 0 ) )
 **Pandas check:**
 ```python
 e.Salary.mean(), e.Salary.fillna(0).mean(), e.Salary.isna().sum()
-# (65.0, 43.333333333333336, 2)
+# values: 65.0, 43.333..., 2  (pandas 3 / NumPy 2 print them wrapped, e.g. np.float64(65.0))
 ```
 **Version / licensing note:** from memory, unverified (help.tableau.com and learn.microsoft.com were unreachable in this session).
 **Edge cases:** Null is not equal to anything (`[x] = NULL` is not a test, use `ISNULL`); null dates break date axes; nulls in a dimension appear as a "Null" mark.
@@ -591,7 +598,7 @@ e.Salary.mean(), e.Salary.fillna(0).mean(), e.Salary.isna().sum()
 | Apr | 190 | 3 | 2 | 189 |
 
 **DAX / Steps:** **Not run here:** Tableau and Power BI were not available; steps are written from memory.
-Power BI: Home > Get data > load table; Model view mark Date table; Report view > Line chart: X = Month, Y = measure; Format > Analytics for a constant line.
+Power BI: Home > Get data > load table; Table tools > Mark as date table; Report view > Line chart: X = Month, Y = measure; Visualizations pane > Analytics (magnifier icon) > Constant line.
 ```dax
 Attrition % =
 DIVIDE ( SUM ( Monthly[Leavers] ), AVERAGEX ( Monthly, ( Monthly[Start] + Monthly[End] ) / 2 ) )
@@ -606,7 +613,7 @@ m["End"]=m.Start-m.Leavers+m.Joiners
 # [2.02, 1.03, 2.6, 1.58]
 ```
 **Version / licensing note:** from memory, unverified (help.tableau.com and learn.microsoft.com were unreachable in this session). Publishing to share needs a paid licence in both tools (from memory).
-**Edge cases:** A monthly average of department rates is not the company rate; months with no data vanish unless a Date table or Show Missing Values is used; define a leaver (resigned only, or all exits).
+**Edge cases:** The sample uses text month names for brevity; for a continuous Tableau axis or a Power BI Date table use real dates (for example 1 Jan 2026). A monthly average of department rates is not the company rate; months with no data vanish unless a Date table or Show Missing Values is used; define a leaver (resigned only, or all exits).
 **Likely follow-ups:** "Annualise it?" Multiply a monthly rate by 12 or use 12-month leavers / average headcount. "Add forecast?" Tableau has a Forecast option in Analytics; Power BI line charts have one too (from memory).
 **Common mistakes:** Using month-end headcount only; text month names that sort alphabetically (Apr, Feb, Jan).
 
@@ -616,7 +623,7 @@ m["End"]=m.Start-m.Leavers+m.Joiners
 **Say this in the interview:** "Tableau Public is the free version where everything you publish is visible to anyone on the internet. So I use it only for open data and never for company or employee data."
 **Explain simply:**
 - **Tableau Public** = a free tool and website for sharing visuals publicly; it is meant for portfolios and open data.
-- Workbooks you save go to a public profile; anyone can view and, in general, download the underlying data.
+- Workbooks you save go to a public profile; anyone can view and, in general, download the underlying data (from memory; the author can switch downloads off, but treat data as exposed).
 - Company data may be confidential, and employee data (salary, attendance) is personal data: publishing it can breach policy and law.
 - Safe use: public datasets (government, Kaggle) or fully made-up HR data for a portfolio.
 **Example:** A candidate publishes "Our attrition by manager" with real names. Anyone can open it. The right fix is synthetic data such as 500 invented employees.
@@ -736,8 +743,14 @@ d.Attr.mean(), d.Attr.quantile([.25,.75]).tolist()
 - Relationships behave more like Power BI's model relationships.
 - Joins still suit one-to-one lookups or when you need a specific join type.
 **Example:** Employees (500 rows) and Leave records (3,000 rows). A join gives 3,000 rows and repeats salary; a relationship keeps both and averages salary correctly.
+**Sample data:** `Employees` E1 salary 50, E2 70, E3 60 (average 60). `Leave` has 5 rows: E1 once, E2 three times, E3 once.
 **DAX / Steps:** **Not run here:** Tableau and Power BI were not available; steps are written from memory. Data Source tab > drag a second table beside the first (noodle = relationship) > edit the key; double-click the table to open the join canvas.
 **Alternative:** Blend data on a shared field (see join vs blend).
+**Result:** Reproduced with pandas: the join has 5 rows and average salary 64 (E2 counted three times); the true employee average is 60, which a relationship keeps.
+**Pandas check:**
+```python
+j=emp.merge(lv,on="EmpID"); len(j), j.Salary.mean(), emp.Salary.mean()   # 5 64.0 60.0
+```
 **Version / licensing note:** from memory, unverified (help.tableau.com and learn.microsoft.com were unreachable in this session).
 **Edge cases:** Relationships need matching data types; unmatched rows may drop out of the view; cardinality settings can be wrong.
 **Likely follow-ups:** "When join instead?" Row-level flat output. "Does it fix duplication?" Largely, yes.
@@ -858,7 +871,7 @@ p[p.Region=="East"].nlargest(3,"Sales").Product.tolist()  # ['A','C','F']
 | Mar | West | 30 |
 
 **DAX / Steps:** **Not run here:** Tableau and Power BI were not available; steps are written from memory. Right-click the green delta pill > Edit Table Calculation > Compute using > Specific Dimensions > tick Month, set "Restarting every" Region.
-**Alternative:** In Power BI use a DAX running total with `CALCULATE ( SUM(...), FILTER ( ALLSELECTED ( Date ), Date[Date] <= MAX ( Date[Date] ) ) )`, which does not depend on layout.
+**Alternative:** In Power BI use a DAX running total with `CALCULATE ( SUM(...), FILTER ( ALLSELECTED ( Date ), Date[Date] <= MAX ( Date[Date] ) ) )`, which depends on the filter context rather than on the order of fields in the layout.
 **Result:** reproduced with pandas: running total across all 10, 30, 45, 70, 90, 120; per region East 10, 25, 45 and West 20, 45, 75.
 **Pandas check:**
 ```python
@@ -886,7 +899,12 @@ r["RT_by_region"]=r.groupby("Region").Sales.cumsum()
 -- Power BI role filter on the Employees table
 [ManagerEmail] = USERPRINCIPALNAME ()
 ```
-Tableau: Data > Create User Filter (or a calculated field with `USERNAME()`), then publish with the filter on the data source.
+Tableau: Server > Create User Filter (menu name from memory; or a calculated field with `USERNAME()`), then publish with the filter on the data source.
+**Sample data / Result:** Employees E1..E6 with ManagerEmail a, a, b, b, b, c. Reproduced with pandas (the logic only, no RLS engine): the user b@co.com sees 3 rows, E3, E4, E5.
+**Pandas check:**
+```python
+u[u.Mgr=="b@co.com"].Emp.tolist()   # ['E3', 'E4', 'E5']
+```
 **Alternative:** Database-level security.
 **Version / licensing note:** from memory, unverified (help.tableau.com and learn.microsoft.com were unreachable in this session). Sharing needs paid licences in both (from memory).
 **Edge cases:** Extracts and embedded credentials can bypass user-level security; admins and workspace members with edit rights can bypass Power BI RLS.
@@ -916,7 +934,7 @@ Tableau: Data > Create User Filter (or a calculated field with `USERNAME()`), th
 **Explain simply:**
 - **Sharing**: Power BI uses workspaces and apps; Tableau uses sites, projects and permissions.
 - **Refresh**: Power BI scheduled refresh of semantic models; Tableau extract refresh schedules. On-premises sources need a gateway (Power BI) or Tableau Bridge (Tableau Cloud).
-- **Governance**: Power BI has sensitivity labels, certified/promoted content, tenant settings; Tableau has certified data sources, project permissions, and Tableau Cloud Server admin.
+- **Governance**: Power BI has sensitivity labels, certified/promoted content, tenant settings; Tableau has certified data sources, project permissions, and Tableau Cloud or Server admin settings.
 - **Deployment**: Tableau Server is self-hosted; Tableau Cloud is hosted. Power BI Service is cloud only (Report Server is on-premises).
 **Example:** An HR dashboard published to a Power BI workspace, refreshed nightly at 6 am via a gateway, shared as an app to 40 managers.
 **DAX / Steps:** **Not run here:** Tableau and Power BI were not available; steps are written from memory. Power BI: Publish > workspace > semantic model > Settings > Scheduled refresh. Tableau: Server > Publish > Schedule extract refresh.
@@ -986,17 +1004,18 @@ Tableau: Data > Create User Filter (or a calculated field with `USERNAME()`), th
 
 **DAX / Steps:** **Not run here:** Tableau and Power BI were not available; steps are written from memory.
 ```dax
-Headcount = DISTINCTCOUNT ( Headcount[Emp] )
+Distinct Headcount = DISTINCTCOUNT ( Headcount[Emp] )
 ```
 **Alternative:** Tableau `COUNTD([Emp])` vs `COUNT([Emp])`.
-**Result:** reproduced with pandas: 8 rows; 7 distinct IDs; permanent distinct 6; active at 31 March excluding exits that day 5, counting the 31 March leaver 6. Five different "headcounts" from the same data.
+**Result:** reproduced with pandas: 8 rows; 7 distinct IDs; permanent distinct 6; no exit date 5 (E1, E2, E3, E5, E6); also counting E7, who left on 31 March, 6. So the same data gives four different numbers: 8, 7, 6 and 5.
 **Pandas check:**
 ```python
 len(h), h.Emp.nunique(), h[h.Type=="Perm"].Emp.nunique()   # 8 7 6
 h[h.Exit.isna()].Emp.nunique()                              # 5
+h[h.Exit.isna()|(h.Exit>="2026-03-31")].Emp.nunique()         # 6  (Exit read with pd.to_datetime)
 ```
 **Version / licensing note:** from memory, unverified (help.tableau.com and learn.microsoft.com were unreachable in this session).
-**Edge cases:** Blanks in the exit date; time zones on dates; duplicate employees.
+**Edge cases:** DAX DISTINCTCOUNT counts a blank as one value while `nunique` and Tableau COUNTD skip nulls (from memory, unverified), so blank IDs can split the two tools; blanks in the exit date; time zones on dates; duplicate employees.
 **Likely follow-ups:** "Who is right?" Whichever matches the agreed definition; document it.
 **Common mistakes:** Comparing totals only, not IDs; changing a dashboard before agreeing a definition.
 
@@ -1008,7 +1027,7 @@ h[h.Exit.isna()].Emp.nunique()                              # 5
 - **Fan-out** = a join that multiplies rows because one side has several matches.
 - Sales (6 rows) joined to Targets on Month only: each month has two target rows (N and S), so every sale appears twice.
 - Revenue is summed per row, so it doubles.
-- Fixes: join on Month and Region; aggregate targets to one row per month; use relationships; or divide by a LOD count.
+- Fixes: join on Month and Region; aggregate targets to one row per month; use relationships; or de-duplicate per sale with `SUM({ FIXED [Sale] : MAX([Rev]) })`.
 **Example:** January revenue is really 400 but shows 800.
 **Sample data:** table `Sales`
 
@@ -1030,13 +1049,14 @@ Table `Targets`
 | Feb | N | 300 |
 | Feb | S | 300 |
 
-**DAX / Steps:** **Not run here:** Tableau and Power BI were not available; steps are written from memory. Data Source tab > edit the join > add Region as a second join clause; or replace the join with a relationship; or `{ FIXED [Month] : SUM([Rev]) }` for revenue.
+**DAX / Steps:** **Not run here:** Tableau and Power BI were not available; steps are written from memory. Data Source tab > edit the join > add Region as a second join clause; or replace the join with a relationship; or `SUM({ FIXED [Sale] : MAX([Rev]) })` for revenue (one value per sale, so repeats collapse; a FIXED SUM by Month would still add the repeated rows).
 **Alternative:** Blend: Sales primary, Targets secondary on Month and Region.
 **Result:** reproduced with pandas: sales 800, 6 rows; join on Month gives 1,600 and 12 rows; join on Month and Region gives 800 and 6 rows. Jan 800 vs real 400.
 **Pandas check:**
 ```python
 sa.Rev.sum(), sa.merge(t,on="Month").Rev.sum()              # 800 1600
 sa.merge(t,on=["Month","Region"]).Rev.sum()                 # 800
+sa.merge(t,on="Month").groupby("Sale").Rev.max().sum()      # 800 (the FIXED [Sale] MAX idea)
 ```
 **Version / licensing note:** from memory, unverified (help.tableau.com and learn.microsoft.com were unreachable in this session).
 **Edge cases:** Missing target rows in an inner join drop sales; left join keeps them.

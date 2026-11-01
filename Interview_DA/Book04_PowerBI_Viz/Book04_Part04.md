@@ -62,7 +62,7 @@ Total Revenue (measure) = SUMX ( Sales, Sales[Quantity] * Sales[UnitPrice] )
 3. Ribbon: **Home** tab > **Calculations** group > **New measure** (or **Table tools** / **Column tools** tab > **New column**). Right-clicking the table also shows both commands.
 4. Type in the formula bar, e.g. `Headcount = COUNTROWS ( Employees )`, press **Enter**.
 5. Drag the new field onto a visual.
-**Alternative:** Create the column in Power Query (Home > Transform data > Add Column) instead of DAX, or use **Quick measure** (Q23).
+**Alternative:** Create the column in Power Query instead of DAX (Home > Transform data opens the Power Query Editor; there use the Add Column tab; from memory, not run here), or use **Quick measure** (Q23).
 **Version / licensing note:** From memory, unverified. Desktop is believed free; DAX authoring in the Power BI Service (web model editing) is unverified: do not claim it either way.
 **Edge cases:** A measure with the same name as a column in the same table will clash. DirectQuery models restrict some column DAX.
 **Likely follow-ups:**
@@ -191,7 +191,7 @@ Output: `5100`, `5100`, `1700`.
 ```dax
 Bonus Count  = COUNT ( Employees[Bonus] )
 Name Count   = COUNTA ( Employees[EmpName] )
-Employees    = COUNTROWS ( Employees )
+Headcount    = COUNTROWS ( Employees )   -- named Headcount so it does not clash with the table name
 Dept Count   = DISTINCTCOUNT ( Employees[Dept] )
 ```
 **Alternative:** `COUNTROWS(VALUES(Employees[Dept]))` also counts distinct departments (VALUES includes a blank row if one exists).
@@ -215,7 +215,7 @@ Output: 4, 6, 6, 3, and 4 (3 distinct bonus amounts plus blank, shown only to il
 **Likely follow-ups:**
 - *Why COUNTROWS over COUNT?* Q27 (clearer intent).
 - *Unique employees?* DISTINCTCOUNT(EmpID) (Q11).
-**Common mistakes:** Using COUNT on a text column and getting blank/zero; counting a fact table's employee column with COUNTROWS when employees repeat monthly.
+**Common mistakes:** Using COUNT on a text column and getting a surprising result (Q54); counting a fact table's employee column with COUNTROWS when employees repeat monthly.
 
 ### Q7 ⭐⭐⭐ 🟢 What is filter context in DAX?
 **Asked at:** Commonly asked (no company-specific report found); the Weekday 2026 guide in the sources file calls it a deciding concept.
@@ -336,7 +336,7 @@ print("Tech Sales, slicer=Furniture:", tech, "(slicer overwritten)")
 ```
 Output: 2500; 1500; 2500.
 **Version / licensing note:** The sources file records the Microsoft Learn CALCULATE page (fetched in the research phase, updated 2026-08, not re-fetched here). Everything else from memory, unverified.
-**Edge cases:** CALCULATE also turns a row context into a filter context (context transition, Q33). Boolean filter arguments work on one column.
+**Edge cases:** CALCULATE also turns a row context into a filter context (context transition, Q33). A Boolean filter cannot call a measure. Older material says it may refer to only one column; recent versions are believed to allow several columns of the same table (from memory, unverified), so use FILTER if unsure.
 **Likely follow-ups:**
 - *Can it take several filters?* Yes, combined with AND (Q36).
 - *CALCULATE vs FILTER?* FILTER returns a table; CALCULATE evaluates (Q38).
@@ -571,9 +571,9 @@ Output: 5100; East 1600, North 1800, South 1700; 47160.
 
 **DAX / Steps:** Not run here.
 ```dax
-Attrition % = DIVIDE ( SUM ( Dept[Leavers] ), SUM ( Dept[AvgHeadcount] ) )
+Attrition % = DIVIDE ( SUM ( 'Dept Summary'[Leavers] ), SUM ( 'Dept Summary'[AvgHeadcount] ) )
 ```
-**Alternative:** `IF ( SUM ( Dept[AvgHeadcount] ) = 0, BLANK(), SUM ( Dept[Leavers] ) / SUM ( Dept[AvgHeadcount] ) )`, longer and slower to read.
+**Alternative:** `IF ( SUM ( 'Dept Summary'[AvgHeadcount] ) = 0, BLANK(), SUM ( 'Dept Summary'[Leavers] ) / SUM ( 'Dept Summary'[AvgHeadcount] ) )`, longer and slower to read.
 **Result:** Reproduced with pandas: HR 0.05, IT 0.075, Sales 0.06, Legal blank (NaN). A plain `/` in pandas also gives NaN for 0/0, so the pandas run cannot show DAX's own error display; in DAX, from memory (unverified), `/` shows NaN or Infinity instead of blank.
 **Pandas check:**
 ```python
@@ -644,11 +644,20 @@ Output: 500, 500, 500; then IT 300, HR 50, Sales 150.
 - The table argument can be filtered, e.g. `SUMX(FILTER(...), ...)`.
 - Plain SUM/AVERAGE are shortcuts for one column.
 **Example:** Average order value across orders = `AVERAGEX(Sales, Sales[Quantity] * Sales[UnitPrice])`.
+**Sample data:** Table `Sales` (Quantity x UnitPrice): 2 x 500, 1 x 800, 3 x 500.
 **DAX / Steps:** Not run here.
 ```dax
 Avg Order Value = AVERAGEX ( Sales, Sales[Quantity] * Sales[UnitPrice] )
 ```
 **Alternative:** `DIVIDE ( [Total Revenue], COUNTROWS ( Sales ) )` gives the same for non-blank rows.
+**Result:** Reproduced with pandas: line values 1000, 800, 1500; average 1100.
+**Pandas check:**
+```python
+import pandas as pd
+s = pd.DataFrame({"Quantity":[2,1,3],"UnitPrice":[500,800,500]})
+print((s.Quantity*s.UnitPrice).tolist(), (s.Quantity*s.UnitPrice).mean())
+```
+Output: `[1000, 800, 1500] 1100.0`.
 **Version / licensing note:** From memory, unverified; only SUMX was documented in the sources file.
 **Edge cases:** Large tables with nested iterators are slow; blanks in the expression are skipped.
 **Likely follow-ups:**
@@ -737,7 +746,7 @@ Table `Dept`:
 | IT |
 | Sales |
 
-Table `Exits`:
+Table `Exits` (related to `Dept` on the Dept column, and the visual uses `Dept[Dept]`, so Finance and HR can appear with no exit rows):
 
 | Dept | Exits |
 |---|---|
@@ -747,12 +756,12 @@ Table `Exits`:
 
 **DAX / Steps (not run here):**
 ```dax
-Exits = SUM ( Exits[Exits] )                 -- BLANK when no rows
-Exits (show 0) = SUM ( Exits[Exits] ) + 0    -- BLANK + 0 = 0
-Exits (alt) = COALESCE ( SUM ( Exits[Exits] ), 0 )
-Is Empty = ISBLANK ( [Exits] )
+Exit Count = SUM ( Exits[Exits] )                 -- BLANK when no rows
+Exit Count (show 0) = SUM ( Exits[Exits] ) + 0    -- BLANK + 0 = 0
+Exit Count (alt) = COALESCE ( SUM ( Exits[Exits] ), 0 )
+Is Empty = ISBLANK ( [Exit Count] )
 ```
-**Alternative:** `IF( ISBLANK([Exits]), 0, [Exits] )`, which is longer but easier to read.
+**Alternative:** `IF( ISBLANK([Exit Count]), 0, [Exit Count] )`, which is longer but easier to read.
 **Result (reproduced with pandas, not a DAX engine):** Finance BLANK, HR BLANK, IT 3, Sales 1; with the zero-forcing version Finance 0, HR 0, IT 3, Sales 1.
 **Pandas check:**
 ```python
@@ -821,7 +830,7 @@ in
 ```dax
 Attendance % = DIVIDE ( CALCULATE ( COUNTROWS ( Attendance ), Attendance[Status] = "Present" ), COUNTROWS ( Attendance ) )
 ```
-Steps to see M: Power BI Desktop > Home > Transform data > Home > Advanced Editor (not run here).
+Steps to see M: Power BI Desktop > Home > Transform data (opens the Power Query Editor) > in the editor, Home > Advanced Editor (from memory, not run here).
 **Alternative:** Compare in a table: when it runs (refresh vs query time), what it works on (source rows vs model tables), typical task (clean vs measure).
 **Version / licensing note:** Microsoft Learn was not reachable here; from memory, unverified.
 **Edge cases:** A calculated column can be made in either language. Prefer M where possible (see Q45 area), since it is processed before loading.
@@ -960,8 +969,8 @@ print(lv)
 - A column with few distinct values compresses well; one with many distinct values (such as a unique ID or a long decimal) is expensive.
 - Every row of the table gets a stored value, so millions of rows multiply the cost.
 - Measures cost almost no storage, only calculation time.
-**Example:** `Salary Band` with 3 distinct values over 100,000 rows is cheap. A column mixing salary and ID with ~77,000 distinct values is not.
-**DAX / Steps (not run here):** Check size: Power BI Desktop > Optimise ribbon? Not verified. Use the external tool DAX Studio > Advanced > View Metrics (from memory, unverified).
+**Example:** `Salary Band` with 3 distinct values over 100,000 rows is cheap. A raw `Salary` column with about 76,600 distinct values over the same rows (see the pandas run below) is far more expensive.
+**DAX / Steps (not run here):** Check size with the free external tool DAX Studio > Advanced > View Metrics (from memory, unverified; I did not run it).
 **Pandas check:**
 ```python
 import pandas as pd, numpy as np
@@ -1218,7 +1227,7 @@ AVERAGE(Qty)*AVERAGE(Price) = 408.0
 **Example:** North sold 120 against 100: Target Met.
 **Sample data:**
 
-Table `Sales` and `Targets` (by Region):
+Table `Sales` and `Targets` (by Region; both are assumed related to one `Region` table so West still appears):
 
 | Region | Sales | Target |
 |---|---|---|
@@ -1316,7 +1325,7 @@ print(cust)
 ### Q34 ⭐⭐ 🟡 Write a DAX measure for the headcount of active employees using CALCULATE and COUNTROWS.
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Can you combine CALCULATE, COUNTROWS and a Boolean filter for the most common HR measure?
-**Say this in the interview:** "Active Headcount = CALCULATE(COUNTROWS(Employees), Employees[Status] = \"Active\"). COUNTROWS counts the employee rows and CALCULATE restricts them to Active."
+**Say this in the interview:** "Active Headcount = CALCULATE(COUNTROWS(Employees), Employees[Status] = "Active"). COUNTROWS counts the employee rows and CALCULATE restricts them to Active."
 **Explain simply:**
 - COUNTROWS counts rows left after filters.
 - CALCULATE adds the filter Status = "Active" to whatever the visual already filters (e.g. department).
@@ -1446,7 +1455,7 @@ IT in Hyd = CALCULATE ( COUNTROWS ( Employees ), Employees[Dept] = "IT", Employe
 IT and HR (empty) = CALCULATE ( COUNTROWS ( Employees ), Employees[Dept] = "IT", Employees[Dept] = "HR" )
 IT or HR = CALCULATE ( COUNTROWS ( Employees ), Employees[Dept] IN { "IT", "HR" } )
 ```
-**Alternative:** `FILTER` with `||` for OR across different columns.
+**Alternative:** `FILTER` with `||` for OR across different columns (a plain Boolean `||` across columns may also work in recent versions; from memory, unverified).
 **Result (reproduced with pandas):** IT AND Hyderabad = 2; IT AND HR = 0 (blank in DAX); IT OR HR = 4.
 **Pandas check:**
 ```python
@@ -1520,10 +1529,10 @@ Slicer=HR+IT KEEPFILTERS: 2
 **What the interviewer is checking:** Do you know when the simple filter is enough and when you need FILTER?
 **Say this in the interview:** "A Boolean filter is a simple true/false test on one column, like Salary > 50000. FILTER lets me go row by row over a table and test several columns or a measure. I use the Boolean form whenever it works, and FILTER when I need more."
 **Explain simply:**
-- Boolean filter: `Employees[Salary] > 50000` inside CALCULATE. It can refer to one column only and cannot use a measure (per the CALCULATE page, fetched earlier per the sources file).
-- FILTER(table, condition): returns a table of rows where the condition holds; the condition can compare two columns, or use a measure.
+- Boolean filter: `Employees[Salary] > 50000` inside CALCULATE. It is a shortcut for filtering that column's values and cannot use a measure. Whether it may compare two columns depends on the version (older rule: one column only; from memory, unverified, so check your build).
+- FILTER(table, condition): returns a table of rows where the condition holds; the condition can compare two columns (works in every version), or use a measure.
 - Behind the scenes a Boolean filter is treated like a filter on that column's values, so it is simple and fast (from memory).
-**Example:** Payroll of employees earning above 50,000 (Boolean) vs those whose bonus is above allowance (needs FILTER, two columns).
+**Example:** Payroll of employees earning above 50,000 (Boolean) vs those whose bonus is above allowance (FILTER, comparing two columns; the FILTER form is safe in every version).
 **Sample data:**
 
 Table `Employees`:
@@ -1559,7 +1568,7 @@ FILTER Bonus>Allowance: 169000 ['E02', 'E03', 'E05']
 **Version / licensing note:** Microsoft Learn: CALCULATE function (DAX) fetched earlier per sources file; FILTER page not read; Learn unreachable here.
 **Edge cases:** `FILTER(Employees, ...)` respects other filters on Employees; `FILTER(ALL(col), ...)` ignores them. A FILTER on a whole big table can be slower.
 **Likely follow-ups:** 1) Why not FILTER always? Slower and more complex. 2) Can a Boolean filter use a measure? No; use FILTER.
-**Common mistakes:** Comparing two columns in a Boolean filter; filtering a whole fact table when one column is enough.
+**Common mistakes:** Putting a measure in a Boolean filter; filtering a whole fact table when one column is enough.
 
 ### Q39 ⭐⭐ 🟡 What is the difference between SUMX(FILTER(...)) and CALCULATE(SUM(...), ...)?
 **Asked at:** commonly asked (no company-specific report found). The Deloitte Sept 2025 Power BI round reportedly included SUM vs SUMX (research/interview_processes.md); that is a related, not identical, question.
@@ -1594,7 +1603,7 @@ Big Orders CALC = CALCULATE(SUM(Sales[Amount]), Sales[Amount] > 5000)
 North SUMX = SUMX(FILTER(Sales, Sales[Region] = "North"), Sales[Amount])
 North CALC = CALCULATE(SUM(Sales[Amount]), Sales[Region] = "North")
 ```
-**Alternative:** For one text condition, CALCULATE with a Boolean filter is the simplest. Use FILTER inside CALCULATE only when the condition compares a measure or two columns.
+**Alternative:** For one text condition, CALCULATE with a Boolean filter is the simplest. Use FILTER inside CALCULATE when the condition uses a measure (or compares two columns and you want it to work in every version).
 **Result:** reproduced with pandas: with no slicer both Big Orders measures return 50,500. With the slicer on South, North SUMX returns blank (South rows filtered to North leaves nothing) and North CALC returns 25,500.
 **Pandas check:**
 ```python
@@ -1794,18 +1803,18 @@ import pandas as pd
 online = pd.DataFrame({"CustID":["C1","C2","C3","C2"]})
 store  = pd.DataFrame({"CustID":["C3","C4","C5","C1"]})
 union = pd.concat([online.CustID, store.CustID])
-print("UNION rows (duplicates kept):", len(union))
+print("UNION rows after VALUES (each table de-duplicated first):", len(pd.concat([online.CustID.drop_duplicates(), store.CustID.drop_duplicates()])))
 print("Unique customers:", union.nunique())
 print("Sum of separate distinct counts (wrong):", online.CustID.nunique()+store.CustID.nunique())
 ```
 Output (run):
 ```
-UNION rows (duplicates kept): 8
+UNION rows after VALUES (each table de-duplicated first): 7
 Unique customers: 5
 Sum of separate distinct counts (wrong): 7
 ```
 **Version / licensing note:** Same in Power BI Desktop and Service models (Desktop is where you author; from memory, unverified). Microsoft Learn was unreachable from this session (learn.microsoft.com did not resolve), so I could not re-fetch function pages; DAX syntax is checked against my knowledge of the function pages, not freshly fetched. Earlier research (research/Book04_Part04_sources.md) fetched Microsoft Learn pages CALCULATE, DIVIDE vs / operator, COUNTROWS and SUMX; I did not re-read them.
-**Edge cases:** Blank IDs count as one extra value in DISTINCT. IDs stored as text in one table and numbers in the other will not match. Trailing spaces make "C1 " different from "C1".
+**Edge cases:** Blank IDs count as one extra value in DISTINCT (from memory, unverified). IDs stored as text in one table and numbers in the other will not match. Trailing spaces make "C1 " different from "C1".
 **Likely follow-ups:** 1) *Why not DISTINCTCOUNT(Online[CustID]) + DISTINCTCOUNT(Store[CustID])?* Overlap double counts. 2) *Cleaner way?* A customer dimension.
 **Common mistakes:** Adding two distinct counts; using UNION without DISTINCT; ignoring data type mismatch.
 
@@ -1873,7 +1882,7 @@ Output (run):
 - Power Query cannot see relationships in the model; DAX can.
 **Example:** Splitting "Ananya Rao" into first and last name, or trimming employee codes, belongs in Power Query. Pulling the department's location via RELATED belongs in DAX.
 **DAX / Steps:** (not run here (no DAX engine in this environment))
-1. Power Query: Home > Transform data > Add Column > Custom Column (M), or Column From Examples.
+1. Power Query: Home > Transform data (opens the Power Query Editor) > Add Column tab > Custom Column (M), or Column From Examples (from memory).
 2. DAX: Table view > Table tools > New column > type the formula.
 **Alternative:** For anything that must respond to slicers, use a measure instead of either column.
 **Version / licensing note:** from memory, unverified: both are available in Desktop and in the Service dataflows/semantic models. Microsoft Learn was unreachable from this session (learn.microsoft.com did not resolve), so I could not re-fetch function pages; no page on this was fetched.
@@ -2324,14 +2333,14 @@ RETURN DIVIDE(Leavers, COUNTROWS(Employees))
 **What the interviewer is checking:** Do you know DAX is shared across the Microsoft data tools?
 **Say this in the interview:** "Yes. DAX started in Power Pivot, the Excel Data Model add-in. In Excel you can write DAX measures and calculated columns in the Data Model, and use them in PivotTables. It is not used in normal cell formulas."
 **Explain simply:**
-- Power Pivot is Excel's built-in data model: tables, relationships and DAX, behind PivotTables (we saw the Data Model in Book 1 distinct count).
+- Power Pivot is Excel's built-in data model: tables, relationships and DAX, behind PivotTables.
 - Same language, but the Power BI Desktop has more functions and features (from memory, unverified).
 - You can also connect Excel to a Power BI semantic model with Analyze in Excel (from memory, unverified).
 - DAX is not usable in worksheet cells like =SUM(); there you use Excel formulas.
 **Example:** In a PivotTable built on the Data Model, a measure `Total Payroll = SUM(Payroll[Basic])` appears in the field list.
 **DAX / Steps:** (not run here (no DAX engine in this environment))
 1. Insert > PivotTable > tick Add this data to the Data Model.
-2. Power Pivot > Manage (needs the add-in enabled on some versions) > Measures > New Measure.
+2. Power Pivot tab (the add-in must be enabled on some versions) > Measures > New Measure (from memory).
 3. Type the DAX; use it in the PivotTable.
 **Alternative:** Build the model in Power BI Desktop, which has fuller DAX support and visuals.
 **Version / licensing note:** Availability depends on the Excel edition, and Mac Excel has limited Power Pivot (from memory, unverified). Microsoft Learn was unreachable from this session (learn.microsoft.com did not resolve), so I could not re-fetch function pages; no Excel page was fetched.
@@ -2404,8 +2413,12 @@ Latest Hire Date = MAX ( Employees[JoinDate] )
 **Result (reproduced with pandas):** 2023-02-20 (Divya) for all employees.
 **Pandas check:**
 ```python
-print(emp.JoinDate.max().date())   # 2023-02-20
+import pandas as pd
+emp = pd.DataFrame({"EmpID":["E01","E02","E03","E04","E05","E06"],
+    "JoinDate":pd.to_datetime(["2015-06-01","2019-03-15","2021-08-01","2016-01-10","2023-02-20","2020-11-01"])})
+print(emp.JoinDate.max().date())
 ```
+Output: `2023-02-20`.
 **Version / licensing note:** MAX is a standard DAX function in all versions (from memory, unverified).
 **Edge cases:** If no rows are in filter context, MAX returns blank. Format the measure as a date (Measure tools > Format) or it may show a number.
 **Likely follow-ups:** 1) *Earliest date?* MIN. 2) *Latest hire per department?* Put the measure in a table by Dept.
@@ -2463,8 +2476,11 @@ Employees Seen v2 = CALCULATE ( DISTINCTCOUNT ( Attendance[EmpID] ), NOT ISBLANK
 **Result (reproduced with pandas):** DISTINCTCOUNT gives 4; the no-blank versions give 3.
 **Pandas check:**
 ```python
-print(att.EmpID.nunique(dropna=False), att.EmpID.nunique())   # 4 3
+import pandas as pd
+att = pd.DataFrame({"Row":[1,2,3,4,5,6],"EmpID":["E01","E02","E02",None,"E03",None]})
+print(att.EmpID.nunique(dropna=False), att.EmpID.nunique())
 ```
+Output: `4 3`.
 **Version / licensing note:** from memory, unverified. DISTINCTCOUNTNOBLANK exists in current DAX (from memory).
 **Edge cases:** A relationship with unmatched rows adds a blank row to the one-side table, which can silently inflate counts. Empty text "" is not the same as BLANK (Q20).
 **Likely follow-ups:** 1) *Count unique across tables?* See Q43. 2) *COUNT vs DISTINCTCOUNT?* COUNT counts all non-blank, repeats included.
@@ -2542,8 +2558,12 @@ Attrition % = DIVIDE ( SUM ( DeptStats[Leavers] ), SUM ( DeptStats[Headcount] ) 
 **Result (reproduced with pandas):** average of rates = 16.67% (wrong); total leavers / total headcount = 16.00% (correct). Row values stay 20%, 10%, 20% either way.
 **Pandas check:**
 ```python
-print(round(d.Rate.mean(),4), d.Leavers.sum()/d.Headcount.sum())   # 0.1667 0.16
+import pandas as pd
+d = pd.DataFrame({"Dept":["HR","IT","Sales"],"Headcount":[10,40,50],"Leavers":[2,4,10]})
+d["Rate"] = d.Leavers/d.Headcount
+print(round(d.Rate.mean(),4), d.Leavers.sum()/d.Headcount.sum())
 ```
+Output: `0.1667 0.16`.
 **Version / licensing note:** DIVIDE behaviour as in Q15 (from Microsoft Learn "DIVIDE vs / operator" page fetched in the sources file; not re-fetched this session).
 **Edge cases:** Totals for non-additive measures (distinct counts, ratios) never equal the sum of rows. Hiding totals is an alternative.
 **Likely follow-ups:** 1) *Why not a calculated column for the rate?* It cannot be re-aggregated correctly. 2) *Weighted average?* Same idea, SUMX(price*qty) / SUM(qty).
@@ -2631,11 +2651,13 @@ Title = "Attrition for " & SELECTEDVALUE ( Employees[Dept], "all departments" )
 **Result (reproduced with pandas logic):** Slicer HR gives "HR"; slicer IT gives "IT"; nothing selected (4 rows, 3 depts) gives the alternate result, "all departments".
 **Pandas check:**
 ```python
+import pandas as pd
+q = pd.DataFrame({"Name":["Asha","Ravi","Karan","Meena"],"Dept":["HR","IT","IT","Sales"]})
 for dep in ["HR","IT"]:
     v = q[q.Dept==dep].Dept.unique(); print(dep, v[0] if len(v)==1 else "Multiple")
 print("Multiple" if q.Dept.nunique()>1 else q.Dept.iloc[0])
-# real output: HR / IT / Multiple (the last line stands for the alternate result)
 ```
+Output: `HR`, `IT`, `Multiple` (the last line stands for the alternate result, "all departments").
 **Version / licensing note:** from memory, unverified (Microsoft Learn SELECTEDVALUE page not reachable here).
 **Edge cases:** Selecting two departments returns the alternate result. Cross-filtering from a relationship can leave one value even without a slicer.
 **Likely follow-ups:** 1) *vs MAX?* MAX gives a number even with many values. 2) *With multi-select?* Use CONCATENATEX.
@@ -2668,6 +2690,7 @@ print("Multiple" if q.Dept.nunique()>1 else q.Dept.iloc[0])
 - Slowness comes from heavy expressions or huge tables, not from SUMX itself.
 - `SUMX(Sales, Sales[Qty])` and `SUM(Sales[Qty])` give the same number.
 **Example:** Two order lines: 2 x 100 and 3 x 50.
+**Sample data:** Table `Sales`: Qty 2, 3; Price 100, 50.
 **DAX (not run here):**
 ```dax
 Revenue = SUMX ( Sales, Sales[Qty] * Sales[Price] )
@@ -2676,8 +2699,11 @@ Revenue = SUMX ( Sales, Sales[Qty] * Sales[Price] )
 **Result (reproduced with pandas):** 2*100 + 3*50 = 350.
 **Pandas check:**
 ```python
-print(df.eval("Qty*Price").sum())   # 350
+import pandas as pd
+df = pd.DataFrame({"Qty":[2,3],"Price":[100,50]})
+print(df.eval("Qty*Price").sum())
 ```
+Output: `350`.
 **Version / licensing note:** the "use SUM if you do not need to filter" remark comes from the Microsoft Learn SUMX page fetched earlier (per sources file, not re-fetched). Claims about engine speed are from memory, unverified.
 **Edge cases:** Expressions inside SUMX that call measures trigger context transition for every row (Q33), which gets expensive.
 **Likely follow-ups:** 1) *When is SUMX needed?* Row calculations. 2) *Faster alternative?* Pre-calculated column.
@@ -2711,8 +2737,12 @@ Rows With Blank Exit = CALCULATE ( COUNTROWS ( Employees ), ISBLANK ( Employees[
 **Result (reproduced with pandas):** 4 (Asha, Meena, Karan, Divya).
 **Pandas check:**
 ```python
-print(emp.ExitDate.isna().sum())   # 4
+import pandas as pd
+emp = pd.DataFrame({"EmpID":["E01","E02","E03","E04","E05","E06"],
+    "ExitDate":pd.to_datetime([None,"2024-05-31",None,None,None,"2025-12-31"])})
+print(emp.ExitDate.isna().sum())
 ```
+Output: `4`.
 **Version / licensing note:** from memory, unverified; the function pages were not reachable here.
 **Edge cases:** Empty text "" is not BLANK, so ISBLANK misses it. Import often turns empty cells into blank, but check.
 **Likely follow-ups:** 1) *Count non-blank?* `NOT ISBLANK`, or COUNTA. 2) *Why COUNTROWS?* Counts rows (Q27).
@@ -2746,8 +2776,11 @@ North South Sales = CALCULATE ( SUM ( Sales[Amount] ), Sales[Region] IN { "North
 **Result (reproduced with pandas):** 12000 + 8000 + 5000 = 25,000 (out of 56,000 total).
 **Pandas check:**
 ```python
-print(s[s.Region.isin(["North","South"])].Amount.sum())   # 25000
+import pandas as pd
+s = pd.DataFrame({"Region":["North","South","East","West","North","East"],"Amount":[12000,8000,15000,9000,5000,7000]})
+print(s[s.Region.isin(["North","South"])].Amount.sum(), "of", s.Amount.sum())
 ```
+Output: `25000 of 56000`.
 **Version / licensing note:** the Boolean filter rules come from the Microsoft Learn CALCULATE page fetched earlier (per sources file); IN usage is from memory, unverified.
 **Edge cases:** A Region slicer is replaced by this filter, so with a slicer on East the measure still returns 25,000 (Q37). A slicer on another column, such as Year, still applies.
 **Likely follow-ups:** 1) *Different columns with OR?* Use `FILTER` or `||` across columns with FILTER. 2) *Add more regions?* Add to the braces.
@@ -2780,8 +2813,11 @@ Large Orders Total = CALCULATE ( SUM ( Orders[OrderValue] ), Orders[OrderValue] 
 **Result (reproduced with pandas):** 12,000 + 25,000 = 37,000 from 2 orders.
 **Pandas check:**
 ```python
-print(o[o.OrderValue>10000].OrderValue.sum())   # 37000
+import pandas as pd
+o = pd.DataFrame({"OrderID":["O1","O2","O3","O4","O5"],"OrderValue":[4500,12000,10000,25000,9800]})
+print(o[o.OrderValue>10000].OrderValue.sum())
 ```
+Output: `37000`.
 **Version / licensing note:** Boolean filter behaviour from Microsoft Learn CALCULATE page (fetched earlier per sources file); the rest is from memory, unverified.
 **Edge cases:** O3 at exactly 10,000 is excluded. If rows are lines, a single order may be split across rows and miss the threshold. A slicer on OrderValue is overwritten by the Boolean filter.
 **Likely follow-ups:** 1) *Count of such orders?* `CALCULATE(COUNTROWS(Orders), ...)`, giving 2. 2) *Make the threshold changeable?* Use a what-if parameter.
@@ -2819,9 +2855,14 @@ RETURN
 **Result (reproduced with pandas, as of 2026-11-01, cutoff 2021-11-01):** 5 (Asha, Ravi, Meena, Karan, Imran). Divya is under 5 years. With active-only, Ravi and Imran drop out: 3.
 **Pandas check:**
 ```python
+import pandas as pd
+emp = pd.DataFrame({"Name":["Asha","Ravi","Meena","Karan","Divya","Imran"],
+    "JoinDate":pd.to_datetime(["2015-06-01","2019-03-15","2021-08-01","2016-01-10","2023-02-20","2020-11-01"]),
+    "ExitDate":pd.to_datetime([None,"2024-05-31",None,None,None,"2025-12-31"])})
 cut = pd.Timestamp("2026-11-01") - pd.DateOffset(months=60)
-print((emp.JoinDate < cut).sum())   # 5
+print((emp.JoinDate < cut).sum(), "| active only:", ((emp.JoinDate < cut) & emp.ExitDate.isna()).sum())
 ```
+Output: `5 | active only: 3`.
 **Version / licensing note:** EDATE and TODAY are standard DAX (from memory, unverified; Microsoft Learn pages not reachable here).
 **Edge cases:** Leavers are counted unless filtered; TODAY() uses the PC or service time zone; a join date exactly on the cutoff is not "more than" 5 years.
 **Likely follow-ups:** 1) *Why not DATEDIFF?* Boundary counting. 2) *Fixed as-of date?* Replace TODAY() with a date from a parameter.

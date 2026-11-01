@@ -3,6 +3,19 @@
 **Target:** 35 questions | **Actual:** 35 questions
 **Scope:** advanced practical DAX for analysts: filter and row context, CALCULATE modifiers (ALL, ALLEXCEPT, ALLSELECTED, REMOVEFILTERS, KEEPFILTERS), context transition, time intelligence, RANKX and Top N, variables, DAX debugging and performance. Basics (calculated column vs measure, SUM vs SUMX, COUNT, basic CALCULATE) are in Part 4.
 
+**Pandas setup for the short checks in Q1 to Q18 (run once, then each check runs as written; Q19 onward are self-contained):**
+```python
+import pandas as pd
+S = pd.DataFrame({"Region":["North"]*3+["East"]*3+["West"]*3, "Product":["Laptop","Phone","Tablet"]*3,
+                  "Amount":[300,200,100,200,100,50,100,150,50]})                  # Sales table of Q1
+m24 = [100,120,90,150,130,170,160,180,140,200,190,210]; m25 = [110,130,100,170,150,190]   # monthly totals of Q4
+M = pd.DataFrame({"Year":[2024]*12+[2025]*6, "Sales":m24+m25})
+E = pd.DataFrame({"Employee":["Asha","Ravi","Meena","Karan","Divya"], "Salary":[85000,62000,74000,58000,91000]})   # Q6
+T = pd.DataFrame({"Salary":[91000,85000,85000,74000,62000,62000]})                # Q16
+P = pd.DataFrame({"Product":list("ABCDEFG"), "Sales":[500,420,420,380,300,250,90]})  # Q17, Q18
+```
+All DAX and click-paths in this part are not run here (no DAX engine, Power BI or Power Query is available); every result is reproduced with pandas.
+
 ### Q1 ⭐⭐⭐ 🟢 What is the difference between ALL and ALLEXCEPT in DAX?
 **Asked at:** commonly asked; research/interview_processes.md lists "ALL vs ALLEXCEPT" among Power BI/DAX concept questions for service MNCs (no single company named).
 **What the interviewer is checking:** Do you understand filter context (the filters a visual silently applies to a measure) and how to remove some or all of it?
@@ -54,7 +67,7 @@ print(tot, north)   # 1250 600
 **Common mistakes:** Naming a column from another table in ALLEXCEPT; using ALL(Table) when only one column should be cleared.
 
 ### Q2 ⭐⭐⭐ 🟢 Why do time intelligence functions need a date table, and what rules must it follow?
-**Asked at:** commonly asked (no company-specific report found); the date-table topic appears in the Weekday Power BI list and most DAX prep sets we found.
+**Asked at:** commonly asked (no company-specific report found); the Weekday list covers YTD and YoY, which depend on a date table.
 **What the interviewer is checking:** Do you know why YTD, YoY and similar measures break without a proper calendar?
 **Say this in the interview:** "Time intelligence functions move through dates, like 'same period last year'. They need a separate date table with one row per day, no gaps, covering whole years, with a Date column of Date type, marked as the date table and related to the fact table."
 **Explain simply:**
@@ -64,7 +77,7 @@ print(tot, north)   # 1250 600
 - Mark it as a date table, and relate its Date column to the date column in the fact table (one-to-many, Date table on the one side).
 - Use the date table's columns (Month, Year) in visuals, not the fact table's dates.
 **Example:** An HR table of joining dates has no row for 5 March because nobody joined. Without a full calendar, "same period last year" can land on a missing day and give wrong or blank numbers.
-**DAX / Steps:** Creation steps in Q11. Check: Table view > select Date column > the table should show as marked. (Not run here (no DAX engine available); the values below were reproduced with pandas.)
+**DAX / Steps:** Creation steps in Q11. Check: Table view > select Date column > the table should show as marked (click-path from memory; not run here, no Power BI available).
 **Alternative:** Rely on Power BI's automatic date/time hidden tables (an option in Options > Data Load). Fine for quick work, but you cannot share one calendar across tables or add fiscal columns, so a real date table is preferred.
 **Version / licensing note:** From memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft Learn page was fetched).
 **Edge cases:** Fact data with dates beyond the calendar end are not covered; time-of-day values in the fact column break the relationship match; several date columns in one fact table need extra relationships (Q22).
@@ -355,6 +368,7 @@ print((pd.Timestamp(2025,12,31)-pd.Timestamp(2024,1,1)).days+1)   # 731
 - A filter in CALCULATE replaces any existing filter on the same column, unless wrapped in KEEPFILTERS (Q28).
 - A filter on a different column adds to the existing filters.
 - Multiple arguments = AND.
+- A **Boolean filter** is a simple true/false condition on one column, such as `Sales[Product] = "Laptop"`.
 **Example:** Product IN {Laptop, Phone} = 1,050; Region North AND Product Laptop = 300.
 **Sample data:** Table Sales in Q1.
 **DAX / Steps:** (Not run here (no DAX engine available); the values below were reproduced with pandas.)
@@ -412,7 +426,16 @@ Sales QTD = TOTALQTD ( [Total Sales], Dates[Date] )
 | 2025-04-18 | 300 | 300 |
 | 2025-05-06 | 110 | 410 |
 
-**Pandas check:** period filter on `Date.dt.to_period("M")` / `"Q"` and `Date <= d`; output matches the table above.
+**Pandas check:**
+```python
+import pandas as pd
+d = pd.DataFrame({"Date":pd.to_datetime(["2025-01-10","2025-01-25","2025-02-05","2025-02-20","2025-03-03","2025-03-28","2025-04-02","2025-04-18","2025-05-06"]),
+                  "Amount":[100,150,200,120,180,90,160,140,110]})
+for a in ["2025-02-20","2025-03-28","2025-04-18","2025-05-06"]:
+    a = pd.Timestamp(a); w = d[d.Date <= a]
+    print(a.date(), "MTD", w[w.Date.dt.to_period("M")==a.to_period("M")].Amount.sum(), "QTD", w[w.Date.dt.to_period("Q")==a.to_period("Q")].Amount.sum())
+# 2025-02-20 MTD 320 QTD 570 / 2025-03-28 MTD 270 QTD 840 / 2025-04-18 MTD 300 QTD 300 / 2025-05-06 MTD 110 QTD 410
+```
 **Version / licensing note:** From memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft Learn page was fetched).
 **Edge cases:** Quarters are calendar quarters; a fiscal quarter needs a custom calendar column approach.
 **Likely follow-ups:** 1) *Month-level visual?* Shows the full month to date. 2) *Fiscal?* Q24.
@@ -434,14 +457,14 @@ AVERAGEX (
     DATESINPERIOD ( Dates[Date], MAX ( Dates[Date] ), -3, MONTH ),
     [Total Sales] )   -- averages daily totals, wrong
 ```
-That version averages days, so use months:
+That version averages days, so use months. The window must be applied with CALCULATE around the whole AVERAGEX, so that both the list of months and each month's sales see the 3-month window:
 ```dax
 Sales 3M Avg =
 VAR Win = DATESINPERIOD ( Dates[Date], MAX ( Dates[Date] ), -3, MONTH )
 RETURN
-    AVERAGEX ( CALCULATETABLE ( VALUES ( Dates[YearMonth] ), Win ), [Total Sales] )
+    CALCULATE ( AVERAGEX ( VALUES ( Dates[YearMonth] ), [Total Sales] ), Win )
 ```
-(Needs a `YearMonth` column in Dates, e.g. `FORMAT ( Dates[Date], "yyyy-mm" )`.)
+(Needs a `YearMonth` column in Dates, e.g. `FORMAT ( Dates[Date], "yyyy-mm" )`. Reasoned, not run: if the visual axis is a different Dates column, such as Month name, test that the window still widens.)
 **Alternative:** Divide `CALCULATE ( [Total Sales], Win )` by 3 (fixed divisor; wrong for the first months).
 **Result:** (reproduced with pandas, partial windows at the start averaged over available months) 2024: Jan 100.0, Feb 110.0, Mar 103.3, Apr 120.0, May 123.3, Jun 150.0, Jul 153.3, Aug 170.0; 2025: Jan 170.0, Feb 150.0, Mar 113.3, Apr 133.3, May 140.0, Jun 170.0.
 **Pandas check:**
@@ -570,7 +593,7 @@ print(P.Sales.rank(method="min",ascending=False).astype(int).tolist())  # [1, 2,
 - TOPN(5, table, measure) returns the five highest rows.
 - RANKX approach: `IF ( [Rank] <= 5, [Total Sales] )` hides the others.
 - Visual route: Filters pane > product field > Filter type Top N > Show items Top 5 > By value.
-**Example:** Sales A 500, B 420, C 420, D 380, E 300, F 250, G 90: top 5 are A to E (1,720 total).
+**Example:** Sales A 500, B 420, C 420, D 380, E 300, F 250, G 90: top 5 are A to E (2,020 total).
 **Sample data:** Table Products in Q17.
 **DAX / Steps:** (Not run here (no DAX engine available); the values below were reproduced with pandas.)
 ```dax
@@ -582,11 +605,12 @@ Top 5 Total =
 CALCULATE ( [Total Sales], TOPN ( 5, ALL ( Products[Product] ), [Total Sales] ) )
 ```
 **Alternative:** Visual-level Top N filter (no DAX).
-**Result:** (reproduced with pandas) A, B, C, D, E shown (F, G blank); Top 5 total 1,720. With a tie at 5th (E and F both 300) both TOPN and rank <= 5 return six products: A to F.
+**Result:** (reproduced with pandas) A, B, C, D, E shown (F, G blank); Top 5 total 2,020. With a tie at 5th (E and F both 300) both TOPN and rank <= 5 return six products: A to F.
 **Pandas check:**
 ```python
-print(P.nlargest(5,"Sales",keep="all").Product.tolist())   # ['A','B','C','D','E']
-# tie case (E=F=300): ['A', 'B', 'C', 'D', 'E', 'F']
+top = P.nlargest(5,"Sales",keep="all"); print(top.Product.tolist(), top.Sales.sum())   # ['A', 'B', 'C', 'D', 'E'] 2020
+P2 = P.copy(); P2.loc[5,"Sales"] = 300                                                  # tie case: E = F = 300
+print(P2.nlargest(5,"Sales",keep="all").Product.tolist())                               # ['A', 'B', 'C', 'D', 'E', 'F']
 ```
 **Version / licensing note:** From memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft Learn page was fetched).
 **Edge cases:** Ties at the cut-off return extra rows; the Total row of "Top 5 Sales" sums only the visible ones.
@@ -715,7 +739,7 @@ RETURN
     )
 ```
 Put `Dates[MonthName]` on matrix rows and this measure in values.
-**Alternative:** Running difference: `joins to date - exits to date`, i.e. `CALCULATE ( COUNT ( Employees[EmpID] ), Employees[JoinDate] <= EndD ) - CALCULATE ( COUNT ( Employees[EmpID] ), Employees[ExitDate] <= EndD )`. Same answer, easier to read, and two Boolean filters are cheaper than FILTER on the table (Q31). COUNT skips blank IDs only, so make sure EmpID is never blank.
+**Alternative:** Running difference: `joins to date - exits to date`, written as `VAR EndD = MAX ( Dates[Date] ) RETURN CALCULATE ( COUNT ( Employees[EmpID] ), Employees[JoinDate] <= EndD, REMOVEFILTERS ( Dates ) ) - CALCULATE ( COUNT ( Employees[EmpID] ), Employees[ExitDate] <= EndD, REMOVEFILTERS ( Dates ) )` (not run here; REMOVEFILTERS is needed or an active date relationship would still cut the rows to one month). Same answer, easier to read, and two Boolean filters are cheaper than FILTER on the table (Q31). COUNT skips blank IDs only, so make sure EmpID is never blank.
 **Result (reproduced with pandas, not run in Power BI):** 7, 8, 8, 7, 7, 7 for Jan to Jun 2025 (month ends).
 **Pandas check:**
 ```python
@@ -762,7 +786,7 @@ Output:
 | Meena | 2021-07-01 |
 | Karan | 2023-03-10 |
 
-**DAX / Steps (not run here):**
+**DAX / Steps (not run here).** Create these two as **calculated columns** (New column), not measures, because they read each employee's own JoinDate row by row:
 ```dax
 Tenure Years (boundaries) = DATEDIFF ( Employees[JoinDate], TODAY (), YEAR )
 
@@ -909,7 +933,7 @@ Average of row %: 12.7
 ```
 **Version / licensing note:** DAX behaviour from memory, unverified (learn.microsoft.com not reachable).
 **Edge cases:** Filters applied by a slicer change what the total covers. A measure using SELECTEDVALUE returns blank at the total. Matrix subtotals follow the same logic at each level.
-**Likely follow-ups:** 1) *Why does my sum of an average look wrong?* Averages need weights. 2) *How to hide totals?* Format pane > Row subtotals / Column grand total off.
+**Likely follow-ups:** 1) *Why does my sum of an average look wrong?* Averages need weights. 2) *How to hide totals?* Format pane > Row subtotals / Column grand total off (click-path from memory; not run here).
 **Common mistakes:** Assuming Total = sum of rows; "fixing" a correct weighted total with SUMX; using AVERAGE of a percentage column.
 
 ### Q24 ⭐⭐ 🟡 How do you make TOTALYTD follow an Indian financial year that ends on 31 March?
@@ -937,8 +961,8 @@ Average of row %: 12.7
 ```dax
 FY YTD Sales = TOTALYTD ( [Total Sales], Dates[Date], "3/31" )
 ```
-**Alternative:** `CALCULATE ( [Total Sales], DATESYTD ( Dates[Date], "3/31" ) )`, or add a FiscalYear column to the date table (`IF ( MONTH ( [Date] ) >= 4, YEAR ( [Date] ) + 1, YEAR ( [Date] ) )`) and filter on it.
-**Result (reproduced with pandas, not run in Power BI):** FY YTD: Jan 100, Feb 220, Mar 310, Apr 110, May 240, Jun 390 (calendar YTD would be 100, 220, 310, 420, 550, 700).
+**Alternative:** `CALCULATE ( [Total Sales], DATESYTD ( Dates[Date], "3/31" ) )`, or add a FiscalYear calculated column to the date table (`IF ( MONTH ( [Date] ) >= 4, YEAR ( [Date] ) + 1, YEAR ( [Date] ) )`) and filter on it.
+**Result (reproduced with pandas, not run in Power BI):** FY YTD: Jan 100, Feb 220, Mar 310, Apr 110, May 240, Jun 390 (calendar YTD would be 100, 220, 310, 420, 550, 700). Caveat: this sample starts in January, so the Jan to Mar FY values leave out the earlier April to December 2024 months that a real FY2024-25 YTD would include.
 **Pandas check:**
 ```python
 import pandas as pd

@@ -82,7 +82,7 @@
 - Report page tooltip: a small page, marked as a tooltip, that is shown on hover and filtered to the hovered point.
 - Hover only; it is not clickable.
 **Example:** Hover over the Sales bar in headcount and a mini line chart shows Sales' monthly attrition for the year.
-**DAX / Steps (not run here):** Page tooltip: add a page > Format page > Page information > Tooltip on; Canvas settings > Type = Tooltip. Then on the visual: Format > General > Tooltips > Type = Report page > choose page. Full steps in Q26.
+**DAX / Steps (not run here):** Page tooltip: add a page > Format page > Page information > Allow use as tooltip on; Canvas settings > Type = Tooltip. Then on the visual: Format > General > Tooltips > Type = Report page > choose page. Full steps in Q26.
 **Alternative:** Add fields to the Tooltips well for a simple text extension.
 **Version / licensing note:** from memory, unverified. The research file notes tooltips are non-interactive and not available on dashboards (Microsoft page "Create report tooltips"; not re-fetched by me).
 **Edge cases:** Needs a field that exists in the hovered visual, or the tooltip page shows unfiltered data.
@@ -135,7 +135,7 @@
 - Users reach it by right-clicking a data point.
 **Example:** Summary page: attrition by department. Drill-through page "Department detail" with a card of leavers and a table of employees. Right-click Sales, jump to Sales' 36 leavers.
 **DAX / Steps (not run here):**
-1. Home > Insert > New page; rename "Department detail".
+1. Home > New page; rename "Department detail".
 2. Select the page canvas; in the Build pane find Drill through (Add drill-through fields here).
 3. Drag Department into it (leave Cross-report off, Keep all filters as needed, Q48).
 4. Add a card [Leavers], a table of Employee, Tenure.
@@ -202,13 +202,16 @@
 Attrition Rate = DIVIDE(SUM(Dept[Leavers]), SUM(Dept[AvgHeadcount]))
 Attrition Colour = IF([Attrition Rate] > 0.15, "#C0392B", "#27AE60")
 ```
-Rules path: select visual > Format > Cell elements > Background colour > fx > Format style = Rules > If value >= 0.15... (set "is greater than 0.15" = red; add second rule "is less than or equal to 0.15" = green).
+Rules path: select visual > Format > Cell elements > Background colour > fx > Format style = Rules > add rule "If value is greater than 0.15" = red, then a second rule "If value is less than or equal to 0.15" = green (menu names from memory, unverified).
 **Alternative:** Field value: Format style = Field value > Based on field = [Attrition Colour].
 **Result (reproduced with pandas, not a DAX engine):** Sales 18% red, IT 12% green, HR 20% red, Finance 10% green, Ops 17% red; Total 15.45% red.
 **Pandas check:**
 ```python
+import pandas as pd
+d=pd.DataFrame({"Dept":["Sales","IT","HR","Finance","Ops"],"AvgHeadcount":[200,150,40,60,100],"Leavers":[36,18,8,6,17]})
 d["Attrition"]=d.Leavers/d.AvgHeadcount
 d["Colour"]=d.Attrition.apply(lambda x:"Red" if x>0.15 else "Green")
+print(d); print(d.Leavers.sum()/d.AvgHeadcount.sum())   # total 0.1545...
 ```
 Output: Sales 0.18 Red; IT 0.12 Green; HR 0.20 Red; Finance 0.10 Green; Ops 0.17 Red; Total 0.1545 Red.
 **Version / licensing note:** from memory, unverified.
@@ -217,7 +220,7 @@ Output: Sales 0.18 Red; IT 0.12 Green; HR 0.20 Red; Finance 0.10 Green; Ops 0.17
 **Common mistakes:** Typing 15 instead of 0.15; ignoring the Total row colour.
 
 ### Q12 ⭐⭐⭐ 🟡 A slicer selection is not changing one of the visuals on the page. What do you check?
-**Asked at:** commonly asked (no company-specific report found); a troubleshooting scenario in prep blogs (snippets only).
+**Asked at:** commonly asked (no company-specific report found); gap-fill from standard practice (a troubleshooting scenario).
 **What the interviewer is checking:** A calm checklist, not guessing.
 **Say this in the interview:** "First Edit interactions, whether that visual is set to None. Then whether the slicer's field is related to that visual's table in the model, whether the visual has its own filter, and whether the measure ignores filters, for example with ALL."
 **Explain simply:**
@@ -280,7 +283,7 @@ Output: Sales 0.18 Red; IT 0.12 Green; HR 0.20 Red; Finance 0.10 Green; Ops 0.17
 **Example:** Click "Sales" in a department chart: a gender column chart shows only Sales (filter) or shows all with Sales' portion shaded (highlight).
 **DAX / Steps (not run here):** Select the source visual > Format tab > Edit interactions > on each target choose Filter, Highlight or None.
 **Alternative:** Slicer for explicit selection.
-**Version / licensing note:** from memory, unverified. The research file notes the Microsoft page "Change how visuals interact" (the older cross-filter page returned 404 for the earlier agent).
+**Version / licensing note:** from memory, unverified. The research file notes the Microsoft page "Change how visuals interact" (an older cross-filter page returned 404 in the earlier research pass).
 **Edge cases:** Highlight is not available for some visual types, which then filter instead.
 **Likely follow-ups:** 1) *Stop one visual reacting?* None. 2) *Does drill affect others?* Q37.
 **Common mistakes:** Confusing highlight with filter when numbers look unchanged.
@@ -353,6 +356,8 @@ Output: Sales 0.18 Red; IT 0.12 Green; HR 0.20 Red; Finance 0.10 Green; Ops 0.17
 **Result (reproduced with pandas):** Kept: C 300, L 260, E 210, I 175, G 150, A 120, K 110, B 95, F 80, H 60. Dropped: D 40, J 25. Top 10 total 1,560 of 1,625.
 **Pandas check:**
 ```python
+import pandas as pd
+p=pd.DataFrame({"Product":list("ABCDEFGHIJKL"),"Sales":[120,95,300,40,210,80,150,60,175,25,110,260]})
 print(p.nlargest(10,"Sales"))
 print(p.nlargest(10,"Sales").Sales.sum(), p.Sales.sum())
 ```
@@ -419,10 +424,10 @@ Output: the ten rows above, then `1560 1625`.
 ### Q22 ⭐⭐ 🟢 What is the Analytics pane, and how do you add an average line or a target line to a chart?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you can add reference lines without writing extra measures.
-**Say this in the interview:** "The Analytics pane, the magnifying-glass icon next to Format, adds helper lines to a chart: average, median, min, max, constant and percentile lines, trend lines and forecasts. For a target I add a Constant line or a Y-axis constant at the target value, or a measure if the target changes."
+**Say this in the interview:** "The Analytics pane, the magnifying-glass icon next to Format, adds helper lines to a chart: average, median, min, max, constant and percentile lines, trend lines and forecasts. For a target I add a Y-axis constant line at the target value, or a measure if the target changes."
 **Explain simply:**
 - Select the chart, open the **Analytics** pane, expand **Average line**, switch it on. You can choose which series it measures.
-- **Constant line** is a fixed number, such as a target headcount of 440.
+- **Y-axis constant line** is a fixed number, such as a target headcount of 440.
 - Not every visual supports it (works on cartesian charts such as line, column, bar; not on pie or table) — from memory, unverified.
 - If the target changes by month, make a measure and add it as a second line series instead.
 **Example:** Monthly headcount Jan-Jun is 410, 420, 415, 430, 445, 450. The average line sits at 428.3. A constant line at 440 shows only May and June meet the target.
@@ -445,6 +450,7 @@ Avg Headcount = AVERAGEX ( ALLSELECTED ( 'Calendar'[Month] ), [Headcount] )
 **Result:** reproduced with pandas: average = 428.33.
 **Pandas check:**
 ```python
+import pandas as pd
 hc = pd.DataFrame({"Month":["Jan","Feb","Mar","Apr","May","Jun"],"Headcount":[410,420,415,430,445,450]})
 print(hc.Headcount.mean())   # 428.3333333333333
 ```
@@ -480,6 +486,8 @@ Payroll M = FORMAT ( [Total Payroll] / 1000000, "0.0" ) & "M"
 **Result:** reproduced with pandas: 12.3, 9.9, 4.6, 15.0 (millions, 1 decimal).
 **Pandas check:**
 ```python
+import pandas as pd
+s = pd.DataFrame({"Payroll":[12345678,9876543,4567890,15000000]})
 print((s.Payroll/1e6).round(1).tolist())   # [12.3, 9.9, 4.6, 15.0]
 ```
 **Version / licensing note:** from memory, unverified. Indian grouping (lakh/crore) is not a built-in display unit; I believe a custom approach is needed (unverified).
@@ -535,6 +543,8 @@ Then: select `Month` column > Column tools > Sort by column > `MonthNum`.
 **Result:** reproduced with pandas: alphabetical `['Apr','Feb','Jan','Jun','Mar','May']`; by MonthNum `['Jan','Feb','Mar','Apr','May','Jun']`.
 **Pandas check:**
 ```python
+import pandas as pd
+m = pd.DataFrame({"Month":["Jan","Feb","Mar","Apr","May","Jun"],"MonthNum":range(1,7),"Hires":[12,9,15,7,11,10]})
 print(m.sort_values("Month").Month.tolist()); print(m.sort_values("MonthNum").Month.tolist())
 ```
 **Version / licensing note:** from memory, unverified. Available in all Desktop versions.
@@ -555,7 +565,7 @@ print(m.sort_values("Month").Month.tolist()); print(m.sort_values("MonthNum").Mo
 **DAX / Steps (not run here):** 1) New page "Tip - Dept". 2) Format page > Canvas settings > Type = Tooltip. 3) Page information > Allow use as tooltip = On. 4) Add visuals filtered by Department. 5) Optionally Format page > Canvas background to preview. 6) On the main chart: Format > General > Tooltips > Type = Report page, Page = "Tip - Dept". 7) Hide the tooltip page (right-click tab > Hide page).
 **Alternative:** Drag extra measures into the visual's Tooltips well to enrich the default tooltip with no extra page.
 **Version / licensing note:** from memory, unverified. Menu names (Page information, Canvas settings) change between builds.
-**Edge cases:** If the tooltip page has no matching field, it shows unfiltered data. Tooltip pages are not interactive (see Part 6, tooltip limitations) and are not available everywhere, e.g. dashboards (from memory, unverified).
+**Edge cases:** If the tooltip page has no matching field, it shows unfiltered data. Tooltip pages are not interactive (see Q55, tooltip limitations) and are not available everywhere, e.g. dashboards (from memory, unverified).
 **Likely follow-ups:** 1) *Can I click in a tooltip?* No (unverified). 2) *Why is it unfiltered?* Field mismatch.
 **Common mistakes:** Forgetting to hide the page; making it too big; not putting the filtering field in the visual.
 
@@ -608,7 +618,7 @@ print(m.sort_values("Month").Month.tolist()); print(m.sort_values("MonthNum").Mo
 **Alternative:** Add a page navigation button with a drillthrough action, or use a tooltip page instead.
 **Version / licensing note:** from memory, unverified; Microsoft's drillthrough page was listed in the sources file but I could not re-read it here.
 **Edge cases:** Selected multiple values across tables can disable it; a relationship to another table may be needed.
-**Likely follow-ups:** 1) *Can drillthrough use a measure as filter?* Not directly. 2) *Cross-report?* Needs same workspace and matching names (Part 6 Q49).
+**Likely follow-ups:** 1) *Can drillthrough use a measure as filter?* Not directly. 2) *Cross-report?* Needs same workspace and matching names (Q49).
 **Common mistakes:** Right-clicking a card; using different field names; keeping the field summarised.
 
 ### Q30 ⭐⭐ 🟡 How do you create a dynamic visual title that shows the department selected in a slicer?
@@ -643,10 +653,13 @@ Then Format > General > Title > Text > fx > Format style: Field value > Title At
 **Result:** reproduced with pandas (logic only): IT -> "Attrition - IT"; IT+HR -> "Attrition - All departments"; none -> "Attrition - All departments".
 **Pandas check:**
 ```python
+import pandas as pd
+emp = pd.DataFrame({"Department":["Sales"]*3+["IT"]*2+["HR"]*3,"Left":[1,0,0,0,1,0,0,0]})
 def title(sel):
     d = emp if not sel else emp[emp.Department.isin(sel)]
     u = d.Department.unique()
     return "Attrition - " + (u[0] if len(u)==1 else "All departments")
+print(title(["IT"]), "|", title(["IT","HR"]), "|", title([]))
 ```
 **Version / licensing note:** from memory, unverified. Field-value titles are available in current Desktop; DAX functions not checked against Microsoft Learn.
 **Edge cases:** Multi-select returns the alternate result; add CONCATENATEX if you want the list. Cross-filtering from other visuals also changes the title.
@@ -675,6 +688,7 @@ def title(sel):
 
 **DAX / Steps (not run here):**
 ```dax
+Attendance % = AVERAGE ( Attendance[Attendance] )
 Attendance Colour =
 VAR a = [Attendance %]
 RETURN
@@ -687,7 +701,12 @@ Steps: select the table/matrix > Format > Cell elements > turn on Background col
 **Result:** reproduced with pandas: Asha green, Ravi amber, Meena red, Karan grey, Divya green.
 **Pandas check:**
 ```python
-a["Colour"] = a.Attendance.map(col)  # col() mirrors the IF logic
+import pandas as pd
+a = pd.DataFrame({"Employee":["Asha","Ravi","Meena","Karan","Divya"],"Attendance":[.97,.93,.88,None,.95]})
+def col(x):   # mirrors the IF logic
+    if pd.isna(x): return "grey"
+    return "green" if x >= .95 else "amber" if x >= .90 else "red"
+a["Colour"] = a.Attendance.map(col); print(a)
 ```
 **Version / licensing note:** from memory, unverified. Field value format style exists in Desktop; Microsoft Learn conditional formatting page not re-read here.
 **Edge cases:** Division results of 0/0 can give NaN; use DIVIDE. Totals row uses the measure at total level.
@@ -716,12 +735,15 @@ a["Colour"] = a.Attendance.map(col)  # col() mirrors the IF logic
 ```dax
 Hours Worked = SUM ( Attendance[Hours] )
 ```
-Matrix: Rows = Employee[Name], Columns = Calendar[DayName] (sorted by DayNum), Values = Hours Worked. Then Format > Cell elements > Background colour > fx > Gradient (Minimum red, Maximum green) or Rules.
+Matrix: Rows = Attendance[Employee], Columns = Calendar[DayName] (sorted by DayNum), Values = Hours Worked. Then Format > Cell elements > Background colour > fx > Gradient (Minimum red, Maximum green) or Rules.
 **Alternative:** Show status text (P / A / L) using a measure with MAX of a status code and colour by a Field value measure (Q31).
 **Result:** reproduced with pandas: the pivot table above (Asha 0 on Wed; Meena 0 on Mon; Ravi 0 on Fri, 4 on Tue).
 **Pandas check:**
 ```python
-att.pivot_table(index="Employee", columns="Day", values="Hours", aggfunc="sum")[["Mon","Tue","Wed","Thu","Fri"]]
+import pandas as pd
+w = pd.DataFrame({"Employee":["Asha","Meena","Ravi"],"Mon":[8,0,8],"Tue":[8,8,4],"Wed":[0,8,8],"Thu":[8,8,8],"Fri":[7.5,8,0]})
+att = w.melt(id_vars="Employee", var_name="Day", value_name="Hours")   # long format, as stored in the model
+print(att.pivot_table(index="Employee", columns="Day", values="Hours", aggfunc="sum")[["Mon","Tue","Wed","Thu","Fri"]])
 ```
 **Version / licensing note:** from memory, unverified. Matrix and conditional formatting are in all Desktop versions.
 **Edge cases:** A day with no row at all shows blank, not 0, unless Show items with no data is on. Gradient on subtotal cells distorts the scale.
@@ -734,7 +756,7 @@ att.pivot_table(index="Employee", columns="Day", values="Hours", aggfunc="sum")[
 **Say this in the interview:** "Drill icons only appear when the visual has two or more fields stacked in a single drill-capable well, like Axis or Rows, or a hierarchy. Fields placed in Values or spread across wells don't create drill levels. I move them into Axis in order."
 **Explain simply:**
 - **Drill down** moves from a broad level to detail (Year > Quarter > Month) inside one visual.
-- Fields in Axis, Rows, Columns (matrix) or Legend (in some visuals) create levels in their order.
+- Fields stacked in the Axis well, or in Rows or Columns of a matrix, create levels in their order.
 - Fields in Values, or one field in Axis and another in Legend, give no drill path.
 - Some visuals (cards, gauges) never drill. Turn drill on from the icon (down arrow) in the visual header.
 **Example:** A headcount chart has Department in Axis and Location in Legend: no drill. Put both Department and Location in Axis (Department on top): the arrows appear.
@@ -772,7 +794,9 @@ Visualizations > Line and clustered column chart; Column y-axis = Exits, Line y-
 **Result:** reproduced with pandas: 2.00%, 1.46%, 2.96%.
 **Pandas check:**
 ```python
-c["Attr%"] = (c.Exits/c.Headcount*100).round(2)
+import pandas as pd
+c = pd.DataFrame({"Exits":[8,6,12],"Headcount":[400,410,405]})
+c["Attr%"] = (c.Exits/c.Headcount*100).round(2); print(c)
 ```
 **Version / licensing note:** from memory, unverified.
 **Edge cases:** Different scales mislead; a line across categories (not time) implies a trend that does not exist. Use DIVIDE to avoid divide-by-zero.
@@ -804,6 +828,8 @@ c["Attr%"] = (c.Exits/c.Headcount*100).round(2)
 **Result:** reproduced with pandas: Sales -> Asha, Ravi, Kiran.
 **Pandas check:**
 ```python
+import pandas as pd
+emp = pd.DataFrame({"Employee":["Asha","Ravi","Kiran","Meena","Divya"],"Department":["Sales"]*3+["IT","HR"]})
 print(emp[emp.Department=="Sales"].Employee.tolist())
 ```
 **Version / licensing note:** from memory, unverified.
@@ -844,7 +870,14 @@ Bar chart: Axis = Dept; column chart: Axis = Tenure band (sorted by band order);
 **Result:** reproduced with pandas: the two tables above; overall 33.3%.
 **Pandas check:**
 ```python
-g = e.groupby("Dept").Left.agg(["sum","count"]); g["rate%"] = (g["sum"]/g["count"]*100).round(1)
+import pandas as pd
+rows = [("Sales","<1y",1)]*2 + [("Sales","1-3y",1),("Sales","1-3y",0)] + [("Sales","3y+",0)]*2
+rows += [("IT","<1y",1)] + [("IT","1-3y",0)]*2 + [("IT","3y+",0)]*2
+rows += [("HR","<1y",0),("HR","1-3y",1)] + [("HR","3y+",0)]*2     # 15 employees, 5 left
+e = pd.DataFrame(rows, columns=["Dept","Tenure","Left"])
+for by in ("Dept","Tenure"):
+    g = e.groupby(by).Left.agg(["sum","count"]); g["rate%"] = (g["sum"]/g["count"]*100).round(1); print(g)
+print(round(100*e.Left.mean(),1))   # 33.3
 ```
 **Version / licensing note:** from memory, unverified. Sample is tiny and invented for illustration.
 **Edge cases:** Tiny groups give extreme rates (an HR cell with 1 person shows 100%); show counts alongside. Use average headcount for a proper annual rate.
@@ -894,6 +927,8 @@ g = e.groupby("Dept").Left.agg(["sum","count"]); g["rate%"] = (g["sum"]/g["count
 **Result:** reproduced with pandas: correlation 0.988.
 **Pandas check:**
 ```python
+import pandas as pd
+sc = pd.DataFrame({"Tenure":[1,2,3,5,8,10],"Salary":[4.0,4.5,6.0,7.2,9.0,9.8]})
 print(round(sc.Tenure.corr(sc.Salary), 3))   # 0.988
 ```
 **Version / licensing note:** from memory, unverified.
@@ -1025,7 +1060,7 @@ print(act[act.Dept=="Sales"].groupby("Location").size())
 ```
 Output: Total headcount 9; Sales 3, Finance 2, IT 2, Ops 2; Sales by Location: Bengaluru 1, Hyderabad 2.
 **Version / licensing note:** from memory, unverified (learn.microsoft.com unreachable): whether the AI splits need a particular licence or Service-only features.
-**Edge cases:** Blank categories appear as (Blank) branches; very many categories get truncated; it cannot be a drillthrough or cross-filter source in the same way as bar charts (from memory).
+**Edge cases:** Blank categories appear as (Blank) branches; very many categories get truncated; whether it can drive other visuals or drillthrough the way a bar chart does should be tested in your build (from memory, unverified).
 **Likely follow-ups:** 1) *Decomposition tree vs key influencers?* The tree lets you walk the path; key influencers ranks drivers statistically. 2) *Can users pick the order?* Yes, with the +.
 **Common mistakes:** Using it as a dashboard centrepiece for fixed numbers; adding a measure to Explain by.
 
@@ -1187,7 +1222,12 @@ Steps: Modeling tab > **New parameter** > **Fields** > add the three measures > 
 **Pandas check:** (this is the Q51 setup block reused by Q45, Q48, Q50, Q52, Q57, Q58, Q60, Q61 as `setup.py`)
 ```python
 import pandas as pd
-# emp = the 12-row table above, JoinDate/ExitDate converted with pd.to_datetime
+emp = pd.DataFrame([("E01","Sales","Hyderabad","G1","2022-06-01",None),("E02","Sales","Bengaluru","G2","2023-01-15","2025-02-10"),
+ ("E03","Sales","Hyderabad","G1","2025-01-20",None),("E04","Ops","Bengaluru","G2","2021-09-01",None),("E05","Ops","Hyderabad","G1","2024-11-05","2025-03-05"),
+ ("E06","Ops","Hyderabad","G3","2020-04-10",None),("E07","IT","Bengaluru","G3","2019-08-01",None),("E08","IT","Bengaluru","G2","2025-03-03",None),
+ ("E09","IT","Hyderabad","G1","2023-07-01","2025-01-25"),("E10","Finance","Hyderabad","G2","2022-02-14",None),("E11","Finance","Bengaluru","G1","2025-01-06",None),
+ ("E12","Sales","Bengaluru","G2","2024-05-20",None)], columns=["EmpID","Dept","Location","Grade","JoinDate","ExitDate"])
+emp["JoinDate"] = pd.to_datetime(emp.JoinDate); emp["ExitDate"] = pd.to_datetime(emp.ExitDate)
 start, end = pd.Timestamp("2025-01-01"), pd.Timestamp("2025-03-31")
 def active_on(d, df=emp): return df[(df.JoinDate <= d) & (df.ExitDate.isna() | (df.ExitDate > d))]
 def metrics(df):
@@ -1197,7 +1237,7 @@ def metrics(df):
                       "Avg tenure (yrs)": round(((end-a.JoinDate).dt.days/365.25).mean(),1)})
 print(emp.groupby("Dept").apply(metrics, include_groups=False)); print(metrics(emp))
 ```
-Printed output: Finance 2 / 0.0 / 1.7; IT 2 / 50.0 / 2.9; Ops 2 / 40.0 / 4.3; Sales 3 / 33.3 / 1.3; total 9 / 33.3 / 2.4 (also by Location: Bengaluru 5 / 22.2 / 2.1, Hyderabad 4 / 44.4 / 2.8; by Grade: G1 3 / 66.7 / 1.1, G2 4 / 25.0 / 1.9, G3 2 / 0.0 / 5.3).
+Printed output (Headcount shows as 2.0, 3.0 etc. because pandas makes the table decimal): Finance 2 / 0.0 / 1.7; IT 2 / 50.0 / 2.9; Ops 2 / 40.0 / 4.3; Sales 3 / 33.3 / 1.3; total 9 / 33.3 / 2.4 (also by Location: Bengaluru 5 / 22.2 / 2.1, Hyderabad 4 / 44.4 / 2.8; by Grade: G1 3 / 66.7 / 1.1, G2 4 / 25.0 / 1.9, G3 2 / 0.0 / 5.3).
 **Version / licensing note:** Field parameters are described on the Microsoft Learn "Field parameters" page (listed in research/Book04_Part06_sources.md, not re-fetched here). Which Desktop release introduced them and whether it was once a preview: from memory, unverified. Nothing about licence was verified.
 **Edge cases:** Number formats differ per measure (a % next to a count) so set format inside each measure; average-of-ratios totals; a measure returning blank hides a bar.
 **Likely follow-ups:** 1) *Can you also switch the axis?* Yes, a second parameter with Dept, Location, Grade columns (Q61). 2) *Title?* `SELECTEDVALUE` of the parameter's name column.
@@ -1281,7 +1321,7 @@ Sales (Top N) =
 VAR _rank = RANKX ( ALLSELECTED ( Sales[Customer] ), [Total Sales], , DESC, Dense )
 RETURN IF ( _rank <= [Top N Value], [Total Sales] )
 ```
-Steps: Enter data (or DAX table `TopN = { 3, 5, 10 }`) > slicer on TopN > bar chart with Customer and `Sales (Top N)`. For a slicer that lists only top customers, add a `Is Top Customer = IF ( ... <= N, 1, 0 )` measure as a visual-level filter on the customer slicer (whether slicers accept a measure filter: from memory, unverified).
+Steps: Enter data (or DAX table `TopN = { 3, 5, 10 }`, whose column is called Value by default: rename it to TopN to match the measure) > slicer on TopN > bar chart with Customer and `Sales (Top N)`. For a slicer that lists only top customers, add a `Is Top Customer = IF ( ... <= N, 1, 0 )` measure as a visual-level filter on the customer slicer (whether slicers accept a measure filter: from memory, unverified).
 **Alternative:** Native visual-level Top N filter (fixed N, no user choice); or a bookmark per N.
 **Result:** Reproduced with pandas. Top 3 returns Acme 90, Birla 75, Cipla 60, Delta 60 (tie), total 285; Top 5 adds Eon 40 and Fynn 30, total 355; all customers 385.
 **Pandas check:**
@@ -1345,7 +1385,7 @@ Orphan Staff = COUNTROWS ( FILTER ( Staff, ISBLANK ( Staff[DeptID] ) || ISBLANK 
 ```
 Steps: Table view of Staff and Dept; Model view to confirm relationship; Transform data > column profile.
 **Alternative:** Add an "Unknown" row to the Dept table and a default key such as -1 for staff with no department.
-**Result:** Reproduced with pandas: Sales 2, Ops 1, IT 1, (Blank) 2; orphan key found: 9; rows with no key: 1.
+**Result:** Reproduced with pandas: Sales 2, Ops 1, IT 1, (Blank) 2; orphan key found: 9 (pandas prints it as `[9.0]` because the empty key makes the column decimal); rows with no key: 1.
 **Pandas check:**
 ```python
 import pandas as pd
@@ -1468,7 +1508,7 @@ out["Share %"] = (100*out.Selected/out.Company).round(1); print(out)
 ```
 **Version / licensing note:** Edit interactions behaviour per the Microsoft "Change how visuals interact" page listed in research/Book04_Part06_sources.md (not re-fetched). ALL/REMOVEFILTERS semantics from memory, unverified (Learn unreachable).
 **Edge cases:** Other slicers (Location) still filter the "company" number if you only remove Dept; if the visual is a card without Location this is fine, but a share % can exceed 100 if filters are removed inconsistently; page and report filters in the Filters pane still apply.
-**Likely follow-ups:** 1) *ALL vs ALLSELECTED?* ALLSELECTED respects outer filters; ALL ignores them. 2) *Does the Filters pane filter stop with ALL?* ALL inside CALCULATE removes it for that measure.
+**Likely follow-ups:** 1) *ALL vs ALLSELECTED?* ALLSELECTED respects outer filters; ALL ignores them. 2) *Does ALL also remove a Filters-pane filter?* Only a filter on the same column (here Dept); a page or report filter on another column, such as Year, still applies.
 **Common mistakes:** Removing all filters and losing the date filter too; using Edit interactions then forgetting a new visual picks up the slicer by default.
 
 ### Q61 ⭐ 🔴 How would you design one HR page where managers pick the measure (headcount, attrition, average tenure) and the grouping (department, location, grade) and can still drill through to employees?
@@ -1494,7 +1534,12 @@ Chart Title = SELECTEDVALUE ( 'Measure Pick'[Measure Pick], "Headcount" ) & " by
 Steps: New parameter > Fields twice (Measure Pick from Q51; Group Pick above) > slicers > chart > Employee Detail page with drillthrough fields > Back button; hide the detail page from tabs.
 **Alternative:** Separate pages per grouping (simple, repetitive), or a matrix with the three columns as a hierarchy.
 **Result:** Reproduced with pandas (Q51 output): by Dept Attrition % Sales 33.3, Ops 40.0, IT 50.0, Finance 0.0; by Location Bengaluru 22.2, Hyderabad 44.4; by Grade G1 66.7, G2 25.0, G3 0.0; Headcount by Grade 3, 4, 2.
-**Pandas check:** (setup block from Q51) the Q51 `metrics` function grouped by `Dept`, `Location` or `Grade`; its printed output is listed in Q51.
+**Pandas check:** (setup block from Q51)
+```python
+exec(open("setup.py").read())
+for by in ("Dept","Location","Grade"): print(emp.groupby(by).apply(metrics, include_groups=False))
+```
+Output matches the figures in the Result line above.
 **Version / licensing note:** Field parameters and the drillthrough/tooltip limitation per the sources file (not re-fetched); the interaction of parameter axes with right-click drillthrough is unverified, from memory.
 **Edge cases:** Small groups give silly percentages (Grade G1 66.7 from 3 people); quarterly attrition is not annual; blank grades; an unsorted parameter order; formats per measure.
 **Likely follow-ups:** 1) *Row-level security?* Managers should only see their own team (a separate part). 2) *Why test each grouping?* Drillthrough context differs per choice.

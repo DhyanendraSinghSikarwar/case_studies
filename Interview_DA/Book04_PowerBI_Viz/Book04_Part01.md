@@ -47,7 +47,7 @@
 **What the interviewer is checking:** Do you understand "build" versus "share and consume"?
 **Say this in the interview:** "Desktop is the free Windows application where I connect to data, transform it, build the model with relationships and DAX, and design the report. The Service is the cloud site where I publish it, share it, schedule refresh, build dashboards and manage security."
 **Explain simply:**
-- Desktop (per Microsoft): full data modelling and design tools; Power Query Editor; DAX, relationships; performance analyzer; external tools; composite models.
+- Desktop (per Microsoft): full data modelling and design tools; Power Query Editor (data cleaning, Q8); DAX (Power BI's formula language) and relationships; performance analyzer; external tools; composite models (mixing Import and DirectQuery, Q15).
 - Service (per Microsoft): workspaces, apps, dataflows, scheduled refresh, email subscriptions, alerts, row-level security (RLS, which limits which rows each person sees), sensitivity labels.
 - **Dashboards are a Service feature**; Microsoft states they are not available in Desktop.
 - Both can connect to data and make visuals, and the Service can also edit reports in the browser (lighter editing than Desktop).
@@ -72,7 +72,7 @@
 - **Report:** one or more pages of visuals based on a single semantic model.
 - **Dashboard:** a single page of tiles pinned from reports (Service only).
 - **Tile:** one pinned item on a dashboard.
-- Microsoft's concepts page also lists app, workspace, capacity and dataflow as Service-side terms.
+- Microsoft's concepts page also lists app, workspace, capacity (reserved computing power for a workspace) and dataflow (reusable data cleaning, Q45) as Service-side terms.
 **Example:** Visual = "Attrition % by department" bar chart. Report = 4-page "HR Analytics" file. Dashboard = one screen with 6 tiles the CHRO checks daily.
 **DAX / Steps:** Not a measure question.
 **Alternative:** Some sources say the building blocks are data, model, visuals, report, dashboard; keep the Microsoft terms and explain.
@@ -97,7 +97,7 @@
 **DAX / Steps:** Pin a tile (not run here): open report in the Service > hover a visual > Pin visual > choose or create a dashboard.
 **Alternative:** Analogy: a report is a book, a dashboard is the poster summarising it.
 **Version / licensing note:** Verified on Microsoft Learn: "Intro to dashboards for Power BI designers" (comparison table). Creating dashboards in a workspace needs Pro or PPU; in My workspace it does not, per the same page.
-**Edge cases:** Pinning an entire report page keeps drill-down working in that tile.
+**Edge cases:** Pinning an entire report page keeps drill-down working in that tile (from memory, unverified).
 **Likely follow-ups:**
 1. *Can a dashboard be built in Desktop?* No.
 2. *What happens when data refreshes?* Tiles update as the underlying data changes.
@@ -110,17 +110,17 @@
 **Explain simply:**
 1. **Requirements:** which questions, who uses it, which KPIs (from memory, standard practice).
 2. **Connect and prepare:** Get data, clean in Power Query (remove blanks, fix types).
-3. **Model:** relationships between tables; **DAX** (Power BI's formula language) measures.
+3. **Model:** relationships between tables, ideally a star schema (small lookup tables such as Department around one central table of events); **DAX** (Power BI's formula language) measures.
 4. **Build visuals:** cards, charts, slicers, tooltips.
 5. **Explore and check:** validate numbers against the source.
-6. **Publish and share:** workspace, app or share link; scheduled refresh; security (RLS).
+6. **Publish and share:** workspace, app or share link; scheduled refresh; security (RLS, row-level security: each person sees only their rows).
 7. **Administer/monitor.**
 - Microsoft's own seven steps (get started; connect and prepare; model and combine; build; explore; share; administer and secure) match this.
 **Example:** HR MIS: take the monthly HRIS export, clean department names, relate Employees to Departments and a Date table, create Headcount and Attrition % measures, publish, refresh daily at 6 am.
 **DAX / Steps:** Not a single measure; see Q16 for hands-on steps.
 **Alternative:** Short version for a fresher: "Get data, transform, model, visualise, publish, refresh."
 **Version / licensing note:** Verified on Microsoft Learn: "What is Power BI?" (seven-step list). Scheduled refresh limits are in other books.
-**Edge cases:** On-premises sources need a gateway for refresh in the Service (from memory, unverified).
+**Edge cases:** On-premises sources need a gateway (a small bridge program that lets the cloud reach data inside your network) for refresh in the Service (from memory, unverified).
 **Likely follow-ups:**
 1. *Where do you validate?* Compare totals with the source before publishing.
 2. *Where is the time spent?* Usually data cleaning and modelling.
@@ -140,7 +140,7 @@
 **DAX / Steps:** (not run here) Desktop > Home > Get data > choose category > Connect > Navigator > Load or Transform Data.
 **Alternative:** Mention Web (URL) and Blank query for advanced users.
 **Version / licensing note:** Verified on Microsoft Learn: "Data sources in Power BI Desktop" and "What is Power BI?". A new Power Query Get Data experience is in preview per the first page; the legacy dialog is described above.
-**Edge cases:** Needing credentials, privacy levels and gateways for on-premises sources.
+**Edge cases:** Sources ask for credentials (login details, Q36); privacy levels (settings that stop data from one source leaking into another) and gateways (a bridge program for on-premises data) may also be needed.
 **Likely follow-ups:**
 1. *Excel or SQL, which is better?* SQL for scale and refresh; Excel for quick starts.
 2. *Can you connect to a PDF?* From memory, yes via the PDF connector; unverified here.
@@ -199,11 +199,11 @@
 - Contents (queries, model, report, data cache) are from memory, unverified on a single page; the PBIP page does mention a local data cache for the semantic model.
 - Because it can contain the data, a .pbix may hold salaries and other sensitive HR data: do not email it casually.
 - Alternative save format: **Power BI Project (.pbip)** stores report and model as folders of text files, useful for Git version control; you can convert .pbix to .pbip and back via Save As.
-- A **.pbit** template (no data) is from memory, unverified.
+- A **.pbit** template (same project without the data) is covered in Q41.
 **Example:** An HR analyst saves "Attrition_Dashboard.pbix" (30 MB). It includes the cleaned data, so sharing it externally would leak employee details; instead publish to the Service with access control.
 **DAX / Steps:** File > Save as > choose .pbix or Power BI project (not run here).
 **Alternative:** Publishing from Desktop sends the model and report to the Service as a semantic model plus report.
-**Version / licensing note:** Verified: Microsoft Learn "Query Overview in Power BI Desktop", "Power BI Desktop projects (PBIP)". Contents list: from memory, unverified.
+**Version / licensing note:** Verified: Microsoft Learn "Query Overview in Power BI Desktop", "Power BI Desktop projects (PBIP)". Contents list: from memory, unverified. The .pbit point is in Q41.
 **Edge cases:** A newer .pbix cannot be opened by older Desktop versions ("Download Power BI Desktop" page).
 **Likely follow-ups:**
 1. *File too big?* Reduce columns/rows or use better modelling.
@@ -283,6 +283,7 @@
 - Fix 3, cleanest: in Power Query set the type to Text, because IDs, phone numbers and pin codes are labels, not quantities.
 **Example:** Five employees (IDs 1001 to 1005). A grand total of 5015 for "Employee ID" is meaningless; the real headcount is 5.
 **Sample data:** Table: Employees
+
 | EmployeeID | Name | Department | Salary |
 |---|---|---|---|
 | 1001 | Asha | HR | 52000 |
@@ -300,13 +301,16 @@ Click-path (not run here): select EmployeeID in the Data pane > Column tools > S
 **Result:** Reproduced with pandas (not run in DAX): summing EmployeeID gives 5015; Employee Count gives 5 overall, HR 2, IT 2, Sales 1.
 **Pandas check:**
 ```python
+import pandas as pd
+emp = pd.DataFrame({"EmployeeID":[1001,1002,1003,1004,1005],
+  "Department":["HR","IT","IT","Sales","HR"]})
 print(emp.EmployeeID.sum())          # 5015
 print(emp.EmployeeID.nunique())      # 5
 print(emp.groupby("Department").EmployeeID.nunique())
 ```
-Output: `5015`, `5`, then HR 2, IT 2, Sales 1.
+Output (run with pandas 3.0.5): `5015`, `5`, then HR 2, IT 2, Sales 1.
 **Version / licensing note:** DISTINCTCOUNT and COUNTROWS verified on Microsoft Learn (DISTINCTCOUNT function (DAX); COUNTROWS function (DAX)). Menu names from memory, unverified.
-**Edge cases:** DISTINCTCOUNT counts a blank as a value (use DISTINCTCOUNTNOBLANK to skip it), and returns BLANK if there are no rows; distinct counts are not additive across categories, so totals can be smaller than the sum of parts.
+**Edge cases:** DISTINCTCOUNT counts a blank as a value (use DISTINCTCOUNTNOBLANK to skip it), and (from memory, unverified) returns BLANK if there are no rows; distinct counts are not additive across categories, so totals can be smaller than the sum of parts.
 **Likely follow-ups:**
 1. *Why does a Name column not sum?* Text cannot be added.
 2. *Will fixing it in one visual fix all?* No; the column-level setting does.
@@ -319,7 +323,7 @@ Output: `5015`, `5`, then HR 2, IT 2, Sales 1.
 **Explain simply:**
 - **Import:** data cached in the model; refresh to update; Microsoft says to use Import by default.
 - **DirectQuery:** no data imported; each visual queries the source; speed depends on the source; one-million-row intermediate result limit per query (Premium can raise it).
-- **Live connection:** connects to an existing semantic model or Analysis Services; no Power Query.
+- **Live connection:** connects to an existing semantic model or Analysis Services (Microsoft's server engine that hosts models); no Power Query.
 - Newer options: hybrid tables (mix of both), Direct Lake (Fabric), composite models, aggregations.
 - Refresh frequency (Pro 8 per day, Premium/PPU 48) is from the DirectQuery page.
 **Example:** Quarterly HR report from Excel: Import. A live attendance feed where swipes must show within minutes: consider DirectQuery or a hybrid table.
@@ -342,6 +346,7 @@ Output: `5015`, `5`, then HR 2, IT 2, Sales 1.
 - Check totals against the Excel file.
 **Example:** Employees.xlsx with 6 rows: Headcount 6, total salary 410,000.
 **Sample data:** Table: Employees
+
 | EmployeeID | Department | Salary |
 |---|---|---|
 | 1001 | HR | 52000 |
@@ -355,7 +360,7 @@ Output: `5015`, `5`, then HR 2, IT 2, Sales 1.
 1. Home > Get data > Excel > select file > Open.
 2. In Navigator, tick the table > Transform Data (or Load).
 3. Power Query: set EmployeeID to Text, Salary to Whole number > Close & Apply.
-4. Report view: tick Department and Headcount in the Fields pane; change visual type in the Visualizations pane.
+4. Report view: create the two measures below (Home > New measure), then tick Department and Headcount in the Data pane (older name: Fields pane); change visual type in the Visualizations pane.
 5. File > Save; Home > Publish > pick workspace.
 Measures (not run here):
 ```dax
@@ -366,9 +371,14 @@ Total Salary = SUM ( Employees[Salary] )
 **Result:** Reproduced with pandas: HR 2 / 101,000; IT 3 / 249,000; Sales 1 / 60,000; grand total 6 / 410,000.
 **Pandas check:**
 ```python
-emp.groupby("Department").agg(Headcount=("EmployeeID","count"),TotalSalary=("Salary","sum"))
+import pandas as pd
+emp = pd.DataFrame({"EmployeeID":range(1001,1007),
+  "Department":["HR","IT","IT","Sales","HR","IT"],
+  "Salary":[52000,78000,81000,60000,49000,90000]})
+print(emp.groupby("Department").agg(Headcount=("EmployeeID","count"),TotalSalary=("Salary","sum")))
+print(len(emp), emp.Salary.sum())
 ```
-Output: HR 2, 101000; IT 3, 249000; Sales 1, 60000 (grand total 6 and 410000).
+Output (run with pandas 3.0.5): HR 2, 101000; IT 3, 249000; Sales 1, 60000; then `6 410000`.
 **Version / licensing note:** Verified: Microsoft Learn "Get started with Power BI Desktop"; DAX COUNTROWS and SUM function pages. Publishing to a workspace needs a Service account/licence (from the licence page, see Q19).
 **Edge cases:** Excel file moved later gives a connection error; blank rows; headers not promoted.
 **Likely follow-ups:**
@@ -386,7 +396,7 @@ Output: HR 2, 101000; IT 3, 249000; Sales 1, 60000 (grand total 6 and 410000).
 - You cannot create dashboards on mobile, only view and share them.
 - The Windows app was retired on 31 Dec 2023; use the Service in a browser on Windows.
 **Example:** An HR head at an airport checks yesterday's attendance tile and sets an alert if absenteeism goes above 6%.
-**DAX / Steps:** (not run here) Desktop > View tab > Mobile layout > arrange visuals > publish.
+**DAX / Steps:** (not run here; menu path from memory, unverified) Desktop > View tab > Mobile layout > arrange visuals > publish.
 **Alternative:** Use the browser version of the Service on a phone.
 **Version / licensing note:** Verified: Microsoft Learn "What Are the Power BI Mobile Apps?" (dated 2025-10 and updated 2026-02) and "Intro to dashboards for Power BI designers". Which licence a mobile viewer needs: not on the pages I read; see Q3/Q19 for sharing rules.
 **Edge cases:** A report without a mobile layout is shown the desktop layout.
@@ -401,7 +411,7 @@ Output: HR 2, 101000; IT 3, 249000; Sales 1, 60000 (grand total 6 and 410000).
 **Say this in the interview:** "A semantic model is the data model that reports are built on: the tables, relationships and measures, plus the connection to the source. It used to be called a dataset. Many reports can use the same model so the numbers match everywhere."
 **Explain simply:**
 - Microsoft: semantic models represent a source of data ready for reporting and visualization; formerly known as dataset.
-- A model developed in Desktop is effectively an Analysis Services tabular model, and runs in Import, DirectQuery or Composite mode.
+- A model developed in Desktop is effectively an Analysis Services tabular model (Microsoft's engine that stores and calculates models), and runs in Import, DirectQuery or Composite mode.
 - It can be created by uploading a Desktop file, an Excel workbook or CSV, or by connecting to an external model.
 - Models can enforce row-level security.
 - Import models need refresh (scheduled or on demand); ownership matters for changing settings.
@@ -429,7 +439,7 @@ Output: HR 2, 101000; IT 3, 249000; Sales 1, 60000 (grand total 6 and 410000).
 - Free licence cannot share or publish to others' workspaces; Pro/PPU can, and capacity (Fabric F64+ or Premium) lets free users consume.
 **Example:** A fresher installs Desktop on a laptop from the Store and builds a practice report without paying; to share with a team lead, the company must give licences.
 **DAX / Steps:** (not run here) Open the Microsoft Store > search Power BI Desktop > Install; or Download Center > Download > choose 64-bit > Next > run installer. Check version: Help > About.
-**Alternative:** From the Service, the Download icon (top right) > Power BI Desktop.
+**Alternative:** From the Service, the Download icon (top right) > Power BI Desktop (from memory, unverified).
 **Version / licensing note:** Verified: Microsoft Learn "Download Power BI Desktop" (ms.date 2026-10-09) and "Power BI service features by license type" (ms.date 2026-08-24). Prices not quoted; they change.
 **Edge cases:** Store and old .msi versions side by side are not supported; work laptops may block installs.
 **Likely follow-ups:**
@@ -477,10 +487,12 @@ Steps (not run here): 1) Desktop: build the card visual, then Home > Publish to 
 **Result:** Reproduced with pandas: 2 of 8 employees have Status "Left", so the card shows 0.25, formatted as 25.0%. DIVIDE, COUNTROWS and CALCULATE syntax checked on Microsoft Learn; the numbers are not from a DAX engine.
 **Pandas check:**
 ```python
+import pandas as pd
+emp = pd.DataFrame({"Status":["Active","Left","Active","Active","Left","Active","Active","Active"]})
 att = (emp.Status == "Left").sum() / len(emp)
 print("Attrition % =", round(att*100, 1))
 ```
-Output: `Attrition % = 25.0`
+Output (run with pandas 3.0.5): `Attrition % = 25.0`
 **Version / licensing note:** Verified on Microsoft Learn ("Introduction to Dashboard Tiles for Power BI Designers"): dashboards and tiles are Power BI Service features, not in Desktop, and you cannot create dashboards on mobile but can view and share them. Sharing a dashboard needs a Pro or higher licence, unless content sits in Premium or Fabric F64+ capacity (Microsoft Learn: Power BI service features by license type).
 **Edge cases:** If you never saved the report, clicking the tile does nothing. Some formatting (background colour, tooltip settings) does not carry to the tile. Tiles from import models refresh when the semantic model refreshes.
 **Likely follow-ups:** 1) *Report vs dashboard?* Report: many pages, one semantic model, built in Desktop. Dashboard: one page of tiles, can mix several reports. 2) *Can a tile come from two reports?* Yes, the dashboard can hold tiles from several.
@@ -578,10 +590,13 @@ Headcount = COUNTROWS ( Employees )
 **Result:** Reproduced with pandas: summarized = HR 2, IT 3, Sales 3 (3 rows); underlying = 8 rows. Not from a Power BI engine.
 **Pandas check:**
 ```python
+import pandas as pd
+emp = pd.DataFrame({"EmpID":range(101,109),
+  "Dept":["Sales","Sales","HR","HR","IT","IT","IT","Sales"]})
 s = emp.groupby("Dept", as_index=False).agg(Headcount=("EmpID","count"))
 print(s); print("Underlying rows:", len(emp))
 ```
-Output: HR 2, IT 3, Sales 3, then `Underlying rows: 8`.
+Output (run with pandas 3.0.5): HR 2, IT 3, Sales 3, then `Underlying rows: 8`.
 **Version / licensing note:** Verified on the Learn export page: row limits above; custom visuals may not support export; admins can disable export and admin settings override report settings. Sensitivity labels carry to xlsx exports.
 **Edge cases:** Grayed-out Export means the designer or admin disabled it. CSV has no total rows. With DirectQuery the export is limited to 16 MB uncompressed. Underlying export fails if "Show items with no data" is on or tables have no unique key.
 **Likely follow-ups:** 1) *Why is my export truncated?* Row cap. 2) *Is sensitive HR data safe?* Labels and RLS apply; still restrict export for salary data.
@@ -620,13 +635,16 @@ Output: HR 2, IT 3, Sales 3, then `Underlying rows: 8`.
 **Result:** Reproduced with pandas: before refresh 8, after refresh 9. Not a Power BI result.
 **Pandas check:**
 ```python
+import pandas as pd
+emp = pd.DataFrame({"EmpID":range(101,109)})        # the 8 rows already loaded
+new_row = pd.DataFrame({"EmpID":[109]})              # Zoya, added in Excel
 snap = emp.copy(); new = pd.concat([emp, new_row])
 print(len(snap), "->", len(new))
 ```
-Output: `Excel now has 9 rows; report still shows 8 until Refresh; after Refresh: 9`
+Output (run with pandas 3.0.5): `8 -> 9` (the report keeps showing the snapshot of 8 until you click Refresh, then shows 9).
 **Version / licensing note:** Verified on Learn: shared-capacity models get up to 8 scheduled refreshes per day; Premium, PPU and Fabric capacity up to 48 (Data refresh in Power BI). Refresh shows only changes saved in the file.
 **Edge cases:** If a column is renamed or removed in Excel, visuals and measures that use it break; fix in Power Query. Service refresh fails after a schema change until you refresh in Desktop and republish.
-**Likely follow-ups:** 1) *Why does the Service not update?* Needs schedule and gateway or cloud file. 2) *Refresh only visuals?* View/Optimize ribbon Refresh visuals, which does not re-import.
+**Likely follow-ups:** 1) *Why does the Service not update?* Needs schedule and gateway or cloud file. 2) *Refresh only visuals?* A Refresh visuals command exists on a ribbon (tab name from memory, unverified); it does not re-import data.
 **Common mistakes:** Forgetting to save the Excel file; thinking opening the .pbix refreshes it.
 
 ### Q28 ⭐⭐ 🟢 How do you type a small list, such as departments and cost centres, straight into Power BI Desktop without an Excel file?
@@ -661,10 +679,11 @@ DATATABLE (
     { { "Sales", "CC100" }, { "HR", "CC200" }, { "IT", "CC300" }, { "Finance", "CC400" } }
 )
 ```
-**Alternative:** The DATATABLE measure above, or keep the list in a SharePoint list or Excel so non-technical people can edit it.
+**Alternative:** The DATATABLE calculated table above (a table made by a formula, not a measure), or keep the list in a SharePoint list or Excel so non-technical people can edit it.
 **Result:** Reproduced with pandas: a 4-row, 2-column table as shown. Not from Power BI.
 **Pandas check:**
 ```python
+import pandas as pd
 dep = pd.DataFrame({"Dept":["Sales","HR","IT","Finance"],"CostCentre":["CC100","CC200","CC300","CC400"]})
 print(dep)
 ```
@@ -699,13 +718,17 @@ CALCULATE ( SUM ( Employees[Salary] ), Employees[SalaryBand] = "High" )
 **Result:** Reproduced with pandas: SalaryBand High for Ravi, Karan, Imran, Sneha. Total Salary all = 397000; by Dept HR 95000, IT 165000, Sales 137000; High Salary Total = 229000.
 **Pandas check:**
 ```python
+import pandas as pd
+emp = pd.DataFrame({"Name":["Asha","Ravi","Meena","Karan","Divya","Imran","Sneha","Tarun"],
+  "Dept":["Sales","Sales","HR","HR","IT","IT","IT","Sales"],
+  "Salary":[40000,52000,35000,60000,48000,55000,62000,45000]})
 emp["SalaryBand"] = emp.Salary.apply(lambda x: "High" if x >= 50000 else "Standard")
 print(emp.Salary.sum()); print(emp.groupby("Dept").Salary.sum())
 print(emp[emp.SalaryBand=="High"].Salary.sum())
 ```
-Output: `397000`; HR 95000, IT 165000, Sales 137000; `229000`.
-**Version / licensing note:** IF, SUM and CALCULATE syntax verified on Microsoft Learn. Field list wording verified on Learn. The calculator icon for measures is confirmed on Learn's export page; the other glyph shapes (fx for calculated column) rest on community posts, unverified.
-**Edge cases:** A numeric column with a sigma sum can be turned off (Q "Employee ID summed"). Hidden fields do not show. A measure inside a table shows the table's icon context but the calculator on the field.
+Output (run with pandas 3.0.5): `397000`; HR 95000, IT 165000, Sales 137000; `229000`.
+**Version / licensing note:** IF, SUM and CALCULATE syntax verified on Microsoft Learn. Field list wording verified on Learn. Icon shapes (calculator for a measure, sigma for a summable column, a column-with-fx style icon for a calculated column) are from memory, unverified; click the field and read the ribbon.
+**Edge cases:** A numeric column with a sigma sum can be turned off (Q14). Hidden fields do not show. A measure inside a table shows the table's icon context but the calculator on the field.
 **Likely follow-ups:** 1) *Column or measure for a ratio?* Measure; ratios do not add up per row. 2) *Cost?* Calculated columns use model memory.
 **Common mistakes:** Using a calculated column for percentages; treating a measure like a column in a slicer.
 
@@ -749,7 +772,7 @@ Output: `397000`; HR 95000, IT 165000, Sales 137000; `229000`.
 **Say this in the interview:** "Desktop is for building: data cleaning, modelling, DAX and report design. The Service is for sharing and running: workspaces, apps, dashboards, scheduled refresh, subscriptions, alerts and security administration."
 **Explain simply:**
 - **Service only:** workspaces, apps, dashboards and tiles, scheduled refresh, email subscriptions, alerts, Q&A, embedding, usage metrics, sensitivity labels and audit logs (Microsoft Learn: What is Power BI?).
-- **Desktop only:** more than 100 connectors, Power Query Editor, DAX models, calculated columns, relationships, performance analyzer, external tools, composite models (same page).
+- **Desktop only:** the full Get data connector range (the Service connects to many sources too, so treat this as approximate), Power Query Editor, DAX models, calculated columns, relationships, performance analyzer, external tools, composite models (same page).
 - Overlap: both connect to data and build visuals; the Service can also edit some models in the browser (Learn: DirectQuery in Power BI).
 - Typical flow: build in Desktop > Publish > share from the Service.
 **Example:** Analyst builds the attrition report in Desktop; the HR manager gets it in an app with daily refresh at 7 am.
@@ -816,7 +839,7 @@ Output: `397000`; HR 95000, IT 165000, Sales 137000; `229000`.
 ### Q36 ⭐⭐ 🟡 What credential types does Power BI ask for when you connect to a source (Windows, Database, Organizational account, Anonymous), and where do you change them?
 **Asked at:** commonly asked (no company-specific report found); gap-fill from standard practice.
 **What the interviewer is checking:** Do you know the four credential types and where to edit saved ones?
-**Say this in the interview:** "Windows uses my Windows login, Database uses a username and password stored in the database, Organizational account is single sign-on through Microsoft Entra, and Anonymous is for public sources. I edit saved credentials in Data source settings in Desktop, and in the dataset settings or gateway connection in the Service."
+**Say this in the interview:** "Windows uses my Windows login, Database uses a username and password stored in the database, Organizational account is single sign-on through Microsoft Entra (Microsoft's sign-in system, formerly Azure AD), and Anonymous is for public sources. I edit saved credentials in Data source settings in Desktop, and in the semantic model settings (formerly dataset) or gateway connection in the Service."
 **Explain simply:**
 - **SQL Server connector** supports Database/Basic, Windows, Organizational account and service principal (Microsoft Learn: Power Query SQL Server connector).
 - **Excel** online-hosted file: Anonymous, Basic or Organizational account (Learn: Power Query Excel connector).
@@ -857,7 +880,7 @@ in
 **Alternative:** Create a parameter FilePath (Home > Manage parameters) and use `File.Contents(FilePath)` (from memory), so one change fixes all queries.
 **Result:** Not run here. No pandas reproduction, since this is a connection fix, not a calculation.
 **Version / licensing note:** Data source settings menu path verified on Learn (Data sources in Power BI Desktop). Change Source and Edit Permissions button labels, and parameter steps: from memory or third-party, unverified.
-**Edge cases:** Sheet renamed gives a different error. File open in Excel can affect legacy .xls reads (Learn). A published model may need credentials re-entered.
+**Edge cases:** The exact error text for a moved file is usually a "file not found" style message, so the quoted wording in the question is approximate (from memory, unverified). Sheet renamed gives a different error. File open in Excel can affect legacy .xls reads (Learn). A published model may need credentials re-entered.
 **Likely follow-ups:** 1) *Refresh fails in the Service only?* Gateway or credentials. 2) *Many files?* Folder connector.
 **Common mistakes:** Deleting the query and rebuilding everything; moving files without telling report owners.
 
@@ -1067,7 +1090,7 @@ in
 **Sample data:** Table `Employees[Dept]`, 8 rows: Sales, Sales, Support, Sales, Tech, Support, Sales, Tech.
 **DAX / Steps (not run here):** None. To see column sizes use an external tool such as DAX Studio (VertiPaq Analyzer view, from memory, unverified).
 **Alternative:** DirectQuery keeps data at the source (slower queries, no copy); see Q55 for Direct Lake.
-**Result:** reproduced with pandas: dictionary {0: Sales, 1: Support, 2: Tech}; stored codes [0, 0, 1, 0, 2, 1, 0, 2]. This is only a teaching sketch of dictionary encoding, not VertiPaq's real algorithm.
+**Result:** reproduced with pandas (dictionary encoding means storing each distinct value once in a lookup and keeping only small codes per row): dictionary {0: Sales, 1: Support, 2: Tech}; stored codes [0, 0, 1, 0, 2, 1, 0, 2]. This is only a teaching sketch of dictionary encoding, not VertiPaq's real algorithm.
 **Pandas check:**
 ```python
 import pandas as pd
@@ -1081,7 +1104,7 @@ dictionary: {0: 'Sales', 1: 'Support', 2: 'Tech'}
 stored codes: [0, 0, 1, 0, 2, 1, 0, 2]
 ```
 **Version / licensing note:** Import size limits: see Q52. The Learn pages above carry dates 2024-12-30 (data reduction) and 2026-09-02 (Direct Lake).
-**Edge cases:** High-cardinality columns (IDs, timestamps) bloat the model. Calculated columns compress less well than Power Query columns, per the data-reduction page.
+**Edge cases:** High-cardinality columns (many unique values, such as IDs and timestamps) bloat the model. Calculated columns compress less well than Power Query columns, per the data-reduction page.
 **Likely follow-ups:**
 1. *Is data in memory only?* It is persisted to disk and loaded into memory for queries.
 2. *How to shrink a model?* Remove unused columns/rows, summarise, use numeric types.
@@ -1146,7 +1169,7 @@ Total 6.0%
 - **Workspace roles:** limit who is Contributor or above; they bypass RLS.
 - **Sensitivity labels** (Microsoft Purview): tag content "Confidential"; the label and encryption follow exports to Excel, PowerPoint, PDF and .pbix, but in the Service a label does not itself change who can open the report (Learn: Sensitivity Labels in Power BI).
 - RLS does not hide columns; for that use object-level security. Anyone with access to a report sees the entire underlying model unless RLS limits it.
-- Data minimisation: drop bank account and PAN columns that no one needs.
+- Data minimisation: drop bank account and PAN (India's tax ID number) columns that no one needs.
 **Example:** Payroll table with managers' emails. Role "My Team" filters `ManagerEmail = USERPRINCIPALNAME()`. Asha sees her 2 staff (total salary 112,000); Ravi sees his 2 (84,000); an unmapped person sees nothing; an admin sees all 6 rows (381,000).
 **Sample data:** Table `Payroll`.
 
@@ -1217,7 +1240,7 @@ no RLS 6 381000
 - Learn: Data reduction techniques: shared capacity can host models up to 1 GB; Premium can host larger depending on SKU.
 - With Fabric capacities, enabling Large semantic model storage format raises the limit to the capacity size (or an admin-set maximum). Desktop upload size remains limited to 10 GB.
 - The 1 GB is the compressed model, not the source file (see Q48).
-**Example:** A 6 GB CSV of attendance swipes might compress to roughly 0.6 GB; fine for Pro. But 40 GB would not fit; reduce it or use Premium/Fabric.
+**Example:** Illustration only (compression depends on the data, Q48): a 6 GB CSV of attendance swipes might compress to roughly 0.6 GB, fine for Pro. But 40 GB would not fit; reduce it or use Premium/Fabric.
 **DAX / Steps (not run here):** Service > semantic model > Settings > Large semantic model storage format > On > Apply (needs eligible capacity).
 **Alternative:** Reduce the model (remove columns, summarise, DirectQuery), or use Direct Lake (Q55).
 **Version / licensing note:** From the two Learn pages above (ms.date 2025-06-17 and 2024-12-30). Per-user storage quotas were not verified. Premium P SKUs are being retired in favour of Fabric F SKUs per Learn.
@@ -1271,7 +1294,7 @@ DIVIDE (
 ```
 1. Desktop: build and publish the model to workspace "HR Model" (Home > Publish).
 2. Service: model > Manage permissions > grant Build to an analyst group; Settings > Endorsement > Promote/Certify.
-3. Analyst, Desktop: Home > Data > OneLake catalog / Power BI semantic models > select the model > Connect > build visuals > publish to their workspace.
+3. Analyst, Desktop: Home > Get data > Power BI semantic models (or OneLake catalog) > select the model > Connect > build visuals > publish to their workspace.
 **Alternative:** Analysts "copy a report" in the Service and modify it, since the data model is already built (Learn page). Or one workspace with Contributor access for all five, simpler but riskier.
 **Result:** reproduced with pandas: every report using the shared measure returns Total 6.0% and Sales 6.1% (same output as Q49), because the logic exists in one place.
 **Pandas check:** same snippet as Q49; run once, the result is shared by all reports.
@@ -1287,7 +1310,7 @@ DIVIDE (
 **What the interviewer is checking:** Fabric-era awareness: understanding storage modes and trade-offs, without overselling.
 **Say this in the interview:** "Direct Lake is a storage mode in Microsoft Fabric where the model reads Delta tables from OneLake straight into memory, giving Import-like speed without copying all the data on every refresh. It suits large, lake-based data with IT-managed preparation; Import is still better for self-service analysts."
 **Explain simply:**
-- Microsoft Learn: Direct Lake overview: Direct Lake loads data from Delta tables in OneLake (Fabric's single data store) into memory; queries run on the VertiPaq engine, like Import, whereas DirectQuery sends queries to the source.
+- Microsoft Learn: Direct Lake overview: Direct Lake loads data from Delta tables (an open table file format used in the lake) in OneLake (Fabric's single data store) into memory; queries run on the VertiPaq engine, like Import, whereas DirectQuery sends queries to the source.
 - Its refresh only copies metadata ("framing") and can finish in seconds, whereas Import refresh copies all data.
 - Two flavours: Direct Lake on OneLake (no DirectQuery fallback) and Direct Lake on SQL endpoints (can fall back to DirectQuery).
 - Use it when data is large, already in a Fabric lakehouse/warehouse, and freshness matters. Learn says Import often suits a self-service analyst who needs agility without IT dependency, and Power Query transformations only work with Import tables.
