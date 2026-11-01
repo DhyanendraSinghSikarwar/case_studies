@@ -7,7 +7,7 @@ Reviewer: Wave C agent C04_Part04. Only Book04_Part04.md and this report were ed
 - Pandas snippets run (pandas 3.0.5): 55 snippets extracted. First run: 45 OK, 9 failed (not self-contained: Q60, Q62, Q65, Q69, Q71, Q72, Q73, Q74, Q75). After fixes: 55 of 55 run OK.
 - Printed outputs and Result lines compared to real runs: all matched, except Q43 (UNION row count) and Q69 (printed lines), fixed below.
 - Every DAX result re-derived by hand on the sample data (filter context, totals, blanks); all agree with the Result lines.
-- Answers fixed: 27 (Q3, Q6, Q9, Q15, Q17, Q20, Q22, Q26, Q32, Q34, Q36, Q38, Q43, Q45, Q57, Q60, Q62, Q65, Q69, Q71, Q72, Q73, Q74, Q75; plus Q9/Q38 wording linked items). Markdown: code fences balanced, tables followed by a blank line.
+- Answers fixed: 24 (Q3, Q6, Q9, Q15, Q17, Q20, Q22, Q26, Q32, Q34, Q36, Q38, Q43, Q45, Q57, Q60, Q62, Q65, Q69, Q71, Q72, Q73, Q74, Q75). Markdown: code fences balanced, tables followed by a blank line.
 
 ## Fixes
 | Q | What was wrong | How fixed |

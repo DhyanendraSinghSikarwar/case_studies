@@ -480,13 +480,15 @@ m = att.merge(emp, on="EmpID").merge(dept, on="DeptID")
 absent = m[m["Status"] == "Absent"].groupby("DeptName").size()
 print("Absent Days by department (others are BLANK):"); print(absent.to_string())
 print("Departments a 'with data' slicer should list:", list(absent.index))
+print("Depts With Absence:", len(absent))
 ```
-Printed output:
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
 ```
 Absent Days by department (others are BLANK):
 DeptName
 Sales    1
 Departments a 'with data' slicer should list: ['Sales']
+Depts With Absence: 1
 ```
 **Version / licensing note:** Guidance page updated 2026-01 (Microsoft Learn); applies to Desktop models.
 **Edge cases:** Both plus RLS has its own checkbox; it applies bi-directional filtering when RLS is enforced.
@@ -893,12 +895,21 @@ Summed after joining to daily rows: 230000
 **Result:** reproduced with pandas: alphabetical order gives February, January, March; sorted by number gives January, February, March. A valid pair has at most 1 number per name; a bad pair has 2.
 **Pandas check:**
 ```python
+import pandas as pd
 d = pd.DataFrame({"MonthName":["January","February","March","January","February"],"MonthNo":[1,2,3,1,2]})
-print(d.sort_values("MonthName").MonthName.unique())   # ['February','January','March']
-print(d.sort_values("MonthNo").MonthName.unique())     # ['January','February','March']
-print(d.groupby("MonthName").MonthNo.nunique().max())  # 1 -> valid sort-by pair
+print(sorted(d.MonthName.unique()))                              # alphabetical (default text sort)
+print(d.drop_duplicates().sort_values("MonthNo").MonthName.tolist())   # sorted by MonthNo
+print(d.groupby("MonthName").MonthNo.nunique().max())            # 1 -> valid sort-by pair
+bad = pd.concat([d, pd.DataFrame({"MonthName":["January"],"MonthNo":[13]})])
+print(bad.groupby("MonthName").MonthNo.nunique().max())          # 2 -> invalid pair
 ```
-Printed: `['February', 'January', 'March']`, `['January', 'February', 'March']`, `1`. A bad pair (Jan with 1 and 13) printed `2`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+['February', 'January', 'March']
+['January', 'February', 'March']
+1
+2
+```
 **Version / licensing note:** Microsoft Learn: Sort One Column by Another Column in Power BI says this applies to Desktop and the Service; the Column tools path is Desktop Report view only, and the Service uses the tooltip workaround. Free vs Pro not stated.
 **Edge cases:** A column marked as a key column ignores its sort order. Month numbers stored as text sort wrongly ("10" before "2"). For fiscal years, use a fiscal month number.
 **Likely follow-ups:** 1) *Can you sort by a rank column with ties?* No, duplicates are not allowed. 2) *Should year be included?* Month Name alone merges all years, so also filter or group by Year.
@@ -988,11 +999,18 @@ Hire Date is the active relationship; Exit Date is inactive.
 **Result:** reproduced with pandas: Hires by month Jan 2, Feb 1, Mar 1; Exits Feb 1, Mar 1; the two unfilled exits go to a blank member.
 **Pandas check:**
 ```python
+import pandas as pd
 e = pd.DataFrame({"EmpID":["E1","E2","E3","E4"],"HireDate":pd.to_datetime(["2025-01-10","2025-01-25","2025-02-14","2025-03-02"]),"ExitDate":pd.to_datetime(["2025-03-05",None,"2025-02-28",None])})
-print(e.groupby(e.HireDate.dt.strftime("%Y-%m")).size().to_dict())
-print(e.groupby(e.ExitDate.dt.strftime("%Y-%m")).size().to_dict())
+print("Hires :", e.groupby(e.HireDate.dt.strftime("%Y-%m")).size().to_dict())
+print("Exits :", e.groupby(e.ExitDate.dt.strftime("%Y-%m")).size().to_dict())
+print("Exit rows with no date (go to the blank member):", int(e.ExitDate.isna().sum()))
 ```
-Printed (run for Q25, in the scratch folder): hires `{'2025-01': 2, '2025-02': 1, '2025-03': 1}`, exits `{'2025-02': 1, '2025-03': 1}`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Hires : {'2025-01': 2, '2025-02': 1, '2025-03': 1}
+Exits : {'2025-02': 1, '2025-03': 1}
+Exit rows with no date (go to the blank member): 2
+```
 **Version / licensing note:** Microsoft Learn: Understand star schema and importance for Power BI; Active vs inactive relationship guidance.
 **Edge cases:** Exit date is blank for current staff, which creates a BLANK date member. Hire and exit in the same month need both roles shown at once, which favours copies.
 **Likely follow-ups:** 1) *One slicer for both roles?* Inactive design: slicer filters only the active role. 2) *Is it a different table in the source?* No, same source.
@@ -1032,10 +1050,26 @@ CALCULATE (
 **Result:** reproduced with pandas (not from a DAX engine). By month: order date Jan 3000, Feb 2000, Mar 800; ship date Jan 1000, Feb 3500, Mar 500, plus 800 against a blank member (unshipped). Both columns total 5800.
 **Pandas check:**
 ```python
-by_order = sales.groupby(sales.OrderDate.dt.strftime("%Y-%m")).Amount.sum()
+import pandas as pd
+sales = pd.DataFrame({"OrderID":["O1","O2","O3","O4","O5"],
+  "OrderDate":pd.to_datetime(["2025-01-05","2025-01-20","2025-02-10","2025-02-25","2025-03-15"]),
+  "ShipDate":pd.to_datetime(["2025-01-08","2025-02-02","2025-02-12","2025-03-03",None]),
+  "Amount":[1000,2000,1500,500,800]})
+by_order = sales.groupby(sales.OrderDate.dt.strftime("%Y-%m").fillna("(Blank)")).Amount.sum()
 by_ship = sales.groupby(sales.ShipDate.dt.strftime("%Y-%m").fillna("(Blank)")).Amount.sum()
+out = pd.DataFrame({"By Order Date": by_order, "By Ship Date": by_ship}).fillna(0).astype(int)
+out.loc["Total"] = out.sum()
+print(out.to_string())
 ```
-Printed table: `(Blank) 0 | 800`, `2025-01 3000 | 1000`, `2025-02 2000 | 3500`, `2025-03 800 | 500`, totals `5800 | 5800`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+         By Order Date  By Ship Date
+(Blank)              0           800
+2025-01           3000          1000
+2025-02           2000          3500
+2025-03            800           500
+Total             5800          5800
+```
 **Version / licensing note:** Microsoft Learn: USERELATIONSHIP function (DAX) (its own example is this exact pattern); Active vs inactive relationship guidance (says a BLANK member can appear when ship date is blank). Not usable when RLS is defined on the table.
 **Edge cases:** The blank member row (unshipped orders) depends on a blank in the many-side column; the Learn guidance notes it appears via table expansion. A Date table that stops before the last ship date drops sales.
 **Likely follow-ups:** 1) *Which argument order?* Many-side first, but swapped if reversed. 2) *Need the relationship inactive?* It works whether active or not; but the Order Date one must exist.
@@ -1096,9 +1130,21 @@ Skill S1 = SQL, S2 = Power BI.
 **Result:** reproduced with pandas: SQL 18, Power BI 16; the grand total of all employees is 24, but the skill rows add to 34.
 **Pandas check:**
 ```python
+import pandas as pd
+skill = pd.DataFrame({"SkillID":["S1","S2"],"Skill":["SQL","Power BI"]})
+bridge = pd.DataFrame({"EmpID":[1,1,2,3],"SkillID":["S1","S2","S1","S2"]})
+ts = pd.DataFrame({"EmpID":[1,2,3],"TrainingHours":[10,8,6]})
 j = bridge.merge(skill,on="SkillID").merge(ts,on="EmpID")
-print(j.groupby("Skill").TrainingHours.sum())   # Power BI 16, SQL 18
-print(ts.TrainingHours.sum(), j.groupby("Skill").TrainingHours.sum().sum())  # 24 34
+by = j.groupby("Skill").TrainingHours.sum()
+print(by.to_string())
+print("All employees:", ts.TrainingHours.sum(), "| skill rows add up to:", by.sum())
+```
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Skill
+Power BI    16
+SQL         18
+All employees: 24 | skill rows add up to: 34
 ```
 **Version / licensing note:** Microsoft Learn: Many-to-many relationship guidance (updated 2026-01); Understand star schema (bridging table = factless fact). Whether the Service differs was not verified on a fetched page.
 **Edge cases:** Duplicate pairs in the bridge double-count. Employees with no skill vanish under skill slicers. Only one bi-directional relationship; more creates ambiguity.
@@ -1134,9 +1180,20 @@ print(ts.TrainingHours.sum(), j.groupby("Skill").TrainingHours.sum().sum())  # 2
 **Result:** reproduced with pandas: Sales 110, HR 40, (Blank) 30; the unmatched key is D9.
 **Pandas check:**
 ```python
+import pandas as pd
+dept = pd.DataFrame({"DeptID":["D1","D2"],"Dept":["Sales","HR"]})
+emp = pd.DataFrame({"EmpID":[1,2,3,4],"DeptID":["D1","D2","D1","D9"],"Salary":[50,40,60,30]})
 j = emp.merge(dept,on="DeptID",how="left"); j["Dept"] = j.Dept.fillna("(Blank)")
-print(j.groupby("Dept").Salary.sum())   # (Blank) 30, HR 40, Sales 110
-print(sorted(set(emp.DeptID)-set(dept.DeptID)))  # ['D9']
+print(j.groupby("Dept").Salary.sum().to_string())
+print("Orphan keys:", sorted(set(emp.DeptID)-set(dept.DeptID)))
+```
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Dept
+(Blank)     30
+HR          40
+Sales      110
+Orphan keys: ['D9']
 ```
 **Version / licensing note:** Microsoft Learn: Model relationships in Power BI Desktop (regular relationships, table expansion, blank virtual rows; blank rows apply only to regular, not limited, relationships). Desktop and Service share the engine; not separately verified.
 **Edge cases:** A many-to-many (limited) relationship uses inner-join semantics, so orphans silently disappear instead of showing a blank. Blank rows also come from blank ship dates (Q26).
@@ -1177,9 +1234,19 @@ Then Home > Close & Apply and recreate the relationship.
 **Result:** reproduced with pandas: `DeptID` is not unique (False); after trim and dedupe it has 3 unique rows (True). With two conflicting names for D2 two rows remain, so it needs a business decision.
 **Pandas check:**
 ```python
-print(dept.DeptID.is_unique)                                    # False
+import pandas as pd
+dept = pd.DataFrame({"DeptID":["D1","D2","D2","D3"],"Dept":["Sales","HR","HR ","Ops"]})
+print("DeptID unique before:", dept.DeptID.is_unique)
 fixed = dept.assign(Dept=dept.Dept.str.strip()).drop_duplicates()
-print(fixed.DeptID.is_unique)                                   # True
+print("DeptID unique after trim + dedupe:", fixed.DeptID.is_unique, "| rows:", len(fixed))
+conflict = pd.DataFrame({"DeptID":["D2","D2"],"Dept":["HR","People"]}).drop_duplicates()
+print("Conflicting names for D2 leave", len(conflict), "rows -> business decision")
+```
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+DeptID unique before: False
+DeptID unique after trim + dedupe: True | rows: 3
+Conflicting names for D2 leave 2 rows -> business decision
 ```
 **Version / licensing note:** Microsoft Learn: Model relationships in Power BI Desktop; Data types in Power BI (trim guidance). The Power Query M functions (Table.TransformColumns, Table.Distinct, Text.Trim) were not fetched here; `Text.Trim` is mentioned on the Data types page; others from memory, unverified.
 **Edge cases:** Case differences: the engine is case-insensitive but Power Query is case-sensitive, so "hr" and "HR" are different in Power Query and the same in the model. Blank keys also count as duplicates.
@@ -1222,10 +1289,24 @@ Headcount = COUNTROWS ( RELATEDTABLE ( Emp ) )
 **Result:** reproduced with pandas: Emp rows get Region South, North, South. Dept totals: Sales 110 (2 staff), HR 40 (1 staff).
 **Pandas check:**
 ```python
-emp["Region"] = emp.DeptID.map(dept.set_index("DeptID").Region)
-dept["TotalSalary"] = dept.DeptID.map(emp.groupby("DeptID").Salary.sum())
+import pandas as pd
+dept = pd.DataFrame({"DeptID":["D1","D2"],"Dept":["Sales","HR"],"Region":["South","North"]})
+emp = pd.DataFrame({"EmpID":[1,2,3],"DeptID":["D1","D2","D1"],"Salary":[50,40,60]})
+emp["Region"] = emp.DeptID.map(dept.set_index("DeptID").Region)                 # RELATED
+dept["TotalSalary"] = dept.DeptID.map(emp.groupby("DeptID").Salary.sum())       # SUMX(RELATEDTABLE)
+dept["Headcount"] = dept.DeptID.map(emp.groupby("DeptID").size())               # COUNTROWS(RELATEDTABLE)
+print(emp.to_string(index=False)); print(dept.to_string(index=False))
 ```
-Printed Region `South, North, South`; TotalSalary `110, 40`; Headcount `2, 1`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+ EmpID DeptID  Salary Region
+     1     D1      50  South
+     2     D2      40  North
+     3     D1      60  South
+DeptID  Dept Region  TotalSalary  Headcount
+    D1 Sales  South          110          2
+    D2    HR  North           40          1
+```
 **Version / licensing note:** Microsoft Learn: RELATED function (DAX), RELATEDTABLE function (DAX). RELATEDTABLE is not supported in calculated columns or RLS in DirectQuery mode per its page.
 **Edge cases:** RELATED looks at all values regardless of filters. With no matching row it returns blank. RELATED does not work without a relationship.
 **Likely follow-ups:** 1) *RELATED in a measure?* Only inside an iterator (SUMX) that provides row context. 2) *Many-to-many?* Use limited relationships carefully; RELATED fails.
@@ -1259,10 +1340,22 @@ Printed Region `South, North, South`; TotalSalary `110, 40`; Headcount `2, 1`.
 **Result:** reproduced with pandas: Customer 2 rows, Product 2 rows, Orders fact 4 rows; Amount total 122500 in both flat and star.
 **Pandas check:**
 ```python
+import pandas as pd
+flat = pd.DataFrame({"OrderID":["O1","O1","O2","O3"],
+  "OrderDate":["2025-01-05","2025-01-05","2025-01-09","2025-01-12"],
+  "CustomerName":["Asha","Asha","Ravi","Asha"],"City":["Hyderabad","Hyderabad","Pune","Hyderabad"],
+  "ProductName":["Laptop","Mouse","Laptop","Mouse"],"Category":["IT"]*4,
+  "Qty":[1,2,1,3],"Amount":[60000,1000,60000,1500]})
 cust = flat[["CustomerName","City"]].drop_duplicates().reset_index(drop=True); cust.insert(0,"CustomerKey",cust.index+1)
 prod = flat[["ProductName","Category"]].drop_duplicates().reset_index(drop=True); prod.insert(0,"ProductKey",prod.index+1)
 fact = flat.merge(cust,on=["CustomerName","City"]).merge(prod,on=["ProductName","Category"])[["OrderID","OrderDate","CustomerKey","ProductKey","Qty","Amount"]]
-print(flat.Amount.sum(), fact.Amount.sum(), len(flat), len(fact))   # 122500 122500 4 4
+print("Customer rows:", len(cust), "| Product rows:", len(prod), "| Fact rows:", len(fact))
+print("Amount flat:", flat.Amount.sum(), "| Amount star:", fact.Amount.sum())
+```
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Customer rows: 2 | Product rows: 2 | Fact rows: 4
+Amount flat: 122500 | Amount star: 122500
 ```
 **Version / licensing note:** Microsoft Learn: Understand star schema and importance for Power BI (denormalized exports, index column, surrogate keys). Desktop menu names for Power Query from memory, unverified.
 **Edge cases:** Same customer name in two cities (merge on name only would be wrong); mis-typed names create duplicate customers; the row counts and totals must match after the merge.
@@ -1294,8 +1387,22 @@ print(flat.Amount.sum(), fact.Amount.sum(), len(flat), len(fact))   # 122500 122
 **Result:** reproduced with pandas: 4 products in, 4 rows out after two left merges, each with SubCategory and Category.
 **Pandas check:**
 ```python
-flat = prod.merge(sub,on="SubID",how="left").merge(cat,on="CatID",how="left")[["ProdID","Product","SubCategory","Category"]]
-print(len(prod), len(flat))   # 4 4
+import pandas as pd
+cat = pd.DataFrame({"CatID":["C1","C2"],"Category":["IT","Furniture"]})
+sub = pd.DataFrame({"SubID":["S1","S2","S3"],"SubCategory":["Laptops","Accessories","Chairs"],"CatID":["C1","C1","C2"]})
+prod = pd.DataFrame({"ProdID":[1,2,3,4],"Product":["Laptop X","Mouse M","Keyboard K","Chair C"],"SubID":["S1","S2","S2","S3"]})
+flat = prod.merge(sub,on="SubID",how="left").merge(cat,on="CatID",how="left")[["Product","SubCategory","Category"]]
+print(flat.to_string(index=False))
+print("Rows in:", len(prod), "| rows out:", len(flat))
+```
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+   Product SubCategory  Category
+  Laptop X     Laptops        IT
+   Mouse M Accessories        IT
+Keyboard K Accessories        IT
+   Chair C      Chairs Furniture
+Rows in: 4 | rows out: 4
 ```
 **Version / licensing note:** Microsoft Learn: Understand star schema and importance for Power BI (snowflake dimensions section). "Enable load" menu name from memory, unverified; Learn's data-reduction page mentions the option.
 **Edge cases:** A left merge never changes the row count unless the lookup key is duplicated; check row counts. Orphan products with no subcategory get blanks.
@@ -1342,9 +1449,26 @@ IF (
 **Result:** reproduced with pandas: by month Sales 600 vs Target 670 (Jan), 750 vs 670 (Feb); by category IT 1100 vs 1100, HR Kit 250 vs 240. If Product = Laptop filters targets through Category, targets show 1100, the category target, not a laptop target.
 **Pandas check:**
 ```python
-a = sales.groupby("Month").Amount.sum(); t = target.groupby("Month").Target.sum()
+import pandas as pd
+sales = pd.DataFrame({"Month":["2025-01","2025-01","2025-02","2025-02"],"Category":["IT","HR Kit","IT","HR Kit"],
+                      "Product":["Laptop","Badge","Laptop","Badge"],"Amount":[500,100,600,150]})
+target = pd.DataFrame({"Month":["2025-01","2025-01","2025-02","2025-02"],"Category":["IT","HR Kit","IT","HR Kit"],"Target":[550,120,550,120]})
+print(pd.DataFrame({"Sales":sales.groupby("Month").Amount.sum(),"Target":target.groupby("Month").Target.sum()}).to_string())
+print(pd.DataFrame({"Sales":sales.groupby("Category").Amount.sum(),"Target":target.groupby("Category").Target.sum()}).to_string())
 cats = sales[sales.Product=="Laptop"].Category.unique()
-print(target[target.Category.isin(cats)].Target.sum())   # 1100
+print("Target shown if Product = Laptop filters through Category:", target[target.Category.isin(cats)].Target.sum())
+```
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+         Sales  Target
+Month                 
+2025-01    600     670
+2025-02    750     670
+          Sales  Target
+Category               
+HR Kit      250     240
+IT         1100    1100
+Target shown if Product = Laptop filters through Category: 1100
 ```
 **Version / licensing note:** Microsoft Learn: Many-to-many relationship guidance (relate higher grain facts; ISFILTERED pattern); ISFILTERED function (DAX). Many-to-many is a limited relationship per Learn.
 **Edge cases:** Month drill-down to days gives blanks without the measure. Targets at product level need no many-to-many.
@@ -1379,9 +1503,19 @@ print(target[target.Category.isin(cats)].Target.sum())   # 1100
 **Result:** reproduced with pandas: joining on the raw timestamp leaves 3 of 3 rows unmatched; after normalizing to date, 0 unmatched and hours total Sun 15, Mon 9.
 **Pandas check:**
 ```python
-m = fact.merge(dim,left_on="EventTime",right_on="Date",how="left"); print(m.Weekday.isna().sum(), len(m))  # 3 3
-fact["EventDate"]=fact.EventTime.dt.normalize()
-m2 = fact.merge(dim,left_on="EventDate",right_on="Date",how="left"); print(m2.groupby("Weekday").Hours.sum().to_dict())  # {'Mon': 9, 'Sun': 15}
+import pandas as pd
+fact = pd.DataFrame({"EventTime":pd.to_datetime(["2025-01-05 09:30","2025-01-05 14:10","2025-01-06 08:00"]),"Hours":[8,7,9]})
+dim = pd.DataFrame({"Date":pd.to_datetime(["2025-01-05","2025-01-06"]),"Weekday":["Sun","Mon"]})
+m = fact.merge(dim,left_on="EventTime",right_on="Date",how="left")
+print("Unmatched on raw timestamp:", m.Weekday.isna().sum(), "of", len(m))
+fact["EventDate"] = fact.EventTime.dt.normalize()
+m2 = fact.merge(dim,left_on="EventDate",right_on="Date",how="left")
+print("Unmatched after removing time:", m2.Weekday.isna().sum(), "| Hours by weekday:", m2.groupby("Weekday").Hours.sum().to_dict())
+```
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Unmatched on raw timestamp: 3 of 3
+Unmatched after removing time: 0 | Hours by weekday: {'Mon': 9, 'Sun': 15}
 ```
 **Version / licensing note:** Microsoft Learn: Model relationships in Power BI Desktop (data types of columns); Data types in Power BI (Date/time types); Set and use date tables in Power BI Desktop. Time zone: the model does not adjust time zones.
 **Edge cases:** Date/Time/Timezone is converted to Date/Time and not shifted by user locale. A mixed column (some with time, some without) matches only partly.
@@ -1498,9 +1632,25 @@ Put both in a card next to the source figures; then a table with `Product[Name]`
 **Result:** reproduced with pandas: source total 2100; visual rows A 300, B 700, C 500, (Blank) 600, visual total 2100; orphan key 9 with amount 600; duplicate dimension keys 0; duplicate fact rows 0.
 **Pandas check:**
 ```python
+import pandas as pd
+src = pd.DataFrame({"OrderID":[1,2,3,4,5,6],"ProductKey":[1,1,2,2,3,9],"Amount":[100,200,300,400,500,600]})
+prod = pd.DataFrame({"ProductKey":[1,2,3],"Name":["A","B","C"]})
 j = src.merge(prod,on="ProductKey",how="left")
 by = j.assign(Name=j.Name.fillna("(Blank)")).groupby("Name").Amount.sum()
-print(src.Amount.sum(), by.sum(), sorted(set(src.ProductKey)-set(prod.ProductKey)), prod.ProductKey.duplicated().sum())  # 2100 2100 [9] 0
+print(by.to_string())
+print("Source total:", src.Amount.sum(), "| visual total:", by.sum())
+print("Orphan keys:", sorted(set(src.ProductKey)-set(prod.ProductKey)), "| duplicate dimension keys:", prod.ProductKey.duplicated().sum(),
+      "| duplicate fact rows:", src.duplicated().sum())
+```
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Name
+(Blank)    600
+A          300
+B          700
+C          500
+Source total: 2100 | visual total: 2100
+Orphan keys: [9] | duplicate dimension keys: 0 | duplicate fact rows: 0
 ```
 **Version / licensing note:** Microsoft Learn: Model relationships in Power BI Desktop (blank virtual rows, one-side uniqueness, Assume referential integrity risk of understated results); COUNTROWS function (DAX); SUM function (DAX).
 **Edge cases:** With Assume referential integrity or many-to-many (inner join), orphans vanish and totals fall short, with no blank row to warn you. Check filters, time zones, and incremental refresh gaps (from memory).
@@ -1536,11 +1686,19 @@ Then Model view: drag `Payroll[EmpMonthKey]` to `Attendance[EmpMonthKey]`. Prefe
 **Result:** reproduced with pandas: joined on the combined key gives 4 rows, NetPay 185,000, DaysPresent 82. Joined on EmpID only gives 8 rows.
 **Pandas check:**
 ```python
-pay["Key"]=pay.EmpID+"|"+pay.Month; att["Key"]=att.EmpID+"|"+att.Month
-m=pay.merge(att[["Key","DaysPresent"]],on="Key"); print(m.NetPay.sum(), m.DaysPresent.sum())
-print(len(pay.merge(att,on="EmpID")))
+import pandas as pd
+pay = pd.DataFrame({"EmpID":["E1","E1","E2","E2"],"Month":["2026-01","2026-02","2026-01","2026-02"],"NetPay":[50000,50000,42000,43000]})
+att = pd.DataFrame({"EmpID":["E1","E1","E2","E2"],"Month":["2026-01","2026-02","2026-01","2026-02"],"DaysPresent":[22,20,19,21]})
+pay["Key"] = pay.EmpID+"|"+pay.Month; att["Key"] = att.EmpID+"|"+att.Month
+m = pay.merge(att[["Key","DaysPresent"]],on="Key")
+print("Combined key: rows", len(m), "| NetPay", m.NetPay.sum(), "| DaysPresent", m.DaysPresent.sum())
+print("EmpID only: rows", len(pay.merge(att,on="EmpID")))
 ```
-Printed: `185000 82` and `8`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Combined key: rows 4 | NetPay 185000 | DaysPresent 82
+EmpID only: rows 8
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Relationship rules (one column each side) are from memory.
 **Edge cases:** Blank in either part makes the key partly empty; both key columns must have the same data type (text); a key that is not unique on the "one" side forces many-to-many.
 **Likely follow-ups:** 1) *Why not relate on EmpID alone?* It is many-to-many and inflates totals. 2) *Calculated column or Power Query?* Power Query, it compresses better.
@@ -1605,9 +1763,15 @@ Printed: `185000 82` and `8`.
 **Result:** reproduced with pandas: EmpID unique in both tables (`True True`), joined rows 4 = same as each table, so a merge is lossless.
 **Pandas check:**
 ```python
+import pandas as pd
+emp = pd.DataFrame({"EmpID":[1,2,3,4]})
+con = pd.DataFrame({"EmpID":[1,2,3,4],"Phone":list("abcd")})
 print(emp.EmpID.is_unique, con.EmpID.is_unique, len(emp.merge(con,on="EmpID")))
 ```
-Printed: `True True 4`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+True True 4
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Behaviour of one-to-one filtering both ways is from memory.
 **Edge cases:** If one side has duplicates the relationship cannot be one-to-one; an employee with no contact row gives blanks after a merge.
 **Likely follow-ups:** 1) *Does it need bi-directional?* It filters both ways automatically. 2) *Security reason?* Keep salary in a separate table for RLS.
@@ -1642,9 +1806,14 @@ Offers = SUM ( HiringFact[Offers] )
 **Result:** reproduced with pandas: 3 distinct requisitions, 6 rows, offers per requisition R1=2, R2=1, R3=3.
 **Pandas check:**
 ```python
-print(f.groupby("ReqNo").Offers.sum().to_dict(), f.ReqNo.nunique(), len(f))
+import pandas as pd
+f = pd.DataFrame({"ReqNo":["R1","R1","R2","R3","R3","R3"],"Dept":["A","B","A","B","A","B"],"Offers":[1]*6})
+print(f.groupby("ReqNo").Offers.sum().to_dict(), "distinct requisitions:", f.ReqNo.nunique(), "| rows:", len(f))
 ```
-Printed: `{'R1': 2, 'R2': 1, 'R3': 3} 3 6`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+{'R1': 2, 'R2': 1, 'R3': 3} distinct requisitions: 3 | rows: 6
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Terminology is standard Kimball modelling; page not read here.
 **Edge cases:** Blank ReqNo is not counted by DISTINCTCOUNT's distinct values logic but a blank is counted as a value in some versions, so clean it first (from memory).
 **Likely follow-ups:** 1) *Is it a key?* It is an ID, not a foreign key. 2) *Hide it?* Hide it if only used inside measures.
@@ -1678,10 +1847,21 @@ Printed: `{'R1': 2, 'R2': 1, 'R3': 3} 3 6`.
 **Result:** reproduced with pandas: 6 fact rows reduce to 4 junk rows (max 8 possible).
 **Pandas check:**
 ```python
-jd=j.drop_duplicates().reset_index(drop=True); jd["JunkKey"]=jd.index+1
-print(len(j), len(jd), 2*2*2)
+import pandas as pd
+j = pd.DataFrame({"Gender":["M","F","M","F","M","F"],"Shift":["Day","Day","Night","Night","Day","Night"],"Remote":["Y","N","N","Y","Y","Y"]})
+jd = j.drop_duplicates().reset_index(drop=True); jd.insert(0,"JunkKey",jd.index+1)
+print(jd.to_string(index=False))
+print("Fact rows:", len(j), "| junk rows:", len(jd), "| possible combinations:", 2*2*2)
 ```
-Printed: `6 4 8`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+ JunkKey Gender Shift Remote
+       1      M   Day      Y
+       2      F   Day      N
+       3      M Night      N
+       4      F Night      Y
+Fact rows: 6 | junk rows: 4 | possible combinations: 8
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Concept is from the Microsoft star schema guidance as listed in the sources file, but that page was not re-read here.
 **Edge cases:** New combinations appear later, so refresh must add rows. Gender is sensitive, so check policy.
 **Likely follow-ups:** 1) *Why not one table per flag?* Too many tiny tables. 2) *Junk vs degenerate?* Junk groups flags; degenerate is an ID.
@@ -1717,10 +1897,19 @@ COUNTROWS ( EXCEPT ( VALUES ( Employee[EmpID] ), VALUES ( TrainingEnrolment[EmpI
 **Result:** reproduced with pandas: 5 enrolments; 3 distinct POSH employees; not on POSH: E4, E5.
 **Pandas check:**
 ```python
-print(len(enr), enr[enr.Course=="POSH"].EmpID.nunique())
-print([e for e in allemp if e not in enr[enr.Course=="POSH"].EmpID.values])
+import pandas as pd
+enr = pd.DataFrame({"EmpID":["E1","E1","E2","E3","E4"],"Course":["POSH","Excel","POSH","POSH","Excel"],"Month":["Jan","Jan","Jan","Feb","Feb"]})
+allemp = ["E1","E2","E3","E4","E5"]
+posh = enr[enr.Course=="POSH"].EmpID
+print("Enrolments:", len(enr), "| distinct employees on POSH:", posh.nunique())
+not_posh = [e for e in allemp if e not in posh.values]
+print("Not enrolled in POSH:", not_posh, "| count:", len(not_posh))
 ```
-Printed: `5 3` and `['E4', 'E5']`. The DAX uses the same logic; the course filter would come from a slicer.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Enrolments: 5 | distinct employees on POSH: 3
+Not enrolled in POSH: ['E4', 'E5'] | count: 2
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Function behaviours (`COUNTROWS`, `EXCEPT`, `VALUES`) are from memory; pages not read here.
 **Edge cases:** `Not Enrolled` ignores the course slicer unless the filter reaches `VALUES`; make sure the dimensions are related.
 **Likely follow-ups:** 1) *Another example?* Daily attendance records. 2) *How is the grain stated?* One row per employee-course-month.
@@ -1754,9 +1943,16 @@ Steps: **Modeling tab (or Home) > New parameter > Numeric range**, set 0 to 0.10
 **Result:** reproduced with pandas: 150000 at 0, 157500 at 5%, 165000 at 10%.
 **Pandas check:**
 ```python
-for p in (0,0.05,0.10): print(p, sal.Salary.sum()*(1+p))
+import pandas as pd
+sal = pd.DataFrame({"EmpID":[1,2,3],"Salary":[40000,50000,60000]})
+for p in (0,0.05,0.10): print(f"Hike {p:.0%}: projected cost {sal.Salary.sum()*(1+p):,.0f}")
 ```
-Printed: `0 150000`, `0.05 157500.0`, `0.1 165000.0`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Hike 0%: projected cost 150,000
+Hike 5%: projected cost 157,500
+Hike 10%: projected cost 165,000
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). What-if parameter menu names and `SELECTEDVALUE` behaviour are from memory, unverified.
 **Edge cases:** Multi-select returns the default (0); the parameter's measure is created for you; use the same trick for a measure-switching slicer.
 **Likely follow-ups:** 1) *Can it filter data?* Only via a measure or `TREATAS`. 2) *Can it be in the Service?* Parameter is a Desktop authoring feature (from memory).
@@ -1777,9 +1973,16 @@ Printed: `0 150000`, `0.05 157500.0`, `0.1 165000.0`.
 **Result:** reproduced with pandas memory use (not VertiPaq): integer 8,000,000 bytes, text 64,000,000 bytes. This shows the idea only; Power BI's stored size will differ.
 **Pandas check:**
 ```python
-print(ints.memory_usage(index=False), strs.memory_usage(index=False,deep=True))
+import pandas as pd, numpy as np
+codes = np.arange(5000)
+ints = pd.Series(np.random.default_rng(1).choice(codes, 1_000_000))
+strs = ints.map(lambda x: f"DEPT-{x:05d}-IND")
+print("int64 bytes:", ints.memory_usage(index=False), "| text bytes (pandas, deep):", strs.astype(object).memory_usage(index=False, deep=True))
 ```
-Printed: `8000000 64000000`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+int64 bytes: 8000000 | text bytes (pandas, deep): 63000000
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Performance claims are from memory, unverified; pandas memory is not the same as Power BI storage.
 **Edge cases:** Leading zeros in codes (`007`) get lost when stored as numbers; relationships need matching data types on both sides.
 **Likely follow-ups:** 1) *Do you hide the key?* Yes (Q22). 2) *Integer or GUID?* Integer.
@@ -1814,10 +2017,30 @@ Add a row `Unknown` to the department table (Enter data, then Append Queries).
 **Result:** reproduced with pandas: before fix HR 250, IT 200, blank 75; after fix HR 250, IT 200, Unknown 75. Total 525 both times.
 **Pandas check:**
 ```python
-j2=fct.merge(dim,on="Dept",how="left"); print(j2.groupby("Name",dropna=False).Cost.sum())
-fct["Dept"]=fct.Dept.where(fct.Dept.isin(dim.Dept),"Unknown")
+import pandas as pd
+cost = pd.DataFrame({"Dept":["D1","D2","D99","D1","D77"],"Cost":[100,200,50,150,25]})
+dim = pd.DataFrame({"Dept":["D1","D2"],"Name":["HR","IT"]})
+before = cost.merge(dim,on="Dept",how="left")
+print("Before:"); print(before.groupby("Name",dropna=False).Cost.sum().to_string())
+cost["Dept"] = cost.Dept.where(cost.Dept.isin(dim.Dept),"Unknown")
+dim2 = pd.concat([dim,pd.DataFrame({"Dept":["Unknown"],"Name":["Unknown"]})])
+after = cost.merge(dim2,on="Dept",how="left")
+print("After:"); print(after.groupby("Name").Cost.sum().to_string()); print("Total:", after.Cost.sum())
 ```
-Printed before: HR 250, IT 200, NaN 75; after: HR 250, IT 200, Unknown 75.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Before:
+Name
+HR     250
+IT     200
+NaN     75
+After:
+Name
+HR         250
+IT         200
+Unknown     75
+Total: 525
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). The blank virtual row behaviour is from memory (the sources file says the relationships page covers it, but the page was not read here).
 **Edge cases:** Rows with an empty key behave the same; DirectQuery and referential integrity settings change how orphans show (Q54).
 **Likely follow-ups:** 1) *Why not delete them?* Totals would no longer match finance. 2) *How do you catch them?* Anti-join in Power Query.
@@ -1894,9 +2117,15 @@ Fix steps: Model view, find the loop, change **Cross filter direction** to **Sin
 **Result:** reproduced with pandas: inner join total 300, left join 350, true total 350.
 **Pandas check:**
 ```python
+import pandas as pd
+fa = pd.DataFrame({"Dept":["D1","D2","D99"],"Cost":[100,200,50]})
+dim = pd.DataFrame({"Dept":["D1","D2"]})
 print(fa.merge(dim,on="Dept",how="inner").Cost.sum(), fa.merge(dim,on="Dept",how="left").Cost.sum(), fa.Cost.sum())
 ```
-Printed: `300 350 350`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+300 350 350
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Option availability and behaviour are from memory, unverified.
 **Edge cases:** Later data loads may introduce orphans; add a check; the option applies to the relationship, not the table.
 **Likely follow-ups:** 1) *Import mode?* Little or no benefit (from memory). 2) *Risk?* Silent drop of rows.
@@ -1931,10 +2160,26 @@ Then relate `Payroll[EmpKey]` to `EmployeeDim[EmpKey]`, and use `DISTINCTCOUNT (
 **Result:** reproduced with pandas: cost by department Sales 165,000, Support 65,000. If you overwrote (Type 1), E1 would be all Support: Sales 45,000, Support 185,000.
 **Pandas check:**
 ```python
-x=pay2.merge(d,on="EmpID"); x=x[(x.Date>=x.From)&(x.Date<=x.To)]
-print(x.groupby("Dept").Cost.sum())
+import pandas as pd
+d = pd.DataFrame({"EmpKey":[1,2,3],"EmpID":["E1","E1","E2"],"Dept":["Sales","Support","Sales"],
+  "From":pd.to_datetime(["2025-01-01","2026-07-01","2025-01-01"]),"To":pd.to_datetime(["2026-06-30","2099-12-31","2099-12-31"])})
+pay2 = pd.DataFrame({"EmpID":["E1","E1","E2","E1"],"Date":pd.to_datetime(["2026-03-31","2026-05-31","2026-05-31","2026-08-31"]),"Cost":[60000,60000,45000,65000]})
+x = pay2.merge(d,on="EmpID"); x = x[(x.Date>=x.From)&(x.Date<=x.To)]
+print("Type 2:"); print(x.groupby("Dept").Cost.sum().to_string())
+t1 = pay2.merge(pd.DataFrame({"EmpID":["E1","E2"],"Dept":["Support","Sales"]}),on="EmpID")
+print("Type 1 (overwritten):"); print(t1.groupby("Dept").Cost.sum().to_string())
 ```
-Printed: `Sales 165000`, `Support 65000`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Type 2:
+Dept
+Sales      165000
+Support     65000
+Type 1 (overwritten):
+Dept
+Sales       45000
+Support    185000
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). SCD Type 1/2 descriptions are from the Microsoft star schema guidance named in the sources file but not read here; the M code is not run here.
 **Edge cases:** Overlapping date ranges duplicate rows; gaps lose rows; counting rows instead of distinct EmpID inflates headcount.
 **Likely follow-ups:** 1) *Why a surrogate key?* EmpID repeats across versions. 2) *Type 3?* Adds a column for the previous value.
@@ -1972,9 +2217,27 @@ Steps: add calculated columns (**Table tools > New column**), then in the Data p
 **Result:** reproduced with pandas: paths `1`, `1|2`, `1|3`, `1|2|4`, `1|2|4|5`; Zoya has depth 4 with levels Asha, Ravi, Kiran, Zoya; Meena has levels Asha, Meena, blank.
 **Pandas check:**
 ```python
-e["Path"]=e.EmpID.map(path); e["Len"]=e.Path.str.count(r"\|")+1
+import pandas as pd
+e = pd.DataFrame({"EmpID":[1,2,3,4,5],"Name":["Asha","Ravi","Meena","Kiran","Zoya"],"ManagerID":[None,1,1,2,4]})
+mgr = dict(zip(e.EmpID, e.ManagerID))
+def path(i):                      # same idea as DAX PATH: top person first
+    p = [i]
+    while pd.notna(mgr[p[0]]): p.insert(0, int(mgr[p[0]]))
+    return p
+e["Path"] = e.EmpID.map(lambda i: "|".join(map(str, path(i)))); e["Depth"] = e.Path.str.count(r"\|")+1
+name = dict(zip(e.EmpID, e.Name))
+for n in (1,2,3,4): e[f"Level {n}"] = e.Path.map(lambda s: name[int(s.split("|")[n-1])] if len(s.split("|"))>=n else None)
+print(e.drop(columns="ManagerID").to_string(index=False))
 ```
-Printed paths as above (`Len` 1, 2, 2, 3, 4).
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+ EmpID  Name    Path  Depth Level 1 Level 2 Level 3 Level 4
+     1  Asha       1      1    Asha     NaN     NaN     NaN
+     2  Ravi     1|2      2    Asha    Ravi     NaN     NaN
+     3 Meena     1|3      2    Asha   Meena     NaN     NaN
+     4 Kiran   1|2|4      3    Asha    Ravi   Kiran     NaN
+     5  Zoya 1|2|4|5      4    Asha    Ravi   Kiran    Zoya
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). `PATH`, `PATHITEM`, `LOOKUPVALUE` are from memory (not read here); `PATH` needs a unique ID column.
 **Edge cases:** A cycle (A manages B, B manages A) makes `PATH` fail; the top person has a blank manager; unequal depths leave blank levels.
 **Likely follow-ups:** 1) *How many levels?* Pick the max depth (`MAX ( Employee[Depth] )`). 2) *Why not recursion?* DAX has none.
@@ -2013,10 +2276,24 @@ Model: `Category` (one) to `Product` and to `Targets`; `Year` (one) to `Date` an
 **Result:** reproduced with pandas: Laptops 1,100 vs 1,000 (1.1), Phones 400 vs 500 (0.8); grand totals 1,500 vs 1,500. Joining targets directly to sales rows would repeat the targets and total 4,500.
 **Pandas check:**
 ```python
-a=sales.groupby(["Category","Year"]).Amt.sum().reset_index().merge(tg,on=["Category","Year"])
-print(sales.merge(tg,on=["Category","Year"]).Target.sum())
+import pandas as pd
+prodmap = pd.DataFrame({"Product":["P1","P2","P3"],"Category":["Laptops","Laptops","Phones"]})
+sales = pd.DataFrame({"Product":["P1","P2","P3","P1","P2"],"Date":pd.to_datetime(["2026-01-05","2026-02-10","2026-03-12","2026-06-01","2026-07-04"]),"Amt":[300,200,400,350,250]})
+sales = sales.merge(prodmap,on="Product"); sales["Year"] = sales.Date.dt.year
+tg = pd.DataFrame({"Category":["Laptops","Phones"],"Year":[2026,2026],"Target":[1000,500]})
+a = sales.groupby(["Category","Year"]).Amt.sum().reset_index().merge(tg,on=["Category","Year"])
+a["Achievement"] = a.Amt/a.Target
+print(a.to_string(index=False)); print("Totals:", a.Amt.sum(), a.Target.sum())
+print("Naive row-level join, summed target:", sales.merge(tg,on=["Category","Year"]).Target.sum())
 ```
-Printed: Laptops 1100/1000, Phones 400/500, and `4500` for the naive join.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Category  Year  Amt  Target  Achievement
+ Laptops  2026 1100    1000          1.1
+  Phones  2026  400     500          0.8
+Totals: 1500 1500
+Naive row-level join, summed target: 4500
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Guidance and DAX function behaviour from memory; the many-to-many page was not read here.
 **Edge cases:** Month slicer on targets: the year target repeats for each month unless you allocate; fiscal vs calendar year.
 **Likely follow-ups:** 1) *Why not a many-to-many relationship?* Q58. 2) *Quarterly targets?* Add them at a month or quarter grain.
@@ -2057,9 +2334,20 @@ Model: `Department` (unique list, built in Power Query by appending both Dept co
 **Result:** reproduced with pandas: row-level join returns 7 rows and sums of 7 and 7; correct totals are 3 hires and 4 exits; grouped by department: Hires A=2, B=1; Exits A=3, B=1.
 **Pandas check:**
 ```python
-mm=hires.merge(exits,on="Dept"); print(len(mm), mm.Hires.sum(), mm.Exits.sum())
+import pandas as pd
+hires = pd.DataFrame({"Dept":["A","A","B"],"Hires":[1,1,1]})
+exits = pd.DataFrame({"Dept":["A","A","A","B"],"Exits":[1,1,1,1]})
+mm = hires.merge(exits,on="Dept")
+print("Row-level join: rows", len(mm), "| Hires", mm.Hires.sum(), "| Exits", mm.Exits.sum())
+print("Correct:", hires.Hires.sum(), "hires,", exits.Exits.sum(), "exits")
+print(hires.groupby("Dept").Hires.sum().to_dict(), exits.groupby("Dept").Exits.sum().to_dict())
 ```
-Printed: `7 7 7`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+Row-level join: rows 7 | Hires 7 | Exits 7
+Correct: 3 hires, 4 exits
+{'A': 2, 'B': 1} {'A': 3, 'B': 1}
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Power BI's actual many-to-many engine behaves differently from a pandas row join (it filters by distinct keys). My pandas figure shows why row-level matching is risky, not exactly what Power BI would display; the sources file notes Microsoft pages disagree on service support for many-to-many, so I would re-check the live page before stating support. Not verified here.
 **Edge cases:** Blank keys; totals in many-to-many may not add up.
 **Likely follow-ups:** 1) *When is many-to-many acceptable?* Higher-grain data like targets, with care. 2) *Bridge direction?* Bridge to facts one-to-many.
@@ -2097,9 +2385,15 @@ Click-path: none; this is typed as a measure (**Modeling > New measure**).
 **Result:** reproduced with pandas logic: 2 departments have employees out of 3. (`Employee` rows 4, departments 3.)
 **Pandas check:**
 ```python
+import pandas as pd
+dp = pd.DataFrame({"Dept":["Sales","IT","HR"]})
+emp2 = pd.DataFrame({"EmpID":[1,2,3,4],"Dept":["Sales","Sales","IT","IT"]})
 print("depts with employees:", emp2.Dept.nunique(), "of", len(dp))
 ```
-Printed: `depts with employees: 2 of 3`. This reproduces the expected answer, not Power BI's evaluation.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+depts with employees: 2 of 3
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Syntax from memory; Microsoft Learn: CROSSFILTER function (DAX) could not be fetched, so unverified.
 **Edge cases:** Fails for a missing relationship; does not work in DirectQuery with some settings (from memory); a one-to-one relationship already filters both ways.
 **Likely follow-ups:** 1) *Difference from USERELATIONSHIP?* That activates an inactive relationship. 2) *Performance?* Both-way filters can be slower.
@@ -2137,9 +2431,15 @@ CALCULATE (
 **Result:** reproduced with pandas: 600.
 **Pandas check:**
 ```python
+import pandas as pd
+sl = pd.DataFrame({"EmpID":[1,2,3,4,5],"Amt":[100,200,300,400,500]})
+sel = [2,4,9]    # Shortlist[EmpID]; 9 has no sales row
 print(sl[sl.EmpID.isin(sel)].Amt.sum())
 ```
-Printed: `600`.
+Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DAX engine):
+```
+600
+```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Syntax from memory; Microsoft Learn: TREATAS function (DAX) could not be fetched, so unverified.
 **Edge cases:** Data types must match; values not in the target are ignored; column order must match.
 **Likely follow-ups:** 1) *TREATAS vs USERELATIONSHIP?* USERELATIONSHIP needs an existing inactive relationship, TREATAS does not. 2) *Cost?* Very large value lists can be slow.
