@@ -1,0 +1,23 @@
+stages: [train, test, promote]
+default:
+  image: python:3.12-slim
+train:
+  stage: train
+  script:
+    - python train.py --out model.pkl
+  artifacts:
+    paths: [model.pkl]
+test:
+  stage: test
+  needs: [train]
+  script:
+    - python gate.py --model model.pkl
+promote:
+  stage: promote
+  needs: [test]
+  environment: production
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - python promote.py --alias champion

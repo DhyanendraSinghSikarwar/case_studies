@@ -1,0 +1,6 @@
+models/churn/model.py        -> @acme/data-science
+deploy/k8s/serve.yaml        -> @acme/ml-platform
+deploy/secrets.example       -> @acme/security
+src/features/scale.py        -> @acme/data-science @acme/ml-platform
+notebooks/eda.ipynb          -> @acme/data-science
+README.md                    -> @acme/ml-platform

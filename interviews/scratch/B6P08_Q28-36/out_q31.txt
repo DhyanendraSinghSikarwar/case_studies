@@ -1,0 +1,8 @@
+relative rise 0.613
+z 6.02 two-sided p 1.8e-09
+95% CI for the rise (points) 1.28 2.52
+rated answers needed per arm 1686
+canary 10%: rated/day in canary 114, days to 1686 ratings 14.8
+canary 50%: rated/day in canary 571, days to 1686 ratings 3.0
+days of post-ship ratings before z>2.58 against last week: 1
+golden-set drop 6.0 pts, 1.96 se = 5.4 pts

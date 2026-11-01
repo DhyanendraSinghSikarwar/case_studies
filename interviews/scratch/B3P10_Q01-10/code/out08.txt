@@ -1,0 +1,45 @@
+ id amount_text  as_int  as_real  roundtrip_ok
+  1      '1200'  1200.0   1200.0           0.0
+  2     '1,200'     1.0      1.0           0.0
+  3      ' 45 '    45.0     45.0           0.0
+  4       '007'     7.0      7.0           0.0
+  5     '12abc'    12.0     12.0           0.0
+  6       'abc'     0.0      0.0           0.0
+  7          ''     0.0      0.0           0.0
+  8       '1e3'     1.0   1000.0           0.0
+  9       '3.7'     3.0      3.7           1.0
+ 10      '0x10'     0.0      0.0           0.0
+ 11         nan     NaN      NaN           NaN
+
+ id       x  status  value
+  1  '1200'   clean 1200.0
+  2 '1,200' fixable 1200.0
+  3  ' 45 ' fixable   45.0
+  4   '007'   clean    7.0
+  5 '12abc' invalid    NaN
+  6   'abc' invalid    NaN
+  7      '' missing    NaN
+  8   '1e3' invalid    NaN
+  9   '3.7'   clean    3.7
+ 10  '0x10' invalid    NaN
+ 11     nan missing    NaN
+
+zero from garbage vs a real zero: 1
+typeof(CAST('abc' AS INTEGER)): integer
+'12abc' + 1 = 13 (arithmetic coerces the same way)
+
+to_numeric(errors='coerce'):
+      x  numeric
+ '1200'   1200.0
+'1,200'      NaN
+ ' 45 '     45.0
+  '007'      7.0
+'12abc'      NaN
+  'abc'      NaN
+     ''      NaN
+  '1e3'   1000.0
+  '3.7'      3.7
+ '0x10'      NaN
+    nan      NaN
+
+asserts passed (id order): statuses {1: 'clean', 2: 'fixable', 3: 'fixable', 4: 'clean', 5: 'invalid', 6: 'invalid', 7: 'missing', 8: 'invalid', 9: 'clean', 10: 'invalid', 11: 'missing'}

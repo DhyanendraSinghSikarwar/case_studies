@@ -1,0 +1,10 @@
+1 raw  : <div>Here is your summary <img src=x onerror=alert(1)> done</div>
+1 escpd: <div>Here is your summary &lt;img src=x onerror=alert(1)&gt; done</div>
+2 string-concat rows: 2 | parameterised rows: 0
+3 shell string would be: cat report.txt; echo INJECTED
+3 allowlist blocks: not allowlisted: 'report.txt; echo INJECTED'
+3 quoted if you must: 'report.txt; echo INJECTED'
+4 leak -> ('Done. [image removed] Thanks', [('collect.attacker.test', 24)])
+4 ok   -> ('Chart: ![c](https://cdn.example-corp.test/chart1.png)', [])
+4 link not caught by the image rule: True | links seen: ['https://collect.attacker.test/r?d=ACCT-4417']
+5 valid: True | extra key: False

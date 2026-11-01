@@ -1,0 +1,7 @@
+config problems: none
+bad config (preferred 16 > max 8, delay 50000): ['preferred_batch_size [4, 16] above max_batch_size 8', 'queue delay 50000 us outside the sane 0..10000 range for an online model']
+delay = 0.1 ms (100 us), preferred 8:
+  arrival     500 req/s: p50 queue wait 0.100 ms, max 0.100 ms
+  arrival    5000 req/s: p50 queue wait 0.100 ms, max 0.100 ms
+  arrival   50000 req/s: p50 queue wait 0.053 ms, max 0.100 ms
+hand check: one lone request waits the full 0.100 ms, so p50 added is at most about 0.1 ms

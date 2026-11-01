@@ -1,0 +1,10 @@
+# Not executed here (pre-commit not installed in the test venv). Pin rev to a real release tag, check current docs.
+repos:
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.38.2
+    hooks:
+      - id: check-github-workflows

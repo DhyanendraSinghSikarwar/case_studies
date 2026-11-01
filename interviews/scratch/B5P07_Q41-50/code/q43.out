@@ -1,0 +1,6 @@
+examples ok: [4, 2, 2, 4, 1, 0]
+shapes checked exhaustively (0..8 nodes): 2056
+300 random trees ok
+[1,2,3,4,null,null,5]: width = 4  largest level count = 2
+zig-zag chain, 3000 nodes: width = 1 ; without re-basing the biggest index has 3000 bits
+right chain, 3000 nodes: width = 1 ; raw-index bits = 3000

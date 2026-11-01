@@ -1,0 +1,53 @@
+**Say this first (1 line):** At 120 the hotel makes 62 x 100 = 6,200 a night against 70 x 80 = 5,600 at 100, so 120 wins by 600 on the average night (illustrative), but demand and price sensitivity change by night, so I would price by night, not pick one flat price.
+
+**Clarifying questions:**
+- Where do the 70 and 62 come from? Average of a test, a model forecast, or a guess? A guess makes the whole comparison weak.
+- Does the 62 at 120 hold on every night or only on average? Weekend and weekday demand differ a lot.
+- Is 20 the only variable cost? Cleaning, commissions and breakfast can change the margin per room.
+- Can the hotel see turned-away demand (sold-out nights)? Without it, sales understate demand.
+- Do guests who see 120 go to a competitor or book another night? That decides whether lost rooms come back.
+
+**Approach:**
+1. Margin per room: at 100 it is 80, at 120 it is 100.
+2. Profit at 100: 70 x 80 = 5,600. At 120: 62 x 100 = 6,200. Difference: +600 a night.
+3. The demand fall implied is 1 - 62/70 = 11.4%, which the prompt rounds to about 11%.
+4. Break-even: 120 needs only 5,600 / 100 = 56 rooms, a 20% fall from 70. So 120 wins unless demand falls by more than 20%.
+5. Now add nights. Capacity is 100 rooms. On a peak night demand at 100 already exceeds 100, so raising the price loses nobody and every room earns 20 more. On a soft night, the room loss is real.
+6. Simulate (illustrative demand, mean 70, sd 20, capped at 100 rooms): flat 120 beats flat 100 by about 640 a night. Gains are about 1,960 on peak nights and 339 on soft nights.
+7. If soft nights are more price sensitive (they lose 40% at 120, strong nights 0%), flat 120 earns 5,862, flat 100 earns 5,555, and pricing by night earns 6,403. Price by night wins.
+8. To estimate sensitivity by night type, run price tests by randomised dates or room types, controlling for day of week and events.
+
+**Metrics:**
+- Profit per available room night = rooms sold x (price - variable cost) / rooms available. Revenue per available room is a guardrail but ignores cost.
+- Occupancy = rooms sold / 100. Sell-out share = nights with demand at or above capacity / all nights.
+- Guardrails: repeat bookings, review score, cancellation rate.
+
+**Risks:**
+- Averages hide the sell-out nights, where sales are capped and demand is censored.
+- Price effects differ by segment and season.
+- Competitor prices and events move demand independently of our price.
+- Selection: a price change tested on quiet weeks looks worse than it is.
+
+**What the interviewer scores:**
+- Strong: correct profit, break-even demand fall, and the capacity point (sold-out nights give free price increases). Weak: compares 70 x 100 with 62 x 120 using revenue only, forgetting variable cost.
+- Strong: proposes price by night with randomised testing. Weak: says "just run an A/B test" with no thought about dates or capacity.
+- Strong: notes the 70 is censored on busy nights. Weak: treats observed sales as demand.
+
+**Example:** Illustrative numbers. 70 x 80 = 5,600 against 62 x 100 = 6,200. Break-even is 56 rooms. Weak: "120 is better, by 600, ship it." Strong: "On average yes, but I would raise price on the peak nights first, and test the soft nights separately, because the gain is mostly from nights that are already full."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why does revenue alone mislead?* 70 x 100 = 7,000 vs 62 x 120 = 7,440, a gap of 440 instead of 600, because it misses the 160 of variable cost saved on the 8 rooms not sold (440 + 160 = 600).
+- *How do you measure demand on sold-out nights?* Log turned-away requests, searches and abandoned bookings, or fit a censored model like Part 5 Q53.
+- *Could this be a bandit?* Yes, once you have a few price points and enough nights.
+
+**Common mistakes:**
+- Using revenue instead of profit.
+- Using one average demand drop for every night.
+- Ignoring the capacity cap.
+- Testing price on a few nights and attributing weekday-weekend swings to price.

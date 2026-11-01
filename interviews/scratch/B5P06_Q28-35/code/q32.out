@@ -1,0 +1,8 @@
+3 distinct nodes: True | to_array: [1, 2, 3]
+reverse in place   -> [3, 2, 1] | same node objects: True
+reverse new nodes  -> [3, 2, 1] | same node objects: False
+buggy reverse      -> reported: list has a cycle
+same_structure and aliasing check: OK
+compare of cyclic lists: step cap hit while comparing
+500 random lists: in-place version passes everything; new-node version passes values, fails identity
+drop_first subset check -> [6, 7] True

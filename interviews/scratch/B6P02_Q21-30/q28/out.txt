@@ -1,0 +1,11 @@
+cohort age (days) | matured share | expected observed | observed (sim) | pred/obs
+                1 |          0.30 |            0.0150 |         0.0155 | 3.23
+                2 |          0.50 |            0.0250 |         0.0257 | 1.95
+                3 |          0.65 |            0.0325 |         0.0322 | 1.55
+                4 |          0.78 |            0.0390 |         0.0388 | 1.29
+                5 |          0.88 |            0.0440 |         0.0443 | 1.13
+                6 |          0.95 |            0.0475 |         0.0473 | 1.06
+                7 |          1.00 |            0.0500 |         0.0493 | 1.01
+maturity-adjusted ratio for yesterday's cohort: 1.03 (1.00 means well calibrated)
+for a 20,000-user cohort the standard error of a 5% rate is 0.0015; alert band about +/-0.0030
+asserts passed

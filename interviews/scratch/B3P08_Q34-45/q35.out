@@ -1,0 +1,27 @@
+cumulative funnel (SQL):
+ step step_name  users_cumulative
+    1      view                 9
+    2      cart                 8
+    3  checkout                 7
+    4  purchase                 5
+users who reached purchase but skipped a step (SQL):
+ user_id  has_cart  has_checkout
+       2         1             0
+       3         0             0
+       5         0             0
+any-order presence per step (SQL):
+event_name  users_any_order
+      cart                6
+  checkout                4
+  purchase                5
+      view                7
+strict ordered funnel s1..s4 (SQL): (7, 5, 2, 1)
+ step step_name  users_cumulative
+    1      view                 9
+    2      cart                 8
+    3  checkout                 7
+    4  purchase                 5
+cumprod of presence booleans (no skipped step): {'view': 7, 'cart': 5, 'checkout': 3, 'purchase': 2}
+strict ordered funnel s1..s4 (pandas): (7, 5, 2, 1)
+any-order presence (pandas): {'view': 7, 'cart': 6, 'checkout': 4, 'purchase': 5}
+asserts passed

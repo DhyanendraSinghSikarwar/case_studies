@@ -1,0 +1,27 @@
+name: llm-eval
+on:
+  pull_request:
+    paths: ["prompts/**", "config/**", "app/**", "evals/**"]
+permissions:
+  contents: read
+concurrency:
+  group: llm-eval-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  deterministic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pytest evals/deterministic -q       # format, schema, banned content; no API key, runs on forks too
+  judged:
+    needs: deterministic
+    if: github.event.pull_request.head.repo.full_name == github.repository   # forks get no secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: LLM-as-judge on a sampled subset, repeated
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          EVAL_REPEATS: "3"
+          EVAL_SAMPLE: "40"
+        run: python evals/run_gate.py --golden evals/golden.jsonl

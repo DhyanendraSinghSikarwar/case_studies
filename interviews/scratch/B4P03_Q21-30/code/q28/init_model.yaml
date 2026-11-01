@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-server
+spec:
+  replicas: 4
+  selector:
+    matchLabels: {app: llm-server}
+  template:
+    metadata:
+      labels: {app: llm-server}
+    spec:
+      volumes:
+        - name: model
+          emptyDir:
+            sizeLimit: 40Gi              # counts toward node ephemeral storage; pod is evicted if exceeded
+      initContainers:
+        - name: fetch-model
+          image: registry.example.com/model-fetcher:1.0   # small image with an object-store CLI
+          command: ["sh", "-c"]
+          args:
+            - >-
+              fetch --src "$MODEL_URI" --dst /models/current &&
+              sha256sum -c /models/current/SHA256SUMS
+          env:
+            - name: MODEL_URI
+              value: s3://models-prod/llm/2026-10-01/   # pin an immutable version, never "latest"
+          volumeMounts:
+            - {name: model, mountPath: /models}
+          resources:
+            requests: {cpu: "1", memory: 1Gi, ephemeral-storage: 40Gi}
+      containers:
+        - name: server
+          image: registry.example.com/llm-server:3.2
+          volumeMounts:
+            - {name: model, mountPath: /models, readOnly: true}
+          startupProbe:
+            httpGet: {path: /ready, port: 8080}
+            periodSeconds: 10
+            failureThreshold: 60         # up to 10 min to load weights before kubelet gives up
+          readinessProbe:
+            httpGet: {path: /ready, port: 8080}

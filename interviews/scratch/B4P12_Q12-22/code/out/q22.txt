@@ -1,0 +1,9 @@
+items 50, overridden 5 = 10%  overall WAPE model 16.3%  bias -13.2%
+
+class            WAPE    bias   n ovr  FVA on overridden (pts)  decision
+fast             4.8%   -2.1%  20   1                     +0.7  too few overrides to judge FVA; automate
+slow            30.6%   -7.9%  10   0                      n/a  too few overrides to judge FVA; keep review, fix model
+promo           26.8%  -25.5%  12   3                    +19.5  overrides help because model is biased: fix the model bias, keep review till then
+intermittent    57.8%  +31.7%   8   1                     +0.0  too few overrides to judge FVA; keep review, fix model
+
+whole-portfolio total: actual 3932, model 3413 -> total error 13.2% (cancelling) vs item-level WAPE above

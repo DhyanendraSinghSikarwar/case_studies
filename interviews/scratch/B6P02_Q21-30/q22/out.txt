@@ -1,0 +1,4 @@
+thumbs-up 78% -> 69%, z=7.9
+fixed set 85% -> 77%; lost 38, gained 14; exact McNemar p=0.0012
+difference -8.0 points, 95% CI [-12.6, -3.4]
+unpaired canary of 300: minimum detectable drop about 8.2 points

@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: churn-serving-prod
+  namespace: argocd
+spec:
+  project: ml-serving
+  source:
+    repoURL: https://github.com/example-org/ml-deploy-config.git
+    targetRevision: main
+    path: apps/churn-serving/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: churn
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

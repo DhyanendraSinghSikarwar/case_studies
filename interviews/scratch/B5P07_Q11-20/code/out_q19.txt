@@ -1,0 +1,12 @@
+root=[3, 4, 5, 1, 2] sub=[4, 1, 2] -> True
+root=[3, 4, 5, 1, 2, None, None, None, None, 0] sub=[4, 1, 2] -> False
+root=[1, 1] sub=[1] -> True
+root=[12] sub=[2] -> False
+naive concatenation: root [12] holds '12' and sub [2] holds '2' -> '2' in '12' is True (wrong)
+markers but no delimiters: '12##' vs '2##' -> substring test says True (wrong)
+with delimiters: ',12,#,#' vs ',2,#,#' -> substring test says False
+delimiters but no markers: root [1,null,2] gives ',1,2' and sub [1,2] gives ',1,2' -> substring test says True (wrong, the trees differ)
+exhaustive ok: 75076 (root, sub) pairs, 982 are True; is_same calls never exceed n*(2m+1)
+naive string test wrong on 6178 of 75076 pairs (plain values concatenated, no markers, no delimiters)
+random ok: 300 trees
+chain n=400, sub chain m=200: found = False | is_same calls = 120198 | n*m = 80000

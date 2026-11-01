@@ -1,0 +1,5 @@
+name: churn-docker
+version: "1"
+build:
+  path: ./docker-context
+  dockerfile_path: Dockerfile

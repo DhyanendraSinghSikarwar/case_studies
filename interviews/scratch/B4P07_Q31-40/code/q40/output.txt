@@ -1,0 +1,12 @@
+{'det_rate': 0.95, 'judge_mean': 4.422, 'judge_spread': 0.734}
+note: g3 repeat 4: missing 'days'
+GATE: PASS
+exit=0
+5 passed in 0.02s
+== a broken model (always 'I cannot help')
+{'det_rate': 0.0, 'judge_mean': 2.047, 'judge_spread': 0.147}
+FAIL: deterministic pass rate 0.00 < 0.9
+FAIL: judge mean 2.05 < floor 4.0
+FAIL: judge mean 2.05 dropped more than tolerance 0.3 from baseline 4.4
+== actionlint llm-ci.yml
+exit=0

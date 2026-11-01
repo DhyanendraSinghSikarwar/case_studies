@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scorer-config
+data:
+  MODEL_URI: "models:/churn/Production"
+  LOG_LEVEL: "info"
+  THRESHOLD: "0.62"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: scorer-secrets
+type: Opaque
+data:
+  REGISTRY_TOKEN: bm90LWEtcmVhbC10b2tlbg==      # base64 of a dummy value
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scorer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: scorer
+  template:
+    metadata:
+      labels:
+        app: scorer
+      annotations:
+        checksum/config: "REPLACE_WITH_HASH_OF_CONFIGMAP_DATA"   # changes -> pod template changes -> rollout
+    spec:
+      containers:
+        - name: scorer
+          image: registry.example.com/ml/scorer:1.4.0
+          envFrom:
+            - configMapRef:
+                name: scorer-config
+          env:
+            - name: REGISTRY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: scorer-secrets
+                  key: REGISTRY_TOKEN
+          volumeMounts:
+            - name: config-files
+              mountPath: /etc/scorer
+              readOnly: true
+      volumes:
+        - name: config-files
+          configMap:
+            name: scorer-config

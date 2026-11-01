@@ -1,0 +1,3 @@
+2000 random op sequences match the list brute force
+n=100000 pushes, 50000 removes -> 50000 live pops; heap list ended at 0 entries
+list.remove + heapify works but costs O(n) per remove: [1, 2, 9, 7]

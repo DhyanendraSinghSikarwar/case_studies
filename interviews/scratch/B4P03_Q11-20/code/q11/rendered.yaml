@@ -1,0 +1,63 @@
+---
+# Source: modelserver/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: churn-modelserver
+data:
+  MODEL_NAME: "churn"
+  LOG_LEVEL: "info"
+---
+# Source: modelserver/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: churn-modelserver
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: modelserver
+      app.kubernetes.io/instance: churn
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: modelserver
+        app.kubernetes.io/instance: churn
+    spec:
+      containers:
+        - name: server
+          image: "registry.example.com/ml/churn-model:1.4.2"
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: churn-modelserver
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+          resources:
+            requests:
+              cpu: "500m"
+              memory: 1Gi
+            limits:
+              memory: 8Gi
+              nvidia.com/gpu: 1
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+---
+# Source: modelserver/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: churn-modelserver
+spec:
+  selector:
+    app.kubernetes.io/name: modelserver
+    app.kubernetes.io/instance: churn
+  ports:
+    - port: 80
+      targetPort: 8080

@@ -1,0 +1,3 @@
+AUC champion 0.7065
+challenger_small_gain: AUC 0.7398 diff +0.0333 95% CI [+0.0178, +0.0508] -> PROMOTE (CI above zero and gain above the floor)
+challenger_noise_only: AUC 0.7130 diff +0.0064 95% CI [-0.0106, +0.0239] -> HOLD (CI includes zero or gain below floor; collect more labels)

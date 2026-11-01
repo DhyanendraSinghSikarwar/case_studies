@@ -1,0 +1,7 @@
+naive before/after in treated city: +15%
+DiD = 0.10 orders per user per week = +5.0% of the baseline
+parallel trends: DiD mean 0.100 (truth 0.100), sd 0.020, pre-trend slope sd 0.0050
+trend violated:   DiD mean 0.166 (truth 0.100), pre-trend slope mean 0.0108 per week
+real DiD 0.111; placebo DiDs [-0.002 -0.023 -0.025 -0.021 -0.04 ]
+rank of real among 6 = 1; smallest possible permutation p = 1/6 = 0.167
+all asserts passed

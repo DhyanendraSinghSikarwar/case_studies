@@ -1,0 +1,92 @@
+tiny window [('N', 2, 90), ('N', 3, 90), ('N', 4, 70), ('S', 7, 30), ('S', 6, 20)]
+tiny correlated COUNT [('N', 2, 90), ('N', 3, 90), ('N', 4, 70), ('S', 7, 30), ('S', 6, 20)]
+tiny correlated IN + LIMIT [('N', 2, 90), ('N', 3, 90), ('N', 4, 70), ('S', 7, 30), ('S', 6, 20)]
+tiny: plain count form with only '>' would return [(2,), (3,), (4,)] (ties at 90 both rank 0, 70 rank 2, 50 rank 3 excluded; tie-break matters when ranks collide)
+
+== 6,000 rows (50 regions x about 120 rows), all forms, with and without the index
+index=False window                 rows 150 VM steps    290187
+        CO-ROUTINE (subquery-1)
+        CO-ROUTINE (subquery-3)
+        SCAN sales
+        USE TEMP B-TREE FOR ORDER BY
+        SCAN (subquery-3)
+        SCAN (subquery-1)
+        USE TEMP B-TREE FOR ORDER BY
+index=False correlated COUNT       rows 150 VM steps 147731516
+        SCAN a
+        CORRELATED SCALAR SUBQUERY 1
+        SCAN b
+        USE TEMP B-TREE FOR ORDER BY
+index=False correlated IN + LIMIT  rows 150 VM steps 148685000
+        SCAN a
+        CORRELATED LIST SUBQUERY 1
+        SCAN b
+        USE TEMP B-TREE FOR ORDER BY
+        USE TEMP B-TREE FOR ORDER BY
+index=True  window                 rows 150 VM steps    230185
+        CO-ROUTINE (subquery-1)
+        CO-ROUTINE (subquery-3)
+        SCAN sales USING COVERING INDEX ix_reg_amt
+        SCAN (subquery-3)
+        SCAN (subquery-1)
+        USE TEMP B-TREE FOR ORDER BY
+index=True  correlated COUNT       rows 150 VM steps   5195467
+        SCAN a USING COVERING INDEX ix_reg_amt
+        CORRELATED SCALAR SUBQUERY 1
+        SEARCH b USING COVERING INDEX ix_reg_amt (region=?)
+index=True  correlated IN + LIMIT  rows 150 VM steps    162611
+        SCAN a USING COVERING INDEX ix_reg_amt
+        CORRELATED LIST SUBQUERY 1
+        SEARCH b USING COVERING INDEX ix_reg_amt (region=?)
+
+== quadratic growth of the correlated COUNT with the index (rows per region grows with n)
+  n=  3000 steps   1332755  steps/n = 444.2
+  n=  6000 steps   5195467  steps/n = 865.9
+  n= 12000 steps  20470934  steps/n = 1705.9
+
+== 300,000 rows
+window, no index:                      rows 150 VM steps  14402187
+        CO-ROUTINE (subquery-1)
+        CO-ROUTINE (subquery-3)
+        SCAN sales
+        USE TEMP B-TREE FOR ORDER BY
+        SCAN (subquery-3)
+        SCAN (subquery-1)
+        USE TEMP B-TREE FOR ORDER BY
+window, index (region, amount DESC, sale_id): rows 150 VM steps  11402185
+        CO-ROUTINE (subquery-1)
+        CO-ROUTINE (subquery-3)
+        SCAN sales USING COVERING INDEX ix_reg_amt
+        SCAN (subquery-3)
+        SCAN (subquery-1)
+        USE TEMP B-TREE FOR ORDER BY
+correlated IN + LIMIT, index:           rows 150 VM steps   8100611
+        SCAN a USING COVERING INDEX ix_reg_amt
+        CORRELATED LIST SUBQUERY 1
+        SEARCH b USING COVERING INDEX ix_reg_amt (region=?)
+(correlated COUNT not run at 300,000 rows: it needs about n*rows-per-region/2 index entries, see the growth table)
+
+== where the sorts come from, 300,000 rows (index present)
+window, NO outer ORDER BY                            rows 150 VM steps  11401132 temp b-trees 0
+        CO-ROUTINE (subquery-1)
+        CO-ROUTINE (subquery-3)
+        SCAN sales USING COVERING INDEX ix_reg_amt
+        SCAN (subquery-3)
+        SCAN (subquery-1)
+window, outer ORDER BY region, amount DESC, sale_id  rows 150 VM steps  11402181 temp b-trees 1
+        CO-ROUTINE (subquery-1)
+        CO-ROUTINE (subquery-3)
+        SCAN sales USING COVERING INDEX ix_reg_amt
+        SCAN (subquery-3)
+        SCAN (subquery-1)
+        USE TEMP B-TREE FOR ORDER BY
+window, outer ORDER BY sale_date (another key)       rows 150 VM steps  12602486 temp b-trees 1
+        CO-ROUTINE (subquery-1)
+        CO-ROUTINE (subquery-3)
+        SCAN sales USING INDEX ix_reg_amt
+        SCAN (subquery-3)
+        SCAN (subquery-1)
+        USE TEMP B-TREE FOR ORDER BY
+NO index, no outer ORDER BY                          temp b-trees 1
+NO index, outer ORDER BY                             temp b-trees 2
+asserts passed: all forms equal the pandas sort + groupby.head(3) (compared in order region, amount desc, sale_id)

@@ -1,0 +1,4 @@
+1500 random cases match matching brute force
+latest-end-first on [[1, 1], [1, 2]] : 1 vs soonest-end 2
+ties in a heap of ints are fine: [2, 4, 4, 4]
+n=100000 random events -> 98052 attended (<= 100000 days)

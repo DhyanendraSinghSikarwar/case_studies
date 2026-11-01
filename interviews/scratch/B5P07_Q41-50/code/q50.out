@@ -1,0 +1,10 @@
+examples ok: [1, 2, 1, 1, 0]
+shapes checked exhaustively (0..9 nodes): 6918
+trees with n >= 2 where an optimal placement with no camera on a leaf exists: 6916 (all of them)
+[0,0,0]: a camera on each leaf needs 2, the greedy needs 1 (the root watches all three)
+single node: greedy count = 1 (the final root fix adds the camera)
+chain of 3: greedy count = 1 (camera on the middle node)
+300 random trees (up to 14 nodes) ok
+chain of 1000 nodes: iterative = 334
+recursive version: RecursionError (default limit 1000)
+chain sizes 1..12 -> cameras: [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4] (= ceil(k/3))

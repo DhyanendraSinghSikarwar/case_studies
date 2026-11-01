@@ -1,0 +1,24 @@
+$ actionlint unsafe.yml
+unsafe.yml:9:36: "github.event.pull_request.title" is potentially untrusted. avoid using it directly in inline scripts. instead, pass it through an environment variable. see https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks for more details [expression]
+  |
+9 |       - run: echo "PR title is ${{ github.event.pull_request.title }}"
+  |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+unsafe.yml:12:34: "github.head_ref" is potentially untrusted. avoid using it directly in inline scripts. instead, pass it through an environment variable. see https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks for more details [expression]
+   |
+12 |       - run: echo "branch is ${{ github.head_ref }}"
+   |                                  ^~~~~~~~~~~~~~~
+unsafe exit=1
+$ actionlint safe.yml
+safe exit=0
+$ bash inject_demo.sh
+--- unsafe: expression pasted into the script text
+echo "PR title is x"; echo INJECTED-COMMAND-RAN; echo ""
+PR title is x
+INJECTED-COMMAND-RAN
+
+--- safe: value passed as an environment variable
+PR title is x"; echo INJECTED-COMMAND-RAN; echo "
+$ python -I mask_demo.py
+exact  -> token=***
+base64 -> token=czNjcjN0LXRva2VuLTEyMw==
+split  -> token=s3cr3t -token-123

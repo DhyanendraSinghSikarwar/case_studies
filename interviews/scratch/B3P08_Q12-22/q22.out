@@ -1,0 +1,16 @@
+signup_month  cohort_size  gross  refunded  net_revenue  ltv_per_signup  cohort_age_months
+     2024-01            2 2300.0     250.0       2050.0          1025.0                  5
+     2024-02            2 1300.0     600.0        700.0           350.0                  4
+     2024-04            1    0.0       0.0          0.0             0.0                  2
+     2024-05            2  500.0       0.0        500.0           250.0                  1
+wrong (orders joined to refunds first):
+signup_month  wrong_gross  refunded
+     2024-01       3300.0     250.0
+     2024-02       1300.0     600.0
+     2024-05        500.0       0.0
+signup_month  cohort_size  gross  refunded  net_revenue  ltv_per_signup  cohort_age_months
+     2024-01            2 2300.0     250.0       2050.0          1025.0                  5
+     2024-02            2 1300.0     600.0        700.0           350.0                  4
+     2024-04            1    0.0       0.0          0.0             0.0                  2
+     2024-05            2  500.0       0.0        500.0           250.0                  1
+asserts passed

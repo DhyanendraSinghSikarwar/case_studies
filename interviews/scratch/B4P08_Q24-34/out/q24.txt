@@ -1,0 +1,4 @@
+A calibrated, reference            est acc 0.687 true acc 0.688 | est prec 0.640 true prec 0.642
+B covariate shift, calibration holds est acc 0.688 true acc 0.688 | est prec 0.709 true prec 0.709
+C concept drift (link weakened)    est acc 0.687 true acc 0.576 | est prec 0.640 true prec 0.561
+D overconfident model              est acc 0.687 true acc 0.612 | est prec 0.640 true prec 0.584

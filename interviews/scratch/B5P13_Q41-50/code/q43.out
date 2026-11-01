@@ -1,0 +1,11 @@
+examples ok: [[4, 4, 0, 0, 5], [4, 10, 10, 10, 7], [10, 6, 1, 1, 8], [5, 6, 4, 4, 4], [0, 0, 0, 0, 0]]
+1500 random lists: Timsort count == cmp_to_key counter, merge-count inversions == O(n^2) count == insertion shifts
+shifts == inversions and comparisons == inversions + (n-1) - (strict new prefix minima) for 3280 lists
+sorted and strictly descending lists of every length 1..299: exactly n - 1 comparisons
+descending with ties [2,2,1,1]: 5 (not strictly descending, so not one run)
+n = 300  (timsort, insertion, shifts, inversions, merge)
+  sorted            [299, 299, 0, 0, 1180]
+  5 adjacent swaps  [541, 304, 5, 5, 1182]
+  reversed          [299, 44850, 44850, 44850, 1308]
+  random            [2083, 22710, 22418, 22418, 2089]
+edge asserts ok

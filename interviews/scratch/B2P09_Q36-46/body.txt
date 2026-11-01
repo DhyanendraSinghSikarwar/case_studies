@@ -1,0 +1,193 @@
+=====Q36
+**Say this first (1 line):** A capability eval asks "what can the model not do yet?" and is expected to fail a lot; a regression eval asks "did anything that used to work break?" and is expected to pass almost always; a healthy suite moves stable cases from the first to the second and keeps adding harder cases.
+**Then explain:**
+- **Two jobs, two shapes.** Capability evals start at a low pass rate and give the team a hill to climb. Regression evals start near 100% and act as a smoke alarm. Anthropic's engineering post on agent evals (opened) draws the same split and also suggests starting with 20-50 tasks taken from real failures.
+- **Graduation.** When a capability case passes reliably (here: 5 of 5 trials), copy it into the regression suite. Graduating on repeated trials, not one lucky pass, matters because of run variance (Part 9 Q27).
+- **Saturation.** When the capability suite is nearly all passes, it no longer separates versions. The fix is new, harder cases drawn from fresh production failures, not a bigger pile of easy ones. Saturation also hurts public benchmarks (Part 9 Q21).
+- **Regression gates must tolerate noise.** A strict "every case 5/5" gate will fail healthy candidates because borderline cases flicker (see the run). Gate on a drop in the aggregate, plus any case that now fails most trials; thresholds and flaky handling are in Part 9 Q14.
+- **Eval-driven development.** Write the failing eval first (from a bug report or a new requirement), then change the prompt or model until it passes, then graduate it. The cases are the specification.
+- **Agent suites** (trajectories, tool mocks, pass^k) are covered in Part 8 Q14, Q39 and Q51; this answer is the general lifecycle.
+**Example:** (SYNTHETIC mock, no LLM). 60 cases of rising difficulty. Skill goes 1.0 to 8.0 over five versions. The capability pass rate on the remaining cases goes 0.37, 0.46, 0.67, 0.81, 0.97 while the graduated regression suite grows 7, 15, 27, 41, 57. At v5 the capability suite is at 0.97 with only a few cases left, so it is saturated and 20 harder cases are added. Then a candidate that breaks one block of 10 cases is tested: the strict 5/5 gate fails both the healthy candidate (2 flaky cases) and the broken one (12 cases, 10 of them in the broken block); the looser "any case at 2 of 5 or worse" gate passes the healthy candidate and fails the broken one (10 cases). One toy run with one seed, so read the shape, not the counts. Also, per Anthropic's post, 75% per-trial success gives about 42% pass^3, which the run confirms (0.75^3 = 0.4219).
+**Code:** (run with `python3 -I`; stdlib only; mock model, synthetic cases)
+@@CODE@@
+**Follow-ups:**
+- *Should graduated cases ever leave?* Yes. Retire cases whose requirement changed, and re-label cases a human finds wrong; version the suite so old runs stay comparable (Part 9 Q2).
+- *How many regression cases?* Enough to cover each important behaviour and each past incident, and small enough to run on every change; tiering (fast on every commit, full nightly) is Part 9 Q14.
+- *What if the capability score never moves?* Either the cases are too hard to give a signal, or the changes you try do not address the failure mode; go back to error analysis (Part 9 Q15).
+**Common mistakes:** one suite for everything; graduating on a single pass; a strict all-pass gate that cries wolf and gets switched off; never adding harder cases so the dashboard shows 100% and nobody learns anything; treating a public benchmark as your capability suite.
+
+=====Q37
+**Say this first (1 line):** Elo updates ratings one battle at a time, so the final numbers depend on the order of the battles; Bradley-Terry fits all battles at once by maximum likelihood, so the order cannot matter.
+**Then explain:**
+- **Elo:** expected win probability for A is 1 / (1 + 10^((rB - rA)/400)); after each battle move each rating by K x (result - expected). Because every update uses the current ratings, a model that happens to win late ends higher.
+- **Bradley-Terry:** each model has a strength p; P(A beats B) = pA / (pA + pB). The data are only the win counts per pair, so shuffling battles changes nothing. I fit it with the MM iteration: p_i = wins_i / sum over opponents of n_ij / (p_i + p_j), then rescale.
+- **Checks I ran:** at the solution wins minus expected wins is 0 for every model (that is the likelihood condition), and for two models the fit matches the closed form 400 x log10(wins / losses).
+- **When Elo is fine:** a stream where models truly change over time (a recency effect is then a feature). For a static leaderboard from a fixed pile of votes, BT is the cleaner choice. Per LMSYS blog snippets (not opened in full, check the live posts), the Arena moved from online Elo to a Bradley-Terry fit for this reason; see Part 9 Q20 for the Arena's intervals and blind spots.
+**Example:** two battles, K = 32, both models start at 1000. A beats B, then B beats A: A ends at 998.53 and B at 1001.47. Swap the order and A ends at 1001.47, B at 998.53. Same two results, different ratings. On 600 synthetic battles (assumed true strengths A 1.8, B 1.2, C 1.0, D 0.5; K = 16) Elo gives A = 1112.1 on the original order, 1170.0 reversed, 1399.1 when A's wins are pushed to the end and 763.4 when they come first (those last two are deliberately adversarial orders). Bradley-Terry gives A = 1115.5, B = 1043.7, C = 999.2, D = 841.5 every time.
+**Code:** (run with `python3 -I`; stdlib only; synthetic battles)
+@@CODE@@
+**Follow-ups:**
+- *How do you get error bars on BT?* Bootstrap the battles (resample votes, refit) and take percentiles; Part 9 Q38 has the bootstrap machinery.
+- *Ties?* Count a tie as half a win for each side, or model ties explicitly; I did not implement ties here.
+- *Why 400 and 10?* Convention only; it sets the scale so a 400-point gap means 10 to 1 odds.
+**Common mistakes:** quoting an Elo gap from one ordering as if it were stable; no shuffling or averaging when using Elo; forgetting BT is only identified up to a constant (so centre the ratings); fitting BT when some model has zero wins (the MLE diverges, so regularise); treating Arena-style rankings as a measure of your product's quality.
+
+=====Q38
+**Say this first (1 line):** Resample the test cases with replacement many times, recompute accuracy each time, and take the 2.5th and 97.5th percentiles; for two systems, resample the same cases for both and bootstrap the per-case difference.
+**Then explain:**
+- **The unit is the test case.** Each resample draws n cases with replacement. In the paired version each drawn case carries both systems' results, so the correlation between systems is kept.
+- **Why paired is tighter:** the two systems usually fail on many of the same hard cases. Only the cases where they disagree carry information about the difference, so the paired interval is narrower than an unpaired one that pretends the two samples are independent.
+- **Sanity checks:** for one accuracy the bootstrap half-width should be close to 1.96 x sqrt(p(1-p)/n); for the paired difference it should be close to 1.96 x sqrt(b + c - (b-c)^2 / n) / n, with b and c the counts of cases where only one system is right.
+- **Limits:** it assumes the cases are independent draws. If several test cases come from one document or one user, resample the groups instead. It also says nothing about cases you never sampled. The "evals as experiments with error bars" paper by Miller (arXiv 2411.00640, abstract only opened) argues for reporting this kind of uncertainty.
+- Sample size and power are Part 9 Q26; McNemar and other tests are Part 9 Q28; the worked 82% vs 80% scenario is Part 9 Q11.
+**Example:** (SYNTHETIC outcomes, 200 cases, correlated systems). A is 0.820 accurate with a bootstrap 95% CI of [0.765, 0.870]. B is 0.740. The difference is +0.080. The paired bootstrap gives [+0.030, +0.130] (width 0.100); the unpaired one gives [+0.000, +0.160] (width 0.160), whose lower end sits at zero, so it would not clearly show a win. The check numbers match: normal approximation half-width 0.053 vs bootstrap 0.052 for A; closed-form 1.96 x SE = 0.049 vs bootstrap half-width 0.050 for the difference (A only right on 21 cases, B only on 5).
+**Code:** (run with `python3 -I`; stdlib only; synthetic data)
+@@CODE@@
+**Follow-ups:**
+- *How many resamples?* A few thousand is usual for a 95% interval; I used 10,000, which is cheap at this size.
+- *Percentile vs BCa?* Percentile is fine for a first look; for small n or skewed statistics use BCa or an exact method (from memory, check a stats reference).
+- *Multiple runs per case?* Average the trials within a case first, then bootstrap the cases (this is what Part 9 Q40 does).
+**Common mistakes:** resampling individual trials instead of cases; the unpaired bootstrap on paired data; bootstrapping with tiny n and trusting the edges; reporting a CI for accuracy but a bare difference for the comparison; claiming "no difference" when the interval is just wide.
+
+=====Q39
+**Say this first (1 line):** Kappa is agreement between judge and human corrected for the agreement you would get by chance, and I always report it next to TPR and TNR because accuracy alone is misleading when one class dominates.
+**Then explain:**
+- **Formula:** kappa = (po - pe) / (1 - pe), where po is observed agreement and pe is the chance agreement from each rater's own label frequencies. 1 is perfect, 0 is chance level.
+- **TPR and TNR with the human as reference:** TPR = share of human-good items the judge also calls good; TNR = share of human-bad items the judge also calls bad. They tell you which way the judge errs (too lenient or too strict), which kappa hides. This is the TPR/TNR practice from Hamel Husain's evals FAQ (opened).
+- **Why accuracy misleads:** if 90% of outputs are good, a judge that always says "pass" scores about 90% accuracy and kappa 0.
+- **Small samples are noisy.** TNR rests on the few bad items. Put a bootstrap interval on kappa.
+- **Interpretation thresholds** (0.6 and 0.8 rules of thumb) are conventions, not laws; the full comparison of kappa variants and the kappa paradox is in Part 9 Q25, and judge calibration practice (splits, rubric iteration) is Part 9 Q6.
+**Example:** (hand check) 15 true positives, 20 true negatives, 5 false positives, 10 false negatives: po = 35/50 = 0.70, pe = 0.5, kappa = 0.40, which the code reproduces. On synthetic data with 200 items and about 90% good, the always-pass judge and a realistic judge both score accuracy 0.915, but kappa is 0.000 for the lazy one and 0.540 for the realistic one (TPR 0.934, TNR 0.706; I designed it with TNR about 0.60, and with only 17 bad items the observed value wobbles). The bootstrap 95% CI for that kappa is [0.345, 0.719], which is wide.
+**Code:** (run with `python3 -I`; stdlib only; toy labels)
+@@CODE@@
+**Follow-ups:**
+- *More than two classes?* Same formula with pe summed over all classes; use weighted kappa when classes are ordered.
+- *More than two raters?* Fleiss' kappa or Krippendorff's alpha (Part 9 Q25).
+- *What do you do with a low kappa?* Read the disagreements, fix the rubric or the labels, relabel a calibration set, then re-measure; do not just swap the judge model.
+**Common mistakes:** reporting accuracy only; computing kappa on a calibration set the rubric was tuned on; ignoring class imbalance; treating a kappa from 50 items as precise; mixing up which rater is the reference when reading TPR and TNR.
+
+=====Q40
+**Say this first (1 line):** A harness is five small pieces: a loader, a runner that calls the model through a cache, graders that turn outputs into scores, repeated trials, and a report that gives a mean with a confidence interval computed over cases.
+**Then explain:**
+- **Loader:** read JSONL into dicts with an id, input and reference. Fail loudly on duplicates and missing fields.
+- **Runner and cache:** key the cache on everything that changes the output (model, prompt, trial index, and in real life temperature and parameters). A rerun then costs nothing and is reproducible.
+- **Graders are separate functions** returning a score per case. Keep them deterministic where you can (exact, regex, schema) and add a judge only where needed (Part 9 Q32).
+- **Repeated trials:** average trials inside a case, then bootstrap over cases, because trials of one case are not independent (Part 9 Q27, Q38).
+- **Report:** per grader, mean and CI; for two models, a paired difference with its CI.
+- **Keep honest weak results:** with 30 cases the large model's edge in the run is not established.
+**Example:** (SYNTHETIC; the mock models are assumed to be right 70% and 85% of the time). 30 arithmetic cases, 3 trials, 90 calls per model. The strict exact-match grader scores both models 0.000, because the mock models answer "The answer is 12." That is a grader bug, not a model fact; the "contains the number" grader gives small 0.722 [0.622, 0.822] and large 0.822 [0.767, 0.878]. The paired difference is +0.100 with CI [-0.022, +0.233], so on 30 cases it includes zero. The first pass makes 90 calls per model with 0 cache hits; the rerun makes no new calls and has 180 cache hits.
+**Code:** (run with `python3 -I`; stdlib only; mock LLM, no network)
+@@CODE@@
+**Follow-ups:**
+- *How do you add an LLM judge?* As another grader function with its own cache key (judge model and rubric version) and its own calibration (Part 9 Q6).
+- *Parallelism and rate limits?* Wrap the runner in a thread pool with retries and a budget; keep the cache write thread-safe.
+- *Build or buy?* Part 9 Q35.
+**Common mistakes:** a cache key missing the model or the prompt version; caching away the trial variation you wanted to measure; CIs over trials instead of cases; a brittle grader silently scoring everything 0 (always print a few graded examples); no budget cap.
+
+=====Q41
+**Say this first (1 line):** The script has six classic bugs, and each one makes the result look better or more certain than it is: leaked test cases, a biased pass@k estimator, a position-biased judge, no interval, a self-judging model, and a single run at nonzero temperature.
+**Then explain:**
+| # | Bug | Effect | Fix |
+|---|---|---|---|
+| 1 | few-shot examples sampled from the test set | model can copy answers, score inflated | separate dev pool for examples, assert it is disjoint from test (Part 9 Q2) |
+| 2 | naive pass@k, 1-(1-c/n)^k | biased estimate | unbiased 1 - C(n-c,k)/C(n,k) (Part 9 Q12, Q13) |
+| 3 | pairwise judge always sees system X first | position bias becomes a win rate | run both orders, count a win only across both (Part 9 Q5, Q18) |
+| 4 | mean score only | cannot tell signal from noise | paired bootstrap interval (Part 9 Q38) |
+| 5 | same model generates and judges | self-preference | judge from a different family; verify with a swap (Part 9 Q5) |
+| 6 | temperature above 0 and one run | one noisy number | repeated trials, mean and spread (Part 9 Q27) |
+**Example:** (MOCK models and judges; the biases are assumed, so the numbers show direction only.) (1) 200 test questions, 40 shots taken from them: score 0.585 vs 0.505 after the fix (the mock answers half of unseen questions). (2) n = 10 samples, k = 5, per-sample success 0.3 (assumed): true pass@5 is 0.8319, the expected unbiased estimate is 0.8319, the expected naive estimate is 0.7597, so the plug-in version under-reports here. (3) Two equal systems and a judge that favours slot A 65% of the time: X "wins" 0.670 with X always first, 0.518 with swapping. (4) Two systems with an identical mean of 3.45: the paired diff is +0.00 with CI [-0.25, +0.25]. (5) A judge adding +0.6 to its own family gives 4.20 vs 3.61 for an equally good system. (6) Eight single runs of a 70%-accurate mock on 30 items range from 0.533 to 0.800 (sd 0.108).
+**Code:** (run with `python3 -I`; stdlib only; each bug shown as a mock demo with its fix)
+@@CODE@@
+**Follow-ups:**
+- *Which bug would you look for first?* Leakage, because it silently invalidates every other number; then the judge setup.
+- *How do you find leakage?* Check overlap of test inputs with prompts, few-shot pools and training or fine-tuning data (Part 4 Q34 on fine-tuning data, Part 9 Q21).
+- *Is the naive pass@k always low?* Not in general; in this setting it under-reports. The point is that it is biased and the unbiased form is cheap.
+**Common mistakes:** fixing the code but not re-running to see the change in the number; "fixing" position bias by randomising once instead of swapping every pair; a fixed seed standing in for repeated trials; adding an interval but resampling the wrong unit.
+
+=====Q42
+**Say this first (1 line):** The offline set no longer represents what users do or what they care about, so I would reweight and refresh the set from current traffic and complaints, and check whether the offline metric or judge is being gamed.
+**Then explain:**
+- **Diagnose in this order:** (1) join complaints to traces and categorise them (Part 9 Q15); (2) compare the offline set's mix to today's traffic; (3) look at per-slice trends, not the headline; (4) check whether the metric rewards something users do not want, such as length; (5) check for overfitting to the set after many tuning rounds; (6) check for non-quality causes (latency, UI, a retrieval change).
+- **Traffic shift:** the eval set was frozen from older traffic; new query types are underrepresented. Fix by stratifying and reweighting to the current mix, and by adding cases from the new slice.
+- **Metric mismatch:** a judge that favours long answers rewards a change that users dislike (Part 9 Q5). Fix by controlling length, calibrating against user outcomes, or adding implicit-feedback signals (Part 9 Q30).
+- **Goodhart:** after many rounds of tuning against one set, the score stops predicting reality; keep a held-out set that is not used for tuning.
+- **Then change the eval:** add the complaint cases as a new slice, report per-slice scores, set a per-slice floor so one slice cannot hide behind the average, and track the gap between offline and online as a metric of its own.
+**Example:** (SYNTHETIC, assumed numbers). Three categories; the eval set mix is 60/30/10 (billing, how-to, new feature) but today's traffic is 35/30/35. Releases r1 to r4 tune billing up (0.70 to 0.95) while the new-feature slice degrades (0.60 to 0.35). The offline headline rises 0.705, 0.760, 0.795, 0.824, while the same per-category scores reweighted to today's traffic go 0.680, 0.698, 0.688, 0.674. Separately, a mock judge with a length bonus correlates +0.46 with answer length while mock user satisfaction correlates -0.28; the 200-word bucket gets a mean judge score of +1.28 and mean user satisfaction of -0.70.
+**Code:** (run with `python3 -I`; stdlib only; synthetic illustration, not evidence about any real product)
+@@CODE@@
+**Follow-ups:**
+- *What if offline is truly representative and complaints still rise?* Then the cause may be outside the model (latency, UI, pricing) or in what the metric measures; look at the complaint text before changing anything.
+- *Do you throw the offline set away?* No, it stays as a regression suite (Part 9 Q36), but it stops being the success metric.
+- *How do you prevent it recurring?* Refresh from sampled production traces every cycle and monitor offline vs online agreement (monitoring depth is Part 11).
+**Common mistakes:** trusting the average; adding more of the same cases; blaming users; changing the model before looking at the complaints; removing the judge entirely instead of calibrating it.
+
+=====Q43
+**Say this first (1 line):** Pin a dated snapshot so changes only happen when I choose, run a fixed canary eval on a schedule against both the alias and the pin, alert on a paired difference, then attribute by slice and by what else changed, and roll back by switching the pin.
+**Then explain:**
+- **Prevention:** use a dated model identifier rather than a floating alias where the provider offers one, and track the provider's deprecation notices (from memory: providers publish snapshot names and retirement schedules; check your provider's docs for current policy).
+- **Detection:** a fixed canary set (here 150 prompts) run daily through the alias and through the pinned snapshot. Compare them case by case with an exact sign test on the cases where they disagree (a McNemar-style test; Part 9 Q28). Same prompts, same day, so the noise is only model noise.
+- **Power is the catch.** Small canaries miss moderate drops. In the run, a single day on 150 prompts caught the assumed update only 8% of the time at alpha 0.01, while 600 prompts caught it 65.7% of the time. Pool days, grow the canary, or accept a looser alpha plus a human look.
+- **Attribution:** (1) slice the drop (here the drop sat in one slice); (2) rule out your own changes (prompt, retrieval index, tool versions, data) by freezing them; (3) re-run the pinned snapshot to confirm the baseline did not move; (4) read a sample of the failing outputs for format changes or refusals.
+- **Protection:** snapshot pin plus a staged switch (shadow traffic, then a small share), rollback by flipping the pin, and a regression suite that gates any version bump (Part 9 Q14, Q36). Online monitoring and tracing depth is Part 11.
+**Example:** (SYNTHETIC mock provider; all rates assumed.) The sign-test code matches brute force (p = 0.03857). With no change at all, 1 of 200 days was flagged at alpha 0.01 (about 2 expected). I then made the alias "update" on day 10, breaking an assumed 30-prompt slice. No single day from 10 to 15 alerted at 0.01 (day 14 had p = 0.0259, day 15 p = 0.0596), but pooling days 10 to 12 gave p = 0.030, and the broken slice showed 0.467 on the alias vs 0.867 on the pin. This is an honest weak result: a 150-prompt canary is not a reliable alarm for a drop this size, which is why the power numbers matter.
+**Code:** (run with `python3 -I`; stdlib only; mock provider with an assumed silent update)
+@@CODE@@
+**Follow-ups:**
+- *What if there is no snapshot to pin?* Run your own canary against the alias, store outputs per day, and compare against your own frozen baseline outputs and scores; you can detect but cannot roll back.
+- *Alert fatigue?* Alert on the pooled or rolling test, and page only when a guardrail slice moves.
+- *Self-hosted models?* Pin weights and serving stack; changes then come from your own deployments, which the same canary also catches.
+**Common mistakes:** monitoring only latency and errors; a canary too small to detect anything; comparing today to last month without a same-day control; attributing a drop to the provider before ruling out your own prompt or index changes; no rollback path.
+
+=====Q44
+**Say this first (1 line):** I would build the platform around immutable, versioned artifacts (datasets, prompts, graders) and recorded runs, with a CI gate, a human-review queue and budgets on top, so any number on a dashboard can be traced back to exactly what produced it.
+**Then explain:**
+- **Core objects:** dataset version, prompt version, grader version (including judge model and rubric), model identifier and parameters, and a run record linking them with per-case results. Version by content hash so identical content gets the same id.
+- **Runs:** triggered from CI, a notebook or a schedule; results are stored per case, not just aggregates, so you can diff two runs case by case.
+- **CI integration:** a gate compares a candidate run to a baseline run on the same dataset version with a paired check and a threshold (Part 9 Q14); blocking for core suites, advisory for the rest.
+- **Human review queue:** send the cases the judge is least sure about, plus a random audit sample, to reviewers; their labels feed the judge calibration set (Part 9 Q6, Q45).
+- **Cost control:** per-team budgets, caching of identical calls, sampling for expensive judges, and a cheap-then-expensive cascade (Part 9 Q33).
+- **Multi-team concerns:** permissions, a shared grader library with owners, golden-set governance (Part 9 Q2), PII handling for production traces, and a "build vs adopt" decision on tooling (Part 9 Q35). Dashboards should show per-slice scores with intervals (Part 9 Q34, Q38), not one average.
+**Example:** (MOCK, in-memory sketch; prices are assumed, not real.) The same dataset content gives the same version id and adding one case gives a new one. A baseline run scores 0.817 and a candidate prompt 0.717; the CI gate (max drop 0.03) says BLOCK, with 15 cases regressed and 9 improved. The review queue picks the five cases whose judge confidence is closest to 0.5. A team with a $0.05 budget is stopped by an exception partway through its run instead of overspending.
+**Code:** (run with `python3 -I`; stdlib only; a design sketch, not a product)
+@@CODE@@
+**Follow-ups:**
+- *What breaks first at scale?* Cost and queue throughput, then grader sprawl (many near-duplicate graders nobody owns).
+- *How do you keep judges honest across teams?* Each grader carries its calibration report and an anchor set that is re-scored on a schedule (Part 9 Q45).
+- *Where do production traces enter?* Sampled, scrubbed and added to datasets as new versions, never edited in place.
+**Common mistakes:** storing only aggregate scores; mutable datasets so old runs cannot be reproduced; one global threshold for every team; no ownership of graders; ignoring cost until the bill arrives; building a dashboard before the data model.
+
+=====Q45
+**Say this first (1 line):** A judge I can trust is one I have measured: a narrow rubric, a human-labelled calibration set with a held-out test, explicit bias probes, an ensemble where it is worth the cost, a scheduled anchor check for drift, and a rule for when I retire it.
+**Then explain:**
+- **Rubric:** one criterion per judge, binary or a small scale, anchored examples, reasoning before the verdict (Part 9 Q7).
+- **Calibration set:** a few hundred human-labelled cases split into dev (tune the rubric) and test (report once); report TPR, TNR and kappa with intervals (Part 9 Q6, Q39). Hamel Husain's FAQ (opened) gives 100-200 labelled examples per failure mode as his guidance, not a standard.
+- **Bias tests:** a length probe (pad answers with fluff; the verdict should not move), a position swap for pairwise judges, and a self-preference check with a judge from another family (Part 9 Q5). The MT-Bench paper abstract (opened) reports position, verbosity and self-enhancement biases.
+- **Ensembles:** a panel of smaller judges from different families can beat one large judge and cost less, as reported by the PoLL authors (abstract opened; their setting); errors must be independent for the gain to appear. The mock below assumes independence, which real judges only partly have.
+- **Drift:** re-score a fixed human-labelled anchor set on a schedule and alert on kappa, TPR or TNR; also re-run after any change of judge model, prompt or data mix.
+- **Retire it when:** it fails the anchor check and cannot be fixed with a rubric change, the task changed, humans and judge disagree on the hard cases that matter, or a deterministic check can do its job.
+**Example:** (MOCK judges and SYNTHETIC labels; all biases assumed.) Judge A scores TPR 0.844, TNR 0.756, kappa 0.601 on a 200-item held-out test. Padding the same answers with 80 words moves its pass rate from 0.62 to 0.76, so it has a length bias; swapping order flips 0.25 of verdicts for a position-biased judge. Scoring the same judge A again gave kappa 0.751, which shows how noisy a single measurement is. The majority of three judges reached kappa 0.884 (TPR 0.959, TNR 0.923) under the independence assumption. For drift, kappa on 60 anchor items per week alerted at weeks 6 and 7 (0.387, 0.223) after the assumed TNR drop, but weeks 8 to 10 (0.476, 0.524, 0.472) stayed above the 0.45 threshold even though the drift persisted, so a single small weekly anchor is a noisy alarm.
+**Code:** (run with `python3 -I`; stdlib only; mock judges)
+@@CODE@@
+**Follow-ups:**
+- *How big should the anchor set be?* Big enough that the interval on TNR is useful; the rare class (bad items) sets the size (Part 9 Q26).
+- *Judge disagrees with humans on a slice?* Add that slice to the calibration set and fix the rubric, or route the slice to humans.
+- *Do you ever let a judge run unattended?* Only for tasks where its measured TPR and TNR are good enough and an audit sample keeps being reviewed.
+**Common mistakes:** quoting agreement from the same data the rubric was tuned on; one big multi-criterion rubric; assuming ensemble errors are independent; no scheduled re-check; ignoring that the judge model may be updated by the provider (Part 9 Q43); never retiring a judge.
+
+=====Q46
+**Say this first (1 line):** "Is it ready?" has no yes or no answer in general; I define launch criteria in advance as bounds on failure rates for each risk, show the evidence with intervals, and launch in stages with stop conditions, with humans in the loop for the high-stakes parts.
+**Then explain:**
+- **Criteria first, per risk:** helpfulness and grounding (lower bounds on pass rate), critical errors (upper bound on failure rate, much stricter), harmful compliance from red-teaming, over-refusal. Thresholds are set with the domain owner, before seeing results.
+- **Evidence with bounds, not point estimates:** with zero failures in n cases the 95% upper bound on the failure rate is about 3/n (the rule of three), so a 2% target needs about 150 clean cases and 1% needs about 300 (the run confirms 149 and 299 with the exact bound).
+- **Red team:** manual experts plus automated attacks, severity-weighted, with fixes re-tested (Part 5 Q23 for red-team basics; Part 9 Q29 for attack success rates and release gates).
+- **High-stakes domain (clinical or financial):** domain experts grade a sample, the assistant abstains or escalates when unsure, citations or source grounding are checked (Part 9 Q9), a human reviews the outputs that can cause harm, and compliance and legal sign off on the use case. Regulatory requirements differ by jurisdiction; I would not guess them, I would ask compliance.
+- **Staged rollout:** internal dogfood, a small share of traffic or shadow mode, then widening, each stage with a monitored guardrail, a minimum number of requests and a rollback trigger (A/B and monitoring in Part 9 Q30; monitoring depth in Part 11).
+- **The honest answer:** "It meets these criteria with these bounds; these risks are unproven; here is what we monitor and when we stop." If a criterion fails, the answer is no, or a narrower launch.
+**Example:** (SYNTHETIC results and assumed thresholds.) With exact 95% bounds: helpfulness 182/200 gives a lower bound 0.869 vs a 0.85 target (met); grounded 188/200 gives 0.905 vs 0.90 (met, barely); critical clinical error 1 in 250 gives an upper bound 0.019 vs 0.02 (met, barely); over-refusal 9/200 gives 0.077 vs 0.08 (met, barely); red-team harmful compliance 2/80 gives an upper bound 0.077 vs a 0.05 target (NOT MET). So the verdict is no-go for the full launch; fix the red-team failures and retest, or launch narrower. In rollout, zero critical incidents in 299 requests bounds the rate at 1%, and it takes 2995 to bound it at 0.1%.
+**Code:** (run with `python3 -I`; stdlib only; exact binomial bounds checked against the closed form and the rule of three)
+@@CODE@@
+**Follow-ups:**
+- *What if the thresholds are met by a hair?* Treat it as "not yet proven": grow the sample or stage the launch more cautiously.
+- *Who decides?* The product and risk owners, using the evidence; the eval team's job is to make the evidence honest.
+- *After launch?* Keep sampling production traces for human review and re-run the red team on every significant change.
+**Common mistakes:** thresholds picked after seeing the results; a point estimate with no interval; averaging a critical failure away inside a high overall score; skipping a human review path in a clinical or financial setting; treating launch as the end of evaluation; claiming compliance without asking the compliance team.

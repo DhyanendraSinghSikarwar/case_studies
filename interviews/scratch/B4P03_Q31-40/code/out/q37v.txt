@@ -1,0 +1,3 @@
+INFO q37_sa.yaml passed for resource serviceaccount/trainer-eks against version 1.37
+INFO q37_sa.yaml passed for resource serviceaccount/trainer-gke against version 1.37
+INFO q37_sa.yaml passed for resource serviceaccount/trainer-aks against version 1.37

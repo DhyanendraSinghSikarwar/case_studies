@@ -1,0 +1,16 @@
+ week group    n   sel          ci  ratio  tpr_gap  naive_alert  guarded_alert
+    1     A 2763 0.381 [0.36,0.40]   1.00    0.000        False          False
+    1     B 1115 0.379 [0.35,0.41]   0.99    0.009        False          False
+    1     C  122 0.361 [0.28,0.45]   0.95   -0.024        False          False
+    2     A 2831 0.362 [0.34,0.38]   1.00    0.000        False          False
+    2     B 1061 0.368 [0.34,0.40]   1.02    0.027        False          False
+    2     C  108 0.278 [0.20,0.37]   0.77   -0.173         True          False
+    3     A 2801 0.371 [0.35,0.39]   1.00    0.000        False          False
+    3     B 1092 0.136 [0.12,0.16]   0.37   -0.293         True           True
+    3     C  107 0.374 [0.29,0.47]   1.01   -0.081        False          False
+    4     A 2748 0.377 [0.36,0.39]   1.00    0.000        False          False
+    4     B 1137 0.165 [0.14,0.19]   0.44   -0.263         True           True
+    4     C  115 0.391 [0.31,0.48]   1.04   -0.030        False          False
+
+weeks where naive rule fired for C (tiny group): [2]
+weeks where guarded rule fired: [[3, 'B'], [4, 'B']]

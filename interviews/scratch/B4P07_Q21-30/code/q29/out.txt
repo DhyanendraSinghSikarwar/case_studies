@@ -1,0 +1,12 @@
+$ actionlint ci.yml
+exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows ci.yml
+ok -- validation done
+exit=0
+$ python3 -I summary_rule.py
+docs-only PR: lint success, model-gate skipped     -> mergeable
+model PR, all green                                -> mergeable
+model-gate failure                                 -> blocked
+lint cancelled                                     -> blocked
+$ actionlint trap.yml (valid file, but a trap in branch protection)
+exit=0

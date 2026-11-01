@@ -1,0 +1,15 @@
+== dev project (outside perimeter) -> all checks pass
+  1. Vertex AI API and Storage API enabled in the project: PASS
+  2. job service account has roles on bucket, image repo, project: PASS
+  3. project perimeter membership matches the intent: PASS
+== prod project (inside perimeter) -> first failure: #6
+  1. Vertex AI API and Storage API enabled in the project: PASS
+  2. job service account has roles on bucket, image repo, project: PASS
+  3. project perimeter membership matches the intent: PASS
+  4. restricted services include aiplatform and storage consistently: PASS
+  5. job has a network attachment (PSC interface) when data-plane egress is needed: PASS
+  6. attachment subnet has room (docs recommend /28; check current docs): FAIL: subnet too small
+  7. DNS resolves googleapis.com names to the restricted VIP: FAIL: add private DNS zone for restricted.googleapis.com
+  8. no step needs the public internet (pip install, git clone, external API): FAIL: mirror packages in Artifact Registry or allow egress through a controlled proxy
+  9. images and data live in-perimeter, or an ingress/egress rule names this identity: FAIL: add an egress rule for the job service account and the bucket project
+ 10. denials checked in audit logs (dry-run mode first): FAIL: read the VPC-SC violation entries

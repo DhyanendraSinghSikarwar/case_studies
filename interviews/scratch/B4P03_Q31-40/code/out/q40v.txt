@@ -1,0 +1,1 @@
+INFO q40_manifests/ok_deploy.yaml passed for resource deployment/model-api against version 1.37

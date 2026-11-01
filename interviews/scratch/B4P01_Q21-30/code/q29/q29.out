@@ -1,0 +1,16 @@
+--- batch: good
+{"level": "INFO", "logger": "scoring", "msg": "batch received", "rows_in": 5, "run_id": "run-0001"}
+{"level": "INFO", "logger": "scoring", "msg": "batch scored", "rows_bad": 0, "rows_in": 5, "rows_out": 5, "run_id": "run-0001"}
+--- batch: ragged
+{"level": "INFO", "logger": "scoring", "msg": "batch received", "rows_in": 10, "run_id": "run-0001"}
+{"bad_ids": [2], "level": "WARNING", "logger": "scoring", "msg": "dropping bad rows", "rows_bad": 1, "run_id": "run-0001"}
+{"level": "INFO", "logger": "scoring", "msg": "batch scored", "rows_bad": 1, "rows_in": 10, "rows_out": 9, "run_id": "run-0001"}
+--- batch: bad
+{"level": "INFO", "logger": "scoring", "msg": "batch received", "rows_in": 5, "run_id": "run-0001"}
+{"bad_ids": [1, 2, 3], "level": "WARNING", "logger": "scoring", "msg": "dropping bad rows", "rows_bad": 3, "run_id": "run-0001"}
+{"exc": "BadInputError('3/5 bad rows exceeds limit 20%')", "level": "ERROR", "logger": "scoring", "msg": "batch rejected", "reason": "3/5 bad rows exceeds limit 20%", "run_id": "run-0001"}
+--- batch: nocol
+{"level": "INFO", "logger": "scoring", "msg": "batch received", "rows_in": 2, "run_id": "run-0001"}
+{"exc": "BadInputError('missing column: income')", "level": "ERROR", "logger": "scoring", "msg": "batch rejected", "reason": "missing column: income", "run_id": "run-0001"}
+exit=1
+pandas 3.0.5

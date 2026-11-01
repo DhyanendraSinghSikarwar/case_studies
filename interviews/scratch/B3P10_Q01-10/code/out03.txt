@@ -1,0 +1,29 @@
+  name username             domain tld
+  Asha asha.rao        example.com com
+   Ben      ben mail.example.co.in  in
+Chitra      NaN                NaN NaN
+   Dev      NaN                NaN NaN
+  Esha      NaN                NaN NaN
+ Farid      NaN                NaN NaN
+  Gita     gita        example.com com
+  Hari     hari        example.com com
+
+            domain  n
+           invalid  4
+       example.com  3
+mail.example.co.in  1
+
+recursive CTE tld (no two-@ guard): {'Asha': 'com', 'Ben': 'in', 'Farid': 'com', 'Gita': 'com', 'Hari': 'com'}
+unguarded username and domain for 'esha.example.com' (no @, INSTR = 0): ('', 'esha.example.com')
+
+str.split(expand=True) column count: 3 (3 because 'a@b@c.com' has two @)
+  name username             domain tld
+  Asha asha.rao        example.com com
+   Ben      ben mail.example.co.in  in
+Chitra      NaN                NaN NaN
+   Dev      NaN                NaN NaN
+  Esha      NaN                NaN NaN
+ Farid      NaN                NaN NaN
+  Gita     gita        example.com com
+  Hari     hari        example.com com
+asserts passed (parse compared after sorting by name; counts sorted by n desc, domain)

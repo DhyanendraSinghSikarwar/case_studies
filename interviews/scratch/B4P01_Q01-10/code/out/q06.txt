@@ -1,0 +1,27 @@
+--- before the mistake
+80b92af c2 add early stopping
+d542e02 c1 add cross validation
+5530887 c0 baseline
+HEAD is now at 5530887 c0 baseline
+--- after git reset --hard HEAD~2 (commits look gone)
+5530887 c0 baseline
+step0
+--- git reflog
+5530887 HEAD@{0}: reset: moving to HEAD~2
+80b92af HEAD@{1}: commit: c2 add early stopping
+d542e02 HEAD@{2}: commit: c1 add cross validation
+5530887 HEAD@{3}: commit (initial): c0 baseline
+lost tip is 80b92af
+--- recovered
+80b92af c2 add early stopping
+d542e02 c1 add cross validation
+5530887 c0 baseline
+step2: add early stopping
+--- safer: branch from the reflog entry instead of moving main
+80b92af c2 add early stopping
+--- what reflog cannot save: uncommitted work
+scratch.py (untracked) survives reset --hard: scratch.py
+tracked unstaged edit is gone: train.py = step0
+--- stash keeps uncommitted work
+train.py after stash: step0
+after pop: wip

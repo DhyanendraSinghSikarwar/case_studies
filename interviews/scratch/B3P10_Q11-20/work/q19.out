@@ -1,0 +1,44 @@
+SQLite 3.45.1 | pandas 3.0.5
+
+SQL counts (NULL line gives NULL; the empty line gives words_naive = 1):
+ id  err_case_sensitive  err_any_case  words_naive  words_fixed
+  1                 2.0           2.0          3.0          3.0
+  2                 0.0           0.0          1.0          1.0
+  3                 NaN           NaN          NaN          NaN
+  4                 1.0           2.0          1.0          1.0
+  5                 0.0           0.0          1.0          0.0
+  6                 0.0           0.0          6.0          3.0
+  7                 0.0           0.0          3.0          2.0
+
+SQL vowels:
+ id   name  vowels
+  1   Anil     2.0
+  2  RAHUL     2.0
+  3 Rhythm     0.0
+  4  Aeiou     5.0
+  5    NaN     NaN
+
+pandas str.count / split:
+ id  err_case_sensitive  err_any_case  words
+  1                 2.0           2.0    3.0
+  2                 0.0           0.0    1.0
+  3                 NaN           NaN    NaN
+  4                 1.0           2.0    1.0
+  5                 0.0           0.0    0.0
+  6                 0.0           0.0    3.0
+  7                 0.0           0.0    2.0
+asserts passed (SQL and pandas equal, ordered by id; the naive word count is not asserted equal because it is wrong)
+
+overlap: does 'aaa' contain 'aa' once or twice?
+  SQL LENGTH/REPLACE: 1 (REPLACE leaves 'a')
+  pandas str.count('aa')            : 1
+  pandas str.count('(?=aa)') lookahead: 2
+  Python 'aaa'.count('aa')          : 1
+
+str.count is always a regex: '.' -> 5 | r'\.' -> 2 | re.escape('.') -> 2 | SQL on 'a.b.c': 2
+
+empty pattern: REPLACE('abc', '', '') -> 'abc' | 3 / LENGTH('') -> None (division by zero is NULL in SQLite)
+substring is not a word: 'terrors' counts 1 occurrence of 'error'
+
+'Error' LIKE '%error%': 1 | REPLACE is case-sensitive: Error
+after PRAGMA case_sensitive_like = 1: 'Error' LIKE '%error%' -> 0

@@ -1,0 +1,11 @@
+# Deployment policy (invented). Region ids are generic labels.
+required_tags: [owner, cost_center, data_classification, env]
+data_classifications: [public, internal, restricted]
+allowed_regions: [in-west, in-south]
+approved_registries: ["registry.internal.example/"]
+require_digest: true                # image must be name@sha256:<64 hex>
+restricted_no_public_endpoint: true
+max_gpus_without_approval: 4
+exceptions:                         # every exception names a rule, a manifest and an expiry
+  - {rule: max_gpus, manifest: big-train-job, expires: "2026-11-30", approved_by: platform-lead}
+  - {rule: allowed_region, manifest: eu-pilot, expires: "2026-09-01", approved_by: security}

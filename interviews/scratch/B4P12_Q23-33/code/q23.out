@@ -1,0 +1,5 @@
+mode               requests primary_ok fallback  failed attempts amplification
+retries_only          72000      24109        0   47891   167949          2.33
+retries_fallback      72000      24109    47891       0   167949          2.33
+breaker               72000      23910    48090       0    23994          0.33
+outage requests: 48000 -> at most 144000 attempts in the outage

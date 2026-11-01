@@ -1,0 +1,31 @@
+Application: churn-serving-prod | path: apps/churn-serving/overlays/prod | prune: True | selfHeal: True
+Flux Kustomization: churn-serving-prod | interval: 5m
+--- git diff after the bump script ---
+diff --git a/values.yaml b/values.yaml
+index 3db1c26..76fa37e 100644
+--- a/values.yaml
++++ b/values.yaml
+@@ -1,6 +1,6 @@
+ image:
+   repository: ghcr.io/example-org/churn-serving
+-  digest: sha256:aaaa1111
++  digest: sha256:bbbb2222
+ model:
+   name: churn
+-  version: 4
++  version: 5
+
+--- after git revert (the rollback) ---
+image:
+  repository: ghcr.io/example-org/churn-serving
+  digest: sha256:aaaa1111
+model:
+  name: churn
+  version: 4
+
+73bdb75 Revert "deploy: churn model 5"
+67c64e6 deploy: churn model 5
+ba8a348 initial: model 4
+
+== actionlint bump-config.yml
+exit=0

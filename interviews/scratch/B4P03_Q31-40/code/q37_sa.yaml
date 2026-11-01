@@ -1,0 +1,24 @@
+# Same idea on three clouds: annotate a ServiceAccount, the cloud maps it to a cloud identity. Names hedged: check current docs.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: trainer-eks
+  namespace: ml
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::111122223333:role/ml-trainer   # IRSA (EKS Pod Identity is the newer alternative)
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: trainer-gke
+  namespace: ml
+  annotations:
+    iam.gke.io/gcp-service-account: ml-trainer@my-project.iam.gserviceaccount.com   # GKE Workload Identity
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: trainer-aks
+  namespace: ml
+  annotations:
+    azure.workload.identity/client-id: 00000000-0000-0000-0000-000000000000   # AKS Workload Identity (pod also needs a label)

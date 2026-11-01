@@ -1,0 +1,11 @@
+observed/predicted = 1.40, gap = 4 points
+mean predicted 0.100, observed positive rate 0.138, AUC 0.811
+Platt fit: intercept +0.453, slope 1.005
+ECE before 0.0381 -> after recalibration 0.0023; AUC 0.8095 -> 0.8095
+fixed 0.5 on old scores: precision 0.712, recall 0.103, flagged 0.020
+fixed 0.5 on recalibrated scores: precision 0.621, recall 0.187, flagged 0.042
+top-10% capacity rule: precision 0.498, recall 0.360, flagged 0.100
+cost threshold p>=0.167: recalibrated flagged 0.281 recall 0.679; uncalibrated flagged 0.184 recall 0.538
+n=   200: observed 0.14 +/- 0.0481 (95%), excludes 0.10: False
+n=   500: observed 0.14 +/- 0.0304 (95%), excludes 0.10: True
+n=  2000: observed 0.14 +/- 0.0152 (95%), excludes 0.10: True

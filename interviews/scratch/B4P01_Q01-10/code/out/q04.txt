@@ -1,0 +1,21 @@
+--- pushed history
+c0fe011 later work on top
+edd99e7 BAD: change feature scaling
+e40b684 good: standard scaling
+--- revert the bad commit (safe on shared branch: adds a new commit)
+5bdad13 Revert "BAD: change feature scaling"
+c0fe011 later work on top
+edd99e7 BAD: change feature scaling
+e40b684 good: standard scaling
+cfg now: scaler=standard, train.py kept: v2
+
+--- reset modes on an UNPUSHED local commit
+reset --soft HEAD~1 -> commit undone: yes | staged: 'x.txt' | file on disk: 'soft-change'
+reset --mixed HEAD~1 -> commit undone: yes | staged: '' | file on disk: 'mixed-change'
+reset --hard HEAD~1 -> commit undone: yes | staged: '' | file on disk: 'MISSING'
+
+--- restore a single file
+ M train.py
+after git restore train.py: v2; status: ''
+restore from an older commit: git restore --source=HEAD~3 cfg.txt
+scaler=standard

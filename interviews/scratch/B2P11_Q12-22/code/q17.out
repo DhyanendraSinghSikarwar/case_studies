@@ -1,0 +1,10 @@
+acme-large-latest        UNPINNED alias
+acme-large-2026-03-01    pinned
+acme-large               UNPINNED alias
+acme-large-2026-03-01 retires in 100 days -> start migration runbook if under 120
+worse on 8, better on 2: p = 0.0547
+worse on 5, better on 5: p = 0.6230
+worse on 12, better on 4: p = 0.0384
+worse on 3, better on 0: p = 0.1250
+closed form matches brute force for all four cases
+old pass 47/60 new pass 41/60 | new worse on 11, better on 5, p = 0.1051

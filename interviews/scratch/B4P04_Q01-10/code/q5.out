@@ -1,0 +1,42 @@
+v1 model md5 from dvc.lock:
+      md5: 8ceac560346ba3243217c578149a59d5
+--- experiment moves on: C=0.01 -> model v2
+v2 model md5:
+6c4b20cf712cd280633ed13c86254e62
+--- go back to v1
+train:
+	changed outs:
+		modified:           model.joblib
+evaluate:
+	changed deps:
+		modified:           model.joblib
+M       model.joblib
+md5 of model.joblib on disk now:
+8ceac560346ba3243217c578149a59d5
+--- repro dry-run check (is v1 reproducible without retraining?)
+Data and pipelines are up to date.
+--- fresh clone, pull from remote
+dvc.lock
+dvc.yaml
+evaluate.py
+metrics.json
+params.yaml
+prepare.py
+roc.csv
+train.py
+A       model.joblib
+A       prepared.npz
+2 files fetched and 2 files added
+8ceac560346ba3243217c578149a59d5
+--- remote garbage collected (gc keeps only workspace=v2)
+WARNING: This will remove all cache except items used in the workspace of the current repo.
+Removed 5 objects from repo cache.
+No unused 'legacy' cache to remove.
+Removed 1 objects from remote.
+No unused cache to remove from remote.
+A       prepared.npz
+1 file fetched and 1 file added
+ERROR: failed to pull data from the cloud - Checkout failed for following targets:
+model.joblib
+Is your cache up to date?
+<https://error.dvc.org/missing-files>

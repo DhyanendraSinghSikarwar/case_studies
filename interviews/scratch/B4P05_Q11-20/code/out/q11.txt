@@ -1,0 +1,21 @@
+components: ['comp-make-data', 'comp-notify', 'comp-train']
+
+== exec-make-data: image=python:3.12
+command[:2]: ['sh', '-c']
+args-tail: --executor_input {{$}} --function_to_execute make_data
+
+== exec-notify: image=alpine:3.20
+command[:2]: ['echo']
+args-tail: ["{{$.inputs.parameters['msg']}}"]
+command: ['echo']
+
+== exec-train: image=python:3.12
+command[:2]: ['sh', '-c']
+args-tail: --executor_input {{$}} --function_to_execute train
+
+train input artifacts: {'data': {'artifactType': {'schemaTitle': 'system.Dataset', 'schemaVersion': '0.0.1'}}}
+train output artifacts: {'metrics': {'artifactType': {'schemaTitle': 'system.Metrics', 'schemaVersion': '0.0.1'}}, 'model': {'artifactType': {'schemaTitle': 'system.Model', 'schemaVersion': '0.0.1'}}}
+train params: {'lr': {'defaultValue': 0.1, 'isOptional': True, 'parameterType': 'NUMBER_DOUBLE'}}
+exec-make-data pip installs: ['pandas==2.2.3', 'kfp==2.17.3']
+exec-train pip installs: ['kfp==2.17.3']
+loaded from YAML: YamlComponent inputs: ['msg']

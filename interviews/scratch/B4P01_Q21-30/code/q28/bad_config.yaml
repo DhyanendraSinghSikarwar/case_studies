@@ -1,0 +1,4 @@
+learning_rate: fast        # wrong type
+epoch: 5                   # typo: unknown key (and 'epochs' is missing -> default used, which is the danger)
+data_path: data/train.csv
+features: [age, income]

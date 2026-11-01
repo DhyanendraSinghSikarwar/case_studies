@@ -1,0 +1,14 @@
+--- git submodule status (the pinned commit; note the tag in brackets) ---
+ 4cb75e7 vendor/featlib (v1.4.0)
+--- the parent repo stores only a commit pointer (mode 160000) ---
+160000 commit
+--- upstream moved to v2.0.0, model_repo still sees v1.4.0 until someone bumps the pointer ---
+v1.4.0
+featlib 1.5.0: accepted by 7 repos ['churn', 'fraud', 'ltv', 'ranker', 'nlp', 'pricing', 'risk']
+             blocked in 1 repos ['forecast']
+featlib 2.0.0: accepted by 2 repos ['ranker', 'nlp']
+             blocked in 6 repos ['churn', 'fraud', 'ltv', 'forecast', 'pricing', 'risk']
+/home/user/case_studies/interviews/scratch/B4P01_Q31-40/code/q31/shim.py:10: DeprecationWarning: scale(x) without unit is deprecated; pass unit= (removed in 2.0)
+  print(scale(250))                # old style, still works, warns
+2.5
+2.5

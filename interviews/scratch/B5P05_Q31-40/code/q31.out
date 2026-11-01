@@ -1,0 +1,11 @@
+x = 2 fixed: 1.414213562373095  eps loop: (1.4142135619185865, 31)
+x = 0.25 fixed: 0.5  eps loop: (0.5000000004656613, 30)
+x = 0 fixed: 3.944304526105059e-31  eps loop: (4.656612873077393e-10, 30)
+x = 1000000 fixed: 1000.0  eps loop: (999.99999999989, 50)
+hi = x with x=0.25 gives 0.25 (true 0.5)
+eps=1e-15, x=10**6: loops = 1000000 (hit the 10**6 cap)  spacing near 1000: 1.1368683772161603e-13
+eps=1e-9, x=10**6: loops = 50
+halvings for width 10**6 to tol 1e-6: 40
+halvings for width 1 to tol 1e-6: 20
+2000 random x: worst error of fixed-100 version = 1.1368683772161603e-13
+all checks passed

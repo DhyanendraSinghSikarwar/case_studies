@@ -1,0 +1,13 @@
+plain dict, protocol 2 -> no globals
+reduce->os.getcwd, protocol 2 -> [(2, 'posix.getcwd', 'DENY')]
+reduce->os.getcwd, protocol 4 -> [(28, 'posix.getcwd', 'DENY')]
+numpy==1.26.4 --hash=sha256:aaaa         OK
+requests>=2.0                            not pinned with ==
+torch                                    not pinned with ==
+internal-lib==1.0 --hash=sha256:bbbb     OK
+git+https://example.invalid/x.git        URL install, no hash
+reqests==2.31.0 --hash=sha256:cccc       name not in approved index list (typosquat?)
+hash match: True | tampered: False
+uses: actions/checkout@v4 -> MUTABLE tag/branch
+uses: actions/setup-python@aaaaaaaaaaaaaaaaaaaaaaa -> pinned SHA
+uses: some-org/deploy@main -> MUTABLE tag/branch

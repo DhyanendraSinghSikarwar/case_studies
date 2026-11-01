@@ -1,0 +1,17 @@
+--- 20 models in production
+ team   build  managed    buy  cheapest
+    4    81.0     84.5  117.3  build
+    8   117.0     98.5  128.1  managed
+   16   189.0    126.5  149.7  managed
+--- 100 models in production
+ team   build  managed    buy  cheapest
+    4    93.0    156.5  213.3  build
+    8   129.0    170.5  224.1  build
+   16   201.0    198.5  245.7  managed
+--- 400 models in production
+ team   build  managed    buy  cheapest
+    4   138.0    426.5  573.3  build
+    8   174.0    440.5  584.1  build
+   16   246.0    468.5  605.7  build
+exit-cost units: build 0, managed 12, buy 18  (invented; re-platforming effort)
+criterion that flips: if compliance forbids the managed service region, managed drops out

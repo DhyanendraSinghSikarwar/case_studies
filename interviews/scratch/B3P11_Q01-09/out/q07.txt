@@ -1,0 +1,21 @@
+declared affinities: [('id', 'INTEGER'), ('k', 'TEXT'), ('v', 'INT'), ('id', 'INTEGER'), ('k', 'INTEGER'), ('w', 'INT')]
+typeof stored: ('text',) ('integer',)
+                             query                                                                    plan  vm_steps  count_or_rows
+  a.k = 42 (TEXT col, int literal)                                           SEARCH a USING INDEX ia (k=?)        17              1
+                        a.k = '42'                                           SEARCH a USING INDEX ia (k=?)        16              1
+                          b.k = 42                                           SEARCH b USING INDEX ib (k=?)        93             12
+b.k = '42' (INT col, text literal)                                           SEARCH b USING INDEX ib (k=?)        94             12
+  join a.k = b.k (TEXT vs INTEGER) SCAN a USING COVERING INDEX ia | SEARCH b USING COVERING INDEX ib (k=?)    175010          50000
+                join a.k = b.k + 0 SCAN b USING COVERING INDEX ib | SEARCH a USING COVERING INDEX ia (k=?)    449999          50000
+              join a.k = b.k || '' SCAN b USING COVERING INDEX ib | SEARCH a USING COVERING INDEX ia (k=?)    449999          50000
+      join CAST(b.k AS TEXT) = a.k SCAN b USING COVERING INDEX ib | SEARCH a USING COVERING INDEX ia (k=?)    399998          50000
+
+row k='042' in TEXT column a:
+  a.k = 42   -> 1 (42 is converted to text '42', which is not '042')
+  a.k = '42' -> 1
+  join a.k = b.k, rows with a.id=9001: 12 (column vs column: numeric affinity is applied to the TEXT side, so '042' = 42)
+  join on a.k = CAST(b.k AS TEXT), rows with a.id=9001: 0
+
+pandas dtypes: str int64
+pandas merge on mismatched dtypes -> ValueError: You are trying to merge on str and int64 columns for key 'k'. If you wish to proceed you should use 
+after astype(int64): merge rows 50000 = SQL join count 50000

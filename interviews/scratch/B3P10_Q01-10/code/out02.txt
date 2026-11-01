@@ -1,0 +1,34 @@
+ customer_id                      raw  len_before           clean  len_after         cmp_key
+           1          '  Asha   Rao '        13.0        Asha Rao        8.0        asha rao
+           2           'RAHUL sharma'        12.0    RAHUL sharma       12.0    rahul sharma
+           3                       ''         0.0                        0.0                
+           4 'Meena    Iyer     Nair'        22.0 Meena Iyer Nair       15.0 meena iyer nair
+           5                      nan         NaN             NaN        NaN             NaN
+           6                '\tDev\t'         5.0         \tDev\t        5.0         \tdev\t
+           7                    '   '         3.0                        0.0                
+
+--- why one REPLACE is not enough (customer 1 and 4) ---
+1 one REPLACE: 'Asha  Rao' | three REPLACEs: 'Asha Rao' | marker trick: 'Asha Rao'
+4 one REPLACE: 'Meena  Iyer   Nair' | three REPLACEs: 'Meena Iyer Nair' | marker trick: 'Meena Iyer Nair'
+10 spaces: 'a     b' 'a  b' 'a b'
+
+--- TRIM semantics ---
+TRIM('abcba','ab') = 'c' (a set of characters, not a substring)
+TRIM('abab','ab')  = ''
+TRIM('xabx','xab') = ''
+TRIM(tab+Dev+tab) length: 5 (tabs stay, 5 not 3)
+TRIM(name, space+tab) length: 3
+TRIM(NBSP+x+NBSP) length: 3 (NBSP stays)
+
+pandas dtype of name: str | missing marker: nan
+ customer_id           clean         cmp_key  len_after
+           1        Asha Rao        asha rao        8.0
+           2    RAHUL sharma    rahul sharma       12.0
+           3                                        0.0
+           4 Meena Iyer Nair meena iyer nair       15.0
+           5             NaN             NaN        NaN
+           6             Dev             dev        3.0
+           7                                        0.0
+pandas strip on tab+Dev+tab: 'Dev' -> pandas strips tabs and NBSP: 'x'
+str.replace(r'\s+', ' ') without regex=True leaves it alone (pandas 3 default regex=False): 'a   b'
+asserts passed (compared in customer_id order; tabs mapped to spaces in the SQL first)

@@ -1,0 +1,3 @@
+500 random cases agree with brute force
+sliding window on [1,-1,1], k=1: 2 but truth is 3
+2 2

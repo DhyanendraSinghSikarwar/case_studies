@@ -1,0 +1,14 @@
+replicaCount: 2
+image:
+  repository: registry.example.com/model-api
+  tag: ""            # empty -> falls back to .Chart.AppVersion
+  pullPolicy: IfNotPresent
+service:
+  port: 8080
+gpu:
+  count: 0           # 0 = CPU only, no GPU limit rendered
+resources:
+  requests: {cpu: 500m, memory: 1Gi}
+  limits: {memory: 2Gi}
+tolerations: []
+modelUri: ""         # required: chart refuses to render without it

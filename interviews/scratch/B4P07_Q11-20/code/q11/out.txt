@@ -1,0 +1,30 @@
+$ python3 -I seed.py $URI
+seeded [(2, {'gate': 'passed'}), (1, {})]
+
+$ python3 -I promote.py --uri $URI --name churn --version 1   # never gated
+before: champion -> (unset)
+REFUSED: version 1 has no gate=passed tag
+after: champion -> (unset)
+exit=2
+
+$ python3 -I promote.py --uri $URI --name churn --version 99
+before: champion -> (unset)
+REFUSED: version 99 of churn not found (RESOURCE_DOES_NOT_EXIST)
+after: champion -> (unset)
+exit=2
+
+$ GITHUB_ACTOR=asha GITHUB_RUN_ID=4242 GITHUB_REPOSITORY=acme/churn python3 -I promote.py ... --version 2
+before: champion -> (unset)
+PROMOTED: champion None -> 2
+after: champion -> v2
+exit=0
+
+$ same command again (idempotent)
+before: champion -> v2
+NO-OP: champion already points at version 2
+after: champion -> v2
+exit=0
+
+$ read tags back
+{'gate': 'passed', 'promoted_by': 'asha', 'promoted_run': 'https://github.com/acme/churn/actions/runs/4242', 'promoted_at': '<timestamp>'}
+alias champion -> 2

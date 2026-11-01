@@ -1,0 +1,25 @@
+services:
+  jupyter:
+    image: ${JUPYTER_IMAGE:-jupyter-gpu:2026-10}   # built by the team from a pinned CUDA/PyTorch base
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    working_dir: /workspace
+    environment:
+      HOME: /home/ds
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:?set a token}
+    ports:
+      - "127.0.0.1:8888:8888"          # localhost only; reach it with an SSH tunnel
+    volumes:
+      - ./:/workspace                  # code: bind mount, edits visible on the host
+      - ds-home:/home/ds               # persistent home (kernels, config, caches)
+      - /data/shared:/data:ro          # shared read-only datasets
+    shm_size: "8gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1                 # one GPU, not all of them, on a shared box
+              capabilities: [gpu]
+    command: ["jupyter", "lab", "--ip=0.0.0.0", "--no-browser", "--ServerApp.root_dir=/workspace"]
+volumes:
+  ds-home:

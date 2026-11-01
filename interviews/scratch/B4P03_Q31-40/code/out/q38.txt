@@ -1,0 +1,5 @@
+samples parsed: 9
+p95 latency  : 0.3056 s
+p50 latency  : 0.0417 s
+error ratio  : 0.030
+bad input   : bad line: 'this is not a metric line'

@@ -1,0 +1,16 @@
+**Weak response:** Switch the report off quietly, announce it at a meeting as a waste of time, or never raise it because it is awkward. Each one burns trust or wastes team hours.
+
+**Strong response:** Start with understanding, not a verdict. Collect facts you can share: the hours it costs, who opens it, and what decisions it feeds. Then talk to the owner one to one before anyone else. Ask about the report's original purpose, who they believe depends on it, and what they would want to keep. Credit their work honestly. Propose a low-risk option, such as a short trial period where a lighter version or a simple dashboard replaces it, with a check that nobody who needs it loses out, and ask users directly. Let the owner be a part of the decision, even lead it. If they refuse, ask your manager to help set a decision process, not a verdict on the person.
+
+**Why it works:** The owner's pride is a real input. Involving them early, with evidence and a face-saving path, gives you a better chance than pressure. A trial limits risk if you are wrong.
+
+**What the interviewer scores:** Influence without authority, respect for history, evidence, stakeholder mapping, willingness to start the awkward conversation. For the numeric version with a scorecard see Book 6 Part 6 Q43.
+
+**Say it like this:**
+```
+"[Name], I know you built this report and it has been useful for a long time. I have noticed it takes us about [hours] each month and I am not sure who still relies on it. Could we look at who uses it together? If a lighter version would work, I can build it and we can try it for [period] with a way back. I would like your view before I suggest anything to anyone else."
+```
+
+**If they push back:** If asked "what if they say no?", say you would ask what would change their mind and check the usage facts again, then ask your manager how such decisions are normally made. If the report turns out to be needed, say that is a good result as well. Do not go around the owner in secret.
+
+**Common mistakes:** Going around the owner. Making it about their competence. Arriving with no data. Offering no fallback. Giving up silently.

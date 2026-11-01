@@ -1,0 +1,13 @@
+train-data-in-india            ALLOW
+raw-pan-to-global-ml           REJECT
+    - restricted ['pan_number'] to non-India region us-1 (transform=none)
+tokenised-to-global-ml         ALLOW
+tokenised-vault-abroad         REJECT
+    - restricted ['phone'] to non-India region eu-1 (transform=tokenised)
+logs-with-name                 REJECT
+    - restricted ['customer_name'] to non-India region us-1 (transform=None)
+    - log leaving India carries ['customer_name']
+store-key-abroad               REJECT
+    - restricted store with key in us-1, rule wants country IN
+new-field-nobody-classified    REJECT
+    - unclassified fields ['salary_band'] (default deny)

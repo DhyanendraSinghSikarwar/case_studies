@@ -1,0 +1,6 @@
+states: 6 | reachable: 6 | terminals: ['NotifyFailure', 'RegisterModel', 'RejectModel']
+OK: all Next targets exist
+states: 6 | reachable: 5 | terminals: ['NotifyFailure', 'RegisterModel']
+ERRORS:
+  GoodEnough -> RejectModell does not exist
+  RejectModel is unreachable

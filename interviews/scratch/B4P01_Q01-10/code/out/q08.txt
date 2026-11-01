@@ -1,0 +1,8 @@
+=== correct code
+.........                                                                [100%]
+9 passed in 0.46s
+=== injected bug (std with ddof=1)
+E         comparison failed
+FAILED test_prep.py::test_known_values_by_hand - AssertionError: 
+FAILED test_prep.py::test_output_is_standardised - assert np.float64(0.894427...
+2 failed, 7 passed in 0.42s

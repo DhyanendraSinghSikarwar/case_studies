@@ -1,0 +1,45 @@
+=== 1. broken pipeline
+Running stage 'make':
+> python make.py
+Generating lock file 'dvc.lock'
+Updating lock file 'dvc.lock'
+Use `dvc push` to send your updates to remote storage.
+sum=12
+--- changed config.json to scale=10, ran dvc repro:
+Stage 'make' didn't change, skipping
+Data and pipelines are up to date.
+sum=12
+--- truth (run by hand):
+sum=60
+=== 2. fix: declare config.json
+Running stage 'make':
+Updating lock file 'dvc.lock'
+sum=60
+Running stage 'make':
+sum=18
+=== 3. always_changed, frozen, cache:false metrics
+Stage 'make' didn't change, skipping
+Running stage 'stamp':
+Stage 'make' didn't change, skipping
+Running stage 'stamp':
+--- freeze make, change data, repro
+WARNING: stage: 'make' is frozen. Its dependencies are not going to be reproduced.
+Stage 'make' didn't change, skipping
+Running stage 'stamp':
+sum=18
+Running stage 'make':
+sum=30
+=== 4. foreach and matrix
+make        Outputs out.txt
+fold@0      Outputs fold_0.txt
+fold@1      Outputs fold_1.txt
+fold@2      Outputs fold_2.txt
+grid@svm-1  Outputs g_svm_1.txt
+grid@svm-2  Outputs g_svm_2.txt
+grid@rf-1   Outputs g_rf_1.txt
+grid@rf-2   Outputs g_rf_2.txt
+=== 5. non-deterministic stage
+Running stage 'noisy':
+noisy.txt md5 in dvc.lock: 4b112c2d5921e1d280efe82bf4f08948
+Running stage 'noisy':
+noisy.txt md5 in dvc.lock: 3667f00915aa9a9e1f7f0c1f5bc27379

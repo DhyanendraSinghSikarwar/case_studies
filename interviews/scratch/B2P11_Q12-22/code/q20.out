@@ -1,0 +1,5 @@
+responded: 975 of 50000 (1.95%) | up 393 down 582
+thumbs-down share among responses: 59.7%  vs true unhappy share 20%
+reweighted using the ASSUMED rates: estimated unhappy share 19.8%
+down share if true unhappy is 20%: 61.4% | if it rises to 30%: 72.4%
+implicit events keyed by trace: [('regenerate', 5), ('copy', 6), ('abandon', 7), ('edit', 6)]

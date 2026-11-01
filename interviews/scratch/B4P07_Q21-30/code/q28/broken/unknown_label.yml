@@ -1,0 +1,7 @@
+name: unknown-label
+on: [push]
+jobs:
+  smoke:
+    runs-on: [self-hosted, gpu]
+    steps:
+      - run: nvidia-smi

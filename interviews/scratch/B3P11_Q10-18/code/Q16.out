@@ -1,0 +1,28 @@
+share of 'placed': 2.98 %
+--- 0. no secondary indexes ---
+  Qa: steps   900,095 rows     7 | SCAN orders | USE TEMP B-TREE FOR ORDER BY
+  Qb: steps   919,408 rows   749 | SCAN orders
+  Qc: steps 1,406,495 rows     4 | SCAN orders | USE TEMP B-TREE FOR GROUP BY
+--- 1. proposed set: ix_a(customer_id, order_date), ix_b(status, order_date), ix_c(order_date, status, amount) ---
+  Qa: steps        92 rows     7 | SEARCH orders USING COVERING INDEX ix_a (customer_id=?)
+  Qb: steps     3,051 rows   749 | SEARCH orders USING COVERING INDEX ix_b (status=? AND order_date<?)
+  Qc: steps    16,501 rows     4 | SEARCH orders USING COVERING INDEX ix_c (order_date>? AND order_date<?) | USE TEMP B-TREE FOR GROUP BY
+--- 2. drop ix_b, keep ix_a and ix_c: how bad is Qb? ---
+  Qa: steps        84 rows     7 | SEARCH orders USING COVERING INDEX ix_a (customer_id=?)
+  Qb: steps   101,991 rows   749 | SEARCH orders USING COVERING INDEX ix_c (order_date<?)
+  Qc: steps    16,492 rows     4 | SEARCH orders USING COVERING INDEX ix_c (order_date>? AND order_date<?) | USE TEMP B-TREE FOR GROUP BY
+--- 3. replace ix_b by the partial index ix_p(order_date) WHERE status = 'placed' ---
+  Qa: steps        91 rows     7 | SEARCH orders USING COVERING INDEX ix_a (customer_id=?)
+  Qb: steps     3,050 rows   749 | SEARCH orders USING COVERING INDEX ix_p (order_date<?)
+  Qc: steps    16,499 rows     4 | SEARCH orders USING COVERING INDEX ix_c (order_date>? AND order_date<?) | USE TEMP B-TREE FOR GROUP BY
+--- 4. a redundant prefix: ix_cust(customer_id) next to ix_a ---
+  Qa with both: SEARCH orders USING COVERING INDEX ix_a (customer_id=?)
+--- index sizes (dbstat) ---
+three.db [('ix_a', 1615), ('ix_b', 2107), ('ix_c', 2763)]
+apc.db [('ix_a', 1615), ('ix_c', 2763), ('ix_p', 43)]
+--- write cost: insert 100,000 more rows with k secondary indexes ---
+  0 indexes                  VM steps  1,600,006   time     397 ms (machine-specific)
+  ix_a                       VM steps  2,300,006   time     481 ms (machine-specific)
+  ix_a, ix_b                 VM steps  2,900,006   time     915 ms (machine-specific)
+  ix_a, ix_b, ix_c           VM steps  3,600,006   time    1636 ms (machine-specific)
+  ix_a, ix_c, partial ix_p   VM steps  3,512,022   time    1219 ms (machine-specific)

@@ -1,0 +1,8 @@
+1500 random cases x 2 orders match sorted()
+total_ordering gives >, <=, >= for free: True (not needed by heapq)
+(-len, w) pops: ['date', 'kiwi', 'pear', 'plum', 'fig'] | wanted: ['plum', 'pear', 'kiwi', 'date', 'fig']
+strings have no unary minus: bad operand type for unary -: 'str'
+with sentinel   : ['ba', 'b', 'abc', 'ab'] | expected ['ba', 'b', 'abc', 'ab']
+without sentinel: ['b', 'ba', 'ab', 'abc'] (prefix 'ab' wrongly before 'abc')
+sentinel trick verified on 1000 random lists
+dict payload with tied keys, no TypeError: {'id': 2}

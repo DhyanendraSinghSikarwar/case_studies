@@ -1,0 +1,5 @@
+0/5 nodes are available: 3 Insufficient nvidia.com/gpu, 2 node(s) had untolerated taint {nvidia.com/gpu: present}. preemption: 0/5 nodes are available: 5 Preemption is not helpful for scheduling.
+0/4 nodes are available: 4 node(s) didn't match Pod's node affinity/selector.
+0/6 nodes are available: 2 Insufficient memory, 1 Insufficient cpu, 3 node(s) had untolerated taint {dedicated: gpu}.
+0/3 nodes are available: pod has unbound immediate PersistentVolumeClaims.
+0/5 nodes are available: 5 Too many pods.

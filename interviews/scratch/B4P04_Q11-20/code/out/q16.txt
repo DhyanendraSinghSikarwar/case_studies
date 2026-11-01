@@ -1,0 +1,50 @@
+--- cache after dvc add (a.txt and b.txt are identical): 2 objects for 3 files
+.dvc/cache/files/md5/b1/946ac92492d2347c6235b4d2611184
+.dvc/cache/files/md5/ba/7790b1708b71cb2b61b1a30d824712
+--- a.txt.dvc
+outs:
+- md5: b1946ac92492d2347c6235b4d2611184
+  size: 6
+  hash: md5
+  path: a.txt
+--- inode of a.txt vs its cache object (same inode = link, different = copy)
+1130612 a.txt
+1131781 .dvc/cache/files/md5/b1/946ac92492d2347c6235b4d2611184
+--- dvc status -c BEFORE push (cache vs remote)
+	new:                c.txt
+	new:                b.txt
+2 files pushed
+--- dvc status -c AFTER push
+Cache and remote 'loc' are in sync.
+--- delete a.txt from workspace; dvc status; dvc checkout
+a.txt.dvc:
+	changed outs:
+		deleted:            a.txt
+A       a.txt
+hello
+--- change c.txt, add, commit: old c.txt object is now unreferenced
+cache objects: 3
+--- dvc gc -w --dry (dry run)
+WARNING: This will remove all cache except items used in the workspace of the current repo.
+Removing /tmp/wr.zI7J/part1/.dvc/cache/files/md5/ba/7790b1708b71cb2b61b1a30d824712
+Removed 1 objects from repo cache.
+No unused 'legacy' cache to remove.
+cache objects after dry run: 3
+--- dvc gc -w -f (workspace only: keeps only what the current workspace uses)
+WARNING: This will remove all cache except items used in the workspace of the current repo.
+Removed 1 objects from repo cache.
+No unused 'legacy' cache to remove.
+cache objects after gc: 2
+--- but the old c.txt is still in the remote, so it can come back
+M       c.txt
+1 file fetched and 1 file modified
+other
+=== part 2: symlink cache type, edit through the link
+lrwxrwxrwx a.txt -> .dvc/cache/files/md5/b1/946ac92492d2347c6235b4d2611184
+--- dvc status after the edit:
+b.txt.dvc:
+	changed outs:
+		modified:           b.txt
+a.txt.dvc:
+	changed outs:
+		modified:           a.txt

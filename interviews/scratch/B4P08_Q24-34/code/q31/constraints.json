@@ -1,0 +1,32 @@
+{
+ "version": 1,
+ "row_count_min": 300,
+ "columns": {
+  "age": {
+   "type": "numeric",
+   "max_null_ratio": 0.01,
+   "min": 21.0,
+   "max": 65.0,
+   "mean_ref": 43.5,
+   "mean_tolerance_pct": 15
+  },
+  "income": {
+   "type": "numeric",
+   "max_null_ratio": 0.05,
+   "min": 7906.0,
+   "max": 169360.0,
+   "mean_ref": 39412.2,
+   "mean_tolerance_pct": 15
+  },
+  "channel": {
+   "type": "string",
+   "max_null_ratio": 0.01,
+   "allowed_values": [
+    "app",
+    "branch",
+    "web"
+   ],
+   "max_new_value_ratio": 0.01
+  }
+ }
+}

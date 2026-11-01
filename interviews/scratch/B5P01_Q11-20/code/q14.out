@@ -1,0 +1,3 @@
+nums[-0:] = [1, 2, 3] so the k == 0 guard matters
+500 random cases agree
+[5, 6, 7, 1, 2, 3, 4]

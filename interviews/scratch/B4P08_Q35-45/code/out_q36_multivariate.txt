@@ -1,0 +1,6 @@
+per-feature KS x0: D=0.026 p=0.53
+per-feature KS x1: D=0.027 p=0.46
+domain classifier AUC: 0.893
+corr ref=0.808 cur=-0.794 abs diff=1.602
+PCA(1) recon error ref=0.188 cur=1.781
+control (no change) domain AUC: 0.512  corr diff 0.002  recon 0.197 vs 0.202

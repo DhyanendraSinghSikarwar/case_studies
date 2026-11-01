@@ -1,0 +1,5 @@
+hash split check: 0.0496 of 100000 users land in a 5% canary; sticky: True
+canary share | candidate truly worse (0.84 vs 0.90): rolled back / median minutes | candidate equal (0.90): false rollbacks   [300 sims each]
+     2%      |  300/300  median    45 min                 |   14/300
+     5%      |  300/300  median    30 min                 |   18/300
+    20%      |  300/300  median    15 min                 |   22/300

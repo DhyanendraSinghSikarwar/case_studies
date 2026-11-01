@@ -1,0 +1,4 @@
+previous day (rolling)   alerts 16 of 53 days (nothing really changed)
+one fixed Saturday       alerts 38 of 53 days (nothing really changed)
+day-of-week matched      alerts  0 of 53 days (nothing really changed)
+Tue batch vs Saturday reference: KS p = 3.26e-72

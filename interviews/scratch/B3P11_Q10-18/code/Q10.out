@@ -1,0 +1,95 @@
+=== 1. function on the column ===
+bad : customer_id + 0 = 5
+   plan : SCAN orders
+   steps: 800,147   rows: 12
+good: customer_id = 5
+   plan : SEARCH orders USING INDEX ix_cust (customer_id=?)
+   steps: 183   rows: 12
+bad : substr(code, 1, 2) = '12'
+   plan : SCAN orders
+   steps: 834,636   rows: 4,323
+good: code >= '12' AND code < '13'
+   plan : SEARCH orders USING INDEX ix_code (code>? AND code<?)
+   steps: 47,609   rows: 4,323
+=== 2. leading wildcard ===
+bad : code LIKE '%7'
+   plan : SCAN orders
+   steps: 961,994   rows: 20,243
+prefix LIKE '12%' on a BINARY index
+   plan : SCAN orders
+   steps: 834,634   rows: 4,323
+prefix LIKE '12%' after a NOCASE index
+   plan : SEARCH orders USING INDEX ix_code_nc (code>? AND code<?)
+   steps: 47,613   rows: 4,323
+   with PRAGMA case_sensitive_like=ON, BINARY index only: SEARCH orders USING INDEX ix_code (code>? AND code<?)
+=== 3. second column of the composite index only ===
+bad : order_date = '2024-03-05'  (before ANALYZE)
+   plan : SCAN orders
+   steps: 604,818   rows: 596
+same query after ANALYZE (skip-scan possible)
+   plan : SEARCH orders USING INDEX ix_st_dt (ANY(status) AND order_date=?)
+   steps: 6,669   rows: 596
+good: index on order_date
+   plan : SEARCH orders USING INDEX ix_dt (order_date=?)
+   steps: 6,647   rows: 596
+=== 4. OR across two columns ===
+bad : customer_id = 5 OR amount > 490 (amount unindexed)
+   plan : SCAN orders
+   steps: 1,232,481   rows: 4,053
+good: index on amount too
+   plan : MULTI-INDEX OR | INDEX 1 | SEARCH orders USING INDEX ix_cust (customer_id=?) | INDEX 2 | SEARCH orders USING INDEX ix_amt (amount>?)
+   steps: 56,866   rows: 4,053
+UNION rewrite
+   plan : COMPOUND QUERY | LEFT-MOST SUBQUERY | SEARCH orders USING INDEX ix_cust (customer_id=?) | UNION USING TEMP B-TREE | SEARCH orders USING INDEX ix_amt (amount>?)
+   steps: 77,136   rows: 4,053
+=== 5. != on a column where 97% of rows match ===
+status != 'cancelled'
+   plan : SCAN orders
+   steps: 2,151,937   rows: 193,980
+INDEXED BY ix_st_dt (forced)
+   plan : SCAN orders USING INDEX ix_st_dt
+   steps: 2,351,938   rows: 193,980
+status != 'delivered' (10% match, still a scan)
+   plan : SCAN orders
+   steps: 761,201   rows: 20,138
+status IN ('placed','cancelled','returned')
+   plan : SCAN orders
+   steps: 1,761,211   rows: 20,138
+=== 6. partial index, WHERE not repeated (only the partial index on customer_id exists) ===
+customer_id = 5
+   plan : SCAN orders
+   steps: 600,125   rows: 12
+customer_id = 5 AND status = 'cancelled'
+   plan : SEARCH orders USING INDEX ix_part (customer_id=?)
+   steps: 34   rows: 0
+customer_id = 5 AND status IN ('cancelled')
+   plan : SCAN orders
+   steps: 600,055   rows: 0
+=== 7. stale statistics (small table analysed while b was constant, then grown) ===
+   stat1 when analysed: [('ix_a', '1000 500'), ('ix_b', '1000 1000')]
+   stat1 after 200,000 more rows (not refreshed): [('ix_a', '1000 500'), ('ix_b', '1000 1000')]
+stale stats: a = 1 AND b = 500
+   plan : SEARCH w USING INDEX ix_a (a=?)
+   steps: 503,672   rows: 0
+stale stats: b = 500
+   plan : SCAN w
+   steps: 603,067   rows: 2
+   stat1 after re-ANALYZE: [('ix_a', '201000 100500'), ('ix_b', '201000 3')]
+   same connection that ran ANALYZE, EXPLAIN b = 500: SCAN w
+fresh stats: a = 1 AND b = 500
+   plan : SEARCH w USING INDEX ix_b (b=?)
+   steps: 74   rows: 0
+fresh stats: b = 500
+   plan : SEARCH w USING INDEX ix_b (b=?)
+   steps: 74   rows: 2
+=== 8. a scan is the right choice (status = 'delivered', 90% of rows) ===
+planner choice
+   plan : SEARCH orders USING INDEX ix_st_dt (status=?)
+   steps: 1,978,580   rows: 179,862
+NOT INDEXED (forced scan)
+   plan : SCAN orders
+   steps: 2,038,993   rows: 179,862
+INDEXED BY ix_st_dt (forced)
+   plan : SEARCH orders USING INDEX ix_st_dt (status=?)
+   steps: 1,978,580   rows: 179,862
+   pandas: a boolean mask is always a full scan; rows = 179862

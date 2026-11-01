@@ -1,0 +1,15 @@
+alerts: ['UpstreamFeedDown', 'DriftScoreSustained', 'FeatureNullRateHigh', 'LabelJoinLagHigh', 'ModelStale']
+route keys ok: True
+errors: none
+structural check only: promtool and Alertmanager were NOT run
+t=  0min value=0.10 inactive
+t= 30min value=0.35 pending
+t= 60min value=0.40 pending
+t= 90min value=0.20 inactive
+t=120min value=0.31 pending
+t=150min value=0.33 pending
+t=180min value=0.36 pending
+t=210min value=0.34 firing
+t=240min value=0.35 firing
+t=270min value=0.10 inactive
+first firing at sample: 7 | a single spike never fires: True

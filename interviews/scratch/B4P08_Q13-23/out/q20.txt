@@ -1,0 +1,6 @@
+validation positive rate 0.025
+validation TPR 0.363 FPR 0.007
+live positive rate 0.050 | true live prevalence 0.119 | estimated 0.120
+mean score before 0.075 after prior correction 0.119 (true prevalence 0.119)
+positives flagged at 0.5: raw 0.050, adjusted 0.084
+BROKEN case: true prevalence 0.124, estimate 0.025  (P(x|y) moved, method assumes it did not)

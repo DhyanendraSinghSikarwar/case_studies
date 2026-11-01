@@ -1,0 +1,8 @@
+== sudden concept change starting day 50
+  feature KS before vs after: x0 D=0.012 p=0.44 | x1 D=0.017 p=0.10  (quiet)
+  AUC days 10-20: 0.975  AUC days 40-50: 0.969  AUC days 60-70: 0.357  AUC days 80-90: 0.386
+  Page-Hinkley fires at sample 10045 = prediction day 50 -> detection delay 0 days of data; with 30-day label lag you learn on day 80
+== gradual concept change starting day 50
+  feature KS before vs after: x0 D=0.012 p=0.44 | x1 D=0.017 p=0.10  (quiet)
+  AUC days 10-20: 0.975  AUC days 40-50: 0.969  AUC days 60-70: 0.673  AUC days 80-90: 0.377
+  Page-Hinkley fires at sample 11165 = prediction day 55 -> detection delay 5 days of data; with 30-day label lag you learn on day 85

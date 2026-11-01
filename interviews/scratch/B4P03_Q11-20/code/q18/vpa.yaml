@@ -1,0 +1,17 @@
+apiVersion: autoscaling.k8s.io/v1      # VPA is an add-on with its own CRD; install it separately
+kind: VerticalPodAutoscaler
+metadata:
+  name: scorer-vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: scorer
+  updatePolicy:
+    updateMode: "Off"                  # recommend only: never evict or resize pods
+  resourcePolicy:
+    containerPolicies:
+      - containerName: server
+        controlledResources: ["cpu", "memory"]
+        minAllowed: {memory: 512Mi}
+        maxAllowed: {memory: 16Gi}

@@ -1,0 +1,12 @@
+global ARGs (before first FROM): ['PY_VERSION'] -> usable ONLY in FROM lines unless redeclared
+
+stage 0: FROM python:${PY_VERSION}-slim AS builder
+  ARG PIP_INDEX_URL  build-only (gone at runtime); value baked into an ENV: False
+  ARG GIT_SHA        build-only (gone at runtime); value baked into an ENV: False
+
+stage 1: FROM python:${PY_VERSION}-slim
+  ARG GIT_SHA        build-only (gone at runtime); value baked into an ENV: True
+  ARG PY_VERSION     build-only (gone at runtime) (redeclared: value inherited from global default); value baked into an ENV: False
+  ENV MODEL_PATH     runtime (visible in docker inspect/ps env): /models/churn.pkl
+  ENV THRESHOLD      runtime (visible in docker inspect/ps env): 0.5
+  ENV BUILD_SHA      runtime (visible in docker inspect/ps env): ${GIT_SHA}

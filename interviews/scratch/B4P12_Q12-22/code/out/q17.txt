@@ -1,0 +1,13 @@
+hand-check daily token volume = requests * (in+out)
+support      9000 x  1150 = 10,350,000 tokens/day  budget 11,000,000  ratio 94%
+hr-bot       2500 x   900 =  2,250,000 tokens/day  budget  3,000,000  ratio 75%
+analytics    1200 x  2100 =  2,520,000 tokens/day  budget  2,000,000  ratio 126%
+
+served: {'primary': 11460, 'fallback': 0, 'cache': 996, 'blocked': 604}
+support    used   9,203,116 /  11,000,000 = 84%
+hr-bot     used   2,252,140 /   3,000,000 = 75%
+analytics  used   2,001,064 /   2,000,000 = 100%
+ALERT 80% budget: analytics at request #6511
+ALERT 80% budget: support at request #12435
+redaction check: call <PHONE> or <EMAIL> PAN <PAN>
+outage drill (30 of 100 requests while primary down): {'primary': 70, 'fallback': 30, 'cache': 0, 'blocked': 0}

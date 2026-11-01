@@ -1,0 +1,17 @@
+n per arm for 2.0% -> 2.1%: 315,206; months at 4,000/arm/month = 79
+the prompt's round figures: 300,000 / 4,000 = 75 months
+
+what the traffic can detect (relative MDE at baseline 2.0%):
+   1 months ( 4,000 per arm): MDE = 44%
+   3 months (12,000 per arm): MDE = 25%
+   6 months (24,000 per arm): MDE = 18%
+  12 months (48,000 per arm): MDE = 13%
+  24 months (96,000 per arm): MDE = 9%
+CUPED rho 0.3: n = 286,837 per arm, 72 months
+CUPED rho 0.5: n = 236,404 per arm, 59 months
+CUPED rho 0.7: n = 160,755 per arm, 40 months
+upstream metric, 20% baseline, 5% lift: n = 25,582 per arm, 6.4 months
+target 20% relative lift: n = 21,108 per arm, 5.3 months
+one-sided alpha 0.10 (z = 1.28), 5% lift: n = 181,033 per arm, 45 months
+same change on 10 similar pages: 7.9 months
+all asserts passed

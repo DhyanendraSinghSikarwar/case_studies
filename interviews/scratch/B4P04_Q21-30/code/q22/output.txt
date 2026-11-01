@@ -1,0 +1,57 @@
+/tmp/claude-0/ven/v/lib/python3.13/site-packages/mlflow/pyfunc/utils/data_validation.py:187: UserWarning: Add type hints to the `predict` method to enable data validation and automatic signature inference during model logging. Check https://mlflow.org/docs/latest/model/python_model.html#type-hint-usage-in-pythonmodel for more details.
+2026/10/26 14:05:37 WARNING mlflow.pyfunc: Passing a Python object as `python_model` causes it to be serialized using CloudPickle, it requires exercising caution as Python object serialization mechanisms may execute arbitrary code during deserialization.Consider using a file path (str or Path) instead. See https://mlflow.org/docs/latest/ml/model/models-from-code/ for details.
+files in the pyfunc model folder:
+   MLmodel
+   conda.yaml
+   input_example.json
+   python_env.yaml
+   python_model.pkl
+   registered_model_meta
+   requirements.txt
+   serving_input_example.json
+   artifacts/clf.pkl
+   artifacts/scaler.pkl
+
+--- MLmodel (custom pyfunc), trimmed ---
+flavors:
+  python_function:
+    artifacts:
+      clf:
+        path: artifacts/clf.pkl
+        uri: clf.pkl
+      scaler:
+        path: artifacts/scaler.pkl
+        uri: scaler.pkl
+    cloudpickle_version: 3.1.2
+    code: null
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pyfunc.model
+    python_model: python_model.pkl
+    python_version: 3.13.17
+    streamable: false
+is_signature_from_type_hint: false
+model_size_bytes: 4619
+prompts: null
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "sepal length (cm)", "required": true}, {"type":
+    "double", "name": "sepal width (cm)", "required": true}, {"type": "double", "name":
+    "petal length (cm)", "required": true}, {"type": "double", "name": "petal width
+    (cm)", "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+
+--- flavors in the plain sklearn model ---
+['python_function', 'sklearn']
+
+custom pyfunc on RAW (unscaled) rows: [0, 1, 2] | truth: [0, 1, 2]
+/tmp/claude-0/ven/v/lib/python3.13/site-packages/sklearn/utils/validation.py:2823: UserWarning: X has feature names, but LogisticRegression was fitted without feature names
+  warnings.warn(
+plain sklearn pyfunc on the same raw rows: [1, 2, 2] (no scaler inside, so skew risk)

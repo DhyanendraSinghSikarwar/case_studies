@@ -1,0 +1,13 @@
+output given to partner    queries agreement weight cosine
+full                         20000     1.000         1.000
+full                           200     1.000         1.000
+full                            25     1.000         1.000
+round1                       20000     0.976         1.000
+round1                         200     0.957         0.992
+round1                          25     0.753         0.692
+bucket3                      20000     0.915         1.000
+bucket3                        200     0.914         0.994
+bucket3                         25     0.752         0.788
+label                        20000     1.000         1.000
+label                          200     0.962         0.994
+label                           25     0.772         0.777

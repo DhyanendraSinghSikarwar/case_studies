@@ -1,0 +1,11 @@
+replicas=3
+  vecdb-0  pvc=data-vecdb-0   dns=vecdb-0.vecdb.default.svc.cluster.local
+  vecdb-1  pvc=data-vecdb-1   dns=vecdb-1.vecdb.default.svc.cluster.local
+  vecdb-2  pvc=data-vecdb-2   dns=vecdb-2.vecdb.default.svc.cluster.local
+replicas=5
+  vecdb-0  pvc=data-vecdb-0   dns=vecdb-0.vecdb.default.svc.cluster.local
+  vecdb-1  pvc=data-vecdb-1   dns=vecdb-1.vecdb.default.svc.cluster.local
+  vecdb-2  pvc=data-vecdb-2   dns=vecdb-2.vecdb.default.svc.cluster.local
+  vecdb-3  pvc=data-vecdb-3   dns=vecdb-3.vecdb.default.svc.cluster.local
+  vecdb-4  pvc=data-vecdb-4   dns=vecdb-4.vecdb.default.svc.cluster.local
+start order: 0 -> 1 -> 2 (OrderedReady); stop order: reverse. PVCs are NOT deleted on scale-down by default.

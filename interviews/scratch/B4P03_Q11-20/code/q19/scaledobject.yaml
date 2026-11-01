@@ -1,0 +1,20 @@
+apiVersion: keda.sh/v1alpha1           # KEDA is an add-on with its own CRDs; field names: check current KEDA docs
+kind: ScaledObject
+metadata:
+  name: batch-scorer
+spec:
+  scaleTargetRef:
+    name: batch-scorer                 # a Deployment in the same namespace
+  pollingInterval: 30                  # seconds between checks of the queue
+  cooldownPeriod: 300                  # seconds of 'inactive' before going to minReplicaCount (when that is 0)
+  minReplicaCount: 0                   # 0 = scale to zero; use 1 if the cold start is too slow
+  maxReplicaCount: 10
+  triggers:
+    - type: aws-sqs-queue
+      authenticationRef:
+        name: sqs-auth                 # a TriggerAuthentication (not shown): keeps credentials out of this file
+      metadata:
+        queueURL: https://sqs.ap-south-1.amazonaws.com/123456789012/scoring-jobs   # placeholder
+        awsRegion: ap-south-1
+        queueLength: "50"              # target messages per pod: replicas ~ ceil(messages / 50)
+        activationQueueLength: "0"     # scale 0 -> 1 only when messages > 0

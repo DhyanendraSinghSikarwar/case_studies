@@ -1,0 +1,224 @@
+### R1 Sweden (Europe)
+
+**Evidence level:** Thin. No Sweden-specific guide to data scientist or ML engineer rounds appeared; the process picture rests on a search summary of a few Glassdoor reviews (some dated 2016-2021) for Ericsson, Spotify, ICA, Klarna and Scania, plus one commercial guide [S1][S2]. CV, language and job-seeker material is better sourced, including university and public-body pages [S4][S5][S8]. Snippets only; no page was opened.
+
+**Market snapshot for data and ML roles (as reported):**
+- Employer types named in results: scale-ups (Spotify, Klarna), a large enterprise (Ericsson), manufacturing and retail (Scania, H&M, ICA) from candidate reviews [S1][S10]. Listings also show start-ups such as Lovable hiring data scientist and AI engineer roles in Stockholm [S11].
+- Hubs named: Stockholm, Gothenburg and Malmo in a 2026 career blog; Gothenburg coverage was thinner in listings [S10][S11].
+- Job counts change daily; treat listings as a snapshot [S11]. Hiring season: not found in sources.
+- Pay is out of scope in this book.
+
+**Hiring process norms (as reported):**
+1. HR or recruiter call first (Ericsson, ICA reviews) [S1].
+2. A technical step. Reported forms: an online screen with easy coding, SQL queries and ML multiple-choice questions (one Ericsson review, anecdotal) [S1]; a credit-scoring or default-prediction exercise (one Klarna review, anecdotal) [S1]; a take-home presentation at Klarna per an ML engineer guide [S3].
+3. Hiring-manager or team interviews; one Ericsson reviewer describes a non-technical interview with the head of the data science team [S1].
+4. Round counts reported: three interviews (Ericsson, ICA) and four rounds (Spotify), each from a single review (anecdotal) [S1]. Spotify detail is in Book 7 Part 4 (Spotify profile).
+5. Timeline: one commercial guide says two to four months from application to offer and that teams are involved in decisions [S2]; Glassdoor reviews for Ericsson and Klarna say about four weeks [S1]. The two disagree; treat both as rough.
+
+**Round formats:**
+
+| Format | How common as reported | What is tested | Evidence |
+|---|---|---|---|
+| HR / recruiter call | Appears in several reviews | Background, motivation, fit | [S1] anecdotal |
+| Online technical screen | One Ericsson review | Easy coding, SQL, ML multiple choice | [S1] anecdotal |
+| Take-home or case exercise | Klarna reports (exercise, presentation) | Prediction task, communication of approach | [S1][S3] anecdotal |
+| Live coding / ML interview | Not found as Sweden-specific; common elsewhere | Python, ML fundamentals | [G] |
+| Product metrics case | One Spotify review mentions metrics scenarios | Product reasoning | [S1] anecdotal |
+| Team / hiring manager interview | Several reviews | Experience, team fit | [S1][S2] |
+| System design | Not found in sources | n/a | [U] |
+
+**Culture and communication style in interviews:**
+- Workplaces are described in general guides as egalitarian, with first-name address and listening to junior views; punctuality is stressed [S12]. These are consultancy-blog descriptions, not interview studies.
+- One summary found no source describing Swedish interview formats or questions in detail; interview style is therefore mostly [U] [S12].
+- Scania reviews mention being asked about your background and why you work in Sweden (anecdotal, one review) [S1].
+- Notes on "lagom" and "fika" in guides are opinion, not documented interview rules [S12].
+
+**CV and application format:**
+- CV: short; one guide says typically two pages with a summary, experience, education and skills [S4][S6]. Unverified whether this applies to data roles [U].
+- Cover letter (personligt brev): usually half to one A4 page, specific to the role and company, not a repeat of the CV [S4][S5].
+- Photo: sources conflict. Optional per a university page and Oresunddirekt; one guide says a photo is the norm [S4][S5][S6]. Leave out unless asked [G].
+- Tailor each application; do not rely on machine translation for a Swedish-language letter [S5].
+- References and date of birth conventions: not found in sources [U]. Older guide: [S7] (2018, dated).
+
+**Language and location notes:**
+- English is reported as the working language in most Stockholm and Gothenburg tech teams, per a commercial guide [S15]. Swedish is expected in smaller local firms, customer-facing roles and the public sector [S16].
+- Postings are mixed: some list "Swedish, English", others only English [S15]. A 2011 article argues Swedish requirements in IT were overstated; it is old [S17].
+- Colleagues may chat in Swedish socially even where work is in English [S16].
+- If you do not speak Swedish, apply in English [S5].
+
+**Work authorisation: where to check:**
+- Official body to consult: Migrationsverket (Swedish Migration Agency); no URL for it appeared in the results, so find it through the Swedish government's official pages [U]. One guide itself points to it [S4].
+- Public Employment Service (Arbetsformedlingen) English pages: https://arbetsformedlingen.se/other-languages/english-engelska/welcome-to-sweden [S8]. EURES Sweden page: https://eures.europa.eu/living-and-working/living-and-working-conditions/living-and-working-conditions-sweden_en [S9].
+- Verify: which route applies to you, what the employer must do, and expected timelines, directly on official pages. This book states no rules [G].
+
+**Process differences for candidates coming from India's process:**
+- Expect an optional personal letter and a short CV rather than a long one [S4][S5].
+- Expect several rounds with team involvement and no single campus-style test [S2][G].
+- Expect English to be usable in most tech interviews, but check the job ad's language line [S15][S16].
+- A take-home with a presentation may appear at some employers [S3] (anecdotal).
+- Total timeline reports vary widely, so plan for weeks to months [S1][S2].
+- Interview style details beyond this: not found [U].
+
+**How to use Books 1-7 for this market:**
+- Book 3 Part 4 (window functions: ranking, top-N per group) and Part 6 (date/time: retention, cohorts) for SQL screens [S1].
+- Book 1 Part 3 (classification metrics, imbalance, calibration, thresholding) for default-prediction style exercises [S1].
+- Book 1 Part 10 (A/B testing, causal inference, experimentation) and Book 6 Part 1 (product metrics and metric drops) for product-metrics cases [S1].
+- Book 1 Part 12 (NumPy/pandas/sklearn live-coding) and Book 5 Part 1 (arrays and hashing) for coding screens [G].
+- Book 7 Part 4 (Spotify) for a company example; do not repeat its claims here.
+- Book 9 for behavioural stories (planned, not yet written) [G].
+
+**Preparation checklist (2 weeks):**
+- Days 1-2: write a short CV and a half-page tailored letter [S4][S5].
+- Days 3-4: SQL and pandas basics: Book 3 Parts 3-6 [S1].
+- Days 5-6: ML metrics and a mini end-to-end prediction exercise: Book 1 Parts 2-4 [S1].
+- Days 7-8: Prepare a 10-minute presentation of one project, as take-homes may need it [S3].
+- Days 9-10: Stats and A/B: Book 1 Parts 10, 13 [S1].
+- Days 11-12: Coding in a plain editor: Book 5 Parts 1-2 [G].
+- Days 13-14: Mock team interview; ask the recruiter about format and language [G].
+
+**Common mistakes:**
+- Treating a single Glassdoor review as the process [S1].
+- Sending a long CV or a generic letter [S4][S5].
+- Assuming Swedish is not needed anywhere, or that it is needed everywhere [S15][S16].
+- Skipping official checks on authorisation [G].
+
+**Recent changes and AI-era notes:**
+- 2026: a Stockholm start-up, Fika Jobs, reported funding for an AI video-interview platform with roughly ten-minute AI interviews; launch still ahead, so early evidence [S13].
+- A 2025 qualitative study of nine Swedish recruiters found AI mostly used in early recruitment stages (student paper, small sample) [S14].
+- No evidence found on candidate use of AI during Swedish interviews, or Swedish rules on AI in hiring [U].
+
+**Sources:**
+- S1: https://www.glassdoor.co.uk/Interview/Ericsson-Interview-E3472-RVW75169886.htm . Supports: Ericsson, Spotify, ICA, Klarna and Scania review summary (HR then technical then team; online screen; credit-scoring exercise; 3-4 rounds; about four weeks); the summary pooled several Glassdoor results (also https://www.glassdoor.co.nz/Interview/Klarna-Interview-E389854-RVW11329968.htm), so attribution is approximate; some reviews date 2016-2021. Seen 2026-10-31. Snippet only.
+- S2: https://jobrise.io/en/blog/sweden-data-scientist-application-guide-2026/ . Supports: two to four months estimate, multiple rounds, team involvement; commercial and generic. Seen 2026-10-31. Snippet only.
+- S3: https://www.interviewquery.com/interview-guides/klarna-ml-engineer . Supports: Klarna ML engineer guide mentioning a take-home presentation (via search summary). Seen 2026-10-31. Snippet only.
+- S4: https://www.oresunddirekt.dk/en/find-a-job-in-sweden/how-to-look-for-a-job-in-sweden/how-to-write-an-application-for-a-job-in-sweden/ . Supports: cover letter half to one A4 page, photo common but not required, short profile on CV. Seen 2026-10-31. Snippet only.
+- S5: https://oru.se/english/career/finding-a-job-in-sweden/writing-a-cover-letter . Supports: photo optional, one A4 letter, use English if no Swedish, tailor, avoid machine translation. Seen 2026-10-31. Snippet only.
+- S6: https://www.visualcv.com/international/sweden-resume . Supports: contrary view that photo is the norm; typical two pages. Commercial. Seen 2026-10-31. Snippet only.
+- S7: https://www.thelocal.se/20180129/how-to-write-perfect-swedish-cv-resume-cover-letter-job-application . Supports: existence of a 2018 CV guide; snippet gave no content. Seen 2026-10-31. Snippet only.
+- S8: https://arbetsformedlingen.se/other-languages/english-engelska/welcome-to-sweden . Supports: English section of the Public Employment Service. Seen 2026-10-31. Snippet only.
+- S9: https://eures.europa.eu/living-and-working/living-and-working-conditions/living-and-working-conditions-sweden_en . Supports: EURES "How to find a job" page for Sweden (job bank Platsbanken and interview advice named in the search summary). Seen 2026-10-31. Snippet only.
+- S10: https://nucamp.co/blog/coding-bootcamp-sweden-swe-top-10-tech-companies-to-work-for-in-sweden-in-2025 . Supports: 2026 career blog on employer types and Stockholm, Gothenburg, Malmo hubs; commercial. Seen 2026-10-31. Snippet only.
+- S11: https://inferencejobs.com/jobs/locations/gothenburg-o-sweden/data-science . Supports: job-board listings (Gothenburg thinner; Lovable roles via aggregator summary). Seen 2026-10-31. Snippet only.
+- S12: https://hellopebl.com/resources/blog/business-etiquette-in-sweden/ . Supports: punctuality, egalitarian workplace descriptions; blog. Seen 2026-10-31. Snippet only.
+- S13: https://mugglehead.com/swedish-startup-fika-raises-us4m-for-ai-job-interview-platform/ . Supports: Fika Jobs AI interview platform report. Seen 2026-10-31. Snippet only.
+- S14: https://lup.lub.lu.se/student-papers/record/9219088 . Supports: student paper on recruiters and AI (nine recruiters, via summary; attribution approximate). Seen 2026-10-31. Snippet only.
+- S15: https://jobrise.io/en/blog/sweden-software-engineer-application-guide-2026/ . Supports: English as working language in most Stockholm and Gothenburg tech teams; mixed job-ad language lines; commercial. Seen 2026-10-31. Snippet only.
+- S16: https://www.expat.com/en/guide/europe/sweden/21141-stockholm-s-labour-market.html . Supports: English common in multinationals and tech; Swedish expected in smaller firms and customer-facing roles. Seen 2026-10-31. Snippet only.
+- S17: https://techsverige.se/en/2011/11/ar-it-branschens-krav-pa-svenskakunskaper-overdrivna/ . Supports: 2011 opinion that IT Swedish requirements were overstated; old. Seen 2026-10-31. Snippet only.
+
+**Confidence and what to verify:**
+- Low-to-medium: CV, language and job-seeker pages are reasonably sourced; the interview process is only a few anecdotes [S1][S2].
+- Not found: system-design rounds, references, hiring season, AI-use rules in interviews [U].
+- Verify with the recruiter: rounds, language, take-home scope, AI policy; and authorisation on official pages [G].
+
+### R2 Germany (Europe)
+
+**Evidence level:** Medium-Thin (rated Medium for CV and language conventions, Thin for interview rounds). CV format and the official job portal are well covered by many pages [S4][S5][S8]. Interview-process evidence is a handful of anonymous Glassdoor-type reports (Sixt, Allianz, Zalando, Delivery Hero, Wolt, Celonis, eBay, HelloFresh, PwC) from single candidates, plus commercial guides [S1][S2][S3]. No German-specific official guidance on data or ML interview rounds appeared. Snippets only; no page was opened.
+
+**Market snapshot for data and ML roles (as reported):**
+- Employer types in results: e-commerce and delivery platforms (Zalando, Delivery Hero, HelloFresh), mobility and auto (Sixt, BMW), insurance (Allianz, Munich Re), software and analytics (Celonis, SAP appears in Book 7 Part 4), consulting (PwC, Machine Learning Reply), media and retail data firms [S1][S2][S3]. Company-specific claims for Zalando, Delivery Hero and SAP are in Book 7 Part 4 and are not repeated here.
+- Hubs: Berlin has the largest pool of English-only tech openings, Munich and Hamburg behind it, per a 2026 article and guides; a May 2026 Berlin analysis cited about one in five open tech roles with no German requirement [S6][S7]. No data-science-specific city breakdown was found [S7].
+- Hiring season: not found in sources [U]. Pay is out of scope in this book.
+
+**Hiring process norms (as reported):**
+1. First screen with HR or a hiring manager; Machine Learning Reply (Berlin) reported about 30 minutes with a data scientist and a business unit manager (anecdotal) [S1].
+2. Technical stage. Forms reported: take-home assignment with code submission, then a discussion and one live Python question (Celonis working-student report, 2022, anecdotal) [S2]; a take-home described as two weeks' time within a three-round process (eBay Berlin, 2024, anecdotal) [S2]; a take-home done in a day or two (HelloFresh junior role, anecdotal) [S2]; a one-day practical case presented in the evening, then technical questions on the methods (PwC, anecdotal) [S9].
+3. Hiring manager, product manager and team rounds: Wolt Berlin senior data scientist report lists HR, hiring manager, product manager, data science team (2024, anecdotal) [S1].
+4. Round counts reported: two (Allianz Munich case study), three (Sixt Munich), five over two months (Zalando Berlin 2024, called poorly coordinated), all single reviews [S1].
+5. Timelines reported: about six weeks (Delivery Hero 2025), seven weeks (Sixt Berlin), two months (Zalando); each is one review [S1]. A German ML guide says take-home deadlines of three to seven days are typical [S3] (commercial).
+6. Sequence summary in one guide: first conversation, technical round, sometimes coding test or take-home, then team conversation [S3].
+
+**Round formats:**
+
+| Format | How common as reported | What is tested | Evidence |
+|---|---|---|---|
+| HR / manager screen | In most reports | Fit, motivation, background | [S1][S3] anecdotal |
+| Take-home assignment | Reported by several employers; one guide says common at product companies | Code quality, approach; reviewed in a follow-up | [S2][S3] anecdotal |
+| Case study with presentation | PwC and Allianz reports | Problem framing, methods, communication | [S1][S9] anecdotal |
+| Live coding | One Celonis report (one Python question) | Python basics | [S2] anecdotal |
+| Past-project and tools questions | Allianz report | Experience, tools | [S1] anecdotal |
+| Panel or group interview | One Allright report summary | Not detailed | [S1] anecdotal |
+| System design | Not found in sources | n/a | [U] |
+| Behavioural | Not found as a distinct round | n/a | [U] |
+
+**Culture and communication style in interviews:**
+- Guides say to address interviewers formally (Sie, titles with surnames) until invited to switch, and to arrive on time; margins vary by source [S10]. These are career-advice and language-school blogs.
+- One German-language guide advises preparing three main projects with problem, your role, method and result, because interviewers want to see what you built rather than certificates [S9] (commercial).
+- A case-study guide says the main success factor is clear communication [S9].
+- Generalisations about national style in blogs were discarded; only etiquette points repeated across several pages are kept [S10].
+
+**CV and application format:**
+- Tabular, reverse-chronological Lebenslauf, dates in one column, up to two A4 pages per sources [S4][S5].
+- Package described as Lebenslauf, Anschreiben (one-page cover letter to a named contact) and supporting certificates and references [S4]. One marketing source claims a missing cover letter is routinely rejected, except at very international tech employers; treat as weak [S4] [U].
+- Photo: sources conflict. One says expected, another says English-first Berlin scale-ups and tech firms often skip it [S4][S5]. Check the employer's norm [G].
+- References and Arbeitszeugnis: sources describe them as part of the package and say a reference letter from a past employer can stand in for candidates who never worked in Germany; the legal side is not covered here [S4].
+- For tech roles, one source says a GitHub link is not an optional extra; CEFR-rated language skills are recommended [S4][S5] (commercial).
+
+**Language and location notes:**
+- Many tech roles in Berlin do not require German; the share is lower elsewhere and varies by sector [S6][S7]. Job boards list English-speaking data scientist roles in Berlin and Munich [S7].
+- The official federal portal says its search works best with German job titles; most postings on the Federal Employment Agency board are in German [S8].
+- Interviews in German need formal-register practice per language-school guides [S10].
+- Cities named: Berlin, Munich, Hamburg [S7].
+
+**Work authorisation: where to check:**
+- Official portal: Make it in Germany, https://www.make-it-in-germany.com/en/making-it/job-listings/ [S8]. It states that its job listings come from the Federal Employment Agency and that its branding is misused by fraudulent providers [S8].
+- Also named in results: the Federal Employment Agency (Bundesagentur fur Arbeit) and ZAV for international recruitment; a hotline and email for advice [S8].
+- Verify on official pages: the route that fits your situation, what your employer must provide, and processing timelines. This book states no rules and no figures [G].
+
+**Process differences for candidates coming from India's process:**
+- Expect a tabular CV, a separate cover letter and supporting documents in many applications, more paperwork than a one-page CV [S4][S5].
+- Expect take-home assignments with a follow-up review at some employers, with deadlines that can span days to weeks [S2][S3].
+- Expect a case presentation in some processes (consulting-type firms) [S9].
+- Expect formal address and punctuality to be stressed in guides [S10].
+- Expect job postings on the official board mostly in German even where roles are English-friendly elsewhere [S8][S6].
+- Round counts and durations differ widely between employers [S1].
+
+**How to use Books 1-7 for this market:**
+- Book 6 Part 5 (business case studies: pricing, churn, fraud, supply chain) and Part 10 ("design a solution end-to-end" open scenarios) for case and take-home presentations [S9].
+- Book 1 Part 12 (NumPy/pandas/sklearn live-coding and AI-code-review rounds) for take-home code and live Python [S2].
+- Book 4 Part 1 (Git, code quality, packaging, testing ML code) for take-home code-quality expectations [S2].
+- Book 3 Parts 3-6 (subqueries and CTEs; window functions; date/time) for data screens [G].
+- Book 1 Part 11 (ML system design) for ML engineer roles [G].
+- Book 7 Part 4 (Zalando, Delivery Hero, SAP) for company examples; do not repeat their claims here.
+- Book 9 for communication and presentation skills (planned, not yet written) [G].
+
+**Preparation checklist (2 weeks):**
+- Days 1-2: build a tabular CV, a one-page cover letter and a document set [S4].
+- Days 3-4: Practise a time-boxed take-home from data to clean repository: Book 4 Part 1, Book 1 Part 12 [S2].
+- Days 5-6: Rehearse a 15-minute case presentation: Book 6 Parts 5 and 10 [S9].
+- Days 7-8: Prepare three project stories (problem, your role, method, result) [S9].
+- Days 9-10: SQL and statistics refresh: Book 3 Parts 3-6, Book 1 Parts 10 and 13 [G].
+- Days 11-12: ML fundamentals and system design: Book 1 Parts 3, 4, 11 [G].
+- Days 13-14: Mock panel with formal address; check job-ad language line and ask recruiter about take-home length [S3][S10].
+
+**Common mistakes:**
+- Treating one review as the standard process [S1].
+- Submitting a take-home as a notebook with no explanation or tests; reviewers discuss it afterwards [S2] (inferred) [U].
+- Skipping the cover letter or document set without checking the employer's norm [S4].
+- Assuming roles are English-only, or German-only [S6][S7].
+- Arriving late or using first names unprompted [S10].
+
+**Recent changes and AI-era notes:**
+- A 2026 law-firm guide discusses AI in German recruiting in terms of GDPR, the EU AI Act and works council involvement; it is a law firm's summary and should be checked against primary sources [S11] [U].
+- German university career workshops teach using AI for applications and interviews while staying authentic [S12].
+- No German 2025-2026 survey on recruiter or candidate AI use in interviews was found; a US figure on ChatGPT use is not German evidence and is not used [U].
+- Older: 2018 and 2020 pilots of recruiting robots and chatbots appeared; not relied on [U].
+
+**Sources:**
+- S1: https://www.glassdoor.co.uk/Interview/Sixt-Interview-E10875-RVW72611919.htm . Supports: summary of Glassdoor reports for Allianz (two rounds, case study), Wolt Berlin (HR, manager, PM, team), Machine Learning Reply (30-minute first screen), Zalando (five rounds, two months), Delivery Hero (six weeks), Sixt (three rounds, seven weeks), Allright; the summary pooled several results (also https://static.glassdoor.sg/Interview/Delivery-Hero-Interview-E504556-RVW99785483.htm and https://www.glassdoor.com/Interview/Zalando-Interview-RVW84395986.htm), attribution approximate; single anonymous reviews. Seen 2026-10-31. Snippet only.
+- S2: https://www.jointaro.com/interviews/companies/ebay/experiences/machine-learning-engineer-berlin-march-1-2024-no-offer-positive-504410fa/ . Supports: eBay Berlin take-home (two weeks, three-round process); Celonis (https://fr.glassdoor.ca/Entretien/Celonis-Entretien-E1307503-RVW60780236.htm) take-home with live Python; HelloFresh (https://www.glassdoor.com.ar/Entrevista/HelloFresh-Entrevista-E998728-RVW24953386.htm) take-home in a day or two; all anecdotal, details from search summary. Seen 2026-10-31. Snippet only.
+- S3: https://jobrise.io/de/blog/germany-machine-learning-engineer-application-guide-2026/ . Supports: common flow (first conversation, technical round, take-home or coding test, team), take-home common at product companies, three to seven days; commercial and generic. Seen 2026-10-31. Snippet only.
+- S4: https://resumegeni.com/blog/how-to-write-resume-germany . Supports: tabular Lebenslauf, two A4 pages, Anschreiben, certificates and references, photo conflict, GitHub note (guides pooled in the search summary; also https://www.visualcv.com/international/germany-cv/); commercial. Seen 2026-10-31. Snippet only.
+- S5: https://leapscholar.com/digest/german-ats-friendly-resume-tech-companies-2026-by-expert-leap . Supports: German CV for tech companies, no-photo norms at some international firms, CEFR language levels (via summary); commercial. Seen 2026-10-31. Snippet only.
+- S6: https://www.thelocal.de/20260513/revealed-which-companies-in-berlin-offer-jobs-that-dont-require-german . Supports: May 2026 analysis of Berlin tech job listings with no German requirement (about one in five). Seen 2026-10-31. Snippet only.
+- S7: https://msingermany.com/blog/jobs-germany-without-german-2026 . Supports: English-friendly tech work Berlin highest, Munich and Hamburg behind; English-speaking data scientist listings (also https://www.arbeitnow.com/english-speaking-jobs); blog and job boards. Seen 2026-10-31. Snippet only.
+- S8: https://www.make-it-in-germany.com/en/making-it/job-listings/ . Supports: official portal, listings from the Federal Employment Agency, German-title search works best, ZAV, advice contacts, branding-misuse warning (also https://www.make-it-in-germany.com/de/arbeiten-in-deutschland/job/jobsuche). Seen 2026-10-31. Snippet only.
+- S9: https://jobrise.io/de/blog/data-scientist-interview-answers-examples-2026/ . Supports: German-language guide on case study, project preparation; PwC case-study anecdote at https://static.glassdoor.nl/Interview/PwC-Interview-E8450-RVW17358080.htm (one-day case presented in the evening, then technical questions); commercial and anecdotal. Seen 2026-10-31. Snippet only.
+- S10: https://www.lingoda.com/blog/en/how-to-have-a-successful-job-interview-in-germany/ . Supports: formal Sie, titles, punctuality, preparation (pooled with https://www.ue-germany.com/blog/how-to-prepare-for-a-job-interview-in-german and https://goausbildung.com/docs/students/interview-prep/understanding-german-interview-culture); language-school and career blogs. Seen 2026-10-31. Snippet only.
+- S11: https://compound.law/en-DE/news/ai-recruitment-germany/ . Supports: law-firm discussion of AI recruiting, GDPR, AI Act, works council. Seen 2026-10-31. Snippet only.
+- S12: https://www.b-tu.de/en/research/news/detail/28325-german-job-applications-102-interviews-leveraging-ai-for-your-career-start . Supports: university workshop on German interviews and using AI. Seen 2026-10-31. Snippet only.
+
+**Confidence and what to verify:**
+- Medium for CV package and English-language availability; low for round counts and timelines (single reviews, mixed employers and years) [S1][S2].
+- Not found: system-design rounds, hiring season, references conventions beyond the package, AI-use rules in interviews [U].
+- Verify with the recruiter: take-home scope and deadline, language of interview, CV photo and document expectations, AI policy; and authorisation on Make it in Germany and the Federal Employment Agency pages [S8][G].

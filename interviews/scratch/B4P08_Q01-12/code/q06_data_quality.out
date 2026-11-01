@@ -1,0 +1,16 @@
+--- good batch, plain pandas: no failures
+--- good batch, pandera: passed
+--- corrupted batch, plain pandas: ['null rate income 0.38', 'age out of 18-80: 5 rows', "bad country values: ['XX']", 'duplicate user_id: 1', 'stale: newest row 0 days 09:00:17 old', 'volume 400 vs baseline 1000']
+--- corrupted batch, pandera: 11 failure rows
+  column                               check failure_case
+     NaN volume below 70 percent of baseline        False
+ user_id                    field_uniqueness           30
+ user_id                    field_uniqueness           30
+     age                    in_range(18, 80)           -1
+     age                    in_range(18, 80)          200
+     age                    in_range(18, 80)          150
+     age                    in_range(18, 80)           17
+     age                    in_range(18, 80)          999
+ country            isin(['IN', 'US', 'UK'])           XX
+  income           null rate above 2 percent        False
+event_ts     stale: newest row older than 2h        False

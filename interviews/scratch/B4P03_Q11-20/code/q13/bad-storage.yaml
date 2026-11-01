@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-weights
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scorer-bad
+spec:
+  replicas: 3
+  selector:
+    matchLabels: {app: scorer-bad}
+  template:
+    metadata:
+      labels: {app: scorer-bad}
+    spec:
+      containers:
+        - name: server
+          image: registry.example.com/ml/scorer:3.1.0
+          volumeMounts:
+            - {name: weights, mountPath: /models}
+            - {name: typo, mountPath: /other}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: weights
+          persistentVolumeClaim: {claimName: shared-weights}
+        - name: typo
+          persistentVolumeClaim: {claimName: shared-weigths}
+        - name: tmp
+          emptyDir: {}

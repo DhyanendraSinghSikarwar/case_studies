@@ -1,0 +1,29 @@
+
+1a. CREATE INDEX after the statement text was used
+   real SELECT, same text: steps before 150100 after 277 (count 88 = before 88 )
+   EXPLAIN QUERY PLAN before: ['SCAN t']
+   EXPLAIN QUERY PLAN after CREATE INDEX, identical text: ['SEARCH t USING COVERING INDEX ix_cust (cust=?)']
+1b. DROP INDEX after the statement text was used
+   EXPLAIN QUERY PLAN with the index: ['SEARCH t USING COVERING INDEX ix_cust (cust=?)']
+   after DROP INDEX, identical text: ['SEARCH t USING COVERING INDEX ix_cust (cust=?)']
+   after DROP INDEX, text plus two trailing spaces: ['SCAN t']
+   the real SELECT with the identical text still runs correctly: steps 150100 count 88
+   fresh connection after create+drop: ['SCAN t']
+   cached_statements=0, same text after DROP INDEX: ['SCAN t']
+
+2. LIKE ? bound to 'alp%': steps 37,466, count 12483, plan ['SEARCH t USING COVERING INDEX ix_name (name>? AND name<?)']
+
+2. LIKE ? bound to '%pha1': steps 200,017, count 4, plan ['SCAN t USING COVERING INDEX ix_name']
+
+2. LIKE ? bound to 'alp%': steps 37,464, count 12483, plan ['SEARCH t USING COVERING INDEX ix_name (name>? AND name<?)']
+   same statement text, three bindings: the plan follows the value (checked above; pandas count for 'alp%' = 12483 )
+
+3. planner's choice: steps 1,469, count 208, plan ['SEARCH t USING INDEX ix_status (status=?)']
+
+3. INDEXED BY ix_cust: steps 159,624, count 208, plan ['SEARCH t USING INDEX ix_cust (cust>?)']
+
+3. NOT INDEXED: steps 150,720, count 208, plan ['SCAN t']
+   unary plus on status: steps 159,624, count 208, plan ['SEARCH t USING INDEX ix_cust (cust>?)']
+    SELECT COUNT(*) FROM t INDEXED BY no_such_index WHERE cust = 7 -> OperationalError: no such index: no_such_index
+    SELECT COUNT(*) FROM t INDEXED BY ix_status WHERE cust = 7 -> [(88,)]
+   all hint variants return the same count as pandas: 208

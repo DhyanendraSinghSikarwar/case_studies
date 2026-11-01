@@ -1,0 +1,44 @@
+ id level user_txt action     status
+  1 ERROR       42  login         ok
+  2  INFO        7   view         ok
+  3 ERROR      NaN  login         ok
+  4 ERROR       42    pay         ok
+  5   NaN      NaN    NaN  null line
+  6  WARN        9    NaN         ok
+  7   NaN      NaN    NaN unreadable
+  8 ERROR      abc      x   bad user
+[('ERROR', 4), ('INFO', 1), ('WARN', 1)]
+distinct users with an ERROR line: 1
+lines the parser could not read: [(5, 'null line'), (7, 'unreadable'), (8, 'bad user')]
+rows in = rows out: (8, 8)
+ id level user_txt action     status
+  1 ERROR       42  login         ok
+  2  INFO        7   view         ok
+  3 ERROR      NaN  login         ok
+  4 ERROR       42    pay         ok
+  5   NaN      NaN    NaN  null line
+  6  WARN        9    NaN         ok
+  7   NaN      NaN    NaN unreadable
+  8 ERROR      abc      x   bad user
+ id      k        v
+  1 action    login
+  1     ip 10.0.0.7
+  1   user       42
+  2 action     view
+  2   user        7
+  3 action      pay
+  3   note      a=b
+ id user action       ip note
+  1   42  login 10.0.0.7  NaN
+  2    7   view      NaN  NaN
+  3  NaN    pay      NaN  a=b
+  4  NaN    NaN      NaN  NaN
+  5  NaN    NaN      NaN  NaN
+ id user action       ip note
+  1   42  login 10.0.0.7  NaN
+  2    7   view      NaN  NaN
+  3  NaN    pay      NaN  a=b
+  4  NaN    NaN      NaN  NaN
+  5  NaN    NaN      NaN  NaN
+SQL count of 'aa' in 'aaa': 1 | pandas str.count: 1 | '=' per attrs line (pandas): [3.0, 2.0, 3.0, nan, 0.0]
+asserts passed

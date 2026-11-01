@@ -1,0 +1,50 @@
+| B9P03-Q1 | 3 | Tell me about a time you took ownership of something that was not strictly your job. |
+| B9P03-Q2 | 3 | Tell me about a time you put a customer's or end user's need ahead of what was easiest for your team. |
+| B9P03-Q3 | 3 | Tell me about a time you had to act quickly without having all the information. |
+| B9P03-Q4 | 3 | A recruiter asks early on, 'What are your expectations?' How do you respond without naming a number? |
+| B9P03-Q5 | 3 | How do you ask a recruiter about the pay range for a role, and at what point in the process do you ask? |
+| B9P03-Q6 | 3 | Why do you want to join our company? |
+| B9P03-Q7 | 3 | Why are you looking to move now? |
+| B9P03-Q8 | 3 | What is your notice period, and how soon can you realistically join? |
+| B9P03-Q9 | 3 | Tell me about a time you disagreed with a decision, made your case, and then committed to it once it was made. |
+| B9P03-Q10 | 3 | Tell me about a time you dug far deeper into the data or a system than expected and found something others had missed. |
+| B9P03-Q11 | 3 | Tell me about a time you delivered a result despite serious obstacles. |
+| B9P03-Q12 | 3 | Tell me about a time you earned the trust of a sceptical colleague or stakeholder. |
+| B9P03-Q13 | 3 | A recruiter asks what you are earning now. How do you redirect to the role and the process, and what do you ask HR about how this is handled? |
+| B9P03-Q14 | 3 | You get a verbal offer on a phone call. What do you say in the moment, and what do you ask for next? |
+| B9P03-Q15 | 3 | You have two offers. How do you compare them by components rather than by one headline figure? |
+| B9P03-Q16 | 3 | Do you have other offers or interviews in progress? |
+| B9P03-Q17 | 3 | Where do you see yourself in five years? |
+| B9P03-Q18 | 3 | Tell me about a time you simplified a process, a model pipeline or a piece of work that had become too complicated. |
+| B9P03-Q19 | 3 | Tell me about a time you had to learn something new quickly because the work required it. |
+| B9P03-Q20 | 3 | Tell me about a time you helped a teammate succeed when it did not benefit you directly. |
+| B9P03-Q21 | 3 | How do you ask for time to consider an offer, especially when the deadline is tight? |
+| B9P03-Q22 | 3 | How do you decline an offer in a way that keeps the relationship with the recruiter and the team? |
+| B9P03-Q23 | 3 | How do you ask for a later start date so you can finish your handover properly? |
+| B9P03-Q24 | 3 | How would you describe your work style, and what kind of manager and team bring out your best? |
+| B9P03-Q25 | 3 | Are you willing to relocate, and what would you want to know before deciding? |
+| B9P03-Q26 | 3 | Can you provide references, and who would you choose and why? |
+| B9P03-Q27 | 3 | Tell me about a time you raised the standard of work on your team. |
+| B9P03-Q28 | 3 | Tell me about a time you chose the long-term outcome over a quick win. |
+| B9P03-Q29 | 3 | Tell me about a time you gave a peer direct feedback that was hard to hear. |
+| B9P03-Q30 | 3 | Tell me about a time you achieved a goal with far fewer people, time or budget than you wanted. |
+| B9P03-Q31 | 3 | An offer comes in below what you hoped. What steps do you follow to make a counter, using placeholders for your own targets? |
+| B9P03-Q32 | 3 | How do you negotiate the scope and content of the role before you accept it? |
+| B9P03-Q33 | 3 | How do you raise a remote or hybrid arrangement as part of the offer discussion? |
+| B9P03-Q34 | 3 | How do you ask for a learning budget or growth support as part of an offer? |
+| B9P03-Q35 | 3 | How do you make sure what was agreed verbally appears in writing before you resign from your current job? |
+| B9P03-Q36 | 3 | There is a gap or career break on your resume. How do you explain it? |
+| B9P03-Q37 | 3 | You have changed jobs several times in a short period. What is behind that? |
+| B9P03-Q38 | 3 | How do you work in a remote or hybrid team, and how do you stay connected and visible? |
+| B9P03-Q39 | 3 | If your current employer makes a counter-offer when you resign, how will you respond? |
+| B9P03-Q40 | 3 | Which leadership principle or company value is hardest for you personally, and what have you done about it? |
+| B9P03-Q41 | 3 | Tell me about a risky bet you made that did not work, and what you changed afterwards. |
+| B9P03-Q42 | 3 | How do you talk about pay after a layoff, when you may feel pressure to accept the first offer? |
+| B9P03-Q43 | 3 | How does background verification work from your side, and what do you do if a detail will not match a record? |
+| B9P03-Q44 | 3 | Why do you prefer a large company over a startup, or the other way round? |
+| B9P03-Q45 | 3 | Tell me about a time a decision you were asked to carry out conflicted with your own values, and what you did. |
+| B9P03-Q46 | 3 | Tell me about a time you made an unpopular call for the good of customers or the team. |
+| B9P03-Q47 | 3 | Another company's offer deadline falls before this one's. How do you handle both honestly without bluffing? |
+| B9P03-Q48 | 3 | The offer is at a lower level than you expected. How do you discuss title and level without souring the conversation? |
+| B9P03-Q49 | 3 | You were laid off. How do you explain it in the HR round? |
+| B9P03-Q50 | 3 | You were placed on a performance improvement plan at your last job. How do you discuss it honestly? |

@@ -1,0 +1,26 @@
+Plan 1: nested loop with an index probe on the inner table
+    SCAN c
+    SEARCH o USING INDEX ix_o_cust (customer_id=?)
+Plan 2: no index on either side -> automatic index (before ANALYZE)
+    SCAN a
+    BLOOM FILTER ON b (k=?)
+    SEARCH b USING AUTOMATIC COVERING INDEX (k=?)
+Plan 2 after ANALYZE (a new statement text is used so no cached plan is reused):
+    SCAN a
+    BLOOM FILTER ON b (k=?)
+    SEARCH b USING AUTOMATIC COVERING INDEX (k=?)
+Plan 3: a CTE used twice -> MATERIALIZE plus a scalar subquery
+    MATERIALIZE t
+    SCAN orders USING INDEX ix_o_cust
+    SCAN t1
+    SCALAR SUBQUERY 2
+    SCAN t
+    USE TEMP B-TREE FOR ORDER BY
+Plan 4: a grouped subquery used once -> co-routine instead of materialising
+    CO-ROUTINE (subquery-1)
+    SCAN orders USING INDEX ix_o_cust
+    SCAN (subquery-1)
+
+rows: plan1 5010, plan2 count 17841, plan3 975; all equal to pandas merge/groupby (sorted by name, amount / customer_id)
+orders rows: before 20000 | after EXPLAIN QUERY PLAN DELETE 20000 | inside BEGIN..DELETE 16413 | after ROLLBACK 20000
+SQLite version: 3.45.1

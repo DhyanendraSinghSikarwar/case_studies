@@ -1,0 +1,112 @@
+--- repro #1
+Running stage 'prepare':
+> python prepare.py
+prepared 300 train rows
+Generating lock file 'dvc.lock'
+Updating lock file 'dvc.lock'
+
+Running stage 'train':
+> python train.py
+trained with C = 1.0
+Updating lock file 'dvc.lock'
+
+Running stage 'evaluate':
+> python evaluate.py
+evaluated
+Updating lock file 'dvc.lock'
+
+To track the changes with git, run:
+
+	git add .gitignore dvc.lock
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Use `dvc push` to send your updates to remote storage.
+--- dvc.lock (train stage)
+  train:
+    cmd: python train.py
+    deps:
+    - path: prepared.npz
+      hash: md5
+      md5: 6b7a979dc958f90ce05da26c9e7ffe53
+      size: 13774
+    - path: train.py
+      hash: md5
+      md5: a8ce490d01045ca694769ab036e917aa
+      size: 298
+    params:
+      params.yaml:
+        train.C: 1.0
+    outs:
+    - path: model.joblib
+      hash: md5
+      md5: 8ceac560346ba3243217c578149a59d5
+      size: 879
+  evaluate:
+--- dag
+        +---------+      
+        | prepare |      
+        +---------+      
+         *         **    
+       **            *   
+      *               ** 
++-------+               *
+| train |             ** 
++-------+            *   
+         *         **    
+          **     **      
+            *   *        
+        +----------+     
+        | evaluate |     
+        +----------+     
+--- repro #2 (nothing changed)
+Stage 'prepare' didn't change, skipping
+Stage 'train' didn't change, skipping
+Stage 'evaluate' didn't change, skipping
+Data and pipelines are up to date.
+--- edit only evaluate.py (comment)
+Stage 'prepare' didn't change, skipping
+Stage 'train' didn't change, skipping
+Running stage 'evaluate':
+> python evaluate.py
+evaluated
+Updating lock file 'dvc.lock'
+
+To track the changes with git, run:
+
+	git add dvc.lock
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Use `dvc push` to send your updates to remote storage.
+--- change train.C only
+Stage 'prepare' didn't change, skipping
+Running stage 'train':
+> python train.py
+trained with C = 0.1
+Updating lock file 'dvc.lock'
+
+Running stage 'evaluate':
+> python evaluate.py
+evaluated
+Updating lock file 'dvc.lock'
+
+To track the changes with git, run:
+
+	git add dvc.lock
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Use `dvc push` to send your updates to remote storage.
+--- dvc status after changing prepare.seed
+prepare:
+	changed deps:
+		params.yaml:
+			modified:           prepare.seed
+{
+  "accuracy": 0.81,
+  "auc": 0.907
+}

@@ -1,0 +1,22 @@
+        word      norm  reversed  is_palindrome
+                                              1
+A man a plan amanaplan nalpanama              0
+       Level     level     level              1
+      Silent    silent    tnelis              0
+    Taco cat   tacocat   tacocat              1
+         abc       abc       cba              0
+         bca       bca       acb              0
+         cab       cab       bac              0
+      listen    listen    netsil              0
+       madam     madam     madam              1
+      tinsel    tinsel    lesnit              0
+signature  n              members
+      abc  3          abc,bca,cab
+   eilnst  3 Silent,listen,tinsel
+group_concat(DISTINCT word, '|') -> DISTINCT aggregates must have exactly one argument
+group_concat(DISTINCT word) works, default separator ',': abc,cab
+string_agg with ORDER BY works: A man a plan|Taco cat|abc|bca|cab|madam
+reverse: no such function: reverse
+pandas palindromes: ['', 'Level', 'Taco cat', 'madam']
+pandas anagram groups: [['abc', 'abc,bca,cab'], ['eilnst', 'Silent,listen,tinsel']]
+asserts passed

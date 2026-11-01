@@ -1,0 +1,25 @@
+name: train-and-register
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - id: push
+        run: echo "digest=sha256:placeholder" >> "$GITHUB_OUTPUT"   # real job: build-push-action output
+  register:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      MLFLOW_TRACKING_URI: ${{ vars.MLFLOW_TRACKING_URI }}
+      DATA_VERSION: ${{ vars.DATA_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Train, register, stamp lineage
+        env:
+          IMAGE_DIGEST: ${{ needs.build.outputs.digest }}
+        run: python scripts/register_and_stamp.py   # GITHUB_SHA, GITHUB_RUN_ID, GITHUB_WORKFLOW come from the runner

@@ -1,0 +1,13 @@
+[1, 2, 3, 4, 5] -> 3
+[1, 2] -> 1
+[1] -> 0
+[1, None, 2, 3, 4, 5, None, None, 6, 7] -> 5
+[] -> 0
+exhaustive ok: 626 shapes with 0..7 nodes
+random ok: 300 trees
+not through the root: 4 (root has one child, path is below it)
+chain n=50: height_slow calls = 2550, n*n = 2500
+chain n=100: height_slow calls = 10100, n*n = 10000
+chain n=200: height_slow calls = 40200, n*n = 40000
+chain 10000 recursive: RecursionError | iterative: 9999
+zig-zag 5000 iterative: 4999

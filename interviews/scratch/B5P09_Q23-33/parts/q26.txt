@@ -1,0 +1,49 @@
+**Pattern:** Minimax path (bottleneck shortest path) on a grid: Dijkstra with `max` in place of `+`. Binary search on the answer plus a DFS/BFS reachability test is the alternative.
+
+**Say this first (1 line):** "It is Dijkstra, but a route's cost is its largest step so far. Extending a route can never make that smaller, and a cheaper prefix never gives a worse result, so the greedy pop order is still correct."
+
+**Brute force:** Enumerate every simple path from corner to corner and take the one with the smallest maximum step. Exponential in the number of cells; fine only on 3 x 3 grids. It is one checker in the code.
+
+**Optimal:**
+- Heap entries `(effort, row, col)`, `best[r][c] = INF` except `best[0][0] = 0`.
+- Pop the smallest. If `effort > best[r][c]` it is stale, skip. If it is the bottom-right cell, return it.
+- For each of the 4 neighbours: `ne = max(effort, abs(h[nb] - h[cell]))`; if `ne < best[nb]`, update and push.
+- Why `max` still works. Dijkstra needs two properties of the path cost:
+  - Extending a path never lowers its cost: `max(e, w) >= e`.
+  - The extension is monotone in the prefix: if `e1 <= e2` then `max(e1, w) <= max(e2, w)`.
+  - With these, when a cell is popped with effort `e`, any other route reaches it through a cell not yet popped, whose effort is already `>= e`, so that route costs at least `e`. So the first pop of a cell is final. Sum satisfies both properties for non-negative steps, and so does max.
+- Binary search alternative: for a threshold T, flood fill only through steps `<= T`; feasibility is monotone in T, so binary search T in `[0, max - min]`. Cost O(mn * log(10^6)), about 20 floods. The code runs both and they agree.
+- The two answers are not the same as the sum version: on example 1 the sum-of-steps answer is 4 but the minimum effort is 2 (code prints it).
+
+**Complexity:** Dijkstra: each cell pushes at most one entry per improvement, at most 4mn pushes, each O(log(mn)), so O(mn log(mn)) time, O(mn) space. Binary search: O(mn log(range)) time, O(mn) space; at 100 x 100 and range 10^6 that is about 20 * 10^4 cell visits. Both are fine at this size; the binary search has no heap.
+
+**Dry run:** `[[1,2,2],[3,8,2],[5,3,5]]`.
+- Start (0,0) effort 0. Push right (0,1): max(0,1) = 1; push down (1,0): max(0,2) = 2.
+- Pop (0,1) effort 1: right (0,2) step 0, effort 1; down (1,1) step 6, effort 6.
+- Pop (0,2) effort 1: down (1,2) step 0, effort 1. Pop (1,2) effort 1: down (2,2) step 3, effort 3.
+- Pop (1,0) effort 2: down (2,0) step 2, effort 2. Pop (2,0) effort 2: right (2,1) step 2, effort 2. Pop (2,1) effort 2: right (2,2) step 2, effort max(2,2) = 2 < 3, update.
+- Pop (2,2) with effort 2. Answer 2.
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- 1 x 1 grid: start is the goal, effort 0.
+- Equal heights everywhere: 0.
+- Going away from the goal is allowed and sometimes necessary (the snake corridor winds through about 5000 cells).
+- Huge heights (10^6): ints, no overflow in Python.
+- Return when the target is popped, not when it is first pushed (a later, better push can still arrive).
+
+**Follow-ups:**
+- Why not BFS or DFS with a visited set directly? The best route to a cell depends on its effort, not on who arrived first, so a plain visited set can lock in a worse effort.
+- Union-find version? Sort all adjacent-cell edges by step cost and add them until top-left and bottom-right join: the last edge added is the answer (Kruskal-style bottleneck), O(mn log(mn)).
+- Why is the maximum spanning-path idea related to MST? The minimax path between two nodes lies on the minimum spanning tree; that is the Q29 connection.
+
+**Common mistakes:**
+- Summing the steps (Dijkstra by habit).
+- Taking `abs` of the wrong pair, or using the neighbour's height only.
+- Returning at the first push of the target.
+- Marking cells visited when pushed.

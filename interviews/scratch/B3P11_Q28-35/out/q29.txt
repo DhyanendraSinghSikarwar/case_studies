@@ -1,0 +1,132 @@
+rows: [300000, 20000, 900000]
+
+== S0 baseline: strftime on date, no FK index, fan-out join, COUNT(DISTINCT) 
+VM steps: 9,512,523   seconds (machine-specific, one run): 1.22   rows returned: 60
+   plan: MATERIALIZE cm
+   plan: SCAN i
+   plan: SEARCH o USING INTEGER PRIMARY KEY (rowid=?)
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: SCAN cm
+   plan: LIST SUBQUERY 2
+   plan: SCAN cm
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== S1 sargable date predicate (order_date >= literal) 
+VM steps: 8,972,842   seconds (machine-specific, one run): 1.06   rows returned: 60
+   plan: MATERIALIZE cm
+   plan: SCAN i
+   plan: SEARCH o USING INTEGER PRIMARY KEY (rowid=?)
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: SCAN cm
+   plan: LIST SUBQUERY 2
+   plan: SCAN cm
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== S2 + index on order_items(order_id) 
+VM steps: 4,835,519   seconds (machine-specific, one run): 0.25   rows returned: 60
+   plan: MATERIALIZE cm
+   plan: SCAN o
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: SEARCH i USING COVERING INDEX ix_items_order (order_id=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: SCAN cm
+   plan: LIST SUBQUERY 2
+   plan: SCAN cm
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== S3 drop the unused order_items join (removes the fan-out) 
+VM steps: 2,479,765   seconds (machine-specific, one run): 0.10   rows returned: 60
+   plan: MATERIALIZE cm
+   plan: SCAN o
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: SCAN cm
+   plan: LIST SUBQUERY 2
+   plan: SCAN cm
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== S4a wide SELECT o.*, c.* inside a CTE, otherwise S3 
+VM steps: 2,479,765   seconds (machine-specific, one run): 0.09   rows returned: 60
+   plan: MATERIALIZE cm
+   plan: SCAN o
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: SCAN cm
+   plan: LIST SUBQUERY 3
+   plan: SCAN cm
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== S5 + covering index orders(status, order_date, customer_id, amount) 
+VM steps: 1,311,137   seconds (machine-specific, one run): 0.07   rows returned: 60
+   plan: MATERIALIZE cm
+   plan: SEARCH o USING COVERING INDEX ix_ord_cov (status=? AND order_date>?)
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR count(DISTINCT)
+   plan: SCAN cm
+   plan: LIST SUBQUERY 2
+   plan: SCAN cm
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+== S6 pre-aggregate by customer and month, then join customers 
+VM steps: 2,415,360   seconds (machine-specific, one run): 0.08   rows returned: 60
+   plan: MATERIALIZE cm
+   plan: MATERIALIZE pc
+   plan: SEARCH orders USING COVERING INDEX ix_ord_cov (status=? AND order_date>?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: SCAN pc
+   plan: SEARCH c USING INTEGER PRIMARY KEY (rowid=?)
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: SCAN cm
+   plan: LIST SUBQUERY 3
+   plan: SCAN cm
+   plan: USE TEMP B-TREE FOR GROUP BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+   plan: USE TEMP B-TREE FOR ORDER BY
+
+pandas expected rows: 60 | top-10 cities: ['City_02', 'City_07', 'City_10', 'City_11', 'City_13', 'City_19', 'City_26', 'City_27', 'City_35', 'City_39']
+   city   month  revenue  customers
+City_02 2026-05 22661.37        184
+City_02 2026-06 23800.42        191
+City_02 2026-07 21669.54        162
+City_02 2026-08 20836.51        169
+S3, S4a, S5, S6 equal pandas (compared after sorting by city, month)
+S0 (fan-out) top-10 city set equals pandas? False | revenue equal? False
+   inflation of revenue in S0 (first rows): [2.95, 2.89, 2.8, 3.01]
+   S0 customers column equal on the shared city-months? False | orders with no items (dropped by the inner join): 14971
+orders delivered in the window: 45568 | items per order mean: 3.00
+
+steps summary: {'S0': 9512523, 'S1': 8972842, 'S2': 4835519, 'S3': 2479765, 'S4a': 2479765, 'S5': 1311137, 'S6': 2415360}
+
+mini example: with the order_items join [('Pune', 350.0, 1)] | without it [('Pune', 150.0, 1)]
+
+recommended query (S5), exactly as run:
+/* S5 covering index on orders */
+WITH cm AS (
+ SELECT c.city AS city, strftime('%Y-%m', o.order_date) AS month,
+        SUM(o.amount) AS revenue, COUNT(DISTINCT o.customer_id) AS customers
+ FROM orders o JOIN customers c ON c.customer_id = o.customer_id
+ WHERE o.status = 'delivered' AND o.order_date >= '2026-05-01'
+ GROUP BY c.city, strftime('%Y-%m', o.order_date))
+SELECT cm.city, cm.month, cm.revenue, cm.customers FROM cm
+WHERE cm.city IN (SELECT city FROM cm GROUP BY city ORDER BY SUM(revenue) DESC LIMIT 10)
+ORDER BY cm.city, cm.month

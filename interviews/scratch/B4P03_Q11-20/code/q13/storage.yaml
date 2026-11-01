@@ -1,0 +1,63 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-rwo
+provisioner: example.com/block-csi      # placeholder: use your cloud's CSI driver name
+reclaimPolicy: Delete                   # Delete: volume dies with the PVC. Retain: keep for manual cleanup
+volumeBindingMode: WaitForFirstConsumer # create the volume where the pod lands (zone-safe)
+allowVolumeExpansion: true
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: training-ckpt
+spec:
+  accessModes: ["ReadWriteOnce"]        # one node at a time: fine for one training pod
+  storageClassName: fast-rwo
+  resources:
+    requests:
+      storage: 200Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-cache
+spec:
+  accessModes: ["ReadOnlyMany"]         # many nodes read; needs a backend that supports it
+  storageClassName: shared-files        # not defined in this file on purpose; see the checker
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scorer
+spec:
+  replicas: 4
+  selector:
+    matchLabels: {app: scorer}
+  template:
+    metadata:
+      labels: {app: scorer}
+    spec:
+      initContainers:
+        - name: fetch-weights               # pattern 3: each pod pulls from object storage at start
+          image: registry.example.com/tools/fetcher:1.0
+          args: ["--src", "s3://models/churn/v7/", "--dst", "/models"]
+          volumeMounts:
+            - {name: weights, mountPath: /models}
+      containers:
+        - name: server
+          image: registry.example.com/ml/scorer:3.1.0
+          volumeMounts:
+            - {name: weights, mountPath: /models, readOnly: true}
+            - {name: shared, mountPath: /shared-cache, readOnly: true}
+      volumes:
+        - name: weights
+          emptyDir:
+            sizeLimit: 10Gi                 # a node-local scratch dir, deleted with the pod
+        - name: shared
+          persistentVolumeClaim:
+            claimName: model-cache
+            readOnly: true

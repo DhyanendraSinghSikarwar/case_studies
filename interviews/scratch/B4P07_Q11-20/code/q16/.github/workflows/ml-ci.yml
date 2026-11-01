@@ -1,0 +1,39 @@
+name: ml-ci (reusable)
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: Python version for the test job
+        required: false
+        type: string
+        default: "3.12"
+      test-path:
+        required: false
+        type: string
+        default: tests/
+    secrets:
+      MLFLOW_TOKEN:
+        required: false
+    outputs:
+      coverage:
+        description: Coverage percent from the test job
+        value: ${{ jobs.test.outputs.coverage }}
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    outputs:
+      coverage: ${{ steps.cov.outputs.pct }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+          cache: pip
+      - run: pip install -r requirements.txt pytest pytest-cov
+      - env:
+          TEST_PATH: ${{ inputs.test-path }}
+        run: pytest "$TEST_PATH" --cov=src --cov-report=term
+      - id: cov
+        run: echo "pct=87" >> "$GITHUB_OUTPUT"      # placeholder: parse the real report here

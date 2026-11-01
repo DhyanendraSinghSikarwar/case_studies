@@ -1,0 +1,24 @@
+-- plain index ix_name (BINARY collation)
+                       predicate                                                 plan  vm_steps  rows
+               name LIKE 'Asha%'                                           SCAN users    420093 10042
+               name LIKE '%Rao%'                                           SCAN users    420245 10118
+                name LIKE '%Rao'                                           SCAN users    420245 10118
+        lower(name) = 'asha rao'                                           SCAN users    401955   973
+name >= 'Asha' AND name < 'Ashb' SEARCH users USING INDEX ix_name (name>? AND name<?)     36159  9036
+               name GLOB 'Asha*' SEARCH users USING INDEX ix_name (name>? AND name<?)     36155  9036
+
+-- with ix_name_nc ON users(name COLLATE NOCASE)
+SEARCH users USING INDEX ix_name_nc (name>? AND name<?) 40180 10042
+LIKE rows: 10042  BINARY prefix-range rows: 9036  GLOB rows: 9036
+
+case_sensitive_like=ON plan: SEARCH users USING INDEX ix_name (name>? AND name<?) | rows: 9036 (was 10042 with the default)
+
+expression index on lower(name): SEARCH users USING INDEX ix_lower (<expr>=?) 4877 973
+suffix 'rao' via reversed column: SEARCH users USING INDEX ix_rev (name_rev>? AND name_rev<?) 40487 10118
+full scan LIKE '%rao' steps: 520248 rows: 10118 (same rows)
+
+FTS5 compiled in: True
+FTS5 plan: SCAN fts VIRTUAL TABLE INDEX 0:M1
+MATCH 'asha' (whole word, case-insensitive): 10042 | prefix query 'ash*': 10042
+
+pandas: str.lower().str.startswith('asha') = 10042 rows (= LIKE); str.startswith('Asha') = 9036 (= BINARY range)

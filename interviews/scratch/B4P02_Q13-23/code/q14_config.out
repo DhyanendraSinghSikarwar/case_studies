@@ -1,0 +1,143 @@
+name: mlstack
+services:
+  api:
+    environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: change-me-local-only
+      MINIO_ROOT_PASSWORD: change-me-local-only
+      MINIO_ROOT_USER: minioadmin
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      POSTGRES_DB: mlflow
+      POSTGRES_PASSWORD: change-me-local-only
+      POSTGRES_USER: mlflow
+    networks:
+      mlnet: null
+    build:
+      context: /home/user/case_studies/interviews/scratch/B4P02_Q13-23/code/q14/api
+      dockerfile: Dockerfile
+    depends_on:
+      mlflow:
+        condition: service_healthy
+        required: true
+    ports:
+      - mode: ingress
+        target: 8000
+        published: "8000"
+        protocol: tcp
+  minio:
+    command:
+      - server
+      - /data
+      - --console-address
+      - :9001
+    environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: change-me-local-only
+      MINIO_ROOT_PASSWORD: change-me-local-only
+      MINIO_ROOT_USER: minioadmin
+      POSTGRES_DB: mlflow
+      POSTGRES_PASSWORD: change-me-local-only
+      POSTGRES_USER: mlflow
+    image: minio/minio:latest
+    networks:
+      mlnet: null
+    volumes:
+      - type: volume
+        source: miniodata
+        target: /data
+        volume: {}
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:9000/minio/health/live
+      timeout: 3s
+      interval: 5s
+      retries: 10
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 9001
+        published: "9001"
+        protocol: tcp
+  mlflow:
+    command:
+      - mlflow
+      - server
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5000"
+    environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: change-me-local-only
+      MINIO_ROOT_PASSWORD: change-me-local-only
+      MINIO_ROOT_USER: minioadmin
+      MLFLOW_ARTIFACTS_DESTINATION: s3://mlflow-artifacts
+      MLFLOW_BACKEND_STORE_URI: postgresql://mlflow:change-me-local-only@postgres:5432/mlflow
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      POSTGRES_DB: mlflow
+      POSTGRES_PASSWORD: change-me-local-only
+      POSTGRES_USER: mlflow
+    networks:
+      mlnet: null
+    build:
+      context: /home/user/case_studies/interviews/scratch/B4P02_Q13-23/code/q14/mlflow
+      dockerfile: Dockerfile
+    depends_on:
+      minio:
+        condition: service_healthy
+        required: true
+      postgres:
+        condition: service_healthy
+        required: true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request as u; u.urlopen('http://localhost:5000/health')
+      timeout: 3s
+      interval: 10s
+      retries: 6
+      start_period: 20s
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 5000
+        published: "5000"
+        protocol: tcp
+  postgres:
+    environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: change-me-local-only
+      MINIO_ROOT_PASSWORD: change-me-local-only
+      MINIO_ROOT_USER: minioadmin
+      POSTGRES_DB: mlflow
+      POSTGRES_PASSWORD: change-me-local-only
+      POSTGRES_USER: mlflow
+    image: postgres:16-bookworm
+    networks:
+      mlnet: null
+    volumes:
+      - type: volume
+        source: pgdata
+        target: /var/lib/postgresql/data
+        volume: {}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}
+      timeout: 3s
+      interval: 5s
+      retries: 10
+networks:
+  mlnet:
+    name: mlstack_mlnet
+    driver: bridge
+volumes:
+  miniodata:
+    name: mlstack_miniodata
+  pgdata:
+    name: mlstack_pgdata

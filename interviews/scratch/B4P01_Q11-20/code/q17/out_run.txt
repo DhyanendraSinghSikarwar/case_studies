@@ -1,0 +1,9 @@
+== buggy, run 3 times (note: prints TRAIN accuracy, and it changes each run)
+accuracy 0.905
+accuracy 0.857
+accuracy 0.821
+== buggy but score on its own test split (what bug 3 hides)
+leaky test accuracy: 0.667 (labels are random, so this should be about 0.5)
+== fixed
+test accuracy 0.611
+test accuracy 0.611

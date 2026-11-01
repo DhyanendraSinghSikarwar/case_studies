@@ -1,0 +1,18 @@
+Successfully registered model 'iris_clf'.
+Created version '1' of model 'iris_clf'.
+registered iris_clf v1, alias champion
+--- mlflow models predict (batch, CLI) ---
+{"columns":["sepal length (cm)","sepal width (cm)","petal length (cm)","petal width (cm)"],"data":[[5.1,3.5,1.4,0.2],[4.9,3.0,1.4,0.2]]}
+bare split file (no wrapper key):
+mlflow.exceptions.MlflowException: The input must be a JSON dictionary with exactly one of the input fields {'instances', 'inputs', 'dataframe_records', 'dataframe_split'}. Received dictionary with in
+wrapped file {"dataframe_split": ...}:
+{"predictions": [0, 0]}
+--- mlflow models serve (localhost:5088) ---
+GET /ping -> 200
+dataframe_split:
+{"predictions": [0, 0]}
+dataframe_records:
+{"predictions": [2]}
+missing column:
+{"error_code": "INVALID_PARAMETER_VALUE", "message": "Failed to predict data '   sepal length (cm)\n0                6.7'. \nError: Failed to enforce schema of data '   sepal length (cm)\n0                6.7' with schema '['sepal length (cm)': double (require
+

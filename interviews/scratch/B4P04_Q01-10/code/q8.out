@@ -1,0 +1,16 @@
+2026/10/26 14:08:52 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/26 14:08:52 INFO mlflow.store.db.utils: Updating database tables
+2026/10/26 14:08:57 INFO mlflow.tracking.fluent: Experiment with name 'q8-registry' does not exist. Creating a new experiment.
+Successfully registered model 'clf'.
+Created version '1' of model 'clf'.
+Registered model 'clf' already exists. Creating a new version of this model...
+Created version '2' of model 'clf'.
+versions: [1, 2]
+before: champion -> version 1 | predict x=1.5: [0]
+promoted: champion -> version 2 | predict x=1.5: [1]
+rolled back: champion -> version 1 | predict x=1.5: [0]
+aliases now: {'1': ['champion'], '2': ['challenger']}
+tags on v2: {'validated': 'true'}
+--- old stage API in this version
+transition_model_version_stage: worked; note: ``mlflow.tracking.client.MlflowClient.transition_model_version_stage`` is deprecated since 2.9.0. Model regist
+models:/clf/Production loaded

@@ -1,0 +1,57 @@
+**Say this first (1 line):** Total cost is 158,400 a month against 500,000 revenue, so the feature is profitable overall (68% margin), but each heavy user costs 18 and pays 5, a loss of 13 each, so I would add included calls with metered overage rather than let 5% of users eat 57% of the cost.
+
+**Clarifying questions:**
+- Is 0.012 per call the same for heavy and light users? Heavy users often send longer inputs, so their real cost may be higher.
+- Is the 5 per month the only revenue, or is the feature a retention tool for a bigger plan? That changes how much loss I accept.
+- What is the usage pattern of the 1,500-call users: bots, power users, or one team sharing a login? Abuse needs a different fix than pricing.
+- Are heavy users also the most loyal or the most vocal? Cutting them has a cost beyond margin.
+- Can the heavy calls use a cheaper model, a cache, or a smaller prompt?
+
+**Approach:**
+1. Calls = 5,000 x 1,500 + 95,000 x 60 = 7.5 million + 5.7 million = 13.2 million.
+2. Total cost = 13.2 million x 0.012 = 158,400. Revenue = 100,000 x 5 = 500,000. Margin = 341,600 (68.3%). All illustrative.
+3. Cost per heavy user = 1,500 x 0.012 = 18.00. Margin per heavy user = 5 - 18 = -13.00 (-260% of their revenue). Heavy users in total: -65,000.
+4. Light users: cost 0.72 each, margin 4.28, total 406,600. So light users carry the heavy ones.
+5. Break-even usage at a price of 5 is 5 / 0.012 = 416.7 calls a month.
+6. Options (illustrative):
+   - A. Include 400 calls, charge 0.02 per call above that. A heavy user then pays 5 + 1,100 x 0.02 = 27 and costs 18, margin +9.00. Light users are unchanged.
+   - B. Hard cap at 400 calls: heavy cost 4.80, margin 0.20. Safe but may annoy and churn power users.
+   - C. Cheaper model for calls above 400 (assume 40% cheaper): heavy cost 12.72, still a loss of 7.72, so it is a helper and not a fix.
+7. Choose A, with a soft warning at 80% of the allowance, plus rate limits to stop abuse. Run it as an A/B test on new users first and watch churn.
+
+**Metrics:**
+- Margin per user = price paid - (calls x cost per call), reported by usage decile.
+- Share of cost from the top 5% of users = 56.8% here.
+- Gross margin = (revenue - cost) / revenue = 68.3%.
+- Guardrails: churn of heavy users, upgrade rate, support tickets about limits, share of calls hitting a cap.
+
+**Risks:**
+- Heavy users may be your best advocates; a hard cap can cost more in churn than it saves.
+- The 0.012 average may hide a heavier per-call cost for heavy users.
+- Usage will shift once a price is visible (people may split across accounts).
+- The margin looks fine overall; do not let that hide the cross-subsidy. If the heavy share grows from 5% to 10%, the loss doubles.
+
+**What the interviewer scores:**
+- Strong: three correct numbers (158,400; 18; -13) and notes the total margin is positive. Weak: "the feature loses money" (it does not, overall).
+- Strong: includes calls plus overage, and tests it. Weak: "raise the price for everyone".
+- Strong: asks whether per-call cost is really flat. Weak: never questions it.
+- Strong: considers cost levers (cache, smaller model) as complements.
+
+**Example:** Illustrative. Weak: "Heavy users lose us 13 each, cap them at 100 calls." Strong: "Overall we make 341,600, but the top 5% cost 57% of the spend and lose 13 each. I would include 400 calls, charge 0.02 over that, which turns a heavy user into +9, and test it before rollout."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *What if heavy users are bots?* Rate limit and authentication first, pricing second.
+- *Why not charge everyone 20?* Light users cost 0.72; a high flat price loses them to a competitor and keeps only the heavy ones.
+- *How would you reduce cost per call?* Caching and shorter prompts; see Book 2 Part 1 Q24 (prefix caching) and Book 2 Part 2 Q5 (token maths).
+
+**Common mistakes:**
+- Using the average cost per user (1.58) and missing the cross-subsidy.
+- Calling the feature unprofitable from the heavy-user margin alone.
+- Capping without checking who the heavy users are.
+- Forgetting that behaviour changes after pricing changes.

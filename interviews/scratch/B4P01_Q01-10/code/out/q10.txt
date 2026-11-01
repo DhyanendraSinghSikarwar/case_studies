@@ -1,0 +1,32 @@
+--- layout
+./pyproject.toml
+./src/churnkit/__init__.py
+./src/churnkit/features.py
+./tests/test_features.py
+--- build wheel + sdist (isolated build env pulls hatchling from the index)
+* Building wheel...
+Successfully built churnkit-0.1.0.tar.gz and churnkit-0.1.0-py3-none-any.whl
+churnkit-0.1.0-py3-none-any.whl
+churnkit-0.1.0.tar.gz
+--- wheel contents (src/ is NOT in the wheel; the package sits at the top level)
+churnkit/__init__.py
+churnkit/features.py
+churnkit-0.1.0.dist-info/METADATA
+churnkit-0.1.0.dist-info/WHEEL
+churnkit-0.1.0.dist-info/RECORD
+--- sdist contents
+churnkit-0.1.0/src/churnkit/__init__.py
+churnkit-0.1.0/src/churnkit/features.py
+churnkit-0.1.0/tests/test_features.py
+churnkit-0.1.0/pyproject.toml
+churnkit-0.1.0/PKG-INFO
+--- fresh venv, install the WHEEL only, run from another folder (so the source tree cannot leak in)
+imported from <tmp>/v1/lib/python3.13/site-packages/churnkit/__init__.py
+version 0.1.0
+churnkit        0.1.0
+pandas          3.1.0
+--- editable install in a second venv: edit the source, no reinstall needed
+after editing source, ratio = 50.0 (clip(lower=2) is live)
+--- run tests against the installed package
+.                                                                        [100%]
+1 passed in 0.36s

@@ -1,0 +1,12 @@
+[3, 9, 20, None, None, 15, 7] -> 2
+[2, None, 3, None, 4, None, 5, None, 6] -> 5
+[] -> 0
+[1, 2] -> 2
+wrong 1+min on [1,2]: 1 (correct is 2)
+wrong 1+min on the chain example: 1 (correct is 5)
+exhaustive ok: 626 shapes; the 1+min version is wrong on 496 of them
+random ok: 500 trees
+perfect h=10 (n=1023)        depth=10  recursive visits=1023  BFS pops=512
+chain n=500                  depth=500  recursive visits=500  BFS pops=500
+shallow leaf + chain n=500   depth=2  recursive visits=500  BFS pops=2
+chain 100000: recursive: RecursionError | BFS: 100000 | BFS pops: 100000

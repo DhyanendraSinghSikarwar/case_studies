@@ -1,0 +1,16 @@
+== pytest
+3 passed, 1 warning in 6.83s
+== demo
+start                        staging=None champion=None
+refused: v2 never reached staging; refusing to skip it
+moved
+moved
+v1 staging then champion     staging=1 champion=1
+moved
+v2 in staging                staging=2 champion=1
+moved
+v2 champion                  staging=2 champion=2
+{"name": "churn", "version": "1", "env": "staging", "previous": null, "actor": "ci", "ts": <t>}
+{"name": "churn", "version": "1", "env": "champion", "previous": null, "actor": "ci", "ts": <t>}
+{"name": "churn", "version": "2", "env": "staging", "previous": "1", "actor": "ci", "ts": <t>}
+{"name": "churn", "version": "2", "env": "champion", "previous": "1", "actor": "ci", "ts": <t>}

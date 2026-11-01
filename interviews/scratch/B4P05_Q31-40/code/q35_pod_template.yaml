@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: placeholder
+  labels:
+    app: ml-train
+spec:
+  restartPolicy: Never
+  serviceAccountName: ml-train
+  nodeSelector:
+    pool: gpu
+  tolerations:
+    - key: nvidia.com/gpu
+      operator: Exists
+      effect: NoSchedule
+  containers:
+    - name: base
+      image: registry.example.com/ml/train:1.4.2
+      resources:
+        requests: {cpu: "4", memory: 16Gi}
+        limits: {memory: 16Gi, nvidia.com/gpu: "1"}
+      volumeMounts:
+        - {name: out, mountPath: /out}
+  volumes:
+    - {name: out, emptyDir: {}}

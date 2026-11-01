@@ -1,0 +1,27 @@
+--- fetch vs pull: someone pushes to origin, then we fetch
+main (mine):   0d8a57d
+origin/main:   7bb1770  <- fetch only updated this pointer
+7bb1770 model v3
+after pull, main = 7bb1770  (pull = fetch + merge)
+--- status / diff / diff --staged
+ model.txt | 1 +
+ 1 file changed, 1 insertion(+)
+[git status --short]
+MM model.txt
+[git diff = working tree vs index]
++edit2
+[git diff --staged = index vs HEAD]
++edit1
+--- detached HEAD
+HEAD detached at v1.0
+HEAD file says: v1
+commit made on detached HEAD: ef587e9
+[escape: branch it before leaving]
+hotfix-1.0
+  hotfix-1.0 ef587e9 hotfix on old release
+* main       7bb1770 model v3
+* ef587e9 hotfix on old release
+| * 7bb1770 model v3
+| * 0d8a57d model v2
+|/  
+* cb098c3 model v1

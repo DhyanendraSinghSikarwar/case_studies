@@ -1,0 +1,15 @@
+services:
+  model:
+    image: registry.example.com/ml/model:2.0.1
+    restart: unless-stopped            # restarts on THIS machine only
+    ports: ["8000:8000"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped

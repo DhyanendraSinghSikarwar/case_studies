@@ -1,0 +1,16 @@
+pool         | slots | description  | include_deferred | team_name
+=============+=======+==============+==================+==========
+default_pool | 128   | Default pool | False            | None     
+                                                                  
+Pool gpu created
+pool         | slots | description                    | include_deferred | team_name
+=============+=======+================================+==================+==========
+default_pool | 128   | Default pool                   | False            | None     
+gpu          | 4     | 4 GPUs on the training cluster | False            | None     
+                                                                                    
+      1 Returned value was: trial-0-done
+      1 Returned value was: trial-1-done
+      1 Returned value was: trial-2-done
+      1 Returned value was: trial-3-done
+      1 Returned value was: trial-4-done
+      1 Returned value was: trial-5-done

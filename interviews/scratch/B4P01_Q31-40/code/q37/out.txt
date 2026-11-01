@@ -1,0 +1,28 @@
+Successfully built mlutil-0.3.0-py3-none-any.whl
+mlutil-0.3.0-py3-none-any.whl
+--- name-version-python-abi-platform: py3-none-any = pure Python, any OS ---
+--- contents ---
+mlutil/__init__.py
+mlutil/gpu.py
+mlutil-0.3.0.dist-info/METADATA
+mlutil-0.3.0.dist-info/WHEEL
+mlutil-0.3.0.dist-info/RECORD
+--- METADATA (header part) ---
+Metadata-Version: 2.5
+Name: mlutil
+Version: 0.3.0
+Summary: Small ML utilities; core is pure Python, GPU module is optional
+Requires-Python: >=3.9
+Requires-Dist: numpy>=1.24
+Provides-Extra: dev
+Requires-Dist: pytest; extra == 'dev'
+Provides-Extra: gpu
+Requires-Dist: torch>=2.1; extra == 'gpu'
+--- WHEEL file ---
+Wheel-Version: 1.0
+Generator: hatchling 1.32.4
+Root-Is-Purelib: true
+Tag: py3-none-any
+--- clean venv: install base vs extra (offline for the base; torch not downloaded) ---
+[0.0, 0.5, 1.0]
+ImportError: mlutil.gpu needs the extra: pip install 'mlutil[gpu]'

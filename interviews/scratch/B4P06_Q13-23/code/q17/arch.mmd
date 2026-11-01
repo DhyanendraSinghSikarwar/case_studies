@@ -1,0 +1,10 @@
+flowchart LR
+  C[Client app] --> G[API gateway]
+  G --> S[Scoring service, N replicas]
+  S -->|1 feature lookup| F[(Online feature store / cache)]
+  S -->|2 model inference| M[Model runtime in process or Triton]
+  S -->|3 score + model version| G
+  S -. timeout: fallback rules .-> R[Rules / last-known score]
+  W[Weekly training job] --> REG[Model registry]
+  REG -->|canary, then full| S
+  S --> O[Metrics, logs, traces]

@@ -1,0 +1,3 @@
+trainer-eks  eks.amazonaws.com/role-arn         present
+trainer-gke  iam.gke.io/gcp-service-account     present
+trainer-aks  azure.workload.identity/client-id  present

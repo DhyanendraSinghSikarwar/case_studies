@@ -1,0 +1,60 @@
+| B9P04-S1 | 4 | Interview room: your mind goes blank halfway through an answer |
+| B9P04-S2 | 4 | Interview room: a question about a method you have never used |
+| B9P04-S3 | 4 | Interview room: your connection is poor and a loud background is leaking in |
+| B9P04-S4 | 4 | Interview room: the interviewer says 'any questions for us?' and you have covered everything |
+| B9P04-S5 | 4 | Failure and ownership: you realise on Wednesday that Friday's deliverable will slip |
+| B9P04-S6 | 4 | Communication: your manager asks for a standup update and nothing is finished |
+| B9P04-S7 | 4 | Remote and global: the only team meeting is at 10pm your time |
+| B9P04-S8 | 4 | Interview room: you freeze on the first line of a live-coding problem |
+| B9P04-S9 | 4 | Interview room: you think the interviewer's statement is wrong |
+| B9P04-S10 | 4 | Stakeholder conflict: a product lead says your finding 'does not match what customers tell us' |
+| B9P04-S11 | 4 | Stakeholder conflict: two senior stakeholders each say the other agreed to a different dashboard |
+| B9P04-S12 | 4 | Ambiguity: a dataset arrives with no data dictionary and a deadline tomorrow |
+| B9P04-S13 | 4 | Ambiguity: requirements change for the third time in two weeks |
+| B9P04-S14 | 4 | Failure and ownership: you find a filter bug in a dashboard the vice president saw yesterday |
+| B9P04-S15 | 4 | Communication: a CXO asks in a meeting why last week's metric dropped and you do not know yet |
+| B9P04-S16 | 4 | Team dynamics: a teammate on a shared deliverable is not delivering |
+| B9P04-S17 | 4 | Influence without authority: a senior engineer's design has a flaw and you are the most junior person in the review |
+| B9P04-S18 | 4 | Ethics and judgement: you notice customer emails in a notebook open to the whole company |
+| B9P04-S19 | 4 | Failure and ownership: a production model starts giving odd predictions on a Friday evening |
+| B9P04-S20 | 4 | Ethics and judgement: your manager asks you to report the best of five runs as the headline number |
+| B9P04-S21 | 4 | Stakeholder conflict: a stakeholder keeps messaging your junior teammate for quick numbers |
+| B9P04-S22 | 4 | Team dynamics: a junior colleague asks you the same questions every day |
+| B9P04-S23 | 4 | Remote and global: your question in a chat channel is unanswered for a day and you are blocked |
+| B9P04-S24 | 4 | Interview room: the interviewer arrives late, checks their phone and answers curtly |
+| B9P04-S25 | 4 | Interview room: the interviewer asks about your family plans |
+| B9P04-S26 | 4 | Interview room: a take-home assignment says two hours and is clearly much longer |
+| B9P04-S27 | 4 | Interview room: the interviewer pushes back hard on the solution you just proposed |
+| B9P04-S28 | 4 | Interview room: a one-to-one interview turns into a panel of four |
+| B9P04-S29 | 4 | Stakeholder conflict: a stakeholder asks you to rerun an analysis a third time until it looks better |
+| B9P04-S30 | 4 | Ambiguity: your manager says 'find out what drives churn' and is away for a week |
+| B9P04-S31 | 4 | Ambiguity: two teammates define the success metric differently mid-sprint |
+| B9P04-S32 | 4 | Failure and ownership: a colleague finds your mistake in a code review in front of the team |
+| B9P04-S33 | 4 | Failure and ownership: you overwrote a shared table with a bad job run |
+| B9P04-S34 | 4 | Influence without authority: you want engineering to adopt your pipeline but they have their own roadmap |
+| B9P04-S35 | 4 | Influence without authority: you need another team's analyst but they have no reason to help |
+| B9P04-S36 | 4 | Influence without authority: a product manager wants to launch without the A/B test you asked for |
+| B9P04-S37 | 4 | Team dynamics: a colleague presents your analysis as their own in a team meeting |
+| B9P04-S38 | 4 | Team dynamics: two teammates are in open conflict and each wants you on their side |
+| B9P04-S39 | 4 | Ethics and judgement: a product manager wants to join datasets in a way customers were not told about |
+| B9P04-S40 | 4 | Ethics and judgement: a teammate pastes customer data into a public AI chatbot |
+| B9P04-S41 | 4 | Communication: a stakeholder replies angrily to a message you meant as neutral |
+| B9P04-S42 | 4 | Communication: a long email thread has fourteen replies and you are asked to summarise the decision |
+| B9P04-S43 | 4 | Remote and global: your new manager expects written pre-reads and you are used to talking things through |
+| B9P04-S44 | 4 | Interview room: you realise you gave a wrong answer an hour ago |
+| B9P04-S45 | 4 | Ambiguity: a stakeholder expects a classifier in a month and you have no labels |
+| B9P04-S46 | 4 | Ethics and judgement: you notice the model errs more for one language group days before launch |
+| B9P04-S47 | 4 | Ambiguity: your first week and no documentation on a handed-over project |
+| B9P04-S48 | 4 | Stakeholder conflict: an engineering lead refuses a logging change you need |
+| B9P04-S49 | 4 | Influence without authority: a peer team keeps rebuilding what yours already built |
+| B9P04-S50 | 4 | Team dynamics: a new manager changes how the team works and others stay silent |
+| B9P04-S51 | 4 | Team dynamics: a teammate seems burned out and quality is slipping |
+| B9P04-S52 | 4 | Communication: a loud colleague dominates the meeting and your recommendation is never heard |
+| B9P04-S53 | 4 | Communication: your manager gives you blunt negative feedback in a team review |
+| B9P04-S54 | 4 | Remote and global: your video interviewer's camera is off and you cannot see any reaction |
+| B9P04-S55 | 4 | Remote and global: a deadline lands at the start of the other region's morning and your reviewer is asleep |
+| B9P04-S56 | 4 | Remote and global: a colleague in another zone hands over a pipeline at their end of day with no notes |
+| B9P04-S57 | 4 | Stakeholder conflict: your manager promised a client-facing team a feature without asking you |
+| B9P04-S58 | 4 | Failure and ownership: a post-incident review blames 'the data team' and the cause is your commit |
+| B9P04-S59 | 4 | Influence without authority: you want to retire a legacy report owned by a long-serving manager |
+| B9P04-S60 | 4 | Ethics and judgement: leadership wants a customer-facing chatbot live before the safety tests finish |

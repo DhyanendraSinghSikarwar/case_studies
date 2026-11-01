@@ -1,0 +1,11 @@
+4 prompt examples ok
+coins [1, 2, 5], dp[0..11] = [0, 1, 1, 2, 2, 1, 2, 2, 3, 3, 2, 3]
+coins [1, 3, 4], dp[0..6]  = [0, 1, 2, 1, 1, 2, 2]
+greedy on coins [1, 3, 4], amount 6 -> 3 (4+1+1) but optimum is 2 (3+3)
+greedy on coins [2, 5], amount 6 -> -1 but optimum is 3 (2+2+2)
+1000 seeded random (<= 5 coins in 1..12, amount 0..12): DP == plain recursion
+exhaustive coin sets in 1..7 x amounts 0..14 = 1905 cases: DP == recursion; greedy wrong on 231 (169 of them says -1 when a solution exists)
+amount 10^4, 12 coins, bottom-up -> 2
+coins [2], amount 9999 -> -1 ; coins [2], amount 10^4 -> 5000
+memoised amount 10^4: RecursionError (default limit 1000 )
+memoised amount 500 -> 100 == bottom-up 100

@@ -1,0 +1,53 @@
+**Say this first (1 line):** Count searches per (category, term), `DENSE_RANK()` those counts per category in descending order, and `LEFT JOIN` the list of categories to the rows with rank 2, so a category with fewer than two distinct counts still appears, with NULL.
+
+**Schema and sample data:** (assumption: "second most searched" means the second highest distinct count, so ties for first do not use up rank 2; terms tied at that count are all returned, one row each.) The 24 search rows are generated in the Code block from the counts below.
+```sql
+CREATE TABLE searches(search_id INTEGER PRIMARY KEY, category TEXT, term TEXT);
+```
+| category | term: searches |
+|---|---|
+| shoes | A: 5, B: 5, C: 3, D: 3, E: 1 |
+| phones | X: 4, Y: 2 |
+| books | novel: 3 |
+
+**SQL answer:** `sql` in the Code block: `c` counts per (category, term), `r` adds `DENSE_RANK() OVER (PARTITION BY category ORDER BY n DESC)`, `cats` lists the distinct categories, and `cats LEFT JOIN r ON r.category = cats.category AND r.rk = 2` keeps every category. The condition `rk = 2` sits in `ON`, not in `WHERE`.
+
+**pandas answer:** group and count, `rank(method='dense', ascending=False)` per category, take the rank-2 rows, and `merge(..., how='left')` them onto the unique categories.
+
+**Example:** by hand.
+- shoes: counts 5, 5, 3, 3, 1. Distinct counts: 5, 3, 1. Dense ranks: A and B are 1, C and D are 2, E is 3. Second highest distinct count = 3 and the terms are C and D (two rows).
+- phones: X = 4 (rank 1), Y = 2 (rank 2): one row, (phones, 2, Y).
+- books: one term, one distinct count, no rank 2: (books, NULL, NULL).
+- A plain `LIMIT 1 OFFSET 1` or `ROW_NUMBER() = 2` over the terms would return one arbitrary term per category (for shoes, the second of the two tied leaders, B), not C and D, and nothing sensible for books.
+
+**Code:** run with `python3 -I`.
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- **Tie for the top (A, B):** dense rank keeps rank 2 for the next count (3), not skipping it; with `RANK` the next rank after two ties would be 3 and shoes would come back with nothing.
+- **Tie for second (C, D):** both returned, two rows for shoes.
+- **Single distinct count (books):** appears with NULL for count and term. The printed `inner-join version` line shows that an inner join silently drops books.
+- **A category with several terms but all the same count:** also only one distinct count, so also NULL.
+- **Order of output:** NULL term sorts first in SQLite ascending, last in some engines; the output here has one row for books so the order is not affected, but say it.
+- **Empty table:** no categories, no rows.
+
+**Then explain:**
+- **Where the filter goes:** a `WHERE r.rk = 2` after the join would turn the left join into an inner join and drop books; the condition belongs in `ON`.
+- **Dense vs plain rank for "second highest":** the same idea as the second highest salary question (Part 4 Q5 and Q46, the per-department version with NULL for a single distinct salary), with ties handled by rank on distinct values.
+- **pandas detail:** `rank` returns floats; the comparison `rk == 2` works on them. The merged `second_count` is float with NaN, and the Code block compares after turning NaN and NULL into None.
+- **Dialects (not executed here):** standard on PostgreSQL, MySQL 8, SQL Server, BigQuery and Snowflake; `QUALIFY` on BigQuery and Snowflake would shorten the rank filter (not executed).
+- **Scoring note (Set F2, Q2 of 5, 20 pts):** about 8 points for the four right rows (shoes C and D, phones Y, books NULL), 4 for the seeded edge cases (both ties and the NULL category), 4 for pandas asserted equal, 2 for saying "second highest distinct count" and why it is dense, 2 for a check (every returned count is below the category maximum). Dropping books earns no edge-case points.
+
+**Follow-ups:**
+- *Top N distinct counts per category?* Change `rk = 2` to `rk <= N`.
+- *Also return the first place?* Return both ranks with `rk IN (1, 2)` and keep the category list via the left join.
+- *What if terms differ only by case?* Normalise with `LOWER(TRIM(term))` before counting (Part 10).
+
+**Common mistakes:**
+- `RANK` instead of `DENSE_RANK`.
+- `LIMIT 1 OFFSET 1`, which returns one arbitrary tied term.
+- `WHERE rk = 2` after a left join.
+- Counting search rows when the question means distinct users; here each row is one search, as the prompt says.

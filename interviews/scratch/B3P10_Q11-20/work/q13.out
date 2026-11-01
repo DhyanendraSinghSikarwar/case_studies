@@ -1,0 +1,38 @@
+--- which predicate catches which row (1 = true, 0 = false, NULL = unknown) ---
+ id          stored                        hex  is_null eq_empty trim_empty eq_text_null  nullif_trim ne_empty
+  1   '98765 43210'     3938373635203433323130        0        0          0            0            0        1
+  2            NULL                                   1     NULL       NULL         NULL            1     NULL
+  3              ''                                   0        1          1            0            1        0
+  4           '   '                     202020        0        0          1            0            1        1
+  5          'NULL'                   4E554C4C        0        0          0            1            0        1
+  6           'N/A'                     4E2F41        0        0          0            0            0        1
+  7 ' 98111 22222 ' 20393831313120323232323220        0        0          0            0            0        1
+  8            '\t'                         09        0        0          0            0            0        1
+  9             ' '                       C2A0        0        0          0            0            0        1
+
+SQL normalised phone:
+ customer_id phone_clean
+           1 98765 43210
+           2         NaN
+           3         NaN
+           4         NaN
+           5         NaN
+           6         NaN
+           7 98111 22222
+           8         NaN
+           9         NaN
+
+SQL counts and averages:
+ rows_total  count_phone  phone_ne_empty  count_clean   avg_limit  avg_limit_null_as_0
+          9            8               7            2 2142.857143          1666.666667
+WHERE phone <> '' returns ids: [1, 4, 5, 6, 7, 8, 9]
+WHERE phone IS NULL OR phone <> '' returns 8 rows
+WHERE TRIM(phone) = '' returns ids: [3, 4] (tab and NBSP rows 8, 9 are missed)
+
+pandas phone dtype: str | isna count after normalising: 7
+pandas: mean skips NaN: 2142.8571428571427 | fillna(0).mean(): 1666.6666666666667 | count(phone) before: 8 after: 2
+asserts passed (pandas matches SQL in customer_id order)
+
+read_csv default: parsed as missing: ['', 'NULL', 'N/A', 'NA', 'None', 'nan', 'NaN', 'null', 'n/a', '#N/A', '<NA>']
+read_csv default: kept as text     : ['Null', 'na', 'NAN', '   ', '-', '0']
+keep_default_na=False, na_values=['NULL','N/A'] -> missing: ['NULL', 'N/A']

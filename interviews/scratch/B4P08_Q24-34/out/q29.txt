@@ -1,0 +1,5 @@
+{"amount_band": "50-100k", "city_tier": 2, "customer_pseudo_id": "2efd8c92e7dfc971", "decision": "review", "model_version": "v7", "note": "caller [EMAIL] asked on [PHONE]", "score": 0.82, "ts": "2026-10-26T10:00:00Z"}
+{"amount_band": "10-50k", "city_tier": 2, "customer_pseudo_id": "2efd8c92e7dfc971", "decision": "approve", "model_version": "v7", "note": "alt [PHONE]", "score": 0.31, "ts": "2026-10-26T10:05:00Z"}
+{"amount_band": "10-50k", "city_tier": 3, "customer_pseudo_id": "1b17d2867daccc7b", "decision": "review", "model_version": "v7", "note": "no pii here", "score": 0.55, "ts": "2026-10-26T10:07:00Z"}
+same customer -> same pseudo id (joins still work): True
+brute force with salt recovers id: ['C1001']

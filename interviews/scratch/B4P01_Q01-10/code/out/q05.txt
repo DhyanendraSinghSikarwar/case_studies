@@ -1,0 +1,28 @@
+{
+  "config": {
+    "lr": 0.1,
+    "max_depth": 4
+  },
+  "data": {
+    "train.csv": "2a2b86e74ffd5e6a9b75e52a105cf9d02920837179f8e8961aa15411d380f7a3"
+  },
+  "git": {
+    "commit": "760ecc4f61526c1dcef5bb661299ca4c732265ae",
+    "dirty": false
+  },
+  "hardware": {
+    "gpu": "none (this demo)",
+    "machine": "x86_64",
+    "os": "<os string>",
+    "python": "3.13.17"
+  },
+  "metrics": {
+    "auc": 0.91
+  },
+  "model_sha256": "51f4c7fe675c87ed8c398050bf3d366eb64a2928b6cacd48eb72e92e62c0c6b3",
+  "packages": {
+    "numpy": "2.5.3"
+  },
+  "seed": 42
+}
+model bytes identical on rerun with same seed: True

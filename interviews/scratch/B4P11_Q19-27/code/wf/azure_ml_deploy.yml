@@ -1,0 +1,36 @@
+name: azure-ml-train-and-deploy
+on:
+  push:
+    branches: [main]
+permissions:
+  id-token: write      # lets the job request an OIDC token
+  contents: read
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2           # federated credential: no client secret stored
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: az extension add -n ml -y
+      - run: >
+          az ml job create --file jobs/train.yml
+          --resource-group rg-ml --workspace-name ws-ml-dev --stream
+  deploy-prod:
+    needs: train
+    runs-on: ubuntu-latest
+    environment: prod                  # required reviewers are set on this environment in repo settings
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_PROD }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: az extension add -n ml -y
+      - run: >
+          az ml online-deployment create --file deploy/green.yml
+          --resource-group rg-ml --workspace-name ws-ml-prod

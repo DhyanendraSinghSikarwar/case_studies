@@ -1,0 +1,30 @@
+# VCS and editor
+.git
+.gitignore
+.idea
+.vscode
+# secrets and local config
+.env
+.env.*
+!.env.example
+**/*.pem
+# big or generated ML artefacts
+data/
+models/
+checkpoints/
+mlruns/
+wandb/
+**/*.ckpt
+**/*.pt
+!models/tiny_test.pt
+# python junk
+**/__pycache__
+**/*.pyc
+.venv/
+.pytest_cache/
+# notebooks and docs
+**/*.ipynb
+docs/
+# Dockerfile and .dockerignore are still sent to the builder even if listed; COPY just cannot see them
+Dockerfile*
+docker-compose*.yml

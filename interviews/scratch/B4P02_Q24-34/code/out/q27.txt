@@ -1,0 +1,13 @@
+--- run 1 output
+start at step 0
+got signal 15, will checkpoint and exit
+saved step 20, exiting 143
+run 1 exit code: 143
+checkpoint on disk: {'step': 20, 'loss': 0.0476}
+--- run 2 output
+start at step 20
+done at step 50, loss 0.0196
+run 2 exit code: 0
+resumed from 20 and finished: OK
+--- bash -n docker_run.sh
+OK

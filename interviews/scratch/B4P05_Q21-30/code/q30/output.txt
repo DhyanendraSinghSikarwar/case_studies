@@ -1,0 +1,22 @@
+--- decide()
+quiet          (False, 'no trigger: age 25d, rows 5000, psi 0.05, auc 0.86')
+volume         (True, 'volume: 250000 new rows >= 100000')
+drift          (True, 'drift: PSI 0.31 > 0.25')
+perf+drift     (True, 'performance: live AUC 0.74 < floor 0.8')
+no labels yet  (False, 'no trigger: age 25d, rows 5000, psi 0.05, auc None')
+old model      (True, 'schedule: model is 55 days old (limit 30)')
+{'reason': 'drift: PSI 0.31 > 0.25', 'data_end': '2026-10-26', 'lookback_days': 30, 'model_version': 'auto', 'dry_run': True}
+--- DagBag
+import_errors: {}
+['retrain', 'retrain_gate']
+--- dags test retrain 
+PLAN reason='manual' window=30d ending 2026-10-01 version=auto dry_run=False
+TRAIN fit on 30 days ending 2026-10-01
+DagRun Finished: dag_id=retrain state=success
+--- dags test retrain --conf {"reason":"drift: PSI 0.31","lookback_days":14,"data_end":"2026-10-25","dry_run":true}
+PLAN reason='drift: PSI 0.31' window=14d ending 2026-10-25 version=auto dry_run=True
+TRAIN skipped (dry_run=True): would train and register nothing
+DagRun Finished: dag_id=retrain state=success
+--- dags test retrain --conf {"lookback_days":9999}
+    raise ParamValidationError(f"Invalid input for param {k}: {e}") from None
+airflow.sdk.exceptions.ParamValidationError: Invalid input for param lookback_days: 9999 is greater than the maximum of 365

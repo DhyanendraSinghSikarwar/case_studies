@@ -1,0 +1,47 @@
+default read_csv dtypes: {'amount': 'str', 'amount_clean': 'str', 'pincode': 'int64', 'when': 'str', 'status': 'str', 'country': 'str'}
+pincode as int loses the zero: [11001, 110001, 400001, 560001, 11001] | country NA/None/N/A became: [nan, 'IN', nan, nan, 'IN']
+thousands=',' + dtype/pincode + keep_default_na=False: {'amount': 'str', 'amount_clean': 'float64', 'pincode': 'str', 'when': 'str', 'status': 'str', 'country': 'str'}
+amount_clean: [1200.0, 45.0, 7.0, 2000.0, nan] | amount (has 'x') stays text: ['1,200', ' 45 ', 'x', '1e3', nan] | pincode: ['011001', '110001', '400001', '560001', '011001'] | country: ['NA', 'IN', 'None', 'N/A', 'IN']
+default NA markers: ['', '#N/A', '#N/A N/A', '#NA', '-1.#IND', '-1.#QNAN', '-NaN', '-nan', '1.#IND', '1.#QNAN', '<NA>', 'N/A', 'NA', 'NULL', 'NaN', 'None', 'n/a', 'nan', 'null']
+astype(int) on the amount column   -> ValueError: invalid literal for int() with base 10: '1,200'
+astype(int) on [' 45 ']            -> [45]
+astype(float) on ['1e3']           -> [1000.0]
+astype(float) on ['']              -> ValueError: could not convert string to float: ''
+to_numeric (errors='raise')        -> ValueError: Unable to parse string "1,200" at position 0
+to_numeric coerce: [nan, 45.0, nan, 1000.0, nan] float64
+remove commas first: [1200.0, 45.0, nan, 1000.0, nan]
+downcast='integer' on clean ints: int16 | with a NaN it stays: float64
+SQLite CAST ('1,200', 1, 1.0, 11001)
+SQLite CAST (' 45 ', 45, 45.0, 110001)
+SQLite CAST ('x', 0, 0.0, 400001)
+SQLite CAST ('1e3', 1, 1000.0, 560001)
+SQLite CAST (None, None, None, 11001)
+SQL safe-cast (NULL for garbage): [None, 45.0, None, None, None]
+pandas coerce on '1e3': 1000.0 | SQL safe-cast: None | CAST AS INTEGER: 1
+SQL date(): ['2024-01-05', None, '2024-03-07', None, None]
+to_datetime default, strict        -> ValueError: time data "05/01/2024" doesn't match format "%Y-%m-%d". You might want to try:
+    - passing `format` if your strings have a consistent format;
+    - passing `format='ISO8601'` if your strings are all ISO8601 but not necessarily in exactly the same format;
+    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this.
+coerce (format guessed from row 1): ['2024-01-05', nan, '2024-03-07', nan, nan]
+format='mixed': ['2024-01-05', '2024-05-01', '2024-03-07', nan, nan]
+format='mixed', dayfirst=True: ['2024-05-01', '2024-01-05', '2024-07-03', nan, nan]
+affinity row: ('integer', 12, 'text', ' 12', 'real', 12.0)
+affinity row: ('integer', 12, 'text', '12 ', 'real', 12.0)
+affinity row: ('text', 'x', 'text', 'x', 'text', 'x')
+affinity row: ('integer', 1000, 'text', '1e3', 'real', 1000.0)
+affinity row: ('text', '0x10', 'text', '0x10', 'text', '0x10')
+affinity row: ('integer', 12, 'text', '12', 'real', 12.0)
+TEXT column ' 12' = 12 -> 0 | INTEGER column ' 12' = 12 -> 1
+STRICT insert ok: (' 12', 'x')
+STRICT insert ('x', 'y') -> cannot store TEXT value in INTEGER column st.i
+STRICT insert ok: ('12', 12)
+STRICT stored: [('integer', 12, 'text', 'x'), ('integer', 12, 'text', '12')]
+categories: ['paid', 'pending', 'refunded']
+assign outside categories          -> TypeError: Cannot setitem on a Categorical with a new category (lost), set the categories first
+fillna with a new category         -> TypeError: Cannot setitem on a Categorical with a new category (unknown), set the categories first
+add_categories first: ['a', 'unknown', 'b']
+groupby default: {'paid': 3, 'refunded': 3} | observed=False: {'pending': 0, 'paid': 3, 'refunded': 3}
+sort by category order: ['pending', 'paid', 'refunded'] | alphabetical: ['paid', 'pending', 'refunded']
+.str on category works, result dtype: object ['PAID', 'PAID', 'REFUNDED', 'PAID', 'PENDING']
+asserts passed

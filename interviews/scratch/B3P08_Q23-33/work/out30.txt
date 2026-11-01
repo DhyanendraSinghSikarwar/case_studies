@@ -1,0 +1,63 @@
+SQL GROUP BY (NULL channel kept as 'unknown'):
+ channel  cancelled  completed  orders  completed_share  channel_mix
+     ads          1          2       3           0.6667          0.3
+ organic          0          2       2           1.0000          0.2
+referral          1          1       2           0.5000          0.2
+ unknown          1          2       3           0.6667          0.3
+channel dtype: str ; NaN rows: 3
+(a) pivot_table, default dropna=True:
+status    cancelled  completed
+channel                       
+ads               1          2
+organic           0          2
+referral          1          1
+    rows kept: 7 of 10
+(a') pivot_table with the default aggfunc='mean' on order_id (not a count):
+status    cancelled  completed
+channel                       
+ads             2.0        5.5
+organic         NaN        3.5
+referral        5.0        9.0
+(a'') pivot_table after fillna('unknown'):
+status     cancelled  completed
+channel_f                      
+ads                1          2
+organic            0          2
+referral           1          1
+unknown            1          2
+(b) crosstab normalize='index', NaN channel silently absent:
+status    cancelled  completed
+channel                       
+ads          0.3333     0.6667
+organic      0.0000     1.0000
+referral     0.5000     0.5000
+(b') crosstab after fillna('unknown'):
+status     cancelled  completed
+channel_f                      
+ads           0.3333     0.6667
+organic       0.0000     1.0000
+referral      0.5000     0.5000
+unknown       0.3333     0.6667
+(b'') crosstab normalize='all' sums to 1.0 (shares of the 7 kept rows, not of 10)
+(c) value_counts(normalize=True):
+channel
+ads         0.4286
+organic     0.2857
+referral    0.2857
+(c') value_counts(normalize=True, dropna=False):
+channel
+ads         0.3
+NaN         0.3
+organic     0.2
+referral    0.2
+categorical key with an unused category 'affiliate':
+  pivot_table default rows: ['ads', 'organic', 'referral', 'unknown']
+  pivot_table observed=False rows: ['ads', 'organic', 'referral', 'unknown', 'affiliate']
+  crosstab default rows: ['ads', 'organic', 'referral', 'unknown']
+  crosstab dropna=False rows: ['ads', 'organic', 'referral', 'unknown', 'affiliate']
+after fallback to signup channel, NaN left: 0
+channel_fb
+ads         5
+organic     3
+referral    2
+asserts passed

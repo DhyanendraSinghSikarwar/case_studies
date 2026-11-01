@@ -1,0 +1,6 @@
+accuracy on KNOWN categories (what the dashboard measures) = 96.4%
+all 1200 new-line tickets get a known-category label anyway: mean confidence 0.65 (known: 0.89)
+true overall routing correctness = 84.8% of all tickets (new-line tickets are all misrouted)
+confidence rule (flag if < 0.58): catches 38.3% of new-line tickets, flags 5.0% of known
+distance rule (flag if > 17.8): catches 78.8% of new-line tickets, flags 5.0% of known
+weekly human-triage queue: 1386 tickets, of which 946 are new-line (68% precision)

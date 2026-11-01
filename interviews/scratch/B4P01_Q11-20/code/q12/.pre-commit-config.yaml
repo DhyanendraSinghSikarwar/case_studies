@@ -1,0 +1,27 @@
+# Local hooks use tools already in the env (no network clone). For a real team you can
+# pin remote repos instead, e.g. repo: https://github.com/astral-sh/ruff-pre-commit (check current docs for rev).
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-lint
+        name: ruff lint
+        entry: ruff check --output-format=concise
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff format --check
+        entry: ruff format --check --quiet
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy
+        entry: mypy --ignore-missing-imports
+        language: system
+        types: [python]
+        exclude: ^tests/
+      - id: pytest-fast
+        name: pytest (fast only)
+        entry: pytest -q -m "not slow"
+        language: system
+        pass_filenames: false
+        stages: [pre-push]   # heavier check runs on push, not on every commit

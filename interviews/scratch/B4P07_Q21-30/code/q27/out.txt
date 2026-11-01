@@ -1,0 +1,20 @@
+$ python3 -I fairness_gate.py fair
+candidate = fair
+        n    sel    tpr    fpr
+A  3296.0  0.350  0.715  0.192
+B  2135.0  0.348  0.711  0.193
+C   569.0  0.351  0.711  0.194
+GATE: PASS
+exit=0
+$ python3 -I fairness_gate.py unfair
+candidate = unfair
+        n    sel    tpr    fpr
+A  3296.0  0.350  0.715  0.192
+B  2135.0  0.348  0.711  0.193
+C   569.0  0.144  0.376  0.043
+FAIL selection-rate ratio 0.41 < 0.8 (C vs A)
+FAIL TPR gap 0.34 > 0.1
+FAIL FPR gap 0.15 > 0.1
+FAIL group C: TPR 0.38 worse than champion 0.71
+GATE: FAIL
+exit=1

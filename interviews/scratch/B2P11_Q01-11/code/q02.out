@@ -1,0 +1,11 @@
+trace_id=t-0001 (one trace, many spans; parent_id links them)
+request        dur=2.90s self=0.02s 
+  retrieve       dur=0.15s self=0.15s 
+  rerank         dur=0.08s self=0.08s 
+  llm_call       dur=0.30s self=0.30s {'attempt': 1, 'error': 'Timeout', 'finish_reason': None}
+  backoff_sleep  dur=0.50s self=0.50s 
+  llm_call       dur=0.95s self=0.95s {'attempt': 2, 'tokens_in': 900, 'tokens_out': 120, 'finish_reason': 'tool_calls'}
+  tool:get_order dur=0.20s self=0.20s 
+  llm_call       dur=0.70s self=0.70s {'attempt': 1, 'tokens_in': 1100, 'tokens_out': 80, 'finish_reason': 'stop'}
+llm spans: 3; total tokens in/out on successful spans: 2000/200
+time lost to the failed attempt + backoff: 0.80s of 2.90s

@@ -1,0 +1,8 @@
+examples ok: [[2, 2, 2, 2], 6, 4] [[1, 1, 2, 3, 3], 8, 8] [[1, 2, 3, 4, 5], 10, 14]
+3000 random inputs: iterative == recursive (sorted list and both counters)
+all equal, n = 2000: Lomuto 1999000 = n(n-1)/2 ; three-way 2000 = n
+sorted 1..2000: Lomuto 1999000  three-way 2000999
+2000 random items from 10 distinct values: Lomuto 205321  three-way 6102
+recursive version on 1500 equal items: RecursionError (limit 1000 )
+iterative version on 2000 equal items worked (no recursion at all)
+edge asserts ok

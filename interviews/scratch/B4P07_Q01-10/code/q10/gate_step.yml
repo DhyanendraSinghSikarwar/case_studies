@@ -1,0 +1,11 @@
+name: gate-demo
+on: workflow_dispatch
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Promotion gate (non-zero exit fails the job)
+        run: python gate.py --candidate candidate.json --champion champion.json
+      - name: Promote (runs only if the gate step passed)
+        run: python promote.py --alias champion

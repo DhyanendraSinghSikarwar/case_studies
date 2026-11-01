@@ -1,0 +1,9 @@
+(a) exactly 2 days, c=1..7: [False, False, True, True, True, False, False]  monotone? False
+    days by capacity: [None, None, 2, 2, 2, 1, 1]
+(a) at most 2 days, c=1..7: [False, False, True, True, True, True, True]  monotone? True
+(b) arr=[5,-10,5,5], L=1..4: [False, True, False, False]  monotone? False
+at-most-d monotone in capacity: checked 6372 (weights, d) cases
+exact-d predicate non-monotone in 279 of 500 random cases
+non-negative: once True stays True for larger L, checked 16368 cases
+with negatives, True then False happened in 172 of 500 random cases
+all checks passed

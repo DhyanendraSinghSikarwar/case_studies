@@ -1,0 +1,5 @@
+Counter('aa') - Counter('aab') = Counter() (b:-1 is gone, a:0 is gone)
+subtract() keeps them: Counter({'a': 0, 'b': -1})
+wrong direction magazine - note: Counter({'b': 1}) (leftover b, says nothing about note)
+1000 random cases agree
+True False

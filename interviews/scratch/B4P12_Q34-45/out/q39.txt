@@ -1,0 +1,10 @@
+threats with control and owner: 7
+- prompt injection via retrieved HR text   owner: platform security
+- over-broad ticketing tool permission     owner: platform team
+- data exfil via logs                      owner: data protection office
+- data exfil via answers                   owner: platform security
+- cross-user retrieval leak                owner: search/RAG team
+- API key theft                            owner: platform team
+- supply-chain (model/lib)                 owner: platform security
+rejected incomplete row: ['model weights leaked']
+ACL test ok: hr user sees ['d1', 'd2']

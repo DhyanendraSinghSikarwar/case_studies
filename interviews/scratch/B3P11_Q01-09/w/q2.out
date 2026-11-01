@@ -1,0 +1,13 @@
+sqlite 3.45.1
+lookup customer_id=5 -> 9 rows
+  VM steps as scan: 300,071   with ix_cust: 120
+  page_size 4096; page_count before index 978, after 1240 (+262 pages)
+  dbstat bytes: table orders 4,001,792  index ix_cust 1,073,152
+
+inserting 100,000 rows with k secondary indexes (executemany in one transaction)
+k  VM_steps    ms(machine-specific)
+0  1,600,006      244
+1  2,200,006      339
+2  2,700,006      484
+3  3,200,006      586
+steps grow with every extra index: [600000, 500000, 500000]

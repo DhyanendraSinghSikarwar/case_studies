@@ -1,0 +1,11 @@
+q20/Dockerfile.before:3 DL3020 error: Use COPY instead of ADD for files and folders
+q20/Dockerfile.before:4 DL3003 warning: Use WORKDIR to switch to a directory
+q20/Dockerfile.before:4 SC2164 warning: Use 'cd ... || exit' or 'cd ... || return' in case cd fails.
+q20/Dockerfile.before:5 DL3009 info: Delete the apt lists (/var/lib/apt/lists) after installing something
+q20/Dockerfile.before:5 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.
+q20/Dockerfile.before:6 DL3015 info: Avoid additional packages by specifying `--no-install-recommends`
+q20/Dockerfile.before:6 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.
+q20/Dockerfile.before:6 DL3008 warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+q20/Dockerfile.before:7 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.
+q20/Dockerfile.before:7 DL3042 warning: Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`
+q20/Dockerfile.before:11 DL3025 warning: Use arguments JSON notation for CMD and ENTRYPOINT arguments

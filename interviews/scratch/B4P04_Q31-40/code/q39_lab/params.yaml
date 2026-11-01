@@ -1,0 +1,4 @@
+train:
+  C: 1.0
+  max_iter: 200
+  seed: 7

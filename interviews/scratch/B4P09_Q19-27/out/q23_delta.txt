@@ -1,0 +1,5 @@
+pyspark 4.2.0 delta-spark 4.4.1
+after 4 appends: data files on disk = 12 | log files = ['00000000000000000000.json', '00000000000000000001.json', '00000000000000000002.json', '00000000000000000003.json']
+latest commit 00000000000000000004.json actions: {'add': 1, 'commitInfo': 1, 'remove': 12}
+live files after OPTIMIZE (numFiles) = 1 | files still on disk (old ones await VACUUM) = 13
+rows: 2000 (expected 2000)

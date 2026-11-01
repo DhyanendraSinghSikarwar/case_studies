@@ -1,0 +1,4 @@
+CTR 5.00% -> 4.70% = -6.0% relative; NDCG 0.500 -> 0.515 = +3.0% relative
+popularity slate CTR first20=0.0750 last20=0.0644 (-14.1%) distinct items shown=5 top5 impression share=1.00
+explore    slate CTR first20=0.0718 last20=0.1392 (+94.0%) distinct items shown=300 top5 impression share=0.60
+asserts passed

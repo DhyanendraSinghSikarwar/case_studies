@@ -1,0 +1,8 @@
+378 of 512 possible tool subsets contain all three legs
+inclusion-exclusion count: 378  (matches: True)
+proposed design legs: ['external_comms', 'private_data', 'untrusted_content']
+single-tool removals that break the trifecta: none (need to remove several)
+smallest removal size: 3; sets: [('read_inbox', 'search_web', 'fetch_url'), ('send_email', 'render_markdown_images', 'fetch_url')]
+filter assumed 95% effective, attacker tries  1 variants: P(at least one gets through) closed form 0.050, simulated 0.051
+filter assumed 95% effective, attacker tries 10 variants: P(at least one gets through) closed form 0.401, simulated 0.405
+filter assumed 95% effective, attacker tries 50 variants: P(at least one gets through) closed form 0.923, simulated 0.923

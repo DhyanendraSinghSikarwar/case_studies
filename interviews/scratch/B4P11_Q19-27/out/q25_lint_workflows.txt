@@ -1,0 +1,8 @@
+azure_ml_deploy.yml | trigger: {'push': {'branches': ['main']}}
+   lint: OK
+vertex_deploy.yml | trigger: {'push': {'branches': ['main']}}
+   lint: OK
+bad.yml | 3 findings
+   - workflow lacks permissions.id-token: write (OIDC login would fail)
+   - long-lived credential pattern: creds: ${{ secrets.AZURE_CREDENTIALS }}
+   - job deploy-prod: deploy job without an environment (no approval gate)

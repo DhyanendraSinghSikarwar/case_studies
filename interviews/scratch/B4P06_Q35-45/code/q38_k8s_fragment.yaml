@@ -1,0 +1,11 @@
+# Pod spec fragment (concept; NOT applied to any cluster). Part 3 owns Kubernetes.
+spec:
+  terminationGracePeriodSeconds: 45        # must be > preStop sleep + uvicorn graceful timeout
+  containers:
+    - name: model
+      image: registry.example/model:1.4.0
+      command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--timeout-graceful-shutdown", "25"]
+      readinessProbe: {httpGet: {path: /readyz, port: 8000}, periodSeconds: 5, failureThreshold: 2}
+      livenessProbe:  {httpGet: {path: /livez,  port: 8000}, periodSeconds: 10, failureThreshold: 3}
+      lifecycle:
+        preStop: {exec: {command: ["sleep", "10"]}}   # let endpoints/load balancer stop sending traffic first

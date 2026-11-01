@@ -1,0 +1,48 @@
+**Say this first (1 line):** For each user take the earliest `view`, then the earliest `add_to_cart` that is strictly later than that view, then the earliest `checkout` later than that, then the earliest `purchase` later than that; count users who got through each step, and divide by the previous step and by step 1.
+
+**Schema and sample data:** (assumption said out loud: a step only counts if its time is strictly later than the time of the step before it, so two events with the same timestamp do not count as "in order"; users who never viewed are not in the funnel.)
+@@SCHEMA@@
+
+**SQL answer:** the query `sql` in the Code block. It chains four CTEs: `s1` is the first view per user; `s2` joins `s1` back to `events` and keeps `add_to_cart` events with `event_ts > s1.t`, then takes the MIN; `s3` and `s4` repeat that for `checkout` and `purchase`. A `UNION ALL` of the four counts gives the funnel, and `LAG` and `FIRST_VALUE` give the step and overall conversion.
+
+**pandas answer:** the loop in the Code block. It keeps a frame `cur` of (user_id, t) for the previous step, merges the next step's events on `user_id`, filters `event_ts > t`, and takes `groupby('user_id').min()`. The row count at each step is the funnel count.
+
+**Example:** by hand, per user (V = view, C = cart, K = checkout, P = purchase):
+- User 1 and user 10: V, C, K, P in order, so they reach step 4 (user 10 has two purchases, still one user).
+- User 2: V, C, K, then stops: step 3. User 3: V, C: step 2. User 4: V only: step 1.
+- User 5: V 09:00, checkout 09:10, purchase 09:20, cart 09:30. The cart is after the view, so step 2 is reached; no checkout is later than 09:30, so the funnel stops at step 2 even though a purchase exists (purchase before add_to_cart).
+- User 6: two views (10:00 and 10:20) and a cart at 10:10; the first view is 10:00, so the cart counts: step 2.
+- User 7: cart 09:00, view 09:30, cart 10:00, checkout, purchase. The first cart is before the view, but the cart at 10:00 is after it, so the strict funnel counts this user through step 4.
+- User 8: never viewed: not in step 1. User 9: view and cart at the same second: the cart is not strictly later, so step 1 only.
+- Totals: step 1 = 9 (users 1 to 7, 9, 10), step 2 = 7 (1, 2, 3, 5, 6, 7, 10), step 3 = 4 (1, 2, 7, 10), step 4 = 3 (1, 7, 10). Conversions: 7/9 = 0.7778, 4/7 = 0.5714, 3/4 = 0.75; overall 3/9 = 0.3333.
+
+**Code:** run with `python3 -I`.
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- **Purchase before cart (user 5):** a plain count of users with a purchase event would include them; the strict chain does not. The "any event" counts in the second printed table (`cart_any` 9, `checkout_any` 6, `purchase_any` 5) show how far an unordered funnel overstates.
+- **Earliest-after, not global MIN (user 7):** the "chained MIN(CASE)" version (`cart_chain`, `checkout_chain`, `purchase_chain`: 6, 3, 2) takes each step's overall first time and compares it with the previous one. User 7's first cart (09:00) is before the first view (09:30), so that version drops them, and undercounts steps 2 to 4 by one. The fix is to take the earliest event after the previous step, as the Code block does. The prompt's "MIN(CASE) per step" idea is fine for the first step and for a funnel where order is not enforced; for strict order it needs the "later than" join.
+- **Ties in time (user 9):** a same-timestamp view and cart do not count here (`>`); say if your product would count them (`>=`).
+- **Repeat events (users 6 and 10):** MIN per user collapses them, so counts are users, not events.
+- **Empty step:** if no user reaches a step, the `JOIN` returns no rows and `COUNT(*)` returns 0, so the funnel row still appears.
+
+**Then explain:**
+- **Why strict order:** an unordered funnel counts a purchase that has no cart before it (data fix-ups, duplicated events, clock skew, or a re-order link), and conversion can then even look better than reality.
+- **The conversion columns:** step conversion divides by the previous step (`LAG`), overall conversion divides by step 1 (`FIRST_VALUE`). The first step has no previous step, so its step conversion is NULL in SQL and NaN in pandas.
+- **Dialects (not executed here):** the same SQL works on PostgreSQL, MySQL 8, BigQuery and Snowflake (they all have `LAG` and `FIRST_VALUE`); `ROUND` and the `1.0 *` cast to avoid integer division are the usual small changes.
+- **Scoring note (Set E1, Q5 of 5, 25 pts):** about 10 points for the right counts on the seed (9, 7, 4, 3), 5 for handling the seeded trap (user 5 and user 7, or at least user 5), 5 for the pandas version asserted equal, 2.5 for saying the order and tie assumption before coding, 2.5 for a check such as "step 1 is never smaller than step 2". Full marks need the "later than the previous step" join; the global-MIN version with the right numbers on a lucky seed earns partial credit only.
+
+**Follow-ups:**
+- *Add a time limit (purchase within 24 hours of the view)?* Add `AND e.event_ts <= datetime(s1.t, '+1 day')` style conditions in the join, measured from step 1, and state whether the window starts at the first view.
+- *Do it by session?* Replace `user_id` with `session_id` in every join; the logic does not change.
+- *How do you break it down by channel?* Add the channel to the select and `GROUP BY`, keeping the user in the step CTEs, or compute per channel in pandas with a groupby around the loop.
+
+**Common mistakes:**
+- Counting users with any `purchase` event as step 4 and ignoring order.
+- Comparing global minimums per step (loses users like user 7).
+- Counting events rather than distinct users (user 10's two purchases).
+- Dividing by the wrong denominator, or integer division in SQL (`3/9` gives 0 without `1.0 *`).
+- Forgetting that the first step's step-conversion is undefined.

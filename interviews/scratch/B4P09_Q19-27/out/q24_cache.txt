@@ -1,0 +1,16 @@
+pyspark 4.2.0 | cores (defaultParallelism) = 4
+no cache   actions=3 results=(10,1000,49995000) source rows computed = 30001
+cache      actions=3 results=(10,1000,49995000) source rows computed = 10001
+           storage level: Disk Memory Serialized 1x Replicated | plan has InMemoryTableScan: True
+(accumulators inside transformations can over-count on task retries; fine as a teaching probe)
+-- partition counts
+read default (range splits)         : 4
+repartition(8)                      : 8
+repartition(8).coalesce(2)          : 2
+repartition(8).coalesce(16)         : 8 (coalesce cannot grow)
+after groupBy (shuffle.partitions=4): 4
+repartition(8) rows per partition   : [12500, 12500, 12500, 12500, 12500, 12500, 12500, 12500]
+coalesce(2) from 4 splits, rows/part: [50000, 50000]
+-- plan nodes
+repartition(8) : ['Exchange RoundRobinPartitioning(8), REPARTITION_BY_NUM, [plan_id=256]']
+coalesce(2)    : ['Coalesce 2']

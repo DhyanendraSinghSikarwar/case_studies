@@ -1,0 +1,38 @@
+groups:
+  - name: ml-monitoring
+    rules:
+      - alert: UpstreamFeedDown
+        expr: time() - feature_feed_last_success_timestamp_seconds{model="credit"} > 3600
+        for: 10m
+        labels: {severity: page, owner: data-engineering}
+        annotations:
+          summary: "Feature feed for {{ $labels.model }} has not updated for over an hour"
+          runbook_url: https://wiki.example.com/runbooks/feed-down
+      - alert: DriftScoreSustained
+        expr: max by (model) (feature_drift_score{model="credit"}) > 0.3
+        for: 2h
+        labels: {severity: ticket, owner: data-science}
+        annotations:
+          summary: "Drift score above threshold for 2h on {{ $labels.model }}"
+          runbook_url: https://wiki.example.com/runbooks/drift-sustained
+      - alert: FeatureNullRateHigh
+        expr: feature_null_ratio{model="credit"} > 0.05
+        for: 15m
+        labels: {severity: page, owner: data-engineering}
+        annotations:
+          summary: "Null rate above 5% for {{ $labels.feature }}"
+          runbook_url: https://wiki.example.com/runbooks/feature-null-rate
+      - alert: LabelJoinLagHigh
+        expr: label_join_lag_seconds{model="credit"} > 172800
+        for: 1h
+        labels: {severity: ticket, owner: data-engineering}
+        annotations:
+          summary: "Labels are more than 2 days behind"
+          runbook_url: https://wiki.example.com/runbooks/label-lag
+      - alert: ModelStale
+        expr: time() - model_last_trained_timestamp_seconds{model="credit"} > 30 * 86400
+        for: 30m
+        labels: {severity: ticket, owner: ml-platform}
+        annotations:
+          summary: "Model older than 30 days"
+          runbook_url: https://wiki.example.com/runbooks/model-stale

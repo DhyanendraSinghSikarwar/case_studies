@@ -1,0 +1,10 @@
+control total 1,000,000; treatment total 1,060,000; bots 30,000
+lift with bots    : +6.0%
+lift without bots : +3.0%
+all accounts                 lift +5.99%  Welch p = 0.0000
+bots removed                 lift +3.00%  Welch p = 0.0002
+winsorized at p99.9          lift +3.16%  Welch p = 0.0000
+cap = 206.8 vs a bot's revenue 2,500 and a normal mean of 10
+rule 'page views/day > 1000': flags 12 of 12 bots and 0 of 200,000 normal accounts
+P(all 12 bots land in treatment by chance) = 0.00024
+all asserts passed

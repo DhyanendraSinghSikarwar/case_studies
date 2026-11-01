@@ -1,0 +1,21 @@
+$ python -I q01_order.py q01_stage_map.yml
+top-level keys: ['name', True, 'jobs']
+1 lint <- -
+2 unit <- ['lint']
+3 data-tests <- ['lint']
+4 smoke-train <- ['unit', 'data-tests']
+5 full-train <- ['smoke-train']
+6 evaluate <- ['full-train']
+7 register <- ['evaluate']
+8 gate <- ['register']
+9 deploy <- ['gate']
+wave 1 runs in parallel: ['lint']
+wave 2 runs in parallel: ['data-tests', 'unit']
+wave 3 runs in parallel: ['smoke-train']
+wave 4 runs in parallel: ['full-train']
+wave 5 runs in parallel: ['evaluate']
+wave 6 runs in parallel: ['register']
+wave 7 runs in parallel: ['gate']
+wave 8 runs in parallel: ['deploy']
+$ actionlint q01_stage_map.yml
+actionlint exit=0

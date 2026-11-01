@@ -1,0 +1,16 @@
+name: code-ci
+on:
+  push:
+    branches: [main]
+    paths: ["src/**", "tests/**", "requirements*.txt"]
+  pull_request:
+    branches: [main]
+    paths: ["src/**", "tests/**", "requirements*.txt"]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -r requirements.txt && pytest -m "not slow" -q

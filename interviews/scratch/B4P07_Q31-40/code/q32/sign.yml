@@ -1,0 +1,28 @@
+name: sign-model-image
+on:
+  push:
+    tags: ["model-v*"]
+permissions:
+  contents: read
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write        # keyless signing needs the OIDC token
+      attestations: write    # build provenance attestation
+    env:
+      IMAGE: ghcr.io/example-org/churn-serving
+      DIGEST: ${{ vars.IMAGE_DIGEST }}   # in a real job: output of the build job
+    steps:
+      - uses: sigstore/cosign-installer@v3        # pin to a SHA in real use
+      - name: Sign image by digest (keyless)
+        run: cosign sign --yes "$IMAGE@$DIGEST"
+      - name: Attach SBOM as attestation
+        run: cosign attest --yes --type cyclonedx --predicate sbom.json "$IMAGE@$DIGEST"
+      - name: Verify as the deploy side would
+        run: >
+          cosign verify "$IMAGE@$DIGEST"
+          --certificate-identity-regexp "^https://github.com/example-org/.+/.github/workflows/.+@refs/tags/model-v.+$"
+          --certificate-oidc-issuer https://token.actions.githubusercontent.com

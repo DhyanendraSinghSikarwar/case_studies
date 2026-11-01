@@ -1,0 +1,6 @@
+check: exact P(X>=10 | n=500,p=.01)=0.03110  simulated=0.03072
+window  k  baseline min over k per day  median minutes to alert after 1%->3% (200 runs)
+   1m   6      0.93                      10.0  (never alerted in 0/200)
+   5m  14      1.33                       5.0  (never alerted in 0/200)
+  15m  29      1.37                      15.0  (never alerted in 0/200)
+  60m  86      1.87                      60.0  (never alerted in 0/200)

@@ -1,0 +1,19 @@
+daemon.json: OK. Upper bound per container = 50m x 3 = 150 MiB
+bad_daemon.json: PROBLEM: invalid JSON: Illegal trailing comma before end of object: line 3 column 46 (char 76)
+exit=1
+--- rotation model
+files: ['c-json.log', 'c-json.log.1', 'c-json.log.2']
+bytes written: ~ 7000  bytes kept on disk: 2100  (cap = 3000)
+--- real flag names from the CLI help (no daemon needed)
+  -a, --all             Remove all unused images not just dangling ones
+      --filter filter   Provide filter values (e.g. "label=<key>=<value>")
+  -f, --force           Do not prompt for confirmation
+      --volumes         Prune anonymous volumes
+  -a, --all             Remove all unused volumes, not just anonymous ones
+      --filter filter   Provide filter values (e.g. "label=<label>")
+  -a, --all             Remove all unused images, not just dangling ones
+      --filter filter   Provide filter values (e.g. "until=<timestamp>")
+--- docker system df (no daemon here)
+failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory
+--- bash -n commands.sh
+OK

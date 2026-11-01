@@ -1,0 +1,6 @@
+examples ok: 3 0 0 9999999
+5000 random lists (n <= 30, values up to 3, 10, 100 or 10^9): equal to sorted() + adjacent differences
+exhaustive on 66384 lists: max gap >= ceil(range/(n-1)); bucket width - 1 < max gap; every maximum-gap pair straddles buckets; buckets <= 2n
+n = 100000, values up to 10^9: bucket width 10000 , buckets 100000
+max gap = 130321 ; (sandbox timing, varies run to run) bucket method 0.027 s, sorted() + differences 0.024 s
+edge asserts ok

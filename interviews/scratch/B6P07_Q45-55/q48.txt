@@ -1,0 +1,54 @@
+**Say this first (1 line):** The tail is 1% of tasks but 7.5% of tokens (160 million of 2,140 million), the 80,000 cap saves 3.7% of all tokens, and that saving is real only if capped tasks end cleanly (partial result, handoff) and are not simply rerun.
+
+**Clarifying questions:**
+- Is the cap counted on input plus output tokens, summed across all steps of the agent loop? That is the number that matters.
+- What do the tail tasks look like: stuck loops, repeated tool errors, or genuinely large jobs? It decides whether capping loses value.
+- Does the 99,000 "exactly the median" hold? Real bodies have a mean above the median, which changes the shares (see the code).
+- What is the cost of a failed task (retry by the user, human handling)? That sets what a cap really saves.
+- Is there already a step limit or a time limit? A token cap is the backstop.
+
+**Approach:**
+1. Total tokens = 99,000 x 20,000 + 1,000 x 160,000 = 1,980 million + 160 million = 2,140 million.
+2. Tail share = 160 / 2,140 = 7.48%, from 1% of tasks.
+3. With an 80,000 cap, each tail task stops at 80,000 (assuming it would have run to 160,000). Saving = 1,000 x 80,000 = 80 million = 3.74% of all tokens.
+4. Check the saving assumptions. If half the capped tasks are rerun from scratch up to the cap, the saving halves to 1.87%. If all are rerun, the saving is zero.
+5. Design the cap: a soft warning at 50,000 (the agent must summarise its state and decide), and a hard stop at 80,000. Also set limits on steps, repeated identical tool calls, and wall-clock time.
+6. What happens at the cap: stop cleanly, return what it has with a clear message, save a checkpoint (so a person or a second pass can continue), hand off to a human if the task matters, and log the trace for review.
+7. Review the capped traces weekly. If they are loops, fix the agent. If they are legitimate big jobs, raise the cap for that task type only.
+
+**Metrics:**
+- Tail share of tokens = tokens in tasks above the cap threshold / all tokens = 7.48%.
+- Saving share = (tokens that would have been used - tokens used under the cap) / all tokens = 3.74%.
+- Cap-hit rate = capped tasks / all tasks (1% here). Resolution after cap: resolved by handoff / capped.
+- Cost per successful task, not cost per task. Guardrail: success rate on tasks that would have finished between 80,000 and 160,000.
+
+**Risks:**
+- Some tail tasks are valuable (long research, large refactors); a flat cap kills them.
+- A cap with no clean ending leaves half-done side effects (writes, emails). Make actions idempotent and safe to stop.
+- Users retry capped tasks, so the money comes back.
+- The cap hides loops instead of fixing them.
+
+**What the interviewer scores:**
+- Strong: 7.5% and 3.7%, with a comment that these are different questions. Weak: says "the cap removes the tail" (it removes half of it).
+- Strong: describes what the user sees at the cap, and how side effects are handled. Weak: "just stop it".
+- Strong: asks whether the tail is waste or value. Weak: assumes all tail tasks are failures.
+- Strong: cost per success as the real metric.
+
+**Example:** Illustrative blended price of 5 per million tokens. Total 10,700 per month, the cap saves 400. Weak: "Cap at 80,000 tokens and we cut the long tasks." Strong: "The cap saves 3.7% of tokens at best. I would warn at 50,000, stop at 80,000, return a partial result with a checkpoint, and look at the capped traces, because if they are loops the real fix is in the agent."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why not a lower cap such as 40,000?* It saves more on paper (1,000 x 120,000 = 120 million, 5.6%) but starts killing normal large tasks. Pick it from the success rate by token use.
+- *Does the median matter?* Only as a baseline. Tokens are driven by the mean, and the tail raises the mean.
+- *What about cost caps per user?* Add one as a second layer; see Q49 in this part.
+
+**Common mistakes:**
+- Confusing the tail's share of tokens (7.5%) with the saving from capping it (3.7%).
+- Forgetting retries.
+- No clean ending at the cap.
+- Judging the cap by cost per task instead of cost per success.

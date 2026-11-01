@@ -1,0 +1,20 @@
+clean table with excluded rows:
+                   grp  users  conversions  conv_rate
+               control      5          1.0     0.2000
+             treatment      6          4.0     0.6667
+    excluded_both_arms      1          NaN        NaN
+     excluded_immature      2          NaN        NaN
+dropped_duplicate_rows      2          NaN        NaN
+no cleaning (every assignment row, immature windows included):
+      grp  rows_as_users  conversions  conv_rate
+  control              8            4     0.5000
+treatment              9            6     0.6667
+clean: absolute uplift 0.4667, relative uplift 233.3%
+dirty: absolute uplift 0.1667, relative uplift 33.3%
+                   grp  users  conversions  conv_rate
+               control      5          1.0     0.2000
+             treatment      6          4.0     0.6667
+    excluded_both_arms      1          NaN        NaN
+     excluded_immature      2          NaN        NaN
+dropped_duplicate_rows      2          NaN        NaN
+asserts passed

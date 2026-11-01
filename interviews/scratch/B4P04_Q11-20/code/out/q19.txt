@@ -1,0 +1,49 @@
+--- images.dvc
+outs:
+- md5: f6cbd8086608ea283fa2b571d1eda43f.dir
+  size: 32
+  nfiles: 4
+  hash: md5
+  path: images
+--- cache: one .dir manifest + one object per file
+72/bee980634a9a1520150196659c531a
+af/02dda0190040f03b85066c4119aa7e
+d1/494b65f1a872b59ffd2c5e50887c62
+dc/234b94ae02e9da1d061a83aa4f7ac8
+f6/cbd8086608ea283fa2b571d1eda43f.dir
+--- manifest content (f6cbd8086608ea283fa2b571d1eda43f.dir)
+[{"md5": "d1494b65f1a872b59ffd2c5e50887c62", "relpath": "img1.txt"}, {"md5": "dc234b94ae02e9da1d061a83aa4f7ac8", "relpath": "img2.txt"}, {"md5": "af02dda0190040f03b85066c4119aa7e", "relpath": "img3.txt"}, {"md5": "72bee980634a9a1520150196659c531a", "relpath": "img4.txt"}]
+5 files pushed
+=== change ONE file, add again
+new dir hash:
+- md5: aa9c77b9e249efbc01974b4efec0ec22.dir
+cache objects: 7  (3 unchanged files reused, +1 file, +1 manifest)
+2 files pushed
+=== dvc get (plain copy, no link to the source repo)
+img1.txt
+img2.txt
+img3.txt
+img4.txt
+image-3
+=== dvc import (copy + a .dvc file that pins repo and rev)
+	dvc config core.autostage true
+md5: b86c734301d2a487420f10773812902a
+frozen: true
+deps:
+- path: images
+  repo:
+    url: /tmp/wr.TQ3I/producer
+    rev: v1
+    rev_lock: dd0dbc692f3bb8efa54361117928241bca7e9a47
+outs:
+- md5: f6cbd8086608ea283fa2b571d1eda43f.dir
+  size: 32
+  nfiles: 4
+  hash: md5
+  path: imported
+=== dvc.api.open: stream one file of a pinned version, no checkout
+v1 -> image-3
+v2 -> image-3 edited
+=== dvc update to v2
+Importing 'images (/tmp/wr.TQ3I/producer)' -> 'imported'
+image-3 edited

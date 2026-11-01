@@ -1,0 +1,54 @@
+**Say this first (1 line):** Count each user's March posts, then `DENSE_RANK()` those counts per country in descending order and keep rank 1 and 2: dense rank means ties share a rank and no rank number is skipped, so a three-way tie for second place keeps all three.
+
+**Schema and sample data:** (assumptions: March means `created_at >= '2025-03-01'` and `< '2025-04-01'`, a half-open range that also catches a post at 23:59:59 on 03-31 and excludes one at 00:00:00 on 04-01; users with no March post are not ranked.) The 24 post rows are generated in the Code block from per-user counts, shown here as a table; the `users` rows are literal.
+```sql
+CREATE TABLE users(user_id INTEGER PRIMARY KEY, country TEXT);
+CREATE TABLE posts(post_id INTEGER PRIMARY KEY, user_id INTEGER, created_at TEXT);
+INSERT INTO users VALUES (1,'IN'),(2,'IN'),(3,'IN'),(4,'IN'),(5,'IN'),(6,'US'),(7,'US'),(8,'UK');
+```
+| user_id | country | posts in March | other posts |
+|---|---|---|---|
+| 1 | IN | 5 | none |
+| 2 | IN | 3 | none |
+| 3 | IN | 3 | none |
+| 4 | IN | 3 (the last one at 2025-03-31 23:59:59) | none |
+| 5 | IN | 1 | 2 in February |
+| 6 | US | 4 | none |
+| 7 | US | 2 | 1 at 2025-04-01 00:00:00 |
+| 8 | UK | 0 | none |
+
+**SQL answer:** `sql` in the Code block: CTE `c` counts March posts per (country, user), CTE `r` adds `DENSE_RANK() OVER (PARTITION BY country ORDER BY posts DESC)`, and the final `SELECT` keeps `rk <= 2` ordered by country, posts descending, user_id.
+
+**pandas answer:** filter the posts to March with two string comparisons, merge with `users`, `groupby(['country', 'user_id']).size()`, then `groupby('country')['posts'].rank(method='dense', ascending=False)` and keep `rk <= 2`.
+
+**Example:** by hand, India has March counts 5 (user 1), 3, 3, 3 (users 2, 3, 4) and 1 (user 5). Distinct counts in descending order: 5, 3, 1. Dense ranks: 1, 2, 2, 2, 3. Rank 3 is dropped, so IN keeps users 1, 2, 3, 4. US has 4 and 2: ranks 1 and 2, both kept. UK has no March posts, so no row. Total 6 rows.
+
+**Code:** run with `python3 -I`.
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- **Three-way tie for second (users 2, 3, 4):** all kept by `DENSE_RANK`. `ROW_NUMBER` would keep exactly one of them arbitrarily: the printed line starting `with ROW_NUMBER` shows `ROW_NUMBER` keeping only users 1 and 2 for IN, and silently dropping 3 and 4.
+- **`RANK` instead of `DENSE_RANK`:** the ranks would be 1, 2, 2, 2 and then 5. For "top 2" the kept rows are the same here, but `RANK` and "top 2 distinct counts" differ when the tie is at rank 1: `RANK` would skip rank 2 and return only the tied leaders. That is why the prompt says dense.
+- **Zero-post user (user 8):** never in the count CTE because of the inner join; UK is absent from the result. To show UK as empty, left-join from `users` and handle NULL.
+- **Date boundaries:** user 5's February posts and user 7's 04-01 midnight post must not count; the half-open range handles the timestamp boundary, whereas `<= '2025-03-31'` would drop the 23:59:59 post of user 4.
+- **Posts per user as the only measure:** the count is a row count; if a post could be duplicated (retries), count distinct `post_id` (not needed here, `post_id` is the key).
+
+**Then explain:**
+- **Dense rank on counts, not on users:** ranking distinct counts means "the two highest levels of activity" rather than "two people".
+- **pandas:** `rank(method='dense', ascending=False)` returns floats; the Code block casts to int to compare with SQL's integer rank.
+- **Dialects (not executed here):** `DENSE_RANK` is standard (PostgreSQL, MySQL 8, SQL Server, BigQuery, Snowflake); `QUALIFY DENSE_RANK() ... <= 2` on BigQuery or Snowflake saves the extra CTE (not executed).
+- **Scoring note (Set F1, Q3 of 5, 20 pts):** about 8 points for the six right rows, 4 for the seeded edge cases (three-way tie kept, zero-post user excluded), 4 for pandas asserted equal, 2 for stating dense versus row rank and the March boundary, 2 for a check (every kept user has posts, counts descend within a country). Using `ROW_NUMBER` or `LIMIT 2` per country is a wrong answer here, not a style choice.
+
+**Follow-ups:**
+- *Include countries with no posters as an empty row?* Left join from distinct countries and accept NULL user.
+- *Top 2 per country per month?* Add the month to the grouping and partition; the code shape is the same.
+- *What if you also need the rank of ties to be broken by earliest post?* Add `MIN(created_at)` as a secondary order key and use `ROW_NUMBER`, but that changes the question to "exactly two people".
+
+**Common mistakes:**
+- `ROW_NUMBER` or `LIMIT` and losing tied users.
+- Filtering the rank in the same `SELECT` (window results are not available in `WHERE`).
+- `<= '2025-03-31'` on a timestamp column.
+- Ranking before filtering to March.

@@ -1,0 +1,35 @@
+tiny: two NULL emails coexist under UNIQUE: 2
+tiny: duplicate non-NULL email -> IntegrityError UNIQUE constraint failed: orders.email
+tiny: 'BEN@mail.com' is accepted next to 'ben@mail.com' (UNIQUE is case-sensitive, BINARY)
+
+placed rows: 6064 of 200000 (3.03%)
+
+PARTIAL INDEX ix_placed(order_date) WHERE status = 'placed'
+ status = 'placed' AND order_date > ...   rows   982 steps     2958  ['SEARCH orders USING COVERING INDEX ix_placed (order_date>?)']
+ status IN ('placed') AND ...             rows   982 steps   614102  ['SCAN orders']
+ status != 'delivered' AND ...            rows 16839 steps   839434  ['SCAN orders']
+ status = ? (bound) AND ...               rows   982 steps     5907  ['SEARCH orders USING COVERING INDEX ix_placed (order_date>?)']
+ order_date > ... only                    rows 32837 steps   665682  ['SCAN orders']
+
+EXPRESSION AND UNIQUE INDEXES, target email User1298@Example.COM
+ lower(email) = ?                 rows 1 steps       17  ['SEARCH orders USING INDEX ix_lower_email (<expr>=?)']
+ lower(email) = lower(?)          rows 1 steps       19  ['SEARCH orders USING INDEX ix_lower_email (<expr>=?)']
+ upper(email) = ?                 rows 1 steps   800011  ['SCAN orders USING COVERING INDEX ux_email']
+ lower(trim(email)) = ?           rows 1 steps  1000011  ['SCAN orders USING COVERING INDEX ux_email']
+ email = ? (exact)                rows 1 steps       11  ['SEARCH orders USING COVERING INDEX ux_email (email=?)']
+ email = ? COLLATE NOCASE         rows 1 steps   600011  ['SCAN orders USING COVERING INDEX ux_email']
+ email LIKE ? (case-insensitive)  rows 1 steps   800013  ['SCAN orders USING COVERING INDEX ux_email']
+lower(email) lookup rows match pandas str.lower() filter: [1298]
+
+NULL emails in the UNIQUE-indexed column: 9938 (all allowed)
+duplicate insert -> UNIQUE constraint failed: orders.email
+
+INDEX SIZES (dbstat bytes and pages, page_size 4096)
+  ix_placed          118784 bytes    29 pages
+  ix_full           3792896 bytes   926 pages
+  ix_lower_email    5890048 bytes  1438 pages
+  ux_email          5890048 bytes  1438 pages
+  orders           11223040 bytes  2740 pages (the table itself)
+insert 100,000 'delivered' rows, partial index: progress callbacks 2000003, index pages 1, wall 363 ms (machine-specific, single run)
+insert 100,000 'delivered' rows, full index   : progress callbacks 2000003, index pages 516, wall 432 ms (machine-specific, single run)
+insert 100,000 'delivered' rows, no index     : progress callbacks 1400003, index pages 0, wall 245 ms (machine-specific, single run)

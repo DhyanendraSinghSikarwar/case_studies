@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "model-api.name" . }}
+  labels:
+    {{- include "model-api.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "model-api.name" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "model-api.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: server
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MODEL_URI
+              value: {{ required "modelUri is required (--set modelUri=s3://...)" .Values.modelUri | quote }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          resources:
+            requests:
+              {{- toYaml .Values.resources.requests | nindent 14 }}
+            limits:
+              {{- toYaml .Values.resources.limits | nindent 14 }}
+              {{- if gt (int .Values.gpu.count) 0 }}
+              nvidia.com/gpu: {{ .Values.gpu.count }}
+              {{- end }}

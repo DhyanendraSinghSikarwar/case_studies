@@ -1,0 +1,11 @@
+accuracy 0.93  <- reported (the labels are coin flips)
+E       AssertionError: mean accuracy 0.81 on noise labels = leakage
+E       AssertionError: two runs differ (0.767 vs 0.867): no seed
+>       assert target.exists(), "save failed silently"
+E       AssertionError: save failed silently
+FAILED test_review.py::test_no_leakage_on_pure_noise - AssertionError: mean a...
+FAILED test_review.py::test_same_input_same_result - AssertionError: two runs...
+FAILED test_review.py::test_model_file_really_written - AssertionError: save ...
+3 failed, 1 passed in 1.52s
+--- fixed version ---
+4 passed in 1.47s

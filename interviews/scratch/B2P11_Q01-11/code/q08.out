@@ -1,0 +1,22 @@
+base ranking (L x I):
+  20  LLM01 Prompt Injection
+  20  LLM06 Excessive Agency
+  16  LLM02 Sensitive Information Disclosure
+  12  LLM05 Improper Output Handling
+  12  LLM09 Misinformation
+   9  LLM03 Supply Chain
+   9  LLM04 Data and Model Poisoning
+   9  LLM08 Vector and Embedding Weaknesses
+   9  LLM10 Unbounded Consumption
+   8  LLM07 System Prompt Leakage
+share of 5000 perturbed scorings in which each risk lands in the top 4:
+  95.7%  LLM01 Prompt Injection
+  89.2%  LLM06 Excessive Agency
+  79.2%  LLM02 Sensitive Information Disclosure
+  35.9%  LLM05 Improper Output Handling
+  32.2%  LLM09 Misinformation
+  19.8%  LLM03 Supply Chain
+  17.3%  LLM04 Data and Model Poisoning
+  12.4%  LLM08 Vector and Embedding Weaknesses
+  10.7%  LLM10 Unbounded Consumption
+   7.5%  LLM07 System Prompt Leakage

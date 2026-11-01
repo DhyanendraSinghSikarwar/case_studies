@@ -1,0 +1,12 @@
+conf 0.90: p=0.90 -> n=271   worst case p=0.50 -> n=752
+conf 0.95: p=0.90 -> n=385   worst case p=0.50 -> n=1068
+flagged N=50000, full-label precision = 0.9124
+stratum sizes [727, 10157, 22816, 16300]
+proportional alloc [10, 122, 274, 196]  neyman-like alloc [15, 184, 286, 116]
+simple random            est 0.9150  95% CI [0.8928, 0.9372]  covers truth: True
+stratified proportional  est 0.9274  95% CI [0.9072, 0.9476]  covers truth: True
+stratified neyman-like   est 0.9013  95% CI [0.8781, 0.9245]  covers truth: True
+srs     mean 0.9129 sd 0.0118 coverage 0.938
+prop    mean 0.9126 sd 0.0112 coverage 0.943
+neyman  mean 0.9125 sd 0.0106 coverage 0.948
+biased (top stratum only): 0.9747  vs truth 0.9124

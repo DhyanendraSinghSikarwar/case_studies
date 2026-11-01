@@ -1,0 +1,9 @@
+typical accuracy (mean over 200 splits): 0.928   sd across splits: 0.0185
+binomial SE on 200 rows at p=0.928: 0.0183
+
+variant                                                    fail rate
+A. assert acc > 0.90, split differs each run (200 runs)      5.5%
+B. same seed 42 every run (200 runs)                       100.0%   (accuracy 0.875 every time: all-or-nothing)
+C. widen: assert acc > p_hat - 3*SE = 0.873, split differs   0.5%
+D. larger test set (1000 rows), same 0.90 threshold          0.0%   sd 0.0071
+E. property: acc > majority baseline + 0.10                  0.0%   (baseline 0.500)

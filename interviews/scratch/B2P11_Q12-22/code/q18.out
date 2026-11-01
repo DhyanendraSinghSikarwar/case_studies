@@ -1,0 +1,4 @@
+no real change                     naive gate passes  53.7% | paired-sign gate passes  96.0%
+real regression (-0.15 per item)   naive gate passes   2.6% | paired-sign gate passes  43.2%
+secret scan on fake key: ['sk-aaaaaaaaaaaaaaaaaaaa'] | clean text: []
+prompt lint: ['unclosed placeholder'] []

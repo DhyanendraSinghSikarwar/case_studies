@@ -1,0 +1,24 @@
+math functions compiled in: 1 | power(0.5, 2) = 0.25 | exp(-2*ln(2)) = 0.25
+     channel  linear  time_decay
+         ads    70.0     24.3755
+       email    40.0     38.6476
+      search    40.0     76.9769
+      social    30.0     40.0000
+unattributed   170.0    170.0000
+completed revenue: 350.0 | linear sum: 350.0 | time-decay sum: 350.0
+LUT fallback (age truncated to whole days):
+     channel  linear  time_decay
+         ads    70.0     24.3639
+       email    40.0     38.5454
+      search    40.0     77.0907
+      social    30.0     40.0000
+unattributed   170.0    170.0000
+largest difference to the exact weights: 0.1138
+     channel  linear  time_decay
+         ads    70.0     24.3755
+       email    40.0     38.6476
+      search    40.0     76.9769
+      social    30.0     40.0000
+unattributed   170.0    170.0000
+order 1 time-decay weights: [{'channel': 'ads', 'age_days': 29.0, 'dec_w': 0.0365}, {'channel': 'email', 'age_days': 7.0, 'dec_w': 0.3221}, {'channel': 'search', 'age_days': 0.0417, 'dec_w': 0.6415}]
+asserts passed

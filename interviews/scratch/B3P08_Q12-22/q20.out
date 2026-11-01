@@ -1,0 +1,23 @@
+     channel  first_touch_rev  last_touch_rev
+         ads             40.0           210.0
+       email            200.0           200.0
+        push              0.0            40.0
+         seo            150.0             0.0
+      social             60.0             0.0
+unattributed             80.0            80.0
+completed revenue: 530.0 | first-touch sum: 530.0 | last-touch sum: 530.0
+     channel  first_touch_rev  last_touch_rev
+         ads             40.0           210.0
+       email            200.0           200.0
+        push              0.0            40.0
+         seo            150.0             0.0
+      social             60.0             0.0
+unattributed             80.0            80.0
+ order_id  amount        first         last
+        1   100.0          seo          ads
+        2    50.0          seo          ads
+        3   200.0        email        email
+        4    80.0 unattributed unattributed
+        5    60.0       social          ads
+        7    40.0          ads         push
+asserts passed

@@ -1,0 +1,64 @@
+**Say this first (1 line):** One candidate costs 2,000 x 3 x 0.0153 = 91.80 (illustrative), which is tiny next to the risk, so I would run every serious candidate on the full suite and spend my time on the plan: freeze the suite, compare prompt by prompt, canary, and keep a fallback.
+
+**Clarifying questions:**
+- Is 0.0153 the generation cost only, or does it include the judge call? If answers are scored by a model judge, each run costs more, so the number can double.
+- What exactly is the "snapshot" and is the replacement named? It sets whether I test one candidate or three.
+- Is the suite a sample of real traffic, or hand-written prompts? Real traffic tells me about users. Hand-written prompts tell me about known failures.
+- What is the pass rule per prompt (exact match, rubric, judge)? It decides how noisy a single run is.
+- Are there hard requirements (JSON format, refusal behaviour, latency, price) that can fail even when answer quality is fine?
+- What is the fallback if no candidate passes by day 90 (stay on the old model through an extension, or ship a degraded feature)?
+
+**Approach:**
+1. Cost. Calls = 2,000 prompts x 3 runs = 6,000. Cost = 6,000 x 0.0153 = 91.80. Three candidates = 275.40. All numbers are illustrative.
+2. Day 0 to 7: freeze the suite and the scoring rules. Record the old model's results (3 runs) as the baseline. Add 100 or so prompts from recent real traffic so the suite is not stale.
+3. Day 8 to 30: run each candidate with 3 runs at the production settings. Use the majority verdict per prompt, and flag prompts that disagree across runs as flaky.
+4. Compare paired, prompt by prompt. Count prompts that got worse and prompts that got better. Do not look only at the total pass rate.
+5. Read every regression by hand, grouped by cause: format drift, refusals, longer or shorter answers, changed tone, a real quality loss.
+6. Fix what can be fixed: edit the prompt (re-test the old model too, so the comparison stays fair), add examples, tighten the output schema. Keep a prompt version per model.
+7. Day 31 to 60: shadow traffic or a small canary (for example 5% of traffic). Watch user-facing metrics and cost, not just the suite.
+8. Day 61 to 75: ramp to 100% behind a flag. Keep the old model callable until the retirement date.
+9. Day 76 to 90 is the buffer. Never plan to finish on day 89.
+
+**What if the new version regresses on some prompts:**
+- If the flipped prompts are few and fixable by a prompt change, fix and re-run only those prompts plus a random sample of the rest (cheap).
+- If a whole category regresses, route that category to another model or keep a rule-based path, and ship the rest.
+- If the regression is real and no candidate fixes it, tell the product owner early, with the list of prompts, and ask for an extension or accept a degraded feature. Do not hide it in an average.
+
+**Metrics:**
+- Paired result per prompt: pass on baseline majority and pass on candidate majority. Counts: better = fail to pass, worse = pass to fail.
+- Net change = (better - worse) / 2,000. Sign test on the flipped prompts only.
+- Flaky rate = prompts whose 3 runs disagree / 2,000.
+- Guardrails: format-valid rate, refusal rate, latency p95, cost per call, and the pass rate on the safety and high-value slices separately.
+
+**Risks:**
+- A suite pass rate that moves by 0.5 points is inside noise for a suite this size; do not decide on it.
+- The suite may not cover what users now ask. Add fresh traffic.
+- Changing the prompt for the new model and comparing against an untuned old prompt gives a fake win.
+- Behaviours that are not in the suite (tone, length, safety) can shift. Add a small manual review.
+- Pricing or rate limits of the new model may break the budget even if quality is fine.
+
+**What the interviewer scores:**
+- Strong: computes 91.80 and says it is small, then plans around risk. Weak: stops at the number or says "the cost is high".
+- Strong: paired prompt-level comparison and reading regressions. Weak: compares two overall percentages.
+- Strong: a dated plan with a buffer, canary and fallback. Weak: "swap it and watch".
+- Strong: knows what 3 runs do and do not do (flags flaky prompts, does not remove noise).
+
+**Example:** Illustrative. Suite 2,000, baseline majority pass 1,640 (82.0%), candidate 1,650 (82.5%). Flipped prompts: 60 worse, 70 better. Sign test p = 0.43, so the 0.5-point gain is not evidence. Weak: "The new model scores higher, ship it." Strong: "The totals are close, but 60 prompts got worse. I will read those 60, and if they cluster in JSON output I fix the schema prompt, re-test, and canary at 5% before moving everyone."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why 3 runs and not 1 or 10?* One run cannot separate a real regression from luck on a flaky prompt. Three gives a majority and flags disagreement, at 3x cost. Ten is rarely worth it unless the suite is small and decisions are close.
+- *Can you run the cheap check first?* Yes: a 200-prompt random subset first to drop bad candidates, then the full suite on survivors.
+- *What if the old model is retired earlier than promised?* Keep a second provider or a tested fallback so the feature degrades, not breaks. Related: Book 2 Part 9 Q4 ("What is LLM-as-a-judge?") for scoring if you use a judge.
+
+**Common mistakes:**
+- Comparing only the total pass rate.
+- Treating one run as the truth.
+- Tuning the prompt for the new model only.
+- Forgetting judge cost, format and latency checks.
+- Planning to finish on the last day.

@@ -1,0 +1,13 @@
+replicaCount: 1
+image:
+  tag: "dev"
+resources:
+  requests: {cpu: 250m, memory: 512Mi}
+  limits: {memory: 1Gi}
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+gpu:
+  count: 0
+modelUri: s3://models-dev/fraud/3

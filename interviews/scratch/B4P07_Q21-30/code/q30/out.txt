@@ -1,0 +1,9 @@
+$ python3 -I ci_cost.py
+before: 67 billed min per run x 150 runs = 10050 min/week
+after : 2592 min/week (PR runs + 7 nightly full-data runs)
+saving: 7458 min/week = 74%
+wall clock critical path before: 43 min if serial (jobs can also run in parallel)
+$ actionlint ci_fast.yml
+exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows ci_fast.yml
+ok -- validation done

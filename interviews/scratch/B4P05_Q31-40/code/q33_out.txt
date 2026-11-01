@@ -1,0 +1,10 @@
+bad2_dag.py: FAIL
+    line 7: default_args has no retries
+    line 6: top-level call into boto3
+bad_dag.py: FAIL
+    line 6: missing tags
+    line 6: default_args has no owner
+    line 6: default_args has no retries
+    line 4: top-level call into requests
+good_dag.py: OK
+exit=1

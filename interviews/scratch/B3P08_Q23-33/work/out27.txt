@@ -1,0 +1,16 @@
+SQL (abandoned = cart and no purchase anywhere in the session):
+       day  sessions  cart_sessions  abandoned  abandonment_rate  bounce_any_event  bounce_rate_any  bounce_one_page_view  bounce_rate_pv
+2024-03-01         5              4          2               0.5                 2             0.40                     1             0.2
+2024-03-02         3              1          1               1.0                 1             0.33                     0             0.0
+2024-03-03         1              0          0               NaN                 1             1.00                     1             1.0
+SQL variant (purchase must be at or after the first add_to_cart):
+       day  cart_sessions  abandoned  abandonment_rate_ordered
+2024-03-01              4          3                      0.75
+2024-03-02              1          1                      1.00
+2024-03-03              0          0                       NaN
+pandas:
+       day  sessions  cart_sessions  abandoned  abandonment_rate  bounce_any_event  bounce_rate_any  bounce_one_page_view  bounce_rate_pv
+2024-03-01         5              4          2               0.5                 2             0.40                     1             0.2
+2024-03-02         3              1          1               1.0                 1             0.33                     0             0.0
+2024-03-03         1              0          0               NaN                 1             1.00                     1             1.0
+asserts passed

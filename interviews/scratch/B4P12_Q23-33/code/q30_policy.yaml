@@ -1,0 +1,19 @@
+# Allowed data flows, policy as data. Region ids are generic labels, not any vendor's names.
+regions:
+  in-west: {country: IN}
+  in-south: {country: IN}
+  eu-1: {country: EU}
+  us-1: {country: US}
+fields:
+  pan_number:     restricted
+  account_number: restricted
+  phone:          restricted
+  customer_name:  restricted
+  txn_amount:     internal
+  merchant_cat:   internal
+  device_hash:    internal
+rules:
+  restricted_stays_in_india: true          # a restricted field may only sit in an IN region ...
+  allow_tokenised_abroad: true             # ... unless it is tokenised with the vault and key in India
+  keys_must_be_in_country: IN              # KMS key for any restricted store lives in an IN region
+  logs_may_leave: [internal]               # only these classes in logs that leave India

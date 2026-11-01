@@ -1,0 +1,2 @@
+self_harm  best t=0.41 P=0.46 R=0.98 cost=  323.0 | at t=0.5: P=0.71 R=0.92 cost=  656.0
+weapons    best t=0.34 P=0.10 R=0.97 cost=  840.0 | at t=0.5: P=0.23 R=0.72 cost= 1298.0

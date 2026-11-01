@@ -1,0 +1,10 @@
+IMAGE          CREATED        CREATED BY                                      SIZE      COMMENT
+a1b2c3d4e5f6   2 hours ago    CMD ["python" "serve.py"]                       0B
+<missing>      2 hours ago    COPY . /app # buildkit                          3.2GB
+<missing>      2 hours ago    RUN /bin/sh -c python get_model.py # buildkit   1.8GB
+<missing>      3 hours ago    RUN /bin/sh -c pip install -r requirements.txt  4.1GB
+<missing>      3 hours ago    RUN /bin/sh -c apt-get update && apt-get inst   612MB
+<missing>      3 hours ago    WORKDIR /app                                    0B
+<missing>      2 weeks ago    /bin/sh -c #(nop)  CMD ["python3"]              0B
+<missing>      2 weeks ago    RUN /bin/sh -c set -eux; apt-get update; apt   48.5MB
+<missing>      2 weeks ago    /bin/sh -c #(nop) ADD file:abc in /             74.8MB

@@ -1,0 +1,5 @@
+1) vol owned by root, process runs as uid 10001: PermissionError: [Errno 13] Permission denied: '/tmp/q13_zviyss1_/vol_ckpt/ckpt_1.pt'
+2) vol chown 10001, process uid 10001        : OK
+3) input dir (read-only), process uid 10001  : PermissionError: [Errno 13] Permission denied: '/tmp/q13_zviyss1_/data/ckpt_1.pt'
+4) backup files: ['ckpt_1.pt'] restored: ['ckpt_1.pt'] same: True
+5) run-command checks: {'read-only input': True, 'named volume': True, 'non-root': True}

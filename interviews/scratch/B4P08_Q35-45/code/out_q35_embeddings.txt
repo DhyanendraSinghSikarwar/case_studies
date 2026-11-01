@@ -1,0 +1,4 @@
+no shift         centroid_dist=0.044  domain_AUC=0.505
+small shift 0.3  centroid_dist=0.118  domain_AUC=0.666
+shift 1.0        centroid_dist=0.344  domain_AUC=0.915
+text length KS D=0.728 p=6.1e-257

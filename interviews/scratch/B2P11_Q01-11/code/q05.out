@@ -1,0 +1,15 @@
+t(s)  prompt stamped on trace  served from
+   0  qa@v2                    fetch
+  30  qa@v2                    cache
+  45  qa@v2                    cache
+  59  qa@v2                    cache
+  61  qa@v1                    fetch
+  90  qa@v1                    cache
+audit log:
+  asha published qa@v1 sha=e6856247
+  asha published qa@v2 sha=ad515fdf
+  ravi published qa@v3 sha=d39ea508
+  release-bot moved qa:production vNone->v1
+  ravi DENIED move qa:production->v3
+  release-bot moved qa:production v1->v2
+  release-bot moved qa:production v2->v1

@@ -1,0 +1,5 @@
+head 5%              kept  4988 of 100000 ( 5.0%) | errors kept 63/985 | low-score kept 95/1923
+tail: errors+low+5%  kept  7677 of 100000 ( 7.7%) | errors kept 985/985 | low-score kept 1923/1923
+retention sweep removed 71 of 100 full-text rows (TTL 30 days, synthetic)
+deletion report for u1: {'traces': 1, 'eval_set': 1, 'vector_cache': 0}
+remaining: {'traces': 1, 'eval_set': 0, 'vector_cache': 1} | backups and provider-side copies are NOT touched by this code

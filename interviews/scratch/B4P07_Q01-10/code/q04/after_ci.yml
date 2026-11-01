@@ -1,0 +1,16 @@
+name: after-ci
+on:
+  workflow_run:
+    workflows: ["code-ci"]
+    types: [completed]
+    branches: [main]
+  release:
+    types: [published]
+permissions:
+  contents: read
+jobs:
+  follow-up:
+    if: github.event_name == 'release' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "CI passed on main or a release was published"

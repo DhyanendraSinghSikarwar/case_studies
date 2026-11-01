@@ -1,0 +1,9 @@
+[
+ {"Name": "/api-1", "State": {"Status": "restarting", "Running": false, "ExitCode": 137, "OOMKilled": true, "Error": ""}, "RestartCount": 6, "HostConfig": {"Memory": 2147483648}},
+ {"Name": "/api-2", "State": {"Status": "exited", "Running": false, "ExitCode": 127, "OOMKilled": false, "Error": ""}, "RestartCount": 0, "HostConfig": {"Memory": 0}},
+ {"Name": "/api-3", "State": {"Status": "created", "Running": false, "ExitCode": 128, "OOMKilled": false, "Error": "failed to create task for container: exec /app/start.sh: no such file or directory"}, "RestartCount": 0, "HostConfig": {"Memory": 0}},
+ {"Name": "/api-4", "State": {"Status": "exited", "Running": false, "ExitCode": 126, "OOMKilled": false, "Error": ""}, "RestartCount": 0, "HostConfig": {"Memory": 0}},
+ {"Name": "/api-5", "State": {"Status": "exited", "Running": false, "ExitCode": 143, "OOMKilled": false, "Error": ""}, "RestartCount": 0, "HostConfig": {"Memory": 0}},
+ {"Name": "/api-6", "State": {"Status": "exited", "Running": false, "ExitCode": 1, "OOMKilled": false, "Error": ""}, "RestartCount": 3, "HostConfig": {"Memory": 0}},
+ {"Name": "/api-7", "State": {"Status": "created", "Running": false, "ExitCode": 128, "OOMKilled": false, "Error": "exec format error"}, "RestartCount": 0, "HostConfig": {"Memory": 0}}
+]

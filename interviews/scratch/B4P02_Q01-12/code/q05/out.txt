@@ -1,0 +1,9 @@
+== Dockerfile
+final image: python:3.11-slim-bookworm
+not an nvidia/cuda image; CUDA libs must come from the wheel
+rc=0
+== Dockerfile.nvidia-runtime
+final image: nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+flavour: runtime
+Dockerfile.nvidia-runtime:5 DL3008 warning: Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`
+rc=1

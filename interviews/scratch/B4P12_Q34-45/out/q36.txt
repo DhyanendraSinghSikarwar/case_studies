@@ -1,0 +1,13 @@
+case                                 x  cost/1k   biggest
+today                                1  44.8116   reads
+10x naive                           10  60.7855   reads
+10x + cache 60%                     10  26.8846   reads
+10x + cache + cand 500->200         10  24.4846   reads
+10x + cache + cand + log sample 20%  10  24.4526   reads
+... + refresh 4->2/day (negotiated)  10  24.3306   reads
+flat vs today? 0.55 x today
+sensitivity of 10x naive to unit costs (each +50%):
+  feature_read   -> 1.465 x base
+  gpu_ms         -> 1.033 x base
+  embed_refresh  -> 1.002 x base
+  log_byte       -> 1.000 x base

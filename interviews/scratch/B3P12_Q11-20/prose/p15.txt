@@ -1,0 +1,42 @@
+**Say this first (1 line):** Make a date spine for days 7 to 14, join each spine day to the events from the previous six days and itself (`BETWEEN d - 6 days AND d`), and count distinct users; summing daily distinct counts over a 7-row window is wrong because one user active on three days is counted three times.
+
+**Schema and sample data:** (assumption: "trailing 7 days including that day" means the day itself and the six days before it; the data runs 2025-03-01 to 2025-03-14, with no events at all on 03-04, 03-07 and 03-11. The seed has 6 users and several rows per user per day.)
+@@SCHEMA@@
+
+**SQL answer:** `sql` in the Code block: a recursive CTE `spine(d)` from 2025-03-07 to 2025-03-14, a `LEFT JOIN` to `events` on `event_date BETWEEN date(s.d, '-6 days') AND s.d`, `COUNT(DISTINCT e.user_id)` grouped by `s.d`. `wrong` is the 7-row-window version, shown for contrast.
+
+**pandas answer:** the Code block builds the spine with `pd.date_range`, does a `cross` merge with the events, keeps rows with `day - 6 days <= event_date <= day`, then `groupby('day')['user_id'].nunique()`, reindexed to the spine with `fill_value=0` so a day with an empty window would still show 0.
+
+**Example:** by hand, the window for 03-07 is 03-01 to 03-07. Users with an event in it: 1 (03-01, 03-02), 2 (03-01, 03-03), 3 (03-02), 4 (03-05, 03-06). Users 5 and 6 are later. That is 4. The window for 03-12 is 03-06 to 03-12: user 4 (03-06), user 1 (03-08, 03-09), user 5 (03-09), user 6 (03-10), user 3 (03-12) gives 5. User 2's last event is on 03-03, so they drop out from 03-10 onward.
+
+**Code:** run with `python3 -I`.
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- **Days with no events (03-07 and 03-11 are the ones in the answer range):** the spine keeps them. A query that groups the events by day has no row for them, so it silently skips the day. Here the window of 03-11 (03-05 to 03-11) still has 4 active users.
+- **Several rows per user per day:** `COUNT(DISTINCT user_id)` handles them; `COUNT(*)` would count events.
+- **Empty window:** with a `LEFT JOIN` a spine day with no events in its window shows 0, because `COUNT(DISTINCT NULL)` is 0. In pandas the `reindex(fill_value=0)` does the same job.
+- **First six days:** days 1 to 6 have partial windows, so the question asks only for day 7 onward; the events from 03-01 still feed day 7.
+- **Dates as text:** `date(s.d, '-6 days')` returns an ISO string that compares correctly with the stored dates.
+
+**Then explain:**
+- **Why a 7-row window is wrong:** it adds up daily distinct counts. In the output the `w_spine` column (7-row sum with a full spine) shows 6 or 7 on days where the true 7-day distinct count is 4 or 5, because user 1 is counted on each day they were active. Distinct counts cannot be added across days; you need the distinct count of the union.
+- **A 7-row window without a spine is wrong in a second way:** the frame is 7 *rows*, not 7 *days*; with missing days it reaches back further (`w_nospine`, 8 to 10 here), and the days without events have no row at all (NULL in the `LEFT JOIN`).
+- **Cost:** the range join compares each spine day with up to 7 days of events; fine for a metric table, but at scale people keep a daily "user activity" table (user, day) first, then join that.
+- **Dialects (not executed here):** PostgreSQL would build the spine with `generate_series`, BigQuery with `GENERATE_DATE_ARRAY`, and most engines do not allow `COUNT(DISTINCT ...)` as a window function (PostgreSQL rejects it, from memory), which is why the range join is the portable answer. SQLite does not allow it either.
+- **Scoring note (Set F1, Q4 of 5, 25 pts):** about 10 points for the eight right counts (4, 4, 4, 4, 4, 5, 5, 5), 5 for the spine and the days-with-no-events handling, 5 for pandas asserted equal, 2.5 for stating that the window is the day plus six earlier days, 2.5 for the "why not a 7-row window" sentence (or a check that the metric never exceeds total distinct users, 6). Giving the 7-row-window numbers earns partial credit only.
+
+**Follow-ups:**
+- *Weekly and monthly actives together (WAU, MAU)?* Same pattern with `-6 days` and `-29 days`; stickiness is DAU divided by MAU (Part 8).
+- *How do you make it incremental?* Keep a table of (user, last_active_date) and count users whose last active date falls in the window; this only works for the "active in window" count, not for retention-style questions.
+- *What does it cost?* A (user_id, event_date) index (Part 11) lets each window read a range.
+
+**Common mistakes:**
+- Summing daily distinct counts.
+- `ROWS 6 PRECEDING` on a table with missing days.
+- Counting rows instead of distinct users.
+- Off-by-one: using `-7 days` (an 8-day window).
+- Starting the spine at day 1 and then reporting the partial windows of days 1 to 6.

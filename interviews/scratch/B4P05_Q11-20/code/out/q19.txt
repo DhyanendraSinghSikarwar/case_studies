@@ -1,0 +1,19 @@
+...F.                                                                    [100%]
+=================================== FAILURES ===================================
+_________________ test_every_task_has_retries[bad_no_retries] __________________
+
+bag = <airflow.dag_processing.dagbag.DagBag object at 0x7f9628ddb770>
+dag_id = 'bad_no_retries'
+
+    @pytest.mark.parametrize("dag_id", ["good_train", "bad_no_retries"])
+    def test_every_task_has_retries(bag, dag_id):
+        dag = bag.get_dag(dag_id)
+        missing = [t.task_id for t in dag.tasks if (t.retries or 0) < 1]
+>       assert not missing, f"{dag_id}: tasks without retries: {missing}"
+E       AssertionError: bad_no_retries: tasks without retries: ['only']
+E       assert not ['only']
+
+tests/test_dags.py:30: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_dags.py::test_every_task_has_retries[bad_no_retries] - Asse...
+1 failed, 4 passed in 1.85s

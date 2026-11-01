@@ -1,0 +1,10 @@
+  column        kind                     test         statistic  flag
+  income     numeric      KS + Wasserstein/sd   D=0.182 W=0.477 DRIFT
+ channel categorical           Jensen-Shannon          JS=0.227 DRIFT
+  is_new      binary         rate diff + chi2        diff=0.204 DRIFT
+merchant   high_card       JS on top-10+OTHER          JS=0.124 DRIFT
+n_txn_7d       count           Wasserstein/sd           W=1.332 DRIFT
+text_len     numeric      KS + Wasserstein/sd   D=0.491 W=1.329 DRIFT
+event_ts   timestamp JS hour-of-day + max-lag JS=0.038 lag_h=18 DRIFT
+
+control (no shift) flags: [False, False, False, False, False, False, False]

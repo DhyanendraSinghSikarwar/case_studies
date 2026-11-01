@@ -1,0 +1,11 @@
+azure-ai-ml 1.35.2
+Workspace centralindia public: Disabled | mode: AllowOnlyApprovedOutbound | rules: [('pypi', 'FqdnDestination'), ('pe-storage', 'PrivateEndpointDestination')]
+good -> OK
+bad -> 
+   - workspace public_network_access is not Disabled
+   - no private endpoint for inbound access to the workspace
+   - internet outbound allowed: exfiltration path open (ok only with a written reason)
+   - no outbound private endpoint rule for key_vault
+   - no outbound private endpoint rule for container_registry
+   - endpoint fraud-ep is public
+   - deployer lacks RBAC to create private endpoints (managed network creation fails)

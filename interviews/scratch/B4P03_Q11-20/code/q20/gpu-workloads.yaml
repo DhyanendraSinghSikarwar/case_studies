@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scorer
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: scorer}
+  template:
+    metadata:
+      labels: {app: scorer}
+    spec:
+      nodeSelector:
+        pool: gpu-pool                   # label that every node of the GPU pool carries
+      tolerations:
+        - {key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}
+      containers:
+        - name: server
+          image: registry.example.com/ml/scorer:3.1.0
+          resources:
+            requests: {cpu: "2", memory: 8Gi}
+            limits: {memory: 8Gi, nvidia.com/gpu: 1}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: scorer-pdb
+spec:
+  minAvailable: 1                        # a scale-down drain may never take the last scorer
+  selector:
+    matchLabels: {app: scorer}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: train-long
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      annotations:
+        # Tells Cluster Autoscaler not to evict this pod to empty a node. Karpenter has its own do-not-disrupt style
+        # annotation; names differ by project and version, check current docs.
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+    spec:
+      restartPolicy: OnFailure
+      nodeSelector:
+        pool: gpu-pool
+      tolerations:
+        - {key: nvidia.com/gpu, operator: Exists, effect: NoSchedule}
+      containers:
+        - name: train
+          image: registry.example.com/ml/train:2.3.0
+          command: ["python", "train.py", "--resume-from", "/ckpt/latest.pt"]   # checkpoints make spot loss survivable
+          resources:
+            requests: {cpu: "8", memory: 32Gi}
+            limits: {memory: 32Gi, nvidia.com/gpu: 4}

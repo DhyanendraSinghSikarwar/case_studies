@@ -1,0 +1,21 @@
+$ mypy features.py
+Success: no issues found in 1 source file
+exit=0
+
+$ mypy features_bad.py
+features_bad.py:12: error: Argument "floor" to "add_features" has incompatible type "str"; expected "float"  [arg-type]
+features_bad.py:13: error: Argument 1 to "log_income" has incompatible type "list[float]"; expected "ndarray[tuple[Any, ...], dtype[float64]]"  [arg-type]
+features_bad.py:14: error: Argument "floor" to "log_income" has incompatible type "str"; expected "float"  [arg-type]
+features_bad.py:15: error: Incompatible types in assignment (expression has type "ndarray[tuple[Any, ...], dtype[float64]]", variable has type "int")  [assignment]
+Found 4 errors in 1 file (checked 1 source file)
+exit=1
+
+$ mypy --strict features.py   # what "strict for new modules" means
+Success: no issues found in 1 source file
+exit=0
+
+$ python3 -I runtime_traps.py
+KeyError at runtime (mypy cannot see DataFrame columns): 'income'
+2-D array accepted by a function meant for 1-D income: (3, 2)
+mypy 2.4.0 numpy 2.5.3 pandas 3.0.5
+pandas-stubs              3.0.5.260914

@@ -1,0 +1,17 @@
+$ actionlint .github/workflows/ml-ci.yml .github/workflows/caller.yml .github/workflows/caller-local.yml
+exit=0
+
+$ actionlint .github/workflows/bad-caller.yml   # passes python_version, callee declares python-version
+.github/workflows/bad-caller.yml:7:7: input "python_version" is not defined in "./.github/workflows/ml-ci.yml" reusable workflow. defined inputs are "python-version", "test-path" [workflow-call]
+  |
+7 |       python_version: "3.11"
+  |       ^~~~~~~~~~~~~~~
+exit=1
+
+$ check-jsonschema --builtin-schema vendor.github-workflows (3 good files)
+ok -- validation done
+exit=0
+
+$ check-jsonschema on bad-caller.yml
+ok -- validation done
+exit=0

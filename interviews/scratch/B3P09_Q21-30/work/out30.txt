@@ -1,0 +1,18 @@
+case -> SQL chain join (lca, hops) | SQL materialized-path prefix (lca, hops)
+  10 and 12 (the question): (3, 4) (Hari) | (3, 4)
+  4 and 10 (one is the ancestor of the other): (4, 1) (Shyam) | (4, 1)
+  10 and 10 (same employee): (10, 0) (Ram) | (10, 0)
+  10 and 21 (different trees): None (-) | None
+  10 and 30 (ids '/1/2/3/4/10/' and '/1/2/30/'): (2, 4) (Radha) | (2, 4)
+  8 and 11: (1, 7) (Tim) | (1, 7)
+
+all 79 connected pairs: SQL chain join == pandas dict walk; pairs across the two companies are absent in both
+number of employee pairs in total: 105 | pairs with no common ancestor: 26
+  networkx lowest_common_ancestor(10, 12) = 3
+  networkx lowest_common_ancestor(4, 10) = 4
+  networkx lowest_common_ancestor(10, 10) = 10
+  networkx lowest_common_ancestor(10, 21) = None
+  networkx lowest_common_ancestor(10, 30) = 2
+  networkx lowest_common_ancestor(8, 11) = 1
+networkx 3.6.1 lowest_common_ancestor disagrees with the SQL answer on 0 of 79 connected pairs
+asserts passed

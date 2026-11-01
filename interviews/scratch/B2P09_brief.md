@@ -1,0 +1,11 @@
+# Wave B brief, Book 2 Part 9 (LLM evaluation)
+
+You write answers for a range of questions in interviews/Book2_GenAI/Book2_GenAI_Part09.md. DO NOT edit that file and DO NOT run git. Write only to your own scratch file (path given in your task): copy each question's `### Qn ...` heading line and `**Asked at:**` line VERBATIM from Part09.md, then the answer.
+
+Read first: style_guide.md, scratch/B2P09_wavea section of the scope note in Part09.md (header, evidence limits), research_notes/Book2_Part09_sources.md (what was opened vs snippet-only, facts that could not be verified), and one finished answer in Book2_GenAI_Part08.md (e.g. Q1, Q18) as the format model. Do not repeat earlier parts; cross-reference by part and question number (verify the number against that part's heading before citing).
+
+Answer template (all six fields, in this order, bold labels exactly): **Say this first (1 line):** / **Then explain:** (bullets) / **Example:** (MANDATORY, concrete, small numbers) / **Code:** (python block, runnable with `python3 -I`, numpy/torch/stdlib only, no network; mock LLM judges and toy data; then an **Output (my run):** block pasted from the real run) / **Follow-ups:** / **Common mistakes:**.
+
+Rules: every number in the text must come from a real run or a cited source; label synthetic/assumed inputs. Reported or vendor claims must be labelled with their setting (e.g. "reported by the authors"). Do not quote leaderboard numbers, prices, or dates that the sources note lists as unverified (OpenAI Evals shutdown dates, Arena rebrand date, SWE-bench Verified percentages, self-recognition percentages, HarmBench classifier details). You may use WebFetch/WebSearch to verify further facts (MT-Bench paper body, Ragas context recall page) and then say so; otherwise say "from memory, check". For statistics code, verify against brute force or a known closed form. Keep honest weak toy results. No salary figures, no claims that a company asked a question beyond the Asked-at line. Python fences must start at line start; no triple backticks inside code. Use `### Qn` headings only for question blocks.
+
+When done: verify block count, order, zero ANSWER_PENDING, headings identical to Part09.md, and run every python block standalone with `python3 -I`. Final report: what ran, bugs fixed, premises corrected, and facts written from memory.

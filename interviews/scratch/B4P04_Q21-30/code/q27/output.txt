@@ -1,0 +1,12 @@
+wandb: Adding directory to artifact (data/imgs)... Done. 0.0s
+name: train-data | type: dataset | size entries: 3
+  imgs/a.txt       digest=BkMMzP4kwnLZ... ref=None
+  raw_events       digest=https://exam... ref=https://example.com/raw/events.parquet
+  train.csv        digest=F4uoVwdHDEHP... ref=None
+artifact digest v1: f6fe2d8e2ac987a649f41e7d1fe2b6fc
+same content, rebuilt -> same digest? True
+one row appended -> new digest? True
+version/aliases before upload: None | (v0/v1/latest are assigned by the server on log_artifact)
+s3:// reference here -> Error: s3:// references requires the boto3 library, run pip install wandb[aws]
+
+not run: run.log_artifact(a2, aliases=['latest']) / run.use_artifact('train-data:v0') need an account

@@ -1,0 +1,34 @@
+name: q12
+services:
+  gateway:
+    image: myorg/gateway:1.0
+    networks:
+      default: null
+    depends_on:
+      model:
+        condition: service_healthy
+        required: true
+  model:
+    networks:
+      default: null
+    build:
+      context: /home/user/case_studies/interviews/scratch/B4P02_Q01-12/code/q12
+      dockerfile: Dockerfile
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - /app/healthcheck.py
+        - http://127.0.0.1:8000/ready
+      timeout: 3s
+      interval: 15s
+      retries: 3
+      start_period: 2m0s
+    ports:
+      - mode: ingress
+        target: 8000
+        published: "8000"
+        protocol: tcp
+networks:
+  default:
+    name: q12_default

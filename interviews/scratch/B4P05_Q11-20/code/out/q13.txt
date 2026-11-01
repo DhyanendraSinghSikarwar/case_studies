@@ -1,0 +1,12 @@
+INFO    | Task run 'flaky_fetch-8fd' - Task run failed with exception: ConnectionError('try 1 failed') - Retry 1/2 will start immediately
+INFO    | Task run 'flaky_fetch-8fd' - Task run failed with exception: ConnectionError('try 2 failed') - Retry 2/2 will start immediately
+INFO    | Task run 'flaky_fetch-8fd' - Finished in state Completed()
+INFO    | Flow run 'imperial-griffin' - training data-2026-10-02 for 5 epochs
+INFO    | Flow run 'imperial-griffin' - Finished in state Completed()
+ERROR   | prefect.flows - Parameter validation failed for flow 'train-flow': [{'type': 'int_parsing', 'loc': ('epochs',), 'msg': 'Input should be a valid integer, unable to pa
+ERROR   | prefect.engine - Validation of flow parameters failed with error: Flow run received invalid parameters:
+INFO    | prefect.engine - Finished in state Failed('Validation of flow parameters failed with error: ParameterTypeError: Flow run received invalid parameters:\n - epochs: Inp
+RETURN: ok calls: 3
+VALIDATION: ParameterTypeError Flow run received invalid parameters:
+PLAIN TASK .fn: data-2026-10-03
+PLAIN FLOW .fn: MissingContextError - There is no active flow or task run context.

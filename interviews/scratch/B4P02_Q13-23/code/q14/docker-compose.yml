@@ -1,0 +1,63 @@
+name: mlstack
+services:
+  postgres:
+    image: postgres:16-bookworm        # pin minor/digest in real use; check current tags
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [mlnet]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  minio:
+    image: minio/minio:latest          # pin a dated release tag in real use
+    command: server /data --console-address ":9001"
+    env_file: .env
+    volumes:
+      - miniodata:/data
+    networks: [mlnet]
+    ports:
+      - "127.0.0.1:9001:9001"          # console for humans, bound to loopback only
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]   # assumes curl in the image; check
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  mlflow:
+    build: ./mlflow                    # small image: mlflow + psycopg2 + boto3
+    env_file: .env
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000   # service name, not localhost
+      MLFLOW_BACKEND_STORE_URI: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      MLFLOW_ARTIFACTS_DESTINATION: s3://mlflow-artifacts   # env names: check current MLflow docs
+    command: ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000"]   # no shell, so no $VAR here
+    networks: [mlnet]
+    ports:
+      - "127.0.0.1:5000:5000"
+    depends_on:
+      postgres: {condition: service_healthy}
+      minio: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://localhost:5000/health')"]
+      interval: 10s
+      timeout: 3s
+      start_period: 20s
+      retries: 6
+  api:
+    build: ./api
+    env_file: .env
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    networks: [mlnet]
+    ports:
+      - "8000:8000"                    # the only service users call
+    depends_on:
+      mlflow: {condition: service_healthy}
+networks:
+  mlnet:
+    driver: bridge
+volumes:
+  pgdata:
+  miniodata:

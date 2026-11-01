@@ -1,0 +1,6 @@
+new-tactic share needed for 70% overall: 0.20
+old 800 cases, caught 680; new 200 cases, caught 20; overall 70%
+z for 85% -> 70% with n=1000 each: 8.0
+new tactic is 20% of real fraud but 2.9% of flagged fraud
+new-tactic fraud labelled as legitimate in a flagged-only training set: 180
+random audit finds 12 fraud cases in 2,000 reviewed (expected about 10)

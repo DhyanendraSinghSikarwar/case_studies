@@ -1,0 +1,15 @@
+services:
+  model:
+    build: .
+    ports: ["8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "/app/healthcheck.py", "http://127.0.0.1:8000/ready"]
+      interval: 15s
+      timeout: 3s
+      start_period: 120s
+      retries: 3
+  gateway:
+    image: myorg/gateway:1.0
+    depends_on:
+      model:
+        condition: service_healthy

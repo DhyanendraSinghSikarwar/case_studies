@@ -1,0 +1,5 @@
+name: "preprocess"
+backend: "python"
+max_batch_size: 8
+input [ { name: "RAW", data_type: TYPE_STRING, dims: [ 1 ] } ]
+output [ { name: "FEATURES", data_type: TYPE_FP32, dims: [ 4 ] } ]

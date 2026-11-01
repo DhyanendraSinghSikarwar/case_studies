@@ -1,0 +1,9 @@
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] k = 9 -> 0.5
+[23, 24, 36, 39, 46, 56, 57, 65, 84, 98] k = 1 -> 14.0
+[0, 10] k = 0 -> 10.0
+[0, 10] k = 1 -> 5.0
+eps=1e-6 loop on [0,10], k=1: (5.0, 24)
+eps=1e-17 loop on the 14.0 example, capped at 10**6: 1000000 loops
+600 seeded cases: worst |binary search - exact| = 1.1102230246251565e-16 ; exact optimum was always some gap/(c+1)
+need(d) non-increasing in d on 200 seeded station lists
+all checks passed

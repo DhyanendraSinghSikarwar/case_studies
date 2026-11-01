@@ -1,0 +1,6 @@
+examples ok
+single node points at itself on both sides: head.left is head and head.right is head
+BST shapes checked (0..8 nodes), three methods each, identity verified: 2056
+300 random BSTs ok
+recursive version on a 10000-deep chain: RecursionError (default limit 1000)
+iterative version on the same chain: head = 1 , head.left = 10000 , n steps along right returns to head

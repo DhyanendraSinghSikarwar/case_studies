@@ -1,0 +1,30 @@
+average notes length: 299.9
+with ix_cust only: page_count=9359 -> ix_cust: 262 pages (1,073,152 bytes), orders: 9096 pages (37,257,216 bytes), sqlite_schema: 1 pages (4,096 bytes)
+SELECT * with ix_cust(customer_id)
+   plan : SEARCH orders USING INDEX ix_cust (customer_id>? AND customer_id<?)
+   steps: 55,549   rows: 5,047
+3 columns with ix_cust(customer_id): still needs the table row for order_date and amount
+   plan : SEARCH orders USING INDEX ix_cust (customer_id>? AND customer_id<?)
+   steps: 45,455   rows: 5,047
+after ix_cov: page_count=10113 -> ix_cov: 754 pages (3,088,384 bytes), ix_cust: 262 pages (1,073,152 bytes), orders: 9096 pages (37,257,216 bytes), sqlite_schema: 1 pages (4,096 bytes)
+SELECT * with both indexes
+   plan : SEARCH orders USING INDEX ix_cust (customer_id>? AND customer_id<?)
+   steps: 55,556   rows: 5,047
+3 columns with ix_cov(customer_id, order_date, amount)
+   plan : SEARCH orders USING COVERING INDEX ix_cov (customer_id>? AND customer_id<?)
+   steps: 40,415   rows: 5,047
+one customer, 3 columns, covering
+   plan : SEARCH orders USING COVERING INDEX ix_cov (customer_id=?)
+   steps: 85   rows: 8
+one customer, SELECT *
+   plan : SEARCH orders USING INDEX ix_cust (customer_id=?)
+   steps: 125   rows: 8
+one customer, 3 columns, no covering index
+   plan : SEARCH orders USING INDEX ix_cust (customer_id=?)
+   steps: 86   rows: 8
+--- SELECT * is not stable when the schema changes ---
+columns before: ['order_id', 'customer_id', 'order_date', 'status', 'amount', 'notes']
+columns after : ['order_id', 'customer_id', 'order_date', 'status', 'amount', 'notes', 'coupon']
+--- pandas: only read the columns you need ---
+memory_usage(deep=True) bytes: all columns 48827385 | usecols 7500132
+notes column alone: 34894798

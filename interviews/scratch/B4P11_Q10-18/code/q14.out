@@ -1,0 +1,6 @@
+bank_gcc_m365          {'azure_ml': 4.37, 'vertex': 2.42, 'sagemaker': 2.95} -> azure_ml
+product_bigquery       {'azure_ml': 2.37, 'vertex': 3.89, 'sagemaker': 2.74} -> vertex
+services_all_clouds    {'azure_ml': 3.21, 'vertex': 3.07, 'sagemaker': 3.14} -> azure_ml
+services, client A weights: {'azure_ml': 3.64, 'vertex': 3.07, 'sagemaker': 3.07}
+services, client B weights: {'azure_ml': 3.18, 'vertex': 3.45, 'sagemaker': 3.09}
+hand check: 4.37

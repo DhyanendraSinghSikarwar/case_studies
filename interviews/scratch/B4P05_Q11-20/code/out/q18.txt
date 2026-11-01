@@ -1,0 +1,12 @@
+=== dags test map_train
+MAP_INDEX=2 region=east lr=0.01 epochs=3
+MAP_INDEX=3 region=west lr=0.01 epochs=3
+MAP_INDEX=0 region=north lr=0.1 epochs=3
+MAP_INDEX=1 region=south lr=0.1 epochs=3
+RESULTS_COUNT= 4 BEST= {'region': 'east', 'score': 0.89}
+state=success
+2026-10-26T14:32:22.973176Z [error    ] XCom not found                 [airflow.sdk.api.client] dag_id=map_train detail={'reason': 'not_found', 'messa
+=== dags test map_empty
+AFTER_RAN
+state=success
+2026-10-26T14:32:31.996853Z [info     ] Marking <TaskInstance: map_empty.work manual__2026-10-26T14:32:27.393284+00:00 [None] ti_id=01a178a0-8231-70e3

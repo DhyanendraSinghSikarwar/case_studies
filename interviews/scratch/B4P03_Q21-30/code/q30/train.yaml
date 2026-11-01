@@ -1,0 +1,85 @@
+# SKETCHES. Kubeflow Training Operator and Kueue are CRDs; field names change by version. Check current docs.
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ResourceFlavor
+metadata:
+  name: a100-nodes
+spec:
+  nodeLabels:
+    gpu-type: a100
+---
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ClusterQueue
+metadata:
+  name: team-ml
+spec:
+  namespaceSelector: {}
+  resourceGroups:
+    - coveredResources: ["cpu", "memory", "nvidia.com/gpu"]
+      flavors:
+        - name: a100-nodes
+          resources:
+            - {name: cpu, nominalQuota: "64"}
+            - {name: memory, nominalQuota: 512Gi}
+            - {name: nvidia.com/gpu, nominalQuota: "8"}
+---
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  name: team-ml-queue
+  namespace: ml-train
+spec:
+  clusterQueue: team-ml
+---
+apiVersion: kubeflow.org/v1
+kind: PyTorchJob
+metadata:
+  name: bert-finetune
+  namespace: ml-train
+  labels:
+    kueue.x-k8s.io/queue-name: team-ml-queue      # Kueue holds the job until the whole ask fits quota
+spec:
+  runPolicy:
+    backoffLimit: 3
+  pytorchReplicaSpecs:
+    Master:
+      replicas: 1
+      restartPolicy: OnFailure
+      template:
+        spec:
+          containers:
+            - name: pytorch
+              image: registry.example.com/trainer:5.1
+              args: ["--ckpt-dir=/ckpt", "--resume=auto"]      # restart resumes from the last checkpoint
+              env:
+                - {name: NCCL_DEBUG, value: WARN}
+              resources:
+                requests: {cpu: "8", memory: 64Gi}
+                limits: {nvidia.com/gpu: 2}
+              volumeMounts:
+                - {name: shm, mountPath: /dev/shm}             # default /dev/shm is tiny; dataloaders crash
+                - {name: ckpt, mountPath: /ckpt}
+          volumes:
+            - name: shm
+              emptyDir: {medium: Memory, sizeLimit: 16Gi}
+            - name: ckpt
+              persistentVolumeClaim: {claimName: bert-ckpt}
+    Worker:
+      replicas: 3
+      restartPolicy: OnFailure
+      template:
+        spec:
+          containers:
+            - name: pytorch
+              image: registry.example.com/trainer:5.1
+              args: ["--ckpt-dir=/ckpt", "--resume=auto"]
+              resources:
+                requests: {cpu: "8", memory: 64Gi}
+                limits: {nvidia.com/gpu: 2}
+              volumeMounts:
+                - {name: shm, mountPath: /dev/shm}
+                - {name: ckpt, mountPath: /ckpt}
+          volumes:
+            - name: shm
+              emptyDir: {medium: Memory, sizeLimit: 16Gi}
+            - name: ckpt
+              persistentVolumeClaim: {claimName: bert-ckpt}

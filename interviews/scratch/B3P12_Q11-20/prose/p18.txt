@@ -1,0 +1,45 @@
+**Say this first (1 line):** For each signup date count distinct signups and count distinct users who have a login dated exactly signup date plus one day, with a `LEFT JOIN` to the logins and `COUNT(DISTINCT CASE ...)` so duplicate login rows are harmless and a date with nobody retained still appears with 0.00.
+ 
+**Schema and sample data:** (assumption: day 1 means the next calendar day only; logging in on the signup day or two days later does not count; the rate is retained users divided by all users who signed up that day, and it is rounded to 2 decimals.)
+@@SCHEMA@@
+
+**SQL answer:** `sql` in the Code block: `FROM users u LEFT JOIN logins l ON l.user_id = u.user_id`, grouped by `signup_date`, with `COUNT(DISTINCT u.user_id)` for signups, `COUNT(DISTINCT CASE WHEN l.login_date = date(u.signup_date, '+1 day') THEN u.user_id END)` for retained, and `ROUND(1.0 * retained / signups, 2)` for the rate (the printout formats it with two decimals).
+
+**pandas answer:** compute `next_day` for each user, merge with the de-duplicated logins on `(user_id, next_day = login_date)`, mark users found, then `groupby('signup_date').agg(signups=('user_id', 'nunique'), retained=('retained', 'sum'))` and `(retained / signups).round(2)`.
+
+**Example:** by hand.
+- Signup 03-01 (users 1, 2, 3): user 1 logs in on 03-02, twice (one retained user, not two); user 2 logs in only on 03-03 (two days later, not retained); user 3 logs in on 03-02. Retained 2 of 3: 0.67.
+- Signup 03-02 (users 4, 5, 6): user 4 logs in on 03-03 (retained); user 5 never logs in; user 6 logs in only on 03-09. Retained 1 of 3: 0.33.
+- Signup 03-03 (users 7, 8, 9): user 7 logs in on 03-05 (two days later), user 8 never, user 9 logs in on 03-03 itself (same day). None on 03-04, so 0 of 3: 0.00.
+
+**Code:** run with `python3 -I`.
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- **Duplicate login rows (user 1):** `COUNT(DISTINCT ...)` and `drop_duplicates()` collapse them. A plain count of joined rows gives 3 "retained" for 03-01 in the second printed line, instead of the true 2, and a rate above the truth.
+- **Zero retained (03-03):** the date still appears because the denominator side comes from `users` and the `LEFT JOIN` keeps users with no logins; `COUNT(DISTINCT CASE ...)` returns 0, not NULL.
+- **Users who never log in (users 5 and 8):** kept by the `LEFT JOIN`; their `login_date` is NULL, the comparison is not true, the `CASE` gives NULL, and `COUNT` ignores it.
+- **Same-day logins (user 9) and day 2 logins (users 2, 7):** not day 1 by definition.
+- **Matching the rule exactly:** a `login_date` compared with `date(signup_date, '+1 day')` works because both are `YYYY-MM-DD` text; with timestamps, take `date()` of the login first.
+- **Immature cohorts:** if the latest signup date has not yet had its next day in the data, its rate is understated; mark or drop it in a real report (here the data covers up to 03-09).
+- **Printing 0.00:** SQLite's `ROUND` returns the number 0.0; the two-decimal text is a formatting step (done in the printout).
+
+**Then explain:**
+- **Why a LEFT JOIN from users:** an inner join to logins would drop users who never came back and inflate the rate (and drop the 0.00 row).
+- **Rounding:** `ROUND(2/3, 2)` is 0.67 in both engines. Rounding of exact halves can differ (SQLite and pandas disagree on, for example, 703.125, see Part 10), so keep the raw ratio if you need to compare cohorts.
+- **Dialects (not executed here):** PostgreSQL would write `u.signup_date + 1` (date plus integer) and MySQL `DATE_ADD(u.signup_date, INTERVAL 1 DAY)`; `COUNT(DISTINCT CASE ...)` works in both.
+- **Scoring note (Set F1, Q2 of 5, 20 pts):** about 8 points for the three right rows (0.67, 0.33, 0.00), 4 for the seeded edge cases (duplicate logins, the zero-retention date), 4 for pandas asserted equal, 2 for stating the day-1 definition and denominator, 2 for a check (retained never exceeds signups; signups add up to 9).
+
+**Follow-ups:**
+- *Day 7 retention?* Replace `+1 day` with `+7 days` (exactly day 7), or use a range if the product defines "within 7 days"; say which.
+- *Retention by cohort week?* Group by week of signup; keep the same denominators.
+- *Why did the number differ from the dashboard?* Check the definition (next day versus within a day), time zones, duplicate rows and whether test users are filtered.
+
+**Common mistakes:**
+- Counting login rows rather than distinct users.
+- Using `INNER JOIN` and losing the cohort with no retention.
+- Using `BETWEEN signup_date AND signup_date + 1` (includes day 0).
+- Dividing by users who logged in at all, not by all signups.

@@ -1,0 +1,9 @@
+FROM python:latest
+ENV HF_TOKEN=hf_FAKE_not_a_real_token
+ADD . /app
+WORKDIR /app
+RUN apt-get update
+RUN apt-get install -y curl build-essential
+RUN pip install torch scikit-learn fastapi
+USER root
+CMD python serve.py

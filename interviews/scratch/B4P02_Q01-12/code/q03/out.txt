@@ -1,0 +1,7 @@
+stage builder  base=python:3.11-slim-bookworm  apt=['build-essential', 'libgomp1'] copy_from=[]
+stage test     base=builder                    apt=[] copy_from=[]
+stage runtime  base=python:3.11-slim-bookworm  apt=['libgomp1'] copy_from=['builder']
+final stage: runtime
+left behind (apt in builder, not in final): ['build-essential']
+runtime libs kept: ['libgomp1']
+COPY --from references valid: True

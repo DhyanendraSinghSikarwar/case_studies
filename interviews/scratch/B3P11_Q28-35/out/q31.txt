@@ -1,0 +1,21 @@
+auto_vacuum: 0 (0 = NONE, the default)
+
+[rowid]
+  plan a+b: ['SEARCH kv USING INDEX sqlite_autoindex_kv_1 (a=? AND b=?)']
+  plan b only: ['SCAN kv']
+  page_count 1129, page_size 4096, bytes 4,624,384, freelist 0
+  dbstat (pages, bytes) per b-tree: {'kv': (580, 2375680), 'sqlite_autoindex_kv_1': (548, 2244608)}
+
+[norowid]
+  plan a+b: ['SEARCH kv USING PRIMARY KEY (a=? AND b=?)']
+  plan b only: ['SCAN kv']
+  page_count 565, page_size 4096, bytes 2,314,240, freelist 0
+  dbstat (pages, bytes) per b-tree: {'kv': (564, 2310144)}
+
+lookups equal pandas on both layouts
+
+20,000 rows with a 300-byte c column: {'rowid': 1773, 'norowid': 1916} pages
+
+DELETE half the rows (b odd), then VACUUM
+  rowid: rows left 50000; pages before 1129, after DELETE 1129 (freelist 21), after VACUUM 543 (freelist 0); file bytes after VACUUM 2,224,128
+  norowid: rows left 50000; pages before 565, after DELETE 565 (freelist 29), after VACUUM 257 (freelist 0); file bytes after VACUUM 1,052,672

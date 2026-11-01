@@ -1,0 +1,8 @@
+one 60 MB update at 2 Mbps: 60 MB * 8 / 2 = 240 s = 4.0 min (ideal, no overhead)
+  at 100% link efficiency: 4.0 min
+  at 60% link efficiency: 6.7 min
+fleet transfer: 60 MB x 100,000 = 6,000 GB (decimal) per full rollout
+server storage for 1 copy: 0.06 GB; keep 5 versions: 0.30 GB -> 0.30 units/month
+egress per full rollout: 6,000 units
+delta patch 25% of size: 1,500 GB, 1.0 min per device
+bytes sent / model size, restart-on-drop: 1.38x ; resumable chunks: 1.01x  (toy loss model, 1% drop per chunk)

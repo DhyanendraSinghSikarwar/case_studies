@@ -1,0 +1,20 @@
+kfp                      2.17.3
+kfp-kubernetes           2.17.3
+compiled pipeline.yaml
+yaml documents: 2 (0 = pipeline spec, 1 = platform spec)
+pipelineInfo.name: train-select-deploy
+input parameters: {'lrs': ('LIST', [0.1, 0.01, 0.001]), 'min_score': ('NUMBER_DOUBLE', 0.8)}
+components: ['comp-cleanup', 'comp-condition-3', 'comp-deploy', 'comp-exit-handler-1', 'comp-for-loop-2', 'comp-pick-best', 'comp-train']
+root dag tasks: ['cleanup', 'exit-handler-1']
+  comp-condition-3: tasks=['deploy']
+  comp-exit-handler-1: tasks=['condition-3', 'for-loop-2', 'pick-best']
+  comp-for-loop-2: tasks=['train']
+  root.cleanup: dependentTasks=['exit-handler-1'] trigger=ALL_UPSTREAM_TASKS_COMPLETED
+  root.exit-handler-1: dependentTasks=[] trigger=None
+  cleanup: triggerPolicy={'strategy': 'ALL_UPSTREAM_TASKS_COMPLETED'}
+  exit-handler-1/condition-3: triggerPolicy={'condition': "inputs.parameter_values['pipelinechannel--pick-best-Output'] >= inputs.parameter_values['pipelinechannel--min_score']"}
+  exit-handler-1/for-loop-2: parameterIterator items={'inputParameter': 'pipelinechannel--lrs'} iteratorPolicy={'parallelismLimit': 2}
+  exit-handler-1/pick-best: dependentTasks=['for-loop-2'] scores<-{'outputParameterKey': 'pipelinechannel--train-Output', 'producerTask': 'for-loop-2'}
+train executor resources: {'accelerator': {'count': '1', 'resourceCount': '1', 'resourceType': 'NVIDIA_TESLA_T4', 'type': 'NVIDIA_TESLA_T4'}, 'cpuLimit': 2.0, 'memoryLimit': 4.0, 'resourceCpuLimit': '2', 'resourceMemoryLimit': '4G'}
+platform executor exec-train -> ['nodeSelector', 'secretAsEnv', 'tolerations']
+   nodeSelector: {'labels': {'pool': 'gpu'}} | tolerations: [{'effect': 'NoSchedule', 'key': 'nvidia.com/gpu', 'operator': 'Exists'}] | secretAsEnv: [{'keyToEnv': [{'envVar': 'WANDB_API_KEY', 'secretKey': 'api_key'}], 'optional': False, 'secretName': 'wandb-key', 'secretNameParameter': {'runtimeValue': {'constant': 'wandb-key'}}}]

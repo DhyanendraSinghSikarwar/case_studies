@@ -1,0 +1,60 @@
+dtypes: {'id': 'int64', 'city': 'str', 'status': 'str', 'score': 'int64', 'amount': 'float64', 'ts': 'datetime64[us]'}
+
+memory_usage(deep=True) bytes, default dtypes:
+id         4000000
+city      28000000
+status    27249606
+score      4000000
+amount     4000000
+ts         4000000
+total: 71249606
+
+after downcast + category:
+          before    after     after_dtype
+id       4000000  2000000          uint32
+city    28000000   501120        category
+status  27249606   500218        category
+score    4000000   500000           uint8
+amount   4000000  2000000         float32
+ts       4000000  4000000  datetime64[us]
+total: 9501338 ratio 0.13
+
+unique-per-row strings: str 29888890 bytes vs category 31888890 bytes
+city codes dtype: int8 | categories: 20
+
+risk 1: raw numpy cast wraps silently: [100, -56, 44, 112] (from [100, 200, 300, 70000])
+   pandas Series.astype('int8') on out-of-range: [100, 44]
+   to_numeric downcast picks the smallest type that fits: int16 and uint8
+risk 2: float32 loses precision: float64 16777217 -> float32 -> 16777216 | 0.1 + 0.2 in float32 = 0.30000001192092896 | amount sum f64 50001499.66 vs f32 50001504.00
+   amounts changed by float32 round-trip: 480164 of 500000
+
+CSV size bytes: 25293568
+plain read_csv total bytes: 101249606 {'id': 'int64', 'city': 'str', 'status': 'str', 'score': 'int64', 'amount': 'float64', 'ts': 'str'}
+lean read_csv total bytes: 7502066 {'city': 'category', 'status': 'category', 'score': 'uint8', 'amount': 'float32', 'ts': 'datetime64[us]'}
+chunks: 5
+
+SQL vs chunked pandas: 80 groups, equal (compared after sorting by status, city)
+status    city       sum  count
+   new City_00 636138.38   6343
+   new City_01 627193.63   6291
+   new City_02 634780.98   6338
+
+mini: categories ['Agra', 'Delhi', 'Pune'] codes [2, 1, 2, 2, 1, 0]
+mini chunk 0: rows 3  partial {'Delhi': {'sum': 20, 'count': 1}, 'Pune': {'sum': 40, 'count': 2}}
+mini chunk 1: rows 3  partial {'Agra': {'sum': 60, 'count': 1}, 'Delhi': {'sum': 50, 'count': 1}, 'Pune': {'sum': 40, 'count': 1}}
+mini combined: {'Agra': {'sum': 60, 'count': 1}, 'Delhi': {'sum': 70, 'count': 2}, 'Pune': {'sum': 80, 'count': 3}}
+
+categories order c,b,a; data has b,a,b. Default groupby (3.0.5):
+g
+b    4
+a    2
+observed=False:
+g
+c    0
+b    4
+a    2
+observed=True, sort=False:
+g
+b    4
+a    2
+plain str groupby, sort=True/False: ['a', 'b'] ['b', 'a']

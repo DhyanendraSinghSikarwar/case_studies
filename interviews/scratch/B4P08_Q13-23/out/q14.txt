@@ -1,0 +1,4 @@
+A null spike after a schema change     -> FIX_PIPELINE           | data or code problem; fix upstream, do not retrain on bad data (roll back if the bad data is already served)
+B Diwali week traffic                  -> NO_ACTION_WATCH        | explained by a known event; compare with same-period baseline and re-check after it ends
+C minor feature, outputs stable        -> NO_ACTION              | feature does not matter to the model and outputs are stable; log and tune the alert
+D key feature, labels show drop        -> RETRAIN_OR_ROLLBACK    | matured labels confirm a drop; retrain on fresh data, roll back if a recent release caused it

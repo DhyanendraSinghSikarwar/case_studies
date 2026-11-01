@@ -1,0 +1,333 @@
+# PIPELINE DEFINITION
+# Name: train-select-deploy
+# Inputs:
+#    lrs: list [Default: [0.1, 0.01, 0.001]]
+#    min_score: float [Default: 0.8]
+components:
+  comp-cleanup:
+    executorLabel: exec-cleanup
+  comp-condition-3:
+    dag:
+      tasks:
+        deploy:
+          cachingOptions:
+            enableCache: true
+          componentRef:
+            name: comp-deploy
+          inputs:
+            parameters:
+              score:
+                componentInputParameter: pipelinechannel--pick-best-Output
+          taskInfo:
+            name: deploy
+    inputDefinitions:
+      parameters:
+        pipelinechannel--min_score:
+          parameterType: NUMBER_DOUBLE
+        pipelinechannel--pick-best-Output:
+          parameterType: NUMBER_DOUBLE
+  comp-deploy:
+    executorLabel: exec-deploy
+    inputDefinitions:
+      parameters:
+        score:
+          parameterType: NUMBER_DOUBLE
+  comp-exit-handler-1:
+    dag:
+      tasks:
+        condition-3:
+          componentRef:
+            name: comp-condition-3
+          dependentTasks:
+          - pick-best
+          inputs:
+            parameters:
+              pipelinechannel--min_score:
+                componentInputParameter: pipelinechannel--min_score
+              pipelinechannel--pick-best-Output:
+                taskOutputParameter:
+                  outputParameterKey: Output
+                  producerTask: pick-best
+          taskInfo:
+            name: condition-3
+          triggerPolicy:
+            condition: inputs.parameter_values['pipelinechannel--pick-best-Output']
+              >= inputs.parameter_values['pipelinechannel--min_score']
+        for-loop-2:
+          componentRef:
+            name: comp-for-loop-2
+          inputs:
+            parameters:
+              pipelinechannel--lrs:
+                componentInputParameter: pipelinechannel--lrs
+          iteratorPolicy:
+            parallelismLimit: 2
+          parameterIterator:
+            itemInput: pipelinechannel--lrs-loop-item
+            items:
+              inputParameter: pipelinechannel--lrs
+          taskInfo:
+            name: for-loop-2
+        pick-best:
+          cachingOptions:
+            enableCache: true
+          componentRef:
+            name: comp-pick-best
+          dependentTasks:
+          - for-loop-2
+          inputs:
+            parameters:
+              scores:
+                taskOutputParameter:
+                  outputParameterKey: pipelinechannel--train-Output
+                  producerTask: for-loop-2
+          taskInfo:
+            name: pick-best
+    inputDefinitions:
+      parameters:
+        pipelinechannel--lrs:
+          parameterType: LIST
+        pipelinechannel--min_score:
+          parameterType: NUMBER_DOUBLE
+  comp-for-loop-2:
+    dag:
+      outputs:
+        parameters:
+          pipelinechannel--train-Output:
+            valueFromParameter:
+              outputParameterKey: Output
+              producerSubtask: train
+      tasks:
+        train:
+          cachingOptions:
+            enableCache: true
+          componentRef:
+            name: comp-train
+          inputs:
+            parameters:
+              lr:
+                componentInputParameter: pipelinechannel--lrs-loop-item
+          taskInfo:
+            name: train
+    inputDefinitions:
+      parameters:
+        pipelinechannel--lrs:
+          parameterType: LIST
+        pipelinechannel--lrs-loop-item:
+          parameterType: NUMBER_DOUBLE
+    outputDefinitions:
+      parameters:
+        pipelinechannel--train-Output:
+          parameterType: LIST
+  comp-pick-best:
+    executorLabel: exec-pick-best
+    inputDefinitions:
+      parameters:
+        scores:
+          parameterType: LIST
+    outputDefinitions:
+      parameters:
+        Output:
+          parameterType: NUMBER_DOUBLE
+  comp-train:
+    executorLabel: exec-train
+    inputDefinitions:
+      parameters:
+        lr:
+          parameterType: NUMBER_DOUBLE
+    outputDefinitions:
+      parameters:
+        Output:
+          parameterType: NUMBER_DOUBLE
+deploymentSpec:
+  executors:
+    exec-cleanup:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - cleanup
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'kfp==2.17.3'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"\
+          $0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef cleanup():\n    print(\"always runs: delete scratch data\")\n\
+          \n"
+        image: python:3.12
+    exec-deploy:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - deploy
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'kfp==2.17.3'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"\
+          $0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef deploy(score: float):\n    print(\"deploying model with score\"\
+          , score)\n\n"
+        image: python:3.12
+    exec-pick-best:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - pick_best
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'kfp==2.17.3'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"\
+          $0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef pick_best(scores: List[float]) -> float:\n    return max(scores)\n\
+          \n"
+        image: python:3.12
+    exec-train:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - train
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'kfp==2.17.3'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"\
+          $0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef train(lr: float) -> float:\n    # toy \"validation score\": best\
+          \ near lr=0.01\n    return round(1.0 - abs(lr - 0.01) * 10, 3)\n\n"
+        image: python:3.12
+        resources:
+          accelerator:
+            count: '1'
+            resourceCount: '1'
+            resourceType: NVIDIA_TESLA_T4
+            type: NVIDIA_TESLA_T4
+          cpuLimit: 2.0
+          memoryLimit: 4.0
+          resourceCpuLimit: '2'
+          resourceMemoryLimit: 4G
+pipelineInfo:
+  name: train-select-deploy
+root:
+  dag:
+    tasks:
+      cleanup:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-cleanup
+        dependentTasks:
+        - exit-handler-1
+        taskInfo:
+          name: cleanup
+        triggerPolicy:
+          strategy: ALL_UPSTREAM_TASKS_COMPLETED
+      exit-handler-1:
+        componentRef:
+          name: comp-exit-handler-1
+        inputs:
+          parameters:
+            pipelinechannel--lrs:
+              componentInputParameter: lrs
+            pipelinechannel--min_score:
+              componentInputParameter: min_score
+        taskInfo:
+          name: exit-handler-1
+  inputDefinitions:
+    parameters:
+      lrs:
+        defaultValue:
+        - 0.1
+        - 0.01
+        - 0.001
+        isOptional: true
+        parameterType: LIST
+      min_score:
+        defaultValue: 0.8
+        isOptional: true
+        parameterType: NUMBER_DOUBLE
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.17.3
+---
+platforms:
+  kubernetes:
+    deploymentSpec:
+      executors:
+        exec-train:
+          nodeSelector:
+            labels:
+              pool: gpu
+          secretAsEnv:
+          - keyToEnv:
+            - envVar: WANDB_API_KEY
+              secretKey: api_key
+            optional: false
+            secretName: wandb-key
+            secretNameParameter:
+              runtimeValue:
+                constant: wandb-key
+          tolerations:
+          - effect: NoSchedule
+            key: nvidia.com/gpu
+            operator: Exists

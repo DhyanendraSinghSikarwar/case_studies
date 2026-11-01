@@ -1,0 +1,9 @@
+5 prompt examples ok
+nums = [2, 7, 9, 3, 1]
+dp   = [2, 7, 11, 11, 12]  (dp[i] = best using houses 0..i)
+1000 seeded random streets (len 0..12, cash 0..400): DP == subset enumeration
+exhaustive len 0..7 values 0..3: 21845 streets ok
+greedy-by-largest on [2, 3, 2] takes 3 -> 3, optimum is 4
+n = 10^5 bottom-up -> 11793642
+memoised n = 10^5: RecursionError (default limit 1000 )
+memoised n = 300 -> 35899 == bottom-up 35899

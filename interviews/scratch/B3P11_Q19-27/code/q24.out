@@ -1,0 +1,21 @@
+N+1 loop: 101 statements; first three traced:
+    SELECT customer_id, name FROM customers ORDER BY customer_id
+    SELECT COALESCE(SUM(amount),0), COUNT(*) FROM orders WHERE customer_id = 1
+    SELECT COALESCE(SUM(amount),0), COUNT(*) FROM orders WHERE customer_id = 2
+JOIN + GROUP BY: 1 statement
+batched IN: 2 statements (1 for ids + 1 for orders)
+asserts passed: N+1, JOIN and batched IN give the same 100 rows (customer_id, name, order_count, total)
+in-process times (machine-specific, MISLEADING for a network database): N+1 4.65 ms, JOIN 0.95 ms, IN 1.24 ms
+simulated latency of 0.5 ms per round trip (arithmetic, not a measurement): N+1 adds 50.5 ms, JOIN adds 0.5 ms, IN adds 1.0 ms
+
+plan of the per-customer lookup, no index: ['SCAN orders']
+plan with index on orders(customer_id):   ['SEARCH orders USING INDEX ix_orders_cust (customer_id=?)']
+VM steps with the index: 100 lookups total 7700; the single JOIN/GROUP BY query 15219
+
+bound-variable limit compile option: ['MAX_VARIABLE_NUMBER=250000']
+IN list with 300,000 placeholders -> OperationalError too many SQL variables
+chunked IN (4 chunks of up to 30 ids): 1000 orders counted, table has 1000
+
+pandas per-row read_sql loop: 101 statements
+pandas one read_sql + groupby + merge: 1 statements
+asserts passed: both pandas versions equal (sorted by customer_id)

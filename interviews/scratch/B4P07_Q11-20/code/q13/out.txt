@@ -1,0 +1,18 @@
+$ actionlint ct.yml
+exit=0
+
+$ pytest -q
+........                                                                 [100%]
+8 passed in 0.01s
+
+$ python3 -I trigger.py --event repository_dispatch --state state_noisy.json   # 2h after last train
+go=false
+why=cooldown: last train 2h ago, need 24h
+
+$ python3 -I trigger.py --event repository_dispatch --state state_ok.json      # 6 days after
+go=true
+why=drift alert with enough fresh data
+
+$ PyYAML view of the triggers
+['name', True, 'concurrency', 'permissions', 'jobs']
+dict_keys(['schedule', 'workflow_dispatch', 'repository_dispatch'])

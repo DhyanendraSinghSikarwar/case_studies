@@ -1,0 +1,10 @@
+hazard/hour=0.1625  P(no interruption in 10h)=0.197  (0.85^10=0.197)
+on-demand baseline: 10.0 h, cost 80.0 GPU-hour units at rate 1.0
+policy                      mean_h   p95_h wasted_h(mean) cost_units vs_on_demand
+no checkpoint                26.04   63.06          16.04       72.9         0.91
+hourly, 1 min overhead       11.48   13.63           1.48       32.2         0.40
+10 min, 1 min overhead       11.62   12.48           1.62       32.5         0.41
+closed-form mean, no checkpoint: 26.12 h
+no checkpoint  break-even spot rate = 0.38 of on-demand
+hourly         break-even spot rate = 0.87 of on-demand
+10 min         break-even spot rate = 0.86 of on-demand

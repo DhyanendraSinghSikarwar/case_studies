@@ -1,0 +1,10 @@
+# used explicitly: docker compose -f compose.yml -f compose.prod.yml up -d   (override file is NOT read then)
+services:
+  api:
+    restart: always
+    ports:
+      - "127.0.0.1:8000:8000"         # a reverse proxy on the same VM talks to it
+    deploy:
+      resources:
+        limits:
+          memory: 24g

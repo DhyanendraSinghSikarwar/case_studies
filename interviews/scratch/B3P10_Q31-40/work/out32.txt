@@ -1,0 +1,29 @@
+SQLite 3.45.1 | pandas 3.0.5
+--- missing in this build
+'a' REGEXP 'a'                   -> ERROR: no such function: REGEXP
+split_part('a,b',',',1)          -> ERROR: no such function: split_part
+reverse('abc')                   -> ERROR: no such function: reverse
+lpad('7',3,'0')                  -> ERROR: no such function: lpad
+char_length('abc')               -> ERROR: no such function: char_length
+--- present in this build
+concat('a',NULL,'b')             -> ab
+concat_ws(',','a',NULL,'b')      -> a,b
+printf('%05.1f',3.14159)         -> 003.1
+format('%d items',3)             -> 3 items
+octet_length('é')                -> 2
+hex(unhex('4142'))               -> 4142
+iif(1<2,'yes','no')              -> yes
+NULL IS DISTINCT FROM 1          -> 1
+string_agg ordered -> c|b|a
+--- after create_function
+'abc123' REGEXP '\d+'      -> 1
+NULL REGEXP 'a'           -> None
+regexp: ['AB-1234']
+glob  : ['AB-1234']
+like  : ['AB-1234', 'ab-1234', 'AB-12x4']
+rows with only A-Z, 0-9 and - (GLOB negated class): ['AB-1234', 'AB-123', 'AB-12345']
+'a' LIKE 'A' -> 1 | 'Ä' LIKE 'ä' -> 0 | 'a' GLOB 'A' -> 0
+after PRAGMA case_sensitive_like=ON: 'a' LIKE 'A' -> 0
+second connection -> no such function: REGEXP
+pandas: ['AB-1234']
+asserts passed

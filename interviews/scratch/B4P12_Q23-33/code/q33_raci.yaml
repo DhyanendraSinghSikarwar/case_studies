@@ -1,0 +1,13 @@
+# Hybrid model: platform team owns paved road; product teams own models; embedded MLEs bridge. R=does, A=one owner, C=consulted, I=informed.
+roles: [product_ds, embedded_mle, platform, security, oncall_sre, eng_manager]
+activities:
+  - {name: feature_and_model_code,        R: [product_ds, embedded_mle], A: product_ds,    C: [platform], I: []}
+  - {name: training_pipeline_template,    R: [platform],               A: platform,       C: [embedded_mle], I: [product_ds]}
+  - {name: team_pipeline_using_template,  R: [embedded_mle],           A: embedded_mle,   C: [platform], I: [eng_manager]}
+  - {name: model_serving_runtime,         R: [platform],               A: platform,       C: [oncall_sre, embedded_mle], I: [product_ds]}
+  - {name: model_quality_and_drift,       R: [product_ds],             A: product_ds,     C: [embedded_mle], I: [eng_manager]}
+  - {name: model_endpoint_oncall,         R: [embedded_mle],           A: eng_manager,    C: [platform], I: [product_ds]}
+  - {name: platform_oncall,               R: [oncall_sre],             A: platform,       C: [], I: [eng_manager]}
+  - {name: security_standards_and_scans,  R: [security],               A: security,       C: [platform], I: [product_ds, embedded_mle]}
+  - {name: cost_attribution_and_budgets,  R: [platform],               A: eng_manager,    C: [product_ds], I: []}
+metrics: [adoption_share_of_teams_on_golden_path, lead_time_idea_to_prod, incident_rate_per_model, cost_per_experiment, platform_ticket_age]

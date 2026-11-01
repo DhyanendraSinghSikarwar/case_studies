@@ -1,0 +1,15 @@
+[1, 2, 3, None, None, 4, 5] -> '1,2,#,#,3,4,#,#,5,#,#' -> [1, 2, 3, None, None, 4, 5]
+[] -> '#' -> []
+[1] -> '1,#,#' -> [1]
+[-1, None, -2, -3] -> '-1,#,-2,-3,#,#,#' -> [-1, None, -2, -3]
+exhaustive ok: 626 shapes; tokens == 2n + 1 for n = 0..7 (empty tree is one marker)
+n=1: 1 shapes, plain preorder values identify 1 of them
+n=2: 2 shapes, plain preorder values identify 1 of them
+n=3: 5 shapes, plain preorder values identify 1 of them
+n=4: 14 shapes, plain preorder values identify 1 of them
+n=5: 42 shapes, plain preorder values identify 1 of them
+plain preorder of [1,2] as left child and as right child: [1, 2] [1, 2]
+with markers: 1,2,#,#,# vs 1,#,2,#,#
+negatives ok: -1000,-1,#,-7,#,#,1000,#,#
+random ok: 500 trees
+skewed 3000: recursive serialize: RecursionError | recursive deserialize: RecursionError | iterative round trip equal: True | tokens: 6001

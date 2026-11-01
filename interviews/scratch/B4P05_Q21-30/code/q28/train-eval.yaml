@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: train-eval-
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+      - name: lr
+        value: "0.01"
+  templates:
+    - name: main
+      dag:
+        tasks:
+          - name: train
+            template: train
+            arguments:
+              parameters:
+                - name: lr
+                  value: "{{workflow.parameters.lr}}"
+          - name: evaluate
+            dependencies: [train]
+            template: evaluate
+            arguments:
+              artifacts:
+                - name: model
+                  from: "{{tasks.train.outputs.artifacts.model}}"
+    - name: train
+      inputs:
+        parameters:
+          - name: lr
+      container:
+        image: python:3.12-slim
+        command: [python, -c]
+        args: ["import sys; open('/tmp/model.txt','w').write('lr={{inputs.parameters.lr}}')"]
+      outputs:
+        artifacts:
+          - name: model
+            path: /tmp/model.txt
+    - name: evaluate
+      inputs:
+        artifacts:
+          - name: model
+            path: /tmp/in/model.txt
+      container:
+        image: python:3.12-slim
+        command: [python, -c]
+        args: ["print(open('/tmp/in/model.txt').read())"]
+---
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: nightly-train-eval
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  workflowSpec:                # same shape as a Workflow spec; a workflowTemplateRef is the other option
+    entrypoint: train
+    arguments:
+      parameters:
+        - name: lr
+          value: "0.01"
+    templates:
+      - name: train
+        inputs:
+          parameters:
+            - name: lr
+        container:
+          image: python:3.12-slim
+          command: [python, -c]
+          args: ["print('training with lr={{inputs.parameters.lr}}')"]

@@ -1,0 +1,4 @@
+azure-ai-ml 1.35.2
+FeatureStore fs-demo centralindia
+FeatureStoreEntity account 1 ['accountID']
+FeatureSet txn_agg 1 ['azureml:account:1']

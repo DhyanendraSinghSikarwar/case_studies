@@ -1,0 +1,4 @@
+random cross-check vs brute force: 300 cases OK
+uniqueness: queues checked = 31174 -> no two queues share a pair multiset
+worst case n=2000: elements shifted by insert = 1999000
+invalid input (no real queue): [[4, 0], [5, 3]]

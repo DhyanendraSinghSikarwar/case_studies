@@ -1,0 +1,8 @@
+coefficient on usage: before -1.0 +/- 0.03 | after -0.21 +/- 0.02
+input mean/sd before: [ 0.01 -0.01] [1. 1.] after: [ 0.01 -0.01] [1. 1.]
+old model on old-regime test data: AUC 0.753, top-decile lift 2.55
+old model on new-regime test data: AUC 0.574, top-decile lift 1.37
+refit on new regime, same test:    AUC 0.604, top-decile lift 1.49
+3,000 new rows only:               AUC 0.603
+old 20,000 + new 3,000 + regime x usage: AUC 0.603
+asserts passed

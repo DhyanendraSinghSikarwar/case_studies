@@ -1,0 +1,22 @@
+2026/10/26 14:09:40 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/26 14:09:40 INFO mlflow.store.db.utils: Updating database tables
+2026/10/26 14:09:42 INFO mlflow.tracking.fluent: Experiment with name 'q9-signature' does not exist. Creating a new experiment.
+signature: inputs: 
+  ['age': long (required), 'income': double (required)]
+outputs: 
+  [Tensor('float64', (-1,))]
+params: 
+  None
+
+no_sig model signature: None
+input schema: ['age': long (required), 'income': double (required)]
+exact types         -> [15.0]
+age as float64      -> ERROR: MlflowException Incompatible input types for column age. Can not safely convert float64 to int64.
+income as int64     -> ERROR: MlflowException Incompatible input types for column income. Can not safely convert int64 to float64.
+age int32 (widens)  -> [15.0]
+income int32        -> [15.05]
+income float32      -> [15.0]
+missing column      -> ERROR: MlflowException Model is missing inputs ['income'].
+string value        -> ERROR: MlflowException Incompatible input types for column age. Can not safely convert str to int64.
+extra column        -> [15.0]
+no-signature model, missing column -> ERROR: ValueError The feature names should match those that were passed during fit. Feature names seen at fit time, yet now miss

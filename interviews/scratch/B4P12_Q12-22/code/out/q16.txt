@@ -1,0 +1,4 @@
+good table OK: 11 responsibilities, {'platform': 7, 'book2_app': 4}
+two owners for one item -> rejected: responsibility listed more than once (two owners?): ['prompt_design']
+item nobody owns -> rejected: required responsibility has no owner: ['identity_and_sso']
+unknown owner -> rejected: unknown owner for: ['identity_and_sso']

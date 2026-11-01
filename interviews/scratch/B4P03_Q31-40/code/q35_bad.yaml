@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata: {name: infer-sloppy}
+spec:
+  hostNetwork: true
+  containers:
+  - name: server
+    image: registry.example.com/infer:latest
+    securityContext:
+      privileged: true
+    resources:
+      limits: {nvidia.com/gpu: 1}

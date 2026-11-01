@@ -1,0 +1,35 @@
+ employee_id  salary band_no_else band_else simple_case_null band_safe iif_band
+           1 60000.0         high      high    never matches      high     high
+           2 40000.0          low  not high    never matches       low      low
+           3 50000.0          low  not high    never matches       low      low
+           4 30000.0          low  not high    never matches       low      low
+           5 70000.0         high      high    never matches      high     high
+           6     NaN          NaN  not high    never matches   unknown      low
+           7 50000.0          low  not high    never matches       low      low
+           8     0.0          low  not high    never matches       low      low
+
+ employee_id  name  naive_bonus  fixed_bonus
+           1  Asha        60000        60000
+           2 Meera            0            0
+           3 Mohan            0            0
+           4   NaN            0            0
+           5   NaN            0        70000
+           6  Zoya            0            0
+           7  Ravi        50000        50000
+           8  Hema            0            0
+
+NULL NOT LIKE 'M%' -> None (NULL, so the CASE takes ELSE 0)
+ employee_id  coalesce_  ifnull_ first_non_null  safe_div   plain
+           1      60000    60000           Asha  0.001667 60000.0
+           4      30000    30000            Ops  0.003333 30000.0
+           6          0       -1           Zoya       NaN     NaN
+           7      50000    50000           Ravi  0.002000 50000.0
+           8          0        0           Hema       NaN     0.0
+
+IFNULL with three arguments: error: wrong number of arguments to function IFNULL()
+100.0 / 0 in SQLite (no NULLIF): None (NULL, not an error)
+
+pandas NaN comparisons: salary > 50000 for NaN -> False
+np.where trap for Zoya: low | np.select with isna first: unknown
+name.str.startswith('M') for the NULL name: False (pandas 3 str dtype gives False, not NaN)
+asserts passed (employee_id order)

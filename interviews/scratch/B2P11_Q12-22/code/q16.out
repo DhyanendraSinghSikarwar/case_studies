@@ -1,0 +1,6 @@
+normal : 600 cents spent, alerts: []
+flooded: 1000 cents spent, outcomes: {'ok': 25, 'HARD_BLOCK': 1975} alerts: ['soft alert at spent=800']
+without a hard cap the flood would cost 80000 cents vs 1000 with it (limit 1000)
+other tenant unaffected: ok
+after reconcile spent = 12 (reserved 30, actual 12)
+showback: {'chat': 1000} {'chat': 603}

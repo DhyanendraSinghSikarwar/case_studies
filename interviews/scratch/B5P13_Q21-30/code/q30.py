@@ -1,0 +1,127 @@
+import math
+import random
+import sys
+from fractions import Fraction
+
+random.seed(3001)
+sys.set_int_max_str_digits(0)   # the ORACLE builds a ~10^5-digit integer and prints it; the solution never does
+
+def fraction_to_decimal(num, den):
+    if num == 0:
+        return '0'
+    sign = '-' if (num < 0) != (den < 0) else ''      # decide the sign BEFORE abs
+    n, d = abs(num), abs(den)
+    ip, rem = divmod(n, d)
+    if rem == 0:
+        return sign + str(ip)
+    digits, seen = [], {}
+    while rem and rem not in seen:
+        seen[rem] = len(digits)                        # position where this remainder first appeared
+        rem *= 10
+        digits.append(str(rem // d))
+        rem %= d
+    if rem == 0:
+        return sign + str(ip) + '.' + ''.join(digits)
+    k = seen[rem]
+    return sign + str(ip) + '.' + ''.join(digits[:k]) + '(' + ''.join(digits[k:]) + ')'
+
+def mult_order(d):
+    """Oracle: lengths from the multiplicative order of 10 mod d with 2s and 5s removed."""
+    a = b = 0
+    while d % 2 == 0: d //= 2; a += 1
+    while d % 5 == 0: d //= 5; b += 1
+    pre = max(a, b)
+    period = 0
+    if d > 1:
+        period, x = 1, 10 % d
+        while x != 1:
+            x = x * 10 % d
+            period += 1
+    return pre, period
+
+def brute(num, den):
+    """Oracle: exact digits from integer arithmetic using the predicted pre-period and period lengths."""
+    if num == 0:
+        return '0'
+    sign = '-' if (num < 0) != (den < 0) else ''
+    fr = Fraction(abs(num), abs(den))
+    ip, rem, d = fr.numerator // fr.denominator, fr.numerator % fr.denominator, fr.denominator
+    if rem == 0:
+        return sign + str(ip)
+    pre, per = mult_order(d)
+    total = pre + per
+    s = str(rem * 10 ** total // d).zfill(total)
+    return sign + str(ip) + '.' + s[:pre] + ('(' + s[pre:] + ')' if per else '')
+
+examples = [((1, 2), '0.5'), ((2, 3), '0.(6)'), ((-7, 12), '-0.58(3)'), ((1, 81), '0.(012345679)'),
+            ((0, -5), '0'), ((22, 7), '3.(142857)')]
+for (a, b), want in examples:
+    assert fraction_to_decimal(a, b) == want == brute(a, b)
+    print(f'{a}/{b} -> {fraction_to_decimal(a, b)}')
+
+# dry run: -7/12
+print('-7/12: sign "-" (one negative); |7|/12: integer part 0, remainder 7')
+rem, seen, digits = 7, {}, []
+while rem and rem not in seen:
+    seen[rem] = len(digits)
+    print(f'  remainder {rem}: first seen at digit position {len(digits)}; {rem}*10 = {rem * 10}, digit {rem * 10 // 12}, new remainder {rem * 10 % 12}')
+    rem *= 10; digits.append(str(rem // 12)); rem %= 12
+print(f'  remainder {rem} was seen at position {seen[rem]} -> repeat from digit {seen[rem]}: 0.{"".join(digits[:seen[rem]])}({"".join(digits[seen[rem]:])})')
+
+# seeded random cross-check against the multiplicative-order construction
+for _ in range(4000):
+    a = random.randint(-2**31, 2**31); b = random.choice([-1, 1]) * random.randint(1, 10**5)
+    assert fraction_to_decimal(a, b) == brute(a, b), (a, b)
+print('random cross-check ok: 4000 cases')
+for _ in range(3000):
+    a = random.randint(-50, 50); b = random.choice([-1, 1]) * random.randint(1, 60)
+    assert fraction_to_decimal(a, b) == brute(a, b)
+print('random small cross-check ok: 3000 cases')
+
+# exhaustive: every denominator up to 300 with numerators -2d..2d, and value check by exact reparse
+cnt = 0
+for d in range(1, 301):
+    for a in range(-2 * d, 2 * d + 1):
+        s = fraction_to_decimal(a, d)
+        assert s == brute(a, d)
+        cnt += 1
+print('exhaustive |den| <= 300, |num| <= 2|den|:', cnt, 'fractions')
+
+# period length <= den - 1 and equals the multiplicative order; pre-period = max(#2s, #5s)
+worst = (0, 0)
+for d in range(2, 3001):
+    pre, per = mult_order(d)
+    out = fraction_to_decimal(1, d)
+    got = out.split('.')[1] if '.' in out else ''
+    got_per = len(got.split('(')[1][:-1]) if '(' in got else 0
+    assert got_per == per and per <= d - 1
+    if per > worst[1]: worst = (d, per)
+print('d <= 3000: period equals multiplicative order and is <= d - 1; longest', worst, '(a full-reptend prime has period d - 1)')
+r = fraction_to_decimal(1, 99989)
+assert r.endswith(')') and len(r.split('(')[1]) - 1 == mult_order(99989)[1]
+print('1/99989 period length:', mult_order(99989)[1], 'of at most', 99988)
+r2 = fraction_to_decimal(1, 99991)
+print('1/99991 period length:', len(r2.split('(')[1]) - 1)
+# distinct nonzero remainders < den, so a repeat must occur within den - 1 steps
+for d in (7, 97, 1000, 99999):
+    rem, k, seen = 1, 0, set()
+    while rem and rem not in seen:
+        seen.add(rem); rem = rem * 10 % d; k += 1
+    assert k <= d - 1 + (d == 1)
+print('digit loop runs at most den - 1 times for 7, 97, 1000, 99999: True')
+
+# sign trap: floor division on a negative numerator breaks the integer part and the digits
+def naive_sign(num, den):
+    ip, rem = divmod(num, den)           # Python floors: -7 // 12 = -1, remainder 5
+    return ip, rem
+print('divmod(-7, 12) =', naive_sign(-7, 12), '-> integer part -1 and remainder 5, not -0.58(3)')
+assert fraction_to_decimal(-7, 12) == '-0.58(3)'
+# -1/3 and 1/-3 and -1/-3 agree in magnitude, sign decided first
+assert [fraction_to_decimal(-1, 3), fraction_to_decimal(1, -3), fraction_to_decimal(-1, -3)] == ['-0.(3)', '-0.(3)', '0.(3)']
+
+# edge asserts
+assert fraction_to_decimal(-2**31, -1) == '2147483648' and fraction_to_decimal(-2**31, 1) == '-2147483648'
+assert fraction_to_decimal(1, 3) == '0.(3)' and fraction_to_decimal(1, 6) == '0.1(6)' and fraction_to_decimal(1, 1) == '1'
+assert fraction_to_decimal(1, 1000) == '0.001' and fraction_to_decimal(1, 90) == '0.0(1)' and fraction_to_decimal(1, 7) == '0.(142857)'
+assert fraction_to_decimal(5, 4) == '1.25' and fraction_to_decimal(-1, 2**5) == '-0.03125'
+print('edge asserts ok')

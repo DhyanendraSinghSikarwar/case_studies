@@ -1,0 +1,11 @@
+asset              RTO(min) RPO(min)  meets target
+serving endpoint         15        5  True
+feature store            60        5  True
+model registry          240       60  True
+training pipeline      2880     1440  True
+
+serial chain A*B*C = 0.999*0.995*0.999 = 0.993011  (~302 min down per 30 days)
+B with cached fallback covering 90% of its outages: 0.99950
+chain with fallback = 0.997502  (~108 min down per 30 days)
+
+If all three share one Region and it fails, they fail together: the product above is a best case.

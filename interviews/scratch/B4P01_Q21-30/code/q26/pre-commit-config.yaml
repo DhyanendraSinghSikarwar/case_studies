@@ -1,0 +1,26 @@
+# .pre-commit-config.yaml  (all hooks are "local" so this demo runs offline)
+# In a real repo you would normally pin published hook repos with rev: (check current docs).
+repos:
+  - repo: local
+    hooks:
+      - id: nbstripout
+        name: strip notebook outputs
+        entry: nbstripout
+        language: system
+        files: \.ipynb$
+      - id: no-big-files
+        name: block files larger than 5 MB
+        entry: python3 -I tools/check_big_files.py
+        language: system
+        pass_filenames: true
+      - id: no-secrets
+        name: block obvious secrets (regex, not a real scanner)
+        entry: python3 -I tools/check_secrets.py
+        language: system
+        pass_filenames: true
+      - id: ruff
+        name: ruff lint
+        entry: ruff check --isolated --select E,F
+        language: system
+        types: [python]
+        exclude: ^tools/

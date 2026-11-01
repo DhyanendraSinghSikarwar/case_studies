@@ -1,0 +1,46 @@
+**Pattern:** Single-source shortest paths with non-negative weights: Dijkstra on a `heapq` min-heap, using lazy deletion because `heapq` has no decrease-key.
+
+**Say this first (1 line):** "Pop the closest entry; if its distance is worse than what I already know, it is stale, skip it. Otherwise relax its edges and push every improvement as a new entry. Duplicates are cheap, a decrease-key is not available."
+
+**Brute force:** Bellman-Ford style: n rounds of relaxing every edge, O(n * E). Too slow at 10^5 by 2*10^5, and it does not give the push and stale counts. It is the checker for the distances.
+
+**Optimal:**
+- `dist[src] = 0`, heap `[(0, src)]`, `pushes = 1`, `stale = 0`.
+- Pop `(d, u)`. If `d > dist[u]`: count it as stale, `continue`. Else for each edge `(u, v, w)` in input order: if `d + w < dist[v]` (strict), set it and push `(d + w, v)`.
+- Why it is right: with weights >= 0 the first time a node is popped with `d == dist[u]` that distance is final (any other route goes through an entry that is at least as large). Stale entries are exactly the entries for a node that were beaten after being pushed.
+- Why `(distance, node)` never raises `TypeError`: both items are ints, so tuples always compare. If two entries tie on distance the node number decides, and if both are equal the tuples are equal, which `heapq` does not mind. The `TypeError` in Part 8 Q29 came from tied priorities followed by an unorderable payload object (the code shows it). Part 8 Q38 is the same trick, push a new entry and ignore the old one.
+- Why `pushes <= E + 1`: every push after the first happens while relaxing an edge. A node's edges are relaxed only when its non-stale entry is popped, and each node has exactly one non-stale pop, so each edge is relaxed at most once. So at most E pushes from edges plus the initial one.
+- Why `stale == pushes - reached`: every entry pushed is popped eventually. A reached node has exactly one entry whose distance equals its final `dist` (equal distances are never pushed twice because the comparison is strict, and weights are >= 0 so the final value is never lowered after its pop). That entry is the one non-stale pop; every other entry is stale. The source's first entry counts as its non-stale one.
+
+**Complexity:** Time O((V + E) log E) which is O((V + E) log V) because E <= V^2 only changes the log by a factor of 2: at most E + 1 pushes, each push and pop O(log heap size). Space O(V + E) (adjacency lists, plus a heap of at most E + 1 entries).
+
+**Dry run:** `n=4, edges=[[0,1,4],[0,2,1],[2,1,2],[1,3,1]], src=0`.
+- Pop (0,0). Relax 0->1: dist[1]=4, push (4,1). Relax 0->2: dist[2]=1, push (1,2). Pushes 3.
+- Pop (1,2). Relax 2->1: 1+2=3 < 4, dist[1]=3, push (3,1). Pushes 4.
+- Pop (3,1). Relax 1->3: dist[3]=4, push (4,3). Pushes 5.
+- Pop (4,1): 4 > dist[1]=3, stale (count 1). Pop (4,3): fine.
+- Result `[[0,3,1,4], 5, 1]`; reached = 4, and 5 - 4 = 1 = stale.
+
+**Code:**
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- Unreachable nodes stay `None`; their entries never exist, so they add nothing to the counts (second example: `[[None, None, 0], 1, 0]`).
+- Zero-weight edges and zero-weight cycles (third example): the strict `<` stops infinite pushing, the count stays 3.
+- Parallel edges and self loops: a self loop never improves anything with weight >= 0.
+- `n = 1`: `[[0], 1, 0]`.
+- Negative weights break the "first pop is final" claim and the counting argument (Q28 and Q42 in this part).
+
+**Follow-ups:**
+- Why not skip the stale check? The result stays correct for non-negative weights, but each stale entry re-scans its edges. The code counts 34279 edge scans against 1770 on a 60-node graph.
+- Can you avoid duplicates? An indexed heap with decrease-key (or a Fibonacci heap) does, at the cost of much more code; in Python the lazy version is nearly always faster.
+- Early exit when only one target matters? Return when the target is popped non-stale.
+
+**Common mistakes:**
+- Pushing the node first, `(node, d)`, so the heap orders by node.
+- Using `<=` in the relaxation: equal distances get pushed again and the push bound breaks (zero-weight cycles can loop forever).
+- Marking nodes done on push instead of on pop.
+- Counting `reached` as the number of finite distances but forgetting the source.

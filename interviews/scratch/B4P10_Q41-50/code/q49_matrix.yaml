@@ -1,0 +1,28 @@
+# Role and permission matrix for a lending/payments ML platform (illustrative; account ids are fake)
+accounts:
+  shared: {id: "333333333333", purpose: "ECR, CI roles, org logging, artifacts promoted from dev"}
+  dev:    {id: "111111111111", purpose: "data science, training, registry (model package groups)"}
+  prod:   {id: "222222222222", purpose: "endpoints, monitoring, production data"}
+roles:
+  data-eng-pipeline:
+    account: dev
+    can: [{action: "s3:GetObject", resource: "arn:aws:s3:::acme-ml-dev-lake/raw/*"}, {action: "s3:PutObject", resource: "arn:aws:s3:::acme-ml-dev-lake/curated/*"}]
+  sagemaker-training:
+    account: dev
+    can: [{action: "s3:GetObject", resource: "arn:aws:s3:::acme-ml-dev-lake/snapshots/*"}, {action: "s3:PutObject", resource: "arn:aws:s3:::acme-ml-dev-lake/models/*"},
+          {action: "ecr:BatchGetImage", resource: "arn:aws:ecr:ap-south-1:333333333333:repository/ml/*"}, {action: "kms:Decrypt", resource: "arn:aws:kms:ap-south-1:111111111111:key/dev-lake"}]
+  model-promoter:
+    account: shared
+    can: [{action: "s3:GetObject", resource: "arn:aws:s3:::acme-ml-dev-lake/models/*"}, {action: "s3:PutObject", resource: "arn:aws:s3:::acme-ml-prod-models/approved/*"}]
+  sagemaker-endpoint-exec:
+    account: prod
+    can: [{action: "s3:GetObject", resource: "arn:aws:s3:::acme-ml-prod-models/approved/*"}, {action: "ecr:BatchGetImage", resource: "arn:aws:ecr:ap-south-1:333333333333:repository/ml/*"},
+          {action: "kms:Decrypt", resource: "arn:aws:kms:ap-south-1:222222222222:key/prod-models"}]
+  prod-deployer:
+    account: prod
+    can: [{action: "sagemaker:CreateEndpoint", resource: "*"}, {action: "iam:PassRole", resource: "arn:aws:iam::222222222222:role/sagemaker-endpoint-exec"}]
+guardrails:
+  - "prod model bucket policy: Deny s3:PutObject unless aws:PrincipalArn is model-promoter"
+  - "SCP: deny actions outside ap-south-1 and ap-south-2; deny cloudtrail:StopLogging"
+  - "prod endpoints in private subnets; S3 gateway endpoint, ecr.api, ecr.dkr, logs, sts interface endpoints"
+  - "CloudTrail org trail to a log-archive bucket; alarms on denied calls and on key policy changes"

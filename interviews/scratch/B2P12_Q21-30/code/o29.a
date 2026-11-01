@@ -1,0 +1,10 @@
+thumbs only (no audit)
+  start true accuracy 0.680 (types 0-9: 0.200, types 10-49: 0.800)
+  round 1: thumbs-up rate 0.661  true accuracy 0.755 (types 0-9: 0.175, types 10-49: 0.900)
+  round 2: thumbs-up rate 0.728  true accuracy 0.789 (types 0-9: 0.146, types 10-49: 0.950)
+  round 3: thumbs-up rate 0.762  true accuracy 0.804 (types 0-9: 0.118, types 10-49: 0.975)
+thumbs + human audit of 10 lowest-trust types
+  start true accuracy 0.680 (types 0-9: 0.200, types 10-49: 0.800)
+  round 1: thumbs-up rate 0.655  true accuracy 0.820 (types 0-9: 0.500, types 10-49: 0.900)
+  round 2: thumbs-up rate 0.708  true accuracy 0.920 (types 0-9: 0.800, types 10-49: 0.950)
+  round 3: thumbs-up rate 0.711  true accuracy 0.976 (types 0-9: 0.980, types 10-49: 0.975)

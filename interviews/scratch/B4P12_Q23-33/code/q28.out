@@ -1,0 +1,6 @@
+strategy                             reqs wait>=90s wait>10s   p99 s  max s rep-hours   boots
+scale to zero (idle 300 s)          59055         3     9369      68     90      18.2      37
+min 2 replicas                      59055         0     8752      49     52      15.2      34
+predictive pre-scale, min 0         59055         3     5986      60     90      17.0      51
+predictive + min 1                  59055         0     5846      60     62      17.0      50
+min 2, NO cooldown (flapping)       59055         0    22750      60     62       7.4     101

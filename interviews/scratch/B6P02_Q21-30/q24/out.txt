@@ -1,0 +1,5 @@
+spread giving MAPE 11% at zero bias: 0.138; MAPE with +15% bias: 0.169
+before: bias -0.009 MAPE 0.123 | after: bias +0.146 MAPE 0.171
+break at week 60 | CUSUM alarm at week 66
+after, with rolling ratio patch: bias +0.029 MAPE 0.125
+asserts passed

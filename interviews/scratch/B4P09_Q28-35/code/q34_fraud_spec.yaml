@@ -1,0 +1,19 @@
+model: upi_fraud_v3
+decision_budget_ms: 100            # total; the split below is a planning budget, not a measurement
+budget_split_ms: {gateway_and_parse: 10, feature_fetch: 30, model_score: 20, rules_and_decision: 10, slack: 30}
+entities:
+  card: {key: card_id}
+  device: {key: device_id}
+  merchant: {key: merchant_id}
+features:
+  - {name: card_txn_count_1m,   entity: card,   kind: velocity_count, window: 1m,  freshness: stream,  default: 0,    on_missing: use_default}
+  - {name: card_txn_count_1h,   entity: card,   kind: velocity_count, window: 1h,  freshness: stream,  default: 0,    on_missing: use_default}
+  - {name: card_amount_sum_1h,  entity: card,   kind: velocity_sum,   window: 1h,  freshness: stream,  default: 0.0,  on_missing: use_default}
+  - {name: device_distinct_cards_1h, entity: device, kind: distinct_count, window: 1h, freshness: stream, default: 1, on_missing: use_default}
+  - {name: merchant_chargeback_rate_90d, entity: merchant, kind: batch_rate, window: 90d, freshness: daily, default: null, on_missing: use_global_prior}
+  - {name: device_graph_risk_score, entity: device, kind: graph_batch, freshness: daily, default: null, on_missing: flag_and_use_median}
+labels:
+  name: is_fraud_confirmed
+  source: chargeback_and_dispute_feed
+  delay_days_min: 30               # labels mature late; training uses rows older than this
+logging: [request_id, card_id, feature_values, feature_missing_flags, model_version, score, decision, decided_at]

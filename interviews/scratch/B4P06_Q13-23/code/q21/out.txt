@@ -1,0 +1,10 @@
+no server running -> ConnectionRefusedError
+--- curl, raw v2 JSON:
+{"model_name":"iris_onnx","model_version":"1","id":"","outputs":[{"name":"label","datatype":"INT64","shape":[2],"data":[2,0]},{"name":"probabilities","datatype":"FP32","shape":[2,3],"data":[0.0001,0.0807,0.9193,0.9816,0.0184,0.0]}]}
+--- tritonclient.http:
+input tensor JSON the client builds: {"name": "X", "shape": [2, 4], "datatype": "FP32", "data": [6.699999809265137, 3.0, 5.199999809265137, 2.299999952316284, 5.099999904632568, 3.5, 1.399999976158142, 0.20000000298023224]}
+live: True  ready: True  model ready: True
+metadata inputs: [{'name': 'X', 'datatype': 'FP32', 'shape': [-1, 4]}]
+label: [2 0]  probabilities shape: (2, 3)
+wrong shape -> [400] unexpected input: datatype FP32 shape [1, 3], want FP32 [N,4]
+server stopped

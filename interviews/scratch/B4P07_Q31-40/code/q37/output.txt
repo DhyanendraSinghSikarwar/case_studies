@@ -1,0 +1,19 @@
+--- changed files:
+    models/churn/train.py
+    models/churn/README.md
+{"include":[{"model":"churn","reason":"changed"}]}
+--- changed files:
+    models/fraud/features.py
+    models/ltv/config.yaml
+    docs/index.md
+{"include":[{"model":"fraud","reason":"changed"},{"model":"ltv","reason":"changed"}]}
+--- changed files:
+    libs/common/metrics.py
+    models/ltv/config.yaml
+{"include":[{"model":"churn","reason":"shared"},{"model":"fraud","reason":"shared"},{"model":"ltv","reason":"shared"}]}
+--- changed files:
+    docs/index.md
+{"include":[]}
+== actionlint monorepo.yml
+exit=0
+ok -- validation done

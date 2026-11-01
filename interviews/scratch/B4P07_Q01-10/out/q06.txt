@@ -1,0 +1,14 @@
+$ actionlint deploy.yml
+actionlint exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows deploy.yml
+ok -- validation done
+$ python -I -c 'import json; json.load(open('\''trust_policy.json'\'')); print('\''trust policy: valid JSON'\'')'
+trust policy: valid JSON
+$ python -I sub_matcher.py
+claims                    pinned repo-wide  unpinned
+prod deploy job            ALLOW     ALLOW     ALLOW
+feature branch job          deny     ALLOW     ALLOW
+PR job                      deny     ALLOW     ALLOW
+staging env job             deny     ALLOW     ALLOW
+other repo job              deny      deny     ALLOW
+wrong audience              deny      deny      deny

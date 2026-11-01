@@ -1,0 +1,32 @@
+name: train-test-promote
+on:
+  push:
+    branches: [main]
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python train.py --out model.pkl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model
+          path: model.pkl
+  test:
+    needs: train
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: model
+      - run: python gate.py --model model.pkl
+  promote:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - run: python promote.py --alias champion
+        env:
+          MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}

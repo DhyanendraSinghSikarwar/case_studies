@@ -1,0 +1,5 @@
+design                     lost reqs stale win s  log entries lost  idle capacity
+active-passive                 30000         4.5               907  high (standby ~100%)
+active-active                   3000         5.2               519  low (headroom ~ 50%)
+per-region independent        360000         0.0                 0  low, but no cross-region cover
+residency: per-region independent keeps data in region; replication across regions needs a residency check

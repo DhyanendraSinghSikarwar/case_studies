@@ -1,0 +1,19 @@
+started; codes then bodies
+q31,q32 code done
+q33 code done
+q34 q35 code done
+q36 code done
+q37 code done
+q38 code done
+q39 code done
+q40 code done
+q31 body done
+q32 body done
+q33 body done
+q34 body done
+q35 body done
+q36 body done
+q37 body done
+q38 body done
+q39 body done
+q40 body done

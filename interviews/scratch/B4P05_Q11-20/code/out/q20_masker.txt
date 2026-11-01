@@ -1,0 +1,4 @@
+before mask_secret: connecting with password=S3cretPassw0rd to db
+after  mask_secret: connecting with password=*** to db
+by key name       : {'model_api_key': '***', 'region': 'ap-south-1'}
+partial/other text: ***! | s3cretpassw0rd

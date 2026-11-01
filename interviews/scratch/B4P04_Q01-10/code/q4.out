@@ -1,0 +1,32 @@
+prepared 300 train rows
+trained with C = 1.0
+evaluated
+--- unrelated edit: add an unused key to params.yaml
+Data and pipelines are up to date.
+--- change train.C
+trained with C = 0.01
+evaluated
+--- params diff (workspace vs HEAD)
+Path         Param        HEAD    workspace
+params.yaml  notes.owner  -       team-a
+params.yaml  train.C      1.0     0.01
+--- metrics diff (workspace vs HEAD)
+Path          Metric    HEAD    workspace    Change
+metrics.json  accuracy  0.81    0.76         -0.05
+metrics.json  auc       0.9066  0.9078       0.0012
+--- metrics show
+Path          accuracy    auc
+metrics.json  0.76        0.9078
+--- metrics diff HEAD~1 HEAD
+Path          Metric    HEAD~1    HEAD    Change
+metrics.json  accuracy  0.81      0.76    -0.05
+metrics.json  auc       0.9066    0.9078  0.0012
+--- plots diff --json (head)
+index.html
+--- misspelled param key
+Stage 'prepare' didn't change, skipping
+ERROR: failed to reproduce 'train': Parameters 'train.Cc' are missing from 'params.yaml'.
+--- metrics file missing
+DVC failed to load some metrics for following revisions: ''.
+Path
+metrics.json

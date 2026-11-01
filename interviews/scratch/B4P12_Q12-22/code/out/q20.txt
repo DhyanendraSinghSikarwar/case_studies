@@ -1,0 +1,10 @@
+day  main CTR  holdout CTR of model slate  best well-measured holdout items  ratio   fresh share main/holdout
+  5     0.437                       0.213                             0.321   0.67       100.0% / 100.0%
+ 10     0.428                       0.233                             0.332   0.70         0.0% /  25.4%
+ 15     0.427                       0.228                             0.315   0.72         0.0% /  24.0%
+ 20     0.465                       0.244                             0.318   0.77         0.0% /  24.9%
+ 30     0.447                       0.228                             0.298   0.76         0.0% /  25.0%
+ 40     0.437                       0.232                             0.307   0.76         0.0% /  25.2%
+
+main-traffic CTR over days 15-40: min 0.427 max 0.468 (the in-loop metric looks fine)
+holdout ratio over days 15-40: mean 0.77  -> ALERT rule: ratio < 0.8 for 5 days

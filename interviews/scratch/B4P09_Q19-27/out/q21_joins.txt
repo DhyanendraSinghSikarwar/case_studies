@@ -1,0 +1,29 @@
+pyspark 4.2.0 | AQE off for stable plans
+== A. large x small, broadcast() hint
++- *(2) BroadcastHashJoin [bucket#8L], [bucket#6L], Inner, BuildRight, false, false
+   :        +- *(2) Range (0, 20000, step=1, splits=4)
+   +- BroadcastExchange HashedRelationBroadcastMode(List(input[0, bigint, false]),false), [plan_id=35]
+         +- *(1) Scan ExistingRDD[bucket#6L,segment#7]
+== B. large x small, autoBroadcastJoinThreshold=-1
++- *(5) SortMergeJoin [bucket#8L], [bucket#6L], Inner
+   :- *(2) Sort [bucket#8L ASC NULLS FIRST], false, 0
+   :  +- Exchange hashpartitioning(bucket#8L, 4), ENSURE_REQUIREMENTS, [plan_id=85]
+   :              +- *(1) Range (0, 20000, step=1, splits=4)
+   +- *(4) Sort [bucket#6L ASC NULLS FIRST], false, 0
+      +- Exchange hashpartitioning(bucket#6L, 4), ENSURE_REQUIREMENTS, [plan_id=91]
+            +- *(3) Scan ExistingRDD[bucket#6L,segment#7]
+== C. large x large, broadcast off
++- *(5) SortMergeJoin [user_id#1L], [user_id#4L], Inner
+   :- *(2) Sort [user_id#1L ASC NULLS FIRST], false, 0
+   :  +- Exchange hashpartitioning(user_id#1L, 4), ENSURE_REQUIREMENTS, [plan_id=155]
+   :              +- *(1) Range (0, 20000, step=1, splits=4)
+   +- *(4) Sort [user_id#4L ASC NULLS FIRST], false, 0
+      +- Exchange hashpartitioning(user_id#4L, 4), ENSURE_REQUIREMENTS, [plan_id=161]
+            +- *(3) Range (0, 5000, step=1, splits=4)
+== D. large x large, hint shuffle_hash
++- *(3) ShuffledHashJoin [user_id#1L], [user_id#4L], Inner, BuildRight
+   :- Exchange hashpartitioning(user_id#1L, 4), ENSURE_REQUIREMENTS, [plan_id=222]
+   :           +- *(1) Range (0, 20000, step=1, splits=4)
+   +- Exchange hashpartitioning(user_id#4L, 4), ENSURE_REQUIREMENTS, [plan_id=225]
+         +- *(2) Range (0, 5000, step=1, splits=4)
+row counts equal across strategies (A,B): True 20000 | C,D: True 20000

@@ -1,0 +1,7 @@
+4 prompt examples ok
+walk-through cost = [10, 15, 20]  positions 0..3
+dp = [0, 0, 10, 15]
+500 seeded random lists (len 2..15, values 0..999): bottom-up == forward recursion
+exhaustive, len 2..6 values 0..3: 5456 lists ok
+n = 10^5 bottom-up -> 20600098
+forward memo at 10^5: RecursionError (default limit 1000 )

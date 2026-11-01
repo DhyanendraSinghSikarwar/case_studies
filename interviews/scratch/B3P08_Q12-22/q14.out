@@ -1,0 +1,24 @@
+main (windows):
+country  rev_feb  rev_mar  share_feb_pct  share_mar_pct  change  contribution_pct
+     IN   1000.0   1500.0           50.0           68.2   500.0             250.0
+     SG      0.0    200.0            0.0            9.1   200.0             100.0
+     UK    400.0      0.0           20.0            0.0  -400.0            -200.0
+     US    600.0    500.0           30.0           22.7  -100.0             -50.0
+pandas:
+country  rev_feb  rev_mar  share_feb_pct  share_mar_pct  change  contribution_pct
+     IN   1000.0   1500.0           50.0           68.2   500.0             250.0
+     SG      0.0    200.0            0.0            9.1   200.0             100.0
+     UK    400.0      0.0           20.0            0.0  -400.0            -200.0
+     US    600.0    500.0           30.0           22.7  -100.0             -50.0
+zero total growth:
+country  rev_feb  rev_mar  share_feb_pct  share_mar_pct  change contribution_pct
+     IN   1000.0   1500.0           50.0           75.0   500.0             None
+     UK    400.0      0.0           20.0            0.0  -400.0             None
+     US    600.0    500.0           30.0           25.0  -100.0             None
+negative total growth:
+country  rev_feb  rev_mar  share_feb_pct  share_mar_pct  change  contribution_pct
+     IN   1000.0   1200.0           50.0           63.2   200.0            -200.0
+     SG      0.0    200.0            0.0           10.5   200.0            -200.0
+     UK    400.0      0.0           20.0            0.0  -400.0             400.0
+     US    600.0    500.0           30.0           26.3  -100.0             100.0
+asserts passed

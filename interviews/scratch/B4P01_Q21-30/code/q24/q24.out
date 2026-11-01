@@ -1,0 +1,41 @@
+$ python3 -I -m pytest -q -p no:cacheprovider --cov=scaling --cov-report=term-missing --cov-fail-under=100 test_scaling.py   # line coverage only
+.                                                                        [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.17-final-0 _______________
+
+Name         Stmts   Miss  Cover   Missing
+------------------------------------------
+scaling.py       5      0   100%
+------------------------------------------
+TOTAL            5      0   100%
+Required test coverage of 100% reached. Total coverage: 100.00%
+1 passed in 0.16s
+exit=0
+
+$ ... --cov-branch   # same tests, branch coverage on
+.
+ERROR: Coverage failure: total of 86 is less than fail-under=100
+                                                                         [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.13.17-final-0 _______________
+
+Name         Stmts   Miss Branch BrPart  Cover   Missing
+--------------------------------------------------------
+scaling.py       5      0      2      1    86%   3->5
+--------------------------------------------------------
+TOTAL            5      0      2      1    86%
+FAIL Required test coverage of 100% not reached. Total coverage: 85.71%
+1 passed in 0.13s
+exit=1
+
+$ add a test with lo != 0 -> the bug shows up (coverage was never the thing that could catch it)
+.F                                                                       [100%]
+=================================== FAILURES ===================================
+E   assert 0.25 == 0.5
+     +  where 0.25 = scale(15, 10, 20)
+/home/user/case_studies/interviews/scratch/B4P01_Q21-30/code/q24/test_scaling_more.py:4: assert 0.25 == 0.5
+=========================== short test summary info ============================
+FAILED test_scaling_more.py::test_scale_nonzero_lo - assert 0.25 == 0.5
+1 failed, 1 passed in 0.13s
+exit=1
+coverage 7.17.0 pytest-cov 7.1.0

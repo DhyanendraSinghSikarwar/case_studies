@@ -1,0 +1,35 @@
+SQLite 3.45.1 | pandas 3.0.5
+
+SQL:
+ id   name              phone         cleaned                                status        standard
+  1   Asha    +91 98765-43210    919876543210                                    ok +91-98765-43210
+  2    Ben    (022) 2345 6789     02223456789        review: landline with STD code             NaN
+  3 Chitra       098765 43210     09876543210                                    ok +91-98765-43210
+  4    Dev         9876543210      9876543210                                    ok +91-98765-43210
+  5   Esha 98765 43210 ext 12 9876543210ext12 review: non-digit (extension or text)             NaN
+  6  Farid                NaN             NaN                               missing             NaN
+  7   Gita         98765-4321       987654321                      review: length 9             NaN
+
+pandas:
+ id         cleaned                                status        standard
+  1    919876543210                                    ok +91-98765-43210
+  2     02223456789        review: landline with STD code             NaN
+  3     09876543210                                    ok +91-98765-43210
+  4      9876543210                                    ok +91-98765-43210
+  5 9876543210ext12 review: non-digit (extension or text)             NaN
+  6             NaN                               missing             NaN
+  7       987654321                      review: length 9             NaN
+
+asserts passed (status, cleaned digits and standard form equal, ordered by id)
+
+naive pandas str.replace(r'\D', '').str[-10:]:
+             phone naive_last10
+   +91 98765-43210   9876543210
+   (022) 2345 6789   2223456789
+      098765 43210   9876543210
+        9876543210   9876543210
+98765 43210 ext 12   7654321012
+               NaN          NaN
+        98765-4321    987654321
+row 5 (extension) and row 2 (landline) silently become 10-digit 'numbers'; the status check above refuses them
+SQLite SUBSTR(x, -10) on a 5-char string: 12345 (returns what exists, no error)

@@ -1,0 +1,11 @@
+API response: {'score': 0.37, 'model_name': 'credit-risk', 'model_version': '2'}
+lineage of that version:
+  data_version   data.20261001
+  gha_repo       example-org/credit-risk
+  gha_run_id     9876543210
+  gha_workflow   train-and-register
+  git_sha        ab12cd34ef56ab12cd34ef56ab12cd34ef56ab12
+  image_digest   sha256:bbbb2222
+refused: missing lineage env vars: ['IMAGE_DIGEST']
+== actionlint trace.yml
+exit=0

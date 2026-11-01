@@ -1,0 +1,8 @@
+PASS    Chart.yaml (Helm chart)
+PASS    values.yaml
+PASS    HPA
+PASS    readiness probe
+MISSING startup probe
+PASS    canary (2nd Deployment or weight)
+PASS    resource requests/limits
+MISSING README with run steps

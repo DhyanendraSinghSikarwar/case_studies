@@ -1,0 +1,34 @@
+(a) (q1+q2+q3)/3.0:
+ user_id  avg_a
+       1    4.0
+       2    NaN
+       3    NaN
+       4    NaN
+       5    NaN
+(b) sum of answers / number of answers:
+ user_id  avg_b
+       1    4.0
+       2    3.0
+       3    NaN
+       4    5.0
+       5    1.5
+(b) via UNION ALL unpivot + AVG:
+ user_id  avg_b2
+       1     4.0
+       2     3.0
+       3     NaN
+       4     5.0
+       5     1.5
+(c) per question, NULLs ignored versus NULL coerced to 0:
+ q1_avg  q2_avg  q3_avg  q1_avg_zero  q2_avg_zero  q3_avg_zero
+    3.5     3.5     2.5          2.8          1.4          1.0
+
+dtypes: {'q1': 'float64', 'q2': 'float64', 'q3': 'float64'} (NULL made the integer columns float64)
+pandas mean(axis=1): [4.0, 3.0, nan, 5.0, 1.5]
+pandas mean(axis=1, skipna=False): [4.0, nan, nan, nan, nan]
+pandas sum(axis=1) default (all-NaN row gives 0.0): [12.0, 6.0, 0.0, 5.0, 3.0]
+pandas sum(axis=1, min_count=1): [12.0, 6.0, nan, 5.0, 3.0]
+pandas q1.fillna(0).mean(): 2.8 versus q1.mean(): 3.5
+asserts passed (compared in user_id order; NULL in SQL equals NaN in pandas)
+respondent 3 (all NULL): SQL (b) = None | pandas mean = nan | sum(min_count=1) = nan
+total() and sum on all NULL: (None, 0.0)

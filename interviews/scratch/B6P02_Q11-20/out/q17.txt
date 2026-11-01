@@ -1,0 +1,7 @@
+two-proportion test: SE = 0.259 points, z = 2.70, two-sided p = 0.0069
+smallest week-over-week change detectable with 80% power at this n: 0.73 points
+one week 93.1% +/- 0.35 points (binomial noise alone)
+stable model, 52 weeks: week-on-week p<0.05 rule false alarms/week = 5.0% (about 2.6 per year)
+  3-sigma control limit false alarms/week = 0.47% ; pooled 4-week rule: false alarms/window = 0.77%, chance of any false alarm in the year = 13.1%
+slow decline 0.05 pt/week from week 9: weekly drop alert fires in 4.9% of those weeks (looks like noise level 5.0%)
+  3-sigma limit: detected in 100% of runs, mean delay 8.6 weeks;  pooled 4-week: detected 100%, mean delay 7.3 weeks

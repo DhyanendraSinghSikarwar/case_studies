@@ -1,0 +1,7 @@
+{"type": "numeric", "max_null_ratio": 0.05, "min": 7906.0, "max": 169360.0, "mean_ref": 39412.2, "mean_tolerance_pct": 15} 
+
+clean serving sample -> PASS
+bad serving sample -> FAIL
+   - age: null ratio 0.200 > 0.01
+   - income: mean moved 38% (> 15%)
+   - channel: 14.8% unseen values

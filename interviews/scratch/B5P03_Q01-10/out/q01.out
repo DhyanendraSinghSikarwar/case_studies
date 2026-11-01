@@ -1,0 +1,4 @@
+'  the sky  is blue ' -> 'blue is sky the'
+'a' -> 'a'
+'   ' -> ''
+random cross-check passed: 3000 cases

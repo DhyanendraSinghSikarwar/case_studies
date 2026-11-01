@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: embed-gpu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: embed-gpu
+  template:
+    metadata:
+      labels:
+        app: embed-gpu
+    spec:
+      nodeSelector:
+        pool: gpu                      # a label YOU put on GPU nodes (cloud pools often add their own)
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: server
+          image: registry.example.com/ml/embed-server:3.0.0
+          resources:
+            requests:
+              cpu: "2"
+              memory: 8Gi
+            limits:
+              memory: 8Gi
+              nvidia.com/gpu: 1         # whole GPUs only; goes in limits

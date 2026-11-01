@@ -1,0 +1,7 @@
+azure-ai-ml 1.35.2 | pydantic 2.14.1
+tags on Model entity: 9 e.g. {'rai.dashboard_uri': 'azureml://registries/r/rai/dash1', 'rai.protected_attribute': 'gender', 'rai.fairness_metric': 'demographic_parity_difference'}
+gate passed: True (a pass is a threshold check, not proof of fairness)
+fairness out of range -> rejected: fairness_value
+method none -> rejected: explainability_method
+short limitations -> rejected: limitations
+bad uri -> rejected: dashboard_uri

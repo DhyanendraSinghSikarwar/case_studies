@@ -1,0 +1,5 @@
+base compute 2000000; base stock-out cost 184000 per period
+P1 retrain all less often (4->2/mo)                saved  50.0%  extra stock-out    18400  saved per extra  54.35  meets 40%: True
+P2 tail -> global/cheap model                      saved  68.0%  extra stock-out     4000  saved per extra 340.00  meets 40%: True
+P3 tiered: A as-is, B 2/mo, tail cheap + 1/mo      saved  82.0%  extra stock-out     8200  saved per extra 200.00  meets 40%: True
+pick: P2 tail -> global/cheap model

@@ -1,0 +1,4 @@
+cohort day 60: share of its fraud labelled by day 199: 1.00  recall on labelled part: 0.78 (n=226)
+cohort day 110: share of its fraud labelled by day 199: 0.98  recall on labelled part: 0.80 (n=200)
+cohort day 130: share of its fraud labelled by day 199: 0.68  recall on labelled part: 0.57 (n=126)
+cohort day 150: share of its fraud labelled by day 199: 0.32  recall on labelled part: 0.65 (n=66)

@@ -1,0 +1,25 @@
+All simple routes A to F, cheapest first (SQL path-string guard):
+      route  km  legs
+A>B>C>D>E>F   8     5
+  A>C>D>E>F  10     4
+  A>B>C>D>F  11     4
+  A>B>D>E>F  12     4
+    A>C>D>F  13     3
+    A>B>D>F  15     3
+A>C>B>D>E>F  16     5
+  A>C>B>D>F  19     4
+pandas frontier merge equals SQL: 8 simple routes
+cheapest: SQL ('A>B>C>D>E>F', 8) | heapq Dijkstra ('A>B>C>D>E>F', 8) | networkx ('A>B>C>D>E>F', 8)
+
+Depth limit only (no path guard), cheapest walk from A to F and number of walks, by leg cap:
+  roads: [(4, 6, 10), (6, 14, 8), (8, 22, 8), (10, 30, 8), (12, 38, 8)] (cap, walks_to_F, cheapest_km)
+  roads_neg: [(4, 6, 10), (6, 14, 8), (8, 22, 6), (10, 30, 4), (12, 38, 2)] (cap, walks_to_F, cheapest_km)
+networkx negative_edge_cycle on roads_neg: True
+networkx bellman_ford_path raises NetworkXUnbounded: Negative cycle detected.
+networkx dijkstra raises ValueError ('Contradictory paths found:', 'negative weights?')
+
+Simple-path enumeration on a chain of k diamonds (2 routes per diamond), SQL path-string guard:
+  k= 6: 64 simple routes (2^k = 64), 24 edges, 0.000 s on this machine
+  k=10: 1024 simple routes (2^k = 1024), 40 edges, 0.004 s on this machine
+  k=14: 16384 simple routes (2^k = 16384), 56 edges, 0.071 s on this machine
+asserts passed

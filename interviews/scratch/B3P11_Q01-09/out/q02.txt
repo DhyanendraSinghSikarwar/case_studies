@@ -1,0 +1,12 @@
+rows matched: 8 | VM steps scan: 300064 index: 89 covering: 49
+ indexes  vm_steps  insert_ms_machine_specific  page_count
+       0   1600006                         279         977
+       1   2200006                         525        1266
+       2   2700006                         859        1779
+       3   3300006                        1141        2463
+i1        262 pages   1073152 bytes
+i2        460 pages   1884160 bytes
+i3        625 pages   2560000 bytes
+orders    976 pages   3997696 bytes
+page_size 4096
+asserts passed: SQL scan, SQL index, pandas mask and sorted searchsorted give the same rows (sorted by order_id)

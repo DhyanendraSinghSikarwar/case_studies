@@ -1,0 +1,6 @@
+evidently 0.7.23 pandas 2.3.3
+DriftedColumnsCount(drift_share=0.5) -> {'count': 3.0, 'share': 1.0}
+ValueDrift(column=age,method=Wasserstein distance (normed),threshold=0.1) -> 0.10357764053630446
+ValueDrift(column=income,method=Wasserstein distance (normed),threshold=0.1) -> 0.6956238223011112
+ValueDrift(column=city,method=Jensen-Shannon distance,threshold=0.1) -> 0.16192601436159115
+html written: True

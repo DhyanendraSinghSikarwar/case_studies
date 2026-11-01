@@ -1,0 +1,75 @@
+tiny: per-customer totals [(5, 40), (6, 5), (7, 100)] average of totals 48.333333333333336
+tiny: customers above the average total: [(7, 100)]
+
+== CTE referenced twice (customers whose total exceeds the average total)
+default              rows  9516  VM steps  2385659
+      MATERIALIZE t
+      SCAN orders USING INDEX ix_cust
+      SCAN t
+      SCALAR SUBQUERY 2
+      SCAN t
+      USE TEMP B-TREE FOR ORDER BY
+AS MATERIALIZED      rows  9516  VM steps  2385659
+      MATERIALIZE t
+      SCAN orders USING INDEX ix_cust
+      SCAN t
+      SCALAR SUBQUERY 2
+      SCAN t
+      USE TEMP B-TREE FOR ORDER BY
+AS NOT MATERIALIZED  rows  9516  VM steps  4465655
+      CO-ROUTINE t
+      SCAN orders USING INDEX ix_cust
+      SCAN t
+      SCALAR SUBQUERY 2
+      CO-ROUTINE t
+      SCAN orders USING INDEX ix_cust
+      SCAN t
+      USE TEMP B-TREE FOR ORDER BY
+
+== filter applied OUTSIDE a GROUP BY subquery versus the inlined query (customer_id = 5)
+subquery, filter outside               rows     1  VM steps      138
+      CO-ROUTINE (subquery-1)
+      SEARCH orders USING INDEX ix_cust (customer_id=?)
+      SCAN (subquery-1)
+inlined filter                         rows     1  VM steps      125
+      SEARCH orders USING INDEX ix_cust (customer_id=?)
+CTE used once, filter outside          rows     1  VM steps      138
+      CO-ROUTINE t
+      SEARCH orders USING INDEX ix_cust (customer_id=?)
+      SCAN t
+CTE used once, AS MATERIALIZED         rows     1  VM steps  2180011
+      MATERIALIZE t
+      SCAN orders USING INDEX ix_cust
+      SCAN t
+whole aggregate, no filter (for scale) rows 19999  VM steps  2080004
+      SCAN orders USING INDEX ix_cust
+
+== what blocks push-down (outer filter customer_id = 5)
+LIMIT inside                                   rows      9  VM steps  1800040
+      CO-ROUTINE (subquery-1)
+      SCAN orders
+      SCAN (subquery-1)
+no LIMIT (flattened)                           rows      9  VM steps       63
+      SEARCH orders USING INDEX ix_cust (customer_id=?)
+DISTINCT inside, filter on a distinct column   rows      9  VM steps      161
+      CO-ROUTINE (subquery-1)
+      SEARCH orders USING INDEX ix_cust (customer_id=?)
+      USE TEMP B-TREE FOR DISTINCT
+      SCAN (subquery-1)
+window inside, filter on PARTITION BY column   rows      9  VM steps      349
+      CO-ROUTINE (subquery-1)
+      CO-ROUTINE (subquery-3)
+      SEARCH orders USING COVERING INDEX ix_cust (customer_id=?)
+      SCAN (subquery-3)
+      SCAN (subquery-1)
+window inside, filter on the rank              rows      1  VM steps      329
+      CO-ROUTINE (subquery-1)
+      CO-ROUTINE (subquery-3)
+      SEARCH orders USING COVERING INDEX ix_cust (customer_id=?)
+      SCAN (subquery-3)
+      SCAN (subquery-1)
+aggregate inside, filter on the aggregate      rows  13890  VM steps  2178912
+      CO-ROUTINE (subquery-1)
+      SCAN orders USING INDEX ix_cust
+      SCAN (subquery-1)
+asserts passed: every CTE or subquery form matched the pandas result (compared sorted by customer_id)

@@ -1,0 +1,10 @@
+total = 9.84 GB over 9 sized layers
+1.  4.10 GB  41.7%  RUN /bin/sh -c pip install -r requirements.txt
+2.  3.20 GB  32.5%  COPY . /app # buildkit
+3.  1.80 GB  18.3%  RUN /bin/sh -c python get_model.py # buildkit
+4.  0.61 GB   6.2%  RUN /bin/sh -c apt-get update && apt-get inst
+hints:
+ - COPY . is large: add .dockerignore, copy only src
+ - model baked in: mount or pull at start
+ - pip layer large: CPU-only torch? --no-cache-dir? dev deps?
+ - apt layer big: --no-install-recommends, drop build tools

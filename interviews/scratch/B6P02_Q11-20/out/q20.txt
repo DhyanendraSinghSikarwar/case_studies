@@ -1,0 +1,25 @@
+day  zero_share  null_share  median_ov   AUC
+  1      0.000      0.000      400.9  0.8530
+  2      0.000      0.000      404.6  0.8505
+  3      0.000      0.000      402.6  0.8474
+  4      0.000      0.000      402.9  0.8484
+  5      0.000      0.000      400.4  0.8563
+  6      0.000      0.000      397.5  0.8540
+  7      0.000      0.000      402.2  0.8572
+  8      0.061      0.000      377.2  0.8093
+  9      0.058      0.000      378.0  0.8081
+ 10      0.058      0.000      376.8  0.8091
+ 11      0.062      0.000      378.4  0.8086
+ 12      0.060      0.000      375.2  0.8082
+ 13      0.060      0.000      376.5  0.8099
+ 14      0.060      0.000      381.5  0.8034
+mean AUC before break 0.852, after break 0.808
+check                       healthy day   break day
+schema: column present      True          True
+schema: dtype float         True          True
+null rate <= 1%             True          True
+range: min > 0              True          False
+zero share <= 0.5%          True          False
+median in [200, 800]        True          True
+note: the null-rate check PASSES on the break day; range and zero-share checks fail (the median check also passes), because the default 0 is a valid number
+day 8 AUC overall 0.807; rows via new path 0.792; rows via old path 0.849

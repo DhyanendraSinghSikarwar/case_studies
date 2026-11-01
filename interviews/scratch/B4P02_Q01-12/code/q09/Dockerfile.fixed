@@ -1,0 +1,10 @@
+# syntax=docker/dockerfile:1
+FROM python:3.11-slim-bookworm
+WORKDIR /app
+COPY requirements.txt .
+# secret exists only for this RUN, mounted at /run/secrets/pip_token, never stored in a layer
+RUN --mount=type=secret,id=pip_token \
+    PIP_EXTRA_INDEX_URL="https://user:$(cat /run/secrets/pip_token)@pypi.example.com/simple" \
+    pip install --no-cache-dir -r requirements.txt
+COPY src/ src/
+CMD ["python", "-m", "src.serve"]

@@ -1,0 +1,7 @@
+[t0 first run] actions=['create churn-0 (churn:1.0)', 'create churn-1 (churn:1.0)', 'create churn-2 (churn:1.0)'] actual={'churn-0': 'churn:1.0', 'churn-1': 'churn:1.0', 'churn-2': 'churn:1.0'}
+[t1 nothing changed] actions=none (converged) actual={'churn-0': 'churn:1.0', 'churn-1': 'churn:1.0', 'churn-2': 'churn:1.0'}
+[t2 pod churn-1 killed] actions=['create churn-1 (churn:1.0)'] actual={'churn-0': 'churn:1.0', 'churn-1': 'churn:1.0', 'churn-2': 'churn:1.0'}
+[t3 replicas 3->2] actions=['delete churn-2'] actual={'churn-0': 'churn:1.0', 'churn-1': 'churn:1.0'}
+[t4 image 1.0->1.1] actions=['replace churn-0 -> churn:1.1', 'replace churn-1 -> churn:1.1'] actual={'churn-0': 'churn:1.1', 'churn-1': 'churn:1.1'}
+[t5 idempotent re-run] actions=none (converged) actual={'churn-0': 'churn:1.1', 'churn-1': 'churn:1.1'}
+[t6 CR deleted, cleaned up] actions=none (converged) actual={}

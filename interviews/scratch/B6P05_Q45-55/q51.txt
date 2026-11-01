@@ -1,0 +1,52 @@
+**Say this first (1 line):** The risky group loses 3.0 million, the rest earns 9.0 million, so the portfolio makes 6.0 million; repricing the risky group to 1,350 lifts it to 9.3 million on paper (illustrative), but adverse selection means the people who stay will likely claim more than 1,100, and the cushion is only 50 a policy.
+
+**Clarifying questions:**
+- Are the 1,100 and 700 expected claims from a back-test or only a model estimate? Model error on a 10,000 group can be large.
+- Do expenses of 200 fall when a policy lapses? Here I assume yes.
+- Is repricing allowed by the regulator, and can we price by this risk factor at all? Some factors cannot be used.
+- Will competitors see the same signal? If they price the 90,000 safe policies lower, we lose the profitable ones.
+- Why 40% lapse? Is it measured from a price test or assumed?
+
+**Approach:**
+1. Profit per policy: risky = 1,000 - 200 - 1,100 = -300. Rest = 1,000 - 200 - 700 = +100.
+2. Totals: risky 10,000 x -300 = -3,000,000. Rest 90,000 x 100 = 9,000,000. Portfolio 6,000,000. Average claims are 740, which gives the same 6.0 million.
+3. Reprice risky to 1,350: 40% lapse, so 6,000 remain. Profit per remaining policy = 1,350 - 200 - 1,100 = +50. Total 300,000.
+4. New portfolio = 300,000 + 9,000,000 = 9,300,000, a gain of 3.3 million.
+5. Adverse selection: the 1,100 is the average of the whole risky group. The 40% who leave are probably the less risky ones, who shop around. The 6,000 who stay may average more than 1,100. Break-even for stayers is 1,350 - 200 = 1,150, only 4.5% above 1,100. At 1,250 the group loses 600,000. Portfolio stays above the 6.0 million baseline in these cases, because lapses also remove loss-making policies, but the "+300,000" is not safe.
+6. Bigger risk is on the other side: the 90,000 good policies earn 9.0 million. If a rival prices them lower, we are left with the worst risks. Monitor lapse by risk band.
+7. Roll out in steps, a randomised or phased increase, and track claims for stayers, not only price acceptance.
+
+**Metrics:**
+- Profit per policy = premium - expenses - expected claims. Loss ratio = claims / premium (for example 1,100 / 1,350 = 81.5% after repricing).
+- Lapse rate by risk band = lapsed policies / policies in the band.
+- Guardrails: claims of stayers versus the model, rate-change complaints, regulatory limits.
+
+**Risks:**
+- Adverse selection: those who accept a rise know something the model does not.
+- Model error: the 1,100 may be wrong, and a risky group chosen by a model suffers "winner's curse" (the group selected for high predicted claims is partly selected for model error, so true claims may be lower, which works the other way).
+- The safe group is poached.
+- Fairness and regulation.
+
+**What the interviewer scores:**
+- Strong: gets both groups and the portfolio right, then reprices, then explains why stayers differ from the group average. Weak: reprices and says "profit goes up".
+- Strong: gives the break-even claims (1,150). Weak: no sensitivity.
+- Strong: worries about the 90,000, not only the 10,000. Weak: only the risky group.
+
+**Example:** Illustrative numbers. Before: -3.0 million + 9.0 million = 6.0 million. After: 0.3 million + 9.0 million = 9.3 million. Stayers' claims at 1,250: -0.6 million, portfolio 8.4 million. Weak: "Repricing adds 3.3 million." Strong: "It adds up to 3.3 million, but only if stayers claim about 1,100, and the margin is just 50 a policy."
+
+**Code:**
+{CODE}
+
+**Output (my run):**
+{OUTPUT}
+
+**Follow-ups:**
+- *Why does lapse help here?* Each lapsed policy removes a -300 policy, so a lapse is worth +300 relative to staying at the old price.
+- *How would you check the model?* Compare predicted and actual claims by decile on a hold-out period, and check calibration for the risky band.
+- *Alternatives to a big price rise?* Raise the premium in steps, add deductibles, or offer a safer-driving discount.
+
+**Common mistakes:**
+- Forgetting that expenses of 200 still apply to staying policies.
+- Treating the average claims of the group as the claims of those who stay.
+- Ignoring the 90,000 profitable policies.
+- Using the repriced premium for lapsed policies.

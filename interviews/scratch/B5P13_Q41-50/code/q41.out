@@ -1,0 +1,11 @@
+examples ok: [[2, 3, 1, 8, 9, 5], 2] [[1, 2], 0] [[1, 2], 0] [[4, 4, 4, 4], 1]
+guarantees hold for 24380 arrays (all arrays of length 2..7 over small value sets)
+2000 random arrays: both loop shapes agree and the guarantees hold
+recursing on [lo, j] and [j+1, hi]: 500/500 sorted; on [lo, j-1] and [j+1, hi]: 305 / 500 left unsorted
+pivot = last element, [1, 2] -> j = 1 (= len - 1, so recursing on [0, j] never shrinks)
+last-element pivot quicksort: stuck: same range again and again
+last-element pivot returned j = n-1 for 9 of 81 arrays of length 4 over {0,1,2}
+all equal, n = 8 -> j = 3 (middle); Lomuto with all equal puts the pivot at 7
+all equal, n = 100 -> j = 49 (middle); Lomuto with all equal puts the pivot at 99
+swaps on all-equal input of size 8 and 100: [4, 50] (useless swaps, but the split is balanced)
+edge asserts ok

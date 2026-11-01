@@ -1,0 +1,22 @@
+--- docker buildx version
+github.com/docker/buildx v0.38.1 0dbe87f36ed472fe36b6796c3f70b4210a731fc5
+--- docker buildx build --help (platform and output lines)
+      --cache-from stringArray        External cache sources (e.g.,
+      --cache-to stringArray          Cache export destinations (e.g.,
+      --load                          Shorthand for "--output=type=docker"
+  -o, --output stringArray            Output destination (format:
+      --platform stringArray          Set target platform for build
+      --push                          Shorthand for
+--- uname -m
+x86_64
+--- python3 -I arch_check.py
+this machine, python platform.machine(): x86_64
+ELF header of /usr/bin/python3 -> amd64 (x86-64)
+ELF header of /bin/sh -> amd64 (x86-64)
+ELF header of this .py file -> not an ELF binary (script or other format)
+multi-arch index: amd64 pick = sha256:aaaa, arm64 pick = sha256:bbbb
+arm64-only index (built on a Mac): amd64 pick = None, arm64 pick = sha256:bbbb
+--- bash -n commands.sh
+OK
+--- real build attempt:
+ERROR: failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory

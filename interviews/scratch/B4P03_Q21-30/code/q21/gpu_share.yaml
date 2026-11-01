@@ -1,0 +1,36 @@
+# Time-slicing config for the NVIDIA device plugin (ConfigMap-style).
+# Field names follow the GPU Operator time-slicing docs; check current docs for your version.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: time-slicing-config
+  namespace: gpu-operator
+data:
+  any: |-
+    version: v1
+    flags:
+      migStrategy: none
+    sharing:
+      timeSlicing:
+        resources:
+          - name: nvidia.com/gpu
+            replicas: 4
+---
+# Pod asking for ONE MIG slice. Resource name depends on GPU model and MIG strategy (mixed).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: small-model
+  labels:
+    app: small-model
+spec:
+  tolerations:
+    - key: nvidia.com/gpu
+      operator: Exists
+      effect: NoSchedule
+  containers:
+    - name: server
+      image: registry.example.com/small-model:1.0
+      resources:
+        limits:
+          nvidia.com/mig-1g.10gb: 1

@@ -1,0 +1,9 @@
+implied SE = 0.1531% relative, z = 2.61, p = 0.0090
+annual revenue 12,000,000,000; cost 40,000,000/yr; break-even lift = 0.333%
+low  : lift 0.10% -> gain 12,000,000 units/yr, net -28,000,000
+point: lift 0.40% -> gain 48,000,000 units/yr, net 8,000,000
+high : lift 0.70% -> gain 84,000,000 units/yr, net 44,000,000
+P(true lift > break-even) ~ 67%
+posterior mean with a N(0, 0.3%) prior = 0.317%
+users needed for half-width CI: 4x -> 8000000 per arm
+all asserts passed

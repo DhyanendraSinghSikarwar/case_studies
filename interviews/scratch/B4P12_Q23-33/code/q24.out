@@ -1,0 +1,17 @@
+eligible devices: 74969 of 100000
+A crashy model, crash gate only
+  stage 1 ( 0.5%): exposed=   374 crash_rate=0.0322 conf=0.820 -> HALT
+  => devices exposed when it stopped: 374
+
+B silent accuracy loss, crash gate only
+  stage 1 ( 0.5%): exposed=   374 crash_rate=0.0051 conf=0.682 -> go
+  stage 2 ( 2.0%): exposed=  1499 crash_rate=0.0049 conf=0.671 -> go
+  stage 3 (10.0%): exposed=  7496 crash_rate=0.0049 conf=0.681 -> go
+  stage 4 (50.0%): exposed= 37484 crash_rate=0.0050 conf=0.696 -> go
+  stage 5 (100.0%): exposed= 74969 crash_rate=0.0050 conf=0.654 -> go
+  => devices exposed when it stopped: 74969
+
+C silent accuracy loss, crash + confidence-proxy gate
+  stage 1 ( 0.5%): exposed=   374 crash_rate=0.0040 conf=0.671 -> HALT
+  => devices exposed when it stopped: 374
+

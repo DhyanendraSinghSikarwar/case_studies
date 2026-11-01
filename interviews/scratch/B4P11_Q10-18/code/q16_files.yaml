@@ -1,0 +1,36 @@
+# ---- file: env.yml (Environment from a base image + conda file)
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+name: churn-train
+version: "3"
+image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu22.04
+conda_file: conda.yml
+description: base image + conda file; image is built and cached by the service on first use
+# ---- file: docker_env.yml (Environment from a build context)
+name: churn-docker
+version: "1"
+build:
+  path: ./docker-context
+  dockerfile_path: Dockerfile
+# ---- file: conda.yml (unpinned pandas: the check fails)
+name: churn
+channels: [conda-forge]
+dependencies:
+  - python=3.11
+  - pip=24.0
+  - pip:
+      - scikit-learn==1.5.2
+      - mlflow==2.17.0
+      - pandas
+# ---- file: conda_good.yml (all pinned)
+name: churn
+channels: [conda-forge]
+dependencies:
+  - python=3.11
+  - pip=24.0
+  - pip:
+      - scikit-learn==1.5.2
+      - mlflow==2.17.0
+      - pandas==2.2.3
+# ---- docker-context/Dockerfile
+# FROM python:3.11-slim
+# RUN pip install --no-cache-dir scikit-learn==1.5.2

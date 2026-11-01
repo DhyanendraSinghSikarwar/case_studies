@@ -1,0 +1,6 @@
+rows > 1,000,000: 200 share: 0.200%  median: 801
+auto-error 120  keep 70  review queue 10
+auto-error rule: caught 120 of 120 errors, wrongly flagged 0 genuine
+mean amount: raw 7,587  fixed 3,900  clipped at p99.9 (2,971,627) 6,349
+genuine corporate rows after clip: largest 2,971,627 vs real 7,034,373
+log-scale mean: raw 6.703 fixed 6.695

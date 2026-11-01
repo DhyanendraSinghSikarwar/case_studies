@@ -1,0 +1,1 @@
+Dockerfile.bad:5 DL3059 info: Multiple consecutive `RUN` instructions. Consider consolidation.

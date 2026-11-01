@@ -1,0 +1,16 @@
+**Weak response:** Contradict your manager in front of the other department, or say nothing and quietly work towards an impossible date. Both damage trust, in different ways.
+
+**Strong response:** In the meeting, stay neutral and do not contradict your manager publicly. Ask a light clarifying question if needed, such as what the other team needs from the date. Afterwards, speak to your manager privately and without blame: say you learned of the commitment in the meeting, share your honest estimate and what it depends on, and ask what the other team really needs first. Bring options rather than only a "no", such as a smaller first version, a later date for the full model, or a clear list of what must be true to hit it. Agree together on how the date will be reset with the other department, ideally by your manager, with you available to support. Ask to be included in future commitments about your work. Keep the tone about information and process, not betrayal.
+
+**Why it works:** It protects your manager's standing in public and the truth in private. Options turn a conflict into a joint problem, and the other department receives an honest date sooner.
+
+**What the interviewer scores:** Maturity, honesty about estimates, managing up, offering options, and process awareness. For the numeric trade-off version see Book 6 Part 6 Q1; this item is the "promised without asking" variant.
+
+**Say it like this:**
+```
+"I heard in the meeting that we told [team] the model would be ready next month. My honest estimate is [your estimate], because of [dependencies]. I want to help you keep that team's trust. Could we offer them [smaller first version] next month and the full model by [later date]? Could you reset the date with them, and could we talk through commitments about my work beforehand in future?"
+```
+
+**If they push back:** If the interviewer asks "what if your manager insists on the date?", say you would state the risk in writing, work on the most valuable part first and update the manager early if you slip, without hiding the risk. If asked about escalating higher, say only after the manager conversation fails and the risk is serious, and tell the manager you are doing it.
+
+**Common mistakes:** Public contradiction. Silent sandbagging. Saying only "impossible". Accusing the manager of lying. Skipping the request to be included in future commitments.

@@ -1,0 +1,27 @@
+
+To track the changes with git, run:
+
+	git add .gitignore train.csv.dvc
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+--- train.csv.dvc
+outs:
+- md5: d9b13d6b1aa717f38c852afe582875a0
+  size: 9004
+  hash: md5
+  path: train.csv
+--- .gitignore
+/train.csv
+--- git status
+?? .gitignore
+?? train.csv.dvc
+--- cache layout
+files/md5/d9/b13d6b1aa717f38c852afe582875a0
+--- silent edit
+train.csv.dvc:
+	changed outs:
+		modified:           train.csv
+--- md5 now
+8de6e62d730cb364e8d282c830f7ce2b  train.csv

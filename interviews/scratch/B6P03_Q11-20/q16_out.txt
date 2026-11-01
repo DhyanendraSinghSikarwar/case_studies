@@ -1,0 +1,7 @@
+training: missing rate 5.0%; positive rate when missing 61.0% vs present 32.4%
+flag coefficient: B 1.44  C 0.5
+live missing 5% (random): actual rate 0.340 | AUC / mean score  A 0.833 / 0.340   B 0.828 / 0.340   C 0.833 / 0.330
+live missing 40% (random): actual rate 0.341 | AUC / mean score  A 0.786 / 0.328   B 0.761 / 0.427   C 0.786 / 0.350
+alert when more than 138 of 2000 hourly requests are missing (6.90%)
+false alarms in 30 days (720 normal hours): 0
+outage hour: 819 missing of 2000 -> alarm True

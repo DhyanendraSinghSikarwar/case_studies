@@ -1,0 +1,21 @@
+A. crash mid-training, then rerun same run_id
+  train: start at epoch 0
+  CRASH: spot instance gone after epoch 2
+ attempt 1: crashed
+  train: start at epoch 2
+  published model from r1, score 1.0
+ attempt 2: ok
+ prod: {"run_id": "r1", "w": 1.0, "score": 1.0}
+B. poisoned upstream table
+  validation failed: rows=9 bad_labels=1 -> sent to dead_letter, no training
+ result: poisoned
+ prod unchanged: {"run_id": "r1", "w": 1.0, "score": 1.0}
+ dead_letter: ['r2.json']
+C. model fails evaluation gate (gate 0.95)
+  train: start at epoch 0
+  eval gate FAILED: score 0.9 < 0.95; production untouched
+ result: gate_failed
+ prod unchanged: {"run_id": "r1", "w": 1.0, "score": 1.0}
+D. duplicate run while one is active
+  skip: another run holds the lock
+ result: locked

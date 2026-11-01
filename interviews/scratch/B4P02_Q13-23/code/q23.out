@@ -1,0 +1,10 @@
+python:3.12-slim               -> registry=docker.io                          repo=library/python   tag=3.12-slim digest=-
+myorg/trainer:1.4.0            -> registry=docker.io                          repo=myorg/trainer    tag=1.4.0 digest=-
+ghcr.io/myorg/api:sha-9f3c2a1  -> registry=ghcr.io                            repo=myorg/api        tag=sha-9f3c2a1 digest=-
+123456789012.dkr.ecr.us-east-1 -> registry=123456789012.dkr.ecr.us-east-1.amazonaws.com repo=ml/api           tag=1.0 digest=-
+localhost:5000/ml/api          -> registry=localhost:5000                     repo=ml/api           tag=latest digest=-
+python@sha256:abababababababab -> registry=docker.io                          repo=library/python   tag=None digest=yes
+
+sum of image sizes (no sharing): 31080 MB | stored with layer sharing: 10080 MB
+keep: ['1.11.0', '1.12.0', '1.13.0'] | delete: ['1.10.0'] | stored after cleanup: 10060 MB
+lesson: a changed base or deps layer breaks sharing, so every rebuild then costs the full 7000 MB again

@@ -1,0 +1,23 @@
+                           predicate                                                                       plan  vm_steps  rows
+                       customer_id=5                               SEARCH orders USING INDEX ix (customer_id=?)        99     9
+            customer_id=5 AND status                  SEARCH orders USING INDEX ix (customer_id=? AND status=?)        22     1
+                     all three equal SEARCH orders USING INDEX ix (customer_id=? AND status=? AND order_date=?)        16     0
+                        status alone                                                                SCAN orders    947740 49676
+              order_date range alone                                                                SCAN orders   1048224 16510
+customer_id=5 AND order_date>? (gap)                               SEARCH orders USING INDEX ix (customer_id=?)        85     4
+          customer_id>? AND status=?                               SEARCH orders USING INDEX ix (customer_id>?)      5636   248
+      cust=5 AND status IN AND date> SEARCH orders USING INDEX ix (customer_id=? AND status=? AND order_date>?)        54     1
+      cust=5 AND status>? AND date>?                  SEARCH orders USING INDEX ix (customer_id=? AND status>?)        90     4
+
+ORDER BY only:
+ORDER BY customer_id, status, order_date LIMIT 5 -> SCAN orders USING INDEX ix
+ORDER BY status LIMIT 5 -> SCAN orders | USE TEMP B-TREE FOR ORDER BY
+cust=5 ORDER BY status, order_date -> SEARCH orders USING INDEX ix (customer_id=?)
+cust=5 ORDER BY order_date -> SEARCH orders USING INDEX ix (customer_id=?) | USE TEMP B-TREE FOR ORDER BY
+
+skip-scan before ANALYZE: SCAN o2 (604089, 583)
+stat1: [('ix2', '200000 50000 149')]
+skip-scan after ANALYZE:  SEARCH o2 USING INDEX ix2 (ANY(status) AND order_date=?) (5868, 583)
+high-cardinality leading column: SCAN o3
+
+pandas MultiIndex .loc[(5,'placed')] rows: 1 | same as mask and SQL (sorted order_id): True

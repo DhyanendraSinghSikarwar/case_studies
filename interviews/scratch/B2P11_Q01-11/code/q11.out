@@ -1,0 +1,10 @@
+IN : Hi, I am Priya Nair. Card 4111 1111 1111 1111, mail priya.n@example.test
+OUT: Hi, I am Priya Nair. Card <CARD_1>, mail <EMAIL_1>
+IN : Call me on 9876543210 about order 1234567890123456
+OUT: Call me on <PHONE_1> about order 1234567890123456
+IN : Ravi Kumar here, my number is 98765 43210
+OUT: Ravi Kumar here, my number is 98765 43210
+IN : Refund to a.b@example.test and c@example.test please
+OUT: Refund to <EMAIL_2> and <EMAIL_3> please
+recall per type (found / planted): {'CARD': '1/1', 'EMAIL': '3/3', 'NAME': '0/2', 'PHONE': '1/2'}
+what the trace store keeps for message 1: redacted text + sha256_12 of the raw text = b54818d7e395

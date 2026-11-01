@@ -1,0 +1,9 @@
+$ pytest -q
+......                                                                   [100%]
+6 passed in 0.03s
+
+$ demo (promote 1,2,3 then CLI rollback with explicit --version 1)
+champion now 3
+{"ts": "2026-10-26T16:54:09+00:00", "action": "rollback", "from": "3", "to": "1", "who": "asha", "reason": "v3 and v2 both bad"}
+{"ts": "2026-10-26T16:54:09+00:00", "action": "rollback", "from": "1", "to": "3", "who": "asha", "reason": "oops back"}
+champion now 3 rows 5

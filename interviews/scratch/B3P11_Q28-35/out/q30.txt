@@ -1,0 +1,38 @@
+1. add one lookup column
+  merge(how='left')                               29.74 ms
+  Series.map on a keyed Series                     8.50 ms
+   merge keeps row order for how='left' here: True
+   duplicate key in lookup: merge rows 513 extra; map raises: InvalidIndexError
+2. groupby sort
+  groupby('key', sort=True).sum                   10.32 ms
+  groupby('key', sort=False).sum                  10.25 ms
+   same values after sort_index(); sort=False order is first appearance: [105, 235, 754]
+3. groupby on the category column
+  category, observed=True                          5.90 ms
+  category, observed=False                         2.66 ms
+  same column as str (incl. astype)               31.93 ms
+   default equals observed=True in 3.0.5: True | with an unused category observed=False adds a zero row: 0.0
+4. filter: mask vs query vs eval
+  boolean mask                                     3.17 ms
+  df.query                                         5.77 ms
+  df[df.eval(...)]                                 5.50 ms
+   20,000 rows: mask 0.31 ms vs query 1.61 ms
+  arithmetic with plain operators                  1.82 ms
+  df.eval('value * 2 + key')                       3.42 ms
+5. top k
+  sort_values(...).head(10)                       28.97 ms
+  nlargest(10, 'value')                            6.21 ms
+   top value: 4.5214
+6. index-aligned vs column operation
+  x + y with the shuffled labels (aligns)         27.96 ms
+  x + y.sort_index() (aligned, same order)        37.35 ms
+  numpy: positional add (WRONG pairing)            0.78 ms
+   alignment pairs by label, positional add pairs by position: results differ (asserted)
+
+SQL LEFT JOIN labels and GROUP BY key sums equal pandas (sorted by key / label)
+
+7. chained assignment under pandas 3.0.5
+   after d[d.a > 0]['b'] = 1: [0, 0, 0] | warnings: ['ChainedAssignmentError']
+   warning text: A value is being set on a copy of a DataFrame or Series through chained assignment. Such chained assignment never works to update the original DataFrame or Series, because the intermediate object on which we are setting values alw
+   after d.loc[d.a > 0, 'b'] = 1: [0, 1, 1]
+   writing to a filtered copy leaves the parent alone: [0, 1, 1] | copy: [99, 99]

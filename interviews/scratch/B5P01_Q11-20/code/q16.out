@@ -1,0 +1,7 @@
+dry run [3,4,-1,1]:
+ after i = 0 [-1, 4, 3, 1]
+ after i = 1 [1, -1, 3, 4]
+ after i = 2 [1, -1, 3, 4]
+ after i = 3 [1, -1, 3, 4]
+1000 random cases agree
+2 3 1

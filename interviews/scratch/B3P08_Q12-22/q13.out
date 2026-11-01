@@ -1,0 +1,19 @@
+      arm  assigned_users  converters  conv_pct  rev_per_assigned_user  abs_uplift_pp  rel_uplift_pct
+  control               6           2      33.3                  38.33            NaN             NaN
+treatment               6           3      50.0                  51.67           16.7            50.0
+wrong 1, no time filter (orders before assignment count):
+      arm  assigned_users  converters
+  control               6           3
+treatment               6           4
+wrong 2, time filter in WHERE (LEFT JOIN turns into inner join, non-buyers vanish):
+      arm  assigned_users
+  control               2
+treatment               3
+wrong 3, COUNT(*) on the joined rows:
+      arm  joined_rows  users
+  control            7      6
+treatment            7      6
+      arm  assigned_users  converters  conv_pct  rev_per_assigned_user  abs_uplift_pp  rel_uplift_pct
+  control               6           2      33.3                  38.33            NaN             NaN
+treatment               6           3      50.0                  51.67           16.7            50.0
+asserts passed

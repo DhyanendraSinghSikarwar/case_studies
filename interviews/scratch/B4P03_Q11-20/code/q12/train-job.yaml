@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: churn-train-0426
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2                 # retries before the Job is marked Failed
+  activeDeadlineSeconds: 14400    # hard stop: 4 hours total, whatever the retries
+  ttlSecondsAfterFinished: 86400  # delete the Job and its pods a day after it finishes
+  template:
+    spec:
+      restartPolicy: Never        # Job pods must be OnFailure or Never, not Always
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: train
+          image: registry.example.com/ml/churn-train:2.3.0
+          command: ["python", "train.py", "--resume-from", "/ckpt/latest.pt"]
+          resources:
+            requests: {cpu: "4", memory: 16Gi}
+            limits: {memory: 16Gi, nvidia.com/gpu: 1}
+          volumeMounts:
+            - {name: data, mountPath: /data, readOnly: true}
+            - {name: ckpt, mountPath: /ckpt}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: training-data, readOnly: true}
+        - name: ckpt
+          persistentVolumeClaim: {claimName: training-ckpt}

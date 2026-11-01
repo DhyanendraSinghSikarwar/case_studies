@@ -1,0 +1,8 @@
+[1, 2, 3, None, 5, None, 4] -> [1, 3, 4]
+[1, 2, 3, 4] -> [1, 3, 4]
+[1, None, 3] -> [1, 3]
+[] -> []
+right spine of [1,2,3,4]: [1, 3] but the right view is [1, 3, 4]
+exhaustive ok: 626 shapes with 0..7 nodes
+random ok: 300 trees (repeated values allowed)
+left chain 10000: BFS view length 10000 | recursive DFS: RecursionError | iterative DFS length 10000

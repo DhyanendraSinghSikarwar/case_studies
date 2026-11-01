@@ -1,0 +1,25 @@
+integer division check, (12 + 1) / 2 and (12 + 2) / 2: (6, 7)
+SQL, active users only (zero-event users excluded):
+ users  events  mean_events  median_events  top_decile_users  top_decile_events  top_decile_share_pct
+    10     106         10.6            3.5                 1                 60                  56.6
+SQL, all non-test registered users (zero-event users kept):
+ users  events  mean_events  median_events  top_decile_users  top_decile_events  top_decile_share_pct
+    12     106         8.83            2.5                 2                 80                 75.47
+SQL, deciles over all non-test users (NTILE(10) over 12 rows):
+ user_id  n  decile
+       9 20       1
+      10 60       1
+       7  5       2
+       8  8       2
+       6  4       3
+       5  3       4
+       3  2       5
+       4  2       6
+       1  1       7
+       2  1       8
+      11  0       9
+      12  0      10
+pandas, keep_zero=True:
+ users  events  mean_events  median_events  top_decile_users  top_decile_events  top_decile_share_pct
+    12     106         8.83            2.5                 2                 80                 75.47
+asserts passed

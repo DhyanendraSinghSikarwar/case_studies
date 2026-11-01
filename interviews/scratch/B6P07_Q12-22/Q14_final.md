@@ -1,0 +1,93 @@
+### Q14 ⭐⭐⭐ 🟡 A bot answers in English and Hindi. An illustrative tokenizer gives 1.3 tokens per English word and 4 per Hindi word, a 150-word answer is generated in each language, and on 200 graded answers per language correctness is 74% for Hindi against 88% for English. Compute tokens and relative output cost per answer, the absolute and relative correctness gaps, and what you would do.
+**Asked at:** Indic-language and tokenizer material (an ACL Anthology LoResLM 2026 paper on informal and romanised Hindi tokenization, an arXiv study of tokenizer efficiency across the 22 official Indian languages, a HackerNoon opinion piece on the cost of building AI for Indian languages); research and commentary pages rather than an interview bank; commonly reported in public guides for data scientist, ML engineer and GenAI engineer loops; search snippets only, not opened
+**Say this first (1 line):** A Hindi answer uses about 3.1x the output tokens of an English one (600 against 195), and Hindi is 14 points less correct (74% against 88%), a gap too big to be noise, so I would find out why and fix quality before cost.
+
+**Clarifying questions:**
+- Are the 200 Hindi and 200 English questions the same questions, translated? Why it matters: if they differ, the gap may be difficulty, not language.
+- Who graded the Hindi answers, and how? Why it matters: a judge or grader weaker in Hindi can inflate the gap.
+- Do users write Hindi in Devanagari, romanised Hindi, or mixed? Why it matters: each tokenizes and retrieves differently.
+- Is the tokens-per-word figure measured on our tokenizer? Why it matters: the 1.3 and 4 are illustrative inputs.
+- What share of traffic is Hindi? Why it matters: it sizes both the cost and the quality problem.
+
+**Approach:**
+1. Tokens per answer: English 150 x 1.3 = 195; Hindi 150 x 4 = 600. Relative output cost 600/195 = 3.08x at the same price per token.
+2. Correctness gap: 74% versus 88%. Absolute gap 14 points. Relative gap 14/88 = 15.9% (Hindi is 15.9% lower than English). Error rate 26% versus 12% is 2.17x.
+3. Is it real? Difference SE is 3.86 points, z = 3.63, 95% interval for the gap about 6.4 to 21.6 points. Yes.
+4. Cost per correct answer is worse than cost per answer: 600/0.74 = 811 tokens versus 195/0.88 = 222, a ratio of 3.66x.
+5. Diagnose the cause on paired questions: translation errors, retrieval misses in Hindi, grader bias, or genuine model weakness. Read 50 failures.
+6. Fix in order of cheapness: better Hindi retrieval and prompts, few-shot Hindi examples, a different model for Hindi, shorter answers, a language-specific eval gate.
+7. Track cost per correct answer by language, and put a minimum quality bar per language before launch.
+
+**Metrics:**
+- Tokens per answer = output tokens / answers, per language.
+- Correctness = graded-correct answers / graded answers, per language, with a Wilson interval.
+- Absolute gap = English correctness minus Hindi correctness (points). Relative gap = absolute gap / English correctness.
+- Cost per correct answer = cost per answer / correctness.
+- Guardrails: answer-length cap, human-audited sample of Hindi grades.
+
+**Risks:**
+- Blaming the tokenizer when the cause is retrieval or grading.
+- Cutting Hindi length to save cost and losing completeness.
+- Reporting only the average across languages.
+- Romanised or code-mixed input missing from the test set.
+
+**What the interviewer scores:**
+- Strong: both the cost and the quality numbers, an interval, and a cause-finding plan.
+- Strong: cost per correct answer and a per-language gate.
+- Weak: "Hindi is just expensive, accept it", or "fine-tune a model" with no diagnosis.
+- Weak: mixing up absolute and relative gaps.
+
+**Example:** Illustrative. Weak: "Hindi is 14 percent worse and costs 3 times more." That mixes points with percent. Strong: "Hindi is 14 points lower, which is 15.9% relative to English, and errors are 2.17 times as frequent. Each Hindi answer uses 600 tokens against 195, so a correct Hindi answer costs 3.66 times as many output tokens. I would first read 50 Hindi failures to see if it is retrieval, grading or the model."
+
+**Code:**
+```python
+import math
+words = 150
+en_tok, hi_tok = words * 1.3, words * 4
+ratio = hi_tok / en_tok
+print(f"tokens per answer: English {en_tok:.0f}, Hindi {hi_tok:.0f}; cost ratio {ratio:.2f}x")
+assert en_tok == 195 and hi_tok == 600 and round(ratio, 2) == 3.08
+n = 200
+hi_ok, en_ok = 148, 176
+ph, pe = hi_ok / n, en_ok / n
+assert (ph, pe) == (0.74, 0.88)
+gap_abs = pe - ph
+print(f"absolute gap {gap_abs*100:.0f} points; relative gap {gap_abs/pe*100:.1f}% of English; error rate {1-ph:.0%} vs {1-pe:.0%} = {(1-ph)/(1-pe):.2f}x")
+assert round(gap_abs * 100) == 14 and round(gap_abs / pe * 100, 1) == 15.9 and round((1 - ph) / (1 - pe), 2) == 2.17
+def wilson(k, n, z=1.96):
+    p = k / n; d = 1 + z * z / n
+    c = (p + z * z / (2 * n)) / d
+    h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
+    return c - h, c + h
+for nm, k in (("Hindi", hi_ok), ("English", en_ok)):
+    lo, hi = wilson(k, n); print(f"{nm} 95% Wilson interval {lo*100:.1f}% to {hi*100:.1f}%")
+se = math.sqrt(ph * (1 - ph) / n + pe * (1 - pe) / n)
+z = gap_abs / se
+print(f"difference SE {se*100:.2f} pts, z = {z:.2f}, 95% CI of gap {(gap_abs-1.96*se)*100:.1f} to {(gap_abs+1.96*se)*100:.1f} pts")
+assert round(z, 2) == 3.63 and (gap_abs - 1.96 * se) > 0
+cpc_h, cpc_e = hi_tok / ph, en_tok / pe
+print(f"output tokens per correct answer: Hindi {cpc_h:.1f}, English {cpc_e:.1f}, ratio {cpc_h/cpc_e:.2f}x")
+assert round(cpc_h / cpc_e, 2) == 3.66
+```
+
+**Output (my run):**
+```
+tokens per answer: English 195, Hindi 600; cost ratio 3.08x
+absolute gap 14 points; relative gap 15.9% of English; error rate 26% vs 12% = 2.17x
+Hindi 95% Wilson interval 67.5% to 79.6%
+English 95% Wilson interval 82.8% to 91.8%
+difference SE 3.86 pts, z = 3.63, 95% CI of gap 6.4 to 21.6 pts
+output tokens per correct answer: Hindi 810.8, English 221.6, ratio 3.66x
+```
+
+**Follow-ups:**
+- Why does Hindi use more tokens? Tokenizers trained mostly on English split Devanagari into more pieces; Book 2 Part 02 Q1 ("Why do LLMs use subword tokenization instead of words or characters?") gives the background. Measure it on your tokenizer.
+- Does a different model fix it? Possibly. Test on the same Hindi questions and compare cost per correct answer.
+- What about input tokens? The same effect applies to Hindi prompts and retrieved text, so the real multiplier can be higher.
+
+**Common mistakes:**
+- Quoting "14%" for a 14-point gap.
+- Ignoring the interval.
+- Comparing different question sets across languages.
+- Optimising token cost while quality is the bigger problem.
+

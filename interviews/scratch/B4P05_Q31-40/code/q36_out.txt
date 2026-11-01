@@ -1,0 +1,4 @@
+success: True
+model value: {'w': 2.0, 'rows': 5}
+materialized: training_table
+materialized: churn_model

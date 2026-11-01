@@ -1,0 +1,9 @@
+test positive rate 0.50%, so a no-skill average precision is about 0.005
+method              mean AP  sd over 8 seeds  train rows
+plain                0.0785           0.0153      60,000
+class weight         0.0778           0.0153      60,000
+undersample 1:10     0.0782           0.0161       3,300
+SMOTE to 1:1         0.0778           0.0152     119,400
+undersample 1:10: about 7 minutes if time is linear in rows
+SMOTE to 1:1: about 239 minutes if time is linear in rows
+spread of method means 0.0007 versus seed-to-seed sd 0.0155

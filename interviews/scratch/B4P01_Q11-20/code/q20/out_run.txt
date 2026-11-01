@@ -1,0 +1,11 @@
+tests/test_modelio.py::test_save_load_roundtrip PASSED
+tests/test_modelio.py::test_load_embeddings_without_network PASSED
+tests/test_modelio.py::test_fit_on_subsets[10] PASSED
+tests/test_modelio.py::test_fit_on_subsets[25] PASSED
+tests/test_modelio.py::test_fit_on_subsets[50] PASSED
+tests/test_modelio.py::test_real_download SKIPPED (slow: use --runsl...)
+[session fixture small_df built 1 time(s)]
+========================= 5 passed, 1 skipped in 1.02s =========================
+=========================== short test summary info ============================
+FAILED tests/test_modelio.py::test_real_download - RuntimeError: no network i...
+1 failed, 5 passed in 6.18s

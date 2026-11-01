@@ -1,0 +1,4 @@
+k = 6 prefix ['a', '2', 'b', '2', 'c', '3']
+k = 1 prefix ['a']
+k = 4 prefix ['a', 'b', '1', '2']
+random cross-check passed: 4000 cases

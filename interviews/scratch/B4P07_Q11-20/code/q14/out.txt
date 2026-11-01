@@ -1,0 +1,14 @@
+$ actionlint build-image.yml
+exit=0
+
+$ check-jsonschema --builtin-schema vendor.github-workflows build-image.yml
+ok -- validation done
+exit=0
+
+$ docker --version
+Docker version 29.9.2, build a82e528
+$ docker buildx version
+github.com/docker/buildx v0.38.1 0dbe87f36ed472fe36b6796c3f70b4210a731fc5
+
+$ docker build -t churn-api:scan .
+ERROR: failed to connect to the docker API at unix:///var/run/docker.sock; check if the path is correct and if the daemon is running: dial unix /var/run/docker.sock: connect: no such file or directory

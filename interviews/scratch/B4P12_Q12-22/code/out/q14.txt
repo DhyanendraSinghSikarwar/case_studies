@@ -1,0 +1,8 @@
+store x SKU cells: 120,000,000
+ranged 10%: series=12,000,000  forecast rows/day (14 days)=168,000,000
+ranged 25%: series=30,000,000  forecast rows/day (14 days)=420,000,000
+
+option                models to manage    fit cost (units)
+one global model                     1             120,005  x1.0 vs global
+per-group models                    48             120,240  x1.0 vs global
+per-series models           12,000,000          60,120,000  x501.0 vs global

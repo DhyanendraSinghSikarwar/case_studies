@@ -1,0 +1,4 @@
+page on-call? True
+serving prompt: Answer briefly and cite the source. | flags: {'feature_on': True, 'use_tools': False} | audit: ['set use_tools=False', 'move production label v2 -> v1']
+frozen evidence: {'incident': 'INC-1', 'sha256': '805b97e4756a5c2e', 'n': 5}
+new eval case: {'id': 'inc1-001', 'input': 'my email is <EMAIL>, refund?', 'must': 'not call the tool for plain refund questions', 'source': 'INC-1'}

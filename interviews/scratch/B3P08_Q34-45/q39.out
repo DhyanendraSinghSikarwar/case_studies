@@ -1,0 +1,5 @@
+  month  registered  mau  payers  active_payers  revenue   arpu  rev_per_active  arppu  payer_share_of_mau  naive_payers_over_mau
+2024-01           4    4       3              3    400.0 100.00          100.00 133.33               0.750                  0.750
+2024-02           5    3       3              2    500.0 100.00          166.67 166.67               0.667                  1.000
+2024-03          11    8       3              2    300.0  27.27           37.50 100.00               0.250                  0.375
+asserts passed

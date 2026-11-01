@@ -1,0 +1,4 @@
+[
+  {"id": "CVE-0000-1003", "reason": "only reachable via a feature we do not enable", "expires": "2026-12-31", "owner": "platform-team"},
+  {"id": "CVE-0000-2002", "reason": "old waiver", "expires": "2026-09-01", "owner": "ml-team"}
+]

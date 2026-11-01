@@ -1,0 +1,24 @@
+$ git tag -n1
+v1.0.0          credit-model 1.0.0 (data loans-2026-01)
+v1.1.0          credit-model 1.1.0
+v1.1.1          credit-model 1.1.1
+v2.0.0          credit-model 2.0.0 (output scale 0-100)
+
+$ head -9 CHANGELOG.md
+# Changelog
+
+## 2.0.0 (BREAKING)
+- score() now returns 0-100 instead of 0-1. Update your thresholds.
+## 1.1.1
+- Fix: negative income no longer gives a negative score.
+## 1.1.0
+- Added optional tenure_years argument (backward compatible).
+## 1.0.0
+
+--- install the latest tag, read version at runtime ---
+2.0.0 40 {'code_version': '2.0.0', 'data_version': 'loans-2026-01', 'output_scale': '0-100'}
+--- rollback: check out the previous good tag and reinstall ---
+1.1.1 0.4 {'code_version': '1.1.1', 'data_version': 'loans-2026-01', 'output_scale': '0-1'}
+
+$ git describe --tags   # one commit after v2.0.0
+v2.0.0-1-g<sha>

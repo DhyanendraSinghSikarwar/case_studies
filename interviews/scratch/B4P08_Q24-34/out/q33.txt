@@ -1,0 +1,9 @@
+approved 70% of applicants; labels observed for 41713 of 60000
+--- retrain on approved-only labels
+measured AUC (approved applicants only) 0.774
+true AUC (all applicants)               0.735
+true AUC inside rejected region         0.467
+--- retrain with 916 exploration labels (cost: we knowingly approve some risky cases)
+true AUC (all applicants)               0.814
+true AUC inside rejected region         0.803
+measured AUC (approved applicants only) 0.773

@@ -1,0 +1,16 @@
+$ actionlint train-eval-promote.yml
+exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows train-eval-promote.yml
+ok -- validation done
+exit=0
+
+--- break it: evaluate reads needs.train.outputs.run_id but drops needs: train
+bad.yml:30:12: "needs" section should not be empty [syntax-check]
+   |
+30 |     needs: []
+   |            ^~
+bad.yml:38:27: property "train" is not defined in object type {} [expression]
+   |
+38 |           name: model-${{ needs.train.outputs.run_id }}
+   |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+exit=1

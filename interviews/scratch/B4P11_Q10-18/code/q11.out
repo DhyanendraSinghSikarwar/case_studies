@@ -1,0 +1,5 @@
+good_staging             OK
+good_prod                OK
+bad_prod_self_approved   FAIL approver must differ from registered_by
+bad_stage_in_name        FAIL stage word in model name (use alias/tag instead)
+bad_name_and_run         FAIL name must be lowercase-hyphen, no stage in it; version must be an integer >= 1; source_run missing (no lineage)

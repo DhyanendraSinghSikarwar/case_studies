@@ -1,0 +1,8 @@
+new-model share of index: 14%
+all old, A query (baseline)              hit@5 = 1.00  | target old docs 1.00  target new docs 1.00
+mixed, A query                           hit@5 = 0.91  | target old docs 1.00  target new docs 0.00
+mixed, B query                           hit@5 = 0.10  | target old docs 0.00  target new docs 1.00
+mixed, dual query merged by raw score    hit@5 = 0.33  | target old docs 0.26  target new docs 1.00
+all re-embedded with B                   hit@5 = 1.00  | target old docs 1.00  target new docs 1.00
+mean top-1 cosine A: 0.78  B: 0.93
+asserts passed

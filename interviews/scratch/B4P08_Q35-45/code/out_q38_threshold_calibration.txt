@@ -1,0 +1,9 @@
+null distribution = PSI/KS between the reference and clean batches drawn from the SAME history, 1000 bootstrap batches
+     n  mean PSI  p95 PSI  p99 PSI  P(PSI>0.1) on clean  p99 KS D
+   200    0.0470   0.0896   0.1217                0.031    0.1157
+  2000    0.0046   0.0085   0.0111                0.000    0.0346
+ 20000    0.0005   0.0008   0.0010                0.000    0.0113
+
+n=2000 chosen PSI threshold (p99 of null) = 0.0114; false alarms on 200 fresh clean batches = 0.015; detection of a 0.15-sigma shift = 0.990
+50 features, per-feature false-alarm rate 0.01: P(at least one alarm per day) = 0.395
+per-feature rate for a 0.01 daily family-wise rate over 50 features = 0.00020

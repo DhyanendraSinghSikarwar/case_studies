@@ -1,0 +1,24 @@
+ user_id question  rating
+       1       q1       5
+       3       q1       4
+       4       q1       2
+       1       q2       3
+       3       q2       4
+       3       q3       4
+       4       q3       5
+
+rows kept: UNION ALL 7, CROSS JOIN 7
+UNION on (user_id, rating): 5 rows; UNION ALL on the same: 7 rows (user 3 gave 4,4,4)
+keeping unanswered rows: 12 rows when the IS NOT NULL filter is dropped
+UNION ALL plan: ['MERGE (UNION ALL)', 'LEFT', 'MERGE (UNION ALL)', 'LEFT', 'SCAN survey', 'USE TEMP B-TREE FOR ORDER BY', 'RIGHT', 'SCAN survey', 'USE TEMP B-TREE FOR ORDER BY', 'RIGHT', 'SCAN survey', 'USE TEMP B-TREE FOR ORDER BY']
+CROSS JOIN plan: ['MATERIALIZE qs', 'SCAN 3 CONSTANT ROWS', 'SCAN s', 'SCAN qs', 'USE TEMP B-TREE FOR ORDER BY']
+
+melt keeps NaN rows: 12 rows; after dropna: 7
+melt row order (before sorting): question blocks in column order, users inside each block
+ user_id question  rating
+       1       q1     5.0
+       2       q1     NaN
+       3       q1     4.0
+       4       q1     2.0
+       1       q2     3.0
+asserts passed (compared after sorting by question, user_id)

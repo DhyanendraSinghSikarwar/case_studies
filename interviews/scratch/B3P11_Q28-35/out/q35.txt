@@ -1,0 +1,25 @@
+
+===== journal_mode = delete  (busy_timeout = 100 ms, from timeout=0.1)
+reader: BEGIN + SELECT sees bal = 100 and keeps the transaction open
+writer: BEGIN + UPDATE succeeded (change is uncommitted)
+writer: COMMIT failed -> database is locked
+reader (same transaction) sees bal = 100
+files in the directory: ['t.db', 't.db-journal']
+reader after COMMIT sees bal = 100
+writer retried after the reader finished: committed; bal = 150
+second BEGIN IMMEDIATE while a writer is open -> database is locked
+
+===== journal_mode = wal  (busy_timeout = 100 ms, from timeout=0.1)
+reader: BEGIN + SELECT sees bal = 100 and keeps the transaction open
+writer: BEGIN + UPDATE succeeded (change is uncommitted)
+writer: COMMIT succeeded
+reader (same transaction) sees bal = 100
+files in the directory: ['t.db', 't.db-shm', 't.db-wal']
+reader after COMMIT sees bal = 150
+second BEGIN IMMEDIATE while a writer is open -> database is locked
+reader with an old snapshot tries to write -> database is locked
+
+final tables equal the expected pandas frames: {'delete': [150], 'wal': [151]}
+
+autocommit reader, two SELECTs with a commit between: 1 then 2
+reader inside BEGIN (WAL snapshot), same two SELECTs: 2 then 2

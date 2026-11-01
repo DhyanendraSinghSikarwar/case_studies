@@ -1,0 +1,23 @@
+SQL, distinct users per arm (users in both arms counted in each arm):
+      arm  users  observed_share  expected  diff  chi_part  chi_square
+  control     10          0.6667       7.5   2.5    0.8333      1.6667
+treatment      5          0.3333       7.5  -2.5    0.8333      1.6667
+SQL, same arithmetic on rows (wrong unit):
+      arm  users  observed_share  expected  diff  chi_part  chi_square
+  control     11          0.6471       8.5   2.5    0.7353      1.4706
+treatment      6          0.3529       8.5  -2.5    0.7353      1.4706
+SQL, after removing users that appear in both arms:
+      arm  users  observed_share  expected  diff  chi_part  chi_square
+  control      9          0.6923       6.5   2.5    0.9615      1.9231
+treatment      4          0.3077       6.5  -2.5    0.9615      1.9231
+users in both arms:
+ user_id  arms  rows_
+      14     2      2
+row versus distinct counts:
+ rows_  distinct_users  users_with_repeat_rows
+    17              14                       3
+generated 10,000 vs 10,600 users:
+      arm  users  observed_share  expected   diff  chi_part  chi_square
+  control  10000          0.4854   10300.0 -300.0    8.7379     17.4757
+treatment  10600          0.5146   10300.0  300.0    8.7379     17.4757
+asserts passed

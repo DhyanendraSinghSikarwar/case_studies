@@ -1,0 +1,5 @@
+sticky: yes (20000 users, routed twice, identical)
+share routed to B: 5.110% (target 5%; hash gives about 5%, not exactly 5%)
+bucket('user-1') = 79 -> route: A
+shadow agreement A vs B: 96.233% over 3000 requests
+median latency B minus A: -0.019 ms (this sandbox only, in-process sklearn, not a benchmark)

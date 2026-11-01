@@ -1,0 +1,10 @@
+normal week  actual=1000 forecast=880 MAPE=12.0%  signed error=-12.0%
+sale week    actual=1000 forecast=780 MAPE=22.0%  signed error=-22.0%
+week after   actual=1000 forecast=870 MAPE=13.0%  signed error=-13.0%
+year 1: MAPE normal weeks 12.0%, sale weeks 18.8%, bias in sale weeks -18.1%
+year 2: MAPE normal weeks 11.9%, sale weeks 19.2%, bias in sale weeks -18.4%
+year 3: MAPE normal weeks 12.3%, sale weeks 20.1%, bias in sale weeks -18.9%
+learned sale uplift = 1.25x; year-3 sale-week MAPE old 20.1% -> new 11.0%
+rolling 4-wk bias, quiet weeks before shift: mean +1.0%
+rolling 4-wk bias, weeks 140-155 after shift: mean -12.4%
+same-event comparison, old model: last year 19.2% vs this year 20.1% -> no drift signal

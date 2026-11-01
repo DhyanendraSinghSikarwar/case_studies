@@ -1,0 +1,6 @@
+get(1) -> 1 | recent first: [1, 2]
+put(3,3) evicts 2; get(2) -> -1 | recent first: [3, 1]
+put(4,4) evicts 1; get(1) -> -1
+get(3) -> 3 | get(4) -> 4 | recent first: [4, 3]
+refresh-on-put and capacity 1: OK
+300 random sessions, 9282 operations, LRU = brute force = OrderedDict: OK

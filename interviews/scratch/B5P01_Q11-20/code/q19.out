@@ -1,0 +1,3 @@
+sentinel clash: [-1,2,2] returns -1 which is a real answer AND the 'none' marker
+1000 random cases agree
+5 -1

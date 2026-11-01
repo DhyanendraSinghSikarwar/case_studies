@@ -1,0 +1,47 @@
+tiny OR                   [1, 2, 3, 4]
+tiny UNION ALL, no guard  [1, 1, 2, 3, 4]
+tiny UNION ALL, guarded   [1, 2, 3, 4]
+tiny UNION                [1, 2, 3, 4]
+tiny with a NULL customer: guard 'IS NOT 5' -> [1, 2, 3, 4, 6] ; guard '!= 5' -> [1, 2, 3, 4] (the != guard drops order 6)
+
+status counts: {'delivered': 195960, 'returned': 2064, 'cancelled': 1976}
+
+OR on one column: 25 rows, VM steps 133
+    SEARCH orders USING COVERING INDEX ix_cust (customer_id=?)
+
+OR, two indexed columns: 613 rows, VM steps 5541
+    MULTI-INDEX OR
+    INDEX 1
+    SEARCH orders USING INDEX ix_cust (customer_id=?)
+    INDEX 2
+    SEARCH orders USING INDEX ix_date (order_date=?)
+
+OR with unindexed amount: 40185 rows, VM steps 1080349
+    SCAN orders
+
+UNION ALL, guarded: 613 rows, VM steps 4265
+    COMPOUND QUERY
+    LEFT-MOST SUBQUERY
+    SEARCH orders USING COVERING INDEX ix_cust (customer_id=?)
+    UNION ALL
+    SEARCH orders USING INDEX ix_date (order_date=?)
+
+UNION (dedupe): 613 rows, VM steps 4926
+    COMPOUND QUERY
+    LEFT-MOST SUBQUERY
+    SEARCH orders USING COVERING INDEX ix_cust (customer_id=?)
+    UNION USING TEMP B-TREE
+    SEARCH orders USING COVERING INDEX ix_date (order_date=?)
+
+status != 'delivered': 4040 rows, VM steps 608089
+    SCAN orders USING COVERING INDEX ix_status
+
+status NOT IN (a,b): 195960 rows, VM steps 1785914
+    SCAN orders USING COVERING INDEX ix_status
+
+status IN (other values): 4040 rows, VM steps 16188
+    SEARCH orders USING COVERING INDEX ix_status (status=?)
+
+UNION ALL WITHOUT the guard returns 614 rows versus 613 correct (rows matching both branches counted twice)
+status != delivered with NOT INDEXED (table scan): 4040 rows, VM steps 608088
+asserts passed: every query returned the pandas filter's order_ids (compared sorted)

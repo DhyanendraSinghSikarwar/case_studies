@@ -1,0 +1,19 @@
+--- docker buildx build --help (cache flags)
+      --cache-from stringArray        External cache sources (e.g.,
+                                      "user/app:cache",
+                                      "type=local,src=path/to/dir")
+      --cache-to stringArray          Cache export destinations (e.g.,
+                                      "user/app:cache",
+                                      "type=local,dest=path/to/dir")
+      --call string                   Set method for evaluating build
+--- check_workflow.py
+trigger key parsed as: [True]
+steps: ['actions/checkout', 'docker/setup-buildx-action', 'docker/login-action', 'docker/build-push-action']
+setup-buildx before build-push: True
+cache-from: type=gha | cache-to: type=gha,mode=max
+checks OK
+--- cache_sim.py
+empty runner cache, code-only change : ['COPY requirements.txt', 'RUN pip install', 'COPY src/']
+restored cache, code-only change     : ['COPY src/']
+--- bash -n commands.sh
+OK

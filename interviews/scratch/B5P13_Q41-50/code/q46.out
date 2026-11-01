@@ -1,0 +1,12 @@
+examples ok
+ n  n!   info_bound  merge_worst  insertion_worst  optimal
+ 1    1          0            0                0        0
+ 2    2          1            1                1        1
+ 3    6          3            3                3        3
+ 4   24          5            5                5        5
+ 5  120          7            8                8        7
+closed forms agree: merge worst W(n) = W(n//2) + W(n - n//2) + n - 1, binary insertion worst = sum of bit_length(i), i < n
+Ford-Johnson merge insertion, worst case over all permutations, n = 1..7: [0, 1, 3, 5, 7, 10, 13]
+so seven comparisons really do sort 5 items (matches the exhaustive optimum 7), while merge sort and binary insertion need 8
+n: info_bound / merge_worst (closed forms) : {6: (10, 11), 8: (16, 17), 10: (22, 25), 12: (29, 33)}
+edge asserts ok

@@ -1,0 +1,19 @@
+$ actionlint release.yml
+actionlint exit=0
+$ check-jsonschema --builtin-schema vendor.github-workflows release.yml
+ok -- validation done
+$ python -I list_envs.py
+train              needs=-                environment=None
+evaluate           needs=train            environment=None
+deploy-staging     needs=evaluate         environment=staging
+deploy-production  needs=deploy-staging   environment=production
+$ actionlint bad_env.yml
+bad_env.yml:6:5: name is missing in "environment" section [syntax-check]
+  |
+6 |     environment:
+  |     ^~~~~~~~~~~~
+bad_env.yml:7:7: unexpected key "nme" for "environment" section. expected one of "deployment", "name", "url" [syntax-check]
+  |
+7 |       nme: production
+  |       ^~~~
+bad exit=1

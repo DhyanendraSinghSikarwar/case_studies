@@ -1,0 +1,5 @@
+glue code            : glue.py converts np<->pandas back and forth with no real logic
+pipeline jungle      : 4 step files with v2/final/tmp style names -> ['step2_clean_v2.py', 'step3_clean_final.py', 'step4_clean_final2.py'] ...
+dead experimental    : features.py: constant flag USE_OLD_FEATURES = False guards a branch
+configuration debt   : ['dropout', 'legacy_mode', 'tmp_fix_2022'] are in config.json but never read
+characterization test passed: refactor may start; it must keep this green

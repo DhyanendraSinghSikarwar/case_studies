@@ -1,0 +1,9 @@
+t=0.2s live_rc=0 ready_rc=1
+t=0.9s live_rc=0 ready_rc=1
+t=1.5s live_rc=0 ready_rc=1
+t=2.2s live_rc=0 ready_rc=1
+t=2.8s live_rc=0 ready_rc=1
+t=3.5s live_rc=0 ready_rc=0
+t=4.2s live_rc=0 ready_rc=0
+t=4.8s live_rc=0 ready_rc=0
+ready first seen at about 3.5 s (load takes 3 s)

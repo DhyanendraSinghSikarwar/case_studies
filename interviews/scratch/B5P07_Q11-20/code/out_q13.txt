@@ -1,0 +1,9 @@
+p=5 q=1 -> 3
+p=5 q=4 -> 5
+p=6 q=4 -> 5
+p=7 q=8 -> 3
+p=1 q=2 -> 1
+exhaustive ok: 23020 (tree, p, q) cases, all shapes with 2..7 nodes
+missing q: early-return answered for 4081 of 4081 | counting version returned None for 4081 of 4081
+random ok: 300 trees up to 60 nodes
+chain 20000 recursive: RecursionError | parent-map: 19999

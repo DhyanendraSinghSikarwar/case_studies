@@ -1,0 +1,15 @@
+good frame -> []
+bad frame  -> 4 violations
+  - loan_id has 1 null(s)
+  - loan_id not unique: [1]
+  - age outside [18, 100] at rows [1, 2]
+  - segment has unknown values: ['vip']
+pandera lazy failure cases: 6
+ column                                check failure_case
+loan_id                         not_nullable         <NA>
+loan_id                     field_uniqueness            1
+loan_id                     field_uniqueness            1
+    age                    in_range(18, 100)           17
+    age                    in_range(18, 100)          130
+segment isin(['corporate', 'retail', 'sme'])          vip
+pandera 0.35.0 pandas 3.0.5

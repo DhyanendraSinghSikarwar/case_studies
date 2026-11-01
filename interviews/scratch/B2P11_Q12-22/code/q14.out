@@ -1,0 +1,7 @@
+('t1', 'FAIL A timeout')
+('t1', 'FAIL A timeout')
+('t1', 'OK via B attempt 0')
+('t1', 'CACHE_HIT')
+('t2', 'OK via A attempt 0')
+('t2', 'BUDGET_BLOCK')
+provider calls: A = 3 B = 1 | cache entries: 2

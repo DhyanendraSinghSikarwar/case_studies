@@ -1,0 +1,5 @@
+tool       code lines decorators  loaded/compiled    dependency style
+Airflow 3          15          4  ok                 data-flow in function calls (TaskFlow)
+Prefect 3          13          4  ok, flow = ml-pipe plain function calls inside a flow
+KFP 2              15          4  compiled           .output of one step passed into the next
+Dagster            13          3  not executed       asset names as function arguments

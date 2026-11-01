@@ -1,0 +1,10 @@
+keys that change partition when 6 -> 8: 746 of 1000 (74.6%)
+same key, same partition (6): {0}
+partition logs: {5: [('A', 1), ('A', 2), ('A', 3)], 1: [('B', 1), ('B', 2)]}
+key A: partition 5 with 6 parts, 3 with 8 parts -> ORDER AT RISK
+example key that moves: ['user0'] 5 -> 3
+no idempotence      : ['msg2', 'msg1'] (sent order msg1, msg2)
+sequence check (idem): ['msg1', 'msg2']
+events per partition (60% hot key): {0: 687, 1: 58, 2: 66, 3: 72, 4: 62, 5: 55}
+max/mean ratio: 4.12
+1000 distinct keys, one event each: {0: 184, 1: 166, 2: 148, 3: 174, 4: 166, 5: 162}

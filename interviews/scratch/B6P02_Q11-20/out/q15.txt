@@ -1,0 +1,9 @@
+offline AUC old 0.8076, new 0.8178, relative gain 1.26%
+paired bootstrap 95% CI for AUC difference: [0.0094, 0.0109]
+A/B: lift 0.048 points; users needed per arm = 2,631,329
+  at 100,000 users/day split 50/50: 53 days
+  at 500,000 users/day split 50/50: 11 days
+canary of 20,000 decisions: smallest approval-rate change detectable ~ 1.37 points (80% power)
+chance to flag a 10% relative approval drop: 1.000
+shadow: top-10% decisions differ on 1.53% of requests
+label delay 45 days: use proxy guardrails (approval rate, score shift, latency) until day 45; outcome A/B read at day 45+window

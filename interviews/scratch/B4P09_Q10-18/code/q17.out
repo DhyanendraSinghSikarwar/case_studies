@@ -1,0 +1,14 @@
+before : [(0, 'u1', 'a'), (1, 'u2', 'b'), (2, 'u1', 'c'), (3, 'u3', 'd'), (4, 'u2', None), (5, 'u1', 'e'), (6, 'u4', 'f'), (7, 'u3', 'g')]
+after compaction (tombstone for u2 still present until delete.retention):
+         [(4, 'u2', None), (5, 'u1', 'e'), (6, 'u4', 'f'), (7, 'u3', 'g')]
+after tombstone expires: [(5, 'u1', 'e'), (6, 'u4', 'f'), (7, 'u3', 'g')]
+latest-state table: {'u1': 'e', 'u4': 'f', 'u3': 'g'}
+offsets are NOT renumbered: [4, 5, 6, 7]
+
+retention 7d at 2,000,000 events/day -> 14,000,000 events kept
+approx size one replica: 7.0 GB (x replication factor 3 = 21.0 GB)
+backfill  3 days of features from Kafka alone: possible
+backfill  7 days of features from Kafka alone: possible
+backfill 30 days of features from Kafka alone: NOT possible, need the lake
+backfill 90 days of features from Kafka alone: NOT possible, need the lake
+rolling 30-day feature needs history from day -30; with 7d retention the first 23 days are missing

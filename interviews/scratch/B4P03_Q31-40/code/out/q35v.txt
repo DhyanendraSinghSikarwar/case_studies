@@ -1,0 +1,2 @@
+INFO q35_hardened.yaml passed for resource pod/infer-hardened against version 1.37
+INFO q35_bad.yaml passed for resource pod/infer-sloppy against version 1.37

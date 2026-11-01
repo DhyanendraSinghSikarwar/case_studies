@@ -1,0 +1,7 @@
+assumed per-layer catch rates: {'input screen': 0.8, 'delimiting+hierarchy': 0.7, 'output filter': 0.7}
+A) independent layers: expected fraction of attacks that get past all three = 0.0180
+B) subtlety effect 0.0: past all three = 0.0185   (compare independent 0.0180; the top-10% subtlest attacks pass 0.017)
+B) subtlety effect 1.0: past all three = 0.0856   (compare independent 0.0180; the top-10% subtlest attacks pass 0.367)
+B) subtlety effect 2.0: past all three = 0.2543   (compare independent 0.0180; the top-10% subtlest attacks pass 1.000)
+C) add egress allowlist (assume 60% of attacks need an outside address): residual = 0.0346
+   -> deterministic layer shrinks the attack surface; it does not touch in-scope misuse (e.g. wrong refund within the allowed tool).

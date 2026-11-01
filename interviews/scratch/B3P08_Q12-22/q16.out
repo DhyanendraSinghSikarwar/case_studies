@@ -1,0 +1,10 @@
+                                                 scenario  denominator  buyers  rate_pct
+base: completed orders, registered by 03-31, no test, UTC            8       3      37.5
+                          flip 1: any order status counts            8       5      62.5
+   flip 2: denominator = registered at the start of March            6       2      33.3
+flip 3: denominator = users who placed any order in March            5       3      60.0
+                 flip 4: month in IST (UTC + 330 minutes)            8       2      25.0
+                              flip 5: test users included            9       4      44.4
+base buyers: [1, 2, 7]
+IST buyers: [1, 7]
+asserts passed

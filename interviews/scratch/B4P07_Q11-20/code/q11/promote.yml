@@ -1,0 +1,29 @@
+name: promote-model
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Registry version to promote
+        required: true
+        type: string
+concurrency:
+  group: promote-churn
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      MLFLOW_TRACKING_URI: ${{ vars.MLFLOW_TRACKING_URI }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install mlflow
+      - name: Promote
+        env:
+          VERSION: ${{ inputs.version }}
+        run: python promote.py --uri "$MLFLOW_TRACKING_URI" --name churn --version "$VERSION"

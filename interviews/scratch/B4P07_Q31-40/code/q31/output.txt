@@ -1,0 +1,18 @@
+== scan good
+.github/workflows/ci.yml: OK
+exit=0
+== scan bad
+.github/workflows/ci.yml: 6 problem(s)
+  - no permissions block (top level or job: test)
+  - trigger pull_request_target: never check out PR head code with it
+  - test step 1: 'actions/checkout@v4' not pinned to a 40-char SHA
+  - test step 2: 'tj-actions/changed-files@v45' not pinned to a 40-char SHA
+  - test step 3: 'some-org/ml-helper@main' not pinned to a 40-char SHA
+  - test step 5: pip install without --require-hashes
+exit=1
+== pickle demo
+code ran during pickle.loads
+== actionlint on the bad file
+exit=0
+== actionlint on the good file
+exit=0

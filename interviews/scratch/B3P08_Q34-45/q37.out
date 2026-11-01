@@ -1,0 +1,18 @@
+revenue by channel, clean (SQL):
+channel  orders  revenue
+    ads       2    800.0
+  email       1    600.0
+unknown       1    200.0
+all completed revenue, no filter: 2800.0
+clean users: [1, 2, 6, 8]
+conversion, bots out of both (buyers, active, rate): (3, 4, 0.75)
+conversion, bots out of numerator only (buyers, active incl bots, rate): (3, 7, 0.4286)
+NOT IN with a NULL in bot_users -> users returned: 0 | NOT EXISTS -> 7
+LEFT JOIN + u.is_test = 0 (orders, revenue): (5, 1800.0) | with COALESCE: (6, 2500.0)
+LIKE '%bot%' matches: [(4, 'Googlebot/2.1'), (7, 'AbbottApp/1.0')]
+channel  orders  revenue
+    ads       2    800.0
+  email       1    600.0
+unknown       1    200.0
+pandas conversion: 3 4 0.75
+asserts passed

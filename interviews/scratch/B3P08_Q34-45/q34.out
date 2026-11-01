@@ -1,0 +1,22 @@
+       day  new_users  returning_users  resurrected_users  first_seen_late  dau
+2024-03-01          1                0                  1                0    2
+2024-03-02          1                2                  0                0    3
+2024-03-03          1                0                  0                0    1
+2024-03-04          0                1                  0                1    2
+2024-03-05          1                2                  0                0    3
+2024-03-06          0                1                  1                0    2
+2024-03-07          0                3                  1                0    4
+       day  new_users  returning_users  resurrected_users  first_seen_late  dau
+2024-03-01          1                0                  1                0    2
+2024-03-02          1                2                  0                0    3
+2024-03-03          1                0                  0                0    1
+2024-03-04          0                1                  0                1    2
+2024-03-05          1                2                  0                0    3
+2024-03-06          0                1                  1                0    2
+2024-03-07          0                3                  1                0    4
+raw DAU check: [2, 3, 1, 2, 3, 2, 4]
+DAU 2024-03-02 with is_test = 0: 2 | with COALESCE: 3
+ user_id        day   prev_day  gap_days
+       8 2024-03-06 2024-02-28         7
+       9 2024-03-06 2024-02-27         8
+asserts passed

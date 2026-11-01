@@ -1,0 +1,27 @@
+kernel (shared with every container on this host): 6.18.44-fc-v153
+namespaces of this process:
+  cgroup             cgroup:[4026531835]
+  ipc                ipc:[4026531839]
+  mnt                mnt:[4026531832]
+  net                net:[4026531833]
+  pid                pid:[4026531836]
+  pid_for_children   pid:[4026531836]
+  time               time:[4026531834]
+  time_for_children  time:[4026531834]
+  user               user:[4026531837]
+  uts                uts:[4026531838]
+cgroup membership: 9:name=systemd:/
+8:pids:/
+7:blkio:/
+6:freezer:/
+5:devices:/
+4:memory:/process_api/01a1784e-af58-7445-8b1b-fa61a2ed0e82/claude-code-bash
+3:cpuset:/
+2:cpuacct:/
+1:cpu:/
+0::/
+  memory.max  not present here
+  cpu.max     not present here
+  pids.max    not present here
+in new pid ns, my pid = 1
+host pid of this script: 13078

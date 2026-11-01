@@ -1,0 +1,12 @@
+$ actionlint concurrency.yml
+exit=0
+
+$ pytest -q
+....                                                                     [100%]
+4 passed in 8.31s
+
+$ PYTHONPATH=. python3 sim.py
+run B (newer, v3) finishes first: PROMOTED: vNone -> v3
+run A (older, v2) finishes late : REFUSED: v2 is older than current champion v3
+champion is v3
+naive set_registered_model_alias leaves champion at v2

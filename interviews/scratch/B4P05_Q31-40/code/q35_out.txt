@@ -1,0 +1,5 @@
+pod yaml parses: kind = Pod | container = base | gpu limit = 1
+import_errors: {}
+ task train KubernetesPodOperator
+ task small_check _PythonVirtualenvDecoratedOperator
+ train gpu limit: 1 | namespace: ml-jobs

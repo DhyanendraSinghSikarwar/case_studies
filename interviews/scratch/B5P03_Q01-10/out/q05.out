@@ -1,0 +1,5 @@
+('abcde', 'cdeab') -> True
+('abcde', 'abced') -> False
+('aa', 'a') -> False
+without the length check, ('aa','a') -> True (wrong)
+random cross-check passed: 5000 cases, 2267 of them True

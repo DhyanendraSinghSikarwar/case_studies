@@ -1,0 +1,16 @@
+**Weak response:** Wait ten hours doing nothing because you do not want to touch it, or change things blindly until the job passes and leave no record. Messaging the colleague angrily is also a poor start.
+
+**Strong response:** First stay calm and look at the evidence: the error log, last successful run, recent changes in version control and any run book or tickets. Find out who depends on the output and how urgent it is. Fix only what you can safely understand; if the failure is clearly a transient issue and rerunning is safe, do that, and write down each step. If you cannot be sure, avoid risky changes and tell downstream users and your manager that the job is failing, what you know and when you expect an update. Check whether anyone else, such as a lead or an on-call person, knows the pipeline. Send your colleague a short, friendly message with specific questions to read when they wake up, and afterwards propose a simple handover template so the next one has notes. Keep a log throughout.
+
+**Why it works:** It shows safe ownership. You act where the risk is low, communicate where it is not and keep a trail. The follow-up fixes the process without blame.
+
+**What the interviewer scores:** Ownership, calm debugging, risk judgement (not changing what you do not understand), early communication, and a constructive attitude toward the colleague.
+
+**Say it like this:**
+```
+"Hi [colleague], I have taken over [pipeline]. The [job] is failing with [error]. I checked the logs and recent changes and I plan to [safe step]. Could you tell me when you wake up: what the last change was, whether a rerun is safe, and where any notes are? I have told [manager] and [downstream team] that the output may be late. Thanks for the handover."
+```
+
+**If they push back:** If asked "what if it is business critical?", say you would escalate to your manager or the on-call lead at once rather than guess. If asked "would you wake the colleague?", say only if your team's agreed on-call process allows it and the impact justifies it. Do not guess company policy.
+
+**Common mistakes:** Blind fixes. Silence to downstream users. Blaming the colleague. No log of what you changed. Never asking for a handover template afterwards.

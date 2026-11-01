@@ -1,0 +1,16 @@
+[2, 1, 3] -> True
+[5, 1, 4, None, None, 3, 6] -> False
+[5, 4, 6, None, None, 3, 7] -> False
+[2, 2, 2] -> False
+[-2147483648] -> True
+[] -> True
+parent-only on [5,4,6,null,null,3,7]: True (wrong, 3 sits right of 5)
+sentinel on [-2147483648]: False (wrong, should be True)
+sentinel on [2147483647]: False (wrong, should be True)
+None bounds on [2147483647] -> True
+None bounds on [-2147483648, None, 2147483647] -> True
+None bounds on [2147483647, 2147483647] -> False
+exhaustive ok: 11497 labelled trees, of which 15 are valid BSTs
+inorder-labelled shapes 0..7 are BSTs; every swap of two values is caught
+random ok: 2000 trees
+chain 5000 inorder: True | bounds recursive: RecursionError

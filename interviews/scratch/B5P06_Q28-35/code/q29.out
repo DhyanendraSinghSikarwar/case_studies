@@ -1,0 +1,10 @@
+after add_last 1, add_last 2, add_first 0: [0, 1, 2]
+pop_last -> 2 [0, 1]
+pop_first -> 0 [1]
+pop_first -> 1 []
+pop_first on empty -> None | pop_last on empty -> None | to_array -> []
+remove middle -> b ['a', 'c']
+double remove caught: node already removed
+sentinel remove caught: sentinels are never removed
+300 random op sequences, 6197 operations, mirror check after each: OK
+sentinels intact after emptying: True

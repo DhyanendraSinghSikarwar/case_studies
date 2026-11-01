@@ -1,0 +1,18 @@
+# 1. env-var form: get-value echoes the env var (it does NOT prove the key exists)
+redis://redis:6379/0
+oops
+# 2. validate key names in a CLEAN env (no AIRFLOW__ vars): a 'not found' warning means unknown key
+known    core/executor = LocalExecutor
+known    core/parallelism = 32
+known    core/max_active_tasks_per_dag = 16
+known    celery/broker_url = redis://redis:6379/0
+known    celery/worker_concurrency = 16
+known    kubernetes_executor/namespace = default
+known    kubernetes_executor/pod_template_file = 
+UNKNOWN  core/executr
+UNKNOWN  scheduler/min_file_process_interval
+known    dag_processor/min_file_process_interval = 30
+# 3. executor classes importable in this venv?
+importable: airflow.executors.local_executor
+NOT installed: airflow.providers.celery.executors.celery_executor - ModuleNotFoundError
+NOT installed: airflow.providers.cncf.kubernetes.executors.kubernetes_executor - ModuleNotFoundError

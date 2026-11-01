@@ -1,0 +1,2 @@
+example -> [None, None, None, 5, 5, 1, 5, 1, 5]
+3000 seeded random op lists: two-stack == heap+lazy delete == brute force

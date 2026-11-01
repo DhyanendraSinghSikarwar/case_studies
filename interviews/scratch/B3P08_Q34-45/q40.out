@@ -1,0 +1,11 @@
+attempt level (join + ROW_NUMBER):
+ view_attempts  converted_attempts  attributed_purchases  unattributed_purchases  attempt_conversion
+            10                   3                     4                       3                 0.3
+correlated MAX: (3, 4)
+user level, first view:
+ users_with_view  converted_users  user_conversion
+               6                3              0.5
+boundary user 3, datetime modifier says in window: 1 | unixepoch diff <= 604800: 1
+ view_attempts  converted_attempts  attributed_purchases  unattributed_purchases  attempt_conversion
+            10                   3                     4                       3                 0.3
+pandas user-level conversion: 0.5 | asserts passed

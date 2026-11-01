@@ -1,0 +1,17 @@
+SQL, each send counted once:
+channel  sent  unique_opens  unique_clicks  open_rate  ctor  ctr  click_without_open  ctor_clicked_and_opened
+  email     4             2              3        0.5   1.5 0.75                   2                      0.5
+   push     4             2              2        0.5   1.0 0.50                   1                      0.5
+SQL, raw event counts (wrong rates):
+channel  open_events  click_events  sent  raw_open_rate  raw_click_over_open_events
+  email            4             4     4           1.00                        1.00
+   push            3             2     4           0.75                        0.67
+SQL, user-level open rate:
+channel  users_sent  users_opened  user_open_rate
+  email           3             2            0.67
+   push           3             1            0.33
+pandas:
+channel  sent  unique_opens  unique_clicks  open_rate  ctor  ctr  click_without_open  ctor_clicked_and_opened
+  email     4             2              3        0.5   1.5 0.75                   2                      0.5
+   push     4             2              2        0.5   1.0 0.50                   1                      0.5
+asserts passed

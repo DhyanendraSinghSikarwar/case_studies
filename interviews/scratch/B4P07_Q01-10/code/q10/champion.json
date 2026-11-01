@@ -1,0 +1,1 @@
+{"auc": 0.85, "p95_ms": 40, "size_mb": 90, "slices": {"new_users": 0.78, "mobile": 0.82}, "signature": ["age", "tenure"]}

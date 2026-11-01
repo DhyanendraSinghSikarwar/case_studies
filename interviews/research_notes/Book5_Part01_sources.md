@@ -1,0 +1,21 @@
+# Book 5 Part 1 Sources & research notes (arrays and hashing)
+
+Date: 2026-10-27. Band per plan.md: Rs 30-80 LPA product-company roles; no salary figures. 4 WebSearch calls (standard mode) and 1 WebFetch attempt. WebFetch FAILED (getaddrinfo ENOTFOUND for neetcode.io), so NO page was opened. Everything below is SEARCH SNIPPET ONLY. No company-reported exact question was found; 'Asked at' tags name source types, not verified company reports.
+
+Execution environment for Wave B: code runs as Python 3.13 with the standard library only; sortedcontainers 2.4.0, hypothesis and pytest are installed in the sandbox but are used only where a question says so (Contains duplicate III mentions SortedList). Every block must run with `python3 -I`.
+
+## Snippet-only sources (not opened)
+| Source | URL | What the snippet said | Used for |
+|---|---|---|---|
+| NeetCode 150 mirrors and prep posts | https://github.com/aridepai17/NEETCODE-ROADMAP ; https://www.scribd.com/document/932382564/Neetcode-150-DSA-Learning-Report ; https://leetcode.com/discuss/post/5808617/heres-the-list-of-neetcodes-top-150-ques-rydm/ ; https://dev.to/soham0047/the-only-interview-prep-sheet-i-actually-finished-4alb | Arrays & Hashing section lists contains duplicate, valid anagram, two sum, group anagrams, top K frequent, encode/decode strings, product except self, valid sudoku, longest consecutive sequence; one guide frames it as 'what complement, count or group do I need to look up instantly'; sources disagree on exact list | core 3-star set, pattern framing |
+| Weekday DSA 60-problem guide and Naukri Code360 list | https://www.weekday.works/post/dsa-interview-questions ; https://www.naukri.com/code360/library/must-do-coding-interview-questions-for-product-based-companies | general round format (online assessment of 2-3 problems, then live coding rounds); array and hashing topics common; nothing specific to subarray-sum questions | star calibration, India product angle |
+| Indian placement and OA prep sheets | https://github.com/karthikreddy-7/TCS-NQT-CODING-SHEET ; https://www.scribd.com/document/1024124231/TCS-NQT-Coding-Questions-Comprehensive-Python-Guide ; https://www.scribd.com/document/810376448/Coding-Interview-Preparation-Guide ; https://www.scribd.com/document/978481396/Array-Patterns | frequency counting, repeating elements, rotate array (reversal or block swap), move zeroes with write pointer, first non-repeating element; company tags inconsistent across documents (rotate tagged to Capgemini/Infosys in one and Cognizant/Wipro in another); user-uploaded, unverified | IT-services OA angle (easy tier Qs) |
+| Python dict internals explainers | https://www.designgurus.io/answers/detail/how-are-pythons-built-in-dictionaries-implemented ; https://discuss.python.org/t/memory-efficient-dictionary-via-elastic-hashing-achieving-40-ram-savings-at-high-load-factors/106194 ; https://medium.com/@r_suleimanov/why-is-python-dict-so-fast-555e330a8ded ; https://dev.to/rj722/day-001-how-do-python-dictionaries-work-5aa2 | open addressing, compact dict, insertion order official from 3.7 (3.6 CPython detail), resize near two-thirds load; sources disagree on probing detail (perturbation matches CPython best); nothing on hash randomisation or set internals | 1-star internals Qs; Wave B must verify claims by running code |
+
+## Honest gaps
+- No exact company-reported question; no India GCC or IT-services OA report with verified company attribution. No source for hash randomisation (PYTHONHASHSEED), set internals or Bloom filters was opened; those questions rest on general knowledge and must be demonstrated by runnable code in Wave B.
+- Star counts (16 / 20 / 14) are editorial judgements from list frequency, not measured data.
+- Problems are paraphrased and named by common names only; examples in prompts were hand-checked against the well-known published examples or re-derived by hand and must be re-verified by Wave B code.
+
+## Scope boundaries used
+Intervals (Part 8), sliding window and two pointers (Part 2), string algorithms (Part 3), bit tricks (Part 12), deep prefix sums, matrices and randomised algorithms (Part 13) and LRU/LFU and rate-limiter design (Part 14) are excluded; the XOR, submatrix, randomised-set and Bloom-filter questions here are limited to the hashmap idea.

@@ -1,0 +1,20 @@
+== Airflow dags test
+Pushing xcom                   [task] loc=task_runner.py:2280 task_id=extract
+training on s3://bucket/raw/2026-10-01.parquet
+Pushing xcom                   [task] loc=task_runner.py:2280 task_id=train
+evaluating model-v1
+Pushing xcom                   [task] loc=task_runner.py:2280 task_id=evaluate
+Marking run <DagRun ml_train @ 2026-10-01 00:00:00+00:00: manual__2026-10-26T14:27:15.046651+00:00, state:running, queued_at: None. run_type: manual> successful [airflow.
+DagRun Finished: dag_id=ml_train, logical_date=2026-10-01 00:00:00+00:00, run_id=manual__2026-10-26T14:27:15.046651+00:00, run_start_date=2026-10-01 00:00:00+00:00, run_e
+== Prefect flow
+14:27:37.697 | INFO    | Task run 'flaky_load-6d0' - Task run failed with exception: ValueError('transient') - Retry 1/2 will start immediately
+14:27:37.700 | INFO    | Task run 'flaky_load-6d0' - Task run failed with exception: ValueError('transient') - Retry 2/2 will start immediately
+14:27:37.703 | INFO    | Task run 'flaky_load-6d0' - Finished in state Completed()
+14:27:38.695 | INFO    | Flow run 'screeching-serval' - Finished in state Completed()
+result: loaded calls: 3
+== kfp compile
+compiled
+# PIPELINE DEFINITION
+# Name: lab-pipeline
+# Inputs:
+73

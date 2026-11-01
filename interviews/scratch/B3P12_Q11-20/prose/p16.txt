@@ -1,0 +1,47 @@
+**Say this first (1 line):** Reduce searches to distinct (user, day), number each user's days with `ROW_NUMBER`, subtract that number of days from the date so every consecutive run shares one constant, group by that constant to get run start, end and length, and keep the longest run per user, earliest first on ties.
+
+**Schema and sample data:** (assumption: a day counts if it has at least one search; the calendar day is the first 10 characters of the timestamp; a tie in length keeps the earlier run.)
+@@SCHEMA@@
+
+**SQL answer:** `sql` in the Code block: `days` (distinct user and day), `g` (the group key `date(d, '-' || (ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY d) - 1) || ' days')`), `runs` (MIN, MAX and COUNT per group), and `best` (`ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY days DESC, run_start ASC)`, keep `rn = 1`). SQLite cannot subtract an integer from a date, so the shift is written as a `date(..., '-n days')` modifier; the idea "date minus row number" is the same. The `raw` query is the version without the distinct-days step.
+
+**pandas answer:** the Code block drops duplicate (user, day) pairs, sorts, marks a new run where the gap to the previous day is not exactly one day (`diff().ne(pd.Timedelta(days=1))`, which is also true for the first day of each user), runs a `cumsum` per user to make the run id, aggregates start, end and size, then sorts by `days` descending and `run_start` ascending and keeps the first row per user.
+
+**Example:** by hand.
+- User 1: searches on 03-01, 03-02 (three searches that day), 03-03, then 03-05 and 03-06. Distinct days: 1, 2, 3, 5, 6. Runs: 03-01 to 03-03 (3 days) and 03-05 to 03-06 (2 days). Best: 03-01 to 03-03.
+- User 2: 03-01, 03-02, then a gap on 03-03, then 03-04, 03-05, 03-06. Runs of 2 and 3; best is 03-04 to 03-06.
+- User 3: one day, 03-07: run of 1.
+- User 4: 03-01 and 03-02, then 03-10 and 03-11. Two runs of length 2: the earlier one wins, 03-01 to 03-02.
+- User 5: 01-30, 01-31, 02-01: one run of 3 across the month end.
+
+**Code:** run with `python3 -I`.
+@@CODE@@
+
+**Output (my run):**
+@@OUTPUT@@
+
+**Edge cases:**
+- **Several searches on one day (user 1, 03-02):** without the `DISTINCT` day step the row numbers advance faster than the dates. The second printed table shows what happens to user 1: the runs come out as 03-01 to 03-02 (2 rows), 03-02 to 03-03 (2 rows) and an absurd 03-02 to 03-06 (3 rows) that bridges the real gap on 03-04. This is the duplicate-days trap of Part 7 Q8.
+- **A one-day gap (user 2):** splits the run; the answer comes from the second run.
+- **Tie (user 4):** broken by the earlier start through `run_start ASC`.
+- **Single day (user 3):** a run of length 1 is still a run.
+- **Month and year boundaries (user 5):** date arithmetic handles them; do not compare day-of-month numbers.
+- **Time zones:** `search_ts` is taken as one zone. A "calendar day" in the user's zone needs the conversion before `date()`. Not run here.
+- **Users with no searches:** no row; add a `LEFT JOIN` from `users` if they must appear.
+
+**Then explain:**
+- **Why the trick works:** within a run of consecutive days, the day number and the row number rise together, so their difference is constant; a gap makes the day jump while the row number goes up by one, changing the constant.
+- **pandas vs SQL:** both use the same idea; pandas `cumsum` of "starts a new run" is the common alternative to subtracting a row number.
+- **Dialects (not executed here):** from memory, PostgreSQL can subtract an integer from a date directly (`d - (ROW_NUMBER() OVER (...))::int`); MySQL uses `DATE_SUB(d, INTERVAL n DAY)`; the `ROW_NUMBER` tie rule is standard.
+- **Scoring note (Set F2, Q4 of 5, 25 pts):** about 10 points for the five right run rows, 5 for the seeded edge cases (the same-day duplicates handled by distinct days, the tie rule, the month crossing), 5 for pandas asserted equal, 2.5 for stating "day counts if at least one search" and the tie rule, 2.5 for a check such as "the run length never exceeds the user's number of distinct days". Counting search rows instead of days is the usual way to lose most points here.
+
+**Follow-ups:**
+- *Current streak as of today?* Keep only the run whose end is the as-of date (or the day before); everything else is a broken streak.
+- *All users' longest streak overall?* Take the maximum of `days` from `runs`, with ties listed.
+- *Streak that allows one missed day?* Use a gap threshold of 2 days (`diff <= 2`) in pandas, or a `LAG` flag in SQL; that is an islands variation (Part 7).
+
+**Common mistakes:**
+- Using `ROW_NUMBER` over raw searches instead of distinct days.
+- Comparing `search_ts` strings instead of days, so two searches on one day look like different days.
+- Breaking ties arbitrarily (no second order key) so the answer changes between runs.
+- Forgetting that the `DENSE_RANK` or `ROW_NUMBER` order must be by day, not by user.

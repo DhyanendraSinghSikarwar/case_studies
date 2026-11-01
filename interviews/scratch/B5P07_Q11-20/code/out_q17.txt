@@ -1,0 +1,10 @@
+[1, 2, 3] -> 6
+[-10, 9, 20, None, None, 15, 7] -> 42
+[-3] -> -3
+[2, -1] -> 2
+[-1, -2, -3] -> -1
+bad init (best=0) on [-1,-2,-3]: 0 (wrong)
+no clamp on [1,-5,3]: 3 vs correct 4 (brute 4)
+exhaustive ok: 140680 labelled trees (1..5 nodes, values -2..2)
+random ok: 1500 trees
+chain 30000 recursive: RecursionError | iterative: 450015000 (sum 1..30000 = 450015000 )

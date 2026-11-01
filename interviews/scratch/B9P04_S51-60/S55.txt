@@ -1,0 +1,16 @@
+**Weak response:** Stay up all night to finish and hand over something unreviewed, or hand over late and say nothing about the risk. Another weak move is to blame the schedule and the other region.
+
+**Strong response:** First, check whether the deadline is fixed and who set it, then raise the time-zone problem early, in writing, not on the night. Propose a change to the process rather than a heroic effort: hand over a day earlier, or hand over a draft with a checklist, so the reviewer can sign off in their morning; or agree a short overlap slot. Make the handover easy to review with a clear summary, what changed, what to check and known risks. Ask a colleague in your own zone to do a quick peer check before the handover, and automate the checks you can. If the date truly cannot move, tell your manager the risk and the option of a small delay. Be honest that you cannot work every night; ask for a sustainable pattern.
+
+**Why it works:** It removes the cause, which is a handover timed against the clock, and it keeps quality through checks instead of tiredness. Early notice gives others options.
+
+**What the interviewer scores:** Planning ahead, clear async writing, proposing a process fix, protecting quality, and honest limits on your own hours. No stereotypes about the other region: the issue is the schedule.
+
+**Say it like this:**
+```
+"The deadline falls at the start of [region] morning, which is my night. To avoid a rushed handover, I suggest I hand over a reviewed draft by [time, my day] with a one-page summary of what changed and what to check. [Colleague] will do a peer check first. If a small error appears late, we agree who decides whether to fix or ship. Can we confirm that today?"
+```
+
+**If they push back:** If the interviewer says "the date cannot move", say you would still hand over earlier, with automated checks and a named person to contact in your zone, and flag the residual risk to your manager. If asked about a one-off emergency, say you would help once and then fix the process afterwards.
+
+**Common mistakes:** Pulling an all-nighter as a plan. Silent risk. Blaming the other region. Skipping peer checks. Sending a handover with no summary.

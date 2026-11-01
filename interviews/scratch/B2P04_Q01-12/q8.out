@@ -1,0 +1,4 @@
+base (trained on general only)     general acc 0.98   new-task acc 0.24
+fine-tune on new task only         general acc 0.27   new-task acc 0.97
+new task + 600 general replay      general acc 0.91   new-task acc 0.97
+new task only, tiny LR, few steps  general acc 0.96   new-task acc 0.27
