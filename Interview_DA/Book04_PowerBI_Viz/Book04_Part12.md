@@ -29,7 +29,7 @@
 **Say this in the interview:** "About 6 out of 10 for a fresher. I can clean data in Power Query, build a star-schema model, write measures with SUM, DIVIDE and CALCULATE, and publish a dashboard. I am slower on time-intelligence, row-level security and performance tuning. I would rather give an honest 6 I can prove than a 9 I cannot."
 **Explain simply:**
 - Use a visible ladder (my own teaching scale, not an industry standard): 3-4 = drag-and-drop visuals; 5-6 = Power Query, relationships, basic measures; 7 = CALCULATE, time intelligence, row-level security; 8-9 = performance tuning, complex models, governance.
-- **Star schema** means one central facts table (e.g. attendance rows) linked to small lookup tables (employees, dates).
+- **Star schema** means one central fact table (the event rows, e.g. attendance) linked to small lookup tables (employees, dates).
 - Back the number with a test score or project (Q23).
 - Never say 9 or 10 at entry level; the next question will be hard.
 **Example:** After Week 10 of the plan and one finished HR dashboard, "5 to 6" is defensible. After Week 4, say "4".
@@ -121,7 +121,7 @@ Output: `HR 123000, IT 195000, Sales 113000` and `HR 0.285, IT 0.452, Sales 0.26
 **What the interviewer is checking:** Whether you understand the shift from cell-by-cell to table-and-filter thinking.
 **Say this in the interview:** "Carried over: filtering logic, SUMIFS thinking, pivot-table thinking and many formula names. I had to unlearn cell references and copying formulas down. In Power BI you write a measure once and the filters decide the answer."
 **Explain simply:**
-- Carried over: pivot tables = matrix visual; SUMIFS = `CALCULATE ( SUM(...), filter )`; Power Query is the same engine as Excel's Get & Transform.
+- Carried over: pivot tables = matrix visual; SUMIFS = `CALCULATE ( SUM(...), filter )`; Power Query is the same technology as Excel's Get & Transform (from memory, unverified).
 - Unlearn: no A1 cell references; no hand-typed totals; one table per topic, linked by relationships, instead of one giant sheet and VLOOKUPs.
 - A **measure** is a formula calculated at display time for whatever filters are active.
 **Example:** Excel: `=SUMIFS(C:C, A:A, "Sales", D:D, "")` for payroll of active Sales staff. Power BI: one measure used in every visual.
@@ -138,7 +138,7 @@ CALCULATE ( SUM ( Employees[Salary] ), Employees[Dept] = "Sales", ISBLANK ( Empl
 act = emp[emp.ExitDate.isna()]; print(emp[emp.Dept=="Sales"].Salary.sum(), act[act.Dept=="Sales"].Salary.sum())
 ```
 Output: `113000 75000`.
-**Version / licensing note:** DAX from memory, unverified (Learn unreachable).
+**Version / licensing note:** DAX from memory, unverified (Learn unreachable); the Power Query / Power Pivot overlap with Excel is also from memory, unverified.
 **Edge cases:** Blank ExitDate means still employed; a blank in Excel can be "" text, in Power BI it is a true blank.
 **Likely follow-ups:**
 - *Why not just use Excel?* Bigger data, reusable model, scheduled refresh.
@@ -156,7 +156,7 @@ Output: `113000 75000`.
 - **Premium capacity / Fabric** (F64 and above, per the sources file): free users can then consume content.
 - **Mac:** Desktop has no native Mac version (community-reported; the official page says "Windows application").
 **Example:** HR team of 20 viewers: either each viewer gets Pro, or the report sits in a capacity-backed workspace where viewers need only a free licence.
-**Steps:** Not run here. Check your licence: Service (app.powerbi.com) > profile picture > Account manager.
+**Steps:** Not run here; menu path from memory, unverified. Check your licence: Service (app.powerbi.com) > profile picture > Account manager.
 **Version / licensing note:** Per Microsoft Learn "Power BI service features by license type" (2026-08-24), "Download Power BI Desktop" and "Sign up or purchase Power BI as an individual", as recorded in research/Book04_Part12_sources.md; not re-fetched here. Prices are not quoted; they change, see Microsoft's pricing page.
 **Edge cases:** Sign-up needs a work or school email; Gmail or Hotmail addresses are not accepted directly (Q14).
 **Likely follow-ups:**
@@ -200,12 +200,12 @@ Output: `113000 75000`.
 ### Q10 ⭐⭐ 🟢 How much time do you spend practising Power BI each day or week?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Consistency and honesty, not heroics.
-**Say this in the interview:** "About 1.5 to 2 hours on weekdays and a longer 3-hour block on Saturday, around 12 to 14 hours a week, mostly building rather than watching. I keep a log of what I built each day."
+**Say this in the interview:** "About 1.5 to 2 hours on weekdays and a longer 3-hour block on Saturday, around 10 to 13 hours a week, mostly building rather than watching. I keep a log of what I built each day."
 **Explain simply:**
 - Say a real number. Interviewers prefer 8 steady hours to a claimed 40.
 - Split: roughly one third learning, two thirds doing.
 - Keep proof: a practice log, saved .pbix files, a project.
-**Example:** Mon-Fri 1.5 hours = 7.5 hours; Saturday 3 hours; Sunday rest; total 10.5 hours a week; over 12 weeks about 126 hours.
+**Example:** Mon-Fri 1.5 hours = 7.5 hours; Saturday 3 hours; Sunday rest; total 10.5 hours a week (2 hours on weekdays would give 13); over 12 weeks about 126 hours.
 **Version / licensing note:** Not version-specific.
 **Edge cases:** If you work full time, say so and use weekends.
 **Likely follow-ups:**
@@ -254,9 +254,18 @@ Attrition % = DIVIDE ( [Leavers 2025], ( [Opening HC] + [Closing HC] ) / 2 )
 **Result:** Reproduced with pandas: overall Start 7, End 6, Leavers 2, Attrition 0.308. By department: HR 0 leavers (rate 0.0), IT 1 (0.4), Sales 1 (0.4). Parts check: dept leavers sum 2, starts sum 7, ends sum 6; but the average of department rates is 0.267, not 0.308, so rates must be recomputed, not averaged.
 **Pandas check:**
 ```python
-print(tot); print(bd); print(round(bd.Attr.mean(),3), tot.Attr)
+# emp = the 9-row Employees table from Q4, with JoinDate/ExitDate as dates
+emp["ExitYear"] = emp.ExitDate.dt.year
+a, b = pd.Timestamp("2025-01-01"), pd.Timestamp("2025-12-31")
+def m(d):
+    s = ((d.JoinDate < a) & ~(d.ExitYear == 2024)).sum()
+    e = ((d.JoinDate <= b) & d.ExitDate.isna()).sum()
+    l = (d.ExitYear == 2025).sum(); avg = (s + e) / 2
+    return pd.Series({"Start": s, "End": e, "Leavers": l, "AvgHC": avg, "Attr": round(l/avg, 3) if avg else 0})
+tot = m(emp); bd = emp.groupby("Dept")[emp.columns.tolist()].apply(m)
+print(tot); print(bd); print(round(bd.Attr.mean(), 3), tot.Attr)
 ```
-Output: `Start 7.0, End 6.0, Leavers 2.0, AvgHC 6.5, Attr 0.308`; `0.267 0.308`.
+Output (run with pandas 3.0.5): `Start 7.0, End 6.0, Leavers 2.0, AvgHC 6.5, Attr 0.308`; by department `HR 1/2/0/1.5/0.0, IT 3/2/1/2.5/0.4, Sales 3/2/1/2.5/0.4` (Start/End/Leavers/AvgHC/Attr); then `0.267 0.308`.
 **Version / licensing note:** DAX from memory, unverified. In the Service you can also use "Analyze in Excel"; availability and licence from memory, unverified.
 **Edge cases:** Blank exit dates, duplicate employee IDs, many-to-many relationships, time zones on timestamps, totals vs sum of rows.
 **Likely follow-ups:**
@@ -299,7 +308,7 @@ p = att[att.Status=="Present"]; print(len(p), p.EmpID.nunique())
 ```
 Output: `6 3`.
 **Version / licensing note:** Not verified (Learn unreachable here); from memory, unverified. Always check the page's "applies to" notes.
-**Edge cases:** DISTINCTCOUNT counts blank as one value if blanks exist (a community thread contradicted the docs in earlier notes; test it yourself).
+**Edge cases:** DISTINCTCOUNT counts a blank as one value if blanks exist (from memory, unverified; test it on a small table, and look up DISTINCTCOUNTNOBLANK if you want blanks ignored).
 **Likely follow-ups:**
 - *Where do you look first?* Microsoft Learn function page.
 - *What if the docs are unclear?* Test on a small table.
@@ -310,12 +319,12 @@ Output: `6 3`.
 **What the interviewer is checking:** Resourcefulness and honesty about what you could and could not practise.
 **Say this in the interview:** "Desktop is free, so I built and saved reports locally and practised everything except sharing. The Service needs a work or school email, so I could not use my Gmail directly. I know the steps: Publish from Desktop to a workspace, set a refresh, share via Pro licences or an app, but I have not done them in production."
 **Explain simply:**
-- Free Desktop lets you build, model, and save .pbix files, and export to PDF.
+- Free Desktop lets you build, model, and save .pbix files; exporting to PDF also exists in Desktop (from memory, unverified).
 - A free licence cannot share or publish to others' workspaces (Microsoft Learn, per sources file); the self sign-up needs a work or school email, with a Microsoft 365 trial as a workaround that needs a credit card and lasts up to 30 days.
 - Practice substitutes: record a screen walk-through, share the .pbix file, or publish to the web only if you understand the privacy risk (public data only).
 - Say clearly what is untested.
 **Example:** Portfolio project saved as .pbix plus screenshots and a 2-minute video.
-**Steps:** Not run here. Publish: Desktop > Home tab > Share group > Publish > choose workspace. Share: Service > workspace > report > Share (needs Pro/PPU or capacity).
+**Steps:** Not run here; menu names from memory, unverified. Publish: Desktop > Home tab > Share group > Publish > choose workspace. Share: Service > workspace > report > Share (needs Pro/PPU or capacity).
 **Version / licensing note:** Per Microsoft Learn "Power BI service features by license type" and "Sign up or purchase Power BI as an individual" (as recorded in the sources file, not re-fetched). "Publish to web" rules from memory, unverified.
 **Edge cases:** Never publish employee data publicly; sample or synthetic data only.
 **Likely follow-ups:**
@@ -428,7 +437,7 @@ Output: `292000 6 48666.7`.
 - Where: GitHub, LinkedIn, personal page. The .pbix file can be shared directly.
 - Publishing live reports to the open web needs care: public data only (the exact options and licence: from memory, unverified).
 - Check dataset licence/attribution (Microsoft samples need "obviEnce (c)" per the sources file).
-**Example:** README: "HR attrition dashboard, 1,470 employee rows (public dataset), 5 measures, 3 pages, findings: attrition highest in Sales."
+**Example:** README (illustrative wording, not a real project): "HR attrition dashboard, 1,470 employee rows (public dataset), 5 measures, 3 pages, findings: attrition highest in Sales."
 **Version / licensing note:** Attribution note from Microsoft Learn "What are Power BI samples" (sources file); rest from memory, unverified.
 **Edge cases:** Never include client or employer data.
 **Likely follow-ups:**
@@ -439,7 +448,7 @@ Output: `292000 6 48666.7`.
 ### Q21 ⭐ 🟡 What does the PL-300 exam cover, and how would you prepare for it if an employer asked for it?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** That you know the exam's skill areas and have a plan.
-**Say this in the interview:** "It covers four areas, each roughly a quarter of the exam: prepare the data, model the data, visualize and analyze, and manage and secure. I would use Microsoft's study guide, take the free practice assessment first, fill gaps with projects, then book the exam."
+**Say this in the interview:** "It covers four areas, roughly a quarter each (the last one a little less): prepare the data, model the data, visualize and analyze, and manage and secure. I would use Microsoft's study guide, take the free practice assessment first, fill gaps with projects, then book the exam."
 **Explain simply:**
 - Per the study guide (sources file): prepare 25-30%, model 25-30%, visualize and analyze 25-30%, manage and secure 15-20%; pass score 700; the guide names items such as Copilot, visual calculations, DAX query view and row-level security.
 - Plan: week 1 baseline practice assessment; weeks 2-5 one area per week with hands-on; week 6 mock and weak spots; book exam; renew free each year.

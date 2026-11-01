@@ -29,8 +29,8 @@
 - **Decomposition tree:** "Where is the number coming from?" You split total leavers by department, then by manager, step by step.
 - **Anomaly detection:** on a line chart over time, marks unusual spikes or dips (for example a sudden jump in absenteeism) and can suggest possible causes.
 - **Smart narrative:** auto-written sentences that update with filters.
-**Example:** Monthly leavers: 4, 5, 4, 5, 19, 5. Anomaly detection highlights the 19; the decomposition tree shows 14 of them came from one department; key influencers shows overtime as the top factor.
-**DAX / Steps:** Click-path (not run here): Report view > Visualizations pane > pick the visual icon > drag fields into its wells. Anomaly detection: line chart > Analytics pane > Find anomalies.
+**Example:** Monthly leavers: 4, 5, 4, 5, 19, 5. Anomaly detection highlights the 19; the decomposition tree shows 14 of the 19 came from one department; key influencers shows overtime as the top factor.
+**DAX / Steps:** Click-path (not run here): Report view > Visualizations pane > pick the visual icon > drag fields into its wells. Anomaly detection: line chart > Analytics pane > Find anomalies (menu names from memory).
 **Alternative:** Plain bar charts and matrices answer simpler questions without AI.
 **Version / licensing note:** from memory, unverified. The sources file says decomposition tree and anomaly detection descriptions were only seen as snippets, not fetched in full.
 **Edge cases:** These visuals show correlation (things that move together), not proof of cause.
@@ -48,15 +48,23 @@
 - **Totals:** does the Total row make sense, and does it match the source system?
 - **Page check:** titles, axis, units, sorting, wrong field used (for example headcount counted twice).
 **Example:** Copilot gives attrition 25%. You count 3 leavers of 12 employees by hand: 25%. Then filter to HR: expected 0%.
-**Sample data:** Table Employees (12 rows) used in Q12; 3 leavers, 12 staff.
-**DAX / Steps:** Not run here. Steps: open measure in Model view or DAX query view; compare to your own `EVALUATE ROW("Check", DIVIDE(3,12))`.
+**Sample data:** Table Employees (12 rows) is given in Q12 (3 leavers, 12 staff); the pandas snippet below rebuilds it.
+**DAX / Steps (not run here, from memory):** open the measure in DAX query view and compare it to your own hand-built check, `EVALUATE ROW("Check", DIVIDE(3,12))` (`ROW` returns a one-row table; `DIVIDE` is safe division).
 **Alternative:** Ask Copilot to explain the DAX in words, then compare the explanation to your intent.
 **Result:** Reproduced with pandas: 3 / 12 = 0.25; HR = 0 / 3 = 0.
 **Pandas check:**
 ```python
+import pandas as pd
+# the 12-row Employees table from Q12 (reused by Q12, Q13, Q23, Q24)
+e = pd.DataFrame({
+ 'EmpID': range(1, 13),
+ 'Dept': ['Sales']*5 + ['IT']*4 + ['HR']*3,
+ 'Overtime': ['Yes','Yes','Yes','No','No','Yes','No','No','No','No','No','Yes'],
+ 'Left': [1,1,0,0,0,1,0,0,0,0,0,0]})
 print(e.Left.sum()/len(e))             # 0.25
 print(e[e.Dept=='HR'].Left.sum()/3)    # 0.0
 ```
+Output: `0.25` then `0.0` (run with pandas 3.0.5).
 **Version / licensing note:** from memory, unverified. The research file reports a Microsoft privacy page advising review of DAX before applying; not re-checked.
 **Edge cases:** Blanks, duplicate employee rows, wrong date filter, totals that do not equal the sum of rows.
 **Likely follow-ups:** 1) *Copilot gave a wrong answer, now what?* Fix the prompt or write it manually. 2) *Who is accountable?* The analyst.
@@ -68,14 +76,14 @@ print(e[e.Dept=='HR'].Left.sum()/3)    # 0.0
 **Say this in the interview:** "Copilot needs paid capacity: a Fabric capacity (F2 or higher) or a Premium capacity (P1 or higher), plus the admin enabling the setting and a supported region. Trial and free capacities are not supported."
 **Explain simply:**
 - **Capacity** = a pool of computing power the company rents; Copilot work is charged to it.
-- **Fabric F SKUs** (F2, F4, ... ) and **Premium P SKUs** (P1...) are the paid sizes.
+- **Fabric F SKUs** (F2, F4, ...) and **Premium P SKUs** (P1, ...) are the paid sizes; a SKU is just a product size you can buy, bigger number = more computing power.
 - Admin must enable Copilot in the tenant settings; the region must be supported.
 - Older blogs say F64; the research file notes the fetched page said F2 or higher.
 **Example:** Company has an F8 capacity; HR analysts with workspaces on it can use Copilot once the admin switch is on.
 **DAX / Steps:** Concept. Steps for admin: see Q19.
 **Alternative:** A Fabric Copilot capacity (FCC) can be used so Copilot usage is billed separately (Q25).
 **Version / licensing note:** from memory, unverified (Microsoft Learn not reachable here). The research file reports the overview page (dated 2026-08-24 there) lists: paid Fabric F2+ or Premium P1+, trial/free unsupported, admin setting, supported region, sovereign clouds unsupported. Capacity rules change; re-check before quoting. No prices quoted.
-**Edge cases:** Sovereign clouds unsupported; Private Link not supported (per the research file, unverified).
+**Edge cases:** Sovereign clouds (separate government/regional Microsoft clouds) unsupported; Private Link (a private network route to Azure) not supported (per the research file, unverified).
 **Likely follow-ups:** 1) *Is Pro enough?* Q5. 2) *Trial?* Not supported per the file.
 **Common mistakes:** Saying "any Pro licence works"; quoting the old F64 rule.
 
@@ -123,7 +131,7 @@ print(e[e.Dept=='HR'].Left.sum()/3)    # 0.0
 - **Custom smart narrative:** you edit the text and add dynamic values (numbers that update with filters); no AI generation needed.
 - Copilot narrative body text is not freely editable (per the research file).
 **Example:** Copilot: "Attrition rose to 25% driven by Sales." Custom: "Attrition was [25%] in [2025]" with the brackets linked to measures.
-**DAX / Steps (not run here):** Insert > Narrative (or Smart narrative visual) > choose Copilot or custom mode.
+**DAX / Steps (not run here, menu names from memory):** Insert > Narrative (or Smart narrative visual) > choose Copilot or custom mode.
 **Alternative:** Write the summary text in a text box manually.
 **Version / licensing note:** from memory, unverified. The research file reports a separate Microsoft page on the Copilot narrative visual (2026-05-11) and the smart narrative page (2026-09-25); not re-read.
 **Edge cases:** Key influencers visual not supported by the Copilot narrative (per file).
@@ -208,6 +216,7 @@ print(e[e.Dept=='HR'].Left.sum()/3)    # 0.0
 - Always state the definition: AI cannot guess your HR policy.
 **Example:** 3 leavers among 12 employees = 25%.
 **Sample data:** Table Employees
+
 | EmpID | Dept | Overtime | Left |
 |---|---|---|---|
 | 1 | Sales | Yes | 1 |
@@ -219,7 +228,9 @@ print(e[e.Dept=='HR'].Left.sum()/3)    # 0.0
 | 7-9 | IT | No | 0 |
 | 10-11 | HR | No | 0 |
 | 12 | HR | Yes | 0 |
-(Rows 7-9, 10-12 shown grouped for brevity; the pandas run uses 12 separate rows.)
+
+(Rows 7-9 and 10-11 are shown grouped for brevity; the pandas run uses 12 separate rows.)
+
 **DAX (not run here):**
 ```dax
 Headcount = COUNTROWS ( Employees )
@@ -230,10 +241,11 @@ Attrition Rate = DIVIDE ( [Leavers], [Headcount] )
 **Result:** Reproduced with pandas (not a DAX engine): Leavers 3, Headcount 12, rate 0.25 (25%). By dept: HR 0.0, IT 0.25, Sales 0.40.
 **Pandas check:**
 ```python
+# uses the DataFrame e built in Q3
 print(e.Left.sum(), len(e), round(e.Left.sum()/len(e),4))
 print(e.groupby('Dept').Left.mean().round(3))
 ```
-Output: `3 12 0.25`, then HR 0.000, IT 0.250, Sales 0.400.
+Output (run with pandas 3.0.5): `3 12 0.25`, then HR 0.00, IT 0.25, Sales 0.40.
 **Version / licensing note:** DAX function behaviour (DIVIDE, CALCULATE, COUNTROWS) from memory, unverified: Microsoft Learn could not be fetched.
 **Edge cases:** Zero headcount (DIVIDE returns blank); leavers counted by exit date vs a flag; duplicates; rehires; period filters.
 **Likely follow-ups:** 1) *Average headcount?* (Start + End)/2. 2) *Why DIVIDE not "/"?* Safe on zero.
@@ -247,7 +259,7 @@ Output: `3 12 0.25`, then HR 0.000, IT 0.250, Sales 0.400.
 - **DAX query** = starts with `EVALUATE` and returns a table, useful for testing measures.
 - Copilot can generate a query, explain DAX, and suggest edits.
 - Per the research file, it checks syntax and retries once; very large models may hit size limits; newer DAX functions may be unknown to it.
-**Example:** Prompt: "Show attrition rate by department." Copilot writes a query with a summarise; you run it.
+**Example:** Prompt: "Show attrition rate by department." Copilot writes a query that groups by department; you read it and run it.
 **DAX (not run here):**
 ```dax
 EVALUATE
@@ -255,12 +267,13 @@ SUMMARIZECOLUMNS ( Employees[Dept], "Attrition", [Attrition Rate] )
 ORDER BY Employees[Dept]
 ```
 **Alternative:** Write the query yourself, or use a table visual to test.
-**Result:** Reproduced with pandas: HR 0.0, IT 0.25, Sales 0.40.
+**Result:** Reproduced with pandas (not a DAX engine), assuming the `[Attrition Rate]` measure from Q12 exists: HR 0.0, IT 0.25, Sales 0.40.
 **Pandas check:**
 ```python
+# uses the DataFrame e built in Q3
 print(e.groupby('Dept').Left.mean().round(3))
 ```
-Output: HR 0.000, IT 0.250, Sales 0.400.
+Output (run with pandas 3.0.5): HR 0.00, IT 0.25, Sales 0.40.
 **Version / licensing note:** from memory, unverified. The research file reports a Microsoft page "Write DAX queries with Copilot" (updated 2026-06-29 there) with the points above; not re-read.
 **Edge cases:** Model too large; hidden objects; Copilot may not know new functions.
 **Likely follow-ups:** 1) *Can it change my model?* It suggests; you apply.
@@ -338,8 +351,8 @@ Output: HR 0.000, IT 0.250, Sales 0.400.
 **What the interviewer is checking:** Realistic expectations.
 **Say this in the interview:** "It does not control detailed styling, does not work with some data sources, may not use custom visuals, and sometimes picks the wrong fields, so I always review and finish by hand."
 **Explain simply:**
-- Per the research file: limits include Q&A having to be switched on, streaming datasets, live Analysis Services connections, implicit measures (auto-sum fields), custom visuals, and no styling control.
-- Prompts limited in length (about 10,000 characters per file).
+- Per the research file: limits include Q&A having to be switched on, streaming datasets (live-feed data), live Analysis Services connections (a model hosted on a separate server), implicit measures (auto-sum fields), custom visuals, and no styling control.
+- Prompts are limited in length (about 10,000 characters per prompt, per the research file).
 - Output is a draft.
 **Example:** Copilot builds the page but you must set company colours and fix titles.
 **DAX / Steps:** Not applicable.
@@ -370,8 +383,8 @@ Output: HR 0.000, IT 0.250, Sales 0.400.
 **What the interviewer is checking:** Privacy awareness, without overclaiming.
 **Say this in the interview:** "According to Microsoft documentation, prompts and data go to the Azure OpenAI service within Microsoft's boundary and are not used to train the underlying models. Some regions may process data in another geography if the admin allows it. I would confirm the current policy with our security team."
 **Explain simply:**
-- Per the research file: no training on your data; processing stays in the tenant boundary; Azure OpenAI hosted in US and EU data boundary; cross-geo is an admin setting.
-- Copilot only uses what the user can access; the page read did NOT state row-level security (RLS) behaviour, so I make no claim.
+- Per the research file: no training on your data; processing stays in the tenant boundary; Azure OpenAI (Microsoft's hosted AI service) hosted in US and EU data boundary; cross-geo is an admin setting.
+- Copilot only uses what the user can access; the page read did NOT state row-level security (RLS, rules that limit which rows each user sees) behaviour, so I make no claim.
 **Example:** Salary data in the model: check with the security team before enabling.
 **DAX / Steps:** Concept.
 **Alternative:** Limit Copilot to non-sensitive models.
@@ -423,17 +436,18 @@ Output: HR 0.000, IT 0.250, Sales 0.400.
 **Explain simply:**
 - **Analyze** = the outcome; **Explain by** = candidate factors.
 - Shows "when Overtime = Yes, attrition is X times more likely".
-- Needs enough rows; per file, not supported with DirectQuery.
+- Needs enough rows; per file, not supported with DirectQuery (a mode where Power BI queries the source live instead of storing a copy).
 **Example:** In the sample, 60% of overtime employees left against 0% of non-overtime.
 **Sample data:** Table Employees (Q12).
 **DAX / Steps (not run here):** Visualizations > Key influencers > Analyze: Left (value 1) > Explain by: Overtime, Dept.
 **Alternative:** Compare attrition rate by factor with a bar chart.
-**Result:** Reproduced with pandas (plain rates, not the visual's machine-learning model): Overtime Yes 3/5 = 0.6; No 0/7 = 0.0; Sales 0.4, IT 0.25, HR 0.0.
+**Result:** Reproduced with pandas (plain rates, not the visual's machine-learning model; the Sales/IT/HR rates come from the Q12 run): Overtime Yes 3/5 = 0.6; No 0/7 = 0.0; Sales 0.4, IT 0.25, HR 0.0.
 **Pandas check:**
 ```python
+# uses the DataFrame e built in Q3
 print(e.groupby('Overtime').Left.mean())
 ```
-Output: No 0.0, Yes 0.6.
+Output (run with pandas 3.0.5): No 0.0, Yes 0.6.
 **Version / licensing note:** from memory, unverified; the file cites the key influencers page (2026-08-24).
 **Edge cases:** 12 rows is far too few for real use; correlated factors; correlation is not cause.
 **Likely follow-ups:** 1) *Next step?* Investigate why overtime and who.
@@ -449,14 +463,15 @@ Output: No 0.0, Yes 0.6.
 - Tree shows counts and totals; influencers shows likelihood.
 **Example:** Total leavers 3. Tree: Sales 2, IT 1; then Overtime Yes for all. Influencers: Overtime strongest.
 **Sample data:** Table Employees (Q12).
-**DAX / Steps (not run here):** Decomposition tree: add Leavers to Analyze, Dept and Overtime to Explain by.
+**DAX / Steps (not run here):** Decomposition tree: add the Leavers measure (Q12) to Analyze, Dept and Overtime to Explain by.
 **Alternative:** Matrix with drill-down.
 **Result:** Reproduced with pandas: leavers Sales/Yes 2, IT/Yes 1.
 **Pandas check:**
 ```python
+# uses the DataFrame e built in Q3
 print(e[e.Left==1].groupby(['Dept','Overtime']).size())
 ```
-Output: IT Yes 1, Sales Yes 2.
+Output (run with pandas 3.0.5): IT Yes 1, Sales Yes 2.
 **Version / licensing note:** from memory, unverified; decomposition tree page not fetched in the earlier research either.
 **Edge cases:** Tree shows share, not rate; rates need a measure.
 **Likely follow-ups:** 1) *Which first?* Tree to explore, influencers to rank.
@@ -485,7 +500,7 @@ Output: IT Yes 1, Sales Yes 2.
 - **CU (capacity unit)** = measure of compute.
 - Per the research file: Capacity Metrics app shows Copilot background usage; throttling warning on the Fabric overview page.
 - Admin can watch trends and decide to scale up.
-**Example:** Metrics app shows a Copilot spike at month-end when everyone refreshes HR reports.
+**Example:** Metrics app shows a Copilot spike at month-end when many analysts ask Copilot to summarise HR reports at the same time.
 **DAX / Steps:** Admin installs the Capacity Metrics app (from memory unverified) and checks the Copilot operations.
 **Alternative:** Separate FCC to isolate cost.
 **Version / licensing note:** from memory, unverified; exact billing rates not stated.
