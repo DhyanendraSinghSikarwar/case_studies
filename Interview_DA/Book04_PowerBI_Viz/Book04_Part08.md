@@ -61,7 +61,7 @@
 - Three parts: data (facts), visuals (make patterns easy to see), narrative (context, insight, recommendation).
 - It is not decoration: each chart supports one sentence of the story.
 - It matters because decision-makers are busy and non-technical; they act on what they understand.
-**Example:** Instead of "attrition is 18% annualised", say: "Support loses 1 in 5 people each year, mostly within the first six months. Fixing onboarding could save about 12 hires a year."
+**Example:** Instead of "attrition is 18% annualised", say: "Support loses 1 in 5 people each year, mostly within the first six months. Fixing onboarding could save about 12 hires a year." (illustrative numbers, not real data).
 **Alternative:** The one-line test: write the takeaway as a headline sentence for each chart.
 **Version / licensing note:** Tool-independent; from memory, unverified.
 **Edge cases:** If the data is weak, say so; honest uncertainty builds more trust than a polished overclaim.
@@ -145,7 +145,7 @@
 - **Ask:** short interviews with 3-5 intended users: "what do you use instead?"
 - **Diagnose:** relevance, speed, trust, discoverability, training.
 - **Fix and re-test:** simplify, speed up, add definitions, put it where people already work (Teams, email subscription).
-**Example:** 40 managers invited, only 6 opened it last month. Interviews: it loads in 30 seconds and they prefer a weekly Excel email. Fix: speed up, add a scheduled email snapshot; views reach 25.
+**Example (illustrative):** 40 managers invited, only 6 opened it last month. Interviews: it loads in 30 seconds and they prefer a weekly Excel email. Fix: speed up, add a scheduled email snapshot; views reach 25.
 **Alternative:** Run a 15-minute walkthrough session and collect feedback live.
 **Version / licensing note:** Usage metrics and subscriptions are Service features whose availability depends on licence; from memory, unverified.
 **Edge cases:** Low usage may be fine if the report is only needed quarterly.
@@ -244,11 +244,14 @@ Steps (not run here): Visualizations pane > Card (or the newer "Card" visual) > 
 **Result:** Reproduced with pandas, not a DAX engine: Sep 1.4%, Oct 1.8%; vs target +0.3 points; month on month +0.4 points.
 **Pandas check:**
 ```python
+m=pd.DataFrame({"Month":["Sep","Oct"],"Leavers":[7,9],"AvgHeadcount":[500,500]})
 m["AttritionPct"]=(m.Leavers/m.AvgHeadcount*100).round(1)
-# Sep 1.4, Oct 1.8 ; Oct - target 1.5 = 0.3 ; Oct - Sep = 0.4
+print(m)   # Sep 1.4, Oct 1.8
+print(round(m.AttritionPct[1]-1.5,1), round(m.AttritionPct[1]-m.AttritionPct[0],1))   # 0.3 0.4
 ```
+Printed (pandas 3.0.5): Sep 1.4, Oct 1.8; then 0.3 and 0.4.
 **Version / licensing note:** Card/KPI visuals are in Desktop; new card visual vs classic names changed recently; from memory, unverified. DIVIDE not checked on Microsoft Learn (site unreachable).
-**Edge cases:** DIVIDE returns blank when the denominator is zero; "up" is not always good (attrition up is bad), so colour the logic accordingly.
+**Edge cases:** DIVIDE returns blank when the denominator is zero; the gap measure returns a fraction (0.003), so format it as a percentage and label it "points"; "up" is not always good (attrition up is bad), so colour the logic accordingly.
 **Likely follow-ups:** 1) *Why DIVIDE?* Safe division. 2) *KPI vs card?* KPI adds goal and trend.
 **Common mistakes:** Naked numbers; showing 1.8333333% instead of formatting; green for rising attrition.
 
@@ -376,17 +379,19 @@ m["AttritionPct"]=(m.Leavers/m.AvgHeadcount*100).round(1)
 
 **DAX / Steps (not run here):**
 ```dax
-Actual = SUM ( Hiring[Actual] )
-Target = SUM ( Hiring[Target] )
-Variance = [Actual] - [Target]
-Variance % = DIVIDE ( [Variance], [Target] )
+Total Actual = SUM ( Hiring[Actual] )
+Total Target = SUM ( Hiring[Target] )
+Variance = [Total Actual] - [Total Target]
+Variance % = DIVIDE ( [Variance], [Total Target] )
 ```
-Steps (not run here): Build clustered bar with Actual > Format > add Target as a "Target"/reference value via the Bar chart's error bar or use a column+line combination; or use Visualizations > Bullet chart (custom visual from AppSource).
+Steps (not run here): Measures are named `Total Actual` and `Total Target` because a measure cannot share a name with a column in the same table. Build clustered bar with Total Actual > Format > add Target as a "Target"/reference value via the Bar chart's error bar or use a column+line combination; or use Visualizations > Bullet chart (custom visual from AppSource).
 **Alternative:** Table or matrix with Variance % and conditional-format icons (Q23).
 **Result:** Reproduced with pandas (not a DAX engine): Engineering -8 (-16.0%), Sales +5 (+9.1%), HR -2 (-20.0%), Operations 0 (0.0%), Finance +1 (+20.0%). Total row: actual 146, target 150, variance -4 (-2.7%).
 **Pandas check:**
 ```python
+d=pd.DataFrame({"Department":["Engineering","Sales","HR","Operations","Finance"],"Actual":[42,60,8,30,6],"Target":[50,55,10,30,5]})
 d["Variance"]=d.Actual-d.Target; d["VarPct"]=(d.Variance/d.Target*100).round(1)
+a,t=d.Actual.sum(),d.Target.sum(); print(d); print(a,t,a-t,round((a-t)/t*100,1))
 # Eng -8 -16.0 | Sales 5 9.1 | HR -2 -20.0 | Ops 0 0.0 | Fin 1 20.0 | total 146 150 -4 -2.7
 ```
 **Version / licensing note:** Bullet chart is a custom visual from AppSource, not core; from memory, unverified.
@@ -416,20 +421,23 @@ d["Variance"]=d.Actual-d.Target; d["VarPct"]=(d.Variance/d.Target*100).round(1)
 
 **DAX / Steps (not run here):**
 ```dax
-Candidates = SUM ( Funnel[Candidates] )
-% of Applied = DIVIDE ( [Candidates], CALCULATE ( [Candidates], Funnel[Stage] = "Applied" ) )
+Total Candidates = SUM ( Funnel[Candidates] )
+% of Applied = DIVIDE ( [Total Candidates], CALCULATE ( [Total Candidates], Funnel[Stage] = "Applied" ) )
 ```
-Steps (not run here): Visualizations > Funnel > Group = Stage, Values = Candidates; sort by Candidates descending. Stage-to-previous needs a stage-order column and an OFFSET or a prior-stage column.
+Steps (not run here): Visualizations > Funnel > Group = Stage, Values = Candidates; sort by Candidates descending. (Measure is named `Total Candidates` because a measure cannot share a name with a column in the same table.) Stage-to-previous needs a stage-order column and an OFFSET or a prior-stage column.
 **Alternative:** Sorted horizontal bar with data labels; or a table with the percentages.
-**Result:** Reproduced with pandas: % of previous stage: Screened 40.0, Interviewed 31.2, Offered 30.0, Joined 80.0; % of applied: 100, 40.0, 12.5, 3.8, 3.0.
+**Result:** Reproduced with pandas (not a DAX engine; the DAX is not run here): % of previous stage: Screened 40.0, Interviewed 31.2, Offered 30.0, Joined 80.0; % of applied: 100, 40.0, 12.5, 3.8, 3.0.
 **Pandas check:**
 ```python
+f=pd.DataFrame({"Stage":["Applied","Screened","Interviewed","Offered","Joined"],"Candidates":[1200,480,150,45,36]})
 f["PctOfPrev"]=(f.Candidates/f.Candidates.shift()*100).round(1)
 f["PctOfApplied"]=(f.Candidates/f.Candidates.iloc[0]*100).round(1)
+print(f)
 ```
+Printed (pandas 3.0.5): PctOfPrev NaN, 40.0, 31.2, 30.0, 80.0; PctOfApplied 100.0, 40.0, 12.5, 3.8, 3.0.
 **Version / licensing note:** Funnel is a built-in visual; from memory, unverified. CALCULATE and DIVIDE not checked on Microsoft Learn (site unreachable).
 **Edge cases:** Stages must be in business order, not alphabetical; candidates who skip a stage; time lag (an applicant may join next month).
-**Likely follow-ups:** 1) *Biggest drop?* Screened to interviewed (31.2%). 2) *Cohort or snapshot?* Cohort by application month is fairer.
+**Likely follow-ups:** 1) *Biggest drop?* Depends on the measure: the largest loss in people is Applied to Screened (720 of 1,200), and the lowest stage-to-stage conversion is Interviewed to Offered (30.0%). 2) *Cohort or snapshot?* Cohort by application month is fairer.
 **Common mistakes:** Funnel sorted alphabetically; mixing stage-to-stage with overall percentages.
 
 ### Q23 ⭐⭐ 🟡 How do you highlight exceptions, such as departments above an attrition threshold, using conditional formatting?
@@ -462,9 +470,12 @@ Steps (not run here): select the bar chart > Format visual > Bars > Colors > fx 
 **Result:** Reproduced with pandas: Sales 20.0% red, Support 20.0% red, Engineering 7.5%, HR 10.0%, Finance 7.5%, Operations 12.3% (all normal).
 **Pandas check:**
 ```python
+a=pd.DataFrame({"Department":["Sales","Support","Engineering","HR","Finance","Operations"],"Leavers":[30,24,18,2,3,16],"AvgHeadcount":[150,120,240,20,40,130]})
 a["AttritionPct"]=(a.Leavers/a.AvgHeadcount*100).round(1)
 a["Flag"]=a.AttritionPct.apply(lambda x:"Red" if x>=15 else "Normal")
+print(a)
 ```
+Printed (pandas 3.0.5): 20.0, 20.0, 7.5, 10.0, 7.5, 12.3 with Flag Red, Red, then four Normal.
 **Version / licensing note:** Conditional formatting exists in Desktop and Service; exact menu labels vary by build; from memory, unverified.
 **Edge cases:** Small departments (HR: 20 people, 2 leavers) swing wildly; consider a minimum headcount. At the total level, the colour should apply to total attrition, not an average of rows. Blank values should not turn red.
 **Likely follow-ups:** 1) *Where does the threshold live?* A parameter or table, so it can change. 2) *Boundary?* Decide >= or > and state it.
@@ -479,7 +490,7 @@ a["Flag"]=a.AttritionPct.apply(lambda x:"Red" if x>=15 else "Normal")
 - **Contrast:** dark text on light background; guideline of 4.5:1 for normal text (third-party, unverified).
 - **Alt text:** a short description of each visual for screen readers.
 - **Tab order and titles:** so keyboard users move in a logical sequence.
-- **Themes:** apply an accessible theme and test in Desktop's colour-blind preview if available.
+- **Themes:** apply an accessible theme (Desktop ships a built-in colour-blind-safe theme, from memory, unverified) and test the result with an outside colour-blindness simulator on a screenshot.
 **Example:** Attrition bars: red for above threshold, but also a label "Above 15%" and a warning icon, so a colour-blind user still sees the exception.
 **Alternative:** Use high-contrast built-in themes and test with a colour-blindness simulator on a screenshot.
 **Version / licensing note:** Steps (not run here): select a visual > Format visual > General > Properties > Alt text; View > Selection pane/Tab order; View > Themes. Menu paths from memory, unverified; Microsoft accessibility page not fetched.
@@ -512,10 +523,13 @@ a["Flag"]=a.AttritionPct.apply(lambda x:"Red" if x>=15 else "Normal")
 **Result:** reproduced with pandas: the true rise is 8.3%, the truncated chart shows an 11x difference.
 **Pandas check:**
 ```python
-d["from0"]=d.Attrition_pct/d.Attrition_pct.iloc[0]
-d["from11.9"]=(d.Attrition_pct-11.9)/(d.Attrition_pct.iloc[0]-11.9)
-# Apr: 1.08 vs 11.0 ; true rise (13/12-1)*100 = 8.3
+d=pd.DataFrame({"Month":["Jan","Feb","Mar","Apr"],"Attrition_pct":[12.0,12.5,12.8,13.0]})
+d["from0"]=(d.Attrition_pct/d.Attrition_pct.iloc[0]).round(2)
+d["from11.9"]=((d.Attrition_pct-11.9)/(d.Attrition_pct.iloc[0]-11.9)).round(1)
+print(d)   # Apr: 1.08 vs 11.0
+print(round((13/12-1)*100,1))   # 8.3
 ```
+Printed (pandas 3.0.5): from0 1.00, 1.04, 1.07, 1.08; from11.9 1.0, 6.0, 9.0, 11.0; then 8.3.
 **Version / licensing note:** Axis range settings exist in Desktop and Service; from memory, unverified (learn.microsoft.com unreachable in this session).
 **Edge cases:** Negative values need an axis that includes zero; log scales are fine only if labelled; a time axis with missing months silently hides gaps.
 **Likely follow-ups:** "Is a non-zero axis ever OK?" Yes for lines or when zero is meaningless (e.g. temperature), if clearly labelled. "How do you pick the period?" Match the decision: at least one full business cycle or 12 months for seasonal data.
@@ -549,7 +563,7 @@ d["from11.9"]=(d.Attrition_pct-11.9)/(d.Attrition_pct.iloc[0]-11.9)
 - **Navigation:** page navigator or buttons, a consistent menu, a "back" button.
 - **Bookmarks** = saved states of a page (filters, visibility) used for view toggles.
 **Example:** Overview shows company attrition 14%. User right-clicks "Sales" > Drill through > "Attrition detail" page filtered to Sales, listing exits by manager and tenure band.
-**DAX / Steps (not run here):** Home > Insert > Buttons > Navigator > Page navigator. Drill-through: create the detail page, drag the field (e.g. Department) into Drill through > Add drill-through fields here. Page order: Overview first; hide detail pages via the page's eye icon (Format page, or right-click the tab > Hide).
+**DAX / Steps (not run here):** Insert tab > Buttons > Navigator > Page navigator. Drill-through: create the detail page, drag the field (e.g. Department) into Drill through > Add drill-through fields here. Page order: Overview first; hide detail pages via the page's eye icon (Format page, or right-click the tab > Hide).
 **Alternative:** One-page report with bookmarks toggling summary and detail; or a separate summarised dashboard in the Service linking to the report.
 **Version / licensing note:** from memory, unverified; learn.microsoft.com unreachable. Drill-through and buttons exist in Desktop and Service; no special licence.
 **Edge cases:** Detail pages should show what filter is applied; sync slicers carefully so a filter on one page does not surprise users on another.
@@ -585,7 +599,7 @@ d["from11.9"]=(d.Attrition_pct-11.9)/(d.Attrition_pct.iloc[0]-11.9)
 - **Feedback channel:** one place (a short form or a shared list) with date, who, what, priority.
 - Prioritise by impact on decisions; communicate what changed, with a version note on the report.
 **Example:** HR business partners ask "why is attrition different from my Excel?" Feedback: add a definition tooltip and a "last refreshed" stamp. v1.1 ships both within a week.
-**DAX / Steps (not run here):** Service > workspace > report > ... > View usage metrics (if available) to see views per page; add a "Feedback" button via Insert > Buttons > Web URL linking to a form.
+**DAX / Steps (not run here):** Service > workspace > report > ... > View usage metrics (if available) to see views per page; add a "Feedback" button via Insert > Buttons > Blank, then set its Action type to Web URL, linking to a form (menu names from memory, unverified).
 **Alternative:** A short pulse survey (3 questions) after each release; or a monthly 30-minute review with key users.
 **Version / licensing note:** from memory, unverified (learn.microsoft.com unreachable). Usage metrics depend on workspace type and licence; check before promising them.
 **Edge cases:** Loud users may not represent everyone; conflicting requests (see Q46).
@@ -652,7 +666,7 @@ d["from11.9"]=(d.Attrition_pct-11.9)/(d.Attrition_pct.iloc[0]-11.9)
 - It shows direction and volatility, not exact values.
 - Pair with a comparison ("+1.0 pt vs last month").
 **Example:** Attrition card shows 14%; sparkline over 12 months shows it climbing since July. Without it, 14% means little.
-**DAX / Steps (not run here):** Add a Table or Matrix > Format visual > Cell elements > turn on Sparklines (choose the measure and the date axis). For a card-style tile, use the "Card (new)" visual if available in your build, or place a small line chart beside a card with axes hidden.
+**DAX / Steps (not run here):** Add a Table or Matrix, then add a sparkline from the field's drop-down in the Values well or under Format visual > Cell elements > Sparklines (choose the measure and the date axis; exact path from memory, unverified). For a card-style tile, use the "Card (new)" visual if available in your build, or place a small line chart beside a card with axes hidden.
 **Alternative:** An arrow plus percentage change, or a mini column chart.
 **Version / licensing note:** Sparklines in tables/matrices were added to Desktop in 2021 as I recall; from memory, unverified (learn.microsoft.com unreachable); exact menu names change between builds.
 **Edge cases:** Short or irregular history produces a misleading shape; consistent scales across rows are needed for comparison.
@@ -721,7 +735,7 @@ d["from11.9"]=(d.Attrition_pct-11.9)/(d.Attrition_pct.iloc[0]-11.9)
 - **Recommendation:** specific action, owner, expected impact, timing.
 - Add tension where possible: what happens if nothing changes.
 - Keep supporting detail in an appendix.
-**Example:** Context: "Offer declines affect our Q4 hiring target of 120." Insight: "Declines rose from 12% to 21%, mostly where offers are 10% below market." Recommendation: "Review offer bands for 3 roles; pilot for 1 month."
+**Example (illustrative numbers):** Context: "Offer declines affect our Q4 hiring target of 120." Insight: "Declines rose from 12% to 21%, mostly where offers are 10% below market." Recommendation: "Review offer bands for 3 roles; pilot for 1 month."
 **Alternative:** Situation-Complication-Resolution, or the "answer first" pyramid (Q31).
 **Version / licensing note:** Not applicable.
 **Edge cases:** If the data is inconclusive, say so and recommend what to measure.
@@ -751,18 +765,20 @@ d["from11.9"]=(d.Attrition_pct-11.9)/(d.Attrition_pct.iloc[0]-11.9)
 1. Select the visual > Filters pane > Department > Filter type: Top N > Show items Top 3 > By value: Total Exits > Apply filter. This simply drops the rest (no "Other" bar).
 2. For an "Other" bar, use a ranking measure and a grouping column. Sketch (from memory, unverified against Microsoft Learn):
 ```dax
-Exits = SUM ( Attrition[Exits] )
-Dept Rank = RANKX ( ALL ( Dept[Dept] ), [Exits] )
+Total Exits = SUM ( Exits[Exits] )
+Dept Rank = RANKX ( ALL ( Exits[Dept] ), [Total Exits] )
 ```
-then a calculated column or a disconnected table that maps ranks above 3 to "Other". The right-click Group feature on a visual field (Data groups) is a simpler manual route.
+(here `Exits` is the sample table above; the measure is called `Total Exits` because a measure cannot share a name with a column in the same table) then a calculated column or a disconnected table that maps ranks above 3 to "Other". The right-click Group feature on a visual field (Data groups) is a simpler manual route.
 **Alternative:** Keep all categories in a sorted bar chart with a scrollbar, or use a treemap.
 **Result:** reproduced with pandas: Top 3 = 90 exits (75%), Other = 30 (25%), total 120.
 **Pandas check:**
 ```python
-top=d.sort_values("Exits",ascending=False).head(3)
-other=d.sort_values("Exits",ascending=False).iloc[3:].Exits.sum()  # 30
+d=pd.DataFrame({"Dept":["Sales","Support","Ops","IT","Finance","HR","Legal","Admin"],"Exits":[42,30,18,10,8,6,4,2]})  # the 5 small departments are illustrative splits of 30
+s=d.sort_values("Exits",ascending=False)
+top=s.head(3); other=s.iloc[3:].Exits.sum()
+print(top); print(other, d.Exits.sum())
 ```
-Printed: Sales 42, Support 30, Ops 18, Other 30, total 120.
+Printed (pandas 3.0.5): Sales 42, Support 30, Ops 18; Other 30; total 120.
 **Version / licensing note:** Top N filter and grouping exist in Desktop and Service; from memory, unverified (learn.microsoft.com unreachable).
 **Edge cases:** Ties at rank N; the Top N changes with filters, so "Other" size changes; a Top N filter hides items in totals unless you handle it.
 **Likely follow-ups:** "Does the total change?" With a Top N filter the visual total shows only the shown items; with "Other" it adds up. "Dynamic N?" Use a what-if parameter.
@@ -789,14 +805,16 @@ Printed: Sales 42, Support 30, Ops 18, Other 30, total 120.
 | Overtime | -5 |
 | This month payroll | 530 |
 
-**DAX / Steps (not run here):** Visualizations pane > Waterfall chart > Category: Driver; Y axis: Amount. Set the first and last bars as totals via Format visual > Breakdown / Sentiment colours; or build a Driver column with the two totals as categories. 
+**DAX / Steps (not run here):** Visualizations pane > Waterfall chart > Category: Driver; Y axis: Amount. Put the opening payroll in as the first category (it draws as the first bar) and let the visual's automatic Total bar show the ending 530, so drop the "This month payroll" row from the chart to avoid double counting (behaviour from memory, unverified). Increase/decrease colours are under Format visual > Sentiment colours. 
 **Alternative:** A clustered bar of drivers sorted by size, or a table with variance and conditional formatting.
 **Result:** reproduced with pandas: running totals 500, 540, 565, 535, 530; net change +30, +6.0%.
 **Pandas check:**
 ```python
+d=pd.DataFrame({"Driver":["Last month","New hires","Increments","Attrition savings","Overtime","This month"],"Amount":[500,40,25,-30,-5,530]})
 d["Running"]=[500,540,565,535,530,530]
-net=d.Amount[1:5].sum()  # 30.0 ; 30/500=6.0%
+net=d.Amount[1:5].sum(); print(net, net/500*100)   # 30 6.0
 ```
+Printed (pandas 3.0.5): 30 and 6.0.
 **Version / licensing note:** Waterfall is a built-in core visual in Desktop and Service; from memory, unverified (learn.microsoft.com unreachable).
 **Edge cases:** Mix of totals and drivers can be wrongly treated as increases; negative running totals; many tiny drivers.
 **Likely follow-ups:** "Waterfall for time?" It can be used on a date axis but bridges are clearer. "Sort order?" Logical order, or by size.
@@ -811,7 +829,7 @@ net=d.Amount[1:5].sum()  # 30.0 ; 30/500=6.0%
 - Use a single-hue or a diverging scale with a sensible midpoint.
 - Show the value in the cell as well as colour (accessibility).
 - Sort days Mon-Sun properly, not alphabetically.
-**Example:** Ops on Friday: 79%, the lowest cell; IT is above 90% every day.
+**Example:** Ops on Friday: 79%, the lowest cell; IT is 90% or higher on every day shown.
 **Sample data:** table `Attendance` (Present %)
 
 | Dept | Mon | Tue | Fri |
@@ -820,7 +838,8 @@ net=d.Amount[1:5].sum()  # 30.0 ; 30/500=6.0%
 | Ops | 88 | 94 | 79 |
 | Sales | 92 | 95 | 84 |
 
-**DAX / Steps (not run here):** Visualizations > Matrix > Rows: Department; Columns: Weekday (sorted by weekday number); Values: [Present %]. Format visual > Cell elements > Background colour > fx > Format style: Gradient > Minimum (red-ish) to Maximum (green-ish), or choose Rules.
+**DAX / Steps (not run here):** Visualizations > Matrix > Rows: Department; Columns: Weekday (sorted by weekday number); Values: [Present %]. Format visual > Cell elements > Background colour > fx > Format style: Gradient > Minimum (light) to Maximum (dark) of one colour, or choose Rules. (Red-to-green is a poor choice for colour-blind readers, see Q24.)
+The sample table shows already-computed percentages; the measure below assumes the source has `Present` and `Scheduled` count columns.
 ```dax
 Present % = DIVIDE ( SUM ( Attendance[Present] ), SUM ( Attendance[Scheduled] ) )
 ```
@@ -828,9 +847,11 @@ Present % = DIVIDE ( SUM ( Attendance[Present] ), SUM ( Attendance[Scheduled] ) 
 **Result:** reproduced with pandas (pivot of the table above): lowest cell Ops/Fri = 79; the DAX is not run here.
 **Pandas check:**
 ```python
+d=pd.DataFrame({"Dept":["IT"]*3+["Ops"]*3+["Sales"]*3,"Day":["Mon","Tue","Fri"]*3,"Present_pct":[96,97,90,88,94,79,92,95,84]})
 m=d.pivot(index="Dept",columns="Day",values="Present_pct")[["Mon","Tue","Fri"]]
-m.stack().idxmin()   # ('Ops','Fri')
+print(m.stack().idxmin())   # ('Ops', 'Fri')
 ```
+Printed (pandas 3.0.5): ('Ops', 'Fri').
 **Version / licensing note:** Conditional formatting on matrix cells is in Desktop and Service; from memory, unverified (learn.microsoft.com unreachable).
 **Edge cases:** Totals row may be coloured by another scale; blanks (no shift) should not be coloured as zero; small teams give noisy percentages.
 **Likely follow-ups:** "Colour-blind safe?" Use blue-orange or a single hue and show numbers. "Why DIVIDE?" Safe division: returns blank instead of an error when dividing by zero.
@@ -860,9 +881,12 @@ m.stack().idxmin()   # ('Ops','Fri')
 **Result:** reproduced with pandas: bin counts 8/5/2/0; quartiles 13/20/29; upper fence 53; outlier 60.
 **Pandas check:**
 ```python
-pd.cut(s,[0,20,40,60,80]).value_counts().sort_index()
-q=s.quantile([.25,.5,.75]); fence=q[.75]+1.5*(q[.75]-q[.25])  # 53 ; outlier 60
+s=pd.Series([3,5,8,12,14,16,18,20,22,24,28,30,35,45,60])
+print(pd.cut(s,[0,20,40,60,80]).value_counts().sort_index())   # 8, 5, 2, 0
+q=s.quantile([.25,.5,.75]); fence=q[.75]+1.5*(q[.75]-q[.25])
+print(q.tolist(), fence, s.mean(), s.median())   # [13.0, 20.0, 29.0] 53.0 22.67 20.0
 ```
+Printed (pandas 3.0.5): bins 8/5/2/0; quartiles 13.0, 20.0, 29.0; fence 53.0; mean 22.67; median 20.0.
 **Version / licensing note:** Native histogram absence and AppSource custom visuals: from memory, unverified (learn.microsoft.com unreachable).
 **Edge cases:** Bin size changes the shape; blank salaries; very skewed data.
 **Likely follow-ups:** "What is an outlier?" Common rule: beyond 1.5 x IQR (the spread between 25th and 75th percentile) from the box; a convention, not a law. "Mean or median?" Median for skewed pay.
@@ -878,7 +902,7 @@ q=s.quantile([.25,.5,.75]); fence=q[.75]+1.5*(q[.75]-q[.25])  # 53 ; outlier 60
 - Better: card with target and variance, **bullet chart** (a bar with a target marker and bands), or a bar with a reference line.
 - The Microsoft design tips page (per the research sources file) discusses bar vs pie vs gauge choice; I could not re-fetch it, so this is unverified.
 **Example:** Hiring: 84 of 100 target. Card shows "84 / 100 (-16%)" with sparkline; a gauge shows only a needle at 84%.
-**DAX / Steps (not run here):** Visualizations > Card (or KPI visual with target) or Bar chart with Format > Reference lines (Analytics pane > Constant/Target line).
+**DAX / Steps (not run here):** Visualizations > Card (or KPI visual with target) or Bar chart with a reference line (Analytics pane > Constant line; menu names from memory, unverified).
 **Alternative:** Gauge acceptable for one simple executive KPI with clear thresholds.
 **Version / licensing note:** from memory, unverified (learn.microsoft.com unreachable).
 **Edge cases:** Gauge with min/max/target settings that do not match the measure shows misleading fill.
@@ -896,7 +920,7 @@ q=s.quantile([.25,.5,.75]); fence=q[.75]+1.5*(q[.75]-q[.25])  # 53 ; outlier 60
 - **Review:** a simple checklist before publishing; versioning of files.
 - Shared semantic model (a published data model many reports reuse) keeps numbers consistent.
 **Example:** Five analysts, five attrition definitions, five different numbers. A shared model with one `Attrition %` measure and a common theme ends the debate.
-**DAX / Steps (not run here):** Desktop > File > Save as > Power BI template (.pbit). Publish a certified/promoted semantic model in the Service workspace.
+**DAX / Steps (not run here):** Desktop > File > Export > Power BI template (.pbit) (menu path from memory, unverified). Publish a certified/promoted semantic model in the Service workspace.
 **Alternative:** A written checklist only (low effort).
 **Version / licensing note:** Template saving is a Desktop feature; promoting/certifying content in the Service may need specific licences or roles; from memory, unverified (learn.microsoft.com unreachable).
 **Edge cases:** Templates drift unless owned by someone; changes to the theme do not auto-update old reports.
@@ -969,7 +993,7 @@ q=s.quantile([.25,.5,.75]); fence=q[.75]+1.5*(q[.75]-q[.25])  # 53 ; outlier 60
 - Let the data speak: one clear chart, plain wording, state uncertainty.
 - Offer a low-risk test (pilot) if the conclusion is uncertain.
 - Be open to being wrong: ask what could explain it.
-**Example:** The leader believes salary is why people leave. Exit data shows 60% of leavers cite manager issues, and pay was similar to market. You show this privately, propose a 2-month manager-feedback pilot.
+**Example (illustrative numbers):** The leader believes salary is why people leave. Exit data shows 60% of leavers cite manager issues, and pay was similar to market. You show this privately, propose a 2-month manager-feedback pilot.
 **DAX / Steps:** Not applicable (no tool step).
 **Alternative:** Bring a neutral third party's benchmark; run an A/B pilot to let the evidence settle it.
 **Version / licensing note:** Not applicable.
