@@ -657,7 +657,7 @@ HR                1            2          90000
 IT             <NA>         <NA>           <NA>
 ```
 **Version / licensing note:** Design guidance only (Microsoft Learn star-schema and many-to-many guidance pages).
-**Edge cases:** Leavers and joiners (Type 2 slowly changing dimension needs a surrogate key and start/end dates; Microsoft notes Power Query alone cannot create it). Time zones for attendance stamps.
+**Edge cases:** Leavers and joiners (a Type 2 slowly changing dimension needs a surrogate key and start/end dates (Q55); it is usually built in the source or ETL, from memory, unverified). Time zones for attendance stamps.
 **Likely follow-ups:** 1) *Employee-manager hierarchy?* Parent and Child functions. 2) *Sensitive pay?* Row-level security (not covered here).
 **Common mistakes:** One giant table; linking Payroll to Attendance directly.
 
@@ -757,14 +757,14 @@ Step 3  AND Month=Feb -> Payroll rows: 2 | NetPay sum: 92000
 - **Model view:** open it with the Model view icon at the side of the window; hover over a line to see the two columns it uses. An arrow in the middle shows filter direction; double arrows mean Both (Microsoft Learn: "Model view in Power BI Desktop").
 - Drag-and-drop in Model view is one way to create a relationship; **Manage relationships > New** is the dialog way (Microsoft Learn: "Create and Manage Relationships in Power BI Desktop").
 - Editing: double-click the line, right-click > Properties, or the Properties pane.
-- Models with more than 75 tables warn of slowdowns; a custom layout helps.
+- Very large models get crowded; a custom layout helps (a Learn note about a warning above 75 tables is from memory, unverified).
 **Example:** Link Department[DeptID] to Employee[DeptID] by dragging DeptID from Department onto DeptID in Employee, check 1 and * show, and rename nothing else.
 **DAX / Steps (not run here):**
 1. Click the Model view icon at the side of the window.
 2. Drag Department[DeptID] onto Employee[DeptID], or Home > Manage relationships > New > choose tables and columns > OK.
 3. Double-click the line > check Cardinality (One to many), Cross filter direction (Single), Make this relationship active (ticked) > OK.
 4. Delete a wrong line: select it and press Delete (cannot be undone; a prompt asks to confirm).
-**Alternative:** Modeling tab > Manage relationships > Autodetect (Q18), then review each line.
+**Alternative:** Manage relationships > Autodetect (Q18), then review each line. Ribbon tab names (Home or Modeling) vary by build, from memory, unverified.
 **Version / licensing note:** From the fetched pages: the guided Edit relationship dialog and the Properties-pane editor are described with preview wording, and the Properties pane needs the "Relationship pane" preview feature enabled (File > Options and settings > Options > Preview features). The page may be out of date for your Desktop build. That Desktop runs only on Windows is from memory, unverified.
 **Edge cases:** Ambiguous paths can block a change; a column cannot relate to another column in the same table.
 **Likely follow-ups:** 1) *Where else can I manage relationships?* Report, Table, and Model views via ribbons. 2) *Why can't I create it?* Duplicates on both sides (Q30).
@@ -776,7 +776,7 @@ Step 3  AND Month=Feb -> Payroll rows: 2 | NetPay sum: 92000
 **Say this in the interview:** "Auto-detect looks at column names when tables load and creates relationships when it is confident they match, setting cardinality and direction too. It is a good starting point, but I always open Model view and verify every line, because it can pick the wrong column or the wrong active relationship."
 **Explain simply:**
 - It compares column names across tables during load; if it cannot decide with high confidence it creates nothing (Microsoft Learn: "Create and Manage Relationships in Power BI Desktop").
-- You can run it later: Modeling tab > Manage relationships > Autodetect.
+- You can run it later: Manage relationships > Autodetect (ribbon tab name from memory, unverified).
 - Related options under File > Options and settings > Options > Data Load: import relationships from data sources on first load (on by default), update or delete relationships on refresh (off by default; avoid with RLS that relies on relationships), autodetect new relationships after load.
 - It may set a 1:1 relationship because current data has no repeated values (Microsoft's example), or choose the wrong active relationship when two exist.
 **Example:** Tables `Employee[EmpID]` and `Attendance[EmpID]` have identical names, so autodetect links them. `Dept` vs `DepartmentCode` have different names, so nothing is created.
@@ -910,9 +910,9 @@ Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DA
 1
 2
 ```
-**Version / licensing note:** Microsoft Learn: Sort One Column by Another Column in Power BI says this applies to Desktop and the Service; the Column tools path is Desktop Report view only, and the Service uses the tooltip workaround. Free vs Pro not stated.
-**Edge cases:** A column marked as a key column ignores its sort order. Month numbers stored as text sort wrongly ("10" before "2"). For fiscal years, use a fiscal month number.
-**Likely follow-ups:** 1) *Can you sort by a rank column with ties?* No, duplicates are not allowed. 2) *Should year be included?* Month Name alone merges all years, so also filter or group by Year.
+**Version / licensing note:** Microsoft Learn: Sort One Column by Another Column in Power BI says this applies to Desktop and the Service; the Column tools path is Desktop Report view only, and the Service uses the tooltip workaround. Free vs Pro not stated. That page is not in this part's fetched-pages list, so treat these platform details as from memory, unverified.
+**Edge cases:** Month numbers stored as text sort wrongly ("10" before "2"). For fiscal years, use a fiscal month number.
+**Likely follow-ups:** 1) *Can two month names share one number?* Avoid it: each name should map to one number, and I would keep the sort number unique per name (from memory, unverified whether Power BI allows shared numbers). 2) *Should year be included?* Month Name alone merges all years, so also filter or group by Year.
 **Common mistakes:** Working in Model view and not finding Sort by column; sorting by a column at a different grain (Day Number); forgetting to hide the helper number.
 
 ### Q22 ⭐⭐ 🟢 Why should you hide foreign key and helper columns from Report view?
@@ -927,7 +927,7 @@ Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DA
 **Example:** An HR model has `Unit Price`-style columns: `Salary` should not be summed across months blindly, so hide `Salary` and ship a measure `Avg Salary`.
 **DAX / Steps (not run here):** In **Model view** (or the Data pane), right-click the column > **Hide in report view** (wording from memory, unverified). Do the same for the key columns and for `MonthNo`.
 **Alternative:** Use **Properties** pane in Model view > **Is hidden** toggle (from memory, unverified), or hide a whole table such as a bridge table (Q28).
-**Version / licensing note:** Behaviour is described on Microsoft Learn: Optimization guide for Power BI and Many-to-many relationship guidance. Menu wording is from memory, unverified. The star schema page notes that Desktop live connections let report authors show hidden fields, so hiding is guidance, not security.
+**Version / licensing note:** Behaviour is described on Microsoft Learn: Optimization guide for Power BI and Many-to-many relationship guidance. Menu wording is from memory, unverified, and neither page is in this part's fetched-pages list. Hiding is guidance, not security (from memory, unverified).
 **Edge cases:** Hidden is not secure; use row-level security for protection. Do not hide a key you still want in a drill-through. If a visual used a column you later hide, the visual keeps working.
 **Likely follow-ups:** 1) *Does hiding reduce model size?* No; removing the column does (Q38). 2) *Which side's key should stay visible, if any?* The "one" side.
 **Common mistakes:** Deleting keys instead of hiding them (breaks relationships); leaving a summable ID visible so someone sums EmployeeID.
@@ -966,10 +966,11 @@ CALCULATE ( SUM ( Sales[Amount] ), USERELATIONSHIP ( Sales[ShipDate], 'Date'[Dat
 ```
 Make a relationship inactive: Model view > double-click the line > untick **Make this relationship active**.
 **Alternative:** Duplicate the Date table so each role has its own active relationship (Q27).
+**Result:** concept question; the measure's numbers on sample data (reproduced with pandas, not run in a DAX engine) are in Q26.
 **Version / licensing note:** Microsoft Learn: USERELATIONSHIP function (DAX), Active vs inactive relationship guidance. Learn also says row-level security filters never propagate through inactive relationships, even when USERELATIONSHIP is used.
 **Edge cases:** Inactive relationships still cause a BLANK member to appear on the dimension if the many side has blanks (table expansion). USERELATIONSHIP errors if RLS is defined on the table involved.
 **Likely follow-ups:** 1) *Can two slicers use different roles at once?* Not with one table; duplicate it. 2) *Does USERELATIONSHIP work in a visual filter?* It only works inside CALCULATE-type functions.
-**Common mistakes:** Making both active (Power BI refuses or flags ambiguity); writing USERELATIONSHIP outside CALCULATE.
+**Common mistakes:** Expecting two relationships between the same tables to be active (Power BI creates the second one inactive); writing USERELATIONSHIP outside CALCULATE.
 
 ### Q25 ⭐⭐ 🟡 What is a role-playing dimension? Give an example with Order Date and Ship Date, or Hire Date and Exit Date.
 **Asked at:** role-playing dimensions appear in a 2026 India-oriented Power BI list (Weekday, fetched as a model summary); no company-specific report found.
@@ -1249,7 +1250,7 @@ DeptID unique after trim + dedupe: True | rows: 3
 Conflicting names for D2 leave 2 rows -> business decision
 ```
 **Version / licensing note:** Microsoft Learn: Model relationships in Power BI Desktop; Data types in Power BI (trim guidance). The Power Query M functions (Table.TransformColumns, Table.Distinct, Text.Trim) were not fetched here; `Text.Trim` is mentioned on the Data types page; others from memory, unverified.
-**Edge cases:** Case differences: the engine is case-insensitive but Power Query is case-sensitive, so "hr" and "HR" are different in Power Query and the same in the model. Blank keys also count as duplicates.
+**Edge cases:** Case differences: the engine is case-insensitive but Power Query is case-sensitive, so "hr" and "HR" are different in Power Query and the same in the model. Blank keys also count as duplicates. The case-sensitivity point is from memory, unverified.
 **Likely follow-ups:** 1) *Can I just pick many-to-many?* Possible but limited relationship; avoid for dimensions. 2) *What about an index column?* Add a surrogate key if no unique column exists.
 **Common mistakes:** Forcing many-to-many to get past the error; deduplicating without checking which row is right.
 
@@ -1381,7 +1382,7 @@ Amount flat: 122500 | Amount star: 122500
 | Keyboard K | Accessories | IT |
 | Chair C | Chairs | Furniture |
 
-(this is the flattened result)
+(this is the flattened result). The three input tables, as loaded: `Category` (C1 IT, C2 Furniture); `SubCategory` (S1 Laptops C1, S2 Accessories C1, S3 Chairs C2); `Product` (Laptop X S1, Mouse M S2, Keyboard K S2, Chair C S3).
 **DAX / Steps (not run here):** In Power Query, select `Product` > Home > **Merge Queries** with `SubCategory` on SubID (Left Outer), expand the name; merge the result with `Category` on CatID, expand; remove key columns; disable load of the helper queries (right-click > untick **Enable load**).
 **Alternative:** Create a calculated table with `RELATED` columns (Q31) or keep the snowflake and use a measure; flattening in Power Query or SQL is preferred.
 **Result:** reproduced with pandas: 4 products in, 4 rows out after two left merges, each with SubCategory and Category.
@@ -1435,6 +1436,7 @@ Rows in: 4 | rows out: 4
 | 2025-02 | IT | 550 |
 | 2025-02 | HR Kit | 120 |
 
+(Month is shown as yyyy-mm for readability; in the model it is the first day of the month as a date.)
 **DAX / Steps (not run here):**
 ```dax
 Target Quantity =
@@ -1729,7 +1731,7 @@ EmpID only: rows 8
 **Explain simply:**
 - **Power BI Desktop** is the free app where you load data, clean it (Power Query), model it (Model view) and design reports.
 - It is a Windows application. There is no Mac version (to my knowledge, unverified here).
-- Mac options: Windows through Parallels or Boot Camp-style setups, a Windows cloud PC or a company remote desktop. The browser **Power BI Service** can build reports and edit some model parts, but is not a full replacement.
+- Mac options: Windows through virtualisation software such as Parallels, a Windows cloud PC or a company remote desktop. The browser **Power BI Service** can build reports and edit some model parts, but is not a full replacement.
 - Other model tools exist (Tabular Editor, DAX Studio) but they also run on Windows.
 **Example:** A recruiter analyst on a MacBook uses the company's Windows virtual desktop to open the `.pbix` file, then publishes to the Service.
 **DAX / Steps (not run here):** Desktop: left rail has **Report**, **Table**, **Model** and (in newer builds) **DAX query** views; relationships are drawn in **Model view**.
@@ -1799,7 +1801,7 @@ True True 4
 
 **DAX / Steps (not run here):**
 ```dax
-Open Requisitions = DISTINCTCOUNT ( HiringFact[ReqNo] )
+Requisitions = DISTINCTCOUNT ( HiringFact[ReqNo] )
 Offers = SUM ( HiringFact[Offers] )
 ```
 **Alternative:** Move it to a small `Requisition` dimension only if you need attributes (hiring manager, open date).
@@ -1815,7 +1817,7 @@ Printed output (real run, pandas 3.0.5; reproduces the expected answer, not a DA
 {'R1': 2, 'R2': 1, 'R3': 3} distinct requisitions: 3 | rows: 6
 ```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Terminology is standard Kimball modelling; page not read here.
-**Edge cases:** Blank ReqNo is not counted by DISTINCTCOUNT's distinct values logic but a blank is counted as a value in some versions, so clean it first (from memory).
+**Edge cases:** DISTINCTCOUNT counts a blank ReqNo as one extra value (DISTINCTCOUNTNOBLANK skips it; from memory, unverified), so clean blank IDs first.
 **Likely follow-ups:** 1) *Is it a key?* It is an ID, not a foreign key. 2) *Hide it?* Hide it if only used inside measures.
 **Common mistakes:** Building a one-column dimension; summing the ID.
 
@@ -1890,11 +1892,16 @@ Fact rows: 6 | junk rows: 4 | possible combinations: 8
 ```dax
 Enrolments = COUNTROWS ( TrainingEnrolment )
 Employees Enrolled = DISTINCTCOUNT ( TrainingEnrolment[EmpID] )
-Not Enrolled =
-COUNTROWS ( EXCEPT ( VALUES ( Employee[EmpID] ), VALUES ( TrainingEnrolment[EmpID] ) ) )
+Not Enrolled in POSH =
+COUNTROWS (
+    EXCEPT (
+        VALUES ( Employee[EmpID] ),
+        CALCULATETABLE ( VALUES ( TrainingEnrolment[EmpID] ), TrainingEnrolment[Course] = "POSH" )
+    )
+)
 ```
-**Alternative:** Add a column of 1 and `SUM` it (works but redundant), or use `CALCULATE ( COUNTROWS ( Employee ), NOT ( Employee[EmpID] IN VALUES ( TrainingEnrolment[EmpID] ) ) )`.
-**Result:** reproduced with pandas: 5 enrolments; 3 distinct POSH employees; not on POSH: E4, E5.
+**Alternative:** Add a column of 1 and `SUM` it (works but redundant), or use `COUNTROWS ( FILTER ( Employee, NOT ( Employee[EmpID] IN CALCULATETABLE ( VALUES ( TrainingEnrolment[EmpID] ), TrainingEnrolment[Course] = "POSH" ) ) ) )`.
+**Result:** reproduced with pandas (the `Employee` table holds E1 to E5): 5 enrolments; 3 distinct POSH employees; not on POSH: E4, E5, so `Not Enrolled in POSH` = 2.
 **Pandas check:**
 ```python
 import pandas as pd
@@ -1911,7 +1918,7 @@ Enrolments: 5 | distinct employees on POSH: 3
 Not enrolled in POSH: ['E4', 'E5'] | count: 2
 ```
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Function behaviours (`COUNTROWS`, `EXCEPT`, `VALUES`) are from memory; pages not read here.
-**Edge cases:** `Not Enrolled` ignores the course slicer unless the filter reaches `VALUES`; make sure the dimensions are related.
+**Edge cases:** The course is fixed to POSH inside the measure; to follow a slicer instead, filter `TrainingEnrolment[Course]` from the slicer and make sure the dimensions are related.
 **Likely follow-ups:** 1) *Another example?* Daily attendance records. 2) *How is the grain stated?* One row per employee-course-month.
 **Common mistakes:** Adding a fake numeric column; forgetting people with zero rows do not appear in the fact.
 
@@ -1967,10 +1974,11 @@ Hike 10%: projected cost 165,000
 - Text takes more memory when stored and joined, mismatches on spaces, case or typos (`D01` vs `d01 `).
 - Business codes can be reused or changed, a surrogate key is stable (and needed for history, Q55).
 - Honest caveat: Power BI compresses columns well, so the gain depends on how many different values the column has.
-**Example:** 1,000,000 fact rows, 5,000 different department codes. As plain Python data, the integer column takes 8 MB and the text column about 64 MB in pandas.
+**Sample data:** 1,000,000 fact rows whose department code is one of 5,000 different values, stored once as a whole number (for example 17) and once as text (for example `DEPT-00017-IND`).
+**Example:** 1,000,000 fact rows, 5,000 different department codes. As plain Python data, the integer column takes 8 MB and the text column about 63 MB in pandas (15-character codes).
 **DAX / Steps (not run here):** Power Query: add an **Index Column** to the dimension, **Merge** the fact on the business code to bring the key in, then remove the text code from the fact. Set key columns to **Whole Number**.
 **Alternative:** Keep the natural key when it is already a short integer (e.g. EmployeeID 1001).
-**Result:** reproduced with pandas memory use (not VertiPaq): integer 8,000,000 bytes, text 64,000,000 bytes. This shows the idea only; Power BI's stored size will differ.
+**Result:** reproduced with pandas memory use (not VertiPaq): integer 8,000,000 bytes, text 63,000,000 bytes. This shows the idea only; Power BI's stored size will differ.
 **Pandas check:**
 ```python
 import pandas as pd, numpy as np
@@ -1999,18 +2007,27 @@ int64 bytes: 8000000 | text bytes (pandas, deep): 63000000
 **Example:** Cost rows for D99 (50) and D77 (25) have no department. Without a fix 75 shows under blank; with Unknown it is labelled.
 **Sample data:** Table `Cost` and `Department`
 
-| Dept | Cost | Dept name |
-|---|---|---|
-| D1 | 100 | HR |
-| D2 | 200 | IT |
-| D99 | 50 | none |
-| D1 | 150 | HR |
-| D77 | 25 | none |
+Table `Cost`:
+
+| Dept | Cost |
+|---|---|
+| D1 | 100 |
+| D2 | 200 |
+| D99 | 50 |
+| D1 | 150 |
+| D77 | 25 |
+
+Table `Department`:
+
+| Dept | Name |
+|---|---|
+| D1 | HR |
+| D2 | IT |
 
 **DAX / Steps (not run here):**
 ```m
 // Power Query on the fact: replace unmatched codes
-= Table.TransformColumns(Cost, {"Dept", each if List.Contains(Dept[Dept], _) then _ else "Unknown"})
+= Table.TransformColumns(Cost, {"Dept", each if List.Contains(Department[Dept], _) then _ else "Unknown"})
 ```
 Add a row `Unknown` to the department table (Enter data, then Append Queries).
 **Alternative:** Leave the rows as they are and find the orphans with a Power Query anti-join (Home > Merge Queries > Left Anti), then fix the source.
@@ -2063,6 +2080,7 @@ CALCULATE ( COUNTROWS ( Employee ), USERELATIONSHIP ( Employee[Exit Date], 'Date
 ```
 Fix steps: Model view, find the loop, change **Cross filter direction** to **Single**, remove the redundant link, or mark one **Active** off.
 **Alternative:** Create a second `Date` table copy (role-playing dimension), one per date role.
+**Result:** concept question; the sample numbers for the USERELATIONSHIP pattern (reproduced with pandas, not a DAX engine) are in Q25 and Q26.
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be reached from this session, so no Microsoft page was read for this answer). Behaviour of ambiguity handling and `USERELATIONSHIP` is from memory; pages not read here.
 **Edge cases:** Calculated column loops give a circular dependency message even with no relationship issue.
 **Likely follow-ups:** 1) *Can two relationships both be active?* Not between the same two tables. 2) *Why avoid bi-directional?* It causes the loops.
