@@ -385,7 +385,7 @@ Output: `1765 31 1.8%`.
 [Region] = "North"
 ```
 Click-path: Modeling > Manage roles > Create > name "North" > Employee > Table filter DAX expression.
-**Alternative:** `Employee[Region] = "North"` (full name) or `FILTER`-style `Employee[Region] IN {"North","East"}` for several regions.
+**Alternative:** `Employee[Region] = "North"` (full column name), or `[Region] IN {"North","East"}` for one role covering several regions.
 **Result:** Reproduced with pandas: 3 rows (Asha, Meena, Imran).
 **Pandas check:**
 ```python
@@ -478,13 +478,13 @@ Output: `North -> rows 3 | total salary 113000`; `Dynamic as neha@corp.com -> ro
 - Viewer: RLS applies. They only see rows their role allows.
 - Admin, Member, Contributor: they can edit the model, so RLS is not applied to them.
 - Practical effect: putting a manager in the workspace as Contributor "to be helpful" silently removes their restriction.
-- Giving someone Build permission on the model or edit access is the other way RLS can be bypassed (see Q39).
+- Edit (write) access to the model is what bypasses RLS. Build permission alone, given by sharing the model, does not: such a user is still filtered if they are only a Viewer (see Q51, Q39; from memory, unverified).
 **Example:** An HR report has 6 employees; HRBP Priya has a role limiting her to her 3. As Viewer she sees 3. As Contributor she sees all 6.
 **DAX / Steps:** No measure. (Not run here: Service UI.) Workspace > Manage access > check the role column; change to Viewer; then dataset > Security to confirm role membership.
 **Alternative:** Publish an app and give people app access only; app users behave as Viewers.
 **Result:** Not a calculation; nothing to reproduce.
 **Version / licensing note:** from memory, unverified (learn.microsoft.com could not be fetched from this session). The Part 7 sources file records "RLS applies only to Viewers" from the Microsoft Learn RLS page fetched earlier; I did not re-read it.
-**Edge cases:** A person who is Viewer in the workspace but also has Build permission on the model can query it differently; check each route.
+**Edge cases:** A person can reach the model by several routes (workspace role, direct share, app); check each route, and remember the most powerful role wins.
 **Likely follow-ups:** 1) *How do you test?* View as role. 2) *Can a Member be restricted?* Not by RLS; demote to Viewer.
 **Common mistakes:** Testing RLS while logged in as workspace Admin and concluding "RLS is broken".
 
@@ -532,7 +532,7 @@ Output: `North -> rows 3 | total salary 113000`; `Dynamic as neha@corp.com -> ro
 - Define: Desktop > Modeling > Manage roles. Roles and filters are part of the .pbix.
 - Members are added only in the Service (Q24).
 - Re-publishing keeps the members, as far as I recall; a changed role name may need re-assigning (unverified).
-- Until you assign users, nobody (Viewer) is restricted properly: they are either blocked or you rely on edit rights.
+- Until you assign users, a Viewer who is in no role sees no rows at all (from memory, unverified); editors still see everything.
 **Example:** You build role "HRBP" in Desktop, publish, and then add group "HRBP-All" in the Service.
 **DAX / Steps:** (Not run here.) Desktop: Modeling > Security > Manage roles > Create > pick table > filter DAX > Save. Then Publish; in Service: model "..." > Security.
 **Alternative:** Use Tabular Editor or XMLA to script roles (from memory).
@@ -624,7 +624,20 @@ print(len(s[(s.OrderDate>=rs)&(s.OrderDate<=re)]))  # 3 (wrong rule)
 - It is configured in Desktop but works only after publishing and refreshing in the Service.
 - After publish you cannot download the PBIX again from the Service (from the sources file; unverified by me).
 **Example:** Sales has 5 years (about 40 million rows). Policy: store 3 years, refresh last 10 days. Nightly refresh reloads about 10 days of rows.
-**Sample data:** Table Sales (above) with months: pandas count per month shows 2025-01:1, 2025-12:1, 2026-01:1, 2026-09:1, 2026-10:2, 2026-11:2; "refresh 1 month" would reload only the current-month partition.
+**Sample data:** Table Sales: the four rows from Q29 plus four older rows (IDs 1 to 4), so the table has 8 rows:
+
+| OrderID | OrderDate | Amount |
+|---|---|---|
+| 1 | 2025-01-15 | 150 |
+| 2 | 2025-12-20 | 90 |
+| 3 | 2026-01-05 | 110 |
+| 4 | 2026-09-30 | 120 |
+| 5 | 2026-10-01 | 200 |
+| 6 | 2026-10-31 | 80 |
+| 7 | 2026-11-01 | 60 |
+| 8 | 2026-11-02 | 70 |
+
+Counting rows per month gives the partitions: 2025-01:1, 2025-12:1, 2026-01:1, 2026-09:1, 2026-10:2, 2026-11:2; "refresh 1 month" would reload only the current-month partition.
 **DAX / Steps:** (Not run here.)
 1. Home > Transform data > Manage parameters > New: RangeStart (Date/Time, current value some start date); RangeEnd likewise.
 2. Filter OrderDate: Date filters > Custom filter, is after or equal to RangeStart and is before RangeEnd.
@@ -732,7 +745,7 @@ s["Month"]=s.OrderDate.dt.to_period("M"); print(s.groupby("Month").size())
 **Result:** Not a calculation.
 **Version / licensing note:** from memory, unverified; sources file says failure emails are in the Learn refresh page (updated 2026-10), not re-read.
 **Edge cases:** If the owner leaves, notifications go to a dead mailbox; Take over the dataset.
-**Likely follow-ups:** 1) *Can workspace admins get them?* Add them as contacts. 2) *Success emails?* Not by default.
+**Likely follow-ups:** 1) *Can workspace admins get them?* Add them as contacts. 2) *Success emails?* I believe not by default (unverified).
 **Common mistakes:** Relying on a personal inbox.
 
 ### Q36 ⭐⭐ 🟡 Your manager asks which reports nobody opens anymore. How do you find out in the Power BI Service?
@@ -786,7 +799,7 @@ v=log.groupby("Report").size().reindex(rep,fill_value=0); print(v[v==0].index.to
 **Common mistakes:** Using audiences to protect salary data.
 
 ### Q38 ⭐⭐ 🔴 How would you design RLS for an HR dashboard where each HR business partner sees only their own employees and the CHRO sees everyone?
-**Asked at:** commonly asked (no company-specific report found); RLS appears in Deloitte USI/Cognizant/Wipro-type reports in `research/interview_processes.md` (single unverified anecdotes).
+**Asked at:** commonly asked (no company-specific report found); RLS appears in the Deloitte USI (Sept 2025) and older 2022 Cognizant reports in `research/interview_processes.md` (single unverified anecdotes).
 **What the interviewer is checking:** Dynamic RLS design plus handling the "see everything" role.
 **Say this in the interview:** "I put each employee's HRBP email on the Employees table and create a role filtering it to USERPRINCIPALNAME(). For the CHRO I create a second role with no filter and make sure HRBPs are not in it. I test with View as and keep users as Viewers."
 **Explain simply:**
@@ -829,11 +842,11 @@ print("CHRO",len(emp),emp.Salary.sum())
 ### Q39 ⭐⭐ 🔴 You built RLS but a user in a Contributor role still sees all data. Why, and how do you fix it?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you know the Viewer-only rule.
-**Say this in the interview:** "RLS does not apply to people with edit rights, and Contributor can edit. I would change them to Viewer, or give them access through an app, and also check for other roles or Build permission."
+**Say this in the interview:** "RLS does not apply to people with edit rights, and Contributor can edit. I would change them to Viewer, or give them access through an app, and also check for other roles or edit access to the model."
 **Explain simply:**
 - Contributor can edit content, so RLS is not enforced for them.
 - Fix: change the workspace role to Viewer, or remove them and distribute through an app audience.
-- Also check: are they in a second role with no filter (union), or have Build on the model?
+- Also check: are they in a second role with no filter (union), or do they hold edit (write) access to the model through another route?
 - Confirm with View as role.
 **Example:** Ravi, a Contributor, sees all 6 employees (345 salary). After switching to Viewer in role HRBP he sees 3.
 **DAX / Steps:** (Not run here.) Workspace > Manage access > change role to Viewer; model > Security to verify roles.
@@ -1067,7 +1080,7 @@ print("CHRO",len(emp),emp.Salary.sum())
 2. Tick **Allow recipients to build content with the data associated with this semantic model**.
 **Alternative:** Give a workspace role of Contributor, which includes build (but also bypasses RLS).
 **Version / licensing note:** RLS applies to Viewers: per fetched page in the sources file (RLS with Power BI, 2026-05). Menu wording from memory, unverified.
-**Edge cases:** Granting Build to Contributors defeats RLS.
+**Edge cases:** Making someone a Contributor (or higher) defeats RLS; Build permission alone does not (from memory, unverified).
 **Likely follow-ups:**
 - *Can Build users edit the model?* No.
 **Common mistakes:** Making everyone a Member and then wondering why RLS "does not work".
@@ -1295,7 +1308,7 @@ print(3*per, 3*3_000_000)   # 249999 9000000
 **Common mistakes:** Setting up incremental refresh on a CSV.
 
 ### Q61 ⭐ 🔴 A manager can see every employee because bi-directional filtering is on. How do RLS and Apply security filter in both directions interact?
-**Asked at:** Commonly asked (no company-specific report found); RLS appears in the Deloitte, Cognizant and Wipro-class reports in interview_processes.md, but this bi-directional variant is a gap-fill.
+**Asked at:** Commonly asked (no company-specific report found); RLS appears in the Deloitte (Sept 2025) and 2022 Cognizant reports in interview_processes.md (single unverified anecdotes), but this bi-directional variant is a gap-fill.
 **What the interviewer is checking:** Do you understand that RLS filters propagate along relationship direction?
 **Say this in the interview:** "Premise check: bi-directional alone does not remove RLS. RLS filters the table I put the rule on and flows in each relationship's direction. By default security filters follow the single direction; **Apply security filter in both directions** makes them also travel the other way. I would check where the rule sits, that direction, role membership and whether the user is an editor."
 **Explain simply:**
@@ -1385,7 +1398,7 @@ e[e.Path.apply(lambda s: str(me) in s.split("|"))].Name.tolist()
 **What the interviewer is checking:** Systematic RLS debugging with external users.
 **Say this in the interview:** "In Desktop RLS isn't enforced until I use View as. For a guest I'd check: are they added to the role? Does the role filter match the identity the Service sees, since guests' USERPRINCIPALNAME can look like `name_company.com#EXT#@tenant`? Do they have Viewer access, and does the semantic model allow external sharing?"
 **Explain simply:**
-- **Guest (B2B)** user: an external person invited into your Azure AD.
+- **Guest (B2B)** user: an external person invited into your company's Microsoft Entra ID directory (formerly called Azure AD).
 - The RLS page in the sources file mentions guests; the `#EXT#` format is from memory.
 - Check role membership, filter matching, data columns, and the workspace role (editors bypass RLS).
 **Example:** Partner recruiter has email `ravi@agency.com`, but the model's Email column has that value; the Service identity is a longer `#EXT#` string, so no rows match.
@@ -1393,7 +1406,7 @@ e[e.Path.apply(lambda s: str(me) in s.split("|"))].Name.tolist()
 1. Service > semantic model **Security** > confirm guest in the role.
 2. **...** > **Test as role** with "Other user" if available.
 3. Compare `USERPRINCIPALNAME()` value (temporary card measure) against your data.
-**Alternative:** Map guests with a security table that stores the Azure AD identity.
+**Alternative:** Map guests with a security table that stores the Microsoft Entra identity (the guest's sign-in name).
 **Version / licensing note:** Guest support per the RLS page cited in sources file; `#EXT#` and tenant settings from memory, unverified.
 **Edge cases:** Cross-tenant settings; guest licensing (Pro or capacity).
 **Likely follow-ups:**

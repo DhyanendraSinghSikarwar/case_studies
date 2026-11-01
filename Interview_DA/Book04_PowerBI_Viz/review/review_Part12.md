@@ -1,8 +1,8 @@
 # Review: Book 4 Part 12 (Q1-Q25)
 
 ## Counts
-- Answers checked: 25 (Q1-Q25). Pandas snippets run OK with pandas 3.0.5: 7 (Q4, Q6, Q12, Q13, Q17, Q22, plus Q23 which reuses Q4/Q12/Q17). All printed outputs and Result lines matched.
-- Answers fixed: 10 (Q2, Q6, Q7, Q10, Q12, Q13, Q14, Q20, Q21; Q12 twice).
+- Answers checked: 25 (Q1-Q25). Pandas snippets run OK with pandas 3.0.5: 6 (Q4, Q6, Q12, Q13, Q17, Q22; Q23 reuses Q4/Q12/Q17). All printed outputs and Result lines matched.
+- Answers fixed: 9 (Q2, Q6, Q7, Q10, Q12, Q13, Q14, Q20, Q21).
 - DAX re-derived by hand on the sample data: Q4 (shares), Q6 (75,000), Q12 (start 7, end 6, leavers 2, 30.8%, per-dept rates, mean of rates 0.267), Q13, Q17, Q22. All correct.
 
 ## Fixes
@@ -21,7 +21,7 @@
 ## Checks passed
 - Template: all 25 answers have every required field; measure answers (Q4, Q6, Q12, Q13, Q17, Q22, Q23) have Sample data, DAX, Alternative, Result, Pandas check. All DAX/Steps labelled "not run here"; Results say "reproduced with pandas".
 - "Asked at": only "commonly asked" plus source-backed notes (Coursera Dec 2025, Deloitte Sept 2025, market_skills_2026 JD counts); checked 13/40 = 32.5%, Tableau 12.5%, SQL 57.5% against research/market_skills_2026.md. OK.
-- Numbering Q1-Q25 continuous; stars descending (3,3,3,3 then 2s, then 1s); within stars, the green-to-red order is not strictly sorted in places (Q4 is 3-star yellow after greens is fine; 2-star block mixes green Q5-Q10 then yellow Q11-Q18, fine). Not changed.
+- Numbering Q1-Q25 continuous; stars descending (3 stars Q1-Q4, 2 stars Q5-Q18, 1 star Q19-Q25), green before yellow within each star level. Not changed.
 - Markdown: code fences balanced, tables followed by blank lines.
 
 ## Unresolved / unverified
