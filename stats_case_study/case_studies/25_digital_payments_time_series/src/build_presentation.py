@@ -53,7 +53,7 @@ def main() -> None:
                takeaway="On the log scale growth is close to a straight line that flattens. Shaded: April to July 2020.")
     deck.image("Trend, seasonal pattern and remainder", figs / "fig02_decomposition.png",
                takeaway="The seasonal pattern repeats each year; the remainder is small except for 2020 and March 2023.")
-    deck.image("Growth is not 20%: it fell every year after the 2021 rebound", figs / "fig03_rolling_growth.png",
+    deck.image("Growth is not 20%: it has slowed since the 2021 rebound", figs / "fig03_rolling_growth.png",
                takeaway="Calendar-year growth: 57%, 50%, 46%, 29% (COVID), 51%, 27%, 27%, 24%.")
     deck.image("Why ordinary statistics fail: autocorrelation after differencing", figs / "fig04_acf.png",
                takeaway="The raw series is non-stationary (ADF p = 1.00). After first and seasonal differencing it is stationary (p = 0.0002). Months next to each other are correlated, so split by time.")

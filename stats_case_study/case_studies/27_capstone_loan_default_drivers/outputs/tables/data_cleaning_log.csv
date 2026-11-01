@@ -1,6 +1,6 @@
 problem,rows affected,action
 exact duplicate rows,60,removed
-employment labels with inconsistent case or spaces,7130,standardised to salaried / self_employed / gig
+employment labels with inconsistent case or spaces,2365,standardised to salaried / self_employed / gig
 impossible ages (<18 or >80),3,set to missing
 incomes more than 20 times the median (two extra zeros),25,"set to missing, then imputed"
 monthly income missing,1551,median by employment type + missing indicator
