@@ -471,7 +471,7 @@ interviews/data_analyst/
 | 2 SQL | 12 | ✅ 664 (after removing 30 cross-part duplicates; see research/dedupe_log_book02.md) | ✅ 664 (all 12 parts merged; code run on SQLite 3.45.1 / pandas 3.0.5; non-SQLite syntax labelled "not run here") | ✅ Wave C done 2026-10-21 (see Book02_SQL/review_Book02.md; dialect claims for non-SQLite engines remain unverified) |
 | 3 Python | 12 | ⬜ | ⬜ | ⬜ |
 | 4 Power BI | 12 | ✅ 624 (after removing 36 cross-part duplicates and adding 21 gap-fills; see research/dedupe_log_book04.md) | ✅ 624 (all 12 parts merged; results reproduced in pandas 3.0.5; DAX/M/click-paths labelled "not run here"; Microsoft/Tableau pages unreachable so version/licensing facts "from memory, unverified") | ✅ Wave C done 2026-11-01 (see Book04_PowerBI_Viz/review_Book04.md) |
-| 5 Stats & Maths | 12 | ✅ 628 (after removing 10 cross-part duplicates and adding 1 gap-fill; see research/dedupe_log_book05.md; research was search-snippet only, all page fetches blocked, stars are judgement) | ⬜ | ⬜ |
+| 5 Stats & Maths | 12 | ✅ 628 (after removing 10 cross-part duplicates and adding 1 gap-fill; see research/dedupe_log_book05.md; research was search-snippet only, all page fetches blocked, stars are judgement) | ✅ 628 (all 12 parts merged; every calculation and Python snippet run on numpy 2.5.3 / pandas 3.0.5 / scipy 1.18.1 / statsmodels; Excel formulas labelled "not run in Excel here"; "Asked at" is mostly "no company-specific report found") | ⬜ |
 | 6 Aptitude | 10 | ⬜ | ⬜ | ⬜ |
 | 7 Guesstimates & Cases | 9 | ⬜ | ⬜ | ⬜ |
 | 8 Scenarios | 9 | ⬜ | ⬜ | ⬜ |
