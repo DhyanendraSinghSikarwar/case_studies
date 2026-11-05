@@ -1,6 +1,6 @@
 # Book 5 — Statistics & Maths for Data Analysts | Part 1: Maths Foundations 🟢
 
-**Target:** 60 questions | **Actual:** 66 questions
+**Target:** 60 questions | **Actual:** 62 questions
 **Scope:** business/analyst maths: percentages, percentage points, ratios, averages, weighted average, growth rates (YoY, MoM, CAGR), attrition and funnel arithmetic.
 
 ### Q1 ⭐⭐⭐ 🟢 How do you calculate percentage change, and what is the base you divide by?
@@ -132,71 +132,59 @@
 ### Q43 ⭐⭐ 🔴 A metric rises 25%, then falls to a level 10% below the start. What was the second change?
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐ 🟢 What is the difference between average, mean and median in everyday business reports?
+### Q44 ⭐ 🟢 What is basis point (bps), and how is it different from percentage point?
 <!-- ANSWER_PENDING -->
 
-### Q45 ⭐ 🟢 How do you calculate the average of averages and why does it fail?
+### Q45 ⭐ 🟢 How do you calculate a growth rate from index numbers (base year = 100)?
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐ 🟢 What is basis point (bps), and how is it different from percentage point?
+### Q46 ⭐ 🟢 What is the difference between absolute change and relative change? When do you report each?
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐ 🟢 How do you calculate a growth rate from index numbers (base year = 100)?
+### Q47 ⭐ 🟢 How do you round numbers in reports without distorting totals?
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐ 🟢 What is the difference between absolute change and relative change? When do you report each?
+### Q48 ⭐ 🟢 What is a run rate, and how do you annualise a monthly figure?
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐ 🟢 How do you round numbers in reports without distorting totals?
+### Q49 ⭐ 🟡 How do you calculate the weighted average cost or average price when quantities purchased differ?
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐ 🟢 What is a run rate, and how do you annualise a monthly figure?
+### Q50 ⭐ 🟡 What is a geometric mean, and when do you use it instead of the arithmetic mean?
 <!-- ANSWER_PENDING -->
 
-### Q51 ⭐ 🟢 What is a percentile rank in simple terms, as opposed to a percentage score?
+### Q51 ⭐ 🟡 How do you calculate a percentage change when the value is negative (e.g. profit from -10 to 5)?
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐ 🟢 What is the order of operations, and how does it affect Excel and Python percentage formulas?
+### Q52 ⭐ 🟡 What is the harmonic mean, and when does it apply (e.g. average speed or price per unit)?
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐ 🟡 How do you calculate the weighted average cost or average price when quantities purchased differ?
+### Q53 ⭐ 🟡 How do you adjust figures for inflation to compare salaries over years (real vs nominal)?
 <!-- ANSWER_PENDING -->
 
-### Q54 ⭐ 🟡 What is a geometric mean, and when do you use it instead of the arithmetic mean?
+### Q54 ⭐ 🟡 How do you combine two groups' averages into one when only averages and counts are given?
 <!-- ANSWER_PENDING -->
 
-### Q55 ⭐ 🟡 How do you calculate a percentage change when the value is negative (e.g. profit from -10 to 5)?
+### Q55 ⭐ 🟡 How do you calculate the break-even point as a ratio or percentage, and when does an analyst need it?
 <!-- ANSWER_PENDING -->
 
-### Q56 ⭐ 🟡 What is the harmonic mean, and when does it apply (e.g. average speed or price per unit)?
+### Q56 ⭐ 🟡 How do you calculate a percentage hike so that the new salary equals a target amount?
 <!-- ANSWER_PENDING -->
 
-### Q57 ⭐ 🟡 How do you adjust figures for inflation to compare salaries over years (real vs nominal)?
+### Q57 ⭐ 🟡 How do you calculate the weighted average for a scorecard where KPIs carry different weights?
 <!-- ANSWER_PENDING -->
 
-### Q58 ⭐ 🟡 How do you combine two groups' averages into one when only averages and counts are given?
+### Q58 ⭐ 🟡 How do you scale a target proportionally when team size changes (direct and inverse proportion)?
 <!-- ANSWER_PENDING -->
 
-### Q59 ⭐ 🟡 How do you calculate the break-even point as a ratio or percentage, and when does an analyst need it?
+### Q59 ⭐ 🔴 A company has 50% growth in month 1 and -50% in month 2. What is the net change and the average monthly growth?
 <!-- ANSWER_PENDING -->
 
-### Q60 ⭐ 🟡 How do you calculate a percentage hike so that the new salary equals a target amount?
+### Q60 ⭐ 🔴 How do you decompose a change in an average (e.g. average salary) into effect of rate and effect of mix?
 <!-- ANSWER_PENDING -->
 
-### Q61 ⭐ 🟡 How do you calculate the weighted average for a scorecard where KPIs carry different weights?
+### Q61 ⭐ 🔴 How do you calculate compounded monthly growth rate (CMGR) and convert it to an annual figure?
 <!-- ANSWER_PENDING -->
 
-### Q62 ⭐ 🟡 How do you scale a target proportionally when team size changes (direct and inverse proportion)?
-<!-- ANSWER_PENDING -->
-
-### Q63 ⭐ 🔴 A company has 50% growth in month 1 and -50% in month 2. What is the net change and the average monthly growth?
-<!-- ANSWER_PENDING -->
-
-### Q64 ⭐ 🔴 How do you decompose a change in an average (e.g. average salary) into effect of rate and effect of mix?
-<!-- ANSWER_PENDING -->
-
-### Q65 ⭐ 🔴 How do you calculate compounded monthly growth rate (CMGR) and convert it to an annual figure?
-<!-- ANSWER_PENDING -->
-
-### Q66 ⭐ 🔴 A manager says "attrition is 12%, up from 10%, so 20% more people left". Is that statement correct?
+### Q62 ⭐ 🔴 A manager says "attrition is 12%, up from 10%, so 20% more people left". Is that statement correct?
 <!-- ANSWER_PENDING -->
