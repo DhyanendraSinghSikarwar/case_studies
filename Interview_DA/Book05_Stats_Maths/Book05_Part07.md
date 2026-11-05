@@ -1,6 +1,6 @@
 # Book 5 — Statistics & Maths for Data Analysts | Part 7: Correlation vs Causation, Regression Basics, R² 🟡
 
-**Target:** 50 questions | **Actual:** 56 questions
+**Target:** 50 questions | **Actual:** 54 questions
 **Scope:** correlation and its limits, confounders and causation, simple and multiple linear regression, interpreting coefficients, R² and adjusted R², regression diagnostics for analysts.
 
 ### Q1 ⭐⭐⭐ 🟢 What is the difference between correlation and causation?
@@ -123,50 +123,44 @@
 ### Q40 ⭐⭐ 🔴 How can you move from correlation towards causation when you only have observational data?
 <!-- ANSWER_PENDING -->
 
-### Q41 ⭐ 🟢 What is a correlation matrix, and how is it used in exploratory analysis?
+### Q41 ⭐ 🟡 What is heteroscedasticity, and why does it matter?
 <!-- ANSWER_PENDING -->
 
-### Q42 ⭐ 🟡 What is heteroscedasticity, and why does it matter?
+### Q42 ⭐ 🟡 Why can two trending time series show a high correlation even if they are unrelated?
 <!-- ANSWER_PENDING -->
 
-### Q43 ⭐ 🟡 How can a single outlier change a correlation coefficient or a regression line?
+### Q43 ⭐ 🟡 What does ordinary least squares minimise?
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐ 🟡 Why can two trending time series show a high correlation even if they are unrelated?
+### Q44 ⭐ 🟡 What are MAE and RMSE, and how are they different from R²?
 <!-- ANSWER_PENDING -->
 
-### Q45 ⭐ 🟡 What does ordinary least squares minimise?
+### Q45 ⭐ 🟡 A correlation of 0.3 is found. How do you decide whether it is statistically significant, and how does sample size matter?
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐ 🟡 What are MAE and RMSE, and how are they different from R²?
+### Q46 ⭐ 🟡 How do the slope and the correlation coefficient change if you change the units of a variable, for example salary in rupees versus lakhs?
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐ 🟡 A correlation of 0.3 is found. How do you decide whether it is statistically significant, and how does sample size matter?
+### Q47 ⭐ 🟡 What is partial correlation or controlling for a variable?
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐ 🟡 How do the slope and the correlation coefficient change if you change the units of a variable, for example salary in rupees versus lakhs?
+### Q48 ⭐ 🟡 What is the standard error of a regression coefficient, and how does it give a confidence interval?
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐ 🟡 What is partial correlation or controlling for a variable?
+### Q49 ⭐ 🔴 What is the F-test in regression output, and how is it different from the t-test on a coefficient?
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐ 🟡 What is the standard error of a regression coefficient, and how does it give a confidence interval?
+### Q50 ⭐ 🔴 What is autocorrelation of residuals, and when does it matter?
 <!-- ANSWER_PENDING -->
 
-### Q51 ⭐ 🔴 What is the F-test in regression output, and how is it different from the t-test on a coefficient?
+### Q51 ⭐ 🔴 What is the dummy variable trap?
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐ 🔴 What is autocorrelation of residuals, and when does it matter?
+### Q52 ⭐ 🔴 When would you take the log of a variable in a regression, and how does it change the interpretation?
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐ 🔴 What is the dummy variable trap?
+### Q53 ⭐ 🔴 What is the difference between a confounder, a mediator and a moderator?
 <!-- ANSWER_PENDING -->
 
-### Q54 ⭐ 🔴 When would you take the log of a variable in a regression, and how does it change the interpretation?
-<!-- ANSWER_PENDING -->
-
-### Q55 ⭐ 🔴 What is the difference between a confounder, a mediator and a moderator?
-<!-- ANSWER_PENDING -->
-
-### Q56 ⭐ 🔴 Two predictors have different units. How do you judge which one matters more in the regression?
+### Q54 ⭐ 🔴 Two predictors have different units. How do you judge which one matters more in the regression?
 <!-- ANSWER_PENDING -->
