@@ -24,8 +24,8 @@ Star-assignment reasoning
 - Three stars: definitions and decisions that every source lists first (null/alternative, p-value and its misreading, alpha, Type I/II, t-test and chi-square purpose, significance vs practical, which test for a simple HR comparison, ANOVA vs repeated t-tests).
 - Two stars: mechanics and numeric tasks (test statistic, critical value, power, assumptions, hand calculations, post-hoc, multiple comparisons, p-hacking, effect size) that appear often in the sources and Tiger/Fractal-type loops but not in every entry-level screen.
 - One star: differentiators (non-parametric, Welch, Fisher, Bonferroni/FDR, Bayesian, bootstrap/permutation, Excel ToolPak).
-- Star levels are judged from source frequency, not measured interview rates. Excel/Python functions belong to Part 11; A/B design to Part 8; CIs and CLT depth to Part 5; these appear only where the link to testing is direct (CI-test link, CLT relevance, 1 gap-fill style items).
+- Star levels are judged from source frequency, not measured interview rates. Excel/Python functions belong to Part 11; A/B design to Part 8; CIs and CLT depth to Part 5; these appear only where the link to testing is direct (CI-test link, CLT relevance).
 
 Notes
-- Count: all questions beyond the first 40 or so are standard-practice gap-fills (numeric tasks, difference questions, manager-explanation items, HR scenarios); none are traced to a named company report.
+- Count: roughly 35 of the 75 (numeric tasks, difference questions, manager-explanation and HR items, differentiators) are standard-practice gap-fills (numeric tasks, difference questions, manager-explanation items, HR scenarios); none are traced to a named company report.
 - Unverified: any named-company attribution other than Tiger's listed statistics areas (from third-party prep sites) and the Fractal t-test/z-test title.

@@ -129,7 +129,7 @@
 ### Q42 ⭐⭐ 🔴 Two variants of a landing page show 5.0% vs 5.5% conversion with 2,000 visitors each. Is the difference significant? Show a rough calculation.
 <!-- ANSWER_PENDING -->
 
-### Q43 ⭐ 🟢 Three dice fall and the sum is greater than 6 when two dice are rolled. What is the probability of a sum greater than 6 with two dice?
+### Q43 ⭐ 🟢 Two dice are rolled. What is the probability that the sum is greater than 6?
 <!-- ANSWER_PENDING -->
 
 ### Q44 ⭐ 🟢 What is the probability that a 31-day month has five Sundays?

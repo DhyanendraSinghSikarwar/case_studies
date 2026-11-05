@@ -159,7 +159,7 @@
 ### Q52 ⭐⭐ 🔴 A family has two children; you meet one child and it is a boy. Does the probability that the other is a boy change versus "at least one is a boy"? Explain.
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐⭐ 🔴 Why does switching win 2/3 of the time in Monty Hall, and how would you convince a sceptical colleague with a simulation or an enumeration?
+### Q53 ⭐⭐ 🔴 In a Monty Hall game with 100 doors where the host opens 98 empty doors, what is the probability of winning by switching, and what does it show?
 <!-- ANSWER_PENDING -->
 
 ### Q54 ⭐ 🟢 What is the difference between frequentist and Bayesian probability?
