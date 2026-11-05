@@ -1,6 +1,6 @@
 # Book 5 — Statistics & Maths for Data Analysts | Part 6: Hypothesis Testing: p-value, t-test, Chi-square, ANOVA, Errors 🟡
 
-**Target:** 70 questions | **Actual:** 75 questions
+**Target:** 70 questions | **Actual:** 74 questions
 **Scope:** Interview-style hypothesis testing for 0-3 year analysts: null/alternative, p-value, errors, power, t-test, chi-square, ANOVA, test selection and common misreadings (A/B testing is Part 8).
 
 ### Q1 ⭐⭐⭐ 🟢 What is hypothesis testing, in simple words?
@@ -120,111 +120,107 @@
 ### Q39 ⭐⭐ 🟡 What is the multiple comparisons problem, and how do you handle it?
 <!-- ANSWER_PENDING -->
 
-### Q40 ⭐⭐ 🟡 What is the difference between a confidence level and a significance level?
+### Q40 ⭐⭐ 🟡 Your p-value is 0.051. Do you reject the null hypothesis? How do you explain this to a manager?
 <!-- ANSWER_PENDING -->
 
-### Q41 ⭐⭐ 🟡 Your p-value is 0.051. Do you reject the null hypothesis? How do you explain this to a manager?
+### Q41 ⭐⭐ 🟡 Why should we state the hypotheses and alpha before looking at the data?
 <!-- ANSWER_PENDING -->
 
-### Q42 ⭐⭐ 🟡 Why should we state the hypotheses and alpha before looking at the data?
+### Q42 ⭐⭐ 🟡 What is p-hacking and how can an analyst avoid it?
 <!-- ANSWER_PENDING -->
 
-### Q43 ⭐⭐ 🟡 What is p-hacking and how can an analyst avoid it?
+### Q43 ⭐⭐ 🟡 What is the Central Limit Theorem and why does it matter for hypothesis tests?
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐⭐ 🟡 What is the Central Limit Theorem and why does it matter for hypothesis tests?
+### Q44 ⭐⭐ 🟡 What is effect size, and why report it along with the p-value?
 <!-- ANSWER_PENDING -->
 
-### Q45 ⭐⭐ 🟡 What is effect size, and why report it along with the p-value?
+### Q45 ⭐⭐ 🟡 What is a Type I error rate if you run 20 independent tests at alpha 0.05?
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐⭐ 🟡 What is a Type I error rate if you run 20 independent tests at alpha 0.05?
+### Q46 ⭐⭐ 🟡 How do you test whether two proportions differ, for example the offer acceptance rate of two recruiters?
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐⭐ 🟡 How do you test whether two proportions differ, for example the offer acceptance rate of two recruiters?
+### Q47 ⭐⭐ 🟡 A manager says 'the p-value is 0.04 so there is a 96% chance our hypothesis is right.' How do you respond?
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐⭐ 🟡 A manager says 'the p-value is 0.04 so there is a 96% chance our hypothesis is right.' How do you respond?
+### Q48 ⭐⭐ 🔴 Explain a hypothesis test to a business stakeholder using a courtroom analogy.
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐⭐ 🔴 Explain a hypothesis test to a business stakeholder using a courtroom analogy.
+### Q49 ⭐⭐ 🔴 How do you choose the sample size for a test?
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐⭐ 🔴 How do you choose the sample size for a test?
+### Q50 ⭐⭐ 🔴 How do you interpret a very small p-value from a very large sample?
 <!-- ANSWER_PENDING -->
 
-### Q51 ⭐⭐ 🔴 How do you interpret a very small p-value from a very large sample?
+### Q51 ⭐⭐ 🔴 Walk through a full hypothesis test: does a new onboarding programme change 90-day attrition? Use numbers.
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐⭐ 🔴 Walk through a full hypothesis test: does a new onboarding programme change 90-day attrition? Use numbers.
+### Q52 ⭐ 🟢 What is a Z-score and how is it used in hypothesis testing?
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐ 🟢 What is a Z-score and how is it used in hypothesis testing?
+### Q53 ⭐ 🟡 What is the difference between a parametric and a non-parametric test?
 <!-- ANSWER_PENDING -->
 
-### Q54 ⭐ 🟡 What is the difference between a parametric and a non-parametric test?
+### Q54 ⭐ 🟡 When would you use the Mann-Whitney U test instead of a t-test?
 <!-- ANSWER_PENDING -->
 
-### Q55 ⭐ 🟡 When would you use the Mann-Whitney U test instead of a t-test?
+### Q55 ⭐ 🟡 What is Welch's t-test and when is it preferred?
 <!-- ANSWER_PENDING -->
 
-### Q56 ⭐ 🟡 What is Welch's t-test and when is it preferred?
+### Q56 ⭐ 🟡 What is Fisher's exact test and when is it used instead of chi-square?
 <!-- ANSWER_PENDING -->
 
-### Q57 ⭐ 🟡 What is Fisher's exact test and when is it used instead of chi-square?
+### Q57 ⭐ 🟡 What is the difference between the chi-square test of independence and the test of homogeneity?
 <!-- ANSWER_PENDING -->
 
-### Q58 ⭐ 🟡 What is the difference between the chi-square test of independence and the test of homogeneity?
+### Q58 ⭐ 🟡 What is a two-way ANOVA?
 <!-- ANSWER_PENDING -->
 
-### Q59 ⭐ 🟡 What is a two-way ANOVA?
+### Q59 ⭐ 🟡 How do you test whether data is normally distributed before using a t-test?
 <!-- ANSWER_PENDING -->
 
-### Q60 ⭐ 🟡 How do you test whether data is normally distributed before using a t-test?
+### Q60 ⭐ 🟡 What is a paired test versus an independent test, and what goes wrong if you pick the wrong one?
 <!-- ANSWER_PENDING -->
 
-### Q61 ⭐ 🟡 What is a paired test versus an independent test, and what goes wrong if you pick the wrong one?
+### Q61 ⭐ 🟡 What is the F-test for comparing two variances?
 <!-- ANSWER_PENDING -->
 
-### Q62 ⭐ 🟡 What is the F-test for comparing two variances?
+### Q62 ⭐ 🟡 What is the Bonferroni correction? Give an example.
 <!-- ANSWER_PENDING -->
 
-### Q63 ⭐ 🟡 What is the Bonferroni correction? Give an example.
+### Q63 ⭐ 🟡 How do you handle a hypothesis test when the data has outliers?
 <!-- ANSWER_PENDING -->
 
-### Q64 ⭐ 🟡 How do you handle a hypothesis test when the data has outliers?
+### Q64 ⭐ 🟡 How are the confidence interval and the two-sided test linked? If the 95% CI for a mean difference excludes zero, what is the p-value?
 <!-- ANSWER_PENDING -->
 
-### Q65 ⭐ 🟡 How are the confidence interval and the two-sided test linked? If the 95% CI for a mean difference excludes zero, what is the p-value?
+### Q65 ⭐ 🟡 Does a high p-value prove the two groups are the same?
 <!-- ANSWER_PENDING -->
 
-### Q66 ⭐ 🟡 Does a high p-value prove the two groups are the same?
+### Q66 ⭐ 🟡 What is the difference between a Z-test and a t-test for proportions in practice, and which do analysts usually run?
 <!-- ANSWER_PENDING -->
 
-### Q67 ⭐ 🟡 What is the difference between a Z-test and a t-test for proportions in practice, and which do analysts usually run?
+### Q67 ⭐ 🔴 What is the Bayesian view of hypothesis testing, and how does it differ from the p-value approach?
 <!-- ANSWER_PENDING -->
 
-### Q68 ⭐ 🔴 What is the Bayesian view of hypothesis testing, and how does it differ from the p-value approach?
+### Q68 ⭐ 🔴 What is the false discovery rate, and how does it differ from the family-wise error rate?
 <!-- ANSWER_PENDING -->
 
-### Q69 ⭐ 🔴 What is the false discovery rate, and how does it differ from the family-wise error rate?
+### Q69 ⭐ 🔴 What is the difference between a Type S and Type M error?
 <!-- ANSWER_PENDING -->
 
-### Q70 ⭐ 🔴 What is the difference between a Type S and Type M error?
+### Q70 ⭐ 🔴 What is the minimum detectable effect, and how does it connect to power?
 <!-- ANSWER_PENDING -->
 
-### Q71 ⭐ 🔴 What is the minimum detectable effect, and how does it connect to power?
+### Q71 ⭐ 🔴 How do you run and read a hypothesis test in Excel (Data Analysis ToolPak) at a high level?
 <!-- ANSWER_PENDING -->
 
-### Q72 ⭐ 🔴 How do you run and read a hypothesis test in Excel (Data Analysis ToolPak) at a high level?
+### Q72 ⭐ 🔴 What is bootstrapping and how can it be used for hypothesis testing?
 <!-- ANSWER_PENDING -->
 
-### Q73 ⭐ 🔴 What is bootstrapping and how can it be used for hypothesis testing?
+### Q73 ⭐ 🔴 What is a permutation test and when would you use it?
 <!-- ANSWER_PENDING -->
 
-### Q74 ⭐ 🔴 What is a permutation test and when would you use it?
+### Q74 ⭐ 🔴 Why can we reject the null with statistical significance yet see no business impact? Give an HR example.
 <!-- ANSWER_PENDING -->
-
-### Q75 ⭐ 🔴 Why can we reject the null with statistical significance yet see no business impact? Give an HR example.
-<!-- ANSWER_PENDING -->
-

@@ -2077,6 +2077,634 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 ## Book 5 — Statistics & Maths
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B5P01Q1 | 5 | 1 | How do you calculate percentage change, and what is the base you divide by? |
+| B5P01Q2 | 5 | 1 | Sales went from 80,000 to 92,000. What is the percentage increase? |
+| B5P01Q3 | 5 | 1 | What is the difference between a percentage and a percentage point? Attrition moved from 10% to 12%: how do you report it? |
+| B5P01Q4 | 5 | 1 | How do you calculate the attrition rate of a company? Why do we use average headcount? |
+| B5P01Q5 | 5 | 1 | What is the difference between a simple average and a weighted average? |
+| B5P01Q6 | 5 | 1 | Two branches have 90% and 80% pass rates with 100 and 400 candidates. What is the overall pass rate? |
+| B5P01Q7 | 5 | 1 | Why can you not just average two percentages? When is it acceptable? |
+| B5P01Q8 | 5 | 1 | What is year-over-year (YoY) growth versus month-over-month (MoM) growth, and how do you calculate each? |
+| B5P01Q9 | 5 | 1 | What is a ratio, and how is it different from a percentage and a fraction? |
+| B5P01Q10 | 5 | 1 | What is CAGR, and what is the formula? |
+| B5P01Q11 | 5 | 1 | A price rises 20% and then falls 20%. Is it back to the original price? |
+| B5P01Q12 | 5 | 1 | Revenue fell from 500 to 400. By what percentage must it grow to return to 500? |
+| B5P01Q13 | 5 | 1 | How do you calculate a percentage of a total (share or contribution) in a table, and what should the shares add up to? |
+| B5P01Q14 | 5 | 1 | Explain weighted average to a non-technical manager using one example with numbers. |
+| B5P01Q15 | 5 | 1 | Headcount is 250 and 30 people left during the year with 20 joiners. Calculate the attrition rate and explain your headcount choice. |
+| B5P01Q16 | 5 | 1 | Revenue was 100 in 2021 and 150 in 2024. Calculate CAGR and compare it with the simple average of the yearly growth rates. |
+| B5P01Q17 | 5 | 1 | What does it mean to say a metric is up "15% vs last year"? What can go wrong with this comparison? |
+| B5P01Q18 | 5 | 1 | What are the main ways to express an average (mean, median, weighted)? Which would you use for average salary and why? |
+| B5P01Q19 | 5 | 1 | How do you calculate conversion rate, and what is the denominator? |
+| B5P01Q20 | 5 | 1 | The hiring funnel has 1,000 applicants, 200 interviewed, 50 offered and 40 joined. Calculate the conversion at each stage and overall. |
+| B5P01Q21 | 5 | 1 | How do you calculate a percentage of a percentage (e.g. 20% of the 30% who responded)? |
+| B5P01Q22 | 5 | 1 | What is the difference between mean of ratios and ratio of sums? |
+| B5P01Q23 | 5 | 1 | How do you convert a ratio such as 3:2 into percentages and into actual numbers for a total of 500? |
+| B5P01Q24 | 5 | 1 | Salary increased 10% in year one and 8% in year two. What is the total increase, and why is it not 18%? |
+| B5P01Q25 | 5 | 1 | How do you calculate average salary for a department with different headcounts per grade? |
+| B5P01Q26 | 5 | 1 | How do you calculate the percentage difference between two values where neither is the baseline? |
+| B5P01Q27 | 5 | 1 | What is the difference between percentage change and percentage of total? |
+| B5P01Q28 | 5 | 1 | How do you calculate the rate of absenteeism and the average attendance for a team? |
+| B5P01Q29 | 5 | 1 | Average salary of 20 men is 50,000 and of 30 women is 40,000. What is the overall average? |
+| B5P01Q30 | 5 | 1 | You were asked to report average rating per store; which is better, average of store averages or pooled average? Explain. |
+| B5P01Q31 | 5 | 1 | What is compound growth, and how does it differ from simple growth? |
+| B5P01Q32 | 5 | 1 | How do you calculate the average growth rate over several years, and why is the arithmetic mean of growth rates misleading? |
+| B5P01Q33 | 5 | 1 | How do you compute a moving average, and how does it help read a trend? |
+| B5P01Q34 | 5 | 1 | Marks of five candidates average 60. A sixth candidate scores 78. What is the new average? Show a shortcut. |
+| B5P01Q35 | 5 | 1 | How do you calculate contribution to growth when total sales grew 10% and one region caused most of it? |
+| B5P01Q36 | 5 | 1 | Cost per hire fell from 80 to 62. Calculate the percentage change and explain the direction. |
+| B5P01Q37 | 5 | 1 | How do you handle division by zero when calculating growth from a zero base? |
+| B5P01Q38 | 5 | 1 | What is the Rule of 72, and when can you use it? |
+| B5P01Q39 | 5 | 1 | How would you calculate the average of a column of percentages in Excel correctly? |
+| B5P01Q40 | 5 | 1 | What is a base effect, and how can it make growth look small or large? |
+| B5P01Q41 | 5 | 1 | Explain Simpson's-paradox-style trap in averages: how can every group's rate improve while the overall rate falls? |
+| B5P01Q42 | 5 | 1 | A metric rises 25%, then falls to a level 10% below the start. What was the second change? |
+| B5P01Q43 | 5 | 1 | What is basis point (bps), and how is it different from percentage point? |
+| B5P01Q44 | 5 | 1 | How do you calculate a growth rate from index numbers (base year = 100)? |
+| B5P01Q45 | 5 | 1 | What is the difference between absolute change and relative change? When do you report each? |
+| B5P01Q46 | 5 | 1 | How do you round numbers in reports without distorting totals? |
+| B5P01Q47 | 5 | 1 | What is a run rate, and how do you annualise a monthly figure? |
+| B5P01Q48 | 5 | 1 | How do you calculate the weighted average cost or average price when quantities purchased differ? |
+| B5P01Q49 | 5 | 1 | What is a geometric mean, and when do you use it instead of the arithmetic mean? |
+| B5P01Q50 | 5 | 1 | How do you calculate a percentage change when the value is negative (e.g. profit from -10 to 5)? |
+| B5P01Q51 | 5 | 1 | What is the harmonic mean, and when does it apply (e.g. average speed or price per unit)? |
+| B5P01Q52 | 5 | 1 | How do you adjust figures for inflation to compare salaries over years (real vs nominal)? |
+| B5P01Q53 | 5 | 1 | How do you combine two groups' averages into one when only averages and counts are given? |
+| B5P01Q54 | 5 | 1 | How do you calculate the break-even point as a ratio or percentage, and when does an analyst need it? |
+| B5P01Q55 | 5 | 1 | How do you calculate a percentage hike so that the new salary equals a target amount? |
+| B5P01Q56 | 5 | 1 | How do you calculate the weighted average for a scorecard where KPIs carry different weights? |
+| B5P01Q57 | 5 | 1 | How do you scale a target proportionally when team size changes (direct and inverse proportion)? |
+| B5P01Q58 | 5 | 1 | A company has 50% growth in month 1 and -50% in month 2. What is the net change and the average monthly growth? |
+| B5P01Q59 | 5 | 1 | How do you decompose a change in an average (e.g. average salary) into effect of rate and effect of mix? |
+| B5P01Q60 | 5 | 1 | How do you calculate compounded monthly growth rate (CMGR) and convert it to an annual figure? |
+| B5P01Q61 | 5 | 1 | A manager says "attrition is 12%, up from 10%, so 20% more people left". Is that statement correct? |
+| B5P02Q1 | 5 | 2 | What are mean, median and mode, and how do you calculate each? |
+| B5P02Q2 | 5 | 2 | When would you use the median instead of the mean? Give an example with salaries. |
+| B5P02Q3 | 5 | 2 | What is standard deviation, and what does it tell you about a dataset? |
+| B5P02Q4 | 5 | 2 | What is the difference between variance and standard deviation, and why do we usually report standard deviation? |
+| B5P02Q5 | 5 | 2 | What is the difference between descriptive and inferential statistics? |
+| B5P02Q6 | 5 | 2 | What is an outlier, and how does it affect the mean, median and standard deviation? |
+| B5P02Q7 | 5 | 2 | What is a percentile? What does it mean if your salary is at the 90th percentile? |
+| B5P02Q8 | 5 | 2 | Calculate the mean, median and mode of this data: 4, 8, 6, 5, 3, 8, 9. |
+| B5P02Q9 | 5 | 2 | The average salary in a team of 5 is Rs 6 lakh, but four people earn Rs 4 lakh each. What does that tell you, and which average would you report? |
+| B5P02Q10 | 5 | 2 | What is the IQR, and how do you use it to detect outliers? |
+| B5P02Q11 | 5 | 2 | What are quartiles, and how do you read a box plot? |
+| B5P02Q12 | 5 | 2 | Why does the sample standard deviation divide by n-1 instead of n? |
+| B5P02Q13 | 5 | 2 | What is the difference between population and sample, and between a parameter and a statistic? |
+| B5P02Q14 | 5 | 2 | Calculate the sample standard deviation of 2, 4, 4, 4, 5, 5, 7, 9 step by step. |
+| B5P02Q15 | 5 | 2 | Explain standard deviation to a non-technical manager using employee attendance or salary data. |
+| B5P02Q16 | 5 | 2 | A dataset has an outlier. How do you decide whether to remove it, cap it or keep it? |
+| B5P02Q17 | 5 | 2 | Two teams have the same average monthly sales but different standard deviations. Which team is more consistent and what would you tell the manager? |
+| B5P02Q18 | 5 | 2 | What is the range of a dataset, and what is its main weakness? |
+| B5P02Q19 | 5 | 2 | What is a histogram, and what can you learn from it that the mean alone cannot show? |
+| B5P02Q20 | 5 | 2 | What are the types of data (nominal, ordinal, interval, ratio), and which averages apply to each? |
+| B5P02Q21 | 5 | 2 | What is a frequency distribution, and how do you build one in a table? |
+| B5P02Q22 | 5 | 2 | Can a dataset have more than one mode, or no mode? Give examples. |
+| B5P02Q23 | 5 | 2 | What are the 25th, 50th and 75th percentiles called, and how do they relate to the median? |
+| B5P02Q24 | 5 | 2 | What is skewness, and how does it affect the choice between mean and median? |
+| B5P02Q25 | 5 | 2 | What is the five-number summary? |
+| B5P02Q26 | 5 | 2 | What is the coefficient of variation, and when is it better than standard deviation? |
+| B5P02Q27 | 5 | 2 | What is a weighted mean, and when is it better than a simple mean? Calculate one for exam or appraisal scores. |
+| B5P02Q28 | 5 | 2 | How do you calculate a percentile rank, and how is it different from a percentile value? |
+| B5P02Q29 | 5 | 2 | How do you find the median of grouped data, or of an even number of values? |
+| B5P02Q30 | 5 | 2 | What is a z-score, and how do you use it to compare two values from different distributions? |
+| B5P02Q31 | 5 | 2 | Why is the median robust to outliers, and what does robust mean in statistics? |
+| B5P02Q32 | 5 | 2 | Attrition rates by month are 2%, 3%, 2%, 12%, 3%, 2%. Which summary statistic would you report to HR leadership, and why? |
+| B5P02Q33 | 5 | 2 | How do you choose between mean, median and mode for a given business column such as order value, age or shoe size? |
+| B5P02Q34 | 5 | 2 | What is the mean absolute deviation, and how does it differ from standard deviation? |
+| B5P02Q35 | 5 | 2 | A manager says 'the average employee takes 6 sick days.' What follow-up questions would you ask before trusting that number? |
+| B5P02Q36 | 5 | 2 | How do you describe the spread of a dataset to a business audience in one or two sentences? |
+| B5P02Q37 | 5 | 2 | How would you summarise a numeric column in a new dataset before doing any analysis? |
+| B5P02Q38 | 5 | 2 | If you add a constant to every value, or multiply every value by a constant, what happens to the mean and standard deviation? |
+| B5P02Q39 | 5 | 2 | The mean of 10 numbers is 50. If one number, 80, is replaced with 20, what is the new mean? |
+| B5P02Q40 | 5 | 2 | If the mean of a dataset is greater than its median, what does it say about the shape of the data, and is this always true? |
+| B5P02Q41 | 5 | 2 | How does the average of group averages differ from the overall average, and when is it wrong to average averages? |
+| B5P02Q42 | 5 | 2 | How do different tools (Excel, SQL, Python) calculate percentiles differently, and why can answers differ slightly? |
+| B5P02Q43 | 5 | 2 | You have the mean and count for two groups. How do you compute the combined mean, and how would you combine their standard deviations? |
+| B5P02Q44 | 5 | 2 | What is a trimmed mean, and when would you use it? |
+| B5P02Q45 | 5 | 2 | What are the geometric mean and harmonic mean, and when is each appropriate? |
+| B5P02Q46 | 5 | 2 | What is the standard error, and how is it different from standard deviation? |
+| B5P02Q47 | 5 | 2 | What is kurtosis, and what does a high value tell an analyst about the data? |
+| B5P02Q48 | 5 | 2 | What is a decile, and when would a business report deciles instead of quartiles? |
+| B5P02Q49 | 5 | 2 | What is the Tukey fence, and why is the multiplier 1.5? |
+| B5P02Q50 | 5 | 2 | What is the mode of continuous data, and how do you estimate it from a histogram? |
+| B5P02Q51 | 5 | 2 | How do you handle missing values when calculating summary statistics, and how does it change the mean? |
+| B5P02Q52 | 5 | 2 | Why do two datasets with identical mean, median and standard deviation sometimes look completely different (Anscombe's quartet)? |
+| B5P02Q53 | 5 | 2 | Why is variance additive for independent variables but standard deviation is not? |
+| B5P02Q54 | 5 | 2 | What is the median absolute deviation (MAD), and why is it a more robust spread measure than standard deviation? |
+| B5P02Q55 | 5 | 2 | Is the sample standard deviation an unbiased estimator of the population standard deviation, even though sample variance is unbiased? |
+| B5P02Q56 | 5 | 2 | How would you compute a running mean and running standard deviation for a stream of data without storing every value? |
+| B5P02Q57 | 5 | 2 | Why can the average of ratios (like a mean of per-store conversion rates) differ from the overall ratio, and which is right? |
+| B5P02Q58 | 5 | 2 | Is the 90th percentile of response time a better SLA measure than the mean? Explain with an example. |
+| B5P02Q59 | 5 | 2 | A distribution is bimodal. What does that suggest, and how should you report its centre? |
+| B5P02Q60 | 5 | 2 | How do you report salary data fairly when it has a long right tail and some people are on stock-based pay? |
+| B5P03Q1 | 5 | 3 | What is a normal distribution, and what are its key properties? |
+| B5P03Q2 | 5 | 3 | What is the 68-95-99.7 (empirical) rule? |
+| B5P03Q3 | 5 | 3 | What is skewness, and what is the difference between positive (right) and negative (left) skew? |
+| B5P03Q4 | 5 | 3 | In a right-skewed distribution, what is the order of mean, median and mode, and which would you report for employee salaries? |
+| B5P03Q5 | 5 | 3 | What is a z-score, and how do you calculate it? |
+| B5P03Q6 | 5 | 3 | What is the difference between the binomial and Poisson distributions? |
+| B5P03Q7 | 5 | 3 | Salaries have a mean of 50,000 and a standard deviation of 10,000 and are roughly normal. What percentage of employees earn between 40,000 and 60,000? |
+| B5P03Q8 | 5 | 3 | Give examples of business data that is roughly normal and data that is not. How would you tell? |
+| B5P03Q9 | 5 | 3 | What is a standard normal distribution? |
+| B5P03Q10 | 5 | 3 | What is a probability distribution, and what is the difference between discrete and continuous distributions? |
+| B5P03Q11 | 5 | 3 | What is kurtosis, and what does excess kurtosis tell you? |
+| B5P03Q12 | 5 | 3 | What is a Bernoulli trial, and how does it relate to the binomial distribution? |
+| B5P03Q13 | 5 | 3 | What conditions must hold for a binomial distribution to apply? |
+| B5P03Q14 | 5 | 3 | Which distribution would you use to model the number of employee resignations in a month, and why? |
+| B5P03Q15 | 5 | 3 | Which distribution would you use to model whether a candidate accepts a job offer, and the number of acceptances out of 50 offers? |
+| B5P03Q16 | 5 | 3 | Why is the normal distribution so important in statistics? |
+| B5P03Q17 | 5 | 3 | Explain to a non-technical manager what a bell curve means when HR rates employee performance. |
+| B5P03Q18 | 5 | 3 | Ten candidates each have a 70% chance of joining. What is the probability exactly 7 join? |
+| B5P03Q19 | 5 | 3 | You make 100 offers and each has an 80% chance of acceptance. What are the expected number of acceptances and the standard deviation? |
+| B5P03Q20 | 5 | 3 | An HR team averages 3 resignations a month. Assuming Poisson, what is the probability of zero resignations next month? |
+| B5P03Q21 | 5 | 3 | A support desk gets 15 tickets per hour on average. How do you get the rate for 30 minutes, and what is the probability of no tickets in that time? |
+| B5P03Q22 | 5 | 3 | For a Poisson distribution mean equals variance. What does it mean if your data's variance is much larger than its mean? |
+| B5P03Q23 | 5 | 3 | Exam scores have a mean of 70 and an SD of 10. What is the z-score of 85, and roughly what percentile is it? |
+| B5P03Q24 | 5 | 3 | Scores are normal with a mean of 60 and an SD of 12. What cut-off marks the top 10% of employees? |
+| B5P03Q25 | 5 | 3 | How do you check whether a dataset is normally distributed? |
+| B5P03Q26 | 5 | 3 | Why does the mean get pulled toward the tail in skewed data, and what do you do about it? |
+| B5P03Q27 | 5 | 3 | Mean salary is 45,000 and median is 38,000. What does this say about the shape, and what would you tell the manager? |
+| B5P03Q28 | 5 | 3 | Does zero skewness mean the data is normally distributed? |
+| B5P03Q29 | 5 | 3 | Student A scored 80 (class mean 70, SD 5) and Student B scored 85 (class mean 80, SD 10). Who performed better relative to their class? |
+| B5P03Q30 | 5 | 3 | There are 20 employees and each has a 5% chance of leaving this quarter. What is the probability at least one leaves? |
+| B5P03Q31 | 5 | 3 | A data point lies 4 standard deviations from the mean. What do you conclude, and what would you do next? |
+| B5P03Q32 | 5 | 3 | When can a normal distribution approximate a binomial distribution? |
+| B5P03Q33 | 5 | 3 | What is the difference between a probability mass function, a probability density function and a cumulative distribution function? |
+| B5P03Q34 | 5 | 3 | What assumptions does a Poisson model make, and would daily absenteeism counts satisfy them? |
+| B5P03Q35 | 5 | 3 | What is a uniform distribution? Give a business example. |
+| B5P03Q36 | 5 | 3 | What is a lognormal distribution, and why do salaries and sales often follow it? |
+| B5P03Q37 | 5 | 3 | How does a t-distribution differ from the normal distribution, and when is it used? |
+| B5P03Q38 | 5 | 3 | What is the exponential distribution, and how is it related to the Poisson distribution? |
+| B5P03Q39 | 5 | 3 | What is a bimodal distribution, and what might it mean for HR data such as employee tenure or salary? |
+| B5P03Q40 | 5 | 3 | How do you use Pearson's skewness coefficient? If mean 52, median 48 and SD 8, calculate it. |
+| B5P03Q41 | 5 | 3 | Why can you not use the empirical rule on skewed data? |
+| B5P03Q42 | 5 | 3 | How does the choice of histogram bin width change the shape you see? |
+| B5P03Q43 | 5 | 3 | How do you describe the distribution of employee tenure to a manager, using a histogram and summary numbers? |
+| B5P03Q44 | 5 | 3 | What does a 3-sigma control limit or Six Sigma defect rate mean in terms of the normal distribution? |
+| B5P03Q45 | 5 | 3 | What is the probability that a continuous variable takes exactly one value? |
+| B5P03Q46 | 5 | 3 | If two independent normal variables are added, what are the mean and variance of the sum? |
+| B5P03Q47 | 5 | 3 | What is Chebyshev's inequality, and when do you use it instead of the empirical rule? |
+| B5P03Q48 | 5 | 3 | Is high kurtosis the same as a sharply peaked distribution? |
+| B5P03Q49 | 5 | 3 | How does the Poisson distribution arise as a limit of the binomial distribution? |
+| B5P03Q50 | 5 | 3 | What are heavy-tailed distributions such as the Pareto (80/20), and why do they break the normal-based rules of thumb? |
+| B5P04Q1 | 5 | 4 | What is probability, and how do you calculate it for a simple event such as drawing a card or rolling a die? |
+| B5P04Q2 | 5 | 4 | What is the difference between independent events and mutually exclusive events? |
+| B5P04Q3 | 5 | 4 | What is conditional probability? Explain it with a simple example. |
+| B5P04Q4 | 5 | 4 | Explain Bayes' theorem in simple words and write its formula. |
+| B5P04Q5 | 5 | 4 | What are the addition rule (OR) and the multiplication rule (AND) of probability? |
+| B5P04Q6 | 5 | 4 | What is the complement rule, and when does it make a probability question easier? |
+| B5P04Q7 | 5 | 4 | What is the probability of getting a sum of 7 when two fair dice are rolled? |
+| B5P04Q8 | 5 | 4 | What is the probability of getting at least one head in three tosses of a fair coin? |
+| B5P04Q9 | 5 | 4 | What is expected value, and how do you calculate it? |
+| B5P04Q10 | 5 | 4 | In a company of 200 employees, 40 left last year. What is the probability that a randomly chosen employee left, and what is the probability that a randomly chosen employee stayed? |
+| B5P04Q11 | 5 | 4 | What is the difference between P(A|B) and P(B|A)? Are they the same? |
+| B5P04Q12 | 5 | 4 | A disease affects 1% of people and a test is 99% accurate in both directions (99% sensitivity and 99% specificity). If a person tests positive, what is the probability they have the disease? |
+| B5P04Q13 | 5 | 4 | A test is "99% accurate" and a patient tests positive. Does that mean there is a 99% chance the patient has the condition? Explain the base-rate idea. |
+| B5P04Q14 | 5 | 4 | Of 200 employees, 80 are in Sales and 24 of the Sales employees left; 40 employees left overall. What is the probability that an employee left given that they are in Sales, and are "leaving" and "being in Sales" independent? |
+| B5P04Q15 | 5 | 4 | What is the law of total probability, and how does it help in a Bayes problem? |
+| B5P04Q16 | 5 | 4 | Two cards are drawn from a standard deck without replacement. What is the probability that both are aces? |
+| B5P04Q17 | 5 | 4 | A bag has 5 red and 3 blue balls. What is the probability of drawing two red balls with replacement and without replacement? |
+| B5P04Q18 | 5 | 4 | Explain the Monty Hall problem. Should you switch doors, and why? |
+| B5P04Q19 | 5 | 4 | Machine A makes 60% of items with 2% defective, machine B makes 40% with 5% defective. An item is found defective. What is the probability it came from machine B? |
+| B5P04Q20 | 5 | 4 | How would you explain conditional probability and Bayes' theorem to a non-technical manager? |
+| B5P04Q21 | 5 | 4 | What are a sample space and an event? Give an example. |
+| B5P04Q22 | 5 | 4 | What is the difference between probability and odds? |
+| B5P04Q23 | 5 | 4 | What is the range of a probability value, and what do a probability of 0 and a probability of 1 mean? |
+| B5P04Q24 | 5 | 4 | What is the difference between classical (theoretical) probability and empirical (relative-frequency) probability? |
+| B5P04Q25 | 5 | 4 | What is a random variable? Explain discrete versus continuous with examples. |
+| B5P04Q26 | 5 | 4 | What are joint, marginal and conditional probability? Show them on a two-way table. |
+| B5P04Q27 | 5 | 4 | What is the law of large numbers, and why does a coin not "owe" you a tail after five heads in a row? |
+| B5P04Q28 | 5 | 4 | What is the gambler's fallacy? |
+| B5P04Q29 | 5 | 4 | What is the difference between sampling with replacement and without replacement, and how does it change the probability? |
+| B5P04Q30 | 5 | 4 | What is the expected value of a single roll of a fair six-sided die? |
+| B5P04Q31 | 5 | 4 | If 5 shortlisted candidates each accept an offer independently with probability 20%, what is the probability that at least one accepts? |
+| B5P04Q32 | 5 | 4 | What is the probability that a month with 31 days has 5 Sundays? |
+| B5P04Q33 | 5 | 4 | In a hiring funnel, 50% of applicants clear screening, 40% of those clear the interview, and 80% of those accept the offer. What is the probability that an applicant ends up joining? |
+| B5P04Q34 | 5 | 4 | How do you draw and use a probability tree diagram? Solve one example. |
+| B5P04Q35 | 5 | 4 | Define sensitivity, specificity, false positive rate and false negative rate, and relate them to Bayes' theorem. |
+| B5P04Q36 | 5 | 4 | An attendance-fraud model flags 95% of real cases but also flags 3% of honest employees, and 2% of employees commit fraud. If an employee is flagged, what is the probability of fraud? |
+| B5P04Q37 | 5 | 4 | How do you check from a table whether two events are independent? |
+| B5P04Q38 | 5 | 4 | What is P(A or B) when A and B can occur together, and why do we subtract P(A and B)? |
+| B5P04Q39 | 5 | 4 | You roll a fair die 4 times. What is the probability of getting at least one six? |
+| B5P04Q40 | 5 | 4 | A game pays Rs 100 if a fair die shows 6 and costs Rs 20 to play. What is the expected profit, and should you play? |
+| B5P04Q41 | 5 | 4 | Two dice are rolled and the total is 8. What is the expected value of the first die? |
+| B5P04Q42 | 5 | 4 | You have two children and at least one is a girl. What is the probability that both are girls, and why is the answer not 1/2? |
+| B5P04Q43 | 5 | 4 | A spam filter marks 20% of emails as spam; the word "offer" appears in 50% of spam and 5% of non-spam emails. What is the probability that an email containing "offer" is spam? |
+| B5P04Q44 | 5 | 4 | What is the prosecutor's fallacy, and how does it connect to confusing P(A|B) with P(B|A)? |
+| B5P04Q45 | 5 | 4 | How many people must be in a room before the chance of two sharing a birthday exceeds 50%, and why is the answer surprising? |
+| B5P04Q46 | 5 | 4 | What is the expected number of tosses of a fair coin needed to get the first head? |
+| B5P04Q47 | 5 | 4 | How do you calculate the expected value of a business decision, for example a discount offer with uncertain uptake? |
+| B5P04Q48 | 5 | 4 | If a coin is tossed 3 times, what is the probability of exactly two heads? |
+| B5P04Q49 | 5 | 4 | A test is repeated: a person tests positive twice in two independent tests. How does the probability of disease update? |
+| B5P04Q50 | 5 | 4 | Is the probability of at least one success in n independent trials equal to n times p? Explain the mistake. |
+| B5P04Q51 | 5 | 4 | Three attrition risk teams have attrition rates 10%, 15% and 25% and sizes 100, 200 and 100. What is the probability that a randomly picked leaver came from the third team? |
+| B5P04Q52 | 5 | 4 | A family has two children; you meet one child and it is a boy. Does the probability that the other is a boy change versus "at least one is a boy"? Explain. |
+| B5P04Q53 | 5 | 4 | In a Monty Hall game with 100 doors where the host opens 98 empty doors, what is the probability of winning by switching, and what does it show? |
+| B5P04Q54 | 5 | 4 | What is the difference between frequentist and Bayesian probability? |
+| B5P04Q55 | 5 | 4 | What are prior, likelihood and posterior in Bayes' theorem? |
+| B5P04Q56 | 5 | 4 | What does "at random" and "equally likely" mean in a probability question, and why do interviewers state it? |
+| B5P04Q57 | 5 | 4 | What is the variance of a random variable, and how do you calculate it for a die roll? |
+| B5P04Q58 | 5 | 4 | What is linearity of expectation, and how does it simplify a problem like the expected number of fixed points or matches? |
+| B5P04Q59 | 5 | 4 | What is the difference between P(A and B) and P(A|B)? |
+| B5P04Q60 | 5 | 4 | Explain the Bayesian update when you toss an unknown coin and see 3 heads in a row, with a fair or two-headed coin equally likely at the start. |
+| B5P04Q61 | 5 | 4 | How would you use simulation (Monte Carlo) to estimate a probability that is hard to compute by hand? |
+| B5P04Q62 | 5 | 4 | What is conditional expectation, and how would you use it to find the average salary given a department? |
+| B5P04Q63 | 5 | 4 | What is the odds ratio versus the relative risk, and why are they not the same? |
+| B5P04Q64 | 5 | 4 | A rare event has probability 0.1% per day. What is the probability it happens at least once in a year of 365 days? |
+| B5P04Q65 | 5 | 4 | What is the expected number of tosses to get two heads in a row? |
+| B5P04Q66 | 5 | 4 | You are given the probabilities of A, B and A or B. How do you find the probability that exactly one of A and B happens? |
+| B5P04Q67 | 5 | 4 | What are conditional independence and a common confounding mistake in probability reasoning? |
+| B5P04Q68 | 5 | 4 | Explain the birthday problem calculation step by step and relate it to finding duplicate employee IDs or dates in data. |
+| B5P04Q69 | 5 | 4 | A drunk-driver style puzzle: 90% of a city's taxis are green and 10% blue; a witness who is 80% reliable says the taxi was blue. What is the probability it was blue? |
+| B5P04Q70 | 5 | 4 | What is the probability that a random chord of a circle is longer than the side of an inscribed equilateral triangle, and what does this show about defining "random"? |
+| B5P04Q71 | 5 | 4 | You flip a fair coin until you see heads then tails (HT) versus heads then heads (HH). Which is expected sooner and why? |
+| B5P05Q1 | 5 | 5 | Why do analysts use a sample instead of surveying the whole population? |
+| B5P05Q2 | 5 | 5 | What is simple random sampling? |
+| B5P05Q3 | 5 | 5 | What is sampling bias, and why is it dangerous? |
+| B5P05Q4 | 5 | 5 | What is selection bias? Give an example. |
+| B5P05Q5 | 5 | 5 | What is the Central Limit Theorem, in simple words? |
+| B5P05Q6 | 5 | 5 | What is a confidence interval? |
+| B5P05Q7 | 5 | 5 | What is the difference between standard deviation and standard error? |
+| B5P05Q8 | 5 | 5 | Why is the Central Limit Theorem useful when the data itself is not normally distributed? |
+| B5P05Q9 | 5 | 5 | How do you interpret a 95% confidence interval? |
+| B5P05Q10 | 5 | 5 | Calculate a 95% confidence interval for the mean: sample mean 50, standard deviation 10, sample size 100. |
+| B5P05Q11 | 5 | 5 | What is the margin of error, and what affects its size? |
+| B5P05Q12 | 5 | 5 | How does sample size affect the width of a confidence interval? |
+| B5P05Q13 | 5 | 5 | What is stratified sampling, and when would you use it? |
+| B5P05Q14 | 5 | 5 | What is cluster sampling, and when would you use it? |
+| B5P05Q15 | 5 | 5 | What is systematic sampling? |
+| B5P05Q16 | 5 | 5 | What is the difference between probability sampling and non-probability sampling? |
+| B5P05Q17 | 5 | 5 | What is convenience sampling, and what is wrong with it? |
+| B5P05Q18 | 5 | 5 | What is survivorship bias? Give an example. |
+| B5P05Q19 | 5 | 5 | What is non-response bias? |
+| B5P05Q20 | 5 | 5 | What is voluntary response bias? |
+| B5P05Q21 | 5 | 5 | What is undercoverage bias? |
+| B5P05Q22 | 5 | 5 | What is the difference between sampling error and non-sampling error? |
+| B5P05Q23 | 5 | 5 | What is the difference between stratified sampling and cluster sampling? |
+| B5P05Q24 | 5 | 5 | What is a sampling distribution? |
+| B5P05Q25 | 5 | 5 | How would you explain a confidence interval to a non-technical manager? |
+| B5P05Q26 | 5 | 5 | Is a sample size of 30 always enough for the Central Limit Theorem to work? |
+| B5P05Q27 | 5 | 5 | Calculate the standard error of the mean: standard deviation 12, sample size 36. |
+| B5P05Q28 | 5 | 5 | Calculate a 95% confidence interval for a proportion: 200 of 500 surveyed employees are satisfied. |
+| B5P05Q29 | 5 | 5 | What is the difference between a 90%, 95% and 99% confidence interval for the same data? |
+| B5P05Q30 | 5 | 5 | Is it correct to say there is a 95% probability that the true mean lies inside a given 95% confidence interval? |
+| B5P05Q31 | 5 | 5 | What is the difference between confidence level and significance level? |
+| B5P05Q32 | 5 | 5 | Only 300 of 1,000 employees answered your engagement survey. What problems does this create and what would you do? |
+| B5P05Q33 | 5 | 5 | How many people must you survey for a margin of error of plus or minus 3% at 95% confidence? |
+| B5P05Q34 | 5 | 5 | When do you use a t-distribution instead of a z-distribution for a confidence interval? |
+| B5P05Q35 | 5 | 5 | Exit interviews show that employees leave mainly for better pay. Why might this conclusion be biased? |
+| B5P05Q36 | 5 | 5 | Does a larger sample size remove bias? |
+| B5P05Q37 | 5 | 5 | How would you pick a sample of 200 invoices from 10,000 for an audit? |
+| B5P05Q38 | 5 | 5 | What is the difference between the Law of Large Numbers and the Central Limit Theorem? |
+| B5P05Q39 | 5 | 5 | A survey of 200 employees shows 58 percent satisfaction; what margin of error would you report, and what would you tell HR? |
+| B5P05Q40 | 5 | 5 | What is snowball sampling, and when is it used? |
+| B5P05Q41 | 5 | 5 | What are recall bias and observer bias? |
+| B5P05Q42 | 5 | 5 | What is quota sampling, and how does it differ from stratified sampling? |
+| B5P05Q43 | 5 | 5 | What is bootstrapping, and when would an analyst use it? |
+| B5P05Q44 | 5 | 5 | A poll of 1,000 people shows Candidate A at 52% with a margin of error of plus or minus 3%. Can you say A is leading? |
+| B5P05Q45 | 5 | 5 | What does it mean if a confidence interval for a difference includes zero? |
+| B5P05Q46 | 5 | 5 | What is post-stratification weighting, and why is it used when survey respondents are unrepresentative? |
+| B5P05Q47 | 5 | 5 | What assumptions must hold for the Central Limit Theorem to apply? |
+| B5P05Q48 | 5 | 5 | How do you handle the Central Limit Theorem for heavy-tailed data such as salaries or order values? |
+| B5P05Q49 | 5 | 5 | What is the difference between a confidence interval and a prediction interval? |
+| B5P05Q50 | 5 | 5 | Do two overlapping 95% confidence intervals mean there is no significant difference? |
+| B5P05Q51 | 5 | 5 | What is the finite population correction, and when does it matter? |
+| B5P06Q1 | 5 | 6 | What is hypothesis testing, in simple words? |
+| B5P06Q2 | 5 | 6 | What are the null hypothesis and the alternative hypothesis? Give an HR example. |
+| B5P06Q3 | 5 | 6 | What is a p-value? Explain it to a non-technical manager. |
+| B5P06Q4 | 5 | 6 | What is the significance level (alpha), and why is 0.05 commonly used? |
+| B5P06Q5 | 5 | 6 | What are Type I and Type II errors? |
+| B5P06Q6 | 5 | 6 | If the p-value is 0.03 and alpha is 0.05, what is your conclusion? |
+| B5P06Q7 | 5 | 6 | What is a t-test and when do you use it? |
+| B5P06Q8 | 5 | 6 | What is the chi-square test and when do you use it? |
+| B5P06Q9 | 5 | 6 | What is the difference between statistical significance and practical significance? |
+| B5P06Q10 | 5 | 6 | What does a p-value NOT tell you? What are the common misinterpretations? |
+| B5P06Q11 | 5 | 6 | What does 'fail to reject the null hypothesis' mean, and why do we not say 'accept the null'? |
+| B5P06Q12 | 5 | 6 | What are the steps of a hypothesis test from start to finish? |
+| B5P06Q13 | 5 | 6 | What is the difference between a one-sample, two-sample and paired t-test? |
+| B5P06Q14 | 5 | 6 | Which test would you use to compare the average salary of two departments, and why? |
+| B5P06Q15 | 5 | 6 | Which test would you use to check whether attrition is related to department, and why? |
+| B5P06Q16 | 5 | 6 | What is the difference between a one-tailed and a two-tailed test? |
+| B5P06Q17 | 5 | 6 | Which is worse, a Type I or a Type II error? Give a business example for each. |
+| B5P06Q18 | 5 | 6 | What is ANOVA and why not run many t-tests instead? |
+| B5P06Q19 | 5 | 6 | How does sample size affect the p-value and the conclusion of a test? |
+| B5P06Q20 | 5 | 6 | What is a test statistic? |
+| B5P06Q21 | 5 | 6 | What is the difference between a z-test and a t-test? |
+| B5P06Q22 | 5 | 6 | What is a critical value and what is the rejection region? |
+| B5P06Q23 | 5 | 6 | What are degrees of freedom? |
+| B5P06Q24 | 5 | 6 | How are alpha and the probability of a Type I error related? |
+| B5P06Q25 | 5 | 6 | What is a confidence interval and how does it relate to a hypothesis test? |
+| B5P06Q26 | 5 | 6 | What is statistical power, and what affects it? |
+| B5P06Q27 | 5 | 6 | What is the relationship between alpha, beta and power? |
+| B5P06Q28 | 5 | 6 | What are the assumptions of the t-test? |
+| B5P06Q29 | 5 | 6 | Calculate a one-sample t-statistic: a sample of 25 employees has mean tenure 3.4 years and SD 1.5 years; the claimed mean is 3.0. What is t and is it significant at 5%? |
+| B5P06Q30 | 5 | 6 | Calculate a z-test for proportions: 120 of 400 employees say they would leave; the claimed rate is 25%. What is z and what do you conclude? |
+| B5P06Q31 | 5 | 6 | How do you calculate and interpret the chi-square statistic for a 2x2 table of gender versus promotion? |
+| B5P06Q32 | 5 | 6 | What are the assumptions of the chi-square test of independence? |
+| B5P06Q33 | 5 | 6 | What is the chi-square goodness-of-fit test? Give an example with attendance by weekday. |
+| B5P06Q34 | 5 | 6 | What are the null and alternative hypotheses in one-way ANOVA, and how do you read the F-statistic? |
+| B5P06Q35 | 5 | 6 | What are the assumptions of ANOVA? |
+| B5P06Q36 | 5 | 6 | If ANOVA is significant, how do you find which groups differ? |
+| B5P06Q37 | 5 | 6 | When would you use a paired t-test? Give an example such as training scores before and after. |
+| B5P06Q38 | 5 | 6 | How do you decide which statistical test to use for a given problem? |
+| B5P06Q39 | 5 | 6 | What is the multiple comparisons problem, and how do you handle it? |
+| B5P06Q40 | 5 | 6 | Your p-value is 0.051. Do you reject the null hypothesis? How do you explain this to a manager? |
+| B5P06Q41 | 5 | 6 | Why should we state the hypotheses and alpha before looking at the data? |
+| B5P06Q42 | 5 | 6 | What is p-hacking and how can an analyst avoid it? |
+| B5P06Q43 | 5 | 6 | What is the Central Limit Theorem and why does it matter for hypothesis tests? |
+| B5P06Q44 | 5 | 6 | What is effect size, and why report it along with the p-value? |
+| B5P06Q45 | 5 | 6 | What is a Type I error rate if you run 20 independent tests at alpha 0.05? |
+| B5P06Q46 | 5 | 6 | How do you test whether two proportions differ, for example the offer acceptance rate of two recruiters? |
+| B5P06Q47 | 5 | 6 | A manager says 'the p-value is 0.04 so there is a 96% chance our hypothesis is right.' How do you respond? |
+| B5P06Q48 | 5 | 6 | Explain a hypothesis test to a business stakeholder using a courtroom analogy. |
+| B5P06Q49 | 5 | 6 | How do you choose the sample size for a test? |
+| B5P06Q50 | 5 | 6 | How do you interpret a very small p-value from a very large sample? |
+| B5P06Q51 | 5 | 6 | Walk through a full hypothesis test: does a new onboarding programme change 90-day attrition? Use numbers. |
+| B5P06Q52 | 5 | 6 | What is a Z-score and how is it used in hypothesis testing? |
+| B5P06Q53 | 5 | 6 | What is the difference between a parametric and a non-parametric test? |
+| B5P06Q54 | 5 | 6 | When would you use the Mann-Whitney U test instead of a t-test? |
+| B5P06Q55 | 5 | 6 | What is Welch's t-test and when is it preferred? |
+| B5P06Q56 | 5 | 6 | What is Fisher's exact test and when is it used instead of chi-square? |
+| B5P06Q57 | 5 | 6 | What is the difference between the chi-square test of independence and the test of homogeneity? |
+| B5P06Q58 | 5 | 6 | What is a two-way ANOVA? |
+| B5P06Q59 | 5 | 6 | How do you test whether data is normally distributed before using a t-test? |
+| B5P06Q60 | 5 | 6 | What is a paired test versus an independent test, and what goes wrong if you pick the wrong one? |
+| B5P06Q61 | 5 | 6 | What is the F-test for comparing two variances? |
+| B5P06Q62 | 5 | 6 | What is the Bonferroni correction? Give an example. |
+| B5P06Q63 | 5 | 6 | How do you handle a hypothesis test when the data has outliers? |
+| B5P06Q64 | 5 | 6 | How are the confidence interval and the two-sided test linked? If the 95% CI for a mean difference excludes zero, what is the p-value? |
+| B5P06Q65 | 5 | 6 | Does a high p-value prove the two groups are the same? |
+| B5P06Q66 | 5 | 6 | What is the difference between a Z-test and a t-test for proportions in practice, and which do analysts usually run? |
+| B5P06Q67 | 5 | 6 | What is the Bayesian view of hypothesis testing, and how does it differ from the p-value approach? |
+| B5P06Q68 | 5 | 6 | What is the false discovery rate, and how does it differ from the family-wise error rate? |
+| B5P06Q69 | 5 | 6 | What is the difference between a Type S and Type M error? |
+| B5P06Q70 | 5 | 6 | What is the minimum detectable effect, and how does it connect to power? |
+| B5P06Q71 | 5 | 6 | How do you run and read a hypothesis test in Excel (Data Analysis ToolPak) at a high level? |
+| B5P06Q72 | 5 | 6 | What is bootstrapping and how can it be used for hypothesis testing? |
+| B5P06Q73 | 5 | 6 | What is a permutation test and when would you use it? |
+| B5P06Q74 | 5 | 6 | Why can we reject the null with statistical significance yet see no business impact? Give an HR example. |
+| B5P07Q1 | 5 | 7 | What is the difference between correlation and causation? |
+| B5P07Q2 | 5 | 7 | What is correlation, and what does the correlation coefficient (r) tell you? |
+| B5P07Q3 | 5 | 7 | What does R-squared (R²) tell you in a regression? |
+| B5P07Q4 | 5 | 7 | What is linear regression, and when would a data analyst use it? |
+| B5P07Q5 | 5 | 7 | Give a real business example where correlation does not mean causation. |
+| B5P07Q6 | 5 | 7 | What do the slope and the intercept mean in a simple linear regression equation? |
+| B5P07Q7 | 5 | 7 | How do you interpret correlation coefficients of 0.8, -0.6 and 0.05? |
+| B5P07Q8 | 5 | 7 | What is a confounding variable? Explain it with an example. |
+| B5P07Q9 | 5 | 7 | What are the assumptions of linear regression? |
+| B5P07Q10 | 5 | 7 | How do you interpret the coefficient of a variable in a multiple regression? |
+| B5P07Q11 | 5 | 7 | What does the p-value of a regression coefficient tell you? |
+| B5P07Q12 | 5 | 7 | What is the difference between correlation and regression? |
+| B5P07Q13 | 5 | 7 | What are the dependent and independent variables in a regression? Give an HR example. |
+| B5P07Q14 | 5 | 7 | What can a scatter plot tell you about the relationship between two variables? |
+| B5P07Q15 | 5 | 7 | What is the difference between positive, negative and zero correlation? Give one example of each. |
+| B5P07Q16 | 5 | 7 | Can a correlation coefficient be greater than 1 or less than -1? |
+| B5P07Q17 | 5 | 7 | If the correlation between two variables is zero, does it mean they are unrelated? |
+| B5P07Q18 | 5 | 7 | What is a residual in regression? |
+| B5P07Q19 | 5 | 7 | What is a spurious correlation? |
+| B5P07Q20 | 5 | 7 | What is the difference between simple and multiple linear regression? |
+| B5P07Q21 | 5 | 7 | Given the regression salary = 20000 + 4000 × years of experience, what salary does the model predict for 5 years, and what does the slope mean? |
+| B5P07Q22 | 5 | 7 | In a simple linear regression the correlation between X and Y is 0.6. What is R²? |
+| B5P07Q23 | 5 | 7 | What is the difference between Pearson and Spearman correlation, and when do you use each? |
+| B5P07Q24 | 5 | 7 | What is adjusted R², and why is it preferred over R² in multiple regression? |
+| B5P07Q25 | 5 | 7 | Does a high R² mean the model is good? |
+| B5P07Q26 | 5 | 7 | What is multicollinearity, and how do you detect it? |
+| B5P07Q27 | 5 | 7 | How does multicollinearity affect regression coefficients? |
+| B5P07Q28 | 5 | 7 | What is reverse causation? Give an example. |
+| B5P07Q29 | 5 | 7 | What is the difference between statistical significance and practical significance of a regression coefficient? |
+| B5P07Q30 | 5 | 7 | How would you explain regression output to a non-technical manager? |
+| B5P07Q31 | 5 | 7 | Experience and salary have a correlation of 0.85 across 200 employees. What can you conclude and what can you not conclude? |
+| B5P07Q32 | 5 | 7 | Employees who attended more training have lower attrition. Can you say training reduces attrition? |
+| B5P07Q33 | 5 | 7 | For x = 1, 2, 3, 4, 5 and y = 2, 4, 5, 4, 5, calculate the Pearson correlation coefficient. |
+| B5P07Q34 | 5 | 7 | For x = 1, 2, 3, 4, 5 and y = 2, 4, 5, 4, 5, calculate the regression line y = a + bx. |
+| B5P07Q35 | 5 | 7 | How do you check whether a linear regression model is a good fit? |
+| B5P07Q36 | 5 | 7 | What is a residual plot, and which patterns should worry you? |
+| B5P07Q37 | 5 | 7 | What is extrapolation in regression, and why is it risky? |
+| B5P07Q38 | 5 | 7 | Does a strong correlation mean a steep slope? |
+| B5P07Q39 | 5 | 7 | How do you include a categorical variable such as department in a regression? |
+| B5P07Q40 | 5 | 7 | How can you move from correlation towards causation when you only have observational data? |
+| B5P07Q41 | 5 | 7 | What is heteroscedasticity, and why does it matter? |
+| B5P07Q42 | 5 | 7 | Why can two trending time series show a high correlation even if they are unrelated? |
+| B5P07Q43 | 5 | 7 | What does ordinary least squares minimise? |
+| B5P07Q44 | 5 | 7 | What are MAE and RMSE, and how are they different from R²? |
+| B5P07Q45 | 5 | 7 | A correlation of 0.3 is found. How do you decide whether it is statistically significant, and how does sample size matter? |
+| B5P07Q46 | 5 | 7 | How do the slope and the correlation coefficient change if you change the units of a variable, for example salary in rupees versus lakhs? |
+| B5P07Q47 | 5 | 7 | What is partial correlation or controlling for a variable? |
+| B5P07Q48 | 5 | 7 | What is the standard error of a regression coefficient, and how does it give a confidence interval? |
+| B5P07Q49 | 5 | 7 | What is the F-test in regression output, and how is it different from the t-test on a coefficient? |
+| B5P07Q50 | 5 | 7 | What is autocorrelation of residuals, and when does it matter? |
+| B5P07Q51 | 5 | 7 | What is the dummy variable trap? |
+| B5P07Q52 | 5 | 7 | When would you take the log of a variable in a regression, and how does it change the interpretation? |
+| B5P07Q53 | 5 | 7 | What is the difference between a confounder, a mediator and a moderator? |
+| B5P07Q54 | 5 | 7 | Two predictors have different units. How do you judge which one matters more in the regression? |
+| B5P08Q1 | 5 | 8 | What is A/B testing? Explain it to a non-technical manager. |
+| B5P08Q2 | 5 | 8 | What are the control group and the treatment group in an A/B test? |
+| B5P08Q3 | 5 | 8 | Why do we randomly assign users to the control and treatment groups? |
+| B5P08Q4 | 5 | 8 | What are the null and alternative hypotheses in an A/B test? Give an example. |
+| B5P08Q5 | 5 | 8 | How would you design an A/B test end to end for a new website checkout page? |
+| B5P08Q6 | 5 | 8 | How do you choose the primary metric and the guardrail metrics for an A/B test? |
+| B5P08Q7 | 5 | 8 | What does the p-value mean in an A/B test result, and what does it not mean? |
+| B5P08Q8 | 5 | 8 | Version A converted 200 of 2,000 visitors and version B converted 240 of 2,000. Is B really better? Walk through the test. |
+| B5P08Q9 | 5 | 8 | An A/B test shows a 2% lift with a p-value of 0.03. Would you ship the change? |
+| B5P08Q10 | 5 | 8 | How do you calculate the sample size needed for an A/B test? |
+| B5P08Q11 | 5 | 8 | Why should you not stop an A/B test the moment the result turns significant (the peeking problem)? |
+| B5P08Q12 | 5 | 8 | What are Type I and Type II errors in the context of an A/B test? |
+| B5P08Q13 | 5 | 8 | How do you calculate absolute lift and relative lift of a conversion rate, and why do both matter? |
+| B5P08Q14 | 5 | 8 | Tell me about an A/B test you ran or analysed. What was the result and what happened next? |
+| B5P08Q15 | 5 | 8 | What is statistical power, and why is 80% the usual target? |
+| B5P08Q16 | 5 | 8 | What is the Minimum Detectable Effect (MDE), and how does it change the required sample size? |
+| B5P08Q17 | 5 | 8 | What is a guardrail metric, and what do you do when the primary metric improves but a guardrail metric gets worse? |
+| B5P08Q18 | 5 | 8 | How long should an A/B test run, and why should it usually cover full weeks? |
+| B5P08Q19 | 5 | 8 | What are the novelty effect and the primacy effect in an A/B test? |
+| B5P08Q20 | 5 | 8 | How do you read a confidence interval for the lift in an A/B test? |
+| B5P08Q21 | 5 | 8 | When do you use a one-tailed test and when a two-tailed test in an A/B test? |
+| B5P08Q22 | 5 | 8 | What is the multiple comparisons problem when you test many variants or many metrics, and how do you handle it? |
+| B5P08Q23 | 5 | 8 | What should be the unit of randomisation in an A/B test: user, session, cookie or device? |
+| B5P08Q24 | 5 | 8 | Which statistical test would you use to compare conversion rate, and which to compare average revenue per user? |
+| B5P08Q25 | 5 | 8 | A test shows no statistically significant difference. What do you conclude and what do you recommend? |
+| B5P08Q26 | 5 | 8 | A test shows a lift in click-through rate but no change in revenue. What could explain it? |
+| B5P08Q27 | 5 | 8 | HR wants to test whether a new reminder message reduces interview no-shows. How would you set up the A/B test? |
+| B5P08Q28 | 5 | 8 | Swiggy wants to test free delivery on orders above Rs 199. Which metrics would you track and what could go wrong? |
+| B5P08Q29 | 5 | 8 | What is a Sample Ratio Mismatch (SRM), how do you detect it, and what do you do if you find one? |
+| B5P08Q30 | 5 | 8 | You have too little traffic to reach the required sample size. What are your options? |
+| B5P08Q31 | 5 | 8 | What is the difference between an A/B test and an A/A test, and why run an A/A test? |
+| B5P08Q32 | 5 | 8 | What is the difference between an A/B test, an A/B/n test and a multivariate test? |
+| B5P08Q33 | 5 | 8 | How should outliers, such as a few very large orders, be handled when comparing revenue between groups? |
+| B5P08Q34 | 5 | 8 | Can you run an A/B test with an uneven split such as 90/10, and what are the trade-offs? |
+| B5P08Q35 | 5 | 8 | When should you not run an A/B test? |
+| B5P08Q36 | 5 | 8 | Why is slicing an A/B test result into many segments after the test dangerous? |
+| B5P08Q37 | 5 | 8 | What is the winner's curse, and why does a launched lift often turn out smaller than the test showed? |
+| B5P08Q38 | 5 | 8 | What are network effects or interference between users, and how do they break an A/B test? |
+| B5P08Q39 | 5 | 8 | How do you analyse a ratio metric such as click-through rate when users have different numbers of sessions? |
+| B5P08Q40 | 5 | 8 | What is the difference between frequentist and Bayesian A/B testing? |
+| B5P08Q41 | 5 | 8 | What is CUPED or variance reduction, and why does it help? |
+| B5P08Q42 | 5 | 8 | What is sequential testing, and how does it differ from fixed-horizon testing? |
+| B5P08Q43 | 5 | 8 | How would you measure the impact of a change when randomisation is not possible? |
+| B5P09Q1 | 5 | 9 | What is an outlier? |
+| B5P09Q2 | 5 | 9 | How do you identify outliers in a dataset? |
+| B5P09Q3 | 5 | 9 | How do you handle outliers in a dataset? |
+| B5P09Q4 | 5 | 9 | Your company's average salary is Rs 14 lakh but most employees earn about Rs 6 lakh. Which average would you report to the CEO, and why? |
+| B5P09Q5 | 5 | 9 | Explain the IQR method for detecting outliers. In a salary dataset Q1 is Rs 15,000 and Q3 is Rs 28,000: is Rs 95,000 an outlier? |
+| B5P09Q6 | 5 | 9 | Explain the z-score method for detecting outliers. When does it fail? |
+| B5P09Q7 | 5 | 9 | Should you always remove outliers? When would you keep one? |
+| B5P09Q8 | 5 | 9 | What is Simpson's paradox? Explain it with an example. |
+| B5P09Q9 | 5 | 9 | Two recruiters have different offer-acceptance rates overall, but the ranking flips when you look department by department. Show with numbers how this can happen. |
+| B5P09Q10 | 5 | 9 | How is an outlier different from a data-entry error? |
+| B5P09Q11 | 5 | 9 | How does a box plot show outliers? |
+| B5P09Q12 | 5 | 9 | Attrition fell from 10% to 5%. A manager says "attrition was halved". What is wrong or incomplete about presenting it that way? |
+| B5P09Q13 | 5 | 9 | What is the difference between percentage change and percentage-point change? Give an HR example. |
+| B5P09Q14 | 5 | 9 | How can a chart with a truncated y-axis mislead the reader? |
+| B5P09Q15 | 5 | 9 | What is cherry-picking in data analysis, and how do you avoid it? |
+| B5P09Q16 | 5 | 9 | Why is the average of department-wise averages not the same as the company-wide average? Show with an example. |
+| B5P09Q17 | 5 | 9 | What is winsorization, and how is it different from trimming and from deleting outliers? |
+| B5P09Q18 | 5 | 9 | What is the modified z-score (median and MAD), and why is it more robust than the ordinary z-score? |
+| B5P09Q19 | 5 | 9 | How would you decide whether an outlier is an error, a rare real event, or a different population? |
+| B5P09Q20 | 5 | 9 | A single day shows sales ten times the normal level. How do you check whether to include it in a monthly trend analysis? |
+| B5P09Q21 | 5 | 9 | What is survivorship bias? Give an example from HR or business data. |
+| B5P09Q22 | 5 | 9 | What is the base rate fallacy? Give a numeric example. |
+| B5P09Q23 | 5 | 9 | A 100% conversion rate looks great on a dashboard. Why can small sample sizes make percentages misleading? |
+| B5P09Q24 | 5 | 9 | How would you check your own analysis for Simpson's paradox before sharing it? |
+| B5P09Q25 | 5 | 9 | Which would you trust to make a decision, the overall result or the segment-level result? How do you decide in a Simpson's paradox case? |
+| B5P09Q26 | 5 | 9 | Revenue per customer is dominated by a few very large "whale" customers. How would you report and analyse it? |
+| B5P09Q27 | 5 | 9 | What are some common ways statistics are used to mislead in reports and presentations? |
+| B5P09Q28 | 5 | 9 | Why can a mean be misleading for bimodal or skewed data? What would you report instead? |
+| B5P09Q29 | 5 | 9 | What is Anscombe's quartet, and what lesson does it teach analysts? |
+| B5P09Q30 | 5 | 9 | What is regression to the mean? Give an example that could fool a manager. |
+| B5P09Q31 | 5 | 9 | What is Goodhart's law? Give an example of a KPI that stops being useful once it becomes a target. |
+| B5P09Q32 | 5 | 9 | Why might a log transformation help with outliers and skewed data, and what is the downside when explaining results? |
+| B5P09Q33 | 5 | 9 | How do you report results when removing an outlier changes the conclusion? |
+| B5P09Q34 | 5 | 9 | What is the Texas sharpshooter fallacy? |
+| B5P09Q35 | 5 | 9 | Why is a pie chart or dual-axis chart sometimes considered misleading? |
+| B5P09Q36 | 5 | 9 | What is the ecological fallacy? Give an example. |
+| B5P09Q37 | 5 | 9 | What is the difference between an outlier, a high-leverage point and an influential point? |
+| B5P09Q38 | 5 | 9 | What is the masking effect in outlier detection, and how can you avoid it? |
+| B5P09Q39 | 5 | 9 | What is Berkson's paradox? Give an example. |
+| B5P09Q40 | 5 | 9 | How do you detect outliers when the data has several variables, for example height and weight together? |
+| B5P09Q41 | 5 | 9 | A dashboard shows average handling time falling every month, yet customers complain more. What statistical pitfalls could explain this? |
+| B5P10Q1 | 5 | 10 | Average customer satisfaction (CSAT) fell 10% this quarter. How would you analyse it? |
+| B5P10Q2 | 5 | 10 | Your manager says the average salary of the team is 8 lakh, but most people feel they earn less. What could explain this, and what would you report instead? |
+| B5P10Q3 | 5 | 10 | A report shows attrition went from 12% to 14% in one month. How do you decide whether this is a real increase or normal fluctuation? |
+| B5P10Q4 | 5 | 10 | The sales team claims a new campaign worked because sales rose 5% after launch. How would you check that claim? |
+| B5P10Q5 | 5 | 10 | You have survey responses from 200 of 5,000 employees. How confident can you be in the results, and what would you check first? |
+| B5P10Q6 | 5 | 10 | A result has p = 0.03 but the effect is only 0.2% lift in revenue. Would you recommend acting on it? |
+| B5P10Q7 | 5 | 10 | Two branches have average sales of 52 and 55 units. How do you tell whether the 3-unit gap is real? |
+| B5P10Q8 | 5 | 10 | Ice-cream sales and drowning incidents rise together. A manager says to ban ice cream. How do you respond? |
+| B5P10Q9 | 5 | 10 | A dashboard shows overall conversion rate fell, but every individual channel's rate rose. How is that possible and what would you do? |
+| B5P10Q10 | 5 | 10 | Why would you report median instead of mean for salary, delivery time or order value, and how would you justify it to a manager? |
+| B5P10Q11 | 5 | 10 | You find a few extremely large orders in the data. Do you delete them? Walk through your decision. |
+| B5P10Q12 | 5 | 10 | A new employee training programme was tried on 50 people and their average score rose. How would you test if the programme actually worked? |
+| B5P10Q13 | 5 | 10 | A column has 30% missing values (for example, salary or age). How do you decide what to do, and what bias could each choice introduce? |
+| B5P10Q14 | 5 | 10 | Your report says the average hiring time is 30 days. The recruiter says it feels like 45. How would you investigate the difference? |
+| B5P10Q15 | 5 | 10 | Explain 95% confidence interval to a non-technical manager using an attendance or survey example. |
+| B5P10Q16 | 5 | 10 | Employee engagement survey: 85% of responders are satisfied, but only 20% of staff responded. Can you trust the 85%? |
+| B5P10Q17 | 5 | 10 | A candidate scores 78 in a test where the team average is 70 and the standard deviation is 8. How would you explain how good that score is? |
+| B5P10Q18 | 5 | 10 | How would you sanity-check a number in a report before sending it to a manager? |
+| B5P10Q19 | 5 | 10 | Sales dipped on one day. How do you decide whether to raise an alarm or treat it as normal variation? |
+| B5P10Q20 | 5 | 10 | You run 20 different comparisons on the same data and one shows p < 0.05. Should you report it? |
+| B5P10Q21 | 5 | 10 | A model flags attrition risk with 95% accuracy, but only 3% of employees actually leave. Is 95% good? |
+| B5P10Q22 | 5 | 10 | A test for a rare issue is 99% accurate and 1 in 1,000 items is faulty. A flagged item is faulty with what probability, and how would you explain the result to a manager? |
+| B5P10Q23 | 5 | 10 | Customers who use the mobile app spend more than those who do not. Does that mean pushing everyone to the app will raise spending? |
+| B5P10Q24 | 5 | 10 | The A/B test shows a 2% lift after 3 days and the product team wants to stop early. What do you advise? |
+| B5P10Q25 | 5 | 10 | How would you decide how many people to survey to estimate employee satisfaction within plus or minus 3 points? |
+| B5P10Q26 | 5 | 10 | Two departments have attrition of 10% (of 20 people) and 12% (of 500 people). Which is a more reliable number and why? |
+| B5P10Q27 | 5 | 10 | Average rating of Product A is 4.8 from 5 reviews and Product B is 4.5 from 500 reviews. Which is better? |
+| B5P10Q28 | 5 | 10 | A correlation of 0.8 between training hours and performance is found. What additional questions would you ask before concluding anything? |
+| B5P10Q29 | 5 | 10 | Your team's average response time improved from 10 to 8 minutes, but customers still complain. What might you check in the data? |
+| B5P10Q30 | 5 | 10 | The sales data is right-skewed. Which summary statistics and chart would you show your manager, and why? |
+| B5P10Q31 | 5 | 10 | How would you check whether the gap in average pay between men and women in a company is statistically significant, and what else must you control for? |
+| B5P10Q32 | 5 | 10 | A survey was sent only to employees who are still with the company to ask why people leave. What is wrong with this design? |
+| B5P10Q33 | 5 | 10 | Marks of students from two coaching centres are given. Which test would you use to compare them, and what assumptions do you check? |
+| B5P10Q34 | 5 | 10 | A manager says 'last month's best-performing salesperson will do well again.' Using statistics, how do you challenge or support that? |
+| B5P10Q35 | 5 | 10 | You need to check if a dice or coin used in a promotion game is fair. How would you test it with data? |
+| B5P10Q36 | 5 | 10 | Product return rate is 8% overall. How do you tell if the rate for one region at 11% is genuinely higher? |
+| B5P10Q37 | 5 | 10 | You are asked to present statistical findings to a leadership team with no analytics background. How do you structure the message? |
+| B5P10Q38 | 5 | 10 | Your manager asks you to forecast next month's sales using only the last three months of data. What are the risks and how would you present the uncertainty? |
+| B5P10Q39 | 5 | 10 | Overall, a hospital's treatment shows a lower success rate than a competitor, yet it does better for both mild and severe patients. Explain what is happening and what you would report. |
+| B5P10Q40 | 5 | 10 | An A/B test shows an overall lift, but when split by new vs returning users, the lift disappears in both groups. How could this occur? |
+| B5P10Q41 | 5 | 10 | Two variants of a landing page show 5.0% vs 5.5% conversion with 2,000 visitors each. Is the difference significant? Show a rough calculation. |
+| B5P10Q42 | 5 | 10 | Two dice are rolled. What is the probability that the sum is greater than 6? |
+| B5P10Q43 | 5 | 10 | What is the probability that a 31-day month has five Sundays? |
+| B5P10Q44 | 5 | 10 | You have 100 employees, 60 in sales and 40 in support. If you pick 2 at random, what is the probability both are from support? |
+| B5P10Q45 | 5 | 10 | A call centre gets 6 calls per hour on average. What is the chance of getting no call in a given 10-minute window? |
+| B5P10Q46 | 5 | 10 | An interviewer gives you a coin that you suspect is biased and asks how you would prove it with the fewest tosses. What do you say? |
+| B5P10Q47 | 5 | 10 | Your A/B test ran for a week and shows lift on Monday to Wednesday but none later. What could explain it? |
+| B5P10Q48 | 5 | 10 | The experiment's control group has 10,200 users and the test group has 9,400 users when you expected an equal split. Is that a problem? |
+| B5P10Q49 | 5 | 10 | How would you handle a metric that has a strong weekly pattern (for example, weekday vs weekend attendance) when comparing two periods? |
+| B5P10Q50 | 5 | 10 | How would you tell whether an employee's sudden performance spike is skill or luck (regression to the mean)? |
+| B5P10Q51 | 5 | 10 | A vendor claims their delivery time is 'on average 3 days'. What further statistics would you ask for before trusting this? |
+| B5P10Q52 | 5 | 10 | Customers who complain are 3 times more likely to churn. How would you check whether complaints cause churn? |
+| B5P10Q53 | 5 | 10 | How would you explain to a manager why two employees with the same average performance score may need different management? |
+| B5P10Q54 | 5 | 10 | You must compare monthly attrition across 12 locations with very different headcounts. How would you do this fairly? |
+| B5P10Q55 | 5 | 10 | A dataset shows that employees with more years of experience earn more, but your analysis shows the relationship disappears within each job grade. What does this tell you? |
+| B5P10Q56 | 5 | 10 | How would you estimate how many people are needed in a pilot to detect a 5% improvement in a process? |
+| B5P10Q57 | 5 | 10 | You have to measure the effect of a work-from-home policy but cannot randomise who gets it. How would you approach the analysis? |
+| B5P10Q58 | 5 | 10 | A test has 80% power and you ran 10 experiments where 2 are truly effective. Roughly how many significant results do you expect, and how many are false? |
+| B5P10Q59 | 5 | 10 | An A/B test on a rare event (0.5% conversion) needs a very large sample. What practical alternatives do you suggest to the business? |
+| B5P10Q60 | 5 | 10 | Your boss insists on a result of 'no difference' after a non-significant test. What can and can't you conclude? |
+| B5P10Q61 | 5 | 10 | Estimate the number of employees likely to attrite next quarter and give a range. How do you build and communicate it? |
+| B5P10Q62 | 5 | 10 | A KPI improves after a policy change, but a similar KPI in a neighbouring unit with no change also improves. What does this suggest for your conclusion? |
+| B5P10Q63 | 5 | 10 | Explain how survivorship bias could distort an analysis of the performance of employees hired three years ago. |
+| B5P10Q64 | 5 | 10 | A metric moved from 20.0% to 20.4%, and the dashboard colours it green. How would you design the dashboard to avoid over-reading noise? |
+| B5P11Q1 | 5 | 11 | Which Excel functions do you use to find the mean, median and mode of a column of salaries? |
+| B5P11Q2 | 5 | 11 | How do you get a quick statistical summary of a dataset in Python using pandas describe()? |
+| B5P11Q3 | 5 | 11 | What is the difference between COUNT, COUNTA, COUNTBLANK and COUNTIF in Excel? |
+| B5P11Q4 | 5 | 11 | How do you calculate the average salary per department using a pandas groupby? |
+| B5P11Q5 | 5 | 11 | What is the difference between AVERAGE, AVERAGEIF and AVERAGEIFS in Excel, and how would you find the average salary of the Sales team in Hyderabad? |
+| B5P11Q6 | 5 | 11 | What is the difference between STDEV.S and STDEV.P in Excel, and which one do you use for a sample of 50 employees? |
+| B5P11Q7 | 5 | 11 | How do you calculate the correlation between two columns (for example, experience and salary) in Excel and in Python? |
+| B5P11Q8 | 5 | 11 | Why does np.std give a different answer from pandas .std(), and what is ddof? |
+| B5P11Q9 | 5 | 11 | How do you calculate a weighted average in Excel using SUMPRODUCT, and how do you do it in Python? |
+| B5P11Q10 | 5 | 11 | How do you find quartiles and percentiles in Excel, and what is the difference between PERCENTILE.INC and PERCENTILE.EXC? |
+| B5P11Q11 | 5 | 11 | How do you check for missing values in pandas, and how does a missing value affect mean(), sum() and count()? |
+| B5P11Q12 | 5 | 11 | How do you fill missing values with the mean or median in pandas, and when would you choose the median? |
+| B5P11Q13 | 5 | 11 | How do you build a pivot table in Excel to show average, count and maximum of salary by department? |
+| B5P11Q14 | 5 | 11 | How do you use value_counts() in pandas to see the percentage share of each category, such as attrition Yes/No? |
+| B5P11Q15 | 5 | 11 | How do you calculate a moving average in Excel and in pandas? |
+| B5P11Q16 | 5 | 11 | How do you rank values in Excel using RANK.EQ and PERCENTRANK.INC, and what happens with ties? |
+| B5P11Q17 | 5 | 11 | How do you flag outliers using the IQR rule in Excel? |
+| B5P11Q18 | 5 | 11 | How do you detect outliers in Python using the IQR method with quantile()? |
+| B5P11Q19 | 5 | 11 | How do you calculate a z-score in Excel (STANDARDIZE) and in Python, and what does a z-score of 2.5 tell you? |
+| B5P11Q20 | 5 | 11 | How do you enable and use the Data Analysis ToolPak in Excel to get descriptive statistics? |
+| B5P11Q21 | 5 | 11 | How do you run a simple linear regression in Excel using SLOPE, INTERCEPT, RSQ or LINEST, and how do you read R-squared? |
+| B5P11Q22 | 5 | 11 | How do you run a simple linear regression in Python and read the coefficient and R-squared? |
+| B5P11Q23 | 5 | 11 | How do you run a two-sample t-test in Excel using T.TEST, and what do the type and tails arguments mean? |
+| B5P11Q24 | 5 | 11 | How do you run a two-sample t-test in Python using scipy, and why do you often set equal_var=False? |
+| B5P11Q25 | 5 | 11 | How do you run a chi-square test of independence in Excel (CHISQ.TEST) and in Python (chi2_contingency)? |
+| B5P11Q26 | 5 | 11 | How do you calculate a 95% confidence interval for a mean in Excel using CONFIDENCE.T, and in Python? |
+| B5P11Q27 | 5 | 11 | What is the difference between COVARIANCE.S and COVARIANCE.P in Excel, and how do you get a covariance matrix in pandas? |
+| B5P11Q28 | 5 | 11 | How do you check the shape of a distribution in Excel and Python using SKEW, KURT, a histogram or skew()? |
+| B5P11Q29 | 5 | 11 | How do you take a random sample of rows in Excel and in pandas, and why set random_state? |
+| B5P11Q30 | 5 | 11 | How do you build and read a correlation matrix in pandas, and why must you select numeric columns first? |
+| B5P11Q31 | 5 | 11 | What does mode() return in pandas, and why is the result a Series and not a single number? |
+| B5P11Q32 | 5 | 11 | How do you use NORM.DIST, NORM.S.DIST and NORM.INV in Excel to find probabilities and cut-off values? |
+| B5P11Q33 | 5 | 11 | How do you use BINOM.DIST and POISSON.DIST in Excel, with a worked example? |
+| B5P11Q34 | 5 | 11 | How do you forecast the next value in Excel using FORECAST.LINEAR or TREND, and what are the limits of the forecast? |
+| B5P12Q1 | 5 | 12 | How did you learn statistics, and how long did it take you? |
+| B5P12Q2 | 5 | 12 | How would you rate yourself in statistics out of 10, and why? |
+| B5P12Q3 | 5 | 12 | You come from HR with no maths or statistics background. How did you learn statistics for data analysis? |
+| B5P12Q4 | 5 | 12 | Which statistics topic did you find hardest, and how did you overcome it? |
+| B5P12Q5 | 5 | 12 | Which statistical concepts have you actually used in a real analysis, and what was the result? |
+| B5P12Q6 | 5 | 12 | Which free resources would you recommend to a beginner learning statistics for data analysis? |
+| B5P12Q7 | 5 | 12 | In what order did you study statistics topics, and why that order? |
+| B5P12Q8 | 5 | 12 | How much maths do you really need to work as a data analyst? |
+| B5P12Q9 | 5 | 12 | How much time do you spend practising statistics each week? |
+| B5P12Q10 | 5 | 12 | Which practice datasets have you used to apply statistics? |
+| B5P12Q11 | 5 | 12 | How do you check that you truly understand a statistics concept and are not just memorising the formula? |
+| B5P12Q12 | 5 | 12 | How do you learn a statistical test or concept you have never used before? |
+| B5P12Q13 | 5 | 12 | How do you use AI assistants such as ChatGPT to learn statistics without depending on them? |
+| B5P12Q14 | 5 | 12 | How would you prepare for a statistics and probability round in one week? |
+| B5P12Q15 | 5 | 12 | Tell me about a time you got a statistics concept wrong and how you corrected it. |
+| B5P12Q16 | 5 | 12 | How do you explain a statistical result, such as a p-value or confidence interval, to a non-technical manager? |
+| B5P12Q17 | 5 | 12 | Do certifications or online courses in statistics help, and have you done any? |
+| B5P12Q18 | 5 | 12 | Have you built a portfolio project that uses statistics? |
+| B5P12Q19 | 5 | 12 | How would you build a statistics-based portfolio project from a public HR dataset such as employee attrition? |
+| B5P12Q20 | 5 | 12 | How would you set up a self-check test to measure your own statistics level? |
+| B5P12Q21 | 5 | 12 | What is your plan to improve your statistics and maths over the next three months? |
+| B5P12Q22 | 5 | 12 | What is the difference between learning statistics for exams and learning it for day-to-day data analysis? |
+| B5P12Q23 | 5 | 12 | How do you keep your statistics skills current while working a full-time job? |
+| B5P12Q24 | 5 | 12 | What are the most common statistics mistakes beginners make, and how do you avoid them? |
+| B5P12Q25 | 5 | 12 | Where does statistics end and machine learning begin, and what would you learn after statistics? |
 
 ## Book 6 — Aptitude & Business Maths
 | Q-ID | Book | Part | Canonical question |

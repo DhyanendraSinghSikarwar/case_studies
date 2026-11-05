@@ -1,6 +1,6 @@
 # Book 5 — Statistics & Maths for Data Analysts | Part 9: Outliers, Simpson's Paradox, Misleading Stats 🟡
 
-**Target:** 40 questions | **Actual:** 42 questions
+**Target:** 40 questions | **Actual:** 41 questions
 **Scope:** detecting and handling outliers, Simpson's paradox, and the common ways averages, percentages and charts mislead.
 
 ### Q1 ⭐⭐⭐ 🟢 What is an outlier?
@@ -30,101 +30,98 @@
 ### Q9 ⭐⭐⭐ 🟡 Two recruiters have different offer-acceptance rates overall, but the ranking flips when you look department by department. Show with numbers how this can happen.
 <!-- ANSWER_PENDING -->
 
-### Q10 ⭐⭐⭐ 🟡 How does a single outlier affect the mean, median, standard deviation and correlation?
+### Q10 ⭐⭐ 🟢 How is an outlier different from a data-entry error?
 <!-- ANSWER_PENDING -->
 
-### Q11 ⭐⭐ 🟢 How is an outlier different from a data-entry error?
+### Q11 ⭐⭐ 🟢 How does a box plot show outliers?
 <!-- ANSWER_PENDING -->
 
-### Q12 ⭐⭐ 🟢 How does a box plot show outliers?
+### Q12 ⭐⭐ 🟢 Attrition fell from 10% to 5%. A manager says "attrition was halved". What is wrong or incomplete about presenting it that way?
 <!-- ANSWER_PENDING -->
 
-### Q13 ⭐⭐ 🟢 Attrition fell from 10% to 5%. A manager says "attrition was halved". What is wrong or incomplete about presenting it that way?
+### Q13 ⭐⭐ 🟢 What is the difference between percentage change and percentage-point change? Give an HR example.
 <!-- ANSWER_PENDING -->
 
-### Q14 ⭐⭐ 🟢 What is the difference between percentage change and percentage-point change? Give an HR example.
+### Q14 ⭐⭐ 🟢 How can a chart with a truncated y-axis mislead the reader?
 <!-- ANSWER_PENDING -->
 
-### Q15 ⭐⭐ 🟢 How can a chart with a truncated y-axis mislead the reader?
+### Q15 ⭐⭐ 🟢 What is cherry-picking in data analysis, and how do you avoid it?
 <!-- ANSWER_PENDING -->
 
-### Q16 ⭐⭐ 🟢 What is cherry-picking in data analysis, and how do you avoid it?
+### Q16 ⭐⭐ 🟡 Why is the average of department-wise averages not the same as the company-wide average? Show with an example.
 <!-- ANSWER_PENDING -->
 
-### Q17 ⭐⭐ 🟡 Why is the average of department-wise averages not the same as the company-wide average? Show with an example.
+### Q17 ⭐⭐ 🟡 What is winsorization, and how is it different from trimming and from deleting outliers?
 <!-- ANSWER_PENDING -->
 
-### Q18 ⭐⭐ 🟡 What is winsorization, and how is it different from trimming and from deleting outliers?
+### Q18 ⭐⭐ 🟡 What is the modified z-score (median and MAD), and why is it more robust than the ordinary z-score?
 <!-- ANSWER_PENDING -->
 
-### Q19 ⭐⭐ 🟡 What is the modified z-score (median and MAD), and why is it more robust than the ordinary z-score?
+### Q19 ⭐⭐ 🟡 How would you decide whether an outlier is an error, a rare real event, or a different population?
 <!-- ANSWER_PENDING -->
 
-### Q20 ⭐⭐ 🟡 How would you decide whether an outlier is an error, a rare real event, or a different population?
+### Q20 ⭐⭐ 🟡 A single day shows sales ten times the normal level. How do you check whether to include it in a monthly trend analysis?
 <!-- ANSWER_PENDING -->
 
-### Q21 ⭐⭐ 🟡 A single day shows sales ten times the normal level. How do you check whether to include it in a monthly trend analysis?
+### Q21 ⭐⭐ 🟡 What is survivorship bias? Give an example from HR or business data.
 <!-- ANSWER_PENDING -->
 
-### Q22 ⭐⭐ 🟡 What is survivorship bias? Give an example from HR or business data.
+### Q22 ⭐⭐ 🟡 What is the base rate fallacy? Give a numeric example.
 <!-- ANSWER_PENDING -->
 
-### Q23 ⭐⭐ 🟡 What is the base rate fallacy? Give a numeric example.
+### Q23 ⭐⭐ 🟡 A 100% conversion rate looks great on a dashboard. Why can small sample sizes make percentages misleading?
 <!-- ANSWER_PENDING -->
 
-### Q24 ⭐⭐ 🟡 A 100% conversion rate looks great on a dashboard. Why can small sample sizes make percentages misleading?
+### Q24 ⭐⭐ 🟡 How would you check your own analysis for Simpson's paradox before sharing it?
 <!-- ANSWER_PENDING -->
 
-### Q25 ⭐⭐ 🟡 How would you check your own analysis for Simpson's paradox before sharing it?
+### Q25 ⭐⭐ 🟡 Which would you trust to make a decision, the overall result or the segment-level result? How do you decide in a Simpson's paradox case?
 <!-- ANSWER_PENDING -->
 
-### Q26 ⭐⭐ 🟡 Which would you trust to make a decision, the overall result or the segment-level result? How do you decide in a Simpson's paradox case?
+### Q26 ⭐⭐ 🔴 Revenue per customer is dominated by a few very large "whale" customers. How would you report and analyse it?
 <!-- ANSWER_PENDING -->
 
-### Q27 ⭐⭐ 🔴 Revenue per customer is dominated by a few very large "whale" customers. How would you report and analyse it?
+### Q27 ⭐ 🟢 What are some common ways statistics are used to mislead in reports and presentations?
 <!-- ANSWER_PENDING -->
 
-### Q28 ⭐ 🟢 What are some common ways statistics are used to mislead in reports and presentations?
+### Q28 ⭐ 🟡 Why can a mean be misleading for bimodal or skewed data? What would you report instead?
 <!-- ANSWER_PENDING -->
 
-### Q29 ⭐ 🟡 Why can a mean be misleading for bimodal or skewed data? What would you report instead?
+### Q29 ⭐ 🟡 What is Anscombe's quartet, and what lesson does it teach analysts?
 <!-- ANSWER_PENDING -->
 
-### Q30 ⭐ 🟡 What is Anscombe's quartet, and what lesson does it teach analysts?
+### Q30 ⭐ 🟡 What is regression to the mean? Give an example that could fool a manager.
 <!-- ANSWER_PENDING -->
 
-### Q31 ⭐ 🟡 What is regression to the mean? Give an example that could fool a manager.
+### Q31 ⭐ 🟡 What is Goodhart's law? Give an example of a KPI that stops being useful once it becomes a target.
 <!-- ANSWER_PENDING -->
 
-### Q32 ⭐ 🟡 What is Goodhart's law? Give an example of a KPI that stops being useful once it becomes a target.
+### Q32 ⭐ 🟡 Why might a log transformation help with outliers and skewed data, and what is the downside when explaining results?
 <!-- ANSWER_PENDING -->
 
-### Q33 ⭐ 🟡 Why might a log transformation help with outliers and skewed data, and what is the downside when explaining results?
+### Q33 ⭐ 🟡 How do you report results when removing an outlier changes the conclusion?
 <!-- ANSWER_PENDING -->
 
-### Q34 ⭐ 🟡 How do you report results when removing an outlier changes the conclusion?
+### Q34 ⭐ 🟡 What is the Texas sharpshooter fallacy?
 <!-- ANSWER_PENDING -->
 
-### Q35 ⭐ 🟡 What is the Texas sharpshooter fallacy?
+### Q35 ⭐ 🟡 Why is a pie chart or dual-axis chart sometimes considered misleading?
 <!-- ANSWER_PENDING -->
 
-### Q36 ⭐ 🟡 Why is a pie chart or dual-axis chart sometimes considered misleading?
+### Q36 ⭐ 🔴 What is the ecological fallacy? Give an example.
 <!-- ANSWER_PENDING -->
 
-### Q37 ⭐ 🔴 What is the ecological fallacy? Give an example.
+### Q37 ⭐ 🔴 What is the difference between an outlier, a high-leverage point and an influential point?
 <!-- ANSWER_PENDING -->
 
-### Q38 ⭐ 🔴 What is the difference between an outlier, a high-leverage point and an influential point?
+### Q38 ⭐ 🔴 What is the masking effect in outlier detection, and how can you avoid it?
 <!-- ANSWER_PENDING -->
 
-### Q39 ⭐ 🔴 What is the masking effect in outlier detection, and how can you avoid it?
+### Q39 ⭐ 🔴 What is Berkson's paradox? Give an example.
 <!-- ANSWER_PENDING -->
 
-### Q40 ⭐ 🔴 What is Berkson's paradox? Give an example.
+### Q40 ⭐ 🔴 How do you detect outliers when the data has several variables, for example height and weight together?
 <!-- ANSWER_PENDING -->
 
-### Q41 ⭐ 🔴 How do you detect outliers when the data has several variables, for example height and weight together?
-<!-- ANSWER_PENDING -->
-
-### Q42 ⭐ 🔴 A dashboard shows average handling time falling every month, yet customers complain more. What statistical pitfalls could explain this?
+### Q41 ⭐ 🔴 A dashboard shows average handling time falling every month, yet customers complain more. What statistical pitfalls could explain this?
 <!-- ANSWER_PENDING -->
