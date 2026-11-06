@@ -125,6 +125,7 @@ random_generator = np.random.default_rng(7)
 # a skewed salary population of 100,000 people (monthly, in rupees)
 monthly_salaries = random_generator.lognormal(mean=10.5, sigma=0.6, size=100000) / 12
 print("Population mean:", round(monthly_salaries.mean()), "SD:", round(monthly_salaries.std()))
+print("Skewness of the raw salaries:", round(stats.skew(monthly_salaries), 2))
 
 # for each sample size, draw 5,000 samples and record each sample average
 for sample_size in (2, 30, 200):
@@ -138,7 +139,7 @@ for sample_size in (2, 30, 200):
           "spread:", round(sample_averages.std()), "theory:", round(expected_se),
           "skew:", round(stats.skew(sample_averages), 2))
 ```
-Output: `Population mean: 3617 SD: 2366`, then `2 ... 3636 1668 1673 1.6`, `30 ... 3610 439 432 0.44`, `200 ... 3616 169 167 0.13`. Skewness (lopsidedness) falls from 2.17 in the raw data towards 0 for the averages: they become bell-shaped.
+Output: `Population mean: 3617 SD: 2366`, `Skewness of the raw salaries: 2.17`, then `2 ... 3636 1668 1673 1.6`, `30 ... 3610 439 432 0.44`, `200 ... 3616 169 167 0.13`. Skewness (lopsidedness) falls from 2.17 in the raw data towards 0 for the averages: they become bell-shaped.
 **Likely follow-ups:** 1) *Does the data itself become normal?* No, only the sample average. 2) *Needs normal data?* No (Q8).
 **Common mistakes:** Saying "the data becomes normal with large samples."
 
@@ -320,7 +321,7 @@ for sample_sd in (5, 10, 20):
     margin = 1.96 * sample_sd / np.sqrt(100)
     print("SD", sample_sd, "margin", round(margin, 2))
 ```
-Output: `SD 5 margin 0.98`, `SD 10 margin 1.96`, `SD 20 margin 3.92`. Doubling the spread doubles the margin.
+Output: `SD 5 margin 0.98`, `SD 10 margin 1.96`, `SD 20 margin 3.92`. Doubling the spread doubles the margin. Excel (2010+): `=CONFIDENCE.NORM(0.05, 10, 100)` returns 1.96 for SD 10 and n 100 (not run in Excel here).
 **Likely follow-ups:** 1) *Does it include bias?* No. 2) *How do I shrink it cheaply?* Lower variability (better measurement), or accept lower confidence.
 **Common mistakes:** Thinking a small margin of error means the survey is unbiased.
 
@@ -540,7 +541,7 @@ The survey reports 80% but the real figure is 59%, because silent employees are 
 **What the interviewer is checking:** Can you tell why "opt-in" surveys over-represent strong opinions?
 **Say this in the interview:** "Voluntary response bias is when people choose themselves into the sample, and people with strong feelings choose to respond much more often than people who are neutral."
 **Explain simply:**
-- It is a special case of non-response bias where the **respondent decides** to take part (an open link, a suggestion box, a poll in a group chat).
+- It is closely related to non-response bias, but here the **respondent decides** to take part (an open link, a suggestion box, a poll in a group chat).
 - Results skew towards the very happy and especially the very unhappy.
 - Random selection by the analyst avoids it; self-selection does not.
 **Worked example:** 1,000 employees, of whom 200 are strongly unhappy with the canteen. In an open poll, 40% of the unhappy vote but only 5% of the others. Votes: 80 unhappy and 40 others, so 66.7% of the votes are complaints, while the true share is 20%.
@@ -617,28 +618,28 @@ The email survey is five points too high because a whole group was never invited
 - **Sampling error:** random, measurable (that is what the margin of error covers), averages out.
 - **Non-sampling error:** coverage gaps, non-response, wrong wording, measurement and typing errors; systematic and not covered by a margin of error.
 - Both can exist together; non-sampling error is usually the bigger worry.
-**Worked example:** A company of 10,000 people has an average salary near 41,000. Random samples of 100 land close to it (small random scatter). A sample taken only from the top half of earners (a frame problem) is off by about 15,000, however often you repeat it.
+**Worked example:** A company of 10,000 people has an average salary near 41,000. Random samples of 100 land close to it (small random scatter). A sample taken only from the top half of earners (a frame problem) is off by about 15,700, however often you repeat it.
 **Excel / Python:**
 ```python
 import numpy as np
 
 # Build a pretend company of 10,000 salaries
-rng = np.random.default_rng(42)
-all_salaries = rng.lognormal(mean=10.5, sigma=0.5, size=10000).round(0)
+random_generator = np.random.default_rng(42)
+all_salaries = random_generator.lognormal(mean=10.5, sigma=0.5, size=10000).round(0)
 true_average = all_salaries.mean()
 
 # Sampling error: 2,000 fair random samples of 100 people
 fair_sample_averages = []
-for _ in range(2000):
-    fair_sample = rng.choice(all_salaries, 100, replace=False)
+for repeat in range(2000):
+    fair_sample = random_generator.choice(all_salaries, 100, replace=False)
     fair_sample_averages.append(fair_sample.mean())
 
 # Non-sampling error: the list only contains the top half of earners
 median_salary = np.percentile(all_salaries, 50)
 reachable_salaries = all_salaries[all_salaries >= median_salary]
 biased_sample_averages = []
-for _ in range(2000):
-    biased_sample = rng.choice(reachable_salaries, 100, replace=False)
+for repeat in range(2000):
+    biased_sample = random_generator.choice(reachable_salaries, 100, replace=False)
     biased_sample_averages.append(biased_sample.mean())
 
 print("True average:", round(true_average))
@@ -652,7 +653,7 @@ Fair samples, average of averages: 40956
 Fair samples, scatter: 2185
 Biased samples, average of averages: 56740
 ```
-Fair samples centre on the truth with small scatter; the biased frame centres about 15,800 too high no matter how many samples we take.
+Fair samples centre on the truth with small scatter; the biased frame centres about 15,700 too high no matter how many samples we take.
 **Likely follow-ups:** 1) *Does a bigger sample help?* It shrinks sampling error only. 2) *Which is in the margin of error?* Sampling error only.
 **Common mistakes:** Believing a "±3%" margin of error covers biased questions or missing groups.
 
@@ -684,8 +685,8 @@ print("Stratified counts:", stratified_sample["grade"].value_counts().to_dict())
 print("Offices covered:", stratified_sample["office"].nunique())
 
 # Cluster: randomly pick 2 whole offices and keep everyone in them
-rng = np.random.default_rng(7)
-chosen_offices = list(rng.choice(offices, 2, replace=False))
+random_generator = np.random.default_rng(7)
+chosen_offices = list(random_generator.choice(offices, 2, replace=False))
 cluster_sample = employees[employees["office"].isin(chosen_offices)]
 print("Cluster size:", len(cluster_sample))
 print("Offices covered:", cluster_sample["office"].nunique())
@@ -716,13 +717,13 @@ Stratified touches all 6 offices with 60 people; cluster surveys 200 people in o
 import numpy as np
 
 # A pretend company of 20,000 salaries
-rng = np.random.default_rng(1)
-all_salaries = rng.lognormal(mean=10.5, sigma=0.5, size=20000).round(0)
+random_generator = np.random.default_rng(1)
+all_salaries = random_generator.lognormal(mean=10.5, sigma=0.5, size=20000).round(0)
 
 # Take 3,000 samples of 50 people and record each sample mean
 sample_means = []
-for _ in range(3000):
-    one_sample = rng.choice(all_salaries, 50)
+for repeat in range(3000):
+    one_sample = random_generator.choice(all_salaries, 50)
     sample_means.append(one_sample.mean())
 
 # Compare the spread of the means with the SE formula
@@ -779,7 +780,7 @@ Standard error: 0.0243
 Margin of error: 0.0476
 Range: 0.572 to 0.668
 ```
-So we report "about 62%, likely between 57% and 67%".
+So we report "about 62%, likely between 57% and 67%". Excel (not run in Excel here): `=1.96*SQRT(0.62*(1-0.62)/400)` returns about 0.0476.
 **Likely follow-ups:** 1) *What if the manager wants one number?* Give the estimate, with the range beside it. 2) *Why not just 100% sure?* A range that is certain would be so wide it is useless.
 **Common mistakes:** Quoting the number without the range; using words like "standard error" with the manager.
 
@@ -797,23 +798,27 @@ So we report "about 62%, likely between 57% and 67%".
 import numpy as np
 from scipy import stats
 
-rng = np.random.default_rng(3)
+random_generator = np.random.default_rng(3)
 
 # Fraction of 95% t-intervals that catch the true mean
 def coverage(draw_sample, true_mean, sample_size, repeats=5000):
-    hits = 0
-    for _ in range(repeats):
+    intervals_that_hit = 0
+    for repeat in range(repeats):
         sample = draw_sample(sample_size)
         sample_mean = sample.mean()
         standard_error = sample.std(ddof=1) / np.sqrt(sample_size)
         t_value = stats.t.ppf(0.975, sample_size - 1)
         if sample_mean - t_value * standard_error <= true_mean <= sample_mean + t_value * standard_error:
-            hits += 1
-    return hits / repeats
+            intervals_that_hit += 1
+    return intervals_that_hit / repeats
 
-# Two skewed data types: exponential (mean 1) and heavy-tailed lognormal
-draw_exponential = lambda size: rng.exponential(1.0, size)
-draw_heavy = lambda size: rng.lognormal(0, 1.5, size)
+# Two skewed data types: exponential (mean 1) and heavy-tailed lognormal (mean worked out by formula)
+def draw_exponential(size):
+    return random_generator.exponential(1.0, size)
+
+def draw_heavy(size):
+    return random_generator.lognormal(0, 1.5, size)
+
 heavy_true_mean = np.exp(1.5 ** 2 / 2)
 
 for sample_size in (30, 200, 1000):
@@ -900,7 +905,7 @@ Margin of error: 0.0429
 ```
 We are 95% confident the true satisfied share is between about 35.7% and 44.3%.
 Excel (not run in Excel here): with proportion in B1 (0.4) and n in B2 (500), margin `=1.96*SQRT(B1*(1-B1)/B2)` returns 0.0429.
-**Likely follow-ups:** 1) *Small n or p near 0 or 1?* Use Wilson or exact intervals. 2) *Is it 0.4 plus or minus 4.3 percent or points?* Percentage points.
+**Likely follow-ups:** 1) *Small n or p near 0 or 1?* Use Wilson or exact intervals (methods that stay reliable in those cases). 2) *Is it 0.4 plus or minus 4.3 percent or points?* Percentage points.
 **Common mistakes:** Using the standard deviation of raw data instead of sqrt(p(1-p)/n); mixing percentages with proportions.
 
 ### Q29 ⭐⭐ 🟡 What is the difference between a 90%, 95% and 99% confidence interval for the same data?
@@ -934,7 +939,7 @@ for confidence_level in (0.90, 0.95, 0.99):
 0.95 z = 1.96 CI: 48.04 to 51.96
 0.99 z = 2.576 CI: 47.42 to 52.58
 ```
-The more confident we want to be, the wider the range.
+The more confident we want to be, the wider the range. Excel (2010+): `=CONFIDENCE.NORM(0.01, 10, 100)` returns the 99% margin, about 2.58 (not run in Excel here).
 **Likely follow-ups:** 1) *Why not 100%?* It would be infinitely wide. 2) *How to narrow without losing confidence?* Increase sample size (Q12).
 **Common mistakes:** Thinking higher confidence means a more accurate estimate.
 
@@ -952,16 +957,16 @@ The more confident we want to be, the wider the range.
 import numpy as np
 
 # Population with true mean 50 and SD 10
-rng = np.random.default_rng(11)
+random_generator = np.random.default_rng(11)
 true_mean = 50
 population_sd = 10
 
 # Build 1,000 intervals and count how many catch the true mean
 intervals_that_hit = 0
-for _ in range(1000):
-    sample = rng.normal(true_mean, population_sd, 100)
+for repeat in range(1000):
+    sample = random_generator.normal(true_mean, population_sd, 100)
     sample_mean = sample.mean()
-    standard_error = sample.std(ddof=1) / 10
+    standard_error = sample.std(ddof=1) / np.sqrt(100)
     lower_end = sample_mean - 1.96 * standard_error
     upper_end = sample_mean + 1.96 * standard_error
     if lower_end <= true_mean <= upper_end:
@@ -1006,12 +1011,12 @@ Critical z: 1.96
 ```
 Alpha 5% corresponds to a 95% interval and a cut-off of 1.96 standard errors.
 **Likely follow-ups:** 1) *Can you pick alpha after seeing data?* No. 2) *Does lower alpha mean wider intervals?* Yes.
-**Common mistakes:** Saying alpha is the probability the null hypothesis is true.
+**Common mistakes:** Saying alpha is the probability that the "no effect" assumption (the null hypothesis) is true.
 
 ### Q32 ⭐⭐ 🟡 Only 300 of 1,000 employees answered your engagement survey. What problems does this create and what would you do?
 **Asked at:** commonly asked (HR scenario gap-fill; the sources file marks the 300-of-1,000 scenario as a gap-fill, not seen in a source).
 **What the interviewer is checking:** Do you think about who answered, not just how many?
-**Say this in the interview:** "A 30% response rate gives a wide margin of error, but the bigger risk is non-response bias: the 700 silent people may feel differently. I would compare respondents with the workforce, weight if needed, follow up with a sample of non-responders, and report results with caveats."
+**Say this in the interview:** "A 30% response rate still gives a fairly small margin of error from luck alone, but the bigger risk is non-response bias: the 700 silent people may feel differently. I would compare respondents with the workforce, weight if needed, follow up with a sample of non-responders, and report results with caveats."
 **Explain simply:**
 - **Precision:** 300 answers still give a modest margin of error (about 5 points at 70%).
 - **Bias:** the real danger; respondents may be the very happy or very unhappy.
@@ -1196,10 +1201,10 @@ The exit interviews alone would suggest 65%, but under this assumption the real 
 import numpy as np
 
 # Make the random numbers repeatable
-rng = np.random.default_rng(42)
+random_generator = np.random.default_rng(42)
 
 # Population: 100,000 employees with engagement scores around 6.0 (scale 1 to 10)
-engagement_scores = rng.normal(loc=6.0, scale=1.5, size=100000).clip(1, 10)
+engagement_scores = random_generator.normal(loc=6.0, scale=1.5, size=100000).clip(1, 10)
 true_mean = engagement_scores.mean()
 print("True average engagement:", round(true_mean, 2))
 
@@ -1208,9 +1213,9 @@ chance_of_answering = engagement_scores / engagement_scores.sum()
 
 for sample_size in [100, 1000, 10000]:
     # Biased sample: who answers depends on how happy they are
-    biased_sample = rng.choice(engagement_scores, size=sample_size, replace=False, p=chance_of_answering)
+    biased_sample = random_generator.choice(engagement_scores, size=sample_size, replace=False, p=chance_of_answering)
     # Random sample: everyone has the same chance
-    random_sample = rng.choice(engagement_scores, size=sample_size, replace=False)
+    random_sample = random_generator.choice(engagement_scores, size=sample_size, replace=False)
     print("n =", sample_size,
           "| biased mean:", round(biased_sample.mean(), 2),
           "| random mean:", round(random_sample.mean(), 2))
@@ -1240,12 +1245,12 @@ The biased column stays about 0.4 points too high no matter how many people answ
 import numpy as np
 import pandas as pd
 
-rng = np.random.default_rng(7)
+random_generator = np.random.default_rng(7)
 
 # 10,000 invoices numbered 1 to 10,000, each with an amount
 invoices = pd.DataFrame({
     "invoice_number": np.arange(1, 10001),
-    "amount": rng.lognormal(mean=7, sigma=1, size=10000).round(2),
+    "amount": random_generator.lognormal(mean=7, sigma=1, size=10000).round(2),
 })
 
 # Method 1: simple random sample of 200 invoices
@@ -1253,7 +1258,7 @@ random_sample = invoices.sample(n=200, random_state=1)
 
 # Method 2: systematic sample: every 50th invoice after a random start between 1 and 50
 step = 10000 // 200
-start = int(rng.integers(1, step + 1))
+start = int(random_generator.integers(1, step + 1))
 systematic_sample = invoices.iloc[start - 1::step]
 print("Step:", step, "| start:", start, "| size:", len(systematic_sample))
 
@@ -1296,21 +1301,21 @@ import numpy as np
 from scipy import stats
 
 # Make the random numbers repeatable
-rng = np.random.default_rng(3)
+random_generator = np.random.default_rng(3)
 
 # Skewed population: days to fill a vacancy, true mean about 30
-time_to_hire_days = rng.exponential(scale=30, size=200000)
+time_to_hire_days = random_generator.exponential(scale=30, size=200000)
 print("True population mean:", round(time_to_hire_days.mean(), 2))
 
 # Law of Large Numbers: one sample growing bigger, the average settles near the truth
 for sample_size in [5, 50, 500, 5000, 50000]:
-    sample = rng.choice(time_to_hire_days, size=sample_size)
+    sample = random_generator.choice(time_to_hire_days, size=sample_size)
     print("n =", sample_size, "-> sample mean:", round(sample.mean(), 2))
 
 # CLT: take 5,000 samples of 50 hires and keep each sample's average
 sample_means = []
-for _ in range(5000):
-    sample = rng.choice(time_to_hire_days, size=50)
+for repeat in range(5000):
+    sample = random_generator.choice(time_to_hire_days, size=50)
     sample_means.append(sample.mean())
 sample_means = np.array(sample_means)
 
@@ -1424,16 +1429,16 @@ We are 95% confident the true satisfaction is between about 51% and 65%.
 import numpy as np
 
 # Make the random numbers repeatable
-rng = np.random.default_rng(11)
+random_generator = np.random.default_rng(11)
 
 # A sample of 40 monthly salaries (in thousands), right-skewed
-salaries = np.round(rng.lognormal(mean=3.7, sigma=0.5, size=40), 1)
+salaries = np.round(random_generator.lognormal(mean=3.7, sigma=0.5, size=40), 1)
 print("Sample median:", np.median(salaries))
 
 # Bootstrap: resample 40 salaries WITH replacement, 10,000 times, record each median
 bootstrap_medians = []
-for _ in range(10000):
-    resample = rng.choice(salaries, size=len(salaries), replace=True)
+for repeat in range(10000):
+    resample = random_generator.choice(salaries, size=len(salaries), replace=True)
     bootstrap_medians.append(np.median(resample))
 
 # The middle 95% of the 10,000 medians is the bootstrap interval
@@ -1489,7 +1494,7 @@ The interval includes 50%, so we cannot say A is ahead.
 **Say this in the interview:** "It means the data are consistent with no difference, so we cannot claim a real difference at that confidence level. It does not prove the two are equal; it may just mean we do not have enough data."
 **Explain simply:**
 - Zero in the interval = 'no difference' is a plausible value.
-- This matches a test: a 95% interval including 0 means the p-value is above 0.05 (not significant at 5%).
+- This matches a test: a 95% interval including 0 means the p-value (the chance of seeing a gap this big by luck if there were truly no difference) is above 0.05, so the result is not significant at 5%.
 - "Not significant" is not "no effect". It is often "not enough data".
 - An interval entirely above (or below) zero means a real difference is likely and shows how big it could be.
 **Worked example:** Attrition: Branch A 30 of 200 leave (15%), Branch B 20 of 200 (10%), difference 5 points, 95% interval minus 1.5 to plus 11.5, includes 0. With 2,000 per branch and the same rates, the interval is 3.0 to 7.0, excluding 0.
@@ -1575,7 +1580,7 @@ Head office                0.8              0.3               0.6     0.5
 Field sales                0.4              0.2               0.2     1.0
 Weighted satisfaction: 57.0 %
 ```
-Head office was over-heard, so the raw figure looked better than reality; weighting brings it to 57%.
+Head office was over-represented among respondents, so the raw figure looked better than reality; weighting brings it to 57%.
 **Likely follow-ups:** 1) *Does it remove all non-response bias?* No, only along the groups you weight by. 2) *Why not just resurvey?* Cost and time; weighting is a quick correction.
 **Common mistakes:** Weighting by groups with no link to the answer; using huge weights from tiny groups.
 
@@ -1594,19 +1599,19 @@ Head office was over-heard, so the raw figure looked better than reality; weight
 import numpy as np
 
 # Make the random numbers repeatable
-rng = np.random.default_rng(5)
+random_generator = np.random.default_rng(5)
 
 independent_averages = []
 one_team_averages = []
 
-for _ in range(3000):
+for repeat in range(3000):
     # Independent: 20 different people, each with their own variation
-    mood_scores_independent = rng.normal(0, 2.5, size=20)
+    mood_scores_independent = random_generator.normal(0, 2.5, size=20)
     independent_averages.append(mood_scores_independent.mean())
 
     # Not independent: 20 people from ONE team who all share the same team mood
-    team_mood = rng.normal(0, 2)
-    personal_variation = rng.normal(0, 1.5, size=20)
+    team_mood = random_generator.normal(0, 2)
+    personal_variation = random_generator.normal(0, 1.5, size=20)
     mood_scores_one_team = team_mood + personal_variation
     one_team_averages.append(mood_scores_one_team.mean())
 
@@ -1630,46 +1635,46 @@ The same number of people gives much more uncertainty when they are not independ
 - CLT still holds when variance is finite, but may need hundreds or thousands of observations. If variance is infinite (extreme tails), it fails.
 - Options: **bigger n**; **bootstrap** (Q43); **log transform** (analyse the log, report the geometric mean); **median** or trimmed mean; check tail outliers.
 - Always show the distribution before choosing a method.
-**Worked example:** Salaries (skewness 9.6). Skewness of sample means: 1.28 at n = 30, 0.52 at n = 300, 0.13 at n = 3,000. The 95% interval built the usual way at n = 30 captured the true mean only 84.2% of the time (not 95%); the same check on the log scale gave 94.0%.
+**Worked example:** Salaries (skewness 9.6). Skewness of sample means: 1.28 at n = 30, 0.52 at n = 300, 0.13 at n = 3,000. The 95% interval built the usual way at n = 30 captured the true mean only 84.2% of the time (not 95%); the same check on the log scale gave 94.0% (but that interval is for the typical, geometric-mean value, not the plain average, so it answers a slightly different question).
 **Excel / Python:**
 ```python
 import numpy as np
 from scipy import stats
 
 # Make the random numbers repeatable
-rng = np.random.default_rng(21)
+random_generator = np.random.default_rng(21)
 
 # Very skewed "salaries" (heavy right tail)
-salaries = rng.lognormal(mean=10.5, sigma=1.2, size=500000)
+salaries = random_generator.lognormal(mean=10.5, sigma=1.2, size=500000)
 print("Skewness of raw salaries:", round(stats.skew(salaries), 1))
 print("Mean:", round(salaries.mean()), "| Median:", round(np.median(salaries)))
 
 # How lopsided are the sample averages for different sample sizes?
 for sample_size in [30, 300, 3000]:
-    means = [rng.choice(salaries, size=sample_size).mean() for _ in range(2000)]
+    means = [random_generator.choice(salaries, size=sample_size).mean() for repeat in range(2000)]
     print("n =", sample_size, "-> skewness of sample means:", round(stats.skew(means), 2))
 
 # Does the usual 95% interval capture the true mean 95% of the time when n = 30?
 true_mean = salaries.mean()
-hits = 0
+intervals_that_hit = 0
 trials = 2000
-for _ in range(trials):
-    sample = rng.choice(salaries, size=30)
+for repeat in range(trials):
+    sample = random_generator.choice(salaries, size=30)
     standard_error = sample.std(ddof=1) / np.sqrt(30)
     if sample.mean() - 1.96 * standard_error <= true_mean <= sample.mean() + 1.96 * standard_error:
-        hits += 1
-print("Coverage of normal-theory interval at n=30:", round(hits / trials * 100, 1), "%")
+        intervals_that_hit += 1
+print("Coverage of normal-theory interval at n=30:", round(intervals_that_hit / trials * 100, 1), "%")
 
 # Same check on the log scale
 log_salaries = np.log(salaries)
 true_log_mean = log_salaries.mean()
-hits = 0
-for _ in range(trials):
-    sample = rng.choice(log_salaries, size=30)
+intervals_that_hit = 0
+for repeat in range(trials):
+    sample = random_generator.choice(log_salaries, size=30)
     standard_error = sample.std(ddof=1) / np.sqrt(30)
     if sample.mean() - 1.96 * standard_error <= true_log_mean <= sample.mean() + 1.96 * standard_error:
-        hits += 1
-print("Coverage on log scale at n=30:", round(hits / trials * 100, 1), "%")
+        intervals_that_hit += 1
+print("Coverage on log scale at n=30:", round(intervals_that_hit / trials * 100, 1), "%")
 ```
 ```text
 Skewness of raw salaries: 9.6
@@ -1680,7 +1685,7 @@ n = 3000 -> skewness of sample means: 0.13
 Coverage of normal-theory interval at n=30: 84.2 %
 Coverage on log scale at n=30: 94.0 %
 ```
-Sample averages of skewed data stay lopsided for small n, so the "95%" interval is really about 84%. The log scale fixes most of it.
+Sample averages of skewed data stay lopsided for small n, so the "95%" interval is really about 84%. The log scale behaves much better, but it describes the geometric mean (a "typical" value), not the ordinary average, so state which one you report.
 **Likely follow-ups:** 1) *Mean or median for salaries?* Usually median for the "typical" person. 2) *What if variance is infinite?* The CLT does not apply; use robust methods.
 **Common mistakes:** Blindly using n = 30; reporting the mean of salaries as "typical".
 
@@ -1700,10 +1705,10 @@ import numpy as np
 from scipy import stats
 
 # Make the random numbers repeatable
-rng = np.random.default_rng(8)
+random_generator = np.random.default_rng(8)
 
 # A sample of 50 monthly salaries
-salaries = rng.normal(50000, 8000, size=50).round(0)
+salaries = random_generator.normal(50000, 8000, size=50).round(0)
 sample_size = len(salaries)
 sample_mean = salaries.mean()
 sample_sd = salaries.std(ddof=1)
@@ -1738,7 +1743,7 @@ The average is pinned down to about 5,000 wide, but one new person could be anyw
 - The standard error of a difference is about 1.41 times one group's standard error (square root of 2), not double; so the overlap rule is too strict.
 - Intervals can overlap by a modest amount and still have a difference interval that excludes zero.
 - Correct approach: build the CI for the difference, or run the test directly (Q45).
-**Worked example:** Average engagement: Team A 70, Team B 76, each with standard error 2. CI A: 66.1 to 73.9; CI B: 72.1 to 79.9, they overlap. Difference 6, SE of difference 2.83, z = 2.12, p = 0.034; CI for the difference 0.46 to 11.54, excludes 0, so it is significant at 5%.
+**Worked example:** Average engagement: Team A 70, Team B 76, each with standard error 2. CI A: 66.1 to 73.9; CI B: 72.1 to 79.9, they overlap. Difference 6, SE of difference 2.83, z = 2.12 (the gap measured in standard errors), p = 0.034 (the chance of a gap this big by luck alone if the teams were truly equal); CI for the difference 0.46 to 11.54, excludes 0, so it is significant at 5%.
 **Excel / Python:**
 ```python
 import math
@@ -1774,7 +1779,7 @@ The two intervals overlap (72.1 to 73.9), yet the difference is significant at 5
 ### Q51 ⭐ 🔴 What is the finite population correction, and when does it matter?
 **Asked at:** commonly asked (no company-specific report found); a differentiator topic per the sources file.
 **What the interviewer is checking:** Do you know sampling a large share of a small population reduces uncertainty?
-**Say this in the interview:** "When I sample a big fraction of a small population without replacement, say more than about 5 to 10%, I multiply the standard error by a correction factor below 1. For a small fraction of a large population, it does not matter."
+**Say this in the interview:** "When I sample a big fraction of a small population without replacement, say more than about 5%, I multiply the standard error by a correction factor below 1. For a small fraction of a large population, it does not matter."
 **Explain simply:**
 - Normal formulas assume the population is huge compared to the sample. If you survey almost everyone, little uncertainty is left. At 100% there is none.
 - **Correction factor:** square root of (N minus n) / (N minus 1), where N is the population size and n is the sample size.
@@ -1809,5 +1814,5 @@ N = 10000 | FPC: 0.99 | SE plain: 0.849 | SE corrected: 0.84
 N = 1000000 | FPC: 1.0 | SE plain: 0.849 | SE corrected: 0.848
 ```
 In a company of 500, surveying 200 people cuts the standard error by about 22%; in a population of a million it changes nothing.
-**Likely follow-ups:** 1) *Does it apply with replacement?* No. 2) *What if you survey everyone?* The correction goes to zero (a census has no sampling error).
+**Likely follow-ups:** 1) *Does it apply with replacement?* No. 2) *What if you survey everyone?* The corrected standard error goes to zero (a census has no sampling error).
 **Common mistakes:** Applying it to huge populations; forgetting it only applies when sampling without replacement.

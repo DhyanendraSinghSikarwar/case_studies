@@ -358,7 +358,7 @@ Both routes give 3.9, matching the Excel formula (not run in Excel here).
 **Explain simply:**
 - Quartiles split sorted data into four parts: Q1 = 25th percentile, Q2 = median, Q3 = 75th percentile.
 - `=QUARTILE.INC(range,1)` or `=PERCENTILE.INC(range,0.25)` (Excel 2010+; matches pandas `quantile()` and numpy defaults).
-- `.EXC` works with positions 1 to n+1 so percentiles below 1/(n+1) or above n/(n+1) return #NUM!.
+- `.EXC` places the percentile at position p x (n+1) in the sorted list, which must fall between 1 and n. So percentiles below 1/(n+1) or above n/(n+1) return #NUM!.
 - For small data the two methods differ; for large data they converge.
 **Worked example:** Eight salaries (in thousands) in A2:A9: 30, 35, 42, 45, 52, 60, 75, 90.
 - `=PERCENTILE.INC(A2:A9,0.25)` returns 40.25 (position 0.25 x 7 = 1.75, so 35 + 0.75 x 7)
@@ -478,7 +478,7 @@ median 40000.0
 ```
 Mean-filling invents a 90,000 salary that nobody near that group earns; median-filling gives 40,000, which looks like a normal employee.
 **Likely follow-ups:** 1) *Fill by group?* `groupby("department")["salary"].transform("median")`. 2) *When drop instead?* When few rows are missing and they look random.
-**Common mistakes:** Not assigning the result back; imputing before splitting data in modelling.
+**Common mistakes:** Not assigning the result back; filling gaps using the whole dataset before setting aside test data for a model (this leaks information into the test).
 
 ### Q13 ⭐⭐ 🟢 How do you build a pivot table in Excel to show average, count and maximum of salary by department?
 **Asked at:** commonly asked (no company-specific report found); pivot tables are a staple of Excel interviews (standard practice, no named source).
@@ -649,7 +649,7 @@ Tied 60s share rank 3, and nobody gets rank 4. Python results used as the check;
 **Common mistakes:** Expecting ranks 3 and 4 for ties; forgetting to lock the range with $.
 
 ### Q17 ⭐⭐ 🟡 How do you flag outliers using the IQR rule in Excel?
-**Asked at:** commonly asked; "basic statistics" was reported for an Accenture Bangalore interview (research/interview_processes.md), but no report of this exact question was found.
+**Asked at:** commonly asked; "basic statistics" was mentioned in one Jan 2026 Accenture Bangalore-Rural candidate report (Glassdoor snippet, via research/interview_processes.md), but no report of this exact question was found.
 **What the interviewer is checking:** Can you set objective outlier limits and flag points with a formula?
 **Say this in the interview:** "I calculate Q1 and Q3 with QUARTILE.INC, then IQR = Q3 minus Q1. Anything below Q1 minus 1.5 times IQR, or above Q3 plus 1.5 times IQR, is flagged as an outlier. An IF formula with OR flags each row."
 **Explain simply:**
@@ -694,7 +694,7 @@ Only the 150 salary falls outside 18.5 to 64.5, so it is the single outlier.
 **Common mistakes:** Deleting outliers automatically; using the whole-column range without locking with $.
 
 ### Q18 ⭐⭐ 🟡 How do you detect outliers in Python using the IQR method with quantile()?
-**Asked at:** commonly asked (no company-specific report found); the Part 11 sources note only that Accenture Bangalore reported "basic statistics" questions in general.
+**Asked at:** commonly asked (no company-specific report found); only one Accenture Bangalore-Rural report mentions "basic statistics" in general (research/interview_processes.md); no report of this exact question was found.
 **What the interviewer is checking:** Can you turn the IQR rule into clean pandas code and explain why it is safer than the mean-based rule?
 **Say this in the interview:** "I take Q1 and Q3 with quantile(), compute IQR as Q3 minus Q1, and flag anything below Q1 minus 1.5 times IQR or above Q3 plus 1.5 times IQR. Then I look at those rows before deciding to keep, cap or remove them."
 **Explain simply:**
@@ -734,7 +734,7 @@ Q1: 39.5 Q3: 49.0 IQR: 9.5
 Lower fence: 25.25 Upper fence: 63.25
 Outliers: [150]
 ```
-Only the 150 salary falls outside the fences. By default quantile() interpolates the same way as Excel's QUARTILE.INC.
+Only the 150 salary falls outside the fences. By default quantile() interpolates the same way as Excel's QUARTILE.INC, so Excel gives the same Q1 and Q3 (`=QUARTILE.INC(range,1)` and `=QUARTILE.INC(range,3)`; see Q17 for the full Excel steps, not run in Excel here).
 **Likely follow-ups:** 1) *Why 1.5?* A convention (Tukey's rule); use 3 for "extreme" outliers. 2) *Would you delete it?* Not blindly: check if it is a data-entry error or a real senior package.
 **Common mistakes:** Deleting outliers automatically; using the mean and standard deviation on heavily skewed salary data; forgetting that quartile methods differ slightly between tools.
 
@@ -749,7 +749,7 @@ Only the 150 salary falls outside the fences. By default quantile() interpolates
 **Formula in plain words:** z = (the value minus the mean) divided by the standard deviation.
 **Worked example:** Salary mean 50,000, standard deviation 8,000. An employee on 70,000 has z = (70,000 - 50,000) / 8,000 = 2.5. In a normal distribution the chance of being above that is about 0.62%.
 **Excel / Python:**
-Excel (2010+; not run in Excel here, matched to Python). Put the value in A2 (70000), mean in B2 (50000), standard deviation in C2 (8000): `=STANDARDIZE(A2,B2,C2)` returns 2.5. For a whole column in A2:A21 use `=(A2-AVERAGE($A$2:$A$21))/STDEV.S($A$2:$A$21)` and copy down.
+Excel (STANDARDIZE exists in all versions; not run in Excel here, matched to Python). Put the value in A2 (70000), mean in B2 (50000), standard deviation in C2 (8000): `=STANDARDIZE(A2,B2,C2)` returns 2.5. For a whole column in A2:A21 use `=(A2-AVERAGE($A$2:$A$21))/STDEV.S($A$2:$A$21)` and copy down.
 ```python
 import pandas as pd
 
@@ -883,6 +883,7 @@ About 99% of the salary differences in this small sample line up with experience
 import numpy as np
 import statsmodels.api as sm
 
+# Years of experience and salary (thousands), same 10 employees as Q21
 experience_years = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 salary_thousands = np.array([28, 31, 36, 38, 45, 47, 50, 56, 57, 64])
 
@@ -913,7 +914,7 @@ The first number is the intercept, the second the slope. Printing model.summary(
 **Say this in the interview:** "T.TEST(array1, array2, tails, type) returns the p-value. Tails is 1 or 2; type is 1 for paired, 2 for two samples equal variance, 3 for unequal variance. I default to type 3 and 2 tails unless I have a directional hypothesis."
 **Explain simply:**
 - **t-test** asks whether two group averages differ by more than chance would explain.
-- **p-value**: the probability of a difference this large if the groups really had the same average; below 0.05 is the usual cut-off.
+- **p-value**: the probability of seeing a difference at least this large if the groups really had the same average (it is not the probability that the groups are the same); below 0.05 is the usual cut-off.
 - **Tails = 2** tests "different"; **tails = 1** tests "higher" only, and must be decided before seeing data.
 - **Type 1 paired** is for the same people measured twice (before and after training).
 **Worked example:** Engagement scores: Sales (8 people) average 51.25, Support (9 people) average 45.67. Type 3, two tails gives p = 0.0697 (not below 0.05, so no clear difference). Type 2 gives 0.0660. One-tailed type 3 gives 0.0349, which shows why picking tails after seeing data is cheating.
@@ -984,7 +985,9 @@ observed_counts = np.array([[30, 70],
                             [20, 80],
                             [50, 50]])
 
+# Run the test: it returns the chi-square value, p-value, degrees of freedom and expected counts
 chi_square_value, p_value, degrees_of_freedom, expected_counts = chi2_contingency(observed_counts)
+# Show each result
 print("Chi-square:", round(chi_square_value, 2))
 print("p-value:", p_value)
 print("Degrees of freedom:", degrees_of_freedom)
@@ -1063,6 +1066,7 @@ Excel (2010+; not run in Excel here, matched to Python). Experience A2:A7, salar
 ```python
 import pandas as pd
 
+# Six employees: experience, salary and days absent
 employees = pd.DataFrame({
     "experience_years": [1, 2, 3, 4, 5, 6],
     "salary_thousands": [30, 34, 41, 43, 52, 56],
@@ -1083,7 +1087,7 @@ Output:
                   experience_years  salary_thousands  absent_days
 experience_years               3.5         18.600000         -5.0
 salary_thousands              18.6        100.666667        -26.2
-absent_days                  -5.0        -26.200000          7.6
+absent_days                   -5.0        -26.200000          7.6
 Population covariance: 15.5
 Sample covariance: 18.6
 ```
@@ -1149,6 +1153,7 @@ Excel: put `=RAND()` in B2 next to employee IDs in A2:A11, copy down, sort by co
 ```python
 import pandas as pd
 
+# Ten employees with an ID and a department code (S = Sales, H = HR, F = Finance)
 employees = pd.DataFrame({"emp_id": range(1, 11),
                           "dept": ["S", "S", "H", "H", "F", "F", "S", "H", "F", "S"]})
 
@@ -1192,6 +1197,7 @@ Both runs with seed 42 return the same three rows. The exact rows depend on the 
 ```python
 import pandas as pd
 
+# Six employees; employee_name is text, the other columns are numbers
 employees = pd.DataFrame({
     "employee_name": ["A", "B", "C", "D", "E", "F"],
     "experience_years": [1, 2, 3, 4, 5, 6],
@@ -1351,10 +1357,14 @@ Excel (not run in Excel here, matched to Python). Months in A2:A7, hires in B2:B
 import numpy as np
 from scipy import stats
 
+# Month number and hires in that month
 month_number = np.array([1, 2, 3, 4, 5, 6])
 hires = np.array([20, 24, 25, 29, 33, 34])
 
+# Fit the straight line through the six points
 fit = stats.linregress(month_number, hires)
+
+# Line values: intercept + slope x month gives the forecast for that month
 print("Slope:", round(fit.slope, 4), "Intercept:", round(fit.intercept, 4), "R-squared:", round(fit.rvalue**2, 4))
 print("Month 7:", round(fit.intercept + fit.slope * 7, 2))
 print("Month 8:", round(fit.intercept + fit.slope * 8, 2))

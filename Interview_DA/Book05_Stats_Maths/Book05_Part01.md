@@ -659,10 +659,14 @@ change_2024 = (hires_2024 - hires_2023) / hires_2023 * 100
 # Percentage change versus two years ago
 change_vs_2022 = (hires_2024 - hires_2022) / hires_2022 * 100
 
-print(change_2023, change_2024, change_vs_2022)
+print("Change 2023 vs 2022 (%):", change_2023)
+print("Change 2024 vs 2023 (%):", change_2024)
+print("Change 2024 vs 2022 (%):", change_vs_2022)
 ```
 ```text
--50.0 15.0 -42.5
+Change 2023 vs 2022 (%): -50.0
+Change 2024 vs 2023 (%): 15.0
+Change 2024 vs 2022 (%): -42.5
 ```
 The 15% is real, but it is a recovery from a 50% fall, not growth beyond the old level.
 **Likely follow-ups:** 1) *What if last year was zero?* The percentage is undefined; report the absolute number. 2) *Which comparison fixes seasonality?* Same month last year, not the previous month.
@@ -724,10 +728,12 @@ overall_conversion = joined / applicants * 100
 # Offer acceptance: joiners out of those who got an offer
 offer_acceptance = joined / offers * 100
 
-print(overall_conversion, offer_acceptance)
+print("Overall conversion (%):", overall_conversion)
+print("Offer acceptance (%):", offer_acceptance)
 ```
 ```text
-4.0 80.0
+Overall conversion (%): 4.0
+Offer acceptance (%): 80.0
 ```
 Same 40 joiners, two different rates, because the denominator changed. Excel: with joined in B2 and applicants in B3, `=B2/B3` formatted as percentage.
 **Likely follow-ups:** 1) *Should the denominator include people still in process?* Better to use a fixed cohort so unfinished cases do not lower the rate. 2) *What if the denominator is zero?* Show blank, not 0%.
@@ -1019,7 +1025,7 @@ HR 7.5 0.0
 IT 12.5 25.0
 ```
 Read each row as: share of company, then growth. Excel: share `=B2/SUM($B$2:$B$5)`, change `=(B2-C2)/C2` (not run in Excel here).
-**Likely follow-ups:** 1) *Contribution to growth?* A department's change divided by the company's total change. 2) *Can shares change with no one joining?* Yes, if others shrink.
+**Likely follow-ups:** 1) *Contribution to growth?* A department's change divided by last year's company total, in percentage points (see Q35). 2) *Can shares change with no one joining?* Yes, if others shrink.
 **Common mistakes:** Calling a share "growth"; forgetting the absolute reference on the total.
 
 ### Q28 ⭐⭐ 🟢 How do you calculate the rate of absenteeism and the average attendance for a team?
@@ -1304,7 +1310,7 @@ Long way : 63.0
 Shortcut : 63.0
 ```
 Both routes give 63, so the shortcut is safe.
-**Likely follow-ups:** 1) *What if a score is removed?* Same idea in reverse: subtract it from the total and divide by one fewer. 2) *Is the median also 63?* No, the median is a different measure (Part 2).
+**Likely follow-ups:** 1) *What if a score is removed?* Same idea in reverse: subtract it from the total and divide by one fewer. 2) *Is the median also 63?* Not necessarily; the median is a different measure and needs the individual scores (Part 2).
 **Common mistakes:** Averaging 60 and 78 to get 69; forgetting that the count is now 6.
 
 ### Q35 ⭐⭐ 🟡 How do you calculate contribution to growth when total sales grew 10% and one region caused most of it?
@@ -1760,29 +1766,47 @@ The same +2 people is 50% on a base of 4 but only 0.5% on a base of 400.
 raw_shares = [100 / 3, 100 / 3, 100 / 3]
 
 # Naive: round each share to 1 decimal
-naive_rounded = [round(share, 1) for share in raw_shares]
+naive_rounded = []
+for share in raw_shares:
+    naive_rounded.append(round(share, 1))
 print("Naive rounded:", naive_rounded, "sum =", round(sum(naive_rounded), 1))
 
-# Largest remainder method, working in tenths of a percent (integers)
-raw_tenths = [share * 10 for share in raw_shares]
-rounded_down = [int(value) for value in raw_tenths]       # drop decimals
-shortfall = 1000 - sum(rounded_down)                       # tenths still to give out
-remainders = [raw_tenths[i] - rounded_down[i] for i in range(3)]
+# Largest remainder method: work in tenths of a percent, so all numbers are whole
+tenths_of_percent = []
+for share in raw_shares:
+    tenths_of_percent.append(share * 10)
 
-# Give the missing tenths to the items with the biggest leftover
-order = sorted(range(3), key=lambda i: remainders[i], reverse=True)
-for position in order[:shortfall]:
-    rounded_down[position] += 1
+# Step 1: round every value down to a whole number of tenths
+rounded_down = []
+for value in tenths_of_percent:
+    rounded_down.append(int(value))
 
-adjusted_shares = [value / 10 for value in rounded_down]
+# Step 2: how many tenths are still missing to reach 100.0%
+missing_tenths = 1000 - sum(rounded_down)
+
+# Step 3: the leftover (remainder) that was dropped from each value, with its position
+leftovers_with_position = []
+for position in range(len(raw_shares)):
+    leftover = tenths_of_percent[position] - rounded_down[position]
+    leftovers_with_position.append((leftover, position))
+
+# Step 4: give one extra tenth to each of the items with the biggest leftovers
+leftovers_with_position.sort(reverse=True)
+for leftover, position in leftovers_with_position[:missing_tenths]:
+    rounded_down[position] = rounded_down[position] + 1
+
+# Turn tenths back into percentages
+adjusted_shares = []
+for value in rounded_down:
+    adjusted_shares.append(value / 10)
 print("Largest remainder:", adjusted_shares, "sum =", round(sum(adjusted_shares), 1))
 ```
 Output:
 ```
 Naive rounded: [33.3, 33.3, 33.3] sum = 99.9
-Largest remainder: [33.4, 33.3, 33.3] sum = 100.0
+Largest remainder: [33.3, 33.3, 33.4] sum = 100.0
 ```
-Plain rounding totals 99.9; the adjusted version gives 100.0.
+Plain rounding totals 99.9; the adjusted version gives 100.0 (all three leftovers are equal, so the extra tenth goes to the last department).
 **Likely follow-ups:** 1) *ROUND or format?* Format for display, ROUND for values that must be stored at that precision. 2) *Is adjusting honest?* Yes, if you note it; the change is within rounding error.
 **Common mistakes:** Rounding early and compounding errors; forcing totals silently.
 
@@ -1950,7 +1974,7 @@ The naive method gives -150% even though profit clearly improved; the absolute-v
 ### Q51 ⭐ 🟡 What is the harmonic mean, and when does it apply (e.g. average speed or price per unit)?
 **Asked at:** commonly asked (no company-specific report found); a differentiator question, rarely listed in generic guides.
 **What the interviewer is checking:** Whether you can spot averages of rates where the "per" quantity is held fixed.
-**Say this in the interview:** "The harmonic mean is the right average for rates when the same amount of the bottom quantity is used each time, like equal distance at two speeds, or equal money spent at two prices. It is the reciprocal of the average of reciprocals."
+**Say this in the interview:** "The harmonic mean is the right average for rates when the same amount of the top quantity is used each time, like equal distance covered at two speeds, or equal money spent at two costs per hire. It is the reciprocal of the average of reciprocals."
 **Explain simply:**
 - A rate is "something per something", for example cost per hire.
 - If you spend the *same budget* on each channel, you buy more hires where cost per hire is low, so the simple average overstates your true cost.

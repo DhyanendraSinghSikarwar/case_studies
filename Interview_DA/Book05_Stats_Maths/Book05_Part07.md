@@ -12,7 +12,7 @@
 - *Causation* means that if you changed A on purpose, B would change as a result.
 - Three things can create a correlation without causation: a hidden third factor (a *confounder*), the arrow pointing the other way (*reverse causation*), or pure coincidence.
 - Randomised experiments (A/B tests) are the strongest way to prove causation.
-**Worked example:** In a 300-employee dataset I simulated, training hours and engagement scores correlate at r = 0.68. But tenure drives both (long-serving people get more training and are more engaged). Once tenure is included in the model, the training effect falls from +1.73 points per hour to -0.10 (p = 0.62), meaning no real effect. The correlation was real; the causation was not. (Data is simulated, with the true training effect set to zero.)
+**Worked example:** In a 300-employee dataset I simulated, training hours and engagement scores correlate at r = 0.68 (r is the correlation score from -1 to +1, Q2). But tenure drives both (long-serving people get more training and are more engaged). Once tenure is included in the model, the training effect falls from +1.73 points per hour to -0.10 (p = 0.62; a large p-value means no evidence of an effect, Q11). The correlation was real; the causation was not. (Data is simulated, with the true training effect set to zero.)
 **Likely follow-ups:**
 - *How would you prove causation?* Run a randomised trial, or use careful controls and say clearly the result is suggestive.
 - *Is correlation useless then?* No, it is great for prediction and for deciding what to investigate.
@@ -116,7 +116,7 @@ Output: `slope = 2.709`, `intercept = 27.4`, `predicted salary at 5 years = 40.9
 **Say this in the interview:** "Employees who attend more training have higher engagement scores. But long-serving employees both get more training and are more engaged, so tenure is behind both. If I control for tenure, the training effect disappears. Training is not the cause; I would test it with a pilot."
 **Explain simply:**
 - Pick an example with a clear *third factor*. Classic non-HR ones: ice-cream sales and sunburn (both caused by hot weather); more ad spend in festive months and higher sales (the season drives both).
-- Name the third factor, say how you would check it (control for it, or run an experiment).
+- Name the third factor, say how you would check it (control for it, or run an experiment). *Controlling for* a factor means comparing people with the same value of it, for example the same tenure, so it cannot create a fake link.
 - Mention the other two traps: reverse causation (Q28) and coincidence (Q19).
 **Worked example:** In my simulated 300 employees, training and engagement correlate at 0.68. Tenure correlates 0.88 with training and 0.79 with engagement. With tenure in the model, the training coefficient drops from 1.73 to -0.10 (p = 0.62). Full code is in Q8.
 **Likely follow-ups:** *How would you test it for real?* Randomly offer training to half of a similar group and compare engagement.
@@ -232,11 +232,19 @@ Output: `0.68`, `1.73`, `-0.1`, `0.62`. Once tenure is held fixed, training adds
 **Worked example:** For the 12-employee model in Q10, Breusch-Pagan p = 0.40 (spread looks constant), Shapiro-Wilk p = 0.94 (normal enough), Durbin-Watson = 2.72 (rows here are not in time order, so it is not meaningful). With only 12 rows these tests have little power, so plots matter more.
 **Excel / Python:**
 ```python
+import pandas as pd
+import statsmodels.api as sm
 from statsmodels.stats.diagnostic import het_breuschpagan
 from statsmodels.stats.stattools import durbin_watson
 from scipy.stats import shapiro
 
-# 'model' and 'predictors' come from the Q10 regression
+# Rebuild the Q10 regression (12 employees) so this block runs on its own
+staff = pd.DataFrame({
+    "years":     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "education": [12, 16, 12, 14, 16, 12, 14, 16, 12, 14, 16, 14],
+    "salary":    [29, 41, 36, 40, 49, 40, 49, 58, 46, 56, 67, 57]})
+predictors = sm.add_constant(staff[["years", "education"]])
+model = sm.OLS(staff["salary"], predictors).fit()
 residuals = model.resid
 
 # Equal-spread test: p above 0.05 means no evidence of unequal spread
@@ -436,7 +444,7 @@ Output: `1.0` and `-1.0`: the two extremes.
 **Explain simply:**
 - Pearson r measures *linear* association only.
 - Example in HR: stress vs performance often rises, then falls (an inverted U). Performance depends on stress strongly, yet r can be close to zero.
-- Conversely, independence does imply r = 0, but not the other way round.
+- The one-way rule: if two variables are truly independent, r is close to 0 (in a sample); but r = 0 does not prove they are independent.
 **Worked example:** x = -3 to 3 and y = x². Every y is fully determined by x, but r = 0.0 because the left and right halves cancel.
 **Excel / Python:**
 ```python
@@ -496,11 +504,11 @@ Output: residuals `-0.11 1.18 -2.53 1.76 1.05 -2.65 1.64 0.93 -2.78 1.51`; sum `
 **Say this in the interview:** "A spurious correlation is a relationship that shows up in the numbers but is not a real cause-and-effect link. It usually comes from a hidden third factor, pure coincidence, or a small sample. Before acting, I ask what else could explain it."
 **Explain simply:**
 - **Correlation** means two numbers tend to rise and fall together; **spurious** means the link is misleading.
-- Cause 1: a **confounder**, a hidden third factor that drives both (summer heat drives ice cream sales and also holiday travel, so resignations rise).
+- Cause 1: a **confounder**, a hidden third factor that drives both (the summer season pushes up ice cream sales, and in this made-up office it also coincides with more resignations).
 - Cause 2: coincidence, especially when you test many pairs; some will match by luck.
 - Cause 3: both series simply trend upwards over time.
 - How to guard: think of a mechanism, look for a third factor, check other time periods or groups.
-**Worked example:** Monthly ice cream sales and resignations in an office both peak in summer. Their correlation is very high, but ice cream does not make people quit; the common driver is the season (resignations rise after appraisal and holiday season).
+**Worked example:** Monthly ice cream sales and resignations in an office both peak in summer. Their correlation is very high, but ice cream does not make people quit; the common driver is the time of year (made-up data, only to show the idea).
 **Excel / Python:**
 ```python
 import numpy as np
@@ -534,6 +542,7 @@ A correlation of 0.996 is almost perfect, yet the link is not causal.
 - Multiple regression is more realistic but brings new issues: multicollinearity and adjusted R².
 **Formula in plain words:** Predicted outcome = starting value + (effect of input 1 × input 1) + (effect of input 2 × input 2) and so on. In symbols: y = b0 + b1x1 + b2x2 + ...
 **Worked example:** Simple: attrition risk score from engagement score only. Multiple: add tenure, manager rating and commute distance; now the engagement slope is the effect of engagement among people with the same tenure, rating and commute.
+**Excel / Python:** No new code needed; see Q4 (simple regression with real numbers) and Q10 (multiple regression with two predictors).
 **Likely follow-ups:** 1) *Is multiple always better?* No; useless predictors add noise (see adjusted R²). 2) *Can inputs be categories?* Yes, through dummy variables.
 **Common mistakes:** Reading a multiple-regression slope as if the other variables did not exist.
 
@@ -888,7 +897,7 @@ The p-value is tiny, so the slope is real, but the effect and R² are so small t
 - **Prediction:** "For a person with 5 years we would expect roughly Rs 40,000, give or take."
 - **Limits:** only valid inside the range of the data; shows patterns, not causes.
 - Use a chart (scatter plot with the line) and one recommended action.
-**Worked example:** "Across 200 employees, each extra year of experience is linked to Rs 4,000 higher pay. Experience alone explains 70% of pay differences. For hiring offers within 0 to 15 years, use the line as a guide, but check grade and city too."
+**Worked example (illustrative numbers, not computed from a dataset):** "Across 200 employees, each extra year of experience is linked to Rs 4,000 higher pay. Experience alone explains 70% of pay differences. For hiring offers within 0 to 15 years, use the line as a guide, but check grade and city too."
 **Likely follow-ups:** 1) *What if the manager asks "so does experience cause the raise?"* Say it is linked, and that grade and performance may also play a part. 2) *Which number matters most?* The slope, in business units.
 **Common mistakes:** Reading out coefficient tables, or saying "R² of 0.7" without explaining it.
 
@@ -902,7 +911,7 @@ The p-value is tiny, so the slope is real, but the effect and R² are so small t
 - **Cannot say:** causation (grade, education, performance and role could drive both); the size of the raise per year (that is the slope, not r); individual predictions; outside the range of the data.
 - **Cannot say** the other 28% is random; it could be role, city, skills.
 - Check a scatter plot: outliers or two different groups can produce a high r.
-**Worked example:** If each year added Rs 4,000 on average, r = 0.85 does not tell you that; you need the regression slope. Also, senior grades may bring both experience and pay.
+**Worked example:** r = 0.85 does not tell you the rupee gain per year: two datasets with r = 0.85 can have slopes of Rs 400 or Rs 4,000 per year (Q38). You need the regression slope for that. Also, senior grades may bring both experience and pay.
 **Likely follow-ups:** 1) *What would you do next?* Plot the data and fit a regression with grade and role. 2) *Is 0.85 significant?* With n = 200, yes, comfortably.
 **Common mistakes:** Saying "85% of salary is due to experience" (r is not a percentage; r² is the share, and shared is not caused).
 
@@ -921,7 +930,7 @@ The p-value is tiny, so the slope is real, but the effect and R² are so small t
 **Common mistakes:** Replying "yes, it works" or "no, correlation is not causation" without a constructive next step.
 
 ### Q33 ⭐⭐ 🟡 For x = 1, 2, 3, 4, 5 and y = 2, 4, 5, 4, 5, calculate the Pearson correlation coefficient.
-**Asked at:** commonly asked (no company-specific report found); a standard hand-calculation question (these exact numbers are the classic textbook example).
+**Asked at:** commonly asked (no company-specific report found); a standard hand-calculation question (these exact numbers are a classic textbook example, from memory, unverified).
 **What the interviewer is checking:** Can you do the calculation step by step and read the answer?
 **Say this in the interview:** "The means are 3 and 4. The sum of the cross-products of the gaps is 6, the sum of squared x gaps is 10 and of squared y gaps is 6. So r = 6 ÷ square root of (10 × 6) = 0.775, a strong positive correlation."
 **Explain simply:**
@@ -1036,7 +1045,7 @@ Excel: `=SLOPE(B2:B6,A2:A6)` returns 0.6 and `=INTERCEPT(B2:B6,A2:A6)` returns 2
 - **Residual checks:** random scatter around zero, roughly equal spread, roughly bell-shaped, no outliers with big influence.
 - **Assumptions:** linear shape, independent rows, equal spread, errors roughly normal.
 - **Validation:** split the data into a training set and a test set; compare errors.
-**Worked example:** A model of salary on tenure for 80 employees gave R² = 0.897 and a typical error of about 62.7 (in thousands, on salaries running from about 300 to 900); the residual tests raised no warning, so the line is a decent fit.
+**Worked example:** A model of salary on tenure for 80 employees gave R² = 0.897 and a typical error of about 62.7 (in thousands, on salaries running from about 200 to 1,000); the residual tests raised no warning, so the line is a decent fit.
 **Excel / Python:**
 ```python
 import numpy as np
@@ -1401,7 +1410,7 @@ The near-perfect correlation of levels came from the shared upward trend; once t
 - Squaring stops positive and negative gaps cancelling, and punishes big misses more.
 - Because of squaring, one outlier can pull the line noticeably.
 **Formula in plain words:** Add up (actual - predicted) squared for every person; choose the line that makes this total smallest. In symbols: minimise sum of (y_i - a - b x_i)^2.
-**Worked example:** Experience x = 1 to 5 with skill ratings y = 2, 4, 5, 4, 5. The best line is y = 2.2 + 0.6x with SSE 2.4. Nudging the slope to 0.8 raises SSE to 4.6; nudging the intercept to 2.8 raises it to 4.2.
+**Worked example:** Experience x = 1 to 5 with skill ratings y = 2, 4, 5, 4, 5. The best line is y = 2.2 + 0.6x with SSE 2.4. Keeping the intercept at 2.2 and nudging the slope to 0.8 raises SSE to 4.6; keeping the slope at 0.6 and nudging the intercept to 2.8 raises it to 4.2.
 **Excel / Python:**
 ```python
 import numpy as np
@@ -1487,7 +1496,7 @@ On average the model misses by 3 hours, with the one big miss (40 vs 30) lifting
 **What the interviewer is checking:** Do you know significance depends on both the size of r and the sample size, and that significant is not the same as important?
 **Say this in the interview:** "I test whether the true correlation could be zero using a t-test. With r = 0.3, it is not significant with 20 people but becomes significant at about 44 or more, because bigger samples make the same r more convincing. Significant only means unlikely to be chance, not that the link is strong."
 **Explain simply:**
-- **Null hypothesis:** the true correlation is 0. The **p-value** is the chance of seeing a correlation this large if it really were 0.
+- **Null hypothesis:** the true correlation is 0. The **p-value** is the chance of seeing a correlation at least this far from 0 (in either direction) if the true correlation really were 0.
 - The test converts r to a t value: larger r or larger n gives a larger t and a smaller p-value.
 - Rule of thumb for 5% significance: r = 0.3 needs roughly n = 44 or more.
 - A weak r (0.3 explains only 9% of the variation) can be "significant" with big data, so also report the size and a confidence interval.
@@ -1710,7 +1719,7 @@ import numpy as np
 import statsmodels.api as sm
 from statsmodels.stats.stattools import durbin_watson
 
-# 36 months of headcount-based attrition, with leftover effects that carry over month to month
+# 36 months of attrition percentage, with leftover effects that carry over month to month
 random_generator = np.random.default_rng(9)
 month_number = np.arange(36)
 carry_over_noise = np.zeros(36)
@@ -1878,7 +1887,7 @@ The slope differs by group, which is what moderation means. For the confounder c
 - **Standardising** puts every variable on the same scale (standard deviations), so the coefficients become comparable.
 - The bigger the absolute standardised coefficient, the more y moves per typical change in that predictor, holding the others fixed.
 - Caveats: correlated predictors make the ranking unstable; "matters more" means statistical size, not business importance or causation.
-**Worked example:** Simulated engagement on salary (rupees) and tenure (years). Raw: 0.00000135 points per rupee versus 0.173 per year, which looks like tenure is 100,000 times stronger. Standardised: salary 0.351 and tenure 0.444, so tenure matters somewhat more, not massively.
+**Worked example:** Simulated engagement on salary (rupees) and tenure (years). Raw: 0.00000135 points per rupee versus 0.173 per year, which looks like tenure is more than 100,000 times stronger. Standardised: salary 0.351 and tenure 0.444, so tenure matters somewhat more, not massively.
 **Excel / Python:**
 ```python
 import numpy as np

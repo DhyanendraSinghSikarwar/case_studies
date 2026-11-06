@@ -345,7 +345,7 @@ P(left) = 0.2
 P(stayed) = 0.8
 Check: stayed count = 160 so 0.8
 ```
-One in five employees left. Excel: `=40/200` returns 0.2 and `=1-40/200` returns 0.8.
+One in five employees left. Excel: `=40/200` returns 0.2 and `=1-40/200` returns 0.8 (not run in Excel here).
 **Likely follow-ups:** 1) *Is this attrition rate?* Yes, if the 200 is the starting headcount (average headcount is often used in practice).
 **Common mistakes:** Dividing 40 by 160 (the stayers) instead of 200.
 
@@ -407,13 +407,13 @@ false_positives = healthy_people * false_positive_rate
 # Chance of disease given a positive test
 chance_disease_given_positive = true_positives / (true_positives + false_positives)
 
-print("True positives:", true_positives)
-print("False positives:", false_positives)
+print("True positives:", round(true_positives, 2))
+print("False positives:", round(false_positives, 2))
 print("P(disease | positive) =", round(chance_disease_given_positive, 4))
 ```
 ```text
 True positives: 99.0
-False positives: 99.00000000000009
+False positives: 99.0
 P(disease | positive) = 0.5
 ```
 Half of all positive results are false alarms. Excel: `=0.99*0.01/(0.99*0.01+0.01*0.99)` returns 0.5 (not run in Excel here).
@@ -635,7 +635,7 @@ for game in range(number_of_games):
             host_options.append(door)
     host_opens = random.choice(host_options)
 
-    # The door you would switch to is the one left unopened
+    # The door you would switch to is the one left unopened (door numbers 1+2+3 add to 6)
     switch_pick = 6 - first_pick - host_opens
 
     if first_pick == car_door:
@@ -1117,7 +1117,7 @@ Output:
 P(all five decline): 0.32768
 P(at least one accepts): 0.67232
 ```
-There is about a 67% chance of at least one acceptance. Excel: `=1-0.8^5` returns 0.67232.
+There is about a 67% chance of at least one acceptance. Excel: `=1-0.8^5` returns 0.67232 (not run in Excel here).
 **Likely follow-ups:** 1) *Chance all five accept?* 0.2^5 = 0.032%. 2) *How many candidates for 95% chance?* 1-0.8^n >= 0.95 gives n = 14 (0.8^14 = 0.044).
 **Common mistakes:** Multiplying 5 x 0.20 = 1.0; assuming candidates are independent when they compare offers.
 
@@ -1201,8 +1201,8 @@ Output:
 P(joining) = 0.16
 Applicants -> screened -> interviewed -> joined: 1000 500.0 200.0 160.0
 ```
-Sixteen of every 100 applicants join. Excel: `=0.5*0.4*0.8` returns 0.16.
-**Likely follow-ups:** 1) *To hire 48 people, how many applicants?* 48 / 0.16 = 300. 2) *Which stage to improve?* The biggest leak is the interview (60% drop).
+Sixteen of every 100 applicants join. Excel: `=0.5*0.4*0.8` returns 0.16 (not run in Excel here).
+**Likely follow-ups:** 1) *To hire 48 people, how many applicants?* 48 / 0.16 = 300. 2) *Which stage to improve?* The interview has the highest drop rate (60% of those who reach it), while screening loses the most people (500 of 1,000).
 **Common mistakes:** Adding (0.5+0.4+0.8) or averaging the percentages.
 
 ### Q34 ⭐⭐ 🟡 How do you draw and use a probability tree diagram? Solve one example.
@@ -1348,7 +1348,7 @@ P(flagged and fraud)  = 0.019
 P(flagged and honest) = 0.0294
 P(fraud | flagged)    = 0.3926
 ```
-About 39% of flagged employees are truly fraudulent, so each flag needs a manual review before action. Excel: `=0.02*0.95/(0.02*0.95+0.98*0.03)` returns 0.3926.
+About 39% of flagged employees are truly fraudulent, so each flag needs a manual review before action. Excel: `=0.02*0.95/(0.02*0.95+0.98*0.03)` returns 0.3926 (not run in Excel here).
 **Likely follow-ups:** 1) *How to improve?* Lower the false-alarm rate or review only high-score flags. 2) *What if fraud were 20%?* About 89%: the base rate drives the answer.
 **Common mistakes:** Answering 95%; ignoring the honest majority.
 
@@ -1371,30 +1371,39 @@ employees_who_left = 40
 wfh_and_left = 20
 
 # Probability of leaving overall
-p_left = employees_who_left / total_employees
-# Probability of leaving among WFH employees (conditional)
-p_left_given_wfh = wfh_and_left / wfh_employees
-# Joint probability versus product of the two separate probabilities
-p_wfh = wfh_employees / total_employees
-p_both = wfh_and_left / total_employees
-print("P(left)        =", p_left)
-print("P(left | WFH)  =", p_left_given_wfh)
-print("P(WFH and left) =", p_both, " P(WFH) x P(left) =", p_wfh * p_left)
+probability_left = employees_who_left / total_employees
+
+# Probability of leaving among WFH employees only (conditional)
+probability_left_given_wfh = wfh_and_left / wfh_employees
+
+# Joint probability, and the product of the two separate probabilities
+probability_wfh = wfh_employees / total_employees
+probability_wfh_and_left = wfh_and_left / total_employees
+product_of_separate = probability_wfh * probability_left
+
+print("P(left)         =", probability_left)
+print("P(left | WFH)   =", probability_left_given_wfh)
+print("P(WFH and left) =", probability_wfh_and_left, "  P(WFH) x P(left) =", round(product_of_separate, 4))
 
 # Table 2 (Q14 data): Sales 80, Sales leavers 24
-p_left_given_sales = 24 / 80
-print("Sales: P(left | Sales) =", p_left_given_sales, " vs P(left) =", p_left)
-print("Sales: P(Sales and left) =", 24 / 200, " P(Sales) x P(left) =", (80 / 200) * p_left)
+sales_employees = 80
+sales_who_left = 24
+probability_left_given_sales = sales_who_left / sales_employees
+probability_sales_and_left = sales_who_left / total_employees
+product_for_sales = (sales_employees / total_employees) * probability_left
+
+print("Sales: P(left | Sales) =", probability_left_given_sales, "  vs P(left) =", probability_left)
+print("Sales: P(Sales and left) =", probability_sales_and_left, "  P(Sales) x P(left) =", round(product_for_sales, 4))
 ```
 Output:
 ```
-P(left)        = 0.2
-P(left | WFH)  = 0.2
-P(WFH and left) = 0.1  P(WFH) x P(left) = 0.1
-Sales: P(left | Sales) = 0.3  vs P(left) = 0.2
-Sales: P(Sales and left) = 0.12  P(Sales) x P(left) = 0.08000000000000002
+P(left)         = 0.2
+P(left | WFH)   = 0.2
+P(WFH and left) = 0.1   P(WFH) x P(left) = 0.1
+Sales: P(left | Sales) = 0.3   vs P(left) = 0.2
+Sales: P(Sales and left) = 0.12   P(Sales) x P(left) = 0.08
 ```
-For WFH the numbers match, so independent. For Sales they do not match (0.12 against 0.08; the tiny trailing digits are just computer rounding), so dependent.
+For WFH the numbers match, so independent. For Sales they do not match (0.12 against 0.08), so dependent.
 **Likely follow-ups:** 1) *Can events be both independent and mutually exclusive?* Only if one has probability zero. 2) *Is a small gap enough to say dependent?* Not in sampled data; use a chi-square test.
 **Common mistakes:** Comparing counts instead of proportions; declaring dependence from a tiny gap in a sample; mixing up "independent" with "mutually exclusive".
 
@@ -2047,11 +2056,11 @@ The simulation uses the fact that the host's remaining door must be the car when
 **Common mistakes:** Saying the two remaining doors are 50-50; ignoring that the host knows where the car is.
 
 ### Q54 ⭐ 🟢 What is the difference between frequentist and Bayesian probability?
-**Asked at:** commonly asked (no company-specific report found); a conceptual question in senior or analytics-firm rounds.
+**Asked at:** commonly asked (no company-specific report found); a conceptual question (no report found of where it is asked).
 **What the interviewer is checking:** Whether you can explain the two viewpoints without jargon.
 **Say this in the interview:** "A frequentist says probability is the long-run frequency of an event over many repeats, and parameters like the true attrition rate are fixed but unknown. A Bayesian says probability measures belief, and updates a prior belief with data to get a posterior. Both give similar answers with lots of data."
 **Explain simply:**
-- Frequentist: "If I repeated this survey forever, 30% would be leavers." The data are random; the true rate is a fixed number.
+- Frequentist: "The true attrition rate is one fixed number; my best estimate from this sample is 30%." The sample is what is random; the true rate is not.
 - Bayesian: "Before the data I believed about 20%; after seeing 12 of 40 left I now believe about 28%, with a range." The belief is updated and described by a distribution.
 - Bayesian needs a prior (a starting belief), which is useful when data are small but is debated because it adds judgement.
 - A 95% confidence interval (frequentist) and a 95% credible interval (Bayesian) look alike but are interpreted differently.
@@ -2233,7 +2242,6 @@ The average face is 3.5 and a typical roll lands about 1.7 away from it.
 **Excel / Python:**
 ```python
 import random
-from math import comb
 
 # Setup: 10 candidates are handed 10 laptops at random; a "match" is a candidate who gets their own laptop
 number_of_candidates = 10
@@ -2407,7 +2415,7 @@ The simulation (48.3%) lands within a fraction of a point of the exact answer (4
 **Common mistakes:** Too few runs; no seed so results cannot be reproduced; wrong simulation logic (simulating a different process from the question).
 
 ### Q62 ⭐ 🟡 What is conditional expectation, and how would you use it to find the average salary given a department?
-**Asked at:** commonly asked (no company-specific report found) (the sources file lists conditional expected value of a die given a sum, in a 2026 quant prep guide).
+**Asked at:** commonly asked (no company-specific report found); the sources file lists a conditional expected value of a die given a sum in a 2026 quant prep guide (snippet only).
 **What the interviewer is checking:** Can you compute an average within a group and link it to the overall average?
 **Say this in the interview:** "Conditional expectation is the average of a variable given a condition, for example the average salary given the department is IT. In pandas it is just a groupby mean."
 **Explain simply:**
@@ -2452,7 +2460,7 @@ Sales    50.0
 Name: monthly_salary, dtype: float64
 Weighted sum of department averages = 63.33
 ```
-IT earns the most on average (85); the weighted group averages rebuild the overall 63.33. In Excel, AVERAGEIF(department_range, "IT", salary_range) gives the IT average (not run in Excel here).
+IT earns the most on average (85); the weighted group averages rebuild the overall 63.33. In Excel, `=AVERAGEIF(department_range, "IT", salary_range)` gives the IT average (not run in Excel here).
 **Likely follow-ups:** 1) *Is E[X|Y] a number?* For a fixed Y yes; as a function of Y it is itself random. 2) *Related to regression?* Regression models E[Y | X].
 **Common mistakes:** Averaging the group averages without weights; using a wrong group filter.
 
@@ -2538,7 +2546,7 @@ P(at least once) = 0.3059
 Wrong shortcut 365 x 0.001 = 0.365
 ```
 Roughly a 31% chance in a year; the naive 36.5% overstates it.
-**Likely follow-ups:** 1) *What is the Excel formula?* =1-(1-0.001)^365. 2) *Is independence realistic?* Often not; say it is an assumption.
+**Likely follow-ups:** 1) *What is the Excel formula?* `=1-(1-0.001)^365` (not run in Excel here). 2) *Is independence realistic?* Often not; say it is an assumption.
 **Common mistakes:** Multiplying n x p; forgetting the day-to-day independence assumption.
 
 ### Q65 ⭐ 🟡 What is the expected number of tosses to get two heads in a row?
@@ -2679,7 +2687,7 @@ Overall the two look related (0.34 against 0.25), but inside one seniority group
 **Common mistakes:** Concluding causation from overall correlation; assuming independence given C also means independence overall.
 
 ### Q68 ⭐ 🔴 Explain the birthday problem calculation step by step and relate it to finding duplicate employee IDs or dates in data.
-**Asked at:** commonly asked (no company-specific report found) (the sources file lists the birthday problem as a frequent puzzle in prep material).
+**Asked at:** commonly asked (no company-specific report found); the sources file lists the birthday problem as a frequent puzzle in prep material.
 **What the interviewer is checking:** Can you compute the complement step by step and link it to a data task?
 **Say this in the interview:** "I find the chance everyone's birthday is different, 365/365 x 364/365 and so on, and subtract from 1. At 23 people the chance of a shared birthday passes 50%. The same logic says duplicates in data appear far sooner than you would guess."
 **Explain simply:**
@@ -2778,7 +2786,7 @@ The witness is right 80% of the time, but a 'blue' report is correct only about 
 **Common mistakes:** Answering 80% (ignoring the base rate); treating 'reliable' as the posterior.
 
 ### Q70 ⭐ 🔴 What is the probability that a random chord of a circle is longer than the side of an inscribed equilateral triangle, and what does this show about defining "random"?
-**Asked at:** commonly asked (no company-specific report found) (a classic puzzle, the Bertrand paradox, more common in quant prep than in data-analyst reports).
+**Asked at:** commonly asked (no company-specific report found); a classic puzzle (the Bertrand paradox) that is more common in quant prep than in data-analyst reports.
 **What the interviewer is checking:** Do you see that 'random' needs a precise definition and the answer depends on it?
 **Say this in the interview:** "The answer is 1/3, 1/2 or 1/4, depending on what 'random chord' means. That is the Bertrand paradox: always state how the randomness is generated."
 **Explain simply:**
