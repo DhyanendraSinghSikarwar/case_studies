@@ -87,7 +87,7 @@ Output: `Simulated: 0.03347`, `Exact: 0.0335`. Only about 3.4% of lucky teams sh
 ### Q4 ⭐⭐⭐ 🟢 What is the significance level (alpha), and why is 0.05 commonly used?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Do you know alpha is a chosen threshold, not a law of nature?
-**Say this in the interview:** "Alpha is the false-alarm rate I accept: the chance of rejecting a true null. I fix it before the test, usually 0.05, and reject H0 if the p-value is below it. 0.05 is a convention, popularised by R. A. Fisher, not a magic number."
+**Say this in the interview:** "Alpha is the false-alarm rate I accept: the chance of rejecting a true null. I fix it before the test, usually 0.05, and reject H0 if the p-value is below it. 0.05 is a convention, not a magic number (commonly credited to R. A. Fisher; from memory, unverified)."
 **Explain simply:**
 - Alpha = 0.05 means: if there is truly no effect, I will wrongly claim one in about 1 test out of 20.
 - Pick it **before** looking at data (Q41).
@@ -178,7 +178,7 @@ Output: `Expected counts: [[20.0, 180.0], [20.0, 180.0]]`, `Chi-square: 11.111`,
 **Explain simply:**
 - Significance depends on sample size; importance depends on the size of the effect and the context.
 - Always report the size of the difference alongside p.
-**Worked example:** Two offices, 20,000 employees each (simulated). Average pay differs by about 441 rupees on a salary of about 50,000 (under 1%).
+**Worked example:** Two offices, 20,000 employees each (simulated). Average pay differs by about 441 rupees on a salary of about 50,000 (under 1%). Cohen's d is the gap divided by the typical spread of salaries (the standard deviation); it tells you how big the gap is, whatever the sample size.
 **Excel / Python:**
 ```python
 import numpy as np
@@ -417,7 +417,7 @@ for people_per_group in [20, 100, 500, 2000]:
     p_value = 2 * (1 - stats.t.cdf(t_statistic, 2 * people_per_group - 2))
     print(people_per_group, round(t_statistic, 2), round(p_value, 4))
 ```
-Output: `20 0.32 0.7536`, `100 0.71 0.4803`, `500 1.58 0.1141`, `2000 3.16 0.0016`. The gap never changed; only n did.
+Output: `20 0.32 0.7536`, `100 0.71 0.4803`, `500 1.58 0.1142`, `2000 3.16 0.0016`. The gap never changed; only n did.
 **Likely follow-ups:** 1) *How to plan n?* Power analysis (Q49). 2) *Does a large n fix bias?* No.
 **Common mistakes:** Thinking significance proves importance; running a tiny pilot and concluding "no effect".
 
@@ -1432,14 +1432,16 @@ def cohens_d(first_group, second_group):
     pooled_variance = ((n1-1)*first_group.var(ddof=1) + (n2-1)*second_group.var(ddof=1)) / (n1+n2-2)
     return (second_group.mean() - first_group.mean()) / np.sqrt(pooled_variance)
 
-print("Small study: p =", round(stats.ttest_ind(small_sample_after, small_sample_before).pvalue, 4),
-      " d =", round(cohens_d(small_sample_before, small_sample_after), 2))
+small_study_p = stats.ttest_ind(small_sample_after, small_sample_before).pvalue
+small_study_d = cohens_d(small_sample_before, small_sample_after)
+print("Small study: p =", round(small_study_p, 4), " d =", round(small_study_d, 2))
 
 # Huge study with a tiny real gap of 0.5 points
 big_before = random_generator.normal(70, 12, 20000)
 big_after = random_generator.normal(70.5, 12, 20000)
-print("Huge study : p =", round(stats.ttest_ind(big_after, big_before).pvalue, 6),
-      " d =", round(cohens_d(big_before, big_after), 3))
+huge_study_p = stats.ttest_ind(big_after, big_before).pvalue
+huge_study_d = cohens_d(big_before, big_after)
+print("Huge study : p =", round(huge_study_p, 6), " d =", round(huge_study_d, 3))
 ```
 Output: `Small study: p = 0.1154  d = 0.36`, `Huge study : p = 8e-06  d = 0.045`. The small study has the bigger effect but the weaker p-value. (Random data with a fixed seed; your numbers shift with another seed.)
 **Likely follow-ups:** 1) *Effect size for proportions?* Simply the difference in rates (or odds ratio). 2) *Are Cohen's cut-offs absolute?* No, only a rough guide; judge by business context.
@@ -1611,7 +1613,8 @@ from scipy import stats
 
 # Average monthly salary (rupees) at two big sites, 50,000 employees each
 # Summary numbers: means, SD, group size
-mean_site_a, mean_site_b = 60000, 60300
+mean_site_a = 60000
+mean_site_b = 60300
 standard_deviation = 15000
 people_per_site = 50000
 
@@ -1869,6 +1872,14 @@ model = smf.ols("salary ~ C(department) * C(gender)", data=salary_table).fit()
 anova_table = sm.stats.anova_lm(model, typ=2)
 print(anova_table[["df", "F", "PR(>F)"]].round(3))
 ```
+Output (rounded):
+```
+                          df       F  PR(>F)
+C(department)            2.0  82.796   0.000
+C(gender)                1.0   3.106   0.081
+C(department):C(gender)  2.0   0.149   0.862
+Residual               114.0     NaN     NaN
+```
 Reading it: department has p near 0 (salaries really differ by department); gender p = 0.081 (not significant at 5%); the interaction p = 0.862 (the gender gap is similar in every department).
 **Likely follow-ups:** 1) *What if the interaction is significant?* Interpret the factors together, not separately. 2) *What does "replication" mean in Excel?* More than one observation per cell.
 **Common mistakes:** Reading the main effects while ignoring a significant interaction; running it with very unequal group sizes without care.
@@ -1900,7 +1911,7 @@ for name, values in [("tenure", tenure_years), ("salary", monthly_salaries)]:
     w_statistic, p_value = stats.shapiro(values)
     print(name, "skew", round(stats.skew(values), 2), "p-value", round(p_value, 4))
 ```
-Tenure: p = 0.95, no sign of non-normality. Salary: skew 1.38 and p = 0.0004, clearly not normal, so I would use a log transform or a rank test.
+Output: `tenure skew -0.3 p-value 0.9505`, `salary skew 1.38 p-value 0.0004`. Tenure: p = 0.95, no sign of non-normality. Salary: skew 1.38 and p = 0.0004, clearly not normal, so I would use a log transform or a rank test.
 **Likely follow-ups:** 1) *Do we test normality of the raw data?* For t-tests, the sample means or residuals matter; raw data is the usual quick check. 2) *Large sample, tiny p in Shapiro?* It detects trivial departures; look at the plot.
 **Common mistakes:** Saying "p > 0.05 proves it is normal" (it only fails to show otherwise); relying on the test alone with huge samples.
 
@@ -1913,7 +1924,7 @@ Tenure: p = 0.95, no sign of non-normality. Salary: skew 1.38 and p = 0.0004, cl
 - **Independent**: different people in each group.
 - The paired test works on each person's difference, which removes the person-to-person variation (some people always score high).
 - Wrong the other way (paired test on independent groups) is also invalid, because there is no real pairing.
-**Worked example:** 15 employees scored before and after a training. Average gain is about 4.9 points (SD of the gains 2.5), but scores vary a lot between people (from 34 to 93).
+**Worked example:** 15 employees scored before and after a training. Average gain is about 4.9 points (SD of the gains 2.5), but scores vary a lot between people (the before scores range from 34 to 93).
 **Excel / Python:** Excel: "t-Test: Paired Two Sample for Means" versus "Two-Sample Assuming Equal/Unequal Variances".
 ```python
 import numpy as np
@@ -2187,8 +2198,19 @@ from statsmodels.stats.multitest import multipletests
 
 # 100 checks: 20 have a real effect, 80 are pure noise
 random_generator = np.random.default_rng(4)
-real_p_values = [stats.ttest_1samp(random_generator.normal(0.6, 1, 30), 0).pvalue for _ in range(20)]
-noise_p_values = [stats.ttest_1samp(random_generator.normal(0, 1, 30), 0).pvalue for _ in range(80)]
+
+# 20 checks where the true average really is 0.6 above zero
+real_p_values = []
+for check in range(20):
+    real_sample = random_generator.normal(0.6, 1, 30)
+    real_p_values.append(stats.ttest_1samp(real_sample, 0).pvalue)
+
+# 80 checks where the true average is exactly zero (pure noise)
+noise_p_values = []
+for check in range(80):
+    noise_sample = random_generator.normal(0, 1, 30)
+    noise_p_values.append(stats.ttest_1samp(noise_sample, 0).pvalue)
+
 all_p_values = np.array(real_p_values + noise_p_values)
 
 # Count discoveries and false discoveries under three rules
@@ -2203,7 +2225,7 @@ With no correction: 21 flagged, 3 of them false. Bonferroni flags 8 (all real, b
 **Common mistakes:** Treating FDR 5% as "5% chance each result is wrong"; skipping correction entirely.
 
 ### Q69 ⭐ 🔴 What is the difference between a Type S and Type M error?
-**Asked at:** commonly asked (no company-specific report found); a differentiator topic (Gelman and Carlin's terms).
+**Asked at:** commonly asked (no company-specific report found); a differentiator topic (the terms come from Gelman and Carlin; from memory, unverified).
 **What the interviewer is checking:** Do you understand how small, underpowered studies mislead even when significant?
 **Say this in the interview:** "A Type S (sign) error is concluding the effect goes in the wrong direction. A Type M (magnitude) error is overstating its size. Both are worse in low-power studies: the only results that reach significance are the lucky exaggerated ones."
 **Explain simply:**
@@ -2271,12 +2293,12 @@ With 100 people per group the test can only reliably detect a gap of about 4 poi
 **What the interviewer is checking:** Can you run a test without code and read the output table?
 **Say this in the interview:** "I enable the Analysis ToolPak, open Data, Data Analysis, pick the test such as t-Test: Two-Sample Assuming Unequal Variances, select the two columns and alpha, and read the output: the t Stat, the p-value (P two-tail) and whether t Stat is beyond the t Critical value."
 **Explain simply:**
-- Enable: File, Options, Add-ins, Manage Excel Add-ins, Go, tick "Analysis ToolPak" (Excel 2010 and later).
+- Enable: File, Options, Add-ins, Manage Excel Add-ins, Go, tick "Analysis ToolPak" (this menu path is for Excel 2010 and later; not run in Excel here).
 - Pick the test: t-Test (paired, equal variances, unequal variances), z-Test, F-Test, Anova (single or two-factor).
 - Rule: if P(T<=t) two-tail is below alpha, or the absolute t Stat exceeds t Critical two-tail, reject the null.
 - Use the **two-tail** line for "is there any difference"; one-tail only if you decided direction beforehand.
 - The output is static numbers, not a formula, so it does not update when data changes.
-**Worked example:** Tenure in years for two branches, 12 employees each, columns A and B. The table I expect, rebuilt in Python. As far as I know, the ToolPak rounds the degrees of freedom to a whole number (17.7 becomes 18).
+**Worked example:** Tenure in years for two branches, 12 employees each, columns A and B. The table I expect, rebuilt in Python. As far as I remember, the ToolPak rounds the degrees of freedom to a whole number (17.7 becomes 18); from memory, unverified.
 **Excel / Python:**
 ```python
 import numpy as np
@@ -2287,7 +2309,8 @@ tenure_a = np.array([2.1, 3.5, 1.8, 4.2, 2.9, 3.1, 5.0, 2.4, 3.8, 2.2, 4.6, 3.3]
 tenure_b = np.array([1.5, 2.8, 1.9, 2.2, 3.0, 1.7, 2.5, 2.1, 3.4, 1.6, 2.0, 2.7])
 
 # The numbers the ToolPak table reports
-variance_a, variance_b = tenure_a.var(ddof=1), tenure_b.var(ddof=1)
+variance_a = tenure_a.var(ddof=1)
+variance_b = tenure_b.var(ddof=1)
 standard_error = np.sqrt(variance_a / 12 + variance_b / 12)
 t_statistic = (tenure_a.mean() - tenure_b.mean()) / standard_error
 degrees_of_freedom = (variance_a / 12 + variance_b / 12) ** 2 / (
@@ -2387,13 +2410,13 @@ Only about 0.9% of random shuffles gave a gap as big as the real one, so p is ab
 - **Practical significance** asks if the change is big enough to justify the cost.
 - Report the effect size and the confidence interval, not only the p-value (Q44).
 - Agree beforehand what "meaningful" means, for example a 3-point rise.
-**Worked example:** A wellness app for a big company: 50,000 employees in each group, engagement on a 0-100 scale (made up).
+**Worked example:** A wellness app for a big company: 50,000 employees without it and 50,000 with it, engagement on a 0-100 scale (made up).
 **Excel / Python:**
 ```python
 import numpy as np
 from scipy import stats
 
-# Engagement score (0-100) before and after a new wellness app: 50,000 employees per group
+# Engagement score (0-100) for 50,000 employees without the wellness app and 50,000 with it
 random_generator = np.random.default_rng(21)
 scores_old = random_generator.normal(72.0, 12, 50000)
 scores_new = random_generator.normal(72.3, 12, 50000)
