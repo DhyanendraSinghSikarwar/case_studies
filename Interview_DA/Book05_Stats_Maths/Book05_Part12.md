@@ -116,7 +116,7 @@ Output: `Chi-square: 8.62` and `p-value: 0.0033`. A p-value this small says the 
 - **Reading and quick reference:** Statology tutorials, the free online textbook OpenIntro Statistics.
 - **Practice:** Kaggle Learn (free short courses), Excel on your own HR-style data, Python with pandas and scipy.
 - **Rule:** one resource per stage; finishing one beats sampling ten.
-- Availability and contents change; I have not re-checked every link today.
+- The named resources are from memory, unverified; availability and contents change, and I have not re-checked every link today.
 **Likely follow-ups:** 1) *Why free?* Fundamentals are well covered for free; paid courses add structure and certificates (Q17). 2) *Which first?* Descriptive statistics in Excel.
 **Common mistakes:** Hoarding bookmarks; watching without doing exercises.
 
@@ -164,7 +164,7 @@ Output: `Chi-square: 8.62` and `p-value: 0.0033`. A p-value this small says the 
 **Common mistakes:** Binge-watching on Sunday then nothing for six days; never testing recall.
 
 ### Q10 ⭐⭐ 🟢 Which practice datasets have you used to apply statistics?
-**Asked at:** commonly asked (no company-specific report found). Dataset descriptions below are from general knowledge and were not re-downloaded or checked today; confirm size and licence on the site.
+**Asked at:** commonly asked (no company-specific report found). Dataset descriptions below are from memory, unverified: they were not re-downloaded or checked today; confirm size and licence on the site.
 **What the interviewer is checking:** Hands-on practice with realistic data, and sensible choice of dataset.
 **Say this in the interview:** "I used the IBM HR Analytics employee attrition dataset on Kaggle for attrition and pay analysis, plus classic datasets like Titanic and Iris for fundamentals. HR data kept the work relevant to my background." (Name only datasets you really used.)
 **Explain simply:**
@@ -270,7 +270,7 @@ upper_limit = attrition_rate + 1.96 * standard_error
 print("Rate:", attrition_rate)
 print("95% interval:", round(lower_limit * 100, 1), "to", round(upper_limit * 100, 1), "percent")
 ```
-Output: `Rate: 0.15` and `95% interval: 11.0 to 19.0 percent`. The claimed 10% to 20% was too wide; checking caught it.
+Output: `Rate: 0.15` and `95% interval: 11.0 to 19.0 percent`. The claimed 10% to 20% was a loose, rounded-out range (the real one is about 11% to 19%); recomputing caught it.
 **Likely follow-ups:** 1) *Would you trust AI-written code?* Only after reading and testing it. 2) *Data privacy?* Use dummy or anonymised data.
 **Common mistakes:** Copying answers without understanding; trusting a fluent but wrong explanation; sharing real employee data.
 
@@ -297,11 +297,31 @@ Output: `Rate: 0.15` and `95% interval: 11.0 to 19.0 percent`. The claimed 10% t
 - **Fix:** I wrote the correct definition in my own words and tested it with a small simulation.
 - **Habit now:** I check the question, "what is this number the probability of?", before reporting it.
 **Worked example:** Out of 1,000 tests, suppose 100 effects are real and 900 are not. With 80% power (chance of catching a real effect) and a 5% false-alarm rate, we get 80 true hits and 45 false alarms. So 45 of 125 "significant" results, about 36%, are false, far more than "5%". This shows why a single small p-value is not a 5% chance of being wrong (calculated in Python).
+**Excel / Python:**
+```python
+# Out of 1,000 tests: 100 real effects, 900 with no real effect
+real_effects = 100
+no_effects = 900
+power = 0.80
+false_alarm_rate = 0.05
+
+# Real effects we catch, and no-effect tests that still look significant
+true_hits = real_effects * power
+false_alarms = no_effects * false_alarm_rate
+
+# Share of "significant" results that are false alarms
+share_false = false_alarms / (true_hits + false_alarms)
+print(true_hits, false_alarms, round(share_false * 100, 1), "%")
+```
+```text
+80.0 45.0 36.0 %
+```
+So 36% of the "significant" results are false alarms, not 5%.
 **Likely follow-ups:** 1) *What did you change afterwards?* A checklist before any report. 2) *Would you do it differently?* Yes, ask a reviewer to read my interpretation, not just my numbers.
 **Common mistakes:** Giving a fake perfect answer ("I never get things wrong"); choosing a trivial mistake; blaming the tool or the data.
 
 ### Q16 ⭐⭐ 🟡 How do you explain a statistical result, such as a p-value or confidence interval, to a non-technical manager?
-**Asked at:** commonly asked (no company-specific report found); the sources file notes interviewers use this to test communication.
+**Asked at:** commonly asked (no company-specific report found); no source in the sources file covers this question directly.
 **What the interviewer is checking:** Can you translate numbers into a decision without jargon or false certainty?
 **Say this in the interview:** "I start with the business answer, then the size of the effect, then how sure we are, in plain words. I avoid saying 'statistically significant' without saying what it means for the decision."
 **Explain simply:**
@@ -359,6 +379,7 @@ To the manager: "About 17% plan to leave; the true company-wide figure is plausi
 - A good project has: a clear business question, clean data, descriptive statistics, one or two tests, a chart, and a plain-language conclusion.
 - Be ready to explain every number, including what you would not conclude.
 - Keep it on GitHub or a shared notebook with a short README.
+- **Mini-project ideas (each 1 to 2 weekends, public or self-made data):** 1) attrition rate by department with a confidence interval (Q16); 2) overtime versus leaving, chi-square test (Q19); 3) pay gap check: median and mean salary by group, with a t-test; 4) simulate a mock A/B test of two training formats on invented scores; 5) simple regression of salary on years of experience, with a residual plot.
 **Likely follow-ups:** 1) *What was the hardest part?* Cleaning data and choosing the right test. 2) *What would you improve?* Add a model with controls (Q25), or more data.
 **Common mistakes:** Claiming a project you cannot explain; showing code without interpretation; overclaiming cause.
 
@@ -413,6 +434,16 @@ Attrition is 30% with overtime versus 13.3% without, and the tiny p-value says a
 - Mix three question types: calculate, explain aloud in plain words, and spot the error in a flawed claim.
 - **Scoring (my own rule of thumb, not a standard):** below 60% revise Level 1; 60 to 80% focus on weak topics; above 80% move up a level.
 - Sample questions: "A dice is rolled twice; chance of two sixes?" (1/36); "What does a 95% interval tell a manager?"; "Why is median pay better than mean pay when a few salaries are huge?"
+- **A ready 8-question self-check (answers checked in Python; do it closed-book in 20 minutes):**
+  1. Salaries 30, 32, 35, 38, 200 (thousands): mean and median? Answer: mean 67, median 35; the median is the fairer "typical" pay.
+  2. Two dice, probability the sum is 7? Answer: 6/36 = 16.7%.
+  3. Headcount 250 to 275: percentage change? Answer: 10%.
+  4. Score 80, team average 70, standard deviation 5: z-score? Answer: 2 (two standard deviations above average).
+  5. 45 of 300 left: rate and rough 95% interval? Answer: 15%, about 11% to 19%.
+  6. In plain words, what is a p-value? Answer: how surprising our data would be if there were truly no effect; not the chance we are wrong.
+  7. 20 tests at the 5% level, nothing real: chance of at least one false hit? Answer: about 64%.
+  8. A disease affects 2% of people; a test catches 90% of cases and wrongly flags 10% of healthy people. If you test positive, chance you have it? Answer: about 15.5% (Bayes' theorem).
+  Score 7 or 8: move up a level; 5 or 6: revise the missed topics; below 5: repeat Level 1.
 **Likely follow-ups:** 1) *Where do you get questions?* The practice sets in free courses such as Khan Academy, plus the questions in this book. 2) *How often?* Monthly.
 **Common mistakes:** Open-book testing; only checking calculations; not recording scores over time.
 
@@ -426,6 +457,8 @@ Attrition is 30% with overtime versus 13.3% without, and the tiny p-value says a
 - **Month 3:** one end-to-end project (Q19), regression basics, mock interviews, explain results aloud.
 - **Daily (about 60 to 90 minutes):** 30 minutes learn, 30 minutes problems, 15 minutes explain aloud or write a summary.
 - **Checkpoints:** the self-check test (Q20) at the end of each month.
+- **Job-ready means:** you can explain every Level 2 topic in under a minute, you have one finished project with a write-up (Q18), and you score above 80% on the self-check.
+- **Free resources and datasets to use:** see Q6 and Q10.
 - Maths needed is modest: percentages, algebra, basic probability, reading graphs (see Q8).
 **Likely follow-ups:** 1) *What if you fall behind?* Cut scope, never skip practice. 2) *What would you drop?* Advanced theory such as proofs.
 **Common mistakes:** An overloaded plan; only watching videos; no deadline or output.
