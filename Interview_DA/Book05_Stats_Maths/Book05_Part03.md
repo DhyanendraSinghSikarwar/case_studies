@@ -368,8 +368,8 @@ from scipy import stats
 # Valid binomial: 10 independent candidates, same 70% chance each
 print(round(stats.binom.pmf(7, 10, 0.7), 4))
 ```
-Output: `0.2668`.
-**Likely follow-ups:** 1) *What if p differs per person?* Use a Poisson-binomial or model p per group. 2) *What if trials are linked?* Counts vary more than binomial predicts.
+Output: `0.2668`. About a 27% chance that exactly 7 of the 10 join, under the four conditions above.
+**Likely follow-ups:** 1) *What if p differs per person?* Model p separately per group (a "Poisson-binomial" model handles unequal chances, but that is rarely needed in an interview). 2) *What if trials are linked?* Counts vary more than binomial predicts.
 **Common mistakes:** Assuming independence without thinking; ignoring that p differs between groups.
 
 ### Q14 ⭐⭐ 🟢 Which distribution would you use to model the number of employee resignations in a month, and why?
@@ -466,7 +466,7 @@ Output: `pop skew 2.27`, `2 skew of means 1.5 sd of means 22369 theory 22461`, `
 ### Q17 ⭐⭐ 🟢 Explain to a non-technical manager what a bell curve means when HR rates employee performance.
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Can you explain a statistical idea simply, and flag its limits?
-**Say this in the interview:** "A bell curve means most employees are rated around the middle, and fewer get very high or very low ratings, with the two ends roughly balanced. About two thirds sit within one step of average. It describes how ratings tend to spread, but it should not force managers to fit people into set percentages."
+**Say this in the interview:** "A bell curve means most employees are rated around the middle, and fewer get very high or very low ratings, with the two ends roughly balanced. About two thirds sit within one standard deviation (one typical step) of average. It describes how ratings tend to spread, but it should not force managers to fit people into set percentages."
 **Explain simply:**
 - Picture a hill: the highest point is the typical rating, the slopes are the less common ratings.
 - Example scale 1 to 5 with average 3.0 and SD 0.8: about 16% rate below 2.2, 68% between 2.2 and 3.8, and 16% above 3.8.
@@ -653,7 +653,7 @@ A silent half hour is extremely unlikely under this model. Excel (2010+; not run
 - Typical causes: bursts (events arriving in clusters), rates that change by day or team, or a mix of different groups.
 - Practical effect: Poisson-based probabilities understate the chance of extreme counts.
 **Formula in plain words:** ratio = variance / mean. About 1 fits Poisson; clearly above 1 means overdispersion.
-**Worked example:** A simulated true Poisson with mean 5 gave mean 4.9 and variance 5.16 (ratio about 1.05). A 30-day absence log (Q34) had mean 4.57 and variance 16.19 (ratio 3.5), so Poisson is a poor fit.
+**Worked example:** A simulated true Poisson with mean 5 gave mean 4.94 and variance 5.04 (ratio about 1.02). A 30-day absence log (Q34) had mean 4.57 and variance 16.19 (ratio 3.5), so Poisson is a poor fit.
 **Excel / Python:**
 ```python
 import numpy as np
@@ -668,9 +668,9 @@ print(poisson_counts.mean().round(2), poisson_counts.var().round(2))
 ```
 Output:
 ```
-4.9 5.16
+4.94 5.04
 ```
-Mean and variance are close, as expected for real Poisson data. Excel: compare `=AVERAGE(range)` with `=VAR.S(range)` (2010+).
+Mean and variance are close, as expected for real Poisson data. Excel: compare `=AVERAGE(range)` with `=VAR.S(range)` (VAR.S needs 2010+; not run in Excel here).
 **Likely follow-ups:** 1) *Underdispersion?* Variance below mean: events more regular than random. 2) *Fix?* Negative binomial, or model the changing rate.
 **Common mistakes:** Calling a ratio of 1.3 "wildly off" with no sample-size thought; ignoring it and trusting Poisson tail probabilities.
 
@@ -1119,10 +1119,10 @@ Output: `P(wait <= 5 min): 0.25`, `P(10 to 15 min): 0.25`, `mean wait: 10.0`, `S
 import numpy as np
 from scipy import stats
 
-rng = np.random.default_rng(42)
+random_generator = np.random.default_rng(42)
 
 # Make 10,000 salaries whose logs are normal (this is what lognormal means)
-log_of_salaries = rng.normal(loc=np.log(40000), scale=0.5, size=10000)
+log_of_salaries = random_generator.normal(loc=np.log(40000), scale=0.5, size=10000)
 salaries = np.exp(log_of_salaries)
 
 print("mean salary:", round(salaries.mean()))
@@ -1209,11 +1209,11 @@ Output: both 0.0498; average wait 10.0 days; 63.21% chance the next resignation 
 ```python
 import numpy as np
 
-rng = np.random.default_rng(1)
+random_generator = np.random.default_rng(1)
 
 # Two groups: recent hires around 1.5 years, long-serving staff around 9 years
-recent_hires = rng.normal(1.5, 0.6, 300)
-long_serving = rng.normal(9, 1.5, 200)
+recent_hires = random_generator.normal(1.5, 0.6, 300)
+long_serving = random_generator.normal(9, 1.5, 200)
 tenure_years = np.concatenate([recent_hires, long_serving])
 
 print("mean tenure:", round(tenure_years.mean(), 1))
@@ -1270,10 +1270,10 @@ Output: `1.5`, a clear right skew. In Excel: `=3*(AVERAGE(A2:A100)-MEDIAN(A2:A10
 ```python
 import numpy as np
 
-rng = np.random.default_rng(7)
+random_generator = np.random.default_rng(7)
 
 # Right-skewed data: days to fill a vacancy, mean about 30
-days_to_fill = rng.exponential(scale=30, size=100000)
+days_to_fill = random_generator.exponential(scale=30, size=100000)
 mean_days = days_to_fill.mean()
 sd_days = days_to_fill.std()
 
@@ -1303,10 +1303,10 @@ Output: 85.8%, 95.0%, 98.2% (not 68, 95, 99.7); mean minus 1 SD is 0.2 days; 5.0
 ```python
 import numpy as np
 
-rng = np.random.default_rng(3)
+random_generator = np.random.default_rng(3)
 
 # 200 salary values in thousands: 120 junior, 80 senior
-salaries_k = np.concatenate([rng.normal(35, 5, 120), rng.normal(70, 8, 80)])
+salaries_k = np.concatenate([random_generator.normal(35, 5, 120), random_generator.normal(70, 8, 80)])
 
 for bin_width in [40, 10, 2]:
     edges = np.arange(0, 120 + bin_width, bin_width)
@@ -1335,10 +1335,10 @@ Output: width 40 gives only 3 bars (100, 90, 10), so the two groups blur; width 
 import numpy as np
 import pandas as pd
 
-rng = np.random.default_rng(5)
+random_generator = np.random.default_rng(5)
 
 # Tenure in years for 400 employees (right-skewed)
-tenure_years = pd.Series(np.round(rng.gamma(shape=2.0, scale=2.0, size=400), 1))
+tenure_years = pd.Series(np.round(random_generator.gamma(shape=2.0, scale=2.0, size=400), 1))
 print(tenure_years.describe().round(2))
 
 # Middle half of employees
@@ -1427,11 +1427,11 @@ Output: 0.07965567, 0.00797871, 0.00007979, 0.00000080. The chance falls towards
 import numpy as np
 from scipy import stats
 
-rng = np.random.default_rng(11)
+random_generator = np.random.default_rng(11)
 
 # Two independent task times in minutes
-task_a = rng.normal(30, 4, 1000000)
-task_b = rng.normal(20, 3, 1000000)
+task_a = random_generator.normal(30, 4, 1000000)
+task_b = random_generator.normal(20, 3, 1000000)
 total_time = task_a + task_b
 time_gap = task_a - task_b
 
@@ -1458,10 +1458,10 @@ Output: simulation matches theory: sum mean 50.0, variance 25.03, SD 5.0; differ
 ```python
 import numpy as np
 
-rng = np.random.default_rng(7)
+random_generator = np.random.default_rng(7)
 
 # Right-skewed days-to-fill data
-days_to_fill = rng.exponential(scale=30, size=100000)
+days_to_fill = random_generator.exponential(scale=30, size=100000)
 mean_days = days_to_fill.mean()
 sd_days = days_to_fill.std()
 
@@ -1490,10 +1490,10 @@ Output: k=1.5: at least 55.6%, actual 91.7%; k=2: at least 75.0%, actual 95.0%; 
 import numpy as np
 from scipy import stats
 
-rng = np.random.default_rng(2)
+random_generator = np.random.default_rng(2)
 
 # Bell-shaped scores
-normal_scores = rng.normal(70, 10, 1000)
+normal_scores = random_generator.normal(70, 10, 1000)
 print("normal data excess kurtosis:", round(stats.kurtosis(normal_scores), 2))
 
 # Same scores plus 3 extreme values
@@ -1501,11 +1501,11 @@ with_outliers = np.append(normal_scores, [150, 160, 5])
 print("after adding 3 extreme values:", round(stats.kurtosis(with_outliers), 2))
 
 # Flat data: no tails
-flat_data = rng.uniform(0, 100, 100000)
+flat_data = random_generator.uniform(0, 100, 100000)
 print("uniform:", round(stats.kurtosis(flat_data), 2))
 
 # Heavy-tailed t distribution, 5 degrees of freedom
-heavy_tailed = rng.standard_t(5, 100000)
+heavy_tailed = random_generator.standard_t(5, 100000)
 print("t, 5 df:", round(stats.kurtosis(heavy_tailed), 2), "(theory 6)")
 
 beyond_3sd = np.abs(heavy_tailed - heavy_tailed.mean()) > 3 * heavy_tailed.std()
@@ -1563,14 +1563,14 @@ Output: the two columns agree to about 3 decimals (e.g. k=3: 0.2244 vs 0.2240). 
 ```python
 import numpy as np
 
-rng = np.random.default_rng(4)
+random_generator = np.random.default_rng(4)
 
 # Shape value that gives the 80/20 rule
 alpha = np.log(5) / np.log(4)
 print("alpha for 80/20:", round(alpha, 3))
 
 # Revenue per customer (in thousands), Pareto with minimum value 1
-revenue = rng.pareto(alpha, 200000) + 1
+revenue = random_generator.pareto(alpha, 200000) + 1
 
 # Share of total revenue from the top 20% of customers
 sorted_revenue = np.sort(revenue)[::-1]
@@ -1584,6 +1584,6 @@ print("mean:", round(mean_revenue, 2), "median:", round(np.median(revenue), 2), 
 print("share within mean +- 2 SD:", round(np.mean(np.abs(revenue - mean_revenue) <= 2 * sd_revenue) * 100, 1), "%")
 print("share of customers below the mean:", round(np.mean(revenue < mean_revenue) * 100, 1), "%")
 ```
-Output: alpha 1.161; top 20% hold 77.2% of revenue (close to 80; sample noise from extreme draws); mean 6.33 versus median 1.82; the largest customer is 76,444 (over 12,000 times the median); 88.3% of customers are below the mean; 99.9% fall within mean +- 2 SD, which sounds safe but hides the tail.
+Output: alpha 1.161; top 20% hold 77.2% of revenue (close to 80; sample noise from extreme draws); mean 6.33 versus median 1.82; the largest customer is 76,444 (about 42,000 times the median of 1.82); 88.3% of customers are below the mean; 99.9% fall within mean +- 2 SD, which sounds safe but hides the tail.
 **Likely follow-ups:** 1) *How to summarise?* Median, percentiles, share held by top 10%, log scale. 2) *How to detect?* Log-log plot, or max far above the 99th percentile.
 **Common mistakes:** Reporting an average revenue per customer as typical; treating the 80/20 as an exact law (it is a rule of thumb).

@@ -1503,6 +1503,7 @@ The simulation of 200,000 plays agrees with the exact answer. In Excel (any vers
 **Worked example:** E = (1/6)(80) + (5/6)(-20) = 13.33 - 16.67 = -3.33. Break-even prize would be Rs 120.
 **Excel / Python:**
 ```python
+# Game rules: prize if the die shows 6, fee to play, chance of each result
 prize_if_six = 100
 cost_to_play = 20
 p_six = 1 / 6
@@ -1613,6 +1614,7 @@ Three families survive and only one is two girls. See Q52 for how the answer cha
 **Worked example:** (0.5 x 0.2) / (0.5 x 0.2 + 0.05 x 0.8) = 0.10 / 0.14 = 0.714.
 **Excel / Python:**
 ```python
+# Given: share of spam, and how often the word "offer" appears in each type
 p_spam = 0.20
 p_not_spam = 1 - p_spam
 p_offer_given_spam = 0.50
@@ -1786,6 +1788,7 @@ Both the exact sum and the simulation give 2.
 **Worked example (illustrative numbers, not real data):** Without an offer, 100 customers buy at Rs 300 margin = Rs 30,000. A Rs 50 discount applies to every sale. Uptake: 20% chance of 110 buyers, 50% chance of 130, 30% chance of 150. Margin per sale becomes Rs 250. Expected profit = Rs 33,000, a gain of Rs 3,000.
 **Excel / Python:**
 ```python
+# Assumed numbers (illustrative): normal buyers, profit per sale, discount size
 baseline_buyers = 100
 margin_per_sale = 300
 discount_per_sale = 50
@@ -1871,6 +1874,7 @@ Excel (2010+): `=BINOM.DIST(2,3,0.5,FALSE)` returns 0.375 (not run in Excel here
 **Worked example:** 1% -> 50% -> 99%. Using 1,000,000 people: 10,000 have it; 9,900 test positive; of 990,000 healthy, 9,900 test positive. Half of positives are real (50%). Of those 19,800, retest: 9,801 real positives versus 99 false, so 99%.
 **Excel / Python:**
 ```python
+# Standard numbers: 1% have the disease; the test is 99% right in both directions
 prevalence = 0.01
 sensitivity = 0.99   # P(positive | disease)
 specificity = 0.99   # P(negative | no disease)
@@ -1912,6 +1916,7 @@ Two independent positives move us from "unlikely" to "very likely".
 **Worked example:** 5 shortlisted candidates, each accepts with 20%: n x p = 100%, which is clearly absurd; the correct answer is 67.2%. With 10 candidates, n x p = 200% against a correct 89.3%.
 **Excel / Python:**
 ```python
+# Each of 5 independent candidates accepts with probability 20%
 chance_each_accepts = 0.20
 number_of_trials = 5
 
@@ -1947,6 +1952,7 @@ The shortcut says 100% and 200%; the true chances are 67% and 89%.
 **Worked example:** (0.25 x 0.25) / (0.10 x 0.25 + 0.15 x 0.50 + 0.25 x 0.25) = 0.0625 / 0.1625 = 0.3846.
 **Excel / Python:**
 ```python
+# Team headcounts and yearly attrition rates
 team_sizes = {"Team 1": 100, "Team 2": 200, "Team 3": 100}
 attrition_rates = {"Team 1": 0.10, "Team 2": 0.15, "Team 3": 0.25}
 

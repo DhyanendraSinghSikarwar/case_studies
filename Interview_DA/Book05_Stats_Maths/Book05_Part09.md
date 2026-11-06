@@ -22,7 +22,7 @@
 **Explain simply:**
 - *Visual:* box plot (dots beyond the whiskers), histogram, scatter plot.
 - *IQR rule:* flag values below Q1 minus 1.5 times IQR, or above Q3 plus 1.5 times IQR (Q5). *IQR* is the width of the middle half of the data.
-- *Z-score rule:* flag values more than 3 standard deviations from the mean (Q6).
+- *Z-score rule:* flag values more than 3 standard deviations from the mean (Q6). A *standard deviation* is the typical distance of a value from the mean.
 - *Business rules:* an age of 250 or a negative salary is impossible, so flag it regardless of statistics.
 **Formula in plain words:** Upper fence = Q3 + 1.5 x (Q3 - Q1). Lower fence = Q1 - 1.5 x (Q3 - Q1). Z-score = (value - mean) / standard deviation.
 **Worked example:** Same 11 salaries as Q1 (Rs thousand): Q1 = 24, Q3 = 26.5, IQR = 2.5, fences are 20.25 and 30.25, so only 95 is flagged. Z-score of 95 is 3.01, also flagged.
@@ -104,7 +104,7 @@ Output:
 ```
 median 25.0
 capped mean 25.48
-mean without outlier 25.0
+mean without outlier 25.00
 ```
 Capping keeps all 11 people in the data but stops one salary dragging the average.
 **Likely follow-ups:** 1) *When do you keep it?* See Q7. 2) *What if you are unsure?* Run the analysis both ways and report both.
@@ -511,7 +511,7 @@ The chart makes a 2.6% difference look like 100%.
 - Common forms: choosing a convenient start date, dropping an inconvenient department, or testing many cuts and reporting only the one that "worked".
 - Defence: fix the definition and time window first, show the full series, and say how many cuts you tried.
 - Let a colleague check which rows or periods were left out.
-**Worked example:** Attrition by quarter over two years. A manager says "attrition fell from 9.5% to 6.5%" by starting at the worst quarter (Q2-24) and ending at the best (Q4-25). The full-year averages show 2025 (8.475%) was actually higher than 2024 (7.875%).
+**Worked example:** Attrition by quarter over two years. A manager says "attrition fell from 9.5% to 6.5%" by starting at a high quarter (Q2-24) and ending at the lowest of all (Q4-25). The full-year averages show 2025 (8.475%) was actually higher than 2024 (7.875%).
 **Excel / Python:**
 ```python
 import pandas as pd
@@ -522,7 +522,7 @@ attrition = pd.Series(
     index=["Q1-24", "Q2-24", "Q3-24", "Q4-24", "Q1-25", "Q2-25", "Q3-25", "Q4-25"],
 )
 
-# Cherry-picked view: start at the worst quarter, end at the best
+# Cherry-picked view: start at a high quarter, end at the lowest quarter
 print("Peak to latest:", attrition["Q2-24"], "->", attrition["Q4-25"])
 
 # Honest view: average of each full year
@@ -622,7 +622,7 @@ Mean after deleting 300000: 36777.77777777778
 Original mean: 63100.0
 ```
 The extreme 300000 is pulled down to 45000 when winsorized, and the lowest 30000 is lifted to 32000. The mean falls from 63,100 to about 37,800.
-**Likely follow-ups:** 1) *How much to winsorize?* Commonly 1% to 5% per tail, or 5% to 10% for small samples; choose before looking at results and state it. 2) *Which keeps sample size?* Winsorizing.
+**Likely follow-ups:** 1) *How much to winsorize?* Commonly 1% to 5% per tail, or 5% to 10% for small samples (a rule of thumb, from memory, unverified); choose before looking at results and state it. 2) *Which keeps sample size?* Winsorizing.
 **Common mistakes:** Winsorizing silently without telling readers; using it to hide a data error that should be fixed or deleted.
 
 ### Q18 ⭐⭐ 🟡 What is the modified z-score (median and MAD), and why is it more robust than the ordinary z-score?
@@ -726,7 +726,7 @@ Age 150 fails the sanity test. The 95 lakh salary passes it but is far from its 
 - Check the business: a promotion, festival, bulk corporate order, system backfill that dumped many days into one.
 - If it is an error, correct it or exclude it. If real but one-off, keep it in revenue totals but use a version without it to judge the underlying trend.
 - Always state the choice and its impact.
-**Worked example:** Thirty days of sales around Rs 100 thousand, with day 9 at 1,000 (about 9.9 times the typical day). Month total is 3,936 with it and 2,936 without, a one-third drop.
+**Worked example:** Thirty days of sales around Rs 100 thousand, with day 9 at 1,000 (about 9.9 times the typical day). Month total is 3,936 with it and 2,936 without, so that one day is about a quarter of the month's sales.
 **Excel / Python:**
 ```python
 import numpy as np
@@ -787,7 +787,7 @@ Everyone: 71.2
 Left only: 53.75
 ```
 The survivors-only number looks 11.6 points better than the truth, because the unhappy people have already left.
-**Likely follow-ups:** 1) *Famous example?* Armour added to planes only where returning bombers were hit (Abraham Wald's point: the missing planes were hit elsewhere). 2) *Is it a type of selection bias?* Yes.
+**Likely follow-ups:** 1) *Famous example?* Armour added to planes only where returning bombers were hit (Abraham Wald's point: the missing planes were hit elsewhere; from memory, unverified). 2) *Is it a type of selection bias?* Yes.
 **Common mistakes:** Treating a survey of current staff as a survey of all staff over time.
 
 ### Q22 ⭐⭐ 🟡 What is the base rate fallacy? Give a numeric example.
@@ -832,7 +832,7 @@ Flagged does not mean "will leave": two out of three flagged people are not leav
 **Say this in the interview:** "A 100% rate from 2 visitors is just 2 out of 2. With such a small sample, luck dominates, so the true rate could be anywhere from about 34% to 100%. I show the count next to the percentage and give a confidence range."
 **Explain simply:**
 - Small samples swing wildly: one more failure would move 2/2 to 2/3, which is 67%.
-- A confidence interval is a range that likely contains the true rate; it is wide for small samples and narrow for large ones.
+- A confidence interval is a range of plausible values for the true rate; it is wide for small samples and narrow for large ones.
 - Dashboard fixes: show n (the count), hide or grey out rates for tiny groups, and use ranges or minimum sample thresholds.
 **Worked example:** Campaign A has 2 of 2 converting (100%). Campaign B has 45 of 60 (75%). Campaign C has 450 of 600 (also 75%). A and B look different, but A's range is vast.
 **Excel / Python:**
@@ -1224,7 +1224,7 @@ With the outlier:    r = -0.24  p = 0.509
 Without the outlier: r = 0.71  p = 0.031
 Spearman, all data:  rho = 0.25
 ```
-With everyone, the link looks weak and negative (not significant); without one person, it is clearly positive. The honest report shows both and explains that the conclusion rests on one employee, whom I would investigate first. (p-value: the chance of seeing a link this strong by luck if there were none; below 0.05 is the usual "significant" line.)
+With everyone, the link looks weak and negative (not significant); without one person, it is clearly positive. The honest report shows both and explains that the conclusion rests on one employee, whom I would investigate first. (p-value: the chance of seeing a link this strong or stronger by luck alone if there were really none; below 0.05 is the usual "significant" line.)
 **Likely follow-ups:** 1) *Which one do you pick?* The one supported by the investigation (error means remove, genuine means keep and report both). 2) *Small sample?* With 10 points, sensitivity is expected; say so.
 **Common mistakes:** Presenting only the version that supports the story; removing the point because it "spoils" the result.
 
@@ -1343,12 +1343,12 @@ for department, group in employees.groupby("department"):
 ```
 Output:
 ```
-      overtime  engagement
-department
-A              5.0        49.6
-B             10.3        59.8
-C             14.7        71.1
-D             19.8        80.6
+            overtime  engagement
+department                      
+A                5.0        49.6
+B               10.3        59.8
+C               14.7        71.1
+D               19.8        80.6
 Correlation of the 4 department averages: 1.0
 A within-department correlation: -0.9
 B within-department correlation: -0.91
@@ -1422,6 +1422,7 @@ B is an outlier with low leverage: the slope does not move. C has high leverage 
 - With a few big outliers, the standard deviation grows, so the z-scores shrink and fall under the usual cutoff of 3.
 - Robust methods use the median (middle value), the MAD (median absolute deviation, the typical distance from the median) or quartiles, which ignore a few extreme values.
 - Also, remove or investigate points one at a time, or use robust multivariate methods (Q40).
+- Limit: even the IQR rule can be masked when more than about a quarter of the values are extreme, because then Q3 itself is pulled up.
 **Worked example:** Monthly overtime hours of 13 employees: ten normal values (5 to 10) and three very high ones (70, 75, 80).
 **Excel / Python:**
 ```python
@@ -1465,7 +1466,7 @@ IQR fences: 2.5 14.5  Flagged by IQR: [70. 75. 80.]
 ```
 The three extreme values inflate the mean to 23.1 and the standard deviation to 29.7, so the largest z-score is only 1.92 and nothing is flagged. The robust methods flag all three (the 0.6745 and 3.5 are the standard modified z-score constants, from Iglewicz and Hoaglin, quoted from memory).
 **Likely follow-ups:** 1) *What is swamping?* The opposite problem: normal points wrongly flagged because outliers distort the fit. 2) *Which method do you start with?* A plot plus the IQR rule.
-**Common mistakes:** Trusting |z| > 3 on small or heavily contaminated data.
+**Common mistakes:** Trusting |z| > 3 on small or heavily contaminated data; assuming IQR is immune when a large share of the data is extreme.
 
 ### Q39 ⭐ 🔴 What is Berkson's paradox? Give an example.
 **Asked at:** commonly asked (no company-specific report found); a differentiator question.
@@ -1591,7 +1592,7 @@ monthly_calls["repeat_calls"] = monthly_calls["calls"] - monthly_calls["resolved
 # Total handling time spent in the month
 monthly_calls["total_minutes"] = monthly_calls["calls"] * monthly_calls["average_handling_minutes"]
 
-print(monthly_calls)
+print(monthly_calls.to_string())
 ```
 Output:
 ```
