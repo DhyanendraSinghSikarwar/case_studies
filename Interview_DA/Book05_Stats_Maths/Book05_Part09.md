@@ -1598,8 +1598,8 @@ Output:
 ```
   month  calls  resolved_first_call  average_handling_minutes  repeat_calls  total_minutes
 0   Jan   1000                  800                        10           200          10000
-1   Feb   1000                  700                         8           300          8000
-2   Mar   1000                  600                         6           400          6000
+1   Feb   1000                  700                         8           300           8000
+2   Mar   1000                  600                         6           400           6000
 ```
 The dashboard's number improves every month, while the repeat calls double from 200 to 400; the real quality is getting worse. (The three-month figures are made up for illustration.)
 **Likely follow-ups:** 1) *What would you add to the dashboard?* First-call resolution, repeat-contact rate, customer satisfaction and handling time by call type. 2) *How do you prove the cause?* Compare agents or teams where the target was introduced and where it was not, or look before and after.

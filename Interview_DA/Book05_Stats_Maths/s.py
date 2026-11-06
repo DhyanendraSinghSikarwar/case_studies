@@ -1,15 +1,18 @@
 import numpy as np
-from scipy import stats
 
-# Month number and hires in that month
-month_number = np.array([1, 2, 3, 4, 5, 6])
-hires = np.array([20, 24, 25, 29, 33, 34])
+# 12 employees: yearly cash pay and the yearly value of stock grants (in lakh rupees)
+cash_pay = np.array([6, 7, 8, 9, 10, 11, 12, 14, 16, 20, 30, 45])
+stock_value = np.array([0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 40, 150])
+total_pay = cash_pay + stock_value
 
-# Fit the straight line through the six points
-fit = stats.linregress(month_number, hires)
+def five_numbers(label, values):
+    q1, median, q3 = np.percentile(values, [25, 50, 75])
+    print(label, "| mean", round(values.mean(), 1), "| median", median, "| Q1", q1, "| Q3", q3, "| max", values.max())
 
-# Line values: intercept + slope x month gives the forecast for that month
-print("Slope:", round(fit.slope, 4), "Intercept:", round(fit.intercept, 4), "R-squared:", round(fit.rvalue**2, 4))
-print("Month 7:", round(fit.intercept + fit.slope * 7, 2))
-print("Month 8:", round(fit.intercept + fit.slope * 8, 2))
-print("Month 18:", round(fit.intercept + fit.slope * 18, 2))
+five_numbers("Cash pay    ", cash_pay)
+five_numbers("Total pay   ", total_pay)
+
+people_with_stock = (stock_value > 0).sum()
+print("People holding stock:", people_with_stock, "of", len(stock_value))
+print("Median stock among holders:", np.median(stock_value[stock_value > 0]))
+print("Top earner share of all total pay:", round(total_pay.max() / total_pay.sum() * 100, 1), "%")

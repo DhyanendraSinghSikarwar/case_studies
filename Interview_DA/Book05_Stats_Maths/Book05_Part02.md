@@ -142,6 +142,7 @@ Squared gaps: [25, 9, 0, 0, 9, 25]
 Variance: 13.6
 Standard deviation: 3.69
 ```
+The typical salary sits about 3.7 thousand away from the mean of 35; the variance (13.6) is in squared units, so it is harder to picture.
 Excel (2010+; not run in Excel here): `=VAR.S(A2:A7)` returns 13.6, `=STDEV.S(A2:A7)` returns 3.69.
 **Likely follow-ups:** 1) *Which is more sensitive to outliers?* Both, variance even more. 2) *When is variance preferred?* When combining independent sources of variation.
 **Common mistakes:** Quoting variance to a manager; forgetting variance units are squared.
@@ -243,6 +244,7 @@ Output:
 90th percentile value: 123.0
 Share at or below it: 0.9
 ```
+The 90th percentile salary is 123 thousand, and exactly 90% of the 20 people earn that or less.
 Excel (not run in Excel here): `=PERCENTILE.INC(A2:A21, 0.9)` (2010+) uses the same interpolation and gives 123.
 **Likely follow-ups:** 1) *Percentile vs percentage?* A percentage is a share of a total; a percentile is a rank position. 2) *Tools differ slightly?* Yes (Q42).
 **Common mistakes:** Saying "90th percentile means I scored 90%"; mixing percentile value and percentile rank (Q28).
@@ -279,6 +281,7 @@ Mean: 6.14
 Median: 6
 Mode: 8
 ```
+The three averages are 6.14, 6 and 8; no extreme value, so the data is only mildly uneven.
 Excel: values in A2:A8; `=AVERAGE(A2:A8)`, `=MEDIAN(A2:A8)`, `=MODE.SNGL(A2:A8)` (not run in Excel here).
 **Likely follow-ups:** 1) *What if we add a 10?* Mean 6.63, median 7 (8 values, middle two 6 and 8). 2) *Which would you report?* Mean or median; no outliers here.
 **Common mistakes:** Taking the middle of the unsorted list (which would give 5); rounding the mean too early.
@@ -351,6 +354,7 @@ Q1: 32.25 Q3: 39.5 IQR: 7.25
 Fences: 21.375 50.375
 Outliers: [95]
 ```
+Only the 95 thousand salary falls outside the fences, so it is the one to check.
 Excel (not run in Excel here): `=QUARTILE.INC(A2:A11,1)` gives 32.25 and `=QUARTILE.INC(A2:A11,3)` gives 39.5, matching Python's default method (2010+).
 **Likely follow-ups:** 1) *Why 1.5?* See Q49. 2) *What if the data is not symmetric?* The rule still works but may flag many on the long tail side.
 **Common mistakes:** Using IQR = max minus min; deleting flagged points without checking whether they are real.
@@ -380,6 +384,7 @@ Output:
 ```
 Q1: 32.25 Median: 35.5 Q3: 39.5
 ```
+The box runs from 32.25 to 39.5 with its centre line at 35.5; the tall 95 is what the plot draws as a dot.
 Plot it with `seaborn.boxplot` or Excel's Insert > Box and Whisker chart (2016+; not run in Excel here).
 **Likely follow-ups:** 1) *What does a long upper whisker mean?* Right skew. 2) *Does a box plot show the mean?* Not by default.
 **Common mistakes:** Thinking whiskers always reach min and max; reading box length as the whole range.
@@ -455,6 +460,7 @@ Output:
 Population mean (parameter): 69.6
 Sample mean (statistic): 69.18
 ```
+The survey average (69.18) is a good but not perfect estimate of the true company average (69.6).
 **Likely follow-ups:** 1) *When is the whole group your sample?* Rarely; treat it as a population if you only care about those people. 2) *What is sampling error?* The gap between statistic and parameter.
 **Common mistakes:** Calling the survey result the "true" average; mixing up the symbols.
 
@@ -504,6 +510,7 @@ Sum: 32.0
 Sample variance: 4.571
 Sample SD: 2.138
 ```
+The code repeats the five hand steps and lands on the same 2.138.
 Excel: `=STDEV.S(A2:A9)` returns 2.138 (2010+; not run in Excel here).
 **Likely follow-ups:** 1) *Population SD?* 2.0. 2) *Why do the gaps sum to zero before squaring?* The mean is the balance point.
 **Common mistakes:** Dividing by 8 when the question says sample; forgetting to square root at the end.
@@ -1151,7 +1158,7 @@ One extreme value changed the mean by about 160 but the median by only 1.5.
 **Say this in the interview:** "I would report the median, 2.5%, as the typical month, and separately flag that the fourth month hit 12% and explain why. The mean of 4% is pulled up by that single spike and describes no actual month."
 **Explain simply:**
 - Mean = 4.0%; median = 2.5%. Five of six months are between 2% and 3%.
-- Without the spike the mean would be 2.4%, so one month nearly doubled the average.
+- Without the spike the mean would be 2.4%, so one month lifted the average by about two thirds (2.4% to 4.0%).
 - But do not delete the spike: a 12% month could be a layoff, a bonus-cycle exit wave, or a data error. Leadership needs to hear about it.
 - Report both: "typical month 2.5%, with one exceptional month at 12%".
 **Worked example:** Total attrition over the six months is 24 percentage points; the one month of 12% contributes half of it.
@@ -1266,10 +1273,10 @@ The outlier raised the SD from 2.0 to 8.23 (about 4 times) but the mean absolute
 - **Which average?** Mean or median? Ask for both.
 - **Who is included?** All employees or only those who took leave? Part-timers, new joiners, contractors? Are zeros included?
 - **What period?** A year, a flu season, a pandemic year?
-- **Spread and outliers:** a few long absences (surgery, maternity-related medical leave) can inflate the mean.
+- **Spread and outliers:** a few long absences (surgery, a long illness) can inflate the mean.
 - **Data quality:** how is sick leave recorded, and does "sick day" include half-days or work-from-home?
 - **Comparison:** compared with what, last year or an industry benchmark?
-**Worked example:** 12 employees took 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 5, 40 sick days. Mean = 5.1 but median = 2; 25% took none; without the 40-day case the mean is 1.9. "Average 6" would mislead.
+**Worked example:** 12 employees took 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 5, 40 sick days. Mean = 5.1 but median = 2; 25% took none; without the 40-day case the mean is 1.9. A headline "average" near 6 would mislead.
 **Excel / Python:**
 ```python
 import numpy as np
@@ -1671,6 +1678,7 @@ Trimmed mean: 39.5
 By hand     : 39.5
 Median      : 39.0
 ```
+The director's 300 drags the plain mean to 64.6; trimming one value off each end gives 39.5, which matches the typical employee.
 In Excel: `=TRIMMEAN(A2:A11, 0.2)` trims 20% in total (10% each end, so 1 value from each end here) and returns 39.5 (available in all modern versions; not run in Excel here). Note Excel's percentage is the total cut, scipy's is per end.
 **Likely follow-ups:** 1) *How much should I trim?* 5-20% is common; say what you chose. 2) *Why not just use the median?* The trimmed mean uses more of the data.
 **Common mistakes:** Confusing Excel's total-cut percentage with scipy's per-side one; trimming without telling the audience.
@@ -1724,6 +1732,7 @@ Rebuilt with arithmetic rate: 1157.6
 Average screening speed (harmonic): 13.33 CVs per hour
 Simple mean would wrongly say      : 15.0
 ```
+The steady yearly growth rate is 3.9%, not the 5.0% a simple average gives, and the true screening speed is 13.33 CVs an hour, not 15.
 In Excel: `=GEOMEAN(B2:B4)` and `=HARMEAN(B2:B4)` (all versions; not run in Excel here).
 **Likely follow-ups:** 1) *Can the geometric mean handle zero or negatives?* No; factors must be positive. 2) *Which is largest?* Arithmetic ≥ geometric ≥ harmonic.
 **Common mistakes:** Averaging percentage growth rates arithmetically; using the harmonic mean when time, not work, is the equal part.
@@ -1737,7 +1746,7 @@ In Excel: `=GEOMEAN(B2:B4)` and `=HARMEAN(B2:B4)` (all versions; not run in Exce
 - SE describes the estimate: how far my sample mean might be from the true mean.
 - Quadrupling the sample size halves the SE.
 **Formula in plain words:** Standard error of the mean = sample SD divided by the square root of n. In symbols: s / √n.
-**Worked example:** A company of 400 has engagement scores with SD 12. Surveying 36 people gives an expected SE of 12/6 = 2. In the sample below the survey SD came out at 10.03, giving SE 1.67; repeating the survey 5,000 times shows the averages really do vary by about 1.77 (close to 2; sampling from a small company also shaves it a little).
+**Worked example:** A company of 400 has engagement scores with SD 12. Surveying 36 people gives an expected SE of 12/6 = 2. In the sample below the survey SD came out at 10.03, giving SE 1.67; repeating the survey 5,000 times shows the averages really do vary by about 1.77. It is below 2 because this simulated company's own SD turned out to be 11.08, not exactly 12, and sampling 36 of only 400 people without replacement shaves it a little more (together they predict about 1.76).
 **Excel / Python:**
 ```python
 import numpy as np
@@ -1771,6 +1780,7 @@ Standard error from formula            : 1.67
 Formula using true company SD 12 : 2.0
 SD of 5000 repeated sample means       : 1.77
 ```
+The SD (10.03) describes how employees differ; the standard error (about 1.7) describes how much the survey average would wobble from survey to survey.
 In Excel: `=STDEV.S(A2:A37)/SQRT(COUNT(A2:A37))` (Excel 2010+; not run in Excel here).
 **Likely follow-ups:** 1) *Which goes in a confidence interval?* The SE. 2) *Does a bigger sample reduce SD?* No, it only makes SD more accurately estimated.
 **Common mistakes:** Reporting SE as if it were the spread of employees; forgetting the square root.
@@ -1811,6 +1821,7 @@ Normal      : SD 10.06 excess kurtosis -0.07
 Heavy-tailed: SD 10.0 excess kurtosis 2.92
 Values beyond 3 SD: normal 10 | heavy-tailed 53
 ```
+Same SD, but the heavy-tailed set throws up about five times as many extreme values.
 In Excel: `=KURT(A2:A5001)` returns sample excess kurtosis (all versions; not run in Excel here).
 **Likely follow-ups:** 1) *Is kurtosis the same as peakedness?* Not reliably; it is tail weight. 2) *What would you do with a high value?* Check outliers and prefer robust measures (median, IQR).
 **Common mistakes:** Forgetting whether a tool reports kurtosis or excess kurtosis (Excel and pandas report excess; some tools add 3).
@@ -1857,6 +1868,7 @@ D8 = 53.2
 D9 = 67.6
 Top 10% of people earn 20.6 % of total pay
 ```
+The pay cut points climb slowly and then jump from D8 to D9, so a small top group takes a large share of pay.
 In Excel: `=PERCENTILE.INC(A2:A201, 0.9)` for D9 (2010+; not run in Excel here).
 **Likely follow-ups:** 1) *Is D5 the median?* Yes. 2) *Deciles vs percentiles?* Deciles are every tenth percentile.
 **Common mistakes:** Calling the 10 groups "deciles" when they are the 9 cut points; unequal group sizes when ties exist.
@@ -1908,6 +1920,7 @@ multiplier 3.0 -> flags 0.0 %
 Q1 45.0 Q3 71.25 IQR 26.25 fences 5.625 110.625
 Outliers: [180]
 ```
+A 1.5 multiplier flags under 1% of perfectly bell-shaped data, and in the notice-period example it flags only the 180-day case.
 In Excel, with Q1 in D1 and Q3 in D2: `=D2+1.5*(D2-D1)` for the upper fence (use `QUARTILE.INC`, 2010+; not run in Excel here).
 **Likely follow-ups:** 1) *Should I delete flagged points?* No, investigate first. 2) *Why not z-scores?* Mean and SD are themselves distorted by outliers.
 **Common mistakes:** Treating flagged values as errors automatically; using the rule on tiny samples.
@@ -1963,6 +1976,7 @@ Mode from smooth curve     : 24.1
 Mean and median            : 32.8 31.0
 True mode of this gamma is (shape-1)*scale = 24
 ```
+Both estimates (23.5 and 24.1) land close to the true peak at 24, while the mean and median sit higher because of the right tail.
 In Excel, build the histogram with `FREQUENCY` or the Histogram chart, then read the tallest bin.
 **Likely follow-ups:** 1) *Why does bin width matter?* Wide bins blur, narrow bins are noisy. 2) *Can there be two modes?* Yes (Q59).
 **Common mistakes:** Using `MODE` on decimals and getting an error or a meaningless value.
@@ -2012,6 +2026,7 @@ Mean with blanks as 0: 5.625
 Mean after median fill: 7.5
 SD skipping blanks: 1.05 | SD after median fill: 0.89
 ```
+Skipping blanks gives 7.5; zero-filling wrongly drags it to 5.625; median-filling keeps 7.5 but makes the scores look more alike than they are.
 In Excel, `=AVERAGE(B2:B9)` ignores truly empty cells, and `COUNT` vs `ROWS` tells you how many are missing (all versions; not run in Excel here). Cells containing 0 or "NA" text behave differently.
 **Likely follow-ups:** 1) *When to drop rows?* When few are missing and random. 2) *When to impute?* When many are missing and you need the full table, and you document it.
 **Common mistakes:** Silent zero-filling; not reporting the number missing.
@@ -2021,11 +2036,11 @@ In Excel, `=AVERAGE(B2:B9)` ignores truly empty cells, and `COUNT` vs `ROWS` tel
 **What the interviewer is checking:** Whether you know summary numbers can hide shape, so you should always plot the data.
 **Say this in the interview:** "Summary statistics compress a whole dataset into a few numbers, and many different shapes share the same numbers. Anscombe's quartet has four datasets with nearly identical means, SDs and correlation, yet one is a line, one a curve, and one dominated by a single extreme point. So I always plot before trusting summaries."
 **Explain simply:**
-- Anscombe (1973) built four small datasets of 11 points each to prove the point.
+- Anscombe (1973, from memory, unverified) built four small datasets of 11 points each to prove the point.
 - Mean of y is 7.5 and SD about 2.03 in all four; the correlation is about 0.816.
 - Plots show a straight line, a curve, a line with one outlier, and a vertical stack with one far point.
 - Habit to build: chart first, then summarise.
-**Worked example:** The code below uses sets I, II and IV from the published data; the three print the same summary numbers. (Set III, the line with one outlier, shares them too.)
+**Worked example:** The code below uses sets I, II and IV of Anscombe's published data (typed from memory, unverified; the matching summary numbers in the output agree with the published ones); the three print the same summary numbers. (Set III, the line with one outlier, shares them too.)
 **Excel / Python:**
 ```python
 import numpy as np
@@ -2243,7 +2258,7 @@ Each line shows the stats updated after one more value; the last line matches nu
 **Say this in the interview:** "The average of ratios gives every store equal weight, even a tiny one. The overall ratio, total orders over total visitors, weights each store by its volume. For one company-wide figure the overall ratio is normally right; the average of ratios is right only if I truly want 'the typical store'."
 **Explain simply:**
 - Each ratio has its own denominator; averaging ratios ignores them.
-- Same trap as averaging averages (Q41), and a form of Simpson's paradox when groups differ in size.
+- Same trap as averaging averages (Q41); it is also related to Simpson's paradox, where group sizes can flip a conclusion.
 - Pick by the question: "how does the business do?" (overall) or "how does a typical store do?" (average of ratios).
 **Worked example:** Three stores: 30/100, 80/400 and 500/5,000 orders per visitors. The average of the rates is 20.00%; the overall rate is 610/5,500 = 11.09%. Most visitors are at the large, weaker store.
 **Excel / Python:**
@@ -2277,6 +2292,7 @@ Output (real run):
 Average of rates: 20.0 %
 Overall rate    : 11.09 %
 ```
+The large store has most visitors and the weakest rate, so the overall rate (11.09%) is far below the 20% average of rates.
 Excel: `=SUM(orders)/SUM(visitors)` for overall, `=AVERAGE(rates)` for the other (all versions; not run in Excel here). The same applies to attrition rates by department.
 **Likely follow-ups:** 1) *Which would you show leadership?* The overall rate, plus the per-store breakdown. 2) *What about Power BI?* Build the ratio as a measure (sum / sum), not by averaging a column of ratios.
 **Common mistakes:** Averaging a ratio column in a pivot table.
@@ -2313,6 +2329,7 @@ Mean: 8.65 | median: 3.0 | 90th percentile: 11.2
 Tickets resolved within the mean: 90.0 %
 Tickets resolved within the 90th percentile: 90.0 %
 ```
+Here the mean happens to cover 90% of tickets too, but only by luck of this data; the 90th percentile is defined to cover 90%, so the promise "90% within 11.2 hours (say 12 in the SLA)" always means the same thing, and the mean offers no such guarantee.
 In Excel: `=PERCENTILE.INC(A2:A21, 0.9)` (2010+; not run in Excel here).
 **Likely follow-ups:** 1) *Why not the median?* It ignores the slow tail completely. 2) *Why p99?* Critical services care about the worst 1%.
 **Common mistakes:** Quoting an average resolution time as the SLA; forgetting the slowest 10% still exist.
@@ -2349,6 +2366,7 @@ People scoring between 4 and 7: 0
 Night shift: mean 2.4 median 2.0
 Day shift  : mean 8.5 median 8.5
 ```
+The overall mean (5.45) describes nobody; the two shifts (2.4 and 8.5) are the real story.
 Plot a histogram first (Excel Histogram chart, or pandas `hist`) to see the two peaks.
 **Likely follow-ups:** 1) *How to find the groups?* Segment by candidate variables and compare histograms. 2) *Can the groups be unequal?* Yes; report their shares.
 **Common mistakes:** Reporting "average engagement is 5.5, neutral" when the company is actually split.
@@ -2393,6 +2411,7 @@ People holding stock: 4 of 12
 Median stock among holders: 25.0
 Top earner share of all total pay: 49.6 %
 ```
+Stock leaves the median untouched (11.5) but more than doubles the mean, so the median and quartiles are the fair headline.
 In Excel: `=MEDIAN(range)`, `=QUARTILE.INC(range,1)`, `=QUARTILE.INC(range,3)` (2010+; not run in Excel here).
 **Likely follow-ups:** 1) *Would you cap the top values?* Prefer reporting median and percentiles over editing data. 2) *Gender pay gap?* Compare medians within the same grade.
 **Common mistakes:** Reporting only the mean; mixing cash and stock into one number without explanation.

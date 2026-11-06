@@ -1163,6 +1163,7 @@ for degrees_of_freedom in [4, 9, 29, 1000]:
     cutoff = stats.t.ppf(0.975, df=degrees_of_freedom)
     print("df =", degrees_of_freedom, "t cut-off =", round(cutoff, 3))
 
+# The matching cut-off from the normal curve, for comparison
 normal_cutoff = stats.norm.ppf(0.975)
 print("normal cut-off =", round(normal_cutoff, 3))
 
@@ -1198,8 +1199,11 @@ chance_zero_in_month = stats.poisson.pmf(0, mu=resignations_per_month)
 average_wait_months = 1 / resignations_per_month
 chance_wait_over_month = stats.expon.sf(1, scale=average_wait_months)
 
+# Both routes should give the same number
 print("Poisson P(0 in a month):", round(chance_zero_in_month, 4))
 print("Exponential P(wait > 1 month):", round(chance_wait_over_month, 4))
+
+# Average wait in days, and the chance the next resignation comes within 10 days
 print("average wait in days (30-day month):", round(average_wait_months * 30, 1))
 print("P(wait <= 10 days):", round(stats.expon.cdf(10 / 30, scale=average_wait_months), 4))
 ```
@@ -1227,6 +1231,7 @@ recent_hires = random_generator.normal(1.5, 0.6, 300)
 long_serving = random_generator.normal(9, 1.5, 200)
 tenure_years = np.concatenate([recent_hires, long_serving])
 
+# The mean and median of the combined tenure data
 print("mean tenure:", round(tenure_years.mean(), 1))
 print("median tenure:", round(np.median(tenure_years), 1))
 
@@ -1288,13 +1293,19 @@ days_to_fill = random_generator.exponential(scale=30, size=100000)
 mean_days = days_to_fill.mean()
 sd_days = days_to_fill.std()
 
-for k in [1, 2, 3]:
-    inside = np.mean(np.abs(days_to_fill - mean_days) <= k * sd_days)
-    print(f"within {k} SD: {inside * 100:.1f}%")
+# Share of values within 1, 2 and 3 SDs of the mean (normal data would give 68, 95, 99.7)
+for number_of_sds in [1, 2, 3]:
+    inside = np.mean(np.abs(days_to_fill - mean_days) <= number_of_sds * sd_days)
+    print(f"within {number_of_sds} SD: {inside * 100:.1f}%")
 
+# The lower band edge falls near zero days, so almost nothing can sit below it
 print("mean - 1 SD =", round(mean_days - sd_days, 1), "days")
-print("share above mean + 2 SD:", round(np.mean(days_to_fill > mean_days + 2 * sd_days) * 100, 1), "%")
-print("share below mean - 2 SD:", round(np.mean(days_to_fill < mean_days - 2 * sd_days) * 100, 1), "%")
+
+# Compare the two tails: all the extremes are on the high side
+share_above = np.mean(days_to_fill > mean_days + 2 * sd_days) * 100
+share_below = np.mean(days_to_fill < mean_days - 2 * sd_days) * 100
+print("share above mean + 2 SD:", round(share_above, 1), "%")
+print("share below mean - 2 SD:", round(share_below, 1), "%")
 ```
 Output: 85.8%, 95.0%, 98.2% (not 68, 95, 99.7); mean minus 1 SD is 0.2 days; 5.0% above mean + 2 SD but 0.0% below mean - 2 SD. The one-SD band is far off and the tails are completely one-sided.
 **Likely follow-ups:** 1) *What instead?* Percentiles, or Chebyshev (Q47). 2) *Can you transform?* Yes, take logs (Q36).
@@ -1319,6 +1330,7 @@ random_generator = np.random.default_rng(3)
 # 200 salary values in thousands: 120 junior, 80 senior
 salaries_k = np.concatenate([random_generator.normal(35, 5, 120), random_generator.normal(70, 8, 80)])
 
+# Try three bar widths and count how many bars actually contain people
 for bin_width in [40, 10, 2]:
     edges = np.arange(0, 120 + bin_width, bin_width)
     counts, _ = np.histogram(salaries_k, bins=edges)
@@ -1446,9 +1458,14 @@ task_b = random_generator.normal(20, 3, 1000000)
 total_time = task_a + task_b
 time_gap = task_a - task_b
 
+# Simulated results for the sum and for the difference
 print("sum mean:", round(total_time.mean(), 2), "variance:", round(total_time.var(), 2), "SD:", round(total_time.std(), 2))
 print("difference mean:", round(time_gap.mean(), 2), "variance:", round(time_gap.var(), 2), "SD:", round(time_gap.std(), 2))
+
+# Theory: variances add (16 + 9), then take the square root for the SD
 print("theory: sum variance =", 4**2 + 3**2, "SD =", (4**2 + 3**2) ** 0.5)
+
+# Chance the total exceeds 60 minutes, using the sum's mean 50 and SD 5
 print("P(total > 60):", round(stats.norm.sf(60, loc=50, scale=5), 4))
 ```
 Output: simulation matches theory: sum mean 50.0, variance 25.03, SD 5.0; difference mean 10.0 with variance 25.0; P(total > 60) = 0.0228.
@@ -1476,11 +1493,15 @@ days_to_fill = random_generator.exponential(scale=30, size=100000)
 mean_days = days_to_fill.mean()
 sd_days = days_to_fill.std()
 
+# Share a normal curve would put within each number of SDs (k)
 normal_shares = {1.5: 0.8664, 2: 0.9545, 3: 0.9973}
-for k in [1.5, 2, 3]:
-    chebyshev_minimum = 1 - 1 / k**2
-    actual_share = np.mean(np.abs(days_to_fill - mean_days) < k * sd_days)
-    print(f"k={k}: Chebyshev at least {chebyshev_minimum * 100:.1f}% | actual {actual_share * 100:.1f}% | normal {normal_shares[k] * 100:.1f}%")
+
+# For each k, compare the guaranteed minimum, the real share and the normal-curve share
+for number_of_sds in [1.5, 2, 3]:
+    chebyshev_minimum = 1 - 1 / number_of_sds**2
+    actual_share = np.mean(np.abs(days_to_fill - mean_days) < number_of_sds * sd_days)
+    normal_share = normal_shares[number_of_sds]
+    print(f"k={number_of_sds}: Chebyshev at least {chebyshev_minimum * 100:.1f}% | actual {actual_share * 100:.1f}% | normal {normal_share * 100:.1f}%")
 ```
 Output: k=1.5: at least 55.6%, actual 91.7%; k=2: at least 75.0%, actual 95.0%; k=3: at least 88.9%, actual 98.2%. The guarantee holds, but is conservative.
 **Likely follow-ups:** 1) *Why not always use it?* It is weak when data is close to normal. 2) *Is it exact for any data?* Yes as a bound; some contrived data hits it exactly.
@@ -1519,6 +1540,7 @@ print("uniform:", round(stats.kurtosis(flat_data), 2))
 heavy_tailed = random_generator.standard_t(5, 100000)
 print("t, 5 df:", round(stats.kurtosis(heavy_tailed), 2), "(theory 6)")
 
+# Share of the heavy-tailed values lying more than 3 SDs from their mean
 beyond_3sd = np.abs(heavy_tailed - heavy_tailed.mean()) > 3 * heavy_tailed.std()
 print("t5 share beyond 3 SD:", round(np.mean(beyond_3sd) * 100, 2), "%  (normal: about 0.27%)")
 ```
@@ -1588,6 +1610,7 @@ top_20_percent_count = int(0.2 * len(sorted_revenue))
 top_share = sorted_revenue[:top_20_percent_count].sum() / sorted_revenue.sum()
 print("share of revenue from top 20% of customers:", round(top_share * 100, 1), "%")
 
+# Compare mean and median, then test the "within 2 SDs" rule on this data
 mean_revenue = revenue.mean()
 sd_revenue = revenue.std()
 print("mean:", round(mean_revenue, 2), "median:", round(np.median(revenue), 2), "max:", round(revenue.max()))
