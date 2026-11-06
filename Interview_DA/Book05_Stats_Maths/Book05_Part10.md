@@ -138,7 +138,7 @@ A reading of 14% sits inside the normal 9% to 15% band, so I would call it "watc
 **Common mistakes:** Reacting to a single-month move; ignoring headcount size.
 
 ### Q4 ⭐⭐⭐ 🟢 The sales team claims a new campaign worked because sales rose 5% after launch. How would you check that claim?
-**Asked at:** commonly asked (no company-specific report found); shaped like the "campaign effect" scenarios in generic prep material.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Do you ask "compared with what?" and think of seasonality and other causes?
 **Say this in the interview:** "A 5% rise after launch is a before and after comparison, which also catches seasonality, festivals, price changes and trend. I would compare with a similar region or period that did not get the campaign, and check if 5% is bigger than normal weekly variation."
 **Explain simply:**
@@ -224,7 +224,7 @@ If the sample is fair, the true satisfaction is probably between 53% and 67%.
 - **Effect size** is how large the effect is; a tiny effect can be "significant" with huge samples.
 - Look at the **confidence interval**: the lift may be anywhere from near 0 to a bit more.
 - Decide on value: extra revenue minus cost of the change, plus whether it is repeatable.
-**Worked example:** Revenue per user is 500 rupees with spread 800. A 0.2% lift is 1 rupee per user. To get p = 0.03 for that you need millions of users, and it is worth 20 lakh a month at 20 lakh users, which may or may not beat the cost.
+**Worked example:** Revenue per user is 500 rupees with spread 800. A 0.2% lift is 1 rupee per user. To get p = 0.03 for that you need millions of users, and it is worth 2 crore rupees a month at 2 crore users, which may or may not beat the cost.
 **Excel / Python:**
 ```python
 from scipy import stats
@@ -242,8 +242,8 @@ standard_error_needed = lift_in_rupees / z_for_p
 # Users per group needed to get a standard error that small
 users_per_group = 2 * spread**2 / standard_error_needed**2
 
-# What the lift is worth: 20 lakh users a month
-monthly_users = 2_000_000
+# What the lift is worth: 2 crore (20 million) users a month
+monthly_users = 20_000_000
 extra_revenue = monthly_users * lift_in_rupees
 
 print("Lift per user (rupees):", lift_in_rupees)
@@ -255,9 +255,9 @@ print("Extra revenue per month (rupees):", extra_revenue)
 Lift per user (rupees): 1.0
 z-score at p = 0.03: 2.17
 Users per group behind such a result: about 6.0 million
-Extra revenue per month (rupees): 2000000.0
+Extra revenue per month (rupees): 20000000.0
 ```
-The result is statistically believable but worth only about 20 lakh rupees a month; whether to act depends on cost.
+The result is statistically believable but worth about 2 crore rupees a month for a business with 2 crore monthly users; whether to act depends on cost (the same 1 rupee is worth far less for a small business).
 **Likely follow-ups:** 1) *What would you ask for?* The confidence interval. 2) *Is p = 0.03 strong?* Moderate; not proof.
 **Common mistakes:** Saying "significant means important"; ignoring cost.
 
@@ -556,7 +556,7 @@ Average if open roles are counted: 42.2
 Median if open roles are counted: 32.5
 ```
 Counting open roles moves the average from about 28 to 42, close to the recruiter's feeling; the real figure is at least that, since open roles are still not finished.
-**Likely follow-ups:** 1) *Which number to report?* Median plus percentiles by role type, and state the definition. 2) *Proper method?* Survival analysis handles open cases.
+**Likely follow-ups:** 1) *Which number to report?* Median plus percentiles by role type, and state the definition. 2) *Proper method?* Survival analysis, a method built for cases that are not finished yet, handles open roles.
 **Common mistakes:** Deciding the recruiter is "just wrong"; ignoring still-open roles.
 
 ### Q15 ⭐⭐ 🟢 Explain 95% confidence interval to a non-technical manager using an attendance or survey example.
@@ -793,7 +793,7 @@ for study in range(2000):
 print("Simulated share of studies with a false alarm:", studies_with_false_alarm / 2000 * 100, "%")
 ```
 Output: 64.2% by formula, 0.0025 bar, 62.7% in simulation. In plain words: when nothing is going on, about 6 in 10 such studies still find something "significant".
-**Likely follow-ups:** 1) *Is Bonferroni too strict?* It can be; Benjamini-Hochberg (false discovery rate) is a gentler alternative. 2) *Is one pre-planned test fine?* Yes, that is the clean way.
+**Likely follow-ups:** 1) *Is Bonferroni too strict?* It can be; Benjamini-Hochberg (it controls the share of false alarms among your "wins", the false discovery rate) is a gentler alternative. 2) *Is one pre-planned test fine?* Yes, that is the clean way.
 **Common mistakes:** Reporting only the "winning" test (p-hacking); treating p = 0.049 as proof.
 
 ### Q21 ⭐⭐ 🟡 A model flags attrition risk with 95% accuracy, but only 3% of employees actually leave. Is 95% good?
@@ -833,7 +833,7 @@ precision = true_leavers_caught / (true_leavers_caught + stayers_wrongly_flagged
 print("Precision:", round(precision, 3))
 ```
 Output: accuracy 0.95, do-nothing accuracy 0.97, recall 0.2, precision 0.188. In plain words: the "95% accurate" model is worse than doing nothing on accuracy and catches only 1 in 5 leavers. (This confusion table is an illustrative assumption; the question gives only 95% and 3%.)
-**Likely follow-ups:** 1) *What metric would you use?* Recall and precision, or F1 or area under the curve. 2) *How to improve?* Rebalance data, adjust the flagging threshold.
+**Likely follow-ups:** 1) *What metric would you use?* Recall and precision, or F1 (one score that blends the two) or area under the curve (how well the model ranks leavers above stayers). 2) *How to improve?* Rebalance data, adjust the flagging threshold.
 **Common mistakes:** Quoting accuracy alone; not comparing with the do-nothing baseline.
 
 ### Q22 ⭐⭐ 🟡 A test for a rare issue is 99% accurate and 1 in 1,000 items is faulty. A flagged item is faulty with what probability, and how would you explain the result to a manager?
@@ -1034,6 +1034,7 @@ Output: Small dept 10.0% (1.2% to 31.7%); Large dept 12.0% (9.3% to 15.2%). In p
 - **Shrinkage (Bayesian average)** pulls ratings with few reviews towards the store average, say 4.0 with 20 pseudo-reviews (assumed). A becomes 4.16; B stays 4.48.
 - Also check for fake or early-adopter reviews.
 **Formula in plain words:** Adjusted rating = (rating x reviews + store average x extra reviews) / (reviews + extra reviews).
+**Worked example:** A shows 4.8 from 5 reviews; B shows 4.5 from 500. Using an assumed spread of 0.6 stars, the ranges and adjusted ratings below show B is the safer pick.
 **Excel / Python:**
 ```python
 # Assumptions: ratings vary with a standard deviation of about 0.6 (made up for illustration)
@@ -1148,7 +1149,7 @@ print("25th, 75th percentile:", np.percentile(order_values, [25, 75]).round())
 print("90th, 99th percentile:", np.percentile(order_values, [90, 99]).round())
 print("Share of orders above the mean:", round((order_values > order_values.mean()).mean() * 100, 1), "%")
 ```
-Output as listed above. In plain words: the mean sits above the median, and only about a third of orders exceed it.
+Output: `Mean: 1501`, `Median: 1086`, 25th and 75th percentile `650 and 1891`, 90th and 99th `3153 and 6549`, `34.6 %` of orders above the mean. In plain words: the mean sits above the median, and only about a third of orders exceed it.
 **Likely follow-ups:** 1) *Why not delete the big orders?* They are real revenue. 2) *When is the mean still useful?* For totals and revenue forecasting.
 **Common mistakes:** Reporting only the mean; truncating the chart; deleting genuine large values.
 
@@ -1581,11 +1582,11 @@ Gap = 0.005  Standard error = 0.0071
 z = 0.71  p = 0.478
 ```
 p = 0.478: if the pages were identical, a gap this large would show up almost half the time. In Excel: compute z with =(B-A)/SQRT(pooled*(1-pooled)*(2/2000)) and the p-value with =2*(1-NORM.S.DIST(ABS(z),TRUE)) (2010+; not run in Excel here).
-**Likely follow-ups:** 1) *Does this mean B is not better?* No, it means we cannot tell. 2) *How much data would you need?* Compute sample size for a 0.5-point lift (Q56).
+**Likely follow-ups:** 1) *Does this mean B is not better?* No, it means we cannot tell. 2) *How much data would you need?* Compute the sample size for a 0.5-point lift (method in Q56; it comes to about 31,000 per variant).
 **Common mistakes:** Calling B the winner because 5.5 is bigger; saying "no difference" instead of "not enough evidence".
 
 ### Q42 ⭐ 🟢 Two dice are rolled. What is the probability that the sum is greater than 6?
-**Asked at:** commonly asked (no company-specific report found); reported as a probability puzzle in Tiger Analytics candidate reports (snippet only).
+**Asked at:** commonly asked (no company-specific report found); reported as a probability puzzle in Tiger Analytics candidate self-reports (unverified, snippet only).
 **What the interviewer is checking:** Can you list the outcomes cleanly and count?
 **Say this in the interview:** "Two dice have 36 equally likely outcomes. Sums of 7 or more can happen in 6 + 5 + 4 + 3 + 2 + 1 = 21 ways, so the answer is 21/36 = 7/12, about 58%."
 **Explain simply:**
@@ -1614,7 +1615,7 @@ About 58% of rolls give a sum above 6.
 **Common mistakes:** Treating sums as equally likely (11 sums, so "1/11"), or listing (1,2) and (2,1) as the same outcome.
 
 ### Q43 ⭐ 🟢 What is the probability that a 31-day month has five Sundays?
-**Asked at:** commonly asked (no company-specific report found); reported as a puzzle in Tiger Analytics candidate reports ("five Sundays in a 31-day month", snippet only).
+**Asked at:** commonly asked (no company-specific report found); reported as a puzzle in Tiger Analytics candidate self-reports ("five Sundays in a 31-day month"; unverified, snippet only).
 **What the interviewer is checking:** Can you reason with weeks and leftover days?
 **Say this in the interview:** "31 days is 4 full weeks plus 3 extra days. Those 3 extra days are consecutive. There are 5 Sundays only if Sunday is among them, which happens for 3 of the 7 possible starting weekdays, so 3/7."
 **Explain simply:**
@@ -1689,7 +1690,7 @@ Exact: 26/165 = 0.1576
 Pairs: 780 / 4950 = 0.1576
 ```
 Both methods agree: about 15.8%. In Excel: =COMBIN(40,2)/COMBIN(100,2) (not run in Excel here).
-**Likely follow-ups:** 1) *One from each team?* 2 times 40/100 times 60/99 = 48/165 (about 29.1%). 2) *With replacement?* 0.4 times 0.4 = 16%.
+**Likely follow-ups:** 1) *One from each team?* 2 times 40/100 times 60/99 = 16/33 (about 48.5%). 2) *With replacement?* 0.4 times 0.4 = 16%.
 **Common mistakes:** Using 40/100 times 40/100.
 
 ### Q45 ⭐ 🟡 A call centre gets 6 calls per hour on average. What is the chance of getting no call in a given 10-minute window?
@@ -2248,7 +2249,7 @@ Comparison team change: 2
 Estimated policy effect: 4
 ```
 Only 4 of the 6 points are credited to the policy. (Invented numbers; a real analysis would add a confidence interval.)
-**Likely follow-ups:** 1) *Other options?* Phased rollout, or a cut-off rule (regression discontinuity). 2) *Biggest risk?* People self-select into WFH.
+**Likely follow-ups:** 1) *Other options?* Phased rollout, or a cut-off rule (compare people just above and just below an eligibility line, called regression discontinuity). 2) *Biggest risk?* People self-select into WFH.
 **Common mistakes:** Simple before/after with no comparison group; treating WFH employees as typical; claiming proof of cause.
 
 ### Q58 ⭐ 🔴 A test has 80% power and you ran 10 experiments where 2 are truly effective. Roughly how many significant results do you expect, and how many are false?
@@ -2304,7 +2305,7 @@ The simulation agrees with the arithmetic.
 **Say this in the interview:** "I would first show the sample needed. If it is unrealistic, I would use an earlier, more frequent proxy metric, accept a bigger minimum effect, run longer, or loosen the decision threshold if the decision is cheap and reversible."
 **Explain simply:**
 - Rare events give few successes, so the signal is buried in noise.
-- Options: (1) a proxy metric that happens more often (add-to-cart, shortlisted candidates instead of hires); (2) test only a bold change that gives a bigger effect; (3) run longer or include more traffic; (4) reduce noise using pre-experiment data (variance reduction); (5) use a looser threshold for low-risk decisions; (6) combine with qualitative evidence.
+- Options: (1) a proxy metric that happens more often (add-to-cart, shortlisted candidates instead of hires); (2) test only a bold change that gives a bigger effect; (3) run longer or include more traffic; (4) reduce noise by using each user's behaviour before the test (called variance reduction); (5) use a looser threshold for low-risk decisions; (6) combine with qualitative evidence.
 - Be clear about the trade-off of each (a proxy may not move the real goal).
 **Worked example:** To detect 0.5% to 0.6% needs 85,686 per group. A common proxy (5% to 6%, the same 20% relative lift) needs 8,143. Accepting alpha 0.10 one-sided brings the rare-outcome case to 49,213.
 **Excel / Python:**
@@ -2398,7 +2399,7 @@ from scipy import stats
 # Headcount and last four quarters of leavers
 current_headcount = 800
 leavers_last_four_quarters = np.array([21, 27, 18, 30])
-quarterly_rates = leavers_last_four_quarters / 800
+quarterly_rates = leavers_last_four_quarters / current_headcount
 average_rate = quarterly_rates.mean()
 rate_spread = quarterly_rates.std(ddof=1)
 print("Average quarterly rate:", round(average_rate, 4), "Spread of rate:", round(rate_spread, 4))
