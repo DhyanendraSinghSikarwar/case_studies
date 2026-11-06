@@ -73,3 +73,11 @@ Must contain: zero-to-job-ready roadmap · daily practice plan · free resources
 - Edit only your assigned file(s). Append only your own rows to `question_index.md`.
 - Question targets are minimums; add important missing questions.
 - After finishing, report counts and issues; do not start the next wave.
+
+## 10. Code readability (user rule, applies to every answer in every book)
+- Write all code (SQL, pandas/Python, Excel formulas, DAX, M) in a human-understandable form for a non-technical reader.
+- Use descriptive names (e.g. `employees_who_left`, not `df2`; `total_salary`, not `ts`), one step per line, consistent indentation and spacing.
+- Add a short plain-English comment above each step or clause saying what it does and why.
+- Prefer clear step-by-step code (CTEs, small named variables, intermediate columns) over clever one-liners; if a compact form is worth showing, give the readable version first.
+- Follow each code block with 1-2 lines in plain words explaining what the output means.
+

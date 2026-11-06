@@ -131,8 +131,647 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 | B0Q123 | 0 | 7 | Are there analyst roles in Pune, Chennai or NCR that suit switchers? |
 
 ## Book 1 — Excel
+
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B1P01Q1 | 1 | 1 | What is a cell reference in Excel, and what are the three types? |
+| B1P01Q2 | 1 | 1 | What is the difference between a relative and an absolute cell reference? |
+| B1P01Q3 | 1 | 1 | What is a mixed cell reference, and when would you use one? |
+| B1P01Q4 | 1 | 1 | Which key toggles between relative, absolute and mixed references while editing a formula, and what does it cycle through? |
+| B1P01Q5 | 1 | 1 | Cell B2 holds a price and column D holds quantities. How do you calculate a total for every row in column E using the same price cell without it shifting when you copy the formula down? |
+| B1P01Q6 | 1 | 1 | How do you sort data in Excel? |
+| B1P01Q7 | 1 | 1 | Why must you tick 'My data has headers' in the Sort dialog, and what goes wrong if you sort a single column without selecting the full table? |
+| B1P01Q8 | 1 | 1 | How do you sort employee data by Department first and then by Salary from highest to lowest? |
+| B1P01Q9 | 1 | 1 | How do you filter data in Excel? |
+| B1P01Q10 | 1 | 1 | What is the difference between sorting and filtering? |
+| B1P01Q11 | 1 | 1 | How do you show only the rows for the Sales department with a joining date in 2025 using a filter? |
+| B1P01Q12 | 1 | 1 | How do you clear a filter, and how do you remove the filter arrows completely? |
+| B1P01Q13 | 1 | 1 | What is Freeze Panes, and how do you keep the header row visible while scrolling a long sheet? |
+| B1P01Q14 | 1 | 1 | How do you format data in Excel (number, currency, percentage, date)? |
+| B1P01Q15 | 1 | 1 | Name five keyboard shortcuts you use every day in Excel. |
+| B1P01Q16 | 1 | 1 | What is the shortcut to toggle AutoFilter on and off? |
+| B1P01Q17 | 1 | 1 | How do you quickly sum a column of numbers without typing a formula? |
+| B1P01Q18 | 1 | 1 | What is the difference between a workbook, a worksheet and a cell? |
+| B1P01Q19 | 1 | 1 | What is the difference between a value and a formula in a cell, and how do you view the formula behind a result? |
+| B1P01Q20 | 1 | 1 | Why does a sorted list put 10 before 2, and how do you sort numbers stored as text correctly? |
+| B1P01Q21 | 1 | 1 | What is the Name Box, and how do you use it to jump to a cell or range? |
+| B1P01Q22 | 1 | 1 | How do you select an entire row, an entire column and the whole sheet using the keyboard? |
+| B1P01Q23 | 1 | 1 | How do you move to the end of a data block or select a whole data block with the keyboard? |
+| B1P01Q24 | 1 | 1 | How do you move to the previous and next worksheet using the keyboard? |
+| B1P01Q25 | 1 | 1 | What is the quick way to return to a particular area of a worksheet? |
+| B1P01Q26 | 1 | 1 | How do you use AutoFill to copy a formula or create a series of dates or numbers down a column? |
+| B1P01Q27 | 1 | 1 | What is Format Cells, and how do you open it quickly? |
+| B1P01Q28 | 1 | 1 | What are the differences between the General, Number, Currency and Accounting formats? |
+| B1P01Q29 | 1 | 1 | How do you wrap text within a cell, and how is it different from merging cells? |
+| B1P01Q30 | 1 | 1 | What is the difference between Merge & Center and Center Across Selection, and why do analysts avoid merged cells in data tables? |
+| B1P01Q31 | 1 | 1 | What are left, right, fill and distributed alignments? |
+| B1P01Q32 | 1 | 1 | How do you convert a plain data range into an Excel Table, and what are its advantages? |
+| B1P01Q33 | 1 | 1 | How do you filter for text that contains a word, for example every job title containing 'Analyst'? |
+| B1P01Q34 | 1 | 1 | How do you filter by cell colour or font colour, and how do you sort by colour? |
+| B1P01Q35 | 1 | 1 | How do you filter numbers using greater than, between and Top 10 options? |
+| B1P01Q36 | 1 | 1 | How do you filter dates by month, quarter or 'this week' using the date filter? |
+| B1P01Q37 | 1 | 1 | What do the wildcard characters * and ? do when you type them in the filter search box? |
+| B1P01Q38 | 1 | 1 | How do you use Paste Special to paste only values, only formats or transposed data? |
+| B1P01Q39 | 1 | 1 | How do you add a new worksheet, and how do you rename, move or copy one? |
+| B1P01Q40 | 1 | 1 | How do you hide and unhide rows, columns and sheets? |
+| B1P01Q41 | 1 | 1 | How do you format a date column that shows as 45678 or ##### in the cells? |
+| B1P01Q42 | 1 | 1 | How do you set the print area, print titles (repeat header row) and fit a sheet to one page wide? |
+| B1P01Q43 | 1 | 1 | What is the use of Find & Replace, and how do you find all cells with a particular value or format? |
+| B1P01Q44 | 1 | 1 | How do you refer to a cell in another worksheet in a formula (for example Jan!B5)? |
+| B1P01Q45 | 1 | 1 | How do you stop formulas showing as text, and what does an apostrophe at the start of a cell do? |
+| B1P01Q46 | 1 | 1 | How do you create a custom sort order, for example High, Medium, Low, instead of alphabetical? |
+| B1P01Q47 | 1 | 1 | What is the difference between AutoFilter and Advanced Filter, and when would you use each? |
+| B1P01Q48 | 1 | 1 | What filter will you use if you want more than two conditions, or want to copy the filtered result to another place? |
+| B1P01Q49 | 1 | 1 | What does a #REF! error mean, and how does deleting a row or column cause it? |
+| B1P01Q50 | 1 | 1 | What are the common Excel errors #DIV/0!, #VALUE!, #NAME?, #REF! and #N/A, and what causes each? |
+| B1P01Q51 | 1 | 1 | How do you sort a list randomly, or restore the original order after sorting? |
+| B1P01Q52 | 1 | 1 | How do you apply the same formatting to every sheet in a workbook? |
+| B1P01Q53 | 1 | 1 | How do you use Format Painter, and what does double-clicking it do? |
+| B1P01Q54 | 1 | 1 | How do you use the Fill Handle's double-click shortcut, and when does it stop short? |
+| B1P01Q55 | 1 | 1 | How do you insert and delete rows or columns, and what shortcut do you use? |
+| B1P01Q56 | 1 | 1 | How do you insert today's date and the current time as fixed values with the keyboard, and how is that different from the TODAY function? |
+| B1P01Q57 | 1 | 1 | How do you protect a worksheet or a workbook with a password, and what is the difference between the two? |
+| B1P01Q58 | 1 | 1 | How do you freeze both the top row and the first column at the same time? |
+| B1P01Q59 | 1 | 1 | How do you check which version of Excel you use, and name two features that exist in Microsoft 365 but not in Excel 2016? |
+| B1P01Q60 | 1 | 1 | What are the key differences between Excel and Google Sheets for basic sorting, filtering and sharing? |
+| B1P01Q61 | 1 | 1 | How do you filter or sort only the visible rows, and why does copying a filtered range sometimes paste hidden rows? |
+| B1P01Q62 | 1 | 1 | How do you sort left to right (by columns instead of rows)? |
+| B1P01Q63 | 1 | 1 | How do you stop Excel from changing long numbers, such as an employee ID or phone number, into scientific notation or dropping leading zeros? |
+| B1P01Q64 | 1 | 1 | You receive a sheet where sorting scrambles the data because one column was left out of the selection. How do you recover, and how do you prevent it? |
+| B1P01Q65 | 1 | 1 | How do you create and use a custom number format, for example showing 1500000 as 1.5M or adding 'days' after a number? |
+| B1P01Q66 | 1 | 1 | A manager asks for a quick attendance list: how would you filter a sheet of 5,000 employees to show only those absent more than 3 days in a month, sorted by team? |
+| B1P02Q1 | 1 | 2 | What does the IF function do, and what are its three arguments? |
+| B1P02Q2 | 1 | 2 | Write a formula that returns "Pass" if the marks in B2 are 40 or more, otherwise "Fail". |
+| B1P02Q3 | 1 | 2 | How do you write a nested IF to give grades A, B, C and D based on marks? |
+| B1P02Q4 | 1 | 2 | How do the AND and OR functions work, and how do you use them inside IF? |
+| B1P02Q5 | 1 | 2 | How do you use COUNTIF to count how many employees are in the "Sales" department? |
+| B1P02Q6 | 1 | 2 | What is the difference between COUNT, COUNTA, COUNTBLANK and COUNTIF? |
+| B1P02Q7 | 1 | 2 | How do you use SUMIF to total the salary of one department? |
+| B1P02Q8 | 1 | 2 | What is the difference between COUNTIF and COUNTIFS? Give an example. |
+| B1P02Q9 | 1 | 2 | What is the difference between SUMIF and SUMIFS, and how does the argument order differ? |
+| B1P02Q10 | 1 | 2 | Write a COUNTIFS formula to count employees in Sales, based in Hyderabad, with salary above 50,000. |
+| B1P02Q11 | 1 | 2 | What does IFERROR do, and when would you use it? |
+| B1P02Q12 | 1 | 2 | How do you extract the first three characters of an employee ID such as "HYD-1045"? Which functions get the last four? |
+| B1P02Q13 | 1 | 2 | How do you combine first name and last name into a full name? |
+| B1P02Q14 | 1 | 2 | What does the TODAY function do, and does its value change? |
+| B1P02Q15 | 1 | 2 | In an attendance sheet marked P, A and L, how do you count the days each employee was present? |
+| B1P02Q16 | 1 | 2 | How do you calculate the average salary of each department? |
+| B1P02Q17 | 1 | 2 | How do you calculate an employee's tenure in years from the date of joining? |
+| B1P02Q18 | 1 | 2 | How do you calculate the attrition rate in Excel? |
+| B1P02Q19 | 1 | 2 | Write an IF formula that pays a 10% bonus only if the rating is 4 or more and tenure is above 2 years. |
+| B1P02Q20 | 1 | 2 | How do you COUNTIF with a cell reference in the criteria, for example salaries greater than the value in F1? |
+| B1P02Q21 | 1 | 2 | How do you sum sales between two dates using SUMIFS? |
+| B1P02Q22 | 1 | 2 | What is the IFS function, and in which Excel versions is it available? |
+| B1P02Q23 | 1 | 2 | What does the LEN function return, and where would you use it? |
+| B1P02Q24 | 1 | 2 | What do UPPER, LOWER and PROPER do? |
+| B1P02Q25 | 1 | 2 | How do you pull the year, month and day out of a date? |
+| B1P02Q26 | 1 | 2 | How does the TEXT function work? Show a date formatted as "dd-mmm-yyyy" and as a weekday name. |
+| B1P02Q27 | 1 | 2 | How do you count working days between two dates, excluding weekends and holidays? |
+| B1P02Q28 | 1 | 2 | How do you find the day of the week for a date? |
+| B1P02Q29 | 1 | 2 | Why do dates sometimes show up as numbers like 45231, and how do you fix it? |
+| B1P02Q30 | 1 | 2 | What is the difference between TODAY and NOW? |
+| B1P02Q31 | 1 | 2 | How do you use wildcards (* and ?) in COUNTIF to count names starting with "A"? |
+| B1P02Q32 | 1 | 2 | How do you count cells that contain specific text anywhere inside them? |
+| B1P02Q33 | 1 | 2 | What is the difference between FIND and SEARCH? |
+| B1P02Q34 | 1 | 2 | How do you replace one piece of text with another using SUBSTITUTE? |
+| B1P02Q35 | 1 | 2 | What is the difference between CONCATENATE, CONCAT, the & operator and TEXTJOIN? |
+| B1P02Q36 | 1 | 2 | How do you check whether a cell is blank, and what is the difference between a blank cell and a cell holding ""? |
+| B1P02Q37 | 1 | 2 | What do ROUND, ROUNDUP and ROUNDDOWN do? |
+| B1P02Q38 | 1 | 2 | What does the #DIV/0! error mean, and how do you avoid it when calculating a percentage? |
+| B1P02Q39 | 1 | 2 | What causes the #VALUE! and #NAME? errors? |
+| B1P02Q40 | 1 | 2 | What does the #REF! error mean, and how does it happen? |
+| B1P02Q41 | 1 | 2 | What causes the #N/A error, and how do you handle it? |
+| B1P02Q42 | 1 | 2 | How do you calculate the average of rows that meet one or more conditions (AVERAGEIF, AVERAGEIFS)? |
+| B1P02Q43 | 1 | 2 | How do you find the highest salary in each department using MAXIFS, and what do you do in Excel 2016? |
+| B1P02Q44 | 1 | 2 | What is the SWITCH function, and when is it better than nested IF? |
+| B1P02Q45 | 1 | 2 | How do you extract the domain from an email address such as "ravi@abc.com"? |
+| B1P02Q46 | 1 | 2 | How do you calculate age in years, months and days from a date of birth? |
+| B1P02Q47 | 1 | 2 | How do you get the last day of the month and the date six months from today? |
+| B1P02Q48 | 1 | 2 | How do you calculate the end date of a project, skipping weekends and holidays? |
+| B1P02Q49 | 1 | 2 | How do you apply OR logic in SUMIFS, for example total sales for Mumbai or Delhi? |
+| B1P02Q50 | 1 | 2 | How do you flag duplicate employee IDs with COUNTIF? |
+| B1P02Q51 | 1 | 2 | How do you count rows between two values (for example salary from 30,000 to 50,000) with COUNTIFS? |
+| B1P02Q52 | 1 | 2 | How do you find the quarter or financial year (April to March) from a date? |
+| B1P02Q53 | 1 | 2 | How do you keep leading zeros in employee IDs, and how do you add them with a formula? |
+| B1P02Q54 | 1 | 2 | Why can a COUNTIF or SUMIF formula return the wrong result when copied down, and how do you fix it? |
+| B1P02Q55 | 1 | 2 | Why does COUNTIF not count numbers stored as text, or count them differently? |
+| B1P02Q56 | 1 | 2 | How do you do a multi-condition count or sum with SUMPRODUCT, and when would you use it instead of COUNTIFS? |
+| B1P02Q57 | 1 | 2 | How do you list headcount by joining month from a table of joining dates? |
+| B1P02Q58 | 1 | 2 | How do you show a line break inside a cell using a formula, and combine several cells with commas? |
+| B1P02Q59 | 1 | 2 | How do you use IF with text and dates, for example "Overdue" if the due date is before today? |
+| B1P02Q60 | 1 | 2 | How many IF functions can you nest, and what are the alternatives to deep nesting? |
+| B1P02Q61 | 1 | 2 | How do you count the number of unique values in a column using a formula? |
+| B1P02Q62 | 1 | 2 | How do you count the number of error cells in a range? |
+| B1P02Q63 | 1 | 2 | What does the EXACT function do, and is COUNTIF case-sensitive? |
+| B1P02Q64 | 1 | 2 | What do the WORKDAY and YEARFRAC functions do? |
+| B1P02Q65 | 1 | 2 | How do you repeat a character or text, for example a star rating, with REPT? |
+| B1P02Q66 | 1 | 2 | Which functions in this part are available only in Excel 2019 or 365, and what do you use in Excel 2016? |
+| B1P02Q67 | 1 | 2 | How do COUNTIFS and SUMIFS differ in Google Sheets compared with Excel? |
+| B1P02Q68 | 1 | 2 | What are TEXTBEFORE, TEXTAFTER and TEXTSPLIT, and how do they replace LEFT/MID/FIND? |
+| B1P02Q69 | 1 | 2 | What are ARRAYFORMULA and the REGEX functions in Google Sheets, and how do they compare with Excel? |
+| B1P02Q70 | 1 | 2 | How do you use the TEXT function inside a formula to build a label such as "Jan-2026: 45 hires"? |
+| B1P02Q71 | 1 | 2 | What are the criteria length and wildcard limits of COUNTIF (255 characters, ~ escape)? |
+| B1P02Q72 | 1 | 2 | What is the known problem with the "MD" unit of DATEDIF, and how do you get remaining days correctly? |
+| B1P02Q73 | 1 | 2 | Why can COUNTIF match long numbers such as 16-digit IDs wrongly, and how do you fix it? |
+| B1P02Q74 | 1 | 2 | How would you build a monthly attrition table using COUNTIFS on joining and exit dates? |
+| B1P03Q1 | 1 | 3 | What is VLOOKUP, and what are its four arguments? |
+| B1P03Q2 | 1 | 3 | What is the difference between exact match and approximate match in VLOOKUP, and which one do you use most often? |
+| B1P03Q3 | 1 | 3 | You have an attendance sheet with Employee ID and a master sheet with Employee ID, name and department. Write the formula to bring the department into the attendance sheet. |
+| B1P03Q4 | 1 | 3 | What are the limitations of VLOOKUP? |
+| B1P03Q5 | 1 | 3 | Why does VLOOKUP return #N/A, and how do you fix it? |
+| B1P03Q6 | 1 | 3 | How do you hide or replace the #N/A error that VLOOKUP returns, for example with "Not found"? |
+| B1P03Q7 | 1 | 3 | What is XLOOKUP, and how is it different from VLOOKUP? |
+| B1P03Q8 | 1 | 3 | What is INDEX-MATCH, and why would you use it instead of VLOOKUP? |
+| B1P03Q9 | 1 | 3 | What does the INDEX function do, and what are its arguments? |
+| B1P03Q10 | 1 | 3 | What does the MATCH function do, and what do the match types 0, 1 and -1 mean? |
+| B1P03Q11 | 1 | 3 | Which Excel versions have XLOOKUP, and what do you do if a colleague uses Excel 2016 or 2019? |
+| B1P03Q12 | 1 | 3 | Your VLOOKUP gave correct values yesterday, but after someone inserted a column in the lookup table it returns wrong values. Why, and how do you prevent it? |
+| B1P03Q13 | 1 | 3 | You write a VLOOKUP in the first row and drag it down, but many rows return #N/A even though the IDs exist. What is the most likely cause? |
+| B1P03Q14 | 1 | 3 | Two employee IDs look identical, but VLOOKUP says #N/A. What could be wrong with the data, and how do you check and fix it? |
+| B1P03Q15 | 1 | 3 | How do you look up a value that sits to the left of the key column? |
+| B1P03Q16 | 1 | 3 | How do you pull data with VLOOKUP from a different sheet or a different workbook? |
+| B1P03Q17 | 1 | 3 | What is HLOOKUP, and when do you use it? |
+| B1P03Q18 | 1 | 3 | What is the difference between VLOOKUP and HLOOKUP? |
+| B1P03Q19 | 1 | 3 | What is col_index_num in VLOOKUP, and what happens if it is larger than the number of columns in the table? |
+| B1P03Q20 | 1 | 3 | What is the difference between IFERROR and IFNA, and which one is safer around a lookup? |
+| B1P03Q21 | 1 | 3 | What happens when the lookup column has duplicate values? Which row does VLOOKUP return? |
+| B1P03Q22 | 1 | 3 | Is VLOOKUP case-sensitive? |
+| B1P03Q23 | 1 | 3 | What is the if_not_found argument in XLOOKUP? |
+| B1P03Q24 | 1 | 3 | Can XLOOKUP look to the left? Show a formula that returns the employee ID when you only know the name. |
+| B1P03Q25 | 1 | 3 | Convert this formula to XLOOKUP: =VLOOKUP(A2, Master!A:D, 4, FALSE). |
+| B1P03Q26 | 1 | 3 | How do you return several columns (for example name, department and city) with a single XLOOKUP formula? |
+| B1P03Q27 | 1 | 3 | How do you wrap a lookup in an absolute reference properly (table_array with $) and why does it matter when you drag the formula? |
+| B1P03Q28 | 1 | 3 | How do you assign a performance grade, incentive slab or tax slab from a score or salary using VLOOKUP approximate match? |
+| B1P03Q29 | 1 | 3 | How do you make the column number in VLOOKUP dynamic so it does not break when columns move? |
+| B1P03Q30 | 1 | 3 | How do you do a two-way lookup, for example the sales of a given month for a given employee, using INDEX and MATCH? |
+| B1P03Q31 | 1 | 3 | How do you look up a value using two or more criteria (for example Employee ID and Month) with a helper column? |
+| B1P03Q32 | 1 | 3 | How do you look up with multiple criteria in INDEX-MATCH without a helper column? |
+| B1P03Q33 | 1 | 3 | How do you find the last (latest) matching entry for an employee with XLOOKUP? |
+| B1P03Q34 | 1 | 3 | How do you do a partial-text lookup using wildcards in VLOOKUP and XLOOKUP? |
+| B1P03Q35 | 1 | 3 | Which is faster on a large dataset: VLOOKUP, INDEX-MATCH or XLOOKUP, and what can you do to speed up lookups? |
+| B1P03Q36 | 1 | 3 | You have two lists, active employees and payroll records. How do you find which employees are missing from payroll using a lookup? |
+| B1P03Q37 | 1 | 3 | How do you use XLOOKUP for an approximate match, for example to pick the slab that applies to a given salary? |
+| B1P03Q38 | 1 | 3 | What happens if you omit the third argument of MATCH, and why should you almost always type 0? |
+| B1P03Q39 | 1 | 3 | How do you do a two-way lookup with XLOOKUP? |
+| B1P03Q40 | 1 | 3 | What is XMATCH, and how is it different from MATCH? |
+| B1P03Q41 | 1 | 3 | How do structured (Excel Table) references help lookups when new rows are added every month? |
+| B1P03Q42 | 1 | 3 | Your XLOOKUP shows #SPILL!. What does it mean and how do you fix it? |
+| B1P03Q43 | 1 | 3 | A lookup returns 0 instead of blank when the matching cell is empty. How do you handle it? |
+| B1P03Q44 | 1 | 3 | What is the LOOKUP function, and how is it different from VLOOKUP? |
+| B1P03Q45 | 1 | 3 | What are TRUE/FALSE and 1/0 as the last argument of VLOOKUP, and are they interchangeable? |
+| B1P03Q46 | 1 | 3 | How do you get the row number or position of a value in a list? |
+| B1P03Q47 | 1 | 3 | Do VLOOKUP, INDEX-MATCH and XLOOKUP work in Google Sheets, and what differs from Excel? |
+| B1P03Q48 | 1 | 3 | A VLOOKUP only returns the first match. How can you return all rows that match a value? |
+| B1P03Q49 | 1 | 3 | How do you look up many values at once with one XLOOKUP formula instead of dragging it down? |
+| B1P03Q50 | 1 | 3 | How do you do a case-sensitive lookup? |
+| B1P03Q51 | 1 | 3 | How do you find the closest date or the nearest value in a list (for example the policy period a joining date falls in)? |
+| B1P03Q52 | 1 | 3 | How would you build an employee look-up card where choosing a name from a drop-down shows their department, manager and salary? |
+| B1P03Q53 | 1 | 3 | You do not know which of three monthly sheets holds an employee. How do you search across the sheets? |
+| B1P03Q54 | 1 | 3 | You are asked to replace all VLOOKUPs in a workbook with XLOOKUP. What do you check first? |
+| B1P03Q55 | 1 | 3 | What is binary search mode in XLOOKUP, and when is it safe to use? |
+| B1P03Q56 | 1 | 3 | How can the CHOOSE function be used to make VLOOKUP look to the left? |
+| B1P03Q57 | 1 | 3 | How do you return the nth match (second or third occurrence) of a value using INDEX with SMALL? |
+| B1P03Q58 | 1 | 3 | What is the classic LOOKUP(2,1/(range=value),result_range) trick, and what does it return? |
+| B1P03Q59 | 1 | 3 | How can INDIRECT make a VLOOKUP pick its sheet from a cell value, and what are the risks? |
+| B1P03Q60 | 1 | 3 | How can XLOOKUP return a reference so that you can sum between two lookup points? |
+| B1P04Q1 | 1 | 4 | What is a pivot table, and why do analysts use it? |
+| B1P04Q2 | 1 | 4 | How do you create a pivot table in Excel from a raw data sheet? |
+| B1P04Q3 | 1 | 4 | What are the four areas of the PivotTable Fields pane (Filters, Columns, Rows, Values), and what does each do? |
+| B1P04Q4 | 1 | 4 | What should your source data look like before you build a pivot table? |
+| B1P04Q5 | 1 | 4 | Given columns Employee ID, Department, Location and Salary, how do you build a pivot table that shows headcount by department? |
+| B1P04Q6 | 1 | 4 | Given a sales sheet with Region, Product and Amount, how do you show total sales by region and product? |
+| B1P04Q7 | 1 | 4 | How do you refresh a pivot table after the source data changes? |
+| B1P04Q8 | 1 | 4 | Why does a pivot table show the count of a field instead of the sum, and how do you change it? |
+| B1P04Q9 | 1 | 4 | What is a slicer, and how do you add one to a pivot table? |
+| B1P04Q10 | 1 | 4 | What is a pivot chart, and how do you create one? |
+| B1P04Q11 | 1 | 4 | How do you filter a pivot table to show only the top 5 items? |
+| B1P04Q12 | 1 | 4 | Your pivot table does not show the new rows you added to the source. What do you check? |
+| B1P04Q13 | 1 | 4 | How do you group dates in a pivot table into months, quarters or years? |
+| B1P04Q14 | 1 | 4 | What is the difference between a slicer and a report filter in a pivot table? |
+| B1P04Q15 | 1 | 4 | How would you build a month-wise attrition (leavers) summary by department from an HR data sheet using a pivot table? |
+| B1P04Q16 | 1 | 4 | What is the difference between a pivot table and formulas such as SUMIFS or COUNTIFS? When would you use each? |
+| B1P04Q17 | 1 | 4 | How do you change a Values field from Sum to Average, Count, Max or Min? |
+| B1P04Q18 | 1 | 4 | How do you show values as a percentage of the grand total or of the row total in a pivot table? |
+| B1P04Q19 | 1 | 4 | How do you sort a pivot table by the values column (largest to smallest)? |
+| B1P04Q20 | 1 | 4 | How do you drill down into a number in a pivot table to see the rows behind it? |
+| B1P04Q21 | 1 | 4 | How do you move or remove a field from a pivot table? |
+| B1P04Q22 | 1 | 4 | What are Grand Totals and Subtotals in a pivot table, and how do you turn them off? |
+| B1P04Q23 | 1 | 4 | How do you change the number format of values in a pivot table (for example currency or percent)? |
+| B1P04Q24 | 1 | 4 | How do you rename a field or the column heading in a pivot table? |
+| B1P04Q25 | 1 | 4 | How do you show items with no data (zeros) instead of blank cells in a pivot table? |
+| B1P04Q26 | 1 | 4 | What are Recommended PivotTables, and in which Excel versions can you use them? |
+| B1P04Q27 | 1 | 4 | How do you change the layout of a pivot table to Compact, Outline or Tabular form, and when would you use each? |
+| B1P04Q28 | 1 | 4 | Given a daily attendance sheet with Employee, Date and Status (Present/Absent/Leave), how do you summarise days present per employee per month with a pivot table? |
+| B1P04Q29 | 1 | 4 | How do you apply a filter to a pivot table for one department only (using the Filters area)? |
+| B1P04Q30 | 1 | 4 | What is a calculated field in a pivot table, and how do you create one? |
+| B1P04Q31 | 1 | 4 | What is the difference between a calculated field and a calculated item? |
+| B1P04Q32 | 1 | 4 | How do you connect one slicer to multiple pivot tables? |
+| B1P04Q33 | 1 | 4 | What is a timeline slicer, and how is it different from a normal slicer? |
+| B1P04Q34 | 1 | 4 | How do you use Show Values As to show month-over-month change (difference and percentage) in a pivot table? |
+| B1P04Q35 | 1 | 4 | How do you calculate year-over-year growth percentage with a pivot table? |
+| B1P04Q36 | 1 | 4 | How do you group numbers in a pivot table, for example salary bands or age groups of 10 years? |
+| B1P04Q37 | 1 | 4 | How do you build a pivot chart that updates when you click a slicer? |
+| B1P04Q38 | 1 | 4 | Why does a pivot table not let you group dates, and how do you fix it (blank cells or text dates)? |
+| B1P04Q39 | 1 | 4 | How do you use a pivot table to find duplicate values in a column? |
+| B1P04Q40 | 1 | 4 | How do you find the distinct (unique) count of employees in a pivot table? |
+| B1P04Q41 | 1 | 4 | What is the difference between a pivot chart and a normal chart? |
+| B1P04Q42 | 1 | 4 | What happens to a pivot chart when you filter or change the pivot table behind it? |
+| B1P04Q43 | 1 | 4 | How do you turn a pivot table into static values and why might you do that before sharing it? |
+| B1P04Q44 | 1 | 4 | How do you stop column widths and formatting from resetting every time you refresh a pivot table? |
+| B1P04Q45 | 1 | 4 | How do you merge data from two raw sheets before building a pivot table (for example with Power Query or an Excel Table)? |
+| B1P04Q46 | 1 | 4 | How do you make several pivot tables from one source without increasing the file size much? |
+| B1P04Q47 | 1 | 4 | How do you copy a pivot table to another sheet and keep it working? |
+| B1P04Q48 | 1 | 4 | How do you hide or show the field list and the +/- expand buttons in a pivot table? |
+| B1P04Q49 | 1 | 4 | How do you add a custom sort order (for example Jan to Dec instead of alphabetical) to pivot items? |
+| B1P04Q50 | 1 | 4 | How do you apply a pivot table style or banded rows for a cleaner report? |
+| B1P04Q51 | 1 | 4 | How do you make a pivot table update automatically when the file opens? |
+| B1P04Q52 | 1 | 4 | Why is an Excel Table or a dynamic named range a better pivot source than a fixed range? |
+| B1P04Q53 | 1 | 4 | What is the pivot cache, and why do two pivot tables sometimes share it? |
+| B1P04Q54 | 1 | 4 | What is GETPIVOTDATA, and why does Excel insert it when you click a pivot cell in a formula? |
+| B1P04Q55 | 1 | 4 | How do you turn off the automatic GETPIVOTDATA formula? |
+| B1P04Q56 | 1 | 4 | Why can the pivot show old items that no longer exist in the data, and how do you clear them? |
+| B1P04Q57 | 1 | 4 | What does "Retain items deleted from the data source" do in PivotTable Options? |
+| B1P04Q58 | 1 | 4 | Why does a calculated field give an unexpected result in the Grand Total row? |
+| B1P04Q59 | 1 | 4 | How do you show a running total in a pivot table? |
+| B1P04Q60 | 1 | 4 | How do you rank items in a pivot table using Show Values As? |
+| B1P04Q61 | 1 | 4 | How do you group text items in a pivot table, for example combine several cities into one region? |
+| B1P04Q62 | 1 | 4 | How do you apply conditional formatting to a pivot table so it follows the data when it refreshes? |
+| B1P04Q63 | 1 | 4 | How do you build a simple dashboard from pivot tables, pivot charts and slicers on one sheet? |
+| B1P04Q64 | 1 | 4 | Your pivot shows #REF! after you renamed the source sheet. What happened and how do you fix it? |
+| B1P04Q65 | 1 | 4 | What is the difference between Refresh and Refresh All, and what happens to pivots linked to external data? |
+| B1P04Q66 | 1 | 4 | What is the difference between a pivot table built on a normal range and one built from the Data Model? |
+| B1P04Q67 | 1 | 4 | You are given 2,00,000 rows of HR data and the pivot table is very slow. What would you do? |
+| B1P04Q68 | 1 | 4 | How would you reproduce a pivot table summary without using a pivot table, using SUMIFS or dynamic arrays? |
+| B1P04Q69 | 1 | 4 | How do you show a text field (such as employee names) in the Values area of a pivot table? |
+| B1P04Q70 | 1 | 4 | How do you create a pivot table in Google Sheets, and how does it differ from Excel? |
+| B1P04Q71 | 1 | 4 | How do you share a pivot-table report with someone who has Excel 2016 when you built it in Microsoft 365? |
+| B1P04Q72 | 1 | 4 | How do you use a pivot table to compare actual against target and show the variance? |
+| B1P04Q73 | 1 | 4 | What are the limitations of pivot tables that make you reach for Power Pivot or Power Query? |
+| B1P04Q74 | 1 | 4 | How do you build a headcount-by-tenure-band report from joining dates using a pivot table? |
+| B1P05Q1 | 1 | 5 | How do you remove duplicate rows in Excel? |
+| B1P05Q2 | 1 | 5 | What does the TRIM function do, and when would you use it? |
+| B1P05Q3 | 1 | 5 | How do you find duplicates in Excel without deleting them? |
+| B1P05Q4 | 1 | 5 | What steps do you follow when you receive a messy dataset and have to clean it before analysis? |
+| B1P05Q5 | 1 | 5 | What is Text to Columns, and how do you use it? |
+| B1P05Q6 | 1 | 5 | What is Flash Fill, and how do you trigger it? |
+| B1P05Q7 | 1 | 5 | Given a list of employee IDs in column A, how do you flag the rows whose ID appears more than once? |
+| B1P05Q8 | 1 | 5 | When you use Remove Duplicates, which row does Excel keep, and how do the selected columns decide what counts as a duplicate? |
+| B1P05Q9 | 1 | 5 | Names in column A have extra spaces in front, behind and between words. How do you clean the whole column and keep the result as values? |
+| B1P05Q10 | 1 | 5 | How do you remove duplicates safely so that you can recover the original data if something goes wrong? |
+| B1P05Q11 | 1 | 5 | What is the difference between Remove Duplicates and filtering for unique values? |
+| B1P05Q12 | 1 | 5 | What is the difference between Text to Columns delimited and fixed width? |
+| B1P05Q13 | 1 | 5 | What does the CLEAN function do, and how is it different from TRIM? |
+| B1P05Q14 | 1 | 5 | How do you use Find and Replace to fix inconsistent spellings such as 'Hyd' and 'Hyderabad'? |
+| B1P05Q15 | 1 | 5 | How do you find and handle blank cells in a column of data? |
+| B1P05Q16 | 1 | 5 | How do you fill blank cells in a column with the value from the cell above? |
+| B1P05Q17 | 1 | 5 | Numbers imported from another system are left-aligned and will not add up. What is the problem, and how do you fix it? |
+| B1P05Q18 | 1 | 5 | How do you split a full name in one column into first name and last name in two columns? |
+| B1P05Q19 | 1 | 5 | How do you delete all blank rows from a dataset? |
+| B1P05Q20 | 1 | 5 | How do you use Data Validation to stop bad data from entering a sheet in the first place? |
+| B1P05Q21 | 1 | 5 | Remove Duplicates does not remove two rows that look identical. What could be the reasons, and how do you find out? |
+| B1P05Q22 | 1 | 5 | TRIM does not remove a space that is clearly visible in a cell. What is going on, and what formula fixes it? |
+| B1P05Q23 | 1 | 5 | Dates imported from a CSV file are stored as text. How do you convert them into real dates? |
+| B1P05Q24 | 1 | 5 | A date column has some entries as dd/mm/yyyy and others as mm/dd/yyyy. How do you detect and fix this? |
+| B1P05Q25 | 1 | 5 | What are the limitations of Flash Fill, and when would you use a formula instead? |
+| B1P05Q26 | 1 | 5 | A column holds 'EMP001 - Priya Sharma - Hyderabad'. How do you split it into three columns using Text to Columns, and what must you do before you run it? |
+| B1P05Q27 | 1 | 5 | How do you count how many duplicate records exist in a dataset using formulas? |
+| B1P05Q28 | 1 | 5 | How do you keep only the latest record per employee ID when an HR list has several rows per employee? |
+| B1P05Q29 | 1 | 5 | How do you extract a list of unique values in Excel 2016 or 2019, and how does it differ from Excel 365? |
+| B1P05Q30 | 1 | 5 | How do you use Go To Special to select blanks, errors or constants, and why is it useful in cleaning? |
+| B1P05Q31 | 1 | 5 | A phone number column has entries like '+91 98765-43210', '09876543210' and '98765 43210'. How do you standardise them to ten digits? |
+| B1P05Q32 | 1 | 5 | Remove Duplicates treats "HYD" and "hyd" as the same value. How do you find or remove duplicates that must match case exactly? |
+| B1P05Q33 | 1 | 5 | How do you remove duplicates in Google Sheets, and how does it differ from Excel? |
+| B1P05Q34 | 1 | 5 | What is the difference between SUBSTITUTE and REPLACE when cleaning text? |
+| B1P05Q35 | 1 | 5 | What does the VALUE function do, and how is it different from multiplying the cell by 1? |
+| B1P05Q36 | 1 | 5 | How do you remove leading zeros, or add them back, in a column such as employee codes? |
+| B1P05Q37 | 1 | 5 | How do you remove unwanted characters such as '#', '-' or brackets from a column of text? |
+| B1P05Q38 | 1 | 5 | A cell shows 1.2E+15 for a long ID number. What happened, and how do you prevent it? |
+| B1P05Q39 | 1 | 5 | How do you remove duplicates in Excel 365 using the UNIQUE function, and what are the pros and cons compared with the Remove Duplicates button? |
+| B1P05Q40 | 1 | 5 | How do you find duplicates based on a combination of two or more columns, such as employee ID plus month? |
+| B1P05Q41 | 1 | 5 | How do you use TEXTSPLIT and TEXTBEFORE or TEXTAFTER to clean text, and which Excel versions have them? |
+| B1P05Q42 | 1 | 5 | How do you find near-duplicates, such as 'Infosys Ltd' and 'Infosys Limited', in a company list? |
+| B1P05Q43 | 1 | 5 | How do you convert a column of numbers stored as text when green triangle warnings appear on the cells? |
+| B1P05Q44 | 1 | 5 | Which cleaning steps would you do in Power Query instead of formulas, and why? |
+| B1P05Q45 | 1 | 5 | How do you clean data that arrives every month in the same messy format, so that you do not repeat the manual steps? |
+| B1P05Q46 | 1 | 5 | How do you standardise text with Flash Fill, for example turning 'priya sharma' into 'Sharma, Priya'? |
+| B1P05Q47 | 1 | 5 | How do you check data quality after cleaning, so you can tell your manager the data is reliable? |
+| B1P05Q48 | 1 | 5 | How do you extract the numbers from a mixed text string such as 'Invoice-4581-Q3' without Power Query? |
+| B1P05Q49 | 1 | 5 | How do you remove duplicates while keeping a count of how many times each record appeared? |
+| B1P05Q50 | 1 | 5 | A cleaning formula using TRIM, CLEAN and SUBSTITUTE is slow on 500,000 rows. How do you make the workflow faster and more reliable? |
+| B1P06Q1 | 1 | 6 | What are dynamic arrays in Excel, and what does it mean when a formula "spills"? |
+| B1P06Q2 | 1 | 6 | What does the FILTER function do, and what is its syntax? |
+| B1P06Q3 | 1 | 6 | How do you get a list of unique values from a column using the UNIQUE function? |
+| B1P06Q4 | 1 | 6 | Which Excel versions support dynamic array functions such as FILTER, UNIQUE and SORT, and what happens if you open such a file in Excel 2019? |
+| B1P06Q5 | 1 | 6 | What causes the #SPILL! error and how do you fix it? |
+| B1P06Q6 | 1 | 6 | Given an employee table with Department in column B and Salary in column C, how do you list all employees from the HR department using FILTER, showing a friendly message if there are none? |
+| B1P06Q7 | 1 | 6 | What is the syntax of the SORT function, and what do sort_index and sort_order mean? |
+| B1P06Q8 | 1 | 6 | How do you produce an alphabetically sorted list of unique departments from a column? |
+| B1P06Q9 | 1 | 6 | How do you count the number of distinct values in a column using dynamic array functions? |
+| B1P06Q10 | 1 | 6 | What is the if_empty argument of FILTER for, and what error appears if you leave it out and nothing matches? |
+| B1P06Q11 | 1 | 6 | When would you use FILTER instead of the AutoFilter on the Data tab? |
+| B1P06Q12 | 1 | 6 | When would you use a pivot table instead of FILTER and UNIQUE formulas? |
+| B1P06Q13 | 1 | 6 | How do you filter rows that meet two conditions at the same time (for example Department = "Sales" and Salary greater than 50000)? |
+| B1P06Q14 | 1 | 6 | How do you filter rows that meet either of two conditions (OR logic) with FILTER? |
+| B1P06Q15 | 1 | 6 | What is the difference between SORT and SORTBY, and when do you need SORTBY? |
+| B1P06Q16 | 1 | 6 | What is the spill range operator (#), and how do you use it? |
+| B1P06Q17 | 1 | 6 | How does FILTER help when you need to return all matching rows, where VLOOKUP or XLOOKUP return only the first match? |
+| B1P06Q18 | 1 | 6 | What is the LET function, what is its syntax, and why would you use it? |
+| B1P06Q19 | 1 | 6 | What does the exactly_once argument of UNIQUE do? Give a practical example. |
+| B1P06Q20 | 1 | 6 | How do you sum or average the values returned by FILTER, and when is SUM(FILTER(...)) better or worse than SUMIFS? |
+| B1P06Q21 | 1 | 6 | How do you join all employee names in a department into one cell, separated by commas? |
+| B1P06Q22 | 1 | 6 | What is the @ (implicit intersection) operator that Excel sometimes adds to a formula? |
+| B1P06Q23 | 1 | 6 | Can you use a spilling formula inside an Excel Table? What do you do instead? |
+| B1P06Q24 | 1 | 6 | HR scenario: from a monthly attendance log with one row per employee per absence, how do you list the employees who were absent more than three times? |
+| B1P06Q25 | 1 | 6 | How do you create a dependent or dynamic drop-down list that updates automatically from a UNIQUE formula? |
+| B1P06Q26 | 1 | 6 | Name the dynamic array functions Microsoft introduced (FILTER, SORT, SORTBY, UNIQUE, SEQUENCE, RANDARRAY, XLOOKUP, XMATCH) and give one use for each. |
+| B1P06Q27 | 1 | 6 | How do you generate a list of numbers 1 to 12, or the 12 month-start dates of a year, using SEQUENCE? |
+| B1P06Q28 | 1 | 6 | Does UNIQUE treat "HR" and "hr" as the same value? |
+| B1P06Q29 | 1 | 6 | Do FILTER, UNIQUE and SORT work in Google Sheets, and what Sheets function is often used instead? |
+| B1P06Q30 | 1 | 6 | What is the difference between legacy array formulas (Ctrl+Shift+Enter) and dynamic array formulas? |
+| B1P06Q31 | 1 | 6 | What are the rules for naming variables inside LET, and how many name/value pairs can you define? |
+| B1P06Q32 | 1 | 6 | How does LET make a FILTER formula shorter and faster? Give an example where the same range is used more than once. |
+| B1P06Q33 | 1 | 6 | How do you filter rows where a text column contains a keyword (partial match), for example job titles containing "Analyst"? |
+| B1P06Q34 | 1 | 6 | How do you filter out blank rows or return only non-blank entries from a range? |
+| B1P06Q35 | 1 | 6 | How do you sort a table by Department A to Z and then by Salary high to low with one formula? |
+| B1P06Q36 | 1 | 6 | HR attrition scenario: given a table with Employee, Department and Exit Date, how do you list the employees who left between 1 April and 30 June? |
+| B1P06Q37 | 1 | 6 | How do you return only some columns (for example Name and Salary) from a FILTER result? |
+| B1P06Q38 | 1 | 6 | How do you return the top 5 highest salaries with their employee names using dynamic arrays? |
+| B1P06Q39 | 1 | 6 | How does ARRAYFORMULA in Google Sheets differ from Excel dynamic arrays, and what does the QUERY function add? |
+| B1P06Q40 | 1 | 6 | Why does a formula referencing a closed workbook with FILTER or UNIQUE return #REF!? |
+| B1P06Q41 | 1 | 6 | How do you count the distinct employees who joined in a given year using UNIQUE and FILTER, without getting an error when nobody joined? |
+| B1P06Q42 | 1 | 6 | Why can FILTER return #VALUE!, and how do you check that the include array matches the data array? |
+| B1P06Q43 | 1 | 6 | How would you give the same result as FILTER to colleagues who use Excel 2016 or 2019? |
+| B1P06Q44 | 1 | 6 | For each department, how do you return the highest salary and the employee who earns it using dynamic arrays and LET? |
+| B1P06Q45 | 1 | 6 | How do you build a chart or named range that expands automatically with a spilled FILTER or UNIQUE result? |
+| B1P07Q1 | 1 | 7 | What is Power Query in Excel and what do you use it for? |
+| B1P07Q2 | 1 | 7 | What is the difference between Power Query and Power Pivot? |
+| B1P07Q3 | 1 | 7 | What is the difference between Merge and Append in Power Query? |
+| B1P07Q4 | 1 | 7 | How do you refresh a Power Query report when the source file changes? |
+| B1P07Q5 | 1 | 7 | Why would you use Power Query instead of formulas or manual copy-paste to clean and prepare data? |
+| B1P07Q6 | 1 | 7 | How would you combine 12 monthly attendance files from one folder into a single table using Power Query? |
+| B1P07Q7 | 1 | 7 | What is the difference between a calculated column and a measure in Power Pivot? |
+| B1P07Q8 | 1 | 7 | Where do you find Power Query in Excel 2016, 2019 and Microsoft 365? |
+| B1P07Q9 | 1 | 7 | What are Applied Steps in the Power Query Editor, and why do they matter? |
+| B1P07Q10 | 1 | 7 | How do you change data types of columns in Power Query, and what goes wrong if you skip it? |
+| B1P07Q11 | 1 | 7 | How do you remove duplicates and blank rows in Power Query? |
+| B1P07Q12 | 1 | 7 | How do you replace null values with a default value (for example 0 or "Not Available") in Power Query? |
+| B1P07Q13 | 1 | 7 | How do you split a "Full Name" column into first name and last name in Power Query? |
+| B1P07Q14 | 1 | 7 | How do you trim spaces and fix text case (Clean, Trim, Proper) in Power Query? |
+| B1P07Q15 | 1 | 7 | How do you filter rows in Power Query (for example keep only employees from the Hyderabad office)? |
+| B1P07Q16 | 1 | 7 | How do you add a conditional column in Power Query (the equivalent of an IF formula)? |
+| B1P07Q17 | 1 | 7 | What is Group By in Power Query, and how is it different from a PivotTable? |
+| B1P07Q18 | 1 | 7 | What does "Close & Load To..." offer, and what is a "Connection only" query? |
+| B1P07Q19 | 1 | 7 | What is Power Pivot, and how do you enable it in Excel? |
+| B1P07Q20 | 1 | 7 | What is the Excel Data Model? |
+| B1P07Q21 | 1 | 7 | Why would you build a Data Model with relationships instead of using VLOOKUP to bring tables together? |
+| B1P07Q22 | 1 | 7 | How do you create a relationship between two tables in the Power Pivot Data Model? |
+| B1P07Q23 | 1 | 7 | What is the difference between a one-to-many and a many-to-many relationship? |
+| B1P07Q24 | 1 | 7 | How do you create a PivotTable from the Data Model, and how is it different from a normal PivotTable? |
+| B1P07Q25 | 1 | 7 | What is Unpivot in Power Query, and when would you use it? (for example, a sheet with one column per month) |
+| B1P07Q26 | 1 | 7 | What are the different join kinds available in a Power Query merge? |
+| B1P07Q27 | 1 | 7 | How do you find employees present in the HR master list but missing from the payroll list using Power Query? |
+| B1P07Q28 | 1 | 7 | What is the difference between Reference and Duplicate for a query? |
+| B1P07Q29 | 1 | 7 | How do you handle errors in Power Query (for example Remove Errors, Replace Errors, try ... otherwise)? |
+| B1P07Q30 | 1 | 7 | What do you do when appending two tables whose column names do not match exactly? |
+| B1P07Q31 | 1 | 7 | How do you reduce a table's columns and rows early in a query, and why does the order of steps matter? |
+| B1P07Q32 | 1 | 7 | How do you create a measure in Power Pivot, and what is a simple example? |
+| B1P07Q33 | 1 | 7 | What is DAX, and how is it different from an Excel formula? |
+| B1P07Q34 | 1 | 7 | What does the CALCULATE function do in DAX? |
+| B1P07Q35 | 1 | 7 | How do you count unique employees in Power Pivot (DISTINCTCOUNT), and why can a normal PivotTable not do this directly? |
+| B1P07Q36 | 1 | 7 | What is a star schema, and why is it recommended for a Data Model? |
+| B1P07Q37 | 1 | 7 | Why does a measure sometimes show the same value for every row in a PivotTable? |
+| B1P07Q38 | 1 | 7 | How do you check what a query is doing from the Advanced Editor, and what is the M language? |
+| B1P07Q39 | 1 | 7 | How do you pull data from a web page or a CSV file into Excel with Power Query? |
+| B1P07Q40 | 1 | 7 | What is the Power Query Editor "Query Settings" pane used for? |
+| B1P07Q41 | 1 | 7 | What is query folding, and how can you tell whether a step folds? |
+| B1P07Q42 | 1 | 7 | What is fuzzy matching in a Power Query merge, and which Excel versions support it? |
+| B1P07Q43 | 1 | 7 | How do you unpivot only the selected columns versus the other columns, and what is the difference? |
+| B1P07Q44 | 1 | 7 | How do you pivot a column in Power Query (the reverse of unpivot)? |
+| B1P07Q45 | 1 | 7 | How do you add a Date table to the Data Model, and why is one needed for time intelligence? |
+| B1P07Q46 | 1 | 7 | What is the difference between Power Query "Merge" and an Excel VLOOKUP or XLOOKUP? |
+| B1P07Q47 | 1 | 7 | How do you stop a Power Query refresh from breaking when a column is renamed or removed at the source? |
+| B1P07Q48 | 1 | 7 | How do you share a workbook with Power Query connections to a local file path with colleagues without refresh errors? |
+| B1P07Q49 | 1 | 7 | What is a Power Query parameter, and how would you use one (for example a folder path or a cut-off date)? |
+| B1P07Q50 | 1 | 7 | How do you calculate year-to-date headcount or salary cost with a time-intelligence function such as TOTALYTD or DATESYTD? |
+| B1P07Q51 | 1 | 7 | How do you calculate each department's share of total headcount as a percentage in Power Pivot? |
+| B1P07Q52 | 1 | 7 | What is the difference between SUM and SUMX in DAX? |
+| B1P07Q53 | 1 | 7 | What is the difference between ALL and ALLEXCEPT in DAX? |
+| B1P07Q54 | 1 | 7 | What is row context versus filter context? |
+| B1P07Q55 | 1 | 7 | How do you create a KPI or a hierarchy (Department > Team) in Power Pivot? |
+| B1P07Q56 | 1 | 7 | How do you use slicers to control several PivotTables built on the same Data Model? |
+| B1P07Q57 | 1 | 7 | How would you build a refreshable monthly attrition report using Power Query, a Data Model and a PivotTable? |
+| B1P07Q58 | 1 | 7 | When would you move from Excel Power Query and Power Pivot to Power BI? |
+| B1P07Q59 | 1 | 7 | What are the limits of Power Pivot and the Data Model when files get very large, and how would you handle them? |
+| B1P07Q60 | 1 | 7 | How do you write a custom column in M using if...then...else, Text.Upper or Date functions? |
+| B1P07Q61 | 1 | 7 | What are privacy levels in Power Query, and why can a merge of two sources show a "Formula.Firewall" error? |
+| B1P07Q62 | 1 | 7 | How do you make Power Query refresh automatically when the workbook opens, and what are the limits? |
+| B1P07Q63 | 1 | 7 | How do you troubleshoot a Power Query step that shows "Expression.Error: The column ... of the table wasn't found"? |
+| B1P07Q64 | 1 | 7 | What is the difference between Import mode and DirectQuery, and does Excel support both? |
+| B1P08Q1 | 1 | 8 | What types of charts are available in Excel, and how do you choose the right one for your data? |
+| B1P08Q2 | 1 | 8 | When would you use a column or bar chart, and when a line chart? |
+| B1P08Q3 | 1 | 8 | What is the fastest way to create a chart in Excel from a data range? |
+| B1P08Q4 | 1 | 8 | What is an Excel dashboard, and how is it different from a normal report or a pivot table? |
+| B1P08Q5 | 1 | 8 | What are the key elements of a good Excel dashboard? |
+| B1P08Q6 | 1 | 8 | Walk me through how you would build an interactive dashboard in Excel from raw data. |
+| B1P08Q7 | 1 | 8 | How do you make one slicer control several pivot tables and charts on a dashboard? |
+| B1P08Q8 | 1 | 8 | How do you create a combo chart with a secondary axis, for example revenue as columns and margin percentage as a line? |
+| B1P08Q9 | 1 | 8 | Which chart would you use to show monthly attrition for the last 12 months, and how would you build it? |
+| B1P08Q10 | 1 | 8 | What is the difference between a clustered column chart and a stacked column chart, and when do you use each? |
+| B1P08Q11 | 1 | 8 | When is a pie chart appropriate, and when should you avoid it? |
+| B1P08Q12 | 1 | 8 | What are a data series, the category axis, the value axis and the legend in an Excel chart? |
+| B1P08Q13 | 1 | 8 | How do you add or edit a chart title, axis titles and data labels? |
+| B1P08Q14 | 1 | 8 | What are sparklines, and what types are available? |
+| B1P08Q15 | 1 | 8 | How do you add a trendline to a chart, and what does the R-squared value tell you? |
+| B1P08Q16 | 1 | 8 | A chart is plotting the wrong way round (months as series instead of categories). How do you fix it? |
+| B1P08Q17 | 1 | 8 | You have headcount by department in a table. Which chart would you make for HR leadership, and how would you present it? |
+| B1P08Q18 | 1 | 8 | What are good practices for choosing colours and formatting in Excel charts? |
+| B1P08Q19 | 1 | 8 | How do you hide gridlines and headings on a dashboard sheet so it looks clean? |
+| B1P08Q20 | 1 | 8 | How do you copy an Excel chart into PowerPoint or Word, and what is the difference between pasting as a picture, embedding and linking? |
+| B1P08Q21 | 1 | 8 | How do you make a chart update automatically when new rows of data are added? |
+| B1P08Q22 | 1 | 8 | What is a waterfall chart, when would you use it, and how do you create one? |
+| B1P08Q23 | 1 | 8 | How do you create a histogram in Excel, and how does it differ from a column chart? |
+| B1P08Q24 | 1 | 8 | What is the difference between a Pareto chart and a histogram? |
+| B1P08Q25 | 1 | 8 | How do you build KPI cards on a dashboard that show the value, target and variance with an up or down indicator? |
+| B1P08Q26 | 1 | 8 | How do you show actual versus target in an Excel chart? |
+| B1P08Q27 | 1 | 8 | You are asked for an HR attrition dashboard. Which KPIs, charts and filters would you include? |
+| B1P08Q28 | 1 | 8 | What is a Timeline in Excel, and how do you use it on a dashboard? |
+| B1P08Q29 | 1 | 8 | How do you create a chart title that changes automatically based on a cell value or filter selection? |
+| B1P08Q30 | 1 | 8 | How do you make a chart change when the user picks an option from a dropdown list? |
+| B1P08Q31 | 1 | 8 | How do you handle blank cells and gaps in a line chart? |
+| B1P08Q32 | 1 | 8 | How do you refresh a dashboard when the source data changes? |
+| B1P08Q33 | 1 | 8 | How do you protect a dashboard from accidental edits while keeping slicers usable? |
+| B1P08Q34 | 1 | 8 | How would you decide between building a dashboard in Excel or in Power BI? |
+| B1P08Q35 | 1 | 8 | Which chart types are available in Excel 2016, 2019 and Microsoft 365, and which are missing in older versions? |
+| B1P08Q36 | 1 | 8 | How do you create charts and a simple dashboard in Google Sheets, and how does it differ from Excel? |
+| B1P08Q37 | 1 | 8 | What is a scatter plot, and how does a bubble chart differ from it? |
+| B1P08Q38 | 1 | 8 | What are error bars, and when would you use them? |
+| B1P08Q39 | 1 | 8 | Why can a chart whose value axis does not start at zero be misleading? |
+| B1P08Q40 | 1 | 8 | What are Recommended Charts and Quick Analysis in Excel? |
+| B1P08Q41 | 1 | 8 | How do you group small categories into an Other slice or bar in a chart? |
+| B1P08Q42 | 1 | 8 | How do you save a formatted chart as a template and reuse it? |
+| B1P08Q43 | 1 | 8 | How do you build a hiring funnel chart, from applications to offers to joiners? |
+| B1P08Q44 | 1 | 8 | How do you show salary distribution by grade using a box and whisker chart? |
+| B1P08Q45 | 1 | 8 | How do you create a map chart of employees by state, and what are its requirements? |
+| B1P08Q46 | 1 | 8 | What is the difference between a dynamic chart range built with OFFSET and one built with an Excel Table? |
+| B1P08Q47 | 1 | 8 | How do you colour bars red when they fall below target and green when they meet it? |
+| B1P08Q48 | 1 | 8 | How do you create a Gantt chart for a project plan in Excel? |
+| B1P08Q49 | 1 | 8 | How do you create a gauge or speedometer chart for a KPI? |
+| B1P08Q50 | 1 | 8 | How do you use form controls such as a scroll bar or option buttons to make a chart interactive? |
+| B1P08Q51 | 1 | 8 | How would you speed up a dashboard that has become slow with several hundred thousand rows of data? |
+| B1P08Q52 | 1 | 8 | Design a one-click monthly MIS dashboard that refreshes from new source files, using Power Query, pivots, slicers and a macro. |
+| B1P08Q53 | 1 | 8 | You are shown a cluttered dashboard with 3D pie charts and 15 KPIs. How would you critique and redesign it? |
+| B1P08Q54 | 1 | 8 | How would you present an Excel dashboard to non-technical senior leaders and handle conflicting requests from different stakeholders? |
+| B1P09Q1 | 1 | 9 | What is conditional formatting in Excel, and where would you use it as an analyst? |
+| B1P09Q2 | 1 | 9 | What is data validation in Excel, and why is it important for data accuracy? |
+| B1P09Q3 | 1 | 9 | How do you create a drop-down list in a cell using Data Validation? |
+| B1P09Q4 | 1 | 9 | How do you highlight duplicate values in a column using conditional formatting? |
+| B1P09Q5 | 1 | 9 | In an attendance sheet, how do you highlight every employee whose attendance percentage is below 90%? |
+| B1P09Q6 | 1 | 9 | What is Goal Seek in Excel, and when would you use it? |
+| B1P09Q7 | 1 | 9 | How do you highlight an entire row based on the value in one cell (for example, every row where Status is "Resigned")? |
+| B1P09Q8 | 1 | 9 | What is the difference between Goal Seek, Data Table and Scenario Manager? |
+| B1P09Q9 | 1 | 9 | What is What-If Analysis in Excel, and which tools does it include? |
+| B1P09Q10 | 1 | 9 | Walk me through using Goal Seek to find the units you must sell to reach a target profit. |
+| B1P09Q11 | 1 | 9 | What are Color Scales, Data Bars and Icon Sets in conditional formatting, and when would you use each? |
+| B1P09Q12 | 1 | 9 | How do you highlight cells that contain errors such as #N/A or #DIV/0! using conditional formatting? |
+| B1P09Q13 | 1 | 9 | How do you view, edit, reorder or delete conditional formatting rules (Rules Manager)? |
+| B1P09Q14 | 1 | 9 | What are the three error alert styles in data validation (Stop, Warning, Information), and when would you use each? |
+| B1P09Q15 | 1 | 9 | How do you restrict a cell so that it accepts only whole numbers between 18 and 60 (for example, employee age)? |
+| B1P09Q16 | 1 | 9 | How do you add an input message and a custom error message to a data validation rule? |
+| B1P09Q17 | 1 | 9 | How do you highlight cells that contain specific text, for example every department that contains "Sales"? |
+| B1P09Q18 | 1 | 9 | What is a one-variable data table, and how do you build one? |
+| B1P09Q19 | 1 | 9 | How do you build a two-variable data table, for example loan EMI against interest rate and tenure? |
+| B1P09Q20 | 1 | 9 | How do you prevent duplicate entries in a column (for example, Employee ID) using data validation? |
+| B1P09Q21 | 1 | 9 | How do you create a dependent (cascading) drop-down list, for example State and then City? |
+| B1P09Q22 | 1 | 9 | How do you make a drop-down list update automatically when new items are added to the source list? |
+| B1P09Q23 | 1 | 9 | How do you highlight employee contracts that expire within the next 30 days? |
+| B1P09Q24 | 1 | 9 | How do you highlight the top 10 values, the bottom 10% or the values above average? |
+| B1P09Q25 | 1 | 9 | Why do formula-based conditional formatting rules need mixed references such as $B2, and what goes wrong if you get them wrong? |
+| B1P09Q26 | 1 | 9 | What is Scenario Manager, and how do you create best-case, base-case and worst-case scenarios? |
+| B1P09Q27 | 1 | 9 | How do you highlight names in List A that are missing from List B (for example, employees on the payroll but not on the attendance list)? |
+| B1P09Q28 | 1 | 9 | How do you highlight weekends in an attendance sheet with a date row? |
+| B1P09Q29 | 1 | 9 | What happens when several conditional formatting rules apply to the same cell, and what does Stop If True do? |
+| B1P09Q30 | 1 | 9 | What is the difference between Goal Seek and Solver, and when do you need Solver? |
+| B1P09Q31 | 1 | 9 | How do you highlight blank cells or rows with missing mandatory fields in a hiring tracker? |
+| B1P09Q32 | 1 | 9 | How do you find and remove invalid data and clear data validation from a range (Circle Invalid Data, Clear All)? |
+| B1P09Q33 | 1 | 9 | How do you copy conditional formatting or data validation from one range to another? |
+| B1P09Q34 | 1 | 9 | How do you create a drop-down list whose source list is on another sheet? |
+| B1P09Q35 | 1 | 9 | How do you restrict an entry to exactly 10 digits (for example, a mobile number) using data validation? |
+| B1P09Q36 | 1 | 9 | What are the limitations of Goal Seek, and why might it say it may not have found a solution? |
+| B1P09Q37 | 1 | 9 | Why does a data table sometimes not recalculate, and what does "Automatic except for data tables" mean? |
+| B1P09Q38 | 1 | 9 | How do you apply conditional formatting and a drop-down list in Google Sheets, and how do they differ from Excel? |
+| B1P09Q39 | 1 | 9 | How do you shade alternate rows (banded rows) with conditional formatting so the banding survives sorting and filtering? |
+| B1P09Q40 | 1 | 9 | Can data validation be bypassed, and how can you make it more reliable? |
+| B1P09Q41 | 1 | 9 | Your drop-down arrow is not showing in a cell. What are the common reasons? |
+| B1P09Q42 | 1 | 9 | Why does the Scenario Summary report not update when you change an input, and how do you refresh it? |
+| B1P09Q43 | 1 | 9 | How do you build a traffic-light attrition indicator with Icon Sets, and how do you show only the icon without the number? |
+| B1P09Q44 | 1 | 9 | Can too many conditional formatting rules slow a workbook down, and how do you keep them efficient? |
+| B1P09Q45 | 1 | 9 | How can you allow multiple selections in a single drop-down cell in Excel, and what is the Google Sheets alternative? |
+| B1P09Q46 | 1 | 9 | How do you build a dependent drop-down in Excel 365 using UNIQUE and FILTER spilled ranges, and what breaks it (#SPILL!, older versions)? |
+| B1P10Q1 | 1 | 10 | How do you prepare an MIS report in Excel from raw data? |
+| B1P10Q2 | 1 | 10 | What is an MIS report, and what do daily, weekly and monthly MIS reports usually contain? |
+| B1P10Q3 | 1 | 10 | How do you calculate an employee's tenure in years and months in Excel? |
+| B1P10Q4 | 1 | 10 | Walk me through how you would reconcile two reports from different sources in Excel. |
+| B1P10Q5 | 1 | 10 | Given employee data (Employee ID, Department, Join Date, Exit Date, Status), how would you build a department-wise headcount and attrition summary? |
+| B1P10Q6 | 1 | 10 | What checks do you run on data accuracy before sending an MIS report to management? |
+| B1P10Q7 | 1 | 10 | How would you set up a monthly report so that it updates with minimal manual work when new data is pasted in? |
+| B1P10Q8 | 1 | 10 | How do you handle #N/A, #DIV/0! and #REF! errors in a report before you send it? |
+| B1P10Q9 | 1 | 10 | How do you calculate the absenteeism rate by department for a month? |
+| B1P10Q10 | 1 | 10 | Your report total does not match the source total. How do you find the difference? |
+| B1P10Q11 | 1 | 10 | Given a raw attendance log (Employee ID, Date, In-time, Out-time), how do you calculate hours worked per day and flag late arrivals? |
+| B1P10Q12 | 1 | 10 | How do you protect a worksheet so that others cannot change your formulas? |
+| B1P10Q13 | 1 | 10 | How do you calculate month-on-month growth or variance percentage in a report? |
+| B1P10Q14 | 1 | 10 | How do you group employees into age bands or tenure bands in Excel? |
+| B1P10Q15 | 1 | 10 | How do you add GST to an amount, or take GST out of a GST-inclusive amount, in Excel? |
+| B1P10Q16 | 1 | 10 | How do you highlight the top 10 or bottom 5 performers in a report? |
+| B1P10Q17 | 1 | 10 | How do you present MIS findings to a non-technical manager, beyond sending the sheet? |
+| B1P10Q18 | 1 | 10 | How do you calculate the average and the median salary by department in Excel, and which one would you report? |
+| B1P10Q19 | 1 | 10 | How do you calculate the voluntary and involuntary attrition split for a month? |
+| B1P10Q20 | 1 | 10 | How do you calculate first-year (early) attrition in Excel? |
+| B1P10Q21 | 1 | 10 | How do you calculate attrition by tenure band using COUNTIFS? |
+| B1P10Q22 | 1 | 10 | How do you find the opening and closing headcount of a month from join dates and exit dates? |
+| B1P10Q23 | 1 | 10 | How do you build an HR attrition dashboard in Excel with slicers for department, gender and age band? |
+| B1P10Q24 | 1 | 10 | Given a hiring tracker with candidate stages, how do you calculate the conversion rate from one stage to the next? |
+| B1P10Q25 | 1 | 10 | How do you calculate average time-to-hire by department from requisition and joining dates? |
+| B1P10Q26 | 1 | 10 | How do you build a payroll summary by department and month using SUMIFS? |
+| B1P10Q27 | 1 | 10 | How do you calculate overtime hours and overtime pay from daily hours worked? |
+| B1P10Q28 | 1 | 10 | How do you find employees who are in the HR master list but missing from the payroll sheet, and the reverse? |
+| B1P10Q29 | 1 | 10 | How do you consolidate monthly files from several branches or teams into one report? |
+| B1P10Q30 | 1 | 10 | How do you rank employees by performance rating within each department? |
+| B1P10Q31 | 1 | 10 | How do you speed up a slow, heavy Excel workbook? |
+| B1P10Q32 | 1 | 10 | How do you find employees with more than a set number of absences in the last 12 months? |
+| B1P10Q33 | 1 | 10 | How do you build a leave balance tracker from opening balance, leaves taken and leaves credited? |
+| B1P10Q34 | 1 | 10 | Which would you use for a recurring daily MIS report: manual formulas, Power Query or a macro, and why? |
+| B1P10Q35 | 1 | 10 | How do you build a report that shows each month's figure as a percentage of the annual total? |
+| B1P10Q36 | 1 | 10 | How do you build a department-wise cost summary with subtotals and a grand total for a management report? |
+| B1P10Q37 | 1 | 10 | How do you calculate a rolling 12-month attrition rate? |
+| B1P10Q38 | 1 | 10 | Case: given a sales table (Region, Product, Month, Sales), how would you produce a summary with pivot, rank and formulas in a timed Excel test? |
+| B1P10Q39 | 1 | 10 | How do you share an Excel report with a team without people breaking it or creating conflicting versions? |
+| B1P10Q40 | 1 | 10 | What would you do if your data has more rows than Excel's row limit? |
+| B1P10Q41 | 1 | 10 | How do you document and hand over a recurring report so someone else can run it? |
+| B1P10Q42 | 1 | 10 | How do you check the salary data for outliers and wrong entries? |
+| B1P10Q43 | 1 | 10 | How do you calculate compa-ratio (salary against the band midpoint) for each employee? |
+| B1P10Q44 | 1 | 10 | How do you track training completion by department against a target? |
+| B1P10Q45 | 1 | 10 | How do you calculate the headcount of each manager's team (span of control) from an employee list with a manager ID? |
+| B1P10Q46 | 1 | 10 | How would you build the same attrition report in Google Sheets, and what differs from Excel? |
+| B1P10Q47 | 1 | 10 | What would you do differently in a monthly report if your company is on Excel 2016 instead of Microsoft 365? |
+| B1P10Q48 | 1 | 10 | How do you calculate gender diversity ratio by department and level? |
+| B1P10Q49 | 1 | 10 | How do you reconcile headcount between the HRMS, payroll and the attendance system? |
+| B1P10Q50 | 1 | 10 | How do you build an interview scheduling and hiring status tracker that flags overdue follow-ups? |
+| B1P10Q51 | 1 | 10 | How do you identify which department or tenure band has the highest attrition risk using a simple weighted score? |
+| B1P10Q52 | 1 | 10 | How do you create a monthly revenue-per-employee or cost-per-hire metric in Excel? |
+| B1P10Q53 | 1 | 10 | How do you calculate loss-of-pay (unpaid leave) deductions from an attendance sheet and monthly salary? |
+| B1P10Q54 | 1 | 10 | How do you calculate a cohort-wise retention table (joiners of each month and how many remain after 3, 6 and 12 months)? |
+| B1P10Q55 | 1 | 10 | How do you build a variance report between budget and actual headcount cost with drill-down to the cause? |
+| B1P10Q56 | 1 | 10 | How do you clean and standardise a messy attendance export where timestamps are text and some are blank? |
+| B1P10Q57 | 1 | 10 | How do you prepare an exit-interview analysis in Excel where reasons are free text? |
+| B1P10Q58 | 1 | 10 | How do you audit someone else's MIS workbook to find hidden formula errors? |
+| B1P10Q59 | 1 | 10 | If a stakeholder disputes the attrition number in your report, how do you trace and defend it? |
+| B1P10Q60 | 1 | 10 | How do you build a six-month headcount forecast from the hiring plan and an expected attrition rate? |
+| B1P11Q1 | 1 | 11 | What is a macro in Excel, and what is VBA? |
+| B1P11Q2 | 1 | 11 | How do you record a macro in Excel, and where do you see and edit the code it creates? |
+| B1P11Q3 | 1 | 11 | What is the difference between recording a macro and writing VBA code by hand? |
+| B1P11Q4 | 1 | 11 | Have you used a macro or VBA to automate a task? Give an example, such as a monthly HR attendance report. |
+| B1P11Q5 | 1 | 11 | What is Copilot in Excel, and how can a data analyst use it? |
+| B1P11Q6 | 1 | 11 | How do you verify the output of Copilot or any AI tool before you send a report to a manager? |
+| B1P11Q7 | 1 | 11 | How do you save a workbook that contains macros, and why does Excel show a security warning for macros? |
+| B1P11Q8 | 1 | 11 | What is the difference between absolute and relative reference recording in the macro recorder? |
+| B1P11Q9 | 1 | 11 | What does Option Explicit do, and how do you declare variables in VBA (Dim and data types)? |
+| B1P11Q10 | 1 | 11 | What is the difference between a Sub and a Function in VBA, and what is a user-defined function (UDF)? |
+| B1P11Q11 | 1 | 11 | What is Gemini in Google Sheets, and what can it do for an analyst? |
+| B1P11Q12 | 1 | 11 | What do you need in place to use Copilot in Excel (licence, file location, data format)? |
+| B1P11Q13 | 1 | 11 | What is the Google Sheets equivalent of VBA macros, and how does it differ from Excel VBA? |
+| B1P11Q14 | 1 | 11 | Write a VBA loop that goes through rows 2 to 500 and flags employees with less than one year of tenure. |
+| B1P11Q15 | 1 | 11 | How do you find the last used row in a column with VBA, and why is it needed? |
+| B1P11Q16 | 1 | 11 | How do you handle errors in VBA (On Error GoTo versus On Error Resume Next)? |
+| B1P11Q17 | 1 | 11 | A macro takes five minutes to run on 50,000 rows. How would you speed it up? |
+| B1P11Q18 | 1 | 11 | What is the COPILOT function in Excel, and how is it different from functions such as SUM or IF? |
+| B1P11Q19 | 1 | 11 | What data privacy risks should you consider when using AI tools on employee or payroll data? |
+| B1P11Q20 | 1 | 11 | When would you use Copilot, and when would you use a formula, a PivotTable or Power Query instead? |
+| B1P11Q21 | 1 | 11 | Write a prompt you would give Copilot or Gemini to classify 500 employee feedback comments into themes. |
+| B1P12Q1 | 1 | 12 | How did you learn Excel, and how long did it take you? |
+| B1P12Q2 | 1 | 12 | How would you rate yourself in Excel out of 10, and why? |
+| B1P12Q3 | 1 | 12 | Which version of Excel do you use (2016, 2019, 2021 or Microsoft 365), and does the version matter for your work? |
+| B1P12Q4 | 1 | 12 | You come from HR with no technical background. How did you learn Excel? |
+| B1P12Q5 | 1 | 12 | Walk me through an Excel report or workbook you built from start to finish. |
+| B1P12Q6 | 1 | 12 | Which Excel topic did you find hardest, and how did you overcome it? |
+| B1P12Q7 | 1 | 12 | Which Excel functions and features do you use most often, and which have you not tried yet? |
+| B1P12Q8 | 1 | 12 | How do you learn an Excel function or feature you have never used before? |
+| B1P12Q9 | 1 | 12 | Which free resources would you recommend to a beginner learning Excel? |
+| B1P12Q10 | 1 | 12 | Which practice datasets have you worked with in Excel? |
+| B1P12Q11 | 1 | 12 | Have you used Google Sheets as well as Excel, and how did you pick it up? |
+| B1P12Q12 | 1 | 12 | How much time do you spend practising Excel each day or week? |
+| B1P12Q13 | 1 | 12 | In what order did you study Excel topics, and why that order? |
+| B1P12Q14 | 1 | 12 | How do you check that your own Excel work is correct when there is no answer key? |
+| B1P12Q15 | 1 | 12 | How would you prepare for a live Excel test in one week? |
+| B1P12Q16 | 1 | 12 | How do you use AI assistants such as Copilot or ChatGPT to learn Excel without depending on them? |
+| B1P12Q17 | 1 | 12 | Is Excel enough for a data analyst role, and what would you learn next? |
+| B1P12Q18 | 1 | 12 | How do you keep your Excel skills current as new functions are added? |
+| B1P12Q19 | 1 | 12 | Do Excel certifications help, and have you done any (for example Microsoft Office Specialist)? |
+| B1P12Q20 | 1 | 12 | Have you shared your Excel work publicly or kept a portfolio of it? |
+| B1P12Q21 | 1 | 12 | How would you build an Excel portfolio project from a public HR dataset? |
+| B1P12Q22 | 1 | 12 | How would you set up a self-check test to measure your own Excel level? |
+| B1P12Q23 | 1 | 12 | What is your plan to improve your Excel over the next three months? |
+| B1P12Q24 | 1 | 12 | An HR colleague uses Excel only as a list maker. How would you coach them towards pivot tables and lookups? |
 
 ## Book 2 — SQL
 | Q-ID | Book | Part | Canonical question |
@@ -807,12 +1446,1265 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 |---|---|---|---|
 
 ## Book 4 — Power BI & Visualization
+
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B4P01Q1 | 4 | 1 | What is Power BI and what is it used for? |
+| B4P01Q2 | 4 | 1 | What are the main components of Power BI? |
+| B4P01Q3 | 4 | 1 | What is the difference between Power BI Desktop and the Power BI Service? |
+| B4P01Q4 | 4 | 1 | What are the building blocks of Power BI? |
+| B4P01Q5 | 4 | 1 | What is the difference between a report and a dashboard in Power BI? |
+| B4P01Q6 | 4 | 1 | What is the typical workflow of a Power BI project, from raw data to a shared dashboard? |
+| B4P01Q7 | 4 | 1 | Which data sources can Power BI connect to? |
+| B4P01Q8 | 4 | 1 | What is Power Query, and where does it fit in the Power BI workflow? |
+| B4P01Q9 | 4 | 1 | What are the different views in Power BI Desktop, and what is each one used for? |
+| B4P01Q10 | 4 | 1 | What is a .pbix file and what does it contain? |
+| B4P01Q11 | 4 | 1 | When you load data into Power BI, what is the difference between Load and Transform Data? |
+| B4P01Q12 | 4 | 1 | How is Power BI different from Excel, and why would you use it for HR MIS reporting? |
+| B4P01Q13 | 4 | 1 | Explain Power BI end to end to a non-technical HR manager in two minutes. |
+| B4P01Q14 | 4 | 1 | Employee ID is being added up (summed) in your table visual. Why does Power BI do that, and how do you stop it? |
+| B4P01Q15 | 4 | 1 | What is the difference between Import mode and DirectQuery mode? |
+| B4P01Q16 | 4 | 1 | Walk me through building your first report from an Excel file in Power BI Desktop. |
+| B4P01Q17 | 4 | 1 | What is Power BI Mobile and who uses it? |
+| B4P01Q18 | 4 | 1 | What is a semantic model (formerly called a dataset) in Power BI? |
+| B4P01Q19 | 4 | 1 | Is Power BI Desktop free, and how do you install it? |
+| B4P01Q20 | 4 | 1 | What is a tile in Power BI, and how is one created? |
+| B4P01Q21 | 4 | 1 | What are Power Query, Power Pivot and Power View, and how do they relate to Power BI today? |
+| B4P01Q22 | 4 | 1 | What are the main panes of the Power BI Desktop report canvas (Visualizations, Data, Filters)? |
+| B4P01Q23 | 4 | 1 | How do you connect Power BI Desktop to an Excel file or a SQL Server database? |
+| B4P01Q24 | 4 | 1 | Can you create a report directly in the Power BI Service without Power BI Desktop? |
+| B4P01Q25 | 4 | 1 | How do you export the data behind a visual to Excel or CSV? |
+| B4P01Q26 | 4 | 1 | Where do you get custom visuals in Power BI? |
+| B4P01Q27 | 4 | 1 | How do you refresh the data in Power BI Desktop after the source Excel file has changed? |
+| B4P01Q28 | 4 | 1 | How do you type a small list, such as departments and cost centres, straight into Power BI Desktop without an Excel file? |
+| B4P01Q29 | 4 | 1 | In the Data pane, how do you tell apart a normal column, a measure, a calculated column and a hierarchy by their icons? |
+| B4P01Q30 | 4 | 1 | You shared a report with a colleague who has a Free licence and they cannot open it. Why, and what are your options? |
+| B4P01Q31 | 4 | 1 | Can you run Power BI Desktop on a Mac, and what do you do if your work laptop is a Mac? |
+| B4P01Q32 | 4 | 1 | What can you do in the Power BI Service that you cannot do in Desktop, and the other way round? |
+| B4P01Q33 | 4 | 1 | What is a live connection in Power BI, and how does it differ from DirectQuery? |
+| B4P01Q34 | 4 | 1 | What is Microsoft Fabric, and how does it relate to Power BI? |
+| B4P01Q35 | 4 | 1 | What is Power BI Report Server, and how is it different from the Power BI Service? |
+| B4P01Q36 | 4 | 1 | What credential types does Power BI ask for when you connect to a source (Windows, Database, Organizational account, Anonymous), and where do you change them? |
+| B4P01Q37 | 4 | 1 | Your report shows "We couldn't connect to the data source" after the Excel file was moved to another folder. How do you fix it? |
+| B4P01Q38 | 4 | 1 | What happens to your data and your report when you publish a .pbix file from Desktop to the Service? |
+| B4P01Q39 | 4 | 1 | Can two analysts work on the same .pbix file at the same time, and how do teams manage this? |
+| B4P01Q40 | 4 | 1 | You change a step in Power Query and a yellow banner appears over the report. What does it mean, and what happens if you ignore it? |
+| B4P01Q41 | 4 | 1 | What are .pbit template files and .pbip project files, and when would you use them? |
+| B4P01Q42 | 4 | 1 | How often is Power BI Desktop updated, and why does your version matter when sharing files? |
+| B4P01Q43 | 4 | 1 | Who are the typical users of Power BI: creators, consumers and administrators? |
+| B4P01Q44 | 4 | 1 | What is Power BI Report Builder, and what are paginated reports? |
+| B4P01Q45 | 4 | 1 | What is a dataflow, and how does it differ from Power Query inside Desktop? |
+| B4P01Q46 | 4 | 1 | What is Analyze in Excel in Power BI? |
+| B4P01Q47 | 4 | 1 | What are external tools in Power BI Desktop, such as DAX Studio and Tabular Editor? |
+| B4P01Q48 | 4 | 1 | Where does Power BI store imported data, and what is the VertiPaq engine? |
+| B4P01Q49 | 4 | 1 | Which Power BI component would you use to give HR managers phone access to the monthly attrition numbers? |
+| B4P01Q50 | 4 | 1 | Is it safe to load payroll data into Power BI, and what basic controls would you check first? |
+| B4P01Q51 | 4 | 1 | What is Power BI Embedded, and who uses it? |
+| B4P01Q52 | 4 | 1 | What is the size limit of a semantic model you can publish with a Pro licence? |
+| B4P01Q53 | 4 | 1 | You must share an HR dashboard with 200 employees, most of whom have no Pro licence. What are your options? |
+| B4P01Q54 | 4 | 1 | How would you set up one shared semantic model so five analysts can build separate reports on the same HR numbers? |
+| B4P01Q55 | 4 | 1 | What is Direct Lake mode, and when does it make sense compared with Import? |
+| B4P02Q1 | 4 | 2 | What is Power Query in Power BI, and why do we use it before building reports? |
+| B4P02Q2 | 4 | 2 | How do you open the Power Query Editor in Power BI Desktop? |
+| B4P02Q3 | 4 | 2 | What is the difference between Merge Queries and Append Queries? |
+| B4P02Q4 | 4 | 2 | How do you remove duplicates in Power Query? |
+| B4P02Q5 | 4 | 2 | How do you change a column's data type in Power Query, and why does it matter? |
+| B4P02Q6 | 4 | 2 | How do you handle null or blank values in Power Query? |
+| B4P02Q7 | 4 | 2 | What are Applied Steps in Power Query, and why does their order matter? |
+| B4P02Q8 | 4 | 2 | What does Close & Apply do in the Power Query Editor? |
+| B4P02Q9 | 4 | 2 | What join kinds are available when merging queries in Power Query, and when would you use each? |
+| B4P02Q10 | 4 | 2 | How do you clean a messy employee master (extra spaces, mixed case, inconsistent department names) in Power Query? |
+| B4P02Q11 | 4 | 2 | What is the difference between adding a custom column in Power Query and creating a calculated column in DAX? |
+| B4P02Q12 | 4 | 2 | How do you combine many monthly Excel or CSV files from one folder into a single table in Power BI? |
+| B4P02Q13 | 4 | 2 | What is query folding, and why does it matter? |
+| B4P02Q14 | 4 | 2 | What is the M language, and when would you edit it in the Advanced Editor? |
+| B4P02Q15 | 4 | 2 | How do you promote the first row to headers, and how do you remove top rows from a messy Excel report? |
+| B4P02Q16 | 4 | 2 | What is the difference between Remove Columns and Choose Columns, and why remove unused columns before loading? |
+| B4P02Q17 | 4 | 2 | How do you split a column by a delimiter in Power Query (for example, splitting Full Name)? |
+| B4P02Q18 | 4 | 2 | What do Trim, Clean and Capitalize Each Word do in Power Query? |
+| B4P02Q19 | 4 | 2 | What is the difference between Replace Values and Replace Errors? |
+| B4P02Q20 | 4 | 2 | How do you use Fill Down and Fill Up, and when are they needed? |
+| B4P02Q21 | 4 | 2 | What is the difference between a Custom Column and a Conditional Column in Power Query? |
+| B4P02Q22 | 4 | 2 | How do you use Group By in Power Query (for example, headcount by department)? |
+| B4P02Q23 | 4 | 2 | What are the Column Quality, Column Distribution and Column Profile tools in Power Query? |
+| B4P02Q24 | 4 | 2 | How do you extract the year, month name or day of week from a date column in Power Query? |
+| B4P02Q25 | 4 | 2 | What is the difference between Pivot Column and Unpivot Columns? |
+| B4P02Q26 | 4 | 2 | After merging two queries you see a column of Table values. What do you do next? |
+| B4P02Q27 | 4 | 2 | What does it mean to disable Enable Load on a query, and when would you do it? |
+| B4P02Q28 | 4 | 2 | What is the difference between Fixed Decimal Number, Decimal Number and Whole Number data types in Power Query? |
+| B4P02Q29 | 4 | 2 | Your refresh fails because the source Excel file was moved. How do you fix the data source path? |
+| B4P02Q30 | 4 | 2 | How would you unpivot an HR attendance sheet that has one column per day into a table with one row per employee per day? |
+| B4P02Q31 | 4 | 2 | What is the difference between Unpivot Columns, Unpivot Other Columns and Unpivot Only Selected Columns? |
+| B4P02Q32 | 4 | 2 | What is the difference between Reference and Duplicate for a query? |
+| B4P02Q33 | 4 | 2 | Your merge returns no matches or null values even though the keys look identical. What do you check? |
+| B4P02Q34 | 4 | 2 | How do you append tables whose column names do not match exactly? |
+| B4P02Q35 | 4 | 2 | How do you check whether a step in Power Query is folding to the source? |
+| B4P02Q36 | 4 | 2 | Which Power Query transformations commonly break query folding? |
+| B4P02Q37 | 4 | 2 | How do you find employees who are in the HR master but missing from the attendance data using Power Query? |
+| B4P02Q38 | 4 | 2 | When would you use Merge Queries in Power Query instead of a relationship in the data model? |
+| B4P02Q39 | 4 | 2 | How do you handle errors such as DataFormat.Error when converting a column to number or date? |
+| B4P02Q40 | 4 | 2 | How do you create a tenure band column (0-1, 1-3, 3+ years) from a joining date in Power Query? |
+| B4P02Q41 | 4 | 2 | How do you convert text dates such as 31/12/2025 correctly when your system uses US date settings? |
+| B4P02Q42 | 4 | 2 | What are parameters in Power Query, and how would you use one for a file path or server name? |
+| B4P02Q43 | 4 | 2 | How do you use try ... otherwise in Power Query? |
+| B4P02Q44 | 4 | 2 | Your Power Query refresh is slow. What do you check and change? |
+| B4P02Q45 | 4 | 2 | Why does the order of steps matter for performance, and what should you filter first? |
+| B4P02Q46 | 4 | 2 | Why should you do date, text and number cleaning in Power Query rather than in DAX? |
+| B4P02Q47 | 4 | 2 | How do you keep only the latest record per employee in Power Query? |
+| B4P02Q48 | 4 | 2 | A refresh breaks with 'The column of the table wasn't found' after the source file changed. Why does this happen and how do you make the query more resilient? |
+| B4P02Q49 | 4 | 2 | What is Column From Examples in Power Query? |
+| B4P02Q50 | 4 | 2 | What is the Query Dependencies view used for? |
+| B4P02Q51 | 4 | 2 | What is the difference between Power Query in Excel and Power Query in Power BI Desktop? |
+| B4P02Q52 | 4 | 2 | Why does Power Query add a Changed Type step automatically, and when can that cause problems? |
+| B4P02Q53 | 4 | 2 | What is fuzzy matching in a Power Query merge, and when would you use it? |
+| B4P02Q54 | 4 | 2 | How do you build a date (calendar) table in Power Query? |
+| B4P02Q55 | 4 | 2 | What is a custom function in Power Query, and how do you create and invoke one? |
+| B4P02Q56 | 4 | 2 | What are RangeStart and RangeEnd, and how do they connect Power Query to incremental refresh? |
+| B4P02Q57 | 4 | 2 | What are data source privacy levels (Private, Organizational, Public), and what causes a Formula.Firewall error? |
+| B4P02Q58 | 4 | 2 | What is a native query, and how does writing a SQL statement in Get Data affect query folding? |
+| B4P02Q59 | 4 | 2 | How would you structure queries into staging, dimension and fact queries in a Power BI file? |
+| B4P02Q60 | 4 | 2 | What is a dataflow, and how does it relate to Power Query? |
+| B4P02Q61 | 4 | 2 | What does Table.Buffer do, and when might you use it? |
+| B4P03Q1 | 4 | 3 | What is a data model in Power BI, and why do we build one instead of loading a single flat table? |
+| B4P03Q2 | 4 | 3 | What is a star schema? |
+| B4P03Q3 | 4 | 3 | What is the difference between a fact table and a dimension table? Give an HR example. |
+| B4P03Q4 | 4 | 3 | What is a relationship in Power BI, and what does it do? |
+| B4P03Q5 | 4 | 3 | What types of cardinality can a Power BI relationship have? |
+| B4P03Q6 | 4 | 3 | What is a one-to-many relationship? Explain it with Department and Employee tables. |
+| B4P03Q7 | 4 | 3 | What are a primary key and a foreign key, and how do they relate to Power BI relationships? |
+| B4P03Q8 | 4 | 3 | What is cross-filter direction, and what is the difference between Single and Both? |
+| B4P03Q9 | 4 | 3 | Why is a star schema recommended for Power BI models? |
+| B4P03Q10 | 4 | 3 | What is the difference between a star schema and a snowflake schema? |
+| B4P03Q11 | 4 | 3 | What is a bi-directional relationship, and why should you avoid it unless needed? |
+| B4P03Q12 | 4 | 3 | What is a many-to-many relationship in Power BI, and how do you handle it? |
+| B4P03Q13 | 4 | 3 | Why do you need a separate date table, and how do you mark it as a date table? |
+| B4P03Q14 | 4 | 3 | How would you model HR data with employees, departments, attendance and payroll in Power BI? |
+| B4P03Q15 | 4 | 3 | A visual shows the same total against every row. What do you check in the data model? |
+| B4P03Q16 | 4 | 3 | How does a filter on a dimension table reach the fact table? Walk me through filter propagation. |
+| B4P03Q17 | 4 | 3 | What is Model view in Power BI Desktop, and how do you create or edit a relationship there? |
+| B4P03Q18 | 4 | 3 | What does auto-detect relationships do, and should you rely on it? |
+| B4P03Q19 | 4 | 3 | What is the difference between normalized and denormalized data? |
+| B4P03Q20 | 4 | 3 | What is the grain (granularity) of a fact table, and why does it matter? |
+| B4P03Q21 | 4 | 3 | How do you sort the month name column by month number in Power BI? |
+| B4P03Q22 | 4 | 3 | Why should you hide foreign key and helper columns from Report view? |
+| B4P03Q23 | 4 | 3 | In Model view, what do the 1, the asterisk, the arrow, and a solid or dotted line on a relationship tell you? |
+| B4P03Q24 | 4 | 3 | What is the difference between an active and an inactive relationship? |
+| B4P03Q25 | 4 | 3 | What is a role-playing dimension? Give an example with Order Date and Ship Date, or Hire Date and Exit Date. |
+| B4P03Q26 | 4 | 3 | Write a DAX measure that calculates sales by Ship Date when the active relationship is on Order Date. |
+| B4P03Q27 | 4 | 3 | For a role-playing date dimension, when would you use inactive relationships and when would you duplicate the date table? |
+| B4P03Q28 | 4 | 3 | What is a bridge table, and when do you need one? |
+| B4P03Q29 | 4 | 3 | Blank rows appear in a visual after you add a relationship. What is the likely cause and how do you fix it? |
+| B4P03Q30 | 4 | 3 | Power BI will not let you create a one-to-many relationship because the column contains duplicate values. What do you do? |
+| B4P03Q31 | 4 | 3 | What do the RELATED and RELATEDTABLE functions do, and which side of the relationship does each use? |
+| B4P03Q32 | 4 | 3 | You receive one flat Excel export with orders, customers and products in the same sheet. How would you convert it into a star schema? |
+| B4P03Q33 | 4 | 3 | What is a snowflake dimension, and would you flatten it in Power Query? |
+| B4P03Q34 | 4 | 3 | How would you model Sales and Sales Target tables so that one Date slicer and one Product slicer filter both? |
+| B4P03Q35 | 4 | 3 | A relationship between two date columns does not work as expected. How can data types such as Date and DateTime cause this? |
+| B4P03Q36 | 4 | 3 | What is the Auto date/time feature, and why do many modellers turn it off? |
+| B4P03Q37 | 4 | 3 | How do you create a hierarchy such as Year, Quarter, Month, or Department, Team, Employee? |
+| B4P03Q38 | 4 | 3 | What affects the size and speed of a Power BI model, and how does the model design help? |
+| B4P03Q39 | 4 | 3 | Where should you do a transformation: SQL, Power Query or DAX? How do you decide? |
+| B4P03Q40 | 4 | 3 | How do you check that your data model gives correct numbers before sharing the report? |
+| B4P03Q41 | 4 | 3 | Two tables can only be matched using two columns together, for example Employee ID plus Month. How do you build the relationship, since Power BI links one column to one column? |
+| B4P03Q42 | 4 | 3 | What naming and documentation habits do you follow for tables, columns and measures in a model? |
+| B4P03Q43 | 4 | 3 | Which tool do you use to build a data model, and can you build one in Power BI Desktop on a Mac? |
+| B4P03Q44 | 4 | 3 | What is a one-to-one relationship, and when is it a sign of poor design? |
+| B4P03Q45 | 4 | 3 | What is a degenerate dimension? |
+| B4P03Q46 | 4 | 3 | What is a junk dimension, and when would you build one? |
+| B4P03Q47 | 4 | 3 | What is a factless fact table? Give an example such as employee attendance or training enrolment. |
+| B4P03Q48 | 4 | 3 | What is a disconnected table, and how is it used with a What-if parameter or a slicer? |
+| B4P03Q49 | 4 | 3 | Why do modellers prefer integer keys over text keys for relationships? |
+| B4P03Q50 | 4 | 3 | How do you handle fact rows whose key has no match in the dimension, such as an unknown department code? |
+| B4P03Q51 | 4 | 3 | What causes an ambiguous path or circular dependency error in a model, and how do you fix it? |
+| B4P03Q52 | 4 | 3 | What is a composite model in Power BI? |
+| B4P03Q53 | 4 | 3 | Why build one shared semantic model and connect several reports to it? |
+| B4P03Q54 | 4 | 3 | What does the Assume Referential Integrity setting do on a relationship, and when is it safe to turn on? |
+| B4P03Q55 | 4 | 3 | An employee changes department during the year. How would you model this so history stays correct (slowly changing dimension Type 2)? |
+| B4P03Q56 | 4 | 3 | How would you model an employee and manager hierarchy where each employee reports to another employee? |
+| B4P03Q57 | 4 | 3 | Sales targets are stored by category and year, but sales are stored by product and day. How do you relate them? |
+| B4P03Q58 | 4 | 3 | Why is relating two fact tables directly with a many-to-many relationship not recommended, and what is the alternative? |
+| B4P03Q59 | 4 | 3 | What does the CROSSFILTER function do, and when would you use it in a measure? |
+| B4P03Q60 | 4 | 3 | What does TREATAS do, and how does it create a virtual relationship? |
+| B4P04Q1 | 4 | 4 | What is DAX, and where is it used in Power BI? |
+| B4P04Q2 | 4 | 4 | What is the difference between a calculated column and a measure? |
+| B4P04Q3 | 4 | 4 | How do you create a calculated column and a measure in Power BI Desktop? |
+| B4P04Q4 | 4 | 4 | Should "Salary Band" be a calculated column or a measure? Why? |
+| B4P04Q5 | 4 | 4 | What is the difference between SUM and SUMX? |
+| B4P04Q6 | 4 | 4 | What is the difference between COUNT, COUNTA, COUNTROWS and DISTINCTCOUNT? |
+| B4P04Q7 | 4 | 4 | What is filter context in DAX? |
+| B4P04Q8 | 4 | 4 | What is row context in DAX? |
+| B4P04Q9 | 4 | 4 | What does the CALCULATE function do? |
+| B4P04Q10 | 4 | 4 | Write a DAX measure for total sales (or total payroll cost). |
+| B4P04Q11 | 4 | 4 | Write a DAX measure that counts unique employees. |
+| B4P04Q12 | 4 | 4 | What is the difference between row context and filter context? |
+| B4P04Q13 | 4 | 4 | Write a DAX measure for total sales of one product category using CALCULATE. |
+| B4P04Q14 | 4 | 4 | Write a DAX measure for total revenue when each row has Quantity and Unit Price columns. |
+| B4P04Q15 | 4 | 4 | Why should you use DIVIDE instead of the / operator in a measure? |
+| B4P04Q16 | 4 | 4 | Why does my measure show the same number in every row of a table visual? |
+| B4P04Q17 | 4 | 4 | What is an iterator function in DAX, and which ones do you know? |
+| B4P04Q18 | 4 | 4 | What is the difference between an implicit measure and an explicit measure? |
+| B4P04Q19 | 4 | 4 | Can you write SUM(Sales[Quantity] * Sales[Price]) in DAX? Why or why not? |
+| B4P04Q20 | 4 | 4 | What is BLANK() in DAX, and how is it different from zero or empty text? |
+| B4P04Q21 | 4 | 4 | What is the difference between DAX and Excel formulas? |
+| B4P04Q22 | 4 | 4 | What is the difference between DAX and M, the Power Query language? |
+| B4P04Q23 | 4 | 4 | What is a quick measure, and what are its limits? |
+| B4P04Q24 | 4 | 4 | Write a calculated column using IF to flag late arrivals in an attendance table. |
+| B4P04Q25 | 4 | 4 | Write a DAX formula to calculate the number of days between two dates, for example leave days. |
+| B4P04Q26 | 4 | 4 | Where are calculated columns stored, and how do they affect file size? |
+| B4P04Q27 | 4 | 4 | Why does Microsoft recommend COUNTROWS rather than COUNT to count rows? |
+| B4P04Q28 | 4 | 4 | How do you refer to columns and measures in a DAX formula (syntax conventions)? |
+| B4P04Q29 | 4 | 4 | Write a DAX measure for average salary. |
+| B4P04Q30 | 4 | 4 | Can one measure refer to another measure? |
+| B4P04Q31 | 4 | 4 | What is the difference between AVERAGE and AVERAGEX? |
+| B4P04Q32 | 4 | 4 | Write a DAX measure that shows Target Met or Below Target by comparing total sales with a sales target. |
+| B4P04Q33 | 4 | 4 | What is context transition in DAX? |
+| B4P04Q34 | 4 | 4 | Write a DAX measure for the headcount of active employees using CALCULATE and COUNTROWS. |
+| B4P04Q35 | 4 | 4 | Write a DAX measure for attendance percentage. |
+| B4P04Q36 | 4 | 4 | How does CALCULATE treat several filter arguments? |
+| B4P04Q37 | 4 | 4 | What happens when a CALCULATE filter targets a column that already has a slicer selection? |
+| B4P04Q38 | 4 | 4 | What is the difference between a Boolean filter and the FILTER function inside CALCULATE? |
+| B4P04Q39 | 4 | 4 | What is the difference between SUMX(FILTER(...)) and CALCULATE(SUM(...), ...)? |
+| B4P04Q40 | 4 | 4 | Write a DAX measure for profit margin percentage. |
+| B4P04Q41 | 4 | 4 | Write a DAX measure for each department's share of total headcount. |
+| B4P04Q42 | 4 | 4 | Write a DAX measure for net sales when the table has MRP and discount percentage columns. |
+| B4P04Q43 | 4 | 4 | How would you count unique customers when customer IDs are spread across several tables? |
+| B4P04Q44 | 4 | 4 | Why does a calculated column that uses SUM show the same total on every row? |
+| B4P04Q45 | 4 | 4 | Should you add a column in Power Query or as a DAX calculated column? |
+| B4P04Q46 | 4 | 4 | What does RELATED do, and why does it need row context? |
+| B4P04Q47 | 4 | 4 | Write a calculated column for employee tenure in years from the joining date. |
+| B4P04Q48 | 4 | 4 | Write a DAX measure for average order value. |
+| B4P04Q49 | 4 | 4 | Write a DAX measure for total payroll cost when each row has basic pay and allowances columns. |
+| B4P04Q50 | 4 | 4 | What is SWITCH, and when do you use it instead of nested IF? |
+| B4P04Q51 | 4 | 4 | What are VAR and RETURN in DAX, and why use them? |
+| B4P04Q52 | 4 | 4 | How do you debug a DAX measure that returns a wrong number? |
+| B4P04Q53 | 4 | 4 | What is a calculated table, and when would you use one? |
+| B4P04Q54 | 4 | 4 | What happens if you use COUNT on a text column? |
+| B4P04Q55 | 4 | 4 | Is DAX case-sensitive, and do spaces matter? |
+| B4P04Q56 | 4 | 4 | How do you write comments in DAX? |
+| B4P04Q57 | 4 | 4 | Does DAX work in Excel? |
+| B4P04Q58 | 4 | 4 | Can you write DAX in Power BI Service, or on a Mac? |
+| B4P04Q59 | 4 | 4 | What naming and organisation habits make measures easier to maintain (measure table, display folders)? |
+| B4P04Q60 | 4 | 4 | Write a DAX measure for the latest hiring date. |
+| B4P04Q61 | 4 | 4 | What data types does DAX support, and what is implicit conversion? |
+| B4P04Q62 | 4 | 4 | How does DISTINCTCOUNT treat blanks, and what are the alternatives? |
+| B4P04Q63 | 4 | 4 | What is a circular dependency error in DAX, and how do you fix it? |
+| B4P04Q64 | 4 | 4 | What does the error "A single value for column cannot be determined" mean? |
+| B4P04Q65 | 4 | 4 | Why does a ratio or average show the wrong grand total, and how do you fix it? |
+| B4P04Q66 | 4 | 4 | What is the DAX query view in Power BI Desktop? |
+| B4P04Q67 | 4 | 4 | What is a visual calculation, and how does it differ from a measure? |
+| B4P04Q68 | 4 | 4 | Are there DAX limitations in DirectQuery mode? |
+| B4P04Q69 | 4 | 4 | What does SELECTEDVALUE do, and when do you use it? |
+| B4P04Q70 | 4 | 4 | When are measures calculated, and what does that mean for performance? |
+| B4P04Q71 | 4 | 4 | Is SUMX always slower than SUM? |
+| B4P04Q72 | 4 | 4 | Write a DAX measure that counts rows where a column is blank. |
+| B4P04Q73 | 4 | 4 | Write a DAX measure for sales in the North or South region. |
+| B4P04Q74 | 4 | 4 | Write a DAX measure for the total of orders that are each above Rs 10,000. |
+| B4P04Q75 | 4 | 4 | Write a DAX measure for the number of employees with more than 5 years of service. |
+| B4P05Q1 | 4 | 5 | What is the difference between ALL and ALLEXCEPT in DAX? |
+| B4P05Q2 | 4 | 5 | Why do time intelligence functions need a date table, and what rules must it follow? |
+| B4P05Q3 | 4 | 5 | Write a DAX measure for percentage of total sales (each product's share of the grand total). |
+| B4P05Q4 | 4 | 5 | Write a DAX measure for year-to-date (YTD) sales. |
+| B4P05Q5 | 4 | 5 | Write a DAX measure for year-over-year (YoY) sales growth percentage. |
+| B4P05Q6 | 4 | 5 | How does RANKX work? Write a measure that ranks employees by salary. |
+| B4P05Q7 | 4 | 5 | What is the difference between ALL and ALLSELECTED? |
+| B4P05Q8 | 4 | 5 | What is the difference between ALL and REMOVEFILTERS? |
+| B4P05Q9 | 4 | 5 | What is the difference between TOTALYTD and CALCULATE with DATESYTD? |
+| B4P05Q10 | 4 | 5 | What is the difference between SAMEPERIODLASTYEAR, DATEADD and PARALLELPERIOD? |
+| B4P05Q11 | 4 | 5 | How do you create and mark a date table in Power BI, and what is the difference between CALENDAR and CALENDARAUTO? |
+| B4P05Q12 | 4 | 5 | What happens when you pass two filters on the same column, or on different columns, to CALCULATE? |
+| B4P05Q13 | 4 | 5 | Write a DAX measure for month-to-date (MTD) and quarter-to-date (QTD) values. |
+| B4P05Q14 | 4 | 5 | Write a DAX measure for a rolling 3-month average using DATESINPERIOD. |
+| B4P05Q15 | 4 | 5 | Write a DAX measure for a running (cumulative) total over dates. |
+| B4P05Q16 | 4 | 5 | How does RANKX handle ties, and what is the difference between Skip and Dense? |
+| B4P05Q17 | 4 | 5 | Why does a RANKX measure return 1 for every row in a visual, and how do you fix it? |
+| B4P05Q18 | 4 | 5 | How would you show only the Top 5 products by sales using TOPN or RANKX? |
+| B4P05Q19 | 4 | 5 | Write a DAX measure for employee attrition rate (leavers divided by average headcount). |
+| B4P05Q20 | 4 | 5 | Write a DAX measure for headcount at the end of each month from joining and exit dates. |
+| B4P05Q21 | 4 | 5 | How do you calculate employee tenure in years with DATEDIFF, and what are its limits? |
+| B4P05Q22 | 4 | 5 | What is USERELATIONSHIP, and how would you use it with hire date and exit date in one date table? |
+| B4P05Q23 | 4 | 5 | Why does the Total row in a matrix not equal the sum of the rows shown, and how do you fix it? |
+| B4P05Q24 | 4 | 5 | How do you make TOTALYTD follow an Indian financial year that ends on 31 March? |
+| B4P05Q25 | 4 | 5 | What does EARLIER do in a calculated column, and how can variables replace it? |
+| B4P05Q26 | 4 | 5 | Write a measure for the average monthly sales in a selected year (average of the monthly totals, not of the order rows). |
+| B4P05Q27 | 4 | 5 | Your YoY or YTD measure returns blank or wrong numbers: how do you debug it? |
+| B4P05Q28 | 4 | 5 | What does KEEPFILTERS do, and when would you use it? |
+| B4P05Q29 | 4 | 5 | Why do many experts prefer REMOVEFILTERS with VALUES over ALLEXCEPT? |
+| B4P05Q30 | 4 | 5 | How do you write a closing-balance (semi-additive) measure using LASTDATE or LASTNONBLANK? |
+| B4P05Q31 | 4 | 5 | Why is FILTER on a whole table inside CALCULATE slow, and how do you rewrite it? |
+| B4P05Q32 | 4 | 5 | How do you find and fix a slow DAX measure with Performance Analyzer and DAX Studio? |
+| B4P05Q33 | 4 | 5 | How would you build time intelligence once for many measures using calculation groups? |
+| B4P05Q34 | 4 | 5 | What are visual calculations in Power BI, and how do they differ from measures? |
+| B4P05Q35 | 4 | 5 | What does ISINSCOPE do, and how do you use it to show a different calculation at each level of a matrix hierarchy? |
+| B4P06Q1 | 4 | 6 | What is a slicer in Power BI, and how is it different from a filter in the Filters pane? |
+| B4P06Q2 | 4 | 6 | What is the difference between drill down and drill through in Power BI? |
+| B4P06Q3 | 4 | 6 | What are the different levels of filters in Power BI (visual, page and report level)? |
+| B4P06Q4 | 4 | 6 | What is a bookmark in Power BI, and what is it used for? |
+| B4P06Q5 | 4 | 6 | What is a tooltip in Power BI, and what is a report page tooltip? |
+| B4P06Q6 | 4 | 6 | What is the difference between a table visual and a matrix visual? |
+| B4P06Q7 | 4 | 6 | Which visual would you choose to show monthly headcount over two years, and why? |
+| B4P06Q8 | 4 | 6 | How do you create a drill-through page in Power BI, step by step? |
+| B4P06Q9 | 4 | 6 | How do you stop a slicer from filtering one particular visual on the page? |
+| B4P06Q10 | 4 | 6 | How do you make one slicer control several pages of a report? |
+| B4P06Q11 | 4 | 6 | How would you colour an attrition rate column red when it is above 15% and green otherwise? |
+| B4P06Q12 | 4 | 6 | A slicer selection is not changing one of the visuals on the page. What do you check? |
+| B4P06Q13 | 4 | 6 | What is the difference between a bar chart and a column chart, and between clustered and stacked? |
+| B4P06Q14 | 4 | 6 | When would you use a pie or donut chart, and when should you avoid it? |
+| B4P06Q15 | 4 | 6 | What are cross-filtering and cross-highlighting between visuals? |
+| B4P06Q16 | 4 | 6 | What types of slicer are available, and when would you use each (list, dropdown, tile, between, relative date)? |
+| B4P06Q17 | 4 | 6 | What is the difference between basic filtering, advanced filtering, Top N and relative date filtering? |
+| B4P06Q18 | 4 | 6 | How do you show only the top 10 products by sales in a visual? |
+| B4P06Q19 | 4 | 6 | What is the difference between a card, a multi-row card and a KPI visual? |
+| B4P06Q20 | 4 | 6 | What are buttons in Power BI, and what actions can a button perform? |
+| B4P06Q21 | 4 | 6 | What is the Selection pane used for? |
+| B4P06Q22 | 4 | 6 | What is the Analytics pane, and how do you add an average line or a target line to a chart? |
+| B4P06Q23 | 4 | 6 | How do you change the number format and display units (thousands, millions) of data labels? |
+| B4P06Q24 | 4 | 6 | What are themes in Power BI, and how do you apply one to a report? |
+| B4P06Q25 | 4 | 6 | How do you sort a visual by a different column, for example month names in calendar order instead of alphabetical? |
+| B4P06Q26 | 4 | 6 | How do you build a report page tooltip, step by step? |
+| B4P06Q27 | 4 | 6 | What do the Data, Display and Current page options of a bookmark do? |
+| B4P06Q28 | 4 | 6 | How would you let users switch between a chart and a table on the same page using bookmarks? |
+| B4P06Q29 | 4 | 6 | The Drillthrough option does not appear when you right-click a visual. What do you check? |
+| B4P06Q30 | 4 | 6 | How do you create a dynamic visual title that shows the department selected in a slicer? |
+| B4P06Q31 | 4 | 6 | How do you use a DAX measure to control conditional formatting colours (field value formatting)? |
+| B4P06Q32 | 4 | 6 | How would you build an attendance heat map for employees by day using a matrix? |
+| B4P06Q33 | 4 | 6 | A visual has no drill icons even though it uses several fields. Why, and how do you fix it? |
+| B4P06Q34 | 4 | 6 | When would you use a combo chart (line and clustered column), and what is the risk of a dual axis? |
+| B4P06Q35 | 4 | 6 | How would you let a manager click a department in a chart and see the list of its employees on another page? |
+| B4P06Q36 | 4 | 6 | Which visuals would you use to show attrition by department and by tenure band, and why? |
+| B4P06Q37 | 4 | 6 | By default, does drilling down in one visual change the other visuals on the page, and how can you change that? |
+| B4P06Q38 | 4 | 6 | What is a scatter chart, and when would you use it? |
+| B4P06Q39 | 4 | 6 | What is the difference between a line chart and an area chart? |
+| B4P06Q40 | 4 | 6 | How do you lock or hide a filter in the Filters pane? |
+| B4P06Q41 | 4 | 6 | What are Spotlight and Focus mode in Power BI? |
+| B4P06Q42 | 4 | 6 | What are custom visuals, where do you get them, and what should you check before using one? |
+| B4P06Q43 | 4 | 6 | What is the Mobile layout view in Power BI Desktop, and when do you build one? |
+| B4P06Q44 | 4 | 6 | How do you make a Power BI report more accessible (alt text, tab order, colour choices)? |
+| B4P06Q45 | 4 | 6 | What is a decomposition tree, and when is it useful? |
+| B4P06Q46 | 4 | 6 | What is the difference between a report bookmark and a personal bookmark? |
+| B4P06Q47 | 4 | 6 | What are the limitations of bookmarks (for example, visual positions and slicers added later)? |
+| B4P06Q48 | 4 | 6 | What does Keep all filters do on a drill-through page? |
+| B4P06Q49 | 4 | 6 | What are the requirements for cross-report drillthrough? |
+| B4P06Q50 | 4 | 6 | What is the difference between Go to the next level and Expand all down one level in a hierarchy visual? |
+| B4P06Q51 | 4 | 6 | What are field parameters, and how would you let users choose which measure a chart shows? |
+| B4P06Q52 | 4 | 6 | What does the Select all option in a slicer actually do to the filter? |
+| B4P06Q53 | 4 | 6 | What are Apply all slicers and Clear all slicers buttons, and why would you add them? |
+| B4P06Q54 | 4 | 6 | How would you build a slicer of top customers without using a Top N filter on the visual (disconnected table approach)? |
+| B4P06Q55 | 4 | 6 | What are the limitations of report page tooltips? |
+| B4P06Q56 | 4 | 6 | A category shows as (Blank) in a chart. How do you find out why, and how do you handle it? |
+| B4P06Q57 | 4 | 6 | What does Show items with no data do, and when would you turn it on? |
+| B4P06Q58 | 4 | 6 | How would you build a headcount waterfall (opening headcount, hires, exits, closing headcount)? |
+| B4P06Q59 | 4 | 6 | Can a field parameter be used as a drill-through or tooltip field, and what is the workaround? |
+| B4P06Q60 | 4 | 6 | How would you build a report where a slicer filters most visuals but one visual still shows the company-wide total for comparison? |
+| B4P06Q61 | 4 | 6 | How would you design one HR page where managers pick the measure (headcount, attrition, average tenure) and the grouping (department, location, grade) and can still drill through to employees? |
+| B4P07Q1 | 4 | 7 | What is row-level security (RLS) in Power BI, and why would you use it? |
+| B4P07Q2 | 4 | 7 | How do you publish a report from Power BI Desktop to the Power BI Service? |
+| B4P07Q3 | 4 | 7 | What is scheduled refresh in Power BI, and how do you set it up? |
+| B4P07Q4 | 4 | 7 | What is a Power BI workspace, and how is it different from My workspace? |
+| B4P07Q5 | 4 | 7 | How do you implement row-level security in Power BI, end to end (Desktop to Service)? |
+| B4P07Q6 | 4 | 7 | What is an on-premises data gateway, and when do you need one? |
+| B4P07Q7 | 4 | 7 | What is the difference between static and dynamic row-level security? |
+| B4P07Q8 | 4 | 7 | Your scheduled refresh failed overnight. How do you troubleshoot it? |
+| B4P07Q9 | 4 | 7 | What is incremental refresh in Power BI, and why is it used? |
+| B4P07Q10 | 4 | 7 | What is the difference between a report, a dashboard and an app in the Power BI Service? |
+| B4P07Q11 | 4 | 7 | What are the four workspace roles (Admin, Member, Contributor, Viewer) and what can each do? |
+| B4P07Q12 | 4 | 7 | How do you share a report with a colleague in the Power BI Service, and what licence do they need? |
+| B4P07Q13 | 4 | 7 | What is the difference between a semantic model (dataset) and a report in the Power BI Service? |
+| B4P07Q14 | 4 | 7 | What is the difference between Import mode, DirectQuery and Live Connection from a refresh point of view? |
+| B4P07Q15 | 4 | 7 | What is the difference between a personal gateway and a standard (enterprise) gateway? |
+| B4P07Q16 | 4 | 7 | How often can a Power BI dataset be refreshed per day on Pro versus Premium? |
+| B4P07Q17 | 4 | 7 | What happens when you publish a PBIX file again with the same name to the same workspace? |
+| B4P07Q18 | 4 | 7 | How do you refresh a report on demand in the Power BI Service? |
+| B4P07Q19 | 4 | 7 | Write the DAX filter for a role so each manager sees only the rows of their own region (static RLS for one region). |
+| B4P07Q20 | 4 | 7 | Write the DAX filter for dynamic RLS so each user sees only the rows linked to their own email address. |
+| B4P07Q21 | 4 | 7 | What is the difference between USERNAME() and USERPRINCIPALNAME() in RLS, and how do they behave in Desktop versus the Service? |
+| B4P07Q22 | 4 | 7 | How do you test that RLS works before sharing the report (View as role / Test as role)? |
+| B4P07Q23 | 4 | 7 | Does RLS apply to workspace Admins, Members and Contributors? What about Viewers? |
+| B4P07Q24 | 4 | 7 | How do you add users to an RLS role, and can you use groups? |
+| B4P07Q25 | 4 | 7 | What are RLS limits: does it hide columns, and does it work with Import and DirectQuery? |
+| B4P07Q26 | 4 | 7 | Does RLS defined in Desktop carry over when you publish to the Service? Where do you assign users? |
+| B4P07Q27 | 4 | 7 | How do you set up a refresh for a dataset that uses an on-premises SQL Server or Excel file on a shared drive? |
+| B4P07Q28 | 4 | 7 | How do you configure data source credentials and privacy levels for a dataset in the Service? |
+| B4P07Q29 | 4 | 7 | What are RangeStart and RangeEnd in incremental refresh, and what rules must they follow? |
+| B4P07Q30 | 4 | 7 | How do you set up incremental refresh in Power BI Desktop for a sales table? |
+| B4P07Q31 | 4 | 7 | What is a Power BI app, and how do you publish one from a workspace to business users? |
+| B4P07Q32 | 4 | 7 | How do you make a Power BI report refresh data automatically if the source is a file on OneDrive or SharePoint? |
+| B4P07Q33 | 4 | 7 | A user says they cannot see your report in the Service. What do you check? |
+| B4P07Q34 | 4 | 7 | Your refresh is slow or times out. What do you check, and what are the time limits on Pro and Premium? |
+| B4P07Q35 | 4 | 7 | Who gets an email when a scheduled refresh fails, and how can you change notifications? |
+| B4P07Q36 | 4 | 7 | Your manager asks which reports nobody opens anymore. How do you find out in the Power BI Service? |
+| B4P07Q37 | 4 | 7 | You publish one app for HR, finance and sales teams. How do audiences let each team see different reports? |
+| B4P07Q38 | 4 | 7 | How would you design RLS for an HR dashboard where each HR business partner sees only their own employees and the CHRO sees everyone? |
+| B4P07Q39 | 4 | 7 | You built RLS but a user in a Contributor role still sees all data. Why, and how do you fix it? |
+| B4P07Q40 | 4 | 7 | What is the Power BI mobile app, and how do you make a report mobile friendly? |
+| B4P07Q41 | 4 | 7 | What are subscriptions and alerts in the Power BI Service? |
+| B4P07Q42 | 4 | 7 | What does Export to Excel / Analyze in Excel do, and who can use it? |
+| B4P07Q43 | 4 | 7 | What is the difference between Publish to web and Embed (secure) a report, and why is Publish to web risky? |
+| B4P07Q44 | 4 | 7 | What are dataflows in the Power BI Service, and when would you use one? |
+| B4P07Q45 | 4 | 7 | What are deployment pipelines (Development, Test, Production), and who needs which licence? |
+| B4P07Q46 | 4 | 7 | What is a gateway cluster, and why is it used? |
+| B4P07Q47 | 4 | 7 | Why does the Power BI Service pause a scheduled refresh, and how do you turn it back on? |
+| B4P07Q48 | 4 | 7 | How do you refresh a dataset from a data source that changes only on the first of each month? |
+| B4P07Q49 | 4 | 7 | What does sensitivity labelling and endorsement (certified, promoted) mean in the Power BI Service? |
+| B4P07Q50 | 4 | 7 | What is the Large semantic model storage format, and when is it needed? |
+| B4P07Q51 | 4 | 7 | What is the difference between Build permission and Viewer access on a dataset? |
+| B4P07Q52 | 4 | 7 | What is Direct Lake mode, and when would a Fabric workspace use it? |
+| B4P07Q53 | 4 | 7 | What is the Detect data changes setting in incremental refresh, and when is it useful? |
+| B4P07Q54 | 4 | 7 | How does the Only refresh complete days setting work, and why does the time zone matter? |
+| B4P07Q55 | 4 | 7 | What is object-level security, and how does it differ from row-level security? |
+| B4P07Q56 | 4 | 7 | How do you audit who viewed or changed reports in the Power BI Service? |
+| B4P07Q57 | 4 | 7 | Why can a dataset refresh work in Desktop but fail in the Service? |
+| B4P07Q58 | 4 | 7 | A source table is changing and you want to know which reports will break. How does lineage view help? |
+| B4P07Q59 | 4 | 7 | A colleague only needs to look at one report: how do you share it with them, and what permissions must they have to see the data behind it? |
+| B4P07Q60 | 4 | 7 | Why can incremental refresh be slow or fail if query folding does not work? |
+| B4P07Q61 | 4 | 7 | A manager can see every employee because bi-directional filtering is on. How do RLS and Apply security filter in both directions interact? |
+| B4P07Q62 | 4 | 7 | How do you manage RLS for managers in a parent-child hierarchy (each manager sees their whole reporting line)? |
+| B4P07Q63 | 4 | 7 | A report with RLS works in Desktop but shows no data for a guest user. What would you check? |
+| B4P07Q64 | 4 | 7 | How would you move a report from a Development workspace to Production without breaking the data source connection? |
+| B4P07Q65 | 4 | 7 | A Pro user is asked to share a report with 300 free-licence employees. What are the options? |
+| B4P08Q1 | 4 | 8 | What are the key principles of good dashboard design? |
+| B4P08Q2 | 4 | 8 | How do you choose the right chart type for your data (bar, line, pie, table, card)? |
+| B4P08Q3 | 4 | 8 | How do you decide which KPIs and visuals go on a dashboard? |
+| B4P08Q4 | 4 | 8 | What is data storytelling, and why does it matter for an analyst? |
+| B4P08Q5 | 4 | 8 | Walk me through how you would approach designing a dashboard from scratch when a stakeholder asks for one. |
+| B4P08Q6 | 4 | 8 | How do you design a dashboard for non-technical senior executives? |
+| B4P08Q7 | 4 | 8 | How do you present your insights to non-technical stakeholders? |
+| B4P08Q8 | 4 | 8 | A stakeholder says the numbers on your dashboard do not match their own Excel numbers. What do you do? |
+| B4P08Q9 | 4 | 8 | Users are not using the dashboard you built (low adoption). How do you find out why and fix it? |
+| B4P08Q10 | 4 | 8 | Why are pie charts often discouraged, and when are they acceptable? |
+| B4P08Q11 | 4 | 8 | How do you use colour effectively in a dashboard? |
+| B4P08Q12 | 4 | 8 | What role do white space, alignment and visual hierarchy play in a dashboard? |
+| B4P08Q13 | 4 | 8 | Where on the page should the most important information be placed, and why? |
+| B4P08Q14 | 4 | 8 | Why do dashboards use KPI cards, and what context should a KPI card show? |
+| B4P08Q15 | 4 | 8 | How many visuals should you put on one report page? |
+| B4P08Q16 | 4 | 8 | Why should you avoid 3D charts and decorative effects? |
+| B4P08Q17 | 4 | 8 | What is the difference between a KPI and a metric? |
+| B4P08Q18 | 4 | 8 | What is decluttering in data visualization, and how do you apply it? |
+| B4P08Q19 | 4 | 8 | Describe a dashboard you built and the business decision it supported. |
+| B4P08Q20 | 4 | 8 | What is the difference between operational, analytical and strategic dashboards? |
+| B4P08Q21 | 4 | 8 | How would you show actual versus target in Power BI (card, gauge, bullet chart, variance)? |
+| B4P08Q22 | 4 | 8 | How would you visualize a hiring funnel from application to joining? |
+| B4P08Q23 | 4 | 8 | How do you highlight exceptions, such as departments above an attrition threshold, using conditional formatting? |
+| B4P08Q24 | 4 | 8 | How do you make a Power BI report accessible and colour-blind friendly? |
+| B4P08Q25 | 4 | 8 | What makes a chart misleading (truncated axis, wrong scale, cherry-picked period), and how do you avoid it? |
+| B4P08Q26 | 4 | 8 | What is a Power BI theme, and why would you use one across reports? |
+| B4P08Q27 | 4 | 8 | How do you structure a multi-page report so users move from overview to detail? |
+| B4P08Q28 | 4 | 8 | How do you design a report layout for mobile users in Power BI? |
+| B4P08Q29 | 4 | 8 | How do you collect feedback on a dashboard and iterate on its design? |
+| B4P08Q30 | 4 | 8 | When is a dual-axis chart appropriate, and what are its risks? |
+| B4P08Q31 | 4 | 8 | How do you structure a presentation of findings: what goes first, what goes last? |
+| B4P08Q32 | 4 | 8 | What is the difference between a dashboard, a scorecard and an infographic? |
+| B4P08Q33 | 4 | 8 | What is a sparkline, and when would you use one next to a KPI? |
+| B4P08Q34 | 4 | 8 | What are preattentive attributes, and how do you use them to direct attention? |
+| B4P08Q35 | 4 | 8 | What is the data-ink ratio (Edward Tufte), and how does it guide chart design? |
+| B4P08Q36 | 4 | 8 | What are the Gestalt principles (proximity, similarity, enclosure), and how do they apply to dashboards? |
+| B4P08Q37 | 4 | 8 | What narrative structure would you use for a data story (context, insight, recommendation)? |
+| B4P08Q38 | 4 | 8 | How do you handle a chart with too many categories (Top N, grouping into Other)? |
+| B4P08Q39 | 4 | 8 | Which visual would you use to show a payroll change from last month to this month (waterfall)? |
+| B4P08Q40 | 4 | 8 | How would you visualize employee attendance patterns by day and department (matrix with heatmap formatting)? |
+| B4P08Q41 | 4 | 8 | Which chart would you use to show the distribution of salaries or tenure (histogram or box plot)? |
+| B4P08Q42 | 4 | 8 | Why do some experts criticise gauge charts, and what would you use instead? |
+| B4P08Q43 | 4 | 8 | How do you keep dashboards consistent across a team (templates, style guide, naming)? |
+| B4P08Q44 | 4 | 8 | What would you check when reviewing a colleague's cluttered dashboard? |
+| B4P08Q45 | 4 | 8 | A leader has asked for 15 metrics on one page. How do you handle the request and redesign it? |
+| B4P08Q46 | 4 | 8 | Two stakeholders want conflicting things from the same dashboard. How do you resolve it? |
+| B4P08Q47 | 4 | 8 | How would you present a finding that contradicts a senior leader's long-held belief? |
+| B4P09Q1 | 4 | 9 | Walk me through a Power BI dashboard you built, from raw data to published report. |
+| B4P09Q2 | 4 | 9 | You are given an HR dataset and asked to build a dashboard in Power BI: what are your steps? |
+| B4P09Q3 | 4 | 9 | Your manager asks for a sales dashboard: what questions do you ask before you open Power BI? |
+| B4P09Q4 | 4 | 9 | Which KPIs and visuals would you put on an HR headcount and attrition dashboard? |
+| B4P09Q5 | 4 | 9 | Which KPI cards, charts and filters would you put on a monthly sales dashboard? |
+| B4P09Q6 | 4 | 9 | Write the DAX measures for headcount, leavers and attrition rate for an HR dashboard. |
+| B4P09Q7 | 4 | 9 | Your Power BI report is slow: what do you check, in order? |
+| B4P09Q8 | 4 | 9 | How do you use Performance Analyzer to find which visual is slow? |
+| B4P09Q9 | 4 | 9 | The total in your Power BI report does not match the Excel total: how do you find the reason? |
+| B4P09Q10 | 4 | 9 | How would you model the tables for a sales dashboard before building any visual? |
+| B4P09Q11 | 4 | 9 | A manager says a number on your dashboard looks wrong: how do you investigate and respond? |
+| B4P09Q12 | 4 | 9 | How would you clean a messy attendance export in Power Query before building the report? |
+| B4P09Q13 | 4 | 9 | How would you show the hiring funnel (applied, screened, interviewed, offered, joined) in Power BI? |
+| B4P09Q14 | 4 | 9 | How would you show the top 5 products or regions by sales in a Power BI report? |
+| B4P09Q15 | 4 | 9 | Which visual would you use to show monthly sales against target, and why? |
+| B4P09Q16 | 4 | 9 | How would you build a department-wise attendance summary showing present, absent and leave percentage? |
+| B4P09Q17 | 4 | 9 | How do you make one slicer filter every visual on a page, and stop one visual from responding? |
+| B4P09Q18 | 4 | 9 | A stakeholder says your dashboard is too cluttered: what would you change? |
+| B4P09Q19 | 4 | 9 | How would you schedule the report so the sales dashboard shows yesterday's data every morning? |
+| B4P09Q20 | 4 | 9 | You are using a Mac: how can you build and publish Power BI reports? |
+| B4P09Q21 | 4 | 9 | Your report is published but shows old data: what do you check? |
+| B4P09Q22 | 4 | 9 | What checks do you run on a dashboard before you release it to users? |
+| B4P09Q23 | 4 | 9 | How would you handle sales returns and cancellations so the dashboard shows net revenue? |
+| B4P09Q24 | 4 | 9 | How would you handle employees with a blank department or a missing joining date in your report? |
+| B4P09Q25 | 4 | 9 | Write a DAX measure for target achievement percentage (actual sales vs target). |
+| B4P09Q26 | 4 | 9 | Write a DAX measure for the average tenure of employees in years. |
+| B4P09Q27 | 4 | 9 | How do you calculate monthly attrition rate when people join and leave during the month? |
+| B4P09Q28 | 4 | 9 | How would you count working days per employee while excluding weekends and holidays? |
+| B4P09Q29 | 4 | 9 | How would you stop the same employee appearing twice and inflating headcount? |
+| B4P09Q30 | 4 | 9 | Your model has a fact table of millions of rows and the report is slow: what do you change in the model? |
+| B4P09Q31 | 4 | 9 | The .pbix file has grown to 500 MB: how do you reduce its size? |
+| B4P09Q32 | 4 | 9 | Your scheduled refresh in the Power BI service is failing: how do you troubleshoot it? |
+| B4P09Q33 | 4 | 9 | A visual shows wrong or blank values after you add a slicer: how do you debug the measure? |
+| B4P09Q34 | 4 | 9 | Two tables have no usable relationship and your numbers are inflated: how do you fix it? |
+| B4P09Q35 | 4 | 9 | A chart shows a (Blank) category: what does it mean and how do you fix it? |
+| B4P09Q36 | 4 | 9 | How do you build a proper date table, and why does a sales dashboard need one? |
+| B4P09Q37 | 4 | 9 | How would you handle an April-to-March fiscal year in a sales or HR dashboard? |
+| B4P09Q38 | 4 | 9 | The Excel pivot report is being replaced by Power BI: how do you migrate it and prove the numbers match? |
+| B4P09Q39 | 4 | 9 | How would you build a payroll cost dashboard (gross, deductions, net by department and month)? |
+| B4P09Q40 | 4 | 9 | How would you analyse why employees leave, by tenure band, department and manager? |
+| B4P09Q41 | 4 | 9 | How would you show current month against previous month with an up or down indicator? |
+| B4P09Q42 | 4 | 9 | How would you let users switch between Sales, Profit and Quantity in the same visual? |
+| B4P09Q43 | 4 | 9 | How would you combine monthly Excel files dropped into a folder so the report updates automatically? |
+| B4P09Q44 | 4 | 9 | A source column was renamed and the refresh now fails: how do you fix it without breaking the report? |
+| B4P09Q45 | 4 | 9 | Your colleague cannot open the report you shared: what do you check? |
+| B4P09Q46 | 4 | 9 | The numbers on the dashboard changed since yesterday though nobody edited the report: what could explain it? |
+| B4P09Q47 | 4 | 9 | Write the DAX for average time to hire (days from application to joining) and show it by department. |
+| B4P09Q48 | 4 | 9 | Sales doubled after a colleague saved a corrected copy of a monthly file into the source folder: why, and how do you stop it happening? |
+| B4P09Q49 | 4 | 9 | Your DirectQuery report is slow: what options do you have? |
+| B4P09Q50 | 4 | 9 | Power BI revenue is 2 percent off the finance ledger: how do you reconcile it step by step? |
+| B4P09Q51 | 4 | 9 | How do you test that row-level security works before publishing, and where does it not protect the data? |
+| B4P09Q52 | 4 | 9 | You get three raw Excel files of sales, products and customers: build a sales dashboard with a date slicer and a year-over-year comparison, and explain your steps. |
+| B4P09Q53 | 4 | 9 | How would you plan a dashboard project when the deadline is two weeks? |
+| B4P09Q54 | 4 | 9 | How would you present a new dashboard to non-technical stakeholders and handle change requests? |
+| B4P09Q55 | 4 | 9 | What documentation would you hand over with a report you built for a colleague to maintain? |
+| B4P09Q56 | 4 | 9 | How would you set an alert in the Power BI service when sales fall below target? |
+| B4P09Q57 | 4 | 9 | How would you build a what-if parameter to model a salary hike scenario? |
+| B4P09Q58 | 4 | 9 | How would you build a Pareto (80/20) analysis of products in Power BI? |
+| B4P09Q59 | 4 | 9 | Write a DAX measure to count new versus repeat customers per month. |
+| B4P09Q60 | 4 | 9 | Write DAX for hires and leavers by month using one date table and two date columns. |
+| B4P09Q61 | 4 | 9 | How would you count employees who joined in the last 90 days and are still on probation? |
+| B4P09Q62 | 4 | 9 | How would you flag overtime above a threshold in red in a table visual? |
+| B4P09Q63 | 4 | 9 | How would you build an executive summary page with drill-through to employee-level detail? |
+| B4P09Q64 | 4 | 9 | How would you design one report that works on both desktop and phone? |
+| B4P09Q65 | 4 | 9 | How would you hide salary details from some users while letting them see the rest of the HR report? |
+| B4P09Q66 | 4 | 9 | How would you decide between a Power BI report and a paginated report for a 40-page monthly pack? |
+| B4P09Q67 | 4 | 9 | How would you show the top 5 customers and group everyone else as Others so the chart still adds up to total sales? |
+| B4P09Q68 | 4 | 9 | Refresh became slow because a Power Query step stopped folding: how do you find and fix it? |
+| B4P09Q69 | 4 | 9 | How would you build a joiner-cohort retention view showing how many of each month's hires remain after 3, 6 and 12 months? |
+| B4P09Q70 | 4 | 9 | The report is fast in Power BI Desktop but users say it is slow in the Service: what do you check? |
+| B4P10Q1 | 4 | 10 | What is Tableau, and what is it used for? |
+| B4P10Q2 | 4 | 10 | What is the difference between a dimension and a measure in Tableau? |
+| B4P10Q3 | 4 | 10 | What are the main differences between Power BI and Tableau, and which would you pick for a company? |
+| B4P10Q4 | 4 | 10 | Why are some Tableau pills blue and some green (discrete vs continuous)? |
+| B4P10Q5 | 4 | 10 | What is the difference between a worksheet, a dashboard and a story in Tableau? |
+| B4P10Q6 | 4 | 10 | What are the Tableau products (Desktop, Public, Cloud, Server, Prep) and when is each used? |
+| B4P10Q7 | 4 | 10 | What is the difference between a live connection and an extract in Tableau? |
+| B4P10Q8 | 4 | 10 | What is a calculated field in Tableau? Give an example. |
+| B4P10Q9 | 4 | 10 | What is the difference between a filter and a parameter in Tableau? |
+| B4P10Q10 | 4 | 10 | What is the difference between sets and groups in Tableau? |
+| B4P10Q11 | 4 | 10 | What is the difference between a join and a blend in Tableau? |
+| B4P10Q12 | 4 | 10 | What is the difference between .twb and .twbx files in Tableau? |
+| B4P10Q13 | 4 | 10 | Which chart would you use to show attrition by department in Tableau, and how do you build it? |
+| B4P10Q14 | 4 | 10 | Which is easier to learn for an HR professional moving into analytics, Power BI or Tableau, and why? |
+| B4P10Q15 | 4 | 10 | What is a dual-axis chart in Tableau, and how do you create one? |
+| B4P10Q16 | 4 | 10 | What are the types of filters in Tableau and in what order do they run (order of operations)? |
+| B4P10Q17 | 4 | 10 | What is a context filter in Tableau, and when would you use one? |
+| B4P10Q18 | 4 | 10 | What is a Level of Detail (LOD) expression in Tableau, and what are FIXED, INCLUDE and EXCLUDE? |
+| B4P10Q19 | 4 | 10 | How would you calculate average salary per department regardless of the view's other dimensions using an LOD in Tableau? |
+| B4P10Q20 | 4 | 10 | What is the difference between a calculated field and a table calculation in Tableau? |
+| B4P10Q21 | 4 | 10 | A Tableau dashboard is slow. What do you check, and how do you use the Performance Recorder? |
+| B4P10Q22 | 4 | 10 | What is the Power BI equivalent of a Tableau LOD expression, and how do they compare? |
+| B4P10Q23 | 4 | 10 | How do Tableau's calculated fields differ from Power BI's DAX measures and Power Query steps? |
+| B4P10Q24 | 4 | 10 | How do you handle null values in Tableau? |
+| B4P10Q25 | 4 | 10 | How would you build a monthly attendance or attrition trend dashboard in Tableau and in Power BI? |
+| B4P10Q26 | 4 | 10 | What is Tableau Public, and why should you not put company or employee data on it? |
+| B4P10Q27 | 4 | 10 | Can Tableau Desktop and Power BI Desktop be installed on a Mac? |
+| B4P10Q28 | 4 | 10 | What is Tableau Prep, and how does it compare with Power Query in Power BI? |
+| B4P10Q29 | 4 | 10 | What is a hierarchy in Tableau, and how do you create a drill-down? |
+| B4P10Q30 | 4 | 10 | What is a dashboard action in Tableau (filter, highlight, URL)? |
+| B4P10Q31 | 4 | 10 | What is the difference between a reference line and a reference band in Tableau? |
+| B4P10Q32 | 4 | 10 | What is the difference between Tableau relationships and joins? |
+| B4P10Q33 | 4 | 10 | What is the difference between a data source filter and an extract filter in Tableau? |
+| B4P10Q34 | 4 | 10 | Why is a FIXED LOD not affected by a normal dimension filter, and how do you fix that? |
+| B4P10Q35 | 4 | 10 | Your Tableau Top 10 filter shows fewer than 10 items after you add a region filter. Why, and how do you fix it? |
+| B4P10Q36 | 4 | 10 | Your Tableau running total or rank changes when you add a field to the view. Why? |
+| B4P10Q37 | 4 | 10 | How do you implement row-level security in Tableau compared with Power BI RLS? |
+| B4P10Q38 | 4 | 10 | How do licensing and cost differ between Power BI (Free, Pro, Premium) and Tableau (Creator, Explorer, Viewer)? |
+| B4P10Q39 | 4 | 10 | How do the two tools compare for sharing dashboards, refresh and governance (Power BI Service vs Tableau Cloud or Server)? |
+| B4P10Q40 | 4 | 10 | Your company uses Tableau but you only know Power BI. How would you get productive quickly? |
+| B4P10Q41 | 4 | 10 | How would you migrate an existing Tableau report to Power BI? |
+| B4P10Q42 | 4 | 10 | A stakeholder says the Tableau and Power BI dashboards show different headcount for the same month. How do you investigate? |
+| B4P10Q43 | 4 | 10 | A join to a targets table doubled the revenue in Tableau. What happened, and how do you fix it? |
+| B4P11Q1 | 4 | 11 | What is Copilot in Power BI, and what can it do? |
+| B4P11Q2 | 4 | 11 | What are the AI visuals in Power BI (key influencers, decomposition tree, anomaly detection, smart narrative), and when would you use each? |
+| B4P11Q3 | 4 | 11 | How do you check a DAX measure or report page that Copilot generated before you share it? |
+| B4P11Q4 | 4 | 11 | What licence or capacity do you need to use Copilot in Power BI? |
+| B4P11Q5 | 4 | 11 | Is a Power BI Pro licence enough to use Copilot? |
+| B4P11Q6 | 4 | 11 | How do you start Copilot in Power BI Desktop and in the Power BI service to build a report page? |
+| B4P11Q7 | 4 | 11 | What is the Narrative visual with Copilot, and how is it different from the custom smart narrative? |
+| B4P11Q8 | 4 | 11 | What is the difference between the Copilot pane in a report and the standalone Copilot experience? |
+| B4P11Q9 | 4 | 11 | Which Copilot experiences in Power BI are generally available and which are still in preview? |
+| B4P11Q10 | 4 | 11 | What is the difference between Copilot and the Q&A visual in Power BI? |
+| B4P11Q11 | 4 | 11 | Write a Copilot prompt that builds an HR attrition report page, and explain why it is a good prompt. |
+| B4P11Q12 | 4 | 11 | How would you use Copilot to help write a DAX measure for attrition rate, and what would you check in the result? |
+| B4P11Q13 | 4 | 11 | How does Copilot work in DAX query view? |
+| B4P11Q14 | 4 | 11 | How do you use Copilot to add descriptions to your measures, and why do descriptions matter? |
+| B4P11Q15 | 4 | 11 | How do you prepare a semantic model so that Copilot gives better answers? |
+| B4P11Q16 | 4 | 11 | What are verified answers and AI instructions in Prep data for AI? |
+| B4P11Q17 | 4 | 11 | What does Approved for Copilot mean for a semantic model? |
+| B4P11Q18 | 4 | 11 | What are the limitations of creating or editing report pages with Copilot? |
+| B4P11Q19 | 4 | 11 | Who can turn Copilot on or off in a company, and where do they do it? |
+| B4P11Q20 | 4 | 11 | Does Copilot send your company data outside the organisation, and is it used to train models? |
+| B4P11Q21 | 4 | 11 | Why can Copilot give a different answer to the same question, and what do you do about it? |
+| B4P11Q22 | 4 | 11 | The Copilot button is missing or disabled in Power BI Desktop. What do you check? |
+| B4P11Q23 | 4 | 11 | How would you use the key influencers visual to find what drives employee attrition? |
+| B4P11Q24 | 4 | 11 | What is the difference between the key influencers visual and the decomposition tree? |
+| B4P11Q25 | 4 | 11 | What is a Fabric Copilot capacity, and when would a company use one? |
+| B4P11Q26 | 4 | 11 | How does Copilot use capacity, and how would an admin monitor that usage? |
+| B4P11Q27 | 4 | 11 | Your company wants to roll Copilot out to its HR dashboards. What do you check before switching it on? |
+| B4P12Q1 | 4 | 12 | How did you learn Power BI, and how long did it take you? |
+| B4P12Q2 | 4 | 12 | How would you rate yourself in Power BI out of 10, and why? |
+| B4P12Q3 | 4 | 12 | You come from HR with no technical background. How did you learn Power BI? |
+| B4P12Q4 | 4 | 12 | Which Power BI topic did you find hardest (Power Query, data modelling or DAX), and how did you overcome it? |
+| B4P12Q5 | 4 | 12 | Which Power BI features do you use most often, and which have you not tried yet? |
+| B4P12Q6 | 4 | 12 | You already know Excel. What carried over to Power BI, and what did you have to unlearn? |
+| B4P12Q7 | 4 | 12 | Which Power BI version and licence do you use (Desktop, free service account, Pro, Premium Per User or Fabric), and does it matter for your work? |
+| B4P12Q8 | 4 | 12 | Which free resources would you recommend to a beginner learning Power BI? |
+| B4P12Q9 | 4 | 12 | Which practice datasets have you worked with in Power BI? |
+| B4P12Q10 | 4 | 12 | How much time do you spend practising Power BI each day or week? |
+| B4P12Q11 | 4 | 12 | In what order did you study Power BI topics, and why that order? |
+| B4P12Q12 | 4 | 12 | How do you check that the numbers in your Power BI report are correct when there is no answer key? |
+| B4P12Q13 | 4 | 12 | How do you learn a DAX function or Power BI feature you have never used before? |
+| B4P12Q14 | 4 | 12 | You have no company Power BI account. How did you practise publishing and sharing a report? |
+| B4P12Q15 | 4 | 12 | How do you use AI assistants such as Copilot or ChatGPT to learn Power BI without depending on them? |
+| B4P12Q16 | 4 | 12 | Power BI Desktop is updated every month. How do you keep your skills current? |
+| B4P12Q17 | 4 | 12 | How would you prepare for a live Power BI or DAX test in one week? |
+| B4P12Q18 | 4 | 12 | Why did you choose Power BI as your first BI tool rather than Tableau, and what would you learn next? |
+| B4P12Q19 | 4 | 12 | Do certifications help, and have you done any (for example the Microsoft Power BI Data Analyst PL-300)? |
+| B4P12Q20 | 4 | 12 | Have you shared your Power BI work publicly or kept a portfolio of it? |
+| B4P12Q21 | 4 | 12 | What does the PL-300 exam cover, and how would you prepare for it if an employer asked for it? |
+| B4P12Q22 | 4 | 12 | How would you build a Power BI portfolio project from a public HR dataset? |
+| B4P12Q23 | 4 | 12 | How would you set up a self-check test to measure your own Power BI level? |
+| B4P12Q24 | 4 | 12 | What is your plan to improve your Power BI over the next three months? |
+| B4P12Q25 | 4 | 12 | An HR colleague only reads Power BI reports and never touches filters or slicers. How would you coach them to explore the report themselves? |
 
 ## Book 5 — Statistics & Maths
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B5P01Q1 | 5 | 1 | How do you calculate percentage change, and what is the base you divide by? |
+| B5P01Q2 | 5 | 1 | Sales went from 80,000 to 92,000. What is the percentage increase? |
+| B5P01Q3 | 5 | 1 | What is the difference between a percentage and a percentage point? Attrition moved from 10% to 12%: how do you report it? |
+| B5P01Q4 | 5 | 1 | How do you calculate the attrition rate of a company? Why do we use average headcount? |
+| B5P01Q5 | 5 | 1 | What is the difference between a simple average and a weighted average? |
+| B5P01Q6 | 5 | 1 | Two branches have 90% and 80% pass rates with 100 and 400 candidates. What is the overall pass rate? |
+| B5P01Q7 | 5 | 1 | Why can you not just average two percentages? When is it acceptable? |
+| B5P01Q8 | 5 | 1 | What is year-over-year (YoY) growth versus month-over-month (MoM) growth, and how do you calculate each? |
+| B5P01Q9 | 5 | 1 | What is a ratio, and how is it different from a percentage and a fraction? |
+| B5P01Q10 | 5 | 1 | What is CAGR, and what is the formula? |
+| B5P01Q11 | 5 | 1 | A price rises 20% and then falls 20%. Is it back to the original price? |
+| B5P01Q12 | 5 | 1 | Revenue fell from 500 to 400. By what percentage must it grow to return to 500? |
+| B5P01Q13 | 5 | 1 | How do you calculate a percentage of a total (share or contribution) in a table, and what should the shares add up to? |
+| B5P01Q14 | 5 | 1 | Explain weighted average to a non-technical manager using one example with numbers. |
+| B5P01Q15 | 5 | 1 | Headcount is 250 and 30 people left during the year with 20 joiners. Calculate the attrition rate and explain your headcount choice. |
+| B5P01Q16 | 5 | 1 | Revenue was 100 in 2021 and 150 in 2024. Calculate CAGR and compare it with the simple average of the yearly growth rates. |
+| B5P01Q17 | 5 | 1 | What does it mean to say a metric is up "15% vs last year"? What can go wrong with this comparison? |
+| B5P01Q18 | 5 | 1 | What are the main ways to express an average (mean, median, weighted)? Which would you use for average salary and why? |
+| B5P01Q19 | 5 | 1 | How do you calculate conversion rate, and what is the denominator? |
+| B5P01Q20 | 5 | 1 | The hiring funnel has 1,000 applicants, 200 interviewed, 50 offered and 40 joined. Calculate the conversion at each stage and overall. |
+| B5P01Q21 | 5 | 1 | How do you calculate a percentage of a percentage (e.g. 20% of the 30% who responded)? |
+| B5P01Q22 | 5 | 1 | What is the difference between mean of ratios and ratio of sums? |
+| B5P01Q23 | 5 | 1 | How do you convert a ratio such as 3:2 into percentages and into actual numbers for a total of 500? |
+| B5P01Q24 | 5 | 1 | Salary increased 10% in year one and 8% in year two. What is the total increase, and why is it not 18%? |
+| B5P01Q25 | 5 | 1 | How do you calculate average salary for a department with different headcounts per grade? |
+| B5P01Q26 | 5 | 1 | How do you calculate the percentage difference between two values where neither is the baseline? |
+| B5P01Q27 | 5 | 1 | What is the difference between percentage change and percentage of total? |
+| B5P01Q28 | 5 | 1 | How do you calculate the rate of absenteeism and the average attendance for a team? |
+| B5P01Q29 | 5 | 1 | Average salary of 20 men is 50,000 and of 30 women is 40,000. What is the overall average? |
+| B5P01Q30 | 5 | 1 | You were asked to report average rating per store; which is better, average of store averages or pooled average? Explain. |
+| B5P01Q31 | 5 | 1 | What is compound growth, and how does it differ from simple growth? |
+| B5P01Q32 | 5 | 1 | How do you calculate the average growth rate over several years, and why is the arithmetic mean of growth rates misleading? |
+| B5P01Q33 | 5 | 1 | How do you compute a moving average, and how does it help read a trend? |
+| B5P01Q34 | 5 | 1 | Marks of five candidates average 60. A sixth candidate scores 78. What is the new average? Show a shortcut. |
+| B5P01Q35 | 5 | 1 | How do you calculate contribution to growth when total sales grew 10% and one region caused most of it? |
+| B5P01Q36 | 5 | 1 | Cost per hire fell from 80 to 62. Calculate the percentage change and explain the direction. |
+| B5P01Q37 | 5 | 1 | How do you handle division by zero when calculating growth from a zero base? |
+| B5P01Q38 | 5 | 1 | What is the Rule of 72, and when can you use it? |
+| B5P01Q39 | 5 | 1 | How would you calculate the average of a column of percentages in Excel correctly? |
+| B5P01Q40 | 5 | 1 | What is a base effect, and how can it make growth look small or large? |
+| B5P01Q41 | 5 | 1 | Explain Simpson's-paradox-style trap in averages: how can every group's rate improve while the overall rate falls? |
+| B5P01Q42 | 5 | 1 | A metric rises 25%, then falls to a level 10% below the start. What was the second change? |
+| B5P01Q43 | 5 | 1 | What is basis point (bps), and how is it different from percentage point? |
+| B5P01Q44 | 5 | 1 | How do you calculate a growth rate from index numbers (base year = 100)? |
+| B5P01Q45 | 5 | 1 | What is the difference between absolute change and relative change? When do you report each? |
+| B5P01Q46 | 5 | 1 | How do you round numbers in reports without distorting totals? |
+| B5P01Q47 | 5 | 1 | What is a run rate, and how do you annualise a monthly figure? |
+| B5P01Q48 | 5 | 1 | How do you calculate the weighted average cost or average price when quantities purchased differ? |
+| B5P01Q49 | 5 | 1 | What is a geometric mean, and when do you use it instead of the arithmetic mean? |
+| B5P01Q50 | 5 | 1 | How do you calculate a percentage change when the value is negative (e.g. profit from -10 to 5)? |
+| B5P01Q51 | 5 | 1 | What is the harmonic mean, and when does it apply (e.g. average speed or price per unit)? |
+| B5P01Q52 | 5 | 1 | How do you adjust figures for inflation to compare salaries over years (real vs nominal)? |
+| B5P01Q53 | 5 | 1 | How do you combine two groups' averages into one when only averages and counts are given? |
+| B5P01Q54 | 5 | 1 | How do you calculate the break-even point as a ratio or percentage, and when does an analyst need it? |
+| B5P01Q55 | 5 | 1 | How do you calculate a percentage hike so that the new salary equals a target amount? |
+| B5P01Q56 | 5 | 1 | How do you calculate the weighted average for a scorecard where KPIs carry different weights? |
+| B5P01Q57 | 5 | 1 | How do you scale a target proportionally when team size changes (direct and inverse proportion)? |
+| B5P01Q58 | 5 | 1 | A company has 50% growth in month 1 and -50% in month 2. What is the net change and the average monthly growth? |
+| B5P01Q59 | 5 | 1 | How do you decompose a change in an average (e.g. average salary) into effect of rate and effect of mix? |
+| B5P01Q60 | 5 | 1 | How do you calculate compounded monthly growth rate (CMGR) and convert it to an annual figure? |
+| B5P01Q61 | 5 | 1 | A manager says "attrition is 12%, up from 10%, so 20% more people left". Is that statement correct? |
+| B5P02Q1 | 5 | 2 | What are mean, median and mode, and how do you calculate each? |
+| B5P02Q2 | 5 | 2 | When would you use the median instead of the mean? Give an example with salaries. |
+| B5P02Q3 | 5 | 2 | What is standard deviation, and what does it tell you about a dataset? |
+| B5P02Q4 | 5 | 2 | What is the difference between variance and standard deviation, and why do we usually report standard deviation? |
+| B5P02Q5 | 5 | 2 | What is the difference between descriptive and inferential statistics? |
+| B5P02Q6 | 5 | 2 | What is an outlier, and how does it affect the mean, median and standard deviation? |
+| B5P02Q7 | 5 | 2 | What is a percentile? What does it mean if your salary is at the 90th percentile? |
+| B5P02Q8 | 5 | 2 | Calculate the mean, median and mode of this data: 4, 8, 6, 5, 3, 8, 9. |
+| B5P02Q9 | 5 | 2 | The average salary in a team of 5 is Rs 6 lakh, but four people earn Rs 4 lakh each. What does that tell you, and which average would you report? |
+| B5P02Q10 | 5 | 2 | What is the IQR, and how do you use it to detect outliers? |
+| B5P02Q11 | 5 | 2 | What are quartiles, and how do you read a box plot? |
+| B5P02Q12 | 5 | 2 | Why does the sample standard deviation divide by n-1 instead of n? |
+| B5P02Q13 | 5 | 2 | What is the difference between population and sample, and between a parameter and a statistic? |
+| B5P02Q14 | 5 | 2 | Calculate the sample standard deviation of 2, 4, 4, 4, 5, 5, 7, 9 step by step. |
+| B5P02Q15 | 5 | 2 | Explain standard deviation to a non-technical manager using employee attendance or salary data. |
+| B5P02Q16 | 5 | 2 | A dataset has an outlier. How do you decide whether to remove it, cap it or keep it? |
+| B5P02Q17 | 5 | 2 | Two teams have the same average monthly sales but different standard deviations. Which team is more consistent and what would you tell the manager? |
+| B5P02Q18 | 5 | 2 | What is the range of a dataset, and what is its main weakness? |
+| B5P02Q19 | 5 | 2 | What is a histogram, and what can you learn from it that the mean alone cannot show? |
+| B5P02Q20 | 5 | 2 | What are the types of data (nominal, ordinal, interval, ratio), and which averages apply to each? |
+| B5P02Q21 | 5 | 2 | What is a frequency distribution, and how do you build one in a table? |
+| B5P02Q22 | 5 | 2 | Can a dataset have more than one mode, or no mode? Give examples. |
+| B5P02Q23 | 5 | 2 | What are the 25th, 50th and 75th percentiles called, and how do they relate to the median? |
+| B5P02Q24 | 5 | 2 | What is skewness, and how does it affect the choice between mean and median? |
+| B5P02Q25 | 5 | 2 | What is the five-number summary? |
+| B5P02Q26 | 5 | 2 | What is the coefficient of variation, and when is it better than standard deviation? |
+| B5P02Q27 | 5 | 2 | What is a weighted mean, and when is it better than a simple mean? Calculate one for exam or appraisal scores. |
+| B5P02Q28 | 5 | 2 | How do you calculate a percentile rank, and how is it different from a percentile value? |
+| B5P02Q29 | 5 | 2 | How do you find the median of grouped data, or of an even number of values? |
+| B5P02Q30 | 5 | 2 | What is a z-score, and how do you use it to compare two values from different distributions? |
+| B5P02Q31 | 5 | 2 | Why is the median robust to outliers, and what does robust mean in statistics? |
+| B5P02Q32 | 5 | 2 | Attrition rates by month are 2%, 3%, 2%, 12%, 3%, 2%. Which summary statistic would you report to HR leadership, and why? |
+| B5P02Q33 | 5 | 2 | How do you choose between mean, median and mode for a given business column such as order value, age or shoe size? |
+| B5P02Q34 | 5 | 2 | What is the mean absolute deviation, and how does it differ from standard deviation? |
+| B5P02Q35 | 5 | 2 | A manager says 'the average employee takes 6 sick days.' What follow-up questions would you ask before trusting that number? |
+| B5P02Q36 | 5 | 2 | How do you describe the spread of a dataset to a business audience in one or two sentences? |
+| B5P02Q37 | 5 | 2 | How would you summarise a numeric column in a new dataset before doing any analysis? |
+| B5P02Q38 | 5 | 2 | If you add a constant to every value, or multiply every value by a constant, what happens to the mean and standard deviation? |
+| B5P02Q39 | 5 | 2 | The mean of 10 numbers is 50. If one number, 80, is replaced with 20, what is the new mean? |
+| B5P02Q40 | 5 | 2 | If the mean of a dataset is greater than its median, what does it say about the shape of the data, and is this always true? |
+| B5P02Q41 | 5 | 2 | How does the average of group averages differ from the overall average, and when is it wrong to average averages? |
+| B5P02Q42 | 5 | 2 | How do different tools (Excel, SQL, Python) calculate percentiles differently, and why can answers differ slightly? |
+| B5P02Q43 | 5 | 2 | You have the mean and count for two groups. How do you compute the combined mean, and how would you combine their standard deviations? |
+| B5P02Q44 | 5 | 2 | What is a trimmed mean, and when would you use it? |
+| B5P02Q45 | 5 | 2 | What are the geometric mean and harmonic mean, and when is each appropriate? |
+| B5P02Q46 | 5 | 2 | What is the standard error, and how is it different from standard deviation? |
+| B5P02Q47 | 5 | 2 | What is kurtosis, and what does a high value tell an analyst about the data? |
+| B5P02Q48 | 5 | 2 | What is a decile, and when would a business report deciles instead of quartiles? |
+| B5P02Q49 | 5 | 2 | What is the Tukey fence, and why is the multiplier 1.5? |
+| B5P02Q50 | 5 | 2 | What is the mode of continuous data, and how do you estimate it from a histogram? |
+| B5P02Q51 | 5 | 2 | How do you handle missing values when calculating summary statistics, and how does it change the mean? |
+| B5P02Q52 | 5 | 2 | Why do two datasets with identical mean, median and standard deviation sometimes look completely different (Anscombe's quartet)? |
+| B5P02Q53 | 5 | 2 | Why is variance additive for independent variables but standard deviation is not? |
+| B5P02Q54 | 5 | 2 | What is the median absolute deviation (MAD), and why is it a more robust spread measure than standard deviation? |
+| B5P02Q55 | 5 | 2 | Is the sample standard deviation an unbiased estimator of the population standard deviation, even though sample variance is unbiased? |
+| B5P02Q56 | 5 | 2 | How would you compute a running mean and running standard deviation for a stream of data without storing every value? |
+| B5P02Q57 | 5 | 2 | Why can the average of ratios (like a mean of per-store conversion rates) differ from the overall ratio, and which is right? |
+| B5P02Q58 | 5 | 2 | Is the 90th percentile of response time a better SLA measure than the mean? Explain with an example. |
+| B5P02Q59 | 5 | 2 | A distribution is bimodal. What does that suggest, and how should you report its centre? |
+| B5P02Q60 | 5 | 2 | How do you report salary data fairly when it has a long right tail and some people are on stock-based pay? |
+| B5P03Q1 | 5 | 3 | What is a normal distribution, and what are its key properties? |
+| B5P03Q2 | 5 | 3 | What is the 68-95-99.7 (empirical) rule? |
+| B5P03Q3 | 5 | 3 | What is skewness, and what is the difference between positive (right) and negative (left) skew? |
+| B5P03Q4 | 5 | 3 | In a right-skewed distribution, what is the order of mean, median and mode, and which would you report for employee salaries? |
+| B5P03Q5 | 5 | 3 | What is a z-score, and how do you calculate it? |
+| B5P03Q6 | 5 | 3 | What is the difference between the binomial and Poisson distributions? |
+| B5P03Q7 | 5 | 3 | Salaries have a mean of 50,000 and a standard deviation of 10,000 and are roughly normal. What percentage of employees earn between 40,000 and 60,000? |
+| B5P03Q8 | 5 | 3 | Give examples of business data that is roughly normal and data that is not. How would you tell? |
+| B5P03Q9 | 5 | 3 | What is a standard normal distribution? |
+| B5P03Q10 | 5 | 3 | What is a probability distribution, and what is the difference between discrete and continuous distributions? |
+| B5P03Q11 | 5 | 3 | What is kurtosis, and what does excess kurtosis tell you? |
+| B5P03Q12 | 5 | 3 | What is a Bernoulli trial, and how does it relate to the binomial distribution? |
+| B5P03Q13 | 5 | 3 | What conditions must hold for a binomial distribution to apply? |
+| B5P03Q14 | 5 | 3 | Which distribution would you use to model the number of employee resignations in a month, and why? |
+| B5P03Q15 | 5 | 3 | Which distribution would you use to model whether a candidate accepts a job offer, and the number of acceptances out of 50 offers? |
+| B5P03Q16 | 5 | 3 | Why is the normal distribution so important in statistics? |
+| B5P03Q17 | 5 | 3 | Explain to a non-technical manager what a bell curve means when HR rates employee performance. |
+| B5P03Q18 | 5 | 3 | Ten candidates each have a 70% chance of joining. What is the probability exactly 7 join? |
+| B5P03Q19 | 5 | 3 | You make 100 offers and each has an 80% chance of acceptance. What are the expected number of acceptances and the standard deviation? |
+| B5P03Q20 | 5 | 3 | An HR team averages 3 resignations a month. Assuming Poisson, what is the probability of zero resignations next month? |
+| B5P03Q21 | 5 | 3 | A support desk gets 15 tickets per hour on average. How do you get the rate for 30 minutes, and what is the probability of no tickets in that time? |
+| B5P03Q22 | 5 | 3 | For a Poisson distribution mean equals variance. What does it mean if your data's variance is much larger than its mean? |
+| B5P03Q23 | 5 | 3 | Exam scores have a mean of 70 and an SD of 10. What is the z-score of 85, and roughly what percentile is it? |
+| B5P03Q24 | 5 | 3 | Scores are normal with a mean of 60 and an SD of 12. What cut-off marks the top 10% of employees? |
+| B5P03Q25 | 5 | 3 | How do you check whether a dataset is normally distributed? |
+| B5P03Q26 | 5 | 3 | Why does the mean get pulled toward the tail in skewed data, and what do you do about it? |
+| B5P03Q27 | 5 | 3 | Mean salary is 45,000 and median is 38,000. What does this say about the shape, and what would you tell the manager? |
+| B5P03Q28 | 5 | 3 | Does zero skewness mean the data is normally distributed? |
+| B5P03Q29 | 5 | 3 | Student A scored 80 (class mean 70, SD 5) and Student B scored 85 (class mean 80, SD 10). Who performed better relative to their class? |
+| B5P03Q30 | 5 | 3 | There are 20 employees and each has a 5% chance of leaving this quarter. What is the probability at least one leaves? |
+| B5P03Q31 | 5 | 3 | A data point lies 4 standard deviations from the mean. What do you conclude, and what would you do next? |
+| B5P03Q32 | 5 | 3 | When can a normal distribution approximate a binomial distribution? |
+| B5P03Q33 | 5 | 3 | What is the difference between a probability mass function, a probability density function and a cumulative distribution function? |
+| B5P03Q34 | 5 | 3 | What assumptions does a Poisson model make, and would daily absenteeism counts satisfy them? |
+| B5P03Q35 | 5 | 3 | What is a uniform distribution? Give a business example. |
+| B5P03Q36 | 5 | 3 | What is a lognormal distribution, and why do salaries and sales often follow it? |
+| B5P03Q37 | 5 | 3 | How does a t-distribution differ from the normal distribution, and when is it used? |
+| B5P03Q38 | 5 | 3 | What is the exponential distribution, and how is it related to the Poisson distribution? |
+| B5P03Q39 | 5 | 3 | What is a bimodal distribution, and what might it mean for HR data such as employee tenure or salary? |
+| B5P03Q40 | 5 | 3 | How do you use Pearson's skewness coefficient? If mean 52, median 48 and SD 8, calculate it. |
+| B5P03Q41 | 5 | 3 | Why can you not use the empirical rule on skewed data? |
+| B5P03Q42 | 5 | 3 | How does the choice of histogram bin width change the shape you see? |
+| B5P03Q43 | 5 | 3 | How do you describe the distribution of employee tenure to a manager, using a histogram and summary numbers? |
+| B5P03Q44 | 5 | 3 | What does a 3-sigma control limit or Six Sigma defect rate mean in terms of the normal distribution? |
+| B5P03Q45 | 5 | 3 | What is the probability that a continuous variable takes exactly one value? |
+| B5P03Q46 | 5 | 3 | If two independent normal variables are added, what are the mean and variance of the sum? |
+| B5P03Q47 | 5 | 3 | What is Chebyshev's inequality, and when do you use it instead of the empirical rule? |
+| B5P03Q48 | 5 | 3 | Is high kurtosis the same as a sharply peaked distribution? |
+| B5P03Q49 | 5 | 3 | How does the Poisson distribution arise as a limit of the binomial distribution? |
+| B5P03Q50 | 5 | 3 | What are heavy-tailed distributions such as the Pareto (80/20), and why do they break the normal-based rules of thumb? |
+| B5P04Q1 | 5 | 4 | What is probability, and how do you calculate it for a simple event such as drawing a card or rolling a die? |
+| B5P04Q2 | 5 | 4 | What is the difference between independent events and mutually exclusive events? |
+| B5P04Q3 | 5 | 4 | What is conditional probability? Explain it with a simple example. |
+| B5P04Q4 | 5 | 4 | Explain Bayes' theorem in simple words and write its formula. |
+| B5P04Q5 | 5 | 4 | What are the addition rule (OR) and the multiplication rule (AND) of probability? |
+| B5P04Q6 | 5 | 4 | What is the complement rule, and when does it make a probability question easier? |
+| B5P04Q7 | 5 | 4 | What is the probability of getting a sum of 7 when two fair dice are rolled? |
+| B5P04Q8 | 5 | 4 | What is the probability of getting at least one head in three tosses of a fair coin? |
+| B5P04Q9 | 5 | 4 | What is expected value, and how do you calculate it? |
+| B5P04Q10 | 5 | 4 | In a company of 200 employees, 40 left last year. What is the probability that a randomly chosen employee left, and what is the probability that a randomly chosen employee stayed? |
+| B5P04Q11 | 5 | 4 | What is the difference between P(A|B) and P(B|A)? Are they the same? |
+| B5P04Q12 | 5 | 4 | A disease affects 1% of people and a test is 99% accurate in both directions (99% sensitivity and 99% specificity). If a person tests positive, what is the probability they have the disease? |
+| B5P04Q13 | 5 | 4 | A test is "99% accurate" and a patient tests positive. Does that mean there is a 99% chance the patient has the condition? Explain the base-rate idea. |
+| B5P04Q14 | 5 | 4 | Of 200 employees, 80 are in Sales and 24 of the Sales employees left; 40 employees left overall. What is the probability that an employee left given that they are in Sales, and are "leaving" and "being in Sales" independent? |
+| B5P04Q15 | 5 | 4 | What is the law of total probability, and how does it help in a Bayes problem? |
+| B5P04Q16 | 5 | 4 | Two cards are drawn from a standard deck without replacement. What is the probability that both are aces? |
+| B5P04Q17 | 5 | 4 | A bag has 5 red and 3 blue balls. What is the probability of drawing two red balls with replacement and without replacement? |
+| B5P04Q18 | 5 | 4 | Explain the Monty Hall problem. Should you switch doors, and why? |
+| B5P04Q19 | 5 | 4 | Machine A makes 60% of items with 2% defective, machine B makes 40% with 5% defective. An item is found defective. What is the probability it came from machine B? |
+| B5P04Q20 | 5 | 4 | How would you explain conditional probability and Bayes' theorem to a non-technical manager? |
+| B5P04Q21 | 5 | 4 | What are a sample space and an event? Give an example. |
+| B5P04Q22 | 5 | 4 | What is the difference between probability and odds? |
+| B5P04Q23 | 5 | 4 | What is the range of a probability value, and what do a probability of 0 and a probability of 1 mean? |
+| B5P04Q24 | 5 | 4 | What is the difference between classical (theoretical) probability and empirical (relative-frequency) probability? |
+| B5P04Q25 | 5 | 4 | What is a random variable? Explain discrete versus continuous with examples. |
+| B5P04Q26 | 5 | 4 | What are joint, marginal and conditional probability? Show them on a two-way table. |
+| B5P04Q27 | 5 | 4 | What is the law of large numbers, and why does a coin not "owe" you a tail after five heads in a row? |
+| B5P04Q28 | 5 | 4 | What is the gambler's fallacy? |
+| B5P04Q29 | 5 | 4 | What is the difference between sampling with replacement and without replacement, and how does it change the probability? |
+| B5P04Q30 | 5 | 4 | What is the expected value of a single roll of a fair six-sided die? |
+| B5P04Q31 | 5 | 4 | If 5 shortlisted candidates each accept an offer independently with probability 20%, what is the probability that at least one accepts? |
+| B5P04Q32 | 5 | 4 | What is the probability that a month with 31 days has 5 Sundays? |
+| B5P04Q33 | 5 | 4 | In a hiring funnel, 50% of applicants clear screening, 40% of those clear the interview, and 80% of those accept the offer. What is the probability that an applicant ends up joining? |
+| B5P04Q34 | 5 | 4 | How do you draw and use a probability tree diagram? Solve one example. |
+| B5P04Q35 | 5 | 4 | Define sensitivity, specificity, false positive rate and false negative rate, and relate them to Bayes' theorem. |
+| B5P04Q36 | 5 | 4 | An attendance-fraud model flags 95% of real cases but also flags 3% of honest employees, and 2% of employees commit fraud. If an employee is flagged, what is the probability of fraud? |
+| B5P04Q37 | 5 | 4 | How do you check from a table whether two events are independent? |
+| B5P04Q38 | 5 | 4 | What is P(A or B) when A and B can occur together, and why do we subtract P(A and B)? |
+| B5P04Q39 | 5 | 4 | You roll a fair die 4 times. What is the probability of getting at least one six? |
+| B5P04Q40 | 5 | 4 | A game pays Rs 100 if a fair die shows 6 and costs Rs 20 to play. What is the expected profit, and should you play? |
+| B5P04Q41 | 5 | 4 | Two dice are rolled and the total is 8. What is the expected value of the first die? |
+| B5P04Q42 | 5 | 4 | You have two children and at least one is a girl. What is the probability that both are girls, and why is the answer not 1/2? |
+| B5P04Q43 | 5 | 4 | A spam filter marks 20% of emails as spam; the word "offer" appears in 50% of spam and 5% of non-spam emails. What is the probability that an email containing "offer" is spam? |
+| B5P04Q44 | 5 | 4 | What is the prosecutor's fallacy, and how does it connect to confusing P(A|B) with P(B|A)? |
+| B5P04Q45 | 5 | 4 | How many people must be in a room before the chance of two sharing a birthday exceeds 50%, and why is the answer surprising? |
+| B5P04Q46 | 5 | 4 | What is the expected number of tosses of a fair coin needed to get the first head? |
+| B5P04Q47 | 5 | 4 | How do you calculate the expected value of a business decision, for example a discount offer with uncertain uptake? |
+| B5P04Q48 | 5 | 4 | If a coin is tossed 3 times, what is the probability of exactly two heads? |
+| B5P04Q49 | 5 | 4 | A test is repeated: a person tests positive twice in two independent tests. How does the probability of disease update? |
+| B5P04Q50 | 5 | 4 | Is the probability of at least one success in n independent trials equal to n times p? Explain the mistake. |
+| B5P04Q51 | 5 | 4 | Three attrition risk teams have attrition rates 10%, 15% and 25% and sizes 100, 200 and 100. What is the probability that a randomly picked leaver came from the third team? |
+| B5P04Q52 | 5 | 4 | A family has two children; you meet one child and it is a boy. Does the probability that the other is a boy change versus "at least one is a boy"? Explain. |
+| B5P04Q53 | 5 | 4 | In a Monty Hall game with 100 doors where the host opens 98 empty doors, what is the probability of winning by switching, and what does it show? |
+| B5P04Q54 | 5 | 4 | What is the difference between frequentist and Bayesian probability? |
+| B5P04Q55 | 5 | 4 | What are prior, likelihood and posterior in Bayes' theorem? |
+| B5P04Q56 | 5 | 4 | What does "at random" and "equally likely" mean in a probability question, and why do interviewers state it? |
+| B5P04Q57 | 5 | 4 | What is the variance of a random variable, and how do you calculate it for a die roll? |
+| B5P04Q58 | 5 | 4 | What is linearity of expectation, and how does it simplify a problem like the expected number of fixed points or matches? |
+| B5P04Q59 | 5 | 4 | What is the difference between P(A and B) and P(A|B)? |
+| B5P04Q60 | 5 | 4 | Explain the Bayesian update when you toss an unknown coin and see 3 heads in a row, with a fair or two-headed coin equally likely at the start. |
+| B5P04Q61 | 5 | 4 | How would you use simulation (Monte Carlo) to estimate a probability that is hard to compute by hand? |
+| B5P04Q62 | 5 | 4 | What is conditional expectation, and how would you use it to find the average salary given a department? |
+| B5P04Q63 | 5 | 4 | What is the odds ratio versus the relative risk, and why are they not the same? |
+| B5P04Q64 | 5 | 4 | A rare event has probability 0.1% per day. What is the probability it happens at least once in a year of 365 days? |
+| B5P04Q65 | 5 | 4 | What is the expected number of tosses to get two heads in a row? |
+| B5P04Q66 | 5 | 4 | You are given the probabilities of A, B and A or B. How do you find the probability that exactly one of A and B happens? |
+| B5P04Q67 | 5 | 4 | What are conditional independence and a common confounding mistake in probability reasoning? |
+| B5P04Q68 | 5 | 4 | Explain the birthday problem calculation step by step and relate it to finding duplicate employee IDs or dates in data. |
+| B5P04Q69 | 5 | 4 | A drunk-driver style puzzle: 90% of a city's taxis are green and 10% blue; a witness who is 80% reliable says the taxi was blue. What is the probability it was blue? |
+| B5P04Q70 | 5 | 4 | What is the probability that a random chord of a circle is longer than the side of an inscribed equilateral triangle, and what does this show about defining "random"? |
+| B5P04Q71 | 5 | 4 | You flip a fair coin until you see heads then tails (HT) versus heads then heads (HH). Which is expected sooner and why? |
+| B5P05Q1 | 5 | 5 | Why do analysts use a sample instead of surveying the whole population? |
+| B5P05Q2 | 5 | 5 | What is simple random sampling? |
+| B5P05Q3 | 5 | 5 | What is sampling bias, and why is it dangerous? |
+| B5P05Q4 | 5 | 5 | What is selection bias? Give an example. |
+| B5P05Q5 | 5 | 5 | What is the Central Limit Theorem, in simple words? |
+| B5P05Q6 | 5 | 5 | What is a confidence interval? |
+| B5P05Q7 | 5 | 5 | What is the difference between standard deviation and standard error? |
+| B5P05Q8 | 5 | 5 | Why is the Central Limit Theorem useful when the data itself is not normally distributed? |
+| B5P05Q9 | 5 | 5 | How do you interpret a 95% confidence interval? |
+| B5P05Q10 | 5 | 5 | Calculate a 95% confidence interval for the mean: sample mean 50, standard deviation 10, sample size 100. |
+| B5P05Q11 | 5 | 5 | What is the margin of error, and what affects its size? |
+| B5P05Q12 | 5 | 5 | How does sample size affect the width of a confidence interval? |
+| B5P05Q13 | 5 | 5 | What is stratified sampling, and when would you use it? |
+| B5P05Q14 | 5 | 5 | What is cluster sampling, and when would you use it? |
+| B5P05Q15 | 5 | 5 | What is systematic sampling? |
+| B5P05Q16 | 5 | 5 | What is the difference between probability sampling and non-probability sampling? |
+| B5P05Q17 | 5 | 5 | What is convenience sampling, and what is wrong with it? |
+| B5P05Q18 | 5 | 5 | What is survivorship bias? Give an example. |
+| B5P05Q19 | 5 | 5 | What is non-response bias? |
+| B5P05Q20 | 5 | 5 | What is voluntary response bias? |
+| B5P05Q21 | 5 | 5 | What is undercoverage bias? |
+| B5P05Q22 | 5 | 5 | What is the difference between sampling error and non-sampling error? |
+| B5P05Q23 | 5 | 5 | What is the difference between stratified sampling and cluster sampling? |
+| B5P05Q24 | 5 | 5 | What is a sampling distribution? |
+| B5P05Q25 | 5 | 5 | How would you explain a confidence interval to a non-technical manager? |
+| B5P05Q26 | 5 | 5 | Is a sample size of 30 always enough for the Central Limit Theorem to work? |
+| B5P05Q27 | 5 | 5 | Calculate the standard error of the mean: standard deviation 12, sample size 36. |
+| B5P05Q28 | 5 | 5 | Calculate a 95% confidence interval for a proportion: 200 of 500 surveyed employees are satisfied. |
+| B5P05Q29 | 5 | 5 | What is the difference between a 90%, 95% and 99% confidence interval for the same data? |
+| B5P05Q30 | 5 | 5 | Is it correct to say there is a 95% probability that the true mean lies inside a given 95% confidence interval? |
+| B5P05Q31 | 5 | 5 | What is the difference between confidence level and significance level? |
+| B5P05Q32 | 5 | 5 | Only 300 of 1,000 employees answered your engagement survey. What problems does this create and what would you do? |
+| B5P05Q33 | 5 | 5 | How many people must you survey for a margin of error of plus or minus 3% at 95% confidence? |
+| B5P05Q34 | 5 | 5 | When do you use a t-distribution instead of a z-distribution for a confidence interval? |
+| B5P05Q35 | 5 | 5 | Exit interviews show that employees leave mainly for better pay. Why might this conclusion be biased? |
+| B5P05Q36 | 5 | 5 | Does a larger sample size remove bias? |
+| B5P05Q37 | 5 | 5 | How would you pick a sample of 200 invoices from 10,000 for an audit? |
+| B5P05Q38 | 5 | 5 | What is the difference between the Law of Large Numbers and the Central Limit Theorem? |
+| B5P05Q39 | 5 | 5 | A survey of 200 employees shows 58 percent satisfaction; what margin of error would you report, and what would you tell HR? |
+| B5P05Q40 | 5 | 5 | What is snowball sampling, and when is it used? |
+| B5P05Q41 | 5 | 5 | What are recall bias and observer bias? |
+| B5P05Q42 | 5 | 5 | What is quota sampling, and how does it differ from stratified sampling? |
+| B5P05Q43 | 5 | 5 | What is bootstrapping, and when would an analyst use it? |
+| B5P05Q44 | 5 | 5 | A poll of 1,000 people shows Candidate A at 52% with a margin of error of plus or minus 3%. Can you say A is leading? |
+| B5P05Q45 | 5 | 5 | What does it mean if a confidence interval for a difference includes zero? |
+| B5P05Q46 | 5 | 5 | What is post-stratification weighting, and why is it used when survey respondents are unrepresentative? |
+| B5P05Q47 | 5 | 5 | What assumptions must hold for the Central Limit Theorem to apply? |
+| B5P05Q48 | 5 | 5 | How do you handle the Central Limit Theorem for heavy-tailed data such as salaries or order values? |
+| B5P05Q49 | 5 | 5 | What is the difference between a confidence interval and a prediction interval? |
+| B5P05Q50 | 5 | 5 | Do two overlapping 95% confidence intervals mean there is no significant difference? |
+| B5P05Q51 | 5 | 5 | What is the finite population correction, and when does it matter? |
+| B5P06Q1 | 5 | 6 | What is hypothesis testing, in simple words? |
+| B5P06Q2 | 5 | 6 | What are the null hypothesis and the alternative hypothesis? Give an HR example. |
+| B5P06Q3 | 5 | 6 | What is a p-value? Explain it to a non-technical manager. |
+| B5P06Q4 | 5 | 6 | What is the significance level (alpha), and why is 0.05 commonly used? |
+| B5P06Q5 | 5 | 6 | What are Type I and Type II errors? |
+| B5P06Q6 | 5 | 6 | If the p-value is 0.03 and alpha is 0.05, what is your conclusion? |
+| B5P06Q7 | 5 | 6 | What is a t-test and when do you use it? |
+| B5P06Q8 | 5 | 6 | What is the chi-square test and when do you use it? |
+| B5P06Q9 | 5 | 6 | What is the difference between statistical significance and practical significance? |
+| B5P06Q10 | 5 | 6 | What does a p-value NOT tell you? What are the common misinterpretations? |
+| B5P06Q11 | 5 | 6 | What does 'fail to reject the null hypothesis' mean, and why do we not say 'accept the null'? |
+| B5P06Q12 | 5 | 6 | What are the steps of a hypothesis test from start to finish? |
+| B5P06Q13 | 5 | 6 | What is the difference between a one-sample, two-sample and paired t-test? |
+| B5P06Q14 | 5 | 6 | Which test would you use to compare the average salary of two departments, and why? |
+| B5P06Q15 | 5 | 6 | Which test would you use to check whether attrition is related to department, and why? |
+| B5P06Q16 | 5 | 6 | What is the difference between a one-tailed and a two-tailed test? |
+| B5P06Q17 | 5 | 6 | Which is worse, a Type I or a Type II error? Give a business example for each. |
+| B5P06Q18 | 5 | 6 | What is ANOVA and why not run many t-tests instead? |
+| B5P06Q19 | 5 | 6 | How does sample size affect the p-value and the conclusion of a test? |
+| B5P06Q20 | 5 | 6 | What is a test statistic? |
+| B5P06Q21 | 5 | 6 | What is the difference between a z-test and a t-test? |
+| B5P06Q22 | 5 | 6 | What is a critical value and what is the rejection region? |
+| B5P06Q23 | 5 | 6 | What are degrees of freedom? |
+| B5P06Q24 | 5 | 6 | How are alpha and the probability of a Type I error related? |
+| B5P06Q25 | 5 | 6 | What is a confidence interval and how does it relate to a hypothesis test? |
+| B5P06Q26 | 5 | 6 | What is statistical power, and what affects it? |
+| B5P06Q27 | 5 | 6 | What is the relationship between alpha, beta and power? |
+| B5P06Q28 | 5 | 6 | What are the assumptions of the t-test? |
+| B5P06Q29 | 5 | 6 | Calculate a one-sample t-statistic: a sample of 25 employees has mean tenure 3.4 years and SD 1.5 years; the claimed mean is 3.0. What is t and is it significant at 5%? |
+| B5P06Q30 | 5 | 6 | Calculate a z-test for proportions: 120 of 400 employees say they would leave; the claimed rate is 25%. What is z and what do you conclude? |
+| B5P06Q31 | 5 | 6 | How do you calculate and interpret the chi-square statistic for a 2x2 table of gender versus promotion? |
+| B5P06Q32 | 5 | 6 | What are the assumptions of the chi-square test of independence? |
+| B5P06Q33 | 5 | 6 | What is the chi-square goodness-of-fit test? Give an example with attendance by weekday. |
+| B5P06Q34 | 5 | 6 | What are the null and alternative hypotheses in one-way ANOVA, and how do you read the F-statistic? |
+| B5P06Q35 | 5 | 6 | What are the assumptions of ANOVA? |
+| B5P06Q36 | 5 | 6 | If ANOVA is significant, how do you find which groups differ? |
+| B5P06Q37 | 5 | 6 | When would you use a paired t-test? Give an example such as training scores before and after. |
+| B5P06Q38 | 5 | 6 | How do you decide which statistical test to use for a given problem? |
+| B5P06Q39 | 5 | 6 | What is the multiple comparisons problem, and how do you handle it? |
+| B5P06Q40 | 5 | 6 | Your p-value is 0.051. Do you reject the null hypothesis? How do you explain this to a manager? |
+| B5P06Q41 | 5 | 6 | Why should we state the hypotheses and alpha before looking at the data? |
+| B5P06Q42 | 5 | 6 | What is p-hacking and how can an analyst avoid it? |
+| B5P06Q43 | 5 | 6 | What is the Central Limit Theorem and why does it matter for hypothesis tests? |
+| B5P06Q44 | 5 | 6 | What is effect size, and why report it along with the p-value? |
+| B5P06Q45 | 5 | 6 | What is a Type I error rate if you run 20 independent tests at alpha 0.05? |
+| B5P06Q46 | 5 | 6 | How do you test whether two proportions differ, for example the offer acceptance rate of two recruiters? |
+| B5P06Q47 | 5 | 6 | A manager says 'the p-value is 0.04 so there is a 96% chance our hypothesis is right.' How do you respond? |
+| B5P06Q48 | 5 | 6 | Explain a hypothesis test to a business stakeholder using a courtroom analogy. |
+| B5P06Q49 | 5 | 6 | How do you choose the sample size for a test? |
+| B5P06Q50 | 5 | 6 | How do you interpret a very small p-value from a very large sample? |
+| B5P06Q51 | 5 | 6 | Walk through a full hypothesis test: does a new onboarding programme change 90-day attrition? Use numbers. |
+| B5P06Q52 | 5 | 6 | What is a Z-score and how is it used in hypothesis testing? |
+| B5P06Q53 | 5 | 6 | What is the difference between a parametric and a non-parametric test? |
+| B5P06Q54 | 5 | 6 | When would you use the Mann-Whitney U test instead of a t-test? |
+| B5P06Q55 | 5 | 6 | What is Welch's t-test and when is it preferred? |
+| B5P06Q56 | 5 | 6 | What is Fisher's exact test and when is it used instead of chi-square? |
+| B5P06Q57 | 5 | 6 | What is the difference between the chi-square test of independence and the test of homogeneity? |
+| B5P06Q58 | 5 | 6 | What is a two-way ANOVA? |
+| B5P06Q59 | 5 | 6 | How do you test whether data is normally distributed before using a t-test? |
+| B5P06Q60 | 5 | 6 | What is a paired test versus an independent test, and what goes wrong if you pick the wrong one? |
+| B5P06Q61 | 5 | 6 | What is the F-test for comparing two variances? |
+| B5P06Q62 | 5 | 6 | What is the Bonferroni correction? Give an example. |
+| B5P06Q63 | 5 | 6 | How do you handle a hypothesis test when the data has outliers? |
+| B5P06Q64 | 5 | 6 | How are the confidence interval and the two-sided test linked? If the 95% CI for a mean difference excludes zero, what is the p-value? |
+| B5P06Q65 | 5 | 6 | Does a high p-value prove the two groups are the same? |
+| B5P06Q66 | 5 | 6 | What is the difference between a Z-test and a t-test for proportions in practice, and which do analysts usually run? |
+| B5P06Q67 | 5 | 6 | What is the Bayesian view of hypothesis testing, and how does it differ from the p-value approach? |
+| B5P06Q68 | 5 | 6 | What is the false discovery rate, and how does it differ from the family-wise error rate? |
+| B5P06Q69 | 5 | 6 | What is the difference between a Type S and Type M error? |
+| B5P06Q70 | 5 | 6 | What is the minimum detectable effect, and how does it connect to power? |
+| B5P06Q71 | 5 | 6 | How do you run and read a hypothesis test in Excel (Data Analysis ToolPak) at a high level? |
+| B5P06Q72 | 5 | 6 | What is bootstrapping and how can it be used for hypothesis testing? |
+| B5P06Q73 | 5 | 6 | What is a permutation test and when would you use it? |
+| B5P06Q74 | 5 | 6 | Why can we reject the null with statistical significance yet see no business impact? Give an HR example. |
+| B5P07Q1 | 5 | 7 | What is the difference between correlation and causation? |
+| B5P07Q2 | 5 | 7 | What is correlation, and what does the correlation coefficient (r) tell you? |
+| B5P07Q3 | 5 | 7 | What does R-squared (R²) tell you in a regression? |
+| B5P07Q4 | 5 | 7 | What is linear regression, and when would a data analyst use it? |
+| B5P07Q5 | 5 | 7 | Give a real business example where correlation does not mean causation. |
+| B5P07Q6 | 5 | 7 | What do the slope and the intercept mean in a simple linear regression equation? |
+| B5P07Q7 | 5 | 7 | How do you interpret correlation coefficients of 0.8, -0.6 and 0.05? |
+| B5P07Q8 | 5 | 7 | What is a confounding variable? Explain it with an example. |
+| B5P07Q9 | 5 | 7 | What are the assumptions of linear regression? |
+| B5P07Q10 | 5 | 7 | How do you interpret the coefficient of a variable in a multiple regression? |
+| B5P07Q11 | 5 | 7 | What does the p-value of a regression coefficient tell you? |
+| B5P07Q12 | 5 | 7 | What is the difference between correlation and regression? |
+| B5P07Q13 | 5 | 7 | What are the dependent and independent variables in a regression? Give an HR example. |
+| B5P07Q14 | 5 | 7 | What can a scatter plot tell you about the relationship between two variables? |
+| B5P07Q15 | 5 | 7 | What is the difference between positive, negative and zero correlation? Give one example of each. |
+| B5P07Q16 | 5 | 7 | Can a correlation coefficient be greater than 1 or less than -1? |
+| B5P07Q17 | 5 | 7 | If the correlation between two variables is zero, does it mean they are unrelated? |
+| B5P07Q18 | 5 | 7 | What is a residual in regression? |
+| B5P07Q19 | 5 | 7 | What is a spurious correlation? |
+| B5P07Q20 | 5 | 7 | What is the difference between simple and multiple linear regression? |
+| B5P07Q21 | 5 | 7 | Given the regression salary = 20000 + 4000 × years of experience, what salary does the model predict for 5 years, and what does the slope mean? |
+| B5P07Q22 | 5 | 7 | In a simple linear regression the correlation between X and Y is 0.6. What is R²? |
+| B5P07Q23 | 5 | 7 | What is the difference between Pearson and Spearman correlation, and when do you use each? |
+| B5P07Q24 | 5 | 7 | What is adjusted R², and why is it preferred over R² in multiple regression? |
+| B5P07Q25 | 5 | 7 | Does a high R² mean the model is good? |
+| B5P07Q26 | 5 | 7 | What is multicollinearity, and how do you detect it? |
+| B5P07Q27 | 5 | 7 | How does multicollinearity affect regression coefficients? |
+| B5P07Q28 | 5 | 7 | What is reverse causation? Give an example. |
+| B5P07Q29 | 5 | 7 | What is the difference between statistical significance and practical significance of a regression coefficient? |
+| B5P07Q30 | 5 | 7 | How would you explain regression output to a non-technical manager? |
+| B5P07Q31 | 5 | 7 | Experience and salary have a correlation of 0.85 across 200 employees. What can you conclude and what can you not conclude? |
+| B5P07Q32 | 5 | 7 | Employees who attended more training have lower attrition. Can you say training reduces attrition? |
+| B5P07Q33 | 5 | 7 | For x = 1, 2, 3, 4, 5 and y = 2, 4, 5, 4, 5, calculate the Pearson correlation coefficient. |
+| B5P07Q34 | 5 | 7 | For x = 1, 2, 3, 4, 5 and y = 2, 4, 5, 4, 5, calculate the regression line y = a + bx. |
+| B5P07Q35 | 5 | 7 | How do you check whether a linear regression model is a good fit? |
+| B5P07Q36 | 5 | 7 | What is a residual plot, and which patterns should worry you? |
+| B5P07Q37 | 5 | 7 | What is extrapolation in regression, and why is it risky? |
+| B5P07Q38 | 5 | 7 | Does a strong correlation mean a steep slope? |
+| B5P07Q39 | 5 | 7 | How do you include a categorical variable such as department in a regression? |
+| B5P07Q40 | 5 | 7 | How can you move from correlation towards causation when you only have observational data? |
+| B5P07Q41 | 5 | 7 | What is heteroscedasticity, and why does it matter? |
+| B5P07Q42 | 5 | 7 | Why can two trending time series show a high correlation even if they are unrelated? |
+| B5P07Q43 | 5 | 7 | What does ordinary least squares minimise? |
+| B5P07Q44 | 5 | 7 | What are MAE and RMSE, and how are they different from R²? |
+| B5P07Q45 | 5 | 7 | A correlation of 0.3 is found. How do you decide whether it is statistically significant, and how does sample size matter? |
+| B5P07Q46 | 5 | 7 | How do the slope and the correlation coefficient change if you change the units of a variable, for example salary in rupees versus lakhs? |
+| B5P07Q47 | 5 | 7 | What is partial correlation or controlling for a variable? |
+| B5P07Q48 | 5 | 7 | What is the standard error of a regression coefficient, and how does it give a confidence interval? |
+| B5P07Q49 | 5 | 7 | What is the F-test in regression output, and how is it different from the t-test on a coefficient? |
+| B5P07Q50 | 5 | 7 | What is autocorrelation of residuals, and when does it matter? |
+| B5P07Q51 | 5 | 7 | What is the dummy variable trap? |
+| B5P07Q52 | 5 | 7 | When would you take the log of a variable in a regression, and how does it change the interpretation? |
+| B5P07Q53 | 5 | 7 | What is the difference between a confounder, a mediator and a moderator? |
+| B5P07Q54 | 5 | 7 | Two predictors have different units. How do you judge which one matters more in the regression? |
+| B5P08Q1 | 5 | 8 | What is A/B testing? Explain it to a non-technical manager. |
+| B5P08Q2 | 5 | 8 | What are the control group and the treatment group in an A/B test? |
+| B5P08Q3 | 5 | 8 | Why do we randomly assign users to the control and treatment groups? |
+| B5P08Q4 | 5 | 8 | What are the null and alternative hypotheses in an A/B test? Give an example. |
+| B5P08Q5 | 5 | 8 | How would you design an A/B test end to end for a new website checkout page? |
+| B5P08Q6 | 5 | 8 | How do you choose the primary metric and the guardrail metrics for an A/B test? |
+| B5P08Q7 | 5 | 8 | What does the p-value mean in an A/B test result, and what does it not mean? |
+| B5P08Q8 | 5 | 8 | Version A converted 200 of 2,000 visitors and version B converted 240 of 2,000. Is B really better? Walk through the test. |
+| B5P08Q9 | 5 | 8 | An A/B test shows a 2% lift with a p-value of 0.03. Would you ship the change? |
+| B5P08Q10 | 5 | 8 | How do you calculate the sample size needed for an A/B test? |
+| B5P08Q11 | 5 | 8 | Why should you not stop an A/B test the moment the result turns significant (the peeking problem)? |
+| B5P08Q12 | 5 | 8 | What are Type I and Type II errors in the context of an A/B test? |
+| B5P08Q13 | 5 | 8 | How do you calculate absolute lift and relative lift of a conversion rate, and why do both matter? |
+| B5P08Q14 | 5 | 8 | Tell me about an A/B test you ran or analysed. What was the result and what happened next? |
+| B5P08Q15 | 5 | 8 | What is statistical power, and why is 80% the usual target? |
+| B5P08Q16 | 5 | 8 | What is the Minimum Detectable Effect (MDE), and how does it change the required sample size? |
+| B5P08Q17 | 5 | 8 | What is a guardrail metric, and what do you do when the primary metric improves but a guardrail metric gets worse? |
+| B5P08Q18 | 5 | 8 | How long should an A/B test run, and why should it usually cover full weeks? |
+| B5P08Q19 | 5 | 8 | What are the novelty effect and the primacy effect in an A/B test? |
+| B5P08Q20 | 5 | 8 | How do you read a confidence interval for the lift in an A/B test? |
+| B5P08Q21 | 5 | 8 | When do you use a one-tailed test and when a two-tailed test in an A/B test? |
+| B5P08Q22 | 5 | 8 | What is the multiple comparisons problem when you test many variants or many metrics, and how do you handle it? |
+| B5P08Q23 | 5 | 8 | What should be the unit of randomisation in an A/B test: user, session, cookie or device? |
+| B5P08Q24 | 5 | 8 | Which statistical test would you use to compare conversion rate, and which to compare average revenue per user? |
+| B5P08Q25 | 5 | 8 | A test shows no statistically significant difference. What do you conclude and what do you recommend? |
+| B5P08Q26 | 5 | 8 | A test shows a lift in click-through rate but no change in revenue. What could explain it? |
+| B5P08Q27 | 5 | 8 | HR wants to test whether a new reminder message reduces interview no-shows. How would you set up the A/B test? |
+| B5P08Q28 | 5 | 8 | Swiggy wants to test free delivery on orders above Rs 199. Which metrics would you track and what could go wrong? |
+| B5P08Q29 | 5 | 8 | What is a Sample Ratio Mismatch (SRM), how do you detect it, and what do you do if you find one? |
+| B5P08Q30 | 5 | 8 | You have too little traffic to reach the required sample size. What are your options? |
+| B5P08Q31 | 5 | 8 | What is the difference between an A/B test and an A/A test, and why run an A/A test? |
+| B5P08Q32 | 5 | 8 | What is the difference between an A/B test, an A/B/n test and a multivariate test? |
+| B5P08Q33 | 5 | 8 | How should outliers, such as a few very large orders, be handled when comparing revenue between groups? |
+| B5P08Q34 | 5 | 8 | Can you run an A/B test with an uneven split such as 90/10, and what are the trade-offs? |
+| B5P08Q35 | 5 | 8 | When should you not run an A/B test? |
+| B5P08Q36 | 5 | 8 | Why is slicing an A/B test result into many segments after the test dangerous? |
+| B5P08Q37 | 5 | 8 | What is the winner's curse, and why does a launched lift often turn out smaller than the test showed? |
+| B5P08Q38 | 5 | 8 | What are network effects or interference between users, and how do they break an A/B test? |
+| B5P08Q39 | 5 | 8 | How do you analyse a ratio metric such as click-through rate when users have different numbers of sessions? |
+| B5P08Q40 | 5 | 8 | What is the difference between frequentist and Bayesian A/B testing? |
+| B5P08Q41 | 5 | 8 | What is CUPED or variance reduction, and why does it help? |
+| B5P08Q42 | 5 | 8 | What is sequential testing, and how does it differ from fixed-horizon testing? |
+| B5P08Q43 | 5 | 8 | How would you measure the impact of a change when randomisation is not possible? |
+| B5P09Q1 | 5 | 9 | What is an outlier? |
+| B5P09Q2 | 5 | 9 | How do you identify outliers in a dataset? |
+| B5P09Q3 | 5 | 9 | How do you handle outliers in a dataset? |
+| B5P09Q4 | 5 | 9 | Your company's average salary is Rs 14 lakh but most employees earn about Rs 6 lakh. Which average would you report to the CEO, and why? |
+| B5P09Q5 | 5 | 9 | Explain the IQR method for detecting outliers. In a salary dataset Q1 is Rs 15,000 and Q3 is Rs 28,000: is Rs 95,000 an outlier? |
+| B5P09Q6 | 5 | 9 | Explain the z-score method for detecting outliers. When does it fail? |
+| B5P09Q7 | 5 | 9 | Should you always remove outliers? When would you keep one? |
+| B5P09Q8 | 5 | 9 | What is Simpson's paradox? Explain it with an example. |
+| B5P09Q9 | 5 | 9 | Two recruiters have different offer-acceptance rates overall, but the ranking flips when you look department by department. Show with numbers how this can happen. |
+| B5P09Q10 | 5 | 9 | How is an outlier different from a data-entry error? |
+| B5P09Q11 | 5 | 9 | How does a box plot show outliers? |
+| B5P09Q12 | 5 | 9 | Attrition fell from 10% to 5%. A manager says "attrition was halved". What is wrong or incomplete about presenting it that way? |
+| B5P09Q13 | 5 | 9 | What is the difference between percentage change and percentage-point change? Give an HR example. |
+| B5P09Q14 | 5 | 9 | How can a chart with a truncated y-axis mislead the reader? |
+| B5P09Q15 | 5 | 9 | What is cherry-picking in data analysis, and how do you avoid it? |
+| B5P09Q16 | 5 | 9 | Why is the average of department-wise averages not the same as the company-wide average? Show with an example. |
+| B5P09Q17 | 5 | 9 | What is winsorization, and how is it different from trimming and from deleting outliers? |
+| B5P09Q18 | 5 | 9 | What is the modified z-score (median and MAD), and why is it more robust than the ordinary z-score? |
+| B5P09Q19 | 5 | 9 | How would you decide whether an outlier is an error, a rare real event, or a different population? |
+| B5P09Q20 | 5 | 9 | A single day shows sales ten times the normal level. How do you check whether to include it in a monthly trend analysis? |
+| B5P09Q21 | 5 | 9 | What is survivorship bias? Give an example from HR or business data. |
+| B5P09Q22 | 5 | 9 | What is the base rate fallacy? Give a numeric example. |
+| B5P09Q23 | 5 | 9 | A 100% conversion rate looks great on a dashboard. Why can small sample sizes make percentages misleading? |
+| B5P09Q24 | 5 | 9 | How would you check your own analysis for Simpson's paradox before sharing it? |
+| B5P09Q25 | 5 | 9 | Which would you trust to make a decision, the overall result or the segment-level result? How do you decide in a Simpson's paradox case? |
+| B5P09Q26 | 5 | 9 | Revenue per customer is dominated by a few very large "whale" customers. How would you report and analyse it? |
+| B5P09Q27 | 5 | 9 | What are some common ways statistics are used to mislead in reports and presentations? |
+| B5P09Q28 | 5 | 9 | Why can a mean be misleading for bimodal or skewed data? What would you report instead? |
+| B5P09Q29 | 5 | 9 | What is Anscombe's quartet, and what lesson does it teach analysts? |
+| B5P09Q30 | 5 | 9 | What is regression to the mean? Give an example that could fool a manager. |
+| B5P09Q31 | 5 | 9 | What is Goodhart's law? Give an example of a KPI that stops being useful once it becomes a target. |
+| B5P09Q32 | 5 | 9 | Why might a log transformation help with outliers and skewed data, and what is the downside when explaining results? |
+| B5P09Q33 | 5 | 9 | How do you report results when removing an outlier changes the conclusion? |
+| B5P09Q34 | 5 | 9 | What is the Texas sharpshooter fallacy? |
+| B5P09Q35 | 5 | 9 | Why is a pie chart or dual-axis chart sometimes considered misleading? |
+| B5P09Q36 | 5 | 9 | What is the ecological fallacy? Give an example. |
+| B5P09Q37 | 5 | 9 | What is the difference between an outlier, a high-leverage point and an influential point? |
+| B5P09Q38 | 5 | 9 | What is the masking effect in outlier detection, and how can you avoid it? |
+| B5P09Q39 | 5 | 9 | What is Berkson's paradox? Give an example. |
+| B5P09Q40 | 5 | 9 | How do you detect outliers when the data has several variables, for example height and weight together? |
+| B5P09Q41 | 5 | 9 | A dashboard shows average handling time falling every month, yet customers complain more. What statistical pitfalls could explain this? |
+| B5P10Q1 | 5 | 10 | Average customer satisfaction (CSAT) fell 10% this quarter. How would you analyse it? |
+| B5P10Q2 | 5 | 10 | Your manager says the average salary of the team is 8 lakh, but most people feel they earn less. What could explain this, and what would you report instead? |
+| B5P10Q3 | 5 | 10 | A report shows attrition went from 12% to 14% in one month. How do you decide whether this is a real increase or normal fluctuation? |
+| B5P10Q4 | 5 | 10 | The sales team claims a new campaign worked because sales rose 5% after launch. How would you check that claim? |
+| B5P10Q5 | 5 | 10 | You have survey responses from 200 of 5,000 employees. How confident can you be in the results, and what would you check first? |
+| B5P10Q6 | 5 | 10 | A result has p = 0.03 but the effect is only 0.2% lift in revenue. Would you recommend acting on it? |
+| B5P10Q7 | 5 | 10 | Two branches have average sales of 52 and 55 units. How do you tell whether the 3-unit gap is real? |
+| B5P10Q8 | 5 | 10 | Ice-cream sales and drowning incidents rise together. A manager says to ban ice cream. How do you respond? |
+| B5P10Q9 | 5 | 10 | A dashboard shows overall conversion rate fell, but every individual channel's rate rose. How is that possible and what would you do? |
+| B5P10Q10 | 5 | 10 | Why would you report median instead of mean for salary, delivery time or order value, and how would you justify it to a manager? |
+| B5P10Q11 | 5 | 10 | You find a few extremely large orders in the data. Do you delete them? Walk through your decision. |
+| B5P10Q12 | 5 | 10 | A new employee training programme was tried on 50 people and their average score rose. How would you test if the programme actually worked? |
+| B5P10Q13 | 5 | 10 | A column has 30% missing values (for example, salary or age). How do you decide what to do, and what bias could each choice introduce? |
+| B5P10Q14 | 5 | 10 | Your report says the average hiring time is 30 days. The recruiter says it feels like 45. How would you investigate the difference? |
+| B5P10Q15 | 5 | 10 | Explain 95% confidence interval to a non-technical manager using an attendance or survey example. |
+| B5P10Q16 | 5 | 10 | Employee engagement survey: 85% of responders are satisfied, but only 20% of staff responded. Can you trust the 85%? |
+| B5P10Q17 | 5 | 10 | A candidate scores 78 in a test where the team average is 70 and the standard deviation is 8. How would you explain how good that score is? |
+| B5P10Q18 | 5 | 10 | How would you sanity-check a number in a report before sending it to a manager? |
+| B5P10Q19 | 5 | 10 | Sales dipped on one day. How do you decide whether to raise an alarm or treat it as normal variation? |
+| B5P10Q20 | 5 | 10 | You run 20 different comparisons on the same data and one shows p < 0.05. Should you report it? |
+| B5P10Q21 | 5 | 10 | A model flags attrition risk with 95% accuracy, but only 3% of employees actually leave. Is 95% good? |
+| B5P10Q22 | 5 | 10 | A test for a rare issue is 99% accurate and 1 in 1,000 items is faulty. A flagged item is faulty with what probability, and how would you explain the result to a manager? |
+| B5P10Q23 | 5 | 10 | Customers who use the mobile app spend more than those who do not. Does that mean pushing everyone to the app will raise spending? |
+| B5P10Q24 | 5 | 10 | The A/B test shows a 2% lift after 3 days and the product team wants to stop early. What do you advise? |
+| B5P10Q25 | 5 | 10 | How would you decide how many people to survey to estimate employee satisfaction within plus or minus 3 points? |
+| B5P10Q26 | 5 | 10 | Two departments have attrition of 10% (of 20 people) and 12% (of 500 people). Which is a more reliable number and why? |
+| B5P10Q27 | 5 | 10 | Average rating of Product A is 4.8 from 5 reviews and Product B is 4.5 from 500 reviews. Which is better? |
+| B5P10Q28 | 5 | 10 | A correlation of 0.8 between training hours and performance is found. What additional questions would you ask before concluding anything? |
+| B5P10Q29 | 5 | 10 | Your team's average response time improved from 10 to 8 minutes, but customers still complain. What might you check in the data? |
+| B5P10Q30 | 5 | 10 | The sales data is right-skewed. Which summary statistics and chart would you show your manager, and why? |
+| B5P10Q31 | 5 | 10 | How would you check whether the gap in average pay between men and women in a company is statistically significant, and what else must you control for? |
+| B5P10Q32 | 5 | 10 | A survey was sent only to employees who are still with the company to ask why people leave. What is wrong with this design? |
+| B5P10Q33 | 5 | 10 | Marks of students from two coaching centres are given. Which test would you use to compare them, and what assumptions do you check? |
+| B5P10Q34 | 5 | 10 | A manager says 'last month's best-performing salesperson will do well again.' Using statistics, how do you challenge or support that? |
+| B5P10Q35 | 5 | 10 | You need to check if a dice or coin used in a promotion game is fair. How would you test it with data? |
+| B5P10Q36 | 5 | 10 | Product return rate is 8% overall. How do you tell if the rate for one region at 11% is genuinely higher? |
+| B5P10Q37 | 5 | 10 | You are asked to present statistical findings to a leadership team with no analytics background. How do you structure the message? |
+| B5P10Q38 | 5 | 10 | Your manager asks you to forecast next month's sales using only the last three months of data. What are the risks and how would you present the uncertainty? |
+| B5P10Q39 | 5 | 10 | Overall, a hospital's treatment shows a lower success rate than a competitor, yet it does better for both mild and severe patients. Explain what is happening and what you would report. |
+| B5P10Q40 | 5 | 10 | An A/B test shows an overall lift, but when split by new vs returning users, the lift disappears in both groups. How could this occur? |
+| B5P10Q41 | 5 | 10 | Two variants of a landing page show 5.0% vs 5.5% conversion with 2,000 visitors each. Is the difference significant? Show a rough calculation. |
+| B5P10Q42 | 5 | 10 | Two dice are rolled. What is the probability that the sum is greater than 6? |
+| B5P10Q43 | 5 | 10 | What is the probability that a 31-day month has five Sundays? |
+| B5P10Q44 | 5 | 10 | You have 100 employees, 60 in sales and 40 in support. If you pick 2 at random, what is the probability both are from support? |
+| B5P10Q45 | 5 | 10 | A call centre gets 6 calls per hour on average. What is the chance of getting no call in a given 10-minute window? |
+| B5P10Q46 | 5 | 10 | An interviewer gives you a coin that you suspect is biased and asks how you would prove it with the fewest tosses. What do you say? |
+| B5P10Q47 | 5 | 10 | Your A/B test ran for a week and shows lift on Monday to Wednesday but none later. What could explain it? |
+| B5P10Q48 | 5 | 10 | The experiment's control group has 10,200 users and the test group has 9,400 users when you expected an equal split. Is that a problem? |
+| B5P10Q49 | 5 | 10 | How would you handle a metric that has a strong weekly pattern (for example, weekday vs weekend attendance) when comparing two periods? |
+| B5P10Q50 | 5 | 10 | How would you tell whether an employee's sudden performance spike is skill or luck (regression to the mean)? |
+| B5P10Q51 | 5 | 10 | A vendor claims their delivery time is 'on average 3 days'. What further statistics would you ask for before trusting this? |
+| B5P10Q52 | 5 | 10 | Customers who complain are 3 times more likely to churn. How would you check whether complaints cause churn? |
+| B5P10Q53 | 5 | 10 | How would you explain to a manager why two employees with the same average performance score may need different management? |
+| B5P10Q54 | 5 | 10 | You must compare monthly attrition across 12 locations with very different headcounts. How would you do this fairly? |
+| B5P10Q55 | 5 | 10 | A dataset shows that employees with more years of experience earn more, but your analysis shows the relationship disappears within each job grade. What does this tell you? |
+| B5P10Q56 | 5 | 10 | How would you estimate how many people are needed in a pilot to detect a 5% improvement in a process? |
+| B5P10Q57 | 5 | 10 | You have to measure the effect of a work-from-home policy but cannot randomise who gets it. How would you approach the analysis? |
+| B5P10Q58 | 5 | 10 | A test has 80% power and you ran 10 experiments where 2 are truly effective. Roughly how many significant results do you expect, and how many are false? |
+| B5P10Q59 | 5 | 10 | An A/B test on a rare event (0.5% conversion) needs a very large sample. What practical alternatives do you suggest to the business? |
+| B5P10Q60 | 5 | 10 | Your boss insists on a result of 'no difference' after a non-significant test. What can and can't you conclude? |
+| B5P10Q61 | 5 | 10 | Estimate the number of employees likely to attrite next quarter and give a range. How do you build and communicate it? |
+| B5P10Q62 | 5 | 10 | A KPI improves after a policy change, but a similar KPI in a neighbouring unit with no change also improves. What does this suggest for your conclusion? |
+| B5P10Q63 | 5 | 10 | Explain how survivorship bias could distort an analysis of the performance of employees hired three years ago. |
+| B5P10Q64 | 5 | 10 | A metric moved from 20.0% to 20.4%, and the dashboard colours it green. How would you design the dashboard to avoid over-reading noise? |
+| B5P11Q1 | 5 | 11 | Which Excel functions do you use to find the mean, median and mode of a column of salaries? |
+| B5P11Q2 | 5 | 11 | How do you get a quick statistical summary of a dataset in Python using pandas describe()? |
+| B5P11Q3 | 5 | 11 | What is the difference between COUNT, COUNTA, COUNTBLANK and COUNTIF in Excel? |
+| B5P11Q4 | 5 | 11 | How do you calculate the average salary per department using a pandas groupby? |
+| B5P11Q5 | 5 | 11 | What is the difference between AVERAGE, AVERAGEIF and AVERAGEIFS in Excel, and how would you find the average salary of the Sales team in Hyderabad? |
+| B5P11Q6 | 5 | 11 | What is the difference between STDEV.S and STDEV.P in Excel, and which one do you use for a sample of 50 employees? |
+| B5P11Q7 | 5 | 11 | How do you calculate the correlation between two columns (for example, experience and salary) in Excel and in Python? |
+| B5P11Q8 | 5 | 11 | Why does np.std give a different answer from pandas .std(), and what is ddof? |
+| B5P11Q9 | 5 | 11 | How do you calculate a weighted average in Excel using SUMPRODUCT, and how do you do it in Python? |
+| B5P11Q10 | 5 | 11 | How do you find quartiles and percentiles in Excel, and what is the difference between PERCENTILE.INC and PERCENTILE.EXC? |
+| B5P11Q11 | 5 | 11 | How do you check for missing values in pandas, and how does a missing value affect mean(), sum() and count()? |
+| B5P11Q12 | 5 | 11 | How do you fill missing values with the mean or median in pandas, and when would you choose the median? |
+| B5P11Q13 | 5 | 11 | How do you build a pivot table in Excel to show average, count and maximum of salary by department? |
+| B5P11Q14 | 5 | 11 | How do you use value_counts() in pandas to see the percentage share of each category, such as attrition Yes/No? |
+| B5P11Q15 | 5 | 11 | How do you calculate a moving average in Excel and in pandas? |
+| B5P11Q16 | 5 | 11 | How do you rank values in Excel using RANK.EQ and PERCENTRANK.INC, and what happens with ties? |
+| B5P11Q17 | 5 | 11 | How do you flag outliers using the IQR rule in Excel? |
+| B5P11Q18 | 5 | 11 | How do you detect outliers in Python using the IQR method with quantile()? |
+| B5P11Q19 | 5 | 11 | How do you calculate a z-score in Excel (STANDARDIZE) and in Python, and what does a z-score of 2.5 tell you? |
+| B5P11Q20 | 5 | 11 | How do you enable and use the Data Analysis ToolPak in Excel to get descriptive statistics? |
+| B5P11Q21 | 5 | 11 | How do you run a simple linear regression in Excel using SLOPE, INTERCEPT, RSQ or LINEST, and how do you read R-squared? |
+| B5P11Q22 | 5 | 11 | How do you run a simple linear regression in Python and read the coefficient and R-squared? |
+| B5P11Q23 | 5 | 11 | How do you run a two-sample t-test in Excel using T.TEST, and what do the type and tails arguments mean? |
+| B5P11Q24 | 5 | 11 | How do you run a two-sample t-test in Python using scipy, and why do you often set equal_var=False? |
+| B5P11Q25 | 5 | 11 | How do you run a chi-square test of independence in Excel (CHISQ.TEST) and in Python (chi2_contingency)? |
+| B5P11Q26 | 5 | 11 | How do you calculate a 95% confidence interval for a mean in Excel using CONFIDENCE.T, and in Python? |
+| B5P11Q27 | 5 | 11 | What is the difference between COVARIANCE.S and COVARIANCE.P in Excel, and how do you get a covariance matrix in pandas? |
+| B5P11Q28 | 5 | 11 | How do you check the shape of a distribution in Excel and Python using SKEW, KURT, a histogram or skew()? |
+| B5P11Q29 | 5 | 11 | How do you take a random sample of rows in Excel and in pandas, and why set random_state? |
+| B5P11Q30 | 5 | 11 | How do you build and read a correlation matrix in pandas, and why must you select numeric columns first? |
+| B5P11Q31 | 5 | 11 | What does mode() return in pandas, and why is the result a Series and not a single number? |
+| B5P11Q32 | 5 | 11 | How do you use NORM.DIST, NORM.S.DIST and NORM.INV in Excel to find probabilities and cut-off values? |
+| B5P11Q33 | 5 | 11 | How do you use BINOM.DIST and POISSON.DIST in Excel, with a worked example? |
+| B5P11Q34 | 5 | 11 | How do you forecast the next value in Excel using FORECAST.LINEAR or TREND, and what are the limits of the forecast? |
+| B5P12Q1 | 5 | 12 | How did you learn statistics, and how long did it take you? |
+| B5P12Q2 | 5 | 12 | How would you rate yourself in statistics out of 10, and why? |
+| B5P12Q3 | 5 | 12 | You come from HR with no maths or statistics background. How did you learn statistics for data analysis? |
+| B5P12Q4 | 5 | 12 | Which statistics topic did you find hardest, and how did you overcome it? |
+| B5P12Q5 | 5 | 12 | Which statistical concepts have you actually used in a real analysis, and what was the result? |
+| B5P12Q6 | 5 | 12 | Which free resources would you recommend to a beginner learning statistics for data analysis? |
+| B5P12Q7 | 5 | 12 | In what order did you study statistics topics, and why that order? |
+| B5P12Q8 | 5 | 12 | How much maths do you really need to work as a data analyst? |
+| B5P12Q9 | 5 | 12 | How much time do you spend practising statistics each week? |
+| B5P12Q10 | 5 | 12 | Which practice datasets have you used to apply statistics? |
+| B5P12Q11 | 5 | 12 | How do you check that you truly understand a statistics concept and are not just memorising the formula? |
+| B5P12Q12 | 5 | 12 | How do you learn a statistical test or concept you have never used before? |
+| B5P12Q13 | 5 | 12 | How do you use AI assistants such as ChatGPT to learn statistics without depending on them? |
+| B5P12Q14 | 5 | 12 | How would you prepare for a statistics and probability round in one week? |
+| B5P12Q15 | 5 | 12 | Tell me about a time you got a statistics concept wrong and how you corrected it. |
+| B5P12Q16 | 5 | 12 | How do you explain a statistical result, such as a p-value or confidence interval, to a non-technical manager? |
+| B5P12Q17 | 5 | 12 | Do certifications or online courses in statistics help, and have you done any? |
+| B5P12Q18 | 5 | 12 | Have you built a portfolio project that uses statistics? |
+| B5P12Q19 | 5 | 12 | How would you build a statistics-based portfolio project from a public HR dataset such as employee attrition? |
+| B5P12Q20 | 5 | 12 | How would you set up a self-check test to measure your own statistics level? |
+| B5P12Q21 | 5 | 12 | What is your plan to improve your statistics and maths over the next three months? |
+| B5P12Q22 | 5 | 12 | What is the difference between learning statistics for exams and learning it for day-to-day data analysis? |
+| B5P12Q23 | 5 | 12 | How do you keep your statistics skills current while working a full-time job? |
+| B5P12Q24 | 5 | 12 | What are the most common statistics mistakes beginners make, and how do you avoid them? |
+| B5P12Q25 | 5 | 12 | Where does statistics end and machine learning begin, and what would you learn after statistics? |
 
 ## Book 6 — Aptitude & Business Maths
 | Q-ID | Book | Part | Canonical question |
