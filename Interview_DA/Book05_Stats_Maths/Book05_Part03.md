@@ -234,8 +234,12 @@ engagement_scores = random_generator.normal(3.2, 0.6, 5000)
 # Right-skewed data: salaries (lognormal)
 salaries = random_generator.lognormal(10.6, 0.6, 5000)
 
+# For each dataset, compare the mean, the median and the skewness
 for name, values in (("scores", engagement_scores), ("salaries", salaries)):
-    print(name, "mean", round(values.mean(), 2), "median", round(np.median(values), 2), "skew", round(stats.skew(values), 2))
+    mean_value = values.mean()
+    median_value = np.median(values)
+    skewness = stats.skew(values)
+    print(name, "mean", round(mean_value, 2), "median", round(median_value, 2), "skew", round(skewness, 2))
 ```
 Output: `scores mean 3.19 median 3.18 skew 0.06` and `salaries mean 47669.14 median 40233.52 skew 2.15`. Scores: mean is about median and skew near 0. Salaries: mean far above median and large skew, so not normal.
 **Likely follow-ups:** 1) *What would you do with skewed data?* Report median, or take logs (Q26). 2) *Do small samples show normality well?* No, plots are noisy.
@@ -456,8 +460,12 @@ for sample_size in (2, 30, 200):
     # Draw 5,000 random samples and take each sample's average
     samples = random_generator.choice(population_salaries, (5000, sample_size))
     sample_means = samples.mean(axis=1)
+
+    # Theory: SD of the averages = SD of the population / square root of sample size
     theory_sd = population_salaries.std() / sample_size ** 0.5
-    print(sample_size, "skew of means", round(stats.skew(sample_means), 2), "sd of means", round(sample_means.std()), "theory", round(theory_sd))
+
+    skew_of_means = stats.skew(sample_means)
+    print(sample_size, "skew of means", round(skew_of_means, 2), "sd of means", round(sample_means.std()), "theory", round(theory_sd))
 ```
 Output: `pop skew 2.27`, `2 skew of means 1.5 sd of means 22369 theory 22461`, `30 skew of means 0.45 sd of means 5912 theory 5799`, `200 skew of means 0.18 sd of means 2248 theory 2246`. Averages become more symmetric and tighter as samples grow.
 **Likely follow-ups:** 1) *How large must n be?* Often 30 is a rule of thumb; more for very skewed data. 2) *Does CLT make raw data normal?* No.
@@ -538,7 +546,7 @@ Output:
 ```
 The hand calculation and the library agree: about 26.7%.
 Excel (2010+; not run in Excel here, matched to Python): `=BINOM.DIST(7,10,0.7,FALSE)` returns 0.2668 (FALSE means "exactly 7", not "7 or fewer").
-**Likely follow-ups:** 1) *Probability at least 7 join?* Add P(7)+P(8)+P(9)+P(10), or `=1-BINOM.DIST(6,10,0.7,TRUE)`. 2) *Which assumption could fail?* Independence: friends joining together are not independent.
+**Likely follow-ups:** 1) *Probability at least 7 join?* Add P(7)+P(8)+P(9)+P(10), or `=1-BINOM.DIST(6,10,0.7,TRUE)` (not run in Excel here). 2) *Which assumption could fail?* Independence: friends joining together are not independent.
 **Common mistakes:** Forgetting the "10 choose 7" ways term (you would get 0.0022); using TRUE in `BINOM.DIST` and getting "7 or fewer".
 
 ### Q19 ⭐⭐ 🟡 You make 100 offers and each has an 80% chance of acceptance. What are the expected number of acceptances and the standard deviation?
@@ -574,7 +582,7 @@ Output:
 80.0 16.0 4.0
 72.0 88.0
 ```
-Plan for 80 joiners, and do not be surprised by anything from 72 to 88. Excel: `=100*0.8` and `=SQRT(100*0.8*0.2)` (any version).
+Plan for 80 joiners, and do not be surprised by anything from 72 to 88. Excel: `=100*0.8` and `=SQRT(100*0.8*0.2)` (any version; not run in Excel here).
 **Likely follow-ups:** 1) *Why does SD matter for planning?* It tells HR how much buffer (extra offers) to hold. 2) *When does it break?* If acceptance chances differ by candidate or are linked.
 **Common mistakes:** Giving the variance (16) as the SD; forgetting the (1-p) term.
 
@@ -675,7 +683,7 @@ Mean and variance are close, as expected for real Poisson data. Excel: compare `
 **Common mistakes:** Calling a ratio of 1.3 "wildly off" with no sample-size thought; ignoring it and trusting Poisson tail probabilities.
 
 ### Q23 ⭐⭐ 🟡 Exam scores have a mean of 70 and an SD of 10. What is the z-score of 85, and roughly what percentile is it?
-**Asked at:** commonly asked (no company-specific report found); z-score questions appear in every stats list we found.
+**Asked at:** commonly asked (no company-specific report found); z-scores are a standard item in generic stats question lists.
 **What the interviewer is checking:** Can you standardise a value and read a percentile off the normal curve?
 **Say this in the interview:** "z = (85 - 70) / 10 = 1.5, so 1.5 standard deviations above the mean. Assuming roughly normal scores, that is about the 93rd percentile."
 **Explain simply:**
@@ -778,7 +786,7 @@ Output:
 scores skew 0.26 excess kurt -0.01 Shapiro p 0.4893
 salaries skew 1.98 excess kurt 5.85 Shapiro p 0.0
 ```
-Scores look normal (p well above 0.05, small skew). Salaries fail clearly (high skew, p effectively 0). For the plot: `scipy.stats.probplot` or Excel histogram plus a normal-curve overlay. Excel has no built-in normality test; use `=SKEW(range)` and `=KURT(range)`.
+Scores look normal (p well above 0.05, small skew). Salaries fail clearly (high skew, p effectively 0). For the plot: `scipy.stats.probplot` or Excel histogram plus a normal-curve overlay. Excel has no built-in normality test (to my knowledge; from memory, unverified); use `=SKEW(range)` and `=KURT(range)` (not run in Excel here).
 **Likely follow-ups:** 1) *Is the test enough alone?* No: look at the plot. 2) *What if not normal?* Transform (log), use medians, or non-parametric methods.
 **Common mistakes:** Trusting p > 0.05 as proof of normality on tiny samples; relying only on skewness.
 
@@ -807,7 +815,7 @@ Output:
 45000.0 38000.0
 38125.0 36000.0
 ```
-One person shifted the mean by almost 7,000 but the median by only 2,000. Excel: `=AVERAGE(range)`, `=MEDIAN(range)`.
+One person shifted the mean by almost 7,000 but the median by only 2,000. Excel: `=AVERAGE(range)`, `=MEDIAN(range)` (any version; not run in Excel here).
 **Likely follow-ups:** 1) *Delete the outlier?* Only if it is an error; a real CEO salary is real data. 2) *Best single number?* Median plus a spread measure such as IQR.
 **Common mistakes:** Reporting the mean salary as "typical"; deleting outliers just because they are big.
 
@@ -837,7 +845,7 @@ Output:
 45000.0 38000.0 1.92
 6
 ```
-Six of nine people earn below the "average", a clear sign of right skew. Excel: `=SKEW(range)` (all versions).
+Six of nine people earn below the "average", a clear sign of right skew. Excel: `=SKEW(range)` (all versions; not run in Excel here).
 **Likely follow-ups:** 1) *Which would you report?* Median, plus a range or percentiles. 2) *Does this prove skew?* It is a strong hint; confirm with a histogram.
 **Common mistakes:** Telling the manager "the average employee earns 45,000"; assuming mean > median always means skew (small samples can mislead).
 
@@ -893,7 +901,7 @@ Output:
 ```
 2.0 0.5 0.9772 0.6915
 ```
-A beats about 97.7% of their class, B about 69.1%. Excel: `=STANDARDIZE(80,70,5)` and `=STANDARDIZE(85,80,10)`.
+A beats about 97.7% of their class, B about 69.1%. Excel: `=STANDARDIZE(80,70,5)` returns 2 and `=STANDARDIZE(85,80,10)` returns 0.5 (all versions; not run in Excel here).
 **Likely follow-ups:** 1) *What if the classes are not normal?* Compare ranks or percentiles instead. 2) *Other uses?* Standardising KPIs across departments.
 **Common mistakes:** Comparing raw marks; comparing raw distances from the mean without dividing by SD.
 
@@ -1064,7 +1072,7 @@ Output:
 4.57 16.19 3.54
 0.0027 5
 ```
-Spikes occur far more often than Poisson predicts (5 days observed versus about 0.08 expected), so the model fails. A better approach is a negative binomial or modelling weekday and season. Excel: `=VAR.S(range)/AVERAGE(range)`.
+Spikes occur far more often than Poisson predicts (5 days observed versus about 0.08 expected), so the model fails. A better approach is a negative binomial or modelling weekday and season. Excel: `=VAR.S(range)/AVERAGE(range)` (2010+; not run in Excel here).
 **Likely follow-ups:** 1) *What would you do instead?* Negative binomial, or separate rates by weekday. 2) *When does Poisson work?* Rare, independent events such as ticket arrivals in steady periods.
 **Common mistakes:** Assuming any count data is Poisson; ignoring clustering and seasonality.
 
@@ -1125,8 +1133,11 @@ random_generator = np.random.default_rng(42)
 log_of_salaries = random_generator.normal(loc=np.log(40000), scale=0.5, size=10000)
 salaries = np.exp(log_of_salaries)
 
+# Compare mean and median of the salaries (right skew pulls the mean up)
 print("mean salary:", round(salaries.mean()))
 print("median salary:", round(np.median(salaries)))
+
+# Skewness before and after taking logs
 print("skewness of salaries:", round(stats.skew(salaries), 2))
 print("skewness of log(salaries):", round(stats.skew(np.log(salaries)), 2))
 ```
@@ -1511,7 +1522,7 @@ print("t, 5 df:", round(stats.kurtosis(heavy_tailed), 2), "(theory 6)")
 beyond_3sd = np.abs(heavy_tailed - heavy_tailed.mean()) > 3 * heavy_tailed.std()
 print("t5 share beyond 3 SD:", round(np.mean(beyond_3sd) * 100, 2), "%  (normal: about 0.27%)")
 ```
-Output: normal -0.0; with 3 outliers 7.65 (three values out of 1,003 jumped it from 0); uniform -1.2; t5 5.3 (theory 6; sample estimates of heavy tails are unstable); t5 has 1.18% beyond 3 SD versus about 0.27% normal. Excel: `=KURT(range)` returns excess kurtosis.
+Output: normal -0.0; with 3 outliers 7.65 (three values out of 1,003 jumped it from 0); uniform -1.2; t5 5.3 (theory 6; sample estimates of heavy tails are unstable); t5 has 1.18% beyond 3 SD versus about 0.27% normal. Excel: `=KURT(range)` returns excess kurtosis (not run in Excel here).
 **Likely follow-ups:** 1) *Why can't you see it from the peak?* Peak height and tail weight can move separately. 2) *What to do?* Look at a box plot or check outliers.
 **Common mistakes:** Calling it "peakedness"; forgetting Excel and scipy report excess kurtosis (normal = 0, not 3) by default.
 
@@ -1545,8 +1556,7 @@ for leavers in range(0, 7):
 # Poor match with few trials
 print("n=10, p=0.3, k=3 binomial:", round(stats.binom.pmf(3, 10, 0.3), 4), "poisson:", round(stats.poisson.pmf(3, 3), 4))
 ```
-Output: the two columns agree to about 3 decimals (e.g. k=3: 0.2244 vs 0.2240). With only 10 trials the approximation is off (0.2668 vs 0.2240). Excel: `=BINOM.DIST(3,1000,0.003,FALSE)` and `=POISSON.DIST(3,3,FALSE)` (Excel 2010+, not run in Excel here).
-**Likely follow-ups:** 1) *Binomial mean and variance versus Poisson?* np and np(1-p) versus lambda and lambda; they match when p is tiny. 2) *Which to use in practice?* Binomial if you know n and p.
+Output: the two columns agree to about 3 decimals (e.g. k=3: 0.2244 vs 0.2240). With only 10 trials the approximation is off (0.2668 vs 0.2240). Excel: `=BINOM.DIST(3,1000,0.003,FALSE)` and `=POISSON.DIST(3,3,FALSE)` (Excel 2010+, not run in Excel here).**Likely follow-ups:** 1) *Binomial mean and variance versus Poisson?* np and np(1-p) versus lambda and lambda; they match when p is tiny. 2) *Which to use in practice?* Binomial if you know n and p.
 **Common mistakes:** Applying it with a large p; forgetting that lambda stays fixed while n grows.
 
 ### Q50 ⭐ 🔴 What are heavy-tailed distributions such as the Pareto (80/20), and why do they break the normal-based rules of thumb?

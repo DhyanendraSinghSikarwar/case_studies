@@ -54,7 +54,7 @@
 - Alternative hypothesis (H1): there is a real difference (two-sided) or B is higher (one-sided; see Q21).
 - We never "prove" H1; we either reject H0 (the data is too surprising under H0) or fail to reject it.
 **Formula in plain words:** H0: conversion rate of B minus conversion rate of A equals zero. In symbols: H0: p_B - p_A = 0, H1: p_B - p_A ≠ 0.
-**Worked example:** Checkout test. H0: the new button gives the same 10% conversion as the old one. H1: conversion is not 10%, it differs. Data: 10% vs 12%; the p-value of 0.043 (Q8) says such a gap would show up about 4% of the time if H0 were true, so we reject H0 at the 5% level.
+**Worked example:** Checkout test. H0: the new button and the old button have the same true conversion rate. H1: the two true rates differ. Data: 10% vs 12%; the p-value of 0.043 (Q8) says such a gap would show up about 4% of the time if H0 were true, so we reject H0 at the 5% level.
 **Likely follow-ups:**
 1. *Why not set H1 as "B is better"?* You can (one-sided), but only if a drop would lead to the same decision as no change.
 **Common mistakes:** Saying "we accept the null" when p is high (we only failed to find evidence); writing hypotheses after seeing the data.
@@ -264,7 +264,8 @@ small_variance_sum = 0.10 * 0.90 + 0.11 * 0.89
 small_gap_sample = (z_alpha + z_power) ** 2 * small_variance_sum / small_gap ** 2
 print("visitors per group for 10% to 11%:", math.ceil(small_gap_sample))
 ```
-Output: `z for alpha: 1.96  z for power: 0.842`, `visitors per group: 3839`, `visitors per group for 10% to 11%: 14749`. Library `statsmodels` (NormalIndPower) gives about 3,835, a tiny difference from using a different effect-size formula.
+Output: `z for alpha: 1.96  z for power: 0.842`, `visitors per group: 3839`, `visitors per group for 10% to 11%: 14749`. Library `statsmodels` (NormalIndPower) gives about 3,835, a tiny difference from using a different effect-size formula. In plain words: about 3,839 visitors in each version, so roughly 7,700 in total.
+Excel (2010+; not run in Excel here): `=ROUNDUP((NORM.S.INV(0.975)+NORM.S.INV(0.8))^2*(0.1*0.9+0.12*0.88)/(0.02)^2,0)` should return 3,839 (same formula as the Python code).
 **Likely follow-ups:**
 1. *How long will it take?* Divide total users by daily eligible traffic, then round up to full weeks (Q18).
 **Common mistakes:** Using total instead of per-group sample size; picking an MDE just to fit the available traffic; forgetting to use only eligible users.
@@ -283,11 +284,16 @@ Output: `z for alpha: 1.96  z for power: 0.842`, `visitors per group: 3839`, `vi
 import numpy as np
 from scipy import stats
 
+# Fixed seed so the result reproduces; 5,000 pretend experiments
 random_generator = np.random.default_rng(42)
 number_of_experiments = 5000
 visitors_per_group = 2000
-true_rate = 0.10                                   # both groups identical
-look_points = list(range(200, 2001, 200))          # check at 200, 400, ... 2000 users
+
+# Both groups truly convert at 10%, so any "win" is a false alarm
+true_rate = 0.10
+
+# Look at the results after 200, 400, ... 2000 users per group
+look_points = list(range(200, 2001, 200))
 
 false_alarms_peeking = 0
 false_alarms_final_only = 0
@@ -306,8 +312,10 @@ for experiment in range(number_of_experiments):
         standard_error = np.sqrt(pooled_rate * (1 - pooled_rate) * 2 / users_so_far)
         z_score = (conversions_b - conversions_a) / users_so_far / standard_error
         p_value = 2 * stats.norm.sf(abs(z_score))
+        # A peeker would stop and declare a win the first time p is below 0.05
         if p_value < 0.05:
-            stopped_early = True                   # a peeker would stop and declare a win here
+            stopped_early = True
+        # Someone who looks only once, at the end
         if users_so_far == visitors_per_group and p_value < 0.05:
             false_alarms_final_only += 1
     if stopped_early:
@@ -316,7 +324,7 @@ for experiment in range(number_of_experiments):
 print("peeking 10 times:", false_alarms_peeking / number_of_experiments)
 print("single look at end:", false_alarms_final_only / number_of_experiments)
 ```
-Output: `peeking 10 times: 0.1864`, `single look at end: 0.0556`. Peeking turned a 5% false-alarm rate into nearly 19%.
+Output: `peeking 10 times: 0.1864`, `single look at end: 0.0556`. Peeking turned a 5% false-alarm rate into nearly 19%. In plain words: if we stop at the first lucky look, almost one in five do-nothing changes gets called a win. (The 0.0556 is a little above 5% only because of simulation noise.)
 **Likely follow-ups:**
 1. *Can I monitor at all?* Yes, for bugs and the split ratio; just do not decide the winner from early p-values.
 **Common mistakes:** "It hit 95% so we can stop"; extending a test because it is "almost significant".
@@ -336,12 +344,13 @@ Output: `peeking 10 times: 0.1864`, `single look at end: 0.0556`. Peeking turned
 import numpy as np
 from scipy import stats
 
+# Fixed seed so the result reproduces; 5,000 pretend tests per world
 random_generator = np.random.default_rng(7)
 number_of_tests = 5000
 visitors_per_group = 2000
 
+# Two-proportion z-test at the 5% level: True means "looks significant"
 def is_significant(conversions_a, conversions_b, visitors):
-    # Two-proportion z-test at the 5% level
     pooled_rate = (conversions_a + conversions_b) / (2 * visitors)
     standard_error = np.sqrt(pooled_rate * (1 - pooled_rate) * 2 / visitors)
     z_score = (conversions_b - conversions_a) / visitors / standard_error
@@ -350,21 +359,21 @@ def is_significant(conversions_a, conversions_b, visitors):
 false_alarms = 0
 missed_wins = 0
 for test in range(number_of_tests):
-    # World 1: no real difference (10% vs 10%)
-    a = random_generator.binomial(visitors_per_group, 0.10)
-    b = random_generator.binomial(visitors_per_group, 0.10)
-    if is_significant(a, b, visitors_per_group):
+    # World 1: no real difference (10% vs 10%); a significant result is a false alarm
+    conversions_a = random_generator.binomial(visitors_per_group, 0.10)
+    conversions_b = random_generator.binomial(visitors_per_group, 0.10)
+    if is_significant(conversions_a, conversions_b, visitors_per_group):
         false_alarms += 1
-    # World 2: real difference (10% vs 12%)
-    a = random_generator.binomial(visitors_per_group, 0.10)
-    b = random_generator.binomial(visitors_per_group, 0.12)
-    if not is_significant(a, b, visitors_per_group):
+    # World 2: real difference (10% vs 12%); a non-significant result is a miss
+    conversions_a = random_generator.binomial(visitors_per_group, 0.10)
+    conversions_b = random_generator.binomial(visitors_per_group, 0.12)
+    if not is_significant(conversions_a, conversions_b, visitors_per_group):
         missed_wins += 1
 
 print("Type I rate (false alarms):", false_alarms / number_of_tests)
 print("Type II rate (missed real win):", missed_wins / number_of_tests)
 ```
-Output: `Type I rate (false alarms): 0.049`, `Type II rate (missed real win): 0.4676`.
+Output: `Type I rate (false alarms): 0.049`, `Type II rate (missed real win): 0.4676`. In plain words: with 2,000 users per group, about 1 in 20 do-nothing changes is wrongly called a win, and nearly half of real 2-point wins are missed.
 **Likely follow-ups:**
 1. *Can you reduce both at once?* Yes, only with more data (or lower variance, Q41).
 **Common mistakes:** Mixing up which is which; thinking p < 0.05 means a 5% chance the result is wrong.
@@ -391,7 +400,7 @@ relative_lift_percent = (treatment_rate - control_rate) / control_rate * 100
 print("absolute lift (points):", round(absolute_lift_points, 2))
 print("relative lift (%):", round(relative_lift_percent, 1))
 ```
-Output: `absolute lift (points): 2.0`, `relative lift (%): 20.0`. Excel: with control rate in A1 (0.10) and treatment in B1 (0.12), absolute `=(B1-A1)*100` returns 2; relative `=(B1-A1)/A1` returns 20% when formatted as a percentage.
+Output: `absolute lift (points): 2.0`, `relative lift (%): 20.0`. Excel: with control rate in A1 (0.10) and treatment in B1 (0.12), absolute `=(B1-A1)*100` returns 2; relative `=(B1-A1)/A1` returns 20% when formatted as a percentage. In plain words: 2 extra buyers in every 100 visitors, which is a one-fifth improvement on the old rate.
 **Likely follow-ups:**
 1. *Which do you report to executives?* Both, plus the expected extra orders or hires.
 **Common mistakes:** Saying "up 2%" when you mean 2 points; reporting only the bigger-sounding relative number.
@@ -434,7 +443,7 @@ print("gap (points):", round(gap * 100, 1), " relative change (%):", round(gap /
 print("z:", round(z_score, 2), " p:", round(p_value, 4))
 print("95% CI (points):", round(lower_limit * 100, 1), "to", round(upper_limit * 100, 1))
 ```
-Output: `rates: 0.225 0.16`, `gap (points): -6.5  relative change (%): -28.9`, `z: -2.33  p: 0.0197`, `95% CI (points): -11.9 to -1.1`.
+Output: `rates: 0.225 0.16`, `gap (points): -6.5  relative change (%): -28.9`, `z: -2.33  p: 0.0197`, `95% CI (points): -11.9 to -1.1`. In plain words: the reminder cut no-shows by about 6.5 points, and the whole interval is below zero, so the drop is unlikely to be luck.
 **Likely follow-ups:**
 1. *What would you do differently?* Pre-register the sample size, check SRM, and follow up on long-term effect.
 **Common mistakes:** Presenting only the win; no numbers; claiming outcomes you cannot back up; skipping what happened after the test.
@@ -455,9 +464,12 @@ from scipy import stats
 from statsmodels.stats.power import NormalIndPower
 from statsmodels.stats.proportion import proportion_effectsize
 
+# Inputs: 10% now, 12% hoped for, 5% two-sided significance
 baseline_rate = 0.10
 target_rate = 0.12
 z_alpha = stats.norm.ppf(1 - 0.05 / 2)
+
+# Combined spread of the two rates, and the gap we want to detect
 variance_sum = baseline_rate * (1 - baseline_rate) + target_rate * (1 - target_rate)
 gap = target_rate - baseline_rate
 
@@ -557,7 +569,7 @@ Both rates moved by 0.6 points, but the refund move is much more convincing stat
 ### Q18 ⭐⭐ 🟡 How long should an A/B test run, and why should it usually cover full weeks?
 **Asked at:** commonly asked (no company-specific report found); duration and sample size are a recurring A/B topic in the prep sources (PracHub listing, snippet level).
 **What the interviewer is checking:** Do you connect duration to sample size and to weekly behaviour patterns?
-**Say this in the interview:** "I work out the sample size first, divide by daily traffic to get the minimum days, then round up to full weeks, usually one to two, because behaviour differs between weekdays and weekends. I fix that length in advance and do not stop early."
+**Say this in the interview:** "I work out the sample size first, divide by daily traffic to get the minimum days, then round up to full weeks (often one to three, never less than one), because behaviour differs between weekdays and weekends. I fix that length in advance and do not stop early."
 **Explain simply:**
 - Minimum days = total people needed divided by people entering the test per day.
 - People behave differently by day: job applications may peak on Mondays, food orders on weekends. A test of 3 weekdays sees a biased picture.
@@ -707,9 +719,11 @@ The z-score is negative only because A is listed first; the one-tailed p-value i
 - Treat unplanned significant findings as ideas to retest, not as results.
 - Same issue with A/B/C/D variants and with slicing by segments.
 **Formula in plain words:** Chance of at least one false alarm = 1 minus (1 minus 0.05) to the power of the number of tests. Bonferroni threshold = 0.05 divided by the number of tests.
-**Worked example:** 20 metrics: 1 - 0.95^20 = 0.642. Bonferroni threshold is 0.0025. I also simulated 2,000 tests where nothing is truly different: 64.4% had at least one p below 0.05, but only 4.7% did when using the 0.0025 cut-off.
+**Worked example:** 20 metrics: 1 - 0.95^20 = 0.642. Bonferroni threshold is 0.0025. I also simulated 20,000 experiments where nothing is truly different (20 independent p-values each): 64.0% had at least one p below 0.05, but only 5.0% did when using the 0.0025 cut-off.
 **Excel / Python:**
 ```python
+import numpy as np
+
 # Chance of at least one false alarm if 20 metrics are all tested at 5%
 number_of_metrics = 20
 chance_of_a_false_alarm = 1 - (1 - 0.05) ** number_of_metrics
@@ -718,12 +732,24 @@ print("Chance of at least one false alarm:", round(chance_of_a_false_alarm, 3))
 # Bonferroni: divide the 5% allowance among the 20 tests
 bonferroni_threshold = 0.05 / number_of_metrics
 print("Bonferroni threshold per metric:", bonferroni_threshold)
+
+# Simulate 20,000 experiments with no real effect; when nothing is real, each p-value is a random number between 0 and 1
+random_generator = np.random.default_rng(11)
+p_values = random_generator.random((20000, 20))
+smallest_p_per_experiment = p_values.min(axis=1)
+
+# Share of experiments with at least one "significant" metric, with and without the Bonferroni cut-off
+print("Simulated, cut-off 0.05:", (smallest_p_per_experiment < 0.05).mean())
+print("Simulated, cut-off 0.0025:", (smallest_p_per_experiment < 0.0025).mean())
 ```
 Output:
 ```
 Chance of at least one false alarm: 0.642
 Bonferroni threshold per metric: 0.0025
+Simulated, cut-off 0.05: 0.64045
+Simulated, cut-off 0.0025: 0.0495
 ```
+In plain words: testing 20 metrics at 5% almost always hands you a fake winner; the stricter cut-off brings the false-alarm rate back to about 5%.
 Excel: `=1-(1-0.05)^20` returns 0.642 (not run in Excel here; same arithmetic).
 **Likely follow-ups:** 1) *Is Bonferroni too strict?* Yes, with many tests it loses power; false discovery rate is gentler. 2) *Does one primary metric solve it?* For the main decision, yes.
 **Common mistakes:** Reporting the one "significant" metric out of twenty; adjusting only after seeing results; treating segment slices as free.
@@ -767,7 +793,7 @@ The same ID always gives the same group; over thousands of IDs the split would b
 ### Q24 ⭐⭐ 🟡 Which statistical test would you use to compare conversion rate, and which to compare average revenue per user?
 **Asked at:** commonly asked (no company-specific report found); test choice (z vs t) is in the Interview Query topic list (snippet level).
 **What the interviewer is checking:** Do you match the test to the type of data (yes/no vs amount)?
-**Say this in the interview:** "Conversion is a yes/no outcome, so I use a two-proportion z-test (or chi-square). Revenue per user is a number, so I use a t-test, usually Welch's, which does not assume equal spread. Because revenue is skewed with many zeros, I also check with a bootstrap or Mann-Whitney test and look at outliers."
+**Say this in the interview:** "Conversion is a yes/no outcome, so I use a two-proportion z-test (or chi-square). Revenue per user is a number, so I use a t-test, usually Welch's, which does not assume equal spread. Because revenue is skewed with many zeros, I also check with a bootstrap (re-sampling the data many times to see how much the gap wobbles) or a Mann-Whitney test, and look at outliers."
 **Explain simply:**
 - Yes/no per person (converted, left the company): compare two proportions with a z-test or chi-square.
 - Amount per person (revenue, salary): compare two averages with a t-test; *Welch's* version is the safe default.
@@ -832,9 +858,11 @@ Both tests point the same way here. The data is simulated, only to show the meth
 ```python
 import math
 
-# 100 of 1,000 vs 112 of 1,000 converted
+# 100 of 1,000 vs 112 of 1,000 converted, and the gap between the rates
 rate_a, rate_b = 100 / 1000, 112 / 1000
 lift = rate_b - rate_a
+
+# Standard error of the gap, then the 95% interval
 standard_error = math.sqrt(rate_a * (1 - rate_a) / 1000 + rate_b * (1 - rate_b) / 1000)
 print(f"Lift: {lift:.3f}")
 print(f"95% CI: {lift - 1.96 * standard_error:.3f} to {lift + 1.96 * standard_error:.3f}")
@@ -849,7 +877,7 @@ The range is wide, so we have learned little; this is "inconclusive", not "no ef
 **Common mistakes:** Declaring "no effect"; extending until it becomes significant; ignoring the interval.
 
 ### Q26 ⭐⭐ 🟡 A test shows a lift in click-through rate but no change in revenue. What could explain it?
-**Asked at:** commonly asked; "CTR up but revenue flat" is listed on DataInterview (snippet level, not read in full).
+**Asked at:** commonly asked (no company-specific report found); "CTR up but revenue flat" is listed on DataInterview (snippet level, not read in full).
 **What the interviewer is checking:** Can you reason through a funnel instead of trusting one metric?
 **Say this in the interview:** "More clicks without more revenue means the extra clicks are low-quality, or something later in the funnel got worse. I would break the funnel into steps, check who is clicking, check for clickbait-style design, and check data and timing issues."
 **Explain simply:**
@@ -898,8 +926,12 @@ from scipy import stats
 # Candidates per group to detect a drop in no-shows from 25% to 20%
 baseline_no_show = 0.25
 target_no_show = 0.20
+
+# z-values for 5% two-sided significance and 80% power
 z_alpha = stats.norm.ppf(0.975)
 z_power = stats.norm.ppf(0.80)
+
+# Combined spread of the two rates, then candidates per group (rounded up)
 spread = baseline_no_show * (1 - baseline_no_show) + target_no_show * (1 - target_no_show)
 candidates_per_group = math.ceil((z_alpha + z_power) ** 2 * spread / (baseline_no_show - target_no_show) ** 2)
 print("Candidates per group:", candidates_per_group)
@@ -924,7 +956,7 @@ So the test needs about 2,200 booked interviews in total, a real planning constr
 - Guardrails: delivery time, rider load, cancellations, complaints, discount cost.
 - What can go wrong: a loss-making win (more orders but less profit); users order smaller meals just to cross Rs 199 or merge orders; riders overloaded; some restaurants or cities behave differently; the effect fades after the offer is new (Q19).
 - Randomise by user, not by order, so one person gets one consistent rule.
-**Worked example:** Per 1,000 users, made-up numbers: orders rise 10% (400 to 440). Margin before the fee is Rs 35 an order; the Rs 30 fee is now charged only on 40% of orders. Total profit falls from Rs 26,000 to Rs 20,680, so the "winner" on orders loses money.
+**Worked example:** Per 1,000 users, made-up numbers: orders rise 10% (400 to 440). Margin before the fee is Rs 35 an order. In control every order pays a Rs 30 fee; in treatment the fee is charged only on the 40% of orders below Rs 199. Total profit falls from Rs 26,000 to Rs 20,680, so the "winner" on orders loses money.
 **Excel / Python:**
 ```python
 # Made-up numbers per 1,000 users in each group
@@ -956,7 +988,7 @@ The numbers are invented to show why the primary metric should be profit, not or
 **Explain simply:**
 - *Sample ratio mismatch*: the group sizes differ from the planned ratio by more than chance allows.
 - Chance alone makes small wobbles (50,100 vs 49,900 is fine) but a big gap signals a bug: bot filtering applied to one group, a slower page losing users, a redirect failing, or a faulty assignment.
-- Detect with a *chi-square test* comparing actual counts with the planned split. Many teams alarm at p below 0.001.
+- Detect with a *chi-square test* comparing actual counts with the planned split. Many teams alarm at p below 0.001 (from memory, unverified).
 - If found: pause the read-out, investigate, fix, rerun. Do not "adjust" the numbers.
 **Worked example:** Planned 50/50. Seen 50,500 vs 49,000: chi-square 22.61, p = 0.000002, a clear mismatch. Seen 50,100 vs 49,900: chi-square 0.4, p = 0.53, fine.
 **Excel / Python:**
@@ -1019,7 +1051,7 @@ Aiming for bigger effects makes the test feasible in weeks, not months.
 **Common mistakes:** Running anyway and concluding "no impact"; lowering the bar silently after seeing results; chasing tiny effects with tiny traffic.
 
 ### Q31 ⭐ 🟢 What is the difference between an A/B test and an A/A test, and why run an A/A test?
-**Asked at:** commonly asked (no company-specific report found); a standard item in generic experimentation prep lists.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Do you know that an A/A test is a health check of the testing system, not a test of an idea?
 **Say this in the interview:** "In an A/B test the two groups see different versions. In an A/A test both groups see the exact same version. I run it to check that my setup is trustworthy: the split is fair, the tracking is correct, and the test only cries 'significant' about 5% of the time when there is truly no difference."
 **Explain simply:**
@@ -1069,7 +1101,7 @@ Output: `Share of A/A tests that looked significant: 0.047`. About 5% as promise
 - A/B/n: 3 or more groups, for example the control plus 2 or 3 button designs. More comparisons means a higher chance of a fluke, so I tighten the significance cut-off (Bonferroni: divide 0.05 by the number of comparisons).
 - Multivariate: for example 2 headlines x 3 button colours = 6 combinations ("cells"), each needing its own full sample.
 - Rule of thumb: every extra group costs sample size, so use A/B/n or multivariate only with lots of traffic.
-**Worked example:** Baseline 10%, I want to detect 12%, power 80%. Simulated and computed below.
+**Worked example:** Baseline 10%, I want to detect 12%, power 80%. Computed below.
 **Excel / Python:**
 ```python
 import math
@@ -1100,7 +1132,7 @@ Output: `A/B, users per group: 3835 | total: 7670`, `A/B/n, 3 arms, users per ar
 **Common mistakes:** Picking the best of many variants at plain 0.05; ignoring the traffic cost.
 
 ### Q33 ⭐ 🟡 How should outliers, such as a few very large orders, be handled when comparing revenue between groups?
-**Asked at:** commonly asked (no company-specific report found); revenue per user is a typical skewed metric in generic A/B prep.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Do you know that a few huge values can swing an average and that you must choose a robust method before looking at the result?
 **Say this in the interview:** "First I check whether the outliers are errors or real big customers. Real ones I keep but tame, usually by capping (winsorising) at a high percentile, or by using a method that does not depend on extremes, like a rank test or a bootstrap. I decide the rule before the test starts so I am not picking whatever gives the nicer answer."
 **Explain simply:**
@@ -1189,7 +1221,7 @@ Output: `50/50 total users: 7670 | days: 7.7`, `90/10 total users: 21304 | days:
 **Common mistakes:** Assuming uneven means invalid; not recomputing the sample size for the ratio.
 
 ### Q35 ⭐ 🟡 When should you not run an A/B test?
-**Asked at:** commonly asked (no company-specific report found); a judgement question in generic experimentation prep.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Mature judgement: you know A/B testing is a tool, not a ritual.
 **Say this in the interview:** "I would not run one when there is too little traffic to reach a useful sample size, when the answer is obvious or legally required, when randomising is impossible or unethical, when the effect takes months to show up, or when users would affect each other. In those cases I use other evidence: a before-after comparison with a comparison group, qualitative research, or just a decision."
 **Explain simply:**
@@ -1266,7 +1298,7 @@ for experiment in range(number_of_experiments):
 
 print("Simulated share with >=1 'significant' segment:", experiments_with_a_false_alarm / number_of_experiments)
 ```
-Output: `Calculated chance of >=1 false alarm: 0.642` and `Simulated share with >=1 'significant' segment: 0.644`.
+Output: `Calculated chance of >=1 false alarm: 0.642` and `Simulated share with >=1 'significant' segment: 0.644`. In plain words: with 20 slices and no real effect, about two experiments in three will still show a fake "winning" segment.
 **Likely follow-ups:** 1) *Is segment analysis never allowed?* It is allowed for exploration; label it so and confirm later. 2) *What is Bonferroni?* Divide alpha by the number of looks (0.05/20 = 0.0025).
 **Common mistakes:** Reporting only the segment that "won"; forgetting that small segments have wide uncertainty.
 
@@ -1343,7 +1375,7 @@ Output: `Orders in test, treatment vs control: 60.0 vs 40.0`, `Measured lift in 
 **Common mistakes:** Ignoring shared resources; randomising individuals in a social product.
 
 ### Q39 ⭐ 🔴 How do you analyse a ratio metric such as click-through rate when users have different numbers of sessions?
-**Asked at:** commonly asked (no company-specific report found); a standard advanced item in product analytics experimentation.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Do you realise sessions from the same user are not independent, so the naive formula understates uncertainty?
 **Say this in the interview:** "The randomisation unit is the user, but the click-through rate (CTR, clicks divided by sessions) is counted per session. Sessions from one user are related, so treating each session as independent makes my error bars too narrow and creates false wins. I use the delta method, which calculates the variance from user-level numbers, or I bootstrap by user, or I analyse a per-user metric."
 **Explain simply:**
@@ -1445,7 +1477,7 @@ Output: `Bayesian: chance B is better than A: 0.979`, `95% credible range for li
 **Common mistakes:** Saying a p-value of 0.043 means a 95.7% chance B is better; thinking Bayesian lets you peek with no consequences.
 
 ### Q41 ⭐ 🔴 What is CUPED or variance reduction, and why does it help?
-**Asked at:** commonly asked (no company-specific report found); an advanced topic, usually seen only in product-analytics loops at experimentation-heavy companies.
+**Asked at:** commonly asked (no company-specific report found); an advanced topic, likely only in experimentation-heavy product-analytics roles (from memory, unverified).
 **What the interviewer is checking:** Do you understand that using pre-experiment data removes predictable noise and speeds up tests?
 **Say this in the interview:** "CUPED (Controlled-experiment Using Pre-Experiment Data) adjusts each user's outcome by what we would have expected from their behaviour before the test. A customer who spent a lot last month will probably spend a lot this month regardless of my change, so that part is noise. Removing it shrinks the variance, so the test reaches a clear answer with fewer users or less time."
 **Explain simply:**
@@ -1546,7 +1578,7 @@ Output: `Fixed horizon false alarms: 0.0511`, `Peeking at 1.96: 0.13775`, `Seque
 **Common mistakes:** Peeking using the ordinary 1.96 cut-off; changing the number of looks after seeing data.
 
 ### Q43 ⭐ 🔴 How would you measure the impact of a change when randomisation is not possible?
-**Asked at:** commonly asked (no company-specific report found); a causal-inference follow-up often attached to A/B questions.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Do you know the main quasi-experimental methods and their assumptions, and are you honest about their weakness compared with a randomised test?
 **Say this in the interview:** "I look for a fair comparison group. The most common method is difference-in-differences: compare the change over time in the affected group with the change in a similar unaffected group. Other options are matching, synthetic control, regression discontinuity (a cut-off rule) and interrupted time series. All are weaker than randomisation because they rest on assumptions I must check and state."
 **Explain simply:**
