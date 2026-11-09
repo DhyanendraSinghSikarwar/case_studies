@@ -81,3 +81,9 @@ Must contain: zero-to-job-ready roadmap · daily practice plan · free resources
 - Prefer clear step-by-step code (CTEs, small named variables, intermediate columns) over clever one-liners; if a compact form is worth showing, give the readable version first.
 - Follow each code block with 1-2 lines in plain words explaining what the output means.
 
+## 11. Interview-ready code (user rule, stricter, applies to every answer)
+- The code in "Code / Excel-Python / Steps" must be exactly what a candidate would type or write live in the interview for that question: the shortest clear, correct solution a beginner can explain line by line. No test harnesses, no helper scripts, no build/verification scaffolding, no `print` of debugging values that the interviewer would not ask for.
+- Keep it simple and readable: plain loops or standard built-ins over clever tricks, descriptive names (`employees`, `total_salary`), one idea per line, a short comment on the non-obvious steps. If a short interview version and a more complete version both matter, show the interview version first and label the other "Alternative".
+- Show a tiny sample dataset only as far as needed to run the answer (3 to 8 rows), then the code, then the real output, then one plain-words line about what it means.
+- Verification (running the code to get the output) happens outside the answer; the answer shows the interview code and its real output only.
+
