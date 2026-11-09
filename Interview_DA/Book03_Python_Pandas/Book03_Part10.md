@@ -1,6 +1,6 @@
 # Book 3 — Python & pandas for Analysts | Part 10: Basic Coding Logic Asked in DA Rounds 🟢🟡
 
-**Target:** 65 questions | **Actual:** 74 questions
+**Target:** 65 questions | **Actual:** 71 questions
 **Scope:** easy list, string and dictionary problems (reverse, palindrome, counts, duplicates) and basic CS/OOP fundamentals asked in data analyst coding rounds.
 
 ### Q1 ⭐⭐⭐ 🟢 Write code to reverse a string in Python.
@@ -105,122 +105,113 @@
 ### Q34 ⭐⭐ 🟢 Write code to count how many employees in a list of dictionaries have more than 3 years of tenure.
 <!-- ANSWER_PENDING -->
 
-### Q35 ⭐⭐ 🟢 What is the difference between == and is in Python?
+### Q35 ⭐⭐ 🟢 What is the difference between a function that prints a value and one that returns it?
 <!-- ANSWER_PENDING -->
 
-### Q36 ⭐⭐ 🟢 What is the difference between append() and extend() on a list?
+### Q36 ⭐⭐ 🟢 What is a lambda function, and how is it different from a function defined with def?
 <!-- ANSWER_PENDING -->
 
-### Q37 ⭐⭐ 🟢 What is the difference between a function that prints a value and one that returns it?
+### Q37 ⭐⭐ 🟢 What is a class and an object in Python? Write a simple Employee class with a method.
 <!-- ANSWER_PENDING -->
 
-### Q38 ⭐⭐ 🟢 What do break, continue and pass do inside a loop?
+### Q38 ⭐⭐ 🟢 What does the self keyword mean in a class method?
 <!-- ANSWER_PENDING -->
 
-### Q39 ⭐⭐ 🟢 What is a lambda function, and how is it different from a function defined with def?
+### Q39 ⭐⭐ 🟢 What does the __init__ method do, and how is it different from an ordinary method?
 <!-- ANSWER_PENDING -->
 
-### Q40 ⭐⭐ 🟢 What is a class and an object in Python? Write a simple Employee class with a method.
+### Q40 ⭐⭐ 🟡 Write code to find the two numbers in a list that add up to a given target (Two Sum).
 <!-- ANSWER_PENDING -->
 
-### Q41 ⭐⭐ 🟢 What does the self keyword mean in a class method?
+### Q41 ⭐⭐ 🟡 Write code to find the missing number in a list that should contain 1 to n.
 <!-- ANSWER_PENDING -->
 
-### Q42 ⭐⭐ 🟢 What does the __init__ method do, and how is it different from an ordinary method?
+### Q42 ⭐⭐ 🟡 Write code to check whether a string is a palindrome while ignoring case, spaces and punctuation.
 <!-- ANSWER_PENDING -->
 
-### Q43 ⭐⭐ 🟡 Write code to find the two numbers in a list that add up to a given target (Two Sum).
+### Q43 ⭐⭐ 🟡 Write code to group employees by department using a dictionary of lists.
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐⭐ 🟡 Write code to find the missing number in a list that should contain 1 to n.
+### Q44 ⭐⭐ 🟡 Write code to sort a list of employee dictionaries by salary, highest first, without pandas.
 <!-- ANSWER_PENDING -->
 
-### Q45 ⭐⭐ 🟡 Write code to check whether a string is a palindrome while ignoring case, spaces and punctuation.
+### Q45 ⭐⭐ 🟡 Write a function that calculates net salary from gross salary using simple tax slabs with if-elif.
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐⭐ 🟡 Write code to group employees by department using a dictionary of lists.
+### Q46 ⭐⭐ 🟡 What is the output of a = [1, 2, 3]; b = a; b.append(4); print(a)? Explain why.
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐⭐ 🟡 Write code to sort a list of employee dictionaries by salary, highest first, without pandas.
+### Q47 ⭐⭐ 🟡 What is the difference between a shallow copy and a deep copy?
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐⭐ 🟡 Write a function that calculates net salary from gross salary using simple tax slabs with if-elif.
+### Q48 ⭐⭐ 🟡 What are the four pillars of object-oriented programming? Explain each in plain words with an example.
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐⭐ 🟡 What is the output of a = [1, 2, 3]; b = a; b.append(4); print(a)? Explain why.
+### Q49 ⭐⭐ 🟡 What is inheritance? Write a Manager class that inherits from an Employee class.
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐⭐ 🟡 What is the difference between a shallow copy and a deep copy?
+### Q50 ⭐⭐ 🟡 What are *args and **kwargs, and when would you use them?
 <!-- ANSWER_PENDING -->
 
-### Q51 ⭐⭐ 🟡 What are the four pillars of object-oriented programming? Explain each in plain words with an example.
+### Q51 ⭐⭐ 🟡 What is recursion? Write a recursive function for factorial and state its drawback.
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐⭐ 🟡 What is inheritance? Write a Manager class that inherits from an Employee class.
+### Q52 ⭐⭐ 🟡 Why is checking membership in a set faster than in a list? Explain time complexity (Big O) in simple words.
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐⭐ 🟡 What are *args and **kwargs, and when would you use them?
+### Q53 ⭐ 🟢 Write code to find the length of a string without using len().
 <!-- ANSWER_PENDING -->
 
-### Q54 ⭐⭐ 🟡 What is recursion? Write a recursive function for factorial and state its drawback.
+### Q54 ⭐ 🟢 Write code to check whether a list is sorted in ascending order.
 <!-- ANSWER_PENDING -->
 
-### Q55 ⭐⭐ 🟡 Why is checking membership in a set faster than in a list? Explain time complexity (Big O) in simple words.
+### Q55 ⭐ 🟢 Write code to sort a list of strings by their length.
 <!-- ANSWER_PENDING -->
 
-### Q56 ⭐ 🟢 Write code to find the length of a string without using len().
+### Q56 ⭐ 🟢 Is Python a compiled or an interpreted language, and what does that mean?
 <!-- ANSWER_PENDING -->
 
-### Q57 ⭐ 🟢 Write code to check whether a list is sorted in ascending order.
+### Q57 ⭐ 🟡 Write code to find the GCD (greatest common divisor) of two numbers.
 <!-- ANSWER_PENDING -->
 
-### Q58 ⭐ 🟢 Write code to sort a list of strings by their length.
+### Q58 ⭐ 🟡 Write code to flatten a nested list such as [[1, 2], [3, [4, 5]]].
 <!-- ANSWER_PENDING -->
 
-### Q59 ⭐ 🟢 Is Python a compiled or an interpreted language, and what does that mean?
+### Q59 ⭐ 🟡 Write code to rotate a list by k positions.
 <!-- ANSWER_PENDING -->
 
-### Q60 ⭐ 🟡 Write code to find the GCD (greatest common divisor) of two numbers.
+### Q60 ⭐ 🟡 Write code to move all zeros in a list to the end while keeping the other numbers in order.
 <!-- ANSWER_PENDING -->
 
-### Q61 ⭐ 🟡 Write code to flatten a nested list such as [[1, 2], [3, [4, 5]]].
+### Q61 ⭐ 🟡 Write code to swap the keys and values of a dictionary, and say what goes wrong if values repeat.
 <!-- ANSWER_PENDING -->
 
-### Q62 ⭐ 🟡 Write code to rotate a list by k positions.
+### Q62 ⭐ 🟡 Write code to find the longest streak of consecutive present days in an attendance list of 'P' and 'A'.
 <!-- ANSWER_PENDING -->
 
-### Q63 ⭐ 🟡 Write code to move all zeros in a list to the end while keeping the other numbers in order.
+### Q63 ⭐ 🟡 Write code to do a basic validity check of email addresses in a list without using regex.
 <!-- ANSWER_PENDING -->
 
-### Q64 ⭐ 🟡 Write code to swap the keys and values of a dictionary, and say what goes wrong if values repeat.
+### Q64 ⭐ 🟡 Implement binary search on a sorted list and explain why it is faster than a linear search.
 <!-- ANSWER_PENDING -->
 
-### Q65 ⭐ 🟡 Write code to find the longest streak of consecutive present days in an attendance list of 'P' and 'A'.
+### Q65 ⭐ 🟡 Write code to sort a list using bubble sort and explain how it works.
 <!-- ANSWER_PENDING -->
 
-### Q66 ⭐ 🟡 Write code to do a basic validity check of email addresses in a list without using regex.
+### Q66 ⭐ 🟡 Write code to print a diamond pattern of stars.
 <!-- ANSWER_PENDING -->
 
-### Q67 ⭐ 🟡 Implement binary search on a sorted list and explain why it is faster than a linear search.
+### Q67 ⭐ 🟡 Why is using a mutable default argument such as def f(x, items=[]) a bug?
 <!-- ANSWER_PENDING -->
 
-### Q68 ⭐ 🟡 Write code to sort a list using bubble sort and explain how it works.
+### Q68 ⭐ 🟡 Why does removing items from a list while looping over it give wrong results, and how do you do it safely?
 <!-- ANSWER_PENDING -->
 
-### Q69 ⭐ 🟡 Write code to print a diamond pattern of stars.
+### Q69 ⭐ 🟡 Why does 0.1 + 0.2 == 0.3 return False in Python?
 <!-- ANSWER_PENDING -->
 
-### Q70 ⭐ 🟡 Why is using a mutable default argument such as def f(x, items=[]) a bug?
+### Q70 ⭐ 🟡 What are iterators and generators, and what does yield do?
 <!-- ANSWER_PENDING -->
 
-### Q71 ⭐ 🟡 Why does removing items from a list while looping over it give wrong results, and how do you do it safely?
-<!-- ANSWER_PENDING -->
-
-### Q72 ⭐ 🟡 Why does 0.1 + 0.2 == 0.3 return False in Python?
-<!-- ANSWER_PENDING -->
-
-### Q73 ⭐ 🟡 What are iterators and generators, and what does yield do?
-<!-- ANSWER_PENDING -->
-
-### Q74 ⭐ 🔴 What is a decorator in Python? Write one that prints how long a function takes.
+### Q71 ⭐ 🔴 What is a decorator in Python? Write one that prints how long a function takes.
 <!-- ANSWER_PENDING -->

@@ -164,4 +164,3 @@
 
 ### Q54 ⭐ 🔴 A stakeholder asks: 'Is attrition higher in Hyderabad than Bengaluru?' How do you check this in pandas, and how do you avoid overclaiming when one city has very few employees?
 <!-- ANSWER_PENDING -->
-

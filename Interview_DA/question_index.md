@@ -1444,6 +1444,678 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 ## Book 3 — Python & pandas
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B3P01Q1 | 3 | 1 | What is the difference between a list and a tuple in Python? |
+| B3P01Q2 | 3 | 1 | What are the main built-in data types in Python (int, float, str, bool, list, tuple, dict, set), and how do you check the type of a value? |
+| B3P01Q3 | 3 | 1 | What is the difference between a list and a dictionary, and when would you use each for employee data? |
+| B3P01Q4 | 3 | 1 | What does mutable versus immutable mean in Python, and which common types are which? |
+| B3P01Q5 | 3 | 1 | Write code to count how many times each department appears in a list of employee departments using a dictionary. |
+| B3P01Q6 | 3 | 1 | How do you loop through a dictionary to print each employee name and salary? |
+| B3P01Q7 | 3 | 1 | What is a list comprehension, and how is it different from a normal for loop? |
+| B3P01Q8 | 3 | 1 | Write a list comprehension that returns only the salaries above 50000 from a list of salaries. |
+| B3P01Q9 | 3 | 1 | What is the difference between a for loop and a while loop, and when do you use each? |
+| B3P01Q10 | 3 | 1 | How do you define a function in Python, and what is the difference between print and return? |
+| B3P01Q11 | 3 | 1 | What is a lambda function, and where do analysts typically use it (for example with sort or pandas apply)? |
+| B3P01Q12 | 3 | 1 | Write a function that takes a list of salaries and returns the average. |
+| B3P01Q13 | 3 | 1 | How do you access, add, update and delete items in a dictionary, and what happens if a key does not exist? |
+| B3P01Q14 | 3 | 1 | What is the difference between dict[key] and dict.get(key), and why does get avoid a KeyError? |
+| B3P01Q15 | 3 | 1 | How do you find the maximum, minimum, sum and length of a list without pandas? |
+| B3P01Q16 | 3 | 1 | What is the difference between append(), extend() and insert() on a list? |
+| B3P01Q17 | 3 | 1 | What is the difference between == and is in Python? |
+| B3P01Q18 | 3 | 1 | Write a program that prints the numbers from 1 to 20 and labels each as even or odd. |
+| B3P01Q19 | 3 | 1 | What is the difference between a set and a list, and how do you remove duplicates from a list using a set? |
+| B3P01Q20 | 3 | 1 | How do you remove duplicates from a list while keeping the original order? |
+| B3P01Q21 | 3 | 1 | What is list slicing, and what do my_list[1:4], my_list[::-1] and my_list[-1] return? |
+| B3P01Q22 | 3 | 1 | Write code to sort a list of employee names alphabetically and a list of salaries from highest to lowest. |
+| B3P01Q23 | 3 | 1 | What is the difference between sort() and sorted() on a list? |
+| B3P01Q24 | 3 | 1 | How do you sort a list of dictionaries (for example employees) by the salary key? |
+| B3P01Q25 | 3 | 1 | What is the difference between a shallow copy and a deep copy, and why does list2 = list1 not make a real copy? |
+| B3P01Q26 | 3 | 1 | What is the difference between int, float and str, and how do you convert one to another (type casting)? |
+| B3P01Q27 | 3 | 1 | What happens when you try to convert the string 'abc' to an integer, and how do you handle it safely? |
+| B3P01Q28 | 3 | 1 | What are Python's rules for naming variables, and what is the difference between a variable and a constant by convention? |
+| B3P01Q29 | 3 | 1 | What is the difference between / , // and % operators in Python, with an example such as working days and weeks? |
+| B3P01Q30 | 3 | 1 | What does the range() function do, and does range(5) include 5? |
+| B3P01Q31 | 3 | 1 | What does enumerate() do, and why is it preferred over range(len(my_list))? |
+| B3P01Q32 | 3 | 1 | How do you loop through two lists together (for example names and salaries) using zip()? |
+| B3P01Q33 | 3 | 1 | What do break, continue and pass do inside a loop? |
+| B3P01Q34 | 3 | 1 | How do you use if, elif and else to assign a rating band to a score, for example 5 = Outstanding, 3-4 = Meets, below 3 = Needs improvement? |
+| B3P01Q35 | 3 | 1 | What are the Python boolean operators and, or, not, and what values count as False (truthy and falsy)? |
+| B3P01Q36 | 3 | 1 | How do you check whether an item is present in a list or a dictionary using the in operator? |
+| B3P01Q37 | 3 | 1 | Write code to find the second highest salary in a list. |
+| B3P01Q38 | 3 | 1 | Write code to merge two lists into one and to merge two dictionaries. |
+| B3P01Q39 | 3 | 1 | What is a dictionary comprehension? Write one that maps each employee name to a bonus of 10 percent of salary. |
+| B3P01Q40 | 3 | 1 | How do you get the keys, values and key-value pairs of a dictionary (keys(), values(), items())? |
+| B3P01Q41 | 3 | 1 | What is a nested list or nested dictionary, and how do you access an inner value such as the city of an employee? |
+| B3P01Q42 | 3 | 1 | What is the difference between parameters and arguments, and what are default arguments? |
+| B3P01Q43 | 3 | 1 | What are *args and **kwargs in a function definition? |
+| B3P01Q44 | 3 | 1 | What is the difference between local and global variables, and what does the global keyword do? |
+| B3P01Q45 | 3 | 1 | How do you return multiple values from a function, and how do you unpack them? |
+| B3P01Q46 | 3 | 1 | What is the mutable default argument trap, for example def add(item, bucket=[]), and how do you fix it? |
+| B3P01Q47 | 3 | 1 | How do you use map(), filter() and sorted() with a lambda, and when is a list comprehension better? |
+| B3P01Q48 | 3 | 1 | What is the difference between a list and a generator, and why would you use a generator for a huge file of records? |
+| B3P01Q49 | 3 | 1 | Write a function that takes a list of employee dictionaries and returns the attrition rate (percentage with 'left': True). |
+| B3P01Q50 | 3 | 1 | Write a function that groups employees by department into a dictionary of lists (use defaultdict or setdefault). |
+| B3P01Q51 | 3 | 1 | What is collections.Counter, and how do you get the top 3 most common values from a list? |
+| B3P01Q52 | 3 | 1 | Why is looping over rows slower than vectorised operations in pandas or NumPy, and when is a plain loop still acceptable? |
+| B3P01Q53 | 3 | 1 | What is the output of a loop that modifies a list while iterating over it, and how do you avoid the problem? |
+| B3P01Q54 | 3 | 1 | How do you find the common and the different items between two lists, for example employee IDs in two HR files (set intersection and difference)? |
+| B3P01Q55 | 3 | 1 | What is the time complexity of searching an item in a list versus a set or dictionary, and why does it matter for large data? |
+| B3P01Q56 | 3 | 1 | What is Python, and why is it popular for data analysis compared with Excel? |
+| B3P01Q57 | 3 | 1 | What is the difference between a script and a Jupyter notebook cell when running Python code, and what does indentation mean in Python? |
+| B3P01Q58 | 3 | 1 | How do you take input from a user and print formatted output using f-strings (for example 'Ravi earns 45000')? |
+| B3P01Q59 | 3 | 1 | How do you add comments and docstrings in Python, and why are they useful? |
+| B3P01Q60 | 3 | 1 | What is None in Python, and how is it different from 0 or an empty string? |
+| B3P01Q61 | 3 | 1 | What is the difference between the pop(), remove() and del operations on a list? |
+| B3P01Q62 | 3 | 1 | How do you count the occurrences of an item in a list, and how do you find its position (count and index)? |
+| B3P01Q63 | 3 | 1 | What is tuple unpacking, and where does it appear when looping over dict.items()? |
+| B3P01Q64 | 3 | 1 | What does the len() function return for a list, a string and a dictionary? |
+| B3P01Q65 | 3 | 1 | What is the difference between a function and a method, with examples from lists? |
+| B3P01Q66 | 3 | 1 | What is a recursive function? Write a factorial function and mention when recursion is risky. |
+| B3P01Q67 | 3 | 1 | What is a decorator in Python, in simple terms, and have you used one? |
+| B3P01Q68 | 3 | 1 | What is the difference between is None and == None, and why do analysts check for None before calculating? |
+| B3P01Q69 | 3 | 1 | Write a function that classifies an employee's tenure in years as New (under 1), Mid (1-3) or Senior (over 3), and apply it to a list. |
+| B3P01Q70 | 3 | 1 | Write code to build a monthly attendance summary: given a list of daily statuses ('P', 'A', 'L'), return counts of each using a loop and a dictionary. |
+| B3P01Q71 | 3 | 1 | What are Python's integer and float precision issues, such as 0.1 + 0.2 not equal to 0.3, and how do you compare floats safely or round money values? |
+| B3P01Q72 | 3 | 1 | Given a list of (candidate, stage) tuples from a hiring funnel, write code that returns how many candidates reached each stage and the drop-off percentage between stages. |
+| B3P01Q73 | 3 | 1 | What is a closure in Python, and what goes wrong with lambda functions created inside a loop? |
+| B3P02Q1 | 3 | 2 | What does `with open(...) as f:` do, and why is it preferred over calling open() and close() yourself? |
+| B3P02Q2 | 3 | 2 | What is the difference between the file modes 'r', 'w', 'a' and 'r+', and which one can silently destroy existing data? |
+| B3P02Q3 | 3 | 2 | Explain try, except, else and finally in Python with a small example. |
+| B3P02Q4 | 3 | 2 | Write code to open a CSV file in plain Python (no pandas) and print its first 5 lines. |
+| B3P02Q5 | 3 | 2 | A name column contains '  rAVI   kumar '. Write code to turn it into 'Ravi Kumar'. |
+| B3P02Q6 | 3 | 2 | What do split() and join() do? Split 'Asha,Sales,45000' into parts and rebuild it with '|' as the separator. |
+| B3P02Q7 | 3 | 2 | What does it mean that Python strings are immutable, and why does name.strip() not change name? |
+| B3P02Q8 | 3 | 2 | How do you use an f-string to print 'Ravi earns Rs 45,000.50 in Sales' from variables, with a thousands separator and two decimals? |
+| B3P02Q9 | 3 | 2 | How do you handle a FileNotFoundError when a monthly attendance file is missing? |
+| B3P02Q10 | 3 | 2 | What does ValueError: invalid literal for int() mean, and how do you avoid your script crashing on it? |
+| B3P02Q11 | 3 | 2 | How do you take the first 3 characters, and the numeric part, of an employee code such as 'HYD-1045' using slicing or split? |
+| B3P02Q12 | 3 | 2 | Write code to convert salary strings like 'Rs. 45,000' into integers, skipping bad values such as 'N/A' with try/except. |
+| B3P02Q13 | 3 | 2 | Read a CSV with csv.DictReader and compute the total salary per department using a dictionary. |
+| B3P02Q14 | 3 | 2 | Why should you catch specific exceptions instead of a bare `except:`, and what can go wrong with a bare except? |
+| B3P02Q15 | 3 | 2 | What is the difference between upper(), lower(), title() and capitalize()? |
+| B3P02Q16 | 3 | 2 | What do startswith() and endswith() do, and how would you filter employee IDs that start with 'HYD'? |
+| B3P02Q17 | 3 | 2 | What is the difference between find() and index() when the substring is not present? |
+| B3P02Q18 | 3 | 2 | What is the difference between read(), readline() and readlines()? |
+| B3P02Q19 | 3 | 2 | Write code to save a list of employee names to a text file, one name per line. |
+| B3P02Q20 | 3 | 2 | How do you check whether a string is only digits, only letters, or letters and digits (isdigit, isalpha, isalnum)? Validate that a mobile number is 10 digits. |
+| B3P02Q21 | 3 | 2 | What is the difference between f-strings, str.format() and the % operator for formatting text? |
+| B3P02Q22 | 3 | 2 | How do you pad employee ID 45 to '00045' using zfill() or format specifiers? |
+| B3P02Q23 | 3 | 2 | How do you split the full name 'Ravi Kumar Singh' into first name and last name? |
+| B3P02Q24 | 3 | 2 | How do you read a Python traceback, and where do you look first? |
+| B3P02Q25 | 3 | 2 | What is the difference between a syntax error and an exception? Give an example of each. |
+| B3P02Q26 | 3 | 2 | How do you check whether a file exists before opening it, using os.path or pathlib? |
+| B3P02Q27 | 3 | 2 | What is a raw string (r'...') and why do you need it for Windows file paths such as 'C:\data\new_hires.csv'? |
+| B3P02Q28 | 3 | 2 | How do you raise your own exception, for example rejecting a negative salary with raise ValueError? |
+| B3P02Q29 | 3 | 2 | Write code to extract all email addresses from a block of text using re.findall. |
+| B3P02Q30 | 3 | 2 | What is the difference between re.match, re.search, re.findall and re.sub? |
+| B3P02Q31 | 3 | 2 | Write code to standardise messy phone numbers such as '+91 98765-43210' by removing non-digits and keeping the last 10 digits. |
+| B3P02Q32 | 3 | 2 | Write code to read a pipe-delimited attendance log with lines like 'E101|2024-08-01|P' and count present days per employee. |
+| B3P02Q33 | 3 | 2 | How do you read and write JSON files with json.load and json.dump? |
+| B3P02Q34 | 3 | 2 | When do you use csv.reader, csv.DictReader and pandas.read_csv? |
+| B3P02Q35 | 3 | 2 | Write a function that returns the attrition rate but returns None instead of crashing when headcount is 0 (ZeroDivisionError). |
+| B3P02Q36 | 3 | 2 | Write code to process a file row by row, collect the bad rows in a separate file, and keep going when a row fails. |
+| B3P02Q37 | 3 | 2 | When does the else block of try/except run, and does finally still run if the try block has a return statement? |
+| B3P02Q38 | 3 | 2 | What does newline='' do when writing a CSV, and why do you sometimes get blank lines between rows? |
+| B3P02Q39 | 3 | 2 | A column holds 'Sales - Hyderabad'. Write code to split it into department and city and strip the extra spaces. |
+| B3P02Q40 | 3 | 2 | Write code to remove duplicate employee IDs from a text file while keeping the original order. |
+| B3P02Q41 | 3 | 2 | Write code to list all .csv files in a folder using os.listdir or glob. |
+| B3P02Q42 | 3 | 2 | What are escape characters such as \n and \t, and when do you use triple-quoted strings? |
+| B3P02Q43 | 3 | 2 | How do you compare two strings ignoring case, and what is the difference between lower() and casefold()? |
+| B3P02Q44 | 3 | 2 | How do you check whether a string is empty or contains only spaces? |
+| B3P02Q45 | 3 | 2 | What is the difference between greedy and non-greedy regex matching, for example .* and .*? |
+| B3P02Q46 | 3 | 2 | Write a regex with capture groups to pull the currency and amount out of 'INR 45000'. |
+| B3P02Q47 | 3 | 2 | How do you read a very large text file without loading it all into memory? |
+| B3P02Q48 | 3 | 2 | How do you define and use a custom exception class, and when is it worth it in an analyst script? |
+| B3P02Q49 | 3 | 2 | When do you use assert, and how does it differ from raising an exception? |
+| B3P02Q50 | 3 | 2 | What is a context manager, and how would you write one with __enter__ and __exit__ (or contextlib)? |
+| B3P03Q1 | 3 | 3 | What is NumPy, and why do data analysts use it? |
+| B3P03Q2 | 3 | 3 | What is the difference between a Python list and a NumPy array? |
+| B3P03Q3 | 3 | 3 | How do you create a NumPy array from a list and check its shape, size and data type? |
+| B3P03Q4 | 3 | 3 | How do you select elements from a 1D and a 2D NumPy array using indexing and slicing? |
+| B3P03Q5 | 3 | 3 | Write code to filter a NumPy array of salaries to keep only values above 50,000 (boolean indexing). |
+| B3P03Q6 | 3 | 3 | Write code to find the sum, mean, minimum and maximum of a NumPy array of daily attendance counts. |
+| B3P03Q7 | 3 | 3 | Write code to add a 10% hike to every value in a NumPy array of salaries without using a loop. |
+| B3P03Q8 | 3 | 3 | What does the axis parameter mean in NumPy, and what is the difference between axis=0 and axis=1? |
+| B3P03Q9 | 3 | 3 | What is vectorization in NumPy, and why is it faster than a Python loop? |
+| B3P03Q10 | 3 | 3 | How do you create arrays quickly using np.zeros, np.ones, np.arange and np.linspace? |
+| B3P03Q11 | 3 | 3 | How do you change the shape of a NumPy array using reshape? |
+| B3P03Q12 | 3 | 3 | How do you count how many values in a NumPy array satisfy a condition (for example, employees with more than 5 years of experience)? |
+| B3P03Q13 | 3 | 3 | How does NumPy relate to pandas? |
+| B3P03Q14 | 3 | 3 | How do you change the data type of a NumPy array (for example, float to int)? |
+| B3P03Q15 | 3 | 3 | Write code to find the unique values in a NumPy array and how many times each appears. |
+| B3P03Q16 | 3 | 3 | How do you sort a NumPy array, and what does np.argsort return? |
+| B3P03Q17 | 3 | 3 | What is broadcasting in NumPy? Explain with an example of subtracting column averages from a 2D array. |
+| B3P03Q18 | 3 | 3 | How do you use np.where to create a label array, for example "Present" or "Absent", from an attendance-hours array? |
+| B3P03Q19 | 3 | 3 | Write code to find the row-wise and column-wise totals of a 2D NumPy array of monthly sales (rows are employees, columns are months). |
+| B3P03Q20 | 3 | 3 | How do you handle NaN (missing values) in a NumPy array: detect them, compute a mean ignoring them, and replace them? |
+| B3P03Q21 | 3 | 3 | What is the difference between a view and a copy in NumPy, and why can it cause bugs? |
+| B3P03Q22 | 3 | 3 | What do np.argmax and np.argmin return, and how would you find which employee has the highest salary? |
+| B3P03Q23 | 3 | 3 | How do you combine multiple conditions on a NumPy array (and, or, not)? Why does the Python keyword and give an error? |
+| B3P03Q24 | 3 | 3 | How do you generate reproducible random numbers in NumPy (np.random.seed or default_rng)? |
+| B3P03Q25 | 3 | 3 | How do you join two NumPy arrays using np.concatenate, np.vstack and np.hstack? |
+| B3P03Q26 | 3 | 3 | What is the difference between flatten and ravel in NumPy? |
+| B3P03Q27 | 3 | 3 | How do you calculate a running total and the difference between consecutive values using np.cumsum and np.diff? |
+| B3P03Q28 | 3 | 3 | How do you pick a random sample of 5 employee IDs from an array using NumPy? |
+| B3P03Q29 | 3 | 3 | What is the difference between np.nan, None and 0 when representing missing data? |
+| B3P03Q30 | 3 | 3 | Write code to calculate a 3-day moving average of an array using NumPy only. |
+| B3P04Q1 | 3 | 4 | What is pandas, and what is the difference between a Series and a DataFrame? |
+| B3P04Q2 | 3 | 4 | How do you read a CSV file into a pandas DataFrame, and how do you read an Excel sheet? |
+| B3P04Q3 | 3 | 4 | Write code to load an employee CSV file and look at the first 5 and last 5 rows. |
+| B3P04Q4 | 3 | 4 | How do you check the number of rows and columns of a DataFrame? |
+| B3P04Q5 | 3 | 4 | How do you quickly see column names, data types and non-null counts of a DataFrame using info()? |
+| B3P04Q6 | 3 | 4 | How do you select a single column and multiple columns from a DataFrame? |
+| B3P04Q7 | 3 | 4 | What is the difference between loc and iloc in pandas? |
+| B3P04Q8 | 3 | 4 | Write code to filter an employee DataFrame to show only employees from the Sales department. |
+| B3P04Q9 | 3 | 4 | Write code to sort an employee DataFrame by salary from highest to lowest. |
+| B3P04Q10 | 3 | 4 | How do you add a new column to a DataFrame, for example annual salary from monthly salary? |
+| B3P04Q11 | 3 | 4 | How do you check the data type of each column, and what does the 'object' dtype mean? |
+| B3P04Q12 | 3 | 4 | Write code to filter rows where the department is Sales, HR or Finance using isin(). |
+| B3P04Q13 | 3 | 4 | Write code to filter employees with salary above 50,000 who are also in the Finance department. Why do you need brackets around each condition? |
+| B3P04Q14 | 3 | 4 | What is the difference between using 'and' and '&' when filtering a DataFrame, and what error do you get if you use 'and'? |
+| B3P04Q15 | 3 | 4 | Write code to sort a DataFrame by department (A to Z) and then by salary (high to low) within each department. |
+| B3P04Q16 | 3 | 4 | What does SettingWithCopyWarning mean, and how do you avoid it? |
+| B3P04Q17 | 3 | 4 | You get KeyError when selecting a column that clearly exists in your CSV. What are the common causes and how do you fix them? |
+| B3P04Q18 | 3 | 4 | How do you rename columns in a DataFrame? |
+| B3P04Q19 | 3 | 4 | How do you drop a column or a row from a DataFrame, and what does axis mean? |
+| B3P04Q20 | 3 | 4 | How do you list the unique values of a column and count how many unique values it has? |
+| B3P04Q21 | 3 | 4 | What is the difference between df['col'] and df[['col']]? |
+| B3P04Q22 | 3 | 4 | What is the difference between a view and a copy of a DataFrame, and how do you make an independent copy with copy()? |
+| B3P04Q23 | 3 | 4 | Write code to show the top 5 highest-paid employees. |
+| B3P04Q24 | 3 | 4 | How do you select the first 10 rows and the first 3 columns using iloc? |
+| B3P04Q25 | 3 | 4 | Write code to filter employees whose name starts with 'A' using str.startswith(). |
+| B3P04Q26 | 3 | 4 | How do you filter rows where a column is between two values, for example salary between 30,000 and 60,000? |
+| B3P04Q27 | 3 | 4 | How do you read only selected columns from a large CSV using usecols? |
+| B3P04Q28 | 3 | 4 | How do you save a DataFrame to a CSV file without writing the index, and how do you write it to Excel? |
+| B3P04Q29 | 3 | 4 | What is the difference between head(), sample() and tail(), and how do you pick 5 random rows? |
+| B3P04Q30 | 3 | 4 | How do you find the maximum salary and the row (employee) who earns it? |
+| B3P04Q31 | 3 | 4 | How do you count the rows that satisfy a condition, for example how many employees have left the company? |
+| B3P04Q32 | 3 | 4 | How do you check for duplicate column names or confirm the DataFrame shape after each filter? |
+| B3P04Q33 | 3 | 4 | What is the index of a DataFrame, and how do you set a column such as employee ID as the index? |
+| B3P04Q34 | 3 | 4 | How do you reset the index after filtering or sorting, and what does drop=True do? |
+| B3P04Q35 | 3 | 4 | What is the difference between nlargest() and sort_values().head(), and when would you use each? |
+| B3P04Q36 | 3 | 4 | How do you select rows by label and specific columns using loc, for example employees 101 to 105 and only name and salary? |
+| B3P04Q37 | 3 | 4 | Why does loc slicing include the end label while iloc slicing excludes the end position? |
+| B3P04Q38 | 3 | 4 | How do you filter rows where a text column contains a word, for example job title containing 'Manager', ignoring upper or lower case? |
+| B3P04Q39 | 3 | 4 | How do you filter rows that are NOT in a list of values, for example all departments except HR and Admin? |
+| B3P04Q40 | 3 | 4 | How do you filter rows with missing values in a column, for example employees with no manager ID, using isna()? |
+| B3P04Q41 | 3 | 4 | What is the query() method in pandas, and how does it compare with boolean indexing? |
+| B3P04Q42 | 3 | 4 | How do you use a Python variable inside query()? |
+| B3P04Q43 | 3 | 4 | How do you read only the first 1,000 rows of a large CSV file, and why would you do it? |
+| B3P04Q44 | 3 | 4 | What are the common parameters of read_csv() that you use for messy files (sep, header, skiprows, encoding, na_values)? |
+| B3P04Q45 | 3 | 4 | How do you read a specific sheet of an Excel workbook into pandas, and which extra library is needed? |
+| B3P04Q46 | 3 | 4 | What does the error UnicodeDecodeError mean when reading a CSV, and how do you fix it? |
+| B3P04Q47 | 3 | 4 | What does FileNotFoundError mean when calling read_csv(), and how do you check the file path and current working directory? |
+| B3P04Q48 | 3 | 4 | How do you create a new column using a condition, for example 'High' if salary is above 60,000 else 'Low', using np.where()? |
+| B3P04Q49 | 3 | 4 | How do you sort a DataFrame by index, and what is the difference between sort_values() and sort_index()? |
+| B3P04Q50 | 3 | 4 | What does the inplace parameter do, and why is it better to assign the result back instead? |
+| B3P04Q51 | 3 | 4 | What is the difference between idxmax() and max()? |
+| B3P04Q52 | 3 | 4 | How do you create a DataFrame from a Python dictionary and from a list of lists? |
+| B3P04Q53 | 3 | 4 | How do you select all columns of a particular data type, for example only numeric columns, using select_dtypes()? |
+| B3P04Q54 | 3 | 4 | Why does a column of numbers read as object dtype from a CSV, and how do you spot it? |
+| B3P04Q55 | 3 | 4 | How do you reorder columns or move one column to the front of a DataFrame? |
+| B3P04Q56 | 3 | 4 | How do you filter a DataFrame using multiple conditions with OR, for example employees in Sales or with salary above 80,000? |
+| B3P04Q57 | 3 | 4 | What is chained indexing, for example df[df['dept']=='Sales']['salary'] = 0, and why does it fail to update the original DataFrame? |
+| B3P04Q58 | 3 | 4 | How do you update the values of selected rows, for example give a 10% raise to employees in the Sales department, using loc? |
+| B3P04Q59 | 3 | 4 | How do you set a column as the index and then select a row by that label, such as employee ID 105? |
+| B3P04Q60 | 3 | 4 | What is the difference between at/iat and loc/iloc? |
+| B3P04Q61 | 3 | 4 | How do you select every second row of a DataFrame using slicing? |
+| B3P04Q62 | 3 | 4 | How do you sort a DataFrame by a text column with a custom order, for example Low, Medium, High, using a categorical type? |
+| B3P04Q63 | 3 | 4 | How do you keep sorting stable and place missing values at the top or bottom using na_position? |
+| B3P04Q64 | 3 | 4 | How do you read a CSV with a custom delimiter such as pipe or semicolon? |
+| B3P04Q65 | 3 | 4 | How do you rename the index or axis labels and set a column name for the index? |
+| B3P04Q66 | 3 | 4 | How do you filter columns by name pattern, for example all columns starting with 'Q1_' using filter() or str.startswith()? |
+| B3P04Q67 | 3 | 4 | How do you use where() and mask() to replace values by a condition without changing the shape of the DataFrame? |
+| B3P04Q68 | 3 | 4 | How do you transpose a DataFrame, and when is it useful? |
+| B3P04Q69 | 3 | 4 | How do you display all columns or more rows when a DataFrame is truncated in the notebook? |
+| B3P04Q70 | 3 | 4 | How do you check the memory used by a DataFrame, and how can the category dtype reduce it? |
+| B3P04Q71 | 3 | 4 | How do you read data directly from a URL or from an in-memory text string with read_csv? |
+| B3P04Q72 | 3 | 4 | What is a MultiIndex, and how do you select rows from one? |
+| B3P04Q73 | 3 | 4 | How do you read a large CSV file in chunks, and when is it needed? |
+| B3P04Q74 | 3 | 4 | How do you select the rows with the lowest salary in each department without groupby, using sort_values and iloc? |
+| B3P04Q75 | 3 | 4 | What changed with Copy-on-Write in pandas 3.0, and what does it mean for SettingWithCopyWarning? |
+| B3P05Q1 | 3 | 5 | What does groupby() do in pandas, and what are the split-apply-combine steps? |
+| B3P05Q2 | 3 | 5 | Write code to find the average salary by department from an employee DataFrame. |
+| B3P05Q3 | 3 | 5 | Write code to count the number of employees in each department using groupby. |
+| B3P05Q4 | 3 | 5 | What is the difference between size() and count() in a pandas groupby? |
+| B3P05Q5 | 3 | 5 | What is the difference between merge() and join() in pandas? |
+| B3P05Q6 | 3 | 5 | What join types does pd.merge() support through the how= argument, and how do they map to SQL joins? |
+| B3P05Q7 | 3 | 5 | Write code to left-merge an employee DataFrame with a department DataFrame on the column dept_id. |
+| B3P05Q8 | 3 | 5 | What is the difference between merge() and concat() in pandas? |
+| B3P05Q9 | 3 | 5 | What is pivot_table() in pandas, and how do you create one? |
+| B3P05Q10 | 3 | 5 | Write code to build a pivot table of average salary with department as rows and gender as columns. |
+| B3P05Q11 | 3 | 5 | What is the difference between apply(), map() and applymap() in pandas? |
+| B3P05Q12 | 3 | 5 | Write code to group by department and compute headcount, average salary and maximum salary in one step using named aggregation. |
+| B3P05Q13 | 3 | 5 | What is the difference between agg() and transform() in a pandas groupby? |
+| B3P05Q14 | 3 | 5 | Write code to add a column showing each employee's department average salary next to their own salary. |
+| B3P05Q15 | 3 | 5 | Write code to find the top 3 highest-paid employees in each department. |
+| B3P05Q16 | 3 | 5 | After a merge, your row count increased unexpectedly. What are the likely causes and how do you check? |
+| B3P05Q17 | 3 | 5 | How do you find the rows in one DataFrame that have no match in another (an anti join) in pandas? |
+| B3P05Q18 | 3 | 5 | What is the difference between pivot() and pivot_table() in pandas? |
+| B3P05Q19 | 3 | 5 | Write code using apply() with a lambda to create a column that labels each employee 'High' or 'Low' by salary, and explain when a vectorised alternative is better. |
+| B3P05Q20 | 3 | 5 | Why is apply() with axis=1 slow, and what do you use instead? |
+| B3P05Q21 | 3 | 5 | You get a SettingWithCopyWarning after filtering a DataFrame and assigning a new column. What does it mean and how do you fix it? |
+| B3P05Q22 | 3 | 5 | Write code to replicate Excel's VLOOKUP in pandas using merge. |
+| B3P05Q23 | 3 | 5 | How do you group by two columns, for example department and location, and get the average salary for each pair? |
+| B3P05Q24 | 3 | 5 | After groupby, the group key becomes the index. How do you turn it back into a normal column? |
+| B3P05Q25 | 3 | 5 | What is the effect of as_index=False in groupby, and how does it compare with reset_index()? |
+| B3P05Q26 | 3 | 5 | How do you sort the result of a groupby in descending order of the aggregated value? |
+| B3P05Q27 | 3 | 5 | Write code to find the number of employees by gender within each department as a table. |
+| B3P05Q28 | 3 | 5 | What is the difference between value_counts() and groupby().size()? |
+| B3P05Q29 | 3 | 5 | What does groupby() actually return, and how do you look at a single group such as the 'Finance' department? |
+| B3P05Q30 | 3 | 5 | Write code to find the number of unique candidates per recruitment source (nunique) from a hiring DataFrame. |
+| B3P05Q31 | 3 | 5 | How do you merge two DataFrames when the key column has different names, for example emp_id and employee_id? |
+| B3P05Q32 | 3 | 5 | Write code to stack the January, February and March attendance DataFrames into one DataFrame. |
+| B3P05Q33 | 3 | 5 | What does ignore_index=True do in pd.concat()? |
+| B3P05Q34 | 3 | 5 | What is pd.crosstab(), and how does it differ from pivot_table()? |
+| B3P05Q35 | 3 | 5 | What is the purpose of the suffixes argument in merge()? |
+| B3P05Q36 | 3 | 5 | By default, are rows with NaN in the groupby key included in the result? How do you change that? |
+| B3P05Q37 | 3 | 5 | Write code to map department codes ('FIN', 'HR', 'IT') to full department names using a dictionary and map(). |
+| B3P05Q38 | 3 | 5 | Why does a KeyError appear after a groupby aggregation when you refer to the grouping column, and how do you fix it? |
+| B3P05Q39 | 3 | 5 | Write code to calculate the attrition rate (percentage of leavers) by department. |
+| B3P05Q40 | 3 | 5 | Write code to show each employee's salary as a percentage of their department's total payroll. |
+| B3P05Q41 | 3 | 5 | Write code to keep only the departments that have more than 10 employees using groupby().filter(). |
+| B3P05Q42 | 3 | 5 | Write code to find the department whose average salary is above the company-wide average. |
+| B3P05Q43 | 3 | 5 | Write code to calculate a running (cumulative) total of sales within each region. |
+| B3P05Q44 | 3 | 5 | Write code to rank employees by salary within each department. |
+| B3P05Q45 | 3 | 5 | Write code to compare each month's headcount with the previous month for every department using shift(). |
+| B3P05Q46 | 3 | 5 | How do you merge on two columns, for example employee ID and month? |
+| B3P05Q47 | 3 | 5 | What does the validate argument in merge() do, and when would you use it? |
+| B3P05Q48 | 3 | 5 | What does indicator=True do in merge(), and how do you use the _merge column? |
+| B3P05Q49 | 3 | 5 | After a merge, integer columns turn into floats. Why does this happen and how do you fix it? |
+| B3P05Q50 | 3 | 5 | A merge returns zero matching rows even though the IDs look the same. What would you check? |
+| B3P05Q51 | 3 | 5 | Write code to merge an employees table with an attendance table and calculate each employee's attendance percentage. |
+| B3P05Q52 | 3 | 5 | Write code to merge a payroll table with a deductions table and compute net pay, treating missing deductions as zero. |
+| B3P05Q53 | 3 | 5 | What does an outer merge return, and how do you handle the NaN values it creates? |
+| B3P05Q54 | 3 | 5 | Write code to build a pivot table of headcount by department and month, with row and column totals. |
+| B3P05Q55 | 3 | 5 | What do the fill_value, margins and aggfunc arguments do in pivot_table()? |
+| B3P05Q56 | 3 | 5 | How do you apply more than one aggregation function (sum and mean) to a column in pivot_table()? |
+| B3P05Q57 | 3 | 5 | What does melt() do, and when do you use it? |
+| B3P05Q58 | 3 | 5 | What do stack() and unstack() do, and how are they related to pivot tables? |
+| B3P05Q59 | 3 | 5 | How do you replicate Excel's SUMIFS in pandas? |
+| B3P05Q60 | 3 | 5 | Write code to find the employee with the highest salary in each department using idxmax(). |
+| B3P05Q61 | 3 | 5 | Write code to apply a custom function that labels performance rating bands to every row. |
+| B3P05Q62 | 3 | 5 | How do you pass extra arguments to a function used in apply()? |
+| B3P05Q63 | 3 | 5 | Write code to assign a grade ('A', 'B', 'C') from a score using np.select or np.where instead of apply(). |
+| B3P05Q64 | 3 | 5 | Write code to bucket employees into tenure bands (0-1, 1-3, 3+ years) with pd.cut and count each band. |
+| B3P05Q65 | 3 | 5 | After agg() with several functions, the columns become a MultiIndex. How do you flatten them? |
+| B3P05Q66 | 3 | 5 | What is the difference between concat() with axis=0 and axis=1, and what happens when the indexes do not match? |
+| B3P05Q67 | 3 | 5 | What is the difference between map() and replace() for changing values in a column? |
+| B3P05Q68 | 3 | 5 | Write code to calculate stage-to-stage conversion rates in a hiring funnel (applied, screened, interviewed, offered, joined). |
+| B3P05Q69 | 3 | 5 | Write code to turn a monthly leavers list into a wide table of department by month with zeros where there were no leavers. |
+| B3P05Q70 | 3 | 5 | How do you get the latest record per employee using groupby when an employee appears several times? |
+| B3P05Q71 | 3 | 5 | How do you merge on the index of one DataFrame and a column of another? |
+| B3P05Q72 | 3 | 5 | What does a cross join do, and how do you do it in pandas? |
+| B3P05Q73 | 3 | 5 | What is the difference between groupby with apply() and groupby with agg(), and which is faster? |
+| B3P05Q74 | 3 | 5 | Why is iterrows() slow, and what are faster alternatives for row-wise logic? |
+| B3P05Q75 | 3 | 5 | Is a pivot_table the same as groupby().unstack()? Show both for the same result. |
+| B3P05Q76 | 3 | 5 | Why should you avoid calling concat() inside a loop, and what is the better pattern? |
+| B3P05Q77 | 3 | 5 | Write code to find employees present in both a 'trained' list and a 'certified' list. |
+| B3P05Q78 | 3 | 5 | What does the observed argument do when grouping by a categorical column? |
+| B3P05Q79 | 3 | 5 | Write code to calculate a 3-month rolling average of headcount within each department. |
+| B3P05Q80 | 3 | 5 | What is merge_asof(), and when would an analyst use it? |
+| B3P05Q81 | 3 | 5 | Write code to find the second-highest salary in each department. |
+| B3P05Q82 | 3 | 5 | Write code to calculate each department's share of total attrition and flag departments contributing more than 25%. |
+| B3P05Q83 | 3 | 5 | How would you reconcile two employee lists (HRMS and payroll) to find missing, extra and mismatched records using merge? |
+| B3P06Q1 | 3 | 6 | How do you check for missing values in a pandas DataFrame and count them per column? |
+| B3P06Q2 | 3 | 6 | What is the difference between isna() and isnull() in pandas? |
+| B3P06Q3 | 3 | 6 | How do you remove duplicate rows in pandas? |
+| B3P06Q4 | 3 | 6 | How do you find duplicate rows in a DataFrame without deleting them? |
+| B3P06Q5 | 3 | 6 | What does df.info() tell you, and why is it usually the first step in data cleaning? |
+| B3P06Q6 | 3 | 6 | How do you check the data type of each column, and how do you change a column's type with astype()? |
+| B3P06Q7 | 3 | 6 | What is the difference between dropna() and fillna(), and when would you use each? |
+| B3P06Q8 | 3 | 6 | How do you handle missing values in a salary column: when do you fill with the mean, the median or a constant, and how do you do it in pandas? |
+| B3P06Q9 | 3 | 6 | How does drop_duplicates() decide which row to keep, and how do you use the subset and keep arguments? |
+| B3P06Q10 | 3 | 6 | A column holding numbers is stored as text because of values like 'N/A' or '12,500'. How do you convert it to numeric safely using pd.to_numeric()? |
+| B3P06Q11 | 3 | 6 | How do you detect outliers in a salary column using the IQR method in pandas? |
+| B3P06Q12 | 3 | 6 | You have an employee table with repeated Employee IDs. Write code to keep only the most recent record per employee. |
+| B3P06Q13 | 3 | 6 | What are the steps you follow to clean a messy dataset in pandas before analysis? |
+| B3P06Q14 | 3 | 6 | What is the SettingWithCopyWarning, why does it appear, and how do you fix it? |
+| B3P06Q15 | 3 | 6 | How do you decide whether to drop, fill or flag missing values, and how do you explain the choice to a business stakeholder? |
+| B3P06Q16 | 3 | 6 | What is the difference between NaN, None and an empty string in pandas? |
+| B3P06Q17 | 3 | 6 | How do you drop rows where a specific column is missing, using dropna(subset=...)? |
+| B3P06Q18 | 3 | 6 | How do you fill missing values with the previous or next value using ffill() and bfill()? |
+| B3P06Q19 | 3 | 6 | How do you rename columns in a DataFrame, and why clean column names (spaces, capitals) at the start? |
+| B3P06Q20 | 3 | 6 | How do you remove leading and trailing spaces from a text column in pandas? |
+| B3P06Q21 | 3 | 6 | How do you make text consistent in pandas, for example turning 'hr', 'HR ' and 'Hr' into 'HR'? |
+| B3P06Q22 | 3 | 6 | How do you change a text column to datetime using pd.to_datetime()? |
+| B3P06Q23 | 3 | 6 | How do you replace specific values in a column, for example 'Male' and 'M' to 'M', using replace() or map()? |
+| B3P06Q24 | 3 | 6 | What is the difference between astype(int) and pd.to_numeric(), and what happens if the column has missing values? |
+| B3P06Q25 | 3 | 6 | How do you count unique values in a column, and how do you check for inconsistent spellings with value_counts()? |
+| B3P06Q26 | 3 | 6 | How do you drop columns that are not needed, or columns with too many missing values? |
+| B3P06Q27 | 3 | 6 | What does the errors='coerce' argument do in to_numeric() and to_datetime()? |
+| B3P06Q28 | 3 | 6 | How do you calculate the percentage of missing values in each column, and how do you list columns with more than 30% missing? |
+| B3P06Q29 | 3 | 6 | How do you fill missing values within each group, for example filling a missing salary with the department median using groupby and transform()? |
+| B3P06Q30 | 3 | 6 | How do you use the thresh and how arguments of dropna()? |
+| B3P06Q31 | 3 | 6 | How do you find all rows that are duplicates on Employee ID and month, including the first occurrence (keep=False)? |
+| B3P06Q32 | 3 | 6 | How do you clean a currency column like 'Rs. 45,000' and convert it to a number? |
+| B3P06Q33 | 3 | 6 | How do you detect outliers using the z-score in pandas, and when is the IQR method better? |
+| B3P06Q34 | 3 | 6 | How do you handle outliers: remove, cap (winsorize) or keep? Show how to cap values at the 1st and 99th percentiles with clip(). |
+| B3P06Q35 | 3 | 6 | How do you split a 'Full Name' column into first and last name using str.split()? |
+| B3P06Q36 | 3 | 6 | How do you filter rows with invalid values, for example ages below 18 or above 70, or negative salaries? |
+| B3P06Q37 | 3 | 6 | Why does df[df['salary'] > 0]['bonus'] = 0 not work reliably, and what is the correct way using loc? |
+| B3P06Q38 | 3 | 6 | How do you convert a column to the category dtype, and why is it useful? |
+| B3P06Q39 | 3 | 6 | What is the difference between inplace=True and assigning the result back, and why do many people avoid inplace? |
+| B3P06Q40 | 3 | 6 | How do you create a flag column marking missing values, so you keep that information after filling? |
+| B3P06Q41 | 3 | 6 | How do you standardise inconsistent department names such as 'Human Resources', 'HR' and 'H.R.' into one value? |
+| B3P06Q42 | 3 | 6 | A column of Yes/No answers contains blanks and mixed case. How do you clean it and convert it to True/False? |
+| B3P06Q43 | 3 | 6 | How do you find rows with an invalid email or phone number using str.contains() or a regular expression? |
+| B3P06Q44 | 3 | 6 | Attendance data has a missing check-out time on some days. How would you handle it in pandas? |
+| B3P06Q45 | 3 | 6 | You merge two files and the row count goes up unexpectedly. How do you check for duplicate keys and clean them? |
+| B3P06Q46 | 3 | 6 | How do you reset the index after removing rows, and why does the index have gaps? |
+| B3P06Q47 | 3 | 6 | How do you convert a column of 'Yes'/'No' to 1/0 in pandas? |
+| B3P06Q48 | 3 | 6 | What does the nunique() method do, and how is it different from unique()? |
+| B3P06Q49 | 3 | 6 | How do you replace placeholder values like -1, 999 or 'Unknown' with NaN before cleaning? |
+| B3P06Q50 | 3 | 6 | How do you fill missing values using interpolate(), and when is it appropriate? |
+| B3P06Q51 | 3 | 6 | How do you find near-duplicate company names such as 'Infosys Ltd' and 'Infosys Limited' in pandas? |
+| B3P06Q52 | 3 | 6 | How do you use select_dtypes() to clean numeric and text columns separately? |
+| B3P06Q53 | 3 | 6 | How do you check whether a column's values are consistent with another column, for example exit date earlier than join date? |
+| B3P06Q54 | 3 | 6 | What is Copy-on-Write in newer pandas versions, and how does it change the SettingWithCopyWarning problem? |
+| B3P06Q55 | 3 | 6 | How do you apply a custom cleaning function to a column using apply(), and why are vectorised string methods usually faster? |
+| B3P06Q56 | 3 | 6 | How do you remove outliers separately within each group, such as salary outliers per job grade? |
+| B3P06Q57 | 3 | 6 | How do you reduce memory by downcasting numeric columns with to_numeric(downcast=...)? |
+| B3P06Q58 | 3 | 6 | How do you deal with a column that mixes dates in different formats, such as '05-11-2025' and '2025/11/05'? |
+| B3P06Q59 | 3 | 6 | Why can astype(int) fail with 'Cannot convert non-finite values (NA or inf) to integer', and what is the fix (for example the nullable Int64 type)? |
+| B3P06Q60 | 3 | 6 | You get a 5-lakh-row HR file with inconsistent columns, duplicates and blanks. Walk me through your cleaning plan and how you would document every change. |
+| B3P06Q61 | 3 | 6 | How do you build a reusable data-cleaning function or pipeline in pandas using pipe()? |
+| B3P06Q62 | 3 | 6 | How do you validate the data after cleaning, using assertions and simple quality checks? |
+| B3P06Q63 | 3 | 6 | How do you detect outliers in a column that is highly skewed, such as salary, and why might a log transform help? |
+| B3P07Q1 | 3 | 7 | How do you convert a text column of dates to a proper datetime column in pandas? |
+| B3P07Q2 | 3 | 7 | Write code to read a CSV with a joining_date column and make pandas parse it as a date while loading. |
+| B3P07Q3 | 3 | 7 | How do you extract the year, month, day and weekday name from a datetime column using the .dt accessor? |
+| B3P07Q4 | 3 | 7 | Write code to calculate the number of days between date_of_joining and date_of_exit for each employee. |
+| B3P07Q5 | 3 | 7 | Write code to calculate each employee's tenure in years from the joining date to today. |
+| B3P07Q6 | 3 | 7 | Write code to find total monthly sales from a table with order_date and amount columns. |
+| B3P07Q7 | 3 | 7 | What does errors="coerce" do in pd.to_datetime, and how do you find which rows failed to convert? |
+| B3P07Q8 | 3 | 7 | What is the difference between resample and groupby in pandas for time-based aggregation? |
+| B3P07Q9 | 3 | 7 | Write code to resample daily attendance records to monthly totals. |
+| B3P07Q10 | 3 | 7 | Write code to calculate month-over-month percentage growth in sales. |
+| B3P07Q11 | 3 | 7 | How do you calculate a 7-day rolling average of daily orders in pandas? |
+| B3P07Q12 | 3 | 7 | How do you filter a DataFrame for rows between two dates? |
+| B3P07Q13 | 3 | 7 | How do you set a date column as the index, and why does that help with time series? |
+| B3P07Q14 | 3 | 7 | How do you create a range of dates in pandas using pd.date_range? |
+| B3P07Q15 | 3 | 7 | How do you find the earliest and latest date in a column and the span between them? |
+| B3P07Q16 | 3 | 7 | What is the difference between datetime64, Timestamp and Timedelta in pandas? |
+| B3P07Q17 | 3 | 7 | How do you check whether a column is stored as text or as datetime? |
+| B3P07Q18 | 3 | 7 | Write code to add a new column that flags weekend dates (Saturday or Sunday) in an attendance table. |
+| B3P07Q19 | 3 | 7 | Write code to count hires per month from a joining_date column. |
+| B3P07Q20 | 3 | 7 | How do you format a datetime column as a string such as 05-Nov-2026 using strftime? |
+| B3P07Q21 | 3 | 7 | How do you handle dates like 03/04/2026 that could be day-first or month-first when parsing? |
+| B3P07Q22 | 3 | 7 | How do you parse a date column stored in a custom format such as 20260315 or 15-Mar-26? |
+| B3P07Q23 | 3 | 7 | What is the shift function in pandas, and how do you use it to compare each day with the previous day? |
+| B3P07Q24 | 3 | 7 | How do you use pct_change on monthly data, and why is the first value NaN? |
+| B3P07Q25 | 3 | 7 | Write code to find the day of the week with the highest average sales. |
+| B3P07Q26 | 3 | 7 | Write code to compute a cumulative sum of sales within each year. |
+| B3P07Q27 | 3 | 7 | Write code to group data by quarter and by financial year (April to March) in pandas. |
+| B3P07Q28 | 3 | 7 | How do you find missing dates in a daily series and fill them in with zero? |
+| B3P07Q29 | 3 | 7 | Write code to find employees who joined in the last 90 days. |
+| B3P07Q30 | 3 | 7 | Write code to compute monthly attrition rate from joining and exit date columns. |
+| B3P07Q31 | 3 | 7 | Why do I get a "Can only use .dt accessor with datetimelike values" error, and how do you fix it? |
+| B3P07Q32 | 3 | 7 | What is the difference between rolling, expanding and ewm windows? |
+| B3P07Q33 | 3 | 7 | What is the difference between resample and asfreq? |
+| B3P07Q34 | 3 | 7 | How do you fill gaps after resampling using ffill, bfill or interpolate? |
+| B3P07Q35 | 3 | 7 | How do you subtract or add months and days to a date column using Timedelta and DateOffset? |
+| B3P07Q36 | 3 | 7 | How do you find the last working day or month-end date for each row using pandas offsets? |
+| B3P07Q37 | 3 | 7 | Write code to calculate working days between two dates, excluding weekends, using numpy busday_count. |
+| B3P07Q38 | 3 | 7 | Write code to find the gap in days between consecutive events (for example logins) for each employee. |
+| B3P07Q39 | 3 | 7 | How do you compare this month with the same month last year in pandas? |
+| B3P07Q40 | 3 | 7 | How do you handle time zones in pandas using tz_localize and tz_convert? |
+| B3P07Q41 | 3 | 7 | How do you convert Unix timestamps (epoch seconds) to readable dates in pandas? |
+| B3P07Q42 | 3 | 7 | How do you use pd.Grouper to group by month while also grouping by another column? |
+| B3P07Q43 | 3 | 7 | How do you detect and handle outliers or spikes in a daily time series? |
+| B3P07Q44 | 3 | 7 | How do you split a time series into train and test sets without shuffling, and why does order matter? |
+| B3P07Q45 | 3 | 7 | What is a Period in pandas, and how does it differ from a Timestamp? |
+| B3P07Q46 | 3 | 7 | What is the difference between closed and label arguments in resample, and when do they matter? |
+| B3P08Q1 | 3 | 8 | What is the difference between matplotlib and seaborn, and when do you use each? |
+| B3P08Q2 | 3 | 8 | Write code to draw a bar chart of employee headcount by department using pandas and matplotlib. |
+| B3P08Q3 | 3 | 8 | Write code to plot a line chart of monthly hires over a year. |
+| B3P08Q4 | 3 | 8 | How do you add a title, axis labels and a legend to a matplotlib chart? |
+| B3P08Q5 | 3 | 8 | Write code to draw a histogram of employee salaries and explain how you choose the number of bins. |
+| B3P08Q6 | 3 | 8 | Write code to draw a scatter plot of years of experience against salary. |
+| B3P08Q7 | 3 | 8 | How do you save a chart as an image file in matplotlib, and why does savefig sometimes save a blank image? |
+| B3P08Q8 | 3 | 8 | What does plt.show() do, and is it needed in a Jupyter notebook? |
+| B3P08Q9 | 3 | 8 | Which Python plot would you use to show a trend over time, a comparison between categories, a distribution and a relationship between two numbers? |
+| B3P08Q10 | 3 | 8 | What is the difference between plt.plot() and fig, ax = plt.subplots(), and which style do you prefer? |
+| B3P08Q11 | 3 | 8 | Write code to draw a correlation heatmap of the numeric columns of a DataFrame using seaborn. |
+| B3P08Q12 | 3 | 8 | Write code to draw a boxplot of salary by department in seaborn, and explain how to read it. |
+| B3P08Q13 | 3 | 8 | How do you plot directly from a pandas DataFrame, and how do you plot the result of a groupby? |
+| B3P08Q14 | 3 | 8 | Write code to plot attrition rate by department as a bar chart sorted from highest to lowest. |
+| B3P08Q15 | 3 | 8 | What is the standard way to import matplotlib and seaborn, and what is pyplot? |
+| B3P08Q16 | 3 | 8 | How do you change the figure size of a chart? |
+| B3P08Q17 | 3 | 8 | How do you rotate or fix overlapping x-axis labels? |
+| B3P08Q18 | 3 | 8 | How do you plot multiple lines on the same chart with a legend, for example hires and exits per month? |
+| B3P08Q19 | 3 | 8 | How do you change the colours of a chart or use a seaborn colour palette? |
+| B3P08Q20 | 3 | 8 | How do you add data labels (values) on top of the bars in a bar chart? |
+| B3P08Q21 | 3 | 8 | How do you set axis limits and add gridlines to a chart? |
+| B3P08Q22 | 3 | 8 | How do you draw a pie chart in matplotlib, and why do analysts usually avoid it? |
+| B3P08Q23 | 3 | 8 | What is a seaborn theme or style, and how do you set one with sns.set_theme()? |
+| B3P08Q24 | 3 | 8 | How do you show charts inline in a Jupyter notebook? |
+| B3P08Q25 | 3 | 8 | Write code to create a 2x2 grid of subplots, each showing a different chart. |
+| B3P08Q26 | 3 | 8 | What is the difference between seaborn countplot() and barplot()? |
+| B3P08Q27 | 3 | 8 | Write code to draw a histogram with a density curve (KDE) in seaborn and split it by a category using hue. |
+| B3P08Q28 | 3 | 8 | What is the difference between histplot, displot and the deprecated distplot in seaborn? |
+| B3P08Q29 | 3 | 8 | Write code to draw a stacked bar chart of employees who left and stayed, by department. |
+| B3P08Q30 | 3 | 8 | Write code to draw a grouped (side-by-side) bar chart comparing two years of revenue by region. |
+| B3P08Q31 | 3 | 8 | What is the hue parameter in seaborn, and how do you use it on a scatter plot? |
+| B3P08Q32 | 3 | 8 | What does sns.pairplot() show, and when is it useful or a bad idea? |
+| B3P08Q33 | 3 | 8 | Write code to plot daily attendance as a time series with readable date labels on the x-axis. |
+| B3P08Q34 | 3 | 8 | How do you spot outliers visually with a boxplot, and then find those rows in pandas? |
+| B3P08Q35 | 3 | 8 | What is a violin plot, and how does it differ from a boxplot? |
+| B3P08Q36 | 3 | 8 | What is plt.tight_layout() (or constrained_layout), and when do you need it? |
+| B3P08Q37 | 3 | 8 | How do you handle missing values before plotting, and what does matplotlib do with NaN? |
+| B3P08Q38 | 3 | 8 | My plot shows nothing or shows an error such as ValueError x and y must have the same size. How do you debug it? |
+| B3P08Q39 | 3 | 8 | Why does a KeyError appear when plotting a DataFrame column, and how do you fix it? |
+| B3P08Q40 | 3 | 8 | How do you draw a horizontal reference line, such as the company average attrition, on a chart? |
+| B3P08Q41 | 3 | 8 | How do you create a chart with two y-axes using twinx(), and when is it a bad idea? |
+| B3P08Q42 | 3 | 8 | How do you customise a seaborn heatmap: annotations, colour map, centre value and hiding the upper triangle? |
+| B3P08Q43 | 3 | 8 | What are FacetGrid, catplot and relplot in seaborn, and when do you use them? |
+| B3P08Q44 | 3 | 8 | How do you plot a scatter plot with a very large number of points so it stays readable? |
+| B3P08Q45 | 3 | 8 | How do you choose colours that work for colour-blind readers and for a company colour theme? |
+| B3P08Q46 | 3 | 8 | How do you generate and save one chart per department in a loop for a monthly report? |
+| B3P08Q47 | 3 | 8 | When would you use Plotly instead of matplotlib or seaborn? |
+| B3P08Q48 | 3 | 8 | How would you visualise attrition by department and tenure band in a single chart? |
+| B3P08Q49 | 3 | 8 | Write code to build a one-page summary figure for a hiring funnel: funnel bars, a monthly trend and a source-wise split. |
+| B3P08Q50 | 3 | 8 | How do you remove clutter from a default matplotlib chart (spines, gridlines, legend position) so it is ready for a manager's slide? |
+| B3P09Q1 | 3 | 9 | You are given a CSV file you have never seen. What are the first five things you do in pandas to understand it? |
+| B3P09Q2 | 3 | 9 | Write code to load employees.csv and print its shape, column dtypes and the number of missing values per column. |
+| B3P09Q3 | 3 | 9 | Write code to calculate the overall attrition rate (percentage of employees with Attrition = 'Yes') from an HR DataFrame. |
+| B3P09Q4 | 3 | 9 | Write code to find the attrition rate by department and sort the departments from highest to lowest. |
+| B3P09Q5 | 3 | 9 | Walk me through a complete EDA of an employee attrition dataset using pandas, from loading the file to your final recommendations. |
+| B3P09Q6 | 3 | 9 | Write code to check for duplicate rows in a DataFrame, count them, and remove them while keeping the first occurrence. |
+| B3P09Q7 | 3 | 9 | Write code to find the top 5 job roles by average monthly income, showing role, average income and headcount. |
+| B3P09Q8 | 3 | 9 | A sales DataFrame has order_date, region and revenue. Write code to find total revenue per region and the share (percentage) of each region in the total. |
+| B3P09Q9 | 3 | 9 | Write code to merge an employee table with a department table and then check that the merge did not create extra rows or lose employees. |
+| B3P09Q10 | 3 | 9 | Write code to find which columns have missing values, what percentage is missing in each, and decide how you would treat each (drop, fill, or leave). |
+| B3P09Q11 | 3 | 9 | After you finish an EDA in an interview, how do you present your findings in plain business language instead of reading out code output? |
+| B3P09Q12 | 3 | 9 | Write code to detect outliers in a salary column using the IQR rule and list the employees flagged. |
+| B3P09Q13 | 3 | 9 | Write code to convert a joining_date column stored as text into datetime, then create columns for joining year, joining month and tenure in years. |
+| B3P09Q14 | 3 | 9 | You get a messy attendance file with mixed date formats, 'Present'/'present '/'P' status values and blank employee IDs. Write the cleaning code step by step. |
+| B3P09Q15 | 3 | 9 | Given a hiring funnel DataFrame (candidate_id, stage, date), write code to compute the number of candidates reaching each stage and the conversion rate from one stage to the next. |
+| B3P09Q16 | 3 | 9 | What is the difference between df.info(), df.describe() and df.head(), and what does each tell you in the first minutes of EDA? |
+| B3P09Q17 | 3 | 9 | Write code to list all categorical columns and print the value counts of each, including missing values. |
+| B3P09Q18 | 3 | 9 | Write code to select only numeric columns of a DataFrame and compute their mean, median and standard deviation. |
+| B3P09Q19 | 3 | 9 | How do you check whether a column that looks numeric (for example salary) was loaded as object, and how do you convert it safely? |
+| B3P09Q20 | 3 | 9 | Write code to find the correlation between numeric columns in an HR dataset and list the top 3 pairs with the strongest relationship. |
+| B3P09Q21 | 3 | 9 | Write code to compare the average salary, age and tenure of employees who left versus those who stayed. |
+| B3P09Q22 | 3 | 9 | Write code to create age bands (for example 18-25, 26-35, 36-45, 46+) with pd.cut and show attrition rate per band. |
+| B3P09Q23 | 3 | 9 | Write code to build a payroll summary: headcount, total gross pay and average gross pay per department, with clear column names. |
+| B3P09Q24 | 3 | 9 | Write code to find employees with more than 3 absences in a month from a daily attendance DataFrame. |
+| B3P09Q25 | 3 | 9 | Write code to flag employees whose salary is above the average of their own department (not the whole company). |
+| B3P09Q26 | 3 | 9 | Write code to find the department-wise count of employees who joined in each year using a pivot table or crosstab. |
+| B3P09Q27 | 3 | 9 | Write code to identify the columns that have only one unique value or a unique value for every row, and explain why you would drop them. |
+| B3P09Q28 | 3 | 9 | Why does a merge sometimes return more rows than the left table, and how do you detect and prevent it with validate= and indicator=True? |
+| B3P09Q29 | 3 | 9 | You get a SettingWithCopyWarning while creating a new column on a filtered DataFrame during EDA. Why does it happen and how do you fix it? |
+| B3P09Q30 | 3 | 9 | You get a KeyError for a column name that you can clearly see in the file. What are the likely causes (spaces, case, encoding) and how do you fix them? |
+| B3P09Q31 | 3 | 9 | Write code to standardise column names (strip spaces, lower case, replace spaces with underscores) right after loading a file. |
+| B3P09Q32 | 3 | 9 | Write code to find the month with the highest total sales in a sales DataFrame and the month-over-month growth percentage. |
+| B3P09Q33 | 3 | 9 | Write code to check whether two DataFrames (for example last month and this month employee lists) have employees present in one but missing in the other. |
+| B3P09Q34 | 3 | 9 | Write code to find the top 3 products by revenue within each region. |
+| B3P09Q35 | 3 | 9 | How do you decide between dropping, filling with the median, or flagging missing values in a dataset during EDA? Show the code for each option. |
+| B3P09Q36 | 3 | 9 | How would you check data quality of a new dataset (completeness, duplicates, valid ranges, consistent categories) and produce a short data-quality summary table in pandas? |
+| B3P09Q37 | 3 | 9 | Write code to plot a histogram of salary, a bar chart of attrition by department and a boxplot of salary by job level, and say what each chart tells you. |
+| B3P09Q38 | 3 | 9 | Write code that takes any DataFrame and prints an automatic profile: shape, dtypes, missing percentage, unique counts and basic statistics in one summary table. |
+| B3P09Q39 | 3 | 9 | Write code to compute a 3-month rolling average of monthly headcount and flag months where hiring dropped more than 20 percent. |
+| B3P09Q40 | 3 | 9 | Write code to find employees whose exit date is before their joining date, or whose age is below 18 or above 70, as data validity checks. |
+| B3P09Q41 | 3 | 9 | Write code to compare cohorts: for each joining-year cohort, calculate the percentage still employed after 1 and 2 years. |
+| B3P09Q42 | 3 | 9 | You find that 15 percent of the salary column is missing. How do you investigate whether the missingness is random or related to department or location before filling it? |
+| B3P09Q43 | 3 | 9 | Interviewer gives you a 5-minute task: 'Which department needs retention attention most?' Which columns, aggregations and charts do you use to answer it with evidence? |
+| B3P09Q44 | 3 | 9 | Write code to reconcile two payroll files by employee ID and list records where net pay differs by more than 1 rupee. |
+| B3P09Q45 | 3 | 9 | How do you handle a dataset too large to fit comfortably in memory when doing EDA in pandas (chunksize, usecols, dtypes)? |
+| B3P09Q46 | 3 | 9 | After your EDA shows that overtime and low income are linked to attrition, what are the limits of this conclusion, and how do you explain correlation versus causation to HR? |
+| B3P09Q47 | 3 | 9 | How do you read only selected columns and rows of a large CSV file to start EDA quickly? |
+| B3P09Q48 | 3 | 9 | Write code to export your cleaned DataFrame and a summary table to one Excel file with two sheets. |
+| B3P09Q49 | 3 | 9 | How do you make your EDA notebook reproducible and easy for a reviewer to follow in a take-home assignment (structure, comments, markdown, random seed, order of cells)? |
+| B3P09Q50 | 3 | 9 | Which pandas profiling or auto-EDA tools do you know, and why should you still do manual EDA in an interview? |
+| B3P09Q51 | 3 | 9 | In a take-home EDA assignment given 48 hours, how do you decide what to include in your final report, and what do you leave out? |
+| B3P09Q52 | 3 | 9 | Write code to create a simple attrition risk score from three rules (overtime, low satisfaction, short tenure) and check how well it separates leavers from stayers. |
+| B3P09Q53 | 3 | 9 | Write a function that takes any DataFrame and a target column and returns the target's rate for each categorical column, so you can scan for drivers quickly. |
+| B3P09Q54 | 3 | 9 | A stakeholder asks: 'Is attrition higher in Hyderabad than Bengaluru?' How do you check this in pandas, and how do you avoid overclaiming when one city has very few employees? |
+| B3P10Q1 | 3 | 10 | Write code to reverse a string in Python. |
+| B3P10Q2 | 3 | 10 | Write code to check whether a string is a palindrome. |
+| B3P10Q3 | 3 | 10 | Write code to count how many times each character appears in a string. |
+| B3P10Q4 | 3 | 10 | Write code to count the frequency of each word in a sentence using a dictionary. |
+| B3P10Q5 | 3 | 10 | Write code to find the largest number in a list without using max(). |
+| B3P10Q6 | 3 | 10 | Write code to remove duplicates from a list of employee IDs. |
+| B3P10Q7 | 3 | 10 | Write code to check whether a number is prime. |
+| B3P10Q8 | 3 | 10 | Write the FizzBuzz program: print 1 to 30, but Fizz for multiples of 3, Buzz for multiples of 5 and FizzBuzz for both. |
+| B3P10Q9 | 3 | 10 | Write code to find which values are duplicated in a list and how many times each occurs. |
+| B3P10Q10 | 3 | 10 | Write code to count the vowels and consonants in a string. |
+| B3P10Q11 | 3 | 10 | What is the difference between a list and a tuple, and what does mutable versus immutable mean? |
+| B3P10Q12 | 3 | 10 | What is a list comprehension? Rewrite a loop that squares only the even numbers of a list as one. |
+| B3P10Q13 | 3 | 10 | Write code to find the factorial of a number. |
+| B3P10Q14 | 3 | 10 | Write code to check whether two strings are anagrams of each other. |
+| B3P10Q15 | 3 | 10 | Write code to find the second largest number in a list. |
+| B3P10Q16 | 3 | 10 | Write a function that takes a list of words and returns each word's count, then prints the three most frequent words, without using Counter. |
+| B3P10Q17 | 3 | 10 | Write code to find the first non-repeating character in a string. |
+| B3P10Q18 | 3 | 10 | Write code to print the first n numbers of the Fibonacci series. |
+| B3P10Q19 | 3 | 10 | Write code to check whether a number is an Armstrong number. |
+| B3P10Q20 | 3 | 10 | Write code to find the sum of the digits of a number. |
+| B3P10Q21 | 3 | 10 | How do you swap the values of two variables in Python, with and without a temporary variable? |
+| B3P10Q22 | 3 | 10 | Write code to count the even and odd numbers in a list. |
+| B3P10Q23 | 3 | 10 | Write code to reverse a list in three different ways. |
+| B3P10Q24 | 3 | 10 | Write code to find the longest word in a sentence. |
+| B3P10Q25 | 3 | 10 | Write code to reverse the order of words in a sentence. |
+| B3P10Q26 | 3 | 10 | Write code to find the common elements between two lists, for example employees present in both the HR list and the payroll list. |
+| B3P10Q27 | 3 | 10 | Write code to find employees who are in the HR master list but missing from the payroll list, using sets. |
+| B3P10Q28 | 3 | 10 | Write code to merge two dictionaries in Python. |
+| B3P10Q29 | 3 | 10 | Write code to create the dictionary {1: 1, 2: 4, 3: 9, 4: 16, 5: 25} the most Pythonic way. |
+| B3P10Q30 | 3 | 10 | Write code to print the multiplication table of a number. |
+| B3P10Q31 | 3 | 10 | Write code to check whether a year is a leap year. |
+| B3P10Q32 | 3 | 10 | Write code to print a right-angled triangle pattern of stars with n rows. |
+| B3P10Q33 | 3 | 10 | Write code that loops over a list of employee records and calculates the attrition rate. |
+| B3P10Q34 | 3 | 10 | Write code to count how many employees in a list of dictionaries have more than 3 years of tenure. |
+| B3P10Q35 | 3 | 10 | What is the difference between a function that prints a value and one that returns it? |
+| B3P10Q36 | 3 | 10 | What is a lambda function, and how is it different from a function defined with def? |
+| B3P10Q37 | 3 | 10 | What is a class and an object in Python? Write a simple Employee class with a method. |
+| B3P10Q38 | 3 | 10 | What does the self keyword mean in a class method? |
+| B3P10Q39 | 3 | 10 | What does the __init__ method do, and how is it different from an ordinary method? |
+| B3P10Q40 | 3 | 10 | Write code to find the two numbers in a list that add up to a given target (Two Sum). |
+| B3P10Q41 | 3 | 10 | Write code to find the missing number in a list that should contain 1 to n. |
+| B3P10Q42 | 3 | 10 | Write code to check whether a string is a palindrome while ignoring case, spaces and punctuation. |
+| B3P10Q43 | 3 | 10 | Write code to group employees by department using a dictionary of lists. |
+| B3P10Q44 | 3 | 10 | Write code to sort a list of employee dictionaries by salary, highest first, without pandas. |
+| B3P10Q45 | 3 | 10 | Write a function that calculates net salary from gross salary using simple tax slabs with if-elif. |
+| B3P10Q46 | 3 | 10 | What is the output of a = [1, 2, 3]; b = a; b.append(4); print(a)? Explain why. |
+| B3P10Q47 | 3 | 10 | What is the difference between a shallow copy and a deep copy? |
+| B3P10Q48 | 3 | 10 | What are the four pillars of object-oriented programming? Explain each in plain words with an example. |
+| B3P10Q49 | 3 | 10 | What is inheritance? Write a Manager class that inherits from an Employee class. |
+| B3P10Q50 | 3 | 10 | What are *args and **kwargs, and when would you use them? |
+| B3P10Q51 | 3 | 10 | What is recursion? Write a recursive function for factorial and state its drawback. |
+| B3P10Q52 | 3 | 10 | Why is checking membership in a set faster than in a list? Explain time complexity (Big O) in simple words. |
+| B3P10Q53 | 3 | 10 | Write code to find the length of a string without using len(). |
+| B3P10Q54 | 3 | 10 | Write code to check whether a list is sorted in ascending order. |
+| B3P10Q55 | 3 | 10 | Write code to sort a list of strings by their length. |
+| B3P10Q56 | 3 | 10 | Is Python a compiled or an interpreted language, and what does that mean? |
+| B3P10Q57 | 3 | 10 | Write code to find the GCD (greatest common divisor) of two numbers. |
+| B3P10Q58 | 3 | 10 | Write code to flatten a nested list such as [[1, 2], [3, [4, 5]]]. |
+| B3P10Q59 | 3 | 10 | Write code to rotate a list by k positions. |
+| B3P10Q60 | 3 | 10 | Write code to move all zeros in a list to the end while keeping the other numbers in order. |
+| B3P10Q61 | 3 | 10 | Write code to swap the keys and values of a dictionary, and say what goes wrong if values repeat. |
+| B3P10Q62 | 3 | 10 | Write code to find the longest streak of consecutive present days in an attendance list of 'P' and 'A'. |
+| B3P10Q63 | 3 | 10 | Write code to do a basic validity check of email addresses in a list without using regex. |
+| B3P10Q64 | 3 | 10 | Implement binary search on a sorted list and explain why it is faster than a linear search. |
+| B3P10Q65 | 3 | 10 | Write code to sort a list using bubble sort and explain how it works. |
+| B3P10Q66 | 3 | 10 | Write code to print a diamond pattern of stars. |
+| B3P10Q67 | 3 | 10 | Why is using a mutable default argument such as def f(x, items=[]) a bug? |
+| B3P10Q68 | 3 | 10 | Why does removing items from a list while looping over it give wrong results, and how do you do it safely? |
+| B3P10Q69 | 3 | 10 | Why does 0.1 + 0.2 == 0.3 return False in Python? |
+| B3P10Q70 | 3 | 10 | What are iterators and generators, and what does yield do? |
+| B3P10Q71 | 3 | 10 | What is a decorator in Python? Write one that prints how long a function takes. |
+| B3P11Q1 | 3 | 11 | What is a Jupyter Notebook, and why do data analysts use it? |
+| B3P11Q2 | 3 | 11 | How do you use ChatGPT or another AI assistant to help you write pandas code? |
+| B3P11Q3 | 3 | 11 | What are the risks of using AI-generated Python code, and how do you check it before trusting it? |
+| B3P11Q4 | 3 | 11 | What is the difference between a code cell and a Markdown cell in Jupyter? |
+| B3P11Q5 | 3 | 11 | What does "Restart kernel and run all" do, and why should you do it before sharing a notebook? |
+| B3P11Q6 | 3 | 11 | Write code to combine all the monthly Excel files in a folder into one DataFrame and add a column showing the source file name. |
+| B3P11Q7 | 3 | 11 | How would you automate a monthly HR attendance report in Python so it is produced without manual Excel work? |
+| B3P11Q8 | 3 | 11 | You ask an AI assistant for code that calculates attrition rate by department, and the output looks wrong. How do you debug and verify it? |
+| B3P11Q9 | 3 | 11 | What is a kernel in Jupyter, and what happens when you restart it? |
+| B3P11Q10 | 3 | 11 | What are the Jupyter keyboard shortcuts you use most often (run cell, add cell above or below, delete cell, switch to Markdown)? |
+| B3P11Q11 | 3 | 11 | How do you install a Python library such as openpyxl, and how do you install it from inside a Jupyter notebook? |
+| B3P11Q12 | 3 | 11 | What is an API, explained simply for a non-technical person? |
+| B3P11Q13 | 3 | 11 | How do you fetch data from a REST API in Python using the requests library? |
+| B3P11Q14 | 3 | 11 | What is JSON, and how does it differ from a CSV file? |
+| B3P11Q15 | 3 | 11 | What is the difference between openpyxl and pandas when working with Excel files? |
+| B3P11Q16 | 3 | 11 | What information should you give an AI assistant in a prompt to get useful pandas code? |
+| B3P11Q17 | 3 | 11 | Should you paste real employee data such as salaries or names into a public AI tool? What is the safe alternative? |
+| B3P11Q18 | 3 | 11 | How do you read a CSV file in a notebook and quickly check its shape, columns and first rows? |
+| B3P11Q19 | 3 | 11 | How do you convert a JSON response from an API into a pandas DataFrame? |
+| B3P11Q20 | 3 | 11 | How do you flatten nested JSON from an API into a DataFrame using json_normalize? |
+| B3P11Q21 | 3 | 11 | How do you check whether an API request succeeded, and how do you handle a failed request or a timeout? |
+| B3P11Q22 | 3 | 11 | What are HTTP status codes 200, 401, 404 and 429, and what do they mean when you call an API? |
+| B3P11Q23 | 3 | 11 | How do you load several sheets of one workbook at once with pandas, and what does sheet_name=None return? |
+| B3P11Q24 | 3 | 11 | Write code to read an Excel file, add a column for annual salary from monthly salary, and save the result to a new Excel file. |
+| B3P11Q25 | 3 | 11 | How do you write two DataFrames to two different sheets of the same Excel file? |
+| B3P11Q26 | 3 | 11 | What is out-of-order execution in Jupyter, and how can it give you wrong results? |
+| B3P11Q27 | 3 | 11 | What is the difference between running code in a Jupyter notebook and running a .py script, and when would you use each? |
+| B3P11Q28 | 3 | 11 | How do you read an Excel file that has a title in the first rows, a merged header or footer notes? |
+| B3P11Q29 | 3 | 11 | How do you use openpyxl to open a workbook, read a cell value and write a value to a cell? |
+| B3P11Q30 | 3 | 11 | Write code to loop through a list of department names and save each department's data to a separate Excel file. |
+| B3P11Q31 | 3 | 11 | What is hallucination in AI assistants, and how can it show up in code, for example with a pandas function that does not exist? |
+| B3P11Q32 | 3 | 11 | What would you do if an AI assistant suggests code that gives a different number from your manual Excel calculation? |
+| B3P11Q33 | 3 | 11 | How do you document a notebook so a colleague can understand and re-run it? |
+| B3P11Q34 | 3 | 11 | How do you add a chart or an image output inside a Jupyter notebook, and what does %matplotlib inline do? |
+| B3P11Q35 | 3 | 11 | How do you export a Jupyter notebook to HTML or PDF to share with a manager? |
+| B3P11Q36 | 3 | 11 | What is a virtual environment, and why would an analyst use one? |
+| B3P11Q37 | 3 | 11 | What is the difference between Jupyter Notebook, JupyterLab, Google Colab and VS Code notebooks? |
+| B3P11Q38 | 3 | 11 | How do you apply formatting such as bold headers, column width and number formats to an Excel report with openpyxl? |
+| B3P11Q39 | 3 | 11 | How do you add an Excel formula, such as a SUM at the bottom of a column, using openpyxl? |
+| B3P11Q40 | 3 | 11 | How do you send an API key safely in a request without writing it into the notebook? |
+| B3P11Q41 | 3 | 11 | How do you collect data from an API that returns results in pages (pagination)? |
+| B3P11Q42 | 3 | 11 | What is rate limiting in an API, and how do you stay within it in a loop of requests? |
+| B3P11Q43 | 3 | 11 | How would you schedule a Python report script to run every Monday morning? |
+| B3P11Q44 | 3 | 11 | How would you use an AI assistant to explain a long piece of unfamiliar pandas code, and how do you confirm the explanation is right? |
+| B3P11Q45 | 3 | 11 | How do you pick up a notebook written by someone else and check it still runs on your machine? |
+| B3P11Q46 | 3 | 11 | Write a script that reads daily attendance Excel files, calculates the absenteeism percentage per employee and writes a formatted summary workbook with one sheet per department. |
+| B3P11Q47 | 3 | 11 | How do you decide whether to automate a recurring Excel task with Python, and when is Excel, Power Query or VBA the better choice? |
+| B3P11Q48 | 3 | 11 | Describe a full workflow where an AI assistant helps you build a report, covering the prompt, review, testing and documentation, and say what you would never delegate to it. |
+| B3P12Q1 | 3 | 12 | How did you learn Python, and how long did it take you? |
+| B3P12Q2 | 3 | 12 | How would you rate yourself in Python out of 10, and why? |
+| B3P12Q3 | 3 | 12 | You come from HR with no programming background. How did you learn Python? |
+| B3P12Q4 | 3 | 12 | Walk me through a Python or pandas project you built from start to finish. |
+| B3P12Q5 | 3 | 12 | Which Python topic did you find hardest, and how did you overcome it? |
+| B3P12Q6 | 3 | 12 | Which Python libraries and functions have you actually used in a real analysis, and what was the result? |
+| B3P12Q7 | 3 | 12 | Which free resources would you recommend to a beginner learning Python for data analysis? |
+| B3P12Q8 | 3 | 12 | In what order did you study Python topics, and why that order? |
+| B3P12Q9 | 3 | 12 | How much time do you spend practising Python each week, and roughly how many problems have you solved? |
+| B3P12Q10 | 3 | 12 | Which practice datasets have you worked with in pandas? |
+| B3P12Q11 | 3 | 12 | How would you set up a free Python and Jupyter environment on your own laptop? |
+| B3P12Q12 | 3 | 12 | What HR questions can Python answer that Excel struggles with? |
+| B3P12Q13 | 3 | 12 | You already know Excel and SQL. What carried over to pandas, and what did you have to unlearn? |
+| B3P12Q14 | 3 | 12 | How much Python do you really need for a data analyst role, and where do you stop and leave the rest to data scientists? |
+| B3P12Q15 | 3 | 12 | How do you use AI assistants to learn Python without depending on them? |
+| B3P12Q16 | 3 | 12 | How do you learn a pandas function or library you have never used before? |
+| B3P12Q17 | 3 | 12 | How do you check that your pandas output is correct when there is no answer key? |
+| B3P12Q18 | 3 | 12 | How would you prepare for a live Python coding round in two weeks? |
+| B3P12Q19 | 3 | 12 | What do you do in a live coding test when you blank on syntax or hit an error you cannot fix? |
+| B3P12Q20 | 3 | 12 | Tell me about a time your Python code gave a wrong result and how you found the bug. |
+| B3P12Q21 | 3 | 12 | What is your plan to improve your Python over the next three months? |
+| B3P12Q22 | 3 | 12 | Which platforms have you practised Python on (HackerRank, LeetCode, Kaggle, StrataScratch)? |
+| B3P12Q23 | 3 | 12 | Have you shared your Python work publicly, for example on GitHub or Kaggle? |
+| B3P12Q24 | 3 | 12 | Do Python certifications help, and have you done any? |
+| B3P12Q25 | 3 | 12 | How do you keep your Python skills current while working a full-time job? |
+| B3P12Q26 | 3 | 12 | How would you build a Python portfolio project from a public HR dataset such as employee attrition? |
+| B3P12Q27 | 3 | 12 | How do you know you are job-ready in Python? What self-test would you use? |
+| B3P12Q28 | 3 | 12 | How would you teach Python basics to a non-technical colleague in four weeks? |
+| B3P12Q29 | 3 | 12 | Your old code breaks after a pandas or Python upgrade. How do you handle deprecation warnings and version changes? |
 
 ## Book 4 — Power BI & Visualization
 
