@@ -75,8 +75,7 @@
 ### Q24 ⭐⭐⭐ 🟡 Your HR project used an HRIS export with missing exit dates, duplicate employee IDs and inconsistent department names. How did you clean it, and what did you record about the cleaning?
 <!-- ANSWER_PENDING -->
 
-### Q25 ⭐⭐⭐ 🟡 Project data: the raw HR export has 2,650 rows, of which 120 are exact duplicate rows; of the remaining rows, 130 belong to employees who transferred department and so appear twice. How many unique employees are there, and which record would you keep for each transferred employee?
-Data: 2,650 - 120 = 2,530; minus 130 second records = 2,400 unique employees.
+### Q25 ⭐⭐⭐ 🟡 Project data: the raw HR export has 2,650 rows, of which 120 are exact duplicate rows; of the remaining rows, 130 are second records of employees who transferred department (each such employee has exactly two rows). How many unique employees are there, and which record would you keep for each transferred employee?
 <!-- ANSWER_PENDING -->
 
 ### Q26 ⭐⭐⭐ 🔴 A reviewer challenges your project: "Correlation is not causation; how do you know your recommendation will work?" How do you respond using only what your project data supports?
