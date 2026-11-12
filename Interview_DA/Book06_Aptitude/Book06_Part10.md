@@ -944,7 +944,7 @@
 **Step-by-step working:**
 1. Build a simple sheet: question number, topic, time taken, result (correct, wrong, skipped).
 2. Accuracy per topic = correct / attempted. Example: percentages 7 of 8 (87.5%), probability 2 of 5 (40%).
-3. Time per topic: average seconds per question against the target of about 60 to 90 seconds. Example: probability averaged 140 s, so it is both weak and slow.
+3. Time per topic: average seconds per question against the target of about 60 to 90 seconds (rule of thumb). Example: probability averaged 140 s, so it is both weak and slow.
 4. Redo each wrong answer without looking, then tag it: silly error (misread, arithmetic slip, ignored unit) or concept gap (did not know the method).
 5. Plan: concept gaps get a study session plus 10 fresh questions; silly errors get a habit fix (underline what is asked, check units). Re-test in 2 to 3 days.
 **Check:** After the next mock, the weak topic should show higher accuracy and lower time; if only one improved, keep practising.
