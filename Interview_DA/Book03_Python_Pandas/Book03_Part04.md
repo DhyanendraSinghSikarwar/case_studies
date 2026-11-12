@@ -42,7 +42,7 @@ Name: salary, dtype: int64
 **Common mistakes:** Saying a Series is "a row" (it can be, but usually it is a column); forgetting that every column in a DataFrame is a Series.
 
 ### Q2 ⭐⭐⭐ 🟢 How do you read a CSV file into a pandas DataFrame, and how do you read an Excel sheet?
-**Asked at:** commonly asked (no company-specific report found); `read_csv` is in the DataCamp and AskPython pandas question sets.
+**Asked at:** commonly asked (no company-specific report found); `read_csv` is listed in the DataCamp pandas question set.
 **What the interviewer is checking:** That you know the loading functions and the `sheet_name` option.
 **Say this in the interview:** "`pd.read_csv('file.csv')` for a CSV and `pd.read_excel('file.xlsx', sheet_name='Jan')` for an Excel sheet. Both return a DataFrame."
 **Explain simply:**
@@ -155,7 +155,7 @@ print(len(employees))
 **Common mistakes:** Writing `shape()` with brackets (error: tuple is not callable); mixing up the order (rows first, columns second).
 
 ### Q5 ⭐⭐⭐ 🟢 How do you quickly see column names, data types and non-null counts of a DataFrame using info()?
-**Asked at:** commonly asked (no company-specific report found); `info()` is standard in pandas first-look checklists.
+**Asked at:** commonly asked (no company-specific report found); a basic first-look step (no specific source found).
 **What the interviewer is checking:** That you can spot missing values and wrong data types in one call.
 **Say this in the interview:** "`df.info()` prints each column name, how many non-null (non-missing) values it has, and its data type. If a count is lower than the total rows, that column has missing values."
 **Explain simply:**
@@ -163,7 +163,7 @@ print(len(employees))
 - Compare each count with the row count at the top ("8 entries"). A gap means missing data.
 - The Dtype column shows whether something that should be a number was read as text.
 - `info()` prints directly, so do not wrap it in `print()`.
-**Sample data:** The 8-row employee file, where Meena's department was left blank.
+**Sample data:** The same 8-row file as Q1 (loaded with `pd.read_csv`), but Meena's department cell is blank.
 **Code (what you write in the interview):**
 ```python
 employees.info()
@@ -189,14 +189,14 @@ memory usage: 388.0 bytes
 **Common mistakes:** Writing `print(df.info())` (adds a stray `None`); ignoring a numeric column showing a text dtype. Note: on pandas 3 text columns show as `str`; on pandas 2 they show as `object`.
 
 ### Q6 ⭐⭐⭐ 🟢 How do you select a single column and multiple columns from a DataFrame?
-**Asked at:** commonly asked (no company-specific report found); a core filter-and-select basic in every pandas guide.
+**Asked at:** commonly asked (no company-specific report found); selecting columns is a basic step in all the pandas question sets reviewed (no specific source found).
 **What the interviewer is checking:** Single brackets vs double brackets, and what each returns.
 **Say this in the interview:** "One column: `df['salary']`, which gives a Series. Several columns: pass a list, `df[['name', 'salary']]`, which gives a DataFrame."
 **Explain simply:**
 - Single brackets with one name return one column (a Series).
 - Double brackets: the inner brackets are a Python list of names, the outer brackets are the selection. Result stays a table.
 - The order in your list is the order of the columns in the result.
-**Sample data:** The 8-row `employees` table.
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1.
 **Code (what you write in the interview):**
 ```python
 # One column
@@ -234,7 +234,7 @@ Name: name, dtype: str
 - Position: the order number, starting at 0, no matter what the label is.
 - `loc` slices include the end label; `iloc` slices exclude the end position (see Q37 in this part).
 - Both use `[rows, columns]`.
-**Sample data:** The `employees` table with `employee_id` set as the index.
+**Sample data:** The 8-row `employees` table from Q1 (loaded with `pd.read_csv`); the code below sets `employee_id` as the index.
 **Code (what you write in the interview):**
 ```python
 employees_by_id = employees.set_index("employee_id")
@@ -271,7 +271,7 @@ employee_id
 **Common mistakes:** Using `iloc` with a label, or `loc` with a position after the index changed; expecting `loc` slices to stop before the end.
 
 ### Q8 ⭐⭐⭐ 🟢 Write code to filter an employee DataFrame to show only employees from the Sales department.
-**Asked at:** commonly asked (no company-specific report found); the classic boolean-filter task in pandas screens.
+**Asked at:** commonly asked (no company-specific report found); filtering rows is in the DataCamp pandas set; the exact Sales example is our own.
 **What the interviewer is checking:** That you can write a condition and use it to pick rows.
 **Say this in the interview:** "I write a True/False condition for each row, `employees['department'] == 'Sales'`, and pass it inside square brackets, which keeps only the True rows."
 **Explain simply:**
@@ -279,7 +279,7 @@ employee_id
 - Putting the mask in `employees[...]` keeps only the rows marked True.
 - `==` compares; a single `=` assigns, so do not mix them up.
 - Text must match exactly, including capital letters.
-**Sample data:** The 8-row `employees` table (3 Sales employees).
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1 (3 Sales employees).
 **Code (what you write in the interview):**
 ```python
 sales_employees = employees[employees["department"] == "Sales"]
@@ -308,7 +308,7 @@ print(sales_employees)
 - `ascending=False` means biggest first.
 - It returns a new sorted table; the original is unchanged unless you save the result.
 - Missing values go to the end by default.
-**Sample data:** The 8-row `employees` table.
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1.
 **Code (what you write in the interview):**
 ```python
 employees_by_salary = employees.sort_values("salary", ascending=False)
@@ -334,14 +334,14 @@ print(employees_by_salary)
 **Common mistakes:** Writing `df.sort_values("salary")` and expecting it to be high to low; not saving the result; the old `inplace=True` habit (avoid it, assign instead).
 
 ### Q10 ⭐⭐⭐ 🟢 How do you add a new column to a DataFrame, for example annual salary from monthly salary?
-**Asked at:** commonly asked (no company-specific report found); creating a column from existing ones is in Adaface's pandas set.
+**Asked at:** commonly asked (no company-specific report found); Adaface's pandas set lists creating a new column from conditions (see Q48); maths on existing columns is the simpler version of the same skill.
 **What the interviewer is checking:** That you know column maths works on the whole column at once.
 **Say this in the interview:** "I assign to a new column name: `df['annual_salary'] = df['monthly_salary'] * 12`. Pandas does the maths for every row at once."
 **Explain simply:**
 - Assigning to a column name that does not exist creates it; if it exists, it overwrites it.
 - Maths on a column is applied row by row automatically, so no loop is needed (this is called vectorised).
 - You can combine columns too: `df['a'] + df['b']`.
-**Sample data:**
+**Sample data:** a DataFrame called `payroll` with these rows.
 
 | name | monthly_salary |
 |---|---|
@@ -377,7 +377,7 @@ print(payroll)
 - `object` is a "container" type that can hold anything, mostly Python strings. A numeric column that shows `object` usually has stray text in it (like "N/A" or "40,000").
 - Wrong dtype breaks maths and sorting, so check it first.
 - Version note (verified by running on pandas 3.0.5): text columns display as `str`. On pandas 2.x and earlier the same columns display as `object`.
-**Sample data:** The 8-row `employees` table.
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1.
 **Code (what you write in the interview):**
 ```python
 print(employees.dtypes)
@@ -404,7 +404,7 @@ dtype: object
 - `isin` means "is this value in my list?". The list goes in square brackets.
 - It replaces writing `== "Sales" | == "HR" | == "Finance"`, which is long and bracket-heavy.
 - Spelling and capitalisation must match exactly.
-**Sample data:** The 8-row `employees` table (departments: Sales, HR, Finance, IT).
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1 (departments: Sales, HR, Finance, IT).
 **Code (what you write in the interview):**
 ```python
 selected_departments = ["Sales", "HR", "Finance"]
@@ -438,7 +438,7 @@ print(selected_employees)
 - `&` means "and" (both must be true), `|` means "or", `~` means "not".
 - Operator precedence is the order Python does things in. `&` ranks higher than `>` and `==`, so `salary > 50000 & dept == "Finance"` is read as `50000 & dept`, which makes no sense.
 - Brackets force each comparison to finish first.
-**Sample data:** The 8-row `employees` table.
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1.
 **Code (what you write in the interview):**
 ```python
 high_paid_finance = employees[(employees["salary"] > 50000) & (employees["department"] == "Finance")]
@@ -459,7 +459,7 @@ print(high_paid_finance)
 **Common mistakes:** Forgetting brackets; using `and` (see Q14); writing the department without quotes.
 
 ### Q14 ⭐⭐⭐ 🟡 What is the difference between using 'and' and '&' when filtering a DataFrame, and what error do you get if you use 'and'?
-**Asked at:** commonly asked (no company-specific report found); a classic pandas trap question.
+**Asked at:** commonly asked (no company-specific report found); a common follow-up to filtering with `&` (no specific source found).
 **What the interviewer is checking:** That you know `and` works on single True/False values, while `&` works row by row.
 **Say this in the interview:** "`and` is for one True or False. A filter has a whole column of True/False values, so I need `&`, which compares row by row. Using `and` gives `ValueError: The truth value of a Series is ambiguous`."
 **Explain simply:**
@@ -467,7 +467,7 @@ print(high_paid_finance)
 - `&` is the element-wise "and": it checks row 1 with row 1, row 2 with row 2, and so on.
 - Same story: `or` fails, use `|`; `not` fails, use `~`.
 - The error message itself suggests `.any()` or `.all()`, but for a filter that is not what you want.
-**Sample data:** The 8-row `employees` table.
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1.
 **Code (what you write in the interview):**
 ```python
 # Wrong: raises an error
@@ -495,7 +495,7 @@ ValueError: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.i
 - The first column is the main sort; the second only breaks ties within the same first value.
 - `ascending=[True, False]` lines up one-to-one with the column list.
 - Both lists must be the same length.
-**Sample data:** The 8-row `employees` table.
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1.
 **Code (what you write in the interview):**
 ```python
 sorted_employees = employees.sort_values(
@@ -524,7 +524,7 @@ print(sorted_employees)
 **Common mistakes:** Passing a single `ascending=False` (flips both columns); mismatched list lengths; swapping the column order, which changes the result.
 
 ### Q16 ⭐⭐⭐ 🟡 What does SettingWithCopyWarning mean, and how do you avoid it?
-**Asked at:** commonly asked (no company-specific report found); a staple pandas question in prep guides.
+**Asked at:** commonly asked (no company-specific report found); the pandas 3.0 Copy-on-Write change (see Q75) is covered in 2026 blog posts.
 **What the interviewer is checking:** That you understand views vs copies and know the safe habit.
 **Say this in the interview:** "It warns that I am changing a slice that may be a copy of my data, so the change might not reach the original table. I avoid it by taking an explicit `.copy()` of a filtered slice, or by using `.loc` to set values. In pandas 3 with Copy-on-Write, the warning is gone and a filtered result is always its own copy."
 **Explain simply:**
@@ -532,7 +532,7 @@ print(sorted_employees)
 - Safe habit 1: `sales = df[df["department"] == "Sales"].copy()`, then edit `sales` freely.
 - Safe habit 2: to change the original, use `df.loc[condition, "column"] = value` in one step.
 - Version note (verified by running on pandas 3.0.5): no warning appears and the original is untouched. On pandas 2.x and earlier, the same line printed the warning. From memory, unverified here.
-**Sample data:** The 8-row `employees` table.
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1.
 **Code (what you write in the interview):**
 ```python
 # Safe: make an independent copy of the slice, then edit it
@@ -573,6 +573,8 @@ print(employees.head(3))
 **Sample data:** A CSV whose header line is `employee_id,name,department,salary ` (note the space after salary).
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+
 staff = pd.read_csv("staff.csv")
 
 # See exactly what pandas read
@@ -606,6 +608,8 @@ print(staff["salary"].tolist())
 **Sample data:** `employees.csv` (columns employee_id, name, department, salary).
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+
 employees = pd.read_csv("employees.csv")
 
 # Rename only some columns
@@ -633,7 +637,7 @@ print(employees.columns.tolist())
 - `drop('department', axis=1)` means the same as `drop(columns='department')`. The named versions are easier to read, so I prefer them.
 - `drop` returns a new table; save it in a variable or the original stays as it was.
 - Rows are dropped by index label, not by position, so after filtering check the labels first.
-**Sample data:** The 8-row `employees` table.
+**Sample data:** The 8-row `employees` table, loaded with `employees = pd.read_csv("employees.csv")` as in Q1.
 **Code (what you write in the interview):**
 ```python
 # Drop a column
@@ -663,7 +667,7 @@ print(without_first_two.head(3))
 **Common mistakes:** Forgetting `axis=1` when using the old style `drop("department")` (it looks for a row labelled "department" and raises an error); mixing `axis=` with `columns=` in one call (ValueError); not saving the result.
 
 ### Q20 ⭐⭐ 🟢 How do you list the unique values of a column and count how many unique values it has?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you know unique() (the values) and nunique() (the count) and can tell them apart.
 **Say this in the interview:** "unique() gives me the distinct values, nunique() gives me how many distinct values there are. nunique() skips missing values unless I ask it not to."
 **Explain simply:**
@@ -672,6 +676,8 @@ print(without_first_two.head(3))
 - Missing values (NaN, meaning an empty cell) are shown by `unique()` but not counted by `nunique()`. Use `nunique(dropna=False)` to count them too.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -702,7 +708,7 @@ Length: 4, dtype: str
 **Common mistakes:** Writing `unique` without brackets; calling `unique()` on a DataFrame (it only works on a single column); forgetting that blanks are skipped by `nunique()`, so the count can look one short.
 
 ### Q21 ⭐⭐ 🟢 What is the difference between df['col'] and df[['col']]?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you understand the difference between a Series (one column) and a DataFrame (a table).
 **Say this in the interview:** "Single brackets give me one column as a Series, which is like a plain list with an index. Double brackets give me a DataFrame with one column, so it is still a table."
 **Explain simply:**
@@ -711,6 +717,8 @@ Length: 4, dtype: str
 - Use double brackets when the next step needs a table (for example `.to_csv`, or selecting several columns). Use single brackets when you want to do maths or filtering on one column.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -754,6 +762,8 @@ print(salary_table.shape)
 - `.copy()` gives an independent copy explicitly and works the same in every version.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -789,7 +799,7 @@ print(employees.loc[[0, 3], ["name", "salary"]])
 **Common mistakes:** Assuming that on older pandas a slice is always a copy (it can be a view); modifying a filtered slice and expecting the original to change in pandas 3 (it will not).
 
 ### Q23 ⭐⭐ 🟢 Write code to show the top 5 highest-paid employees.
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you can sort and take the top rows, ideally with nlargest.
 **Say this in the interview:** "I would use nlargest: it gives me the top 5 rows by salary in one step."
 **Explain simply:**
@@ -798,6 +808,8 @@ print(employees.loc[[0, 3], ["name", "salary"]])
 - My sample has only 6 people, so the top 5 leaves out just one person.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -831,7 +843,7 @@ top_earners = employees.sort_values("salary", ascending=False).head(5)
 **Common mistakes:** Forgetting `ascending=False` in the sort version (you get the lowest paid); using `head(5)` without sorting first, which just returns the first 5 rows in file order.
 
 ### Q24 ⭐⭐ 🟢 How do you select the first 10 rows and the first 3 columns using iloc?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you remember that iloc is by position and that its slices exclude the end.
 **Say this in the interview:** "iloc works by position: rows first, then columns. So iloc[:10, :3] means the first 10 rows and the first 3 columns."
 **Explain simply:**
@@ -841,6 +853,8 @@ top_earners = employees.sort_values("salary", ascending=False).head(5)
 - My sample has 12 employees so the output shows 10 rows.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": range(101, 113),
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara", "Kiran", "Divya", "Imran", "Neha", "Vikram", "Pooja"],
@@ -874,7 +888,7 @@ print(first_block)
 **Common mistakes:** Writing `iloc[10, 3]`, which gives one single cell, not a block; putting the columns first; forgetting the colon in `iloc[:10, :3]`.
 
 ### Q25 ⭐⭐ 🟢 Write code to filter employees whose name starts with 'A' using str.startswith().
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you know the `.str` accessor (text tools for a column) and can build a True/False filter.
 **Say this in the interview:** "I use str.startswith on the name column, which gives True or False for each row, and I use that to filter."
 **Explain simply:**
@@ -884,6 +898,8 @@ print(first_block)
 - Blank names: in pandas 3.0 with the default text type they give False and are dropped (I verified). For safety on older versions add `na=False`.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -914,7 +930,7 @@ print(a_employees[["name", "department"]])
 **Common mistakes:** Writing `employees['name'].startswith('A')` without `.str` (an AttributeError); using `==` with a star like `'A*'` (that is not how pandas works); forgetting case sensitivity.
 
 ### Q26 ⭐⭐ 🟢 How do you filter rows where a column is between two values, for example salary between 30,000 and 60,000?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you know between() and that both ends are included.
 **Say this in the interview:** "I use salary.between(30000, 60000). Both ends are included by default."
 **Explain simply:**
@@ -923,6 +939,8 @@ print(a_employees[["name", "department"]])
 - To leave out an end, use `inclusive='left'`, `'right'` or `'neither'` (I checked `'left'` excludes the upper end).
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -992,7 +1010,7 @@ print(employees)
 ```
 **What it means:** Only the three requested columns arrive, so `employee_id` and the rest are never loaded.
 **Alternative:** For files too big even for that, add `nrows=1000` to read a first slice, or `chunksize=` to read in pieces (not run here).
-**Likely follow-ups:** 1) *In what order do the columns appear?* In the file's order, not the order you list them (from memory, verify on your data). 2) *What if a name is misspelt?* pandas raises a ValueError saying the column is not in the file.
+**Likely follow-ups:** 1) *In what order do the columns appear?* In the file's order, not the order you list them (I checked this by running it). 2) *What if a name is misspelt?* pandas raises a ValueError saying the column is not in the file.
 **Common mistakes:** Giving column names with different spelling or capitals than the file header; passing a single string instead of a list; selecting columns after loading and thinking that saves memory (it does not, the whole file was already loaded).
 
 ### Q28 ⭐⭐ 🟢 How do you save a DataFrame to a CSV file without writing the index, and how do you write it to Excel?
@@ -1005,6 +1023,8 @@ print(employees)
 - `to_excel` writes an `.xlsx` file; pandas uses the `openpyxl` package behind the scenes, so install it if you get an ImportError. You can also pass `sheet_name=`.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1039,7 +1059,7 @@ There is no extra number column in front. (I confirmed both files were created a
 **Common mistakes:** Forgetting `index=False` and getting an unnamed extra column when the file is read again; forgetting the file extension; having the file open in Excel while saving (a permission error).
 
 ### Q29 ⭐⭐ 🟢 What is the difference between head(), sample() and tail(), and how do you pick 5 random rows?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you can look at the start, the end and a random part of the data, and know why random matters.
 **Say this in the interview:** "head shows the first rows, tail the last rows, and sample picks random rows. I use sample(5) to get 5 random rows, and random_state if I want the same rows every time."
 **Explain simply:**
@@ -1049,6 +1069,8 @@ There is no extra number column in front. (I confirmed both files were created a
 - `random_state=1` fixes the random pick so you and a colleague see the same rows; it is only needed for repeatability.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1079,7 +1101,7 @@ print(random_five[["name", "department"]])
 **Common mistakes:** Expecting `head()` to be random; asking for `sample(n)` with n larger than the number of rows (an error); assuming the same rows will come back on each run without random_state.
 
 ### Q30 ⭐⭐ 🟢 How do you find the maximum salary and the row (employee) who earns it?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you know that max() gives the value only and idxmax() gives the row position of it.
 **Say this in the interview:** "max gives me the highest salary. To get who earns it I use idxmax, which returns the row label of that maximum, and then I look up that row with loc."
 **Explain simply:**
@@ -1088,6 +1110,8 @@ print(random_five[["name", "department"]])
 - `loc[label]` then pulls out that whole row, so you see the name and other details.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1124,7 +1148,7 @@ Name: 4, dtype: object
 **Common mistakes:** Using `max()` and expecting a row; using `iloc[idxmax()]` when the index is not 0 to n (it mixes labels and positions); not handling ties.
 
 ### Q31 ⭐⭐ 🟢 How do you count the rows that satisfy a condition, for example how many employees have left the company?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you know that a True/False column can be counted with sum().
 **Say this in the interview:** "I make a True/False check for left_company equal to Yes, then sum it. True counts as 1, so the sum is the number of rows that match."
 **Explain simply:**
@@ -1133,6 +1157,8 @@ Name: 4, dtype: object
 - This is the attrition count: the number of employees who left. Divide by the total (`len(employees)`) for the attrition rate.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1170,6 +1196,8 @@ employees_who_left = len(employees[employees["left_company"] == "Yes"])
 - `shape` gives (number of rows, number of columns). Compare it before and after a filter: the rows should drop as you expect, the columns should stay the same.
 **Sample data:**
 ```python
+import pandas as pd
+
 # note: "department" appears twice
 employees = pd.DataFrame(
     [[101, "Asha", "Sales", "Sales"],
@@ -1201,7 +1229,7 @@ True
 **Common mistakes:** Using `df.columns.unique()` and not comparing its length; checking only the final shape and not each step; forgetting that `shape` has no brackets after it.
 
 ### Q33 ⭐⭐ 🟡 What is the index of a DataFrame, and how do you set a column such as employee ID as the index?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you know the index is the row label and that set_index makes a column that label.
 **Say this in the interview:** "The index is the label for each row, 0, 1, 2 by default. I can use set_index to make employee_id the row label so I can look rows up by ID."
 **Explain simply:**
@@ -1211,6 +1239,8 @@ True
 - pandas returns a new table; you must save it back to a name (or use `inplace=True`, which beginners should avoid).
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1244,7 +1274,7 @@ Anil
 **Common mistakes:** Forgetting to save the result, so nothing changes; trying to select the index with `employees['employee_id']` afterwards (it is no longer a column, that is a KeyError); assuming the index must be a number.
 
 ### Q34 ⭐⭐ 🟡 How do you reset the index after filtering or sorting, and what does drop=True do?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you know that filtering keeps the old row numbers and how to tidy them.
 **Say this in the interview:** "After a filter or sort the old row numbers stay. reset_index gives fresh 0, 1, 2 numbers, and drop=True throws the old numbers away instead of keeping them as a new column."
 **Explain simply:**
@@ -1253,6 +1283,8 @@ Anil
 - Without `drop=True` the old index is added back as a new column called `index`. With `drop=True` it is discarded.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1293,6 +1325,8 @@ print(well_paid[["name", "salary"]])
 - Ties: `nlargest` has `keep='first'` (default), `'last'` or `'all'` to control tied rows at the cut-off.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1329,7 +1363,7 @@ print(top_three_again[["name", "salary"]])
 **Common mistakes:** Using `nlargest` on a text column; forgetting `ascending=False` in the sort version; ignoring ties at the cut-off.
 
 ### Q36 ⭐⭐ 🟡 How do you select rows by label and specific columns using loc, for example employees 101 to 105 and only name and salary?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); loc vs iloc is in the DataCamp pandas set.
 **What the interviewer is checking:** Whether you know that loc takes labels, rows first then columns, and that the end label is included.
 **Say this in the interview:** "With employee ID as the index, I write loc[101:105, ['name', 'salary']]. The part before the comma picks rows by label, the part after picks the columns."
 **Explain simply:**
@@ -1339,6 +1373,8 @@ print(top_three_again[["name", "salary"]])
 - This needs the ID as the index first (see Q33). If it is still a normal column, use a filter instead.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1376,7 +1412,7 @@ selected = employees[employees["employee_id"].between(101, 105)][["name", "salar
 **Common mistakes:** Using round brackets `loc(...)` instead of square; forgetting to set the index first; writing the columns without a list (`loc[101:105, 'name', 'salary']` is an error).
 
 ### Q37 ⭐⭐ 🟡 Why does loc slicing include the end label while iloc slicing excludes the end position?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); loc vs iloc is in the DataCamp pandas set.
 **What the interviewer is checking:** Whether you understand the logic behind two slicing rules that look inconsistent.
 **Say this in the interview:** "loc works with labels, so asking for 101 to 103 means those labels, and 103 is included. iloc works with positions and follows the normal Python rule of stopping before the end."
 **Explain simply:**
@@ -1385,6 +1421,8 @@ selected = employees[employees["employee_id"].between(101, 105)][["name", "salar
 - The same lines of data show the difference below.
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1423,7 +1461,7 @@ Name: name, dtype: str
 **Common mistakes:** Using the iloc rule for loc (and being one row short); mixing up which one accepts names (loc) and which only numbers (iloc).
 
 ### Q38 ⭐⭐ 🟡 How do you filter rows where a text column contains a word, for example job title containing 'Manager', ignoring upper or lower case?
-**Asked at:** commonly asked (no company-specific report found); this topic appears in general pandas interview guides (DataCamp, AskPython).
+**Asked at:** commonly asked (no company-specific report found); no specific source found for this exact question.
 **What the interviewer is checking:** Whether you can search inside text and ignore capitals.
 **Say this in the interview:** "I use str.contains with the word and case=False, so Manager, manager and MANAGER all match."
 **Explain simply:**
@@ -1433,6 +1471,8 @@ Name: name, dtype: str
 - Blank cells give a missing result that breaks the filter on older pandas; add `na=False` to be safe (my sample has no blanks).
 **Sample data:**
 ```python
+import pandas as pd
+
 employees = pd.DataFrame({
     "employee_id": [101, 102, 103, 104, 105, 106],
     "name": ["Asha", "Ravi", "Anil", "Meena", "Arjun", "Sara"],
@@ -1747,6 +1787,7 @@ print(employees)
 - Typos, wrong extension (`.csv` vs `.xlsx`) and hidden extensions are common.
 - `os.listdir()` shows the files in the current folder.
 - Windows paths: use forward slashes or a raw string `r"C:\data\employees.csv"`, because `\` is a special character.
+**Sample data:** no data needed; the file `employees.csv` is deliberately missing from the folder `/home/hr/reports`.
 **Code (what you write in the interview):**
 ```python
 import os
@@ -1763,10 +1804,10 @@ print(os.path.exists("employees.csv"))
 ```
 **Output:**
 ```text
-/tmp/claude-0/-home-user-case-studies/f1f97a91-a687-5c91-adf9-6191d712464e/scratchpad/B03P04_Q39-57
+/home/hr/reports
 False
 ```
-**What it means:** Python is looking in that folder, and `employees.csv` is not there (False). The path printed will be your own folder on your machine.
+**What it means:** Python is looking in that folder, and `employees.csv` is not there (False). The first line will be your own folder on your machine.
 **Likely follow-ups:** 1) *How to change the folder?* `os.chdir(path)`. 2) *Does `read_csv` accept a web URL?* Yes.
 **Common mistakes:** Assuming the file is in the same folder as the notebook; typing a backslash path without a raw string; file open in another program is a different error (PermissionError).
 
@@ -1848,7 +1889,7 @@ print(by_label)
 ```
 **What it means:** First table is in salary order (lowest first); second is in ID order.
 **Likely follow-ups:** 1) *Sort columns A to Z?* `sort_index(axis=1)`. 2) *Sort high to low?* `ascending=False`.
-**Common mistakes:** Using `sort_values` with an index name and expecting it to work as a column in every version; forgetting to assign the result.
+**Common mistakes:** Using `sort_values` when you meant `sort_index` (or the other way round); forgetting to assign the result.
 
 ### Q50 ⭐⭐ 🟡 What does the inplace parameter do, and why is it better to assign the result back instead?
 **Asked at:** commonly asked (no company-specific report found).
@@ -1881,7 +1922,7 @@ print(employees)
 1   Ravi   62000
 ```
 **What it means:** Both styles change the data (the second sort put it back lowest first); the first style is the one to use.
-**Likely follow-ups:** 1) *Does inplace save memory?* Usually no; pandas often still makes a copy inside. 2) *Which methods have it?* `sort_values`, `drop`, `rename`, `fillna` and more.
+**Likely follow-ups:** 1) *Does inplace save memory?* Usually no; pandas often still makes a copy inside (from memory, unverified here). 2) *Which methods have it?* `sort_values`, `drop`, `rename`, `fillna` and more.
 **Common mistakes:** `df = df.method(inplace=True)` (result becomes None); expecting the original to change when you forgot to assign.
 
 ### Q51 ⭐⭐ 🟡 What is the difference between idxmax() and max()?
@@ -1929,6 +1970,7 @@ John
 - List of lists: reads like rows in a spreadsheet; without `columns=` you get plain numbers 0, 1, 2 as headings.
 - All columns or rows must have the same length, otherwise you get a `ValueError`.
 - A list of dictionaries (one per row) also works.
+**Sample data:** none needed; the code builds the same 2-row table (Asha 45000, Ravi 62000) two ways.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1967,7 +2009,7 @@ print(from_rows)
 **Say this in the interview:** "`select_dtypes(include='number')` returns only the numeric columns. I can also use `exclude` to drop a type."
 **Explain simply:**
 - dtype means data type: numbers, text, dates and so on.
-- `include="number"` covers whole numbers and decimals; `include="object"` or `"str"` is for text columns (the name depends on the pandas version).
+- `include="number"` covers whole numbers and decimals; for text columns use `include="str"` on pandas 3 (older versions call text `object`). On pandas 3.0.5 `include="object"` still picks up text columns but gives a deprecation warning (I ran it).
 - Handy to run `.describe()` or correlations only on number columns.
 - It returns a new DataFrame with just those columns.
 **Sample data:** 2 employees with name, department, salary, age.
@@ -2134,9 +2176,6 @@ print(employees)
 ```
 **Output:**
 ```text
-ChainedAssignmentError: A value is being set on a copy of a DataFrame or Series through chained assignment.
-Such chained assignment never works to update the original DataFrame or Series, because the intermediate object on which we are setting values always behaves as a copy (due to Copy-on-Write).
-(warning text shortened; it advises using .loc[row_indexer, col_indexer] = value)
     name department  salary
 0   Asha      Sales   45000
 1   Ravi         HR   52000
@@ -2146,6 +2185,7 @@ Such chained assignment never works to update the original DataFrame or Series, 
 1   Ravi         HR   52000
 2  Meena      Sales       0
 ```
+(The chained line also raised a `ChainedAssignmentError` warning on pandas 3.0.5, starting "A value is being set on a copy of a DataFrame or Series through chained assignment" and advising `.loc[row_indexer, col_indexer] = value`. The warning goes to the error stream, not the normal output.)
 **What it means:** The chained line changed nothing (salaries are still 45,000 and 38,000); the `loc` line set Sales salaries to 0.
 **Likely follow-ups:** 1) *What did older pandas do?* Often showed `SettingWithCopyWarning` and sometimes updated, sometimes not (from memory, not run here). 2) *What is Copy-on-Write?* Any result of an operation behaves as its own copy, so you cannot accidentally change another object.
 **Common mistakes:** Ignoring the warning; writing `df[mask]["col"] = value`; assuming it worked because no error stopped the code.
@@ -2160,12 +2200,14 @@ Such chained assignment never works to update the original DataFrame or Series, 
 - Using one loc call (not two steps stacked together) is what makes the update land on the real DataFrame (see Q57).
 - In pandas 3.0, if the column holds whole numbers (int) and the raise gives decimals, pandas stops with a `TypeError` instead of quietly converting. I ran this and saw it. Fix: store salary as decimals first, with `astype(float)`.
 **Sample data:**
+
 | emp_id | department | salary |
 |---|---|---|
 | 101 | Sales | 40000.0 |
 | 102 | HR | 35000.0 |
 | 103 | Sales | 50000.0 |
 | 104 | Finance | 60000.0 |
+
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -2182,7 +2224,7 @@ employees.loc[is_sales, "salary"] *= 1.10
 print(employees)
 ```
 **Output:**
-```
+```text
    emp_id department   salary
 0     101      Sales  44000.0
 1     102         HR  35000.0
@@ -2205,12 +2247,14 @@ print(employees)
 - `loc[105]` looks for the label 105, not the 105th row. The employee does not have to be at position 105.
 - If the ID is not found, you get a `KeyError`.
 **Sample data:**
+
 | emp_id | name | salary |
 |---|---|---|
 | 101 | Asha | 40000 |
 | 103 | Ravi | 50000 |
 | 105 | Meena | 45000 |
 | 107 | John | 60000 |
+
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -2226,7 +2270,7 @@ employees = employees.set_index("emp_id")
 print(employees.loc[105])
 ```
 **Output:**
-```
+```text
 name      Meena
 salary    45000
 Name: 105, dtype: object
@@ -2247,12 +2291,14 @@ Name: 105, dtype: object
 - `loc` and `iloc` accept lists, slices and filters; `at` and `iat` accept only one row and one column.
 - For one cell the speed gain is small, so it only matters when you loop over many cells. In an interview, loc/iloc is also fine.
 **Sample data:**
+
 | emp_id (index) | name | salary |
 |---|---|---|
 | 101 | Asha | 40000 |
 | 103 | Ravi | 50000 |
 | 105 | Meena | 45000 |
 | 107 | John | 60000 |
+
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -2274,7 +2320,7 @@ employees.at[105, "salary"] = 47000
 print(employees.at[105, "salary"])
 ```
 **Output:**
-```
+```text
 45000
 45000
 47000
@@ -2307,7 +2353,7 @@ employees = pd.DataFrame({
 print(employees.iloc[::2])
 ```
 **Output:**
-```
+```text
     name  salary
 0   Asha   40000
 2  Meena   45000
@@ -2344,7 +2390,7 @@ employees["risk_level"] = employees["risk_level"].astype(risk_order)
 print(employees.sort_values("risk_level"))
 ```
 **Output:**
-```
+```text
     name risk_level
 1   Ravi        Low
 3   John        Low
@@ -2363,9 +2409,10 @@ print(employees.sort_values("risk_level"))
 **Explain simply:**
 - Stable sort: if two employees have the same salary, they stay in the same order as before.
 - `na_position` takes `"last"` (default) or `"first"`.
-- From memory (unverified here): the default `kind` for a single column is quicksort, which does not promise stability, so say `kind="stable"` when ties matter.
+- The pandas docs (checked in the installed docstring) say the default `kind` is quicksort and that only `mergesort` and `stable` are stable, so say `kind="stable"` when ties matter. `kind` applies only when you sort on a single column.
 - NaN means "missing value" (blank salary).
 **Sample data:**
+
 | name | salary |
 |---|---|
 | Asha | 40000 |
@@ -2373,6 +2420,7 @@ print(employees.sort_values("risk_level"))
 | Meena | 40000 |
 | John | 60000 |
 | Priya | missing |
+
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -2387,7 +2435,7 @@ sorted_employees = employees.sort_values("salary", na_position="first", kind="st
 print(sorted_employees)
 ```
 **Output:**
-```
+```text
     name   salary
 1   Ravi      NaN
 4  Priya      NaN
@@ -2415,6 +2463,7 @@ print(sorted_employees)
 import pandas as pd
 from io import StringIO
 
+# Small CSV texts held in memory so the example needs no file
 pipe_text = """emp_id|name|salary
 101|Asha|40000
 102|Ravi|50000"""
@@ -2431,7 +2480,7 @@ employees = pd.read_csv(StringIO(semicolon_text), sep=";")
 print(employees.shape)
 ```
 **Output:**
-```
+```text
    emp_id  name  salary
 0     101  Asha   40000
 1     102  Ravi   50000
@@ -2469,7 +2518,7 @@ employees = employees.rename(index={101: 1001, 102: 1002})
 print(employees)
 ```
 **Output:**
-```
+```text
         salary
 emp_id        
 1001     40000
@@ -2510,7 +2559,7 @@ q1_columns = survey.columns[survey.columns.str.startswith("Q1_")]
 print(survey[q1_columns])
 ```
 **Output:**
-```
+```text
    Q1_sales  Q1_costs
 0        10         5
 1        20         6
@@ -2533,12 +2582,14 @@ print(survey[q1_columns])
 - Example: cap very high salaries at 100,000 for a report, or hide them with 0.
 - Easy way to remember: `where` = "keep where true"; `mask` = "hide where true".
 **Sample data:**
+
 | name | salary |
 |---|---|
 | Asha | 40000 |
 | Ravi | 90000 |
 | Meena | 45000 |
 | John | 120000 |
+
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -2556,7 +2607,7 @@ employees["hidden_salary"] = employees["salary"].mask(employees["salary"] > 1000
 print(employees)
 ```
 **Output:**
-```
+```text
     name  salary  capped_salary  hidden_salary
 0   Asha   40000          40000          40000
 1   Ravi   90000          90000          90000
@@ -2589,7 +2640,7 @@ summary = pd.DataFrame(
 print(summary.T)
 ```
 **Output:**
-```
+```text
        headcount  leavers
 Sales         10        2
 HR             5        1
@@ -2604,10 +2655,11 @@ HR             5        1
 **What the interviewer is checking:** Do you know pandas options and that truncation is only display, not data loss?
 **Say this in the interview:** "I use `pd.set_option('display.max_columns', None)` and `display.max_rows`. The data is unchanged; only what the notebook shows changes."
 **Explain simply:**
-- By default pandas shows about 20 columns and 60 rows, with `...` in between.
+- By default a notebook shows up to 20 columns and 60 rows, with `...` in between (a plain terminal instead fits the window width; docs, not run in a notebook here).
 - `None` means "no limit"; a number sets a limit.
 - `pd.reset_option(name)` brings back the default.
 - `pd.option_context(...)` with a `with` block changes the setting only temporarily.
+**Sample data:** none needed; the options apply to any DataFrame you print.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -2620,6 +2672,10 @@ pd.set_option("display.max_rows", 100)
 pd.reset_option("display.max_columns")
 pd.reset_option("display.max_rows")
 ```
+**Output:**
+```text
+(nothing is printed)
+```
 **What it means:** The first two lines change only how much the notebook shows (verified: runs without error, no visible output); the last two restore the defaults.
 **Likely follow-ups:**
 - *Show wider text cells?* `pd.set_option("display.max_colwidth", None)`.
@@ -2630,7 +2686,7 @@ pd.reset_option("display.max_rows")
 **What the interviewer is checking:** Do you know `memory_usage(deep=True)` and when text repeats a lot?
 **Say this in the interview:** "`df.memory_usage(deep=True)` shows bytes per column. A text column with few distinct values, like department, is much smaller as category because pandas stores each value once plus small codes."
 **Explain simply:**
-- `deep=True` counts the real text size, not just pointers.
+- `deep=True` counts the real size of the text, not just the small references pointing to it.
 - Category dtype suits columns with few unique values repeated many times: department, gender, grade.
 - It is a poor fit for columns that are mostly unique, like employee name.
 - Bytes: divide by 1,000,000 for megabytes.
@@ -2652,7 +2708,7 @@ after = employees.memory_usage(deep=True)
 print(after)
 ```
 **Output:**
-```
+```text
 Index             132
 department    5375000
 salary         800000
@@ -2675,6 +2731,7 @@ dtype: int64
 - `read_csv("https://...")` downloads and reads the file (needs internet; I did not run this line here).
 - `StringIO` (from the standard `io` module) turns a string into a file-like object. Handy for tests and examples.
 - Everything else (`sep`, `usecols`) works the same.
+**Sample data:** none needed; the code builds a small CSV text with 2 employees.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -2690,10 +2747,10 @@ print(employees)
 # From a web address (needs internet): pd.read_csv("https://example.com/employees.csv")
 ```
 **Output:**
-```
+```text
    emp_id  name  salary
-0     101  Asha    40000
-1     102  Ravi    50000
+0     101  Asha   40000
+1     102  Ravi   50000
 ```
 **What it means:** The text was read exactly like a file would be.
 **Likely follow-ups:**
@@ -2711,12 +2768,14 @@ print(employees)
 - `xs("L1", level="grade")` ("cross-section") picks a value from an inner level across all departments.
 - `reset_index()` turns it back into normal columns.
 **Sample data:**
+
 | department | grade | headcount |
 |---|---|---|
 | Sales | L1 | 10 |
 | Sales | L2 | 4 |
 | HR | L1 | 3 |
 | HR | L2 | 1 |
+
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -2733,7 +2792,7 @@ print(employees.loc[("HR", "L2")])
 print(employees.xs("L1", level="grade"))
 ```
 **Output:**
-```
+```text
                   headcount
 department grade           
 Sales      L1            10
@@ -2771,6 +2830,7 @@ HR                  3
 import pandas as pd
 from io import StringIO
 
+# Build a 10-row CSV text in memory so the example needs no file
 csv_text = "emp_id,department,salary\n" + "\n".join(
     f"{i},{'Sales' if i % 2 else 'HR'},{40000 + i}" for i in range(1, 11)
 )
@@ -2786,7 +2846,7 @@ for chunk in pd.read_csv(StringIO(csv_text), chunksize=4):
 print(row_count, total_salary / row_count)
 ```
 **Output:**
-```
+```text
 10 40005.5
 ```
 **What it means:** All 10 rows were counted across 3 chunks, giving the right average salary.
@@ -2804,6 +2864,7 @@ print(row_count, total_salary / row_count)
 - Ties: if two people have the same lowest salary, only one is kept (the first one after sorting).
 - For a tie-friendly version, use `groupby` with `transform("min")` (not "without groupby", so only as a mention).
 **Sample data:**
+
 | name | department | salary |
 |---|---|---|
 | Asha | Sales | 40000 |
@@ -2811,6 +2872,7 @@ print(row_count, total_salary / row_count)
 | Meena | HR | 45000 |
 | John | HR | 30000 |
 | Priya | Finance | 60000 |
+
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -2833,7 +2895,7 @@ for department in employees["department"].unique():
 print(pd.DataFrame(rows))
 ```
 **Output:**
-```
+```text
     name department  salary
 3   John         HR   30000
 1   Ravi      Sales   35000
@@ -2882,7 +2944,7 @@ employees.loc[employees["department"] == "Sales", "salary"] = 0
 print(employees["salary"].tolist())
 ```
 **Output:**
-```
+```text
 [40000, 35000, 50000]
 [40000, 35000, 50000]
 [0, 35000, 0]

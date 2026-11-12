@@ -228,6 +228,7 @@ plt.show()
 | Compare categories | Bar | `plt.bar(...)` or `sns.barplot(...)` |
 | Distribution of one number | Histogram, boxplot | `plt.hist(...)`, `sns.boxplot(...)` |
 | Relationship of two numbers | Scatter | `plt.scatter(x, y)` |
+
 - HR examples: monthly headcount (line), attrition by department (bar), salary spread (histogram), experience vs pay (scatter).
 - Pick the chart from the question you are answering, not from what looks fancy.
 **Likely follow-ups:** 1) *Parts of a whole?* Stacked bar, or a pie only for 2 to 3 slices (Q22). 2) *Compare distributions across groups?* Boxplot or violin.
@@ -1085,7 +1086,7 @@ sns.barplot(data=revenue_long, x="region", y="revenue", hue="year")
 plt.show()
 ```
 **Likely follow-ups:** 1) *How do you add values on top?* `bar_label` for each container (see Q20). 2) *How do you widen the bars?* `width=0.8`.
-**Common mistakes:** Forgetting `x="region"` (region becomes a third bar series or errors); using wide data in seaborn; leaving the labels rotated and hard to read.
+**Common mistakes:** Forgetting `x="region"` (pandas silently drops the text column and labels the groups 0, 1, 2, 3 instead of the region names); using wide data in seaborn; leaving the labels rotated and hard to read.
 
 ### Q31 ⭐⭐ 🟡 What is the hue parameter in seaborn, and how do you use it on a scatter plot?
 **Asked at:** commonly asked (no company-specific report found); appears in matplotlib/seaborn question banks (TechPrep, Testbook, PythonGuides; snippet-level only)
@@ -1186,12 +1187,12 @@ plt.show()
 - `fig.autofmt_xdate()` rotates the labels and aligns them to the right.
 - Optional: `DateFormatter("%d %b")` sets the style (`%d` day, `%b` short month, `%Y` year) and `WeekdayLocator` decides how often a label appears.
 - The dips in this sample are weekends (low attendance), a good pattern to point out.
-**Sample data:** 30 days of attendance (weekend dips):
+**Sample data:** 30 days of attendance from Monday 2 March 2026 (low on Saturdays and Sundays):
 ```python
 import pandas as pd
 
 attendance = pd.DataFrame({
-    "date": pd.date_range("2026-03-01", periods=30),
+    "date": pd.date_range("2026-03-02", periods=30),  # starts on a Monday
     "present": [52, 50, 55, 54, 53, 20, 18, 51, 53, 56, 55, 52, 19, 17, 50,
                 54, 55, 53, 51, 22, 18, 52, 56, 54, 55, 53, 21, 19, 50, 52],
 })
@@ -1353,7 +1354,7 @@ right_chart.set_title("Hires per month")
 fig.tight_layout()
 plt.show()
 ```
-**Output:** (chart only, no printed output). Without the last line the long names and the second title crowd each other; with it, everything fits.
+**Output:** (chart only, no printed output). The long names and the second title can crowd each other or be clipped without the last line; with it, everything fits (I did not render both versions side by side).
 **What it means:** Everything fits inside the image with no overlap or clipping.
 **Alternative:** `fig, axes = plt.subplots(1, 2, layout="constrained")` instead of calling `tight_layout()`.
 **Likely follow-ups:**
@@ -1426,8 +1427,8 @@ print(len(months), len(hires))
 
 # step 2: for a DataFrame, check it is not empty after filtering
 hiring = pd.DataFrame({"month": months[:4], "hires": hires})
-it_hiring = hiring[hiring["month"] == "Dec"]
-print(it_hiring.empty)
+december_hiring = hiring[hiring["month"] == "Dec"]
+print(december_hiring.empty)
 
 plt.plot(months, hires)
 ```
@@ -1436,6 +1437,7 @@ plt.plot(months, hires)
 5 4
 True
 ```
+The last line, `plt.plot(months, hires)`, then stops with `ValueError: x and y must have same first dimension, but have shapes (5,) and (4,)`.
 **What it means:** Lengths 5 and 4 explain the error. `True` means the filtered DataFrame is empty, so a plot of it would be blank. The prints point to the problem before touching the chart code.
 **Alternative:** Plotting straight from the DataFrame (`hiring.plot(x="month", y="hires")`) removes the length problem because both columns come from one table.
 **Likely follow-ups:**
@@ -1456,6 +1458,7 @@ True
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
+import matplotlib.pyplot as plt
 
 employees = pd.DataFrame({
     "Department ": ["Sales", "IT", "Sales"],
@@ -1470,6 +1473,7 @@ employees.columns = employees.columns.str.strip().str.lower()
 print(employees.columns.tolist())
 
 employees.groupby("department")["salary"].mean().plot(kind="bar")
+plt.show()
 ```
 **Output:**
 ```
@@ -1683,7 +1687,7 @@ plt.show()
 **What the interviewer is checking:** Do you design for accessibility and brand consistency, not just default colours?
 **Say this in the interview:** "I use a colour-blind-safe palette like seaborn's colorblind, avoid red-green pairs, and add a second cue such as labels or markers. For the company theme I set the hex codes myself in a dictionary so every chart uses the same colours."
 **Explain simply:**
-- About 1 in 12 men is red-green colour-blind, so red vs green alone is not readable.
+- Roughly 1 in 12 men is red-green colour-blind (a commonly quoted figure), so red vs green alone is not readable.
 - `sns.color_palette("colorblind")` gives tested colours (blue, orange, green, vermillion). Viridis is a good continuous option.
 - Company colours: put hex codes in a dictionary keyed by category so Sales is always the same colour across all charts.
 - Do not rely on colour alone: label bars directly, or use different markers or line styles. Also check the chart in greyscale.
@@ -1746,13 +1750,8 @@ for department, department_data in hiring.groupby("department"):
     ax.set_title(f"Hires per month: {department}")
     fig.savefig(f"charts/{department}_hires.png", dpi=150, bbox_inches="tight")
     plt.close(fig)  # frees memory; otherwise figures pile up
-
-print(sorted(os.listdir("charts")))
 ```
-**Output:**
-```
-['IT_hires.png', 'Sales_hires.png']
-```
+**Output:** No printed text. The `charts` folder now holds `IT_hires.png` and `Sales_hires.png` (checked by listing the folder).
 **What it means:** One image file per department, ready to paste into the monthly pack.
 **Alternative:** Put all departments in one picture with `sns.relplot(..., col="department")` and save once.
 **Likely follow-ups:**
@@ -1783,7 +1782,7 @@ attrition = pd.DataFrame({
 figure = px.bar(attrition, x="department", y="attrition_rate", title="Attrition % by department")
 figure.write_html("attrition.html")  # interactive: hover, zoom, share by email
 ```
-**Output:** (no printed output; the chart is saved to attrition.html). The code ran and wrote `attrition.html` (interactive bar chart); not opened in a browser here.
+**Output:** (no printed output; the chart is saved to attrition.html). The code ran (plotly installed with pip) and wrote `attrition.html`, an interactive bar chart; it was not opened in a browser here.
 **What it means:** The manager can hover over a bar to read the exact rate.
 **Alternative:** `figure.show()` opens it in the browser or notebook instead of saving.
 **Likely follow-ups:**
@@ -1857,8 +1856,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 funnel = pd.Series({"Applied": 500, "Screened": 300, "Interviewed": 120, "Offered": 40, "Joined": 30})
-monthly_hires = pd.Series({"Jan": 8, "Feb": 11, "Mar": 9, "Apr": 14, "May": 12, "Jun": 15})
-hires_by_source = pd.Series({"Referral": 40, "Job portal": 35, "Agency": 15, "Campus": 10})
+monthly_hires = pd.Series({"Jan": 3, "Feb": 4, "Mar": 4, "Apr": 6, "May": 5, "Jun": 8})
+hires_by_source = pd.Series({"Referral": 12, "Job portal": 10, "Agency": 5, "Campus": 3})
 
 fig, (funnel_ax, trend_ax, source_ax) = plt.subplots(1, 3, figsize=(14, 4))
 
@@ -1878,7 +1877,7 @@ fig.tight_layout()
 fig.savefig("hiring_summary.png", dpi=150)
 plt.show()
 ```
-**Output:** (chart only, no printed output). Saved as hiring_summary.png. Left: bars shrinking from 500 applied to 30 joined. Middle: hires rising from 8 in January to 15 in June. Right: Referral biggest with 40, then Job portal 35.
+**Output:** (chart only, no printed output). Saved as hiring_summary.png. Left: bars shrinking from 500 applied to 30 joined. Middle: hires rising from 3 in January to 8 in June. Right: Referral biggest with 12, then Job portal 10. The 30 joiners in the funnel match the monthly and source totals.
 **What it means:** One page answers three questions: where do candidates drop off, is hiring improving, and which source works.
 **Alternative:** `plt.subplot_mosaic` or GridSpec for uneven layouts, for example one wide trend chart on top.
 **Likely follow-ups:**
@@ -1901,12 +1900,12 @@ plt.show()
 import matplotlib.pyplot as plt
 
 months = ["Jan", "Feb", "Mar", "Apr", "May"]
-sales = [8, 9, 7, 10, 12]
-it = [5, 6, 6, 7, 6]
+sales_hires = [8, 9, 7, 10, 12]
+it_hires = [5, 6, 6, 7, 6]
 
 fig, ax = plt.subplots(figsize=(8, 4))
-ax.plot(months, sales, marker="o", label="Sales")
-ax.plot(months, it, marker="o", label="IT")
+ax.plot(months, sales_hires, marker="o", label="Sales")
+ax.plot(months, it_hires, marker="o", label="IT")
 
 # remove the box lines that add no information
 ax.spines[["top", "right"]].set_visible(False)
