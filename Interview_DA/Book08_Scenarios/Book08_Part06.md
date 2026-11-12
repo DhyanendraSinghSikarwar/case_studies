@@ -80,6 +80,7 @@
 |---|---|---|
 | A | 5 | 100 |
 | B | 8 | 400 |
+
 **Asked at:** commonly asked (no company-specific report found); weighted-average questions are a standard theme (unverified).
 **What the interviewer is checking:** That you weight averages by volume.
 **Say this in the interview:** "6.5 is the simple average of 5 and 8, but Team B closed four times as many tickets, so the correct overall figure is 7.4 minutes."
@@ -103,6 +104,7 @@
 | South | 80 | 84 |
 | East | 60 | 72 |
 | West | 40 | 34 |
+
 **Asked at:** commonly asked (no company-specific report found); contribution-to-growth questions are common in data-interpretation guides (unverified).
 **What the interviewer is checking:** That you separate contribution (absolute change) from growth rate.
 **Say this in the interview:** "Overall growth is 7.3%. North and East tie as the largest contributors at +12 lakh each, but East grew 20% against North's 10%, and West dropped."
@@ -127,6 +129,7 @@
 | Sales | 150 | 24 |
 | Support | 250 | 30 |
 | HR | 40 | 2 |
+
 **Asked at:** commonly asked (no company-specific report found); HR metrics such as attrition appear as gap-fill HR exhibits in this part (judgement).
 **What the interviewer is checking:** That you use a rate with a denominator, not raw counts.
 **Say this in the interview:** "Sales has the highest rate at 16%, while Engineering has the most leavers (36) but a rate of only 9%."
@@ -149,6 +152,7 @@
 | Add to cart | 6,000 |
 | Checkout started | 2,400 |
 | Payment success | 1,800 |
+
 **Asked at:** commonly asked (no company-specific report found); funnel reading is a recurring prep-site theme (unverified).
 **What the interviewer is checking:** That you compute step rates, find the leak and prioritise it sensibly.
 **Say this in the interview:** "Overall conversion is 3.6%. The step with the biggest loss of buyers who already showed intent is cart to checkout at 40%, so I would look there first."
@@ -263,6 +267,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Jan | 1,000 | 40% | 30% | 28% |
 | Feb | 1,200 | 45% | 34% | - |
 | Mar | 900 | 52% | - | - |
+
 **Asked at:** commonly asked (no company-specific report found); cohort retention tables with immature cells are a listed theme (unverified).
 **What the interviewer is checking:** That you compare cohorts at the same age and treat blanks as not yet observed.
 **Say this in the interview:** "Yes, M1 retention rises 40%, 45%, 52%, and M2 is better for Feb than Jan. But the blank cells are not zero, they are not observed yet, and I would not compare cohorts at different ages."
@@ -285,6 +290,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Sales | 300 | 150 |
 | Tech | 100 | 90 |
 | Ops | 100 | 70 |
+
 **Asked at:** commonly asked (no company-specific report found); weighted rates are a standard theme (unverified).
 **What the interviewer is checking:** That you compute a pooled rate from totals, not by averaging rates.
 **Say this in the interview:** "The company-wide rate is 62%, not 70%. Sales is 60% of the people and has the lowest completion, so it pulls the overall down."
@@ -307,6 +313,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Job portal | 2,000 | 200 | 40 | 24 | 480 |
 | Referral | 150 | 60 | 24 | 21 | 105 |
 | Agency | 300 | 90 | 30 | 18 | 540 |
+
 **Asked at:** commonly asked (no company-specific report found); hiring-funnel metrics are a gap-fill HR exhibit in this part (judgement).
 **What the interviewer is checking:** That "best" depends on the metric, and you can name the trade-off.
 **Say this in the interview:** "On volume the job portal wins with 24 joins, but the referral source is best on quality and cost: 87.5% offer acceptance and Rs 5 thousand per join, against Rs 20 thousand for the portal and Rs 30 thousand for the agency."
@@ -321,7 +328,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 **Result:** Volume: portal. Acceptance, conversion and cost per join: referral. Agency is the costliest per join.
 **Caveats / what else I would check:** Referral supply is limited (only 150 applicants), so it cannot replace the portal; quality after joining (90-day exits, performance), time to hire, role mix across sources, fairness (referrals can narrow diversity), and whether "cost" includes referral bonuses and recruiter time.
 **Next step / recommendation:** Grow referrals (incentives, easy submission), keep the portal for volume, and review the agency for hard-to-fill roles only. Track 90-day retention by source.
-**Likely follow-ups:** 1) *Why is offer acceptance lower for portal hires?* Possibly weaker fit, slower process or competing offers; ask candidates. 2) *Would you stop the agency?* Not without checking which roles it fills.
+**Likely follow-ups:** 1) *Why is offer acceptance lower for portal and agency hires (60% each, against 87.5%)?* Possibly weaker fit, slower process or competing offers; ask candidates. 2) *Would you stop the agency?* Not without checking which roles it fills.
 **Common mistakes / traps:** Picking by volume only; comparing sources with different role mixes; ignoring post-joining quality.
 
 ### Q17 ⭐⭐⭐ 🟡 The A/B result below is for a new checkout button (exercise data). Compute the relative lift, and say whether you would recommend shipping on this evidence alone.
@@ -329,6 +336,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 |---|---|---|
 | Control | 10,000 | 500 |
 | Test | 10,000 | 540 |
+
 **Asked at:** commonly asked (no company-specific report found); A/B result reading is a recurring theme (unverified).
 **What the interviewer is checking:** That you quote the lift correctly and test whether it could be chance.
 **Say this in the interview:** "The test converts at 5.4% against 5.0%, a relative lift of 8%, but it is only 0.4 percentage points and is not statistically significant, so I would not ship on this alone."
@@ -337,11 +345,11 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 **Working:**
 1. Control rate: 500 / 10,000 = 5.0%. Test rate: 540 / 10,000 = 5.4%.
 2. Absolute difference: 0.4 percentage points. Relative lift: 0.4 / 5.0 = 8.0%.
-3. Two-proportion z-test (pooled rate 5.2%): z is about 1.27, two-sided p-value about 0.20.
+3. Two-proportion z-test (pooled rate 5.2%; the z score says how many standard errors apart the two rates are, and the p-value is the chance of a gap this big if the button truly did nothing): z is about 1.27, two-sided p-value about 0.20.
 4. 95% interval for the difference: about -0.2 to +1.0 percentage points (it includes zero).
 **Result:** +0.4 pp (8% relative lift); p about 0.20, not significant at the usual 5% level.
 **Caveats / what else I would check:** Was the sample size planned in advance? Did the test run full weeks? Was assignment random (check both groups look alike)? Were guardrail metrics checked (revenue per visitor, refunds, page speed)? Novelty effects? Did I peek and stop early?
-**Next step / recommendation:** Keep running to a pre-agreed sample size, or accept that a small lift needs more traffic: to detect 0.4 pp reliably needs much more than 10,000 per arm. If the change is cheap and harmless, a business may still ship it on non-statistical grounds, saying so openly.
+**Next step / recommendation:** Keep running to a pre-agreed sample size, or accept that a small lift needs more traffic: to detect 0.4 pp reliably (80% power, 5% level) needs about 48,000 visitors per arm, far more than 10,000. If the change is cheap and harmless, a business may still ship it on non-statistical grounds, saying so openly.
 **Likely follow-ups:** 1) *Does p = 0.20 mean no effect?* No, it means the data cannot rule out chance. 2) *Percent or percentage points?* Say both.
 **Common mistakes / traps:** Shipping because B is higher; quoting 8% without the 0.4 pp; stopping the test the first time it looks good.
 
@@ -350,6 +358,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 |---|---|---|
 | A | 10 / 100 | 180 / 400 |
 | B | 120 / 800 | 50 / 100 |
+
 (each cell is conversions / visitors)
 **Asked at:** commonly asked (no company-specific report found); Simpson's-type reversals are a recurring theme on practice sites (unverified).
 **What the interviewer is checking:** That you can explain a reversal through mix, and pick the sensible comparison.
@@ -375,6 +384,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | City C | 12,000 | 840 | 7.0% |
 | City D | 3,000 | 330 | 11.0% |
 | City E | 800 | 120 | 15.0% |
+
 **Asked at:** commonly asked (no company-specific report found); concentration versus rate questions are a recurring theme (unverified).
 **What the interviewer is checking:** That you separate volume from rate and do not confuse "most returns" with "worst problem".
 **Say this in the interview:** "They have most returns only because they have most orders. Their share of returns, 88.1%, is lower than their share of orders, 92.5%. The problem cities by rate are D and E."
@@ -414,6 +424,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Sessions | 100,000 | 120,000 |
 | Add to cart | 12,000 | 13,200 |
 | Payment success | 3,000 | 2,900 |
+
 **Asked at:** commonly asked (no company-specific report found); funnel-drop diagnosis is a recurring theme (unverified).
 **What the interviewer is checking:** That you compute step rates in both weeks and localise the fall.
 **Say this in the interview:** "Overall conversion fell from 3.0% to 2.4%. The biggest move is cart to payment, from 25.0% to 22.0%; the cart rate also slipped a little, from 12.0% to 11.0%."
@@ -437,7 +448,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 
 **First, clarify / contain:** Note the time, source and what is being compared; tell the owner I am verifying and will update by a set time. I do not announce a cause.
 **What I would check, in order:**
-1. What is the comparison? If it is 12 days against the full last month, 12 / 30 = 40% of the month, so a normal month would show a 60% "drop". A 30% drop is therefore either like-for-like or something else is off.
+1. What is the comparison? If it is 12 days against the full last month, 12 / 30 = 40% of the month, so a normal month would show a 60% "drop". A 30% drop shown this way would actually mean a daily run-rate 75% above last month (0.70 / 0.40 = 1.75), which is implausible, so either the comparison is already like-for-like or something else is off.
 2. Same period? Day 1 to 12 against day 1 to 12 of last month, with the same weekday mix (weekends, month-end spikes).
 3. Data completeness: did today's and the last few days' loads finish (row counts, refresh time, late-arriving orders)?
 4. Definitions: did the order definition, filters or time zone change?
@@ -456,6 +467,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | L1 | 6.0 | 5.9 | 20 | 60 |
 | L2 | 10.0 | 9.9 | 50 | 40 |
 | L3 | 18.0 | 17.8 | 40 | 10 |
+
 **Asked at:** commonly asked (no company-specific report found); pay-gap-by-grade is a gap-fill HR exhibit in this part (judgement).
 **What the interviewer is checking:** That you can show how grade mix creates most of the headline gap, without declaring the remaining gap fine.
 **Say this in the interview:** "The overall averages are 12.18 lakh for men and 8.44 lakh for women, a 31% gap. Within each grade the gap is only 1 to 2%, so most of the headline gap is about who sits in which grade, which is itself the question to examine."
@@ -479,19 +491,20 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 |---|---|---|
 | Q1 | 1,200 | 45 |
 | Q2 | 40 | 38 |
+
 **Asked at:** commonly asked (no company-specific report found); small-sample survey scores are a staple of data-interpretation guides (unverified).
 **What the interviewer is checking:** Whether you ask "how many responses?" before calling a change real.
 **Say this in the interview:** "I would not call it a drop yet. The Q2 score rests on only 40 responses, so it could easily be noise. I would say 'not enough evidence either way' and fix the sample."
 **What the data shows:** NPS (Net Promoter Score: percent promoters minus percent detractors, range -100 to +100) is 45 on 1,200 responses in Q1 and 38 on 40 responses in Q2. The headline gap is 7 points, but the two scores are not equally trustworthy.
 **Working:**
 1. Change: 38 - 45 = -7 points (a difference of points, not percent).
-2. Uncertainty of an NPS is roughly sqrt((P + D - (P - D)^2) / n), where P and D are the promoter and detractor shares. The table does not give P and D, so I use the worst case (P + D = 1), which gives a safe upper bound.
+2. Uncertainty of an NPS (the standard error, a measure of how much a score from a sample can wobble by chance) is roughly sqrt((P + D - (P - D)^2) / n), where P and D are the promoter and detractor shares and n is the number of responses. The table does not give P and D, so I use the worst case (P + D = 1), which gives a safe upper bound.
 3. Q1 (n = 1,200): standard error about 2.6 points, so a 95% range of roughly 40 to 50.
 4. Q2 (n = 40): standard error about 14.6 points, so a 95% range of roughly 9 to 67.
 5. Standard error of the difference is about 14.9 points; -7 is only about 0.5 standard errors, far below the usual 2.
-**Result:** The 7-point fall is well inside the noise. With an assumed realistic mix (60% promoters, 15% detractors in Q1; 55% and 17% in Q2) the answer is the same: roughly 0.6 standard errors. To detect a fall of this size reliably you would need on the order of 1,300 responses (worst-case, for a plus or minus 5 point range). Figures rounded to 1 decimal.
+**Result:** The 7-point fall is well inside the noise. With an assumed realistic mix (60% promoters, 15% detractors in Q1; 55% and 17% in Q2) the answer is the same: roughly 0.6 standard errors. For scale: about 1,230 responses would shrink one quarter's 95% range to plus or minus 5 points, and reliably detecting a 7-point fall between two quarters would need roughly 2,500 responses in each (worst case, 80% power). Figures rounded to 1 decimal.
 **Caveats / what else I would check:** Why did responses fall from 1,200 to 40 (a survey trigger broke, a different channel, only a quarter-to-date partial)? Who responded (non-response bias)? Same question wording and scale? Is Q2 an incomplete quarter?
-**Next step / recommendation:** Tell the product manager: "No evidence of a real drop yet; the Q2 sample is too small. Let us collect at least 400 to 1,300 responses, check why volume collapsed, and re-read the score with a range, not a single number."
+**Next step / recommendation:** Tell the product manager: "No evidence of a real drop yet; the Q2 sample is too small. Let us first find out why volume collapsed, collect as many responses as we can (a few hundred gives a plus or minus 9 point range; over a thousand gives about plus or minus 5), and re-read the score with a range, not a single number."
 **Likely follow-ups:** 1) *What if 40 was all you could get?* Report the score with its wide range and call it directional. 2) *Could the drop still be real?* Yes; small data cannot rule it in or out.
 **Common mistakes / traps:** Reporting 45 to 38 as a trend; comparing scores without comparing sample sizes; quoting the 7 as "7%".
 
@@ -502,6 +515,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | IT | 200 | 214 |
 | Admin | 50 | 49 |
 | Operations | 400 | 436 |
+
 **Asked at:** commonly asked (no company-specific report found); budget-variance reading appears in finance-flavoured analyst case discussions (unverified).
 **What the interviewer is checking:** Whether you look at rupee impact and share of the overrun, not just the percentage.
 **Say this in the interview:** "Marketing has the biggest percentage overrun at 30%, but it is only 6 lakh. Operations at 9% is 36 lakh, about two thirds of the net overrun, so that is where I would look first."
@@ -580,6 +594,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Median | 26 |
 | 90th percentile | 48 |
 | 99th percentile | 85 |
+
 **Asked at:** commonly asked (no company-specific report found); mean-versus-tail delivery metrics appear in operations and e-commerce case prompts (unverified).
 **What the interviewer is checking:** Whether you know that an average can hide the bad experiences that customers actually complain about.
 **Say this in the interview:** "The average of 30 minutes hides a long tail. One in ten orders takes 48 minutes or more and one in a hundred takes 85 or more. I would put the 90th percentile on the dashboard."
@@ -600,6 +615,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 |---|---|---|
 | Men | 200 | 40 |
 | Women | 120 | 16 |
+
 **Asked at:** commonly asked (no company-specific report found); adverse-impact checks are a standard HR-analytics prompt (unverified; the 80% rule is a US guideline recalled from memory, so confirm the applicable standard with HR/legal).
 **What the interviewer is checking:** That you compute selection rates correctly, compare them as a ratio, and handle a sensitive finding carefully.
 **Say this in the interview:** "Men were selected at 20% and women at 13.3%, a ratio of 0.67. That is below the common 0.8 screening threshold, so I would flag it for review, not call it discrimination yet."
@@ -609,7 +625,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 2. Women: 16/120 = 13.3%.
 3. Impact ratio (women's rate divided by men's rate): 13.3/20.0 = 0.67.
 4. If women had been selected at the men's rate: 120 x 20% = 24 offers expected versus 16 actual, a gap of 8.
-5. Significance check (Fisher's exact test on 2 by 2 counts): p about 0.17, so with these numbers the gap could still be chance.
+5. Significance check (Fisher's exact test on the 2 by 2 counts: it asks how often a gap this big would appear by chance if both groups had the same true rate): p about 0.17, so with these numbers the gap could still be chance.
 **Result:** Ratio 0.67 (below the 0.8 rule of thumb), but not statistically significant on 320 applicants (p about 0.17). Percent and ratios rounded to 1 to 2 decimals.
 **Caveats / what else I would check:** Same job and stage? Qualifications and shortlisting criteria; interviewer effects; the stage where women drop (screening, interview or offer); a larger sample across rounds; whether data is complete.
 **Next step / recommendation:** Report privately to the HR head and legal as "flagged for review", not as a conclusion; review the stage-by-stage funnel and accumulate more rounds; document it, and restrict access to the data.
@@ -622,6 +638,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | B1 | 100 | 85 |
 | B2 | 80 | 56 |
 | B3 | 40 | 22 |
+
 **Asked at:** commonly asked (no company-specific report found); offer-acceptance analysis by band is an HR-analytics gap-fill exercise (judgement; no source report).
 **What the interviewer is checking:** That you compute each rate from its own base and overall acceptance from totals, and spot the pattern.
 **Say this in the interview:** "Acceptance falls as the band goes up: 85%, 70%, 55%, and 74% overall. The senior offers are the leak, so I would look at pay competitiveness and time to offer there."
@@ -644,6 +661,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Jan | 50 | 5 |
 | Feb | 60 | 9 |
 | Mar | 40 | 10 |
+
 **Asked at:** commonly asked (no company-specific report found); 90-day exit cohorts are an HR-analytics gap-fill exercise (judgement; no source report).
 **What the interviewer is checking:** Whether you compute exit rates per cohort and ask what changed in the business.
 **Say this in the interview:** "Early exits rose from 10% in January to 15% in February and 25% in March. That is a clear worsening trend, so I would ask what changed in hiring or onboarding."
@@ -683,6 +701,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Legacy | 300 | 280 |
 | Core | 400 | 395 |
 | New launch | 0 | 120 |
+
 **Asked at:** commonly asked (no company-specific report found); mix-versus-total growth stories appear in business-case prompts (unverified).
 **What the interviewer is checking:** Whether you look under the total to see which products are growing.
 **Say this in the interview:** "Total revenue is up 13.6%, but all of it comes from the new launch. Without it, revenue fell 3.6%, so the base business is slipping."
@@ -793,6 +812,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | 1 | 100 | 110 |
 | 2 | 120 | 100 |
 | 3 | 80 | 90 |
+
 **Asked at:** commonly asked (no company-specific report found); forecast accuracy (MAPE) appears in forecasting discussions (unverified).
 **What the interviewer is checking:** Whether you can compute MAPE (Mean Absolute Percentage Error) and know what it misses.
 **Say this in the interview:** "MAPE is 13.1%, so the forecast is off by about 13% on average. But it does not show whether we are biased high or low, and it treats a 10-unit miss on a small month as a big error."
@@ -817,6 +837,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Terminations | 5 |
 | Transfers in | 3 |
 | Transfers out | 8 |
+
 **Asked at:** commonly asked (no company-specific report found); bridge and reconciliation checks are common HR-data prompts (judgement; no source report). Premise note: the stated 515 does not match the bridge.
 **What the interviewer is checking:** Whether you recompute a bridge instead of trusting the stated figure, and find the cause of the gap.
 **Say this in the interview:** "The bridge gives 510, not 515. The 5 difference is exactly the net transfers (3 in, 8 out), so the report seems to have ignored transfers."
@@ -839,6 +860,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Q2 | 90 |
 | Q3 | 100 |
 | Q4 | 130 |
+
 **Asked at:** commonly asked (no company-specific report found); seasonal index (seasonality) is a standard part of trend discussions (unverified). Premise note: a seasonal index from one year of data is only a rough illustration.
 **What the interviewer is checking:** Whether you adjust for seasonality before comparing quarters.
 **Say this in the interview:** "Q4 is 1.3 times an average quarter. So Q4 beating Q1 by 62.5% is mostly the season; after adjusting, they are flat."
@@ -859,6 +881,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | Day | 1 | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|---|
 | Orders | 90 | 120 | 60 | 150 | 90 |
+
 **Asked at:** commonly asked (no company-specific report found); moving averages are a common smoothing topic (unverified). Premise note: the question says seven-day moving average but only five days are given, so I compute the 3-day version it asks for.
 **What the interviewer is checking:** Whether you can compute a moving average and know that smoothing hides things.
 **Say this in the interview:** "The 3-day averages are 90, 110 and 100. It smooths the jumpy daily numbers, but it also hides the real peaks and dips."
@@ -878,6 +901,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 |---|---|---|
 | Before | 200 | 10,000 |
 | After | 209 | 9,500 |
+
 **Asked at:** commonly asked (no company-specific report found); price-volume decomposition appears in finance and e-commerce case discussions (unverified). Premise note: the table says "by region" but shows one total row per period; I treat it as a single total.
 **What the interviewer is checking:** Whether you split a revenue change into price and volume effects and know the split depends on the method.
 **Say this in the interview:** "Revenue rose 9 lakh. Price added about 19 lakh and lower volume took away about 10, so the price rise did the work while volume fell 5%."
@@ -899,6 +923,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 |---|---|---|---|
 | Electronics | 2,000 | 1,000 | 600 |
 | Accessories | 400 | 1,000 | 1,400 |
+
 **Asked at:** commonly asked (no company-specific report found); mix shift (a Simpson-style effect) is a recurring interpretation theme (unverified).
 **What the interviewer is checking:** That you know a blended average moves when the mix changes even if each part is flat.
 **Say this in the interview:** "Nothing got cheaper. The share of low-value accessory orders grew, so the blended AOV fell from Rs 1,200 to Rs 880."
@@ -943,6 +968,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | 1-3 yrs | 120 | 0.98 |
 | 3-5 yrs | 90 | 0.92 |
 | 5+ yrs | 60 | 0.90 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you spot pay compression (new hires paid more than long-serving staff) and look for explanations before proposing money.
 **Say this in the interview:** "The longer someone has stayed, the lower they sit against their grade midpoint, from 1.05 for new joiners to 0.90 for five-plus years. That looks like pay compression, but I would check grade mix and performance before recommending any correction."
@@ -970,6 +996,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | < 1 year | 200 | 56 |
 | 1-3 years | 400 | 48 |
 | 3+ years | 400 | 16 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you compare rates, not counts, and ask the next useful "why" question.
 **Say this in the interview:** "The problem is in the first year: 28% leave, against 12% and 4% in the other groups. I would ask why new joiners leave, and whether it is hiring quality, onboarding or role mismatch."
@@ -997,6 +1024,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | 31-60 days | 50 |
 | 61-90 days | 20 |
 | 90+ days | 10 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you can compute shares from an ageing table and think about collection risk, not just arithmetic.
 **Say this in the interview:** "Receivables total 200 lakh and 30 lakh, 15%, is more than 60 days old. The older the bill, the less likely it is paid, so I would look at the 90-plus bucket by customer and at what is about to roll into it."
@@ -1027,6 +1055,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | C4 | 20 |
 | C5 | 15 |
 | Other 45 customers | 70 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you compute shares correctly and link concentration to risk.
 **Say this in the interview:** "The top five customers bring 130 of 200 lakh, 65% of revenue. Losing C1 alone would take 20%, so the business is exposed to a few relationships."
@@ -1055,6 +1084,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | B | 150 | 4.3 |
 | C | 90 | 4.1 |
 | D | 4 | 5.0 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you notice small sample size before ranking people.
 **Say this in the interview:** "No, not on this evidence. Agent D's 5.0 rests on four surveys, so one more response could move it a lot. I would wait for more surveys and look at other measures too."
@@ -1132,6 +1162,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | M1 | 10 | 6 | 3 | 1 | 0 |
 | M2 | 12 | 1 | 4 | 6 | 1 |
 | M3 | 8 | 2 | 3 | 3 | 0 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you spot rating leniency and strictness between managers and propose a fair process step without accusing anyone.
 **Say this in the interview:** "M1 gave 90% of the team a 4 or 5, M2 only 42%. Teams may differ, but this gap suggests managers rate on different scales, so I would run a calibration before ratings drive pay or promotion."
@@ -1159,6 +1190,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 | S1 | 50 | 10 | 0.5 |
 | S2 | 5,000 | 400 | 60 |
 | S3 | 1,200 | 180 | 18 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you weigh rate, volume and money together instead of one ratio.
 **Say this in the interview:** "S1 has the highest return rate at 20% but only 50 orders. S3 has 15% on 1,200 orders and about 2.7 lakh of returned revenue, so I would escalate S3 first, and keep an eye on S2 for its size."
@@ -1219,6 +1251,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 |---|---|---|
 | Intercept | 4.5 | 0.4 |
 | Tenure (years) | 0.6 | 0.1 |
+
 R-squared = 0.30, n = 220
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you can read a regression in plain words and avoid causal or over-precise claims.
@@ -1241,6 +1274,7 @@ R-squared = 0.30, n = 220
 |---|---|---|
 | Q1 | 50,000 | 2,500 |
 | Q2 | 80,000 | 3,500 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you normalise for volume and present the right framing.
 **Say this in the interview:** "Tickets rose 40% but orders rose 60%, so tickets per thousand orders fell from 50 to 43.75, a 12.5% improvement. I would lead with the rate, and show the raw count too."
@@ -1280,6 +1314,7 @@ R-squared = 0.30, n = 220
 | Enterprise | 900 | 15 | Long cycle |
 | SMB | 600 | 30 | Short cycle |
 | Inside sales | 400 | 20 | Short cycle |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you compute simple ratios and challenge comparisons of unlike teams.
 **Say this in the interview:** "Enterprise is 60 lakh per head against 20 for the other two, but the teams sell different things on different cycles, so I would compare each against its own target and history."
@@ -1341,6 +1376,7 @@ R-squared = 0.30, n = 220
 | Pune | 400 | 2,800 |
 | Chennai | 150 | 1,500 |
 | Remote | 200 | 800 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you normalise by headcount and stay cautious about causes.
 **Say this in the interview:** "Chennai has the most days per person at 10, Pune 7 and Remote 4, against an overall 6.8. Totals favour Pune, but per person Chennai stands out. The data shows where, not why."
@@ -1387,6 +1423,7 @@ Orders: City A UPI 600, card 200; City B UPI 300, card 700.
 | Beta | 25 | 18 |
 | Gamma | 40 | 31 |
 | Delta | 12 | 22 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you see the pattern, the exception and the limits of four data points.
 **Say this in the interview:** "Alpha, Beta and Gamma show attrition rising with overtime, but Delta breaks the pattern, with low overtime and 22% attrition. Overtime may be one factor, not the whole story. I would ask for person-level and exit-reason data."
@@ -1411,6 +1448,7 @@ Orders: City A UPI 600, card 200; City B UPI 300, card 700.
 |---|---|---|
 | W1 | 600 | 100 |
 | W2 | 450 | 50 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you can compute turnover (cost of goods sold divided by average inventory) and interpret it with care.
 **Say this in the interview:** "W1 turns its stock 6 times a year, W2 9 times. W2 moves stock faster, using less money tied up, but I would check product mix and stock-outs before calling it better."
@@ -1484,6 +1522,7 @@ Orders: City A UPI 600, card 200; City B UPI 300, card 700.
 |---|---|---|---|
 | Small | 900 | 90 | 1 |
 | Large | 100 | 30 | 25 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** That you weight by value, not just by head count.
 **Say this in the interview:** "Customer churn is 12%, but revenue churn is about 24.7%, because the customers we lost were disproportionately the big ones."
@@ -1510,6 +1549,7 @@ Orders: City A UPI 600, card 200; City B UPI 300, card 700.
 | Input cost | -35 |
 | Overheads | -8 |
 | This year profit | ? |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** That you can finish a bridge, and read it for causes rather than just signs.
 **Say this in the interview:** "This year's profit is 80 lakh, down 20. Input cost is the biggest single drag at minus 35, and mix at minus 22 is the one I would question next."
@@ -1580,6 +1620,7 @@ Orders: City A UPI 600, card 200; City B UPI 300, card 700.
 |---|---|---|
 | Easy | 90 / 100 | 48 / 50 |
 | Hard | 100 / 400 | 130 / 450 |
+
 **Asked at:** commonly asked (no company-specific report found); Simpson's-type reversals appear on practice sites (unverified).
 **What the interviewer is checking:** That you can explain a mix-driven reversal with numbers.
 **Say this in the interview:** "Both programmes improved but the overall rate fell from 38.0% to 35.6%, because more candidates sat the hard programme. That is a mix shift."
