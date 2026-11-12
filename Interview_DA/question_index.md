@@ -4109,6 +4109,639 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 ## Book 7 — Guesstimates, Cases & Metrics
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B7P01Q1 | 7 | 1 | What is a guesstimate question, and why do data analyst interviewers ask it? |
+| B7P01Q2 | 7 | 1 | What are the standard steps you follow to solve a guesstimate question? |
+| B7P01Q3 | 7 | 1 | What is the difference between a top-down and a bottom-up guesstimate approach? |
+| B7P01Q4 | 7 | 1 | How do you decide whether to use a top-down or a bottom-up approach for a given guesstimate? |
+| B7P01Q5 | 7 | 1 | How do you sanity-check a guesstimate answer? |
+| B7P01Q6 | 7 | 1 | Why do interviewers care more about your assumptions and structure than the final number in a guesstimate? |
+| B7P01Q7 | 7 | 1 | What clarifying questions should you ask before starting a guesstimate such as "Estimate the number of chai cups sold in a city in a day"? |
+| B7P01Q8 | 7 | 1 | Which India population base numbers should a candidate memorise for guesstimates, and how should you quote them in an interview? |
+| B7P01Q9 | 7 | 1 | How do you segment India's population (for example by urban/rural, age group or income class) to start a top-down guesstimate? |
+| B7P01Q10 | 7 | 1 | How do you convert India's population into a number of households, and why is household size useful? |
+| B7P01Q11 | 7 | 1 | Estimate the number of households in a city of 2 million people if the average household has 4 members. Show the calculation and one way to sanity-check it. |
+| B7P01Q12 | 7 | 1 | Using a top-down approach, outline how you would estimate the number of people in India who could be customers of a food delivery app, without using numbers from memory beyond the population. |
+| B7P01Q13 | 7 | 1 | Using a bottom-up approach, outline how you would estimate the number of tea stalls in a city. State what unit you build from and how you scale up. |
+| B7P01Q14 | 7 | 1 | A candidate estimates a city's daily chai consumption two ways: top-down gives 1.2 million cups, bottom-up gives 0.9 million cups. Is this gap acceptable, and what should the candidate do next? |
+| B7P01Q15 | 7 | 1 | What is the order-of-magnitude check, and how would you apply it to the answer "India has 5 crore (50 million) cars"? |
+| B7P01Q16 | 7 | 1 | How do you pick round numbers and simplify the arithmetic during a guesstimate without losing accuracy? Show it by multiplying 1.4 billion by 0.35 by 0.2 mentally. |
+| B7P01Q17 | 7 | 1 | Two candidates estimate the daily orders of a food delivery app in a metro: one gets 20,000, the other 2,000,000. How would you find which assumption caused the 100x gap and decide which is more believable? |
+| B7P01Q18 | 7 | 1 | What is a decision tree or driver tree in a guesstimate, and how does it help you avoid missing a segment? |
+| B7P01Q19 | 7 | 1 | How should you handle a guesstimate when you do not know a base number such as the population of a state? |
+| B7P01Q20 | 7 | 1 | What are the most common mistakes candidates make in a guesstimate? |
+| B7P01Q21 | 7 | 1 | If total population is P, the share aged 15-60 is a, the share employed in organised jobs is b, and 30% of those buy a monthly subscription, write the formula for subscribers and say which of these inputs usually carries the most uncertainty. |
+| B7P01Q22 | 7 | 1 | How do you handle averages versus peak/off-peak in a guesstimate such as metro riders or delivery orders per day? |
+| B7P01Q23 | 7 | 1 | How do you present a range (low, base, high) rather than a single number in a guesstimate, and when is a range better? Use the example of a daily-orders estimate with a base of 100,000 and assumptions that may be 20% off in each direction. |
+| B7P01Q24 | 7 | 1 | How do you calibrate a guesstimate when you learn mid-answer that one of your assumptions is wrong (for example the interviewer says your household size is too high)? |
+| B7P01Q25 | 7 | 1 | Estimate the number of working-age people in a district of 30 lakh (3 million) population if you assume roughly 60% are aged 15-59. Then say how you would adjust for a district with many young students. |
+| B7P01Q26 | 7 | 1 | Explain the idea of independent versus correlated assumptions in a guesstimate. Why can multiplying five 'reasonable' assumptions each 20% too high give an answer that is more than 2x too high? |
+| B7P01Q27 | 7 | 1 | How does a guesstimate differ from a market-sizing case and from a Fermi problem? |
+| B7P01Q28 | 7 | 1 | How would you use a known quantity (for example a company's reported number of customers) as a calibration anchor to check a guesstimate, and what are the risks? |
+| B7P01Q29 | 7 | 1 | How would you use units and dimensional analysis (for example orders per rider per hour) to catch an error in a guesstimate? |
+| B7P01Q30 | 7 | 1 | How would you combine supply-side and demand-side estimates to triangulate a guesstimate, using the example of cups of coffee sold per day in a city? |
+| B7P01Q31 | 7 | 1 | How should you practise guesstimates over four weeks to become fast, and what base-number cheat sheet would you build? |
+| B7P01Q32 | 7 | 1 | Your guesstimate for UPI transactions per day in India came out at 10 times a figure the interviewer hints at. Walk through how you would debug your own model step by step without being defensive. |
+| B7P02Q1 | 7 | 2 | Estimate the number of cups of chai sold in Hyderabad in a day. |
+| B7P02Q2 | 7 | 2 | Estimate the number of cars in Hyderabad. |
+| B7P02Q3 | 7 | 2 | Estimate the number of two-wheelers in Bengaluru. |
+| B7P02Q4 | 7 | 2 | Estimate the number of coffee shops in Bengaluru. |
+| B7P02Q5 | 7 | 2 | Estimate the number of petrol stations in India. |
+| B7P02Q6 | 7 | 2 | Estimate the number of smartphones sold in Delhi in a year. |
+| B7P02Q7 | 7 | 2 | Estimate the number of sweet shops in a town of 5 lakh people. |
+| B7P02Q8 | 7 | 2 | What clarifying questions do you ask before sizing a market (units or rupees, geography, time period, what counts as the product)? |
+| B7P02Q9 | 7 | 2 | How do you decide between a top-down and a bottom-up approach for a market-size question? |
+| B7P02Q10 | 7 | 2 | Assume Hyderabad has 25 lakh households, 20% of them own at least one car, and a car-owning household owns 1.1 cars on average. How many cars are there, and what would you check next? |
+| B7P02Q11 | 7 | 2 | Assume a chai stall sells 200 cups a day at Rs 10 a cup and a locality has 150 such stalls. What is the daily chai revenue of the locality in rupees and in lakhs? |
+| B7P02Q12 | 7 | 2 | Estimate the number of Swiggy or Zomato delivery partners needed in Hyderabad. |
+| B7P02Q13 | 7 | 2 | Estimate the annual market size for online grocery delivery in a metropolitan city like Bengaluru. |
+| B7P02Q14 | 7 | 2 | Estimate the number of kilograms of chicken sold in your city in a year. |
+| B7P02Q15 | 7 | 2 | Estimate the size of the diaper market in India in rupees per year. |
+| B7P02Q16 | 7 | 2 | Estimate the number of cups of tea consumed in all of India in a week. |
+| B7P02Q17 | 7 | 2 | Estimate the number of retail stores in New Delhi. |
+| B7P02Q18 | 7 | 2 | Your top-down and bottom-up estimates for the chai market in Hyderabad differ by a factor of three. What do you do? |
+| B7P02Q19 | 7 | 2 | How do you sanity-check a market-size estimate before giving the final number to the interviewer? |
+| B7P02Q20 | 7 | 2 | Estimate the annual gross order value of food delivery in Hyderabad. |
+| B7P02Q21 | 7 | 2 | Estimate the number of electric vehicles in Hyderabad. |
+| B7P02Q22 | 7 | 2 | Estimate the market size for digital health insurance among young professionals in tier-2 cities in India. |
+| B7P02Q23 | 7 | 2 | Estimate the number of auto-rickshaws in Hyderabad. |
+| B7P02Q24 | 7 | 2 | Estimate the number of biryani plates sold in Hyderabad on a Sunday. |
+| B7P02Q25 | 7 | 2 | Estimate the number of barber shops in a city of 10 lakh people. |
+| B7P02Q26 | 7 | 2 | Estimate the number of ATMs in Hyderabad. |
+| B7P02Q27 | 7 | 2 | Estimate the number of school-going children in Hyderabad. |
+| B7P02Q28 | 7 | 2 | Estimate the number of weddings in India in a year. |
+| B7P02Q29 | 7 | 2 | Estimate the number of IT-sector employees working in Hyderabad. |
+| B7P02Q30 | 7 | 2 | What is the difference between TAM, SAM and SOM, and which one does a market-size guesstimate usually give? |
+| B7P02Q31 | 7 | 2 | Estimate the number of mobile phone users in a city of 20 lakh people who use mobile data daily. |
+| B7P02Q32 | 7 | 2 | Assume India has 140 crore people, 35% live in urban areas, and 60% of urban people use a smartphone. How many urban smartphone users are there, in crores? |
+| B7P02Q33 | 7 | 2 | A tea company wants to know the number of cups served by tea stalls in a district. Assume 4,000 stalls, 150 cups a day each, and stalls open 28 days a month. What is the monthly cup count in lakhs? |
+| B7P02Q34 | 7 | 2 | Estimate the number of mangoes sold in Hyderabad in one summer season. |
+| B7P02Q35 | 7 | 2 | Estimate the number of hospitals and clinics in a city of 50 lakh people. |
+| B7P02Q36 | 7 | 2 | Estimate the number of government school teachers in a district of 20 lakh people. |
+| B7P02Q37 | 7 | 2 | Estimate the number of data analysts employed in India. |
+| B7P02Q38 | 7 | 2 | Estimate the annual market for corporate payroll software in India. |
+| B7P02Q39 | 7 | 2 | Estimate the market size for school uniforms in Hyderabad in a year. |
+| B7P02Q40 | 7 | 2 | Estimate the number of used cars sold in Hyderabad in a year. |
+| B7P02Q41 | 7 | 2 | Estimate the annual market for electric two-wheelers in India in units. |
+| B7P02Q42 | 7 | 2 | Estimate the number of gym members in Bengaluru. |
+| B7P02Q43 | 7 | 2 | Estimate the daily milk consumption of Hyderabad in litres. |
+| B7P02Q44 | 7 | 2 | Estimate the annual LPG cylinder demand of Hyderabad. |
+| B7P02Q45 | 7 | 2 | Estimate the annual market for corporate health check-ups in Hyderabad. |
+| B7P02Q46 | 7 | 2 | Estimate the market size of quick-commerce in Hyderabad in rupees per year. |
+| B7P02Q47 | 7 | 2 | Estimate the annual market for online tutoring for Class 10 students in India. |
+| B7P02Q48 | 7 | 2 | Estimate the number of credit cards in use in India. |
+| B7P02Q49 | 7 | 2 | Estimate the number of laptops a company with 5,000 employees will buy in a year. |
+| B7P02Q50 | 7 | 2 | Estimate the annual market for mobile phone repair in Bengaluru in rupees. |
+| B7P02Q51 | 7 | 2 | Assume an online grocery app has 8 lakh monthly users in a city, 40% order in a month, and an ordering user places 3 orders at Rs 600 each. What is the monthly gross order value in crores? |
+| B7P02Q52 | 7 | 2 | A bottom-up estimate of cars in Hyderabad gives 5.5 lakh. A friend says a top-down check using 70 cars per 1,000 people and a population of 1 crore gives 7 lakh. How do you reconcile the two numbers? |
+| B7P02Q53 | 7 | 2 | How do you size a market when you can only estimate the number of potential customers and not their spending? |
+| B7P02Q54 | 7 | 2 | How do you adjust a market-size estimate for seasonality, such as festival months? |
+| B7P02Q55 | 7 | 2 | How do you decide whether a guesstimate should be in units, rupees or users, and how do you convert between them? |
+| B7P02Q56 | 7 | 2 | Estimate the annual market for packaged snacks in Hyderabad. |
+| B7P02Q57 | 7 | 2 | Estimate the number of Hyderabad residents who use UPI for at least one payment a day. |
+| B7P02Q58 | 7 | 2 | Estimate the annual number of job applications received by India's large IT employers. |
+| B7P02Q59 | 7 | 2 | Estimate the annual market for engineering-college coaching in Hyderabad in rupees. |
+| B7P02Q60 | 7 | 2 | Estimate the addressable market for a B2B SaaS HR tool for companies with 50 to 500 employees in India. |
+| B7P02Q61 | 7 | 2 | Estimate the market size for a UPI-based working-capital loan for small shopkeepers in India. |
+| B7P02Q62 | 7 | 2 | Estimate the number of EV charging points Hyderabad would need in five years. |
+| B7P02Q63 | 7 | 2 | Estimate the market size for a new diabetes drug launch in India. |
+| B7P02Q64 | 7 | 2 | Estimate the potential market for an insurance product for gig delivery workers in India. |
+| B7P02Q65 | 7 | 2 | How do you estimate the market size for a product that does not exist yet? |
+| B7P02Q66 | 7 | 2 | Estimate the number of Activa scooters sold in Mumbai in a year. |
+| B7P02Q67 | 7 | 2 | Estimate the number of flower bunches sold in Hyderabad during a major festival week. |
+| B7P02Q68 | 7 | 2 | Estimate the number of tonnes of rice consumed in Hyderabad in a month. |
+| B7P02Q69 | 7 | 2 | Estimate the number of cigarettes smoked in India in a month. |
+| B7P02Q70 | 7 | 2 | Estimate the number of newspapers sold in a city of 30 lakh people each day. |
+| B7P02Q71 | 7 | 2 | Estimate the number of auto-rickshaw drivers who would switch to an EV auto if offered a subsidy in a city of your choice. |
+| B7P02Q72 | 7 | 2 | Estimate the size of the chewing gum market in India. |
+| B7P02Q73 | 7 | 2 | Estimate the size of the Indian cement industry in tonnes per year. |
+| B7P02Q74 | 7 | 2 | Estimate the annual market for bicycles in India. |
+| B7P02Q75 | 7 | 2 | Estimate the market size of the Indian wedding industry in rupees. |
+| B7P02Q76 | 7 | 2 | Estimate the number of people in India who change jobs in a year. |
+| B7P02Q77 | 7 | 2 | Estimate the annual number of campus hires made by IT companies in India. |
+| B7P02Q78 | 7 | 2 | Estimate the number of pizza slices sold in Mumbai on a Saturday evening. |
+| B7P02Q79 | 7 | 2 | Estimate the annual revenue pool of recruitment agency fees in India. |
+| B7P02Q80 | 7 | 2 | Estimate the number of tennis rackets, or any sports good of your choice, sold in India per year; justify your choice of product. |
+| B7P02Q81 | 7 | 2 | Estimate the number of hours Indians spend on mobile apps for food ordering in a month. |
+| B7P02Q82 | 7 | 2 | A shopkeeper says he sells 120 samosas on a weekday and 200 on a weekend day. Estimate his monthly samosa sales and state how you would extend this to the whole locality. |
+| B7P02Q83 | 7 | 2 | How do you use a small real data sample, such as 50 shop surveys, to improve a market-size guesstimate? |
+| B7P02Q84 | 7 | 2 | What mistakes do candidates commonly make in market-size guesstimates, and how do you avoid them? |
+| B7P02Q85 | 7 | 2 | Estimate the market for corporate gifting during Diwali in India. |
+| B7P02Q86 | 7 | 2 | Estimate the number of sim cards sold in a city of 1 crore people in a year. |
+| B7P02Q87 | 7 | 2 | Estimate the market size for cattle trading in India, as if Flipkart were considering entering it. |
+| B7P02Q88 | 7 | 2 | Estimate the market size for a premium pet food brand in Indian metros. |
+| B7P02Q89 | 7 | 2 | Estimate the market for in-company skilling programmes for data analysts in India per year. |
+| B7P02Q90 | 7 | 2 | Estimate how many 10-minute grocery dark stores Hyderabad can support. |
+| B7P02Q91 | 7 | 2 | A client asks you to size the market for a new cold-chain startup for vegetables. How do you structure the estimate and what data would you request? |
+| B7P02Q92 | 7 | 2 | You estimated a market at 50,000 crore rupees and the client says the real figure is 10,000 crore. How do you respond and revise? |
+| B7P02Q93 | 7 | 2 | Estimate the market size for an employee wellness app sold to Indian companies with more than 1,000 staff. |
+| B7P02Q94 | 7 | 2 | Estimate the annual market for background-verification checks on new hires in India. |
+| B7P03Q1 | 7 | 3 | Estimate the number of food delivery orders a platform like Swiggy receives in India in a day. |
+| B7P03Q2 | 7 | 3 | Estimate the number of passengers who ride the Delhi Metro in a day. |
+| B7P03Q3 | 7 | 3 | Estimate the number of cab rides booked on ride-hailing apps in Delhi in a day. |
+| B7P03Q4 | 7 | 3 | Estimate the number of e-commerce packages delivered in Hyderabad in a day. |
+| B7P03Q5 | 7 | 3 | Before estimating Swiggy's orders per day, which scope questions would you ask the interviewer, and why do they change the answer? |
+| B7P03Q6 | 7 | 3 | How do you convert an estimate of orders per day into revenue per day for a food delivery platform? Distinguish orders, GMV, take rate and net revenue. |
+| B7P03Q7 | 7 | 3 | A metro network carries 2.5 million riders on an average day at an average fare of ₹35. Estimate the daily and annual fare revenue. |
+| B7P03Q8 | 7 | 3 | A delivery partner works 8 hours a day and one order takes 28 minutes from accepting to being free again. How many orders can the partner deliver in a day? |
+| B7P03Q9 | 7 | 3 | Estimate the number of orders a quick-commerce app receives in your city in a day, and list the three assumptions that move the answer most. |
+| B7P03Q10 | 7 | 3 | Estimate the daily revenue of one quick-commerce dark store in a metro city. |
+| B7P03Q11 | 7 | 3 | Estimate the number of orders an e-commerce platform like Flipkart receives on the first day of its annual festive sale. |
+| B7P03Q12 | 7 | 3 | Estimate the number of delivery riders a food delivery app needs in Bengaluru during the dinner peak. |
+| B7P03Q13 | 7 | 3 | A dark store handles 1,000 orders a day and 40% of them arrive in a 4-hour evening peak. One rider completes 2.5 orders per hour. How many riders are needed during the peak? |
+| B7P03Q14 | 7 | 3 | Estimate the number of meals a food delivery app delivers in Mumbai on an average day. |
+| B7P03Q15 | 7 | 3 | You estimated 2 million Swiggy orders a day for India. Give three independent cross-checks you would use to sanity-check that number. |
+| B7P03Q16 | 7 | 3 | A sale-day platform logs 110 orders per second during a 1-hour peak and an average of 20 orders per second over the remaining 23 hours. How many orders does it receive that day? |
+| B7P03Q17 | 7 | 3 | A food delivery platform gets 1.5 million orders a day at an average order value of ₹400 and earns 25% of GMV as net revenue. What is its annual net revenue in ₹ crore? |
+| B7P03Q18 | 7 | 3 | Estimate the revenue a cab aggregator earns from airport trips at one city airport in a day. |
+| B7P03Q19 | 7 | 3 | Estimate the number of online food delivery orders placed in Bengaluru on a typical Sunday. |
+| B7P03Q20 | 7 | 3 | Estimate the number of UPI payment transactions made in India in a day. |
+| B7P03Q21 | 7 | 3 | A food delivery app has 20 million monthly transacting users who order on average 3 times a month. How many orders per day is that, and what does it imply for the daily order estimate? |
+| B7P03Q22 | 7 | 3 | Estimate how many dark stores a quick-commerce company needs to cover a large metro city such as Bengaluru. |
+| B7P03Q23 | 7 | 3 | Estimate the number of food delivery orders nationwide at 8 pm on a Saturday, and explain how you adjust from the daily average to a peak hour. |
+| B7P03Q24 | 7 | 3 | A cab driver completes 12 trips a day at an average fare of ₹180. The platform keeps 20% commission and fuel costs ₹800 a day. What is the driver's net daily earning? |
+| B7P03Q25 | 7 | 3 | A payroll team pays delivery partners ₹40 per order plus incentives equal to 10% of base payout. If 1.2 million orders are delivered in a day, what is the daily payout in ₹ crore? |
+| B7P03Q26 | 7 | 3 | An edtech app has 40,000 paying learners at ₹600 per month. What is its monthly recurring revenue and annualised run-rate in ₹ crore? |
+| B7P03Q27 | 7 | 3 | What is the difference between a top-down and a bottom-up estimate for an operations question such as the size of a rider fleet? Which would you use first? |
+| B7P03Q28 | 7 | 3 | Estimate the daily revenue of a busy multiplex in a tier-1 city. |
+| B7P03Q29 | 7 | 3 | Why is a peak-hour factor important when you estimate riders, agents or dark-store capacity from a daily order number? |
+| B7P03Q30 | 7 | 3 | An app has 2 million orders a day and 3% are cancelled after the rider is assigned, costing ₹20 each in wasted payout. What is the monthly cost of these cancellations in ₹ crore? |
+| B7P03Q31 | 7 | 3 | Estimate the number of tickets sold on an online railway booking platform in a day. |
+| B7P03Q32 | 7 | 3 | A warehouse needs 250 pickers on duty every day. Each picker has one weekly off (6 working days a week) and absenteeism on working days is 8%. How many pickers should be on the roster? |
+| B7P03Q33 | 7 | 3 | A customer support centre receives 1,200 calls in its busiest hour; average handling time is 6 minutes, target occupancy is 80% and shrinkage (breaks, leave, training) is 30%. How many agents must be rostered for that hour? |
+| B7P03Q34 | 7 | 3 | A ride-hailing city sees 600,000 completed rides a day. A cab completes 14 rides a day and is on the road (available) 80% of the fleet at any time. How many cabs must be registered? |
+| B7P03Q35 | 7 | 3 | A parcel hub sorter handles 8,000 items per hour, runs 20 hours a day and achieves 75% utilisation. How many such hubs are needed for 700,000 packages a day? |
+| B7P03Q36 | 7 | 3 | A dark store has on average 12 orders in progress and each order takes 8 minutes to pick and pack. By Little's Law, how many orders arrive per hour? |
+| B7P03Q37 | 7 | 3 | An edtech company has 20,000 learners attending live classes. Each learner attends 2 classes a day, a batch holds 40 learners and one teacher can conduct 4 classes a day. How many teachers are needed? |
+| B7P03Q38 | 7 | 3 | Estimate the number of delivery executives an e-commerce company needs in Hyderabad. |
+| B7P03Q39 | 7 | 3 | Estimate the daily footfall and revenue of a food court in a large mall. |
+| B7P03Q40 | 7 | 3 | Estimate the number of cab rides to and from a metro city airport in a day. |
+| B7P03Q41 | 7 | 3 | Estimate the monthly loan processing-fee revenue of a digital lending app in one city. |
+| B7P03Q42 | 7 | 3 | Estimate the number of orders an Indian quick-commerce app gets in a single city on a rainy day versus a normal day, and say which assumptions change. |
+| B7P03Q43 | 7 | 3 | After you give your Swiggy orders estimate, the interviewer says a public figure is 10 times higher. What do you do? |
+| B7P03Q44 | 7 | 3 | Which assumption in a rider-fleet guesstimate would you test first with sensitivity analysis, and how would you do it? |
+| B7P03Q45 | 7 | 3 | How would you present a revenue guesstimate as a low-base-high range instead of a single number? |
+| B7P03Q46 | 7 | 3 | A metro line runs a train every 3 minutes in each direction during the peak. Each train has 6 coaches and each coach carries up to 250 passengers at peak. What is the maximum passengers per direction in one peak hour? |
+| B7P03Q47 | 7 | 3 | Estimate the number of Uber or Ola cabs idle at any moment in a metro city at 3 pm on a weekday. |
+| B7P03Q48 | 7 | 3 | A food delivery app notices a delivery partner's average cycle time is 28 minutes and a payout of ₹40 per order. What is the payout cost per active hour and how would you use it to judge rider utilisation? |
+| B7P03Q49 | 7 | 3 | A metro station gate processes 30 passengers per minute per gate. A station needs to clear 9,000 passengers in a peak hour. How many gates are needed? |
+| B7P03Q50 | 7 | 3 | A hub's trucks each carry 400 parcels and make 3 trips a day. How many trucks are needed for 90,000 parcels a day, if 10% of trucks are off the road for maintenance? |
+| B7P03Q51 | 7 | 3 | Estimate the daily revenue of a mid-sized Indian restaurant that lists on a delivery app, split between dine-in and delivery. |
+| B7P03Q52 | 7 | 3 | Estimate the annual advertising revenue of a large metro rail network. |
+| B7P03Q53 | 7 | 3 | Estimate the number of orders a food delivery app receives in one city during an IPL final evening, and explain how you model the event spike. |
+| B7P03Q54 | 7 | 3 | A food delivery platform has 1.5 million orders a day, 25% net revenue take rate, ₹400 AOV and delivery cost of ₹55 per order plus other costs of ₹30 per order. Is it profitable per order, and what is the contribution per order? |
+| B7P03Q55 | 7 | 3 | Estimate the peak orders per second an e-commerce platform must handle on sale day, and how that differs from the average per second. |
+| B7P03Q56 | 7 | 3 | Estimate the revenue a quick-commerce company earns per day across India, stating separately the GMV, take-rate and other-income assumptions. |
+| B7P03Q57 | 7 | 3 | Estimate the number of delivery riders in India working for food delivery and quick-commerce apps in a day. |
+| B7P03Q58 | 7 | 3 | Estimate the number of ride-hailing trips and total fare revenue in a metro city in a day, then explain how you would split it between two competing apps. |
+| B7P03Q59 | 7 | 3 | Estimate the daily number of couriers who use the metro to carry parcels, if you were sizing a parcel-by-metro pilot. |
+| B7P03Q60 | 7 | 3 | Estimate the number of orders an average Swiggy restaurant partner receives in a day, and use it to cross-check the platform total. |
+| B7P03Q61 | 7 | 3 | Estimate the revenue lost if a metro network is shut for one day. |
+| B7P03Q62 | 7 | 3 | Estimate the number of EV charging sessions a public charging station network completes in a day. |
+| B7P03Q63 | 7 | 3 | A rider fleet manager says absenteeism is 8%, weekly off is 1 day in 7 and the peak needs 40 riders on duty. How many riders must be on the payroll? |
+| B7P03Q64 | 7 | 3 | Estimate the cloud-kitchen output (meals per day) of a kitchen with 6 cooking stations. |
+| B7P03Q65 | 7 | 3 | Estimate the number of fuel litres a city's food delivery fleet consumes in a day. |
+| B7P03Q66 | 7 | 3 | Estimate the number of new rider onboardings a delivery platform needs per month to keep its fleet stable at 100,000 riders if monthly rider churn is 6%. |
+| B7P03Q67 | 7 | 3 | A SaaS company has 800 customers paying ₹50,000 a month on average and loses 2% of customers every month with no new sales. What is its monthly revenue after 6 months? |
+| B7P03Q68 | 7 | 3 | Estimate the number of orders placed on a food delivery app in a Tier-2 city of 1 million people on a weekday. |
+| B7P03Q69 | 7 | 3 | Estimate the warehouse floor area required for a fulfilment centre that ships 50,000 orders a day. |
+| B7P03Q70 | 7 | 3 | Estimate the total payroll cost for the data and analytics team a food delivery company would need at 2 million orders a day, and state your headcount ratio assumptions. |
+| B7P03Q71 | 7 | 3 | Estimate the number of UPI QR-code merchants a payments app must onboard to reach a stated daily transaction target of 50 million transactions. |
+| B7P03Q72 | 7 | 3 | Estimate the daily wastage cost in a quick-commerce dark store for fresh produce, and how you would validate it. |
+| B7P04Q1 | 7 | 4 | What is the DAU/MAU ratio (stickiness), and what does it tell you about a product? |
+| B7P04Q2 | 7 | 4 | How do you define an "active user" for DAU, and why does the definition matter? |
+| B7P04Q3 | 7 | 4 | What is customer churn rate, and how is it different from revenue churn? |
+| B7P04Q4 | 7 | 4 | What is customer acquisition cost (CAC), and which costs should be included in it? |
+| B7P04Q5 | 7 | 4 | What is customer lifetime value (LTV), and what is the simple formula when monthly churn is constant? |
+| B7P04Q6 | 7 | 4 | What is retention rate, and what do Day-1, Day-7 and Day-30 retention mean for an app? |
+| B7P04Q7 | 7 | 4 | What is a conversion rate, and why must its denominator be stated clearly? |
+| B7P04Q8 | 7 | 4 | What is the difference between a KPI and a metric? |
+| B7P04Q9 | 7 | 4 | What is the difference between average order value (AOV) and average revenue per user (ARPU)? |
+| B7P04Q10 | 7 | 4 | What is a North Star metric, and what would be a good one for a UPI payments app? |
+| B7P04Q11 | 7 | 4 | What is a guardrail metric, and why do you need one next to a primary metric? |
+| B7P04Q12 | 7 | 4 | An app had these average numbers in a month: DAU = 40,000 and MAU = 160,000. What is the stickiness ratio? |
+| B7P04Q13 | 7 | 4 | A subscription app started the month with 5,000 paying customers and lost 150 of them during the month (no one else left). What is the monthly customer churn rate, and what average customer lifetime does it imply? |
+| B7P04Q14 | 7 | 4 | A quick-commerce startup spent Rs 12,00,000 on marketing and Rs 3,00,000 on its sales team in a month and acquired 500 new customers. What is the blended CAC? |
+| B7P04Q15 | 7 | 4 | A food delivery app had a GMV of Rs 45,00,000 from 18,000 orders in a week. What is the AOV? |
+| B7P04Q16 | 7 | 4 | An e-commerce site had 100,000 visits, 20,000 add-to-cart sessions, 6,000 checkout starts and 3,000 orders in a week. Find the step-wise conversion rates and the overall visit-to-order conversion rate. |
+| B7P04Q17 | 7 | 4 | A cohort of 1,000 users installed an app on Day 0. 400 opened it on Day 1, 220 on Day 7 and 120 on Day 30. What are the Day-1, Day-7 and Day-30 retention rates? |
+| B7P04Q18 | 7 | 4 | A company had 400 employees on 1 April and 360 on 31 March the next year, with 60 exits during the year. What is the annual attrition rate using average headcount? |
+| B7P04Q19 | 7 | 4 | An edtech app earns an ARPU of Rs 400 per month at a 60% gross margin, and monthly churn is 4%. What is the LTV per customer? |
+| B7P04Q20 | 7 | 4 | An edtech app has ARPU of Rs 400 per month, a 60% gross margin, 4% monthly churn and a CAC of Rs 1,800. What are the LTV:CAC ratio and the CAC payback period in months? |
+| B7P04Q21 | 7 | 4 | Which metrics would you track to judge the health of a food delivery app, and how would you organise them into a KPI tree? |
+| B7P04Q22 | 7 | 4 | How would you choose a primary metric, supporting metrics and guardrail metrics for a newly launched feature, for example a "reorder in one tap" button on a food delivery app? |
+| B7P04Q23 | 7 | 4 | DAU on a ride-hailing app has been flat for three months while MAU has grown 20%. What does this tell you, and what would you check next? |
+| B7P04Q24 | 7 | 4 | What are the limitations of using DAU/MAU as the single measure of engagement? |
+| B7P04Q25 | 7 | 4 | A product manager says "our conversion rate went up from 3% to 4%." What questions do you ask before accepting this as good news? |
+| B7P04Q26 | 7 | 4 | How do you define and track churn for a product where users do not formally cancel (for example a food delivery or a shopping app)? |
+| B7P04Q27 | 7 | 4 | What is a cohort retention table, and how do you read one? |
+| B7P04Q28 | 7 | 4 | A company reports that its overall retention improved this quarter. How could this be a mix-shift illusion rather than a real improvement (Simpson's paradox style)? |
+| B7P04Q29 | 7 | 4 | What is the funnel view of conversion, and how do you find which step to fix first? |
+| B7P04Q30 | 7 | 4 | What is gross merchandise value (GMV), and how is it different from revenue for a marketplace? |
+| B7P04Q31 | 7 | 4 | What is the difference between a leading and a lagging indicator? Give one example of each for an e-commerce business. |
+| B7P04Q32 | 7 | 4 | What are monthly recurring revenue (MRR) and annual recurring revenue (ARR), and what is ARR for a SaaS company with 200 customers each paying Rs 50,000 per month? |
+| B7P04Q33 | 7 | 4 | What is net promoter score (NPS), and how is it calculated from survey responses? |
+| B7P04Q34 | 7 | 4 | A survey of 200 customers gave 110 promoters (score 9-10), 50 passives (7-8) and 40 detractors (0-6). What is the NPS? |
+| B7P04Q35 | 7 | 4 | What is cart abandonment rate? A site had 8,000 carts created and 2,000 orders completed; what is the abandonment rate? |
+| B7P04Q36 | 7 | 4 | What is the difference between customer churn and user inactivity (dormancy)? |
+| B7P04Q37 | 7 | 4 | What is gross margin and contribution margin per order for a food delivery company, and why do analysts prefer contribution margin? |
+| B7P04Q38 | 7 | 4 | What is an acquisition-to-activation funnel for a fintech app, and what could be a sensible activation event? |
+| B7P04Q39 | 7 | 4 | What is the repeat purchase rate? Of 10,000 customers who ordered in January, 3,200 ordered again in February. What is the repeat rate? |
+| B7P04Q40 | 7 | 4 | What is employee attrition rate, and what is the difference between voluntary and involuntary attrition? |
+| B7P04Q41 | 7 | 4 | What is a hiring funnel conversion rate? Out of 1,200 applications, 300 were screened in, 90 interviewed, 30 offered and 21 joined. Find the stage-wise and overall conversion. |
+| B7P04Q42 | 7 | 4 | A quick-commerce app has 2,50,000 customers at the start of a month. 40,000 new customers join and 30,000 leave during the month. What are the closing customers, the monthly net growth rate and the churn rate on the opening base? |
+| B7P04Q43 | 7 | 4 | A SaaS company has MRR of Rs 50,00,000 at the start of the month. During the month: new MRR Rs 6,00,000, expansion MRR Rs 2,00,000, churned MRR Rs 3,00,000, contraction Rs 1,00,000. Find the closing MRR, gross revenue retention and net revenue retention for the month. |
+| B7P04Q44 | 7 | 4 | A subscription app has 10,000 subscribers at Rs 200 per month. Monthly churn is 5% and it adds 600 new subscribers each month. What level does the subscriber base stabilise at, and what is the base at the end of the first month? |
+| B7P04Q45 | 7 | 4 | A ride-hailing app has an average fare of Rs 180, a take rate (commission) of 20%, and a driver incentive plus rider promo cost of Rs 14 per ride. What is the contribution per ride, and what happens at 10% promo growth? |
+| B7P04Q46 | 7 | 4 | A UPI payments app has 20 million monthly active users who made 300 million successful transactions out of 320 million attempts in a month. What are the success rate and the transactions per active user? |
+| B7P04Q47 | 7 | 4 | An online store has 5,000 first-time buyers in January. Their retention is 30% in month 1 and 20% in month 2 (of the original 5,000). Each active buyer places 1 order of Rs 600 per month with a 25% margin. What is the margin earned from this cohort in months 0, 1 and 2, assuming month 0 orders are 1 per buyer? |
+| B7P04Q48 | 7 | 4 | An app's blended CAC is Rs 400. Paid channels have a CAC of Rs 700 and organic installs cost Rs 0. If 1,000 customers were acquired in total, how many came from paid channels, and what is the marketing spend? |
+| B7P04Q49 | 7 | 4 | A company has two customer segments. Segment A: ARPU Rs 600 per month, churn 3% per month. Segment B: ARPU Rs 900 per month, churn 6% per month. Ignoring margin, which has the higher LTV, and by how much? |
+| B7P04Q50 | 7 | 4 | Why can LTV calculated as ARPU divided by churn be misleading for a young startup? Name at least three problems. |
+| B7P04Q51 | 7 | 4 | What is the difference between blended CAC and paid CAC, and why can blended CAC hide a problem? |
+| B7P04Q52 | 7 | 4 | What is cohort analysis, and how is it different from looking at a single overall retention number? |
+| B7P04Q53 | 7 | 4 | How would you measure and report the retention of an edtech course (completion-based) versus a consumer subscription app? |
+| B7P04Q54 | 7 | 4 | A bank's mobile app shows a rising MAU but falling revenue per user. What could explain this and what data would you pull? |
+| B7P04Q55 | 7 | 4 | How would you define the KPIs for a customer support team at a fintech company? Name 4-5 metrics with one risk of gaming for each. |
+| B7P04Q56 | 7 | 4 | What KPIs would you track for a quick-commerce dark store, and which would you put on a daily dashboard? |
+| B7P04Q57 | 7 | 4 | How would you define the KPIs for an HR team: recruitment, attrition and engagement? Name the formulas. |
+| B7P04Q58 | 7 | 4 | What is the difference between time-to-fill and time-to-hire in recruitment analytics? |
+| B7P04Q59 | 7 | 4 | A company reports cost per hire as total recruitment spend divided by hires. Spend this quarter was Rs 24,00,000 (agency fees Rs 14,00,000, job portals Rs 4,00,000, referral bonuses Rs 2,00,000, recruiter salaries Rs 4,00,000) and there were 48 hires. Find the cost per hire and the cost per hire if recruiter salaries are excluded. |
+| B7P04Q60 | 7 | 4 | A company's 12-month retention of new hires is 70% for those from agencies and 85% for referrals. Cost per hire is Rs 90,000 for agency hires and Rs 30,000 for referrals. How do you compare the two channels on cost per retained hire? |
+| B7P04Q61 | 7 | 4 | How would you build a single customer health score for a SaaS account, and how would you check that it predicts churn? |
+| B7P04Q62 | 7 | 4 | An e-commerce company wants to know whether free delivery on orders above Rs 499 increased AOV. What metrics and comparisons would you use besides the before/after AOV? |
+| B7P04Q63 | 7 | 4 | A food delivery company's monthly order frequency per active user rose from 3.0 to 3.3, but the number of active users fell from 1,00,000 to 92,000. Total orders went from 3,00,000 to 3,03,600. Break the order change into the effect of users and the effect of frequency. |
+| B7P04Q64 | 7 | 4 | Monthly churn of a SaaS product is 2% for customers in their first year and 0.5% after the first year. About 60% of the base is in year one. What is the blended monthly churn and what should the company target? |
+| B7P04Q65 | 7 | 4 | Your LTV:CAC looks healthy at 4:1 but the CFO says cash is running out. Explain how this is possible and which metrics you would add. |
+| B7P04Q66 | 7 | 4 | Design a metric framework (North Star, inputs, guardrails) for a ride-hailing app that wants to grow rides without losing driver supply. |
+| B7P04Q67 | 7 | 4 | A cohort table shows Month-1 retention of 40% for all cohorts, but Month-3 retention has dropped from 25% in January cohort to 15% in April cohort. What are your hypotheses and how would you test them? |
+| B7P04Q68 | 7 | 4 | A product shows rising DAU, rising time spent and falling revenue per user. Is the product healthy? Structure your answer. |
+| B7P04Q69 | 7 | 4 | How would you compute LTV for a new fintech lending product when borrowers have not yet completed their loan tenures? |
+| B7P04Q70 | 7 | 4 | What is the difference between gross churn and net churn? |
+| B7P04Q71 | 7 | 4 | What is a vanity metric? Give two examples from a consumer app. |
+| B7P04Q72 | 7 | 4 | What is the K-factor (viral coefficient)? If each user invites 5 people and 10% of invitees join, what is the K-factor? |
+| B7P04Q73 | 7 | 4 | What is the Rule of 40 for SaaS companies, and how is it calculated? |
+| B7P04Q74 | 7 | 4 | What are the AARRR (pirate) metrics, and how can they be mapped to a UPI app? |
+| B7P04Q75 | 7 | 4 | What is the difference between MAU, WAU and DAU, and when would you choose WAU as the main engagement metric? |
+| B7P04Q76 | 7 | 4 | What is a power-user curve (L-ness, L28), and what does it tell you that the DAU/MAU ratio does not? |
+| B7P04Q77 | 7 | 4 | What is the difference between cohort-based retention and rolling (unbounded) retention? |
+| B7P04Q78 | 7 | 4 | What is revenue per employee, and what are two ways it can mislead? |
+| B7P04Q79 | 7 | 4 | What is the difference between logo retention and net revenue retention in SaaS, and how can NRR exceed 100%? |
+| B7P04Q80 | 7 | 4 | A company has 20,000 customers at the start of a year and 22,500 at the end. 5,000 were new during the year. How many were lost, what is the annual churn, and what monthly churn does that approximate? |
+| B7P04Q81 | 7 | 4 | A subscription app gives a first-month discount. Month-1 retention of discounted users is 25% and of full-price users 40%. Explain how this affects the LTV comparison and what you would do to evaluate the discount. |
+| B7P04Q82 | 7 | 4 | How would you set up the metrics for an internal HR dashboard so that attrition is shown fairly across teams of different sizes? |
+| B7P04Q83 | 7 | 4 | How would you measure the success of a loyalty programme (for example a subscription like Swiggy One) using metrics? |
+| B7P04Q84 | 7 | 4 | Explain why LTV should use gross margin and a discount rate, and recompute the simple LTV for ARPU Rs 500 per month, 50% gross margin, 5% monthly churn, with a 1% monthly discount rate. |
+| B7P04Q85 | 7 | 4 | Two growth teams disagree: one wants to cut CAC by 20% using cheaper channels, the other wants to raise ARPU by 10%. Using LTV:CAC and payback, how do you decide? |
+| B7P04Q86 | 7 | 4 | A marketplace's take rate rose from 18% to 22% and GMV grew 5%. Seller churn doubled. How do you judge whether the take-rate change was worthwhile? |
+| B7P04Q87 | 7 | 4 | You are asked to design the 5 most important weekly KPIs for the CEO of a new Indian edtech startup. Which would you choose and why? |
+| B7P05Q1 | 7 | 5 | Sales dropped 20% compared with last month. What clarifying questions do you ask before starting any analysis? |
+| B7P05Q2 | 7 | 5 | Orders on Tuesdays fell 20% compared with earlier weeks. How do you find out why? |
+| B7P05Q3 | 7 | 5 | How do you check that a reported drop in sales is real and not a data or dashboard problem? |
+| B7P05Q4 | 7 | 5 | How do you split a revenue drop into volume, price and mix effects? |
+| B7P05Q5 | 7 | 5 | What is a hypothesis tree (issue tree) for a sales drop, and how do you build one in the first two minutes of the interview? |
+| B7P05Q6 | 7 | 5 | How do you separate internal causes from external causes when a metric falls? |
+| B7P05Q7 | 7 | 5 | Which comparison baselines do you use when a metric drops (day-over-day, same weekday last week, year-over-year), and when does each one mislead? |
+| B7P05Q8 | 7 | 5 | Which segment cuts do you try first when a total metric falls, and in what order? |
+| B7P05Q9 | 7 | 5 | A food-delivery app's revenue last month was ₹5,00,000 (2,000 orders at ₹250 AOV) and this month it is ₹4,00,000 (1,600 orders at ₹250 AOV). By what percent did revenue fall and which driver explains it? |
+| B7P05Q10 | 7 | 5 | How do you decide which hypothesis to test first when you have ten possible causes and little time? |
+| B7P05Q11 | 7 | 5 | How do you present a root-cause finding to a non-technical business stakeholder in two minutes? |
+| B7P05Q12 | 7 | 5 | Revenue fell from ₹50,00,000 to ₹40,00,000 while orders fell from 20,000 to 18,000. How much of the ₹10,00,000 drop is due to fewer orders and how much to a lower AOV? |
+| B7P05Q13 | 7 | 5 | A shopping app's weekly funnel is below. Orders fell from 8,000 to 6,000. Which stage caused the fall and by what percent did it change? |
+| B7P05Q14 | 7 | 5 | Orders fell from 1,00,000 to 86,000 across four regions (table below). Which regions explain most of the drop, and which region fell fastest in percentage terms? |
+| B7P05Q15 | 7 | 5 | Orders fell from 10,000 to 8,500 per week. New customers fell from 3,000 to 1,800 and repeat customers from 7,000 to 6,700 orders. What share of the drop comes from new customers, and what does that suggest you check next? |
+| B7P05Q16 | 7 | 5 | Tuesday orders normally are 1,000 out of 7,000 per week. This Tuesday they were 800 and every other day was normal. What was the weekly drop in percent, and does it justify an urgent investigation? |
+| B7P05Q17 | 7 | 5 | A food-delivery app received 10,000 orders in each of two weeks. Cancelled orders were 500 in week 1 and 2,500 in week 2. How much did completed orders fall in percent, and what do you investigate? |
+| B7P05Q18 | 7 | 5 | Revenue = active users x orders per user x AOV. Active users fell 5%, orders per user fell 8% and AOV rose 2%. By what percent did revenue change overall? |
+| B7P05Q19 | 7 | 5 | Orders dropped 20% on a single day (a Tuesday) and recovered fully the next day. How do you investigate a one-day dip? |
+| B7P05Q20 | 7 | 5 | Orders are down 20% only on Tuesdays and normal on other days. List the weekday-specific hypotheses you would test, grouped by demand, supply, operations, marketing and data. |
+| B7P05Q21 | 7 | 5 | You open the executive dashboard and see completed orders falling month-on-month. You are the analytics lead. What do you do, step by step? |
+| B7P05Q22 | 7 | 5 | A food-delivery platform's orders fell 20% week-over-week. How do you structure a diagnosis across customers, restaurants and delivery partners? |
+| B7P05Q23 | 7 | 5 | An e-commerce company's gross sales were ₹100 crore in both months, but returns rose from 10% to 25% of gross sales. By what percent did net sales fall and which causes of rising returns do you check? |
+| B7P05Q24 | 7 | 5 | An edtech company's course sales fell 20%. Data is below. Which part of the funnel explains the fall and what do you recommend checking? |
+| B7P05Q25 | 7 | 5 | UPI payment success fell from 96% to 92%. Data is below. How much of the extra failures come from Bank X, and what do you do next? |
+| B7P05Q26 | 7 | 5 | Diwali fell in November last year and in October this year. Sales (in ₹ lakh) are below. November is down 16.7% year-over-year. Is there a real problem? |
+| B7P05Q27 | 7 | 5 | Sales dropped 20% in Hyderabad while all other cities are flat. What hypotheses and data cuts do you use? |
+| B7P05Q28 | 7 | 5 | Cart additions on an e-commerce app fell 15% over the last three days, mostly on the mobile app. How do you diagnose it? |
+| B7P05Q29 | 7 | 5 | Leadership says a 20% drop in revenue is 'just seasonal'. How do you prove or disprove that with data? |
+| B7P05Q30 | 7 | 5 | A price change, a competitor promotion and an app release all happened in the week orders fell 20%. How do you apportion the drop between them? |
+| B7P05Q31 | 7 | 5 | The CEO wants the cause of a 20% orders drop within one hour and only partial data is available. What do you deliver? |
+| B7P05Q32 | 7 | 5 | How do you use the 5 Whys in a sales-drop analysis, and what are its limits? |
+| B7P05Q33 | 7 | 5 | You find that discounts and orders both fell in the same week. How do you tell correlation from a root cause? |
+| B7P05Q34 | 7 | 5 | On a 'sales dropped' ticket, which tables and fields do you ask for first? |
+| B7P05Q35 | 7 | 5 | How does your investigation change for a one-time dip, a step change and a gradual decline? |
+| B7P05Q36 | 7 | 5 | How do you size the impact of a hypothesis so you know whether it explains the whole drop? |
+| B7P05Q37 | 7 | 5 | What are leading and lagging indicators, and how do they help diagnose a decline in orders? |
+| B7P05Q38 | 7 | 5 | Conversion fell from 5% to 4%. What is the drop in percentage points and in percent, and why does the difference matter in a root-cause discussion? |
+| B7P05Q39 | 7 | 5 | AOV fell 10% but order count is flat. What hypotheses do you check? |
+| B7P05Q40 | 7 | 5 | This month has 4 Tuesdays and last month had 5. Tuesday orders were 5,000 per Tuesday in both months. Tuesday orders fell from 25,000 to 20,000 in total. Is that a real 20% drop? |
+| B7P05Q41 | 7 | 5 | How do you decide that a root-cause analysis is finished and you can recommend an action? |
+| B7P05Q42 | 7 | 5 | A website's overall conversion fell although no segment's conversion changed. Data is below. Compute the overall conversion in both weeks and explain the cause. |
+| B7P05Q43 | 7 | 5 | A SaaS company's MRR (in ₹ lakh) moved as below. Compute closing MRR and say which component is the main culprit in the 5% fall. |
+| B7P05Q44 | 7 | 5 | Weekly active users fell from 50,000 to 45,000. Data is below. Which component drives the fall and what do you check next? |
+| B7P05Q45 | 7 | 5 | The last eight Tuesdays had 1,000, 1,020, 980, 1,010, 990, 1,005, 995 and 1,000 orders. This Tuesday had 800. Is 800 within normal noise? Show a quick calculation using mean and standard deviation. |
+| B7P05Q46 | 7 | 5 | Ride requests were 1,00,000 in both weeks. Driver acceptance fell from 85% to 70% and 95% of accepted rides are completed in both weeks. By what percent did completed rides fall and where do you look? |
+| B7P05Q47 | 7 | 5 | A quick-commerce app's average delivery time rose from 10 to 16 minutes and orders fell. How do you test whether slower delivery caused the fall and not the other way round? |
+| B7P05Q48 | 7 | 5 | A lending app's loan disbursals fell. Data is below. Compute disbursals in both months and the percent change, and name the likely driver. |
+| B7P05Q49 | 7 | 5 | Payroll cost rose from ₹10 crore to ₹11.2 crore while headcount rose from 1,000 to 1,020. Compute the change in cost per head and list where you would look for the rise. |
+| B7P05Q50 | 7 | 5 | Monday attendance at a 500-agent call centre fell from 94% to 86%. How many more agents are absent on Mondays, and how do you find the cause? |
+| B7P05Q51 | 7 | 5 | The dashboard shows orders down 20% but the payment settlement report shows only 2% fewer paid orders. How do you reconcile the two? |
+| B7P05Q52 | 7 | 5 | Mobile-phone page views were flat at 1,00,000 per day and the in-stock conversion rate is 3%. Stock availability fell from 95% to 70%. By what percent do you expect orders to change? |
+| B7P05Q53 | 7 | 5 | Average monthly sales are 100 (units in lakh) and November's seasonal index is 0.85. November actual sales were 90. Is this a drop or not? |
+| B7P05Q54 | 7 | 5 | A company raised its price by 10% and volume fell by 8%. Did revenue fall? Compute the change and say what else you would check before blaming the price rise. |
+| B7P05Q55 | 7 | 5 | A promo code accounted for 40% of orders and the promo ended. Total orders fell 20% and non-promo orders were unchanged. What share of promo orders disappeared? |
+| B7P05Q56 | 7 | 5 | A restaurant app's average rating fell from 4.4 to 4.1 two weeks before orders fell. How would you test whether the rating drop led the order drop? |
+| B7P05Q57 | 7 | 5 | How do you test whether a competitor's launch caused your decline using only your own data? |
+| B7P05Q58 | 7 | 5 | Orders fell 20% on Android after app release 7.3 while iOS was flat. Android is 60% of 10,000 orders. What is the overall drop and what is your decision rule on rollback? |
+| B7P05Q59 | 7 | 5 | The last two days show orders 20% lower than usual, but the data pipeline has late-arriving events. How do you detect and handle this? |
+| B7P05Q60 | 7 | 5 | The January cohort (10,000 users) has 30% active in month 1 and the March cohort (12,000 users) has 22%. How many fewer users are active than if March matched January, and what does this suggest about the sales drop? |
+| B7P05Q61 | 7 | 5 | Many partner restaurants take their weekly off on Tuesday. Active restaurants on Tuesday fell from 1,000 to 800 and orders per active restaurant stayed at 10. By what percent did Tuesday orders change and how do you verify this hypothesis? |
+| B7P05Q62 | 7 | 5 | Segment A and B conversion are below. Both segments improved but overall conversion fell. Compute the rate effect and the mix effect. |
+| B7P05Q63 | 7 | 5 | Region T had a price test and Region C did not. Orders are below. Estimate the effect of the test using a difference-in-differences and say what assumption you rely on. |
+| B7P05Q64 | 7 | 5 | How would you design monitoring so that a Tuesday-type drop is caught within a day next time? |
+| B7P05Q65 | 7 | 5 | Sales fell 20% after a loyalty programme change. How do you isolate its causal effect without a randomised experiment? |
+| B7P05Q66 | 7 | 5 | Both orders per user and active restaurants fell on a two-sided marketplace. How do you tell which side fell first? |
+| B7P05Q67 | 7 | 5 | How do you build an expected-value baseline with trend and seasonality so you can quantify the true shortfall in sales? |
+| B7P05Q68 | 7 | 5 | What is a fishbone (Ishikawa) diagram and how would you use it for falling orders? |
+| B7P05Q69 | 7 | 5 | Five causes explain a sales drop with contributions of 50, 25, 10, 8 and 7 units out of a 100-unit drop. Which causes would a Pareto approach fix first and what share do they cover? |
+| B7P05Q70 | 7 | 5 | What is a waterfall (bridge) chart, and what is the closing value of one starting at 100 with price +3, volume -18 and mix -5? |
+| B7P05Q71 | 7 | 5 | Why is looking only at the average dangerous when you investigate a drop, and what do you look at instead? |
+| B7P05Q72 | 7 | 5 | A 28-day month had total sales of 280 and a 31-day month had 310. Is there a drop on a per-day basis? |
+| B7P05Q73 | 7 | 5 | What is anomaly detection and when does a static threshold fail for orders data? |
+| B7P05Q74 | 7 | 5 | A payment-gateway outage lasted two hours in a period when normal orders are 500 per hour. During the outage only 40% of normal orders went through. Estimate lost orders and say how you would separate lost from delayed orders. |
+| B7P05Q75 | 7 | 5 | How can timezone or daylight-saving handling create a fake 'Tuesday drop' in an events table? |
+| B7P05Q76 | 7 | 5 | How do bots or fraud filtering changes make orders or sessions look like they dropped? |
+| B7P05Q77 | 7 | 5 | What is Simpson's paradox and how can it show up when you slice a falling metric by segment? |
+| B7P05Q78 | 7 | 5 | Sales fell 20% but profit rose. Is that a problem, and how do you investigate? |
+| B7P05Q79 | 7 | 5 | A tax or regulatory change is announced. How do you check whether it caused a drop in orders? |
+| B7P05Q80 | 7 | 5 | A rainy week coincides with a drop in order count. How do you separate the weather effect from other causes? |
+| B7P05Q81 | 7 | 5 | You pause paid advertising for a week and orders fall 20%. How do you tell the share driven by ads from organic? |
+| B7P05Q82 | 7 | 5 | How do survivorship effects mislead a retention or sales drop analysis that only uses currently active customers? |
+| B7P05Q83 | 7 | 5 | Demand cannot be seen when an item is out of stock. How does this censor your sales data and how do you correct for it? |
+| B7P05Q84 | 7 | 5 | Why does a B2B SaaS company's Tuesday order drop need a different hypothesis list than a consumer app's? |
+| B7P05Q85 | 7 | 5 | A telecom operator's prepaid recharge value fell 20% in a month. Which segment cuts and external factors do you check first? |
+| B7P05Q86 | 7 | 5 | How do you use synthetic control or Causal Impact to estimate the effect of an event on sales? |
+| B7P05Q87 | 7 | 5 | How do you use interrupted time series to test whether an app release caused a drop? |
+| B7P05Q88 | 7 | 5 | A new private-label product launched; branded sales fell 20% while category sales were flat. How do you assess cannibalisation? |
+| B7P05Q89 | 7 | 5 | A stakeholder insists a competitor caused the drop but your data points elsewhere. How do you handle it? |
+| B7P05Q90 | 7 | 5 | How would you design an automated root-cause tool for metric drops, and what are its failure modes? |
+| B7P05Q91 | 7 | 5 | Price and supply both fell together and orders fell 20%. How do you attribute the drop between two interacting causes? |
+| B7P06Q1 | 7 | 6 | A client says 'our profit has fallen'. What framework do you use to structure a profitability case, and what do you ask first? |
+| B7P06Q2 | 7 | 6 | What is contribution margin, and why is it more useful than net profit when deciding whether to keep selling a product? |
+| B7P06Q3 | 7 | 6 | What is break-even, and how do you compute the break-even quantity for a business with fixed and variable costs? |
+| B7P06Q4 | 7 | 6 | How do you structure the case 'how can we grow revenue by 20% in the next year'? |
+| B7P06Q5 | 7 | 6 | What are the main unit-economics line items for one food delivery order, and which are fixed and which variable per order? |
+| B7P06Q6 | 7 | 6 | A cloud kitchen sells a thali at Rs 200 with variable cost of Rs 120 per thali and fixed costs of Rs 3,00,000 per month. How many thalis must it sell per month to break even? |
+| B7P06Q7 | 7 | 6 | How do you decide whether a price increase is a good idea, and what data do you ask for before deciding? |
+| B7P06Q8 | 7 | 6 | What is the difference between gross margin, contribution margin, EBITDA and net profit, and which one do you use for a store-level decision? |
+| B7P06Q9 | 7 | 6 | For one food delivery order, calculate the contribution per order from the data below. |
+| B7P06Q10 | 7 | 6 | A subscription app raises its monthly price from Rs 500 to Rs 550. Is the increase worth it, and what is the largest fall in subscribers it can absorb before profit drops? |
+| B7P06Q11 | 7 | 6 | Revenue grew 8% but profit fell sharply. Using the table below, diagnose which cost lines explain the fall in profit. |
+| B7P06Q12 | 7 | 6 | A product sells at Rs 1,000 with a variable cost of Rs 700. If you give a 10% discount, by what percentage must unit sales rise just to keep total contribution unchanged? |
+| B7P06Q13 | 7 | 6 | Calculate LTV, LTV:CAC and CAC payback in months for the subscription business below, and say whether you would scale marketing. |
+| B7P06Q14 | 7 | 6 | A marketplace's profit fell although total order count rose. Revenue per order is fixed at a 12% commission, so where else would you look? Give a hypothesis tree and the data cuts you would use. |
+| B7P06Q15 | 7 | 6 | A marketplace earns a 12% commission on an average order of Rs 600. It bears Rs 50 forward logistics per order and Rs 50 reverse logistics per returned order, and refunds the commission on returns. With a 20% return rate, what is the contribution per order placed, and at what return rate does it break even? |
+| B7P06Q16 | 7 | 6 | Revenue per month = active users x orders per user x average order value. Using the data below, compute the revenue growth and say which driver contributed most. |
+| B7P06Q17 | 7 | 6 | A company sells two products with the mix and margins below. Without any change in price or cost, how does the blended margin change when the mix shifts, and why can this hide in a profit review? |
+| B7P06Q18 | 7 | 6 | A quick-commerce dark store handles 1,200 orders a day with contribution of Rs 25 per order, and has fixed costs of Rs 40,000 per day. What is the break-even order volume, and how would you close the gap? |
+| B7P06Q19 | 7 | 6 | A SaaS company's annual recurring revenue (ARR) bridge is below. Calculate net revenue retention and gross revenue retention, and say whether the 30% growth is healthy. |
+| B7P06Q20 | 7 | 6 | A price test shows the results below. Which price should be rolled out on profit per visitor, and what else would you check before the rollout? |
+| B7P06Q21 | 7 | 6 | The price of a product rises 4% and its price elasticity of demand is -1.5. By what percentage does demand change, and does revenue rise or fall? |
+| B7P06Q22 | 7 | 6 | A food delivery company's profit per order has turned negative while order volume is growing. Walk through how you would diagnose it, and say what decision rule would make you recommend cutting orders instead of growing them. |
+| B7P06Q23 | 7 | 6 | A festival sale doubled GMV but the finance team says it lost money. Use the data below to decide whether the sale was worth it, and list what you ignored. |
+| B7P06Q24 | 7 | 6 | What are cost-plus, value-based and competition-based pricing, and when would you use each? |
+| B7P06Q25 | 7 | 6 | What is price elasticity of demand, and how would you judge whether a product is price-sensitive when you have no elasticity estimate? |
+| B7P06Q26 | 7 | 6 | How do you size and prioritise growth ideas once you have listed them, so that you recommend two or three rather than twenty? |
+| B7P06Q27 | 7 | 6 | What is the difference between a revenue problem and a margin problem, and how does the difference change the data you pull first? |
+| B7P06Q28 | 7 | 6 | What clarifying questions would you ask the interviewer before starting a growth or profitability case? |
+| B7P06Q29 | 7 | 6 | How do you present your recommendation at the end of a case in about 60 seconds? |
+| B7P06Q30 | 7 | 6 | A fintech lender's book economics are below. What is the annual profit, and at what credit loss rate does it break even? |
+| B7P06Q31 | 7 | 6 | Using the profit bridge data below, split the change in contribution into a price effect and a volume effect. |
+| B7P06Q32 | 7 | 6 | Edtech course: what is the contribution per sale, and how many sales a month are needed to cover fixed costs? |
+| B7P06Q33 | 7 | 6 | A call-centre analyst finds each agent earns less than they cost. Compute the monthly profit per agent and the break-even utilisation. |
+| B7P06Q34 | 7 | 6 | A marketplace cuts its seller commission from 15% to 12% to attract sellers. By how much must GMV grow to keep commission revenue unchanged? |
+| B7P06Q35 | 7 | 6 | The marketplace wants commission revenue to rise 25% while GMV grows only 10%. What take rate does it need? |
+| B7P06Q36 | 7 | 6 | Is the ad channel below profitable? Compute ROAS and the break-even ROAS. |
+| B7P06Q37 | 7 | 6 | Should the company shut down product line C? Use the data below. |
+| B7P06Q38 | 7 | 6 | Two channels are being compared. Which is cheaper per paying user, and what else do you check before moving budget? |
+| B7P06Q39 | 7 | 6 | A food delivery platform adds Rs 10 to its delivery fee and orders fall 6%. Is this profitable, and how large a fall in orders can it tolerate? |
+| B7P06Q40 | 7 | 6 | A hotel can sell 60% of rooms at Rs 4,000 or cut the price to Rs 3,200 and sell 80%. Compare revenue per available room and profit per available room. |
+| B7P06Q41 | 7 | 6 | A delivery membership costs Rs 99 a month and gives free delivery. Is it profitable per member? |
+| B7P06Q42 | 7 | 6 | Two cities are candidates for the next launch. Which would you launch first on these numbers, and what would change your mind? |
+| B7P06Q43 | 7 | 6 | A new low-price variant is launched. How much extra contribution does it create after cannibalisation? |
+| B7P06Q44 | 7 | 6 | A bot handles part of support tickets. Compute monthly saving versus the all-human baseline. |
+| B7P06Q45 | 7 | 6 | Customer-segment profitability: compute the profit for each segment per 100 customers and say where you would put the next marketing rupee. |
+| B7P06Q46 | 7 | 6 | Retention or acquisition: which of the two options grows the user base more in steady state? |
+| B7P06Q47 | 7 | 6 | Your company's price is 10% below a competitor's, and the competitor drops its price by 10%. How do you decide whether to follow? |
+| B7P06Q48 | 7 | 6 | How do you estimate price elasticity from historical sales data, and what can make the estimate wrong? |
+| B7P06Q49 | 7 | 6 | A growth channel gets harder as spend rises. Compute average and marginal CAC and say whether to spend the second tranche. |
+| B7P06Q50 | 7 | 6 | A company's revenue is up 40% but its operating margin is falling. Is that a problem? Give hypotheses and the data you would pull. |
+| B7P06Q51 | 7 | 6 | A UPI app earns no fee on payments. How can it become profitable, and which metrics would you track to know it is getting there? |
+| B7P06Q52 | 7 | 6 | A SaaS growth case: new-logo growth has slowed but net revenue retention is 115%. Where do you put effort, and why? |
+| B7P06Q53 | 7 | 6 | Subscription pricing: monthly plan Rs 500 versus annual plan Rs 4,800. Compare first-year revenue per subscriber under 6% monthly churn. |
+| B7P06Q54 | 7 | 6 | A quick-commerce company is losing money on every order. List the levers to reach positive contribution per order, size each with an assumed number, and say which two you would pull first. |
+| B7P06Q55 | 7 | 6 | A cab aggregator offers drivers a flat Rs 500 a day instead of a 20% commission. Evaluate this from the driver's and the platform's side. |
+| B7P06Q56 | 7 | 6 | How would you decide whether to enter the 10-minute grocery delivery market in a new city? Give a structure, the numbers you need and a decision rule. |
+| B7P06Q57 | 7 | 6 | Two bundled items versus separate pricing: which pricing earns most profit? |
+| B7P06Q58 | 7 | 6 | A car manufacturer's profit fell 40% year on year. Structure your diagnosis and say what you would check outside the company. |
+| B7P06Q59 | 7 | 6 | How would you measure the true return on a discount promotion, separating incremental orders from orders that would have happened anyway? |
+| B7P06Q60 | 7 | 6 | A referral programme pays Rs 150 to the referrer and Rs 100 to the new user, while paid acquisition costs Rs 400 per user. Is it cheaper, and what viral coefficient is needed to double 1,000 seed users? |
+| B7P06Q61 | 7 | 6 | Why do interviewers prefer a structured profitability tree over a memorised framework? |
+| B7P06Q62 | 7 | 6 | What is operating leverage and why does it make profit more volatile than revenue? |
+| B7P06Q63 | 7 | 6 | A firm has fixed costs of Rs 60 lakh, variable costs of 50% of revenue and revenue of Rs 200 lakh. If revenue rises 10%, by what percentage does profit rise? |
+| B7P06Q64 | 7 | 6 | A store costs Rs 60 lakh to open and earns Rs 1 lakh a month of contribution for the first 6 months, then Rs 3 lakh a month. When does it pay back? |
+| B7P06Q65 | 7 | 6 | A shop-level analysis shows return rate falling from 20% to 15% on 1,00,000 orders a month. What is the monthly saving? |
+| B7P06Q66 | 7 | 6 | A BPO's attrition is 40% on 500 agents with Rs 60,000 replacement cost per exit. How much does cutting attrition to 30% save in a year? |
+| B7P06Q67 | 7 | 6 | Why might a psychologically priced Rs 99 plan outperform a Rs 100 plan, and how would you test it? |
+| B7P06Q68 | 7 | 6 | A fashion e-commerce firm has 30% of stock unsold at season end. How do you decide the markdown depth that maximises profit? |
+| B7P06Q69 | 7 | 6 | How would you set the price of a new product that has no competitors and no sales history? |
+| B7P06Q70 | 7 | 6 | A 10% relative improvement in any funnel stage raises revenue by the same amount, so why do you not treat all stages as equally attractive? |
+| B7P06Q71 | 7 | 6 | What is a flat cohort retention curve, and why does it matter more for growth than a one-time user spike? |
+| B7P06Q72 | 7 | 6 | When is a loss-making business unit still worth running? |
+| B7P06Q73 | 7 | 6 | Dynamic pricing: when does surge pricing improve profit and when does it destroy long-term value? |
+| B7P06Q74 | 7 | 6 | How would you decide between growth and profitability for a startup that has 18 months of cash left? |
+| B7P06Q75 | 7 | 6 | A student discount cuts the price for a segment. Under what conditions does it raise total profit? |
+| B7P06Q76 | 7 | 6 | A competitor offers free delivery with no minimum. How do you test whether you must match it? |
+| B7P07Q1 | 7 | 7 | How would you define the success metric for a new one-tap "reorder" feature on a food delivery app? |
+| B7P07Q2 | 7 | 7 | What is the difference between a primary metric, a guardrail metric and a diagnostic metric when judging a feature launch? |
+| B7P07Q3 | 7 | 7 | What is a conversion funnel, and how do you compute step conversion and overall conversion from the counts at each step? |
+| B7P07Q4 | 7 | 7 | A shopping app funnel in one week is below. Compute the step-to-step conversion, the overall conversion and name the step with the lowest conversion. |
+| B7P07Q5 | 7 | 7 | A product metric (say daily orders) drops suddenly. What do you check first to confirm the drop is real before looking for causes? |
+| B7P07Q6 | 7 | 7 | What clarifying questions do you ask before answering "the metric dropped, find out why" in a product analytics interview? |
+| B7P07Q7 | 7 | 7 | What is the difference between feature adoption and feature impact, and why can high adoption still mean no business impact? |
+| B7P07Q8 | 7 | 7 | What are leading and lagging metrics? Give one example of each for a new feature on an edtech learning app. |
+| B7P07Q9 | 7 | 7 | When a funnel step drops, which segment cuts do you apply first, and how do you decide the order? |
+| B7P07Q10 | 7 | 7 | The payment-success step of a checkout funnel fell from 75% to 60% week on week, with all earlier steps unchanged. 10,000 users reach the payment step each week. How many orders are lost per week, and how do you investigate? |
+| B7P07Q11 | 7 | 7 | Checkout conversion fell from 8% to 7% on an e-commerce platform. Use the table to find which segment explains the drop, how many orders were lost, and what you would investigate next. |
+| B7P07Q12 | 7 | 7 | Overall signup conversion fell even though conversion improved on both platforms. Use the data to explain how this is possible and what you would report. |
+| B7P07Q13 | 7 | 7 | Users of a new in-app feature place 3.0 orders per month against 2.0 for non-users. A manager says the feature adds 1.0 order per user. Is this right, and how would you estimate the true effect? |
+| B7P07Q14 | 7 | 7 | Choose a primary metric, two guardrail metrics and two diagnostic metrics for a new "split the bill" feature in a UPI payments app. |
+| B7P07Q15 | 7 | 7 | Orders per Android user per day dropped after app release 5.2. The release was rolled out to 50% of Android users; iOS is unchanged. Use the data to estimate the drop in total Android orders, and say what else you would check before blaming the release. |
+| B7P07Q16 | 7 | 7 | An A/B test of a new checkout widget is below. Compute the absolute and relative lift, the extra orders per week at full rollout to 2 million weekly visitors, and the extra refunds per week using the guardrail data. |
+| B7P07Q17 | 7 | 7 | A food app launches a "10-minute" tab. Before launch the app had 100,000 orders per day; after launch it has 12,000 on the new tab and 92,000 on the standard tab. Compute the net incremental orders and the cannibalisation share, and say how you would validate the numbers. |
+| B7P07Q18 | 7 | 7 | A payment app's success rate fell. Use the table to compute the overall success rate before and after, the extra failed attempts per 1 million attempts, and the share of the damage caused by each bank. |
+| B7P07Q19 | 7 | 7 | A coupon-code box was added to the cart page and checkout conversion fell from 6.0% to 5.4% on 400,000 weekly cart views. Compute the orders lost per week and propose how you would test the cause and a fix. |
+| B7P07Q20 | 7 | 7 | Design the full measurement plan for launching "group ordering" (several people add items to one shared cart) on a food delivery app: goal, metrics, experiment design, risks and decision rule. |
+| B7P07Q21 | 7 | 7 | A homepage redesign showed +2% orders in a two-week A/B test, but after full rollout total daily orders look flat. List the possible reasons and how you would test each. |
+| B7P07Q22 | 7 | 7 | What is an activation metric, and how would you find the "aha moment" for a new fintech investing app? |
+| B7P07Q23 | 7 | 7 | What is a North Star metric, and what input metrics would you attach to it for a quick commerce app? |
+| B7P07Q24 | 7 | 7 | A feature was used by 360,000 of 2.4 million monthly active users in 30 days, and 90,000 of those 360,000 used it again within the next 30 days. Compute the adoption rate and the repeat-use rate. |
+| B7P07Q25 | 7 | 7 | On a grocery app, 50,000 carts were created in a day and 18,000 became orders. Compute the cart abandonment rate and list three product reasons it could rise. |
+| B7P07Q26 | 7 | 7 | What is the difference between funnel analysis and cohort analysis, and when would you use each in a product case? |
+| B7P07Q27 | 7 | 7 | What events and properties must an app log to measure a checkout funnel, and what instrumentation mistakes commonly corrupt the funnel? |
+| B7P07Q28 | 7 | 7 | What are the HEART framework dimensions, and how would you apply them to a new video-lesson feature in an edtech app? |
+| B7P07Q29 | 7 | 7 | How would you present a feature launch readout to leadership in three slides? |
+| B7P07Q30 | 7 | 7 | An HR self-service app asks employees to apply for leave in the app. How would you measure whether this feature is a success? |
+| B7P07Q31 | 7 | 7 | A new-hire onboarding app funnel is below. Compute each step conversion and the overall conversion, and say where you would look for friction. |
+| B7P07Q32 | 7 | 7 | What is the difference between a session-based funnel and a user-based funnel, and when does each mislead? |
+| B7P07Q33 | 7 | 7 | An edtech app has the free-trial funnel below. Compute step conversion, and find whether a 5-percentage-point improvement at the first step or at the last step gives more paid users. |
+| B7P07Q34 | 7 | 7 | Historically 50% of all eventual paid conversions happen within 1 day of signup, 80% within 3 days and 95% within 7 days. The Monday signup cohort shows 2.4% paid after 3 days. What final conversion do you expect, and what does this say about reading last week's conversion? |
+| B7P07Q35 | 7 | 7 | A fintech app has the onboarding funnel below. Compute each step conversion, identify the biggest friction point and give two hypotheses with data to test each. |
+| B7P07Q36 | 7 | 7 | A ride-hailing funnel is below. Compute the conversion at each step and say which steps point to supply-side problems and which to demand-side problems. |
+| B7P07Q37 | 7 | 7 | Compute the average rating before and after for a delivery app, and explain why the average alone can mislead and what else you would look at. |
+| B7P07Q38 | 7 | 7 | A recommendation widget gets 1 million impressions, a 6% click rate and a 10% click-to-order rate. A holdout test shows only 2,800 of these orders are incremental. Compute the attributed orders and the incrementality ratio, and say which number you would report. |
+| B7P07Q39 | 7 | 7 | Daily active users rose from 300,000 to 330,000 after a streak feature, while monthly active users rose from 1.5 million to 1.55 million. Compute DAU/MAU before and after and interpret the change. |
+| B7P07Q40 | 7 | 7 | How would you test whether forcing all new users through a three-question preference quiz improves day-7 retention? |
+| B7P07Q41 | 7 | 7 | New-user D1, D7 and D30 retention before and after an onboarding change are below. What do you conclude, and what do you check next? |
+| B7P07Q42 | 7 | 7 | A feature's weekly lift in orders per user is 12%, 8%, 5% and 3% over four weeks. How do you estimate the steady-state effect, and what do you tell the team? |
+| B7P07Q43 | 7 | 7 | A new feature raises daily active users but lowers average session length. How do you decide whether this is a win? |
+| B7P07Q44 | 7 | 7 | A new feature is used by only 2% of users but those users generate 15% of revenue. How do you decide whether to keep, fix or remove it? |
+| B7P07Q45 | 7 | 7 | A paid membership programme (free delivery for a monthly fee) has 200,000 members ordering 5.0 times a month, against 3.8 for a matched group of non-members. Compute the incremental orders per month and list the assumptions behind it. |
+| B7P07Q46 | 7 | 7 | What metrics and thresholds would you gate on at each stage of a staged rollout from 1% to 10% to 50% to 100% of users? |
+| B7P07Q47 | 7 | 7 | Estimate the incremental monthly orders from a "schedule delivery" feature, and say how you would check the assumptions after launch. |
+| B7P07Q48 | 7 | 7 | After a release, the app crash-free session rate fell from 99.5% to 98.5% on 10 million weekly sessions. Crashed sessions convert at 0% and normal sessions at 5%. How many orders are lost per week, and how do you prioritise the fix? |
+| B7P07Q49 | 7 | 7 | What is a conversion window in funnel analysis, and how can changing it from same-session to 7-day change your conclusions about a checkout redesign? |
+| B7P07Q50 | 7 | 7 | A marketplace seller-onboarding funnel is below. Compute the step conversion, find the biggest leak and give a hypothesis tree for it. |
+| B7P07Q51 | 7 | 7 | After a release, sessions rose 30% but orders stayed flat. How do you tell whether this is a tracking bug or real behaviour? |
+| B7P07Q52 | 7 | 7 | Two features were launched in the same week and orders rose 5%. How would you attribute the lift to each feature? |
+| B7P07Q53 | 7 | 7 | A new offers screen is launched in Hyderabad only. Use the data to estimate the effect with a difference-in-differences approach, and state the assumptions. |
+| B7P07Q54 | 7 | 7 | A checkout redesign raises conversion from 5.0% to 5.5% but average order value falls from Rs 520 to Rs 450. Compute revenue per visitor before and after and decide whether to ship. |
+| B7P07Q55 | 7 | 7 | A push-notification change raises orders per user from 1.00 to 1.06 per month for 1 million users, but monthly uninstalls rise from 3.0% to 4.5%. Compute the monthly order gain and the extra users lost, and say how you would judge the trade-off. |
+| B7P07Q56 | 7 | 7 | A product team shows a retention curve that keeps falling and never flattens. What does it imply for product-market fit and what would you analyse? |
+| B7P07Q57 | 7 | 7 | How would you evaluate the success of a new search feature (autocomplete and filters) in an e-commerce app? |
+| B7P07Q58 | 7 | 7 | Day-1 retention of new users on an edtech app fell from 45% to 38% over two weeks. List the data cuts and hypotheses in the order you would test them. |
+| B7P07Q59 | 7 | 7 | A feature raises revenue by 3% but lowers NPS by 2 points and raises support tickets by 10%. How do you decide whether to roll back? |
+| B7P07Q60 | 7 | 7 | You can only measure three-month retention but the team must decide in two weeks whether to roll out a feature. How do you decide? |
+| B7P07Q61 | 7 | 7 | Define the metrics tree for a quick commerce app and show how you would use it to locate why weekly orders per active user fell. |
+| B7P07Q62 | 7 | 7 | A payroll-query chatbot handled 20,000 employee queries: 12,000 were closed by the bot without a human, and 3,000 of those reopened as human tickets within 48 hours. Compute the raw and true deflection rates and say which you would report. |
+| B7P07Q63 | 7 | 7 | A 50/50 A/B test shows 50,000 users in control and 48,500 in treatment. Is this a problem, and what do you do before reading the results? |
+| B7P07Q64 | 7 | 7 | A feature costs Rs 30 lakh to build and earns Rs 12 contribution per incremental order. How many incremental orders pay back the build cost, and how would you judge whether to build it? |
+| B7P07Q65 | 7 | 7 | Targets such as "delivery time promised" are gamed by showing longer promised times. How do you design metrics that resist gaming for a feature launch? |
+| B7P07Q66 | 7 | 7 | A feature is shown to treatment users, but only 30% of eligible treatment users ever see it. Overall orders per user rise 0.6 percentage points in conversion. What is the implied effect on those who saw it, and what are the caveats? |
+| B7P07Q67 | 7 | 7 | A feature affects both buyers and sellers on a marketplace. Why can a user-level A/B test be misleading, and what alternatives would you use? |
+| B7P07Q68 | 7 | 7 | How would you design a long-term holdout to measure the cumulative effect of many small features, and what are its costs? |
+| B7P07Q69 | 7 | 7 | How would you measure success of an AI assistant added to a shopping app, including quality, cost and guardrails? |
+| B7P07Q70 | 7 | 7 | A new feature increases orders but cancellations and refunds also rise. Design the analysis to decide if net contribution improved. |
+| B7P07Q71 | 7 | 7 | UPI payments in an app dropped 50% week on week. Walk through your investigation order, hypotheses and the data each one needs. |
+| B7P08Q1 | 7 | 8 | What is attrition rate, how is it calculated for a month, and how do you annualise it? |
+| B7P08Q2 | 7 | 8 | A company had 480 employees on 1 April and 520 on 30 April, and 13 employees left during April. What is the monthly attrition rate using average headcount? |
+| B7P08Q3 | 7 | 8 | What is the difference between voluntary and involuntary attrition, and between regretted and non-regretted attrition, and why do HR teams split the number this way? |
+| B7P08Q4 | 7 | 8 | What are time-to-hire and time-to-fill, and how do they differ? |
+| B7P08Q5 | 7 | 8 | A recruiting team extended 40 offers last quarter and 31 candidates accepted. What is the offer acceptance rate, and what would you check if it fell from 85% the quarter before? |
+| B7P08Q6 | 7 | 8 | Total recruitment spend in a year was INR 18 lakh (job-portal fees, agency fees, referral bonuses, recruiter travel) and the company made 45 hires. What is the cost per hire, and what costs might this figure leave out? |
+| B7P08Q7 | 7 | 8 | A hiring funnel had 2,000 applications, 400 shortlisted, 120 interviewed, 30 offers and 24 joiners. Compute the stage-wise conversion rates and the overall application-to-joiner rate, and say which stage you would look at first. |
+| B7P08Q8 | 7 | 8 | What is the unadjusted gender pay gap, and how is it different from an adjusted (like-for-like) pay gap? |
+| B7P08Q9 | 7 | 8 | What is a compa-ratio? An employee earns INR 9 lakh a year and the midpoint of their pay band is INR 10 lakh. What is the compa-ratio and how would you read it? |
+| B7P08Q10 | 7 | 8 | You are asked to analyse why employees are leaving. What data would you ask for, and what first cuts would you make? |
+| B7P08Q11 | 7 | 8 | Attrition at a 2,000-person IT services company rose from 14% to 21% over a year. Management asks you to find out why. How do you structure the diagnosis? |
+| B7P08Q12 | 7 | 8 | Using the tenure-band data below, compute attrition for each band and the overall figure, and say where you would focus a retention effort. |
+| B7P08Q13 | 7 | 8 | Offer-to-joining conversion at a company fell from 80% to 60% in two quarters. How do you find out why? |
+| B7P08Q14 | 7 | 8 | Average time-to-hire rose from 32 days to 45 days. Using the stage durations below, locate the delay and suggest what to examine next. |
+| B7P08Q15 | 7 | 8 | The average salary of men is INR 12.0 lakh and of women is INR 10.2 lakh in a 600-person company. What is the unadjusted gap as a percentage of men's pay, and how would you investigate whether it reflects unequal pay for equal work? |
+| B7P08Q16 | 7 | 8 | A regression of log salary on a female indicator plus grade, tenure, location and job family gives a coefficient of -0.04 on the female indicator (statistically significant). How do you interpret it and what would you report to leadership? |
+| B7P08Q17 | 7 | 8 | Of 100 people hired in January, 88 are still employed at 3 months, 76 at 6 months and 61 at 12 months. Compute the 12-month retention and the share of the remaining people lost in each interval, and say what pattern suggests. |
+| B7P08Q18 | 7 | 8 | A company has 18% annual attrition. How do you decide whether that is high or low? |
+| B7P08Q19 | 7 | 8 | How would you measure quality of hire, and what are the limitations of each proxy? |
+| B7P08Q20 | 7 | 8 | Which hiring source would you invest more in, based on the data below? |
+| B7P08Q21 | 7 | 8 | Teams with low engagement-survey scores also show higher attrition. Can you say low engagement causes attrition, and what would you do next? |
+| B7P08Q22 | 7 | 8 | A 250-person plant works 22 days a month and recorded 440 absent person-days last month. What is the absenteeism rate, and what cuts would you apply to understand it? |
+| B7P08Q23 | 7 | 8 | A selection process shortlisted 50 of 200 male applicants and 18 of 120 female applicants. Apply the four-fifths rule and explain what it tells you and what it does not. |
+| B7P08Q24 | 7 | 8 | A team needs 240 hires this year. The funnel converts 5% of sourced candidates to screen-pass, 25% of screen-pass to interview-pass, 40% of interview-pass to offer and 75% of offers to joiners. How many candidates must be sourced, and how many recruiters are needed if one recruiter can source 1,200 a year? |
+| B7P08Q25 | 7 | 8 | What is the difference between headcount and FTE, and how do you compute FTE for 30 full-time employees and 10 part-timers working 20 hours a week against a 40-hour full-time week? |
+| B7P08Q26 | 7 | 8 | How does staff turnover differ from attrition, and does the difference matter for reporting? |
+| B7P08Q27 | 7 | 8 | In a survey of 100 employees, 60 are promoters, 25 are passives and 15 are detractors on the 0-10 recommend question. What is the employee Net Promoter Score (eNPS)? |
+| B7P08Q28 | 7 | 8 | What is billable utilisation in a services company, and what is it for a consultant with 1,320 billable hours out of 1,800 available hours? |
+| B7P08Q29 | 7 | 8 | What is a yield ratio in recruiting, and what is the yield from interview to offer if 120 interviews produced 30 offers? |
+| B7P08Q30 | 7 | 8 | How do you protect employee privacy when sharing attrition or pay analysis, and when do you suppress small groups? |
+| B7P08Q31 | 7 | 8 | Why do offer-to-joining drop-outs ('renege' rate) matter more in India than in many markets, and how would you measure them? |
+| B7P08Q32 | 7 | 8 | The marketing department's attrition fell from 20% to 18% and the engineering department's fell from 12% to 10%, yet company-wide attrition rose. Is that possible, and how would you show it from the data below? |
+| B7P08Q33 | 7 | 8 | How would you build a model to predict which employees will resign in the next six months? Cover the target, features, leakage, evaluation and how HR should use the output. |
+| B7P08Q34 | 7 | 8 | An attrition model flags 200 of 2,000 employees as high risk. Over the next six months 150 employees actually leave, of whom 60 were in the flagged group. Compute precision and recall, and say whether the model is useful. |
+| B7P08Q35 | 7 | 8 | First-year attrition of campus hires is 30% against 10% for lateral hires. How do you diagnose this? |
+| B7P08Q36 | 7 | 8 | One manager's team of 20 lost 8 people in a year while the company average is 12%. How do you decide whether this manager is a problem? |
+| B7P08Q37 | 7 | 8 | A 52-person company with 12 women and 40 men wants a pay equity check. How do you proceed when sample sizes are small? |
+| B7P08Q38 | 7 | 8 | Promotion data by gender is below. Compute the promotion rates, and explain how you would test whether the difference is meaningful and what else to check. |
+| B7P08Q39 | 7 | 8 | The company has a payroll of INR 50 crore and an 8% increment budget. How much is the budget, and how would you design the allocation across performance ratings and compa-ratios? |
+| B7P08Q40 | 7 | 8 | A company with 1,000 employees expects 18% attrition and wants net headcount growth of 120 this year. How many hires are needed, and what does that imply for the recruiting plan? |
+| B7P08Q41 | 7 | 8 | Replacing a leaver is estimated to cost 50% of annual CTC. If 60 people with an average CTC of INR 12 lakh left, what is the cost of attrition, and how much would a retention programme costing INR 1.2 crore have to save to break even? |
+| B7P08Q42 | 7 | 8 | Offer rates differ across interviewers for similar candidates, as shown below. How do you find out whether this is interviewer bias or candidate mix? |
+| B7P08Q43 | 7 | 8 | Women are 45% of applicants but only 25% of final-round candidates and 22% of offers. How do you locate where the drop occurs and decide whether it is a problem? |
+| B7P08Q44 | 7 | 8 | The average gap between men's and women's pay is 15% company-wide, but within each job grade the gap is 2%. How can both be true, and what does each tell you? |
+| B7P08Q45 | 7 | 8 | A bank is rolling out a return-to-office policy of three days a week. How would you measure its effect on attrition, productivity and hiring? |
+| B7P08Q46 | 7 | 8 | How would you forecast monthly headcount for the next 12 months for a company that hires in batches and has seasonal resignations? |
+| B7P08Q47 | 7 | 8 | Why is a simple annual attrition rate misleading for tenure analysis, and how would survival analysis (Kaplan-Meier) help? Explain censoring in this context. |
+| B7P08Q48 | 7 | 8 | The company gave retention bonuses to 300 high performers and attrition in that group fell from 15% to 9%. How do you judge whether the bonus worked when it was not randomised? |
+| B7P08Q49 | 7 | 8 | In a pay equity regression, grade is a control, but promotions to higher grades are themselves slower for women. What problem does that create and how do you handle it? |
+| B7P08Q50 | 7 | 8 | Leadership wants to cut payroll by 10% through layoffs. How would you design an analysis to support selection while avoiding bias and legal risk? |
+| B7P08Q51 | 7 | 8 | What is internal mobility rate, and what would a low rate suggest? |
+| B7P08Q52 | 7 | 8 | Performance ratings given by different managers have very different distributions (some give 70% top ratings, some 10%). How would you calibrate them before using ratings in an attrition or pay analysis? |
+| B7P08Q53 | 7 | 8 | A quick-commerce company has 10,000 delivery partners who each started in a given week. Weekly active retention is 70% at week 4 and 45% at week 12. How do you analyse delivery-partner attrition and what levers would you test? |
+| B7P08Q54 | 7 | 8 | A company is considering replacing 50 permanent roles costing INR 10 lakh each with contract staff billed at INR 12 lakh each with no separate benefits cost. How do you compare the true costs? |
+| B7P08Q55 | 7 | 8 | How do you build an HR metrics dictionary so that attrition and headcount mean the same thing across teams? |
+| B7P08Q56 | 7 | 8 | How would you evaluate whether a new employee learning-and-development programme paid back its INR 80 lakh cost? |
+| B7P08Q57 | 7 | 8 | What bias risks arise in using AI or resume-screening models in hiring, and how would you audit one for adverse impact? |
+| B7P09Q1 | 7 | 9 | What does structured thinking mean in an analyst interview, and why do interviewers test it? |
+| B7P09Q2 | 7 | 9 | How did you learn to solve guesstimates and business cases, and how long did it take you? |
+| B7P09Q3 | 7 | 9 | How would you rate yourself in guesstimates and case solving out of 10, and why? |
+| B7P09Q4 | 7 | 9 | What is MECE, and how do you use it to break down a business problem? |
+| B7P09Q5 | 7 | 9 | What is the first thing you do when you are given a vague business question, before you start solving? |
+| B7P09Q6 | 7 | 9 | You come from HR with no consulting or case-interview background. How did you learn structured thinking? |
+| B7P09Q7 | 7 | 9 | Walk me through a real problem you structured with an issue tree or hypothesis tree, and what you found. |
+| B7P09Q8 | 7 | 9 | Which part of guesstimates and cases did you find hardest, and how did you overcome it? |
+| B7P09Q9 | 7 | 9 | How do you practise a guesstimate so that you actually improve instead of just repeating questions? |
+| B7P09Q10 | 7 | 9 | How do you turn a vague business problem into a driver tree, for example orders x average order value for revenue? |
+| B7P09Q11 | 7 | 9 | How do you think aloud under time pressure in a case without going silent or rambling? |
+| B7P09Q12 | 7 | 9 | Tell me about a time your first structure for a problem was wrong and how you corrected it. |
+| B7P09Q13 | 7 | 9 | Which free resources would you recommend to a beginner learning guesstimates and case thinking? |
+| B7P09Q14 | 7 | 9 | In what order did you study guesstimates, metrics and cases, and why that order? |
+| B7P09Q15 | 7 | 9 | How much time do you spend practising guesstimates and cases each week? |
+| B7P09Q16 | 7 | 9 | What is the difference between a guesstimate, a case study and a metric-diagnosis question, and how does your approach change for each? |
+| B7P09Q17 | 7 | 9 | Roughly how many guesstimates and cases should you practise before interviews, and how do you know when you have practised enough? |
+| B7P09Q18 | 7 | 9 | Which base numbers (such as population, households and working-age share) should you keep in memory for guesstimates, and how do you learn them honestly? |
+| B7P09Q19 | 7 | 9 | Do you need a consulting background or an MBA to do well in case and guesstimate rounds? |
+| B7P09Q20 | 7 | 9 | How do you use AI assistants to practise cases and guesstimates without depending on them? |
+| B7P09Q21 | 7 | 9 | How do you find your weak spots in case solving and fix them week by week? |
+| B7P09Q22 | 7 | 9 | How would you prepare for a guesstimate and case round in two weeks? |
+| B7P09Q23 | 7 | 9 | How do you build business knowledge for an industry you have never worked in, such as food delivery or fintech? |
+| B7P09Q24 | 7 | 9 | How do you present your structure to an interviewer in the first 30 seconds before you start calculating? |
+| B7P09Q25 | 7 | 9 | How do you practise the answer-first (Pyramid Principle) style when explaining findings? |
+| B7P09Q26 | 7 | 9 | How do you learn from a guesstimate or case you got wrong in an interview or mock? |
+| B7P09Q27 | 7 | 9 | How do you run useful mock interviews with a friend, and what feedback should the partner give? |
+| B7P09Q28 | 7 | 9 | How do you check that your issue tree is MECE and not just a list of ideas? |
+| B7P09Q29 | 7 | 9 | How do you practise mental arithmetic with rounded numbers so that speed does not hurt accuracy in a guesstimate? |
+| B7P09Q30 | 7 | 9 | How do you apply structured thinking in your day-to-day analyst or HR work, not only in interviews? |
+| B7P09Q31 | 7 | 9 | What habit would you use to build commercial awareness, for example reading about Swiggy, Zepto or PhonePe, without wasting hours? |
+| B7P09Q32 | 7 | 9 | Do casebooks, courses or paid mock-interview services help, and have you used any? |
+| B7P09Q33 | 7 | 9 | Have you written up case solutions or analyses as a portfolio, and where did you share them? |
+| B7P09Q34 | 7 | 9 | What are the most common mistakes beginners make in guesstimates and cases? |
+| B7P09Q35 | 7 | 9 | What 20-minute daily habit would build structured thinking over three months? |
+| B7P09Q36 | 7 | 9 | Which books or articles on structured problem solving would you recommend, and what did you take from them? |
+| B7P09Q37 | 7 | 9 | How would you build a 30-day plan to go from zero to comfortable with guesstimates? |
+| B7P09Q38 | 7 | 9 | What is your plan to improve your guesstimate, metric and case skills over the next three months? |
+| B7P09Q39 | 7 | 9 | How would you set up a self-check test to measure your own guesstimate and case level? |
+| B7P09Q40 | 7 | 9 | How would you build a portfolio case from a public HR dataset such as employee attrition: problem framing, tree, analysis and recommendation? |
+| B7P09Q41 | 7 | 9 | How do you keep your structured-thinking skills current while working a full-time job? |
+| B7P09Q42 | 7 | 9 | How would you teach structured thinking to a junior colleague in four weeks? |
+| B7P09Q43 | 7 | 9 | What is the difference between a structure that scores well in a case-interview book and a structure that works on a real analytics project? |
+| B7P09Q44 | 7 | 9 | How do you structure an answer when the interviewer gives you incomplete or contradictory data? |
+| B7P09Q45 | 7 | 9 | How do you decide when to stop structuring and start calculating in a guesstimate or case? |
+| B7P09Q46 | 7 | 9 | How do you learn to ask good clarifying questions, and which five would you almost always ask? |
+| B7P09Q47 | 7 | 9 | How do you build the habit of sanity-checking numbers by order of magnitude, and how do you practise it? |
+| B7P09Q48 | 7 | 9 | How do you decide which hypotheses to test first when time and data are limited? |
+| B7P09Q49 | 7 | 9 | How do you respond when an interviewer challenges your assumption or structure mid-answer? |
+| B7P09Q50 | 7 | 9 | How do you improve at cases when you have no mentor and no one to give you feedback? |
+| B7P09Q51 | 7 | 9 | You are given an open problem you have never seen, such as improving employee engagement at a 5,000-person company. How do you structure it in two minutes? |
+| B7P09Q52 | 7 | 9 | How do you move from a structured analysis to a clear recommendation, for example by comparing options on impact and effort? |
+| B7P09Q53 | 7 | 9 | Where does structured thinking end and technical analysis begin, and what should you learn after finishing guesstimates and cases, such as product analytics and experimentation? |
 
 ## Book 8 — Scenarios & Data Interpretation
 | Q-ID | Book | Part | Canonical question |
