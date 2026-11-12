@@ -4,7 +4,7 @@ Reviewer: Wave C. File: `Book08_Scenarios/Book08_Part01.md`. Scratch script: `C0
 
 ## Counts
 - Answers checked: 72 (all headings, stars and order untouched).
-- Answers with numbers recomputed by code (written from the question data, then compared): 33 (Q1, Q3, Q4, Q8, Q11, Q12, Q13, Q17, Q18, Q19, Q23, Q24, Q27, Q28, Q29, Q34, Q35, Q36, Q37, Q38, Q39, Q46, Q50, Q51, Q54, Q56, Q59, Q60, Q65, Q66, Q68, Q70 range check by hand, Q72 illustrative only).
+- Answers with numbers recomputed by code (written from the question data, then compared): 29 (Q1, Q3, Q4, Q8, Q11, Q12, Q13, Q17, Q18, Q19, Q23, Q24, Q27, Q28, Q29, Q34, Q35, Q36, Q37, Q38, Q39, Q50, Q51, Q54, Q56, Q59, Q60, Q65, Q68). The remaining answers have no computable data (illustrative figures in Q10, Q58, Q61, Q62, Q66, Q70, Q72 are labelled).
 - Answers with a wrong figure: 1 (Q28). Answers changed in total: 8 (1 arithmetic, 1 technical accuracy, 6 honesty/clarity).
 
 ## Fixes
@@ -30,7 +30,7 @@ Premise checks: Q8, Q13, Q18 correctly diagnose definition/timing first; Q29 cor
 - Template: every answer has Asked at, interviewer check, Say this, structure block, Likely follow-ups, Common mistakes.
 
 ## Unresolved / report only
-- Ordering: Q9/Q10 are marked 🟡 under the 3-star block and Q19 🔴 sits in the same block; order follows 🟢, 🟡, 🔴 correctly. Q63 (⭐ 🟢) precedes Q64 (⭐ 🟡): fine. No ordering fault found.
+- Ordering/numbering: stars then difficulty order is correct throughout; numbering Q1 to Q72 continuous. No fault found.
 - Overlap: Q4/Q7/Q14/Q28/Q58/Q68/Q71 all touch missing data (distinct angles); Q12/Q44 (join fan-out) are near-duplicates; Q25/Q50 (Excel ID damage) overlap; Q9/Q62 and Q52/Q53 overlap in communication. Q2 and Q41 overlap (profiling checks). Overlap with other Book 8 parts and other books (Book 2 SQL join pitfalls, Book 3/Book 5 missing data) not checked here.
 - Minor style: several answers have a blank line before "First, clarify" or "Likely follow-ups" (harmless in markdown). Q26 mixes LOWER and UPPER in steps 2 and 3 (left as is).
 - Q59 "1,440 is exactly 24 hours so likely a default" is reasonable judgement, not proven; the answer already says so.

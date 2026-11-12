@@ -195,6 +195,7 @@ Data (views to paid orders):
 | Add to cart | 12,000 | 11,900 |
 | Checkout started | 7,200 | 7,140 |
 | Payment successful | 6,480 | 5,712 |
+
 **Asked at:** Indian e-commerce conversion-RCA prompts (for example Meesho, MakeMyTrip) appear in Dataford question banks (unverified, company attribution not confirmed); funnel breakdown is commonly asked.
 **What the interviewer is checking:** Step-to-step conversion, not just the top and bottom numbers.
 **Say this in the interview:** "The fall is almost all at the payment step: success from checkout dropped from 90 percent to 80 percent. Paid orders are down 768, or about 11.9 percent."
@@ -223,6 +224,7 @@ Data:
 |---|---|---|---|---|
 | Mobile | 40,000 | 2.0% | 70,000 | 2.2% |
 | Desktop | 60,000 | 5.0% | 30,000 | 5.5% |
+
 **Asked at:** Simpson's paradox and mix-shift items appear in question banks and vendor blogs such as Mixpanel (unverified); commonly asked.
 **What the interviewer is checking:** That you understand mix shift (Simpson's paradox).
 **Say this in the interview:** "Both segments improved, but traffic shifted to the low-converting segment, mobile. The overall rate is a weighted average, so a change in weights can pull it down."
@@ -275,6 +277,7 @@ Data (INR lakh):
 | South | 90 | 66 |
 | East | 100 | 98 |
 | West | 80 | 84 |
+
 **Asked at:** commonly asked (no company-specific report found); driver contribution by segment is standard in revenue-drop question banks (unverified).
 **What the interviewer is checking:** Contribution to the decline, not just growth rates.
 **Say this in the interview:** "South explains about 92 percent of the net fall, 24 of 26 lakh. I would go deeper into South next."
@@ -303,6 +306,7 @@ Data (headcount constant at 1,000 across both months):
 | Engineering | 400 | 6 | 6 |
 | Sales | 200 | 4 | 5 |
 | Operations | 150 | 3 | 3 |
+
 **Asked at:** HR attrition investigation is covered in educational and vendor material (unverified); commonly asked (no company-specific report found).
 **What the interviewer is checking:** Segmenting attrition and giving a share of the change.
 **Say this in the interview:** "Support explains about 91 percent of the rise: 10 of 11 extra leavers. Its monthly attrition went from 2.8 to 6.8 percent."
@@ -377,6 +381,7 @@ Data:
 | A | 50,000 | 96% | 96% |
 | B | 30,000 | 94% | 94% |
 | C | 20,000 | 90% | 70% |
+
 **Asked at:** commonly asked (no company-specific report found); payment-step breakdown follows the funnel items in Dataford question banks (unverified).
 **What the interviewer is checking:** Pinpointing the segment and quantifying its impact.
 **Say this in the interview:** "Gateway C is the whole story: its success fell from 90 to 70 percent, causing 4,000 extra failed payments and taking overall success from 94.2 to 90.2 percent."
@@ -519,6 +524,7 @@ Data (days):
 | Screening | 5 | 5 |
 | Interviews | 10 | 18 |
 | Offer and joining | 8 | 11 |
+
 **Asked at:** commonly asked (no company-specific report found); HR-funnel equivalents of the revenue-drop frame are common in people-analytics material (unverified).
 **What the interviewer is checking:** Whether you decompose a total into stage contributions and then ask operational questions instead of guessing.
 **Say this in the interview:** "Interviews account for 8 of the 12 extra days, about two thirds, so I would start there and ask what changed in the interview process."
@@ -571,6 +577,7 @@ Data:
 |---|---|---|---|---|
 | Mobile | 40% | 2.0% | 70% | 2.2% |
 | Desktop | 60% | 5.0% | 30% | 5.5% |
+
 Use period 1 rates for the mix effect and period 2 shares for the rate effect.
 **Asked at:** commonly asked (no company-specific report found); rate versus mix decomposition appears on question-bank and vendor pages on Simpson's paradox (unverified).
 **What the interviewer is checking:** Whether you can show that every segment improved yet the total fell, and name the right owner for the fix.
@@ -795,6 +802,7 @@ Data:
 |---|---|---|---|
 | Search | INR 100 | 800 | 500 |
 | Social | INR 200 | 200 | 500 |
+
 **Asked at:** commonly asked (no company-specific report found); blended-versus-channel mix shifts are a standard "Simpson-style" trap (unverified).
 **What the interviewer is checking:** That you see a mix shift toward the more expensive channel.
 **Say this in the interview:** "Each channel's CAC is unchanged. The customers moved from cheap search to costlier social, so the blended average rose from INR 120 to INR 150."
@@ -1035,7 +1043,7 @@ Data: this week 2,000 refunds on 40,000 orders. Product X alone has 1,100 refund
 1. Overall: 2,000 / 40,000 = 5.0%.
 2. Product X: 1,100 / 1,500 = 73.3% refund rate; it is 3.75% of orders but 55% of refunds.
 3. Excluding X: (2,000 - 1,100) / (40,000 - 1,500) = 900 / 38,500 = 2.34%.
-4. X alone adds 1,100 / 40,000 = 2.75 points to the overall rate; the remaining rise over 2% is 0.34 points.
+4. Taking X out lowers the overall rate from 5.00% to 2.34%, so X accounts for about 2.66 of the 3.0-point jump. The other products sit 0.34 points above the old 2.0% level.
 **Result:** Rate without Product X is 2.34% (2.0% before). Rounded.
 **Caveats / what else I would check:** Why is X refunded: defect, wrong listing, a supplier or batch problem, fraud, courier damage? Are refunds recorded in the week of the order or of the refund? Is the 0.34-point residual noise or another issue?
 **Next step / recommendation:** Pause or flag the product with the category owner, review the listing and reviews, check the batch and the seller; report the refund rate with and without X until resolved; consider a refund-rate alert by product.
