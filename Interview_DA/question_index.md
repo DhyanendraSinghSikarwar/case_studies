@@ -4746,6 +4746,646 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 ## Book 8 — Scenarios & Data Interpretation
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B8P01Q1 | 8 | 1 | What are the main dimensions of data quality (completeness, accuracy, consistency, uniqueness, validity, timeliness), and what is one HR-data example of a failure in each? |
+| B8P01Q2 | 8 | 1 | You are handed a new dataset and asked for analysis by tomorrow. What checks do you run before doing any analysis? |
+| B8P01Q3 | 8 | 1 | An HRIS export has 1,250 rows. 30 employee IDs appear twice and 10 employee IDs appear three times; every other ID appears once. How many unique employees are there, and by what percentage would a row count overstate headcount? |
+| B8P01Q4 | 8 | 1 | In a 2,000-row orders table, 140 rows have a blank discount_amount. What share is missing, and would you treat the blanks as zero discount? |
+| B8P01Q5 | 8 | 1 | How do you find duplicate records in a dataset, and how do you decide which copy to keep? |
+| B8P01Q6 | 8 | 1 | What is the difference between an exact duplicate and a near-duplicate, and how would you handle each in an employee master file? |
+| B8P01Q7 | 8 | 1 | How do you decide whether to drop rows with missing values, impute them, or leave them as missing? |
+| B8P01Q8 | 8 | 1 | Your dashboard shows 5,000 active customers but the CRM team says 4,600. How do you find out why the numbers differ before replying to your manager? |
+| B8P01Q9 | 8 | 1 | You find that a pipeline bug has put wrong values in a key column for the last three weeks, and reports using it have already gone to leadership. What do you do, and what do you say? |
+| B8P01Q10 | 8 | 1 | How do you explain a data quality problem to a non-technical stakeholder who still needs a number today? |
+| B8P01Q11 | 8 | 1 | A payroll file has one salary of 9,50,00,000 per annum while every other value is between 3 and 40 lakh. How do you decide what to do with it? |
+| B8P01Q12 | 8 | 1 | After joining an orders table to a customers table, the row count rises from 10,000 to 10,900. What has probably happened and how do you confirm it? |
+| B8P01Q13 | 8 | 1 | The dashboard shows total revenue of 12,40,000 while Finance's ledger shows 11,98,000 for the same month. What is the gap in rupees and as a percentage of the Finance figure, and what are the first causes you check? |
+| B8P01Q14 | 8 | 1 | A column you need is 45% null. How do you decide whether you can still use it? |
+| B8P01Q15 | 8 | 1 | How do you make your data cleaning steps documented and reproducible so that someone else can audit them? |
+| B8P01Q16 | 8 | 1 | You raise a data error that originates in another team's system, and they say it is low priority. How do you get it addressed while still delivering your analysis? |
+| B8P01Q17 | 8 | 1 | An attendance export shows an employee with 26 days present in a month that has 22 working days. List the possible causes and say how you would fix the file. |
+| B8P01Q18 | 8 | 1 | HRIS says 5,240 active employees, payroll says 5,198, and Finance says 5,215. How would you reconcile headcount, and what is the largest gap between any two sources? |
+| B8P01Q19 | 8 | 1 | HRIS and payroll disagree on the employment status of about 3% of employees. How do you decide on a source of truth and put a lasting fix in place? |
+| B8P01Q20 | 8 | 1 | What is the difference between data cleaning, data validation and data verification? |
+| B8P01Q21 | 8 | 1 | City names in a customer table appear as 'Bengaluru', 'Bangalore', 'BLR' and 'bengaluru '. How do you standardise them? |
+| B8P01Q22 | 8 | 1 | What is a primary key, and why does its uniqueness matter for data quality? |
+| B8P01Q23 | 8 | 1 | In a store sales file, one store shows 0 for a month because it did not report. Four stores show 120, 0, 100 and 80 (in thousands). What is the average with and without the unreported store, and which would you present? |
+| B8P01Q24 | 8 | 1 | An order placed at 20:00 UTC on 31 March appears in the March report, but the business works in IST. On which date and month did the order happen in IST, and how do you prevent this issue in reports? |
+| B8P01Q25 | 8 | 1 | Employee IDs such as 00453 become 453 after someone opens the file in Excel, and a lookup to the HR master now fails. What happened and how do you fix it? |
+| B8P01Q26 | 8 | 1 | A survey export shows 'Male', 'male ', 'M' and 'MALE' in the gender column. How do you clean it and prevent the issue recurring? |
+| B8P01Q27 | 8 | 1 | A survey of 100 employees has 20 blank answers on a 1-100 satisfaction question. The mean of the 80 answers is 60. What is the mean after mean imputation, what happens to the spread, and is it a good idea? |
+| B8P01Q28 | 8 | 1 | Missing values by department are: Sales 10 of 200, Operations 60 of 300, HR 5 of 100. What is the overall missing rate, which department needs attention, and why might the pattern matter? |
+| B8P01Q29 | 8 | 1 | A feedback survey received 800 submissions from 765 unique email addresses; 1,000 people were invited. The team reported an 80% response rate. What is the corrected rate, and how would you present it? |
+| B8P01Q30 | 8 | 1 | Payment gateway retries create duplicate transactions with different transaction IDs but the same customer, amount and time. How do you detect and remove them without deleting genuine repeat purchases? |
+| B8P01Q31 | 8 | 1 | A revenue column mixes INR and USD values with no currency field. How do you detect and handle it? |
+| B8P01Q32 | 8 | 1 | A tenure column holds values 2, 3, 36, 48 and 5, and you suspect some are in months and some in years. How do you investigate and what do you assume? |
+| B8P01Q33 | 8 | 1 | Your production orders table contains test records such as 'Test User' and orders of Rs 1. How do you find and exclude them, and how do you check they do not distort metrics? |
+| B8P01Q34 | 8 | 1 | Apply the rules 'joining date is not in the future (today is 12 Nov 2026) and exit date is strictly after joining date' to these four records. How many fail, and what do you do with them? |
+| B8P01Q35 | 8 | 1 | A payroll file shows 18 employees paid twice in March at Rs 52,000 each. What is the overpayment, how did it probably happen, and who do you notify? |
+| B8P01Q36 | 8 | 1 | Of 1,000 hires in your ATS, 912 match an HRIS record on email. What is the match rate, what might explain the unmatched 88, and what do you do before building a time-to-hire report? |
+| B8P01Q37 | 8 | 1 | Five employee salaries (in thousands) are 30, 40, 50, 60 and 70, but the file has the 70 row twice. What are the wrong and correct average salaries, and how does the error affect pay-band reporting? |
+| B8P01Q38 | 8 | 1 | A recruiter says there were 600 applications and 45 hires, so conversion is 7.5%. You find 450 unique candidates because many applied to several roles. What is the per-candidate conversion, and which would you report? |
+| B8P01Q39 | 8 | 1 | A sales report has five mandatory fields in 1,000 records. Null counts are 20, 150, 0, 30 and 100. What is the cell-level completeness, and why is it not the same as the share of complete records? |
+| B8P01Q40 | 8 | 1 | How do nulls in join keys affect join results and row counts, and what do you do about them? |
+| B8P01Q41 | 8 | 1 | You have been given a dataset with no data dictionary or owner. What do you do before you trust any column? |
+| B8P01Q42 | 8 | 1 | What automated checks would you add to a daily data load to catch quality problems early (for example row counts, null rates, freshness)? |
+| B8P01Q43 | 8 | 1 | Exit interview data exists for only 25% of employees who left. What can and can you not conclude from it for an attrition analysis? |
+| B8P01Q44 | 8 | 1 | Duplicate keys in a dimension table cause fan-out in your report. How do you detect this before the join and fix it at the right level? |
+| B8P01Q45 | 8 | 1 | The extract from an Excel report has merged cells, subtotal rows and repeated header rows in the middle. How do you turn it into analysis-ready data? |
+| B8P01Q46 | 8 | 1 | Percentages in a survey chart add up to 134%. Is this a data quality problem, and how do you check? |
+| B8P01Q47 | 8 | 1 | Negative quantities appear in a sales table. How do you decide whether they are returns, corrections or errors? |
+| B8P01Q48 | 8 | 1 | An attrition analysis was built from a file of current employees only. What is wrong with that, and how do you fix it? |
+| B8P01Q49 | 8 | 1 | Two teams define 'active customer' differently, so their counts never match. Is this a consistency problem or an accuracy problem, and how do you resolve it? |
+| B8P01Q50 | 8 | 1 | Customer IDs show as 1.23457E+11 after a CSV is opened in Excel. What has gone wrong and how do you recover the real IDs? |
+| B8P01Q51 | 8 | 1 | Phone numbers entered as free text appear as '98765 43210', '+91-9876543210' and '09876543210'. How do you clean and validate them? |
+| B8P01Q52 | 8 | 1 | Do you fix a data error in the report or at the source, and what do you do if you cannot get the source fixed? |
+| B8P01Q53 | 8 | 1 | You cannot fix a known data issue before a deadline. How do you deliver the analysis responsibly? |
+| B8P01Q54 | 8 | 1 | Tell me about a time you found an error in data you were about to use. How did you find it, and what did you do? |
+| B8P01Q55 | 8 | 1 | After you filter a table, 30% of rows disappear unexpectedly. How do you debug where the rows went? |
+| B8P01Q56 | 8 | 1 | You have 45 leavers recorded in HRIS but only 38 in the exit-interview log. What is the coverage and what might explain the missing 7? |
+| B8P01Q57 | 8 | 1 | An employee history table keeps one row per change in role or manager. A headcount report counts rows and overstates staff. How do you diagnose and fix it? |
+| B8P01Q58 | 8 | 1 | Salary is missing for many senior employees in a pay analysis because they opted not to disclose. Why is simple imputation risky, and what do you do? |
+| B8P01Q59 | 8 | 1 | Delivery times in an operations log range from 0 to 1,440 minutes, with a median of 32. How do you tell errors from genuine extremes before you treat them? |
+| B8P01Q60 | 8 | 1 | Fuzzy matching flags 12% of 10,000 customer records as probable duplicates. You check a random 400 flagged records and confirm 200 as true duplicates. Estimate how many true duplicates exist among the flagged records and how you would proceed. |
+| B8P01Q61 | 8 | 1 | Daily figures for yesterday change when you rerun the report today because some data arrives late. How do you handle late-arriving data in reporting? |
+| B8P01Q62 | 8 | 1 | A correction to old data changes numbers that leadership has already seen. How do you handle versioning and communication? |
+| B8P01Q63 | 8 | 1 | What is a golden record, and how does it help with duplicate customer or employee records? |
+| B8P01Q64 | 8 | 1 | A source system renames a column overnight and your report goes blank. How do you detect and prevent schema drift problems? |
+| B8P01Q65 | 8 | 1 | What is a data quality score or scorecard, and how would you build one for a stakeholder audience? |
+| B8P01Q66 | 8 | 1 | Survey completion times show many responses under 30 seconds for a 15-question survey. How do you identify low-quality responses and handle them? |
+| B8P01Q67 | 8 | 1 | A shared Excel file is edited by five people and versions conflict. How do you control quality? |
+| B8P01Q68 | 8 | 1 | What is the difference between missing data that is truly absent and data that is not applicable? Give an HR example and say how each is coded. |
+| B8P01Q69 | 8 | 1 | Ages in an employee file cluster at 30, 40 and 50 far more than at neighbouring values. What does this suggest, and what do you do? |
+| B8P01Q70 | 8 | 1 | GPS pings from a delivery-partner app have gaps of several minutes. When would you interpolate, and when would you leave the gaps? |
+| B8P01Q71 | 8 | 1 | MCAR, MAR and MNAR describe different missing-data mechanisms. How would you tell them apart in a real dataset, and why does the distinction change your approach? |
+| B8P01Q72 | 8 | 1 | Records show that the same person was rehired under a new employee ID. How do you link them for tenure and attrition analysis? |
+| B8P02Q1 | 8 | 2 | A manager messages you, "Can you send me the sales numbers?" with no other detail. What do you do before you touch any data? |
+| B8P02Q2 | 8 | 2 | What clarifying questions would you ask when a stakeholder asks for "a dashboard on employee performance"? |
+| B8P02Q3 | 8 | 2 | How do you find out what a stakeholder actually needs when what they ask for (a report) differs from the decision they are trying to make? |
+| B8P02Q4 | 8 | 2 | How do you decide whether a request is a one-off ad-hoc pull or something that should become a recurring, automated report? |
+| B8P02Q5 | 8 | 2 | What should go into the message or email when you hand over a report, besides the file itself? |
+| B8P02Q6 | 8 | 2 | How do you confirm that you and the stakeholder share the same definition of a term like "active customer" or "attrition" before you build anything? |
+| B8P02Q7 | 8 | 2 | A stakeholder wants the report "by end of day", but you are already committed to two other deadlines. How do you respond? |
+| B8P02Q8 | 8 | 2 | How would you explain a finding to a non-technical senior leader who gives you only two minutes? |
+| B8P02Q9 | 8 | 2 | What is the difference between answering the question that was asked and answering the question that should have been asked, and when is each right? |
+| B8P02Q10 | 8 | 2 | The HR head says, "Attrition is too high, find out why." You have an HRIS export, exit-interview notes and two days. How do you scope and run this? |
+| B8P02Q11 | 8 | 2 | A vice president needs numbers for a board meeting in three hours, but the latest week of data is only about 90% loaded. What do you do and what do you tell them? |
+| B8P02Q12 | 8 | 2 | The sales head and the finance head both ask you for "revenue by region", but their definitions differ (booked versus recognised). How do you handle it? |
+| B8P02Q13 | 8 | 2 | A stakeholder rejects your analysis because it contradicts what they expected. How do you respond in the meeting and afterwards? |
+| B8P02Q14 | 8 | 2 | You discover an error in a report you sent yesterday, and leadership has already quoted the number. What exactly do you do, in what order? |
+| B8P02Q15 | 8 | 2 | A stakeholder keeps adding "just one more cut" to a request you have already started. How do you manage the scope? |
+| B8P02Q16 | 8 | 2 | The marketing head asks, "Did the campaign work?" What do you ask back, and what do you deliver? |
+| B8P02Q17 | 8 | 2 | Three stakeholders each send an "urgent" request at 10 am. How do you decide the order, and how do you tell the two who wait? |
+| B8P02Q18 | 8 | 2 | A stakeholder says, "Just give me the number, I do not need the caveats." The number depends on a shaky assumption. How do you respond? |
+| B8P02Q19 | 8 | 2 | A manager asks you to find data that supports a decision they have already made. How do you handle it? |
+| B8P02Q20 | 8 | 2 | A senior leader pings you for a "quick insight" from a dataset you have not yet validated. How much checking do you do before replying, and what do you say? |
+| B8P02Q21 | 8 | 2 | How do you say no, or "not yet", to a request without damaging the relationship? |
+| B8P02Q22 | 8 | 2 | The recruiting head asks for "time to hire" for the quarter. What do you ask before computing it, and how do you present the result? |
+| B8P02Q23 | 8 | 2 | A stakeholder quotes your chart in a slide deck with a different conclusion from yours. What do you do? |
+| B8P02Q24 | 8 | 2 | Your manager asks for a figure from an HRIS export you know includes contractors and exited staff. The ask was "how many employees do we have?". How do you answer? |
+| B8P02Q25 | 8 | 2 | A stakeholder says, "Sales were 500 before the campaign and 600 after, so the campaign grew sales 20%." The same period last year grew 18% without a campaign. What do you say? |
+| B8P02Q26 | 8 | 2 | A stakeholder asks for "average ticket resolution time" and you see these five resolution times in hours: 2, 2, 3, 4, 40. Which figure do you report, and what do you tell them? |
+| B8P02Q27 | 8 | 2 | Your team receives about 12 ad-hoc requests a week, each taking roughly 90 minutes. Your working week is 40 hours. What share of time do they use, and what would you propose to your manager? |
+| B8P02Q28 | 8 | 2 | Your manager and a director give you conflicting priorities for the same week, and each says theirs is more important. What do you do? |
+| B8P02Q29 | 8 | 2 | A senior stakeholder insists that a metric you know is misleading goes into the monthly review deck unchanged. How do you handle this? |
+| B8P02Q30 | 8 | 2 | You are asked for a number you cannot produce reliably in the time given. How do you decide between delivering a rough estimate, delivering late, and declining, and how do you phrase each? |
+| B8P02Q31 | 8 | 2 | What is the difference between an ad-hoc request, a recurring report and a self-service dashboard, and how do you steer stakeholders towards the right one? |
+| B8P02Q32 | 8 | 2 | A stakeholder asks for "all the data" on a topic. What do you do? |
+| B8P02Q33 | 8 | 2 | How do you keep track of incoming requests so nothing is lost, and what information do you log for each? |
+| B8P02Q34 | 8 | 2 | How do you set expectations on turnaround time when a request arrives without a deadline? |
+| B8P02Q35 | 8 | 2 | What do you do when a stakeholder asks for a chart type that will mislead (for example a truncated bar chart or a 3D pie)? |
+| B8P02Q36 | 8 | 2 | When should you involve your manager in a stakeholder conflict, and when should you resolve it yourself? |
+| B8P02Q37 | 8 | 2 | A stakeholder asks for a quick forecast and says, "Just tell me the exact number we will hit." How do you respond? |
+| B8P02Q38 | 8 | 2 | How do you handle a stakeholder who sends the same request in three different channels (email, chat, a hallway ask) with slightly different wording each time? |
+| B8P02Q39 | 8 | 2 | An offshore or client-side stakeholder in another time zone sends vague requirements late on Friday for a Monday morning deliverable. How do you handle it? |
+| B8P02Q40 | 8 | 2 | A stakeholder asks you to share an employee-level salary list with their team "for planning". What do you do? |
+| B8P02Q41 | 8 | 2 | A team lead asks for average salary by department. One department has only two employees. How do you handle the request? |
+| B8P02Q42 | 8 | 2 | A product manager wants to claim in a leadership update that a feature "caused" a rise in retention, based on a before-and-after comparison. How do you respond? |
+| B8P02Q43 | 8 | 2 | A stakeholder reads a survey result and says, "85% of employees are satisfied, so morale is great." What do you check and say? |
+| B8P02Q44 | 8 | 2 | A manager says attrition in a 40-person team "doubled" this quarter. You see the leavers count. How do you respond and how would you present the change? |
+| B8P02Q45 | 8 | 2 | A stakeholder wants to know the conversion rate. Sessions were 20,000, unique visitors 16,000 and orders 500. Which denominator do you use, and what do you tell them? |
+| B8P02Q46 | 8 | 2 | A stakeholder disputes your number because their own spreadsheet shows a different total. How do you resolve it without turning it into a blame exercise? |
+| B8P02Q47 | 8 | 2 | You are asked to build a weekly report that you suspect nobody will read. How do you check before investing the time? |
+| B8P02Q48 | 8 | 2 | A new stakeholder who has never worked with data asks you to "use AI to tell us what to do". How do you reset the expectation and still help them? |
+| B8P02Q49 | 8 | 2 | A stakeholder asks you for a number the same afternoon that your data source team says is not available until next week. How do you handle both sides? |
+| B8P02Q50 | 8 | 2 | You deliver an analysis and the stakeholder says, "This is not what I asked for." How do you recover, and how do you prevent it next time? |
+| B8P02Q51 | 8 | 2 | A stakeholder wants to change the definition of a KPI mid-quarter because the current one looks bad. How do you respond? |
+| B8P02Q52 | 8 | 2 | A request arrives through a chain: the CEO asked a director, who asked a manager, who asked you. The request makes no sense to you. What do you do? |
+| B8P02Q53 | 8 | 2 | A request from the finance team conflicts with a data-privacy rule your company follows. How do you handle it? |
+| B8P02Q54 | 8 | 2 | How would you handle a stakeholder who wants a dashboard "with everything on it"? |
+| B8P02Q55 | 8 | 2 | How do you present a negative finding (for example, a flagship programme is not working) to the person who owns that programme? |
+| B8P02Q56 | 8 | 2 | The finance head asks for a daily cost report and the data engineering team says the daily feed is unreliable. You must satisfy both. What do you propose? |
+| B8P02Q57 | 8 | 2 | You made an error that changed a hiring or pay decision before it was caught. Describe how you handle the first hour, the first day and the follow-up. |
+| B8P02Q58 | 8 | 2 | Two stakeholders disagree about whether a pilot succeeded and each cites a different metric. You are asked to decide. What do you do? |
+| B8P02Q59 | 8 | 2 | A stakeholder asks you for a regional breakdown that you know will look like a performance ranking of specific managers, and some of the groups are tiny. How do you handle it? |
+| B8P02Q60 | 8 | 2 | You are the only analyst and receive a flood of requests after a leadership change. How do you reorganise your intake, priorities and communication within a week? |
+| B8P02Q61 | 8 | 2 | What does "managing up" mean for a junior data analyst, and give two practical habits? |
+| B8P02Q62 | 8 | 2 | How do you ask a stakeholder for feedback on your reports, and what do you do with it? |
+| B8P02Q63 | 8 | 2 | A stakeholder always asks for last-minute changes during their review meeting. How do you reduce the friction over time? |
+| B8P02Q64 | 8 | 2 | How do you document a stakeholder's request so that a colleague can pick it up if you are on leave? |
+| B8P02Q65 | 8 | 2 | A stakeholder asks you to attend a call where they present your numbers. You think they will overstate them. What do you do beforehand, and during the call? |
+| B8P02Q66 | 8 | 2 | How do you build trust with a stakeholder who has been burnt before by bad data from another team? |
+| B8P02Q67 | 8 | 2 | A request is clearly valuable but sits outside your team's remit (for example, it needs data engineering time). How do you route it? |
+| B8P02Q68 | 8 | 2 | A stakeholder challenges you: "Why should I trust your numbers over my gut feeling?" How do you answer? |
+| B8P02Q69 | 8 | 2 | How do you tailor the same finding for three audiences: an executive, a functional manager and a fellow analyst? |
+| B8P02Q70 | 8 | 2 | Role-play: a stakeholder says only, "Revenue looks off." What are your first three replies, in order? |
+| B8P02Q71 | 8 | 2 | What are the warning signs that a stakeholder request is really a political request rather than an analytical one, and how do you respond? |
+| B8P02Q72 | 8 | 2 | What are the common mistakes junior analysts make when responding to a vague request, and how would you avoid each? |
+| B8P02Q73 | 8 | 2 | You are asked for a headcount and attrition report for a client under offshore-delivery rules: a fixed template, a fixed turnaround and no direct contact with the end user. How do you protect quality when you cannot ask questions directly? |
+| B8P02Q74 | 8 | 2 | A department head asks you to produce an attrition analysis that quietly excludes a recent round of layoffs, "to keep the trend clean". How do you respond? |
+| B8P02Q75 | 8 | 2 | You suspect a stakeholder has been cherry-picking your outputs across several decks to build a misleading story. How do you handle it? |
+| B8P02Q76 | 8 | 2 | The same stakeholder sends you urgent requests every week and your other work is suffering. How do you address the pattern, not just the single request? |
+| B8P02Q77 | 8 | 2 | You join a company where nobody can say who owns the main revenue number and each team reports its own. How do you approach your first stakeholder requests? |
+| B8P02Q78 | 8 | 2 | A stakeholder asks you to turn a rough analysis into an executive recommendation overnight, and you are not confident in the numbers. How do you handle the recommendation? |
+| B8P02Q79 | 8 | 2 | Design a lightweight intake process (form, triage rules and service levels) for a small analytics team that currently gets requests by chat and email. |
+| B8P03Q1 | 8 | 3 | Your dashboard shows 10,200 orders for last month and a colleague's SQL report shows 9,800 for the same month. What is the first thing you check, and in what order do you work through the rest? |
+| B8P03Q2 | 8 | 3 | What are the most common reasons two reports built on the same business data show different totals for the same KPI? |
+| B8P03Q3 | 8 | 3 | A stakeholder messages you, "Your dashboard is wrong." How do you respond in the first hour? |
+| B8P03Q4 | 8 | 3 | A dashboard that took 5 seconds to open now takes 40 seconds. What is the first step you take before changing anything? |
+| B8P03Q5 | 8 | 3 | What is a single source of truth for metrics, and why does it matter when several dashboards report the same KPI? |
+| B8P03Q6 | 8 | 3 | What do you validate before you publish a new dashboard to senior leadership? |
+| B8P03Q7 | 8 | 3 | A dashboard card labelled "Orders" shows 12,500, while Finance says there were 9,000 orders. The orders table has one row per order line item. |
+| B8P03Q8 | 8 | 3 | The sales head says the dashboard "has not updated since yesterday" at 10 am, but the scheduled refresh shows as successful. How do you find out what is going on and what do you tell them? |
+| B8P03Q9 | 8 | 3 | The HR dashboard shows 1,248 active employees on 30 September while the payroll report shows 1,196. How do you reconcile the two, and what do you do with any gap you cannot explain? |
+| B8P03Q10 | 8 | 3 | The sales dashboard shows revenue of INR 482 lakh for October, while Finance reports INR 465 lakh. How do you narrow down the INR 17 lakh gap? |
+| B8P03Q11 | 8 | 3 | Daily order counts on your UTC-based dashboard differ from the operations team's IST report, but the monthly totals nearly match. Can you show the two daily figures are consistent? |
+| B8P03Q12 | 8 | 3 | The dashboard's average order value is INR 1,250, but an analyst's Excel calculation gives INR 1,400 for the same two days. Which is right and why do they differ? |
+| B8P03Q13 | 8 | 3 | A Power BI dataset refresh took 15 minutes last month and now takes 70 minutes. What do you check, in what order? |
+| B8P03Q14 | 8 | 3 | A report is fast for most users but very slow for some users and on Monday mornings. How do you diagnose it? |
+| B8P03Q15 | 8 | 3 | A manager says, "This number was different when I looked last week for the same period." How do you find out why and explain it? |
+| B8P03Q16 | 8 | 3 | The dashboard shows Sales department attrition of 18.0%, but the HR lead calculated 14.4% for the same quarter. Explain the gap and say which you would publish. |
+| B8P03Q17 | 8 | 3 | A region table shows distinct customers of 120, 95 and 110, but the grand total says 290, not 325. Is this a bug, and how would you explain it to a business user? |
+| B8P03Q18 | 8 | 3 | After you add a payments table to the model, the revenue total jumps. How do you confirm a join fan-out and what do you do? |
+| B8P03Q19 | 8 | 3 | A dashboard total is INR 46 lakh while the source system says INR 50 lakh for the same period, and you suspect rows are being dropped in the model. How do you confirm and fix it? |
+| B8P03Q20 | 8 | 3 | A VP sends you an Excel sheet and says the dashboard must be changed to match it. How do you decide whose number is right? |
+| B8P03Q21 | 8 | 3 | The dashboard shows a conversion rate of 4.2% while the funnel report shows 3.5% for the same week. What explains it and which would you present? |
+| B8P03Q22 | 8 | 3 | A number matches the source for most filter selections but is wrong for a few combinations, such as one region in one month. How do you isolate the problem quickly? |
+| B8P03Q23 | 8 | 3 | Finance and Sales each quote a different revenue figure for the same quarter, and each wants the executive dashboard to show theirs. How do you resolve it? |
+| B8P03Q24 | 8 | 3 | At 8 am you find one of three source systems failed overnight, so the executive dashboard is missing about 20% of the data, and the CEO reviews it at 9 am. What do you do? |
+| B8P03Q25 | 8 | 3 | You discover that a number you sent to leadership last week was wrong and decisions may already have been taken on it. What do you do, step by step? |
+| B8P03Q26 | 8 | 3 | A Power BI report on a table with about 200 million rows takes 3 minutes to open and the business wants it under 10 seconds. What is your plan? |
+| B8P03Q27 | 8 | 3 | What is the difference between import (extract) and live/DirectQuery connections for a business dashboard, and when would you choose each? |
+| B8P03Q28 | 8 | 3 | What is incremental refresh and when would you use it for a daily sales report? |
+| B8P03Q29 | 8 | 3 | How do you decide how often a dashboard should refresh? |
+| B8P03Q30 | 8 | 3 | A dashboard card shows "Attrition +20%", and an executive reads it as attrition being 20%. How would you fix the presentation? |
+| B8P03Q31 | 8 | 3 | A stakeholder objects that the percentages in a pie chart add up to 99%. How do you handle it? |
+| B8P03Q32 | 8 | 3 | The dashboard shows year-to-date revenue on a calendar-year basis, but the company's financial year runs April to March. How do you show the right figure? |
+| B8P03Q33 | 8 | 3 | How do you communicate a change in a KPI definition on a live dashboard so users are not confused? |
+| B8P03Q34 | 8 | 3 | The attendance dashboard shows an employee at 61.3% attendance, but the employee expects a much higher figure. Find the cause and give the right figure. |
+| B8P03Q35 | 8 | 3 | Your dashboard shows a gross margin of 31.5% while Finance reports 29.8%. How do you find what explains the difference? |
+| B8P03Q36 | 8 | 3 | On 20 November, the dashboard shows month-to-date revenue 28% below last November and leadership is worried. Is the comparison fair? |
+| B8P03Q37 | 8 | 3 | The revenue by region chart shows an "Unknown" bucket. What do you do about it and what do you tell the stakeholder? |
+| B8P03Q38 | 8 | 3 | Users see yesterday's numbers every morning even though refreshes succeed. How do you find the problem? |
+| B8P03Q39 | 8 | 3 | Your dataset has about 18 million rows covering three years (1,095 days), and a full daily refresh takes 60 minutes, though only the last 7 days of data ever change. How would incremental refresh help, and roughly how much data would each refresh process? |
+| B8P03Q40 | 8 | 3 | A dashboard page has 24 visuals and loads in 28 seconds; the target is 5 seconds. What do you do? |
+| B8P03Q41 | 8 | 3 | An executive slicer lists all 40,000 employee IDs and makes the page slow. What do you change? |
+| B8P03Q42 | 8 | 3 | A user says, "I selected Hyderabad and the dashboard shows nothing, but it worked last week." How do you troubleshoot? |
+| B8P03Q43 | 8 | 3 | A senior leader asks you to add 15 more KPIs and 10 filters to an executive dashboard that is already slow and cluttered. How do you respond? |
+| B8P03Q44 | 8 | 3 | You find that test and dummy accounts have been included in a revenue dashboard for two months. How do you fix it and communicate it? |
+| B8P03Q45 | 8 | 3 | How would you design a dashboard so users can tell when its numbers are provisional or incomplete? |
+| B8P03Q46 | 8 | 3 | A scheduled refresh failed at 3 am because of an expired credential and you only learnt about it at 9 am from users. How do you handle it and stop it recurring? |
+| B8P03Q47 | 8 | 3 | An executive asks for a real-time dashboard, but the source can only deliver hourly batches and live queries would slow the operational system. How do you respond? |
+| B8P03Q48 | 8 | 3 | The new Power BI report differs from the legacy Excel report by 0.8%, and the business refuses to switch. How do you handle the migration? |
+| B8P03Q49 | 8 | 3 | Three regional managers each see only their region, and the national head sees a different total from the sum of their numbers. What do you check? |
+| B8P03Q50 | 8 | 3 | The headcount for March showed 520 when you published the report, but today the same dashboard shows 500 for March. What happened and how do you prevent it? |
+| B8P03Q51 | 8 | 3 | When is a difference of 0.3% between a dashboard and a source report worth chasing, and when would you leave it? |
+| B8P03Q52 | 8 | 3 | What automated checks would you add so a mismatch is caught before users see it? |
+| B8P03Q53 | 8 | 3 | A VP says, "Your dashboard has too much on it and I cannot find the answer." How do you rework it? |
+| B8P03Q54 | 8 | 3 | Users have stopped trusting a dashboard after two incorrect numbers in a month. How do you rebuild trust? |
+| B8P03Q55 | 8 | 3 | You discover 14 different "Sales Dashboard" files across teams, each with slightly different numbers. How do you rationalise them? |
+| B8P03Q56 | 8 | 3 | Customer counts differ across CRM, billing and finance systems, and none is accepted as authoritative. How do you build a reconciliation approach? |
+| B8P03Q57 | 8 | 3 | You notice a manager-level dashboard exposes peers' salary figures because of a row-level security mistake. What do you do? |
+| B8P03Q58 | 8 | 3 | A weekly dashboard refreshes four times a day for 20 minutes each, but usage logs show two viewers open it once a week. What do you do and how many refresh minutes per week do you save? |
+| B8P03Q59 | 8 | 3 | A scheduled email PDF of the dashboard goes out at 7 am, while the data refreshes at 8 am, so recipients see old numbers. How do you fix it? |
+| B8P03Q60 | 8 | 3 | The department headcount chart sums to 1,150, but the HRIS export totals 1,170. How do you find the difference? |
+| B8P03Q61 | 8 | 3 | Dashboard sales in INR differ from Finance's INR figure for USD sales. Find the likely cause and decide which to use. |
+| B8P03Q62 | 8 | 3 | After a data-model change, how would you regression-test a dashboard before releasing it? |
+| B8P03Q63 | 8 | 3 | An old dashboard that people still rely on is broken and no one owns it. How do you handle it? |
+| B8P03Q64 | 8 | 3 | A "Top 10 products" visual gives different results when another filter is applied, and the user thinks the numbers are wrong. How do you explain it? |
+| B8P03Q65 | 8 | 3 | A % of total measure shows 100% for every row once a user selects a category in a slicer. What is happening and how would you change the measure? |
+| B8P03Q66 | 8 | 3 | How do you measure whether a dashboard is actually being used and decide whether to retire it? |
+| B8P03Q67 | 8 | 3 | A user says the mobile app shows different totals from the desktop view of the same report. How do you investigate? |
+| B8P03Q68 | 8 | 3 | A BI tool's approximate distinct count differs by 1.2% from an exact SQL count. When do you accept this and when not? |
+| B8P03Q69 | 8 | 3 | After a department restructure, last year's department-wise numbers on the dashboard changed. How do you handle history in the model and what do you tell users? |
+| B8P03Q70 | 8 | 3 | A director asks you to remove a red KPI from the dashboard before a board meeting. How do you respond? |
+| B8P04Q1 | 8 | 4 | A stakeholder messages you, "Sales have dropped, please look into it." What clarifying questions do you ask before you touch any data? |
+| B8P04Q2 | 8 | 4 | A key dashboard metric moves sharply overnight. What is your first-hour checklist, in order, before you say anything to the business? |
+| B8P04Q3 | 8 | 4 | Name five data-side (non-business) reasons a metric can appear to drop, and one quick check for each. |
+| B8P04Q4 | 8 | 4 | Orders were 12,500 last week and 11,000 this week. What is the percentage change, and what would you look at before deciding whether to escalate? |
+| B8P04Q5 | 8 | 4 | Attrition rose from 12% to 15% over the year. What is the change in percentage points and in percent, and why does the distinction matter when you report it? |
+| B8P04Q6 | 8 | 4 | On the 18th of a 30-day month, the dashboard shows month-to-date revenue of INR 60 lakh against last month's full-month INR 90 lakh, a fall of 33%. What is wrong with this comparison, and what is the like-for-like change? |
+| B8P04Q7 | 8 | 4 | Revenue fell from INR 50 lakh to INR 45 lakh while orders rose from 10,000 to 10,500. What happened to average order value, and what does it tell you about where to look? |
+| B8P04Q8 | 8 | 4 | What is the difference between a metric moving because customer or employee behaviour changed and a metric moving because its definition or measurement changed? Give two examples of each. |
+| B8P04Q9 | 8 | 4 | Daily active users of your company's app are 10% below the 7-day average this morning. You are the on-call analyst. Walk me through your first two hours. |
+| B8P04Q10 | 8 | 4 | Conversion fell this week. Use the funnel below to find the step that explains the fall, and state the change in paid orders. |
+| B8P04Q11 | 8 | 4 | Overall conversion fell even though both mobile and desktop conversion improved. Calculate the overall rates and explain how this can happen. |
+| B8P04Q12 | 8 | 4 | Monthly revenue fell from INR 20,00,000 to INR 18,90,000 for one product. Split the change into a volume effect and a price effect and say what you would do next. |
+| B8P04Q13 | 8 | 4 | Sales fell company-wide by 26 units of revenue. What share of the net decline comes from the South, and how would you proceed from here? |
+| B8P04Q14 | 8 | 4 | Monthly attrition rose from 2.0% to 3.1%. Which department explains most of the increase, what share is it, and what would you check there? |
+| B8P04Q15 | 8 | 4 | This week's orders look low. Is this a real drop or normal noise? Calculate how many standard deviations below the 8-week mean it is. |
+| B8P04Q16 | 8 | 4 | The average delivery time rose from 28 to about 33 minutes. Calculate the new mean and median and explain what you would report to operations. |
+| B8P04Q17 | 8 | 4 | The payment success rate fell. Find the cause from the table and quantify the extra failed payments. |
+| B8P04Q18 | 8 | 4 | The average product rating fell from 4.4 to about 4.2. Calculate the new average and decide whether existing products got worse. |
+| B8P04Q19 | 8 | 4 | It is 10 am and the CEO asks why revenue fell yesterday. You have partial findings only. What exactly do you tell them, and what do you not say? |
+| B8P04Q20 | 8 | 4 | How would you build a metric tree for orders on an e-commerce marketplace so that you can localise a decline in minutes? |
+| B8P04Q21 | 8 | 4 | You have twelve possible causes for a metric drop and two hours. How do you prioritise which hypotheses to test first? |
+| B8P04Q22 | 8 | 4 | A metric dropped the same day a release shipped and a competitor ran a sale. How do you tell whether the release, the competitor or something else caused it? |
+| B8P04Q23 | 8 | 4 | Orders by 9 am today look low. Is it a real shortfall or late-arriving data? Calculate the shortfall and list your checks. |
+| B8P04Q24 | 8 | 4 | Time-to-hire rose from 30 to 42 days. Which stage contributes most of the increase, and what would you ask the recruiting team? |
+| B8P04Q25 | 8 | 4 | Offer acceptance fell from 80% to 60%. Calculate the change and describe how you would investigate before telling HR why. |
+| B8P04Q26 | 8 | 4 | Payroll cost rose 8% month on month while headcount stayed flat. Calculate cost per head and list what you would check. |
+| B8P04Q27 | 8 | 4 | Break the overall conversion fall into a rate effect and a mix effect, in percentage points, using the segments below, and explain which one management should act on. |
+| B8P04Q28 | 8 | 4 | Weekly active users fell 15% on the exact day of a mobile app release, and the app team insists nothing broke. How do you prove or disprove a tracking regression? |
+| B8P04Q29 | 8 | 4 | Revenue is down 10% year on year for the quarter and the board meets on Friday. Design the full investigation and the three-slide readout. |
+| B8P04Q30 | 8 | 4 | You find a real cause on Tuesday but the stakeholder had already told leadership a different explanation on Monday. How do you handle the correction? |
+| B8P04Q31 | 8 | 4 | January revenue was INR 62 lakh and February's was INR 56 lakh. A manager says sales fell. Is that right? |
+| B8P04Q32 | 8 | 4 | The absenteeism rate went up this month. Calculate both months' rates and the change, and say what you would check first. |
+| B8P04Q33 | 8 | 4 | Orders in the table appear to have grown 25% week on week. Calculate the true growth and explain what you would check. |
+| B8P04Q34 | 8 | 4 | The orders table stores timestamps in UTC but the daily report is in IST. Which IST date does an order placed at 20:00 UTC on 31 March belong to, and how can this create a false dip? |
+| B8P04Q35 | 8 | 4 | After finance started reporting revenue net of refunds, the weekly figure fell. Calculate the change and say how you would explain it. |
+| B8P04Q36 | 8 | 4 | Support tickets rose from 2,000 to 2,800 and a manager asks whether quality worsened. What is the ticket rate per 100 orders in each period, and what is your answer? |
+| B8P04Q37 | 8 | 4 | When you investigate a dip, how do you choose between a week-over-week, same-week-last-year and trailing 4-week baseline? Calculate all three comparisons. |
+| B8P04Q38 | 8 | 4 | A single B2B order of INR 10 lakh is in the data this month. Revenue appears up 15%. What is the growth excluding it, and how do you report it? |
+| B8P04Q39 | 8 | 4 | Customer acquisition cost rose. Calculate the change and decompose it into the spend and customer-count effects, then list what you would check. |
+| B8P04Q40 | 8 | 4 | Blended customer acquisition cost rose from INR 120 to INR 150 although no channel got more expensive. Show how, using the table. |
+| B8P04Q41 | 8 | 4 | Average salary in the HRIS report fell from INR 7.5 lakh to INR 7.0 lakh although nobody's pay changed. Show why with the numbers and explain what you would tell the CHRO. |
+| B8P04Q42 | 8 | 4 | After a hiring drive the average tenure dropped. Calculate the new average and explain how you would present tenure so it is not misread. |
+| B8P04Q43 | 8 | 4 | A test planned as a 50/50 split shows the allocation below, and the treatment metric looks worse. Calculate how far the split is from expected in standard deviations and say what you do. |
+| B8P04Q44 | 8 | 4 | Add-to-cart events fell sharply while orders stayed flat. Calculate the percentage fall and say what it suggests. |
+| B8P04Q45 | 8 | 4 | Is Sunday's figure a problem or normal? Use the day-of-week index below. |
+| B8P04Q46 | 8 | 4 | Two sales reps' attainment is averaged in two different ways and gives different answers. Calculate both and say which to report. |
+| B8P04Q47 | 8 | 4 | Churn fell from 5% to 4.0% and a manager calls it an improvement. Check the figures and give your view. |
+| B8P04Q48 | 8 | 4 | A subscription price rose and churn rose with it. Is revenue better or worse next month? |
+| B8P04Q49 | 8 | 4 | NPS apparently fell from 40 to 35. Calculate this month's NPS and say whether you would act on the change. |
+| B8P04Q50 | 8 | 4 | Conversion looks like it dropped from 2.0% to 1.54% after a traffic spike. Calculate the conversion after removing suspected bot sessions and list your checks. |
+| B8P04Q51 | 8 | 4 | Cohort retention for April looks much worse. Calculate the gap and say what you would check first. |
+| B8P04Q52 | 8 | 4 | Marketing says yesterday's conversions are poor. How do you account for attribution lag? Estimate the eventual total. |
+| B8P04Q53 | 8 | 4 | Biometric-recorded attendance dropped after a new device was installed at gate 2. Estimate how many employees are affected and what you would do. |
+| B8P04Q54 | 8 | 4 | Refund rate jumped from 2% to 5%. Calculate the rate excluding the outlier product and say what you would do. |
+| B8P04Q55 | 8 | 4 | Delivery-partner attrition rose from 6% to 8%. Which tenure group explains the rise? |
+| B8P04Q56 | 8 | 4 | Overall conversion fell from 3.75% to 2.85% with no change in any segment's conversion. Show how with the numbers. |
+| B8P04Q57 | 8 | 4 | Sales rise every October and fall in November. How do you separate festival seasonality from the underlying trend? |
+| B8P04Q58 | 8 | 4 | What is the difference between investigating a sudden step-change and a gradual drift in a metric, and how does your approach change? |
+| B8P04Q59 | 8 | 4 | Tracked sessions dropped 20% after a cookie-consent banner went live while backend orders are unchanged. How do you restate the metric and what do you tell the business? |
+| B8P04Q60 | 8 | 4 | The engagement survey's eNPS fell sharply and the response rate fell too. How do you decide whether the fall is real? |
+| B8P04Q61 | 8 | 4 | How do you decide whether a statistically significant dip is big enough to matter to the business? |
+| B8P04Q62 | 8 | 4 | A price rise and a marketing campaign launched the same week. Estimate the price effect with the regions below and state your assumptions. |
+| B8P04Q63 | 8 | 4 | Revenue in INR rose 2.4% but USD revenue is flat. What happened, and how do you report it? |
+| B8P04Q64 | 8 | 4 | How would you set up automated monitoring so that metric drops are caught by alerts rather than by stakeholders? Cover thresholds, seasonality and alert fatigue. |
+| B8P04Q65 | 8 | 4 | A stakeholder asks you to just fix the number because it looks wrong. When do you refuse, and how do you say it? |
+| B8P04Q66 | 8 | 4 | A weekly sales target was announced and a spike appeared in the last two days of every quarter. How do you investigate metric gaming? |
+| B8P04Q67 | 8 | 4 | How do you verify that a fix actually restored a metric, and when do you declare an incident closed? |
+| B8P04Q68 | 8 | 4 | Write the structure of a short post-mortem for a metric incident: what goes in each section and what stays out? |
+| B8P04Q69 | 8 | 4 | When an investigation cannot find a definite cause, how do you present the findings without overclaiming? |
+| B8P04Q70 | 8 | 4 | A data pipeline was fixed after you reported a drop. How do you communicate that the earlier numbers were wrong? |
+| B8P04Q71 | 8 | 4 | Monsoon rains and a cricket match night both affect order volumes in the same week. How do you control for external events when explaining a movement? |
+| B8P04Q72 | 8 | 4 | How do you handle a metric investigation when you only have access to aggregated weekly data and no raw tables? |
+| B8P04Q73 | 8 | 4 | How do you use leading and lagging indicators to explain a rise in attrition before the exit numbers show it? |
+| B8P04Q74 | 8 | 4 | How should a team define a metric dictionary entry so that a mid-year definition change does not silently break trend comparisons? |
+| B8P04Q75 | 8 | 4 | Explain Goodhart's law with an example of a metric that moved because people were optimising for it, and how you would detect it. |
+| B8P04Q76 | 8 | 4 | A data migration changed a metric by 3% overnight. How do you run a reconciliation so you can attribute the movement to the migration? |
+| B8P04Q77 | 8 | 4 | When is difference-in-differences or a synthetic control a sensible way to explain a metric change, and what are the failure modes? |
+| B8P04Q78 | 8 | 4 | A stakeholder believes a metric fell because of a campaign they disliked. How do you test that explanation fairly without confirming their bias? |
+| B8P04Q79 | 8 | 4 | A decline appears only in a survivorship-biased view of cohorts (only users still active). How do you spot and correct the bias? |
+| B8P04Q80 | 8 | 4 | Your anomaly detector flags a spike on every festival. How would you redesign it to learn from known events? |
+| B8P05Q1 | 8 | 5 | A manager says, 'Analyse our sales data and tell me what is going on.' What is your step-by-step approach before you open any data? |
+| B8P05Q2 | 8 | 5 | You are handed a new dataset and asked to analyse it with no further brief. What is your general framework for approaching any analysis from question to recommendation? |
+| B8P05Q3 | 8 | 5 | How would you analyse why customers are leaving (churn) for a subscription business, and how would you define churn before you start? |
+| B8P05Q4 | 8 | 5 | How would you analyse employee attrition in a company of 2,000 people to tell HR where the problem is? |
+| B8P05Q5 | 8 | 5 | How would you analyse a sales funnel (lead, qualified, proposal, won) to find where the biggest loss is? |
+| B8P05Q6 | 8 | 5 | How would you analyse the performance of a marketing campaign that ran for two weeks? |
+| B8P05Q7 | 8 | 5 | A stakeholder asks you to 'find insights' in an HRIS export of employees. How do you decide what to analyse and what to leave out? |
+| B8P05Q8 | 8 | 5 | How would you analyse whether a new onboarding programme improved new-hire retention, and what are the limits of what you can claim? |
+| B8P05Q9 | 8 | 5 | How would you analyse monthly sales performance across regions to decide which region needs attention? |
+| B8P05Q10 | 8 | 5 | What is the difference between a descriptive, a diagnostic, a predictive and a prescriptive analysis, and which one is the request 'why did attrition rise' asking for? |
+| B8P05Q11 | 8 | 5 | What do you check in the data before you start any analysis, and why does that come before charts or models? |
+| B8P05Q12 | 8 | 5 | How would you analyse a table of order data to find the top 10 customers, and what must you decide about 'top' before you run it? |
+| B8P05Q13 | 8 | 5 | A funnel for one month is below. Which stage has the biggest relative drop, and what is the overall conversion from visit to purchase? |
+| B8P05Q14 | 8 | 5 | Two regions are compared below. Which has the better conversion, and what would you check before saying one team is better? |
+| B8P05Q15 | 8 | 5 | A store chain offered a discount in 10 stores and not in 10 others. Sales rose in the discount stores. How would you analyse whether the discount caused the rise? |
+| B8P05Q16 | 8 | 5 | How would you analyse the hiring funnel of a company that says it is 'taking too long to hire'? |
+| B8P05Q17 | 8 | 5 | How would you analyse customer retention using a cohort table, and what would you look for in it? |
+| B8P05Q18 | 8 | 5 | How would you analyse the drop-off in an e-commerce checkout flow when the overall conversion looks stable? |
+| B8P05Q19 | 8 | 5 | Your manager wants to know which products to stock more of. How would you analyse the sales data to answer that? |
+| B8P05Q20 | 8 | 5 | How would you analyse absenteeism across a 300-person plant to find out whether it is a problem and where? |
+| B8P05Q21 | 8 | 5 | A senior asks, 'Is our new feature working?' What clarifying questions do you ask, and how do you analyse it? |
+| B8P05Q22 | 8 | 5 | You find a strong correlation between employees who attend training and employees who get promoted. How do you analyse whether the training causes promotion? |
+| B8P05Q23 | 8 | 5 | How would you segment customers for a retailer to support marketing decisions, and how would you check the segments are useful? |
+| B8P05Q24 | 8 | 5 | When would you use a median instead of a mean in an analysis, and how do you decide when your data has outliers that need treatment? |
+| B8P05Q25 | 8 | 5 | How would you analyse a survey with a 22 percent response rate before presenting results to leadership? |
+| B8P05Q26 | 8 | 5 | How would you analyse whether late deliveries are hurting repeat purchases? |
+| B8P05Q27 | 8 | 5 | You have data from three systems (HRIS, payroll, attendance) to analyse overtime cost. How do you plan the analysis before joining anything? |
+| B8P05Q28 | 8 | 5 | How do you decide which chart or table to use to present an analysis, and what do you put on the first slide? |
+| B8P05Q29 | 8 | 5 | Leadership wants a single KPI for 'employee engagement'. How would you analyse what to measure and how would you build it? |
+| B8P05Q30 | 8 | 5 | Average order value rose 12 percent after a pricing change. How would you analyse whether the change made money? |
+| B8P05Q31 | 8 | 5 | The analysis you finished contradicts what your manager believes. How do you re-check it and present it? |
+| B8P05Q32 | 8 | 5 | How would you analyse the effect of a salary revision on attrition across bands, given the revision was not applied randomly? |
+| B8P05Q33 | 8 | 5 | Sales by quarter are given below. How would you analyse them, and what is the year-on-year growth for Q4? |
+| B8P05Q34 | 8 | 5 | A cohort table for a monthly subscription is below. Which cohort retains worst by month 3, and what do you analyse next? |
+| B8P05Q35 | 8 | 5 | A training programme is evaluated with the figures below. How would you analyse whether it worked, and what is the difference in attrition rate? |
+| B8P05Q36 | 8 | 5 | Revenue is growing but profit is falling. How would you analyse where the problem sits across products, customers and costs? |
+| B8P05Q37 | 8 | 5 | A new product launched and the early numbers look great. How would you analyse whether the launch is truly successful rather than just novel? |
+| B8P05Q38 | 8 | 5 | How do you design an analysis to answer 'which customers should we spend retention budget on' rather than simply 'which customers are likely to leave'? |
+| B8P05Q39 | 8 | 5 | You have only 24 hours and messy data to give an analysis for a Monday leadership meeting. How do you decide scope, what to trust and what to say with caveats? |
+| B8P05Q40 | 8 | 5 | How would you analyse customer feedback comments (free text) to give leadership a view of the main complaints? |
+| B8P05Q41 | 8 | 5 | How would you analyse whether a promotion email campaign worked, given the people who got the email were chosen by the marketing team? |
+| B8P05Q42 | 8 | 5 | What is the difference between correlation and causation, and how does it change the way you word findings in an analysis? |
+| B8P05Q43 | 8 | 5 | How would you analyse the cost per hire of a recruitment team and compare channels? |
+| B8P05Q44 | 8 | 5 | How would you analyse the productivity of a customer support team? |
+| B8P05Q45 | 8 | 5 | Explain the difference between an ad hoc analysis and a recurring report, and how your approach differs for each. |
+| B8P05Q46 | 8 | 5 | How do you document an analysis so another analyst can reproduce it later? |
+| B8P05Q47 | 8 | 5 | Average order value for two customer groups is given below. Which has the higher revenue per visitor, and why might the averages alone mislead you? |
+| B8P05Q48 | 8 | 5 | How would you analyse seasonality in sales data, and how would you use it for next quarter's plan? |
+| B8P05Q49 | 8 | 5 | How would you analyse employee performance ratings to check whether managers rate consistently? |
+| B8P05Q50 | 8 | 5 | How would you analyse a sudden spike in refund requests without being given a reason? |
+| B8P05Q51 | 8 | 5 | How would you analyse the effect of a price increase on demand using only historical sales data? |
+| B8P05Q52 | 8 | 5 | An A/B test shows 3 percent lift but the result is not statistically significant. How do you analyse and present this to the product team? |
+| B8P05Q53 | 8 | 5 | How would you analyse inventory data to find slow-moving and fast-moving items and decide what to do with each? |
+| B8P05Q54 | 8 | 5 | How would you analyse the lifetime value of customers acquired through different channels, and what could mislead you? |
+| B8P05Q55 | 8 | 5 | How would you analyse whether remote work affects performance, given employees chose whether to work remotely? |
+| B8P05Q56 | 8 | 5 | A report shows total sales up but the customer count down. How would you analyse what is happening? |
+| B8P05Q57 | 8 | 5 | How would you analyse delivery time performance and decide whether the average, median or a percentile is the right number to report? |
+| B8P05Q58 | 8 | 5 | How would you analyse the diversity of a hiring pipeline stage by stage, and what would you be careful about in handling the data? |
+| B8P05Q59 | 8 | 5 | How would you analyse a recurring complaint that the 'dashboard shows lower sales than finance', if you had to start from the raw tables? |
+| B8P05Q60 | 8 | 5 | How would you analyse whether employees are leaving soon after a manager change? |
+| B8P05Q61 | 8 | 5 | You are asked to compare two branches' performance. How do you make the comparison fair? |
+| B8P05Q62 | 8 | 5 | How would you analyse the data to recommend the best day and time for a weekly promotion? |
+| B8P05Q63 | 8 | 5 | How would you analyse payroll data for anomalies such as duplicate payments or unusual overtime? |
+| B8P05Q64 | 8 | 5 | How do you analyse a metric that is a ratio (such as conversion rate) across segments without being misled by different sample sizes? |
+| B8P05Q65 | 8 | 5 | How do you analyse data you do not have the domain knowledge for, for example a logistics dataset on your first week? |
+| B8P05Q66 | 8 | 5 | How would you analyse a request to 'compare this year with last year' when the business changed definitions mid-year? |
+| B8P05Q67 | 8 | 5 | How would you analyse ticket resolution time when a few tickets stay open for months? |
+| B8P05Q68 | 8 | 5 | How do you decide between building a quick pivot-table analysis and a fuller model when time is short? |
+| B8P05Q69 | 8 | 5 | The table below shows attrition by tenure band. Where is the problem, and what would you analyse next? |
+| B8P05Q70 | 8 | 5 | The table below shows time-to-hire by stage in days. Which stage should be analysed first, and what is the total median time? |
+| B8P05Q71 | 8 | 5 | A promotion ran in two cities. Using the figures below, what is the lift in each city and what would you check before comparing them? |
+| B8P05Q72 | 8 | 5 | The conversion rate fell in every segment but rose overall. How would you analyse this and explain it simply? |
+| B8P05Q73 | 8 | 5 | How would you analyse whether a loyalty programme increases spending, when the best customers are the ones who joined? |
+| B8P05Q74 | 8 | 5 | How would you analyse the data to forecast headcount needs for the next 12 months, and what assumptions would you expose? |
+| B8P05Q75 | 8 | 5 | How would you analyse the impact of an outage that you cannot rerun, when only partial logs exist? |
+| B8P05Q76 | 8 | 5 | How would you analyse a model's output (for example, a churn score) to decide whether the business can trust it? |
+| B8P05Q77 | 8 | 5 | How would you analyse which of 40 possible factors drive employee attrition, and how would you avoid reporting spurious drivers? |
+| B8P05Q78 | 8 | 5 | Sales for a product are 100, 110, 125, 140 units over four months. How would you analyse whether growth is accelerating, and what is the month-on-month growth each month? |
+| B8P05Q79 | 8 | 5 | How would you analyse the data for a request from a senior leader who says they only need 'one number'? |
+| B8P05Q80 | 8 | 5 | How do you analyse an HRIS export for data-privacy risks before sharing it with a manager? |
+| B8P05Q81 | 8 | 5 | How would you analyse feedback from an employee engagement survey when comments could identify people? |
+| B8P05Q82 | 8 | 5 | What deliverables would you produce at the end of a typical analysis, and how do they differ for an executive and for an analyst peer? |
+| B8P05Q83 | 8 | 5 | How do you decide when an analysis is 'good enough' to share and when it needs more work? |
+| B8P05Q84 | 8 | 5 | How would you analyse the impact of an AI screening tool on shortlisting, including possible bias? |
+| B8P05Q85 | 8 | 5 | How would you analyse the return on investment of a learning and development programme? |
+| B8P05Q86 | 8 | 5 | How would you analyse delivery-partner attrition for a quick-commerce company when the workforce is mostly contract? |
+| B8P05Q87 | 8 | 5 | How would you analyse whether a team's overtime is a staffing problem or a process problem? |
+| B8P05Q88 | 8 | 5 | How would you analyse performance review calibration to see whether a department is rating too generously? |
+| B8P05Q89 | 8 | 5 | How would you analyse web or app traffic data when 30 percent of events are missing due to a tracking bug? |
+| B8P05Q90 | 8 | 5 | How would you analyse a merger of two employee databases to produce a combined headcount report? |
+| B8P05Q91 | 8 | 5 | How would you analyse time-series data that includes holidays and a one-off event such as a strike? |
+| B8P05Q92 | 8 | 5 | How would you analyse a large dataset in Excel if it has about 800,000 rows and keeps crashing, and when would you move to another tool? |
+| B8P05Q93 | 8 | 5 | How would you analyse the data to decide whether to open a new store location, given limited internal data? |
+| B8P05Q94 | 8 | 5 | How would you check whether the sample in a customer panel is representative of the full customer base? |
+| B8P05Q95 | 8 | 5 | How would you analyse support-chat transcripts and sales together to find reasons for lost deals? |
+| B8P05Q96 | 8 | 5 | How would you analyse customer survival (time until churn) when many customers are still active, and why can't you just average the tenure of those who left? |
+| B8P05Q97 | 8 | 5 | How would you analyse the effect of a retention bonus on attrition when only high performers received it? |
+| B8P05Q98 | 8 | 5 | How would you analyse whether a recommendation on the dashboard actually changed behaviour, using only observational data? |
+| B8P05Q99 | 8 | 5 | How would you analyse a decline in a metric where several things changed in the same week (a price change, a release and a holiday)? |
+| B8P05Q100 | 8 | 5 | How would you analyse pay differences between genders at a company so that the result is defensible to both HR and legal? |
+| B8P05Q101 | 8 | 5 | How would you analyse the relationship between employee engagement scores and team performance without over-claiming? |
+| B8P06Q1 | 8 | 6 | You are shown a table or chart you have never seen before, in an interview or on the job. What steps do you follow before you state an insight? |
+| B8P06Q2 | 8 | 6 | A stakeholder says "cancellations went up 1%" when the cancellation rate moved from 2% to 3%. How do you restate this, and why does the wording matter? |
+| B8P06Q3 | 8 | 6 | A chart of monthly revenue and a chart of monthly profit are shown to you. Revenue rose from 500 to 550 (exercise figures, in lakh) while gross margin fell from 30% to 24%. What happened to gross profit, and what do you say to the sales head? |
+| B8P06Q4 | 8 | 6 | What is the difference between an observation and an insight when you present a table, and can you give one example of each from a sales table? |
+| B8P06Q5 | 8 | 6 | Two teams' average ticket-handling times are shown below. A manager says the overall average is 6.5 minutes. Is that right, and what is the correct figure? |
+| B8P06Q6 | 8 | 6 | The table below shows revenue by region for two quarters (exercise data, in lakh). Which region contributed most to the total growth, and what is the overall growth percentage? |
+| B8P06Q7 | 8 | 6 | The attrition table below is from an HRIS export (exercise data). Which department has the highest attrition rate, which has the highest number of leavers, and what would you tell the HR head? |
+| B8P06Q8 | 8 | 6 | A checkout funnel for one week is shown below (exercise data). Compute the step-to-step conversion rates and the overall conversion, and say which step you would investigate first. |
+| B8P06Q9 | 8 | 6 | A salary export for a nine-person team is shown below (in lakh per year, exercise data). Compute the mean and the median, and say which one you would report to leadership and why. |
+| B8P06Q10 | 8 | 6 | You see a bar chart whose y-axis starts at 90 and shows two bars at 92 and 95. The title says "Customer satisfaction jumped". What is wrong with how this is presented, and how would you redraw or reword it? |
+| B8P06Q11 | 8 | 6 | A dashboard card shows "Sales: 1.2 crore, green arrow up". What context do you need before you can say whether this is good news? |
+| B8P06Q12 | 8 | 6 | A scatter chart shows that employees with more training hours have higher performance ratings (correlation about 0.6 in the exercise data). A manager says training causes better performance. How do you respond? |
+| B8P06Q13 | 8 | 6 | You are given a monthly attendance table with one column of absentee percentages for each weekday, and Monday and Friday are visibly higher. What caveats do you state before recommending a policy change? |
+| B8P06Q14 | 8 | 6 | The retention table below is by signup month (exercise data). Are newer cohorts retaining better, and which cells would you not read yet? |
+| B8P06Q15 | 8 | 6 | Training completion by department is shown below (exercise data). Compute the company-wide completion rate and say why it differs from the simple average of the three percentages. |
+| B8P06Q16 | 8 | 6 | The hiring-funnel table below is split by source (exercise data). Which source is best, and does your answer change if you look at offer acceptance or cost per join instead of volume? |
+| B8P06Q17 | 8 | 6 | The A/B result below is for a new checkout button (exercise data). Compute the relative lift, and say whether you would recommend shipping on this evidence alone. |
+| B8P06Q18 | 8 | 6 | Variant B has a higher conversion rate than A in every device segment below, but a lower rate overall. Verify the overall rates, explain how this can happen, and say which variant you would recommend. |
+| B8P06Q19 | 8 | 6 | Orders, returns and return rate by city are shown below (exercise data). A colleague says the top three cities "cause most returns". Do you agree, and what would you check next? |
+| B8P06Q20 | 8 | 6 | Average order value rose from Rs 800 to Rs 900 while orders fell from 10,000 to 8,500 (exercise data). Compute the change in total revenue and say what you would investigate. |
+| B8P06Q21 | 8 | 6 | A funnel for two weeks is shown below (exercise data). Overall conversion fell. Which step moved, and what are the two or three explanations you would test first? |
+| B8P06Q22 | 8 | 6 | The month-to-date figures on a dashboard show a 30% drop in orders versus last month on the 12th. What do you check before raising an alarm? |
+| B8P06Q23 | 8 | 6 | The company-level average salary by gender looks very different from the within-grade averages below (exercise data, in lakh). Compute the overall male and female averages, and explain what the grade split says and what is still unexplained. |
+| B8P06Q24 | 8 | 6 | Customer survey scores are shown for two quarters, based on different numbers of responses (exercise data). Is the NPS drop real, and what do you tell the product manager? |
+| B8P06Q25 | 8 | 6 | The table below shows planned versus actual cost by department (exercise data, in lakh). Which department is the real concern, and why might the biggest percentage variance not be it? |
+| B8P06Q26 | 8 | 6 | What is a checklist of caveats you would mention for any chart or table before an insight is acted on? |
+| B8P06Q27 | 8 | 6 | How would you present the main finding from a table to a non-technical executive in two minutes, and what would you deliberately leave out? |
+| B8P06Q28 | 8 | 6 | Weekly sales spike in the week of a marketing campaign, as the chart shows. What else could explain the spike, and what would you need to claim the campaign caused it? |
+| B8P06Q29 | 8 | 6 | A delivery-time chart shows an average of 30 minutes, but customers complain about lateness. The percentile table below is given (exercise data). What does it tell you, and which metric would you put on the dashboard? |
+| B8P06Q30 | 8 | 6 | A recruiter reports that offers made to women and men in one hiring round gave the numbers below (exercise data). Compute the selection rates and the ratio, and say what you would do with the result. |
+| B8P06Q31 | 8 | 6 | The table below shows offer acceptance by salary band (exercise data). Compute acceptance by band and overall, and say what you would investigate. |
+| B8P06Q32 | 8 | 6 | New joiner exits are shown below by joining month (exercise data). Compute the 90-day exit rate for each cohort and say what you would ask the business. |
+| B8P06Q33 | 8 | 6 | Two dashboards show different totals for the same month: Finance shows revenue of 10.4 crore and Sales shows 10.9 crore. Given a table of both definitions (booking date versus invoice date, taxes included versus excluded), how do you reconcile them and what do you present? |
+| B8P06Q34 | 8 | 6 | Revenue by product is shown below (exercise data). Compute the overall growth, and say what the real story is when the existing products are flat or declining. |
+| B8P06Q35 | 8 | 6 | A pie chart has twelve slices of similar size. What is wrong with it, and what chart would you use instead? |
+| B8P06Q36 | 8 | 6 | A chart uses two y-axes, with revenue on the left and orders on the right, and the lines appear to cross. Why is this risky, and how do you present it more honestly? |
+| B8P06Q37 | 8 | 6 | You are shown a 100% stacked bar chart of channel mix by month. A stakeholder says the share of the web channel fell, so web sales fell. How do you respond? |
+| B8P06Q38 | 8 | 6 | The median delivery time fell from 30 to 25 minutes while the mean stayed flat at 32. What can you say about the distribution, and what would you check? |
+| B8P06Q39 | 8 | 6 | A table reports complaints by branch: Branch X has 120 and Branch Y has 45. What do you need before saying that Branch X is worse? |
+| B8P06Q40 | 8 | 6 | A rate in a dashboard tile is shown without a denominator. Give three examples of metrics where that is dangerous and what you would add. |
+| B8P06Q41 | 8 | 6 | A forecast is compared with actuals below (exercise data). Compute the MAPE and say what you would also look at beyond that single number. |
+| B8P06Q42 | 8 | 6 | The headcount bridge below is from a monthly HR report (exercise data). Compute the closing headcount and check it against the stated figure of 515. |
+| B8P06Q43 | 8 | 6 | Quarterly sales are shown below (exercise data, in lakh). Compute the seasonal index of Q4 (Q4 divided by the quarterly average), and say how you would use it when comparing Q4 with Q1. |
+| B8P06Q44 | 8 | 6 | A seven-day moving average of daily orders is built from the figures below (exercise data). Compute the 3-day moving average for days 3 to 5, and say what it hides. |
+| B8P06Q45 | 8 | 6 | Revenue by region before and after a price change is shown below (exercise data, in lakh). Prices rose 10% on average. How much of the revenue change is price and how much is volume? |
+| B8P06Q46 | 8 | 6 | A mix-shift table is shown below (exercise data). Overall average order value fell even though each category's AOV is flat. Explain this and compute the overall AOV for each month. |
+| B8P06Q47 | 8 | 6 | A cohort chart shows that day-30 retention improved from 18% to 22% after an app release. What else could explain this, and how would you test it? |
+| B8P06Q48 | 8 | 6 | A salary table shows compa-ratios (salary divided by grade midpoint) by tenure band (exercise data). What does it say, and what would you check before recommending corrections? |
+| B8P06Q49 | 8 | 6 | Attrition by tenure bucket is shown below (exercise data). Where is the problem concentrated, and what question would you ask the business next? |
+| B8P06Q50 | 8 | 6 | An accounts-receivable ageing table is shown below (exercise data, in lakh). What is the share overdue by more than 60 days, and what would you flag? |
+| B8P06Q51 | 8 | 6 | The table below shows customer revenue concentration (exercise data). What is the share of the top five customers, and what is the business implication? |
+| B8P06Q52 | 8 | 6 | Agent-level CSAT is shown below (exercise data). Agent D has the highest score. Would you reward them, and what else do you check? |
+| B8P06Q53 | 8 | 6 | A histogram of order delivery times shows two peaks, one around 20 minutes and one around 55 minutes. What might cause this, and what would you do before reporting the average? |
+| B8P06Q54 | 8 | 6 | A heat map shows support tickets by weekday and hour. How would you turn it into a staffing recommendation, and what caveats apply? |
+| B8P06Q55 | 8 | 6 | Two dashboards show the same metric with different trends: one uses daily data and one uses a seven-day moving average. Which do you show to leadership, and why? |
+| B8P06Q56 | 8 | 6 | Performance ratings by manager are shown below (exercise data). What does the table suggest about the rating process, and what should HR do? |
+| B8P06Q57 | 8 | 6 | Returns and revenue by seller are shown below (exercise data). Which seller would you escalate first, and why is the return rate alone not enough? |
+| B8P06Q58 | 8 | 6 | A line chart shows a steady rise in monthly active users. You find that the definition of active changed in month 7. How do you handle the chart and how do you tell the stakeholder? |
+| B8P06Q59 | 8 | 6 | A table compares sales in November this year against October (exercise data show a 25% increase). What is wrong with this comparison, and what comparison would you make? |
+| B8P06Q60 | 8 | 6 | A regression output on salary versus tenure is shown below (exercise data). Interpret the coefficient and R-squared in plain words, and say what you would not conclude. |
+| B8P06Q61 | 8 | 6 | Support tickets per thousand orders are shown by quarter (exercise data). Raw tickets rose 40% but orders rose 60%. What is the change in the rate, and which framing would you present? |
+| B8P06Q62 | 8 | 6 | A year-on-year comparison shows December sales up 40% over last December, but last December had a stock-out for two weeks. How do you describe the growth? |
+| B8P06Q63 | 8 | 6 | Revenue per head by team is shown below (exercise data). Compute each team's revenue per head, and say why this might be an unfair comparison. |
+| B8P06Q64 | 8 | 6 | A table shows the average time-to-fill for open requisitions of 38 days, but the median is 24 days. What do you conclude, and what would you chart? |
+| B8P06Q65 | 8 | 6 | A pivot table shows subtotals and grand totals, and a stakeholder copies the totals column into a new chart that counts them twice. How do you spot and prevent this kind of mistake? |
+| B8P06Q66 | 8 | 6 | Sick-leave days by location are shown below (exercise data). Compute the days per employee for each, and say what the data can and cannot tell you. |
+| B8P06Q67 | 8 | 6 | A pivot can show payment mode by city as row percent or as column percent. Using the order counts below (exercise data), which statement is correct: "most UPI orders come from City A" or "most City A orders are UPI"? |
+| B8P06Q68 | 8 | 6 | Overtime hours per employee and attrition by team are shown below (exercise data). What would you conclude, and what additional cut would you request? |
+| B8P06Q69 | 8 | 6 | Inventory turnover is shown below for two warehouses (exercise data). Compute turnover for each and say which is performing better and what could mislead you. |
+| B8P06Q70 | 8 | 6 | A survey of current employees shows 82% satisfaction. How can that number mislead, and what extra data would you request? |
+| B8P06Q71 | 8 | 6 | A cumulative chart of signups always rises. How does that hide a slowdown, and what do you plot instead? |
+| B8P06Q72 | 8 | 6 | An index chart rebased to 100 shows two products grew from 100 to 140 and 100 to 120 over two years. Why can the one with the lower index still have contributed more absolute revenue, and what would you show? |
+| B8P06Q73 | 8 | 6 | Customer churn and revenue churn are shown below (exercise data). Compute both and say which you report, and why they differ. |
+| B8P06Q74 | 8 | 6 | A profit bridge from last year to this year is shown below (exercise data, in lakh). Which factor was the biggest drag, and what question would you ask the business? |
+| B8P06Q75 | 8 | 6 | A time series of daily orders shows a sudden drop to zero for two days, then a spike. How do you decide whether this is a real event or a data problem, and how do you treat it in the chart? |
+| B8P06Q76 | 8 | 6 | Confidence intervals for conversion by variant overlap slightly in the chart. Does that mean there is no difference, and how do you communicate it? |
+| B8P06Q77 | 8 | 6 | Payroll cost per head is shown below for two years (exercise data). Total payroll rose from 50 crore to 56 crore while headcount rose from 1,000 to 1,200. Compute the change in cost per head and explain what could produce it. |
+| B8P06Q78 | 8 | 6 | Pass rates by programme are shown below for two years (exercise data). Compute the overall pass rate for each year and explain why the overall fell although each programme improved. |
+| B8P06Q79 | 8 | 6 | What is the difference between a stacked bar, a 100% stacked bar and a grouped bar, and which would you choose to show a changing channel mix? |
+| B8P06Q80 | 8 | 6 | What is a log-scale axis, when would you use one, and what is the risk in showing it to a non-technical audience? |
+| B8P06Q81 | 8 | 6 | A chart shows average rating by product, ranked, and the top products have 3 to 5 reviews. How would you adjust the ranking? |
+| B8P06Q82 | 8 | 6 | A map shows sales by state, with the large states darkest. Why can that be misleading, and what would you plot instead? |
+| B8P06Q83 | 8 | 6 | A year-on-year growth table shows a 150% increase for one product. How do you check whether the base is too small before celebrating it? |
+| B8P06Q84 | 8 | 6 | A box plot shows salary by grade, with one grade having several dots above the whisker. How do you read it, and what do you do about those points? |
+| B8P06Q85 | 8 | 6 | Two charts of the same attrition data, one showing counts and one rates, are presented in the same deck. How do you reconcile them for the audience? |
+| B8P06Q86 | 8 | 6 | The same revenue table gives different stories by absolute and percentage change. When do you lead with each in a business review? |
+| B8P06Q87 | 8 | 6 | A sparkline panel shows twenty KPIs with no targets. How would you redesign it to help a decision-maker? |
+| B8P06Q88 | 8 | 6 | Your market share rose (exercise data) from 20% to 22% while the market grew 5%. Compute your revenue growth and say what you would highlight. |
+| B8P06Q89 | 8 | 6 | A table of top performers by revenue and a table by growth rate show different names. Which do you use for a bonus decision, and how do you explain the difference? |
+| B8P06Q90 | 8 | 6 | Two correlated metrics in a chart seem to move together, with one leading the other by two periods. How do you test whether the lead is real and whether it is useful for forecasting? |
+| B8P06Q91 | 8 | 6 | You find that a chart you published last week had a wrong filter, and a decision was taken from it. What do you do, and what do you say to the stakeholder? |
+| B8P06Q92 | 8 | 6 | The last month in a trend chart is incomplete because data is still loading, so the line dips. How do you present it so nobody misreads the dip? |
+| B8P07Q1 | 8 | 7 | You have five open requests from different teams and time to finish only two this week. What framework do you use to decide which two to do, and what do you tell the other three requesters? |
+| B8P07Q2 | 8 | 7 | Your manager and a senior director each ask you for an urgent report due tomorrow morning, and you can finish only one. What do you do? |
+| B8P07Q3 | 8 | 7 | Every stakeholder marks their request "urgent". How do you separate genuinely urgent work from work that only sounds loud? |
+| B8P07Q4 | 8 | 7 | What is the difference between urgent and important work, and how would you use an urgent-important grid on an analyst's request queue? |
+| B8P07Q5 | 8 | 7 | What is personally identifiable information (PII) in HR or customer data, and how do you handle it in everyday work such as exports, emails and screenshots? |
+| B8P07Q6 | 8 | 7 | Can you use your company's data, or a copy of it, for a personal portfolio project or to practise on while switching careers? |
+| B8P07Q7 | 8 | 7 | You realise you will miss a deadline you committed to. When and how do you tell the stakeholder? |
+| B8P07Q8 | 8 | 7 | A colleague outside HR asks you informally, over chat, to send the employee-level salary sheet. What do you do? |
+| B8P07Q9 | 8 | 7 | Three requests are in your queue, scored 1 to 10 on Impact, Confidence and Ease. Compute each ICE score (Impact x Confidence x Ease) and say which you would start with and what the score does not capture. |
+| B8P07Q10 | 8 | 7 | You discover an error in a report that went to the leadership team last week, and a decision may already have used it. What do you do, and in what order? |
+| B8P07Q11 | 8 | 7 | HR and Finance define "headcount" differently and both want their dashboard first. How do you prioritise and resolve the conflict? |
+| B8P07Q12 | 8 | 7 | A stakeholder asks you to leave out one inconvenient region from a presentation because it "spoils the story". What do you do? |
+| B8P07Q13 | 8 | 7 | Halfway through a project, the stakeholder keeps adding new cuts and metrics. How do you handle this scope creep? |
+| B8P07Q14 | 8 | 7 | You have 40 working hours this week, 12 of them already committed to recurring reports and data fixes. The open requests are listed below. Which combination uses the free hours exactly, and what do you say to the requester whose work is left out? |
+| B8P07Q15 | 8 | 7 | The CEO asks for a headcount figure within the hour, but you have not finished validating the source file. What do you send, and how? |
+| B8P07Q16 | 8 | 7 | A colleague wants to share a dashboard that shows salary and performance ratings with all people managers. What do you check before agreeing? |
+| B8P07Q17 | 8 | 7 | A requester asks for a weekly report you believe nobody will act on. How do you handle it? |
+| B8P07Q18 | 8 | 7 | Your manager asks you to remove some outliers so that the attrition rate presented to the board falls below the target, although the records are genuine. What do you do? |
+| B8P07Q19 | 8 | 7 | Two senior leaders give you conflicting priorities, your manager is on leave for a week and the deadlines clash. How do you decide and who do you inform? |
+| B8P07Q20 | 8 | 7 | What is data minimisation, and how does it change your response when someone asks for the full employee export "just in case"? |
+| B8P07Q21 | 8 | 7 | What is the difference between anonymised and pseudonymised data, and which one is a name-masked employee list with employee IDs kept? |
+| B8P07Q22 | 8 | 7 | What is the RICE scoring method, and when would you use it instead of ICE for an analytics backlog? |
+| B8P07Q23 | 8 | 7 | A weekly report takes you 3 hours to prepare by hand, and automating it would take about 20 hours. After how many weeks does the automation pay back, and would you automate it? |
+| B8P07Q24 | 8 | 7 | How do you estimate how long an ad-hoc analysis will take, and what do you promise the stakeholder? |
+| B8P07Q25 | 8 | 7 | You moved to a new team but still have access to the data of your previous project. What do you do? |
+| B8P07Q26 | 8 | 7 | A stakeholder asks for a quick win while a larger, more important analysis is pending. How do you decide which comes first? |
+| B8P07Q27 | 8 | 7 | How do you keep requesters informed about priorities so they stop chasing you individually? |
+| B8P07Q28 | 8 | 7 | Three analytics projects are scored with RICE (Reach x Impact x Confidence / Effort). Compute the scores, pick the first project, and say how you would break the tie between the other two. |
+| B8P07Q29 | 8 | 7 | Requests are scored on weights Impact 50%, Urgency 30% and Ease 20% (each scored 1 to 10). Compute the weighted scores and choose; then say when you would override the score. |
+| B8P07Q30 | 8 | 7 | Two requests arrive: one affects 200 employees whose payroll was wrongly deducted by an assumed INR 1,500 each, the other is a cosmetic dashboard redesign. Compute the money at stake in the first and explain how quantifying changes your priority. |
+| B8P07Q31 | 8 | 7 | The CFO's dashboard breaks mid-day while you are in the middle of a planned analysis for another team. How do you triage? |
+| B8P07Q32 | 8 | 7 | Should you spend this sprint fixing known data-quality problems or building the new dashboard stakeholders are asking for? How do you decide and defend it? |
+| B8P07Q33 | 8 | 7 | A senior leader bypasses your request queue and walks to your desk with a new task. How do you respond? |
+| B8P07Q34 | 8 | 7 | Describe how you would structure a behavioural answer to "tell me about a time you pushed back on a stakeholder request". |
+| B8P07Q35 | 8 | 7 | Sales asks for 'growth' to be shown from the weakest month. How would you respond, using the numbers below? |
+| B8P07Q36 | 8 | 7 | A survey of 1,000 employees got 150 responses, mostly from head office. The CHRO wants one company-wide engagement score on a slide. What is the response rate, and what do you do? |
+| B8P07Q37 | 8 | 7 | A report breaks attrition down by department, gender and grade, and one cell contains only 2 employees. What is the risk, and what do you do? |
+| B8P07Q38 | 8 | 7 | A manager asks you for a named list of "the weakest performers" built from attendance and ratings data. What do you ask, and what do you do? |
+| B8P07Q39 | 8 | 7 | You accidentally emailed a spreadsheet with employee salaries to a wrong external address. What do you do in the next hour? |
+| B8P07Q40 | 8 | 7 | A resume-screening tool shortlists 40 of 100 male applicants and 24 of 100 female applicants. Compute the selection-rate ratio, say what it suggests, and what you do as the analyst. |
+| B8P07Q41 | 8 | 7 | An attrition-risk model is 90% accurate on a company where 10% of employees leave. Show why that number can be misleading and how you would present it to HR. |
+| B8P07Q42 | 8 | 7 | You are told to give a single number with no range or caveats because 'leaders do not like uncertainty'. How do you respond? |
+| B8P07Q43 | 8 | 7 | Can you paste company data into a public AI chatbot to speed up your analysis? What is your rule of thumb and what would you do instead? |
+| B8P07Q44 | 8 | 7 | A stakeholder is unhappy that your analysis contradicts their belief and asks you to 'recheck' it until it fits. How do you handle this? |
+| B8P07Q45 | 8 | 7 | You are asked to build an attrition-prediction model using health-leave records, marital status and religion fields from the HRIS. What concerns do you raise, and what do you build instead? |
+| B8P07Q46 | 8 | 7 | Payroll has 1,250 lines but the HRIS shows 1,238 active employees; 12 payroll lines have no HRIS match. What is the mismatch rate, what do you do first, and who do you tell? |
+| B8P07Q47 | 8 | 7 | An incentive scheme your analysis shows is being gamed benefits the sales head who commissioned your work. How do you report it? |
+| B8P07Q48 | 8 | 7 | You are asked to rank employees for a layoff using performance and attendance data. How do you respond and what safeguards do you ask for? |
+| B8P07Q49 | 8 | 7 | Marketing wants to join your customer data with a purchased third-party dataset to personalise offers. What do you check before doing it? |
+| B8P07Q50 | 8 | 7 | HR wants to use a pattern you found, that younger employees get promoted faster, as a screening rule for promotions. What do you say? |
+| B8P07Q51 | 8 | 7 | How do you decide how long to keep ex-employee data when asked to retain it indefinitely 'for future analysis'? |
+| B8P07Q52 | 8 | 7 | A peer presents your analysis in a meeting without naming you. How do you handle it? |
+| B8P07Q53 | 8 | 7 | What does Goodhart's law mean for an analyst, and how would it apply to a call-centre team measured on average handle time? |
+| B8P07Q54 | 8 | 7 | You are asked to analyse the performance of a team in which your reviewing manager is involved. How do you handle the conflict of interest? |
+| B8P07Q55 | 8 | 7 | How do you balance a fixed share of your time for maintenance and technical debt against a stream of new requests? |
+| B8P07Q56 | 8 | 7 | What does India's data protection law, the Digital Personal Data Protection Act 2023, mean in practice for an analyst working with employee or customer data? Say what you know and what you would verify with the legal team. |
+| B8P07Q57 | 8 | 7 | A manager wants to use email and chat metadata to measure employee productivity. What is your position as the analyst? |
+| B8P07Q58 | 8 | 7 | You find that a resume-screening model trained on past hires shortlists far fewer women. What do you do, and how do you present the fix? |
+| B8P07Q59 | 8 | 7 | A retail model infers customers' health conditions from their purchases to target ads. How do you evaluate whether to build or ship it? |
+| B8P07Q60 | 8 | 7 | A teammate asks you to approve a report you suspect contains copied data they did not have permission to use. How do you proceed? |
+| B8P08Q1 | 8 | 8 | Walk me through your project in two minutes: how would you structure the answer so that the business problem, your role, the method and the result are all covered? |
+| B8P08Q2 | 8 | 8 | What was the business problem or question behind your project, and who was going to use the answer? |
+| B8P08Q3 | 8 | 8 | What was your own contribution to the project, as distinct from what the team, your guide or a template provided? |
+| B8P08Q4 | 8 | 8 | Where did the data for your project come from, how large was it, and how did you check that it was fit for the question? |
+| B8P08Q5 | 8 | 8 | What data cleaning did you do in your project, and which cleaning decision had the biggest effect on the result? |
+| B8P08Q6 | 8 | 8 | Which tools did you use in the project (SQL, Excel, Python, Power BI or Tableau), and why that tool for each step rather than another? |
+| B8P08Q7 | 8 | 8 | What was the key insight or result of your project, and how would you state it in one sentence to a non-technical manager? |
+| B8P08Q8 | 8 | 8 | What business impact did your project have, and if it was a learning or portfolio project, how would you describe the impact you would expect in a real setting? |
+| B8P08Q9 | 8 | 8 | What was the hardest problem you faced in the project, and how did you solve it? |
+| B8P08Q10 | 8 | 8 | If you could redo the project, what would you do differently? |
+| B8P08Q11 | 8 | 8 | Why did you choose this topic or project, and how does it relate to the role you are applying for? |
+| B8P08Q12 | 8 | 8 | How did you validate that your numbers were correct before you shared them? |
+| B8P08Q13 | 8 | 8 | An interviewer says: "Your resume lists a dashboard project. Explain the dashboard: who the audience was, which KPIs you showed and why those." How do you answer? |
+| B8P08Q14 | 8 | 8 | You are asked to explain a project that you did as part of a team of four. How do you talk about it honestly without over-claiming or under-selling your part? |
+| B8P08Q15 | 8 | 8 | Your project resume line says "improved efficiency by 20%". The interviewer asks how that 20% was measured. What do you say, and what if it was an estimate? |
+| B8P08Q16 | 8 | 8 | The interviewer asks: "Why did you use that method or chart or model and not an alternative?" How do you justify a technical choice in a project? |
+| B8P08Q17 | 8 | 8 | How do you explain your project to a non-technical stakeholder versus a technical interviewer, and how do you read which one you are talking to? |
+| B8P08Q18 | 8 | 8 | The interviewer interrupts and asks about a number in your project that you cannot remember exactly. How do you respond? |
+| B8P08Q19 | 8 | 8 | Your project's result was surprising or contradicted the expectation of the business. How did you check it and how did you present it? |
+| B8P08Q20 | 8 | 8 | Describe a stakeholder disagreement or changing requirement in your project, and how you handled it. |
+| B8P08Q21 | 8 | 8 | What assumptions did you make in the project, which one was the riskiest, and how did you test or disclose it? |
+| B8P08Q22 | 8 | 8 | Walk me through an HR-analytics project (attrition analysis, hiring funnel or attendance dashboard): the question, the data fields, the output and the decision it supported. |
+| B8P08Q23 | 8 | 8 | In your attrition analysis project, how did you define "attrition" (voluntary only or all exits, which date, which employee groups), and why did that definition matter? |
+| B8P08Q24 | 8 | 8 | Your HR project used an HRIS export with missing exit dates, duplicate employee IDs and inconsistent department names. How did you clean it, and what did you record about the cleaning? |
+| B8P08Q25 | 8 | 8 | Project data: the raw HR export has 2,650 rows, of which 120 are exact duplicate rows; of the remaining rows, 130 are second records of employees who transferred department (each such employee has exactly two rows). How many unique employees are there, and which record would you keep for each transferred employee? |
+| B8P08Q26 | 8 | 8 | A reviewer challenges your project: "Correlation is not causation; how do you know your recommendation will work?" How do you respond using only what your project data supports? |
+| B8P08Q27 | 8 | 8 | The interviewer asks you to find the weakest point in your own project. Which would you pick and why is naming it a strength? |
+| B8P08Q28 | 8 | 8 | Your project conclusion changes if one outlier group is removed. How do you decide what to report? |
+| B8P08Q29 | 8 | 8 | What did you learn from the project, technically and about working with business users? |
+| B8P08Q30 | 8 | 8 | How long did the project take, how did you plan it, and what did you do when a step took longer than expected? |
+| B8P08Q31 | 8 | 8 | What were the key columns or metrics you created in the project, and how did you define each one? |
+| B8P08Q32 | 8 | 8 | How did you choose the visuals in the project's report or dashboard, and which one would you remove if you had to cut one? |
+| B8P08Q33 | 8 | 8 | Which part of the project would you not trust yet, and what extra data would make you trust it? |
+| B8P08Q34 | 8 | 8 | How did you document the project so that someone else could reproduce your numbers? |
+| B8P08Q35 | 8 | 8 | For an HR project, which people metrics did you track (attrition, time to hire, offer acceptance, absenteeism) and how did you pick them with HR? |
+| B8P08Q36 | 8 | 8 | Your HR project handled sensitive employee data. What privacy and confidentiality steps did you follow, and what did you leave out of the final report? |
+| B8P08Q37 | 8 | 8 | Project exercise: in your attrition project, the sales team had 18 leavers on an average headcount of 120, and engineering had 30 leavers on an average of 400, for the year. Which team has the higher attrition rate, and how would you say it to HR in one line? |
+| B8P08Q38 | 8 | 8 | Exercise: your hiring funnel project showed 1,000 applications, 250 screened in, 100 interviewed, 30 offers and 24 joined. What are the stage-to-stage conversions and the overall application-to-joining rate, and where would you look first? |
+| B8P08Q39 | 8 | 8 | Exercise: in your project, a model flagged 200 employees as likely leavers; 60 actually left, and 90 employees in total left in the period. What are precision and recall, and how would you explain them to an HR head? |
+| B8P08Q40 | 8 | 8 | How did you handle class imbalance or a small sample in a project, for example an HR dataset where only 12% of employees had left? |
+| B8P08Q41 | 8 | 8 | How did you decide the project was finished, and how did you hand it over to its users? |
+| B8P08Q42 | 8 | 8 | Project data had 15% missing values in a key column. Describe the options you weighed and what you reported to the stakeholder. |
+| B8P08Q43 | 8 | 8 | You built a dashboard in your project but the users did not use it. What would you investigate and how would you find out why? |
+| B8P08Q44 | 8 | 8 | How would you scale your project to ten times the data, or to a weekly automatic refresh? What would break first? |
+| B8P08Q45 | 8 | 8 | You are asked: "What would the business do differently because of your analysis?" How do you convert a finding into a recommendation? |
+| B8P08Q46 | 8 | 8 | Your project used a public dataset such as the commonly shared HR attrition sample. How do you answer "how is this different from what everyone else did?" |
+| B8P08Q47 | 8 | 8 | How do you present a project when your team lead did most of the modelling and you did data preparation and reporting? |
+| B8P08Q48 | 8 | 8 | You discover, a week after sharing, an error in a project figure that stakeholders already used. Walk through what you do and say. |
+| B8P08Q49 | 8 | 8 | The interviewer says your project's metric is flawed because it ignores a segment. How do you respond and, if they are right, what do you do? |
+| B8P08Q50 | 8 | 8 | A model in your project showed high accuracy; the interviewer suspects data leakage. What checks would you describe and what leakage could exist in HR data such as exit-interview scores? |
+| B8P08Q51 | 8 | 8 | In your project, would your recommendation hold at a different time or in a different business unit? How would you test its generalisability? |
+| B8P08Q52 | 8 | 8 | Which project of yours would you not put on the resume, and why? |
+| B8P08Q53 | 8 | 8 | How did you use AI tools (for code, queries or summaries) in your project, and how did you verify their output? |
+| B8P08Q54 | 8 | 8 | What is the difference between a project you did in a course and one you would do in a job, and how do you show job-ready thinking from a course project? |
+| B8P08Q55 | 8 | 8 | If your project was in a different domain (retail, finance) from the company's, how do you transfer its lessons to HR or operations analytics? |
+| B8P08Q56 | 8 | 8 | Which ethical risks arise when employee data is used to predict who will leave or to rank performance, and how would your project have handled them? |
+| B8P08Q57 | 8 | 8 | How would you describe your project in a single-line resume bullet, and what makes a bullet verifiable in an interview? |
+| B8P08Q58 | 8 | 8 | Your project timeline slipped because data access was delayed. How do you explain this without blaming others? |
+| B8P08Q59 | 8 | 8 | How do you answer when the interviewer asks about a project you did in a previous non-analytics role, such as HR operations, and how do you reframe it as analytics? |
+| B8P08Q60 | 8 | 8 | Interviewer role-play: they challenge each assumption you state in the project, five times in a row. How do you stay structured instead of defensive? |
+| B8P08Q61 | 8 | 8 | You have no work project to show. How would you design and describe a self-initiated analytics project in two weeks so that it survives a deep-dive? |
+| B8P08Q62 | 8 | 8 | How would you estimate the cost of attrition for the company in your HR project, and which parts of that estimate would you flag as weak? |
+| B8P09Q1 | 8 | 9 | How did you learn to handle scenario-based questions such as data quality problems, vague stakeholder requests and metric drops, and how long did it take you? |
+| B8P09Q2 | 8 | 9 | What does a good answer to a "what would you do" scenario question look like, and what steps do you follow every time? |
+| B8P09Q3 | 8 | 9 | You come from an HR or non-technical background. How did you build the on-the-job judgement that analyst scenario questions test, when you have not yet worked as a data analyst? |
+| B8P09Q4 | 8 | 9 | How do you practise explaining your analysis to a non-technical manager, and how do you know your explanation is getting better? |
+| B8P09Q5 | 8 | 9 | How do you prepare real stories for behavioural scenario questions such as "tell me about a time the data was wrong" or "a stakeholder disagreed with your numbers" when you have limited work experience? |
+| B8P09Q6 | 8 | 9 | Which project from your portfolio best shows scenario thinking, and how did you design it to include dirty data, a vague brief and a stakeholder question? |
+| B8P09Q7 | 8 | 9 | What is your weekly routine for practising scenario questions, and how many hours do you spend on each activity? |
+| B8P09Q8 | 8 | 9 | You are asked a scenario question and you do not know the answer. What do you say and do in the next two minutes? |
+| B8P09Q9 | 8 | 9 | How would you rate your scenario and problem-solving skills out of 10, and which one weakness are you working on? |
+| B8P09Q10 | 8 | 9 | Which free resources and datasets have you used to practise realistic analyst scenarios, and why did you choose them? |
+| B8P09Q11 | 8 | 9 | How do you practise asking clarifying questions before analysing, and what are the first five questions you ask for any vague request? |
+| B8P09Q12 | 8 | 9 | How do you build a bank of your own scenario questions from a dataset you already know, such as an attendance, payroll or sales file? |
+| B8P09Q13 | 8 | 9 | How do you run a mock scenario interview with a friend or mentor, and what feedback checklist do you use afterwards? |
+| B8P09Q14 | 8 | 9 | How do you track progress in scenario practice, and what self-check test tells you that you are ready for interviews? |
+| B8P09Q15 | 8 | 9 | How do you learn from a scenario answer that went badly in a real interview or mock round? |
+| B8P09Q16 | 8 | 9 | How do you practise making a recommendation under time pressure when the data is incomplete or messy? |
+| B8P09Q17 | 8 | 9 | How do you stay current with the business context (retail, e-commerce, HR, finance) needed to answer scenarios well, without reading everything? |
+| B8P09Q18 | 8 | 9 | Design a 30-day plan to get ready for scenario rounds if you can give one hour on weekdays and three hours on weekends. What do you do each week? |
+| B8P09Q19 | 8 | 9 | Design a 90-day plan that takes you from zero scenario experience to being comfortable with data quality, stakeholder, dashboard, metric-change and project walkthrough questions. |
+| B8P09Q20 | 8 | 9 | How do you use a written decision log or case journal to improve your scenario answers over time? |
+| B8P09Q21 | 8 | 9 | How do you practise scenario thinking for ethics and prioritisation questions, where there is no single correct answer? |
+| B8P09Q22 | 8 | 9 | How do you practise a project walkthrough so that it stays clear, honest and under five minutes, and how do you prepare for deep follow-up questions on it? |
+| B8P09Q23 | 8 | 9 | How do you use AI tools to practise scenario questions without letting them write your answers for you? |
+| B8P09Q24 | 8 | 9 | How would you answer "why should we believe you can handle real stakeholder situations when you have never worked as an analyst?" |
 
 ## Book 9 — Basic ML + AI Tools
 | Q-ID | Book | Part | Canonical question |
