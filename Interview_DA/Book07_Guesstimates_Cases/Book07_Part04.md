@@ -60,8 +60,7 @@
 ### Q19 ⭐⭐⭐ 🟡 An edtech app earns an ARPU of Rs 400 per month at a 60% gross margin, and monthly churn is 4%. What is the LTV per customer?
 <!-- ANSWER_PENDING -->
 
-### Q20 ⭐⭐⭐ 🟡 In the edtech case above, if CAC is Rs 1,800, what is the LTV:CAC ratio and the CAC payback period in months?
-Use ARPU Rs 400 per month, gross margin 60%, monthly churn 4% and CAC Rs 1,800.
+### Q20 ⭐⭐⭐ 🟡 An edtech app has ARPU of Rs 400 per month, a 60% gross margin, 4% monthly churn and a CAC of Rs 1,800. What are the LTV:CAC ratio and the CAC payback period in months?
 <!-- ANSWER_PENDING -->
 
 ### Q21 ⭐⭐⭐ 🟡 Which metrics would you track to judge the health of a food delivery app, and how would you organise them into a KPI tree?
@@ -133,7 +132,7 @@ Use ARPU Rs 400 per month, gross margin 60%, monthly churn 4% and CAC Rs 1,800.
 ### Q43 ⭐⭐ 🟡 A SaaS company has MRR of Rs 50,00,000 at the start of the month. During the month: new MRR Rs 6,00,000, expansion MRR Rs 2,00,000, churned MRR Rs 3,00,000, contraction Rs 1,00,000. Find the closing MRR, gross revenue retention and net revenue retention for the month.
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐⭐ 🟡 A subscription app has 10,000 subscribers at Rs 200 per month. Monthly churn is 5% and it adds 600 new subscribers each month. After how many months does the subscriber base stabilise, and at what level?
+### Q44 ⭐⭐ 🟡 A subscription app has 10,000 subscribers at Rs 200 per month. Monthly churn is 5% and it adds 600 new subscribers each month. What level does the subscriber base stabilise at, and what is the base at the end of the first month?
 Use the steady-state idea: base is stable when monthly churned users equal monthly new users.
 <!-- ANSWER_PENDING -->
 
