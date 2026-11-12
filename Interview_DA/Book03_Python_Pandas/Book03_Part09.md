@@ -9,6 +9,7 @@
 **Say this in the interview:** "I look at the first rows, then the shape, then the column types, then missing values and duplicates, then a quick summary of numbers and categories. Only then do I ask questions of the data."
 **Explain simply:**
 - **EDA (exploratory data analysis):** getting to know a dataset before analysing it.
+- **CSV file and DataFrame:** a CSV is a plain-text table, one row per line; pandas loads it into a DataFrame, its own table of rows and columns (I name it `employees`).
 - **Step 1, `head()`:** see real rows, so I know what one row means (one employee? one day?).
 - **Step 2, `shape`:** (rows, columns), to know the size.
 - **Step 3, `info()`:** each column's type and how many values are filled; a salary stored as text shows up here.
@@ -206,11 +207,11 @@ Name: Left, dtype: float64
 **What it means:** HR loses half its people in this tiny sample; IT and Sales tie at one third. With so few rows, I would also show headcount before drawing conclusions.
 **Likely follow-ups:**
 - *How do you show counts too?* `hr.groupby("Department")["Left"].agg(["mean", "count"])`.
-- *Ties?* `sort_values` keeps the original order for ties; add a second sort key if order matters.
+- *Ties?* Tied departments can come out in either order; add a second sort key (for example the department name) if the order matters.
 **Common mistakes:** averaging the text column (error); sorting before calculating; reporting a high rate for a department of 3 people without saying so.
 
 ### Q5 ⭐⭐⭐ 🟡 Walk me through a complete EDA of an employee attrition dataset using pandas, from loading the file to your final recommendations.
-**Asked at:** commonly asked (no company-specific report found); EDA on the IBM HR attrition dataset is the most common practice version (public notebooks, snippet-level).
+**Asked at:** commonly asked (no company-specific report found); EDA on the IBM HR attrition dataset is a common practice version (public notebooks, snippet-level).
 **What the interviewer is checking:** Can you run a structured analysis and end with a business recommendation, not just output.
 **Say this in the interview:** "I start with a business question, load and check quality, calculate the overall attrition rate, split it by department, overtime, income and tenure, and then recommend where HR should act, with the caveat that this shows links, not causes."
 **Explain simply:**
@@ -322,7 +323,7 @@ Duplicate rows: 2
 0         101   Asha         HR
 1         102   Ravi         IT
 3         103  Meena      Sales
-4         104  John         IT
+4         104   John         IT
 ```
 **What it means:** 2 repeated rows were found and removed; 4 unique employees remain (the index keeps its old numbers, which is fine).
 **Likely follow-ups:**
@@ -516,7 +517,7 @@ Department -> fill with 'Unknown'
 **Common mistakes:** one rule for every column; filling with the average when salaries are skewed; not asking what a blank means.
 
 ### Q11 ⭐⭐⭐ 🟡 After you finish an EDA in an interview, how do you present your findings in plain business language instead of reading out code output?
-**Asked at:** commonly asked (no company-specific report found); communication is a stated evaluation point in take-home and live-EDA rounds (inference).
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you can turn numbers into a story and a recommendation for non-technical people.
 **Say this in the interview:** "I start with the answer, then give two or three findings with one number each, say how confident I am, and end with what I recommend and what I would check next."
 **Explain simply:**
@@ -526,6 +527,7 @@ Department -> fill with 'Unknown'
 - **Say how sure you are:** "only 3 people in this group", "this shows a link, not a cause".
 - **End with an action:** who should do what next, and what data would settle the doubts.
 - **Do not read code:** describe what you did in one line ("I excluded 12 duplicate rows").
+**What it means:** the interviewer is hiring someone who can brief a manager, so a clear answer, a number, a caveat and an action matter more than the code.
 **Likely follow-ups:**
 - *How long should a summary be?* Three findings and a recommendation fit in under two minutes.
 - *Which chart?* One bar chart that shows the main comparison.
@@ -672,7 +674,7 @@ Name: count, dtype: int64
 **Common mistakes:** only `dropna` when blanks are empty strings (they stay); forgetting `strip()` so "present " counts separately; not checking for `NaT` left after parsing.
 
 ### Q15 ⭐⭐⭐ 🔴 Given a hiring funnel DataFrame (candidate_id, stage, date), write code to compute the number of candidates reaching each stage and the conversion rate from one stage to the next.
-**Asked at:** commonly asked (no company-specific report found); a standard HR analytics task.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Unique counting, ordering stages, and `shift` for step-to-step rates.
 **Say this in the interview:** "Count unique candidates per stage, put the stages in funnel order, then divide each stage by the one before it using `shift`."
 **Explain simply:**
@@ -716,7 +718,7 @@ Offered               1          50.0
 **What it means:** 60% of applicants pass screening, 67% of those get interviewed, and half of interviewed candidates get an offer. The first stage has no previous stage, so it shows `NaN`.
 **Likely follow-ups:**
 - *Overall conversion?* Last stage divided by first: 1 / 5 = 20%.
-- *Where is the biggest drop?* Screening (40% lost), which is where I would investigate.
+- *Where is the biggest drop?* Interview to offer: only 50% move on, so half are lost there (screening loses 40%, interview loses 33%). That is where I would investigate.
 **Common mistakes:** using `count` when candidates can repeat; letting stages sort alphabetically; dividing by the first stage when asked for step-to-step rates.
 
 ### Q16 ⭐⭐ 🟢 What is the difference between df.info(), df.describe() and df.head(), and what does each tell you in the first minutes of EDA?
@@ -945,7 +947,6 @@ salary  tenure_years    0.991
 dtype: float64
 ```
 **What it means:** Age, salary and tenure move together almost perfectly in this tiny sample; that is expected because older staff usually have longer tenure and higher pay. It says nothing about why.
-**Alternative:** Use `correlations.abs().unstack().sort_values(ascending=False)` and take every second row after removing the 1.0 values; the version above is easier to explain.
 **Likely follow-ups:**
 1. What if columns are text? `numeric_only=True` skips them; encode them first if needed.
 2. Does a high correlation prove cause? No, it only shows two columns move together.
@@ -1200,9 +1201,9 @@ Sales            0     1
 **What it means:** IT hired 2 people in 2022 and 1 in 2023; Sales hired nobody in 2022. This shows hiring trends by department at a glance.
 **Alternative:** `employees.pivot_table(index='department', columns='joining_year', values='joining_date', aggfunc='count', fill_value=0)` gives the same table.
 **Likely follow-ups:**
-1. How with a pivot table? `employees.pivot_table(index='department', columns='joining_year', values='joining_date', aggfunc='count', fill_value=0)`.
+1. Crosstab or pivot table? Same counts here; crosstab is shorter for plain counts, pivot_table is more flexible for sums and averages.
 2. How to add totals? Add `margins=True` to crosstab.
-**Common mistakes:** Using the full date as columns instead of the year. Forgetting to convert text to dates. Using `pivot_table` without `aggfunc='count'` and getting averages.
+**Common mistakes:** Using the full date as columns instead of the year. Forgetting to convert text to dates. Using `pivot_table` without `aggfunc='count'`: the default is the average, which fails on dates or text.
 
 ### Q27 ⭐⭐ 🟡 Write code to identify the columns that have only one unique value or a unique value for every row, and explain why you would drop them.
 **Asked at:** commonly asked (no company-specific report found)
@@ -1673,7 +1674,7 @@ Name: count, dtype: int64
 **Common mistakes:** Only checking missing values and nothing else. Not looking at value_counts, so spelling variants stay hidden. Deleting rows without telling anyone.
 
 ### Q37 ⭐⭐ 🟡 Write code to plot a histogram of salary, a bar chart of attrition by department and a boxplot of salary by job level, and say what each chart tells you.
-**Asked at:** commonly asked (no company-specific report found); charts are a normal part of live EDA and take-home tasks.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Can you pick the right chart for the question and read it in business words.
 **Say this in the interview:** "Histogram for how salaries are spread, bar chart to compare attrition across departments, boxplot to compare salary spread across job levels and spot outliers."
 **Explain simply:**
@@ -1709,7 +1710,7 @@ plt.show()
 employees.boxplot(column="monthly_income", by="job_level")
 plt.show()
 ```
-**Output:** three charts open one after another (the code ran cleanly and saved all three here; images are not pasted). The numbers behind the bar chart:
+**Output:** three charts open one after another (images are not pasted here). The numbers behind the bar chart:
 ```
 IT       33.3
 Sales    33.3
@@ -1909,9 +1910,9 @@ joining_year
 **What the interviewer is checking:** Do you understand that missing values can carry a pattern, and that filling blindly can hide it.
 **Say this in the interview:** "I create a flag column for missing salary and compare the missing rate across department and location. If it is similar everywhere it looks random; if one group is high, the cause is probably a process issue, and I fix or ask before filling."
 **Explain simply:**
-- **Missing at random (MCAR):** blanks have no pattern; filling with the median is usually safe.
+- **Missing completely at random (MCAR):** blanks have no pattern; filling with the median is usually safe.
 - **Related to a group (MAR):** e.g. one department never entered salary; a company-wide median would be wrong for them.
-- **Related to the value itself:** e.g. high earners hide pay; hardest case, cannot be seen in the data, so ask the data owner.
+- **Related to the value itself (MNAR):** e.g. high earners hide pay; hardest case, cannot be seen in the data, so ask the data owner.
 - **Method:** flag, group, compare rates. Also compare other columns (age, tenure) between missing and not-missing rows.
 **Sample data:** 10 employees, 4 salaries missing, mostly in Sales.
 **Code (what you write in the interview):**
@@ -1945,11 +1946,11 @@ Name: salary_missing, dtype: float64
 **What it means:** location makes no difference (40% each) but Sales is missing 75%, so it is not random; talk to Sales or HR ops before filling.
 **Likely follow-ups:**
 - *Then how do you fill?* Median within department, or flag and leave it out of salary analysis.
-- *Any formal test?* A chi-square test of missing flag versus department.
+- *Any formal test?* A chi-square test of the missing flag against department (it checks whether the gap is bigger than chance would explain).
 **Common mistakes:** filling the median first and losing the evidence, checking only the overall percent, ignoring that small groups give noisy percentages.
 
 ### Q43 ⭐⭐ 🔴 Interviewer gives you a 5-minute task: 'Which department needs retention attention most?' Which columns, aggregations and charts do you use to answer it with evidence?
-**Asked at:** commonly asked (no company-specific report found); a typical live business-question format.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Can you turn a vague business ask into a clear metric, a few steps and a decision, fast.
 **Say this in the interview:** "I would define attrition rate per department, show it next to headcount so small teams do not mislead, check one or two drivers like overtime and tenure, and answer with a ranked bar chart and one sentence."
 **Explain simply:**
@@ -1959,6 +1960,7 @@ Name: salary_missing, dtype: float64
 - **Drill down for the top department:** which job roles, tenure bands or overtime groups drive it.
 - **Charts:** (1) sorted bar chart of attrition rate by department with the company average line; (2) bar chart of rate by overtime or tenure inside the top department.
 - **Finish:** "Department X is highest at N%, about Y people a year, mostly short-tenure staff working overtime; I'd start with a stay-interview there."
+**What it means:** the answer is a ranked department with a number, its headcount, one likely driver and a next step, delivered in a few minutes.
 **Likely follow-ups:**
 - *What if two departments are close?* Look at headcount and cost of leavers (salary).
 - *Is it the department or the roles in it?* Break down by job role.
@@ -2012,7 +2014,7 @@ print(reconciled[reconciled["_merge"] != "both"])
 **What the interviewer is checking:** Do you know cheap fixes before reaching for big-data tools.
 **Say this in the interview:** "First load only the columns I need with `usecols`, use smaller types like category, and if it still does not fit, read in chunks and combine small per-chunk results."
 **Explain simply:**
-- **`usecols`:** read only the listed columns; the biggest saving, often 5x or more.
+- **`usecols`:** read only the listed columns; usually the biggest saving, because unused columns are never loaded.
 - **`dtype`:** text columns with few repeated values become `category`; whole numbers can be `int32` instead of `int64`.
 - **`chunksize`:** returns the file in pieces of N rows; you process each piece and keep only a small summary (a sum, a count), never the whole piece.
 - **Other options:** read a sample with `nrows`, filter rows early, or move to a database/Parquet file.
@@ -2057,10 +2059,11 @@ print(income_by_department)
 **Explain simply:**
 - **Correlation:** two things move together. **Causation:** one makes the other happen.
 - **Confounders:** hidden third factors, e.g. junior staff both earn less and leave more; seniority explains both.
-- **Reverse direction:** people planning to leave may have been given less overtime-pay or fewer raises.
+- **Reverse direction:** the cause may run the other way; staff already planning to leave may have been passed over for raises, so low income follows the decision to leave.
 - **Data limits:** one snapshot, survivors only, small groups, self-reported satisfaction.
 - **Plain example for HR:** "Ice cream sales and sunburn rise together, but ice cream does not cause sunburn; summer does."
 - **What to do:** compare like with like (overtime vs non-overtime within the same job level), then test a small pilot such as capping overtime in one team.
+**What it means:** I tell HR the data points to where to look, not what to blame, and I propose a small test before any big policy change.
 **Likely follow-ups:**
 - *How would you prove causation?* An experiment (pilot vs control group) is the strongest evidence.
 - *What do you tell HR to do now?* Low-cost actions: review overtime load and pay bands, then measure again.
@@ -2134,7 +2137,7 @@ with pd.ExcelWriter("hr_report.xlsx") as writer:
     cleaned_employees.to_excel(writer, sheet_name="Cleaned data", index=False)
     department_summary.to_excel(writer, sheet_name="Summary", index=False)
 ```
-**Output:** no printed output; the file is created. Reading it back showed the sheets `['Cleaned data', 'Summary']`, and the Summary sheet held:
+**Output:** no printed output; the file `hr_report.xlsx` is created with the sheets `['Cleaned data', 'Summary']`. The Summary sheet holds:
 ```
   department  count   mean
 0         HR      1  35000
@@ -2158,6 +2161,7 @@ with pd.ExcelWriter("hr_report.xlsx") as writer:
 - **Random seed:** any sampling or model uses a fixed seed (for example `random_state=42`) so results do not change.
 - **Order:** use "Restart and run all" before sending; no cell should depend on one lower down.
 - **Housekeeping:** relative file paths, list libraries, state cleaning decisions (rows dropped and why), no leftover debug cells.
+**What it means:** the reviewer should be able to rerun the notebook once, get your numbers, and follow your reasoning without asking you anything.
 **Likely follow-ups:**
 - *Notebook or script?* Notebook for narrative, script for repeated pipelines.
 - *Version control?* Keep the data file and notebook together with a README.
@@ -2171,8 +2175,9 @@ with pd.ExcelWriter("hr_report.xlsx") as writer:
 - **ydata-profiling:** one command makes an HTML report of missing values, distributions and correlations.
 - **sweetviz:** compares two datasets (for example leavers versus stayers). **D-Tale:** an interactive table in the browser. (Names from memory, not run here.)
 - **Why still manual:** the tool will not say that salary of 0 is an error, that "P" and "Present" are the same, or which metric answers the business question.
-- **In an interview:** they often give no internet or no install, and want to see your thinking.
+- **In an interview:** installing packages or internet access may not be allowed, and the interviewer wants to see your thinking.
 - **Best use:** run an auto report to scan quickly, then do targeted manual checks.
+**What it means:** auto-EDA tools save time on the first scan, but the judgment about what is wrong and what matters is still mine.
 **Likely follow-ups:**
 - *Downsides?* Slow on big data, heavy output, no business context.
 - *Would you use it at work?* Yes for first scan, then verify the findings by hand.
@@ -2188,6 +2193,7 @@ with pd.ExcelWriter("hr_report.xlsx") as writer:
 - **Leave out or move to an appendix:** dead ends, every chart you tried, long code output, raw describe tables.
 - **Be honest:** state limits (small groups, correlation not causation).
 - **Time plan:** about 20% understanding the data, 40% cleaning and analysis, 20% writing and charts, 20% review and rerun.
+**What it means:** a good report is short, answers the question first and shows its limits; it is judged on focus, not on how much was tried.
 **Likely follow-ups:**
 - *What if you find something unexpected?* Include it if relevant, with a caution.
 - *How long should the report be?* A page or two plus the notebook.
@@ -2301,7 +2307,7 @@ No                3  0.000000
 **Explain simply:**
 - **Compare rates, not counts,** and always show headcount and leavers beside the rate.
 - **Small sample:** one extra leaver in 4 people moves the rate by 25 points, so the number is unstable.
-- **How to avoid overclaiming:** say "higher in the data, but based on only 4 people"; give the counts; if needed use a confidence interval or a Fisher exact test, or wait for more data or more months.
+- **How to avoid overclaiming:** say "higher in the data, but based on only 4 people"; give the counts; if needed use a confidence interval or a Fisher exact test (a test of whether a gap between two small groups could just be chance), or wait for more data or more months.
 - **Other fixes:** compare over a longer period, or combine similar small locations.
 **Sample data:** 4 Hyderabad employees (1 left) and 12 Bengaluru employees (2 left).
 **Code (what you write in the interview):**

@@ -10,7 +10,7 @@
 **Explain simply:**
 - **Split:** rows are sorted into buckets by a column, for example one bucket per department.
 - **Apply:** a function runs on each bucket separately (mean, count, sum, max).
-- **Combine:** the per-bucket answers are stitched into one Series or DataFrame, with the group names as the index.
+- **Combine:** the per-bucket answers are stitched into one result (a single column, called a Series, or a table, called a DataFrame), with the group names as the row labels (the index).
 - groupby on its own calculates nothing; it only prepares the groups. The work happens when you add an aggregation such as `.mean()`.
 - The result of an aggregation has one row per group, so it is shorter than the original table.
 **Sample data:**
@@ -144,8 +144,10 @@ Name: salary, dtype: int64
 - `join()` is a DataFrame method that matches on the index, and its default is a left join.
 - Both do the same work underneath; join is just shorter when the keys are already the index.
 - Join needs index set up first, which is an extra step.
-**Sample data:** `employees` (Q1 plus `dept_id`) and a small `departments` table.
+**Sample data:** the `employees` table from Q1 (it already has `dept_id`) and a small `departments` table.
 ```python
+import pandas as pd
+
 departments = pd.DataFrame({
     "dept_id": [10, 20, 30, 50],
     "dept_name": ["Human Resources", "Finance", "IT", "Legal"],
@@ -189,6 +191,7 @@ dept_id
 
 - Unmatched sides are filled with NaN (missing value).
 - In HR terms: "employees with their department name" is a left join from employees.
+**What it means:** The word after `how=` decides which unmatched rows survive. If you remember one thing: inner drops unmatched rows, left keeps every row of the first table.
 **Likely follow-ups:**
 - *Which one for an anti join?* left with `indicator=True` (Q17).
 **Common mistakes:** Forgetting that the default is inner and silently losing employees whose department is missing from the lookup.
@@ -201,7 +204,7 @@ dept_id
 - Left table (employees) is the one you keep in full.
 - Employee Sana has dept_id 40, which is not in the department table, so her dept_name is NaN (missing).
 - Department 50 (Legal) has no employees, so it does not appear.
-**Sample data:** `employees` (7 rows with `dept_id`) and `departments` from Q5.
+**Sample data:** the 7-row `employees` table from Q1 (it has `dept_id`) and `departments` from Q5.
 **Code (what you write in the interview):**
 ```python
 employees_with_dept = employees.merge(departments, on="dept_id", how="left")
@@ -231,7 +234,13 @@ print(employees_with_dept[["name", "dept_id", "dept_name"]])
 - `merge`: side by side, matched on a key column. Row count can change.
 - `concat`: stacks vertically by default (`axis=0`); it lines up columns by name.
 - Use concat for monthly files with the same layout; use merge to bring in data from another table.
-**Sample data:** `jan` (2 rows) and `feb` (2 rows) with columns `emp_id`, `name`.
+**Sample data:**
+```python
+import pandas as pd
+
+jan = pd.DataFrame({"emp_id": [1, 2], "name": ["Asha", "Ravi"]})
+feb = pd.DataFrame({"emp_id": [3, 4], "name": ["Meena", "Karan"]})
+```
 **Code (what you write in the interview):**
 ```python
 # stack: no matching, just rows one after another
@@ -243,10 +252,10 @@ print(combined)
    emp_id   name
 0       1   Asha
 1       2   Ravi
-2       3  Meena
-3       4  Karan
+0       3  Meena
+1       4  Karan
 ```
-**What it means:** 4 rows from 2 + 2; nothing was matched. (Here the index happened to continue; see Q33 for when it repeats.)
+**What it means:** 4 rows from 2 + 2; nothing was matched. Note the row labels (index) repeat 0, 1, 0, 1 because each small table started at 0 (Q33 shows the fix).
 **Likely follow-ups:**
 - *Can concat go sideways?* Yes, `axis=1`, but it matches on index, so merge is safer.
 **Common mistakes:** Using concat when you need a lookup; using merge to stack files.
@@ -260,7 +269,7 @@ print(combined)
 - It groups for you, so duplicates are fine (unlike `pivot`, see Q18).
 - Missing combinations show as NaN (use `fill_value=0` to show 0).
 - `margins=True` adds a Total row and column, like Excel's Grand Total.
-**Sample data:** `employees` table from Q1 plus `gender`.
+**Sample data:** `employees` table from Q1 (it includes `gender`).
 **Code (what you write in the interview):**
 ```python
 headcount_table = employees.pivot_table(
@@ -292,7 +301,7 @@ IT          1  1
 **Explain simply:**
 - IT has no female employee with a salary (Sana's is blank), so that cell is NaN (missing).
 - This is a good place to mention the pay gap analysis HR often asks for.
-**Sample data:** `employees` table from Q1 plus `gender`.
+**Sample data:** `employees` table from Q1 (it includes `gender`).
 **Code (what you write in the interview):**
 ```python
 salary_table = employees.pivot_table(
@@ -322,9 +331,9 @@ IT              NaN  65000.0
 **Say this in the interview:** "map works on one column element by element, often with a dictionary. apply runs a function over a column or over rows. applymap was for every cell of a table; it is now called DataFrame.map."
 **Explain simply:**
 - `Series.map(dict or function)`: one column, one value at a time; values not in the dictionary become NaN.
-- `Series.apply(function)`: similar on one column; `DataFrame.apply(function, axis=1)` passes a whole row.
-- `DataFrame.applymap`: every cell; renamed `DataFrame.map` in pandas 2.1 (renaming from memory; I ran `DataFrame.map` in pandas 3.0.5 and it works).
-- All three are slow compared with vectorised maths like `employees["salary"] * 1.1` (see Q20).
+- `Series.apply(function)`: similar on one column, and a `lambda` is just a one-line function with no name (`lambda salary: salary * 1.1` means "for each salary, multiply by 1.1"); `DataFrame.apply(function, axis=1)` passes a whole row.
+- `DataFrame.applymap`: every cell. It was renamed `DataFrame.map` in pandas 2.1 (from memory, unverified); in pandas 3.0.5 `applymap` no longer exists and `DataFrame.map` works.
+- All three are slow compared with vectorised maths (one operation on the whole column at once, such as `employees["salary"] * 1.1`; see Q20).
 **Sample data:** `employees` table from Q1.
 **Code (what you write in the interview):**
 ```python
@@ -354,7 +363,7 @@ dtype: str
 **What it means:** map replaced matched values and left NaN for "Finance", which was not in the dictionary; apply transformed each value or row.
 **Likely follow-ups:**
 - *Which is fastest?* Vectorised operations, then map, then apply.
-**Common mistakes:** Using applymap in new code (it is deprecated); expecting map to keep unmatched values.
+**Common mistakes:** Using `applymap` (it was deprecated and is gone in pandas 3, so it raises an error); expecting map to keep unmatched values.
 
 ### Q12 ⭐⭐⭐ 🟡 Write code to group by department and compute headcount, average salary and maximum salary in one step using named aggregation.
 **Asked at:** commonly asked; named aggregation is covered in freeacademy and similar lessons (snippet-level).
@@ -393,7 +402,7 @@ print(department_summary)
 **Say this in the interview:** "agg returns one row per group. transform returns a result the same length as the original, so each row gets its group's value and I can add it as a column."
 **Explain simply:**
 - `agg` = summary table (3 departments gives 3 rows).
-- `transform` = the group calculation broadcast back to every row (7 employees gives 7 values, in the original order).
+- `transform` = the group calculation repeated on every row (7 employees gives 7 values, in the original order).
 - Use transform when you need the group number next to the individual (salary vs department average, share of total).
 **Sample data:** `employees` table from Q1.
 **Code (what you write in the interview):**
@@ -459,7 +468,7 @@ print(employees[["name", "department", "salary", "dept_average_salary"]])
 **Explain simply:**
 - Sorting first is the key; groupby keeps the sorted order inside each group.
 - `head(3)` on a groupby returns up to 3 rows per group; groups with fewer people return what they have (IT has 2).
-- Blank salaries sort to the end, so Sana appears last in IT only because IT has room.
+- Blank salaries sort to the end, so Sana comes last; she is kept only because IT has fewer than three people.
 - Ties are broken by position, not shared. For ties use `rank(method="min")`.
 **Sample data:** `employees` table from Q1 (7 rows).
 **Code (what you write in the interview):**
@@ -478,12 +487,12 @@ print(top_paid[["name", "department", "salary"]])
 4  Divya    Finance  90000.0
 3  Karan    Finance  80000.0
 2  Meena    Finance  70000.0
+5  Imran         IT  65000.0
 1   Ravi         HR  60000.0
 0   Asha         HR  50000.0
-5  Imran         IT  65000.0
 6   Sana         IT      NaN
 ```
-**What it means:** Up to three best-paid people per department (shown here sorted by department by luck of the data; add a second sort if you need that order).
+**What it means:** Up to three best-paid people per department, still in overall salary order (rows from different departments are mixed; sort by department afterwards if you want them grouped). Finance has three people, so all three show; HR and IT have fewer than three, so everyone shows.
 **Alternative:** `employees.groupby("department")["salary"].rank(ascending=False) <= 3` keeps ties together.
 **Likely follow-ups:**
 - *Only the single highest?* `head(1)` or `idxmax`.
@@ -548,7 +557,7 @@ print(no_match[["name", "dept_id"]])
 6  Sana       40
 ```
 **What it means:** Sana is the only employee whose department does not exist in the department list.
-**Alternative:** `employees[~employees["dept_id"].isin(departments["dept_id"])]` gives the same row (verified by running), and is shorter.
+**Alternative:** `employees[~employees["dept_id"].isin(departments["dept_id"])]` gives the same row and is shorter.
 **Likely follow-ups:**
 - *Rows in B not in A?* Swap the tables, or use `right_only`.
 **Common mistakes:** Forgetting the `~`; using an inner merge and finding nothing; blank keys (NaN) never match, so they show as unmatched.
@@ -559,7 +568,7 @@ print(no_match[["name", "dept_id"]])
 **Say this in the interview:** "pivot() just rearranges data, so every row/column pair must be unique or it errors. pivot_table() aggregates, like an Excel pivot, so it handles duplicates by averaging, summing or counting them."
 **Explain simply:**
 - A pivot turns values of one column (for example gender) into column headings.
-- `pivot()` does no maths. It needs exactly one row for each department and gender pair, otherwise pandas raises `ValueError: Index contains duplicate entries, cannot reshape` (I ran this).
+- `pivot()` does no maths. It needs exactly one row for each department and gender pair, otherwise pandas raises `ValueError: Index contains duplicate entries, cannot reshape`.
 - `pivot_table()` has an `aggfunc` (aggregate function: mean, sum, count). The default is mean. It also offers `fill_value` and `margins` (totals).
 - Rule of thumb: clean, unique data and pure reshaping, use `pivot()`. Real HR data with repeated rows, use `pivot_table()`.
 **Sample data:** six employees; Finance has two female employees, so the pair (Finance, F) repeats.
@@ -624,7 +633,7 @@ print(employees)
 3   John   90000  High
 ```
 **What it means:** Anyone earning 50,000 or more is labelled High, the rest Low.
-**Alternative:** vectorised, same result (I ran it and the output is identical):
+**Alternative:** vectorised, same result:
 ```python
 import numpy as np
 
@@ -640,7 +649,7 @@ employees["level"] = np.where(employees["salary"] >= 50000, "High", "Low")
 **Explain simply:**
 - `axis=1` means "go across each row". For 1 lakh rows, the function is called 1 lakh times and a new row object is built each time.
 - Vectorised operations (`df["a"] * df["b"]`) process the whole column in one go in compiled code (C), with no Python loop.
-- In a test on 200,000 rows on this machine: apply(axis=1) took about 0.96 seconds, column arithmetic about 0.002 seconds (roughly 500 times faster). Exact times vary by machine.
+- In a test on 200,000 rows: apply(axis=1) took about 1 second and column arithmetic about 0.002 seconds (hundreds of times faster). Exact times vary by machine.
 - Use apply(axis=1) only when the logic really cannot be written with columns (for example complicated text parsing across several fields).
 **Sample data:** three employees with salary and bonus percentage.
 **Code (what you write in the interview):**
@@ -682,7 +691,7 @@ print(employees)
 - Chained assignment means two steps in a row such as `df[mask]["salary"] = 0`. The first step may create a temporary copy, so the assignment can silently go nowhere.
 - Fix 1: `hr_employees = df[mask].copy()`, then add columns freely.
 - Fix 2: to change the original, use one step: `df.loc[mask, "salary"] = 0`.
-- Version note (verified by running on pandas 3.0.5): with Copy-on-Write (pandas 3 default), a filtered result is always its own copy, so assigning a new column to it gives no warning and never touches the original. Chained assignment on the original does not work, and pandas raises a `ChainedAssignmentError` warning. `SettingWithCopyWarning` itself is what you meet on pandas 2.x and older (from memory, unverified here). Writing `.copy()` and `.loc` is correct in all versions.
+- Version note (tested on pandas 3.0.5): pandas 3 uses Copy-on-Write, which means any filtered result is treated as its own copy. So a filtered result is always its own copy, so assigning a new column to it gives no warning and never touches the original. Chained assignment on the original does not work, and pandas raises a `ChainedAssignmentError` warning. `SettingWithCopyWarning` itself is what you meet on pandas 2.x and older (from memory, unverified here). Writing `.copy()` and `.loc` is correct in all versions.
 **Sample data:** four employees in HR and IT.
 **Code (what you write in the interview):**
 ```python
@@ -925,7 +934,7 @@ HR          1  1
 IT          0  1
 ```
 **What it means:** Finance has 2 women and 1 man; IT has no women.
-**Alternative:** groupby version (I ran it and the table is identical):
+**Alternative:** groupby version (gives the identical table):
 ```python
 employees.groupby(["department", "gender"]).size().unstack(fill_value=0)
 ```
@@ -1117,7 +1126,7 @@ print(attendance)
 1       2            18
 ```
 **What it means:** Six rows, two per month. The index repeats 0, 1; adding `ignore_index=True` fixes that (Q33). Note that this stacked table does not say which month each row belongs to.
-**Alternative:** label each month while stacking (I ran it):
+**Alternative:** label each month while stacking:
 ```python
 attendance = pd.concat([january, february, march], keys=["Jan", "Feb", "Mar"], names=["month"]).reset_index(level="month")
 ```
@@ -1132,7 +1141,7 @@ This gives a `month` column with Jan, Feb, Mar (the index still repeats; add `.r
 **Explain simply:**
 - Every DataFrame has an index (row labels). Each small table starts at 0.
 - Plain concat keeps those labels, so after stacking you get repeats (0, 1, 0, 1).
-- With repeats, `df.loc[0]` returns several rows, not one (I ran this and got two rows back).
+- With repeats, `df.loc[0]` returns several rows, not one (two rows come back).
 - `ignore_index=True` gives a clean 0, 1, 2, 3 sequence. Use it when the old labels carry no meaning. Do not use it if the index holds something meaningful like an employee ID.
 **Sample data:** two monthly tables.
 **Code (what you write in the interview):**
@@ -1165,7 +1174,7 @@ print(attendance)
 **Explain simply:**
 - crosstab (cross-tabulation) takes the columns (Series) as arguments: `pd.crosstab(df["department"], df["gender"])`. The default is counting, with 0 for empty cells.
 - `pivot_table` is a DataFrame method: you name `index`, `columns`, `values` and `aggfunc`. The default `aggfunc` is mean, and empty cells are NaN.
-- crosstab extras: `normalize="index"` for row percentages (each row adds up to 1) and `margins=True` for totals. It can also take `values=` with `aggfunc=` for averages, giving the same result as pivot_table (I ran this).
+- crosstab extras: `normalize="index"` for row percentages (each row adds up to 1) and `margins=True` for totals. It can also take `values=` with `aggfunc=` for averages, giving the same result as pivot_table.
 - Rule of thumb: counting categories, crosstab. Anything with a number column, pivot_table.
 **Sample data:** six employees with department, gender and salary.
 **Code (what you write in the interview):**
@@ -1235,7 +1244,7 @@ print(salary_comparison)
 ```
 **What it means:** Each employee now shows both years' salary with clear column names, ready for a "pay change" calculation.
 **Likely follow-ups:**
-- *What if you pass the same suffix twice or an empty one?* Duplicate resulting names raise an error in recent pandas; an empty string on one side keeps that side's original name.
+- *What if you pass the same suffix twice or an empty one?* The same suffix twice gives two columns with the same name (confusing, tested on pandas 3.0.5); an empty string on one side keeps that side's original name.
 - *Alternative to suffixes?* Rename the columns before merging.
 
 **Common mistakes:** Expecting suffixes to rename the key column; forgetting to rename and then guessing which of `_x`/`_y` is which table.
@@ -1359,7 +1368,7 @@ print(avg_salary["department"])
 1    IT
 Name: department, dtype: str
 ```
-(Without `reset_index()`, the real error printed was `KeyError 'department'`.)
+(Without `reset_index()`, `avg_salary["department"]` raises `KeyError: 'department'`.)
 **What it means:** After `reset_index()` the department is an ordinary column again and can be used in merges, filters and charts.
 **Alternative:** `employees.groupby("department", as_index=False)["salary"].mean()` does it in one step.
 **Likely follow-ups:**
@@ -1817,7 +1826,7 @@ dtype: object
 **Say this in the interview:** "I check the data types of both key columns, then print the raw values to look for hidden spaces, different case, or leading zeros, and clean both sides the same way before merging."
 **Explain simply:**
 - Values that look identical can differ invisibly: `"E101"` vs `"E101 "` (trailing space) vs `"e101"` (case).
-- Number vs text: if one side is a number and the other text, pandas raises a `ValueError` about merging int64 and str (in pandas 3 that is what I saw); in older versions it could return no matches. Convert with `astype`.
+- Number vs text: if one side is a number and the other text, pandas raises a `ValueError` about merging int64 and str (tested on pandas 3.0.5); in older versions it could return no matches (from memory, unverified). Convert with `astype`.
 - Also check leading zeros (`007` vs `7`) and Excel-style IDs that became decimals (`101.0`).
 - `isin()` quickly counts how many keys match.
 
@@ -2164,7 +2173,7 @@ print(attendance_long)
 - After `groupby` on two columns you get a result with a two-level index (department, then gender).
 - `unstack()` takes the last level (gender) and makes it columns: a pivot-style grid.
 - `stack()` squeezes columns back into an index level: long format again.
-- Note: missing combinations become NaN after unstack, and stack drops those NaN rows by default.
+- Note: missing combinations become NaN after unstack. In pandas 3.0.5 `stack()` keeps those NaN rows; older versions dropped them by default (from memory, unverified).
 **Sample data:**
 ```python
 import pandas as pd
@@ -2687,7 +2696,7 @@ IT            0    1    1
 Sales         0    2    1
 ```
 **What it means:** Sales lost 2 people in January and 1 in March; HR only lost 1, in February. The zeros are real "nobody left" cells.
-**Alternative:** `leavers.assign(leaver_count=1).pivot_table(index="department", columns="month", values="leaver_count", aggfunc="sum", fill_value=0)` gives the same table (checked by running).
+**Alternative:** `leavers.assign(leaver_count=1).pivot_table(index="department", columns="month", values="leaver_count", aggfunc="sum", fill_value=0)` gives the same table.
 **Likely follow-ups:** 1) *Months are in the wrong order (Feb, Jan, Mar).* Pandas sorts text alphabetically; reorder with `leavers_table[["Jan", "Feb", "Mar"]]`, or store months as real dates. 2) *How do I add totals?* `pd.crosstab(..., margins=True)`.
 **Common mistakes:** Forgetting `fill_value=0` in `pivot_table`; leaving month names as text so they sort alphabetically; counting with a column that has missing values (use `size`/`crosstab`, not `count` on a column).
 
@@ -2736,7 +2745,7 @@ print(latest_records)
 1     101  2025-06-01   55000
 ```
 **What it means:** One row per employee, each being their most recent update. The rows come out in date order, not employee order.
-**Alternative:** `records.loc[records.groupby("emp_id")["update_date"].idxmax()]` picks the row with the biggest date per employee, and no sorting is needed. `sort_values("update_date").drop_duplicates("emp_id", keep="last")` also gives the same rows (both checked by running).
+**Alternative:** `records.loc[records.groupby("emp_id")["update_date"].idxmax()]` picks the row with the biggest date per employee, and no sorting is needed. `sort_values("update_date").drop_duplicates("emp_id", keep="last")` also gives the same rows (both give the same rows).
 **Likely follow-ups:** 1) *What if two records share the same latest date?* `tail(1)` takes whichever sorted last; add a second sort column (like a record ID) to make it predictable. 2) *Why not `groupby().last()`?* It returns the last non-null value of each column separately, which can mix values from different rows.
 **Common mistakes:** Not sorting first; sorting dates stored as text; using `groupby().max()` on every column, which builds a row that never existed.
 
@@ -2825,7 +2834,7 @@ print(employee_months)
 **Explain simply:**
 - `agg` (aggregate) collapses each group to one value using built-in or named functions, which pandas runs in optimised code.
 - `apply` hands each group to a function you write; it can return anything (a number, a table, several rows) but runs Python once per group.
-- Speed matters most when there are many groups. In my test with 20,000 groups, `agg("mean")` took about 0.003 seconds and `apply(lambda ...)` about 0.6 seconds (machine-specific, but the gap is large).
+- Speed matters most when there are many groups. In a test with 20,000 groups, `agg("mean")` took about 0.003 seconds and `apply(lambda ...)` about 0.6 seconds (machine-specific, but the gap is large).
 - Use `apply` for things like "top 3 rows per group" where the result is not a single number.
 
 **Sample data:**
@@ -2879,7 +2888,7 @@ Name: salary, dtype: float64
 **Say this in the interview:** "`iterrows` builds a new Series object for every row and runs Python on each, so it is slow. I use vectorised column maths first, then `np.where`, `map` or `apply` if I must."
 **Explain simply:**
 - "Vectorised" means one operation on the whole column at once, run in fast compiled code.
-- `iterrows` loops one row at a time in plain Python and creates an object per row. On 200,000 rows my test took about 3.4 seconds against 0.001 seconds for one vectorised line (machine-specific).
+- `iterrows` loops one row at a time in plain Python and creates an object per row. On 200,000 rows a test took about 3.4 seconds against 0.001 seconds for one vectorised line (machine-specific).
 - `iterrows` also turns each row into one Series. Mixed columns (numbers and text) become one common type, so numbers can lose their original type.
 - Order of preference: column maths, `np.where` or `np.select` for if/else, `map` with a dictionary, `apply` (axis=1), `itertuples` last.
 
@@ -2985,7 +2994,17 @@ IT          70000.0  80000.0
 - Appending to a plain Python list is cheap; one `concat` at the end copies the data once.
 - The old `DataFrame.append` was removed in pandas 2.0 for the same reason (from memory, unverified here); `pd.concat` is the replacement.
 
-**Sample data:** Three small files jan.csv, feb.csv, mar.csv, each with emp and days columns.
+**Sample data:** three small files, each with the columns `emp` and `days`:
+
+| file | emp | days |
+|---|---|---|
+| jan.csv | 1 | 1 |
+| jan.csv | 2 | 2 |
+| feb.csv | 1 | 2 |
+| feb.csv | 2 | 3 |
+| mar.csv | 1 | 3 |
+| mar.csv | 2 | 4 |
+
 
 **Code (what you write in the interview):**
 ```python
@@ -3044,7 +3063,7 @@ print(trained_and_certified)
 1       4
 ```
 **What it means:** Employees 3 and 4 are both trained and certified.
-**Alternative:** `trained[trained["emp_id"].isin(certified["emp_id"])]` keeps the trained rows whose ID is in the certified list. It never multiplies rows if the certified list has duplicates (checked by running).
+**Alternative:** `trained[trained["emp_id"].isin(certified["emp_id"])]` keeps the trained rows whose ID is in the certified list. It never multiplies rows if the certified list has duplicates.
 **Likely follow-ups:** 1) *Trained but not certified?* Use `~isin(...)` (Q17). 2) *Using sets?* `set(a) & set(b)`.
 **Common mistakes:** Duplicate IDs creating extra rows; IDs stored as text in one table and numbers in the other (no match).
 
@@ -3055,7 +3074,7 @@ print(trained_and_certified)
 **Explain simply:**
 - A categorical column is one with a fixed set of labels, such as pay grades A, B, C.
 - If grade C exists in the list but nobody has it, `observed=False` still prints a C row (NaN for a mean, 0 for a count).
-- Version note, verified by running on pandas 3.0.5: the default is now `observed=True`, so empty categories are hidden unless you ask for them. In older pandas 2.x the default was `False` with a warning (from memory, unverified here). Write it explicitly so your code behaves the same everywhere.
+- Version note (tested on pandas 3.0.5): the default is now `observed=True`, so empty categories are hidden unless you ask for them. In older pandas 2.x the default was `False` with a warning (from memory, unverified here). Write it explicitly so your code behaves the same everywhere.
 - Showing empty categories is useful for complete reports; hiding them gives a cleaner result.
 
 **Sample data:** Grade is categorical with allowed values A, B, C. Rows: A 50000, A 60000, B 70000. Nobody is in C.
@@ -3142,7 +3161,7 @@ print(headcount)
 6         HR   Mar          7            6.000000
 ```
 **What it means:** IT in March is (10 + 12 + 11) / 3 = 11. HR's first full window ends in March, and nothing from IT leaks into it.
-**Alternative:** `headcount.groupby("department")["headcount"].rolling(3, min_periods=1).mean().reset_index(level=0, drop=True)` gives partial averages for early months (checked by running); the extra `reset_index` is needed to line the result up with the original rows.
+**Alternative:** `headcount.groupby("department")["headcount"].rolling(3, min_periods=1).mean().reset_index(level=0, drop=True)` gives partial averages for early months; the extra `reset_index` is needed to line the result up with the original rows.
 **Likely follow-ups:** 1) *Data not sorted?* Sort by department and month (as a real date) first. 2) *Missing months?* Reindex to a full month list, otherwise "3 rows" is not "3 months".
 **Common mistakes:** Rolling without groupby; sorting months as text (Apr before Feb); forgetting the first rows are NaN.
 
@@ -3238,7 +3257,7 @@ print(second_highest)
 3    Dev         HR   50000          2.0
 ```
 **What it means:** IT's second-highest salary is 80000 (shared by two people), HR's is 50000. Sales has nobody in second place.
-**Alternative:** Drop repeated salaries, sort, and take the second row per department: `employees.drop_duplicates(["department", "salary"]).sort_values("salary", ascending=False).groupby("department").nth(1)` (checked by running; it returns one row per department).
+**Alternative:** Drop repeated salaries, sort, and take the second row per department: `employees.drop_duplicates(["department", "salary"]).sort_values("salary", ascending=False).groupby("department").nth(1)` (it returns one row per department).
 **Likely follow-ups:** 1) *Third highest?* Change 2 to 3. 2) *Why not `nlargest(2)`?* With ties it counts the duplicate as second place, which is wrong for "second-highest value".
 **Common mistakes:** Sorting and taking row 2 without handling ties; forgetting `ascending=False`; expecting every department to have a result.
 
