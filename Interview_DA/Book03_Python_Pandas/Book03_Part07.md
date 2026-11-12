@@ -8,7 +8,7 @@
 **What the interviewer is checking:** Do you know dates read from files are often plain text, and that `pd.to_datetime` fixes that.
 **Say this in the interview:** "I use `pd.to_datetime` on the column and assign it back. After that pandas treats it as a real date, so I can sort, subtract and pull out the month or year."
 **Explain simply:**
-- **Text (object/str) column:** pandas sees "2024-01-15" as letters, not a date, so date maths fails.
+- **Text (object/str) column:** `object` or `str` is the label pandas shows for text (a column's type is called its dtype). pandas sees "2024-01-15" as letters, not a date, so date maths fails.
 - **datetime column:** a real date type; you can add days, find gaps, group by month.
 - **Assign it back:** `to_datetime` returns a new column; it does not change the old one by itself.
 **Sample data:** three joining dates stored as text.
@@ -246,7 +246,7 @@ print(failed_rows)
 ```
 **What it means:** two rows could not be converted; I can now fix them or ask the data owner.
 **Likely follow-ups:**
-- *What does `errors="ignore"` do?* It was removed in pandas 3 (from memory, unverified); use coerce.
+- *What does `errors="ignore"` do?* It no longer works in pandas 3 (on 3.0.5 it raised an error when I ran it); use coerce.
 - *What if many rows fail?* Check the format; the data may be day-first (Q21).
 **Common mistakes:** coercing and moving on without checking the NaT rows; counting NaT without comparing to the original blanks.
 
@@ -497,6 +497,7 @@ date
 - **periods:** how many dates you want, as an alternative to `end`.
 - **freq:** the step: "D" day, "W" week, "MS" month start, "ME" month end, "B" business day.
 - Handy for building a full calendar to find or fill missing dates (Q28).
+**Sample data:** none needed; the code creates the dates itself.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1786,7 +1787,7 @@ print(months.dt.start_time)
 dtype: period[M]
 2026-01    2
 2026-02    1
-Name: count, dtype: int64
+Freq: M, Name: count, dtype: int64
 0   2026-01-01
 1   2026-01-01
 2   2026-02-01
@@ -1806,7 +1807,7 @@ dtype: datetime64[us]
 - A bucket has a left edge and a right edge, for example 00:00 to 03:00.
 - `closed="left"`: the left edge belongs to the bucket (00:00 in, 03:00 out). `closed="right"`: the right edge belongs (03:00 in, 00:00 out).
 - `label` only changes the name shown (the left or right edge); it never moves data.
-- Defaults: left and left for hours, days and month-start; right and right for month-end (`ME`), quarter-end, year-end and weekly.
+- Defaults: left and left for hours, days and month-start; right and right for month-end (`ME`), quarter-end, year-end and weekly (`ME` and weekly checked by running; quarter-end and year-end from the pandas docs, not run here).
 **Sample data:** Six hourly readings, each worth 1. (created inside the code)
 **Code (what you write in the interview):**
 ```python

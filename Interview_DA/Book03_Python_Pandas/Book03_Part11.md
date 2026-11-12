@@ -172,16 +172,26 @@ print(attendance)
 **Common mistakes:** automating without validation checks, hard-coding the 22 working days, and not keeping a copy of the input used.
 
 ### Q8 ⭐⭐⭐ 🟡 You ask an AI assistant for code that calculates attrition rate by department, and the output looks wrong. How do you debug and verify it?
-**Asked at:** commonly asked (no company-specific report found); verifying AI-assisted analysis is a recurring interview theme (Microsoft Research study, snippet only).
+**Asked at:** commonly asked (no company-specific report found); a 2024 Microsoft Research paper studies how analysts verify AI-assisted analysis, snippet only, a research paper and not an interview report.
 **What the interviewer is checking:** A calm, step-by-step check: definition, inputs, small test, manual comparison.
 **Say this in the interview:** "First I agree on the definition: leavers divided by headcount. Then I check the inputs, test one department by hand, and compare with the code's number. Usually the problem is the denominator, duplicates, or text values like 'Yes' not matching."
 **Explain simply:**
 - **Attrition rate:** people who left divided by people counted, as a percentage (often average headcount in real reports).
-- **Check the definition:** did the AI divide by the right number?
+- **Check the definition:** did the AI divide by the right number (the denominator, meaning the number you divide by, here the headcount)?
 - **Check the inputs:** duplicate employees, blank departments, "yes" vs "Yes", extra spaces.
 - **Test one group by hand:** count leavers and headcount for one department and compare.
 - **Then fix the code** and rerun; do not just ask AI again blindly.
-**Sample data:** six employees in three departments; `left_company` says Yes or No.
+**Sample data:** `employees.xlsx`, six employees in three departments; `left_company` says Yes or No.
+
+| employee_id | department | left_company |
+|---|---|---|
+| 1 | Sales | Yes |
+| 2 | Sales | No |
+| 3 | IT | Yes |
+| 4 | IT | Yes |
+| 5 | HR | No |
+| 6 | HR | No |
+
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -288,7 +298,7 @@ Name: left_flag, dtype: float64
 - **timeout:** stops the code waiting forever if the server is slow.
 - **raise_for_status():** raises an error if the server replied with a failure code (see Q21).
 - **.json():** turns the reply into Python dictionaries and lists.
-**Sample data:** the live API call was not run here (no real service). I served a small local file `employees.json` at `http://localhost:8000` and ran the same code against it; with a real API you only change the URL (and add an API key, see Q40).
+**Sample data:** a small test file `employees.json` served on my own computer at `http://localhost:8000`, standing in for a real service. With a real API you only change the URL (and add an API key, see Q40).
 **Code (what you write in the interview):**
 ```python
 import requests
@@ -360,6 +370,16 @@ id,name
 - **Together:** pandas does the calculations, openpyxl polishes the final report.
 - **Limit:** pandas does not keep formatting or formulas when it rewrites a file; openpyxl keeps what it can but does not calculate formula results.
 **Sample data:** `employees.xlsx` with six employees.
+
+| employee_id | department |
+|---|---|
+| 1 | Sales |
+| 2 | HR |
+| 3 | IT |
+| 4 | Sales |
+| 5 | HR |
+| 6 | IT |
+
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -402,7 +422,7 @@ Sales Team
 - **Rules:** treat blanks as zero? Which status counts as "left"? Use the company definition.
 - **Environment:** Python and pandas version, so it does not use removed functions.
 - **Ask for:** short code with comments and a line-by-line explanation.
-**Example prompt:** "I have a pandas DataFrame `employees` with columns employee_id (int), department (text), left_company ('Yes'/'No'). Sample rows: (1, 'Sales', 'Yes'), (2, 'Sales', 'No'), (3, 'HR', 'No'). Give me code that returns attrition rate as a percentage per department, rounded to 1 decimal, sorted highest first. Use pandas 2.x. Add comments."
+**Example prompt:** "I have a pandas DataFrame `employees` with columns employee_id (int), department (text), left_company ('Yes'/'No'). Sample rows: (1, 'Sales', 'Yes'), (2, 'Sales', 'No'), (3, 'HR', 'No'). Give me code that returns attrition rate as a percentage per department, rounded to 1 decimal, sorted highest first. Use pandas 3. Add comments."
 **What it means:** a precise prompt gets code close to correct; a vague prompt gets guesses.
 **Likely follow-ups:**
 - *Why fake rows?* To protect privacy (see Q17).
@@ -578,7 +598,7 @@ print(employees)
 - `raise_for_status()` does nothing on success and raises an error on 4xx/5xx, so you cannot use bad data by accident.
 - Without `timeout`, `requests` can wait forever. A timeout (in seconds) makes it give up.
 - try/except means: try this, and if this specific error happens, do the fallback instead of crashing.
-**Sample data:** no live API was called here. To run offline I started a tiny local server on my own machine that answers `/ok` with 200, `/missing` with 404 and `/slow` after 3 seconds (that server is test scaffolding, not part of the answer).
+**Sample data:** no real service. A tiny test server on my own computer answers `/ok` with 200, `/missing` with 404 and `/slow` after 3 seconds.
 **Code (what you write in the interview):**
 ```python
 import requests
@@ -593,8 +613,12 @@ def get_employees(url):
     except requests.exceptions.HTTPError as error:
         print("API returned an error:", error.response.status_code)
     return None
+
+# try it on three test addresses
+for name in ["ok", "missing", "slow"]:
+    print(name, "->", get_employees("http://localhost:8000/" + name))
 ```
-**Output:** (calling it for the three local test URLs)
+**Output:**
 ```
 ok -> [{'employee_id': 101}]
 API returned an error: 404
@@ -893,7 +917,7 @@ Saved Finance with 1 rows
 **Common mistakes:** A department typo giving an empty file; forgetting `index=False`; one fixed file name so each loop overwrites the last; saving files in an unexpected folder.
 
 ### Q31 ⭐⭐ 🟡 What is hallucination in AI assistants, and how can it show up in code, for example with a pandas function that does not exist?
-**Asked at:** commonly asked (no company-specific report found; verifying AI output is a stated expectation in 2026 prep articles, snippet only)
+**Asked at:** commonly asked (no company-specific report found; a 2026 DataCamp prep article says validating AI output is expected, snippet only)
 **What the interviewer is checking:** That you do not trust AI blindly and know how to catch made-up answers.
 **Say this in the interview:** "Hallucination means the AI states something false in a confident tone. In code that can be a function or argument that does not exist, or an old one that was removed. I run the code, read the error, and check the official pandas documentation."
 **Explain simply:**
@@ -1336,7 +1360,7 @@ Output: `Too many requests, waiting 1 seconds`, `Too many requests, waiting 2 se
 **Common mistakes:** Relying on relative paths that break when the scheduler starts from a different folder; no logging; scheduling a notebook instead of a script.
 
 ### Q44 ⭐ 🟡 How would you use an AI assistant to explain a long piece of unfamiliar pandas code, and how do you confirm the explanation is right?
-**Asked at:** commonly asked (no company-specific report found; AI-assisted analysis checking is a topic in 2026 prep material, snippet level only)
+**Asked at:** commonly asked (no company-specific report found; a 2026 DataCamp prep article mentions validating AI-assisted output, snippet only)
 **What the interviewer is checking:** Do you use AI to learn faster but still verify, instead of believing it?
 **Say this in the interview:** "I paste the code, with fake or sample data and no real employee details, and ask it to explain it line by line in plain English. Then I check each claim by running the code step by step on a small table and looking at what each line produces."
 **Explain simply:**
@@ -1346,13 +1370,21 @@ Output: `Too many requests, waiting 1 seconds`, `Too many requests, waiting 2 se
 - Check unknown functions in the **official pandas documentation**; AI can invent functions or misdescribe defaults.
 - Test with a tiny table where you know the answer by hand.
 
-**Sample data:** none needed (use a 5 row copy of the real shape, with made-up values).
+**Sample data:** `employees` with 5 made-up rows (name, department, status): Asha HR Active, Ravi Sales Left, Meena Sales Active, Karan Finance Active, Divya HR Left.
 **Code (what you write in the interview):**
 ```python
 # Code the AI explained as "keeps employees who left, then counts them by department"
 left = employees[employees["status"] == "Left"]
 print(len(employees), len(left))          # does the row count drop like the AI said?
 print(left.groupby("department").size())
+```
+**Output:**
+```
+5 2
+department
+HR       1
+Sales    1
+dtype: int64
 ```
 **What it means:** If the AI says "filters rows" I should see fewer rows; the numbers prove it, not the AI's confidence.
 **Likely follow-ups:**
@@ -1391,7 +1423,7 @@ print(left.groupby("department").size())
 - `ExcelWriter` lets you write several sheets into one file; `groupby` on department makes one table per sheet.
 - Then openpyxl formats (see Q38).
 
-**Sample data:** 3 daily files (3, 4, 5 Nov 2026) with employee_id, name, department, status. Asha is present all 3 days, Ravi is absent on 2 of 3, Meena absent on 2 of 3, John present all 3. (Files created locally for the test.)
+**Sample data:** 3 daily files (3, 4, 5 Nov 2026) with employee_id, name, department, status. Asha is present all 3 days, Ravi is absent on 2 of 3, Meena absent on 2 of 3, John present all 3. Asha and Ravi are in HR; Meena and John are in IT.
 **Code (what you write in the interview):**
 ```python
 import glob
