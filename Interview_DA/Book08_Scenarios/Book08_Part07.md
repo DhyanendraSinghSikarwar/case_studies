@@ -150,6 +150,7 @@
 | A: monthly attrition dashboard refresh | 8 | 6 | 4 |
 | B: fix duplicate employee IDs in the HRIS export | 5 | 9 | 8 |
 | C: build a pay-band analysis for the CHRO | 9 | 3 | 5 |
+
 **Asked at:** commonly asked (no company-specific report found); ICE scoring appears in prioritisation guides (unverified).
 **What the interviewer is checking:** That you can apply a scoring method and also see its limits.
 **Say this in the interview:** "B scores highest at 360, so I would start there, but I would check whether a deadline or the CHRO's seniority changes the order."
@@ -164,7 +165,7 @@
 **Caveats / what else I would check:** The score ignores deadlines (a CHRO meeting could make C urgent), dependencies (the duplicate-ID fix may be needed before A and C are trustworthy, which strengthens B), reach (how many people benefit), strategic fit, and the fact that scores are subjective guesses. Low Confidence on C also suggests a quick scoping step could raise it. Multiplying also lets one low number sink an item.
 **Next step / recommendation:** Do B first, schedule A, and do a 1-hour scoping call on C to raise confidence and clarify the date. Review scores with stakeholders for agreement.
 **Likely follow-ups:** 1) *Why multiply, not add?* Multiplying punishes any single weak factor. 2) *When would you override the score?* A hard deadline, a compliance issue or a dependency.
-**Common mistakes / traps:** Treating scores as facts; ignoring deadlines; not saying what you tell the loser.
+**Common mistakes / traps:** Treating scores as facts; ignoring deadlines; not telling the requester whose item waits.
 
 ### Q10 ⭐⭐⭐ 🟡 You discover an error in a report that went to the leadership team last week, and a decision may already have used it. What do you do, and in what order?
 **Asked at:** commonly asked (no company-specific report found); wrong-data scenarios lead many question banks (unverified).
@@ -245,6 +246,7 @@
 | Hiring-funnel report for Talent Acquisition | 10 |
 | Overtime audit for Payroll | 8 |
 | Survey summary for the CHRO | 6 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Capacity arithmetic plus honest communication about what is dropped.
 **Say this in the interview:** "I have 28 free hours. Attrition, overtime and survey add up to exactly 28, so the hiring funnel waits, and I would tell Talent Acquisition the new date straight away."
@@ -274,7 +276,7 @@
 4. Which checks are still outstanding.
 5. Reasonable range, e.g. the figure could move by about 1 to 2%.
 **If I find...:** Figure is stable across checks: send with a small caveat. A big gap versus payroll: send the figure with a wider range and say it is unresolved. Cannot even give a range: say so honestly with a time.
-**What I would tell the stakeholder:** "Provisional headcount as of today is 4,820 (permanent employees), pending validation of 40 records. I expect the final to be within about 1% and will confirm by 4 pm."
+**What I would tell the stakeholder:** "Provisional headcount as of today is 4,820 (permanent employees), pending validation of 40 records. I expect the final to be within about 1% and will confirm by 4 pm." (All figures here are illustrative.)
 **Prevent it next time:** A validated headcount snapshot kept up to date daily, so quick answers are safe.
 **Likely follow-ups:** 1) *What if the final differs?* Send a correction promptly with the reason. 2) *Why not wait?* The CEO needs something now; the label manages risk.
 **Common mistakes / traps:** Sending an unlabelled number; refusing to answer; over-precise figures.
@@ -471,6 +473,7 @@
 | X: exit-interview theme summary | 500 | 2 | 80% | 4 |
 | Y: shift-roster optimisation study | 1,200 | 1 | 50% | 3 |
 | Z: payroll-error root-cause check | 300 | 3 | 100% | 2 |
+
 **Asked at:** commonly asked (no company-specific report found); RICE exercise is a gap-fill (not from a source).
 **What the interviewer is checking:** Correct arithmetic, a clear pick, and sensible tie-breaking beyond the score.
 **Say this in the interview:** "Z scores 450, X and Y tie at 200. Z goes first; between X and Y I would look at confidence and risk, not flip a coin."
@@ -491,6 +494,7 @@
 | A | 8 | 5 | 6 |
 | B | 6 | 9 | 4 |
 | C | 7 | 6 | 9 |
+
 **Asked at:** commonly asked (no company-specific report found); weighted-score exercise is a gap-fill (not from a source).
 **What the interviewer is checking:** Weighted-average arithmetic, and the judgement to treat the score as a guide.
 **Say this in the interview:** "C scores 7.1, A 6.7, B 6.5, so C first by the model; but the scores are close, and I would override for a hard deadline or a risk to people."
@@ -500,7 +504,7 @@
 2. B: 0.5 x 6 + 0.3 x 9 + 0.2 x 4 = 3.0 + 2.7 + 0.8 = 6.5.
 3. C: 0.5 x 7 + 0.3 x 6 + 0.2 x 9 = 3.5 + 1.8 + 1.8 = 7.1.
 **Result:** C = 7.1, A = 6.7, B = 6.5 (out of 10). Choose C, then A, then B.
-**Caveats / what else I would check:** A gap of 0.4 to 0.6 is within the noise of my own 1-to-10 guesses. Different weights could change the order: with Urgency at 50 percent and Impact at 30 percent, B would lead (6 x 0.3 + 9 x 0.5 + 4 x 0.2 = 7.1 versus C 6.9; I computed this by script). So I would test sensitivity before presenting.
+**Caveats / what else I would check:** A gap of 0.4 to 0.6 is within the noise of my own 1-to-10 guesses. Different weights could change the order: with Urgency at 50 percent and Impact at 30 percent, B would lead (6 x 0.3 + 9 x 0.5 + 4 x 0.2 = 7.1 versus C 6.9, A 6.1). So I would test sensitivity before presenting.
 **Next step / recommendation:** Override the score when: there is a legal, audit or pay-date deadline (B's urgency may be a real hard stop); a request blocks several other people; the issue risks harm to employees or compliance; or the score rests on guesses I can cheaply improve. Always tell the stakeholders when I override, and why.
 **Likely follow-ups:** 1) *Why weight Impact highest?* It reflects value; the weights should be agreed with leadership. 2) *Do the weights sum to 100%?* Yes: 50 + 30 + 20.
 **Common mistakes / traps:** Treating 6.7 versus 6.5 as a real difference; changing weights after seeing the result to favour a pet request.
@@ -604,7 +608,7 @@ The manager wants to report growth from March to June. Compute that growth and t
 ### Q36 ⭐⭐ 🟡 A survey of 1,000 employees got 150 responses, mostly from head office. The CHRO wants one company-wide engagement score on a slide. What is the response rate, and what do you do?
 **Asked at:** commonly asked (no company-specific report found); survey-bias scenario is a gap-fill (not from a source).
 **What the interviewer is checking:** That you spot non-response and sampling bias and still help the CHRO.
-**Say this in the interview:** "The response rate is 15 percent, and mostly head office, so one company-wide score would not represent everyone. I would show it as 'head-office-weighted' with caveats, or by group."
+**Say this in the interview:** "The response rate is 15 percent, and mostly head office, so one company-wide score would not represent everyone. I would show it by group, or label it as 'mostly head-office responses', with caveats."
 **What the data shows:** 150 / 1,000 = 15.0%. Head-office staff are over-represented, so field and plant staff are largely unheard.
 **Working:**
 1. Response rate = 150 / 1,000 = 0.15 = **15%**.
@@ -622,6 +626,7 @@ The manager wants to report growth from March to June. Compute that growth and t
 | Legal | Senior | Female | 2 | 1 |
 | Legal | Senior | Male | 9 | 1 |
 | Ops | Senior | Female | 40 | 5 |
+
 **Asked at:** commonly asked (no company-specific report found); small-cell disclosure is a gap-fill (not from a source).
 **What the interviewer is checking:** That you know small groups can expose individuals and give unreliable percentages.
 **Say this in the interview:** "A cell of 2 people lets readers work out who left, and its 50 percent rate is meaningless. I would combine or suppress the cell, following the company's minimum group size."
@@ -678,7 +683,7 @@ The manager wants to report growth from March to June. Compute that growth and t
 1. Male selection rate = 40 / 100 = 40%.
 2. Female selection rate = 24 / 100 = 24%.
 3. Ratio = 24 / 40 = 0.60 (the gap is 40 - 24 = 16 percentage points).
-4. A simple two-group test (chi-square, checked by script) gives p about 0.015 (uncorrected) to 0.023 (with correction or Fisher), so a gap this size is unlikely to be chance alone with 100 per group.
+4. A simple two-group test (chi-square test, which asks how often a gap this big would appear by luck alone) gives p of about 0.015 (plain) to 0.023 (with continuity correction, or Fisher's exact test). A small p means the gap is unlikely to be chance alone with 100 per group; it still says nothing about why.
 **Result:** Selection-rate ratio 0.60; difference 16 percentage points.
 **Caveats / what else I would check:** A common rule of thumb in US employment practice is the "four-fifths rule" (a ratio below 0.80 flags possible adverse impact); from memory, unverified, other countries differ, so confirm with legal. The ratio alone does not prove bias: check whether the applicant groups differ in qualifications or roles applied for, whether the tool uses proxies (gaps in work history, college names, keywords), and the data for other attributes. Small samples (100 each) are limited.
 **Next step / recommendation:** Report it to HR and the tool owner now with the figures; compare shortlisting by job-relevant criteria; ask the vendor how the tool was trained and tested; suggest a human review of rejected female applicants; and pause or monitor the tool until understood. Monitor the ratio every hiring cycle. Handle the applicants' data carefully (privacy), and keep the analysis within a small, authorised group.
@@ -713,7 +718,7 @@ The manager wants to report growth from March to June. Compute that growth and t
 2. Would the decision change anywhere inside that range? If not, the range is detail, not a blocker.
 3. Which single caveat matters most to this decision?
 **If I find...:** Decision is the same across the range: lead with the number, add the range in small print. Decision flips inside the range: say so plainly, because a single number would mislead.
-**What I would tell the stakeholder:** "Best estimate: 12% attrition next year. Likely between 10% and 15%. At 15% we would need two extra recruiters, so I suggest we plan for 13% and review in March." Short, decisive, honest.
+**What I would tell the stakeholder:** "Best estimate: 12% attrition next year. Likely between 10% and 15%. At 15% we would need two extra recruiters, so I suggest we plan for 13% and review in March." (Illustrative figures.) Short, decisive, honest.
 **Prevent it next time:** Use a standard one-line format (estimate, range, confidence, what would change it) so uncertainty reads as normal.
 **Likely follow-ups:** 1) What if they insist on no range? Give the number, but keep the caveat in the written version so I am not misquoted. 2) How do you explain a range? "Most likely outcomes sit between X and Y."
 **Common mistakes / traps:** Burying the answer in caveats; false precision (12.347%); giving in silently and being blamed later.
@@ -777,7 +782,7 @@ The manager wants to report growth from March to June. Compute that growth and t
 **What the data shows:** 1,250 - 12 = 1,238, so the other lines match the active headcount exactly (assuming one line per person).
 **Working:**
 1. Mismatch rate = 12 / 1,250 = 0.96% of payroll lines (about 0.97% if measured against 1,238).
-2. Matched lines = 1,250 - 12 = 1,238, equal to the HRIS active count (a good sign, but I would verify one-to-one).
+2. Matched lines = 1,250 - 12 = 1,238, equal to the HRIS active count. This is only a hint: an equal total can hide two offsetting gaps (12 extra payroll lines and 12 active employees with no payroll line, for example on unpaid leave), so I would check the match person by person in both directions.
 **Result:** 0.96% (rounded to 2 decimals) of lines unmatched; 12 lines.
 **First, contain:** Do not edit data or stop payments. Keep a read-only copy of both extracts with the date.
 **What I would check, in order:**
@@ -848,7 +853,7 @@ The manager wants to report growth from March to June. Compute that growth and t
 ### Q50 ⭐⭐ 🔴 HR wants to use a pattern you found, that younger employees get promoted faster, as a screening rule for promotions. What do you say?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you separate correlation from a fair rule and spot age discrimination.
-**Say this in the interview:** "That pattern describes the past, it does not justify a rule. Using age as a screen would be unfair, likely unlawful, and would lock in whatever bias created the pattern."
+**Say this in the interview:** "That pattern describes the past, it does not justify a rule. Using age as a screen would be unfair, possibly unlawful (confirm with legal), and would lock in whatever bias created the pattern."
 
 **First, clarify / contain:** Ask what HR hopes to achieve. Say clearly I do not recommend it before anything is built.
 **What I would check, in order:**
@@ -954,7 +959,7 @@ The manager wants to report growth from March to June. Compute that growth and t
 - Rules for employees' data may differ from customers' (for example certain employment-related uses); confirm exactly with legal.
 **What I do day to day:** Work with the minimum columns; mask or aggregate before sharing; keep data in approved tools; avoid personal downloads.
 **What I would verify with legal:** Which basis covers employee analytics, retention periods, cross-border transfers, vendor and AI-tool use, breach reporting duties, and how current Rules apply.
-**Likely follow-ups:** 1) Does it apply to anonymised data? Principle: truly anonymous data is generally outside personal data rules; confirm with legal. 2) Who is responsible? The organisation, but analysts must follow the procedures.
+**Likely follow-ups:** 1) Does it apply to anonymised data? Principle (from memory, unverified): truly anonymous data is generally outside personal data rules; confirm with legal. 2) Who is responsible? The organisation, but analysts must follow the procedures.
 **Common mistakes / traps:** Quoting section numbers or penalties from memory; saying "it does not apply to internal analytics".
 
 ### Q57 ⭐ 🔴 A manager wants to use email and chat metadata to measure employee productivity. What is your position as the analyst?

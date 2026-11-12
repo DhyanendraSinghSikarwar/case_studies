@@ -11,7 +11,7 @@
 - Be truthful. The timeline below is an illustration, not a claim.
 - A believable story has stages: (1) learn one routine (clarify, check, decide, communicate), (2) practise on the three common types: data quality, vague request, metric drop, (3) use real HR files (attendance, payroll, hiring funnel), (4) mock rounds with feedback.
 - Mini-example: 10 weeks x 6.5 hours = 65 hours. Say what those hours contained, not just the total.
-- Add one proof: "My first answers rambled for four minutes; now I give a headline in 20 seconds."
+- Add one proof, only if true (the figures here are illustrative): "My first answers rambled for four minutes; now I give a headline in 20 seconds."
 - Practice step: write your real timeline in four lines (what, how long, what changed) and say it in under a minute.
 
 **Likely follow-ups:** 1) *Are you still learning?* Yes, I review one weak answer a week. 2) *What would you change?* Start mocks earlier.
@@ -23,7 +23,7 @@
 **Say this in the interview:** "I follow the same five steps: clarify and contain, check in order, decide by rules, tell the stakeholder plainly, then prevent a repeat. I give my first move in the first 20 seconds."
 **Explain simply:**
 - A good answer is short, ordered, and honest about what is unknown. It is not a perfect solution.
-- Steps: (1) clarify the goal and the decision, (2) contain risk (do not send or publish yet), (3) list checks from most likely and cheapest first, (4) say what you do for each finding, (5) say what you tell the stakeholder, with a time, (6) prevention.
+- Steps: (1) clarify the goal and the decision, and contain risk (do not send or publish yet), (2) list checks from most likely and cheapest first, (3) say what you do for each finding (the decision rule), (4) say what you tell the stakeholder, with a time, (5) say how you prevent a repeat.
 - Mini-example: "Headcount on the dashboard looks wrong." First: ask which report and date, pause sharing it. Then check filters, then duplicates, then the source file date.
 - Say assumptions aloud, for example "I assume the HRIS export is the source of truth."
 - Practice step: answer one scenario a day with a 2-minute timer using these steps.
@@ -51,7 +51,7 @@
 **Say this in the interview:** "I practise a three-line summary: the answer, the reason with one number, and the action. I check progress by timing myself and asking a non-technical person to repeat it back."
 **Explain simply:**
 - Format: headline first, one supporting number, one recommended action, one caveat.
-- Mini-example: "Attrition rose from 12% to 15% (3 percentage points), mostly in first-year staff in one site. I recommend reviewing onboarding there; I will confirm the exit reasons by Friday."
+- Mini-example (illustrative numbers): "Attrition rose from 12% to 15% (3 percentage points), mostly in first-year staff in one site. I recommend reviewing onboarding there; I will confirm the exit reasons by Friday."
 - Practice: explain a chart to a friend with no data background; record a voice note; delete jargon.
 - Measures of improvement: length (target under 60 seconds), the friend can restate it, and fewer questions of "so what?".
 - Practice step: do three explanations a week and keep the best and worst in a journal.
@@ -139,7 +139,7 @@
 - Types of resources (names from memory, unverified; check each is still free): public data portals; Kaggle-style open datasets (HR attrition, retail sales, e-commerce orders); government open-data sites; free SQL practice sites; free interview guides.
 - Why: messy, business-shaped data beats clean textbook tables.
 - Self-made data: generate a fake attendance or payroll file with deliberate errors; no real employee data.
-- Mini-example: use a sales file with 5% blank regions and ask "what would I tell the sales head?".
+- Mini-example (illustrative): use a sales file with 5% blank regions and ask "what would I tell the sales head?".
 - Practice step: choose two datasets and write three scenario questions for each.
 
 **Likely follow-ups:** 1) *Why not just use a course?* Courses teach tools; scenarios need messy data. 2) *Any paid tools?* Not required.
@@ -176,9 +176,9 @@
 ### Q13 ⭐⭐ 🟡 How do you run a mock scenario interview with a friend or mentor, and what feedback checklist do you use afterwards?
 **Asked at:** commonly asked (no company-specific report found); guides (unverified) recommend mocks aloud and peer feedback.
 **What the interviewer is checking:** Whether you seek and use feedback.
-**Say this in the interview:** "I give my partner five scenarios, answer aloud against a timer, and score a six-point checklist afterwards."
+**Say this in the interview:** "I give my partner three scenarios, answer aloud against a timer, and score a six-point checklist afterwards."
 **Explain simply:**
-- Setup: 45 minutes, 3 scenarios, 8 minutes each, 5 minutes for feedback and a record of it.
+- Setup: 45 minutes = 3 scenarios x 10 minutes (30) + 15 minutes for feedback and a written record of it.
 - Ask the partner to interrupt and push back at least once.
 - Checklist: (1) Did I clarify first? (2) Was the answer ordered? (3) Did I state assumptions? (4) Was there a decision rule? (5) Was the stakeholder message plain? (6) Did I finish on time and give a headline?
 - Mini-example: score each item 0 or 1; a total of 4 of 6 means a pass at this stage.
@@ -223,7 +223,7 @@
 **Explain simply:**
 - Drill: give yourself 10 minutes, a messy table, and one question; write a three-line recommendation.
 - Format: recommendation, evidence in one number, risk, next check.
-- Mini-example: "With 8% of exit reasons blank, I would say the main reason is pay, with moderate confidence; I will complete the blank cases by Friday."
+- Mini-example (illustrative numbers): "With 8% of exit reasons blank, I would say the main reason is pay, with moderate confidence; I will complete the blank cases by Friday."
 - Separate what is known, assumed and unknown.
 - Practice step: do one timed drill a week with a stricter clock each time (10, 8, 6 minutes).
 
