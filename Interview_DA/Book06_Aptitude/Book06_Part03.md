@@ -186,7 +186,7 @@
 ### Q61 ⭐ 🟡 A man can walk both ways in 9 hours. He can ride one way and walk back in 6 hours. How long does he take to ride both ways?
 <!-- ANSWER_PENDING -->
 
-### Q62 ⭐ 🟡 Two runners start together on a circular track of 400 m, running in the same direction at 5 m/s and 3 m/s. After how many seconds do they first meet at the starting point's line again, that is, when the faster runner has lapped the slower one?
+### Q62 ⭐ 🟡 Two runners start together on a circular track of 400 m, running in the same direction at 5 m/s and 3 m/s. After how many seconds does the faster runner first lap (catch up with) the slower one?
 <!-- ANSWER_PENDING -->
 
 ### Q63 ⭐ 🟡 In a 100 m race A beats B by 20 m. In another 100 m race B beats C by 10 m. Assuming constant speeds, by how many metres does A beat C in a 100 m race?
