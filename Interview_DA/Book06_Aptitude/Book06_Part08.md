@@ -330,7 +330,7 @@ Monthly sales (Rs lakh):
 
 <!-- ANSWER_PENDING -->
 
-### Q32 ⭐⭐⭐ 🟡 How much is the increase in headcount percentage for the quarter-on-quarter attrition fall from Q2 to Q3, as a percent change (not percentage points)?
+### Q32 ⭐⭐⭐ 🟡 What is the percent change (not percentage points) in attrition from Q2 to Q3?
 
 Quarterly attrition rate (%):
 
@@ -736,7 +736,7 @@ Employees by pay band:
 
 <!-- ANSWER_PENDING -->
 
-### Q76 ⭐⭐ 🔴 What is the total number of employees from a pay-band table where Operations' missing headcount is derived from payroll, and what is Finance's share of total payroll?
+### Q76 ⭐⭐ 🔴 What is Finance's share of total payroll (to 2 decimals)?
 
 Payroll table (salary in Rs thousand per month):
 
@@ -748,10 +748,10 @@ Payroll table (salary in Rs thousand per month):
 
 <!-- ANSWER_PENDING -->
 
-### Q77 ⭐⭐ 🔴 Revenue in Rs 20,000 crore terms is not needed: if A's share of expense is 20% and equals Rs 2.4 crore, what are the total expense and the amount for a sector of 35%?
+### Q77 ⭐⭐ 🔴 A pie sector for Department A is 20% of total expense and equals Rs 2.4 crore. What is the total expense, and what amount does a 35% sector represent?
 <!-- ANSWER_PENDING -->
 
-### Q78 ⭐⭐ 🔴 In 2024 the pie total was Rs 400 lakh and in 2025 Rs 500 lakh. By how much did Product P's rupee sales change, and why is a falling share not a falling sale?
+### Q78 ⭐⭐ 🔴 Product P's share fell from 40% to 30%. Did its rupee sales fall, and which product had the largest rupee increase?
 
 Product sales shares (pie charts):
 
@@ -828,7 +828,7 @@ Revenue (bar) and profit margin (line):
 ### Q89 ⭐ 🟡 A scatter plot of training hours versus sales shows an upward trend. Can you conclude training causes higher sales?
 <!-- ANSWER_PENDING -->
 
-### Q90 ⭐ 🔴 If total expense was Rs 12 crore, A was 20% and B was 30%, and later total expense rose 10% with A flat, what is A's new share (to 2 decimals)?
+### Q90 ⭐ 🔴 Total expense is Rs 12 crore and Department A spends Rs 2.4 crore. If total expense rises 10% while A's spend stays flat, what is A's new share (to 2 decimals)?
 <!-- ANSWER_PENDING -->
 
 ### Q91 ⭐ 🔴 What is the CAGR from 100 to 133.1 in 3 years, and why is the simple average of annual growth rates misleading?
