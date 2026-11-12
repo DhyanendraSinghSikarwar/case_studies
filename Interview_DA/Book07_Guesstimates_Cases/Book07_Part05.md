@@ -133,13 +133,13 @@
 7. **Channel and promo:** paid, organic, promo code; catches marketing changes.
 **Rule of thumb:** run each cut as a "contribution to the drop" table (segment drop divided by total drop). A segment with 15% of volume but 60% of the drop is the lead.
 **Likely follow-ups:** 1) *When do you stop?* When 80% of the drop is explained. 2) *What if no cut shows a pattern?* The drop is spread out: suspect a global cause (data, price, season).
-**Common mistakes / traps:** Cutting by many dimensions at once; reading percent change without the volume share; ignoring Simpson's paradox.
+**Common mistakes / traps:** Cutting by many dimensions at once; reading percent change without the volume share; ignoring Simpson's paradox (a total can fall while every segment improves, because the mix shifted; see Q77).
 
 ### Q9 ⭐⭐⭐ 🟢 A food-delivery app's revenue last month was ₹5,00,000 (2,000 orders at ₹250 AOV) and this month it is ₹4,00,000 (1,600 orders at ₹250 AOV). By what percent did revenue fall and which driver explains it?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Basic percentage change and spotting the driver.
 **Say this in the interview:** "Revenue fell 20%, and it is all volume: AOV is unchanged at ₹250, so the whole drop is fewer orders."
-**Definition in plain words:** Percent change = (new - old) / old x 100. Revenue = orders x AOV.
+**Definition in plain words:** Percent change = (new - old) / old x 100. Revenue = orders x AOV (average order value, the average rupees per order).
 **Worked answer:**
 1. Fall in revenue = 5,00,000 - 4,00,000 = ₹1,00,000.
 2. Percent = 1,00,000 / 5,00,000 = 20% fall.
@@ -337,7 +337,7 @@
 - **Supply:** many partner restaurants closed on Tuesday (active restaurants on Tuesday); a stock-out pattern on weekly supply days (out-of-stock rate).
 - **Operations:** fewer riders on a Tuesday roster (rider logins, delivery time, cancellation reasons); a Tuesday maintenance window or release (release log).
 - **Marketing:** a weekly "Tuesday offer" ended or push notification schedule changed (promo orders, notification sends).
-- **Data:** a Tuesday ETL job failing or a timezone cut-off (compare events with payments).
+- **Data:** a Tuesday ETL job (the scheduled job that loads data into the reporting tables) failing, or a timezone cut-off (compare events with payments).
 **What I would check, in order:** data check, then promos and notifications, then restaurants and riders, then external demand.
 **If the data shows...:** promo orders gone, so restore the promo; restaurants down, so work on weekly-off incentives; payments fine but events down, so a data problem.
 **Recommendation:** fix the top cause and watch the next four Tuesdays.
@@ -531,9 +531,9 @@
 
 **Clarify first:** Did each change hit everyone, or only some cities or platforms? Exact dates and times? Do I have order logs by city, platform and app version?
 **Structure:** Total drop = common or external part + price part + release part + competitor part + overlap.
-**What I would check, in order:** (1) Drop by day to see which change lines up with the start. (2) Split by platform and app version (release exposure). (3) Split by city, SKU or customer group that did or did not get the price change. (4) Compare cities where the competitor ran the promotion versus where it did not. (5) Try a simple regression of orders on the three exposure flags, with city and day effects.
+**What I would check, in order:** (1) Drop by day to see which change lines up with the start. (2) Split by platform and app version (release exposure). (3) Split by city, SKU (a single product variant) or customer group that did or did not get the price change. (4) Compare cities where the competitor ran the promotion versus where it did not. (5) Try a simple regression (a fitted equation that estimates each change's separate effect) of orders on the three exposure flags, with city and day effects.
 **If the data shows...:** Where the groups are cleanly separated, differences give rough shares. If all three hit everyone at once, say it cannot be separated by data alone and propose a reversal test (restore the old price in a small test group) or an experiment.
-**Numeric work (illustrative):** 10,000 orders fell to 8,000 (drop 2,000). The group with no price change, no release and no promo exposure fell 5% (500 orders on a 10,000 base). Extra fall 1,500: 1,000 sits where only the release applied, 500 where only the price applied. So release 50%, price 25%, common or competitor 25% of the drop. Overlap groups are given as a range.
+**Numeric work (illustrative, assumed):** 10,000 orders fell to 8,000 (drop 2,000). Suppose the group that saw none of the three changes fell 5%; scaled to the whole business that common fall is 5% x 10,000 = 500 orders. The extra 1,500 is then split by exposure: 1,000 where the release applied, 500 where the price change applied. So release 50%, price 25%, common baseline (season, market) 25% of the drop. A competitor effect needs its own exposed and unexposed cities; groups that saw several changes at once are reported as a range.
 **Recommendation:** Present shares as ranges with the method, act on the biggest and most reversible (rollback or price test), and run a small holdout for the rest.
 
 **Likely follow-ups:** (1) Why not simply split evenly? Evenly has no evidence. (2) What if the effects interact? Report the overlap as its own bucket.
@@ -581,7 +581,7 @@
 - Compare groups: orders among customers who still got a discount versus those who did not, in the same week.
 - Check dose-response: were bigger discount cuts followed by bigger order falls?
 - Best proof: a small test or holdout where discounts are restored for a random group.
-**Example (illustrative):** Discount users' orders fell 10% and non-discount users' orders fell 10% too. Then discounts cannot be the cause; something common affected both.
+**Example (illustrative):** Discount users' orders fell 10% and non-discount users' orders fell 10% too. Then discounts are unlikely to be the main cause; something common probably affected both.
 **Practice step:** For any two series, write the three alternative stories (reverse cause, third factor, coincidence) and one data check for each.
 
 **Likely follow-ups:** (1) What if you cannot experiment? Use matched groups or before-after with a control. (2) What if timing matches exactly? Still check confounders.
@@ -699,7 +699,7 @@
 3. Per-Tuesday change = 0%. Total change = (20,000 - 25,000) / 25,000 = -20%, fully a calendar effect.
 **Result:** No real drop; 0% per Tuesday.
 **Check:** 5,000 x 4 = 20,000 and 5,000 x 5 = 25,000.
-**Caveats:** Note the premise says the per-Tuesday figures are equal, so the stated drop is arithmetic only. Also compare with same-weekday-versus-weekday patterns; month totals differ for other days too.
+**Caveats:** Note the premise says the per-Tuesday figures are equal, so the stated drop is arithmetic only. The other weekdays also have different counts in different months, so compare per-day or same-weekday averages for them too.
 
 **Likely follow-ups:** (1) How to avoid it in dashboards? Show orders per day or per same-weekday. (2) What about a 28-day versus 31-day month? Use per-day (see Q72).
 **Common mistakes / traps:** Calling 25,000 to 20,000 a drop; running a long investigation on a calendar artefact.
@@ -763,7 +763,7 @@
 **Check:** Net new MRR (new + expansion - contraction) = +9; churn -14; total -5.
 **Caveats:** Churn of 14% in one month is very high (check whether this is monthly or a quarter, or one big customer). New MRR of 8 is smaller than churn, so acquisition cannot offset it. Split churn by plan, tenure, size and reason.
 
-**Likely follow-ups:** (1) Which metric next? Gross and net revenue retention: gross = (100 - 3 - 14) / 100 = 83%; net = (100 + 4 - 3 - 14) / 100 = 87%. (2) What to check? Churned accounts by segment and any pricing or product change.
+**Likely follow-ups:** (1) Which metric next? Gross revenue retention (share of opening MRR kept, ignoring upsell) = (100 - 3 - 14) / 100 = 83%; net revenue retention (the same but counting upsell) = (100 + 4 - 3 - 14) / 100 = 87%. (2) What to check? Churned accounts by segment and any pricing or product change.
 **Common mistakes / traps:** Saying contraction is churn; blaming acquisition; not checking whether one large customer drove the 14.
 
 ### Q44 ⭐⭐ 🟡 Weekly active users fell from 50,000 to 45,000. Data is below. Which component drives the fall and what do you check next?
@@ -803,7 +803,7 @@
 4. Normal range (mean plus or minus 3 SDs) = about 963 to 1,037.
 5. 800 is (800 - 1,000) / 12.2 = about -16.3 SDs.
 **Result:** 800 is far outside the normal range: a real drop, down 20%.
-**Check:** Even with the population SD (11.5) the answer is about -17 SDs. Even if SD were 50, 800 would still be -4 SDs.
+**Check:** Even with the population SD (11.5, dividing by 8 instead of 7) the answer is about -17.5 SDs. Even if SD were 50, 800 would still be -4 SDs.
 **Caveats:** Eight points is a small sample; check it was not a holiday or a data delay; if usual levels trend or have seasonality, compare with the trend-adjusted expectation.
 
 **Likely follow-ups:** (1) What would be within noise? About 965 to 1,035. (2) Next step? Confirm data completeness, then cut by segment (Q19, Q20).
@@ -926,7 +926,7 @@
 1. Before: 1,00,000 x 0.95 x 0.03 = 2,850 orders.
 2. After: 1,00,000 x 0.70 x 0.03 = 2,100 orders.
 3. Change: 2,100 / 2,850 - 1 = -26.3% (750 fewer orders a day).
-**Result:** About -26%, with a sensible range of -15% to -26%: shoppers who find a sold-out phone may switch to another model, so the real fall is usually smaller than the full 26%.
+**Result:** About -26% if no sold-out view converts, with a sensible range of about -16% to -26%: shoppers who find a sold-out phone may switch to another in-stock model. If (assumed) 40% of them do, the fall is 26.3% x 0.6 = about -16%.
 **Check:** 70 / 95 = 0.737, so -26.3%. Same.
 **Caveats:** The 3% is assumed to apply to in-stock views only; if 3% were already blended with availability, the numbers change. Stock-outs also bias traffic (people stop visiting), so views may not stay flat.
 **Likely follow-ups:** (1) How do you reduce the loss? Show alternatives and "notify me". (2) Is availability by product or overall? Weight by page views, since popular phones matter most.
@@ -1002,7 +1002,7 @@
 **Structure:** Internal causes first (release, price, stock); then external-footprint checks.
 **What I would check, in order:**
 - Timing: does the decline begin at the launch date, as a step, not a slow slide?
-- Geography: compare launch cities with others (difference-in-differences, see Q63).
+- Geography: compare launch cities with others (difference-in-differences: the change in launch cities minus the change in other cities; see Q63).
 - Who left: customers who used us weekly and stopped, rather than new customers failing to arrive; the lost customers' last orders.
 - Our own funnel: if conversion and delivery time are stable but new-user installs and returning users fall, the cause is outside.
 - Competitor's offers: any discount or ad spike on the same dates (outside data, optional).
@@ -1023,7 +1023,7 @@
 - Funnel steps for 7.3: crashes, checkout errors, payment button taps.
 - Timing: did the drop start at the release time?
 **Decision rule (my proposal):** Roll back, or pause the rollout, when (1) the 7.3 group is down well beyond its normal daily swing (for example beyond the usual range of past weeks), (2) the old-version Android group is not, and (3) the funnel shows a specific broken step. If only (1) holds, hold the rollout and investigate; fix forward if a quick patch exists.
-**Recommendation:** Pause staged rollout today; each day of delay costs about 1,200 orders.
+**Recommendation:** Pause staged rollout today; if the 10,000 orders are per day, each day of delay costs about 1,200 orders.
 **Likely follow-ups:** (1) iOS flat helps? Yes, as a control. (2) What if a sale ran only on iOS? Then check promotions by platform.
 **Common mistakes / traps:** Reporting 20% as the overall drop; comparing platforms without checking user mix; rolling back without comparing old and new version users.
 
@@ -1125,7 +1125,7 @@
 **Say this in the interview:** "I would compare each day with the same weekday in past weeks, set an expected band, alert when it is breached and break the alert down automatically by city, platform and restaurant status."
 **Explain simply:**
 - Compare like with like: Tuesday against previous Tuesdays, not Tuesday against Monday.
-- Expected band: mean and spread of the last 8 same-weekdays. Example (assumed): past Tuesdays average 10,000 with a standard deviation (typical swing) of about 200; the alert line at the mean minus 3 swings is about 9,400, so 8,000 would trigger immediately (nearly 10 swings below).
+- Expected band: mean and spread of the last 8 same-weekdays. Example (assumed): past Tuesdays average 10,000 with a standard deviation (typical swing) of about 200; the alert line at the mean minus 3 swings is about 9,400, so 8,000 would trigger immediately (exactly 10 swings below).
 - Use hourly checks as well, so a drop is seen within hours; adjust for data lag (see Q59).
 - Alert on drivers too: active restaurants, delivery time, app errors, payment success, not just orders.
 - Automatic split: every alert shows which city, platform, app version and category is responsible.
@@ -1291,7 +1291,7 @@
 - Grouping by the UTC date puts IST Tuesday morning orders (the first 5.5 hours) into Monday. If the dashboard moved from UTC to IST, or a query truncates dates differently, Tuesday totals shift without any real change.
 - Daylight saving (clocks moving by an hour) does not exist in India but does for UK/US data; on the change day a day has 23 or 25 hours, so counts look off by about 4%.
 - Check: compare hourly counts for the day, and run the same query with an explicit conversion to IST.
-**Short worked example:** If 8% of Tuesday orders come before 5:30 am IST and the pipeline begins to bucket those in UTC, Tuesday appears about 8% lower and Monday higher.
+**Short worked example (assumed numbers):** A pure shift only moves orders between neighbouring days (one day looks lower, the next higher), so a lasting fake 'Tuesday drop' needs a day whose early hours are busier than the next day's. Say 8% of a normal Tuesday's orders come before 5:30 am IST but only 3% of Wednesday's. A UTC cut gives Tuesday its Wednesday-morning 3% instead of its own 8%, so Tuesday looks about 5% lower, while Monday gains the Tuesday early-morning orders and looks higher.
 **Practice step:** Write the query with the timezone made explicit before grouping.
 **Likely follow-ups:** (1) What would give it away? Another day rising by the same amount. (2) Fix? Store UTC, report in IST.
 **Common mistakes / traps:** Not knowing the stored timezone; mixing local and UTC columns; ignoring DST in global data.
@@ -1348,7 +1348,7 @@
 - Mechanism: price change passed to customers? Compliance steps added at checkout?
 **What I would check, in order:** Daily orders around the date; split affected versus unaffected; price and conversion at checkout; competitors under the same rule.
 **If the data shows...:** Affected group drops, control flat, starts at the date: likely the rule. Everything drops everywhere: look elsewhere. Pre-announcement spike then dip: pull-forward, temporary.
-**Recommendation:** Quantify as the difference between affected and unaffected groups' change (difference-in-differences) and recommend a price or process response.
+**Recommendation:** Quantify as the difference between affected and unaffected groups' change (difference-in-differences: the change in the affected group minus the change in the unaffected group, see Q63) and recommend a price or process response.
 **Likely follow-ups:** (1) Why a control group? To remove seasonality. (2) Pull-forward? Compare total over the combined weeks.
 **Common mistakes / traps:** Assuming causation from timing; using no control group.
 
@@ -1376,7 +1376,7 @@
 **If the data shows...:** Attributed paid orders far above the drop: many would have ordered anyway. Drop larger than attributed: ads boost organic too.
 **Recommendation:** Run geo holdouts regularly; compare cost per incremental order, not per attributed order.
 **Likely follow-ups:** (1) Short-term only? Effects can lag. (2) Why holdout? It controls timing.
-**Common mistakes / traps:** Trusting last-click attribution; no control.
+**Common mistakes / traps:** Trusting last-click attribution (crediting the whole order to the last ad clicked); no control.
 
 ### Q82 ⭐ 🟡 How do survivorship effects mislead a retention or sales drop analysis that only uses currently active customers?
 **Asked at:** commonly asked (no company-specific report found); survivorship bias is a standard analytics caution (unverified).
@@ -1438,7 +1438,7 @@
 - Problem: you cannot see what sales would have been without the event. Solution: a weighted mix of comparison regions (the synthetic control) that matched our region before the event.
 - Causal Impact (a Google-developed method) does a similar thing using a statistical model on control series and gives a range of uncertainty.
 - Steps: pick the event date; choose control series not affected; check the fit over the pre-period; predict the post-period; effect = actual - predicted; check with a placebo (pretend the event happened elsewhere).
-- Example (illustrative): after the event, our city sells 80 units; the synthetic control predicts 95. Effect = -15 units, or -15.8%. A naive before-after comparison (100 to 80) says -20%, overstating because the baseline was rising.
+- Example (illustrative): after the event, our city sells 80 units; the synthetic control predicts 95. Effect = -15 units, or -15.8%. A naive before-after comparison (100 to 80) says -20%, which overstates the effect because, without the event, the series was already expected to slip to 95.
 **Practice step:** Try it in Excel as a ratio of our city to the average of other cities, before and after.
 **Likely follow-ups:** (1) Needs? Good controls and a long pre-period. (2) Weakness? Poor fit means unreliable.
 **Common mistakes / traps:** Controls affected by the event; short pre-period; reporting a single number without uncertainty.
