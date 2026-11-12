@@ -31,12 +31,12 @@
 **Common mistakes / traps:** Counting opens and calling it engagement; changing the definition mid-year and reporting growth that is only a definition effect; not excluding internal and test accounts.
 
 ### Q3 ⭐⭐⭐ 🟢 What is customer churn rate, and how is it different from revenue churn?
-**Asked at:** commonly asked (no company-specific report found); churn and LTV are listed among SaaS data analyst topics on prep blogs (unverified).
+**Asked at:** commonly asked (no company-specific report found); churn and LTV are listed among SaaS (software sold as a subscription) data analyst topics on prep blogs (unverified).
 **What the interviewer is checking:** Whether you know churn can be counted in customers or in money, and that the two can disagree.
 **Say this in the interview:** "Customer churn is the share of customers at the start of a period who left during it. Revenue churn is the share of starting revenue lost. They differ when the leavers are bigger or smaller spenders than average."
 **Explain simply:**
 - Customer churn rate = customers lost in the period / customers at the start of the period.
-- Revenue churn rate = recurring revenue lost (cancellations, plus downgrades) / recurring revenue at the start. If upgrades from remaining customers are added back, the result is net revenue churn, which can even go negative.
+- Revenue churn rate = recurring revenue (money that repeats every month, such as subscription fees) lost through cancellations and downgrades / recurring revenue at the start. If upgrades from remaining customers are added back, the result is net revenue churn, which can even go negative.
 - Worked example: 1,000 customers at the start, average payment Rs 500 a month, so Rs 5,00,000 revenue. 50 customers leave, each paying Rs 200. Customer churn = 50/1,000 = 5%. Revenue lost = 50 x 200 = Rs 10,000, so revenue churn = 10,000/5,00,000 = 2%.
 - Reverse case: if the leavers are big customers, revenue churn is higher than customer churn. For an HR analogy, headcount attrition and payroll attrition behave the same way.
 **Practice step:** For any subscription you know, ask: did we lose a lot of small customers or a few big ones?
@@ -280,7 +280,7 @@
 
 ### Q21 ⭐⭐⭐ 🟡 Which metrics would you track to judge the health of a food delivery app, and how would you organise them into a KPI tree?
 **Asked at:** Swiggy business analyst guides mention CAC, retention, AOV and delivery time; KPI definition rounds are reported for Flipkart (prep-site and candidate claims, unverified).
-**What the interviewer is checking:** Whether you build a structured, MECE tree and not a random list.
+**What the interviewer is checking:** Whether you build a structured, MECE tree (MECE = branches do not overlap and nothing is missing) and not a random list.
 **Say this in the interview:** "I would start from one top outcome, profitable orders, and split it into demand, supply and unit economics, with quality as a guardrail."
 **Clarify first:** Is the goal growth, profit or both? Which city or segment? Who owns each metric?
 **Structure (KPI tree):**
@@ -291,7 +291,7 @@
     - Basket: AOV, items per order.
   - Supply: active restaurants, delivery partners online, restaurant availability, partner utilisation.
   - Operations quality: delivery time, on-time rate, cancellation rate, order accuracy, refund rate, rating.
-  - Unit economics: take rate, delivery cost per order, discount per order, contribution margin per order.
+  - Unit economics: take rate (share of order value the app keeps), delivery cost per order, discount per order, contribution margin per order (money left per order after all costs that change with each order, see Q37).
 **What I would check, in order:** (1) Top-line trend versus last week and last year. (2) Which branch of the tree moved, in a table by city. (3) A weekly Power BI or Excel dashboard with the tree as filters.
 **If the data shows...:** Orders up but profit down: look at discounts and delivery cost. Users up, orders per user flat: acquisition without habit. Delivery time up and cancellations up: a supply problem.
 **Recommendation:** Pick 5 to 7 headline KPIs (orders, AOV, retention, delivery time, contribution margin, cancellation) with owners and targets; keep the rest as diagnostic metrics.
@@ -328,7 +328,7 @@
 **If the data shows...:** New cohorts retain far worse, so the 20% is low-quality growth: fix acquisition and onboarding. Old users' frequency is falling, so it is a product or supply issue. One city or channel drives it, so the problem is local.
 **Numeric work (if data given):** Ratio moves from 25.0% to 20.8%, a drop of about 4.2 points (about 17% relative). Verified by script (illustrative numbers).
 **Recommendation:** Do not celebrate MAU. Report DAU/MAU and rides per user as guardrails, and review retention of new cohorts.
-**Likely follow-ups:** Is a lower ratio always bad? No; a ride-hailing app is used a few times a month by most people, so a ratio of 20-25% can be normal; the trend matters more than the level.
+**Likely follow-ups:** Is a lower ratio always bad? No; if most riders use a ride-hailing app only a few times a month (an assumption, unverified), a ratio of 20-25% can be normal; the trend matters more than the level.
 **Common mistakes / traps:** Calling flat DAU "no problem"; ignoring that DAU and MAU come from different user sets; not checking the definition of active.
 
 ### Q24 ⭐⭐⭐ 🟡 What are the limitations of using DAU/MAU as the single measure of engagement?
@@ -360,8 +360,8 @@
 - Statistical: with 1,000 visits, 30 versus 40 orders is noisy; with 1,00,000 it is solid.
 - Quality: average order value, returns, cancellations, discount depth, margin per order.
 - Cause: promo, price cut, seasonality, a test result?
-**What I would check, in order:** (1) the definition and query; (2) conversion by channel, device and new versus returning; (3) volume and a confidence interval; (4) revenue and margin per visitor; (5) timing against launches.
-**If the data shows...:** Every segment up, with order value stable: real gain. Only the traffic mix changed (Simpson's paradox style): no true improvement. Conversion up from heavy discounts and margin down: a trade, not a win.
+**What I would check, in order:** (1) the definition and query; (2) conversion by channel, device and new versus returning; (3) volume and a confidence interval (a range showing how much the rate could move by chance); (4) revenue and margin per visitor; (5) timing against launches.
+**If the data shows...:** Every segment up, with order value stable: real gain. Only the traffic mix changed (a Simpson's paradox style effect: a total moves because the mix of groups changed, not because any group improved): no true improvement. Conversion up from heavy discounts and margin down: a trade, not a win.
 **Numeric work (if data given):** 3% to 4% is +1 percentage point, +33.3% relative. Verified by script.
 **Recommendation:** Accept only after segment, significance and margin checks; track revenue per visitor as the primary metric.
 **Likely follow-ups:** Could fewer visitors raise the rate? Yes, if low-intent traffic was cut; total orders may have fallen.
@@ -374,12 +374,12 @@
 
 **Explain simply:**
 - This is "non-contractual" churn (no subscription), so we infer it from behaviour.
-- Pick the window from data: look at the gap between consecutive orders; choose a point such as the 90th percentile of gaps, so most active customers are not wrongly flagged.
+- Pick the window from data: look at the gap between consecutive orders; choose a point such as the 90th percentile of gaps (the gap that 90% of gaps stay under), so most active customers are not wrongly flagged.
 - Window differs by product: food delivery weeks, groceries a few weeks, fashion months.
 - Label users as active, at risk (gap past usual) and churned; allow reactivation, so churn is a status, not forever.
 - Track: monthly churn = users active last period but not this period, over last period's actives; and cohort retention.
 **Worked mini-example:** Median gap between orders is 9 days and 90% of gaps are under 45 days, so choose 45 days. A customer last ordering on 1 Sept is counted churned from 16 Oct. (Illustrative numbers.)
-**Practice step:** In a sample orders table, compute gaps per customer with LAG() on order date and read the percentiles.
+**Practice step:** In a sample orders table, compute gaps per customer with LAG() (a SQL function that looks at the previous row, here the previous order date) and read the percentiles.
 **Likely follow-ups:** Why not 30 days for everything? Seasonal or occasional buyers would be mislabelled as churned.
 **Common mistakes / traps:** One window for all products; treating churned as permanent; forgetting reactivation.
 
@@ -492,7 +492,7 @@
 **Check:** (110 - 40)/200 = 70/200 = 0.35. Verified by script.
 **Caveats:** Passives (25%) do not appear in the formula, but sit in the denominator. A margin of error exists with 200 respondents.
 **Likely follow-ups:** What if 10 passives become promoters? Promoters become 120/200 = 60%, detractors stay 20%, so NPS = 40 (up 5 points).
-**Common mistakes / traps:** Reporting 35%; dividing by 160 (leaving out passives).
+**Common mistakes / traps:** Reporting 35%; dividing by 150 (leaving out passives) instead of 200.
 
 ### Q35 ⭐⭐ 🟢 What is cart abandonment rate? A site had 8,000 carts created and 2,000 orders completed; what is the abandonment rate?
 **Asked at:** commonly asked (no company-specific report found).
@@ -545,7 +545,7 @@
 - Steps: install, signup (OTP), KYC complete, bank linked, first transaction.
 - Activation event = the action that best predicts long-term retention; test candidates with cohort data (users who did X in week 1 retain at Y).
 - Better than "registered," since many registered users never transact.
-**Worked mini-example:** 10,000 installs, 6,000 registered, 3,000 KYC done, 2,000 first payment. Activation = 2,000/10,000 = 20%; biggest loss at KYC (50%). (Illustrative.)
+**Worked mini-example:** 10,000 installs, 6,000 registered, 3,000 KYC done, 2,000 first payment. Activation = 2,000/10,000 = 20%. Step rates: 60%, 50%, 67%, so the weakest step is registration to KYC (50%), while the largest loss in users is install to registration (4,000). (Illustrative.)
 **Likely follow-ups:** How check the event is right? Compare 30-day retention of users who did it versus those who did not.
 **Common mistakes / traps:** Choosing signup as activation; no time window; ignoring fraud and KYC rejections.
 
@@ -584,7 +584,7 @@
 **Worked answer:** 1) Screened: 300/1,200 = 25%. 2) Interviewed: 90/300 = 30%. 3) Offered: 30/90 = 33.3%. 4) Joined (offer acceptance): 21/30 = 70%. 5) Overall: 21/1,200 = 1.75%.
 **Result:** 25%, 30%, 33.3%, 70%; overall 1.75% (about 57 applications per hire).
 **Check:** 0.25 x 0.30 x 0.333 x 0.70 = 0.0175. Verified by script.
-**Caveats:** Time lags (people in the pipeline); source quality; a 30% offer acceptance gap, 30% decline offers, which suggests checking pay and the process.
+**Caveats:** Time lags (people still in the pipeline); source quality; offer acceptance is 70%, so 30% of offers are declined, which suggests checking pay and the process.
 **Likely follow-ups:** Which stage to fix? The 30% offer decline is costly late; also look at source-wise quality.
 **Common mistakes / traps:** Dividing every stage by applications; ignoring time to hire.
 
@@ -606,7 +606,7 @@
 **What the interviewer is checking:** Whether you exclude new revenue from retention and keep expansion only in NRR.
 **Say this in the interview:** "Closing MRR is 54 lakh. Gross revenue retention counts only losses, so 46/50 = 92%. Net revenue retention adds expansion, 48/50 = 96%. Neither includes new customers."
 
-**Definition in plain words:** GRR = (opening - churned - contraction) / opening. NRR = (opening + expansion - churned - contraction) / opening.
+**Definition in plain words:** MRR is monthly recurring revenue (subscription fees that repeat every month). Churned MRR is revenue lost from customers who cancelled; contraction is revenue lost from customers who downgraded; expansion is extra revenue from existing customers who upgraded. GRR (gross revenue retention) = (opening - churned - contraction) / opening. NRR (net revenue retention) = (opening + expansion - churned - contraction) / opening.
 **Worked answer:** 1) Closing = 50 + 6 + 2 - 3 - 1 = Rs 54,00,000. 2) GRR = (50 - 3 - 1)/50 = 46/50 = 92%. 3) NRR = (50 + 2 - 3 - 1)/50 = 48/50 = 96%.
 **Result:** Closing MRR Rs 54,00,000 (8% growth); GRR 92%; NRR 96%.
 **Check:** GRR cannot exceed 100%; NRR below 100% means the existing base shrank even though total MRR grew from new sales. Verified by script.
@@ -646,7 +646,7 @@ Treat Rs 14 as the only variable cost and ignore taxes and payment fees. For the
 **Common mistakes / traps:** Subtracting the Rs 14 from the Rs 180 fare; applying 10% to the contribution instead of to the cost.
 
 ### Q46 ⭐⭐ 🟡 A UPI payments app has 20 million monthly active users who made 300 million successful transactions out of 320 million attempts in a month. What are the success rate and the transactions per active user?
-**Asked at:** commonly asked (no company-specific report found); PhonePe and similar payments firms report KPI and metric rounds (see research/interview_processes.md); this exact question is unverified.
+**Asked at:** commonly asked (no company-specific report found); a PhonePe prep guide mentions funnel metrics (see research/interview_processes.md, unverified); this exact question is unverified.
 **What the interviewer is checking:** Whether you pick the right denominator for each ratio.
 **Say this in the interview:** "Success rate is successful divided by attempted: 300/320 = 93.75%. Transactions per active user is 300 million / 20 million = 15 a month."
 **Definition in plain words:** Success rate = successful transactions / attempted transactions. Transactions per active user = successful transactions / monthly active users (MAU, people who did at least one action in the month).
@@ -744,7 +744,7 @@ Assume the blended CAC includes only paid marketing spend divided by all new cus
 **Explain simply:**
 - **Cohort** = a group sharing a start month (or channel or plan). Rows are cohorts, columns are months since joining; each cell is the % still active.
 - An overall retention number is one average across all users. It moves with the mix of old and new customers, not only with product quality.
-- Mini-example: January cohort keeps 40% at month 3; June cohort keeps 30%. An overall figure of 36% looks stable while the product is actually getting worse for new users.
+- Mini-example: January cohort keeps 40% at month 3; June cohort keeps 30%. A single overall figure of about 35% blends the two and hides that the newer cohort is 10 points worse.
 - Cohorts also show the shape (steep early drop then flat is healthy; a steady slide is not) and the effect of changes (a new onboarding in June shows up only in the June row).
 - HR parallel: attrition of employees by joining batch shows that new joiners leave faster, which an overall attrition rate hides.
 **Practice step:** Build a 6 x 6 triangle in Excel from a table of customer id, start month and active months, then colour it.
@@ -811,7 +811,7 @@ Assume the blended CAC includes only paid marketing spend divided by all new cus
 **Explain simply:**
 - **Demand and money:** orders per day, average order value (AOV), gross merchandise value (GMV), contribution per order.
 - **Availability:** fill rate (share of ordered items delivered), stock-outs on top-selling items, inventory days.
-- **Speed:** order-to-delivery time, picking time, share delivered within the promised time (for example 10-15 minutes).
+- **Speed:** order-to-delivery time, picking time, share delivered within the promised time (for example 10-15 minutes; an assumed promise, it differs by company).
 - **Quality:** wastage and expiry (perishables), damage, cancellation rate, refund rate, ratings.
 - **Efficiency:** orders per picker per hour, rider utilisation, store capacity utilisation.
 - **Daily dashboard:** orders against forecast, fill rate, delivery time (average and 90th percentile), stock-outs on top items, cancellations, rider availability. **Weekly or monthly:** wastage, contribution per order, inventory days, ratings.
@@ -841,7 +841,7 @@ Assume the blended CAC includes only paid marketing spend divided by all new cus
 - **Time to fill** = date offer accepted minus date job requisition approved (or posted).
 - **Time to hire** = date offer accepted minus date the chosen candidate applied (or was first contacted).
 - Definitions vary by company; always state both start dates.
-- Mini-example: requisition opened 1 March, candidate applied 20 March, offer accepted 15 April. Time to fill = 46 days; time to hire = 26 days.
+- Mini-example: requisition opened 1 March, candidate applied 20 March, offer accepted 15 April. Time to fill = 45 days; time to hire = 26 days.
 - Time to fill includes the time before candidates even arrive (sourcing, approvals); time to hire shows how quickly the team moves once someone is in the funnel.
 - Use the median as well as the average, since a few long searches skew the average.
 **Practice step:** Compute both for last quarter's hires and see which gap is larger.
@@ -875,7 +875,7 @@ Use cost per retained hire = cost per hire divided by 12-month retention rate.
 3. Gap: 1,28,571 - 35,294 = Rs 93,277.
 4. Ratio: 1,28,571 / 35,294 = 3.64.
 **Result:** Referral hires cost about Rs 35,294 per retained hire versus Rs 1,28,571 for agency hires, a gap of about Rs 93,000.
-**Check:** Headline gap is 3.0x (90,000 / 30,000), retention makes it 3.64x. Agency cost per hire rises 29% (1 / 0.7) and referral rises 18% (1 / 0.85).
+**Check:** Headline gap is 3.0x (90,000 / 30,000), retention makes it 3.64x. Agency cost per hire rises 43% (1 / 0.7 = 1.43) and referral rises 18% (1 / 0.85 = 1.18).
 **Caveats:** Referrals cannot fill every role and volume is limited; agencies may reach senior or niche roles. The 12-month window ignores replacement cost if only some stay, and sample sizes may be small. Roles in each channel may differ, so compare like for like.
 **Likely follow-ups:** 1) *Does this prove agencies are bad?* No, only that they cost more per retained hire; check role mix. 2) *Other costs?* Replacement and lost productivity.
 **Common mistakes / traps:** Multiplying by retention instead of dividing; comparing only cost per hire.
@@ -888,7 +888,7 @@ Use cost per retained hire = cost per hire divided by 12-month retention rate.
 - **Choose inputs:** product usage (logins, active seats / purchased seats), depth (key features used), trend (usage vs last 3 months), support (open or escalated tickets), commercial (days to renewal, payment delays), sentiment (NPS).
 - **Score each input** 0 to 100 against fixed thresholds or percentiles, then take a weighted average. Start with simple weights agreed with customer success; refine with logistic regression (a model giving churn probability).
 - **Bands:** green above 70, amber 40 to 70, red below 40.
-- **Validate:** take scores as at 90 days before each past renewal; compare churn rate by band; measure how well it ranks accounts (an AUC well above 0.5), and calibration (do 20% predicted churners churn about 20% of the time?). Use a held-out time period, not the same data.
+- **Validate:** take scores as at 90 days before each past renewal; compare churn rate by band; measure how well it ranks accounts (AUC, a score where 0.5 is a coin flip and 1.0 is perfect ranking; aim well above 0.5), and calibration (do 20% predicted churners churn about 20% of the time?). Use a held-out time period, not the same data.
 - Mini-example (assumed): red band churned 35%, amber 12%, green 3%: the score separates well.
 **Practice step:** Compute churn rate by health band for last year in a pivot table.
 **Likely follow-ups:** 1) *How often to refresh?* Weekly or monthly. 2) *What if usage is high but they still churn?* Add commercial signals such as budget or champion change.
@@ -928,7 +928,7 @@ Use cost per retained hire = cost per hire divided by 12-month retention rate.
 5. Sum = -24,000 + 27,600 = +3,600.
 **Result:** Users effect -24,000 orders; frequency effect +27,600 orders; net +3,600.
 **Check:** The other order of calculation: frequency at old users = 0.3 x 1,00,000 = +30,000; users at new frequency = -8,000 x 3.3 = -26,400; sum +3,600. The split changes slightly with the order, because of the interaction term (-8,000 x 0.3 = -2,400), so say which one you used.
-**Caveats:** Frequency may rise because the lighter users left, so the average of those who remain is higher (a mix effect). Check by cohort. A 8% user loss with an 10% frequency gain is a risky replacement: acquisition costs are lost.
+**Caveats:** Frequency may rise because the lighter users left, so the average of those who remain is higher (a mix effect). Check by cohort. An 8% user loss with a 10% frequency gain is a risky replacement: acquisition costs are lost.
 **Likely follow-ups:** 1) *Is this good news?* Orders are flat, but the base is shrinking; investigate why users left. 2) *Which order of decomposition?* Either; state it.
 **Common mistakes / traps:** Adding percentages (-8% and +10% do not give +2%); forgetting the interaction term.
 
@@ -958,7 +958,7 @@ Use cost per retained hire = cost per hire divided by 12-month retention rate.
 - **Wrong inputs:** LTV on revenue, not margin; optimistic churn from early data; undiscounted; CAC that excludes sales salaries.
 - **Growth burns cash:** the faster you acquire, the more cash goes out before it comes back; fixed costs and unpaid-for working capital add to it.
 - **Other cash drains:** fixed costs, refunds, annual versus monthly billing, delayed collections.
-- **Metrics to add:** CAC payback period (months), cash burn and runway (cash / monthly net burn), gross margin, contribution margin, cohort cumulative cash margin curve, net revenue retention, billing mix (annual upfront helps cash), accounts receivable days.
+- **Metrics to add:** CAC payback period (months), cash burn (cash going out minus cash coming in each month) and runway (months of cash left = cash / monthly net burn), gross margin, contribution margin, cohort cumulative cash margin curve, net revenue retention, billing mix (annual upfront helps cash), accounts receivable days.
 - Remedies: push annual prepay, cut payback below 12 months, slow paid acquisition, improve margin.
 **Practice step:** Compute payback and runway for a made-up business and plot cumulative cash per cohort.
 **Likely follow-ups:** 1) *Good payback?* Often cited under 12 months for SMB (a rule of thumb, unverified). 2) *Is 4:1 wrong?* Not wrong; it is incomplete.
@@ -1059,7 +1059,7 @@ Use cost per retained hire = cost per hire divided by 12-month retention rate.
 **Say this in the interview:** "A vanity metric looks good but does not guide decisions or show real value, such as total downloads or total registered users. I would replace them with active users, retention and revenue per user."
 **Explain simply:**
 - Vanity metrics only go up (cumulative) or ignore quality; you cannot act on them.
-- Example 1: total downloads. 10 lakh downloads, but only 50,000 monthly active users, so 5% of downloads are active.
+- Example 1: total downloads. Say (assumed example) 10 lakh downloads but only 50,000 monthly active users, so 5% of downloads are active.
 - Example 2: total registered users or page views, which include dead accounts and accidental visits.
 - Better: activation rate, week-4 retention, orders per active user, revenue per user.
 - Test: "If this number changed, would I do something different?" If not, it is vanity.
@@ -1086,7 +1086,7 @@ Use cost per retained hire = cost per hire divided by 12-month retention rate.
 **What the interviewer is checking:** The formula and the growth-versus-profit idea.
 **Say this in the interview:** "Rule of 40: revenue growth rate plus profit margin should be at least 40%. It says a company can trade growth for profit."
 **Explain simply:**
-- Score = annual revenue growth % + profit margin %, where margin is usually EBITDA or free cash flow margin (the definition varies; state which you use).
+- Score = annual revenue growth % + profit margin %, where margin is usually EBITDA margin (profit before interest, tax, depreciation and amortisation, as a share of revenue) or free cash flow margin (cash left after spending; the definition varies, so state which you use).
 - Company A: growth 30% + margin 15% = 45, passes.
 - Company B: growth 50% + margin -20% = 30, fails despite fast growth.
 - It is a rule of thumb, not a law; early-stage firms often fail it by design and investors weigh it differently by size.
@@ -1116,7 +1116,7 @@ Use cost per retained hire = cost per hire divided by 12-month retention rate.
 **Explain simply:**
 - DAU: distinct users active on a day. WAU: distinct users in a 7-day window. MAU: in a 28 or 30-day window. Each person is counted once per window.
 - Rule: pick the window that matches how often a healthy user should need the product. Daily need (messaging, UPI) means DAU; weekly need means WAU; occasional (travel) means MAU.
-- Example: a grocery app has DAU 20,000, WAU 60,000, MAU 120,000. DAU/MAU = 17%, which looks poor, but WAU/MAU = 50% means half of monthly users shop weekly, which is the healthy pattern.
+- Example (illustrative numbers): a grocery app has DAU 20,000, WAU 60,000, MAU 120,000. DAU/MAU = 17%, which looks poor, but WAU/MAU = 50% means half of monthly users shop weekly, which is the healthy pattern.
 - WAU also smooths out weekday and weekend swings.
 **Practice step:** For your own use of three apps, name the right window.
 **Likely follow-ups:** (1) Is WAU the sum of 7 DAUs? No, distinct people. (2) Link to stickiness? DAU/MAU and WAU/MAU are the usual ratios.
@@ -1185,7 +1185,7 @@ Use cost per retained hire = cost per hire divided by 12-month retention rate.
 3. Monthly churn: compound form, 1 - (1 - 0.125)^(1/12) = 1.11%. Quick form, 12.5% / 12 = 1.04%.
 **Result:** 2,500 lost; 12.5% annual; about 1.0 to 1.1% monthly.
 **Check:** Retained = 20,000 - 2,500 = 17,500; plus 5,000 new = 22,500. Using the average base of 21,250 gives 11.8%, a variation.
-**Caveats:** The 2,500 is net of customers who joined and left within the year, so the true churn of the opening base cannot be split without records. Denominator choice (start, average) changes the figure; state it. Dividing by 12 slightly understates the compound monthly rate.
+**Caveats:** The 2,500 lost includes anyone who joined during the year and also left it, so the churn of the opening base alone cannot be separated without customer records. Denominator choice (start, average) changes the figure; state it. Dividing by 12 slightly understates the compound monthly rate.
 **Likely follow-ups:** (1) Growth? 22,500 / 20,000 = 12.5% net growth. (2) Annual from monthly 1.1%? 1 - 0.989^12 is about 12.5%.
 **Common mistakes / traps:** Using end customers as the base; treating net adds (2,500) as the lost count.
 
@@ -1215,7 +1215,7 @@ Use cost per retained hire = cost per hire divided by 12-month retention rate.
 **Result:** Rates with counts and a reliability flag; no raw leaver ranking.
 **Check:** Roll up: team leavers must add to the company total.
 **Caveats:** Definitions vary (some use start headcount); small teams need longer windows; protect privacy by suppressing groups of very few people.
-**Likely follow-ups:** (1) Why not sort teams by rate? Small teams would dominate the top and bottom by chance. (2) Alternative view? A funnel-plot style band around the company rate.
+**Likely follow-ups:** (1) Why not sort teams by rate? Small teams would dominate the top and bottom by chance. (2) Alternative view? A funnel-plot style chart: a band around the company rate that is wider for small teams, so only teams outside the band stand out.
 **Common mistakes / traps:** Showing counts; using end headcount; annualising one month.
 
 ### Q83 ⭐ 🟡 How would you measure the success of a loyalty programme (for example a subscription like Swiggy One) using metrics?
@@ -1260,13 +1260,13 @@ Use LTV = monthly margin / (churn + discount rate) as the discounted perpetuity 
 - Option 2, ARPU up 10% to Rs 550 (costs unchanged, margin Rs 300): LTV = Rs 6,000; LTV:CAC = 2.0; payback = 10 months. (If costs also rise by 10%, margin Rs 275: 1.83 and 10.9 months.)
 - Break-even for option 1: if cheaper users churn above 6.25% a month (25% worse), LTV falls to 4,000 and LTV:CAC returns to 1.67, no better than baseline.
 - Break-even for option 2: if the price rise lifts churn to 6% or more, LTV:CAC returns to 1.67 or below.
-**If the data shows...:** cheaper-channel users keep similar retention means option 1 wins slightly and is faster for cash; churn rises less than about 20% after the price increase means option 2 matches it. Both together are possible and independent.
+**If the data shows...:** cheaper-channel users keep similar retention means option 1 wins slightly (2.08 versus 2.0) and is faster for cash; after a price rise, churn below 6% (up by less than 20%) still beats the baseline, but option 2 only catches option 1 if churn does not rise at all (it would need to fall to about 4.8%). Both together are possible and independent.
 **Recommendation:** The two are close on paper, so run small tests, pick by the measured churn effect, and favour the one with shorter payback if cash is tight.
 **Likely follow-ups:** (1) Which suits a cash-poor startup? Shorter payback. (2) Can both be done? Yes, check interaction.
 **Common mistakes / traps:** Assuming unchanged churn; using revenue instead of margin; ignoring payback.
 
 ### Q86 ⭐ 🔴 A marketplace's take rate rose from 18% to 22% and GMV grew 5%. Seller churn doubled. How do you judge whether the take-rate change was worthwhile?
-**Asked at:** commonly asked (no company-specific report found); marketplace metric trade-offs are in Flipkart/Meesho-style case reports (candidate reports, unverified).
+**Asked at:** commonly asked (no company-specific report found); primary-metric trade-off cases are described for Flipkart in an Interview Query guide (unverified); no report of this exact take-rate question was found.
 **What the interviewer is checking:** Short-term revenue gain versus long-term seller supply and lifetime value.
 **Say this in the interview:** "Revenue looks up about 28% now, but sellers are the supply; doubled churn halves their expected lifetime, so I would compare seller lifetime profit before and after, and check whether GMV growth will hold."
 **Clarify first:** Take rate = commission as a share of GMV (gross merchandise value, the total value of goods sold). What was the churn level, which sellers left (big or small), and did prices or conversion change?

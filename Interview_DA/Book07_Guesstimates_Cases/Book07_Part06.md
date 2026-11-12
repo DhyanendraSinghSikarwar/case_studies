@@ -62,7 +62,7 @@
 - Break-even quantity = fixed cost / (price - variable cost). In symbols: Q = F / (P - V).
 - Why it works: each sale contributes (P - V) towards the fixed bills. You need enough sales to cover all of them.
 - Mini example: fixed cost Rs 1,00,000 a month, price Rs 50, variable cost Rs 30, contribution Rs 20. Q = 1,00,000 / 20 = 5,000 units. Break-even revenue = 5,000 x 50 = Rs 2,50,000.
-- Margin of safety: how far actual sales are above break-even (sales 6,000 gives 1,000 units or 16.7% above).
+- Margin of safety: how far actual sales are above break-even (sales of 6,000 are 1,000 units above break-even: 20% above break-even, or 16.7% of actual sales).
 
 **Practice step:** Compute break-even for a tea stall with your own rent and cup price.
 **Likely follow-ups:** 1) *What if you want a target profit?* Q = (F + target profit) / (P - V). 2) *What if price falls?* Contribution shrinks, so break-even quantity rises.
@@ -76,7 +76,7 @@
 **Explain simply:**
 - Clarify first: which company and segment, current revenue, current growth trend, budget and constraints, is the goal absolute rupees or share?
 - Revenue = customers x orders per customer x average order value.
-- Levers: (1) more new customers (new cities, new channels, marketing); (2) keep existing ones longer (lower churn); (3) more orders per customer (loyalty, reminders); (4) higher order value (upsell, bundles, price); (5) new products or segments; (6) inorganic (partnership, acquisition).
+- Levers: (1) more new customers (new cities, new channels, marketing); (2) keep existing ones longer (lower churn, meaning fewer customers leaving each month); (3) more orders per customer (loyalty, reminders); (4) higher order value (upsell, bundles, price); (5) new products or segments; (6) buying growth from outside (partnership, acquisition).
 - Mini example: revenue Rs 100 crore, target Rs 20 crore more. New customers +8, retention +4, order value +5, new product +3 = Rs 20 crore. Each lever gets a cost and a risk.
 - Prioritise by size, ease, speed and cost, then state two or three.
 
@@ -126,15 +126,15 @@ Data: price Rs 200; variable cost Rs 120 per thali; fixed cost Rs 3,00,000 per m
 **Clarify first:** What is the objective (profit, share, cash)? Which product and customers? Is the rise one-off or recurring? Are there contracts?
 **Structure:**
 - Impact on profit: new contribution (new price x remaining volume) versus old contribution.
-- Customer response: how many leave or buy less (elasticity or a test).
+- Customer response: how many leave or buy less (elasticity, meaning how much demand falls when price rises, or a test).
 - Competitive response: do rivals follow, and are there close substitutes?
 - Brand and strategic effects: loyalty, perceived value, long-term customers.
 **What I would check, in order:**
-1. Current price, volume, variable cost, contribution (SQL or Excel).
+1. Current price, volume, variable cost, contribution (price minus variable cost per unit; SQL or Excel).
 2. Past price changes and what happened to volume.
 3. Segments: who is price-sensitive (new versus loyal, city, plan).
 4. Competitor prices; customer survey or a small A/B price test.
-**If the data shows...:** Break-even volume fall below the likely fall in volume means go; a likely larger loss means do not raise, or raise only for insensitive segments.
+**If the data shows...:** The volume loss we expect is smaller than the break-even volume loss means go; a larger expected loss means do not raise, or raise only for insensitive segments.
 **Numeric work:** Price 100, variable cost 60, contribution 40. A 10% rise gives contribution 50. Break-even loss of volume = 10/50 = 20%. If volume is likely to fall only 8%, raise it.
 **Recommendation:** Test on a segment first, track churn and profit per customer, roll out gradually.
 **Likely follow-ups:** 1) *What if competitors don't follow?* Expect bigger losses. 2) *Is a price rise ever bad even if profit goes up?* Yes if it damages long-term customers.
@@ -200,6 +200,7 @@ Data: 2,000 subscribers today; variable cost Rs 200 per subscriber per month; fi
 | Cost of goods sold | 300 | 330 |
 | Marketing | 80 | 110 |
 | Other costs | 70 | 80 |
+
 **Asked at:** commonly asked (no company-specific report found); a "car manufacturer profit fell 40%" question was reported on a candidate-review site (snippet, unverified mapping).
 **What the interviewer is checking:** Whether you compare each cost line against revenue growth, not just in rupees.
 **Say this in the interview:** "Profit fell from 50 to 20 crore, down 60%. Marketing rose 37.5%, far faster than revenue, and it explains the biggest part."
@@ -257,7 +258,7 @@ Data: ARPU Rs 300 per month; gross margin 60%; monthly churn 5%; CAC Rs 1,800. U
 **Common mistakes / traps:** Using revenue instead of gross profit; confusing monthly and annual churn.
 
 ### Q14 ⭐⭐⭐ 🟡 A marketplace's profit fell although total order count rose. Revenue per order is fixed at a 12% commission, so where else would you look? Give a hypothesis tree and the data cuts you would use.
-Available data: orders, GMV, commission revenue, discounts funded by the platform, logistics cost, refunds, marketing spend, all by month, city and category.
+Available data: orders, GMV (gross merchandise value, the total value of goods ordered), commission revenue, discounts funded by the platform, logistics cost, refunds, marketing spend, all by month, city and category.
 **Asked at:** commonly asked (no company-specific report found); a Meesho "declining orders root cause" case is reported in an internal compilation (unverified).
 **What the interviewer is checking:** Whether you see that commission % fixed does not fix revenue per order (order value changes) and that costs can move.
 **Say this in the interview:** "Commission is a fixed percentage but order value is not, and costs per order can rise. I will check revenue per order, then each cost per order, then mix by city and category."
@@ -305,6 +306,7 @@ Data: AOV Rs 600; commission 12% (refunded on returned orders); forward logistic
 | Monthly active users | 1,000,000 | 1,200,000 |
 | Orders per user per month | 2.0 | 1.9 |
 | Average order value (Rs) | 350 | 380 |
+
 **Asked at:** commonly asked (no company-specific report found); driver decomposition of revenue is a standard KPI-case skill at Flipkart and Swiggy rounds per prep sites (unverified).
 **What the interviewer is checking:** Whether you multiply the growth factors and attribute fairly.
 **Say this in the interview:** "Revenue is up about 23.8%. Users grew 20%, frequency fell 5%, order value rose 8.6%; users contributed the most."
@@ -381,18 +383,19 @@ Data (Rs crore): opening ARR 10; new customers +3; expansion +1.5; churn -1.0; c
 |---|---|---|---|
 | A | 99 | 10,000 | 5.0% |
 | B | 129 | 10,000 | 4.0% |
+
 Variable cost per sale is Rs 20 in both variants.
 **Asked at:** commonly asked (no company-specific report found); A/B price tests are a standard pricing-case theme (unverified).
 **What the interviewer is checking:** Profit per visitor, not conversion, and awareness of test quality.
-**Say this in the interview:** "B earns Rs 4.36 per visitor against Rs 3.95 for A, about 10% more, even though it converts less. I would check significance and retention before rolling out."
+**Say this in the interview:** "B earns Rs 4.36 per visitor against Rs 3.95 for A, about 10% more, even though it converts less. But that profit gap is not yet statistically proven, so I would extend the test and check retention before rolling out."
 
 **Definition in plain words:** Profit per visitor = conversion rate x (price - variable cost).
 **Worked answer:**
 1. A: sales = 10,000 x 5% = 500; contribution per sale 99 - 20 = 79; profit = 500 x 79 = Rs 39,500; per visitor Rs 3.95.
 2. B: sales = 400; contribution 129 - 20 = 109; profit = 400 x 109 = Rs 43,600; per visitor Rs 4.36.
 3. B is better by Rs 4,100 (+10.4%).
-**Result:** Roll out B (Rs 129) subject to checks.
-**Check:** Revenue also favours B (Rs 51,600 versus Rs 49,500). A two-proportion test on conversion (5.0% versus 4.0%, 10,000 each) gives z of about 3.4, so the conversion drop is real; the key question is whether profit per visitor difference of Rs 0.41 is robust, which needs a test on profit itself.
+**Result:** B (Rs 129) is ahead on profit per visitor (+Rs 0.41), but the lead is not yet proven; extend the test before a full rollout.
+**Check:** Revenue also favours B (Rs 51,600 versus Rs 49,500). A two-proportion test on conversion (5.0% versus 4.0%, 10,000 each) gives z of about 3.4, so the conversion drop is real; the key question is whether the profit-per-visitor gap of Rs 0.41 is real. A rough test on profit itself (standard error about Rs 0.27, from each visitor earning either Rs 0 or the full contribution) gives z of about 1.5, below the usual 1.96 bar, so the data cannot yet separate B from noise.
 **Caveats:** Check: random assignment and equal traffic mix; test duration and seasonality; refunds and cancellations; repeat purchase and renewal (a higher price may bring lower retention or reviews); customer segments (price-sensitive groups); brand impact; whether the test price is permanent. Consider an intermediate price (for example Rs 109).
 **Likely follow-ups:** 1) *If B had 3.5%?* Profit per visitor 3.82, below A; break-even conversion is 3.95 / 109 = 3.62%. 2) *Why not choose the higher conversion?* Profit matters.
 **Common mistakes / traps:** Choosing A for higher conversion; forgetting variable cost; ignoring statistical noise.
@@ -431,7 +434,7 @@ Data: price elasticity -1.5; price change +4%; assume the elasticity holds over 
 3. Rider cost per order and rider utilisation (orders per rider hour).
 4. Refunds and cancellations by restaurant.
 **If the data shows...:** Rider cost rising from low density means focus orders on dense zones; discounts on repeat users means cut; small baskets means minimum order value or fee; commission too low means renegotiate.
-**Numeric work (illustrative):** Say contribution is -Rs 5 per order. Growing volume multiplies the loss. If a reprice of +Rs 10 fee loses 10% of orders but turns contribution positive, do that. Cut rule: contribution after realistic fixes is still negative and the order group does not bring repeat customers with positive lifetime value (LTV above acquisition loss).
+**Numeric work (illustrative):** Say contribution is -Rs 5 per order. Growing volume multiplies the loss. If a reprice of +Rs 10 fee loses 10% of orders but turns contribution positive, do that. Cut rule: contribution after realistic fixes is still negative and the order group does not bring repeat customers with positive lifetime value (LTV, lifetime value, meaning total contribution a customer brings over their life, above the loss made to win them).
 **Recommendation:** Pause growth in negative-contribution segments, fix unit economics (fees, discounts, rider efficiency), then scale where contribution is positive. Track contribution per order weekly by segment.
 **Likely follow-ups:** 1) *Why not grow to cover fixed costs?* Negative contribution gets worse with scale. 2) *Any reason to keep loss-making orders?* If repeat behaviour makes lifetime value exceed the loss.
 **Common mistakes / traps:** Chasing GMV; averaging across segments (hides profitable cores); forgetting platform-funded discounts.
@@ -607,7 +610,7 @@ Data: course price Rs 20,000; 15% of sales are refunded in full; CAC per sale Rs
 4. Fixed cost Rs 1.6 crore = Rs 1,60,00,000.
 5. Break-even = 1,60,00,000 / 8,000 = 2,000 sales.
 **Result:** Contribution Rs 8,000 per sale (40% of the list price); about 2,000 sales a month.
-**Check:** 2,000 x 8,000 = Rs 1.6 crore. If refunds were 25% instead, contribution would fall to Rs 5,000 and break-even would rise to 3,200 sales.
+**Check:** 2,000 x 8,000 = Rs 1.6 crore. If refunds were 25% instead, contribution would fall to Rs 6,000 (20,000 x 0.75 - 9,000) and break-even would rise to about 2,667 sales.
 **Caveats:** Treating CAC as variable is a choice; some firms count part of it as fixed. Refund timing and payment-gateway fees are ignored.
 **Likely follow-ups:** 1) *Biggest lever?* Cut refunds or CAC; each Rs 1,000 of CAC is 12.5% of contribution. 2) *Is 2,000 a month realistic?* Compare with current volume.
 **Common mistakes / traps:** Refunding only revenue but also removing CAC; dividing by the list price; forgetting fixed cost units (crore to rupees).
@@ -707,6 +710,7 @@ Data (Rs lakh per year): revenue 50; variable cost 35; allocated fixed cost 20 o
 |---|---|---|---|
 | A | 5,00,000 | 2,000 | 10% |
 | B | 3,00,000 | 1,200 | 5% |
+
 **Asked at:** commonly asked (no company-specific report found); channel comparison is a typical marketing-analytics case (unverified); the numbers are invented for practice.
 **What the interviewer is checking:** Whether you look past cost per install to cost per paying user.
 **Say this in the interview:** "Both cost Rs 250 per install, but A converts 10% and B 5%, so A costs Rs 2,500 per paying user and B costs Rs 5,000. I would favour A, after checking quality and scale."
@@ -717,7 +721,7 @@ Data (Rs lakh per year): revenue 50; variable cost 35; allocated fixed cost 20 o
 2. Channel B: CPI = 3,00,000 / 1,200 = Rs 250. Paid users = 1,200 x 5% = 60. Cost per paid = 3,00,000 / 60 = Rs 5,000.
 **Result:** A is half the cost per paying user (Rs 2,500 versus Rs 5,000).
 **Check:** Equal CPI means conversion alone decides: 5% versus 10% gives a factor of 2.
-**Caveats:** Before moving budget, check retention and revenue per paying user (LTV), whether the channel can scale without cost rising (marginal CAC), fraud or bot installs, attribution overlap, and the time window for conversion (B's paid rate may still be rising).
+**Caveats:** Before moving budget, check retention and revenue per paying user (LTV, the total profit a user brings), whether the channel can scale without cost rising (marginal CAC, the cost of the next user), fraud or bot installs, attribution overlap, and the time window for conversion (B's paid rate may still be rising).
 **Likely follow-ups:** 1) *Would you shut B?* Not at once; test whether B's users retain better. 2) *Sample size?* 60 paid users is small, so the 5% is uncertain.
 **Common mistakes / traps:** Stopping at CPI; ignoring quality and scale; reading small samples as certain.
 
@@ -778,6 +782,7 @@ Data: non-members order 3 times a month and pay a delivery fee of Rs 40 that equ
 | Monthly orders at maturity | 5 lakh | 3 lakh |
 | Contribution per order | Rs 25 | Rs 40 |
 | Launch cost | Rs 3 crore | Rs 1.5 crore |
+
 **Asked at:** commonly asked (no company-specific report found); market-entry cases are reported for Fractal and Mu Sigma on prep sites (unverified); the numbers are invented for practice.
 **What the interviewer is checking:** Whether you compare payback and return per rupee, not only size.
 **Say this in the interview:** "B first: it earns Rs 1.2 crore a month at maturity on Rs 1.5 crore of launch cost, paying back in about 1.25 months at maturity, versus 2.4 months for A. A is bigger, so it is the second launch."
@@ -830,7 +835,7 @@ Data: 1,00,000 tickets a month; human cost Rs 80 per ticket; the bot takes 40% o
 **Result:** Saving Rs 13.2 lakh a month (16.5%).
 **Check:** Per bot ticket: bot saves 80 on the 24,000 resolved ones, net 65 each = Rs 15.6 lakh; on the 16,000 unresolved it adds Rs 15 each = -Rs 2.4 lakh; total Rs 13.2 lakh.
 **Caveats:** Customer satisfaction can fall if the bot frustrates users; escalated tickets may be harder and costlier; set-up and maintenance cost is excluded.
-**Likely follow-ups:** 1) *How to raise the saving?* Raise resolution from 60% or bot share above 40%. 2) *Which guard-rail?* CSAT and repeat contacts.
+**Likely follow-ups:** 1) *How to raise the saving?* Raise resolution from 60% or bot share above 40%. 2) *Which guard-rail?* CSAT (customer satisfaction score) and repeat contacts.
 **Common mistakes / traps:** Charging Rs 80 on all bot tickets; ignoring the bot's Rs 15 on unresolved ones; counting savings before checking quality.
 
 ### Q45 ⭐⭐ 🟡 Customer-segment profitability: compute the profit for each segment per 100 customers and say where you would put the next marketing rupee.
@@ -839,6 +844,7 @@ Data: 1,00,000 tickets a month; human cost Rs 80 per ticket; the bot takes 40% o
 | X | 40% | Rs 1,000 | Rs 600 |
 | Y | 40% | Rs 800 | Rs 850 |
 | Z | 20% | Rs 3,000 | Rs 1,200 |
+
 **Asked at:** commonly asked (no company-specific report found); the numbers are invented for practice.
 **What the interviewer is checking:** Whether you weight by share and see that an average hides a loss-making segment.
 **Say this in the interview:** "Per 100 customers X earns Rs 16,000, Y loses Rs 2,000 and Z earns Rs 36,000. Z is 20% of customers but 72% of the profit, so the next rupee goes to finding more Z-like customers, while I fix or stop serving Y."
@@ -876,13 +882,13 @@ Data: 4,000 new users a month and 4% monthly churn give a steady 100,000 users. 
 ### Q47 ⭐⭐ 🟡 Your company's price is 10% below a competitor's, and the competitor drops its price by 10%. How do you decide whether to follow?
 **Asked at:** commonly asked (no company-specific report found); competitive-pricing responses are a standard pricing-case theme on prep sites (unverified).
 **What the interviewer is checking:** Whether you decide on economics and customer behaviour, not reflex.
-**Say this in the interview:** "I would compare the profit from following with the profit from holding, using my margin and how many customers would switch. The gap is now only about 1% instead of 10%, so I check who is actually at risk."
+**Say this in the interview:** "I would compare the profit from following with the profit from holding, using my margin and how many customers would switch. The price gap has mostly closed (to about 1% or even zero, depending on how the 10% is read), so I check who is actually at risk."
 
 **Clarify first:** What is our margin, how loyal are customers, how differentiated is the product, and can the competitor sustain the cut?
-**Structure:** Current gap: if we sell at 100 and the competitor at 110, a 10% cut gives them 99, so they are now about 1% cheaper than us. Options: hold, match, partially match, or respond with value (bundle, service).
+**Structure:** Current gap (the wording is ambiguous, so I would state my reading aloud): if we sell at 100 and the competitor at 110, a 10% cut gives them 99, so they are now about 1% cheaper than us. If instead our price is exactly 10% below theirs (we are 90, they are 100 before the cut), their cut to 90 makes the prices equal. Options: hold, match, partially match, or respond with value (bundle, service).
 **What I would check, in order:** (1) Our contribution margin per unit. (2) The switching rate seen in past competitor price moves. (3) Which segments are price-sensitive. (4) The competitor's margin and cash position. (5) Break-even volume loss of holding versus the cost of matching.
 **If the data shows...:** Few customers switch and our margin is thin: hold. Many switch and margin is healthy: match for the sensitive segment only. Competitor is subsidising: wait, since the war is not sustainable.
-**Numeric work (if data given):** Illustrative: price 100, variable cost 60, contribution 40. Matching a 10% cut gives contribution 30; needed volume rise to break even = 40 / 30 - 1 = 33%. Holding costs profit only if we lose more than the share of volume that matches.
+**Numeric work (if data given):** Illustrative: price 100, variable cost 60, contribution 40. Matching a 10% cut gives contribution 30; needed volume rise to break even = 40 / 30 - 1 = 33%. Holding (40 per unit) beats matching (30 per unit) unless we lose more than 25% of our volume (1 - 30/40).
 **Recommendation:** Do not follow automatically; test in a few cities or segments, and compare with a price-war cost.
 **Likely follow-ups:** 1) *Risk of matching?* A price war that lowers margins for everyone. 2) *Alternatives?* Loyalty offers or bundles.
 **Common mistakes / traps:** Matching by reflex; ignoring that you were previously cheaper; ignoring cost and cash position.
@@ -890,7 +896,7 @@ Data: 4,000 new users a month and 4% monthly churn give a steady 100,000 users. 
 ### Q48 ⭐⭐ 🟡 How do you estimate price elasticity from historical sales data, and what can make the estimate wrong?
 **Asked at:** commonly asked (no company-specific report found); pricing and promo-model work is mentioned for Tiger Analytics on a prep-platform page (unverified).
 **What the interviewer is checking:** Whether you know the basic method and its pitfalls, especially confounding.
-**Say this in the interview:** "I would regress the log of units on the log of price, controlling for season, promotions and competitor prices; the price coefficient is the elasticity. The main risk is that price changes were not random, so the estimate can be biased."
+**Say this in the interview:** "I would run a regression (fit a line through the data) of the log of units on the log of price, controlling for season, promotions and competitor prices; the price coefficient is the elasticity. The main risk is that price changes were not random, so the estimate can be biased."
 
 **Explain simply:**
 - Price elasticity = % change in quantity / % change in price. Elasticity -1.5 means a 10% price rise cuts demand 15%.
@@ -946,14 +952,14 @@ Data: Rs 10 lakh spend brings 1,000 users; Rs 20 lakh in total brings 1,600 user
 **Say this in the interview:** "Payments are the front door, not the shop. I would earn on things users do after they trust the app (loans, insurance, investments, merchant tools, ads), and track revenue per active user against cost per active user."
 **Clarify first:** Is the zero fee a rule we cannot change (assume yes, a regulatory or market norm; unverified)? Do we have a user base to cross-sell? Time horizon (3 years)?
 **Structure:**
-- Revenue: (1) lending and credit-on-UPI, where a partner bank pays a commission; (2) insurance and mutual-fund distribution; (3) merchant services (soundbox, billing software, working-capital loans); (4) ads and brand offers; (5) bill-pay and recharge commissions.
+- Revenue: (1) lending and credit-on-UPI, where a partner bank pays a commission; (2) insurance and mutual-fund distribution; (3) merchant services (soundbox, the small speaker that announces payments to shopkeepers; billing software; working-capital loans); (4) ads and brand offers; (5) bill-pay and recharge commissions.
 - Cost: payment processing and bank charges, fraud and support, cashback, marketing.
 **What I would check, in order:** monthly active users and their transactions; share of users who ever take a second product; revenue per user by product; cost to serve per user; payback on acquisition cost.
 **Numeric work (assumed, approximate, unverified):** 1 crore monthly active users. Loans: 3% take a Rs 20,000 loan a year, partner pays 2% = Rs 400, so 3 lakh x Rs 400 = Rs 12 crore, about Rs 12 per user a year. Add assumed Rs 8 (insurance, funds), Rs 6 (ads), Rs 25 (merchant services) = about Rs 51 per user a year. If cost to serve is Rs 4 a month = Rs 48 a year, the app is only just positive. Lever size matters more than the exact figures.
 **If the data shows...:** high usage but under 2% taking any second product means the cross-sell is weak, fix product fit before buying users. Revenue per user above cost per user and rising means scale will make profit.
 **Recommendation:** Track revenue per monthly active user minus cost per monthly active user, share of users with 2+ products, 30/90-day retention, cashback as a percentage of revenue, and CAC payback in months. Aim for contribution positive per user before scaling marketing.
 **Likely follow-ups:** 1) *Which lever first?* The one with highest revenue per user and least regulatory risk, usually merchant services. 2) *Why not charge a small fee?* Users switch to a free rival.
-**Common mistakes / traps:** Counting payment volume (GMV) as revenue; ignoring that cashback can exceed all earnings; listing ideas with no sizing.
+**Common mistakes / traps:** Counting payment volume (the total rupees moved) as revenue; ignoring that cashback can exceed all earnings; listing ideas with no sizing.
 
 ### Q52 ⭐⭐ 🟡 A SaaS growth case: new-logo growth has slowed but net revenue retention is 115%. Where do you put effort, and why?
 **Asked at:** commonly asked (no company-specific report found); SaaS retention-bridge cases appear in prep-site material (unverified).
@@ -1044,7 +1050,7 @@ Data: customer 1 values item A at Rs 100 and item B at Rs 40; customer 2 values 
 
 ### Q58 ⭐⭐ 🔴 A car manufacturer's profit fell 40% year on year. Structure your diagnosis and say what you would check outside the company.
 **Asked at:** one AmbitionBox snippet reports a "car manufacturer profit fell 40%" question (mapping to a specific company unverified; prep-site level).
-**What the interviewer is checking:** A MECE tree (revenue and cost) and the external factors.
+**What the interviewer is checking:** A MECE tree (mutually exclusive, collectively exhaustive: no overlaps, no gaps) covering revenue and cost, and the external factors.
 **Say this in the interview:** "Profit = volume x (price - unit cost) - fixed cost. I would find which part moved, then check the market outside."
 **Clarify first:** Over what period? Is revenue also down? Which segments and regions? Any one-off items?
 **Structure:** Profit = revenue - cost. Revenue: units x price x model mix. Cost: materials, labour, warranty, marketing, fixed overhead, financing, exchange rates. Internal versus external.
@@ -1063,10 +1069,10 @@ Data: customer 1 values item A at Rs 100 and item B at Rs 40; customer 2 values 
 **Clarify first:** Was the offer randomly assigned? Contribution per order? Any repeat effects?
 **Structure:** Baseline (counterfactual), incremental orders, margin, discount cost, side effects (cannibalisation, pull-forward, later dip).
 **What I would check, in order:** a randomised holdout (a group kept out of the offer); otherwise matched control or before-after with trend; redemptions versus baseline orders; two weeks after the promotion.
-**Numeric work (assumed):** 10,000 orders use the offer; the holdout shows 6,000 would have happened anyway, so 4,000 are incremental. Contribution before discount Rs 80, discount Rs 50. Net = 10,000 x (80 - 50) - 6,000 x 80 = 300,000 - 480,000 = Rs -180,000. (Equally: 4,000 x 80 = Rs 320,000 gained, minus 10,000 x 50 = Rs 500,000 discount cost.) The promotion loses money unless it also builds repeat customers.
+**Numeric work (assumed):** 10,000 orders use the offer; the holdout shows 6,000 would have happened anyway, so 4,000 are incremental. Contribution before discount Rs 80, discount Rs 50. Net = 10,000 x (80 - 50) - 6,000 x 80 = Rs 3,00,000 - Rs 4,80,000 = -Rs 1,80,000. (Equally: 4,000 x 80 = Rs 3,20,000 gained, minus 10,000 x 50 = Rs 5,00,000 discount cost.) The promotion loses money unless it also builds repeat customers.
 **If the data shows...:** high baseline share means target the offer; repeat uplift after 8 weeks may justify it.
 **Recommendation:** Run holdouts routinely; report incremental orders, incremental contribution, cost per incremental order (Rs 125 here) and post-promotion dip.
-**Likely follow-ups:** 1) *No holdout?* Use difference-in-differences against similar regions. 2) *Pull-forward?* Check weeks after.
+**Likely follow-ups:** 1) *No holdout?* Use difference-in-differences: compare the change in the promoted regions with the change in similar regions that had no promotion. 2) *Pull-forward?* Check weeks after.
 **Common mistakes / traps:** Counting all redemptions as incremental; ignoring discount on baseline orders.
 
 ### Q60 ⭐⭐ 🔴 A referral programme pays Rs 150 to the referrer and Rs 100 to the new user, while paid acquisition costs Rs 400 per user. Is it cheaper, and what viral coefficient is needed to double 1,000 seed users?
@@ -1182,7 +1188,7 @@ Data: reverse logistics and refurbishment cost Rs 150 per returned order; ignore
 - Left-digit effect: the first digit anchors perception, so 99 feels notably cheaper than 100 even though the gap is 1%.
 - Price endings also signal "deal".
 - Test: randomly show Rs 99 to half of visitors and Rs 100 to the other half; measure conversion, revenue per visitor, refund and churn.
-- Mini-example (assumed): baseline conversion 4%. To detect a rise to 4.4% (10% relative lift) with 80% power and 5% significance needs about 39,500 visitors per group. A true effect of only 1% (4% to 4.04%) needs about 3.8 million per group, which is not practical.
+- Mini-example (assumed): baseline conversion 4%. To detect a rise to 4.4% (10% relative lift) with 80% power (an 80% chance of spotting a real lift) and 5% significance (a 5% risk of a false alarm) needs about 39,500 visitors per group. A true effect of only 1% (4% to 4.04%) needs about 3.8 million per group, which is not practical.
 - Practice step: decide your minimum lift worth detecting before you start.
 **Likely follow-ups:** 1) *Primary metric?* Revenue per visitor. 2) *Risk?* Cheaper-looking price may attract weaker buyers.
 **Common mistakes / traps:** Stopping early when results look good; judging conversion alone (Rs 99 earns 1% less per sale); testing without randomisation.
@@ -1275,9 +1281,9 @@ Total value (sales + salvage): 20% off = Rs 13.2 lakh; 30% = Rs 15.0 lakh; 40% =
 **Clarify first:** Burn rate? Are unit economics positive? How long does fundraising take? Market competition?
 **Structure:** Runway = cash / monthly net burn. Compare growth spend returns (LTV versus CAC, payback) with cash needed.
 **What I would check, in order:** contribution margin per customer; CAC payback; retention; burn by item; funding conditions.
-**Numeric work (assumed):** Cash Rs 36 crore, burn Rs 2 crore a month gives 18 months. Raising money typically takes 6 months, so decisions must be made by month 12. Cutting burn 30% (to Rs 1.4 crore) stretches runway to 25.7 months.
+**Numeric work (assumed):** Cash Rs 36 crore, burn Rs 2 crore a month gives 18 months. Assume raising money takes about 6 months (an assumption, not a fact), so decisions must be made by month 12. Cutting burn 30% (to Rs 1.4 crore) stretches runway to 25.7 months.
 **If the data shows...:** payback under 12 months with strong retention means keep growing; negative contribution per user means fix pricing and costs first; mixed means grow only the profitable segments.
-**Recommendation:** Rule: keep at least 12 months of runway after any growth spend; grow only where payback is short; set a milestone (for example break-even in two key cities) and start fundraising early. Review monthly: runway, burn multiple, contribution per user, CAC payback.
+**Recommendation:** Rule: keep at least 12 months of runway after any growth spend; grow only where payback is short; set a milestone (for example break-even in two key cities) and start fundraising early. Review monthly: runway (months of cash left), burn multiple (cash burned per rupee of new revenue), contribution per user, CAC payback.
 **Likely follow-ups:** 1) *If funding is hard?* Cut burn sooner. 2) *Growth-profit balance?* Aim for efficient growth.
 **Common mistakes / traps:** Binary thinking; ignoring fundraising time; burning cash on unprofitable customers.
 

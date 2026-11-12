@@ -4,7 +4,7 @@
 - Answers checked: 91 of 91 (all read in full; every header line, template block and follow-up/mistakes line present: 91 each of Asked at, interviewer check, Say this, Likely follow-ups, Common mistakes).
 - Answers whose numbers were recomputed by code: 70 (every answer with arithmetic; the remaining 21 are pure method/concept answers with no figures beyond a count of steps). Script: scratchpad C07_Part05/v.py, written from the question data and stated assumptions.
 - Answers with wrong arithmetic: 0 material errors; 1 rounding/precision slip (Q45).
-- Answers changed: 20 (Q8, Q9, Q20, Q30, Q33, Q40, Q43, Q45, Q52, Q57, Q58, Q64, Q75, Q79, Q81, Q86, plus table spacing in Q13, Q14, Q24, Q25, Q26, Q42, Q43, Q44, Q48, Q62, Q63).
+- Answers changed: 26, of which 16 for content and 10 for table spacing only (Q8, Q9, Q20, Q30, Q33, Q40, Q43, Q45, Q52, Q57, Q58, Q64, Q75, Q79, Q81, Q86, plus table spacing in Q13, Q14, Q24, Q25, Q26, Q42, Q43, Q44, Q48, Q62, Q63).
 
 ## Fixes
 | Q | What was wrong | Fix |
@@ -34,7 +34,7 @@ All percent changes, shares, funnels, DiD, mix/rate split (Q62 incl. order-depen
 - Count: heading says Target 90, Actual 91 (a 91st question was added); intended, not changed.
 - Ordering: star/difficulty order is correct; numbering Q1-Q91 continuous. Q70 and Q72 (1 star, easy) are tiny arithmetic items placed before harder 1-star ones, as expected.
 - Overlap: Q2, Q19, Q20, Q61, Q64 all revolve on the same Tuesday case, and Q42, Q62, Q77 each teach mix shift; Q63, Q65, Q79 reuse DiD; Q16/Q45/Q64/Q73 reuse SD-band logic. Deliberate cross-references exist, but consider whether Part 5 overlaps Book 8 scenarios or other Book 7 parts (not checked, no other parts read).
-- Style: Q45-type and similar answers use "Rs" in a few places (Q71, Q88) and the rupee sign elsewhere; left unchanged.
+- Style: a few answers use "Rs" in a few places (Q71, Q88) and the rupee sign elsewhere; left unchanged.
 
 ## Claims left unverified
 - No web access: question-bank and company "asked at" claims remain unverified as in the sources file. Weather, UPI, telecom and similar context statements are general reasoning, not facts.
