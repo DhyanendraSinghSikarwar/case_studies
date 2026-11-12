@@ -82,7 +82,7 @@
 3. Any data lag or exclusions are noted.
 4. A second person or a re-run has confirmed the main figure.
 **If I find...:** Anything unresolved: say it in the message, not in a footnote.
-**What I would tell the stakeholder:** Use this structure: (1) headline in one sentence; (2) what is in the file and the period covered; (3) definitions used (for example attrition = leavers in the month divided by average headcount); (4) caveats and data cutoff date; (5) the question or decision it supports; (6) next step and who to contact. Example: "Attrition for Q2 is 12%, up from 10% in Q1, mostly in support roles. Data is as of 30 June; contractors excluded. Please tell me if you want it split by manager."
+**What I would tell the stakeholder:** Use this structure: (1) headline in one sentence; (2) what is in the file and the period covered; (3) definitions used (for example attrition = leavers in the month divided by average headcount); (4) caveats and data cutoff date; (5) the question or decision it supports; (6) next step and who to contact. Example (illustrative figures): "Attrition for Q2 is 12%, up from 10% in Q1, mostly in support roles. Data is as of 30 June; contractors excluded. Please tell me if you want it split by manager."
 **Prevent it next time:** Save the message as a template and keep a version note in the file.
 **Likely follow-ups:** 1) *How long should it be?* Short enough to read in a minute. 2) *Should I attach methodology?* Link it; do not bury the finding.
 **Common mistakes / traps:** Sending a file with no context; hiding caveats; no date stamp.
@@ -146,7 +146,7 @@
 - Answer as asked when it is a clear, factual ask, it is time-critical, or the stakeholder already knows the context.
 - Answer the deeper question when the literal answer would mislead (a single month with a holiday spike), or the person is clearly stuck on a decision.
 - Best practice: give the literal answer first, then one line, "this might also be worth looking at", and let them choose.
-**Mini-example:** Asked: "What was last month's headcount?" Literal answer: 1,180 distinct employees. Better question: "Do you mean employees on payroll, or including contractors?" Ask it before answering, since the numbers differ.
+**Mini-example:** Asked: "What was last month's headcount?" Literal answer: 1,090 active employee IDs (illustrative; see Q24). Better question: "Do you mean employees on payroll, or including contractors?" Ask it before answering, since the numbers differ.
 **Practice step:** Take three past requests and write the literal question, the likely real question and your one-line flag.
 **Likely follow-ups:** 1) *What if they get annoyed?* Keep it short and offer the answer first. 2) *Who decides?* The stakeholder; I advise.
 **Common mistakes / traps:** Overriding the ask with your own agenda; never questioning a misleading ask; delivering a long essay when a number was needed.
@@ -180,7 +180,7 @@
 3. Past weeks: how much does a 90%-loaded week typically change once complete?
 4. Whether I can produce a firm number up to the last complete week.
 **If I find...:** Missing part is random: a rough estimate may work (illustrative: 4,500 shown at 90% loaded suggests about 5,000, computed as 4,500 divided by 0.9; label it as an estimate, range stated). Missing part is one region or system: do not scale up; show the gap by region. Load finishes before the meeting: refresh and re-verify.
-**What I would tell the stakeholder:** "Through last week the number is 4,200 and firm (illustrative). The latest week is 90% loaded and shows 4,500; it will probably land near 5,000 but I cannot guarantee that. I suggest showing last week as final and this week as provisional. I will update you the moment the load completes."
+**What I would tell the stakeholder:** "The last complete week was 4,200 and is firm (illustrative). The latest week is 90% loaded and shows 4,500; scaling up suggests about 5,000, but I cannot guarantee that. That would be about 19% above the last complete week, so I am also checking that the jump is plausible. I suggest showing last week as final and this week as provisional. I will update you the moment the load completes."
 **Prevent it next time:** Show a "data complete through" date on every report; automate a load-completeness check.
 **Likely follow-ups:** 1) *Why not just scale up by 10%?* It assumes the missing data looks like the rest. 2) *What if the VP insists on a single number?* Give the estimate with the label attached.
 **Common mistakes / traps:** Presenting a partial total as final; silently dropping the week; hiding the gap.
@@ -342,7 +342,7 @@
 3. Whether data or access is missing (a real blocker).
 4. Whether another person or team should own it.
 **If I find...:** Capacity issue: offer a later date. Data or privacy issue: explain and propose an alternative (grouped or anonymised view). Out of scope: point to the right owner.
-**What I would tell the stakeholder:** "I cannot do the full analysis this week because of the quarter-end report, but I can send the headline numbers by Thursday and the full cut on the 20th. Would that work?" Or: "I cannot share individual salaries, but I can give team averages for groups of at least five."
+**What I would tell the stakeholder:** "I cannot do the full analysis this week because of the quarter-end report, but I can send the headline numbers by Thursday and the full cut on the 20th. Would that work?" Or: "I cannot share individual salaries, but I can give team averages for groups of at least five." (Five is an example threshold; use your company's rule.)
 **Prevent it next time:** Share the team's priorities and queue openly, so a "not yet" is understood.
 **Likely follow-ups:** 1) *What if it is your boss?* Show the trade-off and let them choose. 2) *How often can you say no?* Rarely; mostly "yes, and here is when".
 **Common mistakes / traps:** A flat "no" with no reason; vague "will try"; apologising excessively.
@@ -442,7 +442,7 @@ Resolution times (hours): 2, 2, 3, 4, 40 (exercise data).
 **Plan:**
 1. Working: 12 x 90 = 1,080 minutes = 18 hours. 18 / 40 = 45%. That leaves 22 hours for meetings, planned projects, dashboards and fixes.
 2. Look at the 12 requests: how many repeat (same question every week), how many are really decisions that need data, how many are "nice to know".
-3. Propose to the manager: a reserved ad-hoc budget of about 20 to 25% (8 to 10 hours, so roughly 5 to 6 requests of 90 minutes at that size; my suggestion, not a standard).
+3. Propose to the manager: a reserved ad-hoc budget of about 20 to 25% (8 to 10 hours, so roughly 5 to 7 requests of 90 minutes (5.3 to 6.7); my suggestion, not a standard).
 **Method choice and why:** Simple triage first: a single intake form, a priority rule (decision date, who is affected), and a weekly "ad-hoc quota" the manager can see. Turn repeating requests into a recurring report or self-service dashboard (that pays back fast: build once, answer many times).
 **Pitfalls:** Saying "I am overloaded" without numbers; refusing everything; letting urgent-looking asks bypass the log.
 **Deliverable:** A one-page note: current load (45%), request mix, proposed cap, what gets automated, what gets declined or deferred, and a review in a month.
@@ -460,7 +460,7 @@ Resolution times (hours): 2, 2, 3, 4, 40 (exercise data).
 3. Whether one can be delivered in a lighter version (a rough number now, the full analysis later).
 4. Who is the owner of my priorities (usually my manager).
 **If I find...:** Both fit with a partial scope: do that and tell both. They truly clash: go to my manager first with the facts and a recommended order; if the director is senior, ask the manager to talk to them, or ask for a short three-way message so the decision is on record. One is urgent and one is not: say so factually.
-**What I would tell the stakeholder:** "I have two requests due this week and I cannot finish both in full. Request A needs about 12 hours and B about 15. Could you and the director confirm which goes first? Until I hear, I will start with A, which has the earlier deadline, and I will update you by noon tomorrow."
+**What I would tell the stakeholder:** "I have two requests due this week and I cannot finish both in full. Request A needs about 12 hours and B about 15 (illustrative; my other committed work leaves about 20 hours this week). Could you and the director confirm which goes first? Until I hear, I will start with A, which has the earlier deadline, and I will update you by noon tomorrow."
 **Prevent it next time:** A shared priority list or intake log that managers can see, and a weekly planning note on what is committed.
 **Likely follow-ups:** 1) What if the director insists on it right now? Do it if the manager agrees, and tell the manager what it displaces. 2) What if my manager is unavailable? Message both with the trade-off, work on the earlier deadline, and follow up.
 **Common mistakes / traps:** Silently picking the more senior person; working extra hours and hiding the problem; complaining about the other party; delivering both late.
@@ -492,7 +492,7 @@ Resolution times (hours): 2, 2, 3, 4, 40 (exercise data).
 3. Can I get a bounded estimate (range, sample, last period scaled)?
 4. How long the reliable version would take.
 **If I find...:** A range will do for the decision: deliver an estimate. The decision is high-stakes or the number is audited (payroll, finance, regulatory): deliver late, with a firm date. The data does not exist or a number would mislead: decline that specific number and offer an alternative.
-**What I would tell the stakeholder:** Estimate: "My best estimate is 1,100 to 1,300, based on last quarter's data; it is not final because two sources are missing. Fine for planning, not for external use." Late: "The reliable figure needs the March file; I can give it by Thursday 5 pm. Is that in time?" Decline: "I cannot give a trustworthy number for this because the data is not tracked; here is what I can give instead."
+**What I would tell the stakeholder:** Estimate: "My best estimate (illustrative) is 1,100 to 1,300, based on last quarter's data; it is not final because two sources are missing. Fine for planning, not for external use." Late: "The reliable figure needs the March file; I can give it by Thursday 5 pm. Is that in time?" Decline: "I cannot give a trustworthy number for this because the data is not tracked; here is what I can give instead."
 **Prevent it next time:** Log data gaps, agree standard turnaround for new metrics.
 **Likely follow-ups:** 1) Can you combine options? Yes: a labelled rough figure today and the final later. 2) What if they ignore the label? Repeat it in writing and mention the range with the number.
 **Common mistakes / traps:** One-point estimates with no range; saying yes then silently being late; declining without an alternative.
@@ -512,7 +512,7 @@ Resolution times (hours): 2, 2, 3, 4, 40 (exercise data).
 **Common mistakes / traps:** Building a dashboard for a one-off; leaving recurring reports manual forever; sending ad-hoc numbers that nobody can reproduce later.
 
 ### Q32 ⭐⭐ 🟢 A stakeholder asks for "all the data" on a topic. What do you do?
-**Asked at:** commonly asked; "all the data" is a standard vague-request prompt in prep question banks (Dataford-style, unverified).
+**Asked at:** commonly asked (no company-specific report found); "all the data" is a standard vague-request prompt in prep question banks (Dataford-style, unverified).
 **What the interviewer is checking:** Whether you find the decision behind the request instead of dumping files.
 **Say this in the interview:** "I would ask what they are trying to decide, then offer a focused dataset or summary. A data dump rarely answers a question and can create privacy and accuracy problems."
 **First, clarify / contain:** Ask, politely: what question are you trying to answer, who will use it, by when, and in what form (summary or rows)? Do not export everything yet.
@@ -594,7 +594,7 @@ Resolution times (hours): 2, 2, 3, 4, 40 (exercise data).
 3. Known changes coming (promotion, hiring freeze, policy).
 4. How far past forecasts missed, to size the range.
 **If I find...:** Stable history: narrow range. Volatile or short history: wide range and say so. They need one number: give the central estimate and name the range next to it.
-**What I would tell the stakeholder:** "My best estimate is about 1,000, and I would plan for 900 to 1,100. It would be lower if X happens. I will recheck it at month end and send an updated number."
+**What I would tell the stakeholder:** "My best estimate is about 1,000 (illustrative), and I would plan for 900 to 1,100. It would be lower if X happens. I will recheck it at month end and send an updated number."
 **Prevent it next time:** Track forecast versus actual each month and share the error.
 **Likely follow-ups:** 1) What if they hold you to the exact figure? Explain that it is a target to manage towards, and the range shows the risk. 2) Which method? Start with a baseline and trend; complexity only if it beats the baseline.
 **Common mistakes / traps:** False precision; a vague "it depends"; hiding assumptions.
@@ -654,7 +654,7 @@ Department sizes (exercise data): Finance 38, Support 120, Legal 2.
 **First, clarify / contain:** Ask what the average is for and whether the lead may see salary data at all. Do not send the Legal number yet.
 **What I would check, in order:**
 1. Group sizes: 38, 120 and 2, total 160.
-2. Company or policy minimum group size for reporting (often something like 5 or 10; the rule is set by your organisation, confirm it).
+2. Company or policy minimum group size for reporting (often something like 5 or 10, from memory, unverified; the rule is set by your organisation, confirm it).
 3. With 2 people, if one person knows their own salary and the average, they can work out the colleague's salary exactly. A manager who knows one salary does the same.
 4. Whether the lead needs department averages or something else (budget by grade).
 **If I find...:** Group below the minimum: show "n<5, suppressed" or combine Legal with a related function ("Corporate functions"), only if the combined group is large enough. Policy has no rule: propose one and ask the data owner.
@@ -743,7 +743,7 @@ Sessions: 20,000 | Unique visitors: 16,000 | Orders: 500 (exercise data).
 4. Source and refresh: system export versus manual copy, any edits in their sheet.
 5. Compare at the smallest level (a list of IDs) and find the exact rows that differ.
 **If I find...:** Different definitions: document both and agree on one standard. Their data is stale or edited: share the current source. My error: say so plainly, fix it, tell all recipients.
-**What I would tell the stakeholder:** "Thanks for sharing your file. I compared the two: the 12 difference comes from 9 contractors included in yours and 3 joiners after the cut-off. Both are correct for their definitions; I suggest we use the HRIS definition and I will label it on the report."
+**What I would tell the stakeholder:** "Thanks for sharing your file. I compared the two: the 12 difference (illustrative) comes from 9 contractors included in yours and 3 joiners after the cut-off. Both are correct for their definitions; I suggest we use the HRIS definition and I will label it on the report."
 **Prevent it next time:** A written KPI definition, a single source of truth, and a version/date stamp on every report.
 **Likely follow-ups:** 1) What if you are wrong? Own it quickly and fix it. 2) What if they will not agree? Take the definition question to the metric owner or my manager.
 **Common mistakes / traps:** Defending first; saying "your spreadsheet is wrong"; fixing silently without telling others who used the old number.
@@ -951,7 +951,7 @@ Sessions: 20,000 | Unique visitors: 16,000 | Orders: 500 (exercise data).
 3. Compare pilot with a control group, not before versus after only.
 4. Show all metrics side by side, with sample sizes and uncertainty.
 5. Run a short joint meeting to agree what counts as success.
-**Method choice and why:** Simple pilot versus control comparison. Example (made-up): 200 people in each group; completion 62% in the pilot versus 55% in control, a gain of 7 percentage points (about 12.7% relative), or 124 versus 110 completers. One stakeholder may quote "12.7% better", the other "only 7 points", and both are the same fact. Whether it is "enough" depends on the target and cost.
+**Method choice and why:** Simple pilot versus control comparison. Example (made-up): 200 people in each group; completion 62% in the pilot versus 55% in control, a gain of 7 percentage points (about 12.7% relative), or 124 versus 110 completers. One stakeholder may quote "12.7% better", the other "only 7 points", and both are the same fact. Whether it is "enough" depends on the target and cost. Also check chance: with 200 per group, a 7-point gap gives a two-sided p of about 0.16 (chi-square test, computed), so it could easily be noise; say "encouraging, not proven".
 **Pitfalls:** Choosing the metric after seeing the result; ignoring cost or side effects; small samples; pilot participants that were not typical.
 **Deliverable:** A one-page summary: goal, each metric, the result against the target, confidence, and a recommendation (scale, extend or stop) with the decision owner named. The decision stays with the owner.
 
@@ -967,7 +967,7 @@ Sessions: 20,000 | Unique visitors: 16,000 | Orders: 500 (exercise data).
 **What I would check, in order:**
 1. Group sizes: how many people sit under each manager or region.
 2. Whether the metric is affected by things the manager does not control (role mix, location, hiring season).
-3. Whether the company has a minimum group size rule (commonly 5 to 10, assumed; confirm with HR or privacy).
+3. Whether the company has a minimum group size rule (commonly 5 to 10, from memory, unverified; confirm with HR or privacy).
 4. Who would see the output and how it might be used.
 **If I find...:** Small groups: a team of 4 where one person leaves shows 25% attrition, and a team of 120 with 30 leavers also shows 25%, yet the first is a single event. Combine small groups into larger ones, or show "fewer than 10" instead of a rate. Large groups: show regional results, with the factors that explain them. A true manager-performance review: that is an HR process, and I need explicit approval and method from HR leadership.
 **What I would tell the stakeholder:** "I can give you a regional view that points to where to look. Manager-level percentages on teams of four are mostly noise and could be unfair, so I suggest we combine small teams. I would like HR to confirm this."
@@ -1267,7 +1267,7 @@ Sessions: 20,000 | Unique visitors: 16,000 | Orders: 500 (exercise data).
 **First, clarify / contain:** Handle this week's request on its merits. Then look at the pattern with numbers.
 **What I would check, in order:**
 1. Log the last 4 to 6 weeks of their requests: topic, hours, real deadline.
-2. Illustration (made-up): 12 hours a week of a 40-hour week is 30%, or 48 hours in four weeks, leaving 28 hours (70%) for everything else.
+2. Illustration (made-up): 12 hours a week of a 40-hour week is 30%, or 48 hours in four weeks, leaving 28 hours a week (70%) for everything else.
 3. Which requests repeat and could be automated.
 4. Why they are always urgent (late planning, their own deadlines, habit).
 **If I find...:** Repeats: build a recurring report or dashboard. Late planning: agree a weekly planning call and a "request by Tuesday for Friday" rule. Truly urgent: reserve a fixed ad hoc slot (for example, 4 hours a week).

@@ -9,7 +9,7 @@
 **Say this in the interview:** "Data quality has six common dimensions. I check each one before trusting a dataset, and I can give you an HR example of each."
 **Explain simply:**
 - **Completeness:** are required values present? Failure: 150 new joiners have a blank date of joining.
-- **Accuracy:** does the value match reality? Failure: salary typed as 5,20,000 when payroll paid 52,000 a month.
+- **Accuracy:** does the value match reality? Failure: a monthly salary field typed as 5,20,000 when payroll paid 52,000 (an extra zero).
 - **Consistency:** do two places (or two rows) agree? Failure: HRIS says "Active" while payroll says "Exited" for the same person.
 - **Uniqueness:** is each real thing recorded once? Failure: a rehired employee gets a new ID and is counted twice.
 - **Validity:** does the value follow the allowed format or range? Failure: a date of birth in 2031, or gender coded "X1" when only M/F/O are allowed.
@@ -166,7 +166,7 @@ Inline data: dashboard 5,000; CRM 4,600.
 3. The best estimate I can defend (for example, with the bad rows excluded) and a range.
 4. Whether the decision would change anywhere in that range.
 **If I find...:** Decision unaffected by the range means give the figure and note it; decision sensitive means say "do not finalise on this yet" and give the time for the fix.
-**What I would tell the stakeholder:** "Attrition for the quarter is about 14%, and I would put it between 13% and 15%. Around 5% of exit dates are missing, which is why I cannot be exact. I will confirm by tomorrow noon. For today's discussion, 14% is safe to use as a rough figure."
+**What I would tell the stakeholder:** "Attrition for the quarter is about 14%, and I would put it between 13% and 15% (illustrative figures). Around 5% of exit dates are missing, which is why I cannot be exact. I will confirm by tomorrow noon. For today's discussion, 14% is safe to use as a rough figure."
 **Prevent it next time:** Show a data-quality note (coverage, last refresh) on the report itself.
 **Likely follow-ups:** 1) *Avoid jargon?* Yes: "blank", "duplicate", "late", not "null" or "referential integrity". 2) *What if they insist on one exact number?* Give the best number, mark it provisional.
 **Common mistakes / traps:** Refusing to give a number; hiding the problem; giving a long technical explanation; false precision.
@@ -291,7 +291,7 @@ Inline data: working days 22; days present 26.
 5. Regularisation or manual entries added twice.
 6. A wrong calendar or month in the report.
 **If I find...:** Valid weekend or holiday work means keep it and add a column to separate "worked on a non-working day"; duplicates mean remove the extra rows and log it; two employee IDs mean link and merge; unexplained means flag to HR operations, not guess.
-**What I would tell the stakeholder:** "One employee shows 26 days against 22 working days. Four of those days appear to be weekend or holiday work; the attendance report will show them separately, and payroll should confirm the comp-off rule."
+**What I would tell the stakeholder:** "One employee shows 26 days against 22 working days. Four of those days may be weekend or holiday work, which I am checking; the attendance report will show them separately once confirmed, and payroll should confirm the comp-off rule."
 **Prevent it next time:** A validation rule: days present cannot exceed days in the month, and exceptions above working days must carry a reason code.
 **Likely follow-ups:** 1) *Could 26 be right?* Yes, if weekly off or holiday days were worked. 2) *Fix by capping at 22?* No; that would hide valid overtime.
 **Common mistakes / traps:** Capping at 22 without checking; deleting the row; not asking how the system defines a working day.
@@ -470,7 +470,7 @@ Inline data: Sales 10/200; Operations 60/300; HR 5/100 missing.
 **Caveats / what else I would check:** Operations alone has 60 of the 75 gaps (80%). A pattern like that points to a cause: a different form, shift workers without system access, or a field that does not apply to them. If it is not random, simple deletion or filling will bias results towards Sales and HR. Check which field is missing and over what dates.
 **Next step / recommendation:** Talk to the Operations data owner, fix collection at source, and report results with the missing rate by department; do not average over the gap silently.
 **Likely follow-ups:** 1) Is 12.5% too high? It depends on the field and use; there is no universal cut-off. 2) Delete or impute? Only after knowing the reason.
-**Common mistakes / traps:** Comparing counts without denominators (60 vs 10); averaging the three department rates (6.7% is wrong, since sizes differ).
+**Common mistakes / traps:** Comparing counts without denominators (60 vs 10); averaging the three department rates ((5% + 20% + 5%) / 3 = 10% is wrong, since sizes differ; the true overall rate is 12.5%).
 
 ### Q29 ⭐⭐ 🟡 A feedback survey received 800 submissions from 765 unique email addresses; 1,000 people were invited. The team reported an 80% response rate. What is the corrected rate, and how would you present it?
 Inline data: submissions 800; unique emails 765; invited 1,000.
@@ -853,7 +853,7 @@ Inline data: records 1,000; mandatory fields 5; nulls per field 20, 150, 0, 30, 
 
 **First, clarify / contain:** Close the file without saving. Saving a CSV from Excel can overwrite the original with the damaged values. Keep a copy of the untouched CSV.
 **What I would check, in order:**
-1. Click a cell: if the formula bar shows 123457000000 (zeros at the end), digits were already lost; if it shows the full number, only the display is wrong.
+1. Click a cell: if the formula bar shows the full number (for example 123456789012), only the display is wrong. If it shows zeros at the end (for example 123457000000), digits were already lost. A CSV saved from Excel writes the shortened display value, which is how damage becomes permanent; IDs of more than about 15 digits are cut even on opening (from memory, unverified).
 2. Open the original CSV in a text editor to confirm the full IDs are there.
 3. Re-import with Data > From Text/CSV (or Power Query) and set the ID column type to Text.
 4. Count digits: `=LEN(A2)` should be the same for every row (for example 12).
@@ -877,7 +877,7 @@ Inline data: records 1,000; mandatory fields 5; nulls per field 20, 150, 0, 30, 
 3. Validate: exactly 10 digits and, for Indian mobiles, first digit 6 to 9 (from memory, unverified; confirm the rule with the telecom or CRM owner).
 4. Store the result as text (so no leading-zero or scientific-notation damage).
 5. Count rows passed, fixed and failed.
-**If I find...:** The three examples all become 9876543210 (I ran this check on them; all three pass). Short, long or letter-filled values: flag as invalid, send for review, do not guess digits. Same cleaned number on many customers: possible duplicates or a shared family number; investigate before merging.
+**If I find...:** The three examples all become 9876543210 and all three pass the 10-digit check. Short, long or letter-filled values: flag as invalid, send for review, do not guess digits. Same cleaned number on many customers: possible duplicates or a shared family number; investigate before merging.
 **What I would tell the stakeholder:** "I standardised phone numbers to 10 digits. X% passed as-is, Y% were reformatted, Z% need someone to confirm with the customer."
 **Prevent it next time:** Validate at entry (a 10-digit field with a country-code dropdown) instead of free text.
 
@@ -1002,7 +1002,7 @@ Inline data: HRIS leavers 45; exit log 38.
 3. Check whether salary band data (min and max) exists for these grades, which gives a valid range.
 4. Test how the headline (for example median pay by grade) changes under different treatments.
 **If I find...:** Missing concentrated at the top: mean imputation pulls senior pay toward the overall mean, so averages and any pay-gap result are biased. Options: analyse only disclosed employees and say so; use grade-based imputation with caveats; or use bands for a sensitivity range (lower, upper). Very high missing in one group: say the analysis cannot answer the question for that group.
-**What I would tell the stakeholder:** "Pay for 22% of senior employees is not disclosed, so the average I can calculate covers disclosed staff only and likely understates senior pay. I show the result under three assumptions. A firm number needs HR approval to use the confidential payroll figures."
+**What I would tell the stakeholder:** "Pay for 22% of senior employees (illustrative figure) is not disclosed, so the average I can calculate covers disclosed staff only and likely understates senior pay. I show the result under three assumptions. A firm number needs HR approval to use the confidential payroll figures."
 **Prevent it next time:** Agree up front with HR and payroll which fields the analyst may access, under confidentiality rules; confirm applicable privacy obligations with the legal team.
 
 **Likely follow-ups:** 1) *When is imputation fine?* When missing is random and small, and you report it. 2) *Why not drop the rows?* You then analyse a biased subset.
@@ -1173,7 +1173,7 @@ Inline data: records 10,000; flagged 12%; sample 400; confirmed 200.
 
 **Explain simply:**
 - **Truly missing:** the answer exists but was not recorded. Example: an active employee's date of birth is blank. Code: null, or an explicit "Unknown", plus a missing flag.
-- **Not applicable:** the field does not apply. Example: "Exit date" for a current employee, or "Maternity leave days" for a field where the rule does not apply. Code: a separate label such as "N/A" (or null, with a documented rule); never zero.
+- **Not applicable:** the field does not apply. Example: "Exit date" for a current employee, or "Notice-period end date" for someone who has not resigned. Code: a separate label such as "N/A" (or null, with a documented rule); never zero.
 - **Zero is a real value:** zero leave taken is different from leave not recorded.
 **Worked mini-example:** 100 employees, 10 have blank exit date. If all 10 are current staff, exit date is N/A, not a problem. If 6 are leavers with blank exit date, those 6 are missing data to fix (6% of the rows).
 **Practice step:** Take one HR table and write, for each column, what a blank means and how you would code it.
@@ -1245,7 +1245,7 @@ Inline data: records 10,000; flagged 12%; sample 400; confirmed 200.
 4. Create a person ID that maps all employee IDs for the same person, with a record of how each match was made (rule and confidence).
 5. Review ambiguous matches manually.
 **If I find...:** Clear rehire with a short gap: tenure by policy (continuous or by stint). Long gap: usually treat as separate stints for attrition (the first exit is a real exit, and the rehire is a new hire), but follow the agreed definition. Overlapping dates: send to HR for correction.
-**What I would tell the stakeholder:** "I identified 63 rehires (illustrative) by matching on a verified ID and date of birth. Counting them as one person changes average tenure from 3.4 to 3.7 years, and attrition counts each exit separately. Please confirm the rule."
+**What I would tell the stakeholder:** "I identified 63 rehires by matching on a verified ID and date of birth. Counting them as one person changes average tenure from 3.4 to 3.7 years (all figures illustrative), and attrition counts each exit separately. Please confirm the rule."
 **Prevent it next time:** Reuse the old employee ID on rehire, or store a person-level ID that persists across hires.
 
 **Likely follow-ups:** 1) *Do rehires count as attrition?* Yes, the first exit was a real leaver; label rehires separately in hiring metrics. 2) *Privacy?* Restrict who sees identifying fields; use the person ID in analysis.

@@ -8,7 +8,7 @@
 **What the interviewer is checking:** Whether you can give a clear, ordered, honest summary instead of a tool list.
 **Say this in the interview:** "I will give it in four parts: the problem, my role, what I did, and what changed. About two minutes, then you can dig anywhere."
 
-**Answer structure (about 25 seconds each, 6 sentences in total):**
+**Answer structure (about 20 seconds each, 6 sentences in total, so about two minutes):**
 1. Problem and user: "HR wanted to know why first-year employees were leaving, and the HR head would use the answer."
 2. My role: "I owned data preparation and the dashboard; the model/template came from the team." (say only what is true)
 3. Data and method: source, size, the key cleaning step, the main technique.
@@ -16,7 +16,7 @@
 5. Impact or recommendation, and one limit.
 6. Close by inviting questions: "Happy to go deeper on cleaning or the metric definitions."
 
-**Illustrative project, replace with your real one:** "HR could not explain a 13.4% yearly attrition rate. I was the analyst on a team of two. I cleaned a 1,480-row HRIS export down to 1,350 unique employees, defined attrition with HR, and built an Excel and Power BI view. It showed that 63 of 162 exits (39%) happened in the first year, although first-year staff were only about 15% of headcount. We recommended a 90-day check-in; the effect is not yet measured."
+**Illustrative project, replace with your real one:** "HR could not explain a 13.4% yearly attrition rate. I was the analyst on a team of two. I cleaned a 1,480-row HRIS export (the export from the HR system that holds employee records) down to 1,350 unique employees, defined attrition with HR, and built an Excel and Power BI view. It showed that 63 of 162 exits (39%) happened in the first year, although first-year staff were only about 15% of headcount. We recommended a 90-day check-in; the effect is not yet measured."
 (13.4% = 162 exits / 1,205 average headcount; all figures are invented exercise data.)
 
 **Likely follow-ups:** 1) *Which part took longest?* Cleaning; name the step. 2) *What would you change?* One honest improvement. 3) *Can you go slower on the method?* Have a 30-second version ready.
@@ -65,7 +65,7 @@
 3. Fitness checks: time coverage covers the question; key fields filled; totals reconcile to an outside figure; no unexplained duplicates.
 4. What was NOT in the data that you wished for.
 
-**Illustrative project, replace with your real one:** "HRIS export, 1,480 rows, one row per employee record, 24 months. Checks: join/exit dates present for the full period, headcount reconciled (opening 1,210 + 152 hires - 162 exits = 1,200 closing, matching the HR report), and 40 transferred employees had two rows. Missing: exit reasons were free text and unreliable."
+**Illustrative project, replace with your real one:** "HRIS export, 1,480 rows, one row per employee record, 24 months. Checks: join/exit dates present for the full period, headcount reconciled (opening 1,210 + 152 hires - 162 exits = 1,200 closing, matching the HR report), 90 exact duplicate rows, and 40 transferred employees with two rows each, leaving 1,350 unique employees (1,480 - 90 - 40). Missing: exit reasons were free text and unreliable."
 
 **Likely follow-ups:** 1) *How did you reconcile?* Against HR's own monthly headcount report. 2) *Was it representative?* Say one company, one period; no wider claim.
 **Common mistakes / traps:** "I downloaded it from Kaggle" and nothing more; no row count; skipping the grain.
@@ -243,7 +243,7 @@
 3. One alternative and the trade-off (what you gave up).
 4. A condition under which you would switch.
 
-**Illustrative project, replace with your real one:** "I used a tenure-band bar chart with rates, not a pie of leavers, because the question compared rates across groups. Counts alone would mislead, since groups differ in size. If asked to predict individual leavers, I would then move to logistic regression."
+**Illustrative project, replace with your real one:** "I used a tenure-band bar chart with rates, not a pie of leavers, because the question compared rates across groups. Counts alone would mislead, since groups differ in size. If asked to predict individual leavers, I would then move to logistic regression (a method that predicts a yes/no outcome such as leave or stay)."
 
 **Likely follow-ups:** 1) *What if it was just the tutorial's choice?* Say so honestly, then explain why it still fits. 2) *What would change your mind?* New data or a different question.
 **Common mistakes / traps:** "It is the most popular"; no alternative; defending a choice you cannot explain.
@@ -336,7 +336,7 @@
 2. **Data fields:** employee ID, department, location, grade, date of joining, exit date, exit type, manager ID, last promotion date.
 3. **Output:** the artefact (dashboard, one-page summary) and 2-3 headline findings.
 4. **Decision:** what HR did or would do because of it.
-**Illustrative project, replace with your real one:** "HR wanted to know why people were leaving in their first year. I took a 2,400-employee HRIS export, cleaned it, and built a Power BI page with attrition by department, tenure band and exit type. Over 12 months, 210 people left on an average headcount of 1,500, so attrition was 14.0% (210/1500); 168 were voluntary (11.2%). Of the 210 leavers, 84 (40%) had under one year of service. HR decided to pilot a 90-day check-in for new joiners in the two worst departments."
+**Illustrative project, replace with your real one:** "HR wanted to know why people were leaving in their first year. I took an HRIS export (the HR system's employee records) of 2,400 unique employees including past leavers, cleaned it, and built a Power BI page with attrition by department, tenure band and exit type. Over 12 months, 210 people left on an average headcount of 1,500, so attrition was 14.0% (210/1500); 168 were voluntary (11.2%). Of the 210 leavers, 84 (40%) had under one year of service. HR decided to pilot a 90-day check-in for new joiners in the two worst departments."
 **Do not claim unless true:** the decision actually happened (say "recommended" if it did not), numbers you cannot reproduce, work done by others.
 **Likely follow-ups:** 1) *Who used it?* Name the real audience. 2) *What would you add?* Exit-reason text, with privacy care. 3) *Did attrition fall afterwards?* Only say so if you measured it.
 **Common mistakes / traps:** Starting with tools instead of the question; no decision at the end; presenting 14.0% without saying how it was calculated.
@@ -349,7 +349,7 @@
 **Illustrative project, replace with your real one:** the export had 222 exit rows. I removed 8 internal transfers (not exits) and 4 contract-end or intern completions, leaving 210 exits in the 12 months by last working day (not resignation date). Average headcount was 1,500 (opening 1,520, closing 1,480). Results (rounded to 2 decimals): all exits 210/1500 = 14.00%; voluntary only 168/1500 = 11.20%; using closing headcount 210/1480 = 14.19%; using opening 210/1520 = 13.82%; if transfers and contract ends had stayed in, 222/1500 = 14.80%.
 **Why it matters:** HR can act on voluntary exits (pay, manager, growth); layoffs and contract ends are planned. Mixing them hides the signal and makes year-on-year comparison unfair.
 **Do not claim unless true:** that HR signed off the definition; that contract staff were excluded if you never checked.
-**Likely follow-ups:** 1) *Why average headcount?* Headcount moves through the year, so average is fairer. 2) *Regretted attrition?* Needs a performance flag; mention only if you used one.
+**Likely follow-ups:** 1) *Why average headcount?* Headcount moves through the year, so average is fairer. 2) *Regretted attrition?* (exits of people the company wanted to keep) Needs a performance flag; mention only if you used one.
 **Common mistakes / traps:** Counting resignation date instead of last working day; dividing by closing headcount without saying so; no written definition.
 
 ### Q24 ⭐⭐⭐ 🟡 Your HR project used an HRIS export with missing exit dates, duplicate employee IDs and inconsistent department names. How did you clean it, and what did you record about the cleaning?
@@ -397,7 +397,7 @@
 ### Q27 ⭐⭐⭐ 🔴 The interviewer asks you to find the weakest point in your own project. Which would you pick and why is naming it a strength?
 **Asked at:** commonly asked (no company-specific report found); project walk-throughs show up in about 14 candidate profiles in the internal research, and prep-site prompts for HR attrition projects exist (unverified).
 **What the interviewer is checking:** Self-awareness and judgement: can you rank your own risks without hiding them?
-**Say this in the interview:** "The weakest point is one year of data and a definition of voluntary exit I could not verify. I flagged it in the report and I know what extra data would fix it."
+**Say this in the interview:** "The weakest point is the exit-reason field: it was free text and 18% blank, so my voluntary split is fragile. I flagged it in the report and I know what extra data would fix it."
 **Answer structure:** pick one real weakness that matters to the conclusion; say its likely effect; say what you did to limit it; say what you would do next.
 **Illustrative project, replace with your real one:** exit reasons came from a free-text field that managers filled in, and 18% were blank (illustrative). My voluntary versus involuntary split relied on it. I disclosed the 18%, showed the result with and without them, and recommended HR cross-check against resignation letters.
 **Why naming it is a strength:** it shows you know where your conclusion is fragile, so a decision-maker can rely on you; hiding it only means someone else finds it later, usually at a worse moment. Choose a real weakness, not a fake one ("I work too hard") and not a fatal one you did nothing about.
@@ -490,7 +490,7 @@
 **Illustrative project, replace with your real one:**
 - **Attrition rate** (leavers / average headcount): retention planning.
 - **First-year attrition** (leavers with under one year of service / joiners): onboarding quality.
-- **Time to hire** (offer-accepted date minus requisition-open date, in days): recruiting speed.
+- **Time to hire** (offer-accepted date minus requisition-open date, in days; companies define this differently, so agree the start and end dates): recruiting speed.
 - **Offer acceptance rate** (joined / offers made; for example 24/30 = 80%): offer competitiveness.
 - **Absenteeism rate** (days absent / scheduled working days): workload and wellbeing signal.
 I picked them in a 30-minute session with the HR head, who ranked them; two were dropped as unused.
@@ -506,7 +506,7 @@ I picked them in a 30-minute session with the HR head, who ranked them; two were
 **Illustrative project, replace with your real one:** (1) took only the columns needed; no salary, medical or Aadhaar-type IDs. (2) replaced employee names with a coded ID in my working file. (3) stored files in the approved folder, not on a personal laptop or email. (4) hid any group with fewer than five people (for example, a team of three) in the report. (5) left out free-text exit comments and individual risk scores. (6) deleted working copies at the end as the owner agreed.
 **Legal note:** for India's DPDP Act and company policy, I would confirm requirements with the legal and IT teams (from memory, unverified).
 **Do not claim unless true:** specific controls you did not use; a formal approval.
-**Likely follow-ups:** 1) *Why five?* A common minimum group size so individuals cannot be guessed; the threshold is a policy choice. 2) *Who approved access?* Name the data owner.
+**Likely follow-ups:** 1) *Why five?* A commonly used minimum group size so individuals cannot be guessed (from memory, unverified; the threshold is a policy choice). 2) *Who approved access?* Name the data owner.
 **Common mistakes / traps:** Emailing raw exports; showing small teams; treating a coded ID as fully anonymous.
 
 ### Q37 ⭐⭐ 🟡 Project exercise: in your attrition project, the sales team had 18 leavers on an average headcount of 120, and engineering had 30 leavers on an average of 400, for the year. Which team has the higher attrition rate, and how would you say it to HR in one line?
@@ -527,7 +527,7 @@ I picked them in a 30-minute session with the HR head, who ranked them; two were
 ### Q38 ⭐⭐ 🟡 Exercise: your hiring funnel project showed 1,000 applications, 250 screened in, 100 interviewed, 30 offers and 24 joined. What are the stage-to-stage conversions and the overall application-to-joining rate, and where would you look first?
 **Asked at:** commonly asked (no company-specific report found); project walk-throughs show up in about 14 candidate profiles in the internal research, and prep-site prompts for HR attrition projects exist (unverified).
 **What the interviewer is checking:** Funnel arithmetic and judgement about where to look.
-**Say this in the interview:** "Overall 2.4% of applicants join. The biggest leak in volume is at screening, but the stage I would look at first is interview to offer at 30%, and offer to joining at 80%."
+**Say this in the interview:** "Overall 2.4% of applicants join. The biggest loss in volume is at screening, 750 of 1,000, so I would look there first, then at the 6 offers that did not join."
 **What the data shows:** each stage keeps a share of the previous one.
 **Working:**
 1. Application to screened: 250/1000 = 25.0%.
@@ -563,7 +563,7 @@ I picked them in a 30-minute session with the HR head, who ranked them; two were
 **What the interviewer is checking:** That you know accuracy misleads on imbalanced data and can name practical remedies.
 **Say this in the interview:** "A model that says nobody leaves is 88% accurate and useless. So I used precision and recall, stratified splits, and kept the model simple."
 **Answer structure:** show the trap; pick the right metrics; split carefully; handle imbalance; be honest about small samples.
-**Illustrative project, replace with your real one:** 1,000 employees, 120 leavers (12.0%). Always predicting "stays" gives 880/1000 = 88% accuracy with recall 0. So: (1) metrics: precision, recall and a confusion table, not accuracy. (2) stratified split so a 200-row test set still contains about 24 leavers (12% of 200). (3) class weights or a simple threshold change, compared with a plain baseline. (4) repeated cross-validation for stability, because 24 leavers is a small test set. (5) in the report: say the result is indicative and give ranges.
+**Illustrative project, replace with your real one:** 1,000 employees, 120 leavers (12.0%). Always predicting "stays" gives 880/1000 = 88% accuracy with recall 0. So: (1) metrics: precision, recall and a confusion table, not accuracy. (2) stratified split (the leaver share is kept the same in the training and test parts) so a 200-row test set still contains about 24 leavers (12% of 200). (3) class weights or a simple threshold change, compared with a plain baseline. (4) repeated cross-validation for stability, because 24 leavers is a small test set. (5) in the report: say the result is indicative and give ranges.
 **Do not claim unless true:** SMOTE, XGBoost or other methods you did not use; results beyond what you ran.
 **Likely follow-ups:** 1) *Why not oversample?* It can leak duplicates into the test set if done before splitting. 2) *Enough data?* With a few dozen leavers, prefer simple, explainable analysis.
 **Common mistakes / traps:** Reporting accuracy; oversampling before splitting; confident claims from a tiny test set.
@@ -620,10 +620,10 @@ I picked them in a 30-minute session with the HR head, who ranked them; two were
 **Structure of the answer:**
 1. Name the manual steps (download, copy, paste, fix names by hand); each one fails on a weekly schedule.
 2. Volume: Excel struggles with large files; move cleaning and joins to SQL or a database view, and let the dashboard read the clean table.
-3. Refresh: scheduled refresh, with credentials owned by a service account, not a person's laptop (confirm with IT).
+3. Refresh: scheduled refresh, with credentials owned by a shared service account (a login belonging to the process, not one person), not a person's laptop (confirm with IT).
 4. Checks: row counts, duplicate keys and totals compared with last week; alert when they jump.
 5. Documentation and an owner for the pipeline.
-**Illustrative project, replace with your real one:** "My attrition file had about 12,000 rows from an HRIS export. At ten times (120,000 rows) the Excel lookups would crawl, so I would load the export into a database table, write the cleaning as a view, and refresh weekly. I would also add a check that headcount does not move more than a set percentage without an explanation (illustrative)."
+**Illustrative project, replace with your real one:** "My attrition file had about 12,000 rows from an HRIS export. At ten times (120,000 rows) the Excel lookups would crawl, so I would load the export into a database table, write the cleaning as a view (a saved query that always shows the cleaned table), and refresh weekly. I would also add a check that headcount does not move more than a set percentage without an explanation (illustrative)."
 **Must not claim unless true:** that you actually built automation; if you only designed it, say "I would".
 **Likely follow-ups:** 1) *What breaks first, honestly?* The manual cleaning and any column rename in the export. 2) *How would you know a refresh failed?* A row-count and date check that sends an alert.
 **Common mistakes / traps:** Saying "cloud" without a reason; ignoring data privacy when moving data; no owner for the refresh.
@@ -766,7 +766,7 @@ I picked them in a 30-minute session with the HR head, who ranked them; two were
 3. Verification: run on a tiny sample where I know the answer; compare row counts and totals with a manual check; read every line and be able to explain it.
 4. Where it was wrong, with an example.
 5. Disclosure: say so when asked.
-**Illustrative project, replace with your real one:** "AI suggested a join that doubled rows because the key was not unique. I caught it because the total headcount rose from 1,200 to 1,250 (exercise numbers), then fixed it by de-duplicating first."
+**Illustrative project, replace with your real one:** "AI suggested a join that duplicated some rows because the key was not unique. I caught it because the total headcount rose from 1,200 to 1,250 (exercise numbers), then fixed it by de-duplicating first (say this only if it really happened to you)."
 **Likely follow-ups:** 1) *Would you use it at work?* Within company rules, on non-sensitive data. 2) *Can you write the query without it?* Be ready to, say so only if true.
 **Common mistakes / traps:** Hiding the use; trusting output blindly; uploading confidential data.
 

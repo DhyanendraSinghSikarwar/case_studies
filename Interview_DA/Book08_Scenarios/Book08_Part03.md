@@ -85,7 +85,7 @@
 - Without it, each analyst writes their own "active employees" formula and the numbers drift.
 - With it, a definition change is made once and flows to all dashboards.
 - It also needs an owner, a written definition, and a version history.
-**Mini-example:** HR headcount: one team counts contractors, another does not. Result: 1,248 vs 1,196 on two dashboards. A single governed "Active employees" measure, defined as payroll employees as of month end, removes the argument.
+**Mini-example (illustrative numbers):** HR headcount: one team counts contractors, another does not. Result: 1,248 vs 1,196 on two dashboards. A single governed "Active employees" measure, defined as payroll employees as of month end, removes the argument.
 **Practice step:** List your top 5 KPIs and write one sentence each defining them: what is counted, what is excluded, the date used, the owner.
 **Likely follow-ups:** 1) *Does it mean one dashboard?* No, one definition. 2) *Who owns it?* A named business owner plus a data team that implements it.
 **Common mistakes / traps:** Thinking it is a tool purchase; defining it but not publishing it; no owner.
@@ -274,7 +274,7 @@ Inline data: Day A had 100 orders with an average of INR 1,000; Day B had 400 or
 5. Filters or date range differences, including a "to date" window that moves.
 6. Snapshot vs live: if only live data is stored, history cannot be recreated.
 **If I find...:** Late data means it is normal; show the movement. A logic change means document and tell users. An unexpected change means treat as a bug.
-**What I would tell the stakeholder:** "Last week's figure was 4,100 and today it is 4,180. 80 of that is late-entered orders for that period; the rest is a definition fix on 8 November."
+**What I would tell the stakeholder:** "Last week's figure was 4,100 and today it is 4,180 (illustrative numbers). 50 of the 80 extra are late-entered orders for that period; the other 30 come from a definition fix on 8 November."
 **Prevent it next time:** Keep period-end snapshots for key numbers; show "as of" dates and a change log.
 **Likely follow-ups:** 1) *Should closed periods change?* Ideally freeze them and show restatements separately. 2) *How do you prove it?* Compare snapshots.
 **Common mistakes / traps:** No history to compare against; denying the change.
@@ -299,13 +299,13 @@ Inline data: 54 leavers; closing headcount 300; opening headcount 450. Dashboard
 ### Q17 ⭐⭐⭐ 🟡 A region table shows distinct customers of 120, 95 and 110, but the grand total says 290, not 325. Is this a bug, and how would you explain it to a business user?
 **Asked at:** commonly asked (no company-specific report found); non-additive distinct counts are a standard BI trap (unverified as a company question).
 **What the interviewer is checking:** Understanding that distinct counts do not add.
-**Say this in the interview:** "Not a bug. The three rows add to 325, but the total counts each customer once, and 35 customers bought in more than one region."
+**Say this in the interview:** "Not a bug. The three rows add to 325, but the total counts each customer once, so 35 repeat appearances are removed: up to 35 customers bought in more than one region."
 **What the data shows:** The grand total is lower than the sum of the rows because some customers appear in several regions.
 **Working:**
 1. Sum of rows: 120 + 95 + 110 = 325.
 2. Grand total of distinct customers: 290.
 3. Difference: 325 minus 290 = 35.
-**Result:** At least 35 repeat appearances, so about 35 customers (or more, if some appear in three regions) are counted in more than one region.
+**Result:** 35 repeat appearances are counted in the rows but not in the total. That means at most 35 customers shop in more than one region (fewer if some appear in three regions, since each such customer adds two repeats).
 **Caveats / what else I would check:** Verify by listing customers in two regions (a count of regions per customer greater than 1). Confirm no duplicate customer IDs for one person (that would push the other direction).
 **Next step / recommendation:** Add a note under the table: "Totals are unique customers; customers who shop in several regions appear in each region." Plain-language example for the user: "Priya bought in Pune and Mumbai: she is one customer in the total, but one in each region row."
 **Likely follow-ups:** 1) *Where else?* Distinct users, active employees by department when people transfer. 2) *Hide the total?* Better to explain.
@@ -582,7 +582,7 @@ Question: what are calendar YTD and financial-year YTD at the end of October?
 - **On go-live:** show the new definition in a tooltip or info page, and mark the date on trend charts so people see why a line moves.
 - **Parallel run:** for a few weeks show old and new values together so the gap is understood.
 - **After:** restate history under the new definition (or clearly mark it as not comparable), and update the definition document.
-**Worked mini-example:** Attrition changes from "all leavers" to "voluntary leavers only." The rate drops from 12% to 9%. Without notice, it looks as if retention improved; with a note it is clear the definition changed.
+**Worked mini-example (illustrative numbers):** Attrition changes from "all leavers" to "voluntary leavers only." The rate drops from 12% to 9%. Without notice, it looks as if retention improved; with a note it is clear the definition changed.
 **Practice step:** Write a three-line change notice: what changed, why, effect on the number.
 **Likely follow-ups:** 1) *Do you rewrite history?* Preferably yes, so trends compare like with like; if not, mark the break. 2) *Who approves?* The metric owner.
 **Common mistakes / traps:** Changing quietly; changing the logic without version notes; breaking trends.
@@ -653,10 +653,10 @@ Question: what is North's share with and without the Unknown bucket?
 2. North's share with Unknown = 40 / 100 = 40.0%.
 3. Total without Unknown = 88 lakh; North's share = 40 / 88 = 45.5%.
 4. Unknown share = 12 / 100 = 12%.
-**Result:** North is 40.0% of all revenue, or 45.5% of revenue with a known region. The truth lies between, depending on where Unknown belongs.
+**Result:** North is 40.0% of all revenue, or 45.5% of revenue with a known region (this assumes the Unknown revenue is spread in proportion to the known regions). Without knowing where Unknown belongs, North's true share could be anywhere from 40.0% (none of it is North) to 52.0% (all 12 lakh is North).
 **Caveats / what else I would check:** Why region is missing (new store or pin code not in the mapping, blank state, test accounts, a join that fails), whether it is one source or one customer type, and whether it is growing.
 **Next step / recommendation:** Trace the Unknown rows; fix the mapping table; backfill history; add a data-quality check that alerts when Unknown exceeds, say, 2%. Until then keep the bar visible with a note.
-**What I would tell the stakeholder:** "12% of revenue (INR 12 lakh) has no region tag. Rankings of regions are not yet reliable. I will fix the mapping by [date]; meanwhile North is between 40% and 45.5%."
+**What I would tell the stakeholder:** "12% of revenue (INR 12 lakh) has no region tag. Rankings of regions are not yet reliable. I will fix the mapping by [date]; meanwhile North is between 40% and 52%, and about 45% if the Unknown splits like the rest."
 **Likely follow-ups:** 1) *Would you spread Unknown proportionally?* Not without saying so. 2) *Delete the bucket?* Never; the revenue is real.
 **Common mistakes / traps:** Hiding the bucket so the chart looks clean; using shares without stating the denominator.
 
@@ -808,7 +808,7 @@ Question: what is the load time now, and what else must you do?
 - **Status banner:** appears automatically when a source failed or a completeness check fails ("Source X missing; totals understate").
 - **Provisional labels:** a tag such as "Provisional" for numbers not yet closed by Finance, and "Final" after.
 - **Definitions page:** how the number is built and when it is finalised.
-**Worked mini-example:** Monthly payroll cost: days 1 to 20 are provisional until payroll closes on the 25th; the bar for the current month is hatched and the tooltip says "provisional, final on 26 Nov".
+**Worked mini-example (illustrative):** Monthly payroll cost: days 1 to 20 are provisional until payroll closes on the 25th; the bar for the current month is hatched and the tooltip says "provisional, final on 26 Nov".
 **Practice step:** Take any dashboard and list three numbers that can change after viewing; add a label for each.
 **Likely follow-ups:** 1) *How does a banner appear automatically?* A check on row counts or latest date drives a flag field that the page reads. 2) *Is there a risk of too many labels?* Yes, so use a few consistent ones.
 **Common mistakes / traps:** Showing a partial month as a drop; putting the timestamp in small print where nobody sees it.
@@ -1064,7 +1064,7 @@ Question: confirm the 20-person gap and decide how to show them.
 2. Dashboard total: 1,150.
 3. Gap: 1,170 minus 1,150 = 20, equal to the 20 employees with a blank department (1.7% of 1,170).
 4. Check: 1,170 minus 20 blank = 1,150, so nothing else is unexplained.
-**Result:** The 20-person gap is fully explained, by the blank department field. Caveat: the question lists four department totals that already sum to 1,170, so the blank 20 must be counted inside those departments in the export or in a separate row; I would check which, so as not to count them twice.
+**Result:** The 20-person gap is fully explained, by the blank department field. Premise caution: the four department figures already add to 1,170, so the 20 blank-department people cannot also sit in a separate blank row of that export (the export would then total 1,190 and 40 would be unexplained). The consistent reading is that the export has a department for these 20 but the dashboard's department lookup fails for them, so they show blank. I would compare the dashboard's per-department counts with the export's to see which departments lose people, and confirm this reading before telling anyone.
 **Caveats / what else I would check:** Are the 20 new joiners awaiting assignment, or data entry errors? Are they in other fields (cost centre)? Do the blank rows differ by location?
 **Next step / recommendation:** Add an "Unassigned" bar with a count of 20, send the list to HR operations to fill the department, and add a check that unassigned stays near zero.
 **Likely follow-ups:** 1) *Why not just exclude them?* Totals would not match the HRIS and people would lose trust. 2) *What if the blank count grows?* Raise it as a data quality issue.
@@ -1081,8 +1081,8 @@ Question: how big is the difference in rupees and per cent?
 1. Finance figure: 10,000 x 83.00 = Rs 8,30,000.
 2. Dashboard figure: Rs 8,36,500.
 3. Difference: 8,36,500 minus 8,30,000 = Rs 6,500.
-4. Percent of Finance's figure: 6,500 / 8,30,000 = 0.78% (0.77% of the dashboard figure).
-**Result:** Rs 6,500, about 0.78%; the dashboard is higher because the daily rates, weighted by when the sales happened, averaged 83.65 against 83.00.
+4. Percent of Finance's figure: 6,500 / 8,30,000 = 0.78% (also 0.78% of the dashboard figure, 0.777% unrounded).
+**Result:** Rs 6,500, about 0.78% of Finance's figure; the dashboard is higher because the daily rates, weighted by when the sales happened, averaged 83.65 against 83.00.
 **Caveats / what else I would check:** Which rate source and day? Are sales concentrated late in the month when the dollar was higher? Which rule does Finance use for closing, and which is stated in policy?
 **Next step / recommendation:** Use Finance's rate for any number that must tie to the books. Keep daily-rate analysis if the business wants it, but label it, and show a bridge between the two on the report.
 **Likely follow-ups:** 1) *Is the daily rate more accurate?* For transaction-level value, arguably, but official numbers follow finance policy. 2) *Constant currency?* Use a fixed rate to remove currency effect when comparing periods.
@@ -1162,7 +1162,7 @@ DIVIDE (
     CALCULATE ( [Total Sales], ALLSELECTED ( Products[Category] ) )  -- sales of all selected categories
 )
 ```
-It returns each category's share within the selection; use ALL in place of ALLSELECTED for a share of the full company.
+It returns each category's share within the selection; use ALL in place of ALLSELECTED for a share of the full company. (DAX behaviour from memory, unverified: test it with a slicer selected in your own tool.)
 **Likely follow-ups:** 1) *ALL versus ALLSELECTED?* ALL ignores every filter on that field; ALLSELECTED keeps the filters coming from slicers and outer filters. 2) *Why is 100% there for a single category?* One selected category is correct as 100% of the selection.
 **Common mistakes / traps:** Using ALL when users expect a share of the selection; testing only without a slicer; forgetting DIVIDE for a zero total.
 
