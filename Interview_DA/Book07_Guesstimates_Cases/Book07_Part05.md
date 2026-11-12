@@ -204,6 +204,7 @@
 | Sessions that reach a product page | 50% | 50% |
 | Product-page views that add to cart | 20% | 20% |
 | Carts that become orders | 40% | 30% |
+
 **Asked at:** commonly asked; funnel breakdown is a standard step in the question-bank answers (PracHub, unverified for one company).
 **What the interviewer is checking:** Locate the stage by comparing stage conversion rates.
 **Say this in the interview:** "Only the last step changed: carts to orders went from 40% to 30%, a 25% relative fall, which is the entire drop. Traffic, browsing and add-to-cart are unchanged."
@@ -226,6 +227,7 @@
 | South | 30,000 | 29,000 |
 | East | 20,000 | 14,000 |
 | West | 10,000 | 9,000 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Contribution to the drop versus rate of drop.
 **Say this in the interview:** "North and East explain about 86% of the 14,000 drop; East fell fastest at 30%."
@@ -403,6 +405,7 @@
 | Ad spend | ₹10,00,000 | ₹10,00,000 |
 | Cost per lead | ₹200 | ₹250 |
 | Lead-to-sale conversion | 4% | 4% |
+
 **Asked at:** commonly asked (no company-specific report found); "sales dropped 20%" wording appears in question banks (unverified).
 **What the interviewer is checking:** Whether you break sales into stages (spend, leads, conversion) and find the one stage that moved.
 **Say this in the interview:** Sales = leads x conversion, and leads = spend / cost per lead. Spend and conversion are flat, so the fall is entirely the cost per lead rising 25%, which cut leads by 20% (5,000 to 4,000) and sales from 200 to 160.
@@ -425,6 +428,7 @@
 |---|---|---|---|
 | Bank X | 3,00,000 | 12,000 | 48,000 |
 | All other banks | 7,00,000 | 28,000 | 32,000 |
+
 **Asked at:** commonly asked (no company-specific report found); PhonePe is reported (unverified) to use case rounds, but no UPI-failure report was seen.
 **What the interviewer is checking:** Whether you attribute the change to a segment with arithmetic and then move to causes.
 **Say this in the interview:** Total failures went from 40,000 to 80,000 on 10,00,000 attempts. Bank X added 36,000 of the 40,000 extra failures, 90%, so I would treat this as a Bank X incident first.
@@ -449,6 +453,7 @@
 |---|---|---|
 | October | 100 | 130 |
 | November | 120 | 100 |
+
 **Asked at:** commonly asked (no company-specific report found); calendar-shift variants are a gap-fill, not seen in sources.
 **What the interviewer is checking:** Whether you notice a festival moving between months and compare a combined window.
 **Say this in the interview:** November alone is down 16.7% but the festival moved into October. October plus November is 230 against 220, up 4.5%, so there is no real problem on this evidence.
@@ -721,6 +726,7 @@
 |---|---|---|---|---|
 | Android | 80% | 4% | 90% | 4% |
 | iOS | 20% | 8% | 10% | 8% |
+
 **Asked at:** mix-shift and Simpson's paradox style questions appear in company blogs (Sequoia, Spotify); no interview report found.
 **What the interviewer is checking:** Whether you see a mix shift as the cause, not a performance problem.
 **Say this in the interview:** Overall conversion went from 4.8% to 4.4%. No platform got worse; traffic moved toward the lower-converting Android, so it is a mix effect.
@@ -742,6 +748,7 @@
 | Opening MRR | New | Expansion | Contraction | Churn |
 |---|---|---|---|---|
 | 100 | +8 | +4 | -3 | -14 |
+
 **Asked at:** commonly asked (no company-specific report found); the MRR bridge is a gap-fill item.
 **What the interviewer is checking:** Reading an MRR (monthly recurring revenue) bridge and spotting the dominant leak.
 **Say this in the interview:** Closing MRR is 95, down 5%. New and expansion add 12; contraction and churn remove 17. Churn at 14 is the main culprit.
@@ -765,6 +772,7 @@
 | Retained users | 40,000 | 38,000 |
 | New users | 8,000 | 5,000 |
 | Resurrected users | 2,000 | 2,000 |
+
 **Asked at:** commonly asked (no company-specific report found); a DAU/WAU decline framework search failed, so no source is cited.
 **What the interviewer is checking:** Splitting active users into retained, new and resurrected, and sizing each.
 **Say this in the interview:** The fall is 5,000: new users account for 3,000 (60%) and retained users for 2,000 (40%); resurrected users did not change. I check acquisition first, then retention.
@@ -843,6 +851,7 @@
 | Applications | 50,000 | 48,000 |
 | Approval rate | 40% | 32% |
 | Approved loans actually disbursed | 90% | 90% |
+
 **Asked at:** commonly asked (no company-specific report found); funnel-style numeric cases are common in product rounds (unverified).
 **What the interviewer is checking:** Whether you multiply the funnel stages and find which stage caused the fall.
 **Say this in the interview:** "Disbursals are applications times approval rate times disbursal rate. They fell from 18,000 to 13,824, down 23.2%, and the approval rate is the main driver."
@@ -1072,6 +1081,7 @@
 |---|---|---|---|---|
 | A | 6,000 | 5.0% | 8,000 | 5.5% |
 | B | 4,000 | 10.0% | 2,000 | 11.0% |
+
 **Asked at:** commonly asked (no company-specific report found); mix-shift and Simpson's paradox topics appear on analytics blogs (unverified).
 **What the interviewer is checking:** Whether you can split a change into "rates changed" and "who we have changed".
 **Say this in the interview:** "Overall conversion fell from 7.0% to 6.6%. Each segment improved, but traffic shifted toward the low-converting segment A. The rate effect is about +0.7 points and the mix effect about -1.1 points."
@@ -1093,6 +1103,7 @@
 |---|---|---|
 | T (test) | 10,000 | 8,500 |
 | C (control) | 10,000 | 9,500 |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you use a control region to remove the background trend and know the key assumption.
 **Say this in the interview:** "T fell 15%, C fell 5% for other reasons, so the price test's effect is about -10 percentage points, roughly 1,000 orders."

@@ -191,7 +191,7 @@ Overall: 6,000 / 100,000 = 6.0%.
 
 **Practice step:** Check how much of the drop each cut explains: segment drop divided by total drop.
 
-**Likely follow-ups:** 1) *When do you stop?* When one segment explains most of the drop and has a plausible cause. 2) *What about mix shift?* Compare rates and also share of traffic.
+**Likely follow-ups:** 1) *When do you stop?* When one segment explains most of the drop and has a plausible cause. 2) *What about mix shift (the traffic shifting toward a different kind of user)?* Compare rates and also share of traffic.
 **Common mistakes / traps:** Cutting by many dimensions at once; never quantifying explained share.
 
 ### Q10 ⭐⭐⭐ 🟡 The payment-success step of a checkout funnel fell from 75% to 60% week on week, with all earlier steps unchanged. 10,000 users reach the payment step each week. How many orders are lost per week, and how do you investigate?
@@ -204,7 +204,7 @@ Overall: 6,000 / 100,000 = 6.0%.
 **Structure:**
 - Technical: gateway or bank outage, timeouts, app bug, OTP delays.
 - Product: new payment screen, coupon or address change, new method ordering.
-- Users: different mix (more new users, more COD-averse, more high-value baskets).
+- Users: different mix (more new users, more users who avoid cash on delivery, more high-value baskets).
 - External: bank maintenance, festival load.
 
 **What I would check, in order:**
@@ -296,7 +296,7 @@ Overall: 6,000 / 100,000 = 6.0%.
 **What I would check, in order:**
 1. Pre-period orders of adopters vs non-adopters (if adopters already ordered 2.7, the feature adds about 0.3).
 2. A holdout: randomly hide the feature from a small share of users.
-3. Difference-in-differences: (adopters after - before) minus (non-adopters after - before).
+3. Difference-in-differences: (adopters after - before) minus (non-adopters after - before); it removes the gap that existed before the feature.
 
 **Numeric work (illustrative, assumed):** If adopters had 2.6 before and 3.0 after (+0.4) while non-adopters went 2.0 to 2.0 (0.0), the effect is about +0.4 orders per user, not +1.0.
 
@@ -349,7 +349,7 @@ Overall: 6,000 / 100,000 = 6.0%.
 
 **Numeric work:**
 1. Gap = 2.1 - 1.8 = 0.3 orders per user per day (14.3% lower).
-2. Blended Android: 0.5 x 1.8 + 0.5 x 2.1 = 1.95, versus 2.1 if no one had updated: drop of 0.15 per Android user per day (7.1%).
+2. Blended Android: 0.5 x 1.8 + 0.5 x 2.1 = 1.95, versus 2.1 if no one had updated (assuming the old-version group is typical of all Android users): drop of 0.15 per Android user per day (7.1%).
 3. Per 1,000,000 Android users (assumed for scaling): 150,000 fewer orders per day.
 4. If all Android users moved to 5.2: 0.3 per user, or 300,000 fewer orders per 1,000,000 users per day.
 
@@ -381,17 +381,17 @@ Assume the full-rollout results equal the test rates.
 
 **Result:** +0.3 points absolute, +7.5% relative, +6,000 orders and +292 refunds per week.
 
-**Check:** Refunds on the 6,000 extra orders alone would be 120, so most of the 292 comes from the refund rate rising from 2.0% to 2.2% on all 86,000 orders. Significance: a two-proportion z-test gives z about 2.4 (above 1.96), so the lift is probably real at the 95% level, though not by a huge margin.
+**Check:** Refunds on the 6,000 extra orders alone would be 120, so most of the 292 comes from the refund rate rising from 2.0% to 2.2% on all 86,000 orders. Significance: a two-proportion z-test (it asks whether a gap between two rates is bigger than chance) gives z about 2.4, above the 1.96 cut-off for 95% confidence, so the lift is probably real, though not by a huge margin.
 
 **Caveats:** Test duration and novelty effect; the refund rate difference (0.2 points) needs its own significance check; revenue per order and refund cost decide the net value; full rollout may not match test rates.
 
-**Likely follow-ups:** 1) *Do you launch?* Likely yes if the margin on 5,708 net orders beats the refund cost; confirm refund difference significance. 2) *Sample size needed?* About 68,000 per arm to detect 0.3 points at 80% power (approximate), so this test is slightly underpowered.
+**Likely follow-ups:** 1) *Do you launch?* Likely yes if the margin on 5,708 net orders beats the refund cost; confirm refund difference significance. 2) *Sample size needed?* About 69,000 per arm to detect 0.3 points with 95% confidence and 80% power (power = the chance of spotting a real lift of that size; approximate), so this test, at 50,000 per arm, is somewhat underpowered.
 **Common mistakes / traps:** Calling 0.3 points "0.3%"; using the refund rate on visitors instead of on orders.
 
 ### Q17 ⭐⭐⭐ 🟡 A food app launches a "10-minute" tab. Before launch the app had 100,000 orders per day; after launch it has 12,000 on the new tab and 92,000 on the standard tab. Compute the net incremental orders and the cannibalisation share, and say how you would validate the numbers.
 **Asked at:** commonly asked (no company-specific report found); cannibalisation was not found directly in sources and is a gap-fill from general product-analytics practice.
 **What the interviewer is checking:** Separating total new orders from orders that just moved.
-**Say this in the interview:** "Total orders went from 100,000 to 104,000, so net incremental is 4,000. Of the 12,000 on the new tab, 8,000 moved from the standard tab, so cannibalisation is two-thirds."
+**Say this in the interview:** "Total orders went from 100,000 to 104,000, so net incremental is 4,000. Of the 12,000 on the new tab, 8,000 moved from the standard tab (if the whole standard-tab loss is moved orders), so cannibalisation, meaning orders the feature took from your own other orders, is two-thirds."
 
 **Clarify first:** Is the 100,000 baseline stable (no growth trend)? Any promo or season change in the same period? Is the comparison over the same weekday?
 
@@ -400,7 +400,7 @@ Assume the full-rollout results equal the test rates.
 **What I would check, in order:**
 1. Baseline trend: what would orders have been without the tab (use prior weeks, a control city).
 2. Whether the 8,000 loss is cannibalisation or normal variation.
-3. Margins: new-tab orders may carry higher delivery cost.
+3. Margins: new-tab orders may carry higher delivery cost (contribution margin is the money left from an order after its direct costs such as food, delivery and discounts).
 
 **Numeric work:**
 1. Net incremental = 104,000 - 100,000 = 4,000 orders per day (+4%).
@@ -480,7 +480,7 @@ Assume the full-rollout results equal the test rates.
 - Primary metric: incremental orders (and gross order value) per active user per month versus holdout.
 - Guardrails: cancellation rate, late-delivery rate, support tickets, rider cost per order.
 - Diagnostics: share of carts that are group carts, number of participants, invite-to-join rate, time to finish a shared cart, drop-off at invite step.
-- Experiment design: randomise by city or by user cluster (a user and their frequent co-orderers) to avoid contamination; test 3 to 4 weeks to cover weekday and weekend cycles; check sample size beforehand; pre-register the primary metric.
+- Experiment design: randomise by city or by user cluster (a user and their frequent co-orderers) to avoid contamination (treated users influencing control users); test 3 to 4 weeks to cover weekday and weekend cycles; check sample size beforehand; pre-register the primary metric (write down before the test which metric decides).
 - Risks: cannibalisation (a group of three orders once instead of three separate orders: orders fall but value per order rises), novelty effect, bigger orders slowing kitchens, payment-split disputes.
 
 **What I would check, in order:** Orders and value per active user; share of group carts that replace separate orders; delivery time for large orders; abandoned shared carts.
@@ -524,7 +524,7 @@ Assume the full-rollout results equal the test rates.
 
 **Explain simply:**
 - Activation metric: share of new users who complete a key value action within a time window (for example, make a first investment within 7 days of signup).
-- Aha moment: the specific action or experience after which users are much more likely to stay (for example, completing KYC and making a first investment).
+- Aha moment: the specific action or experience after which users are much more likely to stay (for example, completing KYC, the know-your-customer identity check, and making a first investment).
 - Finding it: list early actions (KYC done, first deposit, first investment, watchlist created), compute day-30 retention for users with and without each action, and pick the action with a big retention gap that is realistic to push.
 
 **Worked mini-example (illustrative):** Day-30 retention is 45% for users who invest within 3 days and 10% for those who do not. First investment in 3 days is a candidate aha; test by nudging users to it.
@@ -620,7 +620,7 @@ Assume the full-rollout results equal the test rates.
 **Common mistakes / traps:** Trusting dashboards without reconciling to the orders table; no session or user id; mixing step order across app versions.
 
 ### Q28 ⭐⭐ 🟢 What are the HEART framework dimensions, and how would you apply them to a new video-lesson feature in an edtech app?
-**Asked at:** commonly asked (no company-specific report found); metric-framework questions appear on prep sites such as TryExponent and Dataford (unverified).
+**Asked at:** commonly asked (no company-specific report found); metric-framework questions appear on prep sites such as TryExponent (unverified); HEART itself was not found in the sources.
 **What the interviewer is checking:** That you can name the framework and turn each letter into a metric you could actually compute.
 **Say this in the interview:** "HEART is Happiness, Engagement, Adoption, Retention, Task success. For video lessons I would pick one metric per letter, and choose course completion as the headline."
 
@@ -748,9 +748,9 @@ Assume the full-rollout results equal the test rates.
 **Worked answer:** 1) Signup: 70,000 / 100,000 = 70%. 2) KYC started: 35,000 / 70,000 = 50%. 3) KYC completed: 21,000 / 35,000 = 60%. 4) First transaction: 10,500 / 21,000 = 50%. 5) Overall: 10,500 / 100,000 = 10.5%.
 **Result:** 70%, 50%, 60%, 50%. Users lost: 30,000, 35,000, 14,000, 10,500.
 **Check:** 0.7 x 0.5 x 0.6 x 0.5 = 0.105.
-**Biggest friction point:** Two steps tie on rate (50%); I pick signup to KYC start because it loses the most users. First transaction is the next target because those users have already finished KYC.
+**Biggest friction point:** (KYC means the know-your-customer identity check.) Two steps tie on rate (50%); I pick signup to KYC start because it loses the most users. First transaction is the next target because those users have already finished KYC.
 **Hypothesis 1:** Users do not see why KYC is needed at that moment (asked before any value is shown). Data: drop at the KYC prompt screen, time on that screen, split by whether the user had browsed the app first; test by delaying KYC until the first transaction attempt.
-**Hypothesis 2:** The document step is scary or fails (Aadhaar or PAN consent, OTP failures, camera issues). Data: errors and OTP failure rate by device and app version, and drop by document type; test with a simpler path or retry help.
+**Hypothesis 2:** The document step is scary or fails (Aadhaar or PAN consent, OTP, meaning one-time password, failures, camera issues). Data: errors and OTP failure rate by device and app version, and drop by document type; test with a simpler path or retry help.
 **Caveats:** Some installs are bots or curious browsers; use signups as the base when judging KYC.
 **Likely follow-ups:** 1) *Next?* Segment by acquisition channel. 2) *First-transaction drop?* Prompt a small first payment or cashback (test with an A/B).
 **Common mistakes / traps:** Looking only at percentage and ignoring volume; proposing a fix without data to test it.
@@ -785,13 +785,13 @@ Assume the full-rollout results equal the test rates.
 | 1 | 8% | 13% |
 **Asked at:** commonly asked (no company-specific report found); rating and review metrics are a typical product-case topic (unverified).
 **What the interviewer is checking:** Weighted average arithmetic and the ability to look at the distribution.
-**Say this in the interview:** "The average falls from 4.20 to 4.00. The drop comes from 5-star ratings turning into 1-star, so the share of unhappy customers (1 or 2 stars) rose from 12% to 17%."
+**Say this in the interview:** "The average falls from 4.20 to 4.00. The shares suggest 5-star ratings turning into 1-star, so the share of unhappy customers (1 or 2 stars) rose from 12% to 17%."
 
 **Definition in plain words:** Average rating = sum of (stars x share of ratings). Both columns add to 100%.
 **Worked answer:** Before: 5 x 0.60 + 4 x 0.20 + 3 x 0.08 + 2 x 0.04 + 1 x 0.08 = 3.00 + 0.80 + 0.24 + 0.08 + 0.08 = 4.20. After: 2.75 + 0.80 + 0.24 + 0.08 + 0.13 = 4.00.
 **Result:** 4.20 before, 4.00 after (down 0.20 stars).
 **Check:** Shares sum to 100% in both columns; the entire shift is 5 points from 5-star to 1-star.
-**Why the average misleads:** It hides the shape: a 4.0 can be mostly 4s, or a mix of 5s and 1s as here (a polarised customer base). The 1-star share, up 5 points (a 62% relative rise from 8% to 13%), is the real alarm. Also look at: the count of ratings and response rate (who rates), rating by order type, restaurant, city and delivery partner, tags or comments for 1-star orders (late, wrong item, cold), refunds, and repeat orders from those customers.
+**Why the average misleads:** It hides the shape: a 4.0 can be mostly 4s, or a mix of 5s and 1s as here (a polarised customer base). The 1-star share, up 5 points (a 62.5% relative rise from 8% to 13%), is the real alarm. Also look at: the count of ratings and response rate (who rates), rating by order type, restaurant, city and delivery partner, tags or comments for 1-star orders (late, wrong item, cold), refunds, and repeat orders from those customers.
 **Caveats:** Ratings are voluntary, so unhappy people may be over-represented; a change in the prompt wording or when it appears can shift ratings on its own.
 **Likely follow-ups:** 1) *Better single metric?* Share of 4-5 stars or share of 1-2 stars (top box and bottom box). 2) *Compare before and after?* Same-length windows, same mix of cities.
 **Common mistakes / traps:** Quoting the average only; ignoring volume; treating 4.0 as "fine".
@@ -812,7 +812,7 @@ Assume the full-rollout results equal the test rates.
 ### Q39 ⭐⭐ 🟡 Daily active users rose from 300,000 to 330,000 after a streak feature, while monthly active users rose from 1.5 million to 1.55 million. Compute DAU/MAU before and after and interpret the change.
 **Asked at:** commonly asked (no company-specific report found); DAU/MAU stickiness questions appear in prep banks (unverified).
 **What the interviewer is checking:** Ratio arithmetic and the stickiness reading.
-**Say this in the interview:** "DAU/MAU goes from 20.0% to 21.3%. DAU is up 10% but MAU only 3.3%, so existing users are coming more often rather than many new users joining; the streak is making the app stickier."
+**Say this in the interview:** "DAU/MAU goes from 20.0% to 21.3%. DAU is up 10% but MAU only 3.3%, so existing users look to be coming more often rather than many new users joining; the streak may be making the app stickier (DAU = daily active users, MAU = monthly active users)."
 
 **Definition in plain words:** DAU/MAU is the average share of monthly users who use the app on a given day (stickiness). Formula: daily active users / monthly active users.
 **Worked answer:** 1) Before: 300,000 / 1,500,000 = 20.0%. 2) After: 330,000 / 1,550,000 = 21.3%. 3) DAU change +10.0%; MAU change +3.3%. 4) A 20% ratio means a typical monthly user opens the app about 6 days a month; 21.3% is about 6.4 days (ratio x 30).
@@ -827,13 +827,13 @@ Assume the full-rollout results equal the test rates.
 **What the interviewer is checking:** Experiment design: randomisation, the right metric, sample size and guardrails.
 **Say this in the interview:** "I would randomly split new users 50/50 into quiz and no-quiz, measure day-7 retention as the primary metric, watch quiz drop-off and day-1 as guardrails, and run until each group has enough users to detect a small lift."
 
-**Clarify first:** How is "retained" defined (opened the app on day 7, or any time in days 1-7)? Is the quiz skippable in the control? What is baseline D7?
+**Clarify first:** How is "retained" defined (opened the app on day 7, or any time in days 1-7; D7 means day 7 after signup)? Is the quiz skippable in the control? What is baseline D7?
 **Structure:**
 - Randomise at user level at first open, with a stable assignment, and check a balanced split (sample-ratio check).
 - Primary metric: D7 retention. Guardrails: signup completion, time to first order or key action, day-1 retention, uninstall rate.
-- Sample size: with an assumed baseline of 20% and a lift of 2 percentage points worth detecting, about 6,300 users per group (95% confidence, 80% power).
+- Sample size: with an assumed baseline of 20% and a lift of 2 percentage points worth detecting, about 6,500 users per group (95% confidence, 80% power; the standard two-proportion formula).
 - Duration: all users must reach day 7, so run at least one full week plus 7 days of follow-up to cover weekday patterns.
-**What I would check, in order:** SRM, quiz completion rate, then D1 and D7 by group, then by channel and device.
+**What I would check, in order:** SRM (sample ratio mismatch: are the two groups the size we planned?), quiz completion rate, then D1 and D7 by group, then by channel and device.
 **If the data shows...:** D7 up and signup completion flat: ship. D7 up but forced quiz hurts signup: try an optional or shorter quiz. No difference: remove the friction.
 **Recommendation:** Run the test, decide on D7 with its confidence interval, and keep a small holdout to read D30.
 **Likely follow-ups:** 1) *Why not pre-post?* Seasonality and campaigns confound it. 2) *Why forced?* Mandatory steps cause drop-off before retention can even start; measure it.
@@ -849,7 +849,7 @@ Assume the full-rollout results equal the test rates.
 **What the interviewer is checking:** Whether you read all three points together and challenge a tidy story.
 **Say this in the interview:** "D1 is up 2 points and D7 up 6 points (a 30% relative lift), but D30 is flat at 12%. So the change brought people back for a week but did not build a lasting habit, and the D7 jump looks unusually large next to D1."
 
-**Clarify first:** Is it an A/B test or a before-and-after comparison? How many users in each group? How is D7 defined?
+**Clarify first:** Is it an A/B test or a before-and-after comparison? How many users in each group? How is D7 defined (D1, D7 and D30 mean the share of new users still active 1, 7 and 30 days after signup)?
 **Structure:**
 - Absolute changes: D1 +2.0 points; D7 +6.0 points (26/20 = 1.30); D30 0.0 points.
 - Possible explanation: the new onboarding triggers reminders or rewards that bring users back for about a week, and the effect fades by D30.
@@ -879,7 +879,7 @@ Assume the full-rollout results equal the test rates.
 **What the interviewer is checking:** Whether you anchor on the goal and a business outcome, not on a single engagement metric.
 **Say this in the interview:** "I would decide by what the product is for. If success is orders or learning, a shorter session can mean users get things done faster. I would check total time and outcome per user, and conversion per session."
 
-**Clarify first:** What is the product goal (orders, lessons, time on content)? Was this an A/B test? How much did each move?
+**Clarify first:** What is the product goal (orders, lessons, time on content; DAU means daily active users)? Was this an A/B test? How much did each move?
 **Structure:**
 - Total engagement = users x sessions x minutes. Illustrative: DAU 100,000 to 110,000 (+10%) and session 10 to 8.5 minutes (-15%): total minutes 1,000,000 to 935,000 (-6.5%).
 - Is the shorter session good (faster task completion) or bad (people leave sooner, lower content quality)?
@@ -892,7 +892,7 @@ Assume the full-rollout results equal the test rates.
 ### Q44 ⭐⭐ 🟡 A new feature is used by only 2% of users but those users generate 15% of revenue. How do you decide whether to keep, fix or remove it?
 **Asked at:** commonly asked (no company-specific report found); a feature-keep-or-kill question, a common product-analytics theme (unverified).
 **What the interviewer is checking:** That you test causation (are they valuable because of the feature, or valuable anyway) and consider cost and potential.
-**Say this in the interview:** "Those users bring about 7.5 times their share, but heavy buyers often adopt features first, so I would check whether the feature causes the revenue. Then I would weigh incremental value, cost and whether low adoption is a discovery problem."
+**Say this in the interview:** "Those users earn about 7.5 times the average user's revenue, but heavy buyers often adopt features first, so I would check whether the feature causes the revenue. Then I would weigh incremental value, cost and whether low adoption is a discovery problem."
 
 **Clarify first:** What is the feature, what does it cost to run, and how were the users exposed to it?
 **Structure:**
@@ -923,11 +923,11 @@ Assume the full-rollout results equal the test rates.
 **Say this in the interview:** "Early stages guard safety (crashes, errors, latency); later stages read business metrics once there is enough traffic. At each gate I would write the go, hold and rollback thresholds before launch. The numbers below are illustrative."
 
 **Explain simply:**
-- 1% (technical safety, about 1 to 2 days): crash-free sessions no worse than baseline by more than 0.2 points, API error rate and p95 latency within 10% of baseline, no new serious support tickets, plus a sample-ratio check. Too few users to judge orders, so do not.
+- 1% (technical safety, about 1 to 2 days): crash-free sessions no worse than baseline by more than 0.2 points, API error rate and p95 latency (the response time that 95% of requests beat) within 10% of baseline, no new serious support tickets, plus a sample-ratio check. Too few users to judge orders, so do not.
 - 10% (early product signal, about 3 to 7 days): the same guardrails, plus funnel conversion not down by more than a pre-agreed amount (for example 1% relative) and the primary metric directionally positive; check payments and refunds.
 - 50% (decision-grade read, about 1 to 2 weeks): enough power for the primary metric with a confidence interval, segment cuts (new versus existing users, device, city), load and cost checks, and support ticket rate.
 - 100%: ship, with a small long-term holdout (for example 1 to 5%) to measure novelty decay and long-term effects.
-**Rollback triggers:** crash-free rate below a hard floor, payment success drops more than a set amount, or a severe bug; use automatic kill-switches.
+**Rollback triggers:** crash-free rate below a hard floor, payment success drops more than a set amount, or a severe bug; use automatic kill-switches (a switch that turns the feature off at once).
 **Mini-example:** If baseline crash-free is 99.5%, gate 1% at 99.3% or higher (assumed).
 **Likely follow-ups:** 1) *Why not jump to 50%?* A bug would hit half the users. 2) *Who decides?* The metric owner and the engineering lead, with thresholds agreed in advance.
 **Common mistakes / traps:** Reading business metrics at 1%; no pre-set thresholds; no rollback plan.
@@ -949,7 +949,7 @@ Assumptions to use: 1,000,000 eligible monthly users; 10% adopt; each adopter pl
 | Incremental share | 50% | holdout or matched comparison |
 **Calculation:** 1) Adopters = 1,000,000 x 0.10 = 100,000. 2) Scheduled orders = 100,000 x 2 = 200,000. 3) Incremental = 200,000 x 0.50 = 100,000.
 **Result:** About 100,000 incremental orders a month (range, for example, 50,000 to 150,000 if incrementality is 25% to 75%).
-**Sanity check:** 100,000 incremental orders is 0.1 per eligible user per month.
+**Sanity check:** Reality check against scale: 100,000 incremental orders is 0.1 per eligible user per month. If an eligible user places about 3 orders a month today (assumed, unverified), the base is about 3,000,000 orders and the feature adds roughly 3%, a believable size for one convenience feature; a result of 30% or more would make me recheck the chain.
 **Sensitivity:** The result is linear in each input; a 25% change in any single one changes the answer by 25%. Incrementality is the most uncertain, since adopters may simply be moving existing orders (cannibalisation), and adoption is next.
 **Post-launch check:** Hide the feature from a random holdout group (for example 5% of users) and compare orders per user; track adoption funnel, orders per adopter, cancellation and failed deliveries, and the order timing of adopters before versus after.
 **Likely follow-ups:** 1) *Biggest risk?* Cannibalisation of on-demand orders. 2) *Other effects?* Better delivery-slot utilisation, lower cost per order.
@@ -1148,7 +1148,7 @@ Assumptions to use: 1,000,000 eligible monthly users; 10% adopt; each adopter pl
 **Clarify first:** Is the 3% revenue incremental (from an A/B test)? Is the NPS change statistically real? Which tickets rose and why?
 **Structure:**
 - Gain: +3% revenue; convert to contribution.
-- Direct cost: tickets +10%. Example (assumed): if support cost is 2% of revenue, +10% tickets costs about 0.2% of revenue, small next to +3%.
+- Direct cost: tickets +10%. (NPS, Net Promoter Score, is a survey score of how likely customers are to recommend us.) Example (assumed): if support cost is 2% of revenue, +10% tickets costs about 0.2% of revenue, small next to +3%.
 - Indirect risk: NPS -2 points may predict higher churn and lower repeat orders; estimate from historic link between NPS and retention.
 - Nature of the pain: confusing flow (fixable) vs deceptive or pushy design (trust damage).
 **What I would check, in order:** significance and segments (are heavy users hurt?); ticket reasons; retention and repeat rate of the exposed group over 4 to 8 weeks; refund and complaint rates.
@@ -1182,7 +1182,7 @@ Assumptions to use: 1,000,000 eligible monthly users; 10% adopt; each adopter pl
 - Conversion = search or browse success x add-to-cart x checkout completion x payment success.
 - Supply side that hits conversion: item availability (out-of-stock rate), delivery time promised, delivery fee, serviceability.
 - Order value separate: items per order, price level.
-**Worked mini-example (made up):** Before: 5.0 sessions x 40% = 2.0 orders per user. After: 4.8 sessions x 37.5% = 1.8. In log terms: sessions -4.1%, conversion -6.5%, total -10.5%, so about 39% of the fall comes from fewer sessions and 61% from conversion. So I go down the conversion branch first.
+**Worked mini-example (made up):** Before: 5.0 sessions x 40% = 2.0 orders per user. (I split the fall with log changes, a way of cutting a combined percentage change into parts that add up exactly.) After: 4.8 sessions x 37.5% = 1.8. In log terms: sessions -4.1%, conversion -6.5%, total -10.5%, so about 39% of the fall comes from fewer sessions and 61% from conversion. So I go down the conversion branch first.
 **What I would check, in order:** definition and logging; by city and dark store (a local stock or rider shortage); by funnel step; availability and delivery time at the moment of session; new vs old users; price, fee and offers.
 **If the data shows...:** Conversion down mainly at search or product (items shown unavailable): availability problem. Down at payment: payment issue. Sessions down: engagement, notification or competition.
 **Recommendation:** Fix the branch carrying most of the fall, then monitor the tree weekly.
@@ -1226,7 +1226,7 @@ Assumptions to use: 1,000,000 eligible monthly users; 10% adopt; each adopter pl
 **Asked at:** commonly asked (no company-specific report found); a build break-even gap-fill.
 **What the interviewer is checking:** Whether you compute break-even and then test whether it is realistic.
 **Say this in the interview:** "Rs 30 lakh divided by Rs 12 is 250,000 incremental orders. Then I ask how long it would take to reach that at a believable incremental volume."
-**Worked answer:**
+**Worked answer:** (contribution per order is the money left after direct costs)
 1. Cost = Rs 30 lakh = Rs 3,000,000.
 2. Break-even orders = 3,000,000 / 12 = 250,000 incremental orders.
 3. Time to payback at an assumed volume (made up): 25,000 incremental orders a month gives 10 months; 40,000 a month gives 6.25 months; 10,000 a month gives 25 months.
@@ -1322,7 +1322,7 @@ Assumptions to use: 1,000,000 eligible monthly users; 10% adopt; each adopter pl
 **What the interviewer is checking:** Whether you move from gross orders to net contribution per user and include every cost line.
 **Say this in the interview:** "I would compare contribution per user after cancellations and refunds, treatment against control. On the made-up example below the net gain is only about 0.6%, even though orders rose 8%."
 **Clarify first:** Is it a randomised test? What is the contribution per delivered order, cost of a cancellation, cost of a refund?
-**Structure:** Net contribution = delivered clean orders x contribution per order - cancelled orders x cancellation cost - refunded orders x refund cost.
+**Structure:** Contribution is the money left from an order after its direct costs. Net contribution = delivered clean orders x contribution per order - cancelled orders x cancellation cost - refunded orders x refund cost.
 **Numeric work (all inputs assumed, made up; per week):**
 - Contribution Rs 45 per delivered, non-refunded order; cancellation costs Rs 15 (wasted prep and rider); refund costs Rs 120.
 - Control: 100,000 orders placed; 4% cancelled; 2% of delivered refunded. Delivered 96,000, refunded 1,920, clean 94,080. Contribution 94,080 x 45 = Rs 42.34 lakh, minus cancellations 4,000 x 15 = Rs 0.60 lakh, minus refunds 1,920 x 120 = Rs 2.30 lakh. Net Rs 39.43 lakh.

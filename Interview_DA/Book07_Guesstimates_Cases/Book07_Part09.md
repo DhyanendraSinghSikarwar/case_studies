@@ -25,10 +25,10 @@
 - Be truthful: the answer must be your real timeline. The numbers here are an illustrative template, not a claim.
 - A believable story has stages: (1) learn one guesstimate method and a driver tree, (2) practise with round numbers, (3) do cases on HR data I already understood, (4) record myself and get feedback.
 - Mini-example: 5 hours a week x 8 weeks = 40 hours. Say what those 40 hours contained, not just the total.
-- Add one concrete proof: "I solved 25 guesstimates and 10 cases, and my first attempts took 20 minutes versus 10 later."
+- Add one concrete proof: "I solved 25 guesstimates and 10 cases, and my first attempts took 20 minutes versus 10 later." These counts and times are template wording only: replace them with your own logged numbers, or leave the line out.
 - Practice step: write your real timeline in four lines (what, how long, what changed) and say it in under a minute.
 
-**Likely follow-ups:** 1) *Are you still improving?* Yes, I review one miss each week. 2) *What would you do differently?* Start timed practice earlier.
+**Likely follow-ups:** 1) *Are you still improving?* Yes, I review one miss each week (say this only if true). 2) *What would you do differently?* Start timed practice earlier.
 **Common mistakes / traps:** Claiming "I was always good at this" or inventing hours; naming resources without saying what you learned; saying it took two days.
 
 ### Q3 ⭐⭐⭐ 🟢 How would you rate yourself in guesstimates and case solving out of 10, and why?
@@ -39,10 +39,10 @@
 - Avoid 10 (not believable) and 3 (no confidence). A 6 to 7 for a switcher, backed by evidence, reads well.
 - Use a three-part answer: the number, two strengths with proof, one gap with the plan.
 - Mini-example: strengths: structure, HR domain sense (attrition, funnels). Gap: mental arithmetic under time. Plan: ten minutes daily of rounded-number drills.
-- Evidence beats adjectives: "I time myself; my average is 12 minutes, target 8."
-- Practice step: score yourself 1 to 5 on structure, assumptions, arithmetic, communication, then average the four into your rating.
+- Evidence beats adjectives: "I time myself; my average is 12 minutes, target 8." (Template figures: use your own measured times, or skip the line.)
+- Practice step: score yourself 1 to 5 on structure, assumptions, arithmetic and communication, add the four scores (maximum 20) and divide by 2 to get a rating out of 10 (a total of 12 gives 6 out of 10).
 
-**Likely follow-ups:** 1) *Why not higher?* I have fewer live interviews than others, so I rate cautiously. 2) *What takes you to 8?* Speed and more varied industries.
+**Likely follow-ups:** 1) *Why not higher?* I have fewer live interviews than others, so I rate cautiously (use your true reason). 2) *What takes you to 8?* Speed and more varied industries.
 **Common mistakes / traps:** A very high number with no proof; a very low number that signals no confidence; naming no gap, which sounds unaware.
 
 ### Q4 ⭐⭐⭐ 🟢 What is MECE, and how do you use it to break down a business problem?
@@ -108,10 +108,10 @@
 - Pick a real, believable difficulty: speed with numbers, MECE splitting, or knowing base numbers. Avoid a fake weakness such as "I work too hard".
 - Describe cause, fix, and result in that order.
 - Mini-example: 47 x 18 exactly is 846; rounding to 50 x 18 = 900, a 6% overstatement, fine for a guesstimate. Learning to round and accept a few percent error removed my stalling.
-- Show the proof: "My typical guesstimate went from about 20 minutes to about 10."
+- Show the proof: "My typical guesstimate went from about 20 minutes to about 10." (Template figures: replace with your own timings, or describe the improvement without numbers.)
 - Practice step: list your three weakest skills, pick one, and design a two-week fix.
 
-**Likely follow-ups:** 1) *Is it fully fixed?* Improving; I still review misses weekly. 2) *What would you tell a beginner?* Round early.
+**Likely follow-ups:** 1) *Is it fully fixed?* Improving; I still review misses weekly (only if true). 2) *What would you tell a beginner?* Round early.
 **Common mistakes / traps:** A fake strength disguised as a weakness; no fix described; picking a weakness that disqualifies the role.
 
 ### Q9 ⭐⭐⭐ 🟡 How do you practise a guesstimate so that you actually improve instead of just repeating questions?
@@ -125,7 +125,7 @@
 - Vary the topics (consumer, B2B, HR) so you learn the method, not memorised answers.
 - Practice step: do three guesstimates this week, log the error type for each, and redo the worst one cold after seven days.
 
-**Likely follow-ups:** 1) *How do you check correctness?* Cross-check top-down against bottom-up. 2) *How many a week?* Three to five with review.
+**Likely follow-ups:** 1) *How do you check correctness?* Cross-check top-down (start from a big total and narrow down) against bottom-up (build up from units). 2) *How many a week?* Three to five with review.
 **Common mistakes / traps:** Solving many questions with no review; memorising answers; practising silently; never timing yourself.
 
 ### Q10 ⭐⭐⭐ 🟡 How do you turn a vague business problem into a driver tree, for example orders x average order value for revenue?
@@ -135,7 +135,7 @@
 **Explain simply:**
 - A driver tree is a metric broken into multiplied or added parts, each of which you can measure.
 - Steps: define the metric, write the formula, split each part again until it is measurable, then compare each driver with its past value.
-- Mini-example (made-up numbers): 25,000 active users x 0.2 orders per user per day = 5,000 orders/day. 5,000 x Rs 350 AOV = Rs 17.5 lakh/day.
+- Mini-example (made-up numbers): 25,000 active users x 0.2 orders per user per day = 5,000 orders/day. 5,000 x Rs 350 AOV (average order value) = Rs 17.5 lakh/day.
 - If orders fall 10% with AOV flat, revenue falls to Rs 15.75 lakh/day, so the loss is in order volume, not basket size.
 - Practice step: write driver trees for three metrics (revenue, attrition, delivery time) and name one data field for each leaf.
 
@@ -176,7 +176,7 @@
 **Say this in the interview:** "I would start with free guesstimate guides and club PDFs, such as the IIT Guwahati 'Guess It Matters' PDF and InsideIIM or Analytics Vidhya articles, then practise on public datasets and check answers by two routes."
 **Explain simply:**
 - Free options: student-club guesstimate PDFs, free articles on guesstimates and metric-drop diagnosis, free preview lessons from prep platforms, and public HR datasets for practice.
-- Be cautious: free guides are often dated (one listed here is from 2014) and their numbers may be old, so treat base numbers as assumptions.
+- Be cautious: free guides are often dated (the Analytics Vidhya article listed in the sources has 2014 in its link) and their numbers may be old, so treat base numbers as assumptions.
 - No single dedicated free structured-thinking course was found in my research, so combine one method guide plus daily practice.
 - Mini-example plan: read one guide (2 hours), solve 5 guesstimates, check each by a second route.
 - Practice step: pick one guide and one dataset this week and finish one worked example from each.
@@ -202,10 +202,10 @@
 ### Q15 ⭐⭐ 🟢 How much time do you spend practising guesstimates and cases each week?
 **Asked at:** commonly asked (no company-specific report found); generic learning-journey question.
 **What the interviewer is checking:** Consistency and realism of your effort.
-**Say this in the interview:** "About five hours a week: four short sessions plus one longer review and mock." (Give your true figure.)
+**Say this in the interview:** "About five hours a week: four short sessions plus one longer review and mock." (Give your true figure; this plan is a template.)
 **Explain simply:**
 - Consistent beats heroic: five hours a week for eight weeks is 40 hours; two 20-hour weekend binges are weaker.
-- Split the time: three 45-minute solving sessions, one 30-minute error-log review, one 60-minute mock.
+- Split the time: three 60-minute solving sessions, one 30-minute error-log review, one 90-minute mock. That is 180 + 30 + 90 = 300 minutes = 5 hours.
 - Be honest if the time is less, and say how you protect it with a full-time job.
 - Practice step: block fixed calendar slots for next week and track the actual hours.
 
@@ -255,7 +255,7 @@
 **Common mistakes / traps:** Stating numbers as verified fact; memorising too many; using stale figures with no label.
 
 ### Q19 ⭐⭐ 🟢 Do you need a consulting background or an MBA to do well in case and guesstimate rounds?
-**Asked at:** commonly asked (no company-specific report found); a generic opener for career switchers, mainly HR or manager rounds (unverified). Internal research says Mu Sigma, Fractal, Flipkart and Meesho-type rounds score structure and explicit assumptions, not a degree.
+**Asked at:** commonly asked (no company-specific report found); a generic opener for career switchers, mainly HR or manager rounds (unverified). Internal research says Mu Sigma and Fractal rounds are graded on structure and explicit assumptions rather than the final number (prep-guide and candidate-report level, unverified); that degrees do not matter is my own inference.
 **What the interviewer is checking:** Whether you are honest about your background and confident that the skill is learnable.
 **Say this in the interview:** "No. A case round tests a habit: clarify, structure, state assumptions, calculate, recommend. I built that habit through practice, and my HR work already trains me to look at people data in a structured way."
 **Explain simply:**
@@ -264,7 +264,7 @@
 - Your edge as an HR professional: you already know attrition, headcount, hiring funnels and attendance in real life.
 - Mini-example: 1,200 employees, 240 left last year. Attrition = 240 / 1,200 = 20%. Saying "20%, and I would split it by tenure next" is the same habit consultants use.
 **Practice step:** Do one case a day for a week and record yourself; compare the first and last recording.
-**Likely follow-ups:** 1) *Then why do people say it helps?* More reps and more exposure to frameworks; both can be built. 2) *What is your gap?* Less industry exposure, so I read about one company a week.
+**Likely follow-ups:** 1) *Then why do people say it helps?* More reps and more exposure to frameworks; both can be built. 2) *What is your gap?* Less industry exposure, so I read about one company a week (only say this if true).
 **Common mistakes / traps:** Apologising for your background; claiming it is easy; memorising frameworks instead of practising.
 
 ### Q20 ⭐⭐ 🟡 How do you use AI assistants to practise cases and guesstimates without depending on them?
@@ -342,7 +342,7 @@
 **Say this in the interview:** "I state the conclusion first, then give two or three supporting reasons, then the detail only if asked."
 **Explain simply:**
 - Pyramid: top = the answer; middle = 2 or 3 reasons; bottom = data behind each.
-- Mini-example: "Attrition rose to 20%, mainly because first-year exits doubled. Reason 1: 120 of the 240 leavers had under one year of tenure (50%). Reason 2: most left within 90 days of joining."
+- Mini-example: "Attrition rose to 20%, mainly because first-year exits doubled. Reason 1: 120 of the 240 leavers had under one year of tenure (50%). Reason 2: most of those left within 90 days of joining." (Made-up numbers for practice. Saying first-year exits "doubled" needs last year's figure to compare, so say it only if you have it.)
 - Practice routine: take any chart or finding, write the one-sentence answer, then the supporting points. Do it for three emails a day, then aloud.
 - Test: if you were cut off after the first sentence, would the listener still know what to do?
 **Practice step:** Rewrite one of your own old HR reports with the conclusion at the top.
@@ -494,14 +494,14 @@
 ### Q36 ⭐ 🟢 Which books or articles on structured problem solving would you recommend, and what did you take from them?
 **Asked at:** commonly asked (no company-specific report found); the Pyramid Principle appears on many consulting-prep pages (unverified).
 **What the interviewer is checking:** Real reading and the ability to state a takeaway.
-**Say this in the interview:** "Recommend only what you have read, with one takeaway each." Examples below are well-known titles; be ready to say what you learned.
+**Say this in the interview:** "Recommend only what you have read, with one takeaway each." Examples below are well-known titles listed from general knowledge (check author and edition yourself); be ready to say what you learned.
 **Explain simply:**
 - *The Pyramid Principle* (Barbara Minto): answer first, then grouped support.
 - *Case Interview Secrets* (Victor Cheng): a hypothesis-led approach to cases.
 - *Case in Point* (Marc Cosentino): a case-framework reference.
 - *Naked Statistics* (Charles Wheelan): reading numbers with common sense.
 - Free: Fermi-style estimation pages and casebooks from university clubs.
-- Takeaway pattern: "Minto taught me to write the conclusion first; I now do it in every HR report."
+- Takeaway pattern: "Minto taught me to write the conclusion first; I now do it in every HR report." (Template: say this only if you have read the book and truly do it.)
 **Practice step:** Read one chapter, then apply one idea to a real task within a day.
 **Likely follow-ups:** 1) *Which is most useful for you?* Start with Minto. 2) *Not read any?* Say so; name what you have used.
 **Common mistakes / traps:** Name-dropping unread books; reading many and practising none.
@@ -514,7 +514,7 @@
 - A guesstimate is a structured estimate of something you cannot look up (for example, how many employees take a cab to work in Bengaluru). The skill is the method, not the final number.
 - Week 1 (method): learn top-down (start from a big population and narrow down) and bottom-up (build from units, such as shops times sales per shop). Solve 5 easy ones on paper.
 - Week 2 (building blocks): memorise a small set of round "anchor" numbers (assumed, approximate, unverified): India population about 1.4 billion, household of about 4 to 5 people, working days about 250 a year. Practise multiplying round numbers.
-- Week 3 (speed and voice): 15 timed questions, 10 minutes each, spoken aloud. Add HR ones: staff needed for a 2,000-person payroll team.
+- Week 3 (speed and voice): 15 timed questions, 10 minutes each, spoken aloud. Add HR ones: how many payroll staff a company of 2,000 employees needs.
 - Week 4 (mocks): 3 mock sessions with a friend or recording, then a one-page list of your own recurring errors.
 - Arithmetic: 30 days x 45 minutes = 22.5 hours in total, enough to build the habit, not to master everything.
 **Practice step:** Today, write the week-by-week plan in a notebook and solve one easy guesstimate, saying each step aloud.
@@ -568,7 +568,7 @@
 **What the interviewer is checking:** Whether you have a sustainable habit that uses your real work.
 **Say this in the interview:** "Small and regular: about 3 hours a week, plus I treat every work request as a free practice case."
 **Explain simply:**
-- Weekly slot: three 1-hour blocks, or 20 minutes a day, one timed question and one review. That is about 3 x 52 = 156 hours a year at the full rate; even half is 78 hours.
+- Weekly slot (illustrative; use your true hours): three 1-hour blocks, or 20 minutes a day, one timed question and one review. That is about 3 x 52 = 156 hours a year at the full rate; even half is 78 hours.
 - Use your job: before answering any request, write three lines (the question, the 3 buckets of causes, what data I need). For an HR example, "why did last month's offer-acceptance rate fall?" is a diagnosis case.
 - Read one business or data post a week and summarise it in three bullets.
 - Keep a small error log: where my structure overlapped or missed something.
@@ -596,7 +596,7 @@
 **What the interviewer is checking:** Whether you know the framework is a thinking aid, not the real job.
 **Say this in the interview:** "A book structure is built to be neat in 20 minutes. A real structure is shaped by the actual data, the stakeholder and the decision, and it changes as I learn."
 **Explain simply:**
-- Book case: the interviewer holds the facts; you get clean data; the framework (such as the 4 Ps) is reused; the goal is to show reasoning.
+- Book case: the interviewer holds the facts; you get clean data; the framework (such as the 4 Ps: product, price, place, promotion) is reused; the goal is to show reasoning.
 - Real project: you first have to find out whether the data exists, whether definitions agree (what counts as "attrition"?), and who decides what.
 - Real work adds constraints: time, data quality, politics, cost of being wrong.
 - Real structures are revised after the first data pull; a book structure is rarely revised.
@@ -739,9 +739,9 @@
 **Say this in the interview:** "Structured thinking decides what to ask and which hypotheses matter; technical analysis tests them with data. After cases, I would add SQL depth, statistics, then product analytics and experimentation."
 **Explain simply:**
 - Structured thinking: framing, MECE, hypotheses, prioritisation, communication.
-- Technical analysis: pulling data (SQL), cleaning, statistics, models, dashboards; it checks whether hypotheses are true.
+- Technical analysis: pulling data (SQL, the language for asking a database questions), cleaning, statistics, models, dashboards; it checks whether hypotheses are true.
 - They meet in the middle: a tree tells you which query to write; a query result tells you which branch to prune.
-- Next steps in order: 1) SQL and Excel or Power BI fluency; 2) statistics (distributions, hypothesis testing, confidence intervals); 3) product analytics (funnels, retention, cohorts); 4) experimentation (A/B test design, sample size, pitfalls).
+- Next steps in order: 1) SQL and Excel or Power BI fluency; 2) statistics (distributions, hypothesis testing, confidence intervals); 3) product analytics (funnels = step-by-step drop-off, retention = who comes back, cohorts = groups that joined in the same period); 4) experimentation (A/B test = compare two versions on random groups; design, sample size, pitfalls).
 - HR link: an A/B test of a new onboarding programme on 90-day retention is the same logic.
 **Practice step:** Take one of your solved cases and write the SQL query for the first branch you would test.
 **Likely follow-ups:** 1) *Do you need machine learning?* Not for most analyst roles. 2) *How long?* Plan a few months per layer.

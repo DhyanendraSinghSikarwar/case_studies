@@ -31,7 +31,7 @@ Inline data: opening headcount 480; closing headcount 520; leavers in April 13.
 3. Context: headcount grew by 40 while 13 left, so about 53 people joined in April (40 net growth + 13 leavers).
 **Result:** 2.6% for April. Annualised about 31.2% (x 12) or 27.1% compounded; treat as indicative only.
 **Check:** Using opening headcount gives 13 / 480 = 2.7%; using closing gives 2.5%. The average sits between, as it should.
-**Caveats:** One month only. A 8% jump in headcount in a month means hiring was heavy, so the new joiners are still "safe" in their first weeks, which flatters the rate.
+**Caveats:** One month only. An 8% jump in headcount in a month means hiring was heavy, so the new joiners are still "safe" in their first weeks, which flatters the rate.
 **Likely follow-ups:** 1) *Is 2.6% high?* Depends on industry and role; compare with your own trend and a like-for-like benchmark. 2) *Would you split it?* Yes, voluntary versus involuntary and by tenure band.
 **Common mistakes / traps:** Using only the opening 480; forgetting to state whether 13 includes involuntary exits; calling 31% "the annual attrition" without saying it is an extrapolation.
 
@@ -228,7 +228,7 @@ Inline data available: per-offer records with offered CTC, hike percentage, noti
 **Caveats:** Averages hide outliers; check medians and the spread. Stages are summed from averages, which is valid for means if the same candidates pass every stage. Check mix change (more senior roles take longer).
 **Recommendation:** Examine interview scheduling and panel availability (calendar waits), feedback turnaround after interviews, the approval chain for offers, and the gap between offer and acceptance (negotiation, counter-offers). Cut by role, hiring manager and recruiter.
 **Likely follow-ups:** 1) *Does shorter always mean better?* No, quality and candidate experience matter. 2) *Where is the cheapest gain?* Feedback and scheduling delays.
-**Common mistakes / traps:** Blaming the stage with the largest absolute time (screening to interview, 9 days) rather than the largest increase; using averages without medians.
+**Common mistakes / traps:** Blaming the stage that is longest rather than the one that grew most (look at the change, not only the level); using averages without medians.
 
 ### Q15 ⭐⭐⭐ 🟡 The average salary of men is INR 12.0 lakh and of women is INR 10.2 lakh in a 600-person company. What is the unadjusted gap as a percentage of men's pay, and how would you investigate whether it reflects unequal pay for equal work?
 Inline data: average men INR 12.0 lakh; average women INR 10.2 lakh. Available columns: job family, grade, tenure, location, performance rating, prior experience.
@@ -256,7 +256,7 @@ Inline data: average men INR 12.0 lakh; average women INR 10.2 lakh. Available c
 - Holding grade, tenure, location and job family equal, women's pay is about 3.9% lower on average. "Significant" means unlikely to be chance, not that it is large.
 - Example: for a comparable man at INR 10,00,000, the comparable woman is estimated at about INR 9,60,800.
 - Limits: it does not prove discrimination (omitted factors such as performance or skills may matter); controls like grade may themselves carry bias; an average hides a few large gaps.
-- Report to leadership: the adjusted gap (about 4%), the unadjusted gap with its drivers (so representation is not missed), a confidence interval, the rough rupee cost of closing the gap, and a plan: review outliers individually, fix starting pay and promotion processes, re-run annually.
+- Report to leadership: the adjusted gap (about 4%), the unadjusted gap with its drivers (so representation is not missed), a confidence interval (the range of gaps the data could plausibly support), the rough rupee cost of closing the gap, and a plan: review outliers individually, fix starting pay and promotion processes, re-run annually.
 - Practice step: re-run the model with and without grade to see how much of the gap sits in grading.
 **Likely follow-ups:** 1) *Why log salary?* Effects are percentages, and pay is skewed. 2) *Would you add performance?* Test both ways, since ratings can be biased.
 **Common mistakes / traps:** Reading -0.04 as INR 0.04 lakh or as exactly 4%; saying significant means large; claiming proof of bias.
@@ -275,7 +275,7 @@ Inline data: start 100; month 3: 88; month 6: 76; month 12: 61.
 5. Per-month equivalent: about 4.2%, 4.8% and 3.6% a month (compounded).
 **Result:** 61% retained; 39 of 100 gone; interval losses 12.0%, 13.6%, 19.7% (monthly about 4.2%, 4.8%, 3.6%).
 **Check:** 100 - 12 - 12 - 15 = 61.
-**Caveats:** Quarter-wise the losses look like they accelerate, but the last interval covers 6 months, so the true monthly pace is highest at months 3 to 6, a typical point when the probation ends or the first appraisal or bonus cycle arrives. The pattern means steady early churn across the year rather than a single cliff; it suggests onboarding, role expectations and a mid-first-year checkpoint. Also 100 people is a single cohort; compare with other cohorts and source.
+**Caveats:** Quarter-wise the losses look like they accelerate, but the last interval covers 6 months, so the true monthly pace is highest at months 3 to 6, a point where a probation end or first appraisal or bonus cycle might matter (a hypothesis to check, not a finding). The pattern means steady early churn across the year rather than a single cliff; it suggests onboarding, role expectations and a mid-first-year checkpoint. Also 100 people is a single cohort; compare with other cohorts and source.
 **Likely follow-ups:** 1) *Which method would you use for more cohorts?* Survival curves (Kaplan-Meier). 2) *Action?* Check-ins at months 2 and 5, review hiring fit.
 **Common mistakes / traps:** Dividing every loss by the original 100; comparing 3-month and 6-month intervals as if equal; ignoring cohort size.
 
@@ -365,7 +365,7 @@ Inline data: men 50 of 200; women 18 of 120.
 **What the interviewer is checking:** You can compute the impact ratio and know it is a screening flag, not a verdict.
 **Say this in the interview:** "Men are shortlisted at 25% and women at 15%. The ratio is 0.60, below the 0.80 line, so this is a red flag worth investigating, not proof of discrimination."
 **Definition in plain words:** The four-fifths (80%) rule compares each group's selection rate with the highest group's rate. Impact ratio = lower rate / higher rate; below 0.80 flags possible adverse impact.
-**Worked answer:** Men: 50/200 = 25%. Women: 18/120 = 15%. Impact ratio = 15 / 25 = 0.60. To reach 0.80, women would need a 20% rate: 24 of 120, so 6 more women (18 vs 24). A two-proportion z-test gives z about 2.12, p about 0.034, so the gap is unlikely to be pure chance at the usual 5% level.
+**Worked answer:** Men: 50/200 = 25%. Women: 18/120 = 15%. Impact ratio = 15 / 25 = 0.60. To reach 0.80, women would need a 20% rate: 24 of 120, so 6 more women (18 vs 24). A two-proportion z-test (a standard check of whether two percentages differ by more than chance) gives z about 2.12, p about 0.034; the p-value is the chance of a gap this big if the true rates were equal, so it is unlikely to be pure chance at the usual 5% level.
 **Result:** Impact ratio 0.60, below 0.80: flagged.
 **Check:** 0.8 x 25% = 20%; 20% of 120 = 24. Rule uses selection rates, not counts.
 **Caveats:** It is a rule of thumb from US practice; it ignores sample size (small groups can fail by chance), job-relevant criteria (experience, qualifications) and applicant mix. It does not show intent or cause. Next: look within role, qualification and source, and see which screening step (resume filter, test) created the gap.
@@ -386,7 +386,7 @@ Inline data: sourced to screen-pass 5%; screen-pass to interview-pass 25%; inter
 5. Recruiters = 64,000 / 1,200 = 53.3, round up to 54.
 **Result:** 64,000 sourced; 54 recruiters.
 **Check:** Forward: 64,000 x 0.05 x 0.25 x 0.40 x 0.75 = 240. Overall conversion = 0.375%, about 267 sourced per hire.
-**Caveats:** Real funnels vary by role; add a buffer for offer-to-join drop-outs and seasonal peaks. Capacity of 1,200 ignores screening and interview effort, which also needs people. If the screen-pass rate improved to 6%, sourcing would fall to about 53,333; the first step moves the answer most.
+**Caveats:** Real funnels vary by role; add a buffer for offer-to-join drop-outs and seasonal peaks. Capacity of 1,200 ignores screening and interview effort, which also needs people. If the screen-pass rate improved from 5% to 6%, sourcing would fall to about 53,333 (a 17% cut); every conversion rate scales the answer equally in relative terms, so improve the one that is cheapest to move.
 **Likely follow-ups:** 1) *Why round up?* You cannot hire 0.3 of a recruiter. 2) *How to cut the load?* Improve the top-of-funnel quality (better targeting, referrals).
 **Common mistakes / traps:** Multiplying instead of dividing; stopping at offers; rounding recruiters down.
 
@@ -512,7 +512,7 @@ Inline data: interviews 120; offers 30.
 - **Target:** snapshot each employee on a date (monthly); label 1 if they resign voluntarily within the next six months, else 0. Exclude layoffs and retirements, or model them separately.
 - **Features (known at snapshot date):** tenure, grade, time since last promotion or raise, compa-ratio, manager and span, recent rating, engagement score, leave and absence pattern, commute or location, team attrition, market conditions.
 - **Leakage:** anything created after the decision: notice-period flags, exit-interview data, "handover started", a post-resignation rating change. Also a random split that lets the same person appear in train and test.
-- **Evaluation:** train on earlier snapshots, test on later ones; check precision, recall and lift at the top 10% of scores, not accuracy (leavers are a minority). Check calibration.
+- **Evaluation:** train on earlier snapshots, test on later ones; check precision, recall and lift (how many times more likely the top-scored group is to leave than an average employee) at the top 10% of scores, not accuracy (leavers are a minority). Check calibration (do people scored 30% risk really leave about 30% of the time).
 - **Fairness:** compare error rates across gender, age, and so on; avoid using protected traits and proxies.
 **What I would check, in order:** Baseline (a simple rule such as short tenure and no raise); logistic regression first, then gradient boosting; compare lift.
 **Recommendation:** HR uses scores to rank who gets a stay conversation; managers see themes, not scores; track whether the interventions reduce attrition against a comparison group. Do not use scores for performance or promotion decisions.
@@ -530,7 +530,7 @@ Inline data: employees 2,000; flagged 200; actual leavers 150; leavers among fla
 **Check:** 60 + 90 = 150 leavers; 60 + 140 = 200 flagged.
 **Caveats:** Usefulness depends on the cost of action: if a stay conversation is cheap, 70% false alarms is tolerable; if each action is a costly bonus, it is not. Compare with a simple rule (tenure under 2 years) to see if the model adds anything. Some leavers (relocation, health) are unpredictable, so recall will never be near 100%. Also check fairness across groups.
 **Likely follow-ups:** 1) *Increase recall?* Flag more people; precision usually falls. 2) *F1?* Combines both: 2 x 0.3 x 0.4 / 0.7 = 0.343.
-**Common mistakes / traps:** Swapping precision and recall; ignoring the base rate; judging by accuracy (1,850 of 2,000 correct sounds great, but it is mostly non-leavers).
+**Common mistakes / traps:** Swapping precision and recall; ignoring the base rate; judging by accuracy (1,770 of 2,000 correct, 88.5%, sounds great, but it is mostly non-leavers).
 
 ### Q35 ⭐⭐ 🟡 First-year attrition of campus hires is 30% against 10% for lateral hires. How do you diagnose this?
 Inline data available: campus-hire records (college tier, branch, offer date, joining date, training batch, project allocation, manager, first-year rating) and exit reasons.
@@ -649,7 +649,7 @@ Inline data: leavers 60; average CTC INR 12 lakh; replacement cost 50% of CTC; p
 - Hypothesis 1: candidate mix differs (B got weaker or harder-role candidates).
 - Hypothesis 2: interviewers apply different standards (bias or strictness).
 - Hypothesis 3: small numbers, so the gap is noise.
-**What I would check, in order:** 1) Rates: A 24/60 = 40%, B 9/55 = 16.4%, C 21/70 = 30%; overall 54/185 = 29.2%. 2) Expected offers at the overall rate: A 17.5, B 16.1, C 20.4. 3) Chi-square test across the three: statistic about 7.8, 2 degrees of freedom, p about 0.02, so unlikely to be pure chance. 4) Stratify (split) by role, level, source and resume score, and recompute. 5) For candidates who met several interviewers, compare each one's score on the same candidate.
+**What I would check, in order:** 1) Rates: A 24/60 = 40%, B 9/55 = 16.4%, C 21/70 = 30%; overall 54/185 = 29.2%. 2) Expected offers at the overall rate: A 17.5, B 16.1, C 20.4. 3) Chi-square test across the three (it compares observed offers with the offers expected if all three had the same rate): statistic about 7.8, 2 degrees of freedom, p about 0.02, so unlikely to be pure chance. 4) Stratify (split) by role, level, source and resume score, and recompute. 5) For candidates who met several interviewers, compare each one's score on the same candidate.
 **If the data shows...:** The gap vanishes after splitting by role or resume score: it was candidate mix. The gap persists inside every segment: interviewer strictness, so calibrate with shared rubrics and a second-interviewer sample. B is strict on everyone equally but fair: standardise the bar, not accuse them.
 **Recommendation:** Do not act on raw rates. Run the stratified comparison, then calibration sessions and structured scorecards; track offer rate per interviewer monthly with the candidate-mix controls.
 **Likely follow-ups:** 1) *Why not just average?* Averages hide mix. 2) *Is p = 0.02 proof of bias?* No, only that chance alone is unlikely; mix could explain it.
@@ -692,7 +692,7 @@ Inline data: company-wide gap 15%; gap within each grade 2%; men are concentrate
 ### Q45 ⭐⭐ 🟡 A bank is rolling out a return-to-office policy of three days a week. How would you measure its effect on attrition, productivity and hiring?
 **Asked at:** commonly asked (no company-specific report found); policy-impact questions appear in people-analytics question banks (unverified).
 **What the interviewer is checking:** Whether you can design a fair before-and-after comparison with a control group and sensible outcome metrics.
-**Say this in the interview:** "I would use difference-in-differences: compare the change in attrition, productivity and hiring for teams under the policy against similar teams not yet affected, because a plain before-and-after confuses the policy with everything else that changed."
+**Say this in the interview:** "I would use difference-in-differences (DiD): compare the change in attrition, productivity and hiring for teams under the policy against similar teams not yet affected, because a plain before-and-after confuses the policy with everything else that changed."
 **Clarify first:** Is the rollout for all branches at once, or staggered? What is the start date? Are some roles exempt (branch staff already on site)? What decision depends on this?
 **Structure:** Three outcome families, each with metric, window and comparison.
 - Attrition: monthly voluntary attrition, split regretted and non-regretted, and by tenure and city. Exits often lag the announcement by 3 to 6 months.
@@ -720,7 +720,7 @@ Inline data: company-wide gap 15%; gap within each grade 2%; men are concentrate
 **Calculation:** 1) Monthly leavers = headcount x 18% / 12 x index. 2) January: 1,000 x 1.5% x 1.3 = 19.5, closing 980. 3) February: 980 x 1.5% x 1.2 = 17.6 leavers, plus 60 joiners = 1,023. 4) Continue each month the same way.
 **Result:** About 185 leavers over the year and closing headcount about 1,056 (low point 980 in January, never above about 1,073 in November after the batch).
 **Sanity check:** 18% x about 1,030 average headcount is about 185, matching the total.
-**Sensitivity:** Attrition rate moves the answer most: each 2 points of annual attrition shifts year-end headcount by about 20. Run best, base and worst cases; check forecast error (MAPE) on last year's data.
+**Sensitivity:** Attrition rate moves the answer most: each 2 points of annual attrition shifts year-end headcount by about 20. Run best, base and worst cases; check forecast error (MAPE, the average percentage miss) on last year's data.
 **Likely follow-ups:** 1) *Where do leavers come from by tenure?* Use tenure-specific rates. 2) *Which tool?* Excel roll-forward, then SARIMA only if history is long.
 **Common mistakes / traps:** Using a flat attrition rate; hiring all in one month; ignoring joining delay after offers.
 
@@ -734,7 +734,7 @@ Inline data: company-wide gap 15%; gap within each grade 2%; men are concentrate
 - Censoring: employees who have not left yet (or left for a reason you exclude, such as retirement) have an unknown final tenure. We know only that it is at least their current tenure. Dropping them or counting them as "stayers forever" biases results.
 - Kaplan-Meier: at each exit time, multiply survival by (1 - leavers / people still at risk).
 **Worked mini-example:** 10 employees, tenure in months (L = left, C = still employed): 3L, 5L, 6C, 8L, 10L, 12C, 14L, 18C, 20C, 24C. Survival: month 3: 1 - 1/10 = 0.90; month 5: x (1 - 1/9) = 0.80; month 8 (7 at risk): 0.686; month 10 (6 at risk): 0.571; month 14 (4 at risk): 0.429. Median tenure is about 14 months, where survival drops below 0.5. A naive "5 of 10 left = 50%" ignores time.
-**Practice step:** Do this in Python's lifelines or Excel, then compare joiner cohorts or teams with a log-rank test.
+**Practice step:** Do this in Python's lifelines or Excel, then compare joiner cohorts or teams with a log-rank test (a test of whether two survival curves differ by more than chance).
 **Likely follow-ups:** 1) *Why not a simple average tenure?* Biased low for recent joiners. 2) *Next step?* Cox model for what predicts exit.
 **Common mistakes / traps:** Treating censored employees as non-events with full follow-up; mixing cohorts; comparing rates across different tenure mixes.
 
