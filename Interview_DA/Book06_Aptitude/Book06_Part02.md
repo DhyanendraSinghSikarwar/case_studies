@@ -104,6 +104,7 @@
 2. Plain average of averages: (40,000 + 60,000) / 2 = 50,000 (wrong).
 3. Weighted: (10 x 40,000 + 90 x 60,000) / 100 = (4,00,000 + 54,00,000) / 100 = Rs 58,000.
 4. 58,000 sits near 60,000 because Group B is far bigger.
+**Check:** 58,000 x 100 = 58,00,000, which equals 4,00,000 + 54,00,000 (the two group totals).
 **Explain simply:**
 - Weight means "how much this group counts"; here it is the headcount.
 - An average hides the total; to combine groups you must rebuild totals (average x count).
@@ -117,7 +118,7 @@
 **Say this in the interview:** "B is 3 in one ratio and 4 in the other, so I make B equal to 12 in both. That gives A:B:C = 8:12:15."
 **Answer:** **8:12:15**
 **Step-by-step working:**
-1. B appears as 3 (in A:B) and 4 (in B:C). LCM of 3 and 4 is 12.
+1. B appears as 3 (in A:B) and 4 (in B:C). Their LCM (lowest common multiple, the smallest number both divide into) is 12.
 2. Scale A:B = 2:3 by 4: 8:12.
 3. Scale B:C = 4:5 by 3: 12:15.
 4. Join them: A:B:C = 8:12:15.
@@ -138,6 +139,7 @@
 1. Direct: pay for hours worked at Rs 500 an hour. 4 hours gives Rs 2,000; 8 hours gives Rs 4,000. Pay / hours = 500 always.
 2. Inverse: a recruitment drive needs 120 person-days of screening. 4 recruiters take 30 days; 8 recruiters take 15 days. Recruiters x days = 120 always.
 3. Test: double one quantity; if the other doubles it is direct, if it halves it is inverse.
+**Check:** Direct: 2,000 / 4 = 4,000 / 8 = 500. Inverse: 4 x 30 = 8 x 15 = 120.
 **Explain simply:**
 - Direct: same direction, same rate (cost per item).
 - Inverse: opposite direction, total work fixed (workers and days).
@@ -155,6 +157,7 @@
 2. Gap of mean from cheaper: 240 - 200 = 40.
 3. Cheaper : dearer = 60 : 40 = 3:2.
 4. Check: 3 x 200 + 2 x 300 = 1,200; 1,200 / 5 = 240.
+**Check:** 3 kg at Rs 200 + 2 kg at Rs 300 = Rs 1,200 for 5 kg, which is Rs 240 per kg.
 **Explain simply:**
 - The mean sits between the two prices, closer to the one you use more of.
 - The ratio is crossed because the cheaper one is used more when the mean is near it.
@@ -250,7 +253,7 @@
 **Common mistakes / traps:** Adding only 2.5 to 65 to get 67.5.
 
 ### Q15 ⭐⭐⭐ 🟡 The monthly salaries of two employees are in the ratio 3:5. After each gets an increment of Rs 4,000, the ratio becomes 7:11. What were their original salaries?
-**Asked at:** commonly asked (no company-specific report found); the same structure as increment problems in prep banks.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Setting up an equation from a ratio before and after.
 **Say this in the interview:** "Let salaries be 3x and 5x. Then (3x + 4,000)/(5x + 4,000) = 7/11. Cross-multiplying gives x = 8,000, so the salaries were Rs 24,000 and Rs 40,000."
 **Answer:** **Rs 24,000 and Rs 40,000**
@@ -302,7 +305,7 @@
 
 ### Q18 ⭐⭐⭐ 🟡 The present ages of a father and his son are in the ratio 5:2. After 10 years the ratio becomes 2:1. What are their present ages?
 **Asked at:** commonly asked; age problems with a "ratio now, ratio later" pattern are reported as recurring Wipro-style items in prep material (unverified).
-**What the interviewer is checking:** Ages as equations, remembering both age by the same number of years.
+**What the interviewer is checking:** Ages as equations, remembering that both people age by the same number of years.
 **Say this in the interview:** "Let ages be 5x and 2x. After 10 years, (5x + 10) = 2(2x + 10), so x = 10. Father is 50, son is 20."
 **Answer:** **Father 50 years, son 20 years**
 **Step-by-step working:**
@@ -314,7 +317,7 @@
 **Check:** After 10 years: 60 and 30, ratio 2:1 (verified by script).
 **Explain simply:**
 - The gap between two ages never changes (here 30 years).
-- Fast route: after 10 years the ratio 2:1 means the gap equals 1 part, so son = 30 then, 20 now.
+- Fast route: the gap is 3 parts now (5x - 2x = 3x). After 10 years the father is twice the son, so the gap equals the son's age then: 3x = 2x + 10, so x = 10 (son 20 now, 30 then).
 **Likely follow-ups:** Ratio 7:3 now, 2:1 after 10 years? Father 70, son 30 gives 80:40, yes 2:1.
 **Common mistakes / traps:** Adding 10 only to one person; solving x as the answer.
 
@@ -331,8 +334,8 @@
 5. A = 16, B = 20.
 **Check:** After 8 years: 24 and 28, ratio 6:7 (verified by script).
 **Explain simply:**
-- Difference is always the same: 1 part now (4 years), and 1 part later (4 years).
-- Fast route: later, 1 part = 4 years, so later ages are 24 and 28; subtract 8.
+- The difference between two ages never changes: it is 1 part now (5x - 4x = x). Later the ratio 6:7 also has a difference of 1 part, so the later ages are 6x and 7x.
+- Fast route: later A = 6x = 4x + 8 (A's age now plus 8 years), so x = 4. Later ages are 24 and 28; now they are 16 and 20.
 **Likely follow-ups:** Ratio 3:4, after 6 years 4:5? x = 6: 18 and 24.
 **Common mistakes / traps:** Forgetting to subtract the years when working from the later ratio.
 
@@ -480,7 +483,7 @@
 **Common mistakes / traps:** Answering 33.33% for "B is more than A" (using B as the base) or 50% for the first part.
 
 ### Q28 ⭐⭐ 🟢 The ratio of income to expenditure of an employee is 7:5. If the employee saves Rs 12,000 a month, what is the monthly income?
-**Asked at:** commonly asked (no company-specific report found); the 7:5 unitary-method style appears in prep blogs (unverified).
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Using savings = income minus expenditure inside a ratio.
 **Say this in the interview:** "Income is 7 parts and expenditure 5 parts, so savings are 2 parts. 2 parts is Rs 12,000, so one part is Rs 6,000 and income is 7 x 6,000 = Rs 42,000."
 **Answer:** **Monthly income = Rs 42,000.**
@@ -508,7 +511,7 @@
 3. Sum of the first n odd numbers (1, 3, 5, ...) = n x n. For n = 25: 25 x 25 = 625.
 4. Average = 625 / 25 = 25.
 **Fast method (30 seconds):** For any evenly spaced list, average = (first + last) / 2. The evens run from 2 to 40: (2 + 40) / 2 = 21. The odds run from 1 to 49: (1 + 49) / 2 = 25.
-**Check:** The two evenly spaced checks above give the same 21 and 25.
+**Check:** Small cases: the first 3 even numbers (2, 4, 6) average 4 = 3 + 1, and the first 3 odd numbers (1, 3, 5) average 3. The formulas fit; the first-and-last method also gives 21 and 25, matching the formulas.
 **Explain simply:**
 - Evenly spaced numbers have their average at the middle, which equals (first + last) / 2.
 - The two formulas to memorise: first n evens sum to n(n+1); first n odds sum to n squared.
@@ -752,7 +755,7 @@
 - Each time you take out a portion, the same fraction of milk leaves with it, so what remains is multiplied by (1 - fraction removed).
 - The second removal takes out some milk too, because the mixture is no longer pure.
 **Likely follow-ups:** 1) *Litres of water in the container now?* 7.6 L. 2) *Three rounds?* 40 x 0.9 cubed = 29.16 L.
-**Common mistakes / traps:** Answering 40 - 4 - 4 = 32 litres (forgetting that the second removal also takes out some water).
+**Common mistakes / traps:** Answering 40 - 4 - 4 = 32 litres (forgetting that the second removal takes out some milk too, because the mixture is no longer pure).
 
 ### Q43 ⭐⭐ 🟡 What is the formula for the quantity of pure liquid left after n replacements in a container (replacement problems)? When does it apply?
 **Asked at:** commonly asked (no company-specific report found); replacement problems are listed as a recurring pattern in prep sources (unverified).
@@ -764,6 +767,7 @@
 2. Each round keeps 1 - 5/50 = 0.9 of the milk.
 3. After 3 rounds: 50 x 0.9 x 0.9 x 0.9 = 50 x 0.729 = 36.45 litres of milk.
 4. Water now = 50 - 36.45 = 13.55 litres.
+**Check:** Round by round the milk is 50, 45, 40.5, 36.45 litres, matching 50 x 0.729.
 **Explain simply:**
 - It applies when the same quantity is removed from a well-mixed container and replaced by the other liquid (or by water), repeatedly, with the total volume constant.
 - Why it works: each removal takes out the fraction x/V of whatever is there, so the pure liquid is multiplied by (1 - x/V) every round.
@@ -810,7 +814,7 @@
 **Common mistakes / traps:** Answering 15 (the new average) or 14 + 25 = 39; using 25 instead of 26 for the new head-count.
 
 ### Q46 ⭐⭐ 🟡 What are componendo and dividendo? If (x+y)/(x-y) = 7/3, find x:y.
-**Asked at:** commonly asked (no company-specific report found); listed as a 2-star shortcut topic in prep material (unverified).
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you know the ratio shortcut that avoids cross-multiplying.
 **Say this in the interview:** "Componendo-dividendo says if a/b = c/d then (a+b)/(a-b) = (c+d)/(c-d). Here (x+y)/(x-y) = 7/3 means x/y = (7+3)/(7-3) = 10/4, so x:y = 5:2."
 **Answer:** **x:y = 5:2**
@@ -846,7 +850,7 @@
 - The 2ab/(a+b) formula (the harmonic mean, a special average for rates) holds only when the distances are equal.
 - Mini-example: 30 and 60 km/h over equal distances gives 2 x 30 x 60 / 90 = 40 km/h.
 **Likely follow-ups:** Same trip at 50 and 75 km/h? 2 x 50 x 75 / 125 = 60 km/h.
-**Common mistakes / traps:** Picking 50 km/h (the plain average), which is the option the test setter places first.
+**Common mistakes / traps:** Picking 50 km/h (the plain average), the tempting wrong option.
 
 ### Q48 ⭐⭐ 🟡 A:B = 2:3 and B:C = 4:5, and the total of their monthly salaries is Rs 1,40,000. What is each person's salary?
 **Asked at:** commonly asked (no company-specific report found); ratio chaining is a recurring placement pattern per prep sites (unverified).

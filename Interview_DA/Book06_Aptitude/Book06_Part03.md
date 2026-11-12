@@ -49,7 +49,7 @@
 - km/h to m/s: multiply by 5/18. m/s to km/h: multiply by 18/5.
 - Speed numbers divisible by 18 (36, 54, 72, 90) give clean answers, which is why exams love them.
 **Likely follow-ups:** 72 km/h in m/s? 72 x 5/18 = 20 m/s.
-**Common mistakes / traps:** Using 18/5 instead of 5/18, or dividing by 3.6 and multiplying by it the wrong way round. A m/s figure bigger than the km/h figure is a red flag.
+**Common mistakes / traps:** Using 18/5 instead of 5/18 (multiplying by 3.6 when you should divide by it). A m/s figure bigger than the km/h figure is a red flag.
 
 ### Q4 ⭐⭐⭐ 🟢 An employee commutes 30 km at an average speed of 40 km/h. How many minutes does the trip take?
 **Asked at:** commonly asked (no company-specific report found).
@@ -148,7 +148,8 @@
 **Check:** 20 x 6 = 120 = 12 x 10. Verified by script.
 **Explain simply:**
 - A man-day (here clerk-day) is one person working one day. A job has a fixed number of them.
-- More people share the same fixed total, so each needs fewer days.
+- More people share the same fixed total, so each needs fewer days. This is "inverse proportion": when one quantity goes up, the other comes down by the same factor.
+- Assumption: every clerk works at the same pace.
 **Likely follow-ups:** 15 clerks? 120/15 = 8 days.
 **Common mistakes / traps:** The 600 forms is a distraction; since the forms are the same, you do not need it. Do not treat this as direct proportion (which would give 16.7).
 
@@ -175,15 +176,16 @@
 **Say this in the interview:** "Equal distances means the harmonic mean: 2 x 60 x 40/(60 + 40) = 48 km/h. The simple average 50 is the trap."
 **Answer:** **48 km/h**
 **Step-by-step working:**
-1. Pick a distance that suits both speeds: say 120 km each way (LCM of 60 and 40).
+1. Pick a distance that suits both speeds: say 120 km each way (120 is the LCM, the smallest number both 60 and 40 divide into).
 2. Time going = 120/60 = 2 h; time returning = 120/40 = 3 h; total 5 h.
 3. Total distance = 240 km.
 4. Average speed = 240/5 = 48 km/h.
 **Fast method (30 seconds):** For equal distances: 2xy/(x + y) = 2 x 60 x 40/100 = 48. It works because average = total distance/total time, and the distance cancels out.
-**Check:** The car spends more time at the slow speed, so the answer must sit below 50 and closer to 40: 48 does. Verified by script.
+**Check:** The car spends more time at the slow speed, so the answer must sit below the simple average of 50, pulled towards 40: 48 does. Verified by script.
 **Explain simply:**
 - Average speed = total distance / total time, always.
 - You spend longer at the slower speed, so it counts for more in the average.
+- The "harmonic mean" is just the name for the average that weights slow speeds more; Q24 explains it in full.
 **Likely follow-ups:** 30 km/h up and 60 km/h back? 2 x 30 x 60/90 = 40 km/h.
 **Common mistakes / traps:** Picking 50 km/h (arithmetic mean). That is always listed as an option.
 
@@ -205,7 +207,7 @@
 **Common mistakes / traps:** Subtracting days (8 - 12 is negative; 12 - 8 = 4 is wrong).
 
 ### Q13 ⭐⭐⭐ 🟡 A, B and C can finish a job alone in 10, 15 and 30 days respectively. How many days do they take working together?
-**Asked at:** commonly asked (no company-specific report found); three-worker combinations are standard in prep lists (unverified).
+**Asked at:** commonly asked (no company-specific report found); three-worker combinations are a standard textbook extension.
 **What the interviewer is checking:** Adding three rates, preferably with the LCM method.
 **Say this in the interview:** "Take the job as 30 units: A does 3, B does 2, C does 1 a day, 6 together, so 5 days."
 **Answer:** **5 days**
@@ -223,7 +225,7 @@
 **Common mistakes / traps:** Using 1/10 + 1/15 + 1/30 and then forgetting to invert.
 
 ### Q14 ⭐⭐⭐ 🟡 A can do a job in 20 days and B in 30 days. They start together, but A leaves after 4 days and B finishes the rest alone. In how many days from the start is the job completed?
-**Asked at:** commonly asked (no company-specific report found); the "one worker leaves" pattern is a listed variant (Byju's concept notes; unverified).
+**Asked at:** commonly asked (no company-specific report found); the "one worker leaves" pattern is a standard variant (prep-site pattern, unverified).
 **What the interviewer is checking:** Splitting the work into phases and tracking the remaining fraction.
 **Say this in the interview:** "Job = 60 units. Together they do 5 a day for 4 days = 20 units. 40 units left at 2 a day for B = 20 days. Total 24 days from the start."
 **Answer:** **24 days**
@@ -269,7 +271,7 @@
 **Fast method (30 seconds):** 108 km/h is a neat 30 m/s; 240/30 = 8.
 **Check:** In 8 s the trains close 30 x 8 = 240 m, exactly the two lengths. Verified by script.
 **Explain simply:**
-- Opposite directions: the gap between them closes at the sum of the speeds.
+- Relative speed (how fast the gap between two moving things changes) is the sum of the speeds when they move in opposite directions, so the gap closes at that rate.
 - "Cross completely" means front meets front until tail clears tail, i.e. both lengths.
 **Likely follow-ups:** Same direction? Relative 12 km/h = 10/3 m/s, 240/(10/3) = 72 s.
 **Common mistakes / traps:** Subtracting the speeds, or using only one train's length.
@@ -283,9 +285,10 @@
 1. Downstream speed = 12 + 3 = 15 km/h; time = 45/15 = 3 h.
 2. Upstream speed = 12 - 3 = 9 km/h; time = 45/9 = 5 h.
 3. Total = 3 + 5 = 8 hours.
-**Check:** Round-trip distance 90 km over 8 h means average speed 11.25 km/h, below 12 as expected (harmonic effect). Verified by script.
+**Fast method (30 seconds):** Do each leg separately; no shortcut is needed. Equal distances, so the slower upstream leg takes the bigger share of time (5 h of 8).
+**Check:** Round-trip distance 90 km over 8 h means average speed 11.25 km/h, below 12 as expected (the slower upstream leg takes longer). Verified by script.
 **Explain simply:**
-- Stream helps going downstream and hinders going upstream.
+- Downstream means moving with the current; upstream means against it. The stream helps going downstream and hinders going upstream.
 - Still-water speed = (down + up)/2; stream speed = (down - up)/2.
 **Likely follow-ups:** Stream 4 km/h? Down 16 (2.8125 h), up 8 (5.625 h); total 8.4375 h.
 **Common mistakes / traps:** Using 12 km/h for both legs (7.5 h), or averaging speeds.
@@ -299,7 +302,7 @@
 1. Inlet A: +1/6 of the tank per hour. Outlet B: -1/8 per hour.
 2. Net = 1/6 - 1/8 = 4/24 - 3/24 = 1/24 per hour.
 3. Time = 24 hours.
-**Fast method (30 seconds):** Take the tank as 24 litres: A adds 4 per hour, B removes 3, net +1 per hour, so 24 hours. Or ab/(b - a) = 48/2 = 24.
+**Fast method (30 seconds):** Take the tank as 24 litres: A adds 4 per hour, B removes 3, net +1 per hour, so 24 hours. Or ab/(b - a) = 48/2 = 24 (a = inlet hours, b = outlet hours, valid only when b > a).
 **Check:** In 24 h A fills 4 tanks, B empties 3, net 1 tank. Verified by script.
 **Explain simply:**
 - An outlet is a worker who undoes work, so its rate is negative.
@@ -315,6 +318,7 @@
 **Step-by-step working:**
 1. Towards each other: relative speed = 25 + 20 = 45 km/h.
 2. Time = gap / relative speed = 90/45 = 2 hours.
+**Fast method (30 seconds):** Time to meet = gap / (sum of speeds) = 90/45.
 **Check:** In 2 h they cover 50 km and 40 km; 50 + 40 = 90. Verified by script.
 **Explain simply:**
 - Facing each other, the gap shrinks by both speeds each hour.
@@ -331,6 +335,7 @@
 1. Same direction: relative speed = 40 - 30 = 10 km/h.
 2. Gap to close = 20 km.
 3. Time = 20/10 = 2 hours.
+**Fast method (30 seconds):** Time to catch = gap / (difference of speeds) = 20/10.
 **Check:** In 2 h the officer runs 80 km and the thief 60 km; 60 + 20 head start = 80. Verified by script.
 **Explain simply:**
 - Chasing: the faster one eats the gap at the difference of speeds.
@@ -376,7 +381,7 @@
 **Asked at:** commonly asked (no company-specific report found); wage-split items are a gap-fill pattern in the Part 3 sources file.
 **What the interviewer is checking:** Whether you know that pay follows work done, and that work done follows daily rate (efficiency).
 **Say this in the interview:** "They work for the same number of days, so work done is in the ratio of their daily rates. A does 1/6 a day, B does 1/12, which is 2 : 1, so A gets 2/3 of Rs 9,000."
-**Answer:** **A's share = Rs 6,000** (B gets Rs 3,000).
+**Answer:** **A's share = Rs 6,000** (B gets Rs 3,000). Assumption: both work every day until the job is done.
 **Step-by-step working:**
 1. A's daily work = 1/6; B's daily work = 1/12 = 0.5/6.
 2. Ratio of A : B = 1/6 : 1/12 = 2 : 1.
@@ -403,7 +408,7 @@
 - With equal times (say 1 hour at a, then 1 hour at b), distances are a and b over 2 hours, so the average is (a + b)/2, the simple mean.
 **Worked mini-example:** Go 60 km at 30 km/h and back 60 km at 60 km/h. Times: 2 h and 1 h, total 3 h for 120 km, so 40 km/h. The simple mean (45) is wrong. Formula: 2 x 30 x 60 / 90 = 40. Same answer.
 **Likely follow-ups:** Drive 1 hour at 30 and 1 hour at 60: average = 45 km/h (equal times). For three equal distances: 3 / (1/a + 1/b + 1/c).
-**Common mistakes / traps:** Picking the arithmetic mean (45) because it "looks right". It is always larger than the true average when the speeds differ.
+**Common mistakes / traps:** Picking the arithmetic mean (45) because it "looks right". For equal distances it is always larger than the true average when the speeds differ.
 
 ### Q25 ⭐⭐⭐ 🟡 How do you solve a time-and-work problem quickly using the LCM of the days as the total units of work? Show the method on a job that A does in 12 days and B in 18 days.
 **Asked at:** commonly asked (no company-specific report found); the LCM/units method is standard prep content on time-and-work practice sites (unverified).
@@ -485,7 +490,7 @@
 **Common mistakes / traps:** Using 8 + 3 for upstream (swapping the signs); arithmetic slips when eliminating; forgetting that u and d are the unknowns, not the boat and stream.
 
 ### Q29 ⭐⭐⭐ 🔴 A and B together can do a job in 10 days, B and C in 15 days, and A and C in 12 days. How many days do all three take working together?
-**Asked at:** commonly asked (no company-specific report found); pair-wise time-and-work is a standard prep pattern (unverified).
+**Asked at:** commonly asked (no company-specific report found); no source reports this exact pattern.
 **What the interviewer is checking:** Adding pair rates and halving, because each person is counted twice.
 **Say this in the interview:** "Add the three pair rates: 1/10 + 1/15 + 1/12 = 1/4. That counts everyone twice, so A + B + C together is 1/8 per day, which means 8 days."
 **Answer:** **8 days.**
@@ -494,6 +499,7 @@
 2. A + B = 60 / 10 = 6 units a day; B + C = 60 / 15 = 4; A + C = 60 / 12 = 5.
 3. Add: 2(A + B + C) = 6 + 4 + 5 = 15, so A + B + C = 7.5 units a day.
 4. Days = 60 / 7.5 = 8.
+**Fast method (30 seconds):** Add the three pair rates and halve: (1/10 + 1/15 + 1/12)/2 = (1/4)/2 = 1/8 per day, so 8 days.
 **Check:** A = 7.5 - 4 = 3.5, B = 7.5 - 5 = 2.5, C = 7.5 - 6 = 1.5; A + B = 6, B + C = 4, A + C = 5, all match. Verified by script.
 **Explain simply:**
 - Each person appears in two of the three pairs, so adding pairs doubles the total; halve it.
@@ -593,6 +599,7 @@
 2. Upstream speed = 20 / 4 = 5 km/h (boat - stream).
 3. Boat = (10 + 5) / 2 = 7.5 km/h.
 4. Stream = (10 - 5) / 2 = 2.5 km/h.
+**Fast method (30 seconds):** Boat = average of the two speeds; stream = half their difference.
 **Check:** 7.5 + 2.5 = 10 and 7.5 - 2.5 = 5. Verified by script.
 **Explain simply:**
 - Downstream the stream pushes the boat; upstream it holds the boat back.
@@ -625,7 +632,7 @@
 - The correct overall speed is a weighted average: the weights are the times.
 - If distances are equal, it matches the harmonic mean; if times are equal, it matches the simple average.
 **Worked mini-example:** Trip 1: 60 km in 2 h (30 km/h). Trip 2: 60 km in 1 h (60 km/h). AVERAGE of speeds = 45. Correct: 120 / 3 = 40 km/h.
-Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C2:C3)` for 40. Alternative: `=SUMPRODUCT(speed, time)/SUM(time)` gives the same.
+Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C2:C3)` for 40. Alternative: `=SUMPRODUCT(speed_range, time_range)/SUM(time_range)` gives the same. These Excel formulas were not run in Excel here; the arithmetic (40 km/h) was checked in code.
 **Likely follow-ups:** If time is in minutes? Divide by 60 first, or multiply the result by 60 for km/h.
 **Common mistakes / traps:** Using AVERAGE on the speed column; mixing minutes with hours.
 
@@ -650,7 +657,7 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Asked at:** commonly asked (no company-specific report found); "workers leaving" is a 2-star variant in the sources file (judgement).
 **What the interviewer is checking:** Man-days (workers x days) as the measure of work.
 **Say this in the interview:** "The project is 12 x 15 = 180 worker-days. 5 days done is 60, so 120 remain. With 6 workers that is 20 more days."
-**Answer:** **20 more days** (25 days in total).
+**Answer:** **20 more days** (25 days in total). Assumption: all workers are equally productive.
 **Step-by-step working:**
 1. Total work = 12 x 15 = 180 worker-days.
 2. Done in 5 days = 12 x 5 = 60 worker-days.
@@ -685,7 +692,7 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Asked at:** commonly asked (no company-specific report found); an HR/analyst-flavoured gap-fill in the sources file.
 **What the interviewer is checking:** Man-hours as the constant measure, with workers and hours both inverse to days.
 **Say this in the interview:** "Total effort is 10 x 8 x 8 = 640 man-hours. The new team does 8 x 10 = 80 man-hours a day, so 640 / 80 = 8 days."
-**Answer:** **8 days.**
+**Answer:** **8 days.** Assumption: every analyst-hour clears tickets at the same rate.
 **Step-by-step working:**
 1. Total effort = 10 analysts x 8 days x 8 hours = 640 analyst-hours.
 2. Tickets are the same (500), so the effort is the same.
@@ -807,7 +814,7 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Common mistakes / traps:** Adding C's rate instead of subtracting; adding the times (12 + 16 - 24); stopping at "9.6" and writing 9 h 60 min.
 
 ### Q48 ⭐⭐ 🟡 Pipe A fills a tank in 10 hours and pipe B in 15 hours. They are opened alternately for one hour each, starting with A. In how many hours is the tank full?
-**Asked at:** commonly asked (no company-specific report found); alternate-pipe variants are listed in prep-site pipe sets (unverified).
+**Asked at:** commonly asked (no company-specific report found); alternating-pipe cases are a 2-star variant in the sources file (judgement, not measured frequency).
 **What the interviewer is checking:** Working in cycles and handling the last partial cycle carefully.
 **Say this in the interview:** "A and B together in a two-hour cycle fill 1/10 + 1/15 = 1/6. After five cycles (10 hours) it is 5/6 full. Hour 11 is A's, adding 1/10; the last 1/15 is exactly B's one hour. So 12 hours."
 **Answer:** **12 hours**
@@ -826,7 +833,7 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Common mistakes / traps:** Answering 6 hours (treating both as open together: 1/(1/6)); or answering 12 by shortcut without checking the partial cycle.
 
 ### Q49 ⭐⭐ 🟡 A car going at 40 km/h reaches its destination 15 minutes late. Going at 50 km/h it reaches 6 minutes early. What is the distance?
-**Asked at:** commonly asked (no company-specific report found); late/early arrival is a standard speed-distance pattern in prep lists (unverified).
+**Asked at:** commonly asked (no company-specific report found); late/early distance is a 2-star pattern in the sources file (judgement, not measured frequency).
 **What the interviewer is checking:** Turning two scenarios into one time-difference equation and handling minutes versus hours.
 **Say this in the interview:** "The two trips differ by 21 minutes, which is 0.35 hours. Distance over 40 minus distance over 50 equals 0.35, so distance times 1/200 equals 0.35, which gives 70 km."
 **Answer:** **70 km**
@@ -931,7 +938,7 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Common mistakes / traps:** Using the simple mean (70 km/h) as the answer: (50 + x)/2 = 60 gives x = 70, which is wrong.
 
 ### Q55 ⭐⭐ 🔴 A and B together can do a job in 8 days. They work together for 3 days, after which B leaves and A finishes the remaining work in 15 more days. How many days would each take alone?
-**Asked at:** commonly asked (no company-specific report found); "worker leaves partway" is a listed variant in prep sources (unverified).
+**Asked at:** commonly asked (no company-specific report found); "worker leaves" variants are 1-2 star patterns in the sources file (judgement, not measured frequency).
 **What the interviewer is checking:** Splitting work into phases and solving for an unknown rate.
 **Say this in the interview:** "In 3 days together they finish 3/8, leaving 5/8. A does that in 15 days, so A does 1/24 a day, 24 days alone. B is 1/8 minus 1/24, which is 1/12, 12 days alone."
 **Answer:** **A alone: 24 days; B alone: 12 days**
@@ -948,7 +955,7 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Common mistakes / traps:** Thinking A took 15 + 3 = 18 days in total as a "solo" figure; dividing 1 by 15 instead of 5/8 by 15.
 
 ### Q56 ⭐⭐ 🔴 Two trains start at the same time from stations A and B towards each other. After meeting, the train from A reaches B in 4 hours and the train from B reaches A in 9 hours. What is the ratio of the speed of the train from A to the speed of the train from B?
-**Asked at:** commonly asked (no company-specific report found); the post-meeting ratio rule is a standard shortcut in prep material (unverified).
+**Asked at:** commonly asked (no company-specific report found); speed-ratio-after-meeting is a 2-star pattern in the sources file (judgement, not measured frequency).
 **What the interviewer is checking:** Whether you know the square-root rule for speeds after a meeting, and why it works.
 **Say this in the interview:** "The ratio of speeds is the square root of the ratio of the times taken after meeting, flipped: speed of A to speed of B equals root of 9 over 4, which is 3 to 2."
 **Answer:** **3 : 2**
@@ -1034,7 +1041,7 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Common mistakes / traps:** Answering 8 (the simple mean of 10 and 6).
 
 ### Q61 ⭐ 🟡 A man can walk both ways in 9 hours. He can ride one way and walk back in 6 hours. How long does he take to ride both ways?
-**Asked at:** commonly asked (no company-specific report found); the walk/ride puzzle is listed as an occasional item in prep sources.
+**Asked at:** commonly asked (no company-specific report found); the walk/ride puzzle is a 1-star pattern in the sources file (judgement).
 **What the interviewer is checking:** Breaking the trip into one-way times and subtracting.
 **Say this in the interview:** "Walking both ways is 9 hours, so one way is 4.5. Riding one way and walking back is 6, so riding one way is 1.5. Riding both ways is 3 hours."
 **Answer:** **3 hours**
@@ -1050,7 +1057,7 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Common mistakes / traps:** Answering 6 hours (that is the mixed trip, not ride both ways) or 1.5 hours (one way only).
 
 ### Q62 ⭐ 🟡 Two runners start together on a circular track of 400 m, running in the same direction at 5 m/s and 3 m/s. After how many seconds does the faster runner first lap (catch up with) the slower one?
-**Asked at:** commonly asked (no company-specific report found); circular-track items are listed as occasional in prep sources.
+**Asked at:** commonly asked (no company-specific report found); circular track is a 1-star pattern in the sources file (judgement).
 **What the interviewer is checking:** Relative speed with a lap to gain.
 **Say this in the interview:** "The faster runner gains 2 metres every second. To gain one full lap of 400 m takes 400 / 2 = 200 seconds."
 **Answer:** **200 seconds**
@@ -1066,13 +1073,13 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Common mistakes / traps:** Dividing 400 by 5 or by 3; adding the speeds for the same-direction case.
 
 ### Q63 ⭐ 🟡 In a 100 m race A beats B by 20 m. In another 100 m race B beats C by 10 m. Assuming constant speeds, by how many metres does A beat C in a 100 m race?
-**Asked at:** commonly asked (no company-specific report found); races are listed as occasional items in prep sources.
+**Asked at:** commonly asked (no company-specific report found); races are a 1-star pattern in the sources file (judgement).
 **What the interviewer is checking:** Chaining ratios of distances in the same time, not just adding the margins.
 **Say this in the interview:** "When A runs 100, B runs 80. When B runs 100, C runs 90, so when B runs 80, C runs 72. So A beats C by 28 m."
 **Answer:** **28 m**
 **Step-by-step working:**
 1. When A finishes 100 m, B has run 80 m. So A : B distances = 100 : 80.
-2. When B runs 100 m, C runs 90 m. So B : C = 100 : 90, which means in 80 m B's partner C runs 80 x 90/100 = 72 m.
+2. When B runs 100 m, C runs 90 m. So B : C = 100 : 90, which means that while B runs 80 m, C runs 80 x 90/100 = 72 m.
 3. So when A finishes 100 m, C has run 72 m.
 4. A beats C by 100 - 72 = 28 m.
 **Fast method (30 seconds):** Multiply the fractions: C's distance = 100 x 0.8 x 0.9 = 72, so the margin is 28 (not 20 + 10 = 30).
@@ -1088,17 +1095,17 @@ Excel: if distance is in B2:B3 and time (hours) in C2:C3, use `=SUM(B2:B3)/SUM(C
 **Say this in the interview:** "The formula assumes every person works at a constant rate, independently, on work that can be split freely. Real projects break those assumptions: people need onboarding, tasks depend on each other, and coordination costs grow with team size."
 **Answer:** **Rate addition (1/A + 1/B) holds only when workers are independent, constant-speed and the work is perfectly divisible; it fails when tasks are sequential, when adding people adds overhead, or when speed changes over time.**
 **Explain simply:**
-- Late additions: a new joiner needs onboarding time and takes a senior person's time away, so the team can get slower at first (the idea behind "adding people to a late project makes it later").
+- Late additions: a new joiner needs onboarding time and takes a senior person's time away, so the team can get slower at first (the idea behind "adding people to a late project makes it later", known as Brooks's law in software management).
 - Handoffs and dependencies: if step 2 cannot start until step 1 ends (data cleaning before analysis), two people cannot halve the time.
 - Communication overhead: more people means more meetings and coordination, so the combined rate is less than the sum.
 - Learning curves, fatigue and skill differences: rates change over time and differ by task.
 - Fixed parts: some tasks (an approval, a data refresh that runs overnight) take the same time whatever the headcount.
-**Worked mini-example:** A report takes 1 analyst 12 days. The textbook says 4 analysts take 3 days. In reality, 2 days are sequential data cleaning that cannot be shared, then 10 days of work split across 4 gives 2.5 days, so about 4.5 days, plus a day of coordination: roughly 5.5 days. The model is a good first estimate, not a promise.
+**Worked mini-example (illustrative numbers I made up):** A report takes 1 analyst 12 days. The textbook says 4 analysts take 3 days. In reality, 2 days are sequential data cleaning that cannot be shared, then 10 days of work split across 4 gives 2.5 days, so about 4.5 days, plus a day of coordination: roughly 5.5 days. The model is a good first estimate, not a promise.
 **Likely follow-ups:** 1) *When is the formula still safe?* Repetitive, independent items such as processing identical tickets or screening resumes. 2) *How would you plan then?* Split into sequential and parallel parts, add a buffer for onboarding.
 **Common mistakes / traps:** Quoting only the formula; or listing problems without an example. In an aptitude test, always use the formula; in an interview, show you know its limits.
 
 ### Q65 ⭐ 🔴 A, B and C can finish a job alone in 10, 15 and 12 days. They start together, but C leaves 3 days before the job is completed. In how many days is the job finished?
-**Asked at:** commonly asked (no company-specific report found); a "worker leaves before the end" variant, listed in prep sources (unverified).
+**Asked at:** commonly asked (no company-specific report found); a "worker leaves early" variant is a 1-star pattern in the sources file (judgement).
 **What the interviewer is checking:** Counting phases backwards from the finish, which is where the "3 days before" trap lives.
 **Say this in the interview:** "All three together do 1/4 a day. Let the total time be T. C works T minus 3 days, A and B (1/6 a day) work all T. Solving gives T = 5 days."
 **Answer:** **5 days**

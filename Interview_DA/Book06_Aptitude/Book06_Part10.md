@@ -13,7 +13,7 @@
 2. 1/6: 100 ÷ 6 = 16.666..., rounded to 16.67%.
 3. 1/12 is half of 1/6, so 16.67 ÷ 2 = 8.33% (exactly 8.333...).
 4. 1/16 is half of 1/8, so 12.5 ÷ 2 = 6.25%.
-**Fast method (30 seconds):** Learn only the "anchors" 1/2 = 50%, 1/3 = 33.33%, 1/4 = 25%, 1/5 = 20%, 1/6 = 16.67%, 1/8 = 12.5%. Halving a denominator-doubled fraction halves the percentage (1/6 to 1/12, 1/8 to 1/16). This works because doubling the denominator halves the fraction.
+**Fast method (30 seconds):** Learn only the "anchors" 1/2 = 50%, 1/3 = 33.33%, 1/4 = 25%, 1/5 = 20%, 1/6 = 16.67%, 1/8 = 12.5%. Doubling the denominator halves the percentage (1/6 to 1/12, 1/8 to 1/16), because doubling the bottom of a fraction halves its value.
 **Check:** Multiply back: 8 x 12.5 = 100 and 16 x 6.25 = 100 exactly; 6 x 16.67 = 100.02 and 12 x 8.33 = 99.96 (small rounding gaps). Verified by script.
 **Explain simply:**
 - A percentage is "out of 100"; 1/n as a percentage is simply 100 divided by n.
@@ -126,14 +126,14 @@
 **Common mistakes / traps:** Using 1/3 or 3/10 for 37.5%; dividing by 3 instead of 8.
 
 ### Q8 ⭐⭐⭐ 🟢 An online assessment has 25 quantitative questions in 40 minutes. How do you split the time across questions, and what do you do when a question is taking more than two minutes?
-**Asked at:** commonly asked (no company-specific report found); 75-100 seconds per quant question and skip-and-return advice appear in the prep sources in the sources file (unverified; test patterns differ between sources).
+**Asked at:** commonly asked (no company-specific report found); 75-100 seconds per quant question and skip-and-return advice appear in the prep sources in the sources file (unverified; test patterns differ between sources). All time splits below are rule-of-thumb guidance, not official rules.
 **What the interviewer is checking:** Whether you have a time-management plan, not just maths skill.
 **Say this in the interview:** "40 minutes is 2,400 seconds, so about 96 seconds a question. I do easy ones in under a minute, bank the saved time for harder ones, and if I cross two minutes without a clear path I mark it and move on."
 **Answer:** **About 96 seconds per question on average (2,400 s ÷ 25). Skip any question stuck past about 2 minutes and return to it after a first pass.**
 **Step-by-step working:**
 1. Convert to seconds: 40 x 60 = 2,400 s.
 2. Divide by 25: 2,400 ÷ 25 = 96 s per question.
-3. Plan a split: roughly 60 s for easy, 90-100 s for medium, 120-150 s for hard ones.
+3. Plan a split (rule of thumb): roughly 60 s for easy, 90-100 s for medium, up to about 120 s for hard ones, which is also your stop point.
 4. Keep the last 2-3 minutes for review and for unattempted questions.
 5. Rule for slow questions: if after about 20 seconds you have no method, or at 2 minutes you are not close, flag it, move on and come back.
 **Check:** 25 questions x 96 s = 2,400 s = 40 minutes.
@@ -187,7 +187,7 @@
 2. Cross-add: 98 + 3 = 101 (or 103 − 2 = 101). This is the "hundreds" part.
 3. Product of deviations: (−2) x (+3) = −6.
 4. Result = 101 x 100 + (−6) = 10,100 − 6 = 10,094.
-**Fast method (30 seconds):** Cross-add, put two zeros, then add or subtract the product of the gaps. Why: (100 + x)(100 + y) = 10,000 + 100(x + y) + xy = 100 x (100 + x + y) + xy.
+**Fast method (30 seconds):** Cross-add, put two zeros, then add or subtract the product of the gaps. Why: (100 + x)(100 + y) = 10,000 + 100(x + y) + xy = 100 x (100 + x + y) + xy. Limit: it is easiest when the gaps are small (product of the gaps under 100); with bigger gaps you must carry the extra hundreds from xy.
 **Check:** 98 x 103 = 98 x 100 + 98 x 3 = 9,800 + 294 = 10,094.
 **Explain simply:**
 - Write each number as 100 plus or minus a small gap, then expand.
@@ -246,7 +246,7 @@
 **Explain simply:**
 - Bringing fractions to a common denominator is the safe way to compare; cross-multiplying does it in one step.
 - The products are close (98 against 99), which tells you the fractions are close too.
-**Likely follow-ups:** 1) *Which is larger, 5/8 or 8/13?* 5 x 13 = 65, 8 x 8 = 64, so 5/8 is larger. 2) *Does this work for negatives?* Not directly; compare the positive versions and reverse.
+**Likely follow-ups:** 1) *Which is larger, 5/8 or 8/13?* 5 x 13 = 65, 8 x 8 = 64, so 5/8 is larger. 2) *Does this work for negatives?* Not directly; compare the positive versions and reverse. The trick also assumes both denominators are positive.
 **Common mistakes / traps:** Comparing the larger numerator only, or cross-multiplying in the wrong direction.
 
 ### Q15 ⭐⭐⭐ 🟡 Using the assumed-mean method, find the average of the monthly sales figures 62, 58, 65, 55 and 70 (Rs lakh).
@@ -297,7 +297,7 @@
 2. Expected marks = 0.25 x (+1) + 0.75 x (−0.25) = 0.25 − 0.1875 = +0.0625.
 3. Two options eliminated: P(correct) = 1/2; P(wrong) = 1/2.
 4. Expected marks = 0.5 x (+1) + 0.5 x (−0.25) = 0.5 − 0.125 = +0.375.
-**Fast method (30 seconds):** A guess breaks even when P(correct) = 0.25 ÷ 1.25 = 20%. With four options a blind guess is 25%, just above break-even; with two options left it is 50%, well above.
+**Fast method (30 seconds):** (Assumption: the options you removed are really wrong; if you eliminate a correct option by mistake, the numbers no longer hold.) A guess breaks even when P(correct) = 0.25 ÷ 1.25 = 20%. With four options a blind guess is 25%, just above break-even; with two options left it is 50%, well above.
 **Check:** Over 100 blind guesses you expect 25 right (+25) and 75 wrong (−18.75), net +6.25 = 0.0625 each. Verified by script.
 **Explain simply:**
 - Expected value is the average result if you repeated the same gamble many times.
@@ -380,7 +380,7 @@
 **Common mistakes / traps:** Using only 300 m (12 m/s = 43.2 km/h) or only 200 m (8 m/s = 28.8 km/h) instead of the sum.
 
 ### Q22 ⭐⭐⭐ 🟡 Mock Set A, Q7 (target 90 s): What is the compound interest on Rs 20,000 at 10% per annum compounded annually for 2 years?
-**Asked at:** commonly asked (no company-specific report found); simple/compound interest is a standard aptitude-gate topic in prep-site pattern lists (unverified).
+**Asked at:** commonly asked (no company-specific report found); original mock question.
 **What the interviewer is checking:** whether you know compound interest earns interest on interest, and can do it in two quick steps.
 **Say this in the interview:** "Year 1 interest is 2,000, so the amount becomes 22,000; year 2 interest is 2,200. Total compound interest is Rs 4,200."
 **Answer:** **Rs 4,200**
@@ -410,7 +410,7 @@
 3. Pass 2 (600 s): return to the marked medium questions; give each up to about 100 s (about 6 questions).
 4. Pass 3 (300 s): for the hardest remainder, use options (back-solving, elimination) or an educated guess; re-check any answers where you felt unsure.
 
-**Fast method (30 seconds):** Rule of thumb: never spend more than twice the average (about 160 s) on one question; a question that eats 2 minutes in pass 1 costs you two easy marks elsewhere.
+**Fast method (30 seconds):** Rule of thumb (my judgement, not an official rule): in pass 1 stop at about 60 to 90 s per question; in pass 2 never go beyond about twice the average (about 160 s) on one question. A question that eats 2 minutes costs you the time of two easy marks elsewhere.
 **Check:** 1,500 + 600 + 300 = 2,400 s. Verified by arithmetic.
 **Explain simply:**
 - A "pass" is one sweep through the paper with a different goal.
@@ -511,14 +511,14 @@
 3. Both roundings pushed the answer up, so the true value is slightly under 500.
 4. Of the options, 480 is too far; 520 and 560 are above 500. The nearest below 500 is 495.
 
-**Fast method (30 seconds):** 2,500 x 0.2 = 500; correct for 0.2% of 2,500 (= 5): 500 - 5 = 495, then 3 less for 2,497 gives about 494.4.
+**Fast method (30 seconds):** 2,500 x 0.2 = 500; correct for 0.2% of 2,500 (= 5): 500 - 5 = 495, then 2,497 is 3 below 2,500, which removes 20% of 3 = 0.6 more, giving about 494.4.
 **Check:** exact value 2,497 x 0.198 = 494.4, closest to 495. Verified by script.
 **Explain simply:**
 - Approximation means round to friendly numbers, then adjust the direction of error.
 - 20% = one fifth; divide by 5.
 - Options that are far apart let you round aggressively.
 
-**Likely follow-ups:** (1) 24.9% of 1,998? About 25% of 2,000 = 500; slightly under, about 497. (2) What if options were 494 and 496? You would need the exact calculation.
+**Likely follow-ups:** (1) 24.9% of 1,998? About 25% of 2,000 = 500; slightly under (exact 497.5). (2) What if options were 494 and 496? You would need the exact calculation.
 **Common mistakes / traps:** picking 520 by rounding up twice without adjusting; rounding too coarsely when options are close.
 
 ### Q29 ⭐⭐ 🟡 Use divisibility rules to test whether 384615 is divisible by 3, by 9 and by 11.
@@ -566,11 +566,11 @@
 ### Q31 ⭐⭐ 🟡 Using digit sums and last digits to eliminate options, which is the value of 387 × 46: 17,802; 17,812; 17,904 or 17,792?
 **Asked at:** commonly asked (no company-specific report found); option-elimination is a standard speed technique.
 **What the interviewer is checking:** eliminating wrong options without full multiplication.
-**Say this in the interview:** "Last digit: 7 x 6 = 42, ends in 2, so 17,904 is out. Digit sum of 387 is 18, which is 0 mod 9, so the answer's digit sum must be a multiple of 9; only 17,802 fits."
+**Say this in the interview:** "Last digit: 7 x 6 = 42, ends in 2, so 17,904 is out. Digit sum of 387 is 18, which leaves remainder 0 on division by 9, so the answer's digit sum must be a multiple of 9; only 17,802 fits."
 **Answer:** **17,802**
 **Step-by-step working:**
 1. Last digit of the product = last digit of 7 x 6 = 42, which is 2. 17,904 ends in 4, so it is eliminated.
-2. Digit sum of 387 = 3 + 8 + 7 = 18, which reduces to 9 (equivalent to 0), so the product must have a digit sum that is a multiple of 9.
+2. Digit sum of 387 = 3 + 8 + 7 = 18, which reduces to 9 (equivalent to 0, meaning remainder 0 when divided by 9), so the product must have a digit sum that is a multiple of 9.
 3. 17,802: 1+7+8+0+2 = 18, passes. 17,812: 19, fails. 17,792: 26, fails.
 4. Only 17,802 survives.
 
@@ -607,7 +607,7 @@
 ### Q33 ⭐⭐ 🟡 Using the alligation (cross) method, in what ratio should rice at Rs 40 per kg and rice at Rs 60 per kg be mixed so that the mixture is worth Rs 52 per kg?
 **Asked at:** commonly asked (no company-specific report found); alligation is a standard mixture shortcut.
 **What the interviewer is checking:** applying the cross-difference rule correctly and not swapping the ratio.
-**Say this in the interview:** "Mean price 52. Distance of 60 from 52 is 8; distance of 40 from 52 is 12. The cheaper rice gets the larger distance's opposite: 8 : 12, which is 2 : 3."
+**Say this in the interview:** "Mean price 52. Distance of 60 from 52 is 8; distance of 40 from 52 is 12. Cross the gaps: the cheaper rice's share is the dearer price's gap (8) and the dearer rice's share is the cheaper price's gap (12), so 8 : 12, which is 2 : 3."
 **Answer:** **Rs 40 rice : Rs 60 rice = 2 : 3**
 **Step-by-step working:**
 1. Write the cheap price (40), dearer price (60) and the mean (52).
@@ -620,6 +620,7 @@
 - Alligation finds the mixing ratio from the distances of the two prices to the mean.
 - The mix leans towards the price closer to the mean, so that price gets the larger quantity.
 - It is just weighted average in reverse.
+- Limit: it works when the price (or strength) per unit is the same kind of quantity for both items and the mean lies between the two.
 
 **Likely follow-ups:** (1) Mean price Rs 48? Gaps 12 and 8 swapped: 12 : 8 = 3 : 2. (2) How much of each in a 50 kg mix at Rs 52? 20 kg at 40, 30 kg at 60.
 **Common mistakes / traps:** giving 3 : 2 by attaching the gaps to the wrong prices; subtracting the wrong pairs.
@@ -628,14 +629,14 @@
 **Asked at:** commonly asked (no company-specific report found); time and work is a standard topic.
 **What the interviewer is checking:** the LCM shortcut for time-and-work.
 **Say this in the interview:** "Assume 36 units of work. A does 3 a day, B does 2 a day, together 5 a day, so 36 / 5 = 7.2 days."
-**Answer:** **7.2 days (7 days and about 5 hours; 7 1/5 days)**
+**Answer:** **7.2 days (7 1/5 days; 0.2 of a day is about 5 hours of a 24-hour day)**
 **Step-by-step working:**
 1. LCM of 12 and 18 = 36, so assume total work = 36 units.
 2. A's rate = 36 / 12 = 3 units per day. B's rate = 36 / 18 = 2 units per day.
 3. Together = 3 + 2 = 5 units per day.
 4. Time = 36 / 5 = 7.2 days.
 
-**Fast method (30 seconds):** For two people, time together = (product of days) / (sum of days) = (12 x 18) / (12 + 18) = 216 / 30 = 7.2 days.
+**Fast method (30 seconds):** For two people, time together = (product of days) / (sum of days) = (12 x 18) / (12 + 18) = 216 / 30 = 7.2 days. This product-over-sum shortcut is for exactly two workers; for three or more, add the rates.
 **Check:** 7.2 days x 5 units = 36 units. Verified by script.
 **Explain simply:**
 - Picking total work as the LCM makes each person's daily work a whole number.
@@ -653,7 +654,7 @@
 **Step-by-step working:**
 1. Round 2,013 to 2,000 and 487 to 500.
 2. 500 / 2,000 = 25%.
-3. Adjust: 487 is 13 below 500, which is 13 / 2,000 = 0.65%; so 25% - 0.65% is about 24.35%. The tiny effect of 2,013 versus 2,000 (0.3% smaller) gives about 24.2%.
+3. Adjust: 487 is 13 below 500, which is 13 / 2,000 = 0.65%; so 25% - 0.65% is about 24.35%. Since 2,013 is slightly bigger than 2,000 (about 0.65% bigger), the percentage shrinks by about 0.65% of itself, roughly 0.16 points, giving about 24.2%.
 4. Nearest whole percent: 24%.
 
 **Fast method (30 seconds):** 10% of 2,013 is about 201. 487 is just over two blocks (402) plus 85; 85 is about 4%. So 20% + 4% = 24%.
@@ -663,7 +664,7 @@
 - Rounding to nearest whole percent allows a rough method.
 - If options are 2% apart, rounding works fine.
 
-**Likely follow-ups:** (1) Percent of 613 in 2,013? About 30.4%. (2) What if options are 24.1% and 24.3%? Do exact division.
+**Likely follow-ups:** (1) Percent of 613 in 2,013? About 30.5% (exact 30.45%). (2) What if options are 24.1% and 24.3%? Do exact division.
 **Common mistakes / traps:** saying 25% without noticing the question wants the nearest option; dividing 2,013 by 487.
 
 ### Q36 ⭐⭐ 🟡 Using the Rule of 72, approximately how many years will a sum take to double at 8% compound interest per annum?
@@ -681,6 +682,7 @@
 - Rule of 72 is a quick estimate, not an exact figure; it works best for rates between about 6% and 10%.
 - It needs compound (not simple) interest: simple interest at 8% would take 12.5 years.
 - It also works in reverse: doubling in 6 years needs about 12%.
+- Why 72: the exact figure is about 69.3 (from the natural log of 2), and 72 is used because it divides by 2, 3, 4, 6, 8, 9 and 12.
 
 **Likely follow-ups:** (1) At 12% per annum? About 6 years. (2) At 9%? About 8 years.
 **Common mistakes / traps:** applying the rule to simple interest (the answer 9 would be wrong); using 100/8 = 12.5.
@@ -696,8 +698,8 @@
 3. 67 x 1 = 67.
 4. 6,700 - 67 = 6,633.
 
-**Fast method (30 seconds):** For any number x 99, the answer is (x - 1) followed by (100 - x): (67 - 1) = 66 and (100 - 67) = 33, so 6,633.
-**Check:** 6,633 digit sum 18 equals 0 mod 9; 67 x 99 digit sums: 4 x 0 = 0. Passes. Verified by script.
+**Fast method (30 seconds):** For a two-digit number x, x 99 is (x - 1) followed by (100 - x) written as two digits: (67 - 1) = 66 and (100 - 67) = 33, so 6,633. Limit: only for two-digit x; otherwise use x x 100 - x.
+**Check:** casting out nines (digit sums): 67 gives 4, 99 gives 0, so the product must give 0; 6,633 has digit sum 18, which gives 0. Passes. Verified by script.
 **Explain simply:**
 - Multiplying by 100 is just adding two zeros.
 - Subtracting one copy of the number corrects for the extra.
@@ -796,7 +798,7 @@
 2. HCF (highest common factor, the biggest number dividing both) uses the lowest power of each prime: 2^2 x 3 = 12.
 3. LCM (lowest common multiple, the smallest number both divide) uses the highest power: 2^4 x 3^2 = 16 x 9 = 144.
 
-**Fast method (30 seconds):** Subtract: 48 - 36 = 12, and 12 divides both, so HCF = 12. Then LCM = (36 x 48) / 12 = 1,728 / 12 = 144.
+**Fast method (30 seconds):** Subtract: 48 - 36 = 12. Any common factor of both numbers must divide their difference, so the HCF is at most 12; here 12 divides both, so HCF = 12. (If the difference did not divide both, test its smaller factors instead.) Then LCM = (36 x 48) / 12 = 1,728 / 12 = 144.
 **Check:** 12 x 144 = 1,728 = 36 x 48. Verified by script.
 **Explain simply:**
 - HCF x LCM = product of the two numbers (true for two numbers only).
@@ -896,7 +898,7 @@
 **Explain simply:**
 - Data sufficiency asks whether the data is enough, not for you to hunt for a trick.
 - A relative statement ("20% more than Sita") needs a known base.
-**Likely follow-ups:** If Statement 2 instead said Sita earns 20% less than Ravi? Still not sufficient, since there is no actual number.
+**Likely follow-ups:** If Statement 2 instead said Sita earns 20% less than Ravi? Still not sufficient, since there is no actual number (and note it would clash with Statement 1: 20% more than Sita means Sita is only 16.67% less than Ravi).
 **Common mistakes / traps:** Choosing Statement 1 alone because it mentions Ravi; or computing 20% of 40,000 and answering 8,000.
 
 ### Q48 ⭐⭐ 🟡 Mock Set C, Q6 (target 60 s): In a certain code each letter is replaced by its position in the alphabet and the values are added, so CAT = 3 + 1 + 20 = 24. What is the code for DOG?
@@ -955,14 +957,14 @@
 ### Q51 ⭐⭐ 🟡 Many assessments use type-in-the-answer (TITA) questions with no options. How does your approach change compared with multiple-choice questions?
 **Asked at:** TITA items are reported in the TCS NQT advanced section on prep sites (prep-site claim, unverified); otherwise commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether you understand that with no options there is no elimination or back-solving safety net.
-**Say this in the interview:** "I solve fully, verify with a reverse calculation, and match the format asked. I do TITA after the easy MCQs because I cannot eliminate options and a guess rarely lands."
-**Answer:** **Solve exactly, self-verify, enter in the format asked; skip rather than guess.**
+**Say this in the interview:** "I solve fully, verify with a reverse calculation, and match the format asked. I do TITA after the easy MCQs because I cannot eliminate options and a guess rarely lands, so I only guess if there is no penalty."
+**Answer:** **Solve exactly, self-verify, enter in the format asked; guess only if wrong answers carry no penalty, otherwise skip.**
 **Step-by-step working:**
 1. Read the required unit and rounding first (for example "nearest whole number" or "in Rs lakh").
 2. Solve exactly; use approximation only to sanity-check, not for the final typed number.
 3. Verify with a reverse step. Example: if 15% of 640 = 96, check 96 / 640 = 0.15.
 4. Type only the number in the stated format (no units or commas unless told).
-5. If it will take more than about 2 minutes, mark it and return.
+5. If it will take more than about 2 minutes (rule of thumb), mark it and return.
 **Check:** A typed answer must pass an independent check, because option-based tricks (last-digit elimination, back-solving) are unavailable.
 **Explain simply:**
 - In MCQs you can eliminate with digit sums or the last digit; in TITA the check has to be built into your own working.
@@ -980,7 +982,7 @@
 2. Week 1, days 4 to 7: profit and loss, interest, time-work, speed; 20 questions a day at 90 seconds each.
 3. Week 2, days 1 to 4: data interpretation sets and data sufficiency, since they mirror real analyst work.
 4. Week 2, days 5 to 7: reasoning, basic counting and probability, plus a full timed mock every second day.
-**Check:** If the top three groups carry roughly 3 to 4 questions each in a 25-question test, they cover about 60% of marks, so they repay time first (an estimate, not a measured frequency).
+**Check:** The first three groups hold about eight topics; if each carries roughly 2 questions in a 25-question test, that is about 16 questions, around 60% of marks, so they repay time first (an illustrative estimate, not a measured frequency).
 **Explain simply:**
 - Choose topics by how often they appear and how quickly you can master them.
 - For an analyst role, data interpretation doubles as job preparation.
@@ -1020,7 +1022,7 @@
 **Check:** Verified by script: 2^50 mod 7 = 4.
 **Explain simply:**
 - When a power's remainder equals 1, the cycle restarts.
-- Only the leftover exponent (50 mod 3 = 2) matters.
+- Only the leftover exponent matters: 50 divided by 3 leaves remainder 2. ("Modulo 7" simply means "the remainder after dividing by 7".)
 **Likely follow-ups:** Remainder of 2^100 mod 7? 100 mod 3 = 1, so 2.
 **Common mistakes / traps:** Picking the wrong position in the cycle and answering 1 or 2.
 
@@ -1084,7 +1086,7 @@
 1. 457 x 1001 = 457 x 1000 + 457 x 1.
 2. 457 x 1000 = 457,000.
 3. Add 457: 457,000 + 457 = 457,457.
-**Fast method (30 seconds):** Write the three digits twice. It works because 1001 = 1000 + 1.
+**Fast method (30 seconds):** Write the three digits twice. It works because 1001 = 1000 + 1. Limit: only for numbers with up to three digits; for four digits the two copies overlap and need carrying (1234 x 1001 = 1,235,234, not 12341234).
 **Check:** 457457 / 1001 = 457. Verified by script.
 **Explain simply:**
 - Multiplying by 1000 shifts the number three places; adding one more copy fills the empty places.
@@ -1133,7 +1135,7 @@
 1. 1012 = 1000 + 12.
 2. (1000 + 12)^2 = 1000^2 + 2 x 1000 x 12 + 12^2 = 1,000,000 + 24,000 + 144.
 3. Total = 1,024,144.
-**Fast method (30 seconds):** Left part = number + deviation = 1012 + 12 = 1024; right part = deviation squared (12^2 = 144) written in 3 digits. Join: 1024 | 144.
+**Fast method (30 seconds):** Left part = number + deviation = 1012 + 12 = 1024; right part = deviation squared (12^2 = 144) written in 3 digits. Join: 1024 | 144. Limit: the deviation squared must fit in 3 digits, so the deviation must be 31 or less; for 1032 and above, carry the extra into the left part.
 **Check:** Verified by script: 1012^2 = 1,024,144.
 **Explain simply:**
 - The trick is (a + b)^2 with a = 1000, so 2ab and b^2 line up with the place values.
@@ -1150,7 +1152,7 @@
 2. Then a mock every 2 to 3 days; use the day after for review and fix-practice.
 3. Simulate the real test: same time of day, strict time limit, no phone, no calculator (rough work on paper only), sections in the real order, negative marking applied.
 4. Final 2 days: one light mock or none; revise formulas and the fraction table, and sleep well.
-**Check:** Review time should be about 1 to 1.5 times the test time; otherwise mocks only measure and do not teach.
+**Check:** Review time should be about 1 to 1.5 times the test time (rule of thumb); otherwise mocks only measure and do not teach.
 **Explain simply:**
 - Mocks train timing and nerves; reviews train content.
 **Likely follow-ups:** What if the test has TITA questions? Include TITA-style items with no option elimination.
@@ -1167,9 +1169,9 @@
 3. Splitting numbers: 15% of 640 = 64 + 32 = 96; or 52 x 48 = 50^2 - 2^2 = 2,496.
 4. Estimating first: 487 out of 2,013 is about 480 / 2,000 = 24%; compute exactly only if the options are close.
 5. Checking by digit sums (casting out nines): for 4,376 x 23 = 100,648, the digit sums are 20 -> 2 and 23 -> 5, so 2 x 5 = 10 -> 1; the answer's digit sum is 19 -> 10 -> 1. They match, so the product passes the check.
-**Check:** 5 minutes a day on these, tracked in a log, should show steady gains within a week (my judgement, not a measured figure).
+**Check:** A few minutes on each habit daily (about 20 to 30 minutes in all), tracked in a log, should show steady gains within a week or two (my judgement, not a measured figure).
 **Explain simply:**
 - Speed is repeated recall and good habits, not just talent.
-**Likely follow-ups:** How long daily? 20 to 30 minutes of drills plus a timed set.
+**Likely follow-ups:** How long daily? About 20 to 30 minutes of drills, plus a timed set (rule of thumb).
 **Common mistakes / traps:** Learning tricks without daily drilling; they fail under time pressure.
 
