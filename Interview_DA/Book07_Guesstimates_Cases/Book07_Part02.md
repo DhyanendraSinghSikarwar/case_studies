@@ -73,7 +73,7 @@
 **Result:** about 26 lakh (range 21 to 30 lakh, from ownership of 50% to 70%).
 **Sanity check:** 26 lakh / 1.3 crore = about 200 per 1,000 people, one two-wheeler per five people. Plausible given the heavy two-wheeler use in Indian cities.
 **Sensitivity:** Ownership share is the swing factor; 10 points up or down changes the total by about 4 lakh.
-**Likely follow-ups:** 1) *Cars vs two-wheelers ratio?* Here about 4 two-wheelers per car (compare Q2 for Hyderabad). 2) *HR angle?* Commute allowance policy depends on this mix.
+**Likely follow-ups:** 1) *Cars vs two-wheelers ratio?* I would need Bengaluru's car count; using Hyderabad's figures from Q2 and Q21 as a rough guide (about 20 lakh two-wheelers to 6 lakh cars), it is about 3 to 4 two-wheelers per car. 2) *HR angle?* Commute allowance policy depends on this mix.
 **Common mistakes / traps:** Assuming one vehicle per person; forgetting the same household has both a car and a two-wheeler.
 
 ### Q4 ⭐⭐⭐ 🟢 Estimate the number of coffee shops in Bengaluru.
@@ -145,7 +145,7 @@
 2. Users: 1.5 crore x 75% = 1.125 crore.
 3. Yearly replacements: 1.125 crore / 3 = 37.5 lakh.
 4. Add 10%: 37.5 lakh x 1.10 = 41 lakh.
-**Result:** about 40 lakh a year (28 lakh at a 4-year cycle; 56 lakh at 2 years).
+**Result:** about 40 lakh a year (31 lakh at a 4-year cycle; 62 lakh at 2 years, both including the 10% NCR uplift).
 **Sanity check:** 40 lakh / 2 crore = 0.2 phones per resident a year, about one purchase per five people.
 **Sensitivity:** The replacement cycle is the lever (2 vs 4 years doubles the answer).
 **Likely follow-ups:** 1) *Value in rupees?* Multiply by an assumed average price. 2) *Festive effect?* Sales skew to the festive quarter.
@@ -472,7 +472,7 @@
 
 ### Q22 ⭐⭐⭐ 🔴 Estimate the market size for digital health insurance among young professionals in tier-2 cities in India.
 **Asked at:** appears in a Dataford practice listing labelled for a fintech insurance company; the company link is the site's claim (unverified).
-**What the interviewer is checking:** Funnel thinking and the distinction between TAM (everyone), the reachable segment, and rupees of premium.
+**What the interviewer is checking:** Funnel thinking and the distinction between TAM (total addressable market: the whole yearly spend if every possible customer bought), the reachable segment, and rupees of premium.
 **Say this in the interview:** "A funnel: tier-2 population, young professionals, those willing to buy digitally, times premium: about Rs 900 crore a year, with a larger theoretical ceiling."
 **Clarify first:** Young professionals means ages 22 to 35 in salaried or professional jobs; tier-2 cities defined as roughly 100 cities (about 12 crore people, assumed); market in annual premium rupees; individual policies bought online, beyond employer cover.
 **Approach:** Bottom-up funnel, with segments shown.
@@ -492,7 +492,7 @@
 5. Reachable market: 11.25 lakh x Rs 8,000 = Rs 900 crore.
 6. A 5% share of that is Rs 45 crore.
 **Result:** about Rs 900 crore a year reachable (Rs 560 to 1,350 crore with premium Rs 5,000 to 12,000; Rs 600 to 1,500 crore with willingness of 10% to 25%).
-**Sanity check:** 11.25 lakh policies is about 15% of 75 lakh people, a fair first estimate for an emerging product.
+**Sanity check:** Rs 900 crore over 12 crore tier-2 residents is about Rs 75 a head a year, and 11.25 lakh policies is about one per 107 residents; modest for an emerging product. (The 15% is an input, so this is a reality check, not a second route.)
 **Sensitivity:** Willingness to buy: a 10-point change moves the answer by Rs 600 crore.
 **Likely follow-ups:** 1) *Which tier-2 cities first?* Those with highest professional density. 2) *Employer cover?* It lowers the reachable share.
 **Common mistakes / traps:** Treating all residents as buyers; confusing TAM and what a firm can win.
@@ -566,8 +566,8 @@
 
 **Calculation:**
 1. Males = 10 lakh x 50% = 5 lakh.
-2. Shop users = 5 lakh x 85% = 4.2 lakh.
-3. Visits a year = 4.2 lakh x 18 = 76.5 lakh.
+2. Shop users = 5 lakh x 85% = 4.25 lakh.
+3. Visits a year = 4.25 lakh x 18 = 76.5 lakh.
 4. One shop serves 25 x 300 = 7,500 visits a year.
 5. Shops = 76.5 lakh / 7,500 = about 1,020.
 **Result:** About 1,000 shops (range 700 to 1,500).
@@ -601,7 +601,7 @@
 **Result:** About 3,000 ATMs (range 2,000 to 4,500).
 **Sanity check:** Both routes (3,000 and 2,940) land within 10% of each other; about 1 ATM per 3,000 to 3,500 people.
 **Sensitivity:** ATMs per lakh adults: 30 instead of 40 cuts the top-down answer by a quarter (to 2,250).
-**Likely follow-ups:** 1) Is UPI reducing ATMs? Yes, growth is flat, so use today's density, not older ratios. 2) Which bank has most? A separate share question.
+**Likely follow-ups:** 1) Is UPI reducing ATMs? Possibly; I would assume the count is roughly flat and use today's density, not older ratios (an assumption, unverified). 2) Which bank has most? A separate share question.
 **Common mistakes / traps:** Mixing city and metro population; ignoring stand-alone ATMs; quoting a precise number with no range.
 
 ### Q27 ⭐⭐ 🟢 Estimate the number of school-going children in Hyderabad.
@@ -806,7 +806,7 @@ HR flavour: state how you would separate employees from contractors.
 4. Beds = 50 lakh x 1.5 / 1,000 = 7,500; hospitals = 7,500 / 40 = 188.
 5. Total = 1,426.
 **Result:** About 1,200 clinics + 190 hospitals = about 1,400 (range 1,000 to 2,500).
-**Sanity check:** Doctor check: about 1 doctor per 1,000 people gives 5,000 doctors; around 1,400 sites implies 3 to 4 doctors per site, plausible for a mix of solo clinics and hospitals.
+**Sanity check:** Doctor check: assuming about 1 doctor per 1,000 people gives 5,000 doctors; around 1,400 sites implies 3 to 4 doctors per site, plausible for a mix of solo clinics and hospitals.
 **Sensitivity:** Visits per clinic per day: 25 instead of 35 gives about 1,730 clinics (+40%).
 **Likely follow-ups:** 1) Add labs and pharmacies? Separate estimate, usually more outlets. 2) Government versus private? Split by share of visits.
 **Common mistakes / traps:** Mixing clinics and hospitals into one capacity number; ignoring that hospitals also run outpatient clinics.
@@ -862,8 +862,8 @@ HR flavour: state which job titles you will count as data analysts.
 3. Small firms = 50,000.
 4. Total = 2.5 lakh + 2.2 lakh + 50,000 = 5.2 lakh.
 **Result:** About 5 lakh data analysts (range 3 to 8 lakh).
-**Sanity check:** Cross-check: if 1 in 10 of ~50 lakh tech workers did analytics, that would be 5 lakh; consistent.
-**Sensitivity:** Analyst share in non-IT sectors: 1% instead of 1.5% lowers the total to 4.5 lakh (-10%).
+**Sanity check:** 5.2 lakh analysts over about 2 crore white-collar workers (50 lakh + 1.5 crore) is roughly 1 analyst in 38 (about 2.6%); plausible but a reality check, not a second route.
+**Sensitivity:** Analyst share in non-IT sectors: 1% instead of 1.5% lowers the total to 4.5 lakh (about -14%).
 **Likely follow-ups:** 1) Include data scientists? State separately; they are fewer. 2) How to verify? Job-portal posting counts or HRIS titles.
 **Common mistakes / traps:** Not defining the title; mixing data analysts with data engineers; skipping non-IT employers.
 
@@ -922,27 +922,25 @@ HR flavour: state which job titles you will count as data analysts.
 ### Q40 ⭐⭐ 🟡 Estimate the number of used cars sold in Hyderabad in a year.
 **Asked at:** commonly asked (no company-specific report found) (a related cars-in-a-city question is a reported classic, unverified).
 **What the interviewer is checking:** Stock-and-flow thinking: cars owned, then how often they change hands.
-**Say this in the interview:** "Cars in the city divided by how long an owner keeps a car gives sales a year. About 1.3 lakh used cars."
+**Say this in the interview:** "Cars in the city divided by how long an owner keeps a car gives sales a year. About 1 lakh used cars."
 **Clarify first:** Count transactions (ownership transfers) or only dealer sales? I will fix: all ownership transfers of cars, no scooters or commercial vehicles.
 **Approach:** Stock divided by holding period, cross-checked by used-to-new ratio.
 **Assumptions (all assumed / approximate, unverified):**
 
 | Input | Value | Reason |
 |---|---|---|
-| Households | 25 lakh | assumed |
-| Households owning cars | 25% | assumed |
-| Cars per owning household | 1.2 | assumed |
+| Cars in Hyderabad | 6 lakh | from Q2, so answers stay consistent |
 | Years before the car is sold on | 5 | assumed |
 | New car life | 10 years | assumed |
 | Used-to-new ratio | 1.5 | assumed |
 
 **Calculation:**
-1. Cars = 25 lakh x 25% x 1.2 = 7.5 lakh.
-2. Used sales = 7.5 lakh / 5 = 1.5 lakh.
-3. Check: new sales = 7.5 lakh / 10 = 75,000; x 1.5 = 1.1 lakh.
-**Result:** About 1.3 lakh used cars (range 80,000 to 1.5 lakh).
-**Sanity check:** The routes give 1.5 lakh and 1.1 lakh; they bracket about 1.3 lakh.
-**Sensitivity:** Holding period: 7 years instead of 5 gives 1.07 lakh (-29%).
+1. Cars = 6 lakh (from Q2).
+2. Used sales = 6 lakh / 5 = 1.2 lakh.
+3. Check: new sales = 6 lakh / 10 = 60,000; x 1.5 = 90,000.
+**Result:** About 1 lakh used cars (range 70,000 to 1.3 lakh).
+**Sanity check:** The routes give 1.2 lakh and 0.9 lakh; they bracket about 1 lakh.
+**Sensitivity:** Holding period: 7 years instead of 5 gives about 86,000 (-29%).
 **Likely follow-ups:** 1) Value? Multiply by an average price per car. 2) Online share? A separate assumption.
 **Common mistakes / traps:** Using new-car sales as used sales; forgetting multi-owner chains; counting only dealer deals.
 
@@ -966,7 +964,7 @@ HR flavour: state which job titles you will count as data analysts.
 3. Per month = 90,000; per day = 2,959.
 4. Range: 3% = 5.4 lakh; 9% = 16.2 lakh.
 **Result:** About 11 lakh units a year (range 5 to 16 lakh).
-**Sanity check:** About 90,000 a month across all states and brands, around 4 per district per day; reasonable.
+**Sanity check:** About 90,000 a month across all states and brands, around 4 per district per day if India has about 750 districts (assumed); reasonable.
 **Sensitivity:** EV share: each 1 point is about 1.8 lakh units; 6% to 9% moves the answer by 50%.
 **Likely follow-ups:** 1) Include e-3-wheelers? Separate segment. 2) Subsidies? They shift the share up or down; state the assumption.
 **Common mistakes / traps:** Using the stock of vehicles instead of annual sales; ignoring the fast-changing EV share; claiming a precise figure.
@@ -974,26 +972,26 @@ HR flavour: state which job titles you will count as data analysts.
 ### Q42 ⭐⭐ 🟡 Estimate the number of gym members in Bengaluru.
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Funnel by age and a supply-side cross-check by gym count.
-**Say this in the interview:** "About 63 lakh people aged 18 to 45, and about 6% have a gym membership: about 3.8 lakh. Counting gyms gives 4.5 lakh."
+**Say this in the interview:** "About 58 lakh people aged 18 to 45, and about 6% have a gym membership: about 3.5 lakh. Counting gyms gives 4.5 lakh."
 **Clarify first:** Active members or all who ever signed up? Chains and local gyms both? I will fix: paying members active this year, all types.
 **Approach:** Demand-side funnel and supply-side (gyms x members).
 **Assumptions (all assumed / approximate, unverified):**
 
 | Input | Value | Reason |
 |---|---|---|
-| Population | 1.4 crore | assumed |
+| Population | 1.3 crore | assumed, same as Q3 and Q4 |
 | Aged 18 to 45 | 45% | assumed |
 | Gym members among them | 6% | assumed |
 | Gyms in the city | 3,000 | assumed |
 | Active members per gym | 150 | assumed |
 
 **Calculation:**
-1. Adults 18 to 45 = 1.4 crore x 45% = 63 lakh.
-2. Members = 63 lakh x 6% = 3.8 lakh.
+1. Adults 18 to 45 = 1.3 crore x 45% = 58.5 lakh.
+2. Members = 58.5 lakh x 6% = 3.5 lakh.
 3. Supply route: 3,000 x 150 = 4.5 lakh.
 **Result:** About 4 lakh members (range 3 to 5 lakh).
-**Sanity check:** Demand 3.8 lakh versus supply 4.5 lakh: within 20%.
-**Sensitivity:** Membership share: 4% instead of 6% gives 2.5 lakh (-33%).
+**Sanity check:** Demand 3.5 lakh versus supply 4.5 lakh: within about 30%.
+**Sensitivity:** Membership share: 4% instead of 6% gives 2.3 lakh (-33%).
 **Likely follow-ups:** 1) HR angle? Corporate wellness tie-ups raise it. 2) Seasonality? January peak, many lapse by March.
 **Common mistakes / traps:** Counting sign-ups as active members; applying membership rate to the full population.
 
@@ -1033,7 +1031,7 @@ HR flavour: state which job titles you will count as data analysts.
 |---|---|---|
 | Households | 25 lakh | assumed |
 | Using LPG | 90% | assumed |
-| Cylinders (14.2 kg) a year | 7 | assumed |
+| Cylinders a year (14.2 kg, assumed standard domestic size) | 7 | assumed |
 | Commercial users | 20,000 | restaurants, hotels |
 | Commercial cylinders a year each | 40 | 19 kg, assumed |
 
@@ -1082,7 +1080,7 @@ HR flavour: employer-paid annual check-ups for salaried staff.
 **Asked at:** commonly asked (no company-specific report found) (a similar grocery-delivery market question appears on a practice platform, unverified).
 **What the interviewer is checking:** Active users, order frequency and average order value, with a per-store check.
 **Say this in the interview:** "About 5 lakh active households order 6 times a month at Rs 450: about Rs 1,620 crore a year."
-**Clarify first:** Orders value (GMV) or company revenue? Food delivery excluded? I will fix: GMV of grocery and essentials, dark-store apps.
+**Clarify first:** Gross merchandise value (GMV, the total value of orders placed) or company revenue? Food delivery excluded? I will fix: GMV of grocery and essentials, dark-store apps.
 **Approach:** Demand-side by active households; supply-side check per store.
 **Assumptions (all assumed / approximate, unverified):**
 
@@ -1092,6 +1090,7 @@ HR flavour: employer-paid annual check-ups for salaried staff.
 | Active quick-commerce households | 20% | assumed |
 | Orders per month | 6 | assumed |
 | Average order value | Rs 450 | assumed |
+| Dark stores (check) | 150 | assumed |
 
 **Calculation:**
 1. Active households = 25 lakh x 20% = 5 lakh.
@@ -1099,7 +1098,7 @@ HR flavour: employer-paid annual check-ups for salaried staff.
 3. Value = 3.6 crore x Rs 450 = Rs 1,620 crore.
 4. Per day = 98,630 orders; at 150 stores, 658 per store.
 **Result:** About Rs 1,620 crore a year (range Rs 800 to 3,000 crore).
-**Sanity check:** About 658 orders per store per day is plausible for a busy dark store.
+**Sanity check:** About 658 orders per store per day at an assumed 150 stores; I would call that plausible for a busy dark store (unverified).
 **Sensitivity:** Active share: 15% instead of 20% gives about Rs 1,215 crore (-25%).
 **Likely follow-ups:** 1) GMV versus revenue? Revenue is the platform's cut, a fraction of GMV. 2) Growth? Raise active share and frequency.
 **Common mistakes / traps:** Counting all households as users; mixing GMV with revenue.
@@ -1107,7 +1106,7 @@ HR flavour: employer-paid annual check-ups for salaried staff.
 ### Q47 ⭐⭐ 🟡 Estimate the annual market for online tutoring for Class 10 students in India.
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Funnel logic and unit pricing for an education market.
-**Say this in the interview:** "About 1.8 crore Class 10 students; those with devices and who pay for online tutoring are about 8.6 lakh. At Rs 15,000 a year, about Rs 1,296 crore."
+**Say this in the interview:** "About 1.8 crore Class 10 students; those with devices and who pay for online tutoring are about 8.64 lakh. At Rs 15,000 a year, about Rs 1,296 crore."
 **Clarify first:** Live tutoring or recorded courses? Board-exam prep only? I will fix: paid online tutoring for Class 10, one academic year.
 **Approach:** Top-down funnel.
 **Assumptions (all assumed / approximate, unverified):**
@@ -1121,8 +1120,8 @@ HR flavour: employer-paid annual check-ups for salaried staff.
 
 **Calculation:**
 1. With access = 1.8 crore x 40% = 72 lakh.
-2. Paying = 72 lakh x 12% = 8.6 lakh.
-3. Market = 8.6 lakh x Rs 15,000 = Rs 1,296 crore.
+2. Paying = 72 lakh x 12% = 8.64 lakh.
+3. Market = 8.64 lakh x Rs 15,000 = Rs 1,296 crore.
 **Result:** About Rs 1,296 crore a year (range Rs 600 to 2,500 crore).
 **Sanity check:** Per Class 10 student overall: Rs 720, small versus the typical tuition spend.
 **Sensitivity:** Paying share: 8% instead of 12% gives about Rs 860 crore (-33%).
@@ -1191,26 +1190,26 @@ HR flavour: consider replacement cycle, new hires and attrition.
 ### Q50 ⭐⭐ 🟡 Estimate the annual market for mobile phone repair in Bengaluru in rupees.
 **Asked at:** commonly asked (no company-specific report found); a smartphones-in-a-city style question appears on practice platforms (unverified).
 **What the interviewer is checking:** Whether you build users x repair rate x ticket size and state the scope.
-**Say this in the interview:** "Smartphones in the city, times the share repaired each year, times average bill. I land near Rs 300 crore a year, range Rs 200 to 450 crore."
+**Say this in the interview:** "Smartphones in the city, times the share repaired each year, times average bill. I land near Rs 270 crore a year, range Rs 180 to 400 crore."
 **Clarify first:** Include both authorised and roadside shops? Only smartphones? Repairs only, not accessories? I fix: smartphones, all repair channels, paid repairs, one year.
 **Approach:** Bottom-up from users, because repairs scale with phones in use.
 **Assumptions (all assumed / approximate, unverified):**
 
 | Input | Value | Reason |
 |---|---|---|
-| Residents | 1.4 crore | city plus built-up fringe |
-| Smartphone owners | 70% = 98 lakh | adults and teens |
+| Residents | 1.3 crore | same Bengaluru base as Q3 and Q4 |
+| Smartphone owners | 70% = 91 lakh | adults and teens |
 | Phones repaired per year | 25% | screens, batteries, charging ports |
 | Average bill | Rs 1,200 | mix of Rs 300 minor jobs and Rs 2,500+ screens |
 
 **Calculation:**
-1. Smartphones: 140 lakh x 70% = 98 lakh.
-2. Repairs per year: 98 lakh x 25% = 24.5 lakh.
-3. Value: 24.5 lakh x Rs 1,200 = Rs 294 crore.
+1. Smartphones: 130 lakh x 70% = 91 lakh.
+2. Repairs per year: 91 lakh x 25% = 22.75 lakh.
+3. Value: 22.75 lakh x Rs 1,200 = Rs 273 crore.
 
-**Result:** about Rs 300 crore a year (range Rs 200 to 450 crore).
-**Sanity check:** Rs 1,200 x 25% = Rs 300 per phone per year, about 2% of a Rs 15,000 phone, believable.
-**Sensitivity:** Repair rate: 15% gives Rs 176 crore, 35% gives Rs 412 crore.
+**Result:** about Rs 270 crore a year (range Rs 180 to 400 crore).
+**Sanity check:** Rs 1,200 x 25% = Rs 300 per phone per year, about 2% of an assumed Rs 15,000 phone, believable.
+**Sensitivity:** Repair rate: 15% gives Rs 164 crore, 35% gives Rs 382 crore.
 **Likely follow-ups:** 1) *How would you split by channel?* Assume shares (e.g. roadside 70%) and mark them as guesses. 2) *Effect of rising phone prices?* Higher ticket, same rate.
 **Common mistakes / traps:** Using the whole population, not phone owners; mixing monthly and yearly rates; no scope on accessories.
 
@@ -1223,7 +1222,7 @@ HR flavour: consider replacement cycle, new hires and attrition.
 **Worked answer:**
 1. Ordering users = 8 lakh x 40% = 3.2 lakh.
 2. Orders = 3.2 lakh x 3 = 9.6 lakh.
-3. GOV = 9.6 lakh x Rs 600 = Rs 57.6 crore (1 crore = 100 lakh; 9.6 lakh x 600 = Rs 5.76 crore x 10 = Rs 57.6 crore).
+3. GOV = 9.6 lakh x Rs 600 = Rs 57.6 crore (1 crore = 100 lakh; 9.6 lakh x Rs 600 = Rs 5,760 lakh = Rs 57.6 crore).
 
 **Result:** 3.2 lakh ordering users, 9.6 lakh orders, Rs 57.6 crore a month.
 **Check:** Per monthly user: 57.6 crore / 8 lakh = Rs 720 per user per month, which equals 40% x 3 x 600. Edge test: at 30% ordering, Rs 43.2 crore; at 50%, Rs 72 crore.
@@ -1242,7 +1241,7 @@ HR flavour: consider replacement cycle, new hires and attrition.
 - Ask which side is easier to defend. Fix the scope on both, rerun, and see how much of the gap closes.
 - If gap remains, report both as low and high cases; a midpoint is 6.25 lakh, so "about 6 lakh, range 5.5 to 7".
 
-**Worked mini-example:** If the 1 crore includes 15 lakh people in outer areas with only 40 cars per 1,000, top-down becomes 85 lakh x 70/1,000 + 15 lakh x 40/1,000 = 5.95 + 0.6 = 6.55 lakh, closing most of the gap (illustrative split).
+**Worked mini-example:** If the 1 crore includes 15 lakh people in outer areas with only 40 cars per 1,000, top-down becomes 85 lakh x 70/1,000 + 15 lakh x 40/1,000 = 5.95 + 0.6 = 6.55 lakh, closing about a third of the gap (1.5 lakh down to 1.05 lakh; illustrative split). Adding commercial cars to the bottom-up (about 6 lakh, see Q2) would close more.
 **Practice step:** Write two sentences stating each estimate's scope before comparing numbers.
 **Likely follow-ups:** 1) *Why not just average?* It hides the cause; a range with reasons is more useful. 2) *Which number do you trust?* The one whose inputs you can verify.
 **Common mistakes / traps:** Picking the number you built; ignoring scope mismatch; not checking the arithmetic.
@@ -1314,7 +1313,7 @@ HR flavour: consider replacement cycle, new hires and attrition.
 4. Annual = 120 x 12 = Rs 1,440 crore.
 
 **Result:** about Rs 1,450 crore a year (range Rs 1,000 to 2,000 crore).
-**Sanity check:** Households route: 25 lakh households x Rs 480 a month x 12 = Rs 1,440 crore, the same figure. Rs 480 a month per household (about Rs 16 a day) on packaged snacks is plausible; Rs 300 a month would give about Rs 900 crore.
+**Sanity check:** Reality check per household: Rs 1,440 crore / 25 lakh households = Rs 480 a month (about Rs 16 a day), plausible for packaged snacks; Rs 300 a month would give about Rs 900 crore. (Same total by construction, so this tests plausibility, not a new route.)
 **Sensitivity:** Packs per month: 7 gives about Rs 1,010 crore, 14 gives about Rs 2,020 crore; price moves it equally.
 **Likely follow-ups:** 1) *Add festivals?* Apply a seasonal index. 2) *Share of a brand?* Multiply by an assumed share.
 **Common mistakes / traps:** Including biscuits without saying; counting pack price as per-kg price; using all 1 crore as consumers.
@@ -1342,7 +1341,7 @@ HR flavour: consider replacement cycle, new hires and attrition.
 4. Daily users: 42 lakh x 50% = 21 lakh.
 
 **Result:** about 21 lakh people (21% of residents); range 15 to 30 lakh.
-**Sanity check:** 21 lakh people paying even 2 times a day gives 42 lakh payments a day, a believable city volume against a household of 4 where about 1.5 earners pay daily.
+**Sanity check:** 21 lakh daily users over 25 lakh households is about 0.84 daily UPI payers per household of 4, roughly one family member per home; plausible for a city (a reality check on the funnel).
 **Sensitivity:** Daily share: 35% gives 14.7 lakh, 65% gives 27.3 lakh.
 **Likely follow-ups:** 1) *Feature phones?* UPI via voice or USSD is small; ignore and note it. 2) *Data I would ask for?* Bank or app transaction counts per user.
 **Common mistakes / traps:** Starting from 1 crore as all users; confusing "has used" with "uses daily".
@@ -1370,8 +1369,8 @@ HR flavour: state how you split fresher and experienced applicants.
 2. Experienced: 11 lakh x 4 = 44 lakh.
 3. Total = 66.5 lakh.
 
-**Result:** about 65 to 70 lakh applications (fresher about a third).
-**Sanity check:** Top-down: assume these firms hire 1.5 lakh freshers and 1.5 lakh experienced; at 15 and 40 applications per hire: 22.5 lakh + 60 lakh = 82.5 lakh, within about 25%.
+**Result:** about 65 to 80 lakh applications (bottom-up 66.5 lakh, top-down 82.5 lakh; fresher about a third).
+**Sanity check:** Top-down: assume these firms hire 2.5 lakh freshers (as in Q77) and 1.5 lakh experienced; at 9 and 40 applications per hire (assumed): 22.5 lakh + 60 lakh = 82.5 lakh, within about 25%.
 **Sensitivity:** The experienced group dominates; at 2 applications each it falls to 22 lakh (total about 45 lakh).
 **Likely follow-ups:** 1) *Referrals?* Add as a separate, smaller channel. 2) *Why applications per hire?* It is an HR funnel ratio you can check with data.
 **Common mistakes / traps:** Equating applications with unique applicants; no fresher vs experienced split.
@@ -1379,31 +1378,31 @@ HR flavour: state how you split fresher and experienced applicants.
 ### Q59 ⭐⭐ 🟡 Estimate the annual market for engineering-college coaching in Hyderabad in rupees.
 **Asked at:** commonly asked (no company-specific report found); an edtech market variant, judgement.
 **What the interviewer is checking:** A cohort-based build with fee and scope assumptions.
-**Say this in the interview:** "Coaching students in two class years times average fee, plus repeaters. I get about Rs 950 crore, range Rs 500 to 1,200 crore."
+**Say this in the interview:** "Coaching students in two class years times average fee, plus repeaters. I get about Rs 1,090 crore, range Rs 600 to 1,400 crore."
 **Clarify first:** Which exams (state and national engineering entrance tests)? Include classroom and integrated college programmes? Fix: entrance coaching for Class 11 and 12 plus repeaters.
 **Approach:** Cohort funnel, student by student.
 **Assumptions (all assumed / approximate, unverified):**
 
 | Input | Value | Reason |
 |---|---|---|
-| Single age cohort (17-year-olds) | 1.2 lakh | about 1.2% of 1 crore |
-| In Class 11 or 12 | 80% = 96,000 | |
-| Maths stream | 35% = 33,600 per class year | |
-| Two class years | 67,200 | |
-| In paid coaching | 70% = 47,040 | |
-| Add outside-city students (hostels) | +20% = 56,448 | |
+| Single age cohort (17-year-olds) | 1.4 lakh | 1 crore / 70 years, as in Q27 |
+| In Class 11 or 12 | 80% = 1.12 lakh | |
+| Maths stream | 35% = 39,200 per class year | |
+| Two class years | 78,400 | |
+| In paid coaching | 70% = 54,880 | |
+| Add outside-city students (hostels) | +20% = 65,856 | |
 | Average fee a year | Rs 1.5 lakh | wide spread |
 | Repeaters | 10,000 at Rs 1 lakh | |
 
 **Calculation:**
-1. Coaching students = 56,448 (rounded 56,000).
-2. Fee revenue = 56,448 x Rs 1.5 lakh = Rs 847 crore.
+1. Coaching students = 65,856 (about 66,000).
+2. Fee revenue = 65,856 x Rs 1.5 lakh = Rs 988 crore.
 3. Repeaters = 10,000 x Rs 1 lakh = Rs 100 crore.
-4. Total = about Rs 947 crore.
+4. Total = about Rs 1,088 crore.
 
-**Result:** about Rs 950 crore a year.
-**Sanity check:** Rs 950 crore / 66,000 students = Rs 1.4 lakh each, consistent with the fee assumed.
-**Sensitivity:** Fee: Rs 1 lakh gives about Rs 665 crore, Rs 2 lakh about Rs 1,230 crore.
+**Result:** about Rs 1,090 crore a year (range Rs 600 to 1,400 crore).
+**Sanity check:** Rs 1,088 crore / 75,856 students (65,856 + 10,000 repeaters) = Rs 1.43 lakh each, which only confirms the blended fee; the real test would be fee data from a few institutes.
+**Sensitivity:** Fee: Rs 1 lakh gives about Rs 760 crore, Rs 2 lakh about Rs 1,420 crore.
 **Likely follow-ups:** 1) *Online players?* Add as a separate line. 2) *Scholarships and discounts?* Lower the average fee.
 **Common mistakes / traps:** Counting only one class year; using list fees; ignoring outside-city students.
 
@@ -1412,7 +1411,7 @@ HR flavour: state how you split fresher and experienced applicants.
 **What the interviewer is checking:** The TAM, SAM, SOM ladder and per-seat pricing, not just a big number.
 **Say this in the interview:** "Total market first, then the part I can really sell. TAM is about Rs 1,550 crore a year, serviceable about Rs 620 crore, and a realistic five-year share about Rs 31 crore."
 **Clarify first:** Does the tool cover payroll, attendance and hiring, or one module? Priced per employee per month? Fix: core HR and payroll suite at Rs 80 per employee per month.
-**Approach:** Bottom-up by company size band.
+**Approach:** Bottom-up by company size band. TAM is the total yearly spend if every firm bought; SAM is the part my product can serve; SOM is the part I can realistically win.
 **Assumptions (all assumed / approximate, unverified):**
 
 | Band | Companies | Avg employees | Reason |
@@ -1436,11 +1435,11 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 **Common mistakes / traps:** Giving TAM as the revenue target; counting all 50 to 500 firms as buyers; one average company size.
 
 ### Q61 ⭐⭐ 🔴 Estimate the market size for a UPI-based working-capital loan for small shopkeepers in India.
-**Asked at:** commonly asked (no company-specific report found); a fintech variant (a digital-lending question is on a practice platform, unverified).
+**Asked at:** commonly asked (no company-specific report found); a fintech variant, judgement not a reported question.
 **What the interviewer is checking:** Funnel from shops to eligible borrowers, then loan book and revenue.
 **Say this in the interview:** "Shops, to UPI-accepting shops, to those wanting credit, to approved. I get about 12 lakh borrowers, a loan book of about Rs 6,000 crore and revenue near Rs 1,080 crore a year."
 **Clarify first:** Loan size and tenure? Do we count loan book or revenue? Fix: average loan Rs 50,000, revolving, 18% yearly yield, report both.
-**Approach:** Funnel, then value.
+**Approach:** Funnel, then value. The loan book is the total money lent and still outstanding; yield is the interest and fees earned a year as a share of it.
 **Assumptions (all assumed / approximate, unverified):**
 
 | Input | Value | Reason |
@@ -1468,30 +1467,30 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 ### Q62 ⭐⭐ 🔴 Estimate the number of EV charging points Hyderabad would need in five years.
 **Asked at:** commonly asked (no company-specific report found); an EV variant, judgement.
 **What the interviewer is checking:** Demand-led build: vehicles, public-charging share, sessions per point.
-**Say this in the interview:** "Vehicles that will be electric, share that depend on public charging, sessions per day, divided by what a point handles. About 4,300 public points, range 2,500 to 7,000."
+**Say this in the interview:** "Vehicles that will be electric, share that depend on public charging, sessions per day, divided by what a point handles. About 2,200 public points, range 1,300 to 3,500."
 **Clarify first:** Public chargers only (not home)? Which vehicles (cars, two-wheelers; buses and trucks excluded)? Fix: public points for cars and two-wheelers.
 **Approach:** Demand-based, by vehicle type.
 **Assumptions (all assumed / approximate, unverified):**
 
 | Input | Value | Reason |
 |---|---|---|
-| Cars now | 7 lakh, growing 6% a year | |
-| Cars in 5 years | 9.4 lakh | 7 x 1.06^5 |
-| Two-wheelers now | 50 lakh, growing 4% | |
-| Two-wheelers in 5 years | 61 lakh | |
+| Cars now | 6 lakh, growing 6% a year | from Q2 |
+| Cars in 5 years | 8.0 lakh | 6 x 1.06^5 |
+| Two-wheelers now | 20 lakh, growing 4% | from Q21 |
+| Two-wheelers in 5 years | 24.3 lakh | 20 x 1.04^5 |
 | EV share of fleet | 8% cars, 10% two-wheelers | |
 | Needing public charging | 30% cars, 15% two-wheelers | rest charge at home |
 | Public sessions per week | 2 cars, 3 two-wheelers | |
 | Sessions a point handles a day | 6 cars, 12 two-wheelers | |
 
 **Calculation:**
-1. EV cars = 9.4 lakh x 8% = about 75,000; public users = 22,500; sessions a day = 22,500 x 2 / 7 = 6,430; points = 6,430 / 6 = about 1,070.
-2. EV two-wheelers = 61 lakh x 10% = 6.1 lakh; public users = 91,000; sessions a day = 39,100; points = 39,100 / 12 = about 3,260.
-3. Total = about 4,330.
+1. EV cars = 8.0 lakh x 8% = about 64,000; public users = 19,300; sessions a day = 19,300 x 2 / 7 = 5,500; points = 5,500 / 6 = about 920.
+2. EV two-wheelers = 24.3 lakh x 10% = 2.43 lakh; public users = 36,500; sessions a day = 15,600; points = 15,600 / 12 = about 1,300.
+3. Total = about 2,220.
 
-**Result:** about 4,300 public charging points (range 2,500 to 7,000).
-**Sanity check:** Roughly 1 point for 150 EVs (6.8 lakh EVs / 4,330), or about 6 per 1,000 EVs; reasonable if two-wheelers use light, cheap points.
-**Sensitivity:** Two-wheeler EV share: 5% instead of 10% cuts the total to about 2,700.
+**Result:** about 2,200 public charging points (range 1,300 to 3,500).
+**Sanity check:** Roughly 1 point for 140 EVs (3.07 lakh EVs / 2,220), or about 7 per 1,000 EVs; reasonable if two-wheelers use light, cheap points.
+**Sensitivity:** Two-wheeler EV share: 5% instead of 10% cuts the total to about 1,570.
 **Likely follow-ups:** 1) *Battery swapping?* It would replace many two-wheeler points. 2) *Where to place them?* Near offices, malls and highways, mapped from traffic data.
 **Common mistakes / traps:** Counting home charging; using one point type for all; ignoring time-of-day peaks.
 
@@ -1542,7 +1541,7 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 2. Realistic: 6 lakh x Rs 800 = Rs 48 crore.
 
 **Result:** potential about Rs 160 crore; realistic about Rs 48 crore a year in premium.
-**Sanity check:** At a 70% claims ratio (assumed) the insurer pays about Rs 34 crore and keeps Rs 14 crore.
+**Sanity check:** Rs 800 a year is about Rs 67 a month, roughly 0.3% of an assumed Rs 20,000 monthly earning, small enough that 30% take-up is plausible. (Insurer view, assuming 70% of premium is paid out in claims: about Rs 34 crore paid, Rs 14 crore kept.)
 **Sensitivity:** Take-up: 15% gives Rs 24 crore, 50% gives Rs 80 crore.
 **Likely follow-ups:** 1) *Who pays?* Platform-funded cover raises take-up sharply. 2) *Churn of workers?* Many leave within a year, so use active workers.
 **Common mistakes / traps:** Counting all gig workers; assuming 100% take-up.
@@ -1585,7 +1584,7 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 3. Activa = 1.82 lakh x 35% = about 63,700.
 
 **Result:** about 64,000 a year (about 175 a day).
-**Sanity check:** 40 dealers x 4 a day = 160 a day, consistent.
+**Sanity check:** Supply side, assuming 40 dealers selling 4 a day each = 160 a day, consistent with about 175.
 **Sensitivity:** Brand share: 25% gives about 45,500; 45% gives about 82,000.
 **Likely follow-ups:** 1) *Why replacement of 10 years?* Typical vehicle life, resale shifts matter. 2) *Seasonality?* Peaks at festivals.
 **Common mistakes / traps:** Using national share for one city; ignoring growth; mixing registration with sale.
@@ -1612,7 +1611,7 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 3. Value = 47.25 lakh x Rs 40 = Rs 18.9 crore.
 
 **Result:** about 47 lakh bunches (about Rs 19 crore) in the week.
-**Sanity check:** About 7 lakh bunches a day across the city, supply-side plausible if a few thousand vendors sell about 100 a day each.
+**Sanity check:** About 7 lakh bunches a day across the city, supply-side plausible if about 7,000 vendors sell about 100 a day each (assumed).
 **Sensitivity:** Buying share 40% gives 31.5 lakh; 80% gives 63 lakh.
 **Likely follow-ups:** 1) *Peak day?* Eve of festival can take 30%. 2) *Supply limit?* Check market arrivals.
 **Common mistakes / traps:** Undefined bunch; counting all residents rather than households.
@@ -1635,7 +1634,7 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 2. Per month = 1,500 x 30 = 45,000 tonnes.
 
 **Result:** about 45,000 tonnes a month (range 36,000 to 54,000).
-**Sanity check:** Households: 25 lakh x 20 kg = 50,000 tonnes, close.
+**Sanity check:** Households: 25 lakh x an assumed 20 kg a month = 50,000 tonnes, close.
 **Sensitivity:** 120 g gives 36,000; 180 g gives 54,000.
 **Likely follow-ups:** 1) *Biryani season?* Raises restaurant share. 2) *Value?* x Rs 50 a kg = about Rs 225 crore.
 **Common mistakes / traps:** Cooked vs raw weight (cooked is about 2.5 to 3 times heavier); 1 tonne = 1,000 kg slip.
@@ -1658,7 +1657,7 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 2. 15 crore x 30 = 450 crore a month.
 
 **Result:** about 450 crore cigarettes a month (about 5,400 crore a year).
-**Sanity check:** About 4.5 per adult per month; at Rs 10 a stick about Rs 4,500 crore a month in retail value, to compare with any published industry figure you remember.
+**Sanity check:** About 4.5 per adult per month; at an assumed Rs 10 a stick about Rs 4,500 crore a month in retail value; 5 crore smokers is 5% of about 100 crore adults (assumed), a modest share.
 **Sensitivity:** 2 sticks a day gives 300 crore; 4.5 gives 675 crore.
 **Likely follow-ups:** 1) *Illicit trade?* Adds to the count. 2) *Gender split?* Mostly men; the split sets the smoker count.
 **Common mistakes / traps:** Including bidis; heavy-smoker average (10 a day) for everyone.
@@ -1692,34 +1691,34 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 ### Q71 ⭐ 🟢 Estimate the number of auto-rickshaw drivers who would switch to an EV auto if offered a subsidy in a city of your choice.
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Choosing a city, segmenting drivers, and a realistic switching rate.
-**Say this in the interview:** "I will take Hyderabad. Autos, those at replacement time, and the share who switch with a subsidy. About 13,000 autos, so about 18,000 drivers, range 9,000 to 26,000."
+**Say this in the interview:** "I will take Hyderabad. Autos, those at replacement time, and the share who switch with a subsidy. About 14,000 autos, so about 20,000 drivers, range 13,000 to 27,000."
 **Clarify first:** One-time subsidy? Switching over what period (say 2 years)? Fix: subsidy window of 2 years.
 **Approach:** Segmented funnel: at replacement vs not.
 **Assumptions (all assumed / approximate, unverified):**
 
 | Input | Value | Reason |
 |---|---|---|
-| Autos in the city | 1.2 lakh | |
-| Due for replacement in window | 25% = 30,000 | 8-year life, 2-year window |
+| Autos in the city | 1.3 lakh | from Q23 |
+| Due for replacement in window | 25% = 32,500 | 8-year life, 2-year window |
 | Switch with subsidy among them | 35% | |
-| Others switching early | 3% of 90,000 = 2,700 | |
+| Others switching early | 3% of 97,500 = 2,925 | |
 | Drivers per auto | 1.4 | shift driving |
 
 **Calculation:**
-1. Replacement switchers = 30,000 x 35% = 10,500.
-2. Early adopters = 90,000 x 3% = 2,700.
-3. Autos switching = 13,200; drivers = 13,200 x 1.4 = about 18,500.
+1. Replacement switchers = 32,500 x 35% = 11,375.
+2. Early adopters = 97,500 x 3% = 2,925.
+3. Autos switching = 14,300; drivers = 14,300 x 1.4 = about 20,000.
 
-**Result:** about 13,000 autos, about 18,000 drivers (range 9,000 to 26,000).
-**Sanity check:** 11% of the auto fleet converting over 2 years is believable for a good subsidy.
-**Sensitivity:** Switching share: 20% gives about 8,700 autos; 50% gives about 17,700.
+**Result:** about 14,000 autos, about 20,000 drivers (range 13,000 to 27,000 drivers).
+**Sanity check:** 11% of the auto fleet converting over 2 years is believable for a good subsidy (a judgement, not a measured figure). Note the owner usually decides, so I count drivers only through autos.
+**Sensitivity:** Switching share: 20% gives about 9,400 autos (13,200 drivers); 50% gives about 19,200 autos (26,800 drivers).
 **Likely follow-ups:** 1) *What blocks switching?* Charging access, range and resale. 2) *Why a drivers count?* The question asks for drivers, so convert autos using drivers per auto.
 **Common mistakes / traps:** Counting all autos; ignoring replacement timing; mixing autos and drivers.
 
 ### Q72 ⭐ 🟡 Estimate the size of the chewing gum market in India.
 **Asked at:** commonly asked in campus and prep-site guesstimate lists (IIT Guwahati "Guess It Matters", InsideIIM, Amity Online; prep-site claims, unverified); no company-specific report found.
 **What the interviewer is checking:** Whether you can size a small impulse product by splitting people into buyers and non-buyers, with a sensible price.
-**Say this in the interview:** "I will size it bottom-up: urban young people who buy gum, times packs per year, times price. I get about Rs 600 crore a year, and I will cross-check from the shop side."
+**Say this in the interview:** "I will size it bottom-up: urban young people who buy gum, times packs per year, times price. I get about Rs 650 crore a year, and I will cross-check from the shop side."
 
 **Clarify first:** Retail value or volume? (Rupees at retail.) Only chewing gum, not bubble gum or mints? (Yes, gum and bubble gum together.) Whole India, all channels? (Yes, but I will count only urban buyers as the core and mention rural as upside.)
 **Approach:** Demand side (people), then a supply-side cross-check (shops), because gum is bought at small shops, not online.
@@ -1742,7 +1741,7 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 5. Value = 94 crore x Rs 7 = Rs 659 crore (rounded about Rs 650 crore).
 **Result:** About Rs 650 crore a year (range Rs 500 to 850 crore, from 15% to 25% buyers). Rural could add a few hundred crore at most; I leave it out and say so.
 **Sanity check:** Shop route: assume 40 lakh outlets (kirana, pan shops, chemists) each sell 0.6 packs a day: 40 lakh x 0.6 x 365 = 88 crore packs, close to 94 crore. Per person across India that is about Rs 5 a year, plausible for a minor treat.
-**Sensitivity:** The buyer share (15% to 25%) moves the answer most, about plus or minus 25%; price (Rs 5 to Rs 10) moves it by about plus or minus 40%.
+**Sensitivity:** The buyer share (15% to 25%) moves the answer most, about plus or minus 25%; price (Rs 5 to Rs 10) moves it from about -29% to +43%.
 
 **Likely follow-ups:** 1) *How would you check the price?* Walk into three shops and note pack prices. 2) *Which segment is growing?* Sugar-free packs in metros; I would ask for sales data by pack type.
 **Common mistakes / traps:** Multiplying total population by a usage rate (children under 10 and many rural people are not buyers); mixing packs and pieces; forgetting to say retail versus company revenue.
@@ -1780,7 +1779,7 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 ### Q74 ⭐ 🟡 Estimate the annual market for bicycles in India.
 **Asked at:** commonly asked in campus and prep-site guesstimate lists (IIT Guwahati, InsideIIM; prep-site claims, unverified); no company-specific report found.
 **What the interviewer is checking:** Whether you use a stock and replacement logic (how many exist, how long they last) and split by customer type.
-**Say this in the interview:** "I will estimate cycles in use, divide by how long a cycle lasts to get replacements, and confirm by buyer type. That gives about 18 million cycles, around Rs 8,000 crore."
+**Say this in the interview:** "I will estimate cycles in use, divide by how long a cycle lasts to get replacements, and confirm by buyer type. That gives about 18 million cycles, around Rs 8,200 crore."
 
 **Clarify first:** Units or rupees? (Both.) New cycles only, not second-hand? (New.) Include premium and e-cycles? (Included in the average price, not separately.)
 **Approach:** Stock-and-replacement top-down, cross-checked by segments.
@@ -1788,19 +1787,19 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 
 | Input | Value | Reason |
 |---|---|---|
-| Households | 140 crore / 4.7 = about 30 crore | average family size assumed |
+| Households | 140 crore / 4.5 = about 31 crore | average family size assumed, same as Q16 |
 | Share owning a cycle | 45% | common in villages and small towns |
 | Cycles per owning household | 1.3 | some own two |
 | Life of a cycle | 10 years | cheap cycles last long |
 | Average price | Rs 4,500 | kids' and basic cycles dominate |
 
 **Calculation:**
-1. Households = 140 crore / 4.7 = 29.8 crore.
-2. Cycles in use = 29.8 crore x 45% x 1.3 = 17.4 crore (174 million).
-3. Replacements per year = 174 million / 10 = 17.4 million.
-4. Value = 18 million (rounded) x Rs 4,500 = Rs 8,100 crore.
-**Result:** About 18 million cycles, about Rs 8,000 crore a year (units range 14.5 to 21.8 million for a life of 12 to 8 years).
-**Sanity check:** By segment: school children 25 crore x 5% = 12.5 million; adult commuters 4 million; free-cycle government schemes 2 million; sports and premium 0.5 million; total 19 million, close to 17.4 million.
+1. Households = 140 crore / 4.5 = 31.1 crore.
+2. Cycles in use = 31.1 crore x 45% x 1.3 = 18.2 crore (182 million).
+3. Replacements per year = 182 million / 10 = 18.2 million.
+4. Value = 18.2 million x Rs 4,500 = Rs 8,190 crore.
+**Result:** About 18 million cycles, about Rs 8,200 crore a year (units range 15.2 to 22.8 million for a life of 12 to 8 years).
+**Sanity check:** By segment (assumed): school children 25 crore x 5% = 12.5 million; adult commuters 4 million; free-cycle government schemes 2 million; sports and premium 0.5 million; total 19 million, close to 18.2 million.
 **Sensitivity:** Cycle life is the most powerful input (8 versus 12 years moves units by about 50%); price moves rupees directly.
 
 **Likely follow-ups:** 1) *What about e-cycles?* Treat as a separate small segment with a higher price. 2) *Which month sells most?* Likely before school opening and festivals; check with dealers.
@@ -1809,7 +1808,7 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 ### Q75 ⭐ 🟡 Estimate the market size of the Indian wedding industry in rupees.
 **Asked at:** commonly asked in campus and prep-site guesstimate lists (IIT Guwahati, InsideIIM, AdmitStreet; prep-site claims, unverified); no company-specific report found.
 **What the interviewer is checking:** Whether you count the number of events and then use spending tiers, since wedding spend varies enormously.
-**Say this in the interview:** "Count weddings per year, split them into spending tiers, and multiply. I get about Rs 6 to 7 lakh crore a year."
+**Say this in the interview:** "Count weddings per year, split them into spending tiers, and multiply. I get about Rs 5.8 lakh crore a year."
 
 **Clarify first:** Spend only on the event, or also jewellery, clothes and gifts? (I include all wedding-related spend.) Only Hindu weddings? (All communities.) One year, normal times? (Yes.)
 **Approach:** Bottom-up: weddings x average spend by tier (the mean is pulled up by a few very large weddings).
@@ -1817,21 +1816,21 @@ Price Rs 80 per employee per month (Rs 960 a year); 40% of firms serviceable (di
 
 | Tier | Share of weddings | Weddings | Spend each |
 |---|---|---|---|
-| Modest | 70% | 70 lakh | Rs 3 lakh |
-| Mid | 25% | 25 lakh | Rs 10 lakh |
-| Premium | 4.5% | 4.5 lakh | Rs 30 lakh |
-| Luxury | 0.5% | 0.5 lakh | Rs 1 crore |
+| Modest | 70% | 63 lakh | Rs 3 lakh |
+| Mid | 25% | 22.5 lakh | Rs 10 lakh |
+| Premium | 4.5% | 4.05 lakh | Rs 30 lakh |
+| Luxury | 0.5% | 0.45 lakh | Rs 1 crore |
 
-Total weddings assumed 1 crore a year (about 25 million people reach marriage age each year; with two people per wedding that is about 1 crore).
+Total weddings assumed 90 lakh a year, the figure from Q28.
 **Calculation:**
-1. Modest: 70 lakh x Rs 3 lakh = Rs 2.10 lakh crore.
-2. Mid: 25 lakh x Rs 10 lakh = Rs 2.50 lakh crore.
-3. Premium: 4.5 lakh x Rs 30 lakh = Rs 1.35 lakh crore.
-4. Luxury: 0.5 lakh x Rs 1 crore = Rs 0.50 lakh crore.
-5. Total = Rs 6.45 lakh crore.
-**Result:** About Rs 6.5 lakh crore a year (range Rs 4 to 9 lakh crore).
-**Sanity check:** Average spend per wedding = 6.45 lakh crore / 1 crore = Rs 6.45 lakh, a believable all-India average once luxury weddings lift the mean. The modest tier alone gives one-third of the total.
-**Sensitivity:** The modest-tier spend (Rs 2 to 4 lakh) moves the total by about Rs 0.7 lakh crore; the luxury tier is small in count but big in money.
+1. Modest: 63 lakh x Rs 3 lakh = Rs 1.89 lakh crore.
+2. Mid: 22.5 lakh x Rs 10 lakh = Rs 2.25 lakh crore.
+3. Premium: 4.05 lakh x Rs 30 lakh = Rs 1.22 lakh crore.
+4. Luxury: 0.45 lakh x Rs 1 crore = Rs 0.45 lakh crore.
+5. Total = Rs 5.8 lakh crore (1 lakh crore = Rs 10,00,00,00,00,000).
+**Result:** About Rs 5.8 lakh crore a year (range Rs 3.5 to 8 lakh crore).
+**Sanity check:** Average spend per wedding = 5.8 lakh crore / 90 lakh = Rs 6.45 lakh, a believable all-India average once luxury weddings lift the mean. The modest tier alone gives one-third of the total.
+**Sensitivity:** The modest-tier spend (Rs 2 to 4 lakh) moves the total by about Rs 0.63 lakh crore; the luxury tier is small in count but big in money.
 
 **Likely follow-ups:** 1) *Which parts would you target for a startup?* Photography and venues; ask for a spend breakdown. 2) *What if you exclude jewellery?* Reduce each tier; ask for a share of spend.
 **Common mistakes / traps:** Using one average spend for every wedding; counting guests instead of weddings; forgetting that spend is skewed (mean is far above median).
@@ -1857,7 +1856,7 @@ HR flavour: define what counts as a job change.
 3. Total = 90 + 42 = 132 lakh = 1.32 crore.
 **Result:** About 1.3 crore people a year (range 1.1 to 1.6 crore).
 **Sanity check:** A 15% rate means average tenure of 1/0.15 = 6.7 years, a reasonable figure. Overall, 1.32 crore of 13 crore salaried is about 10%.
-**Sensitivity:** The white-collar rate matters most: 12% to 18% moves the total from 1.07 to 1.64 crore.
+**Sensitivity:** The white-collar rate matters most: 12% to 18% moves the total from 1.14 to 1.50 crore.
 
 **Likely follow-ups:** 1) *How would an HR team measure it?* Attrition rate = leavers / average headcount (for a company); here it is the sum across employers. 2) *Does fresher joining count?* No, a first job is not a change.
 **Common mistakes / traps:** Not defining "job change"; applying one rate to everyone; counting moves rather than people (one person switching twice).
@@ -1942,8 +1941,8 @@ Placements through agencies: 10 lakh a year, which I get from about 1.3 crore jo
 2. Mid: 2.5 lakh x Rs 12 lakh x 15% = Rs 4,500 crore.
 3. Senior: 0.5 lakh x Rs 40 lakh x 20% = Rs 4,000 crore.
 4. Total = Rs 10,541 crore.
-**Result:** About Rs 10,500 crore (range Rs 7,000 to 14,000 crore, from 7 to 14 lakh placements).
-**Sanity check:** Blended fee is about 14% of the average CTC of Rs 7.45 lakh, near the typical range. Note that 5% of placements (senior) gives 38% of revenue, which is why executive search is attractive.
+**Result:** About Rs 10,500 crore (range Rs 7,400 to 14,800 crore, from 7 to 14 lakh placements).
+**Sanity check:** Blended fee is about 14% of the average CTC of Rs 7.45 lakh, inside the 8 to 20% fee band assumed by tier. Note that 5% of placements (senior) gives 38% of revenue, which is why executive search is attractive.
 **Sensitivity:** The number of placements moves the answer linearly; the mid and senior fee rates matter more than the junior rate.
 
 **Likely follow-ups:** 1) *Temp staffing too?* That is a margin on payroll, a separate and larger pool; ask how to treat it. 2) *Who are the players?* Large listed staffing firms and many small boutique agencies.
@@ -2041,8 +2040,8 @@ Placements through agencies: 10 lakh a year, which I get from about 1.3 crore jo
 1. Standard error = 40 / square root of 50 = 5.66.
 2. 95% range = 80 plus or minus 1.96 x 5.66 = about 69 to 91.
 3. My earlier guess of 100 is outside this range, so I lower it.
-4. Shop types: 30 small shops average 50, 15 medium 110, 5 large 250. Simple sample average = (1,500 + 1,650 + 1,250) / 50 = 88.
-5. If the real mix is 70% small, 25% medium, 5% large, the weighted average = 0.7 x 50 + 0.25 x 110 + 0.05 x 250 = 75. The simple average of 88 overstates by about 17%.
+4. Shop types: 30 small shops average 50, 15 medium 90, 5 large 230. Simple sample average = (1,500 + 1,350 + 1,150) / 50 = 80, matching step 1.
+5. If the real mix is 70% small, 25% medium, 5% large, the weighted average = 0.7 x 50 + 0.25 x 90 + 0.05 x 230 = 69. The simple average of 80 overstates by about 16%.
 **Practice step:** Take any guesstimate you made, pick one input, survey ten people or shops and see how far the answer moves.
 
 **Likely follow-ups:** 1) *Is 50 enough?* For the average yes, if the shops are chosen fairly; with 200 shops the range halves from plus or minus 11 to plus or minus 5.5. 2) *What if the sample is biased?* Say so, and weight or re-sample.
@@ -2055,7 +2054,7 @@ Placements through agencies: 10 lakh a year, which I get from about 1.3 crore jo
 
 **Explain simply:**
 - No clarification: ask what is being sized, where, and for what year, before starting.
-- Unit mix-ups: people versus households, units versus rupees, lakh versus crore. Households are about 30 crore if there are 4.7 people each, not 140 crore; mixing them is a 4.7 times error.
+- Unit mix-ups: people versus households, units versus rupees, lakh versus crore. Households are about 31 crore if there are 4.5 people each, not 140 crore; mixing them is a 4.5 times error.
 - Over-segmenting: ten tiny segments cost time; use three or four.
 - Unexplained assumptions: say why each number is plausible.
 - Not testing: always check from a second route or per-person scale.
@@ -2116,9 +2115,9 @@ Placements through agencies: 10 lakh a year, which I get from about 1.3 crore jo
 2. Replacement per year = 128 lakh / 2.5 = 51.2 lakh.
 3. New users = 1 crore x 1.5% = 1.5 lakh; total = 52.7 lakh.
 4. Retail route: 4,000 x 3.5 x 365 = 51.1 lakh.
-**Result:** About 50 lakh SIMs a year (range 43 to 64 lakh for a life of 3 to 2 years).
+**Result:** About 50 lakh SIMs a year (range 44 to 66 lakh for a life of 3 to 2 years, new users included).
 **Sanity check:** 50 lakh for a population of 1 crore is half a SIM per person a year, consistent with a 2 to 3 year SIM life.
-**Sensitivity:** SIM life is the key assumption: 3 years gives 43 lakh, 2 years gives 64 lakh.
+**Sensitivity:** SIM life is the key assumption: 3 years gives 44 lakh, 2 years gives 66 lakh.
 
 **Likely follow-ups:** 1) *Does mobile number portability matter?* Switching networks while keeping the number still needs a new SIM; included. 2) *Do eSIMs change it?* Slowly; ignore for now.
 **Common mistakes / traps:** Using population as the SIM count; ignoring dual SIM; forgetting replacement.
@@ -2128,7 +2127,7 @@ Placements through agencies: 10 lakh a year, which I get from about 1.3 crore jo
 **What the interviewer is checking:** Whether you size the total market, narrow to what a platform could serve, and mention constraints such as regulation.
 **Say this in the interview:** "I size total value traded in a year, then the part a platform can address, then its fee income. The market is about Rs 1 lakh crore traded, the platform can address perhaps 10%, and fee income might start near Rs 270 crore."
 
-**Clarify first:** Cattle plus buffalo (live dairy and breeding animals)? (Yes, not slaughter or meat.) Gross trade value or commission? (Both.) Rules on cattle transport and sale vary by state, so I flag them as a risk to check.
+**Clarify first:** (A mandi is a wholesale market.) Cattle plus buffalo (live dairy and breeding animals)? (Yes, not slaughter or meat.) Gross trade value or commission? (Both.) Rules on cattle transport and sale vary by state, so I flag them as a risk to check.
 **Approach:** Funnel: animals, turnover share, price, platform share, fee.
 **Assumptions (all assumed / approximate, unverified):**
 
@@ -2147,7 +2146,7 @@ Placements through agencies: 10 lakh a year, which I get from about 1.3 crore jo
 2. Others: 18 crore x 8% = 1.44 crore x Rs 15,000 = Rs 21,600 crore.
 3. Animals traded = 2.88 crore; value = Rs 1,08,000 crore (about Rs 1.1 lakh crore).
 4. Fee at 2.5% = Rs 2,700 crore; online share of 10% = Rs 270 crore.
-**Result:** Total traded about Rs 1.1 lakh crore a year; platform-addressable fee pool about Rs 2,700 crore; early online fee income about Rs 270 crore (all assumed).
+**Result:** Total traded about Rs 1.1 lakh crore a year; fee pool if all of that trade moved onto platforms about Rs 2,700 crore; early online fee income about Rs 270 crore (all assumed).
 **Sanity check:** 2.88 crore animals traded means about 10% of the herd changes hands each year, consistent with an average holding time of about 10 years for all animals but shorter for milch ones.
 **Sensitivity:** Milch animal price and turnover dominate; the online share is a bold assumption.
 
@@ -2188,7 +2187,7 @@ Placements through agencies: 10 lakh a year, which I get from about 1.3 crore jo
 HR flavour: L&D budgets for analytics upskilling.
 **Asked at:** commonly asked (no company-specific report found); HR-flavoured gap-fill question.
 **What the interviewer is checking:** Whether you size the training spend of firms (learning and development, L&D) and separate in-house from outsourced spend.
-**Say this in the interview:** "Analysts in companies with formal L&D times training spend per head, then the share bought from vendors, plus reskilling of non-analysts. I get about Rs 1,500 crore."
+**Say this in the interview:** "Analysts in companies with formal L&D times training spend per head, then the share bought from vendors, plus reskilling of non-analysts. I get about Rs 830 crore."
 
 **Clarify first:** Training for existing analysts, or also reskilling others into analysts? (Both.) Only spend paid to outside vendors? (Yes, in-house trainer time excluded.) Corporate budgets, not individual learners? (Corporate.)
 **Approach:** Bottom-up from the people being trained.
@@ -2196,20 +2195,20 @@ HR flavour: L&D budgets for analytics upskilling.
 
 | Input | Value |
 |---|---|
-| Analysts employed | 15 lakh |
-| In firms with formal L&D | 70% = 10.5 lakh |
+| Analysts employed | 5 lakh (from Q37) |
+| In firms with formal L&D | 70% = 3.5 lakh |
 | Training spend per analyst a year | Rs 20,000 |
 | Share bought from vendors | 50% |
 | Non-analysts reskilled a year | 8 lakh at Rs 12,000, 50% vendor |
 
 **Calculation:**
-1. Total analyst training = 10.5 lakh x Rs 20,000 = Rs 2,100 crore.
-2. Vendor share = Rs 1,050 crore.
+1. Total analyst training = 3.5 lakh x Rs 20,000 = Rs 700 crore.
+2. Vendor share = Rs 350 crore.
 3. Reskilling vendor spend = 8 lakh x Rs 12,000 x 50% = Rs 480 crore.
-4. Total = Rs 1,530 crore.
-**Result:** About Rs 1,500 crore a year (range Rs 765 to 2,295 crore).
-**Sanity check:** Alternative: 5,000 companies x Rs 20 lakh each = Rs 1,000 crore; same order of magnitude.
-**Sensitivity:** Spend per head (Rs 10,000 to Rs 30,000) is the biggest lever.
+4. Total = Rs 830 crore.
+**Result:** About Rs 830 crore a year (range Rs 415 to 1,245 crore, plus or minus 50%).
+**Sanity check:** Alternative (assumed): 5,000 companies x Rs 20 lakh each = Rs 1,000 crore; same order of magnitude.
+**Sensitivity:** Spend per head (Rs 10,000 to Rs 30,000) moves the total from about Rs 655 to 1,005 crore; the reskilling line (Rs 480 crore) is then the larger piece.
 
 **Likely follow-ups:** 1) *What would raise it?* A skills shortage or a push for AI tools. 2) *Who competes?* Online platforms and consulting firms; ask for a competitor list.
 **Common mistakes / traps:** Including college students; counting total L&D spend rather than analytics only; double counting in-house and vendor spend.
@@ -2217,7 +2216,7 @@ HR flavour: L&D budgets for analytics upskilling.
 ### Q90 ⭐ 🔴 Estimate how many 10-minute grocery dark stores Hyderabad can support.
 **Asked at:** commonly asked (no company-specific report found); the sources mention Hyderabad data only as background, and quick-commerce is a gap-fill topic.
 **What the interviewer is checking:** Whether you test both demand (orders) and supply (geography), and take the binding limit.
-**Say this in the interview:** "A dark store is a small warehouse serving only delivery orders. Demand says about 200 stores across all platforms; geography allows about 100 per platform. So I say about 200."
+**Say this in the interview:** "A dark store is a small warehouse serving only delivery orders. Demand says about 100 stores across all platforms; covering the city takes about 100 stores for even one platform. So I say about 100 in total, which means several platforms would each run below break-even."
 
 **Clarify first:** All platforms combined, or one? (All.) The city only, not the whole metro region? (The urban core, about 1 crore people.) Break-even throughput of a store? (Assume 1,000 orders a day.)
 **Approach:** Demand-led count, checked by coverage area.
@@ -2227,18 +2226,18 @@ HR flavour: L&D budgets for analytics upskilling.
 |---|---|
 | Households | 25 lakh |
 | Addressable (income, app use) | 40% = 10 lakh |
-| Active quick-commerce households | 10 lakh (taken as all addressable households) |
+| Active quick-commerce households | 5 lakh (half of addressable; the same 20% of households as Q46) |
 | Orders per household per month | 6 |
 | Orders per store per day to break even | 1,000 |
 | Urban area covered | 400 sq km; one store covers 4 sq km |
 
 **Calculation:**
-1. Orders per month = 10 lakh x 6 = 60 lakh; per day = 2 lakh.
-2. Stores supported = 2 lakh / 1,000 = 200.
+1. Orders per month = 5 lakh x 6 = 30 lakh; per day = 1 lakh.
+2. Stores supported = 1 lakh / 1,000 = 100.
 3. Coverage: 400 / 4 = 100 stores for one platform to cover the city; three platforms = 300.
-**Result:** About 200 dark stores in total (range 170 to 250), demand-limited; geography alone would allow up to about 300.
-**Sanity check:** 200 stores for 25 lakh households is one store per 12,500 households, about 2 sq km each if spread over 400 sq km, which looks plausible.
-**Sensitivity:** Break-even orders (800 gives 250 stores; 1,200 gives 167).
+**Result:** About 100 dark stores in total (range 80 to 125), demand-limited; geography alone would allow up to about 300. (Q46 used 150 stores at 658 orders a day each, which is below this break-even, so the city may already be over-supplied under these assumptions.)
+**Sanity check:** 100 stores for 25 lakh households is one store per 25,000 households, about 4 sq km each over 400 sq km, which looks plausible.
+**Sensitivity:** Break-even orders (800 gives 125 stores; 1,200 gives 83).
 
 **Likely follow-ups:** 1) *What happens with 10-minute delivery?* Coverage per store shrinks to about 2 to 3 km. 2) *What data would you request?* Real orders per store from a platform.
 **Common mistakes / traps:** Counting only geography; ignoring that platforms overlap; unstated break-even.
@@ -2272,7 +2271,7 @@ HR flavour: L&D budgets for analytics upskilling.
 **Structure:** Write both estimates as the same chain (users x share x price) and compare each link.
 **What I would check, in order:**
 1. Definitions: total potential market versus the part that can actually be served; retail value versus company revenue.
-2. Units: a lakh versus crore slip would give 10 times, not 5.
+2. Units: a lakh versus crore slip would give 100 times, so it cannot explain a 5 times gap.
 3. Drivers: for instance a 5 times gap could split as 2 times in users, 1.5 times in share and 1.67 times in price (2 x 1.5 x 1.67 = 5).
 4. Source quality for each of their inputs.
 **If the data shows...:** One driver explains most of the gap: adopt the better-evidenced value for it. Gap is only definitions: restate both under one definition. Both defensible: present a range, 10,000 to 50,000, with the conditions for each end.
