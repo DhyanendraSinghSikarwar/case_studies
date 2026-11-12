@@ -691,7 +691,7 @@ print(employees)
 - Chained assignment means two steps in a row such as `df[mask]["salary"] = 0`. The first step may create a temporary copy, so the assignment can silently go nowhere.
 - Fix 1: `hr_employees = df[mask].copy()`, then add columns freely.
 - Fix 2: to change the original, use one step: `df.loc[mask, "salary"] = 0`.
-- Version note (tested on pandas 3.0.5): pandas 3 uses Copy-on-Write, which means any filtered result is treated as its own copy. So a filtered result is always its own copy, so assigning a new column to it gives no warning and never touches the original. Chained assignment on the original does not work, and pandas raises a `ChainedAssignmentError` warning. `SettingWithCopyWarning` itself is what you meet on pandas 2.x and older (from memory, unverified here). Writing `.copy()` and `.loc` is correct in all versions.
+- Version note (tested on pandas 3.0.5): pandas 3 uses Copy-on-Write, which means a filtered result is always its own copy. So assigning a new column to it gives no warning and never touches the original. Chained assignment on the original does not work, and pandas raises a `ChainedAssignmentError` warning. `SettingWithCopyWarning` itself is what you meet on pandas 2.x and older (from memory, unverified here). Writing `.copy()` and `.loc` is correct in all versions.
 **Sample data:** four employees in HR and IT.
 **Code (what you write in the interview):**
 ```python
@@ -3004,7 +3004,6 @@ IT          70000.0  80000.0
 | feb.csv | 2 | 3 |
 | mar.csv | 1 | 3 |
 | mar.csv | 2 | 4 |
-
 
 **Code (what you write in the interview):**
 ```python
