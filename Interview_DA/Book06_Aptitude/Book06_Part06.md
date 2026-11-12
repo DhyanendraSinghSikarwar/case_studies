@@ -525,6 +525,7 @@
 - nC0 = 1: there is one way to pick nobody. nCn = 1: one way to pick everybody.
 - Symmetry: nCr = n!/(r!(n-r)!) and nC(n-r) = n!/((n-r)! x r!) are the same expression.
 **Worked mini-example:** From 8 employees choose 3 for a team: 8C3 = 56. Equivalent to choosing the 5 who stay out: 8C5 = 56. Check: 8C3 = (8 x 7 x 6)/6 = 56; 8C5 = (8 x 7 x 6 x 5 x 4)/120 = 56.
+**Check:** 8C3 = 8C5 = 56 (worked above); 0! = 1 is what makes nC0 = n!/(0! x n!) equal 1, as shown.
 **Likely follow-ups:** Use the symmetry to find 50C48: equals 50C2 = (50 x 49)/2 = 1,225.
 **Common mistakes / traps:** Saying 0! = 0. Also computing 10C8 the long way instead of using 10C2 = 45.
 
@@ -538,7 +539,7 @@
 - Without replacement: reduce both the favourable count and the total as items are removed.
 **Worked mini-example:** A bag has 3 red and 2 blue balls; draw two reds. With replacement: 3/5 x 3/5 = 9/25. Without: 3/5 x 2/4 = 6/20 = 3/10.
 **Check:** 9/25 = 0.36 and 3/10 = 0.30; without replacement is smaller because a red has been removed. Also 3C2/5C2 = 3/10, verified by script.
-**Likely follow-ups:** "Drawn together" means? Treat as without replacement; use combinations, nCr/NCr.
+**Likely follow-ups:** "Drawn together" means? Treat as without replacement; use combinations on top and bottom: (favourable selections) / (total selections), as in 3C2/5C2 above.
 **Common mistakes / traps:** Using the same fraction (3/5) for the second draw when the first ball is not returned.
 
 ### Q31 ⭐⭐ 🟢 How do you count arrangements of n letters when some letters repeat, for example the word MISSISSIPPI?
@@ -646,8 +647,9 @@
 - Mutually exclusive: if one happens, the other cannot (rolling a 2 and a 5 on one throw). Then P(A and B) = 0.
 - Independent: one happening does not change the chance of the other (two separate coin tosses). Then P(A and B) = P(A) x P(B).
 - If both held, then P(A) x P(B) = 0, so at least one probability must be 0.
-- Actually, mutually exclusive events with non-zero probability are strongly dependent: knowing A happened tells you B did not.
+- Mutually exclusive events with non-zero probability are in fact dependent: knowing A happened tells you B did not.
 **Worked mini-example:** Die: A = "even" (1/2), B = "odd" (1/2). Exclusive: P(A and B) = 0, but P(A) x P(B) = 1/4, not 0, so not independent. Two coin tosses: P(H1 and H2) = 1/4 = 1/2 x 1/2, independent, but both can happen, so not exclusive.
+**Check:** Die example: P(even and odd) = 0 but 1/2 x 1/2 = 1/4, so exclusive events with non-zero chances fail the independence test. (Edge case: an event with probability 0 is trivially both, which is why the question says non-zero.)
 **Likely follow-ups:** For exclusive events, P(A or B)? P(A) + P(B) (no subtraction).
 **Common mistakes / traps:** Treating the two words as the same idea.
 
@@ -1020,7 +1022,7 @@
 **Common mistakes / traps:** Answering 70 and missing that (X,Y) and (Y,X) are the same split.
 
 ### Q60 ⭐ 🟢 A fair die is rolled once and you are paid as many rupees as the number shown. What is the expected payout?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Expected value: probability-weighted average.
 **Say this in the interview:** "Each number 1 to 6 has chance 1/6, so the expected payout is (1+2+3+4+5+6)/6 = 21/6 = 3.5 rupees."
 **Answer:** **Rs 3.5**
@@ -1037,7 +1039,7 @@
 **Common mistakes / traps:** Thinking the answer must be a whole number, or picking the median-looking value 3.
 
 ### Q61 ⭐ 🟡 Four people are chosen at random. Assuming each of the 7 days of the week is equally likely as a birthday and independence, what is the probability that no two of them were born on the same day of the week?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Counting non-matching assignments (birthday-problem style).
 **Say this in the interview:** "First person has 7 choices of day, second 6, third 5, fourth 4 for all-different, out of 7^4 total. 840/2401 = 120/343."
 **Answer:** **120/343 (about 0.350)**
@@ -1054,7 +1056,7 @@
 **Common mistakes / traps:** Using 7C4 / 7^4 or forgetting that the people are distinguishable (order matters).
 
 ### Q62 ⭐ 🟡 In how many ways can 10 identical laptops be distributed among 3 teams if any team may receive none?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Stars and bars: identical items into labelled boxes.
 **Say this in the interview:** "Identical laptops into 3 teams with zeros allowed: C(10 + 3 - 1, 3 - 1) = C(12,2) = 66."
 **Answer:** **66 ways**
@@ -1071,7 +1073,7 @@
 **Common mistakes / traps:** Using 3^10 (that is for distinct laptops) or 10C3.
 
 ### Q63 ⭐ 🔴 Using a shortcut rather than listing, what is the sum of all 3-digit numbers formed from the digits 1, 2, 3 without repetition?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Digit-position shortcut for sums of permutations.
 **Say this in the interview:** "Each digit appears in each place 2 times. Sum of digits 6 times 2 times 111 = 1332."
 **Answer:** **1332**
@@ -1080,7 +1082,7 @@
 2. Each digit appears in each place (units, tens, hundreds) 6/3 = 2 times.
 3. Sum of digits = 1 + 2 + 3 = 6. Contribution per place = 6 x 2 = 12.
 4. Place values: 12 x 1 + 12 x 10 + 12 x 100 = 12 x 111 = 1332.
-**Fast method (30 seconds):** Formula: (sum of digits) x (count / number of digits) x 111 = 6 x 2 x 111 = 1332.
+**Fast method (30 seconds):** Formula: (sum of digits) x (count / number of digits) x 111 = 6 x 2 x 111 = 1332. Limit: it works when every digit is used exactly once per number, or more generally when all digits are equally often in every place (as in follow-up 1, where each digit appears 6 times per place); it needs adjusting if a digit is repeated or 0 cannot lead.
 **Check:** 123+132+213+231+312+321 = 1332 by direct addition. Verified by script.
 **Explain simply:**
 - By symmetry every digit is equally often in every position.
@@ -1089,7 +1091,7 @@
 **Common mistakes / traps:** Forgetting place values (adding 6 x 6 = 36) or using the wrong repeat count.
 
 ### Q64 ⭐ 🔴 How many 4-digit numbers divisible by 5 can be formed using the digits 0 to 9 without repetition?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Case split on the last digit with the 'no leading zero' constraint.
 **Say this in the interview:** "A number divisible by 5 ends in 0 or 5. Count each case, taking care that the first digit cannot be 0. 504 + 448 = 952."
 **Answer:** **952**
@@ -1103,10 +1105,10 @@
 - Divisible by 5 means last digit 0 or 5.
 - The case split is needed because 0 behaves differently as a last digit than 5 does.
 **Likely follow-ups:** 1) Divisible by 2 (4-digit, no repetition)? Ends in 0: 504; ends in 2,4,6,8: 4 x 8 x 8 x 7 = 1792; total 2296. 2) Divisible by 10? 504.
-**Common mistakes / traps:** Using 8 x 8 x 7 for the 5 case but 9 x 8 x 7 for the 0 case wrongly for both, or ignoring the no-leading-zero rule.
+**Common mistakes / traps:** Using 9 x 8 x 7 for both cases (the ends-in-5 case must exclude a leading 0 and the 5 itself), or ignoring the no-leading-zero rule.
 
 ### Q65 ⭐ 🔴 How many 5-letter arrangements (meaningful or not, no letter repeated) can be formed from the word EQUATIONS using exactly 3 vowels and 2 consonants?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Select first, then arrange (combination then permutation).
 **Say this in the interview:** "EQUATIONS has 5 vowels (E, U, A, I, O) and 4 consonants (Q, T, N, S). Pick 3 vowels and 2 consonants, then arrange the 5 letters."
 **Answer:** **7200**
@@ -1121,10 +1123,10 @@
 - Combination (choose) first because the choosing step ignores order; permutation (arrange) afterwards because position matters.
 - 'Exactly 3 vowels' means 3 and no more.
 **Likely follow-ups:** 1) Vowels must all be together? Treat the 3 vowels as a block: 10 x 6 x (3! x 3!) = 2160 (block of 3 vowels arranged inside 3!, block plus 2 consonants 3!). 2) Just 5-letter arrangements of any letters? 9P5 = 15120.
-**Common mistakes / traps:** Forgetting the arrangement step (answering 60), or counting Y as a vowel; here U is a vowel and Q is not.
+**Common mistakes / traps:** Forgetting the arrangement step (answering 60), or miscounting the vowels: here E, U, A, I, O are the 5 vowels and Q, T, N, S are the 4 consonants.
 
 ### Q66 ⭐ 🔴 In how many ways can 12 employees be divided into three labelled project groups of 4 each?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Multinomial coefficient for labelled groups.
 **Say this in the interview:** "Choose 4 for Group 1 (12C4), then 4 of the remaining 8 for Group 2 (8C4), the last 4 form Group 3. 495 x 70 = 34650."
 **Answer:** **34650 ways**
@@ -1142,7 +1144,7 @@
 **Common mistakes / traps:** Dividing by 3! when the groups are labelled (or not dividing when they are not).
 
 ### Q67 ⭐ 🔴 If three fair dice are rolled, what is the probability that the sum is 10?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Counting favourable outcomes among 6^3 = 216.
 **Say this in the interview:** "Count triples with sum 10: there are 27 of them out of 216, so 27/216 = 1/8."
 **Answer:** **1/8 (0.125)**
@@ -1161,7 +1163,7 @@
 **Common mistakes / traps:** Counting only the 6 number-sets (6/216) and forgetting orderings, or missing a set.
 
 ### Q68 ⭐ 🔴 In how many ways can 5 men and 5 women be seated around a circular table so that men and women alternate?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Circular arrangement with an alternating constraint.
 **Say this in the interview:** "Fix the 5 men around the table first: (5-1)! = 24 ways. That leaves 5 gaps, one for each woman: 5! = 120. 24 x 120 = 2880."
 **Answer:** **2880 ways**
@@ -1179,9 +1181,9 @@
 **Common mistakes / traps:** Using 5! x 5! = 14400 (forgetting that rotations are identical).
 
 ### Q69 ⭐ 🔴 Four employees each hand in a laptop, and the four laptops are returned at random, one to each employee. In how many ways can the laptops be returned so that nobody gets their own (derangements of 4)?
-**Asked at:** commonly asked (no company-specific report found); probability and P&C items are listed for TCS, Infosys, Wipro and Mu Sigma style tests in prep sites (unverified).
+**Asked at:** commonly asked (no company-specific report found); a harder or gap-fill pattern from standard aptitude practice, not tied to any company report.
 **What the interviewer is checking:** Derangements: nobody gets their own item.
-**Say this in the interview:** "Use inclusion-exclusion: D4 = 4! (1 - 1 + 1/2 - 1/6 + 1/24) = 9."
+**Say this in the interview:** "Use inclusion-exclusion (count all 24 returns, subtract those where someone gets their own, add back the overlaps): D4 = 4! (1 - 1 + 1/2 - 1/6 + 1/24) = 9."
 **Answer:** **9 ways**
 **Step-by-step working:**
 1. Total returns: 4! = 24.
@@ -1193,5 +1195,5 @@
 - A derangement is a rearrangement where no item stays in its original place.
 - D(n) is about n!/e (e = 2.718), so D4 is 24/2.718, about 8.8, rounding to 9.
 **Likely follow-ups:** 1) D5? 4 x (9 + 2) = 44. 2) Probability nobody gets their own laptop (4 people)? 9/24 = 3/8.
-**Common mistakes / traps:** Subtracting only one case (24 - 6 = 18, those with at least one fixed) or answering 24 - 4 = 20.
+**Common mistakes / traps:** Stopping the inclusion-exclusion too early, for example removing only the 6 returns where one named employee gets their own (24 - 6 = 18) or removing 4 (24 - 4 = 20); the overlaps must be added back.
 

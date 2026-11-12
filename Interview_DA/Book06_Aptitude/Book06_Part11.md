@@ -89,7 +89,7 @@
 **Common mistakes / traps:** "a honest"; "a HR Head" (HR is said "aitch-ar", vowel sound, so if an article were needed it would be "an HR"). Dropping "the" before a specific post.
 
 ### Q6 ⭐⭐⭐ 🟢 In SQL, what is the difference between WHERE and HAVING? Which clause would you use to list departments having more than 10 employees from the table employees(emp_id, dept, salary), and why?
-**Asked at:** commonly asked (no company-specific report found); core SQL appears in candidate reports of analyst online tests and the SQL-heavy analyst gate (unverified, snippet-level sources).
+**Asked at:** commonly asked (no company-specific report found); SQL is the most reported skill across analyst interview reports (research/interview_processes.md, mostly snippet-level), though this exact WHERE vs HAVING item is not a reported question.
 **What the interviewer is checking:** Order of operations: filter rows first, filter groups after GROUP BY.
 **Say this in the interview:** "WHERE filters individual rows before grouping; HAVING filters groups after aggregation. A count per department is a group result, so I use GROUP BY dept with HAVING COUNT(*) > 10."
 **Answer:** **HAVING** (with GROUP BY): `SELECT dept, COUNT(*) FROM employees GROUP BY dept HAVING COUNT(*) > 10;`
@@ -100,13 +100,15 @@
 **Fast method (30 seconds):** Is the condition on a raw column? WHERE. On an aggregate (count, sum, avg)? HAVING.
 **Check (run on Python sqlite3, small data: threshold changed to 2 because there are only 8 sample rows):**
 ```sql
--- employees: Sales x3, HR x2, Ops x3
+-- employees(emp_id, dept, salary), 8 sample rows: Sales 30, 40, 50; HR 30, 50; Ops 10, 20, 25
 SELECT dept, COUNT(*) AS n FROM employees GROUP BY dept HAVING COUNT(*) > 2;
 -- Output: ('Ops', 3), ('Sales', 3)
 
 -- WHERE and HAVING together: only salary > 25 rows are counted, then groups with 2 or more kept
 SELECT dept, COUNT(*) FROM employees WHERE salary > 25 GROUP BY dept HAVING COUNT(*) >= 2 ORDER BY dept;
--- Output: ('HR', 2), ('Sales', 3)
+-- Output: ('HR', 2), ('Sales', 3)   (Ops has only 25, so 1 row, dropped)
+
+-- WHERE COUNT(*) > 2 fails in sqlite3: "misuse of aggregate: COUNT()"
 ```
 **Explain simply:**
 - Think of WHERE as a gatekeeper for rows and HAVING as a gatekeeper for finished groups.
@@ -133,7 +135,7 @@ INSERT INTO emp VALUES(3,'c@x.com',99);  -- no dept 99 -> FAIL: FOREIGN KEY cons
 INSERT INTO emp VALUES(4,NULL,1);        -- OK (NULL in unique column)
 INSERT INTO emp VALUES(5,NULL,1);        -- OK (a second NULL is also allowed)
 ```
-(Run with foreign keys switched on; first row inserted earlier was (1,'a@x.com',1).)
+(Run with PRAGMA foreign_keys = ON, after inserting dept (1,'x') and the first emp row (1,'a@x.com',1). Outputs confirmed on sqlite3.)
 **Explain simply:**
 - Primary key identifies, foreign key connects, unique key prevents duplicates.
 - Database note: SQL Server allows only one NULL in a unique column; MySQL, PostgreSQL, Oracle and SQLite allow many.
@@ -216,7 +218,7 @@ SELECT COUNT(*), COUNT(bonus), AVG(bonus), SUM(bonus) FROM e8;
 **Asked at:** commonly asked (no company-specific report found); an email-writing task is reported for Accenture-style tests (SpeakShark, single source, unverified).
 **What the interviewer is checking:** Clear, polite, solution-focused writing with a specific ask and new deadline.
 **Say this in the interview:** "I state the delay, the reason, the exact new date, and what I am doing meanwhile."
-**Answer (model email, 104 words in the body):**
+**Answer (model email, 100 words in the body, greeting and signature not counted):**
 
 **Subject:** Request for a two-day extension: monthly headcount report
 
@@ -239,14 +241,14 @@ HR Analytics Executive
 4. What you have done and the new date.
 5. Polite close and full signature.
 **Fast method (30 seconds):** Ask, reason, new date, interim step, thanks.
-**Check:** Body word count verified by script; the extension is exactly two working days (Friday to Tuesday over a weekend; for a strict two calendar days, adjust the date).
+**Check:** Body word count (100) verified by script, and 13 November 2026 is a Friday and 17 November a Tuesday; the extension is exactly two working days (Friday to Tuesday over a weekend; for a strict two calendar days, adjust the date).
 **Explain simply:**
 - Managers want the problem, the cause and a solution, not an apology paragraph.
 **Likely follow-ups:** "Should you copy the finance team?" Only if the manager agrees; keep it factual, not accusatory.
 **Common mistakes / traps:** Blaming finance angrily; vague "a few days"; no subject line; very casual tone ("Hi, need more time").
 
 ### Q13 ⭐⭐⭐ 🟡 Two tables are given. Table A(id): 1, 2, 3. Table B(id): 2, 3, 4. How many rows and which ids are returned by (i) A INNER JOIN B ON A.id = B.id, (ii) A LEFT JOIN B ON A.id = B.id (show A.id and B.id), (iii) A FULL OUTER JOIN B ON A.id = B.id?
-**Asked at:** commonly asked (no company-specific report found); a joins item appears in a candidate report of Accenture 2026 on-campus DBMS/SQL (LeetCode discuss, snippet-level, unverified).
+**Asked at:** commonly asked (no company-specific report found); joins are reported in Accenture candidate accounts: a three-table join in one 2026 on-campus report (LeetCode discuss) and INNER vs LEFT JOIN in a Jan 2026 Glassdoor report (both snippet-level, unverified); this exact item is not a reported question.
 **What the interviewer is checking:** Matching vs non-matching rows in each join type.
 **Say this in the interview:** "Inner keeps only matches: 2 rows. Left keeps all of A: 3 rows with NULL for id 1. Full outer keeps all from both: 4 rows."
 **Answer:** **(i) 2 rows: (2,2), (3,3). (ii) 3 rows: (1,NULL), (2,2), (3,3). (iii) 4 rows: (1,NULL), (2,2), (3,3), (NULL,4).**
@@ -292,14 +294,14 @@ SELECT * FROM m WHERE manager_id IS NOT NULL; -- (1,'Asha',101), (3,'Meena',102)
 **Asked at:** commonly asked (no company-specific report found); self-introduction is reported across descriptions of company English and HR rounds (unverified).
 **What the interviewer is checking:** Clear structure, relevant content, fluency and confidence within a time limit.
 **Say this in the interview:** "I follow Present, Past, Future: who I am now, what I have done, and why this role."
-**Answer:** **Use a four-part, 60-second structure (about 130 to 150 words at a calm pace): (1) Hello and name, 5 seconds; (2) background and key skill, 15 seconds; (3) one proof example, 25 seconds; (4) why this role, 15 seconds.**
+**Answer:** **Use a four-part, 60-second structure (about 130 to 150 words at a calm pace, a rule of thumb): (1) Hello and name, 5 seconds; (2) background and key skill, 15 seconds; (3) one proof example, 25 seconds; (4) why this role, 15 seconds.**
 **Step-by-step working (model script for an HR professional moving to analytics):**
 1. Opening: "Good morning, I am Priya Nair. I have two years of HR operations experience and I am now moving into data analytics."
 2. Skills: "I am confident in Excel, including pivot tables and lookups, and I am learning SQL and Power BI."
 3. Proof: "In my last role I built a monthly attrition tracker in Excel that cut manual reporting time by half, and managers began using it for decisions."
 4. Close: "I enjoy turning HR data into clear insights, so this MIS analyst role suits me. I would like to learn and contribute to your reporting team."
 **Fast method (30 seconds):** Present, Past, Future. One number in the proof line (a measurable result) beats three adjectives.
-**Check:** About 135 words read aloud takes about 60 seconds. Practise with a timer.
+**Check:** The model script above is 92 words, about 40 seconds at a calm pace (rule of thumb: roughly 130 to 150 words per minute). To fill 60 seconds, add a second proof example or one more skill. Practise with a timer.
 **Explain simply:**
 - Keep it relevant: do not list family, hobbies or school marks unless asked.
 - Speak slowly and clearly; fluency and clarity are marked in spoken tests.
@@ -347,7 +349,9 @@ SELECT * FROM m WHERE manager_id IS NOT NULL; -- (1,'Asha',101), (3,'Meena',102)
 1. Decide whether the situation is possible in the future (we may well clean the data) or imaginary/contrary to fact (the data is dirty now and we are only supposing).
 2. First conditional = If + present simple, ... will + base verb. So: "If the data is clean, the dashboard will load faster."
 3. Second conditional = If + past simple, ... would + base verb. So: "If the data were clean, the dashboard would load faster."
-4. In the second type, "were" is used for all subjects (I, he, the data), including "was" in casual speech, but "were" is the exam-safe form.
+4. In the second type, "were" is the exam-safe form for every subject (I, he, the data); "was" is common in casual speech but may be marked wrong.
+**Fast method (30 seconds):** Is it a real possibility? Then "is ... will". Is it imaginary or untrue now? Then "were ... would".
+**Check:** Each pair matches (present with will; past form with would). The mixed forms "is ... would" and "were ... will" are the wrong ones.
 **Explain simply:**
 - A conditional sentence has an "if" part (the condition) and a result part.
 - First conditional: a real possibility. Second conditional: a daydream or something unlikely or untrue now.
@@ -440,7 +444,7 @@ Note: SQLite even lets DROP TABLE be rolled back inside a transaction, but the e
 **Common mistakes / traps:** Swapping the two answers (10 for the stack, 30 for the queue).
 
 ### Q22 ⭐⭐ 🟡 In a spoken-English test you hear: "The quarterly attrition report will be shared with all department heads by Friday." You must repeat it exactly. What strategy helps you score well on a repeat-the-sentence task, and what is typically scored (accuracy, fluency, pronunciation)?
-**Asked at:** commonly asked in spoken-English tests; repeat-the-sentence tasks are reported for Versant-style tests by TalkDrill and Pearson's guide, but whether Accenture uses a spoken test is disputed across sources (format unverified).
+**Asked at:** commonly asked in spoken-English tests; repeat-sentence tasks are reported for company English tests by TalkDrill (prep site, unverified); Pearson's guide lists Versant sections (vocabulary, fluency, pronunciation) but is not confirmed as Accenture's test, and whether Accenture uses a spoken test is disputed across sources (format unverified).
 **What the interviewer is checking:** Listening memory, grammar control and clear speech.
 **Say this in the interview:** "I listen for meaning, chunk the sentence into phrases, then repeat it calmly, clearly and in order."
 **Answer:** **Strategy: listen for the meaning, hold it in chunks, speak at a steady pace without restarting. Typically scored on content accuracy (right words, right order), fluency (smooth pace, no long pauses) and pronunciation.** Exact scoring weights are not confirmed; they vary by test.

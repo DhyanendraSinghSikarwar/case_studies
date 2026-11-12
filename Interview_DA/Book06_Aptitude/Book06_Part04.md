@@ -176,7 +176,7 @@
 ### Q12 ⭐⭐⭐ 🟡 A sum of money doubles itself in 8 years at simple interest. In how many years will it become three times itself?
 **Asked at:** this "doubles in 8 years, when triple" pattern is listed on Wipro NLTH prep pages (FACE Prep, PapersAdda, Tutorialride); unverified prep-site claim.
 **What the interviewer is checking:** that simple interest per year is fixed, so growth is linear.
-**Say this in the interview:** "Doubling means it earned 1 times P in 8 years, so P per 8 years. Tripling needs 2 times P, so 16 years."
+**Say this in the interview:** "Doubling means the interest in 8 years equals the principal P, so it earns P every 8 years. Tripling needs interest of 2P, so 16 years."
 **Answer:** **16 years**
 **Step-by-step working:**
 1. Doubling: interest = P in 8 years, so rate = 100 / 8 = 12.5% per year.
@@ -297,12 +297,12 @@
 **Fast method (30 seconds):** P(r)^2 (3 + r) = 10,000 x 0.01 x 3.1 = 310.
 **Check:** Year-by-year: 11,000, 12,100, 13,310. Verified by script.
 **Explain simply:**
-- Year 1 gives no difference; year 2 adds 100 (interest on 1,000); year 3 adds 210 (interest on 2,100 vs 1,000 plus the extra 100's interest). Total 310.
+- Year 1 gives no difference. In year 2, compound interest is 1,100 against simple 1,000, so it is 100 ahead. In year 3, compound interest is 10% of 12,100 = 1,210 against simple 1,000, so it is 210 ahead. Total gap: 100 + 210 = 310.
 **Likely follow-ups:** Same for 2 years? Rs 100.
 **Common mistakes / traps:** Using the 2-year formula (answering 100).
 
 ### Q20 ⭐⭐ 🟢 A company's headcount of 2,000 grows by 10% every year. What is the headcount after 3 years?
-**Asked at:** commonly asked (no company-specific report found); growth word problems are listed as common aptitude items (HR-flavoured version).
+**Asked at:** commonly asked (no company-specific report found); a headcount/10%-growth pattern is similar to samples on prep sites (unverified); HR-flavoured version.
 **What the interviewer is checking:** recognising growth as compound, not simple.
 **Say this in the interview:** "Each year multiplies by 1.1, so 2,000 x 1.331 = 2,662."
 **Answer:** **2,662 employees**
@@ -428,7 +428,7 @@
 **Explain simply:**
 - Simple interest means the interest is always charged on the original amount only.
 - When time is given in days, divide by 365 (the question tells us to use 365) to get years.
-**Likely follow-ups:** 1) Same sum for 146 days? 146 = 2/5 of a year, so 3,650 x 2/5 = Rs 1,460. 2) Using a 360-day year? Then 73/360 gives about Rs 740.28.
+**Likely follow-ups:** 1) Same sum for 146 days? 146 = 2/5 of a year, so 3,650 x 2/5 = Rs 1,460. 2) Using a 360-day year? Then 36,500 x 10 x 73 / (360 x 100) gives about Rs 740.14.
 **Common mistakes / traps:** Using 73 as years, or forgetting to divide by 100.
 
 ### Q28 ⭐⭐ 🟢 A company deposits Rs 5,00,000 for 2 years at 7% per annum compounded annually in one fixed deposit and at 7% simple interest in another. What is the difference in maturity values?
@@ -581,7 +581,7 @@
 **Explain simply:**
 - Compounding half-yearly means interest is added every six months at half the yearly rate.
 - The more often you compound, the more you earn, but the gain is small (this is the idea behind effective annual rate, Q46).
-**Likely follow-ups:** 1) Quarterly? 5% four times: 12,155.06, which is 155.06 more than yearly. 2) What if the rate is 10% yearly instead? Difference is 0.
+**Likely follow-ups:** 1) Quarterly? 5% four times: 12,155.06, which is 155.06 more than yearly. 2) What if the yearly rate is 10%, compared with 5% half-yearly? Yearly gives 11,000; half-yearly gives 10,000 x 1.05 x 1.05 = 11,025; the difference is Rs 25.
 **Common mistakes / traps:** Using 20% for each half-year, or halving the amount.
 
 ### Q37 ⭐⭐ 🟡 Bank A offers 8% simple interest and Bank B offers 7.5% compounded annually. Which gives more interest on Rs 1,00,000 over 2 years, and by how much?
@@ -686,7 +686,7 @@
 **Check:** 7,055.56 x 36 = 2,54,000.16, matches after rounding. Verified by script.
 **Explain simply:**
 - Flat-rate loan: interest is calculated on the original amount for the whole term, even though you keep repaying the principal.
-- Reducing-balance loan: interest is calculated each month only on the outstanding balance, so the same stated rate costs far less. Hence a 9% flat loan is equal to a much higher reducing-balance rate (roughly 16.2% a year for this loan).
+- Reducing-balance loan: interest is calculated each month only on the outstanding balance, so the same stated rate costs far less. Hence a 9% flat loan is equal to a much higher reducing-balance rate: for this loan the matching nominal reducing-balance rate (interest charged monthly on the balance) works out to about 16.2% a year, found by trial calculation.
 - EMI (equated monthly instalment) is the fixed monthly payment.
 **Likely follow-ups:** 1) Is 9% flat the same as 9% reducing? No; flat is costlier in effect. 2) Flat 10% for 2 years on 1,00,000: interest 20,000, EMI 5,000.
 **Common mistakes / traps:** Treating the quoted flat rate as the real cost; always ask for the effective rate.
@@ -808,7 +808,7 @@
 - IRR: no rate is chosen; it solves for the rate that breaks even.
 - A big project with a lower IRR can still have a higher NPV (it creates more rupees), so when projects are of different size or the choice is exclusive, NPV is the safer guide.
 - With cash flows that change sign more than once, IRR can give multiple answers; NPV does not.
-**Likely follow-ups:** 1) *Project A: NPV 500, IRR 12%. Project B: NPV 300, IRR 20%. Which?* If you can do only one and the discount rate is below both IRRs, pick A, the higher NPV. 2) *When is IRR good?* For a quick comparison of return rates on similar-size projects.
+**Likely follow-ups:** 1) *Project A: NPV 500, IRR 12%. Project B: NPV 300, IRR 20%. Which?* Assuming the two are alternatives (you can do only one) and both NPVs are measured at your required rate, pick A, the higher NPV, even though B has the higher IRR. 2) *When is IRR good?* For a quick comparison of return rates on similar-size projects.
 **Common mistakes / traps:** Choosing the project with the higher IRR automatically; saying IRR is the same as profit margin.
 
 ### Q50 ⭐ 🟡 What is the present worth of Rs 1,320 due 2 years hence at 10% simple interest, and what is the true discount?
@@ -826,7 +826,7 @@
 - Present worth is the value today of a sum due in the future (simple-interest version).
 - True discount is the difference between the sum due and its present worth: it is the interest on the present worth, not on the sum due.
 **Likely follow-ups:** 1) Due 1,320 in 2 years at 5%? PW = 1,320 / 1.1 = 1,200, TD = 120. 2) What would the simple interest on 1,320 for 2 years at 10% be? 264, which is not the true discount.
-**Common mistakes / traps:** Taking 20% of 1,320 (264) as the discount; that is the banker's discount, not the true discount.
+**Common mistakes / traps:** Taking 20% of 1,320 (264) as the discount; that is the banker's discount (simple interest charged on the sum due, not on the present worth), not the true discount.
 
 ### Q51 ⭐ 🔴 A debt of Rs 6,300 at 10% simple interest per annum is cleared in two equal annual installments paid at the end of year 1 and year 2, each earning 10% simple interest from payment until the end of year 2. Find the installment.
 **Asked at:** commonly asked (no company-specific report found); installment problems are in the Careers360 question taxonomy (unverified)
@@ -862,6 +862,6 @@
 **Explain simply:**
 - Forgoing a discount is like borrowing from the supplier at a high interest rate.
 - A rate of 37% is much higher than bank loan rates, so it is almost always better to pay within 10 days (even with a bank loan).
-**Likely follow-ups:** 1) 1/10 net 30? 1/99 x 365/20 = about 18.43%. 2) Effective compound rate? (1 + 2/98)^(18.25) - 1 = about 45%.
+**Likely follow-ups:** 1) 1/10 net 30? 1/99 x 365/20 = about 18.43%. 2) Effective compound rate? (1 + 2/98)^(18.25) - 1 = about 44.6%.
 **Common mistakes / traps:** Using 2 / 100 instead of 2 / 98 (giving 36.5%), or using 30 days instead of 20.
 

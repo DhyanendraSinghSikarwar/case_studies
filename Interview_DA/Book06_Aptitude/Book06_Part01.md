@@ -8,6 +8,7 @@
 **What the interviewer is checking:** Whether you divide by the starting value and can say whether the change is up or down.
 **Say this in the interview:** "Change divided by the original value, times 100. The denominator is always the starting number, whichever direction it moves."
 **Answer:** **% change = (New - Old) / Old x 100; the denominator is the OLD (starting) value.** Positive means increase, negative means decrease.
+**Check:** 200 to 150: 50/200 = 25% down; 150 to 200: 50/150 = 33.3% up. Different bases give different answers.
 **Explain simply:**
 - Step 1: find the change, new minus old. Step 2: divide by the old value, because the question is "how big is the move compared with where we began". Step 3: multiply by 100.
 - Percentage increase = (increase / old) x 100. Percentage decrease = (decrease / old) x 100. In both, "old" is the earlier figure.
@@ -25,11 +26,12 @@
 2. 5% is half of that = 42.
 3. 15% = 84 + 42 = 126.
 **Fast method (30 seconds):** Split into 10% plus half of 10%. Why it works: percentages add, so 15% = 10% + 5%.
+**Check:** 126/840 = 0.15 = 15%.
 **Explain simply:**
 - "Per cent" means per hundred, so 15% = 15/100 = 0.15.
 - 0.15 x 840 = 126.
 **Likely follow-ups:** 1) *What is 15% of 1,240?* 124 + 62 = Rs 186. 2) *What is 840 as a percent of 126?* 126/840 = 15%.
-**Common mistakes / traps:** Writing 15 x 840 and forgetting to divide by 100 (gives 12,600). Check: 126/840 = 0.15, verified by script.
+**Common mistakes / traps:** Writing 15 x 840 and forgetting to divide by 100 (gives 12,600).
 
 ### Q3 ⭐⭐⭐ 🟢 A company's headcount rises from 250 to 300. What is the percentage increase?
 **Asked at:** commonly asked (no company-specific report found); prep sites list percentages and profit-loss among the most frequent quant topics at service-company aptitude gates (unverified).
@@ -41,9 +43,9 @@
 2. Divide by the original 250: 50/250 = 0.2.
 3. Times 100 = 20%.
 **Fast method (30 seconds):** Reduce 50/250 to 1/5, and 1/5 is 20%.
+**Check:** 20% of 250 = 50, and 250 + 50 = 300.
 **Explain simply:**
 - The base is the earlier headcount, 250.
-- Check: 20% of 250 = 50, and 250 + 50 = 300.
 **Likely follow-ups:** 1) *If headcount then falls from 300 back to 250?* 50/300 = 16.67% decrease. 2) *Headcount 400 to 500?* 25%.
 **Common mistakes / traps:** Dividing by 300 (gives 16.67%, the trap answer).
 
@@ -52,6 +54,7 @@
 **What the interviewer is checking:** Knowing which base goes with which term.
 **Say this in the interview:** "Profit and loss percentages are on cost price; discount percentage is on marked price, unless the question says otherwise."
 **Answer:** **Profit % and loss % use cost price (CP). Discount % uses marked price (MP).**
+**Check:** 200 x 1.2 = 240 and 300 x 0.8 = 240, so the same SP gives 20% profit on cost and 20% discount on marked price.
 **Explain simply:**
 - Profit % = profit / CP x 100; Loss % = loss / CP x 100. The cost price is what the seller started with, so it is the base for how well or badly the seller did.
 - Discount % = discount / MP x 100, because the discount is a cut from the printed (marked) price.
@@ -68,9 +71,9 @@
 1. Profit = 920 - 800 = 120.
 2. Profit % = 120/800 x 100 = 15%.
 **Fast method (30 seconds):** 10% of 800 is 80, 5% is 40, so 120 = 15%.
+**Check:** 800 x 1.15 = 920.
 **Explain simply:**
 - Base is cost price 800, not selling price.
-- Check: 800 x 1.15 = 920.
 **Likely follow-ups:** 1) *Sold at 700 instead?* Loss 100/800 = 12.5%. 2) *Profit on SP here?* 120/920 = 13.04%.
 **Common mistakes / traps:** Dividing by 920 (13.04%).
 
@@ -83,9 +86,9 @@
 1. Loss = 20% of 500 = 100.
 2. SP = 500 - 100 = 400.
 **Fast method (30 seconds):** SP = CP x (100 - loss%)/100 = 500 x 0.8 = 400.
+**Check:** loss 100 / CP 500 = 20%.
 **Explain simply:**
 - A loss means SP is below CP, so use the multiplier 0.8.
-- Check: loss 100 / CP 500 = 20%.
 **Likely follow-ups:** 1) *20% profit instead?* 500 x 1.2 = Rs 600. 2) *What SP gives a 10% loss?* Rs 450.
 **Common mistakes / traps:** Adding 20% (Rs 600) instead of subtracting.
 
@@ -98,9 +101,9 @@
 1. Discount = 25% of 1,200 = 300.
 2. SP = 1,200 - 300 = 900.
 **Fast method (30 seconds):** 25% is a quarter, so 1,200/4 = 300; subtract.
+**Check:** discount 300/1,200 = 25%.
 **Explain simply:**
 - SP = MP x (100 - discount%)/100.
-- Check: discount 300/1,200 = 25%.
 **Likely follow-ups:** 1) *30% discount?* 1,200 x 0.7 = Rs 840. 2) *A further 10% off the Rs 900?* Rs 810 (see Q12).
 **Common mistakes / traps:** Giving the discount amount (Rs 300) as the selling price.
 
@@ -109,6 +112,7 @@
 **What the interviewer is checking:** Clear vocabulary and the formula chain.
 **Say this in the interview:** "Cost price is what the shop paid, marked price is the label, discount is the cut from the label, and selling price is what the customer actually pays."
 **Answer:** **SP = MP - Discount; Profit = SP - CP (or Loss = CP - SP); Discount % = Discount / MP x 100; Profit % = Profit / CP x 100.**
+**Check:** 1,000 x 0.9 = 900; 900 - 800 = 100; 100/800 = 12.5%.
 **Explain simply:**
 - Cost price (CP): the price the seller paid to buy or make the item.
 - Marked price (MP, also list price): the price printed on the item.
@@ -127,8 +131,8 @@
 1. Raise = 10% of 40,000 = 4,000.
 2. New salary = 40,000 + 4,000 = 44,000.
 **Fast method (30 seconds):** Multiply by 1.10 directly: 40,000 x 1.1 = 44,000. Why: 100% of old plus 10% = 110% of old.
+**Check:** 4,000/40,000 = 10%.
 **Explain simply:**
-- Check: 4,000/40,000 = 10%.
 **Likely follow-ups:** 1) *A 7.5% raise?* 40,000 x 1.075 = Rs 43,000. 2) *Annual new salary?* 44,000 x 12 = Rs 5,28,000.
 **Common mistakes / traps:** Reporting only the raise (Rs 4,000).
 
@@ -141,8 +145,8 @@
 1. 20% of N = 45, so 0.2 x N = 45.
 2. N = 45 / 0.2 = 225.
 **Fast method (30 seconds):** 20% = 1/5, so multiply by 5: 45 x 5 = 225. Why: if one fifth is 45, the five fifths make 225.
+**Check:** 20% of 225 = 45.
 **Explain simply:**
-- Check: 20% of 225 = 45.
 **Likely follow-ups:** 1) *25% of a number is 45?* 45 x 4 = 180. 2) *12% of a number is 36?* 36/0.12 = 300.
 **Common mistakes / traps:** Multiplying 45 by 20% (gives 9) instead of dividing.
 
@@ -154,6 +158,7 @@
 **Step-by-step working:**
 1. Difference in rates = 12% - 10% = 2 percentage points.
 2. Relative change = 2 / 10 x 100 = 20% (the base is the old rate, 10%).
+**Check:** With 500 staff: 50 leavers become 60; 10 more on 50 is +20%, and 12 - 10 = 2 points.
 **Explain simply:**
 - A "percentage point" is the plain subtraction of two percentages. A "percent change" compares that gap with the old percentage.
 - Example: with 500 employees, 10% attrition is 50 leavers and 12% is 60 leavers. Leavers rose by 10 out of 50, which is 20%.
@@ -169,8 +174,8 @@
 1. After 15% off: 1,200 x 0.85 = 1,020.
 2. After a further 10% off: 1,020 x 0.90 = 918.
 **Fast method (30 seconds):** Multiply the factors: 0.85 x 0.90 = 0.765, and 1,200 x 0.765 = 918. The total discount is 23.5%, not 25%.
+**Check:** 1,200 - 918 = 282 = 23.5% of 1,200.
 **Explain simply:**
-- Check: 1,200 - 918 = 282 = 23.5% of 1,200.
 **Likely follow-ups:** 1) *What if both were applied to 1,200 separately (25% total)?* That gives Rs 900, the wrong method. 2) *Order swapped (10% then 15%)?* Still Rs 918.
 **Common mistakes / traps:** Adding 15 + 10 = 25% and answering Rs 900.
 
@@ -185,8 +190,8 @@
 3. After 10% on 80: 80 - 8 = 72.
 4. Total discount = 100 - 72 = 28, so 28%.
 **Fast method (30 seconds):** Formula: x + y - xy/100 = 20 + 10 - (20 x 10)/100 = 30 - 2 = 28. Why: the second discount is on a smaller price, so it is worth less than 10% of the original.
+**Check:** 0.8 x 0.9 = 0.72, so 1 - 0.72 = 0.28.
 **Explain simply:**
-- Check: 0.8 x 0.9 = 0.72, so 1 - 0.72 = 0.28.
 **Likely follow-ups:** 1) *Three discounts of 10%, 20%, 30%?* 0.9 x 0.8 x 0.7 = 0.504, so 49.6%. 2) *Is a single 30% discount better for the customer?* Yes (30 > 28).
 **Common mistakes / traps:** Adding to 30%.
 
@@ -201,8 +206,8 @@
 3. For the same spend 10,000, units = 10,000/125 = 80.
 4. Cut = 100 - 80 = 20 units, so 20%.
 **Fast method (30 seconds):** Formula: reduction = r/(100 + r) x 100 = 25/125 x 100 = 20%. Why: the base for the cut is the original consumption, but the change is measured against the new, higher price.
+**Check:** 80 units x 125 = 10,000.
 **Explain simply:**
-- Check: 80 units x 125 = 10,000.
 **Likely follow-ups:** 1) *Price falls 20%, by what % can consumption rise to keep spend same?* 20/80 = 25%. 2) *Price up 50%?* Cut 50/150 = 33.3%.
 **Common mistakes / traps:** Answering 25% (cutting the same percent as the price rise).
 
@@ -217,8 +222,8 @@
 3. After -20% of 120 = 24: 96.
 4. Net change = 96 - 100 = -4, so -4%.
 **Fast method (30 seconds):** Formula: x - y - xy/100 gives 20 - 20 - 4 = -4%. In general, +x% then -x% is a fall of x squared over 100 percent.
+**Check:** 1.2 x 0.8 = 0.96.
 **Explain simply:**
-- Check: 1.2 x 0.8 = 0.96.
 **Likely follow-ups:** 1) *Fall 20% first, then rise 20%?* 0.8 x 1.2 = 0.96, still 4% down. 2) *+25% then -25%?* 1.25 x 0.75 = 0.9375, a 6.25% fall.
 **Common mistakes / traps:** Saying 0% because "+20 and -20 cancel"; the second change acts on a different base.
 
@@ -233,8 +238,8 @@
 3. Discount = 20% of 140 = 28, so SP = 112.
 4. Profit = 112 - 100 = 12, so 12% on cost.
 **Fast method (30 seconds):** Multiply the factors: 1.40 x 0.80 = 1.12. Net = 40 - 20 - (40 x 20)/100 = 12.
+**Check:** for CP 500, MP 700, SP 560, profit 60 = 12% of 500.
 **Explain simply:**
-- Check: for CP 500, MP 700, SP 560, profit 60 = 12% of 500.
 **Likely follow-ups:** 1) *Markup 50%, discount 20%?* 1.5 x 0.8 = 1.2, 20% profit. 2) *What discount leaves exactly no profit on a 40% markup?* 28.57%.
 **Common mistakes / traps:** Subtracting 40 - 20 = 20% profit; the discount is on MP, not CP.
 
@@ -247,8 +252,8 @@
 1. CP + 20% of CP = SP, so 1.2 x CP = 1,080.
 2. CP = 1,080 / 1.2 = 900.
 **Fast method (30 seconds):** 120% corresponds to 6/5, so CP = 1,080 x 5/6 = 900.
+**Check:** 900 x 1.2 = 1,080.
 **Explain simply:**
-- Check: 900 x 1.2 = 1,080.
 **Likely follow-ups:** 1) *SP 1,080 at 10% loss?* CP = 1,080/0.9 = Rs 1,200. 2) *SP 1,350 at 25% profit?* CP = Rs 1,080.
 **Common mistakes / traps:** Subtracting 20% of 1,080 (gives 864).
 
@@ -263,7 +268,7 @@
 3. Total CP = 1,000 + 1,500 = 2,500. Total SP = 1,200 + 1,200 = 2,400.
 4. Loss = 2,500 - 2,400 = 100. Loss % = 100 / 2,500 x 100 = 4%.
 **Fast method (30 seconds):** When equal SP gives x% gain and x% loss, the net loss is always x squared over 100 percent: 20 x 20 / 100 = 4%. Why: the loss article had a bigger cost, so the 20% loss is on a larger base than the 20% gain.
-**Check:** Verified by script (exact fractions).
+**Check:** Gain article: 1,000 x 1.2 = 1,200. Loss article: 1,500 x 0.8 = 1,200. Total cost 2,500, total sale 2,400, loss 100 = 4% of 2,500.
 **Explain simply:**
 - Gain and loss percentages are on cost price, and the two cost prices differ, so they do not cancel.
 - A common wrong shortcut is "20% gain and 20% loss cancel, so no profit or loss".
@@ -279,9 +284,9 @@
 1. Discount = 2,000 - 1,600 = 400.
 2. Discount % = 400 / 2,000 x 100 = 20%.
 **Fast method (30 seconds):** 400/2,000 = 1/5 = 20%.
+**Check:** 2,000 x 0.8 = 1,600.
 **Explain simply:**
 - Base is marked price, not selling price.
-- Check: 2,000 x 0.8 = 1,600.
 **Likely follow-ups:** 1) *If SP were 1,500?* 500/2,000 = 25%. 2) *Profit % if CP were 1,250?* 350/1,250 = 28%.
 **Common mistakes / traps:** Dividing 400 by 1,600 (gives 25%).
 
@@ -295,8 +300,8 @@
 2. B is less than A by 125 - 100 = 25.
 3. As a share of A (the new base): 25 / 125 = 20%.
 **Fast method (30 seconds):** Formula: x/(100 + x) x 100 = 25/125 x 100 = 20%.
+**Check:** 125 x 0.8 = 100.
 **Explain simply:**
-- Check: 125 x 0.8 = 100.
 **Likely follow-ups:** 1) *A is 20% less than B; by how much is B more than A?* 20/80 = 25%. 2) *A is 50% more than B; B is less than A by?* 33.3%.
 **Common mistakes / traps:** Answering 25% by reusing the same base.
 
@@ -311,8 +316,8 @@
 3. After +20% of 110 = 22: 132.
 4. Net increase = 32, so 32%.
 **Fast method (30 seconds):** Formula: x + y + xy/100 = 10 + 20 + 2 = 32%.
+**Check:** 1.1 x 1.2 = 1.32.
 **Explain simply:**
-- Check: 1.1 x 1.2 = 1.32.
 **Likely follow-ups:** 1) *+20% then +20%?* 44%. 2) *+10% then -20%?* 1.1 x 0.8 = 0.88, a 12% fall.
 **Common mistakes / traps:** Adding 10 + 20 = 30%.
 
@@ -327,7 +332,7 @@
 3. 10% of total = 2,000, so 1% = 200.
 4. Total = 100 x 200 = 20,000.
 **Fast method (30 seconds):** Margin % = 2 x winner % - 100 = 10%. Then total = 2,000 / 0.10 = 20,000. It works because every vote goes to one of two people.
-**Check:** Winner 11,000, loser 9,000; 11,000 - 9,000 = 2,000. Verified by script.
+**Check:** Winner 11,000, loser 9,000; 11,000 - 9,000 = 2,000.
 **Explain simply:**
 - In a two-way contest the margin is the winner's share minus the loser's share.
 - A percentage gap tells you what slice of the total the gap is; divide the actual gap by that slice.
@@ -346,7 +351,7 @@
 4. 7% of max = 35, so 1% = 5 and max = 500.
 5. Pass mark = 35% of 500 + 20 = 175 + 20 = 195.
 **Fast method (30 seconds):** The two scores differ by 7% of max, and the two outcomes differ by 20 + 15 = 35 marks. So 7% = 35.
-**Check:** Student 2: 42% of 500 = 210; 210 - 195 = 15 pass. Student 1: 175; 195 - 175 = 20 short. Verified by script.
+**Check:** Student 2: 42% of 500 = 210; 210 - 195 = 15 pass. Student 1: 175; 195 - 175 = 20 short.
 **Explain simply:**
 - Pass mark is a fixed number; only the student's score changes.
 - Add the shortfall and the surplus: the gap between the two scores is 20 + 15.
@@ -362,7 +367,7 @@
 1. Year 1: 10% of 50,000 = 5,000, so population = 55,000.
 2. Year 2: 10% of 55,000 = 5,500, so population = 60,500.
 **Fast method (30 seconds):** 50,000 x 1.21 = 60,500 (two 10% rises make 21%, not 20%).
-**Check:** Verified by script (exact arithmetic).
+**Check:** 55,000 x 1.1 = 60,500.
 **Explain simply:**
 - Compounded means each year's growth is taken on the latest figure, not the original.
 - A rise of 10% means multiply by 1.10.
@@ -379,7 +384,7 @@
 2. Markup % = profit / cost x 100 = 20 / 80 x 100 = 25%.
 3. Margin % = profit / selling price x 100 = 20 / 100 x 100 = 20%.
 **Fast method (30 seconds):** Same profit, different denominators: cost (smaller) gives the bigger percentage.
-**Check:** Markup 25% on cost 80 gives 80 x 1.25 = 100. Verified by script.
+**Check:** Markup 25% on cost 80 gives 80 x 1.25 = 100.
 **Explain simply:**
 - Markup: how much you add on top of cost. Margin: how much of the selling price is profit.
 - Markup is always larger than margin when there is a profit, because cost is less than selling price.
@@ -397,7 +402,7 @@
 3. Profit per article = 1.20 - 1.00 = Rs 0.20.
 4. Profit % = 0.20 / 1 x 100 = 20%.
 **Fast method (30 seconds):** Profit % = (12 - 10) / 10 x 100 = 20%. The base is the number sold (10), the extra is 2 articles' worth.
-**Check:** Cost of 10 articles = Rs 10 but they sell for Rs 12; 12 / 10 = 1.2. Verified by script.
+**Check:** Cost of 10 articles = Rs 10 but they sell for Rs 12; 12 / 10 = 1.2.
 **Explain simply:**
 - Equal money buys 12 at cost price but only 10 at selling price.
 - The larger count minus the smaller count, over the smaller count, gives the profit on cost.
@@ -415,7 +420,7 @@
 3. Expand: 100 + x + y + xy/100.
 4. Net change = x + y + xy/100 percent.
 **Fast method (30 seconds):** Example: +10% then +20%: 10 + 20 + (10 x 20)/100 = 32%. Check: 1.1 x 1.2 = 1.32.
-**Check:** Verified by script (10 and 20 give 32%; 10 and -10 give -1%).
+**Check:** 10 and 20 give 32% (1.1 x 1.2 = 1.32); 10 and -10 give -1% (1.1 x 0.9 = 0.99).
 **Explain simply:**
 - The extra xy/100 term is growth on the growth.
 - For decreases put a minus sign, e.g. -20 and +10: -20 + 10 - 2 = -12%.
@@ -433,7 +438,7 @@
 3. Profit = 600 - 500 = Rs 100.
 4. Profit % = 100 / 500 x 100 = 20%.
 **Fast method (30 seconds):** Average selling price = 600 / 10 = Rs 60 against Rs 50 cost: 10 / 50 = 20%.
-**Check:** Verified by script.
+**Check:** Cost 500, revenue 600; 600/500 = 1.2, so 20% profit.
 **Explain simply:**
 - Profit % is on total cost unless told otherwise.
 - Never average the two percentages; add the money first.
@@ -449,7 +454,7 @@
 1. GST = 18% of 50,000 = 0.18 x 50,000 = Rs 9,000.
 2. Final bill = 50,000 + 9,000 = Rs 59,000.
 **Fast method (30 seconds):** Multiply by 1.18: 50,000 x 1.18 = 59,000. Or 10% = 5,000, 8% = 4,000, together 9,000.
-**Check:** Verified by script.
+**Check:** 50,000 x 1.18 = 59,000, and 59,000 / 1.18 = 50,000.
 **Explain simply:**
 - GST (Goods and Services Tax) is a sales tax added on top of the pre-tax price.
 - 'Add 18%' means multiply by 1.18.
@@ -465,7 +470,7 @@
 1. Commission = 4% of 3,50,000 = 0.04 x 350,000 = Rs 14,000.
 2. Total = 15,000 + 14,000 = Rs 29,000.
 **Fast method (30 seconds):** 1% of 3,50,000 is 3,500; 4 x 3,500 = 14,000.
-**Check:** Verified by script.
+**Check:** 15,000 + 14,000 = 29,000, and 14,000/3,50,000 = 4%.
 **Explain simply:**
 - Commission is a percentage of sales; the fixed salary does not change.
 - Indian format: 3,50,000 means three lakh fifty thousand.
@@ -481,7 +486,7 @@
 1. Basic = 40% of 6,00,000 = Rs 2,40,000.
 2. HRA = 50% of basic = Rs 1,20,000.
 **Fast method (30 seconds):** 40% x 50% = 20% of CTC; 20% of 6,00,000 = 1,20,000.
-**Check:** Verified by script.
+**Check:** 6,00,000 x 0.40 x 0.50 = 1,20,000.
 **Explain simply:**
 - CTC (Cost To Company) is the total yearly package; HRA (House Rent Allowance) is one component.
 - HRA is a percentage of basic, not of CTC.
@@ -498,7 +503,7 @@
 2. 80% = 1,440, so 1% = 18.
 3. Marked price = 100 x 18 = Rs 1,800.
 **Fast method (30 seconds):** 1,440 / 0.8 = 1,800. Or 1,440 x 5/4.
-**Check:** Discount 20% of 1,800 = 360; 1,800 - 360 = 1,440. Verified by script.
+**Check:** Discount 20% of 1,800 = 360; 1,800 - 360 = 1,440.
 **Explain simply:**
 - Marked price (list price) is the base; the discount is taken off it.
 - Going backwards means dividing, not adding 20% to the final price.
@@ -515,7 +520,7 @@
 2. New side = 11; area = 121.
 3. Increase = 21 on 100 = 21%.
 **Fast method (30 seconds):** x + y + xy/100 with 10 and 10: 10 + 10 + 1 = 21%.
-**Check:** Verified by script.
+**Check:** 1.1 x 1.1 = 1.21, so 21%.
 **Explain simply:**
 - Area is side x side, so a 10% rise applies twice.
 - Two successive 10% rises give 21%, not 20%.
@@ -532,7 +537,7 @@
 2. 108% = 54,000, so 1% = 500.
 3. Old salary = 100 x 500 = Rs 50,000.
 **Fast method (30 seconds):** 54,000 / 1.08 = 50,000.
-**Check:** 8% of 50,000 = 4,000; 50,000 + 4,000 = 54,000. Verified by script.
+**Check:** 8% of 50,000 = 4,000; 50,000 + 4,000 = 54,000.
 **Explain simply:**
 - A hike is a percentage of the old salary, the base.
 - To undo a rise, divide by (1 + rate).
@@ -549,7 +554,7 @@
 2. x = 54 x 100 / 360 = 5,400 / 360.
 3. x = 15.
 **Fast method (30 seconds):** 10% of 360 = 36; 5% = 18; 36 + 18 = 54, so 15%.
-**Check:** 15% of 360 = 54. Verified by script.
+**Check:** 15% of 360 = 54.
 **Explain simply:**
 - Percentage = part / whole x 100.
 - Here the part is 54 and the whole is 360.
@@ -566,7 +571,7 @@
 2. Profit = 8,400 - 7,000 = Rs 1,400.
 3. Profit % = 1,400 / 7,000 x 100 = 20%.
 **Fast method (30 seconds):** 8,400 / 7,000 = 1.2, so 20% up.
-**Check:** Verified by script.
+**Check:** 7,000 x 1.2 = 8,400.
 **Explain simply:**
 - Transport and repairs are part of the cost price, called overhead costs.
 - Using only 6,000 would give 40%, which is wrong.
@@ -583,7 +588,7 @@
 2. Approved leave = 40% of 30 = 12.
 3. Without approval = 30 - 12 = 18 (or 60% of 30 = 18).
 **Fast method (30 seconds):** 60% of 30 = 18 directly.
-**Check:** Verified by script.
+**Check:** 12% of 250 = 30; 40% of 30 = 12; 30 - 12 = 18.
 **Explain simply:**
 - The second percentage is on absentees (30), not on all 250 employees.
 - Find what remains by using the complement (60%).
@@ -600,7 +605,7 @@
 2. Food = 20% of 42,000 = Rs 8,400.
 3. Left = 42,000 - 8,400 = Rs 33,600.
 **Fast method (30 seconds):** Multiply the leftovers: 0.7 x 0.8 = 0.56; 56% of 60,000 = 33,600.
-**Check:** Verified by script.
+**Check:** 60,000 x 0.7 x 0.8 = 33,600.
 **Explain simply:**
 - 'Of the remaining amount' means the base changes after the first expense.
 - Total spent = 18,000 + 8,400 = Rs 26,400, which is 44% of salary, not 50%.
@@ -617,7 +622,7 @@
 2. 10% of 640 = 64; 5% = 32; 15% = 64 + 32 = 96.
 3. 17.5% = 12.5% + 5% = 80 + 32 = 112 (or 10% + 5% + 2.5% = 64 + 32 + 16).
 **Fast method (30 seconds):** Halving works: 10% = 64, half = 5% = 32, half again = 2.5% = 16.
-**Check:** 0.125 x 640 = 80; 0.15 x 640 = 96; 0.175 x 640 = 112. Verified by script.
+**Check:** 0.125 x 640 = 80; 0.15 x 640 = 96; 0.175 x 640 = 112.
 **Explain simply:**
 - Find 10% by moving the decimal point one place.
 - Build any percentage from 10%, 5%, 2.5% and 1%.
@@ -636,7 +641,7 @@
 3. 10% discount on 110 = 11, so final = 99.
 4. Net change = 99 - 100 = -1, i.e. a 1% decrease.
 **Fast method (30 seconds):** x + y + xy/100 = 10 - 10 - 1 = -1%.
-**Check:** 1.1 x 0.9 = 0.99. Verified by script.
+**Check:** 1.1 x 0.9 = 0.99.
 **Explain simply:**
 - The 10% discount is taken on the larger, new price, so it removes more than the rise added.
 - Equal up and down percentages always give a net loss of (x squared)/100 percent.
@@ -652,7 +657,7 @@
 1. Year 1: loses 10% of 1,00,000 = 10,000, value 90,000.
 2. Year 2: loses 10% of 90,000 = 9,000, value 81,000.
 **Fast method (30 seconds):** Multiply by 0.9 for each year: 0.9 x 0.9 = 0.81.
-**Check:** Verified by script.
+**Check:** 1,00,000 x 0.9 x 0.9 = 81,000.
 **Explain simply:**
 - Depreciation is the drop in an asset's value with age.
 - Reducing balance: each year's loss is on the latest value, so the loss gets smaller.
@@ -670,7 +675,7 @@
 3. After a further 10%: 440 x 0.90 = Rs 396.
 4. Difference = 396 - 385 = Rs 11.
 **Fast method (30 seconds):** Successive 20% and 10% equal 20 + 10 - 2 = 28% single discount, 2% less than 30%; 2% of 550 = 11.
-**Check:** Verified by script.
+**Check:** 550 x 0.70 = 385 and 550 x 0.80 x 0.90 = 396; 396 - 385 = 11.
 **Explain simply:**
 - The second discount applies to the already-reduced price, so it is worth less.
 - Two discounts of 20% and 10% are not the same as 30%.
@@ -689,7 +694,7 @@
 4. After 30% off: 72 x 0.70 = 50.4.
 5. Total discount = 100 - 50.4 = 49.6, so 49.6%.
 **Fast method (30 seconds):** Multiply the 'what you pay' factors (0.9 x 0.8 x 0.7 = 0.504) and subtract from 1. It works because every discount shrinks the already-reduced price, not the original.
-**Check:** Reverse: 50.4% of any price, then 49.6% off the original gets the same figure; verified by exact-fraction script (62/125 = 0.496).
+**Check:** Reverse: 50.4% of any price, then 49.6% off the original gets the same figure; exact fraction 62/125 = 0.496.
 **Explain simply:**
 - A successive discount means each new discount is applied to the price left after the previous one.
 - So the discounts do not add up; adding 10+20+30 = 60% overstates the saving.
@@ -710,7 +715,7 @@
 3. Profit = 1,000 - 900 = Rs 100.
 4. Gain % = 100 / 900 x 100 = 11.11%.
 **Fast method (30 seconds):** Gain % = (error / weight actually given) x 100 = 100/900 x 100. The base is the true cost of what he handed over, not 1 kg.
-**Check:** Exact fraction 100/9 = 11.11 (script). Sanity: customer pays for 10 parts but gets 9; extra 1 on 9 is about 11%.
+**Check:** Exact fraction 100/9 = 11.11. Sanity: customer pays for 10 parts but gets 9; extra 1 on 9 is about 11%.
 **Explain simply:**
 - Profit % is always on cost price; his cost is only for the 900 g he gives.
 - Using 100/1000 = 10% is the classic wrong version because 1000 g is the claimed, not the real, quantity.
@@ -730,7 +735,7 @@
 3. Gain of 10% means SP = 110% of CP.
 4. New SP = 600 x 1.10 = Rs 660.
 **Fast method (30 seconds):** Ratio method: SP2 = 540 x 110/90 = 540 x 11/9 = 660. Divide by 9, multiply by 11.
-**Check:** Check: 660 is 10% above 600 and 540 is 10% below 600 (script: 660).
+**Check:** 660 is 10% above 600 and 540 is 10% below 600.
 **Explain simply:**
 - Profit and loss percentages are always taken on the cost price unless the question says otherwise.
 - 'Loses 10%' means he got 90 for every 100 spent.
@@ -751,7 +756,7 @@
 4. Discount in rupees = 150 - 120 = Rs 30.
 5. Discount % on marked price = 30 / 150 x 100 = 20%.
 **Fast method (30 seconds):** Pick cost = 100 and work in rupees. Discount % = (MP - SP)/MP.
-**Check:** Reverse: 150 x 0.80 = 120, a 20% profit on 100 (script: 1/5).
+**Check:** Reverse: 150 x 0.80 = 120, a 20% profit on 100.
 **Explain simply:**
 - Marked price (MP) is the price tag; discount is always on the tag, profit always on cost.
 - Both numbers (50% and 20%) sit on different bases, so you cannot subtract them.
@@ -772,7 +777,7 @@
 4. Selling price = 125 - 15 = Rs 110.
 5. Profit = 110 - 100 = Rs 10, so 10% on cost.
 **Fast method (30 seconds):** Multiply the factors: 1.25 x 0.88 = 1.10, so +10% overall.
-**Check:** Exact fraction 1.25 x 0.88 - 1 = 1/10 (script).
+**Check:** Exact fraction 1.25 x 0.88 - 1 = 1/10.
 **Explain simply:**
 - Markup is a percent rise on cost; discount is a percent fall on the tag.
 - Net effect = combined multiplier minus 1; positive is profit, negative is loss.
@@ -793,7 +798,7 @@
 4. Total sales = 100 x 500 = Rs 50,000.
 5. Profit = 50,000 - 40,000 = Rs 10,000; 10,000 / 40,000 x 100 = 25%.
 **Fast method (30 seconds):** Per-shirt is enough: profit % = (500 - 400)/400 = 1/4. The 100 shirts cancel out.
-**Check:** Exact fraction 10,000/40,000 = 1/4 (script).
+**Check:** Exact fraction 10,000/40,000 = 1/4.
 **Explain simply:**
 - Trade discount is what a supplier gives a retailer off the list price; it lowers the retailer's cost.
 - Profit % is on what the retailer actually paid (Rs 400), not on the list price.
@@ -832,7 +837,7 @@
 3. So the second discount takes 80 down to 72, a fall of Rs 8.
 4. x = 8 / 80 x 100 = 10%.
 **Fast method (30 seconds):** Remaining factor = 0.72 / 0.80 = 0.90, so discount = 10%.
-**Check:** Forward: 0.8 x 0.9 = 0.72 = 100 - 28 (script gives 1/10).
+**Check:** Forward: 0.8 x 0.9 = 0.72 = 100 - 28.
 **Explain simply:**
 - A second discount is on the reduced price (Rs 80), not on the original Rs 100.
 - Combined discount formula: 20 + x - 20x/100 = 28 gives x = 10.
@@ -852,7 +857,7 @@
 3. After 25% decrease: 1.20 N x 0.75 = 0.90 N.
 4. 0.90 N = 540, so N = 540 / 0.90 = 600.
 **Fast method (30 seconds):** Net factor 0.9; 540 is 90%, so 10% is 60 and 100% is 600.
-**Check:** Forward: 600 x 1.2 = 720; 720 x 0.75 = 540 (script).
+**Check:** Forward: 600 x 1.2 = 720; 720 x 0.75 = 540.
 **Explain simply:**
 - To undo a change you divide by its multiplier, not subtract the percent.
 - The two changes do not cancel: +20% and -25% leave a net -10%.
@@ -872,7 +877,7 @@
 3. New area = 120 x 90 = 10,800.
 4. Change = 800 on 10,000 = 8% increase.
 **Fast method (30 seconds):** x + y + xy/100 with x = +20, y = -10: 20 - 10 - 2 = +8.
-**Check:** Exact fraction 1.2 x 0.9 - 1 = 2/25 = 8% (script).
+**Check:** Exact fraction 1.2 x 0.9 - 1 = 2/25 = 8%.
 **Explain simply:**
 - Area depends on both sides, so the percent changes combine by multiplication.
 - The -10 x 20 / 100 = -2 term is the 'interaction' that simple addition misses.
@@ -892,7 +897,7 @@
 3. Cost = SP - profit = 100 - 25 = Rs 75.
 4. Profit on cost = 25 / 75 x 100 = 33.33%.
 **Fast method (30 seconds):** Profit on cost = p / (100 - p) x 100 where p is the profit on SP: 25/75 = 1/3.
-**Check:** Reverse: 75 x 4/3 = 100 (script: 1/3).
+**Check:** Reverse: 75 x 4/3 = 100.
 **Explain simply:**
 - Margin (profit on selling price) is the figure finance teams quote; markup (profit on cost) is what traders use.
 - Margin is always smaller than markup for the same deal.
@@ -912,7 +917,7 @@
 3. Difference = 1.08 C - 0.88 C = 0.20 C.
 4. 0.20 C = 180, so C = 180 / 0.20 = Rs 900.
 **Fast method (30 seconds):** Add the two percentages (12 + 8 = 20), as one is below cost and the other above. 20% of C = 180 so C = 900.
-**Check:** Reverse: 0.88 x 900 = 792, 1.08 x 900 = 972, and 972 - 792 = 180 (script).
+**Check:** Reverse: 0.88 x 900 = 792, 1.08 x 900 = 972, and 972 - 792 = 180.
 **Explain simply:**
 - A loss and a gain sit on opposite sides of cost price, so the total gap is their sum.
 - Both percentages use the same base, the cost price.
@@ -931,7 +936,7 @@
 2. 40% of N - 25% of N = 15% of N.
 3. 15% of N = 120, so N = 120 / 0.15 = 800.
 **Fast method (30 seconds):** 15% is 3/20, so N = 120 x 20/3 = 800.
-**Check:** Reverse: 40% of 800 = 320, 25% of 800 = 200; 320 - 200 = 120 (script).
+**Check:** Reverse: 40% of 800 = 320, 25% of 800 = 200; 320 - 200 = 120.
 **Explain simply:**
 - Percentages of the same number can be added and subtracted directly.
 - Then divide the known amount by the combined percentage.
@@ -950,7 +955,7 @@
 2. Q2 = 8 x 1.25 = Rs 10 lakh.
 3. Q3 = 10 x 0.80 = Rs 8 lakh.
 **Fast method (30 seconds):** 1.25 x 0.8 = 1, because 25% rise is 1/4 up and a fall of 1/5 is the exact reverse (4/5 x 5/4 = 1).
-**Check:** Exact: 8 x 5/4 x 4/5 = 8 (script).
+**Check:** Exact: 8 x 5/4 x 4/5 = 8.
 **Explain simply:**
 - A 25% rise is undone by a 20% fall; the fall is smaller because it is on a bigger base.
 - In reports, always state which quarter a 'fall' is measured against.
@@ -970,7 +975,7 @@
 3. New price 110, new quantity 90: revenue 9,900.
 4. Change = -100 / 10,000 = -1%.
 **Fast method (30 seconds):** x + y + xy/100 = 10 - 10 - 1 = -1.
-**Check:** Exact: 1.1 x 0.9 - 1 = -1/100 (script).
+**Check:** Exact: 1.1 x 0.9 - 1 = -1/100.
 **Explain simply:**
 - Price and quantity multiply, so the changes multiply.
 - The -1% is the 'interaction' term: (+10%) x (-10%) = -1%.
@@ -990,7 +995,7 @@
 3. New revenue = 90 x 130 = Rs 11,700.
 4. Change = 1,700 / 10,000 = 17% increase.
 **Fast method (30 seconds):** x + y + xy/100 = -10 + 30 - 3 = +17.
-**Check:** Exact: 0.9 x 1.3 - 1 = 17/100 (script).
+**Check:** Exact: 0.9 x 1.3 - 1 = 17/100.
 **Explain simply:**
 - Sales volume gain outweighs the price cut, so revenue rises.
 - Revenue is not profit: if cost per unit stays the same, margins shrink at the lower price.
@@ -1009,7 +1014,7 @@
 2. = 70 + 65 - 55 = 80%.
 3. Failed both = 100 - 80 = 20%.
 **Fast method (30 seconds):** Draw two overlapping circles: Only Maths 15%, only English 10%, both 55%, none 20%. They sum to 100.
-**Check:** Circle check: 15 + 10 + 55 + 20 = 100 (script).
+**Check:** Circle check: 15 + 10 + 55 + 20 = 100.
 **Explain simply:**
 - Adding 70 and 65 counts the 55% 'both' group twice, so subtract it once.
 - 'Failed both' is the complement of 'passed at least one'.
@@ -1029,7 +1034,7 @@
 3. Total passes = 32 + 42 = 74.
 4. Total students = 100, so 74 / 100 = 74%.
 **Fast method (30 seconds):** Weights 40:60 = 2:3; the average sits closer to 70: 70 + 10 x 2/5 = 74.
-**Check:** Weighted average (40x80 + 60x70)/100 = 74.0 (script).
+**Check:** Weighted average (40x80 + 60x70)/100 = 74.
 **Explain simply:**
 - Averaging percentages is wrong when groups differ in size; always go back to the counts.
 - The bigger group pulls the average toward its own rate.
@@ -1049,7 +1054,7 @@
 3. Females = 40; 40% of 40 = 16 in analytics.
 4. Total in analytics = 15 + 16 = 31 out of 100 = 31%.
 **Fast method (30 seconds):** Direct: 0.6 x 0.25 + 0.4 x 0.40 = 0.15 + 0.16 = 0.31.
-**Check:** Exact fraction 31/100 (script); lies between 25% and 40% as it should.
+**Check:** Exact fraction 31/100; lies between 25% and 40% as it should.
 **Explain simply:**
 - The overall rate is a weighted average of the group rates, weighted by group sizes.
 - 'Percent of percent' is multiplication: 25% of 60% = 15%.
@@ -1068,7 +1073,7 @@
 2. Offers = 25% of 800 = 200.
 3. Joiners = 80% of 200 = 160.
 **Fast method (30 seconds):** Chain the fractions: 2/5 x 1/4 x 4/5 = 8/100 = 8%; 8% of 2,000 = 160.
-**Check:** Exact: 2000 x 0.4 x 0.25 x 0.8 = 160 (script). That is an overall 8% conversion.
+**Check:** Exact: 2000 x 0.4 x 0.25 x 0.8 = 160. That is an overall 8% conversion.
 **Explain simply:**
 - Each stage's percent applies to the people left from the previous stage, not to the original 2,000.
 - The overall conversion is the product of the stage conversions: 0.4 x 0.25 x 0.8 = 8%.
@@ -1087,7 +1092,7 @@
 2. Year 2: 15% of the remaining leave, 85% stay: 800 x 0.85 = 680.
 3. Year 3: 10% leave, 90% stay: 680 x 0.90 = 612.
 **Fast method (30 seconds):** Multiply the retention factors: 0.8 x 0.85 = 0.68, then 0.68 x 0.9 = 0.612, so 61.2% of 1,000 = 612.
-**Check:** Reverse: 612 / 0.9 / 0.85 / 0.8 = 1,000. Verified by script.
+**Check:** Reverse: 612 / 0.9 / 0.85 / 0.8 = 1,000.
 **Explain simply:**
 - Attrition means the share of staff who leave; retention is what remains (100% minus attrition).
 - Successive percentages multiply; they never add up (20+15+10 = 45% would give 550, which is wrong).
@@ -1107,7 +1112,7 @@
 3. Overtime pay: 10 x 300 = Rs 3,000.
 4. Total: 32,000 + 3,000 = Rs 35,000.
 **Fast method (30 seconds):** Overtime at 1.5 times the rate is 'time and a half'. Pay = 200 x (160 + 10 x 1.5) = 200 x 175 = 35,000.
-**Check:** Overtime hours are 10 of 170 total; 170 x 200 = 34,000 plus the extra 50% on 10 hours (10 x 100 = 1,000) = 35,000. Verified by script.
+**Check:** Overtime hours are 10 of 170 total; 170 x 200 = 34,000 plus the extra 50% on 10 hours (10 x 100 = 1,000) = 35,000.
 **Explain simply:**
 - '50% more than the normal rate' means 1.5 times the rate, not 0.5 times.
 - Overtime is paid only for the extra hours; the 160 normal hours stay at Rs 200.
@@ -1127,7 +1132,7 @@
 3. Profit per orange: 3.00 - 2.50 = Rs 0.50.
 4. Profit % on cost = 0.50 / 2.50 x 100 = 20%.
 **Fast method (30 seconds):** Use 20 oranges, the common multiple of 4 and 5: cost Rs 50, sale Rs 60, profit Rs 10, so 10/50 = 20%.
-**Check:** Take 20 oranges (the LCM of 4 and 5): cost 20/4 x 10 = Rs 50, sale 20/5 x 15 = Rs 60; 10/50 = 20%. Verified by script.
+**Check:** Take 20 oranges (the LCM of 4 and 5): cost 20/4 x 10 = Rs 50, sale 20/5 x 15 = Rs 60; 10/50 = 20%.
 **Explain simply:**
 - Profit percentage is always on cost price unless the question says otherwise: profit / cost x 100.
 - Convert to a per-unit price first so the two offers become comparable.
@@ -1146,7 +1151,7 @@
 2. C pays 125% of B's price: 1.25 x 1.20 = 1.50 times A's cost.
 3. So 1.5 x A's cost = 1,500, giving A's cost = 1,500 / 1.5 = Rs 1,000.
 **Fast method (30 seconds):** Combined profit is 20 + 25 + (20 x 25)/100 = 50%, so cost = 1,500 / 1.5 = 1,000.
-**Check:** Forward: 1,000 x 1.2 = 1,200; 1,200 x 1.25 = 1,500. Verified by script.
+**Check:** Forward: 1,000 x 1.2 = 1,200; 1,200 x 1.25 = 1,500.
 **Explain simply:**
 - Each person's profit is on their own cost price, which is the previous person's selling price.
 - Profits chain by multiplication, so the combined profit is 50%, not 45%.
@@ -1166,7 +1171,7 @@
 3. Discount in rupees = 120 - 96 = Rs 24.
 4. Discount % is on the marked price: 24 / 120 x 100 = 20%.
 **Fast method (30 seconds):** Selling factor 0.96 divided by marking factor 1.20 = 0.80, so a 20% discount.
-**Check:** Cost 100, marked 120, 20% discount gives 96, a 4% loss; 120 x 0.8 = 96. Verified by script.
+**Check:** Cost 100, marked 120, 20% discount gives 96, a 4% loss; 120 x 0.8 = 96.
 **Explain simply:**
 - Discount is always a percentage of the marked price (the printed price tag), not of cost.
 - Choosing cost = 100 makes the percentages easy to read as rupees.
@@ -1185,7 +1190,7 @@
 2. Price = 5,900 / 1.18 = Rs 5,000.
 3. GST = 5,900 - 5,000 = Rs 900 (check: 18% of 5,000 = 900).
 **Fast method (30 seconds):** 5,900 / 118 = 50, so 1% is Rs 50 and the price (100%) is Rs 5,000.
-**Check:** 5,000 x 1.18 = 5,900. Verified by script.
+**Check:** 5,000 x 1.18 = 5,900.
 **Explain simply:**
 - GST (Goods and Services Tax) is an indirect tax added on top of the price before tax.
 - The 18% is on the pre-tax price, so you must divide by 1.18, not take 18% off the bill.
@@ -1204,7 +1209,7 @@
 2. To return to 100 it must fall by 25.
 3. Fall % is on the new price: 25 / 125 x 100 = 20%.
 **Fast method (30 seconds):** Formula: fall % = r / (100 + r) x 100 = 25/125 x 100 = 20%.
-**Check:** 100 x 1.25 = 125; 125 x 0.8 = 100. Verified by script.
+**Check:** 100 x 1.25 = 125; 125 x 0.8 = 100.
 **Explain simply:**
 - Percent change always uses the starting value of that step as the base.
 - The new price is higher, so the same rupee drop is a smaller percentage.
@@ -1223,7 +1228,7 @@
 2. 25% of 8 = (25 x 8) / 100 = 200 / 100 = 2.
 3. Multiplication does not care about order, so the two always match.
 **Fast method (30 seconds):** Flip to the friendlier one: 4% of 75 is hard, 75% of 4 = 3 is instant; 16% of 50 = 50% of 16 = 8.
-**Check:** 8% of 25 = 0.08 x 25 = 2 and 25% of 8 = 0.25 x 8 = 2. Verified by script.
+**Check:** 8% of 25 = 0.08 x 25 = 2 and 25% of 8 = 0.25 x 8 = 2.
 **Explain simply:**
 - 'Percent' means 'per hundred': x% of y = x/100 x y.
 - Because x/100 x y and y/100 x x contain the same product x x y, they are equal.
@@ -1244,7 +1249,7 @@
 3. Article 2, 10% loss: cost = 99 / 0.90 = Rs 110.
 4. Total cost 200, total sale 198, loss Rs 2, so loss % = 2 / 200 = 1%.
 **Fast method (30 seconds):** Formula: loss % = (x/10)^2 = 1% whenever equal SP with x% gain and x% loss (x = 10 gives 1%).
-**Check:** Take SP = Rs 99 each: costs 90 and 110 total 200; sale 198; loss 2/200 = 1%. Verified by script.
+**Check:** Take SP = Rs 99 each: costs 90 and 110 total 200; sale 198; loss 2/200 = 1%.
 **Explain simply:**
 - The loss article had a higher cost price, so its rupee loss is bigger than the other article's gain.
 - Percentages apply to different bases (the two costs), which is why they do not cancel.
@@ -1264,7 +1269,7 @@
 3. Gain % = 100 / 900 x 100 = 11.11%.
 4. With markup: profit factor = (price factor after markup and discount) x (1,000 / 900). Example: price factor 1.2 gives 1.2 x 1.1111 = 1.3333, a 33.33% profit.
 **Fast method (30 seconds):** Remember: error over (true minus error), not error over true. Example: 800 g for 1 kg gives 200/800 = 25%.
-**Check:** Worked: 900 g for 1 kg gives 100/900 = 11.11%; marked-up example checked in Q77 (33.33%). Verified by script.
+**Check:** Worked: 900 g for 1 kg gives 100/900 = 11.11%; marked-up example checked in Q77 (33.33%).
 **Explain simply:**
 - A dishonest dealer sells 'a kilo' that is really less, so cost is for what he actually hands over.
 - The price premium and the weight shortfall are two separate gains, and they multiply.
@@ -1284,7 +1289,7 @@
 3. For a 20% profit he needs SP = Rs 120.
 4. Raise needed = 120 - 80 = Rs 40, as a percentage of the current SP: 40 / 80 x 100 = 50%.
 **Fast method (30 seconds):** Ratio of new SP to old SP = 1.2 / 0.8 = 1.5, a 50% increase.
-**Check:** SP at loss = 80, target SP = 120, 40/80 = 50%. Verified by script.
+**Check:** SP at loss = 80, target SP = 120, 40/80 = 50%.
 **Explain simply:**
 - The base is the price you are raising from (SP of Rs 80), not the cost.
 - Profit and loss are always on cost, but this question changes the base on purpose.
@@ -1304,7 +1309,7 @@
 3. Profit = 240 - 100 = Rs 140.
 4. Profit % = 140 / 100 x 100 = 140%.
 **Fast method (30 seconds):** Doubling the SP does not double the profit percentage: new factor 2.4, so profit is 140%.
-**Check:** CP 100, SP 120; doubled SP 240, profit 140. Verified by script.
+**Check:** CP 100, SP 120; doubled SP 240, profit 140.
 **Explain simply:**
 - Profit % is on cost, which is unchanged here.
 - SP doubles, but the profit itself rises from 20 to 140, seven times.
@@ -1324,7 +1329,7 @@
 3. After the second 10% discount (on 117): 117 x 0.9 = 105.3.
 4. Profit = 105.3 - 100 = 5.3, so 5.3% on cost.
 **Fast method (30 seconds):** Two 10% discounts equal 19% (10 + 10 - 1), not 20%. So SP = 130 x 0.81 = 105.3.
-**Check:** Cost 100, marked 130, after 10% = 117, after 10% = 105.3; check 130 x 0.81 = 105.3. Verified by script.
+**Check:** Cost 100, marked 130, after 10% = 117, after 10% = 105.3; check 130 x 0.81 = 105.3.
 **Explain simply:**
 - Successive discounts apply one after another, each on the reduced price.
 - Net discount = 1 - 0.9 x 0.9 = 19%.
@@ -1344,7 +1349,7 @@
 3. After +20% (on 99): 99 x 1.2 = 118.8.
 4. Net change = 118.8 - 100 = +18.8%.
 **Fast method (30 seconds):** Multiply factors: 1.1 x 0.9 = 0.99, then 0.99 x 1.2 = 1.188.
-**Check:** 1.1 x 0.9 = 0.99; 0.99 x 1.2 = 1.188. Verified by script.
+**Check:** 1.1 x 0.9 = 0.99; 0.99 x 1.2 = 1.188.
 **Explain simply:**
 - Convert each % to a multiplier: +10% is x1.10, -10% is x0.90.
 - Order does not matter for the final multiplier, only that you multiply.
@@ -1364,7 +1369,7 @@
 3. True cost of 900 g = 100 x 0.9 = Rs 90.
 4. Profit = 120 - 90 = 30, so profit % = 30 / 90 = 33.33%.
 **Fast method (30 seconds):** Multiply: 1.2 x (1000/900) = 1.3333, so 33.33%. Do not add 20% and 11.11%.
-**Check:** Cost per 1,000 g sold: customer pays marked 150 less 20% = 120 for a '1 kg'; true cost of 900 g = 90; (120-90)/90 = 33.33%. Verified by script.
+**Check:** Cost per 1,000 g sold: customer pays marked 150 less 20% = 120 for a '1 kg'; true cost of 900 g = 90; (120-90)/90 = 33.33%.
 **Explain simply:**
 - Two separate gains are at work: the net price premium (+20%) and the weight shortfall (+11.11%).
 - They multiply because one is applied to the other.
@@ -1384,7 +1389,7 @@
 3. New SP = 120 x 1.10 = 132.
 4. New profit = 132 - 125 = 7, so 7 / 125 x 100 = 5.6%.
 **Fast method (30 seconds):** Ratio: 1.2 x 1.1 / 1.25 = 1.056, so 5.6% profit.
-**Check:** Original cost 100, SP 120; new cost 125, SP 132; verified by script.
+**Check:** Original cost 100, SP 120; new cost 125, SP 132.
 **Explain simply:**
 - Profit % is always measured on the (new) cost price.
 - SP rose less than cost, so the profit margin shrinks.
@@ -1404,7 +1409,7 @@
 3. With a 20% discount, SP = 200 x 0.8 = Rs 160.
 4. Profit = 160 - 100 = 60, so 60%.
 **Fast method (30 seconds):** MP is 2 x cost, so any discount d gives profit = 2(1 - d) - 1. For d = 20%, 2 x 0.8 - 1 = 60%.
-**Check:** Cost 100, MP 200, SP at 40% off = 120; at 20% off = 160; check verified by script.
+**Check:** Cost 100, MP 200, SP at 40% off = 120; at 20% off = 160.
 **Explain simply:**
 - Marked price is found by dividing the selling price by (1 - discount rate).
 - The unknown cost does not matter, so any value (100) works.
@@ -1424,7 +1429,7 @@
 3. 1 - d = 0.8, so d = 0.2 = 20%.
 4. Check: 2,000 x 0.8 = 1,600, then 1,600 x 0.8 = 1,280.
 **Fast method (30 seconds):** Recognise 0.64 as 0.8 x 0.8 (8 x 8 = 64).
-**Check:** 2,000 x 0.8 = 1,600; 1,600 x 0.8 = 1,280. Verified by script.
+**Check:** 2,000 x 0.8 = 1,600; 1,600 x 0.8 = 1,280.
 **Explain simply:**
 - Successive discounts multiply, so the net effect is not 2d.
 - The single equivalent discount is 36%, not 40%.
@@ -1444,7 +1449,7 @@
 3. Profit = 40 - 28.80 = Rs 11.20.
 4. Profit % = 11.20 / 28.80 x 100 = 38.888...%, rounded to 38.89%.
 **Fast method (30 seconds):** Price factor 40/36 = 1.1111; weight factor 1,000/800 = 1.25; product = 1.3889, so 38.89%.
-**Check:** Customer pays 40 for 800 g; cost of 800 g = 28.8; profit 11.2 on 28.8 = 38.89%. Verified by script.
+**Check:** Customer pays 40 for 800 g; cost of 800 g = 28.8; profit 11.2 on 28.8 = 38.89%.
 **Explain simply:**
 - Two gains: honest price markup (11.11%) and the 20% shortfall in weight (a 25% gain).
 - They multiply: 1.1111 x 1.25 = 1.3889.
@@ -1464,7 +1469,7 @@
 3. Net 4% decrease means result = 96, so 10,000 - x^2 = 9,600.
 4. x^2 = 400, so x = 20 (the positive root).
 **Fast method (30 seconds):** Memorise: +x% then -x% gives a loss of x^2/100 percent; set it to 4, so x = 20.
-**Check:** x = 20: 1.2 x 0.8 = 0.96. Verified by script.
+**Check:** x = 20: 1.2 x 0.8 = 0.96.
 **Explain simply:**
 - The decrease is taken on a larger base, so the final value is always below the start.
 - The negative root -20 is rejected because x is a percentage rise.

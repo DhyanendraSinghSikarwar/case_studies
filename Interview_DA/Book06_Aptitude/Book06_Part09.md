@@ -41,7 +41,7 @@
 1. I alone: Priya = Ravi + 5, but Ravi is unknown, so many ages fit (not sufficient).
 2. II alone: Ravi is 25, nothing about Priya (not sufficient).
 3. Together: Priya = 25 + 5 = 30, one answer (sufficient).
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Each statement holds a missing piece; the question needs both pieces.
 - A chain of facts (Priya from Ravi, Ravi from a number) usually means C.
@@ -57,7 +57,7 @@
 1. I alone: 6,00,000 / 12 = 50,000 (sufficient).
 2. II alone: Anil = 1.2 x Sunil, Sunil is unknown, so Anil could be anything (not sufficient).
 3. Verdict: I alone only, option A.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - A percentage comparison needs a base number; without Sunil's pay there is none.
 - The bracket in the question (12 equal months, no bonus) is what makes I sufficient.
@@ -73,7 +73,8 @@
 1. I alone: CP = 800, but profit is unknown, so SP is unknown (not sufficient).
 2. II alone: SP = 1.25 x CP, CP unknown (not sufficient).
 3. Together: SP = 1.25 x 800 = 1,000 (sufficient).
-**Check:** verified by script.
+**Fast method (30 seconds):** Profit % is on cost, so SP = CP x 1.25; once you have both CP and the percentage, multiply.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Profit % is always measured on cost price unless stated otherwise.
 - SP = CP x (1 + profit%).
@@ -89,7 +90,7 @@
 1. I alone: n + 1 odd means n is even (always yes, sufficient).
 2. II alone: n = 3 is odd, n = 6 is even (sometimes yes, sometimes no, not sufficient).
 3. Verdict: A.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Odd + 1 = even and even + 1 = odd, so n+1 odd forces n even.
 - For yes/no questions, a certain 'yes' or certain 'no' is sufficient.
@@ -105,7 +106,7 @@
 1. I alone: total = 70 x 3 = 210 (sufficient).
 2. II alone: highest mark 85 leaves the other two free (not sufficient).
 3. Verdict: A.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Total = average x number of items.
 - Max or median statements do not fix a total.
@@ -121,7 +122,8 @@
 1. I alone: L + B = 20; (10,10) gives 100, (15,5) gives 75 (not sufficient).
 2. II alone: L = 2B; B = 1 gives 2, B = 2 gives 8 (not sufficient).
 3. Together: 2B + B = 20, B = 20/3, L = 40/3, area = 40/3 x 20/3 = 800/9 = 88.89 sq cm (sufficient).
-**Check:** verified by script.
+**Fast method (30 seconds):** Count unknowns (L and B) and independent facts (perimeter, ratio): 2 and 2, so sufficient only together.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Rule: two unknowns need two independent equations.
 - Perimeter = 2(L + B), so half-perimeter is L + B = 20.
@@ -137,7 +139,7 @@
 1. I alone: 40 women, total unknown (not sufficient).
 2. II alone: total 100, women unknown (not sufficient).
 3. Together: 40/100 = 0.4 (sufficient).
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Probability = favourable / total outcomes.
 - Both numerator and denominator must be known.
@@ -153,7 +155,8 @@
 1. I alone: this year 1.2 crore, last year unknown (not sufficient).
 2. II alone: last year 1 crore, this year unknown (not sufficient).
 3. Together: (1.2 - 1.0) / 1.0 = 0.2 = 20% (sufficient).
-**Check:** verified by script.
+**Fast method (30 seconds):** Change % = difference / old value. Both old and new are needed.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Percentage change = (new - old) / old x 100.
 **Likely follow-ups:** 1) *If sales fell to 0.8 crore?* Change is -20% (a fall). 2) *If I said sales grew by Rs 20 lakh?* Then still need old value.
@@ -168,7 +171,8 @@
 1. I alone: MP = 2,000, SP unknown (not sufficient).
 2. II alone: SP = 1,700, MP unknown (not sufficient).
 3. Together: discount = 2,000 - 1,700 = 300; 300 / 2,000 = 0.15 = 15% (sufficient).
-**Check:** verified by script.
+**Fast method (30 seconds):** Discount % = (MP - SP) / MP, so both prices are needed (or one price plus a percentage link).
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Discount % = (marked price - selling price) / marked price x 100.
 **Likely follow-ups:** 1) *If II said the discount is Rs 300?* Then with I still 15%. 2) *If II gave 'SP is 85% of MP'?* II alone suffices (15%).
@@ -183,7 +187,7 @@
 1. I alone: SP = 1,500, cost unknown (not sufficient).
 2. II alone: SP = 1.2 x CP, so profit = 0.2 x CP, which is 20% of cost (sufficient).
 3. Verdict: B.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Profit % is a ratio, so the actual rupee amounts cancel.
 - Check: CP = 1,000, SP = 1,200 gives 20%; CP = 500, SP = 600 gives 20%.
@@ -205,7 +209,7 @@
 - Judge, do not solve: stop when you know whether one answer exists.
 - Statement I alone means ignore Statement II completely.
 **Worked mini-example:** Q: "What is Priya's age? I: Priya is 5 years older than Ravi. II: Ravi is 25." I alone fails, so the answer is B, C or E. II alone fails, so C or E. Together 30, so C.
-**Likely follow-ups:** 1) *How long per question?* About 1 to 1.5 minutes. 2) *When to guess?* If stuck after combining, pick E if the unknowns clearly exceed the equations.
+**Likely follow-ups:** 1) *How long per question?* About 1 to 1.5 minutes (a rule of thumb, not an official limit). 2) *When to guess?* If stuck after combining, E is a reasonable guess when the unknowns clearly exceed the independent facts (a heuristic, not a guarantee).
 **Common mistakes / traps:** Skipping the "alone" tests and combining straight away; solving fully; forgetting D is possible.
 
 ### Q14 ⭐⭐⭐ 🟡 Why must you not carry information from Statement I into your test of Statement II when checking each statement alone?
@@ -215,7 +219,7 @@
 **Answer:** **Because "alone" means alone; mixing the statements destroys the difference between options A, B, C and D.**
 **Explain simply:**
 - Each statement is tested as if the other did not exist.
-- Carrying information over turns every C answer into a false D, and every A or B into a false D.
+- Carrying information over can turn a true C into a false B or D, and a true A into a false D (II looks sufficient only because it borrowed I).
 - Combine only after both alone tests fail.
 **Worked mini-example:** "What is Priya's age? I: Priya is 5 years older than Ravi. II: Ravi is 25." If you carry "5 years older" into II, then II looks like it gives 30. But II alone (Ravi is 25) says nothing about Priya, so the correct option is C, not B or D.
 **Likely follow-ups:** 1) *Is it fine to reuse the question's own bracketed facts?* Yes, those belong to the question stem and apply to both. 2) *Can a statement repeat the other?* Yes, then it is D or E.
@@ -231,7 +235,7 @@
 2. I alone: x > 0 picks 5 (sufficient).
 3. II alone: 5 and -5 are both integers, so still two values (not sufficient).
 4. Verdict: A.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Every positive square has two square roots, one positive and one negative.
 - A property that both candidates share does not separate them.
@@ -247,7 +251,8 @@
 1. I alone: men = 3/5 of total, total unknown (not sufficient).
 2. II alone: 24 women, men unknown (not sufficient).
 3. Together: women = 1 - 3/5 = 2/5; 2/5 x total = 24, total = 24 x 5/2 = 60 (sufficient).
-**Check:** verified by script.
+**Fast method (30 seconds):** A fraction gives only a ratio; one actual count turns it into numbers. Women 2/5 = 24, so one-fifth = 12 and total = 60.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Proportions need one actual count to become numbers.
 - The bracket (every employee is a man or woman) is what makes women = 2/5.
@@ -263,7 +268,8 @@
 1. I alone: speed = (L + 200) / 30, L unknown (not sufficient).
 2. II alone: L = 100, no time given (not sufficient).
 3. Together: (100 + 200) / 30 = 300 / 30 = 10 m/s (sufficient).
-**Check:** verified by script.
+**Fast method (30 seconds):** Distance covered while crossing = train length + platform length; speed = that distance / time.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Crossing a platform means the engine travels train length + platform length.
 - 10 m/s = 36 km/h (multiply by 18/5).
@@ -279,7 +285,8 @@
 1. I alone: A + B = 1/12 per day, B's share unknown (not sufficient).
 2. II alone: B = 1/20, says nothing about A (not sufficient).
 3. Together: A = 1/12 - 1/20 = 5/60 - 3/60 = 2/60 = 1/30 per day, so 30 days (sufficient).
-**Check:** verified by script.
+**Fast method (30 seconds):** Rates add, so A = combined rate - B's rate. Lowest common denominator 60: 5/60 - 3/60 = 2/60.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Work per day (rate) = 1 / days to finish alone; rates of people working together add up.
 **Likely follow-ups:** 1) *If I said 15 days together and II 20 days?* A = 1/15 - 1/20 = 1/60, so 60 days. 2) *Days for B?* Given: 20.
@@ -295,7 +302,7 @@
 2. I alone: 25 / 200 = 12.5% > 10%, firm yes (sufficient).
 3. II alone: 15 joiners says nothing about leavers (not sufficient).
 4. Verdict: A.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Attrition here = leavers / opening headcount, as the bracket defines it.
 - Joiners affect net headcount, not attrition.
@@ -311,7 +318,7 @@
 1. I alone: 2,50,000 / 5 = 50,000 (sufficient).
 2. II alone: median is the middle salary, others can be anything (not sufficient).
 3. Verdict: A.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Average = total / count; median = middle value after sorting.
 - Here both come out as 50,000 only by coincidence; the median does not determine the average.
@@ -327,7 +334,7 @@
 1. I alone: boys 60%, girls 40%, ratio 60:40 = 3:2 (sufficient).
 2. II alone: 30 students, split unknown (not sufficient).
 3. Verdict: A.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - A ratio is unchanged by the class size; 30 students gives 18 boys and 12 girls (18:12 = 3:2) only as a check.
 **Likely follow-ups:** 1) *If asked the number of girls?* Needs both statements (12). 2) *If II said 12 girls?* The ratio still needs the total, so II alone is not enough.
@@ -342,10 +349,10 @@
 1. I alone: with distance d each way, time = d/40 + d/60 = 5d/120 = d/24 for a total of 2d; average = 2d / (d/24) = 48 km/h (sufficient, d cancels).
 2. II alone: distance only, no speeds (not sufficient).
 3. Verdict: A.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Average speed = total distance / total time, not the average of the two speeds (50 is the trap).
-- Shortcut: 2ab / (a + b).
+- Shortcut: 2ab / (a + b), valid only when both legs cover the same distance (here the same road both ways).
 **Likely follow-ups:** 1) *With II added?* Time = 3 + 2 = 5 h, 240 km, 48 km/h. 2) *If speeds were 30 and 60?* 40 km/h.
 **Common mistakes / traps:** Answering 50 km/h.
 
@@ -358,7 +365,8 @@
 1. I alone: P = 5,000, no interest (not sufficient).
 2. II alone: SI = 1,000 in 2 years, P unknown (not sufficient).
 3. Together: R = SI x 100 / (P x T) = 1,000 x 100 / (5,000 x 2) = 10% (sufficient).
-**Check:** verified by script.
+**Fast method (30 seconds):** SI formula has P, R, T and SI: three known values fix the fourth. Statement I gives one, II gives one (plus T = 2 from the stem of II), so both are needed.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - SI = P x R x T / 100.
 - Three of the four quantities give the fourth.
@@ -374,7 +382,7 @@
 1. I alone: x^3 > 0 means x > 0 (sufficient).
 2. II alone: x^2 > 0 means x is not 0; x = 2 and x = -2 both work (not sufficient).
 3. Verdict: A.
-**Check:** verified by script.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Odd powers keep the sign; even powers make everything non-negative.
 **Likely follow-ups:**  1) *If II said x^3 < 0?* Then firm no. 2) *With x^4 > 0?* Same as the square, not enough.
@@ -389,7 +397,8 @@
 1. I alone: 70 know SQL, Excel unknown (not sufficient).
 2. II alone: 60 know Excel, SQL unknown (not sufficient).
 3. Together: both = 70 + 60 - 100 = 30 (sufficient).
-**Check:** verified by script.
+**Fast method (30 seconds):** With nobody outside both groups, overlap = SQL + Excel - total = 70 + 60 - 100.
+**Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - Union = A + B - overlap; with no one knowing neither, union = 100.
 **Likely follow-ups:**  1) *Only SQL?* 40. 2) *If 10 knew neither?* Union 90, both = 40.
@@ -406,7 +415,7 @@
 2. Keep those divisible by 4 (last two digits form a multiple of 4): 36 (36/4 = 9) and 72 (72/4 = 18). The others fail: 18, 27, 45, 54, 63, 81, 90 leave a remainder.
 3. Two numbers remain, so the value is not pinned down.
 **Fast method (30 seconds):** List the candidates from Statement I (only nine), then filter with II. Two survivors means E.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Data sufficiency asks "can you find ONE value?", not "can you find a value?".
 - Divisible by 4 means the last two digits form a multiple of 4.
@@ -426,7 +435,7 @@
 4. Together: 3S = 2S + 10, so S = 10 and F = 30.
 5. Check: in 10 years father 40, son 20, and 40 = 2 x 20.
 **Fast method (30 seconds):** Two unknowns need two independent equations. Here we have exactly two, and they are different, so a unique answer exists.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Each statement is one equation; one equation with two unknowns has infinitely many solutions.
 - Two equations are enough only if they are not the same equation in disguise.
@@ -450,7 +459,7 @@
 **Asked at:** commonly asked (no company-specific report found); prep sites say data sufficiency items appear in AMCAT, TCS NQT and company aptitude rounds (unverified).
 **What the interviewer is checking:** Time management: not sinking the whole test into one tricky item.
 **Say this in the interview:** "About one to one and a half minutes; I evaluate rather than calculate, and if I am still stuck I eliminate options and move on."
-**Answer:** **Aim for about 60 to 90 seconds per item (the exact limit depends on the test's total time divided by its question count). Guess when you are past about two minutes with no clear route, and you are not penalised for wrong answers.**
+**Answer:** **Aim for about 60 to 90 seconds per item (a rule of thumb; the real limit is the test's total time divided by its question count). Guess when you are past about two minutes with no clear route, but only if the test has no negative marking, or you have ruled out at least two options.**
 **Explain simply:**
 - Work out your budget first: total minutes divided by number of questions. If the test gives 60 seconds a question, aim for 45 on easy ones to bank time.
 - Data sufficiency needs judgement, not full calculation. Often you only need to see that a value can be found, not find it.
@@ -471,7 +480,7 @@
 3. Statement II: distance = 6 x 5/12 = 2.5 km.
 4. Both agree, so each statement alone settles it.
 **Fast method (30 seconds):** Distance = speed x time. A speed plus a time always gives a distance.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Speed times time gives distance, as long as units match (km/h with hours).
 - Two statements that agree is a good sign you read the data correctly.
@@ -488,7 +497,7 @@
 1. Statement I: 1 kg at 40 + 1 kg at 60 = Rs 100 for 2 kg, so Rs 50 per kg.
 2. Statement II: take 10 kg + 10 kg: cost 400 + 600 = 1,000 for 20 kg = Rs 50. Take 5 kg of Rs 40 + 15 kg of Rs 60: cost 200 + 900 = 1,100, Rs 55 per kg. Different answers, so insufficient.
 **Fast method (30 seconds):** With two prices, only the ratio matters; the total weight cancels out.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Mixture price = total cost / total weight.
 - Scaling the whole mixture up or down (10 kg, 20 kg) does not change the average price; changing the proportions does.
@@ -506,12 +515,12 @@
 2. Statement II: diameter 14 gives r = 7 cm.
 3. Area = pi r squared = (22/7) x 7 x 7 = 154 square cm.
 **Fast method (30 seconds):** One measurement of a circle (radius, diameter or circumference) fixes the whole circle.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Circumference = 2 pi r, area = pi r squared, diameter = 2r.
 - Any one of these gives the others.
 **Likely follow-ups:** 1) *Area if circumference is 88?* r = 14, area 616. 2) *Is the area known from only the area of a sector?* Not without the angle.
-**Common mistakes / traps:** Using the diameter as the radius (area 616). Check: 154 = 22 x 7, verified by script.
+**Common mistakes / traps:** Using the diameter as the radius (area 616). Check: (22/7) x 49 = 22 x 7 = 154.
 
 ### Q33 ⭐⭐ 🟡 When do two linear equations in two unknowns fail to give a unique solution, and how does this show up in data sufficiency questions?
 **Asked at:** commonly asked (no company-specific report found); prep sites say data sufficiency items appear in AMCAT, TCS NQT and company aptitude rounds (unverified).
@@ -538,7 +547,7 @@
 2. Try x = 0, y = 4: 0 + 12 = 12 works. Try x = 3, y = 2: 6 + 6 = 12 works. Different x values, so x cannot be found.
 3. No extra condition (such as integers) is given, so many solutions remain.
 **Fast method (30 seconds):** Check whether the second equation is a multiple of the first. If yes, you have only one piece of information.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Two equations in two unknowns solve uniquely only when they are independent.
 - Here the ratios 2/4 = 3/6 = 12/24 are all equal, which is the sign of the same line.
@@ -556,7 +565,7 @@
 2. Statement II: x > y keeps only (2,1).
 3. So x = 2 and y = 1.
 **Fast method (30 seconds):** List the few possibilities from the statement that restricts the most, then filter with the other.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - The "positive integers" condition is part of the question, so use it for both statements.
 - Here Statement I produces two cases and II removes one.
@@ -574,7 +583,7 @@
 2. Statement II removes (7,1) because 7 is not less than 1.
 3. x = 1.
 **Fast method (30 seconds):** 7 is prime, so it has only two factors, 1 and 7. List them, then filter.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - A prime has exactly two positive factors: 1 and itself.
 - Always list the possible pairs from the sharper statement.
@@ -593,7 +602,7 @@
 3. II alone: CP = 850; SP might be 800 (loss) or 950 (profit).
 4. Together: 900 - 850 = 50, a profit. Percentage: 50/850 = 5.88%.
 **Fast method (30 seconds):** A yes/no question about profit needs both selling price and cost price, or the profit percent.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Profit = SP - CP; positive means profit, negative means loss.
 - One price alone is meaningless without the other.
@@ -613,7 +622,7 @@
 4. Together: C = 100 - 40 - 35 = 25%.
 5. 25% of 10,00,000 = Rs 2,50,000.
 **Fast method (30 seconds):** The remaining share equals total minus the known shares, but only when you know all the other shares.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - "Exactly three" means nobody else receives any payroll.
 - Percentages of one total must add to 100%.
@@ -632,7 +641,7 @@
 3. Together: n is a common multiple of 4 and 6. LCM(4,6) = 12. Every common multiple is a multiple of 12.
 4. So the answer is always yes. Note that 4 x 6 = 24 is not the test: LCM is.
 **Fast method (30 seconds):** The correct test is "divisible by each of two numbers means divisible by their LCM", not their product.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - For coprime numbers (like 3 and 4) the LCM equals the product, so "divisible by 3 and 4" means divisible by 12.
 - For 4 and 6, which share a factor 2, the LCM is 12 not 24.
@@ -650,7 +659,7 @@
 2. Statement II: test -0.5 (0.25 > -0.5), -1 (1 > -1), -5 (25 > -5): always yes.
 3. Both give a definite yes, so each is sufficient.
 **Fast method (30 seconds):** The case where it would be no is 0 < x < 1 (x = 0.5 gives 0.25 < 0.5), and 0 and 1 give equality. Neither statement allows these.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - For a yes/no question, one definite answer is enough, even if two statements are about different ranges of x.
 - Square of a fraction between 0 and 1 is smaller than the fraction.
@@ -686,7 +695,7 @@
 3. Ratio A:B = 480 : 300 = 8 : 5.
 4. B's share = 5/13 x 78,000 = Rs 30,000 (78,000/13 = 6,000; x 5).
 **Fast method (30 seconds):** Divide the profit in the ratio of investment x time. 78,000 splits into 13 equal parts of 6,000.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Profit sharing is proportional to capital x months, not just capital.
 - A ratio needs both sides.
@@ -705,7 +714,7 @@
 3. Together: a = 6, b = 3: 6/3 = 2 yes. a = 6, b = 4: 1.5 no. Also a = 12, b = 4: 3 yes.
 4. Both yes and no are possible, so E.
 **Fast method (30 seconds):** A yes/no answer is not sufficient if it can go both ways, even after combining.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - "b is a factor of 12" includes 1, 2, 3, 4, 6, 12.
 - a/b is an integer only if b divides a. Multiples of 6 are divisible by 1, 2, 3 and 6, but not necessarily by 4 or 12.
@@ -723,7 +732,7 @@
 - It is hard to guess, because five options need careful elimination.
 - Prep sites say DS items appear in AMCAT, TCS NQT and some company aptitude rounds (unverified; no official test specification found).
 - For an HR professional moving to analytics, it shows you can handle ambiguity and ask for missing information.
-**Likely follow-ups:** 1) *Example of sufficiency at work?* To compute attrition rate you need leavers and average headcount: one alone is insufficient. 2) *Is it numeric only?* No, also logic and yes/no.
+**Likely follow-ups:** 1) *Example of sufficiency at work?* To compute attrition rate you need the number of leavers and a headcount base (opening or average, depending on the company's definition): one alone is insufficient. 2) *Is it numeric only?* No, also logic and yes/no.
 **Common mistakes / traps:** Answering as if it only tests maths speed. It also tests discipline in not assuming.
 
 ### Q45 ⭐ 🟡 Is the integer product x times y even? (x and y are integers.) Statement I: x + y is odd. Statement II: x is even.
@@ -738,7 +747,7 @@
 3. Statement II: x even, so xy even (x = 4, y = 3: 12; y = -5: -20).
 4. Both are always yes.
 **Fast method (30 seconds):** A product is even if at least one factor is even. It is odd only if both are odd.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Odd + odd = even; even + even = even; odd + even = odd.
 - Odd x odd = odd; anything with an even factor is even.
@@ -756,7 +765,7 @@
 2. Statement II: the third side c can be any length between 12 - 5 = 7 and 12 + 5 = 17 (triangle inequality).
 3. c = 13 gives a right angle; c = 10 or 15 does not. So II alone is insufficient.
 **Fast method (30 seconds):** Three side lengths fix a triangle completely, so you can test whether a right angle exists.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - Right-angled if a squared + b squared = c squared (c longest).
 - Two sides leave the third open.
@@ -805,10 +814,10 @@
 3. Statement II: primes are 2, 3, 5, 7... n = 3, 5, 7, 11 give 8, 24, 48, 120, all yes. But n = 2 gives 4 - 1 = 3, not divisible by 8.
 4. So II gives both yes and no.
 **Fast method (30 seconds):** Odd numbers have a simple structure around them; the only even prime, 2, is the exception.
-**Check:** verified by script (brute force over all cases).
+**Check:** verified by code (enumerated a wide range of test values for the statements, alone and together).
 **Explain simply:**
 - 2 is the only even prime and is a classic trap.
 - Factorising a difference of squares: a squared - b squared = (a - b)(a + b).
-**Likely follow-ups:** 1) *Is n squared - 1 divisible by 8 for every odd n?* Yes (verified for odd n below 50 by script). 2) *Is it divisible by 16?* No: n = 3 gives 8.
-**Common mistakes / traps:** Believing that every prime greater than 2 is odd means primes are fine: but the statement includes 2.
+**Likely follow-ups:** 1) *Is n squared - 1 divisible by 8 for every odd n?* Yes (checked by code for every odd n below 500; the factor argument above proves it for all). 2) *Is it divisible by 16?* No: n = 3 gives 8.
+**Common mistakes / traps:** Reasoning "every prime above 2 is odd, so primes are fine" and forgetting that Statement II also allows n = 2, which is even and gives 3.
 

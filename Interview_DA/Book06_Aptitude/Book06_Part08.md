@@ -30,7 +30,7 @@
 **Step-by-step working:**
 1. Percentage-point change = new rate - old rate = 12 - 10 = 2 pp.
 2. Percent change = (12 - 10) / 10 x 100 = 2 / 10 x 100 = 20%.
-**Fast method (30 seconds):** Subtract for points; divide that gap by the old rate for percent. Points are always smaller than the percent change when the old rate is under 100%.
+**Fast method (30 seconds):** Subtract for points; divide that gap by the old rate for percent. In size, the points figure is always smaller than the percent change when the old rate is under 100%.
 **Check:** 10% x 1.20 = 12% (verified by script).
 **Explain simply:**
 - A percentage point is the unit for the gap between two percentages (a rate measured in %).
@@ -222,7 +222,7 @@ Monthly sales (Rs lakh):
 4. 190 + 60 = 250.
 5. 250 + 70 = 320.
 **Fast method (30 seconds):** Pair numbers that make round sums: (40 + 70) + (45 + 55) + (50 + 60) = 110 + 100 + 110 = 320.
-**Check:** average 320 / 6 = 53.33, which sits between the smallest (40) and largest (70) (verified by script).
+**Check:** sanity check: average 320 / 6 = 53.33 sits between the smallest (40) and largest (70) month; the total 320 was also confirmed by script.
 **Explain simply:**
 - Units matter: the table is in Rs lakh, so the answer is also in lakh.
 **Likely follow-ups:** Total of Product B? 315 lakh.
@@ -285,7 +285,7 @@ Monthly sales (Rs lakh):
 **Explain simply:**
 - Absolute difference ignores the sign: B ahead by 10 and A ahead by 10 count the same.
 **Likely follow-ups:** In how many months was A ahead? Four (Feb, Apr, May, Jun).
-**Common mistakes / traps:** Ignoring the sign and picking a month where A is ahead, or stopping before January because the later gaps look the same.
+**Common mistakes / traps:** Ignoring the sign and picking a month where A is ahead, or not checking every month (five of the six gaps are the same 5, so only January stands out).
 
 ### Q13 ⭐⭐⭐ 🟢 What should you read first when a chart or table is shown in a data interpretation set, and what common errors does this prevent?
 **Asked at:** commonly asked (no company-specific report found); "read the title, units and footnotes first" is standard advice in prep material (unverified). Accenture-style guides name axis and unit misreading as the main error (prep sites, unverified).
@@ -469,7 +469,7 @@ Revenue and expenditure (Rs crore):
 **Fast method (30 seconds):** 70 / 80 = 7/8 = 0.875.
 **Check:** 80 x 1.875 = 150 (verified by script).
 **Explain simply:**
-- This is total growth over four years, not a yearly rate. A per-year (compound) rate would be about 17% a year ((150/80)^(1/4) - 1 = 16.99%).
+- This is total growth over four years, not a yearly rate. A per-year (compound) rate would be about 17% a year ((150/80)^(1/4) - 1 = 17.02%).
 **Likely follow-ups:** Growth 2024 to 2025? 30 / 120 = 25%.
 **Common mistakes / traps:** Using 150 as the base (46.67%), or dividing the 87.5% by 4 and calling it the yearly rate.
 
@@ -816,7 +816,7 @@ Quarterly attrition rate (%):
 **Say this in the interview:** I approximate when the options are well separated and round only at the end, never in the middle of a calculation.
 **Answer:** **Approximate when answer options are far apart, and keep full precision in intermediate steps, rounding only the final answer.**
 **Step-by-step working:**
-1. Look at the options first: if they differ by more than a few percent, round the inputs (for example 4,987 to 5,000).
+1. Look at the options first: if they differ by more than a few percent (a rule of thumb, not a fixed limit), round the inputs (for example 4,987 to 5,000).
 2. If options are close (like 36.57 and 36.75), compute exactly.
 3. Round numbers to the same degree in both numerator and denominator, so errors partly cancel.
 4. Never round percentages and then reuse them; return to counts.
@@ -928,7 +928,7 @@ Regional sales (Rs crore):
 - Absolute change is a difference; percent growth is that difference relative to the starting size.
 - A smaller base lets a smaller addition give a higher percentage.
 - Use absolute for "how much more money", percent for "how fast it grew".
-**Likely follow-ups:** 1) *Which region had the largest percent fall?* East, -5%. 2) *Whose share of total rose most?* Check shares: South 21.43% to 22.93%.
+**Likely follow-ups:** 1) *Which region had the largest percent fall?* East, -5%. 2) *Whose share of total rose most?* Compare shares of the total: South goes from 21.43% to 22.93% (+1.50 points), North from 28.57% to 29.94% (+1.37), West falls from 35.71% to 35.03%, East from 14.29% to 12.10%. So South's share rose most.
 **Common mistakes / traps:** Assuming the biggest rupee gain is also the biggest percent gain.
 
 ### Q38 ⭐⭐⭐ 🟡 What is West's share of total 2025 sales (to 2 decimals)?
@@ -1309,7 +1309,7 @@ Hiring funnel for one drive:
 **Answer:** **3.6% of applicants joined; 80% of offers were accepted**
 **Step-by-step working:**
 1. Joined = 72, Applied = 2,000: 72 / 2,000 x 100 = 3.6%.
-2. Offers accepted means those who joined out of those offered: 72 / 90 x 100 = 80%.
+2. Offers accepted means those who joined out of those offered: 72 / 90 x 100 = 80%. (Assumption: everyone who accepted an offer joined; the table has no separate "accepted" row.)
 **Fast method (30 seconds):** 72/90 simplifies to 4/5 = 80%. 72/2000: 72/20 = 3.6 per 100.
 **Check:** 80% of 90 = 72 and 3.6% of 2,000 = 72 (verified by script).
 **Explain simply:**
@@ -1605,7 +1605,7 @@ Pie chart of 4,000 candidates by source: Referral 30%, Portal 40%, Campus 20%, A
 **Say this in the interview:** "Candidates: Referral 1,200, Portal 1,600, Campus 800, Agency 400. Selected: 240, 80, 120, 40 = 480. Referrals are 240 of 480, which is 50%."
 **Answer:** **480 candidates selected; referrals are 50% of all hires**
 **Step-by-step working:**
-1. Referral candidates = 30% of 4,000 = 1,200; Portal = 40% = 1,600; Campus = 20% = 800; Agency = 10% = 400.
+1. (Assumption: "selected" candidates are the hires.) Referral candidates = 30% of 4,000 = 1,200; Portal = 40% = 1,600; Campus = 20% = 800; Agency = 10% = 400.
 2. Selected: Referral 20% of 1,200 = 240; Portal 5% of 1,600 = 80; Campus 15% of 800 = 120; Agency 10% of 400 = 40.
 3. Total selected = 240 + 80 + 120 + 40 = 480.
 4. Referral share of hires = 240 / 480 x 100 = 50%.
@@ -1937,7 +1937,7 @@ Product sales shares (pie charts):
 2. 2025 rupees: P = 30% of 500 = 150; Q = 40% of 500 = 200; R = 30% of 500 = 150.
 3. Changes: P 150 - 160 = -10; Q 200 - 140 = +60; R 150 - 100 = +50.
 4. Largest rupee increase: Q (+60).
-**Fast method (30 seconds):** Note the P share fell 10 percentage points, yet rupees fell only 10 because the pie itself grew 25%.
+**Fast method (30 seconds):** P's share fell 10 percentage points (40% to 30%), but the pie itself grew 25%, so P's rupees dropped only 10 lakh (6.25%) instead of collapsing.
 **Check:** Rupee changes sum to the total change: -10 + 60 + 50 = +100 = 500 - 400. Verified by script.
 **Explain simply:**
 - A pie shows shares, not amounts. Always multiply by the total of that year's pie.
@@ -2020,7 +2020,7 @@ Salary bands (Rs thousand per month) and number of employees:
 **Explain simply:**
 - Median = middle value; cumulative frequency means running total.
 - The band is exact; the number inside the band is only an estimate.
-**Likely follow-ups:** 1) *What percent earns Rs 50 thousand or more?* 30%. 2) *If the 20-30 band had 35 people instead (total 120)?* Cumulative 35, 60, 90; the 60th/61st person is in 30-40.
+**Likely follow-ups:** 1) *What percent earns Rs 50 thousand or more?* 30%. 2) *If the 20-30 band had 35 people instead (total 120)?* Cumulative 35, 60, 90. The middle is between the 60th and 61st person: the 60th is the last person of the 30-40 band and the 61st is the first of 40-50, so the median falls right on the boundary, about 40 thousand.
 **Common mistakes / traps:** Taking the middle band (40-50) just because it is in the middle, or using the middle of the five bands rather than the middle person.
 
 ### Q83 ⭐ 🟡 Estimate the mean salary using class mid-points (Rs thousand).
@@ -2091,7 +2091,7 @@ Revenue (bar) and profit margin (line):
 **Say this in the interview:** "Profit is revenue times margin: 20, 30 and 45 lakh. From 20 to 45 is up 125%."
 **Answer:** **Profit: 2023 = Rs 20 lakh, 2024 = Rs 30 lakh, 2025 = Rs 45 lakh; profit rose 125% from 2023 to 2025.**
 **Step-by-step working:**
-1. 2023: 200 x 10% = 20.
+1. Profit margin is taken on revenue (profit / revenue). 2023: 200 x 10% = 20.
 2. 2024: 250 x 12% = 30.
 3. 2025: 300 x 15% = 45.
 4. Rise = (45 - 20) / 20 x 100 = 125%.
@@ -2262,7 +2262,7 @@ Revenue (bar) and profit margin (line):
 **Asked at:** commonly asked (no company-specific report found); data interpretation (DI) appears in prep-site lists for TCS NQT, Infosys, Accenture and a pie chart set was reported in a 2025 Novartis review (unverified prep-site and snippet-level claims).
 **What the interviewer is checking:** Time management under pressure.
 **Say this in the interview:** "12 minutes for 12 questions is 60 seconds each. I do quick lookups first, skip heavy multi-step ones, and return if time remains."
-**Answer:** **About 60 seconds per question (12 min / 12 = 1 min); skip or defer the long multi-step calculations and attempt the direct lookups and simple percentages first.**
+**Answer:** **About 60 seconds per question (12 min / 12 = 1 min; the 90-second skip point and 15 to 20 second first read below are rules of thumb, not official limits); skip or defer the long multi-step calculations and attempt the direct lookups and simple percentages first.**
 **Step-by-step working:**
 1. Time budget: 12 minutes / 12 questions = 1 minute each; aim for 45 to 50 seconds on easy ones to bank time for harder ones.
 2. Triage on the first read: lookup, a sum or a simple percent is easy (do now); weighted averages, compound changes or three-step questions are hard (flag and skip).
@@ -2272,6 +2272,6 @@ Revenue (bar) and profit margin (line):
 **Explain simply:**
 - The goal is the maximum marks in the set, not clearing in order.
 - Many tests have no penalty for guessing, so check the marking rule.
-**Likely follow-ups:** 1) *How long for the first read of a set?* About 15 to 20 seconds. 2) *How to practise?* Time 12-question sets and review which types burned time.
+**Likely follow-ups:** 1) *How long for the first read of a set?* About 15 to 20 seconds (rule of thumb). 2) *How to practise?* Time 12-question sets and review which types burned time.
 **Common mistakes / traps:** Spending three minutes on one hard question and leaving the easy ones unattempted.
 
