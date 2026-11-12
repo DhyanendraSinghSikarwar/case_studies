@@ -70,6 +70,7 @@ Asha
 - `except ValueError`: what to do if that specific error happens; the script keeps going instead of crashing.
 - `else`: runs only when `try` finished with no error, so the success steps stay out of the risky block.
 - `finally`: always runs, error or not (closing a connection, printing "done").
+**Sample data:** `salary_text = "abc"` (a text that is not a number), then `"45000"` for the success case.
 **Code (what you write in the interview):**
 ```python
 try:
@@ -86,7 +87,7 @@ finally:
 Salary is not a number
 Done
 ```
-**What it means:** The error was caught, `else` was skipped, and `finally` still ran. With `int("45000")` the output is `Converted fine: 45000` then `Done` (I ran that too).
+**What it means:** The error was caught, `else` was skipped, and `finally` still ran. With `int("45000")` the output is `Converted fine: 45000` then `Done`.
 **Likely follow-ups:** 1) *Can you have try without except?* Yes, with `finally` only. 2) *Can you have several except blocks?* Yes, one per error type; the first match wins.
 **Common mistakes:** Putting too much code inside `try`; thinking `else` runs after an error (it does the opposite).
 
@@ -129,6 +130,7 @@ E4,John,HR,40000
 - `split()` with no argument treats any amount of whitespace as one separator and ignores the ends.
 - `" ".join(words)` glues the list back using one space.
 - `title()` makes the first letter of each word capital and the rest small.
+**Sample data:** One messy name: `"  rAVI   kumar "`.
 **Code (what you write in the interview):**
 ```python
 name = "  rAVI   kumar "
@@ -142,7 +144,7 @@ print(clean_name)
 Ravi Kumar
 ```
 **What it means:** The messy text is now clean and consistent, ready for grouping or matching.
-**Likely follow-ups:** 1) *Does `title()` always work?* No: `"o'neil mcdonald".title()` gives `O'Neil Mcdonald` (I ran it), so names with apostrophes or prefixes need care. 2) *How would you do it in pandas?* `df["name"].str.split().str.join(" ").str.title()`, covered in the pandas parts.
+**Likely follow-ups:** 1) *Does `title()` always work?* No: `"o'neil mcdonald".title()` gives `O'Neil Mcdonald` (checked by running it), so names with apostrophes or prefixes need care. 2) *How would you do it in pandas?* `df["name"].str.split().str.join(" ").str.title()`, covered in the pandas parts.
 **Common mistakes:** Using only `strip()`; using `split(" ")`, which keeps empty strings for repeated spaces.
 
 ### Q6 ⭐⭐⭐ 🟢 What do split() and join() do? Split 'Asha,Sales,45000' into parts and rebuild it with '|' as the separator.
@@ -153,6 +155,7 @@ Ravi Kumar
 - `"a,b".split(",")` gives `["a", "b"]`: text to list.
 - `"|".join(parts)` gives `"a|b"`: list to text. The separator comes first, which surprises beginners.
 - `join` only accepts text pieces, so numbers must be converted with `str()` first.
+**Sample data:** One record: `"Asha,Sales,45000"`.
 **Code (what you write in the interview):**
 ```python
 record = "Asha,Sales,45000"
@@ -181,6 +184,7 @@ Asha|Sales|45000
 - `name.strip()` returns a cleaned copy; the original `name` is untouched.
 - If you do not store the copy, it is thrown away.
 - Lists are the opposite: they are mutable and can change in place. Strings and tuples cannot.
+**Sample data:** One name with stray spaces: `"  Ravi "`.
 **Code (what you write in the interview):**
 ```python
 name = "  Ravi "
@@ -208,6 +212,7 @@ print(repr(name))
 - An f-string is a string starting with `f` where `{name}` is replaced by the variable's value.
 - After the colon in the braces you write the display format.
 - `,` adds thousands separators; `.2f` shows a float with exactly 2 decimals.
+**Sample data:** `name = "Ravi"`, `salary = 45000.5`, `department = "Sales"`.
 **Code (what you write in the interview):**
 ```python
 name = "Ravi"
@@ -262,6 +267,7 @@ File missing: attendance_2024_09.csv - skipping this month
 - `int("12.5")` also fails (decimal text); use `float()` first.
 - Data from files arrives as text, so bad values are common in real HR data.
 - Catching `ValueError` lets the script continue with the next value.
+**Sample data:** Ages typed as text: `["29", "34", "N/A", "41"]`.
 **Code (what you write in the interview):**
 ```python
 ages = ["29", "34", "N/A", "41"]
@@ -292,6 +298,7 @@ Skipped bad value: N/A
 - Slicing `[start:stop]` takes characters by position; `[:3]` means from the start up to (not including) position 3.
 - `split("-")` cuts at the dash and returns a list; `[1]` picks the second piece.
 - Slicing is fine when the prefix is always 3 letters; `split` is safer when lengths vary.
+**Sample data:** One employee code: `"HYD-1045"`.
 **Code (what you write in the interview):**
 ```python
 code = "HYD-1045"
@@ -342,7 +349,7 @@ Skipped: N/A
 ```
 **What it means:** Three salaries were converted; "N/A" was skipped and reported.
 **Likely follow-ups:** 1) *What if a value is `None` or NaN?* `None.replace` raises AttributeError, so check for missing values first. 2) *What if salaries have decimals?* Use `float()`.
-**Common mistakes:** Forgetting that `replace` returns a new string; leaving the space after "Rs." so `int(" 45000")` is fine but "Rs 45000" is not.
+**Common mistakes:** Forgetting that `replace` returns a new string; skipping `strip()`, so an odd leftover space or symbol can make `int()` fail; checking the cleaned text before converting.
 
 ### Q13 ⭐⭐⭐ 🟡 Read a CSV with csv.DictReader and compute the total salary per department using a dictionary.
 **Asked at:** commonly asked (no company-specific report found); dictionary and loop tasks are reported in Python rounds at analytics firms (Tiger Analytics, Glassdoor summaries, details not read).
@@ -381,10 +388,11 @@ print(total_salary)
 **What the interviewer is checking:** That you know bare except hides real bugs and can even block Ctrl+C.
 **Say this in the interview:** "A bare except catches every error, including my own typos, so it hides real bugs behind a wrong message. I catch the specific error I expect, like ValueError, and let anything else show up."
 **Explain simply:**
-- A bare `except:` catches everything, even `KeyboardInterrupt` (pressing Ctrl+C) and `SystemExit`, so the script can become hard to stop (from memory, not run here).
+- A bare `except:` catches everything, even `KeyboardInterrupt` (pressing Ctrl+C) and `SystemExit`, so the script can become hard to stop (checked by running it: a Ctrl+C signal was caught by a bare except).
 - It hides programming mistakes (typos, wrong names) behind a misleading message.
 - A specific except documents exactly what you expect to go wrong.
 - If you must catch broadly, use `except Exception as e:` and print or log `e`.
+**Sample data:** `salary = 45000` and a misspelt variable name (`salry`) in the next line.
 **Code (what you write in the interview):**
 ```python
 salary = 45000
@@ -410,6 +418,7 @@ Salary is missing
 - All four return a new string; the original does not change.
 - Use `lower()` before comparing text so "HR" and "hr" match.
 - `title()` suits names; `capitalize()` suits a single sentence.
+**Sample data:** One messy sentence: `"rAVI kUMAR from hr team"`.
 **Code (what you write in the interview):**
 ```python
 text = "rAVI kUMAR from hr team"
@@ -465,6 +474,7 @@ True
 - `find` is safe for "does it exist?" checks, but you must test for -1.
 - `index` is stricter: you want a crash if the text must be there.
 - To only check presence, `"-" in code` is simplest.
+**Sample data:** One employee code: `"HYD-1045"`.
 **Code (what you write in the interview):**
 ```python
 code = "HYD-1045"
@@ -483,6 +493,7 @@ print(code.index("X"))      # not found: error
 Traceback (most recent call last):
   File "q17.py", line 7, in <module>
     print(code.index("X"))      # not found: error
+          ~~~~~~~~~~^^^^^
 ValueError: substring not found
 ```
 **What it means:** For a missing value, `find` gives -1 and `index` stops the script with an error.
@@ -569,6 +580,7 @@ Meena
 - All three return `True` or `False`, and they return `False` for an empty string.
 - Spaces, dashes and symbols make all three `False` (so `"Ravi Kumar"` is not alpha because of the space).
 - `isdigit()` alone is not enough for a mobile number: `"123"` is all digits but too short. Add `len(mobile) == 10`.
+**Sample data:** Test strings `"45000"`, `"Ravi"`, `"HR101"`, `"Ravi Kumar"` and a mobile number `"9876543210"`.
 **Code (what you write in the interview):**
 ```python
 print("45000".isdigit())        # only digits
@@ -604,6 +616,7 @@ valid
 - `.format()`: put `{}` placeholders in the text and pass the values to `.format(...)`.
 - `%` operator: `%s` for text, `%.2f` for a decimal number, then `% (values)`. Older style, still seen in old code.
 - The format spec after a colon, like `:,.2f`, works in f-strings and `.format()`. The `%` style has no thousands separator.
+**Sample data:** `name = "Ravi"` and `salary = 45000.5`.
 **Code (what you write in the interview):**
 ```python
 name = "Ravi"
@@ -631,6 +644,7 @@ Ravi earns Rs 45000.50
 - `zfill` is a string method; calling it on an integer gives an error, so use `str(45)` first.
 - In a format spec, `05d` means "width 5, pad with 0, treat as a whole number".
 - If the number is already longer than the width, nothing is cut off.
+**Sample data:** Employee ID `45` (a whole number).
 **Code (what you write in the interview):**
 ```python
 employee_id = 45
@@ -647,7 +661,7 @@ print("{:05d}".format(employee_id))  # str.format version
 ```
 **What it means:** All three give the same 5-character ID with leading zeros.
 **Likely follow-ups:** 1) *Why keep the ID as text?* A number loses leading zeros, so store IDs as strings. 2) *What does `"-5".zfill(4)` give?* `-005`; zfill keeps the sign in front.
-**Common mistakes:** Calling `.zfill()` on an int; using `:05` on a string (it pads with spaces on the right, not zeros).
+**Common mistakes:** Calling `.zfill()` on an int; using `:05` on a string (it pads zeros on the right, giving `'45000'`, the wrong side).
 
 ### Q23 ⭐⭐ 🟢 How do you split the full name 'Ravi Kumar Singh' into first name and last name?
 **Asked at:** commonly asked (no company-specific report found); name splitting is a common HR data-cleaning task.
@@ -658,6 +672,7 @@ print("{:05d}".format(employee_id))  # str.format version
 - `parts[0]` is the first word; `parts[-1]` is the last word (index -1 means "from the end").
 - `split(" ", 1)` cuts only at the first space, so "Kumar Singh" stays together as the last name.
 - A one-word name still works with `[0]` and `[-1]` (both give the same word); a two-variable unpack would crash.
+**Sample data:** One full name: `"Ravi Kumar Singh"`.
 **Code (what you write in the interview):**
 ```python
 full_name = "Ravi Kumar Singh"
@@ -722,6 +737,7 @@ KeyError: 'Ravi'
 - Syntax error: broken grammar, like a missing colon. Python spots it before running any line, so nothing runs.
 - Exception: valid code that fails at run time, like dividing text by a number or opening a missing file. Earlier lines do run first.
 - You fix a syntax error by correcting the code; you handle an exception with try/except, or by validating the input.
+**Sample data:** A broken `if` line (no colon), and `salary = "45000"` (text) divided by 10.
 **Code (what you write in the interview):**
 ```python
 # Syntax error: missing colon after the if condition
@@ -736,18 +752,18 @@ bonus = salary / 10
 ```
 **Output:** (file paths shortened)
 ```text
-  File "syntax_demo.py", line 2
+  File "syntax_demo.py", line 3
     if salary > 40000
                      ^
 SyntaxError: expected ':'
 
 Traceback (most recent call last):
-  File "exception_demo.py", line 2, in <module>
+  File "exception_demo.py", line 3, in <module>
     bonus = salary / 10
             ~~~~~~~^~~~
 TypeError: unsupported operand type(s) for /: 'str' and 'int'
 ```
-**What it means:** The first never started running; the second ran line 1 and failed on line 2.
+**What it means:** The first never started running (Python flagged line 3 before running anything); the second ran its earlier lines and failed on line 3.
 **Likely follow-ups:** 1) *Can you catch a SyntaxError with try/except?* Not in the same file, because the file does not run; it is only catchable in special cases like `eval`. 2) *Name common exceptions.* ValueError, TypeError, KeyError, FileNotFoundError, ZeroDivisionError.
 **Common mistakes:** Thinking try/except fixes broken syntax; calling every error a "syntax error".
 
@@ -795,6 +811,7 @@ file missing, skipping
 - Raw string `r"C:\data\new_hires.csv"` keeps every backslash as it is.
 - Other fixes: double the backslashes (`"C:\\data\\new_hires.csv"`) or use forward slashes (`"C:/data/new_hires.csv"`).
 - A raw string cannot end with a single backslash.
+**Sample data:** The Windows path `C:\data\new_hires.csv`.
 **Code (what you write in the interview):**
 ```python
 bad_path = "C:\data\new_hires.csv"
@@ -822,6 +839,7 @@ C:\data\new_hires.csv
 - Use `ValueError` when the type is right but the value is wrong (a negative salary). Use `TypeError` for a wrong type.
 - The message should say what is wrong in plain words, so the next person can fix the data.
 - Raising is better than silently returning a bad value, which would spread wrong numbers into reports.
+**Sample data:** A salary of `-500`.
 **Code (what you write in the interview):**
 ```python
 def check_salary(salary):
@@ -913,6 +931,7 @@ Employee ID joined, then ID joined
 - `\D` means "any character that is not a digit". Replacing it with an empty string deletes it.
 - `[-10:]` means "the last 10 characters", so +91 or a leading 0 falls away.
 - If fewer than 10 digits remain, the number is bad data; check `len()` and flag it.
+**Sample data:** One messy phone number: `"+91 98765-43210"`.
 **Code (what you write in the interview):**
 ```python
 import re
@@ -982,6 +1001,7 @@ print(present_days)
 - Open the file in `"w"` to dump and in `"r"` (default) to load.
 - `indent=2` makes the saved file easy to read.
 - JSON turns Python `None` into `null` and tuples into lists; dates are not supported directly (convert them to text first).
+**Sample data:** One employee as a dictionary: Asha, Sales, 45000.
 **Code (what you write in the interview):**
 ```python
 import json
@@ -1061,6 +1081,7 @@ Meena 52000
 - Dividing by zero raises `ZeroDivisionError` (Python's way of saying "this maths is impossible").
 - `try` runs the risky line; `except ZeroDivisionError` runs only if that exact error happens.
 - `None` is Python's "no value". Returning it tells the caller "not calculable", which is different from 0.
+**Sample data:** 12 people left out of a headcount of 240; and 0 left out of 0.
 **Code (what you write in the interview):**
 ```python
 def attrition_rate(employees_left, headcount):
@@ -1151,6 +1172,7 @@ E104,John,,invalid literal for int() with base 10: ''
 - `else`: runs only if there was no error (and the try block did not return early).
 - `finally`: runs every time, error or not, return or not.
 - With `return` inside `try`, Python first runs `finally`, then actually returns. The `else` block is skipped because the function already left.
+**Sample data:** The text `"42"`, converted with `int()`.
 **Code (what you write in the interview):**
 ```python
 def demo():
@@ -1187,6 +1209,7 @@ try returned
 - Python's normal text mode translates line endings for you. The csv module also writes its own. Doing both doubles up.
 - `newline=''` means "no translation". The Python docs recommend it for all csv files, for reading and writing.
 - The blank-line symptom shows on Windows; I could only run this on Linux, where it looks fine either way (the Windows symptom itself is from memory, unverified here).
+**Sample data:** Two rows: the header `emp_id,name` and one data row `E101,Asha`.
 **Code (what you write in the interview):**
 ```python
 import csv
@@ -1218,6 +1241,7 @@ b'emp_id,name\r\nE101,Asha\r\n'
 - The pieces still have spaces, so `strip()` removes spaces from both ends.
 - `department, city = ...` is "unpacking": the first piece goes to `department`, the second to `city`.
 - Strings are immutable (cannot be changed in place), so `strip()` returns a new string that you must save.
+**Sample data:** One cell: `"Sales - Hyderabad"`.
 **Code (what you write in the interview):**
 ```python
 text = "Sales - Hyderabad"
@@ -1236,7 +1260,7 @@ Sales
 Hyderabad
 ```
 **What it means:** The one messy cell became two clean values.
-**Alternative:** In pandas, for a whole column: `df[["department", "city"]] = df["dept_city"].str.split("-", n=1, expand=True)` and then `.str.strip()` on each column (from memory, not run here).
+**Alternative:** In pandas, for a whole column: `df[["department", "city"]] = df["dept_city"].str.split("-", n=1, expand=True)` and then `.str.strip()` on each column (checked on pandas 3.0.5).
 **Likely follow-ups:**
 - *What if a row has no dash?* Unpacking fails with `ValueError`; check `"-" in text` first.
 - *Why split on "-" and not " - "?* Splitting on the dash alone also copes with uneven spacing.
@@ -1323,6 +1347,7 @@ print(sorted(csv_files))
 - `\n` = new line, `\t` = tab, `\\` = one real backslash, `\'` = a quote inside a quote.
 - A normal string must stay on one line. Triple quotes (`"""..."""`) keep line breaks exactly as typed.
 - Typical uses: email or letter templates, multi-line SQL queries, doc strings (the description under a function).
+**Sample data:** A tab-separated line and a short multi-line offer message.
 **Code (what you write in the interview):**
 ```python
 print("Name\tDept\nAsha\tSales")
@@ -1354,6 +1379,7 @@ Regards, HR
 - `lower()` only makes letters lowercase.
 - `casefold()` is built for comparing: it also maps special letters, so 'straße' and 'STRASSE' match.
 - Always apply the same method to both strings.
+**Sample data:** `"Ravi Kumar"` and `"RAVI kumar"`; also `"straße"` and `"STRASSE"`.
 **Code (what you write in the interview):**
 ```python
 name_a = "Ravi Kumar"
@@ -1383,6 +1409,7 @@ True
 - `strip()` removes spaces from both ends, turning '   ' into ''.
 - `not ''` is True, so the `if` fires for both cases.
 - `text.isspace()` is another check, but it returns False for an empty string, so it misses that case.
+**Sample data:** Three values: `""`, `"   "` and `" Asha "`.
 **Code (what you write in the interview):**
 ```python
 for text in ["", "   ", " Asha "]:
@@ -1411,6 +1438,7 @@ for text in ["", "   ", " Asha "]:
 - `.` means any character, `*` means "as many as possible, including none".
 - Adding `?` after the `*` flips it to "as few as possible".
 - Example: between `<b>` and `</b>`, greedy grabs from the first `<b>` to the last `</b>`; non-greedy gives each bold word separately.
+**Sample data:** One text with two bold words: `"<b>Asha</b> and <b>Ravi</b>"`.
 **Code (what you write in the interview):**
 ```python
 import re
@@ -1439,6 +1467,7 @@ print(re.findall(r"<b>.*?</b>", text))
 - `[A-Z]{3}` = exactly three capital letters. `\s*` = zero or more spaces. `\d+` = one or more digits.
 - `group(0)` is the whole match; `group(1)` and `group(2)` are the first and second brackets.
 - `re.search` returns None if nothing matches, so check before using it.
+**Sample data:** One text: `"INR 45000"`.
 **Code (what you write in the interview):**
 ```python
 import re
@@ -1489,7 +1518,7 @@ print(total_lines, e101_count)
 6 2
 ```
 **What it means:** The file has 6 lines and E101 appears twice, found without ever holding the whole file in memory.
-**Alternative:** `for chunk in pd.read_csv("big.csv", chunksize=100000):` then process each chunk (from memory, not run here).
+**Alternative:** `for chunk in pd.read_csv("big.csv", chunksize=100000):` then process each chunk (checked on pandas 3.0.5).
 **Likely follow-ups:**
 - *Why not `readlines()`?* It builds a full list of lines in memory.
 **Common mistakes:** Using `read()` on a huge file; appending every line to a list "to process later".
@@ -1502,6 +1531,7 @@ print(total_lines, e101_count)
 - A class is a blueprint; here the blueprint just gives your error its own name: `class InvalidSalaryError(Exception): pass`.
 - `raise` triggers it; `except InvalidSalaryError` catches only that kind.
 - Built-in errors like `ValueError` are fine for one-off scripts. A custom one pays off when many checks exist and you want to handle data problems differently from code bugs.
+**Sample data:** A salary of `-500`.
 **Code (what you write in the interview):**
 ```python
 class InvalidSalaryError(Exception):
@@ -1535,8 +1565,9 @@ Skipping row: Salary must be positive, got -500
 **Explain simply:**
 - `assert condition, "message"` does nothing if the condition is True; if False it raises `AssertionError` with your message.
 - Use it for internal checks while building a pipeline: totals match, no duplicate IDs, no missing keys.
-- Do not use it to validate outside data. Running Python with the `-O` flag removes all asserts, so the check silently disappears (from memory, not run here).
+- Do not use it to validate outside data. Running Python with the `-O` flag removes all asserts, so the check silently disappears (checked by running `python -O`).
 - `raise` is for expected problems you want to catch and handle; `assert` is for "this should never happen".
+**Sample data:** A list of 3 employee IDs and a report that says headcount is 3.
 **Code (what you write in the interview):**
 ```python
 employees = [{"id": "E101"}, {"id": "E102"}, {"id": "E103"}]
@@ -1553,10 +1584,12 @@ assert len(employees) == headcount_report, "Headcount does not match the report"
 ```
 check passed
 Traceback (most recent call last):
-  ...
+  File "headcount_check.py", line 9, in <module>
+    assert len(employees) == headcount_report, "Headcount does not match the report"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 AssertionError: Headcount does not match the report
 ```
-(The traceback file path line is trimmed here with `...`.)
+(File path shortened to `headcount_check.py`.)
 **What it means:** The first check passed silently. After we removed an employee the numbers disagreed, so the script stopped with our message instead of producing a wrong report.
 **Likely follow-ups:**
 - *Assert or ValueError for a negative salary in a file?* ValueError (or a custom error), since file data is outside input.
@@ -1571,6 +1604,7 @@ AssertionError: Headcount does not match the report
 - Class way: `__enter__` does setup, `__exit__` does cleanup. If `__exit__` returns False, any error still reaches you (it is not hidden).
 - `contextlib` way: write a generator function (a function using `yield`) with `@contextmanager`; code before `yield` is setup, code after is cleanup. Put `yield` inside `try/finally` so cleanup still runs on errors.
 - Analyst uses: timing a slow step, opening and closing a database connection, temporarily changing a setting.
+**Sample data:** No data needed; the step to wrap is the message "Processing payroll file".
 **Code (what you write in the interview):**
 ```python
 class Timer:
@@ -1593,7 +1627,7 @@ Processing payroll file
 Finished (runs even if there was an error)
 ```
 **What it means:** The "Starting" and "Finished" lines wrap the work automatically, which is the same promise `with open()` makes to close a file.
-**Alternative:** With contextlib (checked by running; same wrapping output with "Finished"):
+**Alternative:** With contextlib (verified by running; same wrapping output, ending with "Finished"):
 ```python
 from contextlib import contextmanager
 

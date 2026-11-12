@@ -424,7 +424,7 @@ print(type(salary_array))
 ```
 **What it means:** the pandas column converts straight to a NumPy array.
 **Likely follow-ups:**
-- *Is pandas always NumPy underneath?* For number columns, yes. Text is different: in pandas 3.0.5 a text column has the `str` dtype, which is not a NumPy array (it uses Arrow storage when the pyarrow package is installed, from memory, unverified). Also in pandas 3, `to_numpy()` on a column can return a read-only array (checked on 3.0.5), so call `.copy()` if you need to edit it.
+- *Is pandas always NumPy underneath?* For number columns, yes. Text is different: in pandas 3.0.5 a text column has the `str` dtype, which is not a NumPy array (it uses Arrow storage when the pyarrow package is installed, from memory, unverified). Also in pandas 3, `to_numpy()` on a column can return a read-only array, so call `.copy()` if you need to edit it.
 - *Why not only NumPy?* No labels, no mixed types, awkward for missing data and grouping.
 **Common mistakes:** saying pandas replaces NumPy; forgetting that both must be imported separately.
 
@@ -567,7 +567,7 @@ print(difference_from_average)
  [ 10.  20.  30.]]
 ```
 **What it means:** Each number now shows how far that employee is above or below the average for that month. The middle employee sits exactly on the average.
-**Likely follow-ups:** 1) *What if I want row averages instead?* Use `mean(axis=1, keepdims=True)` so the shape is 3 by 1 and stretches across columns. Without `keepdims` the shapes do not line up: a 2 by 3 table raises a `ValueError`, and a square 3 by 3 table gives no error but silently wrong numbers (checked). 2) *When does broadcasting fail?* When sizes differ and neither is 1 (for example 3 columns against 4 values); NumPy raises a `ValueError`.
+**Likely follow-ups:** 1) *What if I want row averages instead?* Use `mean(axis=1, keepdims=True)` so the shape is 3 by 1 and stretches across columns. Without `keepdims` the shapes do not line up: a 2 by 3 table raises a `ValueError`, and a square 3 by 3 table gives no error but silently wrong numbers. 2) *When does broadcasting fail?* When sizes differ and neither is 1 (for example 3 columns against 4 values); NumPy raises a `ValueError`.
 **Common mistakes:** Using the wrong axis for the averages; forgetting `keepdims=True` for row-wise operations.
 
 ### Q18 ⭐⭐ 🟡 How do you use np.where to create a label array, for example "Present" or "Absent", from an attendance-hours array?
@@ -707,7 +707,7 @@ print(salaries)
 [99999 50000 60000 70000]
 ```
 **What it means:** Editing the slice changed the original (first line). Editing the `.copy()` left it alone (the second print is unchanged).
-**Likely follow-ups:** 1) *How can I check?* `np.shares_memory(a, b)` or look at `b.base`. 2) *Is this the same in pandas?* Different rules; pandas 3 uses Copy-on-Write (editing a column taken from a DataFrame does not change the DataFrame; checked on 3.0.5), so do not assume NumPy behaviour carries over.
+**Likely follow-ups:** 1) *How can I check?* `np.shares_memory(a, b)` or look at `b.base`. 2) *Is this the same in pandas?* Different rules; pandas 3 uses Copy-on-Write (editing a column taken from a DataFrame does not change the DataFrame), so do not assume NumPy behaviour carries over.
 **Common mistakes:** Assuming a slice is a copy; calling `.copy()` everywhere "just in case" on huge arrays and wasting memory.
 
 ### Q22 ⭐⭐ 🟡 What do np.argmax and np.argmin return, and how would you find which employee has the highest salary?
@@ -741,7 +741,7 @@ print(lowest_position, names[lowest_position])
 1 Ravi
 ```
 **What it means:** Meena (position 2) has the highest salary and Ravi (position 1) the lowest.
-**Likely follow-ups:** 1) *What if there is a tie?* Only the first is returned; use `np.where(salaries == salaries.max())` to get all. 2) *What if there are NaNs?* `argmax` returns the position of the first NaN (checked); use `np.nanargmax` to ignore it.
+**Likely follow-ups:** 1) *What if there is a tie?* Only the first is returned; use `np.where(salaries == salaries.max())` to get all. 2) *What if there are NaNs?* `argmax` returns the position of the first NaN; use `np.nanargmax` to ignore it.
 **Common mistakes:** Reporting the position as if it were the salary; forgetting positions start at 0.
 
 ### Q23 ⭐⭐ 🟡 How do you combine multiple conditions on a NumPy array (and, or, not)? Why does the Python keyword and give an error?
@@ -751,7 +751,7 @@ print(lowest_position, names[lowest_position])
 **Explain simply:**
 - Python `and` / `or` ask "is this whole object True or False?". An array of many values cannot answer that, so you get `ValueError: The truth value of an array with more than one element is ambiguous`.
 - `&`, `|`, `~` work element by element, which is what we want.
-- Brackets are required because Python works out `&` before it works out `>` and `<`, so the condition gets scrambled. Without brackets you get the same `ValueError` (checked).
+- Brackets are required because Python works out `&` before it works out `>` and `<`, so the condition gets scrambled. Without brackets you get the same `ValueError`.
 - `~` flips every True to False and back.
 **Sample data:** salaries `[45000, 30000, 60000, 52000, 80000]`.
 **Code (what you write in the interview):**
@@ -1027,5 +1027,5 @@ for start in range(len(daily_hires) - 2):
     three_days = daily_hires[start:start + 3]
     moving_average.append(three_days.mean())
 ```
-**Likely follow-ups:** 1) *Pandas version?* `pd.Series(daily_hires).rolling(3).mean()`, which returns NaN for the first two days instead of dropping them (checked on pandas 3.0.5). 2) *Why is the output shorter?* The first two days do not have 3 days of history.
+**Likely follow-ups:** 1) *Pandas version?* `pd.Series(daily_hires).rolling(3).mean()`, which returns NaN for the first two days instead of dropping them. 2) *Why is the output shorter?* The first two days do not have 3 days of history.
 **Common mistakes:** Forgetting `mode="valid"` (the edges then mix in zeros and look wrong); using a window that does not sum to 1 (the values would not be averages).

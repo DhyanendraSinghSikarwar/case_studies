@@ -241,6 +241,7 @@ False
 - `range(1, 31)` gives 1 to 30 (the end is excluded).
 - `number % 3 == 0` means "divisible by 3".
 - `elif` stops at the first true branch; if "Fizz" were checked first, 15 would print only "Fizz".
+**Sample data:** none needed (the numbers 1 to 30).
 **Code (what you write in the interview):**
 ```python
 for number in range(1, 31):
@@ -445,6 +446,7 @@ print(squares_of_evens)
 - 5! (five factorial) = 5 x 4 x 3 x 2 x 1 = 120.
 - `range(2, n + 1)` gives 2 up to n; multiplying by 1 is pointless.
 - For n = 0 or 1 the loop does not run and the answer stays 1, which is correct.
+**Sample data:** none needed (calls with 5 and 0).
 **Code (what you write in the interview):**
 ```python
 def factorial(n):
@@ -617,6 +619,7 @@ w
 - *Fibonacci series*: 0, 1, 1, 2, 3, 5, 8... each term = sum of the two before it.
 - `previous, current = current, previous + current` updates both at once, so no temporary variable is needed.
 - `end=" "` keeps the numbers on one line.
+**Sample data:** none needed (`n = 10`).
 **Code (what you write in the interview):**
 ```python
 n = 10
@@ -735,7 +738,7 @@ print(a, b)
 10 20
 ```
 **What it means:** The first swap gives 20 and 10; the second swap flips them back to 10 and 20.
-**Alternative:** For numbers only, `a = a + b; b = a - b; a = a - b` swaps without a temp, but it is a trick that can go wrong with very large or decimal numbers; the tuple swap is the Pythonic answer.
+**Alternative:** For numbers only, `a = a + b; b = a - b; a = a - b` swaps without a temp, but it is a trick that can lose accuracy with decimal numbers (rounding) and confuses readers; the tuple swap is the Pythonic answer.
 **Likely follow-ups:** 1) *Can you swap list items this way?* Yes: `numbers[0], numbers[1] = numbers[1], numbers[0]`. 2) *Why does the right side not get confused?* It is fully worked out before any assignment happens.
 **Common mistakes:** Writing `a = b` then `b = a` (both end up with the same value).
 
@@ -1201,7 +1204,7 @@ None
 **Say this in the interview:** "A lambda is a small one-line function without a name, made of a single expression. `def` can hold many lines and has a name. I use lambda for quick throwaway jobs, such as the `key` for sorting."
 **Explain simply:**
 - Anonymous means it needs no name; it returns the result of its one expression automatically (no `return` keyword).
-- A lambda cannot contain several statements, loops with multiple lines, or comments.
+- A lambda can hold only one expression, so no several-line logic, loops or assignments inside it.
 - `def` is better when the logic needs a name, a description, several steps or reuse in many places.
 - Both produce an ordinary function that you call the same way.
 **Sample data:** `employees = [("Asha", 50000), ("Ravi", 42000), ("Meena", 61000)]` (name, salary)
@@ -1549,6 +1552,7 @@ print(net_salary(150000))
 - Lists are **mutable** (changeable in place), so changes show up under every label.
 - `a is b` checks whether two names point to the same object.
 - To get an independent list use `b = a.copy()` or `b = a[:]`.
+**Sample data:** none needed (the list is in the code).
 **Code (what you write in the interview):**
 ```python
 a = [1, 2, 3]
@@ -1610,6 +1614,7 @@ deep:     [['Asha', 50000], ['Ravi', 62000]]
 - **Inheritance:** a new class reuses another's features. A Manager is an Employee with extras.
 - **Polymorphism:** same method name, different behaviour per class. `bonus()` is 5% for Employee, 10% for Manager.
 - **Abstraction:** expose the simple "what", hide the messy "how". You call `bonus()` without knowing the formula.
+**Sample data:** two employees, Asha (50000) and Ravi, a manager (80000).
 **Code (what you write in the interview):**
 ```python
 class Employee:
@@ -1650,6 +1655,7 @@ Ravi 8000.0
 - `class Manager(Employee)` means "Manager is an Employee".
 - `super().__init__(...)` runs the parent's setup so we do not repeat code.
 - A child can **override** a method by defining one with the same name.
+**Sample data:** one manager, Ravi, salary 80000, team of 5.
 **Code (what you write in the interview):**
 ```python
 class Employee:
@@ -1692,6 +1698,7 @@ Ravi manages 5 people
 - `**kwargs` -> a dictionary, e.g. `{"name": "Asha", "department": "HR"}`.
 - The names `args` and `kwargs` are convention; the stars do the work.
 - Common use: wrapper functions and flexible helper functions.
+**Sample data:** none needed (bonuses 1000, 2500, 500 and one employee's details).
 **Code (what you write in the interview):**
 ```python
 def total_pay(*bonuses):
@@ -1727,6 +1734,7 @@ salary = 50000
 - **Recursive step:** `n * factorial(n - 1)`.
 - Drawback: each call is stacked in memory; Python allows about 1000 nested calls by default, then raises `RecursionError`.
 - Without a base case it never stops.
+**Sample data:** none needed (`factorial(5)`).
 **Code (what you write in the interview):**
 ```python
 def factorial(n):
@@ -1850,6 +1858,7 @@ True
 - `key` is a function Python applies to each item before comparing; `len` gives the length of each word.
 - Words of the same length keep their original order (the sort is "stable").
 - For longest first, add `reverse=True`.
+**Sample data:** `skills = ["payroll", "HR", "attendance", "hiring", "exit"]`
 **Code (what you write in the interview):**
 ```python
 skills = ["payroll", "HR", "attendance", "hiring", "exit"]
@@ -1877,9 +1886,10 @@ print(sorted_skills)
 - Interpreted language: a program (the interpreter) reads and runs your code as it goes. Easy to test one line at a time.
 - Python does both small steps: it turns your file into bytecode (a simpler internal form, the `.pyc` files you may see) and the Python virtual machine runs it.
 - Why it matters for analysts: you can try code in a notebook cell by cell. The cost is that plain Python loops are slower than compiled code, which is why pandas and NumPy use fast compiled code underneath.
+**What it means:** Python is compiled to bytecode first and then interpreted, which is why people can fairly call it either, as long as they explain the two steps.
 **Likely follow-ups:**
 - *Why are pandas operations fast then?* The heavy work runs in compiled C code inside NumPy and pandas.
-**Common mistakes:** Saying "Python is only interpreted" with no mention of bytecode; saying interpreted means "no errors until the line runs" is only partly true (syntax errors are caught before anything runs).
+**Common mistakes:** Saying "Python is only interpreted" with no mention of bytecode; believing that errors only show up when a line runs (syntax errors are caught before anything runs).
 
 ### Q57 ⭐ 🟡 Write code to find the GCD (greatest common divisor) of two numbers.
 **Asked at:** commonly asked (no company-specific report found); a classic number-logic drill.
@@ -1890,6 +1900,7 @@ print(sorted_skills)
 - `a % b` is the remainder after dividing a by b.
 - The pair shrinks each step: (48, 18) then (18, 12) then (12, 6) then (6, 0), so the answer is 6.
 - Real-life use: splitting two team sizes into the largest equal groups.
+**Sample data:** `a = 48`, `b = 18`.
 **Code (what you write in the interview):**
 ```python
 def find_gcd(a, b):
@@ -1911,7 +1922,7 @@ print(find_gcd(48, 18))
 **Common mistakes:** Looping from 1 up to the smaller number (works, but slow); stopping when `a` is zero instead of `b`.
 
 ### Q58 ⭐ 🟡 Write code to flatten a nested list such as [[1, 2], [3, [4, 5]]].
-**Asked at:** commonly asked (no company-specific report found); listed among the differentiator list problems for this part.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you can handle unknown depth, which needs recursion (a function calling itself).
 **Say this in the interview:** "I loop over the items. If an item is a list, I flatten it with the same function; otherwise I add it to the result."
 **Explain simply:**
@@ -1919,6 +1930,7 @@ print(find_gcd(48, 18))
 - `isinstance(item, list)` asks "is this item a list?".
 - Recursion works here because each inner list is a smaller version of the same problem.
 - `extend` adds all items of a list; `append` adds one item.
+**Sample data:** `[[1, 2], [3, [4, 5]]]`
 **Code (what you write in the interview):**
 ```python
 def flatten(nested_list):
@@ -1950,6 +1962,7 @@ print(flatten([[1, 2], [3, [4, 5]]]))
 - Slice `numbers[-k:]` means "the last k items"; `numbers[:-k]` means "everything except the last k".
 - `k % len(numbers)` turns a big k (like 10 on a 7-item list) into the same rotation (3).
 - Rotating left by k is the mirror: `numbers[k:] + numbers[:k]`.
+**Sample data:** `numbers = [1, 2, 3, 4, 5, 6, 7]`, `k = 3`
 **Code (what you write in the interview):**
 ```python
 numbers = [1, 2, 3, 4, 5, 6, 7]
@@ -1982,6 +1995,7 @@ print(rotated)
 - `[0] * zero_count` makes a list of that many zeros.
 - Order of non-zero numbers stays the same because we add them as we meet them.
 - An in-place version with two pointers exists; mention it if asked about memory.
+**Sample data:** `numbers = [0, 1, 0, 3, 12, 0, 5]`
 **Code (what you write in the interview):**
 ```python
 numbers = [0, 1, 0, 3, 12, 0, 5]
@@ -2177,6 +2191,7 @@ print(binary_search(employee_ids, 125))
 - Pass 1 moves the largest number to the last position; pass 2 moves the second largest, and so on.
 - The inner loop gets shorter each pass (`n - 1 - i`) because the end is already sorted.
 - Slow for big lists: roughly n times n steps (O(n squared)). In real work use `sorted()`.
+**Sample data:** `numbers = [64, 25, 12, 22, 11]`
 **Code (what you write in the interview):**
 ```python
 numbers = [64, 25, 12, 22, 11]
@@ -2208,6 +2223,7 @@ print(numbers)
 - Star counts for n = 3 go 1, 3, 5, then back to 3, 1 (always odd numbers).
 - Spaces on the left keep the shape centred; they shrink as stars grow.
 - `" " * 2` repeats a string, so `"*" * 5` gives five stars.
+**Sample data:** none needed (`n = 3`).
 **Code (what you write in the interview):**
 ```python
 n = 3  # rows in the top half
@@ -2241,6 +2257,7 @@ for i in range(n - 1, 0, -1):
 - Mutable means it can be changed in place (list, dict, set). Immutable means it cannot (number, string, tuple).
 - A default value is made once and reused, so a changed list stays changed.
 - Safe defaults: `None`, numbers, strings, tuples.
+**Sample data:** none needed (two calls to one function).
 **Code (what you write in the interview):**
 ```python
 def add_employee(name, team=[]):
@@ -2293,7 +2310,7 @@ print(numbers)
 ```text
 [4, 7]
 ```
-**What it means:** Wrong: 4 and 8 are even but stayed, because items were skipped.
+**What it means:** Wrong: 4 is even but stayed, because the loop skipped it after 2 was removed. The correct answer is `[7]`.
 **Alternative (the safe way):**
 ```python
 odd_numbers = [number for number in numbers if number % 2 != 0]
@@ -2311,6 +2328,7 @@ For the same starting list, output: `[7]`.
 - Float: a number with a decimal point, stored approximately.
 - The error is about 1 part in a quadrillion; harmless for averages, harmful for `==` checks.
 - For money, use `Decimal` or whole paise/cents instead of float.
+**Sample data:** none needed (the numbers 0.1, 0.2 and 0.3).
 **Code (what you write in the interview):**
 ```python
 import math
@@ -2335,7 +2353,7 @@ True
 **Common mistakes:** Comparing floats with `==`; building `Decimal(0.1)` from a float (carries the same error).
 
 ### Q70 ⭐ 🟡 What are iterators and generators, and what does yield do?
-**Asked at:** commonly asked (no company-specific report found); listed as a differentiator topic.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you can explain lazy (one at a time) processing.
 **Say this in the interview:** "An iterator is an object that gives me one item at a time with `next()`. A generator is a simple way to make one: a function that uses `yield`, which hands back a value and pauses, then continues from the same place on the next call. It saves memory because values are made on demand."
 **Explain simply:**
@@ -2343,6 +2361,7 @@ True
 - `return` ends a function; `yield` pauses it and keeps its state.
 - Good for huge files: read and process one row at a time instead of loading a million rows.
 - A generator can be used only once; after it is finished it gives nothing.
+**Sample data:** none needed (`count_up_to(3)`).
 **Code (what you write in the interview):**
 ```python
 def count_up_to(n):
@@ -2374,7 +2393,7 @@ print(list(counter))
 **Common mistakes:** Treating a generator like a list (no indexing, no second pass); confusing `yield` with `return`.
 
 ### Q71 ⭐ 🔴 What is a decorator in Python? Write one that prints how long a function takes.
-**Asked at:** commonly asked (no company-specific report found); a differentiator topic, rarely asked of analysts.
+**Asked at:** commonly asked (no company-specific report found); an advanced topic that can set a candidate apart.
 **What the interviewer is checking:** Functions as values, wrapper functions, and `*args, **kwargs`.
 **Say this in the interview:** "A decorator is a function that takes another function and returns a new version with extra behaviour added, without changing the original code. I put `@timer` above a function, and it records the time before and after the call."
 **Explain simply:**
@@ -2382,6 +2401,7 @@ print(list(counter))
 - `@timer` above `def total_payroll` is shorthand for `total_payroll = timer(total_payroll)`.
 - `*args, **kwargs` lets the wrapper accept any arguments and pass them on (see Q50).
 - Typical uses: timing, logging, checking permissions.
+**Sample data:** `salaries = [40000, 35000, 60000]`
 **Code (what you write in the interview):**
 ```python
 import time

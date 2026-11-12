@@ -1343,8 +1343,8 @@ print(salaries.loc[[0, 11], ["name", "salary", "salary_capped"]])
 ```
 **Output:**
 ```
-     name  salary  salary_capped
-0    Asha    3000         6300.0
+      name  salary  salary_capped
+0     Asha    3000         6300.0
 11  Vikram  400000       360620.0
 ```
 **What it means:** The two extremes are pulled in to the limits; every other salary is untouched. I save the result in a new column so the original stays available.
@@ -1575,9 +1575,9 @@ print(employees)
 ```
     name   salary  salary_was_missing
 0   Asha  45000.0               False
-1   Ravi  48500.0               True
+1   Ravi  48500.0                True
 2  Meena  52000.0               False
-3   John  48500.0               True
+3   John  48500.0                True
 ```
 **What it means:** Ravi and John carry an estimated salary and are clearly marked.
 **Likely follow-ups:**
@@ -2163,7 +2163,7 @@ print(employees.columns.tolist())
 - **Vectorised** means one pandas command handles the whole column at once, instead of me looping value by value.
 - `apply(function)` calls my function once per value. It is flexible but slower on big data, because it runs Python each time.
 - Vectorised methods also skip missing values safely. My function would crash on NaN.
-- Honest note: for text, the speed gap is smaller than for numbers. On 600,000 text values I measured about 0.12 s for `apply` and 0.16 s for the `.str` chain, so apply was not slower here. The real wins are safety with missing values and readability. For number maths (`df["a"] * 2`), vectorising is dramatically faster.
+- Honest note: for text, the speed gap is smaller than for numbers. On 600,000 text values I measured about 0.15 s for `apply` and 0.19 s for the `.str` chain (timings vary by machine), so apply was not slower here. The real wins are safety with missing values and readability. For number maths (`df["a"] * 2`), vectorising is dramatically faster.
 **Sample data:** four department values with spaces and mixed case.
 **Code (what you write in the interview):**
 ```python
@@ -2184,7 +2184,7 @@ print(employees)
 0        hr          Hr         Hr
 1         IT         It         It
 2   Finance     Finance    Finance
-3         hr          Hr         Hr
+3         hr         Hr         Hr
 ```
 **What it means:** Both give the same answer. With a missing value, `apply` raised `AttributeError: 'float' object has no attribute 'strip'`, while `.str.strip()` returned NaN for it (verified).
 **Likely follow-ups:**
