@@ -6,7 +6,7 @@
 ### Q1 ⭐⭐⭐ 🟢 Estimate the number of food delivery orders a platform like Swiggy receives in India in a day.
 **Asked at:** a candidate-compiled report (Board Infinity, unverified) and practice sites (Hacking the Case Interview, PrachHub) list "orders per day" for Swiggy; no company-verified paper found.
 **What the interviewer is checking:** Whether you build the number from people and habits (not a memorised company figure), state assumptions and sanity-check.
-**Say this in the interview:** "I will go bottom-up: people in cities the app serves, the share who order from it in a month, orders per user, then divide by 30. I get about 1.6 million orders a day, range 0.8 to 2.7 million."
+**Say this in the interview:** "I will go bottom-up (build the total from small pieces): people in cities the app serves, the share who order from it in a month, orders per user, then divide by 30. I get about 1.6 million orders a day, range 0.8 to 2.7 million."
 
 **Clarify first:** One platform (Swiggy only) or the whole market? Food only or also groceries? Average day or peak? I fix: Swiggy food orders, average day, India.
 **Approach:** Bottom-up (users x frequency). Top-down from 1.4 billion people wastes steps because most people are not in served cities.
@@ -16,12 +16,13 @@
 | People in cities the app serves | 200 million | urban India, only larger towns covered |
 | Share who order from this app in a month | 8% | online food is still a minority habit |
 | Orders per such user per month | 3 | occasional user, not daily |
+
 **Calculation:**
 1. Monthly users = 200 million x 8% = 16 million.
 2. Orders a month = 16 million x 3 = 48 million.
 3. Orders a day = 48 million / 30 = 1.6 million.
 **Result:** about 1.6 million orders a day (range 0.8 to 2.7 million).
-**Sanity check:** Supply route: about 150,000 active restaurants x 10 orders a day = 1.5 million. Close to the first route.
+**Sanity check:** Supply route (assumed, unverified inputs): about 150,000 active restaurants x 10 orders a day = 1.5 million. Close to the first route.
 **Sensitivity:** The share of people ordering is the shakiest input: 6% with 2 orders gives 0.8 million, 10% with 4 orders gives 2.7 million.
 
 **Likely follow-ups:** 1) *What if it is a Sunday?* Multiply by about 1.2 to 1.3. 2) *Why divide by 30?* To turn a monthly count into a daily average.
@@ -42,6 +43,7 @@
 | Journeys per rider per day | 2 | to and back |
 | Stations | 250 | rough network size |
 | Entries per station per day | 18,000 | mix of busy and quiet stations |
+
 **Calculation:**
 1. Riders = 25 million x 10% = 2.5 million people.
 2. Journeys = 2.5 million x 2 = 5 million.
@@ -56,7 +58,7 @@
 ### Q3 ⭐⭐⭐ 🟢 Estimate the number of cab rides booked on ride-hailing apps in Delhi in a day.
 **Asked at:** commonly asked (no company-specific report found); ride-hailing city volumes appear on practice sites (unverified).
 **What the interviewer is checking:** Choosing who is the app user, then frequency; and a supply-side check.
-**Say this in the interview:** "Adults in the city, share who use cab apps in a month, rides each, divide by 30. I get about 360,000 rides a day, range 270,000 to 450,000."
+**Say this in the interview:** "Adults in the city, share who use cab apps in a month, rides each, divide by 30. I get about 360,000 rides a day, range 240,000 to 480,000."
 
 **Clarify first:** Completed rides or bookings (cancellations included)? Cabs only, or autos and bikes? I fix: completed cab rides, all apps combined.
 **Approach:** Bottom-up from users; check from fleet supply.
@@ -68,11 +70,12 @@
 | Adults who use cab apps monthly | 15% | not everyone owns a vehicle or uses cabs |
 | Rides per user per month | 4 | occasional use |
 | Active cabs a day / rides per cab | 80,000 / 5 | for the supply check |
+
 **Calculation:**
 1. Adults = 30 million x 60% = 18 million.
 2. Monthly users = 18 million x 15% = 2.7 million.
 3. Rides a month = 2.7 million x 4 = 10.8 million; a day = 360,000.
-**Result:** about 360,000 rides a day.
+**Result:** about 360,000 rides a day (range 240,000 to 480,000, from the sensitivity below).
 **Sanity check:** Supply: 80,000 x 5 = 400,000, within 11% of the demand route.
 **Sensitivity:** Share of adult users moves it most: 10% gives 240,000, 20% gives 480,000.
 
@@ -95,6 +98,7 @@
 | Orders per such household per month | 3 | a few a month |
 | Packages per order | 1.2 | split shipments |
 | Delivery staff / parcels each | 1,500 / 80 | check |
+
 **Calculation:**
 1. Households = 10 million / 4 = 2.5 million.
 2. Ordering households = 2.5 million x 40% = 1 million.
@@ -188,12 +192,13 @@
 | People per household | 4 | typical |
 | Households active monthly | 25% | affluent, dense, served areas |
 | Orders per active household per month | 6 | top-up shopping |
+
 **Calculation:**
 1. Households = 14 million / 4 = 3.5 million.
 2. Active = 3.5 million x 25% = 875,000.
 3. Orders a month = 875,000 x 6 = 5.25 million; a day = 175,000.
 **Result:** about 175,000 orders a day (range 115,000 to 280,000).
-**Sanity check:** One app with a 35% share would see about 61,000 a day, close to 60 stores x 1,000 (see Q22).
+**Sanity check:** One app with a 35% share would see about 61,000 a day, close to 60 dark stores (small local warehouses that serve only app orders) x 1,000 orders (see Q22).
 **Sensitivity:** The three assumptions that move it most: (1) active share, 20% with 5 orders gives about 117,000; 30% with 8 gives 280,000; (2) frequency; (3) how much of the city is actually served.
 
 **Likely follow-ups:** 1) *Weekday vs weekend?* Weekend higher by about 10 to 20%. 2) *Why households?* Orders are placed per home.
@@ -212,11 +217,12 @@
 | Orders a day | 1,000 | busy metro store |
 | Average order value | ₹500 | mix of staples and snacks |
 | Take rate (margin plus fees) | 18% | assumed |
+
 **Calculation:**
 1. GMV = 1,000 x 500 = ₹5,00,000 (₹5 lakh).
-2. Net revenue = 5,00,000 x 18% = ₹90,000.
+2. Net revenue = 5,00,000 x 18% = ₹90,000. (GMV, gross merchandise value, is the total value of orders; take rate is the share of it the company keeps.)
 **Result:** GMV about ₹5 lakh a day; net revenue about ₹90,000.
-**Sanity check:** Orders per hour over 16 open hours = 62, about 1 a minute: plausible for a busy store.
+**Sanity check:** Orders per hour over an assumed 16 open hours = 62, about 1 a minute: plausible for a busy store.
 **Sensitivity:** Orders matter most: 800 to 1,200 orders and AOV ₹400 to ₹600 give ₹3.2 lakh to ₹7.2 lakh GMV.
 
 **Likely follow-ups:** 1) *Is it profitable?* Needs rent, pay and rider costs. 2) *How to grow it?* Raise AOV or orders per area.
@@ -235,12 +241,13 @@
 | Monthly active buyers in festive period | 80 million | large platform |
 | Share buying on day one | 3% | early-access and deal hunters |
 | Orders per buyer that day | 1.3 | a few buy twice |
+
 **Calculation:**
 1. Day-one buyers = 80 million x 3% = 2.4 million.
 2. Orders = 2.4 million x 1.3 = 3.12 million.
 3. Rate = 3.12 million / 86,400 s = 36 orders per second on average; a 3x peak is about 108 per second.
 **Result:** about 3 million orders (range 2 to 5 million).
-**Sanity check:** A 108-per-second peak is the same order as rates seen in sale news (see Q16), so the scale holds.
+**Sanity check:** A 108-per-second peak is the same order of magnitude as the 110-per-second exercise figure in Q16, so the scale holds (both are assumed inputs, not verified facts).
 **Sensitivity:** Day-one share: 2% gives about 2.1 million, 5% gives about 5.2 million.
 
 **Likely follow-ups:** 1) *Normal day?* Perhaps one fifth. 2) *Value in rupees?* Orders x AOV for GMV.
@@ -256,17 +263,18 @@
 **Assumptions (all assumed / approximate, unverified):**
 | Input | Value | Reason |
 |---|---|---|
-| App orders a day in Bengaluru | 250,000 | about 45 to 50% of all food orders (see Q19) |
+| App orders a day in Bengaluru | 250,000 | about 60% of the all-app average day of about 417,000 in Q19 |
 | Share in 3-hour dinner peak | 35% | 7 to 10 pm |
 | Orders per rider per hour | 2 | cycle of about 28 minutes |
-| Roster uplift | 30% | breaks, absentees |
+| Roster uplift | 30% | breaks, absentees (the roster is everyone scheduled, more than those on the road at once) |
+
 **Calculation:**
 1. Peak orders = 250,000 x 35% = 87,500.
 2. Per hour = 87,500 / 3 = 29,167.
 3. Riders on road = 29,167 / 2 = 14,583.
 4. Roster = 14,583 x 1.3 = 18,958, about 19,000.
 **Result:** about 15,000 riders on the road (range 12,000 to 19,000).
-**Sanity check:** 14,583 riders x 2 orders x 3 hours = 87,500, matching peak orders.
+**Sanity check:** Second route: 250,000 orders a day at about 17 orders per rider per day (Q8) is about 14,700 riders working that day, close to the 14,583 on the road at dinner if almost every rider on duty works the dinner peak.
 **Sensitivity:** Rider productivity: 2.5 orders an hour gives about 11,700; 1.5 gives about 19,400.
 
 **Likely follow-ups:** 1) *Rain?* Cycle time up, so more riders. 2) *Lunch peak?* Smaller, perhaps 25%.
@@ -285,9 +293,9 @@
 3. Riders = 100 / 2.5 = 40.
 **Result:** 40 riders during the peak.
 **Check:** 40 x 2.5 x 4 = 400 orders.
-**Caveats:** Orders are not spread evenly inside the peak; add a buffer (about 10 to 15%) for absentees, which would give 44 to 46; the daily average is only 62 orders an hour over 16 hours.
+**Caveats:** Orders are not spread evenly inside the peak; add a buffer (about 10 to 15%) for absentees, which would give 44 to 46; the daily average is only about 62 orders an hour if the store is open 16 hours (an assumption).
 
-**Likely follow-ups:** 1) *With 10% buffer?* 44 riders. 2) *Off-peak?* 600 / 12 hours = 50 an hour, so 20 riders.
+**Likely follow-ups:** 1) *With 10% buffer?* 44 riders. 2) *Off-peak?* If the store is open 16 hours, the other 12 hours carry 600 orders: 50 an hour, so 20 riders.
 **Common mistakes / traps:** Using 1,000 orders for the peak; dividing by 4 twice.
 
 ### Q14 ⭐⭐⭐ 🟡 Estimate the number of meals a food delivery app delivers in Mumbai on an average day.
@@ -305,6 +313,7 @@
 | Households ordering from this app monthly | 20% | dense city |
 | Orders per household per month | 5 | |
 | Meals per order | 1.5 | some orders are for two |
+
 **Calculation:**
 1. Households = 21 million / 4 = 5.25 million.
 2. Ordering = 5.25 million x 20% = 1.05 million.
@@ -365,7 +374,7 @@
 3. Annual = 15 x 365 = ₹5,475 crore.
 **Result:** ₹5,475 crore a year.
 **Check:** Annual GMV = ₹21,900 crore; 25% of that = 5,475.
-**Caveats:** A 25% share of GMV is high for such platforms (I treat it only as the exercise input); real take rates are usually lower and fall after discounts and delivery costs.
+**Caveats:** The 25% share of GMV is the exercise input, not a verified figure; in practice I would check it against the company's reported numbers, and discounts and delivery costs reduce what is kept.
 
 **Likely follow-ups:** 1) *At 20%?* 4,380 crore. 2) *Why use 365?* Platforms run every day.
 **Common mistakes / traps:** Mistaking 600 million for 600 crore; applying 25% to orders.
@@ -385,6 +394,7 @@
 | Passengers per ride | 1.6 | solo and families |
 | Average fare | ₹700 | airport trips are long |
 | Aggregator commission | 20% | assumed |
+
 **Calculation:**
 1. App-cab passengers = 150,000 x 25% = 37,500.
 2. Rides = 37,500 / 1.6 = 23,438.
@@ -410,6 +420,7 @@
 | Active online food users in the city | 2.5 million | about 18% of 14 million people |
 | Orders per user per month | 5 | |
 | Sunday factor | 1.3 | weekend demand |
+
 **Calculation:**
 1. Orders a month = 2.5 million x 5 = 12.5 million.
 2. Average day = 12.5 million / 30 = 416,667.
@@ -424,7 +435,7 @@
 ### Q20 ⭐⭐⭐ 🟡 Estimate the number of UPI payment transactions made in India in a day.
 **Asked at:** commonly asked (no company-specific report found); a UPI revenue prompt could not be sourced.
 **What the interviewer is checking:** Active users x frequency, and the reality check against population.
-**Say this in the interview:** "Active UPI users times transactions a month, divide by 30: about 400 million a day, range 270 to 600 million."
+**Say this in the interview:** "Active UPI (India's instant bank-to-bank payment system) users times transactions a month, divide by 30: about 400 million a day, range 270 to 600 million."
 
 **Clarify first:** Count all UPI payments (person-to-person and merchant)? Successful ones only? I fix: all successful transactions, average day.
 **Approach:** Bottom-up from active users.
@@ -433,11 +444,12 @@
 |---|---|---|
 | Monthly active UPI users | 400 million | smartphone adults |
 | Transactions per user a month | 30 | about one a day |
+
 **Calculation:**
 1. Monthly = 400 million x 30 = 12 billion.
 2. Daily = 12 billion / 30 = 400 million.
 **Result:** about 400 million a day (range 270 to 600 million).
-**Sanity check:** Spread over 1.4 billion people it is 0.29 a day each, about 1 transaction per 3.5 people daily; looks plausible. The figure should be checked against published figures (not verified here).
+**Sanity check:** Spread over about 1.4 billion people (assumed) it is 0.29 a day each, about 1 transaction per 3.5 people daily; looks plausible. The figure should be checked against published figures (not verified here).
 **Sensitivity:** Per-user frequency: 20 a month gives 267 million; 45 gives 600 million.
 
 **Likely follow-ups:** 1) *Value?* Transactions x average ticket (small). 2) *Peak?* Evenings and month start.
@@ -476,6 +488,7 @@
 | City quick-commerce orders a day | 175,000 | from Q9 |
 | Company share | 35% | |
 | Orders per store a day | 1,000 | busy store |
+
 **Calculation:**
 1. Area per store = 3.14 x 2 x 2 x 75% = 9.4 km2.
 2. Area route = 600 / 9.4 = 64 stores.
@@ -501,6 +514,7 @@
 | Average daily orders | 2 million | from Q15 |
 | Saturday factor | 1.2 | weekend uplift |
 | Share of day in the 8 to 9 pm hour | 12% | dinner peak |
+
 **Calculation:**
 1. Saturday orders = 2 million x 1.2 = 2.4 million.
 2. 8 pm hour = 2.4 million x 12% = 288,000.
@@ -581,7 +595,7 @@
 **Asked at:** commonly asked (no company-specific report found); gap-fill revenue-per-venue prompt.
 **What the interviewer is checking:** Capacity x utilisation x price, with food and beverage (F&B) as a second revenue stream.
 **Say this in the interview:** "Bottom-up from seats and shows: about 3,200 tickets a day, roughly ₹13 lakh a day including snacks."
-**Clarify first:** A 8-screen multiplex, an average day (weekday and weekend blended), ticket plus F&B revenue, no ad or parking income.
+**Clarify first:** An 8-screen multiplex, an average day (weekday and weekend blended), ticket plus F&B revenue, no ad or parking income.
 **Approach:** Bottom-up from seats, because the venue has a physical capacity that caps the answer.
 **Assumptions (all assumed / approximate, unverified):**
 | Input | Value | Reason |
@@ -592,6 +606,7 @@
 | Average occupancy | 40% | weekdays low, weekends high |
 | Average ticket | ₹300 | mix of cheap and premium seats |
 | F&B per viewer | ₹120 | popcorn and drink, not all buy |
+
 **Calculation:**
 1. Seats per day = 8 x 250 x 4 = 8,000.
 2. Tickets = 8,000 x 40% = 3,200.
@@ -600,7 +615,7 @@
 5. Total = ₹13.44 lakh.
 **Result:** about ₹13 lakh a day (range ₹10 to 20 lakh).
 **Sanity check:** ₹13.4 lakh x 365 = about ₹49 crore a year for one site, a plausible scale for a busy multiplex (unverified).
-**Sensitivity:** Occupancy matters most: 30% gives ₹9.6 lakh, 50% (at ₹350 ticket, ₹140 F&B) gives ₹19.6 lakh.
+**Sensitivity:** Occupancy matters most: 30% gives about ₹10.1 lakh, 50% (at ₹350 ticket, ₹140 F&B) gives ₹19.6 lakh.
 **Likely follow-ups:** 1) *Weekend vs weekday?* Raise occupancy to 70% and price; weekend can be double. 2) *Other revenue?* Ads, parking, ticket convenience fees.
 **Common mistakes / traps:** Assuming 100% occupancy; forgetting the F&B stream; ignoring that a film release drives huge swings.
 
@@ -637,7 +652,7 @@
 **Asked at:** commonly asked (no company-specific report found); gap-fill, similar to a Delhi Metro riders method seen on practice blogs (unverified).
 **What the interviewer is checking:** Population-to-trips decomposition with a distinction between passengers and tickets.
 **Say this in the interview:** "Top-down from population: about 1.15 million reserved journeys a day, roughly 4.6 lakh online tickets, since one ticket covers about two people."
-**Clarify first:** Reserved long-distance tickets only (not suburban or platform tickets), one-way journeys, one national platform, count tickets (PNR bookings), not passengers.
+**Clarify first:** Reserved long-distance tickets only (not suburban or platform tickets), one-way journeys, one national platform, count tickets (PNR, the booking reference, bookings), not passengers.
 **Approach:** Top-down from population; a bottom-up from train seats is the cross-check.
 **Assumptions (all assumed / approximate, unverified):**
 | Input | Value | Reason |
@@ -647,14 +662,15 @@
 | One-way reserved journeys per such person | 2 per year | one return trip |
 | Share booked online | 80% | most reserved booking is online |
 | Passengers per ticket | 2 | families and groups |
+
 **Calculation:**
 1. Travellers = 1.4 billion x 15% = 210 million.
 2. Journeys per year = 210 million x 2 = 420 million; per day = 420 million / 365 = 1.15 million.
 3. Online passengers = 1.15 million x 80% = 0.92 million.
 4. Tickets = 0.92 million / 2 = 0.46 million.
-**Result:** about 4.6 lakh tickets a day (range 2.7 to 6.9 lakh).
-**Sanity check:** Bottom-up: if about 3,000 long-distance trains run with about 1,000 reserved seats each, one-way seats per day are about 3 million; at 75% fill and 40% of trips booked online, that is roughly 0.9 million passengers, consistent with step 3 (inputs unverified).
-**Sensitivity:** The 15% traveller share moves the answer proportionally: 10% gives 2.7 lakh, 20% gives 6.9 lakh.
+**Result:** about 4.6 lakh tickets a day (range 3 to 9 lakh; the supply check below points to the upper side).
+**Sanity check:** Bottom-up (assumed, unverified inputs): about 3,000 reserved long-distance trains x 1,000 reserved seats = 3 million seats a day; at 75% fill that is 2.25 million journeys, and at 80% booked online about 1.8 million online passengers, or about 0.9 million tickets at 2 per ticket. That is about twice my top-down 0.46 million, so the truth may sit higher; I would quote 3 to 9 lakh and lean to the upper half.
+**Sensitivity:** The 15% traveller share moves the answer proportionally: 10% gives about 3.1 lakh, 20% gives about 6.1 lakh.
 **Likely follow-ups:** 1) *Festival days?* Booking opens 60+ days ahead so dates spike. 2) *Why tickets not passengers?* Platform volume is counted in bookings.
 **Common mistakes / traps:** Mixing journeys and tickets; counting unreserved and suburban trips; treating booking day as travel day (they differ).
 
@@ -700,7 +716,7 @@
 1. Active cabs = 600,000 / 14 = 42,857.
 2. Registered = 42,857 / 0.80 = 53,571.4, round up to 53,572.
 **Result:** about 53,600 registered cabs (about 10,700 inactive on a given day).
-**Check:** 53,572 x 0.8 = 42,858 active; x 14 = 600,001 rides. Matches.
+**Check:** 53,572 x 0.8 = 42,858 active; x 14 = about 600,000 rides. Matches.
 **Caveats:** "Rides per cab" is an average; peak-hour supply is not guaranteed by the daily number (see peak factor). The question mixes "on the road 80% of the fleet at any time" with a per-day active share; I treated it as 80% active, as the given line says.
 **Likely follow-ups:** 1) *If rides per cab rise to 16?* 46,875 registered. 2) *Is this enough at peak?* Not necessarily; check peak-hour demand.
 **Common mistakes / traps:** Multiplying by 0.8 instead of dividing; treating registered and active as the same.
@@ -767,12 +783,13 @@
 | Weekly off | 6 of 7 days worked | usual policy |
 | Absenteeism | 10% | assumed |
 | Company share | 25% | one of several players |
+
 **Calculation:**
 1. Parcels per day (market) = 2.5 million x 1.5 / 30 = 125,000.
 2. On duty = 125,000 / 35 = 3,571.
 3. Roster = 3,571 x 7/6 / 0.90 = 4,630.
 4. Company at 25% share = 4,630 x 0.25 = about 1,160.
-**Result:** about 1,200 executives for one company (range 800 to 1,900); about 4,600 for the whole city.
+**Result:** about 1,200 executives for one company (range 800 to 1,800, from combining productivity and ordering-rate changes); about 4,600 for the whole city.
 **Sanity check:** 125,000 parcels a day against 10 million people is 1 parcel per 80 people a day, plausible for a big city.
 **Sensitivity:** Parcels per executive: at 30 the answer is about 1,350; at 40 about 1,000. Share and household ordering rate scale the answer one-for-one.
 **Likely follow-ups:** 1) *Sale day?* Orders 2 to 3 times; a company hires temporary riders. 2) *Why is roster larger?* Weekly offs and absences.
@@ -792,6 +809,7 @@
 | Spend per person | ₹300 | quick-service meals |
 | Seats | 400 | typical large food court |
 | Turns per seat per day | 6 | lunch, evening, dinner |
+
 **Calculation:**
 1. Footfall to food court = 25,000 x 15% = 3,750 visitors.
 2. Revenue = 3,750 x ₹300 = ₹11.25 lakh.
@@ -811,9 +829,10 @@
 **Assumptions (all assumed / approximate, unverified):**
 | Input | Value | Reason |
 |---|---|---|
-| Passengers a day (arrivals + departures) | 80,000 | large metro airport |
+| Passengers a day (arrivals + departures) | 80,000 | busy metro airport, smaller than the 150,000 case in Q18 |
 | Share going by cab | 30% | rest use own car, metro, bus |
 | Passengers per cab | 2 | some travel alone, some in groups |
+
 **Calculation:**
 1. Cab passengers = 80,000 x 30% = 24,000.
 2. Rides = 24,000 / 2 = 12,000 per day (about 6,000 to the airport and 6,000 from it).
@@ -839,13 +858,14 @@
 | App share of those loans | 15% | one of many apps |
 | Average loan | ₹25,000 | small-ticket loans |
 | Processing fee | 2% | assumed (fees vary) |
+
 **Calculation:**
 1. Adults = 6 million x 60% = 3.6 million; eligible = 3.6 million x 40% = 1.44 million.
 2. Market loans per month = 1.44 million x 1% = 14,400.
 3. The app's loans = 14,400 x 15% = 2,160.
 4. Fee per loan = 25,000 x 2% = ₹500.
 5. Revenue = 2,160 x 500 = ₹10.8 lakh.
-**Result:** about ₹11 lakh a month (range ₹6 to 27 lakh).
+**Result:** about ₹11 lakh a month (range ₹5 to 22 lakh).
 **Sanity check:** 2,160 loans a month is 72 a day for a 6-million city, a small share, so it feels modest.
 **Sensitivity:** Monthly take-up (1%) and app share (15%) multiply directly: take-up 0.5% to 2% moves revenue from about ₹5 to 22 lakh.
 **Likely follow-ups:** 1) *Why not interest income?* Question asks fees; interest arrives over months and needs default assumptions. 2) *What about rejection?* Apply an approval rate: only approved loans pay a fee.
@@ -867,6 +887,7 @@
 | Rain: demand uplift | +30% | people avoid going out |
 | Rain: rider availability | 85% of normal | some stay off the road |
 | Rain: delivery speed | 85% of normal | slower trips |
+
 **Calculation:**
 1. Normal orders = 3 million x 6% x 6 / 30 = 36,000 per day.
 2. Capacity = normal / 0.70 = 51,400 per day.
@@ -886,7 +907,7 @@
 **Explain simply:**
 - Step 1: do not panic and do not just multiply by 10. Thank them and ask what the public figure measures: orders or GMV, a day or a month, food only or also grocery, India or one city.
 - Step 2: line up scope. A 10x gap often comes from a unit mismatch: monthly vs daily is about 30x; revenue vs orders; users vs orders.
-- Step 3: reconcile my chain. Example (assumed): my chain was 1.4 billion x 1% active x 1 order a week / 7 = 0.2 million a day. A factor 10 could mean 10% active users, or 3 orders a week, or more cities than I assumed. Ask which is more plausible (3 orders a week per active user is possible; 10% of India ordering is not).
+- Step 3: reconcile my chain. Example (assumed): my chain was 140 million people in served cities x 1% active x 1 order a week / 7 = 0.2 million a day. A factor 10 could mean 3% active users and 3 orders a week (3 x 3 = 9 times, about 1.8 million a day), or more cities than I assumed. Ask which is more plausible (3 orders a week for an active user is possible; a tenfold jump in the active share alone is not).
 - Step 4: update openly. "If the figure is food orders per day nationwide, I would raise active users and frequency, giving about X; here is my new range."
 - Step 5: if I still disagree and the figure is unverified, say so politely and explain what I can check.
 - Practice step: take any estimate and write down three inputs that could each explain a 10x gap.
@@ -902,7 +923,7 @@
 - Fleet = orders x peak share / orders per rider per hour x roster factor. Orders, peak share and roster factor move the answer one-for-one; rider productivity moves it inversely, and is the shakiest input.
 - Worked example (assumed base): 60,000 orders a day, 12% in the peak hour, 2.5 orders per rider per hour, roster factor 1.4. Base = 60,000 x 0.12 / 2.5 x 1.4 = 4,032 riders.
 - Productivity 2.0: 5,040 (+25%); productivity 3.0: 3,360 (-17%). Peak share 15%: 5,040 (+25%). Roster factor 1.2: 3,456 (-14%).
-- Method in Excel: put inputs in cells, change one at a time, record the output, and rank in a table (a tornado chart for presentation).
+- Method in Excel: put inputs in cells, change one at a time, record the output, and rank in a table (a tornado chart, bars sorted from biggest to smallest effect, for presentation).
 - Practice step: do the same with an assumed order count of 80,000 and note which input still dominates.
 **Likely follow-ups:** 1) *Why not just trust the average?* Productivity varies with traffic and distance. 2) *How would you check real values?* Pull rider logs.
 **Common mistakes / traps:** Changing several inputs at once; testing a tiny input; presenting the sensitivities without a decision.
@@ -951,6 +972,7 @@
 | Rides per active cab per day | 12 | typical use |
 | Share of active cabs online at 3 pm | 60% | lull between peaks |
 | Share of online cabs idle at 3 pm | 35% | the rest on trips or heading to pickup |
+
 **Calculation:**
 1. Active cabs = 400,000 / 12 = 33,333.
 2. Online at 3 pm = 33,333 x 60% = 20,000.
@@ -1004,7 +1026,7 @@
 3. Available share = 100% - 10% = 90%, so fleet = 75 / 0.9 = 83.3, round up to 84.
 **Result:** 84 trucks.
 **Check:** 84 x 0.9 = 75.6 available trucks, enough for 75. With 83 trucks, 83 x 0.9 = 74.7, which falls short.
-**Caveats:** Assumes every trip is completely full (400) and trips are perfectly spread. Real load factors are about 80-90%, which would raise the fleet.
+**Caveats:** Assumes every trip is completely full (400) and trips are perfectly spread. Real trucks are often not full (say 80 to 90% loaded, an assumption), which would raise the fleet.
 **Likely follow-ups:** 1) *If trucks are only 80% full?* 75 / 0.8 = 94 on the road, then 94 / 0.9 = 104.2, so 105. 2) *What if unavailability is 15%?* 75 / 0.85 = 88.2, so 89.
 **Common mistakes / traps:** Adding 10% to 75 (75 x 1.1 = 82.5, rounds to 83, which is short because 10% of the bigger fleet is the off-road share, not 10% of 75); forgetting the 3 trips.
 
@@ -1022,6 +1044,7 @@
 | Delivery orders per day | 45 | steady listing on one or two apps |
 | Delivery order value | Rs 350 | single or couple meal |
 | App commission | 25% | assumed typical range 20-30% |
+
 **Calculation:**
 1. Dine-in = 80 x 450 = Rs 36,000.
 2. Delivery gross = 45 x 350 = Rs 15,750.
@@ -1050,6 +1073,7 @@
 | Train sets | 300 | with wraps and interior panels |
 | Revenue per train set | Rs 10 lakh/year | wrap plus interior ads |
 | Other (naming rights, digital screens, tickets/cards) | Rs 15 crore | small extras |
+
 **Calculation:**
 1. Station ads = 250 x 40 x 15,000 x 12 x 0.6 = Rs 108 crore.
 2. Train ads = 300 x 10 lakh = Rs 30 crore.
@@ -1074,14 +1098,15 @@
 | Share in the 6 pm-midnight window | 50% = 150,000 | dinner-heavy day |
 | Hourly shape (6 to 12) | 14%, 16%, 18%, 18%, 18%, 16% | ramp into dinner |
 | Event multipliers (same hours) | 1.1, 1.5, 1.6, 1.5, 1.7, 1.2 | pre-match build-up, mid-match snacks, final-over and post-match |
+
 **Calculation:**
 1. Baseline per hour: 21,000; 24,000; 27,000; 27,000; 27,000; 24,000.
 2. With multipliers: 23,100; 36,000; 43,200; 40,500; 45,900; 28,800.
 3. Sum = 217,500 orders in the evening.
 4. Ratio to normal = 217,500 / 150,000 = 1.45.
 5. Busiest hour (10-11 pm) = 45,900, about 12.8 orders a second.
-**Result:** About 217,000 evening orders (range 180,000-260,000); about 370,000 for the whole day, up about 22%.
-**Sanity check:** Evening-only uplift 45% means the full-day uplift is 22.5% (67,500 / 300,000), a believable bump for one night.
+**Result:** About 217,000 evening orders (range 180,000-260,000); about 367,500 for the whole day, up 22.5%.
+**Sanity check:** Second route: the share-weighted average of the multipliers (0.14 x 1.1 + 0.16 x 1.5 + 0.18 x 1.6 + 0.18 x 1.5 + 0.18 x 1.7 + 0.16 x 1.2) is also 1.45. The full-day uplift is 22.5% (67,500 / 300,000), a believable bump for one night.
 **Sensitivity:** The multiplier in the busiest hours matters most. If every multiplier is 0.2 lower, the total falls to about 187,500.
 **Likely follow-ups:** 1) *What limits the spike?* Rider supply and kitchen capacity, so fulfilled orders may cap below demand. 2) *How would you check it?* Compare with last year's final and a normal Sunday in the data.
 **Common mistakes / traps:** Applying one flat multiplier to the whole day; ignoring that orders dip during the key overs and surge at breaks; forgetting rider capacity.
@@ -1100,7 +1125,7 @@
 5. Daily contribution = 1.5 million x 15 = Rs 2.25 crore (about Rs 821 crore a year, for 365 days).
 **Result:** Rs 15 per order, 3.75% of GMV, or 15% of net revenue. Positive per order.
 **Check:** 3.75% x 60 crore = Rs 2.25 crore, matches. Break-even rider cost = 100 - 30 = Rs 70 per order; above that, each order loses money.
-**Caveats:** The question gives no fixed costs (technology, corporate staff, marketing, customer discounts), so "profitable" means contribution-positive, not profit-positive. A 25% take rate is high for a platform with commission only; it presumably includes delivery fees and ad income. Each 1 percentage point of take rate is worth Rs 4 per order.
+**Caveats:** The question gives no fixed costs (technology, corporate staff, marketing, customer discounts), so "profitable" means contribution-positive, not profit-positive. The 25% take rate is the exercise input; if it were commission only I would question it, so I would ask whether it includes delivery fees and ad income. Each 1 percentage point of take rate is worth Rs 4 per order.
 **Likely follow-ups:** 1) *If rider cost rises to Rs 70?* Contribution falls to Rs 0. 2) *If AOV rises to Rs 450?* Net revenue Rs 112.5, contribution Rs 27.5.
 **Common mistakes / traps:** Using GMV as revenue (Rs 400 minus Rs 85); calling Rs 15 per order "profit"; forgetting to multiply by 1.5 million.
 
@@ -1117,15 +1142,16 @@
 | Share in busiest hour | 12% | midnight or evening launch of deals |
 | Busiest minute vs hourly average | 1.5x | deals open on the hour |
 | Safety headroom | 2x | systems must not fall over |
+
 **Calculation:**
 1. Average = 12,000,000 / 86,400 seconds = 139 orders a second.
 2. Busiest hour = 12% x 12 million = 1.44 million; per second = 1,440,000 / 3,600 = 400.
 3. Busiest minute = 400 x 1.5 = 600 a second.
 4. Design capacity = 600 x 2 = 1,200 a second.
 **Result:** Average about 140/s; peak about 600/s (4.3 times average); design target about 1,200/s (8.6 times average). Range for peak: 400-900/s.
-**Sanity check:** Peak-hour share of 12% means a flat day would give 4.2% (1/24) per hour, so the peak hour is 2.9 times a flat hour, a typical size for a sale.
+**Sanity check:** Peak-hour share of 12% means a flat day would give 4.2% (1/24) per hour, so the peak hour is 2.9 times a flat hour, a plausible size for a sale launch (assumed).
 **Sensitivity:** Peak-hour share drives it. At 8% the peak minute is 400/s; at 16% it is 800/s.
-**Likely follow-ups:** 1) *Why is browsing harder than ordering?* Each order comes with perhaps 50-100 page views and searches, so read traffic is far bigger. 2) *Does stock matter?* Yes, a flash deal on limited stock concentrates demand in seconds.
+**Likely follow-ups:** 1) *Why is browsing harder than ordering?* Each order comes with perhaps 50-100 page views (assumed) and searches, so read traffic is far bigger. 2) *Does stock matter?* Yes, a flash deal on limited stock concentrates demand in seconds.
 **Common mistakes / traps:** Designing for the average per second; confusing orders with requests; forgetting that all customers share one clock in India, so there is no natural spread of demand across time zones.
 
 ### Q56 ⭐⭐ 🔴 Estimate the revenue a quick-commerce company earns per day across India, stating separately the GMV, take-rate and other-income assumptions.
@@ -1142,6 +1168,7 @@
 | Take rate (commission and margin on goods) | 18% of GMV | assumed range 15-22% |
 | Advertising income | 4% of GMV | brand placement on the app |
 | Fees (delivery, handling, small-cart) | Rs 10 per order | partly waived |
+
 **Calculation:**
 1. GMV = 5,000,000 x 500 = Rs 2,500 million = Rs 250 crore.
 2. Take-rate revenue = 18% x 250 = Rs 45 crore.
@@ -1167,16 +1194,17 @@
 | Orders per food rider per day | 12 | about 8 hours, 1 order per 40 minutes |
 | Quick-commerce orders per day | 5 million | short trips |
 | Orders per QC rider per day | 18 | trips of 10-15 minutes |
-| Riders working on both kinds of app | 15% of the total | multi-apping |
+| Riders working on both kinds of app | 15% of the total | multi-apping (working for several apps) |
+
 **Calculation:**
 1. Food riders = 4,000,000 / 12 = 333,000.
 2. QC riders = 5,000,000 / 18 = 278,000.
 3. Sum = 611,000.
 4. Remove overlap: 611,000 x 0.85 = 519,000.
 **Result:** About 520,000 riders working on a day (range 400,000-800,000).
-**Sanity check:** Peak need: if 40% of daily orders fall in the two meal peaks, riders needed on the road at once would be a few hundred thousand, similar to the daily figure because most work in a single shift.
-**Sensitivity:** Orders per rider. At 15 food and 22 QC orders per rider, the answer drops to about 400,000.
-**Likely follow-ups:** 1) *Registered vs active?* Registered is typically 2-3x active because of churn. 2) *Part-timers?* If half work 4-hour shifts, headcount rises.
+**Sanity check:** 9 million orders over 520,000 distinct riders is about 17 orders per rider, between the 12 and 18 I used for each segment, as expected when some riders do both. Per head, it is about 1 rider per 385 people if 200 million live in served cities (the Q1 assumption).
+**Sensitivity:** Orders per rider. At 15 food and 22 QC orders per rider, the answer drops to about 420,000.
+**Likely follow-ups:** 1) *Registered vs active?* Registered is usually a multiple of active (assumed 2 to 3x) because of churn. 2) *Part-timers?* If half work 4-hour shifts, headcount rises.
 **Common mistakes / traps:** Dividing by orders per hour and ignoring shift length; counting the same rider twice; mixing registered riders with daily active.
 
 ### Q58 ⭐⭐ 🔴 Estimate the number of ride-hailing trips and total fare revenue in a metro city in a day, then explain how you would split it between two competing apps.
@@ -1193,6 +1221,7 @@
 | Rides per user per month | 8 | mix of commuters and occasional users |
 | Mix: cab / auto / bike | 35% / 40% / 25% | |
 | Average fare: cab / auto / bike | Rs 250 / 120 / 60 | |
+
 **Calculation:**
 1. Rides per month = 3.25 million x 8 = 26 million; per day = 26/30 = 867,000.
 2. Average fare = 0.35 x 250 + 0.40 x 120 + 0.25 x 60 = 87.5 + 48 + 15 = Rs 150.5.
@@ -1207,7 +1236,7 @@
 ### Q59 ⭐ 🟢 Estimate the daily number of couriers who use the metro to carry parcels, if you were sizing a parcel-by-metro pilot.
 **Asked at:** commonly asked (no company-specific report found); a niche variant of the metro-riders guesstimate, unverified.
 **What the interviewer is checking:** Whether you narrow a big ridership number to a small segment with two independent routes.
-**Say this in the interview:** "Two routes: 5 million daily riders times a tiny courier share, and the city's delivery workforce times the share who use the metro. Both give about 5,000 couriers a day."
+**Say this in the interview:** "Two routes: 5 million daily riders times a tiny courier share, and the city's delivery workforce times the share who use the metro. The two give 7,500 and 4,500, so I quote about 6,000 a day, range 4,500 to 7,500."
 **Clarify first:** One city's network, couriers meaning gig or company delivery workers carrying parcels (not personal luggage), a typical weekday.
 **Approach:** Top-down from ridership; bottom-up from the courier workforce as a cross-check.
 **Assumptions (all assumed / approximate, unverified):**
@@ -1217,11 +1246,12 @@
 | Share who are couriers carrying parcels | 0.15% | very small, a few in a thousand |
 | Parcel and delivery workers in the city | 150,000 | gig and company riders |
 | Share using metro for part of the route | 3% | most use bikes |
+
 **Calculation:**
 1. Top-down: 5,000,000 x 0.0015 = 7,500 couriers.
 2. Bottom-up: 150,000 x 0.03 = 4,500 couriers.
-3. Average of the two is about 6,000; I quote 5,000-7,500.
-**Result:** About 5,000-7,500 couriers a day (point estimate 6,000), range 2,000-10,000.
+3. Average of the two is 6,000; I quote 4,500-7,500 around it.
+**Result:** About 6,000 couriers a day (the two routes give 4,500 to 7,500; wider range 2,000-10,000).
 **Sanity check:** 6,000 couriers is 0.12% of riders, so you would meet about one in every 800 passengers; plausible.
 **Sensitivity:** The share inputs dominate; doubling either share doubles the answer.
 **Likely follow-ups:** 1) *What would the pilot need?* Rules on bag size, off-peak timing and station lockers. 2) *Which line first?* The one linking the biggest warehouses to dense residential areas.
@@ -1230,7 +1260,7 @@
 ### Q60 ⭐ 🟢 Estimate the number of orders an average Swiggy restaurant partner receives in a day, and use it to cross-check the platform total.
 **Asked at:** a Board Infinity candidate report (via search summary, unverified) mentions "how many orders does Swiggy get in a day" using population and orders per person; this per-restaurant version is a gap-fill.
 **What the interviewer is checking:** Whether you can reach the same number from two directions and show they agree.
-**Say this in the interview:** "Bottom-up a restaurant sees about 9 orders a day on the app; top-down 1.8 million orders over 200,000 restaurants is also 9. The two routes agree."
+**Say this in the interview:** "Bottom-up a restaurant sees about 9 orders a day on the app; top-down 1.8 million orders over 200,000 restaurants is also 9. The two routes agree, though I set the inputs to be consistent, so it shows consistency, not proof."
 **Clarify first:** Average over all active partners (not a chain outlet), orders on this one app, a normal day.
 **Approach:** Per-restaurant bottom-up, then top-down from the platform total.
 **Assumptions (all assumed / approximate, unverified):**
@@ -1241,6 +1271,7 @@
 | Share of delivery on this app | 60% | two main apps |
 | Platform orders per day | 1.8 million | assumed |
 | Active restaurant partners | 200,000 | assumed |
+
 **Calculation:**
 1. Bottom-up: 60 x 0.25 = 15 delivery orders; x 0.6 = 9 orders on this app.
 2. Top-down: 1,800,000 / 200,000 = 9 orders.
@@ -1262,15 +1293,16 @@
 |---|---|---|
 | Daily riders | 5 million | large network |
 | Average fare | Rs 35 | mix of short and long trips |
-| Annual ad revenue | Rs 140 crore | link to Q52 |
+| Annual ad revenue | Rs 153 crore | from Q52 |
 | Other income (property, parking, retail) | 10% of fares | assumed |
+
 **Calculation:**
 1. Fares = 5,000,000 x 35 = Rs 17.5 crore.
-2. Ads = 140 crore / 365 = Rs 0.38 crore.
+2. Ads = 153 crore / 365 = Rs 0.42 crore.
 3. Other = 10% x 17.5 = Rs 1.75 crore.
-4. Total = 17.5 + 0.38 + 1.75 = Rs 19.6 crore.
+4. Total = 17.5 + 0.42 + 1.75 = Rs 19.7 crore.
 **Result:** About Rs 20 crore (range Rs 12-25 crore). On a Sunday with 3.5 million riders, fares are Rs 12.25 crore.
-**Sanity check:** Annual = 19.6 x 365 = Rs 7,150 crore, high versus a typical large network's real revenue, so my fare and rider inputs may be generous; I would trim to the lower half of the range.
+**Sanity check:** Annual = 19.7 x 365 = about Rs 7,180 crore. I have not checked this against any real network's published revenue (unverified), and the 5 million riders and Rs 35 fare may be generous, so I would lean to the lower half of the range.
 **Sensitivity:** Riders and fare multiply; a 20% lower fare gives Rs 3.5 crore less.
 **Likely follow-ups:** 1) *Are costs saved?* Some (power, consumables), but staff and fixed costs remain. 2) *Is revenue recovered later?* Mostly not; trips are lost or shifted to buses and cabs.
 **Common mistakes / traps:** Counting only fares; mixing revenue with the economic cost to the city; ignoring weekday versus weekend.
@@ -1284,10 +1316,11 @@
 **Assumptions (all assumed / approximate, unverified):**
 | Input | Value | Reason |
 |---|---|---|
-| DC fast chargers | 800 | highway and city hubs |
+| DC (direct current, quick) fast chargers | 800 | highway and city hubs |
 | Sessions per fast charger per day | 8 | session about 36 minutes |
-| AC slow chargers | 2,200 | malls, offices |
+| AC (alternating current, slow) chargers | 2,200 | malls, offices |
 | Sessions per AC charger per day | 1.5 | session about 3 hours |
+
 **Calculation:**
 1. Fast = 800 x 8 = 6,400 sessions.
 2. Slow = 2,200 x 1.5 = 3,300 sessions.
@@ -1327,14 +1360,15 @@
 | Operating hours | 12 | 4 peak, 8 off-peak |
 | Peak utilisation | 80% | lunch and dinner |
 | Off-peak utilisation | 30% | |
+
 **Calculation:**
 1. Peak per station = 4 x 12 x 0.8 = 38.4 meals.
 2. Off-peak per station = 8 x 12 x 0.3 = 28.8 meals.
 3. Per station per day = 67.2.
 4. Kitchen = 67.2 x 6 = 403 meals.
 **Result:** About 400 meals a day (range 300-600).
-**Sanity check:** Maximum capacity = 12 x 12 x 6 = 864 meals, so I assumed 47% overall utilisation, a believable figure for cloud kitchens.
-**Sensitivity:** Peak utilisation. At 95% it rises to about 450; at 60%, about 360.
+**Sanity check:** Maximum capacity = 12 x 12 x 6 = 864 meals, so I assumed 47% overall utilisation, plausible for a cloud kitchen (assumed, unverified).
+**Sensitivity:** Peak utilisation. At 95% it rises to about 450; at 60%, about 350.
 **Likely follow-ups:** 1) *How to raise output?* Prep ahead, shared stations, shorter menus. 2) *Meals versus orders?* An order often has 1.5-2 items.
 **Common mistakes / traps:** Assuming full speed all day; mixing orders with items; ignoring prep and cleaning time.
 
@@ -1352,6 +1386,7 @@
 | Distance per rider per day | 80 km | includes repositioning |
 | Mileage | 45 km per litre | scooter or bike |
 | Petrol price | Rs 100 per litre | assumed |
+
 **Calculation:**
 1. Petrol riders = 40,000 x 0.85 = 34,000.
 2. Total km = 34,000 x 80 = 2.72 million km.
@@ -1410,6 +1445,7 @@
 | Adults using a food app monthly | 12% | lower than metros |
 | Orders per active user per month | 3.5 | |
 | Weekday factor | 0.9 | vs average day |
+
 **Calculation:**
 1. Adults = 700,000; app users = 700,000 x 0.12 = 84,000.
 2. Orders per month = 84,000 x 3.5 = 294,000.
@@ -1436,6 +1472,7 @@
 | Racking height | 5 m | |
 | Space utilisation | 30% | aisles, gaps in racks |
 | Storage share of total area | 50% | rest: receiving, packing, sorting, dispatch |
+
 **Calculation:**
 1. Units shipped a day = 50,000 x 2 = 100,000; stock = 100,000 x 20 = 2 million units.
 2. Volume = 2,000,000 x 0.01 = 20,000 m3.
@@ -1443,7 +1480,7 @@
 4. Total area = 13,333 / 0.5 = 26,700 m2, which is 26,700 x 10.76 = about 287,000 sq ft.
 **Result:** About 27,000 m2, roughly 3 lakh sq ft (range 1.5-4.5 lakh).
 **Sanity check:** 50,000 orders / 287,000 sq ft = 0.17 orders per sq ft a day; I would say plausible for a mixed-goods centre, unverified.
-**Sensitivity:** Days of stock; 10 days halves storage, so area falls to about 15,000 m2.
+**Sensitivity:** Days of stock; 10 days halves storage, so area falls to about 13,300 m2.
 **Likely follow-ups:** 1) *Peak sale?* Size for peak or use temporary space. 2) *Automation?* Raises utilisation and cuts area.
 **Common mistakes / traps:** Ignoring aisles and working zones; using daily orders only; mixing m2 and sq ft.
 
@@ -1461,6 +1498,7 @@
 | Data engineers | 35 | 24 |
 | BI/dashboard developers | 15 | 12 |
 | Managers and leads | 20 | 45 |
+
 **Calculation:**
 1. Headcount = 70 + 40 + 35 + 15 + 20 = 180.
 2. Cost: 700 + 1,120 + 840 + 180 + 900 = Rs 3,740 lakh = Rs 37.4 crore.
@@ -1469,7 +1507,7 @@
 **Result:** 180 people; Rs 37 crore a year payroll (Rs 45 crore loaded); range Rs 25-60 crore.
 **Sanity check:** Ratio 2,000,000 / 180 = 1 data person per 11,000 daily orders; cost per order = 3,740 lakh / 730 million orders a year = about 51 paise.
 **Sensitivity:** Headcount drives it; 150 people lowers cost to Rs 31 crore. Data scientist pay is the next biggest swing.
-**Likely follow-ups:** 1) *Why this mix?* More analysts than scientists because most questions are descriptive. 2) *Ratio to company size?* Analytics at about 4-5% of corporate staff.
+**Likely follow-ups:** 1) *Why this mix?* More analysts than scientists because most questions are descriptive. 2) *Ratio to company size?* I would assume a small share of corporate staff, but I have no verified ratio, so I would ask for the company's headcount.
 **Common mistakes / traps:** Forgetting managers; ignoring on-costs; using monthly salaries as annual.
 
 ### Q71 ⭐ 🔴 Estimate the number of UPI QR-code merchants a payments app must onboard to reach a stated daily transaction target of 50 million transactions.
@@ -1485,12 +1523,13 @@
 | Share from merchant QR payments | 75% | rest are person-to-person |
 | Transactions per active merchant per day | 12 | mix of small shops and larger stores |
 | Active share of onboarded merchants | 60% | many QR codes sit unused |
+
 **Calculation:**
 1. Merchant transactions = 50,000,000 x 0.75 = 37.5 million.
 2. Active merchants = 37,500,000 / 12 = 3.125 million.
 3. Onboarded merchants = 3,125,000 / 0.6 = 5.21 million.
 **Result:** About 5.2 million merchants (range 3-8 million).
-**Sanity check:** 50 million / 5.2 million = about 9.6 transactions per onboarded merchant per day, plausible for small shops.
+**Sanity check:** 37.5 million merchant payments / 5.2 million onboarded merchants = about 7.2 per onboarded merchant per day (12 x 60% active), plausible for small shops.
 **Sensitivity:** Transactions per merchant; at 20 a day the answer drops to about 3.1 million, and at 8 it rises to 7.8 million.
 **Likely follow-ups:** 1) *Which merchants first?* Higher-frequency ones (tea stalls, grocers). 2) *Market share?* Competing apps share the same QR codes, so onboarding does not guarantee transactions.
 **Common mistakes / traps:** Counting all onboarded as active; ignoring person-to-person; assuming one QR code equals one merchant.
@@ -1509,6 +1548,7 @@
 | Fresh produce share of sales | 12% | |
 | Wastage rate on produce sales | 4% | assumed range 2-8% |
 | Cost as share of sales price | 80% | |
+
 **Calculation:**
 1. Store sales = 1,200 x 550 = Rs 660,000.
 2. Produce sales = 12% x 660,000 = Rs 79,200.
