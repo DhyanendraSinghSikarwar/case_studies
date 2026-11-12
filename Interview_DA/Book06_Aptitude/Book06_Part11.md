@@ -1,0 +1,103 @@
+# Book 6 — Aptitude & Business Maths | Part 11: English/Communication Assessment & Online-Test CS/SQL Items 🟢🟡
+
+**Target:** 30 questions | **Actual:** 33 questions
+**Scope:** Accenture-style English and communication assessment (grammar, vocabulary, reading, email, spoken tasks) plus the SQL and basic CS-fundamentals MCQ items embedded in online tests.
+
+### Q1 ⭐⭐⭐ 🟢 Choose the correct option: "The list of employees eligible for the bonus ___ on the notice board." (a) are displayed (b) is displayed (c) were displayed (d) have been displayed. Which is correct and why?
+<!-- ANSWER_PENDING -->
+
+### Q2 ⭐⭐⭐ 🟢 Spot the error in the sentence: "Neither of the two candidates have submitted their documents on time." Rewrite it correctly and name the grammar rule.
+<!-- ANSWER_PENDING -->
+
+### Q3 ⭐⭐⭐ 🟢 Fill in the blanks with the correct prepositions: "The manager is responsible ___ payroll accuracy, and she is very good ___ analysing attendance data, but she is not satisfied ___ the current report."
+<!-- ANSWER_PENDING -->
+
+### Q4 ⭐⭐⭐ 🟢 Correct the sentence and name the tense rule: "He has joined the company in 2022 and is working here since then."
+<!-- ANSWER_PENDING -->
+
+### Q5 ⭐⭐⭐ 🟢 Fill in the correct articles (a / an / the / no article): "She is ___ honest analyst who works in ___ MIS team and sends ___ report to ___ HR Head every Monday."
+<!-- ANSWER_PENDING -->
+
+### Q6 ⭐⭐⭐ 🟢 In SQL, what is the difference between WHERE and HAVING? Which clause would you use to list departments having more than 10 employees from the table employees(emp_id, dept, salary), and why?
+<!-- ANSWER_PENDING -->
+
+### Q7 ⭐⭐⭐ 🟢 What is the difference between a PRIMARY KEY, a FOREIGN KEY and a UNIQUE key in a database table? Can a primary key contain NULL, and can a table have more than one UNIQUE key?
+<!-- ANSWER_PENDING -->
+
+### Q8 ⭐⭐⭐ 🟢 A table employees has 5 rows. The column bonus has the values 1000, NULL, 2000, NULL, 3000. What do SELECT COUNT(*), SELECT COUNT(bonus) and SELECT AVG(bonus) return?
+<!-- ANSWER_PENDING -->
+
+### Q9 ⭐⭐⭐ 🟡 Choose the word closest in meaning to the underlined word: "The new payroll process will mitigate the risk of salary errors." (a) increase (b) reduce (c) ignore (d) transfer. Then give one antonym of "mitigate" in this sense.
+<!-- ANSWER_PENDING -->
+
+### Q10 ⭐⭐⭐ 🟡 Read the passage and answer. Passage: "Attrition in the sales team rose from 12% to 18% over the year, while attrition in operations stayed flat at 10%. Exit interviews showed that most leavers in sales cited limited career growth rather than pay. The HR head proposed a promotion framework instead of a company-wide salary hike." Question: Which of the following is the best inference? (a) Salary hikes caused the rise in attrition (b) Operations has a better pay structure than sales (c) A targeted growth framework addresses the stated reason better than a general pay rise (d) Attrition is expected to fall to 10% next year. Explain why the other options fail.
+<!-- ANSWER_PENDING -->
+
+### Q11 ⭐⭐⭐ 🟡 Rearrange the following sentences into a logical paragraph (give the order of letters): P. As a result, the team reduced report preparation time from two days to four hours. Q. The analytics team found that most reports were prepared manually in Excel. R. They automated the data refresh using a scheduled query and a dashboard. S. Every month, the finance team needed a headcount report for senior management.
+<!-- ANSWER_PENDING -->
+
+### Q12 ⭐⭐⭐ 🟡 Write a professional email (about 100 words) to your reporting manager asking for a two-day extension on a data report because the source file from the finance team arrived late. Include a subject line, greeting, body, closing and signature.
+<!-- ANSWER_PENDING -->
+
+### Q13 ⭐⭐⭐ 🟡 Two tables are given. Table A(id): 1, 2, 3. Table B(id): 2, 3, 4. How many rows and which ids are returned by (i) A INNER JOIN B ON A.id = B.id, (ii) A LEFT JOIN B ON A.id = B.id (show A.id and B.id), (iii) A FULL OUTER JOIN B ON A.id = B.id?
+<!-- ANSWER_PENDING -->
+
+### Q14 ⭐⭐⭐ 🟡 The table employees(emp_id, name, manager_id) has 4 rows with manager_id values 101, NULL, 102, NULL. What does SELECT * FROM employees WHERE manager_id = NULL return, and what is the correct query to find employees with no manager? Why does the first query behave that way?
+<!-- ANSWER_PENDING -->
+
+### Q15 ⭐⭐⭐ 🟡 "Tell me about yourself" in 60 seconds: how would you structure a spoken answer for a data/MIS analyst fresher in an English communication or HR screening round?
+<!-- ANSWER_PENDING -->
+
+### Q16 ⭐⭐ 🟢 Choose the correct word: "The new policy will directly (affect / effect) employee attendance, and its (affect / effect) will be reviewed after three months."
+<!-- ANSWER_PENDING -->
+
+### Q17 ⭐⭐ 🟢 Convert the sentence to passive voice: "The analyst prepared the monthly attrition report and sent it to the HR head."
+<!-- ANSWER_PENDING -->
+
+### Q18 ⭐⭐ 🟢 Complete the conditional sentence correctly: "If the data ___ (be) clean, the dashboard ___ (load) faster." Name the conditional type, and give the correct form for a "real/probable" situation and for an "unreal/hypothetical" situation.
+<!-- ANSWER_PENDING -->
+
+### Q19 ⭐⭐ 🟢 Which normal form removes partial dependency, and what do 1NF, 2NF and 3NF each require? Illustrate with the table orders(order_id, product_id, product_name, customer_name) where the key is (order_id, product_id).
+<!-- ANSWER_PENDING -->
+
+### Q20 ⭐⭐ 🟢 What is the difference between DELETE, TRUNCATE and DROP in SQL? State whether each can be rolled back, whether it removes rows or the table structure, and whether it supports a WHERE clause.
+<!-- ANSWER_PENDING -->
+
+### Q21 ⭐⭐ 🟢 What is the difference between a stack and a queue? If you push 10, 20, 30 onto a stack and then pop once, and separately enqueue 10, 20, 30 into a queue and then dequeue once, what value is removed in each case?
+<!-- ANSWER_PENDING -->
+
+### Q22 ⭐⭐ 🟡 In a spoken-English test you hear: "The quarterly attrition report will be shared with all department heads by Friday." You must repeat it exactly. What strategy helps you score well on a repeat-the-sentence task, and what is typically scored (accuracy, fluency, pronunciation)?
+<!-- ANSWER_PENDING -->
+
+### Q23 ⭐⭐ 🟡 Is the phrase "Please revert back to me at the earliest" correct in professional English? Explain the problem and rewrite it in two better ways.
+<!-- ANSWER_PENDING -->
+
+### Q24 ⭐⭐ 🟡 In a workplace conversation task, a colleague says: "I think the sales figures in your report look wrong." Which is the most appropriate reply? (a) "No, you are wrong." (b) "Thanks for flagging it. Could you share which figures look off so I can check against the source?" (c) "Whatever, the data came from the system." (d) "I will not change anything." Explain why the best option is best.
+<!-- ANSWER_PENDING -->
+
+### Q25 ⭐⭐ 🟡 Write a short, professional reply (about 80 words) to a stakeholder who says angrily that last month's numbers in your report do not match the finance report. State the tone to keep, what you check first, and the next step you commit to.
+<!-- ANSWER_PENDING -->
+
+### Q26 ⭐⭐ 🟡 Find the output of this pseudocode: sum = 0; for i = 1 to 10: if i mod 3 == 0 then sum = sum + i; end if; end for; print sum. Show the working.
+<!-- ANSWER_PENDING -->
+
+### Q27 ⭐⭐ 🟡 What does ACID stand for in databases? Give a one-line banking example for each property.
+<!-- ANSWER_PENDING -->
+
+### Q28 ⭐ 🟢 Choose the correct word in each pair: "The (principal / principle) reviewed the (stationary / stationery) order" and "Please (accept / except) all invoices (accept / except) the cancelled ones." Explain each pair in one line.
+<!-- ANSWER_PENDING -->
+
+### Q29 ⭐ 🟢 What is the difference between an IP address and a MAC address, and between HTTP and HTTPS? Answer as expected in a basic networking MCQ.
+<!-- ANSWER_PENDING -->
+
+### Q30 ⭐ 🟡 Find the odd sentence out that does not belong to the paragraph: (1) A dashboard should show only the KPIs the audience needs. (2) Too many charts distract managers from the key message. (3) Our canteen introduced a new lunch menu last week. (4) Clear titles and consistent colours help readers understand quickly.
+<!-- ANSWER_PENDING -->
+
+### Q31 ⭐ 🟡 Summarise the following in one sentence of at most 20 words: "The HR team reviewed 1,200 exit forms last quarter. Most employees who left cited poor work-life balance and slow promotions. The report recommends flexible working hours and a transparent promotion calendar to reduce attrition."
+<!-- ANSWER_PENDING -->
+
+### Q32 ⭐ 🟡 What is the difference between encapsulation and abstraction in object-oriented programming? Give a simple example of each using an Employee class.
+<!-- ANSWER_PENDING -->
+
+### Q33 ⭐ 🟡 What is the time complexity of binary search and of linear search on a sorted list of 1,024 elements? How many comparisons does binary search need at most for 1,024 elements, and what condition must hold for it to work?
+<!-- ANSWER_PENDING -->
