@@ -365,7 +365,7 @@
 1. I alone: P = 5,000, no interest (not sufficient).
 2. II alone: SI = 1,000 in 2 years, P unknown (not sufficient).
 3. Together: R = SI x 100 / (P x T) = 1,000 x 100 / (5,000 x 2) = 10% (sufficient).
-**Fast method (30 seconds):** SI formula has P, R, T and SI: three known values fix the fourth. Statement I gives one, II gives one (plus T = 2 from the stem of II), so both are needed.
+**Fast method (30 seconds):** SI formula has P, R, T and SI: three known values fix the fourth. Statement I gives P; Statement II gives SI and T together (1,000 in 2 years); R needs P, SI and T, so both are needed.
 **Check:** verified by code (enumerated a range of test values for the statements, alone and together).
 **Explain simply:**
 - SI = P x R x T / 100.

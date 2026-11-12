@@ -15,12 +15,12 @@
 - 6: divisible by both 2 and 3.
 - 11: add the digits in odd places, add the digits in even places, subtract. If the difference is 0 or a multiple of 11, the number is divisible by 11.
 **Worked mini-example:** 5,346: even (so by 2); digit sum 5+3+4+6 = 18 (so by 3, 9 and, being even, by 6); odd-place digits from the right 6+3 = 9, even-place 4+5 = 9, difference 0 (so by 11). Last three digits 346 are not divisible by 8 (346 / 8 = 43.25), so it is not.
-**Check:** verified by script (5,346 = 2 x 3 x 3 x 3 x 99 = 9 x 594 = 11 x 486 checks).
+**Check:** verified by script: 5,346 = 9 x 594 = 11 x 486, and 5,346 / 8 = 668.25 (not whole).
 **Likely follow-ups:** 1) *Rule for 12?* Divisible by both 3 and 4. 2) *Rule for 7?* No short rule; just divide.
 **Common mistakes / traps:** Saying "divisible by 6" after checking only 2 or only 3; testing 4 with the last digit only; forgetting that a difference of 0 counts as divisible by 11.
 
 ### Q2 ⭐⭐⭐ 🟢 How do you approach a number series question when the pattern is not obvious (first differences, second differences, ratios, squares/cubes, primes, alternating series)?
-**Asked at:** commonly asked (no company-specific report found); prep sites (FACE Prep, JobCannon) describe first differences as the first thing to try, and claim 5-8 series items in Infosys aptitude (unverified).
+**Asked at:** commonly asked (no company-specific report found); FACE Prep (prep site) describes first differences as the first thing to try and claims 5-8 series items in Infosys aptitude (unverified); JobCannon frames series by constant versus growing change.
 **What the interviewer is checking:** A calm, ordered method rather than guessing.
 **Say this in the interview:** "I try a fixed checklist: differences, differences of differences, ratios, squares and cubes, primes, then two interleaved series. I stop at the first rule that fits every term."
 **Answer:** **Work through the checklist in order and confirm the rule on all terms, not just the first two.**
@@ -156,7 +156,7 @@
 **Explain simply:**
 - Each place value 10, 100, ... leaves remainder 1 when divided by 9, so only the digits matter.
 **Likely follow-ups:** *Remainder when divided by 3?* 42 mod 3 = 0.
-**Common mistakes / traps:** Answering 42 (not reducing further); answering 0 for any digit sum that merely looks round.
+**Common mistakes / traps:** Answering 42 (the digit sum, not the remainder); forgetting that the remainder must be below 9.
 
 ### Q11 ⭐⭐⭐ 🟡 Find the next number in the series 2, 3, 5, 9, 17, 33, ?
 **Asked at:** commonly asked (no company-specific report found); growing-difference series appear in practice-vendor material.
@@ -217,7 +217,7 @@
 **Explain simply:**
 - Cyclicity: the unit digit of successive powers repeats in a loop. Divide the exponent by the cycle length; a remainder of 0 means use the last digit in the cycle.
 **Likely follow-ups:** *Unit digit of 7^46?* Remainder 2, so 9.
-**Common mistakes / traps:** Treating remainder 0 as the first digit; wrong cycle length (digits 2, 3, 7, 8 cycle by 4; 4 and 9 by 2).
+**Common mistakes / traps:** Treating remainder 0 as the first digit; wrong cycle length (units digits 2, 3, 7, 8 cycle by 4; 4 and 9 by 2; 0, 1, 5, 6 never change).
 
 ### Q15 ⭐⭐⭐ 🟡 What is the remainder when 2^100 is divided by 7?
 **Asked at:** CCBP gives a similar "2^100 mod 3" question (prep-site, unverified); otherwise commonly asked.
@@ -320,7 +320,7 @@
 3. 34 x 3 + 3 = 105.
 4. 105 x 4 + 4 = 424.
 5. 424 x 5 + 5 = 2,120 + 5 = 2,125.
-**Check:** verified by script; the rule fits all four known steps, which makes a coincidence unlikely. Differences (1, 18, 71, 319) show no simple pattern, which is why this test was designed as a trap.
+**Check:** verified by script; the rule fits all four known steps, which makes a coincidence unlikely. Differences (1, 18, 71, 319) show no simple pattern, so a differences-only approach will not find it. Assumption: this is the simplest rule that fits all five given terms; as with any series, other rules could be invented, but this is the intended one.
 **Explain simply:**
 - When differences and ratios fail, test "multiply by a growing number, then add a growing number".
 **Likely follow-ups:** *Next after 2,125?* 2,125 x 6 + 6 = 12,756.
@@ -358,14 +358,14 @@
 ### Q24 ⭐⭐ 🟢 Find the next number in the series 11, 13, 17, 19, 23, ?
 **Asked at:** Number-series items are a standard part of service-company online aptitude rounds (prep sites such as FACE Prep claim 5-8 per Infosys paper; unverified); no company-specific report of this exact item found.
 **What the interviewer is checking:** Spotting a non-arithmetic pattern.
-**Say this in the interview:** These are consecutive prime numbers, numbers with exactly two factors, 1 and themselves. After 23 the next prime is 29.
+**Say this in the interview:** "These are consecutive prime numbers, numbers with exactly two factors, 1 and themselves. After 23 the next prime is 29."
 **Answer:** **29**
 **Step-by-step working:**
 1. Look at the series: 11, 13, 17, 19, 23. None can be split into smaller whole-number factors, so they are primes.
 2. The next candidate after 23 is 24. It is even, so it is divisible by 2: not prime.
 3. 25 = 5 x 5: not prime. 26 is even. 27 = 3 x 9. 28 is even.
 4. 29 has no divisor other than 1 and itself (not divisible by 2, 3 or 5; 7 x 7 = 49 is already above 29): prime.
-**Fast method (30 seconds):** Skip even numbers and anything ending in 5; test only 3 and 7 for the rest.
+**Fast method (30 seconds):** Skip even numbers and anything ending in 5; for the rest, test divisibility by 3 (digit sum). For numbers below 49 nothing else is needed, since the smallest composite with no factor 2, 3 or 5 is 7 x 7 = 49.
 **Check:** The next prime after 23 is 29; 24 to 28 each have a divisor (24, 25, 26, 27, 28 all fail), verified by script.
 **Explain simply:**
 - A prime is a number above 1 that only 1 and itself divide exactly.
@@ -376,7 +376,7 @@
 ### Q25 ⭐⭐ 🟢 Find the next number in the series 1, 8, 27, 64, 125, ?
 **Asked at:** Number-series items are a standard part of service-company online aptitude rounds (prep sites such as FACE Prep claim 5-8 per Infosys paper; unverified); no company-specific report of this exact item found.
 **What the interviewer is checking:** Recognising squares/cubes.
-**Say this in the interview:** The terms are perfect cubes: 1^3, 2^3, 3^3, 4^3, 5^3. The next is 6^3 = 216.
+**Say this in the interview:** "The terms are perfect cubes: 1^3, 2^3, 3^3, 4^3, 5^3. The next is 6^3 = 216."
 **Answer:** **216**
 **Step-by-step working:**
 1. 1 = 1x1x1, 8 = 2x2x2, 27 = 3x3x3, 64 = 4x4x4, 125 = 5x5x5.
@@ -403,7 +403,7 @@
 **Check:** Reverse: 110 / 10 = 11 = average of 2 and 20; verified by script.
 **Explain simply:**
 - Natural numbers are the counting numbers 1, 2, 3...; even ones are divisible by 2.
-- Pairing the ends is the trick used by the maths student Gauss: every pair adds to the same total.
+- Pairing the ends is the trick the mathematician Gauss is said to have used as a schoolboy: every pair adds to the same total.
 **Likely follow-ups:** Sum of first 10 odd numbers? 10 x 10 = 100. Sum of first 50 even numbers? 50 x 51 = 2,550.
 **Common mistakes / traps:** Using n x n (the formula for odd numbers, giving 100).
 
@@ -419,13 +419,13 @@
 4. x = 36/99.
 5. Divide top and bottom by 9 (the highest common factor): 36/9 = 4, 99/9 = 11. So x = 4/11.
 **Fast method (30 seconds):** Repeating block over as many 9s as the block has digits: 36 over 99, then reduce. HCF of 36 and 99 is 9.
-**Check:** Reverse: 4 / 11 = 0.363636..., since 11 x 0.363636 = 4.0; verified by script with exact fractions.
+**Check:** Reverse: 4 divided by 11 gives 0.363636... (long division repeats 36); verified by script with exact fractions.
 **Explain simply:**
 - A recurring decimal repeats a block forever; every such decimal is a fraction.
 - Multiplying by 10, 100, ... (as many zeros as repeating digits) moves the decimal point so the infinite tail cancels on subtraction.
 - Lowest terms means no further common factor.
 **Likely follow-ups:** 0.272727... as a fraction? 27/99 = 3/11. 0.1666...? (mixed repeat) 1/6.
-**Common mistakes / traps:** Leaving the answer as 36/99, or putting 36/100. Test setters offer 36/99 as a trap option.
+**Common mistakes / traps:** Leaving the answer as 36/99, or putting 36/100. 36/99 is correct in value but not in lowest terms, so a question asking for lowest terms expects 4/11.
 
 ### Q28 ⭐⭐ 🟢 What is the largest 4-digit number divisible by 16?
 **Asked at:** commonly asked (no company-specific report found)
@@ -468,7 +468,7 @@
 **Common mistakes / traps:** Calling 1, 9, 15, 21, 27, 33, 39, 49 prime; 49 = 7 x 7 is the classic trap.
 
 ### Q30 ⭐⭐ 🟢 Monthly sales are Rs 5,000, Rs 5,500, Rs 6,050 and Rs 6,655 in four consecutive months. If the same pattern continues, what are the sales in the fifth month?
-**Asked at:** commonly asked (no company-specific report found); compounding-growth pattern also appears in business series.
+**Asked at:** commonly asked (no company-specific report found); growth-rate series are a natural business flavour of the geometric type.
 **What the interviewer is checking:** Spotting growth rate / GP.
 **Say this in the interview:** The sales grow by 10% each month (multiplying by 1.1), so month 5 is 6,655 x 1.1 = Rs 7,320.50.
 **Answer:** **Rs 7,320.50** (rounded to the paisa; about Rs 7,321)
@@ -482,7 +482,7 @@
 **Explain simply:**
 - This is a geometric progression (GP): each term is the previous one times a fixed ratio.
 - The differences also grow by 10% (500, 550, 605), which is a hint.
-**Likely follow-ups:** Month 6? 7,320.5 x 1.1 = Rs 8,052.55. If the growth were a fixed Rs 500 each month? That would be an AP: month 5 = Rs 7,000 (but the data shows 550 and 605, so no).
+**Likely follow-ups:** Month 6? 7,320.5 x 1.1 = Rs 8,052.55. If every month added a fixed Rs 500 instead (5,000, 5,500, 6,000, 6,500)? That would be an AP and month 5 would be Rs 7,000, but the given data adds 500, 550, 605, so it is not an AP.
 **Common mistakes / traps:** Adding the latest difference (605 + 55 = 660 gives 7,315) or adding Rs 600, instead of using the ratio. 7,315 is the trap.
 
 ### Q31 ⭐⭐ 🟢 Find the 25th term of the series 4, 7, 10, 13, ...
@@ -798,7 +798,7 @@
 **Common mistakes / traps:** Counting only prime factors (3) or forgetting the +1 for the power 0 (2 x 2 x 1 = 4).
 
 ### Q48 ⭐⭐ 🟡 A two-digit number is 4 times the sum of its digits, and when its digits are reversed the number increases by 27. Find the number.
-**Asked at:** commonly asked (no company-specific report found); digit puzzles are standard service-company aptitude material (prep-site claim, unverified).
+**Asked at:** commonly asked (no company-specific report found); digit puzzles are a gap-fill from standard practice, not tied to a source.
 **What the interviewer is checking:** Can you turn a word puzzle into two simple equations using place value.
 **Say this in the interview:** "Write the number as 10a + b. The two conditions give b = 2a and b - a = 3, so a = 3, b = 6, and the number is 36."
 **Answer:** **36**
@@ -816,7 +816,7 @@
 **Common mistakes / traps:** Answering 63, the reversed number (check: 4 x 9 = 36, not 63). Also forgetting that "increases" means the units digit is the larger one.
 
 ### Q49 ⭐⭐ 🟡 A number leaves a remainder of 29 when divided by 56. What is the remainder when the same number is divided by 8?
-**Asked at:** commonly asked (no company-specific report found); remainder questions are in every prep-site syllabus (unverified).
+**Asked at:** commonly asked (no company-specific report found); FACE Prep's remainders guide (prep site, unverified) covers remainder rules.
 **What the interviewer is checking:** Whether you know that a remainder carries over to a divisor that is a factor of the original one.
 **Say this in the interview:** "56 is a multiple of 8, so the number is 56k + 29, and 56k is clean for 8. The remainder is just 29 divided by 8, which leaves 5."
 **Answer:** **5**
@@ -843,7 +843,7 @@
 2. Alternate signs: +6 - 5 + 4 - 3 + 2 - 1.
 3. Add up: 6 - 5 = 1; 1 + 4 = 5; 5 - 3 = 2; 2 + 2 = 4; 4 - 1 = 3.
 4. The result 3 is between 0 and 10, so it is the remainder.
-**Fast method (30 seconds):** The alternating sum above is the whole method. If the sum is negative, add 11 until it is between 0 and 10.
+**Fast method (30 seconds):** The alternating sum above is the whole method. If the sum is negative, add 11 until it is between 0 and 10; if it is 11 or more, subtract 11.
 **Check:** 11 x 11,223 = 123,453, and 123,456 - 123,453 = 3. Verified by script.
 **Explain simply:**
 - Powers of 10 leave remainder 1, then -1, then 1, -1 when divided by 11, which is why signs alternate.
@@ -1077,6 +1077,7 @@
 | 2 | 3 | 13 |
 | 3 | 4 | 25 |
 | 5 | 6 | ? |
+
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Testing a rule against every row, not just the first.
 **Say this in the interview:** "C is A squared plus B squared. 4 + 9 = 13, 9 + 16 = 25, so 25 + 36 = 61."
@@ -1085,7 +1086,7 @@
 1. Row 1: 2 and 3 give 13. Try 2^2 + 3^2 = 4 + 9 = 13. Fits.
 2. Row 2: 3^2 + 4^2 = 9 + 16 = 25. Fits.
 3. Row 3: 5^2 + 6^2 = 25 + 36 = 61.
-**Check:** The rule fits both complete rows; the alternative A x B + A + B (11, 19) does not, so only the squares rule works. Verified by script.
+**Check:** The rule fits both complete rows (13 and 25), and 61 also comes from the equivalent form 2 x A x B + 1, so the answer is the same either way. A rule like A x B + A + B (gives 11 and 19) fails. Assumption: each row uses only its own columns; a rule based on the row number (13, 25, 37) would give a different answer, but that is not the intended reading. Verified by script.
 **Explain simply:**
 - In grid puzzles, look for a rule combining the first two columns; test one idea on all known rows before trusting it.
 **Likely follow-ups:** If the row were 4, 7, ? Then 16 + 49 = 65.
@@ -1109,7 +1110,7 @@
 **Common mistakes / traps:** Trying to compute 3^50 directly, or answering 3.
 
 ### Q66 ⭐ 🟡 What is the smallest 3-digit number that leaves a remainder of 3 when divided by 4, 5 and 6?
-**Asked at:** commonly asked (no company-specific report found); LCM-with-same-remainder is a stock prep-site pattern (unverified).
+**Asked at:** commonly asked (no company-specific report found); this is a gap-fill of the standard LCM-plus-remainder pattern, not tied to a source.
 **What the interviewer is checking:** Same remainder rule: LCM times k plus the remainder.
 **Say this in the interview:** "LCM of 4, 5, 6 is 60. Numbers are 60k + 3. 63 is two digits, so the next is 123."
 **Answer:** **123**

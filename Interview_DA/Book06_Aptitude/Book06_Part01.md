@@ -1,6 +1,7 @@
 # Book 6 — Aptitude & Business Maths | Part 1: Percentages, Profit & Loss, Discounts 🟢🟡🔴
 
 **Target:** 70 questions | **Actual:** 82 questions
+**Method note:** Every answer was re-solved independently in review code (exact fractions or enumeration) and the follow-up figures were rechecked. The '30 seconds' labels are rule-of-thumb practice targets, not an official time limit. 'Asked at' lines only record what the research notes support; prep-site claims are unverified.
 **Scope:** percentages and percentage change, profit and loss, markup and margin, discounts (single, successive, buy-get-free), GST, false-weight traps, and HR/sales word problems in aptitude-test style.
 
 ### Q1 ⭐⭐⭐ 🟢 How do you calculate percentage increase and percentage decrease between two numbers, and which value goes in the denominator?
@@ -30,7 +31,7 @@
 **Explain simply:**
 - "Per cent" means per hundred, so 15% = 15/100 = 0.15.
 - 0.15 x 840 = 126.
-**Likely follow-ups:** 1) *What is 15% of 1,240?* 124 + 62 = Rs 186. 2) *What is 840 as a percent of 126?* 126/840 = 15%.
+**Likely follow-ups:** 1) *What is 15% of 1,240?* 124 + 62 = Rs 186. 2) *What percent of 840 is 126?* 126/840 = 15%.
 **Common mistakes / traps:** Writing 15 x 840 and forgetting to divide by 100 (gives 12,600).
 
 ### Q3 ⭐⭐⭐ 🟢 A company's headcount rises from 250 to 300. What is the percentage increase?
@@ -58,7 +59,7 @@
 **Explain simply:**
 - Profit % = profit / CP x 100; Loss % = loss / CP x 100. The cost price is what the seller started with, so it is the base for how well or badly the seller did.
 - Discount % = discount / MP x 100, because the discount is a cut from the printed (marked) price.
-- Worked example: CP Rs 200, MP Rs 300, SP Rs 240. Profit = 40, so 40/200 = 20% profit. Discount = 60, so 60/300 = 20% discount. Same 20%, different bases.
+- Worked example (SP = selling price, what the customer pays): CP Rs 200, MP Rs 300, SP Rs 240. Profit = 40, so 40/200 = 20% profit. Discount = 60, so 60/300 = 20% discount. Same 20%, different bases.
 **Likely follow-ups:** 1) *What if the question says "profit on selling price"?* Then divide by SP (that is margin, see Q25). 2) *Is a discount on CP ever used?* Only if the question states it.
 **Common mistakes / traps:** Calculating discount on cost price, or profit on selling price, because the SP is the number in front of you.
 
@@ -159,6 +160,7 @@
 1. Difference in rates = 12% - 10% = 2 percentage points.
 2. Relative change = 2 / 10 x 100 = 20% (the base is the old rate, 10%).
 **Check:** With 500 staff: 50 leavers become 60; 10 more on 50 is +20%, and 12 - 10 = 2 points.
+**Fast method (30 seconds):** Points: just subtract (12 - 10 = 2). Percent change: (12 - 10) / 10 = 1/5 = 20%.
 **Explain simply:**
 - A "percentage point" is the plain subtraction of two percentages. A "percent change" compares that gap with the old percentage.
 - Example: with 500 employees, 10% attrition is 50 leavers and 12% is 60 leavers. Leavers rose by 10 out of 50, which is 20%.
@@ -442,7 +444,7 @@
 **Explain simply:**
 - Profit % is on total cost unless told otherwise.
 - Never average the two percentages; add the money first.
-**Likely follow-ups:** 1) *If only 5 are sold at 70 and the rest unsold?* Revenue 350 against Rs 500 cost is a 30% loss on paper. 2) *Profit if all 10 sold at 45?* 450 - 500 = -50, a 10% loss.
+**Likely follow-ups:** 1) *If only 5 are sold at 70 and the rest unsold?* Unsold stock is not a loss yet. The 5 sold cost 250 and brought in 350, a 40% profit on them; against the full Rs 500 outlay, cash received is still 30% short. 2) *Profit if all 10 sold at 45?* 450 - 500 = -50, a 10% loss.
 **Common mistakes / traps:** Averaging 40% gain and -10% loss for the two groups.
 
 ### Q29 ⭐⭐ 🟢 A laptop costs Rs 50,000 before tax and GST of 18% is added. What is the final bill amount?
@@ -591,7 +593,7 @@
 **Check:** 12% of 250 = 30; 40% of 30 = 12; 30 - 12 = 18.
 **Explain simply:**
 - The second percentage is on absentees (30), not on all 250 employees.
-- Find what remains by using the complement (60%).
+- Find what remains by using the complement, meaning the rest: 100% - 40% = 60%.
 **Likely follow-ups:** 1) *Absentee rate without approval, as % of all staff?* 18/250 = 7.2%. 2) *If 20% had approved leave?* 24 without approval.
 **Common mistakes / traps:** Taking 40% of 250 (100).
 
@@ -694,7 +696,7 @@
 4. After 30% off: 72 x 0.70 = 50.4.
 5. Total discount = 100 - 50.4 = 49.6, so 49.6%.
 **Fast method (30 seconds):** Multiply the 'what you pay' factors (0.9 x 0.8 x 0.7 = 0.504) and subtract from 1. It works because every discount shrinks the already-reduced price, not the original.
-**Check:** Reverse: 50.4% of any price, then 49.6% off the original gets the same figure; exact fraction 62/125 = 0.496.
+**Check:** Paying 50.4% of the price means a 49.6% saving; exact fraction 62/125 = 0.496.
 **Explain simply:**
 - A successive discount means each new discount is applied to the price left after the previous one.
 - So the discounts do not add up; adding 10+20+30 = 60% overstates the saving.
@@ -864,7 +866,7 @@
 **Likely follow-ups:**
 - Increased 10%, reduced 20%, result 880? Net 0.88, so 1000.
 - Why not 540 + 10%? That is 594, and that is wrong because the net change is on the original.
-**Common mistakes / traps:** Adding 540 x 1.05 or assuming a net of -5%.
+**Common mistakes / traps:** Adding back 10% (540 x 1.1 = 594) or assuming the net change is -5%.
 
 ### Q52 ⭐⭐ 🟡 The length of a rectangle is increased by 20% and its breadth is decreased by 10%. What is the percentage change in its area?
 **Asked at:** commonly asked (no company-specific report found); percentages and profit-loss are listed as high-frequency quant topics at TCS/Infosys/Wipro/Accenture-type gates in prep blogs (unverified).
@@ -1020,7 +1022,7 @@
 - 'Failed both' is the complement of 'passed at least one'.
 **Likely follow-ups:**
 - How many passed only one subject? 15 + 10 = 25%.
-- If 40% failed both, what passed both? 70 + 65 - 60 = 75%.
+- If 40% failed both? Impossible here: at least 70% passed Maths, so at most 30% can fail both. (With 30% failing both, the overlap is 70 + 65 - 70 = 65%.)
 **Common mistakes / traps:** Forgetting to subtract the overlap (70 + 65 = 135 is over 100%), or answering 30% (100 - 70).
 
 ### Q60 ⭐⭐ 🟡 Section A has 40 students with an 80% pass rate and Section B has 60 students with a 70% pass rate. What is the overall pass percentage?
@@ -1176,7 +1178,7 @@
 - Discount is always a percentage of the marked price (the printed price tag), not of cost.
 - Choosing cost = 100 makes the percentages easy to read as rupees.
 **Likely follow-ups:**
-- For a 8% profit instead? SP 108, discount 12/120 = 10%.
+- For an 8% profit instead? SP 108, discount 12/120 = 10%.
 - Break-even discount? 20/120 = 16.67%.
 **Common mistakes / traps:** Dividing the 24 by cost (24%) instead of the marked price.
 
@@ -1456,7 +1458,7 @@
 **Likely follow-ups:**
 - Only the weight trick? 25%.
 - If the weight was 900 g? 1.1111 x 1.1111 = 1.2346, so 23.46%.
-**Common mistakes / traps:** Dividing by Rs 36 (11.11% + 25% = 36.11%) or using 20% in place of 25% for the weight gain.
+**Common mistakes / traps:** Adding the two gains (11.11% + 25% = 36.11%) instead of multiplying, or using 20% in place of 25% for the weight gain.
 
 ### Q82 ⭐ 🔴 The price of a product is first increased by x% and then decreased by x%, resulting in a net 4% decrease from the original. Find x.
 **Asked at:** commonly asked (no company-specific report found); prep sites list percentages and profit-loss at TCS, Infosys, Wipro and Accenture-type gates (unverified)
