@@ -18,8 +18,11 @@
 import pandas as pd
 
 employees = pd.DataFrame({
+    "emp_id": [1, 2, 3, 4, 5, 6, 7],
     "name": ["Asha", "Ravi", "Meena", "Karan", "Divya", "Imran", "Sana"],
     "department": ["HR", "HR", "Finance", "Finance", "Finance", "IT", "IT"],
+    "dept_id": [10, 10, 20, 20, 20, 30, 40],
+    "gender": ["F", "M", "F", "M", "F", "M", "F"],
     "salary": [50000, 60000, 70000, 80000, 90000, 65000, None],
 })
 ```

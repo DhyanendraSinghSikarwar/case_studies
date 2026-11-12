@@ -47,7 +47,7 @@
 ### Q4 ⭐⭐⭐ 🟢 Walk me through a Python or pandas project you built from start to finish.
 **Asked at:** commonly asked (no company-specific report found); Python project-based questions are reported for some analytics firms (Tiger Analytics Glassdoor snippet, contents not read, unverified).
 **What the interviewer is checking:** Can you tell a clear story: question, data, cleaning, analysis, result, action?
-**Say this in the interview:** "I wanted to know which department loses most people. I loaded the employee file, cleaned blanks and duplicates, turned the Yes/No leaver column into 1 and 0, grouped by department, and found Sales had the highest attrition. I then checked it against Excel and wrote two recommendations." Use YOUR real project; the steps below are the structure, not a story to claim. Small project ideas if you have none yet: attrition by department, absence patterns by weekday, hiring funnel conversion, salary gap by gender and grade.
+**Say this in the interview:** "I wanted to know which department has the highest attrition, meaning the share of staff who leave. I loaded the employee file, cleaned blanks and duplicates, turned the Yes/No leaver column into 1 and 0, grouped by department, and found Sales had the highest attrition. I then checked it against Excel and wrote two recommendations." Use YOUR real project; the steps below are the structure, not a story to claim. Small project ideas if you have none yet: attrition by department, absence patterns by weekday, hiring funnel conversion, salary gap by gender and grade.
 **Explain simply:**
 - Structure: **Question, Data, Cleaning, Analysis, Result, What changed or what you would do next.**
 - Mention one problem you hit and how you fixed it; interviewers trust that.
@@ -267,7 +267,7 @@ Name: count, dtype: int64
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Practical comfort: can you get a working workspace without help?
 **Say this in the interview:** "Install Python from python.org, create a virtual environment (a private folder of libraries for one project), install pandas and JupyterLab with pip, and start Jupyter. If I do not want any installation, I use Google Colab in the browser."
-**Explain simply:** Commands you type in a terminal (Command Prompt or PowerShell on Windows). I confirmed `python -m venv` creates an environment on a machine here; the `pip install` and `jupyter lab` steps were not run here (from memory, unverified).
+**Explain simply:** Commands you type in a terminal (Command Prompt or PowerShell on Windows). These steps are from memory, unverified; check the current instructions on python.org and jupyter.org.
 ```
 python -m venv hr-env
 hr-env\Scripts\activate            (Windows)
@@ -290,7 +290,7 @@ jupyter lab
 **Say this in the interview:** "Python helps when data is big, comes from many files, or the work repeats every month. Examples: combining 12 monthly attendance files, cleaning messy text, tenure-band attrition across years, and re-running the whole analysis with one click next month. Excel is still fine for small one-off tables."
 **Explain simply:**
 - **Many files:** loop over 12 monthly files and stack them into one table.
-- **Large data:** Excel slows down near about a million rows; pandas handles bigger tables more comfortably.
+- **Large data:** Excel stops at about 1 million rows per sheet (1,048,576) and slows down well before that; pandas handles bigger tables more comfortably.
 - **Repeatable:** the script is a saved recipe; Excel manual steps are easy to get wrong or forget.
 - **Messy text and dates:** one cleaning rule applied to every row.
 - **Deeper analysis:** statistics, forecasting and charts of any kind (see Book 5).
@@ -385,7 +385,7 @@ Name: bonus_amount, dtype: float64
 **Common mistakes:** Writing loops over rows where one column formula works; not checking row counts after a merge.
 
 ### Q14 ⭐⭐ 🟢 How much Python do you really need for a data analyst role, and where do you stop and leave the rest to data scientists?
-**Asked at:** commonly asked (no company-specific report found). Internal research (research/market_skills_2026.md) found Python in about 32% of sampled analyst job descriptions pooled; see that file for the sample.
+**Asked at:** commonly asked (no company-specific report found). Internal research (research/market_skills_2026.md) found Python in 14 of 40 sampled job descriptions (35%, mostly 0-2 year roles), so it is common but not universal.
 **What the interviewer is checking:** Realistic scope: you know the analyst toolkit and you do not pretend to be a data scientist.
 **Say this in the interview:** "For analyst work I need pandas for cleaning, joining and summarising, basic charts, reading and writing Excel and CSV, and enough Python to write small functions and loops. Machine learning model building, deep learning and production code belong to data scientists and engineers; I understand what they do but I do not claim it."
 **Explain simply:** A self-check, "job-ready" list. You are ready when you can do these without searching, on a new dataset, in a timed hour:
@@ -494,7 +494,7 @@ print(employees[employees["department"] == "Sales"]["salary"].sum())
 **Common mistakes:** Checking only that no error appeared; forgetting that blanks are skipped; comparing two numbers that came from the same flawed step.
 
 ### Q18 ⭐⭐ 🟡 How would you prepare for a live Python coding round in two weeks?
-**Asked at:** commonly asked (no company-specific report found). Company reports in research/interview_processes.md describe Python in the technical rounds of several service and analytics firms (for example Accenture, Tiger Analytics, Amazon BA, HSBC) as basic Python and pandas, single-anecdote level.
+**Asked at:** commonly asked (no company-specific report found). Candidate reports in research/interview_processes.md mention Python in the technical rounds of Infosys, Tiger Analytics, HSBC and JPMorgan (Hyderabad) at a basic level (lists, strings, duplicates, pandas); each rests on one or a few anecdotes.
 **What the interviewer is checking:** Realistic planning and knowing what live rounds actually test.
 **Say this in the interview:** "In two weeks I would not learn new topics; I would drill the ones that appear most: filtering, groupby, merge, missing values, duplicates and string/date cleaning in pandas, plus basic loops, lists and dictionaries. Every day I would solve problems while typing code live, then explain it aloud."
 **Explain simply:** (a template; adjust to your hours, roughly 1.5 to 2 hours a day)
@@ -575,7 +575,7 @@ Payroll after merge: 215000
 Payroll after fix: 155000
 ```
 **What it means:** The merge counted Ravi's 60,000 twice (155,000 + 60,000 = 215,000). After reducing the training table to one row per employee, payroll is correct again.
-**Likely follow-ups:** 1) *How do you prevent it?* Check keys are unique, or merge with `validate="one_to_many"` style checks (from memory, check docs). 2) *Did anyone act on the wrong number?* Answer truthfully; caught before sharing is the best story.
+**Likely follow-ups:** 1) *How do you prevent it?* Check keys are unique, or add `validate="one_to_one"` to the merge, which raises an error if a key repeats on either side (I ran this on pandas 3.0.5; for the example above, `one_to_many` is the correct setting for the employee-to-training merge). 2) *Did anyone act on the wrong number?* Answer truthfully; caught before sharing is the best story.
 **Common mistakes:** Saying "I never make mistakes"; blaming the data without proof; telling a bug story with no lesson.
 
 ### Q21 ⭐⭐ 🟡 What is your plan to improve your Python over the next three months?

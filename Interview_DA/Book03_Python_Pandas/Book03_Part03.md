@@ -11,7 +11,7 @@
 - **Library:** a ready-made toolbox of code you import (`import numpy as np`).
 - **Array (ndarray):** a fixed-type list of numbers, 1D (a row) or 2D (a table of rows and columns).
 - **Why analysts use it:** it is much faster than plain Python loops, uses less memory, and has built-in sum, mean, min, max and filters.
-- **Why you still care when you use pandas:** every pandas column is NumPy underneath, so its rules (data types, NaN, axis) carry over.
+- **Why you still care when you use pandas:** number columns in pandas are stored as NumPy arrays, so its rules (data types, NaN, axis) carry over.
 **What it means:** think of it as Excel-style whole-column maths, but for millions of rows in code.
 **Likely follow-ups:**
 - *Why not just use lists?* Lists are slow for maths and have no vector operations (see Q2).
@@ -19,7 +19,7 @@
 **Common mistakes:** saying NumPy is "for machine learning only", or forgetting the usual alias `np`.
 
 ### Q2 ⭐⭐⭐ 🟢 What is the difference between a Python list and a NumPy array?
-**Asked at:** commonly asked (no company-specific report found); it is the first question in most NumPy lists.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you know arrays hold one type and do maths element by element.
 **Say this in the interview:** "A list can mix types and `*` repeats it. A NumPy array holds one type and `*` multiplies every value. Arrays are faster and use less memory."
 **Explain simply:**
@@ -85,7 +85,7 @@ int64
 ```
 **What it means:** the first array has 4 values in one dimension; the second has 2 rows and 2 columns, 4 values in all.
 **Likely follow-ups:**
-- *What dtype if the list has 1, 2.5, 3?* `float64`, because NumPy upgrades to fit the decimal (checked).
+- *What dtype if the list has 1, 2.5, 3?* `float64`, because NumPy upgrades to fit the decimal.
 - *How many dimensions?* `.ndim`.
 **Common mistakes:** writing `salaries.shape()` with brackets (error); confusing `size` with `len` on 2D arrays (`len` gives rows only). The dtype `int64` is the default on Linux/Mac; on some Windows setups older NumPy gave `int32` (from memory, unverified).
 
@@ -224,7 +224,7 @@ print(new_salaries)
 **Likely follow-ups:**
 - *Whole rupees only?* `np.round(new_salaries)` or `.astype(int)` (Q14).
 - *Hike only for salaries under 40,000?* `np.where(salaries < 40000, salaries * 1.10, salaries)`.
-**Common mistakes:** multiplying by 0.10 (that gives only the hike amount); adding 10 instead of 10%; tiny float noise like 49500.00000000001 appears if you print with more precision (checked), so round for reports.
+**Common mistakes:** multiplying by 0.10 (that gives only the hike amount); adding 10 instead of 10%; tiny float noise (the second salary is stored as 49500.00000000001) shows up if you print with more precision, so round for reports.
 
 ### Q8 ⭐⭐⭐ 🟡 What does the axis parameter mean in NumPy, and what is the difference between axis=0 and axis=1?
 **Asked at:** commonly asked (no company-specific report found); axis is a named topic in Adaface and other lists (snippet).
@@ -266,9 +266,9 @@ print(hours.sum(axis=1))
 **Say this in the interview:** "Vectorization means one operation on the whole array. The loop runs inside NumPy's compiled C code on same-type data, instead of Python handling each value one by one."
 **Explain simply:**
 - **Vectorization:** writing `array * 1.10` instead of a `for` loop.
-- **Why faster:** (1) the loop runs in compiled C, not interpreted Python; (2) values sit side by side in memory with one type, so there is no per-item type checking.
+- **Why faster:** (1) the loop runs inside NumPy in compiled C code (code already translated to machine instructions), not in interpreted Python, which reads one line at a time; (2) values sit side by side in memory with one type, so there is no per-item type checking.
 - **Also shorter and clearer**, which matters for readable analysis.
-- In a quick check here on 1 million values, the loop took about 47 ms and the vectorised line about 1 ms (about 40 times faster; machine-dependent).
+- Timed on 1 million values on pandas 3.0.5 / NumPy 2.5.3: looping over the NumPy array took about 1.6 seconds, looping over a plain list about 50 ms, and the vectorised line about 1 ms. Exact times depend on the machine; the order does not.
 **Sample data:** `[30000, 45000, 60000, 52000]`
 **Code (what you write in the interview):**
 ```python
@@ -358,7 +358,7 @@ print(monthly.reshape(4, -1).shape)
 ```
 **What it means:** 12 values fit in 3 rows of 4, or 4 rows of 3 when -1 is used.
 **Likely follow-ups:**
-- *What if sizes do not match?* `ValueError: cannot reshape array of size 12 into shape (5,3)` (checked).
+- *What if sizes do not match?* `ValueError: cannot reshape array of size 12 into shape (5,3)`.
 - *Does it copy?* Usually it returns a view of the same data.
 **Common mistakes:** choosing a shape that does not multiply to the size; using -1 more than once.
 
@@ -389,7 +389,7 @@ print(more_than_five.mean())
 0.5714285714285714
 ```
 **What it means:** 4 of 7 employees (about 57%) have more than 5 years; the one with exactly 5 is not counted.
-**Alternative:** `np.count_nonzero(experience_years > 5)` gives the same 4 (checked).
+**Alternative:** `np.count_nonzero(experience_years > 5)` gives the same 4.
 **Likely follow-ups:**
 - *Count with two conditions?* Combine with `&` first (Q23).
 - *How to see who they are?* `experience_years[experience_years > 5]`.
@@ -408,7 +408,6 @@ print(more_than_five.mean())
 **Sample data:** salaries 30000, 45000, 60000 in a DataFrame.
 **Code (what you write in the interview):**
 ```python
-import numpy as np
 import pandas as pd
 
 employees = pd.DataFrame({"salary": [30000, 45000, 60000]})
@@ -425,7 +424,7 @@ print(type(salary_array))
 ```
 **What it means:** the pandas column converts straight to a NumPy array.
 **Likely follow-ups:**
-- *Is pandas always NumPy underneath?* Mostly for numbers; newer pandas can also use other storage (for example Arrow) for some types, from memory, unverified.
+- *Is pandas always NumPy underneath?* For number columns, yes. Text is different: in pandas 3.0.5 a text column has the `str` dtype, which is not a NumPy array (it uses Arrow storage when the pyarrow package is installed, from memory, unverified). Also in pandas 3, `to_numpy()` on a column can return a read-only array (checked on 3.0.5), so call `.copy()` if you need to edit it.
 - *Why not only NumPy?* No labels, no mixed types, awkward for missing data and grouping.
 **Common mistakes:** saying pandas replaces NumPy; forgetting that both must be imported separately.
 
@@ -457,7 +456,7 @@ print(np.round(salaries).astype(int))
 ```
 **What it means:** plain `astype(int)` lost the .75 and .99 instead of rounding; the second line rounded properly.
 **Likely follow-ups:**
-- *What about text?* `np.array(["30000", "45000"]).astype(int)` gives `[30000 45000]` (checked); text that is not a number raises an error.
+- *What about text?* `np.array(["30000", "45000"]).astype(int)` gives `[30000 45000]`; text that is not a number raises an error.
 - *Does it change the original?* No, assign the result to keep it.
 **Common mistakes:** assuming `astype` rounds; not assigning the result; the .5 case rounds to the nearest even number (45000.5 became 45000), so tell the interviewer if exact rounding matters.
 
@@ -486,14 +485,14 @@ print(headcount)
 [3 2 1]
 ```
 **What it means:** HR has 3 employees, IT 2, Sales 1; the two arrays line up by position.
-**Alternative:** `np.unique(array)` alone just removes duplicates (checked: `[3,1,3,2,1]` becomes `[1 2 3]`). In pandas, `pd.Series(departments).value_counts()` does the same.
+**Alternative:** `np.unique(array)` alone just removes duplicates (for example `[3,1,3,2,1]` becomes `[1 2 3]`). In pandas, `pd.Series(departments).value_counts()` does the same.
 **Likely follow-ups:**
 - *Remove duplicates but keep the original order?* `np.unique` sorts, so use pandas `drop_duplicates()` instead.
 - *Which department is the largest?* `department_names[headcount.argmax()]`.
 **Common mistakes:** expecting original order; forgetting that counts come back as a second value, so unpacking into one name gives a tuple.
 
 ### Q16 ⭐⭐ 🟢 How do you sort a NumPy array, and what does np.argsort return?
-**Asked at:** commonly asked (no company-specific report found); sorting appears in general NumPy question lists.
+**Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** That you know `np.sort` returns sorted values, while `np.argsort` returns positions, and you can use those positions to reorder a second array.
 **Say this in the interview:** "`np.sort` gives me the values in order. `np.argsort` gives me the index positions that would sort the array, so I can use them to sort another array, like names, in the same order."
 **Explain simply:**
@@ -568,7 +567,7 @@ print(difference_from_average)
  [ 10.  20.  30.]]
 ```
 **What it means:** Each number now shows how far that employee is above or below the average for that month. The middle employee sits exactly on the average.
-**Likely follow-ups:** 1) *What if I want row averages instead?* Use `mean(axis=1, keepdims=True)` so the shape is 3 by 1 and stretches across columns. Without `keepdims` the shapes do not line up correctly. 2) *When does broadcasting fail?* When sizes differ and neither is 1 (for example 3 columns against 4 values); NumPy raises a `ValueError`.
+**Likely follow-ups:** 1) *What if I want row averages instead?* Use `mean(axis=1, keepdims=True)` so the shape is 3 by 1 and stretches across columns. Without `keepdims` the shapes do not line up: a 2 by 3 table raises a `ValueError`, and a square 3 by 3 table gives no error but silently wrong numbers (checked). 2) *When does broadcasting fail?* When sizes differ and neither is 1 (for example 3 columns against 4 values); NumPy raises a `ValueError`.
 **Common mistakes:** Using the wrong axis for the averages; forgetting `keepdims=True` for row-wise operations.
 
 ### Q18 ⭐⭐ 🟡 How do you use np.where to create a label array, for example "Present" or "Absent", from an attendance-hours array?
@@ -637,7 +636,7 @@ print(column_totals)
 **Common mistakes:** Swapping axis 0 and 1; expecting the totals to keep the 2D shape (they come back as 1D).
 
 ### Q20 ⭐⭐ 🟡 How do you handle NaN (missing values) in a NumPy array: detect them, compute a mean ignoring them, and replace them?
-**Asked at:** commonly asked (no company-specific report found); NaN handling is a standard analyst task in NumPy prep lists.
+**Asked at:** commonly asked (no company-specific report found); a NaN comparison pitfall is covered in np.where tutorials (Algocademy, snippet only).
 **What the interviewer is checking:** That you know a normal `mean` returns NaN when one value is missing, and that you know the `nan`-safe tools.
 **Say this in the interview:** "I detect missing values with `np.isnan`, calculate with `np.nanmean` which skips them, and replace them with `np.where`. A plain `mean` would just return NaN."
 **Explain simply:**
@@ -708,7 +707,7 @@ print(salaries)
 [99999 50000 60000 70000]
 ```
 **What it means:** Editing the slice changed the original (first line). Editing the `.copy()` left it alone (the second print is unchanged).
-**Likely follow-ups:** 1) *How can I check?* `np.shares_memory(a, b)` or look at `b.base`. 2) *Is this the same in pandas?* Different rules; pandas 3 uses Copy-on-Write (from memory, unverified here), so do not assume NumPy behaviour carries over.
+**Likely follow-ups:** 1) *How can I check?* `np.shares_memory(a, b)` or look at `b.base`. 2) *Is this the same in pandas?* Different rules; pandas 3 uses Copy-on-Write (editing a column taken from a DataFrame does not change the DataFrame; checked on 3.0.5), so do not assume NumPy behaviour carries over.
 **Common mistakes:** Assuming a slice is a copy; calling `.copy()` everywhere "just in case" on huge arrays and wasting memory.
 
 ### Q22 ⭐⭐ 🟡 What do np.argmax and np.argmin return, and how would you find which employee has the highest salary?
@@ -742,7 +741,7 @@ print(lowest_position, names[lowest_position])
 1 Ravi
 ```
 **What it means:** Meena (position 2) has the highest salary and Ravi (position 1) the lowest.
-**Likely follow-ups:** 1) *What if there is a tie?* Only the first is returned; use `np.where(salaries == salaries.max())` to get all. 2) *What if there are NaNs?* `argmax` treats NaN as the largest; use `np.nanargmax`.
+**Likely follow-ups:** 1) *What if there is a tie?* Only the first is returned; use `np.where(salaries == salaries.max())` to get all. 2) *What if there are NaNs?* `argmax` returns the position of the first NaN (checked); use `np.nanargmax` to ignore it.
 **Common mistakes:** Reporting the position as if it were the salary; forgetting positions start at 0.
 
 ### Q23 ⭐⭐ 🟡 How do you combine multiple conditions on a NumPy array (and, or, not)? Why does the Python keyword and give an error?
@@ -752,7 +751,7 @@ print(lowest_position, names[lowest_position])
 **Explain simply:**
 - Python `and` / `or` ask "is this whole object True or False?". An array of many values cannot answer that, so you get `ValueError: The truth value of an array with more than one element is ambiguous`.
 - `&`, `|`, `~` work element by element, which is what we want.
-- Brackets are required because `&` binds tighter than `>` and `<`. Without brackets you get the same error.
+- Brackets are required because Python works out `&` before it works out `>` and `<`, so the condition gets scrambled. Without brackets you get the same `ValueError` (checked).
 - `~` flips every True to False and back.
 **Sample data:** salaries `[45000, 30000, 60000, 52000, 80000]`.
 **Code (what you write in the interview):**
@@ -961,7 +960,7 @@ print(sample_ids)
 **Say this in the interview:** "`np.nan` is a float placeholder that keeps arrays numeric and can be skipped with `nanmean`. `None` is a Python object that makes the array slow, general-purpose and breaks maths. `0` is a real number, so it drags averages down."
 **Explain simply:**
 - `np.nan`: "unknown number". The array stays `float64`; use `np.isnan` and the `nan` functions.
-- `None`: Python's "nothing". Putting it in an array turns the whole array into `object` type; `mean()` then fails with a `TypeError`.
+- `None`: Python's "nothing". Putting it in an array turns the whole array into `object` type (a slow, catch-all type where each value is a separate Python item); `mean()` then fails with a `TypeError`.
 - `0`: a real value (for example, zero hours worked). It is counted in averages, which is wrong if the value was simply not recorded.
 - `np.nan == np.nan` is `False`, so you cannot test for it with `==`.
 **Sample data:** salaries `[40000, ?, 60000]` where `?` is stored three different ways.
@@ -1021,12 +1020,12 @@ print(moving_average)
 [3.33333333 3.66666667 4.         6.33333333]
 ```
 **What it means:** Days 1 to 3 average 3.33, days 2 to 4 average 3.67, and so on. The jump to 6.33 shows hiring picking up at the end.
-**Alternative:** A plain loop that takes each 3-day slice and averages it, easier to explain line by line (gives the same four values, checked by running it):
+**Alternative:** A plain loop that takes each 3-day slice and averages it, easier to explain line by line (gives the same four values; it reuses `daily_hires` from above):
 ```python
 moving_average = []
 for start in range(len(daily_hires) - 2):
     three_days = daily_hires[start:start + 3]
     moving_average.append(three_days.mean())
 ```
-**Likely follow-ups:** 1) *Pandas version?* `pd.Series(daily_hires).rolling(3).mean()`, which returns NaN for the first two days instead of dropping them (from memory, not run here). 2) *Why is the output shorter?* The first two days do not have 3 days of history.
+**Likely follow-ups:** 1) *Pandas version?* `pd.Series(daily_hires).rolling(3).mean()`, which returns NaN for the first two days instead of dropping them (checked on pandas 3.0.5). 2) *Why is the output shorter?* The first two days do not have 3 days of history.
 **Common mistakes:** Forgetting `mode="valid"` (the edges then mix in zeros and look wrong); using a window that does not sum to 1 (the values would not be averages).
