@@ -4,157 +4,864 @@
 **Scope:** simple and compound interest (rate, time, principal, installments, CI vs SI), growth and depreciation, and business finance basics (ROI, break-even, margins, payback, NPV, EMI) as asked in aptitude gates.
 
 ### Q1 ⭐⭐⭐ 🟢 What is the formula for simple interest, and how do you find the amount after t years?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); simple interest is listed among core quant topics for TCS, Infosys, Wipro and Cognizant-style gates on prep sites (FACE Prep, PapersAdda), which is an unverified aggregator claim.
+**What the interviewer is checking:** whether you know the base formula cold and the difference between interest and amount.
+**Say this in the interview:** "Simple interest is SI = P x R x T / 100, where interest is always charged on the original principal. The amount is principal plus interest, A = P + SI = P(1 + RT/100)."
+**Answer:** **SI = P x R x T / 100; Amount A = P + SI = P(1 + RT/100)**
+**Explain simply:**
+- Principal (P) is the money lent or deposited at the start. Rate (R) is the percentage charged per year. Time (T) is in years.
+- "Simple" means the interest each year is the same, because it is always worked out on the original P, never on interest already earned.
+- Amount is what you get back in total: the principal plus the interest.
+- Mini-example: P = Rs 1,000, R = 5%, T = 2. SI = 1,000 x 5 x 2 / 100 = Rs 100. Amount = 1,000 + 100 = Rs 1,100. Check: 5% of 1,000 is 50 per year, 2 years gives 100. Verified.
+**Likely follow-ups:** (1) Rate or time given in months? Convert to years first (8 months = 8/12 year). (2) Find P from SI? P = SI x 100 / (R x T).
+**Common mistakes / traps:** Forgetting to divide by 100; giving the interest when the question asks for the amount (or vice versa); using months directly in T while R is per year.
 
 ### Q2 ⭐⭐⭐ 🟢 Find the simple interest on Rs 8,000 at 7.5% per annum for 4 years.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** direct use of the SI formula with a decimal rate.
+**Say this in the interview:** "7.5% of 8,000 is 600 a year, so over 4 years it is Rs 2,400."
+**Answer:** **Rs 2,400**
+**Step-by-step working:**
+1. SI = P x R x T / 100 = 8,000 x 7.5 x 4 / 100.
+2. 8,000 x 7.5 = 60,000; 60,000 x 4 = 2,40,000.
+3. 2,40,000 / 100 = 2,400.
+**Fast method (30 seconds):** 1% of 8,000 = 80, so 7.5% = 80 x 7.5 = 600 per year; 600 x 4 = 2,400. Works because simple interest is the same every year.
+**Check:** Reverse: 2,400 x 100 / (8,000 x 4) = 7.5%. Verified by script.
+**Explain simply:**
+- Find one year's interest, then multiply by the years; no compounding to worry about.
+**Likely follow-ups:** What is the amount? 8,000 + 2,400 = Rs 10,400. Same sum at 6 years? 600 x 6 = Rs 3,600.
+**Common mistakes / traps:** Treating 7.5 as 75 or 0.75; mixing up the decimal point (answer 24,000 or 240).
 
 ### Q3 ⭐⭐⭐ 🟢 Find the compound interest on Rs 10,000 at 10% per annum for 2 years, compounded annually.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); a near-identical template (CI on Rs 2,000 at 10% for 2 years) appears on Cognizant GenC prep pages (unverified).
+**What the interviewer is checking:** year-by-year compounding and the A minus P step.
+**Say this in the interview:** "Year 1 interest is 1,000, so the balance is 11,000; year 2 interest is 1,100. Total compound interest is Rs 2,100."
+**Answer:** **Rs 2,100**
+**Step-by-step working:**
+1. Year 1 interest = 10% of 10,000 = 1,000. Balance = 11,000.
+2. Year 2 interest = 10% of 11,000 = 1,100. Balance = 12,100.
+3. CI = final amount minus principal = 12,100 - 10,000 = 2,100.
+**Fast method (30 seconds):** Two 10% rises multiply by 1.1 x 1.1 = 1.21. So amount = 10,000 x 1.21 = 12,100; CI = 2,100.
+**Check:** Formula: 10,000 x (1.1)^2 - 10,000 = 2,100. Verified by script.
+**Explain simply:**
+- Compound interest means you earn interest on the interest too: each year's interest is added to the principal before the next year is worked out.
+- CI is the total interest only; the amount includes the principal.
+**Likely follow-ups:** What would simple interest give? 2,000, so CI is Rs 100 more. And for 3 years? 10,000 x 1.331 - 10,000 = Rs 3,310.
+**Common mistakes / traps:** Answering 12,100 (the amount) when CI is asked; computing 2 x 10% x 10,000 = 2,000 (that is simple interest).
 
 ### Q4 ⭐⭐⭐ 🟢 What is the formula for the amount under compound interest, and why does compound interest exceed simple interest after the first year?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); the formula A = P(1 + R/(100n))^(nT) is the standard form on prep sites (FACE Prep, TutorialsPoint).
+**What the interviewer is checking:** formula recall and conceptual understanding of "interest on interest".
+**Say this in the interview:** "A = P(1 + R/100)^n for yearly compounding. In year 1 both methods give the same interest; from year 2, compound interest also earns interest on last year's interest, so it is higher."
+**Answer:** **A = P(1 + R/100)^n for n years compounded annually; CI = A - P. In general A = P(1 + R/(100m))^(mn) when compounded m times a year.**
+**Explain simply:**
+- Each year the balance is multiplied by (1 + R/100). Doing that n times gives the power n.
+- In year 1 the base is the same P for both, so interest is equal. In year 2 compound interest is charged on P plus year 1 interest, simple interest still only on P.
+- Mini-example: Rs 1,000 at 10% for 2 years. Simple: 1,000 + 200 = 1,200. Compound: 1,000 x 1.21 = 1,210. The extra Rs 10 is 10% of the first year's Rs 100 interest.
+- Check: 1,000 x 1.1 = 1,100; 1,100 x 1.1 = 1,210. Verified.
+**Likely follow-ups:** Half-yearly compounding? Use rate R/2 and periods 2n. Does CI ever equal SI? Only for exactly 1 year (annual compounding).
+**Common mistakes / traps:** Writing (1 + R) instead of (1 + R/100); forgetting to subtract P to get CI; saying CI is bigger in year 1.
 
 ### Q5 ⭐⭐⭐ 🟢 At what rate of simple interest per annum will a sum of Rs 12,000 earn Rs 3,600 interest in 5 years?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** rearranging SI = PRT/100 to find the rate.
+**Say this in the interview:** "Interest per year is 3,600 / 5 = 720, and 720 out of 12,000 is 6%."
+**Answer:** **6% per annum**
+**Step-by-step working:**
+1. R = SI x 100 / (P x T) = 3,600 x 100 / (12,000 x 5).
+2. Numerator = 3,60,000; denominator = 60,000.
+3. R = 3,60,000 / 60,000 = 6.
+**Fast method (30 seconds):** 3,600 / 12,000 = 30% total over 5 years; 30 / 5 = 6% a year.
+**Check:** 12,000 x 6 x 5 / 100 = 3,600. Verified by script.
+**Explain simply:**
+- Total interest as a percentage of principal, divided by years, gives the yearly rate.
+**Likely follow-ups:** Same sum, Rs 4,800 in 4 years? 4,800/12,000 = 40%; 40/4 = 10%.
+**Common mistakes / traps:** Forgetting to divide by the 5 years (answering 30%).
 
 ### Q6 ⭐⭐⭐ 🟢 In how many years will Rs 5,000 amount to Rs 6,200 at 6% simple interest per annum?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** noticing that amount includes principal, so interest = amount minus principal.
+**Say this in the interview:** "Interest needed is 1,200. At 6% of 5,000 that is 300 a year, so 4 years."
+**Answer:** **4 years**
+**Step-by-step working:**
+1. Interest = 6,200 - 5,000 = 1,200.
+2. Interest per year = 5,000 x 6 / 100 = 300.
+3. T = 1,200 / 300 = 4.
+**Fast method (30 seconds):** 1,200 / 5,000 = 24% total; 24 / 6 = 4 years.
+**Check:** 5,000 x 6 x 4 / 100 = 1,200, and 5,000 + 1,200 = 6,200. Verified by script.
+**Explain simply:**
+- Always convert "amount" into "interest" first; the formula for time is T = SI x 100 / (P x R).
+**Likely follow-ups:** At 8% instead? 1,200 / 400 = 3 years.
+**Common mistakes / traps:** Using 6,200 as the interest (gives 20.67 years).
 
 ### Q7 ⭐⭐⭐ 🟢 What principal will earn Rs 5,625 simple interest in 5 years at 7.5% per annum?
-<!-- ANSWER_PENDING -->
+**Asked at:** this exact pattern (Rs 5,625 SI in 5 years at 7.5%) appears as a sample on Cognizant GenC prep pages (Placement Preparation, PrepInsta); company attribution is from a prep site and unverified.
+**What the interviewer is checking:** rearranging the formula for principal.
+**Say this in the interview:** "5 years at 7.5% is 37.5% of the principal, so P = 5,625 / 0.375 = Rs 15,000."
+**Answer:** **Rs 15,000**
+**Step-by-step working:**
+1. P = SI x 100 / (R x T) = 5,625 x 100 / (7.5 x 5).
+2. Numerator = 5,62,500; denominator = 37.5.
+3. P = 5,62,500 / 37.5 = 15,000.
+**Fast method (30 seconds):** Total rate = 7.5 x 5 = 37.5%, which is 3/8. So 3/8 of P = 5,625; one eighth = 1,875; P = 1,875 x 8 = 15,000.
+**Check:** 15,000 x 7.5 x 5 / 100 = 5,625. Verified by script.
+**Explain simply:**
+- Turning the total percentage into a fraction (37.5% = 3/8) makes the division easy.
+**Likely follow-ups:** Interest Rs 3,000 at 10% for 2 years? 20% total, so P = 15,000.
+**Common mistakes / traps:** Dividing by 7.5 only and forgetting the 5 years (gives 75,000 after scaling).
 
 ### Q8 ⭐⭐⭐ 🟢 A moneylender charges 2% per month simple interest. How much interest is due on Rs 25,000 after 6 months?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** whether you keep rate and time in the same unit (months).
+**Say this in the interview:** "2% a month on 25,000 is 500 a month; 6 months is Rs 3,000."
+**Answer:** **Rs 3,000**
+**Step-by-step working:**
+1. Rate is per month, time is in months, so no conversion needed.
+2. Monthly interest = 2% of 25,000 = 500.
+3. For 6 months: 500 x 6 = 3,000.
+**Fast method (30 seconds):** 2% x 6 = 12% of 25,000 = 3,000.
+**Check:** In yearly terms: 24% per year for half a year = 25,000 x 24 x 0.5 / 100 = 3,000. Verified by script.
+**Explain simply:**
+- The unit of the rate and the unit of time must match. 2% per month is 24% per year.
+**Likely follow-ups:** After 1 year? 24% of 25,000 = Rs 6,000.
+**Common mistakes / traps:** Treating 2% as a yearly rate (which gives only Rs 250 for 6 months); or converting 6 months to 0.5 year while keeping 2% as the rate.
 
 ### Q9 ⭐⭐⭐ 🟢 Find the simple interest on Rs 18,000 at 10% per annum for 8 months.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** converting months to a fraction of a year.
+**Say this in the interview:** "Yearly interest is 1,800; 8 months is 8/12 = 2/3 of a year, so Rs 1,200."
+**Answer:** **Rs 1,200**
+**Step-by-step working:**
+1. T = 8/12 = 2/3 year.
+2. SI = 18,000 x 10 x (2/3) / 100.
+3. 18,000 x 10 / 100 = 1,800 per year; 1,800 x 2/3 = 1,200.
+**Fast method (30 seconds):** 10% a year is 10/12 % a month; 18,000 / 100 = 180 per 1%; 180 x (10 x 8 / 12) = 180 x 6.67 = 1,200.
+**Check:** 1,200 x 12 / 8 = 1,800 a year, which is 10% of 18,000. Verified by script.
+**Explain simply:**
+- Rate is yearly, so time must be in years: months divided by 12.
+**Likely follow-ups:** 9 months? 1,800 x 0.75 = Rs 1,350.
+**Common mistakes / traps:** Using T = 8 (gives 14,400); dividing by 10 instead of 12.
 
 ### Q10 ⭐⭐⭐ 🟢 A sum of money becomes 4 times itself in 15 years at simple interest. What is the rate per annum?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); the "becomes n times" pattern is a standard SI question type (Careers360).
+**What the interviewer is checking:** amount = 4P means interest = 3P.
+**Say this in the interview:** "If it becomes 4 times, the interest is 3 times the principal, 300%. Over 15 years that is 20% a year."
+**Answer:** **20% per annum**
+**Step-by-step working:**
+1. Let principal = P. Amount = 4P, so interest = 4P - P = 3P.
+2. SI = P x R x T / 100, so 3P = P x R x 15 / 100.
+3. R = 3 x 100 / 15 = 20.
+**Fast method (30 seconds):** (n - 1) x 100 / T = 3 x 100 / 15 = 20.
+**Check:** Rs 100 earns 20 a year; 15 years gives 300; 100 + 300 = 400, which is 4 times. Verified by script.
+**Explain simply:**
+- The principal cancels out, so you can pretend it is Rs 100.
+**Likely follow-ups:** Becomes 3 times in 10 years? 2 x 100 / 10 = 20%.
+**Common mistakes / traps:** Using 4 instead of 3 (answer 26.67%).
 
 ### Q11 ⭐⭐⭐ 🟢 An employee takes a salary advance of Rs 50,000 at 12% simple interest per annum and repays it after 3 years. What is the total amount repaid?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); HR-flavoured version of the standard amount question.
+**What the interviewer is checking:** that "total repaid" means amount, principal plus interest.
+**Say this in the interview:** "Interest is 12% x 3 = 36% of 50,000 = 18,000, so total repaid is Rs 68,000."
+**Answer:** **Rs 68,000**
+**Step-by-step working:**
+1. SI = 50,000 x 12 x 3 / 100 = 18,000.
+2. Amount = 50,000 + 18,000 = 68,000.
+**Fast method (30 seconds):** Amount = P x (1 + 0.36) = 50,000 x 1.36 = 68,000.
+**Check:** 68,000 / 50,000 = 1.36. Verified by script.
+**Explain simply:**
+- Total repaid is the amount, not just the interest.
+**Likely follow-ups:** Monthly instalment if repaid equally over 36 months? 68,000 / 36 = about Rs 1,889.
+**Common mistakes / traps:** Stopping at 18,000.
 
 ### Q12 ⭐⭐⭐ 🟡 A sum of money doubles itself in 8 years at simple interest. In how many years will it become three times itself?
-<!-- ANSWER_PENDING -->
+**Asked at:** this "doubles in 8 years, when triple" pattern is listed on Wipro NLTH prep pages (FACE Prep, PapersAdda, Tutorialride); unverified prep-site claim.
+**What the interviewer is checking:** that simple interest per year is fixed, so growth is linear.
+**Say this in the interview:** "Doubling means it earned 1 times P in 8 years, so P per 8 years. Tripling needs 2 times P, so 16 years."
+**Answer:** **16 years**
+**Step-by-step working:**
+1. Doubling: interest = P in 8 years, so rate = 100 / 8 = 12.5% per year.
+2. Tripling: interest needed = 2P.
+3. T = 2P x 100 / (P x 12.5) = 16.
+**Fast method (30 seconds):** Each 8 years adds one P. For 2P of interest you need 2 x 8 = 16 years. (Rule: time for n times = (n - 1) x time for 2 times.)
+**Check:** 12.5% x 16 = 200%, so amount = P + 2P = 3P. Verified by script.
+**Explain simply:**
+- Simple interest is a straight line: the same extra amount every year.
+**Likely follow-ups:** Time to become 5 times? 4 x 8 = 32 years.
+**Common mistakes / traps:** Answering 12 years (thinking 8 x 3/2) or 24 years (8 x 3).
 
 ### Q13 ⭐⭐⭐ 🟡 What is the shortcut for the difference between compound interest and simple interest on a sum for 2 years, and what is the check for 3 years?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); "principal from CI-SI difference" is one of the five standard CI question types on prep sites (FACE Prep, TutorialsPoint).
+**What the interviewer is checking:** knowing the quick formulas instead of computing both interests in full.
+**Say this in the interview:** "For 2 years, CI minus SI = P x (R/100)^2. For 3 years it is P x (R/100)^2 x (3 + R/100)."
+**Answer:** **2 years: CI - SI = P(R/100)^2. 3 years: CI - SI = P(R/100)^2 (3 + R/100).**
+**Explain simply:**
+- Why 2 years: CI is P[(1+r)^2 - 1] = P(2r + r^2); SI is 2Pr. The difference is P r^2, where r = R/100. It is "interest on the first year's interest".
+- Why 3 years: (1+r)^3 - 1 - 3r = 3r^2 + r^3 = r^2(3 + r).
+- Mini-example (Rs 10,000 at 10%): 2 years: 10,000 x 0.01 = 100 (CI 2,100 minus SI 2,000). 3 years: 10,000 x 0.01 x 3.1 = 310 (CI 3,310 minus SI 3,000). Check: both agree with direct calculation. Verified by script.
+**Likely follow-ups:** Difference on Rs 5,000 at 20% for 2 years? 5,000 x 0.04 = Rs 200.
+**Common mistakes / traps:** Using the 2-year formula for 3 years; using R instead of R/100.
 
 ### Q14 ⭐⭐⭐ 🟡 The difference between compound interest and simple interest on a sum for 2 years at 8% per annum is Rs 96. Find the sum.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); a standard "find the principal from CI - SI" item.
+**What the interviewer is checking:** using the 2-year difference shortcut in reverse.
+**Say this in the interview:** "Difference = P x (8/100)^2 = P x 0.0064. So P = 96 / 0.0064 = Rs 15,000."
+**Answer:** **Rs 15,000**
+**Step-by-step working:**
+1. CI - SI (2 years) = P x (R/100)^2 = P x (8/100)^2 = P x 64/10,000.
+2. P x 64/10,000 = 96.
+3. P = 96 x 10,000 / 64 = 15,000.
+**Fast method (30 seconds):** 96 / 64 = 1.5; 1.5 x 10,000 = 15,000.
+**Check:** SI = 15,000 x 8 x 2 / 100 = 2,400. CI = 15,000 x 1.1664 - 15,000 = 2,496. Difference = 96. Verified by script.
+**Explain simply:**
+- The difference is just the interest on the first year's interest: first year interest 1,200, and 8% of 1,200 = 96.
+**Likely follow-ups:** Difference Rs 150 at 10% for 2 years? P = 150 / 0.01 = Rs 15,000.
+**Common mistakes / traps:** Using 8 instead of 0.08 (P = 1.5).
 
 ### Q15 ⭐⭐⭐ 🟡 Find the compound interest on Rs 16,000 at 10% per annum for 1 year, compounded half-yearly.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); the half-yearly CI template appears on FACE Prep guides (unverified prep-site claim).
+**What the interviewer is checking:** halving the rate and doubling the periods.
+**Say this in the interview:** "Half-yearly means 5% for each of 2 periods. 16,000 x 1.05 x 1.05 = 17,640, so CI is Rs 1,640."
+**Answer:** **Rs 1,640**
+**Step-by-step working:**
+1. Rate per half-year = 10 / 2 = 5%. Number of periods = 1 x 2 = 2.
+2. After 6 months: 16,000 + 5% of 16,000 (800) = 16,800.
+3. After 12 months: 16,800 + 5% of 16,800 (840) = 17,640.
+4. CI = 17,640 - 16,000 = 1,640.
+**Fast method (30 seconds):** 5% then 5% on a growing amount: 5 + 5 + (5 x 5 / 100) = 10.25%. 10.25% of 16,000 = 1,640.
+**Check:** 16,000 x (1.05)^2 = 17,640. Verified by script.
+**Explain simply:**
+- "Compounded half-yearly" means interest is added to the balance every 6 months, so you earn interest on interest within the year.
+- Annual compounding would give only 1,600; the extra 40 comes from the early interest.
+**Likely follow-ups:** Quarterly? 2.5% for 4 periods: 16,000 x 1.025^4 = 17,661.0 (CI about Rs 1,661).
+**Common mistakes / traps:** Using 10% for 2 periods (gives 3,360) or answering 1,600.
 
 ### Q16 ⭐⭐⭐ 🟡 At simple interest, a sum earns interest equal to 9/25 of the principal in 3 years. Find the rate per annum.
-<!-- ANSWER_PENDING -->
+**Asked at:** a "rate from a fraction" pattern is tagged to Wipro on a PapersAdda page (prep site, unverified).
+**What the interviewer is checking:** converting a fraction of principal into a percentage.
+**Say this in the interview:** "9/25 is 36%. Over 3 years that is 12% a year."
+**Answer:** **12% per annum**
+**Step-by-step working:**
+1. Interest = (9/25) P, so SI/P = 9/25.
+2. 9/25 = 36/100 = 36%.
+3. R = 36 / 3 = 12.
+**Fast method (30 seconds):** Multiply the fraction by 4 to get percent: 9/25 = 36/100.
+**Check:** P = 100: SI = 100 x 12 x 3 / 100 = 36 = 9/25 of 100. Verified by script.
+**Explain simply:**
+- Fractions with denominator 25 convert easily: multiply top and bottom by 4.
+**Likely follow-ups:** Interest = 4/5 of P in 8 years? 80% / 8 = 10%.
+**Common mistakes / traps:** Answering 36% (forgetting to divide by 3).
 
 ### Q17 ⭐⭐⭐ 🟡 A sum of Rs 15,000 is lent partly at 8% and partly at 10% simple interest per annum. If the total interest after 1 year is Rs 1,320, find the two parts.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); a standard "partition of a sum" type.
+**What the interviewer is checking:** forming one equation or using the alligation shortcut.
+**Say this in the interview:** "If all were at 8%, interest would be 1,200; the extra 120 comes from the part at 10%, which earns 2% more. So that part is 120 / 0.02 = Rs 6,000 and the rest, Rs 9,000, is at 8%."
+**Answer:** **Rs 9,000 at 8% and Rs 6,000 at 10%**
+**Step-by-step working:**
+1. Let the part at 8% be x; the part at 10% is 15,000 - x.
+2. 0.08x + 0.10(15,000 - x) = 1,320.
+3. 0.08x + 1,500 - 0.10x = 1,320, so 0.02x = 180.
+4. x = 9,000; the other part = 6,000.
+**Fast method (30 seconds):** Average rate = 1,320 / 15,000 = 8.8%. Distance from 8 is 0.8, from 10 is 1.2, so the ratio (8% part : 10% part) = 1.2 : 0.8 = 3 : 2. Split 15,000 in 3:2 gives 9,000 and 6,000 (alligation).
+**Check:** 9,000 x 8% = 720; 6,000 x 10% = 600; total 1,320. Verified by script.
+**Explain simply:**
+- Alligation: the blended rate sits between the two rates; the amounts are in inverse proportion to the distances.
+**Likely follow-ups:** Total interest Rs 1,400? Average rate 9.33%; the 8% : 10% parts are in ratio 1 : 2, so Rs 5,000 at 8% and Rs 10,000 at 10% (400 + 1,000 = 1,400).
+**Common mistakes / traps:** Reversing the ratio (6,000 at 8%).
 
 ### Q18 ⭐⭐⭐ 🟡 A sum amounts to Rs 6,600 in 2 years and Rs 7,500 in 5 years at simple interest. Find the principal and the rate per annum.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); a standard "two amounts" SI type.
+**What the interviewer is checking:** the difference of the two amounts is pure interest for the extra years.
+**Say this in the interview:** "The 3 extra years earned 900, so 300 a year. Two years of that is 600, so the principal is 6,000, and the rate is 300 / 6,000 = 5%."
+**Answer:** **Principal Rs 6,000; rate 5% per annum**
+**Step-by-step working:**
+1. Interest for years 3 to 5 = 7,500 - 6,600 = 900 for 3 years.
+2. Interest per year = 900 / 3 = 300.
+3. Interest in 2 years = 600, so P = 6,600 - 600 = 6,000.
+4. R = 300 x 100 / 6,000 = 5%.
+**Fast method (30 seconds):** Per-year interest is the slope: (7,500 - 6,600) / 3 = 300. Subtract 2 slopes from the first amount to get P.
+**Check:** 6,000 x 5 x 5 / 100 = 1,500; 6,000 + 1,500 = 7,500. Verified by script.
+**Explain simply:**
+- At simple interest, the amount rises by the same sum each year, so two data points give the line.
+**Likely follow-ups:** Rs 5,600 in 2 years and Rs 6,500 in 5 years? Slope 900 / 3 = 300; P = 5,600 - 600 = 5,000; rate 6%.
+**Common mistakes / traps:** Dividing 900 by 5 years or 2 years instead of 3.
 
 ### Q19 ⭐⭐⭐ 🟡 Find the difference between compound interest and simple interest on Rs 10,000 at 10% per annum for 3 years.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** using the 3-year difference formula or computing both.
+**Say this in the interview:** "SI is 3,000. CI is 10,000 x 1.331 - 10,000 = 3,310. The difference is Rs 310."
+**Answer:** **Rs 310**
+**Step-by-step working:**
+1. SI = 10,000 x 10 x 3 / 100 = 3,000.
+2. Amount = 10,000 x (1.1)^3 = 10,000 x 1.331 = 13,310; CI = 3,310.
+3. Difference = 3,310 - 3,000 = 310.
+**Fast method (30 seconds):** P(r)^2 (3 + r) = 10,000 x 0.01 x 3.1 = 310.
+**Check:** Year-by-year: 11,000, 12,100, 13,310. Verified by script.
+**Explain simply:**
+- Year 1 gives no difference; year 2 adds 100 (interest on 1,000); year 3 adds 210 (interest on 2,100 vs 1,000 plus the extra 100's interest). Total 310.
+**Likely follow-ups:** Same for 2 years? Rs 100.
+**Common mistakes / traps:** Using the 2-year formula (answering 100).
 
 ### Q20 ⭐⭐ 🟢 A company's headcount of 2,000 grows by 10% every year. What is the headcount after 3 years?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); growth word problems are listed as common aptitude items (HR-flavoured version).
+**What the interviewer is checking:** recognising growth as compound, not simple.
+**Say this in the interview:** "Each year multiplies by 1.1, so 2,000 x 1.331 = 2,662."
+**Answer:** **2,662 employees**
+**Step-by-step working:**
+1. Year 1: 2,000 x 1.1 = 2,200.
+2. Year 2: 2,200 x 1.1 = 2,420.
+3. Year 3: 2,420 x 1.1 = 2,662.
+**Fast method (30 seconds):** 1.1^3 = 1.331; 2,000 x 1.331 = 2,662.
+**Check:** Formula 2,000 x (1 + 10/100)^3 = 2,662, a whole number. Verified by script.
+**Explain simply:**
+- "Grows by 10% every year" means 10% of the current headcount, so it compounds.
+**Likely follow-ups:** After 3 years if it grew by a flat 200 a year? 2,600.
+**Common mistakes / traps:** Answering 2,600 (simple growth).
 
 ### Q21 ⭐⭐ 🟢 A machine worth Rs 80,000 depreciates by 10% per annum on the reducing-balance method. What is its value after 2 years?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); depreciation is a gap-fill topic from general practice, not seen in a source.
+**What the interviewer is checking:** compound decay: multiply by 0.9 each year.
+**Say this in the interview:** "Reducing balance means 10% of the current value each year, so 80,000 x 0.9 x 0.9 = Rs 64,800."
+**Answer:** **Rs 64,800**
+**Step-by-step working:**
+1. Year 1 loss = 10% of 80,000 = 8,000. Value = 72,000.
+2. Year 2 loss = 10% of 72,000 = 7,200. Value = 64,800.
+**Fast method (30 seconds):** 0.9 x 0.9 = 0.81; 80,000 x 0.81 = 64,800.
+**Check:** 80,000 x (1 - 10/100)^2 = 64,800. Verified by script.
+**Explain simply:**
+- Reducing-balance (written-down value) depreciation charges the rate on what is left, so the yearly loss shrinks.
+**Likely follow-ups:** What if 10% of the original each year? 80,000 - 16,000 = 64,000 (straight-line).
+**Common mistakes / traps:** Subtracting 20% in one go (64,000); 10% twice does not equal 20%.
 
 ### Q22 ⭐⭐ 🟢 Straight-line depreciation: an asset costs Rs 1,20,000, has a salvage value of Rs 20,000 and a life of 5 years. What is the annual depreciation?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); finance-style basics, not tied to data-analyst reports.
+**What the interviewer is checking:** knowing depreciation is on cost minus salvage value.
+**Say this in the interview:** "Depreciable amount is 1,20,000 minus 20,000 = 1,00,000; spread over 5 years that is Rs 20,000 a year."
+**Answer:** **Rs 20,000 per year**
+**Step-by-step working:**
+1. Depreciable amount = cost - salvage = 1,20,000 - 20,000 = 1,00,000.
+2. Annual depreciation = 1,00,000 / 5 = 20,000.
+**Fast method (30 seconds):** (Cost - salvage) / life.
+**Check:** 5 x 20,000 = 1,00,000, and 1,20,000 - 1,00,000 = 20,000 salvage left at the end. Verified by script.
+**Explain simply:**
+- Salvage value is what you can still sell the asset for at the end of its life, so only the rest is written off.
+- Straight-line means the same charge every year.
+**Likely follow-ups:** Book value after 3 years? 1,20,000 - 60,000 = Rs 60,000.
+**Common mistakes / traps:** Dividing the full cost by 5 (24,000).
 
 ### Q23 ⭐⭐ 🟢 A marketing campaign costs Rs 2,50,000 and generates Rs 3,25,000 in gross profit before the campaign cost. What is the ROI?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); ROI was a gap-fill from general knowledge and no ROI practice set was found, so it is not confirmed as a data-analyst gate item.
+**What the interviewer is checking:** using net gain, not gross return, in ROI.
+**Say this in the interview:** "Net gain is 3,25,000 minus the 2,50,000 cost = 75,000. ROI = 75,000 / 2,50,000 = 30%."
+**Answer:** **30%**
+**Step-by-step working:**
+1. Gross profit before campaign cost = 3,25,000.
+2. Net gain = 3,25,000 - 2,50,000 = 75,000.
+3. ROI = net gain / cost x 100 = 75,000 / 2,50,000 x 100 = 30%.
+**Fast method (30 seconds):** 3.25 / 2.5 = 1.30, so ROI = 1.30 - 1 = 30%.
+**Check:** 2,50,000 x 1.30 = 3,25,000. Verified by script.
+**Explain simply:**
+- ROI (return on investment) = (gain - cost) / cost. It tells you how much extra you got per rupee spent.
+- Because the profit figure here is before the campaign cost, the cost must still be deducted.
+**Likely follow-ups:** If the 3,25,000 was already net of campaign cost? Then net gain is 3,25,000 and ROI = 130%. Say which assumption you use.
+**Common mistakes / traps:** Answering 130% (gross divided by cost) or 23% (dividing by the return).
 
 ### Q24 ⭐⭐ 🟢 A company has fixed costs of Rs 4,80,000 per month, sells at Rs 250 per unit and has a variable cost of Rs 170 per unit. How many units must it sell to break even?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); break-even is a standard finance-interview definition (CFI, Forage), more common for finance than data roles.
+**What the interviewer is checking:** contribution per unit logic.
+**Say this in the interview:** "Each unit contributes 250 minus 170 = Rs 80 toward fixed costs. 4,80,000 / 80 = 6,000 units."
+**Answer:** **6,000 units per month**
+**Step-by-step working:**
+1. Contribution per unit = selling price - variable cost = 250 - 170 = 80.
+2. Break-even units = fixed costs / contribution = 4,80,000 / 80 = 6,000.
+**Fast method (30 seconds):** 4,80,000 / 80 = 48,000 / 8 = 6,000 (cancel a zero from both, then divide by 8).
+**Check:** Revenue 6,000 x 250 = 15,00,000; variable cost 6,000 x 170 = 10,20,000; plus fixed 4,80,000 = 15,00,000. Profit zero. Verified by script.
+**Explain simply:**
+- Break-even is where total revenue equals total cost, so profit is zero.
+- Fixed costs (rent, salaries) do not change with volume; variable costs (materials) do.
+**Likely follow-ups:** Units to earn Rs 2,40,000 profit? (4,80,000 + 2,40,000) / 80 = 9,000.
+**Common mistakes / traps:** Dividing fixed cost by the selling price (1,920 units).
 
 ### Q25 ⭐⭐ 🟢 An investment of Rs 12 lakh returns a constant net cash inflow of Rs 3 lakh every year. What is the payback period?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); payback is a gap-fill finance basic.
+**What the interviewer is checking:** knowing payback = investment / yearly inflow.
+**Say this in the interview:** "12 lakh divided by 3 lakh a year is 4 years."
+**Answer:** **4 years**
+**Step-by-step working:**
+1. Payback period = initial investment / annual net cash inflow.
+2. = 12 lakh / 3 lakh = 4.
+**Fast method (30 seconds):** How many 3s make 12? Four.
+**Check:** 4 x 3 lakh = 12 lakh. Verified by script.
+**Explain simply:**
+- Payback is the time taken to recover the money invested. It ignores what happens after, and ignores the time value of money.
+**Likely follow-ups:** Inflow Rs 2.5 lakh? 12 / 2.5 = 4.8 years (4 years 9.6 months).
+**Common mistakes / traps:** Using total profit instead of the yearly cash inflow.
 
 ### Q26 ⭐⭐ 🟢 A firm has revenue of Rs 80 lakh, cost of goods sold of Rs 52 lakh and operating expenses of Rs 18 lakh. Find the gross margin percentage and the operating margin percentage.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); margins are standard finance-interview definitions (CFI, Forage, Hyring).
+**What the interviewer is checking:** which costs are deducted at which margin level.
+**Say this in the interview:** "Gross profit is 80 minus 52 = 28 lakh, which is 35%. Operating profit is 28 minus 18 = 10 lakh, which is 12.5%."
+**Answer:** **Gross margin 35%; operating margin 12.5%**
+**Step-by-step working:**
+1. Gross profit = revenue - COGS = 80 - 52 = 28 lakh.
+2. Gross margin % = 28 / 80 x 100 = 35%.
+3. Operating profit = gross profit - operating expenses = 28 - 18 = 10 lakh.
+4. Operating margin % = 10 / 80 x 100 = 12.5%.
+**Fast method (30 seconds):** 28/80 = 7/20 = 35%. 10/80 = 1/8 = 12.5%.
+**Check:** 35% of 80 = 28; 12.5% of 80 = 10. Verified by script.
+**Explain simply:**
+- COGS (cost of goods sold) is the direct cost of making what was sold. Operating expenses are running costs like salaries and rent.
+- Both margins use revenue as the base (the denominator).
+**Likely follow-ups:** If opex rises to Rs 22 lakh? Operating profit 6 lakh, margin 7.5%.
+**Common mistakes / traps:** Dividing by COGS instead of revenue; calling 10 lakh the gross margin by skipping COGS, or forgetting that operating margin is also a percentage of revenue.
 
 ### Q27 ⭐⭐ 🟢 Find the simple interest on Rs 36,500 at 10% per annum for 73 days, taking a year as 365 days.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Whether you can convert days into a fraction of a year.
+**Say this in the interview:** "73 days is exactly one-fifth of 365 days, so I take one-fifth of one year's interest. A year's interest is 3,650; one-fifth is 730."
+**Answer:** **Rs 730**
+**Step-by-step working:**
+1. Time in years = 73 / 365 = 1/5 = 0.2 year.
+2. Simple interest (SI) = Principal x Rate x Time / 100 = 36,500 x 10 x 0.2 / 100.
+3. 36,500 x 10 = 3,65,000; x 0.2 = 73,000; divided by 100 = 730.
+**Fast method (30 seconds):** 10% of 36,500 is 3,650 for a full year. 73 is 365 divided by 5, so the interest is 3,650 / 5 = 730.
+**Check:** Reverse: 730 / 36,500 = 2%, and 10% a year for one-fifth of a year is 2%. Verified by script.
+**Explain simply:**
+- Simple interest means the interest is always charged on the original amount only.
+- When time is given in days, divide by 365 (the question tells us to use 365) to get years.
+**Likely follow-ups:** 1) Same sum for 146 days? 146 = 2/5 of a year, so 3,650 x 2/5 = Rs 1,460. 2) Using a 360-day year? Then 73/360 gives about Rs 740.28.
+**Common mistakes / traps:** Using 73 as years, or forgetting to divide by 100.
 
 ### Q28 ⭐⭐ 🟢 A company deposits Rs 5,00,000 for 2 years at 7% per annum compounded annually in one fixed deposit and at 7% simple interest in another. What is the difference in maturity values?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Whether you can compare compound and simple growth without computing two long amounts.
+**Say this in the interview:** "Under compound interest the amount is 5,00,000 x 1.07 x 1.07 = 5,72,450; under simple interest it is 5,00,000 + 70,000 = 5,70,000. The difference is Rs 2,450."
+**Answer:** **Rs 2,450** (compound FD gives more)
+**Step-by-step working:**
+1. Compound amount: A = P(1 + r)^n = 5,00,000 x (1.07)^2 = 5,00,000 x 1.1449 = Rs 5,72,450.
+2. Simple amount: interest = 5,00,000 x 7 x 2 / 100 = 70,000, so amount = Rs 5,70,000.
+3. Difference = 5,72,450 - 5,70,000 = Rs 2,450.
+**Fast method (30 seconds):** For 2 years the gap is P x (r/100)^2 = 5,00,000 x 0.07 x 0.07 = 5,00,000 x 0.0049 = 2,450. The gap is just interest earned on the first year's interest (35,000 x 7% = 2,450).
+**Check:** Both routes give 2,450; verified by script.
+**Explain simply:**
+- Compound interest (CI) adds each year's interest to the principal, so next year's interest is charged on a bigger base.
+- Simple interest never grows its base. Over 2 years the only difference is interest on the first year's interest.
+**Likely follow-ups:** 1) Difference after 3 years at 7%? P x (r^2)(3 + r) = 5,00,000 x 0.0049 x 3.07 = Rs 7,521.50. 2) Which is better for the company? The compound deposit.
+**Common mistakes / traps:** Subtracting the two interests wrongly or squaring 7 instead of 0.07.
 
 ### Q29 ⭐⭐ 🟡 Find the amount on Rs 20,000 at 20% per annum for 1.5 years, compounded half-yearly.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked; half-yearly compounding is a standard compound-interest question type on prep sites (unverified)
+**What the interviewer is checking:** Whether you halve the rate and double the periods correctly.
+**Say this in the interview:** "Half-yearly means the rate is halved to 10% and the periods are doubled, 1.5 years = 3 half-years. So the amount is 20,000 x 1.1 cubed = Rs 26,620."
+**Answer:** **Rs 26,620**
+**Step-by-step working:**
+1. Compounded half-yearly: rate per half-year = 20% / 2 = 10%.
+2. Number of half-years = 1.5 x 2 = 3.
+3. Amount = 20,000 x (1.10)^3. 1.1 x 1.1 = 1.21; 1.21 x 1.1 = 1.331.
+4. 20,000 x 1.331 = Rs 26,620 (interest Rs 6,620).
+**Fast method (30 seconds):** Do it in steps: 20,000 -> 22,000 -> 24,200 -> 26,620 (add 10% each time).
+**Check:** Step by step: 20,000+2,000=22,000; +2,200=24,200; +2,420=26,620. Verified by script.
+**Explain simply:**
+- Compounding frequency is how often interest is added to the balance. More frequent means slightly more money.
+- Formula: A = P(1 + R/(100n))^(nT), where n is the number of compounding periods per year and T is years.
+**Likely follow-ups:** 1) Same sum, same rate, compounded annually for 1.5 years? Use 20,000 x 1.2 = 24,000, then simple interest 10% on 24,000 for half a year = 1,200, total Rs 25,200 (the usual convention for a fractional year). 2) Quarterly? 5% per quarter, 6 quarters.
+**Common mistakes / traps:** Using 20% and 1.5 periods, or forgetting to double the periods.
 
 ### Q30 ⭐⭐ 🟡 A sum at compound interest amounts to Rs 6,615 in 2 years at 5% per annum. Find the sum.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Working backwards from the amount.
+**Say this in the interview:** "Amount is principal times (1.05) squared = 1.1025 times principal. So principal = 6,615 / 1.1025 = Rs 6,000."
+**Answer:** **Rs 6,000**
+**Step-by-step working:**
+1. A = P x (1 + 5/100)^2 = P x 1.1025.
+2. 6,615 = P x 1.1025.
+3. P = 6,615 / 1.1025 = 6,000.
+**Fast method (30 seconds):** Use fractions: (21/20)^2 = 441/400. P = 6,615 x 400 / 441 = 15 x 400 = 6,000 (6,615 / 441 = 15).
+**Check:** Forward check: 6,000 x 1.05 = 6,300; 6,300 x 1.05 = 6,615. Verified by script.
+**Explain simply:**
+- Principal is the starting sum; amount is principal plus interest.
+- To find the principal from a compound amount, divide by the growth factor (1 + r)^n.
+**Likely follow-ups:** 1) Same amount, 3 years at 5%? 6,615 / 1.157625 = Rs 5,714.29 approx. 2) Rate 10% instead? 6,615 / 1.21 = Rs 5,466.94 approx.
+**Common mistakes / traps:** Taking 6,615 minus 10% (or 5% twice) as the principal; that is not how compounding reverses.
 
 ### Q31 ⭐⭐ 🟡 A sum amounts to Rs 8,820 in 2 years and Rs 9,261 in 3 years at compound interest. Find the rate per annum.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked; the 'rate from two successive compound amounts' type is one of five standard CI question types on prep sites (unverified)
+**What the interviewer is checking:** The trick that one year's growth factor equals the ratio of successive amounts.
+**Say this in the interview:** "The amount from year 2 to year 3 is the one extra year of interest. 9,261 / 8,820 = 1.05, so the rate is 5% a year."
+**Answer:** **5% per annum**
+**Step-by-step working:**
+1. The difference between the two amounts is one year's interest on the year-2 amount: 9,261 - 8,820 = 441.
+2. Rate = 441 / 8,820 x 100 = 5%.
+**Fast method (30 seconds):** Ratio of consecutive amounts = 1 + r. 9,261 / 8,820 = 1.05, so r = 5%. (Sum is 8,820 / 1.1025 = Rs 8,000.)
+**Check:** Forward: 8,000 x 1.05 = 8,400; x 1.05 = 8,820; x 1.05 = 9,261. Verified by script.
+**Explain simply:**
+- In compound interest, every year the amount is multiplied by the same factor (1 + r).
+- So dividing any amount by the previous year's amount gives that factor.
+**Likely follow-ups:** 1) What is the sum? Rs 8,000. 2) Amounts 5,500 (year 1) and 6,050 (year 2)? Ratio 1.1, so 10%.
+**Common mistakes / traps:** Using the 2-year amount as principal for simple interest, or comparing amounts two years apart.
 
 ### Q32 ⭐⭐ 🟡 In how many years will Rs 8,000 amount to Rs 9,261 at 5% per annum compound interest?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Spotting a power of 1.05 by recognising 9,261 = 21 cubed.
+**Say this in the interview:** "9,261 / 8,000 = 1.157625, which is 1.05 cubed. So it takes 3 years."
+**Answer:** **3 years**
+**Step-by-step working:**
+1. Growth factor needed = 9,261 / 8,000 = (21/20)^3, because 21^3 = 9,261 and 20^3 = 8,000.
+2. The factor per year is 1 + 5/100 = 21/20.
+3. So the number of years n = 3.
+**Fast method (30 seconds):** Spot the cubes: 9,261 = 21 x 21 x 21, and 8,000 = 20 x 20 x 20. Their ratio is (21/20)^3, and 21/20 is the yearly 5% factor.
+**Check:** Forward: 8,000 -> 8,400 -> 8,820 -> 9,261. Verified by script.
+**Explain simply:**
+- The number of years is the power to which the yearly factor is raised.
+- Examiners choose cubes and squares (like 9,261 and 8,000) so the answer is a whole number.
+**Likely follow-ups:** 1) How many years to reach 8,820? 2 years. 2) 4,000 growing to 4,410 at 5%? 2 years (4,410 / 4,000 = 1.1025).
+**Common mistakes / traps:** Trying simple interest: 1,261 / (8,000 x 5%) gives 3.15 years, which is not the answer.
 
 ### Q33 ⭐⭐ 🟡 A sum doubles itself in 5 years at compound interest. In how many years will it become 8 times itself?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked doubling pattern (no company-specific report found); the simple-interest doubles/triples version is tagged to Wipro-style papers on prep sites (unverified)
+**What the interviewer is checking:** Whether you see that 8 = 2 cubed, so three doubling periods.
+**Say this in the interview:** "8 is 2 x 2 x 2. Each 5 years the sum doubles, so three lots of 5 years: 15 years."
+**Answer:** **15 years**
+**Step-by-step working:**
+1. Let the yearly factor be x. Doubling in 5 years: x^5 = 2.
+2. We want x^n = 8 = 2^3.
+3. So x^n = (x^5)^3 = x^15, hence n = 15 years.
+**Fast method (30 seconds):** Doubling three times gives 2 x 2 x 2 = 8, so 3 x 5 = 15.
+**Check:** Reverse: 1 -> 2 (5 yrs) -> 4 (10 yrs) -> 8 (15 yrs). Verified by script (3 doublings).
+**Explain simply:**
+- At compound interest the sum multiplies by the same factor in every equal period.
+- Compare with simple interest (Q12), where it would be a different answer: doubling in 5 years means 8 times in 35 years.
+**Likely follow-ups:** 1) Time to become 4 times? 10 years. 2) Simple interest: doubles in 5 years; how long to become 8 times? Interest 7 times principal needs 7 x 5 = 35 years.
+**Common mistakes / traps:** Multiplying 5 x 8 = 40 or 5 x 4 = 20 (using simple-interest thinking).
 
 ### Q34 ⭐⭐ 🟡 Find the compound interest on Rs 20,000 for 2 years if the rate is 10% in the first year and 20% in the second year.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Handling different rates in successive years.
+**Say this in the interview:** "Multiply year by year: 20,000 x 1.10 x 1.20 = 26,400. Compound interest is 26,400 minus 20,000 = Rs 6,400."
+**Answer:** **Rs 6,400**
+**Step-by-step working:**
+1. Year 1: 20,000 x 1.10 = 22,000.
+2. Year 2: 22,000 x 1.20 = 26,400.
+3. Compound interest = amount - principal = 26,400 - 20,000 = Rs 6,400.
+**Fast method (30 seconds):** Combined growth = 1.10 x 1.20 = 1.32, so 32% of 20,000 = 6,400. Equivalent single rate is 10 + 20 + (10 x 20)/100 = 32%.
+**Check:** Interest year 1 = 2,000, year 2 = 22,000 x 20% = 4,400; sum 6,400. Verified by script.
+**Explain simply:**
+- When the rate changes each year, multiply the growth factors one after the other.
+- The successive-percentage shortcut a + b + ab/100 gives the total percentage.
+**Likely follow-ups:** 1) Rates 20% then 10%? Same: 32%, Rs 6,400 (order does not matter). 2) Simple interest at the same rates? 2,000 + 4,000 = Rs 6,000.
+**Common mistakes / traps:** Adding 10% + 20% = 30% and answering 6,000.
 
 ### Q35 ⭐⭐ 🟡 Rs 8,000 is invested at 10% per annum compounded annually. How much interest is earned in the third year alone?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Whether you can isolate one year's interest.
+**Say this in the interview:** "Interest in year 3 is 10% of the amount at the end of year 2. That amount is 8,000 x 1.21 = 9,680; 10% of it is Rs 968."
+**Answer:** **Rs 968**
+**Step-by-step working:**
+1. Amount after year 1 = 8,000 x 1.1 = 8,800.
+2. Amount after year 2 = 8,800 x 1.1 = 9,680.
+3. Interest in year 3 = 10% of 9,680 = Rs 968.
+**Fast method (30 seconds):** Interest of year n is P x r x (1+r)^(n-1). Here 8,000 x 0.1 x 1.21 = 968. Each year's interest is 10% bigger than the last: 800, 880, 968.
+**Check:** Amount after 3 years = 8,000 x 1.331 = 10,648; minus 9,680 = 968. Verified by script.
+**Explain simply:**
+- Each year's interest is calculated on the balance at the start of that year.
+- Year-wise interest in compound interest grows by the factor (1 + r) each year.
+**Likely follow-ups:** 1) Interest in year 2? Rs 880. 2) Total interest over 3 years? 800 + 880 + 968 = Rs 2,648.
+**Common mistakes / traps:** Taking simple interest (Rs 800) or using the original 8,000 as the base.
 
 ### Q36 ⭐⭐ 🟡 What is the difference between the amounts on Rs 10,000 for 1 year at 20% per annum compounded yearly and compounded half-yearly?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Understanding how compounding frequency changes the result.
+**Say this in the interview:** "Yearly gives 12,000. Half-yearly is 10% twice: 10,000 x 1.1 x 1.1 = 12,100. The difference is Rs 100."
+**Answer:** **Rs 100** (half-yearly gives more)
+**Step-by-step working:**
+1. Compounded yearly: 10,000 x 1.20 = Rs 12,000.
+2. Compounded half-yearly: rate per half-year = 10%, two periods: 10,000 x 1.10 x 1.10 = Rs 12,100.
+3. Difference = 12,100 - 12,000 = Rs 100.
+**Fast method (30 seconds):** The extra 100 is simply 10% of the first half-year's interest of 1,000 (interest on interest).
+**Check:** Half-yearly steps: 10,000 -> 11,000 -> 12,100. Verified by script.
+**Explain simply:**
+- Compounding half-yearly means interest is added every six months at half the yearly rate.
+- The more often you compound, the more you earn, but the gain is small (this is the idea behind effective annual rate, Q46).
+**Likely follow-ups:** 1) Quarterly? 5% four times: 12,155.06, which is 155.06 more than yearly. 2) What if the rate is 10% yearly instead? Difference is 0.
+**Common mistakes / traps:** Using 20% for each half-year, or halving the amount.
 
 ### Q37 ⭐⭐ 🟡 Bank A offers 8% simple interest and Bank B offers 7.5% compounded annually. Which gives more interest on Rs 1,00,000 over 2 years, and by how much?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Comparing simple and compound options with the right method for each.
+**Say this in the interview:** "Bank A gives 16,000 interest. Bank B: 1,00,000 x 1.075 squared = 1,15,562.50, so interest 15,562.50. Bank A wins by Rs 437.50."
+**Answer:** **Bank A gives more, by Rs 437.50**
+**Step-by-step working:**
+1. Bank A (simple): 1,00,000 x 8 x 2 / 100 = Rs 16,000.
+2. Bank B (compound): 1.075 x 1.075 = 1.155625, so amount = Rs 1,15,562.50.
+3. Interest B = 1,15,562.50 - 1,00,000 = Rs 15,562.50.
+4. Difference = 16,000 - 15,562.50 = Rs 437.50.
+**Fast method (30 seconds):** For 2 years, compare equivalent rates: B's total growth is 7.5 + 7.5 + 0.5625 = 15.5625%, A's is 16%. So A is higher by 0.4375% of 1,00,000 = 437.50.
+**Check:** A: 8% x 2 = 16% = 16,000; B: 15.5625% = 15,562.50. Verified by script.
+**Explain simply:**
+- A higher simple rate can beat a lower compound rate over short periods.
+- Compounding catches up as the years increase; over a long time B would win.
+**Likely follow-ups:** 1) After how long does B overtake A? Over 2 years A leads; by year 3 B gives 24.23% vs A 24%, so B leads from year 3. 2) Which is better for 1 year? A (8% vs 7.5%).
+**Common mistakes / traps:** Assuming compound is always better.
 
 ### Q38 ⭐⭐ 🟡 Two sums in the ratio 2:3 are lent at 5% and 4% simple interest per annum for the same period. What is the ratio of the interest earned?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Using ratios instead of absolute numbers.
+**Say this in the interview:** "Interest is proportional to principal x rate when time is the same. So 2 x 5 : 3 x 4 = 10 : 12 = 5 : 6."
+**Answer:** **5 : 6**
+**Step-by-step working:**
+1. Let the sums be 2k and 3k (k is any number, same for both).
+2. Interest = principal x rate x time / 100. Time is the same, so interest is proportional to principal x rate.
+3. First: 2k x 5 = 10k. Second: 3k x 4 = 12k.
+4. Ratio = 10 : 12 = 5 : 6.
+**Fast method (30 seconds):** Multiply across and cancel: (2 x 5) : (3 x 4) = 10 : 12 = 5 : 6. No actual money needed.
+**Check:** Try k = 1,000, 1 year: interest 100 and 120, ratio 5 : 6. Verified by script.
+**Explain simply:**
+- When one thing is the same for both (time), it drops out of the ratio.
+- This is the same trick used for mixed-rate problems: weight each rate by the amount.
+**Likely follow-ups:** 1) Sums in ratio 3:5 at 4% and 6%? 12 : 30 = 2 : 5. 2) Different times too (2 years and 3 years) for the original? 10 x 2 : 12 x 3 = 20 : 36 = 5 : 9.
+**Common mistakes / traps:** Giving 2:3 or 5:4 (forgetting to multiply principal and rate).
 
 ### Q39 ⭐⭐ 🟡 A salary grows from Rs 4,00,000 to Rs 5,76,000 in 2 years at a uniform annual rate. What is the annual growth rate, and what is the CAGR formula?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Knowing the growth-rate formula (CAGR) and solving a square root cleanly.
+**Say this in the interview:** "CAGR is the final over the initial, raised to one over the number of years, minus one. 5,76,000 / 4,00,000 = 1.44, and the square root is 1.2, so 20% a year."
+**Answer:** **20% per annum; CAGR = (Final / Initial)^(1/years) - 1**
+**Step-by-step working:**
+1. Growth factor over 2 years = 5,76,000 / 4,00,000 = 1.44.
+2. Annual factor = square root of 1.44 = 1.2 (because 1.2 x 1.2 = 1.44).
+3. Growth rate = 1.2 - 1 = 0.20 = 20% per annum.
+**Fast method (30 seconds):** 1.44 is 12 x 12 / 100, so the square root is 1.2 straight away.
+**Check:** Forward: 4,00,000 x 1.2 = 4,80,000; x 1.2 = 5,76,000. Verified by script.
+**Explain simply:**
+- CAGR (compound annual growth rate) is the single steady yearly rate that gets you from the start value to the end value.
+- It is not the simple average of yearly growths when growth varies; it smooths them in compounded terms.
+- Use it for salary, headcount, revenue or attrition trends.
+**Likely follow-ups:** 1) Salary 4,00,000 to 6,00,000 in 2 years: CAGR? (1.5)^0.5 - 1 = 22.47% approx. 2) Simple average would give 25%, which is wrong for compounding.
+**Common mistakes / traps:** Dividing 44% by 2 and answering 22%.
 
 ### Q40 ⭐⭐ 🟡 How much must be deposited today at 8% per annum compound interest to receive Rs 1,16,640 after 2 years?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Present value: reversing compounding.
+**Say this in the interview:** "Divide the future amount by 1.08 twice. 1.08 squared is 1.1664, so the deposit is 1,16,640 / 1.1664 = Rs 1,00,000."
+**Answer:** **Rs 1,00,000**
+**Step-by-step working:**
+1. After 2 years the money grows by (1.08)^2 = 1.1664.
+2. Deposit x 1.1664 = 1,16,640.
+3. Deposit = 1,16,640 / 1.1664 = 1,00,000.
+**Fast method (30 seconds):** Notice 108 x 108 = 11,664, so 1,16,640 = 1.08 x 1.08 x 1,00,000.
+**Check:** Forward: 1,00,000 x 1.08 = 1,08,000; x 1.08 = 1,16,640. Verified by script.
+**Explain simply:**
+- Present value (PV) is what a future sum is worth today at a given rate: PV = FV / (1 + r)^n.
+- Discounting is the opposite of compounding.
+**Likely follow-ups:** 1) Deposit needed for 1,16,640 after 1 year? 1,16,640 / 1.08 = Rs 1,08,000. 2) After 3 years? 1,16,640 / 1.259712 = about Rs 92,592.59.
+**Common mistakes / traps:** Taking 16% off 1,16,640 (a simple subtraction) instead of dividing.
 
 ### Q41 ⭐⭐ 🟡 What is the Rule of 72, and how long does money take to double at 9% per annum by this rule?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Whether you know a quick mental approximation for doubling time.
+**Say this in the interview:** "Rule of 72 says doubling time in years is 72 divided by the yearly rate in percent. At 9%, 72 / 9 = 8 years."
+**Answer:** **8 years** (exact figure is about 8.04 years)
+**Step-by-step working:**
+1. Rule: years to double is about 72 / rate (in %).
+2. At 9%: 72 / 9 = 8 years.
+3. Exact: solve 1.09^n = 2, so n = ln 2 / ln 1.09, about 8.04 years (compound interest).
+**Fast method (30 seconds):** 72 has many divisors (2, 3, 4, 6, 8, 9, 12), so the division is easy. It works best for rates between about 6% and 12%.
+**Check:** Reverse: 1.09^8 = 1.9926, very close to 2. Verified by script (exact 8.04 years).
+**Explain simply:**
+- The rule is an approximation that comes from natural logarithms (ln 2 is about 0.693, nudged up to 72 for easy division).
+- Mini-example: at 12% money doubles in about 72 / 12 = 6 years; 1.12^6 = 1.97.
+**Likely follow-ups:** 1) Time to double at 6%? 12 years. 2) Rule for simple interest? Use 100 / rate (at 10% simple, doubling takes 10 years).
+**Common mistakes / traps:** Using the rule for simple interest, or at very high rates where it is less accurate.
 
 ### Q42 ⭐⭐ 🟡 What is the difference between a flat-rate and a reducing-balance loan? Compute the total interest and monthly EMI on Rs 2,00,000 at 9% flat per annum for 3 years.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Whether you know that flat-rate interest looks cheaper than it is.
+**Say this in the interview:** "Flat rate charges interest on the full original loan for all years. 9% x 3 years on 2,00,000 is 54,000 interest, total 2,54,000, so the EMI is 2,54,000 / 36 = about Rs 7,055.56."
+**Answer:** **Total interest Rs 54,000; EMI about Rs 7,055.56 per month**
+**Step-by-step working:**
+1. Flat interest = 2,00,000 x 9 x 3 / 100 = Rs 54,000.
+2. Total to repay = 2,00,000 + 54,000 = Rs 2,54,000.
+3. Months = 3 x 12 = 36.
+4. EMI = 2,54,000 / 36 = Rs 7,055.56 (rounded to paise).
+**Fast method (30 seconds):** Flat: 9% x 3 = 27% of the loan; add it, and divide by the number of months.
+**Check:** 7,055.56 x 36 = 2,54,000.16, matches after rounding. Verified by script.
+**Explain simply:**
+- Flat-rate loan: interest is calculated on the original amount for the whole term, even though you keep repaying the principal.
+- Reducing-balance loan: interest is calculated each month only on the outstanding balance, so the same stated rate costs far less. Hence a 9% flat loan is equal to a much higher reducing-balance rate (roughly 16.2% a year for this loan).
+- EMI (equated monthly instalment) is the fixed monthly payment.
+**Likely follow-ups:** 1) Is 9% flat the same as 9% reducing? No; flat is costlier in effect. 2) Flat 10% for 2 years on 1,00,000: interest 20,000, EMI 5,000.
+**Common mistakes / traps:** Treating the quoted flat rate as the real cost; always ask for the effective rate.
 
 ### Q43 ⭐⭐ 🟡 An investment of Rs 1,800 today returns Rs 2,420 after 2 years. At a discount rate of 10% per annum, what is the NPV, and should the project be accepted?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); NPV is a finance-interview topic, not reported for data analyst gates
+**What the interviewer is checking:** Whether you discount future cash and compare with the cost.
+**Say this in the interview:** "NPV is the present value of what I receive minus what I pay today. 2,420 discounted two years at 10% is 2,000, minus 1,800 gives plus 200. Positive, so accept."
+**Answer:** **NPV = Rs +200; accept the project**
+**Step-by-step working:**
+1. Discount factor for 2 years at 10% = 1.1 x 1.1 = 1.21.
+2. Present value of 2,420 = 2,420 / 1.21 = Rs 2,000.
+3. NPV = 2,000 - 1,800 = Rs 200.
+**Fast method (30 seconds):** 2,420 = 2,000 x 1.21 (11 x 11 = 121 pattern), so the discount is quick to see.
+**Check:** Forward: 2,000 x 1.21 = 2,420. Verified by script.
+**Explain simply:**
+- NPV (net present value) = present value of future cash inflows minus the initial investment.
+- Positive NPV means the project earns more than the required return (the discount rate), so it creates value. Negative means reject.
+**Likely follow-ups:** 1) At a 15% discount rate? 2,420 / 1.3225 = 1,829.87, NPV about +29.87, still accept. 2) At 20%? 2,420 / 1.44 = 1,680.56; NPV about -119.44, reject.
+**Common mistakes / traps:** Subtracting 1,800 from 2,420 and calling the profit 620 without discounting.
 
 ### Q44 ⭐⭐ 🟡 A loan of Rs 1,00,000 at 12% per annum is repaid in monthly EMIs on a reducing balance, and the EMI is Rs 8,885. How much of the first EMI is interest and how much is principal?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Splitting an EMI into interest and principal on a reducing balance.
+**Say this in the interview:** "In month one the interest is 1% of 1,00,000, which is Rs 1,000. The rest of the EMI, 8,885 minus 1,000, is Rs 7,885 principal."
+**Answer:** **Interest Rs 1,000; principal Rs 7,885**
+**Step-by-step working:**
+1. Monthly rate = 12% / 12 = 1% per month.
+2. First month interest = 1% of the opening balance 1,00,000 = Rs 1,000.
+3. Principal repaid = EMI - interest = 8,885 - 1,000 = Rs 7,885.
+4. New balance = 1,00,000 - 7,885 = Rs 92,115.
+**Fast method (30 seconds):** Move the decimal: 1% of 1,00,000 is 1,000.
+**Check:** 1,000 + 7,885 = 8,885. Verified by script (the EMI 8,885 matches a 12-month loan at 1% per month; the question gives no tenure, so I used the stated EMI only).
+**Explain simply:**
+- On a reducing balance, interest each month = monthly rate x outstanding balance.
+- Early EMIs are mostly interest; later EMIs are mostly principal.
+**Likely follow-ups:** 1) Interest in month 2? 1% of 92,115 = Rs 921.15. 2) Principal in month 2? 8,885 - 921.15 = Rs 7,963.85.
+**Common mistakes / traps:** Using 12% instead of 1% for the month, or using the original balance every month.
 
 ### Q45 ⭐⭐ 🔴 A loan of Rs 10,500 at 10% per annum compound interest is repaid in two equal annual installments paid at the end of each year. Find each installment.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); instalment problems appear in the Careers360 question taxonomy (unverified)
+**What the interviewer is checking:** Whether you equate the present value of installments to the loan.
+**Say this in the interview:** "Each installment's present value is its amount divided by the growth factor. x / 1.1 plus x / 1.21 equals 10,500, which gives x = Rs 6,050."
+**Answer:** **Rs 6,050 each**
+**Step-by-step working:**
+1. Let each installment be x. Installment 1 is paid after 1 year, installment 2 after 2 years.
+2. Value of loan today = x / 1.1 + x / 1.21 = 10,500.
+3. Common denominator 1.21: (1.1x + x) / 1.21 = 2.1x / 1.21 = 10,500.
+4. x = 10,500 x 1.21 / 2.1 = 5,000 x 1.21 = 6,050.
+**Fast method (30 seconds):** Use fractions: 1/1.1 = 110/121 and 1/1.21 = 100/121, so together 210/121. Then x = 10,500 x 121 / 210 = 50 x 121 = 6,050.
+**Check:** Reverse: 6,050 / 1.1 = 5,500; 6,050 / 1.21 = 5,000; total 10,500. Verified by script.
+**Explain simply:**
+- Present value of an installment = installment divided by (1 + r)^(years until it is paid).
+- The loan equals the sum of those present values; this is the base for all installment problems.
+**Likely follow-ups:** 1) Three equal installments? 10,500 = x(1/1.1 + 1/1.21 + 1/1.331) = x x 2.4869, so x = Rs 4,222.2 approx. 2) Same two installments at a 20% rate? x / 1.2 + x / 1.44 = 10,500 gives x = Rs 6,872.73.
+**Common mistakes / traps:** Dividing 10,500 by 2 (5,250) and ignoring interest, or adding 21% on the whole loan.
 
 ### Q46 ⭐ 🟡 What is the effective annual rate for a nominal 20% per annum compounded quarterly?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked; an Infosys-tagged effective-annual-rate item on 20% compounded quarterly appears on PapersAdda (single prep-site claim, unverified)
+**What the interviewer is checking:** Whether you understand that compounding more often gives a higher effective rate.
+**Say this in the interview:** "Quarterly rate is 20 / 4 = 5%. After four quarters the factor is 1.05 to the power 4, which is 1.2155. So the effective annual rate is 21.55%."
+**Answer:** **21.55% per annum (approximately)**
+**Step-by-step working:**
+1. Nominal rate 20% compounded quarterly means 20 / 4 = 5% each quarter.
+2. Growth in one year = (1.05)^4. 1.05 x 1.05 = 1.1025; 1.1025 x 1.1025 = 1.21550625.
+3. Effective annual rate (EAR) = 1.21550625 - 1 = 0.21550625, about 21.55%.
+**Fast method (30 seconds):** Square twice: 1.05^2 = 1.1025 and 1.1025^2 = 1.2155. Subtract 1.
+**Check:** On 100: 100 -> 105 -> 110.25 -> 115.7625 -> 121.550625. Verified by script.
+**Explain simply:**
+- Nominal rate is the headline rate quoted per year; effective annual rate is what you really earn in a year after counting interest-on-interest.
+- Formula: EAR = (1 + nominal/n)^n - 1, with n compounding periods a year.
+**Likely follow-ups:** 1) Same 20% compounded half-yearly? 1.1^2 - 1 = 21%. 2) Monthly? (1 + 0.2/12)^12 - 1 = about 21.94%.
+**Common mistakes / traps:** Answering 20% (or 5% x 4 = 20%); that ignores interest on interest.
 
 ### Q47 ⭐ 🟡 A credit card charges 3% per month. What is the effective annual rate, correct to two decimals?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Annualising a monthly rate correctly by compounding, not multiplying by 12.
+**Say this in the interview:** "3% a month compounds twelve times. 1.03 to the power 12 is 1.4258, so the effective annual rate is about 42.58%, much more than 36%."
+**Answer:** **42.58% per annum**
+**Step-by-step working:**
+1. Monthly factor = 1.03.
+2. Over 12 months the factor is 1.03^12. 1.03^2 = 1.0609; ^4 = 1.12550881; ^8 = 1.26677008; ^12 = 1.26677008 x 1.12550881 = 1.42576089.
+3. EAR = 1.42576 - 1 = 0.42576, which is 42.58% (to 2 decimals).
+**Fast method (30 seconds):** Rough check: 3% x 12 = 36% is the floor; extra interest-on-interest pushes it to about 42-43%.
+**Check:** Using 36% nominal compounded monthly: (1 + 0.36/12)^12 - 1 = 42.58%. Verified by script.
+**Explain simply:**
+- Effective annual rate (EAR) is the true yearly cost when interest is added every period.
+- Credit-card rates look small per month but are very large when annualised, which is the lesson to tell users.
+**Likely follow-ups:** 1) 2% a month: EAR? 1.02^12 - 1 = 26.82%. 2) How much would Rs 10,000 owe after one year at 3% a month? 10,000 x 1.4258 = Rs 14,257.61.
+**Common mistakes / traps:** Quoting 36% (3 x 12) as the effective rate.
 
 ### Q48 ⭐ 🟡 What is the difference between the nominal and real interest rate? If the nominal rate is 10% and inflation is 5%, what is the real rate?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found)
+**What the interviewer is checking:** Whether you account for inflation when judging returns.
+**Say this in the interview:** "Nominal rate is the quoted rate; real rate adjusts for inflation. Exactly, real = 1.10 / 1.05 - 1 = 4.76%; the quick estimate is 10 - 5 = 5%."
+**Answer:** **Real rate about 4.76% exactly (about 5% by the quick subtraction)**
+**Step-by-step working:**
+1. Nominal rate = 10%, inflation = 5%.
+2. Quick estimate: real rate = nominal - inflation = 10% - 5% = 5%.
+3. Exact (Fisher) formula: (1 + nominal) / (1 + inflation) - 1 = 1.10 / 1.05 - 1.
+4. 1.10 / 1.05 = 1.047619, so the real rate = 4.76%.
+**Fast method (30 seconds):** Say "about 5%, precisely 4.76%". The quick subtraction is fine when both rates are small.
+**Check:** Rs 100 earns 10 -> Rs 110; prices rise 5%, so Rs 105 is needed to buy what Rs 100 did. 110 / 105 = 1.0476. Verified by script.
+**Explain simply:**
+- Nominal rate is the rate in rupees. Real rate is the rate in buying power, after prices have risen.
+- If inflation is higher than the nominal rate, the real rate is negative: you are getting poorer.
+**Likely follow-ups:** 1) Nominal 6%, inflation 7%? Real about -0.93% (1.06 / 1.07 - 1). 2) Why does it matter for HR? A 5% pay rise when inflation is 6% is a real pay cut.
+**Common mistakes / traps:** Subtracting only and quoting exactly 5% when the exact answer is asked.
 
 ### Q49 ⭐ 🟡 What is IRR, and how does it differ from NPV when comparing projects?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked in finance interviews (no company-specific report found); not reported for data analyst aptitude gates.
+**What the interviewer is checking:** Whether you understand the link between IRR and NPV and their limits.
+**Say this in the interview:** "IRR is the discount rate at which a project's NPV is exactly zero, in effect its own yearly return. NPV gives the rupee value created at my required rate; IRR gives a percentage. They can disagree when ranking projects."
+**Answer:** **IRR (internal rate of return) is the discount rate that makes NPV equal to zero; NPV gives a value in rupees at a chosen discount rate, whereas IRR is a rate in percent. The project is acceptable if IRR is above the required return.**
+**Worked mini-example (from Q43):** Pay Rs 1,800 now and get Rs 2,420 in 2 years. Solve 1,800 x (1 + r)^2 = 2,420, so (1 + r)^2 = 1.3444 and r = about 15.95%. At a 10% required return, IRR 15.95% is higher, so accept, agreeing with NPV = +200.
+**Check:** At 15.95%, 2,420 / 1.1595^2 = 1,800.0 (verified by script).
+**Explain simply:**
+- NPV: choose a discount rate first, then it tells you the value added in rupees.
+- IRR: no rate is chosen; it solves for the rate that breaks even.
+- A big project with a lower IRR can still have a higher NPV (it creates more rupees), so when projects are of different size or the choice is exclusive, NPV is the safer guide.
+- With cash flows that change sign more than once, IRR can give multiple answers; NPV does not.
+**Likely follow-ups:** 1) *Project A: NPV 500, IRR 12%. Project B: NPV 300, IRR 20%. Which?* If you can do only one and the discount rate is below both IRRs, pick A, the higher NPV. 2) *When is IRR good?* For a quick comparison of return rates on similar-size projects.
+**Common mistakes / traps:** Choosing the project with the higher IRR automatically; saying IRR is the same as profit margin.
 
 ### Q50 ⭐ 🟡 What is the present worth of Rs 1,320 due 2 years hence at 10% simple interest, and what is the true discount?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); present worth and true discount are among the occasional 'installment/discount' types on prep sites (unverified)
+**What the interviewer is checking:** Whether you know that present worth is the sum that grows to the given amount.
+**Say this in the interview:** "Present worth is the sum that grows to 1,320 in 2 years at 10% simple interest. It earns 20% in total, so 1,320 / 1.2 = 1,100. True discount is 1,320 - 1,100 = Rs 220."
+**Answer:** **Present worth Rs 1,100; true discount Rs 220**
+**Step-by-step working:**
+1. Rate for 2 years at 10% simple = 20%, so the amount is 1.20 times the present worth (PW).
+2. PW = 1,320 / 1.20 = Rs 1,100.
+3. True discount (TD) = amount due - PW = 1,320 - 1,100 = Rs 220.
+**Fast method (30 seconds):** TD is the simple interest on PW: 20% of 1,100 = 220. Alternatively PW = 1,320 x 100 / (100 + 10 x 2) = 1,100.
+**Check:** Forward: 1,100 + 20% of 1,100 = 1,320. Verified by script.
+**Explain simply:**
+- Present worth is the value today of a sum due in the future (simple-interest version).
+- True discount is the difference between the sum due and its present worth: it is the interest on the present worth, not on the sum due.
+**Likely follow-ups:** 1) Due 1,320 in 2 years at 5%? PW = 1,320 / 1.1 = 1,200, TD = 120. 2) What would the simple interest on 1,320 for 2 years at 10% be? 264, which is not the true discount.
+**Common mistakes / traps:** Taking 20% of 1,320 (264) as the discount; that is the banker's discount, not the true discount.
 
 ### Q51 ⭐ 🔴 A debt of Rs 6,300 at 10% simple interest per annum is cleared in two equal annual installments paid at the end of year 1 and year 2, each earning 10% simple interest from payment until the end of year 2. Find the installment.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); installment problems are in the Careers360 question taxonomy (unverified)
+**What the interviewer is checking:** Whether you handle instalments paid earlier than the final date, using the stated convention.
+**Say this in the interview:** "By the end of year 2 the debt becomes 6,300 x 1.2 = 7,560. The first installment earns one year of interest, so it counts as 1.1 x, the second counts as x. So 2.1x = 7,560 and x = Rs 3,600."
+**Answer:** **Rs 3,600 each**
+**Step-by-step working:**
+1. Debt at end of year 2 under simple interest = 6,300 x (1 + 10 x 2 / 100) = 6,300 x 1.2 = Rs 7,560.
+2. Installment x paid at end of year 1 earns 10% for the remaining 1 year: it grows to x + 0.1x = 1.1x.
+3. Installment x paid at end of year 2 earns nothing more: x.
+4. Total = 1.1x + x = 2.1x = 7,560.
+5. x = 7,560 / 2.1 = Rs 3,600.
+**Fast method (30 seconds):** Alternative: 2.1x = 7,560; 7,560 / 2.1 = 3,600 (7,560 / 21 = 360).
+**Check:** Reverse: 3,600 x 1.1 = 3,960; 3,960 + 3,600 = 7,560. Verified by script.
+**Explain simply:**
+- Under the convention stated in the question, each installment earns simple interest from the date paid to the end of year 2.
+- So both sides are compared at one date, the end of year 2.
+**Likely follow-ups:** 1) Three equal installments at the end of years 1, 2, 3 for 6,300 at 10%? Debt at year 3 is 8,190; installments are worth 1.2x + 1.1x + x = 3.3x, so x = Rs 2,481.82. 2) If installments earn no interest? Then 2x = 7,560 and x = 3,780.
+**Common mistakes / traps:** Ignoring interest on the early installment, or dividing 6,300 by 2 (3,150).
 
 ### Q52 ⭐ 🔴 A supplier offers terms of 2/10 net 30 (2% discount if paid within 10 days, otherwise full amount due in 30 days). What is the approximate annualised simple interest rate of forgoing the discount, using a 365-day year?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked in finance courses (no company-specific report found); not reported for data analyst aptitude gates.
+**What the interviewer is checking:** Whether you can annualise a small discount to see its true cost.
+**Say this in the interview:** "Skipping the discount lets you keep the money 20 more days at a cost of 2 per 98 paid. That is 2.04% for 20 days, and annualised 2.04% x 365/20 is about 37.2%."
+**Answer:** **About 37.2% per annum (simple, 365-day year)**
+**Step-by-step working:**
+1. Take an invoice of Rs 100. Pay in 10 days and you pay Rs 98; pay on day 30 and you pay Rs 100.
+2. The extra Rs 2 buys the use of Rs 98 for 20 extra days (day 10 to day 30).
+3. Rate for 20 days = 2 / 98 = 2.0408%.
+4. Annualised: 2.0408% x 365 / 20 = 2.0408 x 18.25 = 37.24%.
+**Fast method (30 seconds):** Fast: 2 / 98 x 365 / 20 is about 2% x 18 = 36%, nudged up to about 37%.
+**Check:** 365/20 = 18.25 periods; 18.25 x 2.0408 = 37.24. Verified by script.
+**Explain simply:**
+- Forgoing a discount is like borrowing from the supplier at a high interest rate.
+- A rate of 37% is much higher than bank loan rates, so it is almost always better to pay within 10 days (even with a bank loan).
+**Likely follow-ups:** 1) 1/10 net 30? 1/99 x 365/20 = about 18.43%. 2) Effective compound rate? (1 + 2/98)^(18.25) - 1 = about 45%.
+**Common mistakes / traps:** Using 2 / 100 instead of 2 / 98 (giving 36.5%), or using 30 days instead of 20.
+
