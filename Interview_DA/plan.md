@@ -49,7 +49,7 @@
 
 | # | Book | Type | Q target |
 |---|---|---|---|
-| 0 | Career Switch & Interview Process Guide (HR → DA) | Guide | Guide + 100 FAQs |
+| 0 | Career Switch & Interview Process Guide (HR → DA) | Guide | Guide + 123 FAQs (target 100) |
 | 1 | Excel for Data Analysts (formulas → Power Query → dashboards) | Q&A + practical | 600 |
 | 2 | SQL (easy → hard, scenario-based) | Q&A + code | 600 |
 | 3 | Python & pandas for Analysts (from zero) | Q&A + code | 600 |
@@ -123,7 +123,7 @@ Each skill book ends with a **"How to Develop This Skill" part**: zero-to-job-re
 | 4 | Round-by-round expectations: online test, SQL live, Excel/Power BI task, case/guesstimate, take-home, HR, GD |
 | 5 | How HR experience is an advantage (people analytics, stakeholder skills, domain) |
 | 6 | 6-month learning roadmap for a non-technical beginner |
-| 7 | 100 FAQs on switching careers |
+| 7 | 100+ FAQs on switching careers (123 delivered) |
 
 ### Book 1 — Excel (600)
 | Part | Topic | Qs |
@@ -466,15 +466,15 @@ interviews/data_analyst/
 | Book | Parts | Questions | Answers | Review |
 |---|---|---|---|---|
 | Phase 0 | — | — | — | ✅ research done (JD sample 186; pending your approval) |
-| 0 | 7 sections | ✅ 123 FAQs + guide outline | ⬜ | ⬜ |
-| 1 Excel | 12 | ⬜ | ⬜ | ⬜ |
-| 2 SQL | 12 | ✅ 664 (after removing 30 cross-part duplicates; see research/dedupe_log_book02.md) | ⬜ | ⬜ |
-| 3 Python | 12 | ⬜ | ⬜ | ⬜ |
-| 4 Power BI | 12 | ⬜ | ⬜ | ⬜ |
-| 5 Stats & Maths | 12 | ⬜ | ⬜ | ⬜ |
-| 6 Aptitude | 10 | ⬜ | ⬜ | ⬜ |
-| 7 Guesstimates & Cases | 9 | ⬜ | ⬜ | ⬜ |
-| 8 Scenarios | 9 | ⬜ | ⬜ | ⬜ |
+| 0 | 7 sections | ✅ 123 FAQs + guide outline | ✅ guide (Book00_Guide.md) + 123 FAQ answers | ✅ Wave C done 2026-10-24 (see Book00_CareerSwitch_Process/review_Book00.md; research-based, many items "No reliable data found") |
+| 1 Excel | 12 | ✅ 638 (after removing 11 cross-part duplicates and adding 5 gap-fills; see research/dedupe_log_book01.md) | ✅ 638 (all 12 parts merged; formulas run in LibreOffice 24.2 where supported, 365-only functions/pivots/Power Query/VBA labelled "not run here") | ✅ Wave C done 2026-10-22 (see Book01_Excel/review_Book01.md; never run in real Excel; several Microsoft/Google facts remain unverified) |
+| 2 SQL | 12 | ✅ 664 (after removing 30 cross-part duplicates; see research/dedupe_log_book02.md) | ✅ 664 (all 12 parts merged; code run on SQLite 3.45.1 / pandas 3.0.5; non-SQLite syntax labelled "not run here") | ✅ Wave C done 2026-10-21 (see Book02_SQL/review_Book02.md; dialect claims for non-SQLite engines remain unverified) |
+| 3 Python | 12 | ✅ 672 (after removing 9 cross-part duplicates; see research/dedupe_log_book03.md; research was search-snippet only, no page fetched in full, stars are judgement) | ✅ 672 (all 12 parts merged; every snippet run on Python 3 / pandas 3.0.5 / numpy 2.5.3 (plots on matplotlib 3.11.2 / seaborn 0.13.2, Agg backend, images mostly not viewed); live API calls not run (mock server); pandas 2.x behaviour labelled "from memory"; "Asked at" mostly "no company-specific report found") | ✅ Wave C done 2026-11-12 (see Book03_Python_Pandas/review_Book03.md; pandas 2.x claims unverified, no internet) |
+| 4 Power BI | 12 | ✅ 624 (after removing 36 cross-part duplicates and adding 21 gap-fills; see research/dedupe_log_book04.md) | ✅ 624 (all 12 parts merged; results reproduced in pandas 3.0.5; DAX/M/click-paths labelled "not run here"; Microsoft/Tableau pages unreachable so version/licensing facts "from memory, unverified") | ✅ Wave C done 2026-11-01 (see Book04_PowerBI_Viz/review_Book04.md) |
+| 5 Stats & Maths | 12 | ✅ 628 (after removing 10 cross-part duplicates and adding 1 gap-fill; see research/dedupe_log_book05.md; research was search-snippet only, all page fetches blocked, stars are judgement) | ✅ 628 (all 12 parts merged; every calculation and Python snippet run on numpy 2.5.3 / pandas 3.0.5 / scipy 1.18.1 / statsmodels; Excel formulas labelled "not run in Excel here"; "Asked at" is mostly "no company-specific report found") | ✅ Wave C done 2026-11-06 (see Book05_Stats_Maths/review_Book05.md; ~172 answers fixed; Excel never run; "Asked at" claims snippet-level) |
+| 6 Aptitude | 11 | ✅ 724 (after removing 5 cross-part duplicates; see research/dedupe_log_book06.md; research was search-snippet only, no page fetched, stars are judgement; answers not yet computed) | ✅ 724 (all 11 parts merged; every numeric/logic/DI/DS item re-solved independently by code in Wave C; SQL run on sqlite3; Excel and non-SQLite items not run) | ✅ Wave C done 2026-11-12 (see Book06_Aptitude/review_Book06.md; company claims unverified, snippet-level research) |
+| 7 Guesstimates & Cases | 9 | ✅ 633 (no cross-part duplicates removed; see research/dedupe_log_book07.md; research was search-snippet only, no page fetched, stars are judgement; figures not yet computed) | ✅ 633 (all 9 parts merged; every figure recomputed independently by code in Wave C; base numbers are labelled assumptions, unverified) | ✅ Wave C done 2026-11-12 (see Book07_Guesstimates_Cases/review_Book07.md; real-world base numbers unverified, company claims snippet-level) |
+| 8 Scenarios | 9 | ✅ 640 (after removing 1 cross-part duplicate; see research/dedupe_log_book08.md; research was search-snippet only, no page fetched, stars are judgement; figures not yet computed) | ✅ 640 (all 9 parts merged; every figure recomputed independently by code in Wave C; legal/tool facts labelled from memory, unverified) | ✅ Wave C done 2026-11-12 (see Book08_Scenarios/review_Book08.md; company claims snippet-level, legal and tool facts unverified) |
 | 9 ML + AI | 12 | ⬜ | ⬜ | ⬜ |
 | 10 Domain | 8 | ⬜ | ⬜ | ⬜ |
 | 11 Soft Skills | 10 | ⬜ | ⬜ | ⬜ |

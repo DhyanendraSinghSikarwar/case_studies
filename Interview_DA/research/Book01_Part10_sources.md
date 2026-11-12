@@ -1,0 +1,32 @@
+# Book 1 Part 10 sources (scenario/practical tasks: MIS reports, HR attrition sheet)
+Accessed 2026-10-21 via WebSearch and WebFetch. 6 distinct searches returned results (2 more were rate-limited with no results; 1 fetch got HTTP 429, 1 returned an empty page). Mostly search snippets; only the pages marked "fetched" were read through the fetch tool (which summarises through a small model, so this is not a verbatim full read). No first-hand 2025-26 Hyderabad/Bengaluru Excel-scenario interview report was found; company attributions are unverified.
+
+| Source | URL | Used for | Type | Recency | Fetch status |
+|---|---|---|---|---|---|
+| Indeed India: MIS executive interview questions | https://in.indeed.com/hire/interview-questions/mis-executive | "How do you prepare an MIS report using Excel?", "How do you keep worksheets secure?", routine and handover questions | hiring-site list (10 Qs) | undated | fetched |
+| x0pa MIS executive hiring guide | https://x0pa.com/hiring/mis-executive-interview-questions/ | data accuracy, error handling, large datasets, lookups (as summarised by search; about 60 Qs, May 2026) | hiring guide | 2026 | search snippet only (fetch returned empty) |
+| Glassdoor EXL Service interview reviews (E37901) | https://www.glassdoor.sg/Interview/EXL-Service-Interview-E37901-RVW97726986.htm | candidates report basic Excel round then a hands-on Excel test with formulas | candidate reviews | 2022-2025 | snippet only |
+| Glassdoor MIS interview search ("Excel based questions on sum and gst") | https://clear.glassdoor.nl/Interview/mis-interview-questions-SRCH_KO0,3_IP29.htm | GST/sum question seen as a title only | candidate reviews | undated | snippet only |
+| Careers360 Top 50 Excel questions | https://www.careers360.com/courses-certifications/articles/excel-interview-questions-and-answers | advanced formulas, pivots, VBA, Power Query for MIS-type roles | prep article | 2025 | snippet only |
+| AIHR attrition rate | https://www.aihr.com/blog/attrition-rate/ | attrition % = departures / average headcount x 100; average = (start+end)/2; voluntary vs involuntary; tenure bands (0-3, 3-6, 6-12 months, 1+ yr). First-year attrition formula is my inference, not stated by AIHR | HR vendor blog | undated | fetched |
+| SumHR / Ordio / upgrowth attrition guides | https://sumhr.com/glossary/attrition-formula/ | same formula; ending headcount flatters growing firms; Excel layout (B5/B6/B7) | vendor blogs | 2025 | snippet only |
+| Microsoft: DATEDIF | https://support.microsoft.com/en-us/office/datedif-function-25dba1a4-2812-480b-84dd-8b32a451b35c | units Y/M/D/YM/YD/MD; "MD" unreliable; start > end gives #NUM!; kept for Lotus compatibility; listed for Excel 2016-365 | official | current | fetched |
+| Microsoft: NETWORKDAYS | https://support.microsoft.com/en-us/office/networkdays-function-48e717bf-a7a3-495f-969e-5005e3eb18e7 | optional holidays range; text dates give #VALUE!; NETWORKDAYS.INTL for custom weekends | official | current | fetched |
+| Microsoft: tips for improving Excel performance | https://support.microsoft.com/en-US/excel/tips-for-improving-excel-s-performance | slow-workbook question; faster lookups, XLOOKUP/XMATCH in 365 | official | current | intro seen in snippet only |
+| spreadsheetweb: Excel is running slow | https://spreadsheetweb.com/excel-is-running-slow/ | manual calc, conditional formatting load, 64-bit | blog | undated | snippet only |
+| Dataford reconciliation questions | https://dataford.io/questions/explain-the-process-of-reconciling-two-mismatched-datasets-and-what-steps-you-take-to-find-the-discrepancy | reconciliation as a standard prompt (XLOOKUP/VLOOKUP/INDEX-MATCH, SUMIF, pivot) | practice platform | undated | snippet only (fetch 429) |
+| ExcelDemy / The Bricks reconciliation guides | https://www.thebricks.com/resources/guide-how-to-do-a-reconciliation-in-excel-using-ai | clean both sets, key, variance column, pivot summary | tutorials | 2025 | snippet only |
+| EmployTest pivot test; Maven Analytics HR attrition project; GitHub HR-Analysis-Excel project | https://mavenanalytics.io/project/14358 | HR attrition dashboard tasks: attrition by gender, education, age group, slicers by department | practice projects | undated | snippet only |
+| Glassdoor ExcelR and Infosys Hyderabad reviews | https://www.glassdoor.com/Interview/ExcelR-Interview-E1335324-RVW101705455.htm | Excel appears in screening and technical rounds; only generic questions quoted | candidate reviews | 2024-2025 | snippet only |
+| Repo research files | research/interview_processes.md, research/jd_sample_mis_people.md, research/market_skills_2026.md | Novartis Excel case (pivots, rank, formulas); MIS/payroll/HR-analytics JDs (e.g. Ninjacart MIS: VLOOKUP, pivot, macros; Cohere payroll: MIS reports); Excel in 60% of in-scope JDs, dashboards/reporting/MIS 52.5% | internal research | 2026 | read (grep extracts only, not in full) |
+
+## Star reasoning
+- Three stars (13): MIS report preparation, attrition formula, tenure, working days, reconciliation, accuracy checks, error handling, report automation, absenteeism, total mismatch. Each appears in several MIS sources and in the MIS/payroll/HR JDs (Excel 60%, MIS/reporting 52.5%). The attendance-hours task is a common live test but backed only by general practice, so it is rated 3 by analogy with the EXL hands-on test; treat as moderate confidence.
+- Two stars (26): variants of the core tasks (voluntary split, tenure bands, dashboard, payroll, hiring funnel, ranking, sheet protection, GST, slowness, Novartis-style case). Seen in one or two sources or implied by JDs.
+- One star (21): differentiators (cohorts, compa-ratio, Sheets/2016 differences, audit, stakeholder dispute). Gap-fills.
+
+## Counts and limits
+- Gap-fills (topic not tied to any source above, written from standard practice): 38 of 60. The other 22 are tied loosely to a source (a topic, not a verified question).
+- No question here is claimed as asked at a named company, except the Novartis Excel case which comes from the repo's interview_processes.md (a candidate report, unverified).
+- Blocked or empty: Glassdoor only as search snippets (not fetched), Reddit/AmbitionBox not surfaced, dataford 429, x0pa fetch empty. Sample: roughly 10 search result sets and 7 successful fetches; heavy bias toward prep content over candidate reports.
+- Overlap watch: questions on pivots, lookups, Power Query, VBA and dashboards belong to Parts 3, 4, 7, 8, 11; those here are scenario framed (attrition dashboard, automation choice).
