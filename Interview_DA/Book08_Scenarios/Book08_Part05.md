@@ -622,7 +622,7 @@ Inline data: Cohort Jan: 1,000 users, month-3 active 520. Cohort Feb: 800 users,
 **Pitfalls:** Comparing counts; different cohort mix (more discount-led signups in March); a cohort not yet fully observed.
 **Deliverable:** A cohort heatmap, a note on March, and a hypothesis list ranked by effort to check.
 
-**Likely follow-ups:** 1) *Is 41.7 vs 45.0 a real gap?* With these sizes it could be noise for small cohorts; test it. 2) *What would you do?* Compare March channels first.
+**Likely follow-ups:** 1) *Is the gap real?* March against January (41.7% vs 52.0%) is far beyond chance (a two-group test gives p well below 0.001, checked by script). March against February (41.7% vs 45.0%) is not clear (p about 0.14), so I would not call February better than March from this table. 2) *What would you do?* Compare March channels first.
 **Common mistakes / traps:** Saying Jan retained "most users" because 520 is large; ignoring cohort size.
 
 ### Q35 ⭐⭐⭐ 🟡 A training programme is evaluated with the figures below. How would you analyse whether it worked, and what is the difference in attrition rate?
@@ -868,7 +868,7 @@ Inline data: Group A: 2,000 visitors, 100 orders, AOV 1,500. Group B: 3,000 visi
 **Pitfalls:** Looking at AOV alone; ignoring that groups differ in traffic source or product mix; small order counts (90 and 100 orders mean noisy averages); outliers inflating B's AOV (check the median).
 **Deliverable:** A small table with visitors, orders, conversion, AOV and revenue per visitor, plus one line on which group to invest in and what to test.
 
-**Likely follow-ups:** 1) *Which is better for the business?* Depends on margin and cost of acquiring visitors. 2) *Can B fix it?* Raising its conversion from 3.0% to 3.4% would match A (66 x 75/66 needs 3.41%).
+**Likely follow-ups:** 1) *Which is better for the business?* Depends on margin and cost of acquiring visitors. 2) *Can B fix it?* Raising its conversion from 3.0% to 3.4% would match A (it needs 75 / 2,200 = 3.41%).
 **Common mistakes / traps:** Picking B because of AOV; mixing total revenue with per-visitor revenue.
 
 ### Q48 ⭐⭐ 🟡 How would you analyse seasonality in sales data, and how would you use it for next quarter's plan?
@@ -1054,7 +1054,7 @@ Inline data: Group A: 2,000 visitors, 100 orders, AOV 1,500. Group B: 3,000 visi
 **Plan:**
 1. Data: order time, pickup, delivery time, city, slot, status.
 2. Clean: remove impossible values (negative times), keep late orders (do not delete the tail), treat cancelled separately.
-3. Plot a histogram and compute mean, median, 90th and 95th percentile. Illustration with 16 orders: mean 61.8 minutes, median 43.5, 90th percentile 110 (a few very late orders pull the mean up).
+3. Plot a histogram and compute mean, median, 90th and 95th percentile. Illustration with 16 orders (minutes, exercise data: 20, 25, 28, 30, 34, 38, 43, 43, 44, 80, 85, 89, 90, 100, 120, 120): mean 61.8, median 43.5, 90th percentile 110 (a few very late orders pull the mean up; 9 of 16 arrived within 45 minutes).
 4. Compute the share delivered within the promise.
 5. Cut by city, hour and rider, to find where the tail lives.
 **Method choice and why:** Median for typical; percentile or share-on-time for the promise; mean only for capacity planning, because it adds up total effort.
@@ -1187,7 +1187,7 @@ Inline data: Group A: 2,000 visitors, 100 orders, AOV 1,500. Group B: 3,000 visi
 **Clarify first:** What is the numerator and denominator exactly (visitors or sessions)? Which segments and period? How big a gap would matter to the business?
 **Plan:**
 1. Build a table: segment, conversions, visitors, rate.
-2. Add a 95% confidence interval for each rate. Illustration: 3 of 10 is 30% with an interval of about 2% to 58% (very wide); 120 of 600 is 20% with an interval of about 17% to 23%. The 30% looks higher, but we cannot say it is.
+2. Add a 95% confidence interval for each rate. Illustration: 3 of 10 is 30% with an interval of about 11% to 60% (very wide); 120 of 600 is 20% with an interval of about 17% to 23%. The 30% looks higher, but the ranges overlap, so we cannot say it is.
 3. Flag or group segments below a minimum count (for example under 100 visitors).
 4. Never average segment rates; recompute the overall rate as total conversions divided by total visitors.
 5. When comparing segments, use a test of two proportions, or ranges that do not overlap, and beware of testing many segments (some will look different by chance).
@@ -1196,7 +1196,7 @@ Inline data: Group A: 2,000 visitors, 100 orders, AOV 1,500. Group B: 3,000 visi
 **Deliverable:** A table or chart with error bars, small segments greyed out, and a plain note on what can and cannot be concluded.
 
 **Likely follow-ups:** 1) *Minimum sample size?* Depends on the rate and the difference to detect; use a power calculation. 2) *Why not just a percentage?* It hides reliability.
-**Common mistakes / traps:** Averaging percentages; trusting tiny segments. (Intervals are computed, rounded, normal approximation.)
+**Common mistakes / traps:** Averaging percentages; trusting tiny segments. (Intervals are computed and rounded, using the Wilson method, which behaves better than the simple textbook formula for small counts.)
 
 ### Q65 ⭐⭐ 🟡 How do you analyse data you do not have the domain knowledge for, for example a logistics dataset on your first week?
 **Asked at:** commonly asked (no company-specific report found); learning speed in a new domain is a common behavioural-technical question (unverified).
@@ -1245,7 +1245,7 @@ Inline data: Group A: 2,000 visitors, 100 orders, AOV 1,500. Group B: 3,000 visi
 **Clarify first:** What clock starts and stops the timer (does waiting for the customer count)? Priority levels? What is the service target?
 **Plan:**
 1. Data: ticket id, created, first response, resolved, status, priority, team, reopen flag.
-2. Resolved tickets: compute median and 90th percentile time by priority; Illustration with 12 resolved tickets (days): mean 3.9, median 3.0, a few high values pull the mean.
+2. Resolved tickets: compute median and 90th percentile time by priority; Illustration with 12 resolved tickets (days, exercise data: 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 9, 12): mean 3.9, median 3.0, 90th percentile about 8.6; the two long tickets pull the mean up.
 3. Open tickets: compute their current age; report counts above thresholds (30, 60, 90 days) and the oldest list.
 4. Show the share resolved within target by cohort of creation month (the most recent months look better only because slow tickets are not closed yet).
 5. Investigate the old tickets one by one (blocked, waiting on others, forgotten).
@@ -1500,7 +1500,7 @@ Inline data: Exercise data.
 **Pitfalls:** Deleting names but leaving a unique combination (grade, joining date, location); forgetting hidden columns; forwarding the same file to others.
 **Deliverable:** The reduced file plus a short note of what was removed and why, logged for audit.
 
-**Likely follow-ups:** 1) *What if the manager insists on salary?* Ask for the business reason and escalate to the data owner. 2) *Minimum group size?* A company rule; commonly 5 or more (confirm the policy).
+**Likely follow-ups:** 1) *What if the manager insists on salary?* Ask for the business reason and escalate to the data owner. 2) *Minimum group size?* A company rule; I have seen 5 or more used (from memory, unverified; confirm the policy).
 **Common mistakes / traps:** Sharing the full export "just in case"; thinking an employee ID is anonymous.
 
 ### Q81 ⭐ 🟢 How would you analyse feedback from an employee engagement survey when comments could identify people?
@@ -1729,7 +1729,7 @@ Inline data: Exercise data.
 **Pitfalls:** Filtering and copying huge ranges; opening the same file on a weak laptop; losing the original; no documentation of steps.
 **Deliverable:** A summary workbook (small), the reproducible query or script, and a note on when it was last refreshed.
 
-**Likely follow-ups:** 1) *Why Power Query?* It records the steps and handles large files better. 2) *More than 1 million rows?* Excel cannot hold them in a sheet; use the Data Model, a database or Python.
+**Likely follow-ups:** 1) *Why Power Query?* It records the steps and handles large files better. 2) *More than 1 million rows?* A sheet cannot hold them (from memory, unverified); use the Data Model, a database or Python.
 **Common mistakes / traps:** Buying a bigger computer rather than changing the method.
 
 ### Q93 ⭐ 🟡 How would you analyse the data to decide whether to open a new store location, given limited internal data?

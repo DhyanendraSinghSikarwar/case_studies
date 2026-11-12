@@ -229,7 +229,7 @@ Data:
 **What the interviewer is checking:** That you understand mix shift (Simpson's paradox).
 **Say this in the interview:** "Both segments improved, but traffic shifted to the low-converting segment, mobile. The overall rate is a weighted average, so a change in weights can pull it down."
 
-**What the data shows:** Mobile share of sessions went from 40% to 70%.
+**What the data shows:** (This pattern, where every segment improves but the total falls, is called Simpson's paradox.) Mobile share of sessions went from 40% to 70%.
 **Working:**
 1. Period 1 orders: 40,000 x 2.0% = 800; 60,000 x 5.0% = 3,000; total 3,800 of 100,000 sessions = 3.80%.
 2. Period 2 orders: 70,000 x 2.2% = 1,540; 30,000 x 5.5% = 1,650; total 3,190 of 100,000 = 3.19%.
@@ -326,7 +326,7 @@ Data (headcount constant at 1,000 across both months):
 - Regretted exits (people you wanted to keep).
 - Is the headcount really constant?
 **Next step / recommendation:** Pull Support leavers by manager, tenure, shift and reason; share a draft with HR business partner before conclusions; track weekly.
-**Likely follow-ups:** 1) *Is it a crisis?* Judge by annualised rate (6.8% a month is high) and reasons. 2) *Why not just look at Sales?* Its change is tiny.
+**Likely follow-ups:** 1) *Is it a crisis?* Judge by the reasons and by how far 6.8% a month sits above Support's usual 2.8% and the company's own history; I would not call it a crisis from one month. 2) *Why not just look at Sales?* Its change is tiny.
 **Common mistakes / traps:** Using percentages without leaver counts; naming a cause before exit data; confusing pp and percent.
 
 ### Q15 ⭐⭐⭐ 🟡 This week's orders look low. Is this a real drop or normal noise? Calculate how many standard deviations below the 8-week mean it is.
@@ -550,7 +550,7 @@ Data: last quarter 50 offers, 40 accepted; this quarter 50 offers, 30 accepted.
 2. Change in points = 60 - 80 = -20 percentage points.
 3. Relative change = (60 - 80) / 80 = -25%.
 **Result:** -20 percentage points (-25% relative); 10 fewer acceptances.
-**Caveats / what else I would check:** With 50 offers per quarter, the sampling noise is large (the standard error of a 70% rate on 50 offers is about 6.5 points). A Fisher exact test on these counts gives p of about 0.049, borderline. So the drop is probably real but not certain, and the size is uncertain. Check: (1) role, level and location mix of offers; (2) offered salary versus market and versus candidates' expectations; (3) decline reasons from recruiters or exit-from-process notes; (4) time between final interview and offer (slow offers lose people); (5) competitor offers; (6) the same candidates' counter-offers; (7) whether offers still pending are counted as declined (definition).
+**Caveats / what else I would check:** With 50 offers per quarter, the sampling noise is large (the standard error of a 70% rate on 50 offers is about 6.5 points). A Fisher exact test (a standard test for whether two small-count proportions really differ) on these counts gives p of about 0.049, borderline (p is the chance of a gap this big if nothing had really changed). So the drop is probably real but not certain, and the size is uncertain. Check: (1) role, level and location mix of offers; (2) offered salary versus market and versus candidates' expectations; (3) decline reasons from recruiters or exit-from-process notes; (4) time between final interview and offer (slow offers lose people); (5) competitor offers; (6) the same candidates' counter-offers; (7) whether offers still pending are counted as declined (definition).
 **Next step / recommendation:** Break acceptances by role family and recruiter, read the decline reasons, and bring HR a ranked list of likely causes with evidence, not one story. Track acceptance monthly with the offer count shown.
 **Likely follow-ups:** (1) Is it significant? Borderline, so do not overclaim. (2) What would you tell HR today? "It fell 20 points; the cause is not yet known; I will report by Thursday."
 **Common mistakes / traps:** Calling 20 points "20%"; ignoring that 50 is a small sample; counting offers still open as declined; giving HR a cause before checking.
@@ -706,8 +706,8 @@ Data: this week the orders table has 12,500 rows but 10,000 distinct order IDs; 
 1. 20:00 UTC + 5:30 = 25:30, which is 01:30 the next day.
 2. So the order date in IST is 1 April, not 31 March.
 3. The IST day 31 March covers 18:30 UTC on 30 March to 18:30 UTC on 31 March.
-**Result:** 1 April, 01:30 IST (IST has no daylight saving).
-**Caveats / what else I would check:** A false dip appears when part of the data is cut by UTC date and part by IST date: if the report filters UTC dates but the business thinks in IST, late-evening IST orders are shifted from one day to the other; at month-end, evening orders of 30 or 31 March move into April, making March look lower and April higher. A partial load that stops at midnight UTC also leaves the last 5.5 hours of the IST day missing, so "today" looks low. Check where the conversion occurs (database, BI tool or report) and that it happens only once; also check whether source and report both say which zone they use.
+**Result:** 1 April, 01:30 IST (IST has no daylight saving, from memory, unverified).
+**Caveats / what else I would check:** A false dip appears when the report cuts days by UTC date but the business thinks in IST. The first 5.5 hours of each IST day (00:00 to 05:30 IST) fall on the previous UTC date, so those early-morning orders are counted in the wrong day; at month-end, orders placed just after midnight IST on 1 April are counted in March, making April look lower and March higher. A feed that is only loaded up to midnight UTC is also cut at 05:30 IST, so the IST "today" can look incomplete. Check where the conversion occurs (database, BI tool or report) and that it happens only once; also check whether source and report both say which zone they use.
 **Next step / recommendation:** Convert to IST once in a single place, document it, and use the same cut for all reports; compare with the finance ledger at month-end.
 **Likely follow-ups:** (1) Why does it matter at month-end? Revenue lands in the wrong month. (2) What if the timestamps are naive? Confirm the zone with the owner before converting.
 **Common mistakes / traps:** Converting twice; forgetting the half hour; reporting UTC dates to an Indian business.
@@ -956,7 +956,7 @@ Data: last month 400 responses (200 promoters, 40 detractors). This month 40 res
 **Say this in the interview:** "This month's NPS is 35 on 40 responses; it is a 5-point fall, but the uncertainty on 40 responses is about plus or minus 20 points, so I would not act on it yet."
 **What the data shows:** Last month's survey had 400 responses and this month's only 40.
 **Working:**
-1. NPS = % promoters minus % detractors.
+1. NPS (Net Promoter Score) = % promoters (customers scoring 9 to 10 on "would you recommend us?") minus % detractors (scoring 0 to 6), so it runs from -100 to +100.
 2. Last month: 200/400 = 50% and 40/400 = 10%, so NPS = 40.
 3. This month: 18/40 = 45% and 4/40 = 10%, so NPS = 35.
 4. Approx 95% margin of error: last month about plus or minus 6.5 points; this month about plus or minus 20.3 points (normal approximation, 1.96 x standard error).
@@ -1142,7 +1142,7 @@ Data: 1,200 employees invited. Last survey 900 responded; this survey 300 respon
 **What the data shows:** The sample is one third of its former size, and non-response is large.
 **Working:**
 1. Response rate: 900 / 1,200 = 75% last time; 300 / 1,200 = 25% now.
-2. Worst-case margin of error on eNPS (the score ranges from -100 to +100): 900 responses give about plus or minus 6.5 points; 300 give about plus or minus 11.3 points (95%, normal approximation; the real value is smaller if many answers are neutral).
+2. Worst-case margin of error on eNPS (employee Net Promoter Score, the same promoter-minus-detractor score asked of staff, from -100 to +100): 900 responses give about plus or minus 6.5 points; 300 give about plus or minus 11.3 points (95%, normal approximation; the real value is smaller if many answers are neutral).
 3. Seventy-five percent of staff did not answer now, so non-response bias is the bigger risk.
 **Result:** Without the actual eNPS values, only a fall bigger than about 11 points on 300 responses can be called statistically real, and even then only for the people who answered.
 **Caveats / what else I would check:** Mix of respondents versus employee population by department, tenure, location and grade; whether the invitation, reminders, survey length or timing changed; anonymity concerns; whether disengaged people are more or less likely to respond.
