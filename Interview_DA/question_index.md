@@ -3381,6 +3381,730 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 ## Book 6 — Aptitude & Business Maths
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B6P01Q1 | 6 | 1 | How do you calculate percentage increase and percentage decrease between two numbers, and which value goes in the denominator? |
+| B6P01Q2 | 6 | 1 | What is 15% of Rs 840? |
+| B6P01Q3 | 6 | 1 | A company's headcount rises from 250 to 300. What is the percentage increase? |
+| B6P01Q4 | 6 | 1 | On what base are profit percentage, loss percentage and discount percentage each calculated (cost price or marked price)? |
+| B6P01Q5 | 6 | 1 | An article is bought for Rs 800 and sold for Rs 920. What is the profit percentage on cost price? |
+| B6P01Q6 | 6 | 1 | An article costing Rs 500 is sold at a 20% loss. What is the selling price? |
+| B6P01Q7 | 6 | 1 | The marked price of a shirt is Rs 1,200 and the shop gives a 25% discount. What is the selling price? |
+| B6P01Q8 | 6 | 1 | What is the difference between cost price, marked price, selling price and discount, and how are they linked by formulas? |
+| B6P01Q9 | 6 | 1 | An employee's salary of Rs 40,000 per month is raised by 10%. What is the new monthly salary? |
+| B6P01Q10 | 6 | 1 | If 20% of a number is 45, what is the number? |
+| B6P01Q11 | 6 | 1 | The attrition rate rose from 10% to 12%. What is the increase in percentage points, and what is the percentage increase? |
+| B6P01Q12 | 6 | 1 | A store sells a shirt marked Rs 1,200 after successive discounts of 15% and then 10%. What is the selling price? |
+| B6P01Q13 | 6 | 1 | How do you find the single equivalent discount for two successive discounts of 20% and 10%? |
+| B6P01Q14 | 6 | 1 | The price of an item rises by 25%. By what percentage must a household cut its consumption so that its spending stays the same? |
+| B6P01Q15 | 6 | 1 | A salary is increased by 20% and then decreased by 20%. What is the net percentage change? |
+| B6P01Q16 | 6 | 1 | A trader marks an article 40% above its cost price and then allows a 20% discount on the marked price. What is the profit percentage on cost price? |
+| B6P01Q17 | 6 | 1 | A trader sells an article for Rs 1,080 and earns a 20% profit on cost price. What is the cost price? |
+| B6P01Q18 | 6 | 1 | Two articles are each sold for Rs 1,200. One is sold at a 20% gain and the other at a 20% loss. What is the overall profit or loss, and what percentage of the total cost price is it? |
+| B6P01Q19 | 6 | 1 | The marked price of an article is Rs 2,000 and it is sold for Rs 1,600. What is the discount percentage? |
+| B6P01Q20 | 6 | 1 | A's salary is 25% more than B's salary. By what percentage is B's salary less than A's salary? |
+| B6P01Q21 | 6 | 1 | The price of a product rises 10% and then rises another 20%. What is the net percentage increase? |
+| B6P01Q22 | 6 | 1 | In an election with two candidates, the winner gets 55% of the votes and wins by 2,000 votes. What is the total number of votes cast (assuming every vote is valid)? |
+| B6P01Q23 | 6 | 1 | A student scores 35% marks and fails by 20 marks. Another student scores 42% and passes by 15 marks. What are the maximum marks, and what is the pass mark? |
+| B6P01Q24 | 6 | 1 | A town has a population of 50,000 and it grows 10% each year, compounded on the previous year's population. What is the population after 2 years? |
+| B6P01Q25 | 6 | 1 | What is the difference between markup percentage and margin percentage? If an item costs Rs 80 and sells for Rs 100, what are both? |
+| B6P01Q26 | 6 | 1 | The cost price of 12 articles equals the selling price of 10 articles. What is the profit percentage on cost price? |
+| B6P01Q27 | 6 | 1 | What is the formula for the net percentage change after two successive changes of x% and y%, and why can you not simply add them? |
+| B6P01Q28 | 6 | 1 | A retailer buys 10 articles at Rs 50 each. He sells 6 of them at Rs 70 each and the other 4 at Rs 45 each. What is the overall profit percentage on cost price? |
+| B6P01Q29 | 6 | 1 | A laptop costs Rs 50,000 before tax and GST of 18% is added. What is the final bill amount? |
+| B6P01Q30 | 6 | 1 | A salesperson earns a fixed salary of Rs 15,000 per month plus a 4% commission on monthly sales. If sales are Rs 3,50,000 in a month, what is the total earning? |
+| B6P01Q31 | 6 | 1 | An employee's CTC is Rs 6,00,000 per year. Basic pay is 40% of CTC and HRA is 50% of basic pay. What is the annual HRA? |
+| B6P01Q32 | 6 | 1 | After a 20% discount, the selling price of a jacket is Rs 1,440. What was the marked price? |
+| B6P01Q33 | 6 | 1 | The side of a square is increased by 10%. By what percentage does its area increase? |
+| B6P01Q34 | 6 | 1 | An employee gets an 8% hike that takes the monthly salary to Rs 54,000. What was the salary before the hike? |
+| B6P01Q35 | 6 | 1 | Find x if x% of 360 equals 54. |
+| B6P01Q36 | 6 | 1 | A shopkeeper buys an item for Rs 6,000, spends Rs 400 on transport and Rs 600 on repairs, and sells it for Rs 8,400. What is the profit percentage on his total cost? |
+| B6P01Q37 | 6 | 1 | Out of 250 employees, 12% were absent on a day and 40% of the absentees were on approved leave. How many were absent without approved leave? |
+| B6P01Q38 | 6 | 1 | A person earns Rs 60,000 per month. He spends 30% on rent and then 20% of the remaining amount on food. How much is left after these two expenses? |
+| B6P01Q39 | 6 | 1 | How do you quickly find 12.5%, 15% and 17.5% of a number such as Rs 640 without a calculator? |
+| B6P01Q40 | 6 | 1 | A store increases the price of an item by 10% and later offers a 10% discount on the new price. Is the final price equal to the original price? If not, what is the net change? |
+| B6P01Q41 | 6 | 1 | A machine worth Rs 1,00,000 loses 10% of its value each year, calculated on the value at the start of that year. What is its value after 2 years? |
+| B6P01Q42 | 6 | 1 | Find the difference in selling price between a single 30% discount on Rs 550 and two successive discounts of 20% and 10% on Rs 550. |
+| B6P01Q43 | 6 | 1 | What single discount is equivalent to three successive discounts of 10%, 20% and 30%? |
+| B6P01Q44 | 6 | 1 | A dishonest shopkeeper claims to sell at cost price but uses a 900 g weight instead of a 1 kg weight. What is his gain percentage? |
+| B6P01Q45 | 6 | 1 | By selling an article for Rs 540, a man loses 10%. At what selling price would he gain 10%? |
+| B6P01Q46 | 6 | 1 | A shopkeeper marks goods 50% above cost price. What discount percentage on the marked price will leave him with exactly 20% profit? |
+| B6P01Q47 | 6 | 1 | A store marks a product 25% above cost price and gives a 12% discount. What is the profit percentage on cost price? |
+| B6P01Q48 | 6 | 1 | A retailer buys 100 shirts at a marked price of Rs 500 each with a 20% trade discount and sells each at Rs 500. What is his profit percentage on cost price? |
+| B6P01Q49 | 6 | 1 | A shop offers 'buy 3, get 1 free' on an item. What is the effective discount percentage? |
+| B6P01Q50 | 6 | 1 | After a 20% discount followed by a second discount of x%, the final price equals a single 28% discount. What is x? |
+| B6P01Q51 | 6 | 1 | A number is increased by 20% and the result is reduced by 25%, giving 540. What was the original number? |
+| B6P01Q52 | 6 | 1 | The length of a rectangle is increased by 20% and its breadth is decreased by 10%. What is the percentage change in its area? |
+| B6P01Q53 | 6 | 1 | If the profit is 25% of the selling price, what is the profit percentage on cost price? |
+| B6P01Q54 | 6 | 1 | A watch is sold at a 12% loss. Had it been sold for Rs 180 more, there would have been an 8% gain. What is the cost price? |
+| B6P01Q55 | 6 | 1 | If 40% of a number is 120 more than 25% of the same number, what is the number? |
+| B6P01Q56 | 6 | 1 | Sales in quarter 1 are Rs 8 lakh. In quarter 2 sales rise 25%, and in quarter 3 they fall 20% from quarter 2. What are quarter 3 sales? |
+| B6P01Q57 | 6 | 1 | A product's price rises 10% and the quantity sold falls 10%. What is the percentage change in revenue? |
+| B6P01Q58 | 6 | 1 | A shop cuts the price by 10% and unit sales rise by 30%. What is the percentage change in revenue? |
+| B6P01Q59 | 6 | 1 | In a test, 70% of students passed Maths, 65% passed English and 55% passed both. What percentage failed both subjects? |
+| B6P01Q60 | 6 | 1 | Section A has 40 students with an 80% pass rate and Section B has 60 students with a 70% pass rate. What is the overall pass percentage? |
+| B6P01Q61 | 6 | 1 | In a company 60% of employees are male. 25% of the males and 40% of the females work in analytics. What percentage of all employees work in analytics? |
+| B6P01Q62 | 6 | 1 | A hiring funnel starts with 2,000 applicants. 40% are shortlisted, 25% of the shortlisted receive offers, and 80% of the offered candidates join. How many join? |
+| B6P01Q63 | 6 | 1 | A firm starts with 1,000 employees and makes no hires. Attrition is 20% in year 1, 15% of the remaining staff in year 2 and 10% of the remaining staff in year 3. How many employees remain after 3 years? |
+| B6P01Q64 | 6 | 1 | An hourly employee earns Rs 200 per hour for 160 normal hours in a month. Overtime hours are paid at 50% more than the normal rate. What is the total pay for the month if he works 10 overtime hours? |
+| B6P01Q65 | 6 | 1 | A trader buys oranges at 4 for Rs 10 and sells them at 5 for Rs 15. What is his profit percentage on cost price? |
+| B6P01Q66 | 6 | 1 | A sells an article to B at a 20% profit and B sells it to C at a 25% profit. If C pays Rs 1,500, what did A pay for it? |
+| B6P01Q67 | 6 | 1 | A marked price is 20% above cost price. What discount percentage makes the sale a 4% loss on cost price? |
+| B6P01Q68 | 6 | 1 | A bill including 18% GST comes to Rs 5,900. What was the price before GST, and how much GST was charged? |
+| B6P01Q69 | 6 | 1 | The price of a product rose 25% last year. By what percentage must it now fall to return to the original price? |
+| B6P01Q70 | 6 | 1 | Why is 8% of 25 equal to 25% of 8, and how can this save time in calculations? |
+| B6P01Q71 | 6 | 1 | If two articles are sold at the same selling price, one at a 10% gain and the other at a 10% loss, what is the net result as a percentage? |
+| B6P01Q72 | 6 | 1 | What is the shortcut formula for a dishonest dealer who sells at cost price but uses a false weight, and how does it change if he also marks up the price? |
+| B6P01Q73 | 6 | 1 | A trader sells an article at a 20% loss. By what percentage of the selling price must he raise it to earn a 20% profit on cost price? |
+| B6P01Q74 | 6 | 1 | The profit is 20% when an article is sold for Rs 120. If the selling price is doubled, what is the new profit percentage? |
+| B6P01Q75 | 6 | 1 | A trader marks goods 30% above cost price and gives two successive discounts of 10% and 10%. What is his profit percentage on cost price? |
+| B6P01Q76 | 6 | 1 | In one year, a population changes by +10%, then -10%, then +20%. What is the net percentage change over the three years? |
+| B6P01Q77 | 6 | 1 | A shopkeeper marks his goods 50% above cost price and gives a 20% discount. He also uses a false weight of 900 g for every 1 kg he bills. What is his net profit percentage? |
+| B6P01Q78 | 6 | 1 | The cost of an item rises by 25% while its selling price is raised by only 10%. If the original profit was 20% on cost price, what is the new profit percentage on cost price? |
+| B6P01Q79 | 6 | 1 | A 40% discount on the marked price still gives a 20% profit on cost price. What would the profit percentage be if the discount were 20%? |
+| B6P01Q80 | 6 | 1 | At what two successive discounts of equal percentage would a Rs 2,000 product sell for Rs 1,280? |
+| B6P01Q81 | 6 | 1 | A shopkeeper sells sugar at Rs 40 per kg, which he bought at Rs 36 per kg, but his weighing machine shows 1 kg for only 800 g. What is his actual profit percentage, correct to 2 decimal places? |
+| B6P01Q82 | 6 | 1 | The price of a product is first increased by x% and then decreased by x%, resulting in a net 4% decrease from the original. Find x. |
+| B6P02Q1 | 6 | 2 | What is a ratio, and how do you reduce the ratio 48:72:120 to its simplest form? |
+| B6P02Q2 | 6 | 2 | A bonus pool of Rs 63,000 is to be shared among three employees in the ratio 2:3:4. How much does each employee get? |
+| B6P02Q3 | 6 | 2 | The ratio of male to female employees in a department is 7:5. If there are 35 male employees, how many female employees are there, and what is the total headcount? |
+| B6P02Q4 | 6 | 2 | What is the formula for the average of a set of numbers, and what is the average of 12, 15, 18, 22 and 28? |
+| B6P02Q5 | 6 | 2 | The average monthly salary of 8 employees is Rs 36,000. What is the total payroll, and what does the average become if a ninth employee earning Rs 45,000 joins? |
+| B6P02Q6 | 6 | 2 | What is a weighted average, and why can you not simply average two group averages when the groups have different sizes? |
+| B6P02Q7 | 6 | 2 | If A:B = 2:3 and B:C = 4:5, find A:B:C. |
+| B6P02Q8 | 6 | 2 | How do you tell whether two quantities are in direct proportion or inverse proportion? Give one business example of each. |
+| B6P02Q9 | 6 | 2 | What is the rule of alligation, and in what kind of problem do you use it? |
+| B6P02Q10 | 6 | 2 | Eight workers are paid Rs 12,000 in total for 15 days of work at a fixed daily rate per worker. How much would 10 workers be paid for 24 days at the same rate? |
+| B6P02Q11 | 6 | 2 | The average score of a candidate in four tests is 72. What must the candidate score in the fifth test to bring the average up to 75? |
+| B6P02Q12 | 6 | 2 | The average salary of 40 employees in Department A is Rs 50,000 and of 60 employees in Department B is Rs 65,000. What is the average salary of all 100 employees? |
+| B6P02Q13 | 6 | 2 | The average age of 39 employees in a team is 30 years. When their manager, aged 70 years, is included, what is the new average age? |
+| B6P02Q14 | 6 | 2 | The average weight of 8 people increases by 2.5 kg when one person weighing 65 kg is replaced by a new person. What is the weight of the new person? |
+| B6P02Q15 | 6 | 2 | The monthly salaries of two employees are in the ratio 3:5. After each gets an increment of Rs 4,000, the ratio becomes 7:11. What were their original salaries? |
+| B6P02Q16 | 6 | 2 | In what ratio must rice costing Rs 40 per kg be mixed with rice costing Rs 55 per kg so that the mixture is worth Rs 48 per kg? |
+| B6P02Q17 | 6 | 2 | A mixture of 60 litres contains milk and water in the ratio 2:1. How much water must be added to make the ratio of milk to water 1:1? |
+| B6P02Q18 | 6 | 2 | The present ages of a father and his son are in the ratio 5:2. After 10 years the ratio becomes 2:1. What are their present ages? |
+| B6P02Q19 | 6 | 2 | The ratio of the present ages of A and B is 4:5. After 8 years the ratio will be 6:7. Find their present ages. |
+| B6P02Q20 | 6 | 2 | The average of 10 observations is 25. It is later found that two entries were recorded wrongly: 15 instead of 45, and 40 instead of 20. What is the correct average? |
+| B6P02Q21 | 6 | 2 | A invests Rs 50,000 for 12 months and B invests Rs 80,000 for 6 months in a business. If the total profit is Rs 90,000, how much does each partner get? |
+| B6P02Q22 | 6 | 2 | Rs 27,000 is to be divided among A, B and C in the ratio 1/3 : 1/4 : 1/6. How much does each get? |
+| B6P02Q23 | 6 | 2 | The average age of a husband, wife and child 3 years ago was 27 years. The average age of the wife and child 5 years ago was 20 years. What is the husband's present age? |
+| B6P02Q24 | 6 | 2 | In a company the ratio of male to female employees is 5:3. After 20 more female employees are hired, the ratio becomes 5:4. How many male and female employees were there originally? |
+| B6P02Q25 | 6 | 2 | How do you find the fourth proportional to 6, 9 and 14, and the mean proportional between 4 and 25? |
+| B6P02Q26 | 6 | 2 | Which ratio is greater, 3:5 or 4:7? How do you compare ratios quickly without converting to decimals? |
+| B6P02Q27 | 6 | 2 | If A:B = 2:3, A is what percentage of B, and B is what percentage more than A? |
+| B6P02Q28 | 6 | 2 | The ratio of income to expenditure of an employee is 7:5. If the employee saves Rs 12,000 a month, what is the monthly income? |
+| B6P02Q29 | 6 | 2 | What is the average of the first 20 even numbers and of the first 25 odd numbers? State the shortcut formulas you used. |
+| B6P02Q30 | 6 | 2 | How can the assumed-mean method be used to find the average of 118, 122, 119, 125 and 121 quickly? What is the average? |
+| B6P02Q31 | 6 | 2 | An annual bonus of Rs 1,08,000 is shared pro rata among three employees who worked 12, 9 and 6 months respectively in the year. How much does each receive? |
+| B6P02Q32 | 6 | 2 | What is a compound ratio? Find the compound ratio of 2:3, 4:5 and 6:7 in simplest form. |
+| B6P02Q33 | 6 | 2 | The average of 11 numbers is 50. The average of the first six is 49 and the average of the last six is 52. What is the sixth number? |
+| B6P02Q34 | 6 | 2 | The sum of three numbers is 98. The ratio of the first to the second is 2:3 and of the second to the third is 5:8. What is the second number? |
+| B6P02Q35 | 6 | 2 | Two numbers are in the ratio 5:7. If 12 is subtracted from each, the ratio becomes 3:5. What are the numbers? |
+| B6P02Q36 | 6 | 2 | Rs 5,100 is divided among A, B and C so that A gets 2/3 of what B gets and B gets 1/4 of what C gets. How much does each get? |
+| B6P02Q37 | 6 | 2 | In a class the average mark of boys is 72 and of girls is 78. The average of the whole class is 74. In what ratio are boys and girls? Use alligation. |
+| B6P02Q38 | 6 | 2 | A shopkeeper mixes sugar costing Rs 36 per kg and Rs 48 per kg in the ratio 2:3 and sells the mixture at Rs 54 per kg. What is the profit percentage? |
+| B6P02Q39 | 6 | 2 | 20 litres of a 20% acid solution is mixed with 10 litres of a 50% acid solution. What is the percentage of acid in the final mixture? |
+| B6P02Q40 | 6 | 2 | How much water must be added to 40 litres of a 30% acid solution to reduce the concentration to 20%? |
+| B6P02Q41 | 6 | 2 | Vessel 1 holds 20 litres of a milk-water mixture in the ratio 3:2 and vessel 2 holds 30 litres in the ratio 4:1. If both are poured into one container, what is the ratio of milk to water? |
+| B6P02Q42 | 6 | 2 | A container holds 40 litres of pure milk. 4 litres are removed and replaced with water, and the process is repeated once more. How much milk is left in the container? |
+| B6P02Q43 | 6 | 2 | What is the formula for the quantity of pure liquid left after n replacements in a container (replacement problems)? When does it apply? |
+| B6P02Q44 | 6 | 2 | A team of 40 employees has an average salary of Rs 45,000. After 8 employees with an average salary of Rs 30,000 resign, what is the average salary of the remaining team? |
+| B6P02Q45 | 6 | 2 | The average age of a class of 25 students is 14 years. When the teacher's age is included, the average rises by 1 year. What is the teacher's age? |
+| B6P02Q46 | 6 | 2 | What are componendo and dividendo? If (x+y)/(x-y) = 7/3, find x:y. |
+| B6P02Q47 | 6 | 2 | A vehicle travels a distance at 60 km/h and returns the same distance at 40 km/h. Why is the average speed not 50 km/h, and what is it? |
+| B6P02Q48 | 6 | 2 | A:B = 2:3 and B:C = 4:5, and the total of their monthly salaries is Rs 1,40,000. What is each person's salary? |
+| B6P02Q49 | 6 | 2 | Two alloys contain copper and zinc in the ratios 3:2 and 1:4. They are melted together in the weight ratio 2:3. What is the ratio of copper to zinc in the new alloy? |
+| B6P02Q50 | 6 | 2 | The average monthly sales of a company are Rs 80 lakh for the first 3 months, Rs 90 lakh for the next 4 months and Rs 110 lakh for the last 5 months of a year. What is the average monthly sales for the year? |
+| B6P02Q51 | 6 | 2 | 20 kg of an ingredient costing Rs 30 per kg is mixed with 30 kg costing Rs 40 per kg. If the mixture is sold at Rs 42 per kg, what is the profit percentage? |
+| B6P02Q52 | 6 | 2 | A and B earn incomes in the ratio 4:5 and their expenditures are in the ratio 3:4. If each saves Rs 2,000, what are their incomes? |
+| B6P02Q53 | 6 | 2 | A canteen has provisions for 60 employees for 40 days. After 10 days, 20 employees leave. For how many more days will the remaining provisions last for the remaining employees? |
+| B6P02Q54 | 6 | 2 | How many kg of rice costing Rs 30 per kg must be mixed with 20 kg of rice costing Rs 45 per kg so that the mixture costs Rs 38 per kg? |
+| B6P02Q55 | 6 | 2 | A trader mixes 26 kg of rice at Rs 20 per kg, 30 kg at Rs 36 per kg and 24 kg at Rs 50 per kg, and sells the mixture at Rs 40 per kg. What is the profit percentage? |
+| B6P02Q56 | 6 | 2 | The average of 7 consecutive even numbers is 30. What is the smallest number? |
+| B6P02Q57 | 6 | 2 | On a map with scale 1:50,000, two offices are 3.5 cm apart. What is the actual distance in km? |
+| B6P02Q58 | 6 | 2 | Rs 125 is made up of Re 1, 50-paise and 25-paise coins in the ratio 3:4:5 by number. How many 50-paise coins are there? |
+| B6P02Q59 | 6 | 2 | A is 25% more than B and C is 20% less than A. Find A:B:C. |
+| B6P02Q60 | 6 | 2 | A sales executive's average over 12 months is Rs 48 lakh. In the 13th month the sales are Rs 100 lakh. What is the new average over 13 months? |
+| B6P02Q61 | 6 | 2 | The average of 5 numbers is 20. If the first number is increased by 2, the second by 4, the third by 6, the fourth by 8 and the fifth by 10, what is the new average? |
+| B6P02Q62 | 6 | 2 | Two numbers are in the ratio 3:4 and their LCM is 180. What is their sum? |
+| B6P02Q63 | 6 | 2 | A invests Rs 60,000 for 12 months and B invests Rs 90,000 for 8 months. The total profit is Rs 1,80,000. What is B's share? |
+| B6P02Q64 | 6 | 2 | A vessel holds 60 litres of milk. 12 litres are removed and replaced with water, and this is repeated once more. What is the final ratio of milk to water? |
+| B6P02Q65 | 6 | 2 | A cask holds 80 litres of wine. 8 litres are withdrawn and replaced with water, and this is repeated three times in all. How much wine remains? |
+| B6P02Q66 | 6 | 2 | A and B start a business with investments in the ratio 3:5 (Rs 30,000 and Rs 50,000). After 6 months A withdraws Rs 10,000. If the annual profit is Rs 1,50,000, how much does each get? |
+| B6P02Q67 | 6 | 2 | The average of 50 numbers is 38. If two numbers, 45 and 55, are discarded, what is the average of the remaining numbers? |
+| B6P03Q1 | 6 | 3 | A can complete a job in 12 days and B in 15 days. Working together, how many days do they take? |
+| B6P03Q2 | 6 | 3 | If A alone takes a days and B alone takes b days to finish a job, what is the formula for the time they take together, and why do you add their rates rather than their times? |
+| B6P03Q3 | 6 | 3 | Convert a delivery van's speed of 54 km/h into m/s. |
+| B6P03Q4 | 6 | 3 | An employee commutes 30 km at an average speed of 40 km/h. How many minutes does the trip take? |
+| B6P03Q5 | 6 | 3 | Pipe A fills a tank in 20 minutes and pipe B fills it in 30 minutes. If both are opened together, how long does the tank take to fill? |
+| B6P03Q6 | 6 | 3 | A 150 m long train runs at 54 km/h. How many seconds does it take to cross a telegraph pole? |
+| B6P03Q7 | 6 | 3 | A can finish a job in 10 days, and B is twice as efficient as A. How many days does B alone take? |
+| B6P03Q8 | 6 | 3 | Data-entry operator A enters 30 records per minute and operator B enters 20 records per minute. Working together, how many minutes do they need to enter 1,500 records? |
+| B6P03Q9 | 6 | 3 | 12 clerks process 600 forms in 10 days. How many days would 20 clerks take to process the same 600 forms, assuming equal efficiency? |
+| B6P03Q10 | 6 | 3 | 8 men can finish a job in 15 days. How many men are needed to finish the same job in 10 days? |
+| B6P03Q11 | 6 | 3 | A car travels from home to office at 60 km/h and returns along the same road at 40 km/h. What is the average speed for the whole round trip? |
+| B6P03Q12 | 6 | 3 | A and B together finish a job in 8 days. A alone can finish it in 12 days. How many days does B alone take? |
+| B6P03Q13 | 6 | 3 | A, B and C can finish a job alone in 10, 15 and 30 days respectively. How many days do they take working together? |
+| B6P03Q14 | 6 | 3 | A can do a job in 20 days and B in 30 days. They start together, but A leaves after 4 days and B finishes the rest alone. In how many days from the start is the job completed? |
+| B6P03Q15 | 6 | 3 | A 120 m long train travelling at 72 km/h crosses a 280 m long platform. How many seconds does it take? |
+| B6P03Q16 | 6 | 3 | Two trains of lengths 100 m and 140 m run on parallel tracks in opposite directions at 60 km/h and 48 km/h. How many seconds do they take to cross each other completely? |
+| B6P03Q17 | 6 | 3 | A boat's speed in still water is 12 km/h and the stream flows at 3 km/h. How long does it take to go 45 km downstream and come back the same 45 km upstream? |
+| B6P03Q18 | 6 | 3 | A tank is filled by pipe A in 6 hours and emptied by outlet pipe B in 8 hours. If both are opened together on an empty tank, how many hours does it take to fill? |
+| B6P03Q19 | 6 | 3 | Two people start 90 km apart and travel towards each other at 25 km/h and 20 km/h. After how many hours do they meet? |
+| B6P03Q20 | 6 | 3 | A thief runs at 30 km/h. A police officer starts chasing from a point 20 km behind at 40 km/h in the same direction. After how many hours does the officer catch the thief? |
+| B6P03Q21 | 6 | 3 | A man walking at 5/6 of his usual speed reaches the office 12 minutes late. What is his usual time to reach the office? |
+| B6P03Q22 | 6 | 3 | A is 3 times as fast as B. Together they finish a job in 12 days. How many days does A alone take? |
+| B6P03Q23 | 6 | 3 | A and B can finish a job in 6 and 12 days respectively. They work together and are paid Rs 9,000 in total, shared in proportion to the work each does. What is A's share? |
+| B6P03Q24 | 6 | 3 | Why is the average speed over two equal distances not the arithmetic mean of the two speeds? Which mean is correct, and when is the simple average correct? |
+| B6P03Q25 | 6 | 3 | How do you solve a time-and-work problem quickly using the LCM of the days as the total units of work? Show the method on a job that A does in 12 days and B in 18 days. |
+| B6P03Q26 | 6 | 3 | A can do a job in 24 days and B in 36 days. They work on alternate days, starting with A. In how many days is the job completed? |
+| B6P03Q27 | 6 | 3 | A 200 m long train passes a man running in the opposite direction at 6 km/h in 12 seconds. What is the speed of the train in km/h? |
+| B6P03Q28 | 6 | 3 | A boat goes 30 km upstream and 44 km downstream in 10 hours. It goes 40 km upstream and 55 km downstream in 13 hours. Find the speed of the boat in still water and the speed of the stream. |
+| B6P03Q29 | 6 | 3 | A and B together can do a job in 10 days, B and C in 15 days, and A and C in 12 days. How many days do all three take working together? |
+| B6P03Q30 | 6 | 3 | Convert 25 m/s into km/h. |
+| B6P03Q31 | 6 | 3 | A tap fills a tank in 6 hours. Because of a leak at the bottom it takes 7 hours. How long would the leak alone take to empty the full tank? |
+| B6P03Q32 | 6 | 3 | How far does a courier travel in 2 hours 20 minutes at 45 km/h? |
+| B6P03Q33 | 6 | 3 | What are the formulas for relative speed when two objects move in the same direction and in opposite directions? Give one business-day example of each. |
+| B6P03Q34 | 6 | 3 | A can do 1/4 of a job in 5 days. How many days does A need for the entire job? |
+| B6P03Q35 | 6 | 3 | A boat goes 20 km downstream in 2 hours and returns the same 20 km upstream in 4 hours. Find the speed of the boat in still water and of the stream. |
+| B6P03Q36 | 6 | 3 | A tank has capacity 1,200 litres. An inlet pipe adds 25 litres per minute and an outlet removes 15 litres per minute. If both are open on an empty tank, how many minutes does it take to fill? |
+| B6P03Q37 | 6 | 3 | In Excel you have a delivery log with distance and time for each trip. How would you compute the correct average speed for all trips, and why is AVERAGE of the speed column wrong? |
+| B6P03Q38 | 6 | 3 | A can do a job in 20 days and B in 30 days. A works alone for 5 days and then B joins. How many days from the start does the job take to finish? |
+| B6P03Q39 | 6 | 3 | 12 workers can complete a project in 15 days. After 5 days, 6 workers leave the project. How many more days are needed to finish the remaining work? |
+| B6P03Q40 | 6 | 3 | A is 25% more efficient than B. If B alone takes 20 days to do a job, how many days does A alone take? |
+| B6P03Q41 | 6 | 3 | A team of 10 analysts clears 500 tickets in 8 days working 8 hours a day. How many days would 8 analysts need to clear 500 tickets working 10 hours a day? |
+| B6P03Q42 | 6 | 3 | A walks at 4 km/h. Two hours later B starts from the same point on the same route at 6 km/h. How many hours after B starts does B catch up with A? |
+| B6P03Q43 | 6 | 3 | A courier covers three equal distances at 20 km/h, 30 km/h and 60 km/h respectively. What is the average speed for the whole journey? |
+| B6P03Q44 | 6 | 3 | A 200 m long train takes 25 seconds to cross a 300 m long bridge. What is the speed of the train in km/h? |
+| B6P03Q45 | 6 | 3 | Two trains, each 150 m long, run in the same direction at 54 km/h and 36 km/h. How many seconds does the faster train take to overtake the slower one completely? |
+| B6P03Q46 | 6 | 3 | A boat's speed in still water is 10 km/h and the stream speed is 2 km/h. For the same distance, the boat takes 3 hours more going upstream than downstream. What is the distance? |
+| B6P03Q47 | 6 | 3 | Pipe A fills a tank in 12 hours and pipe B in 16 hours. Outlet pipe C empties the full tank in 24 hours. If all three are opened together on an empty tank, how many hours does it take to fill? |
+| B6P03Q48 | 6 | 3 | Pipe A fills a tank in 10 hours and pipe B in 15 hours. They are opened alternately for one hour each, starting with A. In how many hours is the tank full? |
+| B6P03Q49 | 6 | 3 | A car going at 40 km/h reaches its destination 15 minutes late. Going at 50 km/h it reaches 6 minutes early. What is the distance? |
+| B6P03Q50 | 6 | 3 | A support team clears 90 tickets per day with team A and 60 tickets per day with team B. The backlog is 1,200 tickets and 30 new tickets arrive each day. If both teams work, in how many days is the backlog cleared? |
+| B6P03Q51 | 6 | 3 | A train takes 9 seconds to cross a pole and 24 seconds to cross a 300 m long platform at the same constant speed. What is the length of the train? |
+| B6P03Q52 | 6 | 3 | A man alone can do a job in 24 days and a woman alone in 36 days. In how many days can 6 men and 6 women together do it? |
+| B6P03Q53 | 6 | 3 | If a person increases speed by 25%, by what percentage does the travel time over the same distance fall? |
+| B6P03Q54 | 6 | 3 | A vehicle travels from P to Q at 50 km/h. At what speed must it return so that the average speed for the round trip is 60 km/h? |
+| B6P03Q55 | 6 | 3 | A and B together can do a job in 8 days. They work together for 3 days, after which B leaves and A finishes the remaining work in 15 more days. How many days would each take alone? |
+| B6P03Q56 | 6 | 3 | Two trains start at the same time from stations A and B towards each other. After meeting, the train from A reaches B in 4 hours and the train from B reaches A in 9 hours. What is the ratio of the speed of the train from A to the speed of the train from B? |
+| B6P03Q57 | 6 | 3 | A man rows 30 km upstream and 30 km downstream in a total of 8 hours. If the stream speed is 2 km/h, what is his speed in still water? |
+| B6P03Q58 | 6 | 3 | Why do pipes-and-cisterns problems reduce to time-and-work problems, and how do you treat an outlet or leak? |
+| B6P03Q59 | 6 | 3 | A, B and C can finish a job in 6, 8 and 12 days respectively. They work together and are paid Rs 5,400 in total in proportion to the work done. What is C's share? |
+| B6P03Q60 | 6 | 3 | A boat has speed 8 km/h in still water and the stream flows at 2 km/h. What is its average speed for a round trip over the same distance? |
+| B6P03Q61 | 6 | 3 | A man can walk both ways in 9 hours. He can ride one way and walk back in 6 hours. How long does he take to ride both ways? |
+| B6P03Q62 | 6 | 3 | Two runners start together on a circular track of 400 m, running in the same direction at 5 m/s and 3 m/s. After how many seconds does the faster runner first lap (catch up with) the slower one? |
+| B6P03Q63 | 6 | 3 | In a 100 m race A beats B by 20 m. In another 100 m race B beats C by 10 m. Assuming constant speeds, by how many metres does A beat C in a 100 m race? |
+| B6P03Q64 | 6 | 3 | In what real situations does the simple rate-addition model of time and work fail, such as adding people late to a project or handoffs between team members? |
+| B6P03Q65 | 6 | 3 | A, B and C can finish a job alone in 10, 15 and 12 days. They start together, but C leaves 3 days before the job is completed. In how many days is the job finished? |
+| B6P04Q1 | 6 | 4 | What is the formula for simple interest, and how do you find the amount after t years? |
+| B6P04Q2 | 6 | 4 | Find the simple interest on Rs 8,000 at 7.5% per annum for 4 years. |
+| B6P04Q3 | 6 | 4 | Find the compound interest on Rs 10,000 at 10% per annum for 2 years, compounded annually. |
+| B6P04Q4 | 6 | 4 | What is the formula for the amount under compound interest, and why does compound interest exceed simple interest after the first year? |
+| B6P04Q5 | 6 | 4 | At what rate of simple interest per annum will a sum of Rs 12,000 earn Rs 3,600 interest in 5 years? |
+| B6P04Q6 | 6 | 4 | In how many years will Rs 5,000 amount to Rs 6,200 at 6% simple interest per annum? |
+| B6P04Q7 | 6 | 4 | What principal will earn Rs 5,625 simple interest in 5 years at 7.5% per annum? |
+| B6P04Q8 | 6 | 4 | A moneylender charges 2% per month simple interest. How much interest is due on Rs 25,000 after 6 months? |
+| B6P04Q9 | 6 | 4 | Find the simple interest on Rs 18,000 at 10% per annum for 8 months. |
+| B6P04Q10 | 6 | 4 | A sum of money becomes 4 times itself in 15 years at simple interest. What is the rate per annum? |
+| B6P04Q11 | 6 | 4 | An employee takes a salary advance of Rs 50,000 at 12% simple interest per annum and repays it after 3 years. What is the total amount repaid? |
+| B6P04Q12 | 6 | 4 | A sum of money doubles itself in 8 years at simple interest. In how many years will it become three times itself? |
+| B6P04Q13 | 6 | 4 | What is the shortcut for the difference between compound interest and simple interest on a sum for 2 years, and what is the check for 3 years? |
+| B6P04Q14 | 6 | 4 | The difference between compound interest and simple interest on a sum for 2 years at 8% per annum is Rs 96. Find the sum. |
+| B6P04Q15 | 6 | 4 | Find the compound interest on Rs 16,000 at 10% per annum for 1 year, compounded half-yearly. |
+| B6P04Q16 | 6 | 4 | At simple interest, a sum earns interest equal to 9/25 of the principal in 3 years. Find the rate per annum. |
+| B6P04Q17 | 6 | 4 | A sum of Rs 15,000 is lent partly at 8% and partly at 10% simple interest per annum. If the total interest after 1 year is Rs 1,320, find the two parts. |
+| B6P04Q18 | 6 | 4 | A sum amounts to Rs 6,600 in 2 years and Rs 7,500 in 5 years at simple interest. Find the principal and the rate per annum. |
+| B6P04Q19 | 6 | 4 | Find the difference between compound interest and simple interest on Rs 10,000 at 10% per annum for 3 years. |
+| B6P04Q20 | 6 | 4 | A company's headcount of 2,000 grows by 10% every year. What is the headcount after 3 years? |
+| B6P04Q21 | 6 | 4 | A machine worth Rs 80,000 depreciates by 10% per annum on the reducing-balance method. What is its value after 2 years? |
+| B6P04Q22 | 6 | 4 | Straight-line depreciation: an asset costs Rs 1,20,000, has a salvage value of Rs 20,000 and a life of 5 years. What is the annual depreciation? |
+| B6P04Q23 | 6 | 4 | A marketing campaign costs Rs 2,50,000 and generates Rs 3,25,000 in gross profit before the campaign cost. What is the ROI? |
+| B6P04Q24 | 6 | 4 | A company has fixed costs of Rs 4,80,000 per month, sells at Rs 250 per unit and has a variable cost of Rs 170 per unit. How many units must it sell to break even? |
+| B6P04Q25 | 6 | 4 | An investment of Rs 12 lakh returns a constant net cash inflow of Rs 3 lakh every year. What is the payback period? |
+| B6P04Q26 | 6 | 4 | A firm has revenue of Rs 80 lakh, cost of goods sold of Rs 52 lakh and operating expenses of Rs 18 lakh. Find the gross margin percentage and the operating margin percentage. |
+| B6P04Q27 | 6 | 4 | Find the simple interest on Rs 36,500 at 10% per annum for 73 days, taking a year as 365 days. |
+| B6P04Q28 | 6 | 4 | A company deposits Rs 5,00,000 for 2 years at 7% per annum compounded annually in one fixed deposit and at 7% simple interest in another. What is the difference in maturity values? |
+| B6P04Q29 | 6 | 4 | Find the amount on Rs 20,000 at 20% per annum for 1.5 years, compounded half-yearly. |
+| B6P04Q30 | 6 | 4 | A sum at compound interest amounts to Rs 6,615 in 2 years at 5% per annum. Find the sum. |
+| B6P04Q31 | 6 | 4 | A sum amounts to Rs 8,820 in 2 years and Rs 9,261 in 3 years at compound interest. Find the rate per annum. |
+| B6P04Q32 | 6 | 4 | In how many years will Rs 8,000 amount to Rs 9,261 at 5% per annum compound interest? |
+| B6P04Q33 | 6 | 4 | A sum doubles itself in 5 years at compound interest. In how many years will it become 8 times itself? |
+| B6P04Q34 | 6 | 4 | Find the compound interest on Rs 20,000 for 2 years if the rate is 10% in the first year and 20% in the second year. |
+| B6P04Q35 | 6 | 4 | Rs 8,000 is invested at 10% per annum compounded annually. How much interest is earned in the third year alone? |
+| B6P04Q36 | 6 | 4 | What is the difference between the amounts on Rs 10,000 for 1 year at 20% per annum compounded yearly and compounded half-yearly? |
+| B6P04Q37 | 6 | 4 | Bank A offers 8% simple interest and Bank B offers 7.5% compounded annually. Which gives more interest on Rs 1,00,000 over 2 years, and by how much? |
+| B6P04Q38 | 6 | 4 | Two sums in the ratio 2:3 are lent at 5% and 4% simple interest per annum for the same period. What is the ratio of the interest earned? |
+| B6P04Q39 | 6 | 4 | A salary grows from Rs 4,00,000 to Rs 5,76,000 in 2 years at a uniform annual rate. What is the annual growth rate, and what is the CAGR formula? |
+| B6P04Q40 | 6 | 4 | How much must be deposited today at 8% per annum compound interest to receive Rs 1,16,640 after 2 years? |
+| B6P04Q41 | 6 | 4 | What is the Rule of 72, and how long does money take to double at 9% per annum by this rule? |
+| B6P04Q42 | 6 | 4 | What is the difference between a flat-rate and a reducing-balance loan? Compute the total interest and monthly EMI on Rs 2,00,000 at 9% flat per annum for 3 years. |
+| B6P04Q43 | 6 | 4 | An investment of Rs 1,800 today returns Rs 2,420 after 2 years. At a discount rate of 10% per annum, what is the NPV, and should the project be accepted? |
+| B6P04Q44 | 6 | 4 | A loan of Rs 1,00,000 at 12% per annum is repaid in monthly EMIs on a reducing balance, and the EMI is Rs 8,885. How much of the first EMI is interest and how much is principal? |
+| B6P04Q45 | 6 | 4 | A loan of Rs 10,500 at 10% per annum compound interest is repaid in two equal annual installments paid at the end of each year. Find each installment. |
+| B6P04Q46 | 6 | 4 | What is the effective annual rate for a nominal 20% per annum compounded quarterly? |
+| B6P04Q47 | 6 | 4 | A credit card charges 3% per month. What is the effective annual rate, correct to two decimals? |
+| B6P04Q48 | 6 | 4 | What is the difference between the nominal and real interest rate? If the nominal rate is 10% and inflation is 5%, what is the real rate? |
+| B6P04Q49 | 6 | 4 | What is IRR, and how does it differ from NPV when comparing projects? |
+| B6P04Q50 | 6 | 4 | What is the present worth of Rs 1,320 due 2 years hence at 10% simple interest, and what is the true discount? |
+| B6P04Q51 | 6 | 4 | A debt of Rs 6,300 at 10% simple interest per annum is cleared in two equal annual installments paid at the end of year 1 and year 2, each earning 10% simple interest from payment until the end of year 2. Find the installment. |
+| B6P04Q52 | 6 | 4 | A supplier offers terms of 2/10 net 30 (2% discount if paid within 10 days, otherwise full amount due in 30 days). What is the approximate annualised simple interest rate of forgoing the discount, using a 365-day year? |
+| B6P05Q1 | 6 | 5 | What are the divisibility rules for 2, 3, 4, 5, 6, 8, 9 and 11? |
+| B6P05Q2 | 6 | 5 | How do you approach a number series question when the pattern is not obvious (first differences, second differences, ratios, squares/cubes, primes, alternating series)? |
+| B6P05Q3 | 6 | 5 | Find the missing number in the series 2, 5, 8, 11, 14, ? |
+| B6P05Q4 | 6 | 5 | Find the next number in the series 1, 4, 9, 16, 25, ? |
+| B6P05Q5 | 6 | 5 | Find the HCF and LCM of 24 and 36, and verify that the product of the two numbers equals HCF x LCM. |
+| B6P05Q6 | 6 | 5 | How do you check whether 241 is a prime number without a calculator? |
+| B6P05Q7 | 6 | 5 | What is the unit digit of the product 13 x 27 x 34? |
+| B6P05Q8 | 6 | 5 | Is 5,346 divisible by 9? Is it divisible by 11? Show the rule you used for each. |
+| B6P05Q9 | 6 | 5 | Find the sum of the first 50 natural numbers. |
+| B6P05Q10 | 6 | 5 | What is the remainder when 7,893,456 is divided by 9, using the digit-sum method? |
+| B6P05Q11 | 6 | 5 | Find the next number in the series 2, 3, 5, 9, 17, 33, ? |
+| B6P05Q12 | 6 | 5 | Find the next number in the series 4, 6, 12, 14, 28, 30, ? |
+| B6P05Q13 | 6 | 5 | Find the next number in the series 2, 6, 12, 20, 30, 42, ? |
+| B6P05Q14 | 6 | 5 | What is the unit digit of 7^45? Explain the cyclicity method. |
+| B6P05Q15 | 6 | 5 | What is the remainder when 2^100 is divided by 7? |
+| B6P05Q16 | 6 | 5 | What is the greatest number that divides 148, 246 and 623 leaving remainders 4, 6 and 11 respectively? |
+| B6P05Q17 | 6 | 5 | What is the least number which, when divided by 12, 15 and 20, leaves a remainder of 7 in each case? |
+| B6P05Q18 | 6 | 5 | The HCF of two numbers is 12 and their LCM is 180. If one number is 36, find the other. |
+| B6P05Q19 | 6 | 5 | Three payroll batches run every 6, 8 and 12 days respectively, and all three ran together today. After how many days will all three next run on the same day? |
+| B6P05Q20 | 6 | 5 | What is the remainder when 17^23 is divided by 18? (Use the negative-remainder shortcut.) |
+| B6P05Q21 | 6 | 5 | Find the next number in the series 15, 16, 34, 105, 424, ? |
+| B6P05Q22 | 6 | 5 | What is the difference between natural numbers, whole numbers, integers, rational numbers and irrational numbers? Give one example of each. |
+| B6P05Q23 | 6 | 5 | Find the next number in the Fibonacci-type series 0, 1, 1, 2, 3, 5, 8, ? |
+| B6P05Q24 | 6 | 5 | Find the next number in the series 11, 13, 17, 19, 23, ? |
+| B6P05Q25 | 6 | 5 | Find the next number in the series 1, 8, 27, 64, 125, ? |
+| B6P05Q26 | 6 | 5 | Find the sum of the first 10 even natural numbers. |
+| B6P05Q27 | 6 | 5 | Convert the recurring decimal 0.363636... into a fraction in its lowest terms. |
+| B6P05Q28 | 6 | 5 | What is the largest 4-digit number divisible by 16? |
+| B6P05Q29 | 6 | 5 | How many prime numbers are there below 50? List them. |
+| B6P05Q30 | 6 | 5 | Monthly sales are Rs 5,000, Rs 5,500, Rs 6,050 and Rs 6,655 in four consecutive months. If the same pattern continues, what are the sales in the fifth month? |
+| B6P05Q31 | 6 | 5 | Find the 25th term of the series 4, 7, 10, 13, ... |
+| B6P05Q32 | 6 | 5 | How many terms are there in the series 2, 4, 8, 16, ..., 1024? |
+| B6P05Q33 | 6 | 5 | Find the square root of 5,929 without a calculator. |
+| B6P05Q34 | 6 | 5 | What does the Excel formula =MOD(5346, 9) return, and how would you use MOD to test divisibility across a column of employee IDs? |
+| B6P05Q35 | 6 | 5 | Find the next number in the series 1, 3, 7, 13, 21, 31, ? |
+| B6P05Q36 | 6 | 5 | Find the next number in the series 2, 12, 30, 56, 90, ? |
+| B6P05Q37 | 6 | 5 | Find the next number in the series 6, 11, 21, 36, 56, ? |
+| B6P05Q38 | 6 | 5 | Find the next number in the series 2, 10, 4, 20, 6, 30, 8, ? |
+| B6P05Q39 | 6 | 5 | Find the next number in the series 2, 5, 11, 23, 47, ? |
+| B6P05Q40 | 6 | 5 | Find the wrong number in the series 2, 5, 10, 17, 26, 37, 50, 64, 82. |
+| B6P05Q41 | 6 | 5 | Find the wrong number in the series 3, 7, 15, 31, 63, 127, 256. |
+| B6P05Q42 | 6 | 5 | What is the smallest 4-digit number exactly divisible by 12, 15 and 18? |
+| B6P05Q43 | 6 | 5 | How many numbers from 1 to 200 are divisible by 3 or 5? |
+| B6P05Q44 | 6 | 5 | How many numbers from 1 to 500 are divisible by both 4 and 6? |
+| B6P05Q45 | 6 | 5 | How many numbers between 100 and 300 are divisible by 7? |
+| B6P05Q46 | 6 | 5 | How many trailing zeros does 50! have? |
+| B6P05Q47 | 6 | 5 | How many factors does 360 have? |
+| B6P05Q48 | 6 | 5 | A two-digit number is 4 times the sum of its digits, and when its digits are reversed the number increases by 27. Find the number. |
+| B6P05Q49 | 6 | 5 | A number leaves a remainder of 29 when divided by 56. What is the remainder when the same number is divided by 8? |
+| B6P05Q50 | 6 | 5 | What is the remainder when 123,456 is divided by 11? |
+| B6P05Q51 | 6 | 5 | What is the smallest number that must be added to 5,000 to make it exactly divisible by 13? |
+| B6P05Q52 | 6 | 5 | What is the smallest number that must be subtracted from 1,000 to make it a perfect square? |
+| B6P05Q53 | 6 | 5 | An employee's monthly salary is Rs 30,000 in month 1 and rises by a fixed Rs 2,500 every month. What is the salary in month 12, and the total paid over the 12 months? |
+| B6P05Q54 | 6 | 5 | Why is the product of any three consecutive integers always divisible by 6? |
+| B6P05Q55 | 6 | 5 | Convert the binary number 1101 to decimal and the decimal number 45 to binary. |
+| B6P05Q56 | 6 | 5 | Simplify sqrt(50) + sqrt(18) and state whether the result is rational or irrational. |
+| B6P05Q57 | 6 | 5 | Find the sum 5 + 10 + 15 + ... + 100. |
+| B6P05Q58 | 6 | 5 | Find the next number in the series 4, 9, 25, 49, 121, 169, ? |
+| B6P05Q59 | 6 | 5 | Find the sum 3 + 6 + 12 + ... for 10 terms. |
+| B6P05Q60 | 6 | 5 | Find the sum of the squares of the first 10 natural numbers. |
+| B6P05Q61 | 6 | 5 | What is the sum of all the factors of 28? What is special about this number? |
+| B6P05Q62 | 6 | 5 | How many perfect squares are there from 101 to 999 inclusive? |
+| B6P05Q63 | 6 | 5 | Find the LCM of the fractions 2/3, 4/9 and 5/6. |
+| B6P05Q64 | 6 | 5 | In the grid below, each row follows the same rule. Find the missing number. |
+| B6P05Q65 | 6 | 5 | What is the remainder when 3^50 is divided by 8? |
+| B6P05Q66 | 6 | 5 | What is the smallest 3-digit number that leaves a remainder of 3 when divided by 4, 5 and 6? |
+| B6P05Q67 | 6 | 5 | What does =MOD(-7, 3) return in Excel, and why is the result not -1? |
+| B6P05Q68 | 6 | 5 | Is 0.999... equal to 1? Justify your answer. |
+| B6P05Q69 | 6 | 5 | What is the remainder when 3^100 is divided by 7? (State Fermat's little theorem and use it.) |
+| B6P05Q70 | 6 | 5 | What are the last two digits of 7^2025? |
+| B6P06Q1 | 6 | 6 | What is the difference between a permutation and a combination, and how do you decide which one a question needs? |
+| B6P06Q2 | 6 | 6 | State the formulas for nPr and nCr and the relation between them. |
+| B6P06Q3 | 6 | 6 | How is the probability of an event defined, and what range of values can it take? |
+| B6P06Q4 | 6 | 6 | State the fundamental counting principle (the multiplication rule) and the addition rule, and when each applies. |
+| B6P06Q5 | 6 | 6 | Why is the complement rule, P(at least one) = 1 - P(none), the standard shortcut for 'at least one' probability questions? |
+| B6P06Q6 | 6 | 6 | Five candidates are shortlisted for three distinct posts (Analyst, Team Lead, Manager), and each person can get at most one post. In how many ways can the posts be filled? |
+| B6P06Q7 | 6 | 6 | A committee of 3 members is to be chosen from 8 employees. In how many ways can this be done? |
+| B6P06Q8 | 6 | 6 | A fair coin is tossed twice. What is the probability of getting two heads? |
+| B6P06Q9 | 6 | 6 | A fair six-sided die is rolled once. What is the probability that the number is a prime number? |
+| B6P06Q10 | 6 | 6 | Two fair dice are rolled together. What is the probability that the sum is 7? |
+| B6P06Q11 | 6 | 6 | A bag has 5 red and 3 blue balls. One ball is drawn at random. What is the probability that it is red? |
+| B6P06Q12 | 6 | 6 | How many different arrangements can be made from the letters of the word DATA? |
+| B6P06Q13 | 6 | 6 | How many 4-digit PINs can be formed using the digits 1 to 9 if no digit may be repeated? |
+| B6P06Q14 | 6 | 6 | At a team meeting, each of the 10 people shakes hands exactly once with every other person. How many handshakes take place? |
+| B6P06Q15 | 6 | 6 | A fair coin is tossed three times. What is the probability of getting at least one head? |
+| B6P06Q16 | 6 | 6 | How many 3-digit numbers can be formed using the digits 1, 2, 3, 4, 5 if no digit may be repeated? |
+| B6P06Q17 | 6 | 6 | How many distinct arrangements are possible from the letters of the word SALARY? |
+| B6P06Q18 | 6 | 6 | In how many ways can the letters of the word LEADER be arranged so that all the vowels stay together? |
+| B6P06Q19 | 6 | 6 | Two cards are drawn one after the other, without replacement, from a well-shuffled pack of 52 cards. What is the probability that both are aces? |
+| B6P06Q20 | 6 | 6 | A bag has 4 red, 6 green and 5 yellow balls. Three balls are drawn together at random. What is the probability that all three are of the same colour? |
+| B6P06Q21 | 6 | 6 | A committee of 5 is to be chosen from 6 men and 4 women so that it has at least 2 women. In how many ways can this be done? |
+| B6P06Q22 | 6 | 6 | Two fair dice are rolled together. What is the probability that the sum is greater than 9? |
+| B6P06Q23 | 6 | 6 | A fair die is rolled 3 times. What is the probability of getting at least one six? |
+| B6P06Q24 | 6 | 6 | In how many ways can 5 people sit around a circular table? |
+| B6P06Q25 | 6 | 6 | Seven people stand in a row. In how many ways can they be arranged if two particular people must always stand together? |
+| B6P06Q26 | 6 | 6 | A number is chosen at random from 1 to 50. What is the probability that it is a multiple of 4 or a multiple of 6? |
+| B6P06Q27 | 6 | 6 | How many 4-digit numbers can be formed using the digits 0, 1, 2, 3, 4, 5 if no digit may be repeated? |
+| B6P06Q28 | 6 | 6 | In how many ways can 5 men and 4 women be seated in a row so that no two women sit next to each other? |
+| B6P06Q29 | 6 | 6 | What are the values of 0!, nC0 and nCn, and why is nCr equal to nC(n-r)? |
+| B6P06Q30 | 6 | 6 | What is the difference between selecting with replacement and without replacement, and how does it change the probability calculation? |
+| B6P06Q31 | 6 | 6 | How do you count arrangements of n letters when some letters repeat, for example the word MISSISSIPPI? |
+| B6P06Q32 | 6 | 6 | Calculate 12C4 by cancelling terms, without expanding the full factorials. |
+| B6P06Q33 | 6 | 6 | Two fair dice are rolled together. What is the probability that the product of the two numbers is even? |
+| B6P06Q34 | 6 | 6 | A fair die is rolled twice. What is the probability that both numbers are the same? |
+| B6P06Q35 | 6 | 6 | What is the minimum number of employees you must pick to guarantee that at least two of them have their birthday in the same calendar month? |
+| B6P06Q36 | 6 | 6 | A team has 5 men and 4 women. Three people are chosen at random for a training programme. What is the probability that all three are women? |
+| B6P06Q37 | 6 | 6 | What is the difference between mutually exclusive events and independent events, and can two events with non-zero probability be both? |
+| B6P06Q38 | 6 | 6 | What is the formula for the number of circular arrangements of n distinct objects, and how does it change when clockwise and anticlockwise arrangements are treated as the same (a necklace or garland)? |
+| B6P06Q39 | 6 | 6 | If P(A) = 0.5, P(B) = 0.4 and P(A and B) = 0.2, what is P(A or B)? |
+| B6P06Q40 | 6 | 6 | Two analysts check a report independently. Analyst A catches a particular error with probability 1/3 and Analyst B with probability 1/4. What is the probability that exactly one of them catches it? |
+| B6P06Q41 | 6 | 6 | What is the rank of the word RATE if all arrangements of its letters are listed in dictionary (alphabetical) order? |
+| B6P06Q42 | 6 | 6 | In how many ways can 5 distinct bonus vouchers be distributed among 3 employees if any employee may receive any number of vouchers, including none? |
+| B6P06Q43 | 6 | 6 | A committee of 4 is to be chosen from 10 people, two of whom are A and B. In how many ways can it be chosen if A and B must not both be on the committee? |
+| B6P06Q44 | 6 | 6 | How many rectangles (of all sizes) are there on a standard 8 x 8 chessboard? |
+| B6P06Q45 | 6 | 6 | There are 10 points on a plane, of which 4 lie on one straight line and no other three are collinear. How many triangles can be formed using these points as vertices? |
+| B6P06Q46 | 6 | 6 | How many distinct arrangements are there of the letters of the word MISSISSIPPI? |
+| B6P06Q47 | 6 | 6 | Two cards are drawn together from a pack of 52 cards. What is the probability that both are spades? |
+| B6P06Q48 | 6 | 6 | Two fair dice are rolled. Given that the first die shows 3, what is the probability that the sum is 8? |
+| B6P06Q49 | 6 | 6 | A family has two children. Assuming each child is equally likely to be a boy or a girl, independently, what is the probability that both are boys given that at least one is a boy? |
+| B6P06Q50 | 6 | 6 | What is the probability that a leap year selected at random has 53 Sundays? |
+| B6P06Q51 | 6 | 6 | A fair coin is tossed 4 times. What is the probability of getting exactly 2 heads? |
+| B6P06Q52 | 6 | 6 | A batch has 10 items, of which 3 are defective. Two items are chosen at random without replacement for inspection. What is the probability that neither is defective? |
+| B6P06Q53 | 6 | 6 | A two-digit number is chosen at random from all two-digit numbers (10 to 99). What is the probability that it is divisible by 7? |
+| B6P06Q54 | 6 | 6 | A card is drawn from a standard pack of 52. What is the probability that it is a red card or a face card (J, Q, K)? |
+| B6P06Q55 | 6 | 6 | A fair die is rolled twice. What is the probability that the second number is greater than the first? |
+| B6P06Q56 | 6 | 6 | Six people stand in a row. In how many ways can they be arranged so that two particular people, A and B, are not next to each other? |
+| B6P06Q57 | 6 | 6 | A company has 120 employees: 70 men and 50 women. 20 men and 10 women resigned this year. If one employee is picked at random, what is the probability that the person resigned or is a woman? |
+| B6P06Q58 | 6 | 6 | Each of 3 employees independently stays with the company for the full year with probability 0.8. What is the probability that at least one of them leaves during the year? |
+| B6P06Q59 | 6 | 6 | In how many ways can 8 employees be split into two unlabelled teams of 4 each? |
+| B6P06Q60 | 6 | 6 | A fair die is rolled once and you are paid as many rupees as the number shown. What is the expected payout? |
+| B6P06Q61 | 6 | 6 | Four people are chosen at random. Assuming each of the 7 days of the week is equally likely as a birthday and independence, what is the probability that no two of them were born on the same day of the week? |
+| B6P06Q62 | 6 | 6 | In how many ways can 10 identical laptops be distributed among 3 teams if any team may receive none? |
+| B6P06Q63 | 6 | 6 | Using a shortcut rather than listing, what is the sum of all 3-digit numbers formed from the digits 1, 2, 3 without repetition? |
+| B6P06Q64 | 6 | 6 | How many 4-digit numbers divisible by 5 can be formed using the digits 0 to 9 without repetition? |
+| B6P06Q65 | 6 | 6 | How many 5-letter arrangements (meaningful or not, no letter repeated) can be formed from the word EQUATIONS using exactly 3 vowels and 2 consonants? |
+| B6P06Q66 | 6 | 6 | In how many ways can 12 employees be divided into three labelled project groups of 4 each? |
+| B6P06Q67 | 6 | 6 | If three fair dice are rolled, what is the probability that the sum is 10? |
+| B6P06Q68 | 6 | 6 | In how many ways can 5 men and 5 women be seated around a circular table so that men and women alternate? |
+| B6P06Q69 | 6 | 6 | Four employees each hand in a laptop, and the four laptops are returned at random, one to each employee. In how many ways can the laptops be returned so that nobody gets their own (derangements of 4)? |
+| B6P07Q1 | 6 | 7 | Pointing to a man, Meera says, "He is the son of my mother's only brother." How is the man related to Meera? |
+| B6P07Q2 | 6 | 7 | A is the sister of B, C is the mother of B, D is the father of C, and E is the mother of D. How is A related to D? |
+| B6P07Q3 | 6 | 7 | P is the brother of Q, Q is the sister of R, and R is the father of S, who is a girl. How is S related to P? |
+| B6P07Q4 | 6 | 7 | Introducing a woman, a man says, "Her mother is the only daughter of my mother." How is the woman related to the man? |
+| B6P07Q5 | 6 | 7 | A is the brother of B, C is the father of A, D is the brother of C, and E is the son of D. How is E related to B? |
+| B6P07Q6 | 6 | 7 | How do you solve a blood-relation question quickly: which symbols do you use for gender and marriage, how do you build the family tree, and what do you do when a clue does not give the gender? |
+| B6P07Q7 | 6 | 7 | Statements: All employees are analysts. All analysts are graduates. Conclusions: I. All employees are graduates. II. All graduates are employees. Which conclusion(s) follow? |
+| B6P07Q8 | 6 | 7 | Statements: Some managers are engineers. All engineers are analysts. Conclusions: I. Some managers are analysts. II. All analysts are managers. Which conclusion(s) follow? |
+| B6P07Q9 | 6 | 7 | What are the four standard statement forms in syllogism questions (All, No, Some, Some not), and how is each drawn in a Venn diagram? |
+| B6P07Q10 | 6 | 7 | Five colleagues A, B, C, D and E sit in a row facing north. A sits at the extreme left end and E at the extreme right end. D sits immediately to the left of E. B does not sit next to A. Who sits in the middle? |
+| B6P07Q11 | 6 | 7 | How do you approach a seating-arrangement question: how do you handle linear versus circular tables, left and right, and which clues do you place first? |
+| B6P07Q12 | 6 | 7 | In a certain code, MANAGER is written as NBOBHFS. How is ANALYST written in that code? |
+| B6P07Q13 | 6 | 7 | In a certain code, TABLE is written as GZYOV. How is CHAIR written in that code? |
+| B6P07Q14 | 6 | 7 | How do you identify the rule in a coding-decoding question: what are the common patterns (shift, reverse alphabet, position value, substitution)? |
+| B6P07Q15 | 6 | 7 | A man walks 8 km south and then 6 km west. How far is he from his starting point? |
+| B6P07Q16 | 6 | 7 | Ravi walks 5 km north, turns right and walks 3 km, then turns right again and walks 5 km. How far is he from the starting point and in which direction? |
+| B6P07Q17 | 6 | 7 | In a class of 40 students, Priya's rank from the top is 12. What is her rank from the bottom? |
+| B6P07Q18 | 6 | 7 | Arun ranks 7th from the top and 28th from the bottom in a class. How many students are in the class? |
+| B6P07Q19 | 6 | 7 | P is taller than Q, Q is taller than R, S is taller than P but shorter than T. Who is the tallest and who is the shortest? |
+| B6P07Q20 | 6 | 7 | If A = 1, B = 2, ... Z = 26, what is the sum of the letter values of the word SQL? |
+| B6P07Q21 | 6 | 7 | What is the 6th letter to the right of the 12th letter from the right end of the English alphabet? |
+| B6P07Q22 | 6 | 7 | In a row, Rita is 14th from the left and Sunil is 18th from the right. When they interchange positions, Rita becomes 22nd from the left. How many people are in the row, and how many people stand between Rita and Sunil? |
+| B6P07Q23 | 6 | 7 | Six friends A, B, C, D, E and F sit around a circular table facing the centre (so a person's right-hand side is the anticlockwise direction). A sits opposite D. B sits second to the right of A. C sits immediately to the right of D. E does not sit next to B. Who sits immediately to the right of F? |
+| B6P07Q24 | 6 | 7 | Statements: All pens are books. Some books are bags. No bag is a box. Conclusions: I. Some books are not boxes. II. Some pens are bags. III. No pen is a box. Which conclusion(s) follow? |
+| B6P07Q25 | 6 | 7 | Statements: No clerk is a manager. All managers are graduates. Conclusions: I. No clerk is a graduate. II. Some graduates are not clerks. Assuming every named group has at least one member, which conclusion(s) follow? |
+| B6P07Q26 | 6 | 7 | In a code language, "good sales team" is written "mo ka re", "team is good" is written "ka pi mo", and "sales team lead" is written "re ka du". What is the code for "good"? |
+| B6P07Q27 | 6 | 7 | A man starts from point P, walks 6 km north, turns east and walks 8 km, turns south and walks 6 km, then turns west and walks 3 km. How far is he from P and in which direction? |
+| B6P07Q28 | 6 | 7 | In a relation code, A + B means A is the mother of B, A - B means A is the brother of B, and A x B means A is the father of B. What does P x Q - R mean for P and R? |
+| B6P07Q29 | 6 | 7 | P and Q are a married couple (P is the husband). R is the son of P, S is the wife of R, T is the daughter of S, and U is the brother of T. How is U related to Q? |
+| B6P07Q30 | 6 | 7 | Six people P, Q, R, S, T and U sit in a row facing north. Q sits third from the left. R sits immediately to the right of Q. P sits at one of the ends. S sits immediately to the left of P. U does not sit next to Q. Who sits second from the left? |
+| B6P07Q31 | 6 | 7 | Five employees Anil, Bina, Chetan, Divya and Esha live on different floors of a five-floor building (floor 1 is the lowest), one per floor. Esha lives on the top floor. Bina lives on the floor immediately above Anil. Divya lives on a lower floor than Anil. Chetan lives on a higher floor than Bina. Who lives on floor 3? |
+| B6P07Q32 | 6 | 7 | Pointing to a lady, a man says, "The son of her only brother is the brother of my wife." How is the lady related to the man? |
+| B6P07Q33 | 6 | 7 | Eight people A, B, C, D, E, F, G and H sit around a circular table facing the centre (so a person's right-hand side is the anticlockwise direction). B sits third to the right of A. C sits opposite B. D sits immediately to the left of C. E sits immediately to the right of A. F sits opposite E. G sits opposite A. Who sits between B and E? |
+| B6P07Q34 | 6 | 7 | Pen is to Write as Knife is to what? |
+| B6P07Q35 | 6 | 7 | AZ is to BY as CX is to what? |
+| B6P07Q36 | 6 | 7 | Find the odd one out: 8, 27, 64, 100, 125. |
+| B6P07Q37 | 6 | 7 | Complete the letter series: ACE, GIK, MOQ, ? |
+| B6P07Q38 | 6 | 7 | What formula gives the angle between the hour hand and the minute hand of a clock at H hours and M minutes? |
+| B6P07Q39 | 6 | 7 | How many odd days are there in 100 years, and what does an odd day mean? |
+| B6P07Q40 | 6 | 7 | Which of the years 1900, 2000, 2024 and 2100 are leap years, and what is the rule? |
+| B6P07Q41 | 6 | 7 | A clock strikes once at 1 o'clock, twice at 2 o'clock, and so on up to 12 times at 12 o'clock. How many times does it strike in 12 hours? |
+| B6P07Q42 | 6 | 7 | If today is Wednesday, what day of the week will it be 100 days from today? |
+| B6P07Q43 | 6 | 7 | Five candidates were scored on a test. Kiran scored more than Lata but less than Mohan. Nitin scored less than Lata. Om scored more than Mohan. Who ranks third from the top? |
+| B6P07Q44 | 6 | 7 | Statement: The number of customer complaints has doubled in the last quarter. Courses of action: I. The company should investigate the causes of the complaints. II. The company should stop accepting new customers. Which course(s) of action follow? |
+| B6P07Q45 | 6 | 7 | Statements: Only data analysts attend the weekly review. Priya attended the weekly review. Conclusion: Priya is a data analyst. Does the conclusion follow? |
+| B6P07Q46 | 6 | 7 | What are the most common traps in syllogism questions (for example, treating "some" as "all", or ignoring the "either-or" case)? |
+| B6P07Q47 | 6 | 7 | You have 20 questions in 20 minutes in a reasoning section. How do you manage time, and when do you skip a question? |
+| B6P07Q48 | 6 | 7 | What is the difference between deductive and inductive reasoning, with one workplace example each? |
+| B6P07Q49 | 6 | 7 | In a survey of 100 employees, 60 use Excel, 45 use SQL and 20 use neither. How many use both? |
+| B6P07Q50 | 6 | 7 | A 3 x 3 x 3 cube is painted on all outer faces and then cut into 27 equal small cubes. How many small cubes have exactly two faces painted? |
+| B6P07Q51 | 6 | 7 | What is the angle between the hour hand and the minute hand at 3:25? |
+| B6P07Q52 | 6 | 7 | If 1 January 2026 is a Thursday, what day of the week is 15 August 2026? |
+| B6P07Q53 | 6 | 7 | Of 120 candidates, 70 cleared the aptitude test, 50 cleared the technical test and 30 cleared both. How many cleared neither? |
+| B6P07Q54 | 6 | 7 | Statement: P > Q >= R = S < T. Conclusions: I. P > S. II. T > Q. Which conclusion(s) follow? |
+| B6P07Q55 | 6 | 7 | Statements: Some doctors are teachers. All teachers are writers. Conclusions: I. All doctors are writers. II. Some doctors are not writers. Which conclusion(s) follow? |
+| B6P07Q56 | 6 | 7 | Statement: The company has decided to cut travel expenses by 20% this year. Assumptions: I. Travel is a meaningful part of the company's costs. II. Employees will stop travelling completely. Which assumption(s) are implicit? |
+| B6P07Q57 | 6 | 7 | Argument: "Call-centre attrition fell from 30% to 25% after the pay hike, so the pay hike caused the fall." Which fact would weaken this argument most? (a) Attrition also fell from 28% to 24% in a branch that got no pay hike. (b) The pay hike was 10%. (c) The call centre has 400 employees. (d) Attrition is measured yearly. |
+| B6P07Q58 | 6 | 7 | Facing north, Riya turns 90 degrees clockwise, then 180 degrees anticlockwise, then 45 degrees clockwise. Which direction is she facing now? |
+| B6P07Q59 | 6 | 7 | One morning after sunrise, Vikas stood facing a pole and the shadow of the pole fell to his right. Which direction was he facing? |
+| B6P07Q60 | 6 | 7 | Asha, Bala, Chitra and Dev each use a different one of Excel, SQL, Python and Power BI. Asha does not use Excel or SQL. Bala does not use Python or Power BI. Chitra does not use Excel or Power BI. Dev does not use SQL, Python or Excel. Who uses Python? |
+| B6P07Q61 | 6 | 7 | Statements: All laptops are devices. No device is a fruit. Conclusions: I. No laptop is a fruit. II. Some fruits are not laptops. Assuming every named group has at least one member, which conclusion(s) follow? |
+| B6P07Q62 | 6 | 7 | You have a 3-litre jug and a 5-litre jug with no markings and unlimited water. How do you measure exactly 4 litres? |
+| B6P07Q63 | 6 | 7 | You have 8 identical-looking balls and one is heavier. Using a balance scale, what is the minimum number of weighings needed to find the heavy ball, and how? |
+| B6P07Q64 | 6 | 7 | Which year after 2026 will have exactly the same calendar as 2026? |
+| B6P07Q65 | 6 | 7 | Of 200 candidates, 100 know Excel, 80 know SQL and 60 know Python. 30 know Excel and SQL, 25 know SQL and Python, 20 know Excel and Python, and 10 know all three. How many know at least one of the three? |
+| B6P07Q66 | 6 | 7 | How many times do the hour hand and the minute hand of a clock overlap in 12 hours? |
+| B6P07Q67 | 6 | 7 | A is twice as old as B. Ten years ago A was three times as old as B. What are their present ages? |
+| B6P07Q68 | 6 | 7 | Three people A, B and C say: A: "B is lying." B: "C is lying." C: "A and B are both lying." Who is telling the truth? |
+| B6P07Q69 | 6 | 7 | Six candidates A, B, C, D, E and F are interviewed on six consecutive days, Monday to Saturday, one per day. C is interviewed on Wednesday. A is interviewed two days before C. B is interviewed the day after F and after C. D is not interviewed on Saturday. E is interviewed before D. On which day is B interviewed? |
+| B6P07Q70 | 6 | 7 | Statements: Some A are B. All B are C. No C is D. Some D are E. Conclusions: I. Some A are C. II. No B is D. III. Some E are not C. IV. Some A are D. Which conclusion(s) follow? |
+| B6P07Q71 | 6 | 7 | Why do companies such as Mu Sigma, Fractal and service MNCs test logical reasoning for analyst roles, and how does it connect to day-to-day data work? |
+| B6P07Q72 | 6 | 7 | On an island, knights always tell the truth and knaves always lie. A says, "We are both knaves." What are A and B? |
+| B6P07Q73 | 6 | 7 | Three switches outside a closed room control three bulbs inside. You can enter the room only once. How do you find which switch controls which bulb? |
+| B6P07Q74 | 6 | 7 | You have two ropes that each burn for exactly 60 minutes but burn unevenly. How do you measure exactly 45 minutes? |
+| B6P07Q75 | 6 | 7 | A snail climbs 3 m up a 10 m well each day and slips back 2 m each night. On which day does it reach the top? |
+| B6P07Q76 | 6 | 7 | Three boxes are labelled Apples, Oranges and Mixed, and every label is wrong. You may pick one fruit from one box. Which box do you pick from, and how does that fix all labels? |
+| B6P07Q77 | 6 | 7 | Four people take 1, 2, 5 and 10 minutes to cross a bridge at night with one torch. At most two cross at a time at the slower person's speed. What is the minimum total time for all four to cross? |
+| B6P07Q78 | 6 | 7 | Using two identical eggs in a 100-storey building, what is the minimum number of drops needed in the worst case to find the lowest floor from which an egg breaks? |
+| B6P07Q79 | 6 | 7 | You have 25 horses and a track that races 5 at a time, with no stopwatch. What is the minimum number of races needed to find the 3 fastest horses? |
+| B6P07Q80 | 6 | 7 | You have 12 identical-looking balls, one of which has a different weight (heavier or lighter, unknown). Using a balance scale at most 3 times, how do you find the odd ball and whether it is heavier or lighter? |
+| B6P08Q1 | 6 | 8 | What is the formula for percentage change, and why must the base be the original (earlier) value? |
+| B6P08Q2 | 6 | 8 | What is the difference between a percentage-point change and a percent change? Attrition rises from 10% to 12%: state both. |
+| B6P08Q3 | 6 | 8 | What is the percentage increase in total headcount from 2024 to 2025? |
+| B6P08Q4 | 6 | 8 | Which department shows the highest percentage growth in headcount from 2024 to 2025? |
+| B6P08Q5 | 6 | 8 | By what percentage did Operations headcount decrease from 2024 to 2025? |
+| B6P08Q6 | 6 | 8 | How much money (Rs) is allotted to Bonus in the salary budget? |
+| B6P08Q7 | 6 | 8 | What is the central angle (in degrees) of the Allowances sector? |
+| B6P08Q8 | 6 | 8 | What is the ratio of Basic to PF in the salary budget, in simplest form? |
+| B6P08Q9 | 6 | 8 | How much more (in Rs) is spent on Allowances than on Bonus? |
+| B6P08Q10 | 6 | 8 | What are the total sales of Product A from January to June (Rs lakh)? |
+| B6P08Q11 | 6 | 8 | What is the average monthly sales of Product B over the six months (Rs lakh)? |
+| B6P08Q12 | 6 | 8 | In which month is the absolute difference between sales of Product A and Product B the largest? |
+| B6P08Q13 | 6 | 8 | What should you read first when a chart or table is shown in a data interpretation set, and what common errors does this prevent? |
+| B6P08Q14 | 6 | 8 | How many candidates qualified in Test C? |
+| B6P08Q15 | 6 | 8 | A pie chart of 7,200 employees has a Sales sector with a central angle of 90 degrees. How many employees are in Sales? |
+| B6P08Q16 | 6 | 8 | What is the average annual profit over the five years (Rs crore)? |
+| B6P08Q17 | 6 | 8 | In a pie chart the sector angles for A, B and C are 72, 108 and 90 degrees, and D takes the rest. What percentage does D represent, and what does A represent? |
+| B6P08Q18 | 6 | 8 | In which quarter did attrition fall the most compared with the previous quarter, and by how many percentage points? |
+| B6P08Q19 | 6 | 8 | What is the profit percentage on expenditure in 2024 (to 2 decimals)? |
+| B6P08Q20 | 6 | 8 | What is the percentage growth in revenue from 2021 to 2025? |
+| B6P08Q21 | 6 | 8 | In which year was the profit percentage on expenditure the lowest, and what was it? |
+| B6P08Q22 | 6 | 8 | What is the total number of Tech employees in Company A and Company B together? |
+| B6P08Q23 | 6 | 8 | How many more Operations employees does Company B have than Company A? |
+| B6P08Q24 | 6 | 8 | What percentage of the combined workforce of both companies is in Sales? |
+| B6P08Q25 | 6 | 8 | In which month did orders show the largest percentage increase over the previous month, and what was it? |
+| B6P08Q26 | 6 | 8 | What is the percentage decline in orders from February to March? |
+| B6P08Q27 | 6 | 8 | What is the total payroll and the weighted average salary of the three departments (Rs thousand per month)? Find Operations headcount first. |
+| B6P08Q28 | 6 | 8 | Why is the overall average salary not the simple average of the department averages? Compute both for this table, using Operations headcount from its payroll. |
+| B6P08Q29 | 6 | 8 | What is the overall qualification percentage across all four tests (to 2 decimals)? |
+| B6P08Q30 | 6 | 8 | Product A's June sales are what percentage of its January to June total (to 2 decimals)? |
+| B6P08Q31 | 6 | 8 | By what percentage were Product B's March sales higher than its February sales? |
+| B6P08Q32 | 6 | 8 | What is the percent change (not percentage points) in attrition from Q2 to Q3? |
+| B6P08Q33 | 6 | 8 | When should you approximate in data interpretation, and how do you keep rounding errors from changing the answer? |
+| B6P08Q34 | 6 | 8 | In a company of 800 employees, 55% are male. 40% of males and 30% of females work in Tech. How many employees work in Tech? |
+| B6P08Q35 | 6 | 8 | A company starts the year with 500 employees. 60 leave and 80 join during the year. What is the attrition rate on average headcount (to 2 decimals)? |
+| B6P08Q36 | 6 | 8 | Which region has the highest percentage growth in sales from 2024 to 2025, and what is the overall growth percentage (to 2 decimals)? |
+| B6P08Q37 | 6 | 8 | Which region contributed the largest absolute increase in sales, and how does that differ from the region with the highest percentage growth? |
+| B6P08Q38 | 6 | 8 | What is West's share of total 2025 sales (to 2 decimals)? |
+| B6P08Q39 | 6 | 8 | What is the combined amount (Rs crore) spent on Marketing and Miscellaneous? |
+| B6P08Q40 | 6 | 8 | If salary expenses rise by 10% and all other expenses stay the same, what is the new share of salaries in total expense (to 2 decimals)? |
+| B6P08Q41 | 6 | 8 | What is the central angle of the Technology sector, and what is the sum of all sector angles in any pie chart? |
+| B6P08Q42 | 6 | 8 | If revenue is Rs 100 crore in year 1 and Rs 144 crore in year 3 with the same growth each year, what is the yearly growth rate? Write the CAGR formula. |
+| B6P08Q43 | 6 | 8 | Revenue grows 20% in the first year and 50% in the second year. Why is the average yearly growth not 35%, and what is the total two-year growth? |
+| B6P08Q44 | 6 | 8 | In which quarter did the company make a loss, and what is the profit percentage on cost for Q4? |
+| B6P08Q45 | 6 | 8 | What is the total profit (or loss) in Rs lakh across the four quarters? |
+| B6P08Q46 | 6 | 8 | What is the overall average score of all employees across the three batches? |
+| B6P08Q47 | 6 | 8 | Which product sold more in total from January to June, and by how much (Rs lakh)? |
+| B6P08Q48 | 6 | 8 | In how many months did Product A outsell Product B? |
+| B6P08Q49 | 6 | 8 | What is Operations' share of total 2025 headcount (to 2 decimals)? |
+| B6P08Q50 | 6 | 8 | What is the ratio of qualified candidates in Test A to those in Test D? |
+| B6P08Q51 | 6 | 8 | How many percent more Tech employees does Company B have than Company A? |
+| B6P08Q52 | 6 | 8 | What percentage of applicants eventually joined, and what percentage of offers were accepted? |
+| B6P08Q53 | 6 | 8 | What percentage of the screened-in candidates were interviewed, and what percentage of applicants was rejected at screening? |
+| B6P08Q54 | 6 | 8 | What is the average attrition across the four quarters? |
+| B6P08Q55 | 6 | 8 | What are the percentage of females and the male to female ratio in the 3-5 years band? |
+| B6P08Q56 | 6 | 8 | If a company's 2020 sales index is 100, the 2021 index is 110 and the 2022 index is 121, and 2020 sales were Rs 50 crore, what were 2022 sales, and what was the percent change from 2021 to 2022? |
+| B6P08Q57 | 6 | 8 | What is the overall percentage of females across all bands, and which band has the highest female share? |
+| B6P08Q58 | 6 | 8 | Which region has the highest revenue per rep, and how much is it? |
+| B6P08Q59 | 6 | 8 | What is the combined revenue per rep across all regions (to 2 decimals)? |
+| B6P08Q60 | 6 | 8 | What is the overall attrition rate across grades, and how many employees left? |
+| B6P08Q61 | 6 | 8 | What is the constant yearly growth rate of Product P, and what would 2026 sales be at the same rate? |
+| B6P08Q62 | 6 | 8 | How many times are Product P's 2025 sales as compared with 2022 (as a decimal)? |
+| B6P08Q63 | 6 | 8 | Pie sectors are P = 25%, Q = 2x%, R = x% and S = 15%. Find x and the central angle of Q. |
+| B6P08Q64 | 6 | 8 | How many candidates were selected in total, and what share of all hires came from referrals? |
+| B6P08Q65 | 6 | 8 | What is the overall selection percentage across all sources? |
+| B6P08Q66 | 6 | 8 | What was the percentage change in Product P's sales from 2024 to 2025, in rupees (not share)? |
+| B6P08Q67 | 6 | 8 | By what percentage did Product R's sales grow from 2024 to 2025? |
+| B6P08Q68 | 6 | 8 | By what percentage did Product Q's sales grow from 2024 to 2025 (to 2 decimals)? |
+| B6P08Q69 | 6 | 8 | A pie chart shows Tech at 40% of Company X and 30% of Company Y. Can you say Company X has more Tech employees than Company Y? Why or why not? |
+| B6P08Q70 | 6 | 8 | A bar chart's y-axis starts at 80 instead of 0. How can this mislead, and what should you check? |
+| B6P08Q71 | 6 | 8 | If B is 25% more than A, then A is what percent less than B? Check with A = 40 and B = 50. |
+| B6P08Q72 | 6 | 8 | The 2025 revenue is Rs 150 crore. What expenditure gives a 40% profit on cost (to 2 decimals)? |
+| B6P08Q73 | 6 | 8 | When is a stacked bar chart better than a clustered bar chart, and when is it worse? |
+| B6P08Q74 | 6 | 8 | Headcount rises from 200 to 220 and average salary rises from Rs 50,000 to Rs 55,000 per month. By what percentage does total payroll rise? |
+| B6P08Q75 | 6 | 8 | What is the overall average salary of all employees (Rs lakh per year)? |
+| B6P08Q76 | 6 | 8 | What is Finance's share of total payroll (to 2 decimals)? |
+| B6P08Q77 | 6 | 8 | A pie sector for Department A is 20% of total expense and equals Rs 2.4 crore. What is the total expense, and what amount does a 35% sector represent? |
+| B6P08Q78 | 6 | 8 | Product P's share fell from 40% to 30%. Did its rupee sales fall, and which product had the largest rupee increase? |
+| B6P08Q79 | 6 | 8 | Which chart type would you use to show share of sales by region, trend over 12 months, and comparison across 5 products? |
+| B6P08Q80 | 6 | 8 | What is the difference between a bar chart and a histogram? |
+| B6P08Q81 | 6 | 8 | What does a dual-axis chart show, and why can it mislead? |
+| B6P08Q82 | 6 | 8 | What percentage of employees earn less than Rs 50 thousand per month, and in which band does the median lie? |
+| B6P08Q83 | 6 | 8 | Estimate the mean salary using class mid-points (Rs thousand). |
+| B6P08Q84 | 6 | 8 | What is Product B's share of total sales over Q1 to Q3 (to 2 decimals), and what is it in Q3? |
+| B6P08Q85 | 6 | 8 | What was the profit in each year, and by what percentage did profit rise from 2023 to 2025? |
+| B6P08Q86 | 6 | 8 | What are the first and last 3-month moving averages for monthly sales of 20, 26, 23, 29, 32? |
+| B6P08Q87 | 6 | 8 | Complaints by category are 120, 80, 50, 30 and 20. What percentage do the top two categories contribute, and what is a Pareto chart? |
+| B6P08Q88 | 6 | 8 | A headcount waterfall starts at 500, adds 90 hires and 20 transfers in, and subtracts 60 attrition and 10 transfers out. What is the closing headcount and the net percent change? |
+| B6P08Q89 | 6 | 8 | A scatter plot of training hours versus sales shows an upward trend. Can you conclude training causes higher sales? |
+| B6P08Q90 | 6 | 8 | Total expense is Rs 12 crore and Department A spends Rs 2.4 crore. If total expense rises 10% while A's spend stays flat, what is A's new share (to 2 decimals)? |
+| B6P08Q91 | 6 | 8 | What is the CAGR from 100 to 133.1 in 3 years, and why is the simple average of annual growth rates misleading? |
+| B6P08Q92 | 6 | 8 | What is the difference between a caselet and a standard data interpretation set, and how should you structure a caselet? |
+| B6P08Q93 | 6 | 8 | How should you approach a mixed-graph set (a bar chart plus a table), and what do you check first? |
+| B6P08Q94 | 6 | 8 | What is a good time budget per data interpretation question in a 12 question, 12 minute set, and which questions should you skip? |
+| B6P09Q1 | 6 | 9 | What is a data sufficiency question, and how is it different from a normal aptitude problem? |
+| B6P09Q2 | 6 | 9 | What are the five standard answer options in a data sufficiency question, and what does each one mean? |
+| B6P09Q3 | 6 | 9 | What is Priya's age? Statement I: Priya is 5 years older than Ravi. Statement II: Ravi is 25 years old. |
+| B6P09Q4 | 6 | 9 | What is Anil's monthly salary? (Anil is paid the same amount every month, 12 months a year, with no bonus.) Statement I: His annual salary is Rs 6,00,000. Statement II: His salary is 20% more than Sunil's. |
+| B6P09Q5 | 6 | 9 | What is the selling price of an item? Statement I: The cost price is Rs 800. Statement II: The profit is 25% of the cost price. |
+| B6P09Q6 | 6 | 9 | Is the integer n even? Statement I: n + 1 is odd. Statement II: n is divisible by 3. |
+| B6P09Q7 | 6 | 9 | What is the total marks of a student in 3 subjects? Statement I: The average marks in the 3 subjects is 70. Statement II: The highest mark in any one subject is 85. |
+| B6P09Q8 | 6 | 9 | What is the area of a rectangle? Statement I: Its perimeter is 40 cm. Statement II: Its length is twice its breadth. |
+| B6P09Q9 | 6 | 9 | A company has employees only in one pool; one employee is picked at random. What is the probability that the employee picked is a woman? Statement I: There are 40 women in the pool. Statement II: There are 100 employees in the pool. |
+| B6P09Q10 | 6 | 9 | By what percentage did sales rise this year compared with last year? Statement I: This year's sales are Rs 1.2 crore. Statement II: Last year's sales were Rs 1 crore. |
+| B6P09Q11 | 6 | 9 | What is the discount percentage on an item? Statement I: The marked price is Rs 2,000. Statement II: The selling price is Rs 1,700. |
+| B6P09Q12 | 6 | 9 | What is the profit percentage on a sale? Statement I: The selling price is Rs 1,500. Statement II: The selling price is 20% above the cost price. |
+| B6P09Q13 | 6 | 9 | What is the step-by-step method (the AD / BCE elimination grid) for solving data sufficiency questions quickly? |
+| B6P09Q14 | 6 | 9 | Why must you not carry information from Statement I into your test of Statement II when checking each statement alone? |
+| B6P09Q15 | 6 | 9 | What is the value of x, if x squared equals 25? Statement I: x is greater than 0. Statement II: x is an integer. |
+| B6P09Q16 | 6 | 9 | How many employees are in a department? (Every employee is either a man or a woman.) Statement I: The men are 3/5 of the department. Statement II: There are 24 women in the department. |
+| B6P09Q17 | 6 | 9 | What is the speed of a train in m/s? Statement I: It crosses a 200 m long platform in 30 seconds. Statement II: The length of the train is 100 m. |
+| B6P09Q18 | 6 | 9 | In how many days can A alone finish a job? Statement I: A and B together finish the job in 12 days. Statement II: B alone finishes the job in 20 days. |
+| B6P09Q19 | 6 | 9 | A company had 200 employees at the start of the year. (Attrition rate = employees who left during the year divided by the opening headcount.) Was the annual attrition rate above 10%? Statement I: 25 employees left during the year. Statement II: 15 new employees joined during the year. |
+| B6P09Q20 | 6 | 9 | What is the average salary of 5 employees? Statement I: The total salary of the 5 employees is Rs 2,50,000. Statement II: The median salary of the 5 employees is Rs 50,000. |
+| B6P09Q21 | 6 | 9 | What is the ratio of boys to girls in a class? (Every student is a boy or a girl.) Statement I: Boys are 60% of the class. Statement II: There are 30 students in the class. |
+| B6P09Q22 | 6 | 9 | What is the average speed for a round trip between two towns? (Same road both ways, no stops.) Statement I: The speed going is 40 km/h and the speed returning is 60 km/h. Statement II: The one-way distance is 120 km. |
+| B6P09Q23 | 6 | 9 | At what rate percent per annum is simple interest charged on a loan? Statement I: The principal is Rs 5,000. Statement II: The simple interest earned in 2 years is Rs 1,000. |
+| B6P09Q24 | 6 | 9 | Is x positive? Statement I: x cubed is greater than 0. Statement II: x squared is greater than 0. |
+| B6P09Q25 | 6 | 9 | Out of 100 employees, how many know both SQL and Excel? (Every employee knows at least one of the two.) Statement I: 70 employees know SQL. Statement II: 60 employees know Excel. |
+| B6P09Q26 | 6 | 9 | What is the two-digit number? Statement I: The sum of its digits is 9. Statement II: The number is divisible by 4. |
+| B6P09Q27 | 6 | 9 | What is the present age of a father? Statement I: The father is 3 times as old as his son. Statement II: After 10 years the father will be twice as old as his son. |
+| B6P09Q28 | 6 | 9 | How do you handle a yes/no data sufficiency question differently from a value question? |
+| B6P09Q29 | 6 | 9 | How much time should you spend on a data sufficiency question in a timed online test, and when should you guess? |
+| B6P09Q30 | 6 | 9 | What is the distance from home to the office? (Ravi walks at a constant speed.) Statement I: Walking at 5 km/h he takes 30 minutes. Statement II: Walking at 6 km/h he takes 25 minutes. |
+| B6P09Q31 | 6 | 9 | Tea at Rs 40 per kg is mixed with tea at Rs 60 per kg. What is the cost per kg of the mixture? Statement I: The two teas are mixed in the ratio 1:1 by weight. Statement II: The total weight of the mixture is 20 kg. |
+| B6P09Q32 | 6 | 9 | What is the area of a circle? (Take pi as 22/7.) Statement I: Its circumference is 44 cm. Statement II: Its diameter is 14 cm. |
+| B6P09Q33 | 6 | 9 | When do two linear equations in two unknowns fail to give a unique solution, and how does this show up in data sufficiency questions? |
+| B6P09Q34 | 6 | 9 | Can the value of x be found? Statement I: 2x + 3y = 12. Statement II: 4x + 6y = 24. |
+| B6P09Q35 | 6 | 9 | x and y are positive integers. What is the value of x? Statement I: x + y = 3. Statement II: x is greater than y. |
+| B6P09Q36 | 6 | 9 | x and y are positive integers. What is the value of x? Statement I: x times y equals 7. Statement II: x is less than y. |
+| B6P09Q37 | 6 | 9 | Was a sale made at a profit? Statement I: The selling price is Rs 900. Statement II: The cost price is Rs 850. |
+| B6P09Q38 | 6 | 9 | A company's total payroll is Rs 10 lakh and is split among exactly three departments A, B and C. What is the payroll of department C? Statement I: Department A's payroll is 40% of the total. Statement II: Department B's payroll is 35% of the total. |
+| B6P09Q39 | 6 | 9 | Is the positive integer n divisible by 12? Statement I: n is divisible by 4. Statement II: n is divisible by 6. |
+| B6P09Q40 | 6 | 9 | Is x squared greater than x? Statement I: x is greater than 1. Statement II: x is less than 0. |
+| B6P09Q41 | 6 | 9 | What are the common traps in data sufficiency questions (squares and roots, assuming integers, assuming a figure is to scale, and similar)? |
+| B6P09Q42 | 6 | 9 | A and B run a business and share the profit in proportion to (investment times months invested). What is B's share of a total profit of Rs 78,000? Statement I: A invested Rs 40,000 for 12 months. Statement II: B invested Rs 50,000 for 6 months. |
+| B6P09Q43 | 6 | 9 | Is a divided by b an integer? (a and b are positive integers.) Statement I: a is divisible by 6. Statement II: b is a factor of 12. |
+| B6P09Q44 | 6 | 9 | Why do companies include data sufficiency questions in aptitude tests for analyst roles? |
+| B6P09Q45 | 6 | 9 | Is the integer product x times y even? (x and y are integers.) Statement I: x + y is odd. Statement II: x is even. |
+| B6P09Q46 | 6 | 9 | Is triangle ABC right-angled? Statement I: Its sides are 5 cm, 12 cm and 13 cm. Statement II: Two of its sides are 5 cm and 12 cm. |
+| B6P09Q47 | 6 | 9 | Can two data sufficiency statements contradict each other, and what should you do if they seem to? |
+| B6P09Q48 | 6 | 9 | A manager says: 'Sales in Hyderabad fell 10% after our campaign, so the campaign failed.' How would you judge whether the data given is sufficient to conclude that? |
+| B6P09Q49 | 6 | 9 | Is n squared minus 1 divisible by 8? (n is a positive integer.) Statement I: n is odd. Statement II: n is prime. |
+| B6P10Q1 | 6 | 10 | Without a calculator, write the percentage equivalents of 1/8, 1/6, 1/12 and 1/16 (to two decimals where needed). |
+| B6P10Q2 | 6 | 10 | Using the 10% + 5% method, find 15% of Rs 640 without long multiplication. |
+| B6P10Q3 | 6 | 10 | Using the 'ends in 5' rule n(n+1) followed by 25, find 85² and 115². |
+| B6P10Q4 | 6 | 10 | How do you multiply 468 by 25 quickly using division by 4? Compute 468 × 25. |
+| B6P10Q5 | 6 | 10 | Using the 'split the digits and add in the middle' trick, compute 73 × 11. |
+| B6P10Q6 | 6 | 10 | Using the identity (a − b)(a + b) = a² − b², compute 52 × 48 without long multiplication. |
+| B6P10Q7 | 6 | 10 | Find 37.5% of Rs 880 by converting the percentage to a fraction. |
+| B6P10Q8 | 6 | 10 | An online assessment has 25 quantitative questions in 40 minutes. How do you split the time across questions, and what do you do when a question is taking more than two minutes? |
+| B6P10Q9 | 6 | 10 | Mock Set A, Q1 (target 60 s): An employee's salary of Rs 48,000 per month is raised by 12.5%. What is the new monthly salary? |
+| B6P10Q10 | 6 | 10 | Mock Set A, Q2 (target 60 s): A company's headcount fell from 800 to 680 in a year. What is the percentage decrease? |
+| B6P10Q11 | 6 | 10 | Using the base-100 (deviation) method, compute 98 × 103. |
+| B6P10Q12 | 6 | 10 | A salary is raised by 20% and then cut by 20%. Using the shortcut a + b + ab/100, what is the net percentage change? |
+| B6P10Q13 | 6 | 10 | Using (a − b)² = a² − 2ab + b² with a round number, compute 47². |
+| B6P10Q14 | 6 | 10 | Without computing decimals, which is larger: 7/9 or 11/14? Show the cross-multiplication trick. |
+| B6P10Q15 | 6 | 10 | Using the assumed-mean method, find the average of the monthly sales figures 62, 58, 65, 55 and 70 (Rs lakh). |
+| B6P10Q16 | 6 | 10 | Why is the average speed for a round trip not the simple average of the two speeds? Find the average speed if a delivery van goes at 40 km/h one way and returns the same distance at 60 km/h. |
+| B6P10Q17 | 6 | 10 | A test awards +1 for a correct answer and −0.25 for a wrong answer, with four options per question. Is it worth guessing blindly? What if you can eliminate two options? Compute the expected marks per guess in both cases. |
+| B6P10Q18 | 6 | 10 | Mock Set A, Q3 (target 90 s): A retailer marks goods 40% above cost price and then allows a 10% discount. What is the profit percent? |
+| B6P10Q19 | 6 | 10 | Mock Set A, Q4 (target 90 s): The ratio of male to female employees is 5:3. After 20 more females join (no males join or leave) the ratio becomes 5:4. What was the original total headcount? |
+| B6P10Q20 | 6 | 10 | Mock Set A, Q5 (target 90 s): A can finish a report in 12 days and B in 15 days. They work together for 4 days and then A leaves. In how many more days will B finish the rest? |
+| B6P10Q21 | 6 | 10 | Mock Set A, Q6 (target 90 s): A train 200 m long passes a platform 300 m long in 25 seconds. What is its speed in km/h? |
+| B6P10Q22 | 6 | 10 | Mock Set A, Q7 (target 90 s): What is the compound interest on Rs 20,000 at 10% per annum compounded annually for 2 years? |
+| B6P10Q23 | 6 | 10 | How do you plan a 30-question, 40-minute quantitative section in passes (first pass, second pass, final pass), and how many seconds do you give each pass? |
+| B6P10Q24 | 6 | 10 | Mock Set A, Q8 (target 120 s): A 40-litre mixture has milk and water in the ratio 3:2. How many litres of water must be added to make the ratio 1:1? |
+| B6P10Q25 | 6 | 10 | What is the percentage increase when headcount rises from 80,000 employees to 92,000 employees? Show the quick method using 10% blocks. |
+| B6P10Q26 | 6 | 10 | Mock Set B, Q1 (target 60 s): Find the next term in the series 3, 8, 15, 24, 35, ? |
+| B6P10Q27 | 6 | 10 | Mock Set B, Q2 (target 90 s): How many three-digit numbers are divisible by 7? |
+| B6P10Q28 | 6 | 10 | Using approximation, which option is closest to 19.8% of 2,497: 480, 495, 520 or 560? |
+| B6P10Q29 | 6 | 10 | Use divisibility rules to test whether 384615 is divisible by 3, by 9 and by 11. |
+| B6P10Q30 | 6 | 10 | Using casting out nines (digit sums), check whether 4,376 × 23 = 1,00,648 is correct. |
+| B6P10Q31 | 6 | 10 | Using digit sums and last digits to eliminate options, which is the value of 387 × 46: 17,802; 17,812; 17,904 or 17,792? |
+| B6P10Q32 | 6 | 10 | After a 20% hike, an employee's monthly salary is Rs 54,000. Using back-solving with the options Rs 40,000, Rs 42,000, Rs 45,000 and Rs 48,000, find the original salary and explain why back-solving saves time. |
+| B6P10Q33 | 6 | 10 | Using the alligation (cross) method, in what ratio should rice at Rs 40 per kg and rice at Rs 60 per kg be mixed so that the mixture is worth Rs 52 per kg? |
+| B6P10Q34 | 6 | 10 | Using the LCM method (assume total work = LCM of days), how long will A (12 days alone) and B (18 days alone) take together? |
+| B6P10Q35 | 6 | 10 | In a data-interpretation question you must find what percent 487 is of 2,013. Show how rounding gives the answer in under 20 seconds, and state the result to the nearest whole percent. |
+| B6P10Q36 | 6 | 10 | Using the Rule of 72, approximately how many years will a sum take to double at 8% compound interest per annum? |
+| B6P10Q37 | 6 | 10 | Using the shortcut 100 − 1, compute 67 × 99. |
+| B6P10Q38 | 6 | 10 | If the price of an item rises by 25%, by what percent must consumption fall so that total expenditure stays the same? Use the fraction method. |
+| B6P10Q39 | 6 | 10 | Mock Set B, Q3 (target 90 s): In how many ways can the letters of the word PAYROLL be arranged? |
+| B6P10Q40 | 6 | 10 | Mock Set B, Q4 (target 90 s): Two fair dice are rolled. What is the probability that the sum of the numbers is 8? |
+| B6P10Q41 | 6 | 10 | Mock Set B, Q5 (target 90 s): What is the simple interest on Rs 25,000 at 8% per annum for 3 years 6 months? |
+| B6P10Q42 | 6 | 10 | Mock Set B, Q6 (target 60 s): Find the HCF and the LCM of 36 and 48. |
+| B6P10Q43 | 6 | 10 | Mock Set B, Q7 (target 120 s): A committee of 3 is to be chosen from 5 men and 4 women. In how many ways can it be chosen so that it includes at least one woman? |
+| B6P10Q44 | 6 | 10 | Mock Set C, Q2 (target 120 s): Five colleagues P, Q, R, S and T sit in a row, facing north. P sits at the extreme left and T at the extreme right. S sits immediately to the right of Q. R does not sit next to P. Who sits in the middle? |
+| B6P10Q45 | 6 | 10 | Mock Set C, Q3 (target 60 s): Statements: All analysts are graduates. Some graduates are managers. Conclusions: I. Some analysts are managers. II. Some managers are graduates. Which conclusion(s) follow? |
+| B6P10Q46 | 6 | 10 | Mock Set C, Q4 (target 90 s): Quarterly sales in Rs lakh were Q1 120, Q2 150, Q3 160, Q4 200. What is the percentage growth from Q3 to Q4, and what percent of the annual total is Q2 (to one decimal)? |
+| B6P10Q47 | 6 | 10 | Mock Set C, Q5 (target 60 s): What is Ravi's salary? Statement 1: Ravi earns 20% more than Sita. Statement 2: Sita earns Rs 40,000 per month. Is statement 1 alone, statement 2 alone, both together, or neither sufficient? |
+| B6P10Q48 | 6 | 10 | Mock Set C, Q6 (target 60 s): In a certain code each letter is replaced by its position in the alphabet and the values are added, so CAT = 3 + 1 + 20 = 24. What is the code for DOG? |
+| B6P10Q49 | 6 | 10 | Mock Set C, Q7 (target 45 s): Meena ranks 12th from the top in a class of 40 students. What is her rank from the bottom? |
+| B6P10Q50 | 6 | 10 | After a full-length mock test, how do you analyse the result (accuracy, time per topic, silly errors vs concept gaps) and decide what to practise next? |
+| B6P10Q51 | 6 | 10 | Many assessments use type-in-the-answer (TITA) questions with no options. How does your approach change compared with multiple-choice questions? |
+| B6P10Q52 | 6 | 10 | Which aptitude topics would you prioritise for a data/MIS analyst online assessment if you only have two weeks, and why? |
+| B6P10Q53 | 6 | 10 | You have no calculator in the test. How do you train yourself to do multi-step arithmetic on data-interpretation sets quickly and accurately? |
+| B6P10Q54 | 6 | 10 | Using cyclicity of powers of 2 modulo 7, find the remainder when 2^50 is divided by 7. |
+| B6P10Q55 | 6 | 10 | Mock Set B, Q8 (target 120 s): What is the remainder when 7^100 is divided by 5? |
+| B6P10Q56 | 6 | 10 | Mock Set C, Q8 (target 90 s): A training budget of Rs 8,00,000 is split as Salaries 40%, Tools 25%, Training 15% and Others the remainder. In a pie chart, what is the central angle for Others and the rupee amount for Others? |
+| B6P10Q57 | 6 | 10 | Convert 3/7 into a percentage correct to two decimals using the memorised value of 1/7. |
+| B6P10Q58 | 6 | 10 | Find 457 × 1001 using the 1001 trick. |
+| B6P10Q59 | 6 | 10 | Using the formula for the sum of an arithmetic series, find the sum of all multiples of 7 from 7 to 100. |
+| B6P10Q60 | 6 | 10 | 1 January 2026 is a Thursday. Using odd days, what day of the week is 1 January 2028? |
+| B6P10Q61 | 6 | 10 | Use the square of a number near 1000 trick to find 1012². |
+| B6P10Q62 | 6 | 10 | How many full-length timed mocks should you take in the last two weeks before an assessment, and how should you simulate the real test conditions? |
+| B6P10Q63 | 6 | 10 | Name the five mental-maths habits you would practise daily to raise aptitude speed, and give one example for each with a number. |
+| B6P11Q1 | 6 | 11 | Choose the correct option: "The list of employees eligible for the bonus ___ on the notice board." (a) are displayed (b) is displayed (c) were displayed (d) have been displayed. Which is correct and why? |
+| B6P11Q2 | 6 | 11 | Spot the error in the sentence: "Neither of the two candidates have submitted their documents on time." Rewrite it correctly and name the grammar rule. |
+| B6P11Q3 | 6 | 11 | Fill in the blanks with the correct prepositions: "The manager is responsible ___ payroll accuracy, and she is very good ___ analysing attendance data, but she is not satisfied ___ the current report." |
+| B6P11Q4 | 6 | 11 | Correct the sentence and name the tense rule: "He has joined the company in 2022 and is working here since then." |
+| B6P11Q5 | 6 | 11 | Fill in the correct articles (a / an / the / no article): "She is ___ honest analyst who works in ___ MIS team and sends ___ report to ___ HR Head every Monday." |
+| B6P11Q6 | 6 | 11 | In SQL, what is the difference between WHERE and HAVING? Which clause would you use to list departments having more than 10 employees from the table employees(emp_id, dept, salary), and why? |
+| B6P11Q7 | 6 | 11 | What is the difference between a PRIMARY KEY, a FOREIGN KEY and a UNIQUE key in a database table? Can a primary key contain NULL, and can a table have more than one UNIQUE key? |
+| B6P11Q8 | 6 | 11 | A table employees has 5 rows. The column bonus has the values 1000, NULL, 2000, NULL, 3000. What do SELECT COUNT(*), SELECT COUNT(bonus) and SELECT AVG(bonus) return? |
+| B6P11Q9 | 6 | 11 | Choose the word closest in meaning to the underlined word: "The new payroll process will mitigate the risk of salary errors." (a) increase (b) reduce (c) ignore (d) transfer. Then give one antonym of "mitigate" in this sense. |
+| B6P11Q10 | 6 | 11 | Read the passage and answer. Passage: "Attrition in the sales team rose from 12% to 18% over the year, while attrition in operations stayed flat at 10%. Exit interviews showed that most leavers in sales cited limited career growth rather than pay. The HR head proposed a promotion framework instead of a company-wide salary hike." Question: Which of the following is the best inference? (a) Salary hikes caused the rise in attrition (b) Operations has a better pay structure than sales (c) A targeted growth framework addresses the stated reason better than a general pay rise (d) Attrition is expected to fall to 10% next year. Explain why the other options fail. |
+| B6P11Q11 | 6 | 11 | Rearrange the following sentences into a logical paragraph (give the order of letters): P. As a result, the team reduced report preparation time from two days to four hours. Q. The analytics team found that most reports were prepared manually in Excel. R. They automated the data refresh using a scheduled query and a dashboard. S. Every month, the finance team needed a headcount report for senior management. |
+| B6P11Q12 | 6 | 11 | Write a professional email (about 100 words) to your reporting manager asking for a two-day extension on a data report because the source file from the finance team arrived late. Include a subject line, greeting, body, closing and signature. |
+| B6P11Q13 | 6 | 11 | Two tables are given. Table A(id): 1, 2, 3. Table B(id): 2, 3, 4. How many rows and which ids are returned by (i) A INNER JOIN B ON A.id = B.id, (ii) A LEFT JOIN B ON A.id = B.id (show A.id and B.id), (iii) A FULL OUTER JOIN B ON A.id = B.id? |
+| B6P11Q14 | 6 | 11 | The table employees(emp_id, name, manager_id) has 4 rows with manager_id values 101, NULL, 102, NULL. What does SELECT * FROM employees WHERE manager_id = NULL return, and what is the correct query to find employees with no manager? Why does the first query behave that way? |
+| B6P11Q15 | 6 | 11 | "Tell me about yourself" in 60 seconds: how would you structure a spoken answer for a data/MIS analyst fresher in an English communication or HR screening round? |
+| B6P11Q16 | 6 | 11 | Choose the correct word: "The new policy will directly (affect / effect) employee attendance, and its (affect / effect) will be reviewed after three months." |
+| B6P11Q17 | 6 | 11 | Convert the sentence to passive voice: "The analyst prepared the monthly attrition report and sent it to the HR head." |
+| B6P11Q18 | 6 | 11 | Complete the conditional sentence correctly: "If the data ___ (be) clean, the dashboard ___ (load) faster." Name the conditional type, and give the correct form for a "real/probable" situation and for an "unreal/hypothetical" situation. |
+| B6P11Q19 | 6 | 11 | Which normal form removes partial dependency, and what do 1NF, 2NF and 3NF each require? Illustrate with the table orders(order_id, product_id, product_name, customer_name) where the key is (order_id, product_id). |
+| B6P11Q20 | 6 | 11 | What is the difference between DELETE, TRUNCATE and DROP in SQL? State whether each can be rolled back, whether it removes rows or the table structure, and whether it supports a WHERE clause. |
+| B6P11Q21 | 6 | 11 | What is the difference between a stack and a queue? If you push 10, 20, 30 onto a stack and then pop once, and separately enqueue 10, 20, 30 into a queue and then dequeue once, what value is removed in each case? |
+| B6P11Q22 | 6 | 11 | In a spoken-English test you hear: "The quarterly attrition report will be shared with all department heads by Friday." You must repeat it exactly. What strategy helps you score well on a repeat-the-sentence task, and what is typically scored (accuracy, fluency, pronunciation)? |
+| B6P11Q23 | 6 | 11 | Is the phrase "Please revert back to me at the earliest" correct in professional English? Explain the problem and rewrite it in two better ways. |
+| B6P11Q24 | 6 | 11 | In a workplace conversation task, a colleague says: "I think the sales figures in your report look wrong." Which is the most appropriate reply? (a) "No, you are wrong." (b) "Thanks for flagging it. Could you share which figures look off so I can check against the source?" (c) "Whatever, the data came from the system." (d) "I will not change anything." Explain why the best option is best. |
+| B6P11Q25 | 6 | 11 | Write a short, professional reply (about 80 words) to a stakeholder who says angrily that last month's numbers in your report do not match the finance report. State the tone to keep, what you check first, and the next step you commit to. |
+| B6P11Q26 | 6 | 11 | Find the output of this pseudocode: sum = 0; for i = 1 to 10: if i mod 3 == 0 then sum = sum + i; end if; end for; print sum. Show the working. |
+| B6P11Q27 | 6 | 11 | What does ACID stand for in databases? Give a one-line banking example for each property. |
+| B6P11Q28 | 6 | 11 | Choose the correct word in each pair: "The (principal / principle) reviewed the (stationary / stationery) order" and "Please (accept / except) all invoices (accept / except) the cancelled ones." Explain each pair in one line. |
+| B6P11Q29 | 6 | 11 | What is the difference between an IP address and a MAC address, and between HTTP and HTTPS? Answer as expected in a basic networking MCQ. |
+| B6P11Q30 | 6 | 11 | Find the odd sentence out that does not belong to the paragraph: (1) A dashboard should show only the KPIs the audience needs. (2) Too many charts distract managers from the key message. (3) Our canteen introduced a new lunch menu last week. (4) Clear titles and consistent colours help readers understand quickly. |
+| B6P11Q31 | 6 | 11 | Summarise the following in one sentence of at most 20 words: "The HR team reviewed 1,200 exit forms last quarter. Most employees who left cited poor work-life balance and slow promotions. The report recommends flexible working hours and a transparent promotion calendar to reduce attrition." |
+| B6P11Q32 | 6 | 11 | What is the difference between encapsulation and abstraction in object-oriented programming? Give a simple example of each using an Employee class. |
+| B6P11Q33 | 6 | 11 | What is the time complexity of binary search and of linear search on a sorted list of 1,024 elements? How many comparisons does binary search need at most for 1,024 elements, and what condition must hold for it to work? |
 
 ## Book 7 — Guesstimates, Cases & Metrics
 | Q-ID | Book | Part | Canonical question |
