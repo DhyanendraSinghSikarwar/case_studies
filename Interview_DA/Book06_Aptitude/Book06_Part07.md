@@ -325,7 +325,7 @@
 **Check:** Verified by script (sum of positions = 48).
 **Explain simply:**
 - This is a "position value" code: each letter becomes its number.
-**Likely follow-ups:** 1) *Value of DATA?* 4 + 1 + 20 + 1 = 26. 2) *Letter whose value is 26 minus the value of C?* X (24).
+**Likely follow-ups:** 1) *Value of DATA?* 4 + 1 + 20 + 1 = 26. 2) *Letter whose value is 26 minus the value of C?* 26 - 3 = 23, which is W. (X is 24, the mirror letter from the 27 rule in Q13, a different thing.)
 **Common mistakes / traps:** Off-by-one counting near the middle of the alphabet.
 
 ### Q21 ⭐⭐⭐ 🟢 What is the 6th letter to the right of the 12th letter from the right end of the English alphabet?
@@ -376,7 +376,7 @@
 5. Seats 2 and 6 remain for E and F. E must not be next to B (seat 5). Seat 6 is next to seat 5, so E takes seat 2 and F takes seat 6.
 6. Clockwise order: A, E, C, D, B, F. F is in seat 6; immediately to F's right (anticlockwise) is seat 5, which is B.
 **Fast method (30 seconds):** Draw a hexagon, mark clockwise numbers, and move anticlockwise for every "right". Use the "not next to" clue last to split the two leftover seats.
-**Check:** Brute force over all 720 arrangements gives exactly one arrangement satisfying every clue (unique), and it gives B.
+**Check:** Brute force over all 720 seatings finds 6 that satisfy every clue; they are the same ring turned round (6 rotations), so the circular arrangement is unique and F's right-hand neighbour is always B.
 **Explain simply:**
 - Opposite in a table of 6 means 3 seats away.
 - If you sit facing the centre, your right hand points anticlockwise (the reverse of a clock). Mixing this up is the main source of wrong answers.
@@ -560,7 +560,7 @@
 7. Seat 7 is left, so H sits there.
 8. Clockwise: A, C, D, F, G, B, H, E. Between B (seat 6) and E (seat 8) on the short side is seat 7: H.
 **Fast method (30 seconds):** Draw 8 dots; "opposite" is always 4 seats away, so A/G, B/C, E/F are three fixed pairs. Place the pairs first.
-**Check:** Brute force over all 5,040 arrangements gives exactly one valid ring (unique). The other side between B and E holds five people (C, D, F, G, A), so H is the natural "between" answer.
+**Check:** Brute force over all 40,320 seatings finds 8 that satisfy every clue; they are the same ring turned round (8 rotations), so the circular arrangement is unique. The other side between B and E holds five people (C, D, F, G, A), so H is the natural "between" answer.
 **Explain simply:**
 - Opposite pairs in a table of 8 are 4 seats apart.
 - A clue like "third to the right" means move three seats in the right (anticlockwise) direction.
@@ -667,7 +667,7 @@
 - Weeks repeat every 7 days, so only the leftover days shift the weekday.
 - If today is Monday, after 5 odd days it is Saturday.
 **Likely follow-ups:** How many odd days in 400 years? 0 (400 years is an exact number of weeks, 20,871 weeks).
-**Common mistakes / traps:** Counting 25 leap years in 100 years (gives 6), forgetting the century year is not leap.
+**Common mistakes / traps:** Counting 25 leap years in 100 years (gives 6), forgetting the century year is not leap. Assumption: the standard textbook century (years 1 to 100, 101 to 200 and so on, where the last year is a non-leap century year, except every fourth century). The span 1901 to 2000 contains 2000, a leap year, so it has 25 leap years and 6 odd days.
 
 ### Q40 ⭐⭐ 🟢 Which of the years 1900, 2000, 2024 and 2100 are leap years, and what is the rule?
 **Asked at:** commonly asked (no company-specific report found); calendar rules are a 2-star topic in prep lists (prep-site claim, unverified)
@@ -737,7 +737,7 @@
 - "Ranks third from the top" means two people scored higher.
 - All clues here link into one chain, so the order is fully fixed.
 **Likely follow-ups:** 1) *Who ranks second from the bottom?* Lata. 2) *Who is the lowest scorer?* Nitin.
-**Common mistakes / traps:** Ranking from the bottom by mistake (Lata is third from the bottom, the tempting wrong pick).
+**Common mistakes / traps:** Ranking from the bottom by mistake (with five people the middle person is third from both ends, so the order matters more than the end you count from); placing Om below Mohan by misreading "more than".
 
 ### Q44 ⭐⭐ 🟢 Statement: The number of customer complaints has doubled in the last quarter. Courses of action: I. The company should investigate the causes of the complaints. II. The company should stop accepting new customers. Which course(s) of action follow?
 **Asked at:** commonly asked (no company-specific report found)
@@ -1039,7 +1039,7 @@
 **Common mistakes / traps:** Rejecting II because "nothing was said about fruits and laptops together"; it follows through the device link. Also forgetting that the existence assumption is what makes "some ... not" valid.
 
 ### Q62 ⭐⭐ 🟡 You have a 3-litre jug and a 5-litre jug with no markings and unlimited water. How do you measure exactly 4 litres?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Systematic trial of fill, pour and empty moves.
 **Say this in the interview:** "Fill the 5, pour into the 3 leaving 2, empty the 3, move the 2 across, refill the 5 and top up the 3; 4 litres remain in the 5-litre jug."
 **Answer:** **Yes, 4 litres, in 6 steps (shown below).**
@@ -1052,13 +1052,13 @@
 6. Pour from 5 into 3 until it is full; it needs only 1 litre: (4, 3). The 5-litre jug now holds exactly 4 litres.
 **Check:** verified by script (a shortest-path search over all jug states finds 4 litres in 6 moves, and no shorter route exists). Hand check: 5 - 3 = 2 left, 2 + 3 = 5 total moved, then 5 - 1 = 4.
 **Explain simply:**
-- With jugs of 3 and 5 (no common factor except 1) you can make any whole number up to 5, because each pour moves you by 3 or by 5 modulo each other.
+- With jugs of 3 and 5, which share no common factor except 1, you can measure every whole number of litres up to 5. A 6 and 9 pair shares the factor 3, so it can only make multiples of 3.
 - Think of it as "5 minus 1": you want the 5-litre jug short of full by 1, and 3 minus 2 gives that 1.
-**Likely follow-ups:** 1) *How to measure 1 litre?* After step 5 you hold (5, 2); pouring 1 litre into the 3-litre jug leaves 4, and emptying both then pouring the 4 into the 3 leaves 1. 2) *Can you measure 4 with 6 and 9 litre jugs?* No, 4 is not a multiple of 3.
+**Likely follow-ups:** 1) *How to measure 1 litre?* Carry on from step 6, where you hold (4, 3): empty the 3-litre jug (4, 0), pour the 4 into it (1, 3), and the 5-litre jug holds 1 litre (6 moves in all). 2) *Can you measure 4 with 6 and 9 litre jugs?* No, 4 is not a multiple of 3.
 **Common mistakes / traps:** Wasting steps by emptying the wrong jug; forgetting that the leftover after a pour is the "difference" you are collecting.
 
 ### Q63 ⭐⭐ 🟡 You have 8 identical-looking balls and one is heavier. Using a balance scale, what is the minimum number of weighings needed to find the heavy ball, and how?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Splitting into three groups (not two) because a balance has three outcomes.
 **Say this in the interview:** "Two weighings. Weigh 3 against 3: if they tip, the heavy ball is in the lower group; if equal, it is among the 2 left out. Then one more weighing of at most 3 balls finds it."
 **Answer:** **2 weighings.**
@@ -1190,7 +1190,7 @@
 2. All B are C, and no C is D: so nothing in B can be D. **II (no B is D) follows**.
 3. Some D are E. Those D are not C (no C is D), so some E are not C. **III follows**.
 4. Some A are B means A touches B, and B is inside C, which is away from D. Other A members might touch D, but nothing forces it. **IV does not follow**.
-**Check:** verified by script (545 small worlds satisfying all four statements; I, II and III hold in all of them, IV fails in 225).
+**Check:** verified by script (36,864 possible worlds, each described by which kinds of member exist, satisfy all four statements; I, II and III hold in every one, IV is false in 6,144 and true in the rest).
 **Explain simply:**
 - "Follows" means true in every possible picture, not just one.
 - "Some A are B" plus "all B are C" gives a "some" conclusion (some A are C); "all" plus "no" gives "no".
@@ -1213,7 +1213,7 @@
 **Common mistakes / traps:** Answering "to filter people out" without linking to real work; claiming company-specific facts you cannot support.
 
 ### Q72 ⭐ 🟡 On an island, knights always tell the truth and knaves always lie. A says, "We are both knaves." What are A and B?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Testing the two possibilities for A against his own statement.
 **Say this in the interview:** "If A were a knight, he would be telling the truth that both are knaves, which contradicts him being a knight. So A is a knave; then his statement is false, so not both are knaves, and since A is, B must be a knight."
 **Answer:** **A is a knave and B is a knight.**
@@ -1224,11 +1224,11 @@
 **Check:** verified by script (all 4 knight/knave combinations tried; only A knave, B knight is consistent).
 **Explain simply:**
 - A liar's sentence is false; "both are knaves" is false whenever at least one is a knight.
-**Likely follow-ups:** 1) *If A says "at least one of us is a knave"?* A is a knight, B a knave. 2) *If A says "We are both knights"?* A is a knave (then B could be either); not enough alone.
+**Likely follow-ups:** 1) *If A says "at least one of us is a knave"?* A is a knight, B a knave. 2) *If A says "We are both knights"?* Not enough: A knight with B knight, A knave with B knight and A knave with B knave all fit; only A knight with B knave is impossible.
 **Common mistakes / traps:** Concluding B is a knave because "A says so"; liars' statements must be flipped, not trusted.
 
 ### Q73 ⭐ 🟡 Three switches outside a closed room control three bulbs inside. You can enter the room only once. How do you find which switch controls which bulb?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Using a second property (heat) when only one observation (light) is available.
 **Say this in the interview:** "I turn switch 1 on for a few minutes, then off, turn switch 2 on, and walk in. The lit bulb is switch 2, the warm unlit bulb is switch 1, the cold unlit bulb is switch 3."
 **Answer:** **Use a bulb's warmth as the second clue (steps below).**
@@ -1240,11 +1240,11 @@
 **Explain simply:**
 - One look gives only two states (on or off), which cannot separate three bulbs. Warmth adds a third state (warm and off).
 - A modern LED may not get hot enough; the puzzle assumes old-style filament bulbs.
-**Likely follow-ups:** 1) *What if the bulbs are LEDs?* Leave the room door ajar, or use another memory (e.g., a bulb that has flickered), but the classic answer needs heat. 2) *Can you do it with two bulbs?* Yes: turn one on and enter.
+**Likely follow-ups:** 1) *What if the bulbs are LEDs?* They barely warm up, so the heat trick becomes unreliable; state the old-style bulb assumption at the start. Assumption: all switches start off and you may touch the bulbs. 2) *Can you do it with two bulbs?* Yes: turn one on and enter.
 **Common mistakes / traps:** Trying only on/off combinations, which cannot separate three bulbs in one visit.
 
 ### Q74 ⭐ 🟡 You have two ropes that each burn for exactly 60 minutes but burn unevenly. How do you measure exactly 45 minutes?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Using both ends of a rope to halve the burn time.
 **Say this in the interview:** "Light rope 1 at both ends and rope 2 at one end. Rope 1 finishes at 30 minutes; then light the other end of rope 2, which has 30 minutes of burn left and now finishes in 15. Total 45."
 **Answer:** **45 minutes (steps below).**
@@ -1259,7 +1259,7 @@
 **Common mistakes / traps:** Assuming half the rope length equals half the time; the rope burns unevenly, so only the total burn matters.
 
 ### Q75 ⭐ 🟡 A snail climbs 3 m up a 10 m well each day and slips back 2 m each night. On which day does it reach the top?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Not applying the average blindly; the last day has no slip-back.
 **Say this in the interview:** "Net gain is 1 m per day, but on the final day the snail reaches the top before slipping. After 7 days it is at 7 m; on day 8 it climbs 3 m to 10 m and is out. Answer: day 8, not day 10."
 **Answer:** **Day 8**
@@ -1275,7 +1275,7 @@
 **Common mistakes / traps:** Answering day 10 by dividing 10 m by the net 1 m; forgetting that the slip does not happen once the snail is out.
 
 ### Q76 ⭐ 🟡 Three boxes are labelled Apples, Oranges and Mixed, and every label is wrong. You may pick one fruit from one box. Which box do you pick from, and how does that fix all labels?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Using the "all labels are wrong" fact to cut possibilities.
 **Say this in the interview:** "Pick from the box labelled Mixed. It cannot really be mixed, so whatever fruit I pull out tells me its true content, and then the other two labels follow by elimination."
 **Answer:** **Pick from the box labelled "Mixed".**
@@ -1292,7 +1292,7 @@
 **Common mistakes / traps:** Picking from the Apples or Oranges box; forgetting that "Mixed" is the one label you can trust to be wrong in a useful way.
 
 ### Q77 ⭐ 🔴 Four people take 1, 2, 5 and 10 minutes to cross a bridge at night with one torch. At most two cross at a time at the slower person's speed. What is the minimum total time for all four to cross?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Not letting the fastest person escort everyone; sending the two slowest together.
 **Say this in the interview:** "Send the 1 and 2 across, bring the 1 back, send the 5 and 10 together, bring the 2 back, then send the 1 and 2 across. Total 2 + 1 + 10 + 2 + 2 = 17 minutes."
 **Answer:** **17 minutes**
@@ -1329,7 +1329,7 @@
 **Common mistakes / traps:** Answering 10 (jumps of 10) or 19; forgetting to reduce the jump after each non-break.
 
 ### Q79 ⭐ 🔴 You have 25 horses and a track that races 5 at a time, with no stopwatch. What is the minimum number of races needed to find the 3 fastest horses?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Pruning candidates by elimination rather than racing everyone against everyone.
 **Say this in the interview:** "Five heat races, one race of the five winners, then one race among the 5 horses that could still be in the top 3. Seven races."
 **Answer:** **7 races.**
@@ -1339,7 +1339,7 @@
 3. Eliminate: D1 and E1 and their groups cannot be in the top 3 (D1 and E1 already have 3 or 4 faster horses). Also C2, C3, B3 (each has at least 3 faster horses above them) and anyone in the bottom of a group.
 4. Candidates left for places 2 and 3: A2, A3, B1, B2, C1 (A1 is already first).
 5. Race 7: race those 5. The first two finishers are 2nd and 3rd fastest overall.
-**Check:** the count is the standard result for this puzzle (not proved by script here); the elimination in step 3 was checked by reasoning: 5 candidates, one race, 2 places. Each place needs a race of its own group, so fewer than 7 cannot cover all horses.
+**Check:** 7 is the standard published answer; it was not proved minimal by script. The elimination in step 3 was checked by hand: each removed horse already has at least 3 faster horses above it, and the 5 candidates left fit exactly one race.
 **Explain simply:**
 - Each race gives only an order, not a time, so you can only compare horses inside the same race; you must use the results to chain comparisons.
 - The key trick is that a horse is out as soon as 3 horses are known to be faster.
@@ -1347,7 +1347,7 @@
 **Common mistakes / traps:** Racing all combos; including A1 in the last race (already known as the fastest); keeping too many candidates.
 
 ### Q80 ⭐ 🔴 You have 12 identical-looking balls, one of which has a different weight (heavier or lighter, unknown). Using a balance scale at most 3 times, how do you find the odd ball and whether it is heavier or lighter?
-**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle rounds at Mu Sigma, Fractal and Flipkart (candidate and prep-site reports, mapping to this exact puzzle unverified).
+**Asked at:** classic brain-teaser; research/interview_processes.md notes puzzle questions in Mu Sigma, Flipkart, Tiger Analytics and PhonePe processes (candidate and prep-site reports; no report for this exact puzzle, and none for Fractal puzzles, unverified).
 **What the interviewer is checking:** Splitting into groups of 4 and planning follow-up weighings in advance.
 **Say this in the interview:** "Weigh 4 against 4. If balanced, the odd ball is in the last 4; if not, I use the tipped side to split into 'maybe heavy' and 'maybe light' groups, and two more weighings finish it."
 **Answer:** **Possible in 3 weighings (full plan below).**
