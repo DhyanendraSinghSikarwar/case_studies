@@ -140,7 +140,7 @@ Asha ASHA
 TypeError: 'tuple' object does not support item assignment
 ```
 **What it means:** The list was edited in place; the string stayed the same and gave back a new one; the tuple refused the edit.
-**Likely follow-ups:** 1) *Is a tuple holding a list immutable?* The tuple's slots are fixed, but the inner list can still change. 2) *Mutable default argument trap?* See the function questions later in this part (not covered here).
+**Likely follow-ups:** 1) *Is a tuple holding a list immutable?* The tuple's slots are fixed, but the inner list can still change. 2) *Mutable default argument trap?* See Q46.
 **Common mistakes:** Thinking `name = name + "x"` changes the old string (it creates a new one); calling a tuple "completely unchangeable" when it holds a list.
 
 ### Q5 ⭐⭐⭐ 🟢 Write code to count how many times each department appears in a list of employee departments using a dictionary.
@@ -288,7 +288,7 @@ Hiring, openings left: 2
 Hiring, openings left: 1
 ```
 **What it means:** The for loop ran 3 times because 3 months were given; the while loop ran until openings hit 0.
-**Likely follow-ups:** 1) *What is an infinite loop?* A while loop whose condition never becomes false. 2) *How do you exit early?* `break` (see the loop-control questions in this part).
+**Likely follow-ups:** 1) *What is an infinite loop?* A while loop whose condition never becomes false. 2) *How do you exit early?* `break` (see Q33).
 **Common mistakes:** Forgetting `openings -= 1` in the while loop (it runs forever); expecting `range(1, 4)` to include 4.
 
 ### Q10 ⭐⭐⭐ 🟢 How do you define a function in Python, and what is the difference between print and return?
@@ -643,7 +643,7 @@ print(unique_departments)
 ['HR', 'IT', 'Sales']
 ```
 **What it means:** Each department appears once, in the order it first showed up.
-**Alternative:** `list(dict.fromkeys(employee_departments))` gives the same `['HR', 'IT', 'Sales']` in one line and is faster. `list(set(employee_departments))` also removes duplicates but gave `['IT', 'Sales', 'HR']` in my run, so the order is not safe.
+**Alternative:** `list(dict.fromkeys(employee_departments))` gives the same `['HR', 'IT', 'Sales']` in one line and is faster. `list(set(employee_departments))` also removes duplicates, but a set has no fixed order and the result can come out as `['IT', 'Sales', 'HR']` or `['HR', 'Sales', 'IT']` from one run to the next, so the order is not safe.
 **Likely follow-ups:** 1) *Why is the loop slow on big data?* `not in` on a list checks item by item. 2) *How would you make it faster by hand?* Track seen items in a set.
 **Common mistakes:** Using `list(set(...))` and assuming order is kept; saying a dictionary keeps order without knowing it needs Python 3.7 or later.
 
@@ -1131,7 +1131,7 @@ False False
 True True True
 ```
 **What it means:** All seven "empty or zero" values are False; non-empty things are True, even `"0"`.
-**Likely follow-ups:** 1) *Is `NaN` falsy?* No, `bool(float("nan"))` is True (from memory, not run here). 2) *What does `and` return?* Python stops early, so it returns one of the two values, not always True or False.
+**Likely follow-ups:** 1) *Is `NaN` falsy?* No, `bool(float("nan"))` is True (checked). 2) *What does `and` return?* Python stops early, so it returns one of the two values, not always True or False.
 **Common mistakes:** Thinking `"0"` or `"False"` is falsy; confusing `and`/`or` with `&`/`|` (those are for pandas columns and need brackets).
 
 ### Q36 ⭐⭐ 🟢 How do you check whether an item is present in a list or a dictionary using the in operator?
@@ -1245,7 +1245,7 @@ bonus = {name: salary * 0.10 for name, salary in employees.items()}
 print(bonus)
 ```
 **Output:**
-```
+```text
 {'Asha': 4000.0, 'Ravi': 4500.0, 'Meena': 5200.0}
 ```
 **What it means:** Each employee now has a bonus amount next to their name.
@@ -1278,7 +1278,7 @@ for name, salary in employee_salary.items():
     print(name, salary)
 ```
 **Output:**
-```
+```text
 ['Asha', 'Ravi', 'Meena']
 [40000, 45000, 52000]
 [('Asha', 40000), ('Ravi', 45000), ('Meena', 52000)]
@@ -1323,7 +1323,7 @@ employees = [
 print(employees[1]["address"]["city"])
 ```
 **Output:**
-```
+```text
 Hyderabad
 Ravi
 Pune
@@ -1353,7 +1353,7 @@ print(final_salary(40000, 20))                 # overrides the default
 print(final_salary(base=40000, bonus_percent=5))  # named arguments
 ```
 **Output:**
-```
+```text
 44000.0
 48000.0
 42000.0
@@ -1387,7 +1387,7 @@ print(total_pay(40000, 45000, 52000))
 show_employee(name="Asha", department="HR")
 ```
 **Output:**
-```
+```text
 137000
 name Asha
 department HR
@@ -1425,7 +1425,7 @@ hire_one()
 print(headcount)
 ```
 **Output:**
-```
+```text
 5
 100
 101
@@ -1454,7 +1454,7 @@ print(lowest, highest, average)
 print(salary_summary([40000, 45000, 52000]))   # without unpacking: one tuple
 ```
 **Output:**
-```
+```text
 40000 52000 45666.666666666664
 (40000, 52000, 45666.666666666664)
 ```
@@ -1492,7 +1492,7 @@ print(add_good("Asha"))
 print(add_good("Ravi"))
 ```
 **Output:**
-```
+```text
 ['Asha']
 ['Asha', 'Ravi']
 ['Asha']
@@ -1535,7 +1535,7 @@ print(highest_first)
 print([salary for salary in salaries if salary > 50000])
 ```
 **Output:**
-```
+```text
 [44000.0, 49500.00000000001, 57200.00000000001, 67100.0]
 [52000, 61000]
 [('Meena', 52000), ('Ravi', 45000), ('Asha', 40000)]
@@ -1578,7 +1578,7 @@ print(list(squares))
 print(list(squares))   # already used up
 ```
 **Output:**
-```
+```text
 8448728
 192
 0
@@ -1586,7 +1586,7 @@ print(list(squares))   # already used up
 [4]
 []
 ```
-**What it means:** The list takes about 8 MB; the generator about 192 bytes. Once consumed, a generator is empty.
+**What it means:** The list's own storage is about 8.4 MB (and that does not count the million number objects it points to); the generator is only a few hundred bytes. Once consumed, a generator is empty.
 **Likely follow-ups:**
 - Can you index a generator? No, only loop through it or call `next()`.
 - pandas equivalent? `read_csv(..., chunksize=...)` reads in pieces.
@@ -1609,7 +1609,7 @@ def attrition_rate(employees):
         return 0                      # avoid dividing by zero
     left_count = 0
     for employee in employees:
-        if employee["left"] == True:
+        if employee["left"]:
             left_count = left_count + 1
     return left_count / total * 100
 
@@ -1624,7 +1624,7 @@ print(attrition_rate(employees))
 print(attrition_rate([]))
 ```
 **Output:**
-```
+```text
 40.0
 0
 ```
@@ -1633,7 +1633,7 @@ print(attrition_rate([]))
 **Likely follow-ups:**
 - How would you do this in pandas? `df["left"].mean() * 100`.
 - Is this rate annual? Only if the data covers one year; real attrition often uses average headcount as the denominator.
-**Common mistakes:** Forgetting `* 100`; integer thinking (in Python 3 `/` gives decimals, fine); missing `left` key in some records.
+**Common mistakes:** Forgetting `* 100`; comparing the count to the wrong total; a missing `left` key in some records (use `employee.get("left")`).
 
 ### Q50 ⭐⭐ 🟡 Write a function that groups employees by department into a dictionary of lists (use defaultdict or setdefault).
 **Asked at:** commonly asked (no company-specific report found); grouping and frequency tasks are a standard coding-round pattern on practice platforms
@@ -1663,7 +1663,7 @@ employees = [
 print(group_by_department(employees))
 ```
 **Output:**
-```
+```text
 {'HR': ['Asha', 'Meena'], 'Sales': ['Ravi'], 'IT': ['John']}
 ```
 **What it means:** Each department holds the names of its people.
@@ -1697,7 +1697,7 @@ print(counts)
 print(counts.most_common(3))
 ```
 **Output:**
-```
+```text
 Counter({'Sales': 4, 'HR': 3, 'IT': 2, 'Finance': 1})
 [('Sales', 4), ('HR', 3), ('IT', 2)]
 ```
@@ -1731,7 +1731,7 @@ for salary in salaries:
 # vectorised version: the whole column at once
 bonus_vectorised = salaries * 0.10
 ```
-**Output:** The code prints nothing. Timing it separately on this machine (single run, varies by machine): loop about 0.109 seconds, vectorised about 0.0066 seconds, roughly 15 times faster here; the gap grows with more complex work.
+**Output:** The code prints nothing. Timing it separately on this machine (single run, varies by machine): loop about 0.12 seconds, vectorised about 0.005 seconds, roughly 20 times faster here; the gap grows with more complex work.
 **What it means:** Same answer, far less time with the column operation.
 **Likely follow-ups:**
 - Why is `iterrows()` especially slow? It builds a new Series object for every row.
@@ -1760,7 +1760,7 @@ odd_numbers = [number for number in numbers if number % 2 != 0]
 print(odd_numbers)
 ```
 **Output:**
-```
+```text
 [4, 8, 9]
 [9]
 ```
@@ -1795,7 +1795,7 @@ print(sorted(only_in_b))
 print(sorted(in_either_but_not_both))
 ```
 **Output:**
-```
+```text
 [103, 104, 105]
 [101, 102]
 [106]
@@ -1825,11 +1825,11 @@ print(999_999 in employee_ids_list)   # scans the list, slow
 print(999_999 in employee_ids_set)    # direct lookup, fast
 ```
 **Output:**
-```
+```text
 True
 True
 ```
-**What it means:** Same answer, very different speed. Timing 100 searches separately on this machine (one run): list about 0.99 seconds, set about 0.00001 seconds.
+**What it means:** Same answer, very different speed. Timing 100 searches separately on this machine (one run): list about 0.74 seconds, set about 0.00001 seconds.
 **Likely follow-ups:**
 - What is the worst case for a set? O(n) with many hash collisions, which is rare.
 **Common mistakes:** Calling `in` on a big list inside a loop (that becomes O(n x m)); forgetting that building the set also takes time.
@@ -1867,7 +1867,7 @@ if salary > 40000:
 print("Done")                  # not indented: always runs
 ```
 **Output:**
-```
+```text
 Above average
 Checked
 Done
@@ -1958,7 +1958,7 @@ print(manager == 0, manager == "")
 
 # Missing salary must not be treated as zero
 salaries = [50000, None, 60000]
-known_salaries = [s for s in salaries if s is not None]
+known_salaries = [salary for salary in salaries if salary is not None]
 print(sum(known_salaries) / len(known_salaries))
 ```
 **Output:**
@@ -2234,7 +2234,7 @@ True
 ```
 **What it means:** Both tests say True here, but `is None` is the safe habit. The loop skipped the missing salary and totalled the rest. (Checked: `50000 + None` gives `TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'`.)
 **Likely follow-ups:** 1) *Does `if not value` work?* It also catches 0 and "", so it can wrongly treat a real 0 as missing. 2) *In pandas?* Use `isna()`.
-**Common mistakes:** Using `if not salary:` and dropping real zeros; writing `is not None` as `not x is None` (works but harder to read).
+**Common mistakes:** Using `if not salary:` and dropping real zeros; writing `not x is None` instead of `x is not None` (works but harder to read).
 
 ### Q69 ⭐ 🟡 Write a function that classifies an employee's tenure in years as New (under 1), Mid (1-3) or Senior (over 3), and apply it to a list.
 **Asked at:** commonly asked (no company-specific report found); an HR-flavoured version of the standard if/elif banding task.
@@ -2352,7 +2352,7 @@ print(Decimal("0.1") + Decimal("0.2"))   # 0.3
 **Explain simply:**
 - **Funnel:** a series of stages where people drop out, like Applied, Screened, Interviewed, Offered, Joined.
 - **Drop-off %** between two stages = (people at the earlier stage minus people at the next stage) divided by people at the earlier stage, times 100. The base is the earlier stage.
-- Dictionaries have no guaranteed funnel order of meaning, so I keep a separate `stage_order` list.
+- A dictionary does not know which stage comes first in the funnel, so I keep a separate `stage_order` list.
 - If a candidate appeared twice in the same stage you would double count; remove duplicates first (use a set).
 **Sample data:** 5 applied, 4 screened, 3 interviewed, 2 offered, 1 joined (each candidate repeated once per stage reached).
 **Code (what you write in the interview):**

@@ -673,7 +673,7 @@ dtype: bool
 - Without `subset`, one empty cell anywhere in the row removes the whole row, which can throw away good data.
 - `subset=["salary"]` checks only the salary column. You can pass several columns in the list.
 - It returns a new table; the original is unchanged unless you save the result.
-**Sample data:** Employee table where two salaries are missing. (the data is created inside the code block below)
+**Sample data:** Employee table where two salaries are missing.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -709,7 +709,7 @@ print(employees_with_salary)
 - `bfill()` means backward fill: copy the next value upward into empty cells.
 - Only sensible when rows are in a meaningful order (sort by date first) and the value really stays the same until it changes.
 - In pandas 3 the old `fillna(method="ffill")` form is removed (verified: use `.ffill()` directly).
-**Sample data:** Shift of an employee, recorded only when it changes. (the data is created inside the code block below)
+**Sample data:** Shift of an employee, recorded only when it changes.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -749,7 +749,7 @@ print(attendance)
 - `df.columns = df.columns.str...` cleans every name in one go.
 - Spaces and capitals cause errors: `"Annual Salary "` with a hidden trailing space is hard to spot and fails to match.
 - Lower case with underscores (`date_of_joining`) is easy to type and works with dot access and SQL-style tools.
-**Sample data:** Messy column names, as they often arrive from an HRMS export. (the data is created inside the code block below)
+**Sample data:** Messy column names, as they often arrive from an HRMS export.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -786,7 +786,7 @@ print(employees.columns.tolist())
 - `strip()` removes spaces at both ends; `lstrip()` only the left, `rstrip()` only the right.
 - Hidden spaces make 'HR' and 'HR ' count as different values in groupby and merges.
 - It does not touch spaces inside the text ('Asha  Rao' keeps both spaces).
-**Sample data:** Names with stray spaces. (the data is created inside the code block below)
+**Sample data:** Names with stray spaces.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -816,7 +816,7 @@ print(employees["name"].tolist())
 - Chain `.str.strip()` then `.str.upper()` (or `.lower()`, or `.title()` for names).
 - Check with `value_counts()` afterwards.
 - Real spelling differences ('Human Resources' vs 'HR') need a replace or map (see Q23).
-**Sample data:** Department column typed by different people. (the data is created inside the code block below)
+**Sample data:** Department column typed by different people.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -850,7 +850,7 @@ Name: count, dtype: int64
 - Without a format, '03-04-2025' can be read as 4 March or 3 April; Indian data is usually day first.
 - Once converted, `.dt.year`, `.dt.month`, `.dt.day_name()` work.
 - Bad values raise an error unless you use `errors="coerce"` (Q27).
-**Sample data:** Joining dates stored as day-month-year text. (the data is created inside the code block below)
+**Sample data:** Joining dates stored as day-month-year text.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -884,7 +884,7 @@ dtype: object
 - `map({old: new})` looks up every value; missing keys turn into NaN, which can silently erase data.
 - Use `map` when you want a complete recoding and want unexpected values to stand out as NaN.
 - After replacing, run `value_counts()` to confirm the labels.
-**Sample data:** Gender column with mixed labels. The 'M' value is already correct. (the data is created inside the code block below)
+**Sample data:** Gender column with mixed labels. The 'M' value is already correct.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -922,7 +922,7 @@ print(employees)
 - `pd.to_numeric(..., errors="coerce")` converts what it can and turns the rest into NaN.
 - Plain integer columns cannot store NaN, so a column with gaps stays float (25.0) after to_numeric.
 - `astype("Int64")` (capital I, 'nullable integer') keeps whole numbers and shows `<NA>` for gaps.
-**Sample data:** Small series with text and with a gap. (the data is created inside the code block below)
+**Sample data:** Small series with text and with a gap.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -969,7 +969,7 @@ dtype: Int64
 - `value_counts()` lists every distinct value with its frequency, biggest first.
 - Variants like 'Hyderabad', 'HYDERABAD' and 'Hyderabad ' (trailing space) appear as separate lines.
 - Add `dropna=False` to also count missing values.
-**Sample data:** City column with inconsistent spellings. The last 'Hyderabad ' has a trailing space you cannot see. (the data is created inside the code block below)
+**Sample data:** City column with inconsistent spellings. The last 'Hyderabad ' has a trailing space you cannot see.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1008,7 +1008,7 @@ Name: count, dtype: int64
 - `dropna(axis=1)` works on columns instead of rows.
 - `thresh=n` means 'keep the column only if it has at least n non-missing values'.
 - Here half the rows is the minimum, so `internal_notes` (1 of 4 filled) is dropped.
-**Sample data:** Employee table with a useless column and a mostly empty column. (the data is created inside the code block below)
+**Sample data:** Employee table with a useless column and a mostly empty column.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1024,7 +1024,7 @@ employees = pd.DataFrame({
 employees = employees.drop(columns=["temp_column"])
 
 # Keep only columns that have at least 50% of values filled
-minimum_filled = len(employees) * 0.5
+minimum_filled = int(len(employees) * 0.5)
 employees = employees.dropna(axis=1, thresh=minimum_filled)
 print(employees.columns.tolist())
 ```
@@ -1046,8 +1046,8 @@ print(employees.columns.tolist())
 - Default `errors="raise"` stops at the first bad value, which is useful when you want to know.
 - `errors="coerce"` turns bad values into NaN (numbers) or NaT (dates, 'not a time').
 - It is safe but can hide problems, so check `isna().sum()` after.
-- Pandas 3 note: the older `errors="ignore"` option was removed (from memory, unverified).
-**Sample data:** A salary text column and a date column with one bad entry each. (the data is created inside the code block below)
+- Pandas 3 note: the older `errors="ignore"` option no longer works; `to_numeric(..., errors="ignore")` raised a ValueError when I ran it on 3.0.5.
+**Sample data:** A salary text column and a date column with one bad entry each.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1085,7 +1085,7 @@ dtype: datetime64[us]
 - `.mean()` of True/False gives the share of True (True = 1, False = 0).
 - `* 100` converts to percent.
 - Filter the result with `> 30` and take `.index` to list the column names.
-**Sample data:** Five employees, salary 20% missing, manager 80% missing. (the data is created inside the code block below)
+**Sample data:** Five employees, salary 20% missing, manager 80% missing.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1127,7 +1127,7 @@ dtype: float64
 - `fillna(that_column)` fills each gap from the matching row of that column.
 - Median is preferred over mean for salary because a few very high salaries drag the mean up.
 - A department where every salary is missing stays NaN (no median to use).
-**Sample data:** HR median is 45,000 (of 40,000 and 50,000), IT median is 80,000. (the data is created inside the code block below)
+**Sample data:** HR median is 45,000 (of 40,000 and 50,000), IT median is 80,000.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1168,7 +1168,7 @@ print(employees)
 - `how="all"`: drop only if everything in the row is missing.
 - `thresh=n`: minimum number of non-missing values to keep the row; it replaces `how` (you cannot use both together).
 - Useful for survey data where partly answered rows are still valuable.
-**Sample data:** Survey with 4 respondents; the third answered nothing, the fourth answered only q3. (the data is created inside the code block below)
+**Sample data:** Survey with 4 respondents; the third answered nothing, the fourth answered only q3.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1210,7 +1210,7 @@ print(survey.dropna(thresh=2))
 - By default (`keep="first"`) the first copy is False and only later copies are True.
 - `keep=False` marks all copies True, so you see the full set to review.
 - `subset=["employee_id", "month"]` defines 'duplicate' as same employee in the same month, even if other columns differ.
-**Sample data:** Payroll where employee 101 appears twice for January. (the data is created inside the code block below)
+**Sample data:** Payroll where employee 101 appears twice for January.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1246,7 +1246,7 @@ print(repeated_rows)
 - `str.replace("Rs.", "", regex=False)` removes the label; `regex=False` means treat the text literally (the dot is not a wildcard).
 - Remove the commas the same way, then `strip()` leftover spaces.
 - `pd.to_numeric(..., errors="coerce")` then makes real numbers, with NaN for anything that still fails.
-**Sample data:** Payroll with currency text and one 'N/A'. (the data is created inside the code block below)
+**Sample data:** Payroll with currency text and one 'N/A'.
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -1351,7 +1351,7 @@ print(salaries.loc[[0, 11], ["name", "salary", "salary_capped"]])
 **Likely follow-ups:**
 - *Why a new column?* So the raw data is never lost and the change is auditable.
 - *Is capping at 1 and 99 always right?* No; 5 and 95 is also used. It is a judgement call to state openly.
-**Common mistakes:** Capping before checking if the values are errors; overwriting the original column; capping the whole file when outliers differ by group (see grade-wise logic).
+**Common mistakes:** Capping before checking if the values are errors; overwriting the original column; capping the whole file when outliers differ by group (see Q56).
 
 ### Q35 ⭐⭐ 🟡 How do you split a 'Full Name' column into first and last name using str.split()?
 **Asked at:** commonly asked (no company-specific report found).
@@ -1435,7 +1435,7 @@ print(valid_rows)
 ```
 **What it means:** Three rows break at least one rule and are set aside; two rows are clean.
 **Likely follow-ups:**
-- *What about missing ages?* A missing age fails both tests silently in some forms; I check `isna()` separately.
+- *What about missing ages?* A missing age is neither below 18 nor above 70 (NaN compares as False), so it slips past the invalid filter; I check `isna()` separately.
 - *Why not delete the 16-year-old?* It may be a typing error or a real intern; ask the source.
 **Common mistakes:** Using `and` / `or` instead of `&` / `|`; forgetting brackets around each condition (gives an error); dropping bad rows without telling anyone.
 
@@ -2239,7 +2239,7 @@ print(employees[~inside])
 5     L1   90000
 11    L2  150000
 ```
-**What it means:** One outlier per grade was found. A single global rule would have kept 90,000 (it is below L2's normal pay) and compared grades unfairly.
+**What it means:** One outlier per grade was found. One global rule over all 12 salaries flags neither 90,000 nor 150,000 (I checked), because the two grades stretch the spread; the per-grade rule catches both.
 **Likely follow-ups:**
 - *Do you always delete them?* No; first ask whether it is a typo, a real executive salary, or a data error.
 **Common mistakes:** Using `groupby().apply` and getting a shorter result that cannot filter the original; tiny groups (with 4 rows, quartiles are unreliable); removing real high earners.
@@ -2517,7 +2517,7 @@ max          103.0  72000.000000
 **Likely follow-ups:**
 - *Do asserts always run?* Not if Python is run with the `-O` option (from memory, unverified), so for production pipelines people often raise an explicit error instead.
 - *Any library?* Tools such as pandera or Great Expectations exist (not run here).
-**Common mistakes:** Forgetting `.all()` (an assert on a whole column is an error); checking only the shape; assuming a missing salary slips through `salary > 0`: it does not, because `NaN > 0` is False, so the check fails (but add the explicit `notna()` check for a clearer message).
+**Common mistakes:** Forgetting `.all()` (an assert on a whole column is an error); checking only the shape; assuming a missing salary slips through `salary > 0`: it does not, because `NaN > 0` is False, so that check fails too (the explicit `notna()` check just gives a clearer message).
 
 ### Q63 ⭐ 🔴 How do you detect outliers in a column that is highly skewed, such as salary, and why might a log transform help?
 **Asked at:** a candidate-reported "write a Python function that detects outliers using the IQR method" question appears on Glassdoor (snippet only, company not confirmed); otherwise commonly asked.
