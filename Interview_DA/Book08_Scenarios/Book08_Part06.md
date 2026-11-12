@@ -684,12 +684,12 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 **First, clarify / contain:** The gap is 10.9 - 10.4 = 0.5 crore (about 4.8% of Finance's figure). I do not say either dashboard is wrong, and I do not send the numbers upward until reconciled.
 **What I would check, in order:**
 1. Definition: Sales counts on booking date (order placed); Finance counts on invoice date (billed).
-2. Tax basis: are both ex-tax or are taxes in only one? A tax difference would be a large, round-percentage gap, so I check it first.
+2. Tax basis: are both ex-tax or are taxes in only one? A tax difference would show up as one steady percentage of every invoice, so I test whether the 0.5 crore is a flat share of revenue (here 0.5 / 10.4 = 4.8%).
 3. Period cut-offs: the month-end date and the time zone.
 4. Credits: returns, credit notes and cancellations posted in one system only.
 5. Scope: same entities, currencies, intercompany sales excluded.
 **If I find...:** Booked but not invoiced explains the gap: this is timing, not an error. Tax included in one side: restate to the same basis. Unexplained residual: raise it to both data owners and treat it as a data issue.
-**Illustrative bridge (crore):** Sales 10.9; less booked this month but invoiced later 0.70; plus invoiced this month from earlier bookings 0.35; less credit notes posted only in Finance 0.15; equals Finance 10.4 (10.9 - 0.70 + 0.35 - 0.15 = 10.4, checked).
+**Illustrative bridge (crore; all amounts are invented, and it assumes both sides already use the same tax basis, otherwise I would add a tax line):** Sales 10.9; less booked this month but invoiced later 0.70; plus invoiced this month from earlier bookings 0.35; less credit notes posted only in Finance 0.15; equals Finance 10.4 (10.9 - 0.70 + 0.35 - 0.15 = 10.4, checked).
 **What I would tell the stakeholder:** "The two numbers differ by 0.5 crore because of timing and credit notes. Bookings are a leading indicator; invoiced revenue is what we report externally. I suggest we show both, clearly labelled, with this bridge, by Friday."
 **Prevent it next time:** One metric dictionary with one owner per definition, both labelled "Bookings" and "Invoiced revenue", and an automatic monthly reconciliation.
 **Likely follow-ups:** 1) *Which do you show the CEO?* Both, labelled, with the bridge; use the Finance number for reported revenue. 2) *What if a residual remains?* List it, set a tolerance (for example under 0.5%), and investigate above it.
@@ -762,13 +762,13 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 ### Q38 ⭐⭐ 🟢 The median delivery time fell from 30 to 25 minutes while the mean stayed flat at 32. What can you say about the distribution, and what would you check?
 **Asked at:** commonly asked (no company-specific report found); median versus mean is a staple interpretation topic (unverified). Note: I treat the two numbers as exercise inputs and draw only what they support.
 **What the interviewer is checking:** Whether you reason about skew and tails from two summary numbers.
-**Say this in the interview:** "The typical order got faster, but the average did not improve, so the slow orders must have got slower. The tail grew."
-**What the data shows:** Median 30 to 25 (-5 minutes) with mean flat at 32 (see the note below). The mean is above the median in both periods, so the distribution has a long right tail.
+**Say this in the interview:** "The middle order got faster, but the average did not improve, so the slow orders have probably got slower. The tail likely grew, and I would confirm with percentiles."
+**What the data shows:** Median 30 to 25 (-5 minutes) with the mean flat at 32 in both periods (as the question states). The mean is above the median in both periods, so the distribution has a long right tail.
 **Working:**
 1. Gap between mean and median before: 32 - 30 = 2 minutes; after: 32 - 25 = 7 minutes.
 2. A bigger gap means a heavier right tail: the median fell, yet the mean did not.
-3. Mean = typical orders + slow orders; the typical got 5 minutes better but the total average stayed 32, so the slow orders must have got longer by enough to offset it.
-**Result:** Distribution became more skewed: faster for most orders, worse for the slowest ones. A single "improvement" headline would mislead. (Assumes the flat mean is 32 both before and after; the question gives only the mean's current level.)
+3. The mean is the total time divided by the number of orders. The middle order got 5 minutes faster, yet total time per order did not fall, so the orders above the median must on average have got slower by enough to offset the faster ones.
+**Result:** The distribution became more skewed: the middle order is faster, but the slow end got worse. Two summary numbers cannot show exactly how many orders improved, so this is a lead to check with percentiles, not a proof. A single "improvement" headline would mislead.
 **Caveats / what else I would check:** Percentiles (P75, P90, P99); the share of orders over the promise; outliers or data errors (stuck timestamps); changes in mix (zones, order types); whether cancelled orders are excluded.
 **Next step / recommendation:** Show a histogram or percentiles for both periods and find where the slow orders sit (zones, hours, restaurants).
 **Likely follow-ups:** 1) *Is the median better than the mean?* Neither; use both plus percentiles. 2) *Which would customers feel?* The tail drives complaints.
@@ -847,7 +847,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 2. Less resignations 20 and terminations 5: 540 - 25 = 515.
 3. Plus transfers in 3 and less transfers out 8: 515 + 3 - 8 = 510.
 4. Stated 515 minus computed 510 = 5 (that is, the net transfers of -5).
-**Result:** Closing headcount is 510; the stated 515 is overstated by 5 (about 1.0%). The stated 515 is the figure you get when transfers are left out.
+**Result:** Closing headcount is 510; the stated 515 is overstated by 5 (about 1.0%). The stated 515 is exactly the figure you get when transfers are left out, which is the likely cause but still a hypothesis to confirm, not proof.
 **Caveats / what else I would check:** Transfers in a single-company headcount should usually net to zero (one person's transfer out is another's transfer in), so 3 in versus 8 out is itself suspicious: are 5 transfers out to another legal entity, or are transfers in missing from the data? Check the report's scope (one entity or a department), the same cut-off date, and the HRIS headcount on the closing date.
 **Next step / recommendation:** Confirm the closing headcount from the HRIS on the closing date, find the 5 unmatched transfers, correct the report and add a bridge check to it.
 **Likely follow-ups:** 1) *Which number do you trust?* The HRIS count on the date, after the transfers are explained. 2) *Does a gap of 5 matter?* At 1% it is small, but it signals a process error.
@@ -863,7 +863,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 
 **Asked at:** commonly asked (no company-specific report found); seasonal index (seasonality) is a standard part of trend discussions (unverified). Premise note: a seasonal index from one year of data is only a rough illustration.
 **What the interviewer is checking:** Whether you adjust for seasonality before comparing quarters.
-**Say this in the interview:** "Q4 is 1.3 times an average quarter. So Q4 beating Q1 by 62.5% is mostly the season; after adjusting, they are flat."
+**Say this in the interview:** "Q4 is 1.3 times an average quarter. If that seasonal pattern is real, Q4 beating Q1 by 62.5% is mostly the season. But one year of data cannot prove the pattern."
 **What the data shows:** Sales rise through the year, with Q4 the highest.
 **Working:**
 1. Quarterly average: (80 + 90 + 100 + 130) / 4 = 100 lakh.
@@ -871,7 +871,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 3. Q1 index: 80 / 100 = 0.80 (and Q2 0.90, Q3 1.00; the four indices add to 4.0).
 4. Raw Q4 versus Q1: 130 / 80 = 1.625, so +62.5%.
 5. Seasonally adjusted: Q4 = 130/1.30 = 100; Q1 = 80/0.80 = 100.
-**Result:** Q4 seasonal index is 1.30. After adjusting, Q4 and Q1 are equal at 100, so the apparent 62.5% growth is only seasonality.
+**Result:** Q4 seasonal index is 1.30. After adjusting, Q4 and Q1 are equal at 100, so the apparent 62.5% growth would be only seasonality. Caution: with one year of data this is true by construction, because the indices are built from the same four numbers, so any real growth through the year is also counted as "season". Treat it as an illustration of the method, not a finding.
 **Caveats / what else I would check:** One year is not enough to define a season, so I use at least two to three years; a trend inside the year (growth) mixes with seasonality here; promotions or festivals in Q4; year-on-year comparison (Q4 versus last Q4) avoids the problem.
 **Next step / recommendation:** Compare Q4 with the previous Q4, or deseasonalise using indices from several years; build targets with the season in them.
 **Likely follow-ups:** 1) *Simplest fix?* Compare the same quarter last year. 2) *What if there is a real trend?* Use a model to separate trend and season.
@@ -1067,7 +1067,8 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 3. Top-five share = 130 / 200 = 65.0%; the 45 others = 35.0%.
 4. C1 alone = 40 / 200 = 20%; top three = 95 / 200 = 47.5%.
 5. Average revenue: top five = 26 lakh each; the other 45 = 70 / 45 = about 1.6 lakh each.
-**Result:** Top five = 65% of revenue (C1 = 20%). One top customer is worth about 26 small ones.
+6. C1 (40 lakh) is worth about 26 average small customers (40 / 1.56); the average top-five customer is worth about 17.
+**Result:** Top five = 65% of revenue (C1 = 20%). C1 alone equals roughly 26 of the small customers.
 **Caveats / what else I would check:**
 1. Time period and whether it is revenue or profit; a big customer may be low margin.
 2. Contracts: length, renewal dates, pricing power, any exclusivity.
@@ -1172,7 +1173,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 1. Top-two share (rated 4 or 5): M1 = 9 / 10 = 90%; M2 = 5 / 12 = 41.7%; M3 = 5 / 8 = 62.5%. Company: 19 / 30 = 63.3%.
 2. Average rating: M1 = 4.50; M2 = 3.42; M3 = 3.88.
 3. Rated 5 only: M1 = 60%; M2 = 8.3%; M3 = 25%.
-4. A quick significance check on M1 versus M2 (top-two share, Fisher exact test) gives p of about 0.03, but with 10 and 12 people, and chosen after looking, treat it as a flag, not proof.
+4. A quick significance check on M1 versus M2 (top-two share, Fisher exact test, which asks how often a gap this big would appear by chance between two equal teams) gives p of about 0.03, but with 10 and 12 people, and chosen after looking, treat it as a flag, not proof.
 **Result:** M1's team averages 4.50 and M2's 3.42, a gap of 1.08 rating points.
 **Caveats / what else I would check:**
 1. Real team differences: seniority, role, and the work they do.
@@ -1201,7 +1202,7 @@ Salaries: 6, 6, 7, 7, 8, 8, 9, 10, 60
 2. Share of all 590 returns: S1 1.7%; S2 67.8%; S3 30.5%.
 3. Revenue per order: S1 = Rs 1,000; S2 = Rs 1,200; S3 = Rs 1,500.
 4. Returned revenue (assuming returned orders are average value): S1 = 20% x 0.5 = 0.1 lakh; S2 = 8% x 60 = 4.8 lakh; S3 = 15% x 18 = 2.7 lakh.
-5. Uncertainty (95% Wilson interval on the rate): S1 11% to 33% (wide); S2 7.3% to 8.8%; S3 13.1% to 17.1% (S3 is clearly above S2).
+5. Uncertainty (a 95% Wilson interval is the range in which the true return rate plausibly lies, given only this many orders): S1 11% to 33% (wide); S2 7.3% to 8.8%; S3 13.1% to 17.1% (S3 is clearly above S2).
 **Result:** S3 is the sharpest problem (15% on a meaningful volume). S2 holds the most returned money (4.8 lakh) but its rate is the lowest. S1 is too small to judge.
 **Caveats / what else I would check:**
 1. Why they return: wrong size, damage, quality, fake listing (reasons by seller).
@@ -1261,13 +1262,12 @@ R-squared = 0.30, n = 220
 **Working:**
 1. Intercept 4.5: predicted salary at zero years of tenure.
 2. Slope 0.6: each extra year goes with about 0.6 higher; predictions: 5 years = 4.5 + 3.0 = 7.5; 10 years = 4.5 + 6.0 = 10.5.
-3. Reliability: t = 0.6 / 0.1 = 6; the approximate 95% range for the slope is 0.60 +/- 0.20, so 0.40 to 0.80. Tenure is clearly related to salary.
+3. Reliability: the t value (estimate divided by its standard error, which says how many "wobbles" the slope is away from zero) is 0.6 / 0.1 = 6; the approximate 95% range for the slope is 0.60 +/- 0.20, so 0.40 to 0.80. Tenure is clearly related to salary.
 4. R-squared 0.30: tenure accounts for 30% of the variation in salary; 70% is due to other things (grade, role, performance, location, market). The correlation is the square root, about 0.55.
 **Result:** About 0.6 lakh extra per year of tenure on average; R-squared 0.30.
 **Caveats / what else I would check:** Residual plot (are errors larger at high salaries?); outliers such as executives; non-straight relationship (pay may flatten after some years); grade and job family as extra variables; n = 220 only; the model describes this group, not every company.
 **Next step / recommendation:** Add grade, role and performance and see how the tenure effect shrinks; use the model to flag employees far below predicted pay, then review them individually.
-**Likely follow-ups:** 1) Is 0.30 low? For pay, yes, since grade matters most. 2) Does tenure cause pay? Possibly through raises, but this does not prove it.
-**Common mistakes / traps:** "Tenure explains 30% of salary" (it is of the variation, not of the amount); causal language; extrapolating to 30 years.
+**Likely follow-ups:** 1) Is 0.30 low? It leaves 70% unexplained; I would expect grade to explain a lot more of pay, but I would test that rather than assume. 2) Does tenure cause pay? Possibly through raises, but this does not prove it.**Common mistakes / traps:** "Tenure explains 30% of salary" (it is of the variation, not of the amount); causal language; extrapolating to 30 years.
 
 ### Q61 ⭐⭐ 🟡 Support tickets per thousand orders are shown by quarter (exercise data). Raw tickets rose 40% but orders rose 60%. What is the change in the rate, and which framing would you present?
 | Quarter | Orders | Tickets |
@@ -1578,7 +1578,7 @@ Orders: City A UPI 600, card 200; City B UPI 300, card 700.
 4. Whether other metrics (visits, signups) also dropped to zero.
 5. Whether the same pattern happens in other tables or regions.
 **If I find...:** Pipeline failure with backfilled data: reload the correct dates and the chart becomes normal. A real outage (site down): keep the zero, annotate it, and treat the spike as recovered demand. No explanation yet: show the points but mark them "under review".
-**What I would tell the stakeholder:** "Orders show zero on 14 and 15 and a spike on 16. This looks like a data load issue, not lost sales; I am confirming with the data team and will update by 5 pm."
+**What I would tell the stakeholder:** "Orders show zero on 14 and 15 and a spike on 16. This may be a data load issue rather than lost sales, but I have not confirmed it yet; I am checking with the data team and will update by 5 pm."
 **Prevent it next time:** Add a freshness and row-count alert on the orders table, and annotate known incidents on the dashboard.
 **Likely follow-ups:** 1) *Chart treatment?* Annotate, or show a gap rather than a fake zero. 2) *Interpolate?* Only for a clearly marked data fault.
 **Common mistakes / traps:** Explaining a "buying frenzy"; smoothing it away silently; deleting the data.
@@ -1592,7 +1592,7 @@ Orders: City A UPI 600, card 200; City B UPI 300, card 700.
 1. 95% interval for A: 4.57% to 5.43%.
 2. 95% interval for B: 5.29% to 6.21%. The two overlap between 5.29% and 5.43%.
 3. Difference: 5.75% - 5.00% = 0.75 percentage points.
-4. Interval of the difference: 0.12 to 1.38 percentage points; z = 2.35. It excludes zero, so the difference is statistically significant.
+4. Interval of the difference: 0.12 to 1.38 percentage points; z = 2.35 (the gap is about 2.35 standard errors, and anything above about 1.96 is significant at the usual 5% level). It excludes zero, so the difference is statistically significant.
 **Result:** Overlap yet a significant difference of 0.75 percentage points (a 15% relative lift).
 **Caveats / what else I would check:** The reverse also holds: non-overlap is a safe sign, but borderline overlap needs the difference test; check sample ratio, run time, multiple looks, and practical size of the lift.
 **Next step / recommendation:** Say "B is likely better, by roughly 0.1 to 1.4 points; the plausible range is wide, so I would confirm if the cost of being wrong is high."
@@ -1602,13 +1602,13 @@ Orders: City A UPI 600, card 200; City B UPI 300, card 700.
 ### Q77 ⭐⭐ 🔴 Payroll cost per head is shown below for two years (exercise data). Total payroll rose from 50 crore to 56 crore while headcount rose from 1,000 to 1,200. Compute the change in cost per head and explain what could produce it.
 **Asked at:** commonly asked (no company-specific report found); an HR-metrics gap-fill chosen by judgement.
 **What the interviewer is checking:** Per-unit thinking, and mix explanations for an average that moves.
-**Say this in the interview:** "Total payroll rose 12%, but cost per head fell about 6.7%, from 5.0 to 4.67 lakh. That usually means we hired cheaper roles, not that anyone took a pay cut."
+**Say this in the interview:** "Total payroll rose 12%, but cost per head fell about 6.7%, from 5.0 to 4.67 lakh. That can mean we hired cheaper roles or people who joined part-way through the year, not that anyone took a pay cut; I would split by grade to confirm."
 **What the data shows:** Headcount grew faster (20%) than payroll (12%).
 **Working:**
 1. Year 1: 50 crore / 1,000 = 5.00 lakh per head per year (1 crore = 100 lakh).
 2. Year 2: 56 crore / 1,200 = 4.667 lakh per head.
 3. Change: 4.667 / 5.00 - 1 = -6.7%, or -0.33 lakh per head.
-4. The 200 extra heads added 6 crore, an average of 3.0 lakh each, well below the existing 5.0 lakh average.
+4. If the original 1,000 people still cost 50 crore (no raises, no exits), the 200 extra heads added 6 crore, an average of 3.0 lakh each, well below the existing 5.0 lakh average. In reality raises and exits also move the total, so this is the upper limit of the "cheap hires" story, not a measured fact.
 **Result:** Cost per head fell 6.7% (5.00 to 4.67 lakh).
 **Caveats / what else I would check:** Joining dates (people joined mid-year only cost part of the year, so full-year cost per head will be higher), grade and location mix, attrition of expensive senior staff, bonus and one-off timing, whether contractors are in the headcount.
 **Next step / recommendation:** Split by grade and compute like-for-like pay change; use average headcount (or full-time equivalents), not year-end.
