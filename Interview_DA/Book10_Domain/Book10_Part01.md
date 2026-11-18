@@ -282,7 +282,7 @@
 - A **roll-forward** is opening + additions - reductions = closing, so every change in headcount is explained.
 - Additions: joiners, rehires (people who left earlier and came back) and transfers in from another legal entity.
 - Reductions: resignations (employee's choice), terminations (company's decision) and transfers out.
-**Worked example:** (all figures computed by code)
+**Worked example:**
 
 | Line | Heads |
 |---|---|
@@ -626,7 +626,7 @@ Total change = 0.35. Explained = 0.30 (86% of the change). Unexplained = 0.05 (1
 **What the interviewer is checking:** Structured thinking: audience, decisions, definitions, and privacy before charts.
 **Say this in the interview:** "I would first ask which decisions the CHRO wants to make, then agree metric definitions, and then build a few pages: headcount, hiring, attrition, and talent. Monthly refresh after payroll close, with role-based access and small-group suppression."
 **Clarify first:** Who views it (CHRO only, or HR business partners too)? What definitions apply (headcount, attrition)? What is the source of truth?
-**Proposal:**
+**Explain simply (the proposal):**
 - **Page 1, Summary:** headcount, net change, attrition (rolling 12 months), open requisitions, engagement score.
 - **Page 2, Headcount and cost:** by unit, location, grade; approved versus filled; payroll cost.
 - **Page 3, Hiring:** requisitions ageing, time to fill, offer acceptance, joining rate.
@@ -704,7 +704,7 @@ Total change = 0.35. Explained = 0.30 (86% of the change). Unexplained = 0.05 (1
 - **Direct reports** are people who report straight to one manager (not the whole team below).
 - Very high spans (for example 20+) can mean thin supervision, overload or a flat structure. Very low spans (1 to 3) can mean too many layers or managers with little to manage.
 - What counts as "too high" depends on the type of work; I would compare similar teams.
-**Worked example (small invented table of 11 employees):**
+**Worked example (small invented table of 11 employees: employee 1 is the top person with no manager; employees 2 and 3 report to 1; 4, 5 and 6 report to 2; 7, 8, 9 and 10 report to 3; employee 11 reports to 4):**
 ```python
 direct_reports = (
     employees[employees["manager_id"].notna()]   # skip the top person
@@ -882,7 +882,7 @@ Stayers: 940 total, 376 below midpoint
 **What the interviewer is checking:** Whether you treat known exits separately from predicted exits.
 **Say this in the interview:** "Those 48 are known exits, so I subtract them on their last working dates: 30 next month and 18 later. On top of that I add an estimate for people who have not resigned yet."
 **Explain simply:**
-- **Notice period:** time between resignation and last working day (commonly 30 to 90 days; varies by company and level). The person still counts in headcount until the last day.
+- **Notice period:** time between resignation and last working day (often somewhere between 30 and 90 days, from memory, unverified; it varies by company and level). The person still counts in headcount until the last day.
 - Known exits: 30 next month, 48 - 30 = **18** in the months after (use each person's actual date).
 - **Forecast closing headcount** = opening + planned hires (joined) - known exits - expected new resignations that also leave within the period. A resignation next week with a 60-day notice would not leave this month.
 - **Risks to adjust for:** some resignations are withdrawn (counter-offers); notice buyouts bring dates forward; extensions push them back. Use history to apply a small withdrawal percentage.
@@ -901,7 +901,7 @@ Stayers: 940 total, 376 below midpoint
 - **Method:** use the most recent rating before the observation date, then follow the group forward for 12 months (a cohort). Rate = leavers in the group / headcount at start.
 - People with no rating (new joiners, early leavers) form their own group; do not drop them.
 - Compare like with like: control for grade, tenure and team.
-**Likely follow-ups:** 1) *Does the rating itself change?* Yes, calibration can move ratings, so use the final one. 2) *Small group?* Top performers may be 10 to 15% of staff, so numbers are small; avoid conclusions from a handful of exits.
+**Likely follow-ups:** 1) *Does the rating itself change?* Yes, calibration can move ratings, so use the final one. 2) *Small group?* Top performers may be a small slice of staff (say 10 to 15%, illustrative), so numbers are small; avoid conclusions from a handful of exits.
 **Common mistakes:** Using the rating that comes after the person left; excluding unrated leavers; mixing voluntary and forced exits.
 
 ### Q61 ⭐⭐ 🟡 What is a boomerang (rehired) employee, how would you measure the rehire rate, and what decisions could the data inform?
@@ -967,7 +967,7 @@ Stayers: 940 total, 376 below midpoint
 **Explain simply:**
 - A **requisition** is an approved open job position that a recruiter works to fill.
 - Closure rate: 18 / 30 = **60.0%**; 9 / 12 = **75.0%**. The first recruiter filled twice as many roles (18 vs 9) with a larger load.
-- Small numbers: the difference of 15 percentage points is within what chance can produce (a simple test gives a p-value of about 0.48), so do not rank on it.
+- Small numbers: the difference of 15 percentage points is within what chance can produce (a standard test for comparing two proportions, Fisher's exact test, gives a p-value of about 0.48; in plain words, a gap this large would appear by chance roughly half the time even if both recruiters were equally good), so do not rank on it.
 - **Fair comparison adds:** seniority and skill of roles (niche roles close slowly); how old each requisition is when assigned; hiring manager responsiveness; location; requisitions cancelled or put on hold (exclude them from the denominator); quality (90-day retention, hiring manager satisfaction); time to fill; offer acceptance.
 - Use a like-for-like cohort (same job family and level) and the same time window.
 **Likely follow-ups:** 1) *Single scorecard?* Use several measures; one rate encourages gaming. 2) *Who is better?* I cannot say yet.
@@ -1332,7 +1332,7 @@ A single missed person moves the rate by 20 points, so I would pool years and sh
 - Assume women leave at the same rate as everyone (20%).
 - Each year: women next year = women now x 0.8 + 20 x (share of fills that are women).
 
-**Worked example (computed):**
+**Worked example:**
 - If only 25% of fills are women, the count stays at 25.0, never improving.
 - Solving for 4 years: the share of fills that are women must be about 50.4% (on average) to reach 40.
 - Check: 50% gives 39.8 women (just short); 55% gives 42.7.
@@ -1424,7 +1424,7 @@ A single missed person moves the rate by 20 points, so I would pool years and sh
 **Say this in the interview:** Market ratio is 9.6 / 11.2 = 0.857, so this person is paid about 14.3% below the market median. For 150 employees I would calculate this for each person, then prioritise.
 **Explain simply:**
 - Ratio: 9.6 / 11.2 = 0.857 (85.7%, rounded to 1 decimal). Gap: INR 1.6 lakh, which is 14.3% below the median (1.6 / 11.2).
-- Percentage vs percentage points: 85.7% of market means 14.3% below, since the gap is divided by market.
+- Two ways to say it: the person is paid 85.7% of the market median, which is the same as 14.3% below it, because the gap is divided by the market figure (not by own pay).
 - For 150 people: add market ratio, performance rating, tenure, critical skill flag, and compare with the pay range.
 - Group them: ratio under 0.85, 0.85 to 0.95, 0.95 to 1.05, and above. Count and cost to bring each group to a target (for example to 0.90 or to the median).
 - Cost to fix is the sum of (target minus current pay) for the chosen people; show finance a few scenarios.
@@ -1452,7 +1452,7 @@ from emp a join emp b
  and b.join_date > a.join_date
  and b.salary_lakh > a.salary_lakh;
 ```
-On a small invented table of 6 employees this returned 7 pairs, for example grade G5 employee 1 (joined 2018, 9.0 lakh) against employee 3 (joined 2025, 11.2 lakh). It says: in G5 the 2025 joiner out-earns all three earlier joiners.
+On a small invented table of 6 employees (grade G5: employee 1 joined 2018 on 9.0 lakh, employee 2 joined 2021 on 9.8, employee 4 joined 2023 on 10.4, employee 3 joined 2025 on 11.2; grade G4: two employees, the later joiner paid more) this returned 7 pairs, for example grade G5 employee 1 (joined 2018, 9.0 lakh) against employee 3 (joined 2025, 11.2 lakh). It says: in G5 the 2025 joiner out-earns all three earlier joiners.
 **Likely follow-ups:**
 - Is every inversion wrong? No; a scarce skill may justify it, but it should be documented.
 **Common mistakes:** Comparing across grades; ignoring part-year or part-time pay.
@@ -1703,14 +1703,17 @@ Output: E101 Permanent 2022-04-01; E102 Permanent 2024-02-01; E103 Part-time 202
 - Limits: assumes the past repeats; small levels give shaky rates; ignores a changing market.
 **Worked example:** Pooled movements (invented counts) from a table of from-state, to-state, count:
 ```python
-# One row per start level and end state, with the number of people
-movements = pd.DataFrame(...)  # columns: from, to, n
+# Pooled two-year counts: people who started a year at each level, and where they ended
+rows = [("L1","L1",60), ("L1","L2",9), ("L1","L3",1), ("L1","Exit",10),
+        ("L2","L1",1),  ("L2","L2",30), ("L2","L3",3), ("L2","Exit",4),
+        ("L3","L2",1),  ("L3","L3",16), ("L3","Exit",3)]
+movements = pd.DataFrame(rows, columns=["from", "to", "n"])
 counts = movements.pivot_table(index="from", columns="to",
                                values="n", aggfunc="sum", fill_value=0)
 # Divide each row by its total to get the share of people
 rates = counts.div(counts.sum(axis=1), axis=0).round(3)
 ```
-Output (rates, each row sums to 1): L1 stays 0.750, to L2 0.112, to L3 0.012, exits 0.125; L2 stays 0.789, to L3 0.079, down to L1 0.026, exits 0.105; L3 stays 0.800, to L2 0.050, exits 0.150. With today's headcount of 800, 380 and 100 (1,280 total), about 1,125 remain after a year (155 exits, exact before rounding), landing at roughly 610 in L1, 394 in L2 and 120 in L3. Planned hires must cover the rest.
+Output (rates, each row sums to 1): L1 stays 0.750, to L2 0.112, to L3 0.012, exits 0.125; L2 stays 0.789, to L3 0.079, down to L1 0.026, exits 0.105; L3 stays 0.800, to L2 0.050, exits 0.150. With today's headcount of 800, 380 and 100 (1,280 total), about 1,125 remain after a year (155 exits, exact before rounding), landing at roughly 610 in L1, 395 in L2 and 120 in L3 (using the unrounded rates). Planned hires must cover the rest.
 **Likely follow-ups:** 1) *Why pool two years?* More data per cell, less noise. 2) *What about a big restructure in year one?* Weight recent data more or exclude the unusual year.
 **Common mistakes:** Dividing by end headcount instead of start; ignoring exits in the matrix; treating rates as promises.
 
@@ -1723,7 +1726,7 @@ Output (rates, each row sums to 1): L1 stays 0.750, to L2 0.112, to L3 0.012, ex
 - **Successor:** an employee nominated as a possible replacement; **readiness** is a rating from talent review meetings (ready now, 1-2 years, 3+ years).
 - Data needed: critical roles list, successor nominations with readiness and date reviewed, current roles, performance ratings, potential ratings, retention-risk indicators, incumbent retirement or exit dates.
 - Start from the critical roles list so roles with zero successors still appear (use a left join).
-**Worked example:** Five critical roles, seven nominations (invented):
+**Worked example:** Five critical roles, six nominations rated ready now or in 1 to 2 years (invented):
 ```sql
 -- Count successors by readiness; LEFT JOIN keeps roles with no successors
 SELECT r.critical_role,
@@ -1755,7 +1758,7 @@ Output: HR Head 0 and 1; IT Head 0 and 0; Sales Head 0 and 0; Plant Head 1 and 2
 ### Q111 ⭐⭐ 🟡 What is the difference between descriptive, diagnostic, predictive and prescriptive people analytics, and which stage would most HR teams in India be at today?
 **Asked at:** commonly asked (no company-specific report found); the four-stage framing is a common prep-site question (unverified).
 **What the interviewer is checking:** Vocabulary and a realistic view of maturity, not hype.
-**Say this in the interview:** "Descriptive says what happened, diagnostic says why, predictive says what is likely next, and prescriptive says what to do about it. From what I have seen reported, many HR teams are still mostly descriptive with some diagnostic work, but I would not claim a precise figure."
+**Say this in the interview:** "Descriptive says what happened, diagnostic says why, predictive says what is likely next, and prescriptive says what to do about it. My impression, unverified, is that many HR teams are still mostly descriptive with some diagnostic work, but I would not claim a precise figure."
 **Explain simply:**
 - **Descriptive:** attrition was 14% last year, headcount by department.
 - **Diagnostic:** attrition was highest in first-year employees under one manager group; here are the drivers.
@@ -1893,7 +1896,7 @@ Campus: 80 hires, 60 retained, 75.0% retention, avg rating 3.1, ramp 110 days. R
 - **Linking to HRIS** (the core employee record system) lets you cut results by team, grade and gender. It is useful but each extra cut makes groups smaller.
 **Worked example:** 40 respondents split by 4 teams x 3 grades x 2 genders = 24 cells, so 40 / 24 = 1.7 people per cell on average (rounded to 1 decimal). A cell holding 1 or 2 people effectively points to a person.
 **Regulation / privacy note (awareness only):** from memory, unverified, confirm with the compliance/legal team: using answers for a purpose employees were not told about is a privacy concern; say plainly in the survey invitation how data is linked and used.
-**Likely follow-ups:** 1) *What minimum group size?* Companies commonly pick around 5 to 10; it is a policy choice, so state yours. 2) *What about overlapping cuts?* Hide results where two reports subtracted from each other reveal a small group.
+**Likely follow-ups:** 1) *What minimum group size?* Companies often pick a number around 5 to 10 (from memory, unverified); it is a policy choice, so state yours. 2) *What about overlapping cuts?* Hide results where two reports subtracted from each other reveal a small group.
 **Common mistakes:** Calling a survey anonymous while the link carries a personal ID; reporting a team of 3; forgetting that "female, grade L7, Pune" may be one person.
 
 ### Q122 ⭐⭐ 🟡 How would you analyse free-text survey comments (themes, keyword counts, sentiment) and how would you protect the identity of commenters?
@@ -1929,7 +1932,7 @@ Campus: 80 hires, 60 retained, 75.0% retention, avg rating 3.1, ramp 110 days. R
 - **Response rate** is respondents divided by people invited. Low response means the score describes only the people who chose to answer (**non-response bias**).
 - Disengaged people often skip surveys, so scores can rise as response falls.
 - Fewer answers also make the score less stable.
-**Worked example (assume a team of 100, so 85 then 48 respondents; scores 0 to 100; all invented):** The first round total is 85 x 62 = 5,270 points. The second is 48 x 71 = 3,408. If the 48 were among the original 85, the 37 who stopped answering would have averaged (5,270 - 3,408) / 37 = 50.3 on the first survey. So if the people who left the survey were that unhappy, the "9 point rise" can appear with no one changing their mind. With an assumed spread of 20 points, the 95% margin on the difference is about +/-7.1 points (rounded).
+**Worked example (assume a team of 100, so 85 then 48 respondents; scores 0 to 100; all invented):** The first round total is 85 x 62 = 5,270 points. The second is 48 x 71 = 3,408. If the 48 were among the original 85, the 37 who stopped answering would have averaged (5,270 - 3,408) / 37 = 50.3 on the first survey. So if the people who left the survey were that unhappy, the "9 point rise" can appear with no one changing their mind. With an assumed spread of 20 points between individual answers, the 95% margin of error on the difference (the size of gap that chance alone could plausibly produce) is about +/-7.1 points (rounded). A 9-point rise is only slightly larger than that, which is another reason for caution.
 **Data and tables involved:** survey invite list joined to HRIS (team, tenure, grade), respondents by round; first cuts: who responded in both rounds, response by tenure and grade, exits between rounds.
 **Likely follow-ups:** 1) *How do you test it?* Compare only repeat respondents, and compare responders with the invited population on tenure, grade and gender. 2) *Why did response fall?* Survey fatigue, a broken link, or fear; ask the survey team.
 **Common mistakes:** Celebrating the score; comparing scores without comparing response; forgetting people who left the team during the period.
@@ -2037,7 +2040,7 @@ Campus: 80 hires, 60 retained, 75.0% retention, avg rating 3.1, ramp 110 days. R
 **Say this in the interview:** "I would first verify that the market comparison is right for each person, then rank by how far below market, performance, criticality, flight risk and fairness against peers. For finance I would show a cost range by target level and by start date, including on-costs."
 **Explain simply:**
 - **Check the data first:** job match to market survey, location, pay components, tenure (new joiners often sit lower).
-- **Compa-ratio** is pay divided by the market midpoint; 0.85 means 15% below.
+- **Market ratio** (often loosely called compa-ratio here) is pay divided by the market reference pay for the job; 0.85 means 15% below. In the strict sense, compa-ratio divides by the internal pay-range midpoint (Q35); I use the market figure here, so state which.
 - **Priority score:** gap size, performance, critical skill, exit risk, internal equity, with a documented rule so it is defensible.
 - **Fairness:** check by gender and group so the fix does not create a new gap.
 - **Options:** correct to market in one step, to 90% of market now, or phase over two cycles.
@@ -2052,8 +2055,8 @@ Campus: 80 hires, 60 retained, 75.0% retention, avg rating 3.1, ramp 110 days. R
 **Explain simply:**
 - **Assumptions to collect:** current headcount and revenue; productivity change (revenue per employee); attrition rate by role; time to fill plus notice and ramp-up; role mix (delivery, sales, support); budget; contractors versus employees.
 - **Checks to show:** revenue per head, hires per month versus recruiter capacity, cost of the plan against budget, and a sensitivity case (lower productivity gain, higher attrition).
-**Worked example (invented, rounded):** 1,000 people now; revenue +25%; productivity +5%. End headcount = 1,000 x 1.25 / 1.05 = 1,190, so net adds = 190. Average headcount = about 1,095; at 15% attrition, replacements = 164. Gross hires = 190 + 164 = 355. Mix of 60%, 25%, 15% gives 213, 89 and 53 hires. With no productivity gain, net adds would be 250.
-**Lead time:** if a hire takes 60 days to fill plus 30 days notice, recruiting for a role needed by April must start by December.
+**Worked example (invented, rounded):** 1,000 people now; revenue +25%; productivity +5%. End headcount = 1,000 x 1.25 / 1.05 = 1,190.5 (about 1,190), so net adds = about 190. Average headcount = about 1,095; at 15% attrition, replacements = about 164. Gross hires = 190.5 + 164.3 = about 355 (rounded from unrounded figures). Mix of 60%, 25%, 15% gives 213, 89 and 53 hires. With no productivity gain, net adds would be 250.
+**Lead time:** if a hire takes 60 days to fill plus 30 days notice, recruiting for a role needed on 1 April must start around the start of January at the latest (90 days earlier), so December is safer.
 **Likely follow-ups:** 1) *Does revenue move headcount one for one?* Not always; some roles scale less. 2) *How update?* Review quarterly.
 **Common mistakes:** Forgetting replacement hiring; hiring all at the year start; one blended attrition rate for all roles.
 
@@ -2066,7 +2069,7 @@ Campus: 80 hires, 60 retained, 75.0% retention, avg rating 3.1, ramp 110 days. R
 - **Data to combine:** attrition and exits by team; manager changes (new manager, vacancies); workload (overtime, headcount per team); leave taken and unplanned absence; pulse comments themes; business events (restructure, move, pay cycle).
 - **Compare** with unaffected locations (a difference-in-differences view): did the others also fall?
 - Look for the sub-group driving it (one team, one shift).
-**Worked example (invented):** about 60 and 55 respondents, spread of 18 points: standard error of the difference = sqrt(18^2/60 + 18^2/55) = 3.4; 95% margin = 1.96 x 3.4 = about 6.6 points. A 10-point drop is larger than that, so probably real, though not by much. With around 300 and 280 respondents, the margin would be about 2.9.
+**Worked example (invented):** about 60 and 55 respondents, spread of 18 points: standard error of the difference (how much the gap would wobble by chance) = sqrt(18^2/60 + 18^2/55) = 3.4; 95% margin = 1.96 x 3.4 = about 6.6 points. A 10-point drop is larger than that, so probably real, though not by much. With around 300 and 280 respondents, the margin would be about 2.9.
 **Likely follow-ups:** 1) *Did response change?* Check first (see Q124). 2) *Next step?* Listening sessions to test the explanation.
 **Common mistakes:** Reacting to small-group swings; claiming a cause from one data link; ignoring company-wide trends.
 

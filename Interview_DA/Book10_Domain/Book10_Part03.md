@@ -16,7 +16,7 @@
 **Common mistakes:** Forgetting that deposits are a cost to the bank (it pays interest on them); thinking fees are the main income for a typical lender.
 
 ### Q2 ⭐⭐⭐ 🟢 What is the difference between a bank, an NBFC and a fintech app, and what can each of them do with your money?
-**Asked at:** commonly asked (no company-specific report found); fintech loops reportedly stress understanding who holds the licence (unverified).
+**Asked at:** commonly asked (no company-specific report found); fintech guides say to learn how partners and payment parties fit together (unverified).
 **What the interviewer is checking:** That you know who is regulated to do what, because that decides what data exists and who owns it.
 **Say this in the interview:** "A bank takes deposits and lends. An NBFC (non-banking finance company) lends but generally cannot take ordinary savings deposits. A fintech app is usually a technology front end that works with a licensed bank or NBFC."
 **Explain simply:**
@@ -125,7 +125,7 @@
 - **PD (probability of default):** for example 2% over the next year.
 - **LGD (loss given default):** after selling collateral and collecting, how much is lost; 45% means 55% is recovered.
 - **EAD (exposure at default):** the outstanding amount when default occurs.
-**Worked example:** invented inputs: PD 2% (0.02), LGD 45% (0.45), EAD Rs 10,00,000. Expected loss = 0.02 x 0.45 x 10,00,000 = Rs 9,000 (computed by code). Banks use such figures to size provisions; this is awareness only, not a lending recommendation.
+**Worked example:** invented inputs: PD 2% (0.02), LGD 45% (0.45), EAD Rs 10,00,000. Expected loss = 0.02 x 0.45 x 10,00,000 = Rs 9,000. Banks use such figures to size provisions; this is awareness only, not a lending recommendation.
 **Likely follow-ups:** 1) *Is expected loss the worst case?* No, it is the average; unexpected loss needs capital. 2) *What lowers LGD?* Better collateral.
 **Common mistakes:** Mixing LGD as a Rupee amount (it is a percentage); using the original loan amount instead of the amount outstanding.
 
@@ -191,7 +191,7 @@ Data (Rs crore): gross advances 50,000; gross NPAs 1,500; provisions held agains
 - Net NPA % = 600 / 49,100 = 1.22% (rounded to 2 decimals).
 - Provision coverage = 900 / 1,500 = 60%.
 - **Manager reading:** asset quality problem is 3% of loans; 60% of it already cushioned, so the remaining hit to profit is smaller.
-**Worked example:** all figures above computed by code. Note that other definitions (for example net NPA / gross advances = 1.20%) exist; always state which you use.
+**Worked example:** the figures above are the full calculation. Note that other definitions (for example net NPA / gross advances = 1.20%) exist; always state which you use.
 **Likely follow-ups:** 1) *If provisions rise?* Net NPA falls but profit falls too, since provisions are a cost. 2) *Percent or points?* A move from 3.0% to 2.5% is a 0.5 percentage-point fall.
 **Common mistakes:** Using 600/50,000; forgetting net advances; mixing crore and lakh.
 
@@ -206,7 +206,7 @@ Data (Rs crore, one month): EMIs falling due this month (current demand) 120; co
 - The second divides by only this month's demand while its numerator includes old money, so it blends two groups. That is a common company convention, but definitions differ; state yours.
 - The 5-point gap is purely recovery of old dues; useful, but it can hide a fresh slide. A strong recovery month can even exceed 100%.
 - The collections head should watch both: 90% for fresh slippage, the arrears recovery separately.
-**Worked example:** computed by code; percentages rounded to one decimal.
+**Worked example:** 108 / 120 = 90.0%; (108 + 6) / 120 = 95.0% (percentages to one decimal).
 **Likely follow-ups:** 1) *What if 108 dropped to 100?* Current-demand efficiency would be 83.3%, a warning. 2) *Count or amount?* Track both.
 **Common mistakes:** Reporting the flattering number only; counting prepayments as collections.
 
@@ -221,7 +221,7 @@ Data (Rs crore): earned premium 200; claims incurred 150; expenses (commission p
 - Combined ratio = 75% + 28% = 103.0%.
 - Underwriting result = 200 - 150 - 56 = -6, a loss of Rs 6 crore (3% of earned premium).
 - The insurer may still be profitable overall if it earns enough investment income on premiums it holds before paying claims. This is about the underwriting side only.
-**Worked example:** computed by code; the underwriting loss equals (103% - 100%) of 200 = Rs 6 crore.
+**Worked example:** the underwriting loss equals (103% - 100%) of 200 = Rs 6 crore.
 **Likely follow-ups:** 1) *What fixes it?* Better pricing, lower claims through fraud checks, lower expenses. 2) *Percentage or points?* A change from 103% to 99% is 4 percentage points.
 **Common mistakes:** Using written instead of earned premium; calling a 103% combined ratio a profit.
 
@@ -253,7 +253,7 @@ Data (Rs crore, one year): interest earned 9,000; interest paid on deposits and 
 - **Loan master:** loan_id, customer_id, product, branch, channel, disbursal date, sanctioned amount, interest rate, tenure, secured flag.
 - **Monthly loan snapshot:** loan_id, month-end date, outstanding principal, DPD, bucket, status. One row per loan per month; this is the grain most metrics need.
 - **Repayment / demand table:** loan_id, due date, amount due, amount paid, paid date (for collection efficiency).
-- **Customer master:** customer_id, age band, city, income band, score band (masked of direct identifiers).
+- **Customer master:** customer_id, age band, city, income band, score band (with direct identifiers masked).
 - **First cuts:** (1) total outstanding by product and branch; (2) share of balance in each DPD bucket (0, 1-30, 31-60, 61-90, 90+) as a trend; (3) gross NPA % by product; (4) collection efficiency by month; (5) early delinquency by disbursal month (vintage); (6) roll rates between buckets.
 - Before anything, reconcile the total outstanding to the finance team's figure.
 **Regulation / privacy note (awareness only):** from memory, unverified, confirm with the compliance team: customer-level dashboards should use masked or coded IDs and role-based access.
@@ -308,7 +308,7 @@ Data: applications 10,000; approved 4,000; disbursed 3,200.
 **Explain simply:**
 - **KYC (know your customer)** is the identity and address check a bank must complete before dealing with a customer. The **customer master** is the central table of customers.
 - Typical problems: the same person with two customer IDs; spelling and initials differences ("Ravi Kumar" vs "Ravi K"); missing PAN or date of birth; one phone number shared across unrelated customers; invalid PAN format; expired KYC documents; address changed in one system only.
-- A short check (SQL on a sample table, which flagged one repeated PAN, one missing PAN and one missing date of birth):
+- A short check. Sample `customers` table (5 rows): (1, Ravi Kumar, ABCDE1234F, 1990-01-05), (2, Ravi K, ABCDE1234F, 1990-01-05), (3, Meena Rao, no PAN, 1985-07-12), (4, Sunil Das, PQRST5678Z, no date of birth), (5, Anita Roy, LMNOP9012Q, 1992-03-30). These are invented.
 ```sql
 -- PAN numbers that appear on more than one customer record
 select pan, count(*) as records_with_this_pan
@@ -401,7 +401,7 @@ Data: January 2025 cohort: 1,000 loans, 20 were 30+ DPD at month-on-book 3 (MOB 
 **Explain simply:**
 - **MOB (months on book)** is how many months since the loan started. Comparing at the same MOB is fair; comparing today's snapshot is not, because older loans have had longer to go wrong.
 - Gap: 1.5 percentage points, or 75% higher in relative terms.
-- With only 1,000 loans each, 20 versus 35 is suggestive, not proof; a quick test gives about p = 0.055 (borderline). I would watch MOB 6 and the next cohorts, and check whether the Feb mix (channel, product, score) changed.
+- With only 1,000 loans each, 20 versus 35 is suggestive, not proof; a Fisher exact test gives about p = 0.055 (borderline; an uncorrected chi-square test gives about 0.04, so the verdict depends on the test). I would watch MOB 6 and the next cohorts, and check whether the Feb mix (channel, product, score) changed.
 **Worked example:** Jan 20/1,000 = 2.0%; Feb 35/1,000 = 3.5%.
 **Likely follow-ups:** 1) *Why might Feb be worse?* A looser cut-off, a new channel, a campaign. 2) *Next step?* Split by channel and score band.
 **Common mistakes:** Comparing at different MOBs; calling the gap "1.5%" instead of 1.5 points; over-reading small numbers.
@@ -727,6 +727,7 @@ Data: 5,000 loans disbursed last month, 150 missed the first EMI. Separately, 10
 **What the interviewer is checking:** Whether you use the right denominator for each rate and understand why early signals matter.
 **Say this in the interview:** "First-payment default is 3.0% (150 of 5,000), and the auto-debit bounce rate is 12% (1,200 of 10,000). They use different denominators, loans in one case and mandate presentations in the other, so I would not combine them."
 **Explain simply:**
+- Assumption: all 5,000 loans have had their first EMI fall due.
 - **First-payment default (FPD):** a borrower misses the very first EMI (monthly instalment). It often points to fraud, wrong targeting or someone who never meant to repay.
 - **NACH / e-mandate:** a standing instruction that lets the lender automatically pull the EMI from the borrower's bank account on the due date. A **bounce** means the pull failed, usually for low balance.
 - Early measures matter because they show trouble within weeks, long before a loan is officially a bad loan (NPA), giving time to act: change approval rules, call earlier, fix the channel.
