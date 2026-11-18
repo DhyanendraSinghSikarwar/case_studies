@@ -230,7 +230,7 @@ Leads 5,000; MQLs 1,500; SQLs 600; opportunities 240; won 48. Marketing spend Rs
 | First-touch | Rs 10,000 | Rs 0 | Rs 0 |
 | Last-touch | Rs 0 | Rs 0 | Rs 10,000 |
 | Linear | Rs 3,333.33 | Rs 3,333.33 | Rs 3,333.33 |
-- Each column sums to total Rs 10,000 under each model (linear: 3,333.33 x 3 = 9,999.99, rounding gap of Re 0.01).
+- Each row sums to the total Rs 10,000 under each model (linear: 3,333.33 x 3 = 9,999.99, rounding gap of Re 0.01).
 - Instagram gets nothing under first or last touch, though it may have helped.
 **Likely follow-ups:** 1) *Position-based split here?* With 40/40/20 it is Rs 4,000 / Rs 2,000 / Rs 4,000 (weights are a choice, see Q6). 2) *Which would you report?* One agreed model, plus a note on its bias.
 **Common mistakes:** Credits that do not add to the sale total; mixing models across channels; assuming the email "caused" the sale because it came last.
@@ -337,7 +337,7 @@ Baseline 1,000 units/day at Rs 100 price and Rs 70 cost. During a 7-day promotio
 - New versus returning customers.
 - Revenue by channel over the two months, including organic and direct.
 - Incrementality: pause or reduce spend in a test region and compare.
-**Likely follow-ups:** 1) *How would you prove it?* A holdout or geo test (see Q39 area). 2) *Would you cut spend?* Only after the test; ROAS 6 might still be incremental for non-branded terms.
+**Likely follow-ups:** 1) *How would you prove it?* A holdout or geo test (see Q39 for holdout, geo and before-and-after tests, and Q36 for incrementality). 2) *Would you cut spend?* Only after the test; ROAS 6 might still be incremental for non-branded terms.
 **Common mistakes:** Trusting the platform dashboard; comparing ROAS with total revenue directly; changing spend without a test.
 
 ### Q23 ⭐⭐⭐ 🔴 The marketing head says a discount campaign worked because sales rose 25% during it. How would you evaluate whether it really worked?
@@ -363,7 +363,7 @@ Baseline 1,000 units/day at Rs 100 price and Rs 70 cost. During a 7-day promotio
 - Split the 40% by source, campaign, region and customer type. A new low-cost source often adds volume of poor leads.
 - Follow each group through the funnel: lead to qualified lead, to opportunity, to won. Compare with last quarter.
 - Check sales side too: response time to leads, leads per rep, new reps, pricing changes.
-- Check timing: this quarter's leads may not have finished their sales cycle, which makes win rate look lower (immature cohorts).
+- Check timing: this quarter's leads may not have finished their sales cycle, which makes win rate look lower (immature cohorts: leads not yet old enough to have been won or lost).
 - Check definitions: did the lead form or scoring rule change?
 **Likely follow-ups:** 1) *What do you recommend?* Judge sources by cost per won deal, not cost per lead; tighten or cut weak sources. 2) *How do you stay neutral?* Show the data for both marketing and sales.
 **Common mistakes:** Accepting "quality is worse" without proof; comparing unfinished cohorts; looking at the average only.
@@ -506,7 +506,7 @@ Baseline 1,000 units/day at Rs 100 price and Rs 70 cost. During a 7-day promotio
 - **Elastic (size above 1):** customers react strongly, like shoppers on a fashion sale. **Inelastic (size below 1):** customers barely react, like a daily medicine or salt.
 - A discount is only worth planning if volume rises enough to cover the lower price per unit (and the lower margin).
 - Elasticity differs by product, customer group and time, and measuring it from messy history is hard because other things (festivals, ads) move at the same time.
-**Worked example (invented):** price falls 10% and units rise 20%. Elasticity = 20% / -10% = **-2** (elastic). Revenue goes from 1.0 to 0.9 x 1.2 = 1.08, up 8%. Rounded to whole units.
+**Worked example (invented):** price falls 10% and units rise 20%. Elasticity = 20% / -10% = **-2** (elastic). Revenue goes from 1.0 to 0.9 x 1.2 = 1.08, up 8%.
 **Likely follow-ups:** 1) *Does higher revenue mean higher profit?* Not necessarily; margin per unit fell too. 2) *Can elasticity be a single number for the whole shop?* No, compute it per category or segment.
 **Common mistakes:** Ignoring the sign; assuming elasticity is constant; mixing it up with incrementality.
 
@@ -668,7 +668,7 @@ R1: quota 50, booked 60. R2: quota 50, booked 25. R3: quota 100, booked 90. R4: 
 Qualified opportunities 200; win rate 20%; average deal size Rs 5,00,000; average sales cycle 80 days.
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** That you know the formula and understand which lever is cheapest to move.
-**Say this in the interview:** "Velocity is 200 x 20% x Rs 5,00,000 / 80 days, which is Rs 2,50,000 of expected revenue per day. Because the formula multiplies, a 10% gain in any input gives the same lift, so I would start with the one that is easiest to move, usually win rate through better qualification."
+**Say this in the interview:** "Velocity is 200 x 20% x Rs 5,00,000 / 80 days, which is Rs 2,50,000 of expected revenue per day. Because the formula multiplies, a 10% gain in any of the first three inputs gives the same lift, so I would start with the one that is easiest to move, usually win rate through better qualification."
 **Explain simply:**
 - **Pipeline velocity:** how much revenue the pipeline is expected to produce per day: (opportunities x win rate x deal size) / sales cycle days.
 - Three inputs raise it (opportunities, win rate, deal size); a shorter cycle also raises it.
@@ -805,7 +805,7 @@ Score above 70: 1,000 leads, 150 converted. Score 70 or below: 4,000 leads, 100 
 **Explain simply:**
 - **Win rate** is the share of deals that close. A deeper discount raises it but cuts the price and the margin on each deal.
 - I compare gross profit per 200 deals = deals x win rate x price x margin.
-- Both arms imply the same full price of Rs 1,00,000 (90,000 / 0.9 and 80,000 / 0.8), so the test looks consistent.
+- Both arms imply the same full price of Rs 1,00,000 (90,000 / 0.9 and 80,000 / 0.8). The implied unit cost differs slightly (Rs 54,000 in the first arm, Rs 56,000 in the second), so I would confirm the margins; if both arms had the Rs 54,000 cost, the 20% arm would earn Rs 18.72 lakh, still below Rs 21.6 lakh.
 **Worked example:** (computed by script)
 
 | | 10% discount | 20% discount |
@@ -834,12 +834,12 @@ with spend as (
   select upper(trim(campaign_id)) as campaign, sum(spend) as spend
   from ad_spend group by 1),
 leads as (
-  select upper(trim(utm_campaign)) as campaign, count(*) as leads,
+  select upper(trim(utm_campaign)) as campaign, count(distinct l.lead_id) as leads,
          count(o.order_id) as orders, coalesce(sum(o.order_value), 0) as revenue
   from crm_leads l left join orders o on o.lead_id = l.lead_id
   group by 1)
 select s.campaign, s.spend, l.leads, l.orders, l.revenue,
-       round(s.spend / l.leads, 1) as cost_per_lead
+       round(1.0 * s.spend / l.leads, 1) as cost_per_lead
 from spend s left join leads l on l.campaign = s.campaign;
 ```
 Output: C1 spend 2,200, 3 leads, 2 orders, revenue 8,000, cost per lead 733.3; C2 spend 800, 1 lead, 0 orders, cost per lead 800. One lead had no tag and fell outside both rows, which is exactly the "unattributed" gap to report.
@@ -859,7 +859,7 @@ Output: C1 spend 2,200, 3 leads, 2 orders, revenue 8,000, cost per lead 733.3; C
 - **First cuts:** distribution of orders and revenue per customer (how skewed); recency (days since last order), frequency and monetary value (the **RFM** method); split by acquisition channel, city, category; share of one-time buyers; missing data counts.
 - Then test candidate segments: are they large enough, stable over months, clearly different on a key metric, and can marketing actually act on them?
 **Regulation / privacy note (awareness only):** From memory, unverified, confirm with the compliance/legal team: use only data for which the customer gave consent for that purpose, and avoid sensitive attributes unless clearly justified.
-**Likely follow-ups:** 1) *Rules or clustering?* Start with simple rules (RFM); use clustering such as k-means if rules do not capture differences. 2) *How do you know segments are good?* They differ on outcomes and a different action is possible per segment.
+**Likely follow-ups:** 1) *Rules or clustering?* Start with simple rules (RFM); use clustering such as k-means (a standard method that groups similar customers automatically) if rules do not capture differences. 2) *How do you know segments are good?* They differ on outcomes and a different action is possible per segment.
 **Common mistakes:** Clustering before cleaning; segments too many to act on; ignoring that outliers dominate a segment.
 
 ### Q57 ⭐⭐ 🟡 What data would you need to measure whether a promotion was profitable, and what first cuts would you run?
@@ -1069,7 +1069,7 @@ If the mix had changed but each segment's rate stayed the same, the win rate wou
 - Uplift A: +600 units. Loss B: -200 units. Cannibalisation = 200 / 600 = 33%.
 - Net units: +400.
 - Profit A: Rs 40,000 to Rs 32,000 (-Rs 8,000). Profit B: Rs 28,000 to Rs 21,000 (-Rs 7,000).
-- Net profit: **-Rs 15,000**, even though units rose. Brand A would need 2,000 units (double) just to break even on margin.
+- Net profit: **-Rs 15,000**, even though units rose. Brand A alone would need 2,000 units (double) just to match its old profit.
 **Likely follow-ups:** 1) *What else?* Post-promotion dip and competitor brands' effect. 2) *How to get a clean baseline?* A control group of similar stores with no promotion.
 **Common mistakes:** Counting only the promoted brand's units; ignoring lower margin; using last week as baseline when seasonality exists.
 
@@ -1150,7 +1150,7 @@ If the mix had changed but each segment's rate stayed the same, the win rate wou
 - **Mix causes:** more large or enterprise deals, which naturally take longer.
 - **Real causes:** longer buyer approvals (legal, procurement), new competitors, weaker leads, a slow internal quote or discount approval, new reps.
 - **Worked example:** (illustrative, computed by script) Stage days before to after: qualification 10 to 12; demo 15 to 18; proposal 15 to 20; negotiation 12 to 15; legal and procurement 8 to 25. Total 60 to 90. Of the 30 extra days, 17 are in legal and procurement, so that is the first thing to investigate.
-- Split by deal size, segment, rep and source to separate mix from stage delays; also watch whether the data includes deals still open (right-censoring).
+- Split by deal size, segment, rep and source to separate mix from stage delays; also watch whether the data includes deals still open: deals that have not closed yet are missing from the average, which makes recent cycles look shorter than they will turn out.
 **Likely follow-ups:** 1) *Won only?* Include lost deals too, since slow deals may be dying. 2) *Action?* Standard contract templates, earlier legal involvement.
 **Common mistakes:** Quoting only the average; ignoring mix; comparing quarters with different closing patterns.
 
@@ -1233,7 +1233,7 @@ If the mix had changed but each segment's rate stayed the same, the win rate wou
 **What the interviewer is checking:** Whether you understand top-down versus user-level measurement.
 **Say this in the interview:** "Marketing mix modelling (MMM) uses totals over time, such as weekly spend per channel and weekly sales, in a regression to estimate how much each channel contributes. Attribution follows individual customer journeys and gives credit to touchpoints."
 **Explain simply:**
-- **MMM:** top-down, needs one to three years of weekly data, includes things you cannot click on (TV, hoardings, discounts, seasonality, festivals). Needs no personal data.
+- **MMM:** top-down; practitioners often say it needs a year or more of weekly data (from memory, unverified); includes things you cannot click on (TV, hoardings, discounts, seasonality, festivals). Needs no personal data.
 - **Attribution:** bottom-up, needs tracked clicks or logins per user; blind to offline media and weakened when tracking is restricted.
 - MMM answers "how should we split next year's budget?"; attribution answers "which ad or email in the journey should we tweak this week?"
 - Analogy: MMM is checking overall headcount cost against output by department; attribution is tracing one employee's path.
@@ -1262,7 +1262,7 @@ If the mix had changed but each segment's rate stayed the same, the win rate wou
 - **Closed won:** already signed. **Commit:** rep stakes their name on it. **Best case:** possible but with risks. **Pipeline:** all open opportunities, early ones included.
 - Category names and rules vary by company; reps' labels are judgement, so analysts test them against history.
 - Analogy: offers accepted, offers in negotiation, and candidates still interviewing.
-**Worked example:** Rs lakh: commit 120, best case 200, pipeline 400. With historical win rates 90%, 40%, 10% (invented): 108 + 80 + 40 = 228 lakh expected on top of closed deals.
+**Worked example:** Rs lakh, treating the three buckets as separate, not overlapping: commit 120, best case 200, pipeline 400. With historical win rates 90%, 40%, 10% (invented): 108 + 80 + 40 = 228 lakh expected on top of closed deals.
 **Likely follow-ups:** 1) *Are rep labels reliable?* Check commit-to-actual accuracy per rep. 2) *Weighted or not?* Show both.
 **Common mistakes:** Adding all pipeline at face value; counting commit twice inside best case; not freezing the forecast at period start to measure accuracy.
 
@@ -1326,7 +1326,7 @@ If the mix had changed but each segment's rate stayed the same, the win rate wou
 - Win rates come from past closed deals by stage and segment, not rep opinion alone.
 - Deals slip: use close date history, and exclude stale deals.
 - Give a range from scenarios: pessimistic win rates, expected, optimistic.
-**Worked example (Rs lakh, invented):** Closed 150. Commit 120, best case 200, pipeline 400. Low rates (80%, 20%, 5%): 156, total 306. Expected (90%, 40%, 10%): 228, total 378. High (95%, 50%, 15%): 274, total 424. Say: "Most likely about 378, plausible range 306 to 424."
+**Worked example (Rs lakh, invented; the buckets are separate, not overlapping):** Closed 150. Commit 120, best case 200, pipeline 400. Low rates (80%, 20%, 5%): 156, total 306. Expected (90%, 40%, 10%): 228, total 378. High (95%, 50%, 15%): 274, total 424. Say: "Most likely about 378, plausible range 306 to 424."
 **Likely follow-ups:** 1) *Check quality?* Compare past forecasts to actuals (error percentage). 2) *Deals slip?* Model close-date slippage.
 **Common mistakes:** One precise number; unweighted pipeline; changing the forecast after the fact.
 
@@ -1377,5 +1377,5 @@ If the mix had changed but each segment's rate stayed the same, the win rate wou
 - Validate on a later period, not random rows; check ranking (are top-decile leads converting most) and calibration (does a 20% score win about 20%).
 - Follow-up bias: sales called high-score leads first, so they converted partly because of attention. Compare by contact speed, or hold out a random group from priority treatment.
 - Avoid features that proxy for personal traits; review fairness.
-**Likely follow-ups:** 1) *Metric?* Conversion by score band, AUC (ranking quality). 2) *Refresh?* Retrain regularly.
+**Likely follow-ups:** 1) *Metric?* Conversion by score band, and AUC (a 0.5-to-1 score of how well the model ranks winners above non-winners; 0.5 is a coin toss). 2) *Refresh?* Retrain regularly.
 **Common mistakes:** Random split with time leakage; using fields filled after sales contact (leakage); never re-checking.

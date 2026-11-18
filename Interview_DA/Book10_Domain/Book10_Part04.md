@@ -240,7 +240,7 @@ Therapy market: Rs 30 crore this year, up 8 percent from last year. Brand A sold
 - *Billing lines* (to see which item was cut) and *coding table* (diagnosis and procedure codes).
 - First cuts, in order: denial rate by month (trend), then by payer, department, reason, and top reasons by denied value.
 
-Illustrative run on 8 invented claims:
+Illustrative run on 8 invented claims (claim_id, department, status, billed in Rs): 1 Cardio Paid 150000; 2 Cardio Denied 200000; 3 Cardio Paid 120000; 4 Ortho Denied 110000; 5 Ortho Paid 90000; 6 Ortho Denied 80000; 7 General Paid 30000; 8 General Denied 40000. The query below works in SQLite and MySQL (in other databases write the denied count with CASE WHEN).
 ```sql
 SELECT department,
        COUNT(*) AS claims,
@@ -251,7 +251,15 @@ FROM claims
 GROUP BY department
 ORDER BY denied_value DESC;
 ```
-Output: Cardio 3 claims, 1 denied, 33.3%, 200,000; Ortho 3, 2, 66.7%, 190,000; General 2, 1, 50.0%, 40,000. In plain words: Cardio loses the most rupees, Ortho has the highest rate, so both need a look. Eight rows prove nothing; this only shows the cut.
+Output:
+
+| department | claims | denied | denial_rate_pct | denied_value |
+|---|---|---|---|---|
+| Cardio | 3 | 1 | 33.3 | 200000 |
+| Ortho | 3 | 2 | 66.7 | 190000 |
+| General | 2 | 1 | 50.0 | 40000 |
+
+In plain words: Cardio loses the most rupees, Ortho has the highest rate, so both need a look. Eight rows prove nothing; this only shows the cut.
 **Regulation / privacy note (awareness only):** The extract has patient identity; ask for IDs masked and only needed fields (from memory, unverified, confirm with the compliance/legal team).
 **Likely follow-ups:** 1) *Reason codes are free text?* Group them into a few standard buckets with the billing team. 2) *Rate looks fine but money is lost?* Check denied value and partial cuts, not just full denials.
 **Common mistakes:** Mixing initial and final denials; quoting rate without rupees; blaming payers before checking documentation and coding errors.

@@ -12,7 +12,7 @@
 - **Week 2, data and people:** list the existing reports and dashboards (an inventory); find out which table feeds each; sit with 2 or 3 colleagues who use those reports and ask what decision each report supports.
 - **Rule:** listen before changing anything. A strange-looking number often has a business reason.
 - **HR parallel:** like learning a new company's org chart, job families and pay cycle before you analyse its headcount.
-- **Suggested split:** about 40% reading, 40% talking to people, 20% looking at data.
+- **Suggested split (my judgement, not a measured figure):** about 40% reading, 40% talking to people, 20% looking at data.
 **Likely follow-ups:** 1) *What is your first deliverable?* A one-page business map plus a glossary, shared with the team to be corrected. 2) *What if no one has time?* Learn from existing reports and tickets, and book short 15-minute slots with a list of questions ready.
 **Common mistakes:** Diving into tables before knowing the business; trying to learn everything at once; criticising old reports early.
 
@@ -126,7 +126,7 @@
 **Common mistakes:** Meeting only senior people; asking things already written in documents; not following up with thanks and a summary.
 
 ### Q10 ⭐⭐ 🟢 How much domain knowledge does a junior data analyst really need compared with tool skills?
-**Asked at:** commonly asked; job-posting samples in this project's research list domain knowledge as good-to-have for most junior roles (research/market_skills_2026.md, small internal sample).
+**Asked at:** commonly asked (no company-specific report found); in this project's small internal job-posting sample, domain knowledge is named in only a small share of postings (about 2.5%) and as good-to-have (research/market_skills_2026.md; small sample, may be stale).
 **What the interviewer is checking:** Whether you have realistic priorities: tools get you hired, domain makes you useful.
 **Say this in the interview:** "For a junior, tools come first: SQL, Excel and clear reporting are tested directly. Domain knowledge needs to be enough to read a number correctly and ask smart questions: key terms, main metrics and the process. It deepens on the job."
 **Explain simply:**
@@ -191,6 +191,7 @@ Weekday hours: 5 x 1 = 5 per week. Weekend hours: 3 per week. Over 4 weeks: (5 +
 - **Week 3 (8 h):** weekdays: pick a free dataset (Q8), read its description, profile it in SQL or Excel; weekend: compute the metrics from week 2.
 - **Week 4 (8 h):** weekdays: write a 1-page findings note and 3 questions you would ask the business; weekend: self-check test (20 marks, see Q19), fix gaps, practise a 2-minute spoken summary.
 - **Daily habit:** 5 minutes at the end to update the glossary.
+- **Note:** 4 weeks is 28 days, so 32 hours fits a 30-day window with a couple of spare days.
 **Likely follow-ups:** 1) *What if you miss a week?* Drop reading, keep the project. 2) *How do you know it worked?* Self-test score and a project you can explain.
 **Common mistakes:** All reading and no output; no end date; skipping the self-test.
 
@@ -202,10 +203,11 @@ Total budget: 6 hours x 12 weeks = 72 hours.
 **Explain simply:**
 - **Vocabulary (10 hours, about 14%):** build a glossary of 60 to 80 terms; a term is "domain vocabulary" such as "claim" in insurance or "SKU" (stock-keeping unit, one sellable item) in retail.
 - **Metrics (14 hours, about 19%):** learn 10 to 15 key numbers (the ratios the business watches) and work each one by hand with a small number.
-- **Datasets (16 hours, about 22%):** explore two public datasets to see what real tables look like.
-- **Mini-project (24 hours, about 33%):** one end-to-end analysis with a one-page write-up.
-- **Self-check and mock interviews (8 hours, about 11%):** explain everything aloud and fix the gaps.
-**Worked example:** 10 + 14 + 16 + 24 + 8 = 72 hours. Per week that is about 0.8 h vocabulary, 1.2 h metrics, 1.3 h datasets, 2 h project, 0.7 h self-check (rounded to one decimal; they add to 6). Weeks 1 to 3 are mostly vocabulary and metrics, weeks 4 to 9 mostly datasets and project, weeks 10 to 12 polish and self-check.
+- **Datasets (16 hours, about 22%):** explore two public datasets to see what real tables look like (choices in Q8).
+- **Mini-project (24 hours, about 33%):** one end-to-end analysis with a one-page write-up (method and ideas in Q17).
+- **Self-check and mock interviews (8 hours, about 11%):** explain everything aloud and fix the gaps (test design in Q19).
+- **Sources for the reading hours:** see Q7.
+**Worked example:** 10 + 14 + 16 + 24 + 8 = 72 hours (percentages are rounded, so they show 99%; exact values are 13.9, 19.4, 22.2, 33.3 and 11.1). Per week that is about 0.8 h vocabulary, 1.2 h metrics, 1.3 h datasets, 2 h project, 0.7 h self-check (rounded to one decimal; they add to 6). Weeks 1 to 3 are mostly vocabulary and metrics, weeks 4 to 9 mostly datasets and project, weeks 10 to 12 polish and self-check.
 **Likely follow-ups:** 1) *What if you fall behind?* Cut dataset breadth, never the project or the self-check. 2) *Why so much on the project?* It is the only item that produces something you can show and talk about.
 **Common mistakes:** Spending 50 hours on videos and nothing on practice; learning 200 terms and no metrics; never saying the plan aloud; leaving the self-check to the last day.
 
@@ -233,6 +235,8 @@ Total budget: 6 hours x 12 weeks = 72 hours.
 - **Step 4, data checks:** duplicates, missing values, impossible values, a total that reconciles with a known figure.
 - **Step 5, findings in business words:** "late deliveries cluster in these regions, so a manager could review the carrier there", with caveats.
 - **Step 6, one page:** question, method, 3 findings, limits, next step.
+- **Four mini-project ideas, one per domain (illustrative; datasets as in Q8, from memory, unverified, check the link):** e-commerce: which orders arrive late and how do review scores change; banking: which customer groups said yes to a phone offer; HR: which groups show higher attrition, with a note that the data is synthetic; healthcare: how many synthetic patients have repeat visits within 30 days (only synthetic data, never real patient records).
+- **Done-checklist:** one-sentence question, written metric definitions, data checks listed, 3 findings with caveats, one recommendation, one page. Rehearse a 2-minute spoken version (it feeds Q19).
 - **Datasets (from memory, unverified, check the link):** the Olist Brazilian e-commerce dataset on Kaggle (orders, items, reviews); the "Bank Marketing" dataset from the UCI Machine Learning Repository (a bank's phone campaign results); Kaggle also hosts HR analytics datasets (for example IBM-style attrition data, which is synthetic), good for an HR switcher's first project.
 **Likely follow-ups:** 1) *How do you show domain understanding in one slide?* Show the metric definition and one business action. 2) *Which tools?* Whatever you know; the choice matters less than the reasoning.
 **Common mistakes:** Pretty charts with no question; no metric definitions; ignoring data quality; claiming a cause when you only saw a pattern.
@@ -290,7 +294,7 @@ Example scoring sheet: define 10 terms (1 mark each), draw 1 process (3 marks), 
 - **0:50 to 1:40, simple cuts:** count and average by status, by month, by product; share rejected; biggest amounts. Prefer medians when a few huge values exist.
 - **1:40 to 2:00, write up:** 3 findings, the data problems found, assumptions, and what you would ask next.
 - **Be honest:** "from this data alone I cannot tell why; the next step is to confirm with the claims team".
-**Data and tables involved:** `claims` (claim ID, policy ID, dates, amount, status), usually joined to `policies` and `customers`. First cuts, on a made-up 7-row sample:
+**Data and tables involved:** `claims` (claim ID, policy ID, dates, amount, status), usually joined to `policies` and `customers`. First cuts, on a made-up 7-row sample (illustrative): C1 paid 250,000; C2 paid 2,000 (appears twice); C3 paid 3,000; C4 paid 1,200; C5 rejected 4,000; C6 open, amount blank. The `sum(claim_amount is null)` shortcut works in SQLite and MySQL; in other databases use `sum(case when claim_amount is null then 1 else 0 end)`.
 ```sql
 -- how many rows, how many distinct claims, how many missing amounts
 select count(*) as total_rows,
@@ -303,7 +307,7 @@ select status, count(*) as claims, round(avg(claim_amount), 0) as average_amount
 from claims
 group by status;
 ```
-Output: 7 rows but 6 distinct claims, and 1 missing amount; paid 5 rows, average 51,640; rejected 1 at 4,000; open 1 with no amount. In plain words: one claim is duplicated and one amount is a huge outlier (250,000), so the paid average is distorted; I report both before any conclusion.
+Output: 7 rows but 6 distinct claims, and 1 missing amount; paid 5 rows, average 51,640; rejected 1 at 4,000; open 1 with no amount. In plain words: one claim is duplicated and one amount is a huge outlier (250,000), so the paid average is distorted (the middle paid amount, the median, is 2,000, far from 51,640); I report both before any conclusion.
 **Likely follow-ups:** 1) *What if there is no time for everything?* Do quality checks first; a wrong number is worse than a missing one. 2) *Would you build a model?* No, not before the basics are understood.
 **Common mistakes:** Jumping straight to charts; trusting averages with outliers; ignoring duplicates; not writing down assumptions.
 
@@ -316,6 +320,7 @@ Output: 7 rows but 6 distinct claims, and 1 missing amount; paid 5 rows, average
 - **Use the job:** if you are in HR, practise on headcount, attendance and attrition data (with permission and masked) before moving to a new domain.
 - **Protect the habit:** same time daily, a visible tracker, lower the target on busy weeks but never go to zero.
 - **Weekly review:** 10 minutes on Sunday: what did I learn, what is unclear, what is next.
+- **Daily practice block (30 minutes, same order each day):** 5 minutes revise yesterday's glossary terms, 15 minutes on one task (one metric worked by hand, one dataset question, or one source from Q7), 5 minutes write what you learned, 5 minutes note one question for an expert. Once a week, take the self-check from Q19.
 **Worked example:** 3 x 0.5 + 2 x 0.5 + 2 + 1 = 5.5 hours; add one 30-minute catch-up slot for 6 hours. Over 12 weeks this is 72 hours.
 **Likely follow-ups:** 1) *What if a week is missed?* Resume; do not try to make up the whole backlog. 2) *Do you study at work?* Only if it is related to your work and allowed; otherwise on your own time.
 **Common mistakes:** Planning 2 hours daily and quitting in week 2; no weekly review; using confidential company data in personal practice.
