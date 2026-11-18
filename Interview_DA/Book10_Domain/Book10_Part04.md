@@ -248,7 +248,7 @@ Average pharmacy stock value is Rs 50 lakh; stock worth Rs 1.5 lakh expired and 
 ### Q75 ⭐ 🟡 How would you measure doctor productivity in an OPD, and what would be unfair about ranking doctors on a single number?
 <!-- ANSWER_PENDING -->
 
-### Q76 ⭐ 🟡 Do a Pareto analysis idea: in a pharma company the top 20 percent of brands give what share of sales, and what would you do with that finding?
+### Q76 ⭐ 🟡 What share of sales do the top 20 percent of brands give in the example below, and what would you do with a Pareto finding like this?
 Example: a company has 50 brands; the top 10 brands give Rs 72 crore of Rs 90 crore total sales.
 <!-- ANSWER_PENDING -->
 
