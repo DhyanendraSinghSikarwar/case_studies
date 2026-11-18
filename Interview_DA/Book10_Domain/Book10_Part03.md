@@ -841,7 +841,7 @@ Data: gateway shows 10,000 successful payments worth Rs 1.20 crore. Bank settlem
 - Gateway shows 10,000 payments, Rs 1.20 crore (average Rs 1,200). Bank shows 9,940, Rs 1.19 crore. Gap: 60 payments and Rs 1.00 lakh (average Rs 1,667 each; the figures are rounded to the nearest 0.01 crore, so the true gap could differ somewhat).
 - Likely causes: timing (a payment on the last day settled on the next day), payments still pending or reversed, refunds or chargebacks netted off, fees deducted before settlement, duplicates, or a status mismatch (gateway says success, bank never received).
 **Data and tables involved:** gateway transaction table (reference id, amount, status, timestamp) and bank settlement file (UTR or reference, amount, settlement date). First cuts: unmatched by date, by status, by amount band.
-**Worked example:** a tiny sample, matched on reference:
+**Worked example:** a tiny invented sample. Gateway: T1 1000, T2 2000, T3 1500, T4 3000. Bank file: T1 1000, T2 1950, T3 1500, T9 800. Matched on reference (FULL OUTER JOIN works in PostgreSQL and recent SQLite; MySQL needs a UNION of two joins):
 ```sql
 -- Match both files on the transaction reference and show only the differences
 SELECT COALESCE(g.txn_id, b.txn_id) AS txn_id,
@@ -959,12 +959,14 @@ Data: 180 complaints received in a quarter; 60,000 policies in force.
 - Steps: build the count per entity per window; label past cases as fraud or genuine; try thresholds; for each, compute alerts, frauds caught (recall) and the share of alerts that are fraud (precision); check by segment (a shop-owner account is naturally busier than a student's); also check how many alerts the review team can handle.
 - Re-test over time because fraud patterns change.
 **Worked example:** invented test on 10,000 card-days with 100 known frauds:
+
 | Threshold (transactions in 10 min) | Alerts | Frauds caught | Precision | Recall |
 |---|---|---|---|---|
 | 3 or more | 900 | 90 | 10.0% | 90% |
 | 4 or more | 400 | 82 | 20.5% | 82% |
 | 5 or more | 160 | 70 | 43.8% | 70% |
 | 6 or more | 70 | 40 | 57.1% | 40% |
+
 Choice: a threshold of 4 or 5 depends on team capacity and the cost of a missed fraud versus an annoyed customer; precision is rounded to one decimal.
 **Likely follow-ups:** 1) *One rule for everyone?* Use segment thresholds. 2) *Why not the lowest threshold?* Alert overload and blocked genuine customers. 3) *Who decides?* Fraud and business heads with the data.
 **Common mistakes:** Choosing a threshold on fraud found alone; ignoring segments and review capacity; never re-testing.
@@ -979,7 +981,7 @@ Choice: a threshold of 4 or 5 depends on team capacity and the cost of a missed 
 - **SMA buckets (from memory, unverified):** SMA-0 is overdue up to 30 days, SMA-1 is 31-60, SMA-2 is 61-90. Exact rules differ by loan type and have been refined by RBI over time.
 - **Why watch them:** a borrower who is 20 days late can often be reached with a reminder or a restructured date; one who is 80 days late is about to become an NPA with a loss attached. The SMA-2 pool is the "next month's NPA" forecast.
 - Analysts track how many accounts and how much money move from SMA-0 to SMA-1 to SMA-2 (the "roll" between buckets).
-**Worked example:** days overdue by code: 0 days = standard (on time); 5 days = SMA-0; 35 days = SMA-1; 65 days = SMA-2; 95 days = NPA.
+**Worked example:** mapping days overdue to a label: 0 days = standard (on time); 5 days = SMA-0; 35 days = SMA-1; 65 days = SMA-2; 95 days = NPA.
 **Regulation / privacy note (awareness only):** day-count rules and reporting thresholds are from memory, unverified; confirm with the risk or compliance team.
 **Likely follow-ups:** 1) *What is a roll rate?* The share of accounts in one bucket that move to the next worse bucket in a month. 2) *Do you count accounts or rupees?* Both; a few large accounts can distort the rupee view.
 **Common mistakes:** Treating SMA as the same thing as NPA; forgetting a payment resets the day counter; mixing "overdue" with "outstanding" (the full loan balance).
@@ -1073,7 +1075,17 @@ Choice: a threshold of 4 or 5 depends on team capacity and the cost of a missed 
 - **KS (Kolmogorov-Smirnov):** sort applicants from riskiest to safest; KS is the biggest gap between the cumulative share of bad and good borrowers caught so far.
 - **Gini:** a 0 to 1 measure of overall ranking power (0 = random, 1 = perfect); Gini = 2 x AUC - 1, where AUC is the chance a random bad borrower scores worse than a random good one.
 - Manager version: "If we reject the riskiest 40% of applicants, how many bad ones do we avoid compared with good ones we turn away?"
-**Worked example:** invented 1,300 borrowers in 10 score bands (riskiest first): 1,040 good, 260 bad (20% bad). By band 4 we hold 80.8% of bads but only 19.2% of goods: gap 61.5%, so KS = 61.5 points. Trapezoid area under that cumulative curve gives AUC = 0.881, so Gini = 0.761 (rounded to three decimals).
+**Worked example:** invented 1,300 borrowers in 5 score bands, riskiest first (1,040 good, 260 bad, so 20% bad). "Cumulative" means running total from the riskiest band down.
+
+| Band | Good | Bad | Cumulative % of bad | Cumulative % of good | Gap |
+|---|---|---|---|---|---|
+| 1 | 60 | 100 | 38.5% | 5.8% | 32.7 |
+| 2 | 140 | 70 | 65.4% | 19.2% | 46.2 |
+| 3 | 240 | 50 | 84.6% | 42.3% | 42.3 |
+| 4 | 300 | 25 | 94.2% | 71.2% | 23.1 |
+| 5 | 300 | 15 | 100.0% | 100.0% | 0.0 |
+
+KS = the biggest gap = 46.2 points (at band 2). Area under the cumulative curve (trapezoid rule) gives AUC = 0.792, so Gini = 2 x 0.792 - 1 = 0.584. With only 5 bands the AUC is approximate; real work uses finer bands or the raw scores.
 **Likely follow-ups:** 1) *Is a high Gini always good?* Suspiciously high may mean leakage; check on new data. 2) *Why watch it over time?* Scores drift as the economy and customers change.
 **Common mistakes:** Mixing up Gini of a model with Gini inequality; reading KS as a percent of bad borrowers; judging on training data only.
 
@@ -1207,7 +1219,7 @@ Choice: a threshold of 4 or 5 depends on team capacity and the cost of a missed 
 - **Attendance and absenteeism:** absent agent-days / scheduled agent-days.
 - **Productivity:** calls per hour, **right-party contacts** (reaching the actual borrower), promises to pay and share kept, recovery per present agent-day.
 - **Tenure mix:** new agents usually recover less and need training, so heavy attrition lowers recovery even if headcount is topped up.
-**Worked example:** invented team: 50 agents at month start, 6 leave, 4 join; 48 at end, average 49. Attrition = 6 / 49 = 12.2% monthly. Scheduled agent-days 1,100, absent 110, so absenteeism = 10.0%. Recovery: 12 new agents at Rs 60,000 each (Rs 7,20,000) plus 38 experienced at Rs 1,00,000 each (Rs 38,00,000) = Rs 45,20,000. Replacing 6 experienced with new agents loses 6 x Rs 40,000 = Rs 2,40,000, or 5.3% of recovery. Figures are exercise inputs, not benchmarks.
+**Worked example:** invented team: 50 agents at month start, 6 leave, 4 join; 48 at end, average 49. Attrition = 6 / 49 = 12.2% monthly. Scheduled agent-days 1,100, absent 110, so absenteeism = 10.0%. Recovery, for the 50 agents at month start (12 of them under six months in the job, 38 experienced): 12 new agents at Rs 60,000 each (Rs 7,20,000) plus 38 experienced at Rs 1,00,000 each (Rs 38,00,000) = Rs 45,20,000. Replacing 6 experienced with new agents loses 6 x Rs 40,000 = Rs 2,40,000, or 5.3% of recovery. Figures are exercise inputs, not benchmarks.
 **Likely follow-ups:** 1) *Correlation or cause?* Control for account mix and bucket difficulty. 2) *Cut by what?* Tenure, team, shift, portfolio bucket.
 **Common mistakes:** Comparing agents on different portfolios; counting headcount, not present agents; ignoring ramp-up time.
 
@@ -1229,7 +1241,7 @@ Choice: a threshold of 4 or 5 depends on team capacity and the cost of a missed 
 | Salaried, older loans | 50% | 3.0% | 3.5% | 0.25 pp |
 | Self-employed | 20% | 4.5% | 7.0% | 0.50 pp |
 
-Contribution = share x change. These sum to 1.5 pp (checked by code). Two pockets explain 1.25 pp (83%), so I would dig into recent salaried and self-employed loans first.
+Contribution = share x change (assuming each segment's share of loans stayed the same). These sum to 1.5 pp. Two pockets explain 1.25 pp (83%), so I would dig into recent salaried and self-employed loans first.
 **Likely follow-ups:** 1) *How do you separate mix from behaviour?* Hold segment rates fixed and see how much the rate moves from share shifts alone. 2) *What if everything rose evenly?* Look outside the book: economy, a bureau-wide issue, or collections capacity.
 **Common mistakes:** Jumping to "customers are weak" without checking the denominator; looking only at the overall rate; comparing loans of different ages (young loans have not had time to go late).
 
@@ -1255,7 +1267,7 @@ Contribution = share x change. These sum to 1.5 pp (checked by code). Two pocket
 - **Identity:** claim ratio = frequency x severity / premium per policy.
 - **Mix:** a shift toward older members or costly cities raises the overall ratio even if each group is unchanged. Test by comparing segment by segment.
 - **Pricing:** did average premium fall (discounts, a new cheaper plan) or did prices lag medical cost inflation?
-**Worked example:** Invented year-on-year changes: frequency +5%, severity +6%, premium per policy -1.4%. Then 78% x 1.05 x 1.06 / 0.986 = 88.0% (checked by code). Share of the rise (log method, a standard way to split multiplied changes): frequency about 40%, severity about 48%, pricing about 12%. Then repeat the split inside each age band or plan to see whether mix explains part of it.
+**Worked example:** Invented year-on-year changes: frequency +5%, severity +6%, premium per policy -1.4%. Then 78% x 1.05 x 1.06 / 0.986 = 88.0%. Share of the rise (log method, a standard way to split multiplied changes): frequency about 40%, severity about 48%, pricing about 12%. Then repeat the split inside each age band or plan to see whether mix explains part of it.
 Mix illustration: two groups with claim ratios 70% and 95%. At a 70/30 member split the portfolio is 77.5%; at 50/50 it is 82.5%, a 5-point rise with no change inside either group.
 **Likely follow-ups:** 1) *Why use earned premium?* It matches the premium to the cover period of the claims. 2) *Could the reserve estimate be the cause?* Yes, a change in the estimate for unpaid claims moves incurred claims.
 **Common mistakes:** Comparing written premium with claims; ignoring mix; forgetting that unpaid-claim estimates are judgement.
@@ -1282,7 +1294,7 @@ Mix illustration: two groups with claim ratios 70% and 95%. At a 70/30 member sp
 - **Cohorts:** users acquired through the campaign against similar users acquired earlier or elsewhere.
 - **Abuse signals:** several accounts on one device, phone, address or bank account; accounts that do the minimum qualifying action and go dormant; round-amount circular transfers between related accounts; unusually fast sign-up bursts.
 - **Genuine growth looks like** normal repeat usage and a spread of devices and locations.
-**Worked example:** Invented figures: fraud loss Rs 20 lakh to Rs 40 lakh (2.0x); transaction value index 100 to 130 (+30%). Fraud per 100 of value: 0.20 to 0.308, a 54% rise. So growth explains part of the doubling; the rest (a rise in the rate) needs explaining, and campaign cohorts are the first place to look.
+**Worked example:** Invented figures: fraud loss Rs 20 lakh to Rs 40 lakh (2.0x); transaction value index 100 to 130 (+30%). Fraud per index point of value (Rs lakh per point): 0.20 to 0.308, a 54% rise. So growth explains part of the doubling; the rest (a rise in the rate) needs explaining, and campaign cohorts are the first place to look.
 **Likely follow-ups:** 1) *How to stop it?* Eligibility rules, limits, device checks, delayed payout; weigh friction against growth. 2) *How to measure incremental growth?* Compare against a holdout group that did not see the offer.
 **Common mistakes:** Looking at absolute loss only; punishing all campaign users; forgetting genuine users share devices (families).
 
@@ -1377,7 +1389,7 @@ Data: quarterly revenue Rs 300 crore; active clients 20 lakh.
 **What the interviewer is checking:** That you know a model can quietly go stale when the customer population changes.
 **Say this in the interview:** "PSI compares how a score or feature was distributed when the model was built with how it looks now. A high value means the population has shifted, so the model may no longer be reliable."
 **Explain simply:**
-- Split scores into bins. For each bin, compare the old share (expected) with the new share (actual): (actual - expected) x ln(actual / expected), then add up across bins.
+- Split scores into bins. For each bin, compare the old share (expected) with the new share (actual): (actual - expected) x ln(actual / expected), then add up across bins (ln is the natural logarithm, a calculator or Excel LN button).
 - **Common rule of thumb (from memory, unverified):** below 0.1 stable, 0.1 to 0.25 some shift, above 0.25 major shift. Teams set their own limits.
 - High PSI says "the inputs changed", not "the model is wrong"; check performance (bad rate by score) next.
 - Typical causes: a new marketing channel, a policy change, seasonality, or a data pipeline fault.
@@ -1427,9 +1439,9 @@ select device_id, count(*) as applications,
 from applications
 group by device_id
 having count(distinct customer_id) > 1
-order by customers desc;
+order by customers desc, device_id;
 ```
-Output on a tiny invented table: D1 (2 applications, 2 customers, 2 lenders) and D4 (2, 2, 2). Plain words: two different people applying from one device across lenders is a lead to review, not proof (family members can share a phone).
+Tiny invented `applications` table (7 rows; device, customer, lender): D1/101/A, D1/102/B, D2/103/A, D2/103/B, D3/104/C, D4/105/A, D4/106/B. Real output: `D1 | 2 | 2 | 2` and `D4 | 2 | 2 | 2` (device, applications, customers, lenders). D2 is not flagged because it is one customer applying to two lenders. Plain words: two different people applying from one device across lenders is a lead to review, not proof (family members can share a phone).
 **Likely follow-ups:** 1) *Reduce false alarms?* Use several signals together and a review step. 2) *Fix?* Faster bureau reporting and shared-signal checks.
 **Common mistakes:** Treating one shared device as proof; ignoring genuine shared households.
 
@@ -1454,7 +1466,7 @@ from txns
 group by account_id
 having out_to_in > 0.9 and total_in >= 50000;
 ```
-Output on a tiny invented table: account 9 with total in 130,000, out 128,500, ratio 0.99. Plain words: it passed on 99% of what it received; add timing (minutes, not days) before flagging.
+Tiny invented `txns` table (account, direction, amount): 9 IN 70,000; 9 IN 60,000; 9 OUT 128,500; 5 IN 90,000; 5 OUT 20,000; 7 IN 10,000; 7 OUT 9,900. Real output: `9 | 130000 | 128500 | 0.99`. (Using the alias in HAVING works in SQLite and MySQL; in other databases repeat the expression.) Account 7 passes on 99% too but is excluded by the 50,000 minimum. Plain words: it passed on 99% of what it received; add timing (minutes, not days) before flagging.
 **Likely follow-ups:** 1) *How to cut false positives?* Combine ratio, speed, new-account age and counterparty count. 2) *What to track?* Precision of alerts reviewed.
 **Common mistakes:** Flagging every pass-through; ignoring the time gap; treating every flagged customer as guilty.
 
