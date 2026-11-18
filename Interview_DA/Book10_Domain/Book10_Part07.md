@@ -37,7 +37,7 @@
 - **Gross utilisation:** billable hours / total standard hours (for example 8 hours x working days). Leave counts against the team.
 - **Net utilisation:** billable hours / (standard hours minus holidays, leave and sometimes training). It shows how well *available* time was used.
 - **Usually excluded from the denominator (varies by firm, confirm the policy):** senior management, sales, HR, finance and other support staff; people on long leave; sometimes trainees and bench in formal training.
-- **Why it matters:** the same team can show 70% gross and 80% net. Always state which one a report uses.
+- **Why it matters:** the same team can show, for example, 70% gross and 80% net (illustrative). Always state which one a report uses.
 - **HR parallel:** like attendance rate, where you must decide whether approved leave counts as absence.
 **Likely follow-ups:** 1) *Which is better?* Net for judging allocation, gross for judging total capacity use. 2) *Is higher always better?* No; very high utilisation leaves no time for training and risks burnout (see Q16).
 **Common mistakes:** Comparing a gross number with a net target; including non-delivery staff; not using the same headcount in numerator and denominator.
