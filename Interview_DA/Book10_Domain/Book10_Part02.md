@@ -6,7 +6,7 @@
 ### Q1 ⭐⭐⭐ 🟢 How does an online marketplace such as Flipkart or Amazon make money, and how is that different from an inventory-led e-commerce retailer and from a quick-commerce company such as Blinkit, Zepto or Swiggy Instamart?
 **Asked at:** commonly asked (no company-specific report found); business-model basics are assumed in e-commerce analyst rounds (prep-site guides, unverified).
 **What the interviewer is checking:** Whether you know who owns the stock and who earns what, because that decides which numbers you will analyse.
-**Say this in the interview:** "A marketplace earns fees from independent sellers (commission, shipping, ads) and does not own most stock. An inventory-led retailer buys goods and earns the margin between buying and selling price. Quick commerce is usually inventory-led or hybrid, but from small local warehouses, so it earns margin plus fees and lives on delivery speed."
+**Say this in the interview:** "A marketplace earns fees from independent sellers (commission, shipping, ads) and does not own most stock. An inventory-led retailer buys goods and earns the margin between buying and selling price. Quick commerce is often inventory-led or a hybrid (models differ by company and change over time), but it ships from small local warehouses, so it earns margin plus fees and lives on delivery speed."
 **Explain simply:**
 - **Marketplace:** think of a shopping mall. The platform is the landlord; sellers are the shops. The platform earns a *commission* (a percentage of each sale), fees for shipping and payment handling, and *advertising* income when sellers pay to appear higher in search. Its revenue is a slice, not the full sale price.
 - **Inventory-led retailer:** the company buys stock from brands, holds it and sells it. Revenue is the full selling price; profit is selling price minus purchase cost (this gap is the *margin*).
@@ -62,8 +62,8 @@
 **Say this in the interview:** "A dark store is a small neighbourhood warehouse set up only for online orders; customers cannot walk in. It is much closer to customers than a fulfilment centre, which is how 10-minute delivery becomes possible."
 **Explain simply:**
 - **Supermarket:** open to walk-ins; layout and staff serve shoppers; sales happen at a till.
-- **Dark store:** shelves arranged for fast picking, a few thousand SKUs, serves a radius of a few kilometres; staff are pickers and packers, riders collect parcels.
-- **Fulfilment centre (FC) or warehouse:** large site, lakhs of items, serves a city or region, ships by courier within days; also feeds dark stores.
+- **Dark store:** shelves arranged for fast picking, typically a few thousand SKUs, serving a radius of a few kilometres (typical pattern, varies by company); staff are pickers and packers, riders collect parcels.
+- **Fulfilment centre (FC) or warehouse:** large site, typically lakhs of items (1 lakh = 100,000), serves a city or region, ships by courier within days; also feeds dark stores.
 - **Data difference:** dark stores generate hourly stock, pick time, orders per hour and rider wait data; FCs generate inbound, putaway and dispatch data (see Q34).
 - **Analyst's lens:** each dark store is like a mini business with its own rent, staff and sales, so store-level profit and availability matter.
 **Likely follow-ups:** 1) *Why small assortments?* Space is limited; wrong choices mean stock-outs. 2) *What drives store success?* Orders per store per day, availability and delivery time.
@@ -80,7 +80,7 @@
 - **Ride:** distance and traffic; depends on delivery radius.
 - **Handover:** finding the address, lift, call to customer.
 - **Which number:** companies differ in whether the clock starts at order or at store acceptance and whether it is an average, median or percentage within the promise; state your definition.
-- **Tip:** report percentiles (for example how many orders beat the promise), not only averages.
+- **Tip:** report percentiles, not only averages. A percentile answers "nine in ten orders arrive within X minutes", and also report the share of orders that beat the promise.
 **Likely follow-ups:** 1) *Why not use only the average?* A few very late orders hide behind a good average. 2) *Which stage first?* The one with the biggest gap versus its target.
 **Common mistakes:** Measuring only the ride; not agreeing when the clock starts; ignoring orders that were cancelled for being late.
 
@@ -274,7 +274,7 @@ Data (one store, one day): 1,000 orders containing 4,000 items. 3,760 items were
 - **Complaints and ratings:** wrong or missing items, late delivery.
 **First cuts to show:** (1) orders by hour against staff on shift; (2) average and 90th-percentile pick time and delivery time; (3) on-shelf availability with the top 10 stocked-out SKUs; (4) item and order fill rate; (5) cancellations by reason; (6) pending orders older than a threshold, shown live.
 **Data and tables involved:** orders, order_items, order_events (timestamps), inventory_hourly, staff_roster, rider_logins, complaints. Joined by order_id, sku_id and store_id.
-**Likely follow-ups:** 1) *Why compare with the same weekday?* Demand has a weekly pattern, so Monday should be compared with Monday. 2) *Why show the 90th percentile?* Averages hide the slow orders that cause complaints.
+**Likely follow-ups:** 1) *Why compare with the same weekday?* Demand has a weekly pattern, so Monday should be compared with Monday. 2) *Why show the 90th percentile?* It is the time within which 9 in 10 orders arrive; averages hide the slow orders that cause complaints.
 **Common mistakes:** Showing thirty metrics instead of what the manager can act on today; using only averages; ignoring the staffing view; refreshing daily when the manager needs hourly.
 
 ### Q18 ⭐⭐⭐ 🟡 What is on-shelf availability (or stock-out rate) in quick commerce, and how would you measure it from hourly stock snapshots?
@@ -307,7 +307,7 @@ Data (one day, attempts / successes): UPI 70,000 / 63,000; cards 20,000 / 17,000
 **Common mistakes:** Treating attempts as orders; averaging the three method rates (86.7%) instead of weighting by attempts; ignoring retries.
 
 ### Q20 ⭐⭐⭐ 🟡 An orders table holds several status rows per order (placed, packed, shipped, delivered). How do you pull the latest status per order, and how is a status-history table different from a snapshot table?
-**Asked at:** commonly asked (no company-specific report found); window functions such as ranking and lead/lag are reported in Flipkart and Swiggy candidate reviews (anonymous, unverified).
+**Asked at:** commonly asked (no company-specific report found); window functions are reported in Swiggy candidate reviews and lead/lag in a Flipkart review (anonymous snippets, unverified).
 **What the interviewer is checking:** That you can use a window function to keep one row per order and understand how the table was built.
 **Say this in the interview:** "I rank each order's rows by time, newest first, and keep rank 1. A history table keeps every change; a snapshot keeps only the current state."
 **Explain simply:**
@@ -333,7 +333,7 @@ Output on a small sample: 101 delivered (2026-11-03 15:00); 102 packed (2026-11-
 
 ### Q21 ⭐⭐⭐ 🟡 What is a monthly transacting user (MTU) and why do e-commerce and quick-commerce companies prefer it to registered or installed users?
 Data: 30 lakh orders in a month from 12 lakh transacting users and 80 lakh registered users. Calculate orders per MTU and the share of registered users who transacted.
-**Asked at:** commonly asked (no company-specific report found); MTU is widely used in Indian quick-commerce reporting, but definitions differ by company (unverified).
+**Asked at:** commonly asked (no company-specific report found); MTU is a common user metric in app-based businesses (from memory, unverified); definitions differ by company.
 **What the interviewer is checking:** Whether you prefer behaviour (buying) over vanity counts (sign-ups).
 **Say this in the interview:** "An MTU is a unique user who placed at least one order in the month. Here that is 30 lakh orders over 12 lakh MTUs, so 2.5 orders per MTU, and 15% of registered users transacted."
 **Explain simply:**
@@ -369,7 +369,7 @@ Data: 30 lakh orders in a month from 12 lakh transacting users and 80 lakh regis
 - **Size and fit:** returns by size, and by size-chart changes.
 - **Customer cuts:** new versus repeat, city tier, payment mode, discount used (a sale may bring bargain buyers who return more).
 - **Operations:** warehouse, courier, packaging damage, and delivery delay before the return.
-- **Contribution analysis:** how many of the 9 points come from each segment; a "mix effect" (more orders from a high-return segment) differs from a "rate effect".
+- **Contribution analysis:** how many of the 9 points come from each segment; a "mix effect" (more orders came from a segment that always returns more) differs from a "rate effect" (each segment's own return rate went up).
 **Data and tables involved:** orders, order_items, returns (reason, date, condition), products (size, brand, seller), customers, shipments.
 **Likely follow-ups:** 1) *If it is seller-specific?* Warn, audit quality and photos, then limit listings. 2) *If it is sale-driven?* Compare with the previous sale's return rate.
 **Common mistakes:** Jumping to a cause before checking the definition; ignoring return lag; looking only at totals instead of segments.
@@ -526,7 +526,7 @@ Data (one month): 40,000 COD orders with 14% RTO; 60,000 prepaid orders with 3% 
 Data: commission 12%, fixed closing fee ₹20, shipping fee ₹60, collection fee 2% of price. Ignore GST.
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you can build a seller payout waterfall and define take rate with a clear numerator.
-**Say this in the interview:** "Total fees are ₹220, so the seller payout is ₹780 and the take rate is 22% of the selling price. Because the shipping fee mostly goes to the courier, the platform's own earning is lower, so I would state which definition I use."
+**Say this in the interview:** "Total fees are ₹220, so the seller payout is ₹780 and the take rate is 22% of the selling price. Because the shipping fee may largely pass through to the courier (varies by platform), the platform's own earning can be lower, so I would state which definition I use."
 **Explain simply:**
 - **Take rate:** fees collected from sellers divided by the item's selling price (or by GMV, the total value of orders placed). Definitions differ by company.
 - **Commission:** a percentage of price for using the marketplace. **Closing fee:** a flat charge per sold item. **Shipping fee:** charge for delivery, often by weight and zone. **Collection fee:** payment-handling charge.
@@ -601,7 +601,7 @@ Data: a phone has an MRP of ₹20,000 and a selling price of ₹15,000, plus a �
 - **Why an average discount misleads:** a simple average gives every product equal weight. Take two products (invented): ₹1,000 MRP sold at ₹800 (20% off) and ₹10,000 MRP sold at ₹9,000 (10% off). The simple average is 15%, but the true overall discount is 1 - 9,800/11,000 = **10.9%**, about 11%. Weight by MRP or sales value.
 - Also compare like with like: the MRP itself may be inflated, so a deep discount does not always mean a cheap price.
 **Worked example:** headline = (20,000 - 15,000) / 20,000 = **25%**. Effective price = 15,000 - 1,000 = ₹14,000; effective discount = 6,000 / 20,000 = **30%**, which is 5 percentage points above the headline.
-**Likely follow-ups:** 1) *Who pays for the bank offer?* Depends on the deal; check the funding split. 2) *Which discount is net revenue based on?* The platform's recorded price excludes bank offers unless booked as a cost.
+**Likely follow-ups:** 1) *Who pays for the bank offer?* Depends on the deal; check the funding split. 2) *Which discount is net revenue based on?* It depends on how finance books bank offers (reduction of price or a marketing cost); ask finance.
 **Common mistakes:** Subtracting percentages instead of working in rupees; simple-averaging discounts across items of different value.
 
 ### Q40 ⭐⭐ 🟡 How would you test whether a discount coupon created extra orders rather than just discounting orders that would have happened anyway?
@@ -615,7 +615,7 @@ Data: 10,000 customers got a ₹75 coupon and placed 25,000 orders, all using th
 - Here 20,000 of the 25,000 coupon orders (80%) would probably have happened anyway, yet all got the discount.
 - Decide with economics: if an average order earns ₹100 contribution (invented), paying ₹375 per extra order loses money unless the customer later keeps buying. Check repeat behaviour after the coupon ends.
 **Worked example:** orders per customer: 2.5 (coupon) vs 2.0 (control), a lift of 0.5 per customer. Incremental orders = 25,000 - 20,000 = **5,000**. Coupon cost = 25,000 x ₹75 = ₹18,75,000. Cost per incremental order = 18,75,000 / 5,000 = **₹375**.
-**Likely follow-ups:** 1) *Is the difference real?* Test statistical significance and look at the gap's confidence interval. 2) *What else to watch?* Pull-forward, where customers just bring future orders earlier.
+**Likely follow-ups:** 1) *Is the difference real?* Check it is bigger than random noise: a statistical test, or a range (confidence interval) around the 5,000 that does not include zero. 2) *What else to watch?* Pull-forward, where customers just bring future orders earlier.
 **Common mistakes:** Dividing cost by all coupon orders (₹75) instead of incremental ones; comparing with last month instead of a concurrent control.
 
 ### Q41 ⭐⭐ 🟡 Who funds a discount on a marketplace (seller, brand or platform), and why does it matter for net revenue and margin?
@@ -758,16 +758,16 @@ Data per order: gross margin 18% of AOV; ads income ₹10; pick-and-pack ₹25; 
 - **Clickstream** is the log of every tap or page view (open app, search, add to cart). **Attribution** means deciding which session or campaign gets credit for an order.
 - Best case: the order event carries the session ID. Otherwise join on user ID and take the last session that started before the order.
 - Problems: guests with no user ID; one person on phone and laptop (two IDs); cookie or app-reinstall resets; clocks that differ between app and server; one order after several visits (last click, first click or split credit give different answers); orders placed by call or from a push notification.
-**Data and tables involved:** `sessions` (session_id, user_id, device_id, start time, source/campaign), `events` (session_id, event name, time), `orders` (order_id, user_id, order time).
+**Data and tables involved:** `sessions` (session_id, user_id, device_id, start time, source/campaign), `events` (session_id, event name, time), `orders` (order_id, user_id, ordered_at).
 ```sql
 -- credit each order to the latest session that started before it
-select p.order_id, p.user_id,
+select o.order_id, o.user_id,
   (select s.session_id from sessions s
-   where s.user_id = p.user_id and s.started_at <= p.ordered_at
+   where s.user_id = o.user_id and s.started_at <= o.ordered_at
    order by s.started_at desc limit 1) as session_id
-from purchases p;
+from orders o;
 ```
-Output: order 11 maps to session s2, order 12 to s3, order 13 to s1. Plain words: each order is tied to the user's most recent earlier visit; add a time limit (for example 24 hours) in real work.
+Output (small sample): order 11 maps to session s2, order 12 to s3, order 13 to s1. Plain words: each order is tied to the user's most recent earlier visit; add a time limit (for example 24 hours) in real work.
 **Likely follow-ups:** 1) *Last click or first click?* Say which you use; last click favours the final nudge, first click favours discovery. 2) *How do you spot a broken join?* Share of orders with no session should be small and stable.
 **Common mistakes:** Joining on user ID alone with no time rule; assuming 100% match; not telling the business which attribution rule you used.
 
@@ -807,7 +807,7 @@ Output: order 11 maps to session s2, order 12 to s3, order 13 to s1. Plain words
 - **Return fraud:** wrong item sent back, used item, empty box. Signals: return rate far above peers, returns concentrated in high-value items, repeat "item not received".
 - **Fake COD orders:** cash-on-delivery orders placed with no intent to accept. Signals: new account, new pincode, high value, past refusals; the order comes back as RTO (return to origin).
 - **Refund abuse:** claiming "damaged" or "missing" repeatedly. Signals: refund claims per customer, per rider, per store.
-- Always measure the false-positive cost: blocking a good customer loses real revenue.
+- Always measure the false-positive cost: a false positive is a genuine customer wrongly flagged, and blocking them loses real revenue.
 **Data and tables involved:** `orders`, `customers` (phone, device, address hash), `coupons`, `returns/refunds`, `delivery outcomes`. First cut: customers per device/address, refund share by customer decile.
 **Regulation / privacy note (awareness only):** Matching devices and phones is personal-data processing; from memory, unverified, confirm with the compliance/legal team.
 **Likely follow-ups:** 1) *Rules or model?* Start with simple rules; a model needs reliable fraud labels. 2) *How do you size the loss?* Fraud value over total value, by type.
@@ -949,7 +949,7 @@ Data: 10 orders showed an ETA of 12 minutes; the actual times were 9, 10, 11, 12
 Data: a new customer cohort of 1,000 users; 600 placed a second order within 30 days; 300 placed a third within 60 days. Calculate the 30-day repeat rate and the second-to-third order conversion.
 **Asked at:** commonly asked (no company-specific report found); repeat and churn analysis appears in reported Flipkart rounds (anonymous reviews, unverified).
 **What the interviewer is checking:** That you handle cohort definitions and window rules properly.
-**Say this in the interview:** "I use a window function to get the gap between each order and the previous one. Here the 30-day repeat rate is 60%, and 50% of second-time buyers go on to a third order."
+**Say this in the interview:** "I use a window function (a SQL feature that can look at the previous row) to get the gap between each order and the previous one. Here the 30-day repeat rate is 60%, and 50% of second-time buyers go on to a third order."
 **Explain simply:**
 - **Cohort:** customers who joined (first order) in the same period. Gap = this order date minus previous order date, per customer.
 - Long gap means weaker habit or churn risk; look at the median gap and the share beyond 30 days.
@@ -963,6 +963,7 @@ select user_id, order_date,
   julianday(order_date) - julianday(lag(order_date) over (partition by user_id order by order_date)) as days_since_previous
 from orders;
 ```
+Output on a 3-row sample: user u1 has orders on 1 and 10 November, so the second row shows 9 days since the previous order; each first order shows empty (null). In plain words: `lag` looks at the user's previous row, so the date difference is the gap; the first order has no gap.
 **Likely follow-ups:** 1) *Which gap is "long"?* Compare with the category's normal buying cycle. 2) *Mean or median?* Median; a few very long gaps distort the mean.
 **Common mistakes:** Mixing windows (30 days vs 60 days) in one rate; including users who joined last week; using the wrong denominator.
 
@@ -1008,7 +1009,7 @@ Data (per order): base payout ₹40; surge and incentive ₹8; fuel allowance �
 - **Fuel allowance, insurance and support:** smaller per-order add-ons.
 - **Second trip:** if the first attempt fails (customer unreachable, wrong item, rider issue), a second trip costs another base payout. Spread over all orders, it is an expected cost, not a cost every order bears.
 - Real versions may add rider onboarding, uniforms or a delivery-partner fleet manager's fee; define which lines you include.
-**Worked example:** (all figures computed by script)
+**Worked example:**
 - Cost of a normal trip: 40 + 8 + 4 + 2 = ₹54.
 - Second-trip cost spread over all orders: 10% x ₹40 = ₹4.
 - Average delivery cost per order: 54 + 4 = **₹58**.
@@ -1026,7 +1027,7 @@ Data: 1,000 customers in a month: 600 ordered 1-2 times (₹700 each), 300 order
 - Segments are a business choice; 1-2, 3-6 and 7+ orders are fine, but fix the cut-offs and keep them stable so trends are comparable.
 - No target share is correct. The useful signal is the trend: are light users moving into regular, and is the company over-dependent on a few heavy users?
 - Heavy users are also costly to lose; track their retention separately.
-**Worked example:** (computed by script; total GMV ₹15,20,000, rounded to one decimal)
+**Worked example:** (total GMV ₹15,20,000, rounded to one decimal)
 
 | Segment | Customers | Customer share | GMV | GMV share |
 |---|---|---|---|---|
@@ -1084,7 +1085,7 @@ Heavy users are 10% of customers but 32.9% of GMV (about 3.3 times their headcou
 **Say this in the interview:** "I compare it with older stores at the same age, not with their current numbers. I line up each store's first eight weeks and look at orders, service quality and cost."
 **Explain simply:**
 - **Ramp-up:** how quickly a new store builds orders after opening.
-- **Method:** line up older stores by "weeks since opening"; build a ramp curve (the middle store and a range, such as the 25th to 75th percentile). Plot the new store's weekly orders on it.
+- **Method:** line up older stores by "weeks since opening"; build a ramp curve (the middle store and a range, such as the middle half of stores, the 25th to 75th percentile). Plot the new store's weekly orders on it.
 - **Measures:** orders per day, orders per store-hour, new customers vs repeat, delivery time, item fill rate, availability, wastage, and cost per order.
 - **Adjust for context:** the opening season, the catchment size, and nearby stores. Pick comparable peers.
 - **Judge:** a store below the range on orders but good on service may need marketing; a store with strong orders but high late rates needs capacity.
@@ -1220,7 +1221,7 @@ Heavy users are 10% of customers but 32.9% of GMV (about 3.3 times their headcou
 - **Delivery and other fees:** may be in GMV or not, and may be revenue for the company or a pass-through to someone else.
 - **Other differences:** cancellations and returns (GMV is often before them), timing of order versus delivery, and discounts.
 - **Method:** list the definition of each, reconcile step by step, and show a bridge from GMV to finance revenue.
-**Worked example:** (invented figures; GST rate of 18% is only for the exercise; computed by script)
+**Worked example:** (invented figures; GST rate of 18% is only for the exercise)
 - Item price before tax ₹1,000; GST ₹180; delivery fee ₹40.
 - Customer pays ₹1,220.
 - GMV definitions: with everything ₹1,220; with GST, without delivery ₹1,180; without GST, with delivery ₹1,040; item only ₹1,000.
@@ -1254,7 +1255,7 @@ select s.order_id, s.payout from settlement s
 where s.order_id not in (select order_id from orders);
 ```
 Output: O1 ok; O2 payout mismatch (expected 500-75-40 = 385, paid 395, so 10 overpaid); O3 ok; O4 delivered, not settled (600 unpaid); O5 not settled, expected (cancelled); second query shows O6 with payout 470 and no order behind it.
-Plain words: one order is underpaid, one is overpaid, and one payout has no order, all to be raised with finance.
+Plain words: one order is overpaid by 10, one delivered order is unpaid, and one payout has no order behind it, all to be raised with finance.
 **Data and tables involved:** orders, settlement lines, returns, and the commission rate card; first cuts are total value vs total payout by week, and count of unmatched rows.
 **Likely follow-ups:** 1) *Why might delivered orders be missing?* Payout timing (paid after a return window), so compare using the settlement cycle. 2) *Which key do you join on?* Order ID, or order-item ID if one order has several sellers.
 **Common mistakes:** Joining only one way and missing extra settlement rows; ignoring timing; comparing cancelled orders that were never meant to be paid.
@@ -1312,7 +1313,7 @@ Plain words: hire about 154 temporary packers; a second shift or lower new-joine
 - **Incentives and fakes:** free-product reviews, seller-arranged reviews and review bombing distort scores.
 - **Small counts and timing:** a 4.8 from 5 reviews is weaker than 4.5 from 5,000; old reviews may describe an old version.
 - **Using them well:** show rating with review count; compare against return rate and complaints; analyse review text themes (size, quality); weight verified-purchase reviews.
-**Likely follow-ups:** 1) *How compare two sellers?* Use a shrunk average or minimum count. 2) *Does rating drive sales?* It correlates, but better products get both.
+**Likely follow-ups:** 1) *How compare two sellers?* Set a minimum number of reviews, or pull a seller with few reviews toward the overall average before comparing. 2) *Does rating drive sales?* It correlates, but better products get both.
 **Common mistakes:** Averaging stars as if they were measurements; ignoring the count; treating correlation as cause.
 
 ### Q86 ⭐ 🟡 What dashboard or data would a brand or seller want from a marketplace, and which of it can the platform share?
@@ -1359,7 +1360,7 @@ Plain words: 70% accept when asked, but only 30% of affected orders are even off
 | X | plain | 200 | 10 | 5.0% |
 | Y | bubble | 200 | 2 | 1.0% |
 | Y | plain | 600 | 24 | 4.0% |
-Overall 46 / 2,000 = 2.3%. By courier: X 20/1,200 = 1.7%, Y 26/800 = 3.3%, so Y looks worse. By packaging: bubble 12/1,200 = 1.0%, plain 34/800 = 4.25%. Within each packaging type the couriers are similar (1.0% vs 1.0%; 5.0% vs 4.0%): packaging, not courier, drives most damage.
+Overall 46 / 2,000 = 2.3%. By courier: X 20/1,200 = 1.7%, Y 26/800 = 3.25%, so Y looks worse. By packaging: bubble 12/1,200 = 1.0%, plain 34/800 = 4.25%. Within each packaging type the couriers are similar (1.0% vs 1.0%; 5.0% vs 4.0%): packaging, not courier, drives most damage.
 **Likely follow-ups:** 1) *Next step?* Pilot bubble wrap on plain orders. 2) *Cost?* Compare packaging cost to damage cost.
 **Common mistakes:** Blaming the courier from one split; ignoring unreported damage.
 
@@ -1383,7 +1384,7 @@ Overall 46 / 2,000 = 2.3%. By courier: X 20/1,200 = 1.7%, Y 26/800 = 3.3%, so Y 
 - **Delivery estimate:** the date or minutes shown on the product page. **Conversion:** share of visits that turn into orders.
 - **Naive view:** fast-estimate pages convert better. That may be because fast estimates appear in dense metro areas, for in-stock popular items, with richer customers.
 - **Analysis steps:** compare within the same city, category and price band; control for stock and time of day; use before/after with a comparison group; best, a randomised test showing different estimates to similar users (ethically, only changing the display of true promises).
-- **What can mislead:** confounders, promises that cause later late-delivery complaints, short windows, and effects that show in repeat purchase and returns rather than first conversion.
+- **What can mislead:** confounders (other differences that move both delivery estimate and buying), promises that cause later late-delivery complaints, short windows, and effects that show in repeat purchase and returns rather than first conversion.
 **Likely follow-ups:** 1) *Better metric?* Conversion and on-time rate together. 2) *Test cell?* Pincodes or users.
 **Common mistakes:** Comparing metro against rural; treating a correlation as a lift; ignoring failed promises.
 
@@ -1424,11 +1425,11 @@ Plain words: the store needs 36 night orders to break even, so shorten hours unl
 **Explain simply:**
 - **COD:** cash on delivery. **RTO:** return to origin, the parcel comes back undelivered.
 - **Inputs:** customer's past delivery and RTO history, order value, pincode RTO rate, product category, order time, address quality, number of recent orders; use history as input, not personal traits.
-- **Method:** a simple logistic regression or rule-based score, trained on past orders and tested on later months.
+- **Method:** a simple rule-based score or a basic model (logistic regression, which turns the inputs into a probability between 0 and 1), built on past orders and tested on later months.
 - **Fairness check:** see how many good customers (delivered) are flagged, and check results by region.
 **Worked example:** (invented) 1,000 COD orders, 200 end in RTO (20%). Threshold flags 150 orders: 90 RTO and 60 delivered.
-- Precision = 90 / 150 = 60%.
-- Recall = 90 / 200 = 45%.
+- Precision (of the orders flagged, how many really became RTO) = 90 / 150 = 60%.
+- Recall (of all RTOs, how many we caught) = 90 / 200 = 45%.
 - Good customers flagged = 60 / 800 = 7.5%.
 Plain words: at this threshold 45% of RTOs are caught but 7.5% of good customers are flagged, so use a call, not a block.
 **Likely follow-ups:** 1) *Threshold?* Pick by cost: RTO cost vs lost sale. 2) *Monitor?* Re-check monthly.

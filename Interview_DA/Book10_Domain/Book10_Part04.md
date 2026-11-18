@@ -174,6 +174,7 @@ A hospital billing team submitted 2,000 insurance claims in a quarter. 260 were 
 **What the interviewer is checking:** Whether you separate first-pass denial from the denial that finally sticks.
 **Say this in the interview:** "Initial denial rate is 260 out of 2,000, which is 13 percent. After 40 were recovered on appeal, 220 remain denied, so the final denial rate is 11 percent."
 **Explain simply:**
+- A *denial* means the insurer refused to pay the claim; an *appeal* is the hospital asking the insurer to reconsider with more documents or explanation.
 - **Initial denial rate** = 260 / 2,000 = **13 percent**; shows how clean the first submission was.
 - **Final denial rate** = (260 - 40) / 2,000 = 220 / 2,000 = **11 percent**; shows what was finally lost.
 - **Difference:** 2 percentage points, which the appeal team recovered. A big gap means good appeal work; a small gap with high initial rate means problems are fixed late and expensively.
@@ -191,7 +192,7 @@ A hospital billing team submitted 2,000 insurance claims in a quarter. 260 were 
 - **Readmission:** a patient returns to hospital within a set window (30 days here) after discharge.
 - **All-cause** = 64 / 800 = **8.0 percent**. **Unplanned only** = 54 / 800 = **6.75 percent**.
 - **Caution 1:** planned vs unplanned. A staged procedure is intended, so including it makes quality look worse.
-- **Caution 2:** only you can see your own hospital. A patient readmitted elsewhere is missed, so the rate may be understated; and sicker case mix raises rates unfairly, so compare like groups.
+- **Caution 2:** your data covers only your own hospital. A patient readmitted elsewhere is missed, so the rate may be understated; and a sicker case mix raises rates unfairly, so compare like groups.
 - Also decide whether deaths and transfers sit in the denominator, and count by patient or by discharge.
 **Worked example:** 64 / 800 = 0.08; (64 - 10) / 800 = 54 / 800 = 0.0675. Rates as percentages; 8.0 - 6.75 = 1.25 percentage points.
 **Likely follow-ups:** 1) *Why 30 days?* A common convention; 7 or 90 days also used. 2) *How to reduce it?* Not medical advice; analysts find which groups return and share findings with clinicians.
@@ -223,7 +224,7 @@ Therapy market: Rs 30 crore this year, up 8 percent from last year. Brand A sold
 - **Why it matters:** recruitment is the main time and cost driver. Planning for 200 screenings would leave the trial about 80 short. Screening effort, number of sites, timelines and budget all scale up.
 - Real trials also lose patients after enrolment (dropouts); a plan would allow for those separately.
 **Worked example:** 200 / 0.6 = 333.33; ceiling = 334. Wrong shortcut: 200 x 1.4 = 280, which gives only 168 enrolled (280 x 0.6).
-**Likely follow-ups:** 1) *What if 10 percent also drop out?* Enrol 200 / 0.9, then screen on top of that. 2) *Why track by site?* Screen failure differs by site.
+**Likely follow-ups:** 1) *What if 10 percent also drop out?* Enrol 200 / 0.9 = 222.2, so 223; then screen 223 / 0.6 = 371.7, so 372. 2) *Why track by site?* Screen failure differs by site.
 **Common mistakes:** Multiplying by 1.4; rounding down; ignoring dropouts.
 
 ### Q17 ⭐⭐⭐ 🟡 You are asked to analyse why health insurance claims are being denied at a hospital. What tables and fields would you ask for, and what are your first cuts?
@@ -469,7 +470,7 @@ Seven samples, TAT in minutes: 30, 35, 40, 45, 50, 55, 240.
 **Say this in the interview:** "The average is 70.7 minutes, but six of the seven samples are 55 minutes or less. One 240-minute sample inflates it. I would report the median, 45 minutes, plus the 90th percentile, and investigate the outlier."
 **Explain simply:**
 - **TAT (turnaround time):** minutes from sample collection (or registration) to the report being released. Define the start and stop points first; labs differ.
-- **Average vs median:** the median is the middle value when sorted. Think of one employee on a Rs 50 lakh salary in a team of seven: the average salary misleads, the median does not.
+- **Average vs median:** the median is the middle value when sorted. Think of one employee on a Rs 50 lakh (Rs 5 million) salary in a team of seven: the average salary misleads, the median does not.
 - **What to report:** the median, a high percentile (the 90th means 9 in 10 samples are at or under it) and the share done within the promised time. Patients feel the slow tail, not the average.
 - **The outlier:** 240 minutes may be a machine breakdown, a recollected sample or a data error. Look into it; do not silently delete it.
 **Worked example:** Sum = 495 minutes. Mean = 495 / 7 = 70.7. Median = 45 (4th of 7 sorted values). Mean without the outlier = 42.5. 90th percentile (linear interpolation) = 129. Rounded to one decimal.
@@ -551,7 +552,7 @@ Outstanding insurer receivables are Rs 6 crore. Average monthly billing to insur
 **What the interviewer is checking:** That you can compute it and read a rising value as slower collection.
 **Say this in the interview:** "Days in A/R is 60: it takes about two months on average to collect what we bill insurers. A rising number means slower payment, so cash is stuck."
 **Explain simply:**
-- **Accounts receivable:** money the hospital has billed but not yet received, like salary arrears owed to staff but in reverse.
+- **Accounts receivable:** money the hospital has billed but not yet received, like unpaid invoices a business is waiting to be paid for.
 - **Formula (my definition):** outstanding receivables / average daily billing. Daily billing = 3 crore / 30 = Rs 0.1 crore.
 - **Rising means:** insurers or TPAs (third-party administrators who process claims for insurers) are paying slower, more claims are being queried or denied, or billing and documentation are slow. Check the ageing split (0-30, 31-60, 61-90, over 90 days) and the payer.
 - **Why it matters:** cash flow and risk of write-offs. Definitions vary by organisation.
@@ -693,7 +694,7 @@ Arm A: 12 of 60 patients reported at least one AE. Arm B: 6 of 60 patients repor
 - Same-day (day-case) patients can have LOS 0; decide whether they are in or out, and label it.
 - Also check: transfers between wards that create several rows for one stay, a patient re-admitted the same day (one stay or two?), test patients, and extreme values (a 400-day stay is usually a data error or a long-stay case to review separately).
 - HR parallel: like checking an attendance sheet for missing punch-outs and duplicate swipes before computing average hours.
-**Worked example:** a tiny 7-row table (illustrative). One query counts the problems.
+**Worked example:** a tiny 7-row table (illustrative; adm_id, admit_dt, discharge_dt): A1 1-Mar to 5-Mar; A2 2-Mar to 4-Mar; A3 3-Mar, no discharge; A4 6-Mar to 4-Mar; A5 7-Mar to 7-Mar; A6 8-Mar to 12-Mar; A6 again, same dates. One query counts the problems (SQLite or MySQL style).
 ```sql
 select sum(discharge_dt is null)           as missing_discharge,
        sum(discharge_dt < admit_dt)        as discharge_before_admit,
@@ -701,7 +702,7 @@ select sum(discharge_dt is null)           as missing_discharge,
        count(*) - count(distinct adm_id)   as duplicate_ids
 from admissions;
 ```
-Output: 1, 1, 1, 1. Plain words: of 7 rows, one has no discharge, one is impossible, one is a day case and one admission ID is repeated, so only 4 rows are clean stays.
+Output: 1, 1, 1, 1. Plain words: of 7 rows, one has no discharge, one is impossible, one is a day case and one admission ID is repeated. Setting aside the open, impossible and repeated rows leaves 4 usable rows (A1, A2, A5, A6), of which A5 is a day case to label or report separately.
 **Likely follow-ups:** 1) *Do you delete bad rows?* No, I log them, report the count and ask the owner to fix at source. 2) *Calendar days or hours?* Ask the hospital's definition; count nights or days consistently.
 **Common mistakes:** Averaging with open stays silently dropped; mixing day cases with inpatients; deleting outliers without telling anyone.
 
@@ -714,7 +715,7 @@ Output: 1, 1, 1, 1. Plain words: of 7 rows, one has no discharge, one is impossi
 - Simple fix (called indirect standardisation): take a benchmark ALOS per case type (for example the all-hospital average), apply it to each hospital's own case counts to get an **expected** ALOS, then compare actual with expected.
 - Group by diagnosis or procedure group, age band and admission type (emergency or planned). Small groups are noisy, so merge them.
 - Same logic for doctors: a surgeon who takes referrals for hard cases looks "slow".
-**Worked example:** benchmark: simple cases 3 days, complex 9 days. Hospital A: 80 simple, 20 complex. Hospital B: 20 simple, 80 complex. Actual ALOS: A 4.2, B 8.24.
+**Worked example:** benchmark: simple cases 3 days, complex 9 days. Hospital A: 80 simple, 20 complex. Hospital B: 20 simple, 80 complex. Actual ALOS (invented): A 4.2, B 8.24.
 - Raw: B is 4.04 days longer than A.
 - Expected A = (80x3 + 20x9)/100 = 4.2; expected B = (20x3 + 80x9)/100 = 7.8.
 - Actual / expected: A = 1.00; B = 8.24/7.8 = 1.056, about 5.6% above expectation (rounded to 1 decimal).
@@ -738,7 +739,7 @@ So most of B's gap is case mix; a small real excess remains.
 ### Q52 ⭐⭐ 🟡 In plain words, what do India's DPDP Act and the US HIPAA rule try to protect, and how do they affect an analyst who works with patient data?
 **Asked at:** commonly asked (no company-specific report found); healthcare analyst guides stress governance and compliance (prep-site level, unverified).
 **What the interviewer is checking:** That you respect patient privacy and know the basic habits, without playing lawyer.
-**Say this in the interview:** "Both protect personal information: DPDP is India's general personal-data law, HIPAA is the US rule for health information held by healthcare organisations and their partners. As an analyst I use only the data I need, for the stated purpose, with access controls."
+**Say this in the interview:** "Both protect personal information: DPDP is India's general personal-data law, HIPAA is the US rule for health information held by healthcare organisations and their partners (my understanding, from memory, unverified). As an analyst I use only the data I need, for the stated purpose, with access controls."
 **Explain simply:**
 - **DPDP Act** (Digital Personal Data Protection Act, India): consent and purpose-based handling of personal data, with duties on the organisations that decide why data is used. Details and enforcement dates: from memory, unverified.
 - **HIPAA** (US): protects "protected health information" (health data tied to a person). It covers things like who may see it and how it is secured; specifics unverified.
@@ -766,7 +767,7 @@ So most of B's gap is case mix; a small real excess remains.
 **What the interviewer is checking:** Correct vocabulary and the habit of asking for the least identifying data.
 **Say this in the interview:** "Pseudonymised data swaps identifiers for codes but can be linked back; de-identified data has identifiers removed under a defined rule; anonymised data cannot reasonably be traced to a person. For trends I would ask for de-identified or aggregated data."
 **Explain simply:**
-- **Pseudonymised:** name replaced by a code (P8841); a separate key table can restore identity. Still treated as personal data in most regimes.
+- **Pseudonymised:** name replaced by a code (P8841); a separate key table can restore identity. Usually still treated as personal data, because it can be linked back (from memory, unverified).
 - **De-identified:** direct identifiers (name, phone, address, full dates, ID numbers) removed or generalised following a defined standard. HIPAA has a named method for this; DPDP has no health-specific standard yet (from memory, unverified).
 - **Anonymised:** irreversibly cut off from the person; hard to prove, as rare combinations (age, pin code, rare disease) can re-identify someone.
 - For trends (monthly admissions by department) I need counts, not people: ask for aggregates, or row-level data with age bands, month instead of date, and no names.
@@ -812,8 +813,8 @@ So with no slowdown inside either group, the rise from 4.2 to 5.1 can come entir
 - **Bed occupancy** = occupied bed-days / available bed-days. **ARPOB** (average revenue per occupied bed per day) = revenue / occupied bed-days. Definitions vary (available vs staffed beds), so state yours.
 - Likely causes: more low-priced cases (package-rate or government-scheme patients), longer stays of stable low-billing patients, fewer high-value surgeries, bigger discounts, delayed or missed billing, rising denials, more day-care in beds.
 - Check by department, payer type, and procedure type; compare the same months last year.
-**Worked example:** 100 beds, 90 days, 92% occupancy: occupied bed-days = 100 x 90 x 0.92 = 8,280. If revenue is ₹4.5 crore, ARPOB = ₹45,000,000 / 8,280 = about ₹5,435 per day (rounded).
-Mix effect (illustrative): package patients earn ₹4,000 per day, others ₹7,000. At 40% package share ARPOB = 0.4x4,000 + 0.6x7,000 = ₹5,800; at 55% it is 0.55x4,000 + 0.45x7,000 = ₹5,350, a fall of 7.8% with occupancy unchanged.
+**Worked example:** 100 beds, 90 days, 92% occupancy: occupied bed-days = 100 x 90 x 0.92 = 8,280. If revenue is Rs 4.5 crore (Rs 45,000,000), ARPOB = 45,000,000 / 8,280 = about Rs 5,435 per day (rounded). All figures are invented and small, only to keep the arithmetic easy; real hospital values differ (compare Q12).
+Mix effect (illustrative): package patients (fixed-price package rate) earn Rs 4,000 per day, others Rs 7,000. At 40% package share ARPOB = 0.4x4,000 + 0.6x7,000 = Rs 5,800; at 55% it is 0.55x4,000 + 0.45x7,000 = Rs 5,350, a fall of 7.8% with occupancy unchanged.
 **Likely follow-ups:** 1) *Is high occupancy then good?* Only if the right cases fill the beds. 2) *Cost side?* Add cost per occupied bed to see margin.
 **Common mistakes:** Treating occupancy as profit; mixing outpatient revenue into a bed metric.
 
@@ -832,6 +833,7 @@ Mix effect (illustrative): package patients earn ₹4,000 per day, others ₹7,0
 | X | 5,000 at 4% | 3,000 at 4% |
 | Y | 3,000 at 8% | 3,000 at 8% |
 | Z | 2,000 at 18% | 4,000 at 26% |
+
 - Q1 denied: 200+240+360 = 800 (8.0%). Q2: 120+240+1,040 = 1,400 (14.0%). Rise = 6.0 percentage points.
 - Payer Z explains nearly all of it. Holding Z's Q1 rate (18%) with Q2 volumes gives 1,080 denials (10.8%): mix adds 2.8 points; Z's own rate rise adds 3.2 points.
 **Likely follow-ups:** 1) *Percent or points?* 8% to 14% is +6 points, a 75% relative increase. 2) *First action?* Review Z's top denial reasons.
@@ -859,7 +861,7 @@ Mix effect (illustrative): package patients earn ₹4,000 per day, others ₹7,0
 - Compare with similar sites, using their own conversion rates.
 - Tell the team: where patients are lost, whether to add outreach, extra staff, relax a protocol rule (only through proper approvals), or add other sites. Do not hide a problem.
 **Worked example:** target 30 enrolled in 6 months (5 per month); after 4 months only 8 enrolled.
-- Current rate = 8/4 = 2 per month. Needed: (30 - 8)/2 = 11 per month, 5.5 times the current rate.
+- Current rate = 8/4 = 2 per month. Months left = 6 - 4 = 2, so needed: (30 - 8)/2 = 11 per month, 5.5 times the current rate.
 - If 40% fail screening, reaching 30 needs 30/(1 - 0.4) = 50 screened.
 **Likely follow-ups:** 1) *Extend the timeline?* Possible, but it costs time and money; compare against adding sites. 2) *Privacy?* Use site-level counts, not patient names.
 **Common mistakes:** Judging by raw count without the funnel; ignoring screen-failure reasons.
@@ -891,7 +893,7 @@ Mix effect (illustrative): package patients earn ₹4,000 per day, others ₹7,0
 ### Q63 ⭐ 🟢 What is IQVIA known for in the pharma world, and what kind of data do companies buy from audit firms?
 **Asked at:** IQVIA analyst candidate reports (Glassdoor, AmbitionBox and others, anonymous, snippet-level) mention market-share, sales and promotion cases; unverified.
 **What the interviewer is checking:** Whether you know where market data comes from.
-**Say this in the interview:** "IQVIA is known as a major provider of healthcare market data, analytics and clinical-research services. Pharma firms buy audit data to see sales, prescriptions and market share across the whole market, not just their own."
+**Say this in the interview:** "IQVIA is known as a major provider of healthcare market data, analytics and clinical-research services (from memory, unverified). Pharma firms buy audit data to see sales, prescriptions and market share across the whole market, not just their own."
 **Explain simply:**
 - Your own sales system shows only your brands. Competitors' numbers come from outside **audit firms**, which collect sales from chemists, distributors and prescription samples (methods and coverage unverified).
 - Typical datasets: retail and hospital sales by product, pack, region and month; prescription counts by doctor specialty; market share and growth; sometimes promotion tracking.
@@ -1005,7 +1007,7 @@ Mix effect (illustrative): package patients earn ₹4,000 per day, others ₹7,0
 
 ### Q72 ⭐ 🟡 Calculate the hospital pharmacy wastage percentage and say what you would investigate.
 Average pharmacy stock value is Rs 50 lakh; stock worth Rs 1.5 lakh expired and was written off in the month.
-**Asked at:** commonly asked (no company-specific report found); gap-fill calculation.
+**Asked at:** commonly asked (no company-specific report found); gap-fill calculation. (1 lakh = 100,000 rupees, so Rs 50 lakh = Rs 5 million.)
 **What the interviewer is checking:** That you can compute a simple ratio and ask why money was lost.
 **Say this in the interview:** "Wastage is 1.5 divided by 50, which is 3 percent of average stock value in the month. I would then look at which items expired and why."
 **Explain simply:**

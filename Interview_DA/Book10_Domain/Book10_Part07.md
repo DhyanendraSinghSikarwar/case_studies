@@ -52,7 +52,7 @@
 - **Mix:** for example 20% onsite and 80% offshore by headcount. A shift toward offshore usually lowers revenue per person but can raise margin percentage; reports should show both.
 - **What to report:** headcount and revenue split by location, rate by location, and cost by location.
 - **HR parallel:** like comparing a posting in a metro (higher pay, higher allowances) with one at a regional office.
-**Likely follow-ups:** 1) *Is the mix the same by headcount and revenue?* No, onsite is a smaller share of headcount but a larger share of revenue. 2) *Why do clients accept offshore?* Cost savings.
+**Likely follow-ups:** 1) *Is the mix the same by headcount and revenue?* Usually not: onsite is often a smaller share of headcount but a larger share of revenue, because of the higher rate (a typical pattern; check the firm's own data). 2) *Why do clients accept offshore?* Cost savings.
 **Common mistakes:** Quoting the mix by headcount when asked about revenue; ignoring that onsite staff carry extra costs that sit outside normal salary.
 
 ### Q5 ⭐⭐⭐ 🟢 What is a Global Capability Centre (GCC), and how does the reporting work of a GCC analyst differ from that of an analyst at an IT services vendor?
@@ -142,7 +142,7 @@
 **Explain simply:**
 - **Green:** on track. **Amber:** at risk, needs attention. **Red:** off track, needs escalation.
 - **Problem with opinion:** project managers may keep projects green too long ("watermelon" status: green outside, red inside).
-- **Objective rules (thresholds below are invented examples; set your own with the PMO):** schedule index below 0.9 is amber, below 0.8 red; cost index likewise; open critical risks above a count; milestones late by more than N days.
+- **Objective rules (thresholds below are invented examples; set your own with the PMO):** schedule index (SPI, see Q20) 0.95 or above green, 0.85 to 0.95 amber, below 0.85 red, and cost index (CPI) likewise, the same illustrative bands used in Q20; open critical risks above a count; milestones late by more than N days.
 - **Worst-of rule:** overall colour is the worst of the individual measures.
 - **Keep a comment column:** a manager can add context, but must not overwrite the calculated colour silently.
 **Likely follow-ups:** 1) *What data do you need?* Plan dates, actual progress, cost and effort. 2) *Where do the numbers come from?* See Q20 for the formulas.
@@ -264,7 +264,7 @@
 ### Q20 ⭐⭐⭐ 🟡 A project has planned value 100, earned value 90 and actual cost 120 (all in INR lakh). Compute schedule variance, cost variance, SPI and CPI, and give the RAG story in plain words.
 **Asked at:** commonly asked (no company-specific report found); earned-value formulas are standard project-management practice (PMI-style, from memory, unverified).
 **What the interviewer is checking:** Whether you can apply the four formulas and translate them into a business message.
-**Say this in the interview:** "Schedule variance is minus 10 lakh and SPI is 0.90: we are behind plan. Cost variance is minus 30 lakh and CPI is 0.75: we spent 120 to get 90 of value. Late and over budget, so this is red on cost, amber to red on schedule."
+**Say this in the interview:** "Schedule variance is minus 10 lakh and SPI is 0.90: we are behind plan. Cost variance is minus 30 lakh and CPI is 0.75: we spent 120 to get 90 of value. Late and over budget: on the illustrative bands below, amber on schedule and red on cost."
 **Explain simply:**
 - **Planned value (PV):** the work we planned to finish by now, in money terms. **Earned value (EV):** the work actually finished, valued at plan. **Actual cost (AC):** what we really spent.
 - **Schedule variance (SV) = EV minus PV** = 90 - 100 = -10 lakh. **SPI = EV / PV** = 0.90.
@@ -296,7 +296,7 @@
 - **SQL:** best when data already sits in a database; fast, repeatable, easy to review.
 - **Python:** best for messy logic, large files, or scheduling; needs coding skill and someone to maintain it.
 - **Alteryx:** visual workflow tool, strong for repeated multi-source jobs, but paid and needs a licence (from memory, unverified).
-- **Decide with a simple test:** time saved per month against build and maintenance effort, plus risk if the builder leaves. Six hours monthly is 72 hours a year, so it is worth automating.
+- **Decide with a simple test:** time saved per month against build and maintenance effort, plus risk if the builder leaves. Six hours monthly is 72 hours a year, so automation is usually worth it if the build and upkeep take only a few days (my rough rule; judge by the case).
 - **Always:** keep a manual check against the old pack for the first two cycles.
 **Likely follow-ups:** 1) *What if IT blocks tools?* Use what is approved, usually Excel features. 2) *How do you prove it works?* Run old and new in parallel and compare totals.
 **Common mistakes:** Picking a tool for CV value; building something only you understand; skipping documentation and validation.
@@ -412,7 +412,7 @@
 - **Milestone:** revenue arrives in chunks; months with no milestone show none.
 - **Percentage-of-completion:** smoother; the share often comes from cost or effort incurred versus estimated total.
 - **Analyst care:** monthly revenue, margin and forecasts depend on the method; estimates change.
-**Worked example:** contract INR 60 lakh; total estimated project cost INR 90 lakh-equivalent effort and INR 36 lakh incurred so far: completion 36 / 90 = 40.0%, so 40% x 60 = INR 24 lakh recognised. Under a milestone contract where the first 30% milestone (INR 18 lakh) is not yet achieved, revenue so far is 0 (invented numbers, computed).
+**Worked example:** contract INR 60 lakh; total estimated project cost INR 45 lakh and INR 18 lakh incurred so far: completion 18 / 45 = 40.0%, so 40% x 60 = INR 24 lakh recognised. Under a milestone contract where the first 30% milestone (INR 18 lakh) is not yet achieved, revenue so far is 0 (invented numbers, computed).
 **Likely follow-ups:** 1) *Does invoicing equal revenue?* No. 2) *Risk?* Poor estimates distort the number.
 **Common mistakes:** Treating invoice as revenue; ignoring estimate revisions.
 
@@ -438,7 +438,7 @@
 - **GCC (Global Capability Centre):** an offshore centre, often in India, owned by a multinational company to do work for its own business units (IT, finance, HR, analytics).
 - **Time-zone handoff:** work passes from one team to another as the day ends in one place and begins in another. Reports must say clearly "as of" which time and which zone.
 - **Follow-the-sun support:** a service desk run from three regions so a ticket is always worked in daylight. Your SLA report must count the ticket as one case across all shifts, not three.
-- **Calendar effect:** month-end close, board reviews and weekly operations calls sit on different dates and holidays (India and the US have different holiday lists). A data refresh that finishes at 2 a.m. India time is a day early for the US reader.
+- **Calendar effect:** month-end close, board reviews and weekly operations calls sit on different dates and holidays (India and the US have different holiday lists). A data refresh that finishes at 2 a.m. India time lands on the previous calendar date for a US reader, so the "as of" date must be stated.
 - **Practical habits:** one reporting time zone (often UTC or India time), a published calendar of cut-off, refresh, review and release dates, and a named backup when the owner is on leave.
 - **HR parallel:** attendance cut-off for payroll has the same logic; everyone needs to know the date and the time zone.
 **Likely follow-ups:** 1) *How do you handle a late source file?* Release on time with a clear "provisional" note rather than silently delaying. 2) *What if two regions want different cut-offs?* Agree one official cut-off and offer a secondary view if needed.
@@ -532,7 +532,7 @@
 **What the interviewer is checking:** Whether you know the basic building blocks of the HR system you would report from.
 **Say this in the interview:** "In Workday, a worker is the person, a position is a seat in the organisation that can be filled or vacant, a supervisory organisation is a reporting group under a manager, and a business process is the approval workflow for any change such as a hire or transfer. This is from memory; I would confirm with the company's own setup."
 **Explain simply:**
-- **Worker:** the person record, either an employee or a contingent (contract) worker. One worker holds a job through a position or job requisition.
+- **Worker:** the person record, either an employee or a contingent (contract) worker. In companies that manage headcount by position, the worker fills a position.
 - **Position:** a defined seat in the structure (job title, location, cost centre). It can be vacant, so it supports headcount-plan versus actual reporting.
 - **Supervisory organisation:** the manager-led team structure; the tree of these shows who reports to whom and is the basis for team-level reports and security.
 - **Business process:** a workflow for a change (hire, transfer, termination, compensation change) with initiation, approval steps and completion. Data changes only after the process completes.
@@ -695,7 +695,7 @@ where e.is_billable = 1 and t.week_end = '2026-11-13'
 group by e.team
 order by compliance_pct;
 ```
-Output: Beta 4 expected, 2 submitted, 50.0%; Alpha 3 expected, 2 submitted, 66.7%. Plain words: lowest-compliance team first; the people list is a separate query shared only with managers.
+Sample rows: Alpha has 3 billable people (2 submitted), Beta has 4 (2 submitted). Output: Beta 4 expected, 2 submitted, 50.0%; Alpha 3 expected, 2 submitted, 66.7%. Plain words: lowest-compliance team first; the people list is a separate query shared only with managers.
 **Likely follow-ups:** 1) *Does 78% mean 22% are lazy?* No; check leave, system access, approval delays first. 2) *Daily or weekly?* Whatever the policy cut-off is; state it.
 **Common mistakes:** Counting people on leave as defaulters; changing the denominator between weeks; publishing a name list to the whole company.
 
@@ -855,7 +855,7 @@ P1: 20 tickets, 15 within SLA | P2: 100, 85 | P3: 400, 380 | P4: 480, 470
 4. Unique on HRMS ID: one row per employee (check the duplicates output).
 5. Summarize timesheet to employee: sum billable hours and total hours.
 6. Join on employee ID: timesheet totals (left) with HRMS (right); inspect the L and R outputs for unmatched people.
-7. Formula: utilisation = billable hours / available hours (state the definition; firms differ).
+7. Formula: utilisation = billable hours / available hours (state the definition; firms differ). Available hours are in neither file above: take standard hours for the month less holidays and leave, from a calendar or leave file joined in here.
 8. Summarize by team: sum of billable hours and available hours, then divide again (so utilisation is weighted, not an average of percentages).
 9. Sort, then Output Data (Excel or a table for Power BI).
 **Data and tables involved:** Timesheet (employee ID, date, project, hours, billable flag); HRMS (employee ID, team, grade, joining date, status, location).
@@ -951,7 +951,7 @@ P1: 20 tickets, 15 within SLA | P2: 100, 85 | P3: 400, 380 | P4: 480, 470
 - **Check 4:** effective dates (a change dated in the future or backdated can break a feed) and worker status.
 - **Check 5:** compare against the last good run: what changed in the report definition or the data?
 - Payroll data is sensitive: share only the worker IDs needed, and follow the company's access rules.
-**Worked example (tiny sample):**
+**Worked example (tiny sample):** `workers` is a 4-row table, W1 to W4, with the columns shown in the output.
 ```python
 # Workers who are missing a mandatory field
 mandatory_fields = ["bank_account", "cost_centre"]
@@ -1007,7 +1007,7 @@ Plain words: two of four sample workers lack a bank account or cost centre, and 
 - Examine: headcount and pay changes, attrition and rehiring, overtime, tool or licence cost, rework and exceptions per invoice, invoice mix (complex versus simple), allocated overhead changes.
 - Check that volume is measured the same way and was not cut by automation that also cost money.
 **Data and tables involved:** monthly cost by category (people, tools, overhead); invoices processed by type and complexity; headcount and hours; exception and rework counts; allocation rules.
-**Worked example:** invented base: 50,000 invoices at 4.00 = 200,000. New volume 46,000 at 4.48 = 206,080, so total cost +3.04%. Fixed-cost-only test: if fixed cost is 120,000 and variable 1.60 per invoice, cost per transaction would be 4.21 at 46,000 (+5.2%); the other roughly 6.8 percentage points of the rise comes from added cost or inefficiency.
+**Worked example:** invented base: 50,000 invoices at 4.00 = 200,000. New volume 46,000 at 4.48 = 206,080, so total cost +3.04%. Fixed-cost-only test: if fixed cost is 120,000 and variable 1.60 per invoice, cost per transaction would be 4.21 at 46,000 (+5.2%); the actual 4.48 is still about 6.4% above that 4.21 (ratios, not percentage points, so the 12% does not split as 5.2 + 6.8); that remainder comes from added cost or inefficiency.
 **Likely follow-ups:** 1) *Should volume have lowered cost?* Only for variable cost. 2) *How do you present it?* A bridge from old to new cost per transaction by driver.
 **Common mistakes:** Treating all cost as variable; ignoring overhead allocation changes; comparing percentage changes as if additive.
 
@@ -1019,7 +1019,7 @@ Plain words: two of four sample workers lack a bank account or cost centre, and 
 - **P1:** the highest priority (critical outage). **SLA:** the written service promise. **Clock pause:** many contracts stop the timer while waiting for the client, which is legitimate only if the contract says so.
 - **Tests:** (1) is the denominator all P1 tickets, including ones downgraded to P2 and ones still open? (2) are paused hours allowed? (3) is "resolved" the time of the fix or the time the ticket was closed or reopened? (4) is the average hiding a long tail of very late tickets? (5) does the client count business hours or wall-clock hours?
 - Also compare against client sentiment: reopen rate, escalations, repeat tickets.
-**Worked example:** invented bridge: 90 reported tickets, 86 met = 95.6% (reported as 96%). Now add 10 tickets downgraded out of P1 (4 of them met) and remove 5 tickets that met the target only because the clock was paused: (86 - 5 + 4) / 100 = 85.0% on the client's view. Small SQL sample of 10 tickets:
+**Worked example:** invented bridge: 90 reported tickets, 86 met = 95.6% (reported as 96%). Now add 10 tickets downgraded out of P1 (4 of them met) and remove 5 tickets that met the target only because the clock was paused: (86 - 5 + 4) / 100 = 85.0% on the client's view. Small SQL sample of 10 tickets (6 closed as P1, all met after pauses; 4 closed as P2; only 4 of the 10 met 4 wall-clock hours without being reopened):
 ```sql
 -- reported view: P1 at close, paused hours removed
 -- client view: all tickets opened as P1, wall-clock time, no reopened tickets

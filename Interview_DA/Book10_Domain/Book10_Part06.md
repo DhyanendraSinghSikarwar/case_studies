@@ -1231,7 +1231,7 @@ If the mix had changed but each segment's rate stayed the same, the win rate wou
 ### Q82 ⭐ 🟢 What is marketing mix modelling, and how is it different from attribution?
 **Asked at:** commonly asked (no company-specific report found); appears in marketing analytics prep guides (unverified).
 **What the interviewer is checking:** Whether you understand top-down versus user-level measurement.
-**Say this in the interview:** "Marketing mix modelling (MMM) uses totals over time, such as weekly spend per channel and weekly sales, in a regression to estimate how much each channel contributes. Attribution follows individual customer journeys and gives credit to touchpoints."
+**Say this in the interview:** "Marketing mix modelling (MMM) uses totals over time, such as weekly spend per channel and weekly sales, in a regression (a statistical method that finds how sales move with spend) to estimate how much each channel contributes. Attribution follows individual customer journeys and gives credit to touchpoints."
 **Explain simply:**
 - **MMM:** top-down; practitioners often say it needs a year or more of weekly data (from memory, unverified); includes things you cannot click on (TV, hoardings, discounts, seasonality, festivals). Needs no personal data.
 - **Attribution:** bottom-up, needs tracked clicks or logins per user; blind to offline media and weakened when tracking is restricted.

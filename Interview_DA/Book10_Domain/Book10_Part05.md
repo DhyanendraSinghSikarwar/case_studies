@@ -667,7 +667,7 @@ Counted 500 locations; 460 matched system quantity exactly; 25 differed by 1-2 u
 - Two common definitions: cycle service level (share of order cycles with no stockout) and fill rate (share of demand met from stock). Say which one you use.
 - Using the Q40 data (daily standard deviation 20, lead time 9 days, z values from memory, unverified): 90% needs about 77 units, 95% about 99, 99% about 140. Going from 95% to 99% adds about 41 more units (41%) for 4 points more service.
 - So the right target differs by item: high for important, high-margin items; lower for cheap, slow or easily substituted ones (links to ABC, Q48).
-- Inventory cost = holding cost x (cycle stock + safety stock), so every extra unit of safety stock is a running cost.
+- Yearly holding cost = holding cost per unit x (average cycle stock + safety stock), so every extra unit of safety stock is a running cost.
 **Likely follow-ups:** 1) *How to choose the target?* Compare the cost of a stockout with the cost of holding extra stock. 2) *Can we raise service without more stock?* Yes, by cutting lead time or forecast error.
 **Common mistakes:** Setting 99% for every item; confusing cycle service level with fill rate.
 
@@ -691,8 +691,8 @@ Counted 500 locations; 460 matched system quantity exactly; 25 differed by 1-2 u
 **Say this in the interview:** "I would calculate lead time per order from order date to receipt date, then report average, standard deviation, and percentiles, not one figure. Planning on 14 days when it is sometimes 25 leads to stockouts."
 **Explain simply:**
 - Per order: lead time = goods receipt date minus purchase order date. Then summarise by supplier and item.
-- Illustration with invented data: 20 orders, 12 at 14 days and 8 at 25 days. Mean = 18.4 days; standard deviation = 5.4 days (sample 5.5); CV about 0.29; the 90th percentile is 25 days. The buyer's "14 days" is right 60% of the time, but late 40% of the time by 11 days.
-- Business effect (demand 100 units/day, daily standard deviation 20, z = 1.65, a common textbook formula, from memory): safety stock treating lead time as fixed at 14 days is about 123 units; including lead-time variability it is about 900 units. Variable supply is expensive.
+- Illustration with invented data: 20 orders, 12 at 14 days and 8 at 25 days. Mean = 18.4 days; standard deviation = 5.4 days (5.5 if you treat it as a sample); CV (standard deviation / mean) about 0.29; the 90th percentile is 25 days. The buyer's "14 days" is right 60% of the time, but late 40% of the time by 11 days.
+- Business effect (demand 100 units/day, daily standard deviation 20, z = 1.65, a common textbook formula, from memory): safety stock treating lead time as fixed at 14 days is about 123 units; including lead-time variability (z x square root of [average lead time x demand variance + demand squared x lead-time variance]; variance is the standard deviation squared) it is about 900 units. Variable supply is expensive.
 - Next steps: look for a pattern (month, product, route) and agree a realistic planning lead time or work with the supplier.
 **Likely follow-ups:** 1) *Which lead time to plan with?* A percentile such as the 90th, or model the variability explicitly. 2) *Quoted vs actual?* Track the gap as a supplier metric.
 **Common mistakes:** Averaging away the spread; mixing different items or order types in one lead time.
@@ -704,7 +704,7 @@ Counted 500 locations; 460 matched system quantity exactly; 25 differed by 1-2 u
 **Explain simply:**
 - Stages: order placed, approved (credit check), shipped, delivered, invoiced, paid. Each timestamp comes from a different system (order system, warehouse, transport, finance).
 - In Excel: stage days = later date column minus earlier date column, then pivot by month, customer or region and look at median and 90th percentile. Watch for blanks (not yet shipped or paid) and use IF to exclude them.
-- In SQL (SQLite, with a small invented table):
+- In SQL (SQLite). Tiny invented table `orders` (dates in March and April 2026; shown as day numbers from the order date): order 1 approved day 0, shipped day 2, delivered day 5, invoiced day 2, paid day 32; order 2 approved 0, shipped 0, delivered 3, invoiced 0, paid 39; order 3 approved 1, shipped 5, delivered 7, invoiced 5, paid 41.
 ```sql
 select order_id,
   julianday(approved_ts)-julianday(order_date)  as days_to_approve,
@@ -715,10 +715,10 @@ select order_id,
 from orders;
 ```
 ```
-order_id  approve  ship  transit  collect  order_to_cash
-1         0        2     3        30       32
-2         0        0     3        39       39
-3         1        4     2        36       41
+order_id  days_to_approve  days_to_ship  days_in_transit  days_to_collect  order_to_cash_days
+1         0.0              2.0           3.0              30.0             32.0
+2         0.0              0.0           3.0              39.0             39.0
+3         1.0              4.0           2.0              36.0             41.0
 ```
 Average order-to-cash for these three orders is 37.3 days, and collection (waiting for payment) is the largest stage.
 - Other databases use date subtraction or DATEDIFF instead of julianday.
@@ -803,7 +803,7 @@ Average order-to-cash for these three orders is 37.3 days, and collection (waiti
 **Common mistakes:** Treating zero sales as zero demand; filling gaps with the overall average including promo days.
 
 ### Q57 ⭐⭐ 🟡 How does a replenishment model for a quick-commerce dark store differ from one for a central warehouse supplying retail stores?
-**Asked at:** commonly asked (no company-specific report found); quick-commerce dark store replenishment is an Indian-context gap-fill; Flipkart reports mention supply chain design prompts (unverified).
+**Asked at:** commonly asked (no company-specific report found); quick-commerce dark store replenishment is an Indian-context gap-fill.
 **What the interviewer is checking:** Whether you see how small, fast stores need different timing, assortment and accuracy from large stock-holding warehouses.
 **Say this in the interview:** "A dark store has a tiny space, a few thousand SKUs, orders in minutes, and perishables, so it needs daily or even intra-day replenishment at SKU level. A central warehouse replenishes retail stores in bigger, scheduled batches and pools stock across many outlets."
 **Explain simply:**
@@ -898,6 +898,7 @@ Forecast 20,000 order lines per day; standard 30 lines per labour hour; 8 produc
 **What the interviewer is checking:** Basic trade vocabulary: who pays and who bears risk at each stage.
 **Say this in the interview:** "Incoterms are standard trade terms that say who arranges and pays for transport, insurance and customs, and where risk passes from seller to buyer. FOB and CIF are two common sea-freight terms."
 **Explain simply:**
+- Details below are from memory, unverified; confirm against the official ICC Incoterms text.
 - **FOB** (free on board): the seller delivers goods onto the ship at the origin port; after that, the buyer carries cost and risk.
 - **CIF** (cost, insurance and freight): the seller pays freight and insurance to the destination port, but risk still passes when goods are loaded on the ship (from memory, unverified; the current Incoterms rules should be confirmed from the official ICC text).
 - Why it matters to an analyst: it decides which costs sit in landed cost, whose data holds the shipment status, who files claims for damage, and when ownership of inventory (and so book stock) changes.
@@ -942,7 +943,7 @@ Forecast 20,000 order lines per day; standard 30 lines per labour hour; 8 produc
 - Why it matters: data fields such as GSTIN, HSN code (product classification), e-way bill number, vehicle number and invoice reference link transport, invoicing and inventory records; missing or expired e-way bills delay trucks; tax rates affect landed cost.
 **Regulation / privacy note (awareness only):** from memory, unverified, confirm with the compliance or tax team; thresholds and rules change.
 **Likely follow-ups:** 1) *How to use e-way data?* Transit time per truck. 2) *Which key joins data?* Invoice number and e-way bill number.
-**Common mistakes:** Quoting thresholds as fact; ignoring that the tax-time of supply may differ from physical receipt date.
+**Common mistakes:** Quoting thresholds as fact; ignoring that the date a tax invoice is raised may differ from the date goods physically arrive.
 
 ### Q68 ⭐ 🟡 What is the cash-to-cash cycle, and how do inventory days, receivable days and payable days combine to produce it?
 Days of inventory 45, days sales outstanding 30, days payables outstanding 40.
@@ -1012,8 +1013,16 @@ Statistical forecast error 18%; after planner override 22%; naive last-month for
 - Override vs naive: 25% - 22% = +3 percentage points.
 - Percentage points, not percent, because these are differences between two percentages.
 
-Interview version on a tiny made-up sheet (6 SKUs):
+Interview version on a tiny made-up sheet (6 SKUs, a separate illustration from the 18%/22%/25% figures above). (`stat` is the statistical forecast, `final` is after the planner override.)
 ```python
+import pandas as pd
+
+forecasts = pd.DataFrame({
+    "actual": [100, 80, 90, 70, 60, 100],
+    "stat":   [110, 85, 98, 82, 63, 105],
+    "final":  [112, 87, 101, 84, 63, 101],
+})
+
 # error of each forecast against what actually sold
 forecasts["stat_error"]  = (forecasts["stat"]  - forecasts["actual"]).abs()
 forecasts["final_error"] = (forecasts["final"] - forecasts["actual"]).abs()
@@ -1058,6 +1067,10 @@ Output: statistical 8.6%, final 9.6%, override closer in 1 of 6 SKUs (worse in 4
 
 **Worked example** (8 suppliers, invented spend in Rs lakh: 40, 25, 12, 8, 6, 4, 3, 2; total 100):
 ```python
+import pandas as pd
+
+spend = pd.DataFrame({"spend": [40, 25, 12, 8, 6, 4, 3, 2]})
+
 # rank suppliers from biggest spend to smallest
 spend = spend.sort_values("spend", ascending=False)
 
