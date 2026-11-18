@@ -5394,6 +5394,724 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 ## Book 10 — Domain Knowledge
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B10P01Q1 | 10 | 1 | What is an HRIS, and which systems (core HR, applicant tracking, payroll, learning, performance, attendance) feed the data an HR analyst works with? |
+| B10P01Q2 | 10 | 1 | What is the employee lifecycle ("hire to retire"), and what data is created at each stage that an analyst could use? |
+| B10P01Q3 | 10 | 1 | Who are the usual stakeholders of an HR analyst (HR business partners, talent acquisition, compensation and benefits, HR operations, learning and development, finance), and what kind of report does each typically ask for? |
+| B10P01Q4 | 10 | 1 | What is the difference between an employee ID, a position ID and a requisition ID, and why does an analyst need all three to join HR tables correctly? |
+| B10P01Q5 | 10 | 1 | Which worker types (permanent, fixed-term contract, third-party or agency staff, consultants, interns, trainees, gig workers) are usually counted in company headcount, and which are not? Why must this rule be written down? |
+| B10P01Q6 | 10 | 1 | Why does "headcount" always need a date, and what is the difference between a point-in-time snapshot, a period-end figure and an average headcount? |
+| B10P01Q7 | 10 | 1 | What does "effective-dated" HR data mean (for example, a salary change that applies from 1 July but is entered on 20 July), and what goes wrong in reports if you ignore effective dates? |
+| B10P01Q8 | 10 | 1 | What is the difference between grade, band, level, designation and job family in an HR data table? |
+| B10P01Q9 | 10 | 1 | What is CTC, and how do gross salary, deductions and take-home pay relate to it in an Indian payroll (basic, HRA, special allowance, employer and employee PF, variable pay)? |
+| B10P01Q10 | 10 | 1 | Which employment statuses do HR systems carry (active, on leave, on notice, absconding, terminated, retired), and which should count as headcount in a month-end report? |
+| B10P01Q11 | 10 | 1 | What are the stages of a hiring lifecycle (requisition approval, sourcing, screening, interviews, offer, background verification, joining), and what table or timestamp in an applicant tracking system marks each stage? |
+| B10P01Q12 | 10 | 1 | What is the difference between a replacement (backfill) hire and a growth (net new) hire, and why do finance and HR report them separately? |
+| B10P01Q13 | 10 | 1 | What types of employee surveys exist (annual engagement, pulse, onboarding, exit, stay interview), and how do their purposes and data differ? |
+| B10P01Q14 | 10 | 1 | Which DEI metrics do companies commonly track (representation, hiring, promotion, attrition, pay equity, leadership pipeline), and how is representation different from inclusion? |
+| B10P01Q15 | 10 | 1 | What are the fixed, variable and long-term components of an employee's total rewards (fixed pay, bonus, ESOP or RSU, benefits), and how does total rewards differ from CTC? |
+| B10P01Q16 | 10 | 1 | What is workforce planning, and how do demand forecasting (how many people we need) and supply forecasting (how many we will have) fit together? |
+| B10P01Q17 | 10 | 1 | What are the main steps of a monthly payroll run (attendance and leave cut-off, new joiners and exits, increments, deductions, payslips, bank file), and which of these steps produce data an analyst may use? |
+| B10P01Q18 | 10 | 1 | Which employee data is especially sensitive (salary, health and medical leave, disciplinary records, caste or religion, bank and government ID numbers), and why should access be role-based? |
+| B10P01Q19 | 10 | 1 | What does an HR analyst actually do in a typical week at a mid-sized company (recurring MIS reports, ad hoc requests, data clean-up, dashboard maintenance), and which of these would a newcomer handle first? |
+| B10P01Q20 | 10 | 1 | Opening headcount on 1 April was 1,200. During April there were 90 external joiners, 15 rehires, 12 transfers into the entity, 8 transfers out, 55 resignations and 6 terminations. Build the headcount roll-forward and give the closing headcount. |
+| B10P01Q21 | 10 | 1 | An employee resigns on 5 October, serves a 60-day notice period and has a last working day of 4 December. In which month should the exit be counted in an attrition report, and what rule would you write for the data dictionary? |
+| B10P01Q22 | 10 | 1 | Twelve month-end headcounts for a year are: 980, 985, 990, 1,000, 1,010, 1,030, 1,040, 1,020, 1,015, 1,005, 1,000, 1,010. Compute the average headcount and say why it is better than using only the opening and closing figures as the denominator for attrition. |
+| B10P01Q23 | 10 | 1 | How should rehires (boomerang employees) and internal transfers between legal entities be treated in hiring counts and attrition counts, and what happens to the numbers if two teams treat them differently? |
+| B10P01Q24 | 10 | 1 | Which data checks would you run on an HRIS extract before building any report (for example, duplicate employee IDs, joining date after exit date, missing manager, impossible dates of birth)? List at least eight. |
+| B10P01Q25 | 10 | 1 | Employees who left within 90 days of joining are called early attrition. Why do HR teams track it separately from overall attrition, and what data would you pull to understand it? |
+| B10P01Q26 | 10 | 1 | Exit interviews give a "primary reason for leaving" for each leaver. What are the weaknesses of this data, and how would you code and cross-check reasons before reporting them? |
+| B10P01Q27 | 10 | 1 | What is regretted attrition, who decides which exits are "regretted", and what data (ratings, critical skills, tenure) would you use to flag it consistently? |
+| B10P01Q28 | 10 | 1 | Monthly exits for the last 12 months were 8, 10, 9, 12, 15, 11, 10, 9, 14, 13, 12, 17 against an average headcount of 1,000. Compute the rolling 12-month attrition, and compare it with annualising the last quarter's exits. |
+| B10P01Q29 | 10 | 1 | An open-requisitions table has 40 requisitions; 12 are older than 90 days. Define requisition ageing and fill rate, and say what first cuts you would make to understand why some are stuck. |
+| B10P01Q30 | 10 | 1 | In a recruiting funnel by source, one candidate appears under both "job portal" and "referral". How would you assign credit, and what duplicates would you remove before computing source-wise conversion? |
+| B10P01Q31 | 10 | 1 | An engagement survey had 640 responses from 800 invited employees. What is the response rate, why does it matter when reading the scores, and what would worry you at 35%? |
+| B10P01Q32 | 10 | 1 | In a 5-point agreement item, the answers were 5: 120, 4: 200, 3: 150, 2: 80, 1: 50. Compute the mean score and the favourable percentage (top-two-box), and say which one you would report to a manager and why. |
+| B10P01Q33 | 10 | 1 | Why do survey teams set a minimum group size (for example, five or ten responses) before reporting a team's score, and what happens to your dashboard design because of it? |
+| B10P01Q34 | 10 | 1 | Women are 120 of 300 employees at junior level, 60 of 240 at middle level and 12 of 100 at senior level. Compute representation at each level and say where the pipeline narrows most. |
+| B10P01Q35 | 10 | 1 | A pay band runs from INR 8 lakh (minimum) to INR 14 lakh (maximum) with a midpoint of INR 11 lakh. An employee earns INR 12.5 lakh. Compute the range penetration and say how you would read it. |
+| B10P01Q36 | 10 | 1 | Compute the weighted average increment for the company from the data below and explain why it differs from the simple average of the three percentages. |
+| B10P01Q37 | 10 | 1 | Compute the variance and the vacancy rate for each department from the table below, and say what you would flag. |
+| B10P01Q38 | 10 | 1 | The HRIS shows 1,014 active employees at month-end, but payroll paid 1,021 people. List the reasons the two counts can legitimately differ and the checks you would run to reconcile them. |
+| B10P01Q39 | 10 | 1 | Monthly payroll cost rose from INR 4.10 crore to INR 4.45 crore. Build a bridge from the data below and say how much is unexplained. |
+| B10P01Q40 | 10 | 1 | In plain words, what does India's Digital Personal Data Protection Act 2023 expect of an employer handling employee and candidate data (data fiduciary, consent, legitimate use for employment, deletion)? Mention that you are answering from general awareness. |
+| B10P01Q41 | 10 | 1 | What is the difference between master data (employee, position, organisation) and transactional data (leave, payroll, appraisal) in HR, and why does the difference matter when you build tables for reporting? |
+| B10P01Q42 | 10 | 1 | A CHRO asks you to design a monthly HR dashboard. Which pages, KPIs, filters and refresh rules would you propose, and which privacy controls would you build in? |
+| B10P01Q43 | 10 | 1 | A business head asks for the names of employees your attrition model flags as likely to resign so that he can "talk to them". How do you respond, and what do you offer instead? |
+| B10P01Q44 | 10 | 1 | What is a requisition and how does a headcount approval work (budget approved by finance, requisition raised by manager, approved by HR), and which data fields come from each step? |
+| B10P01Q45 | 10 | 1 | What is the difference between attrition, layoffs, retirement, termination for cause and absconding, and how should an exit-type field be coded so that voluntary and involuntary exits can be separated? |
+| B10P01Q46 | 10 | 1 | What are resignation, notice period, last working day, notice buyout and full-and-final settlement, and which of them are dates you would store in the exit table? |
+| B10P01Q47 | 10 | 1 | What is span of control, how is it computed from a reporting hierarchy table, and what might very high or very low values suggest? |
+| B10P01Q48 | 10 | 1 | What is campus hiring (offers, pre-placement offers, internship conversion, batch joining), and why do campus offers often have a long gap before joining? |
+| B10P01Q49 | 10 | 1 | What do KRA, KPI, OKR, PIP, calibration and the 9-box grid mean in performance management, and which of them produce data you could analyse? |
+| B10P01Q50 | 10 | 1 | How is demographic data (gender, disability, age, region, caste or religion) collected for DEI reporting, why is much of it optional and incomplete, and how should "prefer not to say" be handled in analysis? |
+| B10P01Q51 | 10 | 1 | Which statutory items does a payroll deal with in plain words (provident fund, ESI, professional tax, income tax deducted at source, gratuity), and which would an analyst need for employee cost reporting? Answer from general awareness. |
+| B10P01Q52 | 10 | 1 | What leave and attendance data does a company hold (casual, sick, earned, maternity leave, swipe records, regularisation requests), and what analyses can it support? |
+| B10P01Q53 | 10 | 1 | Compute the average span of control and the number of organisation layers for the data below, and say what you would flag. |
+| B10P01Q54 | 10 | 1 | Which fields do you need in an organisation hierarchy table to roll attrition up to a vice president's total team, and what goes wrong when a manager leaves and the team is reassigned? |
+| B10P01Q55 | 10 | 1 | A department was split into two in July. How would you report attrition for the whole year for the old and the new structure without breaking comparability? |
+| B10P01Q56 | 10 | 1 | A mid-year reorganisation moved 120 people from sales operations to a new shared-services unit. How do you stop this movement from showing up as attrition in one unit and as hiring in another? |
+| B10P01Q57 | 10 | 1 | The table below lists leavers and stayers by pay position in band. Compute the share of each group below band midpoint and say what it suggests and what it does not. |
+| B10P01Q58 | 10 | 1 | Attrition by time since last promotion is 8% for under 1 year, 11% for 1 to 2 years, 15% for 2 to 3 years and 24% for over 3 years. What does this suggest, and what other variables could be confounding it? |
+| B10P01Q59 | 10 | 1 | At a given date, 48 employees have resigned but are serving notice, and 30 of them will have their last working day next month. How would you use this pending-exit pipeline in a headcount forecast? |
+| B10P01Q60 | 10 | 1 | Why might top performers leave at a different rate from average performers, and how would you compare them using ratings data that are only available once a year? |
+| B10P01Q61 | 10 | 1 | What is a boomerang (rehired) employee, how would you measure the rehire rate, and what decisions could the data inform? |
+| B10P01Q62 | 10 | 1 | The company's attrition is 16% but it rose from 9% in the sales team to 25% while engineering stayed at 8%. What further cuts (tenure, manager, location, hire source, pay position) would you apply first, and in what order? |
+| B10P01Q63 | 10 | 1 | A company made 400 campus offers in December for July joining, and 340 joined. Compute the joining rate and say which data cuts (college tier, branch, offer date, interim offers elsewhere) you would use to find the leak. |
+| B10P01Q64 | 10 | 1 | A hiring plan asked for 240 hires by September; actual hires were 168 and 36 more offers are accepted but not yet joined. Compute plan attainment and the likely year-end position, and say which assumptions you made. |
+| B10P01Q65 | 10 | 1 | One recruiter closed 18 positions from 30 assigned requisitions in a quarter and another closed 9 from 12. How would you compare them fairly? |
+| B10P01Q66 | 10 | 1 | What would you measure about the candidate experience in recruiting (survey scores, stage drop-off, communication delay), and from which systems would the data come? |
+| B10P01Q67 | 10 | 1 | Of 60 joiners, 4 never turned up on the joining date and 3 left within the first week. What would you call these figures, and what pre-joining data would you review? |
+| B10P01Q68 | 10 | 1 | Background verification (BGV) fails or is delayed for 9% of offered candidates. Which measures (turnaround time, discrepancy rate, fall-out stage) would you report, and what privacy concerns arise? |
+| B10P01Q69 | 10 | 1 | What is the interview-to-offer ratio and interviews per hire, and how would you compute them from an interview-level table with candidate IDs and panel members? |
+| B10P01Q70 | 10 | 1 | What share of hires should come from internal moves and from referrals, and how would you measure the quality of referral hires against other sources? |
+| B10P01Q71 | 10 | 1 | What is time-to-productivity (ramp-up) for new joiners, and what data would you use to estimate it for a sales team or a support team? |
+| B10P01Q72 | 10 | 1 | The hiring manager rejects most profiles that recruiters shortlist. What data would you collect to find out whether the problem is the job description, the sourcing or the screening? |
+| B10P01Q73 | 10 | 1 | The rating distribution is 12% outstanding, 55% exceeds, 30% meets and 3% below. The guideline was 10%, 25%, 55%, 10%. Compute how far each category is from guideline and say what you would check before telling leadership about rating inflation. |
+| B10P01Q74 | 10 | 1 | From the 9-box table below, compute the share of employees in each talent group (high performance and high potential, core, low performance and low potential) and say how HR might use the result. |
+| B10P01Q75 | 10 | 1 | What are the four Kirkpatrick levels of training evaluation, and which levels can you measure from a learning management system versus other data? |
+| B10P01Q76 | 10 | 1 | Mandatory compliance training (for example, prevention of sexual harassment and code of conduct) had 1,640 completions from 1,820 assigned employees by the deadline. Compute the completion rate and say what you would report and to whom. |
+| B10P01Q77 | 10 | 1 | What would you measure about onboarding (30-60-90 day check-ins, early attrition, manager rating of the new joiner, time to first task), and how would you judge whether a new onboarding programme is helping? |
+| B10P01Q78 | 10 | 1 | What employee relations data (grievances, disciplinary cases, harassment complaints, closure time) might an analyst handle, and what extra care does this data need? |
+| B10P01Q79 | 10 | 1 | Compute the Bradford factor for the two employees below (spells squared times total days absent) and say what it is meant to show and what its limits are. |
+| B10P01Q80 | 10 | 1 | Employees have accumulated 12,000 unused earned-leave days and the average daily salary is INR 2,500. Estimate the leave encashment liability and say which team besides HR would want this number. |
+| B10P01Q81 | 10 | 1 | Why would an analyst look at who has not taken any leave for six months or who regularly works weekends, and what are the privacy and ethical limits of such monitoring? |
+| B10P01Q82 | 10 | 1 | How would you compute the median and the mean tenure of current employees, and why can a rising average tenure mean different things? |
+| B10P01Q83 | 10 | 1 | The workforce has 1,000 employees. Compute revenue per employee and employee cost as a percentage of revenue from the data below, and say what each can mislead you about. |
+| B10P01Q84 | 10 | 1 | What is the retention rate of women returning from maternity leave (for example, still employed 12 months after return), how would you compute it from leave and exit data, and what would you do about small numbers? |
+| B10P01Q85 | 10 | 1 | A target is to reach 40% women in leadership by 2030. With 20 leadership positions filling per year, the current share of 25% and 100 current leaders, outline how you would test whether the target is feasible. |
+| B10P01Q86 | 10 | 1 | What is the "leaky pipeline" in DEI analysis, and which three tables would you join to see where representation drops between hiring and promotion? |
+| B10P01Q87 | 10 | 1 | How would you compute and compare time-to-promotion by gender or by hiring source, and what bias risks exist in the comparison? |
+| B10P01Q88 | 10 | 1 | What is intersectional analysis in DEI reporting, and why does it quickly lead to very small groups that cannot be reported safely? |
+| B10P01Q89 | 10 | 1 | Why is workforce age distribution a planning topic, and how would you estimate the retirement risk in a plant where 22 of 180 supervisors are within five years of retirement age? |
+| B10P01Q90 | 10 | 1 | What is market benchmarking in compensation (salary surveys, percentiles such as P25, P50 and P75), and how would you compute an employee's position against the market median? |
+| B10P01Q91 | 10 | 1 | An employee is paid INR 9.6 lakh and the market median for the role is INR 11.2 lakh. Compute the market ratio and say what a compensation team would do with this for 150 employees. |
+| B10P01Q92 | 10 | 1 | How would you detect pay compression or pay inversion (a new joiner paid more than a longer-serving peer) in a salary table, and what would you recommend? |
+| B10P01Q93 | 10 | 1 | A salesperson has an annual variable target of INR 6 lakh with this payout curve: below 80% achievement pays zero, 80 to 100% pays pro rata, and above 100% pays 1.5 times for the excess. Compute the payout at 70%, 90% and 120% achievement. |
+| B10P01Q94 | 10 | 1 | Increments of 10% take effect on 1 July for a company with a financial year from April to March. What are the costs in the current financial year and in the next financial year per INR 100 of current salary? |
+| B10P01Q95 | 10 | 1 | ESOPs vest over four years with a one-year cliff (25% at the end of year one, then monthly). Compute the vested percentage for someone who has served 30 months and say what the cliff means for attrition analysis. |
+| B10P01Q96 | 10 | 1 | What would you check in a salary table to find outliers or data entry errors before a compensation analysis (zero or negative pay, ten-times jumps, monthly versus annual mix-ups)? |
+| B10P01Q97 | 10 | 1 | What is the difference between cost to company and cost to the employer (employer PF, gratuity, insurance, bonus), and which is right for budgeting? |
+| B10P01Q98 | 10 | 1 | An employee joined on 11 November and the contractual monthly gross is INR 60,000. Compute the pro-rated salary for November (30 days) on a calendar-day basis and on a fixed 26-working-day basis, and say what could differ. |
+| B10P01Q99 | 10 | 1 | What are loss-of-pay days, arrears and full-and-final settlement, and what data errors typically cause an arrears payment? |
+| B10P01Q100 | 10 | 1 | How are contract or third-party workers' costs and hours usually tracked compared with employees, and why does this make "total workforce" reporting hard? |
+| B10P01Q101 | 10 | 1 | How is data typically handed over from the applicant tracking system to the HRIS when a candidate joins, and what mismatches (names, dates, grades, cost centres) can appear? |
+| B10P01Q102 | 10 | 1 | How would you build a monthly headcount snapshot table from effective-dated employee records, and what are the benefits of keeping snapshots rather than recomputing from transactions? |
+| B10P01Q103 | 10 | 1 | The HR dashboard shows 1,014 headcount and the finance report shows 1,036. How would you trace the difference and who should own the final definition? |
+| B10P01Q104 | 10 | 1 | What is the difference between a dimension and a measure in an HR data model (for example, department, grade, location versus headcount, tenure, salary), and which dimensions are always needed for a headcount report? |
+| B10P01Q105 | 10 | 1 | What does it mean that a person has multiple records (concurrent employment, contract then permanent, rehire), and how do you pick one row per person without losing history? |
+| B10P01Q106 | 10 | 1 | What is a position-based versus a person-based HR model, and why does vacancy reporting need positions? |
+| B10P01Q107 | 10 | 1 | A plant has 5% budgeted absenteeism but actual is 7.5% in the night shift and 4% in the day shift. How would you slice the data to find what is happening, and why would you be careful about naming individuals? |
+| B10P01Q108 | 10 | 1 | What is workforce supply forecasting using an internal movement (transition) matrix of promotions, lateral moves and exits, and how would you build a simple one from two years of data? |
+| B10P01Q109 | 10 | 1 | How would you compute bench strength for succession planning (ready-now and ready-in-one-to-two-years successors per critical role), and which data would you need? |
+| B10P01Q110 | 10 | 1 | What are skills inventories and skills gap analysis, and which data (certifications, learning records, project history) would you use for a first version? |
+| B10P01Q111 | 10 | 1 | What is the difference between descriptive, diagnostic, predictive and prescriptive people analytics, and which stage would most HR teams in India be at today? |
+| B10P01Q112 | 10 | 1 | How would you compare the quality of hires from campus, referral, agency and job portal sources using first-year performance, retention and ramp-up time? |
+| B10P01Q113 | 10 | 1 | What anonymisation methods (removing names, pseudonymising employee IDs, banding salaries, grouping small cells) would you apply before sharing an HR dataset with an external survey or benchmarking vendor? |
+| B10P01Q114 | 10 | 1 | How would you set up row-level security so that each HR business partner sees only their own business unit's employee data in the dashboard, and what could still leak? |
+| B10P01Q115 | 10 | 1 | An employee asks the company to show all the personal data it holds about them. What awareness of employee data rights should an analyst have, and what would your role be? |
+| B10P01Q116 | 10 | 1 | What does purpose limitation mean for employee data (for example, using badge-swipe data collected for security to judge productivity), and why does it matter? |
+| B10P01Q117 | 10 | 1 | What are the ethical risks of scoring employees on "flight risk" or monitoring productivity from emails and logins, and what transparency would you recommend? |
+| B10P01Q118 | 10 | 1 | Why is it risky to email an Excel file with salaries or performance ratings, and what working habits would you follow instead? |
+| B10P01Q119 | 10 | 1 | How long should an employer keep resumes of candidates who were not hired, and what practical steps would you take as an analyst to avoid keeping unnecessary candidate data? |
+| B10P01Q120 | 10 | 1 | A global company's Indian centre sends employee data to a parent company abroad for global reporting. What privacy awareness points (cross-border transfer, access, purpose) would you raise? |
+| B10P01Q121 | 10 | 1 | What is the difference between anonymity and confidentiality in employee surveys, and what happens when survey answers are linked to HRIS attributes such as team, grade and gender? |
+| B10P01Q122 | 10 | 1 | How would you analyse free-text survey comments (themes, keyword counts, sentiment) and how would you protect the identity of commenters? |
+| B10P01Q123 | 10 | 1 | How would you identify the main drivers of overall engagement from the survey items, and why does high correlation between an item and engagement not prove causation? |
+| B10P01Q124 | 10 | 1 | Engagement scores in a team rose from 62 to 71, but the response rate fell from 85% to 48%. How would you interpret the change? |
+| B10P01Q125 | 10 | 1 | What would you look at in the early days of a new joiner cohort (attendance, system access, check-in survey, manager one-to-ones) to predict who will leave in 90 days? |
+| B10P01Q126 | 10 | 1 | What does it mean that some HR metrics are leading indicators (pending resignations, engagement, internal mobility) and others are lagging (attrition, time to fill)? Give examples of each. |
+| B10P01Q127 | 10 | 1 | How would you explain the difference between a metric and a KPI to an HR head, using one example from attrition and one from hiring? |
+| B10P01Q128 | 10 | 1 | HR operations says they closed 92% of employee queries within the agreed time. What additional data (volume, category, reopen rate, satisfaction) would you ask for before judging service quality? |
+| B10P01Q129 | 10 | 1 | What is the employee-to-HR ratio and the HR cost per employee, and why are benchmarks of these two ratios hard to compare across companies? |
+| B10P01Q130 | 10 | 1 | Regretted attrition among high performers rose while overall attrition stayed flat. How would you structure an analysis for the CHRO and which three actions might the data support? |
+| B10P01Q131 | 10 | 1 | Sixty requisitions have been open for more than 90 days and the business says recruiting is slow. How would you analyse whether the delay is due to recruiters, hiring managers, pay competitiveness or unrealistic requirements? |
+| B10P01Q132 | 10 | 1 | Compensation says 120 employees are paid more than 15% below market and asks for an off-cycle correction. How would you design the analysis to prioritise who gets a correction, and what would you tell finance about cost? |
+| B10P01Q133 | 10 | 1 | The business plans 25% revenue growth next year. Build the headcount plan: list the assumptions you need (productivity, attrition, hiring lead time, mix of roles) and the checks you would show leadership. |
+| B10P01Q134 | 10 | 1 | Engagement fell by 10 points in one location year on year. Which data would you combine (attrition, pulse comments, manager changes, workload, leave) and how would you separate real change from noise? |
+| B10P01Q135 | 10 | 1 | What is a BPO or contact-centre "nesting period" and why do those workforces track first-90-day attrition so closely? |
+| B10P01Q136 | 10 | 1 | What is the difference between an HR analyst, an HR generalist, an HR operations executive and an HRIS analyst, and which one suits an HR career switcher moving into analytics? |
+| B10P01Q137 | 10 | 1 | What is the difference between full-time, part-time and shift-based rostering data, and which metrics matter for a shift workforce (shrinkage, adherence, overtime)? |
+| B10P01Q138 | 10 | 1 | What is Human Capital Value Added or Human Capital ROI, and why do analysts treat such ratios with caution? |
+| B10P01Q139 | 10 | 1 | What contingent workforce share is "normal" in an IT or manufacturing company, and how would you track the cost difference between contractors and employees? |
+| B10P01Q140 | 10 | 1 | How would you measure the effectiveness of an employee referral programme, including the bonus cost per hire and the 12-month retention of referred hires? |
+| B10P01Q141 | 10 | 1 | What is a stay interview, and how could you use stay interview data and attrition data together? |
+| B10P01Q142 | 10 | 1 | What are alumni (ex-employee) networks used for in HR analytics, and what data would you need to track rehire potential? |
+| B10P01Q143 | 10 | 1 | How would you describe the role of an employer brand in the hiring funnel, and which metrics (career page visits, application rate, offer acceptance) would you link to it? |
+| B10P01Q144 | 10 | 1 | How is an HR analytics maturity journey sequenced in a company with data in spreadsheets, HRIS and payroll in separate systems, and what would you build in the first 90 days? |
+| B10P01Q145 | 10 | 1 | What is the difference between a legal entity, business unit, cost centre and location in HR reporting, and why do the same employees look different depending on the view? |
+| B10P01Q146 | 10 | 1 | How does an employee's work location (office, hybrid, remote) get stored in HR data, and what difficulties arise in analysing hybrid work? |
+| B10P01Q147 | 10 | 1 | What is a probation period, how does confirmation work, and which confirmation data would you analyse (confirmed on time, extended, terminated during probation)? |
+| B10P01Q148 | 10 | 1 | What are internal job postings and internal movement, and how would you compute the share of vacancies filled internally by grade? |
+| B10P01Q149 | 10 | 1 | Leadership asks for a one-page "state of the workforce" for the board. Which ten numbers would you include, and what notes would you add on definitions and privacy? |
+| B10P01Q150 | 10 | 1 | An external audit asks you to prove the headcount reported to the board on 31 March. What evidence (HRIS snapshot, payroll register, attendance, reconciliations) would you assemble? |
+| B10P02Q1 | 10 | 2 | How does an online marketplace such as Flipkart or Amazon make money, and how is that different from an inventory-led e-commerce retailer and from a quick-commerce company such as Blinkit, Zepto or Swiggy Instamart? |
+| B10P02Q2 | 10 | 2 | Walk me through the life of an e-commerce order, from the customer pressing "place order" to delivery or return, and name the data you get at each stage. |
+| B10P02Q3 | 10 | 2 | What is the difference between a cancellation, a customer return and an RTO (return to origin) in Indian e-commerce, and why does an analyst track them separately? |
+| B10P02Q4 | 10 | 2 | What is a SKU, and how is it different from a product, a listing and a seller offer on a marketplace? |
+| B10P02Q5 | 10 | 2 | What is a dark store, and how is it different from a normal supermarket and from a fulfilment centre or warehouse? |
+| B10P02Q6 | 10 | 2 | What does a "10-minute delivery" promise contain, and which time stages (order to pick-complete, pick-complete to rider pick-up, ride, handover) does an analyst measure? |
+| B10P02Q7 | 10 | 2 | Why does cash on delivery (COD) matter so much to an Indian e-commerce analyst, and how does it change the metrics you track? |
+| B10P02Q8 | 10 | 2 | Which tables would you expect in an e-commerce database (customers, orders, order items, products, payments, shipments, returns), and how do they connect to each other? |
+| B10P02Q9 | 10 | 2 | What do TAT, ETA, SLA, promise date and cut-off time mean in e-commerce delivery operations, and how are they related? |
+| B10P02Q10 | 10 | 2 | What is the difference between order-level data and order-item-level data, and how does mixing them give wrong order counts or wrong shipping-fee totals? |
+| B10P02Q11 | 10 | 2 | Walk through the waterfall from gross GMV to net sales after cancellations, RTO and customer returns, and explain why leadership may still quote the gross number. |
+| B10P02Q12 | 10 | 2 | How do you calculate the on-time delivery rate, and how does the choice of denominator change the answer? |
+| B10P02Q13 | 10 | 2 | What is the return rate, and how does it differ when you measure it by orders, by units and by value? |
+| B10P02Q14 | 10 | 2 | How do you tag a customer as new or repeat from an orders table, and what goes wrong with guest checkouts, duplicate accounts and a cancelled first order? |
+| B10P02Q15 | 10 | 2 | Which metrics would a marketplace use to judge a seller's performance, and what would you do about a seller with high GMV but poor metrics? |
+| B10P02Q16 | 10 | 2 | What is the difference between order fill rate and item fill rate in quick commerce, and why do both matter? |
+| B10P02Q17 | 10 | 2 | Which data and tables would you need to build a daily dashboard for a dark store manager, and which first cuts would you show? |
+| B10P02Q18 | 10 | 2 | What is on-shelf availability (or stock-out rate) in quick commerce, and how would you measure it from hourly stock snapshots? |
+| B10P02Q19 | 10 | 2 | How would you analyse payment failure at checkout, and which payment methods and stages would you compare? |
+| B10P02Q20 | 10 | 2 | An orders table holds several status rows per order (placed, packed, shipped, delivered). How do you pull the latest status per order, and how is a status-history table different from a snapshot table? |
+| B10P02Q21 | 10 | 2 | What is a monthly transacting user (MTU) and why do e-commerce and quick-commerce companies prefer it to registered or installed users? |
+| B10P02Q22 | 10 | 2 | You are asked to build the daily MIS report for an e-commerce operations team. Which columns, views and ageing buckets would you include for orders received, packed, shipped, delivered and pending? |
+| B10P02Q23 | 10 | 2 | The return rate in women's ethnic wear rose from 18% to 27% in six weeks. Which data cuts would you run to find the cause? |
+| B10P02Q24 | 10 | 2 | Late deliveries in Hyderabad rose from 8% to 15% of shipments. Which data cuts would you use to isolate the cause? |
+| B10P02Q25 | 10 | 2 | COD orders show a much higher RTO rate than prepaid orders. Use the data to decide whether a confirmation-call programme is worth running, and say what else you would test. |
+| B10P02Q26 | 10 | 2 | What are the main fulfilment models in e-commerce: seller-fulfilled, platform-fulfilled (such as Fulfilled by Amazon or Flipkart Assured) and inventory-led, and how do they change the data you see? |
+| B10P02Q27 | 10 | 2 | What are forward logistics and reverse logistics, and what do first mile, mid mile, last mile, a courier partner (3PL) and a pincode zone mean? |
+| B10P02Q28 | 10 | 2 | Which metrics spike during a festive sale such as Big Billion Days or the Great Indian Festival, and how should an analyst compare it with a normal period? |
+| B10P02Q29 | 10 | 2 | Why do platforms charge a delivery fee, handling fee, small-cart fee or minimum order value, and which metrics tell you whether these fees work? |
+| B10P02Q30 | 10 | 2 | What are the common reasons for cancellations (customer, seller, system, payment, stock-out), and which reasons would you want to reduce first? |
+| B10P02Q31 | 10 | 2 | What is serviceability in e-commerce and quick commerce, and how is pincode or geofence coverage data used? |
+| B10P02Q32 | 10 | 2 | How do category economics differ between grocery, fashion, electronics and beauty (AOV, margin, return rate, repeat frequency)? |
+| B10P02Q33 | 10 | 2 | What is D2C, and how does a brand's own website differ from a marketplace seller in the data it holds? |
+| B10P02Q34 | 10 | 2 | What are the main steps inside a fulfilment centre (inbound, putaway, pick, pack, ship), and which data is captured at each step? |
+| B10P02Q35 | 10 | 2 | A seller sells a ₹1,000 item. Calculate the seller payout and the platform's take rate from the fees below, and say which fees are commonly charged by marketplaces. |
+| B10P02Q36 | 10 | 2 | What are ROAS and ACoS for sponsored listings on a marketplace, and how do ad revenues fit into platform revenue? |
+| B10P02Q37 | 10 | 2 | How do you measure on-site search quality, and what is the zero-result or null-search rate? |
+| B10P02Q38 | 10 | 2 | How would you use the 80/20 (Pareto) view on SKUs and categories, and what decisions does it support? |
+| B10P02Q39 | 10 | 2 | What is the difference between MRP, selling price, discount percentage and effective price after bank offers, and why can an average discount mislead? |
+| B10P02Q40 | 10 | 2 | How would you test whether a discount coupon created extra orders rather than just discounting orders that would have happened anyway? |
+| B10P02Q41 | 10 | 2 | Who funds a discount on a marketplace (seller, brand or platform), and why does it matter for net revenue and margin? |
+| B10P02Q42 | 10 | 2 | What is a contact rate in customer support, and which reason tags (for example "where is my order") would you analyse first? |
+| B10P02Q43 | 10 | 2 | What are first-attempt delivery rate and an NDR (non-delivery report), and how do they drive RTO? |
+| B10P02Q44 | 10 | 2 | How do you measure delivery-partner productivity and cost, and which numbers would you show a city operations head? |
+| B10P02Q45 | 10 | 2 | Which workforce metrics (attendance, shift fill, productivity per picker hour, attrition) would you track for dark store pickers and delivery partners, using your HR background? |
+| B10P02Q46 | 10 | 2 | Your platform onboards delivery partners. How would you analyse the onboarding funnel and where would you look for drop-off? |
+| B10P02Q47 | 10 | 2 | How would you tell the difference between wastage (known losses) and shrinkage (unexplained loss) for a fresh category in a dark store? |
+| B10P02Q48 | 10 | 2 | How do items per order and AOV together explain a change in basket size, and what would you check? |
+| B10P02Q49 | 10 | 2 | What is the minimum AOV at which a quick-commerce order breaks even on contribution, given the cost lines below? |
+| B10P02Q50 | 10 | 2 | How do you connect app or web session events (clickstream) to orders, and what attribution problems arise? |
+| B10P02Q51 | 10 | 2 | How is a session defined on an app or website, and why can session counts differ between a web-analytics tool and your own event data? |
+| B10P02Q52 | 10 | 2 | What does a catalogue analyst check (duplicate listings, missing attributes, wrong categories, poor images), and how does bad catalogue data affect conversion and returns? |
+| B10P02Q53 | 10 | 2 | Which fraud and abuse patterns appear in e-commerce (coupon abuse, return fraud, fake COD orders, refund abuse), and what data would flag them? |
+| B10P02Q54 | 10 | 2 | Which date do you use to report an order to a month: order date, payment date, dispatch date or delivery date, and how does the choice change the numbers? |
+| B10P02Q55 | 10 | 2 | Which customer data in an orders table is personal information (name, phone, address, location), and how would you share data safely with a business team? |
+| B10P02Q56 | 10 | 2 | In plain words, what should an e-commerce analyst know about India's Digital Personal Data Protection Act, 2023, when using customer data for analysis? |
+| B10P02Q57 | 10 | 2 | What is order processing time or dispatch SLA in an e-commerce warehouse, and how would you measure breaches? |
+| B10P02Q58 | 10 | 2 | What is ETA accuracy in quick commerce, and how would you measure the gap between the delivery time shown to the customer and the actual time? |
+| B10P02Q59 | 10 | 2 | Why can a customer order an item shown as in stock and then have it cancelled, and which data would show inventory accuracy problems? |
+| B10P02Q60 | 10 | 2 | How would you analyse refund turnaround time, and how do orders, payment-gateway and bank records get reconciled for refunds? |
+| B10P02Q61 | 10 | 2 | How would you use hourly order data to plan pickers and riders, and how do you define a peak hour? |
+| B10P02Q62 | 10 | 2 | How would you measure the time between a customer's orders in quick commerce, and what does a long gap tell you? |
+| B10P02Q63 | 10 | 2 | What happens to a returned item (quality check, restock, refurbish, liquidate, destroy), and how do you measure the recovery value? |
+| B10P02Q64 | 10 | 2 | What data and pitfalls would you consider when comparing your prices with a competitor's (pack sizes, offers, availability)? |
+| B10P02Q65 | 10 | 2 | What cost lines make up the delivery cost per order in quick commerce, and how would you calculate it? |
+| B10P02Q66 | 10 | 2 | How would you segment quick-commerce customers by monthly order frequency, and what share of GMV should each segment contribute? |
+| B10P02Q67 | 10 | 2 | How do you define an active seller on a marketplace, and how would you measure seller churn and seller onboarding quality? |
+| B10P02Q68 | 10 | 2 | What are the main lines of a dark-store-level profit and loss, and how would you compare stores fairly? |
+| B10P02Q69 | 10 | 2 | How would you decide where to open the next dark store using existing order and delivery data? |
+| B10P02Q70 | 10 | 2 | A new dark store opened eight weeks ago. How would you judge whether it is ramping up well compared with older stores? |
+| B10P02Q71 | 10 | 2 | Delivery times in a city rose sharply on rainy evenings. How would you separate the effect of rider supply, store capacity and distance, and what would you recommend? |
+| B10P02Q72 | 10 | 2 | A membership programme (such as Prime, Flipkart VIP or Zepto Pass) claims members order more often. How would you test whether the programme caused it, given that keen buyers join more? |
+| B10P02Q73 | 10 | 2 | Item fill rate dropped from 96% to 91% in 15 of 200 stores. How would you find the cause and what would you do? |
+| B10P02Q74 | 10 | 2 | How do you decide which SKUs a dark store should stock, and what data would you use to rank them? |
+| B10P02Q75 | 10 | 2 | Do customers who get a late delivery order less often afterwards? Describe how you would analyse it and what could mislead you. |
+| B10P02Q76 | 10 | 2 | The company extended its return window from 7 to 10 days and made returns free. How would you evaluate the effect on orders, returns and margin? |
+| B10P02Q77 | 10 | 2 | What is a private label on an e-commerce platform, and why do platforms track its share of GMV and margin? |
+| B10P02Q78 | 10 | 2 | What is the buy box on a marketplace, and why do sellers care about it? |
+| B10P02Q79 | 10 | 2 | In plain words, what do the Consumer Protection (E-Commerce) Rules and the dark-pattern guidelines mean for an analyst working on checkout, pricing and COD fees? |
+| B10P02Q80 | 10 | 2 | Does GMV include GST and delivery fees, and why does the answer matter when you compare with finance numbers? |
+| B10P02Q81 | 10 | 2 | What does a marketplace settlement report show (orders, commission, fees, returns, payout), and how would you reconcile it with the orders table? |
+| B10P02Q82 | 10 | 2 | What is a delivery slot or cut-off time (same-day, next-day, scheduled), and how would you analyse its effect on orders and cost? |
+| B10P02Q83 | 10 | 2 | In plain words, what is the gig-worker social security provision in India, and why do analysts need to treat rider pay and location data with care? |
+| B10P02Q84 | 10 | 2 | How would you plan seasonal workforce for a fulfilment centre ahead of a festive sale, using last year's orders and productivity data? |
+| B10P02Q85 | 10 | 2 | Why are product ratings and reviews biased, and how would you use them in an analysis? |
+| B10P02Q86 | 10 | 2 | What dashboard or data would a brand or seller want from a marketplace, and which of it can the platform share? |
+| B10P02Q87 | 10 | 2 | What is item substitution in quick commerce, and how would you measure substitution acceptance? |
+| B10P02Q88 | 10 | 2 | What is a damaged-in-transit rate, and how would you split it between packaging, courier and handling? |
+| B10P02Q89 | 10 | 2 | Why are price experiments tricky in e-commerce, given that customers compare prices across apps? |
+| B10P02Q90 | 10 | 2 | Do faster delivery estimates raise conversion? Describe how you would analyse it and what could mislead you. |
+| B10P02Q91 | 10 | 2 | Design a seller scorecard for a marketplace: which metrics, what weights, and how would you avoid unfair penalties? |
+| B10P02Q92 | 10 | 2 | Late-night orders in quick commerce are few. How would you decide whether a dark store should shorten its opening hours? |
+| B10P02Q93 | 10 | 2 | How would you design an RTO risk score for COD orders, which inputs would you use, and how would you check it does not unfairly block good customers? |
+| B10P02Q94 | 10 | 2 | City A shows a better on-time delivery rate than city B overall, but B is better in every order-type segment. How can that happen, and how would you report it? |
+| B10P03Q1 | 10 | 3 | How does a bank make money? Explain interest income and non-interest (fee) income in plain words. |
+| B10P03Q2 | 10 | 3 | What is the difference between a bank, an NBFC and a fintech app, and what can each of them do with your money? |
+| B10P03Q3 | 10 | 3 | What is an NPA (non-performing asset), and after how many days of non-payment does a loan usually become one? |
+| B10P03Q4 | 10 | 3 | What are CASA deposits, and why does a bank want a high CASA share? |
+| B10P03Q5 | 10 | 3 | What is KYC, and why must banks and fintech apps do it before opening an account or giving a loan? |
+| B10P03Q6 | 10 | 3 | What is DPD (days past due), and how are delinquency buckets such as 0, 1-30, 31-60, 61-90 and 90+ used in reports? |
+| B10P03Q7 | 10 | 3 | Name the main retail loan products (home, personal, auto, two-wheeler, gold, credit card) and say how their risks differ. |
+| B10P03Q8 | 10 | 3 | What is UPI, and which parties are involved when one person pays another through a UPI app? |
+| B10P03Q9 | 10 | 3 | What are credit risk, market risk and operational risk? Give one everyday example of each. |
+| B10P03Q10 | 10 | 3 | What do PD, LGD and EAD mean in plain words, and how do they combine into expected loss? |
+| B10P03Q11 | 10 | 3 | What is a credit score (for example a CIBIL score), what data feeds it, and how do lenders use it? |
+| B10P03Q12 | 10 | 3 | What is the difference between life insurance and general insurance? Explain premium, sum assured and claim. |
+| B10P03Q13 | 10 | 3 | What is the difference between gross NPA and net NPA? |
+| B10P03Q14 | 10 | 3 | What are the common types of fraud in banking and fintech (card fraud, account takeover, loan application fraud, first-party fraud)? |
+| B10P03Q15 | 10 | 3 | Calculate gross NPA % and net NPA % and explain what each tells a manager. |
+| B10P03Q16 | 10 | 3 | Calculate collection efficiency two ways (current demand only, and including arrears) and say which one the collections head should watch. |
+| B10P03Q17 | 10 | 3 | An insurer has the figures below. Calculate the loss ratio, expense ratio and combined ratio, and say whether it made an underwriting profit. |
+| B10P03Q18 | 10 | 3 | A bank's figures are below. Calculate net interest income and net interest margin (NIM) and explain what NIM means. |
+| B10P03Q19 | 10 | 3 | Which tables and fields would you need to build a loan portfolio health dashboard, and what first cuts would you show? |
+| B10P03Q20 | 10 | 3 | Calculate the roll rate, cure rate and stay rate for the 30-DPD bucket and say what a rising roll rate warns about. |
+| B10P03Q21 | 10 | 3 | A lender approves 4,000 of 10,000 applications and disburses 3,200 of them. Calculate the approval rate and the application-to-disbursal rate, and name two reasons approved customers do not take the loan. |
+| B10P03Q22 | 10 | 3 | Why is customer data such as Aadhaar, PAN, account number and phone number sensitive, and how should an analyst handle it in files and dashboards? Answer at awareness level in plain words. |
+| B10P03Q23 | 10 | 3 | What data-quality problems usually appear in KYC and customer master data (duplicate customers, mismatched names, missing fields), and how would you check for them? |
+| B10P03Q24 | 10 | 3 | Calculate the cost-to-income ratio and say whether lower or higher is better and why. |
+| B10P03Q25 | 10 | 3 | Calculate the CASA ratio and explain how a falling CASA ratio would affect the bank's profit. |
+| B10P03Q26 | 10 | 3 | A transaction-monitoring system raises alerts for possible money laundering. Calculate the precision before and after a rule change and say what you would check before accepting the change. |
+| B10P03Q27 | 10 | 3 | Calculate the claim settlement ratio two ways and explain why this single number can mislead a customer comparing insurers. |
+| B10P03Q28 | 10 | 3 | Explain the 13th-month persistency ratio of a life insurer and calculate it from the data. |
+| B10P03Q29 | 10 | 3 | What is a vintage (cohort) analysis for loans, and which of the two cohorts below is performing worse? |
+| B10P03Q30 | 10 | 3 | In plain words, what does the RBI do, and why should a bank analyst know that regulatory reporting formats and definitions exist? |
+| B10P03Q31 | 10 | 3 | What is the difference between NEFT, RTGS, IMPS and UPI? |
+| B10P03Q32 | 10 | 3 | What are secured and unsecured loans, and which is riskier for the lender? |
+| B10P03Q33 | 10 | 3 | What is the repo rate in plain words, and how can a change in it affect loan EMIs and deposit rates? |
+| B10P03Q34 | 10 | 3 | What is a payment gateway, and how does it earn money (MDR, take rate)? |
+| B10P03Q35 | 10 | 3 | What is the difference between a debit card, a credit card, a prepaid wallet and a BNPL (buy now pay later) product? |
+| B10P03Q36 | 10 | 3 | What are the stages of the loan life cycle (sourcing, underwriting, disbursal, servicing, collections, closure) and what data does each stage create? |
+| B10P03Q37 | 10 | 3 | What is a demat account and what role do a stock exchange, a broker and a depository play when someone buys a share? |
+| B10P03Q38 | 10 | 3 | What is a mutual fund, and what do NAV, AUM and SIP mean? |
+| B10P03Q39 | 10 | 3 | What is the difference between term insurance, endowment and ULIP in plain words? |
+| B10P03Q40 | 10 | 3 | What is the difference between write-off and NPA, and why do banks still track written-off loans? |
+| B10P03Q41 | 10 | 3 | What is underwriting in lending and in insurance, and how do the two differ? |
+| B10P03Q42 | 10 | 3 | What is a chargeback, and who bears the loss in a card or payment dispute? |
+| B10P03Q43 | 10 | 3 | What is reinsurance in plain words, and why do insurers buy it? |
+| B10P03Q44 | 10 | 3 | What is a salary account, and why do banks compete for corporate salary accounts? Connect it to what an HR team provides to the bank. |
+| B10P03Q45 | 10 | 3 | Calculate the provision coverage ratio and say what a low value would signal. |
+| B10P03Q46 | 10 | 3 | Calculate the credit-deposit ratio and say what it tells a bank about how much of its deposits it has lent. |
+| B10P03Q47 | 10 | 3 | Calculate yield on advances, cost of funds and spread, and explain why spread differs from NIM. |
+| B10P03Q48 | 10 | 3 | A lender compares two score cut-offs. Calculate the marginal bad rate of the extra customers approved by lowering the cut-off, and say how you would present the trade-off. |
+| B10P03Q49 | 10 | 3 | Calculate expected loss for one loan and for a pool, and say what the result is used for. |
+| B10P03Q50 | 10 | 3 | Calculate the FOIR (fixed obligation to income ratio) and the loan-to-value (LTV) ratio, and say how a lender uses each. (Here LTV means loan-to-value, not customer lifetime value.) |
+| B10P03Q51 | 10 | 3 | Two credit card customers are below. What is the average of their individual utilisation, what is the portfolio utilisation, and which one should a risk analyst report? |
+| B10P03Q52 | 10 | 3 | A loan funnel is below. Calculate stage-to-stage and overall conversion and say where you would look first for improvement. |
+| B10P03Q53 | 10 | 3 | Compare two loan sourcing channels using the data below. Which is better for the business, and what else would you check before deciding? |
+| B10P03Q54 | 10 | 3 | Calculate the first-payment-default rate and the NACH/e-mandate bounce rate, and explain why early-delinquency measures matter to a lender. |
+| B10P03Q55 | 10 | 3 | Walk through the collections contact funnel below and calculate each rate. Where would you intervene? |
+| B10P03Q56 | 10 | 3 | Calculate cost to collect and explain how a collections head uses it when choosing between tele-calling and field visits. |
+| B10P03Q57 | 10 | 3 | Calculate claim frequency, average claim size (severity) and pure premium, and explain what a pricing analyst does with them. |
+| B10P03Q58 | 10 | 3 | Calculate the motor insurance renewal rate and list three data cuts you would use to find why renewals are low. |
+| B10P03Q59 | 10 | 3 | Calculate the gateway take rate and the chargeback ratio, and say why payment companies watch both. |
+| B10P03Q60 | 10 | 3 | Calculate the fraud rate in basis points and say what you would compare it with. |
+| B10P03Q61 | 10 | 3 | A payment gateway report and a bank settlement file are below. How would you reconcile them and what are the likely causes of the gap? |
+| B10P03Q62 | 10 | 3 | Calculate the change in mutual fund AUM from flows versus market movement and explain why distributors track both. |
+| B10P03Q63 | 10 | 3 | Calculate NAV per unit and explain what NAV does and does not tell an investor. |
+| B10P03Q64 | 10 | 3 | Calculate the SIP stoppage ratio and explain why distributors watch it. |
+| B10P03Q65 | 10 | 3 | Calculate the cross-sell ratio (products per customer) and explain how a retail bank uses it. |
+| B10P03Q66 | 10 | 3 | Calculate the complaint rate per 10,000 policies and say which grievance data an insurer would track. |
+| B10P03Q67 | 10 | 3 | What are the main KYC, AML and fraud screening checks in a customer onboarding flow, and which data points does each use? |
+| B10P03Q68 | 10 | 3 | What is a velocity rule in fraud detection, and how would you pick a threshold for it using data? |
+| B10P03Q69 | 10 | 3 | What are SMA-0, SMA-1 and SMA-2 categories of stressed loans, and why are they watched before a loan becomes an NPA? |
+| B10P03Q70 | 10 | 3 | What are the main differences between a bank deposit customer metric set and a lending customer metric set? |
+| B10P03Q71 | 10 | 3 | What does UPI "zero MDR" mean, and how do UPI apps still earn revenue? |
+| B10P03Q72 | 10 | 3 | How would you define an active customer for a bank, a UPI app and an insurer, and why do the definitions differ? |
+| B10P03Q73 | 10 | 3 | What are P2P and P2M payments, and how do the metrics you track differ for each? |
+| B10P03Q74 | 10 | 3 | What are the main reasons for UPI or card payment failures (technical decline vs business decline), and how does the failure code field help an analyst? |
+| B10P03Q75 | 10 | 3 | What data would you pull to build a customer 360 view for a retail bank, and what privacy caution applies? |
+| B10P03Q76 | 10 | 3 | What is a scorecard in credit underwriting, what do Gini and KS tell you, and how would you explain them to a non-technical manager? |
+| B10P03Q77 | 10 | 3 | What is IND AS 109 or IFRS 9 expected credit loss in plain words, and what are stage 1, stage 2 and stage 3 loans? |
+| B10P03Q78 | 10 | 3 | What is a bank's capital adequacy ratio in plain words, and why does a regulator care about it? |
+| B10P03Q79 | 10 | 3 | What is the India Digital Personal Data Protection Act in plain words, and what two habits should a BFSI analyst follow because of it? (From memory: awareness only, not legal advice.) |
+| B10P03Q80 | 10 | 3 | What is the PMLA and the purpose of suspicious transaction reporting, in plain words, and where does an analyst's work touch it? |
+| B10P03Q81 | 10 | 3 | What are the RBI digital lending guidelines about, at awareness level, and which data fields would a lender need to keep to show the rules are followed? |
+| B10P03Q82 | 10 | 3 | What is the Account Aggregator framework in plain words, and what does it change for lenders' data? |
+| B10P03Q83 | 10 | 3 | What is data-sharing consent, and how should an analyst treat customer data when handing it to an outside vendor or consultant? |
+| B10P03Q84 | 10 | 3 | A salary-advance (earned wage access) product uses employer payroll data. What data would you need, what risks exist, and how does an HR background help? |
+| B10P03Q85 | 10 | 3 | What workforce metrics would you track for a collections call-centre team (attrition, agent productivity, attendance), and how would they connect to recovery numbers? |
+| B10P03Q86 | 10 | 3 | A personal-loan portfolio's 30+ DPD rate rose from 3% to 4.5% over three months. How would you investigate, and what cuts would you make first? |
+| B10P03Q87 | 10 | 3 | Collection efficiency in one region fell from 96% to 91% in a month. Walk through what you would check, in order. |
+| B10P03Q88 | 10 | 3 | A health insurer's incurred claim ratio rose from 78% to 88% in a year. How would you find out whether it is frequency, severity, mix or pricing? |
+| B10P03Q89 | 10 | 3 | A fintech lender's approval rate dropped from 45% to 35% after a model update. How do you tell whether this is good risk control or lost business? |
+| B10P03Q90 | 10 | 3 | Fraud losses doubled after a cashback campaign. How would you separate genuine growth from abuse using data? |
+| B10P03Q91 | 10 | 3 | What is a stock market index such as Nifty 50, and how is it different from a single share price? |
+| B10P03Q92 | 10 | 3 | What is a bond, and why does its price fall when interest rates rise? Explain in plain words. |
+| B10P03Q93 | 10 | 3 | What are cash market and futures-and-options (F&O) trading, and why is F&O considered riskier? |
+| B10P03Q94 | 10 | 3 | What is a co-lending or DLG (default loss guarantee) arrangement between a bank and a fintech, in plain words? |
+| B10P03Q95 | 10 | 3 | What is a thin-file or new-to-credit customer, and what alternative data might a lender consider for them? |
+| B10P03Q96 | 10 | 3 | What is a broker's revenue model (brokerage, interest on margin funding, distribution fees), and what metrics would a broking analyst track (active clients, ARPU, turnover)? |
+| B10P03Q97 | 10 | 3 | Calculate a broker's revenue per active client and explain why ARPU can move without new customers. |
+| B10P03Q98 | 10 | 3 | What is population stability index (PSI) in model monitoring, and when would a risk team worry about a high value? |
+| B10P03Q99 | 10 | 3 | What is concentration risk, and how would you measure it in a loan book by sector, geography or borrower? |
+| B10P03Q100 | 10 | 3 | What is stress testing in a bank, and what simple what-if could an analyst run on a loan portfolio? |
+| B10P03Q101 | 10 | 3 | What is loan stacking or synthetic identity fraud, and what data signals can reveal it? |
+| B10P03Q102 | 10 | 3 | What is a mule account, and what patterns in account data can point to one? |
+| B10P03Q103 | 10 | 3 | How can bias or unfair outcomes creep into credit decisions, and what checks can an analyst run at awareness level? |
+| B10P03Q104 | 10 | 3 | What is earned versus written premium, and why do insurers report loss ratios on earned premium? |
+| B10P03Q105 | 10 | 3 | What is IBNR (incurred but not reported) in plain words, and why can a recent period's loss ratio be understated? |
+| B10P03Q106 | 10 | 3 | What are APE (annualised premium equivalent) and value of new business in life insurance, in plain words, and why are they used instead of total premium? |
+| B10P03Q107 | 10 | 3 | What is a bank branch productivity analysis, and which cuts (staff, deposits, loans, footfall) would you use? Include an HR-flavoured staffing metric. |
+| B10P03Q108 | 10 | 3 | What is a dormant or inactive account, how is it identified, and what do banks do with such data? |
+| B10P03Q109 | 10 | 3 | Design a weekly KPI pack for the head of collections of an NBFC: which metrics, which cuts, and which alerts would you include and why? |
+| B10P03Q110 | 10 | 3 | A bank wants to reduce false-positive alerts in transaction monitoring by 30% without missing real cases. How would you test and prove a new threshold is safe? |
+| B10P03Q111 | 10 | 3 | Persistency fell in one sales channel (bancassurance) but not others. How would you investigate and what would you recommend? |
+| B10P03Q112 | 10 | 3 | Design a simple early-warning signal set for a retail loan portfolio using repayment, bureau and transaction data, and explain how you would test it. |
+| B10P03Q113 | 10 | 3 | How would you build a first-cut risk score for a new-to-credit segment using only repayment history of the first three EMIs, and how would you validate it before use? |
+| B10P04Q1 | 10 | 4 | In plain words, how does a multispecialty hospital work, and what is the difference between OPD, IPD, emergency and day-care patients? |
+| B10P04Q2 | 10 | 4 | What is the difference between a payer, a provider and a patient in healthcare, and how do money and data move between them? |
+| B10P04Q3 | 10 | 4 | What is a health insurance claim, and what is the difference between a cashless claim and a reimbursement claim? |
+| B10P04Q4 | 10 | 4 | What are ICD-10 codes, and why does a healthcare data analyst care about them? |
+| B10P04Q5 | 10 | 4 | What is an EMR/EHR and a hospital information system (HIS), and what kinds of tables or data would an analyst get from them? |
+| B10P04Q6 | 10 | 4 | Why is patient data treated as especially sensitive, and what basic rules would you follow when you handle it as an analyst? |
+| B10P04Q7 | 10 | 4 | What is a clinical trial, and what happens in Phase I, II, III and IV in simple terms? |
+| B10P04Q8 | 10 | 4 | In pharma sales, what is the difference between primary sales and secondary sales, and which one tells you more about real demand? |
+| B10P04Q9 | 10 | 4 | Which five KPIs would you put on a hospital operations dashboard, and what does each one tell the management? |
+| B10P04Q10 | 10 | 4 | Calculate bed occupancy rate and explain what data feeds it. |
+| B10P04Q11 | 10 | 4 | Calculate average length of stay (ALOS) and say what you would do before comparing it with another hospital. |
+| B10P04Q12 | 10 | 4 | Calculate ARPOB (average revenue per occupied bed per day) and explain why hospital management watches it. |
+| B10P04Q13 | 10 | 4 | Calculate the initial and the final claim denial rate and explain the difference. |
+| B10P04Q14 | 10 | 4 | Calculate the 30-day readmission rate and name two cautions when you report it. |
+| B10P04Q15 | 10 | 4 | Calculate a brand's market share and evolution index and explain what each number tells a pharma sales manager. |
+| B10P04Q16 | 10 | 4 | A trial needs 200 enrolled patients and the expected screen failure rate is 40 percent. How many people must be screened, and why does this matter for planning? |
+| B10P04Q17 | 10 | 4 | You are asked to analyse why health insurance claims are being denied at a hospital. What tables and fields would you ask for, and what are your first cuts? |
+| B10P04Q18 | 10 | 4 | You receive a patient-level extract with names, phone numbers and diagnoses for an analysis that needs only trends. What do you do before you start? |
+| B10P04Q19 | 10 | 4 | What does a TPA (third-party administrator) do in Indian health insurance, and what data does it hold? |
+| B10P04Q20 | 10 | 4 | What is pre-authorisation in cashless treatment, and why do turnaround times for it matter? |
+| B10P04Q21 | 10 | 4 | What are the main stages of the revenue cycle in a hospital, from registration to payment collection? |
+| B10P04Q22 | 10 | 4 | Who is a medical representative (MR) in pharma, and how is a typical field-force hierarchy organised (MR, area manager, regional manager)? |
+| B10P04Q23 | 10 | 4 | What do these pharma terms mean: molecule, brand, generic, formulation, therapy area? |
+| B10P04Q24 | 10 | 4 | Who are the sponsor, the CRO, the site and the investigator in a clinical trial, and what is a case report form (CRF)? |
+| B10P04Q25 | 10 | 4 | What is the difference between an adverse event (AE) and a serious adverse event (SAE), and who tracks them? |
+| B10P04Q26 | 10 | 4 | What is NABH accreditation in plain words, and why would quality indicators be tracked by an analyst? |
+| B10P04Q27 | 10 | 4 | What is a patient unique ID (UHID or MRN), and what goes wrong in analysis when one patient has two IDs? |
+| B10P04Q28 | 10 | 4 | Besides doctors and nurses, which staff groups does a hospital have, and how do visiting consultants and contract staff complicate headcount reporting? |
+| B10P04Q29 | 10 | 4 | Where does a hospital earn its revenue (consultations, room rent, procedures, pharmacy, diagnostics), and why does the revenue mix matter for analysis? |
+| B10P04Q30 | 10 | 4 | Explain the difference between ICD-10, CPT, SNOMED CT, LOINC and MedDRA in one line each, and say which kind of analyst meets which. |
+| B10P04Q31 | 10 | 4 | Why can bed occupancy be reported with different denominators (available beds vs staffed beds), and how would you make the dashboard unambiguous? |
+| B10P04Q32 | 10 | 4 | How do you count inpatient days when a patient is admitted at 11 pm and discharged at 10 am two days later, and why do hospitals agree a counting rule? |
+| B10P04Q33 | 10 | 4 | Lab turnaround time (TAT) for blood tests is reported as an average. What does the data below suggest and what would you report instead? |
+| B10P04Q34 | 10 | 4 | Calculate the OPD no-show rate and explain what you would do with it. |
+| B10P04Q35 | 10 | 4 | Calculate the OPD-to-IPD conversion rate and explain how a doctor-wise view could mislead. |
+| B10P04Q36 | 10 | 4 | Calculate operating theatre utilisation and explain why booked time and actual time differ. |
+| B10P04Q37 | 10 | 4 | Calculate the nurse-to-patient ratio and name two other workforce metrics you would pair with it. |
+| B10P04Q38 | 10 | 4 | What data would you use to study nurse attrition in a hospital and its link to patient care, and what cautions apply? |
+| B10P04Q39 | 10 | 4 | Calculate days in accounts receivable (A/R) and say what a rising number means. |
+| B10P04Q40 | 10 | 4 | Calculate the clean claim (first-pass acceptance) rate and say what low values usually point to. |
+| B10P04Q41 | 10 | 4 | Calculate payer mix and say why it matters for hospital revenue planning. |
+| B10P04Q42 | 10 | 4 | Calculate target achievement and year-on-year growth for a pharma sales territory and explain what else you would check. |
+| B10P04Q43 | 10 | 4 | What is MAT (moving annual total) in pharma sales reporting, why is it used, and what is MAT growth in the example below? |
+| B10P04Q44 | 10 | 4 | Calculate doctor coverage and call frequency for a field-force dashboard and explain what each shows. |
+| B10P04Q45 | 10 | 4 | Primary sales in a pharma company jump at every quarter end. What could explain this, and what data would you compare to check? |
+| B10P04Q46 | 10 | 4 | What tables and fields would you need to build a pharma sales-force dashboard by territory and brand? |
+| B10P04Q47 | 10 | 4 | Calculate the adverse event rate per treatment arm and explain why you must be careful in interpreting it. |
+| B10P04Q48 | 10 | 4 | Calculate the dropout rate in a trial and say how a dashboard should handle dropouts versus completers. |
+| B10P04Q49 | 10 | 4 | What basic data checks would you run on a hospital admission-discharge table before reporting any length-of-stay figure? |
+| B10P04Q50 | 10 | 4 | Why is comparing ALOS across two hospitals or two doctors unfair without case mix, and how would you adjust in a simple way? |
+| B10P04Q51 | 10 | 4 | What is a coding error or upcoding in healthcare data, and how can an analyst spot unusual patterns without accusing anyone? |
+| B10P04Q52 | 10 | 4 | In plain words, what do India's DPDP Act and the US HIPAA rule try to protect, and how do they affect an analyst who works with patient data? |
+| B10P04Q53 | 10 | 4 | Patient data was collected for treatment. A manager now wants to use it for marketing analytics. What concerns would you raise? |
+| B10P04Q54 | 10 | 4 | What is the difference between anonymised, de-identified and pseudonymised data, and which one would you ask for when you only need trends? |
+| B10P04Q55 | 10 | 4 | What does role-based access mean in a hospital reporting setting, and which of your reports would need restricted access? |
+| B10P04Q56 | 10 | 4 | The average length of stay rose from 4.2 to 5.1 days over three months. How would you investigate? |
+| B10P04Q57 | 10 | 4 | Bed occupancy is 92 percent, yet revenue per occupied bed is falling. What would you check? |
+| B10P04Q58 | 10 | 4 | The claim denial rate rose from 8 percent to 14 percent in one quarter. How would you break this down and what would you report? |
+| B10P04Q59 | 10 | 4 | A brand's sales fell in one region while the therapy market grew there. What cuts would you do and what data would you need? |
+| B10P04Q60 | 10 | 4 | A clinical trial site is far behind its enrollment target. What would you analyse and what would you tell the study team? |
+| B10P04Q61 | 10 | 4 | What is the difference between a generic drug, a branded generic and a biosimilar, and what is a patent cliff? |
+| B10P04Q62 | 10 | 4 | Why do most drug candidates never reach the market, and what does the drug pipeline funnel look like? |
+| B10P04Q63 | 10 | 4 | What is IQVIA known for in the pharma world, and what kind of data do companies buy from audit firms? |
+| B10P04Q64 | 10 | 4 | Why is hospital demand seasonal, and how does that affect how you compare months? |
+| B10P04Q65 | 10 | 4 | What are EDI 837 and 835 files in US healthcare billing, and how do they relate to claims analysis? |
+| B10P04Q66 | 10 | 4 | In plain words, what is the difference between CDISC SDTM and ADaM datasets in clinical trial reporting? |
+| B10P04Q67 | 10 | 4 | What does an audit trail mean in clinical data systems, and why do regulators care about it (GCP and 21 CFR Part 11 at awareness level)? |
+| B10P04Q68 | 10 | 4 | What is HL7 or FHIR, and why would an analyst hear about them when hospital systems are integrated? |
+| B10P04Q69 | 10 | 4 | What is real-world data (RWD) in healthcare, and what are its strengths and limits compared with trial data? |
+| B10P04Q70 | 10 | 4 | What is pharmacovigilance, and why does safety data live in a separate database from the trial database? |
+| B10P04Q71 | 10 | 4 | A report shows a rare-disease group with only 2 patients in a ward-and-age cell. What should you do before sharing it? |
+| B10P04Q72 | 10 | 4 | Calculate the hospital pharmacy wastage percentage and say what you would investigate. |
+| B10P04Q73 | 10 | 4 | What is case mix index (CMI) and how does it change how you read ALOS and revenue per patient? |
+| B10P04Q74 | 10 | 4 | Which metrics would you track for a telemedicine or online pharmacy service, beyond number of consultations or orders? |
+| B10P04Q75 | 10 | 4 | How would you measure doctor productivity in an OPD, and what would be unfair about ranking doctors on a single number? |
+| B10P04Q76 | 10 | 4 | What share of sales do the top 20 percent of brands give in the example below, and what would you do with a Pareto finding like this? |
+| B10P04Q77 | 10 | 4 | Outline how you would size the market for a new cancer drug in India, and what data sources you would use. |
+| B10P04Q78 | 10 | 4 | A hospital group wants to reduce 30-day readmissions. What analysis would you propose, and how would you avoid blaming individual doctors? |
+| B10P04Q79 | 10 | 4 | Design a monthly management report for a hospital CEO using only data you can get from billing, admission and lab systems. What goes on page one? |
+| B10P05Q1 | 10 | 5 | What is a supply chain, and what are its main stages from supplier to customer? |
+| B10P05Q2 | 10 | 5 | What is OTIF (on-time, in-full), and why is it more demanding than on-time delivery alone? |
+| B10P05Q3 | 10 | 5 | What is inventory turnover, and what does a low or high value tell a supply chain analyst? |
+| B10P05Q4 | 10 | 5 | What is lead time, and how is supplier lead time different from customer order lead time? |
+| B10P05Q5 | 10 | 5 | What is safety stock, and why does a business hold it? |
+| B10P05Q6 | 10 | 5 | What is a stockout, and what business costs does it cause beyond the lost sale? |
+| B10P05Q7 | 10 | 5 | What is fill rate, and how is order fill rate different from line fill rate and unit fill rate? |
+| B10P05Q8 | 10 | 5 | What is demand forecasting, and which inputs and data sources does a demand planner typically use? |
+| B10P05Q9 | 10 | 5 | What is S&OP (Sales and Operations Planning), who attends the meeting, and what does the analyst bring to it? |
+| B10P05Q10 | 10 | 5 | What is a SKU, and how is a SKU different from a product, a category and a SKU-location? |
+| B10P05Q11 | 10 | 5 | What is ABC analysis of inventory, and how does it help prioritise attention? |
+| B10P05Q12 | 10 | 5 | What is the difference between a warehouse, a distribution centre, a fulfilment centre and a dark store? |
+| B10P05Q13 | 10 | 5 | Compute OTIF from the order data below and say which failure type is the bigger problem. |
+| B10P05Q14 | 10 | 5 | Compute order fill rate, line fill rate and unit fill rate from the data below, and explain why the three differ. |
+| B10P05Q15 | 10 | 5 | Compute days of inventory on hand (days of supply) from the data below and say whether you would worry. |
+| B10P05Q16 | 10 | 5 | Calculate the reorder point from the data below. |
+| B10P05Q17 | 10 | 5 | Compute inventory turnover and days of inventory for the item group below, then explain why the answer depends on whether you use sales or cost of goods sold. |
+| B10P05Q18 | 10 | 5 | What data tables and fields would you need to report OTIF by supplier or by customer, and what are the first three cuts you would make? |
+| B10P05Q19 | 10 | 5 | Compute forecast bias and WAPE from the data below and say what each tells a planner. |
+| B10P05Q20 | 10 | 5 | An item's forecast is consistently higher than actual sales. What are the consequences for inventory, cash and service, and how would you detect the pattern in data? |
+| B10P05Q21 | 10 | 5 | How does a business decide how much of an item to order and when, and how do reorder point and order quantity work together? |
+| B10P05Q22 | 10 | 5 | Which stock-keeping data would you check first to confirm that the system inventory matches what is physically in the warehouse? |
+| B10P05Q23 | 10 | 5 | What data sources (ERP, WMS, TMS, planning tool, supplier portals) feed a supply chain dashboard, and what does each system record? |
+| B10P05Q24 | 10 | 5 | How would you measure supplier performance, and what metrics beyond price would you put on a supplier scorecard? |
+| B10P05Q25 | 10 | 5 | What is a purchase order, a goods receipt note and a supplier invoice, and how does the three-way match use them? |
+| B10P05Q26 | 10 | 5 | What is the difference between demand planning, supply planning and inventory planning? |
+| B10P05Q27 | 10 | 5 | What is procurement, and how is it different from purchasing and sourcing? |
+| B10P05Q28 | 10 | 5 | What are inbound logistics and outbound logistics, and what is reverse logistics? |
+| B10P05Q29 | 10 | 5 | What is a 3PL (third-party logistics provider), and why do companies outsource logistics? |
+| B10P05Q30 | 10 | 5 | What do WMS, TMS and ERP stand for, and what does each system manage? |
+| B10P05Q31 | 10 | 5 | What is the bullwhip effect, and why do small changes in customer demand create large swings upstream? |
+| B10P05Q32 | 10 | 5 | What is MOQ (minimum order quantity), and how does it affect ordering decisions? |
+| B10P05Q33 | 10 | 5 | What is backorder and what is the difference between a backorder and a lost sale? |
+| B10P05Q34 | 10 | 5 | What are the main modes of transport (road, rail, air, sea) and what trade-off does each offer between cost and speed? |
+| B10P05Q35 | 10 | 5 | What does cross-docking mean, and when is it used in a warehouse network? |
+| B10P05Q36 | 10 | 5 | What is FIFO and FEFO in warehouse stock rotation, and which products need FEFO? |
+| B10P05Q37 | 10 | 5 | What are carrying cost (holding cost) and ordering cost, and what is included in each? |
+| B10P05Q38 | 10 | 5 | What is a perfect order, and which components does a perfect order rate combine? |
+| B10P05Q39 | 10 | 5 | Compute the Economic Order Quantity from the data below and explain what the formula balances. |
+| B10P05Q40 | 10 | 5 | A safety-stock rule of thumb is z x demand variability x square root of lead time. Calculate the safety stock from the data below and explain why higher variability or longer lead time raises it. |
+| B10P05Q41 | 10 | 5 | Rank the SKUs below into A, B and C classes by share of annual revenue and say what you would do differently for each class. |
+| B10P05Q42 | 10 | 5 | A warehouse has the pick data below. Compute pick accuracy and lines picked per labour hour for each shift and say which shift is better. |
+| B10P05Q43 | 10 | 5 | Compute supplier on-time delivery percentage and average delay for the supplier data below, and say what you would ask the buyer. |
+| B10P05Q44 | 10 | 5 | Compute order cycle time and its stage breakdown from the timestamps below and say where the bottleneck is. |
+| B10P05Q45 | 10 | 5 | Compute transport cost per kg and per delivery for the data below, and say which route needs investigation. |
+| B10P05Q46 | 10 | 5 | Compute inventory accuracy from a cycle count and list the first checks if it is low. |
+| B10P05Q47 | 10 | 5 | What is a service level target, and how do service level, safety stock and inventory cost trade off against each other? |
+| B10P05Q48 | 10 | 5 | How would you use ABC analysis together with XYZ analysis (demand variability) to set a different stocking policy for each segment? |
+| B10P05Q49 | 10 | 5 | A buyer says a supplier's lead time is 14 days, but your data shows 14 days sometimes and 25 days at other times. How do you describe and quantify lead time variability? |
+| B10P05Q50 | 10 | 5 | What is the order-to-cash cycle and what are the Excel or SQL steps to measure each stage from system timestamps? |
+| B10P05Q51 | 10 | 5 | How would you build a stockout or low-stock early-warning report, and what columns and thresholds would it need? |
+| B10P05Q52 | 10 | 5 | What master data fields (SKU, supplier, location, unit of measure, lead time, MOQ) do supply chain analyses depend on, and what data quality problems do you look for in them? |
+| B10P05Q53 | 10 | 5 | How do you handle units of measure (each, case, pallet, kg) when combining inventory or sales data from different systems? |
+| B10P05Q54 | 10 | 5 | How do seasonality, promotions and festivals (for example Diwali or end-of-season sales) show up in demand data, and how would you treat them before forecasting? |
+| B10P05Q55 | 10 | 5 | What is a demand forecast at SKU level versus category level, and why is aggregate forecast usually more accurate than item-level forecast? |
+| B10P05Q56 | 10 | 5 | What is the difference between demand and sales in the data, and how would you estimate demand for an item that was out of stock for part of the period? |
+| B10P05Q57 | 10 | 5 | How does a replenishment model for a quick-commerce dark store differ from one for a central warehouse supplying retail stores? |
+| B10P05Q58 | 10 | 5 | How would you analyse delivery delays for a courier network by origin, destination, hub and carrier, and what would you look for? |
+| B10P05Q59 | 10 | 5 | What is the difference between a make-to-stock and a make-to-order business, and how does that change which planning metrics matter? |
+| B10P05Q60 | 10 | 5 | A plant uses workforce planning like a warehouse does: how would you compute the labour hours needed from the order volume forecast, and which HR data would you join? |
+| B10P05Q61 | 10 | 5 | On-time delivery fell from 94% to 86% over two weeks. Walk through how you would investigate, naming the data cuts and systems you would use. |
+| B10P05Q62 | 10 | 5 | Fill rate is stable at 96% but OTIF dropped from 92% to 83%. What does this pattern suggest and how would you test the hypotheses? |
+| B10P05Q63 | 10 | 5 | The business reports 98% stock availability but customers still complain about stockouts. How could both be true, and what would you check? |
+| B10P05Q64 | 10 | 5 | What are Incoterms (for example FOB and CIF) in plain words, and why do they matter to a logistics analyst? |
+| B10P05Q65 | 10 | 5 | What is a bill of lading, an invoice and a packing list, and what is each document used for in shipping? |
+| B10P05Q66 | 10 | 5 | What does lean or just-in-time inventory mean, and what risk does it carry when supply is disrupted? |
+| B10P05Q67 | 10 | 5 | What are GST, e-way bills and eInvoicing in plain words, and why do they matter to transport and inventory data in India (from memory, unverified)? |
+| B10P05Q68 | 10 | 5 | What is the cash-to-cash cycle, and how do inventory days, receivable days and payable days combine to produce it? |
+| B10P05Q69 | 10 | 5 | How do you compute and interpret the obsolete or aged inventory share, and what actions follow? |
+| B10P05Q70 | 10 | 5 | What is the difference between forecast accuracy measured at lead time and at one month ahead, and why does the measurement lag matter? |
+| B10P05Q71 | 10 | 5 | What is Forecast Value Add (FVA), and how would you test whether a planner's manual override improved on the statistical forecast? |
+| B10P05Q72 | 10 | 5 | What is a spend cube or spend analysis, and what first cuts would you make to find savings in procurement data? |
+| B10P05Q73 | 10 | 5 | Explain Pareto (80/20) analysis for spend and for defects, and how you would build it in Excel or Power BI. |
+| B10P05Q74 | 10 | 5 | What are the components of landed cost, and how would you compute landed cost per unit from the data below? |
+| B10P05Q75 | 10 | 5 | What is vendor-managed inventory (VMI) and consignment stock, and how do they change who owns the inventory data? |
+| B10P05Q76 | 10 | 5 | What are the common ways to measure capacity utilisation in a warehouse (storage, labour, dock), and what data would each need? |
+| B10P05Q77 | 10 | 5 | What does inventory write-off or shrinkage mean, what causes it, and how would you quantify shrinkage from book stock and physical count? |
+| B10P05Q78 | 10 | 5 | What data-privacy and confidentiality points should an analyst keep in mind when handling supplier contracts, pricing and driver or warehouse staff personal data? |
+| B10P05Q79 | 10 | 5 | How would you monitor warehouse labour productivity and attendance together, and what care is needed with staff-level data? |
+| B10P05Q80 | 10 | 5 | Design a KPI dashboard for a regional distribution centre: which metrics would you choose for inbound, storage, outbound and delivery, and which would you leave out? |
+| B10P05Q81 | 10 | 5 | A supplier delay has put a key component out of stock for ten days. Which analyses would you run to size the impact on orders and revenue and to recommend a response? |
+| B10P05Q82 | 10 | 5 | How would you use data to decide whether to open a new warehouse or dark store in a city, and what inputs and trade-offs would you consider? |
+| B10P05Q83 | 10 | 5 | Two warehouses show different cost per order. How would you compare them fairly, and which factors would you adjust for before judging either? |
+| B10P05Q84 | 10 | 5 | How would you build a simple S&OP review pack that shows a forecast, an inventory plan and the gaps for the next three months, and what questions would you expect from sales and finance? |
+| B10P05Q85 | 10 | 5 | Planners say the forecast model is good but inventory still keeps growing. What data would you examine to find out whether the cause is forecasting, ordering, MOQs, supplier lead times or slow sales? |
+| B10P06Q1 | 10 | 6 | What is the marketing funnel (awareness, consideration, conversion, retention), and which metric would you track at each stage? |
+| B10P06Q2 | 10 | 6 | What is the difference between a marketing qualified lead (MQL) and a sales qualified lead (SQL), and who decides when a lead moves from one to the other? |
+| B10P06Q3 | 10 | 6 | What do CTR, CPC, CPM and CPL stand for, and how is each calculated? |
+| B10P06Q4 | 10 | 6 | What is ROAS, how is it different from marketing ROI, and why can a high ROAS still lose money? |
+| B10P06Q5 | 10 | 6 | What is marketing attribution, and why is it hard to say which campaign caused a sale? |
+| B10P06Q6 | 10 | 6 | What are first-touch, last-touch, linear, time-decay and position-based attribution models, and when does each mislead? |
+| B10P06Q7 | 10 | 6 | In a CRM such as Salesforce or HubSpot, what are a lead, contact, account and opportunity, and how do they relate to each other? |
+| B10P06Q8 | 10 | 6 | What is a sales pipeline, what are its typical stages, and what does an analyst measure about it? |
+| B10P06Q9 | 10 | 6 | What are win rate, average deal size and sales cycle length, and why do sales leaders watch all three together? |
+| B10P06Q10 | 10 | 6 | What is customer segmentation, and why do marketing teams segment customers instead of treating everyone the same? |
+| B10P06Q11 | 10 | 6 | What is RFM analysis, and what business decisions does it support? |
+| B10P06Q12 | 10 | 6 | What are UTM parameters, and what goes wrong in campaign reporting when they are used inconsistently? |
+| B10P06Q13 | 10 | 6 | A campaign had the figures below. Calculate CTR, CPC, CPM, CPL, CPA (cost per customer) and ROAS. |
+| B10P06Q14 | 10 | 6 | Find the stage-wise conversion rates, the lead-to-won rate and the marketing cost per won deal from the funnel below. |
+| B10P06Q15 | 10 | 6 | A channel shows ROAS of 4.0 and the product has a gross margin of 30%. Is the channel profitable, and what is the break-even ROAS? |
+| B10P06Q16 | 10 | 6 | A customer clicked a Google ad, then an Instagram ad, then an email, and bought for Rs 10,000. Split the credit across the three touches under first-touch, last-touch and linear attribution. |
+| B10P06Q17 | 10 | 6 | A 10% discount cuts the unit margin from 30% to 20% of the original price. How much must volume rise for gross profit to stay the same, and what does that tell you about discount planning? |
+| B10P06Q18 | 10 | 6 | A promotion lifted daily sales as below. Calculate the incremental units, the incremental gross profit and say whether the promotion paid off. |
+| B10P06Q19 | 10 | 6 | Last month's paid campaign spent Rs 1,00,000 and reported Rs 4,00,000 revenue, but half of that revenue came from customers who had bought before. What are the blended ROAS and the new-customer ROAS, and which would you report? |
+| B10P06Q20 | 10 | 6 | What data and tables would you need to build a campaign performance report, and what first cuts would you produce? |
+| B10P06Q21 | 10 | 6 | What fields does a CRM opportunity table usually hold, and which data quality problems do you check for first? |
+| B10P06Q22 | 10 | 6 | Paid search reports a ROAS of 6, yet total company revenue has been flat for two months. What could explain this, and what would you check? |
+| B10P06Q23 | 10 | 6 | The marketing head says a discount campaign worked because sales rose 25% during it. How would you evaluate whether it really worked? |
+| B10P06Q24 | 10 | 6 | Lead volume rose 40% this quarter but sales say lead quality is worse and win rate is down. How do you investigate? |
+| B10P06Q25 | 10 | 6 | What is the difference between B2B and B2C marketing and sales analytics in terms of buyers, cycle length and data volume? |
+| B10P06Q26 | 10 | 6 | What is the difference between paid, owned and earned media, and which channels sit in each? |
+| B10P06Q27 | 10 | 6 | What is lead scoring, and how is it different from lead status and lead source? |
+| B10P06Q28 | 10 | 6 | What is a marketing automation platform (for example Marketo, HubSpot or Salesforce Marketing Cloud), and what kind of data does it produce for an analyst? |
+| B10P06Q29 | 10 | 6 | What is the difference between impressions, reach and frequency in advertising? |
+| B10P06Q30 | 10 | 6 | What is the difference between bookings, billings and recognised revenue in a sales organisation? |
+| B10P06Q31 | 10 | 6 | What are first-party, second-party and third-party data, and why does the decline of third-party cookies matter to marketing analysts? |
+| B10P06Q32 | 10 | 6 | What are the standard email campaign metrics (delivery rate, open rate, click-through rate, click-to-open rate, bounce, unsubscribe), and why is open rate now an unreliable metric? |
+| B10P06Q33 | 10 | 6 | What is the difference between MRP, list price, selling price, discount, markup and margin? |
+| B10P06Q34 | 10 | 6 | What are common promotion types (flat discount, percentage off, buy-one-get-one, coupon, cashback, bundle), and what does each do to the customer's behaviour and the company's margin? |
+| B10P06Q35 | 10 | 6 | What is price elasticity of demand, and why do analysts care about it when a discount is planned? |
+| B10P06Q36 | 10 | 6 | What is incrementality in marketing, and how is it different from the conversions an ad platform reports? |
+| B10P06Q37 | 10 | 6 | What is lifecycle (CRM) marketing for an app or e-commerce business, and which messages go to a new, active, lapsing and lapsed customer? |
+| B10P06Q38 | 10 | 6 | What is quota attainment, how is a sales quota usually set, and which data does an analyst need to track it? |
+| B10P06Q39 | 10 | 6 | What is the difference between a holdout test, a geo test and a simple before-and-after comparison for measuring a campaign? |
+| B10P06Q40 | 10 | 6 | A sales team needs to hit a quarterly quota. Using the figures below, calculate the pipeline coverage ratio and the expected bookings, and say whether the pipeline is enough. |
+| B10P06Q41 | 10 | 6 | Two channels delivered the leads below. Compare them on cost per lead and cost per qualified lead, and say which you would scale. |
+| B10P06Q42 | 10 | 6 | Calculate delivery rate, open rate, click-through rate (on delivered) and click-to-open rate for the email campaign below. |
+| B10P06Q43 | 10 | 6 | Score the six customers below on R, F and M (1 to 3, 3 best, ranked within this small group) and name which one is a champion, which one is at risk and which one is new. |
+| B10P06Q44 | 10 | 6 | After a price cut from Rs 100 to Rs 90, monthly units rose from 1,000 to 1,200. Calculate the price elasticity and say whether revenue rose or fell. |
+| B10P06Q45 | 10 | 6 | Four reps have the quotas and bookings below. Calculate each rep's attainment, the team attainment, and explain why the average of rep attainments differs from team attainment. |
+| B10P06Q46 | 10 | 6 | Calculate pipeline velocity and say which of the four inputs you would try to improve first. |
+| B10P06Q47 | 10 | 6 | Calculate the weighted pipeline for the quarter from the stage probabilities below, and explain why it is not a promise. |
+| B10P06Q48 | 10 | 6 | A coupon campaign issued 20,000 coupons of Rs 50; 3,000 were redeemed, and a matched control group suggests 1,800 of those orders would have happened anyway. Calculate the redemption rate and the cost per incremental order. |
+| B10P06Q49 | 10 | 6 | A campaign had 30,00,000 impressions reaching 10,00,000 unique people with a spend of Rs 1,50,000. Calculate the average frequency, CPM and cost per reached person, and say what frequency you would worry about. |
+| B10P06Q50 | 10 | 6 | Customers are grouped by value below. Calculate each group's share of customers and revenue and say what it implies for the retention budget. |
+| B10P06Q51 | 10 | 6 | Marketing spent Rs 5,00,000 and the sales attributed to the campaign produced Rs 14,00,000 revenue at 35% gross margin. Calculate ROAS and marketing ROI on gross profit. |
+| B10P06Q52 | 10 | 6 | Compare buying on CPM and buying on CPC for the two ad channels below, and say which gives the cheaper click and the cheaper lead. |
+| B10P06Q53 | 10 | 6 | Leads scored above 70 and below 70 converted as below. Calculate the conversion rate of each group and the lift, and say whether the score is useful. |
+| B10P06Q54 | 10 | 6 | Two discount depths were tested on similar deals. Which would you recommend and why? |
+| B10P06Q55 | 10 | 6 | How do you join ad platform spend data with CRM leads and orders, and what breaks in the join? |
+| B10P06Q56 | 10 | 6 | What data would you gather for a customer segmentation project, and what first cuts would you run before choosing segments? |
+| B10P06Q57 | 10 | 6 | What data would you need to measure whether a promotion was profitable, and what first cuts would you run? |
+| B10P06Q58 | 10 | 6 | Why does a pipeline analysis need a stage-history (snapshot) table and not only the current CRM opportunity table? |
+| B10P06Q59 | 10 | 6 | How do duplicate leads and contacts arise across a CRM, a marketing automation tool and web forms, and how do they distort funnel metrics? |
+| B10P06Q60 | 10 | 6 | What is the difference between Google Analytics sessions, ad platform clicks and CRM leads, and why do the three numbers rarely match? |
+| B10P06Q61 | 10 | 6 | In plain words, what does India's data protection law (DPDP Act) mean for a marketing team's customer data and consent? (from memory, awareness level) |
+| B10P06Q62 | 10 | 6 | In plain words, what are TRAI's DND (do-not-disturb) and DLT template rules for promotional SMS, and how do they affect campaign reporting? (from memory, awareness level) |
+| B10P06Q63 | 10 | 6 | Which fields in a marketing dataset are personal data, and how should an analyst handle them (masking, hashing, access) when sharing files or uploading audiences to an ad platform? |
+| B10P06Q64 | 10 | 6 | Why must opted-out and non-consented customers be excluded from campaign lists and segments, and how would you check your list before it goes out? |
+| B10P06Q65 | 10 | 6 | How do cookie consent banners and browser tracking limits change what you can measure in marketing attribution? |
+| B10P06Q66 | 10 | 6 | Win rate for one sales region fell from 28% to 19% in a quarter. Walk through your analysis. |
+| B10P06Q67 | 10 | 6 | Google Analytics, the ad platforms and the CRM each give different credit to channels, and the CMO asks which channel to cut. How do you advise? |
+| B10P06Q68 | 10 | 6 | Design a customer segmentation for a fintech or e-commerce app: which variables, how many segments, and how would the business use them? |
+| B10P06Q69 | 10 | 6 | A 20% discount on one shampoo brand lifted its units, but a sister brand's units fell. How do you measure cannibalisation and the net result? |
+| B10P06Q70 | 10 | 6 | An email newsletter's open rate jumped from 22% to 60% overnight. What do you check before telling the team it is a success? |
+| B10P06Q71 | 10 | 6 | What would you put on a sales performance dashboard for a regional sales head, and what would you leave out? |
+| B10P06Q72 | 10 | 6 | The company can add Rs 10 lakh to its marketing budget. How would you use data to decide where it goes? |
+| B10P06Q73 | 10 | 6 | How would you analyse a Diwali campaign fairly against last year's, given different dates, budgets and product ranges? |
+| B10P06Q74 | 10 | 6 | A sales team's attrition doubled this year. How would you estimate the effect on pipeline, quota attainment and revenue, and what data would you pull from the HR system and the CRM? |
+| B10P06Q75 | 10 | 6 | A B2B company's sales cycle lengthened from 60 to 90 days. What could be the causes and how would you split them with data? |
+| B10P06Q76 | 10 | 6 | Customers who got a discount coupon in their first order have lower repeat rates than those who did not. How do you interpret this? |
+| B10P06Q77 | 10 | 6 | A segment called 'high-value customers' is built on last year's revenue only. What problems can this cause and how would you improve it? |
+| B10P06Q78 | 10 | 6 | What is a customer data platform (CDP), a 'customer 360' view and identity resolution? |
+| B10P06Q79 | 10 | 6 | What is account-based marketing (ABM), and which metrics differ from a normal lead-based approach? |
+| B10P06Q80 | 10 | 6 | What is the difference between SEO and SEM, and what does an analyst measure for each? |
+| B10P06Q81 | 10 | 6 | What is a sales and marketing service-level agreement (SLA), and what metrics show whether the lead handoff works? |
+| B10P06Q82 | 10 | 6 | What is marketing mix modelling, and how is it different from attribution? |
+| B10P06Q83 | 10 | 6 | What are the common brand health metrics (awareness, consideration, share of voice, NPS), and how are they measured? |
+| B10P06Q84 | 10 | 6 | What are the sales forecast categories (commit, best case, pipeline), and how do sales teams use them? |
+| B10P06Q85 | 10 | 6 | What is pipeline velocity, and which four things move it? |
+| B10P06Q86 | 10 | 6 | A sales rep leaves and a new rep takes a quota of Rs 60 lakh a quarter with a three-month ramp (25%, 50%, 100% of quota in the three months). What is the quota capacity lost in the first quarter, and why should the HR and sales-ops teams plan for it? |
+| B10P06Q87 | 10 | 6 | How would you build a recruitment-marketing funnel (career site visit, application start, application, interview, offer, joined) using web analytics and HR system data, and what are its marketing-style metrics? |
+| B10P06Q88 | 10 | 6 | In plain words, what is the role of ASCI (the advertising standards body in India) for marketing claims, and when might an analyst be asked for evidence? (from memory, awareness level) |
+| B10P06Q89 | 10 | 6 | How would you forecast next quarter's revenue from the CRM pipeline, and how would you state your confidence to leadership? |
+| B10P06Q90 | 10 | 6 | A sales commission plan pays on bookings, not collections. What behaviours and data problems might that create, and what would you report? |
+| B10P06Q91 | 10 | 6 | How would you set up a test to decide between two price points for a subscription product, and what would you watch besides conversion? |
+| B10P06Q92 | 10 | 6 | Marketing wants to credit a webinar for the deals it touched. How do you decide whether the webinar influenced the deals or just met people who were already buying? |
+| B10P06Q93 | 10 | 6 | How would you build a simple lead-scoring model for a B2B company, and how would you check it works and is not biased by sales follow-up? |
+| B10P07Q1 | 10 | 7 | How does an IT services company make money, and what is the difference between time-and-materials and fixed-price contracts from a reporting point of view? |
+| B10P07Q2 | 10 | 7 | What does 'bench' mean in an IT services company, and why does management track bench strength every week? |
+| B10P07Q3 | 10 | 7 | What is the difference between gross utilisation and net utilisation, and which employees are usually excluded from the denominator? |
+| B10P07Q4 | 10 | 7 | What is the onsite-offshore model, and why does the onsite-offshore mix matter for revenue and margin reporting? |
+| B10P07Q5 | 10 | 7 | What is a Global Capability Centre (GCC), and how does the reporting work of a GCC analyst differ from that of an analyst at an IT services vendor? |
+| B10P07Q6 | 10 | 7 | What is MIS reporting, and how does it differ from a BI dashboard and from ad hoc analysis? |
+| B10P07Q7 | 10 | 7 | What does a typical monthly MIS pack for an IT delivery or shared-services unit contain? |
+| B10P07Q8 | 10 | 7 | What is an SLA in IT support, and what is the difference between response time and resolution time? |
+| B10P07Q9 | 10 | 7 | What do P1, P2, P3 and P4 priorities mean in a ticketing system, and why must SLAs be reported by priority rather than as one blended figure? |
+| B10P07Q10 | 10 | 7 | What is the difference between an incident, a service request, a problem and a change in IT service management? |
+| B10P07Q11 | 10 | 7 | What is a RAG status on a project, and how can you make it objective rather than the project manager's opinion? |
+| B10P07Q12 | 10 | 7 | What is the difference between a calculated field and a report in Workday, and why do HR reporting analysts use calculated fields? |
+| B10P07Q13 | 10 | 7 | What is Workday HCM, and which HR data does it hold that an analyst would report on? |
+| B10P07Q14 | 10 | 7 | What is Alteryx, and what kind of recurring MIS work is it used to automate? |
+| B10P07Q15 | 10 | 7 | A team of 40 people has 6,400 available hours in a month after holidays and leave. Billable hours logged were 4,480, internal and training hours were 640, and the rest was idle. Compute billable utilisation, non-billable share and bench (idle) share. |
+| B10P07Q16 | 10 | 7 | A team's utilisation is 85% but the project margin is falling. Give three reasons this can happen and the data you would pull to check each. |
+| B10P07Q17 | 10 | 7 | Where does the data for an IT-services MIS pack usually come from (timesheet tool, HRMS, project-management or PSA tool, ERP/finance, ITSM tool), and what keys join them? |
+| B10P07Q18 | 10 | 7 | The utilisation report and the finance billing report show different billable hours for the same month. How do you reconcile them step by step? |
+| B10P07Q19 | 10 | 7 | A support team closed 1,250 tickets last month. 1,075 were resolved within the SLA target and 90 were still open past their target. How do you compute SLA compliance, and what ambiguity must you resolve before reporting the number? |
+| B10P07Q20 | 10 | 7 | A project has planned value 100, earned value 90 and actual cost 120 (all in INR lakh). Compute schedule variance, cost variance, SPI and CPI, and give the RAG story in plain words. |
+| B10P07Q21 | 10 | 7 | In Alteryx, what is the difference between the Join tool and the Union tool, and what are the three outputs of Join? |
+| B10P07Q22 | 10 | 7 | You are given a monthly Excel MIS that takes six hours of copy-paste to refresh. How would you decide whether to automate it with Power Query, SQL, Python or Alteryx? |
+| B10P07Q23 | 10 | 7 | What is the difference between billing rate and cost rate, and how do they combine into gross margin per resource? |
+| B10P07Q24 | 10 | 7 | What is realisation in a professional-services firm, and how is it different from utilisation? |
+| B10P07Q25 | 10 | 7 | What is the employee pyramid in an IT services company, and why does a flat or inverted pyramid hurt margin? |
+| B10P07Q26 | 10 | 7 | What is revenue per employee, and what are its weaknesses as a measure of productivity? |
+| B10P07Q27 | 10 | 7 | What are timesheets in a services company, and what data quality problems (late filing, wrong project code, default hours) do analysts typically find? |
+| B10P07Q28 | 10 | 7 | What is the role of the resource management group (RMG) and how does an analyst support allocation and demand-supply reporting? |
+| B10P07Q29 | 10 | 7 | What is a statement of work (SOW) and a change request, and why does scope creep show up in MIS data as effort overrun? |
+| B10P07Q30 | 10 | 7 | What do DSO, unbilled revenue (WIP) and invoice ageing mean for a services company, and who uses them? |
+| B10P07Q31 | 10 | 7 | How do milestone-based and percentage-of-completion revenue recognition differ in plain words, and why does an MIS analyst care? |
+| B10P07Q32 | 10 | 7 | Why do GCCs report cost per FTE, and what does the metric include and exclude? |
+| B10P07Q33 | 10 | 7 | How do time-zone handoffs, follow-the-sun support and a global stakeholder base affect the reporting calendar of a GCC analyst? |
+| B10P07Q34 | 10 | 7 | What does attrition look like in IT services (voluntary, by band, by tenure, campus hires), and why is last-twelve-months attrition the standard way to report it? |
+| B10P07Q35 | 10 | 7 | What does first response time measure, and why should it be measured to a human reply rather than an automated acknowledgement? |
+| B10P07Q36 | 10 | 7 | What are first-contact resolution, reopen rate and CSAT in service-desk reporting, and how do they balance speed metrics? |
+| B10P07Q37 | 10 | 7 | How would you set up an MIS requirement conversation with a stakeholder who asks for 'a report on utilisation'? Which questions do you ask first? |
+| B10P07Q38 | 10 | 7 | What controls do you apply before an MIS pack goes to leadership (reconciliation to source, totals check, previous-month comparison, sign-off)? |
+| B10P07Q39 | 10 | 7 | What is effort variance and schedule variance on a software project, and how are they calculated? |
+| B10P07Q40 | 10 | 7 | What are the Workday concepts of worker, position, supervisory organisation and business process, in plain words? |
+| B10P07Q41 | 10 | 7 | What does 'effective dating' mean in an HRIS like Workday, and how does it affect headcount-as-of-date and attrition reports? |
+| B10P07Q42 | 10 | 7 | What are the main Workday report types (simple, advanced, matrix, composite) and when would you choose each? |
+| B10P07Q43 | 10 | 7 | How does Workday Prism Analytics differ from standard Workday reporting, and when would an HR team need it? |
+| B10P07Q44 | 10 | 7 | What are the main Alteryx tools (Input, Select, Filter, Formula, Summarize, Cross Tab, Unique, Output) and what does each do? |
+| B10P07Q45 | 10 | 7 | What is data privacy awareness in a GCC context: why must you be careful with employee and client data, and what do the EU GDPR and India's DPDP Act mean for an analyst in plain words? |
+| B10P07Q46 | 10 | 7 | A consultant bills at INR 2,000 per hour and costs INR 1,100 per hour. If they bill 140 hours in a month, what are revenue, direct cost and gross margin percentage? |
+| B10P07Q47 | 10 | 7 | A project logged 1,000 billable hours at a standard rate of INR 1,500. After client discounts and write-offs the invoice was INR 13.2 lakh. What is the realisation rate, and what do you check if it falls? |
+| B10P07Q48 | 10 | 7 | Using the staffing below, compute the pyramid shares and the average cost per head, and say which direction you would move the mix for a fixed-price project. |
+| B10P07Q49 | 10 | 7 | A company with average headcount of 8,000 earned INR 1,200 crore revenue in a quarter. What is annualised revenue per employee in INR lakh, and what caveats apply when comparing it with another company? |
+| B10P07Q50 | 10 | 7 | Timesheet compliance is 78% on the cut-off date. How would you define compliance, find the defaulters by team, and report it without blaming individuals? |
+| B10P07Q51 | 10 | 7 | Open demand is 120 roles against 35 people on bench. What first cuts of data would you make to see whether the bench can fill the demand? |
+| B10P07Q52 | 10 | 7 | Invoices outstanding are INR 9 crore and quarterly revenue is INR 30 crore (90 days). Compute DSO and say what an ageing bucket report adds. |
+| B10P07Q53 | 10 | 7 | A delivery unit had 1,000 employees on average over the last 12 months and 180 left. Quarterly exits were 40, 50, 45 and 45. Compute LTM attrition and the annualised rate of the latest quarter. |
+| B10P07Q54 | 10 | 7 | Why is 'MTTR' ambiguous in service-desk reports, and how would you label and define it in your MIS so stakeholders do not argue? |
+| B10P07Q55 | 10 | 7 | Open tickets are 400 this week against 300 last week, while new tickets are flat. What does a ticket backlog and ageing report show, and what would you check next? |
+| B10P07Q56 | 10 | 7 | Compute SLA compliance by priority and the blended figure, and say why the blended figure misleads. |
+| B10P07Q57 | 10 | 7 | A monthly MIS shows headcount of 2,040 but the HRMS shows 2,015. List the likely reasons and how you would trace the 25-person difference. |
+| B10P07Q58 | 10 | 7 | A project estimated 2,000 person-hours and logged 2,350 with 70% of the work complete. Compute effort variance, and the forecast hours at completion if the current pace continues. |
+| B10P07Q59 | 10 | 7 | A Workday headcount report shows 5% more people than payroll. What differences in definition (contingent workers, leave of absence, future-dated hires, terminations in the month) would you check? |
+| B10P07Q60 | 10 | 7 | Why is employee data in an HRIS sensitive, and how do role-based security and anonymisation protect it when you build and share reports? |
+| B10P07Q61 | 10 | 7 | In Alteryx, how would you find records that appear in last month's file but not in this month's file, and how would you remove duplicates? |
+| B10P07Q62 | 10 | 7 | Describe an Alteryx workflow that merges a timesheet extract with an HRMS employee file and produces utilisation by team, listing the tools in order. |
+| B10P07Q63 | 10 | 7 | What is a subcontractor or contingent worker, and how should they be handled in headcount, utilisation and cost reports? |
+| B10P07Q64 | 10 | 7 | Why do GCC analyst roles often ask for stakeholder management and Power BI or Tableau along with Excel and SQL? |
+| B10P07Q65 | 10 | 7 | How do large batches of fresher campus joiners affect utilisation and bench reports in the first six months after they join, and how would you report them fairly? |
+| B10P07Q66 | 10 | 7 | What is the difference between a project's gross margin and contribution margin in an IT services MIS, and which overheads are normally excluded at project level? |
+| B10P07Q67 | 10 | 7 | A project has 10 resources: 6 billable at 100%, 2 at 50% and 2 not allocated. What is the allocation-based utilisation for the project, and why can it differ from timesheet utilisation? |
+| B10P07Q68 | 10 | 7 | How would you build an HR-systems data dictionary for Workday fields such as worker status, cost centre and job profile so that reports across teams agree? |
+| B10P07Q69 | 10 | 7 | A Workday integration (EIB or RaaS) feeding the payroll vendor fails for 30 workers. What data checks would you do first as the reporting analyst? |
+| B10P07Q70 | 10 | 7 | When would you not use Alteryx, and what are its licence-cost and governance drawbacks compared with Power Query and Python? |
+| B10P07Q71 | 10 | 7 | Utilisation is 82% and bench is 9% but revenue is flat for three quarters. Lay out a structured analysis of what to examine (pricing, mix, leave, non-billable investment, realisation, demand). |
+| B10P07Q72 | 10 | 7 | A GCC finance-operations team's invoice-processing cost per transaction rose 12% while volume fell 8%. How would you analyse it, and what data do you need? |
+| B10P07Q73 | 10 | 7 | A client's SLA says 95% of P1 tickets are resolved in 4 hours. The report shows 96%, but the client says it feels worse. How would you test the report? |
+| B10P07Q74 | 10 | 7 | A project is green on schedule and budget but its defect rate and attrition on the team are rising. How would you design an early-warning project health score? |
+| B10P07Q75 | 10 | 7 | A GCC wants to compare its reporting cost against an outsourced vendor. How would you build a fair cost-per-FTE and cost-per-transaction comparison? |
+| B10P07Q76 | 10 | 7 | Management wants one dashboard that shows utilisation, bench, SLA compliance and project RAG for 40 projects. How would you define the metrics, owners and refresh cycle before building anything? |
+| B10P08Q1 | 10 | 8 | You are joining a team in an industry you have never worked in, such as banking or healthcare. How do you learn the business in your first two weeks? |
+| B10P08Q2 | 10 | 8 | You come from HR. How are you building knowledge of the industry you are applying to, and what from your HR background carries over? |
+| B10P08Q3 | 10 | 8 | What goes into a personal domain glossary in the first week, and how do you keep it accurate? |
+| B10P08Q4 | 10 | 8 | When you enter a new domain, how do you decide what to learn first and what to postpone? |
+| B10P08Q5 | 10 | 8 | How do you map a new business: its customers, products, main processes, money flow and the places where its data is created? |
+| B10P08Q6 | 10 | 8 | Tell me about a time you had to learn an unfamiliar subject quickly and then use it in your work. |
+| B10P08Q7 | 10 | 8 | Which free resources would you use to learn a new business domain from zero? |
+| B10P08Q8 | 10 | 8 | Which free public datasets would you use to practise analysis in domains such as banking, e-commerce, healthcare and supply chain? |
+| B10P08Q9 | 10 | 8 | Which people would you meet in your first month to learn a new domain, and what would you ask each of them? |
+| B10P08Q10 | 10 | 8 | How much domain knowledge does a junior data analyst really need compared with tool skills? |
+| B10P08Q11 | 10 | 8 | A new company database has no data dictionary. How do you learn what each table and column means? |
+| B10P08Q12 | 10 | 8 | What do you ask a domain expert in a first meeting, and how do you prepare so you do not waste their time? |
+| B10P08Q13 | 10 | 8 | How would you choose which domain to aim for as a career switcher, for example HR tech, banking, e-commerce or healthcare? |
+| B10P08Q14 | 10 | 8 | Design a 30-day plan to learn a new domain if you can give one hour on weekdays and three hours on weekends. |
+| B10P08Q15 | 10 | 8 | You have 6 hours a week for 12 weeks to become job-ready in one domain. How would you split the hours across vocabulary, metrics, datasets and a mini-project? |
+| B10P08Q16 | 10 | 8 | Design a 90-day roadmap that takes you from zero knowledge of a domain to being able to discuss its vocabulary, key metrics, data sources and a small analysis. |
+| B10P08Q17 | 10 | 8 | How would you build a mini-project from a public dataset that shows domain understanding and not only tool skill? |
+| B10P08Q18 | 10 | 8 | How would you use a company's annual report, investor presentation or earnings call to learn its business model and key metrics? |
+| B10P08Q19 | 10 | 8 | How would you design a self-check test to know whether you are ready to discuss a domain in an interview? |
+| B10P08Q20 | 10 | 8 | How do you learn the data privacy and regulation basics of a domain such as banking, healthcare or HR at awareness level, without giving legal advice? |
+| B10P08Q21 | 10 | 8 | You are given an unfamiliar domain's dataset, for example insurance claims, with no briefing and two hours. How do you produce a first useful analysis? |
+| B10P08Q22 | 10 | 8 | How do you fit domain learning into a full-time job, and what does a typical week look like? |
+| B10P08Q23 | 10 | 8 | How do you check your understanding with a colleague or expert without sounding uninformed? |
+| B10P08Q24 | 10 | 8 | How do you use job descriptions to decide which domain terms, metrics and tables to study first? |
+| B10P08Q25 | 10 | 8 | How do you use AI assistants to learn a domain without trusting wrong facts, such as invented rules or definitions? |
+| B10P08Q26 | 10 | 8 | How do you tell an interviewer honestly that you are new to their domain without losing the opportunity? |
+| B10P08Q27 | 10 | 8 | How do you keep a notes system, such as a glossary, metric sheet and process maps, so that learning compounds when you move to a second domain? |
+| B10P08Q28 | 10 | 8 | A domain expert says your number makes no business sense. How do you find out whether the data or your understanding of the domain is wrong? |
 
 ## Book 11 — Soft Skills, HR Round, GD
 | Q-ID | Book | Part | Canonical question |

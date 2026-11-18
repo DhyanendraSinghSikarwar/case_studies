@@ -476,6 +476,6 @@ interviews/data_analyst/
 | 7 Guesstimates & Cases | 9 | ✅ 633 (no cross-part duplicates removed; see research/dedupe_log_book07.md; research was search-snippet only, no page fetched, stars are judgement; figures not yet computed) | ✅ 633 (all 9 parts merged; every figure recomputed independently by code in Wave C; base numbers are labelled assumptions, unverified) | ✅ Wave C done 2026-11-12 (see Book07_Guesstimates_Cases/review_Book07.md; real-world base numbers unverified, company claims snippet-level) |
 | 8 Scenarios | 9 | ✅ 640 (after removing 1 cross-part duplicate; see research/dedupe_log_book08.md; research was search-snippet only, no page fetched, stars are judgement; figures not yet computed) | ✅ 640 (all 9 parts merged; every figure recomputed independently by code in Wave C; legal/tool facts labelled from memory, unverified) | ✅ Wave C done 2026-11-12 (see Book08_Scenarios/review_Book08.md; company claims snippet-level, legal and tool facts unverified) |
 | 9 ML + AI | 12 | ⬜ | ⬜ | ⬜ |
-| 10 Domain | 8 | ⬜ | ⬜ | ⬜ |
+| 10 Domain | 8 | ✅ 718 (after removing 1 cross-part duplicate; see research/dedupe_log_book10.md; research was search-snippet only, no page fetched in full, stars are judgement; regulation items awareness-level only) | ⬜ | ⬜ |
 | 11 Soft Skills | 10 | ⬜ | ⬜ | ⬜ |
 | 12 Portfolio & Job Search | 7 sections | ⬜ | ⬜ | ⬜ |
