@@ -1,6 +1,6 @@
 # Book 9 — Basic ML + AI Tools for Analysts | Part 6: Overfitting, Train/Test Split, Feature Engineering Basics 🟡
 
-**Target:** 38 questions | **Actual:** 40 questions
+**Target:** 38 questions | **Actual:** 39 questions
 **Scope:** overfitting and underfitting, train/validation/test splits and sklearn train_test_split, cross-validation, data leakage, and basic feature engineering (encoding, scaling, missing values, outliers, derived features) for a 0-3 year analyst.
 
 ### Q1 ⭐⭐⭐ 🟢 What is overfitting? Explain it with a simple example to a non-technical manager.
@@ -110,36 +110,33 @@ Salary in thousands: Q1 = 30, Q3 = 50.
 ### Q29 ⭐⭐ 🟡 A model looked good in your notebook but performs poorly after being used on new employee data. List the likely causes.
 <!-- ANSWER_PENDING -->
 
-### Q30 ⭐⭐ 🟡 What is regularisation (Ridge and Lasso) in intuitive terms, and how does it help against overfitting?
+### Q30 ⭐⭐ 🟡 Two features, `years_at_company` and `age`, have a correlation of 0.95. How would you decide which to keep, and does it matter for prediction versus explanation?
 <!-- ANSWER_PENDING -->
 
-### Q31 ⭐⭐ 🟡 Two features, `years_at_company` and `age`, have a correlation of 0.95. How would you decide which to keep, and does it matter for prediction versus explanation?
+### Q31 ⭐⭐ 🔴 Why can fitting an imputer or scaler on the whole dataset before cross-validation inflate the scores, and how does a Pipeline inside cross_val_score fix it?
 <!-- ANSWER_PENDING -->
 
-### Q32 ⭐⭐ 🔴 Why can fitting an imputer or scaler on the whole dataset before cross-validation inflate the scores, and how does a Pipeline inside cross_val_score fix it?
-<!-- ANSWER_PENDING -->
-
-### Q33 ⭐ 🟡 What does a learning curve show, and what does each pattern below suggest?
+### Q32 ⭐ 🟡 What does a learning curve show, and what does each pattern below suggest?
 Case A: training score 0.95 and validation score 0.70, gap stays wide as rows increase. Case B: both scores plateau near 0.65.
 <!-- ANSWER_PENDING -->
 
-### Q34 ⭐ 🟡 A salary column is heavily right-skewed. Would you transform it for a model, and how (for example log)? Which models care?
+### Q33 ⭐ 🟡 A salary column is heavily right-skewed. Would you transform it for a model, and how (for example log)? Which models care?
 <!-- ANSWER_PENDING -->
 
-### Q35 ⭐ 🟡 What are interaction or ratio features? Create one from `salary` and `grade_midpoint`, and say why it might predict attrition better than salary alone.
+### Q34 ⭐ 🟡 What are interaction or ratio features? Create one from `salary` and `grade_midpoint`, and say why it might predict attrition better than salary alone.
 <!-- ANSWER_PENDING -->
 
-### Q36 ⭐ 🟡 You want to use gender, age and pincode as features in an attrition or hiring model. What risks would you raise about fairness, proxies and privacy before including them?
+### Q35 ⭐ 🟡 You want to use gender, age and pincode as features in an attrition or hiring model. What risks would you raise about fairness, proxies and privacy before including them?
 <!-- ANSWER_PENDING -->
 
-### Q37 ⭐ 🟡 What is the difference between overfitting, data leakage and train-test distribution shift? Give a one-line example of each.
+### Q36 ⭐ 🟡 What is the difference between overfitting, data leakage and train-test distribution shift? Give a one-line example of each.
 <!-- ANSWER_PENDING -->
 
-### Q38 ⭐ 🔴 Your attrition data has several monthly rows per employee. Why can a random row-level split leak information, and what would you use instead?
+### Q37 ⭐ 🔴 Your attrition data has several monthly rows per employee. Why can a random row-level split leak information, and what would you use instead?
 <!-- ANSWER_PENDING -->
 
-### Q39 ⭐ 🔴 You tune hyperparameters repeatedly and report the best score on the same test set. What is wrong, and how would you structure the data to avoid it?
+### Q38 ⭐ 🔴 You tune hyperparameters repeatedly and report the best score on the same test set. What is wrong, and how would you structure the data to avoid it?
 <!-- ANSWER_PENDING -->
 
-### Q40 ⭐ 🔴 What is target (mean) encoding for a high-cardinality column such as pincode, and how can it leak the target if done carelessly?
+### Q39 ⭐ 🔴 What is target (mean) encoding for a high-cardinality column such as pincode, and how can it leak the target if done carelessly?
 <!-- ANSWER_PENDING -->

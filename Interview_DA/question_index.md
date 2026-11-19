@@ -5390,6 +5390,647 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 ## Book 9 — Basic ML + AI Tools
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B9P01Q1 | 9 | 1 | Explain machine learning to a non-technical manager in two or three sentences. |
+| B9P01Q2 | 9 | 1 | What is the difference between supervised and unsupervised learning? |
+| B9P01Q3 | 9 | 1 | What is the difference between machine learning and traditional rule-based programming? |
+| B9P01Q4 | 9 | 1 | What are features and a label (target) in a machine learning dataset? Name them for an employee attrition dataset. |
+| B9P01Q5 | 9 | 1 | What is the difference between classification and regression? Give one HR example of each. |
+| B9P01Q6 | 9 | 1 | Give one real business example each of supervised and unsupervised learning. |
+| B9P01Q7 | 9 | 1 | When would a data analyst reach for machine learning instead of a dashboard, pivot table or SQL query? |
+| B9P01Q8 | 9 | 1 | What is the difference between AI, machine learning, deep learning and data science? |
+| B9P01Q9 | 9 | 1 | What does it mean to "train" a model, and what is the difference between an algorithm and a model? |
+| B9P01Q10 | 9 | 1 | Label each task as classification, regression or clustering: (a) predict next month's sales amount, (b) group customers by buying behaviour with no predefined groups, (c) predict whether an employee will resign within six months, (d) predict delivery time in minutes. |
+| B9P01Q11 | 9 | 1 | Does every analytics problem need machine learning? Describe one situation where ML is the wrong tool. |
+| B9P01Q12 | 9 | 1 | Look at the columns of this HR table. Which one is the label, which are usable features, and which would you drop before modelling? |
+| B9P01Q13 | 9 | 1 | Does a machine learning model give certain answers? How would you explain its output to a stakeholder who expects a yes or no? |
+| B9P01Q14 | 9 | 1 | What is the difference between machine learning and classical statistics, and where do they overlap for an analyst? |
+| B9P01Q15 | 9 | 1 | Read this code. What does each line do, and what is the role of fit and predict? |
+| B9P01Q16 | 9 | 1 | Walk through the steps of a typical machine learning project, from business question to a result the business can use. |
+| B9P01Q17 | 9 | 1 | How do you decide whether a business problem is really a machine learning problem? What would you check first? |
+| B9P01Q18 | 9 | 1 | Your manager says "can we use AI to predict attrition?" Which clarifying questions do you ask before touching any data? |
+| B9P01Q19 | 9 | 1 | Why does a supervised model need historical data with known outcomes, and what goes wrong if the labels are wrong or missing for many rows? |
+| B9P01Q20 | 9 | 1 | A stakeholder asks "why did the model flag this employee?" How do you answer without technical jargon? |
+| B9P01Q21 | 9 | 1 | Classify each scenario as supervised or unsupervised learning and name the task type: (a) predict which loan applicants will default using past repayment records, (b) group stores by sales pattern with no labels, (c) predict house price from area and location, (d) find unusual expense claims with no past fraud labels, (e) predict whether a candidate will accept an offer using past offers. |
+| B9P01Q22 | 9 | 1 | Name five common machine learning algorithms and say whether each is mainly used for supervised or unsupervised learning. |
+| B9P01Q23 | 9 | 1 | What is clustering, in plain words, and what is one business use of it? |
+| B9P01Q24 | 9 | 1 | What is deep learning, and what is a neural network in simple terms? |
+| B9P01Q25 | 9 | 1 | Which Python library do analysts normally use for basic machine learning, and what is the common fit and predict pattern it offers? |
+| B9P01Q26 | 9 | 1 | In this pandas snippet, what are X and y, and why are they separated? |
+| B9P01Q27 | 9 | 1 | What does "garbage in, garbage out" mean for machine learning, with an example from HR data? |
+| B9P01Q28 | 9 | 1 | Will machine learning replace data analysts? How do you see your role next to ML? |
+| B9P01Q29 | 9 | 1 | How does the work of a data analyst differ from that of a data scientist and an ML engineer? |
+| B9P01Q30 | 9 | 1 | What is a baseline model, and why should you build one before anything complicated? |
+| B9P01Q31 | 9 | 1 | Name three ways machine learning is used in HR analytics. |
+| B9P01Q32 | 9 | 1 | Name three ways machine learning is used in e-commerce. |
+| B9P01Q33 | 9 | 1 | Name three ways machine learning is used in banking and finance. |
+| B9P01Q34 | 9 | 1 | Classify each column as numeric, categorical, date, text or identifier, and say which are useful as features. |
+| B9P01Q35 | 9 | 1 | A trained model is: predicted_salary = 25000 + 4000 x years_experience. Predict the salary for a candidate with 3 years, and explain what the model has "learned". |
+| B9P01Q36 | 9 | 1 | After loading a CSV for modelling, what does df.shape tell you and how do you read rows and columns in ML language? |
+| B9P01Q37 | 9 | 1 | Why do analysts check df.isna().sum() before building a model? |
+| B9P01Q38 | 9 | 1 | Coming from an HR background, how would you use machine learning on HR data in your first year as an analyst? |
+| B9P01Q39 | 9 | 1 | What is semi-supervised learning, and when does it make sense for a company with few labelled rows? |
+| B9P01Q40 | 9 | 1 | Name three problems that unsupervised learning solves, besides clustering, with a business example each. |
+| B9P01Q41 | 9 | 1 | Why do we convert categorical columns such as department into numbers before modelling? |
+| B9P01Q42 | 9 | 1 | What is the difference between a model parameter and a hyperparameter? |
+| B9P01Q43 | 9 | 1 | What is anomaly detection, and when is it supervised versus unsupervised? |
+| B9P01Q44 | 9 | 1 | You have 20,000 customer records and none are labelled with an outcome. What can you do with machine learning, and what can you not do? |
+| B9P01Q45 | 9 | 1 | Trace the unsupervised code below. What does it return, and why is there no y? |
+| B9P01Q46 | 9 | 1 | Spot the mistake in this snippet before it is used to predict attrition. |
+| B9P01Q47 | 9 | 1 | A model predicts that nobody will leave. In a team of 200 employees, 30 left last year. What accuracy does this useless model get, and what does it teach you about judging a model? |
+| B9P01Q48 | 9 | 1 | Compare a simple rule with a model. The rule: tenure under 12 months means will leave. Use the 10 rows below to count how many the rule gets right. |
+| B9P01Q49 | 9 | 1 | Predict with a one-nearest-neighbour idea: copy the label of the closest known employee. Who is closest to a new employee, and what is the prediction? |
+| B9P01Q50 | 9 | 1 | Estimate whether an attrition model is worth building using the hypothetical figures below. |
+| B9P01Q51 | 9 | 1 | Using the hypothetical counts below, can you train a supervised model, and what would you do with the rest? |
+| B9P01Q52 | 9 | 1 | What is AutoML, and should an analyst use it? |
+| B9P01Q53 | 9 | 1 | Which ML-style features exist inside Excel and Power BI that an analyst can use without writing code? |
+| B9P01Q54 | 9 | 1 | An HR model is trained on ten years of past promotions. What bias risk exists, and what do you do about it? |
+| B9P01Q55 | 9 | 1 | What should you consider before using employee personal data to train a model? |
+| B9P01Q56 | 9 | 1 | What is interpretability, and when would you choose a simpler, explainable model over a more accurate black box? |
+| B9P01Q57 | 9 | 1 | Which columns would you keep out of an attrition model, and why? |
+| B9P01Q58 | 9 | 1 | Tell me about a predictive or machine learning project you have done or would pitch for HR or sales data, covering the problem, data, model type and outcome. |
+| B9P01Q59 | 9 | 1 | Only 20 of 1,000 employees in your file left. Why is this a problem for a supervised model, and what are your first practical steps? |
+| B9P01Q60 | 9 | 1 | You have only 300 employee records. Is machine learning still sensible? What would you say about the reliability of the result? |
+| B9P01Q61 | 9 | 1 | Without labels, how do you judge whether the groups from an unsupervised method are useful to the business? |
+| B9P01Q62 | 9 | 1 | A model produces a risk score for each employee. What is the difference between the score, the decision and the action, and who owns each? |
+| B9P01Q63 | 9 | 1 | What is reinforcement learning, and where does it appear in business? |
+| B9P01Q64 | 9 | 1 | What is the difference between a predictive model and a generative model? |
+| B9P01Q65 | 9 | 1 | What is a recommendation system, in simple terms? |
+| B9P01Q66 | 9 | 1 | What is dimensionality reduction, and what is PCA trying to do in intuition? |
+| B9P01Q67 | 9 | 1 | Is ChatGPT trained with supervised or unsupervised learning? Explain at a high level without claiming details you are unsure of. |
+| B9P01Q68 | 9 | 1 | Why can a model that worked last year degrade over time? |
+| B9P01Q69 | 9 | 1 | Your CEO says "we need an AI strategy". How do you respond as an analyst? |
+| B9P01Q70 | 9 | 1 | Why should you try a simple model first, even when a complex one is available? |
+| B9P01Q71 | 9 | 1 | What is an ML pipeline, and why do teams automate it? |
+| B9P01Q72 | 9 | 1 | What is a feature store or feature table, and why does consistent feature definition matter between training and use? |
+| B9P01Q73 | 9 | 1 | How do hype claims about AI differ from what ML can reliably do on small, messy company data? |
+| B9P01Q74 | 9 | 1 | Show with an example how supervised and unsupervised learning can be combined in one project. |
+| B9P01Q75 | 9 | 1 | How would you decide between explaining the past with analytics and predicting the future with ML, when leadership wants both with one dataset and two weeks? |
+| B9P01Q76 | 9 | 1 | A vendor claims their black-box tool predicts attrition with high accuracy. What do you ask before trusting it, and what evidence do you request? |
+| B9P01Q77 | 9 | 1 | Design a minimal, responsible attrition-risk workflow: data, label definition, model type, who sees the output, and what action follows. |
+| B9P02Q1 | 9 | 2 | What is the difference between linear regression and logistic regression? |
+| B9P02Q2 | 9 | 2 | When would you use linear regression and when would you use logistic regression? Give one HR example of each. |
+| B9P02Q3 | 9 | 2 | Why is logistic regression called a classification algorithm even though its name says regression? |
+| B9P02Q4 | 9 | 2 | What does the sigmoid (logistic) function do in logistic regression, and what range of values does it output? |
+| B9P02Q5 | 9 | 2 | Write the sklearn code to fit a linear regression that predicts salary from years of experience using a pandas DataFrame, and then predict the salary for 6 years of experience. |
+| B9P02Q6 | 9 | 2 | After fitting LinearRegression in sklearn, what do `model.coef_` and `model.intercept_` tell you, and what salary does the model predict for 4 years of experience? |
+| B9P02Q7 | 9 | 2 | How would you explain a fitted linear regression model to a non-technical HR manager in two sentences? |
+| B9P02Q8 | 9 | 2 | A logistic regression model gives an employee a probability of 0.72 of leaving. What does that number mean, and what class does the model predict at the default threshold? |
+| B9P02Q9 | 9 | 2 | Why is plain linear regression a poor choice when the outcome is yes/no, such as whether an employee leaves? |
+| B9P02Q10 | 9 | 2 | What is the difference between `predict()` and `predict_proba()` in sklearn's LogisticRegression? |
+| B9P02Q11 | 9 | 2 | In an attrition dataset, which columns would you treat as the target and which as features, and why? |
+| B9P02Q12 | 9 | 2 | What data preparation steps do you do in pandas before fitting a regression model in sklearn? |
+| B9P02Q13 | 9 | 2 | How do you interpret a logistic regression coefficient, and what is the odds ratio for a coefficient of 0.7 on the variable `works_overtime`? |
+| B9P02Q14 | 9 | 2 | What does `model.score(X_test, y_test)` return for LinearRegression, and what does it return for LogisticRegression? |
+| B9P02Q15 | 9 | 2 | A logistic regression has intercept -2 and a coefficient of 0.5 on `overtime_hours_per_week`. What is the predicted probability of leaving for an employee with 3 overtime hours? |
+| B9P02Q16 | 9 | 2 | How do probability, odds and log-odds relate? Convert a probability of 0.8 to odds, and odds of 1.5 to a probability. |
+| B9P02Q17 | 9 | 2 | How do you handle a categorical variable such as `department` before fitting LinearRegression or LogisticRegression in sklearn? |
+| B9P02Q18 | 9 | 2 | Your attrition model predicts 'stayed' for every employee and gets 95% accuracy. Why can that happen, and what would you try in a logistic regression? |
+| B9P02Q19 | 9 | 2 | Do you need to scale the features before fitting linear regression and logistic regression in sklearn? |
+| B9P02Q20 | 9 | 2 | How do you choose a classification threshold other than 0.5 for a logistic regression model, and why would you? |
+| B9P02Q21 | 9 | 2 | Where is the decision boundary of a logistic regression model, and at what value of x does the model predict a probability of exactly 0.5? |
+| B9P02Q22 | 9 | 2 | Using the multiple regression below, what monthly salary does the model predict for an employee with 3 years of experience and 20 training hours? |
+| B9P02Q23 | 9 | 2 | What is the difference between building a model to predict and building one to explain, and how does it change what you look at? |
+| B9P02Q24 | 9 | 2 | For the fitted line y = 10 + 2x and the data below, calculate the predicted values, the residuals and the sum of squared errors. |
+| B9P02Q25 | 9 | 2 | Walk through the sklearn steps to build a simple attrition model with logistic regression, from a DataFrame to a prediction for a new employee. |
+| B9P02Q26 | 9 | 2 | A logistic regression coefficient says employees with a higher last salary hike are more likely to leave. What do you do before reporting this? |
+| B9P02Q27 | 9 | 2 | One of your features is `exit_interview_done`. Your model reaches 99% accuracy. What is the problem, and how do you fix it? |
+| B9P02Q28 | 9 | 2 | What does the least squares line mean in simple terms, and how does sklearn find it? |
+| B9P02Q29 | 9 | 2 | What does the intercept mean in a logistic regression model? |
+| B9P02Q30 | 9 | 2 | Can linear regression predict impossible values such as a negative salary or a probability above 1? Show an example. |
+| B9P02Q31 | 9 | 2 | For each of the following targets, say whether you would use linear regression or logistic regression, or neither, and why. |
+| B9P02Q32 | 9 | 2 | How does one extreme outlier change a fitted regression line? Use the data below. |
+| B9P02Q33 | 9 | 2 | What does an odds ratio of 1, of 2 and of 0.5 mean in a logistic regression? |
+| B9P02Q34 | 9 | 2 | Why does 'linear' regression still fit with an x-squared term? What does 'linear' refer to? |
+| B9P02Q35 | 9 | 2 | Why does sklearn raise 'Expected 2D array, got 1D array instead' and how do you fix it? |
+| B9P02Q36 | 9 | 2 | How do you fit a multiple linear regression in sklearn with several feature columns, and where do you find each coefficient? |
+| B9P02Q37 | 9 | 2 | How do you plot predicted versus actual values to check a regression model, and what pattern tells you the model is good? |
+| B9P02Q38 | 9 | 2 | Why can the intercept of a regression sometimes be meaningless? Give an example. |
+| B9P02Q39 | 9 | 2 | An attrition logistic regression has a coefficient of -0.2 per year of tenure. What is the odds ratio for 5 extra years of tenure? |
+| B9P02Q40 | 9 | 2 | How would you add a squared term to capture a curved relationship in sklearn? |
+| B9P02Q41 | 9 | 2 | How do you deal with missing values before fitting a regression in sklearn? |
+| B9P02Q42 | 9 | 2 | What is regularisation in intuitive terms, and how do Ridge and Lasso differ? |
+| B9P02Q43 | 9 | 2 | What would you conclude if Lasso shrinks the coefficient of a variable exactly to zero? |
+| B9P02Q44 | 9 | 2 | What does `class_weight='balanced'` do in LogisticRegression, and when would you use it? |
+| B9P02Q45 | 9 | 2 | What is the intuition behind how linear regression and logistic regression are fitted (least squares versus maximum likelihood or log loss)? |
+| B9P02Q46 | 9 | 2 | What does the parameter C mean in sklearn's LogisticRegression, and is regularisation applied by default? |
+| B9P02Q47 | 9 | 2 | Calculate the odds ratio of leaving for overtime versus no-overtime employees from the table below. |
+| B9P02Q48 | 9 | 2 | How does sklearn's LogisticRegression handle a target with three classes, such as three exit reasons? |
+| B9P02Q49 | 9 | 2 | Write the code to predict the probability of leaving for one new employee with a fitted model, and say how you read the output. |
+| B9P02Q50 | 9 | 2 | A manager asks for the top drivers of attrition from your logistic regression. How do you rank the variables fairly? |
+| B9P02Q51 | 9 | 2 | What does a dummy variable coefficient mean in the model below? |
+| B9P02Q52 | 9 | 2 | Can the test-set R² be negative, and what does it mean if it is? |
+| B9P02Q53 | 9 | 2 | Why would you use `stratify=y` in train_test_split for an attrition dataset? |
+| B9P02Q54 | 9 | 2 | How do you read the coef, std err, P>/z/ and confidence interval columns in a statsmodels logistic regression summary? |
+| B9P02Q55 | 9 | 2 | What is an interaction term, and when would you add one in a regression? |
+| B9P02Q56 | 9 | 2 | Why do we not rely on R² for logistic regression, and what do people use instead? |
+| B9P02Q57 | 9 | 2 | When would you use statsmodels instead of sklearn for a regression, and when sklearn? |
+| B9P02Q58 | 9 | 2 | For which model setting would a false negative be costlier than a false positive, and how would that change your threshold? |
+| B9P02Q59 | 9 | 2 | What is calibration for a logistic regression model, and how would you check that '30% risk' really means about 30 in 100? |
+| B9P02Q60 | 9 | 2 | What is perfect separation in logistic regression, what warning signs do you see, and what do you do? |
+| B9P02Q61 | 9 | 2 | Where can an analyst fit a regression without Python, for example in Excel, and how does that compare with sklearn? |
+| B9P02Q62 | 9 | 2 | What is a baseline model, and why compare your regression against predicting the average? |
+| B9P02Q63 | 9 | 2 | A model said 0.72 chance of leaving but the employee stayed. Was the model wrong? |
+| B9P02Q64 | 9 | 2 | How is a regression model different from a rule such as 'flag anyone with more than 3 absences' for attrition risk? |
+| B9P02Q65 | 9 | 2 | What is a sklearn Pipeline and why would you use one for regression? |
+| B9P02Q66 | 9 | 2 | What is a linear probability model, and why do analysts still sometimes use it? |
+| B9P02Q67 | 9 | 2 | Why is logistic regression often a good first model in business, including banks and HR teams? |
+| B9P02Q68 | 9 | 2 | For an HR audience, how would you compare logistic regression with a decision tree on interpretability? |
+| B9P02Q69 | 9 | 2 | Should you include gender or age in an attrition or pay regression? Discuss fairness and privacy. |
+| B9P02Q70 | 9 | 2 | If you log-transform salary as the target, how do you turn predictions back into rupees and how does interpretation change? |
+| B9P02Q71 | 9 | 2 | What are influential points and leverage, and how do you spot one in a regression? |
+| B9P02Q72 | 9 | 2 | Why is an odds ratio not the same as a risk ratio, and when does the difference matter? |
+| B9P02Q73 | 9 | 2 | What is gradient descent in one minute, and does LinearRegression in sklearn use it? |
+| B9P02Q74 | 9 | 2 | How would you report a logistic regression to management using predicted probabilities instead of odds ratios? |
+| B9P02Q75 | 9 | 2 | What is an elastic net, and when might it beat Ridge or Lasso alone? |
+| B9P02Q76 | 9 | 2 | How do you check a logistic regression model for multicollinearity, and does it matter if you only want predictions? |
+| B9P02Q77 | 9 | 2 | What does `max_iter` do in LogisticRegression, and what does a ConvergenceWarning tell you? |
+| B9P02Q78 | 9 | 2 | What is Poisson regression, and when would you use it for a count target such as leaves taken per employee? |
+| B9P02Q79 | 9 | 2 | What is the difference between a coefficient and a marginal effect (change in probability) in logistic regression, and why does the effect vary by employee? |
+| B9P02Q80 | 9 | 2 | What happens in linear regression when you have more features than rows, and what do you do? |
+| B9P02Q81 | 9 | 2 | How would you detect and handle data leakage caused by time, for example using future information in a churn model? |
+| B9P02Q82 | 9 | 2 | What is the learning rate in gradient-based fitting of logistic regression, and what goes wrong if it is too big? |
+| B9P02Q83 | 9 | 2 | Your logistic regression is accurate on training data but poor on new months. List causes and your first three checks. |
+| B9P02Q84 | 9 | 2 | How would you compare two logistic regression models, one with 5 features and one with 12, to decide which to deploy? |
+| B9P03Q1 | 9 | 3 | What is a decision tree, and how would you explain one to a non-technical HR manager using an employee attrition example? |
+| B9P03Q2 | 9 | 3 | In a decision tree, what are the root node, a decision (internal) node, a leaf node, and the depth of the tree? |
+| B9P03Q3 | 9 | 3 | What is a random forest, and how is it different from a single decision tree? |
+| B9P03Q4 | 9 | 3 | A node in an attrition tree holds 10 employees: 6 stayed and 4 left. Calculate its Gini impurity. |
+| B9P03Q5 | 9 | 3 | How does a decision tree decide where to split the data at each node? |
+| B9P03Q6 | 9 | 3 | Why do decision trees overfit easily, and which sklearn settings (max_depth, min_samples_leaf) would you use to control it? |
+| B9P03Q7 | 9 | 3 | Calculate the weighted Gini impurity after this split and the Gini gain, for an attrition tree split on overtime. |
+| B9P03Q8 | 9 | 3 | You run the code below. What does the output tell you, and what would you try next? |
+| B9P03Q9 | 9 | 3 | Using the table, which max_depth would you pick for an attrition tree, and why? |
+| B9P03Q10 | 9 | 3 | How does a random forest reduce overfitting compared with one deep decision tree? Mention bootstrap samples and random feature subsets. |
+| B9P03Q11 | 9 | 3 | How do you get feature importance from a fitted RandomForestClassifier in sklearn, and how would you present the top three features to a manager? |
+| B9P03Q12 | 9 | 3 | For an attrition-prediction task, when would you choose a single decision tree over a random forest, and when the reverse? |
+| B9P03Q13 | 9 | 3 | Calculate the entropy (base 2) of a node with 5 leavers and 5 stayers, and of a node with 8 stayers and 0 leavers. What do the two values mean? |
+| B9P03Q14 | 9 | 3 | Do decision trees and random forests need feature scaling? Do they need categorical columns to be encoded in sklearn? |
+| B9P03Q15 | 9 | 3 | Read the printed tree below. What does it predict for an employee with tenure 1.5 years who works overtime, and what rule did you follow? |
+| B9P03Q16 | 9 | 3 | Write short sklearn code to split an attrition dataset, fit a RandomForestClassifier and print test accuracy. |
+| B9P03Q17 | 9 | 3 | What do the n_estimators and max_depth parameters of RandomForestClassifier control? |
+| B9P03Q18 | 9 | 3 | Five trees in a random forest predict leave, stay, leave, leave, stay for one employee. What does the forest predict by majority vote? If the five trees give leave probabilities 0.8, 0.3, 0.6, 0.7, 0.2, what is the averaged probability? |
+| B9P03Q19 | 9 | 3 | A manager says a random forest is a black box and refuses to trust it. What do you say? |
+| B9P03Q20 | 9 | 3 | Compare two candidate splits using weighted Gini impurity. Which one would the tree choose? |
+| B9P03Q21 | 9 | 3 | Calculate the information gain (entropy-based) of this split. |
+| B9P03Q22 | 9 | 3 | A regression tree predicts monthly store sales. Calculate the total squared error before and after splitting the six stores into {10, 12, 14} and {30, 32, 34} (sales in lakh rupees). |
+| B9P03Q23 | 9 | 3 | What is the difference between Gini impurity and entropy, and which one is the sklearn default? |
+| B9P03Q24 | 9 | 3 | An attrition dataset has 950 stayers and 50 leavers. A tree that always predicts stay is 95% accurate. Why is this a problem, and how can you handle imbalance in a tree or forest? |
+| B9P03Q25 | 9 | 3 | Interpret the importance table, and say what it does not prove. |
+| B9P03Q26 | 9 | 3 | What are the weaknesses of impurity-based feature importance, and what is permutation importance? |
+| B9P03Q27 | 9 | 3 | What are a bootstrap sample and bagging? Roughly what fraction of rows is left out of each bootstrap sample when the dataset is large? |
+| B9P03Q28 | 9 | 3 | What does predict_proba return for a random forest, and how would you use it to list the 20% of employees most at risk of leaving? |
+| B9P03Q29 | 9 | 3 | A sales model is trained on stores whose monthly sales were between 50 and 100 lakh. A regression tree and a linear regression are asked to predict a store expected at 150 lakh. How do their predictions behave, and why? |
+| B9P03Q30 | 9 | 3 | A node has 9 employees and you set min_samples_leaf=5. Can it split? What if it has 12 employees? |
+| B9P03Q31 | 9 | 3 | What is data leakage in a tree-based attrition model? Give two examples of columns that would leak. |
+| B9P03Q32 | 9 | 3 | How do you prepare categorical columns and missing values before fitting a tree in sklearn? Show a short pandas example. |
+| B9P03Q33 | 9 | 3 | How does a tree split differ when the target is categorical (classification) and when it is numeric (regression)? |
+| B9P03Q34 | 9 | 3 | What is out-of-bag (OOB) score in a random forest, and how do you switch it on in sklearn? |
+| B9P03Q35 | 9 | 3 | Write short code that uses GridSearchCV to tune max_depth and n_estimators of a random forest. |
+| B9P03Q36 | 9 | 3 | What is the maximum number of leaves in a binary decision tree of depth 3, and why does a depth-10 tree on 500 rows nearly always overfit? |
+| B9P03Q37 | 9 | 3 | At a high level, how does a random forest differ from gradient boosting? |
+| B9P03Q38 | 9 | 3 | Should an HR attrition model use gender or age as input features? Discuss fairness and privacy for a tree-based model. |
+| B9P03Q39 | 9 | 3 | Find the error in this workflow and say how it affects the reported result. |
+| B9P03Q40 | 9 | 3 | What is cost-complexity pruning (ccp_alpha) in a decision tree, and how does it differ from setting max_depth? |
+| B9P03Q41 | 9 | 3 | Why can two decision trees trained on slightly different samples of the same data look very different, and why does that matter when you explain a tree to leaders? |
+| B9P03Q42 | 9 | 3 | Why does averaging many trees reduce variance only if the trees are not too correlated, and how do random feature subsets help? |
+| B9P03Q43 | 9 | 3 | Your random forest has 99% train and 80% test accuracy. HR wants to use it to decide which individual employees get retention offers. How do you validate it and what do you caution them about? |
+| B9P04Q1 | 9 | 4 | What is clustering, and how is it different from classification? |
+| B9P04Q2 | 9 | 4 | What is customer segmentation, and why do businesses do it? |
+| B9P04Q3 | 9 | 4 | Explain k-means clustering to a non-technical marketing manager in plain words. |
+| B9P04Q4 | 9 | 4 | What are the steps of the k-means algorithm? |
+| B9P04Q5 | 9 | 4 | What does RFM stand for, and what does each letter measure? |
+| B9P04Q6 | 9 | 4 | How do you choose the number of clusters k in k-means? |
+| B9P04Q7 | 9 | 4 | Why must you scale the features before running k-means, and how do you do it in sklearn? |
+| B9P04Q8 | 9 | 4 | Perform one k-means iteration by hand: which cluster does P3 join, and what are the new centroids? |
+| B9P04Q9 | 9 | 4 | Using the table below, calculate recency in days, average order value and say which customer is the most recent buyer. |
+| B9P04Q10 | 9 | 4 | Write pandas code that builds an RFM table (recency, frequency, monetary) per customer from an orders table. |
+| B9P04Q11 | 9 | 4 | Write sklearn code that scales three RFM columns, fits k-means with 4 clusters, and attaches the cluster label to each customer. |
+| B9P04Q12 | 9 | 4 | Given these 10 recency values (days since last purchase), assign R scores from 1 to 5 using quintiles, where 5 is the best score. |
+| B9P04Q13 | 9 | 4 | How is RFM segmentation different from k-means clustering, and when would you use each? |
+| B9P04Q14 | 9 | 4 | A manager asks you to split customers into high, medium and low value groups using their last 12 months of purchase history. What approach do you take? |
+| B9P04Q15 | 9 | 4 | You have named segments such as Champions, Loyal, At Risk and Hibernating. What marketing or retention action would you suggest for each? |
+| B9P04Q16 | 9 | 4 | How do you decide whether a set of customer segments is actually useful to the business? |
+| B9P04Q17 | 9 | 4 | What does k-means actually minimise, and what is inertia? |
+| B9P04Q18 | 9 | 4 | Does k-means need labelled data, and what does that mean for how you judge the result? |
+| B9P04Q19 | 9 | 4 | What does a high RFM score such as 555 mean, compared with 155 and 511? |
+| B9P04Q20 | 9 | 4 | How is k-means different from k-nearest neighbours (KNN)? |
+| B9P04Q21 | 9 | 4 | What is the difference between segments, cohorts and personas? |
+| B9P04Q22 | 9 | 4 | Using the inertia values below, which k would you choose with the elbow method, and why? |
+| B9P04Q23 | 9 | 4 | Using the silhouette scores below, which k looks best, and what else would you check before deciding? |
+| B9P04Q24 | 9 | 4 | Calculate the silhouette value of a single point where its average distance to its own cluster is 2 and its average distance to the nearest other cluster is 5. What would a value of -0.25 tell you? |
+| B9P04Q25 | 9 | 4 | Compute the inertia (within-cluster sum of squared distances) for the two clusters below. |
+| B9P04Q26 | 9 | 4 | Compare the Euclidean distance between two customers before and after standardising, and explain what it shows. |
+| B9P04Q27 | 9 | 4 | Apply the rules below to label each customer by RFM score. |
+| B9P04Q28 | 9 | 4 | Work out the average recency, frequency and monetary values of this cluster and suggest a label for it. |
+| B9P04Q29 | 9 | 4 | Given the cluster sizes and revenue shares below, which segments deserve the most attention and why? |
+| B9P04Q30 | 9 | 4 | Read the code below. What do `labels_`, `cluster_centers_` and `inertia_` contain, and what does the last line print? |
+| B9P04Q31 | 9 | 4 | What is wrong with this segmentation code, and how would you fix it? |
+| B9P04Q32 | 9 | 4 | Why do analysts often apply a log transform to the monetary value before k-means, and what happens if they do not? |
+| B9P04Q33 | 9 | 4 | How do you treat customers with a single purchase, and returns or refunds, when building RFM? |
+| B9P04Q34 | 9 | 4 | How do you choose the reference date for recency, and what goes wrong if you pick it carelessly? |
+| B9P04Q35 | 9 | 4 | How many segments should you create in practice, and what limits the number? |
+| B9P04Q36 | 9 | 4 | One of your k-means clusters contains only 2 customers. What do you do? |
+| B9P04Q37 | 9 | 4 | How do outliers affect k-means, and how do you handle them? |
+| B9P04Q38 | 9 | 4 | What are the main limitations of k-means? |
+| B9P04Q39 | 9 | 4 | Does k-means always find the best solution? Explain initialisation, k-means++ and the role of n_init and random_state. |
+| B9P04Q40 | 9 | 4 | How does hierarchical clustering differ from k-means, and how do you read a dendrogram? |
+| B9P04Q41 | 9 | 4 | How can k-means handle categorical variables such as city or payment method? |
+| B9P04Q42 | 9 | 4 | Two of your clustering features are highly correlated. Does it matter for k-means? |
+| B9P04Q43 | 9 | 4 | How do you handle missing values before clustering? |
+| B9P04Q44 | 9 | 4 | How would you visualise clusters when there are more than three features? |
+| B9P04Q45 | 9 | 4 | Should recency, frequency and monetary carry equal weight in RFM, and what if frequency and monetary are strongly correlated? |
+| B9P04Q46 | 9 | 4 | How do you check that your segments are stable and not an accident of one random run? |
+| B9P04Q47 | 9 | 4 | You have fitted a k-means model and a new batch of customers arrives. How do you assign them to segments? |
+| B9P04Q48 | 9 | 4 | Write a SQL query that computes recency, frequency and monetary per customer and assigns 1 to 5 scores with NTILE. |
+| B9P04Q49 | 9 | 4 | You are asked to segment employees by tenure, absence days and engagement score for a retention programme. Describe your approach and one risk. |
+| B9P04Q50 | 9 | 4 | You have a cluster profile table in original units. Describe how you would turn it into named segments for the HR team. |
+| B9P04Q51 | 9 | 4 | How would you present customer segments to a marketing team that does not know statistics? |
+| B9P04Q52 | 9 | 4 | After you target a segment with a campaign, how do you measure whether the segmentation actually helped? |
+| B9P04Q53 | 9 | 4 | What privacy and fairness concerns arise when you segment customers or employees, and how do you handle them? |
+| B9P04Q54 | 9 | 4 | A cluster is described as 'Segment 2' with no further meaning. A stakeholder asks what it is. What would a good analyst do? |
+| B9P04Q55 | 9 | 4 | When the elbow curve is smooth with no clear bend, what do you do? |
+| B9P04Q56 | 9 | 4 | Is the clustering result 'right'? How do you defend your choice of k when the silhouette score favours 3 and the business wants 5 segments? |
+| B9P04Q57 | 9 | 4 | What is DBSCAN, and when would you prefer it to k-means? |
+| B9P04Q58 | 9 | 4 | Compare StandardScaler and MinMaxScaler for clustering. Does the choice change the clusters? |
+| B9P04Q59 | 9 | 4 | What would happen to inertia if you set k=1, and if you set k equal to the number of points? |
+| B9P04Q60 | 9 | 4 | Why do cluster numbers change between runs, and how do you keep segment names consistent month to month? |
+| B9P04Q61 | 9 | 4 | Can you use cluster labels as an input feature in a supervised model, and what risks does that carry? |
+| B9P04Q62 | 9 | 4 | What is a Gaussian mixture model, and how does it differ from k-means? |
+| B9P04Q63 | 9 | 4 | What is mini-batch k-means, and when would you use it? |
+| B9P04Q64 | 9 | 4 | How do k-modes and k-medoids differ from k-means, and when are they useful? |
+| B9P04Q65 | 9 | 4 | Describe an end-to-end customer segmentation project you would run for an e-commerce company, from raw data to an action plan, including how you would validate it. |
+| B9P04Q66 | 9 | 4 | How is RFM related to customer lifetime value, and where does RFM fall short as a predictive tool? |
+| B9P05Q1 | 9 | 5 | What is a confusion matrix, and what do the four cells TP, FP, FN and TN mean for a binary classification model? |
+| B9P05Q2 | 9 | 5 | How is accuracy defined, and how do you calculate it from a confusion matrix? |
+| B9P05Q3 | 9 | 5 | What is precision, in plain words, and what is its formula? |
+| B9P05Q4 | 9 | 5 | What is recall (also called sensitivity), in plain words, and what is its formula? |
+| B9P05Q5 | 9 | 5 | Explain the difference between precision and recall to a non-technical HR manager using an employee attrition model as the example. |
+| B9P05Q6 | 9 | 5 | Why can accuracy be a misleading metric, especially when one class is rare? |
+| B9P05Q7 | 9 | 5 | A model for fraud detection gives you a confusion matrix. Explain its components and how you would choose between optimising precision or recall. |
+| B9P05Q8 | 9 | 5 | What do sensitivity and specificity mean, and how do they relate to recall and the confusion matrix? |
+| B9P05Q9 | 9 | 5 | What is RMSE, and why is it easier to explain to a business user than MSE? |
+| B9P05Q10 | 9 | 5 | An attrition model flags employees who may resign. Would you prioritise precision or recall, and why? |
+| B9P05Q11 | 9 | 5 | What is the F1 score, and when would you report it instead of accuracy? |
+| B9P05Q12 | 9 | 5 | How do you decide whether to use classification metrics (accuracy, precision, recall) or regression metrics (RMSE, MAE) for a problem? |
+| B9P05Q13 | 9 | 5 | Accuracy calculation: using the confusion matrix below, what is the accuracy of the model? |
+| B9P05Q14 | 9 | 5 | A model predicts that no employee will leave. Of 1,000 employees, 950 stay and 50 leave. What are the accuracy and the recall for the 'leaves' class, and what does this tell you? |
+| B9P05Q15 | 9 | 5 | Precision calculation: an attrition model produced the matrix below. What is its precision for the 'leaves' class, and what does that figure mean for the HR team acting on the flags? |
+| B9P05Q16 | 9 | 5 | Recall calculation: of 60 employees who actually resigned, the model flagged 45 of them. It also flagged 30 employees who stayed. What is the recall, and what is the precision? |
+| B9P05Q17 | 9 | 5 | F1 calculation: a model has precision 0.80 and recall 0.50. What is its F1 score, and why is it lower than the simple average of the two? |
+| B9P05Q18 | 9 | 5 | RMSE calculation: compute the RMSE from the five predictions below. |
+| B9P05Q19 | 9 | 5 | MAE calculation: using the same five predictions below, what is the MAE, and how would you say it to a sales head? |
+| B9P05Q20 | 9 | 5 | What is the difference between RMSE and MAE, and when would you report each? |
+| B9P05Q21 | 9 | 5 | Code reading: what confusion matrix does this code print, and what are the precision and recall? |
+| B9P05Q22 | 9 | 5 | Accuracy paradox: a card-fraud model is tested on 10,000 transactions of which 100 are fraud. It flags 150 transactions, 60 of them truly fraud. Calculate accuracy, precision and recall, and say whether you would call this model good. |
+| B9P05Q23 | 9 | 5 | How does lowering the classification threshold from 0.5 to 0.3 change the number of false positives, false negatives, precision and recall? |
+| B9P05Q24 | 9 | 5 | Your manager asks 'how accurate is the churn model?' How do you answer in a way that is honest and useful, rather than quoting one accuracy number? |
+| B9P05Q25 | 9 | 5 | Cost-based choice: a missed leaver (FN) costs about Rs 50,000 in replacement; a wasted retention call (FP) costs Rs 2,000. Using the counts below, which model has the lower total error cost, and by how much? |
+| B9P05Q26 | 9 | 5 | Code reading: in scikit-learn, in what order does confusion_matrix(y_true, y_pred).ravel() return its four values, and how would you unpack them to compute recall? |
+| B9P05Q27 | 9 | 5 | Two analysts report 'model accuracy' for the same attrition data and get 0.92 and 0.81. Name three reasons the numbers might differ legitimately. |
+| B9P05Q28 | 9 | 5 | What is specificity (true negative rate), and how is it calculated from a confusion matrix? |
+| B9P05Q29 | 9 | 5 | What is the false positive rate, and why does a screening team care about it? |
+| B9P05Q30 | 9 | 5 | What is MAE (mean absolute error), and what are its units? |
+| B9P05Q31 | 9 | 5 | What is MSE, and why do we square the errors instead of just averaging them? |
+| B9P05Q32 | 9 | 5 | What is a baseline model, and why should you compare a new model against one before reporting its metric? |
+| B9P05Q33 | 9 | 5 | What is the difference between a false positive and a false negative? Give one example each from a hiring-screening model. |
+| B9P05Q34 | 9 | 5 | What does a residual mean in a regression model, and how is it linked to RMSE? |
+| B9P05Q35 | 9 | 5 | What is the difference between precision and accuracy in model evaluation (not in measurement)? |
+| B9P05Q36 | 9 | 5 | What does an ROC curve show, and what do AUC values of 0.5 and 1.0 mean? |
+| B9P05Q37 | 9 | 5 | Which single metric would you not report alone for a rare-event model, and what would you add to it? |
+| B9P05Q38 | 9 | 5 | What does 'test-set performance' mean, and why do we report metrics on it rather than on training data? |
+| B9P05Q39 | 9 | 5 | What is the difference between a metric (like recall) and a loss function used when a model is trained? |
+| B9P05Q40 | 9 | 5 | If a regression model's RMSE is 8 and the target is monthly salary in thousands of rupees, how do you read it? |
+| B9P05Q41 | 9 | 5 | Hiring screen: a resume-screening model shortlists 50 of 500 applicants; 30 shortlisted are actually suitable, and 60 suitable applicants exist in total. What are its precision and recall? |
+| B9P05Q42 | 9 | 5 | Threshold calculation: using the scores below, compute precision and recall at a threshold of 0.5 and again at 0.3. |
+| B9P05Q43 | 9 | 5 | Outliers: the errors of a sales model on five months are shown below. Compute MAE and RMSE and explain why they differ. |
+| B9P05Q44 | 9 | 5 | Baseline vs model: compute the RMSE of the model and of a baseline that always predicts the mean of the actuals. Is the model worthwhile? |
+| B9P05Q45 | 9 | 5 | Precision at top K: HR can only call 20 employees. The model's top 20 contains 14 actual leavers, and 40 employees leave in total. What are precision@20 and recall@20? |
+| B9P05Q46 | 9 | 5 | Model comparison: Model A has precision 0.30 and recall 0.90; Model B has precision 0.80 and recall 0.60. Which would you choose for a retention campaign with a small budget, and which if the company can afford to call everyone at risk? |
+| B9P05Q47 | 9 | 5 | Multi-class reading: given the confusion matrix below (rows = actual, columns = predicted), what is the overall accuracy and the precision for class B? |
+| B9P05Q48 | 9 | 5 | What is the difference between macro-averaged and weighted-averaged recall in a classification report, and which would you use for an imbalanced set of ticket categories? |
+| B9P05Q49 | 9 | 5 | Code reading: what does this print, and what is wrong with the idea of using it as the only evaluation? |
+| B9P05Q50 | 9 | 5 | Code task: write short code that applies a 0.3 threshold to model.predict_proba(X_test)[:, 1] and prints the confusion matrix and recall. |
+| B9P05Q51 | 9 | 5 | Code task: use sklearn to report RMSE and MAE for y_test and y_pred, and say which function names you would use in a recent scikit-learn version. |
+| B9P05Q52 | 9 | 5 | Code reading: what does cross_val_score(model, X, y, cv=5, scoring='recall') return, and why choose recall as the scoring? |
+| B9P05Q53 | 9 | 5 | MAPE calculation: compute the MAPE for the four predictions below and say when MAPE becomes unreliable. |
+| B9P05Q54 | 9 | 5 | What is k-fold cross-validation, and why does it give a steadier estimate of a metric than a single train/test split? |
+| B9P05Q55 | 9 | 5 | A model has R-squared 0.90 but its RMSE is Rs 40,000 on salaries that range from Rs 30,000 to Rs 60,000. How do you explain this to a manager, and what do you report? |
+| B9P05Q56 | 9 | 5 | What is the precision-recall trade-off, and what do you do when HR wants both to be high? |
+| B9P05Q57 | 9 | 5 | Always-positive model: 10% of customers churn, and a model flags every customer as a churner. What are its recall, precision and F1? |
+| B9P05Q58 | 9 | 5 | A random guesser flags employees as 'will leave' with probability 0.2 in a dataset where 20% really leave. What precision and recall do you expect, and why does this matter as a benchmark? |
+| B9P05Q59 | 9 | 5 | Your test set has only 20 rows and accuracy is 85%. Why should you be cautious, and what would you do? |
+| B9P05Q60 | 9 | 5 | Code reading: how do you build a confusion matrix from two pandas columns with pd.crosstab, and what do the rows and columns represent? |
+| B9P05Q61 | 9 | 5 | How would you read a scikit-learn classification_report for a three-class model, and which columns would you look at first? |
+| B9P05Q62 | 9 | 5 | Code reading: a statsmodels OLS result is used as below. What does this measure, and why is it optimistic as a report of model quality? |
+| B9P05Q63 | 9 | 5 | What is the difference between in-sample RMSE and out-of-sample RMSE, and which one do you give to a stakeholder? |
+| B9P05Q64 | 9 | 5 | Which regression metric would you pick when over-predicting and under-predicting inventory carry very different costs, and how would you handle that? |
+| B9P05Q65 | 9 | 5 | Macro recall: using the 3-class matrix below (rows = actual), calculate the macro-averaged recall. |
+| B9P05Q66 | 9 | 5 | Your attrition model shows 96% recall on the test set, which is far above anything in the earlier versions. What would you suspect, and what would you check before reporting it? |
+| B9P05Q67 | 9 | 5 | A model's recall is 60% overall, but 80% for men and 40% for women in the test data. How do you investigate and report this, and what are the risks of acting on the model? |
+| B9P05Q68 | 9 | 5 | What is a lift or gain chart, and how does it help an HR or marketing team decide how many people to contact? |
+| B9P05Q69 | 9 | 5 | What is Cohen's kappa in plain words, and why might it be used when labels are imbalanced? |
+| B9P05Q70 | 9 | 5 | Lift calculation: of 1,000 employees, 100 leave. The top decile of model scores (100 people) contains 35 leavers. What is the lift for that decile? |
+| B9P05Q71 | 9 | 5 | Why can ROC-AUC look flattering on a heavily imbalanced problem, and what would you look at instead? |
+| B9P05Q72 | 9 | 5 | What is the Matthews correlation coefficient (MCC), and why do some practitioners prefer it to F1? |
+| B9P05Q73 | 9 | 5 | What is log loss (cross-entropy), and how does it differ from accuracy as a metric? |
+| B9P05Q74 | 9 | 5 | What is calibration of predicted probabilities, and why does it matter if HR will use a '70% risk' number? |
+| B9P05Q75 | 9 | 5 | What is adjusted R-squared, and why would it be preferred to R-squared when comparing models with different numbers of features? |
+| B9P05Q76 | 9 | 5 | Why is MAE minimised by the median and RMSE by the mean, and does that matter to an analyst? |
+| B9P05Q77 | 9 | 5 | You use ChatGPT or Claude to tag 1,000 survey comments as positive, neutral or negative. How would you evaluate how good the tagging is using a human-labelled sample of 100? |
+| B9P05Q78 | 9 | 5 | Employee data contains personal details. What do you have to consider before using a real employee confusion matrix or predictions in a public tool or an AI assistant? |
+| B9P05Q79 | 9 | 5 | When would you choose PR-AUC over ROC-AUC, and how do you explain the choice in one sentence? |
+| B9P05Q80 | 9 | 5 | Which metrics would you show on a single slide for a non-technical audience about a churn model, and which would you keep in an appendix? |
+| B9P05Q81 | 9 | 5 | A classifier needs to hit at least 90% precision for a fraud team. How would you choose the threshold, and what happens to recall? |
+| B9P05Q82 | 9 | 5 | Does a change of random_state in train_test_split change your precision and recall? What would you do about the instability? |
+| B9P05Q83 | 9 | 5 | Your model beats the baseline in offline recall, but the retention campaign it supports shows no change in resignations. Give possible reasons and how you would investigate. |
+| B9P05Q84 | 9 | 5 | Explain data leakage using an attrition model that includes the column 'exit_interview_done'. How would it affect the evaluation metrics? |
+| B9P05Q85 | 9 | 5 | What is the difference between a model that predicts well and one that explains why employees leave, and how does that change the metrics you report? |
+| B9P05Q86 | 9 | 5 | How would you evaluate a model whose classes are heavily imbalanced and where only about 20 positive cases exist in the test set? |
+| B9P05Q87 | 9 | 5 | How would you choose between two models with similar recall when one is a logistic regression and the other a random forest, given your audience is HR? |
+| B9P06Q1 | 9 | 6 | What is overfitting? Explain it with a simple example to a non-technical manager. |
+| B9P06Q2 | 9 | 6 | What is underfitting, and how is it different from overfitting? |
+| B9P06Q3 | 9 | 6 | Why do we split data into a training set and a test set instead of evaluating the model on the data it was trained on? |
+| B9P06Q4 | 9 | 6 | A model for predicting employee attrition has the scores below. What do they suggest, and what would you try next? |
+| B9P06Q5 | 9 | 6 | What is feature engineering? Give three examples of features you could create for an employee attrition dataset. |
+| B9P06Q6 | 9 | 6 | What is data leakage in a machine learning project? Give one HR or sales example. |
+| B9P06Q7 | 9 | 6 | Read this code and explain what each argument does. With 1,000 rows, how many rows end up in the training and test sets? |
+| B9P06Q8 | 9 | 6 | What does stratify=y do in train_test_split, and when would you use it? Using the data below, how many leavers are in the test set? |
+| B9P06Q9 | 9 | 6 | What is the difference between a training set, a validation set and a test set, and why is the test set kept untouched until the end? |
+| B9P06Q10 | 9 | 6 | Your churn model scores 99% on the test set. What would make you suspicious, and how would you check for leakage? |
+| B9P06Q11 | 9 | 6 | What is wrong with this code, and how would you fix it? |
+| B9P06Q12 | 9 | 6 | How do you handle a categorical column such as department or city before fitting a model? Compare one-hot encoding with label encoding. |
+| B9P06Q13 | 9 | 6 | How would you handle missing values in a feature before modelling, and why should the fill values be calculated from the training data only? |
+| B9P06Q14 | 9 | 6 | What practical steps can you take to reduce overfitting in a model you built as an analyst? |
+| B9P06Q15 | 9 | 6 | Explain the bias-variance trade-off in plain words. Where do an overfit model and an underfit model sit on it? |
+| B9P06Q16 | 9 | 6 | What does random_state do in train_test_split, and why does it matter when you share your results with a colleague? |
+| B9P06Q17 | 9 | 6 | What is the difference between a feature and a target (label)? Identify both in a model that predicts whether an employee will resign within 6 months. |
+| B9P06Q18 | 9 | 6 | Does adding more features always make a model better? Explain with an example. |
+| B9P06Q19 | 9 | 6 | What is k-fold cross-validation, and why is it preferred over a single train-test split on small datasets? For 5-fold on 500 rows, how many rows are in each training and validation part? |
+| B9P06Q20 | 9 | 6 | Interpret these 5-fold cross-validation scores. What is the mean, and what does the spread tell you? |
+| B9P06Q21 | 9 | 6 | A decision tree was trained at several depths. Which depth would you choose, and why? |
+| B9P06Q22 | 9 | 6 | Why is scaling needed for some models and not others? Standardise a salary of 62,000 when the training mean is 50,000 and the standard deviation is 5,000. |
+| B9P06Q23 | 9 | 6 | Write pandas code to create a `tenure_months` feature from a `hire_date` column, and explain why this is usually more useful to a model than the raw date. |
+| B9P06Q24 | 9 | 6 | After one-hot encoding with drop_first=True, how many columns does this dataset have, and why do we drop one dummy column? |
+| B9P06Q25 | 9 | 6 | How do you spot and treat outliers in a feature before modelling? Using the IQR rule, what is the upper fence below, and would a salary of 95 be flagged? |
+| B9P06Q26 | 9 | 6 | Only 5% of customers in your churn data actually churn, so a model that predicts 'no churn' for everyone is 95% accurate. What can you do at the data and model level to handle this imbalance? |
+| B9P06Q27 | 9 | 6 | Why is a random train-test split a problem for data that depends on time, such as monthly sales or monthly attrition snapshots? How would you split instead? |
+| B9P06Q28 | 9 | 6 | Why use an sklearn Pipeline with a scaler and a model instead of transforming the data manually? |
+| B9P06Q29 | 9 | 6 | A model looked good in your notebook but performs poorly after being used on new employee data. List the likely causes. |
+| B9P06Q30 | 9 | 6 | Two features, `years_at_company` and `age`, have a correlation of 0.95. How would you decide which to keep, and does it matter for prediction versus explanation? |
+| B9P06Q31 | 9 | 6 | Why can fitting an imputer or scaler on the whole dataset before cross-validation inflate the scores, and how does a Pipeline inside cross_val_score fix it? |
+| B9P06Q32 | 9 | 6 | What does a learning curve show, and what does each pattern below suggest? |
+| B9P06Q33 | 9 | 6 | A salary column is heavily right-skewed. Would you transform it for a model, and how (for example log)? Which models care? |
+| B9P06Q34 | 9 | 6 | What are interaction or ratio features? Create one from `salary` and `grade_midpoint`, and say why it might predict attrition better than salary alone. |
+| B9P06Q35 | 9 | 6 | You want to use gender, age and pincode as features in an attrition or hiring model. What risks would you raise about fairness, proxies and privacy before including them? |
+| B9P06Q36 | 9 | 6 | What is the difference between overfitting, data leakage and train-test distribution shift? Give a one-line example of each. |
+| B9P06Q37 | 9 | 6 | Your attrition data has several monthly rows per employee. Why can a random row-level split leak information, and what would you use instead? |
+| B9P06Q38 | 9 | 6 | You tune hyperparameters repeatedly and report the best score on the same test set. What is wrong, and how would you structure the data to avoid it? |
+| B9P06Q39 | 9 | 6 | What is target (mean) encoding for a high-cardinality column such as pincode, and how can it leak the target if done carelessly? |
+| B9P07Q1 | 9 | 7 | What is a time series, and how does forecasting a time series differ from predicting a value for ordinary independent rows? |
+| B9P07Q2 | 9 | 7 | Explain trend, seasonality and random noise in a monthly sales series to a non-technical manager. |
+| B9P07Q3 | 9 | 7 | What is a moving average, and why do analysts use it on sales or attendance data? |
+| B9P07Q4 | 9 | 7 | What is a naive forecast, and why should every forecasting model be compared with one? |
+| B9P07Q5 | 9 | 7 | How would you explain to a manager that a forecast is an estimate with a range and not a promise? |
+| B9P07Q6 | 9 | 7 | What are MAE, RMSE and MAPE for a forecast, and which one would you show to a sales head? |
+| B9P07Q7 | 9 | 7 | Monthly sales for six months are given. What is the 3-month simple moving average forecast for July? |
+| B9P07Q8 | 9 | 7 | Why can you not use a random train/test split for a forecasting problem, and how do you split instead? |
+| B9P07Q9 | 9 | 7 | Actual and forecast values for three months are given. Calculate MAE, RMSE and MAPE. |
+| B9P07Q10 | 9 | 7 | You are asked for a 3-month versus a 12-month moving average on monthly sales. What is the trade-off in choosing the window size? |
+| B9P07Q11 | 9 | 7 | A pandas column `sales` holds daily sales. What does `df['sales'].rolling(3).mean()` return for the first two rows, and what extra step turns it into a forecast for the next day rather than a smoothed value for today? |
+| B9P07Q12 | 9 | 7 | What is the difference between a forecast, a target and a budget? |
+| B9P07Q13 | 9 | 7 | How would you check whether monthly sales data has seasonality before building any model? |
+| B9P07Q14 | 9 | 7 | What is the difference between additive and multiplicative seasonality, and how do you tell which one your data shows? |
+| B9P07Q15 | 9 | 7 | Quarterly sales over two years are given. Compute the seasonal index for Q3, using the average of all four quarter means as the base. |
+| B9P07Q16 | 9 | 7 | Last December sales were 500 units. January to November this year ran 10% above the same months last year. Using a seasonal naive forecast with a growth adjustment, what is the December forecast? |
+| B9P07Q17 | 9 | 7 | Sales rise by exactly 10 units every month. Why does a 3-month moving average lag the trend, and what does it forecast for the next month? |
+| B9P07Q18 | 9 | 7 | Fit a straight-line trend to five periods of data and forecast period 6. |
+| B9P07Q19 | 9 | 7 | Given quarterly seasonal indices, how do you deseasonalise a figure and use the index to forecast next quarter? |
+| B9P07Q20 | 9 | 7 | A weighted moving average gives weights 0.5, 0.3 and 0.2 to the latest, previous and earlier months. What is the forecast, and why use weights? |
+| B9P07Q21 | 9 | 7 | What is simple exponential smoothing, and how does it differ from a moving average? Calculate the new forecast. |
+| B9P07Q22 | 9 | 7 | Two methods are tested on four months. Which has the better MAE, which has the better RMSE, and what does the difference tell you? |
+| B9P07Q23 | 9 | 7 | Forecast errors (actual minus forecast) are given. Is the forecast biased, and how do you measure it? |
+| B9P07Q24 | 9 | 7 | Why can MAPE mislead when some actual values are zero or very small, and what would you use instead? |
+| B9P07Q25 | 9 | 7 | What is stationarity, why does it matter for ARIMA-type models, and how would you check it in a few lines of Python? |
+| B9P07Q26 | 9 | 7 | Explain walk-forward (rolling-origin) validation, and why ordinary k-fold cross-validation is wrong for a time series. |
+| B9P07Q27 | 9 | 7 | What does `seasonal_decompose(df['sales'], model='additive', period=12)` from statsmodels give you, and how do you read each part? |
+| B9P07Q28 | 9 | 7 | How would you handle a festival or promotion spike, such as Diwali sales, when forecasting monthly or daily sales? |
+| B9P07Q29 | 9 | 7 | Give an example of data leakage in forecasting, such as using a centered moving average or full-sample statistics, and how you avoid it. |
+| B9P07Q30 | 9 | 7 | The HR head asks you to forecast monthly attrition for the next six months from three years of history. How would you approach it, and how will you present the result? |
+| B9P07Q31 | 9 | 7 | When would you move from a moving average or exponential smoothing to a machine learning model with lag features for forecasting, and when would you not? |
+| B9P07Q32 | 9 | 7 | A forecast missed last quarter's sales by a wide margin and the manager asks why. How do you investigate and explain it? |
+| B9P07Q33 | 9 | 7 | Common misconception check: a trend line fits the last 12 months with a high R-squared, so the team says it will continue to hold for two more years. What is wrong with that reasoning? |
+| B9P07Q34 | 9 | 7 | What does ARIMA stand for, and how would you describe it in plain words to a colleague who has only used moving averages? |
+| B9P07Q35 | 9 | 7 | Read this code and say what it does and where it could go wrong: |
+| B9P07Q36 | 9 | 7 | You create `df['lag_7'] = df['sales'].shift(7)` and `df['roll_7'] = df['sales'].rolling(7).mean()` as features. What leakage risk do you check, and what do you do with the missing rows? |
+| B9P07Q37 | 9 | 7 | What is Holt-Winters (triple exponential smoothing), and which of trend and seasonality does each of its three smoothing parts handle? |
+| B9P07Q38 | 9 | 7 | How would you forecast demand for a new product with no sales history, and what do you tell the business about confidence? |
+| B9P07Q39 | 9 | 7 | Stockouts hid true demand for a fast-selling item for two weeks. How does that distort the history you forecast from, and what would you do? |
+| B9P07Q40 | 9 | 7 | Compute 3-day moving averages and say what an outlier does to them. |
+| B9P07Q41 | 9 | 7 | Daily orders show weekly seasonality. Given two weeks of data, compute the Monday index and use it to forecast next Monday, assuming the weekly average level stays at 100. |
+| B9P07Q42 | 9 | 7 | You want to paste last quarter's sales data into a public AI chatbot to get a forecast. What privacy and accuracy checks do you make first, and how do you verify the output? |
+| B9P07Q43 | 9 | 7 | When is Prophet a sensible choice for an analyst, and what would you still check about its output? |
+| B9P07Q44 | 9 | 7 | Why is a trend estimated with a 2x12 centered moving average for monthly data, rather than a plain 12-month average? |
+| B9P07Q45 | 9 | 7 | What do the autocorrelation function (ACF) plot and a lag spike at 12 tell you about monthly data? |
+| B9P08Q1 | 9 | 8 | You are asked to build an attrition prediction model for an HR team from raw HRIS data. Walk me through the steps from the business question to handing the result over. |
+| B9P08Q2 | 9 | 8 | How would you define the target variable for an employee attrition model, and why does it matter whether you include voluntary and involuntary exits together? |
+| B9P08Q3 | 9 | 8 | Your model gives an employee an attrition risk score of 0.72. How would you explain to an HR head what that number does and does not mean? |
+| B9P08Q4 | 9 | 8 | Why is accuracy a misleading metric for an attrition model? |
+| B9P08Q5 | 9 | 8 | Compute precision, recall and F1 for the leaver class and say which one matters more for an HR stay-interview programme. |
+| B9P08Q6 | 9 | 8 | What is data leakage in an attrition model? Name three columns in an HR file that could leak the outcome. |
+| B9P08Q7 | 9 | 8 | What is wrong with this workflow, and how would you fix it? |
+| B9P08Q8 | 9 | 8 | How do you read a logistic regression coefficient in an attrition model when you explain it to HR? |
+| B9P08Q9 | 9 | 8 | Leavers are about 15% of your attrition dataset. List the ways you can handle this imbalance and say which you would try first. |
+| B9P08Q10 | 9 | 8 | HR can hold stay-interviews with only 50 employees this quarter. How do you turn the model's scores into that list, and how do you pick the cut-off? |
+| B9P08Q11 | 9 | 8 | The model shows that employees with low satisfaction scores are more likely to leave. Can HR conclude that raising satisfaction will cut attrition? Explain. |
+| B9P08Q12 | 9 | 8 | A recruiter says: "I built a churn model on the Telco dataset with 80% accuracy." As the interviewer, what follow-up questions would you ask, and how should a candidate answer them? |
+| B9P08Q13 | 9 | 8 | Which features would you engineer for an attrition model beyond the raw columns in an HRIS export? Give four with a reason each. |
+| B9P08Q14 | 9 | 8 | How is a customer churn mini-project the same as, and different from, an employee attrition mini-project? |
+| B9P08Q15 | 9 | 8 | Would you start with logistic regression or a random forest for an HR attrition model, and why? |
+| B9P08Q16 | 9 | 8 | Write the short code to split an attrition dataset into train and test sets and fit a logistic regression, keeping the leaver share equal in both sets. |
+| B9P08Q17 | 9 | 8 | An e-commerce company has no subscriptions. How would you define a churned customer for a churn model? |
+| B9P08Q18 | 9 | 8 | Two attrition models are tested on the same 1,000 employees. Which would you give to HR for stay interviews, and why? |
+| B9P08Q19 | 9 | 8 | Estimate the net value of an attrition model with the figures below, and state which assumptions the answer depends on. |
+| B9P08Q20 | 9 | 8 | Should you split attrition data randomly or by time? Explain with an example of what can go wrong with a random split. |
+| B9P08Q21 | 9 | 8 | Why would you use stratified k-fold cross-validation for a churn or attrition model? |
+| B9P08Q22 | 9 | 8 | Write a scikit-learn pipeline that one-hot encodes the categorical columns, scales the numeric columns and fits a class-weighted logistic regression. |
+| B9P08Q23 | 9 | 8 | A random forest ranks MonthlyIncome as the most important feature for attrition. What cautions would you give before presenting this to HR? |
+| B9P08Q24 | 9 | 8 | Read this statsmodels output and tell the manager which findings you would act on and which you would treat carefully. |
+| B9P08Q25 | 9 | 8 | Churn is very rare in a month. How does a customer who joined last month and has not yet cancelled create a labelling problem, and how would you handle it? |
+| B9P08Q26 | 9 | 8 | Build a decile lift table by hand: what is the lift of the top decile, and what does it tell the marketing team? |
+| B9P08Q27 | 9 | 8 | The same attrition mini-project idea can predict offer dropouts in a hiring funnel. Describe the target, three features and one risk of that project. |
+| B9P08Q28 | 9 | 8 | Your model's recall for leavers differs by gender. Compute the gap and say how you would handle it before the model is used. |
+| B9P08Q29 | 9 | 8 | Should HR use individual attrition risk scores to decide who gets promotions or training? Discuss fairness, consent and privacy, including proxy variables. |
+| B9P08Q30 | 9 | 8 | You removed gender from the features, yet the model's flags still differ by gender. How can that happen and what would you check? |
+| B9P08Q31 | 9 | 8 | A model says 0.30 for a group of 100 similar employees but only 10 of them leave. What does that tell you about calibration, and does it matter for HR? |
+| B9P08Q32 | 9 | 8 | Six months after deployment, attrition jumps after a pay-policy change and the model's precision falls. How would you detect and respond to this drift? |
+| B9P08Q33 | 9 | 8 | A 200-person company has only 12 leavers in three years and wants an attrition model. What do you advise? |
+| B9P09Q1 | 9 | 9 | How do you use AI tools such as ChatGPT, Claude or Copilot in your day-to-day analysis work? |
+| B9P09Q2 | 9 | 9 | What is a large language model (LLM), explained in two sentences to a non-technical HR manager? |
+| B9P09Q3 | 9 | 9 | What is generative AI, and how is it different from the traditional analytics and machine learning you do as an analyst? |
+| B9P09Q4 | 9 | 9 | What is an AI hallucination, and why is it dangerous when an analyst uses AI for numbers or SQL? |
+| B9P09Q5 | 9 | 9 | How do you verify AI-generated output before you use it in a report? |
+| B9P09Q6 | 9 | 9 | What is a prompt, and what are the basic ingredients of a good prompt for an analysis task? |
+| B9P09Q7 | 9 | 9 | Which tasks in an analyst's job are good candidates for AI help, and which tasks would you keep fully human? |
+| B9P09Q8 | 9 | 9 | Is it safe to paste company data into a public AI chatbot? What would you do instead? |
+| B9P09Q9 | 9 | 9 | What kind of data should you never paste into ChatGPT or any external AI tool? |
+| B9P09Q10 | 9 | 9 | Can AI replace a data analyst? Give your honest view in an interview. |
+| B9P09Q11 | 9 | 9 | If an AI tool and your own manual calculation give different numbers, what do you do? |
+| B9P09Q12 | 9 | 9 | How would you use ChatGPT or Claude to help write a SQL query when you are stuck? |
+| B9P09Q13 | 9 | 9 | What information do you give an AI tool so that the SQL it writes uses your real tables and columns? |
+| B9P09Q14 | 9 | 9 | Does AI-generated SQL that runs without errors mean the answer is correct? Explain. |
+| B9P09Q15 | 9 | 9 | Who is accountable if a wrong AI-generated number reaches the leadership dashboard: the tool or the analyst? |
+| B9P09Q16 | 9 | 9 | What is Microsoft Copilot in Excel or Power BI, and what can it do for an analyst? |
+| B9P09Q17 | 9 | 9 | What does it mean to be "AI-literate" as a data analyst in 2026? |
+| B9P09Q18 | 9 | 9 | Why should you tell the AI which SQL dialect (MySQL, PostgreSQL, SQL Server) you use? |
+| B9P09Q19 | 9 | 9 | Describe one analysis in which you used an AI tool: what you asked, how you checked the answer, and what you decided yourself. |
+| B9P09Q20 | 9 | 9 | AI wrote the query below for "average salary by department name". Find what is wrong and fix it. |
+| B9P09Q21 | 9 | 9 | Walk through a checklist you would apply to any AI-generated SQL before running it on production data. |
+| B9P09Q22 | 9 | 9 | How would you explain the privacy risk of AI tools to a colleague who regularly pastes employee records into a chatbot? |
+| B9P09Q23 | 9 | 9 | Give an example of a weak prompt and a strong prompt for the same analysis request, and say why the strong one is better. |
+| B9P09Q24 | 9 | 9 | What is the difference between asking an AI to write code for you and asking an AI to analyse your uploaded file directly? Which is easier to verify? |
+| B9P09Q25 | 9 | 9 | An AI assistant summarises your sales file and says "revenue grew in all four quarters". How would you check this claim before sending it on? |
+| B9P09Q26 | 9 | 9 | What is data anonymisation or masking, and how would you apply it before sharing a sample with an AI tool? |
+| B9P09Q27 | 9 | 9 | How do you check an AI-generated Excel formula or DAX measure before putting it in a report? |
+| B9P09Q28 | 9 | 9 | Your manager says "just ask ChatGPT, it's faster" for a payroll reconciliation involving real employee names and salaries. How do you respond and what do you do? |
+| B9P09Q29 | 9 | 9 | What is the difference between ChatGPT, Claude and Microsoft Copilot from a user's point of view? Keep it practical, without claiming which model is best. |
+| B9P09Q30 | 9 | 9 | What is a chatbot's "context window" in simple words, and why does it matter when you paste a big table? |
+| B9P09Q31 | 9 | 9 | Why can the same prompt give different answers on different runs? |
+| B9P09Q32 | 9 | 9 | What is prompt engineering, and is it a real skill for analysts or just hype? |
+| B9P09Q33 | 9 | 9 | What does it mean to give an AI "context" in a prompt? Give an HR example. |
+| B9P09Q34 | 9 | 9 | Why is it useful to tell the AI what role to play and what output format you want? |
+| B9P09Q35 | 9 | 9 | What is a follow-up prompt, and how do you use iteration to improve a first answer? |
+| B9P09Q36 | 9 | 9 | How can AI help you clean messy data, for example inconsistent department names, and what must you still check? |
+| B9P09Q37 | 9 | 9 | How can AI help you write a summary of findings for a non-technical audience? |
+| B9P09Q38 | 9 | 9 | How can you use AI to explain a SQL query or Excel formula that a colleague wrote? |
+| B9P09Q39 | 9 | 9 | How can AI help you learn a new tool such as Power BI or pandas faster, and what are the risks of learning only through AI? |
+| B9P09Q40 | 9 | 9 | What is the difference between a free consumer AI account and an enterprise AI account in terms of data handling? What would you check with your IT team? |
+| B9P09Q41 | 9 | 9 | Can you trust the sources or links an AI gives you? What do you do before citing them? |
+| B9P09Q42 | 9 | 9 | What is bias in AI output, and give a simple example relevant to hiring data. |
+| B9P09Q43 | 9 | 9 | Do you need to tell your manager or client when AI helped with an analysis? What is a reasonable practice? |
+| B9P09Q44 | 9 | 9 | What does a company's AI usage policy usually cover, and how would you find out what yours allows? |
+| B9P09Q45 | 9 | 9 | How do you ask an AI to explain its reasoning, and does a fluent explanation prove the answer is right? |
+| B9P09Q46 | 9 | 9 | Why should you keep the AI-written query and your checks together in a short note? |
+| B9P09Q47 | 9 | 9 | What can Copilot in Power BI do, such as suggesting DAX or summarising a report page, and why must you still review it? |
+| B9P09Q48 | 9 | 9 | What can Copilot in Excel do, and why does it usually work better when data is in a proper Excel table? |
+| B9P09Q49 | 9 | 9 | Write a prompt that asks an AI to generate a SQL query for monthly attrition by department. What details must the prompt include? |
+| B9P09Q50 | 9 | 9 | An AI wrote the query below for "each customer's first order date and total spend". What may go wrong, and how do you test it? |
+| B9P09Q51 | 9 | 9 | AI wrote this query for "employees earning more than their department average". Is it correct, and how would you test it with a tiny table? |
+| B9P09Q52 | 9 | 9 | How would you ask an AI to debug a SQL error message? What do you paste and what do you leave out? |
+| B9P09Q53 | 9 | 9 | What does "AI joined on the wrong key" look like in practice, and how do you spot it by checking row counts? |
+| B9P09Q54 | 9 | 9 | How would you ask an AI to convert a MySQL query into PostgreSQL or SQL Server, and how would you verify the converted query gives identical results? |
+| B9P09Q55 | 9 | 9 | How would you use AI to translate a business question into a list of metrics and a data requirement, and what would you check yourself? |
+| B9P09Q56 | 9 | 9 | What is few-shot prompting? Show how you would use two example rows to get consistent output when classifying survey comments. |
+| B9P09Q57 | 9 | 9 | How would you use AI to classify 500 free-text survey comments into themes, and how would you check its accuracy before reporting percentages? |
+| B9P09Q58 | 9 | 9 | What is a sensible way to ask AI to produce a pandas script to clean a file, and how do you test the script on a small sample first? |
+| B9P09Q59 | 9 | 9 | How would you ask AI to review your own SQL for performance or readability, and why should you still run EXPLAIN or test timings yourself? |
+| B9P09Q60 | 9 | 9 | Your AI-generated chart summary says "sales fell because of the price increase". What is wrong with that sentence from an analyst's point of view? |
+| B9P09Q61 | 9 | 9 | What risks come from letting an AI tool run queries directly on a production database, and what safeguards would you want? |
+| B9P09Q62 | 9 | 9 | How would you compare two AI answers to the same analysis question and decide which to trust? |
+| B9P09Q63 | 9 | 9 | How would you document your use of AI for an analysis so someone else can reproduce and audit it? |
+| B9P09Q64 | 9 | 9 | A DAX measure suggested by Copilot returns a number that is double what your pivot table shows. How do you investigate? |
+| B9P09Q65 | 9 | 9 | What is prompt injection in simple terms, and why should you be careful when asking AI to read text from emails or files that others wrote? |
+| B9P09Q66 | 9 | 9 | How would you use an AI assistant to prepare for an interview or learn a topic without memorising wrong facts? |
+| B9P09Q67 | 9 | 9 | What is the DPDP Act (India), at a one-line level, and why does it matter when you send employee or customer data to an AI tool? State only what you are sure of and say what you would confirm with legal. |
+| B9P09Q68 | 9 | 9 | AI suggests a SQL query that returns revenue by region and the total matches finance within 0.1%. What further checks would you still do before trusting it? |
+| B9P09Q69 | 9 | 9 | You are asked to build a monthly HR dashboard and your team wants AI to generate all DAX measures. Describe a workflow that is fast but safe. |
+| B9P09Q70 | 9 | 9 | A colleague pasted a spreadsheet of employee IDs, salaries and performance ratings into a public chatbot last week. What should you do, and who should you inform? |
+| B9P09Q71 | 9 | 9 | What is the difference between AI, machine learning and generative AI? |
+| B9P09Q72 | 9 | 9 | What are tokens, and why do AI tools have limits on how much text you can send? |
+| B9P09Q73 | 9 | 9 | What is a "temperature" setting in an AI tool, in simple words? |
+| B9P09Q74 | 9 | 9 | What is an AI agent compared with a chatbot, in one sentence each? |
+| B9P09Q75 | 9 | 9 | What do you think are the biggest limitations of current AI tools for analysis work? |
+| B9P09Q76 | 9 | 9 | Will AI change the skills a fresher data analyst needs to learn? What would you learn first? |
+| B9P09Q77 | 9 | 9 | What is a custom GPT, project or reusable prompt template, and how could an analyst use one for repeated reporting tasks? |
+| B9P09Q78 | 9 | 9 | Why might an AI tool give confident-sounding wrong answers on data from your own company? |
+| B9P09Q79 | 9 | 9 | What is Retrieval-Augmented Generation (RAG) in one paragraph, and how does it help an AI answer using company documents? (Detailed RAG is covered in Part 10.) |
+| B9P09Q80 | 9 | 9 | How would you set up a simple evaluation of an AI tool for SQL help: a list of test questions with known answers and a pass rate? |
+| B9P09Q81 | 9 | 9 | What is chain-of-thought prompting, and when would you ask an AI to work step by step on a calculation? |
+| B9P09Q82 | 9 | 9 | AI says the mean tenure is 4.2 years and the median is 6.8. What should this make you check, and how would you ask AI to help while staying in control? |
+| B9P09Q83 | 9 | 9 | How would you use AI to generate realistic fake data for practice or testing a dashboard without exposing real employees? |
+| B9P09Q84 | 9 | 9 | An AI tool gives you a regex or Excel formula that works on 10 test rows. How would you test edge cases before applying it to 50,000 rows? |
+| B9P09Q85 | 9 | 9 | How would you explain to a manager the trade-off between speed gained from AI and time spent verifying? |
+| B9P09Q86 | 9 | 9 | What is an AI-assisted text-to-SQL tool in a BI product, and what must be in place (clean schema, definitions) for it to be reliable? |
+| B9P09Q87 | 9 | 9 | What is a semantic layer or data dictionary, and why does giving it to an AI improve SQL accuracy? |
+| B9P09Q88 | 9 | 9 | What copyright or licensing questions might arise when you use AI-generated code or text in client deliverables? |
+| B9P09Q89 | 9 | 9 | What is the difference between Claude, ChatGPT and Copilot in how they handle uploaded files (such as CSV or Excel)? Say what you would test rather than what you assume. |
+| B9P09Q90 | 9 | 9 | AI provided a function in Python to calculate attrition rate. Read it and say whether the logic matches the usual definition. |
+| B9P09Q91 | 9 | 9 | You get two AI-written queries for "customers who bought in January but not in February". How do you decide which is correct? |
+| B9P09Q92 | 9 | 9 | How would you use an AI tool to draft an email or slide for stakeholders from your analysis, and what would you check before sending? |
+| B9P09Q93 | 9 | 9 | What is data leakage in the context of AI tools (not ML leakage): how can company information leave your control through prompts? |
+| B9P09Q94 | 9 | 9 | How would you handle a situation where your team lead tells you not to use AI at all, but you believe it would save time? |
+| B9P09Q95 | 9 | 9 | Design a safe AI-assisted workflow for a weekly attrition report from raw HRMS exports, covering data prep, prompting, checks, sign-off and privacy. |
+| B9P09Q96 | 9 | 9 | AI-written SQL gave a headline number that leadership already quoted, and you later discover a join fan-out inflated it by about 20%. How do you handle the correction? |
+| B9P09Q97 | 9 | 9 | How would you evaluate whether a new AI feature in your BI tool is good enough to roll out to non-technical business users? |
+| B9P09Q98 | 9 | 9 | You are asked to build a chat interface where HR managers ask questions about employee data in plain English. What risks would you raise first? |
+| B9P09Q99 | 9 | 9 | Explain why an AI answer can be well written, well formatted and still wrong, and what in the review process catches the different kinds of error (logic, data, definition, presentation). |
+| B9P09Q100 | 9 | 9 | How would you prepare for an interview round where AI tools are permitted, and what would you show the interviewer about how you work with them? |
+| B9P10Q1 | 9 | 10 | What is a large language model (LLM), in simple words, and what is it good and bad at for an analyst? |
+| B9P10Q2 | 9 | 10 | What is RAG (retrieval-augmented generation), and why would a company use it instead of just asking an LLM? |
+| B9P10Q3 | 9 | 10 | What is a hallucination in an LLM, and give two practical ways to reduce or catch it when you use an LLM for analysis. |
+| B9P10Q4 | 9 | 10 | What is a token, and what is a context window? Why should an analyst care when pasting a large report into a chatbot? |
+| B9P10Q5 | 9 | 10 | An LLM-based assistant is going to answer HR policy questions from internal documents. Would you use RAG or fine-tuning, and why? |
+| B9P10Q6 | 9 | 10 | What is an embedding? Explain it to a non-technical manager using an example such as similar customer complaints. |
+| B9P10Q7 | 9 | 10 | What is a vector database, and is it always needed for a RAG system? |
+| B9P10Q8 | 9 | 10 | What do the terms prompt, system prompt and temperature mean when you call an LLM? |
+| B9P10Q9 | 9 | 10 | Name three risks of pasting company data (for example employee payroll or customer records) into a public chatbot, and how you would avoid them. |
+| B9P10Q10 | 9 | 10 | What does the retrieval step of RAG do, and what are the two main stages (offline preparation and online answering)? |
+| B9P10Q11 | 9 | 10 | What is chunking in a RAG pipeline? What can go wrong if chunks are too large or too small? |
+| B9P10Q12 | 9 | 10 | A RAG chatbot over 40 policy PDFs gives a wrong leave-encashment answer. List the places in the pipeline where the fault could be (document, chunking, retrieval, prompt, model) and how you would check each. |
+| B9P10Q13 | 9 | 10 | How would you evaluate whether a RAG assistant is working well? Name one measure for retrieval and one for answer quality. |
+| B9P10Q14 | 9 | 10 | You have 5,000 free-text employee survey comments. How would you use an LLM to summarise themes, and how would you check that the summary is faithful? |
+| B9P10Q15 | 9 | 10 | Fine-tuning vs RAG vs prompt engineering: when would you pick each for an analytics team, in one line each? |
+| B9P10Q16 | 9 | 10 | What is semantic search, and how does it differ from keyword search (for example SQL LIKE or Excel search)? |
+| B9P10Q17 | 9 | 10 | A cosine similarity between a query embedding and three document chunks is 0.82, 0.45 and 0.79. Which would a top-2 retrieval return, and does a high score guarantee the chunk answers the question? |
+| B9P10Q18 | 9 | 10 | What is prompt injection, and why does it matter when a RAG assistant reads documents that anyone in the company can edit? |
+| B9P10Q19 | 9 | 10 | An LLM-generated text-to-SQL query runs without error on your sales table. How do you decide whether its answer is correct, and what controls would you put around such a tool? |
+| B9P10Q20 | 9 | 10 | An LLM assistant gives different answers to the same question on two runs. Why can this happen, and what settings or design choices make results more repeatable? |
+| B9P10Q21 | 9 | 10 | You are asked to build a quick internal question-answering assistant on 200 HR documents for a team with no ML engineer. Walk through the architecture, the data-privacy decisions and how you would measure success. |
+| B9P10Q22 | 9 | 10 | A manager says, 'The LLM read our data, so its answer is a fact.' How do you explain the limits, and what would you say in a project note about how AI output was verified? |
+| B9P11Q1 | 9 | 11 | What does "the cloud" mean for a data analyst, and how is working with cloud-hosted data different from working with files on your laptop or an on-premise server? |
+| B9P11Q2 | 9 | 11 | What is the difference between a database, a data warehouse and a data lake, and which one would an analyst usually query for reporting? |
+| B9P11Q3 | 9 | 11 | What is Snowflake, and what does "storage and compute are separate" mean for an analyst running queries? |
+| B9P11Q4 | 9 | 11 | Name the main object-storage service and the main analytics warehouse service on AWS, Azure and Google Cloud, and say which are storage and which are warehouses. |
+| B9P11Q5 | 9 | 11 | BigQuery on-demand pricing is based on bytes scanned. A table holds 2 TB across 10 columns of roughly equal size, and you need only 2 columns. Compare the data scanned and the cost of `SELECT *` against selecting just those 2 columns, using an illustrative rate of 5 currency units per TB scanned. |
+| B9P11Q6 | 9 | 11 | What is the difference between OLTP and OLAP systems, and why do analysts run reports on a warehouse instead of the live application database? |
+| B9P11Q7 | 9 | 11 | Explain in one minute what Microsoft Fabric and OneLake are, as you would to a Power BI user who has never heard of them. |
+| B9P11Q8 | 9 | 11 | What is the shared responsibility model in cloud, and what does the principle of least privilege (IAM) mean for the access an analyst should request? |
+| B9P11Q9 | 9 | 11 | Your manager asks why the team should move its reports from Excel files on a shared drive to a cloud warehouse. Give two benefits and two risks or costs to check. |
+| B9P11Q10 | 9 | 11 | Before uploading an employee payroll or attrition file to a cloud storage bucket or an online AI or analytics tool, what checks would you make? |
+| B9P11Q11 | 9 | 11 | What is the difference between a Fabric lakehouse and a Fabric warehouse, and what is the SQL analytics endpoint of a lakehouse used for? |
+| B9P11Q12 | 9 | 11 | In Power BI, how do Import, DirectQuery and Direct Lake modes differ, and when would you prefer each? |
+| B9P11Q13 | 9 | 11 | What is the difference between partitioning and clustering a BigQuery table, and which would you apply to a sales table queried mostly by order date and then by region? |
+| B9P11Q14 | 9 | 11 | Read this BigQuery query on a table partitioned by `order_date`. Does it limit the data scanned, and how would you fix it if not? |
+| B9P11Q15 | 9 | 11 | A Snowflake virtual warehouse is billed at 2 credits per hour while running. It runs 3 hours every weekday and auto-suspends otherwise. How many credits does it use in a 4-week month (20 weekdays), and what single change would you try first if the team wants to cut the bill? |
+| B9P11Q16 | 9 | 11 | You ran `DROP TABLE hr.attendance` by mistake on a Snowflake table. What features might let you recover it, and what do you do right away? |
+| B9P11Q17 | 9 | 11 | What is the difference between ETL and ELT, and why is ELT common with cloud warehouses such as Snowflake and BigQuery? |
+| B9P11Q18 | 9 | 11 | Your BigQuery or Snowflake bill doubled this month and your analyst team is the main user. What would you check, in order, before changing anything? |
+| B9P11Q19 | 9 | 11 | What is schema-on-write versus schema-on-read, and which applies when CSV files sit in S3 or Azure Data Lake and you query them directly? |
+| B9P11Q20 | 9 | 11 | In Snowflake, a table `raw_events` has a VARIANT column `payload` holding JSON such as `{"employee": {"id": 101, "dept": "HR"}, "event": "login"}`. Write a query that returns employee id, department and event as separate typed columns. |
+| B9P11Q21 | 9 | 11 | A company already uses Microsoft 365 and Power BI heavily, while another uses Google Workspace and mostly SQL notebooks. How would your cloud platform recommendation for analytics differ, and what non-technical factors would you weigh? |
+| B9P12Q1 | 9 | 12 | How did you learn the basic machine learning you know, and how long did it take you? |
+| B9P12Q2 | 9 | 12 | You are an analyst, not an ML engineer. Why are you learning machine learning at all, and how much of it do you need for this role? |
+| B9P12Q3 | 9 | 12 | Which AI tools (for example ChatGPT, Claude or Copilot) do you use in your analysis work, and how did you learn to use them well? |
+| B9P12Q4 | 9 | 12 | Walk me through one machine learning mini-project you built to learn, covering the question, the data, the model, how you checked it and what you would change. |
+| B9P12Q5 | 9 | 12 | What was the hardest concept in machine learning for you to understand, and how did you finally get it? |
+| B9P12Q6 | 9 | 12 | You come from an HR or non-technical background. How did you build machine learning skills without a formal data science degree? |
+| B9P12Q7 | 9 | 12 | How do you make sure you understand a model you built, rather than just running code you copied from a tutorial or an AI tool? |
+| B9P12Q8 | 9 | 12 | Which free or low-cost resources did you use to learn machine learning, and in what order? |
+| B9P12Q9 | 9 | 12 | How do you keep up with new AI tools and techniques without chasing every new release? |
+| B9P12Q10 | 9 | 12 | Rate yourself from 1 to 10 on machine learning, and explain what you can do at that level and what you cannot yet do. |
+| B9P12Q11 | 9 | 12 | What should a data analyst learn first, in order, among SQL, statistics, Python, machine learning and AI tools, and why? |
+| B9P12Q12 | 9 | 12 | How do you choose a dataset and a question for a practice ML project so that it looks relevant to a hiring manager (for example attrition, churn or sales)? |
+| B9P12Q13 | 9 | 12 | How do you practise explaining a model, such as overfitting or precision versus recall, to a non-technical manager? |
+| B9P12Q14 | 9 | 12 | Tell me about a time a model or an AI tool gave you a wrong or misleading result. How did you notice it and what did you learn? |
+| B9P12Q15 | 9 | 12 | What would be your 30-day plan to go from knowing SQL and Excel to being able to fit and evaluate a basic model in scikit-learn? |
+| B9P12Q16 | 9 | 12 | How do you test yourself to know whether you have really learned a topic such as logistic regression or k-means, and not only watched videos about it? |
+| B9P12Q17 | 9 | 12 | Do you hold any ML or AI certificate, and how much weight should an interviewer give it compared with a project? |
+| B9P12Q18 | 9 | 12 | What is your 90-day plan to move from basic ML to being useful with AI tools and simple models in a real analyst job? |
+| B9P12Q19 | 9 | 12 | How do you decide when to stop learning a topic and start building something with it? |
+| B9P12Q20 | 9 | 12 | What did you learn about data privacy and confidentiality while practising with AI tools, and what rules do you follow for company or employee data? |
+| B9P12Q21 | 9 | 12 | How do you track progress in your ML and AI learning, and what evidence (notebooks, write-ups, repository) can you show an interviewer? |
+| B9P12Q22 | 9 | 12 | Where do you see the limits of your current ML knowledge, and how would you handle an interview question or a task that goes beyond it? |
+| B9P12Q23 | 9 | 12 | If your manager asked you to build a first predictive model on employee data with two weeks of learning time, how would you plan the learning and the work? |
+| B9P12Q24 | 9 | 12 | How will your ML and AI skills still be useful and up to date in two years, and what is your plan for learning the next area (for example LLMs or cloud tools)? |
 
 ## Book 10 — Domain Knowledge
 | Q-ID | Book | Part | Canonical question |

@@ -1,6 +1,6 @@
 # Book 9 — Basic ML + AI Tools for Analysts | Part 2: Linear and Logistic Regression (Intuition + sklearn) 🟢🟡
 
-**Target:** 85 questions | **Actual:** 85 questions
+**Target:** 85 questions | **Actual:** 84 questions
 **Scope:** fitting linear and logistic regression with sklearn/statsmodels, coefficients as an analyst explains them, predicting, odds and probabilities, classification with logistic regression, data preparation, regularisation basics and the prediction-versus-explanation distinction (statistics theory and R-squared are in Book 5).
 
 ### Q1 ⭐⭐⭐ 🟢 What is the difference between linear regression and logistic regression?
@@ -112,181 +112,178 @@ Fitted line: attrition_score = -0.1 + 0.15 × overtime_hours. Predict for 0 and 
 (a) monthly salary, (b) left company yes/no, (c) number of leaves taken, (d) days to fill a vacancy, (e) performance rating high/low.
 <!-- ANSWER_PENDING -->
 
-### Q32 ⭐⭐ 🟢 What does it mean to 'train' or 'fit' a model, and what is the difference between a parameter and a feature?
-<!-- ANSWER_PENDING -->
-
-### Q33 ⭐⭐ 🟢 How does one extreme outlier change a fitted regression line? Use the data below.
+### Q32 ⭐⭐ 🟢 How does one extreme outlier change a fitted regression line? Use the data below.
 x = 1, 2, 3, 4 with y = 2, 4, 6, 8, then add the point x = 5, y = 30. State whether the slope goes up or down and roughly why.
 <!-- ANSWER_PENDING -->
 
-### Q34 ⭐⭐ 🟢 What does an odds ratio of 1, of 2 and of 0.5 mean in a logistic regression?
+### Q33 ⭐⭐ 🟢 What does an odds ratio of 1, of 2 and of 0.5 mean in a logistic regression?
 <!-- ANSWER_PENDING -->
 
-### Q35 ⭐⭐ 🟢 Why does 'linear' regression still fit with an x-squared term? What does 'linear' refer to?
+### Q34 ⭐⭐ 🟢 Why does 'linear' regression still fit with an x-squared term? What does 'linear' refer to?
 <!-- ANSWER_PENDING -->
 
-### Q36 ⭐⭐ 🟢 Why does sklearn raise 'Expected 2D array, got 1D array instead' and how do you fix it?
+### Q35 ⭐⭐ 🟢 Why does sklearn raise 'Expected 2D array, got 1D array instead' and how do you fix it?
 ```python
 X = df['experience']
 LinearRegression().fit(X, y)
 ```
 <!-- ANSWER_PENDING -->
 
-### Q37 ⭐⭐ 🟢 How do you fit a multiple linear regression in sklearn with several feature columns, and where do you find each coefficient?
+### Q36 ⭐⭐ 🟢 How do you fit a multiple linear regression in sklearn with several feature columns, and where do you find each coefficient?
 ```python
 features = ['experience', 'training_hours', 'age']
 ```
 <!-- ANSWER_PENDING -->
 
-### Q38 ⭐⭐ 🟢 How do you plot predicted versus actual values to check a regression model, and what pattern tells you the model is good?
+### Q37 ⭐⭐ 🟢 How do you plot predicted versus actual values to check a regression model, and what pattern tells you the model is good?
 <!-- ANSWER_PENDING -->
 
-### Q39 ⭐⭐ 🟡 Why can the intercept of a regression sometimes be meaningless? Give an example.
+### Q38 ⭐⭐ 🟡 Why can the intercept of a regression sometimes be meaningless? Give an example.
 Model: salary = a + b × age, trained on employees aged 22 to 58.
 <!-- ANSWER_PENDING -->
 
-### Q40 ⭐⭐ 🟡 An attrition logistic regression has a coefficient of -0.2 per year of tenure. What is the odds ratio for 5 extra years of tenure?
+### Q39 ⭐⭐ 🟡 An attrition logistic regression has a coefficient of -0.2 per year of tenure. What is the odds ratio for 5 extra years of tenure?
 Use e^-1.0 ≈ 0.368.
 <!-- ANSWER_PENDING -->
 
-### Q41 ⭐⭐ 🟡 How would you add a squared term to capture a curved relationship in sklearn?
+### Q40 ⭐⭐ 🟡 How would you add a squared term to capture a curved relationship in sklearn?
 <!-- ANSWER_PENDING -->
 
-### Q42 ⭐⭐ 🟡 How do you deal with missing values before fitting a regression in sklearn?
+### Q41 ⭐⭐ 🟡 How do you deal with missing values before fitting a regression in sklearn?
 <!-- ANSWER_PENDING -->
 
-### Q43 ⭐⭐ 🟡 What is regularisation in intuitive terms, and how do Ridge and Lasso differ?
+### Q42 ⭐⭐ 🟡 What is regularisation in intuitive terms, and how do Ridge and Lasso differ?
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐⭐ 🟡 What would you conclude if Lasso shrinks the coefficient of a variable exactly to zero?
+### Q43 ⭐⭐ 🟡 What would you conclude if Lasso shrinks the coefficient of a variable exactly to zero?
 <!-- ANSWER_PENDING -->
 
-### Q45 ⭐⭐ 🟡 What does `class_weight='balanced'` do in LogisticRegression, and when would you use it?
+### Q44 ⭐⭐ 🟡 What does `class_weight='balanced'` do in LogisticRegression, and when would you use it?
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐⭐ 🟡 What is the intuition behind how linear regression and logistic regression are fitted (least squares versus maximum likelihood or log loss)?
+### Q45 ⭐⭐ 🟡 What is the intuition behind how linear regression and logistic regression are fitted (least squares versus maximum likelihood or log loss)?
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐⭐ 🟡 What does the parameter C mean in sklearn's LogisticRegression, and is regularisation applied by default?
+### Q46 ⭐⭐ 🟡 What does the parameter C mean in sklearn's LogisticRegression, and is regularisation applied by default?
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐⭐ 🟡 Calculate the odds ratio of leaving for overtime versus no-overtime employees from the table below.
+### Q47 ⭐⭐ 🟡 Calculate the odds ratio of leaving for overtime versus no-overtime employees from the table below.
 Overtime group: 100 employees, 30 left. No-overtime group: 100 employees, 10 left.
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐⭐ 🟡 How does sklearn's LogisticRegression handle a target with three classes, such as three exit reasons?
+### Q48 ⭐⭐ 🟡 How does sklearn's LogisticRegression handle a target with three classes, such as three exit reasons?
 <!-- ANSWER_PENDING -->
 
-### Q50 ⭐⭐ 🟡 Write the code to predict the probability of leaving for one new employee with a fitted model, and say how you read the output.
+### Q49 ⭐⭐ 🟡 Write the code to predict the probability of leaving for one new employee with a fitted model, and say how you read the output.
 Features used in training: `tenure_years`, `overtime_hours`. New employee: 2 years tenure, 10 overtime hours.
 <!-- ANSWER_PENDING -->
 
-### Q51 ⭐⭐ 🟡 A manager asks for the top drivers of attrition from your logistic regression. How do you rank the variables fairly?
+### Q50 ⭐⭐ 🟡 A manager asks for the top drivers of attrition from your logistic regression. How do you rank the variables fairly?
 <!-- ANSWER_PENDING -->
 
-### Q52 ⭐⭐ 🟡 What does a dummy variable coefficient mean in the model below?
+### Q51 ⭐⭐ 🟡 What does a dummy variable coefficient mean in the model below?
 salary = 40,000 + 3,000 × experience - 2,500 × department_Sales, with HR as the reference department. Interpret -2,500.
 <!-- ANSWER_PENDING -->
 
-### Q53 ⭐⭐ 🟡 Can the test-set R² be negative, and what does it mean if it is?
+### Q52 ⭐⭐ 🟡 Can the test-set R² be negative, and what does it mean if it is?
 <!-- ANSWER_PENDING -->
 
-### Q54 ⭐⭐ 🟡 Why would you use `stratify=y` in train_test_split for an attrition dataset?
+### Q53 ⭐⭐ 🟡 Why would you use `stratify=y` in train_test_split for an attrition dataset?
 <!-- ANSWER_PENDING -->
 
-### Q55 ⭐⭐ 🟡 How do you read the coef, std err, P>|z| and confidence interval columns in a statsmodels logistic regression summary?
+### Q54 ⭐⭐ 🟡 How do you read the coef, std err, P>|z| and confidence interval columns in a statsmodels logistic regression summary?
 One row: `overtime  coef 0.70  std err 0.20  z 3.50  P>|z| 0.000  [0.025 0.308  0.975 1.092]`.
 <!-- ANSWER_PENDING -->
 
-### Q56 ⭐⭐ 🟡 What is an interaction term, and when would you add one in a regression?
+### Q55 ⭐⭐ 🟡 What is an interaction term, and when would you add one in a regression?
 <!-- ANSWER_PENDING -->
 
-### Q57 ⭐⭐ 🟡 Why do we not rely on R² for logistic regression, and what do people use instead?
+### Q56 ⭐⭐ 🟡 Why do we not rely on R² for logistic regression, and what do people use instead?
 <!-- ANSWER_PENDING -->
 
-### Q58 ⭐⭐ 🟡 When would you use statsmodels instead of sklearn for a regression, and when sklearn?
+### Q57 ⭐⭐ 🟡 When would you use statsmodels instead of sklearn for a regression, and when sklearn?
 <!-- ANSWER_PENDING -->
 
-### Q59 ⭐⭐ 🟡 For which model setting would a false negative be costlier than a false positive, and how would that change your threshold?
+### Q58 ⭐⭐ 🟡 For which model setting would a false negative be costlier than a false positive, and how would that change your threshold?
 Illustrative costs: missing a leaver costs Rs 4,00,000 in rehiring; a wasted retention call costs Rs 2,000. Compute the break-even probability.
 <!-- ANSWER_PENDING -->
 
-### Q60 ⭐⭐ 🔴 What is calibration for a logistic regression model, and how would you check that '30% risk' really means about 30 in 100?
+### Q59 ⭐⭐ 🔴 What is calibration for a logistic regression model, and how would you check that '30% risk' really means about 30 in 100?
 <!-- ANSWER_PENDING -->
 
-### Q61 ⭐⭐ 🔴 What is perfect separation in logistic regression, what warning signs do you see, and what do you do?
+### Q60 ⭐⭐ 🔴 What is perfect separation in logistic regression, what warning signs do you see, and what do you do?
 <!-- ANSWER_PENDING -->
 
-### Q62 ⭐ 🟢 Where can an analyst fit a regression without Python, for example in Excel, and how does that compare with sklearn?
+### Q61 ⭐ 🟢 Where can an analyst fit a regression without Python, for example in Excel, and how does that compare with sklearn?
 <!-- ANSWER_PENDING -->
 
-### Q63 ⭐ 🟢 What is a baseline model, and why compare your regression against predicting the average?
+### Q62 ⭐ 🟢 What is a baseline model, and why compare your regression against predicting the average?
 Illustrative: salaries 30, 40, 50, 60 thousand. What does the mean-only model predict, and what is its RMSE?
 <!-- ANSWER_PENDING -->
 
-### Q64 ⭐ 🟢 A model said 0.72 chance of leaving but the employee stayed. Was the model wrong?
+### Q63 ⭐ 🟢 A model said 0.72 chance of leaving but the employee stayed. Was the model wrong?
 <!-- ANSWER_PENDING -->
 
-### Q65 ⭐ 🟢 How is a regression model different from a rule such as 'flag anyone with more than 3 absences' for attrition risk?
+### Q64 ⭐ 🟢 How is a regression model different from a rule such as 'flag anyone with more than 3 absences' for attrition risk?
 <!-- ANSWER_PENDING -->
 
-### Q66 ⭐ 🟡 What is a sklearn Pipeline and why would you use one for regression?
+### Q65 ⭐ 🟡 What is a sklearn Pipeline and why would you use one for regression?
 <!-- ANSWER_PENDING -->
 
-### Q67 ⭐ 🟡 What is a linear probability model, and why do analysts still sometimes use it?
+### Q66 ⭐ 🟡 What is a linear probability model, and why do analysts still sometimes use it?
 <!-- ANSWER_PENDING -->
 
-### Q68 ⭐ 🟡 Why is logistic regression often a good first model in business, including banks and HR teams?
+### Q67 ⭐ 🟡 Why is logistic regression often a good first model in business, including banks and HR teams?
 <!-- ANSWER_PENDING -->
 
-### Q69 ⭐ 🟡 For an HR audience, how would you compare logistic regression with a decision tree on interpretability?
+### Q68 ⭐ 🟡 For an HR audience, how would you compare logistic regression with a decision tree on interpretability?
 <!-- ANSWER_PENDING -->
 
-### Q70 ⭐ 🟡 Should you include gender or age in an attrition or pay regression? Discuss fairness and privacy.
+### Q69 ⭐ 🟡 Should you include gender or age in an attrition or pay regression? Discuss fairness and privacy.
 <!-- ANSWER_PENDING -->
 
-### Q71 ⭐ 🟡 If you log-transform salary as the target, how do you turn predictions back into rupees and how does interpretation change?
+### Q70 ⭐ 🟡 If you log-transform salary as the target, how do you turn predictions back into rupees and how does interpretation change?
 <!-- ANSWER_PENDING -->
 
-### Q72 ⭐ 🟡 What are influential points and leverage, and how do you spot one in a regression?
+### Q71 ⭐ 🟡 What are influential points and leverage, and how do you spot one in a regression?
 <!-- ANSWER_PENDING -->
 
-### Q73 ⭐ 🟡 Why is an odds ratio not the same as a risk ratio, and when does the difference matter?
+### Q72 ⭐ 🟡 Why is an odds ratio not the same as a risk ratio, and when does the difference matter?
 <!-- ANSWER_PENDING -->
 
-### Q74 ⭐ 🟡 What is gradient descent in one minute, and does LinearRegression in sklearn use it?
+### Q73 ⭐ 🟡 What is gradient descent in one minute, and does LinearRegression in sklearn use it?
 <!-- ANSWER_PENDING -->
 
-### Q75 ⭐ 🟡 How would you report a logistic regression to management using predicted probabilities instead of odds ratios?
+### Q74 ⭐ 🟡 How would you report a logistic regression to management using predicted probabilities instead of odds ratios?
 Illustrative model: baseline probability 10% for no overtime, odds ratio 3.0 for overtime. Compute the probability for overtime employees.
 <!-- ANSWER_PENDING -->
 
-### Q76 ⭐ 🟡 What is an elastic net, and when might it beat Ridge or Lasso alone?
+### Q75 ⭐ 🟡 What is an elastic net, and when might it beat Ridge or Lasso alone?
 <!-- ANSWER_PENDING -->
 
-### Q77 ⭐ 🟡 How do you check a logistic regression model for multicollinearity, and does it matter if you only want predictions?
+### Q76 ⭐ 🟡 How do you check a logistic regression model for multicollinearity, and does it matter if you only want predictions?
 <!-- ANSWER_PENDING -->
 
-### Q78 ⭐ 🟡 What does `max_iter` do in LogisticRegression, and what does a ConvergenceWarning tell you?
+### Q77 ⭐ 🟡 What does `max_iter` do in LogisticRegression, and what does a ConvergenceWarning tell you?
 <!-- ANSWER_PENDING -->
 
-### Q79 ⭐ 🔴 What is Poisson regression, and when would you use it for a count target such as leaves taken per employee?
+### Q78 ⭐ 🔴 What is Poisson regression, and when would you use it for a count target such as leaves taken per employee?
 <!-- ANSWER_PENDING -->
 
-### Q80 ⭐ 🔴 What is the difference between a coefficient and a marginal effect (change in probability) in logistic regression, and why does the effect vary by employee?
+### Q79 ⭐ 🔴 What is the difference between a coefficient and a marginal effect (change in probability) in logistic regression, and why does the effect vary by employee?
 <!-- ANSWER_PENDING -->
 
-### Q81 ⭐ 🔴 What happens in linear regression when you have more features than rows, and what do you do?
+### Q80 ⭐ 🔴 What happens in linear regression when you have more features than rows, and what do you do?
 <!-- ANSWER_PENDING -->
 
-### Q82 ⭐ 🔴 How would you detect and handle data leakage caused by time, for example using future information in a churn model?
+### Q81 ⭐ 🔴 How would you detect and handle data leakage caused by time, for example using future information in a churn model?
 <!-- ANSWER_PENDING -->
 
-### Q83 ⭐ 🔴 What is the learning rate in gradient-based fitting of logistic regression, and what goes wrong if it is too big?
+### Q82 ⭐ 🔴 What is the learning rate in gradient-based fitting of logistic regression, and what goes wrong if it is too big?
 <!-- ANSWER_PENDING -->
 
-### Q84 ⭐ 🔴 Your logistic regression is accurate on training data but poor on new months. List causes and your first three checks.
+### Q83 ⭐ 🔴 Your logistic regression is accurate on training data but poor on new months. List causes and your first three checks.
 <!-- ANSWER_PENDING -->
 
-### Q85 ⭐ 🔴 How would you compare two logistic regression models, one with 5 features and one with 12, to decide which to deploy?
+### Q84 ⭐ 🔴 How would you compare two logistic regression models, one with 5 features and one with 12, to decide which to deploy?
 <!-- ANSWER_PENDING -->
