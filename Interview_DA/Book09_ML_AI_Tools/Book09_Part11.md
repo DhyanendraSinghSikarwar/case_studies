@@ -4,44 +4,215 @@
 **Scope:** cloud concepts an entry-level analyst should be able to explain (storage vs warehouse, warehouse vs lake, cost and access basics, Snowflake, BigQuery, Microsoft Fabric); low frequency, so stars stay at the low end.
 
 ### Q1 ⭐⭐ 🟢 What does "the cloud" mean for a data analyst, and how is working with cloud-hosted data different from working with files on your laptop or an on-premise server?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); basic cloud questions appear in prep-site banks (unverified).
+**What the interviewer is checking:** That you understand where the data lives and what changes for you in daily work.
+**Say this in the interview:** "The cloud means data and computing power rented over the internet from a provider instead of owned in our office. For me it means I connect to a shared, governed data source rather than emailing files around."
+**Explain simply:**
+- **Cloud:** servers, storage and software run by a provider (AWS, Azure, Google Cloud) and rented as you use them.
+- **Laptop files:** one copy, limited by your machine's memory, easy to lose, hard to share safely.
+- **On-premise server:** the company owns and maintains the hardware in its own building.
+- **Cloud data:** one shared copy, scales up for big queries, access controlled by login and permissions, and billed by usage (so careless queries cost money).
+- For an analyst: you query through a browser or tool, you need access rights, and you must think about cost and privacy.
+**Alternative / pitfalls:** Cloud is not automatically cheaper or safer; it depends on how it is set up and governed.
+**Likely follow-ups:** 1) *Is cloud data safe?* Safe if access, encryption and sharing are configured well; the provider secures the platform, the company secures its use (see Q8). 2) *Biggest day-to-day change?* Usage-based cost.
+**Common mistakes:** Saying "cloud is just storage"; ignoring cost and access control; downloading cloud data to a laptop and losing governance.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q2 ⭐⭐ 🟢 What is the difference between a database, a data warehouse and a data lake, and which one would an analyst usually query for reporting?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); the three-way comparison is a staple of question banks (unverified).
+**What the interviewer is checking:** That you can place each system by purpose and say where reporting data should come from.
+**Say this in the interview:** "A database runs the live application, a warehouse holds cleaned, structured history for reporting, and a lake holds raw files of any format. Analysts normally query the warehouse."
+**Explain simply:**
+- **Database (OLTP):** stores current transactions, like the HR system recording a leave request. Fast for many small writes.
+- **Data warehouse:** structured, cleaned, combined data organised for questions (headcount by month). Fast for big reads and aggregates.
+- **Data lake:** raw files (CSV, JSON, logs, PDFs) kept cheaply, structure applied later.
+- Many firms now blend them ("lakehouse"; see Q11).
+**Worked example:** The HRIS database holds today's employees. The warehouse holds monthly snapshots joined with payroll and attendance, so you can chart attrition over two years. The lake holds raw exit-interview text and badge logs.
+**Alternative / pitfalls:** Querying the live database for reports slows the application (see Q6); querying a raw lake without cleaning gives inconsistent numbers.
+**Likely follow-ups:** 1) *Which is cheapest per TB?* Lakes usually; confirm pricing in vendor docs. 2) *Where does an analyst start?* The warehouse, or a curated layer on top of the lake.
+**Common mistakes:** Treating a warehouse as "just a big database"; thinking a lake is a mess to avoid, when it is simply raw and unmodelled.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q3 ⭐⭐ 🟢 What is Snowflake, and what does "storage and compute are separate" mean for an analyst running queries?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); Snowflake basics appear in fresher guides (unverified).
+**What the interviewer is checking:** Whether you know the one idea that explains Snowflake's behaviour and bill.
+**Say this in the interview:** "Snowflake is a cloud data warehouse. Data is stored in one place and the compute that runs queries is separate, so several teams can query the same data without slowing each other, and you pay for compute only while it runs."
+**Explain simply:**
+- **Storage:** where tables live; billed by how much you keep.
+- **Compute:** a "virtual warehouse" (a cluster of machines) that runs your query; billed while running, in credits (a unit of compute usage).
+- **Separate means:** the finance team's heavy month-end query and your HR dashboard can use different compute on the same data; you can resize or stop compute without moving data.
+- **Analyst impact:** pick the right warehouse, do not leave one running idle (auto-suspend), and avoid wasteful queries (see Q15, Q18).
+**Likely follow-ups:** 1) *Can compute be switched off?* Yes, auto-suspend stops it when idle (from memory, unverified). 2) *Is it only Snowflake?* Other platforms also separate the two, in different ways.
+**Common mistakes:** Saying Snowflake is a database for the live app; forgetting compute costs money; thinking a bigger warehouse is always better.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q4 ⭐⭐ 🟢 Name the main object-storage service and the main analytics warehouse service on AWS, Azure and Google Cloud, and say which are storage and which are warehouses.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); service equivalence appears in cloud prep guides (unverified).
+**What the interviewer is checking:** That you know storage and warehouse are different jobs and can map names across providers.
+**Say this in the interview:** "Object storage holds files: S3, Azure Blob or Data Lake Storage, Google Cloud Storage. The warehouses are Redshift, Synapse (and Fabric Warehouse), and BigQuery."
+**Explain simply:**
+
+| Provider | Object storage (files) | Analytics warehouse |
+|---|---|---|
+| AWS | S3 | Redshift |
+| Azure | Blob Storage / Data Lake Storage | Synapse (Microsoft is moving to Fabric) |
+| Google Cloud | Cloud Storage (GCS) | BigQuery |
+
+- **Object storage:** keeps files cheaply, no SQL by itself.
+- **Warehouse:** runs SQL on structured tables fast.
+- Snowflake runs on top of these clouds and is not any provider's own service.
+**Alternative / pitfalls:** BigQuery is a warehouse, not a file store; S3 is not a warehouse (though query tools can read files on it, see Q19). Product names change often.
+**Likely follow-ups:** 1) *Which would you query?* The warehouse. 2) *Where do raw exports land?* Object storage.
+**Common mistakes:** Calling S3 a database; mixing up which Azure service is current.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q5 ⭐⭐ 🟡 BigQuery on-demand pricing is based on bytes scanned. A table holds 2 TB across 10 columns of roughly equal size, and you need only 2 columns. Compare the data scanned and the cost of `SELECT *` against selecting just those 2 columns, using an illustrative rate of 5 currency units per TB scanned.
 Data: 2 TB table, 10 equal-sized columns, illustrative rate 5 per TB scanned (assumption for calculation only, not a quoted price).
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); bytes-scanned billing is a staple BigQuery topic (unverified).
+**What the interviewer is checking:** That you know column choice drives cost, and can do the arithmetic.
+**Say this in the interview:** "BigQuery stores data by column and bills for the columns you read. SELECT * scans all 2 TB; two of ten equal columns scan 0.4 TB, so 80% less."
+**Sample data:** 2 TB table, 10 equal columns, rate 5 per TB (exercise input, not a real price).
+**Code (what you write in the interview):**
+```python
+table_tb = 2
+columns_total = 10
+columns_needed = 2
+rate_per_tb = 5
+
+select_star_tb = table_tb
+two_columns_tb = table_tb * columns_needed / columns_total
+
+print("SELECT * scans (TB):", select_star_tb, "cost:", select_star_tb * rate_per_tb)
+print("2 columns scan (TB):", two_columns_tb, "cost:", two_columns_tb * rate_per_tb)
+print("Saving:", 1 - two_columns_tb / select_star_tb)
+```
+**Output:**
+```
+SELECT * scans (TB): 2 cost: 10
+2 columns scan (TB): 0.4 cost: 2.0
+Saving: 0.8
+```
+**What it means:** Each run drops from 10 to 2 units. Run it daily for a month and the gap compounds.
+**Alternative / pitfalls:** Real columns are never equal in size (a text column can be huge), so the saving is an estimate. `LIMIT` does not reduce bytes scanned on a normal table, and filtering rows helps only if the table is partitioned on the filter column (Q13, Q14) (from memory, unverified). The dry-run or query-validator estimate shows bytes before you run.
+**Likely follow-ups:** 1) *How else to cut cost?* Partition, cluster, preview with a dry run. 2) *Does a cached result cost?* Typically not (from memory, unverified).
+**Common mistakes:** Believing LIMIT 10 makes SELECT * cheap; assuming rows, not columns, drive the scan.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q6 ⭐ 🟢 What is the difference between OLTP and OLAP systems, and why do analysts run reports on a warehouse instead of the live application database?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** That you know why reporting should not run on the live system.
+**Say this in the interview:** "OLTP systems record day-to-day transactions quickly; OLAP systems are built to answer big analytical questions. I report from the warehouse so I do not slow the live app and I get history in a clean shape."
+**Explain simply:**
+- **OLTP (online transaction processing):** many small reads and writes, current data, such as saving a leave request.
+- **OLAP (online analytical processing):** few large reads over lots of history, such as attrition by department over three years.
+- **Why not report on the live database:** a heavy query can slow payroll or hiring screens; the live data is current-only and split across many normalised tables; numbers can change while you run.
+- **Warehouse benefits:** history kept, tables joined and cleaned, one agreed definition of each metric.
+**Likely follow-ups:** 1) *Can a read replica help?* Sometimes, but it is still OLTP-shaped. 2) *How fresh is a warehouse?* Depends on the load schedule; ask.
+**Common mistakes:** Defining OLTP/OLAP by name only; not giving the slowdown and history reasons.
 
 ### Q7 ⭐ 🟢 Explain in one minute what Microsoft Fabric and OneLake are, as you would to a Power BI user who has never heard of them.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); a Microsoft Hyderabad review (Jan 2024) names Fabric/Azure per the sources file, unverified.
+**What the interviewer is checking:** Whether you can explain a new platform simply, from the user's side.
+**Say this in the interview:** "Fabric is Microsoft's all-in-one analytics platform where data engineering, warehousing and Power BI sit together. OneLake is its single shared storage, like OneDrive for the organisation's data, so every tool reads the same copy."
+**Explain simply:**
+- **For a Power BI user:** reports can connect to data held once in OneLake instead of each team keeping its own extract.
+- **One copy:** fewer duplicate files and fewer "which version is right" arguments.
+- **Access:** workspaces and permissions decide who sees what.
+- Licensing, capacity and exact features are not something to state from memory.
+**Alternative / pitfalls:** Do not claim details (capacity pricing, feature names) with certainty; say "check the Microsoft documentation".
+**Likely follow-ups:** 1) *Is it a database?* No, a platform of several services. 2) *What would you do first?* Ask which workspace and tables I should use.
+**Common mistakes:** Drowning a non-technical listener in service names; claiming exact limits.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q8 ⭐ 🟢 What is the shared responsibility model in cloud, and what does the principle of least privilege (IAM) mean for the access an analyst should request?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); both topics appear in cloud prep guides (unverified).
+**What the interviewer is checking:** That you respect security and ask for only the access you need.
+**Say this in the interview:** "The provider secures the cloud platform; the company secures what it puts there and who can reach it. For access I ask for the minimum: read-only on the specific tables I need."
+**Explain simply:**
+- **Shared responsibility:** provider handles data centres and the base platform; the customer handles its data, user accounts, permissions and sharing settings.
+- **IAM (identity and access management):** the system of users, roles and permissions.
+- **Least privilege:** give a person only the access their task needs, for as long as needed.
+- **Analyst example:** request read access to the attrition and headcount tables, not write access to the whole HR schema; request masked columns if salary is not needed.
+**Likely follow-ups:** 1) *Who is at fault if a bucket is public?* Usually the customer's configuration. 2) *Need more access later?* Ask, with the reason.
+**Common mistakes:** Asking for admin "to be safe"; sharing logins; assuming the provider protects everything.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q9 ⭐ 🟢 Your manager asks why the team should move its reports from Excel files on a shared drive to a cloud warehouse. Give two benefits and two risks or costs to check.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** Balanced judgement, not cloud enthusiasm.
+**Say this in the interview:** "Benefits: one trusted source and faster, bigger analysis. Risks: usage cost and the effort of access control and migration."
+**Explain simply:**
+- **Benefit 1, one source of truth:** no more "final_v7.xlsx"; everyone uses the same tables and metric definitions.
+- **Benefit 2, scale and refresh:** millions of rows, scheduled refresh, history kept, access logged.
+- **Risk 1, cost:** usage-based bills can grow; need budgets and monitoring (Q18).
+- **Risk 2, privacy and effort:** sensitive HR data needs permissions, masking and legal review; teams need training and the Excel logic must be rebuilt and checked.
+**What I would check:** current Excel pain (time, errors), data size, who needs access, rough monthly cost, and a pilot on one report with totals reconciled to the old file.
+**Likely follow-ups:** 1) *Would Excel still exist?* Yes, as a front end for analysis. 2) *How to prove value?* Pilot and compare time and errors.
+**Common mistakes:** Only listing benefits; claiming it will be cheaper without numbers.
 
 ### Q10 ⭐ 🟢 Before uploading an employee payroll or attrition file to a cloud storage bucket or an online AI or analytics tool, what checks would you make?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); a judgement question for HR-data roles.
+**What the interviewer is checking:** That you protect sensitive data by habit.
+**Say this in the interview:** "First, am I allowed to upload this? Then I minimise and protect the data, and confirm who can see it."
+**Explain simply:** My checklist:
+1. **Permission and policy:** data owner, HR and IT approval; is this tool approved by the company? Legal basis under rules such as India's DPDP Act or GDPR (from memory, unverified: confirm with legal).
+2. **Minimise:** do I need names, IDs, salaries? Drop unneeded columns.
+3. **De-identify:** replace names and IDs with codes, group salaries into bands, remove free text.
+4. **Where does it go:** region, who can read the bucket, public sharing off, encryption on.
+5. **Online AI tools:** does the tool keep or train on inputs? Never paste real employee data into public tools; use an approved internal tool or synthetic data.
+6. **Retention and logging:** delete when done; keep a record of what was shared.
+**Likely follow-ups:** 1) *Manager says just do it?* I explain the risk and ask for written approval via HR/IT. 2) *Is a hashed ID anonymous?* Not necessarily; it can still be linked back.
+**Common mistakes:** Uploading first and asking later; assuming a private-looking bucket is private; ignoring the free-text columns.
 
 ### Q11 ⭐ 🟡 What is the difference between a Fabric lakehouse and a Fabric warehouse, and what is the SQL analytics endpoint of a lakehouse used for?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); lakehouse vs warehouse appears in Fabric guides (unverified).
+**What the interviewer is checking:** That you know the two Fabric stores and which one you would query.
+**Say this in the interview:** "A lakehouse stores files and tables in an open format and suits raw or semi-structured data; a Fabric warehouse is a classic SQL warehouse with full T-SQL. The lakehouse's SQL analytics endpoint lets me query its tables with SQL, read-only."
+**Explain simply:**
+- **Lakehouse:** lake flexibility plus table structure; often used by engineers with notebooks.
+- **Warehouse:** structured tables, SQL for reading and writing.
+- **SQL analytics endpoint:** an automatic read-only SQL door onto the lakehouse tables, so an analyst can write SELECTs or connect Power BI without Spark code.
+- The exact write capabilities and differences change between releases.
+**Alternative / pitfalls:** Do not promise features; check current Microsoft documentation.
+**Likely follow-ups:** 1) *Can I INSERT through the endpoint?* Treat it as read-only (from memory, unverified). 2) *Which to pick?* Follow the team's design; ask.
+**Common mistakes:** Saying they are the same; saying analysts must use Spark.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q12 ⭐ 🟡 In Power BI, how do Import, DirectQuery and Direct Lake modes differ, and when would you prefer each?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** That you understand the speed versus freshness trade-off in Power BI.
+**Say this in the interview:** "Import copies data into the report for speed; DirectQuery asks the source each time for fresh data; Direct Lake, in Fabric, reads the lake tables directly aiming for speed without a copy."
+**Explain simply:**
+- **Import:** data loaded into Power BI's memory; fast, as fresh as the last refresh, size limits apply. Default choice for most reports.
+- **DirectQuery:** each click sends a query to the source; near-live, but slower and loads the source.
+- **Direct Lake:** only in Fabric; reads OneLake tables without a separate import (from memory, unverified, behaviour and fallback rules change).
+- **Prefer:** Import for a weekly HR dashboard; DirectQuery when data must be live and the source is fast; Direct Lake when the data already lives in a Fabric lakehouse or warehouse.
+**Likely follow-ups:** 1) *Why not DirectQuery always?* Speed and source load. 2) *How often does Import refresh?* On a schedule you set.
+**Common mistakes:** Thinking Import is live; recommending DirectQuery without checking source speed.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q13 ⭐ 🟡 What is the difference between partitioning and clustering a BigQuery table, and which would you apply to a sales table queried mostly by order date and then by region?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); partition vs cluster appears in BigQuery guides (unverified).
+**What the interviewer is checking:** That you can match table layout to query patterns.
+**Say this in the interview:** "Partition by order date, which splits the table into date chunks so a date filter skips whole chunks; then cluster by region, which sorts data inside each chunk."
+**Explain simply:**
+- **Partitioning:** physically divides a table, usually by a date column; queries that filter on it read only matching parts (and cost less).
+- **Clustering:** orders data by chosen columns within the table or partition so filters on them read fewer blocks; best on columns often filtered or grouped.
+- **Sales table:** partition on `order_date`, cluster on `region`. Pruning by clustering is less predictable, so cost estimates are approximate.
+- Limits and details differ by platform version: from memory, unverified, confirm with official documentation.
+**Likely follow-ups:** 1) *Partition by region?* Too few, uneven values and you mostly filter by date. 2) *Do analysts set this?* Often engineers; analysts suggest it from query patterns.
+**Common mistakes:** Mixing the two up; partitioning on a column nobody filters.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q14 ⭐ 🟡 Read this BigQuery query on a table partitioned by `order_date`. Does it limit the data scanned, and how would you fix it if not?
 ```sql
@@ -50,26 +221,154 @@ FROM sales.orders
 WHERE FORMAT_DATE('%Y-%m', order_date) = '2026-10'
 GROUP BY customer_id;
 ```
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); "WHERE not hitting the partition column" is a common BigQuery pitfall in prep guides (unverified).
+**What the interviewer is checking:** Whether you know a function wrapped around the partition column can stop partition pruning.
+**Say this in the interview:** "Probably not. The filter transforms `order_date` with FORMAT_DATE, so the engine may not prune partitions. I would filter the column directly with a date range."
+**Explain simply:**
+- Pruning works best when the partition column is compared directly to constants.
+- Wrapping it in a function can force a scan of all partitions (from memory, unverified; confirm with the dry-run bytes estimate).
+- **Fix:**
+```sql
+SELECT customer_id, SUM(amount)
+FROM sales.orders
+WHERE order_date >= '2026-10-01' AND order_date < '2026-11-01'
+GROUP BY customer_id;
+```
+**Check the logic is unchanged** (SQLite stand-in, same idea, small table with dates on both sides of October):
+```
+wrapped: [(1, 50.0), (2, 100.0)]
+range:   [(1, 50.0), (2, 100.0)]
+```
+Both give the same sums, so the rewrite keeps the result; only the scan can differ. SQLite has no partitions, so it cannot show the cost saving; use BigQuery's dry run for that.
+**Alternative / pitfalls:** Use `BETWEEN` carefully with timestamps (the end boundary). If the column is a timestamp, compare to timestamp bounds.
+**Likely follow-ups:** 1) *How do you confirm?* Dry run or validator bytes before and after. 2) *Require a partition filter?* Some tables enforce it.
+**Common mistakes:** Assuming any WHERE on the table cuts cost; wrapping the column in functions.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q15 ⭐ 🟡 A Snowflake virtual warehouse is billed at 2 credits per hour while running. It runs 3 hours every weekday and auto-suspends otherwise. How many credits does it use in a 4-week month (20 weekdays), and what single change would you try first if the team wants to cut the bill?
 Data: 2 credits per hour (illustrative figure), 3 hours per weekday, 20 weekdays.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** Simple cost arithmetic and a sensible first lever.
+**Say this in the interview:** "2 x 3 x 20 is 120 credits a month. First I would check the warehouse is not running longer than the queries need, for example shortening auto-suspend."
+**Sample data:** 2 credits/hour, 3 hours/weekday, 20 weekdays (exercise inputs, not real rates).
+**Code (what you write in the interview):**
+```python
+credits_per_hour = 2
+hours_per_day = 3
+weekdays = 20
+
+monthly_credits = credits_per_hour * hours_per_day * weekdays
+print("Credits per month:", monthly_credits)
+
+# if the warehouse were cut to 2 running hours per day
+print("If 2 hours per day:", credits_per_hour * 2 * weekdays)
+```
+**Output:**
+```
+Credits per month: 120
+If 2 hours per day: 80
+```
+**What it means:** 120 credits a month; each running hour removed saves 40. Multiply by the contract price per credit (look it up; it is not given here).
+**Alternative / pitfalls:** Resizing the warehouse down can cut the hourly rate but may slow queries; whether queries need that size must be tested. Billing details such as per-second charging and minimum run time are from memory, unverified.
+**Likely follow-ups:** 1) *Single change?* Lower the auto-suspend time or reduce idle runtime. 2) *Other levers?* Resource monitors, fewer refreshes.
+**Common mistakes:** Forgetting the 20 days; changing size before checking idle time.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q16 ⭐ 🟡 You ran `DROP TABLE hr.attendance` by mistake on a Snowflake table. What features might let you recover it, and what do you do right away?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found).
+**What the interviewer is checking:** Calm, correct response to a mistake, and awareness of recovery features.
+**Say this in the interview:** "Stop and tell the data owner immediately. Snowflake may let me restore a dropped table with UNDROP within the Time Travel window, and there may be a short Fail-safe period that only Snowflake support can use."
+**Explain simply:**
+- **Right away:** do not recreate a table with the same name (it can block the undrop); inform the owner or admin; note the time and exact name.
+- **Time Travel:** lets you see or restore data from earlier within a set retention period. `UNDROP TABLE hr.attendance;` is the command (from memory, unverified).
+- **Fail-safe:** a further limited period after Time Travel, for recovery by the provider (from memory, unverified).
+- **Retention length:** depends on edition and settings; confirm with official documentation and your admin.
+- Afterwards: check row counts against the last report and ask for lower privileges (Q8).
+**Likely follow-ups:** 1) *If outside the window?* Restore from a backup or reload from source. 2) *Prevent it?* Least privilege, no DROP rights for analysts.
+**Common mistakes:** Panicking and recreating the table; hiding the mistake; assuming recovery is guaranteed.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q17 ⭐ 🟡 What is the difference between ETL and ELT, and why is ELT common with cloud warehouses such as Snowflake and BigQuery?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); ETL vs ELT is common in warehouse question banks (unverified).
+**What the interviewer is checking:** That you know the order of steps and why it changed.
+**Say this in the interview:** "ETL transforms data before loading it; ELT loads raw data first and transforms inside the warehouse. ELT is common because cloud warehouses have cheap storage and strong compute."
+**Explain simply:**
+- **ETL:** Extract from the source, Transform on a separate server, then Load clean data.
+- **ELT:** Extract, Load raw data straight into the warehouse, then Transform with SQL there.
+- **Why ELT in the cloud:** the warehouse can scale to do the transformation, raw data stays available to redo logic, and analysts can help write the SQL.
+- **HR example:** load the raw HRIS and payroll exports, then build a clean `headcount_monthly` table in SQL.
+**Alternative / pitfalls:** ELT keeps raw sensitive data in the warehouse, so access control matters (Q10). ETL still suits cases where data must be masked before loading.
+**Likely follow-ups:** 1) *Tools?* Many exist; name none unless you have used them. 2) *Who does it?* Usually engineers; analysts may own the SQL layer.
+**Common mistakes:** Mixing the order; saying ELT has no transformation.
 
 ### Q18 ⭐ 🟡 Your BigQuery or Snowflake bill doubled this month and your analyst team is the main user. What would you check, in order, before changing anything?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); gap-fill scenario (judgement).
+**What the interviewer is checking:** A methodical diagnosis before acting.
+**Say this in the interview:** "I would look for what changed: who or what drove the usage, which queries, and whether it is a one-off. Only then change settings."
+**Explain simply:** In order:
+1. **Confirm the bill:** compare to the previous month, same units, any price or contract change, any one-off.
+2. **Break down by service and user:** storage versus compute (or scanned bytes); which team, project, warehouse.
+3. **Top queries:** the most expensive and most frequent, using the platform's query history views (names from memory, unverified).
+4. **Look for causes:** new `SELECT *` on big tables, dashboards refreshing too often, a scheduled job looping, a warehouse left running, a larger size, data growth.
+5. **Check with the team:** was a new project or backfill started?
+6. **Only then act:** fix the query, add partition filters, reduce refresh, auto-suspend, budgets and alerts.
+**Likely follow-ups:** 1) *Everything is the analysts' fault?* Not assumed; evidence first. 2) *Prevention?* Budget alerts and usage reviews.
+**Common mistakes:** Cutting access first; blaming without looking at query history; not checking for a contract or price change.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q19 ⭐ 🟡 What is schema-on-write versus schema-on-read, and which applies when CSV files sit in S3 or Azure Data Lake and you query them directly?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); appears in warehouse vs lake pages (unverified).
+**What the interviewer is checking:** That you know when structure is enforced.
+**Say this in the interview:** "Schema-on-write defines and enforces structure when data is loaded, as in a warehouse. Schema-on-read applies structure only when you query, as with raw files in a lake. CSVs queried in place are schema-on-read."
+**Explain simply:**
+- **Schema:** the column names and types.
+- **On write:** bad data is rejected at load; queries are reliable.
+- **On read:** anything can be stored; the query (or an external table definition) says how to read it, so types and bad rows surface late.
+- **CSV in S3 or Azure Data Lake:** schema-on-read; a column of dates might include text and fail or return nulls.
+**What I would do:** check types and null counts first, or ask for the curated table.
+**Likely follow-ups:** 1) *Tradeoff?* Flexibility versus reliability. 2) *Which is faster to query?* Loaded warehouse tables usually; confirm.
+**Common mistakes:** Mixing up the two; trusting types in raw files.
 
 ### Q20 ⭐ 🔴 In Snowflake, a table `raw_events` has a VARIANT column `payload` holding JSON such as `{"employee": {"id": 101, "dept": "HR"}, "event": "login"}`. Write a query that returns employee id, department and event as separate typed columns.
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); semi-structured data is a Snowflake topic in guides (unverified).
+**What the interviewer is checking:** That you can read nested JSON and cast it to proper types.
+**Say this in the interview:** "I use the colon and dot path into the VARIANT column and cast each value with `::`."
+**Code (what you write in the interview):**
+```sql
+-- Snowflake syntax from memory, unverified: path with colon/dot, cast with ::
+SELECT
+    payload:employee.id::INT        AS employee_id,
+    payload:employee.dept::STRING   AS department,
+    payload:event::STRING           AS event
+FROM raw_events;
+```
+**Output:** I cannot run Snowflake here. The same idea in SQLite (`json_extract` for the path, CAST for the type), run on two sample rows:
+```
+(101, 'HR', 'login')
+(102, 'Finance', 'logout')
+```
+**What it means:** Each row becomes three typed columns an analyst can filter and join. Without the cast, values stay VARIANT and can show with quotes.
+**Alternative / pitfalls:** Missing keys return NULL; arrays need `FLATTEN` (from memory, unverified). Keys are case-sensitive. Check the row count and nulls against the source. `GET_PATH(payload, 'employee.id')` is an equivalent form.
+**Likely follow-ups:** 1) *Array of events?* Use FLATTEN. 2) *Why cast?* So types sort and join correctly.
+**Common mistakes:** Forgetting the cast; wrong key case; assuming every record has every key.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
 
 ### Q21 ⭐ 🔴 A company already uses Microsoft 365 and Power BI heavily, while another uses Google Workspace and mostly SQL notebooks. How would your cloud platform recommendation for analytics differ, and what non-technical factors would you weigh?
-<!-- ANSWER_PENDING -->
+**Asked at:** commonly asked (no company-specific report found); platform choice is a gap-fill judgement question.
+**What the interviewer is checking:** That you recommend from needs and people, not brand loyalty.
+**Say this in the interview:** "I would not push a platform. For the Microsoft shop I would look at Fabric and Azure first because Power BI and logins already fit; for the Google shop BigQuery with notebooks fits. Then I would weigh cost, skills and governance."
+**Explain simply:**
+- **Microsoft 365 and Power BI company:** Fabric/Azure integrates with existing Power BI, Entra identity and Excel; Direct Lake and the SQL endpoint are options (Q11, Q12, from memory, unverified).
+- **Google Workspace and SQL notebooks company:** BigQuery pairs with Sheets and notebooks, with bytes-scanned cost to watch (Q5).
+- **Non-technical factors:** existing skills and training, current contracts and licences, total cost and who pays, data privacy and where data may be stored, vendor support, migration effort, how easily we can leave.
+- **Method:** pilot one real report on a shortlisted platform and compare time, cost and accuracy.
+**Likely follow-ups:** 1) *Snowflake?* A neutral option across clouds; evaluate on the same factors. 2) *Who decides?* IT, finance and data leaders; I provide analyst requirements.
+**Common mistakes:** Naming a winner without asking about skills and budget; ignoring switching cost; quoting prices from memory.
+
+*Cloud and vendor facts below are from memory, unverified, confirm with official documentation.*
+
