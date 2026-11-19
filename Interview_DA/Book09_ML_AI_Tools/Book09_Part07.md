@@ -62,7 +62,7 @@ Series: 100, 110, 120, 130.
 t = 1, 2, 3, 4, 5; sales = 10, 12, 15, 16, 19.
 <!-- ANSWER_PENDING -->
 
-### Q19 ⭐⭐ 🟡 Using the quarterly seasonal indices from your own working, how do you deseasonalise a figure and use the index to forecast next quarter?
+### Q19 ⭐⭐ 🟡 Given quarterly seasonal indices, how do you deseasonalise a figure and use the index to forecast next quarter?
 Indices: Q1 0.81, Q2 1.00, Q3 1.29, Q4 0.90. Deseasonalised level expected for next quarter = 110, which is Q1.
 <!-- ANSWER_PENDING -->
 
