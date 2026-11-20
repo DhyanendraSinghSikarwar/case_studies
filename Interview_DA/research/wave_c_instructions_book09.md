@@ -4,7 +4,7 @@ You review ONE part file of Book 9 and fix it in place. Read first: `plan.md` (S
 
 ## Scope and edit rules
 - Edit ONLY your assigned `Book09_ML_AI_Tools/Book09_PartNN.md` (targeted Edit calls, never rewrite the whole file) and write ONE report `Book09_ML_AI_Tools/review/review_PartNN.md` (mkdir -p). Never change question headings, numbers, stars or order, nor a question's inline data/code. Do not git commit.
-- Scratch folder (yours only): `/tmp/claude-0/-home-user-case-studies/7227d798-1dc4-5a0c-b272-858a37cce3c1/scratchpad/C09_PartNN`. Run `python3 script.py`.
+- Scratch folder (yours only): `/tmp/claude-0/-home-user-case-studies/f1f97a91-a687-5c91-adf9-6191d712464e/scratchpad/C09_PartNN`. Run `python3 script.py`.
 
 ## Checks (every answer in the part)
 1. **Run every code block (mandatory):** extract each Python/SQL block (rebuild data from the answer's sample data or described generator; where the answer hides data-building code, regenerate data that matches the stated description) and run it on the installed versions; compare with the pasted Output and with numbers in the prose. Fix wrong code, outputs and numbers. Snippets must run as shown (imports included). Where output depends on a seed or hidden data, it must say so.
