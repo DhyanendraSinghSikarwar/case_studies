@@ -248,6 +248,7 @@ satisfaction accuracy drop: 0.037
 | 4 | Basic ML | 3 | 18 |
 | | Total | 15 | 90 |
 
+**Zero-to-job-ready roadmap (example shape, adjust to the job):** weeks 1-4 Excel and SQL; weeks 5-8 statistics; weeks 9-12 Python and pandas; weeks 13-15 basic ML; weeks 16-20 two portfolio projects, a repository and mock interviews; AI tools are used as a checked helper from week 1.
 **Alternative / pitfalls:** Some start with Python; fine if the job is Python-heavy. Do not start with AI tools or ML.
 **Likely follow-ups:** 1) *Where does Excel fit?* Before or with SQL. 2) *Would you reorder for a job?* Yes, follow the job description.
 **Common mistakes:** Jumping to ML first, skipping statistics, treating AI tools as a substitute for foundations.
@@ -262,6 +263,8 @@ satisfaction accuracy drop: 0.037
 - Prefer one clean project to five shallow ones.
 - Name datasets only after confirming they exist and are open; an IBM-style HR attrition sample dataset is a common choice (from memory, unverified).
 **Worked example:** Question "which employees are at risk of leaving?" Decision: whom managers talk to first. Metric: recall among top 100 flagged. Limit: 1,000 rows with 21% leavers is enough for a demo, not for firm conclusions.
+**Practice datasets (all from memory, unverified: check the link, licence and column list before use):** IBM HR Analytics employee attrition sample (attrition), Telco customer churn sample (churn), Kaggle or UCI public datasets such as bike sharing or retail sales (forecasting), or the synthetic generator shown in Q4 (no licence worries).
+**Mini-project ideas (one question each):** 1) attrition risk with logistic regression; 2) customer churn with a decision tree; 3) weekly sales forecast against a naive baseline; 4) k-means grouping of customers by spend.
 **Alternative / pitfalls:** Avoid the most over-used toy datasets without adding your own angle, and avoid datasets with columns that reveal the answer.
 **Likely follow-ups:** 1) *Why this question?* Link to a decision. 2) *Is the data real?* Say if it is synthetic.
 **Common mistakes:** Choosing a flashy dataset with no business question; ignoring leakage and data licence.
@@ -274,7 +277,7 @@ satisfaction accuracy drop: 0.037
 - **Overfitting:** the model memorises past employees instead of learning patterns, like a student who memorises last year's paper.
 - **Precision:** of the people flagged, how many really left. **Recall:** of those who left, how many we flagged.
 - Practise: write a one-sentence version, a 30-second version and one example; test it on a friend outside data.
-**Worked example (computed on the made-up data built in Q4, seed 42):** A fully grown decision tree scored 94.4% on the data it learned from but 67.6% on new data; a small tree (3 levels) scored 79.6% on both. Plain words: "The big tree memorised the past and does worse on new people." For precision/recall: of 1,000 employees, 50 leave; the model flags 40 and 30 truly leave. Precision 30/40 = 75%, recall 30/50 = 60%. "Three of four flags are right, and we catch six of ten leavers."
+**Worked example (computed on the made-up data built in Q4, seed 42):** A fully grown decision tree scored 94.4% on the data it learned from but 67.6% on new data; a small tree (3 levels) scored 78.4% and 79.6%. Plain words: "The big tree memorised the past and does worse on new people." For precision/recall: of 1,000 employees, 50 leave; the model flags 40 and 30 truly leave. Precision 30/40 = 75%, recall 30/50 = 60%. "Three of four flags are right, and we catch six of ten leavers."
 **Alternative / pitfalls:** Do not show formulas first; lead with the decision.
 **Likely follow-ups:** 1) *Which matters more?* Depends on cost: missed leaver versus wasted conversation. 2) *How do you spot overfitting?* Big gap between train and test.
 **Common mistakes:** Jargon, long explanations, no number, no recommendation.
@@ -332,6 +335,7 @@ for columns in (base, base + ["exit_interview_done"]):
 | 4 | precision, recall, project write-up | 6 | 1-page project note |
 | | Total | 24 | |
 
+**Daily practice plan (about 1 hour on weekdays, example):** 10 minutes recall of yesterday without notes, 35 minutes hands-on coding on a small dataset, 10 minutes noting one thing learned and one gap in your learning log, 5 minutes planning tomorrow. Weekend: one 2-hour block on the project.
 **Practice step:** On day 1, load any small CSV in pandas and reproduce one SQL query you know.
 **Alternative / pitfalls:** If the week slips, cut scope (one model), not the write-up.
 **Likely follow-ups:** 1) *What if you only have 3 hours a week?* Stretch to 8 weeks. 2) *How do you know you are done?* You fit and evaluate a model without copying code.
@@ -364,6 +368,7 @@ print(kmeans.cluster_centers_.round(2))
  [9.   9.  ]]
 ```
 **What it means:** The first three points form one group with centre (1.33, 3.00); you can check by hand: (1+1+2)/3 = 1.33 and (2+4+3)/3 = 3. The other group centre is (9, 9).
+**Self-check test set (answer aloud, no notes):** 1) Why does a model need a test set? 2) Why can 79% accuracy be useless? 3) Work precision and recall from 40 flagged and 30 correct out of 50 leavers (75% and 60%). 4) What does k-means do when you change k? 5) Name one leakage example. If you miss two or more, revisit that topic.
 **Alternative / pitfalls:** Videos feel like learning; recall is the real test.
 **Likely follow-ups:** 1) *Weak area?* Name one. 2) *How often?* Weekly review.
 **Common mistakes:** Only watching, copying code, never testing on fresh data.
