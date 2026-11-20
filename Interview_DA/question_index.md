@@ -6757,6 +6757,679 @@ Columns: Q-ID (`B<book>P<part>Q<n>`) | Book | Part | Canonical question
 ## Book 11 — Soft Skills, HR Round, GD
 | Q-ID | Book | Part | Canonical question |
 |---|---|---|---|
+| B11P01Q1 | 11 | 1 | Tell me about yourself. |
+| B11P01Q2 | 11 | 1 | Please introduce yourself in one minute. |
+| B11P01Q3 | 11 | 1 | Walk me through your resume. |
+| B11P01Q4 | 11 | 1 | You have an HR background and you are applying for a data analyst role. Why? |
+| B11P01Q5 | 11 | 1 | What did you do in your last HR role, and what part of it involved data? |
+| B11P01Q6 | 11 | 1 | What are your strengths, and which of them help in an analyst role? |
+| B11P01Q7 | 11 | 1 | Tell me about yourself in a way that connects your HR experience to this analyst job. |
+| B11P01Q8 | 11 | 1 | Your resume says HR, not analytics. Walk me through how you decided to switch and what you have done about it. |
+| B11P01Q9 | 11 | 1 | What have you done so far to prepare for a data analyst role? |
+| B11P01Q10 | 11 | 1 | What from your HR experience will make you a better analyst than someone from a pure IT background? |
+| B11P01Q11 | 11 | 1 | You have never worked as an analyst. Why should we trust that you can do this job? |
+| B11P01Q12 | 11 | 1 | How would you describe your career story in three sentences: past, present and future? |
+| B11P01Q13 | 11 | 1 | Your introduction sounds like a list of jobs. Tell me about yourself again in 60 seconds, but this time as a story that ends with why you are here. |
+| B11P01Q14 | 11 | 1 | Tell me about yourself in 30 seconds. |
+| B11P01Q15 | 11 | 1 | What is your educational background, and how does it relate to this role? |
+| B11P01Q16 | 11 | 1 | What is your biggest weakness, as a switcher into analytics? |
+| B11P01Q17 | 11 | 1 | Which analytics tools have you actually used, and for what? |
+| B11P01Q18 | 11 | 1 | What did you like most and least about your HR work? |
+| B11P01Q19 | 11 | 1 | What was the most data-heavy task you did in HR, and what did you learn from it? |
+| B11P01Q20 | 11 | 1 | Tell me about an achievement from your HR career that shows analytical thinking. |
+| B11P01Q21 | 11 | 1 | Tell me about an HR report or dashboard you built, or would build, and what decision it would help with. |
+| B11P01Q22 | 11 | 1 | Why did you not start in analytics earlier? |
+| B11P01Q23 | 11 | 1 | Are you comfortable starting at a junior level after your HR experience? |
+| B11P01Q24 | 11 | 1 | What is one project you did on your own to learn analytics, and what did you find? |
+| B11P01Q25 | 11 | 1 | How do you explain your decision to switch careers to someone who says you are throwing away your HR experience? |
+| B11P01Q26 | 11 | 1 | What will be difficult for you in this role, given your background, and how will you handle it? |
+| B11P01Q27 | 11 | 1 | What do you do when you do not know something, such as a tool or concept new to you? |
+| B11P01Q28 | 11 | 1 | How long have you been learning analytics, and how do you balance it with your job? |
+| B11P01Q29 | 11 | 1 | Describe yourself in three words, and give me evidence for each. |
+| B11P01Q30 | 11 | 1 | You introduced yourself as an HR professional first. Do you see yourself as an analyst or an HR person? |
+| B11P01Q31 | 11 | 1 | Your introduction mentions analytics learning. Which one of those skills are you strongest in, and prove it with an example. |
+| B11P01Q32 | 11 | 1 | Give me the honest weak points of your profile for this analyst role, and how you are closing each one. |
+| B11P01Q33 | 11 | 1 | Suppose I think you are a risky hire because you are changing fields. Convince me in one minute. |
+| B11P01Q34 | 11 | 1 | Your introduction was too long and unfocused. Tell me, in two sentences, what kind of analyst you want to be and why. |
+| B11P01Q35 | 11 | 1 | What do you do outside work, and does any of it relate to data or analysis? |
+| B11P01Q36 | 11 | 1 | How would your colleagues in HR describe you? |
+| B11P01Q37 | 11 | 1 | Are you more comfortable with people or with numbers? |
+| B11P01Q38 | 11 | 1 | What is the one thing on your resume you would like me to ask about? |
+| B11P01Q39 | 11 | 1 | Tell me something about yourself that is not on your resume. |
+| B11P01Q40 | 11 | 1 | You are 33 and starting a new field. What makes you think you can keep up with younger analysts? |
+| B11P01Q41 | 11 | 1 | The interviewer asks about your family, marital status or plans to have children as part of your introduction. How do you respond politely? |
+| B11P01Q42 | 11 | 1 | Your introduction at the first interview was strong. How do you adapt it for a manager, a panel and an HR recruiter? |
+| B11P01Q43 | 11 | 1 | You have no direct experience of analytics at work. Imagine you were hired. What would your first month in the team look like? |
+| B11P01Q44 | 11 | 1 | If we offered you the job, but at a lower level and pay than your HR role, how would you introduce your reason for accepting? |
+| B11P01Q45 | 11 | 1 | I see a gap, a short HR stint and a recent course. Tell me about yourself and explain how all of this fits together. |
+| B11P01Q46 | 11 | 1 | Tell me about yourself in a video interview, when you cannot see the interviewer's reaction and the connection is slow. How do you adjust? |
+| B11P02Q1 | 11 | 2 | Why do you want to become a data analyst? |
+| B11P02Q2 | 11 | 2 | Why do you want to join our company? |
+| B11P02Q3 | 11 | 2 | Why are you leaving HR to move into data analytics? |
+| B11P02Q4 | 11 | 2 | What do you know about our company and what we do with data? |
+| B11P02Q5 | 11 | 2 | Why are you moving into this role now, and not earlier in your career? |
+| B11P02Q6 | 11 | 2 | Why data analytics and not HR analytics, where your HR background would be a direct advantage? |
+| B11P02Q7 | 11 | 2 | Why should I believe this is a lasting career decision and not a passing trend you will drop in a year? |
+| B11P02Q8 | 11 | 2 | Why us and not another company hiring analysts in this city? |
+| B11P02Q9 | 11 | 2 | Where do you see yourself in five years? |
+| B11P02Q10 | 11 | 2 | Was something wrong in your HR job that pushed you out, or are you moving towards something? |
+| B11P02Q11 | 11 | 2 | What excites you most about working with data? |
+| B11P02Q12 | 11 | 2 | How did you first become interested in data analytics? |
+| B11P02Q13 | 11 | 2 | In your own words, what does a data analyst do all day? |
+| B11P02Q14 | 11 | 2 | What attracted you to this particular job description? |
+| B11P02Q15 | 11 | 2 | What do you expect to learn from us in your first year? |
+| B11P02Q16 | 11 | 2 | What do you like least about data work, or expect to find hardest? |
+| B11P02Q17 | 11 | 2 | Why do you want to leave your current employer? |
+| B11P02Q18 | 11 | 2 | What do you want from your next employer? |
+| B11P02Q19 | 11 | 2 | You have never used data in your HR job beyond basic reports. Where did your interest in analytics come from? |
+| B11P02Q20 | 11 | 2 | Tell me about a task in your HR work that made you realise you enjoy working with numbers and data. |
+| B11P02Q21 | 11 | 2 | What have you done so far, beyond reading and courses, to prove your interest is genuine? |
+| B11P02Q22 | 11 | 2 | You are taking a more junior role than your HR position. Why are you willing to step back? |
+| B11P02Q23 | 11 | 2 | Is this switch about pay, or about the work itself? |
+| B11P02Q24 | 11 | 2 | Why data analyst and not business analyst, data scientist or product analyst? |
+| B11P02Q25 | 11 | 2 | What do you know about our industry, and what attracts you to it? |
+| B11P02Q26 | 11 | 2 | Will you miss HR, and would you ever want to go back? |
+| B11P02Q27 | 11 | 2 | This role starts with a lot of repetitive MIS reporting. How do you feel about that? |
+| B11P02Q28 | 11 | 2 | What would make you leave this company? |
+| B11P02Q29 | 11 | 2 | What is your biggest worry about making this switch? |
+| B11P02Q30 | 11 | 2 | Why a global capability centre or in-house analytics team rather than a services firm or a startup? |
+| B11P02Q31 | 11 | 2 | You had a stable HR career. What is the risk you are taking with this move, and how have you reduced it? |
+| B11P02Q32 | 11 | 2 | Candidates who switch from HR to analytics often quit within a year. Convince me you will not. |
+| B11P02Q33 | 11 | 2 | Our team is mostly engineers and statisticians. Why would you fit in? |
+| B11P02Q34 | 11 | 2 | You say you chose analytics because of the pay. Convince me that you also care about the work. |
+| B11P02Q35 | 11 | 2 | Tell me about a data-driven decision or story that impressed you. |
+| B11P02Q36 | 11 | 2 | What questions do you have for us about the role and the team? |
+| B11P02Q37 | 11 | 2 | If you do not enjoy analytics after six months, what will you do? |
+| B11P02Q38 | 11 | 2 | AI tools are doing more routine analysis. Why choose this field now? |
+| B11P02Q39 | 11 | 2 | Are you applying only to us or to other companies as well, and why did you apply to us? |
+| B11P02Q40 | 11 | 2 | Our job description lists Python and statistics, which you are still learning. Why apply, and why should we consider you? |
+| B11P02Q41 | 11 | 2 | How does your HR background make you better, not just different, as an analyst in a company like ours? |
+| B11P02Q42 | 11 | 2 | Role play: a recruiter calls and asks in one minute, "Why do you want this job?" Answer it aloud. |
+| B11P02Q43 | 11 | 2 | Role play: you are asked "why leaving HR" by an interviewer who clearly dislikes career switchers. How do you respond? |
+| B11P02Q44 | 11 | 2 | You are shortlisted but must say in two sentences why you chose us over the other offer you hold. What do you say? |
+| B11P02Q45 | 11 | 2 | Role play: the interviewer says, "Frankly, an HR background is a weakness for this job." How do you react? |
+| B11P03Q1 | 11 | 3 | What is the STAR method, and how will you use it to answer behavioural questions in this interview? |
+| B11P03Q2 | 11 | 3 | Tell me about a time you worked as part of a team to achieve a goal. |
+| B11P03Q3 | 11 | 3 | What is your biggest strength, and can you give me an example where it helped your work? |
+| B11P03Q4 | 11 | 3 | What is your biggest weakness, and what have you done to improve it? |
+| B11P03Q5 | 11 | 3 | Tell me about a time you made a mistake at work. What did you do about it? |
+| B11P03Q6 | 11 | 3 | Tell me about a time you disagreed with a colleague or manager. How did you handle it? |
+| B11P03Q7 | 11 | 3 | Tell me about a time you used data or numbers to make or change a decision, even in a non-analytics role. |
+| B11P03Q8 | 11 | 3 | Tell me about a time you failed at something. What did you learn? |
+| B11P03Q9 | 11 | 3 | Tell me about a time you had to handle several tasks at once. How did you decide what came first? |
+| B11P03Q10 | 11 | 3 | Tell me about a time you received critical feedback. How did you react and what did you change? |
+| B11P03Q11 | 11 | 3 | Tell me about a time you had to explain something complicated to someone who did not understand it at first. |
+| B11P03Q12 | 11 | 3 | Tell me about a time you went beyond your job description to solve a problem. |
+| B11P03Q13 | 11 | 3 | Tell me about your most challenging project so far, and what your own role in it was. |
+| B11P03Q14 | 11 | 3 | You are moving from HR to analytics. Tell me about a time you took on a task outside your comfort zone. |
+| B11P03Q15 | 11 | 3 | Tell me about a time you worked with a difficult colleague or stakeholder. |
+| B11P03Q16 | 11 | 3 | Tell me about a time you handled a stressful situation at work. |
+| B11P03Q17 | 11 | 3 | Tell me about an achievement you are proud of. Why does it matter to you? |
+| B11P03Q18 | 11 | 3 | You have never worked as an analyst. Tell me about a time, in any setting, that shows you can work with data. |
+| B11P03Q19 | 11 | 3 | Tell me about a time you helped a teammate who was struggling. |
+| B11P03Q20 | 11 | 3 | Tell me about a time you asked for help. What happened? |
+| B11P03Q21 | 11 | 3 | Tell me about a time you had to adapt to a change at work. |
+| B11P03Q22 | 11 | 3 | Tell me about a time you handled a complaint or an unhappy employee, customer or colleague. |
+| B11P03Q23 | 11 | 3 | Tell me about a time you improved a process, however small. |
+| B11P03Q24 | 11 | 3 | Tell me about a time you had to follow a process or rule you did not agree with. |
+| B11P03Q25 | 11 | 3 | Tell me about a time you worked with people from another team or department. |
+| B11P03Q26 | 11 | 3 | Tell me about a time you had to say no to a request. How did you say it? |
+| B11P03Q27 | 11 | 3 | Tell me about a time you spotted an error in your own work before anyone else did. |
+| B11P03Q28 | 11 | 3 | Tell me about a time you were new to a team or company. How did you settle in? |
+| B11P03Q29 | 11 | 3 | Tell me about a time you taught or trained someone else. |
+| B11P03Q30 | 11 | 3 | You have no formal analytics job experience. Tell me about a project you did on your own (course, portfolio or work-related) and what you did in it. |
+| B11P03Q31 | 11 | 3 | Describe a situation where you had to learn a tool or software on your own. How did you go about it? |
+| B11P03Q32 | 11 | 3 | How long should a STAR answer be, and how many stories should you prepare before an interview? |
+| B11P03Q33 | 11 | 3 | How do you answer a behavioural question when you honestly have no direct example? |
+| B11P03Q34 | 11 | 3 | Tell me about a time you found an error in a report or number that others were already using. What did you do? |
+| B11P03Q35 | 11 | 3 | Tell me about a time you disagreed with someone's conclusion and used facts to make your point. |
+| B11P03Q36 | 11 | 3 | Tell me about a time you had to deal with a sudden change in priorities. |
+| B11P03Q37 | 11 | 3 | Tell me about a time you worked on two urgent things at once and one had to wait. |
+| B11P03Q38 | 11 | 3 | Tell me about a time you dealt with a manager whose expectations were unrealistic. |
+| B11P03Q39 | 11 | 3 | Tell me about a time you handled confidential information. How did you protect it? |
+| B11P03Q40 | 11 | 3 | Tell me about a time you were asked to do something that felt wrong or unethical. What did you do? |
+| B11P03Q41 | 11 | 3 | Tell me about a time your work had a measurable result, with numbers. |
+| B11P03Q42 | 11 | 3 | Tell me about a time you led a small group or took the lead on a task without a formal title. |
+| B11P03Q43 | 11 | 3 | Tell me about a time you had to work long hours or on a weekend to finish something. Why, and how did you cope? |
+| B11P03Q44 | 11 | 3 | Tell me about a time you balanced quality with speed. |
+| B11P03Q45 | 11 | 3 | Tell me about a time you received feedback you thought was unfair. |
+| B11P03Q46 | 11 | 3 | Tell me about a time you had to rebuild trust after something went wrong. |
+| B11P03Q47 | 11 | 3 | Tell me about a time you had to make a decision with no manager available. |
+| B11P03Q48 | 11 | 3 | Tell me about a time you noticed a problem others had missed. |
+| B11P03Q49 | 11 | 3 | Tell me about a time you worked on a repetitive task and found a way to make it faster or easier. |
+| B11P03Q50 | 11 | 3 | Tell me about a time your first approach did not work. What did you do next? |
+| B11P03Q51 | 11 | 3 | Tell me about a time you had to turn a pile of employee or HR records into something a manager could use. |
+| B11P03Q52 | 11 | 3 | Tell me about a time you compromised with someone to get a task done. |
+| B11P03Q53 | 11 | 3 | You have not led a team. What would you say when asked about a time you showed leadership? |
+| B11P03Q54 | 11 | 3 | Tell me about a time you disagreed with a decision after it was made. How did you behave? |
+| B11P03Q55 | 11 | 3 | The interviewer says "Walk me through that story again, but focus only on what you did, not the team." How do you respond? |
+| B11P03Q56 | 11 | 3 | The interviewer asks "What would you do differently if you faced that situation again?" How do you answer? |
+| B11P03Q57 | 11 | 3 | After you finish a story, the interviewer asks "What was the result in numbers?" and you do not have exact numbers. What do you say? |
+| B11P03Q58 | 11 | 3 | Tell me about a time you had to push back on a senior person. |
+| B11P03Q59 | 11 | 3 | Tell me about a time you took a risk that did not work out. |
+| B11P03Q60 | 11 | 3 | Tell me about a time your work was criticised in front of other people. How did you respond? |
+| B11P03Q61 | 11 | 3 | Tell me about a time you had a conflict between two stakeholders who each wanted something different from you. |
+| B11P03Q62 | 11 | 3 | Tell me about the toughest decision you have had to make at work and what you based it on. |
+| B11P03Q63 | 11 | 3 | Tell me about a time you were wrong and had to admit it to someone senior. |
+| B11P03Q64 | 11 | 3 | Tell me about a time you celebrated a team success. What was your part? |
+| B11P03Q65 | 11 | 3 | Tell me about a time you stayed calm when others around you were stressed. |
+| B11P03Q66 | 11 | 3 | Tell me about a time you were really bored by a task. How did you stay focused? |
+| B11P03Q67 | 11 | 3 | Tell me about a time you helped someone outside your own team. |
+| B11P03Q68 | 11 | 3 | Tell me about a time you used a spreadsheet or tool to save yourself or your team time. |
+| B11P03Q69 | 11 | 3 | Tell me about a time your manager asked you to learn something you had never done. What was your first step? |
+| B11P03Q70 | 11 | 3 | Tell me about a time you prioritised a long-term goal over a quick win. |
+| B11P03Q71 | 11 | 3 | Tell me about a time you worked with someone very different from you in style or background. |
+| B11P03Q72 | 11 | 3 | Tell me about a time you had to build a relationship with a person who was not friendly towards you. |
+| B11P03Q73 | 11 | 3 | Tell me about a time you worked remotely or with a distributed team. What made it work or fail? |
+| B11P03Q74 | 11 | 3 | Tell me about a time you had to make a judgement call on whether to escalate an issue. |
+| B11P03Q75 | 11 | 3 | Tell me about a time you were given more work than you could handle. What did you do? |
+| B11P03Q76 | 11 | 3 | Tell me about a time you changed your mind after hearing new information. |
+| B11P03Q77 | 11 | 3 | Tell me about a time you were praised for your work. What exactly did you do to earn it? |
+| B11P03Q78 | 11 | 3 | Tell me about a time you had to share credit or take the blame for a team result. |
+| B11P03Q79 | 11 | 3 | Tell me about a time you handled a request that came from many people at once, such as every manager asking for their report first. |
+| B11P03Q80 | 11 | 3 | Tell me about a time you did a task nobody wanted to do. |
+| B11P03Q81 | 11 | 3 | Tell me about a time you worked with a person who was not pulling their weight. |
+| B11P03Q82 | 11 | 3 | Tell me about a time you identified a risk early and acted on it. |
+| B11P03Q83 | 11 | 3 | The interviewer says "That sounds like a team result, what did you personally do?" How do you answer without sounding boastful? |
+| B11P03Q84 | 11 | 3 | Tell me about a time you recovered from a serious setback in your career. |
+| B11P03Q85 | 11 | 3 | Tell me about a time you had to give honest feedback to a peer or senior. |
+| B11P03Q86 | 11 | 3 | Tell me about a time you handled an inappropriate request or remark at work, and how you stayed professional. |
+| B11P03Q87 | 11 | 3 | Tell me about a time you influenced a result without any authority over the people involved. |
+| B11P03Q88 | 11 | 3 | Tell me about a time you worked on something that was cancelled or failed through no fault of your own. |
+| B11P03Q89 | 11 | 3 | Your stories are all from HR. Why should we believe they prove you can do analytics work? |
+| B11P03Q90 | 11 | 3 | How would you decide which of your stories to use when the question does not match any of them exactly? |
+| B11P04Q1 | 11 | 4 | Tell me about a time you explained data, numbers or a finding to someone who was not comfortable with numbers. |
+| B11P04Q2 | 11 | 4 | Why is communication so important for a data analyst, and how would you rate your own? |
+| B11P04Q3 | 11 | 4 | How do you change the way you explain a finding when your listener is non-technical? |
+| B11P04Q4 | 11 | 4 | You come from HR. When have you already explained numbers such as headcount, payroll or attrition to people who did not want the detail? |
+| B11P04Q5 | 11 | 4 | How do you avoid jargon? Give three technical words you would replace and the plain words you would use. |
+| B11P04Q6 | 11 | 4 | What is the difference between telling a manager what the data shows and telling them what to do about it? Which do you do? |
+| B11P04Q7 | 11 | 4 | What makes a good summary of an analysis for a busy manager? |
+| B11P04Q8 | 11 | 4 | Tell me about a time a stakeholder did not understand your analysis. What did you change in the way you explained it? |
+| B11P04Q9 | 11 | 4 | How do you check that a non-technical audience has actually understood your finding, not just nodded? |
+| B11P04Q10 | 11 | 4 | What is the first sentence you say when you present a finding to a senior leader, and why? |
+| B11P04Q11 | 11 | 4 | Tell me about a time you had to deliver bad news using data. |
+| B11P04Q12 | 11 | 4 | Explain the difference between average and median to a non-technical manager, using the salary example below. |
+| B11P04Q13 | 11 | 4 | Attrition went from 10% to 12%. How do you say this to a business head without confusing "2 percent" with "2 percentage points"? |
+| B11P04Q14 | 11 | 4 | Pick any project you have done. Explain it for two minutes to a non-technical person, then to a technical interviewer. What changes between the two versions? |
+| B11P04Q15 | 11 | 4 | Tell me about a time you presented findings to senior people. How did you prepare, and what was the outcome? |
+| B11P04Q16 | 11 | 4 | A line chart shows monthly attrition rising for six months. Talk me through it aloud as if presenting to the HR head. |
+| B11P04Q17 | 11 | 4 | Write the email you would send to your manager summarising a finding: what are the subject line and the first three lines? |
+| B11P04Q18 | 11 | 4 | You have never presented to business people. How would you prepare for your first presentation in an analyst job? |
+| B11P04Q19 | 11 | 4 | Tell me about a time you simplified something complicated for a team. What was the result? |
+| B11P04Q20 | 11 | 4 | How do you explain that you are not sure of a number, or that the data is incomplete, without losing the listener's trust? |
+| B11P04Q21 | 11 | 4 | How do you tell a story with data in a spoken answer, as opposed to showing slides? |
+| B11P04Q22 | 11 | 4 | What would you do if, halfway through your presentation, you see the audience is lost? |
+| B11P04Q23 | 11 | 4 | Tell me about a time your communication did not go well. What did you learn and what do you do differently now? |
+| B11P04Q24 | 11 | 4 | Role-play: I am the HR head and I ask, "Why did attrition go up in Q2?" You have 90 seconds and the numbers below. Answer me. |
+| B11P04Q25 | 11 | 4 | How do you explain a join, a pivot table or a filter to a colleague who has only used paper registers and basic Excel? |
+| B11P04Q26 | 11 | 4 | What is a plain-language way to explain a percentage change to someone who struggles with maths? |
+| B11P04Q27 | 11 | 4 | Which do you prefer for sharing results: email, a call, or a meeting? When do you use each? |
+| B11P04Q28 | 11 | 4 | How do you communicate with someone who is non-technical but very senior and short of time? |
+| B11P04Q29 | 11 | 4 | Do you prefer talking or writing? Give an example where the choice mattered. |
+| B11P04Q30 | 11 | 4 | Your audience is more comfortable in Hindi or a regional language than in English. How do you share the findings so everyone follows? |
+| B11P04Q31 | 11 | 4 | English is not my first language, a candidate might say. How do you make sure your spoken English is clear in a business discussion? |
+| B11P04Q32 | 11 | 4 | Speak for one minute on this topic as in a spoken-communication assessment: "How can data help a company make better decisions?" |
+| B11P04Q33 | 11 | 4 | What do you do when you do not understand what a business stakeholder is trying to tell you in a meeting? |
+| B11P04Q34 | 11 | 4 | How do you listen in a meeting, and how does listening make your analysis better? |
+| B11P04Q35 | 11 | 4 | What analogy or everyday example would you use to explain a dashboard, a database or a KPI to an HR manager? |
+| B11P04Q36 | 11 | 4 | How do you explain a correlation to a manager without letting them hear it as proof of cause? |
+| B11P04Q37 | 11 | 4 | A manager asks, "What does this chart mean for me?" How do you answer in two sentences? |
+| B11P04Q38 | 11 | 4 | How do you decide how much detail to give in a presentation of findings, and what do you keep in the appendix? |
+| B11P04Q39 | 11 | 4 | A senior listener interrupts with a question that is a few slides ahead. What do you do? |
+| B11P04Q40 | 11 | 4 | You do not know the answer to a question about your own analysis during a meeting. What do you say? |
+| B11P04Q41 | 11 | 4 | A stakeholder says, "I do not trust numbers, my gut feeling says otherwise." How do you respond in the room? |
+| B11P04Q42 | 11 | 4 | A manager reads your report and takes away the opposite meaning from what you intended. What do you do? |
+| B11P04Q43 | 11 | 4 | How do you write a status update on a long analysis so that your manager needs no follow-up question? |
+| B11P04Q44 | 11 | 4 | Show me how you would rewrite this sentence for a manager: "The distribution is right-skewed with significant outliers affecting the mean." |
+| B11P04Q45 | 11 | 4 | How do you share a data error you found, in plain words, with the people who relied on the number? |
+| B11P04Q46 | 11 | 4 | A team meeting has both finance and HR people, who define "cost" differently. How do you speak so both understand your finding? |
+| B11P04Q47 | 11 | 4 | How do you use a visual or a single number to make a point in a conversation, rather than a table? |
+| B11P04Q48 | 11 | 4 | You must explain a result to a group where some are junior and some are very senior. How do you pitch it? |
+| B11P04Q49 | 11 | 4 | Tell me about a time you taught someone a tool or a concept in a way they understood. How did you do it? |
+| B11P04Q50 | 11 | 4 | Tell me about a time you had to persuade someone using data. What did you say and what happened? |
+| B11P04Q51 | 11 | 4 | How do you write a clear summary of results in a chat message (Teams or Slack) for an urgent query? |
+| B11P04Q52 | 11 | 4 | Someone says your presentation was too long and too technical. How do you take that feedback and improve? |
+| B11P04Q53 | 11 | 4 | You are asked in a client call, "Can you explain how you got this number?" How do you do it live, without jargon? |
+| B11P04Q54 | 11 | 4 | How do you explain the limits of a small sample, such as a survey with 40 responses out of 400 employees, to a non-technical manager? |
+| B11P04Q55 | 11 | 4 | How do you explain what a payroll variance of Rs 2.4 lakh is made of, to a finance head who has two minutes? |
+| B11P04Q56 | 11 | 4 | Explain "this month's absenteeism is 4.5% against 3.0% last month" in a way a plant supervisor will act on. |
+| B11P04Q57 | 11 | 4 | How do you ask a stakeholder questions in a meeting when you are the most junior person there? |
+| B11P04Q58 | 11 | 4 | How do you give a quick verbal summary of a 20-slide analysis if the meeting is cut to five minutes? |
+| B11P04Q59 | 11 | 4 | A stakeholder asks for "the story behind the numbers". What does that mean to you and how do you deliver it? |
+| B11P04Q60 | 11 | 4 | What do you say when your analysis result is surprising or opposite to what everyone expected? |
+| B11P04Q61 | 11 | 4 | How do you use the words "I think", "the data shows" and "I recommend" differently when speaking to a leader? |
+| B11P04Q62 | 11 | 4 | Describe how you prepare before a meeting where you will share your findings. |
+| B11P04Q63 | 11 | 4 | How do you follow up in writing after a meeting where you presented findings? |
+| B11P04Q64 | 11 | 4 | How do you communicate effectively in a virtual meeting or video call when sharing your screen with a data finding? |
+| B11P04Q65 | 11 | 4 | How do you give feedback on a colleague's report or chart without hurting their feelings? |
+| B11P04Q66 | 11 | 4 | How do you decide what to leave out of a presentation of findings, and how do you justify it if someone asks? |
+| B11P04Q67 | 11 | 4 | A stakeholder asks you to simplify a finding so much that it becomes slightly wrong. How do you keep it simple without making it wrong? |
+| B11P04Q68 | 11 | 4 | You have found that one location accounts for most of the overtime cost, and its manager is in the meeting. How do you present it so it informs and does not blame? |
+| B11P04Q69 | 11 | 4 | A director asks you to present a result you have not fully checked, in ten minutes. What do you say and what do you not say? |
+| B11P04Q70 | 11 | 4 | You must explain a regression, a forecast or an ML score you built to a business user who will rely on it. How do you explain how much to trust it? |
+| B11P04Q71 | 11 | 4 | What is the most complicated thing you have explained to another person, and how did you know they got it? |
+| B11P04Q72 | 11 | 4 | If you could improve one communication habit this year, which one would it be and how would you practise? |
+| B11P04Q73 | 11 | 4 | How do you use body language, pace and pauses when presenting numbers? |
+| B11P04Q74 | 11 | 4 | How would you explain what a data analyst does to your parents or a friend outside the industry? |
+| B11P04Q75 | 11 | 4 | What is the difference between presenting to a technical audience and to a business audience, and which are you more comfortable with? |
+| B11P04Q76 | 11 | 4 | Why might a short answer be better than a complete answer when a manager asks about a number? |
+| B11P04Q77 | 11 | 4 | How do you use questions to check understanding while you speak, without sounding patronising? |
+| B11P04Q78 | 11 | 4 | Do you use AI tools to draft summaries or emails about findings? How do you make sure the message is still accurate and your own? |
+| B11P04Q79 | 11 | 4 | How would you explain a chart you built to a person who is colour-blind or who cannot see the screen on a phone call? |
+| B11P04Q80 | 11 | 4 | What would you say in a meeting if two senior people disagree about what your numbers mean? |
+| B11P04Q81 | 11 | 4 | How do you keep a single document or thread so that everyone refers to the same version of the numbers? |
+| B11P04Q82 | 11 | 4 | Tell me about a time you explained something to a group and one person kept disagreeing. How did you handle it? |
+| B11P04Q83 | 11 | 4 | How do you handle a presentation if the data or the projector fails just before you start? |
+| B11P04Q84 | 11 | 4 | How do you present a finding that has no clear recommendation yet, only a hypothesis? |
+| B11P04Q85 | 11 | 4 | What is your approach to writing a one-page summary of an analysis, and what do you put on it? |
+| B11P04Q86 | 11 | 4 | What would you do in the first month to improve how the business teams around you understand your reports? |
+| B11P04Q87 | 11 | 4 | How would you convert a technical analysis document into a one-page brief that an HR business partner can use with line managers? |
+| B11P04Q88 | 11 | 4 | What is the difference between informing, persuading and advising in data communication, and which one is your job? |
+| B11P04Q89 | 11 | 4 | Explain a finding aloud in one sentence for each of three audiences: a payroll clerk, an HR director and a CFO. |
+| B11P04Q90 | 11 | 4 | Pitch a data finding to a sceptical head of a department who has never used a report from the data team. You have two minutes. |
+| B11P04Q91 | 11 | 4 | You are interviewing for a team that serves non-technical clients. I am the client. Explain what a pivot table is, and I will keep asking "why" until I am satisfied. |
+| B11P04Q92 | 11 | 4 | Someone in the room asks, "Why should I trust the data team's numbers at all?" What do you say? |
+| B11P05Q1 | 11 | 5 | Tell me about a time you worked in a team. What was your specific role and what was the result? |
+| B11P05Q2 | 11 | 5 | How would you describe your working style when you work with a team? |
+| B11P05Q3 | 11 | 5 | What do you do when a colleague does not reply to your messages and you need their input to finish your work? |
+| B11P05Q4 | 11 | 5 | How do you handle feedback or criticism from your manager? |
+| B11P05Q5 | 11 | 5 | Do you prefer working alone or in a team, and why? |
+| B11P05Q6 | 11 | 5 | How do you fit in as the newest person on a team that already works well together? |
+| B11P05Q7 | 11 | 5 | A senior person asks you for something and you do not understand what they mean. What do you say to them? |
+| B11P05Q8 | 11 | 5 | How do you work with someone whose style is very different from yours? |
+| B11P05Q9 | 11 | 5 | Tell me about a time you had a conflict with a colleague. How did you resolve it? |
+| B11P05Q10 | 11 | 5 | Tell me about a time you dealt with a difficult stakeholder or internal customer. |
+| B11P05Q11 | 11 | 5 | Tell me about a time you had to persuade someone who did not agree with you. |
+| B11P05Q12 | 11 | 5 | Tell me about a time you said no, or "not now", to a request from a senior person. |
+| B11P05Q13 | 11 | 5 | Tell me about a time two people asked you for different things at the same time and you could not do both. |
+| B11P05Q14 | 11 | 5 | Tell me about a time a requirement changed after you had started the work. How did you keep the person happy and your work on track? |
+| B11P05Q15 | 11 | 5 | How do you handle a team member who is not doing their share of the work? |
+| B11P05Q16 | 11 | 5 | How do you build a working relationship with a stakeholder you have just met? |
+| B11P05Q17 | 11 | 5 | Tell me about a time you missed a deadline, or knew you would. Who did you tell and when? |
+| B11P05Q18 | 11 | 5 | How do you handle a colleague who takes credit for your work? |
+| B11P05Q19 | 11 | 5 | How do you handle a stakeholder who is rude or dismissive towards you? |
+| B11P05Q20 | 11 | 5 | How do you respond if the whole team disagrees with your idea? |
+| B11P05Q21 | 11 | 5 | How do you deal with people who are hard to work with? |
+| B11P05Q22 | 11 | 5 | Tell me about the most difficult stakeholder you have worked with. What would you do differently today? |
+| B11P05Q23 | 11 | 5 | Your manager gives vague instructions and then says the result is not what they wanted. How do you handle this, now and next time? |
+| B11P05Q24 | 11 | 5 | Describe a time the team went with a decision you disagreed with. How did you behave afterwards? |
+| B11P05Q25 | 11 | 5 | How do you keep your manager updated on your work without being asked? |
+| B11P05Q26 | 11 | 5 | How do you ask for help when you are stuck, and how long do you try alone first? |
+| B11P05Q27 | 11 | 5 | A teammate asks for your help while you are busy with your own deadline. What do you do? |
+| B11P05Q28 | 11 | 5 | How do you give credit to teammates when you present shared work? |
+| B11P05Q29 | 11 | 5 | What does good teamwork mean to you? |
+| B11P05Q30 | 11 | 5 | What do you do when you disagree with a decision after it has already been made? |
+| B11P05Q31 | 11 | 5 | How do you respond if a teammate performs better than you? |
+| B11P05Q32 | 11 | 5 | A teammate is very quiet in meetings and their ideas are being missed. What would you do? |
+| B11P05Q33 | 11 | 5 | How do you keep stakeholders in other cities or time zones updated and aligned? |
+| B11P05Q34 | 11 | 5 | How do you handle receiving tasks on chat from three different people on the same day? |
+| B11P05Q35 | 11 | 5 | How do you handle a misunderstanding that started over email or chat? |
+| B11P05Q36 | 11 | 5 | How do you work effectively with colleagues you rarely meet in person? |
+| B11P05Q37 | 11 | 5 | Tell me about a time you went out of your way for a stakeholder, employee or internal customer. |
+| B11P05Q38 | 11 | 5 | Tell me about a time you worked with a teammate whose communication or working style made things hard. |
+| B11P05Q39 | 11 | 5 | Tell me about a time you learned something important from a colleague. |
+| B11P05Q40 | 11 | 5 | Tell me about a time your team struggled or failed. What was your part in it? |
+| B11P05Q41 | 11 | 5 | Tell me about a time you worked under a manager you did not get along with. |
+| B11P05Q42 | 11 | 5 | Tell me about a time you coordinated work across several people with different deadlines. |
+| B11P05Q43 | 11 | 5 | Tell me about a time you gave feedback to a colleague or a senior person. |
+| B11P05Q44 | 11 | 5 | Tell me about a time you disagreed with a team decision but still fully supported it. |
+| B11P05Q45 | 11 | 5 | Tell me about a time you worked on something where roles were unclear. |
+| B11P05Q46 | 11 | 5 | How do you handle a stakeholder who goes to your manager over your head? |
+| B11P05Q47 | 11 | 5 | How do you handle a stakeholder who does not read your report and then asks the same question again? |
+| B11P05Q48 | 11 | 5 | How would you handle a stakeholder who agrees in the meeting and changes their mind later? |
+| B11P05Q49 | 11 | 5 | How would you handle a stakeholder who never answers your clarification questions? |
+| B11P05Q50 | 11 | 5 | How do you handle a stakeholder who treats you as a report-maker and never asks for your opinion? |
+| B11P05Q51 | 11 | 5 | Your manager praises you in public for work that a teammate did half of. What do you do? |
+| B11P05Q52 | 11 | 5 | You find a mistake in a teammate's shared work and your manager has not noticed. What do you do? |
+| B11P05Q53 | 11 | 5 | You and a teammate both believe you own the same task. How do you sort it out? |
+| B11P05Q54 | 11 | 5 | A teammate shares your work with the manager and presents it as theirs. What do you do? |
+| B11P05Q55 | 11 | 5 | A senior colleague keeps interrupting you in meetings. How do you handle it? |
+| B11P05Q56 | 11 | 5 | How do you manage your relationship with the IT or data-engineering team when you depend on them for data? |
+| B11P05Q57 | 11 | 5 | You find errors in data owned by another team. How do you raise it without blame? |
+| B11P05Q58 | 11 | 5 | How do you handle a task from someone who is not your manager? |
+| B11P05Q59 | 11 | 5 | How do you handle a stakeholder who is always in a hurry and unhappy with timelines? |
+| B11P05Q60 | 11 | 5 | How do you handle workplace gossip or office politics? |
+| B11P05Q61 | 11 | 5 | How do you handle a client call where the client is unhappy about a delay you did not cause? |
+| B11P05Q62 | 11 | 5 | How do you help a new joiner settle into your team? |
+| B11P05Q63 | 11 | 5 | Role-play: your manager says, "Your report is late again." What do you say? |
+| B11P05Q64 | 11 | 5 | Role-play: a colleague says, "Why do you always ask so many questions?" What do you say? |
+| B11P05Q65 | 11 | 5 | Role-play: a teammate complains to you about the manager. What do you say? |
+| B11P05Q66 | 11 | 5 | Role-play: it is Friday 6 pm and your manager asks you to take on a task outside your job description. How do you respond? |
+| B11P05Q67 | 11 | 5 | Role-play: your manager asks, "Do you have capacity for one more task?" and you are already at full load. What do you say? |
+| B11P05Q68 | 11 | 5 | You are an HR professional moving into analytics: how will you gain credibility with a team of experienced analysts? |
+| B11P05Q69 | 11 | 5 | In HR you served employees as customers. How is serving business stakeholders as an analyst different, and what will you change in your behaviour? |
+| B11P05Q70 | 11 | 5 | How would your experience handling managers' requests in HR (hiring, payroll, attendance) help you manage analytics stakeholders? |
+| B11P05Q71 | 11 | 5 | A junior colleague knows more SQL than you do. How do you work with them? |
+| B11P05Q72 | 11 | 5 | A technical teammate talks down to you because you came from HR. What do you do? |
+| B11P05Q73 | 11 | 5 | How would you handle having a manager who is younger than you or has less experience than you? |
+| B11P05Q74 | 11 | 5 | You have never worked in an analytics team. What would you do in your first conflict with a senior analyst? |
+| B11P05Q75 | 11 | 5 | A teammate asks you to cover for them by telling the manager they were in a meeting when they were not. What do you do? |
+| B11P05Q76 | 11 | 5 | A colleague casually tells you another employee's salary. What do you do? |
+| B11P05Q77 | 11 | 5 | You see a senior colleague treating a junior unfairly in a meeting. What do you do? |
+| B11P05Q78 | 11 | 5 | You disagree with your manager's method and believe yours is better. How do you raise it? |
+| B11P05Q79 | 11 | 5 | How do you decide whether to resolve a disagreement yourself or escalate it to your manager? |
+| B11P05Q80 | 11 | 5 | Tell me about a time you had to deal with a conflict between two other people on your team. |
+| B11P05Q81 | 11 | 5 | How would you handle a team where two senior members are not on speaking terms and you need both for your work? |
+| B11P05Q82 | 11 | 5 | How do you work with a stakeholder who gives feedback only at the very end, after you have finished? |
+| B11P05Q83 | 11 | 5 | How do you handle receiving positive feedback and recognition from the team? |
+| B11P05Q84 | 11 | 5 | What do you do if a teammate's habits (late replies, last-minute work) affect your work? |
+| B11P05Q85 | 11 | 5 | How do you say thank you or appreciate a colleague who helped you? |
+| B11P05Q86 | 11 | 5 | What would you do on day one to meet and understand the people you will work with? |
+| B11P05Q87 | 11 | 5 | Tell me about a time you worked with someone you did not like. What did you learn? |
+| B11P05Q88 | 11 | 5 | How do you handle a manager who micromanages you? |
+| B11P05Q89 | 11 | 5 | How do you handle a manager who is never available to answer your questions? |
+| B11P05Q90 | 11 | 5 | How do you handle a team member who always says yes in meetings and then does not deliver? |
+| B11P05Q91 | 11 | 5 | How do you decide when to stay quiet and when to speak up in a team disagreement? |
+| B11P05Q92 | 11 | 5 | How would you handle a stakeholder who prefers a different analyst or team member over you? |
+| B11P05Q93 | 11 | 5 | How do you handle a teammate who is clearly burnt out or overloaded and affects shared deadlines? |
+| B11P05Q94 | 11 | 5 | An interviewer asks, "Will you be comfortable working under a manager who is younger than you or of a different gender or community?" How do you answer politely? |
+| B11P05Q95 | 11 | 5 | An interviewer asks, "Will family responsibilities stop you from staying late with the team?" How do you answer without giving up your privacy or sounding unwilling? |
+| B11P05Q96 | 11 | 5 | How do you stay fair and objective with colleagues you are friends with? |
+| B11P05Q97 | 11 | 5 | Tell me about a time you worked through a serious disagreement where both sides had a fair point. |
+| B11P05Q98 | 11 | 5 | How would you handle being the junior in a meeting where two leaders openly argue about your numbers? |
+| B11P05Q99 | 11 | 5 | Your team is split into two camps over a decision and each wants your support. What do you do? |
+| B11P05Q100 | 11 | 5 | What would you do if you felt a team decision was unethical but everyone else was comfortable with it? |
+| B11P05Q101 | 11 | 5 | How do you approach rebuilding a strained working relationship when you were the one in the wrong? |
+| B11P05Q102 | 11 | 5 | You inherit a stakeholder relationship that the previous analyst left damaged. How do you repair it in the first month? |
+| B11P05Q103 | 11 | 5 | How would you handle a stakeholder who is openly sceptical of analytics and of you as a career switcher? |
+| B11P06Q1 | 11 | 6 | Tell me about a time you found an error in a report or file after you had already shared it. What did you do? |
+| B11P06Q2 | 11 | 6 | Tell me about a time you had to learn something new quickly to finish a task. |
+| B11P06Q3 | 11 | 6 | What does ownership mean to you at work, and can you give an example? |
+| B11P06Q4 | 11 | 6 | Tell me about a time you solved a problem that was not clearly yours to solve. |
+| B11P06Q5 | 11 | 6 | Tell me about a time you missed a deadline. What happened and what did you change afterwards? |
+| B11P06Q6 | 11 | 6 | Tell me about a difficult problem you solved at work and how you approached it. |
+| B11P06Q7 | 11 | 6 | How do you approach a problem when you do not know the answer? |
+| B11P06Q8 | 11 | 6 | You have never worked in analytics. How will you learn the tools and processes of this team in your first 30 days? |
+| B11P06Q9 | 11 | 6 | Tell me about a time you were given a task with unclear instructions. How did you proceed? |
+| B11P06Q10 | 11 | 6 | Tell me about a time you took initiative without being asked. |
+| B11P06Q11 | 11 | 6 | Tell me about a time you worked under a tight deadline with several tasks competing for your time. |
+| B11P06Q12 | 11 | 6 | Your report total does not match the number Finance has. What do you do, and who do you tell, and when? |
+| B11P06Q13 | 11 | 6 | Tell me about a time a process you owned went wrong. Who was affected and how did you fix it? |
+| B11P06Q14 | 11 | 6 | How do you make sure the numbers in your work are correct before you send them? |
+| B11P06Q15 | 11 | 6 | Tell me about a time you had to pick up a tool or skill with no one to teach you. |
+| B11P06Q16 | 11 | 6 | What would you do if you realised on Friday evening that Thursday's report you sent to the leadership had a wrong figure? |
+| B11P06Q17 | 11 | 6 | What is your biggest weakness, and what are you doing about it? |
+| B11P06Q18 | 11 | 6 | What is your biggest strength as an analyst, and what proof do you have? |
+| B11P06Q19 | 11 | 6 | How do you learn best, and how do you decide what to learn first when there is too much? |
+| B11P06Q20 | 11 | 6 | Tell me about something you taught yourself in the last six months. |
+| B11P06Q21 | 11 | 6 | How do you stay organised when you handle many requests at the same time? |
+| B11P06Q22 | 11 | 6 | What do you do when you get stuck on a problem and no one is available to help? |
+| B11P06Q23 | 11 | 6 | When do you ask for help, and when do you keep trying on your own? |
+| B11P06Q24 | 11 | 6 | Tell me about a time you helped improve a process in your HR job, even in a small way. |
+| B11P06Q25 | 11 | 6 | What did you do in your HR role that went beyond your job description? |
+| B11P06Q26 | 11 | 6 | How do you handle repetitive work, such as the same monthly report every month? |
+| B11P06Q27 | 11 | 6 | How do you react when your work is criticised in front of others? |
+| B11P06Q28 | 11 | 6 | What is the most important thing you have learned from a mistake? |
+| B11P06Q29 | 11 | 6 | Tell me about a time you automated or simplified something that used to be done by hand. |
+| B11P06Q30 | 11 | 6 | Tell me about a time you had to work with incomplete or messy information. What did you do? |
+| B11P06Q31 | 11 | 6 | Walk me through the steps you follow when someone brings you a problem you have never seen before. |
+| B11P06Q32 | 11 | 6 | Tell me about a time you noticed a problem before anyone else did. |
+| B11P06Q33 | 11 | 6 | Tell me about a time you had to change your approach midway because it was not working. |
+| B11P06Q34 | 11 | 6 | A payroll or attendance report you built is questioned by a manager who says the numbers are wrong. How do you respond? |
+| B11P06Q35 | 11 | 6 | Tell me about a time you had to learn a new software system, such as an HRMS, quickly. How did you get productive? |
+| B11P06Q36 | 11 | 6 | How do you keep your skills current while working full time? |
+| B11P06Q37 | 11 | 6 | Tell me about a time you were wrong and someone corrected you. How did you take it? |
+| B11P06Q38 | 11 | 6 | Your manager gives you a task that you think is the wrong approach. What do you do? |
+| B11P06Q39 | 11 | 6 | Tell me about a time you owned a result that depended on other people. How did you make sure it got done? |
+| B11P06Q40 | 11 | 6 | Tell me about a time you made a decision with limited information. How did you decide, and how did it turn out? |
+| B11P06Q41 | 11 | 6 | What would you do if you were asked to deliver something in two days that normally takes five? |
+| B11P06Q42 | 11 | 6 | You have three tasks due today: a 4-hour report for your manager, a 1-hour request from a colleague, and a 2-hour clean-up of a file. You have 6 hours. How do you decide the order and what do you say to people? |
+| B11P06Q43 | 11 | 6 | Describe a time you stayed with a problem for a long time before solving it. What kept you going and when did you ask for help? |
+| B11P06Q44 | 11 | 6 | What would you do in your first week if you found that the team's existing report had an error that had been there for months? |
+| B11P06Q45 | 11 | 6 | A teammate asks you to share your file, and you notice it contains a mistake you made last month. What do you do? |
+| B11P06Q46 | 11 | 6 | Tell me about a time you made a mistake that had a real cost, in time, money or trust. How did you handle it? |
+| B11P06Q47 | 11 | 6 | Tell me about a time you disagreed with how a problem should be solved and still had to deliver. What did you do? |
+| B11P06Q48 | 11 | 6 | What would you do if you were blamed for a mistake that was not yours? |
+| B11P06Q49 | 11 | 6 | What would you do if you found a data problem that would embarrass your manager if raised publicly? |
+| B11P06Q50 | 11 | 6 | Tell me about your biggest professional failure and what it says about you as a future analyst. |
+| B11P06Q51 | 11 | 6 | What does accountability mean to you? |
+| B11P06Q52 | 11 | 6 | How do you decide when your work is good enough to send? |
+| B11P06Q53 | 11 | 6 | How do you keep yourself motivated when learning something difficult alone? |
+| B11P06Q54 | 11 | 6 | Which book, course or resource changed how you work, and how? |
+| B11P06Q55 | 11 | 6 | How do you plan your time when a deadline is near? |
+| B11P06Q56 | 11 | 6 | What would your last manager say about how you handle responsibility? |
+| B11P06Q57 | 11 | 6 | What have you learned about yourself while switching careers? |
+| B11P06Q58 | 11 | 6 | Describe a time you were out of your comfort zone at work. |
+| B11P06Q59 | 11 | 6 | Tell me about a time you got something wrong because you did not ask a question. What would you do now? |
+| B11P06Q60 | 11 | 6 | How do you handle a situation where you do not know the answer to a colleague's question? |
+| B11P06Q61 | 11 | 6 | Tell me about a time you set a goal for yourself and reached it. |
+| B11P06Q62 | 11 | 6 | How do you make sure you do not repeat the same mistake? |
+| B11P06Q63 | 11 | 6 | What do you do when you disagree with a decision already made by your manager? |
+| B11P06Q64 | 11 | 6 | Tell me about a time you had to unlearn an old habit or way of working. |
+| B11P06Q65 | 11 | 6 | How do you balance doing a task quickly with doing it right? |
+| B11P06Q66 | 11 | 6 | How do you use AI assistants to solve a work problem, and how do you check that what they tell you is correct? |
+| B11P06Q67 | 11 | 6 | If I gave you a task today with no instructions, what would you do in the first hour? |
+| B11P06Q68 | 11 | 6 | What would you do if you realised you could not finish your task by the deadline you had promised? |
+| B11P06Q69 | 11 | 6 | What would you do if a stakeholder asked you to change a number in your report so that it looks better? |
+| B11P06Q70 | 11 | 6 | Where do you see gaps in your analytics skills today, and what is your plan for each? |
+| B11P06Q71 | 11 | 6 | Tell me about a time you asked a question you were embarrassed to ask. What happened and what did you learn? |
+| B11P06Q72 | 11 | 6 | Tell me about a time you took responsibility for something that was going wrong when no one else would. |
+| B11P06Q73 | 11 | 6 | A colleague's work you depend on is late and your deadline cannot move. What do you do? |
+| B11P06Q74 | 11 | 6 | Tell me about the hardest thing you have learned on your own, and how you know you really understood it. |
+| B11P06Q75 | 11 | 6 | You find that a figure you reported to leadership last quarter was wrong by about 8%. Nobody has noticed. What do you do? |
+| B11P06Q76 | 11 | 6 | Give me an example of when you showed good judgement without anyone checking your work. |
+| B11P06Q77 | 11 | 6 | Tell me about a time you did not know something important in a meeting. How did you handle it? |
+| B11P06Q78 | 11 | 6 | What would you do if you were asked to own a dashboard in a tool you have never used, with a two-week deadline? |
+| B11P06Q79 | 11 | 6 | Tell me about a time you had to make a trade-off between speed and quality. What did you choose and why? |
+| B11P06Q80 | 11 | 6 | If you could redo one decision in your career so far, what would it be and what have you learned? |
+| B11P07Q1 | 11 | 7 | What is a group discussion round, and what are the evaluators actually scoring? |
+| B11P07Q2 | 11 | 7 | The panel gives your group of 8 a topic and 15 minutes. How do you decide when and how to enter the discussion? |
+| B11P07Q3 | 11 | 7 | How do you open a group discussion, and why do many guides warn against opening with a firm stand? |
+| B11P07Q4 | 11 | 7 | Two candidates keep interrupting each other and the discussion is turning into a shouting match. What do you do? |
+| B11P07Q5 | 11 | 7 | How do you conclude or summarise a group discussion, and why should the summary reflect the group and not only your view? |
+| B11P07Q6 | 11 | 7 | Is it better to speak first, speak most, or speak well? How many times should you speak in a 15-minute GD? |
+| B11P07Q7 | 11 | 7 | Will AI take away more jobs than it creates? Show how you would structure your points in a GD on this topic. |
+| B11P07Q8 | 11 | 7 | You have never taken part in a GD. How would you prepare in two weeks? |
+| B11P07Q9 | 11 | 7 | One participant dominates and nobody else gets a chance to speak. How do you bring yourself, and the quiet members, into the discussion without being rude? |
+| B11P07Q10 | 11 | 7 | You are the quietest person in the group and 10 minutes have passed without you speaking. What do you do now? |
+| B11P07Q11 | 11 | 7 | Someone states a wrong statistic confidently. How do you correct it politely in a GD? |
+| B11P07Q12 | 11 | 7 | You disagree with the point a participant just made. Give the exact words you would use. |
+| B11P07Q13 | 11 | 7 | The recruiter says there may be a group discussion round. You are an experienced candidate switching careers: how do you find out if it applies, and how do you prepare? |
+| B11P07Q14 | 11 | 7 | What is the difference between a topic-based GD, a case-based GD and a group task with assigned roles, and how would you adjust your approach for each? |
+| B11P07Q15 | 11 | 7 | The GD topic is a case: a retailer's online orders fell 12 percent in a month, and your group must recommend three actions. How do you bring structure into the group? |
+| B11P07Q16 | 11 | 7 | The topic is 'Work from home versus work from office'. Give a balanced opening, two arguments for, two against, and a closing line. |
+| B11P07Q17 | 11 | 7 | The topic is 'Is data privacy more important than business convenience?' How would you argue it, using an example from HR data such as salary or health records? |
+| B11P07Q18 | 11 | 7 | The topic is 'Gig economy: opportunity or exploitation?' How do you structure a balanced answer in 2 minutes? |
+| B11P07Q19 | 11 | 7 | The topic is 'Is a college degree still relevant?' You are a career switcher with an HR background. How do you use your own background without making the GD about yourself? |
+| B11P07Q20 | 11 | 7 | The topic is 'Should companies monitor employees' work hours and activity with software?' What points would you raise from an HR point of view? |
+| B11P07Q21 | 11 | 7 | How do you use a number or a fact in a GD so it adds weight, and what do you do if you are not sure the number is exact? |
+| B11P07Q22 | 11 | 7 | The group is split 4 against 4 and time is nearly over. How do you move the group to a conclusion? |
+| B11P07Q23 | 11 | 7 | What do you do if you start a GD and your opening point is immediately challenged and shown to be weak? |
+| B11P07Q24 | 11 | 7 | You are asked to be the group's note taker or time keeper in a GD. Does accepting hurt or help your evaluation, and why? |
+| B11P07Q25 | 11 | 7 | The topic is totally unfamiliar, for example a policy decision you have never read about. How do you contribute honestly without bluffing? |
+| B11P07Q26 | 11 | 7 | After the GD the interviewer asks: 'Do you think your group reached the right conclusion? What would you have done differently?' How do you answer? |
+| B11P07Q27 | 11 | 7 | How is a virtual GD on a video platform different from an in-person GD, and what do you do to be heard and seen well? |
+| B11P07Q28 | 11 | 7 | Your video freezes or your audio drops for 30 seconds in the middle of an online GD. What do you do? |
+| B11P07Q29 | 11 | 7 | A participant makes a remark that is rude or sounds biased against a gender, region or community. How do you respond in the GD? |
+| B11P07Q30 | 11 | 7 | In a GD, the interviewers say after the topic is announced: 'Choose your side now, for or against.' How do you pick, and may you change your stand midway? |
+| B11P07Q31 | 11 | 7 | Does a GD in an analytics company expect you to bring data thinking, such as defining the metric before arguing, and how would you show it? |
+| B11P07Q32 | 11 | 7 | The group has to pick two members to move to the next round and give reasons (as reported at one analytics firm). How do you handle it when you are asked to nominate others, or yourself? |
+| B11P07Q33 | 11 | 7 | You are placed in a GD with 12 people and a 5-minute limit, so you may get only one chance to speak. What exactly do you say in that one chance? |
+| B11P08Q1 | 11 | 8 | What are your salary expectations for this data analyst role? |
+| B11P08Q2 | 11 | 8 | What is your current CTC? |
+| B11P08Q3 | 11 | 8 | What is your expected CTC, and how did you arrive at that number? |
+| B11P08Q4 | 11 | 8 | What is your notice period, and can it be shortened? |
+| B11P08Q5 | 11 | 8 | Can you join immediately, or how soon can you join if we make you an offer? |
+| B11P08Q6 | 11 | 8 | Why are you moving from HR into data analytics, and why now, given you are leaving a stable role? |
+| B11P08Q7 | 11 | 8 | Are you willing to relocate to Bengaluru or Hyderabad for this role, and by when? |
+| B11P08Q8 | 11 | 8 | Do you have any other offers or interviews in progress? |
+| B11P08Q9 | 11 | 8 | Would you accept this role if we offered a package lower than your expectation? |
+| B11P08Q10 | 11 | 8 | Are you comfortable working from the office on the days or shifts this team requires? |
+| B11P08Q11 | 11 | 8 | Why is there a gap in your resume between your last job and now? |
+| B11P08Q12 | 11 | 8 | You are moving from HR into your first analyst role. Your current pay is higher than our budget for this role. How do you respond? |
+| B11P08Q13 | 11 | 8 | You said your expected CTC is Rs 7 LPA, but our budget for this role is Rs 5.5 LPA. How do you react? |
+| B11P08Q14 | 11 | 8 | Your notice period is 60 days but we need someone in 30. What can you do? |
+| B11P08Q15 | 11 | 8 | How do you decide between a salary hike and a role switch into analytics, if they pull in different directions? |
+| B11P08Q16 | 11 | 8 | Weak versus strong: how would you answer 'Tell me your expected salary' if you do not know the market range for a switcher? |
+| B11P08Q17 | 11 | 8 | Is your salary negotiable, or is your expected figure fixed? |
+| B11P08Q18 | 11 | 8 | Will you be able to provide salary slips and relieving letters from your previous employer? |
+| B11P08Q19 | 11 | 8 | Are you open to a contract-to-hire or a probation period before confirmation? |
+| B11P08Q20 | 11 | 8 | Are you comfortable with rotational or late shifts if the project needs it? |
+| B11P08Q21 | 11 | 8 | What happens if we do a background verification and find a difference between what you told us and your records? |
+| B11P08Q22 | 11 | 8 | How long do you plan to stay with us if we hire you? |
+| B11P08Q23 | 11 | 8 | What would make you reject our offer? |
+| B11P08Q24 | 11 | 8 | Your resume shows one job for only 8 months. Why did you leave so quickly? |
+| B11P08Q25 | 11 | 8 | You have been unemployed for several months while switching careers. What did you do in that time? |
+| B11P08Q26 | 11 | 8 | Your current fixed pay is Rs 4.8 LPA with a Rs 40,000 variable. How do you state your CTC accurately in the form? |
+| B11P08Q27 | 11 | 8 | An exercise: if your current CTC is Rs 5 LPA (an invented figure) and you ask for a 30% hike, what is your expected CTC, and would you quote that or a market-based number? |
+| B11P08Q28 | 11 | 8 | An exercise: our offer is Rs 6 LPA CTC with Rs 50,000 as the annual variable. What is the monthly fixed component before deductions, assuming the rest is fixed? |
+| B11P08Q29 | 11 | 8 | An exercise: your notice period is 60 days and your current monthly salary is Rs 40,000 (an invented figure). What would a full buy-out cost, and would you ask us to pay it? |
+| B11P08Q30 | 11 | 8 | We can offer Rs 5.2 LPA; your ask was Rs 6 LPA. Walk me through how you would negotiate, aloud, in two minutes. |
+| B11P08Q31 | 11 | 8 | Why should we pay a career switcher with no analytics experience the same as an experienced analyst? |
+| B11P08Q32 | 11 | 8 | Your notice period is 90 days and your manager has refused early release. What will you do? |
+| B11P08Q33 | 11 | 8 | You have two offers: one pays more, the other has a better learning path. How will you decide, and what will you tell us? |
+| B11P08Q34 | 11 | 8 | Would you take a pay cut or a lower title to enter analytics? What is your limit? |
+| B11P08Q35 | 11 | 8 | You are on the HR payroll team today. How will you handle leaving mid-cycle, for example a payroll close, during your notice period? |
+| B11P08Q36 | 11 | 8 | What do you do if your current company makes a counter-offer after you resign? |
+| B11P08Q37 | 11 | 8 | A recruiter asks you to reveal your other offer's company and salary. How do you respond? |
+| B11P08Q38 | 11 | 8 | You are late in accepting our offer. Can you explain why you are taking time to reply? |
+| B11P08Q39 | 11 | 8 | Would you be comfortable if your joining bonus had a clawback clause for leaving within a year? |
+| B11P08Q40 | 11 | 8 | Your gap was for family or health reasons. How much do you share, and how do you reassure us about commitment? |
+| B11P08Q41 | 11 | 8 | You have a gap because you were preparing for analytics. How do you show that this was productive time? |
+| B11P08Q42 | 11 | 8 | You were laid off. How do you explain this without sounding bitter? |
+| B11P08Q43 | 11 | 8 | You have never worked in a data team. Would you still ask for a pay hike over HR pay? Justify it. |
+| B11P08Q44 | 11 | 8 | Interviewer asks: 'Are you married, and do you plan to have children soon?' How do you handle this politely? |
+| B11P08Q45 | 11 | 8 | Interviewer asks about your age, caste or religion. How do you respond without losing the opportunity? |
+| B11P08Q46 | 11 | 8 | Role-play: I am the HR manager and I say, 'This is our final offer, take it or leave it.' Respond. |
+| B11P08Q47 | 11 | 8 | Role-play: you accepted our offer, but a better one arrives before your joining date. What do you do, and what would you tell us? |
+| B11P08Q48 | 11 | 8 | Role-play: three days before joining, your current employer asks you to stay for a month for a handover. What do you do? |
+| B11P08Q49 | 11 | 8 | Role-play: we ask you to join in 15 days, but your notice is 60 days. Negotiate with me live. |
+| B11P08Q50 | 11 | 8 | What can we do to make sure you actually join after you accept our offer? |
+| B11P08Q51 | 11 | 8 | Do you have any health issues or commitments that may affect your work schedule? |
+| B11P08Q52 | 11 | 8 | How do you plan to support your family or finances during the first year of your switch? |
+| B11P08Q53 | 11 | 8 | Will you sign a bond or service agreement if training is provided? |
+| B11P08Q54 | 11 | 8 | Is the work-from-home or hybrid policy important to you when choosing between offers? |
+| B11P08Q55 | 11 | 8 | What would you do if we offered a lower grade or title than the one you expected? |
+| B11P08Q56 | 11 | 8 | You have a long commute or a relocation cost. Will you ask for a relocation allowance, and how? |
+| B11P08Q57 | 11 | 8 | Three months after joining, you find colleagues in similar roles earn more. What do you do? |
+| B11P08Q58 | 11 | 8 | What is more important to you right now: pay, learning, or brand name of the employer? Defend your choice. |
+| B11P08Q59 | 11 | 8 | After the joining date is fixed, how will you spend the weeks before joining to be ready for the role? |
+| B11P08Q60 | 11 | 8 | Our offer letter is delayed. How do you handle your resignation timing without risk? |
+| B11P08Q61 | 11 | 8 | You had a gap, and your resume dates do not match your LinkedIn profile. How do you explain it? |
+| B11P08Q62 | 11 | 8 | Is it ethical to accept an offer you are not sure you will join, to keep options open? Where do you draw the line? |
+| B11P08Q63 | 11 | 8 | If your total pay after the switch is lower for the first year, how will you justify the move to your family and to yourself, and what does this say about commitment? |
+| B11P08Q64 | 11 | 8 | Under a notice period dispute, your employer threatens to withhold your relieving letter. What do you do? |
+| B11P09Q1 | 11 | 9 | Your mind goes completely blank in the middle of an answer. What do you say and do? |
+| B11P09Q2 | 11 | 9 | The interviewer says, "You look nervous. Are you okay?" How do you reply? |
+| B11P09Q3 | 11 | 9 | You did not understand the question. How do you ask the interviewer to repeat or clarify it without looking weak? |
+| B11P09Q4 | 11 | 9 | The interviewer asks about a tool you have never used, such as Tableau when you know only Power BI. How do you respond? |
+| B11P09Q5 | 11 | 9 | How do you stay calm and think clearly in a technical interview when you feel nervous? |
+| B11P09Q6 | 11 | 9 | The interviewer asks, "What is a window function in SQL?" and you have never used one. What do you say? |
+| B11P09Q7 | 11 | 9 | You give an answer and the interviewer replies, "Are you sure?" How do you decide whether to hold your answer or change it? |
+| B11P09Q8 | 11 | 9 | You realise five minutes later that an earlier answer was wrong. Do you go back to it, and how? |
+| B11P09Q9 | 11 | 9 | Your internet drops or your audio cuts out in the middle of a video interview. What do you do? |
+| B11P09Q10 | 11 | 9 | The interviewer points out a mistake in the SQL query or Excel formula you wrote live. How do you react? |
+| B11P09Q11 | 11 | 9 | The interviewer keeps asking one technical question after another and you have said "I do not know" three times in a row. How do you handle the rest of the interview? |
+| B11P09Q12 | 11 | 9 | The interviewer says, "Take a minute to think." What do you do with that minute? |
+| B11P09Q13 | 11 | 9 | What do you do in the first two minutes of a video interview to settle yourself and make a good start? |
+| B11P09Q14 | 11 | 9 | How do you check your setup (camera, microphone, light, background, internet) before a virtual interview, and what is your backup plan? |
+| B11P09Q15 | 11 | 9 | The interviewer is on a phone or video call and joins ten minutes late, or the panel starts without introducing itself. How do you handle it? |
+| B11P09Q16 | 11 | 9 | How do you use the whiteboard, shared screen or notepad in a virtual round so that your thinking is visible? |
+| B11P09Q17 | 11 | 9 | How do you answer when the interviewer asks, "Do you have any questions for us?" and you are nervous or tired? |
+| B11P09Q18 | 11 | 9 | The interviewer interrupts you in the middle of your answer. How do you respond? |
+| B11P09Q19 | 11 | 9 | The interviewer is silent after your answer, with no feedback and no nod. How do you handle the silence? |
+| B11P09Q20 | 11 | 9 | You are asked something and you know part of the answer but not the rest. How do you answer the part you know and handle the gap? |
+| B11P09Q21 | 11 | 9 | Two or three interviewers on a panel ask questions at the same time or in a rush. How do you manage it? |
+| B11P09Q22 | 11 | 9 | The interviewer says, "That is a very basic answer. I expected more." How do you respond? |
+| B11P09Q23 | 11 | 9 | You are asked to solve an SQL or Excel problem on a shared screen while the interviewers watch silently. How do you cope with being watched? |
+| B11P09Q24 | 11 | 9 | In a virtual interview you can see the interviewer is distracted (typing, looking away). How do you keep your answer engaging? |
+| B11P09Q25 | 11 | 9 | The interviewer asks a personal question that feels inappropriate, such as your marital status, plans for children, age or religion. How do you respond politely? |
+| B11P09Q26 | 11 | 9 | You get a question on a topic you prepared for but your answer comes out messy and too long. How do you recover mid-answer? |
+| B11P09Q27 | 11 | 9 | The interviewer is openly sceptical: "An HR person doing analytics? I do not think this will work." How do you stay composed and answer? |
+| B11P09Q28 | 11 | 9 | The interviewer is rude or dismissive, or tries a stress interview by challenging every answer. How do you respond, and when is it right to end the interview politely? |
+| B11P09Q29 | 11 | 9 | The interviewer asks a question, you answer, and they say, "Wrong," without giving a reason. What do you do? |
+| B11P09Q30 | 11 | 9 | You freeze in a live technical round and the interviewer says time is running out. How do you salvage the round? |
+| B11P09Q31 | 11 | 9 | What do you do with your hands, eyes and posture in a video interview, and how do you look at the camera and the screen? |
+| B11P09Q32 | 11 | 9 | How do you prepare the night before and the morning of an interview to reduce nerves? |
+| B11P09Q33 | 11 | 9 | How do you handle a long waiting-room delay, or a rescheduled interview at the last minute? |
+| B11P09Q34 | 11 | 9 | After an interview where you blanked on two questions, how do you reflect and what do you do before the next interview? |
+| B11P09Q35 | 11 | 9 | There is background noise, a power cut or a family interruption during your video interview. What do you do? |
+| B11P09Q36 | 11 | 9 | The interviewer asks you to switch your camera on, share your screen or open your mobile for a test, and you are uncomfortable. How do you respond? |
+| B11P09Q37 | 11 | 9 | You sent a thank-you email after the interview. What should it say, and should you mention a question you answered badly? |
+| B11P09Q38 | 11 | 9 | In a panel interview, one interviewer is friendly and another is hostile. How do you divide your attention? |
+| B11P09Q39 | 11 | 9 | The interviewer asks you to solve a problem and says, "Do not use Google, ChatGPT or any notes." You normally use them at work. How do you respond? |
+| B11P09Q40 | 11 | 9 | You suspect the interviewer is wrong about a fact (a function or definition). How do you disagree politely without sounding arrogant? |
+| B11P09Q41 | 11 | 9 | After a bad interview where you blanked completely, how do you recover mentally and ask for feedback or a second chance without sounding desperate? |
+| B11P10Q1 | 11 | 10 | How would you rate your communication skills out of 10, and what evidence supports that score? |
+| B11P10Q2 | 11 | 10 | What is your biggest weakness in communication, and what are you doing about it right now? |
+| B11P10Q3 | 11 | 10 | Which soft skills matter most for a data analyst, and how have you been developing them? |
+| B11P10Q4 | 11 | 10 | You come from HR and have never worked as an analyst. How have you built your data storytelling skill? |
+| B11P10Q5 | 11 | 10 | How do you structure a spoken data story so a busy manager remembers the main point? |
+| B11P10Q6 | 11 | 10 | How do you show in an interview, and not just claim, that you are a strong communicator? |
+| B11P10Q7 | 11 | 10 | Design a 30-day plan to improve your communication for analyst interviews if you can give one hour on weekdays and three hours on weekends. What do you do each week? |
+| B11P10Q8 | 11 | 10 | You have no analyst job experience. How do you build real confidence before interviews, and not just pretend to be confident? |
+| B11P10Q9 | 11 | 10 | What does a good two-minute spoken explanation of an insight sound like, and how do you practise it every day? |
+| B11P10Q10 | 11 | 10 | How do you honestly assess your own storytelling and presentation skills, and what scoring checklist do you use? |
+| B11P10Q11 | 11 | 10 | Which free resources would you use to improve your spoken communication, presentation and writing, and why those? |
+| B11P10Q12 | 11 | 10 | What 15-minute daily habit would you set to improve how you communicate, and how will you keep it going for 30 days? |
+| B11P10Q13 | 11 | 10 | What is business acumen, and how would you show it as a junior analyst with no analyst experience? |
+| B11P10Q14 | 11 | 10 | How do you practise structured thinking in everyday life, and not only in interviews? |
+| B11P10Q15 | 11 | 10 | How do you structure a professional email so that a busy stakeholder reads it and replies? |
+| B11P10Q16 | 11 | 10 | As a career switcher you may feel like an impostor next to people with years of analytics experience. How do you manage that feeling? |
+| B11P10Q17 | 11 | 10 | Here is a finding: employees with under one year of tenure left at 32 percent a year, against 11 percent for everyone else. Give me the 60-second spoken version for the HR head, with the headline, one piece of evidence and one recommended action. |
+| B11P10Q18 | 11 | 10 | Rewrite this email so it is clear and professional. |
+| B11P10Q19 | 11 | 10 | What is MECE, and how would you use it to break down the problem "hiring is taking too long"? |
+| B11P10Q20 | 11 | 10 | What is answer-first communication (often called the pyramid principle), and how do you use it in an interview answer or a manager update? |
+| B11P10Q21 | 11 | 10 | How do you practise a five-minute presentation of your project, and how do you rehearse so you stay on time? |
+| B11P10Q22 | 11 | 10 | How do you record yourself, review the recording and decide what to fix first? |
+| B11P10Q23 | 11 | 10 | How do you ask a mentor or colleague for useful feedback on your communication, and what do you do with it? |
+| B11P10Q24 | 11 | 10 | Cost per hire rose from 18,000 to 24,000 rupees. Before you open any data, which business questions do you ask yourself, and how do you organise them? |
+| B11P10Q25 | 11 | 10 | How do you build the habit of linking every number you report to a business decision? |
+| B11P10Q26 | 11 | 10 | Your English is not as fluent as some other candidates. How do you plan to work on it, and how do you handle the interview meanwhile? |
+| B11P10Q27 | 11 | 10 | How do you use AI tools to improve your emails and storytelling without losing your own voice or sounding generic? |
+| B11P10Q28 | 11 | 10 | Design a 30-day plan to improve your written emails and short reports. What do you write and review each week? |
+| B11P10Q29 | 11 | 10 | Design a 30-day plan to improve your presentation skills, ending with a recorded five-minute project presentation. |
+| B11P10Q30 | 11 | 10 | How would you build a small communication portfolio, such as a one-page insight memo, a five-slide deck and a short spoken walkthrough, from a public HR dataset? |
+| B11P10Q31 | 11 | 10 | What self-check test tells you that your communication and presentation skills are ready for analyst interviews? |
+| B11P10Q32 | 11 | 10 | How do you measure whether your soft skills are actually improving week by week? |
+| B11P10Q33 | 11 | 10 | How do you turn a mini-project you built into a 90-second story that an interviewer will remember? |
+| B11P10Q34 | 11 | 10 | Which books, podcasts or courses would you use for storytelling and business acumen, and how would you avoid just collecting resources without practising? |
+| B11P10Q35 | 11 | 10 | How do you practise speaking on the spot when you are asked a question you did not prepare for, using exercises such as impromptu-speaking drills? |
+| B11P10Q36 | 11 | 10 | How do you keep confidence after a rejection or a bad interview, and what do you change before the next one? |
+| B11P10Q37 | 11 | 10 | How do you balance confidence and humility when you speak about your projects? |
+| B11P10Q38 | 11 | 10 | How do you build a daily ten-minute business-news habit that improves your business acumen, and what do you note down? |
+| B11P10Q39 | 11 | 10 | How do you build the habit of speaking up in team meetings when you are the newest and least experienced person? |
+| B11P10Q40 | 11 | 10 | How do you use teaching a concept to a friend or family member as practice for explaining data clearly? |
+| B11P10Q41 | 11 | 10 | Take the problem "overtime cost rose by 20 percent this quarter". Draw an issue tree out loud with at most three branches and say which branch you would check first and why. |
+| B11P10Q42 | 11 | 10 | A senior listener says "you speak too fast and give too much detail." How do you practise fixing this, and what specific changes do you make to your next answer? |
+| B11P10Q43 | 11 | 10 | Design a 90-day plan that takes you from nervous and unstructured to calm and structured in communication, storytelling, business acumen, presentation, writing and confidence. How do you split the hours? |
+| B11P11Q1 | 11 | 11 | Tell me about a time you dived deep into data or a process to find the real cause of a problem. (Dive Deep) |
+| B11P11Q2 | 11 | 11 | Tell me about a time you went above and beyond for a customer, internal or external. (Customer Obsession) |
+| B11P11Q3 | 11 | 11 | Tell me about a time you took ownership of something that was not strictly your job. (Ownership) |
+| B11P11Q4 | 11 | 11 | Tell me about a time you made a decision quickly with incomplete information. (Bias for Action) |
+| B11P11Q5 | 11 | 11 | Tell me about a time you delivered a result despite a serious obstacle or tight deadline. (Deliver Results) |
+| B11P11Q6 | 11 | 11 | Tell me about a time you disagreed with your manager or a senior colleague and how it ended. (Have Backbone; Disagree and Commit) |
+| B11P11Q7 | 11 | 11 | Tell me about a time you had to earn the trust of a team or stakeholder who did not know you. (Earn Trust) |
+| B11P11Q8 | 11 | 11 | Amazon asks for a STAR answer. What do Situation, Task, Action and Result each contain, and why do interviewers keep saying "focus on I, not we"? |
+| B11P11Q9 | 11 | 11 | Interviewers will ask a follow-up such as "What exactly did YOU do?" or "What was the number?". How do you prepare your story to survive three or four layers of probing? |
+| B11P11Q10 | 11 | 11 | You have never worked in an analytics job. Which kinds of experience (HR work, college, a course project, volunteering) can you use for Amazon Leadership Principle stories, and which should you avoid? |
+| B11P11Q11 | 11 | 11 | Tell me about a time a customer or internal user asked for one thing but you realised they needed something different. (Customer Obsession) |
+| B11P11Q12 | 11 | 11 | Tell me about a time you worked with little or no data to solve a problem. (Bias for Action; Are Right, A Lot) |
+| B11P11Q13 | 11 | 11 | Tell me about a time you found a mistake in your own work after you had shared it. What did you do? (Ownership; Earn Trust) |
+| B11P11Q14 | 11 | 11 | Tell me about a time you held a high standard when others were willing to accept good enough. (Insist on the Highest Standards) |
+| B11P11Q15 | 11 | 11 | Tell me about a time you failed. What did you learn and what changed afterwards? (Learn and Be Curious; Ownership) |
+| B11P11Q16 | 11 | 11 | Tell me about a time you had two urgent requests from different people and could not do both. How did you prioritise? (Deliver Results; Customer Obsession) |
+| B11P11Q17 | 11 | 11 | You have only one strong story. Is it acceptable to reuse it for several principles in the same loop, and how do you tell it differently each time? |
+| B11P11Q18 | 11 | 11 | Tell me about a time you taught yourself a new skill or tool to finish a piece of work. (Learn and Be Curious) |
+| B11P11Q19 | 11 | 11 | Tell me about a time you simplified a process or report that was slow, manual or confusing. (Invent and Simplify) |
+| B11P11Q20 | 11 | 11 | Tell me about a time you achieved more with fewer resources, such as less time, budget or people. (Frugality) |
+| B11P11Q21 | 11 | 11 | Tell me about a time you helped a colleague grow or coached someone newer than you. (Hire and Develop the Best) |
+| B11P11Q22 | 11 | 11 | Which two Amazon Leadership Principles do you think are your strongest, and which one is your weakest? Give evidence for each. |
+| B11P11Q23 | 11 | 11 | Tell me about a time you were wrong about something and changed your mind because of new data. (Are Right, A Lot) |
+| B11P11Q24 | 11 | 11 | Tell me about a time you disagreed with a decision, lost the argument, and still committed fully to the outcome. (Have Backbone; Disagree and Commit) |
+| B11P11Q25 | 11 | 11 | Tell me about a time you thought of a better way to do something and convinced others to try it. (Invent and Simplify) |
+| B11P11Q26 | 11 | 11 | Tell me about a time you spotted a data or process error that nobody else had noticed. (Dive Deep; Insist on the Highest Standards) |
+| B11P11Q27 | 11 | 11 | Tell me about a time you gave honest, difficult feedback to someone and how they responded. (Earn Trust; Have Backbone) |
+| B11P11Q28 | 11 | 11 | Interviewers sometimes ask when Bias for Action and Dive Deep conflict. Describe a time you had to balance speed against checking the detail. |
+| B11P11Q29 | 11 | 11 | Tell me about the toughest customer-facing or stakeholder situation you handled where the outcome was uncertain until the end. (Customer Obsession; Deliver Results) |
+| B11P11Q30 | 11 | 11 | Tell me about a time you were under pressure and had to make a trade-off that you knew had a cost. (Deliver Results; Ownership) |
+| B11P11Q31 | 11 | 11 | Tell me about a time you thought bigger than the task you were given. (Think Big) |
+| B11P11Q32 | 11 | 11 | Tell me about a time you made your team or workplace better for the people in it. (Strive to be Earth's Best Employer) |
+| B11P11Q33 | 11 | 11 | Tell me about a time you considered the wider effect of your work on other teams, people or the community, beyond your own deliverable. (Success and Scale Bring Broad Responsibility) |
+| B11P11Q34 | 11 | 11 | Tell me about a time you raised the bar when hiring or selecting someone, such as for a team role, an intern or a vendor. (Hire and Develop the Best) |
+| B11P11Q35 | 11 | 11 | You are an HR professional moving to Amazon analytics. Where in your HR work (hiring, attrition, payroll accuracy, attendance, onboarding) have you shown Dive Deep or Customer Obsession, as an HR person? |
+| B11P11Q36 | 11 | 11 | The interviewer says, "That sounds like what your team did. What was your own contribution, and what would have happened without you?" How do you respond without sounding defensive? |
 
 ## Book 12 — Portfolio, Resume, Job Search
 | Q-ID | Book | Part | Canonical question |
