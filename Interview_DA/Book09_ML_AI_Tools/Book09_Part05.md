@@ -458,14 +458,14 @@ recall: 0.6
 - At 0.3 more people cross the line, so you catch more real leavers (fewer **false negatives**, FN = leavers we missed) but also flag more stayers by mistake (more **false positives**, FP = stayers we wrongly flagged).
 - **Recall** = TP / (TP + FN), the share of real leavers caught. **Precision** = TP / (TP + FP), the share of flags that are right.
 - Recall can only stay the same or rise when you lower the threshold. Precision usually falls, though not always step by step.
-**Worked example (concept questions):** 1,000 employees, 218 real leavers, simulated scores (random seed 42).
+**Worked example (concept questions):** 1,000 employees, 218 real leavers, simulated scores. How it was made, so you can rerun it: numpy `default_rng(42)`; each employee leaves with chance 0.2; the score is a normal random number with mean 0.75 for leavers and 0.25 for stayers (spread 0.2), cut to the range 0 to 1.
 
 | Threshold | TP | FP | FN | Precision | Recall |
 |---|---|---|---|---|---|
-| 0.5 | 190 | 61 | 28 | 0.76 | 0.87 |
-| 0.3 | 216 | 303 | 2 | 0.42 | 0.99 |
+| 0.5 | 186 | 78 | 32 | 0.70 | 0.85 |
+| 0.3 | 213 | 310 | 5 | 0.41 | 0.98 |
 
-Lowering to 0.3 caught 26 more leavers but added 242 extra false alarms.
+Lowering to 0.3 caught 27 more leavers but added 232 extra false alarms.
 **Alternative / pitfalls:** 0.5 is only a default, not a law. If leavers are rare, the best threshold is often well below 0.5. Pick it from cost (see Q25), not habit.
 **Likely follow-ups:** 1) *What if I raise it to 0.7?* Fewer flags: precision up, recall down. 2) *How to see all thresholds at once?* ROC or precision-recall curve (Q36).
 **Common mistakes:** Saying precision and recall always move in exact opposite directions; reporting one threshold's numbers without saying the threshold.
@@ -478,9 +478,9 @@ Lowering to 0.3 caught 26 more leavers but added 242 extra false alarms.
 - Give **recall** (share of real churners caught) and **precision** (share of flags that are right) in plain sentences.
 - Give the **baseline**: what you would get by guessing "nobody churns". If only 22% churn, that guess is 78% accurate.
 - Say which dataset the numbers come from (unseen test data, not training data) and how many rows.
-- Turn it into action: "if we call the top 250 flagged customers, about 190 will be real churners".
+- Turn it into action: "if we call 250 flagged customers, about 175 will be real churners".
 - Mention the limits: one time period, small groups, threshold chosen.
-**Worked example (concept questions):** From the Q23 numbers at threshold 0.5: accuracy 0.91, but baseline 0.78. Better statement: "It catches 87 of every 100 churners, and 76 of every 100 flagged customers are real churners. Guessing 'no churn' would have been 78% accurate and caught nobody."
+**Worked example (concept questions):** From the Q23 numbers at threshold 0.5 (treat the leavers as churners): accuracy 0.89, but baseline 0.78. Better statement: "It catches 85 of every 100 churners, and 70 of every 100 flagged customers are real churners. Guessing 'no churn' would have been 78% accurate and caught nobody."
 **Alternative / pitfalls:** Offer a one-line summary for the manager and keep the confusion matrix in a backup slide.
 **Likely follow-ups:** 1) *Which number is most important?* Depends on the cost of missing versus wasted calls. 2) *Would you quote accuracy at all?* Yes, next to the baseline.
 **Common mistakes:** Quoting accuracy only; no baseline; quoting training results; jargon like "F1" without translating.
@@ -560,8 +560,8 @@ Recall: 0.75
 - **Different data:** one analyst may have used train data (optimistic) and the other test data; or different years, filters, or different class mix.
 - **Different threshold or metric:** accuracy at cut-off 0.5 versus 0.3, or "balanced accuracy", or cross-validated average versus one split.
 - Also possible: different features, preprocessing, or an unnoticed leak in one pipeline.
-**Worked example (concept questions):** Same logistic model, same synthetic data (600 rows, about 17% leave), only the split seed changes (test set 120 rows). Accuracy across seeds 1 to 5: 0.84, 0.89, 0.86, 0.88, 0.81. Recall on the leavers swung much more: 0.29, 0.41, 0.29, 0.15, 0.22.
-**Alternative / pitfalls:** If the leavers are about 17%, guessing "nobody leaves" gives about 0.83, so both figures may be near baseline.
+**Worked example (concept questions):** Same logistic model, same synthetic data (1,000 rows, about 15% leave; the generator is in Q52), only the split seed changes (random_state 0 to 4, test set 250 rows, plain random split). Accuracy: 0.92, 0.92, 0.90, 0.88, 0.90. Recall on the leavers swung much more: 0.66, 0.64, 0.57, 0.43, 0.73.
+**Alternative / pitfalls:** If the leavers are about 15%, guessing "nobody leaves" gives about 0.85 (0.82 to 0.85 in the test sets above), so accuracy alone says little.
 **Likely follow-ups:** 1) *How do you settle it?* Same data, same split, same metric, then cross-validate. 2) *Is one of them wrong?* Not necessarily.
 **Common mistakes:** Assuming one analyst made an error; not asking what data the number came from.
 
@@ -692,7 +692,7 @@ Specificity: 0.9
 - **AUC** (area under the curve) has a simple meaning: the chance that a random leaver gets a higher score than a random stayer.
 - 0.5 = random ranking (diagonal line). 1.0 = every leaver scored above every stayer. Below 0.5 means the ranking is backwards.
 - AUC measures ranking, not whether a given threshold is good.
-**Worked example (concept questions):** Six employees, 3 leavers. Perfect scores (leavers all higher): AUC 1.0. One leaver ranked below one stayer: AUC 0.78. All scores equal: AUC 0.50. Random scores on 2,000 rows: AUC about 0.50 (0.498 here, seed 1).
+**Worked example (concept questions):** Six employees, 3 leavers. Perfect scores (leavers all higher): AUC 1.0. One leaver ranked below one stayer: AUC 0.78. All scores equal: AUC 0.50. Random 0/1 labels and random scores on 2,000 rows (numpy `default_rng(1)`): AUC about 0.50 (0.498 here).
 **Alternative / pitfalls:** On rare-event problems ROC-AUC can look flattering (Q71); also check precision-recall.
 **Likely follow-ups:** 1) *Good AUC?* Context-dependent; above 0.5 and beating a simple baseline. 2) *Does it pick the threshold?* No.
 **Common mistakes:** Calling AUC "accuracy"; thinking 0.5 means 50% accurate.
@@ -719,7 +719,7 @@ Specificity: 0.9
 - **Overfitting** means learning the noise in training data, so training scores look great and test scores are worse.
 - Test performance estimates how the model will behave on future data.
 - Do not tune the model repeatedly against the test set, or it stops being a fair exam.
-**Worked example (concept questions):** Unrestricted decision tree on 500 synthetic rows (seed 42, 70/30 split): training accuracy 1.00, test accuracy 0.65. Reporting 1.00 would mislead the manager.
+**Worked example (concept questions):** Unrestricted decision tree on 500 synthetic rows (`make_classification(n_samples=500, n_features=10, n_informative=5, flip_y=0.1, random_state=42)`, 70/30 split with random_state 42, `DecisionTreeClassifier(random_state=42)`): training accuracy 1.00, test accuracy 0.75. Reporting 1.00 would mislead the manager.
 **Alternative / pitfalls:** Use cross-validation for a steadier estimate (Q54). Tuning decisions should use a separate validation set.
 **Likely follow-ups:** 1) *Typical split?* Often 70-80% train, 20-30% test. 2) *What if test is small?* Results are noisy (Q59).
 **Common mistakes:** Quoting training accuracy; peeking at the test set repeatedly.
@@ -966,7 +966,7 @@ print(accuracy_score(y_true, y_pred))
 - `predict_proba(...)[:, 1]` gives each person's probability of the positive class (for example, leaving).
 - A **threshold** is the cut-off: probability at or above 0.3 becomes a flag.
 - Lowering from 0.5 to 0.3 usually raises recall and lowers precision.
-**Sample data:** Synthetic: 1,000 rows, about 15% positive, `train_test_split(test_size=0.25, stratify=y, random_state=42)`, `LogisticRegression()`. `model`, `X_test`, `y_test` are assumed already created.
+**Sample data:** Synthetic: `make_classification(n_samples=1000, n_features=20, n_informative=2, n_redundant=2, weights=[0.85], flip_y=0.01, random_state=42)`, about 15% positive, `train_test_split(test_size=0.25, stratify=y, random_state=42)` (`stratify=y` keeps the same share of positives in train and test), `LogisticRegression()`. `model`, `X_test`, `y_test` are assumed already created.
 **Code (what you write in the interview):**
 ```python
 from sklearn.metrics import confusion_matrix, recall_score
@@ -1026,7 +1026,7 @@ MAE: 3000.0
 - The data is split into 5 parts (**folds**). Five times, the model trains on 4 parts and is scored on the held-out part.
 - You get five numbers; the mean tells the typical performance, the spread tells how stable it is.
 - Default scoring for a classifier would be accuracy, which misleads on imbalanced data. `scoring='recall'` swaps in recall for the positive class.
-**Sample data:** Synthetic 1,000 rows, about 15% positive, `LogisticRegression()`.
+**Sample data:** Synthetic data as in Q50 (`make_classification(n_samples=1000, n_features=20, n_informative=2, n_redundant=2, weights=[0.85], flip_y=0.01, random_state=42)`, about 15% positive), `LogisticRegression()`; `model`, `X`, `y` assumed already created.
 **Code (what you write in the interview):**
 ```python
 from sklearn.model_selection import cross_val_score
@@ -1085,7 +1085,7 @@ print(mape)
 - A single split gives one number that depends on which rows landed in the test set, especially when the data is small or the positive class is rare.
 - Averaging k numbers smooths out that luck, and the spread (standard deviation) tells you how unstable the estimate is.
 - Cost: you train the model k times.
-**Worked example (concept questions):** Same model, same data, five different single splits (random_state 0 to 4) gave recall 0.66, 0.64, 0.57, 0.44 and 0.73 (synthetic data). A reader who saw only seed 3 would think the model was poor; one who saw seed 4 would think it was great. 5-fold cross-validation on the same data gave a mean of 0.63 with a spread of 0.04.
+**Worked example (concept questions):** Same model, same data, five different single splits (random_state 0 to 4) gave recall 0.66, 0.64, 0.57, 0.43 and 0.73 (synthetic data from Q52, plain random splits with test size 25%). A reader who saw only seed 3 would think the model was poor; one who saw seed 4 would think it was great. 5-fold cross-validation on the same data gave a mean of 0.63 with a spread of 0.04.
 **Alternative / pitfalls:** Use stratified folds for imbalanced classes, and time-ordered splits for forecasting (never shuffle the future into the past). Keep a final hold-out set for the last check; preprocessing must be fitted inside each fold to avoid leakage.
 **Likely follow-ups:** 1) *What k?* 5 or 10 are common. 2) *Is CV used to train the final model?* No; it estimates performance, then you fit on all training data.
 **Common mistakes:** Calling it "5 different models"; scaling the whole dataset before splitting; reporting only the best fold.
@@ -1137,7 +1137,7 @@ print(mape)
 **Explain simply:**
 - Guessing is independent of the truth, so the flagged group has the same 20% leavers as everyone: precision = 0.2.
 - Also 20% of the real leavers happen to be flagged: recall = 0.2.
-- Check by 100,000-row simulation (seed 42): precision 0.202, recall 0.204. (Accuracy for the guesser is 0.68 = 0.2 x 0.2 + 0.8 x 0.8, which looks decent but is meaningless.)
+- Check by 100,000-row simulation (numpy `default_rng(42)`, 20% truly leave, 20% guessed): precision 0.202, recall 0.204. (Accuracy for the guesser is 0.68 = 0.2 x 0.2 + 0.8 x 0.8, which looks decent but is meaningless.)
 - Benchmark: precision of a real model should be compared with the base rate (0.2), not with 0 or 0.5. A model with precision 0.30 is a 1.5x improvement; one with 0.80 is 4x.
 **Alternative / pitfalls:** Also compare with simple rules (for example "tenure under one year") and the majority-class baseline; a fancy model that cannot beat a rule is not worth deploying.
 **Likely follow-ups:** 1) *What is lift?* Precision divided by the base rate. 2) *Does flag rate change precision?* No, for a random guesser precision stays at the base rate.
@@ -1197,7 +1197,7 @@ Stay          1     4
 - Each row is one class. **precision** = of the predictions for this class, how many were right. **recall** = of the real members, how many were found. **f1-score** = a blend of the two. **support** = number of real rows in that class.
 - Below the classes: **accuracy** (overall), **macro avg** (plain average over classes) and **weighted avg** (weighted by support).
 - Order of reading: support, then the weakest class's recall and precision, then macro versus weighted (a big gap means a small class is doing badly).
-**Worked example (concept questions):** Synthetic 100-employee example (Stay 50, Leave soon 30, Promoted 20), from `classification_report(y_true, y_pred, target_names=[...])`:
+**Worked example (concept questions):** Synthetic 100-employee example (Stay 50, Leave soon 30, Promoted 20), from `classification_report(y_true, y_pred, target_names=[...])`. It comes from this confusion matrix (rows actual, columns predicted; order Stay, Leave soon, Promoted): [[44, 4, 2], [8, 18, 4], [2, 5, 13]].
 ```
               precision    recall  f1-score   support
 
@@ -1222,11 +1222,11 @@ rmse = np.sqrt(np.mean(model.resid ** 2))
 ```
 **Asked at:** commonly asked (no company-specific report found); the statsmodels in-sample RMSE point is a gap-fill, not tied to a named company.
 **What the interviewer is checking:** That you recognise in-sample error and why it flatters the model.
-**Say this in the interview:** "It measures the typical miss on the same rows the model was fitted on, that is, the in-sample RMSE. It is optimistic because the model was tuned to those exact rows. I would report the error on data it has not seen."
+**Say this in the interview:** "This is an OLS (ordinary least squares, the standard regression) fit, and the code measures the typical miss on the same rows the model was fitted on, that is, the in-sample RMSE. It is optimistic because the model was tuned to those exact rows. I would report the error on data it has not seen."
 **Explain simply:**
 - `model.resid` = actual minus fitted value for each training row. Squaring, averaging and square-rooting gives RMSE.
 - Because OLS chooses coefficients to make these residuals as small as possible on this very data, adding more columns can only shrink the error here, even if the columns are noise.
-- Illustration (synthetic, 60 rows, 15 features, split 42 train / 18 test, seed 42): in-sample RMSE 17.8, but on the held-out rows RMSE 38.9, more than double.
+- Illustration (synthetic: numpy `default_rng(42)`, 60 rows, 15 random feature columns of which only 3 matter, noise spread 20; first 42 rows to fit, last 18 held out): in-sample RMSE 14.2, but on the held-out rows RMSE 34.8, more than double.
 - Note: this RMSE divides by n, while statsmodels' own `model.mse_resid` divides by the degrees of freedom left, so they differ slightly.
 **What it means:** Report RMSE from a hold-out set or cross-validation, and say which one it is.
 **Alternative / pitfalls:** Adjusted R-squared and AIC penalise extra columns, but a real hold-out check is more convincing.
@@ -1240,7 +1240,7 @@ rmse = np.sqrt(np.mean(model.resid ** 2))
 **Explain simply:**
 - In-sample (training) error is almost always lower; a model can even memorise the training rows (**overfitting**: learning the noise and quirks of that data, so it does worse on new data).
 - Out-of-sample (test or cross-validated) error estimates real-world performance.
-- A big gap between the two warns of overfitting. In the Q62 illustration, 17.8 versus 38.9 (synthetic data, seed 42).
+- A big gap between the two warns of overfitting. In the Q62 illustration, 14.2 versus 34.8 (synthetic data, seed 42).
 - For time series, "out-of-sample" means later periods than the training period.
 **What it means:** Report the out-of-sample RMSE in business units (rupees, days), with MAE, and state how the test data was chosen.
 **Alternative / pitfalls:** If the test set is small, use cross-validation and give a range. Never tune settings on the test set, or it stops being truly out-of-sample.
@@ -1283,7 +1283,7 @@ Row C: 0, 10, 40
 **Explain simply:**
 - **Leakage** = information in the features that would not be available at prediction time (for example, `exit_interview_done`, `notice_period_days`, `final_settlement_date`).
 - Checks: (1) list features by importance and look at the top ones; (2) ask "would I know this before the person resigns?"; (3) confirm the split happened before any scaling, balancing or feature building, and no employee appears in both train and test; (4) look at precision, since flagging everyone gives high recall too (see Q57); (5) confirm the number with cross-validation and a later time period; (6) check how many leavers the test set holds.
-- Illustration (synthetic data, seed 42): a model using only tenure had recall 0.75 and precision 0.72. Adding a leaky column `exit_interview_done` lifted recall to 0.96 and precision to 1.00, a "perfect" model that is useless on live employees, because the column does not exist yet for people who are still working.
+- Illustration (the synthetic data of Q84, seed 42): a model using tenure and overtime had recall 0.68 and precision 0.31. Adding a leaky column `exit_interview_done` lifted recall to 0.90 and precision to 0.92, a "brilliant" model that is useless on live employees, because the column does not exist yet for people who are still working.
 **What it means:** Do not report 96% until the features and the split are checked. Report the honest, leak-free number with the date range it covers.
 **Alternative / pitfalls:** Other causes: duplicate rows across train and test, a threshold set very low, tuning on the test set, a target definition that includes people who already resigned.
 **Likely follow-ups:** 1) *How do you prevent leakage?* Build features only from data available at the prediction date. 2) *What would you report meanwhile?* "Promising, under validation."
@@ -1755,7 +1755,7 @@ weighted avg       0.76      0.76      0.76       100
 - **Appendix**: confusion matrix, ROC-AUC, PR-AUC, F1, MCC, kappa, calibration plot, threshold choice, per-group results (fairness) and limitations.
 - Always say what the numbers rest on: test data, dates, size, and the main risk.
 **Worked example (concept questions):** Test set of 1,000 people, 100 leavers; the model flags 150 and 60 of them really leave. Precision = 60 / 150 = 40%, recall = 60 / 100 = 60%. Slide line: "Contact 150 people to reach 60 of 100 leavers; a random 150 would reach about 15." (Random: 150 x 10% = 15.)
-**Alternative / pitfalls:** Do not show accuracy alone (Q69, Q72), and keep the slide to 3 numbers and one recommendation. Mention uncertainty and group gaps (Q67) if they matter.
+**Alternative / pitfalls:** Do not show accuracy alone (Q6, Q14), and keep the slide to 3 numbers and one recommendation. Mention uncertainty and group gaps (Q67) if they matter.
 **Likely follow-ups:** 1) *Is the threshold business or technical?* Business: it trades recall against effort. 2) *What if a manager wants one number?* Recall at a fixed contact budget.
 **Common mistakes:** Showing a confusion matrix without explanation; listing 10 metrics; no comparison with the do-nothing baseline.
 

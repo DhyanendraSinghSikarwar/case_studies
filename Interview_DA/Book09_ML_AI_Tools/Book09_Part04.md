@@ -56,7 +56,7 @@
 - Step 3: **update**: move each centroid to the mean of the points now in its group.
 - Step 4: repeat steps 2 and 3 until nothing changes (converged) or the iteration limit is hit.
 - Every round the total squared distance to the centroids can only stay the same or fall, so it always settles, but possibly on a "good enough" answer rather than the best one.
-**Worked example (concept questions):** Q8 below runs one full round by hand with 4 points: P2 stays with c1, P3 switches to c2, and the centroids move to (1.5, 1) and (4.5, 3.5).
+**Worked example (concept questions):** Q8 below runs one full round by hand with 4 points: P2 joins c1, P3 joins c2, and the centroids move to (1.5, 1) and (4.5, 3.5).
 **Alternative / pitfalls:** Different starts can give different final groups, so run several starts (`n_init`).
 **Likely follow-ups:** 1) *What does it minimise?* Within-cluster sum of squared distances (Q17). 2) *What if it does not converge?* It almost always does; raise `max_iter` if sklearn warns.
 **Common mistakes:** Forgetting the update step; saying k-means uses medians (it uses means); skipping scaling.
@@ -85,7 +85,7 @@
 - **Silhouette score:** for each point, how much closer it is to its own cluster than to the next one, from -1 to 1. Higher average is better.
 - **Stability:** rerun with different seeds or on a sample; good clusters repeat.
 - **Business need:** a team may only be able to run 4 campaigns, so 12 segments are no use.
-**Worked example (concept questions):** Synthetic data with 3 real groups (300 points, seed 42, `make_blobs`), k from 2 to 6:
+**Worked example (concept questions):** Synthetic data with 3 real groups (`make_blobs(n_samples=300, centers=3, random_state=42)`, then `KMeans(n_clusters=k, n_init=10, random_state=42)` for each k, scores by `silhouette_score`; rerun on scikit-learn 1.9.1), k from 2 to 6:
 
 | k | Inertia | Silhouette |
 |---|---|---|
@@ -555,6 +555,11 @@ One-dimensional data. Cluster A: 2, 4, 6. Cluster B: 10, 12.
 **Sample data:** `cluster_a = np.array([2, 4, 6])`, `cluster_b = np.array([10, 12])`
 **Code (what you write in the interview):**
 ```python
+import numpy as np
+
+cluster_a = np.array([2, 4, 6])
+cluster_b = np.array([10, 12])
+
 # Inertia = sum of squared distances from each point to its own cluster mean
 inertia_a = ((cluster_a - cluster_a.mean()) ** 2).sum()
 inertia_b = ((cluster_b - cluster_b.mean()) ** 2).sum()
@@ -571,7 +576,7 @@ Total inertia: 10.0
 ```
 **What it means:** The total of 10 is the number k-means tries to minimise. On its own it has no meaning; compare it with the inertia for other values of k on the same data.
 **Likely follow-ups:** 1) *Does sklearn `inertia_` match?* Yes, it is this same total. 2) *Why squared?* Squaring penalises far-away points more and makes the mean the best centre.
-**Common mistakes:** Measuring from the grand mean (7.2) instead of each cluster's own mean; forgetting to square.
+**Common mistakes:** Measuring from the grand mean (6.8) instead of each cluster's own mean; forgetting to square.
 
 ### Q26 ⭐⭐ 🟡 Compare the Euclidean distance between two customers before and after standardising, and explain what it shows.
 Customer A: age 50, income 100,000. Customer B: age 30, income 40,000. Age has mean 40 and standard deviation 10; income has mean 60,000 and standard deviation 20,000.
@@ -586,6 +591,8 @@ Customer A: age 50, income 100,000. Customer B: age 30, income 40,000. Age has m
 **Sample data:** Given in the question; the code below types it in.
 **Code (what you write in the interview):**
 ```python
+import numpy as np
+
 customer_a = np.array([50, 100000])
 customer_b = np.array([30, 40000])
 means = np.array([40, 60000])
@@ -632,6 +639,15 @@ Rules in order: Champions if R >= 4 and F >= 4; At Risk if R <= 2 and F >= 4; Ne
 **Sample data:** The table in the question, loaded into a DataFrame called `customers`.
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+
+customers = pd.DataFrame({
+    "customer": ["C1", "C2", "C3", "C4", "C5"],
+    "R": [5, 1, 2, 4, 3],
+    "F": [5, 5, 1, 2, 3],
+    "M": [5, 4, 1, 3, 3],
+})
+
 def label_customer(row):
     # Rules are checked in the order given; the first match wins
     if row["R"] >= 4 and row["F"] >= 4:
@@ -672,6 +688,14 @@ Customers in the cluster (recency in days, orders, spend in INR): (10, 8, 5,000)
 **Sample data:** `cluster` DataFrame with columns `recency_days`, `orders`, `spend_inr` and the three rows above.
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+
+cluster = pd.DataFrame({
+    "recency_days": [10, 20, 30],
+    "orders": [8, 6, 10],
+    "spend_inr": [5000, 4000, 6000],
+})
+
 print(cluster.mean())
 ```
 **Output:**
@@ -698,6 +722,13 @@ dtype: float64
 **Sample data:** `clusters` DataFrame with `customers` and `revenue_share_pct`.
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+
+clusters = pd.DataFrame({
+    "customers": [4000, 3000, 2000, 800, 200],
+    "revenue_share_pct": [10, 20, 20, 25, 25],
+})
+
 clusters["customer_share_pct"] = clusters["customers"] / clusters["customers"].sum() * 100
 
 # Revenue share divided by customer share: above 1 means the group earns more than its headcount suggests
@@ -733,13 +764,23 @@ print(len(km.labels_) == len(X_scaled))
 - `cluster_centers_`: a 3 x 4 table; each row is the average position of a cluster across the 4 (scaled) features.
 - `inertia_`: one number, the total squared distance of points to their centres (smaller = tighter).
 - `random_state=42` makes the run repeatable; `n_init=10` tries 10 starting positions and keeps the best.
-**Sample data:** `X_scaled` is not given, so the output below uses invented random data with three groups (seed 42, 500 rows, 4 columns). Your first five labels and inertia would differ with real data; the shape and the final True would not.
-**Output:**
+**Sample data:** `X_scaled` is not given, so to run the code above I generated invented data with three groups (500 rows, 4 columns), then standardised it:
+
+```python
+from sklearn.datasets import make_blobs
+from sklearn.preprocessing import StandardScaler
+
+X, _ = make_blobs(n_samples=500, n_features=4, centers=3, random_state=42)
+X_scaled = StandardScaler().fit_transform(X)
+```
+
+Your first five labels and inertia would differ with real data; the shape and the final True would not.
+**Output (on that generated data, scikit-learn 1.9.1):**
 ```text
-[1 2 1 0 0] (3, 4) 1999.454322780442
+[2 0 2 0 1] (3, 4) 100.26264748907157
 True
 ```
-**What it means:** Shape (3, 4) and True are fixed by the setup; the label numbers and inertia depend on the data. Cluster numbers (0, 1, 2) are arbitrary names, not rankings.
+**What it means:** Shape (3, 4) and True are fixed by the setup; the label numbers and inertia depend on the data (here the tight, well-separated groups give a small inertia of about 100 against a total spread of 2,000 for 500 standardised rows and 4 columns). Cluster numbers (0, 1, 2) are arbitrary names, not rankings.
 **Likely follow-ups:** 1) *How do I label new customers?* `km.predict(new_scaled)`. 2) *Are the centres in original units?* No, they are in scaled units; convert back or profile with the raw data.
 **Common mistakes:** Thinking `labels_` is sorted or means "low to high"; reading the centres as raw rupee or day values.
 
@@ -753,13 +794,24 @@ km = KMeans(n_clusters=4).fit(X)
 **Say this in the interview:** "Four problems: the customer ID is a label, not behaviour, so it must not be a feature; the features are not scaled, so monetary dominates; there is no `random_state`, so results change every run; and the cluster labels are never saved back to the customers."
 **Explain simply:**
 - **customer_id** is just a number that identifies someone. Clustering on it makes customers with nearby IDs look similar, which means nothing.
-- **Scaling:** k-means uses distance, so a column in rupees swamps one in days. For two sample customers, 99.996% of the squared distance came from monetary, 0.004% from recency and almost nothing from the ID.
+- **Scaling:** k-means uses distance, so a column in rupees swamps one in days. Between customers 1001 and 1003 in the sample below, 99.996% of the squared distance comes from monetary, 0.004% from recency and almost nothing from the ID.
 - **Randomness:** the start positions are random; fix `random_state` and use several starts (`n_init=10`).
 - **Labels not kept:** use `fit_predict` and store the result.
 - Also choose k from evidence (elbow, silhouette), not by default; here 2 is used for the tiny sample.
 **Sample data:** 8 invented customers in `df` with `customer_id`, `recency`, `frequency`, `monetary`.
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+df = pd.DataFrame({
+    "customer_id": [1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008],
+    "recency": [5, 12, 300, 280, 8, 15, 310, 290],
+    "frequency": [20, 15, 1, 2, 18, 14, 1, 2],
+    "monetary": [50000, 42000, 1500, 2000, 47000, 39000, 1200, 2500],
+})
+
 # Use only behaviour columns (no ID) and put them on the same scale
 features = df[["recency", "monetary"]]
 X_scaled = StandardScaler().fit_transform(features)
@@ -796,9 +848,17 @@ print(df)
 - The **log transform** replaces each value with its logarithm; it turns "10x bigger" into "a fixed step bigger". `np.log1p` is log(1 + x) and handles zero safely.
 - After the log, segment boundaries are in relative (percentage) terms, which often matches how marketers think.
 **Worked example:** 300 invented customers with skewed spend (mean 1,692, median 1,006, max 20,209, which is 8 standard deviations above the mean). Three clusters on raw spend:
-**Sample data:** `customers` DataFrame with one column `monetary` (generated with seed 42).
+**Sample data:** `customers` DataFrame with one column `monetary`, generated as `rng.lognormal(7, 1, 300).round()` with `rng = np.random.default_rng(42)` (reproduced on numpy 2.5.3: mean 1,692, median 1,006, max 20,209).
 **Code (what you write in the interview):**
 ```python
+import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+rng = np.random.default_rng(42)
+customers = pd.DataFrame({"monetary": rng.lognormal(7, 1, 300).round()})
+
 customers["monetary_log"] = np.log1p(customers["monetary"])
 
 for column in ["monetary", "monetary_log"]:
@@ -826,9 +886,18 @@ monetary_log cluster sizes: [ 85 158  57]
 - Decide the rule with the business: net monetary is common; some teams exclude cancelled and fully returned orders entirely.
 - For recency, a refund is not a purchase, so use the last real sale date.
 **Worked example (numbers by script):** A bought twice (1,000 and 1,500), then returned the 1,500 order; B bought once (2,000); C bought once (800) and returned it.
-**Sample data:** `orders` with `customer_id`, `order_date`, `amount` (refunds are negative).
+**Sample data:** `orders` with `customer_id`, `order_date`, `amount` (refunds are negative), built in the code below.
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+
+orders = pd.DataFrame({
+    "customer_id": ["A", "A", "A", "B", "C", "C"],
+    "order_date": pd.to_datetime(["2026-08-15", "2026-09-10", "2026-09-20",
+                                  "2026-10-20", "2026-07-05", "2026-07-12"]),
+    "amount": [1000, 1500, -1500, 2000, 800, -800],
+})
+
 # Keep sales for frequency; use net amount (sales minus refunds) for monetary
 sales = orders[orders["amount"] > 0]
 
@@ -864,9 +933,16 @@ C           2026-07-05          1         0
 - Using each customer's own latest date, or `max()` per customer, would make recency zero for everyone.
 - Fixing the date also makes monthly reruns comparable: say "snapshot as of 31 Oct".
 **Worked example (computed by script):** Last orders: A 30 Oct, B 1 Oct, C 15 Jun (all 2026).
-**Sample data:** `orders` with `customer_id`, `order_date`.
+**Sample data:** `orders` with `customer_id`, `order_date`, built in the code below.
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+
+orders = pd.DataFrame({
+    "customer_id": ["A", "B", "C"],
+    "order_date": pd.to_datetime(["2026-10-30", "2026-10-01", "2026-06-15"]),
+})
+
 # Reference date = the day after the last order in the data (the snapshot date)
 snapshot_date = orders["order_date"].max() + pd.Timedelta(days=1)
 
@@ -921,10 +997,29 @@ Name: order_date, dtype: int64
 - Inspect the 2 customers: very high spend? Duplicated or test accounts? Wrong currency?
 - If they are errors, fix or remove them. If they are real VIPs, treat them as a "key accounts" list managed by a person, and cluster the rest.
 - Other options: log transform or cap values, or lower k so the small group merges.
-**Worked example (computed by script, invented data):** 298 ordinary customers plus 2 with INR 900,000 and 1,200,000 spend and over 150 orders. k = 4 gives clusters of 104, 98, 96 and 2. The 2-customer cluster averages monetary 1,050,000 against 1,500 to 7,854 for the others.
-**Sample data:** `customers` DataFrame with `recency`, `frequency`, `monetary` (300 rows; the last two are the whales).
+**Worked example (computed by script, invented data):** 298 ordinary customers plus 2 with INR 900,000 and 1,200,000 spend and over 150 orders. k = 4 gives clusters of 101, 100, 97 and 2. The 2-customer cluster averages monetary 1,050,000 against 1,492 to 7,513 for the others.
+**Sample data:** `customers` DataFrame with `recency`, `frequency`, `monetary` (300 rows; the last two are the whales), generated here (output depends on this generator and seed 42):
 **Code (what you write in the interview):**
 ```python
+import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+# Invented data: three ordinary groups plus two extreme buyers (the "whales")
+rng = np.random.default_rng(42)
+
+def one_group(size, recency, frequency, monetary):
+    return pd.DataFrame({
+        "recency": rng.normal(recency, recency * 0.15, size).round(),
+        "frequency": rng.poisson(frequency, size),
+        "monetary": rng.normal(monetary, monetary * 0.15, size).round(),
+    })
+
+whales = pd.DataFrame({"recency": [5, 8], "frequency": [160, 170], "monetary": [900000, 1200000]})
+customers = pd.concat([one_group(100, 200, 2, 1500), one_group(100, 30, 8, 7800),
+                       one_group(98, 100, 4, 3800), whales], ignore_index=True)
+
 X_scaled = StandardScaler().fit_transform(customers)
 customers["cluster"] = KMeans(n_clusters=4, n_init=10, random_state=42).fit_predict(X_scaled)
 
@@ -935,17 +1030,17 @@ print(customers.groupby("cluster").mean().round(0))
 **Output:**
 ```text
 cluster
-2    104
-3     98
-0     96
+0    101
+3    100
+2     97
 1      2
 Name: count, dtype: int64
-         recency  frequency  monetary
+         recency  frequency   monetary
 cluster                                
-0          200.0        2.0     1500.0
+0           30.0        8.0     7513.0
 1            6.0      165.0  1050000.0
-2           29.0        8.0     7854.0
-3          101.0        4.0     3846.0
+2          200.0        2.0     1492.0
+3          101.0        4.0     3750.0
 ```
 **What it means:** Cluster 1 is a tiny group of extreme buyers, not a segment. Set them aside and the other 298 customers get three clear groups, a better use of k.
 **Alternative / pitfalls:** Wasting a cluster on 2 people means you effectively have k - 1 useful clusters.
@@ -963,6 +1058,11 @@ cluster
 **Sample data:** `spend = np.array([900, 1000, 1100, 1200])` and the same list with 50000 appended.
 **Code (what you write in the interview):**
 ```python
+import numpy as np
+
+spend = np.array([900, 1000, 1100, 1200])
+spend_with_outlier = np.append(spend, 50000)
+
 # One extreme customer drags the average (the k-means centre) far away from everyone else
 print("Centre without outlier:", spend.mean())
 print("Centre with outlier:", spend_with_outlier.mean())
@@ -1004,12 +1104,19 @@ Median with outlier: 1100.0
 **Explain simply:**
 - **Initialisation** = choosing the first centres. Bad starts (two centres inside one group) can lead to a bad final answer, called a **local optimum**.
 - **k-means++** (the sklearn default, `init="k-means++"`, verified in the signature) picks starting centres that are far apart from each other.
-- **`n_init`**: how many times to restart; the run with the lowest inertia wins. In sklearn 1.9 the default is `"auto"` (verified in the signature); how many starts "auto" means is from memory, unverified.
+- **`n_init`**: how many times to restart; the run with the lowest inertia wins. In sklearn 1.9.1 the default is `"auto"` (verified in the signature and source): 1 start with the default k-means++, 10 starts with `init="random"`. That is why the code above sets `n_init=10` explicitly.
 - **`random_state`**: a seed number; same seed, same answer.
-**Worked example (computed by script, invented data with 6 clear groups, 60 points each):**
-**Sample data:** `X_scaled`, 360 rows by 2 columns, in six blobs.
+**Worked example (computed by script, invented data with 6 groups, 60 points each):**
+**Sample data:** `X_scaled`, 360 rows by 2 columns, in six blobs, built in the code below.
 **Code (what you write in the interview):**
 ```python
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+from sklearn.preprocessing import StandardScaler
+
+X, _ = make_blobs(n_samples=360, centers=6, cluster_std=0.6, random_state=0)
+X_scaled = StandardScaler().fit_transform(X)
+
 # One random start each time: different seeds can land on different answers
 for seed in range(5):
     km = KMeans(n_clusters=6, init="random", n_init=1, random_state=seed).fit(X_scaled)
@@ -1021,14 +1128,14 @@ print("best of 10 starts:", round(best.inertia_, 1))
 ```
 **Output:**
 ```text
-seed 0 inertia 666.4
-seed 1 inertia 1590.3
-seed 2 inertia 666.4
-seed 3 inertia 666.4
-seed 4 inertia 1597.0
-best of 10 starts: 666.4
+seed 0 inertia 38.7
+seed 1 inertia 39.0
+seed 2 inertia 20.2
+seed 3 inertia 38.9
+seed 4 inertia 20.2
+best of 10 starts: 20.2
 ```
-**What it means:** Two seeds got stuck at an inertia more than double the best (1,590 and 1,597 against 666.4). Output depends on the seeds shown (0 to 4 and 42). More starts or k-means++ avoids that.
+**What it means:** Three of the five single random starts got stuck at an inertia of about 39, nearly double the best value of 20.2 (two starts found it). Output depends on the data and the seeds shown (0 to 4 and 42). More starts or k-means++ avoids that.
 **Likely follow-ups:** 1) *Does random_state make it "correct"?* No, only repeatable. 2) *Why not use many starts always?* Cost grows with each start.
 **Common mistakes:** Treating `random_state` as improving quality; not setting it and getting different segments each run.
 
@@ -1044,6 +1151,10 @@ best of 10 starts: 666.4
 **Sample data:** `spend = np.array([[1], [2], [9], [10], [11], [30]])`
 **Code (what you write in the interview):**
 ```python
+import numpy as np
+from scipy.cluster.hierarchy import linkage
+
+spend = np.array([[1], [2], [9], [10], [11], [30]])
 merges = linkage(spend, method="ward")
 
 # Each row: the two groups joined, the distance at the join, and the new group size
@@ -1073,6 +1184,15 @@ print(merges.round(2))
 **Sample data:** 4 invented customers, `customers` DataFrame with `monthly_spend`, `orders`, `payment_method`.
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+customers = pd.DataFrame({
+    "monthly_spend": [2000, 2200, 8000, 7800],
+    "orders": [3, 4, 12, 11],
+    "payment_method": ["UPI", "Card", "UPI", "Card"],
+})
+
 # Turn each category into a 0/1 column (one-hot encoding)
 encoded = pd.get_dummies(customers, columns=["payment_method"], dtype=int)
 
@@ -1105,10 +1225,21 @@ print(X_scaled.round(2))
 - **Correlation** (from -1 to +1) measures how closely two features move together. Orders and spend often correlate strongly.
 - If both go in, "how big a buyer" counts twice and the other features (such as recency) count once.
 - Fixes: drop one, create a combined measure (spend per order), reduce with PCA (principal component analysis, which merges overlapping features), or deliberately weight the features.
-**Worked example (computed by script, invented data, 200 customers):** orders and spend correlate at 0.96; recency correlates with neither (-0.03, -0.02). After scaling, the first PCA axis (the "how big a buyer" direction) holds 65% of all variation (two of the three features point that way), recency alone holds 33%, and the last 1% is noise. So the clusters are pulled about twice as hard by size of buyer as by recency.
-**Sample data:** `customers` DataFrame with `orders`, `spend` (about 900 per order plus noise), `recency`.
+**Worked example (computed by script, invented data, 200 customers, generator below, seed 42):** orders and spend correlate at 0.96; recency correlates with neither (0.09, 0.06). After scaling, the first PCA axis (the "how big a buyer" direction) holds 66% of all variation (two of the three features point that way), recency alone holds 33%, and the last 1% is noise. So the clusters are pulled about twice as hard by size of buyer as by recency.
+**Sample data:** `customers` DataFrame with `orders`, `spend` (about 900 per order plus noise), `recency`, built in the code below.
 **Code (what you write in the interview):**
 ```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+orders = rng.integers(1, 30, 200)
+customers = pd.DataFrame({
+    "orders": orders,
+    "spend": (orders * 900 + rng.normal(0, 2000, 200)).round(),
+    "recency": rng.integers(1, 200, 200),
+})
+
 print(customers.corr().round(2))
 
 # Orders and spend carry almost the same message, so after scaling they count twice in the distance
@@ -1116,9 +1247,9 @@ print(customers.corr().round(2))
 **Output:**
 ```text
          orders  spend  recency
-orders     1.00   0.96    -0.03
-spend      0.96   1.00    -0.02
-recency   -0.03  -0.02     1.00
+orders     1.00   0.96     0.09
+spend      0.96   1.00     0.06
+recency    0.09   0.06     1.00
 ```
 **What it means:** Orders and spend are 96% correlated, so they are nearly one feature counted twice. Recency is independent. Report it as: "I will keep one of the pair, or combine them, before clustering."
 **Alternative / pitfalls:** In RFM, frequency and monetary are often correlated; scoring each on its own 1 to 5 scale is simple, and the overlap is accepted. Dropping a feature loses a little information.
