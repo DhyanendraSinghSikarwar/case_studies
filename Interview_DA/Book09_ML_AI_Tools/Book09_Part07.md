@@ -25,7 +25,7 @@
 - **Trend:** the slow, underlying direction. Think of it as the average level climbing or falling over years.
 - **Seasonality:** a regular, calendar-linked rise and fall with a fixed length (12 months for monthly data). Think of Diwali demand, or April attrition after appraisals.
 - **Noise (random variation):** one-off ups and downs from chance, such as a big order that landed a week early. You cannot forecast it, only estimate how large it usually is.
-**Worked example (concept question):** In an invented 3-year monthly series (units), the yearly average was 1,056, 1,120 and 1,182: that is the trend, about +5 units per month. Within each year, December ran about 23% above that year's average and February about 12% below: that is seasonality. Month to month wobble of roughly 15 units around the pattern is noise.
+**Worked example (concept question):** In an invented 3-year monthly series (units), the yearly average was 1,045, 1,110 and 1,175: that is the trend, about +5 units per month. Within each year, December ran about 23% above that year's average and February about 12% below: that is seasonality (the same series as Q13). Month to month wobble of roughly 15 units around the pattern is noise.
 **Alternative / pitfalls:** Some series also have cycles (multi-year booms and slowdowns with no fixed length); these are harder than seasonality because the length is not fixed.
 **Likely follow-ups:** 1) *Can seasonality change?* Yes, if customer behaviour or the calendar (festival dates) shifts. 2) *How do you see them?* Plot the series and a yearly overlay (Q13).
 **Common mistakes:** Calling any bump "seasonality" after one year of data; mixing up a trend with a one-time jump.
@@ -119,7 +119,7 @@ Naive MAE: 10.0
 - Wider range means less certainty: longer horizons, volatile data, or promotions all widen it.
 - Offer decisions by scenario: plan to the middle, protect against the low end.
 **Worked example (concept question):** 12 past monthly errors (units): 30, -25, 40, -10, 15, -35, 20, -5, 25, -30, 10, -20. Their standard deviation is 25.4, so a forecast of 1,200 gets a rough 80% range of 1,200 plus or minus 33, that is 1,167 to 1,233.
-**Alternative / pitfalls:** Statistical models (statsmodels, Prophet) can output intervals directly; still check them against past misses.
+**Alternative / pitfalls:** Statistical models (statsmodels; Prophet is from memory, unverified) can output intervals directly; still check them against past misses.
 **Likely follow-ups:** 1) *Does 80% mean the actual will always be inside?* No, about 1 month in 5 lands outside. 2) *Is a range a way to avoid being wrong?* No, it is an honest statement of risk.
 **Common mistakes:** Quoting one number to the decimal ("1,203.7 units"); presenting the range as a guarantee.
 
@@ -168,7 +168,7 @@ print(july_forecast)
 ```
 **What it means:** Forecast for July is 145 units, equal to June because the series went up then dipped. Say it is an estimate, and that it will lag if sales keep climbing.
 **Likely follow-ups:** 1) *And August?* Use May, Jun and the July forecast, or wait for July's actual. 2) *Why not 6 months?* Smoother but slower to react (Q10).
-**Common mistakes:** Averaging all six months (140.0); using Mar, Apr, May.
+**Common mistakes:** Averaging all six months (135.0); using Mar, Apr, May.
 
 ### Q8 ⭐⭐⭐ 🟡 Why can you not use a random train/test split for a forecasting problem, and how do you split instead?
 **Asked at:** commonly asked (no company-specific report found); an unverified anonymous Tiger Analytics report mentions a related time-series cross-validation question.
@@ -323,12 +323,21 @@ print(df.round(1))
 - Month-by-year table or "seasonal plot": one line per year; lines that move together mean seasonality.
 - Ratio to yearly average: a value consistently away from 1.0 for a given month is its seasonal effect.
 - With under two cycles you cannot separate seasonality from a one-off event.
-**Sample data:** `sales_series`: 36 monthly values (units, made-up, Jan 2022 to Dec 2024) with a rising level and a festive peak in November and December. Its December values are 1,317, 1,363 and 1,442.
+**Sample data:** `sales_series`: 36 monthly values (units, invented, Jan 2022 to Dec 2024) with a rising level and a festive peak in November and December, built by the seeded generator below (run it first). Its December values are 1,291, 1,354 and 1,447.
 **Code (what you write in the interview):**
 ```python
+import numpy as np
 import pandas as pd
 
-# sales_series: monthly units with a date index (36 months, Jan 2022 to Dec 2024)
+# Sample data (invented, seeded): rising level times a yearly pattern with a Nov/Dec peak
+rng = np.random.default_rng(42)
+months = pd.date_range("2022-01-01", periods=36, freq="MS")
+season = np.array([0.9, 0.89, 0.93, 0.95, 0.96, 0.97, 0.99, 0.99, 1.0, 1.01, 1.1, 1.18])
+level = 1027 + 5.3 * np.arange(36)
+sales_series = pd.Series((level * np.tile(season, 3) * rng.normal(1, 0.01, 36)).round(0),
+                         index=months)
+
+# The analysis itself
 sales = sales_series.to_frame(name="units")
 sales["year"] = sales.index.year
 sales["month"] = sales.index.month
@@ -342,7 +351,7 @@ print(sales.groupby("month")["vs_year_average"].mean().round(2))
 **Output:**
 ```text
 month
-1     0.89
+1     0.88
 2     0.88
 3     0.93
 4     0.95
@@ -356,7 +365,7 @@ month
 12    1.23
 Name: vs_year_average, dtype: float64
 ```
-**What it means:** January and February sit about 11 to 12% below the yearly average; November and December run 14% and 23% above. That repeated shape across three years is seasonality. The table was computed on this invented series.
+**What it means:** January and February sit about 12% below the yearly average; November and December run 14% and 23% above. That repeated shape across three years is seasonality. The table was computed on this invented, seeded series.
 **Alternative / pitfalls:** `seasonal_decompose` (Q27) or an ACF plot (Q45). A trend inflates later months within a year, so ratios are slightly confounded by it.
 **Likely follow-ups:** 1) *How many years?* At least two, preferably three or more. 2) *Seasonality or promotion?* Check whether it repeats on the same calendar month.
 **Common mistakes:** Judging from one year; forgetting the data trend.
@@ -608,7 +617,7 @@ Method A errors: +2, -2, +2, -2. Method B errors: 0, 0, 0, +6.
 **Explain simply:**
 - MAE for A: (2+2+2+2)/4 = 2. For B: (0+0+0+6)/4 = 1.5.
 - RMSE for A: square root of (4+4+4+4)/4 = 2. For B: square root of 36/4 = 3.
-- Same total error idea, different shape: A is steady small misses, B is mostly right with one big miss.
+- Different shape of error: A is steady small misses, B is mostly right with one big miss.
 - If one big miss means a stockout or an overspend, prefer A; if small misses are cheap and the big one is rare, B may be fine.
 **Code (what you write in the interview):**
 ```python
@@ -732,8 +741,9 @@ months = pd.date_range('2022-01-01', periods=36, freq='MS')
 sales = pd.Series(100 + 3 * np.arange(36) + rng.normal(0, 4, 36), index=months)
 
 # Augmented Dickey-Fuller test: a small p-value (below 0.05) suggests stationary
-p_raw = adfuller(sales)[1]
-p_differenced = adfuller(sales.diff().dropna())[1]
+# (result_object=True returns a named result and avoids a FutureWarning in statsmodels 0.15)
+p_raw = adfuller(sales, result_object=True).pvalue
+p_differenced = adfuller(sales.diff().dropna(), result_object=True).pvalue
 
 print("raw p-value:", round(p_raw, 3))
 print("after differencing p-value:", round(p_differenced, 6))
@@ -889,15 +899,42 @@ trailing: [nan, nan, 51.0, 64.3, 64.7, 65.0]
 - Three years is only 36 points, so avoid complicated models. Simple methods are hard to beat on small data.
 - Present: a line chart (history, forecast, range), the expected number of leavers, and the main assumptions (no restructuring, no big hiring wave, no pay change).
 - Add business drivers separately: a planned layoff or a policy change is not in the history.
-**Worked example (concept question):** Invented monthly attrition rate (%), 36 months with a mild April and May bump (seeded). Hold out the last 6 months and test three methods (computed by script):
+**Worked example (concept question):** Invented monthly attrition rate (%), 36 months with a mild April and May bump. Hold out the last 6 months and test three methods. The seeded code below reproduces the table on the installed versions:
+```python
+import numpy as np
+import pandas as pd
+
+# Sample data (invented, seeded): about 1.5% a month, with a bump in April and May
+rng = np.random.default_rng(42)
+months = pd.date_range("2022-01-01", periods=36, freq="MS")
+april_may_bump = np.tile([0, 0, 0, 0.15, 0.10, 0, 0, 0, 0, 0, 0, 0], 3)
+attrition = pd.Series(1.5 + april_may_bump + rng.normal(0, 0.07, 36), index=months)
+
+# Hold out the last 6 months; the training months are everything before
+train, test = attrition.iloc[:-6], attrition.iloc[-6:]
+
+forecasts = {
+    "Naive (repeat last month)": pd.Series(train.iloc[-1], index=test.index),
+    "3-month average": pd.Series(train.iloc[-3:].mean(), index=test.index),
+    "Seasonal naive (same month last year)": attrition.shift(12).iloc[-6:],
+}
+for name, forecast in forecasts.items():
+    errors = (test - forecast).abs()
+    print(f"{name}: MAE {errors.mean():.3f}, biggest miss {errors.max():.2f}")
+```
+```text
+Naive (repeat last month): MAE 0.066, biggest miss 0.12
+3-month average: MAE 0.099, biggest miss 0.17
+Seasonal naive (same month last year): MAE 0.046, biggest miss 0.09
+```
 
 | Method | MAE (percentage points) |
 |---|---|
-| Naive (repeat last month) | 0.096 |
-| 3-month average | 0.222 |
-| Seasonal naive (same month last year) | 0.079 |
+| Naive (repeat last month) | 0.066 |
+| 3-month average | 0.099 |
+| Seasonal naive (same month last year) | 0.046 |
 
-Seasonal naive wins. Its biggest miss was 0.15 points, so quote a range of about the forecast plus or minus 0.15 points. For example, "expect about 1.5% to 1.7% a month, roughly 30 to 34 leavers on a headcount of 2,000" is easier to act on than one decimal-precise number. This is synthetic data, so the ranking will differ on real data.
+Seasonal naive wins. Its biggest miss was 0.09 points, so quote a range of about the forecast plus or minus 0.1 points. For example, "expect about 1.5% to 1.7% a month, roughly 30 to 34 leavers on a headcount of 2,000" is easier to act on than one decimal-precise number. This is synthetic data, so the ranking will differ on real data.
 **Alternative / pitfalls:** If monthly counts are very small (say under 5 leavers), the series is mostly noise; consider quarterly. Report both rate and count.
 **Likely follow-ups:** 1) *What if I only have 3 years?* Stick to simple, seasonal methods. 2) *Can I predict who will leave?* That is a separate classification problem.
 **Common mistakes:** One number with no range; ignoring a changed definition; fancy model on 36 points; no holdout check.
@@ -949,7 +986,7 @@ So 180 of the 200 units are explained by events outside the model, and only 20 a
 - Twelve points is a short window; a straight line forced through a curve can still score high.
 - The further out you project, the wider the real uncertainty, and the line has no range at all.
 - Business reasons also change: capacity limits, competitors, market size.
-**Worked example (concept question):** Invented monthly sales that grow quickly and then flatten: 100, 108, 115, 121, 126, 130, 133, 135, 136, 137, 137.5, 138. A straight line fits with slope 3.30 a month and R-squared of 0.87 (computed by script). Extending the line 24 months ahead (month 36) gives about 224, but the real series is clearly flattening near 138 (the last month added only 0.5). The line would overstate by over 60%.
+**Worked example (concept question):** Invented monthly sales that grow quickly and then flatten: 100, 108, 115, 121, 126, 130, 133, 135, 136, 137, 137.5, 138. A straight line fits with slope 3.30 a month and R-squared of 0.87 (recomputed on the installed numpy). Extending the line 24 months ahead (month 36) gives about 224, but the real series is clearly flattening near 138 (the last month added only 0.5). The line would overstate by over 60%.
 **Alternative / pitfalls:** Use a method that allows growth to slow (damped trend), compare against a naive forecast, and test on a later holdout. Judge a model on out-of-sample error, not R-squared.
 **Likely follow-ups:** 1) *What horizon is reasonable?* Short, and updated regularly. 2) *What would you show instead?* A range plus scenarios (slow, base, fast).
 **Common mistakes:** Using R-squared as proof of future accuracy; long extrapolation; one-line forecasts without a range.
@@ -1011,8 +1048,8 @@ print(fc.round(1))
 2025-06-01    346.0
 Freq: MS, dtype: float64
 ```
-**What it means:** It forecasts January to June 2025 and keeps rising because of the trend. Judge it by comparing with a seasonal naive on a holdout, not by how smooth the line looks.
-**Alternative / pitfalls:** Use `seasonal='add'` if swings stay the same size as sales grow. `trend='add', damped_trend=True` stops the trend running forever (from memory, unverified as an argument name in this run).
+**What it means:** It forecasts January to June 2025 and keeps rising because of the trend. On this seeded data the fitted smoothing weights all landed at about 0 (check `m.params`), meaning the model barely updates after its starting estimates: a reminder that a fit can run without error and still be weak. Judge it by comparing with a seasonal naive on a holdout, not by how smooth the line looks.
+**Alternative / pitfalls:** Use `seasonal='add'` if swings stay the same size as sales grow. `trend='add', damped_trend=True` stops the trend running forever (the argument ran without error on statsmodels 0.15.0; not checked for forecast quality).
 **Likely follow-ups:** 1) *How do you test it?* Hold out the last months, compare MAE to seasonal naive. 2) *How do you get a range?* Look at holdout errors or simulate; the basic `.forecast` gives only point values.
 **Common mistakes:** Fitting on under two years; ignoring zeros; trusting the output without a baseline.
 
@@ -1077,7 +1114,7 @@ rows kept: 5 of 12
 - Simple exponential smoothing (Q21) tracks only the level. Holt's method adds a trend. Holt-Winters adds seasonality, so it is "triple".
 - Alpha: level (the current baseline). Beta: trend (how quickly the slope updates). Gamma: seasonality (how quickly the seasonal pattern updates).
 - Seasonality can be additive (fixed amount) or multiplicative (a percentage).
-- In statsmodels the fitted weights are `smoothing_level`, `smoothing_trend`, `smoothing_seasonal` (checked on 0.15.0; Q35 uses it).
+- In statsmodels the fitted weights are the keys `smoothing_level`, `smoothing_trend`, `smoothing_seasonal` of `fit.params` (checked on 0.15.0; Q35 uses it).
 **Alternative / pitfalls:** Needs at least two full cycles of data. Weights close to 0 mean a very slow-changing part. If the weights land on 0 or 1 (the edges), the fit may be unreliable.
 **Likely follow-ups:** 1) *Without a trend?* Set `trend=None`. 2) *Which one for flat data with seasonality?* Level plus seasonality only.
 **Common mistakes:** Calling beta the seasonal part; applying it to data with fewer than two cycles; no baseline comparison.

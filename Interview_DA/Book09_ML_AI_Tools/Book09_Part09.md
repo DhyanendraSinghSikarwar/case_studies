@@ -200,7 +200,10 @@
 **Sample data:** employees: 5 rows (HR 2, Sales 2, Ops 1). Suppose the departments table wrongly has a duplicate row for Sales (id 2).
 **Code (what you write in the interview):**
 ```python
-import sqlite3, pandas as pd
+import sqlite3
+import pandas as pd
+
+# Build a tiny in-memory database; the departments table wrongly lists Sales twice
 con = sqlite3.connect(":memory:")
 con.executescript("""
 CREATE TABLE employees(emp_id INT, dept_id INT);
@@ -208,12 +211,14 @@ CREATE TABLE departments(dept_id INT, dept_name TEXT);
 INSERT INTO employees VALUES (1,1),(2,1),(3,2),(4,2),(5,3);
 INSERT INTO departments VALUES (1,'HR'),(2,'Sales'),(2,'Sales'),(3,'Ops');
 """)
+# The AI-style query: headcount per department name
 query = """
 SELECT d.dept_name, COUNT(*) AS headcount
 FROM employees e JOIN departments d ON e.dept_id = d.dept_id
 GROUP BY d.dept_name ORDER BY d.dept_name
 """
 print(pd.read_sql(query, con))
+# Reconciliation check: the real number of employees
 print(pd.read_sql("SELECT COUNT(*) AS true_total FROM employees", con))
 ```
 **Output:** (real, run in sqlite)
@@ -303,7 +308,7 @@ FROM employees e JOIN departments d ON e.dept_id = d.dept_id;
 ```
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** you spot the missing GROUP BY and know the dialect-dependent risk.
-**Say this in the interview:** "It mixes a plain column with an aggregate and has no GROUP BY. Most databases reject it; some (SQLite, and older MySQL modes) run it and return one misleading row. I add GROUP BY d.dept_name."
+**Say this in the interview:** "It mixes a plain column with an aggregate and has no GROUP BY. Most databases reject it (from memory, unverified); some (SQLite, which I ran, and possibly older MySQL modes) run it and return one misleading row. I add GROUP BY d.dept_name."
 **Explain simply:**
 - `AVG()` collapses rows; without GROUP BY it collapses all of them to one row.
 - `dept_name` is then ambiguous: which department's name goes with the overall average?
@@ -566,14 +571,34 @@ HR_file: P001, 50000 / P002, 61500; Bank_file: P001, 50000 / P003, 48000.
 - Low randomness means nearly always the top choice; higher means more variety.
 - Other causes: model updates, small wording changes in the prompt, different earlier chat history.
 - Analyst takeaway: ask for code, run the code (it gives the same result every time), and check the numbers.
-**Worked example:** a toy model with three possible phrases (made-up scores). Output from the script (seed 42) is the probability of each phrase at three randomness settings, then five sampled runs at the middle setting:
+**Worked example:** a toy model with three possible phrases (made-up scores 2.0, 1.0 and 0.2). The script below prints the probability of each phrase at three randomness settings, then five sampled runs at the middle setting. The sampled runs depend on the seed (42); this is a simplified toy, not a real LLM.
+```python
+import numpy as np
+
+phrases = ["rose", "fell", "stayed flat"]
+scores = np.array([2.0, 1.0, 0.2])
+
+def probabilities(temperature):
+    # Lower temperature makes the top-scoring phrase dominate
+    weights = np.exp(scores / temperature)
+    return weights / weights.sum()
+
+for temperature in (0.2, 1.0, 1.5):
+    p = probabilities(temperature)
+    print(f"setting {temperature}: rose {p[0]:.2f}, fell {p[1]:.2f}, stayed flat {p[2]:.2f}")
+
+rng = np.random.default_rng(42)
+runs = [str(rng.choice(phrases, p=probabilities(1.0))) for _ in range(5)]
+print("5 runs at 1.0:", ", ".join(runs))
+```
+Output:
 ```
 setting 0.2: rose 0.99, fell 0.01, stayed flat 0.00
 setting 1.0: rose 0.65, fell 0.24, stayed flat 0.11
 setting 1.5: rose 0.55, fell 0.28, stayed flat 0.17
 5 runs at 1.0: fell, rose, fell, fell, rose
 ```
-Same input, different outputs, exactly as with a chatbot (this is a simplified toy, not a real LLM).
+Same input, different outputs, as with a chatbot.
 **Alternative / pitfalls:** Setting randomness to zero reduces variation but does not make the answer correct.
 **Likely follow-ups:** 1) *Can you control it?* In some tools (from memory, unverified); in chat apps usually not. 2) *What do you do for a report?* Use verified code and save it.
 **Common mistakes:** Rerunning until the answer looks nice; reporting a number from one chat run; thinking consistency equals correctness.
@@ -895,7 +920,7 @@ left by then (exit_date NULL or on/after month start); exits = those who left du
 attrition_pct = 100 * exits / start_headcount. Ignore people who join and leave in the same month.
 Include a month_start series. Explain assumptions in a short list after the query.
 ```
-An AI-style answer (logic tested here in SQLite with a month list written as a recursive CTE, since PostgreSQL was not run; in PostgreSQL the month list would come from `generate_series`, from memory, unverified). Tested on 7 invented employees for Jan and Feb 2025:
+An AI-style answer (logic tested here in SQLite with a month list written as a recursive CTE, since PostgreSQL was not run; in PostgreSQL the month list would come from `generate_series`, from memory, unverified). Tested on 7 invented employees for Jan and Feb 2025 (employees as emp_id, dept, join_date, exit_date: 1 HR 2023-01-10 exit 2025-02-15; 2 HR 2022-05-01 still employed; 3 HR 2025-02-10 still employed; 4 Sales 2022-01-01 exit 2025-01-20; 5 Sales 2021-03-03 exit 2025-02-10; 6 Sales 2020-02-02 and 7 Sales 2024-06-06 still employed):
 ```sql
 WITH RECURSIVE months(month_start) AS (
   SELECT '2025-01-01' UNION ALL
@@ -1094,6 +1119,7 @@ List every function or syntax you changed and why. Flag anything whose behaviour
 ```
 **Code (what you write in the interview):** I cannot run MySQL or PostgreSQL here, so this runs the same compare idea in SQLite, with two equivalent versions of a monthly revenue query. In real life you run each version in its own database and compare the two result sets.
 ```python
+# connection: SQLite test database with a small orders table (invented rows)
 old_query = """SELECT strftime('%Y-%m', order_date) AS month, SUM(amount) AS revenue
                FROM orders GROUP BY 1"""
 new_query = """SELECT substr(order_date, 1, 7) AS month, SUM(amount) AS revenue
@@ -1222,6 +1248,7 @@ Rules: drop exact duplicate rows; make department HR or Finance; salary to numbe
 ```python
 import pandas as pd
 
+# sample is the 6-row invented table described above
 cleaned = sample.copy()
 # Drop exact duplicate rows
 cleaned = cleaned.drop_duplicates()
@@ -1271,6 +1298,7 @@ Keep the results identical. Explain each suggestion and the trade-off.
 ```
 **Code (what you write in the interview):** A SQLite demo (the plan command differs by database; `EXPLAIN ANALYZE` in PostgreSQL is from memory, unverified).
 ```python
+# connection: SQLite test database with an attendance table (invented rows)
 query = "SELECT SUM(hours) FROM attendance WHERE emp_id = 42"
 
 print(connection.execute("EXPLAIN QUERY PLAN " + query).fetchall()[0][3])
@@ -1323,7 +1351,7 @@ SEARCH attendance USING INDEX idx_att_emp (emp_id=?)
 - Put both answers side by side; list each number, formula and assumption.
 - Recalculate independently (SQL, pandas or Excel) on the same data.
 - Two AIs agreeing is not proof; both can make the same mistake.
-**Worked example (concept question):** January: 200 employees at start, 190 at end, 12 leavers. Answer A: 6.0% (12 / 200, start headcount). Answer B: 6.2% (12 / 190, end headcount). A standard definition uses average headcount: 12 / 195 = 6.15%. All three are "right" under different denominators, so state the definition you chose. Computed by script.
+**Worked example (concept question):** January: 200 employees at start, 190 at end, 12 leavers. Answer A: 6.0% (12 / 200, start headcount). Answer B: 6.3% (12 / 190 = 6.32%, end headcount). A standard definition uses average headcount: 12 / 195 = 6.15%. All three are "right" under different denominators, so state the definition you chose. Computed by script.
 **Alternative / pitfalls:** Pick the definition your company uses and document it. Trap: choosing the answer that sounds confident.
 **Likely follow-ups:** 1) *What if both match your manual number?* Good evidence, still check edge cases. 2) *What if neither does?* Trust your check and debug the logic.
 **Common mistakes:** Averaging two numbers; trusting the longer explanation.
@@ -1362,6 +1390,7 @@ Pivot total sales = 5,00,000. Copilot measure total = 10,00,000.
 **Sample data:** invented sales (4 rows, total 5,00,000) and a product table that holds each product twice (for example two price-list versions).
 **Code (what you write in the interview):** The same fault reproduced in pandas, because a merge behaves like a relationship.
 ```python
+# sales (4 rows) and products (each product listed twice) are the invented tables described above
 print("pivot total:", sales["amount"].sum())
 
 joined = sales.merge(products, on="product_id")
@@ -1433,6 +1462,7 @@ Quiz me on SQL window functions for a data analyst interview. One question at a 
 **Sample data:** invented orders. Total revenue 103,000. The AI joined customers' current region; finance uses the order's region.
 **Code (what you write in the interview):**
 ```python
+# connection: SQLite test database with orders and customers tables (invented rows)
 ai_version = """SELECT c.current_region, SUM(o.revenue)
                 FROM orders o JOIN customers c ON c.customer_id = o.customer_id
                 GROUP BY 1"""
@@ -1513,7 +1543,7 @@ Total: [(103000,)]
 - At each step the model gives probabilities to possible next words; temperature reshapes them (lower makes the favourite more dominant).
 - Many chat tools hide this setting; it mainly appears in developer settings (from memory, unverified).
 - Even low temperature does not guarantee identical answers or correct ones.
-**Worked example (concept question):** Three next-word options with scores for Pay, Manager, Workload. Converted to probabilities: at temperature 0.2, Pay gets 99%; at 1.0, 63% / 23% / 14%; at 2.0, 48% / 29% / 23%. Computed by script (illustrative, not a real model).
+**Worked example (concept question):** Three next-word options with scores for Pay, Manager, Workload. Converted to probabilities (made-up scores 2.0, 1.0, 0.5): at temperature 0.2, Pay gets 99%; at 1.0, 63% / 23% / 14%; at 2.0, 48% / 29% / 23%. Computed by script (illustrative, not a real model).
 **Alternative / pitfalls:** Low temperature is for classification and SQL; higher for brainstorming wording. It reduces randomness, not hallucination.
 **Likely follow-ups:** 1) *Temperature 0 means always correct?* No. 2) *Why do answers vary in a chat tool?* Sampling and hidden settings.
 **Common mistakes:** Believing temperature is a "truthfulness" dial.
@@ -2072,7 +2102,7 @@ Fix lowers reported figure by: 16.7 %
 **Common mistakes:** Treating "no error message" as correct; checking formatting instead of logic.
 
 ### Q100 ⭐ 🔴 How would you prepare for an interview round where AI tools are permitted, and what would you show the interviewer about how you work with them?
-**Asked at:** commonly asked (no company-specific report found); the sources show AI-fluency and verification prompts on prep sites (unverified, snippet level) and one Infosys Hyderabad report of GenAI interview content (March 2026, a single report).
+**Asked at:** commonly asked (no company-specific report found); the sources show AI-fluency and verification prompts on prep sites (unverified, snippet level) and one Infosys Hyderabad candidate report of GenAI interview content (March 2026, a single anecdote; role not confirmed as data analyst).
 **What the interviewer is checking:** Whether you use AI as a tool with judgement, not as a substitute for thinking.
 **Say this in the interview:** "I would first confirm the rules. Then I would practise with realistic tasks: restate the problem myself, give the AI the schema and definitions, ask for a draft, and test it on a tiny dataset. What I show is the process: my own plan first, a clear prompt, checking the answer with a test or a known number, and explaining each line, including what I changed."
 **Explain simply:**

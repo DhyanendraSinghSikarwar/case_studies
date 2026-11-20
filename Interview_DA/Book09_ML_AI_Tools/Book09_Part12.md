@@ -60,7 +60,7 @@
 - Structure: question, data, model, check, what I would change.
 - **Baseline:** the dumbest sensible prediction (everyone stays). Your model must beat it.
 - **Precision/recall:** of those flagged, how many truly left; of those who left, how many were caught.
-- The example below uses made-up generated data (1,000 rows, seed 42), so it is not a real finding.
+- The example below uses made-up generated data (1,000 rows, seed 42; the generator is shown after the output), so it is not a real finding.
 **Code (core of the project):**
 ```python
 import pandas as pd
@@ -91,11 +91,28 @@ print("recall:", round(recall_score(y_test, pred), 3))
 ```text
 share who left: 0.214
 baseline accuracy: 0.788
-model accuracy: 0.824
-precision: 0.68
-recall: 0.321
+model accuracy: 0.804
+precision: 0.7
+recall: 0.132
 ```
-**What it means:** Accuracy beats the baseline by only 3.6 points, and the model catches about 32% of leavers. Report that honestly and say what you would change (more features, a lower threshold to raise recall).
+**Data used (made-up teaching data; this script builds `employees.csv` so you can reproduce every output in this part, results depend on this seed and generator):**
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+row_count = 1000
+tenure_years = rng.uniform(0.5, 15, row_count).round(1)
+overtime = rng.binomial(1, 0.35, row_count)
+satisfaction = rng.integers(1, 6, row_count)
+# Shorter tenure, overtime and low satisfaction raise the chance of leaving
+leave_score = -1.02 - 0.12 * tenure_years + overtime - 0.45 * (satisfaction - 3)
+chance_of_leaving = 1 / (1 + np.exp(-leave_score))
+left = rng.binomial(1, chance_of_leaving)
+pd.DataFrame({"tenure_years": tenure_years, "overtime": overtime,
+              "satisfaction": satisfaction, "left": left}).to_csv("employees.csv", index=False)
+```
+**What it means:** Accuracy beats the baseline by only 1.6 points (80.4% versus 78.8%), and the model catches only about 13% of leavers (precision 70%: of those it flags, 7 in 10 really leave). Report that honestly and say what you would change (more features, a lower threshold to raise recall).
 **Likely follow-ups:** 1) *Why not just accuracy?* Because 79% is reached by predicting nobody leaves. 2) *What would you change?* Add features, cross-validation, check fairness.
 **Common mistakes:** Reporting accuracy only, no baseline, no test set, claiming causes.
 
@@ -153,13 +170,13 @@ result = permutation_importance(model, X_test, y_test, n_repeats=10, random_stat
 for name, drop in zip(features.columns, result.importances_mean):
     print(name, "accuracy drop:", round(drop, 3))
 ```
-**Output:** (seed 42, made-up data)
+**Output:** (seed 42, made-up data built by the generator in Q4)
 ```text
-tenure_years accuracy drop: 0.052
-overtime accuracy drop: 0.046
-satisfaction accuracy drop: 0.059
+tenure_years accuracy drop: 0.011
+overtime accuracy drop: 0.014
+satisfaction accuracy drop: 0.037
 ```
-**What it means:** All three features matter by a similar amount here; none is useless. Importance is not cause.
+**What it means:** Satisfaction matters most here (accuracy falls about 3.7 points when it is shuffled); tenure and overtime matter less (about 1 point each). Importance is not cause, and small drops can be noise, so repeat with another seed.
 **Likely follow-ups:** 1) *Do you trust AI-written code?* Only after reading and testing it. 2) *Why change the seed?* To see if results are stable.
 **Common mistakes:** Copying code without reading, trusting the first accuracy, treating importance as causation.
 
@@ -257,7 +274,7 @@ satisfaction accuracy drop: 0.059
 - **Overfitting:** the model memorises past employees instead of learning patterns, like a student who memorises last year's paper.
 - **Precision:** of the people flagged, how many really left. **Recall:** of those who left, how many we flagged.
 - Practise: write a one-sentence version, a 30-second version and one example; test it on a friend outside data.
-**Worked example (computed on made-up data, seed 42):** A fully grown decision tree scored 98.5% on the data it learned from but 73.2% on new data; a small tree scored 78.4% and 79.2%. Plain words: "The big tree memorised the past and does worse on new people." For precision/recall: of 1,000 employees, 50 leave; the model flags 40 and 30 truly leave. Precision 30/40 = 75%, recall 30/50 = 60%. "Three of four flags are right, and we catch six of ten leavers."
+**Worked example (computed on the made-up data built in Q4, seed 42):** A fully grown decision tree scored 94.4% on the data it learned from but 67.6% on new data; a small tree (3 levels) scored 79.6% on both. Plain words: "The big tree memorised the past and does worse on new people." For precision/recall: of 1,000 employees, 50 leave; the model flags 40 and 30 truly leave. Precision 30/40 = 75%, recall 30/50 = 60%. "Three of four flags are right, and we catch six of ten leavers."
 **Alternative / pitfalls:** Do not show formulas first; lead with the decision.
 **Likely follow-ups:** 1) *Which matters more?* Depends on cost: missed leaver versus wasted conversation. 2) *How do you spot overfitting?* Big gap between train and test.
 **Common mistakes:** Jargon, long explanations, no number, no recommendation.
@@ -270,7 +287,7 @@ satisfaction accuracy drop: 0.059
 - Structure: what happened, how noticed, cause, fix, new habit.
 - Typical honest causes: **data leakage** (a column that reveals the answer), AI-written SQL double counting after a join, tool made-up details.
 - Habit: be suspicious of results that are too good.
-**Worked example (illustration, made-up data):** I added a column `exit_interview_done`, which only exists for people who already left. Test accuracy jumped from 83.2% to 100%. That is a leak, not skill.
+**Worked example (illustration, made-up data):** I added a column `exit_interview_done`, which only exists for people who already left. Test accuracy jumped from 79.6% to 100%. That is a leak, not skill.
 **Code (illustration):**
 ```python
 import pandas as pd
@@ -288,9 +305,9 @@ for columns in (base, base + ["exit_interview_done"]):
     model = DecisionTreeClassifier(max_depth=3, random_state=42).fit(X_train, y_train)
     print(len(columns), "features, test accuracy:", round(model.score(X_test, y_test), 3))
 ```
-**Output:** (seed 42)
+**Output:** (seed 42, data from Q4)
 ```text
-3 features, test accuracy: 0.832
+3 features, test accuracy: 0.796
 4 features, test accuracy: 1.0
 ```
 **What it means:** A perfect score is a warning. Remove columns that would not be known at prediction time.
