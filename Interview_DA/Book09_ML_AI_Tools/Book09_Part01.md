@@ -25,7 +25,7 @@
 - Think "teacher marks the homework" (supervised) versus "sort these photos into piles however they look alike" (unsupervised).
 **Worked example (concept question):** 5,000 past employees with a column `left` (Yes/No) means supervised. 5,000 employees with only survey scores and no outcome, grouped into "engaged", "neutral", "disengaged" piles by similarity, is unsupervised.
 **Alternative / pitfalls:** There is a third family, reinforcement learning, which is rarely needed by analysts. Do not call clustering "prediction": it describes, it does not predict a known outcome.
-**Likely follow-ups:** 1) *Which needs more effort to prepare?* Supervised, because someone must collect reliable labels. 2) *Can the two be combined?* Yes (Q39).
+**Likely follow-ups:** 1) *Which needs more effort to prepare?* Supervised, because someone must collect reliable labels. 2) *Can the two be combined?* Yes (Q74).
 **Common mistakes:** Saying "supervised means a human watches the model"; mixing up clustering with classification.
 
 ### Q3 ⭐⭐⭐ 🟢 What is the difference between machine learning and traditional rule-based programming?
@@ -36,7 +36,7 @@
 - Rules: input data + hand-written rules produce answers. ML: input data + known answers produce the rules (the model).
 - Rules are easy to explain and audit, but break when many factors interact.
 - ML can weigh many columns together, but it is harder to explain and needs good historical data.
-**Worked example (concept question):** On 10 past employees, the hand-written rule "overtime above 20 hours means will leave" matched what really happened for 8 of 10 (80%), computed by script. A model could look at overtime, tenure and more columns together and may do better, but you must test it on rows it has not seen (Book 9 later parts). If the 80% rule is good enough, use the rule.
+**Worked example (concept question):** Ten past employees (overtime hours per month, then what happened): 30 left, 25 left, 22 left, 28 left, 12 stayed, 8 stayed, 15 stayed, 5 stayed, 24 stayed, 10 left. The hand-written rule "overtime above 20 hours means will leave" is right for the first eight rows and wrong for the 24-hour employee (who stayed) and the 10-hour employee (who left): 8 of 10, or 80%. A model could look at overtime, tenure and more columns together and may do better, but you must test it on rows it has not seen (Book 9 later parts). If the 80% rule is good enough, use the rule.
 **Alternative / pitfalls:** Many production systems mix both: a model gives a score and business rules decide the action.
 **Likely follow-ups:** 1) *When prefer rules?* When the logic is known, legal or must be fully transparent (for example a leave policy). 2) *Is ML always more accurate?* No; compare against the simple rule as a baseline (Q30).
 **Common mistakes:** Calling every IF statement "AI"; assuming ML needs no human judgement.
@@ -239,7 +239,7 @@ print(new_pred)
 **Common mistakes:** Calling `predict` before `fit`; fitting on the test data; passing the label inside X.
 
 ### Q16 ⭐⭐⭐ 🟡 Walk through the steps of a typical machine learning project, from business question to a result the business can use.
-**Asked at:** commonly asked (no company-specific report found); "project workflow" is a reported discussion topic in some analyst interviews (for example a Deloitte USI Hyderabad review, unverified).
+**Asked at:** commonly asked (no company-specific report found); "project workflow" is a reported discussion topic in some analyst interviews (a Deloitte USI Hyderabad review mentions a "project workflow" discussion, but not an ML-specific one; unverified).
 **What the interviewer is checking:** That you see ML as a business process, not just model fitting.
 **Say this in the interview:** "I start with the business question and the decision it will change, then check the data exists, clean and explore it, build a simple baseline, train and test models on unseen data, explain the result in business terms, hand it over with a plan to monitor it."
 **Explain simply:**
@@ -459,10 +459,23 @@ print(X.shape, y.shape)
 **What the interviewer is checking:** That you measure improvement against something, and know a fancy model must beat a simple one.
 **Say this in the interview:** "A baseline is the simplest sensible prediction, for example always guessing the most common outcome, or last month's value. It sets the bar. If my model cannot beat it clearly, the extra complexity is not worth it."
 **Explain simply:**
-- Without a baseline, "81% accurate" means nothing. If 69% of employees stay, always saying "stays" already scores 69%.
+- Without a baseline, "74% accurate" means nothing. If 70% of employees stay, always saying "stays" already scores 70%.
 - Baselines: most frequent class (classification), the average or last value (numbers), or a business rule such as "tenure under 12 months leaves".
 - It also checks your pipeline: if a baseline looks suspiciously good, suspect a data problem.
-**Sample data:** `employees` is a 400-row practice table (simulated, seed 42) with `tenure_months`, `overtime_hours` and `left` (1 = left); about 31% left.
+**Sample data:** `employees` is a 400-row practice table with `tenure_months`, `overtime_hours` and `left` (1 = left); about 31% left. In the interview you would load your own file; here it is simulated so you can rerun it (seed 42; the output depends on the seed):
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+n = 400
+employees = pd.DataFrame({
+    'tenure_months': rng.integers(1, 73, n),
+    'overtime_hours': rng.integers(0, 41, n)})
+# more overtime and shorter tenure raise the chance of leaving
+risk = -1.35 + 0.07 * (employees['overtime_hours'] - 15) - 0.03 * (employees['tenure_months'] - 30)
+employees['left'] = (rng.random(n) < 1 / (1 + np.exp(-risk))).astype(int)
+```
 **Code (what you write in the interview):**
 ```python
 from sklearn.dummy import DummyClassifier
@@ -485,10 +498,10 @@ print('model accuracy:', model.score(X_test, y_test))
 ```
 **Output:**
 ```text
-baseline accuracy: 0.69
-model accuracy: 0.81
+baseline accuracy: 0.7
+model accuracy: 0.74
 ```
-**What it means:** Doing nothing clever gets 69%; the model gets 81%, so it adds real value. Report both numbers to a manager, not just the model's.
+**What it means:** Doing nothing clever gets 70%; the model gets 74%, a gain of 4 points. That is a modest but real improvement on this simulated file; on your own data decide whether 4 points changes any decision. Report both numbers to a manager, not just the model's.
 **Alternative / pitfalls:** With rare outcomes, accuracy hides a lot (see Q47); also compare on a metric that matches the business goal.
 **Likely follow-ups:** 1) *What if the model barely beats the baseline?* Use the simpler option or improve the data. 2) *Is a rule a valid baseline?* Yes (see Q48).
 **Common mistakes:** Quoting accuracy with no baseline; building the complex model first.
@@ -1044,9 +1057,23 @@ net benefit (lakh): 6.0
 - *Black box:* many trees or a neural network; accurate but hard to explain in one sentence.
 - Choose simple when: stakes affect individuals (pay, promotion, exits); rules or law require reasons; data is small; the accuracy gain is small.
 - Choose the black box when the gain is large, the stakes are low (for example product recommendations) and you can still test it carefully.
-**Sample data:** Employees with overtime_hours and tenure_months; 800 simulated rows (seed 42).
+**Sample data:** Employees with overtime_hours and tenure_months; 800 simulated rows (seed 42). The setup below only builds practice data; with real data you would load your file.
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+n = 800
+employees = pd.DataFrame({
+    'overtime_hours': rng.integers(0, 41, n),
+    'tenure_months': rng.integers(1, 73, n)})
+risk = -1.5 + 0.09 * (employees['overtime_hours'] - 15) - 0.02 * (employees['tenure_months'] - 30)
+left = (rng.random(n) < 1 / (1 + np.exp(-risk))).astype(int)
+```
 **Code (what you write in the interview):**
 ```python
+from sklearn.linear_model import LogisticRegression
+
 # fit a logistic regression: predicts whether someone leaves (1) or stays (0)
 model = LogisticRegression(max_iter=1000).fit(employees, left)
 
@@ -1056,10 +1083,10 @@ print("Tenure +12 months: ", np.exp(model.coef_[0][1]*12).round(2))
 ```
 **Output:** (simulated data, seed 42)
 ```text
-Overtime +10 hours: 2.46
-Tenure +12 months:  0.78
+Overtime +10 hours: 2.65
+Tenure +12 months:  0.77
 ```
-**What it means:** In this simulated file, 10 more overtime hours multiplies the odds of leaving by about 2.5, and a year more tenure lowers them by about 22%. That sentence is something a manager can understand and challenge.
+**What it means:** In this simulated file, 10 more overtime hours multiplies the odds of leaving by about 2.7 (odds are not the same as probability: odds of 1 to 2 become 2.7 to 2), and a year more tenure lowers the odds by about 23%. That sentence is something a manager can understand and challenge.
 **Alternative / pitfalls:** Black boxes can be partly explained afterwards with tools such as SHAP or feature importance, but these are approximations. Simple models are easier to audit.
 **Likely follow-ups:** 1) *Does explainable mean causal?* No, still association. 2) *What if the black box is 5 points better?* Ask whether 5 points changes any decision, and whether it holds on fresh data.
 **Common mistakes:** Assuming accuracy is all that matters; treating a coefficient as a cause; claiming a black box cannot be checked at all.
@@ -1088,6 +1115,19 @@ Columns: emp_id, age, tenure_months, last_rating, exit_interview_done (Yes/No), 
 
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+
+# the six sample rows from the table above
+employees = pd.DataFrame({
+    "emp_id": [101, 102, 103, 104, 105, 106],
+    "age": [29, 41, 35, 26, 50, 31],
+    "tenure_months": [14, 60, 33, 8, 120, 22],
+    "last_rating": [3, 4, 3, 2, 5, 3],
+    "exit_interview_done": ["Yes", "No", "No", "Yes", "No", "Yes"],
+    "exit_date": ["2025-03-31", None, None, "2025-05-15", None, "2025-06-30"],
+    "overtime_hours": [30, 5, 12, 40, 2, 25],
+    "left_company": ["Yes", "No", "No", "Yes", "No", "Yes"]})
+
 # does an exit column perfectly match the label? then it is leakage
 print(pd.crosstab(employees["left_company"], employees["exit_interview_done"]))
 print(employees["exit_date"].notna().eq(employees["left_company"].eq("Yes")).all())
@@ -1134,9 +1174,28 @@ True
 - *Accuracy trap:* guessing "stays" every time scores 98%.
 - *Few examples:* 20 leavers is too few to learn a stable pattern, and a test set may hold only 4.
 - *First steps:* (1) print the base rate; (2) split with `stratify` so train and test keep the same 2% share; (3) use `class_weight="balanced"` (gives rare cases more weight); (4) report recall and precision; (5) widen the label window (left within 12 months) or add earlier years to get more leavers.
-**Sample data:** 1,000 simulated employees (overtime_hours, tenure_months, left), exactly 20 leavers, seed 42.
+**Sample data:** 1,000 simulated employees (overtime_hours, tenure_months, left), exactly 20 leavers, seed 42. The setup only builds practice data; with real data you would load your file.
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+n = 1000
+employees = pd.DataFrame({
+    'overtime_hours': rng.integers(0, 41, n),
+    'tenure_months': rng.integers(1, 73, n)})
+# exactly 20 leavers, drawn with a higher chance for high overtime and short tenure
+risk = 0.09 * employees['overtime_hours'] - 0.02 * employees['tenure_months']
+chance = np.exp(risk) / np.exp(risk).sum()
+employees['left'] = 0
+employees.loc[rng.choice(n, size=20, replace=False, p=chance), 'left'] = 1
+```
 **Code (what you write in the interview):**
 ```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+from sklearn.model_selection import train_test_split
+
 print(employees["left"].value_counts())
 print("Accuracy of 'nobody leaves':", 1 - employees["left"].mean())
 
@@ -1161,11 +1220,11 @@ left
 Name: count, dtype: int64
 Accuracy of 'nobody leaves': 0.98
 Leavers in test set: 4 of 200
-Accuracy: 0.79
-Recall: 0.75
-Precision: 0.06818181818181818
+Accuracy: 0.61
+Recall: 1.0
+Precision: 0.04878048780487805
 ```
-**What it means:** Accuracy fell to 79%, yet the model is more useful: it caught 3 of 4 leavers. But it flagged about 44 people to find them (precision 7%), and 4 leavers is far too few to trust. Report "promising but unproven, need more data".
+**What it means:** Accuracy fell to 61%, yet the model is more useful than "nobody leaves": it caught all 4 leavers in the test set. But it flagged 82 of 200 people to find them (precision about 5%), and with only 4 leavers in the test set these numbers could swing a lot on another split. Report "promising but unproven, need more data".
 **Alternative / pitfalls:** Resampling (oversampling the rare class) is another option, but do it only on the training part, otherwise test data leaks. Never tune on the test set.
 **Likely follow-ups:** 1) *Why not just oversample?* It can copy the same 16 rows and overfit; do it only inside training. 2) *Which metric?* Recall and precision, plus lift.
 **Common mistakes:** Celebrating 98% accuracy; random split without stratify; reporting results from 4 leavers as solid.
@@ -1180,9 +1239,27 @@ Precision: 0.06818181818181818
 - *Cross-validation:* split the data several times, test on each part, and look at the spread.
 - *Baseline:* compare against "predict that nobody leaves".
 - Often basic descriptive analysis (attrition by team, tenure band) is the more reliable output at this size.
-**Sample data:** 300 simulated employees, 33 leavers, overtime_hours and tenure_months, seed 42.
+**Sample data:** 300 simulated employees, 33 leavers, overtime_hours and tenure_months, seed 42. The setup only builds practice data; with real data you would load your file.
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+n = 300
+employees = pd.DataFrame({
+    'overtime_hours': rng.integers(0, 41, n),
+    'tenure_months': rng.integers(1, 73, n)})
+# exactly 33 leavers, drawn with only a weak link to overtime and tenure
+risk = 0.05 * employees['overtime_hours'] - 0.01 * employees['tenure_months']
+chance = np.exp(risk) / np.exp(risk).sum()
+employees['left'] = 0
+employees.loc[rng.choice(n, size=33, replace=False, p=chance), 'left'] = 1
+```
 **Code (what you write in the interview):**
 ```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import RepeatedStratifiedKFold, cross_val_score
+
 print("Leavers:", employees["left"].sum(), "of", len(employees))
 X = employees[["overtime_hours", "tenure_months"]]
 y = employees["left"]
@@ -1199,7 +1276,7 @@ print("Share of leavers caught (recall), mean:", round(recall.mean(), 3), "range
 ```text
 Leavers: 33 of 300
 Mean accuracy: 0.89
-Lowest and highest fold: 0.867 0.9
+Lowest and highest fold: 0.883 0.9
 Accuracy of 'nobody leaves': 0.89
 Share of leavers caught (recall), mean: 0.0 range: 0.0 to 0.0
 ```
@@ -1219,7 +1296,7 @@ Share of leavers caught (recall), mean: 0.0 range: 0.0 to 0.0
 - *Outside check:* even though the groups were made without labels, see whether they differ on a business outcome such as attrition.
 - *Actionable and sized:* a group of 5 people, or a group that needs the same action as another, adds little.
 - Statistics like the silhouette score can help, but they do not replace the business test (Part 4 covers clustering steps).
-**Worked example:** In a simulated file of 600 employees (see Q74), three groups came out with attrition of 34%, 4% and 10%, average overtime of 36, 5 and 15 hours, sizes 200, 209 and 191. The 34% group (high overtime, low tenure) is clearly different, easy to name and actionable. If all three had shown about 10% attrition and similar profiles, I would say the grouping is not useful.
+**Worked example:** In a simulated file of 600 employees (see Q74), three groups came out with attrition of 38%, 2% and 14%, average overtime of 35, 5 and 14 hours, sizes 200, 198 and 202. The 38% group (high overtime, low tenure) is clearly different, easy to name and actionable. If all three had shown about the same attrition and similar profiles, I would say the grouping is not useful.
 **Alternative / pitfalls:** Different numbers of groups can all look "fine"; pick the one that supports distinct actions. Groups depend on which columns you fed in and how they were scaled.
 **Likely follow-ups:** 1) *What if the groups are unstable?* Fewer groups, other features, or conclude there is no real structure. 2) *Is a high silhouette enough?* No, it measures separation, not value.
 **Common mistakes:** Saying "the algorithm found them, so they are valid"; no profile or name; not checking stability.
@@ -1275,7 +1352,7 @@ Share of leavers caught (recall), mean: 0.0 range: 0.0 to 0.0
 - *Based on items:* suggest items often bought together, or similar in features.
 - Works best with a lot of history; new users or items have little data (the "cold start" problem).
 - It is also used for HR: suggesting training courses to similar employees.
-**Worked example (5 customers, hypothetical):** A, B, C and E bought a laptop. Of those four, A, B and C also bought a mouse, so 3 of 4 (75%). When a new laptop buyer appears, suggest a mouse first. A bag shows up for only 1 of the 4 (25%), so rank it lower. A short pandas crosstab confirmed these shares.
+**Worked example (5 customers, hypothetical):** A, B, C and E bought a laptop. Of those four, A, B and C also bought a mouse, so 3 of 4 (75%). When a new laptop buyer appears, suggest a mouse first. A bag shows up for only 1 of the 4 (25%), so rank it lower. Basket data: A (laptop, mouse), B (laptop, mouse), C (laptop, mouse), D (mouse only), E (laptop, bag). Counting the four laptop buyers gives 3 mouse, 1 bag, and the shares above.
 **Alternative / pitfalls:** Popular items dominate, so everyone gets the same suggestions. Recommendations need fairness and privacy checks, too.
 **Likely follow-ups:** 1) *How do you measure success?* Click or purchase rate in an A/B test. 2) *What is cold start?* No history for a new user or item.
 **Common mistakes:** Calling it "just a filter"; ignoring that popular items crowd out others.
@@ -1290,8 +1367,25 @@ Share of leavers caught (recall), mean: 0.0 range: 0.0 to 0.0
 - Columns must be put on the same scale first, otherwise big-number columns dominate.
 - Trade-off: the components are harder to explain than the original columns.
 **Sample data:** 200 simulated employees with age, tenure_months, salary_k (thousands) and overtime_hours; the first three rise together (seed 42).
+**Setup (builds the practice data; seed 42):**
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+n = 200
+seniority = rng.normal(0, 1, n)  # hidden driver: age, tenure and salary rise together
+employees = pd.DataFrame({
+    'age': (35 + 8 * seniority + rng.normal(0, 3, n)).round(),
+    'tenure_months': (48 + 24 * seniority + rng.normal(0, 10, n)).clip(1).round(),
+    'salary_k': (60 + 20 * seniority + rng.normal(0, 8, n)).round(),
+    'overtime_hours': rng.normal(15, 8, n).clip(0).round()})
+```
 **Code (what you write in the interview):**
 ```python
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
 # put columns on the same scale first, otherwise big numbers dominate
 scaled = StandardScaler().fit_transform(employees)
 pca = PCA(n_components=2)
@@ -1301,12 +1395,12 @@ print(pd.DataFrame(pca.components_, columns=employees.columns, index=["PC1", "PC
 ```
 **Output:** (simulated data, seed 42)
 ```text
-Share of information kept: [0.71 0.25]
+Share of information kept: [0.66 0.25]
       age  tenure_months  salary_k  overtime_hours
 PC1  0.58           0.58      0.58            0.04
-PC2 -0.06          -0.01      0.00            1.00
+PC2 -0.09           0.00      0.02            1.00
 ```
-**What it means:** Four columns became two that keep 96% of the variation. The first component is basically "seniority" (age, tenure and salary move together); the second is overtime on its own.
+**What it means:** Four columns became two that keep 91% of the variation (the signs of a component can flip between runs; that does not change the meaning). The first component is basically "seniority" (age, tenure and salary move together); the second is overtime on its own.
 **Alternative / pitfalls:** PCA is not feature selection, since it blends all columns. It does not use a label, so the top components are not guaranteed to predict anything.
 **Likely follow-ups:** 1) *Why scale first?* Otherwise salary in thousands outweighs rating from 1 to 5. 2) *When would you avoid it?* When you must explain each input.
 **Common mistakes:** Forgetting to scale; thinking PCA removes columns; reading components as original columns.
@@ -1333,7 +1427,42 @@ PC2 -0.06          -0.01      0.00            1.00
 - *Concept drift:* the link between inputs and outcome changes (overtime used to cause exits; now the main reason is manager change).
 - *Process changes:* a column is redefined, a system is replaced, a label is recorded differently.
 - *Fix:* track performance on recent data, compare input averages with training, retrain, and keep an owner.
-**Worked example (simulated, seed 42):** A logistic regression is trained on one year where overtime drives attrition. On a new year with the same pattern, the top-10% risk list caught 26% of leavers, against 10% by chance. After the pattern changes (overtime no longer matters), the same model's top-10% list caught 9%, worse than random.
+**Worked example (simulated, seed 42):** A logistic regression is trained on one year where overtime drives attrition. On a new year with the same pattern, the top-10% risk list caught 25% of leavers, against 10% by chance. After the pattern changes (overtime no longer matters), the same model's top-10% list caught 11%, no better than chance. Code to reproduce it:
+```python
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+
+rng = np.random.default_rng(42)
+
+def make_year(n, overtime_matters):
+    year = pd.DataFrame({'overtime_hours': rng.integers(0, 41, n),
+                         'tenure_months': rng.integers(1, 73, n)})
+    overtime_effect = 0.08 if overtime_matters else 0.0
+    risk = -2.0 + overtime_effect * (year['overtime_hours'] - 20) - 0.01 * (year['tenure_months'] - 36)
+    year['left'] = (rng.random(n) < 1 / (1 + np.exp(-risk))).astype(int)
+    return year
+
+train_year = make_year(2000, overtime_matters=True)
+same_pattern = make_year(2000, overtime_matters=True)
+changed_pattern = make_year(2000, overtime_matters=False)
+
+features = ['overtime_hours', 'tenure_months']
+model = LogisticRegression(max_iter=1000).fit(train_year[features], train_year['left'])
+
+def top_decile_catch(year):
+    score = model.predict_proba(year[features])[:, 1]
+    top_10_percent = score >= np.quantile(score, 0.9)
+    return year.loc[top_10_percent, 'left'].sum() / year['left'].sum()
+
+print('Same pattern, share of leavers in top-10% list:', round(top_decile_catch(same_pattern), 2))
+print('Changed pattern, share of leavers in top-10% list:', round(top_decile_catch(changed_pattern), 2))
+```
+Output (seed 42):
+```text
+Same pattern, share of leavers in top-10% list: 0.25
+Changed pattern, share of leavers in top-10% list: 0.11
+```
 **Alternative / pitfalls:** Not every drop is drift; check data quality and seasonality first. If true outcomes arrive slowly (leavers show up months later), drift is noticed late.
 **Likely follow-ups:** 1) *How often to retrain?* Based on monitoring, not a fixed rule. 2) *How do you detect it early?* Watch input distributions and recent hit rate.
 **Common mistakes:** Deploying and forgetting; blaming the algorithm; retraining without checking data definitions.
@@ -1362,9 +1491,30 @@ PC2 -0.06          -0.01      0.00            1.00
 - Simple models are easier to explain, audit and maintain, and are less likely to memorise noise (overfit).
 - On small, messy data, complex models often add little.
 - Complex only if the gain is large and consistent, and you can still explain and monitor it.
-**Sample data:** 400 simulated employees: overtime_hours, tenure_months, last_rating, engagement, left (seed 42).
+**Sample data:** 400 simulated employees: overtime_hours, tenure_months, last_rating, engagement, left (seed 42). The setup only builds practice data; with real data you would load your file.
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+n = 400
+employees = pd.DataFrame({
+    'overtime_hours': rng.integers(0, 41, n),
+    'tenure_months': rng.integers(1, 73, n),
+    'last_rating': rng.integers(1, 6, n),
+    'engagement': rng.uniform(1, 5, n).round(1)})
+# the true pattern is simple (straight-line effects), about 28% leave
+risk = (-1.3 + 0.07 * (employees['overtime_hours'] - 15)
+        - 0.03 * (employees['tenure_months'] - 30)
+        - 0.5 * (employees['engagement'] - 3))
+employees['left'] = (rng.random(n) < 1 / (1 + np.exp(-risk))).astype(int)
+```
 **Code (what you write in the interview):**
 ```python
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import RepeatedStratifiedKFold, cross_val_score
+
 X = employees.drop(columns="left")
 y = employees["left"]
 cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=5, random_state=42)
@@ -1375,8 +1525,8 @@ print("Gradient boosting AUC:  ", complex_model.mean().round(3))
 ```
 **Output:** (simulated data, seed 42)
 ```text
-Logistic regression AUC: 0.727
-Gradient boosting AUC:   0.681
+Logistic regression AUC: 0.807
+Gradient boosting AUC:   0.755
 ```
 **What it means:** AUC is a score from 0.5 (guessing) to 1 (perfect) for how well the model ranks leavers above stayers. Here the simple model beat the complex one on the same folds. That is not a law (here the true pattern was simple), but it shows the complex model has to earn its place.
 **Alternative / pitfalls:** If the relationships are curved or interact in complicated ways, trees can win; test, do not assume.
@@ -1390,7 +1540,7 @@ Gradient boosting AUC:   0.681
 **Explain simply:**
 - *Steps:* data extract, cleaning, feature creation, training, evaluation, scoring, saving results, monitoring.
 - *Why automate:* fewer manual errors, same steps for training and scoring, repeatable each month, easy to audit.
-- *sklearn Pipeline* (tested to exist in the installed sklearn version here) chains preprocessing and a model, so scaling learned on training data is applied identically to new data and cannot leak from test data.
+- *sklearn Pipeline* (tested to exist in the installed sklearn version here) chains preprocessing and a model, so scaling learned on training data is applied identically to new data; used inside cross-validation, it also stops test rows from leaking into the scaling step.
 - Scheduling and tooling vary by company; I would describe the idea, not claim a specific platform.
 **Worked example:** A monthly attrition list: Monday, the HR extract loads; cleaning rules run; features are rebuilt as of that date; the saved model scores everyone; a table feeds the dashboard; a check alerts if row counts or averages look odd.
 **Alternative / pitfalls:** Automating a bad process just repeats errors faster. Add checks (row counts, missing values) and an owner.
@@ -1406,7 +1556,7 @@ Gradient boosting AUC:   0.681
 - *Feature table or store:* a shared, documented table of features with one definition each, reused by many models and by scoring.
 - *Why consistency:* the model learned what the number meant at training; change the meaning and it misreads.
 - Always compute features as of a stated date, using only what was known then.
-**Worked example (hypothetical, computed by script):** Employee 2 joined 2022-07-01. If training measured tenure as of 2025-06-30 she had 36.0 months; scoring a year later gives 48.0 months, which is correct only if the model was trained that way. A worse mismatch: a leaver who joined on 2023-03-15 and left 2025-03-14 has tenure 24.0 months counted to the exit date, while current staff are counted to today. The model sees leavers as "short tenure" for a reason that exists only after the event.
+**Worked example (hypothetical, checked by a short date calculation):** Employee 2 joined 2022-07-01. If training measured tenure as of 2025-06-30 she had about 36.0 months (days divided by 30.4375); scoring a year later gives about 48.0, which is correct only if the model was trained that way. A worse mismatch: a leaver who joined on 2023-03-15 and left 2025-03-14 has tenure about 24.0 months counted to the exit date, while current staff are counted to today. The model sees leavers as "short tenure" for a reason that exists only after the event.
 **Alternative / pitfalls:** A small team can use one shared SQL view or a documented table instead of a full feature-store product.
 **Likely follow-ups:** 1) *What is this problem called?* Training-serving skew. 2) *Where do you document?* A data dictionary with definition and as-of date.
 **Common mistakes:** Rebuilding features differently in two scripts; no as-of date; using post-event information.
@@ -1435,9 +1585,31 @@ Gradient boosting AUC:   0.681
 - *Profile:* describe the groups and compare attrition across them.
 - *Supervised step* (with the answer column): feed the group as an extra input to a model that predicts leaving.
 - Other chains: clustering customers, then a separate model per segment; PCA first, then a classifier.
-**Sample data:** 600 simulated employees: engagement, overtime_hours, tenure_months, left; three hidden types (seed 42).
+**Sample data:** 600 simulated employees: engagement, overtime_hours, tenure_months, left; three hidden types (seed 42). The setup only builds practice data; with real data you would load your file.
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+# three hidden employee types: (engagement, overtime, tenure, chance of leaving)
+hidden_types = [(2.2, 35, 13, 0.34), (4.1, 5, 58, 0.04), (3.0, 15, 28, 0.10)]
+parts = []
+for engagement, overtime, tenure, chance_of_leaving in hidden_types:
+    parts.append(pd.DataFrame({
+        'engagement': rng.normal(engagement, 0.5, 200).clip(1, 5),
+        'overtime_hours': rng.normal(overtime, 5, 200).clip(0),
+        'tenure_months': rng.normal(tenure, 8, 200).clip(1),
+        'left': (rng.random(200) < chance_of_leaving).astype(int)}))
+# shuffle the rows so that cross-validation folds are not sorted by type
+employees = pd.concat(parts).sample(frac=1, random_state=42).reset_index(drop=True)
+```
 **Code (what you write in the interview):**
 ```python
+from sklearn.cluster import KMeans
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+from sklearn.preprocessing import StandardScaler
+
 features = ["engagement", "overtime_hours", "tenure_months"]
 scaled = StandardScaler().fit_transform(employees[features])
 
@@ -1457,13 +1629,13 @@ print("Accuracy of 'nobody leaves':", round(1 - employees["left"].mean(), 3))
 ```text
        size  engagement  overtime  tenure  attrition
 group                                               
-0       200        2.18     35.52   12.97       0.34
-1       209        4.11      5.05   58.51       0.04
-2       191        3.05     14.94   28.39       0.10
-CV accuracy: 0.842
-Accuracy of 'nobody leaves': 0.84
+0       198        4.10      5.45   57.69       0.02
+1       200        2.18     35.04   12.61       0.38
+2       202        2.96     14.00   28.57       0.14
+CV accuracy: 0.822
+Accuracy of 'nobody leaves': 0.822
 ```
-**What it means:** Group 0 (low engagement, heavy overtime, short tenure) loses 34% of people versus 4% in group 1: that profile is the business insight. Accuracy (84.2%) only matches the 84% baseline, so do not sell the model on accuracy; use the groups to focus conversations, and judge any risk model by recall and lift (Q59).
+**What it means:** Group 1 (low engagement, heavy overtime, short tenure) loses 38% of people versus 2% in group 0: that profile is the business insight. Accuracy (82.2%) only matches the 82.2% baseline, so do not sell the model on accuracy; use the groups to focus conversations, and judge any risk model by recall and lift (Q59).
 **Alternative / pitfalls:** Cluster only on training data if you will use the groups in a model, otherwise information leaks. Groups change when columns or scaling change.
 **Likely follow-ups:** 1) *Why not just use the clusters as the answer?* Without a label we cannot say whether they matter for attrition. 2) *Another combination?* Segment customers, then forecast per segment.
 **Common mistakes:** Treating cluster numbers as meaningful; skipping profiling; clustering on the whole data before splitting.
