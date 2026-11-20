@@ -1081,7 +1081,7 @@ Median with outlier: 1100.0
 **Common mistakes:** Removing outliers without asking the business; ignoring them and getting a cluster of 2.
 
 ### Q38 ⭐⭐ 🟡 What are the main limitations of k-means?
-**Asked at:** commonly asked (no company-specific report found); k-means limitations appear in unverified candidate reports and question banks (for example Tiger Analytics, k-means vs hierarchical).
+**Asked at:** commonly asked (no company-specific report found); k-means limitations appear in question banks (unverified); a Tiger Analytics (June 2020) round reportedly asked k-means vs hierarchical (single anonymous snippet, mapping unverified).
 **What the interviewer is checking:** That you know where the method fails, not just how it works.
 **Say this in the interview:** "You must choose k up front; it assumes roughly round, similar-sized clusters; it is sensitive to scale and outliers; it can land on a poor answer depending on the start; it works on numbers only; and it always returns clusters, even when the data has no real groups."
 **Explain simply:**
@@ -1268,7 +1268,15 @@ recency    0.09   0.06     1.00
 **Sample data:** 6 invented customers with one gap in each of `recency`, `frequency`, `monetary`.
 **Code (what you write in the interview):**
 ```python
+import numpy as np
+import pandas as pd
 from sklearn.impute import SimpleImputer
+
+customers = pd.DataFrame({
+    "recency": [10, 25, np.nan, 40, 200, 180],
+    "frequency": [12, 8, 6, np.nan, 1, 2],
+    "monetary": [9000, 6000, 5000, 4500, np.nan, 900],
+})
 
 # How many gaps per column?
 print(customers.isna().sum())
@@ -1306,11 +1314,25 @@ dtype: int64
 - Check the share of variation kept; if it is low (say 40%), the picture hides structure.
 - Other options: pairs of features in a scatter-matrix, a heatmap or bar chart of cluster averages, a radar chart for 2 to 3 clusters, or t-SNE/UMAP (from memory, unverified; good for pictures, not for measuring distance).
 - The cluster-profile table (averages per cluster) is what the business reads.
-**Sample data:** 300 invented customers, 5 features (`recency`, `frequency`, `monetary`, `tenure`, `returns`), 3 clusters from k-means (seed 42).
+**Sample data:** 300 invented customers, 5 features (`recency`, `frequency`, `monetary`, `tenure`, `returns`, in arbitrary standardised-style units), 3 clusters from k-means (seed 42), built in the code below.
 **Code (what you write in the interview):**
 ```python
-from sklearn.decomposition import PCA
+import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# Invented data: three groups of customers with different average profiles
+rng = np.random.default_rng(42)
+centres = np.array([[5, 5, 0, 0, 0], [0, 5, 5, 5, 0], [0, 0, 0, 0, 0]])
+sizes = [60, 60, 180]
+points = np.vstack([rng.normal(centres[i], 1, (sizes[i], 5)) for i in range(3)])
+customers = pd.DataFrame(points, columns=["recency", "frequency", "monetary", "tenure", "returns"])
+
+X_scaled = StandardScaler().fit_transform(customers)
+labels = KMeans(n_clusters=3, n_init=10, random_state=42).fit_predict(X_scaled)
 
 # Squash 5 features into 2 "summary" axes for a flat picture
 pca = PCA(n_components=2)
@@ -1327,13 +1349,13 @@ print(customers.groupby(labels).mean().round(2))
 ```
 **Output:**
 ```text
-Share of variation kept: [0.46 0.29]
+Share of variation kept: [0.46 0.28]
    recency  frequency  monetary  tenure  returns
-0     5.00       5.09      0.11   -0.19    -0.24
-1     0.02       5.07      4.82    5.11    -0.04
-2    -0.03      -0.02      0.02    0.01    -0.04
+0    -0.18       5.03      5.11    4.86     0.12
+1     0.06       0.08     -0.05   -0.01    -0.16
+2     5.00       4.94     -0.03    0.07    -0.18
 ```
-**What it means:** The two axes keep 75% of the variation (0.46 + 0.29), enough for a fair picture. The table shows what makes each group: cluster 0 has high recency and frequency values, cluster 1 high frequency, monetary and tenure. (The scatter plot itself is a picture, not printed text; the invented features are in arbitrary units.)
+**What it means:** The two axes keep 74% of the variation (0.46 + 0.28), enough for a fair picture. The table shows what makes each group: cluster 0 has high frequency, monetary and tenure, cluster 2 high recency (days since last purchase) and frequency, and cluster 1 sits near the average on everything. (The scatter plot itself is a picture, not printed text; `plt.show()` needs a display, so on a server save it with `plt.savefig`.)
 **Likely follow-ups:** 1) *Is the 2-D plot exact?* No, it is a projection. 2) *Does PCA need scaling first?* Yes, scale first.
 **Common mistakes:** Treating overlap on the plot as proof the clusters are bad; showing a plot with no profile table.
 
@@ -1344,9 +1366,28 @@ Share of variation kept: [0.46 0.29]
 **Explain simply:**
 - **RFM** = Recency (days since last purchase), Frequency (number of purchases), Monetary (total spend). Weights are how much each letter counts in a combined score.
 - Equal weight means a simple average of the three 1-5 scores. A weighted score (for example 0.5 R, 0.3 F, 0.2 M) is fine if the business can justify it; write the reason down.
-- **Correlated** means two columns rise and fall together. On a made-up 300-customer table, frequency and monetary correlate at 0.85. With k-means, that makes "how much they buy" count about twice.
+- **Correlated** means two columns rise and fall together. On the made-up 300-customer table built below, frequency and monetary correlate at 0.91. With k-means, that makes "how much they buy" count about twice.
 - Fixes: keep R plus one of F or M; average F and M into one "value" column; or use PCA (a method that merges overlapping columns into new ones). Log-transform skewed spend first.
-**Worked example (concept questions):** Customers A, B, C have scores R/F/M of 5/4/4, 2/5/5 and 4/1/1. Equal weights give 4.33, 4.00, 2.00 (A ranks first). With weights 0.5/0.3/0.2, A scores 4.5, B 3.5 and C 2.5; B drops because it is weak on recency. On the 300-customer data, k-means with 3 clusters on R and F only gave nearly the same segments as with all three (agreement score 0.93, where 1.0 means identical), which shows how much M adds once F is in.
+**Worked example (concept questions):** Customers A, B, C have scores R/F/M of 5/4/4, 2/5/5 and 4/1/1. Equal weights give 4.33, 4.00, 2.00 (A ranks first). With weights 0.5/0.3/0.2, A scores 4.5, B 3.5 and C 2.5; B drops because it is weak on recency. On the 300-customer data, k-means with 3 clusters on R and F only gave nearly the same segments as with all three (agreement score 0.94, an adjusted Rand index where 1.0 means identical), which shows how little M adds once F is in.
+**Sample data (made-up 300 customers, reused in Q46, Q51, Q54, Q58, Q60, Q62 and Q65; numbers depend on this generator and seed 42, run on numpy 2.5.3 and scikit-learn 1.9.1):**
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+
+def one_group(size, recency, recency_spread, orders, order_value):
+    orders_made = np.maximum(rng.poisson(orders, size), 1)
+    return pd.DataFrame({
+        "recency": np.clip(rng.normal(recency, recency_spread, size), 1, None).round(),
+        "frequency": orders_made,
+        "monetary": (orders_made * rng.lognormal(np.log(order_value), 0.3, size)).round(),
+    })
+
+# Three invented groups: lapsed (89), regular (134), best (77)
+customers = pd.concat([one_group(89, 159, 40, 2, 20), one_group(134, 68, 25, 4, 27),
+                       one_group(77, 14, 6, 15, 30)], ignore_index=True)
+```
 **Alternative / pitfalls:** Do not pick weights to get a "nice-looking" result. For quintile scores, correlated F and M just give similar numbers, which is harmless for reporting but misleading inside a distance-based model.
 **Likely follow-ups:** 1) *How would you choose weights?* Ask the business which behaviour predicts the goal (repeat purchase, churn) and test it on past data. 2) *Does scaling fix correlation?* No; scaling fixes units, not overlap.
 **Common mistakes:** Saying "equal weights are always correct"; ignoring that spend is skewed; never checking the correlation table.
@@ -1360,7 +1401,7 @@ Share of variation kept: [0.46 0.29]
 - **Adjusted Rand index (ARI):** a number comparing two groupings of the same people. 1.0 means identical groups (the labels may be renamed); near 0 means no better than chance.
 - **Bootstrap:** refit on a random resample of customers (with replacement), assign everyone to the nearest resulting centre, and compare with the original grouping.
 - Also check that segment sizes, profiles and silhouette stay similar, and that the segments still appear next month.
-**Worked example (concept questions):** On the made-up 300-customer data (3 real groups), 10 single-start runs with different seeds all matched the best run with ARI 0.99 to 1.0. In 20 bootstrap refits, 3 segments averaged ARI 0.95 (worst 0.83); asking for 5 segments dropped to an average of 0.82 (worst 0.55). So 3 segments are stable here and 5 are shaky.
+**Worked example (concept questions):** On the made-up 300-customer data from Q45 (3 real groups), 10 single-start runs with different seeds all matched the best run with ARI 1.0. In 20 bootstrap refits, 3 segments averaged ARI 0.95 (worst 0.91); asking for 5 segments dropped to an average of 0.90 (worst 0.53). So 3 segments are stable here and 5 are shakier, with at least one refit that disagreed badly.
 **Alternative / pitfalls:** High stability does not prove the segments are useful; it only shows they are not random. Perfectly stable clusters can still be meaningless if the features were poor.
 **Likely follow-ups:** 1) *What if stability is low?* Reduce k, remove noisy features, or try another method. 2) *Why not just fix `random_state`?* That hides the instability; it does not remove it.
 **Common mistakes:** Running once with a fixed seed and calling it final; comparing raw label numbers between runs (they swap names, see Q60).
@@ -1382,6 +1423,28 @@ Assume `scaler` and `km` were fitted earlier on the training data.
 | 190 | 1 | 50 |
 | 60 | 4 | 250 |
 
+Training data used for the run below (made-up; `scaler` and `km` fitted on it earlier):
+
+```python
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+training = pd.DataFrame({
+    "recency_days": [8, 15, 10, 200, 170, 150, 25, 5],
+    "frequency": [14, 9, 12, 1, 2, 2, 8, 15],
+    "monetary": [900, 600, 750, 40, 70, 90, 500, 1000],
+})
+scaler = StandardScaler().fit(training)
+km = KMeans(n_clusters=2, n_init=10, random_state=42).fit(scaler.transform(training))
+
+new_customers = pd.DataFrame({
+    "recency_days": [12, 190, 60],
+    "frequency": [11, 1, 4],
+    "monetary": [800, 50, 250],
+})
+```
+
 **Code (what you write in the interview):**
 ```python
 # Same scaler as training: transform only, never fit again
@@ -1398,7 +1461,7 @@ print(new_customers)
 1           190          1        50        1
 2            60          4       250        1
 ```
-**What it means:** Segment 0 is the active big spenders and segment 1 the lapsed low spenders (training labels were [0 0 0 1 1 1 0 0]). The third customer (60 days, 4 orders) is borderline: its distance to centre 1 was 1.75 against 2.12 for centre 0, so check how close the call is.
+**What it means:** Segment 0 is the active big spenders and segment 1 the lapsed low spenders (training labels were [0 0 0 1 1 1 0 0]). The third customer (60 days, 4 orders) is borderline: its distance to centre 1 was 1.58 against 2.08 for centre 0 (in scaled units, from `km.transform`), so check how close the call is.
 **Alternative / pitfalls:** Customers far from every centre (new behaviour) still get a label; flag large distances (`km.transform`) as "new type, review". Save the scaler and model with joblib so production uses the same objects.
 **Likely follow-ups:** 1) *What if the new batch looks very different?* Monitor drift and refit. 2) *Could you fit on old plus new?* Yes, on a schedule, and then map the new labels to the old names.
 **Common mistakes:** Calling `fit_transform` on the new batch; forgetting to scale at all; refitting and comparing label numbers.
@@ -1480,7 +1543,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 **What the interviewer is checking:** A sensible end-to-end approach, and awareness that people data needs care.
 **Say this in the interview:** "I would first agree the goal with HR: who needs support to stay. Then clean the three columns, standardise them so units do not dominate, run k-means for a few values of k, pick k using silhouette, stability and usefulness, profile each cluster in original units and name them. The main risk is that a segment label sticks to people as a judgement, or is used for decisions it was never built for."
 **Explain simply:**
-- **Standardise** means rescaling each column to average 0 and spread 1. Without it, absence days (0 to 30) would swamp engagement (1 to 5). Example: two employees differing by 1 engagement point but 5 absence days look 5.0 apart raw, against 2.2 when only tenure and engagement differ; scale first.
+- **Standardise** means rescaling each column to average 0 and spread 1. Without it, absence days (0 to 30) would swamp engagement (1 to 5). Example: two employees who differ by 1 engagement point and 5 absence days are 5.1 apart on raw numbers, almost all of it absence; two who differ by 2 years of tenure and 1 engagement point are only 2.2 apart. Scale first so each column counts fairly.
 - Check missing engagement scores (survey non-response is not random), and outliers such as long-term leave.
 - Name segments from the profile table, then work out one retention action each.
 - **Risks:** stereotyping or stigma ("the absent group"); using absence as a proxy that affects people with health conditions or caring duties; small groups that make individuals identifiable; clusters that look like gender or age groups. Segmentation describes groups; it does not predict who will resign.
@@ -1517,7 +1580,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 - Use a bar chart of revenue share vs customer share; avoid scatter plots of principal components.
 - Make it concrete: show a sample customer from each group.
 - Add confidence: "the groups stayed the same when we re-ran the analysis".
-**Worked example (concept questions):** From the made-up 300-customer data: "Champions" are 26% of customers (77) but 65% of revenue; "Regulars" are 45% (134) and 27% of revenue; "Lapsed" are 30% (89) but 8% of revenue. The headline: protect the 26% that bring two thirds of revenue.
+**Worked example (concept questions):** From the made-up 300-customer data (generator in Q45, k = 3): "Champions" are 25% of customers (74) but 64% of revenue; "Regulars" are 48% (143) and 29% of revenue; "Lapsed" are 28% (83) but 7% of revenue. The headline: protect the quarter of customers that bring almost two thirds of revenue.
 **Alternative / pitfalls:** Do not hide limitations: segments are a simplification and some customers sit between groups. Avoid more than 5 segments; the team cannot act on 9.
 **Likely follow-ups:** 1) *Which chart?* Bar of size vs revenue share, plus a table. 2) *What if marketing disagrees with a name?* Rename; names are for communication, not statistics.
 **Common mistakes:** Showing silhouette scores or centroids; using "cluster 3" as a name; no recommended action.
@@ -1559,7 +1622,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 - Look at fields **not** used to build the clusters; if the segment also differs there, it is likely real.
 - Check size and revenue share; if it holds 3 people, it may be noise.
 - Name it by behaviour and test it with the stakeholder ("does this match what you see?").
-**Worked example (concept questions):** In the made-up 300-customer data, segment 2 has 134 customers with median recency 68 days (overall 71), 4 orders (overall 4) and median spend 108 (overall 108). It looks like an average group: "Regulars", 27% of revenue. Segment 1 (77 customers; 14 days, 15 orders, 443 spend; 65% of revenue) would be "Champions". Segment 0 (89 customers; 159 days, 2 orders, 41 spend) is "Lapsed".
+**Worked example (concept questions):** In the made-up 300-customer data (generator in Q45, k = 3), segment 2 has 83 customers (28%) with median recency 165 days (overall 68), 2 orders (overall 4) and median spend 36 (overall 96), and only 7% of revenue. That reads as "Lapsed": long silent, few orders, low spend. Segment 1 (74 customers; 13 days, 15 orders, spend 441; 64% of revenue) would be "Champions". Segment 0 (143 customers; 68 days, 4 orders, spend 91; 29% of revenue) looks like an average group: "Regulars".
 **Alternative / pitfalls:** Numbers like 0, 1, 2 are arbitrary and can change next run (Q60). A segment that looks "average" may mean k is too large or features are poor.
 **Likely follow-ups:** 1) *What if no story emerges?* Try fewer clusters or different features. 2) *Where do you store the name?* In a mapping table tied to centre profiles.
 **Common mistakes:** Giving only the centroid in scaled units; inventing a story without checking; leaving "Segment 2" in the deck.
@@ -1572,7 +1635,16 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 - **Elbow method:** plot **inertia** (total squared distance from points to their cluster centre; lower is tighter) for k = 1, 2, 3...; pick the bend where extra clusters stop helping much.
 - **Silhouette** (-1 to 1): how well each point fits its own cluster compared with the nearest other; higher is better.
 - Also try the gap statistic, stability (Q46), and practical limits (campaign budget, team capacity).
-**Worked example (concept questions):** On a made-up 300-point, 3-feature dataset, inertia fell 900.0, 640.8, 391.0, 309.4, 241.5, 199.8 for k=1 to 6. The percentage drops were 28.8% (k=2), 39.0% (k=3), 20.9%, 22.0%, 17.3%: no sharp break, just a slow slide. Silhouette: 0.316 (k=2), 0.440 (k=3), 0.420 (k=4), 0.404 (k=5), 0.363 (k=6). Silhouette favours 3, with 4 and 5 close behind.
+**Worked example (concept questions):** On a made-up 300-point, 3-feature dataset with three overlapping groups (generator below, standardised, KMeans `n_init=10`, `random_state=42`), inertia fell 900.0, 660.0, 437.8, 346.5, 287.0, 247.1 for k=1 to 6. The percentage drops were 26.7% (k=2), 33.7% (k=3), 20.9%, 17.2%, 13.9%: the biggest gain is at k=3, but there is no sharp break afterwards, just a slow slide. Silhouette: 0.281 (k=2), 0.373 (k=3), 0.359 (k=4), 0.343 (k=5), 0.309 (k=6). Silhouette favours 3, with 4 and 5 close behind.
+**Sample data (generator):**
+```python
+from sklearn.datasets import make_blobs
+from sklearn.preprocessing import StandardScaler
+
+centres = [[0, 0, 0], [4, 0, 0], [2, 3.5, 0]]
+X, _ = make_blobs(n_samples=300, centers=centres, cluster_std=1.0, random_state=42)
+X_scaled = StandardScaler().fit_transform(X)
+```
 **Alternative / pitfalls:** Silhouette scores near 0.25 or below suggest weak structure; segments may be a convenient partition, not natural groups. Say so.
 **Likely follow-ups:** 1) *Can you automate the pick?* Possible, but I still review it. 2) *Does scaling matter?* Yes, always scale before computing inertia.
 **Common mistakes:** Forcing an elbow that is not there; using inertia alone, which always falls as k grows.
@@ -1585,7 +1657,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 - Statistics say how separated the groups are; the business says how many it can treat differently.
 - Compare k=3 and k=5 on: silhouette, stability, smallest segment size, and distinct actions.
 - A compromise: 3 core segments, with 2 sub-segments of the largest.
-**Worked example (concept questions):** On the made-up dataset from Q55, silhouette was 0.440 at k=3 and 0.404 at k=5, a small gap. Stability over 20 bootstrap refits: k=3 averaged agreement 0.98 (worst 0.95); k=5 averaged 0.89 (worst 0.54), so some k=5 segments are shaky. Sizes at k=5: 59, 96, 58, 45, 42 (all workable). Recommendation: 3 solid segments are safest; go to 5 only if marketing confirms five different actions and the shaky pair can be merged.
+**Worked example (concept questions):** On the made-up dataset from Q55, silhouette was 0.373 at k=3 and 0.343 at k=5, a small gap. Stability over 20 bootstrap refits (adjusted Rand index against the full-data result): k=3 averaged 0.96 (worst 0.79); k=5 averaged 0.82 (worst 0.56), so some k=5 segments are shaky. Sizes at k=5: 91, 53, 58, 51, 47 (all workable). Recommendation: 3 solid segments are safest; go to 5 only if marketing confirms five different actions and the shaky pair can be merged.
 **Alternative / pitfalls:** Never hide that the data really contains 3 groups; presenting 5 as "natural" would mislead. Agree the criteria before looking at results to avoid arguing from a favourite.
 **Likely follow-ups:** 1) *What if marketing insists on 5?* Deliver 5 with a note on overlap, and test it with a campaign (Q52). 2) *What would change your mind?* Evidence that the extra segments respond differently.
 **Common mistakes:** Treating silhouette as the final word; ignoring the business constraint; claiming the clusters are "true".
@@ -1599,7 +1671,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 - Points in dense areas form clusters; points with too few neighbours get label -1 (noise).
 - k-means assumes round, similar-sized clusters and forces every point into a group.
 - Weakness: choosing `eps` is hard, and it struggles when densities differ. It also behaves poorly in many dimensions.
-**Worked example (concept questions):** On a made-up two-crescent shaped dataset (300 points), k-means with k=2 cut across the crescents (agreement with the true shapes 0.25 on a 0 to 1 scale), while DBSCAN with eps=0.2 and min_samples=5 recovered both crescents perfectly (1.0). Adding 3 far-away points, DBSCAN labelled exactly those 3 as noise.
+**Worked example (concept questions):** On a made-up two-crescent shaped dataset (`make_moons(n_samples=300, noise=0.05, random_state=42)`, unscaled), k-means with k=2 cut across the crescents (adjusted Rand index against the true shapes 0.25; 1.0 means identical), while DBSCAN with eps=0.2 and min_samples=5 recovered both crescents perfectly (1.0). Adding 3 far-away points, DBSCAN labelled exactly those 3 as noise.
 **Alternative / pitfalls:** For ordinary customer RFM data (blob-like groups), k-means is usually simpler and easier to explain. Scale features first, since `eps` is a distance.
 **Likely follow-ups:** 1) *How do you pick eps?* Plot sorted nearest-neighbour distances and look for a bend; then check results. 2) *Can DBSCAN predict new points?* Not directly in sklearn.
 **Common mistakes:** Using it without scaling; expecting a fixed number of clusters.
@@ -1613,7 +1685,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 - **MinMaxScaler:** (value - min) / (max - min). One huge outlier makes everyone else close to 0.
 - Clustering uses distances, so any unscaled column with large numbers (spend in rupees) would dominate.
 - Heavily skewed columns benefit from a log transform before either scaler.
-**Worked example (concept questions):** On the made-up 300-customer data, both scalers gave the same three segment sizes (about 89, 77, 134 vs 90, 77, 133; agreement 0.99). After adding one customer who spent 20,000, standard scaling isolated that customer as a cluster of 1 (sizes 122, 178, 1), while MinMax kept three normal-sized clusters (59, 120, 122) but with different boundaries (agreement between the two results 0.61).
+**Worked example (concept questions):** On the made-up 300-customer data (generator in Q45), both scalers gave similar segment sizes (143, 74, 83 with StandardScaler vs 149, 74, 77 with MinMaxScaler; agreement 0.94, adjusted Rand index). After adding one customer who spent 20,000 (30 days, 8 orders), standard scaling isolated that customer as a cluster of 1 (sizes 80, 220, 1), while MinMax kept three normal-sized clusters (148, 76, 77); agreement between the two results fell to 0.49.
 **Alternative / pitfalls:** Neither is "correct"; try both and check stability. Handle outliers deliberately (cap, log, or analyse separately).
 **Likely follow-ups:** 1) *Do you scale before or after the train/test split?* Fit on train, transform both. 2) *RobustScaler?* Uses median and IQR; less sensitive to outliers (from memory, unverified).
 **Common mistakes:** Not scaling; scaling the cluster labels; fitting the scaler on all data and then splitting.
@@ -1641,7 +1713,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 - Best option: keep the fitted model and name the centres; only refit at planned intervals.
 - If you must refit, match each new centre to the closest old centre (the Hungarian method in `scipy.optimize.linear_sum_assignment` does this optimally), then rename.
 - Alternatively assign names by rule ("highest spend = Champions") rather than by number.
-**Worked example (concept questions):** On the made-up 300-customer data, two single-start runs (seeds 1 and 2) gave customer 1 the label 2 in one run and 0 in the other, yet the groupings agreed (ARI 0.99). Matching by centre distance mapped {0 to 2, 1 to 1, 2 to 0}; after renaming, 99.7% of customers had the same label in both runs.
+**Worked example (concept questions):** On the made-up 300-customer data (generator in Q45), two single-start runs (`n_init=1`, seeds 1 and 4) gave customer 1 the label 0 in one run and 1 in the other, yet the groupings were identical (ARI 1.0). Matching by centre distance mapped the second run's {1 to 0, 0 to 1, 2 to 2}; after renaming, 100% of customers had the same label in both runs.
 **Alternative / pitfalls:** If behaviour truly shifts, a segment may merge or split; flag that rather than forcing a match. Track a **migration table** (how many customers moved from segment A to B) for the business.
 **Likely follow-ups:** 1) *Why does `random_state` fix it?* It fixes the start, so the same numbering repeats on the same data. 2) *What if segment count changes?* Document it and compare at the profile level.
 **Common mistakes:** Comparing label numbers across runs; hard-coding "cluster 2 = VIP".
@@ -1671,7 +1743,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 - k-means implies round, similar-sized clusters; a mixture can stretch each group in different directions.
 - In sklearn: `GaussianMixture(n_components=3)`, then `predict_proba`.
 - It is slower, has more settings and can be unstable on small data; it still needs scaling and a choice of the number of groups (BIC is a common guide; from memory, unverified here).
-**Worked example (concept questions):** On the made-up 300-customer data (3 groups), 94.7% of customers had a top probability above 0.9, but 4 had below 0.7. One customer (12 days, 7 orders, spend 196) got probabilities 0.00, 0.48 and 0.52: k-means labelled this customer firmly as segment 2, but the model shows they sit between two groups. The mixture and k-means groupings agreed at 0.68.
+**Worked example (concept questions):** On the made-up 300-customer data (generator in Q45; `GaussianMixture(n_components=3, n_init=5, random_state=42)`), 81% of customers had a top probability above 0.9, but 21 had below 0.7. One customer (73 days, 4 orders, spend 91) got probabilities 0.52, 0.00 and 0.48: k-means labelled this customer firmly as one segment, but the mixture model shows they sit between two groups. The mixture and k-means groupings agreed only moderately (adjusted Rand index 0.51), because the lapsed and regular groups overlap.
 **Alternative / pitfalls:** For a simple segmentation in a business setting, k-means is usually enough; use the mixture when borderline customers matter, for example in targeting thresholds.
 **Likely follow-ups:** 1) *Is k-means a special case?* Loosely yes: equal round groups with hard assignment. 2) *How to pick the number of components?* Compare BIC for several values.
 **Common mistakes:** Believing probabilities prove the groups are real; skipping scaling.
@@ -1685,7 +1757,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 - Result: nearly the same centres at much lower cost.
 - In sklearn: `MiniBatchKMeans(n_clusters=5, batch_size=1024, random_state=42)`.
 - For the tens of thousands of customers an analyst usually segments, normal k-means is fast enough and simpler.
-**Worked example (concept questions):** On made-up data of 200,000 rows and 5 features, regular k-means reached inertia 999,194 and mini-batch 999,572, only 0.04% worse, and the two groupings agreed fully (1.0). In this run, mini-batch took about half the time (0.12 seconds vs 0.22 seconds; timings depend on the machine, and the difference grows with data size).
+**Worked example (concept questions):** On made-up data of 200,000 rows and 5 features (five blobs, `default_rng(42)`), regular k-means (defaults, `random_state=42`) reached inertia 1,000,436 and mini-batch (`batch_size=1024`) 1,000,482, only 0.005% worse, and the two groupings agreed almost fully (adjusted Rand index above 0.999). Speed did not favour mini-batch in my test (full k-means took about 0.3 seconds, mini-batch several seconds on this machine), so I will not claim a speed-up from this run: the benefit is expected only at much larger sizes or with many features (from memory, unverified), and timings depend on the machine.
 **Alternative / pitfalls:** Results can differ a bit between runs; fix `random_state` and compare with full k-means on a sample before trusting it.
 **Likely follow-ups:** 1) *Does it give exactly the same answer?* No, a close approximation. 2) *Other ways to scale?* Cluster a sample, then assign all rows.
 **Common mistakes:** Using it on small data where it brings no benefit; forgetting scaling.
@@ -1718,7 +1790,7 @@ customer_id  recency_days  frequency  monetary  r_score  f_score  m_score
 6. **Profile and name:** table in original units, size and revenue share; one action each.
 7. **Validate:** stability, business sense, and a campaign holdout test (Q52). Add a monitoring plan: re-score monthly with the saved model.
 8. **Deliver:** short deck, segment list in the CRM, an owner and metrics.
-**Worked example (concept questions):** On the made-up 300-customer data, the result is 3 segments: Champions (77 customers, 65% of revenue), Regulars (134, 27%) and Lapsed (89, 8%). Actions: loyalty rewards for Champions, cross-sell to Regulars, win-back offers with a cost cap for Lapsed.
+**Worked example (concept questions):** On the made-up 300-customer data (generator in Q45), the result is 3 segments: Champions (74 customers, 64% of revenue), Regulars (143, 29%) and Lapsed (83, 7%). Actions: loyalty rewards for Champions, cross-sell to Regulars, win-back offers with a cost cap for Lapsed.
 **Alternative / pitfalls:** Rules-based RFM scoring is easier to explain and may be enough; compare it with k-means. Customer data is personal: keep it inside approved tools, minimise it, and follow company policy (Q53).
 **Likely follow-ups:** 1) *How long would it take?* Depends on data readiness; most time goes into cleaning. 2) *How would you know it worked?* Lift against a holdout.
 **Common mistakes:** Starting with the algorithm; no action plan; no validation or monitoring.
