@@ -16,6 +16,6 @@ Accessed 2026-11-20 via WebSearch (snippet/summary level only; no page opened in
 No source gives frequencies. 3 stars: the core wording ("why data analyst", "why us", "why leave HR", "why now", "five years", commitment) which appears in nearly every question-bank hit and HR-round report. 2 stars: probes on proof of interest, pay/step-back, role comparison, repetitive MIS, retention, and the harder role-plays. 1 star: differentiators (AI, reverse questions, hostile-interviewer role plays, offer comparison).
 
 ## Notes
-- Count 48 vs target 40. Gap-fills beyond what sources name (judgement): about 18 (role-plays, step-back, MIS repetition, hostile interviewer, offer comparison, JD-gap question).
+- Count 45 vs target 40. Gap-fills beyond what sources name (judgement): about 16 (role-plays, step-back, MIS repetition, hostile interviewer, offer comparison, JD-gap question).
 - Overlap avoided: Book 0 B0Q18 (why leave HR, outline), B0Q29 (fresher vs 2-year candidate), B0Q8/B0Q54 (explaining HR experience), B0Q34 (people analytics first), B0Q15/B0Q68 (AI career outlook, only an interview-room variant kept at 1 star), B0Q25/B0Q59 (pay). Tell-me-about-yourself belongs to Part 1; salary/notice to Part 8.
 - No question presupposes invented facts; experience-based items ask for a type of experience and include no-experience variants.
