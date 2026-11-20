@@ -58,7 +58,7 @@
 | Provider | Object storage (files) | Analytics warehouse |
 |---|---|---|
 | AWS | S3 | Redshift |
-| Azure | Blob Storage / Data Lake Storage | Synapse (Microsoft is moving to Fabric) |
+| Azure | Blob Storage / Data Lake Storage | Synapse (Microsoft is moving to Fabric, from memory, unverified) |
 | Google Cloud | Cloud Storage (GCS) | BigQuery |
 
 - **Object storage:** keeps files cheaply, no SQL by itself.
@@ -75,6 +75,7 @@ Data: 2 TB table, 10 equal-sized columns, illustrative rate 5 per TB scanned (as
 **Asked at:** commonly asked (no company-specific report found); bytes-scanned billing is a staple BigQuery topic (unverified).
 **What the interviewer is checking:** That you know column choice drives cost, and can do the arithmetic.
 **Say this in the interview:** "BigQuery stores data by column and bills for the columns you read. SELECT * scans all 2 TB; two of ten equal columns scan 0.4 TB, so 80% less."
+**Explain simply:** A TB (terabyte) is a unit of data size. BigQuery charges for how much data your query reads, and it reads whole columns, so asking for fewer columns means a smaller bill. The 5 per TB rate is made up for practice.
 **Sample data:** 2 TB table, 10 equal columns, rate 5 per TB (exercise input, not a real price).
 **Code (what you write in the interview):**
 ```python
@@ -110,7 +111,7 @@ Saving: 0.8
 **Explain simply:**
 - **OLTP (online transaction processing):** many small reads and writes, current data, such as saving a leave request.
 - **OLAP (online analytical processing):** few large reads over lots of history, such as attrition by department over three years.
-- **Why not report on the live database:** a heavy query can slow payroll or hiring screens; the live data is current-only and split across many normalised tables; numbers can change while you run.
+- **Why not report on the live database:** a heavy query can slow payroll or hiring screens; the live data is current-only and split across many small linked tables (normalised); numbers can change while you run.
 - **Warehouse benefits:** history kept, tables joined and cleaned, one agreed definition of each metric.
 **Likely follow-ups:** 1) *Can a read replica help?* Sometimes, but it is still OLTP-shaped. 2) *How fresh is a warehouse?* Depends on the load schedule; ask.
 **Common mistakes:** Defining OLTP/OLAP by name only; not giving the slowdown and history reasons.
@@ -174,11 +175,11 @@ Saving: 0.8
 ### Q11 ⭐ 🟡 What is the difference between a Fabric lakehouse and a Fabric warehouse, and what is the SQL analytics endpoint of a lakehouse used for?
 **Asked at:** commonly asked (no company-specific report found); lakehouse vs warehouse appears in Fabric guides (unverified).
 **What the interviewer is checking:** That you know the two Fabric stores and which one you would query.
-**Say this in the interview:** "A lakehouse stores files and tables in an open format and suits raw or semi-structured data; a Fabric warehouse is a classic SQL warehouse with full T-SQL. The lakehouse's SQL analytics endpoint lets me query its tables with SQL, read-only."
+**Say this in the interview:** "A lakehouse stores files and tables in an open format and suits raw or semi-structured data; a Fabric warehouse is a classic SQL warehouse with full T-SQL (Microsoft's version of SQL). The lakehouse's SQL analytics endpoint lets me query its tables with SQL, read-only."
 **Explain simply:**
 - **Lakehouse:** lake flexibility plus table structure; often used by engineers with notebooks.
 - **Warehouse:** structured tables, SQL for reading and writing.
-- **SQL analytics endpoint:** an automatic read-only SQL door onto the lakehouse tables, so an analyst can write SELECTs or connect Power BI without Spark code.
+- **SQL analytics endpoint:** an automatic read-only SQL door onto the lakehouse tables, so an analyst can write SELECTs or connect Power BI without Spark code (Spark is an engine engineers use to process big data in code).
 - The exact write capabilities and differences change between releases.
 **Alternative / pitfalls:** Do not promise features; check current Microsoft documentation.
 **Likely follow-ups:** 1) *Can I INSERT through the endpoint?* Treat it as read-only (from memory, unverified). 2) *Which to pick?* Follow the team's design; ask.
@@ -225,7 +226,7 @@ GROUP BY customer_id;
 **What the interviewer is checking:** Whether you know a function wrapped around the partition column can stop partition pruning.
 **Say this in the interview:** "Probably not. The filter transforms `order_date` with FORMAT_DATE, so the engine may not prune partitions. I would filter the column directly with a date range."
 **Explain simply:**
-- Pruning works best when the partition column is compared directly to constants.
+- **Partition pruning** means skipping the date chunks the query does not need. It works best when the partition column is compared directly to constants.
 - Wrapping it in a function can force a scan of all partitions (from memory, unverified; confirm with the dry-run bytes estimate).
 - **Fix:**
 ```sql
@@ -234,7 +235,7 @@ FROM sales.orders
 WHERE order_date >= '2026-10-01' AND order_date < '2026-11-01'
 GROUP BY customer_id;
 ```
-**Check the logic is unchanged** (SQLite stand-in, same idea, small table with dates on both sides of October):
+**Check the logic is unchanged** (SQLite stand-in, same idea; I ran it on an invented 4-row table: customer 1 with 50 on 2026-10-05 and 30 on 2026-09-30, customer 2 with 100 on 2026-10-20 and 70 on 2026-11-01; SQLite's `strftime` replaces FORMAT_DATE):
 ```
 wrapped: [(1, 50.0), (2, 100.0)]
 range:   [(1, 50.0), (2, 100.0)]
@@ -251,6 +252,7 @@ Data: 2 credits per hour (illustrative figure), 3 hours per weekday, 20 weekdays
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Simple cost arithmetic and a sensible first lever.
 **Say this in the interview:** "2 x 3 x 20 is 120 credits a month. First I would check the warehouse is not running longer than the queries need, for example shortening auto-suspend."
+**Explain simply:** A credit is Snowflake's unit of compute use. Cost is rate times hours times days, so the two ways to cut it are fewer running hours or a lower hourly rate.
 **Sample data:** 2 credits/hour, 3 hours/weekday, 20 weekdays (exercise inputs, not real rates).
 **Code (what you write in the interview):**
 ```python
@@ -304,6 +306,8 @@ If 2 hours per day: 80
 **Likely follow-ups:** 1) *Tools?* Many exist; name none unless you have used them. 2) *Who does it?* Usually engineers; analysts may own the SQL layer.
 **Common mistakes:** Mixing the order; saying ELT has no transformation.
 
+*Cloud and vendor facts above are from memory, unverified, confirm with official documentation.*
+
 ### Q18 ⭐ 🟡 Your BigQuery or Snowflake bill doubled this month and your analyst team is the main user. What would you check, in order, before changing anything?
 **Asked at:** commonly asked (no company-specific report found); gap-fill scenario (judgement).
 **What the interviewer is checking:** A methodical diagnosis before acting.
@@ -337,6 +341,7 @@ If 2 hours per day: 80
 **Asked at:** commonly asked (no company-specific report found); semi-structured data is a Snowflake topic in guides (unverified).
 **What the interviewer is checking:** That you can read nested JSON and cast it to proper types.
 **Say this in the interview:** "I use the colon and dot path into the VARIANT column and cast each value with `::`."
+**Explain simply:** JSON is text with nested labelled values. A VARIANT column is Snowflake's column type for holding such JSON. You walk down to a value with a path and then cast it (convert it) to a normal type such as a number or text.
 **Code (what you write in the interview):**
 ```sql
 -- Snowflake syntax from memory, unverified: path with colon/dot, cast with ::
@@ -346,7 +351,7 @@ SELECT
     payload:event::STRING           AS event
 FROM raw_events;
 ```
-**Output:** I cannot run Snowflake here. The same idea in SQLite (`json_extract` for the path, CAST for the type), run on two sample rows:
+**Output:** I cannot run Snowflake here. The same idea in SQLite (`json_extract` for the path, CAST for the type), run on two invented sample rows (`{"employee": {"id": 101, "dept": "HR"}, "event": "login"}` and the same shape with id 102, dept Finance, event logout):
 ```
 (101, 'HR', 'login')
 (102, 'Finance', 'logout')
@@ -363,7 +368,7 @@ FROM raw_events;
 **What the interviewer is checking:** That you recommend from needs and people, not brand loyalty.
 **Say this in the interview:** "I would not push a platform. For the Microsoft shop I would look at Fabric and Azure first because Power BI and logins already fit; for the Google shop BigQuery with notebooks fits. Then I would weigh cost, skills and governance."
 **Explain simply:**
-- **Microsoft 365 and Power BI company:** Fabric/Azure integrates with existing Power BI, Entra identity and Excel; Direct Lake and the SQL endpoint are options (Q11, Q12, from memory, unverified).
+- **Microsoft 365 and Power BI company:** Fabric/Azure integrates with existing Power BI, Entra (Microsoft's company login system) and Excel; Direct Lake and the SQL endpoint are options (Q11, Q12, from memory, unverified).
 - **Google Workspace and SQL notebooks company:** BigQuery pairs with Sheets and notebooks, with bytes-scanned cost to watch (Q5).
 - **Non-technical factors:** existing skills and training, current contracts and licences, total cost and who pays, data privacy and where data may be stored, vendor support, migration effort, how easily we can leave.
 - **Method:** pilot one real report on a shortlisted platform and compare time, cost and accuracy.

@@ -86,7 +86,7 @@ print(tokens_estimate, tokens_estimate > context_window)
 **Say this in the interview:** "An embedding turns a piece of text into a list of numbers so that texts with similar meaning get similar numbers. 'Delivery was late' and 'parcel arrived after the promised date' end up close together, even with no shared words, so we can group or find similar complaints."
 **Explain simply:**
 - Think of a map where every complaint is a dot; similar complaints sit near each other.
-- The computer measures closeness with a number such as cosine similarity (Q17).
+- The computer measures closeness with a score such as cosine similarity (Q17): near 1 means very similar meaning, near 0 means unrelated.
 - Uses: find similar complaints, group themes, power semantic search and RAG retrieval.
 - A separate embedding model creates these numbers; it is not the chat model.
 **Alternative / pitfalls:** Closeness is not truth; two texts can be similar yet say opposite things ("leave allowed" vs "leave not allowed").
@@ -99,7 +99,7 @@ print(tokens_estimate, tokens_estimate > context_window)
 **Say this in the interview:** "A vector database stores embeddings and quickly finds the ones closest to a query. It is not always needed: for a few hundred chunks you can keep embeddings in a file or table and compare them directly; it becomes useful with many documents or frequent lookups."
 **Explain simply:**
 - It answers "which stored chunks are nearest to this question?" fast, even for millions of items.
-- For 200 HR documents (maybe a few thousand chunks) a simple in-memory search is usually enough.
+- For 200 HR documents (maybe a few thousand chunks, meaning small pieces of text, Q11) a simple in-memory search is usually enough.
 - Some regular databases and search tools also offer vector search (from memory, unverified; check the product's documentation).
 - Extras it may give: filtering by metadata (department, date), access control, updates.
 **Alternative / pitfalls:** Do not pick a tool before you know the data size and who needs access.
@@ -135,7 +135,7 @@ for temperature in [0.2, 1.0, 2.0]:
 1.0 {'high': 0.626, 'low': 0.23, 'stable': 0.14, 'banana': 0.004}
 2.0 {'high': 0.463, 'low': 0.281, 'stable': 0.219, 'banana': 0.038}
 ```
-**What it means:** Low temperature almost always picks "high"; higher temperature spreads the choice, so answers vary. This is a toy illustration, not a real model run.
+**What it means:** The code divides each score by the temperature and turns the results into percentages that add to 1 (a standard step called softmax). Low temperature almost always picks "high"; higher temperature spreads the choice, so answers vary. This is a toy illustration, not a real model run.
 **Likely follow-ups:** 1) *Best for SQL generation?* Low. 2) *Is the system prompt secret?* Not safely; do not put secrets in it.
 **Common mistakes:** Thinking temperature controls accuracy; low temperature only makes output steadier, not correct.
 
@@ -203,7 +203,7 @@ for chunk in chunks:
 - **Prompt:** are the chunks actually in the prompt, and does it say "answer only from this text"? Inspect the final prompt.
 - **Model:** if the right chunk was supplied and the answer still differs, it misread it; lower temperature, tighten instructions, or try another model.
 **Alternative / pitfalls:** Fix one stage at a time and re-test a saved set of questions, so a fix does not break others.
-**Likely follow-ups:** 1) *Most common cause?* Often retrieval or documents, in my experience-based view (not a measured statistic). 2) *What do you log?* Question, retrieved chunks, final prompt, answer.
+**Likely follow-ups:** 1) *Most common cause?* Retrieval or the documents themselves are often named as the usual suspects in prep material (unverified, not a measured statistic); I would check rather than assume. 2) *What do you log?* Question, retrieved chunks, final prompt, answer.
 **Common mistakes:** Blaming the model first without looking at what it was given.
 
 ### Q13 ⭐ 🟡 How would you evaluate whether a RAG assistant is working well? Name one measure for retrieval and one for answer quality.
@@ -211,7 +211,7 @@ for chunk in chunks:
 **What the interviewer is checking:** That you test with a fixed question set, not impressions.
 **Say this in the interview:** "I would build a test set of real questions with known answers. For retrieval I measure hit rate: how often the correct passage is in the top few results. For answers I check faithfulness: does the answer match the retrieved text, scored by people on a small sample."
 **Explain simply:**
-- Retrieval measure: hit rate at k (or recall at k): share of questions where the right chunk appears in the top k.
+- Retrieval measure: hit rate at k (or recall at k): share of questions where the right chunk appears among the top k results returned (k is how many results you look at, for example 3).
 - Answer measure: faithfulness/correctness: is every claim supported by the source? Human review of a sample; an LLM as judge is possible but is itself checked by humans (from memory, unverified as a practice).
 - Also track: "I don't know" when the answer is absent, response time, user thumbs-down.
 **Sample data:** 5 test questions with the true chunk and the top-3 retrieved (invented).
@@ -337,7 +337,7 @@ print(top2)
 **What the interviewer is checking:** That "runs without error" is not "correct", and that you verify independently.
 **Say this in the interview:** "I would compare the result with an independent check: a total from the base table, a row count, a few rows checked by hand. The classic traps are join duplicates and wrong filters. Around the tool I would allow read-only access, limit rows, log queries and test it on questions with known answers."
 **Explain simply:**
-- Check the logic: join keys, grain (one row per order?), filters, date range, NULLs.
+- Check the logic: join keys (the column linking two tables), grain (what one row means, for example one row per order), filters, date range, NULLs (blank values).
 - Check the result: grand total versus a simple query on the base table, row counts before and after a join, sample rows.
 - Controls: read-only role, approved tables and a business glossary, query limits and timeouts, human review for important numbers, log every query, show the SQL to the user.
 - Privacy: do not send real customer rows to an external tool; send only the schema (from memory, unverified as a policy; confirm with IT).
@@ -374,7 +374,7 @@ print(pd.read_sql("SELECT SUM(amount) AS total FROM sales", conn))
    total
 0    600
 ```
-**What it means:** The generated query ran fine but overstated region N by 100 (400 instead of 300) because order 1 was counted twice. The grand total check (700 versus 600) exposes it. Aggregate the returns first, then join.
+**What it means:** The generated query ran fine but overstated region N by 100 (400 instead of 300) because order 1 was counted twice. Adding its two regions gives 700, while the base table total is 600, which exposes the error. Aggregate the returns first, then join.
 **Likely follow-ups:** 1) *Other traps?* Wrong date filter, ambiguous "revenue". 2) *Test set?* A few questions with known answers.
 **Common mistakes:** Accepting a query because it returned numbers.
 
@@ -383,7 +383,7 @@ print(pd.read_sql("SELECT SUM(amount) AS total FROM sales", conn))
 **What the interviewer is checking:** Understanding that sampling is random, and practical steps for consistency.
 **Say this in the interview:** "The model picks words with some randomness, and the context or model version can also differ. For repeatability I use low temperature, a fixed and precise prompt, structured output, and save results instead of regenerating; even then, exact sameness is not guaranteed."
 **Explain simply:**
-- Sampling: the model draws from likely next words (Q8), so repeated runs differ.
+- Sampling: the model draws from likely next words (Q8), so repeated runs differ. A seed is a starting number that makes a random draw repeatable.
 - Other causes: a vague prompt, different retrieved chunks, the vendor updating the model.
 - Help: temperature at or near 0 where the tool allows it, a seed setting if offered (not all tools do; check documentation), a fixed output format (for example fixed theme list), a pinned model version, and storing the first approved answer.
 - For numbers: compute them in code and let the LLM only explain.
