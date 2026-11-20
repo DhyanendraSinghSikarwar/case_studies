@@ -32,6 +32,7 @@
 ```python
 from sklearn.tree import DecisionTreeClassifier, export_text
 
+# employees = the 12-row table above, loaded as a pandas DataFrame
 features = employees[["tenure_years", "overtime"]]
 left = employees["left"]
 
@@ -79,8 +80,26 @@ print(export_text(tree, feature_names=list(features.columns)))
 - Each tree is deliberately a bit different, so their individual mistakes tend to cancel out.
 - For a yes/no question the forest takes the majority vote; for a number it takes the average.
 - Trade-off: usually more accurate and stable, but you lose the single readable flowchart.
-**Sample data:** Synthetic 500-row attrition table (tenure_years, overtime_hours, salary_band, engagement_score; 80/20 split, seeds fixed at 42). Both models scored 1.0 on training rows. On the 100 unseen test rows: single unlimited tree 0.67, random forest (100 trees) 0.71.
-**Worked example (concept questions):** The forest gained 4 points on unseen data, but with only 100 test rows that gap is noisy; report it as "about the same or slightly better", not a guaranteed win.
+**Sample data:** A synthetic attrition table made up for teaching (not real HR data). Every later answer that says "synthetic attrition table" uses this generator, so you can rebuild it. `make_attrition(500)` gives 500 rows, about 22% leavers; it is split 80/20 with `train_test_split(..., test_size=0.2, random_state=42)`. Both models scored 1.0 (100%) on the 400 training rows. On the 100 unseen test rows: single unlimited tree 0.76, random forest (100 trees) 0.79.
+```python
+import numpy as np
+import pandas as pd
+
+def make_attrition(n_rows, seed=42, base=-1.4):
+    rng = np.random.default_rng(seed)
+    table = pd.DataFrame({
+        'tenure_years': rng.uniform(0, 15, n_rows).round(1),
+        'overtime_hours': rng.integers(0, 41, n_rows),
+        'salary_band': rng.integers(1, 5, n_rows),
+        'engagement_score': rng.integers(1, 6, n_rows)})
+    # More overtime raises the chance of leaving; tenure, pay and engagement lower it
+    score = (base + 0.12 * table['overtime_hours'] - 0.2 * table['tenure_years']
+             - 0.6 * table['salary_band'] - 0.7 * (table['engagement_score'] - 3))
+    chance_of_leaving = 1 / (1 + np.exp(-score))
+    table['left'] = (rng.random(n_rows) < chance_of_leaving).astype(int)
+    return table
+```
+**Worked example (concept questions):** The forest gained 3 points on unseen data (0.79 against 0.76), but with only 100 test rows that gap is noisy; report it as "about the same or slightly better", not a guaranteed win. (Exact values depend on the seed and the generator above.)
 **Likely follow-ups:** 1) *Why "random"?* Random rows and random features per split. 2) *How many trees?* More is rarely harmful, just slower; 100 is the sklearn default.
 **Common mistakes:** Saying a forest is "one big tree"; claiming it can never overfit.
 
@@ -122,7 +141,7 @@ Gini = 1 minus the sum of squared class proportions.
 - `max_depth=4`: at most 4 questions in a row.
 - `min_samples_leaf=10`: every final group must contain at least 10 employees, so no rules based on 1 or 2 people.
 - Other controls: `min_samples_split`, `ccp_alpha`, or use a random forest.
-**Worked example (concept questions):** On the synthetic 500-row attrition data, an unrestricted tree scored 1.00 train and 0.67 test. With `max_depth=5, min_samples_leaf=10` it scored 0.76 train and 0.67 test: the gap shrank from 0.33 to 0.09 though test accuracy did not rise on this small, noisy sample.
+**Worked example (concept questions):** On the synthetic 500-row attrition data from Q3 (80/20 split), an unrestricted tree scored 1.00 train and 0.76 test. With `max_depth=5, min_samples_leaf=10` it scored 0.86 train and 0.80 test: the gap shrank from 0.24 to 0.06 and test accuracy rose by 4 points (on 100 test rows, so treat that gain as indicative, not proven).
 **Alternative / pitfalls:** Choose settings with cross-validation (several train/test splits), not by peeking at one test set.
 **Likely follow-ups:** 1) *Can too much limiting hurt?* Yes, underfitting (too simple). 2) *Which first?* Usually `min_samples_leaf` or `max_depth`.
 **Common mistakes:** Judging only on training accuracy; setting depth so low that the tree cannot learn anything.
@@ -147,7 +166,7 @@ Overtime = Yes: 6 employees (4 left, 2 stayed). Overtime = No: 4 employees (1 le
 ```python
 tree = DecisionTreeClassifier(random_state=42).fit(X_train, y_train)
 print(tree.score(X_train, y_train), tree.score(X_test, y_test))
-# output: 1.0 0.71
+# output (illustrative numbers for the exercise): 1.0 0.71
 ```
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Can you spot overfitting from a train/test gap and name fixes.
@@ -228,7 +247,7 @@ print(top_three)
 - **Random forest:** usually more accurate, steadier, handles many features; harder to explain beyond importance charts, slower.
 - Often I build both: the tree for communication, the forest as accuracy benchmark.
 - Whichever I choose, I compare on test data against a simple baseline.
-**Worked example (concept questions):** On the synthetic 500-row data (see Q3), the forest scored 0.71 vs 0.67 for the single tree on test rows: a modest edge, noisy at 100 rows. If that gain is tiny, the explainable tree may win.
+**Worked example (concept questions):** On the synthetic 500-row data (see Q3), the forest scored 0.79 vs 0.76 for the single tree on test rows: a modest edge, noisy at 100 rows. If that gain is tiny, the explainable tree may win.
 **Likely follow-ups:** 1) *Small dataset?* Forest is still usually safer. 2) *Regulated decisions?* Lean to explainable models.
 **Common mistakes:** "Forest is always better"; ignoring the explanation requirement.
 
@@ -288,15 +307,15 @@ Assume `X` (features, all numeric) and `y` (1 = left, 0 = stayed) already exist.
 - `train_test_split`: random split; `random_state=42` makes it repeatable.
 - `fit`: the model learns from training rows only.
 - `score`: for classifiers, accuracy on the rows you give it.
-**Sample data:** First rows of `X` (synthetic 500-row table made up for teaching; seed fixed in my check script, 20% test):
+**Sample data:** First rows of `X` (the 500-row synthetic table from Q3, made up for teaching, built with `make_attrition(500)`; `X` is its four feature columns and `y` is `left`):
 
 | tenure_years | overtime_hours | salary_band | engagement_score |
 |---|---|---|---|
-| 6.4 | 16 | 4 | 4 |
-| 2.7 | 2 | 2 | 1 |
-| 0.4 | 5 | 2 | 3 |
-| 0.2 | 26 | 4 | 5 |
-| 8.1 | 13 | 2 | 4 |
+| 11.6 | 33 | 3 | 5 |
+| 6.6 | 30 | 2 | 1 |
+| 12.9 | 22 | 1 | 2 |
+| 10.5 | 36 | 2 | 3 |
+| 1.4 | 5 | 3 | 4 |
 
 **Code (what you write in the interview):**
 ```python
@@ -314,9 +333,9 @@ print("Test accuracy:", round(model.score(X_test, y_test), 3))
 ```
 **Output:**
 ```text
-Test accuracy: 0.71
+Test accuracy: 0.79
 ```
-**What it means:** About 71 of 100 unseen employees were classified correctly (output depends on the data and seed). Compare it with the baseline of always predicting the majority class (here about 56% left, so 0.71 only modestly beats it), and for real data report precision and recall too (Q24).
+**What it means:** About 79 of 100 unseen employees were classified correctly (output depends on the data and seed). Compare it with the baseline of always predicting the majority class (here 75% of test employees stayed, so 0.79 only modestly beats it), and for real data report precision and recall too (Q24).
 **Likely follow-ups:** 1) *Why random_state?* Same split every run. 2) *Imbalanced classes?* Add `stratify=y`.
 **Common mistakes:** Scoring on training data; forgetting the split; not setting a seed.
 
@@ -437,7 +456,7 @@ Mention class_weight='balanced' and what you would measure instead of accuracy.
 - Recall for leavers = of the people who really left, what share did we flag. Precision = of the people we flagged, what share really left. Report both, plus the F1 score (one number blending them).
 - Fixes: `class_weight='balanced'` (each leaver counts more during training), use a stratified split so the test set keeps the same mix, and lower the decision cut-off using `predict_proba` (Q28).
 - Other fixes: collect more leaver rows, or resample (oversample leavers or undersample stayers, on the training data only).
-**Sample data:** 1,000 employees (950 stayers, 50 leavers) with `overtime_hours`, `tenure_years`, `salary_band`, `left` (synthetic, seeded). 75% goes to training, 25% (250 rows, 12 leavers) to testing.
+**Sample data:** 1,000 employees (950 stayers, 50 leavers) with `overtime_hours`, `tenure_years`, `salary_band`, `left` (synthetic, built from the Q3 generator by sampling 950 stayers and 50 leavers out of `make_attrition(3000)` with `random_state=42`). A stratified 75/25 split (`train_test_split(X, y, test_size=0.25, random_state=42, stratify=y)`) gives 750 training rows and 250 test rows with 12 leavers.
 **Code (what you write in the interview):**
 ```python
 from sklearn.ensemble import RandomForestClassifier
@@ -458,9 +477,9 @@ for name, model in [('plain', plain_forest), ('balanced', balanced_forest)]:
 **Output:**
 ```text
 plain accuracy 0.95 recall 0.0 precision 0.0
-balanced accuracy 0.81 recall 0.42 precision 0.11
+balanced accuracy 0.8 recall 0.67 precision 0.15
 ```
-**What it means:** The plain forest is 95% accurate but finds no leavers. The balanced one finds 5 of 12 (recall 0.42) at the cost of accuracy and many false alarms (precision 0.11). Tell a manager the recall and precision for leavers, not accuracy. (Only 12 leavers are in the test set, so these numbers are shaky; the exact values depend on the seed.)
+**What it means:** The plain forest is 95% accurate but finds no leavers. The balanced one finds 8 of 12 leavers (recall 0.67) at the cost of accuracy and many false alarms (it flagged 54 people and only 8 really left, precision 0.15). Tell a manager the recall and precision for leavers, not accuracy. (Only 12 leavers are in the test set, so these numbers are shaky; the exact values depend on the seed.)
 **Alternative / pitfalls:** `class_weight='balanced_subsample'` recomputes weights inside each tree's sample. Never oversample before splitting, or copies of the same person land in both train and test (leakage).
 **Likely follow-ups:** 1) *What is the accuracy baseline here?* 95%, always predicting stay. 2) *Which metric if missing a leaver is costly?* Recall; if false alarms are costly, precision.
 **Common mistakes:** Celebrating 95% accuracy; resampling before the split; not using a stratified split.
@@ -493,9 +512,10 @@ balanced accuracy 0.81 recall 0.42 precision 0.11
 - Impurity importance (`feature_importances_`) adds up how much each column reduced impurity across all splits, measured on training data. A column that lets a tree memorize (like an ID with many unique values) gets credit even though it has no real signal.
 - It also splits credit between correlated columns, and says nothing about test performance.
 - Permutation importance: shuffle one column in the test set (breaking its link with the answer) and see how much the score falls. A big fall means the model truly relied on it; about zero means it did not matter.
-**Sample data:** The attrition table with columns `overtime_hours`, `tenure_years`, `salary_band`, plus a meaningless `employee_id` (a random number I added on purpose). 750 training rows, 250 test rows.
+**Sample data:** The 1,000-row synthetic table `make_attrition(1000)` (Q3 generator) with columns `overtime_hours`, `tenure_years`, `salary_band`, plus a meaningless `employee_id` added on purpose (`np.random.default_rng(0).permutation(1000)`, a shuffled list of numbers 0 to 999). Split with `test_size=0.25, random_state=42`: 750 training rows, 250 test rows.
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.inspection import permutation_importance
 
@@ -510,18 +530,18 @@ print(pd.Series(result.importances_mean, index=X_test.columns).round(3).sort_val
 ```
 **Output:**
 ```text
-overtime_hours    0.351
-employee_id       0.293
-tenure_years      0.250
-salary_band       0.106
+overtime_hours    0.335
+tenure_years      0.290
+employee_id       0.280
+salary_band       0.095
 dtype: float64
-overtime_hours    0.108
-tenure_years      0.058
-salary_band       0.013
-employee_id       0.003
+overtime_hours    0.049
+tenure_years      0.026
+salary_band       0.005
+employee_id      -0.020
 dtype: float64
 ```
-**What it means:** The random `employee_id` looks like the second most important column in the built-in table (0.293) but drops to about zero (0.003) in permutation importance. Trust the second table. Values depend on the seed.
+**What it means:** The random `employee_id` looks like a top-three column in the built-in table (0.280, almost level with tenure) but drops to about zero (-0.020, slightly negative by chance) in permutation importance. Trust the second table. Values depend on the seed.
 **Alternative / pitfalls:** Permutation importance can also understate columns that are strongly correlated with another one (shuffling one leaves the other to cover). Run it on test data, not training data.
 **Likely follow-ups:** 1) *Does permutation importance prove cause?* No. 2) *What is the cost?* More computing time (one re-score per shuffle).
 **Common mistakes:** Trusting the default table blindly; including ID columns as features; computing permutation importance on training data.
@@ -545,7 +565,7 @@ Hint: the chance a given row is never picked in n draws with replacement is (1 -
 | 1,000 | 0.368 |
 | 100,000 | 0.368 |
 
-A simulated bootstrap of 1,000 employees (seed 42) left out 363 of them (36.3%).
+A simulated bootstrap of 1,000 employees (`np.random.default_rng(42).integers(0, 1000, 1000)`) left out 363 of them (36.3%); a different seed gives a slightly different count.
 **Alternative / pitfalls:** For small datasets the fraction differs a little (0.349 at n=10). The 0.368 value is 1/e, from the same limit used in compound interest.
 **Likely follow-ups:** 1) *Where do the left-out rows get used?* The out-of-bag score (Q34). 2) *Does bagging reduce bias?* Mainly it reduces variance.
 **Common mistakes:** Saying the sample has no repeats; saying 37% of rows are removed from the dataset (only from that one sample); mixing up bagging with random subsets of columns.
@@ -562,16 +582,18 @@ probs = rf.predict_proba(X_test)[:, 1]
 - For a forest, the probability is the average of the trees' predicted probabilities, roughly the share of trees voting "leave". It is a ranking score, not a guaranteed true chance.
 - `[:, 1]` keeps all rows and only the "left" column.
 - The top 20% = those at or above the 80th percentile of scores, then sort so the riskiest come first.
-**Sample data:** The synthetic attrition table (750 training, 250 test rows); test rows look like this:
+**Sample data:** The 1,000-row synthetic table `make_attrition(1000)` (Q3 generator), features `overtime_hours`, `tenure_years`, `salary_band`; 750 training and 250 test rows (`test_size=0.25, random_state=42`). `rf` is a `RandomForestClassifier(random_state=42)` fitted on the training rows. Test rows look like this:
 
 | overtime_hours | tenure_years | salary_band |
 |---|---|---|
-| 33 | 2 | 3 |
-| 12 | 0 | 4 |
-| 34 | 13 | 2 |
+| 1 | 5.6 | 2 |
+| 7 | 4.5 | 3 |
+| 7 | 0.0 | 1 |
 
 **Code (what you write in the interview):**
 ```python
+import numpy as np
+
 # column 1 = probability of "left"; column 0 = probability of "stayed"
 probs = rf.predict_proba(X_test)[:, 1]
 
@@ -584,13 +606,13 @@ print(at_risk.sort_values('risk', ascending=False).head(3).round(2))
 ```
 **Output:**
 ```text
-50 of 250 employees flagged
+52 of 250 employees flagged
      overtime_hours  tenure_years  salary_band  risk
-514              39             3            1  0.98
-771              40             6            1  0.97
-94               36             5            1  0.97
+893              37           1.5            1  0.99
+286              37           0.7            1  0.96
+836              39          11.4            1  0.90
 ```
-**What it means:** 50 of 250 employees are flagged, riskiest first. In this test set 62% of the flagged group really left, against 24% overall, so the ranking is useful. Report that lift, not just the list.
+**What it means:** 52 of 250 employees are flagged (a few tied scores push it just over 50), riskiest first. In this test set 44% of the flagged group really left, against 24% overall (about 1.9 times the average), so the ranking is useful. Report that lift, not just the list.
 **Alternative / pitfalls:** `predict` uses a 0.5 cut-off, which is a poor fit for rare outcomes; ranking by probability lets you pick the cut-off to match HR capacity. Forest probabilities can be poorly calibrated (0.8 does not mean 80% will leave).
 **Likely follow-ups:** 1) *Why the 80th percentile?* It leaves 20% of scores above it. 2) *What about ties?* Several people can share a score, so the count can slightly exceed 20%.
 **Common mistakes:** Using `[:, 0]` (the stay probability); sorting the wrong way; using `predict` when you need a ranking; treating scores as exact risks.
@@ -604,7 +626,7 @@ print(at_risk.sort_values('risk', ascending=False).head(3).round(2))
 - Regression tree: each leaf predicts the average of the training stores in it. Beyond the top range everything falls into the last leaf, so the forecast stays flat (capped).
 - Linear regression: fits a straight line and continues it forever. It gives a higher number, only valid if the straight-line pattern really continues.
 - Forests behave like trees: they cannot extrapolate either.
-**Sample data:** 60 stores with `last_year_sales` between 50 and 100 and `this_year_sales` (made-up, seeded; true pattern about 5 + 1.05 x last year plus noise).
+**Sample data:** 60 stores with `last_year_sales` between 50 and 100 and `this_year_sales` (made-up; built with `rng = np.random.default_rng(42)`, `last = rng.uniform(50, 100, 60).round(1)`, `this_year = (5 + 1.05 * last + rng.normal(0, 4, 60)).round(1)`).
 
 | last_year_sales | this_year_sales |
 |---|---|
@@ -616,6 +638,7 @@ print(at_risk.sort_values('risk', ascending=False).head(3).round(2))
 
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.linear_model import LinearRegression
 
@@ -662,7 +685,7 @@ Linear: [109.1 161.4]
 - Examples that leak in attrition: `exit_interview_completed` (only leavers have one), `last_working_day` or `termination_date` (only exist for leavers), `full_and_final_settlement_paid`, or an "attrition risk flag" HR added after resignation.
 - Also leakage: fitting scalers or imputers on all data before splitting, or the same person appearing in both train and test.
 - Test: ask "would I know this value on the day I make the prediction?" If no, drop it.
-**Worked example (concept question):** I added a column `exit_interview_done` (about 95% of leavers have it, 2% of stayers) to the synthetic table. Test accuracy of a random forest rose from 0.804 to 0.98. A jump like that from one column should make you suspicious, not happy.
+**Worked example (concept question):** I added a column `exit_interview_done` (about 95% of leavers have it, 2% of stayers; random draws, seed 1) to `make_attrition(1000)` and used all four feature columns. Test accuracy of a random forest (`random_state=42`, 75/25 split) rose from 0.78 to 0.984. A jump like that from one column should make you suspicious, not happy.
 **Alternative / pitfalls:** Check the top importance columns for anything that sounds like "after the fact". Split data by time when predicting the future (train on earlier months, test on later ones).
 **Likely follow-ups:** 1) *How do you find leakage?* Suspiciously high scores and importance dominated by one odd column. 2) *Is a strong predictor always leakage?* No; it is leakage only if unavailable at prediction time.
 **Common mistakes:** Keeping outcome-related columns; imputing or scaling before the split; celebrating a 98% model without questioning it.
@@ -692,6 +715,8 @@ df = pd.read_csv('hr.csv')  # columns include department (text), salary_band (te
 
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
+
 df = pd.read_csv('hr.csv')
 
 # Ordered text: map to numbers that keep the order
@@ -742,7 +767,7 @@ print(df.to_string())
 - Compare those votes with the real answer: that is the out-of-bag accuracy, an honest estimate without a separate test set.
 - Useful when data is small; still keep a proper test set for the final report.
 - For classification, the default score is accuracy.
-**Sample data:** The synthetic attrition table (750 train, 250 test rows).
+**Sample data:** The 1,000-row synthetic table `make_attrition(1000)` with `overtime_hours`, `tenure_years`, `salary_band` (750 train, 250 test rows, `random_state=42`).
 **Code (what you write in the interview):**
 ```python
 from sklearn.ensemble import RandomForestClassifier
@@ -754,10 +779,10 @@ print('Test accuracy:', round(model.score(X_test, y_test), 3))
 ```
 **Output:**
 ```text
-OOB accuracy : 0.772
-Test accuracy: 0.804
+OOB accuracy : 0.756
+Test accuracy: 0.768
 ```
-**What it means:** The OOB estimate (0.772) is close to the test score (0.804), so the forest is not wildly overfitting. Accuracy alone is weak for rare outcomes, so also check recall (Q24).
+**What it means:** The OOB estimate (0.756) is close to the test score (0.768), so the two honest estimates agree. (The forest still scores near 100% on its own training rows, so do not quote that.) Accuracy alone is weak for rare outcomes, so also check recall (Q24).
 **Alternative / pitfalls:** OOB needs `bootstrap=True` (the default) and enough trees so every row is left out at least once. It is not a replacement for cross-validation when tuning many settings.
 **Likely follow-ups:** 1) *Does OOB need a validation set?* No. 2) *Why close to test accuracy?* Both are scored on rows the model did not train on.
 **Common mistakes:** Forgetting `oob_score=True`; reading `oob_score_` on a fitted model that had no bootstrap; treating OOB as training accuracy.
@@ -769,10 +794,10 @@ Candidate values: max_depth in [3, 5, 8], n_estimators in [100, 300].
 **Say this in the interview:** "I define the grid, run 5-fold cross-validation on the training data for each of the 6 combinations, pick the best by F1 because leavers are rare, and only then check the test set once."
 **Explain simply:**
 - Hyperparameters are settings you choose before training (tree depth, number of trees); the model does not learn them.
-- GridSearchCV tries every combination (3 depths x 2 sizes = 6), splitting the training data into 5 parts each time (cross-validation) and averaging the scores. That is 30 fits.
+- GridSearchCV tries every combination (3 depths x 2 sizes = 6), splitting the training data into 5 parts each time (cross-validation) and averaging the scores. That is 30 fits (plus one final refit of the best combination on all training rows).
 - `scoring='f1'` judges by F1, since accuracy misleads with rare leavers.
 - The test set is used once at the end, never inside the search.
-**Sample data:** The synthetic attrition table (750 train, 250 test rows).
+**Sample data:** The 1,000-row synthetic table `make_attrition(1000)` (750 train, 250 test rows, `random_state=42`).
 **Code (what you write in the interview):**
 ```python
 from sklearn.ensemble import RandomForestClassifier
@@ -787,11 +812,11 @@ print('Test F1      :', round(search.score(X_test, y_test), 3))
 ```
 **Output:**
 ```text
-Best settings: {'max_depth': 8, 'n_estimators': 300}
-Best CV F1   : 0.511
-Test F1      : 0.602
+Best settings: {'max_depth': 8, 'n_estimators': 100}
+Best CV F1   : 0.424
+Test F1      : 0.447
 ```
-**What it means:** Depth 8 with 300 trees did best (cross-validated F1 0.511; test F1 0.602). Report the test F1 once, with the caveat that small differences between combinations are noise. Outputs depend on the seed.
+**What it means:** Depth 8 with 100 trees did best (cross-validated F1 0.424; test F1 0.447, so the model catches leavers only modestly). Report the test F1 once, with the caveat that small differences between combinations are noise. Outputs depend on the seed.
 **Alternative / pitfalls:** `RandomizedSearchCV` samples combinations when the grid is large. The best value sitting at the edge of the grid (depth 8 is the largest) is a hint to try bigger values.
 **Likely follow-ups:** 1) *Why cross-validation?* One split can be lucky. 2) *Does the grid search use the test set?* No.
 **Common mistakes:** Tuning on the test set; using accuracy on imbalanced data; huge grids on tiny data.
@@ -804,7 +829,7 @@ Test F1      : 0.602
 - Binary tree: each split makes 2 branches. Depth is the number of splits from the top to the bottom. Leaves at depth d = at most 2^d.
 - Depth 3: 8 leaves. Depth 10: 1,024 leaves.
 - With 500 rows and room for 1,024 leaves, the tree can carve out tiny groups (often 1 to 3 people) and "learn" random quirks, so it scores near-perfect on training but poorly on new data (overfitting).
-**Sample data:** Synthetic attrition table with 500 rows (400 train, 100 test).
+**Sample data:** The 500-row synthetic table from Q3 (400 train, 100 test).
 **Code (what you write in the interview):**
 ```python
 from sklearn.tree import DecisionTreeClassifier
@@ -816,11 +841,11 @@ print('Leaves:', deep_tree.get_n_leaves(), 'for', len(X_train), 'training rows')
 ```
 **Output:**
 ```text
-Train accuracy: 0.973
-Test accuracy : 0.8
-Leaves: 93 for 400 training rows
+Train accuracy: 0.983
+Test accuracy : 0.76
+Leaves: 77 for 400 training rows
 ```
-**What it means:** 93 leaves for 400 rows is about 4 people per leaf; train 97% vs test 80% shows the gap. The tree rarely uses all 1,024 slots, because a node stops when it is pure, but it still has plenty of room to memorize.
+**What it means:** 77 leaves for 400 rows is about 5 people per leaf; train 98% vs test 76% shows the gap. The tree rarely uses all 1,024 slots, because a node stops when it is pure, but it still has plenty of room to memorize.
 **Alternative / pitfalls:** "Nearly always" is a rule of thumb, not a law; on very clean data it may not overfit. Control it with `max_depth`, `min_samples_leaf` or pruning (Q40), or use a forest.
 **Likely follow-ups:** 1) *How would you pick the depth?* Cross-validation. 2) *Max leaves of depth 4?* 16.
 **Common mistakes:** Saying 2 x depth leaves; counting nodes instead of leaves; confusing depth with number of splits in total.
@@ -864,9 +889,11 @@ print('Accuracy:', rf.score(X, y))
 - A forest can memorize training rows, so the training score is near-perfect even when it knows little about new people.
 - Also missing: `random_state` (results change on every run) and a baseline (always predicting stay).
 - Fix: `train_test_split` with `stratify=y`, fit on training data, score on the test data (or use cross-validation).
-**Sample data:** Synthetic attrition table, 750 train / 250 test rows, about 24% leavers.
+**Sample data:** `make_attrition(1000)` with `overtime_hours`, `tenure_years`, `salary_band`; 750 train / 250 test rows, about 24% leavers.
 **Code (what you write in the interview):**
 ```python
+from sklearn.ensemble import RandomForestClassifier
+
 rf = RandomForestClassifier(random_state=42).fit(X_train, y_train)
 print('Train accuracy:', rf.score(X_train, y_train))
 print('Test accuracy :', round(rf.score(X_test, y_test), 3))
@@ -874,11 +901,11 @@ print('Always-stay baseline', round(1 - y_test.mean(), 3))
 ```
 **Output:**
 ```text
-Train accuracy: 0.972
-Test accuracy : 0.804
+Train accuracy: 0.9933333333333333
+Test accuracy : 0.768
 Always-stay baseline 0.764
 ```
-**What it means:** Training accuracy (0.972) overstates the model. The honest figure is 0.804, only a little above the 0.764 you get by predicting "stay" for everyone. Report test accuracy with recall for leavers.
+**What it means:** Training accuracy (0.993) overstates the model. The honest figure is 0.768, barely above the 0.764 you get by predicting "stay" for everyone. Report test accuracy with recall for leavers.
 **Alternative / pitfalls:** For a small dataset use cross-validation. Do any scaling or filling after the split, using training data only.
 **Likely follow-ups:** 1) *Why not report training accuracy?* It rewards memorizing. 2) *What is a test set?* Rows hidden from the model until the final check.
 **Common mistakes:** Reporting training accuracy; tuning on the test set; no stratify on imbalanced data.
@@ -892,17 +919,17 @@ Always-stay baseline 0.764
 - `ccp_alpha` is a penalty for each extra leaf. At 0, nothing is pruned. As it grows, weak branches are cut, leaving a smaller tree.
 - `max_depth` limits levels everywhere equally; a useful deep branch is cut while a useless shallow one stays.
 - Choose `ccp_alpha` by cross-validation (`cost_complexity_pruning_path` lists candidate values).
-**Sample data:** Synthetic attrition table, 750 train / 250 test rows. Computed:
+**Sample data:** `make_attrition(1000)` with `overtime_hours`, `tenure_years`, `salary_band`; 750 train / 250 test rows (`random_state=42`); a `DecisionTreeClassifier(ccp_alpha=..., random_state=42)` for each value. Computed:
 
 | ccp_alpha | Leaves | Train accuracy | Test accuracy |
 |---|---|---|---|
-| 0 | 231 | 0.972 | 0.760 |
-| 0.002 | 18 | 0.856 | 0.840 |
-| 0.005 | 6 | 0.827 | 0.812 |
-| 0.01 | 4 | 0.824 | 0.832 |
-| 0.02 | 3 | 0.824 | 0.832 |
+| 0 | 218 | 0.993 | 0.716 |
+| 0.002 | 45 | 0.883 | 0.748 |
+| 0.005 | 6 | 0.799 | 0.808 |
+| 0.01 | 3 | 0.781 | 0.800 |
+| 0.02 | 2 | 0.761 | 0.764 |
 
-**What it means:** The unpruned tree has 231 leaves and test accuracy 0.76. Light pruning (0.002) cuts it to 18 leaves and raises test accuracy to 0.84. A `max_depth=3` tree on the same data scores 0.812 with 8 leaves. Both help; pruning is guided by how much each branch is worth. (One split of the data, so differences of a few points are noise.)
+**What it means:** The unpruned tree has 218 leaves and test accuracy 0.716. Pruning with 0.005 cuts it to 6 leaves and raises test accuracy to 0.808; 0.02 prunes too much (2 leaves, 0.764). A `max_depth=3` tree on the same data scores 0.808 with 8 leaves. Both help; pruning is guided by how much each branch is worth. (One split of the data, so differences of a few points are noise.)
 **Alternative / pitfalls:** Too large an alpha leaves a tree too simple. You can combine the two controls. Tune on training data with cross-validation, not the test set.
 **Likely follow-ups:** 1) *Pre-pruning vs post-pruning?* Pre = stop early (max_depth, min_samples_leaf); post = grow then cut (ccp_alpha). 2) *What does alpha=0 mean?* No pruning.
 **Common mistakes:** Thinking higher alpha grows a bigger tree; picking alpha using the test set.
@@ -914,15 +941,25 @@ Always-stay baseline 0.764
 **Explain simply:**
 - A tree picks the best split greedily at each step. If two cut-offs are almost equally good, a few different rows tip the choice, and the branches below change.
 - That is high variance: the model changes a lot when the data changes a little.
-- For leaders: a tree looks like a crisp rulebook ("overtime above 26 hours leads to exit"), but the 26 could easily be 21 or 31 with a slightly different sample.
+- For leaders: a tree looks like a crisp rulebook ("overtime above 28 hours leads to exit"), but the 28 could easily be 25 or 31 with a slightly different sample.
 - Use trees to show broad patterns and communicate uncertainty; use a forest or other checks for stable results.
-**Worked example (concept question):** I took 150 employees and resampled them three times with replacement (seed 1, 2, 3). The first cut-off for overtime was 26.5, 21.5 and 31.5 hours; the sub-splits used salary_band in one tree and tenure_years in the others.
-```text
-Sample 1 | splits used: ['overtime_hours', 'salary_band', 'tenure_years'] | first cut-off: 26.5
-Sample 2 | splits used: ['overtime_hours', 'tenure_years', 'tenure_years'] | first cut-off: 21.5
-Sample 3 | splits used: ['overtime_hours', 'tenure_years', 'tenure_years'] | first cut-off: 31.5
+**Worked example (concept question):** I took 150 employees (`make_attrition(150)`, the Q3 generator) and resampled them three times with replacement (seeds 1, 2, 3), fitting a tree with `max_depth=2` on each.
+```python
+from sklearn.tree import DecisionTreeClassifier
+
+features = ['overtime_hours', 'tenure_years', 'salary_band']
+for seed in (1, 2, 3):
+    sample = employees.sample(len(employees), replace=True, random_state=seed)
+    tree = DecisionTreeClassifier(max_depth=2, random_state=42).fit(sample[features], sample['left'])
+    used = [features[i] for i in tree.tree_.feature if i >= 0]  # -2 marks a leaf
+    print(f"Sample {seed} | splits used: {used} | first cut-off: {tree.tree_.threshold[0]}")
 ```
-The top feature stayed the same, but the exact numbers and the lower branches moved.
+```text
+Sample 1 | splits used: ['overtime_hours', 'tenure_years', 'tenure_years'] | first cut-off: 28.5
+Sample 2 | splits used: ['overtime_hours', 'tenure_years', 'tenure_years'] | first cut-off: 28.5
+Sample 3 | splits used: ['overtime_hours', 'tenure_years', 'tenure_years'] | first cut-off: 30.5
+```
+The top feature stayed the same here and the first cut-off moved only a little (28.5 to 30.5 hours); the exact tenure cut-offs in the lower branches differ between samples. With noisier data or a deeper tree the changes are larger, so treat every number in a single tree as approximate.
 **Alternative / pitfalls:** Averaging many trees (a forest) reduces this instability (Q42). Quote cut-offs as approximate ("roughly 20 to 30 hours").
 **Likely follow-ups:** 1) *How do you reduce it?* Bagging or a forest, or limit depth. 2) *Is the tree then wrong?* Not wrong, just not unique.
 **Common mistakes:** Presenting exact thresholds as facts; reading causes into a single tree.
@@ -958,10 +995,11 @@ With correlation 0.8, 100 trees barely help (0.80); at 0.3 the floor is about 0.
 - Overfitting: 99% train vs 80% test means it learned noise. Reduce with `min_samples_leaf`, depth limits, fewer features, and tuning by cross-validation.
 - Validate: (1) baseline: compare with always predicting stay (about 76% here); (2) stratified cross-validation, not one lucky split; (3) recall, precision and a top-20% lift table, not accuracy; (4) a time-based test (train on earlier months, test on later) and a check for leaking columns (Q31); (5) fairness by group (Q38).
 - Caution HR: it is a risk ranking, not a verdict. A flagged person may not leave, and an unflagged person may. Use it to prioritise conversations and support, not to cut pay or opportunities, and keep a human in the loop. Check data-protection rules with IT or legal (from memory, unverified).
-- Offers have a cost: at 62% precision in the top 20% (below), 38% of offers go to people who would have stayed.
-**Sample data:** Synthetic attrition table, 750 train / 250 test rows; about 24% leavers.
+- Offers have a cost: at 44% precision in the top 20% (below), 56% of offers go to people who would have stayed.
+**Sample data:** `make_attrition(1000)` with `overtime_hours`, `tenure_years`, `salary_band` as `X` and `left` as `y`; 750 train / 250 test rows (`test_size=0.25, random_state=42`); about 24% leavers.
 **Code (what you write in the interview):**
 ```python
+import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 
@@ -977,11 +1015,11 @@ print('share of top 20% who left:', round(y_test[top_20].mean(), 2), '| overall 
 ```
 **Output:**
 ```text
-CV recall: [0.49 0.4  0.43 0.56 0.4 ]
-train 0.972 test 0.804
-share of top 20% who left: 0.62 | overall leave rate: 0.24
+CV recall: [0.4  0.42 0.35 0.3  0.38]
+train 0.993 test 0.768
+share of top 20% who left: 0.44 | overall leave rate: 0.24
 ```
-**What it means:** The model finds only 40 to 56% of leavers across folds, so it misses many. Its ranking is still useful: the top 20% flagged group leaves at 62% against 24% overall (about 2.6 times the base rate). The honest message to HR is "good for prioritising groups, not reliable for individual decisions". (Numbers are from synthetic data; the 99% train score in the question is an exercise value.)
+**What it means:** The model finds only 30 to 42% of leavers across folds, so it misses most of them. Its ranking is still useful: the top 20% flagged group leaves at 44% against 24% overall (about 1.9 times the base rate). The honest message to HR is "good for prioritising groups, not reliable for individual decisions". (Numbers are from synthetic data; the 99% train score in the question is an exercise value.)
 **Alternative / pitfalls:** Calibrate probabilities before using them as risk percentages, set the cut-off by HR capacity and the cost of an offer, and re-validate regularly as the workforce changes.
 **Likely follow-ups:** 1) *Would you deploy it?* As decision support for planning, with monitoring, not for individual penalties. 2) *How would you measure impact?* A pilot with a control group.
 **Common mistakes:** Trusting accuracy; deploying without a baseline; using risk scores for punitive decisions; ignoring fairness checks.

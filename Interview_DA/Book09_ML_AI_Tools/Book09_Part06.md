@@ -12,7 +12,42 @@
 - Think of a student who memorises last year's question paper. Full marks on that paper, but a new paper exposes that nothing was understood.
 - The model has latched onto coincidences (one odd employee who left after a Tuesday birthday) and treats them as rules.
 - The sign: **training score** (on rows the model learned from) is high, **test score** (on rows it never saw) is clearly lower.
-**Worked example (concept questions):** I simulated 1,000 employees (4 columns: tenure, salary, overtime, engagement; seed 3) and trained a decision tree with no limit on its size. It scored 100% on the training rows but only 64.8% on 250 unseen rows. A smaller tree (3 levels deep) scored 77.7% on training and 72.4% on unseen rows. The simpler model is the better one even though its training score is lower.
+**Worked example (concept questions):** I simulated 1,000 employees (invented data: tenure, salary, overtime, engagement; seed 3; code below) and trained a decision tree (a model that learns a chain of yes/no questions) with no limit on its size. It scored 100% on the training rows but only 66.0% on 250 unseen rows. A smaller tree (3 levels deep) scored 73.6% on training and 69.2% on unseen rows. The simpler model is the better one even though its training score is lower. Later answers (Q2 to Q4, Q14, Q15, Q18) reuse this same simulated data.
+```python
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+# 1,000 invented employees; leaving depends on four columns plus a lot of luck
+rng = np.random.default_rng(3)
+employees = pd.DataFrame({
+    "tenure_years": rng.uniform(0, 15, 1000).round(1),
+    "salary": rng.normal(50000, 12000, 1000).round(-2),
+    "overtime_hours": rng.uniform(0, 30, 1000).round(1),
+    "engagement": rng.integers(1, 11, 1000),
+})
+leaving_score = (2.4 - 0.25 * employees["tenure_years"]
+                 - 0.00004 * (employees["salary"] - 50000)
+                 + 0.08 * employees["overtime_hours"]
+                 - 0.35 * employees["engagement"]
+                 + rng.normal(0, 2.0, 1000))
+left = (leaving_score > 0).astype(int)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    employees, left, test_size=0.25, random_state=42)
+
+for name, tree in [("no size limit", DecisionTreeClassifier(random_state=42)),
+                   ("3 levels deep", DecisionTreeClassifier(max_depth=3, random_state=42))]:
+    tree.fit(X_train, y_train)
+    print(name, "train:", round(tree.score(X_train, y_train), 3),
+          "test:", round(tree.score(X_test, y_test), 3))
+```
+```
+no size limit train: 1.0 test: 0.66
+3 levels deep train: 0.736 test: 0.692
+```
+Plain words: the unlimited tree memorised the training rows (1.0) but drops to 0.66 on new ones. The data is invented, so the exact scores are illustrative; they change if the data-making code changes.
 **Alternative / pitfalls:** Always judge a model on data it has not seen. A perfect training score is a warning, not a result.
 **Likely follow-ups:** 1) *How do you spot it?* Compare training and test scores; a big gap is the signal. 2) *How do you fix it?* Simpler model, more data, fewer features, cross-validation (see Q14).
 **Common mistakes:** Celebrating a 100% training score; explaining it with formulas to a manager; confusing it with a model that is just inaccurate everywhere (that is underfitting, Q2).
@@ -26,7 +61,7 @@
 - Overfit: like memorising each employee's history. Perfect on the past, useless on new people.
 - Scores tell them apart: underfit = low training and low test score; overfit = high training, low test score; good fit = both reasonably high and close.
 - Causes of underfitting: too few or uninformative features, a model too simple for the pattern, or too much restriction on the model.
-**Worked example (concept questions):** On the simulated attrition data from Q1, a model that always guesses the most common answer scored 54.4% on training and 51.6% on test (both poor, so it underfits). The unlimited tree scored 100% and 64.8% (overfit). The 3-level tree scored 77.7% and 72.4% (a reasonable fit).
+**Worked example (concept questions):** On the simulated attrition data from Q1, a model that always guesses the most common answer scored 52.3% on training and 56.4% on test (both poor, so it underfits; a 1-level tree is hardly better at 67.1% and 60.4%). The unlimited tree scored 100% and 66.0% (overfit). The 3-level tree scored 73.6% and 69.2% (a reasonable fit). Invented data, so the numbers are illustrative.
 **Alternative / pitfalls:** Compare with a naive baseline (always guess the majority). If your model barely beats it, suspect underfitting or weak features.
 **Likely follow-ups:** 1) *How do you fix underfitting?* Add useful features, allow a more flexible model, reduce restrictions. 2) *Can a model do both?* Not at once, but moving from simple to complex trades one for the other (Q15).
 **Common mistakes:** Saying underfitting is "low accuracy on test only"; adding complexity before checking the data has any signal.
@@ -40,7 +75,7 @@
 - **Test set**: rows hidden from the model until the end, used once to measure performance (commonly 20-30%).
 - The question the business cares about is "how will this do next quarter?", not "how well did it remember last quarter?".
 - It is like practising on past papers but being marked on a fresh paper.
-**Worked example (concept questions):** Same 1,000 simulated employees as Q1, 750 for training and 250 for testing (seed 42 for the split). The unlimited tree scored 100.0% on rows it had trained on, but 64.8% on the 250 held-out rows. Reporting 100% to a manager would have been wrong by 35 points.
+**Worked example (concept questions):** Same 1,000 simulated employees as Q1, 750 for training and 250 for testing (seed 42 for the split). The unlimited tree scored 100.0% on rows it had trained on, but 66.0% on the 250 held-out rows. Reporting 100% to a manager would have been wrong by 34 points.
 **Alternative / pitfalls:** With small data one split is noisy; use cross-validation (Q19). For data over time, hold out the latest months instead of random rows.
 **Likely follow-ups:** 1) *What split ratio?* 80/20 or 75/25 is common; no magic number. 2) *Why a third set?* To tune choices without touching the test set (Q9).
 **Common mistakes:** Reporting training accuracy; tuning the model repeatedly on the test set; splitting after doing preprocessing that learned from all rows (Q11).
@@ -55,7 +90,7 @@ Training accuracy = 0.97, test accuracy = 0.71.
 - A gap this large means the model learned noise. The 0.71 is what to expect in real use, at best.
 - Before celebrating 0.71, compare with a baseline: if 70% of employees stay, "everyone stays" already scores 0.70.
 - Next steps, in order: limit the model's size (for example a shallower tree), remove noisy columns, use cross-validation for a steadier estimate, then engineer better features or get more rows.
-**Worked example (concept questions):** On my simulated data, limiting a tree with `min_samples_leaf=30` (each final group must hold at least 30 employees) cut the gap from 35.2 points (1.000 vs 0.648) to 9.2 points (0.784 vs 0.692), and the test score rose. The training score fell, which is the point.
+**Worked example (concept questions):** On my simulated data, limiting a tree with `min_samples_leaf=30` (each final group must hold at least 30 employees) cut the gap from 34.0 points (1.000 vs 0.660) to 3.1 points (0.739 vs 0.708), and the test score rose (invented data, illustrative numbers). The training score fell, which is the point.
 **Alternative / pitfalls:** If the data is imbalanced (few leavers), accuracy hides problems; also report precision and recall. If a feature leaks the answer, the train score would be high and the test score also high, so a gap alone does not catch it.
 **Likely follow-ups:** 1) *Would more data help?* Often, yes, for overfitting. 2) *What if the gap were tiny but both scores low?* That suggests underfitting.
 **Common mistakes:** Reporting 0.97; making the model more complex; ignoring the baseline.
@@ -91,7 +126,7 @@ Employee 1 is paid 20% below the department median and has waited 21 months: a p
 - Exit interview completed, final settlement amount, notice period start date: all exist only after someone resigns.
 - Sales example: predicting whether a deal closes using "contract sent" date, which is only filled once a deal is won.
 - The giveaway is an unrealistically high score.
-**Worked example (concept questions):** In the simulated churn data of Q10 (1,000 customers, 455 churned), the column `account_closed_date` is filled only for churners. A depth-3 tree using it scored 100% on 200 test rows; without it, the real signals gave 67%. The 100% would vanish on live customers, because nobody has a closing date before they close.
+**Worked example (concept questions):** In the simulated churn data of Q10 (1,000 customers, 455 churned), the column `account_closed_date` is filled only for churners. A depth-3 tree using it (as a yes/no "has a closing date" column) scored 100% on 200 test rows; without it, the real signals gave 60% (simulated data, illustrative). The 100% would vanish on live customers, because nobody has a closing date before they close.
 **Alternative / pitfalls:** Ask for each feature: "Would I know this on the day I make the prediction?" Also split by time when predicting the future.
 **Likely follow-ups:** 1) *How do you detect it?* Suspiciously good scores, one feature dominating importance, features with future dates. 2) *How do you prevent it?* Split first, fit preprocessing on training only, use a Pipeline (Q11).
 **Common mistakes:** Confusing leakage with overfitting (leakage gives high test scores too); only checking after deployment.
@@ -185,7 +220,27 @@ One of the features is `account_closed_date`, which is empty for customers who a
 - Red flags: near-perfect score, one feature carrying almost all importance, a feature recorded after the outcome.
 - `account_closed_date` is empty for active customers and filled for churned ones, so "has a date" equals "churned".
 - Checks: cross-tabulate suspect columns with the target; look at feature importance; ask the business when each column is filled in; retrain without it and see how far the score falls.
-**Sample data:** I simulated 1,000 customers (tenure, bill, support calls, churned, account_closed_date; seed 42), with 455 churners. `customers` is that table.
+**Sample data:** I simulated 1,000 customers (tenure, bill, support calls, churned, account_closed_date; seed 42), with 455 churners. `customers` is that table (invented data; building code below, not something you would write in the interview).
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+customers = pd.DataFrame({
+    "tenure_months": rng.integers(1, 61, 1000),
+    "monthly_bill": rng.normal(60, 15, 1000).round(2),
+    "support_calls": rng.poisson(2, 1000),
+})
+risk = (0.5 * customers["support_calls"] + 0.02 * customers["monthly_bill"]
+        - 0.03 * customers["tenure_months"] + rng.normal(0, 1.5, 1000))
+# the 455 customers with the highest risk score are the churners
+customers["churned"] = (risk.rank(ascending=False) <= 455).astype(int)
+# the closing date exists only for customers who have already churned
+customers["account_closed_date"] = pd.NaT
+closed = customers["churned"] == 1
+customers.loc[closed, "account_closed_date"] = (
+    pd.Timestamp("2025-01-01") + pd.to_timedelta(rng.integers(0, 365, closed.sum()), unit="D"))
+```
 **Code (what you write in the interview):**
 ```python
 # Does "has a closed date" simply equal "churned"?
@@ -200,7 +255,7 @@ has_closed_date
 False            545    0
 True               0  455
 ```
-**What it means:** The two are identical, so the column is the answer in disguise. A depth-3 tree using it scored 100% on test and gave it 100% of the importance; without it, the score was 67% (the honest figure).
+**What it means:** The two are identical, so the column is the answer in disguise. A depth-3 tree using it scored 100% on test and gave it 100% of the importance; without it, the score was 60% (the honest figure; I checked this with a separate script, not shown here).
 **Alternative / pitfalls:** Not every leak is this obvious; check each feature's timing with the data owner. Also check for duplicate rows across train and test.
 **Likely follow-ups:** 1) *Would you keep the column if it were useful?* Only if it is known at prediction time; it is not. 2) *What would you report?* The score without the leaking column.
 **Common mistakes:** Trusting the 99% and deploying; dropping the column without understanding why; assuming leakage always shows up as a high-importance column.
@@ -219,9 +274,21 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2)
 - The mean and standard deviation are learned from data. If they come from all rows, the test set has quietly shaped the training process.
 - Fix: split, then `fit_transform` on training and plain `transform` on test.
 - Also missing: `random_state`, so the split cannot be repeated.
-**Sample data:** 200 simulated employees with salary and tenure columns (seed 42).
+**Sample data:** 200 simulated employees with salary and tenure (months) columns, and a random 0/1 target (seed 42; invented, only to run the code).
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+X = pd.DataFrame({"salary": rng.normal(50000, 12000, 200).round(-2),
+                  "tenure_months": rng.integers(1, 90, 200)})
+y = rng.integers(0, 2, 200)
+```
 **Code (what you write in the interview):**
 ```python
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 scaler = StandardScaler()
@@ -229,15 +296,19 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 # reuse the same numbers on the test rows
 X_test_scaled = scaler.transform(X_test)
-print(scaler.mean_.round(0))
-print(X.mean().round(0).values)
+print(pd.Series(scaler.mean_, index=X.columns).round(1))
+print(X.mean().round(1))
 ```
 **Output:**
 ```
-[50809.    43.]
-[50952.    45.]
+salary           49996.9
+tenure_months       46.1
+dtype: float64
+salary           49634.5
+tenure_months       45.6
+dtype: float64
 ```
-**What it means:** The training-only means differ from the all-rows means; the buggy code would have used the second set. The gap is small here but the habit matters.
+**What it means:** The first block is the training-only means; the second is the all-rows means, which the buggy code would have used. The gap is small here but the habit matters.
 **Alternative / pitfalls:** `make_pipeline(StandardScaler(), model)` with cross-validation refits the scaler inside each fold. Tree models do not need scaling, but the fix is a good habit.
 **Likely follow-ups:** 1) *Does the same apply to filling missing values?* Yes (Q13). 2) *Does it matter for trees?* Scaling is not needed for them.
 **Common mistakes:** Calling `fit_transform` on the test set; fitting any preprocessing before the split.
@@ -281,7 +352,7 @@ print(employees)
 4         HR                0
 ```
 **What it means:** One-hot treats departments as equal groups; the codes (0, 1, 2) look like a ranking that does not exist.
-**Alternative / pitfalls:** Fit the encoder on training data and reuse it on test (new categories in test need handling, for example `OneHotEncoder(handle_unknown="ignore")`, from memory, unverified on this install).
+**Alternative / pitfalls:** Fit the encoder on training data and reuse it on test (new categories in test need handling, for example `OneHotEncoder(handle_unknown="ignore")`, which I checked on sklearn 1.9.1: an unseen category becomes all zeros).
 **Likely follow-ups:** 1) *Many categories?* Group rare ones, or use target encoding with care (leakage risk). 2) *Ordered categories?* Use an ordered code.
 **Common mistakes:** Label-encoding department for logistic regression; one-hot encoding an ID column; encoding before the split.
 
@@ -294,7 +365,15 @@ print(employees)
 - The **median** is the middle value; it resists outliers (a few very high salaries).
 - The fill value is learned from data, just like a scaler. Learning it from all rows lets test rows shape training. Learn from training, then apply the same value to test.
 - Missingness itself can carry meaning (a blank last-promotion date may mean "never promoted").
-**Sample data:** Ten ages with two blanks, split 70/30 (seed 42).
+**Sample data:** Ten ages with two blanks (missing), split 70/30 (seed 42); the training part gets both blanks.
+```python
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+employees = pd.DataFrame({"age": [25, 38, np.nan, 52, 33, 40, 29, 45, 22, np.nan]})
+X_train, X_test = train_test_split(employees, test_size=0.3, random_state=42)
+```
 **Code (what you write in the interview):**
 ```python
 from sklearn.impute import SimpleImputer
@@ -325,7 +404,7 @@ print(imputer.statistics_)
 - **More data**: harder for a model to memorise a bigger sample.
 - **Cross-validation**: average over several splits so one lucky split does not fool you (Q19).
 - **Regularisation** (a penalty for complexity; for example in logistic regression) and **early stopping** exist, but mention them only briefly at analyst level.
-**Worked example (concept questions):** On the simulated attrition data (Q1): unlimited tree, train 1.000, test 0.648; `min_samples_leaf=30`, train 0.784, test 0.692; `max_depth=3`, train 0.777, test 0.724. Restricting the tree narrowed the gap from 35.2 to 5.3 points and raised the test score by 7.6 points.
+**Worked example (concept questions):** On the simulated attrition data (Q1): unlimited tree, train 1.000, test 0.660; `min_samples_leaf=30`, train 0.739, test 0.708; `max_depth=3`, train 0.736, test 0.692. Restricting the tree narrowed the gap from 34.0 to 3.1 points (leaf rule) or 4.4 points (depth rule) and raised the test score by 4.8 or 3.2 points (illustrative, one split).
 **Alternative / pitfalls:** Over-restricting leads to underfitting (Q2). Tune using validation data or cross-validation, not the test set.
 **Likely follow-ups:** 1) *Does more data always help?* It helps overfitting but not bad features. 2) *Which first?* Check for leakage and simplify.
 **Common mistakes:** Adding features hoping to improve; tuning on the test set; stopping at "use regularisation" with no example.
@@ -343,12 +422,12 @@ print(imputer.statistics_)
 
 | Depth | Train | Test |
 |---|---|---|
-| 1 | 0.717 | 0.692 |
-| 3 | 0.777 | 0.724 |
-| 6 | 0.867 | 0.668 |
-| no limit | 1.000 | 0.648 |
+| 1 | 0.671 | 0.604 |
+| 3 | 0.736 | 0.692 |
+| 6 | 0.805 | 0.668 |
+| no limit | 1.000 | 0.660 |
 
-Training score always rises with depth; the test score peaks near depth 3 and then falls. Depth 1 leans towards high bias; no limit towards high variance.
+Training score never falls as depth rises; the test score peaks near depth 3 and then drifts down (depth 4 to 10 scored between 0.648 and 0.684, not a perfectly smooth fall). Depth 1 leans towards high bias; no limit towards high variance.
 **Alternative / pitfalls:** The numbers are one random split; the exact peak moves with the seed, so cross-validation is safer.
 **Likely follow-ups:** 1) *Can you reduce both?* More good data and better features can. 2) *Where is the best model?* At the lowest test error.
 **Common mistakes:** Mixing up which one is "simple"; thinking you can eliminate both; no concrete example.
@@ -363,6 +442,13 @@ Training score always rises with depth; the test score peaks near depth 3 and th
 - The value itself (42, 0, 7) has no special meaning.
 - Different splits give slightly different scores; that variation is a reminder that one split is a noisy estimate.
 **Sample data:** 100 rows, test size 20%.
+```python
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+X = pd.DataFrame({"a": range(100)})
+y = pd.Series([0, 1] * 50)
+```
 **Code (what you write in the interview):**
 ```python
 for seed in [42, 42, 7]:
@@ -412,7 +498,7 @@ The first three columns are features; `resigned_in_6m` is the target.
 - With limited rows, the more columns, the easier it is to memorise coincidences.
 - More columns also cost time, are harder to explain to a manager, and raise the chance of including a leaking or sensitive column.
 - Judge by test or cross-validation score, not by how many columns you have.
-**Worked example (concept questions):** On the simulated attrition data (1,000 rows, 4 real features), a 4-level tree scored 0.808 train and 0.652 test. After adding 40 columns of pure random numbers, train went up slightly to 0.817 while test fell to 0.616. The model was "learning" from noise. (One seed; the direction is the lesson, the exact size would vary.)
+**Worked example (concept questions):** On the simulated attrition data (1,000 rows, 4 real features), a 4-level tree scored 0.740 train and 0.684 test. After adding 40 columns of pure random numbers, train rose to 0.768 while test fell to 0.657 (average of 20 different sets of random columns; single draws ranged from about 0.62 to 0.68 on test). The model was "learning" from noise. (Illustrative: the direction is the lesson, the exact size varies.)
 **Alternative / pitfalls:** Remove features with no relationship to the target, near-duplicates (salary in two currencies), and anything unavailable at prediction time.
 **Likely follow-ups:** 1) *How do you choose features?* Business logic, correlation checks, test-score comparison. 2) *Is a larger dataset an answer?* More rows help; more columns do not.
 **Common mistakes:** Throwing in every column; judging by training score, which always rises with more features.
@@ -426,10 +512,13 @@ The first three columns are features; `resigned_in_6m` is the target.
 - 5-fold: five rounds, each with 100 rows held out and 400 used to train. Every row is held out exactly once.
 - Report the mean and the spread across folds (Q20).
 - The cost is training the model k times, which is fine for small data.
-**Sample data:** 500 rows.
+**Sample data:** 500 rows (`X = pd.DataFrame({"a": range(500)})`).
 **Code (what you write in the interview):**
 ```python
+import pandas as pd
 from sklearn.model_selection import KFold
+
+X = pd.DataFrame({"a": range(500)})
 
 kfold = KFold(n_splits=5, shuffle=True, random_state=42)
 for fold, (train_rows, validation_rows) in enumerate(kfold.split(X), start=1):
@@ -553,7 +642,7 @@ print(df)
 2 2025-01-20            3.3
 3 2019-07-31           69.0
 ```
-**What it means:** Employee 3 has been here almost six years; employee 2 is a recent joiner.
+**What it means:** Row 3 (hired 2019-07-31) has been here almost six years; row 2 (hired 2025-01-20) is a recent joiner.
 **Alternative / pitfalls:** For whole calendar months use `(ref.year - d.dt.year) * 12 + (ref.month - d.dt.month)`. Never use `datetime.now()` inside a model feature, and for leavers measure tenure up to the exit date, not today.
 **Likely follow-ups:** 1) *Other date features?* Hire month, day of week, quarter. 2) *What if hire_date is missing?* Investigate; do not fill with a made-up date.
 **Common mistakes:** Subtracting strings without `to_datetime`; using today's date; counting leavers' tenure to today, which leaks their outcome.
@@ -831,7 +920,7 @@ print('pipeline:   ', right.mean().round(4))
 manual prep: 0.9133
 pipeline:    0.9133
 ```
-**What it means:** Here both scores are identical to four decimals, so mean-and-scale leakage did not matter on this data. That is typical, but the habit matters: on pure noise (100 rows, 500 random columns, target random) I checked that selecting the 10 "best" columns before CV gives about 0.70 accuracy versus 0.50 inside a Pipeline. The first number is fake.
+**What it means:** Here both scores are identical to four decimals, so mean-and-scale leakage did not matter on this data. That is typical, but the habit matters: on pure noise (100 rows, 500 random columns, random target) I checked, with a separate script not shown here, that choosing the 10 "best" columns (`SelectKBest`) before cross-validation gave 0.70 to 0.80 accuracy across five seeds, versus 0.39 to 0.57 when the selection sat inside a Pipeline (true value is 0.50). The first numbers are fake.
 **Alternative / pitfalls:** Never claim "it always inflates a lot"; say it can, and the risk is highest with target-aware steps and small data.
 **Likely follow-ups:** 1) *Does it matter for the final test set too?* Yes, fit on train, only transform test. 2) *Does Pipeline handle `GridSearchCV`?* Yes, pass the pipeline as the estimator.
 **Common mistakes:** Calling `fit_transform` on the full X before `cross_val_score`; overstating the effect of scaler leakage.
@@ -1004,7 +1093,7 @@ print('group split, employees in both parts:', len(shared))
 random split, employees in both parts: 163
 group split, employees in both parts: 0
 ```
-**What it means:** With a random split, 163 of the 200 employees appear on both sides. With a group split none do. In a separate check with invented employee-specific data (random forest, seed 42), the random split scored about 0.96 accuracy and the group split about 0.45 (chance level), because there was nothing real to learn.
+**What it means:** With a random split, 163 of the 200 employees appear on both sides. With a group split none do. In a separate check with invented employee-specific data (random forest, seed 42), the random split scored about 0.96 accuracy and the group split about 0.42 (chance is about 0.50), because there was nothing real to learn. (That check: each employee had fixed random features plus a random leave flag, same split settings; separate script, not shown.)
 **Alternative / pitfalls:** Or collapse to one row per employee (snapshot at a date) and predict leaving in the next 6 months. Also watch for rows after the exit date.
 **Likely follow-ups:** 1) *Same issue with customers and orders?* Yes, group by customer. 2) *What about time?* Combine group and time splits where relevant.
 **Common mistakes:** Using plain `KFold`; forgetting to pass `groups=`.
@@ -1058,7 +1147,7 @@ final test score (used once): 0.787
 - **High cardinality** means a column with very many distinct values (thousands of pincodes). One-hot encoding would add thousands of columns.
 - Target encoding: pincode 560001 becomes, say, 0.18 if 18% of its training employees left.
 - Leak: a pincode with 2 rows, one leaver, gets 0.5 and that number partly *is* the answer for those rows.
-- Fixes: compute each row's value from other folds only; **smoothing** (pull small groups toward the overall average); sklearn's `TargetEncoder` does cross-fitting internally (the class exists in sklearn 1.9.1, checked; that it cross-fits inside `fit_transform` is from memory, unverified).
+- Fixes: compute each row's value from other folds only; **smoothing** (pull small groups toward the overall average); sklearn's `TargetEncoder` does cross-fitting internally (the class exists in sklearn 1.9.1, and I checked that `fit_transform` gives different values from `fit` then `transform` on the same rows, which is what cross-fitting would produce).
 **Sample data:** invented: 800 employees, 400 pincodes, and a target made of random noise, so the true predictive power is zero (seed 42).
 **Code (what you write in the interview):**
 ```python

@@ -166,7 +166,7 @@ print(intercept + coefficient * years_of_experience)
 - Default threshold is 0.5: 0.5 or more gives class 1, below gives class 0.
 - In odds terms: 0.72 / 0.28 is about 2.57 to 1 in favour of leaving.
 **Alternative / pitfalls:** The model is only as good as its calibration (whether "72%" really behaves like 72% in practice). Check this before quoting percentages to managers.
-**Likely follow-ups:** 1) *Was the model wrong if the person stays?* Not necessarily; a 72% chance still means 28 in 100 stay (a 72% chance still leaves a 28% chance of staying). 2) *Would you act at 0.72?* Depends on cost of a retention conversation versus cost of attrition.
+**Likely follow-ups:** 1) *Was the model wrong if the person stays?* Not necessarily; a 72% chance still leaves a 28% chance of staying, so about 28 in 100 such employees stay. 2) *Would you act at 0.72?* Depends on cost of a retention conversation versus cost of attrition.
 **Common mistakes:** Saying "the employee will leave with 72% certainty" or "72% of the employee's time"; forgetting the threshold can be changed.
 
 ### Q9 ⭐⭐⭐ 🟢 Why is plain linear regression a poor choice when the outcome is yes/no, such as whether an employee leaves?
@@ -790,7 +790,40 @@ Probability of leaving: 0.907
 - Ask for every feature: "would I know this on the day I make the prediction?" For `exit_interview_done` the answer is no.
 - Fix: remove the feature (and any similar ones, such as final settlement date or notice period served), rebuild the dataset as of a past date, and rerun.
 - A suspiciously perfect score (99%) is itself a warning sign.
-**Worked example:** On made-up data where about a third of employees leave and only leavers get an exit interview, the model with the leaking column scored 1.0 on test data and gave it a huge coefficient (6.4). Without it, accuracy fell to 0.68, which is the realistic level. (Computed by script on simulated data, seed 42, 500 rows.)
+**Sample data:** 500 illustrative employees, about a third leave; only leavers have an exit interview, so `exit_interview_done` equals the answer (built inside the code).
+**Code (what you write in the interview):**
+```python
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+
+# Illustrative data: 500 employees, about a third leave, leavers work more overtime
+rng = np.random.default_rng(42)
+left_company = (rng.random(500) < 0.33).astype(int)
+employees = pd.DataFrame({
+    "overtime_hours": np.where(left_company == 1, rng.normal(10, 4, 500), rng.normal(7, 4, 500)),
+    "tenure_years": rng.uniform(0, 10, 500),
+    # Leak: the exit interview only happens after someone has left
+    "exit_interview_done": left_company,
+})
+
+for features in (["overtime_hours", "tenure_years", "exit_interview_done"],
+                 ["overtime_hours", "tenure_years"]):
+    X_train, X_test, y_train, y_test = train_test_split(
+        employees[features], left_company, test_size=0.3, random_state=42, stratify=left_company)
+    model = LogisticRegression().fit(X_train, y_train)
+    print(len(features), "features | test accuracy:", round(model.score(X_test, y_test), 2),
+          "| largest coefficient:", round(np.abs(model.coef_[0]).max(), 1))
+print("Always-'stayed' baseline accuracy:", round(1 - left_company.mean(), 2))
+```
+**Output:** (seed 42; simulated data)
+```text
+3 features | test accuracy: 1.0 | largest coefficient: 6.3
+2 features | test accuracy: 0.69 | largest coefficient: 0.1
+Always-'stayed' baseline accuracy: 0.65
+```
+**What it means:** With the leaking column the model is perfect (1.0) and that one coefficient is huge (6.3). Without it, accuracy drops to 0.69, only a little above the 0.65 you get by always guessing "stayed", which is the honest picture of what overtime and tenure can do here.
 **Alternative / pitfalls:** Other common leaks: using the full data to scale or impute before splitting, features recorded after the outcome, and duplicates across train and test.
 **Likely follow-ups:** 1) *How do you spot leakage?* Near-perfect score, one dominant coefficient, or a feature that is only filled for one class. 2) *How do you prevent it?* Define the prediction date and use only data available before it.
 **Common mistakes:** Celebrating 99%; dropping the feature but keeping its close relatives; checking only accuracy.
@@ -1139,7 +1172,7 @@ Model: salary = a + b × age, trained on employees aged 22 to 58.
 - If zero is not a realistic or observed value (age 0, tenure 0 with no one at 0, height 0), predicting there is extrapolation, so the intercept is only a mathematical anchor.
 - It can look odd, even negative, and that is fine; the slope is what matters for interpretation.
 - Fix for readability: centre the variable (use age minus 40) so the intercept becomes the salary at age 40.
-**Worked example:** On made-up data generated with age 22 to 58, the fitted line had an intercept of about 19,900 and a slope of about 1,190 per year. The 19,900 is the "salary at age 0", which is nonsense; but "about 1,190 more per year of age" is useful. (Computed by script on simulated data, seed 42.)
+**Worked example:** Five made-up employees aged 22, 30, 40, 50 and 58 earn 47,000, 55,000, 68,000, 80,000 and 89,000 a month. The fitted line (checked with `np.polyfit`) has a slope of about 1,186 per year of age and an intercept of about 20,347. The 20,347 is the "salary at age 0", which is nonsense; "about 1,186 more per year of age" is useful. After centring (age minus 40) the intercept becomes about 67,800, the predicted salary at age 40, which is a sensible number.
 **Alternative / pitfalls:** The intercept still matters for correct predictions; never drop it from the equation. If x = 0 is meaningful (zero overtime hours), the intercept is interpretable.
 **Likely follow-ups:** 1) *Should you remove the intercept?* No, that forces the line through zero and usually distorts the fit. 2) *How do you get a meaningful one?* Centre the variable.
 **Common mistakes:** Presenting "salary at age 0" in a report; predicting outside the training range.
@@ -1413,7 +1446,7 @@ balanced recall: 0.59 precision: 0.3 flagged: 188
 - Linear regression: badness = sum of squared errors (gap between actual and predicted, squared so misses in both directions count and big misses count more). The best line has a direct formula.
 - Logistic regression: the outcome is 0/1, so squared gaps are a poor fit. Instead it asks "how likely was the data we saw?" (maximum likelihood). Log loss is that idea turned into a penalty: confident wrong answers are punished heavily.
 - Logistic regression has no direct formula; the computer improves the coefficients step by step until they stop changing.
-**Worked example (concept):** Five points x = 1..5, y = 2, 4, 5, 4, 6. The least squares line is y = 1.8 + 0.8x with squared error 2.4; a flatter line with slope 0.5 has squared error 7.35, so it is worse. For five employees who left (0, 0, 1, 0, 1), predicted probabilities 0.2, 0.3, 0.6, 0.4, 0.7 give a log loss of 0.39; saying 0.5 for everyone gives 0.69. Lower is better.
+**Worked example (concept):** Five points x = 1..5, y = 2, 4, 5, 4, 6. The least squares line is y = 1.8 + 0.8x with squared error 2.4; a flatter line with the same intercept 1.8 but slope 0.5 has squared error 7.35, so it is worse. For five employees where 1 means left (0, 0, 1, 0, 1), predicted probabilities 0.2, 0.3, 0.6, 0.4, 0.7 give a log loss of 0.39; saying 0.5 for everyone gives 0.69. Lower is better.
 **Alternative / pitfalls:** Least squares on a 0/1 target is the linear probability model (Q66) and can predict below 0 or above 1.
 **Likely follow-ups:** 1) *Why squares?* They penalise large misses and give a clean formula. 2) *What is gradient descent?* Taking repeated small steps downhill on the badness score.
 **Common mistakes:** Saying logistic regression minimises squared error; thinking it has a closed-form formula.
@@ -1762,15 +1795,15 @@ ci_low, ci_high = 0.308, 1.092
 
 print("Odds ratio:", round(np.exp(coef), 2))
 print("95% CI for odds ratio:", round(np.exp(ci_low), 2), "to", round(np.exp(ci_high), 2))
-print("z:", coef / std_err)
+print("z:", round(coef / std_err, 2))
 ```
 **Output:**
 ```text
 Odds ratio: 2.01
 95% CI for odds ratio: 1.36 to 2.98
-z: 3.4999999999999996
+z: 3.5
 ```
-**What it means:** Overtime roughly doubles the odds of leaving, and the plausible range is about 1.4 to 3.0 times. The z of 3.5 is shown as 3.5 (the long decimals are only floating-point rounding).
+**What it means:** Overtime roughly doubles the odds of leaving, and the plausible range is about 1.4 to 3.0 times.
 **Alternative / pitfalls:** Statistically significant does not mean large or causal. The interval is for the coefficient; exponentiate both ends for the odds ratio. A significant p-value with a huge sample can still be a trivial effect.
 **Likely follow-ups:** 1) *What if the interval includes 0?* The effect is not clearly different from none (for odds ratios: includes 1). 2) *Does sklearn give p-values?* No (Q57).
 **Common mistakes:** Reading the coef as a probability change; saying p = 0.000 means "zero chance"; forgetting to exponentiate.
@@ -1838,7 +1871,36 @@ intercept: 10.1
 - **AUC**: chance that a random leaver gets a higher score than a random stayer (0.5 is guessing, 1.0 is perfect).
 - **Precision and recall** (Q44) at the threshold you will really use.
 - **Pseudo R² (McFadden)**: 1 minus the model's log-likelihood divided by that of a no-variable model; 0.2-0.4 is often described as good (a rule of thumb from memory, unverified).
-**Worked example:** Illustrative 1,000 employees (seed 42). Ordinary R² on the probabilities is 0.13, McFadden's pseudo R² is 0.13 (0.127), log loss is 0.44 against 0.51 for always predicting the average leaving rate, and AUC is 0.75. The model is useful but only moderately so; report AUC and the precision/recall trade-off.
+**Sample data:** 1,000 illustrative employees, two features, about 25% leave (built inside the code).
+**Code (what you write in the interview):**
+```python
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import log_loss, roc_auc_score, r2_score
+
+# Illustrative data: 1,000 employees, two features, about 25% leave
+rng = np.random.default_rng(42)
+features = rng.normal(size=(1000, 2))
+risk = -1.2 + 0.8 * features[:, 0] + 0.5 * features[:, 1]
+left = (rng.random(1000) < 1 / (1 + np.exp(-risk))).astype(int)
+
+predicted = LogisticRegression().fit(features, left).predict_proba(features)[:, 1]
+no_variable_loss = log_loss(left, np.full(1000, left.mean()))
+model_loss = log_loss(left, predicted)
+
+print("Ordinary R2 on probabilities:", round(r2_score(left, predicted), 2))
+print("McFadden pseudo R2:", round(1 - model_loss / no_variable_loss, 2))
+print("Log loss: model", round(model_loss, 2), "| always the average rate", round(no_variable_loss, 2))
+print("AUC:", round(roc_auc_score(left, predicted), 2))
+```
+**Output:** (seed 42; simulated data, scored on the training rows for brevity)
+```text
+Ordinary R2 on probabilities: 0.1
+McFadden pseudo R2: 0.09
+Log loss: model 0.51 | always the average rate 0.56
+AUC: 0.7
+```
+**What it means:** The model beats the "average rate for everyone" baseline (log loss 0.51 against 0.56) and ranks leavers above stayers 70% of the time (AUC 0.70). The R-squared style numbers look small (0.09 to 0.10) even though the model is useful, which is why they are a poor headline. Report AUC and the precision/recall trade-off, ideally on held-out data.
 **Alternative / pitfalls:** Accuracy is misleading when the outcome is rare. Always evaluate on held-out data (Q53).
 **Likely follow-ups:** 1) *Which one to tell a manager?* Recall and precision at the chosen threshold, in counts of people. 2) *Brier score?* Mean squared gap of probability from outcome; it also checks calibration (Q59).
 **Common mistakes:** Reporting R² for a classifier; reporting only accuracy; comparing pseudo R² with ordinary R².
@@ -2540,7 +2602,7 @@ Rare case odds ratio: 3.06
 ### Q73 ⭐ 🟡 What is gradient descent in one minute, and does LinearRegression in sklearn use it?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you understand "step downhill on the error" and know that sklearn's LinearRegression does not need it.
-**Say this in the interview:** "Gradient descent starts with a guess for the line, measures the error, and nudges the numbers a small step in the direction that reduces the error, repeating until it stops improving. sklearn's LinearRegression does not use it; it solves least squares directly with linear algebra. Gradient descent is used when no direct solution exists, as in neural nets, and is used for logistic regression in some solvers."
+**Say this in the interview:** "Gradient descent starts with a guess for the line, measures the error, and nudges the numbers a small step in the direction that reduces the error, repeating until it stops improving. sklearn's LinearRegression does not use it; it solves least squares directly with linear algebra. Gradient descent is used when no direct solution exists, as in neural nets; for logistic regression some solvers use gradient-style steps."
 **Explain simply:**
 - Picture walking downhill in fog: feel the slope, take a step, repeat.
 - The step size is the *learning rate*.
@@ -2945,7 +3007,6 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import train_test_split
 
 rng = np.random.default_rng(42)
 n = 3000
@@ -2964,7 +3025,6 @@ def evaluate(features, split):
     model = LogisticRegression(max_iter=1000).fit(train[features], train["churned"])
     return round(roc_auc_score(test["churned"], model.predict_proba(test[features])[:, 1]), 3)
 
-random_split = train_test_split(customers, test_size=0.3, random_state=42)
 time_split = (customers[customers["snapshot_month"] <= 9], customers[customers["snapshot_month"] > 9])
 
 clean = ["orders_last_3m", "app_sessions"]

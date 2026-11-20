@@ -147,7 +147,7 @@ print(model.score(X_test, y_test))
 - The test set also no longer has the real 15% leaver share, so the score does not describe real life.
 - `model.score` is accuracy, which is the wrong metric here (Q4).
 - Fix, in order: stratified split first; rebalance `X_train, y_train` only (or inside a pipeline so cross-validation does it per fold); evaluate on the original test set with recall, precision and a confusion matrix.
-**Worked example (concept questions):** I ran a simple version of this on pure random noise (no real signal) with plain duplication of leavers instead of SMOTE, using seed 42. Duplicating before the split gave a test accuracy of 0.967, which is meaningless. Splitting first and duplicating training rows only gave an honest accuracy of 0.805 with leaver recall of 0.029 (1 of 35 leavers), which is what random noise deserves.
+**Worked example (concept questions):** I ran a simple version of this on pure random noise (1,000 rows, 5 random columns, about 15% leavers picked by chance, so there is nothing to learn), with plain duplication of leavers instead of SMOTE and a random forest, numpy seed 42. Duplicating before the split gave a test accuracy of about 0.95, which is meaningless because copies of the same leaver sit in both train and test. Splitting first and duplicating training rows only gave an honest accuracy of 0.805 with leaver recall of 2 of 35 (0.06), which is what random noise deserves. Exact figures depend on the seed and the generator; the gap between the two is the lesson.
 **Alternative / pitfalls:** Fixed code (imbalanced-learn is not installed here, so this snippet is from memory, unverified):
 ```python
 X_train, X_test, y_train, y_test = train_test_split(
@@ -316,7 +316,7 @@ Data: a pandas DataFrame `df` with numeric features and a 0/1 column `Attrition`
 - `stratify=y` keeps the 0/1 mix the same in both sets.
 - `random_state=42` makes the split repeatable.
 - The model **fits** (learns) on the training set only; the test set is kept for the final check.
-**Sample data:** My check used 1,000 synthetic rows (not real employees) with five numeric columns (Age, Tenure, Salary, OverTimeHours, SatisfactionScore) and about 15% leavers, made with `make_classification(weights=[0.85], random_state=42)`.
+**Sample data:** My check used 1,000 synthetic rows (not real employees) with five numeric columns (Age, Tenure, Salary, OverTimeHours, SatisfactionScore) and about 15% leavers, made with `make_classification(n_samples=1000, n_features=5, n_informative=2, n_redundant=2, weights=[0.85], random_state=42)` from `sklearn.datasets`, with the five columns then named as above (the names are labels only; the values are random). With this call the output below reproduces on scikit-learn 1.9.1.
 **Code (what you write in the interview):**
 ```python
 from sklearn.model_selection import train_test_split
@@ -433,10 +433,10 @@ Data (illustrative): model flags 40 employees, 24 of them are real leavers. A st
 - A random split is fine for one-row-per-person snapshots where nothing changes over time.
 - It goes wrong with employee-month tables (one row per person per month): the same person lands in both sets, and the model simply recognises them.
 - It also hides drift: policies, pay and the job market change, and a random split mixes old and new together.
-**Worked example (concept question):** Made-up table: 400 employees x up to 12 months, 25% leave, and the features (age, salary) carry no real signal by construction. A random forest scored on a random 70/30 row split gets an AUC of 0.86 (AUC: 0.5 is a coin flip, 1.0 is perfect). The same model tested on employees it never saw gets 0.54, which is the honest answer. Seed 42.
+**Worked example (concept question):** Made-up table: 400 employees x 1 to 12 monthly rows each, 25% leave, and age and salary are random per person (tiny month-to-month wobble) with no link to leaving. A random forest scored on a random 70/30 row split gets an AUC of about 0.98 (AUC: 0.5 is a coin flip, 1.0 is perfect), because it recognises the same person in both sets. The same model tested on employees it never saw (a group split) gets about 0.51, which is the honest answer. Seed 42; exact values change with the generator.
 **Alternative / pitfalls:** Best of both: split by time, and keep each employee on only one side (group split). Watch out: with only a few years of data, a time split leaves a small test set, so report the uncertainty.
 **Likely follow-ups:** 1) *What is a group split?* Keep all rows of one person together in train or test. 2) *Time split for a static snapshot?* Use snapshot date A for training and later date B for testing.
-**Common mistakes:** Calling a 0.86 score from a random split "model performance"; forgetting that one person has many rows.
+**Common mistakes:** Calling a 0.98 score from a random split "model performance"; forgetting that one person has many rows.
 
 ### Q21 ⭐⭐ 🟡 Why would you use stratified k-fold cross-validation for a churn or attrition model?
 **Asked at:** commonly asked (no company-specific report found); validation for imbalanced churn data appears in question banks (unverified).
@@ -467,7 +467,7 @@ StratifiedKFold [2, 2, 2, 2, 2]
 ```
 **What it means:** The plain version puts every leaver in one fold, so four folds cannot measure recall at all. Stratified gives two leavers in each.
 **Alternative / pitfalls:** With a strong ordering by date, use time-aware splits instead; for repeated people use group folds. Do any resampling (such as SMOTE) inside the training folds only.
-**Likely follow-ups:** 1) *Does `cross_val_score` stratify by default?* For classifiers with an integer k, scikit-learn uses stratified folds (from memory; I confirm it in the docs before claiming it). 2) *How many folds?* 5 is common; with very few leavers use fewer folds or repeat.
+**Likely follow-ups:** 1) *Does `cross_val_score` stratify by default?* For a classifier with a yes/no target and an integer k, yes: I checked that scikit-learn 1.9.1 picks `StratifiedKFold` without shuffling (it does not for regression targets). 2) *How many folds?* 5 is common; with very few leavers use fewer folds or repeat.
 **Common mistakes:** Shuffling and stratifying but still letting the same person appear in several folds; reporting only the average without the spread.
 
 ### Q22 ⭐⭐ 🟡 Write a scikit-learn pipeline that one-hot encodes the categorical columns, scales the numeric columns and fits a class-weighted logistic regression.
@@ -480,7 +480,22 @@ Data: `cat_cols = ["Department", "JobRole"]`, `num_cols = ["Age", "MonthlyIncome
 - **Scaling** puts numbers on a similar range so income (thousands) does not drown age (tens).
 - **Class weight** tells the model that a missed leaver costs more than a missed stayer.
 - `handle_unknown="ignore"` stops a crash if a new job role appears later.
-**Sample data:** 600 made-up employees in `employees` (about 10% leavers), columns Department, JobRole, Age, MonthlyIncome, YearsAtCompany, Attrition (1 = left). Only for running the code.
+**Sample data:** 600 made-up employees in `employees` (about 10% leavers), columns Department, JobRole, Age, MonthlyIncome, YearsAtCompany, Attrition (1 = left). Only for running the code; this builder is not part of the interview answer:
+```python
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(42)
+rows = 600
+employees = pd.DataFrame({
+    "Department": rng.choice(["Sales", "HR", "R&D"], rows),
+    "JobRole": rng.choice(["Executive", "Analyst", "Manager", "Technician"], rows),
+    "Age": rng.integers(21, 60, rows),
+    "MonthlyIncome": rng.normal(6000, 2000, rows).round(),
+    "YearsAtCompany": rng.integers(0, 20, rows),
+    "Attrition": (rng.random(rows) < 0.10).astype(int),   # random, no real signal
+})
+```
 **Code (what you write in the interview):**
 ```python
 import pandas as pd
@@ -516,13 +531,13 @@ print("Recall:", round(recall_score(y_test, predictions), 2))
 print("Precision:", round(precision_score(y_test, predictions), 2))
 print("Columns after encoding:", model[:-1].transform(X_test).shape[1])
 ```
-**Output:** (random data built with numpy seed 42; output depends on the data)
+**Output:** (data from the builder above, numpy seed 42; a different build gives different numbers)
 ```text
-Recall: 0.58
-Precision: 0.13
+Recall: 0.5
+Precision: 0.12
 Columns after encoding: 10
 ```
-**What it means:** 10 columns = 3 departments + 4 roles + 3 numbers. The model catches 58% of leavers but only 13% of its flags are right; with 10% leavers, class weights trade precision for recall. On this made-up data, that is expected and not a real finding.
+**What it means:** 10 columns = 3 departments + 4 roles + 3 numbers. The model catches half of the leavers in the test set but only 12% of its flags are right; with 10% leavers, class weights trade precision for recall. On this made-up data, that is expected and not a real finding.
 **Alternative / pitfalls:** `make_column_transformer` is a shorter spelling. Class weights distort predicted probabilities (see Q31), so do not read the scores as true chances.
 **Likely follow-ups:** 1) *Why not scale before the split?* The test set would influence the scaling numbers (leakage). 2) *Why a pipeline?* So cross-validation refits every step on each training fold.
 **Common mistakes:** Fitting the encoder on the full dataset; one-hot encoding an ID column; forgetting `max_iter` warnings.
@@ -536,7 +551,7 @@ Columns after encoding: 10
 - With **correlated features**, the model can pick one and ignore its twin, so the winner looks bigger than it is.
 - The default (impurity) importance can favour columns with many distinct values, like income.
 - Importance shows size, not direction: it does not say whether low or high income leaves.
-**Worked example (concept question):** Made-up 2,000 employees where income is almost a copy of job level (correlation 0.97) and leaving truly depends on level and overtime, not income itself. With only income and overtime, the forest gives income 0.90 of the importance. Add job level and income drops to 0.63 while level takes 0.27; permutation importance (shuffle a column and see how much accuracy falls) shows income 0.07, level 0.08, overtime 0.07, all similar. Within level 3 alone, income and leaving have a correlation of only -0.08.
+**Worked example (concept question):** Made-up 2,000 employees where income is almost a copy of job level (correlation 0.96) and leaving truly depends on level and overtime, not income itself. With only income and overtime, the forest gives income 0.56 of the importance. Add job level and income drops to 0.44 while level takes only 0.13: income still looks like the top driver, partly because it has many distinct values (the bias in the second point above) and partly because it shares credit with level. Permutation importance (shuffle a column and see how much accuracy falls, on held-out rows) is small for every column here: income 0.00, level 0.02, overtime 0.04. Within level 3 alone, income and leaving have a correlation of only -0.09. Random forest with seed 42; made-up data, and exact values change with the seed.
 **What it means:** Present it as "income is associated with leaving, partly through level"; never as "raise salaries to cut attrition" without testing.
 **Alternative / pitfalls:** Use a plain logistic regression or partial-dependence plots for direction; check importance on test data; run a small pay pilot to learn the causal effect.
 **Likely follow-ups:** 1) *Better method?* Permutation importance on test data, or SHAP (explanation tool, from memory; I would confirm usage in the docs). 2) *Does a high rank mean a big effect?* No, only that the model used it.
@@ -699,7 +714,7 @@ Data: Group A has 50 leavers, model catches 40. Group B has 50 leavers, model ca
 - A **proxy variable** is a column that moves with gender (or another protected trait) closely enough to carry the same signal.
 - Flag rates can also differ because real leaving rates differ between groups; the real question is whether the errors differ.
 - Checks: (1) Can the remaining features predict gender? A high AUC (a score where 0.5 is a coin flip) says proxies exist. (2) Compare flag rate, recall, precision and false alarms per group. (3) Drop or alter the suspect feature and see if the gap shrinks. (4) Check whether the training labels reflect biased past decisions.
-**Worked example (concept question):** Made-up 4,000 employees: 8% of men and 39% of women work part-time, and part-time raises leaving odds. The model never sees gender, yet flags 4.6% of men and 21% of women, and its recall is 0.08 for men and 0.31 for women. A model that sees only part-time and tenure can predict gender with an AUC of 0.67. Part-time is the proxy. Seed 42; made-up data.
+**Worked example (concept question):** Made-up 4,000 employees: 8% of men and 39% of women work part-time, and part-time raises leaving odds. Leaving odds rise with part-time work, so women leave a bit more often in this data (about 15% against 9%). The model never sees gender, yet it flags the top 15% of scores: about 5% of men and 24% of women, with recall 0.25 for men and 0.46 for women. A model that sees only part-time and tenure can predict gender with an AUC of about 0.65. Part-time is the proxy. Logistic regression, seed 42; made-up data, exact figures change with the seed.
 **What it means:** Dropping the column was cosmetic. Decide with HR and legal whether the proxy feature is justifiable, and monitor group metrics after launch.
 **Alternative / pitfalls:** Keep gender in a separate audit table (not as a model input) so you can measure the gap; deleting it removes your ability to check fairness.
 **Likely follow-ups:** 1) *Is a flag-rate gap always bias?* No, it may reflect real differences; compare error rates and look at causes. 2) *Fix?* Remove or redesign the proxy, retrain, review thresholds.
@@ -714,7 +729,7 @@ Data: Group A has 50 leavers, model catches 40. Group B has 50 leavers, model ca
 - Chance does not explain it: if the true rate were 30%, getting 10 or fewer leavers out of 100 has probability about 0.0000016 (computed).
 - Common cause: class weights or oversampling (SMOTE) used to handle imbalance push scores upward. They help catch leavers but distort probabilities.
 - It matters when scores feed a budget (expected leavers x replacement cost); it matters less for a ranked top-50 list.
-**Worked example (concept question):** Made-up 5,000 employees with a 12% leaver rate. A plain logistic regression's average score is 0.118 against an actual 0.118 (calibrated). The same model with `class_weight="balanced"` has an average score of 0.438, against the same actual 0.118, yet its ranking (AUC) is almost identical, 0.76 versus 0.76. Seed 42.
+**Worked example (concept question):** Made-up 5,000 employees with an 11.5% leaver rate. A plain logistic regression's average score is 0.115 against an actual 0.115 (calibrated). The same model with `class_weight="balanced"` has an average score of 0.435, against the same actual rate, yet its ranking (AUC) is identical, 0.74 versus 0.74. Seed 42.
 **Alternative / pitfalls:** Check a calibration curve (bucket scores, compare average score with actual rate); recalibrate on held-out data with Platt scaling or isotonic regression (scikit-learn `CalibratedClassifierCV`, from memory; verify before using). Keep calibration data separate from training data.
 **Likely follow-ups:** 1) *Number to report?* Expected versus actual leavers by score band. 2) *Does good AUC mean good calibration?* No.
 **Common mistakes:** Quoting a probability from a class-weighted model as real risk; judging calibration on training data.
@@ -761,7 +776,7 @@ PSI: 0.96
 - 12 of 200 is 6% overall (about 2% a year if headcount stayed steady), with a 95% range of 3.5% to 10.2% (computed). A model that says "nobody leaves" is 94% accurate and useless.
 - A common rule of thumb is about 10 leavers per feature, so 12 supports about one feature (rule of thumb, not exact).
 - Test sets would hold 2 or 3 leavers, so scores swing wildly.
-**Worked example (concept question):** Made-up check: 200 rows, 12 random "leavers", 8 features of pure noise, 4-fold stratified cross-validation, repeated with 200 different seeds. The average AUC is 0.50, as it should be, yet single runs range from 0.18 to 0.81, and about 9.5% of runs score above 0.65 by luck. A "good" result on 12 leavers can easily be noise.
+**Worked example (concept question):** Made-up check (logistic regression, scikit-learn 1.9.1): 200 rows, 12 random "leavers", 8 features of pure noise, shuffled 4-fold stratified cross-validation, repeated with 200 different seeds. The average AUC is 0.50, as it should be, yet single runs range from 0.18 to 0.81, and about 9.5% of runs score above 0.65 by luck. A "good" result on 12 leavers can easily be noise.
 **What it means:** Tell leadership that the data cannot support a trustworthy model; better use of time is understanding the 12 exits and collecting more.
 **Alternative / pitfalls:** Add more history, pool similar groups, record reasons for leaving, or use exit and stay interviews. If a model is built, use logistic regression with 1 or 2 features, report intervals, and do not use scores to make decisions about individuals.
 **Likely follow-ups:** 1) *Would SMOTE help?* No, it duplicates the same 12 stories. 2) *What would change your mind?* Several years more data or several hundred leavers.
