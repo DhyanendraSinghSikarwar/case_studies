@@ -62,8 +62,9 @@
 | 10 | Domain Knowledge (HR/People Analytics, E-com, BFSI, Healthcare, Supply Chain) | Q&A | 615 |
 | 11 | Soft Skills, HR Round, GD & Career-Switch Story | Q&A + scenarios + playbooks | 630 |
 | 12 | Portfolio, Resume, LinkedIn/Naukri & Job Search | Guide + 100 FAQs | Guide |
+| 13 | Logical Reasoning & Analytical Thinking for Data Analysts (added 2026-11-25; goes deeper than Book 6 Part 7) | Q&A + puzzles | 640 |
 
-Total: ~6,675 Q&As + 2 guides. No new book added: Phase 0 found no missing must-have skill (Excel, SQL, dashboards, communication all covered). Changes are part-level rebalances (Section 6, marked **[P0]**).
+Total: ~6,675 Q&As + 2 guides. No new book added: Phase 0 found no missing must-have skill (Excel, SQL, dashboards, communication all covered). Changes are part-level rebalances (Section 6, marked **[P0]**). Book 13 (logical reasoning, ~640 Q&As) was added later at the user's request: Book 6 Part 7 already holds 80 logical-reasoning questions, so Book 13 covers the depth they lack and must not repeat them.
 
 ---
 
@@ -300,6 +301,23 @@ Each skill book ends with a **"How to Develop This Skill" part**: zero-to-job-re
 | 6 | Application tracker & weekly job-search routine |
 | 7 | 100 FAQs |
 
+### Book 13 — Logical Reasoning & Analytical Thinking for Data Analysts (640)
+Boundaries: Book 6 Part 7 (80 questions: basic blood relations, syllogisms, seating, coding, directions, ranking, clocks, calendar, statement-assumption, classic brain teasers) stays as is; Book 13 asks different, deeper questions and never repeats them. Book 6 owns number series and number system (Part 5), data interpretation (Part 8) and data sufficiency (Part 9); Book 5 owns probability and correlation concepts; Book 2 owns SQL how-to. Non-verbal figure questions (mirror images, paper folding, figure series) cannot be shown faithfully in Markdown: use only text-described versions (for example cube painting, dice with stated faces).
+| Part | Topic | Qs |
+|---|---|---|
+| 1 | Why analyst roles test logical reasoning; test formats (online assessments, Mu Sigma/Fractal-style rounds, service MNC tests); strategy, time management, accuracy vs speed | 40 |
+| 2 | Deductive logic: syllogisms (Venn and possibility cases), "only/all/some/none", conditional logic (if-then, converse, contrapositive), common fallacies 🟡 | 70 |
+| 3 | Inequalities (direct and coded), comparison, ranking, order and position puzzles 🟢🟡 | 50 |
+| 4 | Linear and circular seating, floor, box, month and day arrangements 🟡🔴 | 70 |
+| 5 | Multi-attribute puzzles (who-owns-what grids, schedules, tournaments), constraint puzzles, truth-teller and liar 🔴 | 70 |
+| 6 | Deeper blood relations and family trees, direction and distance, coding-decoding, input-output and machine logic 🟡 | 60 |
+| 7 | Letter and alphanumeric series, analogy, classification, pattern recognition 🟢🟡 | 50 |
+| 8 | Critical reasoning: assumption, strengthen/weaken, inference, conclusion, cause vs correlation, evaluating a data-driven argument 🟡🔴 | 60 |
+| 9 | Data-analyst logic: boolean logic, truth tables, IF/AND/OR logic, SQL and Excel logic puzzles (NULL and three-valued logic, NOT IN traps), decision tables, flowchart and pseudocode tracing, edge cases 🟡🔴 | 60 |
+| 10 | Quantitative-logic puzzles and brain teasers (new variants only): weighing, measuring, age, set counting, combinatorial and estimation logic 🔴 | 50 |
+| 11 | Timed mixed mock sets in online-assessment style, with strategy notes per set 🟡🔴 | 40 |
+| 12 | How to develop logical reasoning: roadmap, daily practice plan, free resources, practice sets, mini-projects, self-check tests | 20 |
+
 ---
 
 ## 7. Study Schedule (24 weeks, non-technical start)
@@ -330,7 +348,7 @@ Instruction being executed:
 | Order | Rule |
 |---|---|
 | Phase 0 first | Market & skills research before any book |
-| Books | 0 → 2 → 1 → 4 → 5 → 3 → 6 → 7 → 8 → 10 → 9 → 11 → 12 (priority by market demand) |
+| Books | 0 → 2 → 1 → 4 → 5 → 3 → 6 → 7 → 8 → 10 → 9 → 11 → 12 → 13 (priority by market demand) |
 | Per part | Research → Question list (frozen) → Answers → Review |
 | Gate | Answers begin only after that part's question list is frozen |
 
@@ -432,7 +450,8 @@ interviews/data_analyst/
 ├── Book09_ML_AI_Tools/
 ├── Book10_Domain/
 ├── Book11_SoftSkills/
-└── Book12_Portfolio_JobSearch/
+├── Book12_Portfolio_JobSearch/
+└── Book13_Logical_Reasoning/
 ```
 
 ### 8.9 Request Commands
@@ -479,3 +498,4 @@ interviews/data_analyst/
 | 10 Domain | 8 | ✅ 718 (after removing 1 cross-part duplicate; see research/dedupe_log_book10.md; research was search-snippet only, no page fetched in full, stars are judgement; regulation items awareness-level only) | ✅ 718 (all 8 parts merged; every worked figure computed by script; SQL run on sqlite3; regulation, benchmark and tool-feature facts labelled "from memory, unverified"; no legal, medical or financial advice; "Asked at" mostly "no company-specific report found") | ✅ Wave C done 2026-11-19 (see Book10_Domain/review_Book10.md; ~117 answers fixed; regulation, tool-feature and benchmark facts unverified; "Asked at" claims snippet-level) |
 | 11 Soft Skills | 11 | ✅ 673 (after removing 27 cross-part duplicates and adding 1 gap-fill; see research/dedupe_log_book11.md; research was search-snippet only, no page fetched in full, stars are judgement; personal-experience answers will be templates, never invented experience) | ⬜ | ⬜ |
 | 12 Portfolio & Job Search | 7 sections | ⬜ | ⬜ | ⬜ |
+| 13 Logical Reasoning | 12 | ⬜ | ⬜ | ⬜ |
