@@ -28,7 +28,7 @@ Chapter 37 comes in Week 12, but you do not need to wait for it. From Week 1, ke
 
 ### Week-by-week map
 
-Practice counts come from the index in `research/book14_user_index.md` and from `plan.md` (computed by code, see the checks below). The column "Chapter practice" counts the practice questions in the chapters of that week. The 8 mock tests (15 questions each, 30 minutes each) are listed separately and sit in Weeks 9 to 12. Chapter 36 teaches how to take mocks and holds the mock tests; its 120 questions are counted under "Mock questions", not under "Chapter practice".
+Practice counts come from the index in `research/book14_user_index.md` and from `plan.md` (computed by code, see the checks below). The column "Chapter practice" counts the practice questions in the chapters of that week. The 8 mock tests (15 questions each, 30 minutes each) are listed separately and sit in Weeks 9 to 12. Chapter 36 teaches how to take mocks and holds the mock tests; its 120 questions are counted under "Mock questions", not under "Chapter practice". Chapter 37 has 15 practice exercises, but they are not in the index count, so they are left out of every total in this table (add 15 to Week 12 if you want to count them: 25 chapter practice, 55 questions, 11 a day).
 
 | Week | Chapters | Chapters this week | Running total | Chapter practice | Mocks | Mock questions | All questions | Questions per study day (5 days, rounded up) |
 |---|---|---|---|---|---|---|---|---|
@@ -82,17 +82,23 @@ Practice counts come from the index in `research/book14_user_index.md` and from 
 | Sum of "Chapters this week" | 37 |
 | Sum of chapter practice, Chapters 1 to 34 (index) | 820 |
 | Plus 10 case studies (Chapter 35) | 830 chapter practice items |
+| Chapter 37 exercises (15), not in the index count | excluded from all totals; 845 and 965 if included |
 | Mock questions (8 mocks x 15) | 120 |
 | Grand total of questions | 950 |
 | Mocks placed in Weeks 9 to 12 | 8 (2 per week) |
 
-Notes on counts: Chapter 11 counts 10 flowcharts to draw, and Chapter 35 counts 10 full cases; Chapters 36 and 37 have no separate practice count (their questions are the mocks and the template). Counts follow the index; if a chapter file has more questions than the index minimum, use that file's number.
+Notes on counts (each recomputed from the final chapter files by code):
+
+- Chapters 1 to 34 follow the index table, and every chapter file matches it (for example Chapter 16 has 30 questions and Chapter 19 has 20). Chapter 11 counts 10 flowcharts to draw.
+- Chapter 35 is counted as its 10 full cases, each of which has five sub-questions (a to e); the sub-questions are not counted separately.
+- Chapter 36 is counted only as 8 mocks x 15 = 120 questions (under "Mock questions"), never under "Chapter practice".
+- Chapter 37 has 15 exercises. The index lists it as "template provided" with no count, so the 15 exercises are not included in 830, 120 or 950. Counting them would give 845 chapter practice items and 965 questions in all.
 
 ## 2. Plan B: slower pace (about one chapter every 3 to 4 days)
 
 The index suggests one chapter every 3 to 4 days, about 5 months. This is **our suggestion, not research**. We computed the length in Python instead of trusting the rounded figure.
 
-| Pace | Days per chapter | Total days | Total weeks | Approx months |
+| Pace | Days per chapter | Total days | Total weeks | Approx months (30-day months) |
 |---|---|---|---|---|
 | Fast end | 3 | 111 | 15.9 | 3.7 |
 | Middle (used here) | 3.5 | 129.5 | 18.5 | 4.3 |

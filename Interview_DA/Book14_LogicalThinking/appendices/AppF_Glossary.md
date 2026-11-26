@@ -4,7 +4,7 @@ This glossary lists the technical terms taught in Book 14, in alphabetical order
 
 How to use it: look a term up when a chapter uses a word you have forgotten, then go back to the chapter for the worked examples. Where a chapter uses a word in a narrower way than everyday speech (for example, "argument" is a set of reasons, not a quarrel), the entry follows the chapter and says so.
 
-Note: the entries are drawn from the chapters present in the book folder (Ch 1 to Ch 15, Ch 17, Ch 18 and Ch 20 to Ch 34). Terms taught only in Ch 16 and Ch 19, which were not in the folder when this appendix was written, are not listed.
+Note: the entries are drawn from all 37 chapters. Ch 16 (seating) and Ch 19 (truth-teller and liar puzzles) terms are listed, as are the terms introduced by Ch 35 (mixed cases), Ch 36 (mock tests) and Ch 37 (error log). Where a word has a different narrower meaning in two chapters (for example "anchor" in Ch 10 and Ch 16), each has its own entry.
 
 ## A-Z index
 
@@ -23,6 +23,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 | Correlation and causation | Correlation is moving together; causation is one thing making the other happen. |
 | Distance travelled and displacement | Travelled adds every leg; displacement is the straight line from start to end. |
 | Standard competition and dense ranking | Standard skips the number after a tie; dense does not. |
+| Your left and the sitter's left | In seating puzzles left and right belong to the person sitting there, so two rows facing each other have opposite rights. |
 | Opposite and negation | A negation is false exactly when the original is true; a flipped word may leave both false. |
 
 ## A
@@ -35,6 +36,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **All (universal quantifier)** (Ch 5): A quantifier meaning every single one, with no exceptions; one exception makes it false. Example: "All staff have an ID card" is false if one person lacks one.
 - **Analogy** (Ch 8): A pair of items with a relationship that is copied onto a second pair, written A : B :: C : D. Example: Pilot : aircraft :: driver : car.
 - **Anchor (logic grid)** (Ch 10): The group (usually people) that every other group is tied to in a puzzle with three or more categories. Example: Uma is in Payroll, Payroll works nights, so Uma works nights.
+- **Anchor (seating)** (Ch 16): A fixed fact in a seating puzzle (such as "sits at the west end" or "sits opposite X"), placed first because it cannot move. Not the same as the anchor group of a logic grid in Ch 10. Example: "Dev sits in seat 1" is drawn before any other clue.
 - **Anchoring** (Ch 25): A bias where the first number you hear pulls your later estimate towards it. Example: A shirt marked "was 4,000, now 2,400" feels cheap even if it normally sells for 2,300.
 - **And (conjunction)** (Ch 3): "p AND q" is true only when both p and q are true. Example: "Member AND bill above 999" needs both.
 - **Anecdote** (Ch 26): A single story used as evidence; it is the weakest rung of the evidence ladder. Example: "My cousin quit and got a raise, so quitting pays."
@@ -46,6 +48,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Appeal to tradition** (Ch 23): A fallacy that says something is right because it has always been done that way. Example: "We have always done it, so we must continue."
 - **Argument** (Ch 1): A small piece of text where some statements (premises) are offered as reasons for another statement (the conclusion); here it does not mean a quarrel. Example: "The warehouse floods every monsoon, so we should move the stock upstairs."
 - **Arithmetic slip** (Ch 34): A bug where a calculation on its own step is simply wrong. Example: 90 divided by 12 written as 8.5 instead of 7.5.
+- **Assume, follow, check** (Ch 19): The method for truth-teller and liar puzzles: assume a kind for one person, follow the consequences, check every statement, and flip the assumption if there is a contradiction. Example: Suppose Meena is a truth-teller, then Naveen is a liar; test whether Naveen's statement matches.
 - **Assumption (statement-assumption)** (Ch 21): Something the speaker takes for granted without saying it, and without which the statement would make no sense; the chapter checks it with the negation test. Example: "Please bring your ID card" assumes employees have ID cards.
 - **Availability bias** (Ch 25): A bias where you think something is common because an example comes to mind easily. Example: Fearing one rare event you heard about last week.
 - **Average of averages** (Ch 34): A bug where group averages are averaged without weighting by group size. Example: Averaging a team of 2 and a team of 20 as if they counted equally.
@@ -57,6 +60,9 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Base case** (Ch 31): The first step of an induction proof: check the claim directly for the first value, usually n = 1. Example: Show 1 = 1 x 2 / 2 before proving a sum rule.
 - **Baseline (chart)** (Ch 27): The value where a chart's bars or line start; for bars it should normally be zero. Example: A bar chart starting at 90 makes small gaps look huge.
 - **Base-rate neglect** (Ch 25): A bias where you ignore how common something is overall and focus on a test result or a story. Example: Treating a "fraud alert" as proof of fraud when fraud is very rare.
+- **Between (seating)** (Ch 16): The people in the gap between two seats in a row; their number is the difference of the seat numbers minus 1. Example: Seats 2 and 6 have 3 people between them.
+- **Blameless review** (Ch 37): A review that looks for the first faulty step, not for a person to blame. Example: Finding that a report total was 10,000 too high by tracing the steps.
+- **Block (seating clue)** (Ch 16): Two or more people tied together by a clue such as "immediately right of", written as one unit and moved as a whole. Example: "Ana is immediately right of Ben" gives the block Ben, Ana.
 - **Blood relation** (Ch 14): A puzzle type where family facts are given in words and you must name how two people are related by drawing the family. Example: "Lila is the mother of Omar; how is Lila's husband related to Omar?"
 - **Boundary value (edge value)** (Ch 11): The exact number named in a rule, which you should test because it often falls on the surprising side. Example: For "more than 500", the value 500 takes the No arrow.
 - **Brackets** (Ch 3): Symbols that show which part of a logic rule to work out first. Example: In "p AND (q OR r)", work out "q OR r" first.
@@ -74,6 +80,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Check digit** (Ch 17): A last digit calculated from the earlier digits by a fixed rule, so a mistyped digit is caught. Example: The units digit of the sum of the first five digits.
 - **Cherry-picked window** (Ch 27): A chart trick that shows only a rising stretch and hides a longer fall. Example: Three good months of a bad year.
 - **Circular reasoning** (Ch 23): A fallacy where the conclusion is already hidden inside the premise. Example: "It is fair because it is just."
+- **Circular seating** (Ch 16): People around a round table; only relative positions matter, so the first person may be placed anywhere. Example: Moving all five people one seat round gives the same arrangement.
 - **Claim** (Ch 26): A statement that says something is true, not a fact until it is checked; in Ch 30 it is also a statement to be proved. Example: "The office has 120 employees."
 - **Classification** (Ch 8): Sorting things into groups using a rule you can check on each item. Example: Sorting expenses into travel, food and supplies.
 - **Clockwise** (Ch 13): Turning the way clock hands move, for example north to east to south to west. Example: Facing north and a quarter turn clockwise, you face east.
@@ -96,6 +103,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Confirmation bias** (Ch 25): A bias where you look for, notice and remember facts that agree with what you already believe. Example: Counting only the days your favourite bus was on time.
 - **Confounder (third factor)** (Ch 24): A hidden factor that affects both things being compared and can fake a link between them. Example: Hot weather drives both ice-cream sales and swimming accidents.
 - **Context** (Ch 2): The place and time facts a sentence needs before it can be called true or false. Example: "It is raining" needs a place and a time.
+- **Contradiction** (Ch 19): A result that does not match what an assumption requires, such as a truth-teller whose statement turns out false; it shows the assumption was wrong. Example: Assuming Ravi is a truth-teller leads to "Ravi is lying", so Ravi is not a truth-teller.
 - **Contradiction, proof by** (Ch 30): A proof that assumes the claim is false, follows the consequences to something impossible, and so concludes the claim is true. Example: Assume the biggest odd number exists, then show a bigger one.
 - **Contrapositive** (Ch 4): The rule built from "If p then q" by swapping and negating both parts: "If not q then not p"; it always means the same as the original. Example: If no apology email, then the shipment was not delayed.
 - **Controlled test** (Ch 26): The strongest rung of evidence: people assigned by chance to the options being compared. Example: Random coupons.
@@ -103,6 +111,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Converse error** (Ch 34): A bug that treats "if A then B" as if it said "if B then A". Example: "All sales staff get an allowance, Meera gets one, so she is in sales."
 - **Coordinate** (Ch 13): An address on a grid written as two numbers (across, up). Example: Walking 5 east then 3 north gives (5, 3).
 - **Correlation** (Ch 24): Two things tend to move together; it is a pattern in the data, not proof that one causes the other. Example: Higher ad spend and higher sales in the same months.
+- **Count clue** (Ch 19): A given about how many people are lying or telling the truth, used to cross out rows of a case table. Example: "Exactly one of the three is lying" removes every row with two liars.
 - **Counterexample** (Ch 4): One case where the condition is true and the result false, which breaks an if-then rule; more widely, one case that breaks an "all" claim. Example: One Sales employee with no target breaks "Every Sales employee has a target".
 - **Counterexample method** (Ch 6): Showing an argument is invalid by building a situation where every premise is true and the conclusion is false. Example: Premises "Some A are B; some B are C" with A and C kept apart.
 - **Counting rule for three sets** (Ch 7): At least one = A + B + C - (A and B) - (A and C) - (B and C) + (all three), because people in the centre are added three times, removed three times, then added back once (often called inclusion and exclusion). Example: 20 + 15 + 12 - 6 - 5 - 4 + 2 = 34 people in at least one group.
@@ -128,6 +137,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Dense ranking** (Ch 15): A tie method where tied people share a rank and no number is skipped. Example: Scores 90, 80, 80, 70 get ranks 1, 2, 2, 3.
 - **Denying the condition** (Ch 6): An invalid shape: if P then Q, not P, so not Q; Q may happen anyway. Example: If it rains the road is wet; it did not rain; so the road is dry (a sprinkler may have run).
 - **Denying the result (modus tollens)** (Ch 6): A valid shape: if P then Q, not Q, so not P. Example: If paid then receipt sent; no receipt; so not paid.
+- **Diagonally opposite** (Ch 16): In a two-row layout, in the other row and one seat to the side of the person facing you. Example: Top seat 1 and bottom seat 2.
 - **Direction (analogy)** (Ch 8): The order of a relationship, which must be kept the same on both sides of an analogy. Example: Page : book is not the same as book : page.
 - **Directly above** (Ch 18): Exactly one floor higher than another; stronger than "above". Example: B on 2, A on 3.
 - **Direct proof** (Ch 30): A proof that starts from what is given and moves step by step, each line following from the last, to the claim. Example: Write even numbers as 2k and 2m, add them to get 2(k + m).
@@ -144,6 +154,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Elimination** (Ch 29): A strategy of crossing out options that break a clue until one is left. Example: Cross out every candidate number whose last digit breaks a clue.
 - **Encoding** (Ch 17): Applying the code rule to turn a plain word into a coded word. Example: Shifting every letter forward 2 places.
 - **Equivalent** (Ch 3): Two statements are equivalent if their truth-table result columns are identical row by row. Example: "If p then q" and its contrapositive.
+- **Error log** (Ch 37): A simple table where each mistake is recorded once with its type, root cause, fix rule and re-test date. Example: A row saying "read 5 percentage points as 5 percent".
 - **Estimate** (Ch 33): A rough answer that is close enough to make a decision and that you can explain step by step. Example: About 4,800,000 cups a day, with the steps shown.
 - **Even number** (Ch 30): A whole number you can write as 2 times a whole number, 2k. Example: 0, 2, 4, 10.
 - **Evidence** (Ch 26): What you can point to that supports a claim. Example: A dated HR export showing headcount.
@@ -153,6 +164,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 
 ## F
 
+- **Facing direction** (Ch 16): The way a person faces, which decides which hand is their right: north in a straight row, the centre at a round or rectangular table, south for the top row and north for the bottom row of a two-row layout. Example: Facing the centre, your right is the next seat anticlockwise.
 - **Fair experiment** (Ch 24): Splitting people at random into groups, changing one thing for one group only, and comparing. Example: Give a coupon to a random half of customers.
 - **Fallacy** (Ch 23): A pattern of bad reasoning where the reasons look like support but do not; it does not prove the conclusion false. Example: "Two rude riders, so all riders are rude."
 - **False cause** (Ch 23): A fallacy that assumes A caused B just because B came after A. Example: "I wore my lucky shirt, then we won the bid."
@@ -166,11 +178,13 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Finite** (Ch 32): A property of an algorithm: it ends after a limited number of steps. Example: It says STOP or runs out of items.
 - **First faulty step** (Ch 34): The earliest incorrect step in a solution; it is the root cause, and later steps only carry the damage. Example: Step 2 is wrong, so steps 3 to 5 inherit the error.
 - **Five-question routine** (Ch 26): WHO says it, WHAT evidence, HOW measured, WHAT is missing, CAN I CHECK elsewhere. Example: Apply to a forwarded message.
+- **Fix rule** (Ch 37): A small, concrete action you will take next time to avoid a logged mistake, easy to check. Example: "Write the unit next to every number."
 - **Flawed solution** (Ch 34): A worked answer that looks reasonable but contains a mistake. Example: A tidy five-line answer with a wrong base.
 - **Flowchart** (Ch 11): A picture of a process: boxes for actions, diamonds for questions, arrows for order, starting at Start and stopping at End. Example: A returns process with a 7-day check.
 - **Follows (certain)** (Ch 12): A verdict meaning the conclusion is true in every picture that obeys the statements. Example: "All X are Y; all Y are Z" gives "All X are Z".
 - **For all (universal claim)** (Ch 30): A claim about every case; one counterexample kills it and only a general argument proves it. Example: "Every payslip is correct."
 - **Framing effect** (Ch 25): A bias where the same facts feel different when worded differently. Example: "90% passed" feels better than "10% failed".
+- **Full-table method** (Ch 19): Writing down all 2^n ways to label n people as truth-teller or liar and testing each row. Example: Three people give 8 rows.
 
 ## G
 
@@ -183,6 +197,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 
 - **Halo effect** (Ch 25): A bias where one good trait makes you rate everything else about a person or product higher. Example: Rating a smart-looking candidate as also punctual.
 - **Hasty generalisation** (Ch 23): A fallacy that draws a broad rule from too few or unrepresentative cases. Example: "Two rude riders, so all riders are rude."
+- **Heads (rectangular table)** (Ch 16): The two seats at the short ends of a rectangular table. Example: The West head and the East head.
 - **Helper column** (Ch 3): An extra column in a truth table for one small piece of a long rule. Example: A column for "q OR r".
 - **Hidden conditions** (Ch 28): Easily missed words such as "between", "at least", "different" or "together" that change a problem. Example: "At least 3" includes 3.
 - **Hindsight and outcome bias** (Ch 25): A bias where, after the result is known, you feel you knew it all along and judge a decision only by its result. Example: "That plan was obviously going to fail."
@@ -192,6 +207,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 
 - **If and only if (iff)** (Ch 4): A rule that works in both directions: "If p then q" and "If q then p"; true when p and q are both true or both false. Example: A coupon works if and only if the cart total is at least 500.
 - **If-then rule (conditional)** (Ch 4): A rule saying that whenever the first thing happens the second must follow; it is broken only when the condition is true and the result false. Example: If a shipment is delayed, the customer gets an apology email.
+- **Immediately right of (left of)** (Ch 16): The seat touching a person on that person's own right (left) side. Example: At a round table facing the centre, immediately right of seat 1 is the next seat anticlockwise.
 - **Implicit assumption** (Ch 21): An assumption the statement needs but does not say; it fails the negation test if flipping it makes the statement pointless. Example: "Employees do not have ID cards" makes "Bring your ID" silly.
 - **Inclusive or** (Ch 3): The logic meaning of OR: true when either part is true or both are. Example: A member whose bill is above 999 still gets free delivery.
 - **Induction** (Ch 1): Reasoning where the premises make the conclusion likely but a surprise is still possible, usually going from observed cases to a general or future case; it is not the same as mathematical induction (Ch 31). Example: The last five Mondays were busy, so this Monday will probably be busy.
@@ -208,9 +224,13 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 
 ## L
 
+- **Labelling** (Ch 19): Giving each person in a puzzle the kind truth-teller or liar so that every statement matches its speaker. Example: Meena truth-teller, Naveen liar.
 - **Last one standing** (Ch 10): A grid rule: if a row has crosses everywhere but one cell, that cell must be a tick. Example: One cell left means it is the answer.
 - **Leaf** (Ch 11): A final outcome at the end of a branch in a decision tree. Example: "Bonus approved".
 - **Leap year** (Ch 20): A 366-day year: divisible by 4, except century years, which need divisibility by 400. Example: 2028 is a leap year; 2100 is not.
+- **Left and right (of the sitter)** (Ch 16): Left and right always mean the hands of the person sitting there, not the reader's. Example: In a two-row layout the two rows have opposite rights.
+- **Liar** (Ch 19): In these puzzles, a person whose every statement is false; this does not mean the opposite of everything, only the negation of what was said. Example: A liar who says "Ravi or Sana did it" means neither did it.
+- **Linear seating** (Ch 16): People side by side in a straight row, all facing north, with seat 1 at the west end. Example: In a row of four, seat 4 is on the east side.
 - **Linear versus area** (Ch 27): If every side of a picture is multiplied by 2, the area is multiplied by 4, so doubling an icon's height and width looks like four times. Example: A twice-as-tall, twice-as-wide icon.
 - **Loaded question** (Ch 23): A fallacy using a question with an unfair assumption built in. Example: "Have you stopped cheating on timesheets?"
 - **Logic** (Ch 1): The study of good reasoning: do the reasons given really support the claim?. Example: "The road is jammed, so I will take the metro."
@@ -227,6 +247,8 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Mean hiding the middle** (Ch 27): A chart trick where one very large value drags the average up, so the median and spread should also be shown. Example: Nine salaries with one huge one.
 - **MECE** (Ch 8): A grouping scheme where there is no overlap and nothing is left out. Example: Employment types: permanent, contract, intern, other.
 - **Misread condition** (Ch 34): A bug that uses a number or rule the problem did not state. Example: Using 30 days when the problem said 28.
+- **Mixed case** (Ch 35): A short business scenario that combines several tools (statements, counts, a chart, bias) in one request. Example: A claim, a small order table and a chart in one email.
+- **Mock test** (Ch 36): A timed practice set of 15 questions (30 minutes) used to practise pace and review, our suggestion rather than research. Example: Mock 1 with 5 easy, 6 medium and 4 hard questions.
 - **Modus ponens (affirm the condition)** (Ch 6): A valid shape: if P then Q, P, so Q. Example: If late then fined; late; so fined.
 - **Multiple of 3** (Ch 30): A whole number that is 3 times some whole number, written 3m. Example: 3, 6, 9.
 - **Multiplier (ratio)** (Ch 9): What you get by dividing one term by the one before it. Example: In 5, 15, 45 the multiplier is 3.
@@ -236,6 +258,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Negation** (Ch 5): A statement that is false exactly when the original is true and true exactly when the original is false; it is stricter than an "opposite". Example: The negation of "All are present" is "At least one is not present".
 - **Negation test** (Ch 21): Flipping a proposed assumption to its opposite and checking whether the statement becomes pointless. Example: "Employees do not have ID cards" breaks "Bring your ID".
 - **Negative clue** (Ch 10): A clue saying something is not so, which is one cross in a grid and still a real clue. Example: "Naveen is not in Payroll."
+- **Neighbour (seating)** (Ch 16): A person in a seat touching yours, on either side. Example: In a row, seat 3 has neighbours in seats 2 and 4.
 - **Nested quantifiers** (Ch 5): A quantifier inside a quantifier, negated from the outside in, flipping each layer. Example: The negation of "Every department has at least one earner above 50,000" is "Some department has none".
 - **No (none)** (Ch 5): A quantifier meaning zero; one example breaks it. Example: "No employee works on Sunday."
 - **Not (negation word)** (Ch 3): "NOT p" is true when p is false. Example: NOT "invoice paid".
@@ -250,6 +273,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Only if** (Ch 4): A wording where "p only if q" means "If p then q"; it points to what is required. Example: You may enter only if you have a pass means if you entered, you had a pass.
 - **Open sentence** (Ch 2): A sentence with a blank that can change its truth, so it is not true or false until the blank is filled in. Example: "x + 4 = 10", or "salary above 50,000" before saying whose.
 - **Opinion or value** (Ch 26): A claim of taste that cannot be true or false by itself; ask for the criteria. Example: "This is the best canteen."
+- **Opposite (seating)** (Ch 16): Across the table (half a table away in a round table with an even number of people) or in the same seat number of the other row in a two-row layout. Example: With 6 people, seat 1 faces seat 4.
 - **Or (disjunction)** (Ch 3): "p OR q" is true when p is true, q is true, or both are. Example: Member OR bill above 999.
 - **Order of magnitude** (Ch 33): Roughly how many zeros a number has; the main goal of a Fermi estimate. Example: Thousands versus millions.
 - **Original (if-then)** (Ch 4): The starting rule "If p then q" from which converse, inverse and contrapositive are built. Example: If delayed, then apology email.
@@ -278,6 +302,7 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 ## Q
 
 - **Quantifier** (Ch 5): A word that says roughly how many items a sentence is about, such as all, some or none. Example: "Some employees work from home."
+- **Queue position** (Ch 16): Place in a line counted from the front or the back; from front plus from back minus 1 gives the total. Example: 4th from the front and 5th from the back means 8 people.
 
 ## R
 
@@ -286,17 +311,20 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Rank from top plus rank from bottom** (Ch 15): The fact that rank from top + rank from bottom = total people + 1, because the person is counted in both. Example: 4th from top among 10 is 7th from bottom.
 - **Rate** (Ch 27): A count divided by the size of the group, time or hours; compare rates, not raw counts, across groups of different size. Example: Complaints per 1,000 customers.
 - **Recency bias** (Ch 25): A bias where you give too much weight to the latest events. Example: Rating a whole year on the last two weeks.
+- **Rectangular table** (Ch 16): A table with people on both long sides and at the two heads, treated as a circle you can walk round, facing the centre. Example: Six seats: West head, North 1, North 2, East head, South 2, South 1.
 - **Red flags (messages)** (Ch 26): Warning signs in a forwarded message such as urgency, no author or date, vague "experts say" and requests to forward or to share money or ID details. Example: "Today only, forward to 10 friends."
 - **Red herring** (Ch 23): A fallacy that changes the subject to something irrelevant. Example: "Why worry about delays? We won an award."
 - **Relationship words** (Ch 14): Kinship words built from parent, child, sibling and spouse: grandparent (a parent's parent), uncle or aunt (a parent's sibling), cousin (a parent's sibling's child), nephew or niece (a sibling's child), parent-in-law (a spouse's parent), sibling-in-law (a spouse's sibling or a sibling's spouse) and son or daughter-in-law (a child's spouse). Example: My father's sister's son is my cousin.
 - **Relative versus absolute change** (Ch 26): A relative change is a percent of the starting number; an absolute change is the actual difference; ask for both. Example: "Down 50%" can be from 2 in 1,000 to 1 in 1,000.
 - **Relevant (course of action)** (Ch 21): A check that the step deals with the stated problem. Example: Fixing the payroll bug for a payroll error.
 - **Remainder** (Ch 9): What is left after dividing, used for weekdays and cycles. Example: 10 divided by 7 leaves 3.
+- **Re-test** (Ch 37): Solving a logged question again later without looking at the answer, to see if the fix rule works. Example: Redo Q7 one week later.
 - **Reversal (letter code)** (Ch 17): A code rule that reverses the word or the alphabet (A = Z, B = Y). Example: CAT reversed is TAC.
 - **Reverse cause** (Ch 24): An explanation where B actually causes A, the reverse of what you assumed. Example: Poor sleep leads to sleeping pills, not the other way.
 - **Reversed or unlabeled axis** (Ch 27): An axis where up can mean smaller or the numbers are missing. Example: Read axis numbers first.
 - **Reversible code** (Ch 17): A code where each coded word comes from only one plain word, so it can be decoded. Example: A one-to-one letter swap.
 - **Right angle** (Ch 20): A 90 degree angle between two lines or hands. Example: Clock hands at 3:00.
+- **Root cause** (Ch 37): One sentence saying why a mistake happened, not only what happened. Example: "I was in a hurry and skipped the unit check."
 - **Row total** (Ch 10): The sum of the cells across one row of a table. Example: Total staff in Payroll.
 - **Rule (series)** (Ch 9): The pattern that generates every term in a series; the simplest rule that fits every term is the answer. Example: Add 3 each month.
 
@@ -304,6 +332,9 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 
 - **Sample size** (Ch 26): How many cases a claim rests on; "nine out of ten" can be ten people. Example: 9 of 10 is not 900 of 1,000.
 - **Sanity check** (Ch 33): Checking an estimate with a second path or a common-sense limit. Example: Count stalls instead of people.
+- **Seating puzzle** (Ch 16): A puzzle with a few people and facts about where they sit, usually leaving exactly one arrangement. Example: Four people in a row with three clues.
+- **Second to the right of** (Ch 16): Two seats along on the right side, skipping one person. Example: In a row facing north, second to the right of seat 1 is seat 3.
+- **Selection bias** (Ch 35): A distortion because the people in a group were chosen or chose themselves in a way that makes them differ from others before the test. Example: A coupon sent only to big spenders.
 - **Self-selection** (Ch 24): A trap where people choose their own group, so the groups differ from the start. Example: Volunteers for training are already keen.
 - **Series** (Ch 9): A list of terms in a fixed order, where each follows a rule. Example: 20, 23, 26, 29.
 - **Set** (Ch 7): A group of things with a clear rule for "in" or "not in". Example: Customers who bought a phone.
@@ -311,8 +342,10 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Shift codes (constant, progressive, alternating)** (Ch 17): Letter codes where each letter moves the same number of places (constant), a growing number (progressive, +1, +2, +3) or a number that takes turns (alternating, +2, -1, +2). Example: CAT with +2 becomes ECV; with +1, +2, +3 becomes DCW.
 - **Sibling** (Ch 14): Someone who has the same two parents as you; the word does not tell gender. Example: My brother or sister.
 - **Simplify** (Ch 29): A strategy of solving the same problem with smaller numbers first, then spotting what changes. Example: Try 3 rows instead of 200.
+- **Six-step attack** (Ch 35): A routine for mixed cases: parse the claim, list the premises, check conditions and edge cases, test with a small table, check causation and bias, conclude with limits. Example: Applying it to a "free shipping rule" claim.
 - **Slippery slope** (Ch 23): A fallacy claiming one small step will inevitably lead to disaster, with no evidence for the chain. Example: "One late day and soon nobody will work."
 - **Some (existential quantifier)** (Ch 5): A quantifier meaning at least one, which could even be all; it does not mean "not all". Example: "Some staff are present" is true even if all are.
+- **Somewhere left of (right of)** (Ch 16): On a person's left (right) side but not necessarily touching. Example: In a row facing north with seat 1 at the west end, a person in seat 4 is somewhere right of the person in seat 1 and seat 2.
 - **Sound** (Ch 6): An argument is sound if it is valid and all its premises are actually true, which guarantees a true conclusion. Example: All birds can fly; a penguin is a bird; so a penguin can fly. The shape is valid but a premise is false, so it is unsound.
 - **Source** (Ch 26): Where a claim comes from; closer to the original dated record is better, and many repeats are not many sources. Example: An HR export beats a forward.
 - **Spouse** (Ch 14): The person you are married to; the word does not tell gender. Example: Husband or wife.
@@ -326,11 +359,13 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Sunk cost fallacy** (Ch 25): A bias where you keep going because of money or effort already spent and gone, not what lies ahead. Example: Finishing a bad film because the ticket was expensive.
 - **Survey** (Ch 26): A set of answers from people asked; check who answered and how many. Example: A poll shared in one company.
 - **Survivorship bias** (Ch 25): A bias where you study only the winners or survivors and forget those who dropped out of view. Example: Judging gyms by members who stayed.
+- **Switcher** (Ch 19): A third kind of speaker used in one hard question, whose two statements have opposite truth values. Example: One true and one false statement.
 - **Syllogism** (Ch 12): A tiny argument made of statements and a conclusion whose job is to decide if the conclusion has to be true from the statements alone. Example: All X are Y; all Y are Z; so all X are Z.
 
 ## T
 
 - **Table** (Ch 10): Information arranged in rows (across) and columns (down). Example: Staff by team.
+- **Taxonomy** (Ch 37): A list of categories; Ch 37 uses eight error types as its own working list. Example: Arithmetic slip, wrong assumption.
 - **Term (series)** (Ch 9): One item in a series. Example: The third term of 6, 11, 16 is 16.
 - **Three-D effects and decoration** (Ch 27): Perspective and decoration that make front bars look bigger and distract from the data. Example: Use plain 2D.
 - **Time order** (Ch 24): The idea that a cause must come before its effect. Example: The coupon was sent before the purchase.
@@ -340,8 +375,10 @@ Note: the entries are drawn from the chapters present in the book folder (Ch 1 t
 - **Triangular numbers** (Ch 9): A number family whose gaps grow by 1 each time. Example: 1, 3, 6, 10, 15.
 - **Truncated axis** (Ch 27): A bar chart axis that does not start at zero, making small differences look huge. Example: Bars starting at 90.
 - **Truth table** (Ch 3): A grid listing every combination of T and F for the simple statements and the result of a rule for each; n statements need 2 to the power n rows. Example: Two statements need 4 rows.
+- **Truth-teller** (Ch 19): In these puzzles, a person whose every statement is true. Example: Tomas, who says "Uma is a liar", means Uma is a liar.
 - **Truth value** (Ch 2): True or false, the single value a statement has even if we cannot see which. Example: "A week has seven days": true.
 - **Tu quoque** (Ch 23): A fallacy that dismisses advice by pointing out that the speaker does not follow it. Example: "You tell me to save, but you spend too."
+- **Two-row layout** (Ch 16): Two straight rows facing each other: the top (north) row faces south and the bottom (south) row faces north; seats are numbered from the west. Example: Two rows of three with seat 1 facing seat 1.
 
 ## U
 

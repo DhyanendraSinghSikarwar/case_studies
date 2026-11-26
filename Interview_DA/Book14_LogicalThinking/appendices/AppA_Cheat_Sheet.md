@@ -1,6 +1,6 @@
 # Appendix A: Formula and Rule Cheat Sheet
 
-One compact section per topic, in the order of the book. Every formula, truth table and rule below was checked by a short computer program (all possible truth values, brute-force counting, or a calendar and clock simulation). Where a convention is needed, it is stated, because many puzzles are decided by the convention. Chapter numbers show where to learn the idea.
+One compact section per topic, in the order of the book. Part names follow the book's six parts (Part 6, mixed cases, mock tests and the error log, is practice and has no formulas, so it has no section here). Every formula, truth table and rule below was checked by a short computer program (all possible truth values, brute-force counting, or a calendar and clock simulation). Where a convention is needed, it is stated, because many puzzles are decided by the convention. Chapter numbers show where to learn the idea.
 
 Symbols: T true, F false, p q r statements, NOT, AND, OR written in capitals.
 
@@ -95,7 +95,7 @@ A real negation can never leave both sentences false. "No employee is present" i
 
 ---
 
-## Part 2: Sets and Classification
+## Part 2: Organising Information
 
 ### A7. Sets and Venn counting (Ch 7)
 
@@ -125,8 +125,6 @@ A circle total includes its overlaps. The "+ all three" is there because people 
 
 ---
 
-## Part 3: Patterns and Information
-
 ### A9. Series pattern checklist (Ch 9)
 
 Try in this order and stop at the first rule that fits every term:
@@ -150,6 +148,10 @@ Try in this order and stop at the first rule that fits every term:
 - Row total adds across; column total adds down; the grand total must agree both ways.
 - Grid puzzle rules: one tick per row and column within each pair of categories; after a tick, cross the rest of its row and column; a negative clue is a cross; if a row has one open cell, tick it.
 - Flowchart: follow the arrows; a diamond is a yes/no test; test each path with a tiny example.
+
+---
+
+## Part 3: Classic Reasoning Problems
 
 ### A11. Syllogism rules (Ch 12)
 
@@ -182,8 +184,6 @@ Two statements (X and Z are the outer groups):
 In every row, "Some" and "No" statements can be swapped (Some X are Z = Some Z are X). Verdicts: Follows (true in every legal picture), Possible (true in some), False (false in all). Either-or: choose "either I or II" only when neither follows alone and the two are a claim and its negation. Always try to break the conclusion with another legal drawing.
 
 ---
-
-## Part 4: Position, Relations and Puzzles
 
 ### A12. Direction and distance conventions (Ch 13)
 
@@ -229,7 +229,7 @@ In every row, "Some" and "No" statements can be swapped (Some X are Z = Some Z a
 - Ties: standard competition ranking skips numbers (90, 80, 80, 70 gives 1, 2, 2, 4); dense ranking does not (1, 2, 2, 3). The question says which.
 - Row positions: from left + from right = total + 1.
 
-### A15. Seating conventions (used in Appendix B)
+### A15. Seating conventions (Ch 16, used in Appendix B)
 
 - These are the conventions of Chapter 16 (and Chapters 17, 18 and 36 follow them). Left and right always belong to the person sitting there.
 - Straight row: everyone faces north (the top of the page), so right is east, the right side of the drawing. Seat 1 is the west end (left end).
@@ -291,8 +291,6 @@ Calendar:
 
 ---
 
-## Part 5: Reasoning for Real Decisions
-
 ### A19. Statement-assumption, conclusion, course of action (Ch 21)
 
 | Type | Test |
@@ -314,6 +312,10 @@ Sufficient means exactly one answer (for yes/no questions: always yes or always 
 | not | not | not sufficient | E |
 
 Show "not sufficient" with two cases that both obey the statement but give different answers. Background facts count. Repeated facts add nothing.
+
+---
+
+## Part 4: Critical Thinking
 
 ### A21. Fallacy list with one-line tests (Ch 23)
 
@@ -385,7 +387,7 @@ Also read: title, axis labels and units, source, denominator.
 
 ---
 
-## Part 6: Problem-Solving Methods
+## Part 5: Problem Solving and Proof
 
 ### A26. Polya's four steps (Ch 28)
 

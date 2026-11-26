@@ -23,10 +23,12 @@ All reading suggestions in this appendix are **our suggestion, not research**.
 | *Thinking, Fast and Slow* | Daniel Kahneman | Chapters 23 to 27 | Read selected chapters on thinking mistakes, slowly |
 | *The Art of Thinking Clearly* | Rolf Dobelli | Chapters 23 to 27 | Read a few short pieces at a time |
 
+Titles and authors in this table are from memory, unverified. The chapter matches and the suggested uses are our own suggestion.
+
 ## 1. *How to Solve It* (George Polya)
 
 - **Title and author (from memory, unverified):** *How to Solve It*, by George Polya (the name is often written with an accent, Pólya). Check the title and the edition.
-- **What it is about, in plain words:** It is a book about how to approach a problem when you do not know how to start. It describes a way of working: first make sure you understand the problem, then make a plan, then carry out the plan, then look back at your work. It also lists helpful questions and ideas you can ask yourself when you are stuck. The examples are mostly maths problems, but the method is about thinking in general.
+- **What it is about, in plain words (from memory, unverified):** It is a book about how to approach a problem when you do not know how to start. It describes a way of working: first make sure you understand the problem, then make a plan, then carry out the plan, then look back at your work. It also lists helpful questions and ideas you can ask yourself when you are stuck. The examples are mostly maths problems, but the method is about thinking in general.
 - **Book 14 chapters it connects to:** Chapter 28 (Polya's 4 steps: understand, plan, execute, review) and Chapter 29 (strategies such as working backward, simplifying, finding patterns, casework and elimination).
 - **How a beginner can use it (our suggestion):**
   1. Finish Chapter 28 in this book first, then read the parts of the book about the four steps.
@@ -37,7 +39,7 @@ All reading suggestions in this appendix are **our suggestion, not research**.
 ## 2. *Thinking, Fast and Slow* (Daniel Kahneman)
 
 - **Title and author (from memory, unverified):** *Thinking, Fast and Slow*, by Daniel Kahneman. Check the title and the edition.
-- **What it is about, in plain words:** It is about how people think and decide. It describes two broad ways the mind works: a quick, automatic way and a slower, more careful way. The book then looks at the kinds of mistakes people make because of the quick way, such as being swayed by a first number they hear or by a vivid story. It is written for general readers and explains many ideas through short examples.
+- **What it is about, in plain words (from memory, unverified):** It is about how people think and decide. It describes two broad ways the mind works: a quick, automatic way and a slower, more careful way. The book then looks at the kinds of mistakes people make because of the quick way, such as being swayed by a first number they hear or by a vivid story. It is written for general readers and explains many ideas through short examples.
 - **Book 14 chapters it connects to:** Chapters 23 to 27 (Part 4: Critical Thinking). The closest links are Chapter 25 (cognitive biases such as anchoring) and Chapter 24 (correlation versus causation), with background for Chapters 23, 26 and 27.
 - **How a beginner can use it (our suggestion):**
   1. Read selected chapters only. Choose the ones whose titles match a topic you just studied, for example anchoring after Chapter 25.
@@ -48,7 +50,7 @@ All reading suggestions in this appendix are **our suggestion, not research**.
 ## 3. *The Art of Thinking Clearly* (Rolf Dobelli)
 
 - **Title and author (from memory, unverified):** *The Art of Thinking Clearly*, by Rolf Dobelli. Check the title, the translation and the edition.
-- **What it is about, in plain words:** It is a collection of many very short pieces. Each piece is about one common thinking error, for example following the crowd or sticking with a bad decision because you have already spent money on it. The pieces are short and can be read in any order.
+- **What it is about, in plain words (from memory, unverified):** It is a collection of many very short pieces. Each piece is about one common thinking error, for example following the crowd or sticking with a bad decision because you have already spent money on it. The pieces are short and can be read in any order.
 - **Book 14 chapters it connects to:** Chapters 23 to 27 (Part 4: Critical Thinking), most closely Chapter 23 (logical fallacies such as bandwagon), Chapter 25 (cognitive biases such as sunk cost and survivorship) and Chapter 27 (misleading charts and statistics).
 - **How a beginner can use it (our suggestion):**
   1. Read one or two short pieces at a time, for example while having tea.
