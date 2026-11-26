@@ -1,0 +1,184 @@
+# Book 13 — Logical Reasoning & Analytical Thinking | Part 6: Deeper Blood Relations, Direction & Distance, Coding-Decoding, Input-Output and Machine Logic 🟡
+
+**Target:** 60 questions | **Actual:** 60 questions
+**Scope:** multi-step blood relations and coded relations, direction and distance with turns and coordinates, letter, number, table and word coding-decoding, and input-output machine and process-tracing questions; fully specified problems with single answers plus method questions.
+
+### Q1 ⭐⭐⭐ 🟢 Pointing to a photograph, Rohit says, "She is the daughter of the only son of my father's mother." How is the girl in the photograph related to Rohit?
+<!-- ANSWER_PENDING -->
+
+### Q2 ⭐⭐⭐ 🟢 Each of four brothers in a family has exactly one sister, and there are no other children. How many children does the family have?
+<!-- ANSWER_PENDING -->
+
+### Q3 ⭐⭐⭐ 🟢 A group contains 2 mothers, 2 daughters and 1 grandmother. What is the minimum number of people in the group, and how do you show it?
+<!-- ANSWER_PENDING -->
+
+### Q4 ⭐⭐⭐ 🟢 Why do blood-relation questions say "only son" or "only daughter", and how does that word change the answer to "the only son of my mother's mother" compared with "a son of my mother's mother"?
+<!-- ANSWER_PENDING -->
+
+### Q5 ⭐⭐⭐ 🟢 A courier starts at office O, goes 10 km north, turns right and goes 4 km, turns right again and goes 6 km, turns left and goes 8 km, and finally turns left and goes 5 km. How far is the courier now from O, and in which quadrant (north-east, north-west, south-east or south-west) of O is the courier?
+<!-- ANSWER_PENDING -->
+
+### Q6 ⭐⭐⭐ 🟢 A trekker walks 3 km north, then 4 km east, then 6 km south, then 4 km west. Where is the trekker now relative to the starting point (distance and direction)?
+<!-- ANSWER_PENDING -->
+
+### Q7 ⭐⭐⭐ 🟢 In a certain code, CAT is written as ECV. How is PAYSLIP written in that code? (Wrap around after Z.)
+<!-- ANSWER_PENDING -->
+
+### Q8 ⭐⭐⭐ 🟢 In a code, the alphabet is reversed (A = Z, B = Y, ...) and each letter is then shifted 2 places forward. How is ROW written?
+<!-- ANSWER_PENDING -->
+
+### Q9 ⭐⭐⭐ 🟢 In a code, each letter is replaced by its mirror position in the alphabet (A = 26, B = 25, ..., Z = 1). How are the words SQL and DATA written as numbers?
+<!-- ANSWER_PENDING -->
+
+### Q10 ⭐⭐⭐ 🟢 Letters A to Y are placed in a 5 x 5 table, row by row (row 1 is A B C D E, row 2 is F G H I J, row 3 is K L M N O, row 4 is P Q R S T, row 5 is U V W X Y). Each letter is coded as its row number followed by its column number (for example, B = 12). How is QUERY written in this code?
+<!-- ANSWER_PENDING -->
+
+### Q11 ⭐⭐⭐ 🟢 What are the main families of coding-decoding rules (constant shift, position-dependent shift, reversal, substitution, number value, language word-matching), and in what order do you test them on an unfamiliar question?
+<!-- ANSWER_PENDING -->
+
+### Q12 ⭐⭐⭐ 🟡 Pointing to a woman, Ajay says, "She is the mother-in-law of my wife's brother's wife." How is the woman related to Ajay? Assume all siblings mentioned are full siblings.
+<!-- ANSWER_PENDING -->
+
+### Q13 ⭐⭐⭐ 🟡 Pointing to a man, Anita says, "His mother's husband is my father's only brother." How is the man related to Anita?
+<!-- ANSWER_PENDING -->
+
+### Q14 ⭐⭐⭐ 🟡 Pointing to a boy, a woman says, "He is the son of the only daughter-in-law of my mother-in-law." How is the boy related to the woman?
+<!-- ANSWER_PENDING -->
+
+### Q15 ⭐⭐⭐ 🟡 Pointing to a lady, a man says, "She is the wife of the only son of my mother's mother." How is the lady related to the man? (Use the Indian-English kinship terms or describe the relation in words.)
+<!-- ANSWER_PENDING -->
+
+### Q16 ⭐⭐⭐ 🟡 In a family, each daughter has as many brothers as sisters, and each son has twice as many sisters as brothers. How many sons and how many daughters does the family have?
+<!-- ANSWER_PENDING -->
+
+### Q17 ⭐⭐⭐ 🟡 Six people are described: (i) Arun is the husband of Bela. (ii) Chetan is the son of Bela. (iii) Divya is the only sister of Chetan. (iv) Esha is the wife of Chetan. (v) Farah is the daughter of Esha and Chetan. How is Divya related to Farah?
+<!-- ANSWER_PENDING -->
+
+### Q18 ⭐⭐⭐ 🟡 In a coded relation, A + B means A is the mother of B, A - B means A is the brother of B, A x B means A is the sister of B and A / B means A is the father of B. What does P / Q x R + S mean, i.e. how is P related to S?
+<!-- ANSWER_PENDING -->
+
+### Q19 ⭐⭐⭐ 🟡 In a coded relation, A + B means A is the mother of B, A - B means A is the brother of B, A x B means A is the sister of B and A / B means A is the father of B. How is M related to T in M x N / O - T?
+<!-- ANSWER_PENDING -->
+
+### Q20 ⭐⭐⭐ 🟡 In the coded relation A $ B means A is the mother of B, A # B means A is the sister of B and A @ B means A is the father of B. If X # Y $ Z @ W, how is X related to W?
+<!-- ANSWER_PENDING -->
+
+### Q21 ⭐⭐⭐ 🟡 A blood-relation question gives the clue "P is the cousin of Q" and asks for the gender of P. How do you decide whether a question has enough information, and what do you answer here?
+<!-- ANSWER_PENDING -->
+
+### Q22 ⭐⭐⭐ 🟡 How do you decode a coded-relation question (symbols for mother, father, brother, sister): what is the step-by-step method, and how do you read a chain like A + B x C / D from left to right without losing the gender?
+<!-- ANSWER_PENDING -->
+
+### Q23 ⭐⭐⭐ 🟡 Asha starts at a point and walks 9 km west and then 12 km north. Bala starts at the same point, walks 3 km east and then 4 km south. How far apart are Asha and Bala now?
+<!-- ANSWER_PENDING -->
+
+### Q24 ⭐⭐⭐ 🟡 Town P is 8 km due north of town Q, and town R is 6 km due east of Q. How far is R from P, and in which direction is R from P?
+<!-- ANSWER_PENDING -->
+
+### Q25 ⭐⭐⭐ 🟡 Point C is 24 km due north of point A, and point B is 7 km due east of A. How far is C from B, and in which direction is B from C?
+<!-- ANSWER_PENDING -->
+
+### Q26 ⭐⭐⭐ 🟡 Point P is 12 km due north of Q and R is due east of Q. If the distance PR is 13 km, how far is R from Q, and in which direction is P from R?
+<!-- ANSWER_PENDING -->
+
+### Q27 ⭐⭐⭐ 🟡 A rider leaves a warehouse W and goes 11 km north, then 24 km east, then 4 km south, and then returns to W in a straight line. What is the total distance travelled?
+<!-- ANSWER_PENDING -->
+
+### Q28 ⭐⭐⭐ 🟡 Two cars leave the same junction at the same time. Car A drives north at 40 km/h and car B drives east at 30 km/h. How far apart are they after 90 minutes, assuming they keep driving at those speeds in straight lines?
+<!-- ANSWER_PENDING -->
+
+### Q29 ⭐⭐⭐ 🟡 Kiran faces south-west. He turns 135 degrees anticlockwise, then 90 degrees clockwise, and then 90 degrees clockwise again. In which direction is he facing now?
+<!-- ANSWER_PENDING -->
+
+### Q30 ⭐⭐⭐ 🟡 A drone faces north and makes this sequence of 90-degree turns: right, left, left, right, right, right, left. Which direction does it face at the end?
+<!-- ANSWER_PENDING -->
+
+### Q31 ⭐⭐⭐ 🟡 How do you solve a direction-and-distance question reliably: how do you set up coordinates, how do you handle left and right turns relative to the current heading, and what is the most common error?
+<!-- ANSWER_PENDING -->
+
+### Q32 ⭐⭐⭐ 🟡 In a certain code, REPORT is written as SGSSWZ. How is ANALYSIS written in that code?
+<!-- ANSWER_PENDING -->
+
+### Q33 ⭐⭐⭐ 🟡 In a certain code, FRIEND is written as HUMJTK. How is CANDLE written in that code?
+<!-- ANSWER_PENDING -->
+
+### Q34 ⭐⭐⭐ 🟡 In a certain code, SALARY is written as TZMZSX. How is BONUS written in that code?
+<!-- ANSWER_PENDING -->
+
+### Q35 ⭐⭐⭐ 🟡 Using the rule in which SALARY is written as TZMZSX (odd-numbered letters shifted 1 forward, even-numbered letters shifted 1 back), which word is written as EZUZTDU?
+<!-- ANSWER_PENDING -->
+
+### Q36 ⭐⭐⭐ 🟡 In a code language, "tax rule filed" is written "ka mo zi", "rule filed late" is written "zi mo bu" and "late tax audit" is written "ka bu pe". What is the code for "audit"?
+<!-- ANSWER_PENDING -->
+
+### Q37 ⭐⭐⭐ 🟡 In a code language, "sales up today" is written "pa ni su", "today report due" is written "su ro ve" and "due sales call" is written "ve pa ti". What is the code for "report"?
+<!-- ANSWER_PENDING -->
+
+### Q38 ⭐⭐⭐ 🟡 A code works as follows: the letters of the word are first reversed, then every vowel (A, E, I, O, U) is replaced by the next letter in the alphabet. How is DATABASE written in this code?
+<!-- ANSWER_PENDING -->
+
+### Q39 ⭐⭐⭐ 🟡 In a code, the value of a word equals the sum of the alphabet positions of its consonants minus the sum of the alphabet positions of its vowels (A = 1, ..., Z = 26; treat Y as a consonant). What is the value of ANALYTICS?
+<!-- ANSWER_PENDING -->
+
+### Q40 ⭐⭐⭐ 🟡 In a code, + means x, x means -, - means / and / means +. What is the value of 12 / 6 - 3 + 4 x 2?
+<!-- ANSWER_PENDING -->
+
+### Q41 ⭐⭐⭐ 🟡 Why does a word-coding question sometimes give two or three different sentences with overlapping words, and how do you find the code of one word from them without trying every combination?
+<!-- ANSWER_PENDING -->
+
+### Q42 ⭐⭐⭐ 🟡 Meena's father's father has only one son. How is that son's wife's mother related to Meena?
+<!-- ANSWER_PENDING -->
+
+### Q43 ⭐⭐⭐ 🔴 A family has three generations. Anil and Bharti are husband and wife. Chitra is the daughter of Anil and Bharti. Dev is the husband of Chitra. Esha is the daughter of Dev and Chitra. Farid is the brother of Bharti. How is Farid related to Esha?
+<!-- ANSWER_PENDING -->
+
+### Q44 ⭐⭐ 🟢 A machine applies this rule to every number: an odd number is doubled and an even number is halved, and then all numbers are arranged in ascending order. Input: 18 7 24 13 10. What is the output of Step II (after the rule has been applied twice)?
+<!-- ANSWER_PENDING -->
+
+### Q45 ⭐⭐ 🟢 A machine arranges numbers by the sum of their digits in ascending order, and numbers with the same digit sum by value in ascending order. Input: 47 92 35 18 63. What is the output?
+<!-- ANSWER_PENDING -->
+
+### Q46 ⭐⭐ 🟢 How do you solve an input-output (machine) question with unknown rules: what do you compare between consecutive steps, how many steps do you check before trusting a rule, and how do you avoid computing every step when a later step is asked?
+<!-- ANSWER_PENDING -->
+
+### Q47 ⭐⭐ 🟢 A machine takes a number x. If x is a multiple of 5 the output is x / 5, otherwise the output is x + 3. The machine is applied again and again to its own output, starting with 22. After how many applications is the output first below 5?
+<!-- ANSWER_PENDING -->
+
+### Q48 ⭐⭐ 🟡 A machine rearranges words in increasing order of the number of vowels (a, e, i, o, u), and words with the same number of vowels alphabetically. Input: region sales profit margin units. What is the output?
+<!-- ANSWER_PENDING -->
+
+### Q49 ⭐⭐ 🟡 A machine takes a string of digits and works as follows. Step 1: reverse the string. Step 2: replace each digit d by (d + 3) modulo 10. Step 3: delete any digit that already appeared earlier (keep the first occurrence). What is the output for the input 2 7 4 7 9 2?
+<!-- ANSWER_PENDING -->
+
+### Q50 ⭐⭐ 🟡 A machine takes a two-digit number and does this: Step 1: swap the digits. Step 2: take the positive difference between the original number and the swapped number. Step 3: add the digits of that difference. For the input 83 the output is 9. For which two-digit inputs is the output not 9, and what is the output then?
+<!-- ANSWER_PENDING -->
+
+### Q51 ⭐⭐ 🟡 Input: 4 9 16 25 36. Output: 7 13 21 31 43. What output does the machine give for the input 64?
+<!-- ANSWER_PENDING -->
+
+### Q52 ⭐⭐ 🟡 A machine sorts numbers as follows. Input: 47 19 82 36 63 25. Step I: 19 47 82 36 63 25. Step II: 19 82 47 36 63 25. Step III: 19 82 25 47 36 63. Step IV: 19 82 25 63 47 36. Each step moves the smallest or largest number of the remaining unsorted part to the next free place from the left, alternately, starting with the smallest. What is Step V?
+<!-- ANSWER_PENDING -->
+
+### Q53 ⭐⭐ 🟡 A machine rearranges words step by step. Input: tax audit rule bonus claim fund. Step 1 moves the alphabetically first word to the left end. Step 2 moves the alphabetically last word to the right end. Step 3 moves the alphabetically first of the remaining unplaced words to the second place from the left, Step 4 moves the alphabetically last of the remaining unplaced words to the second place from the right, and so on in the same pattern. All other words keep their relative order. In how many steps is the output fully in alphabetical order for the first time?
+<!-- ANSWER_PENDING -->
+
+### Q54 ⭐⭐ 🟡 A payroll machine takes hours worked h. Gross pay is 20 x h for h up to 40, and 800 + 30 x (h - 40) beyond 40 hours. If the gross pay is more than 1,000, a 10% deduction is applied. What is the net pay for h = 48?
+<!-- ANSWER_PENDING -->
+
+### Q55 ⭐⭐ 🟡 A machine reverses the first k elements in Step k, starting with k = 2. Input: 5 3 8 1 9 2. What is the output of Step 5?
+<!-- ANSWER_PENDING -->
+
+### Q56 ⭐⭐ 🟡 A machine performs one left-to-right bubble pass per step: it compares each pair of neighbours and swaps them if the left one is larger. Input: 6 2 9 4 1 7. After how many steps is the list first fully in ascending order, and what is the list after Step 2?
+<!-- ANSWER_PENDING -->
+
+### Q57 ⭐⭐ 🟡 A machine question asks for "Step VII" of an input where steps I to III are shown. What are the two signs that the pattern has a cycle or that the arrangement is already final, and how do they save time?
+<!-- ANSWER_PENDING -->
+
+### Q58 ⭐⭐ 🔴 In a payroll machine (gross = 20h up to 40 hours, 800 + 30(h - 40) beyond; a 10% deduction if gross exceeds 1,000), a net pay of 1,017 was recorded. How many hours were worked?
+<!-- ANSWER_PENDING -->
+
+### Q59 ⭐ 🟡 A stack machine reads tokens left to right. A number is pushed onto the stack. D duplicates the top item. S swaps the top two items. + and x pop two items and push their sum or product. - pops the top item as b, then the next item as a, and pushes a - b. What is the final stack for the tokens: 3 4 + D x 5 S -?
+<!-- ANSWER_PENDING -->
+
+### Q60 ⭐ 🟡 A queue machine processes commands in order. ENQ x puts x at the back, and DEQ removes the item at the front and prints it. Commands: ENQ 4, ENQ 7, DEQ, ENQ 9, DEQ, ENQ 2, DEQ. What is printed, and what remains in the queue?
+<!-- ANSWER_PENDING -->
