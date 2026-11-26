@@ -1016,7 +1016,7 @@ Maternal grandmother
 **Explain simply:**
 - Undoing a deduction means dividing by 0.9 (not adding 10%).
 - Always test the branch you assumed.
-- The 10% deduction makes net pay drop just after gross passes 1,000 (h = 46 gives 980, h = 47 gives 909), so a net figure can sometimes come from two different hour counts; here only h = 51 works.
+- The 10% deduction makes net pay drop just after gross passes 1,000 (h = 46 gives 980, h = 47 gives 909), so net pay is not a steadily rising function of hours. In whole hours no two hour counts give the same net, so h = 51 is the only answer.
 **Likely follow-ups:** 1) *Net 936?* Gross 1,040 and h = 48.
 **Common mistakes / traps:** Adding 10% (1,017 x 1.1 = 1,118.7), which gives a wrong gross; forgetting the 800 base.
 
