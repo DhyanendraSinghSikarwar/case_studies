@@ -49,7 +49,7 @@
 
 | # | Book | Type | Q target |
 |---|---|---|---|
-| 0 | Career Switch & Interview Process Guide (HR → DA) | Guide | Guide + 100 FAQs |
+| 0 | Career Switch & Interview Process Guide (HR → DA) | Guide | Guide + 123 FAQs (target 100) |
 | 1 | Excel for Data Analysts (formulas → Power Query → dashboards) | Q&A + practical | 600 |
 | 2 | SQL (easy → hard, scenario-based) | Q&A + code | 600 |
 | 3 | Python & pandas for Analysts (from zero) | Q&A + code | 600 |
@@ -62,8 +62,10 @@
 | 10 | Domain Knowledge (HR/People Analytics, E-com, BFSI, Healthcare, Supply Chain) | Q&A | 615 |
 | 11 | Soft Skills, HR Round, GD & Career-Switch Story | Q&A + scenarios + playbooks | 630 |
 | 12 | Portfolio, Resume, LinkedIn/Naukri & Job Search | Guide + 100 FAQs | Guide |
+| 13 | Logical Reasoning & Analytical Thinking for Data Analysts (added 2026-11-25; goes deeper than Book 6 Part 7) | Q&A + puzzles | 640 |
+| 14 | Logical Thinking from Zero, for Future Data Scientists (added 2026-11-26 from the user's own chapter index, `research/book14_user_index.md`; a teaching textbook, not an interview Q&A bank) | Textbook: concept + solved examples + scenarios + practice + answer key | 37 chapters, 820+ practice questions |
 
-Total: ~6,675 Q&As + 2 guides. No new book added: Phase 0 found no missing must-have skill (Excel, SQL, dashboards, communication all covered). Changes are part-level rebalances (Section 6, marked **[P0]**).
+Total: ~6,675 Q&As + 2 guides. No new book added: Phase 0 found no missing must-have skill (Excel, SQL, dashboards, communication all covered). Changes are part-level rebalances (Section 6, marked **[P0]**). Book 13 (logical reasoning, ~640 Q&As) was added later at the user's request: Book 6 Part 7 already holds 80 logical-reasoning questions, so Book 13 covers the depth they lack and must not repeat them.
 
 ---
 
@@ -123,7 +125,7 @@ Each skill book ends with a **"How to Develop This Skill" part**: zero-to-job-re
 | 4 | Round-by-round expectations: online test, SQL live, Excel/Power BI task, case/guesstimate, take-home, HR, GD |
 | 5 | How HR experience is an advantage (people analytics, stakeholder skills, domain) |
 | 6 | 6-month learning roadmap for a non-technical beginner |
-| 7 | 100 FAQs on switching careers |
+| 7 | 100+ FAQs on switching careers (123 delivered) |
 
 ### Book 1 — Excel (600)
 | Part | Topic | Qs |
@@ -300,24 +302,60 @@ Each skill book ends with a **"How to Develop This Skill" part**: zero-to-job-re
 | 6 | Application tracker & weekly job-search routine |
 | 7 | 100 FAQs |
 
+### Book 13 — Logical Reasoning & Analytical Thinking for Data Analysts (640)
+Boundaries: Book 6 Part 7 (80 questions: basic blood relations, syllogisms, seating, coding, directions, ranking, clocks, calendar, statement-assumption, classic brain teasers) stays as is; Book 13 asks different, deeper questions and never repeats them. Book 6 owns number series and number system (Part 5), data interpretation (Part 8) and data sufficiency (Part 9); Book 5 owns probability and correlation concepts; Book 2 owns SQL how-to. Non-verbal figure questions (mirror images, paper folding, figure series) cannot be shown faithfully in Markdown: use only text-described versions (for example cube painting, dice with stated faces).
+| Part | Topic | Qs |
+|---|---|---|
+| 1 | Why analyst roles test logical reasoning; test formats (online assessments, Mu Sigma/Fractal-style rounds, service MNC tests); strategy, time management, accuracy vs speed | 40 |
+| 2 | Deductive logic: syllogisms (Venn and possibility cases), "only/all/some/none", conditional logic (if-then, converse, contrapositive), common fallacies 🟡 | 70 |
+| 3 | Inequalities (direct and coded), comparison, ranking, order and position puzzles 🟢🟡 | 50 |
+| 4 | Linear and circular seating, floor, box, month and day arrangements 🟡🔴 | 70 |
+| 5 | Multi-attribute puzzles (who-owns-what grids, schedules, tournaments), constraint puzzles, truth-teller and liar 🔴 | 70 |
+| 6 | Deeper blood relations and family trees, direction and distance, coding-decoding, input-output and machine logic 🟡 | 60 |
+| 7 | Letter and alphanumeric series, analogy, classification, pattern recognition 🟢🟡 | 50 |
+| 8 | Critical reasoning: assumption, strengthen/weaken, inference, conclusion, cause vs correlation, evaluating a data-driven argument 🟡🔴 | 60 |
+| 9 | Data-analyst logic: boolean logic, truth tables, IF/AND/OR logic, SQL and Excel logic puzzles (NULL and three-valued logic, NOT IN traps), decision tables, flowchart and pseudocode tracing, edge cases 🟡🔴 | 60 |
+| 10 | Quantitative-logic puzzles and brain teasers (new variants only): weighing, measuring, age, set counting, combinatorial and estimation logic 🔴 | 50 |
+| 11 | Timed mixed mock sets in online-assessment style, with strategy notes per set 🟡🔴 | 40 |
+| 12 | How to develop logical reasoning: roadmap, daily practice plan, free resources, practice sets, mini-projects, self-check tests | 20 |
+
+### Book 14 — Logical Thinking from Zero, for Future Data Scientists (textbook, 37 chapters)
+Source: the user's own chapter index, stored verbatim in `research/book14_user_index.md` (chapter list, topics, scenarios and practice counts are the user's design; do not drop or reorder chapters). Scope per the index: logic, reasoning, critical thinking and problem solving; maths, Python and statistics are excluded (learned in Books 5, 3 and others). Reader: a complete beginner, starting from zero, who wants to think logically for a data career (not only to pass an interview).
+**Chapter template (every chapter, per the index):** (1) Concept in plain language; (2) 5 solved examples, step by step with the "why"; (3) 2 real-life scenarios (commerce, data, daily life); (4) practice questions, easy then medium then hard, using the count in the index table (the index also says "15 practice questions" as the standard; where the table gives a larger number, the table wins and 15 is the minimum); (5) mistake log (the 3 to 5 most common errors in that chapter) and a 5-line recap. Answers with full reasoning go to Appendix C (answer key). Additions the lead may make beyond the index (user allowed more content): a "Why this matters for data work" box per chapter, a 3-question self-check at chapter start, "Try it in a spreadsheet or SQL" links to Books 1 and 2 where natural (no new tutorials), and Appendix F (glossary of every logic term).
+**Boundaries:** Book 13 is the interview Q&A bank for logical reasoning (657 frozen questions) and Book 6 Part 7 holds 80 classic aptitude items. Book 14 teaches the same skills from zero: all examples and practice questions must be NEW (never copy or lightly reword Book 13 or Book 6 Part 7 questions; use different scenarios, names, numbers and structures); cross-refer ("for interview-style drills see Book 13 Part N") instead of repeating. Book 5 owns statistics and probability; Book 6 owns number series, number system and data interpretation drills (Ch 9 here teaches pattern-spotting as a thinking skill; Ch 22 teaches the data-sufficiency idea, drills live in Book 6 Part 9); Book 11 Part 10 owns structured-thinking soft skills. Non-verbal figure questions cannot be shown in Markdown: text-described versions only.
+| Part | Chapters (index) | Practice (index) |
+|---|---|---|
+| 1 Foundations of Logic | 1 logic, premise/conclusion, deduction vs induction (15); 2 statements and truth values (30); 3 AND, OR, NOT and truth tables (20); 4 if-then, converse, inverse, contrapositive, iff (20); 5 quantifiers and negation (25); 6 valid, invalid, sound arguments (20) | 130 |
+| 2 Organising Information | 7 sets and Venn (25); 8 classification, odd one out, analogies (30); 9 number, letter, pattern series (40); 10 tables and matrices (15); 11 flowcharts and decision trees (10 flowcharts to draw) | 120 |
+| 3 Classic Reasoning Problems | 12 syllogisms (40); 13 direction and distance (30); 14 blood relations (40); 15 ranking and ordering (30); 16 seating (30); 17 coding-decoding (40); 18 floor/box/day/month/scheduling puzzles (25); 19 truth-teller and liar (20); 20 clocks and calendars (25); 21 statement-assumption, conclusion, course of action (40); 22 data sufficiency (30) | 350 |
+| 4 Critical Thinking | 23 logical fallacies (30); 24 correlation vs causation (20); 25 cognitive biases (20); 26 evaluating claims and sources (15); 27 misleading charts and statistics (15) | 100 |
+| 5 Problem Solving and Proof | 28 Polya's 4 steps (10); 29 strategies (25); 30 proof techniques (20); 31 intro to induction, idea only (10); 32 algorithmic thinking (20); 33 estimation, Fermi (20); 34 debugging your reasoning (15) | 120 |
+| 6 Putting It All Together | 35 mixed case studies (10 full cases); 36 timed practice sets (8 mock tests of 30 minutes; 15 questions each, 120 in total); 37 personal error log and review system (template) | 130 |
+| Appendices | A formula and rule cheat sheet; B truth-table and Venn templates; C answer key with full reasoning (all practice, all mocks, all cases); D reading list (Polya, Thinking Fast and Slow, The Art of Thinking Clearly: titles only, no claims about them beyond what is common knowledge, labelled "from memory"); E 12-week study schedule (the index also suggests 1 chapter every 3 to 4 days, about 5 months; show both and label them our suggestion) | n/a |
+Totals: 37 chapters; practice 820 (Ch 1-34) + 10 cases + 120 mock questions = 950 (index promises "700+"). Honesty rules: every puzzle brute-force checked for a unique answer and the answer key recomputed by code; real-life scenarios use invented illustrative numbers (labelled); fallacy, bias and claim examples are invented, never real named people, companies, news items or "studies"; no effectiveness claims about learning logic; the reading list is from memory, unverified. Build pipeline: (1) chapter writers (one per 1 to 3 chapters) write `Book14_LogicalThinking/Ch<NN>.md` with practice questions and no answers, plus `answer_key/Ch<NN>_key.md` with full reasoning, all verified by code; (2) lead assembles appendices (A, B, D, E, F written by dedicated agents) and merges answer keys into Appendix C; (3) Wave C review per part (recompute every worked example, scenario number, practice answer and mock set; beginner-clarity check; overlap check against Books 13 and 6). Sequence: after Book 13 is finished.
+
 ---
 
-## 7. Study Schedule (24 weeks, non-technical start)
+## 7. Study Schedule (24 weeks, non-technical start; updated 2026-11-26 for Books 13 and 14)
 
-| Weeks | Focus |
-|---|---|
-| 1–3 | Book 0, Book 1 (Excel), Book 5 Parts 1–2 (maths basics), Book 6 Parts 1–2 |
-| 4–7 | Book 2 (SQL) Parts 1–6, Book 6 Parts 3–5 |
-| 8–10 | Book 2 Parts 7–12, Book 4 (Power BI) Parts 1–4 |
-| 11–13 | Book 4 Parts 5–12, Book 5 Parts 3–6 |
-| 14–16 | Book 3 (Python) Parts 1–6, Book 5 Parts 7–12 |
-| 17–18 | Book 3 Parts 7–12, Book 7 (Guesstimates & cases) |
-| 19–20 | Book 8 (Scenarios), Book 10 (Domain, HR first) |
-| 21–22 | Book 9 (ML + AI tools), Book 6 mocks |
-| 23–24 | Book 11 (Soft skills), Book 12 (Portfolio & job search), mock interviews |
+Two tracks run side by side. **Main track** (the original plan, unchanged): Books 0 to 12. **Logic track** (new): Book 14 teaches logical thinking from zero in weeks 1 to 19, then Book 13 drills interview-style reasoning in weeks 20 to 24. All pace and time figures below are our suggestion, not research.
 
-Daily (2–3 hrs): 40% SQL/Excel/Power BI practice, 25% Python/stats, 20% cases/guesstimates/aptitude, 15% soft skills & portfolio.
+| Weeks | Main track | Logic track |
+|---|---|---|
+| 1–3 | Book 0, Book 1 (Excel), Book 5 Parts 1–2 (maths basics), Book 6 Parts 1–2 | Book 14 Ch 1–6 (Part 1: foundations of logic); Book 13 Part 1 (formats and strategy) read once |
+| 4–7 | Book 2 (SQL) Parts 1–6, Book 6 Parts 3–5 | Book 14 Ch 7–14 (Part 2 and the start of Part 3) |
+| 8–10 | Book 2 Parts 7–12, Book 4 (Power BI) Parts 1–4 | Book 14 Ch 15–20 (Part 3) |
+| 11–13 | Book 4 Parts 5–12, Book 5 Parts 3–6 | Book 14 Ch 21–26 (end of Part 3, then Part 4: critical thinking) |
+| 14–16 | Book 3 (Python) Parts 1–6, Book 5 Parts 7–12 | Book 14 Ch 27–32 (end of Part 4, then Part 5: problem solving and proof) |
+| 17–18 | Book 3 Parts 7–12, Book 7 (Guesstimates & cases) | Book 14 Ch 33–35 (end of Part 5, then the mixed cases of Part 6) |
+| 19–20 | Book 8 (Scenarios), Book 10 (Domain, HR first) | Book 14 Ch 36–37 (mock tests and error log) in Week 19, with Appendix C as the key; then Book 13 Parts 2–3 (deduction, inequalities, ordering), ⭐⭐⭐ first |
+| 21–22 | Book 9 (ML + AI tools), Book 6 mocks | Book 13 Parts 4–6 and 8 (arrangements, puzzles, critical reasoning), ⭐⭐⭐ and ⭐⭐ |
+| 23–24 | Book 11 (Soft skills), Book 12 (Portfolio & job search), mock interviews | Book 13 Parts 7, 9, 10 (series, data-analyst logic, brain teasers) and Part 11 timed mock sets; Part 12 as the self-check plan |
+
+Daily (2–3 hrs main track): 40% SQL/Excel/Power BI practice, 25% Python/stats, 20% cases/guesstimates/aptitude, 15% soft skills & portfolio.
 Soft-skill playbooks (Book 11 Part 10): 15 min/day from Week 1.
+**Logic track time (new, our suggestion):** about 30 to 40 minutes a day on top of the main track, 5 days a week, with Saturday for catch-up. Book 14 at this pace is about 3 to 4 days per chapter: 37 chapters at 3.5 days each is 129.5 days, about 18.5 weeks, which is why Book 14 occupies weeks 1 to 19 (computed in Book 14 Appendix E, Plan B). If the main track gets crowded, run the logic track on alternate days and let Book 14 finish by week 24, dropping Book 13 to its ⭐⭐⭐ questions and Part 11 mocks only. Book 13 has 657 questions, so in weeks 20 to 24 do the ⭐⭐⭐ items of each part first; the rest are for repeat practice before an assessment.
+**Faster alternative (more time available):** Book 14 Appendix E, Plan A, finishes the whole book in 12 weeks at 45 to 60 minutes a day; if you take it, move Book 13 up by the same number of weeks and keep the main track as is.
 
 ---
 
@@ -330,7 +368,7 @@ Instruction being executed:
 | Order | Rule |
 |---|---|
 | Phase 0 first | Market & skills research before any book |
-| Books | 0 → 2 → 1 → 4 → 5 → 3 → 6 → 7 → 8 → 10 → 9 → 11 → 12 (priority by market demand) |
+| Books | 0 → 2 → 1 → 4 → 5 → 3 → 6 → 7 → 8 → 10 → 9 → 11 → 12 → 13 (priority by market demand) |
 | Per part | Research → Question list (frozen) → Answers → Review |
 | Gate | Answers begin only after that part's question list is frozen |
 
@@ -432,7 +470,9 @@ interviews/data_analyst/
 ├── Book09_ML_AI_Tools/
 ├── Book10_Domain/
 ├── Book11_SoftSkills/
-└── Book12_Portfolio_JobSearch/
+├── Book12_Portfolio_JobSearch/
+├── Book13_LogicalReasoning/
+└── Book14_LogicalThinking/
 ```
 
 ### 8.9 Request Commands
@@ -466,16 +506,18 @@ interviews/data_analyst/
 | Book | Parts | Questions | Answers | Review |
 |---|---|---|---|---|
 | Phase 0 | — | — | — | ✅ research done (JD sample 186; pending your approval) |
-| 0 | 7 sections | ✅ 123 FAQs + guide outline | ⬜ | ⬜ |
-| 1 Excel | 12 | ⬜ | ⬜ | ⬜ |
-| 2 SQL | 12 | ✅ 664 (after removing 30 cross-part duplicates; see research/dedupe_log_book02.md) | ⬜ | ⬜ |
-| 3 Python | 12 | ⬜ | ⬜ | ⬜ |
-| 4 Power BI | 12 | ⬜ | ⬜ | ⬜ |
-| 5 Stats & Maths | 12 | ⬜ | ⬜ | ⬜ |
-| 6 Aptitude | 10 | ⬜ | ⬜ | ⬜ |
-| 7 Guesstimates & Cases | 9 | ⬜ | ⬜ | ⬜ |
-| 8 Scenarios | 9 | ⬜ | ⬜ | ⬜ |
-| 9 ML + AI | 12 | ⬜ | ⬜ | ⬜ |
-| 10 Domain | 8 | ⬜ | ⬜ | ⬜ |
-| 11 Soft Skills | 10 | ⬜ | ⬜ | ⬜ |
-| 12 Portfolio & Job Search | 7 sections | ⬜ | ⬜ | ⬜ |
+| 0 | 7 sections | ✅ 123 FAQs + guide outline | ✅ guide (Book00_Guide.md) + 123 FAQ answers | ✅ Wave C done 2026-10-24 (see Book00_CareerSwitch_Process/review_Book00.md; research-based, many items "No reliable data found") |
+| 1 Excel | 12 | ✅ 638 (after removing 11 cross-part duplicates and adding 5 gap-fills; see research/dedupe_log_book01.md) | ✅ 638 (all 12 parts merged; formulas run in LibreOffice 24.2 where supported, 365-only functions/pivots/Power Query/VBA labelled "not run here") | ✅ Wave C done 2026-10-22 (see Book01_Excel/review_Book01.md; never run in real Excel; several Microsoft/Google facts remain unverified) |
+| 2 SQL | 12 | ✅ 664 (after removing 30 cross-part duplicates; see research/dedupe_log_book02.md) | ✅ 664 (all 12 parts merged; code run on SQLite 3.45.1 / pandas 3.0.5; non-SQLite syntax labelled "not run here") | ✅ Wave C done 2026-10-21 (see Book02_SQL/review_Book02.md; dialect claims for non-SQLite engines remain unverified) |
+| 3 Python | 12 | ✅ 672 (after removing 9 cross-part duplicates; see research/dedupe_log_book03.md; research was search-snippet only, no page fetched in full, stars are judgement) | ✅ 672 (all 12 parts merged; every snippet run on Python 3 / pandas 3.0.5 / numpy 2.5.3 (plots on matplotlib 3.11.2 / seaborn 0.13.2, Agg backend, images mostly not viewed); live API calls not run (mock server); pandas 2.x behaviour labelled "from memory"; "Asked at" mostly "no company-specific report found") | ✅ Wave C done 2026-11-12 (see Book03_Python_Pandas/review_Book03.md; pandas 2.x claims unverified, no internet) |
+| 4 Power BI | 12 | ✅ 624 (after removing 36 cross-part duplicates and adding 21 gap-fills; see research/dedupe_log_book04.md) | ✅ 624 (all 12 parts merged; results reproduced in pandas 3.0.5; DAX/M/click-paths labelled "not run here"; Microsoft/Tableau pages unreachable so version/licensing facts "from memory, unverified") | ✅ Wave C done 2026-11-01 (see Book04_PowerBI_Viz/review_Book04.md) |
+| 5 Stats & Maths | 12 | ✅ 628 (after removing 10 cross-part duplicates and adding 1 gap-fill; see research/dedupe_log_book05.md; research was search-snippet only, all page fetches blocked, stars are judgement) | ✅ 628 (all 12 parts merged; every calculation and Python snippet run on numpy 2.5.3 / pandas 3.0.5 / scipy 1.18.1 / statsmodels; Excel formulas labelled "not run in Excel here"; "Asked at" is mostly "no company-specific report found") | ✅ Wave C done 2026-11-06 (see Book05_Stats_Maths/review_Book05.md; ~172 answers fixed; Excel never run; "Asked at" claims snippet-level) |
+| 6 Aptitude | 11 | ✅ 724 (after removing 5 cross-part duplicates; see research/dedupe_log_book06.md; research was search-snippet only, no page fetched, stars are judgement; answers not yet computed) | ✅ 724 (all 11 parts merged; every numeric/logic/DI/DS item re-solved independently by code in Wave C; SQL run on sqlite3; Excel and non-SQLite items not run) | ✅ Wave C done 2026-11-12 (see Book06_Aptitude/review_Book06.md; company claims unverified, snippet-level research) |
+| 7 Guesstimates & Cases | 9 | ✅ 633 (no cross-part duplicates removed; see research/dedupe_log_book07.md; research was search-snippet only, no page fetched, stars are judgement; figures not yet computed) | ✅ 633 (all 9 parts merged; every figure recomputed independently by code in Wave C; base numbers are labelled assumptions, unverified) | ✅ Wave C done 2026-11-12 (see Book07_Guesstimates_Cases/review_Book07.md; real-world base numbers unverified, company claims snippet-level) |
+| 8 Scenarios | 9 | ✅ 640 (after removing 1 cross-part duplicate; see research/dedupe_log_book08.md; research was search-snippet only, no page fetched, stars are judgement; figures not yet computed) | ✅ 640 (all 9 parts merged; every figure recomputed independently by code in Wave C; legal/tool facts labelled from memory, unverified) | ✅ Wave C done 2026-11-12 (see Book08_Scenarios/review_Book08.md; company claims snippet-level, legal and tool facts unverified) |
+| 9 ML + AI | 12 | ✅ 641 (after removing 2 cross-part duplicates; see research/dedupe_log_book09.md; research was search-snippet only, no page fetched, stars are judgement; figures and code not yet run) | ✅ 641 (all 12 parts merged 2026-11-19; code run on Python 3.13 / pandas 3.0.5 / scikit-learn 1.9.1 / statsmodels per the answer reports; no live LLM or cloud calls; GenAI, cloud, legal facts "from memory, unverified") | ✅ Wave C done 2026-11-20 (see Book09_ML_AI_Tools/review_Book09.md; ~167 answers fixed, mostly hidden-data reproducibility; GenAI, cloud and legal facts unverified; no live LLM or cloud run) |
+| 10 Domain | 8 | ✅ 718 (after removing 1 cross-part duplicate; see research/dedupe_log_book10.md; research was search-snippet only, no page fetched in full, stars are judgement; regulation items awareness-level only) | ✅ 718 (all 8 parts merged; every worked figure computed by script; SQL run on sqlite3; regulation, benchmark and tool-feature facts labelled "from memory, unverified"; no legal, medical or financial advice; "Asked at" mostly "no company-specific report found") | ✅ Wave C done 2026-11-19 (see Book10_Domain/review_Book10.md; ~117 answers fixed; regulation, tool-feature and benchmark facts unverified; "Asked at" claims snippet-level) |
+| 11 Soft Skills | 11 | ✅ 673 (after removing 27 cross-part duplicates and adding 1 gap-fill; see research/dedupe_log_book11.md; research was search-snippet only, no page fetched in full, stars are judgement; personal-experience answers will be templates, never invented experience) | ✅ 673 answers merged | ✅ reviewed 2026-11-26 (see Book11_SoftSkills/review_Book11.md) |
+| 12 Portfolio & Job Search | 7 sections | ✅ 108 FAQs + 6-section outline (Wave A 2026-11-26; research snippet-level only; see research/dedupe_log_book12.md) | ✅ guide (Book12_Guide.md, 6 sections) + 108 FAQ answers | ✅ Wave C done 2026-11-26 (see Book12_Portfolio_JobSearch/review_Book12.md; platform, certificate and legal facts snippet-level only, unverified) |
+| 13 Logical Reasoning | 12 | ✅ 657 (frozen 2026-11-26 after dedupe, see research/dedupe_log_book13.md; research was search-snippet only, stars are judgement) | ✅ 657 (all 12 parts merged 2026-11-26; every puzzle, numeric, series and SQL item solved or brute-forced by the writers; Excel/other-database behaviour labelled "from memory, unverified") | ✅ 657 (Wave C done 2026-11-26: 0 wrong final answers; supporting-text fixes only, see review_Book13.md) |
+| 14 Logical Thinking from Zero (textbook, user index) | 6 parts / 37 chapters | ✅ user index (research/book14_user_index.md), chapter template per plan Book 14 section | ✅ 37 chapters + 37 answer keys + Appendices A-F (Appendix C merged, 2026-11-26) | ✅ Wave C done 2026-11-26 (see Book14_LogicalThinking/review_Book14.md; every practice item re-solved by code, ~120 overlap rewrites, reading list and formulas labelled unverified) |

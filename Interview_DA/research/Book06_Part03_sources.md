@@ -1,0 +1,31 @@
+# Book 6 Part 3 sources (time and work, time-speed-distance)
+Accessed 2026-11-12 via web search (snippet-level; no page fetched in full, WebFetch unavailable). 8 WebSearch calls issued: 6 returned results, 2 failed with a rate-limit error (Infosys pipes-and-cisterns 2025; TCS NQT trains/boats 2026) and were re-run once with reworded queries, both of which returned results. Glassdoor appeared only as search-result titles; AmbitionBox, Reddit and LinkedIn returned nothing and were not fetched. No first-hand 2025-26 candidate report naming specific time-and-work or speed questions for a data/MIS analyst role was found.
+
+| Source | URL | Used for | Type | Recency |
+|---|---|---|---|---|
+| Mettl general aptitude test | https://mettl.com/job-aptitude-test | time and work listed in a general aptitude test syllabus | assessment vendor | undated (snippet) |
+| Adaface quantitative aptitude test | https://www.adaface.com/assessment-test/quantitative-aptitude-test | time and work listed among quant topics | assessment vendor | undated (snippet) |
+| WeCreateProblems aptitude template | https://www.wecreateproblems.com/tests/aptitude-assessment-test | aptitude test aimed at Graduate Trainee / Data Analyst roles | assessment vendor | undated (snippet) |
+| PlacementPreparation time and work | https://www.placementpreparation.io/quantitative-aptitude/time-and-work/questions-and-answers | efficiency-ratio problem pattern; "5-7% of quant" estimate is a prep-site guess | practice site | 2025-26 (snippet) |
+| Byju's time and work concept PDF | https://cdn1.byjus.com/wp-content/uploads/2020/06/Time-and-Work-Questions-Concept.pdf | question types: efficiency, group work, work in a duration | education | 2020 (snippet) |
+| Dataford combined quant (time-work, speed-distance, percentages) | https://dataford.io/questions/solve-quantitative-aptitude-problems-focusing-on-time-and-work-speed-and-distance-and-percentages | topics grouped in analyst-style assessments | practice platform | undated (snippet) |
+| PapersAdda / PrepInsta / FACE Prep TSD pages | https://papersadda.com/article/speed-time-distance-for-placement/ ; https://prepinsta.com/tcs-nqt/placement-papers/aptitude-questions/time-speed-distance/quiz-1/ ; https://faceprep.in/article/understanding-motion-a-fundamental-concept-in-physics/ | TSD said to appear in TCS NQT, Cognizant, Wipro tests (2-5 questions per paper, relative motion, average speed, trains); counts unverified | prep sites | 2026 (snippets) |
+| JobRise aptitude 30-day plan 2026 | https://jobrise.io/blog/aptitude-test-preparation-guide-2026 | claimed formats: InfyTQ quant 15 q/25 min, Wipro NLTH 20 q/30 min, Cognizant GenC 18 q/30 min; sources conflict, unverified | prep blog | 2026 (snippet) |
+| Wipro placement papers / NLTH pages | https://papersadda.com/article/wipro-placement-papers-2026/ ; https://faceprep.in/article/wipro-placement-papers-most-repeated-questions-for-wipro-nlth-face-prep/ | Wipro quant lists; one list omitted speed-distance, so Wipro frequency is uncertain | prep sites | 2025-26 (snippets) |
+| GfG Wipro mock item | https://www.geeksforgeeks.org/aptitude-wipro-mock-test-question-21/amp/ | average-speed (return-trip) item style | practice | undated (snippet) |
+| PrepInsta Infosys time and work quiz; FACE Prep Infosys aptitude | https://prepinsta.com/?p=157790 ; https://faceprep.in/article/infosys-aptitude-questions-with-solutions-for-infosys-aptitude-test/ | Infosys-branded time-and-work practice, pipes as work variant | prep sites | undated (snippets) |
+| GfG pipes and cistern; Careers360 negative work | https://www.geeksforgeeks.org/?p=142830 ; https://careers360.com/quantitative-aptitude/pipe-and-cistern-and-negative-work-topic-pge | outlet = negative work, net-rate method | education | undated (snippets) |
+| Careers360 / Naukri Code360 trains, boats and streams | https://www.careers360.com/quantitative-aptitude/application-of-tsd-in-trains-and-stream-topic-pge ; https://www.naukri.com/code360/library/trains-boats-and-streams | platform length trap, km/h to m/s, downstream/upstream formulas | education | undated (snippets) |
+| Glassdoor Absolutdata interview reviews | https://www.glassdoor.co.in/Interview/Absolutdata-Interview-E371814-RVW2235526.htm | one analytics firm reviewers mention time and work, speed and distance, simple interest, syllogisms in a 25-min/30-q aptitude test | candidate reviews | 2011-2021 (title/snippet only) |
+| dt-interview-prep GfG-style aptitude set | https://dt-interview-prep.pages.dev/gfg/aptitude | fresher data-analyst aptitude practice (unofficial mirror) | practice set | undated |
+| research/interview_processes.md | (local) | aptitude gates at Infosys, Accenture, Wipro, Fractal, Mu Sigma; GfG campus report ~20 aptitude + 10 CS + 2 coding | local research | earlier waves |
+
+Star-assignment reasoning (judgement, not measured frequency)
+- 3 stars: A+B together, efficiency, man-days, pipes with outlet, unit conversion, average speed (harmonic), train/platform/pole, opposite-direction crossing, boats and streams, meeting and chase. These recur across every prep source and every IT-services quant syllabus.
+- 2 stars: alternate/partial-work variants, workers leaving, three-pipe and alternating-pipe cases, late/early distance, train-length unknowns, speed-ratio-after-meeting, backlog/ticket word problems. Common in lists, less certain in a single paper.
+- 1 star: wage splits across three workers, races, circular track, walk/ride puzzle, a worker leaving early, model-limits discussion. Occasional or differentiators.
+- Stars are judgement; sources are thin and are generic prep material, not company data. Company-format claims (question counts, timings) are unverified and conflict between sources.
+
+Limitations
+- Sample: 8 searches, snippet only. No source gives an interview frequency for data-analyst roles; Accenture-specific TSD content was not found.
+- 65 questions; roughly 58 are fully specified numeric problems (about 89%). All numeric problems were designed from standard patterns by the author; none copied from a source. Gap-fills (not seen in a source, added from standard practice): the Excel average-speed question, the model-limits question, ticket-backlog, payroll/wage splits, clerks/analysts word problems, and the HR-flavoured items (about 8).

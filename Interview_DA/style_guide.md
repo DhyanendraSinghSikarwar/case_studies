@@ -73,3 +73,17 @@ Must contain: zero-to-job-ready roadmap · daily practice plan · free resources
 - Edit only your assigned file(s). Append only your own rows to `question_index.md`.
 - Question targets are minimums; add important missing questions.
 - After finishing, report counts and issues; do not start the next wave.
+
+## 10. Code readability (user rule, applies to every answer in every book)
+- Write all code (SQL, pandas/Python, Excel formulas, DAX, M) in a human-understandable form for a non-technical reader.
+- Use descriptive names (e.g. `employees_who_left`, not `df2`; `total_salary`, not `ts`), one step per line, consistent indentation and spacing.
+- Add a short plain-English comment above each step or clause saying what it does and why.
+- Prefer clear step-by-step code (CTEs, small named variables, intermediate columns) over clever one-liners; if a compact form is worth showing, give the readable version first.
+- Follow each code block with 1-2 lines in plain words explaining what the output means.
+
+## 11. Interview-ready code (user rule, stricter, applies to every answer)
+- The code in "Code / Excel-Python / Steps" must be exactly what a candidate would type or write live in the interview for that question: the shortest clear, correct solution a beginner can explain line by line. No test harnesses, no helper scripts, no build/verification scaffolding, no `print` of debugging values that the interviewer would not ask for.
+- Keep it simple and readable: plain loops or standard built-ins over clever tricks, descriptive names (`employees`, `total_salary`), one idea per line, a short comment on the non-obvious steps. If a short interview version and a more complete version both matter, show the interview version first and label the other "Alternative".
+- Show a tiny sample dataset only as far as needed to run the answer (3 to 8 rows), then the code, then the real output, then one plain-words line about what it means.
+- Verification (running the code to get the output) happens outside the answer; the answer shows the interview code and its real output only.
+
