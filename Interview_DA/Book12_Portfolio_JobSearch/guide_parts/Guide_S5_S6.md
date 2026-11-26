@@ -114,7 +114,7 @@ If you cannot name a job that needs it, the worst case should make you pause.
 
 ### 6.1 Why track
 
-No source we found shows that tracking raises your chance of a job. We track because the Book 0 rule needs data: after 10 applications with no replies, change the resume, not the target (Book 0 FAQ Q-list, job search answer; this is our own rule of thumb, not sourced, and 10 is illustrative). Without a record you cannot see which resume version or which board is working. Build the tracker in Excel (Book 1) or Google Sheets.
+No source we found shows that tracking raises your chance of a job. We track because the Book 0 rule needs data: after 10 applications with no replies, change the resume, not the target (Book 0 FAQs, job-search answer; this is our own rule of thumb, not sourced, and 10 is illustrative). Without a record you cannot see which resume version or which board is working. Build the tracker in Excel (Book 1) or Google Sheets.
 
 ### 6.2 Tracker design
 
