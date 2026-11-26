@@ -892,6 +892,7 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 ### Q56 ⭐ 🟡 You have a long commute or a relocation cost. Will you ask for a relocation allowance, and how?
 **Asked at:** relocation and shift questions appear in anonymous Glassdoor reports for large companies (snippet level, unverified); otherwise commonly asked.
 **What the interviewer is checking:** do you ask politely, with a basis, and accept the answer calmly.
+**Say this in the interview:** Ask once, politely, what the relocation policy covers, tie any request to real costs, and accept a no calmly.
 **Explain simply:**
 - It is fine to ask once, politely, after you have an offer or are near one.
 - Ask what the policy is, before asking for an amount.
@@ -936,6 +937,7 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 ### Q59 ⭐ 🟡 After the joining date is fixed, how will you spend the weeks before joining to be ready for the role?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** are you proactive without overpromising, and do you plan.
+**Say this in the interview:** Describe a small, honest plan: finish handover cleanly, refresh the tools in the job description on practice data, and ask the manager what to read.
 **Explain simply:**
 - Keep the plan small and tied to the job description.
 - Do not use confidential data from your current employer.
@@ -954,6 +956,7 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 ### Q60 ⭐ 🟡 Our offer letter is delayed. How do you handle your resignation timing without risk?
 **Asked at:** commonly asked (no company-specific report found); getting terms in writing is advised in notice-period guides (unverified blogs).
 **What the interviewer is checking:** are you careful and courteous, and do you avoid an unsafe move.
+**Say this in the interview:** I will not resign until I hold the written offer; I will ask politely for its date and keep my current role until then.
 **Explain simply:**
 - Do not resign on a verbal promise or an email that says "selected".
 - Ask politely for a date for the written offer.

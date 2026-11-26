@@ -17,7 +17,7 @@
 **If you have no direct experience:** Use any true evidence: a class presentation, a mock interview a friend rated. Say "I rate myself [6] because I have [mock-interview feedback from X]; here is how I plan to reach 8."
 
 **Likely follow-ups:**
-- *Why not higher?* Name one real gap and your current fix.
+- *Why not higher?* One real gap, one fix.
 - *Who gave you that feedback?* A real person or situation; never invent one.
 
 **Common mistakes:** Giving 9 or 10; no evidence; a gap with no action.
