@@ -23,7 +23,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 **Common mistakes:** describing the fix but not the digging; no number; saying "we"; claiming a cause you never tested.
 
 ### Q2 ⭐⭐⭐ 🟢 Tell me about a time you went above and beyond for a customer, internal or external. (Customer Obsession)
-**Asked at:** Customer Obsession is one of the most common principles in prep-site samples for Amazon loops (unverified). Principle name from memory, unverified, check Amazon's own page.
+**Asked at:** Customer Obsession-style prompts recur in prep-site samples for Amazon loops (unverified; no frequency data). Principle name from memory, unverified, check Amazon's own page.
 **What the interviewer is checking:** whether you start from the user's need and keep going beyond the minimum, with proof of effect.
 **Say this in the interview:** name the customer (an employee or manager counts), what they needed, the extra step you chose, and what improved for them.
 
@@ -42,7 +42,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 **Common mistakes:** a story about being nice, with no result; confusing "customer" with "boss"; the extra effort was actually part of the job.
 
 ### Q3 ⭐⭐⭐ 🟢 Tell me about a time you took ownership of something that was not strictly your job. (Ownership)
-**Asked at:** Ownership appears in most prep-site and review samples for Amazon loops (unverified). Principle name from memory, unverified, check Amazon's own page.
+**Asked at:** Ownership prompts recur in prep-site and review samples for Amazon loops (unverified; no frequency data). Principle name from memory, unverified, check Amazon's own page.
 **What the interviewer is checking:** whether you act on problems nobody assigned you and see them through, without blaming others.
 **Say this in the interview:** say why nobody else owned it, what you took on, and how you saw it finished.
 
@@ -144,12 +144,12 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 **Explain simply:**
 - Situation: the setting and the problem in one or two lines.
 - Task: your own responsibility or goal.
-- Action: the steps YOU took, in order, with reasons. About 60% of the time.
+- Action: the steps YOU took, in order, with reasons. About 60% of the time (my rule of thumb, not an Amazon rule).
 - Result: the outcome in numbers, plus what you learned.
 - "I not we": the interviewer cannot judge you from your team's work. Using "we" hides what you did, so they will ask "what did YOU do?".
 
 **Plan / steps:**
-1. Write each story as five lines: one for S, one for T, three for A, one for R.
+1. Write each story as six lines: one for S, one for T, three for A, one for R (my suggestion, not an Amazon rule).
 2. Underline every "we" and replace it with "I" where it was truly you.
 3. Add one number to the Result (time, count, percentage, cost).
 4. Practise aloud for about two minutes.
@@ -335,9 +335,9 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 **Say this in the interview:** "I can reuse it with a different focus, but I will try to prepare more."
 
 **Explain simply:**
-- Reuse is often possible, but interviewers compare notes; repeating it fully looks thin.
+- Reuse is sometimes possible, but I do not know how Amazon interviewers share notes, so assume they may notice; repeating it fully looks thin.
 - Each story has several facets: a decision, a disagreement, a mistake.
-- Different focus each time: Dive Deep (how I found the cause), Ownership (why I took it on), Earn Trust (how I told stakeholders).
+- Different focus each time: Dive Deep (how I found the cause), Ownership (why I took it on), Earn Trust (how I told stakeholders). Principle names from memory, unverified, check Amazon's own page.
 - Say if asked: "I used this example earlier; here is a different part."
 
 **Plan / steps:**
@@ -391,10 +391,10 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 ### Q20 ⭐⭐ 🟢 Tell me about a time you achieved more with fewer resources, such as less time, budget or people. (Frugality)
 **Asked at:** commonly asked (no company-specific report found); LP questions appear in Amazon loops per prep sites (unverified). Principle name from memory, unverified, check Amazon's own page.
 **What the interviewer is checking:** Frugality: resourcefulness under limits, not simply cutting corners.
-**Say this in the interview:** "We had [less than needed], so I picked the one thing that mattered most, used what we already had, and still met the goal."
+**Say this in the interview:** "I had [less than needed], so I picked the one thing that mattered most, used what we already had, and still met the goal."
 **Weak answer (what not to say):** "We had no budget, so we just did less and it was fine."
 **Why it is weak:** Doing less is not achieving more; no goal met, no number.
-**Strong answer (template, speak it in your own words):** "I needed to [goal] with [limit: budget, time, people]. The usual way would cost [amount or time]. I looked at what already existed: [tool, template, colleague, free option]. I chose [approach], dropped [nice-to-have], and protected [must-have]. We delivered [outcome] at [cost] instead of [usual cost]. I also checked quality by [how], so the saving was not hiding a weaker result."
+**Strong answer (template, speak it in your own words):** "I needed to [goal] with [limit: budget, time, people]. The usual way would cost [amount or time]. I looked at what already existed: [tool, template, colleague, free option]. I chose [approach], dropped [nice-to-have], and protected [must-have]. I delivered [outcome] at [cost] instead of [usual cost]. I also checked quality by [how], so the saving was not hiding a weaker result."
 **Illustrative example, replace with your own true story:** A vendor quoted Rs 60,000 for onboarding slide design for 15 new joiners. I built the deck from our existing templates and asked a senior colleague for one review. Cost was Rs 8,000 for printing, a saving of Rs 52,000. Feedback scores matched the previous batch.
 **STAR breakdown:** Situation: goal with a hard limit. Task: deliver anyway. Action: reuse existing assets, cut the nice-to-have, keep quality checks. Result: goal met at Rs 8,000 versus Rs 60,000 (replace with your real figures).
 Say this only if it is true for you. If you have no direct example, use the no-experience version below.
@@ -408,7 +408,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 **Say this in the interview:** "I saw what they needed, showed them once, let them try, gave specific feedback, and the error rate came down."
 **Weak answer (what not to say):** "I am always helping juniors. I tell them whatever they ask."
 **Why it is weak:** Generic; no person, no change, no result.
-**Strong answer (template, speak it in your own words):** "[Name or role] joined and struggled with [skill]. I noticed because [what I saw]. I did not just fix it for them. I showed [one example], asked them to do the next one, and reviewed it with specific points. We met [how often] for [weeks]. After that their [measure] moved from [before] to [after], and they now [handle X on their own]. I learned [what I learned about coaching]."
+**Strong answer (template, speak it in your own words):** "[Name or role] joined and struggled with [skill]. I noticed because [what I saw]. I did not just fix it for them. I showed [one example], asked them to do the next one, and reviewed it with specific points. I met them [how often] for [weeks]. After that their [measure] moved from [before] to [after], and they now [handle X on their own]. I learned [what I learned about coaching]."
 **Illustrative example, replace with your own true story:** A new executive made mistakes in 5 of 20 leave sheets (25%). I showed her how to cross-check against the policy table, then reviewed her next batches with comments. After 3 weeks it was 1 of 20 (5%) and she began checking others' sheets.
 **STAR breakdown:** Situation: newer colleague struggling. Task: help them reach independence. Action: demonstrate, let them try, give specific feedback. Result: errors 25% to 5%, now works alone (use your real figures).
 Say this only if it is true for you. If you have no direct example, use the no-experience version below.
@@ -465,7 +465,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 **Weak answer (what not to say):** "I had a great idea and told my manager, and eventually they agreed."
 **Why it is weak:** No idea described, no proof, no result.
 **Strong answer (template, speak it in your own words):** "Our way of [doing X] had [problem]. My idea was [idea]. People worried about [concern]. So I ran a small test on [limited scope] and compared it with the old method: [numbers]. I showed [who] the comparison, and we adopted it for [wider use]. Result: [outcome]. I also wrote a one-page guide so others could follow it."
-**Illustrative example, replace with your own true story:** Candidate status was updated by email, 15 minutes per batch. I proposed a shared tracker with drop-down status. Colleagues worried about errors, so I ran it for 1 week on 1 role. Updates took about 5 minutes instead of 15 per batch (6 batches a week is 90 minutes saved on the old method, illustrative). The team adopted it.
+**Illustrative example, replace with your own true story:** Candidate status was updated by email, 15 minutes per batch. I proposed a shared tracker with drop-down status. Colleagues worried about errors, so I ran it for 1 week on 1 role. Updates took about 5 minutes instead of 15 per batch (with 6 batches a week, 90 minutes became 30, so 60 minutes saved a week; illustrative). The team adopted it.
 **STAR breakdown:** Situation: weak current method. Task: improve it with team buy-in. Action: pilot, compare, present. Result: adopted, time saved, guide written.
 Say this only if it is true for you. If you have no direct example, use the no-experience version below.
 **If you have no direct experience:** Use a study or volunteer example, or describe how you would pilot an idea on a small scale before asking others to change.

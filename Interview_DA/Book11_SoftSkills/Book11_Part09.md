@@ -4,16 +4,16 @@
 **Scope:** interview-room situations asked or role-played aloud: blanking, not knowing an answer, nervousness, difficult or sceptical interviewers, mistakes under observation, and virtual-interview setup and failures.
 
 ### Q1 ⭐⭐⭐ 🟢 Your mind goes completely blank in the middle of an answer. What do you say and do?
-**Asked at:** commonly asked (no company-specific report found); the sources file lists blanking as the most common fear among career switchers (guides, unverified).
+**Asked at:** commonly asked (no company-specific report found); general guides describe blanking as common (unverified; no frequency data).
 **What the interviewer is checking:** Whether you stay composed and recover honestly, because blanking happens to almost everyone.
 **Say this in the interview:** Pause, breathe once, say calmly that you need a moment, then restart from the last point you remember or from the simplest part of the answer.
 **Weak answer (what not to say):** Silence for twenty seconds, then a nervous laugh and "Sorry, sorry, I forgot everything, I am so bad at this."
 **Why it is weak:** Heavy apology and panic tell the interviewer more than the blank itself.
 **Strong answer (template, speak it in your own words):** "Give me a second, I want to put this in order." (Breathe, look at your notes if you have them.) "Let me come back to the main point: [the last thing you said]. From there, [continue with the next point]." If it does not come: "I have lost my thread on that part. The core of my answer is [one-line main point]. Shall I give an example instead?"
-**Illustrative example, replace with your own true story:** Mid-answer on a hiring tracker project you forget the next step. You say: "One moment. I was explaining how I cleaned the tracker. The next step was checking duplicate candidate IDs, and then I built a weekly summary." Two seconds of pause, no apology, answer finishes. Say this only if it is true for you. If you have no direct example, use the no-experience version below.
+**Illustrative example, replace with your own true story:** Mid-answer on a hiring tracker project you forget the next step. You say: "One moment. I was explaining how I cleaned the tracker. The next step was checking duplicate candidate IDs, and then I built a weekly summary." Short pause, no apology, answer finishes. Say this only if it is true for you. If you have no direct example, use the no-experience version below.
 **STAR breakdown:** (Structure for a recovery) Point: acknowledge briefly. Reason: a short pause is normal and shows control. Example: restart from your last sentence or your core point. Link back: finish the answer and move on without commenting on it again.
-**If you have no direct experience:** You do not need a past blank to answer. Say how you would handle it: "I pause, breathe, and restart from my last point. I also keep a three-word outline in my head for every answer: point, example, result." Practise with a friend who interrupts you.
-**Likely follow-ups:** 1) *Has this happened to you before?* Answer only truthfully; if yes, say how you recovered; if no, say how you prepare for it. 2) *Do you panic under pressure?* No; I slow down first, then speak.
+**If you have no direct experience:** You do not need a past blank to answer. Say how you would handle it: "I pause, breathe, and restart from my last point. I also keep a three-word outline in my head for every answer: point, example, result."
+**Likely follow-ups:** 1) *Has this happened to you before?* Answer only truthfully; if yes, say how you recovered; if no, say how you prepare for it. 2) *Do you panic under pressure?* Answer truthfully; for example, "I feel it, so I slow down first, then speak."
 **Common mistakes:** Long silence with no signal; over-apologising; starting a new unrelated answer; making up something just to fill the gap.
 
 ### Q2 ⭐⭐⭐ 🟢 The interviewer says, "You look nervous. Are you okay?" How do you reply?
@@ -26,7 +26,7 @@
 **Illustrative example, replace with your own true story:** Interviewer: "You look a bit nervous." You: "Slightly, because this is a switch from HR into analytics and it matters to me. I am fine, though. Could I start with a quick walk through the attendance dashboard I built?" Say this only if it is true for you. If you have no direct example, use the no-experience version below.
 **STAR breakdown:** (Structure) Point: yes, a little. Reason: it matters to me. Example: one calm sentence, no story. Link back: return to the question with a steady pace.
 **If you have no direct experience:** Say only what is true. If you honestly are not nervous, say: "I am a bit more careful than usual, I want to give good answers." Do not claim a feeling or a project you do not have.
-**Likely follow-ups:** 1) *What helps you stay calm?* A short breath, writing a note, slowing down. 2) *Will this affect your work?* No; I get calmer once I start.
+**Likely follow-ups:** 1) *What helps you stay calm?* A short breath, writing a note, slowing down. 2) *Will this affect your work?* Say only what is true for you, for example "I usually settle once I start."
 **Common mistakes:** Denying it; long confessions; joking too much; speaking faster after the question.
 
 ### Q3 ⭐⭐⭐ 🟢 You did not understand the question. How do you ask the interviewer to repeat or clarify it without looking weak?
@@ -39,7 +39,7 @@
 **Illustrative example, replace with your own true story:** Question: "How would you handle attrition metrics for a skewed department?" You: "Let me confirm: do you mean how I would measure attrition when one department has very few employees, so small changes look large? If so, I would report counts next to percentages." Say this only if it is true for you. If you have no direct example, use the no-experience version below.
 **STAR breakdown:** (Structure) Point: restate in one sentence. Reason: so I answer what you actually need. Example: name the two possible meanings. Link back: answer the confirmed version.
 **If you have no direct example:** Use the steps above; clarifying is a skill you can show in the room without any past story. Practise one restating line.
-**Likely follow-ups:** 1) *Why did you ask?* Analysts clarify the question before building anything. 2) *Do you often not understand?* No; I check the key words when a question is open.
+**Likely follow-ups:** 1) *Why did you ask?* Analysts clarify the question before building anything. 2) *Do you often not understand?* Answer truthfully; for example, "I check the key words when a question is open."
 **Common mistakes:** Apologising too much; asking the interviewer to repeat all of it when one word was unclear; answering something else to avoid asking.
 
 ### Q4 ⭐⭐⭐ 🟢 The interviewer asks about a tool you have never used, such as Tableau when you know only Power BI. How do you respond?
@@ -49,7 +49,7 @@
 **Weak answer (what not to say):** "Yes, I have used Tableau." (when you have not) or "No, I only know Power BI."
 **Why it is weak:** Bluffing gets exposed on the next question; a flat no shows no effort.
 **Strong answer (template, speak it in your own words):** "I have not worked in [Tool B] yet. I know [Tool A] well, and the ideas of [data model, filters, charts, dashboards] carry over. I would [practise on a sample file, use the free version, follow the official tutorial] in my first [short time period]. Could you tell me how your team uses it?"
-**Illustrative example, replace with your own true story:** "I have not used Tableau. In Power BI I built an attendance dashboard with slicers and a monthly trend chart. I would rebuild the same dashboard in Tableau Public to learn it. Which features does your team use most?" Say this only if it is true for you. If you have no direct example, use the no-experience version below.
+**Illustrative example, replace with your own true story:** "I have not used Tableau. In Power BI I built an attendance dashboard with slicers and a monthly trend chart. I would rebuild the same dashboard in a free version of Tableau (from memory, unverified: check what is currently free) to learn it. A slicer is a filter button on a dashboard. Which features does your team use most?" Say this only if it is true for you. If you have no direct example, use the no-experience version below.
 **STAR breakdown:** Point: honest gap. Reason: related skills transfer. Example: one real thing you built in the tool you know. Link back: learning plan plus a question about how they use it.
 **If you have no direct experience:** If you know neither tool well, name what you do know (for example Excel pivots and charts) and say you have started learning. Never claim exposure you do not have.
 **Likely follow-ups:** 1) *How long would you need?* Give an honest estimate for basics, not mastery. 2) *Have you tried it at all?* Answer truthfully; if you did a tutorial, say so.
@@ -71,7 +71,7 @@
 4. When stuck: say "Let me break this down" and move to the next step.
 5. After a miss: move on; do not carry it into the next question.
 **Worked example or script:** "Let me restate: you want the top three departments by overtime. I will first check the columns, then group by department, then sort. If I get stuck on the syntax I will tell you the logic first." (This is a model script, not a claim about you.)
-**Likely follow-ups:** 1) *What do you do when you freeze?* Pause, breathe, restate, begin with the simplest step. 2) *Does this method work?* It works for me in practice only if you have tried it; say honestly if you are still building the habit.
+**Likely follow-ups:** 1) *What do you do when you freeze?* Pause, breathe, restate, begin with the simplest step. 2) *Does this method work?* Say honestly whether you have tried it; if you are still building the habit, say so.
 **Common mistakes:** Rushing to answer; staying silent while thinking; memorising scripts; fighting the nervous feeling instead of slowing down.
 
 ### Q6 ⭐⭐⭐ 🟡 The interviewer asks, "What is a window function in SQL?" and you have never used one. What do you say?
@@ -138,7 +138,7 @@
 **Weak answer (what not to say):** "No, it should work" (arguing), or freezing and apologising repeatedly.
 **Why it is weak:** Defensiveness or panic hides your actual debugging ability.
 **Strong answer (template, speak it in your own words):** "Good catch, thank you. Let me look. I see the issue: [cause, for example the join column or the range]. I will change [part] to [fix] and rerun. Let me test it on [a small case] to be sure."
-**Illustrative example, replace with your own true story:** You wrote =SUM(B2:B10) for 12 rows of overtime hours. Interviewer points it out. You: "Thanks. My range stops at row 10, so it misses two rows. I will extend it to B13 and compare with the filtered total." Say this only if it is true for you. If you have no direct example, use the no-experience version below.
+**Illustrative example, replace with your own true story:** The data is in rows 2 to 13 (12 rows of overtime hours) and you wrote =SUM(B2:B10), which covers only 9 rows. Interviewer points it out. You: "Thanks. My range stops at row 10, so it misses three rows. I will extend it to B13 and compare with the filtered total." Say this only if it is true for you. If you have no direct example, use the no-experience version below.
 **STAR breakdown:** Point: accept the feedback. Reason: find the cause. Example: fix it and test. Link back: tell what you will check next time.
 **If you have no direct experience:** If you have not coded live, say how you check your own work: read errors, test on a small sample, compare totals.
 **Likely follow-ups:** 1) *How do you avoid this normally?* I test on a small sample and compare totals. 2) *What if you cannot find it?* Ask for a hint after trying.
@@ -218,11 +218,11 @@
 **Say this in the interview:** "Stay relaxed and friendly, do not mention the delay as a complaint, and if names and roles are missing, ask politely at a natural moment."
 **Weak answer (what not to say):** "You are late, I have another meeting after this." Or sitting silent and confused while a panel fires questions.
 **Why it is weak:** The first sounds rude; the second leaves you answering people you cannot identify.
-**Strong answer (template, speak it in your own words):** "No problem at all, thank you for joining. [Pause, smile.] Before we start, could I quickly confirm who I am speaking with and what your roles are? It helps me answer in the right way." If time is short: "I understand we have [shorter time], so I will keep my answers focused. Please stop me if you want more detail on anything." While waiting, use the ten minutes to re-read your notes and breathe, not to message anyone about it.
+**Strong answer (template, speak it in your own words):** "No problem at all, thank you for joining. [Pause, smile.] Before we start, could I quickly confirm who I am speaking with and what your roles are? It helps me answer in the right way." If time is short: "I understand we have [shorter time], so I will keep my answers focused. Please stop me if you want more detail on anything." While waiting, re-read your notes and breathe.
 **Illustrative example, replace with your own true story:** "A panel of three joined eight minutes late and began with a technical question. I answered, then said, 'Sorry, could I confirm your names and roles so I can speak to each of you properly?' They introduced themselves, and one said she was the HR business partner, so I added a people-side example. (Invented example, for illustration only.)"
 **STAR breakdown:** Point (stay warm, no complaint), Reason (the delay is usually not about you), Example (the polite ask for names and roles), Link back to the role (analysts deal with busy stakeholders all the time).
 **If you have no direct experience:** You have probably not met this exact case; say "I have not faced this in an interview, but I have waited for late stakeholders in meetings and here is how I handle it," and describe only what is true for you. Say this only if it is true for you.
-**Likely follow-ups:** 1) *Would you ever leave?* If the wait is very long with no message, send one polite email to the recruiter asking whether to reschedule. 2) *What if no one introduces themselves?* Ask once, politely, as above.
+**Likely follow-ups:** 1) *Would you ever leave?* (My suggestion, not a rule.) If the wait is very long with no message, send one polite email to the recruiter asking whether to reschedule. 2) *What if no one introduces themselves?* Ask once, politely, as above.
 **Common mistakes:** Showing irritation; staying silent about not knowing who is who; apologising for something that is not your fault.
 
 ### Q16 ⭐⭐ 🟢 How do you use the whiteboard, shared screen or notepad in a virtual round so that your thinking is visible?
@@ -280,7 +280,7 @@
 **Say this in the interview:** "Wait two or three seconds, then check in with one short, confident question, instead of adding more words."
 **Weak answer (what not to say):** Keep adding sentences until the answer becomes long and unclear, or say "Was that wrong?" in a worried voice.
 **Why it is weak:** It looks anxious and weakens a good answer.
-**Strong answer (template, speak it in your own words):** [Breathe, count to three silently.] Often the interviewer is just writing notes. If the silence continues: "I can give an example, or go deeper on any part, whichever is more useful." Or: "Does that answer your question, or would you like more detail?" Then wait again. Silence is not a sign you failed; many interviewers take notes and do not react by design. Keep your face calm and your eyes steady on the camera or the person.
+**Strong answer (template, speak it in your own words):** [Breathe, count to three silently.] Often the interviewer is just writing notes. If the silence continues: "I can give an example, or go deeper on any part, whichever is more useful." Or: "Does that answer your question, or would you like more detail?" Then wait again. Silence is not a sign you failed; many interviewers take notes. Keep your face calm.
 **Illustrative example, replace with your own true story:** "After I explained how I would check an attrition number, the interviewer said nothing for several seconds. I waited, then asked, 'Would you like a quick example from an HR dataset?' He nodded and said, 'Yes, go ahead.' (Invented example, for illustration only.)"
 **STAR breakdown:** Point (wait, then check in once), Reason (silence is often note-taking), Example (one short question to offer more), Link back to the role (analysts present results and wait for feedback calmly).
 **If you have no direct experience:** Think of a class presentation or a meeting where no one reacted at first; say what you did, only if it is true for you. If none, say how you would handle it using the steps above. Say this only if it is true for you.
@@ -293,7 +293,7 @@
 **Say this in the interview:** "I answer the part I am sure of, say clearly where my knowledge stops, and explain how I would find the rest."
 **Weak answer (what not to say):** Guess the missing part with confidence, or say "I do not know" and stop.
 **Why it is weak:** The first can be caught and damages trust; the second wastes the part you do know.
-**Strong answer (template, speak it in your own words):** "I am sure about [part you know], and I have used it for [real use, if true]. I have not worked with [missing part], so I would not want to guess. My understanding is [careful reasoning], but I would check it in [documentation, a test on sample data, or ask a colleague]. How would you handle that part?" This shows honesty, reasoning and learning habits in about fifteen seconds. Do not invent knowledge.
+**Strong answer (template, speak it in your own words):** "I am sure about [part you know], and I have used it for [real use, if true]. I have not worked with [missing part], so I would not want to guess. My understanding is [careful reasoning], but I would check it in [documentation, a test on sample data, or ask a colleague]. How would you handle that part?" Do not invent knowledge.
 **Illustrative example, replace with your own true story:** "Asked about window functions, I said, 'I know GROUP BY well and can rank rows with a self-join. I have not used ROW_NUMBER in a project, but I understand it numbers rows inside groups, and I would test it on a small table first.' (Invented example, for illustration only; say only what is true for you.)"
 **STAR breakdown:** Point (what I know), Reason (be honest about the gap), Example (how I would find it out), Link back to the role (analysts learn new tools constantly).
 **If you have no direct experience:** If you know nothing about it, say so plainly and show how you would learn: "I have not used it; I would read the documentation, try a small example, and ask the team." Say this only if it is true for you.
@@ -306,7 +306,7 @@
 **Say this in the interview:** "Slow things down gently: note each question, repeat the list, and answer one at a time."
 **Weak answer (what not to say):** Trying to answer everything at once, or freezing and asking nobody anything.
 **Why it is weak:** You give a muddled answer and may miss a question.
-**Strong answer (template, speak it in your own words):** "Thank you, let me make sure I catch all of that. I heard [first question], and [second question]. Is that right? Let me take the first one first." Then answer each in order, briefly. Keep a pen and notepad to jot a keyword per question. Look at the person who asked, then include the others with a glance. If they speak over each other, say calmly, "I want to give each question a proper answer; may I start with [one]?"
+**Strong answer (template, speak it in your own words):** "Thank you, let me make sure I catch all of that. I heard [first question], and [second question]. Is that right? Let me take the first one first." Then answer each in order, briefly. Jot a keyword per question and glance at the other panellists too. If they speak over each other, say calmly, "I want to give each question a proper answer; may I start with [one]?"
 **Illustrative example, replace with your own true story:** "Two panellists asked, 'How did you check the data?' and 'What tools did you use?' at once. I said, 'Two questions: first, data checks; second, tools. First: I compared totals with the payroll file. Second: I used Excel and a pivot table.' Both nodded. (Invented example, for illustration only.)"
 **STAR breakdown:** Point (slow down, list the questions), Reason (accuracy matters), Example (the two-part repeat), Link back to the role (analysts handle many stakeholders with different requests).
 **If you have no direct experience:** If you have not faced a panel, say you have handled several people asking at once in a meeting or viva (only if true), or describe the steps. Say this only if it is true for you.
@@ -332,7 +332,7 @@
 **Say this in the interview:** "I think aloud, work in small steps, and test as I go; a small error calmly fixed is a good sign."
 **Weak answer (what not to say):** Silent typing for ten minutes, or deleting everything in panic after one error.
 **Why it is weak:** They cannot see your reasoning, and panic looks worse than the mistake.
-**Strong answer (template, speak it in your own words):** "Let me restate the problem: [one line]. My plan is [two or three steps]. First I will [step]." Work slowly, narrate in short phrases, and run a small piece early. If you get an error: "That error says [read it]; I think the cause is [guess]; let me fix it." Remind yourself that they watch silently because they are taking notes; the silence is normal. Before submitting, check the result with a small example or a total.
+**Strong answer (template, speak it in your own words):** "Let me restate the problem: [one line]. My plan is [two or three steps]. First I will [step]." Work slowly, narrate in short phrases, and run a small piece early. If you get an error: "That error says [read it]; I think the cause is [guess]; let me fix it." Silent watching is usually note-taking. Before submitting, check the result with a small example or a total.
 **Illustrative example, replace with your own true story:** "In a mock round I was asked to count employees per department. I said, 'First select department and count, then group by department.' The query returned an error on a missing column; I said, 'Probably a typo in the column name,' fixed it and moved on. (Invented example, for practice only.)"
 **STAR breakdown:** Point (think aloud, small steps), Reason (shows method), Example (the error read and fixed calmly), Link back to the role (analysts debug in front of stakeholders).
 **If you have no direct experience:** Practise with a friend or a free mock session, and say honestly: "I practised this on a shared screen with a friend, and this is what I do." Say this only if it is true for you.
@@ -371,11 +371,11 @@
 **Say this in the interview:** "Pause, say the main point in one sentence, and offer to give detail if they want it."
 **Weak answer (what not to say):** Keep going and hope it lands, or say "Sorry, I am rambling, I am so bad at this."
 **Why it is weak:** The first leaves the interviewer lost; the second damages confidence.
-**Strong answer (template, speak it in your own words):** [Pause, breathe.] "Let me put that more simply. The main point is [one sentence]. The example was [one line]. I can give more detail on [one part] if useful." A calm reset sounds confident, not weak. To prevent it next time, prepare each story as three or four bullet points (situation, action, result) rather than a script, and practise it in about 90 seconds.
+**Strong answer (template, speak it in your own words):** [Pause, breathe.] "Let me put that more simply. The main point is [one sentence]. The example was [one line]. I can give more detail on [one part] if useful." A calm reset sounds confident, not weak. Next time, prepare each story as three or four bullet points rather than a script.
 **Illustrative example, replace with your own true story:** "I started a long story about an attendance report and lost the thread. I said, 'Let me simplify: the report took four days; I made a template and it took two. Would you like the steps?' The interviewer said, 'Yes, briefly.' (Invented numbers, for illustration only.)"
 **STAR breakdown:** Point (reset), Reason (clarity beats completeness), Example (a one-sentence summary), Link back to the role (analysts must summarise clearly for managers).
 **If you have no direct experience:** If you have not been in this situation in an interview, you may have lost your way in a presentation; say honestly what you did. Say this only if it is true for you. Otherwise describe the reset steps as how you would handle it.
-**Likely follow-ups:** 1) *How do you avoid rambling?* Prepare bullets, practise with a timer. 2) *How long should answers be?* About one to two minutes.
+**Likely follow-ups:** 1) *How do you avoid rambling?* Prepare bullets, practise with a timer. 2) *How long should answers be?* A common suggestion is one to two minutes; this is a rule of thumb, not a fixed rule.
 **Common mistakes:** Apologising repeatedly; starting over completely; adding more words to fix it; reading a memorised script.
 
 ### Q27 ⭐⭐ 🔴 The interviewer is openly sceptical: "An HR person doing analytics? I do not think this will work." How do you stay composed and answer?
@@ -397,7 +397,7 @@
 **Say this in the interview:** "Stay calm and factual, treat challenges as questions, and do not copy their tone; if respect truly breaks down, end politely."
 **Weak answer (what not to say):** Arguing back, sarcasm, or giving in to every challenge: "Maybe you are right, I am not sure about anything."
 **Why it is weak:** Arguing escalates; giving in looks as if you have no view.
-**Strong answer (template, speak it in your own words):** Breathe, lower your pace, and answer facts with facts. "I see it differently, and here is my reasoning: [one reason]. I am open to a better approach; what would you do?" If a challenge is a stress test, show steadiness, not agreement for its own sake. If the tone is rude: "I want to give you a useful answer; could we focus on the question?" If it is personal, insulting, or unprofessional repeatedly: "I do not think this conversation is working well for either of us. Thank you for your time." Then leave calmly and, if you wish, give feedback to the recruiter or HR afterwards.
+**Strong answer (template, speak it in your own words):** Breathe, lower your pace, and answer facts with facts. "I see it differently, and here is my reasoning: [one reason]. I am open to a better approach; what would you do?" If a challenge is a stress test, show steadiness, not agreement for its own sake. If the tone is rude: "I want to give you a useful answer; could we focus on the question?" If it is personal, insulting, or unprofessional repeatedly: "I do not think this conversation is working well for either of us. Thank you for your time." Then leave calmly.
 **Illustrative example, replace with your own true story:** "The interviewer said, 'That answer is wrong' to three answers in a row. I said, 'I understand. My reasoning was [one line]. If you would handle it differently, I would like to learn.' He eased up and explained his view. (Invented example, for illustration only.)"
 **STAR breakdown:** Point (calm, factual), Reason (a stress test checks composure), Example (the reasoning and openness line), Link back to the role (analysts face challenging stakeholders). Decision: a tough but fair interview is normal; ongoing disrespect is a signal about the workplace, and leaving politely is your right.
 **If you have no direct experience:** If you have not faced a hostile interviewer, say how you would handle it, or use a tough viva or a demanding stakeholder (only if true). Say this only if it is true for you.
@@ -423,7 +423,7 @@
 **Say this in the interview:** "Say what I have so far, give the simplest version that works, and explain how I would finish with more time."
 **Weak answer (what not to say):** Staying silent, or saying "I cannot do this, sorry."
 **Why it is weak:** Silence gives the interviewer nothing to score; giving up ends the round.
-**Strong answer (template, speak it in your own words):** "Let me take ten seconds and write down what I know. The goal is [restate it]. I will start with a simple version: [first small step, for example, count rows, or filter one month]. That already gives [partial result]. With more time I would [next step], and I would check it by [a quick test]. Is it better if I finish this part or explain the full approach?" Asking this hands the interviewer a choice and shows you can prioritise.
+**Strong answer (template, speak it in your own words):** "Let me take ten seconds and write down what I know. The goal is [restate it]. I will start with a simple version: [first small step, for example, count rows, or filter one month]. That already gives [partial result]. With more time I would [next step], and I would check it by [a quick test]. Is it better if I finish this part or explain the full approach?"
 **Illustrative example, replace with your own true story:** On a "rank employees by salary within each department" task, you freeze on the window function. You say: "I will first sort by department and salary to see the pattern; then I would number the rows within each department, which is what a ranking function does, and I would check the first row of each group." You may not have written the exact syntax, but the logic is visible. (Invented example, for illustration only.)
 **STAR breakdown:** Point (show partial work) then Reason (interviewers score thinking, not only the final answer) then Example (the simple version first) then Link back to the role (analysts often deliver an 80 percent answer on deadline and say what is left).
 **If you have no direct experience:** Say: "I have not frozen in a live round yet, so I practise this: timed mock questions where I speak while solving." Say this only if it is true for you; otherwise describe your practice plan.
@@ -462,7 +462,7 @@
 2. Lay out clothes, ID, charger, notebook, water; test link, camera and microphone (see Q14).
 3. Write 3 to 5 questions to ask the interviewer.
 4. Sleep at a normal time; avoid a late-night cram.
-5. Morning: light meal, water, a short walk or stretch, slow breathing (in for four counts, out for six).
+5. Morning: light meal, water, a short walk or stretch, slow breathing (a common suggestion: in for four counts, out for six).
 6. Read your one-page notes once; then put them away.
 7. Join 5 to 10 minutes early; say your first line aloud once.
 **Worked example or script:** If asked "How do you handle pressure?", say: "Before big days I use a simple routine: I prepare the night before, sleep, and take a short walk. During the interview if I feel stuck I pause and breathe." Use this only if it is true for you; otherwise say the routine you plan to practise.
@@ -544,7 +544,7 @@
 6. Close politely; check names and spelling.
 **Worked example or script:**
 "Dear [Name], thank you for your time today. I enjoyed our discussion on [topic]. One small addition on the question about [topic]: after thinking again, [one-sentence correct answer]. I remain very interested in the role and in contributing with my HR background and analytics skills. Regards, [your name]."
-The correction is one sentence, calm, with no long apology.
+The correction should be one sentence, calm, with no long apology.
 **Likely follow-ups:** 1) *What if you hear nothing?* Follow up politely after about a week (a common guideline, unverified; follow the timeline they gave). 2) *Should every panellist get an email?* One email to the main contact, addressing the panel, is usually enough.
 **Common mistakes:** A long apology; copying a template with the wrong name; correcting several answers; sending nothing at all.
 

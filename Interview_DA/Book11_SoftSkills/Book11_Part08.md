@@ -844,7 +844,7 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 **Weak answer (what not to say):** "I will manage somehow." Or: "I will leave if the pay is not enough."
 **Why it is weak:** No plan, and it signals a flight risk.
 **Strong answer (template, speak it in your own words):** "I looked at this before applying. My monthly expenses are about Rs [X]. I have savings covering about [N] months, and [my family situation is stable / my spouse works]. I expect the first-year pay to be [similar or slightly lower], and I have accepted that for the learning. I plan to re-check my pay at the one-year review based on what I have delivered."
-**Illustrative example, replace with your own true story:** Exercise numbers only: expenses Rs 28,000 a month and savings Rs 1,68,000 give 168,000 / 28,000 = 6 months of buffer. Use your own real figures, or just say "a few months of buffer".
+**Illustrative example, replace with your own true story:** Exercise numbers only: expenses Rs 28,000 a month and savings Rs 1,68,000 give 168,000 / 28,000 = 6 months of buffer. Say this only if it is true for you; use your own real figures, or just say "a few months of buffer".
 **STAR breakdown:** Point: I have a plan. Reason: known expenses and savings. Example: buffer in months. Link back: I am here for the long run.
 **If you have no direct experience:** You do not need a past example. If your finances are tight, say honestly that the pay range must be workable and state your minimum calmly.
 **Likely follow-ups:** "Will you stay if pay is lower?" Yes for a reasonable period, with a growth path. "Do you have dependants?" Answer in one line only if you want to.
@@ -883,7 +883,7 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 **Weak answer (what not to say):** "That would be an insult, I need the senior title." Or: "Fine, I do not care at all."
 **Why it is weak:** One sounds entitled; the other sounds like you have no standards.
 **Strong answer (template, speak it in your own words):** "For my first analytics role, I understand starting at [Analyst / Associate Analyst] is reasonable. I would ask what the role actually does day to day, what the next level needs, and when the review happens. If the work and learning are right, the title is secondary. I would also ask if the grade can be reviewed after [6-12] months based on results."
-**Illustrative example, replace with your own true story:** "In HR I was [Senior Executive]. I know an analyst title may look lower. I would accept it if there is a clear path to the next level, and I would ask for a review date in writing."
+**Illustrative example, replace with your own true story:** "In HR I was [Senior Executive]. I know an analyst title may look lower. I would accept it if there is a clear path to the next level, and I would ask for a review date in writing." Say this only if it is true for you; use your real previous title.
 **STAR breakdown:** Point: label matters less than content. Reason: I am new to analytics. Example: ask about next level and review timing. Link back: growth.
 **If you have no direct experience:** No story needed; speak from the plan above.
 **Likely follow-ups:** "What if the title also drops pay?" Treat title and pay separately; check your minimum number (see Q34). "Would you leave if no promotion?" Say you would discuss goals with your manager first.
@@ -914,7 +914,7 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 **Weak answer (what not to say):** "I would confront the colleague" or "I would start looking elsewhere."
 **Why it is weak:** Hurts trust and may rest on a wrong assumption.
 **Strong answer (template, speak it in your own words):** "First I would check whether it is really the same role. Experience, grade and joining time can explain a gap. I would not discuss specific people's pay. I would prepare my own case: what I delivered in [3-6] months. Then I would ask my manager, 'What does growth in pay look like, and what should I deliver to reach the next band?' and I would ask for a review at the proper time."
-**Illustrative example, replace with your own true story:** Exercise numbers: if I think the pay is Rs 5.6 lakh against my 5.0 lakh, the gap is (5.6 - 5.0) / 5.0 = 12%. I would not quote this as a fact, since it is a rumour; I would present my own results and ask about the band.
+**Illustrative example, replace with your own true story:** Exercise numbers: if I think the pay is Rs 5.6 lakh against my 5.0 lakh, the gap is (5.6 - 5.0) / 5.0 = 12%. I would not quote this as a fact, since it is a rumour; I would present my own results and ask about the band. Say this only if it is true for you.
 **STAR breakdown:** Point: facts first. Reason: pay depends on role, grade and timing. Example: own results and a calm conversation. Link back: long-term growth.
 **If you have no direct experience:** Describe the steps above as your plan.
 **Likely follow-ups:** "What if they say no?" Ask what would change it, and by when. "Would you leave?" Say you would first understand the reason and the path.
@@ -927,7 +927,7 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 **Weak answer (what not to say):** "All three equally." Or: "Pay, obviously."
 **Why it is weak:** One avoids choosing; the other sounds like you will leave for a rupee more.
 **Strong answer (template, speak it in your own words):** "Right now it is learning. I am moving into analytics, so what I learn in the next two years sets my path. Pay matters, and it must cover my needs, but I see it growing as my skills grow. A brand name is helpful, but a strong team and real data work teach me more than a logo. So I would pick the role where I get hands-on work with good people, at a fair salary."
-**Illustrative example, replace with your own true story:** "If two offers differed by a small amount, I would take the one where I will own reports and get feedback." Only say this if it is true for you.
+**Illustrative example, replace with your own true story:** "If two offers differed by a small amount, I would take the one where I will own reports and get feedback." Say this only if it is true for you.
 **STAR breakdown:** Point: learning first. Reason: career switch. Example: hands-on work and feedback. Link back: pay follows skill.
 **If you have no direct experience:** No story needed; give your honest ranking and reason.
 **Likely follow-ups:** "What if learning is poor but pay is high?" Say you would ask about the work before deciding. "Is brand not important?" Say it opens doors, but is not the main thing.
@@ -989,11 +989,11 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 **Weak answer (what not to say):** "Everyone does it, companies also withdraw offers." Or: "I would accept and decide later."
 **Why it is weak:** Excuses an unfair habit, and shows you may do the same to them.
 **Strong answer (template, speak it in your own words):** "I think accepting when you do not intend to join is unfair, because the company stops its search and plans around you. My line is simple: I accept only when I am ready to join. If I am still deciding, I ask for a few days and say honestly that I am waiting on one more decision, without naming anyone. If circumstances truly change after I accept, I tell them as soon as I know, directly, and apologise."
-**Illustrative example, replace with your own true story:** "If I needed until Friday to decide, I would write: 'Thank you for the offer. I would like until Friday to give you a final answer.'" That is honest and does not require lying or revealing details.
+**Illustrative example, replace with your own true story:** "If I needed until Friday to decide, I would write: 'Thank you for the offer. I would like until Friday to give you a final answer.'" That is honest and does not require lying or revealing details. Say this only if it is true for you.
 **STAR breakdown:** Point: do not accept unless ready. Reason: fairness to the company and other candidates. Example: ask for time. Link back: reliability.
 **If you have no direct experience:** Say it as a principle; no story needed.
 **Likely follow-ups:** "What if the company is slow and you have a deadline from another?" Tell the slower company you have a deadline and ask whether they can speed up. "Is asking for time rude?" No, if polite.
-**Common mistakes:** Defending dishonesty as normal; reporting a fake deadline; claiming you have no other offers when you do.
+**Common mistakes:** Defending dishonesty as normal; inventing a fake deadline; claiming you have no other offers when you do.
 
 ### Q63 ⭐ 🔴 If your total pay after the switch is lower for the first year, how will you justify the move to your family and to yourself, and what does this say about commitment?
 **Asked at:** commonly asked (no company-specific report found).
@@ -1002,7 +1002,7 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 **Weak answer (what not to say):** "Money is not everything, I just love data." Or: "It will be fine eventually."
 **Why it is weak:** No numbers and no plan; sounds emotional.
 **Strong answer (template, speak it in your own words):** "I looked at two years, not one. Year one is about Rs [X] lower, which is about Rs [Y] a month, and my family and I agreed we can manage it because [buffer]. Analytics pay can grow as skills grow, while my current path [has limited growth in my view]. I set a review at [12-18] months: if I am delivering and there is no growth path, I will talk to my manager. It shows I chose this with open eyes, not on impulse."
-**Illustrative example, replace with your own true story:** Exercise numbers only, all invented: stay in HR at Rs 5,00,000 and get 10% next year (Rs 5,50,000); switch at Rs 4,40,000 and reach Rs 6,00,000 in year two. Year-one gap: 5,00,000 - 4,40,000 = Rs 60,000, which is 12% or Rs 5,000 a month. Two-year totals: 10,50,000 stay vs 10,40,000 switch, a gap of only Rs 10,000. These growth numbers are assumptions, not forecasts; do not present them as fact. Use your own figures and say they are estimates.
+**Illustrative example, replace with your own true story:** Exercise numbers only, all invented: stay in HR at Rs 5,00,000 and get 10% next year (Rs 5,50,000); switch at Rs 4,40,000 and reach Rs 6,00,000 in year two. Year-one gap: 5,00,000 - 4,40,000 = Rs 60,000, which is 12% or Rs 5,000 a month. Two-year totals: 10,50,000 stay vs 10,40,000 switch, a gap of only Rs 10,000. These growth numbers are assumptions, not forecasts; do not present them as fact. Say this only if it is true for you; use your own figures and say they are estimates.
 **STAR breakdown:** Point: justified with a two-year view. Reason: skills and path. Example: gap in rupees and a review point. Link back: commitment with a plan.
 **If you have no direct experience:** No story needed; share your honest reasons and numbers, and the family discussion if it truly happened.
 **Likely follow-ups:** "What if year two does not improve?" Review the plan, speak to your manager, and decide. "What does your family think?" Answer only with what is true.
@@ -1015,7 +1015,7 @@ Say this only if it is true for you. Whether a company can withhold release, or 
 **Weak answer (what not to say):** "I would just stop going to work" or "I would threaten to report them."
 **Why it is weak:** Breaks the contract and makes the dispute worse.
 **Strong answer (template, speak it in your own words):** "First I stay calm and re-read my appointment letter and policy, to see what it says about notice and the relieving letter. I would talk to my manager and HR and try to settle it: complete the handover, serve the notice or discuss a buy-out. I would keep everything in writing by email. If it was still unresolved, I would take advice from a qualified person, such as a labour lawyer or HR professional. I would also tell the new employer honestly, because hiding it creates a problem later."
-**Illustrative example, replace with your own true story:** An email to HR: "I have completed the handover on [date] and served [N] days. Please confirm my last working day and share the relieving letter and full-and-final statement by [date]." Whether an employer can legally hold the letter depends on the contract and the law (from memory, unverified, confirm with HR/legal).
+**Illustrative example, replace with your own true story:** An email to HR: "I have completed the handover on [date] and served [N] days. Please confirm my last working day and share the relieving letter and full-and-final statement by [date]." Whether an employer can legally hold the letter depends on the contract and the law (from memory, unverified, confirm with HR/legal). Say this only if it is true for you; the dates and day counts are placeholders.
 **STAR breakdown:** Point: calm, by the book. Reason: contract and records matter. Action: read, discuss, write, seek advice. Link back: be honest with the new employer.
 **If you have no direct experience:** Say it as a plan; do not claim a past dispute you did not have.
 **Likely follow-ups:** "Would you join without the relieving letter?" Ask the new employer what alternative they accept; tell them honestly. "Do you know your rights?" Say you would confirm with a legal professional.
