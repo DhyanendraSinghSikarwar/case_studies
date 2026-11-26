@@ -1,6 +1,6 @@
 # Book 13 — Logical Reasoning & Analytical Thinking | Part 7: Letter and Alphanumeric Series, Analogy, Classification and Pattern Recognition 🟢🟡
 
-**Target:** 50 questions | **Actual:** 49 questions
+**Target:** 50 questions | **Actual:** 50 questions
 **Scope:** Letter and alphanumeric series (including wrap-around and two-track series), analogies, odd-one-out classification and text-described pattern recognition, with method and "why" questions; text-only, no figure questions; pure number series stay in Book 6 Part 5.
 
 ### Q1 ⭐⭐⭐ 🟢 How do you find the rule in a letter series quickly: what do you convert the letters into, which patterns do you test first, and when do you give up and move on?
@@ -87,22 +87,25 @@
 ### Q28 ⭐⭐ 🟢 A test gives 20 series, analogy and classification questions in 15 minutes. How many seconds can you spend per question, and what is your rule for skipping?
 <!-- ANSWER_PENDING -->
 
-### Q29 ⭐⭐ 🟡 Complete the series: A1Z, B4Y, C9X, D16W, ?
+### Q29 ⭐⭐ 🟢 Pivot table is to summarising as filter is to what? (a) Selecting (b) Sorting (c) Deleting (d) Joining
 <!-- ANSWER_PENDING -->
 
-### Q30 ⭐⭐ 🟡 Complete the series: ZYX, VUT, RQP, ?
+### Q30 ⭐⭐ 🟡 Complete the series: A1Z, B4Y, C9X, D16W, ?
 <!-- ANSWER_PENDING -->
 
-### Q31 ⭐⭐ 🟡 In the series B, E, H, K, N, Q, S, W, one term is wrong. Which term is it, and what should it be?
+### Q31 ⭐⭐ 🟡 Complete the series: ZYX, VUT, RQP, ?
 <!-- ANSWER_PENDING -->
 
-### Q32 ⭐⭐ 🟡 Letter series with wrap-around: A, B, D, H, P, ? What is the next letter?
+### Q32 ⭐⭐ 🟡 In the series B, E, H, K, N, Q, S, W, one term is wrong. Which term is it, and what should it be?
 <!-- ANSWER_PENDING -->
 
-### Q33 ⭐⭐ 🟡 Complete the mixed series: Z, 1, Y, 4, X, 9, W, ?
+### Q33 ⭐⭐ 🟡 Letter series with wrap-around: A, B, D, H, P, ? What is the next letter?
 <!-- ANSWER_PENDING -->
 
-### Q34 ⭐⭐ 🟡 In the table below, each row follows the same rule. Find the missing number.
+### Q34 ⭐⭐ 🟡 Complete the mixed series: Z, 1, Y, 4, X, 9, W, ?
+<!-- ANSWER_PENDING -->
+
+### Q35 ⭐⭐ 🟡 In the table below, each row follows the same rule. Find the missing number.
 
 | Row | Col 1 | Col 2 | Col 3 |
 |---|---|---|---|
@@ -111,25 +114,25 @@
 | 3 | 6 | 7 | ? |
 <!-- ANSWER_PENDING -->
 
-### Q35 ⭐⭐ 🟡 The letters of the word REPORTING are arranged in alphabetical order (repeated letters kept). Which letter is fourth from the right end?
+### Q36 ⭐⭐ 🟡 The letters of the word REPORTING are arranged in alphabetical order (repeated letters kept). Which letter is fourth from the right end?
 <!-- ANSWER_PENDING -->
 
-### Q36 ⭐⭐ 🟡 Find the odd one out: B2, D8, F18, H32, J49.
+### Q37 ⭐⭐ 🟡 Find the odd one out: B2, D8, F18, H32, J49.
 <!-- ANSWER_PENDING -->
 
-### Q37 ⭐⭐ 🟡 In the word PIVOTS, how many pairs of letters have as many letters between them in the word as they have between them in the English alphabet? (Count each pair of positions once.)
+### Q38 ⭐⭐ 🟡 In the word PIVOTS, how many pairs of letters have as many letters between them in the word as they have between them in the English alphabet? (Count each pair of positions once.)
 <!-- ANSWER_PENDING -->
 
-### Q38 ⭐⭐ 🟡 In the sequence R 4 K 7 M 2 T 9 L 5 D 3 A 8 N 6 E, how many consonants are immediately followed by an even digit?
+### Q39 ⭐⭐ 🟡 In the sequence R 4 K 7 M 2 T 9 L 5 D 3 A 8 N 6 E, how many consonants are immediately followed by an even digit?
 <!-- ANSWER_PENDING -->
 
-### Q39 ⭐⭐ 🟡 Find the odd one out: CEG, HJL, MOQ, RTU, WYA.
+### Q40 ⭐⭐ 🟡 Find the odd one out: CEG, HJL, MOQ, RTU, WYA.
 <!-- ANSWER_PENDING -->
 
-### Q40 ⭐⭐ 🟡 A pattern is written in groups: A, BB, CCC, DDDD, and so on up to Z. What is the 50th letter written?
+### Q41 ⭐⭐ 🟡 A pattern is written in groups: A, BB, CCC, DDDD, and so on up to Z. What is the 50th letter written?
 <!-- ANSWER_PENDING -->
 
-### Q41 ⭐⭐ 🟡 Find the missing number in the table. All rows follow the same rule.
+### Q42 ⭐⭐ 🟡 Find the missing number in the table. All rows follow the same rule.
 
 | Row | Col 1 | Col 2 | Col 3 |
 |---|---|---|---|
@@ -139,26 +142,26 @@
 | 4 | 8 | 5 | ? |
 <!-- ANSWER_PENDING -->
 
-### Q42 ⭐ 🟢 Why does the question "Find the odd one out: 2, 3, 5, 9, 11" feel ambiguous at first, and what is the standard way to decide the answer?
+### Q43 ⭐ 🟢 Why does the question "Find the odd one out: 2, 3, 5, 9, 11" feel ambiguous at first, and what is the standard way to decide the answer?
 <!-- ANSWER_PENDING -->
 
-### Q43 ⭐ 🟡 How does the skill of spotting patterns in series connect to analyst work such as finding trends, seasonality and anomalies, and where does the analogy break down?
+### Q44 ⭐ 🟡 How does the skill of spotting patterns in series connect to analyst work such as finding trends, seasonality and anomalies, and where does the analogy break down?
 <!-- ANSWER_PENDING -->
 
-### Q44 ⭐ 🟡 RISK is to SKVO as DATA is to what? (Use the same rule for both.)
+### Q45 ⭐ 🟡 RISK is to SKVO as DATA is to what? (Use the same rule for both.)
 <!-- ANSWER_PENDING -->
 
-### Q45 ⭐ 🟡 G is to 49 as K is to what?
+### Q46 ⭐ 🟡 G is to 49 as K is to what?
 <!-- ANSWER_PENDING -->
 
-### Q46 ⭐ 🟡 Complete the series: A2C, D6F, G18I, J54L, ?
+### Q47 ⭐ 🟡 Complete the series: A2C, D6F, G18I, J54L, ?
 <!-- ANSWER_PENDING -->
 
-### Q47 ⭐ 🟡 Letter series with two tracks: YA, ZC, AE, ?
+### Q48 ⭐ 🟡 Letter series with two tracks: YA, ZC, AE, ?
 <!-- ANSWER_PENDING -->
 
-### Q48 ⭐ 🟡 The series A, B, C, D, C, B, A, B, C, D, C, B, ... repeats in the same way. What is the 100th term?
+### Q49 ⭐ 🟡 The series A, B, C, D, C, B, A, B, C, D, C, B, ... repeats in the same way. What is the 100th term?
 <!-- ANSWER_PENDING -->
 
-### Q49 ⭐ 🟡 If all five vowels are removed from the English alphabet, which letter is 10th from the left in the remaining letters?
+### Q50 ⭐ 🟡 If all five vowels are removed from the English alphabet, which letter is 10th from the left in the remaining letters?
 <!-- ANSWER_PENDING -->
