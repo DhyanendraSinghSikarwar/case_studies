@@ -10,12 +10,12 @@
 **Say this in the interview:** "I told the people who had the file the same day, said what was wrong and what the right number was, and then added a check so it could not happen again."
 **Weak answer (what not to say):** "I quietly fixed it and sent the new file. I did not want to make a big deal of it."
 **Why it is weak:** Silent fixes leave people using the old number and show you hide mistakes.
-**Strong answer (template, speak it in your own words):** "I had sent [report or file] to [who]. On [day] I noticed [what was wrong, for example a filter missed some rows]. First I checked how big the problem was: [how many rows or what size of difference]. Then I told [who] straight away: what was wrong, what the correct figure is, and that the corrected file was attached. I also asked them to delete the old one. After that I added [a check, for example a total I compare with the source] so it would be caught before sending. The correction took [time], and nobody made a decision on the wrong number."
-**Illustrative example, replace with your own true story:** A monthly headcount file went to three managers. Next morning I saw 6 of 240 rows (2.5%) were left out because of a filter on a date column. I emailed all three within the hour: "The headcount in yesterday's file is 6 too low. Corrected file attached; please use only this one." Then I added a step that compares my total with the HRMS total before I send.
+**Strong answer (template, speak it in your own words):** "I had sent [report or file] to [who]. On [day] I noticed [what was wrong, for example a filter missed some rows]. First I checked how big the problem was: [how many rows or what size of difference]. Then I told [who] straight away: what was wrong, what the correct figure is, and that the corrected file was attached. I also asked them to delete the old one. After that I added [a check, for example a total I compare with the source] so it would be caught before sending. The correction took [time]. [Say 'nobody acted on the wrong number' only if true.]"
+**Illustrative example, replace with your own true story:** A monthly headcount file went to three managers. Next morning I saw 6 of 240 rows (2.5%) were left out because of a filter on a date column. I emailed all three within the hour: "The headcount in yesterday's file is 6 too low. Corrected file attached; please use only this one." Then I added a step that compares my total with the HRMS (the HR software system) total before I send.
 **STAR breakdown:** Situation: report already sent, error found later. Task: limit damage and fix it. Action: size the error, tell recipients at once with the right number, replace the file, add a check. Result: no wrong decision made, and a check now exists (state it only if true).
-**If you have no direct experience:** Say: "I do not have an exact case of a shared file. The closest is [an error you caught in your own work before sending]. Here is what I would do for a shared one: check the size, tell everyone who has it the same day, send the corrected version, and add a check." Say this only if it is true for you. If you have no direct example, use this no-experience version.
+**If you have no direct experience:** Say: "I do not have an exact case of a shared file. The closest is [an error I caught in my own work before sending]. For a shared one I would check the size, tell everyone who has it the same day, send the corrected version, and add a check." Say this only if it is true for you. If you have no direct example, use this no-experience version.
 **Likely follow-ups:** 1) *Did you tell your manager first?* Yes, a short heads-up first, then the wider message. 2) *What if no one had noticed?* I would still tell them; they might decide on it later.
-**Common mistakes:** Hiding or downplaying it; blaming the data source; telling the story with no fix for next time; inventing a heroic result.
+**Common mistakes:** Hiding it; blaming the data source; no fix for next time; inventing a heroic result.
 
 ### Q2 ⭐⭐⭐ 🟢 Tell me about a time you had to learn something new quickly to finish a task.
 **Asked at:** commonly asked (no company-specific report found); learning-agility prompts are common on question banks (unverified).
@@ -24,7 +24,7 @@
 **Weak answer (what not to say):** "I am a fast learner. I just watched some videos and figured it out."
 **Why it is weak:** No detail, no proof, no checking.
 **Strong answer (template, speak it in your own words):** "I needed to [task] by [deadline], and I had never used [tool or skill]. I first listed what I really needed, which was only [two or three things]. I learned those from [a colleague, official help, a short course], and practised on [small sample]. Then I checked my result against [a known answer]. I finished by [date]. Afterwards I wrote [a short note] so the next person could do it faster."
-**Illustrative example, replace with your own true story:** I had to match 300 attendance rows to payroll and had only used basic Excel. I learned VLOOKUP-style lookups for one afternoon, tried them on 20 rows where I knew the answer, found 2 mismatches caused by extra spaces, fixed them, then ran all 300. I saved a two-line note on the steps.
+**Illustrative example, replace with your own true story:** I had to match 300 attendance rows to payroll and had only used basic Excel. I learned lookups (a formula that pulls matching values from another list) in one afternoon, tried them on 20 rows where I knew the answer, found 2 mismatches caused by extra spaces, fixed them, then ran all 300. I saved a two-line note on the steps.
 **STAR breakdown:** Situation: new task, unfamiliar tool. Task: finish by the deadline. Action: narrow what to learn, learn, test small, verify. Result: delivered on time, with a note left behind (only if true).
 **If you have no direct experience:** Use a course or personal project: "I taught myself [SQL basics] for [a practice project] and checked my answers against known results." Say this only if it is true for you. If you have no direct example, use the no-experience version: describe exactly how you would learn a tool for a task, step by step.
 **Likely follow-ups:** 1) *How did you know you had learned enough?* The test sample matched a known answer. 2) *What if no one could help?* Official help and a small practice file.
@@ -92,7 +92,7 @@
 **Illustrative example, replace with your own true story:** A leave balance looked odd. I restated the question: "Which employees differ from the HRMS?" I checked one employee by hand, found the issue was half-day leaves counted as full days, then checked all rows for the same rule.
 **STAR breakdown:** Point: method. Reason: steps reduce panic and wasted time. Example: one short case. Link back: how this helps in analytics.
 **If you have no direct experience:** The method itself is the answer; add a small real example only if you have one. Say this only if it is true for you. If you have no direct example, give the method and say you would practise it on small tasks.
-**Likely follow-ups:** 1) *How long before you ask?* A set limit, for example 30 to 60 minutes depending on urgency. 2) *What do you bring when asking?* What I tried and what I think.
+**Likely follow-ups:** 1) *How long before you ask?* A set limit; 30 to 60 minutes depending on urgency is my suggestion, not a rule. 2) *What do you bring when asking?* What I tried and what I think.
 **Common mistakes:** Panic; silently struggling; asking with no effort shown.
 
 ### Q8 ⭐⭐⭐ 🟢 You have never worked in analytics. How will you learn the tools and processes of this team in your first 30 days?
@@ -143,7 +143,7 @@
 **Strong answer (template, speak it in your own words):** "I had [number] tasks due [when]: [list]. I estimated each at about [hours] and saw that I had [available] hours. I did [most urgent] first, asked [person] if [lower priority task] could move, and told [person] clearly what would arrive late. I delivered [what and when]."
 **Illustrative example, replace with your own true story:** I had three tasks needing 3, 2 and 1.5 hours (6.5 hours in total) with only 5 hours free. I did the manager's 3-hour report first, shared the 1.5-hour clean-up with a colleague, and asked the requester of the 2-hour task for the next morning.
 **STAR breakdown:** Situation: more work than time. Task: deliver what matters. Action: list, estimate, order, negotiate. Result: key work on time, others re-planned.
-**If you have no direct example:** Use a study or personal example, or describe your method. Say this only if it is true for you. If you have no direct example, use the no-experience version.
+**If you have no direct experience:** Use a study or personal example, or describe your method. Say this only if it is true for you. If you have no direct example, use the no-experience version.
 **Likely follow-ups:** 1) *How do you decide priority?* Impact and deadline. 2) *What if everything is urgent?* Ask the manager to rank.
 **Common mistakes:** Silent overwork; no negotiation; no mention of what was dropped.
 
@@ -156,7 +156,7 @@
 **Strong answer (template, speak it in your own words):** "Step 1: I confirm I am comparing like with like: the same period, definition and cut-off date. Step 2: I check the size of the gap and compare by ID or category to find where it comes from. Step 3: I tell my manager within the day: 'Gap is [size], I am checking [likely cause], update by [time].' Step 4: I talk to Finance, asking how they define it. Step 5: I agree one definition in writing and fix the report."
 **Illustrative example, replace with your own true story:** An exercise: my headcount is 1,196 and Finance has 1,204; the gap is 8, about 0.66%. Comparing by employee ID shows 8 joiners dated after my cut-off. I tell my manager, then agree the cut-off with Finance.
 **STAR breakdown:** Point: check, locate, tell, agree. Reason: mismatches are usually definitions. Example: the 8-person gap. Link back: trust in numbers.
-**If you have no direct experience:** This is a situational question; the steps are the answer. Say this only if it is true for you if you add a real case. If you have no direct example, give the steps.
+**If you have no direct experience:** This is a situational question; the steps are the answer. If you add a real case, say this only if it is true for you. If you have no direct example, give the steps.
 **Likely follow-ups:** 1) *When do you tell the manager?* As soon as I know it is real, not after solving it. 2) *What if I was wrong?* Fix it, tell everyone who used it.
 **Common mistakes:** Blaming Finance; waiting until sure; not agreeing a single definition afterwards.
 
@@ -176,7 +176,7 @@
 ### Q14 ⭐⭐⭐ 🟡 How do you make sure the numbers in your work are correct before you send them?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** A real checking habit, not "I am careful".
-**Say this in the interview:** "I have a short checklist: reconcile the total to the source, check counts and blanks, test a few rows by hand, and ask whether the number makes sense."
+**Say this in the interview:** "I have a short checklist: reconcile the total to the source (check that my total equals the original record's total), check counts and blanks, test a few rows by hand, and ask whether the number makes sense."
 **Weak answer (what not to say):** "I double-check everything carefully."
 **Why it is weak:** No method.
 **Strong answer (template, speak it in your own words):** "Before I send anything I do four checks. One: does my total match the source or a previously published number? Two: do counts, blanks, and duplicates look right? Three: I pick [a few] rows and verify them by hand. Four: I ask whether the result makes sense, for example a sudden jump. If I can, I ask a colleague to look over anything important. I note my definitions on the file."
@@ -208,7 +208,7 @@
 **Strong answer (template, speak it in your own words):** "First I confirm the error and work out the correct figure and its size. Then I message my manager right away, with what is wrong, what it affects, and my proposed correction. With their agreement, or if they cannot be reached and the risk is real, I send a short note to the same recipients: 'The figure in Thursday's report was [wrong]. The correct figure is [right]. Corrected file attached.' On Monday I add a check to prevent a repeat."
 **Illustrative example, replace with your own true story:** An exercise: attrition was shown as 4.8% and should be 5.4%, a gap of 0.6 points. I would send my manager a three-line message, then a correction note to leaders with both numbers.
 **STAR breakdown:** Point: act now. Reason: leaders may decide on the wrong number. Example: the 4.8% versus 5.4% note. Link back: you can trust me to say when I am wrong.
-**If you have no direct experience:** Give the steps as your method. Say this only if it is true for you if you add a real case. If you have no direct example, use the steps as your answer.
+**If you have no direct experience:** Give the steps as your method. If you add a real case, say this only if it is true for you. If you have no direct example, use the steps as your answer.
 **Likely follow-ups:** 1) *What if your manager does not reply?* If the risk is real, send the correction and inform them. 2) *What if the error is tiny?* Still tell them, scaled to impact.
 **Common mistakes:** Waiting; blaming a colleague or tool; sending a long, emotional message; not saying the right figure.
 
@@ -250,7 +250,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 
 **STAR breakdown:** Point: one strength. Reason: why you think so. Example: a short true proof. Link back to the role: why the analyst job needs it.
 
-**If you have no direct example:** Use a strength from HR work that carries over (knowing the people data, confidentiality, careful checking), and prove it with your course project, a Kaggle-style practice file or a portfolio piece. Say plainly that it is from practice, not from a job.
+**If you have no direct example:** Use a strength from HR work that carries over (knowing the people data, confidentiality, careful checking), and prove it with your course project, a public practice dataset or a portfolio piece. Say plainly that it is from practice, not from a job.
 
 **Likely follow-ups:**
 - Give another example. "[A second true one, or say you have one strong example and explain it deeper.]"
@@ -264,7 +264,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 **Say this in the interview:** "I learn by doing small real tasks, and I pick what to learn by asking what the job needs this month."
 
 **Explain simply:**
-- Know your style: reading, watching, or doing. Most people retain more by doing a small task straight after learning.
+- Know your style: reading, watching, or doing. Many people remember more by doing a small task straight after learning (a common view, from memory, unverified).
 - Too much to learn is normal in analytics. The trick is order, not speed.
 - Learn what you will use in the next 30 days first, and park the rest on a "later" list.
 
@@ -373,7 +373,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 - Asking well is part of the skill: clear question, what you tried, what you need.
 
 **Plan / steps:**
-1. Set a time box before you start (small task 30 to 45 minutes; larger task more).
+1. Set a time box before you start (my suggestion: 30 to 45 minutes for a small task, more for a larger one).
 2. During the time box, try the basics and search.
 3. At the end, if still stuck, write the question: goal, what you tried, where it fails.
 4. Ask the right person (data owner, senior, or manager), not everyone.
@@ -622,7 +622,7 @@ Inline data: manager says 12 of 480 employees show wrong leave balances (2.5%). 
 **Say this in the interview:** "I thank them, ask for the 12 names, check those first, and tell the manager what I know before the meeting, even if I am still checking."
 **Weak answer (what not to say):** "It is only 2.5 percent, so the report is basically fine. I will look next week."
 **Why it is weak:** Leave balances affect people's pay and trust; a small share is not a small problem, and it ignores the deadline.
-**Strong answer (template, speak it in your own words):** "I would not argue. I would say, 'Thank you, please send me the 12 names so I can check them now.' Then I compare those 12 against the source: [leave policy rules, the HRMS record, the formula]. I look for a pattern, such as [joiners mid-year, carry-forward, a date format]. Within [about 60 minutes] I message you: 'I found [cause] / I have not found it yet, here is what I checked.' Before the meeting I give a short note: what is wrong, how many are affected, and when the fix will be ready. After that I check the other 468 for the same pattern."
+**Strong answer (template, speak it in your own words):** "I would not argue. I would say, 'Thank you, please send me the 12 names so I can check them now.' Then I compare those 12 against the source: [leave policy rules, the HRMS record, the formula]. I look for a pattern, such as [joiners mid-year, carry-forward, a date format]. Within [about 60 minutes] I message the manager: 'I found [cause] / I have not found it yet, here is what I checked.' Before the meeting I send a short note: what is wrong, how many are affected, and when the fix will be ready. After that I check the other 468 for the same pattern."
 **Illustrative example, replace with your own true story:** Check: 12 of 480 is 2.5%, so 468 are not flagged. A possible two-hour plan (invented): 10 minutes to acknowledge and get the names, 50 minutes to find the pattern in the 12, 25 minutes to test the same pattern on the other 468, 20 minutes to fix or list the open items, 15 minutes to write the manager note; total 120 minutes. Suppose 9 of the 12 joined mid-year and the formula gave them a full-year quota: the cause is found, and the same check is run on all joiners.
 **STAR breakdown:** Point: take it seriously and move fast. Reason: balances affect people. Example: the 12 names, a pattern, a short note before the meeting. Link back to the role: analysts are trusted because they find and own errors quickly.
 **If you have no direct experience:** "I have not had a report questioned in an analyst role, but in HR I [true example, such as a payroll query]. I would follow the same steps." Say this only if it is true for you.
@@ -701,7 +701,7 @@ Inline data: manager says 12 of 480 employees show wrong leave balances (2.5%). 
 **Weak answer (what not to say):** "I went with my gut and it worked."
 **Why it is weak:** No reasoning, and no way to repeat it.
 **Strong answer (template, speak it in your own words):** "In [situation] I had to decide [decision] by [time], but I did not know [gap]. I listed what I knew, quickly checked [the one thing that could be checked], and chose the option that was [easy to reverse or lowest risk]. I told [people] my assumption so they could correct me. The result was [outcome]. If I did it again, I would [change]."
-**Illustrative example, replace with your own true story:** A recruiter had to decide whether to extend 5 offers before the budget was approved. She checked last year's approval pattern, extended 3 now and 2 after approval, and told candidates the timeline. The 3 joined; the other 2 were extended a week later. She learned to ask finance earlier.
+**Illustrative example, replace with your own true story:** A recruiter had to decide whether to start interviews for 5 roles before the budget was approved. She checked last year's approval pattern, started 3 roles now and kept 2 on hold until approval, and told candidates the timeline honestly. No offer went out before approval. She learned to ask finance earlier.
 **STAR breakdown:** Situation: decision with gaps. Task: decide by a deadline. Action: list knowns and unknowns, check one thing, pick a reversible option, share assumptions. Result: [outcome and lesson].
 **If you have no direct experience:** Use any real decision at college or home, kept brief, or describe your method. Say this only if it is true for you. If you have no direct example, use this no-experience version.
 **Likely follow-ups:** 1) *What if you were wrong?* Own it and show the fix. 2) *What information would you have wanted?* Name it specifically.
@@ -715,7 +715,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 **Weak answer (what not to say):** "Sure, I will do it all, even if I have to work all night."
 **Why it is weak:** It promises the impossible and risks mistakes.
 **Strong answer (template, speak it in your own words):** "Two days is 40 percent of the usual five, so we cannot do everything at the same quality. I would ask, 'What decision will this be used for, and on which day?' Even if all parts matter, some matter first. I would split the work, estimate each part, and propose: 'By Friday I can give you [parts A and B], checked; [part C] would follow on [day]. Or we add [help] and then I can do more.' I would confirm it in writing and flag what is not checked."
-**Illustrative example, replace with your own true story:** Computation: 5 days to 2 days is 3 days less, 40% of normal time. Suppose 5 parts of one day each; the manager says the board needs parts 1, 2 and 3 now, so 2 days gives about 2 parts with checks, and 1 more with risk. The analyst offers parts 1 and 2 checked, part 3 marked "draft", parts 4 and 5 next week.
+**Illustrative example, replace with your own true story:** Computation: 2 days is 40% of the usual 5 days (a 60% cut, 3 days less). Suppose 5 parts of one day each; the manager says the board needs parts 1, 2 and 3 now, so 2 days gives about 2 parts with checks, and 1 more with risk. The analyst offers parts 1 and 2 checked, part 3 marked "draft", parts 4 and 5 next week.
 **STAR breakdown:** Point: negotiate scope, not quality. Reason: a wrong number is worse than a late one. Example: split, estimate, options in writing. Link back to the role.
 **If you have no direct experience:** "I would handle it like this, and in HR I [true example, such as a rush audit request]." Say this only if it is true for you.
 **Likely follow-ups:** 1) *What if the answer is still "all of it"?* Ask which risk they accept and put it in writing. 2) *Would you work extra hours?* Maybe once, but not as a plan.
@@ -741,10 +741,10 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 **Weak answer (what not to say):** "I worked on it alone for a week because I did not want to bother anyone."
 **Why it is weak:** Silence for a week is a risk, not a strength.
 **Strong answer (template, speak it in your own words):** "The problem was [problem]. I broke it into parts and tested one at a time: [steps]. What kept me going was [real reason: the impact, the small progress each day]. After [time limit I had set] I asked [person] for help, with a clear summary: 'Here is what I tried and where I am stuck.' They pointed out [insight], and we solved it by [outcome]. I now give myself a time limit before asking."
-**Illustrative example, replace with your own true story:** A leave balance sheet differed from the HRMS by 6 days in total. She spent a day testing joiners, leavers and holidays, and found part of the gap. After two hours more with no progress, she asked a payroll colleague with a short note; the colleague spotted a half-day leave type. Gap closed.
+**Illustrative example, replace with your own true story:** A leave balance sheet differed from the HRMS (the HR management system, where leave and attendance are recorded) by 6 days in total. She spent a day testing joiners, leavers and holidays, and found part of the gap. After two hours more with no progress, she asked a payroll colleague with a short note; the colleague spotted a half-day leave type. Gap closed.
 **STAR breakdown:** Situation: a hard problem. Task: solve it with a deadline. Action: break down, test, keep going, ask with a summary at a set time. Result: [solved, and a habit of time limits].
 **If you have no direct experience:** Use a study problem or a hard Excel task. Say this only if it is true for you. If you have no direct example, use this no-experience version: "I would try for [a set time], then ask with a summary of what I tried."
-**Likely follow-ups:** 1) *How long before asking?* A set time such as 30-60 minutes, depending on the deadline. 2) *What did you learn?* To share what I tried.
+**Likely follow-ups:** 1) *How long before asking?* A set time such as 30-60 minutes, depending on the deadline (my suggestion, not a fixed rule). 2) *What did you learn?* To share what I tried.
 **Common mistakes:** Hero stories with no help; asking too soon with no attempt; no outcome.
 
 ### Q44 ⭐⭐ 🟡 What would you do in your first week if you found that the team's existing report had an error that had been there for months?
@@ -795,7 +795,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 **Strong answer (template, speak it in your own words):** "On [project], [person] wanted [approach A]; I thought [approach B] was better because [reason]. I explained it once, calmly, with [a small fact or example]. They decided on A. I agreed to commit, delivered A properly, and noted [risk] in writing. The result was [outcome]. [What I learned: they were right about X / my concern did come true and we adjusted]."
 **Illustrative example, replace with your own true story:** A manager wanted a monthly report built manually; the executive suggested a template. After the manager chose manual for the first month, she did it carefully and tracked the time (3 hours). In month two she showed the 3 hours and the manager approved the template.
 **STAR breakdown:** Situation: disagreement. Task: deliver anyway. Action: state view with reason, accept, deliver fully. Result: [outcome and what I learned].
-**If you have no direct experience:** Use a class, volunteer or home example, or describe how you would do it. Say this only if it is true for you. If you have no direct example, use this no-experience version.
+**If you have no direct experience:** Use a class, volunteer or home example, or describe how you would do it. Say this only if it is true for you. If you have no direct example, use this no-experience version: "I would state my view once with a reason, accept the decision, deliver it fully and record my concern."
 **Likely follow-ups:** 1) *What if you still believed they were wrong?* Deliver, record the concern, and review later. 2) *Would you escalate?* Only for ethics or serious harm.
 **Common mistakes:** Sulking; "I told you so"; making the other person the villain.
 
@@ -807,7 +807,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 **Why it is weak:** It turns a problem into a fight and may be wrong.
 **Strong answer (template, speak it in your own words):** "I would not react in the moment. I would say, 'I want to understand what happened. Can we look at the file history together?' Then I would show my part with facts: [dates, versions, emails]. If my part was clean, I say that calmly, without naming a person as guilty. I would offer to help fix it, and later talk privately to my manager if the blame stays. I also check I am not wrong; maybe I did contribute."
 **Illustrative example, replace with your own true story:** A manager says the leave report is wrong. The analyst checks version history: the input file changed after her run. She says, "My report matched the file of the 5th; the file was edited on the 7th. Let us rerun on the current file." The report is rerun and corrected, and nobody is named.
-**STAR breakdown:** Point: calm, facts, fix. Reason: protect relationships and truth. Example: version history and rerun. Link back to the role: analysts trace data lineage.
+**STAR breakdown:** Point: calm, facts, fix. Reason: protect relationships and truth. Example: version history and rerun. Link back to the role: analysts trace where a number came from (the file, the version, the date).
 **If you have no direct experience:** "I have not been in this exact case, but I would do this." Say this only if it is true for you; never claim you were blamed unfairly if you were not.
 **Likely follow-ups:** 1) *What if no records exist?* Keep notes from now on; say what you know; focus on the fix. 2) *What if the blame stays?* Talk to the manager privately.
 **Common mistakes:** Defensiveness; naming and shaming; skipping the fix.
@@ -866,7 +866,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 
 **Explain simply:**
 - **Right question:** does it answer what was actually asked?
-- **Right numbers:** totals tie to a trusted source; no obvious blanks, duplicates or odd values.
+- **Right numbers:** totals tie to a trusted source (such as the HRIS, the HR information system that holds employee records); no obvious blanks, duplicates or odd values.
 - **Right reader:** is the main point clear in the first line, without needing me to explain?
 - **Right effort:** extra polish that changes no decision can wait.
 
@@ -883,7 +883,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 
 **Explain simply:**
 - **Goal:** I link the learning to something real, such as a report I want to build.
-- **Small steps:** 30 to 45 minutes a day beats a long weekend session.
+- **Small steps:** 30 to 45 minutes a day, which I find easier to keep up than one long weekend session (my suggestion, not a researched rule).
 - **Proof of progress:** a notes file or finished mini-projects I can look back on.
 - **Community:** forums, a study partner, or a mentor for specific doubts.
 - **Rest:** I stop when tired and return next day.
@@ -902,7 +902,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 **Weak answer (what not to say):** "I have done many courses online. They were all very useful." Or naming a famous book you have not read.
 **Why it is weak:** no specific idea or change; a made-up resource collapses at the first follow-up question.
 **Strong answer (template, speak it in your own words):** "A resource that changed how I work was [real book, course or person]. The idea that stuck with me was [one idea in plain words]. Before that, I used to [old habit]. Now I [new habit], for example [one concrete use at work or in practice]. It helped because [short result, only if true]."
-**Illustrative example, replace with your own true story:** Suppose a basic Excel course taught me to use pivot tables and a reconciliation step. Before, I counted headcount by hand from filters. Now I build a pivot and compare its total to the HRIS count, which catches mismatches in minutes.
+**Illustrative example, replace with your own true story:** Suppose a basic Excel course taught me to use pivot tables and a reconciliation step. Before, I counted headcount by hand from filters. Now I build a pivot and compare its total to the HRIS count (a reconciliation, meaning checking that two sources agree), which catches mismatches in minutes.
 **STAR breakdown (adapted):** Resource, Key idea, Old habit, New habit, Evidence it helped.
 **If you have no direct experience:** be honest and pick something you really used, even a free tutorial, a colleague's advice, or documentation. Say this only if it is true for you. Never name a book or course you have not used; only mention a title you can discuss for two minutes.
 
@@ -921,7 +921,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 - **Communicate:** early, with options, not at the last minute.
 - **Protect focus:** block time, mute distractions.
 
-**Plan / steps:** 1) Write the list. 2) Mark must-have versus nice-to-have. 3) Estimate and add a buffer (many people reserve the last part of the time for review). 4) Schedule the hardest piece in my best-energy hours. 5) Check in at the halfway point; if behind, speak up.
+**Plan / steps:** 1) Write the list. 2) Mark must-have versus nice-to-have. 3) Estimate and add a buffer (my suggestion: keep the last part of the time for review). 4) Schedule the hardest piece in my best-energy hours. 5) Check in at the halfway point; if behind, speak up.
 **Worked example or script:** "Suppose a report is due Friday at noon. On Monday I list data pull, cleaning, calculations, charts and review. I plan the review for Thursday afternoon. If on Wednesday I see the data is late, I tell my manager the same day: 'The data may arrive Thursday; I can send a draft Thursday evening or a final on Friday afternoon. Which do you prefer?'" (Illustrative.)
 
 **Likely follow-ups:** 1) *What if you are behind?* Tell the stakeholder early, offer a smaller scope or a later final. 2) *Do you work late?* Sometimes, but I prefer planning that avoids it.
@@ -1096,7 +1096,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 4. Compare totals and spot-check a few rows by hand.
 5. Confirm against a trusted source (official documentation, a colleague, the original file).
 6. Note in the work that AI helped, if your team expects that.
-**Worked example or script:** "I wanted a formula to count absences per employee. I asked an AI tool using a made-up sample of 10 rows. It gave me a formula. I tested it on those 10 rows where I had counted by hand, and it matched. Then I ran it on the real file inside our own system, and compared the grand total with the HRMS report."
+**Worked example or script:** (Illustrative example, replace with your own true story; say this only if it is true for you.) "I wanted a formula to count absences per employee. I asked an AI tool using a made-up sample of 10 rows. It gave me a formula. I tested it on those 10 rows where I had counted by hand, and it matched. Then I ran it on the real file inside our own system, and compared the grand total with the HRMS report."
 **Likely follow-ups:** 1) *What if the AI and your check disagree?* Trust the check, find why, and do not ship until it is clear. 2) *Would you share salary data with a public AI tool?* No, not unless the company approves a tool for it.
 **Common mistakes:** Saying "I just copy the answer"; pasting real employee data; saying AI is never reliable (shows you do not use it).
 
@@ -1149,7 +1149,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 - For each gap: what, why it matters, how you will close it, and by when.
 **Plan / steps:**
 1. List your skills against the job description (Excel, SQL, a BI tool, statistics basics, Python).
-2. Rate yourself honestly: strong, working, weak.
+2. Rate yourself honestly: strong, working, weak. (A BI tool means a business intelligence tool, such as Power BI or Tableau, used to build dashboards.)
 3. Pick the top two or three gaps for THIS job.
 4. For each, set one small project and a date.
 5. Say it in 30 seconds, with the proof of progress so far.
@@ -1164,7 +1164,7 @@ Inline data: 5 working days of effort normally; 2 days available; the requester 
 **Weak answer (what not to say):** "I never feel embarrassed to ask anything."
 **Why it is weak:** Unbelievable, and it hides the lesson.
 **Strong answer (template, speak it in your own words):** "In [situation] I did not understand [the term or step], and I felt I should already know it. I thought about guessing, but the result mattered. So I asked [person]: 'Can you explain [x] once, so that I get it right?' They explained in two minutes, and I avoided [the possible error]. I learned that a short question early costs less than a long fix later, and now I ask in the first week of any new task."
-**Illustrative example, replace with your own true story:** An HR executive did not know what "CTC versus take-home" meant for a salary report. Instead of guessing, they asked finance: "Which of the two should this report show?" It was take-home; the first draft would have shown CTC and been rejected.
+**Illustrative example, replace with your own true story:** An HR executive did not know which to show in a salary report: CTC (cost to company, the full yearly package) or take-home (the amount credited each month). Instead of guessing, they asked finance: "Which of the two should this report show?" It was take-home; the first draft would have shown CTC and been rejected.
 **STAR breakdown:** Situation: a gap I felt awkward about. Task: get the work right. Action: asked a specific question. Result: [error avoided, learned the term].
 **If you have no direct experience:** Use any true small moment, even in a course or a team call. Say this only if it is true for you. If none, say: "I do ask early, and I would rather ask once than guess."
 **Likely follow-ups:** 1) *How do you ask without sounding unprepared?* Say what you tried first. 2) *Do you still feel embarrassed?* A little, and I ask anyway.
@@ -1214,7 +1214,7 @@ Inline data: reported attrition 14.0%; corrected attrition 15.1%. Compute the ga
 **Asked at:** commonly asked (no company-specific report found); owning an analytical mistake is a standard bank question (unverified).
 **What the interviewer is checking:** Honesty and speed: do you tell, even if nobody has noticed?
 **Say this in the interview:** "I verify it, tell my manager the same day, with the corrected number and a fix. Hiding it is not an option."
-**The numbers (computed by script):** The gap is 15.1 minus 14.0 = 1.1 percentage points. In relative terms it is 1.1 divided by 14.0 = 7.86%, about 8%, so the question's "about 8%" matches (rounded to two decimals). Note: the 8% is relative to the old figure; in points the miss is 1.1.
+**The numbers (checked by code):** The gap is 15.1 minus 14.0 = 1.1 percentage points. In relative terms it is 1.1 divided by 14.0 = 7.86%, about 8%, so the question's "about 8%" matches (rounded to two decimals). Note: the 8% is relative to the old figure; in points the miss is 1.1.
 **Weak answer (what not to say):** "If nobody noticed, I would fix it quietly in the next report."
 **Why it is weak:** Decisions may already have been made on the wrong number.
 **Strong answer (template, speak it in your own words):** "First I double-check the error and find the cause. Then I tell my manager the same day: 'I found an error in last quarter's attrition. We reported 14.0%; the right figure is 15.1%, which is 1.1 points higher, about 8% more in relative terms. The cause was [x]. These decisions used the number: [list]. I suggest we send a correction to [leadership] with the right figure.' I bring the corrected file and a check that stops this next time."
@@ -1259,7 +1259,7 @@ Inline data: reported attrition 14.0%; corrected attrition 15.1%. Compute the ga
 - Learn by building the smallest working version, not by finishing a whole course first.
 - Agree the scope and a review date early.
 **Plan / steps:**
-1. Day 1: clarify users, 3 to 5 key numbers, data source, refresh needs.
+1. Day 1: clarify users, 3 to 5 key numbers, data source, and how often the data must update.
 2. Days 1 to 2: learn the basics (official tutorials, a colleague who knows the tool).
 3. Days 3 to 5: build a rough version with one page.
 4. End of week 1: show it to the requester and collect feedback.
