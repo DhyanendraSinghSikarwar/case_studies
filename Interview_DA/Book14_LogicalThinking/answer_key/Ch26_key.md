@@ -35,10 +35,10 @@
 (c) Seasonality: sales rise by the same 25% between these two quarters every year, so the logo cannot be credited. The comparison with the same period a year earlier removes the seasonal effect.
 
 **Q9.**
-(a) 40 happy divided by 50 replies = 0.8 = 80%.
-(b) Response rate = 50 divided by 500 = 10%.
-(c) If all 450 non-responders were unhappy: 40 divided by 500 = 8% happy. If all were happy: (40 + 450) divided by 500 = 490 divided by 500 = 98% happy.
-(d) The true share could be anywhere from 8% to 98%, so the claim "80% of employees" is not supported. It describes only the 10% who chose to reply. Also ask how the people who replied differ from those who did not.
+(a) 36 recommend divided by 40 cards = 0.9 = 90%.
+(b) Return rate = 40 divided by 800 = 0.05 = 5%.
+(c) If none of the 760 non-returners would recommend: 36 divided by 800 = 4.5%. If all 760 would: (36 + 760) divided by 800 = 796 divided by 800 = 99.5%.
+(d) The true share could be anywhere from 4.5% to 99.5%, so "90% of our customers recommend us" is not supported. It describes only the 5% who chose to return a card (probably the keenest or the angriest). Also ask how the people who returned cards differ from those who did not, and whether one Saturday represents the whole week.
 
 **Q10.**
 (a) None that are independent: the claim traces back to one unnamed "report" that nobody shows. Many repeats equal one source.

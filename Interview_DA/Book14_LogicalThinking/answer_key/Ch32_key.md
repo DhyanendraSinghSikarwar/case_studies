@@ -151,6 +151,10 @@ Trace for 34, 12, 56, 7, 45: start (34, 34); 12 gives smallest 12; 56 gives larg
 Plain steps: compare each number with the one before it; as soon as a number is smaller than the previous one, the answer is "no"; if you reach the end without that, the answer is "yes".
 ```text
 GIVEN a list called numbers
+IF numbers has 0 or 1 items THEN
+    SHOW "yes"
+    STOP
+END IF
 SET previous_number TO the first value
 FOR EACH number IN the rest of numbers
     IF number < previous_number THEN
@@ -161,7 +165,7 @@ FOR EACH number IN the rest of numbers
 END FOR
 SHOW "yes"
 ```
-Trace for 3, 5, 5, 9: 5 vs 3 fine; 5 vs 5 fine (equal is allowed); 9 vs 5 fine; end, **yes**. Trace for 2, 6, 4, 8: 6 vs 2 fine; 4 vs 6 is smaller, so **no**. (A list with 0 or 1 items is "yes" because there is nothing to break the rule.)
+Trace for 3, 5, 5, 9: 5 vs 3 fine; 5 vs 5 fine (equal is allowed); 9 vs 5 fine; end, **yes**. Trace for 2, 6, 4, 8: 6 vs 2 fine; 4 vs 6 is smaller, so **no**. (A list with 0 or 1 items is "yes" because there is nothing to break the rule; the first IF in the pseudocode handles that case.)
 
 **Q11** 🟡 Missing from the bank.
 ```text

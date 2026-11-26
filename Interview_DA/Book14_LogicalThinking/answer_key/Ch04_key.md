@@ -130,7 +130,7 @@ Two parts: Part 1 "if score at least 40, then passes"; Part 2 "if passes, then a
 | S5 | No | No | No | No | No |
 | S6 | Yes | Yes | No | **Yes** | No |
 
-**Answer:** **S2, S4 and S6** break the rule. S3 does not: a score below 40 is not mentioned in either part, and attendance is fine. (The rule is not an "if and only if", so passing without 40 is allowed.)
+**Answer:** **S2, S4 and S6** break the rule. S3 does not: a score below 40 is not mentioned in either part, and attendance is fine. (The rule is not an "if and only if", so passing without 40 is allowed.) Note: the two parts together forbid any student who scores at least 40 but has attendance below 75 (Part 1 says she must pass, Part 2 says she must not), so S2 and S4 can never satisfy the rule. That is why a rule with two parts needs both parts checked.
 
 ### Q18 🔴
 Let p = "overloaded", q = "stopped at the check post". S1 is "if p then q".

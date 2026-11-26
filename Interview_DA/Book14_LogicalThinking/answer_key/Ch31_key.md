@@ -79,10 +79,10 @@ All five rows agree. This is only a check of five cases; it does not show the fo
 - 20 = 4 × 5
 - 21 = 7 × 3
 
-Step: take any amount n of 22 or more and assume every amount from 18 up to n minus 1 can be paid. Then n minus 4 is at least 18 and below n, so it can be paid. Add one 4-rupee voucher and n is paid. So every amount from 18 on can be paid. *Why four base cases:* the step uses the amount four earlier, so we must have started the chain at four different amounts.
+Step: take any amount n of 22 or more and assume every amount from 18 up to n minus 1 can be paid. Then n minus 4 is at least 18 and below n, so it can be paid. Add one 4-rupee voucher and n is paid. So every amount from 18 on can be paid. (This is the same domino idea, except that each domino is knocked over by the one four places back, and we assume all earlier amounts, not only the one just before.) *Why four base cases:* the step uses the amount four earlier, so we must have started the chain at four different amounts.
 
 **Q10** 🔴 The step fails when k = 1, going from groups of 1 to groups of 2.
 1. With 2 employees, A and B: remove A, the remaining group is just {B}; remove B, the remaining group is just {A}.
 2. The argument says "the two groups of k overlap, so A, B and everyone else share a size". For k = 1 the two groups {B} and {A} do **not** overlap at all, so there is nothing linking A's size to B's.
-3. For k at least 2 the overlap argument is fine, but it starts from "groups of 2 all share a size", which was never proved. So the chain breaks at the first link: the base case n = 1 does not lead to n = 2. The step is only valid when the overlap exists (k at least 2), and nothing supplies the starting value for n = 2.
+3. For k at least 2 the overlap argument is fine, but it needs "every group of 2 shares a size" as its starting point, and that was never proved. So the chain breaks at the first link: the base case n = 1 does not lead to n = 2. The step is valid only when the overlap exists (k at least 2), so it cannot be used to get from 1 to 2.
 4. The conclusion is plainly false (two people can have different shoe sizes). **Lesson:** the step must work for *every* k from the base case on, including the first one.

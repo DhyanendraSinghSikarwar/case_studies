@@ -44,10 +44,10 @@
 (c) State B has three times the rate. A fair map would shade by cases per million (or per 100,000) people, and ideally show the totals in a tooltip or table.
 
 **Q11.**
-(a) A, the bottom segment, sits on the baseline in both bars (units 0 to 40).
-(b) Quarter 1 total: 40 + 30 + 20 = 90. Quarter 2 total: 40 + 20 + 40 = 100.
+(a) Only A, the bottom segment, sits on the zero baseline in both bars (0 to 40 in Quarter 1, 0 to 45 in Quarter 2). B and C float on top of the segments below them.
+(b) Quarter 1 total: 40 + 30 + 20 = 90. Quarter 2 total: 45 + 20 + 40 = 105.
 (c) B: (20 minus 30) divided by 30 = minus 10 divided by 30 = about minus 33.3%. C: (40 minus 20) divided by 20 = plus 100%.
-(d) B and C do not start from the same height in the two bars: B starts at 40 in both bars but C starts at 70 in Quarter 1 and at 60 in Quarter 2, so the eye cannot compare lengths against a common line. Use a grouped (side by side) bar chart or a separate small chart for each product, all starting from zero.
+(d) B and C do not start from the same height in the two bars: B starts at 40 in Quarter 1 and at 45 in Quarter 2; C starts at 70 in Quarter 1 and at 65 in Quarter 2. So the eye cannot compare their lengths against a common line. Use a grouped (side by side) bar chart or a separate small chart for each product, all starting from zero.
 
 **Q12.**
 (a) 10 to 100: (100 minus 10) divided by 10 = 9 = 900%. 100 to 1,000: (1,000 minus 100) divided by 100 = 9 = 900%. Each year the value is multiplied by 10.

@@ -54,7 +54,7 @@ Other combinations fail either a premise or already make P true. A concrete read
 
 **Q18** **(a)**. With "Everyone who gets a raise has been promoted", "Dev got a raise" gives "Dev was promoted", a valid chain. (b), (c) and (d) say nothing linking raises to promotions; a computer search found a case for each where all premises are true and Dev was not promoted, so they leave the argument invalid.
 
-**Q19** **Valid, but unsound.** The two premises contradict each other (all encrypted, yet one is not), so they can never be true together. Therefore there is no situation with true premises and a false conclusion, which is the definition of valid (called valid "by emptiness"). It is **not sound**, because at least one premise is always false. It also shows that validity alone proves nothing: from contradictory premises any conclusion is "valid".
+**Q19** **Valid, but unsound.** The two premises contradict each other (all encrypted, yet one is not), so they can never be true together. Therefore there is no situation with true premises and a false conclusion, which is the definition of valid (sometimes called "vacuously valid"). It is **not sound**, because at least one premise is always false. It also shows that validity alone proves nothing: from contradictory premises any conclusion is "valid".
 
 **Q20**
 (a) Replace premise 2 with **"Only admin-access holders can delete records"** (that is, everyone who can delete records holds admin access). Then: no intern has admin access, so no intern can delete records. Checked valid.

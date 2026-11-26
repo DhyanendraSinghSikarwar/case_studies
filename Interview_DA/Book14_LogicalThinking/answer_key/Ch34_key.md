@@ -24,11 +24,11 @@ All results recomputed by code (Q13 checked by listing every possible height ord
 
 **Q7.** First faulty step: Step 2. The rule is: priority implies answered within 2 hours. Being answered in 1 hour does not show the ticket was priority; non-priority tickets may also be answered fast. Bug: converse error. Correct conclusion: nothing can be concluded about T-17's priority.
 
-**Q8.** First faulty step: Step 4 (steps 1 to 3 are right: both 5, tea only 30, coffee only 25). The sum must include the both group: 30 + 25 + 5 = 60, which equals the class, so nobody likes neither. Bug: double counting setup / forgetting a group. Answer: 0 like neither (consistent with "everyone likes at least one").
+**Q8.** First faulty step: Step 4 (steps 1 to 3 are right: both 5, tea only 30, coffee only 25). The sum must include the both group: 30 + 25 + 5 = 60, which equals the class, so nobody likes neither. Bug: arithmetic slip (the both group was left out of the sum). Answer: 0 like neither (consistent with "everyone likes at least one").
 
 **Q9.** First faulty step: Step 2. A percentage change uses the starting value (80) as base: 20 / 80 = 25% fall, not 20 / 60. Bug: wrong base. Check: 25% of 80 is 20, and 80 - 20 = 60.
 
-**Q10.** First faulty step: Step 2. More workers means less time, not more. Total work = 5 x 6 = 30 worker-days; with 10 workers: 30 / 10 = 3 days. Bug: wrong direction (inverse relationship treated as direct). Check: 10 workers x 3 days = 30 worker-days.
+**Q10.** First faulty step: Step 2. More workers means less time, not more. Total work = 5 x 6 = 30 worker-days; with 10 workers: 30 / 10 = 3 days. Bug: wrong direction (an inverse relationship treated as a direct one). Check: 10 workers x 3 days = 30 worker-days.
 
 **Q11.** First faulty step: Step 3. 6 x 5 = 30 counts ordered pairs, so "Asha then Ravi" and "Ravi then Asha" are counted as two teams but are the same team. Each team is counted twice: 30 / 2 = 15. Bug: double counting. Check by listing: 6 people give 5 + 4 + 3 + 2 + 1 = 15 distinct pairs.
 
