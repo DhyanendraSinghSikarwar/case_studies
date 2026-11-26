@@ -1,0 +1,298 @@
+# Book 13 — Logical Reasoning & Analytical Thinking | Part 9: Data-Analyst Logic: Boolean, SQL/Excel NULL Traps, Decision Tables and Tracing 🟡🔴
+
+**Target:** 60 questions | **Actual:** 60 questions
+**Scope:** Boolean logic and truth tables, IF/AND/OR logic, SQL and Excel logic puzzles (NULL and three-valued logic, NOT IN traps, join and filter semantics), decision tables, flowchart and pseudocode tracing, and edge cases; SQL syntax how-to stays in Book 2, and puzzles state the dialect when it matters.
+
+### Q1 ⭐⭐⭐ 🟢 In SQL's three-valued logic, what do `TRUE AND NULL`, `FALSE AND NULL`, `TRUE OR NULL`, `FALSE OR NULL` and `NOT NULL` evaluate to, and what does a `WHERE` clause do with a row whose condition evaluates to UNKNOWN?
+<!-- ANSWER_PENDING -->
+
+### Q2 ⭐⭐⭐ 🟢 A table `employees` has 10 rows. The `bonus` column holds: 5000, 0, NULL, 2000, NULL, 0, 3000, NULL, 0, 1500. How many rows does `SELECT * FROM employees WHERE bonus <> 0` return?
+<!-- ANSWER_PENDING -->
+
+### Q3 ⭐⭐⭐ 🟢 Which expression is equivalent to `NOT (status = 'Active' AND tenure > 2)`? (Assume neither column contains NULL.)
+- (a) `status <> 'Active' AND tenure <= 2`
+- (b) `status <> 'Active' OR tenure <= 2`
+- (c) `status = 'Active' OR tenure > 2`
+- (d) `status <> 'Active' AND tenure > 2`
+<!-- ANSWER_PENDING -->
+
+### Q4 ⭐⭐⭐ 🟢 Cell A1 holds a number and cell B1 holds `=IF(AND(A1>=10, A1<20), "Mid", IF(A1>=20, "High", "Low"))`. What does B1 show when A1 is 9, 10, 19 and 20 in turn?
+<!-- ANSWER_PENDING -->
+
+### Q5 ⭐⭐⭐ 🟢 A table `tickets` has 8 rows. Its `resolved_by` column holds: Ana, Ana, NULL, Raj, NULL, Raj, Ana, NULL. What do `COUNT(*)`, `COUNT(resolved_by)` and `COUNT(DISTINCT resolved_by)` return?
+<!-- ANSWER_PENDING -->
+
+### Q6 ⭐⭐⭐ 🟢 Table `A` has `id` values 1, 2, 3, 4. Table `B` has `id` values 2 and NULL. How many rows does `SELECT id FROM A WHERE id NOT IN (SELECT id FROM B)` return, and why?
+<!-- ANSWER_PENDING -->
+
+### Q7 ⭐⭐⭐ 🟢 Trace the pseudocode and give the printed value:
+```
+total = 0
+FOR i = 1 TO 6
+    IF i MOD 2 = 0 THEN
+        total = total + i
+    ELSE
+        total = total - 1
+PRINT total
+```
+<!-- ANSWER_PENDING -->
+
+### Q8 ⭐⭐⭐ 🟡 Trace this flowchart, written as numbered boxes, and give the two printed values:
+```
+1  START: a = 48, b = 18, count = 0
+2  IF b = 0 THEN GO TO 6
+3  r = a MOD b
+4  a = b ; b = r ; count = count + 1
+5  GO TO 2
+6  PRINT a, count
+```
+<!-- ANSWER_PENDING -->
+
+### Q9 ⭐⭐⭐ 🟡 A table `t` has an integer column `x` that contains some NULLs. Why does `SELECT * FROM t WHERE x = x` not return every row, and what does it return?
+<!-- ANSWER_PENDING -->
+
+### Q10 ⭐⭐⭐ 🟡 In Excel, cell A1 is truly empty (nothing typed, no formula). What do `=A1=0`, `=A1=""` and `=A1>0` return?
+<!-- ANSWER_PENDING -->
+
+### Q11 ⭐⭐⭐ 🟡 A leave-approval rule is applied top to bottom and the first matching rule wins:
+1. If the request falls in a blackout period, Reject.
+2. Else if the leave balance is less than the days requested, Reject.
+3. Else if the days requested are 2 or fewer, Auto-approve.
+4. Else Manager approval.
+
+| Request | Balance (days) | Days requested | Blackout period |
+|---|---|---|---|
+| A | 5 | 2 | No |
+| B | 5 | 3 | No |
+| C | 1 | 2 | No |
+| D | 10 | 1 | Yes |
+| E | 2 | 2 | No |
+
+How many requests end in each outcome (Auto-approve, Manager approval, Reject)?
+<!-- ANSWER_PENDING -->
+
+### Q12 ⭐⭐⭐ 🟡 Table `employees(emp_id, name)` has rows (1, Asha), (2, Bala), (3, Chitra), (4, Dev). Table `attendance(emp_id, status)` has rows (1, Present), (1, Absent), (2, Absent), (3, Present). How many rows do these two queries return?
+- Query 1: `SELECT e.name FROM employees e LEFT JOIN attendance a ON e.emp_id = a.emp_id AND a.status = 'Present'`
+- Query 2: `SELECT e.name FROM employees e LEFT JOIN attendance a ON e.emp_id = a.emp_id WHERE a.status = 'Present'`
+<!-- ANSWER_PENDING -->
+
+### Q13 ⭐⭐⭐ 🟡 Table `staff(dept, salary)` has rows: (Sales, 40000), (Sales, 60000), (HR, 30000), (HR, 70000), (IT, 80000), (HR, 55000). How many rows does each query return?
+- Query 1: `WHERE dept = 'Sales' OR dept = 'HR' AND salary > 50000`
+- Query 2: `WHERE (dept = 'Sales' OR dept = 'HR') AND salary > 50000`
+<!-- ANSWER_PENDING -->
+
+### Q14 ⭐⭐⭐ 🔴 Column `x` is NULL and column `y` is 5 in a row. Which of these conditions evaluate to TRUE for this row (so the row is kept by `WHERE`)? (a) `x > 3 OR y > 3`; (b) `x > 3 AND y > 3`; (c) `NOT (x > 3)`; (d) `x IS NULL AND y > 3`; (e) `x = x`.
+<!-- ANSWER_PENDING -->
+
+### Q15 ⭐⭐⭐ 🔴 Table `A` has `id` values 1, NULL, 3. Table `B` has `id` values 3 and 4. How many rows does `SELECT id FROM A WHERE id NOT IN (SELECT id FROM B)` return, and which value is it?
+<!-- ANSWER_PENDING -->
+
+### Q16 ⭐⭐ 🟢 How do you correctly compare two columns that may both be NULL so that NULL matches NULL (for example with `IS NOT DISTINCT FROM` or a manual expression), and why does `a = b` fail for this?
+<!-- ANSWER_PENDING -->
+
+### Q17 ⭐⭐ 🟢 Define XOR (exclusive or). For three Boolean inputs A, B and C, how many of the 8 input combinations make `A XOR B XOR C` true?
+<!-- ANSWER_PENDING -->
+
+### Q18 ⭐⭐ 🟢 Cell C1 holds `=IF(OR(A1="", B1=""), "Missing", A1+B1)`. What does C1 show for (i) A1 = 5 and B1 truly empty, (ii) A1 = 5 and B1 = 0, (iii) A1 and B1 both empty?
+<!-- ANSWER_PENDING -->
+
+### Q19 ⭐⭐ 🟢 Trace the pseudocode and give the printed values:
+```
+a = 7
+b = 3
+a = a + b
+b = a - b
+a = a - b
+PRINT a, b
+```
+<!-- ANSWER_PENDING -->
+
+### Q20 ⭐⭐ 🟢 Table `X` has `v` values 1, 2, 2, 3. Table `Y` has `v` values 2, 3, 4. How many rows do `SELECT v FROM X UNION SELECT v FROM Y` and `SELECT v FROM X UNION ALL SELECT v FROM Y` return?
+<!-- ANSWER_PENDING -->
+
+### Q21 ⭐⭐ 🟡 A shortlist rule says: shortlist a candidate if experience is at least 2 years AND (SQL test passed OR Python test passed) AND NOT flagged by background check. Which candidates are shortlisted?
+
+| Candidate | Experience (years) | SQL passed | Python passed | Flagged |
+|---|---|---|---|---|
+| C1 | 3 | Yes | No | No |
+| C2 | 1.5 | Yes | Yes | No |
+| C3 | 4 | No | No | No |
+| C4 | 2 | No | Yes | Yes |
+| C5 | 2 | No | Yes | No |
+| C6 | 5 | Yes | Yes | No |
+<!-- ANSWER_PENDING -->
+
+### Q22 ⭐⭐ 🟡 Table `A` has `id` values 1, 2, 3, 4 and table `B` has `id` values 2 and NULL. Which ids does `SELECT id FROM A WHERE NOT EXISTS (SELECT 1 FROM B WHERE B.id = A.id)` return, and why does it differ from the `NOT IN` version of the same query?
+<!-- ANSWER_PENDING -->
+
+### Q23 ⭐⭐ 🟡 Using symbols A, B and `→` for "implies", how many of these four statements are tautologies (true for every combination of A and B)?
+- (i) A OR NOT A
+- (ii) (A AND B) → A
+- (iii) (A → B) → (B → A)
+- (iv) NOT (A AND B) is equivalent to (NOT A) OR (NOT B)
+<!-- ANSWER_PENDING -->
+
+### Q24 ⭐⭐ 🟡 Cells A1:A6 hold: 5, 3, (truly empty), 7, 5, the text "n/a". What does `=COUNTIF(A1:A6, "<>5")` return?
+<!-- ANSWER_PENDING -->
+
+### Q25 ⭐⭐ 🟡 A column `score` holds 80, NULL, 60, 100. What does `AVG(score)` return, and what would `AVG(COALESCE(score, 0))` return?
+<!-- ANSWER_PENDING -->
+
+### Q26 ⭐⭐ 🟡 Trace the pseudocode and give the two printed values:
+```
+n = 27
+steps = 0
+WHILE n <> 1 AND steps < 5
+    IF n MOD 2 = 0 THEN n = n / 2
+    ELSE n = 3 * n + 1
+    steps = steps + 1
+PRINT n, steps
+```
+<!-- ANSWER_PENDING -->
+
+### Q27 ⭐⭐ 🟡 A decision table has three Yes/No conditions C1, C2 and C3, so there are 8 possible combinations. The table defines rules for these combinations only: YYY, YYN, YNY, NYY, NNY, NNN (written C1 C2 C3). How many combinations are missing, and which are they?
+<!-- ANSWER_PENDING -->
+
+### Q28 ⭐⭐ 🟡 A query uses `CASE WHEN score >= 40 THEN 'Pass' WHEN score >= 75 THEN 'Distinction' WHEN score IS NULL THEN 'Absent' ELSE 'Fail' END`. What does it return for scores 30, 60, 80 and NULL?
+<!-- ANSWER_PENDING -->
+
+### Q29 ⭐⭐ 🟡 Column `region` holds: North, NULL, South, North, NULL, NULL. How many groups does `SELECT region, COUNT(*) FROM t GROUP BY region` return, and what is the count in the NULL group?
+<!-- ANSWER_PENDING -->
+
+### Q30 ⭐⭐ 🟡 A `login_ts` timestamp column holds: 2025-01-01 09:00, 2025-06-15 14:30, 2025-12-31 18:45, 2025-12-31 23:59, 2026-01-01 08:00. A date literal such as '2025-12-31' is read as midnight at the start of that day. How many rows does `WHERE login_ts BETWEEN '2025-01-01' AND '2025-12-31'` return, and what is the safer way to write the filter for "all of 2025"?
+<!-- ANSWER_PENDING -->
+
+### Q31 ⭐⭐ 🟡 Simplify the filter `(region = 'West' AND tier = 'Gold') OR (region = 'West' AND tier <> 'Gold')`. Is it the same as `region = 'West'` when `tier` can be NULL? If not, what is the exactly equivalent filter?
+<!-- ANSWER_PENDING -->
+
+### Q32 ⭐⭐ 🟡 A rule gives a discount when the order quantity is at least 1000 and below 5000 (whole numbers only). Which minimum set of quantities tests both boundaries on each side, and why is a "typical" value such as 2500 not enough?
+<!-- ANSWER_PENDING -->
+
+### Q33 ⭐⭐ 🔴 Trace the recursive function and give `f(6)`, and the total number of times `f` is called (including the first call) when evaluating `f(5)`:
+```
+FUNCTION f(n)
+    IF n <= 1 THEN RETURN 1
+    RETURN f(n - 1) + f(n - 2)
+```
+<!-- ANSWER_PENDING -->
+
+### Q34 ⭐⭐ 🔴 A bonus rule in Excel is `bonus = salary * IF(rating >= 4, IF(tenure >= 3, 20%, 10%), IF(rating = 3, 5%, 0))`. Compute the total bonus for these five employees.
+
+| Employee | Salary | Rating | Tenure (years) |
+|---|---|---|---|
+| E1 | 50000 | 5 | 4 |
+| E2 | 40000 | 4 | 1 |
+| E3 | 60000 | 3 | 5 |
+| E4 | 30000 | 2 | 6 |
+| E5 | 80000 | 4 | 3 |
+<!-- ANSWER_PENDING -->
+
+### Q35 ⭐⭐ 🔴 Trace the nested loops and give the printed value:
+```
+count = 0
+FOR i = 1 TO 4
+    FOR j = i TO 4
+        IF (i + j) MOD 3 = 0 THEN count = count + 1
+PRINT count
+```
+<!-- ANSWER_PENDING -->
+
+### Q36 ⭐⭐ 🔴 Table `P` has `k` values 1, NULL, NULL, 2 and table `Q` has `k` values NULL, 2. What do `SELECT k FROM P EXCEPT SELECT k FROM Q` and `SELECT k FROM P INTERSECT SELECT k FROM Q` return? (Use the standard rule that set operators treat NULLs as equal to each other and remove duplicates.)
+<!-- ANSWER_PENDING -->
+
+### Q37 ⭐⭐ 🔴 Table `A` has `k` values 1, NULL, 2, 2 and table `B` has `k` values 2, NULL, 3. How many rows do `A INNER JOIN B ON A.k = B.k` and `A LEFT JOIN B ON A.k = B.k` return?
+<!-- ANSWER_PENDING -->
+
+### Q38 ⭐ 🟢 A dashboard hides every row where `NOT (region = 'East' OR channel = 'Online')` is false. The rows are (East, Online), (East, Store), (West, Online), (West, Store) as (region, channel). Which rows stay visible?
+<!-- ANSWER_PENDING -->
+
+### Q39 ⭐ 🟢 In Excel, what do `="apple"="APPLE"`, `=EXACT("apple","APPLE")` and `="a"<"B"` return?
+<!-- ANSWER_PENDING -->
+
+### Q40 ⭐ 🟢 Cell A1 holds a number. What does `=IF(A1, "Y", "N")` return when A1 is 0, 2 and -1?
+<!-- ANSWER_PENDING -->
+
+### Q41 ⭐ 🟢 Access rules: (1) a user who can edit can also view; (2) a user can approve only if the user can edit; (3) Meena cannot view. Using the contrapositive, what can you conclude about Meena's ability to edit and to approve?
+<!-- ANSWER_PENDING -->
+
+### Q42 ⭐ 🟡 Cells A1 and A3 hold TRUE, and A2 is truly empty. What does `=AND(A1:A3)` return, and what does it return if A1:A3 are all empty?
+<!-- ANSWER_PENDING -->
+
+### Q43 ⭐ 🟡 Trace the pseudocode and give the printed value (`DIV` is integer division):
+```
+n = 1234
+s = 0
+WHILE n > 0
+    s = s + (n MOD 10) * 2
+    n = n DIV 10
+PRINT s
+```
+<!-- ANSWER_PENDING -->
+
+### Q44 ⭐ 🟡 Trace this flowchart and give the two printed values (`DIV` is integer division):
+```
+1  START: x = 100, k = 0
+2  IF x < 10 THEN GO TO 5
+3  x = x DIV 3 ; k = k + 1
+4  GO TO 2
+5  PRINT x, k
+```
+<!-- ANSWER_PENDING -->
+
+### Q45 ⭐ 🟡 How many times does the body run in `FOR i = 1 TO n STEP 2` when n = 10, n = 1 and n = 0? Why do such off-by-one checks matter in edge-case testing?
+<!-- ANSWER_PENDING -->
+
+### Q46 ⭐ 🟡 How many of the 16 combinations of Boolean inputs A, B, C and D make `(A OR B) AND (C OR D)` true?
+<!-- ANSWER_PENDING -->
+
+### Q47 ⭐ 🟡 For `SELECT 100 + NULL`, `SELECT COALESCE(NULL, NULL, 7)`, `SELECT NULLIF(5, 5)` and `SELECT NULLIF(5, 6)`, what does each return?
+<!-- ANSWER_PENDING -->
+
+### Q48 ⭐ 🟡 A query is `SELECT CASE WHEN bonus = NULL THEN 'Missing' ELSE 'Present' END`. What does it return for bonus values NULL, 0 and 500, and how should the condition be written?
+<!-- ANSWER_PENDING -->
+
+### Q49 ⭐ 🟡 Table `candidates` has an `email` column holding: a@x.com, b@x.com, a@x.com, c@x.com, b@x.com, a@x.com, NULL, NULL. How many rows does `SELECT email, COUNT(*) FROM candidates GROUP BY email HAVING COUNT(*) > 1` return, and which of them is a trap for a duplicate check?
+<!-- ANSWER_PENDING -->
+
+### Q50 ⭐ 🟡 What does `=IFS(A1>10,"High", A1>5,"Mid")` return when A1 is 12, 7 and 3, and how do you add a default result?
+<!-- ANSWER_PENDING -->
+
+### Q51 ⭐ 🟡 Apply one pass of bubble sort (compare each adjacent pair from left to right and swap if the left value is larger) to the list [5, 2, 4, 1, 3]. What is the list after the pass, and how many swaps happened?
+<!-- ANSWER_PENDING -->
+
+### Q52 ⭐ 🟡 How many rows does the truth table of a formula with 5 Boolean variables have, and how many different Boolean functions of 2 variables exist?
+<!-- ANSWER_PENDING -->
+
+### Q53 ⭐ 🟡 In Excel, what do `="10">9`, `="10">"9"` and `=10>9` return, and what rule explains the first two?
+<!-- ANSWER_PENDING -->
+
+### Q54 ⭐ 🟡 In PostgreSQL, what do `SELECT 7/2`, `SELECT 7.0/2` and `SELECT -7/2` return?
+<!-- ANSWER_PENDING -->
+
+### Q55 ⭐ 🟡 A data-quality rule list for attrition reporting is: attrition % = leavers / average headcount x 100. Name at least five edge cases you would test before trusting this formula in a report.
+<!-- ANSWER_PENDING -->
+
+### Q56 ⭐ 🟡 How do you trace a pseudocode or flowchart question quickly and accurately in an online test (what do you write down, when do you stop, and which traps do you check)?
+<!-- ANSWER_PENDING -->
+
+### Q57 ⭐ 🟡 How would you explain the `NOT IN` NULL trap to a non-technical manager, and what are two safe rewrites?
+<!-- ANSWER_PENDING -->
+
+### Q58 ⭐ 🔴 A record is valid only if both rules hold: (1) if status = 'Closed' then close_date is not NULL; (2) if close_date is not NULL then amount > 0.
+
+| Record | Status | close_date | Amount |
+|---|---|---|---|
+| R1 | Closed | 2025-03-01 | 0 |
+| R2 | Open | NULL | 0 |
+| R3 | Closed | NULL | 100 |
+| R4 | Open | 2025-04-10 | 50 |
+| R5 | Closed | 2025-05-02 | 20 |
+
+Which records are invalid, and which rule does each break?
+<!-- ANSWER_PENDING -->
+
+### Q59 ⭐ 🔴 A decision table has three Yes/No conditions (C1, C2, C3) and three rules, where `-` means "does not matter": Rule 1 = (Y, Y, -), Rule 2 = (Y, -, Y), Rule 3 = (N, -, -). How many of the 8 combinations are covered by at least one rule, which combination is covered by two rules (a conflict risk), and which one is not covered?
+<!-- ANSWER_PENDING -->
+
+### Q60 ⭐ 🔴 A nightly load failed in exactly one step: Extract, Transform or Load. Three analysts speak. Asha: "It was Transform or Load." Bala: "It was not Load." Chitra: "It was Extract." Exactly one of the three statements is true. Which step failed, and whose statement is true?
+<!-- ANSWER_PENDING -->
