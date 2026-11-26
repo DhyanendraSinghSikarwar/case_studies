@@ -168,8 +168,8 @@ Two statements (X and Z are the outer groups):
 
 | Statement 1 | Statement 2 | Certain about X and Z |
 |---|---|---|
-| All X are Y | All Y are Z | All X are Z; Some Z are X |
-| Some X are Y | All Y are Z | Some X are Z |
+| All X are Y | All Y are Z | All X are Z; Some X are Z; Some Z are X |
+| Some X are Y | All Y are Z | Some X are Z; Some Z are X |
 | All X are Y | No Y are Z | No X are Z; Some X are not Z |
 | Some X are Y | No Y are Z | Some X are not Z |
 | No X are Y | All Z are Y | No X are Z; Some X are not Z |
@@ -179,7 +179,7 @@ Two statements (X and Z are the outer groups):
 | All X are Y | All Z are Y | Nothing |
 | Some X are not Y | All Y are Z | Nothing |
 
-Verdicts: Follows (true in every legal picture), Possible (true in some), False (false in all). Either-or: choose "either I or II" only when neither follows alone and the two are a claim and its negation. Always try to break the conclusion with another legal drawing.
+In every row, "Some" and "No" statements can be swapped (Some X are Z = Some Z are X). Verdicts: Follows (true in every legal picture), Possible (true in some), False (false in all). Either-or: choose "either I or II" only when neither follows alone and the two are a claim and its negation. Always try to break the conclusion with another legal drawing.
 
 ---
 
@@ -231,9 +231,11 @@ Verdicts: Follows (true in every legal picture), Possible (true in some), False 
 
 ### A15. Seating conventions (used in Appendix B)
 
-- Row facing the same way: your left is the same side as the viewer's left when the viewer faces the same way. Two rows facing each other: left and right are swapped between the rows.
-- Circle, facing the centre: your left neighbour is the next seat clockwise; your right is the next seat anticlockwise.
+- These are the conventions of Chapter 16 (and Chapters 17, 18 and 36 follow them). Left and right always belong to the person sitting there.
+- Straight row: everyone faces north (the top of the page), so right is east, the right side of the drawing. Seat 1 is the west end (left end).
+- Circle or rectangular table, facing the centre: your left neighbour is the next seat clockwise; your right is the next seat anticlockwise.
 - Circle, facing outside: reversed (left is anticlockwise, right is clockwise).
+- Two rows facing each other: the top (north) row faces south, so its right is west (the left side of the drawing); the bottom (south) row faces north, so its right is east. Seats are numbered from the west, and "opposite" means the same seat number in the other row.
 - Opposite seat in a circle of n seats (n even): k + n/2.
 - Distinct circular arrangements of n people: (n - 1) factorial. Always say whether the question counts rotations as different.
 - "Neighbour" means directly adjacent; "second to the left" skips one person.
@@ -283,7 +285,7 @@ Calendar:
 - Ordinary year: 365 days = 52 weeks + 1 odd day. Leap year: 366 days = 2 odd days.
 - Leap year: divisible by 4, except century years, which must be divisible by 400 (2000 and 2028 yes; 1900 and 2100 no).
 - Month odd days: 31-day month 3; 30-day month 2; February 28 days 0; February 29 days 1.
-- 100 years have 5 odd days; 200 have 3; 300 have 1; 400 have 0 (counted from a century year start, such as 1601 to 1701).
+- Extra (not taught in Chapter 20, checked by code): 100 years have 5 odd days; 200 have 3; 300 have 1; 400 have 0 (counted from a century year start, such as 1601 to 1701).
 - The same date next year moves 1 weekday, or 2 if a 29 February lies in between.
 - Months with 31 days: Jan, Mar, May, Jul, Aug, Oct, Dec. Financial year: check the convention (India commonly 1 April to 31 March).
 

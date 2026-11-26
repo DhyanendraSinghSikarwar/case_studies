@@ -247,14 +247,25 @@ Either-or check: if Conclusion I and Conclusion II are a statement and its negat
 
 ### B4.1 Straight row (positions 1 to n)
 
-State the convention first: all people face the same way (say, north), so each person's left is the viewer's left when the viewer also faces north. Number the positions from the left end.
+State the convention first (Chapter 16): all people face north (the top of the page), so right is east, the right side of your drawing. Number the positions from the west (left) end, so seat 1 is the west end.
 
 | Position | 1 | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|---|
 | Person | | | | | |
 | Clue used | | | | | |
 
-Useful facts: position from left + position from right = n + 1 (n people). People between positions a and b (a smaller) = b - a - 1. If two rows face each other, the left of one row is the right of the other.
+Useful facts: position from left + position from right = n + 1 (n people). People between positions a and b (a smaller) = b - a - 1.
+
+### B4.1b Two rows facing each other
+
+The top (north) row faces south, so its right is west (the left side of your drawing). The bottom (south) row faces north, so its right is east. Number seats from the west; "opposite" means the same seat number in the other row.
+
+| Seat | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|
+| Top row (faces south) | | | | |
+| Bottom row (faces north) | | | | |
+
+Facts: the left of one row is the right of the other row, so check which row a clue's person is in before you read "right" or "left".
 
 ### B4.2 Circle (n seats)
 
@@ -267,7 +278,7 @@ Number the seats 1 to n going clockwise. Write which way people face.
 
 Conventions (checked by code):
 
-- Facing the centre: your left neighbour is the next seat clockwise; your right neighbour is the next seat anticlockwise.
+- Facing the centre (also at a rectangular table): your left neighbour is the next seat clockwise; your right neighbour is the next seat anticlockwise.
 - Facing outside: it is reversed. Your left neighbour is the next seat anticlockwise; your right neighbour is the next seat clockwise.
 - In a circle of n seats (n even), the person opposite seat k is seat k + n/2 (wrap around after n).
 - Distinct circular arrangements of n people (only relative positions matter) = (n - 1) factorial.
