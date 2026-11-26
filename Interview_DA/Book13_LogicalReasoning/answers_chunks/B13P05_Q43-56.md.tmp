@@ -1,0 +1,300 @@
+### Q43 ⭐⭐ 🟡 How do you check that a round-robin points table is internally consistent (total points, total wins and losses, number of draws) before trying to find the individual results?
+**Asked at:** commonly asked (no company-specific report found); round-robin and points-table items are listed under "games and tournaments" in prep-site reasoning topics (unverified).
+**What the interviewer is checking:** Whether you test the data for sense with totals before hunting for results.
+**Say this in the interview:** "A round robin of n teams has n(n-1)/2 matches. A decisive match hands out 3 points, a draw hands out 2, so total points = 3 x (matches) - d, where d is the number of draws. I check that the totals fit before I solve anything."
+**Answer:** **Count the matches, then compare the points total with 3 x matches. The gap is exactly the number of draws, and it must be a whole number between 0 and the number of matches.**
+**Step-by-step reasoning:**
+1. Matches = n(n-1)/2 (each pair plays once).
+2. Add all the points in the table. Call this S.
+3. If every match were decisive, S would be 3 x matches. Each draw loses one point (2 given out instead of 3). So draws d = 3 x matches - S.
+4. Sanity: d must be a whole number and 0 <= d <= matches. Decisive matches = matches - d, and total wins = total losses = decisive matches.
+5. Each team's wins, draws and losses must add up to the games it played, and each team's points = 3W + D.
+**Worked example (numbers verified by script):** 4 teams, points 6, 4, 1, 5. Matches = 6. S = 16. d = 18 - 16 = 2 draws, so 4 decisive matches: 4 wins and 4 losses in total. Another table, 5 teams with points 20 total, but 10 matches: 30 - 20 = 10 draws, which is possible only if every match was drawn (then every team would have 4 points). In a chess table (1 point per match shared as 1 or 0.5 + 0.5), total points must equal the number of matches exactly: 5 known scores 4, 3.5, 3, 2.5, 1.5 sum to 14.5, so the sixth player has 15 - 14.5 = 0.5.
+**Explain simply:**
+- Round robin: every team plays every other team once.
+- The total is a check, not an answer: it only says the table could be real.
+- With 3-1-0 scoring, a draw "costs" one point of the pool.
+**Likely follow-ups:** 1) *Could a 4-team table total 19 points?* No: 3 x 6 = 18 is the maximum. 2) *Table total 17?* Then d = 1, which is fine.
+**Common mistakes / traps:** Using n(n-1) instead of n(n-1)/2; forgetting that a draw gives 2 points in total; assuming draws count as decisive matches.
+
+### Q44 ⭐⭐ 🟡 What is the difference between "must be true", "could be true" and "cannot be true" questions in a constraint puzzle, and how do you answer each one efficiently?
+**Asked at:** commonly asked (no company-specific report found); this question style is the standard format of constraint-puzzle sets (prep-site material, unverified).
+**What the interviewer is checking:** Whether you treat the answer as a property of ALL valid solutions, not of the one you happened to find.
+**Say this in the interview:** "Must be true means true in every valid arrangement. Could be true means true in at least one. Cannot be true means false in every one. So I first list all valid arrangements, then check each option against the whole list."
+**Answer:** **Must = true in all valid solutions; could = true in at least one; cannot = true in none. Build the full list of valid solutions once, then test each option against it.**
+**Step-by-step reasoning:**
+1. List every arrangement that obeys all the rules (or the compact set of cases).
+2. "Must be true": look for the option that appears in every case. One counterexample kills an option.
+3. "Could be true": find one valid case where the option holds. One example is enough to prove it.
+4. "Cannot be true": show that adding the option breaks a rule in every case.
+5. Note: "must" implies "could" (if the list is non-empty), and "cannot" is the opposite of "could".
+**Worked example (verified by script):** Panel of 3 from Asha, Bimal, Chitra, Dev, Esha, Farah with the rules from Q12. Valid panels: {Asha, Dev, Esha}, {Asha, Esha, Farah}, {Bimal, Dev, Esha}, {Bimal, Esha, Farah}, {Chitra, Dev, Esha}. Esha is in all five, so "Esha must be on the panel". Chitra is in one, so "Chitra could be on it". Asha with Bimal appears in none, so "Asha and Bimal both on the panel cannot be true".
+**Explain simply:**
+- Think of the valid arrangements as a list of "possible worlds"; the question word tells you how many worlds must agree.
+- Disproving "must" needs just one counterexample; proving "could" needs just one example.
+**Likely follow-ups:** 1) *Which person cannot be on a panel with Chitra?* Farah (Chitra needs Dev, and Dev and Farah cannot be together). 2) *Is "not Farah" a must when Chitra is chosen?* Yes.
+**Common mistakes / traps:** Picking an option because it is true in the one solution you found; confusing "could be true" with "must be true".
+
+### Q45 ⭐⭐ 🟡 A selection puzzle says "If Chitra is chosen, Dev must be chosen." What does this rule tell you when Chitra is not chosen, what does it tell you when Dev is not chosen, and how do you use it to list all valid teams?
+**Asked at:** commonly asked (no company-specific report found); conditional selection rules are a standard constraint-puzzle form (prep-site material, unverified).
+**What the interviewer is checking:** Correct use of an "if-then" rule: the forward direction and the contrapositive, and not the converse.
+**Say this in the interview:** "If Chitra is out, the rule says nothing about Dev. If Dev is out, then Chitra must be out too, because Chitra would force Dev in. So Chitra never appears without Dev."
+**Answer:** **Chitra not chosen: the rule tells you nothing (Dev may be in or out). Dev not chosen: Chitra cannot be chosen (the contrapositive). Valid teams are only those with Chitra absent, or with Chitra AND Dev both present.**
+**Step-by-step reasoning:**
+1. Write the rule as C -> D (C = Chitra chosen, D = Dev chosen).
+2. Contrapositive: not D -> not C. This is always logically equivalent to the original rule.
+3. Converse (D -> C) and inverse (not C -> not D) are NOT implied. Dev can be chosen alone.
+4. To list teams, split into two cases: Chitra in (then Dev is in too, fill the rest) and Chitra out (ignore the rule, apply the other rules).
+5. Apply the other rules inside each case.
+**Worked example (verified by script):** Panel of 3 from the six, with Q12's rules. Chitra in: Dev in; the third must be Esha (Farah is blocked by Dev): {Chitra, Dev, Esha}, 1 panel. Chitra out: 4 panels from the other five people ({Asha, Dev, Esha}, {Asha, Esha, Farah}, {Bimal, Dev, Esha}, {Bimal, Esha, Farah}). Total 5.
+**Explain simply:**
+- "If A then B" only promises something when A happens.
+- The contrapositive ("if not B then not A") is the same rule seen from the other side.
+- Converse and inverse are different statements and may be false.
+**Likely follow-ups:** 1) *Name the fallacy of reading C -> D as D -> C.* Affirming the consequent. 2) *Reading it as not C -> not D?* Denying the antecedent.
+**Common mistakes / traps:** Thinking that "Chitra is out" forces Dev out, or that "Dev is in" forces Chitra in.
+
+### Q46 ⭐⭐ 🟡 A set of questions shares one puzzle, and one question begins "If Esha is on the panel, which of the following must be true?" Does that extra condition carry over to the other questions in the set, and how should you work such a question?
+**Asked at:** commonly asked (no company-specific report found); "if ... then which must be true" sub-questions are a common set format (prep-site material, unverified).
+**What the interviewer is checking:** Whether you keep the base rules fixed and treat each "if" as a temporary, local assumption.
+**Say this in the interview:** "No, the extra 'if' applies only to that question. The original rules stay for every question. I add the new condition, redo the possible cases, and then see what holds in all of them."
+**Answer:** **No. The new condition applies only to that one question; the base rules apply to all questions in the set.**
+**Step-by-step reasoning:**
+1. Copy the base rules to a fresh scratch area for this question.
+2. Add the new condition ("Esha is on the panel") as an extra fact.
+3. List the cases that satisfy the base rules and the new fact (the list is usually shorter).
+4. Pick the option that is true in all of these cases (must), or in at least one (could).
+5. For the next question, throw the extra fact away and go back to the base rules.
+**Worked example (verified by script):** Base rules are those in Q12. With the added fact "Farah is on the panel", the valid panels shrink to {Asha, Esha, Farah} and {Bimal, Esha, Farah}, so "Esha must be on the panel" is true for that question. Without the extra fact, a different question may allow {Chitra, Dev, Esha}, where Farah is absent. Esha is in all five base panels, so here the "if Esha" condition removes nothing; this is allowed, and it just means the condition was not restrictive.
+**Explain simply:**
+- A "what if" question explores a smaller world; it does not rewrite the puzzle.
+- Reusing an earlier "if" by mistake is the most common way to lose marks in a set.
+**Likely follow-ups:** 1) *If Dev is on the panel, can Farah be?* No (rule 4). 2) *What if the extra condition contradicts the base rules?* Then the question has no valid case; recheck for an error.
+**Common mistakes / traps:** Carrying a previous question's condition into the next; ignoring a base rule in the "if" world.
+
+### Q47 ⭐⭐ 🟡 What is the difference between the minimum time to finish a project with prerequisite tasks (critical path) and the number of valid orders in which the tasks can be done one at a time, and how do you compute each?
+**Asked at:** commonly asked (no company-specific report found); scheduling and precedence items appear in puzzle collections (prep-site material, unverified).
+**What the interviewer is checking:** Whether you separate "how long" (parallel work) from "in what sequence" (one at a time).
+**Say this in the interview:** "Minimum time assumes people work in parallel, so it is the longest chain of dependent tasks, the critical path. The number of orders assumes one task at a time and counts every sequence that respects the prerequisites."
+**Answer:** **Critical path = the longest total duration along a chain of dependent tasks (this is the minimum project time with enough workers). Number of orders = the count of one-at-a-time sequences that put every prerequisite before its task. They answer different questions.**
+**Step-by-step reasoning:**
+1. Critical path: for each task, finish time = its duration + the latest finish time among its prerequisites. The largest finish time is the project length.
+2. Orders: count the sequences (topological orders) where each task comes after its prerequisites. For small cases, build the order by choosing at each step any task whose prerequisites are done.
+3. Duration does not matter for the order count; the arrows do not matter for ordinary "choose any" counting except through the rules.
+**Worked example (verified by script):** Migration project (Q36): finish times A 3, B 5, C 7, D 8, E 10, F 11, G 10. The longest chain A-B-D-E-F is 3+2+3+2+1 = 11 days. For the payroll tasks of Q34 (P, V, L, T, C, A, D), brute force over all 5040 permutations gives 8 valid orders.
+**Explain simply:**
+- Parallel work: several people work at once, so you only wait for the longest chain.
+- One at a time: a valid order is any list in which no task appears before its prerequisites.
+- A task that is on the critical path is one where delay delays the whole project.
+**Likely follow-ups:** 1) *Does adding a short side task change the project time?* Not if it fits inside slack and is not on the critical path. 2) *Can two projects have the same orders but different times?* Yes, change the durations only.
+**Common mistakes / traps:** Adding all durations (28 days in Q36 instead of 11); counting orders as if all tasks were free (7! = 5040).
+
+### Q48 ⭐⭐ 🔴 Five colleagues Anu, Bala, Chitra, Dev and Esha work in five different departments (HR, Finance, IT, Ops, Sales) and each uses a different way to get to office (bus, metro, bike, car, walk). Clues: (1) The Sales employee is the metro commuter. (2) The Finance employee is the bike commuter. (3) Anu is the HR employee. (4) The IT employee is the bus commuter. (5) The Ops employee is the car commuter. (6) Dev is not the Finance employee. (7) Bala is not the bike commuter. (8) Bala is not the Ops employee. (9) Dev is not the car commuter. (10) Dev is not the IT employee. (11) Chitra is not the bike commuter. Who works in Ops, and how does that person commute?
+**Asked at:** commonly asked (no company-specific report found); matching grids are listed for TCS, Infosys, Wipro, Accenture and Cognizant in prep-site pages (unverified).
+**What the interviewer is checking:** Merging two attributes into one (department fixes mode) and then eliminating.
+**Say this in the interview:** "Clues 1, 2, 4, 5 tie each department to a mode, so HR must take the leftover mode, walk. Then I eliminate people. Chitra is the Ops employee, and she travels by car."
+**Answer:** **Chitra works in Ops and commutes by car.**
+**Step-by-step reasoning:**
+1. Departments link to modes: Sales = metro, Finance = bike, IT = bus, Ops = car. The only mode left is walk, so HR = walk.
+2. Anu is HR (clue 3), so Anu walks.
+3. Dev is not Finance (6), not IT (10), not HR (Anu) and not Ops (Ops = car, clue 9 says Dev is not car). So Dev is Sales (metro).
+4. Bala is not bike, so not Finance (7); not Ops (8); HR and Sales are taken. So Bala is IT (bus).
+5. Chitra and Esha share Finance and Ops. Chitra is not the bike commuter (11), so she is not Finance. Chitra = Ops (car), Esha = Finance (bike).
+```
+Anu   HR      walk
+Bala  IT      bus
+Chitra Ops    car
+Dev   Sales   metro
+Esha  Finance bike
+```
+Unique because every step above was forced; a brute force over all 120 x 120 assignments found exactly 1 solution.
+**Fast method (30 seconds):** First merge the "department = mode" clues so that only one attribute remains; then fill the most restricted person (Dev) first.
+**Check:** Verified by script (all clues satisfied; exactly one solution).
+**Explain simply:**
+- When two attributes are tied together by clues, treat them as one column.
+- The leftover value goes to the only unlinked item (HR takes walk).
+- Work from the person with the most "not" clues.
+**Likely follow-ups:** 1) *If clue 11 were dropped, would the answer stay unique?* Not shown here; check by re-running the elimination (Chitra and Esha could then swap). 2) *Who walks?* Anu.
+**Common mistakes / traps:** Forgetting that HR gets walk by elimination; ignoring that clue 9 (not car) bars Dev from Ops.
+
+### Q49 ⭐⭐ 🔴 Four analysts Ira, Jay, Kim and Lee differ in tool (Excel, SQL, Python, Tableau), city (Pune, Delhi, Chennai, Kolkata) and department (HR, Finance, IT, Sales); every value is used exactly once. Clues: (1) Kim is the person in Chennai. (2) The Python user is the Finance employee. (3) The Excel user is the Sales employee. (4) Ira is the person in Delhi. (5) The person in Delhi is the Sales employee. (6) The Tableau user is the IT employee. (7) The person in Pune is the Finance employee. (8) Jay is not the Python user. (9) Jay is not the SQL user. Who is in the Sales department, which tool does that person use, and in which city?
+**Asked at:** commonly asked (no company-specific report found); three-attribute grids are in the style of analyst-role logic puzzles (a government recruitment puzzle and prep pages show the format; no company report found).
+**What the interviewer is checking:** Chaining linked clues across three attributes.
+**Say this in the interview:** "Ira is in Delhi, Delhi is Sales, Sales uses Excel. So the Sales person is Ira, using Excel, in Delhi."
+**Answer:** **Ira is in Sales, uses Excel and is in Delhi.**
+**Step-by-step reasoning:**
+1. Clue 4 + 5: Ira is in Delhi and Delhi is Sales, so Ira is Sales.
+2. Clue 3: Sales uses Excel, so Ira uses Excel.
+3. Clue 2 + 7: Python = Finance = Pune. Clue 6: Tableau = IT. SQL is left with HR.
+4. Jay is not Python and not SQL, and Excel is Ira's, so Jay uses Tableau (IT).
+5. Kim is in Chennai, so not Pune, so not the Python/Finance person. Kim is not Excel or Tableau, so Kim uses SQL (HR). Lee gets Python (Finance, Pune). Jay gets the last city, Kolkata.
+```
+Ira  Excel   Sales   Delhi
+Jay  Tableau IT      Kolkata
+Kim  SQL     HR      Chennai
+Lee  Python  Finance Pune
+```
+Unique: brute force over all 24 x 24 x 24 assignments gave exactly one that meets every clue.
+**Fast method (30 seconds):** Look for a name attached to a position (Ira = Delhi) and follow the chain of "is" clues from it.
+**Check:** Verified by script.
+**Explain simply:**
+- Several "is" clues make one chain; once you reach a name, the whole chain belongs to that person.
+- Negative clues finish the rest by elimination.
+**Likely follow-ups:** 1) *Who is in Pune?* Lee. 2) *If clue 8 were removed?* Jay would still be forced to Tableau by clue 9 and Excel/Python/SQL elimination (only if the other clues alone force it; re-check by code before saying so).
+**Common mistakes / traps:** Treating "the person in Pune is Finance" as a name; forgetting that Kim's city rules out Pune.
+
+### Q50 ⭐⭐ 🔴 Four analysts Rhea, Sameer, Tara and Uday differ in tool (Excel, SQL, Python, Tableau), city (Pune, Delhi, Chennai, Kolkata) and department (HR, Finance, IT, Sales); every value is used exactly once. Clues: (1) The person in Delhi is the Finance employee. (2) Tara is the HR employee. (3) The person in Chennai is the IT employee. (4) The Tableau user is the person in Pune. (5) The Python user is the Sales employee. (6) The Excel user is the IT employee. (7) Uday is not the Finance employee. (8) Uday is not the Excel user. (9) Sameer is not the IT employee. Who uses Python, in which city, and in which department?
+**Asked at:** commonly asked (no company-specific report found); three-attribute grid, a format shown in analyst-role puzzles (no company report found).
+**What the interviewer is checking:** Linking attributes before names, then using "not" clues to place people.
+**Say this in the interview:** "Chennai is IT, and IT uses Excel. Python is Sales. Pune uses Tableau, so Pune is not Sales, so Pune is HR and Kolkata is Sales. Tara is HR, and Uday cannot be Finance or IT, so Uday is Sales. Uday uses Python in Kolkata."
+**Answer:** **Uday uses Python, works in Kolkata, in the Sales department.**
+**Step-by-step reasoning:**
+1. Clue 3 + 6: Chennai = IT = Excel. Clue 1: Delhi = Finance. Clue 4: Pune = Tableau. Clue 5: Python = Sales.
+2. Python user is not in Pune (Pune uses Tableau), not Chennai (Excel), not Delhi (Finance, not Sales). So Python is in Kolkata, and Kolkata is Sales.
+3. Pune is then HR (Tableau). Delhi is Finance (SQL, the remaining tool).
+4. Tara is HR, so Tara is in Pune with Tableau.
+5. Uday is not Finance (7), not Excel/IT (8), not HR (Tara). So Uday is Sales: Python, Kolkata.
+6. Sameer is not IT (9), so Sameer is Finance (Delhi, SQL); Rhea is IT (Chennai, Excel).
+```
+Rhea   Excel   IT      Chennai
+Sameer SQL     Finance Delhi
+Tara   Tableau HR      Pune
+Uday   Python  Sales   Kolkata
+```
+Unique: brute force over all 24^3 assignments found exactly one.
+**Fast method (30 seconds):** Fuse the clues so each city has a tool and a department; only then use the name clues.
+**Check:** Verified by script.
+**Explain simply:**
+- Build "bundles" (city + tool + department) first, names last.
+- The bundle that cannot fit any named exclusion goes to the last person.
+**Likely follow-ups:** 1) *Who uses SQL?* Sameer. 2) *Which city has the HR person?* Pune.
+**Common mistakes / traps:** Giving Python to the HR person in Pune because Tara is named; mixing up the "not" clues.
+
+### Q51 ⭐⭐ 🔴 Four team leads A, B, C and D are each a knight (always truthful) or a knave (always lying). A says: "C is a knave." B says: "A and D are of different types." C says: "Exactly three of the four of us are knaves." D says: "C is a knight." How many of the four are knaves, and who are they?
+**Asked at:** commonly asked (no company-specific report found); a knights-and-knaves item appears in an interview-question bank (page not read, unverified).
+**What the interviewer is checking:** Assume-and-check on a four-person puzzle with a count statement.
+**Say this in the interview:** "I assume C is a knight and see if it breaks. If C were a knight, D is a knight, A is a knave, B is a knight, so 1 knave, but C says 3: contradiction. So C is a knave, D is a knave, A is a knight and B is a knight. Two knaves: C and D."
+**Answer:** **2 knaves: C and D (A and B are knights).**
+**Step-by-step reasoning:**
+1. Assume C is a knight. Then D (who says C is a knight) is truthful, so D is a knight. A says "C is a knave", which is false, so A is a knave. B says A and D differ: knave vs knight is true, so B is a knight. Knaves = {A} only, but C (a knight) said there are exactly three. Contradiction.
+2. So C is a knave. D says "C is a knight", which is false, so D is a knave.
+3. A says "C is a knave", which is true, so A is a knight.
+4. B says A (knight) and D (knave) differ: true, so B is a knight.
+5. Check C's lie: knaves = {C, D} = 2, not 3, so "exactly three" is false, as a knave must say.
+```
+A knight   B knight   C knave   D knave
+```
+Unique: all 16 type combinations were enumerated and only this one is consistent.
+**Fast method (30 seconds):** Start with the person whose statement is about a count or about one other person (C), since a wrong guess collapses quickly.
+**Check:** Verified by script (16 combinations).
+**Explain simply:**
+- A knight's statement must be true; a knave's statement must be false.
+- Knowing C settles D, then A, then B in a chain.
+**Likely follow-ups:** 1) *If C had said "exactly two of us are knaves"?* Then C would be telling the truth and would be a knight; re-solve by code to see. 2) *What if D said "C is a knave"?* Re-solve.
+**Common mistakes / traps:** Treating a knave's statement as "partly false"; the whole statement must be false.
+
+### Q52 ⭐⭐ 🔴 Four analysts A, B, C and D are each a knight (always truthful) or a knave (always lying). A says: "D and I are of the same type." B says: "Exactly two of the four of us are knaves." C says: "B and I are of the same type." D says: "At least one of the other three is a knight." Who are the knights?
+**Asked at:** commonly asked (no company-specific report found); knights-and-knaves items appear in an interview-question bank (page not read, unverified).
+**What the interviewer is checking:** Systematic case analysis where "same type" statements are used.
+**Say this in the interview:** "D must be a knight, because if D were a knave, all three others would be knaves and A's 'same type' statement would be true, which a knave cannot say. Then I test A. The only consistent case is B and D knights, A and C knaves."
+**Answer:** **B and D are knights (A and C are knaves).**
+**Step-by-step reasoning:**
+1. If D were a knave, his statement is false, so A, B, C are all knaves. But then A (a knave) says "D and I are the same type", which is true. A knave cannot say something true. So D is a knight.
+2. If A were a knight, A and D are knights. If B were a knight, there are exactly two knaves, but then C and B would force C to be a knight (true statement), so 3 knights and 1 knave: B's count fails. If B were a knave then C's statement about B has to be false for a knight C, and so on; every sub-case breaks.
+3. So A is a knave (his statement "D and I are the same" is false, as D is a knight).
+4. Now B: if B is a knave, B's count must be false and C must be a knight or knave; C claims "same type as B": if C is a knight, the claim must be true (C a knave, contradiction); if C is a knave, the claim must be false (but both are knaves, so it would be true, contradiction). So B is a knight.
+5. B (knight) says exactly two knaves. A is one; C must be the other (C says "B and I are the same", false since B is a knight, so C is a knave).
+```
+A knave   B knight   C knave   D knight
+```
+Unique: all 16 combinations were enumerated by script.
+**Fast method (30 seconds):** Look for the person whose being a knave would force a true statement from someone else. That gives D quickly.
+**Check:** Verified by script (16 combinations).
+**Explain simply:**
+- "Same type" statements are easy to test: two knaves would be telling the truth when they say "same".
+- A statement about a count must match the final count if the speaker is a knight.
+**Likely follow-ups:** 1) *How many knaves are there?* Two. 2) *Change B to "exactly three of us are knaves"?* Re-solve by code before answering.
+**Common mistakes / traps:** Forgetting that a knave must say a completely false statement; stopping after finding one consistent branch without testing the others.
+
+### Q53 ⭐⭐ 🔴 A project team of exactly 4 is chosen from seven people: Arun, Bhavna, Chandra, Deepak, Esha, Farid and Geeta. Rules: (1) If Arun is chosen, Chandra must be chosen. (2) Bhavna and Deepak cannot both be chosen. (3) At least one of Esha and Farid must be chosen. (4) Esha and Geeta cannot both be chosen. (5) Geeta can be chosen only if Arun or Bhavna is chosen. (6) At least one of Chandra and Deepak must be chosen. (7) Chandra and Farid cannot both be chosen. (8) If Esha is chosen, Bhavna must be chosen. Who is on the team?
+**Asked at:** commonly asked (no company-specific report found); selection puzzles are a standard constraint-puzzle form (prep-site material, unverified).
+**What the interviewer is checking:** Case splitting on the person who appears in the most rules.
+**Say this in the interview:** "I split on Farid. If Farid is in, Chandra is out, so Deepak is in, so Bhavna is out, and then I cannot find a fourth member. So Farid is out, Esha is in, and the rest follows: Esha, Bhavna, Chandra and Arun."
+**Answer:** **The team is Arun, Bhavna, Chandra and Esha.**
+**Step-by-step reasoning:**
+1. Case Farid in: rule 7 puts Chandra out; rule 6 puts Deepak in; rule 2 puts Bhavna out; rule 1 puts Arun out (he would need Chandra); rule 5 puts Geeta out (no Arun or Bhavna); rule 8 puts Esha out (she would need Bhavna). Only Farid and Deepak remain, so a team of 4 is impossible.
+2. So Farid is out. Rule 3 puts Esha in. Rule 8 puts Bhavna in. Rule 4 puts Geeta out. Rule 2 puts Deepak out. Rule 6 puts Chandra in.
+3. That gives Esha, Bhavna, Chandra, and one more place. The remaining people are Arun only (Deepak, Farid, Geeta are out). Arun needs Chandra (rule 1), who is in. So the fourth is Arun.
+```
+In: Arun, Bhavna, Chandra, Esha     Out: Deepak, Farid, Geeta
+```
+Unique: all 35 teams of 4 from 7 were enumerated; exactly one passes all 8 rules.
+**Fast method (30 seconds):** Split on the person tied to the most "cannot both" rules, and let the chain of forced decisions run.
+**Check:** Verified by script (35 teams).
+**Explain simply:**
+- A case split tries both answers for one person; if one branch fails, the other must hold.
+- "If X then Y" rules (1, 8) are chains: chosen people pull others in.
+**Likely follow-ups:** 1) *If rule 7 were dropped, could Farid be on the team?* Re-run by code to check. 2) *Which rule did most of the work?* Rule 8.
+**Common mistakes / traps:** Stopping after Esha, Bhavna, Chandra without counting to 4; forgetting rule 1 when adding Arun.
+
+### Q54 ⭐⭐ 🔴 A 3-digit lock code uses three different digits (0 to 9; a code may start with 0). Hints from five trial codes: Guess 1 (5 7 1) - 1 digit is correct but in the wrong position. Guess 2 (4 8 3) - 2 digits are correct but in the wrong position. Guess 3 (3 7 8) - 1 digit is correct and in the right position. Guess 4 (0 1 2) - no digit is in the code. Guess 5 (9 0 4) - 1 digit is correct but in the wrong position. What is the code?
+**Asked at:** commonly asked (no company-specific report found); code-breaking (Mastermind-style) puzzles fit analytics-firm interviews (prep-site material, unverified).
+**What the interviewer is checking:** Eliminating digits and positions systematically.
+**Say this in the interview:** "Guess 4 removes 0, 1, 2. Guess 3 means just one of 3, 7, 8 is in the code, so guess 2 forces 4 plus one of 3 or 8. Positions then give 3 4 5."
+**Answer:** **The code is 3 4 5.**
+**Step-by-step reasoning (reading: "1 digit is correct and in the right position" means exactly one digit of that guess is in the code at all, and it sits in the right place):**
+1. Guess 4: 0, 1 and 2 are not in the code.
+2. Guess 3: exactly one of 3, 7, 8 is in the code, in its guessed place.
+3. Guess 2 needs two of 4, 8, 3; at most one of 3 and 8 can be in the code, so 4 is in the code plus exactly one of 3 or 8.
+4. 4 is not in position 1 (guess 2) and not in position 3 (guess 5), so 4 is in position 2.
+5. Try 3 in position 1: code 3 4 _. Guess 1 needs exactly one of 5 or 7 (1 is out): 7 is barred by step 2, so 5, which is in the wrong place (guess had 5 first, code has it third). Code 3 4 5. Guess 5: 9 is not in the code, 0 not in code, 4 in the wrong place: correct.
+6. Try 8 in position 3: code _ 4 8. Guess 1 needs 5 or 7; 7 is barred, 5 would have to go first, but then it is in the right position in guess 1, which is not allowed. So this fails.
+**Check:** Verified by script over all 720 codes (exactly one, 345).
+**Fast method (30 seconds):** Use the "no digit is correct" guess to delete digits, then the "right position" guess to anchor.
+**Explain simply:**
+- "Wrong position" means the digit is in the code but not where guessed.
+- Counting how many digits each guess shares with the code narrows the choices quickly.
+**Likely follow-ups:** 1) *If guess 3 only said "1 digit is correct" without the position?* Re-solve; other codes could fit. 2) *How many different digits are ruled out?* 0, 1, 2 plus 9 (guess 5 has only 4 correct); 9 is also not in 345.
+**Common mistakes / traps:** Reading guess 3 loosely and allowing two matching digits; forgetting that a digit repeated in the wrong place may still be wrong.
+
+### Q55 ⭐⭐ 🔴 Five teams A, B, C, D and E play a round robin (every pair plays once, no draws). The numbers of wins are: A 3, B 3, C 2, D 1, E 1. B beat A, and D beat B. Who won the match between C and E, and who won the match between D and E?
+**Asked at:** commonly asked (no company-specific report found); round-robin result puzzles appear in prep-site "games and tournaments" topics (unverified).
+**What the interviewer is checking:** Using win counts to fix results one team at a time.
+**Say this in the interview:** "10 matches, 10 wins, so the table is consistent. B has 3 wins and lost to D, so B beat everyone else. D's only win is B, so D lost to all the rest. Then E's only win is D. C beat E, and A beat C."
+**Answer:** **C won the C-E match, and E won the D-E match.**
+**Step-by-step reasoning:**
+1. Total matches = 5 x 4 / 2 = 10 and total wins = 3+3+2+1+1 = 10. Consistent.
+2. B plays 4 matches, has 3 wins, and lost to D. So B beat A, C and E.
+3. D has exactly 1 win and it is over B. So D lost to A, C and E. That gives E a win over D.
+4. E has exactly 1 win (over D), so E lost to A, B and C. That gives C a win over E.
+5. C has 2 wins: over D and E. So C lost to A and to B. A beat C.
+6. A: beat C, D, E (3 wins), lost to B. Matches the table.
+```
+A beat C, D, E   B beat A, C, E   C beat D, E   D beat B   E beat D
+```
+Unique: all 1024 result sets were enumerated; only one fits.
+**Fast method (30 seconds):** Take the team whose win count equals its number of games minus one (B) or whose count is 1 (D, E), and let the "all their wins are used" logic fix the rest.
+**Check:** Verified by script (1024 outcomes, 1 fits the wins and the two given results).
+**Explain simply:**
+- Each team plays 4 matches, so its wins plus losses equal 4.
+- A team whose wins are used up must have lost the rest.
+**Likely follow-ups:** 1) *Who beat C?* A and B. 2) *If B had 2 wins?* Re-solve the table; the totals would then not equal 10, which flags an inconsistent table.
+**Common mistakes / traps:** Giving D a second win; forgetting that D's one win is already used against B.
+
+### Q56 ⭐ 🟢 Why does a single-elimination (knockout) tournament with n teams always need exactly n - 1 matches, and how do you work out byes when n is not a power of two?
+**Asked at:** commonly asked (no company-specific report found); knockout match counting is a classic reasoning item (prep-site material, unverified).
+**What the interviewer is checking:** The "count losers" insight instead of adding up rounds.
+**Say this in the interview:** "Every match eliminates exactly one team, and everyone except the champion must be eliminated, so n - 1 matches. For byes, I round n up to the next power of two, and the difference is the number of byes."
+**Answer:** **n - 1 matches. Byes = (next power of two above or equal to n) - n.**
+**Step-by-step reasoning:**
+1. Each match produces exactly one loser.
+2. Everyone except the champion loses exactly once, so there are n - 1 losers, hence n - 1 matches.
+3. Byes: let P be the smallest power of two with P >= n (2, 4, 8, 16, 32...). Then byes = P - n so that exactly P/2 teams remain after round 1.
+4. Round 1 matches = n - P/2 (the other teams get byes).
+**Worked example (verified by script):** n = 13. Next power of two is 16, so byes = 16 - 13 = 3. Round 1 has 13 - 8 = 5 matches (10 teams play); 5 winners + 3 bye teams = 8 teams remain; matches then 4 + 2 + 1. Total = 5 + 4 + 2 + 1 = 12 = 13 - 1.
+**Explain simply:**
+- Bye: a team advances without playing in that round.
+- A power of two (2, 4, 8, 16...) halves cleanly every round, so no more byes are needed afterwards.
+**Likely follow-ups:** 1) *37 teams?* 36 matches. 2) *Does the count change if byes are given in later rounds?* No: it is still n - 1.
+**Common mistakes / traps:** Counting byes as matches; using n/2 + n/4 + ... and forgetting to round.
+
