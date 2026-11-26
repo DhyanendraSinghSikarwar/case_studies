@@ -1,10 +1,10 @@
 # Book 13 — Logical Reasoning & Analytical Thinking | Part 11: Timed Mixed Mock Sets 🟡🔴
 
 **Target:** 40 questions | **Actual:** 40 questions
-**Scope:** Timed mixed mock sets in online-assessment style, four sets of 10 new questions each that mix the topics of Parts 2-10 (syllogisms, inequalities, ranking, blood relations, coding, directions, seating, grids, schedules, truth-tellers, SQL/Excel logic, pseudocode tracing, critical reasoning, counting, weighing). Questions are sorted by mock set (set order, then question order inside the set), not by stars. Set strategies: Set 1: Mock Set 1 (warm-up, 10 questions, about 13 minutes; strategy: bank the quick marks first, skip any item that has no clear start after 20 seconds, and note which skipped items you would solve with five more minutes) | Set 2: Mock Set 2 (conditional logic and puzzles, 10 questions, about 15 minutes; strategy: do the one-line logic items and the trace items first, and leave the arrangement puzzles for the last third) | Set 3: Mock Set 3 (harder mixed set, 10 questions, about 18 minutes; strategy: expect two items you should skip, attempt grid and schedule puzzles only after the quick items, and keep a two-minute rule per puzzle) | Set 4: Mock Set 4 (full simulation, 10 questions, about 15 minutes; strategy: treat it as the real test, no pauses, mark for review instead of lingering, then score it with the review method of Part 1)
+**Scope:** Timed mixed mock sets in online-assessment style, four sets of 10 new questions each that mix the topics of Parts 2-10 (syllogisms, inequalities, ranking, blood relations, coding, directions, seating, grids, schedules, truth-tellers, SQL/Excel logic, pseudocode tracing, critical reasoning, counting, weighing). Questions are sorted by mock set (set order, then question order inside the set), not by stars. Set strategies (the minutes and strategies are our suggestion, not an official test format; the minutes are the sum of the suggested times in the question headings): Set 1: Mock Set 1 (warm-up, 10 questions, about 13 minutes; strategy: bank the quick marks first, skip any item that has no clear start after 20 seconds, and note which skipped items you would solve with five more minutes) | Set 2: Mock Set 2 (conditional logic and puzzles, 10 questions, about 15 minutes; strategy: do the one-line logic items and the trace items first, and leave the arrangement puzzles for the last third) | Set 3: Mock Set 3 (harder mixed set, 10 questions, about 17 minutes; strategy: expect two items you should skip, attempt grid and schedule puzzles only after the quick items, and keep a two-minute rule per puzzle) | Set 4: Mock Set 4 (full simulation, 10 questions, about 14 minutes; strategy: treat it as the real test, no pauses, mark for review instead of lingering, then score it with the review method of Part 1)
 
 ### Q1 ⭐⭐⭐ 🟢 Mock Set 1, Q1 (suggested time 75 seconds): Statements: All payroll files are encrypted. Some encrypted files are archived. No archived file is public. Conclusions: I. Some payroll files are archived. II. Some archived files are encrypted. III. Some encrypted files are not public. Which conclusions follow, and why does the other one not follow?
-**Asked at:** commonly asked (no company-specific report found); syllogisms are a standard topic in Mu Sigma, TCS and similar aptitude gates (prep-site claim, unverified).
+**Asked at:** commonly asked (no company-specific report found); syllogisms are listed among Mu Sigma logical-reasoning topics in prep-site summaries (reported, unverified).
 **Target time:** 75 seconds (as in the heading).
 **What the interviewer is checking:** Whether you can tell what is guaranteed from what is merely possible, using the rule that every named group exists and "some" means at least one.
 **Say this in the interview:** "II is just the second statement turned around. III follows because an archived-and-encrypted file exists and archived files are not public. I does not follow: the encrypted files that are archived may sit outside payroll."
@@ -22,7 +22,7 @@
 - A conclusion "follows" only if it is true in every possible picture, not just one.
 **Likely follow-ups:** 1) *Does "Some payroll files are encrypted" follow?* Yes: payroll is non-empty and all of it is encrypted. 2) *Would I follow if statement 2 were "Some payroll files are archived"?* Then yes, directly.
 **Common mistakes / traps:** Chaining "All payroll are encrypted" with "Some encrypted are archived" into "Some payroll are archived" (the middle term is only partly covered); stopping after finding one picture where a conclusion is true.
-**If you are short of time:** Do not skip; bank II and III (they follow directly from the statements) and mark I as not following if you cannot draw it in 20 seconds.
+**If you are short of time (our suggestion):** Do not skip; bank II and III (they follow directly from the statements) and mark I as not following if you cannot draw it in 20 seconds.
 
 ### Q2 ⭐⭐⭐ 🟢 Mock Set 1, Q2 (suggested time 60 seconds): Statement: M > N = O >= P < Q. Conclusions: I. M > P. II. N >= P. III. Q > N. Which conclusions definitely follow?
 **Asked at:** commonly asked (no company-specific report found); inequality-chain items are a standard bank and IT-service aptitude topic (prep-site claim, unverified).
@@ -43,7 +43,7 @@
 - "Definitely follows" means true for every set of numbers that fits the chain.
 **Likely follow-ups:** 1) *Does Q > P follow?* Yes, it is written directly (also 140 of 140 cases). 2) *Does M > Q follow?* No: only 70 of 140 cases, so it is not forced.
 **Common mistakes / traps:** Treating the "<" at the end as if Q were also below M; reading ">=" as strictly greater and then wrongly accepting an "or equal" conclusion stated as strict.
-**If you are short of time:** Do not skip; answer from the chain, and reject any conclusion that compares Q with M or N.
+**If you are short of time (our suggestion):** Do not skip; answer from the chain, and reject any conclusion that compares Q with M or N.
 
 ### Q3 ⭐⭐⭐ 🟢 Mock Set 1, Q3 (suggested time 75 seconds): In a hiring test with 45 candidates and no ties in rank, Dev is 14th from the top and Eva scored lower than Dev with exactly 7 candidates ranked between them. What is Eva's rank from the bottom?
 **Asked at:** commonly asked (no company-specific report found); ranking items are a standard reasoning-gate topic (prep-site claim, unverified).
@@ -63,7 +63,7 @@
 - Top and bottom ranks add up to total + 1.
 **Likely follow-ups:** 1) *If Eva were higher than Dev with 7 between?* Eva is 14 - 8 = 6th from the top, 40th from the bottom (script-checked). 2) *Same data, but 9 between and Eva lower?* 14 + 10 = 24th from top, 22nd from bottom (script-checked).
 **Common mistakes / traps:** Answering 21 or 22 from the bottom by forgetting the +1; adding 7 only and landing on 21 from the top.
-**If you are short of time:** Do not skip; this is a one-line sum worth full marks. Skip only after the 75 seconds are gone.
+**If you are short of time (our suggestion):** Do not skip; this is a one-line sum worth full marks. Skip only after the 75 seconds are gone.
 
 ### Q4 ⭐⭐⭐ 🟢 Mock Set 1, Q4 (suggested time 75 seconds): Naveen's mother's only brother has a daughter, and she is Tara's mother. How is Naveen related to Tara?
 Options: (a) maternal uncle (b) mother's cousin (c) cousin (d) nephew
@@ -71,24 +71,24 @@ Options: (a) maternal uncle (b) mother's cousin (c) cousin (d) nephew
 **Target time:** 75 seconds (as in the heading).
 **What the interviewer is checking:** Whether you can follow a family chain one link at a time and name the final relation correctly, including the direction.
 **Say this in the interview:** "Naveen's mother's only brother is Naveen's maternal uncle. His daughter is Naveen's cousin. She is Tara's mother. So Naveen is Tara's mother's cousin, option (b)."
-**Answer:** **(b) Naveen is Tara's mother's cousin.**
+**Answer:** **(b) Naveen is Tara's mother's cousin.** Reading used: "How is Naveen related to Tara?" asks what Naveen is to Tara, so option (b) means "Naveen is the cousin of Tara's mother". The opposite reading (what Tara is to Naveen) would give "Naveen's cousin's child", which is not among the options, so the options only fit our reading.
 **Step-by-step reasoning:**
 1. Naveen's mother's brother = Naveen's maternal uncle (mama).
 2. The uncle's daughter = Naveen's cousin (a child of your parent's sibling).
-3. That cousin is Tara's mother. So Tara is the cousin's daughter.
+3. That cousin is Tara's mother. So Tara is the cousin's child (Tara's gender is not given).
 4. Naveen is the cousin of Tara's mother. So Naveen is Tara's mother's cousin, which is option (b).
-**Fast method (30 seconds):** Write the chain as arrows: Naveen, mother, brother, daughter, daughter (Tara). Cancel the first four steps into "cousin of Naveen". Tara is one generation below that cousin, so Tara is one generation below Naveen's own level.
+**Fast method (30 seconds):** Write the chain as arrows: Naveen, mother, brother, daughter, daughter (Tara). Cancel the first four steps into "cousin of Naveen". Tara is one generation below that cousin, so Tara sits one generation below Naveen's own level.
 **Check:** Hand-checked (family tree with 3 generations).
 **Explain simply:**
 - Your mother's brother is your maternal uncle; his children are your cousins.
 - Your cousin's child is not your cousin; she is one generation younger.
 - The gender of Naveen is not given, so avoid "nephew" or "niece" words unless asked; "mother's cousin" works for any gender.
-**Likely follow-ups:** 1) *What is Tara to Naveen?* Naveen's cousin's daughter, i.e. Naveen's first cousin once removed. 2) *If the sentence said "mother's only sister's son's daughter", who is Tara?* Same logic: Naveen's cousin's daughter, so Naveen is again her mother's cousin (hand-checked).
-**Common mistakes / traps:** Choosing (c) "cousin" because the middle link was a cousin; choosing (d) "nephew" (that needs Naveen to be the child of Tara's parent's sibling) or (a) (that would need Naveen to be the brother of Tara's mother).
-**If you are short of time:** Do not skip; draw the three-level tree. If a chain is longer than five links, guess only after you have cancelled two links.
+**Likely follow-ups:** 1) *What is Tara to Naveen?* The child of Naveen's cousin, i.e. Naveen's first cousin once removed (the reverse direction of the question). 2) *If the sentence said "Naveen's mother's only sister has a daughter, and she is Tara's mother"?* Same logic: that daughter is Naveen's cousin, so Naveen is again Tara's mother's cousin (hand-checked).
+**Common mistakes / traps:** Choosing (c) "cousin" because the middle link was a cousin; choosing (d) "nephew" (that would make Tara an aunt or uncle of Naveen, but Tara is a generation younger) or (a) "maternal uncle" (that would need Naveen to be the brother of Tara's mother, not her cousin).
+**If you are short of time (our suggestion):** Do not skip; draw the three-level tree. If a chain is longer than five links, guess only after you have cancelled two links.
 
 ### Q5 ⭐⭐⭐ 🟢 Mock Set 1, Q5 (suggested time 75 seconds): In a certain code, SALARY is written as UZNZTX. Using the same rule, how is LEAVES written?
-**Asked at:** commonly asked (no company-specific report found); coding-decoding is a standard topic in Mu Sigma-style and service-company aptitude papers (prep-site claim, unverified).
+**Asked at:** commonly asked (no company-specific report found); coding-decoding is listed among Mu Sigma logical-reasoning topics in prep-site summaries (reported, unverified).
 **Target time:** 75 seconds (as in the heading).
 **What the interviewer is checking:** Whether you compare letters position by position and find a repeating shift pattern, then apply it without slips.
 **Say this in the interview:** "Compare SALARY and UZNZTX letter by letter: the shifts alternate plus 2, minus 1. Applying that to LEAVES gives NDCUGR."
@@ -105,7 +105,7 @@ Options: (a) maternal uncle (b) mother's cousin (c) cousin (d) nephew
 - Check the rule on all letters of the example, not just the first two.
 **Likely follow-ups:** 1) *What if a rule had the same shift for all letters?* Then the code is a plain shift (Caesar cipher), found from one letter. 2) *Decode "UZNZTX" without the example?* Apply the reverse shifts (-2, +1) to get SALARY.
 **Common mistakes / traps:** Assuming a constant +1 or +2 shift after the first letter; forgetting that the pattern repeats and applying -1 twice in a row.
-**If you are short of time:** Spend 20 seconds finding the rule; if nothing fits two letters, skip. If the shifts are known, always finish.
+**If you are short of time (our suggestion):** Spend 20 seconds finding the rule; if nothing fits two letters, skip. If the shifts are known, always finish.
 
 ### Q6 ⭐⭐⭐ 🟢 Mock Set 1, Q6 (suggested time 75 seconds): A courier leaves a depot, rides 7 km east, 9 km north, 3 km west and then 6 km south. How far is the courier from the depot, and in the north-east, north-west, south-east or south-west direction from the depot?
 **Asked at:** commonly asked (no company-specific report found); direction-sense items are a standard aptitude topic (prep-site claim, unverified).
@@ -126,7 +126,7 @@ Options: (a) maternal uncle (b) mother's cousin (c) cousin (d) nephew
 - Pythagoras: the long side squared equals the sum of the two short sides squared.
 **Likely follow-ups:** 1) *How far did the courier ride in total?* 7 + 9 + 3 + 6 = 25 km. 2) *If the last leg were 12 km south instead of 6?* Net 4 east, 3 south, still 5 km, now south-east (hand-checked: 9 - 12 = -3).
 **Common mistakes / traps:** Giving 25 km or 7 + 9 = 16 as the distance; subtracting the wrong pair and ending up north-west.
-**If you are short of time:** Do not skip; sketch a quick plus-sign and net out each axis. It should take under a minute.
+**If you are short of time (our suggestion):** Do not skip; sketch a quick plus-sign and net out each axis. It should take under a minute.
 
 ### Q7 ⭐⭐ 🟡 Mock Set 1, Q7 (suggested time 60 seconds): A seating puzzle has 8 people and 7 clues. After two minutes of trying to place everyone, no arrangement is fixed. What decision rule would you apply in a timed online assessment, and what would you do first on the next attempt?
 **Asked at:** commonly asked (no company-specific report found); skip-and-return advice is common on prep sites (prep-site claim, unverified). The rule below is our suggestion, not a research finding.
@@ -140,9 +140,10 @@ Options: (a) maternal uncle (b) mother's cousin (c) cousin (d) nephew
 - Better start order for 8 people and 7 clues: (1) clues that name a fixed position (end seat, "third from left"); (2) clues with "exactly" or "immediately" (strong links); (3) negative clues ("not next to") last, to eliminate.
 - Write a small table with 8 empty slots and put every certain fact in at once; do not hold clues in your head.
 **Worked mini-example:** 8 seats, clues: A at an end, B immediately left of C, D not next to A. Place A at left end first (two cases). Then fit the pair B-C as a block. Last, remove cases where D is next to A. Testing the end-seat cases halves the search.
+**Check:** This is a judgement rule, not a computed result; the 2-minute cap and the order of clues are our suggestion. The arithmetic (one 4-minute puzzle costs about three questions at about 75 seconds each) is hand-checked.
 **Likely follow-ups:** 1) *How do you decide which skipped puzzle to return to?* Pick the one where you already fixed 2 or more seats. 2) *What if there is no negative marking?* Then guess the last 10 seconds instead of leaving it blank (our suggestion).
 **Common mistakes / traps:** "Just five more minutes" thinking; reading all 7 clues again without writing; starting from the weakest ("not next to") clue.
-**If you are short of time:** Skip it after the 2-minute cap, flag it, and guess only if a wrong answer costs nothing or the cost is small compared with the chance of being right.
+**If you are short of time (our suggestion):** Skip it after the 2-minute cap, flag it, and guess only if a wrong answer costs nothing or the cost is small compared with the chance of being right.
 
 ### Q8 ⭐⭐ 🟡 Mock Set 1, Q8 (suggested time 90 seconds): If 1 March 2027 is a Monday, what day of the week is 27 June 2027?
 **Asked at:** commonly asked (no company-specific report found); calendar items are a standard aptitude topic (prep-site claim, unverified).
@@ -163,7 +164,7 @@ Options: (a) maternal uncle (b) mother's cousin (c) cousin (d) nephew
 - 2027 is not a leap year, but the gap here starts after February, so it would not matter anyway.
 **Likely follow-ups:** 1) *What weekday is 100 days after 1 March 2027?* 100 mod 7 = 2, so Wednesday (9 June 2027, script-checked). 2) *What day is 1 July 2027?* 4 days after Sunday 27 June, so Thursday (hand-checked).
 **Common mistakes / traps:** Counting 27 June as 118 + 1; forgetting that the remainder is 6, not 7; using 30 days for every month.
-**If you are short of time:** Do not skip if you remember the remainder-after-7 trick; if you cannot start in 20 seconds, guess any option other than Monday (118 is not a multiple of 7).
+**If you are short of time (our suggestion):** Do not skip if you remember the remainder-after-7 trick; if you cannot start in 20 seconds and options are given, avoid Monday (118 is not a multiple of 7).
 
 ### Q9 ⭐⭐ 🟡 Mock Set 1, Q9 (suggested time 90 seconds): Of 90 candidates in a hiring drive, 52 passed the SQL test, 47 passed the Excel test and 18 passed neither. How many passed both?
 **Asked at:** commonly asked (no company-specific report found); two-set overlap counting is a standard aptitude item (prep-site claim, unverified).
@@ -184,7 +185,7 @@ Options: (a) maternal uncle (b) mother's cousin (c) cousin (d) nephew
 - Always check by adding the four regions back to the total.
 **Likely follow-ups:** 1) *How many passed only SQL?* 25. 2) *Variant: 80 candidates, 50 and 40 passed, 10 neither; both?* 50 + 40 - 70 = 20 (script-checked).
 **Common mistakes / traps:** Doing 52 + 47 - 90 = 9 (forgetting the 18 who passed neither); answering 99 - 90 and treating the 18 as if they passed one test.
-**If you are short of time:** Do not skip; it is a two-line formula. Guess only if the numbers are messy and you cannot start in 20 seconds.
+**If you are short of time (our suggestion):** Do not skip; it is a two-line formula. Guess only if the numbers are messy and you cannot start in 20 seconds.
 
 ### Q10 ⭐⭐ 🟡 Mock Set 1, Q10 (suggested time 75 seconds): A section gives +1 for a correct answer and -0.25 for a wrong one, and each question has 5 options. You can eliminate 2 options on a question and guess among the remaining 3. What is the expected mark from guessing, and should you guess?
 **Asked at:** commonly asked (no company-specific report found); negative-marking decisions are a standard test-strategy topic (prep-site claim, unverified).
@@ -223,9 +224,9 @@ Options: (a) maternal uncle (b) mother's cousin (c) cousin (d) nephew
 - Contrapositive of "if P then Q" is "if not Q then not P"; it always has the same truth as the original.
 - Converse ("if Q then P") and inverse ("if not P then not Q") are not equivalent to the original.
 - Here: not signed rules out doubled, which in turn rules out past midnight.
-**Likely follow-ups:** 1) *If the sheet had been signed, what follows?* Nothing about midnight or doubling: a signature can happen for other reasons (converse trap; script shows 4 of 8 combos remain allowed). 2) *If Kabir's shift ran past midnight, what follows?* Doubled and signed, by the chain (hand-checked).
+**Likely follow-ups:** 1) *If the sheet had been signed, what follows?* Nothing about midnight or doubling: a signature can happen for other reasons (converse trap; a check of the 8 combinations shows 3 remain allowed). 2) *If Kabir's shift ran past midnight, what follows?* Doubled and signed, by the chain (hand-checked).
 **Common mistakes / traps:** Choosing III "allowance was missed" (it needs a shift past midnight, which is ruled out); assuming "signed" is the only way a sheet can be signed (the converse fallacy).
-**If you are short of time:** Do not skip; this is a one-line logic item. If the wording looks tangled, apply the contrapositive and still answer.
+**If you are short of time (our suggestion):** Do not skip; this is a one-line logic item. If the wording looks tangled, apply the contrapositive and still answer.
 
 ### Q12 ⭐⭐⭐ 🟡 Mock Set 2, Q2 (suggested time 120 seconds): Six interviewers P, Q, R, S, T and U sit in a row facing north, positions 1 to 6 from the left. R sits at one of the two ends. P does not sit at an end. Q sits somewhere to the right of R. S sits in position 3. T sits immediately between P and U (that is, P, T and U occupy three consecutive seats with T in the middle). Q and U are not neighbours. Who sits at the right end (position 6)?
 **Asked at:** commonly asked (no company-specific report found); linear seating is a standard puzzle in aptitude gates (prep-site claim, unverified).
@@ -297,7 +298,7 @@ Clockwise order: A(0), E(1), C(2), D(3), B(4), F(5). Opposites: A-D, E-B, C-F.
 - The number of liars is a single fixed number, so statements naming different numbers cannot both be true.
 **Likely follow-ups:** 1) *If A and B both said "exactly one of us is lying", C said "all three lie"?* Then A and B tell the truth and C lies (script-checked: unique). 2) *If all three said "exactly two of us are lying"?* Then 2 liars among 3 equal speakers is impossible (hand-checked: the same statement would be both true and false).
 **Common mistakes / traps:** Assuming the first speaker is truthful and stopping; treating C's claim as possibly true; forgetting that a liar's statement must be false.
-**If you are short of time:** Do not skip; try counts 1, 2, 3 in turn. This takes under a minute.
+**If you are short of time (our suggestion):** Do not skip; try counts 1, 2, 3 in turn. This takes under a minute.
 
 ### Q15 ⭐⭐ 🟡 Mock Set 2, Q5 (suggested time 90 seconds): A decision table gives the discount on an order: order value of 10,000 or more and Gold member: 15%; 10,000 or more and not Gold: 10%; under 10,000 and Gold: 5%; under 10,000 and not Gold: 0%. Four orders are placed: (12,000, Gold), (9,500, Gold), (15,000, Silver) and (800, Silver). What is the total discount in rupees across the four orders?
 **Asked at:** commonly asked (no company-specific report found); rule-table lookups appear in analyst screening tests (unverified).
@@ -318,7 +319,7 @@ Clockwise order: A(0), E(1), C(2), D(3), B(4), F(5). Opposites: A-D, E-B, C-F.
 - Any non-Gold tier (Silver here) falls in the "not Gold" rows.
 **Likely follow-ups:** 1) *What if the 9,500 order were 10,000?* It moves to the 15% row: 1,500 instead of 475, total 4,800. 2) *Which order gets the highest percentage?* The 12,000 Gold order (15%).
 **Common mistakes / traps:** Treating 9,500 as "near enough" to 10,000, or giving Silver a Gold rate; the tempting wrong totals come from using 15% for both large orders.
-**If you are short of time:** Do not skip; it is a pure lookup. Four quick lookups take under a minute, so bank it early.
+**If you are short of time (our suggestion):** Do not skip; it is a pure lookup. Four quick lookups take under a minute, so bank it early.
 
 ### Q16 ⭐⭐ 🟡 Mock Set 2, Q6 (suggested time 90 seconds): Trace the pseudocode and give the final value of total.
 total = 0
@@ -347,7 +348,7 @@ for i = 1 to 6:
 - Tracing means writing the variable after every pass instead of holding it in your head.
 **Likely follow-ups:** 1) *What if the first test were "divisible by 3" instead of "even"?* Then i = 3 gives -1 and i = 6 gives -1, so the total would be 1 + 2 - 1 + 4 + 1 - 1 = 6 (hand-checked). 2) *What if the loop ran to 7?* i = 7 is odd and not divisible by 3, so 14.
 **Common mistakes / traps:** Subtracting 1 at i = 6 because 6 is divisible by 3 (that gives 6 instead of 13), or stopping the loop at 5.
-**If you are short of time:** Do it early; it is a safe, mechanical mark. Never guess it, trace it.
+**If you are short of time (our suggestion):** Do it early; it is a safe, mechanical mark. Never guess it, trace it.
 
 ### Q17 ⭐⭐ 🟡 Mock Set 2, Q7 (suggested time 75 seconds): A table scores has one column score with the values 10, 20, NULL, 30, NULL (five rows). How many rows does SELECT * FROM scores WHERE score <> 20 OR score IS NULL return?
 **Asked at:** commonly asked (no company-specific report found); NULL behaviour in WHERE is a classic SQL screening trap (unverified).
@@ -374,7 +375,7 @@ SELECT * FROM scores WHERE score <> 20;
 - WHERE keeps a row only when its condition is TRUE, so UNKNOWN rows vanish unless another condition rescues them.
 **Likely follow-ups:** 1) *What does WHERE score <> 20 alone return?* 2 rows (10 and 30). 2) *What does WHERE score = NULL return?* 0 rows; use IS NULL.
 **Common mistakes / traps:** Answering 2 (forgetting the NULLs) or 3 (counting only one NULL).
-**If you are short of time:** Do it; it is a one-line logic item. If blank, answer 4, the standard "all except 20" result.
+**If you are short of time (our suggestion):** Do it; it is a one-line logic item. If blank, answer 4, the standard "all except 20" result.
 
 ### Q18 ⭐⭐ 🟡 Mock Set 2, Q8 (suggested time 75 seconds): After a new training module was introduced, the average ticket resolution time fell by 12%. Which one of these, if true, most weakens the claim that the module caused the fall?
 Options: (a) Average resolution time also fell by about 12% over the same period in teams that never took the module. (b) The module cost 2 lakh rupees to build. (c) Agents rated the module highly in a survey. (d) A few agents completed the module more slowly than others.
@@ -396,7 +397,7 @@ Options: (a) Average resolution time also fell by about 12% over the same period
 - "After" does not prove "because of" (correlation is not causation).
 **Likely follow-ups:** 1) *What would strengthen the claim?* Teams without the module showed no fall. 2) *What data would settle it?* Compare module-takers with similar non-takers, before and after (a difference-in-differences style comparison).
 **Common mistakes / traps:** Picking (c) or (d) because they sound related to the module; cost (b) is a distractor about value, not cause.
-**If you are short of time:** Do not skip; reasoning-style items are quick marks. If you must guess, pick the option that mentions a group without the module.
+**If you are short of time (our suggestion):** Do not skip; reasoning-style items are quick marks. If you must guess, pick the option that mentions a group without the module.
 
 ### Q19 ⭐⭐ 🟡 Mock Set 2, Q9 (suggested time 60 seconds): After 6 minutes on Mock Set 2, Q2 (a seating row) still is not solved, 4 questions remain unattempted and the set has 9 minutes left. Explain what you do, with the time you give each remaining question, and why.
 **Asked at:** commonly asked (no company-specific report found); skip and time-split advice appears on prep sites (reported, unverified), and the splits below are our suggestion, not a research finding.
@@ -416,7 +417,7 @@ Options: (a) Average resolution time also fell by about 12% over the same period
 - Marking for review lets you return only if time remains.
 **Likely follow-ups:** 1) *What if the 4 remaining were all hard?* Give the two you can start fastest 3 minutes each and guess or skip the rest. 2) *What if there were no mark-for-review button?* Pick your best guess for the row now and move on.
 **Common mistakes / traps:** "Just one more minute" on the row, which steals time from four questions that are likelier to be solved.
-**If you are short of time:** This is itself the skip rule: skip the stuck puzzle, guess it only at the end, and never let one item take more than about twice its suggested time.
+**If you are short of time (our suggestion):** This is itself the skip rule: skip the stuck puzzle, guess it only at the end, and never let one item take more than about twice its suggested time.
 
 ### Q20 ⭐⭐ 🔴 Mock Set 2, Q10 (suggested time 120 seconds): In a round-robin tournament each of 5 teams plays every other team exactly once and there are no draws. All five teams finish with different numbers of wins. How many wins did the team in third place have, and how do you know the full list of win counts is forced?
 **Asked at:** commonly asked (no company-specific report found).
@@ -437,7 +438,7 @@ Options: (a) Average resolution time also fell by about 12% over the same period
 - The "range trick": if you need k different whole numbers inside a range of exactly k values, you must use them all.
 **Likely follow-ups:** 1) *Who beat whom?* The 4-win team beat all; the 3-win team beat everyone except the top team; and so on down (a perfectly ranked tournament). 2) *What changes with 6 teams?* Wins range 0 to 5 and total 15, and 0 + 1 + 2 + 3 + 4 + 5 = 15, so it is again forced (hand-checked arithmetic).
 **Common mistakes / traps:** Forgetting that a team plays only 4 matches (so 5 wins is impossible), or hunting for a pattern in the results instead of using the total.
-**If you are short of time:** Do it if you spot the range trick; it takes 30 seconds. If not, guess 2 (the middle of 0 to 4).
+**If you are short of time (our suggestion):** Do it if you spot the range trick; it takes 30 seconds. If not, guess 2 (the middle of 0 to 4).
 
 ### Q21 ⭐⭐⭐ 🟡 Mock Set 3, Q1 (suggested time 75 seconds): Statements: Some auditors are coders. No coder is a trainee. All trainees are interns. Conclusions: I. Some auditors are not trainees. II. Some coders are not trainees. III. No intern is a coder. Which conclusions follow?
 **Asked at:** commonly asked (no company-specific report found); syllogisms are reported on prep sites for service-company and analytics-firm tests (unverified).
@@ -457,7 +458,7 @@ Options: (a) Average resolution time also fell by about 12% over the same period
 - A group inside another (trainees inside interns) does not make the outer group share the inner group's rules.
 **Likely follow-ups:** 1) *What if the third statement were "All interns are trainees"?* Then no coder could be an intern, so III would follow (hand-checked). 2) *Does "Some coders are not auditors" follow?* No; the statements do not say.
 **Common mistakes / traps:** Marking III because "coders and trainees are separate and trainees are interns", which slides from "no trainee" to "no intern".
-**If you are short of time:** Do not skip; syllogisms are quick marks. Under negative marking, answer I and II only if you are confident; they are the safe, forced ones.
+**If you are short of time (our suggestion):** Do not skip; syllogisms are quick marks. Under negative marking, answer I and II only if you are confident; they are the safe, forced ones.
 
 ### Q22 ⭐⭐⭐ 🔴 Mock Set 3, Q2 (suggested time 150 seconds): Four analysts Asha, Bilal, Chen and Dina each use a different tool from Excel, SQL, Python and Tableau and each live in a different city from Pune, Delhi, Chennai and Kochi. Asha does not use SQL and does not live in Delhi. The Python user lives in Pune. Bilal lives neither in Kochi nor in Pune. The Tableau user does not live in Chennai. Chen does not use Excel. Either Asha lives in Kochi or Dina uses SQL (or both). The Excel user lives in Kochi. Dina does not live in Pune. Bilal does not use Tableau. Which tool does Dina use and in which city does she live?
 **Asked at:** commonly asked (no company-specific report found); matching grids are a reported puzzle type on prep sites (unverified).
@@ -486,7 +487,7 @@ Unique because every step was forced; no choice was ever left open.
 - An "either or (or both)" clue is useful only after you have ruled out one side.
 **Likely follow-ups:** 1) *If the clue "Dina does not live in Pune" were removed, is it still unique?* No: the enumeration then finds 2 solutions (the second has Chen on Tableau in Delhi and Dina on Python in Pune), so that clue is what makes it unique. 2) *Who lives in Kochi?* Asha.
 **Common mistakes / traps:** Treating the "either or" clue as telling you Asha is in Kochi right away; it only bites after Dina is shown not to use SQL.
-**If you are short of time:** Skip it if no start after 20 to 30 seconds; with four people you can also guess, but a wrong answer costs marks under negative marking. Do the quick items first.
+**If you are short of time (our suggestion):** Skip it if no start after 20 to 30 seconds; with four people you can also guess, but a wrong answer costs marks under negative marking. Do the quick items first.
 
 ### Q23 ⭐⭐⭐ 🔴 Mock Set 3, Q3 (suggested time 150 seconds): Five candidates A, B, C, D and E are interviewed one per day from Monday to Friday. A is interviewed on Monday. Exactly one candidate is interviewed between B and D, and B is interviewed before D. C is interviewed after D. A and C are not interviewed on consecutive days. E is not interviewed on Friday. Who is interviewed on Wednesday?
 **Asked at:** commonly asked (no company-specific report found); scheduling puzzles are a reported type on prep sites (unverified).
@@ -511,7 +512,7 @@ Unique because only one (B, D) pair leaves room for C after D.
 - Using "after" clues to eliminate the last day for the earlier person is a standard schedule trick.
 **Likely follow-ups:** 1) *If C were allowed Tuesday (no "after D" clue)?* Verified by script: 2 orderings would then fit, so the answer would no longer be unique. 2) *Who is interviewed on Thursday?* D.
 **Common mistakes / traps:** Forgetting the "B before D" direction and trying D Tuesday; or answering C for Wednesday by ignoring "C after D".
-**If you are short of time:** Attempt only after the quick items; with a 2-minute cap. If time is gone, guess E, since the middle slot is the one nobody else can take.
+**If you are short of time (our suggestion):** Attempt only after the quick items; with a 2-minute cap. If time is gone, guess E, since the middle slot is the one nobody else can take.
 
 ### Q24 ⭐⭐⭐ 🟡 Mock Set 3, Q4 (suggested time 120 seconds): A machine rearranges numbers in steps. Step 1 swaps the largest number with the number in position 1. Step 2 swaps the smallest number with the number in the last position. Step 3 swaps the largest of the numbers in positions 2 to 4 with the number in position 2, and so on. Input: 17 48 93 26 71. What is the arrangement after Step 2, and how many steps in total are needed to reach the final arrangement?
 **Asked at:** commonly asked (no company-specific report found); input-output machine rearrangement is a reported banking-exam type (unverified).
@@ -536,7 +537,7 @@ Unique because only one (B, D) pair leaves room for C after D.
 - "Final arrangement" means the point after which no step changes anything.
 **Likely follow-ups:** 1) *What if the input were 5 4 3 2 1?* It is already descending, so 0 steps are needed (hand-checked; each swap would swap an item with itself). 2) *What does the machine do in general?* It sorts into descending order.
 **Common mistakes / traps:** Swapping the smallest number with position 2 instead of the last position, or counting a Step 4 that changes nothing.
-**If you are short of time:** Do the two-step part (the arrangement after Step 2) first; if you cannot finish the step count, answer 3, since a 5-number list is sorted in at most 4 steps and the descending target shows 3.
+**If you are short of time (our suggestion):** Do the two-step part (the arrangement after Step 2) first; if you cannot finish the step count, answer 3, since a 5-number list is sorted in at most 4 steps and the descending target shows 3.
 
 ### Q25 ⭐⭐ 🟡 Mock Set 3, Q5 (suggested time 90 seconds): Starting at point O facing north, a surveyor walks 4 km, turns left and walks 9 km, then turns left again and walks 16 km. How far is the surveyor from O, and in which direction from O?
 **Asked at:** commonly asked (no company-specific report found); direction-and-distance items are reported on prep sites (unverified).
@@ -555,9 +556,9 @@ Unique because only one (B, D) pair leaves room for C after D.
 **Explain simply:**
 - Turning "left" depends on which way you face: left of north is west, left of west is south.
 - A 3-4-5 right triangle (and its multiples such as 9-12-15) gives whole-number distances.
-**Likely follow-ups:** 1) *What if the second turn were right instead?* Then you walk east 16 km: (-9 + 16, 4) = (7, 4), distance square root of 65 (about 8.06 km), north-east (hand-checked). 2) *Which way would he face at the end?* South.
+**Likely follow-ups:** 1) *What if the second turn were right instead?* Facing west, a right turn points north, so you walk north 16 km: (-9, 4 + 16) = (-9, 20), distance square root of 481 (about 21.9 km), north-west (script-checked). 2) *Which way would he face at the end?* South.
 **Common mistakes / traps:** Turning left from north to east (mirror error), or adding 4 + 16 instead of subtracting; saying south-east.
-**If you are short of time:** Do not skip; sketch it with a compass cross in 20 seconds. If you must guess, remember that 9-12-15 means 15 km.
+**If you are short of time (our suggestion):** Do not skip; sketch it with a compass cross in 20 seconds. If you must guess, remember that 9-12-15 means 15 km.
 
 ### Q26 ⭐⭐ 🟡 Mock Set 3, Q6 (suggested time 75 seconds): Trace the pseudocode and give the final values of x and y.
 x = 5; y = 1
@@ -583,7 +584,7 @@ while x > 0:
 - Always report the final value of the counter too if asked, not only the result variable.
 **Likely follow-ups:** 1) *What if the start were x = 6?* The loop runs for 6, 4, 2 and y = 48, final x = 0 (hand-checked). 2) *What if x = x - 1?* y = 120 (5 factorial) and x = 0.
 **Common mistakes / traps:** Giving x = 1 (the last value used) instead of -1, or stopping after x = 3.
-**If you are short of time:** Do not skip; it is quick. Both values are needed; if you guess, remember x does not stop at 1.
+**If you are short of time (our suggestion):** Do not skip; it is quick. Both values are needed; if you guess, remember x does not stop at 1.
 
 ### Q27 ⭐⭐ 🟡 Mock Set 3, Q7 (suggested time 75 seconds): In Excel, cell A1 contains 7, cell B1 is completely empty and cell C1 contains 12. What does =IF(AND(A1>5, OR(B1="", C1<10)), "Y", "N") return, and why?
 **Asked at:** commonly asked (no company-specific report found); nested IF/AND/OR logic is a typical spreadsheet screening item (unverified).
@@ -604,7 +605,7 @@ while x > 0:
 - A cell with nothing in it is "blank"; Excel lets blank equal "" in a comparison, but a cell with a formula returning "" is not blank (ISBLANK would say FALSE) even though B1="" is still TRUE.
 **Likely follow-ups:** 1) *What if B1 contained a space?* B1="" is then FALSE, OR falls to C1 < 10 which is FALSE, so the result is "N" (from memory, confirm in the tool). 2) *What if C1 were 8?* Y either way.
 **Common mistakes / traps:** Saying N because C1 < 10 is false, forgetting that OR is satisfied by the blank test.
-**If you are short of time:** Do it if you remember the blank rule; if not, the AND/OR logic still points to Y as the more likely answer.
+**If you are short of time (our suggestion):** Do it if you remember the blank rule; if not, the AND/OR logic still points to Y as the more likely answer.
 
 ### Q28 ⭐⭐ 🔴 Mock Set 3, Q8 (suggested time 90 seconds): "Regions with more sales reps have higher sales, so adding reps to a region will raise its sales." Why does the data not support this conclusion, and what two alternative explanations would you test first?
 **Asked at:** commonly asked (no company-specific report found); correlation versus cause is a standard analyst interview and critical-reasoning theme (unverified).
@@ -618,17 +619,18 @@ while x > 0:
 - Reverse causality: high sales may have led the company to hire more reps there.
 - Confounder: a third factor (market size, population, number of customers, product mix) that raises both reps and sales.
 - A better test: compare the same region before and after adding reps, or run a pilot with some regions getting extra reps and similar ones not (a controlled comparison).
+**Check:** The example numbers are invented: 8 crore / 40 reps = 20 lakh and 2 crore / 10 reps = 20 lakh (hand-checked).
 **Likely follow-ups:** 1) *What data would you pull first?* Sales and reps per region over time, plus market size and customer counts. 2) *What metric would you use?* Sales per rep, and the change in sales after rep additions compared with similar regions that added none.
 **Common mistakes / traps:** Accepting the claim because the correlation is strong, or listing two explanations that are the same idea (for example "other factors" twice); name reverse causality and a confounder separately.
-**If you are short of time:** Do not skip; you can answer in two sentences (correlation is not cause; market size or reverse direction). If it is an option-type item, pick the answer that points out the missing comparison.
+**If you are short of time (our suggestion):** Do not skip; you can answer in two sentences (correlation is not cause; market size or reverse direction). If it is an option-type item, pick the answer that points out the missing comparison.
 
 ### Q29 ⭐⭐ 🔴 Mock Set 3, Q9 (suggested time 90 seconds): From 7 interviewers, a panel of exactly 3 is chosen. Two particular interviewers, X and Y, cannot both be on the panel. How many different panels are possible?
-**Asked at:** commonly asked (no company-specific report found); counting with a restriction is a standard reasoning item.
+**Asked at:** commonly asked (no company-specific report found); counting with a restriction is a standard reasoning item (prep-site claim, unverified).
 **What the interviewer is checking:** Whether you count "all minus forbidden" instead of listing panels.
 **Say this in the interview:** "All panels is 7 choose 3, which is 35. Panels with both X and Y: pick the third from the other 5, so 5. 35 minus 5 is 30."
 **Answer:** **30 panels**
 **Target time:** 90 seconds (as written in the heading).
-**If you are short of time:** do it if it is the "all minus bad" type (it is, about 30 seconds); it is a safe quick mark, never skip it.
+**If you are short of time (our suggestion):** do it if it is the "all minus bad" type (it is, about 30 seconds); it is a safe quick mark, never skip it.
 **Step-by-step reasoning:**
 1. Panels with no restriction: "7 choose 3" means the number of ways to pick 3 people from 7 when order does not matter = (7 x 6 x 5) / (3 x 2 x 1) = 35.
 2. Forbidden panels contain both X and Y. The third seat can be any of the other 5 people, so 5 forbidden panels.
@@ -647,7 +649,7 @@ while x > 0:
 **Say this in the interview:** "Percentage first (45 seconds), syllogism second (60 seconds), which is under 2 minutes for two likely marks. The puzzle needs my whole 4 minutes, so I only touch it with the leftover time, and I leave it blank unless I can cut the options down."
 **Answer:** **Percentage question, then syllogism, then the puzzle only with the remaining time; if the puzzle is not finished, leave it or guess only after elimination.**
 **Target time:** 90 seconds (as written in the heading).
-**If you are short of time:** this is the short-of-time case; the rule is "cheapest marks first, long puzzle last, guess only if a wrong answer costs less than a right one gains".
+**If you are short of time (our suggestion):** this is the short-of-time case; the rule is "cheapest marks first, long puzzle last, guess only if a wrong answer costs less than a right one gains".
 **Step-by-step reasoning:**
 1. Marks per minute: percentage 1 mark in 0.75 min; syllogism 1 mark in 1 min; puzzle 1 mark (or more) in 4 min.
 2. Do the percentage first, then the syllogism: 45 + 60 = 105 seconds, leaving about 135 seconds.
@@ -668,7 +670,7 @@ while x > 0:
 **Say this in the interview:** "The risky assets may or may not be the bonds. Both 'some bonds are risky' and 'no bond is risky' are possible, so neither is certain. But exactly one of them must be true, so the answer is (c) Either I or II follows."
 **Answer:** **(c) Either I or II follows**
 **Target time:** 75 seconds (as written in the heading).
-**If you are short of time:** skip it only if the options are unfamiliar to you; with 5 options and no clear picture, a guess has no edge, so skip when there is a penalty.
+**If you are short of time (our suggestion):** skip it only if the options are unfamiliar to you; with 5 options and no clear picture, a guess has no edge, so skip when there is a penalty.
 **Step-by-step reasoning:**
 1. Convention: each named group has at least one member; "some" means at least one.
 2. Draw bonds fully inside assets. The "risky" circle must overlap assets, but it can sit in the part of assets outside bonds (then no bond is risky), or it can also reach into bonds (then some bonds are risky).
@@ -688,7 +690,7 @@ while x > 0:
 **Say this in the interview:** "S equals T and T is below U, so U is above S: I is true. R is at least S and S equals T, so R is at least T: II is true. R and U are on opposite sides of S with no direct link, so III is not certain. Answer: I and II."
 **Answer:** **Only I and II follow (III does not).**
 **Target time:** 60 seconds (as written in the heading).
-**If you are short of time:** do it; it is a quick mark. Check each conclusion in 10 seconds and move on.
+**If you are short of time (our suggestion):** do it; it is a quick mark. Check each conclusion in 10 seconds and move on.
 **Step-by-step reasoning:**
 1. Chain: R >= S, S = T, T < U.
 2. I (U > S): S = T and T < U, so S < U, so U > S. True.
@@ -709,7 +711,7 @@ while x > 0:
 **Say this in the interview:** "N is O's child. O's only daughter is P, so N is not the daughter, N is a son. So P is N's sister, Q is her husband, and M is N's wife. Q is M's brother-in-law."
 **Answer:** **Q is M's brother-in-law** (the husband of her husband's sister).
 **Target time:** 90 seconds (as written in the heading).
-**If you are short of time:** do it if you can sketch in 20 seconds; relation items are reliable marks. If the chain exceeds 4 links, skip.
+**If you are short of time (our suggestion):** do it if you can sketch in 20 seconds; relation items are reliable marks. If the chain exceeds 4 links, skip.
 **Step-by-step reasoning:**
 1. Assumption (standard in these items): a wife is female and her husband is male, so N is male.
 2. O is N's mother, so N is O's child. O's only daughter is P, and N is male, so N is O's son and P is N's sister.
@@ -735,7 +737,7 @@ while x > 0:
 **Say this in the interview:** "Comparing letter by letter, M to N is +1, A to C is +2, R to U is +3, K to O is +4, E to J is +5, T to Z is +6. Apply +1 to +6 to DEMAND and I get EGPESJ."
 **Answer:** **EGPESJ**
 **Target time:** 90 seconds (as written in the heading).
-**If you are short of time:** do it; after the first two shifts (+1, +2) you can guess the pattern and check on the third letter in 20 seconds.
+**If you are short of time (our suggestion):** do it; after the first two shifts (+1, +2) you can guess the pattern and check on the third letter in 20 seconds.
 **Step-by-step reasoning:**
 1. Letter positions: M13 to N14 (+1), A1 to C3 (+2), R18 to U21 (+3), K11 to O15 (+4), E5 to J10 (+5), T20 to Z26 (+6).
 2. The k-th letter moves forward by k places.
@@ -750,12 +752,12 @@ while x > 0:
 **Common mistakes / traps:** Assuming a constant shift of +1 (M to N only fits the first letter); reading the code backwards.
 
 ### Q35 ⭐⭐ 🔴 Mock Set 4, Q5 (suggested time 120 seconds): Five departments HR, Legal, Finance, IT and Ops each occupy a different floor of a five-storey building (floors 1 to 5, floor 1 is the lowest). IT is on the top floor. HR and Legal are on adjacent floors, with Legal below HR. HR is not on floor 1. Finance is below Ops. Finance and IT are not on adjacent floors. Ops is exactly two floors above HR. Which department is on floor 3?
-**Asked at:** commonly asked (no company-specific report found); linear arrangement puzzles are a standard reasoning item.
+**Asked at:** commonly asked (no company-specific report found); linear arrangement puzzles are a standard reasoning item (prep-site claim, unverified).
 **What the interviewer is checking:** Placing fixed facts first and using the strongest clue to pin the rest.
 **Say this in the interview:** "IT is on 5. Ops is two above HR, and Ops cannot be on 5, so HR is on 1 or 2; HR is not on 1, so HR is on 2, Legal on 1, Ops on 4. Finance gets floor 3, which is below Ops and not next to IT. Floor 3 is Finance."
 **Answer:** **Finance is on floor 3.**
 **Target time:** 120 seconds (as written in the heading).
-**If you are short of time:** this is a 5-item single-line puzzle with a clear start (IT on 5); do it in the first two thirds, skip only if you have already used your 2-minute puzzle budget.
+**If you are short of time (our suggestion):** this is a 5-item single-line puzzle with a clear start (IT on 5); do it in the first two thirds, skip only if you have already used your 2-minute puzzle budget.
 **Step-by-step reasoning:**
 1. IT is on floor 5.
 2. Ops is two above HR; Ops cannot be on 5 (IT), so Ops is on 4 or lower, which puts HR on 1 or 2 (or 3 would give Ops 5, impossible).
@@ -781,7 +783,7 @@ while x > 0:
 **Say this in the interview:** "Each weighing has three outcomes, so two weighings can separate at most 9 cases. I have 10 coins, so two cannot always work. Three weighings are enough: 3 against 3, then narrow down. The answer is 3."
 **Answer:** **3 weighings**
 **Target time:** 75 seconds (as written in the heading).
-**If you are short of time:** do it if you remember "three outcomes, powers of 3"; otherwise skip, as the lower-bound proof is the part that takes time.
+**If you are short of time (our suggestion):** do it if you remember "three outcomes, powers of 3"; otherwise skip, as the lower-bound proof is the part that takes time.
 **Step-by-step reasoning:**
 1. Lower bound: a weighing ends in one of 3 ways (left pan down, right pan down, balance). After w weighings you can tell apart at most 3^w situations. There are 10 possible heavy coins. 3^2 = 9 < 10, so 2 weighings cannot always decide. 3^3 = 27 >= 10, so 3 might.
 2. Method with 3: put 3 coins on each pan and keep 4 aside.
@@ -794,7 +796,7 @@ while x > 0:
 - Splitting into three groups (not two) uses all three outcomes.
 - "Guaranteed" means worst case, not lucky case.
 **Likely follow-ups:** *9 coins?* 2 weighings (3 vs 3, then 1 vs 1). *Up to how many coins in 4 weighings?* 81 (3^4).
-**Common mistakes / traps:** Splitting into two halves (5 vs 5), which needs 4 weighings in the worst case; answering 2 because 9 is close to 10.
+**Common mistakes / traps:** Thinking in two outcomes only (heavier side or lighter side) and answering about 4 from the logarithm base 2 of 10; answering 2 because 9 is close to 10 (9 coins would need 2, 10 coins need 3).
 
 ### Q37 ⭐⭐ 🟡 Mock Set 4, Q7 (suggested time 75 seconds): A table orders has a column region with the values 'N', 'S', NULL, 'N', NULL (five rows). How many rows does SELECT * FROM orders WHERE region NOT IN ('N', NULL) return, and why?
 **Asked at:** commonly asked (no company-specific report found); NULL traps in SQL are a common analyst interview topic.
@@ -802,7 +804,7 @@ while x > 0:
 **Say this in the interview:** "Zero rows. NOT IN means 'not equal to N and not equal to NULL'. Comparing anything to NULL gives unknown, so the whole condition can never be true. Even 'S' is dropped."
 **Answer:** **0 rows**
 **Target time:** 75 seconds (as written in the heading).
-**If you are short of time:** this is a one-line logic item, so do it early; the rule is "NOT IN with a NULL in the list returns nothing".
+**If you are short of time (our suggestion):** this is a one-line logic item, so do it early; the rule is "NOT IN with a NULL in the list returns nothing".
 **Step-by-step reasoning:**
 1. `region NOT IN ('N', NULL)` is the same as `region <> 'N' AND region <> NULL`.
 2. `x <> NULL` is neither true nor false but UNKNOWN. SQL keeps a row only when the condition is TRUE.
@@ -828,7 +830,7 @@ while x > 0:
 **Say this in the interview:** "98 is 100 minus 2, so 98 x 52 is 100 x 52 minus 2 x 52, which is 5200 minus 104, so 5096."
 **Answer:** **5096**
 **Target time:** 75 seconds (as written in the heading).
-**If you are short of time:** do it; it takes 20 seconds. Never skip a near-round multiplication.
+**If you are short of time (our suggestion):** do it; it takes 20 seconds. Never skip a near-round multiplication.
 **Step-by-step reasoning:**
 1. Rewrite 98 as 100 - 2.
 2. (100 - 2) x 52 = 100 x 52 - 2 x 52 (the distributive rule: multiplying a difference means multiplying each part).
@@ -848,7 +850,7 @@ Options: (a) Both teams handled tickets of comparable volume and complexity. (b)
 **Say this in the interview:** "The argument jumps from 'more tickets closed' to 'more productive'. That only holds if the tickets are comparable in difficulty and the teams had a similar workload. That is (a)."
 **Answer:** **(a)**
 **Target time:** 75 seconds (as written in the heading).
-**If you are short of time:** do it; for "which assumption" items, pick the option that, if false, would break the argument, and move on.
+**If you are short of time (our suggestion):** do it; for "which assumption" items, pick the option that, if false, would break the argument, and move on.
 **Step-by-step reasoning:**
 1. Conclusion: A is more productive. Evidence: A closed 20% more tickets.
 2. Gap: if A got easier or more tickets, closing more says nothing about productivity. The argument needs comparable volume and complexity.
@@ -868,7 +870,7 @@ Options: (a) Both teams handled tickets of comparable volume and complexity. (b)
 **Say this in the interview:** "7 right gives 7; 2 wrong costs 0.5, so my net is 6.5 out of 10. Accuracy on attempted is 7 out of 9, about 77.8%. I would improve accuracy on the wrong ones first."
 **Answer:** **Net score 6.5 out of 10; accuracy 7/9, about 77.8% (rounded to one decimal).**
 **Target time:** 75 seconds (as written in the heading).
-**If you are short of time:** do it; it is 20 seconds of arithmetic. Compute net first, accuracy second.
+**If you are short of time (our suggestion):** do it; it is 20 seconds of arithmetic. Compute net first, accuracy second.
 **Step-by-step reasoning:**
 1. Wrong answers = 9 - 7 = 2.
 2. Net = 7 x 1 - 2 x 0.25 = 7 - 0.5 = 6.5.

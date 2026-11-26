@@ -149,7 +149,7 @@
 **Explain simply:**
 - Part-to-whole: the first word is a piece of the second.
 - A table is made of rows and columns; each row holds cells.
-**Likely follow-ups:** *Cell is to row as ? is to table.* Cell : row is part of whole too; the matching pair is row : table (hand-checked).
+**Likely follow-ups:** *Cell is to row as ? is to table.* Both row and column are parts of a table, so the item would need options that separate them; the natural reading is row (a cell is part of a row, a row is part of a table). Hand-checked.
 **Common mistakes / traps:** Picking Column because it "goes with" row (word association), or Cell by reversing the direction.
 
 ### Q10 ⭐⭐⭐ 🟢 Find the odd one out among these Excel functions: COUNTIF, SUMIF, AVERAGEIF, VLOOKUP, SUMIFS.
@@ -162,7 +162,7 @@
 2. VLOOKUP looks up a key and fetches a related value; it does not summarise.
 3. A second surface clue agrees: four names end in IF or IFS; VLOOKUP does not.
 **Fast method (30 seconds):** Ask "what does it return?": a summary (count, total, average) versus a lookup (a value from a table).
-**Check:** Hand-checked. A second rule exists (only COUNTIF counts rather than sums or averages), but it would make four "odd" ones, so the lookup-versus-summary rule is preferred.
+**Check:** Hand-checked. Second rules exist (only COUNTIF counts rather than sums or averages; only SUMIFS takes several conditions), but each singles out one function while leaving the other three together with VLOOKUP unexplained, so the lookup-versus-summary rule is preferred. Rule used: what the function returns.
 **Explain simply:**
 - Conditional aggregation means "summarise only what meets a test".
 - Lookup means "find a row by a key and read another column".
@@ -196,7 +196,7 @@
 2. Next gap +4 gives 29; 29 - 26 = 3 = C. Matches.
 3. Next gap +5 gives 8 = H (3 + 5). Matches.
 4. Next gap +6 gives 14 = N.
-**Fast method (30 seconds):** Whenever letters seem to jump backward in a forward series, add 26 to the later letter before taking the gap. C becomes 29, then 29 - 25 = 4 fits the pattern.
+**Fast method (30 seconds):** Whenever letters seem to jump backward in a forward series, add 26 to the later letter before taking the gap. C becomes 29, and the gap from Y (25) to 29 is 4, which fits the growing-gap pattern.
 **Check:** Verified by script; the gaps 2, 3, 4, 5 fit all given terms and the next is 14 = N.
 **Explain simply:**
 - The alphabet is a circle of 26, so passing Z lands you back at A.
@@ -278,7 +278,7 @@
 **Explain simply:**
 - Position value: the letter's place in the alphabet. Convert to numbers, do the arithmetic, convert back.
 - Opposite-letter rule: the letter the same distance from the other end. Position 3 (C) pairs with 27 - 3 = 24 (X). So A-Z, B-Y, C-X ... M-N all add to 27.
-- Anchors: remember E J O T Y (the word "EJOTY"). Any letter is at most 2 steps from an anchor, so M is O minus 2 = 13, and R is T minus 2 = 18.
+- Anchors: remember E J O T Y (the word "EJOTY"). From F to Y every letter is at most 2 steps from an anchor, so M is O minus 2 = 13, and R is T minus 2 = 18. For A to D, count up from A or down from E (A to D are 4 to 1 steps below E), and Z is 1 step above Y.
 - Worked mini-example: opposite of K? K = 11, 27 - 11 = 16 = P. Position of V? Anchor T = 20, V is 2 further = 22.
 - Useful extra: vowels A E I O U are 1, 5, 9, 15, 21.
 **Likely follow-ups:** 1) *Opposite of H?* 27 - 8 = 19 = S. 2) *What is the 10th letter from the right?* 27 - 10 = 17 = Q (the 17th from the left).
@@ -347,7 +347,7 @@
 1. Positions: CF = 3, 6; GJ = 7, 10; KN = 11, 14; PR = 16, 18; TW = 20, 23.
 2. Gap inside each pair (second minus first): 3, 3, 3, 2, 3.
 3. Four pairs have gap 3; PR has gap 2, so PR is the odd one.
-4. A second rule: the first letters go C, G, K (steps of 4), so the next would be O (15), not P (16); then T is 20 (5 after 15). Under this rule P also breaks the pattern, so both rules point to PR.
+4. A second rule on the first letters (C, G, K, P, T = 3, 7, 11, 16, 20, steps 4, 4, 5, 4) is not clean: removing any one item does not leave a constant step, so it does not point to a different answer. The gap-inside-the-pair rule is the one used.
 **Fast method (30 seconds):** Check the gap inside each item first; it is the quickest test and usually reveals the intruder.
 **Check:** Verified by script: gaps 3, 3, 3, 2, 3.
 **Explain simply:**
@@ -454,7 +454,7 @@
 - A "rule" is just a recipe that produces the terms. With only three terms, more than one recipe can produce them. Rule A: multiply by 2 gives 2, 4, 8, 16. Rule B: add 2, then 4, then 6 (the added amount grows by 2 each time) gives 2, 4, 8, 14.
 - In fact any fourth number can be forced by some formula (a polynomial, i.e. a formula made of powers of n, can be drawn through any set of points), so "fits" alone is not enough. You need the simplest rule.
 - Simplest means fewest steps and no strange constants. Doubling is one step; rule B needs two layers.
-- Tie-breakers: (1) check the answer options, because test setters include only one of the rival values as a valid choice or make the options show the intended rule; (2) a longer given series removes the ambiguity, so more terms mean less doubt; (3) if still tied, take the simplest rule and move on.
+- Tie-breakers: (1) check the answer options, because often only one of the rival values is offered (our suggestion, not a guarantee); (2) a longer given series removes the ambiguity, so more terms mean less doubt; (3) if still tied, take the simplest rule and move on.
 **Worked mini-example:** 2, 4, 8, 16, 32 (doubling) and 2, 4, 8, 14, 22 (differences 2, 4, 6, 8) agree on three terms and split on the fourth. Shown by script.
 **Likely follow-ups:** If the options are 14, 16 and 18, which? Both 14 and 16 fit, so look for the setter's intent: doubling is the simplest, so 16; say you assumed the simplest rule. If the series is 2, 4, 8, 14, ? then rule B is now forced, next is 22.
 **Common mistakes / traps:** Spending two minutes proving the rule is the only one. Also picking a clever, complicated rule when a plain one fits.
@@ -527,7 +527,7 @@
 **Check:** Verified by script (groups generated from start 26 - 4g with step -1 reproduce all three given groups).
 **Explain simply:**
 - Two-level pattern: one rule inside a group, another rule from group to group.
-- Between groups: X (24) to V (22) is a jump of 2 letters skipped over, consistent with first letters dropping by 4 (3 letters used, 1 skipped).
+- Between groups: X (24) to V (22) is a step of 2, so one letter (W) is skipped. That is why first letters drop by 4: 3 letters are used and 1 is skipped.
 **Likely follow-ups:** The group after NML? JIH (10, 9, 8).
 **Common mistakes / traps:** Continuing alphabetically from the last letter (X, W, V, ...) and getting WVU.
 
@@ -600,7 +600,7 @@
 2. Test on row 2: 4 x 5 = 20 matches.
 3. Apply to row 3: 6 x 7 = 42.
 **Fast method (30 seconds):** Try add, subtract, multiply on the first row, and confirm on the second row before using it. Two rows both matching removes most doubts.
-**Check:** Verified by script: products of Col 1 and Col 2 are 6, 20, 42. No other simple rule (sum, difference, square of one column) fits both rows.
+**Check:** Verified by script: products of Col 1 and Col 2 are 6, 20, 42. No other simple rule (sum, difference, square of one column) fits both rows; the natural variants Col 1 x (Col 1 + 1) and Col 2 x (Col 2 - 1) also give 42 (only two complete rows exist, so very contrived formulas could differ).
 **Explain simply:**
 - A row rule must work for every row that has all its numbers.
 - Product means multiplication.
@@ -735,7 +735,7 @@
 3. So the rule is Col 1 x Col 1 - Col 2.
 4. Row 4: 8 x 8 = 64; 64 - 5 = 59.
 **Fast method (30 seconds):** Numbers that grow faster than steadily (22, 32, 47 for inputs 5, 6, 7) hint at squares. Compare to squares, then see what is left over.
-**Check:** Rule re-applied to rows 1 to 3 (22, 32, 47, all match). A script search over simple rules of the form a squared (or a x b, or a) plus k x b plus c found only this one, so no competing simple rule.
+**Check:** Rule re-applied to rows 1 to 3 (22, 32, 47, all match). A script search over formulas with small whole coefficients (squares and product of the columns, each column, and a constant) found two other fits, but each needs six non-zero terms and they give 56 and 62; Col 1 squared minus Col 2 is by far the simplest, so it is the rule used.
 **Explain simply:**
 - Three rows that fit one rule give good evidence; the fourth row is the prediction.
 - "Squared" means a number multiplied by itself.
@@ -821,7 +821,7 @@
 - A "track" is one strand of the pattern (letters or numbers) that follows its own rule.
 - Multiplying by a constant (x3) is called a geometric pattern; adding a constant is arithmetic.
 **Likely follow-ups:** 1) *Next after M162O?* P486R. 2) *What if the numbers went 2, 6, 12, 20?* Differences 4, 6, 8, so the next is 30 (a different rule; verified by hand).
-**Common mistakes / traps:** Adding 4 and 6 (+4, +12, +36) instead of multiplying; wrong +3 counting on letters.
+**Common mistakes / traps:** Adding a constant: the differences 4, 12, 36 are not constant, so the rule is multiplying; wrong +3 counting on letters.
 
 ### Q48 ⭐ 🟡 Letter series with two tracks: YA, ZC, AE, ?
 **Asked at:** commonly asked (no company-specific report found); wrap-around two-track series appear in prep material (unverified).

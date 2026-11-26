@@ -4,7 +4,7 @@
 **Scope:** multi-step blood relations and coded relations, direction and distance with turns and coordinates, letter, number, table and word coding-decoding, and input-output machine and process-tracing questions; fully specified problems with single answers plus method questions.
 
 ### Q1 ⭐⭐⭐ 🟢 Pointing to a photograph, Rohit says, "She is the daughter of the only son of my father's mother." How is the girl in the photograph related to Rohit?
-**Asked at:** commonly asked (no company-specific report found); blood relations appear in prep-site topic lists for TCS NQT, Infosys, Cognizant and Mu Sigma (reported by prep sites, unverified).
+**Asked at:** commonly asked (no company-specific report found); blood relations appear in prep-site topic lists for TCS NQT and Mu Sigma (reported by prep sites, unverified).
 **What the interviewer is checking:** Whether you can unpack a nested "of ... of ..." phrase from the inside out.
 **Say this in the interview:** "My father's mother is my grandmother. Her only son must be my father. His daughter is my sister. So she is Rohit's sister."
 **Answer:** **The girl is Rohit's sister.**
@@ -222,7 +222,7 @@ start (0,0)
 **Common mistakes / traps:** Assuming one pair proves the rule (use at least two letters); forgetting wrap-around; mixing the order of combined rules.
 
 ### Q12 ⭐⭐⭐ 🟡 Pointing to a woman, Ajay says, "She is the mother-in-law of my wife's brother's wife." How is the woman related to Ajay? Assume all siblings mentioned are full siblings.
-**Asked at:** commonly asked (no company-specific report found); multi-step blood-relation chains appear in prep-site lists for TCS, Infosys and Cognizant (unverified).
+**Asked at:** commonly asked (no company-specific report found); multi-step blood-relation chains appear in prep-site lists for TCS NQT and Mu Sigma (unverified).
 **What the interviewer is checking:** Reading a chain from the inside out and noticing a "round trip" that lands back on a close relative.
 **Say this in the interview:** "My wife's brother's wife: her mother-in-law is her husband's mother. Her husband is my wife's brother, so his mother is my wife's mother. That is my mother-in-law."
 **Answer:** **She is Ajay's mother-in-law (his wife's mother).**
@@ -334,7 +334,7 @@ Maternal grandmother
 **Common mistakes / traps:** Counting the person themselves as a sibling, which gives d = s and nonsense; mixing up which group is "doubled".
 
 ### Q17 ⭐⭐⭐ 🟡 Six people are described: (i) Arun is the husband of Bela. (ii) Chetan is the son of Bela. (iii) Divya is the only sister of Chetan. (iv) Esha is the wife of Chetan. (v) Farah is the daughter of Esha and Chetan. How is Divya related to Farah?
-**Asked at:** commonly asked (no company-specific report found); chain-style relation sets appear in prep-site lists for TCS, Infosys and Cognizant (unverified).
+**Asked at:** commonly asked (no company-specific report found); chain-style relation sets appear in prep-site lists for TCS NQT and Mu Sigma (unverified).
 **What the interviewer is checking:** Ignoring distractors and finding the shared parent.
 **Say this in the interview:** "Divya is Chetan's sister, and Chetan is Farah's father. So Divya is Farah's father's sister, her paternal aunt (bua)."
 **Answer:** **Divya is Farah's paternal aunt (father's sister, "bua").**
@@ -364,7 +364,7 @@ Maternal grandmother
 **Explain simply:**
 - Each symbol is a rule about the pair on either side of it, not about the chain as a whole.
 - Siblings (Q, R) share parents, so what is true of P and Q is true of P and R.
-**Likely follow-ups:** 1) *How is S related to P?* Daughter's child (grandchild; gender not given). 2) *Change R + S to R / S?* Then R is S's father, but R was Q's sister (female), so the chain is contradictory.
+**Likely follow-ups:** 1) *How is S related to P?* Daughter's child (grandchild; gender not given). 2) *Change R + S to R / S?* Then R is S's father. That is allowed: Q x R only says Q is female, it does not fix R's gender, so R is Q's brother. P is then S's paternal grandfather (father's father).
 **Common mistakes / traps:** Answering "paternal grandfather" (forgetting R is a woman, so the link is through the mother); reading P and R as unrelated.
 
 ### Q19 ⭐⭐⭐ 🟡 In a coded relation, A + B means A is the mother of B, A - B means A is the brother of B, A x B means A is the sister of B and A / B means A is the father of B. How is M related to T in M x N / O - T?
@@ -764,7 +764,7 @@ Maternal grandmother
 **Common mistakes / traps:** Treating the "only son" as a different person (uncle) and answering "great-grandmother" or "aunt's mother".
 
 ### Q43 ⭐⭐⭐ 🔴 A family has three generations. Anil and Bharti are husband and wife. Chitra is the daughter of Anil and Bharti. Dev is the husband of Chitra. Esha is the daughter of Dev and Chitra. Farid is the brother of Bharti. How is Farid related to Esha?
-**Asked at:** commonly asked (no company-specific report found); family-tree blood-relation questions are on TCS, Infosys and Accenture prep-site lists (unverified).
+**Asked at:** commonly asked (no company-specific report found); family-tree blood-relation questions are on TCS NQT and Mu Sigma prep-site lists (unverified).
 **What the interviewer is checking:** Drawing a tree and counting generations to name a grand-uncle correctly.
 **Say this in the interview:** "Bharti is Esha's mother's mother, so Esha's maternal grandmother. Farid is Bharti's brother, so he is Esha's maternal grandmother's brother, her maternal great-uncle."
 **Answer:** **Farid is Esha's maternal great-uncle (her mother's mother's brother).**
@@ -872,7 +872,7 @@ Maternal grandmother
 **Check:** Verified by script.
 **Explain simply:**
 - Modulo 10 gives the last digit of the sum, so digits wrap round like a clock.
-- Order matters: deduplicating is the last step, because two different digits can never become equal after the shift, but reversing first decides which copy counts as the "first occurrence".
+- Reversing first matters: it decides which copy counts as the "first occurrence". The shift never merges two different digits, so removing repeats before or after the shift gives the same result; the stated order (shift, then remove repeats) is simply followed.
 **Likely follow-ups:** 1) *Keep the last occurrence instead?* From 5 2 0 7 0 5 keep last: 2 7 0 5.
 **Common mistakes / traps:** Writing 10 instead of 0; keeping the first occurrence of the original (unreversed) string; removing both copies of a repeat.
 
@@ -953,7 +953,7 @@ Maternal grandmother
 **Check:** Verified by script (gross 1,040, net 936.0).
 **Explain simply:**
 - Piecewise means different formulas for different ranges of h; the 800 is the pay for the first 40 hours only.
-- The 10% applies to the whole gross, not only to the part above 1,000 (as the question is worded).
+- The 10% applies to the whole gross, not only to the part above 1,000 (as the question is worded). This creates a jump: h = 46 gives net 980, but h = 47 gives gross 1,010 and net 909.
 **Likely follow-ups:** 1) *h = 46?* Gross 800 + 180 = 980, not above 1,000, so net 980 (hand-checked).
 **Common mistakes / traps:** Applying 30 to all 48 hours; taking 10% only of the excess over 1,000.
 
@@ -1012,10 +1012,11 @@ Maternal grandmother
 1. Branch A (no deduction): net = gross, which must be 1,000 or less. 1,017 is above that, so this is impossible.
 2. Branch B (with deduction): net = 0.9 x gross, so gross = 1,017 / 0.9 = 1,130 (which is above 1,000, consistent).
 3. 1,130 is above 800, so overtime applies: 800 + 30(h - 40) = 1,130, so 30(h - 40) = 330 and h = 51.
-**Check:** Forward: h = 51 gives gross 800 + 330 = 1,130 and net 1,017. Brute force over h = 0 to 99 finds 51 only; net pay rises with h, so no other value matches.
+**Check:** Forward: h = 51 gives gross 800 + 330 = 1,130 and net 1,017. Brute force over whole hours h = 0 to 99 finds 51 only. Note that net pay does not rise steadily: it is 980 at h = 46 but 909 at h = 47 (the 10% deduction switches on above 1,000 gross), so uniqueness needs the check above, not an assumption that more hours always means more net pay. We assume whole hours; 1,017 is above 1,000, so the no-deduction branch cannot give it even with part hours.
 **Explain simply:**
 - Undoing a deduction means dividing by 0.9 (not adding 10%).
 - Always test the branch you assumed.
+- The 10% deduction makes net pay drop just after gross passes 1,000 (h = 46 gives 980, h = 47 gives 909), so a net figure can sometimes come from two different hour counts; here only h = 51 works.
 **Likely follow-ups:** 1) *Net 936?* Gross 1,040 and h = 48.
 **Common mistakes / traps:** Adding 10% (1,017 x 1.1 = 1,118.7), which gives a wrong gross; forgetting the 800 base.
 
