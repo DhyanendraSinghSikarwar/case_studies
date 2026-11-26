@@ -1484,6 +1484,7 @@ Subject: Associate Analyst (Reporting) application, HR reporting and Power BI pr
 2. Pick one real example of data you used in HR (an MIS report, attrition analysis, headcount tracking). Do not use confidential numbers.
 3. Name one project and one tool you can speak about in detail.
 4. Also prepare questions for the recruiter: role, team, tools, pay band, notice period, location.
+**Example (illustrative):** Meera (invented) managed monthly attendance and attrition MIS in HR. She says: "In HR I built the monthly attrition report in Excel. I started wanting to find why people left, so I learned SQL and built a small attrition dashboard on a public sample dataset. This role is reporting-heavy with SQL, which is the next step for me." Every fact in her answer is true and she can explain each one. Replace the facts with your own.
 **Say this in the interview:** "In HR I kept ending up in the reports: [your real example]. I wanted to do that part full time, so I learned [tools] and built [project]. This role uses [skill from JD], which is the next step for me." Replace every bracket with your own true facts.
 **Common mistakes:** Memorising a script that sounds rehearsed. Saying "salary is better in analytics". Overstating your project. Running well past 90 seconds.
 **Where this is covered:** Book 0 Q58; Book 11 Parts 1-2 (career-switch story and why leave HR); Book 11 Part 8 for salary and notice questions; Guide Section 4.
