@@ -57,7 +57,7 @@ Total time: drafting 135 minutes + editing 65 + lunch 45 + approval 50 + upload 
 
 ### Q13 🟡 Committee with at least one man (casework)
 Cases by the number of men:
-- 1 man and 2 women: 3 x 6 = 18 (6 pairs of women from 4: WW pairs are 6).
+- 1 man and 2 women: 3 x 6 = 18 (there are 6 pairs of women among 4 women).
 - 2 men and 1 woman: 3 pairs of men x 4 women = 12.
 - 3 men: 1.
 Total: 18 + 12 + 1 = 31. Check by subtraction: all committees of 3 from 7 people = 35; committees with no man (3 women from 4) = 4; 35 - 4 = 31. **Answer: 31.**
@@ -151,5 +151,5 @@ Work from the end. Call a pile "losing" if the player to move from it will lose 
 - Pile 3: take 1 leaves 2 (losing for the opponent). Winning. Pile 4: take 4 and win. Winning.
 - Pile 5: take 1 leaves 4 (winning for the opponent); take 4 leaves 1 (winning for the opponent). Losing.
 - Pile 6: take 1 leaves 5 (losing). Winning. Pile 7: take 1 leaves 6 (winning), take 4 leaves 3 (winning). Losing.
-The losing piles are 0, 2, 5, 7, 10, 12, 15, 17, 20, 22, ... (the remainder is 0 or 2 when divided by 5). From 23, taking 1 leaves 22, a losing pile for your opponent. Taking 4 would leave 19, a winning pile for the opponent (they take 4 to leave 15). After you leave a losing pile, whatever the opponent takes, you can bring the pile back to a losing one (if they take 1, take 4, and if they take 4, take 1: the total of the two moves is 5 each round).
-**Answer: take 1 token, leaving 22; then always make the two moves in a round add up to 5.**
+The losing piles are 0, 2, 5, 7, 10, 12, 15, 17, 20, 22, ... (the remainder is 0 or 2 when divided by 5). From 23, taking 1 leaves 22, a losing pile for your opponent. Taking 4 would leave 19, a winning pile for the opponent (they take 4 to leave 15). After you leave a losing pile, every move your opponent can make leaves a winning pile, and from that pile you can move to a losing pile again (the list above shows how). Example: from 22, if the opponent takes 1 leaving 21, you take 1 leaving 20; if they take 4 leaving 18, you take 1 leaving 17.
+**Answer: take 1 token, leaving 22, a losing pile for your opponent.**
