@@ -1,7 +1,7 @@
 # Book 13 — Logical Reasoning & Analytical Thinking | Part 12: How to Develop Logical Reasoning 🟢🟡
 
 **Target:** 20 questions | **Actual:** 23 questions
-**Scope:** learning-journey interview questions plus the scope of a reasoning skill-development plan for career switchers: roadmap, daily practice plan, free resources, practice sets, mini-projects and self-check tests, with a few small worked items (the remaining 540 practice questions are in Parts 2-10; timed mocks in Part 11).
+**Scope:** learning-journey interview questions plus the scope of a reasoning skill-development plan for career switchers: roadmap, daily practice plan, free resources, practice sets, mini-projects and self-check tests, with a few small worked items (the remaining practice questions are in Parts 2-10: 554 questions in the current files, while the question text and plan count 540; timed mocks in Part 11).
 
 ### Q1 ⭐⭐⭐ 🟢 How did you build your logical reasoning skills, and how long did it take you?
 **Asked at:** commonly asked (no company-specific report found); learning-journey questions are standard in skill-development rounds.
@@ -154,6 +154,21 @@
 4. List every possible arrangement or case (4 people give 24 orders) and cross out those breaking a clue. Exactly one should survive. A spreadsheet or a few lines of code can do this (see Q11).
 5. Have a friend solve it cold and say where they hesitated; each hesitation may be a hidden assumption.
 6. Write the answer key with the reasoning, not only the final letter.
+**Ready-made practice sets and small datasets in this book (counts tallied from the current files; Part 11 holds 40 and Book 6 Part 7 holds 80 reasoning items):**
+
+| Set | Questions | Use |
+|---|---|---|
+| Part 2 Deductive logic | 73 | syllogisms, conditions |
+| Part 3 Inequalities and ranking | 51 | order puzzles |
+| Part 4 Arrangements | 74 | seating, floors, boxes, days |
+| Part 5 Multi-attribute, truth-teller | 70 | grid and constraint puzzles |
+| Part 6 Relations, direction, coding | 60 | blood relations, coding-decoding |
+| Part 7 Series and analogy | 50 | pattern work |
+| Part 8 Critical reasoning | 62 | assumptions, cause vs correlation |
+| Part 9 Data-analyst logic | 60 | NULL traps, decision tables |
+| Part 10 Quantitative puzzles | 54 | brain teasers |
+
+That is 554 in Parts 2 to 10 (73+51+74+70+60+50+62+60+54). Small datasets you build yourself, all invented (our suggestion): the 7-row employees test table in Q14, the 8-row error log in Q10, and a 20-row invented HR table (employee, department, rating, tenure, left yes/no) for the claim note in Q13. Never use real employee data.
 **Explain simply:**
 - "Hidden assumption" means something the writer takes for granted that the solver does not know, such as "left" meaning the speaker's left.
 - Brute force means trying every case; it is slow by hand but easy for a computer on small puzzles, and it proves uniqueness.
@@ -235,20 +250,20 @@ Real output: `('B', 'C', 'A', 'D')`, one line only, so the answer is unique.
 ### Q12 ⭐⭐ 🟡 The remaining Book 13 practice parts (Parts 2 to 10) hold 540 questions. You plan to solve and review 15 questions a day for 6 days a week, and each question takes about 3 minutes including review. How many days and how many weeks does that take, how many minutes a day is that, and what do you drop first if you have only 4 weeks?
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Simple planning arithmetic and prioritisation.
-**Say this in the interview:** "540 divided by 15 is 36 days; at 6 days a week that is 6 weeks; 15 times 3 is 45 minutes a day. With 4 weeks I can do 360, so I drop about 180, starting with the hardest and least job-relevant."
-**Answer:** **36 study days = 6 weeks, at 45 minutes a day. In 4 weeks you cover 24 days x 15 = 360 questions, so drop 180 (one third).**
-**Step-by-step reasoning:**
-1. Days = 540 / 15 = 36.
-2. Weeks = 36 / 6 = 6.
-3. Minutes per day = 15 x 3 = 45.
-4. Four weeks = 4 x 6 = 24 study days, 24 x 15 = 360 questions.
-5. Dropped = 540 - 360 = 180.
+**Say this in the interview:** "On the 540 in the question, 540 divided by 15 is 36 days, 6 weeks at 6 days a week, and 15 times 3 is 45 minutes a day. The book now actually holds 554, which is 37 days, about 7 weeks. With 4 weeks I can do 360 either way, so I drop 180 (of 540) or 194 (of 554), starting with the hardest and least job-relevant."
+**Answer:** **Two counts exist, so both are given. Using the 540 stated in the question: 36 study days = 6 weeks, at 45 minutes a day; in 4 weeks you cover 24 days x 15 = 360 questions, so drop 180 (one third). Using the 554 questions the part files actually hold (counted by script: 73+51+74+70+60+50+62+60+54): 37 study days (36 full days of 15 plus one day of 14), which is 6 weeks and 1 day, so 7 calendar weeks; still 45 minutes a day; in 4 weeks you drop 194 (35%).**
+**Step-by-step reasoning (540 as stated, then 554 in brackets):**
+1. Days = 540 / 15 = 36 (554 / 15 = 36.93, so 37 days when you round up).
+2. Weeks = 36 / 6 = 6 (37 / 6 = 6.17, so 7 calendar weeks).
+3. Minutes per day = 15 x 3 = 45 (same for both counts).
+4. Four weeks = 4 x 6 = 24 study days, 24 x 15 = 360 questions (same for both counts).
+5. Dropped = 540 - 360 = 180 (554 - 360 = 194).
 **What to drop first (our suggestion):** the hardest red-rated items and the topics least likely to appear in your target test: first quantitative puzzles and brain teasers (Part 10), then the hardest multi-attribute and truth-teller puzzles (Part 5). Keep Part 2 (deductive logic), Part 8 (critical reasoning) and Part 9 (data-analyst logic), which link most directly to analyst work. Use your diagnostic (Q18) to adjust.
-**Check:** Verified by script. Note: the current part files together hold 554 questions in Parts 2 to 10 (counted by script), not 540. With 554: 554 / 15 = 36.9, so 37 days (about 6.2 weeks); the 4-week cut is then 194 questions. The question's 540 is used above as stated.
+**Check:** Re-run by script: 540 gives 36 days, 6 weeks, 45 minutes, 360 done, 180 dropped; 554 gives 37 days, 7 calendar weeks, 360 done, 194 dropped. The question says 540 but the part files now hold 554 (an earlier planning count); use 540 to answer the question as asked and mention 554 as the real total.
 **Explain simply:**
 - Rate x time: questions per day times minutes per question gives daily time.
 - The 3 minutes per question is an assumption; if your real average is 4, the daily time is 60 minutes (15 x 4).
-**Likely follow-ups:** *Only 5 days a week?* 540 / 15 = 36 days / 5 = 7.2, so about 8 weeks (7.2 rounded up to whole weeks).
+**Likely follow-ups:** *Only 5 days a week?* 540 / 15 = 36 days / 5 = 7.2, so about 8 weeks (7.2 rounded up to whole weeks); with 554, 37 days / 5 = 7.4, also 8 weeks.
 **Common mistakes / traps:** Dividing by 7 days instead of 6; forgetting the review time; dropping the topics you dislike rather than the ones the test does not need.
 
 ### Q13 ⭐⭐ 🟡 Mini-project: pick one claim from an HR report (for example 'employees who attended training have lower attrition') and write a one-page note that lists the conclusion, the assumptions behind it and one alternative explanation. Which reasoning skills does this practise, and how would you show it to an interviewer?
@@ -302,7 +317,7 @@ FROM employees;
 | Gita (blank on_notice) | 4 | 2 | blank | no bonus / bonus |
 Gita shows the trap: comparing a blank (NULL) gives "unknown", which falls into ELSE, while the COALESCE version treats blank as "not on notice". Neither is automatically right; the rule owner decides.
 **Excel equivalents (from memory, not run here; confirm in the tool):**
-- `=IF(AND(B2>=4, C2>1, D2<>"Yes"), "bonus", "no bonus")`. Note that in Excel a blank cell compared with a number behaves as 0 in many comparisons, so blanks may behave differently from SQL; test it.
+- `=IF(AND(B2>=4, C2>1, D2<>"Yes"), "bonus", "no bonus")`. Note that in Excel a blank cell compared with a number behaves as 0 in many comparisons, so blanks may behave differently from SQL; test it. Here the sheet stores notice as the text "Yes" or "No" (the SQL table uses 1 or 0), and a blank notice cell gives TRUE for `D2<>"Yes"`, so it counts as not on notice, like the blank-safe SQL version.
 **Edge-case checklist:** exactly on each boundary (tenure 1, rating 4), just below (3.9) and above (1.01), blanks in each column, text where a number is expected, the "unless" clause alone.
 **Explain simply:**
 - "Over 1 year" means greater than 1 (excludes 1); "4 or more" means 4 or higher (includes 4). The words decide between `>` and `>=`.
@@ -385,7 +400,7 @@ Gita shows the trap: comparing a blank (NULL) gives "unknown", which falls into 
 - Be honest about the limit: one or two questions per topic is a rough signal, not a measurement. One careless miss changes a score. Re-test with different questions after month one.
 - A zero: do not just drill harder. Go back to the topic's basic method (learn the convention, study 3 solved examples, then solve easy items untimed). If you still score zero after a week, ask whether the method or the notation is the gap.
 **Worked mini-example:** Scores: seating 0 of 2, series 0 of 1, critical reasoning 0 of 1, blood relations 1 of 2, the rest full marks. Month one: seating, series, critical reasoning (the three lowest), with blood relations as a light fourth topic. Seating is a zero, so it starts with 3-person row puzzles before 5-person ones.
-**Likely follow-ups:** 1) *Why not just use all 540 practice questions as a test?* Too long and you lose the fresh-eyes questions you need for later re-tests. 2) *What if two topics tie?* Pick the one more relevant to your target round.
+**Likely follow-ups:** 1) *Why not just use all 554 practice questions as a test?* Too long and you lose the fresh-eyes questions you need for later re-tests. 2) *What if two topics tie?* Pick the one more relevant to your target round.
 **Common mistakes / traps:** Treating 12 questions as precise; timing the test first and mixing "slow" with "does not know"; reusing the same 12 questions as the re-test.
 
 ### Q19 ⭐⭐ 🟡 How should a 4-week reasoning plan differ for a service-MNC online test, an analytics-firm puzzle round such as Mu Sigma or Fractal, and a data-analyst interview with an oral puzzle, given that the exact formats are only reported on prep sites?

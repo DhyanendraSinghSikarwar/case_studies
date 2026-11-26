@@ -459,7 +459,7 @@
 - (d) Both branches report to the same regional manager.
 **Asked at:** commonly asked (no company-specific report found).
 **What the interviewer is checking:** Whether you replace raw counts with rates, using a proper denominator (the base).
-**Say this in the interview:** "B has ten times the customers, so I compare complaints per customer. A's complaints rose 50% while B's rose 30%, so on a rate basis A declined more. (a) weakens the argument."
+**Say this in the interview:** "B has ten times the customers, so I compare complaints per customer. With ten times the customers, B's complaints per customer rose by 3 units where A's rose by 5 (same units), so A declined more. (a) weakens the argument."
 **Answer:** **(a)**
 **Step-by-step reasoning:**
 1. Raw counts: B +30, A +5, so B looks worse.
@@ -467,10 +467,10 @@
 3. Both start at the same rate (10/N), and A ends higher (15/N versus 13/N). So A's service declined more, reversing the conclusion. Verified by script.
 4. Wrong options: (b) the opening date does not change the ratio of complaints to customers. (c) B's high starting count does not show B declined less; it says nothing about the change. (d) a shared manager is irrelevant.
 **Fast method (30 seconds):** Whenever groups differ in size, convert counts to rates (per 100 or per customer). An option that reveals very different sizes is the weakener.
-**Check:** Script: percentage rise 30% (B) vs 50% (A); per-customer rise 3/N (B) vs 5/N (A) when B has ten times the customers.
+**Check:** Script: per-customer rise 3/N (B) vs 5/N (A) when B has ten times the customers (A: 10/N to 15/N; B: 10/N to 13/N); with B at twice A's size the rises are 15/N (B) vs 5/N (A).
 **Explain simply:**
 - Absolute numbers ignore size; a rate divides by the base so groups compare fairly.
-- Even the percentage rise alone (30% versus 50%) favours A, so only the size fact flips the sense of the comparison.
+- Note: the percentage rise in the complaint count (A 50%, B 30%) is not a rate per customer. It would match the per-customer rise only if customer numbers stayed constant over the month; the size fact in (a) is what lets us compare the two branches per customer, and it flips the raw-count verdict.
 **Likely follow-ups:** 1) *If B had only twice A's customers?* Per customer, A rises 10/N to 15/N (+5/N); B rises 50/N to 65/N (+15/N), a bigger per-customer rise than A's +5/N, so on that measure B declined more and the argument is no longer weakened. So the ten-times fact matters. 2) *What do you ask for?* Customers served or transactions handled per branch.
 **Common mistakes / traps:** Trusting the raw gap of 30 versus 5; not asking for the denominator.
 
@@ -845,7 +845,7 @@ X wins in both groups, yet Y wins overall. Why: Y was given mostly easy cases (9
 2. 80% of 50 is 40 satisfied people; that is 2% of the workforce we actually know about.
 3. Self-selection: people with strong feelings (very happy or very unhappy) reply more often, so the sample may lean either way.
 4. Why the others fail: (b) the medium is not the problem, the choice to reply is; (c) false, proportions are a normal measure of satisfaction; (d) 40 / 50 and 80% are the same information.
-**Check:** Bounds: if all 1,950 non-responders were unsatisfied, only 40 / 2,000 = 2% would be satisfied; if all were satisfied, 98%. The true value could be anywhere in that range.
+**Check:** Bounds: if all 1,950 non-responders were unsatisfied, only 40 / 2,000 = 2% would be satisfied; if all were satisfied, (40 + 1,950) / 2,000 = 99.5%. The true value could be anywhere in that range.
 **Explain simply:**
 - "Selection bias" means the people in your data were not picked fairly.
 - A small sample is a second concern, but self-selection is the bigger one here.
@@ -929,7 +929,7 @@ X wins in both groups, yet Y wins overall. Why: Y was given mostly easy cases (9
 **Step-by-step reasoning:**
 1. Average = total pay / headcount. With every existing salary fixed, only the set of people can change.
 2. Adding high earners, or losing low earners, raises the average.
-3. Example: 9 people at 10 and 1 at 10 (average 10); replace a 10 with someone paid 100 for the tenth and the average becomes (9 x 10 + 100) / 10 = 19.
+3. Example: 10 people each paid 10 (average 10). One of them leaves and a new hire paid 100 joins; the 9 who stayed still earn 10, and the average becomes (9 x 10 + 100) / 10 = 19.
 4. Why the others fail: (b) contradicts "no salary changed"; (c) the median need not fall (it may stay put or rise); (d) fewer employees does not by itself raise an average, it depends who left.
 **Check:** Verified by script on the example (19.0 versus 10).
 **Explain simply:**
@@ -1078,7 +1078,7 @@ X wins in both groups, yet Y wins overall. Why: Y was given mostly easy cases (9
 1. Overall: men (56 + 6) / 100 = 62%; women (16 + 40) / 100 = 56%.
 2. Family 1: men 56 / 80 = 70%; women 16 / 20 = 80%.
 3. Family 2: men 6 / 20 = 30%; women 40 / 80 = 50%.
-4. Women lead in both families yet trail overall because most men applied to family 1 (easy to get into, 72% hired in total) and most women to family 2 (harder, 50% hired).
+4. Women lead in both families yet trail overall because most men applied to family 1 (easier to get into, 72 of 100 applicants hired in total) and most women to family 2 (harder, 46 of 100 applicants hired in total).
 5. Why the others fail: (a) false in both families; (c) false overall; (d) the rates are 70/80 and 30/50, not equal.
 **Check:** Verified by script (0.70, 0.80, 0.30, 0.50, 0.62, 0.56).
 **Explain simply:**
@@ -1159,7 +1159,7 @@ X wins in both groups, yet Y wins overall. Why: Y was given mostly easy cases (9
 **Explain simply:**
 - Score = true ability + random noise (mood, luck, guessing, a bad day). Low scorers are a mix of truly weak people and people who had bad noise.
 - On a re-test the noise is drawn again, and the unlucky ones are no longer unlucky on average, so the group average moves up toward the overall mean.
-- Worked example (a simulation I ran, assumed numbers): 100,000 people with true ability averaging 70 and noise on each test. Take the bottom 10% on test 1: their average was 50.1. With no training, the same people averaged 60.1 on test 2, a "gain" of about 10 points from nothing.
+- Worked example (a simulation we ran with assumed numbers, seed fixed, re-run in review): 100,000 people with true ability normally distributed, mean 70 and standard deviation 8, plus independent test noise with standard deviation 8 on each test. Take the bottom 10% on test 1: their average was 50.1. With no training, the same people averaged 60.1 on test 2, a "gain" of about 10 points from nothing.
 - The fix: include a **control group** (similar low scorers who receive no training, or random assignment of who gets trained) and compare the *gain* of the trained group with the control's gain. Or select on one measure and evaluate on an independent one.
 - The same effect is not limited to low scores: top performers tend to slip next time ("the sophomore slump").
 **Likely follow-ups:**
