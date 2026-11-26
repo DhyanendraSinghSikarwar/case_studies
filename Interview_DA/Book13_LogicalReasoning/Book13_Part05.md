@@ -463,16 +463,17 @@ Dept: Sales  HR     Ops   Finance  IT
 **Step-by-step reasoning:**
 1. Clues 1 and 7: Chitra and the Sales employee are both the day after Bala, so Chitra is Sales.
 2. Clue 5: Finance is earlier than Chitra; clue 3: HR is right after Finance; clue 4: Ops is earlier than HR; clue 2: IT is after Sales (Chitra), so IT is after Chitra.
-3. Chitra (Sales) must be before IT, so she is not on Friday. Try Chitra on Thursday: IT is then Friday, and Bala is Wednesday. Monday to Wednesday must hold Ops, Finance, HR (Finance immediately before HR, Ops before HR), which forces Ops Monday, Finance Tuesday, HR Wednesday, so Bala is HR.
-4. The block [Dev, Anu] then takes Monday and Tuesday (Dev Mon, Anu Tue), and Esha takes Friday (IT). Chitra on Tuesday or Wednesday fails some clue (checked by script, not shown here).
+3. Number the days Mon = 1 to Fri = 5 and let Chitra's day be c. Bala is on c - 1, so c is at least 2 (Tue). IT is after Chitra, so c is at most 4 (Thu).
+4. Finance is before Chitra and HR is right after Finance. HR is not Chitra (she is Sales), so HR is also before Chitra. Ops is before HR, and Ops and Finance are different people, so HR needs two earlier days: HR is Wed or later. Chitra is after HR, so c is at least 4. With step 3, c = 4: Chitra is off on Thursday, IT is Friday, HR is Wednesday, Finance is Tuesday, Ops is Monday.
+5. Bala is on c - 1 = Wednesday, so Bala is HR. Dev is the day before Anu, which fits only Monday and Tuesday (Dev Mon = Ops, Anu Tue = Finance). Esha takes Friday (IT).
 ```
 Day:  Mon   Tue      Wed   Thu     Fri
 Who:  Dev   Anu      Bala  Chitra  Esha
 Dept: Ops   Finance  HR    Sales   IT
 ```
-**Why unique:** the brute force below found only one arrangement; the Finance-HR pair must sit before Chitra and be adjacent to each other, and Ops must be before HR, which leaves only this layout.
+**Why unique:** every step above was forced (Chitra's day was squeezed to exactly Thursday), so there is no second layout.
 **Fast method (30 seconds):** Identify who is the same person from two "the day after X" clues, then list which blocks must fit before and after.
-**Check:** Verified by brute force over all 120 x 120 assignments: exactly one solution.
+**Check:** All 7 clues re-read against the table hold. Brute force over all 120 x 120 day and department assignments (re-run in review): exactly one solution.
 **Explain simply:**
 - Two clues pointing to "the day after Bala" mean they name the same person.
 - "Earlier than" clues restrict which blocks can sit before or after others.
@@ -730,7 +731,7 @@ Room C: I3 10:00-11:30 | I6 11:30-13:00
 **Explain simply:**
 - The critical path is the longest chain of tasks that each wait for the previous one; speeding anything off it does not shorten the project.
 - A task with two prerequisites waits for the slower one.
-**Likely follow-ups:** If D took 1 day instead of 3? D ends 6, E starts at 7 (after C), E ends 9, F 10; project 10 days, and C-E-F becomes critical. Computed by hand.
+**Likely follow-ups:** If D took 1 day instead of 3? D ends 6, E starts at 7 (after C), E ends 9, F 10; project 10 days, and there are now two critical paths of 10 days (C-E-F after A, and B-G after A). Computed by hand and re-checked by script.
 **Common mistakes / traps:** Adding all durations (20 days); forgetting G can run alongside D and still must finish; taking only one prerequisite of E.
 
 ### Q37 ⭐⭐ 🟡 Four auditors must each take exactly one of four audits. The table gives the hours each auditor needs for each audit.
@@ -814,7 +815,7 @@ A beat B, A beat C, D beat A, B beat C, B draw D, C draw D
 3. Known scores: 4 + 3.5 + 3 + 2.5 + 1.5 = 14.5.
 4. Sixth player = 15 - 14.5 = 0.5.
 **Fast method (30 seconds):** Total = number of games. Subtract the known scores.
-**Check:** Computed by script (15 - 14.5 = 0.5); a maximum for any one player is 5, so 0.5 is feasible. Whether the full table is achievable was not separately enumerated.
+**Check:** Computed by script (15 - 14.5 = 0.5); a full search over all 3^15 sets of results found a table with scores 4, 3.5, 3, 2.5, 1.5 and 0.5, so the answer is achievable.
 **Explain simply:**
 - A round robin with n players has n(n - 1)/2 games.
 - In chess, every game hands out exactly 1 point in total, so the total of all scores equals the number of games.
@@ -898,7 +899,7 @@ Pooja  Finance bike
 **Explain simply:**
 - Think of the valid arrangements as a list of "possible worlds"; the question word tells you how many worlds must agree.
 - Disproving "must" needs just one counterexample; proving "could" needs just one example.
-**Likely follow-ups:** 1) *Which person cannot be on a panel with Chitra?* Farah (Chitra needs Dev, and Dev and Farah cannot be together). 2) *Is "not Farah" a must when Chitra is chosen?* Yes.
+**Likely follow-ups:** 1) *Which people cannot be on a panel with Chitra?* Asha, Bimal and Farah (Chitra needs Dev, Dev and Farah cannot be together, and Chitra, Dev plus Asha or Bimal would leave no Esha or Farah, breaking rule 3). Only {Chitra, Dev, Esha} exists. 2) *Is "not Farah" a must when Chitra is chosen?* Yes.
 **Common mistakes / traps:** Picking an option because it is true in the one solution you found; confusing "could be true" with "must be true".
 
 ### Q45 ⭐⭐ 🟡 A selection puzzle says "If Chitra is chosen, Dev must be chosen." What does this rule tell you when Chitra is not chosen, what does it tell you when Dev is not chosen, and how do you use it to list all valid teams?
@@ -953,7 +954,7 @@ Pooja  Finance bike
 - One at a time: a valid order is any list in which no task appears before its prerequisites.
 - A task that is on the critical path is one where delay delays the whole project.
 **Likely follow-ups:** 1) *Does adding a short side task change the project time?* Not if it fits inside slack and is not on the critical path. 2) *Can two projects have the same orders but different times?* Yes, change the durations only.
-**Common mistakes / traps:** Adding all durations (28 days in Q36 instead of 11); counting orders as if all tasks were free (7! = 5040).
+**Common mistakes / traps:** Adding all durations (20 days in Q36 instead of 11); counting orders as if all tasks were free (7! = 5040).
 
 ### Q48 ⭐⭐ 🔴 Five colleagues Anu, Bala, Chitra, Dev and Esha work in five different departments (HR, Finance, IT, Ops, Sales) and each uses a different way to get to office (bus, metro, bike, car, walk). Clues: (1) The Sales employee is the metro commuter. (2) The Finance employee is the bike commuter. (3) Anu is the HR employee. (4) The IT employee is the bus commuter. (5) The Ops employee is the car commuter. (6) Dev is not the Finance employee. (7) Bala is not the bike commuter. (8) Bala is not the Ops employee. (9) Dev is not the car commuter. (10) Dev is not the IT employee. (11) Chitra is not the bike commuter. Who works in Ops, and how does that person commute?
 **Asked at:** commonly asked (no company-specific report found); matching grids are listed for TCS, Infosys, Wipro, Accenture and Cognizant in prep-site pages (unverified).
@@ -1387,7 +1388,7 @@ Final: 7 3 8.
 3. With 7 points: two other teams with 7 or more would mean 21 points in total, more than the 18 available. So at most one other team can match or beat 7, and the team finishes in the top two. 7 is enough.
 4. With 6 points it can fail: A beats B, B beats C, C beats A, and each of A, B, C beats D. Then A, B and C all have 6 points and D has 0. Ties are against you, so one of the three is third.
 5. 6 or fewer can fail, so 7 is the minimum guarantee.
-**Fast method (30 seconds):** Use the total-points cap: 3 other teams at the same total as you cannot share more than 18, so find the smallest P with 3P > 18, that is P = 7.
+**Fast method (30 seconds):** Use the total-points cap: you and two other teams all on the same total P would need 3P points, and at most 18 exist, so find the smallest P with 3P > 18, that is P = 7.
 **Check:** Verified by script over all 3^6 = 729 possible sets of results: a team on 7, 8 or 9 points is never outside the top two when ties go against it, but a team on 6 points (and every lower total, 1 to 5) can be.
 **Explain simply:**
 - "Guarantee" means it works in every possible set of results, so we look at the worst case.
