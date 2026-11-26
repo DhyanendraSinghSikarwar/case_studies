@@ -6,15 +6,15 @@
 ### Q1 ⭐⭐⭐ 🟢 Tell me about a time you explained data, numbers or a finding to someone who was not comfortable with numbers.
 **Asked at:** commonly asked (no company-specific report found); the wording appears in prep-site question banks (unverified).
 **What the interviewer is checking:** Can you turn numbers into something a non-numbers person understands and acts on, with a real example.
-**Say this in the interview:** Pick one true story, name the person and what they needed to decide, say what you changed to make it simple, and end with what happened.
+**Say this in the interview:** Pick one true story: who, what they had to decide, what you made simple, what happened.
 **Weak answer (what not to say):** "I am good at explaining numbers. I always make it simple and people understand me well."
 **Why it is weak:** It is a claim with no story, no person, no result.
 **Strong answer (template, speak it in your own words):** "At [workplace or project], [person, for example a plant supervisor] needed to decide [decision] but was not comfortable with [kind of numbers]. I had [what the data showed]. Instead of showing the full sheet, I used one number, [number], and compared it with [something familiar]. I asked them to say it back in their own words. They then [action], and the result was [true result, or 'it helped them decide faster' if you have no figure]."
 **Illustrative example, replace with your own true story:** "A payroll supervisor kept getting blamed for errors but had no idea how big the problem was. I checked 420 payslips and found 14 with errors. I told her: 'About 1 payslip in 30 has a mistake, and most are the same cause, wrong overtime hours.' She then asked her team to confirm overtime sheets before month-end." (14 of 420 is 3.3%, about 1 in 30.) Say this only if it is true for you. If you have no direct example, use the no-experience version below.
 **STAR breakdown:** Situation: who, and what they had to decide. Task: make the finding usable for them. Action: one number, one familiar comparison, a check that they understood. Result: what they did next.
-**If you have no direct experience:** Use a real moment from HR work (explaining a leave balance, a salary slip or a headcount sheet to an employee or manager), or a class or project where you explained a result to a friend. If there is truly none, say: "I have not done this in a data role yet. Here is exactly how I would: one number, one comparison, then ask them to repeat it back."
-**Likely follow-ups:** 1) *How did you know they understood?* They repeated it in their own words or took the right action. 2) *What did you leave out?* The method detail; I kept it ready if they asked.
-**Common mistakes:** Telling a story where you were only technical, not simple; using "we" for everything; no result at the end; inventing a big percentage.
+**If you have no direct experience:** Use a real HR moment (explaining a salary slip or headcount sheet) or a class project. If there is none, say: "I have not done this in a data role yet. Here is how I would: one number, one comparison, then ask them to repeat it back."
+**Likely follow-ups:** 1) *How did you know they understood?* They repeated it or acted on it. 2) *What did you leave out?* Method detail, kept ready.
+**Common mistakes:** Being technical, not simple; saying "we" for everything; no result; inventing a big percentage.
 
 ### Q2 ⭐⭐⭐ 🟢 Why is communication so important for a data analyst, and how would you rate your own?
 **Asked at:** commonly asked (no company-specific report found); communication is the most-named soft skill in the JD sample in `research/market_skills_2026.md` (73% of the sampled JDs, non-random sample, unverified).
@@ -45,7 +45,7 @@
 3. Pick the one number that proves it.
 4. Replace technical words with plain ones.
 5. Ask "does that make sense?" and be ready with the detail.
-**Worked example or script:** Technical: "Attrition in the 0-1 year tenure band is statistically elevated." Plain: "Out of every 100 people who joined this year, about 15 have already left. That is the part of attrition we can fix." (15 here is an invented exercise figure.)
+**Worked example or script:** Technical: "Attrition in the 0-1 year tenure band is statistically elevated." Plain: "Out of every 100 people who joined this year, about 15 have already left. That is the group I would look at first." (15 here is an invented exercise figure.)
 **Likely follow-ups:** 1) *What if they want detail?* I give it after the headline. 2) *What if the listener is technical?* I flip: method, assumptions, then result.
 **Common mistakes:** Starting with data sources and method; using words like "variance" or "skew"; showing a 12-column table.
 
@@ -87,7 +87,7 @@
 **What the interviewer is checking:** Do you understand the line between findings and recommendations, and the judgement involved.
 **Say this in the interview:** "I do both, but I keep them separate: first what the data shows, then what I suggest, and the decision stays with the manager."
 **Explain simply:**
-- What data shows: facts and numbers ("overtime at Site B is 40% of the total").
+- What data shows: facts and numbers ("overtime at Site B is 40% of the total", an invented figure).
 - What to do: a judgement that needs context the data may lack (budget, people, policy).
 - A good analyst gives a clear recommendation but says it is a recommendation.
 **Plan / steps:**
@@ -264,8 +264,8 @@ Also state the relative change: (12 - 10) / 10 = 20% higher than before.
 **Asked at:** commonly asked (no company-specific report found); written-update and "lead with the conclusion" questions appear in prep-site banks (unverified).
 **What the interviewer is checking:** Whether you can put the answer first, in plain words, so a busy person gets the point without opening an attachment.
 **Say this in the interview:** "The subject line carries the finding and the action needed. The first three lines give the answer, the one number that proves it, and what I need from you. Detail goes below or in an attachment."
-**Weak answer (what not to say):** "Subject: Attrition analysis. Hi, please find the attached file. I have looked at the data in many ways and the findings are inside."
-**Why it is weak:** The reader must open the file to learn anything, and the subject line says nothing about the result.
+**Weak answer (what not to say):** "Subject: Attrition analysis. Hi, please find the attached file."
+**Why it is weak:** The reader must open the file to learn anything.
 **Strong answer (template, speak it in your own words):** Subject: [the finding in 8-10 words] + [what you need, by when]. Line 1: the answer in one sentence ("[Metric] rose from [A] to [B] in [period]."). Line 2: the main reason or proof, with one number ("Most of it comes from [group], where [number]."). Line 3: the ask or next step ("Can we agree [action] by [date]? Details and checks are below.").
 **Illustrative example, replace with your own true story:**
 Subject: Q2 attrition is 8.7%, up from 6.0%: need your call on exit interviews by Friday
@@ -274,10 +274,10 @@ Hi [Manager],
 2) The quarter is one data point; I have not yet split it by team or tenure, so I cannot say why.
 3) Can I get 30 minutes with you on Thursday to agree which split to look at first? Method and checks are below.
 (Numbers are invented exercise inputs; the 2.7 comes from 8.7 minus 6.0, rounded to one decimal.)
-**STAR breakdown:** (Written-format question, so use this structure.) Point: subject = finding + ask. Reason: first three lines = answer, proof, next step. Example: the email above. Link back to the role: managers read the top three lines on a phone, so the top must stand alone.
-**If you have no direct experience:** Say: "I have not written analyst emails yet, but in HR I wrote circulars and mail summaries, and I learned to put the decision first. This is the format I would use." Only say the HR part if it is true for you.
-**Likely follow-ups:** 1) *Do you attach the file?* Yes, but the email must make sense without it. 2) *What if the news is bad?* Same format, no softening of the number; add what you are doing about it.
-**Common mistakes:** A subject line like "Analysis" or "FYI"; burying the number in paragraph four; writing a long story before the point; attaching a file and saying nothing about what is in it.
+**STAR breakdown:** (Written-format question, so use this structure.) Point: subject = finding + ask. Reason: first three lines = answer, proof, next step. Example: the email above. Link back to the role: busy managers often read only the top lines, so the top must stand alone (my suggestion).
+**If you have no direct experience:** Say: "I have not written analyst emails yet; this is the format I would use." Mention HR circulars or mail summaries only if true for you.
+**Likely follow-ups:** 1) *Do you attach the file?* Yes, but the email must stand alone. 2) *Bad news?* Same format, number not softened, plus what I am doing.
+**Common mistakes:** Subject "Analysis" or "FYI"; burying the number; a long story before the point; an attachment with no summary.
 
 ### Q18 ⭐⭐⭐ 🟡 You have never presented to business people. How would you prepare for your first presentation in an analyst job?
 **Asked at:** commonly asked (no company-specific report found); presentation-readiness questions appear in prep-site banks (unverified).
@@ -287,7 +287,7 @@ Hi [Manager],
 - Start with the audience, not the data: who is coming, what do they already know, what will they decide?
 - Write the one-sentence message first; every slide or point must support it.
 - Keep numbers few and round; keep the detail in the appendix.
-- Rehearse aloud, out loud and timed, not just in your head.
+- Rehearse aloud and timed, not just in your head.
 **Plan / steps:**
 1. Ask my manager: who attends, how long do I have, what decision is needed.
 2. Write the main message in one sentence.
@@ -303,27 +303,27 @@ Hi [Manager],
 **Asked at:** commonly asked (no company-specific report found); "explain something complex simply" appears in many STAR-guide banks (unverified).
 **What the interviewer is checking:** Whether you can turn a messy process or idea into something others can use, and whether you can point to a result.
 **Say this in the interview:** "I will pick one real example, say what was confusing, the one change I made to simplify it, and what became easier afterwards."
-**Weak answer (what not to say):** "I simplify things all the time. I am good at making complicated things easy for people."
-**Why it is weak:** No specific situation, no action, and no result; it is just a claim.
+**Weak answer (what not to say):** "I simplify things all the time."
+**Why it is weak:** No situation, action or result; it is just a claim.
 **Strong answer (template, speak it in your own words):** "At [workplace or project], [team] was struggling with [complicated thing]. I was asked to [your task]. I [broke it into steps / replaced it with one simple sheet / used an everyday comparison]. I checked it by [asking someone to try it]. As a result, [what improved, with a number if you have a true one, such as time or errors]."
 **Illustrative example, replace with your own true story:** "The monthly attendance and leave summary was done by five people in five different formats, and the totals never matched. I made one template with fixed columns and a short how-to of four steps. In the first month the team of five used it, and the time to close the report fell from about 4 hours to 1 hour." (Invented numbers: that is a 75% reduction, computed.)
 **STAR breakdown:** Situation: five formats, mismatched totals. Task: get one clear process. Action: one template plus four-step guide, tested with one colleague first. Result: 4 hours to 1 hour (illustrative).
-**If you have no direct experience:** Say: "I have not had a formal example at work. In my course project, I [true example, such as explaining a pivot table to a classmate]; here is how I made it simple." If you have no example at all, describe how you would do it: find the confusing step, cut to the minimum, test with one person, adjust.
-**Likely follow-ups:** 1) *How did you know it worked?* A person who had been confused used it alone. 2) *Did anyone resist?* Yes; I showed it saved their time, not just mine.
-**Common mistakes:** Picking an example with no outcome; saying "we" for everything and never "I"; inventing a big percentage you cannot defend if asked how you measured it.
+**If you have no direct experience:** Use a true course or classmate example (such as explaining a pivot table). If none, describe how you would do it: find the confusing step, cut to the minimum, test with one person, adjust.
+**Likely follow-ups:** 1) *How did you know it worked?* A person who had been confused used it alone. 2) *Did anyone resist?* Show it saves their time too.
+**Common mistakes:** No outcome; "we" for everything; a big percentage you cannot defend.
 
 ### Q20 ⭐⭐⭐ 🟡 How do you explain that you are not sure of a number, or that the data is incomplete, without losing the listener's trust?
 **Asked at:** commonly asked (no company-specific report found); stating limits and uncertainty is a theme in stakeholder-pushback articles (unverified).
 **What the interviewer is checking:** Whether you are honest about limits in a calm, useful way, and do not hide uncertainty or hide behind it.
 **Say this in the interview:** "I say what I know, what I do not know, how much it could change the answer, and when I will have it firm. Said plainly, uncertainty builds trust."
-**Weak answer (what not to say):** "I would not tell them, I would just show the number so they are not worried." Or the other extreme: "I am not sure about any of this."
-**Why it is weak:** The first hides a risk and can be exposed later; the second gives the listener nothing to act on.
+**Weak answer (what not to say):** "I would not tell them." Or: "I am not sure about any of this."
+**Why it is weak:** The first hides a risk; the second gives nothing to act on.
 **Strong answer (template, speak it in your own words):** "Here is what I am confident about: [finding]. Here is the limit: [what is missing, in plain words]. This could move the number by about [range], so for now I would [safe action]. I will confirm by [date] and send you the final figure."
 **Illustrative example, replace with your own true story:** "Attrition for the quarter is about 8.7%. One caution: 20 of the 400 exit records have no reason filled in, which is 5%. That does not change the headline rate, but it does limit what I can say about why people left. I would treat the reason breakdown as indicative and will ask the HR team to fill the gaps by Friday." (20 of 400 = 5%, computed; numbers invented.)
 **STAR breakdown:** (Non-story question, so use this structure.) Point: share the finding first. Reason: name the gap in plain words and its size. Example: the 5% blank reasons above. Link back to the role: give the next step and a date so they can still decide.
-**If you have no direct experience:** Say: "I have not faced it at work yet. I would use the four-part structure: what I know, what I do not, how big the gap is, and when I will close it." That is honest and acceptable.
+**If you have no direct experience:** Say: "I have not faced it yet. I would say what I know, what I do not, how big the gap is, and when I will close it."
 **Likely follow-ups:** 1) *What if they want one number now?* Give a range and label the best estimate. 2) *What if the gap is large?* Say the data is not strong enough to decide and recommend what to collect.
-**Common mistakes:** Over-apologising; hiding the gap at the bottom of a slide; guessing a precise number; saying "roughly" without saying how rough.
+**Common mistakes:** Over-apologising; hiding the gap; guessing a precise number; "roughly" without saying how rough.
 
 ### Q21 ⭐⭐⭐ 🟡 How do you tell a story with data in a spoken answer, as opposed to showing slides?
 **Asked at:** commonly asked (no company-specific report found); data-storytelling questions appear in vendor and prep blogs (unverified).
@@ -352,7 +352,7 @@ Hi [Manager],
 **Weak answer (what not to say):** "I would continue and finish my slides, since I have prepared them. They can ask questions at the end."
 **Why it is weak:** The point of speaking is that people understand; finishing on time while they are lost helps nobody.
 **Strong answer (template, speak it in your own words):** "I would pause and say, 'Let me step back, I think I went too fast.' I would restate the main message in one plain sentence. Then I would use a simple example, such as [everyday comparison], and ask, 'Does that make sense, or should I show it another way?' If needed, I would skip the detail and give the conclusion and offer the rest after the meeting."
-**Illustrative example, replace with your own true story:** "I am explaining why leave-balance totals differ between two systems and I see blank faces. I stop and say, 'Short version: one system counts half-days, the other does not, so the totals differ by about 12 days a month.' Then I ask, 'Is that clear?' and move on to the fix." (Invented numbers.)
+**Illustrative example, replace with your own true story:** "I am explaining why leave-balance totals differ between two systems and I see blank faces. I stop and say, 'Short version: one system counts half-days, the other does not, so the totals differ by about 12 days a month.' Then I ask, 'Shall I show you how we fix it?' and move on." (Invented numbers.)
 **STAR breakdown:** (Situational, so use this structure.) Point: stop and reset. Reason: understanding matters more than finishing the plan. Example: the restated sentence. Link back to the role: analysts are judged by whether the decision-maker understood.
 **If you have no direct experience:** Say: "I have not presented to business teams yet, but when I explained [HR policy / process] to employees, I watched faces and slowed down. I would do the same here." Use only if true; otherwise just give the steps.
 **Likely follow-ups:** 1) *How do you spot it?* Silence, looking at phones, repeated questions. 2) *What if one senior person is lost?* Offer a quick one-to-one afterwards.
@@ -374,16 +374,16 @@ Hi [Manager],
 ### Q24 ⭐⭐⭐ 🔴 Role-play: I am the HR head and I ask, "Why did attrition go up in Q2?" You have 90 seconds and the numbers below. Answer me.
 Q1: 18 leavers, average headcount 300 (6.0%). Q2: 27 leavers, average headcount 310 (8.7%). Leavers up 9 in absolute terms.
 **Asked at:** commonly asked (no company-specific report found); role-play of a quick answer to an HR head is a gap-fill scenario, not a reported question (unverified).
-**What the interviewer is checking:** Whether you answer with the number and its meaning, avoid inventing a cause the data cannot support, and propose a next step.
+**What the interviewer is checking:** Number and meaning, no invented cause, a next step.
 **Say this in the interview:** "Attrition rose from 6.0% to 8.7%. The numbers show that it rose, not why. Here is what I would check first, and when I can come back."
 **Weak answer (what not to say):** "Attrition went up because people are unhappy with the new policy." (No data supports this.)
 **Why it is weak:** It states a cause as a fact; the data given has only totals.
 **Strong answer (template, speak it in your own words):** "Attrition rose from [6.0]% to [8.7]% quarter on quarter, from [18] to [27] leavers, while headcount was almost flat. That is [2.7] percentage points higher. I cannot yet tell you why from these totals. I would split it by [tenure, team, location, reason for leaving] to see whether it is one group or everywhere. I can bring that to you by [day]."
-**Illustrative example, replace with your own true story:** (Computed by script.) "Attrition went from 6.0% to 8.7%, which is 2.7 percentage points higher. Leavers went from 18 to 27, a rise of 9, or 50%, while headcount only grew from 300 to 310, about 3%. So the rise is real, not caused by a bigger team. I do not yet know why. I would first split the 27 leavers by tenure and team, because if most are first-year staff in one team, that points to a different action than a company-wide drop. I can show that to you on Thursday." (Rates use leavers divided by average headcount for the quarter; 27/310 = 8.71%, shown as 8.7%. Note these are quarterly rates, not annualised; do not compare them with an annual attrition figure.)
+**Illustrative example, replace with your own true story:** "Attrition went from 6.0% to 8.7%, which is 2.7 percentage points higher. Leavers went from 18 to 27, a rise of 9, or 50%, while headcount only grew from 300 to 310, about 3%. So the rise is real, not caused by a bigger team. I do not yet know why. I would first split the 27 leavers by tenure and team, because if most are first-year staff in one team, that points to a different action than a company-wide drop. I can show that to you on Thursday." (Rate = leavers divided by average headcount for the quarter. These are quarterly rates, not annual; do not compare them with an annual figure.)
 **STAR breakdown:** (Role-play, so use this structure.) Point: attrition up 2.7 percentage points. Reason: leavers up 50%, headcount about 3%, so not a size effect. Example: the split I would run. Link back to the role: say what I need and by when.
 **If you have no direct experience:** The structure works without any: number, comparison, honest limit, next step. Practise it aloud with a timer for 90 seconds.
 **Likely follow-ups:** 1) *Can you guess the reason?* "I can suggest hypotheses to test, like onboarding or a manager change, but I would not present them as findings." 2) *Is 8.7% high?* "I would compare with our own past quarters and, if available, our industry's published figures; I do not want to quote a benchmark from memory."
-**Common mistakes:** Naming a cause; confusing 2.7 percentage points with a 45% relative rise without saying which; talking for 3 minutes; forgetting to say what happens next.
+**Common mistakes:** Naming a cause; mixing 2.7 percentage points with a 45% relative rise; talking for 3 minutes; no next step.
 
 ### Q25 ⭐⭐ 🟢 How do you explain a join, a pivot table or a filter to a colleague who has only used paper registers and basic Excel?
 **Asked at:** commonly asked (no company-specific report found); "explain technical terms to a non-technical person" is a prep-site staple (unverified).
@@ -488,7 +488,7 @@ Q1: 18 leavers, average headcount 300 (6.0%). Q2: 27 leavers, average headcount 
 3. Use short sentences and local examples.
 4. Ask one person to explain it back.
 5. Send a short summary in the same language.
-**Worked example or script:** "For a plant-supervisor meeting, I would say in Hindi: 'Pichhle quarter mein 300 mein se 18 log gaye, is quarter mein 310 mein se 27. Matlab har 100 mein se lagbhag 9 log.' Then I would ask one supervisor to repeat it in his own words." (Numbers from the Q24 data: 27/310 = 8.7%, rounded to about 9 per 100. Language is a sample; use the one your audience speaks, and check the phrasing with a native speaker.)
+**Worked example or script:** "For a plant-supervisor meeting, I would say in Hindi: 'Pichhle quarter mein 300 mein se 18 log gaye, is quarter mein 310 mein se 27. Matlab is quarter mein har 100 mein se lagbhag 9 log.' Then I would ask one supervisor to repeat it in his own words." (Numbers from the Q24 data: 27/310 = 8.7%, rounded to about 9 per 100. Language is a sample; use the one your audience speaks, and check the phrasing with a native speaker.)
 **Likely follow-ups:** 1) *What if you do not speak the regional language?* Ask a colleague to help present or translate and keep slides simple. 2) *Is English never useful?* Where the audience mixes, keep common business terms in English.
 **Common mistakes:** Insisting on English to look professional; machine-translating terms without checking; long sentences; no check that they understood.
 
@@ -514,7 +514,7 @@ Q1: 18 leavers, average headcount 300 (6.0%). Q2: 27 leavers, average headcount 
 
 ### Q32 ⭐⭐ 🟢 Speak for one minute on this topic as in a spoken-communication assessment: "How can data help a company make better decisions?"
 **Asked at:** commonly asked (no company-specific report found); research/interview_processes.md notes an Accenture communication assessment and a Cognizant online communication round, details unverified.
-**What the interviewer is checking:** Fluency, structure and clear thinking, not expert knowledge; about 120-150 spoken words is a one-minute length (rule of thumb).
+**What the interviewer is checking:** Fluency, structure and clear thinking, not expert knowledge; about 110-150 spoken words is a one-minute length (rule of thumb, unverified).
 **Say this in the interview:** "I will give a point, two reasons, one example, and a closing line. I will keep my sentences short."
 **Explain simply:**
 - Structure: opening line, two reasons, one example, closing line.
@@ -527,7 +527,7 @@ Q1: 18 leavers, average headcount 300 (6.0%). Q2: 27 leavers, average headcount 
 3. Reason two: it lets us test if an action worked.
 4. Example: a small HR case.
 5. Close with the point again.
-**Worked example or script:** "Data helps a company make better decisions because it replaces guesses with facts. First, it shows what is really happening. For example, if a company feels people are leaving more, the data can show that attrition rose from 6.0% to 8.7% and that most leavers are in their first year. Second, data helps us check whether an action worked. If we improve onboarding, we can see in the next quarter if first-year exits fall. Of course, data does not decide for us; people still choose. But decisions made with data are easier to explain and easier to fix. So data does not remove judgement, it gives judgement a better base." (About 120 words; the first-year detail is an illustration, not a finding.)
+**Worked example or script:** "Data helps a company make better decisions because it replaces guesses with facts. First, it shows what is really happening. For example, if a company feels people are leaving more, the data can show that attrition rose from 6.0% to 8.7% and that most leavers are in their first year. Second, data helps us check whether an action worked. If we improve onboarding, we can see in the next quarter if first-year exits fall. Of course, data does not decide for us; people still choose. But decisions made with data are easier to explain and easier to fix. So data does not remove judgement, it gives judgement a better base." (About 110 words; the first-year detail is an illustration, not a finding.)
 **Likely follow-ups:** 1) *What if data is wrong?* Decisions will be wrong too, so I check quality first. 2) *Can data replace experience?* No, it supports it.
 **Common mistakes:** Starting with "As we all know"; reading a memorised paragraph; no example; running past the time; ending abruptly.
 
@@ -535,9 +535,9 @@ Q1: 18 leavers, average headcount 300 (6.0%). Q2: 27 leavers, average headcount 
 **Asked at:** commonly asked (no company-specific report found); stakeholder-handling questions appear in prep-site banks (unverified).
 **What the interviewer is checking:** Whether you will ask when unsure, or nod and build the wrong thing.
 **Say this in the interview:** "I say it politely and early: let me repeat it back in my words, and you tell me if I have it right. Then I confirm in writing after the meeting."
-**Weak answer (what not to say):** "I nod and later try to work it out myself, or I Google it."
-**Why it is weak:** Silent guessing is how analysts deliver a report nobody wanted.
-**Strong answer (template, speak it in your own words):** "If I do not follow, I do not pretend. I say, 'Let me check I understood. You want [the decision or number] so that you can [the action], is that right?' If it is still unclear I ask for one example, like 'Can you show me one case where this happened?' After the meeting I send a short note: 'My understanding is [x]. Please correct me by [day].' This costs a minute and saves days of rework."
+**Weak answer (what not to say):** "I nod and later work it out myself."
+**Why it is weak:** Silent guessing gives a report nobody wanted.
+**Strong answer (template, speak it in your own words):** "If I do not follow, I do not pretend. I say, 'Let me check I understood. You want [the decision or number] so that you can [the action], is that right?' If it is still unclear I ask for one example, like 'Can you show me one case where this happened?' After the meeting I send a short note: 'My understanding is [x]. Please correct me by [day].'"
 **Illustrative example, replace with your own true story:** A plant head says, "I need the people numbers by shift." Not sure whether that meant headcount or absence, the analyst asks, "Do you mean how many people are on the roll per shift, or how many were absent last week?" The answer was absence. The follow-up note read: "Absence count by shift, last four weeks, sent each Monday."
 **STAR breakdown:** Situation: unclear request in a meeting. Task: get the right ask. Action: repeat back, ask for an example, confirm in writing. Result: [the report that was actually needed, no rework].
 **If you have no direct experience:** Say: "I have not been in an analyst meeting yet, but in HR I [true example of clarifying a request, e.g. a policy question from a manager]. This is the same habit I would use." Say this only if it is true for you.
@@ -771,6 +771,7 @@ Q1: 18 leavers, average headcount 300 (6.0%). Q2: 27 leavers, average headcount 
 ### Q51 ⭐⭐ 🟡 How do you write a clear summary of results in a chat message (Teams or Slack) for an urgent query?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** can you be short, safe and complete when speed matters.
+**Say this in the interview:** "Answer first with the number and the date, then how sure I am, then what I need from you. Detail can follow."
 **Explain simply:**
 - Answer first, in the first line.
 - Add one line of "how sure am I" and one of "what it is based on".
@@ -802,6 +803,7 @@ Q1: 18 leavers, average headcount 300 (6.0%). Q2: 27 leavers, average headcount 
 ### Q53 ⭐⭐ 🟡 You are asked in a client call, "Can you explain how you got this number?" How do you do it live, without jargon?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** can you explain your method calmly, in steps, and show the number is traceable.
+**Say this in the interview:** "Good question, let me walk you through it: where the data came from, what I counted, how I calculated it."
 **Explain simply:**
 - Give the number's definition in one sentence.
 - Walk through three steps in everyday words: where the data came from, what you counted or removed, how you calculated.
@@ -821,6 +823,7 @@ Q1: 18 leavers, average headcount 300 (6.0%). Q2: 27 leavers, average headcount 
 40 / 400 = 10% response rate. Say what you can and cannot claim.
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** can you be honest about weak evidence without being useless.
+**Say this in the interview:** "Only 1 in 10 people replied, so this is a warning sign for those who answered, not proof of what everyone thinks. Here is my next step."
 **Explain simply:**
 - Only 1 in 10 people answered; we do not know how the other 9 feel.
 - People who reply are often the ones with strong views, so the group may not be typical.
@@ -841,6 +844,7 @@ Q1: 18 leavers, average headcount 300 (6.0%). Q2: 27 leavers, average headcount 
 Last month Rs 52.0 lakh, this month Rs 54.4 lakh. Say the change, the main driver and the one action, in three sentences.
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** change, driver, action: can you be that tight with money numbers.
+**Say this in the interview:** "Payroll is Rs 2.4 lakh higher; here is the main reason; here is one action and who owns it."
 **Explain simply:**
 - Change first: 54.4 minus 52.0 is Rs 2.4 lakh more, about 4.6% higher (checked by script).
 - The driver comes from your data breakdown, which the question does not give; use the real one.
@@ -850,7 +854,7 @@ Last month Rs 52.0 lakh, this month Rs 54.4 lakh. Say the change, the main drive
 2. Split the change into the 2 or 3 pieces that explain it (overtime, new joiners, arrears, bonus).
 3. Lead with the biggest piece.
 4. End with one action and who owns it.
-**Worked example or script:** The driver below is invented for illustration; the question gives no breakdown. Suppose overtime added Rs 1.5 lakh and new joiners Rs 0.9 lakh (together Rs 2.4 lakh). "Payroll is Rs 2.4 lakh higher this month, Rs 54.4 lakh against Rs 52.0 lakh, about 4.6 percent. Most of it, Rs 1.5 lakh or roughly 62 percent of the rise, is overtime in [plant or team]; the rest is new joiners. I suggest we ask [owner] to review overtime approvals this week; I will send the breakdown after this call."
+**Worked example or script:** The driver below is invented for illustration; the question gives no breakdown. Suppose overtime added Rs 1.5 lakh and new joiners Rs 0.9 lakh (together Rs 2.4 lakh). "Payroll is Rs 2.4 lakh higher this month, Rs 54.4 lakh against Rs 52.0 lakh, about 4.6 percent. Most of it, Rs 1.5 lakh or more than 60 percent of the rise, is overtime in [plant or team]; the rest is new joiners. I suggest we ask [owner] to review overtime approvals this week; I will send the breakdown after this call."
 **Likely follow-ups:** "Is it one-time or will it repeat?" Say what the data shows, or say you will check. "Does it include arrears?" Know your data's inclusions before the call.
 **Common mistakes:** Opening with how you pulled the data; mixing lakh and crore units; naming a driver you have not verified; three actions instead of one.
 
@@ -858,6 +862,7 @@ Last month Rs 52.0 lakh, this month Rs 54.4 lakh. Say the change, the main drive
 Increase = 1.5 percentage points, or 50% higher than last month.
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** can you turn a percentage into people and action for a practical listener.
+**Say this in the interview:** "Out of every 200 workers, 6 were absent last month and 9 this month. Please speak to the team leads this week."
 **Explain simply:**
 - Absenteeism rose 1.5 percentage points, from 3.0% to 4.5%; that is 50% higher than last month.
 - Turn it into people: on a shift of 200, 3.0% is 6 absent, 4.5% is 9 absent (computed by script).
@@ -887,6 +892,7 @@ Increase = 1.5 percentage points, or 50% higher than last month.
 ### Q58 ⭐⭐ 🟡 How do you give a quick verbal summary of a 20-slide analysis if the meeting is cut to five minutes?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** can you prioritise and deliver under time pressure.
+**Say this in the interview:** "One sentence answer, two or three supports, one ask, and the rest in writing."
 **Explain simply:**
 - Five minutes means one message, two or three supports, one ask.
 - Never speed-read 20 slides.
@@ -896,15 +902,16 @@ Increase = 1.5 percentage points, or 50% higher than last month.
 2. Choose the 2 or 3 slides that carry the evidence.
 3. Say the decision you need or the action you suggest.
 4. Say what is not covered: "The detail is in slides 6 to 20; I will send a one-page note."
-5. Leave the last minute for questions.
-**Worked example or script:** (invented) "In short: attrition in the first year is the problem, 14 in 40 leavers left within a year. Two supports: most were in one team, and most cited [reason from exit forms]. My ask: agree a stay-interview pilot in that team. The rest, including method, is in the deck and I will send a one-page summary today."
-Time plan: about 30 seconds for the answer, 3 minutes for the evidence, 1 minute for the ask, 30 seconds spare.
+5. Keep the last minute for questions.
+**Worked example or script:** (invented) "In short: first-year attrition is the problem: of our last 40 joiners, 14 left within a year. Two supports: most were in one team, and most cited [reason from exit forms]. My ask: agree a stay-interview pilot in that team. The rest, including method, is in the deck and I will send a one-page summary today."
+Time plan (a suggestion): about 30 seconds for the answer, 2.5 minutes for the evidence, 1 minute for the ask, 1 minute for questions.
 **Likely follow-ups:** "What if they ask about a slide you skipped?" Go to it, answer briefly. "How do you prepare for this?" Always keep a 30-second and a 2-minute version ready.
 **Common mistakes:** Trying to cover everything; starting with background; no ask at the end.
 
 ### Q59 ⭐⭐ 🟡 A stakeholder asks for "the story behind the numbers". What does that mean to you and how do you deliver it?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** do you understand that numbers need context, cause and consequence, without inventing a fairy tale.
+**Say this in the interview:** "What happened, why it probably happened, why it matters, what to do, and I mark which part is evidence and which is a guess."
 **Explain simply:**
 - It means: what happened, why it probably happened, why it matters, what to do.
 - The story must be backed by data and honest about what is unknown.
@@ -935,6 +942,7 @@ Time plan: about 30 seconds for the answer, 3 minutes for the evidence, 1 minute
 ### Q61 ⭐⭐ 🟡 How do you use the words "I think", "the data shows" and "I recommend" differently when speaking to a leader?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** do you separate fact, interpretation and advice, so the leader knows how solid each is.
+**Say this in the interview:** "'The data shows' for facts, 'I think' for my guess, 'I recommend' for my advice; the decision is yours."
 **Explain simply:**
 - "The data shows" = fact from the numbers.
 - "I think" = my interpretation or guess, where data is thin.
@@ -952,6 +960,7 @@ Time plan: about 30 seconds for the answer, 3 minutes for the evidence, 1 minute
 ### Q62 ⭐⭐ 🟡 Describe how you prepare before a meeting where you will share your findings.
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** are you organised, audience-aware and ready for questions.
+**Say this in the interview:** "I know my one message and the decision I want, re-check the numbers, prepare for the hard questions, and rehearse aloud."
 **Explain simply:**
 - Know the audience, the one message, and the decision you want.
 - Re-check numbers and prepare for likely questions.
@@ -971,6 +980,7 @@ Time plan: about 30 seconds for the answer, 3 minutes for the evidence, 1 minute
 ### Q63 ⭐⭐ 🟡 How do you follow up in writing after a meeting where you presented findings?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** do you create a clear record, with decisions and owners, so the work does not evaporate.
+**Say this in the interview:** "Within a day I send a short note: the finding, what was agreed, who does what by when, and any open questions."
 **Explain simply:**
 - Send within a day, while memory is fresh.
 - Short: the finding, decisions, actions with owner and date, open questions.
@@ -989,6 +999,7 @@ Time plan: about 30 seconds for the answer, 3 minutes for the evidence, 1 minute
 ### Q64 ⭐⭐ 🟡 How do you communicate effectively in a virtual meeting or video call when sharing your screen with a data finding?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** can you guide people through a chart you cannot see them reacting to.
+**Say this in the interview:** "Answer first, tell people where to look, and check in often, because I cannot read faces on a call."
 **Explain simply:**
 - You cannot read faces, so check in more often.
 - Direct attention: say where to look before you speak.
@@ -1092,6 +1103,7 @@ Time plan: about 30 seconds for the answer, 3 minutes for the evidence, 1 minute
 **Say this in the interview:** "I say what it predicts, show how it did on past data in plain numbers, say where it is weak, and say how to use it, as a guide for a decision and not a guarantee."
 
 **Explain simply:**
+- Terms: a regression or ML (machine learning) score is a formula that learns from past records; a forecast is its estimate of a future number.
 - What it is: "a tool that uses past patterns to estimate the future," not a certainty.
 - How good it is: compare its guesses with what actually happened, in everyday units (people, rupees).
 - Where it is weak: situations it has not seen, such as a new policy or a one-off event.
@@ -1377,7 +1389,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 4. Propose the test: "Two weeks of exit-interview coding would tell us."
 5. Ask for a decision on the next step only, with an owner and a date.
 
-**Worked example or script:** "Exits among people with under one year of service are 14 out of 40, which is 35%. My working explanation is weak induction, but that is a hypothesis, not proven. It fits the exit reasons, but we have no induction feedback yet. I suggest we collect it from the last 40 joiners over two weeks before changing anything." (Invented numbers.)
+**Worked example or script:** "Of our last 40 joiners, 14 left within a year, which is 35%. My working explanation is weak induction, but that is a hypothesis, not proven. It fits the exit reasons, but we have no induction feedback yet. I suggest we collect it from the last 40 joiners over two weeks before changing anything." (Invented numbers.)
 
 **Likely follow-ups:**
 - *Why present something unconfirmed?* Because the pattern is real and the next step is cheap.
@@ -1455,7 +1467,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 5. Add one example or number to quote, with its as-of date.
 6. Have an HRBP read it and tell you what is unclear.
 
-**Worked example or script:** Technical: "Attrition is concentrated in tenure under 12 months (35%) with weak association to onboarding score." One-page brief: "More than one in three recent joiners left within the year. Managers can ask new joiners in week four how onboarding is going. We have not proven induction is the cause." (Invented numbers.)
+**Worked example or script:** Technical: "Attrition is concentrated in tenure under 12 months (35% of recent joiners left) with weak association to onboarding score." One-page brief: "More than one in three recent joiners left within the year. Managers can ask new joiners in week four how onboarding is going. We have not proven induction is the cause." (Invented numbers.)
 
 **Likely follow-ups:**
 - *What if the brief oversimplifies?* Keep a link to the full analysis and note the limits.
@@ -1534,7 +1546,7 @@ Say this only if it is true for you. If you have no direct example, use the no-e
 4. Give the limit honestly.
 5. Offer a small trial: "Let me send you this for one month and you tell me if it was useful."
 
-**Worked example or script (two minutes, illustrative):** "Thank you for the time. I know reports have not always been useful to your team, so I will keep this to one number. Over the last quarter, your department took on average 45 days to fill a role, against 38 days for the rest of the company, which is 7 days or about 16% longer. I cannot yet say why; the data does not show the reason. What I can offer is a one-page monthly tracker that shows where the days go. If it is not useful after two months, we stop. May I start with your next three openings?" (Invented numbers: 45 vs 38 = 7 days, 15.6%, about 16%, computed by script.)
+**Worked example or script (two minutes, illustrative):** "Thank you for the time. I know reports have not always been useful to your team, so I will keep this to one number. Over the last quarter, your department took on average 45 days to fill a role, against 38 days for the rest of the company, which is 7 days, or about 18% longer than the rest. I cannot yet say why; the data does not show the reason. What I can offer is a one-page monthly tracker that shows where the days go. If it is not useful after two months, we stop. May I start with your next three openings?" (Invented numbers: 45 vs 38 = 7 days; 7 divided by 38 = 18.4%, about 18%, computed by script.)
 
 **Likely follow-ups:**
 - *What if they say "I do not need this"?* "Fair; which decision this quarter would you most like more information on?"
