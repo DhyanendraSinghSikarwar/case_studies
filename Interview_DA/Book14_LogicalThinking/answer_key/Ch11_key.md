@@ -283,4 +283,4 @@ S (Start) Start
 
 ## Notes on verification
 
-Each flowchart was coded as a small graph and run on the following numbers of input combinations, comparing the outcome with a direct if/else version of the written rule: Q1 6, Q2 5, Q3 8, Q4 72, Q5 24, Q6 8, Q7 24, Q8 16, Q9 60, Q10 32. Worked examples and scenarios were checked the same way.
+Each flowchart was coded as a small graph and run on many input combinations, comparing the outcome with a direct if/else version of the written rule: Q1 5, Q2 5, Q3 24, Q4 180, Q5 32, Q6 8, Q7 24, Q8 16, Q9 60, Q10 32 (no mismatches). Every traced path above was reproduced by running the graph. Worked examples 3 to 5 and both scenarios were checked the same way.

@@ -127,7 +127,7 @@ Every answer below was checked by listing every possible Venn picture of the gro
    - (b) All expired offers are coupons. Gives a different picture.
    - (c) Some coupons are expired offers. Gives a different picture.
    - (d) Some expired offers are not coupons. Gives a different picture.
-3. Idea in one line: 'No A are B' is symmetric: the two circles do not touch, whichever one you name first. Option (d) is usually true when expired offers exist, but it is not the same statement, because it says nothing is forced about coupons while (a) says the two groups never meet.
+3. Idea in one line: 'No A are B' is symmetric: the two circles do not touch, whichever one you name first. Option (d) is also true here (expired offers exist and none is a coupon), but it is a weaker claim: it would still be true if some expired offers were coupons, so it does not say the same thing. Only (a) says the two groups never meet.
 
 ### Q12 🟢
 **Answer: 6.**
@@ -374,7 +374,7 @@ Every answer below was checked by listing every possible Venn picture of the gro
 1. All 28 managers are graduates, so managers sit inside the 42 graduates.
 2. (b) Graduates who are not managers: 42 minus 28 = 14.
 3. (a) Graduates are 42 of the 70 employees, so 70 minus 42 = 28 employees are not graduates. Temps cannot be graduates, so there are at most 28 temps. They reach 28 when every non-graduate is a temp.
-4. Check: 28 + 14 + 28 temps + 0 others = 70. (Checked by computer: the largest value is 28 and the smallest is 0; the graduates-not-managers count is always 14.)
+4. Check: 28 + 14 + 28 temps + 0 others = 70. (Checked by computer: the largest number of temps is 28, and the graduates-not-managers count is always 14.)
 
 ### Q35 🔴
 **Answer: statements (1), (3) and (5).**
