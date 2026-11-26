@@ -5,22 +5,22 @@
 
 ### Q1 ⭐⭐⭐ 🟢 How would you rate your communication skills out of 10, and what evidence supports that score?
 **Asked at:** commonly asked (no company-specific report found)
-**What the interviewer is checking:** Honest self-awareness: a believable number backed by proof, not a boast or false modesty.
-**Say this in the interview:** Give a number in the 6 to 8 range only if your evidence supports it, name two pieces of proof, and name one thing you are still improving.
+**What the interviewer is checking:** Honest self-awareness: a believable number with proof.
+**Say this in the interview:** Give a number (6 to 8 is a believable range, my suggestion) only if your evidence supports it, name proof, and name one thing you are improving.
 
 **Weak answer (what not to say):** "10 out of 10, I am an excellent communicator." Or: "Maybe 5, I am not sure."
-**Why it is weak:** A 10 sounds unaware and a 5 with no plan sounds unprepared; neither has evidence.
-**Strong answer (template, speak it in your own words):** "I would say [7] out of 10. The evidence: in [my HR role] I [explained a report or policy change to a group of about X people], and [a named person or result showed it landed, for example fewer follow-up questions]. I also [wrote a weekly summary / ran a training] that people actually used. Where I am not a 9 yet is [one gap, for example keeping answers short when I am nervous]. For that I currently [one specific action, for example recording a two-minute answer each day]."
+**Why it is weak:** Neither number has evidence.
+**Strong answer (template, speak it in your own words):** "I would say [7] out of 10. The evidence: in [my HR role] I [explained a report or policy change to a group of about X people], and [a named person or result showed it landed, for example fewer follow-up questions]. Where I am not a 9 yet is [one gap, for example keeping answers short when I am nervous]. For that I currently [one specific action, for example recording a two-minute answer each day]."
 **Illustrative example, replace with your own true story:** "I would say 7 out of 10. In an HR operations role I wrote a one-page monthly attendance summary for 12 team leads, and after I cut it from three pages to one, the number of clarification emails dropped from about 10 a month to about 3 (invented numbers). My gap is that under pressure I add too much detail, so I practise two-minute recordings."
-**STAR breakdown:** Situation: where you communicated. Task: what the audience needed. Action: what you changed or did. Result: a sign it worked. Then add the honest gap.
+**STAR breakdown:** Situation: where you communicated. Task: what the audience needed. Action: what you did. Result: a sign it worked. Then add the honest gap.
 **Say this only if it is true for you. If you have no direct example, use the no-experience version below.**
-**If you have no direct experience:** Use evidence from anywhere true: a class presentation, a mock interview a friend rated, a written summary of a project. Say "I rate myself [6] because I have [mock-interview feedback from X]; here is how I plan to reach 8."
+**If you have no direct experience:** Use any true evidence: a class presentation, a mock interview a friend rated. Say "I rate myself [6] because I have [mock-interview feedback from X]; here is how I plan to reach 8."
 
 **Likely follow-ups:**
 - *Why not higher?* Name one real gap and your current fix.
-- *Who gave you that feedback?* Give a real person or situation; never invent one.
+- *Who gave you that feedback?* A real person or situation; never invent one.
 
-**Common mistakes:** Giving 9 or 10; giving no evidence; naming a gap with no action.
+**Common mistakes:** Giving 9 or 10; no evidence; a gap with no action.
 
 ### Q2 ⭐⭐⭐ 🟢 What is your biggest weakness in communication, and what are you doing about it right now?
 **Asked at:** commonly asked (no company-specific report found)
@@ -82,8 +82,9 @@
 ### Q5 ⭐⭐⭐ 🟡 How do you structure a spoken data story so a busy manager remembers the main point?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Answer-first thinking and the ability to be brief.
+**Say this in the interview:** "The headline first, then one number, then what I recommend."
 **Explain simply:**
-- Lead with the headline, because a busy listener may stop listening after 20 seconds.
+- Lead with the headline, because a busy listener may lose attention early (my rule of thumb).
 - Give one or two pieces of evidence, not ten.
 - End with the action you recommend and what you need.
 - Repeat the headline in one short line at the end.
@@ -105,6 +106,7 @@
 ### Q6 ⭐⭐⭐ 🟡 How do you show in an interview, and not just claim, that you are a strong communicator?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether your answers demonstrate the skill.
+**Say this in the interview:** Do not announce the skill; let a short, answer-first reply with one example show it.
 **Explain simply:**
 - Your answers are the evidence: structure, brevity, clarity.
 - Give the answer first, then support it.
@@ -113,7 +115,7 @@
 **Plan / steps:**
 1. Pause two seconds before answering; it shows control.
 2. Give the answer in one sentence, then one reason and one example.
-3. Keep most answers under about 90 seconds.
+3. Keep most answers under about 90 seconds (my suggestion, not a rule).
 4. Use plain words; explain any term the listener may not know.
 5. If unsure, ask a clarifying question instead of guessing.
 6. Close with a link to the role, then stop talking.
@@ -128,8 +130,9 @@
 ### Q7 ⭐⭐⭐ 🟡 Design a 30-day plan to improve your communication for analyst interviews if you can give one hour on weekdays and three hours on weekends. What do you do each week?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether your plan is realistic, specific and measurable.
+**Say this in the interview:** "Four weeks: baseline, structure, data stories, pressure; I record and score every week."
 **Explain simply:**
-- Time budget: about 5 weekday hours plus 6 weekend hours is roughly 11 hours a week, about 44 over four weeks (exercise assumption of 4 full weeks).
+- Time budget: 5 weekday hours plus 6 weekend hours (reading "three hours on weekends" as 3 on each weekend day) is 11 hours a week, 44 over four weeks. If you meant 3 in total, it is 8 a week, 32 over four weeks.
 - Practice aloud beats reading about communication.
 - Record, review, repeat.
 **Plan / steps:**
@@ -168,6 +171,7 @@
 ### Q9 ⭐⭐⭐ 🟡 What does a good two-minute spoken explanation of an insight sound like, and how do you practise it every day?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Clear, structured, short explanation of a finding.
+**Say this in the interview:** "Headline, evidence, meaning, action, in about two minutes."
 **Explain simply:**
 - Two minutes is about 250 to 300 spoken words at a calm pace (rough rule of thumb, not measured).
 - Order: headline, evidence, meaning, action.
@@ -190,6 +194,7 @@
 ### Q10 ⭐⭐ 🟢 How do you honestly assess your own storytelling and presentation skills, and what scoring checklist do you use?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether you can measure yourself objectively.
+**Say this in the interview:** "I score a recording against a checklist and ask a friend to score it too."
 **Explain simply:**
 - Self-assessment needs a recording and a checklist, not a feeling.
 - Score each item 0, 1 or 2 so progress is visible.
@@ -212,6 +217,7 @@
 ### Q11 ⭐⭐ 🟢 Which free resources would you use to improve your spoken communication, presentation and writing, and why those?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether you choose resources deliberately and practise.
+**Say this in the interview:** "One resource per skill, and every one ends with something I made."
 **Explain simply:**
 - Fewer resources, used daily, beat many saved links.
 - Match one resource to each skill: speaking, presenting, writing.
@@ -219,7 +225,7 @@
 **Plan / steps:**
 1. Speaking: free spoken-English practice such as the British Council India speaking tips page and Great Learning's free spoken English course (from memory, unverified, check the link).
 2. Presenting: watch a few free recorded talks and note their structure; record your own.
-3. Writing: the British Council "5 Cs of email writing" blog (from memory, unverified, check the link) and the University of Waterloo writing-centre email page.
+3. Writing: the British Council "5 Cs of email writing" blog (from memory, unverified, check the link) and the University of Waterloo writing-centre email page (from memory, unverified, check the link).
 4. Practice partner: a friend or study group; a free recorder on your phone.
 5. Rule: after each resource, produce one output (a recording, an email, a memo).
 **Worked example or script:** "I use one speaking resource and one writing resource. After reading the email guide I rewrote three old emails, then asked a friend to rate them. The resources teach; the rewrites are the practice."
@@ -233,6 +239,7 @@
 ### Q12 ⭐⭐ 🟢 What 15-minute daily habit would you set to improve how you communicate, and how will you keep it going for 30 days?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Realistic habit design and follow-through.
+**Say this in the interview:** "Fifteen minutes a day, same time, recorded, with a short version on busy days."
 **Explain simply:**
 - Small, same-time, tied to an existing habit.
 - Visible tracking keeps you going.
@@ -256,6 +263,7 @@
 ### Q13 ⭐⭐ 🟢 What is business acumen, and how would you show it as a junior analyst with no analyst experience?
 **Asked at:** commonly asked (no company-specific report found). Business-case prompts in prep articles test clarifying questions and linking metrics to goals (unverified prep sites).
 **What the interviewer is checking:** Whether you understand what the business cares about and link data to decisions.
+**Say this in the interview:** "Before any analysis I ask what decision it will support."
 **Explain simply:**
 - Business acumen is understanding how the business makes money, spends it and decides.
 - For an analyst it means asking "what decision will this support?"
@@ -277,6 +285,7 @@
 ### Q14 ⭐⭐ 🟢 How do you practise structured thinking in everyday life, and not only in interviews?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether structure is a habit, not a performance.
+**Say this in the interview:** "I give the answer and three reasons for everyday choices, so it is automatic in interviews."
 **Explain simply:**
 - Structure means: say the point, group the reasons, order them.
 - Everyday decisions are free practice.
@@ -299,6 +308,7 @@
 ### Q15 ⭐⭐ 🟢 How do you structure a professional email so that a busy stakeholder reads it and replies?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Clear writing and consideration for the reader.
+**Say this in the interview:** "The ask goes in line one, with a deadline, and one email carries one request."
 **Explain simply:**
 - Bottom line up front: the ask or point in line one.
 - Short subject line saying what you need and by when.
@@ -343,6 +353,7 @@ Hi Meera, could you confirm that the attached headcount (480) matches your recor
 **Inline data:** 480 employees total, 150 with under one year of tenure; 48 of the 150 left; 36 of the remaining 330 left. Check the rates before you speak.
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Rate checking and a crisp answer-first message.
+**Say this in the interview:** "I checked the rates first, then headline, one comparison, one action."
 **Explain simply:**
 - Check rates first: 48/150 = 32.0 percent; 36/330 = 10.9 percent, which rounds to 11 percent. The question's numbers check out.
 - Overall: 84/480 = 17.5 percent.
@@ -353,7 +364,7 @@ Hi Meera, could you confirm that the attached headcount (480) matches your recor
 2. Evidence: 32 percent versus 11 percent.
 3. Action: test a structured first-90-day programme.
 4. Note the caveat: one period only, no cause shown yet.
-**Worked example or script:** "Our biggest attrition risk is the first year. Of 150 people with under a year of tenure, 48 left, which is 32 percent; for the other 330, 36 left, about 11 percent. That is nearly three times higher, and these new joiners make up 57 percent of all exits from 31 percent of staff. I recommend a structured 30-60-90 day check-in pilot, and exit-interview coding for first-year leavers, to confirm the cause. Can we start with two teams?" (about 90 words, about 40 seconds)
+**Worked example or script:** "Our biggest attrition risk is the first year. Of 150 people with under a year of tenure, 48 left, which is 32 percent; for the other 330, 36 left, about 11 percent. That is nearly three times higher, and these new joiners make up 57 percent of all exits from 31 percent of staff. I recommend a structured 30-60-90 day check-in pilot, and exit-interview coding for first-year leavers, to confirm the cause. Can we start with two teams?" (about 80 words, roughly 35 seconds at a calm pace)
 
 **Likely follow-ups:**
 - *Is this causal?* No; it shows where to look, so I would check exit reasons and team-wise splits.
@@ -365,6 +376,7 @@ Hi Meera, could you confirm that the attached headcount (480) matches your recor
 **Inline data:** "Hi, as discussed kindly find attached the file. Please revert at the earliest. Some numbers may look off, do the needful."
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Clear ask, deadline, honesty about data quality.
+**Say this in the interview:** "I name the file, the ask, the deadline and exactly which numbers to check."
 **Explain simply:**
 - Problems: no named file, no deadline ("at the earliest"), "revert" and "do the needful" are vague, and "numbers may look off" gives no specifics.
 - Fix: say what the file is, what you need, by when, and exactly which numbers to check.
@@ -379,7 +391,7 @@ Hi [Name], attached is the [monthly attrition file] we discussed. Could you revi
 (Placeholders are for you to fill; the original did not give them.)
 
 **Likely follow-ups:**
-- *Is "kindly revert" wrong?* Common in Indian business English but ambiguous; "please reply" is clearer.
+- *Is "kindly revert" wrong?* Often used in Indian business English (my observation), but ambiguous; "please reply" is clearer.
 - *Why name the numbers?* So the reader knows where to look.
 
 **Common mistakes:** Rewriting longer; keeping vague phrases; not stating a deadline.
@@ -387,6 +399,7 @@ Hi [Name], attached is the [monthly attrition file] we discussed. Could you revi
 ### Q19 ⭐⭐ 🟡 What is MECE, and how would you use it to break down the problem "hiring is taking too long"?
 **Asked at:** commonly asked (no company-specific report found). MECE is a consulting-prep idea (origin dates vary by source, unverified).
 **What the interviewer is checking:** Organised, non-overlapping thinking.
+**Say this in the interview:** "MECE means no overlap and nothing missing; I split by stages of the process."
 **Explain simply:**
 - MECE: Mutually Exclusive (no overlap) and Collectively Exhaustive (nothing missing).
 - Use 3 to 5 branches.
@@ -408,6 +421,7 @@ Hi [Name], attached is the [monthly attrition file] we discussed. Could you revi
 ### Q20 ⭐⭐ 🟡 What is answer-first communication (often called the pyramid principle), and how do you use it in an interview answer or a manager update?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** Whether you lead with the conclusion.
+**Say this in the interview:** "I state the conclusion first, then up to three reasons."
 **Explain simply:**
 - State the conclusion first, then supporting reasons, then details.
 - Listeners then follow the logic and can stop you when satisfied.
@@ -429,6 +443,7 @@ Hi [Name], attached is the [monthly attrition file] we discussed. Could you revi
 ### Q21 ⭐⭐ 🟡 How do you practise a five-minute presentation of your project, and how do you rehearse so you stay on time?
 **Asked at:** commonly asked (no company-specific report found). Prep guides mention presenting to a cross-functional audience and time limits (unverified).
 **What the interviewer is checking:** Ability to present within time and adapt.
+**Say this in the interview:** "I plan the timing first, rehearse aloud with a timer and keep an appendix."
 **Explain simply:**
 - Plan the timing before the content.
 - Rehearse aloud, with a timer.
@@ -440,7 +455,7 @@ Hi [Name], attached is the [monthly attrition file] we discussed. Could you revi
 4. Mark the cut-able parts.
 5. Rehearse the opening and close until smooth.
 6. Do a mock with a friend asking questions.
-**Worked example or script:** If a run takes 6:20, cut one chart and trim the approach from 90 seconds to 60. Re-run until you finish at about 4:30 to 4:50 to leave a buffer.
+**Worked example or script:** If a run takes 6:20, cut one chart and trim the approach from 90 seconds to 60. Re-run until you finish at about 4:30 to 4:50 to leave a buffer (my suggestion).
 
 **Likely follow-ups:**
 - *What if you run short of time live?* Skip to the recommendation.
@@ -451,6 +466,7 @@ Hi [Name], attached is the [monthly attrition file] we discussed. Could you revi
 ### Q22 ⭐⭐ 🟡 How do you record yourself, review the recording and decide what to fix first?
 **Asked at:** commonly asked (no company-specific report found)
 **What the interviewer is checking:** A concrete self-improvement loop.
+**Say this in the interview:** "I record, score against a checklist, fix one thing and re-record."
 **Explain simply:**
 - Record audio or video on a phone; two minutes is enough.
 - Review with a checklist, not impressions.
@@ -505,7 +521,7 @@ Hi [Name], attached is the [monthly attrition file] we discussed. Could you revi
 3. Which roles or locations drive it? (Check mix change before blaming effort.)
 4. So what? What decision does it feed: change sourcing channel, renegotiate agency terms, or nothing?
 5. Only then name the data you need.
-**Worked example or script (illustrative numbers, invented):** "A 33 percent rise is big, so first I confirm the definition did not change. Then I split it. Say last quarter 50 hires cost 9,00,000 rupees (18,000 each) and this quarter 40 hires cost 9,60,000 (24,000 each). Spend rose only about 7 percent, but hires fell 20 percent. So the question becomes why we hired fewer, not why we spent more." (Arithmetic checked by script.)
+**Worked example or script (illustrative numbers, invented):** "A 33 percent rise is big, so first I confirm the definition did not change. Then I split it. Say last quarter 50 hires cost 9,00,000 rupees (18,000 each) and this quarter 40 hires cost 9,60,000 (24,000 each). Spend rose only about 7 percent, but hires fell 20 percent. So the question becomes why we hired fewer, not why we spent more." (Arithmetic checked.)
 **Likely follow-ups:** 1) *Which one question first?* "Did the definition or the mix of roles change?" because it can make the problem disappear. 2) *Is a rise always bad?* No; senior hiring costs more, so compare like with like.
 **Common mistakes:** Jumping into SQL; a long unordered list of questions; skipping the "so what"; blaming the recruiters first.
 
@@ -543,7 +559,7 @@ Hi [Name], attached is the [monthly attrition file] we discussed. Could you revi
 5. Use free pages from British Council India or Great Learning (from memory and search snippets, unverified, check the link; whether any specific app is free is not confirmed).
 6. In the interview: slow down, pause, and say "Let me rephrase that" if you lose the word.
 **Worked example or script:** If you forget a word: "Sorry, let me say that another way. The number of people leaving is going up." That is calm, correct and fine. If asked about your English: "It is not my first language, and I am improving it daily. I make sure my answers are clear and structured."
-**Likely follow-ups:** 1) *Will it block the job?* "Analyst work is mostly written and numbers-based; I check my emails twice and ask for feedback." 2) *Do you hide the weakness?* No; name it briefly and show the plan.
+**Likely follow-ups:** 1) *Will it block the job?* "A large part of analyst work is written and numbers-based; I check my emails twice and ask for feedback." 2) *Do you hide the weakness?* No; name it briefly and show the plan.
 **Common mistakes:** Memorised long scripts; copying difficult words; over-apologising; speaking too fast to hide it.
 
 ### Q27 ⭐⭐ 🟡 How do you use AI tools to improve your emails and storytelling without losing your own voice or sounding generic?
@@ -596,7 +612,7 @@ Daily: 20 minutes; weekend: one 90-minute review.
 2. Week 2, delivery: rehearse aloud 3 times; record once; watch it with the sound on and note pace and filler words.
 3. Week 3, polish: cut to 5 minutes (about 1 minute per slide); practise the opening and closing until smooth; prepare 3 likely questions.
 4. Week 4, test: present live to one friend; fix their top point; record the final 5-minute take on the last weekend.
-Time: 1 hour weekdays, 3 hours weekends (adjust to your life).
+Time: 1 hour on weekdays, 3 hours on each weekend day, about 11 hours a week (adjust to your life).
 **Worked example or script (opening, illustrative):** "In 5 minutes I will show you one finding: employees in their first year leave at three times the rate of others, and one action that could help." Use your own project, not an invented one, in the real talk.
 **Likely follow-ups:** 1) *What if you run over?* Cut a slide, not your pace. 2) *Where does the recording go?* Keep it private, or share with a mentor.
 **Common mistakes:** Too many slides; reading from them; skipping the timer; recording once and not reviewing.
@@ -795,14 +811,14 @@ Time: 1 hour weekdays, 3 hours weekends (adjust to your life).
 - The formula gives the tree: cost = hours x rate.
 - Check: 1.12 x 1.07 = 1.1984, so about 19.8 percent, which rounds to the stated 20 percent.
 **Plan / steps:**
-1. Restate: "Overtime cost is up about 20 percent."
+1. Restate: "Overtime cost is up 20 percent."
 2. Branch 1, hours: more overtime hours (by team, shift, reason).
-3. Branch 2, rate: higher hourly rate (pay revision, more senior people).
-4. Branch 3, mix: who does the overtime (higher-paid roles more).
-5. Choose the first: hours, because it is usually the larger lever and the easiest to verify, and the data shows hours rose 12 percent.
-6. Say what you would do next: split hours by team and reason.
-**Worked example or script (invented numbers):** Last quarter: 1,000 hours at Rs 200 = Rs 2,00,000. This quarter: 1,120 hours at Rs 214 = Rs 2,39,680, up 19.84 percent. If only hours rose, cost would be Rs 2,24,000 (up 12 percent); the rate adds the rest. "So hours explain most of it; I check which teams and why." Note: mix is partly inside the average rate, so say that honestly.
-**Likely follow-ups:** 1) *Why not start with rate?* It rose less and has a fixed policy cause. 2) *What if branches overlap?* Redraw them; overlap leads to double counting.
+3. Branch 2, rate: higher pay for the same roles (pay revision, shift allowance).
+4. Branch 3, mix: who does the overtime (more by higher-paid roles). Keep it separate from branch 2.
+5. Choose the first: hours, because in the exercise numbers hours rose 12 percent, the larger part, and hours are easy to verify.
+6. Next: split hours by team and reason.
+**Worked example or script (invented numbers):** Last quarter: 1,000 hours at Rs 200 = Rs 2,00,000. This quarter: 1,120 hours at Rs 214 = Rs 2,39,680, up 19.84 percent. If only hours rose, cost would be Rs 2,24,000 (up 12 percent); the rate adds the rest. "So hours explain most of it; I check which teams and why." Note: the average rate already contains the mix effect, so split them carefully.
+**Likely follow-ups:** 1) *Why not start with rate?* In these numbers it rose less; I would still check it second. 2) *What if branches overlap?* Redraw them; overlap leads to double counting.
 **Common mistakes:** Four to six overlapping branches; no reason for the first branch; starting with data pulls.
 
 ### Q42 ⭐ 🔴 A senior listener says "you speak too fast and give too much detail." How do you practise fixing this, and what specific changes do you make to your next answer?
@@ -821,7 +837,7 @@ Time: 1 hour weekdays, 3 hours weekends (adjust to your life).
 ### Q43 ⭐ 🔴 Design a 90-day plan that takes you from nervous and unstructured to calm and structured in communication, storytelling, business acumen, presentation, writing and confidence. How do you split the hours?
 **Asked at:** commonly asked (no company-specific report found); a coaching-style planning question (unverified).
 **What the interviewer is checking:** Realistic planning, prioritising and measuring progress.
-**Say this in the interview:** "Seven hours a week for 13 weeks, with the most time on communication, which is the skill every job post mentions most, and a recorded test each month."
+**Say this in the interview:** "Seven hours a week for 13 weeks, most time on communication, which about 73 percent of sampled job posts mention (low to medium confidence), and a recorded test each month."
 **Explain simply:**
 - Plan: 7 hours a week (1 hour on weekdays, 2 on the weekend, a sample you can adjust), 13 weeks, about 91 hours.
 - Communication gets 21 hours (about 23 percent) because research/market_skills_2026.md found it in about 73 percent of sampled job posts (n = 40, low to medium confidence); the others get 14 hours each: storytelling, business acumen, presentation, writing, confidence. 21 + 5 x 14 = 91.
@@ -829,7 +845,7 @@ Time: 1 hour weekdays, 3 hours weekends (adjust to your life).
 **Plan / steps:**
 1. Days 1-30, foundation: daily 2-minute recorded answers (structure: answer, reason, example); read one business article daily; write simple emails; do one weekly feedback session.
 2. Days 31-60, build: one public HR dataset, make a one-page memo and a 5-slide deck; start issue trees and MECE; impromptu drills 3 times a week.
-3. Days 61-90, proof: record a 5-minute project presentation; two mock interviews with feedback; polish the portfolio; practise the 90-second project story.
+3. Days 61-90, proof: record a 5-minute project presentation; two mock interviews with feedback; polish the portfolio and 90-second story.
 4. Measure: same prompt recorded on day 1, 30, 60 and 90; compare time to main point, fillers and checklist score.
 5. Confidence comes from evidence: keep a log of finished tasks.
 **Worked example or script:** A typical week of 7 hours: Monday to Friday 1 hour each (20 minutes speaking drill, 20 minutes reading or writing, 20 minutes review of last recording), plus 2 hours on one weekend day for project work or a mock. 5 + 2 = 7.
