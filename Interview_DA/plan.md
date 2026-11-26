@@ -63,6 +63,7 @@
 | 11 | Soft Skills, HR Round, GD & Career-Switch Story | Q&A + scenarios + playbooks | 630 |
 | 12 | Portfolio, Resume, LinkedIn/Naukri & Job Search | Guide + 100 FAQs | Guide |
 | 13 | Logical Reasoning & Analytical Thinking for Data Analysts (added 2026-11-25; goes deeper than Book 6 Part 7) | Q&A + puzzles | 640 |
+| 14 | Logical Thinking from Zero, for Future Data Scientists (added 2026-11-26 from the user's own chapter index, `research/book14_user_index.md`; a teaching textbook, not an interview Q&A bank) | Textbook: concept + solved examples + scenarios + practice + answer key | 37 chapters, 820+ practice questions |
 
 Total: ~6,675 Q&As + 2 guides. No new book added: Phase 0 found no missing must-have skill (Excel, SQL, dashboards, communication all covered). Changes are part-level rebalances (Section 6, marked **[P0]**). Book 13 (logical reasoning, ~640 Q&As) was added later at the user's request: Book 6 Part 7 already holds 80 logical-reasoning questions, so Book 13 covers the depth they lack and must not repeat them.
 
@@ -318,6 +319,21 @@ Boundaries: Book 6 Part 7 (80 questions: basic blood relations, syllogisms, seat
 | 11 | Timed mixed mock sets in online-assessment style, with strategy notes per set 🟡🔴 | 40 |
 | 12 | How to develop logical reasoning: roadmap, daily practice plan, free resources, practice sets, mini-projects, self-check tests | 20 |
 
+### Book 14 — Logical Thinking from Zero, for Future Data Scientists (textbook, 37 chapters)
+Source: the user's own chapter index, stored verbatim in `research/book14_user_index.md` (chapter list, topics, scenarios and practice counts are the user's design; do not drop or reorder chapters). Scope per the index: logic, reasoning, critical thinking and problem solving; maths, Python and statistics are excluded (learned in Books 5, 3 and others). Reader: a complete beginner, starting from zero, who wants to think logically for a data career (not only to pass an interview).
+**Chapter template (every chapter, per the index):** (1) Concept in plain language; (2) 5 solved examples, step by step with the "why"; (3) 2 real-life scenarios (commerce, data, daily life); (4) practice questions, easy then medium then hard, using the count in the index table (the index also says "15 practice questions" as the standard; where the table gives a larger number, the table wins and 15 is the minimum); (5) mistake log (the 3 to 5 most common errors in that chapter) and a 5-line recap. Answers with full reasoning go to Appendix C (answer key). Additions the lead may make beyond the index (user allowed more content): a "Why this matters for data work" box per chapter, a 3-question self-check at chapter start, "Try it in a spreadsheet or SQL" links to Books 1 and 2 where natural (no new tutorials), and Appendix F (glossary of every logic term).
+**Boundaries:** Book 13 is the interview Q&A bank for logical reasoning (657 frozen questions) and Book 6 Part 7 holds 80 classic aptitude items. Book 14 teaches the same skills from zero: all examples and practice questions must be NEW (never copy or lightly reword Book 13 or Book 6 Part 7 questions; use different scenarios, names, numbers and structures); cross-refer ("for interview-style drills see Book 13 Part N") instead of repeating. Book 5 owns statistics and probability; Book 6 owns number series, number system and data interpretation drills (Ch 9 here teaches pattern-spotting as a thinking skill; Ch 22 teaches the data-sufficiency idea, drills live in Book 6 Part 9); Book 11 Part 10 owns structured-thinking soft skills. Non-verbal figure questions cannot be shown in Markdown: text-described versions only.
+| Part | Chapters (index) | Practice (index) |
+|---|---|---|
+| 1 Foundations of Logic | 1 logic, premise/conclusion, deduction vs induction (15); 2 statements and truth values (30); 3 AND, OR, NOT and truth tables (20); 4 if-then, converse, inverse, contrapositive, iff (20); 5 quantifiers and negation (25); 6 valid, invalid, sound arguments (20) | 130 |
+| 2 Organising Information | 7 sets and Venn (25); 8 classification, odd one out, analogies (30); 9 number, letter, pattern series (40); 10 tables and matrices (15); 11 flowcharts and decision trees (10 flowcharts to draw) | 120 |
+| 3 Classic Reasoning Problems | 12 syllogisms (40); 13 direction and distance (30); 14 blood relations (40); 15 ranking and ordering (30); 16 seating (30); 17 coding-decoding (40); 18 floor/box/day/month/scheduling puzzles (25); 19 truth-teller and liar (20); 20 clocks and calendars (25); 21 statement-assumption, conclusion, course of action (40); 22 data sufficiency (30) | 350 |
+| 4 Critical Thinking | 23 logical fallacies (30); 24 correlation vs causation (20); 25 cognitive biases (20); 26 evaluating claims and sources (15); 27 misleading charts and statistics (15) | 100 |
+| 5 Problem Solving and Proof | 28 Polya's 4 steps (10); 29 strategies (25); 30 proof techniques (20); 31 intro to induction, idea only (10); 32 algorithmic thinking (20); 33 estimation, Fermi (20); 34 debugging your reasoning (15) | 120 |
+| 6 Putting It All Together | 35 mixed case studies (10 full cases); 36 timed practice sets (8 mock tests of 30 minutes; 15 questions each, 120 in total); 37 personal error log and review system (template) | 130 |
+| Appendices | A formula and rule cheat sheet; B truth-table and Venn templates; C answer key with full reasoning (all practice, all mocks, all cases); D reading list (Polya, Thinking Fast and Slow, The Art of Thinking Clearly: titles only, no claims about them beyond what is common knowledge, labelled "from memory"); E 12-week study schedule (the index also suggests 1 chapter every 3 to 4 days, about 5 months; show both and label them our suggestion) | n/a |
+Totals: 37 chapters; practice 820 (Ch 1-34) + 10 cases + 120 mock questions = 950 (index promises "700+"). Honesty rules: every puzzle brute-force checked for a unique answer and the answer key recomputed by code; real-life scenarios use invented illustrative numbers (labelled); fallacy, bias and claim examples are invented, never real named people, companies, news items or "studies"; no effectiveness claims about learning logic; the reading list is from memory, unverified. Build pipeline: (1) chapter writers (one per 1 to 3 chapters) write `Book14_LogicalThinking/Ch<NN>.md` with practice questions and no answers, plus `answer_key/Ch<NN>_key.md` with full reasoning, all verified by code; (2) lead assembles appendices (A, B, D, E, F written by dedicated agents) and merges answer keys into Appendix C; (3) Wave C review per part (recompute every worked example, scenario number, practice answer and mock set; beginner-clarity check; overlap check against Books 13 and 6). Sequence: after Book 13 is finished.
+
 ---
 
 ## 7. Study Schedule (24 weeks, non-technical start)
@@ -451,7 +467,8 @@ interviews/data_analyst/
 ├── Book10_Domain/
 ├── Book11_SoftSkills/
 ├── Book12_Portfolio_JobSearch/
-└── Book13_Logical_Reasoning/
+├── Book13_LogicalReasoning/
+└── Book14_LogicalThinking/
 ```
 
 ### 8.9 Request Commands
@@ -499,3 +516,4 @@ interviews/data_analyst/
 | 11 Soft Skills | 11 | ✅ 673 (after removing 27 cross-part duplicates and adding 1 gap-fill; see research/dedupe_log_book11.md; research was search-snippet only, no page fetched in full, stars are judgement; personal-experience answers will be templates, never invented experience) | ✅ 673 answers merged | ✅ reviewed 2026-11-26 (see Book11_SoftSkills/review_Book11.md) |
 | 12 Portfolio & Job Search | 7 sections | ✅ 108 FAQs + 6-section outline (Wave A 2026-11-26; research snippet-level only; see research/dedupe_log_book12.md) | ✅ guide (Book12_Guide.md, 6 sections) + 108 FAQ answers | ✅ Wave C done 2026-11-26 (see Book12_Portfolio_JobSearch/review_Book12.md; platform, certificate and legal facts snippet-level only, unverified) |
 | 13 Logical Reasoning | 12 | ⬜ | ⬜ | ⬜ |
+| 14 Logical Thinking from Zero (textbook, user index) | 6 parts / 37 chapters | ⬜ (index supplied by user 2026-11-26, `research/book14_user_index.md`) | ⬜ | ⬜ |
