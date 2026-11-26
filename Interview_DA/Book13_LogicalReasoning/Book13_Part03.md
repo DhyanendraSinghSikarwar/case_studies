@@ -196,7 +196,7 @@
 - Step 1, decode: write the code key on top ($ = >, # = <, @ = >=, % = <=, * = =) and rewrite the whole statement once in normal signs. Never decode in your head per conclusion.
 - Step 2, mark peaks and valleys: where the direction turns, the two sides cannot be compared.
 - Step 3, test each conclusion: decode it too, then find the path. Strict only if a strict step lies on the path; equal only if every step is "=".
-- Step 4, either-or: if two conclusions are about the same pair of letters, one is "> " and the other "<=" (or "<" and ">=", or "=" with one other), and neither follows alone, then one of them must be true, so "either I or II follows".
+- Step 4, either-or: if two conclusions are about the same pair of letters, one is ">" and the other "<=" (or "<" and ">="), and neither follows alone, then one of them must be true, so "either I or II follows".
 - Worked mini-example: with the key above, A % B * C $ D means A <= B = C > D. "A < D" is not definite (A and D are across the peak at C); "B > D" is true.
 **Likely follow-ups:** 1) *How do you check the either-or case?* The two conclusions must cover all possibilities together (P > S and P <= S do). 2) *What if you are unsure?* Substitute small numbers (a quick counterexample test).
 **Common mistakes / traps:** Decoding one symbol wrongly, treating "=" in the chain as strict, mixing up conclusion symbols with statement symbols, and forgetting the either-or check when both conclusions fail.
@@ -212,7 +212,7 @@
 3. II. P <= S: true in some models, false in others. Not definite alone.
 4. I and II involve the same two letters, and together they cover every possibility (P is either greater than S or not). So at least one is always true.
 5. Neither alone is certain, but one of the two is, which is exactly "either I or II".
-**Fast method (30 seconds):** Check (1) neither alone follows, (2) same pair of letters, (3) the two relations are complements (> with <=, or < with >=, or = and not-equal combined with > and <). Then pick the "either" option.
+**Fast method (30 seconds):** Check (1) neither alone follows, (2) same pair of letters, (3) the two relations are complements, meaning every case falls under one of them (> with <=, or < with >=). Then pick the "either" option.
 **Check:** Verified by script: over all integer assignments 1 to 7, I and II are each sometimes true, and in every model at least one of them is true (and never both).
 **Explain simply:**
 - Either-or only applies when neither conclusion follows by itself and the pair is complete.
@@ -237,7 +237,7 @@ The line is complete (every neighbouring pair is linked), so the order is unique
 **Explain simply:**
 - "Taller than" is transitive: if X is taller than Y and Y is taller than Z, then X is taller than Z.
 - A single line of six letters is a full ranking; no guessing is needed.
-**Likely follow-ups:** 1) *Who is the shortest?* F. 2) *If the clue "F is shorter than C" were removed, who is third?* Still A (E, D, A are all above B and C), and F's position would not matter to that.
+**Likely follow-ups:** 1) *Who is the shortest?* F. 2) *If the clue "F is shorter than C" were removed, who is third?* It could not be determined: F would be unlinked, and checking all orders gives A, D or F as third tallest depending on where F fits.
 **Common mistakes / traps:** Putting D below A because D is mentioned later, or stopping when two chains exist and guessing how they join.
 
 ### Q15 ⭐⭐⭐ 🟡 A weighs 4 kg more than B. B weighs 3 kg less than C. D weighs 2 kg more than C. E weighs 2 kg less than A. Who is the heaviest and who is the lightest of the five?
@@ -276,7 +276,7 @@ Table (relative to C): D +2, A +1, C 0, E -1, B -3.
 - "People between" excludes both named people, so add 1 to get the position difference.
 - Counting from the left and from the right counts the same person twice, hence the "- 1".
 **Likely follow-ups:** 1) *If only 10 people stood between them?* Bhaskar is 9 + 11 = 20th from the left, so the row has 20 + 15 - 1 = 34. 2) *How many stand to the right of Bhaskar?* 14.
-**Common mistakes / traps:** Forgetting the "+1" and getting Bhaskar at 21 (total 35), or adding 9 + 12 + 15 = 36 without knowing why (it only works because 9 + 12 + 1 = 22 and the double-counted Bhaskar cancels the +1; use the proper method).
+**Common mistakes / traps:** Forgetting the "+1" and getting Bhaskar at 21 (total 35), or adding 9 + 12 + 15 = 36 by luck. (It does work here: 9 counts the people up to and including Asha, 12 are between, and 15 counts Bhaskar and everyone to his right. But it is easy to misapply, so use the position method.)
 
 ### Q17 ⭐⭐⭐ 🟡 In a certification batch, Tara is 12th from the top in the Excel test. In the SQL test she drops 10 places and is 27th from the bottom. No ties in either test. How many people are in the batch?
 **Asked at:** commonly asked (no company-specific report found); "rank changes between two tests" is a common prep-site variant (unverified).
@@ -413,7 +413,7 @@ Table:
 - Worked mini-example: 4 people, "A not first" and "B not last". With no other clue there are 24 orders; inclusion-exclusion gives 24 - 6 - 6 + 2 = 14 left (checked by script). Two negatives alone barely help.
 - In Q18, "Q is not 5th" was the last clue used: it chose between two surviving queues.
 - Good habit: keep a small grid of people against positions and cross out the banned cell the moment you read a negative clue; that costs nothing and prevents later mistakes.
-**Likely follow-ups:** 1) *Can a negative clue ever be the key one?* Yes, as the final tie-break (Q18, and Q19's "D after A"). 2) *What if all clues are negative?* Count: the arrangements left after the exclusions; use a grid.
+**Likely follow-ups:** 1) *Can a negative clue ever be the key one?* Yes, as the final tie-break (Q18; in Q19 the plain clue "D is interviewed after A" played the same last-step role). 2) *What if all clues are negative?* Count: the arrangements left after the exclusions; use a grid.
 **Common mistakes / traps:** Forgetting a negative clue after using it once, or trying to start the puzzle from a negative clue and guessing.
 
 ### Q24 ⭐⭐ 🟢 A is older than B. C is older than B. Can you say who is the oldest of the three? Explain why or why not.
@@ -504,7 +504,7 @@ Table:
 - A conclusion "definitely follows" only if it is true in every possible set of numbers that fits the statement.
 - You can chain two comparisons only when they point the same way (or are "=").
 - A flip such as ">= then <" is a break: the two ends are unrelated.
-**Likely follow-ups:** 1) *What if the statement had C <= D instead of C < D? Would (c) still hold?* No, E >= C only. 2) *What would make (a) definite?* A chain B <= D, for example.
+**Likely follow-ups:** 1) *What if the statement had C <= D instead of C < D? Would (c) still hold?* No, E >= C only. 2) *What would make (a) definite?* A strict link such as B < D (then F <= B < D gives F < D). B <= D alone gives only F <= D.
 **Common mistakes / traps:** Treating B >= C < D as "B and D are comparable", and choosing (a) or (b) from the order of letters on the page.
 
 ### Q29 ⭐⭐ 🟡 Statement: K >= L > M >= N, and K = P. Which of the following is definitely false? (a) K > N (b) P > M (c) L > P (d) N < L.
@@ -577,7 +577,7 @@ Table:
 ### Q32 ⭐⭐ 🟡 Out of 30 candidates ranked by score with no ties, Tej scored higher than at least 8 candidates and lower than at least 5. What is the best and the worst rank (from the top) that Tej can have?
 **Asked at:** commonly asked (no company-specific report found); rank-range items are a variant of standard ranking questions (prep-site topic lists, unverified).
 **What the interviewer is checking:** Turning "at least" into limits on the rank, and using the "rank from top = people above + 1" idea.
-**Say this in the interview:** "At least 5 above him means rank 6 or worse. At least 8 below him means at most 22 above-or-equal, so rank 22 or better. Range 6 to 22."
+**Say this in the interview:** "At least 5 above him means rank 6 or worse. At least 8 below him means at most 22 people are at or above him (himself included), so rank 22 or better. Range 6 to 22."
 **Answer:** **Best rank 6th, worst rank 22nd.**
 **Step-by-step reasoning:**
 1. A candidate with rank r has r - 1 people above and 30 - r below.
@@ -744,7 +744,7 @@ Table:
 **Explain simply:**
 - Rank from top + rank from bottom = total + 1, because the person is counted in both.
 - People strictly between two ranks = (difference of ranks) - 1.
-**Likely follow-ups:** 1) *What if 18 scored more than Zoya and 12 scored less than her?* The counts would then need to fit the total of 50 (18 above, Zoya, 12 below makes 31, leaving 19 unplaced), so always check the totals match before answering. 2) *How many scored less than Yash's rank counting Zoya?* 12 below Yash, so Zoya has 12 + 1 + 18 = 31 below her.
+**Likely follow-ups:** 1) *What if 18 scored more than Zoya and 12 scored less than her?* The counts would then need to fit the total of 50 (18 above, Zoya, 12 below makes 31, leaving 19 unplaced), so always check the totals match before answering. 2) *How many scored below Zoya?* The 18 between, Yash and the 12 below Yash: 18 + 1 + 12 = 31 (also 50 - 19 = 31).
 **Common mistakes / traps:** Answering 19 (38 - 19) by forgetting to remove the two endpoints, or treating "18 scored more than Zoya" as Zoya's rank 18.
 
 ### Q40 ⭐⭐ 🟡 State the conditions under which an "either I or II follows" answer is correct in inequality questions, and show them on a short example.
@@ -762,7 +762,7 @@ Common exhaustive pairs: (> and <=), (>= and <), (< and >=), (<= and >). The pai
 **Explain simply:**
 - "Exhaustive" means the two statements together leave no gap.
 - "Either-or" does not mean both are possible; it means one of them is certainly true, you just cannot say which.
-**Likely follow-ups:** 1) *Conclusions are A > C and A < C, what now?* "A = C" is still possible, so neither follows (answer "neither"). 2) *Conclusions are A >= C and A <= C?* They cover every case, so either-or is the usual exam answer (A = C makes both true; exams normally still accept "either I or II").
+**Likely follow-ups:** 1) *Conclusions are A > C and A < C, what now?* "A = C" is still possible, so neither follows (answer "neither"). 2) *Conclusions are A >= C and A <= C?* They cover every case, so either-or is the usual exam answer (A = C makes both true, so strictly one-and-only-one is not guaranteed; how an exam treats this varies, so say your reading aloud. The usual rule of thumb is from memory, unverified).
 **Common mistakes / traps:** Using either-or when the conclusions involve different pairs; using it for > and < and forgetting that equality is a third case; picking either-or when one conclusion is already definitely true.
 
 ### Q41 ⭐⭐ 🔴 Four trainees A, B, C and D finish a certification in different positions (1st to 4th, no ties). Exactly two of these five statements are true: (1) A finished immediately ahead of C. (2) A finished ahead of C. (3) A finished ahead of B. (4) B finished ahead of C. (5) C finished last. In what order did they finish?
@@ -855,7 +855,7 @@ Final queue: 1 A, 2 G, 3 F, 4 B, 5 C, 6 E, 7 D.
 **Explain simply:**
 - "Independent" here means the two rules involve different people, so each cuts the count in half.
 - Factorial (n!) means n x (n-1) x ... x 1.
-**Likely follow-ups:** 1) *If A before B and B before C?* 120/6 = 20 (see Q46). 2) *Add D before E too?* 120/8 = 15.
+**Likely follow-ups:** 1) *If A before B and B before C?* 120/6 = 20 (see Q46). 2) *Add D before E too (so C before D before E, and A before B)?* The order of C, D, E is fixed (1 in 6) and A before B is 1 in 2: 120/12 = 10 (brute-forced).
 **Common mistakes / traps:** Counting E as restricted; adding instead of multiplying fractions.
 
 ### Q46 ⭐ 🟡 Five candidates A to E are interviewed one per slot. A must be interviewed before B and B before C; D and E are unrestricted. How many different orders are possible?
