@@ -96,7 +96,7 @@
 **Explain simply:**
 - Draw the statements in the most spread-out way and in the most overlapping way. Test the conclusion in both.
 - Worked example: "Some analysts are auditors; some auditors are lawyers." "Some analysts are lawyers" is true if the overlaps coincide and false if they do not, so it is only possible.
-- Statement-conclusion questions ask "follows", never "possible", so only keep conclusions true in every diagram.
+- Most statement-conclusion questions ask which "follow", so keep only conclusions true in every diagram (a few, like Q42 and Q71 here, ask you to classify each one as certain, possible or false).
 **Check:** Verified by script: for Q1, Q2 and Q11 I counted, over every model, whether each conclusion was true always, sometimes or never.
 **Likely follow-ups:** 1) *Is "all" stronger than "some"?* Yes; "all A are B" guarantees an overlap, so "some A are B" follows (given A is not empty). 2) *Can a conclusion be neither follows nor possible?* Yes: contradicted ones, where it is false in every diagram.
 **Common mistakes / traps:** Choosing a conclusion because it matches the diagram you drew first. Always try to break it with a second diagram.
@@ -110,7 +110,7 @@
 1. (a) is "if Q then P": the converse, not equivalent.
 2. (b) is "if not P then not Q": the inverse, not equivalent.
 3. (c) is "if not Q then not P": the contrapositive, equivalent.
-4. (d) says "Q only if not P": "if Q then not P", which contradicts the original idea; not equivalent.
+4. (d) says "Q only if not P", i.e. "if Q then not P". If the audit is passed and the licence is renewed, the original is satisfied but (d) is broken, so it is not equivalent.
 **Fast method (30 seconds):** Look for the option that swaps the two parts and negates both.
 **Check:** Verified by script: only (c) has the same truth table as P then Q.
 **Explain simply:**
@@ -368,6 +368,7 @@
 | E6 | 5 | 0 | 3 | No |
 | E7 | 4 | 0 | 2 | Yes |
 | E8 | 3 | 2 | 1 | No |
+
 **Asked at:** commonly asked (no company-specific report found); rule-violation checks on tables are a typical analyst-style reasoning item (unverified).
 **What the interviewer is checking:** Whether you test the rule only where it can be broken (bonus paid), not where it is silent.
 **Say this in the interview:** "'Only if' means a paid bonus needs rating 4 or 5 and no warnings. So I look only at rows with Bonus paid = Yes and check both conditions. E2 has a warning and E5 has rating 2. Two violations."
@@ -397,6 +398,7 @@
 | E6 | 5 | 0 | 3 | No |
 | E7 | 4 | 0 | 2 | Yes |
 | E8 | 3 | 2 | 1 | No |
+
 **Asked at:** commonly asked (no company-specific report found); same family as the "only if" table item above (unverified).
 **What the interviewer is checking:** That you test the rule exactly where its "if" part is satisfied and the "then" part fails.
 **Say this in the interview:** "A violation needs tenure over 2, rating at least 4, and no bonus. Only E6 fits: 3 years, rating 5, bonus not paid."
@@ -479,12 +481,13 @@
 | No A is B | **Some A are B** |
 | Some A are B | **No A is B** |
 | Some A are not B | **All A are B** |
+
 **Step-by-step reasoning:**
 1. A negation must be true exactly when the original is false.
 2. "All A are B" fails the moment one A is outside B, which is "Some A are not B".
 3. "No A is B" fails the moment one A is inside B, which is "Some A are B".
 4. The other two are the same pairs read backwards.
-**Check:** verified by script: over all 8 Venn models of two groups (empty groups allowed), each pair always has opposite truth values.
+**Check:** verified by script: over all 16 Venn models of two groups (4 regions, each occupied or empty; empty groups allowed), each pair always has opposite truth values.
 **Explain simply:**
 - "All" and "No" are opposites but not negations: both are false when A partly overlaps B (for example some analysts are managers, some are not). The negation of "All" is "Some not", not "No".
 - Negating "all" gives "some not": one counter-example kills a universal claim.
@@ -503,6 +506,7 @@
 | A only if B | **If A then B** (same as: if not B then not A) |
 | A if and only if B | **If A then B, and if B then A** |
 | A unless B | **If not B then A** (same as: if not A then B) |
+
 **Step-by-step reasoning:**
 1. "If" points to the sufficient condition: the part after "if" goes on the left.
 2. "Only if" points to the necessary condition: the part after "only if" goes on the right.
@@ -527,6 +531,7 @@
 | No A is B | **Yes** (No B is A) |
 | Some A are B | **Yes** (Some B are A) |
 | Some A are not B | **No** |
+
 **Worked example of a wrong reversal:** Analysts = {Ann, Bob}, managers = {Ann}. "Some analysts are not managers" is true (Bob). Reversed, "Some managers are not analysts" is false (the only manager is an analyst). Likewise "All managers are analysts" is true but "All analysts are managers" is false.
 **Check:** verified by script over Venn models with non-empty groups: reversing "No" and "Some" never fails; reversing "All" or "Some not" fails in some models; "All A are B" always gives "Some B are A".
 **Explain simply:**
@@ -538,7 +543,7 @@
 ### Q29 ⭐⭐ 🟢 You get a set of 4 statements and 5 conclusions in a syllogism question and about 90 seconds. What is a time-efficient step-by-step method, and when should you skip?
 **Asked at:** commonly asked (no company-specific report found); prep sites report about 2 syllogisms in a 20-question, 25-minute TCS NQT reasoning section (prep-site claim, unverified); timings below are our suggestion, not a research finding.
 **What the interviewer is checking:** Structured, calm method under time pressure, and judgement about when to move on.
-**Say this in the interview:** "I draw one combined diagram, then test each conclusion by asking whether I can make it false. About 15 to 18 seconds each. If the diagram needs more than three groups and I am stuck, I guess and move on."
+**Say this in the interview:** "I draw one combined diagram, then test each conclusion by asking whether I can make it false. About 14 seconds each. If the diagram needs more than three groups and I am stuck, I guess and move on."
 **Answer:** **Our suggested 90-second routine: 20 seconds to build the diagram, about 14 seconds per conclusion, and a skip rule for tangled sets.**
 **Step-by-step reasoning:**
 1. Read all statements; note the convention (some = at least one; groups non-empty).
@@ -815,7 +820,7 @@
 - Example, two negatives: "No cats are fish; no fish are cars" says nothing about cats and cars.
 - Example, two "some": "Some analysts are managers; some managers are tall": the managers who are tall may not be analysts.
 - Example, undistributed middle: "All dogs are animals; all cats are animals; so all dogs are cats" fails, because "animals" is the right-hand term in both "All" statements and is never fully covered, so the two groups need not meet.
-**Worked mini-example (numbers):** Verified by script: all 256 combinations of two premises (each of the 4 types) in the 4 standard arrangements of the middle group, tested against conclusions linking the two end groups with every group non-empty, gave 24 valid forms; none had two negative premises or two "some" premises.
+**Check:** Verified by script: 4 premise types x 4 premise types x 4 arrangements of the middle group = 64 combinations per conclusion type, 256 in all with the four conclusion types (All, No, Some, Some not) linking the two end groups; over all models with every group non-empty, 24 forms are valid, and none has two negative premises or two "some" premises.
 **Likely follow-ups:** 1) *Why does "All A are B, all C are B" fail?* Middle B is never fully covered. 2) *Is "All A are B, all B are C, so all A are C" valid?* Yes; B is fully covered in the second premise.
 **Common mistakes / traps:** Treating "All A are B" as meaning "all B are A", and forgetting that these rules assume every group has members (the convention here).
 
@@ -972,7 +977,7 @@
 **Common mistakes / traps:** Accepting III because "clean batch" sounds right; the "load was run" part is an extra claim.
 
 ### Q53 ⭐⭐ 🟡 Statement: "None but data staff attended the workshop." Neha is data staff. Ravi attended the workshop. Which of these must be true: I. Ravi is data staff. II. Neha attended the workshop. III. Anyone who is not data staff did not attend?
-**Asked at:** commonly asked (no company-specific report found); "only" statements are a standard 3-star topic in the sources (prep-site judgement).
+**Asked at:** commonly asked (no company-specific report found); "only" statements are a standard syllogism variant on prep sites (unverified).
 **What the interviewer is checking:** decoding "none but" as "only", which points from attended to data staff.
 **Say this in the interview:** "'None but data staff attended' means attendance requires being data staff. Ravi attended, so he is data staff (I). Neha being data staff does not mean she attended, so II fails. III is the same rule said backwards, so it holds."
 **Answer:** **I and III.**
@@ -1198,6 +1203,7 @@
   | T | F | False |
   | F | T | True |
   | F | F | True |
+
 - The statement is a promise about P-cases only. Where P is false, nothing was promised, so there is no broken promise.
 **Worked mini-example:** Rule "if a record is flagged, it is reviewed". An unflagged record that is reviewed or not reviewed does not break the rule. Only a flagged, unreviewed record does.
 **Likely follow-ups:** *In a table, which rows violate the rule?* Only those with P true and Q false. Table computed by script (3 true, 1 false).

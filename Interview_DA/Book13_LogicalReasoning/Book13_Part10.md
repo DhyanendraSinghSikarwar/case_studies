@@ -429,7 +429,7 @@ Total in the team who know at least one tool: 135.
 **Explain simply:**
 - Replacing each number by a slightly bigger power of 2 gives an upper bound that is easy to add up.
 - 12! (read "12 factorial") means 1 x 2 x 3 x ... x 12.
-**Likely follow-ups:** 1) *Which is larger, 13! or 2^32?* 13! = 6,227,020,800 and 2^32 = 4,294,967,296, so 13! is larger (verified by script); the crossover is at 13!. 2) *Roughly how many digits does 12! have?* 9.
+**Likely follow-ups:** 1) *Which is larger, 13! or 2^32?* 13! = 6,227,020,800 and 2^32 = 4,294,967,296, so 13! is larger (verified by script), even though 12! is still smaller than 2^30. 2) *Roughly how many digits does 12! have?* 9.
 **Common mistakes / traps:** Trusting the rough 2^10 = 1000 estimate when the numbers are within a factor of about 2 (it can mislead), or multiplying 12 numbers by hand.
 
 ### Q23 ⭐⭐ 🟡 A deposit grows at 9% compound interest per year. What is the smallest whole number of years after which it is at least 8 times the original amount, and what does the Rule of 72 estimate instead?
@@ -449,7 +449,7 @@ Total in the team who know at least one tool: 135.
 - Compound interest means interest is earned on past interest, so growth multiplies each year.
 - The Rule of 72 is a mental shortcut (approximate, not exact); it lands within a year here because 9% is in its sweet spot.
 **Likely follow-ups:** 1) *Years to double at 9% exactly?* ln 2 / ln 1.09 = 8.04, so 9 whole years (1.09^8 = 1.993, just under 2; checked by script). 2) *At what rate does money double in exactly 6 years?* About 12.2% (2^(1/6) - 1), roughly the Rule of 72 value of 12%.
-**Common mistakes / traps:** Answering 24 (the estimate or rounding 24.13 down) when the question asks for at least 8 times. Also using simple interest (8 x 100/9, about 78 years).
+**Common mistakes / traps:** Answering 24 (the estimate or rounding 24.13 down) when the question asks for at least 8 times. Also using simple interest (the extra must reach 700% of the deposit, 700 / 9 = about 78 years).
 
 ### Q24 ⭐⭐ 🟡 A support desk receives 1,200 calls a day, each lasting 6.5 minutes on average. An agent is productive for 6 hours a day. What is the minimum number of agents needed to cover the workload?
 **Asked at:** commonly asked (no company-specific report found); capacity and sizing arithmetic fits the estimation style reported for analytics interviews (unverified).
@@ -679,19 +679,19 @@ Total in the team who know at least one tool: 135.
 **Asked at:** commonly asked (no company-specific report found); the gold-chain puzzle is a classic (prep-site claim, unverified).
 **What the interviewer is checking:** Whether you use one opened link as a connector that creates pieces of sizes 1, 2 and 4.
 **Say this in the interview:** "Open just the third link. It frees a single link and leaves a 2-link piece and a 4-link piece. Those sizes 1, 2, 4 let me make any total 1 to 7 by swapping."
-**Answer:** **1 link, the 3rd link from one end (the 5th from the same end works too, by mirror symmetry).**
+**Answer:** **1 link, the 3rd link from one end (the 5th from the same end works too, by mirror symmetry).** Reading used: the 7 links form a straight chain with two loose ends (the classic puzzle), so opening one link frees it and splits the rest into two pieces. If instead the chain were a closed ring (no loose ends), opening one link only leaves a single 6-link piece plus the opened link, which cannot pay every day, and the minimum would be 2 links (for example links 1 and 3, giving pieces 1, 1, 1 and 4; checked by script).
 **Step-by-step reasoning:**
-1. Open (and detach) link 3 of the closed chain of 7. The chain falls into: links 1-2 (a piece of 2), link 3 on its own (a piece of 1), links 4-7 (a piece of 4).
+1. Open (and detach) link 3 of the straight chain of 7 (see the reading above). The chain falls into: links 1-2 (a piece of 2), link 3 on its own (a piece of 1), links 4-7 (a piece of 4).
 2. Day 1: give the single link (1). Day 2: take it back, give the 2-piece. Day 3: give the 2-piece and the single (total 3).
 3. Day 4: take both back, give the 4-piece. Day 5: 4 + 1. Day 6: 4 + 2 (take back the single). Day 7: all three, 4 + 2 + 1 = 7.
 4. Zero opened links cannot work because you cannot hand over exactly one link from a closed chain.
 5. Opening any other link gives piece sizes that cannot make every total from 1 to 7. For example, opening link 4 gives pieces 3, 1, 3, and a total of 2 is impossible.
 **Fast method (30 seconds):** You need pieces of size 1, 2, 4 (binary). 1 + 2 + 4 = 7, so the opened link is the one with 2 links on one side and 4 on the other.
-**Check:** Checked by script over all 7 choices of the single link to open: only link 3 and link 5 give pieces that can pay every day from 1 to 7; opening 0 links cannot pay one link.
+**Check:** Checked by script over all 7 choices of the single link to open in a straight chain: only link 3 and link 5 give pieces that can pay every day from 1 to 7; opening 0 links cannot pay one link. For a closed ring the same script gives a minimum of 2 opened links.
 **Explain simply:**
 - Opening a link does not destroy it: it turns a closed ring into pieces, and the opened link itself becomes a 1-unit piece.
 - The same binary idea as 1-2-4-8 pieces applies.
-**Likely follow-ups:** A chain of 15 links? Opening 1 link cannot work, 2 links can (checked by script, for example open links 3 and 7, pieces 2, 3, 8, 1, 1). A 3-link chain? Open the 1st link.
+**Likely follow-ups:** A chain of 15 links? Opening 1 link cannot work, 2 links can (straight chain, checked by script, for example open links 3 and 7: pieces 2, 1, 3, 1, 8). A 3-link chain? Open the 1st link.
 **Common mistakes / traps:** Opening link 4, the middle link (pieces 3, 1, 3), or saying 2 links without testing whether 1 is enough.
 
 ### Q37 ⭐ 🟡 Using a two-pan balance with weights placed on either pan, what is the smallest number of weights that can weigh every whole number of kilograms from 1 to 40, and what are they?
@@ -778,7 +778,7 @@ Total in the team who know at least one tool: 135.
 2. Glass A now holds V of liquid, made of milk and water. If it holds m of water, it holds V - m of milk, so m of milk is missing from A.
 3. All missing milk must be in glass B, since milk exists only in A and B. So glass B holds exactly m of milk.
 4. So water in A = m = milk in B.
-5. Spoon size and volume do not matter. Example with V = 100 and a 10-unit spoon: B then holds 110, of which 10/110 is milk; returning 10 brings back 10/11 of milk. Result: milk in B = 100/11 and water in A = 100/11.
+5. Spoon size and volume do not matter. Example with V = 100 and a 10-unit spoon: B then holds 110, of which 10/110 is milk; returning 10 units of the mixture brings back 10/11 of a unit of milk (the mixture is 10/110 = 1/11 milk). Result: milk in B = 100/11 and water in A = 100/11.
 **Fast method (30 seconds):** Conservation: "what left A in milk is balanced by what entered A in water, because A's volume is back to normal".
 **Check:** Verified with exact fractions for three different glass and spoon sizes (V = 100, 50, 1000; spoons 10, 3, 1): milk in B equals water in A each time (100/11, 150/53, 1000/1001).
 **Explain simply:**
@@ -913,7 +913,7 @@ Write (8-litre, 5-litre, 3-litre) after each move:
 - Each pass at best doubles the number of pieces in a line: 1, 2, 4. That is why the count is a logarithm.
 - Cuts in different directions do different jobs, so you add them.
 **Likely follow-ups:** 1) *A 5 x 5 x 5 cube?* ceil(log2 5) = 3 per direction, so 9 (the 1-D part verified by script). 2) *A 3 x 3 x 3 cube with stacking?* 2 per direction, so 6.
-**Common mistakes / traps:** Answering 9 (3 cuts per direction, the no-stacking answer) or 3 (one cut per direction). Also assuming that diagonal cuts could do better; they do not help separate the grid cells.
+**Common mistakes / traps:** Answering 9 (3 cuts per direction, the no-stacking answer) or 3 (one cut per direction). Also assuming that diagonal or slanted cuts could do better; this answer assumes flat cuts parallel to the faces, which is the usual reading.
 
 ### Q48 ⭐ 🔴 There are 10 bottles, each filled with 10 g pills. Some bottles (possibly several, possibly none) contain defective pills that each weigh 9 g. Using a digital scale only once, how do you find which bottles are defective, and which bottles are defective if you take 2^(i-1) pills from bottle i (i = 1 to 10) and the scale reads 10,205 g?
 **Asked at:** commonly asked (no company-specific report found); the counterfeit-coins-in-bags idea is a classic scale puzzle (here as a pill variant with binary weights).
@@ -1017,7 +1017,7 @@ Move                      Time   Left bank          Right bank
 Total                     29
 ```
 **Fast method (30 seconds):** Repeat this rule while four or more people remain on the starting side: move the two slowest across using the cheaper of two options: 2nd + 1st + slowest + 2nd, or slowest + 1st + 2nd-slowest + 1st. Finish the last three with 2nd + 1st + slowest.
-**Check:** Verified by script: a shortest-path search over every possible state (who is on which bank, where the torch is) gives 29 as the minimum, and finds 8 different ways to reach it. The naive "1 escorts everyone" plan takes 32.
+**Check:** Verified by script: a shortest-path search over every possible state (who is on which bank, where the torch is) gives 29 as the minimum, and no schedule beats 29 (we did not count the optimal schedules, so do not claim a number of ways). The naive "1 escorts everyone" plan takes 32.
 **Explain simply:**
 - Every return trip costs time too, so the person who returns should be fast.
 - Slow people should never cross alone and should be paired with the other slow one.
@@ -1050,7 +1050,7 @@ Total                     29
 - A cryptarithm replaces digits by letters; the same letter is always the same digit, different letters are different digits.
 - A "carry" is the 1 you carry to the next column when a column sums to 10 or more.
 - Bounding the size of the answer often fixes the first digits at once.
-**Likely follow-ups:** 1) *Why must P be 0?* The sum is under 11,000, so its thousands digit (P) is 0 or 1; it cannot be 1 because A is already 1 and different letters need different digits. 2) *Is the solution unique?* Yes, one assignment only (brute force).
+**Likely follow-ups:** 1) *Why must P be 0?* The sum is at most 10,998, so it lies between 10,000 and 10,998 and its thousands digit (P) must be 0. 2) *Is the solution unique?* Yes, one assignment only (brute force).
 **Common mistakes / traps:** Forgetting that P is the same letter in two places (it is 0 in both), or dropping the carries. Trying T = 8 fails because the sum cannot reach 10,000.
 
 ### Q54 ⭐ 🔴 The product of the ages of three children is 72. A mathematician is told the sum of their ages and still cannot determine the ages. He is then told that there is a unique eldest child, and he works out the ages. What are the ages?
