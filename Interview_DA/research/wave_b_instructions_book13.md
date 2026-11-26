@@ -8,7 +8,7 @@ A non-technical HR professional switching to data analytics who must clear onlin
 ## What you produce
 - Read your range from `Book13_LogicalReasoning/Book13_PartNN.md` (read-only; do NOT edit it).
 - Write ONE chunk file `Book13_LogicalReasoning/answers_chunks/B13P<NN>_Q<from>-<to>.md` (mkdir -p): for each question in your range IN ORDER, the exact heading line copied unchanged AND any data/option/statement lines under the heading copied exactly (everything between the heading and the `<!-- ANSWER_PENDING -->` marker), then the full answer. Do not output the marker. No preamble. Never renumber/reorder/drop/rewrite questions. Touch no other file. Do not commit.
-- Scratch folder: `/tmp/claude-0/-home-user-case-studies/7227d798-1dc4-5a0c-b272-858a37cce3c1/scratchpad/B13P<NN>_Q<from>-<to>` (yours only).
+- Scratch folder: `/tmp/claude-0/-home-user-case-studies/f1f97a91-a687-5c91-adf9-6191d712464e/scratchpad/B13P<NN>_Q<from>-<to>` (yours only).
 
 ## Answer template (puzzles and problems)
 ```
