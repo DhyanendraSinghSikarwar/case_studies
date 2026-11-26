@@ -1,5 +1,4 @@
 # Review F1: Book12_FAQs.md Q1-18
-
 Scope: lines 8-330 of Book12_FAQs.md. Reviewer F1. Wave C instructions followed.
 
 ## Counts
@@ -44,8 +43,7 @@ Scope: lines 8-330 of Book12_FAQs.md. Reviewer F1. Wave C instructions followed.
 - All resume-format advice (ATS layout trouble, PDF, hybrid format, bullet formula, gap labelling) rests on vendor/blog snippets (A12a), labelled so in text.
 - Q9 one-page evidence is US and snippet only.
 
-## Could not check
-- No web access; source pages not opened.
+## Could not check: no web access; source pages not opened.
 
 ## Overlaps / notes (report only)
 - Q4, Q8 and Q17 overlap (resume bullets from HR work) and Q11 and Q16 overlap (cover letter); acceptable as one is the rule and the other the template.

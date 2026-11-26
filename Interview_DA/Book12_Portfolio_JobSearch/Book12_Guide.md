@@ -2,7 +2,7 @@
 
 **Reader:** a non-technical HR professional switching to data analytics. **Target roles:** Data Analyst, Business Analyst, MIS/Reporting, BI, Product/Operations and People/HR Analytics. **Target cities:** Hyderabad and Bengaluru (also Pune, Chennai, NCR). **Pay target:** Rs 6-10 LPA (see Book 0 for what the research says about pay).
 
-**How to read this guide.** Every number comes from the series' own research files (`research/`), with its confidence label next to it. Job-description percentages are from a pooled, non-random sample (n=186, about +/-7 points). Interview processes are anonymous and candidate-reported. Resume, LinkedIn, Naukri, outreach and certificate advice comes from blogs, vendors and platform help pages that we read only as search snippets, so it is labelled "unverified" or "snippet only, check the live page". Where no reliable data exists (ATS pass rates, callback and reply rates, certificate value in India, recruiter behaviour), the guide says "No reliable data found" and gives a decision rule you can apply yourself. Platform limits, prices and settings change: always check the live page. Routines, timelines and the 10-application rule are our own design, not research findings. Today is 2026-11-26.
+**How to read this guide.** Every number that is not marked "illustrative", "invented" or "our own design" comes from the series' own research files (`research/`), with its confidence label next to it. Job-description percentages are from a pooled, non-random sample (n=186, about +/-7 points). Interview processes are anonymous and candidate-reported. Resume, LinkedIn, Naukri, outreach and certificate advice comes from blogs, vendors and platform help pages that we read only as search snippets, so it is labelled "unverified" or "snippet only, check the live page". Where no reliable data exists (ATS pass rates, callback and reply rates, certificate value in India, recruiter behaviour), the guide says "No reliable data found" and gives a decision rule you can apply yourself. Platform limits, prices and settings change: always check the live page. Routines, timelines and the 10-application rule are our own design, not research findings. Today is 2026-11-26.
 
 **Ground rules this guide never breaks.** Use only public or synthetic data in a portfolio, never your employer's data. Never claim experience or numbers you do not have. Never hide keywords or pad a resume to fool a system. Never pay anyone for a job (see Section 4). Legal and policy points (confidentiality, notice period, platform terms) are general information, not legal advice: confirm with HR, a lawyer or the platform.
 
@@ -139,7 +139,7 @@ A **portfolio** is a small set of projects showing you can do the tasks in the j
 
 > **Data rule (strict).** Use only public or synthetic (invented) data. Never use employer data, candidate or employee records, salary files or screenshots of internal dashboards, even anonymised or "just the structure". Anything with real names, phone numbers or salaries of real people is out. Never present made-up results as real. Reason: confidentiality and possible legal risk (general statement, not legal advice; confirm with HR/legal).
 
-**Order for an HR switcher** (our decision rule, based on the role-tool table in MS Section 6; no outcome data): (1) HR attrition dashboard, (2) SQL case, (3) by target role: for MIS/reporting a sales or operations dashboard in Excel or Power BI, for BI or data analyst roles a Python EDA, then (4) the other, and (5) a guesstimate deck as a differentiator. In the MIS/people sample (32 JDs, wider error margin, about +/-17 points) Excel is 72% and Python 16%; in the Bengaluru (42 JDs) and GCC (25 JDs) samples Python is 40% and in the Hyderabad sample (47 JDs) 30% (MS Addendum per-sample column; the pooled n=186 is non-random, about +/-7 points, and each sub-sample is smaller and less certain).
+**Order for an HR switcher** (our decision rule, based on the role-tool table in MS Section 6; no outcome data): (1) HR attrition dashboard, (2) SQL case, (3) by target role: for MIS/reporting a sales or operations dashboard in Excel or Power BI, for BI or data analyst roles a Python EDA, then (4) the other, and (5) a guesstimate deck as a differentiator. In the MIS/people sample (32 JDs, so much less certain than the pooled figure) Excel is 72% and Python 16%; in the Bengaluru (42 JDs) and GCC (25 JDs) samples Python is 40% and in the Hyderabad sample (47 JDs) 30% (MS Addendum per-sample column; the pooled n=186 is non-random, about +/-7 points, and each sub-sample is smaller and less certain).
 
 ### 2.2 Choosing data safely
 
@@ -594,7 +594,7 @@ Every cell below comes from a search snippet of an official or vendor page, not 
 Three details need care:
 
 - **Prices: we do not quote one.** The Google India page and the US Coursera page showed different monthly figures, and third-party sites quoted other rupee amounts. For PL-300 we found no official rupee price, and third-party guesses conflict (unverified). Open Coursera or the Microsoft exam page, look at the price in rupees today, and write it in your worksheet (5.5).
-- **Renewal of PL-300.** The official FAQ snippet says renewal is free through an online assessment taken before the certificate expires; if it lapses you must earn it again. Book 0 Q55 mentions a 12-month renewal. Confirm the current rule on the Microsoft page.
+- **Renewal of PL-300.** The official FAQ snippet says renewal is free through an online assessment taken before the certificate expires; if it lapses you must earn it again. Book 0 Q17 mentions a 12-month renewal. Confirm the current rule on the Microsoft page.
 - **Tableau.** Tableau appeared in about 33% of the pooled postings and Power BI in about 40% (MS; n=186 non-random sample, about +/-7 points). That is no proof a Tableau certificate helps. It only says to consider Tableau if your target postings name it.
 
 ### 5.3 Decision rule when there is no data
@@ -605,6 +605,8 @@ Use your own evidence, not mine. Collect 10 job descriptions (JDs) for the roles
 2. If 0 to 2 do, spend your next hours on a project.
 3. If your target role says Power BI is required and you already have one finished dashboard, PL-300 is a reasonable add.
 4. Work out the total cost: fee, plus study hours, plus the risk of a retake.
+
+The thresholds (0 to 2 of 10, 4 of 10) are our own rules of thumb, not research findings.
 
 | Situation | Do a certificate now | Later | Skip |
 |---|---|---|---|
@@ -617,7 +619,7 @@ Use your own evidence, not mine. Collect 10 job descriptions (JDs) for the roles
 
 ### 5.4 Worked examples (illustrative)
 
-**A. Two weeks: certificate or project?** (illustrative) You have 14 evenings of 1 hour. A certificate course says "about 40 hours". A dashboard project takes you perhaps 20 to 30 hours, including cleaning data and writing a short README (a page explaining what the project is). Your 10 JDs name no certificate. Decision: do the project; a recruiter can open it and see your work. If you finish early, start the certificate. Book 12 Q86 works this through.
+**A. Two weeks: certificate or project?** (illustrative) You have 14 evenings of 1 hour. Suppose a certificate course needs "about 40 hours" (an invented figure; check the real one). A dashboard project takes you perhaps 20 to 30 hours, including cleaning data and writing a short README (a page explaining what the project is). Your 10 JDs name no certificate. Decision: do the project; a recruiter can open it and see your work. If you finish early, start the certificate. Book 12 Q86 works this through.
 
 **B. Cost arithmetic.** (illustrative; replace every number with your own)
 
@@ -683,7 +685,7 @@ If you cannot name a job that needs it, the worst case should make you pause.
 
 ### 6.1 Why track
 
-No source we found shows that tracking raises your chance of a job. We track because the Book 0 rule needs data: after 10 applications with no replies, change the resume, not the target (Book 0 FAQs, job-search answer; this is our own rule of thumb, not sourced, and 10 is illustrative). Without a record you cannot see which resume version or which board is working. Build the tracker in Excel (Book 1) or Google Sheets.
+No source we found shows that tracking raises your chance of a job. We track because the Book 0 rule needs data: after 10 applications with no replies, change the resume, not the target (Book 0 FAQs, job-search answer; this is our own rule of thumb, not sourced, and 10 is illustrative; Q98 walks through it). Without a record you cannot see which resume version or which board is working. Build the tracker in Excel (Book 1) or Google Sheets.
 
 ### 6.2 Tracker design
 
@@ -728,7 +730,7 @@ All entries are illustrative placeholders, not evidence. "Reply" here means any 
 |---|---|---|---|---|---|---|
 | 1 | 1 | Firm A | Naukri | v1 | Screen | Yes |
 | 2 | 1 | Firm B | Naukri | v1 | Applied | No |
-| 3 | 1 | Firm C | Naukri | v1 | Ghosted | No |
+| 3 | 1 | Firm C | Naukri | v1 | Applied | No |
 | 4 | 2 | Firm D | Naukri | v2 | Applied | No |
 | 5 | 2 | Firm E | Naukri | v2 | Rejected | Yes |
 | 6 | 2 | Firm F | LinkedIn | v2 | Screen | Yes |
@@ -780,7 +782,7 @@ Ask once, politely, for feedback; do not argue. Log the stage where you fell, th
 
 | Stage lost | What it may mean | Fix with |
 |---|---|---|
-| Resume screen | Keywords or fit; some filters are rigid JD requirements, not a verdict on you (CompTIA blog snippet) | Section 1, Section 3 |
+| Resume screen | Keywords or fit; some rejections are about rigid JD requirements, not a verdict on you (our reasoning plus general blog advice, unverified; no data on why resumes are screened out) | Section 1, Section 3 |
 | Screening call | Story unclear | Book 11 Parts 1 and 2 |
 | Technical round | Skill gap | Books 1, 2, 4 |
 | Case or scenario | Structure | Books 7, 8 |
@@ -794,7 +796,7 @@ Schedule rest and cap daily applications. The advice is general career-centre ad
 
 ### 6.9 Notice period overlap (read your own contract)
 
-Not legal advice. Notice period rules are from memory and blogs, unverified: confirm with your own contract, HR policy or legal advice. The sources we saw say the contract sets the notice period, a buyout (paying to leave early) is the employer's choice, and some new employers reimburse a buyout (Instahyre blog, unverified). One blog says the Labour Codes leave it to the contract (unverified). Ask the new employer for a later start date, and never leave without a relieving letter. As an HR person you know your company's policy; use it.
+Not legal advice. Notice period rules are from memory and blogs, unverified: confirm with your own contract, HR policy or legal advice. The sources we saw say the contract sets the notice period, a buyout (paying to leave early) is the employer's choice, and some new employers reimburse a buyout (Instahyre blog, unverified). Ask the new employer for a later start date, and never leave without a relieving letter. As an HR person you know your company's policy; use it.
 
 Illustrative arithmetic (replace with your own contract terms):
 

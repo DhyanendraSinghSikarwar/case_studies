@@ -1723,7 +1723,7 @@ Certifications
 ### Q91 ⭐⭐ 🟡 How can I tell from job descriptions whether a certificate is worth paying for in my target roles?
 **Short answer:** Read 10 job descriptions (JDs) for the roles you actually want and count how many name a certificate, and whether as "required" or only as "preferred". If 0 to 2 name one, your money and hours are better spent on a project.
 **Why / explain simply:**
-- A JD is the employer's own wish list, so it is the nearest thing to evidence of what they screen for.
+- A JD is the employer's own wish list, so it is the nearest thing to evidence of what they screen for. It is not proof of how a recruiter actually shortlists, which we cannot see.
 - "Required" is a filter. "Preferred", "good to have" or "advantage" is a tie-breaker at best.
 - Words like "certifications" with no name tell you nothing specific; do not buy a certificate on that basis.
 **What the evidence says:** No analytics certification was named in any of the 40 in-scope JDs of the first sample (MS Section 5). In the pooled sample of 186 JDs (non-random, about +/-7 points), no certification was required; Tableau or Power BI certificates, Google Data Analytics, the Microsoft Data Analyst Associate and CBAP appeared only as advantages (MS Addendum). Employer weight on certificates in India: No reliable data found.
@@ -1733,14 +1733,15 @@ Certifications
 3. Decision rule: 0 to 2 mention one, skip for now and build a project. 3 or more list it as preferred and you already have a finished project, a certificate is a reasonable add. Required in 3 or more, treat it as a filter for that type of employer.
 4. Repeat after a month, because your target roles may change.
 **Example:** (illustrative) Of 10 MIS and reporting JDs, 1 says "Power BI certification is an advantage" and 9 name only Excel, SQL and dashboards. You decide: project first, certificate maybe later.
+The thresholds in step 3 (0 to 2, 3 or more, 10 JDs) are our own rule of thumb, not research. Ten JDs is a small sample, so treat the count as a hint and read more if the answer is close.
 **Common mistakes:** Counting "good to have" as required; reading only 2 JDs; paying first and checking JDs afterwards; copying a certificate list from a course ad.
 **Where this is covered:** Guide Section 5; Q85, Q86 and Q88; Book 0 Q55.
 
 ### Q92 ⭐⭐ 🟢 What happens when PL-300 expires, and how do I renew it?
 **Short answer:** If you renew before the expiry date, it is a free online assessment. If you let it expire, you have to earn the certification again by retaking the exam. Check the exact dates on your own Microsoft Learn profile.
 **Why / explain simply:**
-- PL-300 is the Microsoft Power BI Data Analyst Associate exam. Microsoft role-based certificates do not last forever, because the tool changes.
-- Renewal is a shorter, open-book online test on the topics that changed, not the full exam again.
+- PL-300 is the Microsoft Power BI Data Analyst Associate exam. Microsoft certificates carry an expiry date (see the evidence below), so a certificate is a dated claim, not a lifetime one.
+- Renewal is a short, open-book online assessment, not the full exam again (official snippet, check the live page).
 - If you only ever put the certificate on your resume and never use Power BI, renewal will feel hard, so keep practising.
 **What the evidence says:** Microsoft's official renewal FAQ (snippet only, not opened in full): renewal is free through an online assessment taken before expiry; the window opens about 6 months before; the assessment is about 45 minutes, unproctored and open-book; if it has expired you re-earn it (A12c sources). Book 0 states a 12-month renewal cycle, fetched earlier. The PL-300 study guide heading reads "Skills measured as of April 20, 2026", passing score 700 (official, snippet only). Rules change: check the live page.
 **What to do:**
@@ -1756,9 +1757,9 @@ Certifications
 **Short answer:** Not for a first role in most cases. Take the one that matches the tool your target JDs name, and only after you have a finished project in that tool. DP-600 is more advanced and is out of scope for a first analyst job.
 **Why / explain simply:**
 - Tableau and Power BI are two dashboard tools. Employers usually want one of them, not a certificate in both.
-- Tableau Desktop Specialist is the entry-level Tableau exam.
-- DP-600 is a Microsoft Fabric exam aimed at people who build analytics solutions; it is a step up from PL-300.
-**What the evidence says:** In the pooled 186-JD sample (non-random, about +/-7 points), Power BI was named in about 40% and Tableau in about 33% (MS Addendum); those are tool mentions, not certificate mentions. Tableau's official page snippet: fee $100, no prerequisites, credential does not expire; exam length not verified (A12c sources). DP-600 being more advanced is a blog claim, unverified. Value of any of these in India: No reliable data found.
+- Tableau Desktop Specialist is Tableau's beginner-level exam (our description; check the live page).
+- DP-600 is a Microsoft Fabric exam (Fabric is Microsoft's data platform). Blogs describe it as aimed at people who build analytics solutions and as a step up from PL-300 (blog claim, unverified).
+**What the evidence says:** In the pooled 186-JD sample (non-random, about +/-7 points), Power BI was named in about 40% and Tableau in about 33% (MS Addendum); those are tool mentions, not certificate mentions. Tableau's official page snippet: fee $100, no prerequisites, credential does not expire; exam length not verified (A12c sources). The only Tableau certificate seen in our first JD sample was Tableau Desktop Certified Associate, in one posting that needed 3+ years (MS Section 5, Appendix B). DP-600 being more advanced is a blog claim, unverified; no rupee price was found for any of these. Value of any of these in India: No reliable data found.
 **What to do:**
 1. Count Tableau and Power BI in your 10 target JDs.
 2. Learn and build a dashboard in the more common one first (Book 4).
@@ -1791,7 +1792,7 @@ Certifications
 **Short answer:** Use about 10 plain columns and whichever of Excel or Google Sheets you will open daily. Both work; the habit matters more than the tool.
 **Why / explain simply:**
 - A tracker is a simple table with one row per application. It stops you forgetting follow-ups and lets you see what works.
-- Career blogs agree on roughly 6 to 10 core columns; they do not agree on one perfect layout.
+- Career blogs list similar core columns but do not agree on one perfect layout. About 10 is our own design choice, small enough to keep up.
 - Excel is good if you want practice for Book 1. Google Sheets is easy on a phone and to share a copy with a mentor.
 **What the evidence says:** The column list comes from blogs and university career centres (blog/vendor, snippet level; A12c sources). No source shows that tracking raises your response rate: No reliable data found. The reason to track is so you can apply a decision rule with your own data.
 **What to do:** Create a sheet with these columns (illustrative layout):
