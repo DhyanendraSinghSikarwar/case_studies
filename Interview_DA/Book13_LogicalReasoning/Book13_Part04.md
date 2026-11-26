@@ -97,7 +97,7 @@ Unique by brute force over all 5040 orders. B is seat 2, C is seat 5, so the peo
 **Explain simply:**
 - "Exactly 3 between" means a seat difference of 4.
 - "Somewhere to the left" only means a smaller seat number, not next to.
-**Likely follow-ups:** 1) *Who is third to the right of G?* E... G is seat 1, so seat 4, E. 2) *How many sit between D and G?* 5.
+**Likely follow-ups:** 1) *Who is third to the right of G?* G is seat 1, so seat 4: E. 2) *How many sit between D and G?* 5.
 **Common mistakes / traps:** Counting seats instead of people in between (off by one); and forgetting D could be on either side of A (here only one side fits).
 
 ### Q5 ⭐⭐⭐ 🟡 6 auditors A, B, C, D, E and F sit in a row facing north (so each person's right-hand side is towards the east). (1) A and B do not sit next to each other. (2) A sits third to the right of F. (3) D sits somewhere to the left of F. (4) Exactly 3 persons sit between B and C. Who sits second to the right of F?
@@ -245,7 +245,7 @@ Unique by brute force over all 120 orders.
 **Say this in the interview:** "I fix the compass on the page first: west on the left, east on the right. For people facing north, their left is west and their right is east. For people facing south, it flips: their right is west and their left is east. I never use my own left and right."
 **Answer:** **Anchor everything to compass directions on the page; convert each person's "left/right" using the way they face.**
 **Step-by-step reasoning:**
-1. Draw the two rows as parallel lines, north row on top (facing south) and south row below (facing north) unless the puzzle says otherwise. Mark W on the left of the page and E on the right.
+1. Draw the two rows as parallel lines, the row on the north side on top (its people face south) and the row on the south side below (its people face north) unless the puzzle says otherwise. Mark W on the left of the page and E on the right.
 2. North-facing person: left = West = left of page; right = East = right of page.
 3. South-facing person: left = East = right of page; right = West = left of page.
 4. Convert every clue straight to W or E before drawing, then place people by page position.
@@ -335,7 +335,7 @@ Worked mini-example: "5 people live on floors 1 to 5" is a vertical list (Q1). "
 1. Number the seats 1 to 7 from the left (west) to the right (east). "To the right" means a higher seat number.
 2. Clue 4 gives the block B-A (A directly right of B). Clue 2 gives the block C-G. Clue 3 puts E exactly 3 seats right of G, so the pattern is C G _ _ E.
 3. That pattern can start at seat 1, 2 or 3 (E must be at seat 7 or lower).
-4. Start at seat 1: C1 G2 E5. Free seats are 3, 4, 6, 7. The block B-A needs two touching seats, so it takes 6-7 (B6, A7). Clue 1 (one person between B and F) puts F at seat 4. D takes seat 3. Works.
+4. Start at seat 1: C1 G2 E5. Free seats are 3, 4, 6, 7. The block B-A needs two touching seats: 3-4 or 6-7. If B-A took 3-4 (B3), F would have to be at seat 1 or 5, both taken, so it fails. So B-A takes 6-7 (B6, A7). Clue 1 (one person between B and F) puts F at seat 4. D takes seat 3. Works.
 5. Start at seat 2: C2 G3 E6. Free seats 1, 4, 5, 7. B-A must take 4-5 (B4). F must be at seat 2 or 6, both taken. Fails.
 6. Start at seat 3: C3 G4 E7. Free seats 1, 2, 5, 6. B-A takes 1-2 (B1, so F must be at seat 3, taken) or 5-6 (B5, so F must be at seat 3 or 7, both taken). Fails.
 7. Final row: seat 1 C, 2 G, 3 D, 4 F, 5 E, 6 B, 7 A. Immediately left of F (seat 4) is seat 3, D.
@@ -434,7 +434,7 @@ Worked mini-example: "5 people live on floors 1 to 5" is a vertical list (Q1). "
 **Say this in the interview:** "Number Monday to Saturday as 1 to 6. SQL must be on Mon, Tue or Wed because Tableau is 3 days later. Only SQL on Monday survives the Power BI clues. That fills Mon SQL, Tue Statistics, Wed Python, Thu Tableau, Fri Power BI, so Excel is Saturday."
 **Answer:** **Saturday**
 **Step-by-step reasoning:**
-1. Days: Mon, Tue, Wed, Thu, Fri, Sat (1 to 6). Tableau = SQL + 3, so SQL is on Mon, Tue or Wed. SQL and Python have 1 day between them, so Python = SQL + 2 (the other option, SQL - 2, is tried only where it exists). Statistics = Python - 1.
+1. Days: Mon, Tue, Wed, Thu, Fri, Sat (1 to 6). Tableau = SQL + 3, so SQL is on Mon, Tue or Wed. SQL and Python have 1 day between them, so Python = SQL + 2 (the other option, Python = SQL - 2, would put Statistics at SQL - 3, which needs SQL on Thursday or later, but SQL is on Monday to Wednesday, so it never fits). Statistics = Python - 1.
 2. SQL = Mon: Python Wed, Statistics Tue, Tableau Thu. Left: Fri, Sat for Excel and Power BI. Power BI is not Saturday, so Power BI Fri, Excel Sat. Statistics (Tue) before Power BI (Fri): yes.
 3. SQL = Tue: Tableau Fri, Python Thu, Statistics Wed. Left: Mon, Sat. Power BI is neither Mon nor Sat. Fails.
 4. SQL = Wed: Tableau Sat, Python Fri, Statistics Thu. Left: Mon, Tue. Power BI cannot be Mon, so Tue, but Statistics (Thu) must come before Power BI. Fails.
@@ -664,7 +664,7 @@ Not allowed when: seats are numbered or named (labelled seats, so rotations are 
 
 **Check:** Verified by script: for n = 3 to 7 the brute-force counts matched the table, for both rules.
 **Explain simply:**
-- "Distinct" means nobody has a different neighbour pair arrangement; rotating all does not count as new.
+- "Distinct" means two seatings differ in who sits next to whom; turning everyone round the table by the same number of seats does not make a new seating.
 - Halving applies when the object has no front and back, such as a necklace or a table you can flip. People who face the centre have a left and a right, so mirror images are normally different and you do not halve.
 **Likely follow-ups:** 1) *n = 2?* 1 seating; the halving formula would give 0.5, so it only works for n of 3 or more. 2) *8 people, mirror images different?* 7! = 5040.
 **Common mistakes / traps:** Using n! for a circle, or halving in a seating puzzle where the question says mirror images differ.
@@ -718,7 +718,7 @@ Wording that makes wrap-around matter: "the day after Sunday", "two days before 
 4. Check that every person appears once and the count of seats is right.
 5. Re-read the question itself: "right of", "second to the left", "opposite" must match what you computed.
 **Fast method (30 seconds):** Check direction words first (left/right, above/below, before/after) because they are the most common slip, then the number words (second, third, exactly k between).
-**Check:** This is itself the check; for the puzzles in this book every final arrangement was also confirmed by brute force.
+**Check:** This is itself the check; in the review of this part every puzzle (Q1 to Q10, Q16 to Q22, Q39 to Q58, Q61 to Q70) was re-solved by brute force and each has exactly one arrangement, matching the written one.
 **Explain simply:**
 - A "set" shares one arrangement across 4 to 5 questions, so an early error repeats.
 - Checking costs seconds; a wrong base costs the whole set.
@@ -810,7 +810,7 @@ Final row: F D B G A E H C.
 1. Seats 1 to 8, left to right. Clue 1: Farid = Esha + 3, so Esha is in seats 1 to 5; clue 2 needs a neighbour on each side, so Esha is in seats 2 to 5.
 2. Clue 4: Bala and Hari have exactly 2 between, so their seats differ by 3. Clue 5: Asha is 2 seats right of Gita. Clue 3: Dev is left of Gita.
 3. For each order of the trio (Chitra, Esha, Hari or Hari, Esha, Chitra) and each Esha seat from 2 to 5, place Bala 3 seats from Hari, then see whether the three remaining people fit Gita, Asha (2 right of Gita) and Dev (left of Gita).
-4. Seven of the eight combinations fail, for example Hari, Esha, Chitra with Esha at seat 2 forces Gita 6, Asha 8, Dev 7, which breaks "Dev left of Gita".
+4. Seven of the eight combinations fail, for example Hari, Esha, Chitra with Esha at seat 2 forces Gita 6, Asha 8, Dev 7, which breaks "Dev left of Gita" (Bala is then at seat 4, as 4 is 3 seats from Hari at seat 1).
 5. The survivor: Chitra 3, Esha 4, Hari 5, Farid 7, Bala 2, then Gita 6, Asha 8, Dev 1.
 Row: 1 Dev, 2 Bala, 3 Chitra, 4 Esha, 5 Hari, 6 Gita, 7 Farid, 8 Asha.
 **Fast method (30 seconds):** Use the rigid chain first (Esha and Farid 3 apart), then the 3-seat gap clue, and leave the order of the trio to the end.
@@ -1377,7 +1377,7 @@ Opposite means 4 seats away: Dev (3rd) and Farid (7th).
 **Step-by-step reasoning:**
 1. Number the places 1 (top) to 8 (bottom). Clue 4: Grey = Yellow + 3. Clue 7: Orange touches both Green and Grey. Clue 8: Orange is 2 places from Yellow. Orange = Yellow + 2 (next to Grey), so Green = Yellow + 1. Block: Yellow, Green, Orange, Grey in places p to p+3.
 2. Clue 3: White is 2 boxes away from Green, so White is at p+4 or p-2.
-3. White at p+4: p = 1 leaves Blue and Black adjacent in places 7 and 8 or Blue touching White; p = 2 and p = 3 leave no legal place for Blue; p = 4 puts White at the bottom and Red cannot be below it. All fail.
+3. White at p+4: p = 1 leaves Blue and Black adjacent in places 7 and 8 or Blue touching White; p = 2 puts White at 6 and leaves Blue only place 7 (it is not at an end), which touches White; p = 3 puts White at 7, so Red must be 8 and Blue and Black fill places 1 and 2, which touch; p = 4 puts White at the bottom and Red cannot be below it. All fail.
 4. White at p-2: p = 4 and p = 5 leave Blue only a place touching White. p = 3 works: White 1, free places 2, 7, 8. Blue cannot be at an end or touch White, so Blue = 7. Black cannot touch Blue, so Black = 2, and Red = 8 (below White).
 ```
 1 White
@@ -1430,8 +1430,8 @@ Jan Bala | Feb Chitra | Mar Hari | Apr Gita | May Asha | Jun Esha | Jul Farid | 
 1. Number the columns 1 to 4 from west to east. Row 1 faces south (right = west); row 2 faces north (right = east, left = west).
 2. Clue 5: F is in row 1. Clue 1: H is in row 2. Clue 3: B faces H, so B is in row 1. Clue 4: F is immediately right of G in the same row, so G is also in row 1. Row 1 holds F, G, B plus one more.
 3. Clue 2: A and E are in opposite rows. Clue 6: A and C are in the same row. If A were in row 1, row 1 would need A, C, F, G, B = 5 people. So A and C are in row 2, E is in row 1.
-4. Row 1 is E, F, G, B in some order. Clue 4: F (right = west) sits just west of G. Clue 7: E is at an end. Options: E F G B, E B F G, B F G E.
- - B F G E: A faces E in column 4 and A needs C east of A (A is on C's left, row 2 left is west). No room. Fail.
+4. Row 1 is E, F, G, B in some order. Clue 4: F (right = west) sits just west of G. Clue 7: E is at an end. Options: E F G B, E B F G, B F G E, F G B E.
+ - B F G E and F G B E (E in column 4): A faces E in column 4 and A needs C east of A (A is on C's left, row 2 left is west). No room. Fail.
  - E B F G: H faces B in column 2, but A faces E in column 1 and C must be in column 2. Clash. Fail.
  - E F G B: A column 1, C column 2, H column 4 (faces B), D column 3.
 ```
@@ -1502,7 +1502,7 @@ G (column 3) faces D (column 3).
 **Explain simply:**
 - Place the most restricted items first; otherwise you must subtract overlapping cases.
 - The product rule: if one task has 12 ways and the next has 24, together there are 12 x 24.
-**Likely follow-ups:** 1) *If A and B must sit next to each other?* 5! x 2 = 240 (verified by script). 2) *With 7 people and 7 chairs, A and B avoiding the ends?* 5 x 4 x 5! = 2,400 (verified by script).
+**Likely follow-ups:** 1) *If instead A and B must sit next to each other (no end rule)?* 5! x 2 = 240 (verified by script). 2) *With 7 people and 7 chairs, A and B avoiding the ends?* 5 x 4 x 5! = 2,400 (verified by script).
 **Common mistakes / traps:** Placing the others first, then trying to fit A and B; or giving A all 6 chairs.
 
 ### Q74 ⭐ 🔴 Three married couples sit around a circular table with 6 equally spaced chairs so that men and women alternate and no husband sits next to his own wife. How many different seatings are possible? (Rotations are the same seating; mirror images are different.)
