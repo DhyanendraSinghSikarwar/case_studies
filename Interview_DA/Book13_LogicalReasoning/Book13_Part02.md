@@ -1206,6 +1206,7 @@
 
 - The statement is a promise about P-cases only. Where P is false, nothing was promised, so there is no broken promise.
 **Worked mini-example:** Rule "if a record is flagged, it is reviewed". An unflagged record that is reviewed or not reviewed does not break the rule. Only a flagged, unreviewed record does.
+**Check:** Verified by script: the truth table above has 3 true rows and 1 false row.
 **Likely follow-ups:** *In a table, which rows violate the rule?* Only those with P true and Q false. Table computed by script (3 true, 1 false).
 **Common mistakes / traps:** Calling the statement "false" or "unknown" when P is false, or thinking that Q must hold whenever P is false.
 
@@ -1218,6 +1219,7 @@
 - A "counter-example record" is one row that breaks the rule. One is enough to disprove "always"; but no number of confirming rows can prove it for new data you have not seen.
 - Rows where the condition is false say nothing about the rule (see vacuous truth).
 **Worked mini-example:** Rule: "every invoice above 50,000 has two approvals". Scan invoices with amount above 50,000 and count approvals; any with fewer than two is a counter-example. Invoices of 20,000 with one approval are fine. Hand-checked.
+**Check:** Applied to the Q21 and Q22 tables, filtering for condition true and result false finds the violators (Q22: E6); for an "only if" rule, filter result true and condition false (Q21: E2 and E5), both re-run by script.
 **Likely follow-ups:** *The rule says "only if". What do you filter on?* Look at the "only" side: rows with the result present and the condition false (for example, claims paid with an inactive policy).
 **Common mistakes / traps:** Checking rows that satisfy the rule and calling it proven, or checking the converse (rows with approvals) instead of rows with the condition.
 
@@ -1234,6 +1236,7 @@
 **Explain simply:**
 - A fallacy can have a true conclusion; the problem is the support is weak.
 - Test: ask "does the evidence actually prove this?"
+**Check:** Each example is invented for illustration; none is a real company or study. Fallacy names follow standard textbook usage.
 **Likely follow-ups:** *Which is affirming the consequent?* "Dashboards break when the server is down; the dashboard broke, so the server is down." (Reverses an if-then.)
 **Common mistakes / traps:** Mixing up straw man (distorting a view) with ad hominem (attacking the person).
 
