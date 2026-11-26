@@ -1,5 +1,4 @@
 # Review F3: Book12_FAQs.md Q37-Q54
-
 Counts: 18 FAQs read in full; about 60 claims/numbers/pointers checked; 10 edits (all targeted). No em/en dashes, no ANSWER_PENDING, no code in scope. Word counts 211-355 (all within 150-380).
 
 ## Number audit
@@ -47,7 +46,5 @@ IBM dataset licence and 237 count; GODL text; Power BI publish-to-web wording; L
 ## Could not check
 Live LinkedIn/Naukri/Kaggle/Microsoft pages (no web access).
 
-## Notes (report only)
-- Q37 says guesstimates are mainly analytics/startup firms (IP 3 table); Guide 2.3 calls the deck a differentiator, consistent.
-- Q46 and Guide order differ in nothing material. Q47 and Guide 2.3 both note simple vs average-headcount formula.
-- Q61 (other reviewer) should be checked to cover headline honesty as pointed to from Q49.
+## Notes
+- Q49 now points to Q61 for headline honesty; the F4 reviewer should confirm Q61 covers it.

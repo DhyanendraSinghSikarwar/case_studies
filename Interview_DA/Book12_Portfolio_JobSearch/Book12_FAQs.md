@@ -1810,7 +1810,7 @@ The thresholds in step 3 (0 to 2, 3 or more, 10 JDs) are our own rule of thumb, 
 | Next action date | 2026-12-08 |
 | Notes | [reason, feedback, stage] |
 
-Use a dropdown for Status and Source so spellings stay the same. Never put employer data or other people's personal details beyond a contact name and email.
+Add an eleventh column, Replied (Yes or No), when you start measuring response rates (Q100). Use a dropdown for Status and Source so spellings stay the same. Never put employer data or other people's personal details beyond a contact name and email.
 **Example:** (illustrative) You save the JD text in a document, since postings are taken down, and keep only the link and key lines in the sheet.
 **Common mistakes:** Too many columns so you stop updating; typing free text in Status; no next-action date; not saving the JD.
 **Where this is covered:** Guide Section 6; Q96 and Q100; Book 1 (Excel basics).
@@ -1822,7 +1822,7 @@ Use a dropdown for Status and Source so spellings stay the same. Never put emplo
 - The split below is our own design, not research. Change it to fit your life.
 - A routine covers five jobs: apply, reach out, build the portfolio, practise interviews, review.
 **What the evidence says:** No reliable data found on how many hours or applications a job search needs, or on the best days or times to apply. The plan is a planning tool, not a prediction.
-**What to do:** Start with this template (illustrative) of about 7 to 8 hours a week:
+**What to do:** Start with this template (illustrative) of about 6.5 to 7 hours a week (1+1+1+1+2 hours, plus 30 to 45 minutes on Sunday):
 
 | Slot | Time | Task |
 |---|---|---|
@@ -1849,19 +1849,19 @@ If you are between jobs, use the same blocks on weekdays but do not exceed what 
 **What to do:**
 1. Set a weekly target, for example 5 well-matched applications (illustrative, not data).
 2. Match test: apply only if you can honestly cover most must-have tools in the JD.
-3. For top-fit roles, adjust 3 resume lines to the JD (Q6, Q15; Book 0 Q83 for translating HR work).
+3. For top-fit roles, adjust about 3 resume lines to the JD (3 is our own suggestion, not data; see Q6, Q15; Book 0 Q83 for translating HR work). Only use words that are true for you.
 4. Review the tracker after 4 weeks; if replies are low, change the resume before raising the volume.
-**Example:** (illustrative) You find 12 JDs. 4 match Excel, SQL and reporting closely, so you tailor and apply. 4 are partial matches: you send a version A resume with a short note. 4 need Python and 3 years; you skip them.
+**Example:** (illustrative) Over two weeks you find 12 JDs. 4 match Excel, SQL and reporting closely, so you tailor and apply. 4 are partial matches: you send a version A resume with a short note. 4 need Python and 3 years; you skip them. That is 8 applications in two weeks, close to the weekly target of 5 or fewer.
 **Common mistakes:** Applying to 50 roles a week and learning nothing; tailoring by adding tools you do not know; applying to roles you would not accept.
 **Where this is covered:** Guide Section 6; Q98 and Q108; Book 0 Q73.
 
 ### Q98 ⭐⭐⭐ 🟢 I have applied to 10 jobs and heard nothing. What should I check and change?
-**Short answer:** Silence after 10 applications is a signal to change the resume, not the target role. Check match, resume, profile and source, change one thing, and wait two weeks.
+**Short answer:** Silence after 10 applications is a signal to review, and the resume is the cheapest thing to change first. Check match, resume, profile and source, change one thing, and wait two weeks (the 10 and the two weeks are our rule of thumb, not data).
 **Why / explain simply:**
 - Ten is a small number, so do not panic, but it is enough to review.
 - Many filters are rigid JD requirements, not a verdict on you (CompTIA blog snippet, general).
 - Changing everything at once means you will not know what helped.
-**What the evidence says:** The "10 applications, then change the resume" rule is Book 0's own rule of thumb, not sourced data. No reliable data found on typical reply rates for HR-to-analytics switchers.
+**What the evidence says:** The "10 applications, then review" rule is Book 0's own illustrative threshold (Book 0 Q72), not sourced data. No reliable data found on typical reply rates for HR-to-analytics switchers.
 **What to do:** Check in this order using your tracker:
 1. Match: do your roles ask 0 to 2 years and tools you have? (Q108)
 2. Resume: does it show the JD's tools and a project in the first half page? (Q1, Q6)
@@ -1896,7 +1896,7 @@ If you are between jobs, use the same blocks on weekdays but do not exceed what 
 - COUNTIFS counts rows matching two or more conditions.
 - With small numbers, one reply changes the percentage a lot, so treat results as hints.
 **What the evidence says:** All numbers here are illustrative placeholders. No reliable data found on normal response rates, so there is no benchmark to compare against; compare only your own sources with each other.
-**What to do:** Add a Replied column, then use these formulas (column letters are an example; Source in D, Resume in F, Replied in K):
+**What to do:** Add a Replied column, then use these formulas (column letters are an example, matching the Q95 layout plus Replied in K; Source in D, Resume in F). If a source has no rows yet, the division gives a #DIV/0! error; wrap it as IFERROR(formula,"no data"):
 
 ```
 =COUNTIFS(D:D,"Naukri")
@@ -1928,7 +1928,7 @@ By resume (illustrative): version A 6 applications, 1 reply (17%); version B 6 a
 - Silence is often process delay, not rejection (Book 0 Q72).
 **What the evidence says:** Follow-up norms of about 1 to 2 weeks and a maximum of 2 to 3 follow-ups come from vendor and career blogs (convention, unverified, A12c sources). No reliable data found on whether follow-ups raise response rates in India.
 **What to do:**
-1. In your tracker set Next action date to 7 to 10 days after applying.
+1. In your tracker set Next action date to 7 to 14 days after applying (the blog convention is 1 to 2 weeks).
 2. Send the first follow-up to the named contact, or to the recruiter on LinkedIn or by email if you have one.
 3. Wait another week for the second. A third, only if there is new information to share, such as a finished project.
 4. After that, mark Ghosted (Q105).
@@ -1960,7 +1960,7 @@ Rejection log (illustrative):
 
 **Example:** (illustrative) Three rejections come at the technical round, so you spend a week on SQL joins before applying again.
 **Common mistakes:** Arguing with the recruiter; taking it personally; fixing the wrong stage; not logging the reason.
-**Where this is covered:** Guide Section 6; Book 0 Q72; Book 11 Part 9.
+**Where this is covered:** Guide Section 6; Book 0 Q72; Q105.
 
 ### Q103 ⭐⭐ 🔴 I am serving a notice period of 60 days and have received an offer: how do I handle the overlap, buyout and start date?
 **Short answer:** Read your own contract first, tell the new employer your honest notice terms, and ask for a start date after your notice ends or an agreed early release. This is general information, not legal advice.
@@ -1969,10 +1969,10 @@ Rejection log (illustrative):
 - A buyout means paying the employer to leave early. Whether it is allowed is the current employer's decision.
 - Some new employers reimburse a buyout; that is a negotiation, not a right.
 - As an HR person you know your company's policy better than most; use that knowledge.
-**What the evidence says:** Contract governs notice; buyout is at the employer's discretion; some employers reimburse buyouts; ask for a later start date (vendor/blog claims, unverified; A12c sources). One blog says Labour Codes leave notice to contract (unverified). Legal points are from memory, unverified: confirm with your HR or a lawyer. No reliable data found on buyout norms by company.
+**What the evidence says:** Contract governs notice; buyout is at the employer's discretion; some employers reimburse buyouts; ask for a later start date (vendor/blog claims, unverified; A12c sources). Legal points are from memory, unverified: confirm with your HR or a lawyer. No reliable data found on buyout norms by company.
 **What to do:**
 1. Read: notice days, buyout clause, recovery clauses, relieving letter conditions.
-2. Illustrative arithmetic for a buyout: days remaining x daily pay (monthly pay / 30), plus any dues; replace with your own figures.
+2. Illustrative arithmetic for a buyout: days remaining x daily pay (monthly pay / 30), plus any dues. Your contract may define the amount differently (for example on a different pay base), so use its clause and your own figures.
 3. Ask the new employer for a start date after day 60; ask early about buyout reimbursement before you resign.
 4. Ask your manager about early release only when the offer is written.
 5. Hand over properly and collect the relieving letter.
@@ -2006,9 +2006,9 @@ Rejection log (illustrative):
 - Waiting on one company wastes weeks. Keep several applications live.
 **What the evidence says:** Candidate reports show waits from about a week to months and silent rejections (candidate-reported, anonymous, IP Sections 2 and 3). No reliable data found on how common ghosting is for analysts in India or what stops it.
 **What to do:**
-1. Follow up at 7 to 10 days, again a week later (Q101).
+1. Follow up at 1 to 2 weeks, again a week later (Q101).
 2. Try a second channel once: for example email if you used LinkedIn.
-3. Cut-off rule: after 2 to 3 follow-ups or 3 to 4 weeks without any reply, set Status to Ghosted and stop spending time on it.
+3. Cut-off rule (our own, not data): after 2 to 3 follow-ups or 3 to 4 weeks without any reply, set Status to Ghosted and stop spending time on it.
 4. After an interview, one polite follow-up on the date they promised.
 5. Keep at least 5 live applications (Book 0 Q72).
 **Example:** (illustrative) You interviewed on 3 December and they said "decision next week". On 12 December you send one note. Nothing by 24 December, so you log Ghosted and keep applying.
@@ -2018,7 +2018,7 @@ Rejection log (illustrative):
 ### Q106 ⭐ 🔴 How do I recognise and avoid fake job offers or recruiters who ask for money?
 **Short answer:** A genuine employer does not ask you to pay for a job, interview, training kit or documents. If someone asks for money, stop and verify on the company's official careers page.
 **Why / explain simply:**
-- Red flags widely listed by companies and media: any fee, WhatsApp-only chat, an offer without a real interview, requests for an OTP or a remote-access app, and free email addresses used for "official" mail.
+- Red flags listed by companies and media (snippet level): any request for money, WhatsApp-only chat, and requests for an OTP or a remote-access app. We add two common-sense signs of our own: an offer with no real interview, and "official" mail from a free email address.
 - Scammers copy real company names, so a famous name proves nothing.
 - Paying a recruiter or consultancy for a job is a warning sign. Whether it is legal in your case is unverified; confirm with the platform or a lawyer.
 **What the evidence says:** The rule "a request for money is a red flag" is stated by company, vendor and media pages (snippet only; A12c sources). Reporting routes named there: cybercrime.gov.in and the helpline 1930; check the live pages. No scam-rate statistic is used: No reliable data found.
@@ -2044,7 +2044,7 @@ Rejection log (illustrative):
 2. Set a daily cap, for example no job search after 9 pm (illustrative).
 3. Track actions per week, and celebrate completing them.
 4. Review each month: continue, change the plan, or pause for a week.
-5. Tell one trusted person your plan; talk to a doctor or counsellor if stress affects sleep or health.
+5. Tell one trusted person your plan; talk to a doctor or counsellor if stress affects sleep or health (this is general advice, not medical advice).
 **Example:** (illustrative) Your plan was 3 hours every evening. After two weeks you drop to 1 hour on four evenings and a weekend block, and you keep it going for 8 weeks.
 **Common mistakes:** All-or-nothing plans; checking email every hour; comparing yourself with posts on social media; no rest day.
 **Where this is covered:** Guide Section 6; Q96; Book 0 Q52 and Q67.
@@ -2057,7 +2057,7 @@ Rejection log (illustrative):
 - Roles asking 3+ years tend to want more tools such as Python, cloud and ML (impression, not counted).
 **What the evidence says:** In our JD research, roles needing 3+ years were left out of the in-scope tally (about 25 read); they mentioned Python, Power BI or Tableau, cloud data platforms and GenAI/ML more often than the 0 to 2 year set (impression only, not counted; MS observations under the JD tally). Experience labels in Hyderabad and Bengaluru sometimes ran wide (MS Addendum). Probability of an interview from a mismatch: No reliable data found.
 **What to do:**
-1. Rule: apply if the role asks 2 to 3 years or a range that starts at 0 or 1, and you match most must-have tools.
+1. Rule (our own judgement, not data): apply if the role asks 2 to 3 years or a range that starts at 0 or 1, and you match most must-have tools.
 2. Skip roles that need 3 or more years plus tools you cannot show.
 3. Use a project as proof, and keep the resume honest.
 4. Mark these applications in your tracker and compare their reply rate (Q100).

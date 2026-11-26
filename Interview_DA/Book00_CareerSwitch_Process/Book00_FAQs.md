@@ -1359,7 +1359,7 @@ If three of the five fail twice in a row, delay applying to that role type (a pe
 4. Do not invent percentages. Use real figures you can defend, or describe scale (for example "monthly report for 3 business units").
 **Example (illustrative):** Weak: "Responsible for attrition reporting." Stronger: "Built a monthly attrition tracker in Excel (pivot tables, lookups) by department and tenure band; HR head used it to prioritise exit interviews."
 **Common mistakes:** Listing duties instead of results; adding tools you have only watched videos about; made-up percentages that collapse when asked "how did you calculate that?".
-**Where this is covered:** Guide Section 5 (translation table); Book 12 Part 1; Book 11 Part 1.
+**Where this is covered:** Guide Section 5 (translation table); Book 12 Section 1; Book 11 Part 1.
 
 ### Q84 ⭐⭐ 🟡 How do I explain a career gap in an analytics interview?
 **Short answer:** State the gap in one calm sentence, say what you did or why it happened, then move to what you can do now. Do not apologise or over-explain.
