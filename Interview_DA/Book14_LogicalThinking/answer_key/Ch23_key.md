@@ -12,7 +12,7 @@ Method for every question: find the conclusion, list the reasons, check whether 
 
 ### Easy
 
-**Q1 Ad hominem (1).** Conclusion: do not listen to the proposal. Reason: Mira is new and gets lost. Neither says anything about the leave tracker idea itself.
+**Q1 Ad hominem (1).** Conclusion: do not listen to the proposal. Reason: Mira talks fast and dresses oddly. Neither says anything about the leave tracker idea itself.
 
 **Q2 Bandwagon (4).** Conclusion: you should switch. Reason: neighbours switched. The number of neighbours says nothing about whether the bulbs suit you.
 
@@ -24,7 +24,7 @@ Method for every question: find the conclusion, list the reasons, check whether 
 
 **Q6 Appeal to ignorance (13).** "Not proved unsafe" is used as proof of safe. Absence of proof is not proof of absence; safety needs positive evidence.
 
-**Q7 Straw man (2).** A asked for a shorter workday trial. B replaced it with "stop working altogether" and attacked that.
+**Q7 Straw man (2).** A asked for a quiet-hour trial. B replaced it with "ban all talking" and attacked that.
 
 **Q8 Hasty generalisation (8).** Two cases are used to describe all riders. The sample is tiny and may be unrepresentative.
 
@@ -56,7 +56,7 @@ Method for every question: find the conclusion, list the reasons, check whether 
 
 ### Hard
 
-**Q21 None.** The authority is relevant (payroll auditor on payroll) and the speaker made an independent check. Careful wording ("I believe") fits three months of checking. It is not false authority.
+**Q21 None.** The reasons are a record of 40 orders (39 on time) plus an independent check of 10 against separate warehouse records, and the conclusion is cautious ("usually", "expect"). The reasons connect to the conclusion, so it is not hasty generalisation.
 
 **Q22 None.** The majority view here is backed by direct evidence: reports plus a documented own trial (6 of 8 cold mornings jammed). It is not bandwagon because the reason is evidence, not popularity.
 

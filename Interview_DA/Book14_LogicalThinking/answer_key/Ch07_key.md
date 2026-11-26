@@ -26,7 +26,7 @@ All numbers were recomputed by script; puzzles with an unknown were brute-forced
 
 **Q8** The monthly circle sits entirely inside the weekly circle. (a) The union is the weekly set: 70. (b) Weekly only = 70 - 30 = 40. (c) Both = 30 (all monthly subscribers).
 
-**Q9** At least one = 120 - 20 = 100. Both = 72 + 65 - 100 = 37. Only phone = 72 - 37 = 35. Only laptop = 65 - 37 = 28. Check 35 + 37 + 28 + 20 = 120.
+**Q9** The four regions must add to 120: only phone 35 + only laptop 28 + neither 20 = 83, so both = 120 - 83 = 37. Phone in total = only phone + both = 35 + 37 = 72 (the circle total includes the overlap). Check 35 + 37 + 28 + 20 = 120.
 
 **Q10** Only yoga = 30 - 12 = 18; only swim = 28 - 12 = 16; exactly one = 34. At least one = 30 + 28 - 12 = 46; neither = 50 - 46 = 4. Check 34 + 12 + 4 = 50.
 
@@ -42,7 +42,7 @@ All numbers were recomputed by script; puzzles with an unknown were brute-forced
 
 **Q16** (i) Can be correct: at least one = 25 + 22 - 9 = 38, which is at most 40; 2 people use neither. (ii) Cannot: at least one = 30 + 35 - 10 = 55, more than the 50 people. (iii) Cannot: the "both" group (25) cannot be larger than B (20), because everyone in both is in B.
 
-**Q17** (a) If nobody is in neither, at least one = 100. Both = 70 + 60 - 100 = 30. (b) At least one cannot exceed 100, so both = 130 - (at least one) is at least 30. Both cannot exceed the smaller circle (60), and 60 is reachable (all of B also in A, then at least one = 70 which fits). Smallest 30, largest 60.
+**Q17** (a) If nobody is in neither, at least one = 100. Both = 70 + 60 - 100 = 30. (b) At least one = 130 - both. It cannot exceed 100, so both is at least 30. It cannot be less than 70 either (the A circle alone has 70), so both is at most 60. Neither = 100 - (130 - both) = both - 30. Smallest neither = 30 - 30 = 0 (both = 30); largest neither = 60 - 30 = 30 (everyone in B also in A, so only 70 people buy anything). Smallest 0, largest 30 (confirmed by enumeration).
 
 **Q18** Exactly one = (120 - x) + (90 - x) = 210 - 2x, where x = both. So 210 - 2x = 130, giving x = 40. At least one = 210 - 40 = 170; neither = 200 - 170 = 30. Check: only bread 80, only milk 50, both 40, neither 30 = 200.
 
@@ -52,7 +52,7 @@ All numbers were recomputed by script; puzzles with an unknown were brute-forced
 
 **Q21** Sum of circle totals = 70 + 60 + 50 = 180. 180 = (exactly one) + 2 x 40 + 3 x 10 = (exactly one) + 110. So exactly one = 70. Check: at least one = 70 + 40 + 10 = 120, and none = 150 - 120 = 30, as given. Brute force confirms 70 is the only possible value.
 
-**Q22** Count the people who are missing each item: 100 - 80 = 20 miss A, 100 - 75 = 25 miss B, 100 - 70 = 30 miss C. Anyone who misses at least one item is on at least one of these lists, so at most 20 + 25 + 30 = 75 people miss something (this is the largest it can be, when no one misses two items). So at least 100 - 75 = 25 people own all three. Largest: everyone who owns all three is inside the smallest circle (C), so at most 70 (the size of C); 70 is reachable when everyone who owns C also owns A and B. Smallest 25, largest 70 (confirmed by enumerating every region filling).
+**Q22** 5 completed nothing, so 55 completed at least one module. Smallest: among those 55, 55 - 45 = 10 missed P, 55 - 40 = 15 missed Q and 55 - 35 = 20 missed R. Anyone who misses something is on at least one of these lists, so at most 10 + 15 + 20 = 45 people miss something, and at least 55 - 45 = 10 completed all three. Largest: the sum of the circle totals is 45 + 40 + 35 = 120 = (exactly one) + 2 x (exactly two) + 3 x (all three), and (exactly one) + (exactly two) + (all three) = 55. Subtract: (exactly two) + 2 x (all three) = 65. So all three = (65 - exactly two) / 2, which is at most 32.5, so at most 32 (a whole number); 32 is reachable with exactly two = 1 and exactly one = 22. Smallest 10, largest 32 (confirmed by enumerating every region filling).
 
 **Q23** A ∪ B = {1, 2, 3, 4, 5, 6, 7, 8}, so (A ∪ B)' = {9, 10, 11, 12}. A' = {7, 8, 9, 10, 11, 12}; B' = {1, 2, 3, 9, 10, 11, 12}; A' ∩ B' = {9, 10, 11, 12}. A ∩ B = {4, 5, 6}, so (A ∩ B)' = {1, 2, 3, 7, 8, 9, 10, 11, 12}. A' ∪ B' = {1, 2, 3, 7, 8, 9, 10, 11, 12}. Equal pairs: (A ∪ B)' = A' ∩ B', and (A ∩ B)' = A' ∪ B' (De Morgan's rules).
 
