@@ -8,7 +8,7 @@
 **What the interviewer is checking:** Whether you know what the round is and that it is about how you behave in a group, not who "wins".
 **Say this in the interview:** "A GD is a short, observed conversation where a group discusses a topic. Observers watch how clearly we think, how we listen, and how we work with others."
 **Explain simply:**
-- A group of about 5 to 12 people gets a topic or a case and 10 to 20 minutes. Observers watch silently and score each person.
+- A group of about 5 to 12 people usually gets a topic or a case and 10 to 20 minutes (typical ranges, firms differ). Observers watch silently and score each person.
 - Criteria named in coaching guides (from memory, unverified, firms differ): clear communication, structured thinking, knowledge or reasoning, listening and teamwork, and leadership or initiative.
 - It is not a debate to win. Calm, short, relevant points that build on others usually score better than loud ones.
 - Honest note: GDs are mostly a campus and fresher filter. Lateral hires seldom get one, so ask the recruiter.
@@ -25,7 +25,7 @@
 **What the interviewer is checking:** Whether you can start contributing early without grabbing the floor.
 **Say this in the interview:** "I take about a minute to jot my points, listen to the first speakers, and enter at the first natural pause with a short, useful point that links to what was said."
 **Explain simply:**
-- Enter early enough to be seen (in a 15-minute GD, ideally within the first 3 to 4 minutes) but not by cutting someone off.
+- Enter early enough to be seen (my suggestion: in a 15-minute GD, within the first 3 to 4 minutes) but not by cutting someone off.
 - Good entry moments: a pause, a point you can build on, a point you can clarify, or a topic that has drifted.
 - Enter with a link: "Building on that..." is safer than a fresh monologue.
 **Plan / steps:**
@@ -206,7 +206,7 @@
 3. Say the gap: "Where I differ is [point], because [reason or example]."
 4. Hand it back: "What does everyone think about that?" or "Does that change how we see it?"
 
-**Worked example or script:** Topic: work from home. Someone says, "Productivity always falls at home." You say: "I agree it can fall when people have no quiet space. But I would not say always, because [a true example you know, or a reasonable one such as 'many teams track output and some see no drop']. Maybe the real question is which jobs suit it. What do others think?"
+**Worked example or script:** Topic: work from home. Someone says, "Productivity always falls at home." You say: "I agree it can fall when people have no quiet space. But I would not say always, because [a true example you know]. Maybe the real question is which jobs suit it. What do others think?"
 Other openers: "I partly agree, but..." / "Can I add another angle?" / "That works for [case]; for [other case] I see it differently."
 
 **Likely follow-ups:** 1) *What if they get angry?* Stay calm, say "Fair, let us look at the reason on both sides," and move on. 2) *Should I disagree at all?* Yes, once or twice with a reason; agreeing with everyone shows no thinking.
@@ -346,7 +346,7 @@ Other openers: "I partly agree, but..." / "Can I add another angle?" / "That wor
 ### Q19 ⭐⭐ 🟡 The topic is 'Is a college degree still relevant?' You are a career switcher with an HR background. How do you use your own background without making the GD about yourself?
 **Asked at:** commonly asked (no company-specific report found); degree relevance appears on GD topic lists (placement blogs, unverified).
 **What the interviewer is checking:** Whether you can use experience as a short supporting example without turning the GD into a personal speech.
-**Say this in the interview:** "From what I have seen in hiring, degrees open the door but skills decide the work. That said, it depends on the field."
+**Say this in the interview:** "From what I have seen in hiring, degrees open the door but skills decide the work. That said, it depends on the field." Say this only if it is true for you; if you have not seen hiring, say "from what I have read" or leave the line out.
 
 **Explain simply:**
 - Keep personal references to one sentence, used as evidence for a point.
@@ -560,7 +560,7 @@ Other openers: "I partly agree, but..." / "Can I add another angle?" / "That wor
 3. State it with a condition: "I am for it, provided [safeguard]."
 4. If a better argument arrives, say: "That changes my view slightly. I now think [adjusted position], because [reason]."
 5. Do not swap sides more than once.
-**Worked example or script:** Topic: monitoring software. "I choose 'for, with limits': monitoring outputs like deadlines is fair. Later, after hearing about trust: "Hearing Meena's point, I would now limit it to project metrics, not constant screen tracking."
+**Worked example or script:** Topic: monitoring software. First: "I choose 'for, with limits': monitoring outputs like deadlines is fair." Later, after hearing about trust: "Hearing Meena's point, I would now limit it to project metrics, not constant screen tracking."
 **Likely follow-ups:** 1) *What if everyone picks the same side?* Take the other side politely to widen the debate, if you can argue it. 2) *Is the choice scored?* Nobody outside the panel can say; the quality of reasoning matters more.
 **Common mistakes:** Picking by guessing the majority; extreme stands; changing sides with no reason; refusing to ever shift.
 
