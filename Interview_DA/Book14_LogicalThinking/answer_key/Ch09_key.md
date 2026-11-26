@@ -18,7 +18,7 @@ Letter positions used throughout: A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J
 
 **Q4. 9.** Multipliers: 243/729 = 1/3, 81/243 = 1/3, 27/81 = 1/3. Divide by 3: 27 / 3 = 9.
 
-**Q5. 22.** Gaps: 1, 2, 3, 4, 5 (grow by 1). Next gap 6: 16 + 6 = 22.
+**Q5. 24.** Gaps: 1, 2, 3, 4, 5 (4-3, 6-4, 9-6, 13-9, 18-13; they grow by 1). Next gap 6: 18 + 6 = 24.
 
 **Q6. 35.** Gaps: 49-50 = -1, 47-49 = -2, 44-47 = -3, 40-44 = -4. The amount subtracted grows by 1 each step. Next gap -5: 40 - 5 = 35.
 
@@ -58,7 +58,7 @@ Letter positions used throughout: A=1, B=2, C=3, D=4, E=5, F=6, G=7, H=8, I=9, J
 
 **Q24. 28 should be 27.** Most terms go up by 7: 6, 13, 20, ?, 34, 41, 48. After 20 we expect 27, then 34 (27 + 7), 41, 48 all fit. The term 28 breaks the rule; it should be 27.
 
-**Q25. 47 should be 48.** Gaps for the terms before the doubtful one: 5, 7, 9, 11 (3 to 8, 8 to 15, 15 to 24, 24 to 35). Next gap 13: 35 + 13 = 48, then 48 + 15 = 63 fits (the gap after is 15). So 47 is wrong and should be 48.
+**Q25. 43 should be 42.** Gaps between the first five terms: 2, 5, 8, 11 (2 to 4, 4 to 9, 9 to 17, 17 to 28). The gaps grow by 3, so the next gap is 14: 28 + 14 = 42, and then 42 + 17 = 59 fits (the last term). So 43 is wrong and should be 42.
 
 **Q26. 60.** Gaps: 5, 6, 7, 8 (grow by 1). Next gap 9: 51 + 9 = 60.
 

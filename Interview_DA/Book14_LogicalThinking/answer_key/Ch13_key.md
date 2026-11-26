@@ -10,7 +10,7 @@ Notation: position is (across, up) from the start (0, 0); east and north are plu
 
 ## Practice answers
 
-**Q1** Position: 9 east then 12 north gives (9, 12). Straight line: 9 and 12 are 3 times 3 and 4, so 3 times 5 = 15 km. Across plus, up plus. **15 km, north-east of the depot.**
+**Q1** Position: 24 east then 10 north gives (24, 10). Straight line: 24 and 10 are 2 times 12 and 5, so 2 times 13 = 26 km. Across plus, up plus. **26 km, north-east of the depot.**
 
 **Q2** East, turn right (cw) gives south; turn right again gives west. **West.**
 
@@ -18,7 +18,7 @@ Notation: position is (across, up) from the start (0, 0); east and north are plu
 
 **Q4** Put G at (0, 0). S is 15 m west: (-15, 0). O is 20 m south of S: (-15, -20). Across 15, up 20 is 5 times (3, 4), so 5 times 5 = 25 m. Both minus. **25 m, south-west of G.**
 
-**Q5** Start facing north: 7 north gives (0, 7). Right turn from north faces east: 3 east gives (3, 7). Right turn from east faces south: 7 south gives (3, 0). She is 3 km from the start, due east of it. Walked: 7 + 3 + 7 = 17 km. **3 km, due east; walked 17 km.**
+**Q5** The question does not say which way she faces at the start; it says she walks south, so she faces south. 18 south gives (0, -18). Left turn from south faces east: 5 east gives (5, -18). Left turn from east faces north: 6 north gives (5, -12). Straight line: 5 and 12 give 13 km (friendly triple 5, 12, 13). Across plus, up minus. Walked: 18 + 5 + 6 = 29 km. **13 km, south-east of the start; walked 29 km.**
 
 **Q6** Morning: sun in the east, shadow falls west. Shadow is on her left, so her left is west. Facing north, left is west. **North.**
 
@@ -44,7 +44,7 @@ Notation: position is (across, up) from the start (0, 0); east and north are plu
 
 **Q17** Walked: 8 + 15 = 23 km. Position (-8, -15); straight line: 8 and 15 give 17 (friendly triple 8, 15, 17). Difference 23 - 17 = **6 km shorter**.
 
-**Q18** Bearing: SW = 225. 90 acw: 225 - 90 = 135 (SE). 135 cw: 135 + 135 = 270 (W). 225 acw: 270 - 225 = 45 (NE). **North-east.**
+**Q18** Bearing: NW = 315. 90 acw: 315 - 90 = 225 (SW). 135 cw: 225 + 135 = 360, which is 0 (N). 225 acw: 0 - 225 = -225, which is 135 (SE). **South-east.**
 
 **Q19** Facing east, 6 km: (6, 0). Left from east faces north, 8 km: (6, 8). Left from north faces west, 14 km: (-8, 8). Right from west faces north, 7 km: (-8, 15). She now faces north. Straight line: 8 and 15 give 17 km. Across minus, up plus. **17 km, north-west of the start, facing north.**
 

@@ -1,6 +1,6 @@
 # Chapter 14 Answer Key: Blood Relations and Family Trees
 
-Conventions used throughout (as stated in the chapter): siblings are full siblings, each person has one marriage, nobody marries a blood relative, "husband" means a man and "wife" means a woman, and the family described is the whole family. Every chain answer below was checked by building the family in a small program and reading the relation off it. The multi-person puzzles (Q35, Q38, Q39) were checked by exhaustive search.
+Conventions used throughout (as stated in the chapter): siblings are full siblings, each person has one marriage, every marriage is between one man and one woman, nobody marries a blood relative, "husband" means a man and "wife" means a woman, and the family described is the whole family. Every chain answer below was checked by building the family in a small program and reading the relation off it. The multi-person puzzles (Q35, Q38, Q39) were checked by exhaustive search.
 
 ---
 
@@ -62,7 +62,7 @@ Conventions used throughout (as stated in the chapter): siblings are full siblin
 
 **Answer: Una is Tess's maternal great-grandmother.**
 
-**Q13.** A man's brother-in-law can be: (1) his **wife's brother**; (2) his **sister's husband**; (3) his **wife's sister's husband** (the husband of his wife's sister). Three different people, all called brother-in-law. (For a woman, the same word also covers the **husband's brother**.)
+**Q13.** A man's brother-in-law can be: (1) his **wife's brother** (spouse's sibling); (2) his **sister's husband** (sibling's spouse). Two different people, both called brother-in-law. (For a woman, the same word also covers her **husband's brother**. In some families a wife's sister's husband is also casually called a brother-in-law, but this chapter does not use that.)
 
 **Q14.** Olive is Nils's wife, and Nils is Mia's husband's father. So Olive is Mia's husband's mother.
 
@@ -78,7 +78,7 @@ Conventions used throughout (as stated in the chapter): siblings are full siblin
 
 **Q16.** Mei's mother's only brother is Mei's maternal uncle (M). His only daughter is Mei's cousin (F). Jun is that cousin's husband.
 
-**Answer: Jun is the husband of Mei's cousin (her cousin-in-law).**
+**Answer: Jun is the husband of Mei's cousin.** (People sometimes say "cousin-in-law", but there is no standard single word, so describing the path is correct.)
 
 **Q17.** Gus's wife (F). Her only brother (M) is Gus's brother-in-law. His son (M). That son's sister is a girl in the same family, so a daughter of the wife's brother.
 
@@ -97,13 +97,14 @@ Conventions used throughout (as stated in the chapter): siblings are full siblin
 **Answer: Nico is Ahmed's grandson (his daughter's son).**
 
 **Q21.** Read each symbol as a link.
-- A & B: A is the mother of B (A is female).
-- B # C: B is the sister of C (B is female).
-- C @ D: C is the father of D (C is male).
+- A - B: A is the brother of B (A is male).
+- B + C: B is the husband of C (B is male, C is female).
+- C * D: C is the daughter of D (C is female; D's gender is not given).
 
-A is the mother of B, and B is C's sibling, so A is also C's mother. C is D's father, so A is D's father's mother.
+(a) A is the brother of B, and B is the husband of C, so A is the brother of C's husband: **A is C's brother-in-law**.
+(b) D is C's parent, and C is married to B, so D is B's wife's parent: **D is B's father-in-law or mother-in-law** (D's gender is not stated, so say "parent-in-law").
 
-**Answer: A is D's paternal grandmother.**
+**Answer: (a) brother-in-law; (b) parent-in-law (father-in-law or mother-in-law, cannot tell which).**
 
 **Q22.**
 - M % N: M is the daughter of N (M is female).

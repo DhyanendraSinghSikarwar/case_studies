@@ -83,11 +83,11 @@ Order: Vera, Wasim, Xena, Uday.
 **Answer: Wasim ranks 2nd; Uday ranks last.**
 
 **Q16.** Work from the known person.
-1. Kavi is 20th from the bottom: from the top 45 minus 20 plus 1 = 26.
-2. Jai is 9 places above Kavi: 26 minus 9 = 17.
-3. Ira is 7 places above Jai: 17 minus 7 = 10.
-Check: 10, 17, 26 differ by 7 and 9. 
-**Answer: Ira is 10th from the top.**
+1. Jai is 22nd from the bottom: from the top 45 minus 22 plus 1 = 24.
+2. Ira is 7 places above Jai: 24 minus 7 = 17.
+3. Kavi is 9 places below Ira: 17 + 9 = 26.
+Check: Ira 17, Jai 24 (7 apart), Kavi 26 (9 below Ira, 2 below Jai). All within 1 to 45.
+**Answer: Kavi is 26th from the top.**
 
 **Q17.** Sorted: 92, 92, 88, 88, 88, 75, 75, 60.
 Competition: the two 92s take places 1 and 2 (rank 1). The three 88s take places 3, 4, 5 (rank 3). The two 75s take places 6 and 7 (rank 6). 60 takes place 8 (rank 8).

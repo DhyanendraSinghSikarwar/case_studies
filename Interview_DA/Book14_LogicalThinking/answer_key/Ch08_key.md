@@ -5,7 +5,7 @@ Letter, number, count and band items were recomputed by script. Each odd-one-out
 ## Self-check answers
 
 1. **Electricity bill per unit used.** Rent, insurance and the annual licence fee do not change with how much you use; the electricity bill grows with usage. Rule: fixed cost versus variable cost.
-2. **Cut.** Pen is used to write, knife is used to cut (tool and its job).
+2. **Sew.** A broom is used to sweep, a needle is used to sew (tool and its job). Thread and cloth are things used in sewing; sharp only describes a needle.
 3. The groups overlap: a client lunch on a train trip fits both Food and Travel. A good scheme needs each item to fit exactly one group, or a written tie-break rule (for example "group by main purpose").
 
 ## Practice answers
@@ -14,43 +14,43 @@ Letter, number, count and band items were recomputed by script. Each odd-one-out
 
 **Q2** Laptop, tablet, smartphone and smartwatch are electronic devices; an exercise book is paper. Answer: **Exercise book.**
 
-**Q3** April, June, September and November have 30 days; July has 31. Answer: **July.**
+**Q3** Triangle, square, pentagon and hexagon are shapes made only of straight edges (polygons). A circle has one curved edge. Answer: **Circle.**
 
 **Q4** Department, city, grade and job family are labels (categories). Salary is an amount you can add and average. Answer: **Salary.**
 
 **Q5** Pen, pencil, marker and crayon all make marks. An eraser removes marks. Answer: **Eraser.**
 
-**Q6** Positions: B=2, D=4 (+2); F=6, H=8 (+2); J=10, L=12 (+2); N=14, Q=17 (+3); P=16, R=18 (+2). Answer: **NQ.**
+**Q6** Positions: B=2, D=4 (+2); F=6, H=8 (+2); J=10, L=12 (+2); N=14, Q=17 (+3); R=18, T=20 (+2). Answer: **NQ.** (The first letters B, F, J, N, R also step by 4 each time, so nothing else breaks a rule.)
 
 **Q7** Sparrow, eagle, parrot and crow are birds; a bat is a mammal. Answer: **Bat.**
 
 **Q8** Payroll, recruitment, training and onboarding are HR functions (activities a department does). An invoice is a document. Answer: **Invoice.**
 
-**Q9** Sentence: "A pilot flies an aircraft." So "A driver drives a ___." Answer: **Bus.** Road is where, licence is permission, petrol is fuel; none is what the driver drives.
+**Q9** Sentence: "An author makes (writes) a book." So "A painter makes (paints) a ___." Answer: **Painting.** Canvas is the surface, a brush is the tool and a gallery is a place; none is the finished product.
 
 **Q10** Sentence: "A kilogram measures weight." So "A litre measures ___." Answer: **Volume.** (Water and bottle are things, length is another quantity.)
 
-**Q11** Hot and cold are opposites. Opposite of expand: **Contract.** Grow, stretch and swell are similar to expand, not opposite.
+**Q11** Generous and stingy are opposites. Opposite of brave: **Cowardly.** Bold means almost the same as brave; strong and angry are different ideas.
 
-**Q12** A page is a part of a book. A cell is a part of a **Sheet.** Formula, chart and macro are things that can live in or on a sheet, but a cell is a part of the sheet itself.
+**Q12** A wheel is a part of a car. A row is a part of a **Table.** A column is another part of the same table, not a whole; a cell is a smaller part inside the row; a number is a value, not a whole.
 
 **Q13** Rule: each letter moves 2 forward (C to E, A to C, T to V). D to F, O to Q, G to I gives **FQI.** (Script check: CAT gives ECV with this rule.)
 
 **Q14** 4 x 4 x 4 = 64, so the rule is "cube". 5 x 5 x 5 = **125.** (The cube rule is the simplest rule that fits the first pair.)
 
-**Q15** A spark can cause a **Fire**, as rain can cause a flood (cause and effect). Match, wood and ash are related things, but not an effect of a spark in the same way.
+**Q15** Regular exercise builds fitness, as study builds **Knowledge** (cause and effect). An exam, a book and a teacher are related things, but none is the result that study produces.
 
 **Q16** A drizzle is a weak form of rain, a downpour a strong one. A breeze is a weak wind, a **Gale** is a strong wind (degree, weak to strong).
 
 **Q17** Thermometer measures temperature (tool and the quantity it measures). Ruler measures length: **(a).** A clock on a wall, ink for a pen and paper in a book are other kinds of links.
 
-**Q18** Fixed (amount does not depend on the number of sales): Office rent, Insurance, Manager salary, Annual software subscription (4 items). Variable: Sales commissions, Courier charges, Packaging material, Overtime pay (4 items). 4 + 4 = 8, none left out.
+**Q18** Fixed (amount does not depend on the number of sales): Office rent, Insurance, Manager salary, Annual software subscription (4 items). Variable: Sales commissions, Courier charges, Packaging material, Card payment fees (a percentage of each sale) (4 items). 4 + 4 = 8, none left out.
 
 **Q19** Dozen (12), pair (2), score (20) and gross (144) are words for a fixed count of things. A metre is a unit of length. Answer: **Metre.**
 
 **Q20** By the stated rule: EmployeeID = text label; Name = text label; Department = category; JoinDate = date; Salary = number; Grade = category; Age = number; City = category. Totals: text label 2, category 3, date 1, number 2. Check 2 + 3 + 1 + 2 = 8 columns.
 
-**Q21** Gaps between letters: ACE (+2, +2), FHJ (+2, +2), KMO (+2, +2), PRT (+2, +2), SUX (S=19, U=21, X=24: +2, +3). Answer: **SUX.**
+**Q21** Gaps between letters: ADG (A=1, D=4, G=7: +3, +3), FIL (6, 9, 12: +3, +3), KNQ (11, 14, 17: +3, +3), PSV (16, 19, 22: +3, +3), UYB (U=21, Y=25, B=2, which is 28 after wrap-around: +4, +3). Answer: **UYB.**
 
 **Q22** Position sums: C(3) + X(24) = 27; D(4) + W(23) = 27; F(6) + U(21) = 27; G(7) + V(22) = 29; H(8) + S(19) = 27. Answer: **GV.**
 
