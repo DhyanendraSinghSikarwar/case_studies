@@ -1,6 +1,6 @@
 # Chapter 19 answer key: Truth-Teller and Liar Puzzles
 
-Every puzzle in the chapter (all 5 solved examples, both scenarios and all 20 practice questions) was checked by script that tried every possible labelling of truth-tellers and liars (together with every possible version of the facts, such as culprit, day or number) and confirmed that exactly one combination fits. Q19 was checked over all 4 x 4 x 4 = 64 kind assignments, and Q20 over all 7 days. Short notation below: T = truth-teller, L = liar.
+Every puzzle in the chapter (all 5 solved examples, both scenarios and all 20 practice questions) was checked by script that tried every possible labelling of truth-tellers and liars (together with every possible version of the facts, such as culprit, day or number) and confirmed that exactly one combination fits. Q19 was checked over all 3 x 3 x 3 = 27 assignments of the three kinds, and Q13 and Q20 over all 7 days. Short notation below: T = truth-teller, L = liar.
 
 ## Self-check answers
 

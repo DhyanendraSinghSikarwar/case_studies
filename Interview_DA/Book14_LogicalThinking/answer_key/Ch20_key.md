@@ -17,14 +17,14 @@ All results were recomputed by script (exact fractions for clock times, Python's
 
 **Q4.** At 12:20, H = 12 counts as 0 on the dial. Hour hand: 0 + 0.5 × 20 = 10°. Minute hand: 6 × 20 = 120°. Gap = 120 - 10 = **110°**. Formula check with H = 0: |0 - 5.5 × 20| = 110.
 
-**Q5.** 150 days: 150 / 7 = 21 weeks (147 days) with remainder 3. Tuesday + 3 = Wednesday (1), Thursday (2), **Friday** (3).
+**Q5.** 150 days: 150 / 7 = 21 weeks (147 days) with remainder 3. Going back 3 days from Tuesday: Monday (1), Sunday (2), **Saturday** (3). Python check: Saturday.
 
 **Q6.** Rule: divisible by 4, but centuries must be divisible by 400.
-- 1900: century, 1900 / 400 = 4.75, **not** a leap year.
-- 2000: century, 2000 / 400 = 5, **leap year**.
-- 2028: 2028 / 4 = 507, not a century, **leap year**.
-- 2100: century, 2100 / 400 = 5.25, **not** a leap year.
-Answer: **2000 and 2028**.
+- 1800: century, 1800 / 400 = 4.5, **not** a leap year.
+- 2024: 2024 / 4 = 506, not a century, **leap year**.
+- 2400: century, 2400 / 400 = 6, **leap year**.
+- 2500: century, 2500 / 400 = 6.25, **not** a leap year.
+Answer: **2024 and 2400**.
 
 **Q7.** Days left in March after the 10th: 31 - 10 = 21 (this reaches 31 March). Then 25 more days in April. Total = 21 + 25 = **46 days**.
 
@@ -53,7 +53,7 @@ Answer: **2000 and 2028**.
 - After they pass each other: the minute hand is 40° ahead. It must gain 150 + 40 = 190°. Time = 190 / 5.5 = 380/11 = **34 and 6/11 minutes**, so 5:34 and 6/11 minutes.
 Check 5:20: hour hand 160°, minute hand 120°, gap 40°. Check 5:34 6/11: hour hand 150 + 17.27 = 167.27°, minute hand 6 × 34.545 = 207.27°, gap 40°.
 
-**Q19.** The clock shows correct time on a 12-hour dial when its total gain is a whole multiple of 12 hours = 720 minutes (the first time is exactly 720). At 4 minutes per hour: 720 / 4 = 180 true hours. 180 hours = 7 days + 12 hours (7 × 24 = 168, remainder 12). Starting from midnight at the start of Sunday, that is **12:00 noon on the following Sunday, after 7 and a half days**. At that moment the clock shows 12:00 + 12 hours = 12:00 again on its dial, which matches the true time.
+**Q19.** The clock shows correct time on a 12-hour dial when its total gain is a whole multiple of 12 hours = 720 minutes (the first time is exactly 720). At 4 minutes per hour: 720 / 4 = 180 true hours. 180 hours = 7 days + 12 hours (7 × 24 = 168, remainder 12). Starting from midnight at the start of Sunday, that is **12:00 noon on the following Sunday, after 7 and a half days**. At that moment the clock has run 180 + 12 = 192 hours (exactly 8 days), so it shows 12:00 on its dial; the true time is 12:00 noon, which looks the same on a 12-hour dial.
 
 **Q20.** The hands form a right angle when the gap is 90° or 270° (equivalent on the circle). The gap changes by 5.5° per minute, starting at 0° at midnight. The gap equals 90 + 360k or 270 + 360k at times t = (90 + 360k) / 5.5 or (270 + 360k) / 5.5 minutes. Counting those times inside 0 to 1440 minutes gives 44 (the gap goes through 1440 × 5.5 = 7920° in a day, which is 22 full turns, and each turn passes the 90° and 270° marks once). Answer: **44 times** (22 in each 12 hours). Script check by exact fractions: 44.
 

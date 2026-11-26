@@ -43,7 +43,7 @@
 - **Plan:** casework on the number of packs (0, 1, 2; three packs cost 120, too much), then spend the rest on singles.
 - **Execute:**
   - 0 packs: 100 / 9 gives 11 singles (99 rupees), 11 pens.
-  - 1 pack (40): 60 left, 6 singles (54), 60 / 9 gives 6 whole singles (54 rupees), so pens = 5 + 6 = 11.
+  - 1 pack (40): 60 left, 60 / 9 gives 6 whole singles (54 rupees), so pens = 5 + 6 = 11.
   - 2 packs (80): 20 left, 2 singles (18), pens = 10 + 2 = 12, spending 98.
 - **Review:** 12 beats 11. Could 13 be possible? 13 pens with 2 packs would need 3 singles: 80 + 27 = 107 > 100. With 1 pack, 8 singles: 40 + 72 = 112. With 0 packs, 13 singles: 117. No. So 12 is the greatest.
 
@@ -96,7 +96,7 @@
 - **Execute:** U must be odd and 2U at most 9, so U is 1, 3 (U = 5 would make H = 10, not a digit).
   - U = 1: H = 2, T = 12 - 2 - 1 = 9. T = 9 > 2 yes. Digits 2, 9, 1 are different. Code 291.
   - U = 3: H = 6, T = 12 - 6 - 3 = 3. T equals U, digits not different (and 3 is not above 6). Fails.
-- **Review:** 2 + 9 + 1 = 12; 2 = 2 x 1; 9 > 2; 291 is odd. Without the "odd" clue 462 also fits (H = 4 = 2 x 2? U = 2, H = 4, T = 6, 6 > 4), so the "odd" clue is what makes the code unique.
+- **Review:** 2 + 9 + 1 = 12; 2 = 2 x 1; 9 > 2; 291 is odd. Without the "odd" clue, 462 would also fit (U = 2, H = 4 = 2 x 2, T = 6, and 4 + 6 + 2 = 12, 6 > 4), so the "odd" clue is what makes the code unique.
 
 **Answer: 291.**
 

@@ -89,8 +89,8 @@ I: Other transport = 60 - 45 = 15, not 20. False; does not follow.
 II: 15 follows.
 
 **Q21. Answer: (a).**
-I: The statement says only candidates who passed were interviewed, so an interviewed person must have passed. Follows.
-II: Passing was necessary, not enough on its own. Some who passed may not have been interviewed. Does not follow (the reversal trap).
+I: Only shortlisted candidates received an offer letter, so Kabir was shortlisted. Every shortlisted candidate was interviewed, so Kabir was interviewed. Follows (two steps in a chain).
+II: Being interviewed was not said to be enough for an offer letter; some interviewed candidates may not have received one. Does not follow (the reversal trap).
 
 **Q22. Answer: (d).**
 Both steps are extreme. The problem is one city and a courier issue, so a measured fix would be to change the courier or reroute. Neither passes the proportionate test.

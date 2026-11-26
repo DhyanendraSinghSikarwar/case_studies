@@ -1,7 +1,7 @@
 # Chapter 22 Answer Key: Data Sufficiency
 
 Choices: A = I alone; B = II alone; C = both together only; D = each alone; E = not enough even together.
-Every answer below was checked by a brute-force search over all situations allowed by the question (see the verification note at the end).
+Every answer below was re-checked in review by code (see the verification note at the end).
 
 ## Self-check answers
 
@@ -96,9 +96,9 @@ Every answer below was checked by a brute-force search over all situations allow
 3. A.
 
 **Q17: C.**
-1. I alone: men : women = 2 : 3. Women could be 3 (men 2), 6 (men 4), 30 (men 20), and so on. Not sufficient.
-2. II alone: women = men + 10. Many pairs fit (men 5, women 15; men 20, women 30). Not sufficient.
-3. Together: let men = 2k and women = 3k. Then 3k - 2k = k = 10, so women = 30 (men = 20). One answer. C.
+1. I alone: day : night = 2 : 3. Night agents could be 3 (day 2), 6 (day 4), 30 (day 20), and so on. Not sufficient.
+2. II alone: night = day + 10. Many pairs fit (day 5, night 15; day 20, night 30). Not sufficient.
+3. Together: let day = 2k and night = 3k. Then 3k - 2k = k = 10, so night = 30 (day = 20). One answer. C.
 
 **Q18: D.**
 1. I alone: average = 350 / 5 = 70. Sufficient.
@@ -106,9 +106,9 @@ Every answer below was checked by a brute-force search over all situations allow
 3. D.
 
 **Q19: B.**
-1. I alone: a total of Rs 2,50,000 does not fix the middle value. For example 10k, 20k, 60k, 80k, 80k has median 60k; 30k, 40k, 50k, 60k, 70k has median 50k. Not sufficient.
-2. II alone: the five salaries are 20,000; 40,000; 40,000; 40,000; 90,000. In order the middle (third) is 40,000. Sufficient.
-3. B. (Note that II's total is Rs 2,30,000, which would contradict I; that is fine because we only test each alone here.)
+1. I alone: an average of 30 means a total of 150 minutes, which does not fix the longest and shortest. For example 28, 29, 30, 31, 32 has range 4; 20, 25, 30, 35, 40 has range 20. Not sufficient.
+2. II alone: the five times are listed, so the longest is 40 and the shortest is 22: range = 40 - 22 = 18. Sufficient.
+3. B. (II's times add up to 150, so they also agree with I's average of 30; the two statements do not conflict.)
 
 **Q20: E.**
 1. I alone: Kiran > Omar, Sana unknown. Not sufficient.
@@ -129,10 +129,11 @@ Every answer below was checked by a brute-force search over all situations allow
 ## Hard
 
 **Q23: E.**
-1. I alone: 2A + 3C = 1,900. For example A = 500, C = 300 (1,000 + 900), or A = 350, C = 400 (700 + 1,200). Both are multiples of 50 and positive. Not sufficient.
-2. II alone: 4A + 6C = 3,800. Divide by 2: 2A + 3C = 1,900, the same equation as I. Not sufficient.
-3. Together: II repeats I, so together we still have one equation and two unknowns. A could be Rs 500 or Rs 350. Not sufficient.
-4. E. (Trap: two statements look different but say the same thing.)
+Let F = full-time staff and T = total staff.
+1. I alone: contract = two thirds of F, so F : contract = 3 : 2. Whole-number sizes include F = 6 (contract 4, total 10) and F = 30 (contract 20, total 50). Not sufficient.
+2. II alone: F = 60% of T, so T could be 10 (F = 6) or 50 (F = 30). Not sufficient.
+3. Together: II says contract = 40% of T and F = 60% of T, so contract / F = 40 / 60 = two thirds. That is exactly what I says, so I adds nothing new. Both T = 10 and T = 50 still fit. Not sufficient.
+4. E. (Trap: two statements look different but say the same thing, and neither gives an actual head count.)
 
 **Q24: A.**
 1. I alone: 3a + 5b = 22 with a, b whole numbers, at least 1. Try b = 1: 22 - 5 = 17, not a multiple of 3. b = 2: 22 - 10 = 12, so a = 4. Works. b = 3: 22 - 15 = 7, not a multiple of 3. b = 4: 22 - 20 = 2, not a multiple of 3. b = 5 would need negative 3 kg boxes. So the only possibility is 4 three-kg boxes and 2 five-kg boxes. Number of 5 kg boxes = 2. Sufficient.
@@ -150,8 +151,8 @@ Every answer below was checked by a brute-force search over all situations allow
 3. Together: 18 / 400 = 4.5%, which is below 5%. Always no. C.
 
 **Q27: D.**
-1. I alone: a Rs 800 item sold for Rs 640 means Rs 160 off, which is 160 / 800 = 20%. Since the discount is one flat percentage for every item, the discount is 20%. Sufficient.
-2. II alone: Rs 1,500 sold for Rs 1,200 means Rs 300 off, which is 300 / 1,500 = 20%. Sufficient.
+1. I alone: a fee of Rs 48,000 on Rs 6,00,000 is 48,000 / 6,00,000 = 8%. Since the percentage is the same for every hire, the fee is 8%. Sufficient.
+2. II alone: Rs 72,000 on Rs 9,00,000 is 72,000 / 9,00,000 = 8%. Sufficient.
 3. D.
 
 **Q28: E.**

@@ -64,10 +64,10 @@ All results were re-checked by code (brute force over ranges of whole numbers fo
 **Q13** 🟡 **False.** Counterexample: 12 is divisible by 4 (12 = 4 × 3) and by 6 (12 = 6 × 2), but not by 24. (36 also works.) The correct statement is that it must be divisible by 12.
 
 **Q14** 🟡 **True (proof by contradiction).**
-1. Assume no two of the 8 employees were hired on the same weekday.
-2. Then the 8 employees have 8 different weekdays.
-3. There are only 7 weekdays. Impossible.
-4. So at least two share a hiring weekday. Proved.
+1. Assume no two of the 7 employees chose the same menu.
+2. Then the 7 employees chose 7 different menus.
+3. There are only 6 menus. Impossible.
+4. So at least two chose the same menu. Proved.
 
 **Q15** 🔴 **False.** Test n = 0, 1, 2, ...: the values 17, 19, 23, 29, 37, 47, 59, 73, 89, 107, 127, 149, 173, 199, 227, 257 are all prime, but n = 16 gives 256 + 16 + 17 = 289 = 17 × 17, not prime. Counterexample: n = 16. (Sixteen agreeing cases, still false.)
 
@@ -96,7 +96,7 @@ All results were re-checked by code (brute force over ranges of whole numbers fo
 **Q19** 🔴 **False.** Counterexample: 2 and 3. Their product is 6, which is even, but 3 is not even. (Also 1 and 4: product 4.)
 
 **Q20** 🔴 **True (proof by contradiction).**
-1. Assume that in every month at most 2 of the 25 people were born.
-2. Then the total is at most 12 months times 2 people = 24 people.
-3. But there are 25 people. Impossible.
-4. So some month has at least 3 of them. Proved.
+1. Assume that every batch has at most 2 trainees.
+2. Then the total is at most 9 batches times 2 trainees = 18 trainees.
+3. But there are 19 trainees. Impossible.
+4. So some batch has at least 3 trainees. Proved.
