@@ -48,7 +48,7 @@ Your job title says HR, so the first screen of the resume must carry the analyti
 | Certificates | Only completed ones, month and year | Short; see Section 5 |
 
 - Projects above experience for the first applications is our decision rule. Blogs suggest the same (blog/vendor, unverified); no India outcome data exists.
-- **Functional format** (skills only, no dates) hides your history and tends to read as evasive. Hybrid works only if each skill is tied to concrete work (blog snippets, unverified).
+- **Functional format** (skills only, no dates) hides your history and tends to read as evasive; hybrid works only if each skill is tied to concrete work (both are blog snippet opinion, unverified).
 - Header: by default leave out photo, date of birth and marital status. The reason is simplicity, not a sourced rule. **No reliable data found** on what Indian recruiters prefer. If an employer's form asks for something, follow the form.
 
 ### 1.3 Translating HR work into analytics achievements
@@ -69,7 +69,7 @@ Bullet formula: **verb + what you analysed or built + tool + size of data + resu
 | Hiring funnel tracker | Tracked recruitment status | Built a funnel tracker (applied, interviewed, offered, joined) by role; showed the largest drop-off at [stage] | Excel or Sheets |
 | Engagement survey | Ran the engagement survey | Summarised scores from [N] responses by team; grouped comments into [N] themes; presented drivers to leadership | Excel, survey tool |
 | Exit-interview themes | Conducted exit interviews | Coded [N] exit interviews into themes and counted reasons by department | Excel |
-| Compliance tracker | Tracked compliance dates | Built a due-date tracker with alerts for [N] items; no missed deadlines in [period] only if true | Excel |
+| Compliance tracker | Tracked compliance dates | Built a due-date tracker with alerts for [N] items; [add "no missed deadlines in [period]" only if that is true] | Excel |
 | Offer-to-join tracking | Followed up with candidates | Tracked offer-to-join ratio by source; shared findings with the recruiting team | Excel |
 | Training effectiveness | Organised training | Compared [score or metric] before and after training for [N] participants | Excel |
 | HRIS data clean-up | Updated employee records | Cleaned duplicate and missing fields in [N] HRIS records; documented the rules used | HRIS export, Excel |
@@ -85,7 +85,7 @@ Bullet formula: **verb + what you analysed or built + tool + size of data + resu
 | Text | "Hardworking HR professional seeking a challenging role in a reputed organisation." | "HR professional with [N] years in [area] who builds attrition and hiring reports in Excel and is completing SQL and Power BI projects (links below). Targeting MIS, reporting and junior data analyst roles." |
 | Why | Says nothing checkable | States background, tools you can show, and target |
 
-- **Skills section:** grouped list (Analysis: Excel, SQL; Visualisation: Power BI; Other: communication). Skip skill bars and percentages: nobody can verify them and blogs call them weak (opinion). Order the groups by the target job description.
+- **Skills section:** grouped list (Analysis: Excel, SQL; Visualisation: Power BI; Other: communication). Skip skill bars and percentages: nobody can verify them, and this is our judgement, in line with blog opinion (unverified). Order the groups by the target job description.
 - **Keyword method:** open 10 real job descriptions (JDs) for your target role and tally which tools they name. For scale, the pooled sample (n=186, non-random, about +/-7 points) names dashboards/reporting in 75%, communication 73%, Excel 60%, SQL 54%, Power BI 40%, Python 32% (MS Addendum). Your own 10 JDs matter more for your target.
 
 | Tool or skill | Named in how many of my 10 JDs | Can I demo it? (yes/no) | On my resume? |
@@ -135,11 +135,11 @@ Use only keywords you can demo.
 
 ### 2.1 Purpose and rules
 
-A **portfolio** is a small set of projects showing you can do the tasks in the job description. Blog opinion (snippet, unverified) is that it earns a conversation, not an offer. The one sourced anchor: a project or resume walk-through appears in about 14 of 20 company interview profiles (IP Section 4, candidate-reported, not a statistical sample). Book 0 Q14 holds the "how many" rule (2 to 3 first, our rule of thumb); this section builds them.
+A **portfolio** is a small set of projects showing you can do the tasks in the job description. Blog opinion (snippet, unverified) is that it earns a conversation, not an offer. The one sourced anchor: a project or resume walk-through appears in about 14 of 20 company interview profiles (IP Section 4, candidate-reported, not a statistical sample). Book 0 Q14 holds the "how many" rule (2 to 3 first, our rule of thumb, no data on how many are enough); this section builds them.
 
 > **Data rule (strict).** Use only public or synthetic (invented) data. Never use employer data, candidate or employee records, salary files or screenshots of internal dashboards, even anonymised or "just the structure". Anything with real names, phone numbers or salaries of real people is out. Never present made-up results as real. Reason: confidentiality and possible legal risk (general statement, not legal advice; confirm with HR/legal).
 
-**Order for an HR switcher** (our decision rule, based on the role-tool table in MS Section 6; no outcome data): (1) HR attrition dashboard, (2) SQL case, (3) by target role: for MIS/reporting a sales or operations dashboard in Excel or Power BI, for BI or data analyst roles a Python EDA, then (4) the other, and (5) a guesstimate deck as a differentiator. In the JD sample MIS roles lean on Excel (72%) and Python is 16%; Hyderabad, Bengaluru and GCC samples show Python near 40% (MS Addendum, n=186, non-random, about +/-7 points).
+**Order for an HR switcher** (our decision rule, based on the role-tool table in MS Section 6; no outcome data): (1) HR attrition dashboard, (2) SQL case, (3) by target role: for MIS/reporting a sales or operations dashboard in Excel or Power BI, for BI or data analyst roles a Python EDA, then (4) the other, and (5) a guesstimate deck as a differentiator. In the MIS/people sample (32 JDs, wider error margin, about +/-17 points) Excel is 72% and Python 16%; in the Bengaluru (42 JDs) and GCC (25 JDs) samples Python is 40% and in the Hyderabad sample (47 JDs) 30% (MS Addendum per-sample column; the pooled n=186 is non-random, about +/-7 points, and each sub-sample is smaller and less certain).
 
 ### 2.2 Choosing data safely
 
@@ -336,7 +336,7 @@ Label: n=186 non-random sample, about +/-7 points. Counts are keyword tallies, a
 
 Count: Excel 2, dashboards 2, SQL 2, MIS 1, Power BI 1, data cleaning 1. A headline built from the top terms, if you can truthfully back them: "HR Reporting and MIS | Excel, SQL, Power BI dashboards".
 
-**Rule, stated plainly.** Use only keywords for skills you have actually used and can explain. Never paste hidden or white-text keywords into a profile or resume. Never copy a skill list you have not worked with. A recruiter call will test it (Book 11 covers how to speak about your skills honestly).
+**Rule, stated plainly.** Use only keywords for skills you have actually used and can explain. Never paste hidden or white-text keywords into a profile or resume. Never copy a skill list you have not worked with. A recruiter call or interview will test it.
 
 ### 3.3 LinkedIn profile, field by field
 
@@ -350,7 +350,7 @@ Advice on headlines and About sections below comes from vendor and blog guides (
 | Better | HR Analyst | Excel, SQL, Power BI | Title plus skills, but "HR Analyst" must be true of your work |
 | Best | HR Reporting and People Analytics | Excel, SQL, Power BI | True direction, skills a recruiter can search |
 
-**About section.** Three short paragraphs: who you are, what you built, what you want. Below is a 130-word example for an HR-to-analytics switcher. It is **illustrative**. Replace every fact with your own, and if you do not remember exact numbers, leave the number out and describe the work.
+**About section.** Three short paragraphs: who you are, what you built, what you want. Below is an example of about 125 words for an HR-to-analytics switcher. It is **illustrative**. Replace every fact with your own, and if you do not remember exact numbers, leave the number out and describe the work.
 
 > I have worked in HR operations for [X] years, handling [your real tasks, for example monthly headcount and attrition reports]. I enjoy the reporting side most: finding out why a number moved and explaining it to managers.
 >
@@ -360,7 +360,7 @@ Advice on headlines and About sections below comes from vendor and blog guides (
 
 **Experience entries.** Rewrite HR duties as reporting achievements without changing titles, dates or employers. The translation table is in Section 1.
 
-**Skills.** A LinkedIn help snippet says the Skills section allows up to 100 skills (**search snippet only, unverified; check the live limit**, as third parties disagree on when it changed). Pin the 3 to 5 that match your JD list. There is **no reliable data found** on whether endorsements affect recruiter contact.
+**Skills.** A LinkedIn help snippet says the Skills section allows up to 100 skills (**search snippet only, unverified; check the live limit**, as third parties disagree on when it changed). Put the 3 to 5 that match your JD list at the top (our suggestion; check how the app orders skills). There is **no reliable data found** on whether endorsements affect recruiter contact.
 
 **Featured and Projects.** Link your GitHub, Power BI Service or Tableau Public pages from Section 2. A project link lets a stranger check your work without a call.
 
@@ -399,7 +399,7 @@ Naukri is a job portal where recruiters search resumes by keyword. Official Nauk
 | Block Companies | Hides your profile from the companies you list | Does not guarantee full concealment |
 | Not searchable | Removes you from recruiter search | You then cannot be found by anyone, including new recruiters |
 
-**Consistency.** The same titles, dates and employers on your resume, LinkedIn and Naukri. A mismatch looks careless, and may cause problems at background verification.
+**Consistency.** The same titles, dates and employers on your resume, LinkedIn and Naukri. A mismatch looks careless, and may cause problems at background verification (our reasoning, not researched; confirm with the employer's verification process).
 
 **Naukri vs LinkedIn, in short.**
 
@@ -408,7 +408,7 @@ Naukri is a job portal where recruiters search resumes by keyword. Official Nauk
 | Headline | Resume headline, keyword-rich | Title first plus 2 to 3 skills |
 | Story | Short profile summary | About, three paragraphs |
 | Proof | Projects field, resume file | Featured links, posts |
-| Skills | Key skills list | Skills section, pin top 3 to 5 |
+| Skills | Key skills list | Skills section, top 3 to 5 matched to your JDs |
 | Privacy | Block Companies, not searchable | Open to Work options |
 
 ### 3.5 How recruiters search, and how to diagnose a quiet profile
@@ -424,7 +424,7 @@ LinkedIn's marketing pages say recruiters can filter by title, location and skil
 | Calls for wrong roles | Title or keywords attract other work | Narrow the headline to one target title |
 | Calls but "notice period too long" | Notice period or location mismatch | State notice period and location clearly |
 
-**Job alerts and saved searches.** Set one alert per platform for your target title and city (labels may differ, check live). Keep it to 2 or 3 alerts, so you actually read them.
+**Job alerts and saved searches.** Set one alert per platform for your target title and city (labels may differ, check live). Keep it to 2 or 3 alerts, so you actually read them (our suggestion).
 
 **Worked example: reading a week of tracker rows (illustrative).** Suppose your tracker shows 10 applications and 2 recruiter calls, both for roles that named Power BI, while you only listed Excel and SQL in your headline. The suggested change is to add Power BI to the headline, only if you have a Power BI project to show. Wait 2 weeks and see if the pattern holds. Two calls is a small sample, so treat it as a hint, not proof.
 
@@ -462,7 +462,7 @@ A referral is when an employee submits or recommends your profile for a named op
 | 2 | Second-degree contacts in analytics at target companies | A mutual contact can introduce you |
 | 3 | Strangers (cold) | No reply-rate data found; expect more effort per reply, so keep messages specific |
 
-The tier order is our rule, not a finding. Next, build a list of 20 target companies from the JDs you saved. Company names in the market research (MS Appendix A) are examples of who posted, and do not show who hires switchers.
+The tier order is our rule, not a finding. Next, build a list of 20 target companies from the JDs you saved (20 is our suggestion, not a research number). Company names in the market research (MS Appendix A) are examples of who posted, and do not show who hires switchers.
 
 | Contact type | What to ask | What not to ask |
 |---|---|---|
@@ -508,7 +508,7 @@ First-call checklist, so you leave with facts: the role, the team, the tools, th
 
 ### 4.5 Consultancies and staffing firms
 
-A consultancy or staffing firm finds candidates for client companies. A vendor source says the usual model is that the employer pays (**vendor-stated, unverified**). Some place you on their payroll as a contract worker, others on the client's payroll as permanent staff, so ask.
+A consultancy or staffing firm finds candidates for client companies. A vendor source says the usual model is that the employer pays (**vendor-stated, unverified**). Some place you on their payroll as a contract worker, others on the client's payroll as permanent staff (general knowledge, unverified), so ask.
 
 | Question to ask | Why |
 |---|---|
@@ -518,7 +518,7 @@ A consultancy or staffing firm finds candidates for client companies. A vendor s
 | Can the role convert to permanent, and when? | Plan your next step |
 | Which company is the client, and is the role on its careers page? | Checks the role is real |
 
-**Fee red flags.** TCS and Michael Page (official snippets) warn that legitimate firms do not charge candidates for registration or placement. Rule: do not pay anyone to get an interview or a job. Charging a candidate is a warning sign. Its legal status is conflicting across sources (a 2025 bill and a Maharashtra act per one vendor source), so **unverified, confirm before quoting**.
+**Fee red flags.** TCS and Michael Page (official snippets) warn that legitimate firms do not charge candidates for registration or placement. Rule: do not pay anyone to get an interview or a job. Charging a candidate is a warning sign. Its legal status is conflicting across sources (a 2025 bill and a Maharashtra act, per vendor and news sources), so **unverified, confirm before quoting**.
 
 | Red flag | What to do |
 |---|---|
@@ -548,7 +548,7 @@ Copy this into your tracker. Three messages a week is our suggestion.
 | 2 | 3 | Tier 1 follow-ups plus 1 alumni |
 | 3 | 3 | Tier 2 via a mutual contact |
 | 4 | 3 | Referral asks to people who know your project |
-| 5 | 3 | One cold email per target company |
+| 5 | 3 | Cold emails to up to 3 target companies |
 | 6 | 3 | Follow-ups, thanks, outcome updates, review |
 
 ### Limitations

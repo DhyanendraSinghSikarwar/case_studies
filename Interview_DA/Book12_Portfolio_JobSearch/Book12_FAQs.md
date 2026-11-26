@@ -14,7 +14,7 @@
 - Safe choices: headings such as Summary, Skills, Projects, Experience, Education; dates in one consistent format; bullets made of ordinary text.
 **What the evidence says:** Several resume blogs agree on plain single-column layout, standard headings and selectable text (vendor/blog claim, unverified) (A12a sources). No reliable data found on ATS pass rates, rejection-by-ATS rates, or how Naukri or LinkedIn rank resumes. No source we could read gives how long a recruiter spends per resume, so ignore "6 seconds" style claims. Decision rule: if it survives the copy-paste check (Q21) and a colleague can find your tools in 30 seconds, it is good enough.
 **What to do:**
-1. Use one column, one common font, 10 to 12 point size.
+1. Use one column, one common font, 10 to 12 point size (our suggestion, not a tested rule).
 2. Use the standard headings listed above.
 3. Put phone, email, city and links in the main body, not in the page header.
 4. Save as PDF with selectable text (Q10) and run the copy-paste test (Q21).
@@ -28,10 +28,10 @@
 - A recruiter reading "HR Executive" at the top may stop early. Putting skills and projects first shows analytics evidence before the job title.
 - This is a hybrid format: skills and projects first, then jobs in reverse-chronological order (latest first). Q13 compares formats.
 - Keep each section short. Certificates go last because the market data does not show them as required.
-**What the evidence says:** The order is our own decision rule, supported by consistent but unmeasured blog advice (vendor/blog claim, unverified) (A12a sources). No reliable data found on what Indian recruiters prefer. No named analytics certification (PL-300, Google Data Analytics and so on) appeared in any of the 40 in-scope job descriptions we read (MS Section on certifications), so certificates stay small.
+**What the evidence says:** The order is our own decision rule, supported by consistent but unmeasured blog advice (vendor/blog claim, unverified) (A12a sources). No reliable data found on what Indian recruiters prefer. No named analytics certification (PL-300, Google Data Analytics and so on) appeared in any of the 40 in-scope job descriptions we read (MS Section on certifications), so certificates stay small. In the pooled 186 job descriptions, certifications were named only as advantages, never as requirements (MS Addendum).
 **What to do:**
 1. Write the sections in this order: header, summary, skills, projects, experience, education, certificates.
-2. Move projects below experience once you hold an analytics job title or have 2 years of relevant work.
+2. Move projects below experience once you hold an analytics job title or have about 2 years of relevant work (our own rule of thumb).
 3. Keep every section to what supports the target role.
 **Example (illustrative):**
 
@@ -202,7 +202,7 @@ Replace [N] and the tools with your own true facts.
 - A recruiter may only read the email body, so write it so the email body works alone.
 **What the evidence says:** No reliable data found on whether recruiters in India read cover letters. Decision rule: send one for direct email or a named contact, skip when a portal does not ask.
 **What to do:**
-1. Write 3 short paragraphs, under about 150 words in total.
+1. Write 3 short paragraphs, under about 150 words in total (our suggestion, not a researched limit).
 2. Name the role and company correctly.
 3. Link to one project, not all five.
 4. Attach the resume and the project link.
@@ -231,7 +231,7 @@ Replace [N] and the tools with your own true facts.
 **Why / explain simply:**
 - Reverse-chronological lists jobs latest first. It is clear but shows only your HR title at the top.
 - Hybrid adds skills and projects above it, so analytics evidence is seen first, while your work history stays visible.
-- Functional means skills only, no dates. It hides history and often reads as evasive.
+- Functional means skills only, no dates. It hides history, and blogs say readers distrust it (opinion, unverified).
 - Hybrid works only if each skill is tied to concrete work.
 **What the evidence says:** Blogs favour reverse-chronological or hybrid for career changers (vendor/blog claim, unverified) (A12a sources). No reliable data found on India recruiter preference. Decision rule: hybrid for first applications; shift to reverse-chronological once you hold an analytics title.
 **What to do:**
@@ -264,7 +264,7 @@ Replace [N] and the tools with your own true facts.
 **Why / explain simply:**
 - MIS (management information system, regular reports for managers) roles lean on Excel and reporting. Data analyst roles ask more for SQL and dashboards. HR-analytics roles value your HR domain.
 - Tailoring means reordering and choosing facts, not adding new claims.
-- Three versions are plenty; ten hurts you.
+- Three versions are plenty (our rule): each extra version is more files to keep true and up to date.
 **What the evidence says:** Role-tool differences are from our own job-description reading (MS role-tool table). MIS, operations analyst and HR-tech reporting roles were Excel-first with SQL optional; Python-heavy product analyst roles were the hardest entry (MS). Sample is non-random; treat as a guide. Decision rule: tailor what you show first, never what you claim.
 **What to do:**
 1. Keep one master with every project, tool and bullet (true ones only).
@@ -283,7 +283,7 @@ Replace [N] and the tools with your own true facts.
 **Where this is covered:** Guide Section 1.2 and 1.4; Q6; Book 0 Q26.
 
 ### Q16 ⭐⭐ 🟡 Write a short cover letter or email body for an HR-to-analytics application: what does each paragraph say?
-**Short answer:** Three short paragraphs: why this role and why you, one proof, and a polite ask. Under about 150 words.
+**Short answer:** Three short paragraphs: why this role and why you, one proof, and a polite ask. Aim for under about 150 words (our suggestion).
 **Why / explain simply:**
 - Paragraph 1 names the role and explains the switch in one line.
 - Paragraph 2 gives one true piece of evidence: a project or an HR report.
@@ -315,7 +315,7 @@ I would value a short conversation. My resume is attached. Thank you for your ti
 ### Q18 ⭐⭐ 🟡 How do I show a career gap on the resume of a data-analytics application? (For the interview answer, see Book 0 Q84.)
 **Short answer:** Show the gap honestly with dates and a short label such as "Career break (caregiving)", and add any learning or projects you did during it. Keep personal details private.
 **Why / explain simply:**
-- Hiding dates or blurring months looks evasive and tends to be found out.
+- Hiding dates or blurring months can look evasive, and background checks and interviews ask for exact dates.
 - A short, neutral label is enough; you owe no detail.
 - Dated learning (a course, a project, practice) during the gap shows you stayed current.
 - Keep resume, LinkedIn and your spoken answer consistent.
@@ -336,7 +336,7 @@ I would value a short conversation. My resume is attached. Thank you for your ti
 - If the headline says "Data Analyst" and the experience section says "HR Executive", the reader sees a mismatch and may doubt the rest of the page.
 - Honest direction words ("transitioning to", "targeting") are fine. A title you never held is not.
 - If your real work was reporting, say "HR Reporting" or "People Analytics support" only if that describes what you actually did.
-**What the evidence says:** No reliable data found on how recruiters in Hyderabad or Bengaluru react to headlines. Blog advice (vendor/blog, unverified) says to lead with a title or direction plus 2-3 tools (A12a sources). This is our decision rule, not a measured result.
+**What the evidence says:** No reliable data found on how recruiters in Hyderabad or Bengaluru react to headlines. Our A12a sources do not cover headline wording; vendor/blog resume advice there is about single-column layout, plain headings and projects as proof (vendor/blog, unverified). The "real title plus 2-3 tools you can demo" rule is our own decision rule, not a measured result.
 **What to do:**
 1. Write your real title first, then 2-3 tools you can demo.
 2. Add the target role after a separator only as a direction, e.g. "Targeting: Reporting Analyst".
@@ -370,7 +370,7 @@ I would value a short conversation. My resume is attached. Thank you for your ti
 - Text trapped in images, tables, text boxes or columns can come out scrambled when a machine reads it.
 - Pasting into Notepad (or any plain editor) shows roughly what survives. This is our own method, not an official test.
 - The goal is a resume a machine and a person can both read in about 30 seconds.
-**What the evidence says:** Blogs agree on plain single-column layout, standard headings and selectable text (vendor/blog, unverified; A12a sources). No reliable data found on ATS pass rates or on how Naukri and LinkedIn rank resumes.
+**What the evidence says:** Blogs agree on plain single-column layout, standard headings and PDF files (vendor/blog, unverified; A12a sources). The copy-paste test and the 30-second reading goal are our own suggestions. No reliable data found on ATS pass rates or on how Naukri and LinkedIn rank resumes.
 **What to do:**
 1. Save the resume as PDF with selectable text (try selecting a sentence with your mouse).
 2. Open it, select all, copy, paste into Notepad.
@@ -385,7 +385,7 @@ I would value a short conversation. My resume is attached. Thank you for your ti
 **Short answer:** Use them at most as a spell-check and formatting check. Their scores come from vendor products whose accuracy we could not verify, so never change your truthful resume just to raise a score.
 **Why / explain simply:**
 - An "ATS score" is a number a website's own tool gives your resume. No outside source tells us how closely it matches any real employer system.
-- Many of these tools sell subscriptions, so they have a commercial interest in showing a low score.
+- Many of these tools sell subscriptions, so a low score may serve the seller (our caution, not a measured fact).
 - AI resume builders may add skills or numbers you never had. Adding them can make you answer questions you cannot survive in an interview.
 - Keyword matching can still help you notice a real tool you forgot to mention.
 **What the evidence says:** The claims of these vendors are "vendor/blog claim, unverified" (A12a sources). No reliable data found on whether a higher checker score leads to more interview calls.
@@ -440,7 +440,7 @@ I would value a short conversation. My resume is attached. Thank you for your ti
 **Why / explain simply:**
 - Synthetic means made up by a person or a program, so no real individual is in it.
 - Employer data (employee records, salaries, internal dashboards) is confidential and your contract or law may forbid sharing it. This is a general point, not legal advice.
-- Public data is good enough to show every skill an interviewer tests.
+- In our view public data is enough to show the skills these projects need (our judgement, not measured).
 - Every dataset has its own licence, which says what you may do with it. Read it.
 **What the evidence says:** IBM HR attrition sample: about 1,470 rows and 35 columns, described as fictional (search snippet only, unverified). Its licence terms are loosely specified and we did not read the Kaggle licence field. data.gov.in uses the GODL (Government Open Data Licence), notified 2017 per secondary snippets; we did not read the licence text (A12a sources). Verify by opening each page.
 **What to do:**
@@ -584,7 +584,7 @@ Check each project: does the first slide or README line state the question?
 1. Sign up at github.com with a professional username (your name).
 2. Click "New repository", give it a clear name such as hr-attrition-analysis, choose Public, tick "Add a README".
 3. Click "Add file", then "Upload files", and drop in your .sql files, screenshots and dashboard PDF.
-4. Open the README, click the pencil icon, write the sections from Q30, and save ("commit changes").
+4. Open the README, click the pencil icon, write the sections from Q30, and save ("commit changes"). Button names are from memory and may change; check the live GitHub page.
 5. Put your profile link on your resume.
 **Example (illustrative):** Folder: README.md, data/ (or a link if the licence limits copying), screenshots/, queries.sql.
 **Common mistakes:** Uploading employer files. A username like a nickname. Many empty repos.
@@ -595,7 +595,7 @@ Check each project: does the first slide or README line state the question?
 **Why / explain simply:**
 - Employer data and reports belong to your employer; anonymising names does not remove the confidentiality risk, since structure, counts and dates can still identify a company or people.
 - Your offer letter or policy likely has confidentiality terms; check them (from memory, unverified, confirm with HR/legal).
-- Interviewers also see people who respect confidentiality as safer hires.
+- Respecting confidentiality is the professional norm (our judgement; no data on how interviewers react).
 - You can still talk about the type of work in general terms.
 **What the evidence says:** No reliable data found to say any anonymised HR project is safe to share. This is a strict rule in our plan: no employer data, candidate or employee records, salary files, or screenshots of internal dashboards (A12a outline, data rule box).
 **What to do:**
@@ -670,7 +670,7 @@ Check each project: does the first slide or README line state the question?
 - The deck is a portfolio piece because interviews for analyst roles sometimes include case or guesstimate questions; the technique itself is taught in Book 7 Part 1.
 - Every base number in the deck is an assumption, and must be labelled as one.
 
-**What the evidence says:** Guesstimates, cases and statistics appear in about 6 to 8 of roughly 20 interview profiles (IP Section 4, candidate-reported, anonymous). Whether a guesstimate deck helps a recruiter decide: No reliable data found. The outline treats it as a differentiator, not a must-have (A12a sources, our judgement).
+**What the evidence says:** Guesstimates appear in about 6 of roughly 20 company interview profiles, and business case or metric-diagnosis questions in about 8 (IP Section 4, candidate-reported, anonymous, not a statistical sample; mostly analytics firms and startups, rare at service MNCs). Whether a guesstimate deck helps a recruiter decide: No reliable data found. The outline treats it as a differentiator, not a must-have (A12a sources, our judgement).
 
 **What to do:**
 1. Pick one question (for example, "How many people ride the Hyderabad metro on a weekday?").
@@ -770,7 +770,7 @@ Check each project: does the first slide or README line state the question?
 **What to do:**
 1. List 8 to 10 columns (employee ID, department, join date, exit date or blank, overtime, and so on).
 2. Write generation rules (for example: random departments, a tenure range, leaving more likely in year one). Keep rules in a text file.
-3. Generate 500 to 1,000 rows in Excel or Python.
+3. Generate 500 to 1,000 rows in Excel or Python (our suggestion for size, not a sourced figure).
 4. Put "Synthetic data, generated by me, rules in rules.md" in the README.
 
 **Example:** (illustrative) "Rule: 30% of leavers in the first 12 months, assumed for demonstration only."
@@ -792,7 +792,7 @@ Check each project: does the first slide or README line state the question?
 
 **What to do:**
 1. Create one GitHub repo per project with a clear README.
-2. Pin 3 to 5 repos on your GitHub profile.
+2. Pin your best 3 to 5 repos on your GitHub profile (our suggestion; check the live page for the pin limit).
 3. Add your GitHub link to the resume header and the best 2 projects to LinkedIn Featured.
 4. Keep one PDF of your best project for email.
 
@@ -827,12 +827,12 @@ Check each project: does the first slide or README line state the question?
 **Where this is covered:** Guide Section 2.4; Book 4 Part 7 (publishing); Q45.
 
 ### Q44 ⭐⭐ 🟡 How long should each project take, and how do I know when to stop polishing?
-**Short answer:** Finish a first version, publish it, then improve. Stop when your README is complete and you can answer three follow-up questions about it.
+**Short answer:** Finish a first version, publish it, then improve. Stop when your README is complete and you can answer the likely follow-up questions about it (the five listed in Guide Section 2.3).
 
 **Why / explain simply:**
 - Polishing has no end, but job applications have a deadline in your life.
 - A published, honest project beats a perfect unpublished one.
-- A simple stopping test: README done, key number reproducible by hand, three likely follow-ups answered.
+- A simple stopping test (our own rule, not sourced): README done, key number reproducible by hand, likely follow-ups answered.
 
 **What the evidence says:** No reliable data found on ideal project duration. The time boxes here are our suggestion, not sourced (A12a outline, Section 2.3). Blogs favour 3 good projects over 10 (vendor/blog claim, unverified).
 
@@ -960,7 +960,7 @@ Check each project: does the first slide or README line state the question?
 **What to do:**
 1. Pick the target title from saved JDs (MIS, reporting, operations analyst, see Book 0 Q64).
 2. Write 3 versions, choose the most specific.
-3. Change one thing, wait 2 weeks, check views.
+3. Change one thing, wait about 2 weeks, check profile views (our suggestion, not sourced).
 
 **Example:** (illustrative)
 - Weak: "HR Professional seeking opportunities"
@@ -1031,7 +1031,7 @@ Check each project: does the first slide or README line state the question?
 1. Paragraph 1: [N] years in HR, working with [reports/data].
 2. Paragraph 2: your projects and tools, with link.
 3. Paragraph 3: the role you want and city.
-4. Keep it 120 to 150 words.
+4. Keep it short, about 120 to 150 words (our suggestion, not a platform rule).
 
 **Example:** (illustrative)
 "I have [N] years in HR handling [attendance, hiring tracking]. I now build reports in Excel, SQL and Power BI. My attrition dashboard on a public sample dataset shows [finding]. I am looking for MIS or reporting analyst roles in Hyderabad or Bengaluru."
@@ -1056,7 +1056,7 @@ Check each project: does the first slide or README line state the question?
 2. Key skills from your JD tally.
 3. Summary of 3 lines.
 4. Upload a plain PDF or Word file with no tables or text boxes (third-party tip, unverified).
-5. Update genuinely weekly while searching; no automation tools.
+5. Update genuinely when something changes (a third-party tip suggests a small weekly update; unverified, and Naukri's ranking formula is unknown); no automation tools.
 6. Use Block Companies if needed; Naukri cannot guarantee concealment.
 
 **Example:** (illustrative) Headline: "HR Reporting Analyst | Excel, SQL, Power BI | Hyderabad".
@@ -1078,7 +1078,7 @@ Check each project: does the first slide or README line state the question?
 
 **What to do:**
 1. Pick 10 to 15 skills you can honestly defend.
-2. Pin the 3 to 5 that match JDs: Excel, SQL, Power BI, plus communication and HR analytics.
+2. Put the 3 to 5 that match JDs at the top of the list (LinkedIn lets you order or pin skills; check the live page for how many): Excel, SQL, Power BI, plus communication and HR analytics.
 3. Add Python only if you have a project.
 4. Ask colleagues for endorsements only for skills they have seen.
 
@@ -1097,7 +1097,7 @@ Check each project: does the first slide or README line state the question?
 **What the evidence says:** Naukri's official help snippets describe Block Companies and "not searchable", and say full concealment cannot be guaranteed (search snippet only, page not opened; A12b sources). LinkedIn's help snippet says Open to Work cannot guarantee privacy from recruiters at your current company (search snippet only). No reliable data found on how often employers actually discover a search.
 **What to do:**
 1. On Naukri, add your employer (and its group companies, if any) to Block Companies, and read the live page for exact steps.
-2. On LinkedIn, choose "recruiters only" or leave Open to Work off. Do not add the green photo frame.
+2. On LinkedIn, choose "recruiters only" or leave Open to Work off. Do not add the green photo frame (a visible "open to work" badge; general knowledge, not in our sources).
 3. Avoid a headline that says "seeking opportunities".
 4. Keep job-search activity out of your office laptop and office wifi.
 5. Do not tell colleagues before you have an offer.
@@ -1111,7 +1111,7 @@ Check each project: does the first slide or README line state the question?
 - A "bullet" is one line under a job entry. Most HR bullets list duties ("managed payroll inputs"). Analytics bullets say action, data, output, audience.
 - Reporting, tracking, cleaning data and building trackers are honestly analytics-flavoured tasks. Use those words only where you did that work.
 - Consistency matters: the same titles and dates must appear on your resume and Naukri (see Q62).
-**What the evidence says:** Reporting and dashboards were named in about 75% of pooled JDs (n=186, non-random sample, about +/-7 points; MS Addendum), so reporting language is what recruiters search. No reliable data found on whether rewritten entries raise recruiter contact. Decision rule: if you cannot explain a line in an interview, delete it.
+**What the evidence says:** Reporting and dashboards were named in about 75% of pooled JDs (n=186, non-random sample, about +/-7 points; MS Addendum), so reporting is common vocabulary in postings. No reliable data found on what recruiters type into search or on whether rewritten entries raise recruiter contact. Decision rule: if you cannot explain a line in an interview, delete it.
 **What to do:**
 1. List 5 things you did with data in each role (reports, trackers, reconciliations, MIS sheets).
 2. Rewrite each as: verb, data, tool, who used it.
@@ -1160,7 +1160,7 @@ After: "Compiled monthly attrition report in Excel from HRIS exports for the HR 
 **Short answer:** Recruiters mostly search with keywords and filters such as title, location and skills. You can test this yourself by searching as a recruiter would and seeing whether you appear.
 **Why / explain simply:**
 - Keywords are the words in a recruiter's search box. If your profile lacks them, you will not appear.
-- LinkedIn's recruiter product is a paid tool; Naukri's recruiter side is also separate. You cannot see their screens, so you test from outside.
+- LinkedIn's recruiter product is a separate paid tool (general knowledge, plan tiers not checked); Naukri's recruiter side is also separate. You cannot see their screens, so you test from outside.
 - Your target title may differ from the words in job descriptions (MIS, reporting analyst, operations analyst).
 **What the evidence says:** LinkedIn's marketing pages (vendor-stated, search snippet only) say recruiters filter by title, location and skills, and have an "Open to work" filter. Naukri's official blog says recruiters search by keywords. No reliable data found on ranking weights or how Naukri orders results.
 **What to do:**
@@ -1282,7 +1282,7 @@ After: "Compiled monthly attrition report in Excel from HRIS exports for the HR 
 - The interviewer is checking honesty and depth, not attacking your background.
 - A skill listed on a profile is an invitation to be tested.
 - Keywords you cannot defend cost you the whole interview, not just that question.
-**What the evidence says:** Resume and project depth is probed in many rounds (about 14 of 20 profiles; candidate-reported, anonymous; IP Section 4, as cited in Book 0 Q58). SQL appears in 54% and Power BI in 40% of pooled JDs (n=186, non-random, about +/-7 points; MS Addendum), which is why switchers list them. No reliable data found on how often interviewers challenge profile keywords.
+**What the evidence says:** Resume and project depth is probed in many rounds (about 14 of 20 profiles; candidate-reported, anonymous; IP Section 4, as cited in Book 0 Q8 and Q28). SQL appears in 54% and Power BI in 40% of pooled JDs (n=186, non-random, about +/-7 points; MS Addendum), which is why switchers list them. No reliable data found on how often interviewers challenge profile keywords.
 **What to do:**
 1. Before applying, audit each listed skill: can I show a query, a dashboard or a real task?
 2. Leave out anything you have only watched or read about.
@@ -1326,6 +1326,7 @@ After: "Compiled monthly attrition report in Excel from HRIS exports for the HR 
 4. If accepted, wait a day, then send a short thank-you with one question.
 **Example:** (illustrative)
 "Hi Meera, I am an HR professional moving into reporting analytics in Hyderabad. Your post on Power BI dashboards was useful. Happy to connect."
+This is 142 characters, so it fits the 200 reported by vendors; still check the app's counter. Mention a post only if you really read it.
 **Common mistakes:** Pasting the same note to 50 people. Asking for a referral in the note. Sending a long pitch that gets cut off. Using a fake reason.
 **Where this is covered:** Guide Section 4.3; Q71 (finding people); Book 0 Q74.
 
@@ -1359,11 +1360,12 @@ After: "Compiled monthly attrition report in Excel from HRIS exports for the HR 
 4. Be honest about notice period and pay; see Book 11 Part 8.
 5. Decline fee requests.
 **Example:** (illustrative) "Thank you for reaching out. Could you share the JD, the pay range and the location? My notice period is [X]. I am free Tuesday or Thursday after [time]."
+**Say this in the interview:** "Thank you for reaching out. I work in [HR role] and am moving into analytics; I have built [project]. Could you share the JD and pay range before we speak? My notice period is [X]."
 **Common mistakes:** Giving documents or Aadhaar details in the first message. Inflating your pay. Ignoring the message. Agreeing to a call without the JD.
 **Where this is covered:** Guide Sections 4.4 and 4.5; Book 11 Part 8; Q72.
 
 ### Q71 ⭐⭐ 🟢 How do I find the right people to message at a target company?
-**Short answer:** Start with people you already know, then second-degree contacts in analytics, and only then strangers. Use a short list of about 20 companies built from real job descriptions.
+**Short answer:** Start with people you already know, then second-degree contacts in analytics, and only then strangers. Use a short list of about 20 companies (our own number, not research) built from real job descriptions.
 **Why / explain simply:**
 - Second-degree means someone connected to a person you know.
 - The right person is usually an analyst or team lead in the team that is hiring, not a senior executive.
@@ -1438,7 +1440,7 @@ After: "Compiled monthly attrition report in Excel from HRIS exports for the HR 
 - Employers and recruiters publicly warn that fake agencies charge candidates for registration, CV processing or placement (TCS fraud alert page and Michael Page scam page, official, snippet only).
 - Genuine agencies are normally paid by the employer.
 - Common fee labels: registration fee, CV processing fee, security deposit, training fee "refundable after joining".
-- The legal position on candidate-side fees is unclear to me: sources conflict (a 2025 bill and a Maharashtra act were mentioned by one vendor source). Legality: unverified, confirm.
+- The legal position on candidate-side fees is unclear: sources conflict (a 2025 bill and a Maharashtra act were mentioned by one vendor source). Legality: unverified, confirm.
 **What the evidence says:** The warning comes from official employer and recruiter pages (snippet only, not opened in full). Fee amounts quoted online are unverified and I do not repeat them. Legal status of candidate fees: conflicting sources, unverified. No reliable data found on how common such fees are.
 **What to do:**
 1. Do not pay. Do not give OTPs, bank details or remote-access permission.
@@ -1470,7 +1472,7 @@ Subject: Associate Analyst (Reporting) application, HR reporting and Power BI pr
 **Where this is covered:** Guide Section 4 (message templates); Q73, Q82.
 
 ### Q77 ⭐⭐ 🟡 In the first recruiter call they ask "Why are you moving from HR to analytics?" What should I say?
-**Short answer:** Give a true, short story in three parts: what you did in HR with data, what you have built or learned since, and why this role is the next step. Keep it under a minute.
+**Short answer:** Give a true, short story in three parts: what you did in HR with data, what you have built or learned since, and why this role is the next step. Keep it to about 60 to 90 seconds, as in Book 0 Q58.
 **Why / explain simply:**
 - The recruiter is checking whether the switch is deliberate and whether you will stay. They also have to explain you to a hiring manager.
 - Focus on pull, not escape. "I enjoy working with data" is stronger than "I am bored in HR".
@@ -1483,7 +1485,7 @@ Subject: Associate Analyst (Reporting) application, HR reporting and Power BI pr
 3. Name one project and one tool you can speak about in detail.
 4. Also prepare questions for the recruiter: role, team, tools, pay band, notice period, location.
 **Say this in the interview:** "In HR I kept ending up in the reports: [your real example]. I wanted to do that part full time, so I learned [tools] and built [project]. This role uses [skill from JD], which is the next step for me." Replace every bracket with your own true facts.
-**Common mistakes:** Memorising a script that sounds rehearsed. Saying "salary is better in analytics". Overstating your project. Running past two minutes.
+**Common mistakes:** Memorising a script that sounds rehearsed. Saying "salary is better in analytics". Overstating your project. Running well past 90 seconds.
 **Where this is covered:** Book 0 Q58; Book 11 Parts 1-2 (career-switch story and why leave HR); Book 11 Part 8 for salary and notice questions; Guide Section 4.
 
 ### Q78 ⭐⭐ 🟡 Someone agreed to refer me. Do I still apply on the company portal, and what do I send them?
@@ -1515,7 +1517,7 @@ Subject: Associate Analyst (Reporting) application, HR reporting and Power BI pr
 1. Pick one or two events a month that match your tools (Excel, SQL, Power BI, HR analytics).
 2. Before you go, decide your goal: speak to two people and ask one question each.
 3. After the event, send each a short message: "Nice to meet you at [event], I enjoyed your point about [topic]." Then see Q73 and Q80.
-4. Log contacts in your tracker. Stop an event type if it brings you nothing in 4-6 weeks.
+4. Log contacts in your tracker. Stop an event type if it brings you nothing in 4-6 weeks (our own rule of thumb, not data).
 **Example:** (illustrative) You attend a Power BI meetup, ask a speaker how reports are reviewed in their team, and connect on LinkedIn the same evening with a short note.
 **Common mistakes:** Attending many events and talking to nobody. Handing out resumes. Asking strangers for referrals at the door. Using events as a substitute for building projects.
 **Where this is covered:** Guide Section 4 (who to approach); Q72, Q73.
@@ -1564,9 +1566,9 @@ Subject: Associate Analyst (Reporting) application, HR reporting and Power BI pr
 - You are employed, so time is limited; consistency matters more than bursts.
 **What the evidence says:** No reliable data found on reply rates or the best volume of outreach. Follow-up advice of one nudge after about 5-7 days, then stop, is from vendor and blog sources (A12b sources), unverified. LinkedIn invitation-note limits and monthly quotas conflict between sources (200 or 300 characters; check the counter in the app).
 **What to do:**
-1. Start with 3 messages a week for 6 weeks; log them in your tracker.
+1. Start with 3 messages a week for 6 weeks (our own design); log them in your tracker.
 2. Send one follow-up after about a week, then stop.
-3. If you get no replies after about 10 messages, change the message or the target group, not the volume.
+3. If you get no replies after about 10 messages, change the message or the target group, not the volume (our own rule of thumb, not data).
 4. Never send the same message to many people in one company.
 5. Respect silence and "no".
 **Example:** (illustrative) Week 1: 3 messages to ex-colleagues. Week 2: 2 follow-ups plus 3 new messages to alumni. Tracker shows 2 replies out of 6, so you keep the format.
@@ -1620,7 +1622,7 @@ Subject: Associate Analyst (Reporting) application, HR reporting and Power BI pr
 **What the evidence says:** In the first 40 in-scope JDs, no analytics certification was named. Tableau Desktop Certified Associate appeared only in a 3+ year posting and CBAP-type credentials only in a 4-6 year posting (MS Section 5). In the pooled sample (n=186, non-random, about +/-7 points), certificates appear only as advantages in a few postings (MS Addendum). Value of certificates in India: No reliable data found. Hiring filters, salary uplift and pass rates: No reliable data found.
 **What to do:**
 1. Open 10 target JDs and count how many name a certificate.
-2. If 0-2, spend your hours on Excel, SQL and one finished project.
+2. If 0-2, spend your hours on Excel, SQL and one finished project (our own rule of thumb, not data).
 3. If your target JDs name Power BI as required and you already have a finished dashboard, PL-300 is a reasonable later add.
 4. Budget fee, study hours and retake risk before deciding.
 **Example:** (illustrative) You check 10 JDs: 9 name Excel and SQL, 1 mentions Power BI certification as a plus. You build your SQL and dashboard projects first.
@@ -1638,7 +1640,7 @@ Subject: Associate Analyst (Reporting) application, HR reporting and Power BI pr
 **What to do:**
 1. Count how many of your 10 target JDs name a certificate.
 2. If 0-2, choose the project.
-3. Plan the project: 3-4 evening sessions for data cleaning and analysis, 3-4 for the dashboard, 1-2 for writing a README (a short explanation file).
+3. Plan the project (our own illustrative split, not data): 3-4 evening sessions for data cleaning and analysis, 3-4 for the dashboard, 1-2 for writing a README (a short explanation file).
 4. Use public or synthetic data only, never employer data.
 5. Put the finished project on your resume and LinkedIn.
 **Example:** (illustrative) Week 1: clean a public HR dataset in Excel and answer 3 questions. Week 2: build a one-page Power BI dashboard and write a half-page summary.
@@ -1672,11 +1674,11 @@ Subject: Associate Analyst (Reporting) application, HR reporting and Power BI pr
 **What the evidence says:** Power BI appeared in about 40% of pooled JDs (n=186, non-random, about +/-7 points) (MS Addendum). No certification was named in the first 40 in-scope JDs (MS Section 5). Value in India: No reliable data found. India rupee price: no official figure found; third-party figures conflict and are unverified, so check the live Microsoft page.
 **What to do:**
 1. Build one finished Power BI dashboard from public data first.
-2. Check whether 3 or more of your 10 target JDs name Power BI as required.
+2. Check whether 3 or more of your 10 target JDs name Power BI as required (our own rule of thumb, not data).
 3. If yes, book PL-300 after your project, with an official study plan and time for a possible retake.
 4. Compute total cost: fee + study hours + retake risk.
 **Example:** (illustrative) You finish an HR dashboard in week 3, check your JDs in week 4, and book the exam 4 weeks later after practice tests.
-**Common mistakes:** Memorising dumps or using proxy testing (deceptive, can cost you the credential). Studying from outdated material. Taking it before ever building a report.
+**Common mistakes:** Memorising exam dumps or using proxy test-takers (deceptive; see Q94). Studying from outdated material. Taking it before ever building a report.
 **Where this is covered:** Guide Section 5; Book 4 (Power BI); Book 0 Q55; Q85, Q89.
 
 ### Q89 ⭐⭐ 🟢 How much do PL-300 and the Google Data Analytics certificate cost in India, and how do I check the real price?
