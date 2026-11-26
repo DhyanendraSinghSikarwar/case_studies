@@ -5,15 +5,15 @@ Reviewed 2026-11-26, one or two reviewers per part (per-part reports in `review/
 ## Totals
 | Part | Topic | Answers checked | Answers edited | Notable fixes |
 |---|---|---|---|---|
-| 1 | Interview basics / HR-round | 46 | 17 | Q19 mixed records and employees in one percentage, Q21 overclaimed a cause, unsupported "Asked at" removed |
-| 2 | Career-switch story | 45 | 17 | Missing "Say this only if true" lines, Q17 follow-up that could coach a false reply, Q32 premise note |
-| 3 | (Q1-45 / Q46-90) | 90 | 27 | Q7 speed vs duration wording, Q63 4.2% to 3.4% rebuilt with stated inputs, Q57 saving 2 to 2.5 hours |
-| 4 | (Q1-46 / Q47-92) | 92 | ~67 | Q90 16% to about 18%, Q55 62.5%, Q58 plan vs steps, Q32 word count, missing header lines |
-| 5 | (Q1-52 / Q53-103) | 103 | 26 | Q15 illustrative counts rewritten, Q103 "fallen" overstated a one-offer gap, missing "Say this only if true" lines |
-| 6 | (Q1-40 / Q41-80) | 80 | 25 | Q41 40% of 5 days wording, Q47 empty no-experience version written, Q66 script labelled illustrative, Q40 poor-practice example changed |
-| 7 | Group discussion / communication | 33 | 15 | Q30 broken script, unverified rules of thumb labelled, missing "Say this" lines |
-| 8 | Offer, notice, salary | 64 | ~51 | Q43 book sample no longer presented as candidate's finding, Q39 unsupported claim removed, 3 missing "Say this in the interview" lines added at merge check |
-| 9 | Tool/test-day situations | 41 | 13 | Q10 SUM range misses 3 rows not 2, unsupported sources claim removed, follow-ups no longer coach untrue answers |
+| 1 | Tell me about yourself, career-switch story | 46 | 17 | Q19 mixed records and employees in one percentage, Q21 overclaimed a cause, unsupported "Asked at" removed |
+| 2 | Why analytics, why company, why leave HR | 45 | 17 | Missing "Say this only if true" lines, Q17 follow-up that could coach a false reply, Q32 premise note |
+| 3 | Behavioural (STAR) | 90 | 27 | Q7 speed vs duration wording, Q63 4.2% to 3.4% rebuilt with stated inputs, Q57 saving 2 to 2.5 hours |
+| 4 | Explaining data to non-technical people | 92 | ~67 | Q90 16% to about 18%, Q55 62.5%, Q58 plan vs steps, Q32 word count, missing header lines |
+| 5 | Stakeholder and teamwork scenarios | 103 | 26 | Q15 illustrative counts rewritten, Q103 "fallen" overstated a one-offer gap, missing "Say this only if true" lines |
+| 6 | Problem-solving, ownership, learning agility | 80 | 25 | Q41 40% of 5 days wording, Q47 empty no-experience version written, Q66 script labelled illustrative, Q40 poor-practice example changed |
+| 7 | Group discussion | 33 | 15 | Q30 broken script, unverified rules of thumb labelled, missing "Say this" lines |
+| 8 | HR round: salary, notice, gaps, relocation, offers | 64 | ~51 | Q43 book sample no longer presented as candidate's finding, Q39 unsupported claim removed, 3 missing "Say this in the interview" lines added at merge check |
+| 9 | Interview-room situations | 41 | 13 | Q10 SUM range misses 3 rows not 2, unsupported sources claim removed, follow-ups no longer coach untrue answers |
 | 10 | Skill-improvement playbooks | 43 | 30 | Q17 script 78 words not 90, Q41 MECE branches separated, Q43 "73 percent (low to medium confidence)", Q7 weekend-hours assumption stated |
 | 11 | Amazon LP STAR bank | 36 | 13 | Q25 90 minutes saved was the old weekly total (now 60 saved), Q8 five lines to six, Q17 interviewer-process claim removed, Q30 verified-records wording |
 | **Total** | | **673** | **~300** | |
