@@ -20,7 +20,7 @@
 
 ### Weekly checkpoint (do it on the last study day of the week)
 
-1. For each chapter of the week, **redo its 3 self-check questions** (the ones at the start of the chapter) without looking at your notes. Then compare with the answer key.
+1. For each chapter of the week, **redo its 3 self-check questions** (the ones at the start of the chapter) without looking at your notes. Then compare with the answer key. (Chapter 35, the mixed cases, has no self-check section: for that chapter, redo one case you got wrong instead.)
 2. **Review your error log** (the system taught in Chapter 37): read the week's mistakes and write one line on why each happened.
 3. Tick off the chapters finished. If a chapter feels weak, put it on next week's catch-up day, not in the main block.
 
