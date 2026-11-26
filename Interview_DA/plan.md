@@ -336,22 +336,26 @@ Totals: 37 chapters; practice 820 (Ch 1-34) + 10 cases + 120 mock questions = 95
 
 ---
 
-## 7. Study Schedule (24 weeks, non-technical start)
+## 7. Study Schedule (24 weeks, non-technical start; updated 2026-11-26 for Books 13 and 14)
 
-| Weeks | Focus |
-|---|---|
-| 1–3 | Book 0, Book 1 (Excel), Book 5 Parts 1–2 (maths basics), Book 6 Parts 1–2 |
-| 4–7 | Book 2 (SQL) Parts 1–6, Book 6 Parts 3–5 |
-| 8–10 | Book 2 Parts 7–12, Book 4 (Power BI) Parts 1–4 |
-| 11–13 | Book 4 Parts 5–12, Book 5 Parts 3–6 |
-| 14–16 | Book 3 (Python) Parts 1–6, Book 5 Parts 7–12 |
-| 17–18 | Book 3 Parts 7–12, Book 7 (Guesstimates & cases) |
-| 19–20 | Book 8 (Scenarios), Book 10 (Domain, HR first) |
-| 21–22 | Book 9 (ML + AI tools), Book 6 mocks |
-| 23–24 | Book 11 (Soft skills), Book 12 (Portfolio & job search), mock interviews |
+Two tracks run side by side. **Main track** (the original plan, unchanged): Books 0 to 12. **Logic track** (new): Book 14 teaches logical thinking from zero in weeks 1 to 19, then Book 13 drills interview-style reasoning in weeks 20 to 24. All pace and time figures below are our suggestion, not research.
 
-Daily (2–3 hrs): 40% SQL/Excel/Power BI practice, 25% Python/stats, 20% cases/guesstimates/aptitude, 15% soft skills & portfolio.
+| Weeks | Main track | Logic track |
+|---|---|---|
+| 1–3 | Book 0, Book 1 (Excel), Book 5 Parts 1–2 (maths basics), Book 6 Parts 1–2 | Book 14 Ch 1–6 (Part 1: foundations of logic); Book 13 Part 1 (formats and strategy) read once |
+| 4–7 | Book 2 (SQL) Parts 1–6, Book 6 Parts 3–5 | Book 14 Ch 7–14 (Part 2 and the start of Part 3) |
+| 8–10 | Book 2 Parts 7–12, Book 4 (Power BI) Parts 1–4 | Book 14 Ch 15–20 (Part 3) |
+| 11–13 | Book 4 Parts 5–12, Book 5 Parts 3–6 | Book 14 Ch 21–26 (end of Part 3, then Part 4: critical thinking) |
+| 14–16 | Book 3 (Python) Parts 1–6, Book 5 Parts 7–12 | Book 14 Ch 27–32 (end of Part 4, then Part 5: problem solving and proof) |
+| 17–18 | Book 3 Parts 7–12, Book 7 (Guesstimates & cases) | Book 14 Ch 33–35 (end of Part 5, then the mixed cases of Part 6) |
+| 19–20 | Book 8 (Scenarios), Book 10 (Domain, HR first) | Book 14 Ch 36–37 (mock tests and error log) in Week 19, with Appendix C as the key; then Book 13 Parts 2–3 (deduction, inequalities, ordering), ⭐⭐⭐ first |
+| 21–22 | Book 9 (ML + AI tools), Book 6 mocks | Book 13 Parts 4–6 and 8 (arrangements, puzzles, critical reasoning), ⭐⭐⭐ and ⭐⭐ |
+| 23–24 | Book 11 (Soft skills), Book 12 (Portfolio & job search), mock interviews | Book 13 Parts 7, 9, 10 (series, data-analyst logic, brain teasers) and Part 11 timed mock sets; Part 12 as the self-check plan |
+
+Daily (2–3 hrs main track): 40% SQL/Excel/Power BI practice, 25% Python/stats, 20% cases/guesstimates/aptitude, 15% soft skills & portfolio.
 Soft-skill playbooks (Book 11 Part 10): 15 min/day from Week 1.
+**Logic track time (new, our suggestion):** about 30 to 40 minutes a day on top of the main track, 5 days a week, with Saturday for catch-up. Book 14 at this pace is about 3 to 4 days per chapter: 37 chapters at 3.5 days each is 129.5 days, about 18.5 weeks, which is why Book 14 occupies weeks 1 to 19 (computed in Book 14 Appendix E, Plan B). If the main track gets crowded, run the logic track on alternate days and let Book 14 finish by week 24, dropping Book 13 to its ⭐⭐⭐ questions and Part 11 mocks only. Book 13 has 657 questions, so in weeks 20 to 24 do the ⭐⭐⭐ items of each part first; the rest are for repeat practice before an assessment.
+**Faster alternative (more time available):** Book 14 Appendix E, Plan A, finishes the whole book in 12 weeks at 45 to 60 minutes a day; if you take it, move Book 13 up by the same number of weeks and keep the main track as is.
 
 ---
 
