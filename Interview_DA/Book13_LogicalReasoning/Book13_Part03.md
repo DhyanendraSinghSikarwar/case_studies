@@ -309,9 +309,11 @@ Table (relative to C): D +2, A +1, C 0, E -1, B -3.
 5. Q must be behind R. Blocks cannot be split, so Q goes before R-T (breaks "R ahead of Q"), between R-T and P-S (3rd), or after P-S (5th, banned).
 6. Only one place is left: R, T, Q, P, S, U.
 Final queue:
+
 | Position | 1 | 2 | 3 | 4 | 5 | 6 |
 |---|---|---|---|---|---|---|
 | Person | R | T | Q | P | S | U |
+
 **Fast method (30 seconds):** Glue "immediately behind" pairs into blocks first; they remove the most freedom. Then slot the single free person (Q) into the gaps and use the negative clue last.
 **Check:** Verified by script over all 720 orders: exactly one satisfies all clues (R T Q P S U).
 **Explain simply:**
@@ -332,9 +334,11 @@ Final queue:
 4. Try A = 3: E = 5. Days 1, 2, 4 left; D must be after A, so D = 4 and B = 5, which is taken by E. Fails.
 5. Try A = 1: E = 3. Days 2, 4, 5 left. D-B adjacent gives D = 4, B = 5, so C = 2, which is after A and not Friday. Works.
 Final schedule:
+
 | Day | Mon | Tue | Wed | Thu | Fri |
 |---|---|---|---|---|---|
 | Candidate | A | C | E | D | B |
+
 **Fast method (30 seconds):** Start with the clue that has a fixed gap (E = A + 2) and list the few possible starts for A; test each one. Only A = 1 survives.
 **Check:** Verified by script over all 120 orders: exactly one fits all five clues.
 **Explain simply:**
@@ -370,12 +374,14 @@ Final schedule:
 2. Competition ("1224") ranking: rank = 1 + number of people with a strictly higher score. For Di: higher scores are 91, 91, 82, 82, so 4 people; rank = 5.
 3. Dense ranking ("1223"): rank = 1 + number of distinct higher scores. Distinct higher scores are 91 and 82, so rank = 3.
 Table:
+
 | Person | Score | Competition | Dense |
 |---|---|---|---|
 | Bo, Ed | 91 | 1 | 1 |
 | Ana, Cy | 82 | 3 | 2 |
 | Di | 75 | 5 | 3 |
 | Fay | 68 | 6 | 4 |
+
 **Fast method (30 seconds):** Competition: count people strictly above, add 1. Dense: count distinct scores strictly above, add 1.
 **Check:** Verified by script; the two formulas give Di 5 and 3. In SQL these correspond to RANK() and DENSE_RANK() (named from memory; not run here).
 **Explain simply:**
@@ -444,6 +450,7 @@ Table:
 **Answer:** **Transitive: (a R b and b R c) implies a R c. >, >= and = are transitive; != is not. Same-direction chains keep the strict sign if at least one link is strict; mixing > or >= with < or <= gives no sure conclusion.**
 **Explain simply:**
 - Chaining table, enumerated by script over integers (the sure result for a ? c):
+
 | a ? b, b ? c | Sure conclusion |
 |---|---|
 | > and > | a > c |
@@ -454,6 +461,7 @@ Table:
 | = and = | a = c |
 | = and != | a != c |
 | > and !=, >= and !=, != and !=, != and > | nothing sure |
+
 - Rule of thumb: one strict link makes the whole chain strict; a weak link (>=) alone keeps it weak.
 - Worked mini-example: 5 >= 3 >= 3 gives 5 >= 3 (not strict); 5 > 3 >= 3 gives 5 > 3 (strict).
 - Why != breaks: a != b and b != c still allows a = c (for example 1, 2, 1).
@@ -552,9 +560,11 @@ Table:
 5. If A=2, B=4: free slots are 1, 3, 5. No two adjacent slots free, so D,C cannot fit. Out.
 6. Final order: 1 A, 2 E, 3 B, 4 D, 5 C.
 **Final arrangement:**
+
 | Place | 1st | 2nd | 3rd | 4th | 5th |
 |---|---|---|---|---|---|
 | Runner | A | E | B | D | C |
+
 **Fast method (30 seconds):** Place the rigid blocks first (the "A _ B" block and the "D C" block), and use "not last" to kill options. The glued pair needs two empty neighbouring slots, which only one case leaves.
 **Check:** Brute force over all 120 orders found exactly one that satisfies all clues: A E B D C. Re-reading clues: A is 1st, B 3rd (two apart); C 5th right after D 4th; E is 2nd (not first or last); B is not last.
 **Explain simply:**
@@ -611,11 +621,13 @@ Table:
 1. Original digits by position: 8, 2, 4, 5, 9, 3, 6, 1.
 2. Sort largest to smallest: 9, 8, 6, 5, 4, 3, 2, 1 (all digits are different).
 3. Compare:
+
 | Position | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 |---|---|---|---|---|---|---|---|---|
 | Original | 8 | 2 | 4 | 5 | 9 | 3 | 6 | 1 |
 | Descending | 9 | 8 | 6 | 5 | 4 | 3 | 2 | 1 |
 | Same? | no | no | no | yes | no | yes | no | yes |
+
 4. Three matches.
 **Fast method (30 seconds):** Write the sorted row under the original row and tick matches. Do not sort in your head and count; the table avoids slips.
 **Check:** Verified by script: sorted string 98654321, 3 matching positions.
@@ -634,11 +646,13 @@ Table:
 1. DATABASE has 8 letters: D, A, T, A, B, A, S, E (three A's).
 2. Alphabetical order: A, A, A, B, D, E, S, T.
 3. Compare:
+
 | Position | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 |---|---|---|---|---|---|---|---|---|
 | Original | D | A | T | A | B | A | S | E |
 | Sorted | A | A | A | B | D | E | S | T |
 | Same? | no | yes | no | no | no | no | yes | no |
+
 4. Two matches. The 4th and 6th letters are also A in the original, but the sorted word has B and E there.
 **Fast method (30 seconds):** Sort the letters first (count the A's: three), write both words one under the other, and tick matching places.
 **Check:** Verified by script: sorted word AAABDEST, matches at positions 2 and 7.
@@ -679,12 +693,14 @@ Table:
 3. C: 2 (third) + 3 (second) + 4 (first) = 9.
 4. D: 1 + 1 + 2 = 4.
 5. Check the total: 7 + 10 + 9 + 4 = 30 = 3 interviewers x (4+3+2+1).
+
 | Candidate | Int. 1 | Int. 2 | Int. 3 | Total |
 |---|---|---|---|---|
 | A | 4 | 2 | 1 | 7 |
 | B | 3 | 4 | 3 | 10 |
 | C | 2 | 3 | 4 | 9 |
 | D | 1 | 1 | 2 | 4 |
+
 **Fast method (30 seconds):** Add the points and test that the grand total is 30 (each interviewer hands out 10 points). Any slip shows immediately.
 **Check:** Verified by script: A 7, B 10, C 9, D 4.
 **Explain simply:**

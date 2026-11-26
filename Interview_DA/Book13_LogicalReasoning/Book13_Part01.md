@@ -6,8 +6,9 @@
 ### Q1 ⭐⭐⭐ 🟢 Which day-to-day analyst skills is a logical reasoning test trying to measure, and which important analyst skills does it fail to measure?
 **Asked at:** commonly asked (no company-specific report found). Vendor test pages list Data Analyst as a target role for logical reasoning tests (vendor claim, unverified).
 **What the interviewer is checking:** Whether you understand why the gate exists and can talk about reasoning as a work skill, not a trick.
-**Say this in the interview:** "The test is a quick proxy for careful thinking: reading rules exactly, spotting what follows and what does not, and working under time. It cannot show business sense, communication, SQL or Excel skill, or how I handle messy real data."
+**Say this in the interview:** "The test is a quick proxy for careful thinking: reading rules exactly, spotting what follows and what does not, and working under time. It cannot show business sense, communication, SQL (the language for querying databases) or Excel skill, or how I handle messy real data."
 **Answer:** **It measures: precise reading, deduction from given rules, pattern spotting, structured working and accuracy under time. It does not measure: domain knowledge, tool skills (SQL, Excel, BI), data cleaning on messy data, asking good questions, storytelling and stakeholder handling.**
+**Check:** Not numeric; the skill list is our reading, with the vendor claim unverified.
 **Explain simply:**
 - Deduction means reaching a conclusion that must be true from the given facts. Analysts do this when they check whether a report's claim really follows from the data.
 - Pattern spotting maps to noticing trends, outliers and broken rules in a dataset.
@@ -22,9 +23,11 @@
 **What the interviewer is checking:** Whether you prepare from evidence and know the limits of second-hand information.
 **Say this in the interview:** "Typically it is a timed multiple-choice section on topics like syllogisms, seating, series and data sufficiency, but the exact counts differ between websites, so I prepare for the range and read the official instructions."
 **Answer:** **Reported topics: syllogism, statement and conclusion, data sufficiency, seating, series, coding-decoding. Counts and timings are reported, unverified and conflicting; prepare for a pace of roughly 1 to 2 minutes per question and confirm in your own invitation.**
+**Check:** Ratios recomputed by script: 20/20 = 1.0, 25/20 = 1.25, 30/18 = 1.67, 35/25 = 1.4, 35/15 = 2.33 minutes per question. The counts themselves are reported, unverified.
 **Explain simply:**
+- Service MNC means a large IT-services multinational that hires many graduates at once; NQT (National Qualifier Test) is TCS's entry test name as reported.
 - A prep site is a third party; it copies from candidate memory, and patterns change by year, role and campus or off-campus route.
-- Two sites giving different numbers for the same company is itself the warning sign (this is what the sources file shows for Infosys, Cognizant and Mu Sigma).
+- Two sites giving different numbers for the same company is itself the warning sign (the sources file shows this for Cognizant, which has two reported patterns, and for Mu Sigma).
 - Plan for a range: the reported figures above imply about 1.0 to 2.3 minutes per question (computed: 20 min / 20 = 1.0; 35 min / 15 = 2.33).
 **Likely follow-ups:** 1) *Where do you get the real format?* From the invitation email, the instruction screen or the official site. 2) *Why still read the prep sites?* They show topics; treat the numbers as examples only.
 **Common mistakes / traps:** Memorising "20 questions in 25 minutes" as fact and then being surprised by a different pattern.
@@ -34,6 +37,7 @@
 **What the interviewer is checking:** Honesty about evidence and a sensible plan under uncertainty.
 **Say this in the interview:** "Reports say Mu Sigma tests topics like blood relations, directions, flowcharts and statement-conclusion, and Fractal reportedly uses a long aptitude test. I cannot verify counts, so I prepare broad topics and stay accuracy-first."
 **Answer:** **Reported, unverified: Mu Sigma muAPT topics include blood relations, direction sense, flowcharts, statement-conclusion and coding-decoding, with no negative marking per one prep site; formats disagree (28 questions in 45 minutes versus 10 in 45). A single 2024 report describes a Fractal aptitude of 75 questions (quant, logical, verbal). Nothing official was found for either.**
+**Check:** Not numeric; every count and format above is a reported, unverified prep-site or single-report claim.
 **Explain simply:**
 - Mu Sigma is also reported to use a psychometric test and a video-synthesis round (observation and structured thinking); this is from a prep guide, unverified.
 - "No negative marking" at one firm does not carry over to others, so check each invitation.
@@ -63,6 +67,7 @@
 **What the interviewer is checking:** Whether you prepare the logistics that decide your strategy.
 **Say this in the interview:** "I check marking, timers, navigation, number of questions, cutoffs and rules about tools, because each one changes how I attempt."
 **Answer:** **Our suggested six: (1) negative marking and its size, (2) total time or per-section timers, (3) number of questions and marks per question, (4) whether you can go back, skip and review, (5) sectional cutoffs versus total cutoff, (6) allowed tools and rules (calculator, rough paper, proctoring, retake or no retake).**
+**Check:** Our suggested list; the zero-EV example was verified by script: 1/4 - (3/4)(1/3) = 0.
 **Explain simply:**
 - Negative marking decides whether to guess (see Q4, Q9, Q18).
 - Separate timers mean unused time is lost; one timer lets you shift time between questions.
@@ -77,6 +82,7 @@
 **What the interviewer is checking:** Whether you have a sensible learning method.
 **Say this in the interview:** "Speed built on wrong methods only produces fast wrong answers. I first solve untimed until the method is right, then add a loose clock, then a strict one."
 **Answer:** **Our suggested sequence: (1) untimed, aim for correct method and about 90% accuracy; (2) loosely timed, about 1.5 times the target time; (3) strictly timed at the real pace, then full mocks.** (The 90% and 1.5 times are our rules of thumb, not research.)
+**Check:** 72 x 1.5 = 108 s (script). The 90% and 1.5 times figures are our rules of thumb.
 **Explain simply:**
 - Accuracy first means each wrong answer is a lesson about method; under a clock you only learn panic.
 - Speed mostly comes from recognising patterns you have already practised, so it follows accuracy.
@@ -140,6 +146,7 @@
 **What the interviewer is checking:** Careful reading, the commonest source of lost marks.
 **Say this in the interview:** "Words that set strength or limits flip the answer. I read the question line first, underline the limiting words, then read the data, and re-read the question before answering."
 **Answer:** **Risky words: only, at least, at most, exactly, must be (always true), could be (possible), not necessarily (not forced), except, not, all, some, no.**
+**Check:** Worked example enumerated by script: with 2 to 5 tall people, at least 1 is always tall, all 5 is possible, and exactly 2 is not forced.
 **Explain simply:**
 - Must be true means true in every possible case; could be true means true in at least one case.
 - At least 3 means 3 or more; at most 3 means 3 or fewer.
@@ -154,6 +161,7 @@
 **What the interviewer is checking:** Triage: doing quick wins first.
 **Say this in the interview:** "Quick types first: coding-decoding, syllogism, linear seating; then the circular seating; the grid puzzle last because it takes longest and one slip ruins it."
 **Answer:** **Our suggested ranking, fastest to slowest: (1) simple coding-decoding, (2) syllogism, (3) linear seating with 5 people, (4) circular seating with 8 people and 6 conditions, (5) 3-attribute grid puzzle.** This is a judgement, not measured data; individual candidates differ, so check your own mock timings.
+**Check:** 5! = 120 and 7! = 5,040 verified by script; the ranking itself is our judgement.
 **Explain simply:**
 - Fewer conditions and fewer positions to fill mean faster solving and fewer chances of error.
 - Grid puzzles need several linked deductions; a single wrong early link breaks all the later ones.
@@ -167,6 +175,7 @@
 **What the interviewer is checking:** Whether you learn systematically from mistakes.
 **Say this in the interview:** "For each lost mark I redo the question untimed. If I get it right and I misread, it is a reading error; if I slip in arithmetic, calculation; if I could not start, a concept gap; if I was right but ran out of time, time pressure."
 **Answer:** **Fixes (our suggestions): reading error, circle limiting words and re-read the question; concept gap, relearn the rule and do 5 similar items; calculation slip, write steps and estimate before computing; time-pressure error, set a per-question cap and skip then return.**
+**Check:** Example tally 4 + 3 + 1 + 2 = 10 (script). The fixes are our suggestions.
 **Explain simply:**
 - Tag each lost mark with one label; a tally shows your largest leak.
 - Count unattempted questions separately: they are time-pressure losses, not concept gaps.
@@ -177,9 +186,11 @@
 ### Q13 ⭐⭐ 🟢 Does every data analyst interview include a reasoning round, and how much reasoning practice should you do for a service MNC, an analytics firm, a GCC and a product startup?
 **Asked at:** Based on research notes (candidate reports, small samples): an aptitude or online assessment gate appears at about 14 of roughly 20 company profiles researched, mostly service MNCs and analytics firms.
 **What the interviewer is checking:** Realistic expectations, not blind preparation.
-**Say this in the interview:** "No, not every process has one. Service MNCs and analytics firms usually start with an aptitude gate; GCCs and startups often use a SQL screen instead, with puzzles in the interview."
+**Say this in the interview:** "No, not every process has one. From the reports I have seen, service MNCs and analytics firms usually start with an aptitude gate, while GCCs and startups more often use a SQL screen, with puzzles in the interview."
 **Answer:** **No. Reasoning is common but not universal. Our suggested practice weight: service MNC, high (aptitude is the first filter); analytics firm, high (long aptitude plus puzzles); GCC, light to moderate (SQL screen first); product startup, moderate (SQL first, puzzles and guesstimates in interviews).**
+**Check:** Counts (14 of about 20) are from our research notes, small samples, unverified; the practice weights are our judgement.
 **Explain simply:**
+- GCC means global capability centre, an in-house India hub of a multinational that does analytics work for the parent company.
 - Reported: PhonePe business analyst online test with logical reasoning and SQL; Flipkart reports with an aptitude test, puzzles and guesstimates (single reports).
 - Reported: Tiger Analytics 90-minute test (about 20 maths, 10 CS, 2 coding), one source.
 - The weights are our judgement from small samples, not statistics.
@@ -191,6 +202,7 @@
 **What the interviewer is checking:** Whether you can connect puzzles to real work.
 **Say this in the interview:** "Syllogisms are like set logic in filters and joins, conditionals are IF rules and data checks, ranking is ORDER BY and RANK, series is trend spotting, and critical reasoning is challenging a claim in a report."
 **Answer:** **Mapping: syllogism to set overlap (which customers are in both groups), conditional statement to IF/WHERE rules, ranking to sorting and RANK, series to trend and anomaly spotting, critical reasoning to testing whether a report's conclusion follows.**
+**Check:** The conditional rule was checked against its four cases by hand (only 'cancelled and refund blank' breaks it).
 **Explain simply:**
 - Join check: "every order has a customer" is an all-statement; an order without a match breaks it.
 - A conditional "if status is cancelled then refund is not blank" is false only when status is cancelled and refund is blank.
@@ -202,8 +214,9 @@
 ### Q15 ⭐⭐ 🟢 Which technical and proctoring mistakes (browser, internet, ID, camera, screen switching, unsaved answers) cost candidates attempts in online assessments, and how do you prevent them?
 **Asked at:** commonly asked (no company-specific report found). Specific rules differ by platform; read your own invitation.
 **What the interviewer is checking:** Test-day discipline.
-**Say this in the interview:** "I test the system in advance, use a stable connection and a supported browser, keep ID ready, and follow the proctoring rules exactly, because a flagged tab switch can end an attempt."
+**Say this in the interview:** "I test the system in advance, use a stable connection and a supported browser, keep ID ready, and follow the proctoring rules exactly, because a flagged tab switch may end an attempt on some platforms."
 **Answer:** **Common causes and our suggested prevention: unsupported browser (use the one named, run the platform's system check); unstable internet (wired or strong Wi-Fi, a backup hotspot); ID mismatch (name as on the ID, ID ready); camera or microphone off (allow permissions, good light); screen switching or extra tabs (close all other apps and notifications); unsaved answers (use the save or next button as instructed).**
+**Check:** Our suggestions; platform rules are not verified here.
 **Explain simply:**
 - Proctoring means the platform watches via camera, screen or tab events to detect cheating.
 - Whether a flagged event ends the test or only warns differs by platform; check the instructions.
@@ -223,7 +236,7 @@
 **Check:** verified by script: 125.0.
 **Explain simply:**
 - This assumes the first pass goes exactly to plan; keep a few seconds spare in practice.
-**Likely follow-ups:** 1) *If you only skip 3 hard ones (one is done in 45 s)?* The plan changes; as an example 3 hard ones sharing 1,500 - 1,045 = 455 s are about 152 s each. 2) *If the first pass overruns by 100 s?* 400 / 4 = 100 s each.
+**Likely follow-ups:** 1) *If you do one of the hard ones in the first pass in 45 s, leaving 3?* Then 1,500 - 1,045 = 455 s is shared by 3, about 152 s each (script-verified). 2) *If the first pass overruns by 100 s?* 400 / 4 = 100 s each.
 **Common mistakes / traps:** Forgetting to convert 25 minutes to seconds, or spending the whole remainder on a single hard question.
 
 ### Q17 ⭐⭐ 🟢 An interviewer gives you a verbal puzzle and watches you solve it. What structure do you follow when thinking aloud (restate, assumptions, approach, check), and why does speaking help even when you are unsure?
@@ -231,6 +244,7 @@
 **What the interviewer is checking:** Structured thinking and communication, not only the answer.
 **Say this in the interview:** "Let me restate the problem, list my assumptions, then explain the approach before calculating, and finally check the answer against the conditions."
 **Answer:** **Structure: (1) restate the question in your words, (2) state assumptions and ask clarifying questions, (3) outline the approach, (4) solve step by step aloud, (5) check against the conditions and state the answer.**
+**Check:** Our suggested structure; the grading claim for Mu Sigma is a prep-guide claim, unverified.
 **Explain simply:**
 - Restating catches misunderstandings early.
 - Speaking lets the interviewer see your method and gently correct you; a visible method can earn credit even if the final number is wrong.
@@ -275,6 +289,7 @@
 **What the interviewer is checking:** Adapting strategy to test rules.
 **Say this in the interview:** "With separate timers and no going back, I spend my time inside each section, answer every item before moving on and never carry hope of returning. With one timer and free navigation I do a quick first pass and return to the hard ones."
 **Answer:** **Separate timers, no going back: decide on each question at once (answer, guess or skip permanently), finish each section's time, use leftover time to double-check inside the section. One timer, free navigation: first pass for easy and medium questions, flag hard ones, then return by value for time.**
+**Check:** Worked example: 12 min x 60 / 10 = 72 s (script). Rules differ by platform.
 **Explain simply:**
 - Time in one section cannot be moved to another, so saving time there is wasted.
 - Without going back, a skip is final, so a guess (if there is no penalty, or after elimination) beats leaving blank.
@@ -359,7 +374,7 @@
 ### Q25 ⭐⭐ 🟡 Why does the raw-score cutoff for a reasoning section change between batches, and how should that change the target you set for yourself?
 **Asked at:** commonly asked (no company-specific report found); Glassdoor snippet for Infosys mentions section cutoffs (reported, unverified).
 **What the interviewer is checking:** Whether you understand that a cutoff is relative and uncertain.
-**Say this in the interview:** "Cutoffs are set after seeing the batch's results or by paper difficulty, so they move. I would aim well above last year's reported cutoff and not plan around it."
+**Say this in the interview:** "Cutoffs can move with paper difficulty and the batch's results, though companies rarely say how they set them. I would aim well above last year's reported cutoff and not plan around it."
 **Answer:** **Cutoffs can move because the paper difficulty, number of candidates, number of seats and score distribution differ between batches; set a target with a safety margin. Companies rarely publish cutoffs, so any number you read is unverified.**
 **Step-by-step reasoning:**
 1. A harder paper lowers scores for everyone, so a fixed pass mark would reject many; a relative cutoff adjusts.
@@ -447,7 +462,7 @@
 4. Check how the test treats marked-but-answered questions; confirm on the instruction screen.
 **Check:** Our suggestion, not a research finding.
 **Explain simply:**
-- Mark for review is a flag for you only; it does not change the score.
+- Mark for review is usually just a flag for you; whether it affects scoring depends on the platform, so confirm on the instruction screen.
 **Likely follow-ups:** 1) *What if marked questions are not scored?* Some tools differ; read the rules, never assume. 2) *Mark and leave blank?* Avoid it.
 **Common mistakes / traps:** Marking half the paper; leaving marked items unanswered; spending the last minutes on the hardest one.
 
@@ -539,11 +554,11 @@
 **Asked at:** commonly asked (no company-specific report found); the sources file does not support adaptive tests at these employers, so this is conditional.
 **What the interviewer is checking:** Whether you adapt to test rules instead of assuming one format.
 **Say this in the interview:** "In an adaptive test I would put more care into each answer, avoid skipping around since the system may not allow it, and treat a harder question as a sign I am doing well."
-**Answer:** **Early answers can matter more, and you often cannot go back; prioritise accuracy on every question and do not read a hard question as failure. Confirm the rules on the instruction page.**
+**Answer:** **In some adaptive designs early answers can matter more (general knowledge, varies by test), and you often cannot go back; prioritise accuracy on every question and do not read a hard question as failure. Confirm the rules on the instruction page.**
 **Step-by-step reasoning:**
 1. Adaptive means the next question's difficulty depends on whether you answered the previous ones correctly.
 2. Because skipping and revisiting are usually not allowed, you must answer each one before moving on.
-3. A harder question usually suggests earlier answers were correct, so stay calm.
+3. A harder question often suggests earlier answers were correct, so stay calm.
 4. Use a fixed time cap per question (our suggestion) since you cannot bank time from easy ones.
 5. In a fixed test you can do easy ones first; adaptive tests remove that option.
 **Check:** Conditional advice; features differ by test design.
@@ -615,7 +630,7 @@
 4. Day 6: full-length mock under test conditions; review every miss.
 5. Day 7: light revision of the error log, check device and ID, sleep early.
 6. Daily split (for about 2 hours): 20 percent learning a rule, 50 percent timed practice, 30 percent reviewing errors.
-7. Skip the lowest-yield topic entirely; a guess on it is better than a rushed study.
+7. Skip the lowest-yield topic entirely; if the test has no negative marking, a guess on it is better than a rushed study.
 **Check:** Percentages sum to 100; hand-checked.
 **Explain simply:**
 - Triage means sorting by importance and fixability, like in a hospital.
@@ -634,9 +649,9 @@
 4. 90 + 150 = 240 s fits exactly: 0.8 + 0.5 = 1.3.
 5. Best is 1.7, using 130 s; 110 s remain for checking.
 6. With the spare 110 s, either check your two answers or, since there is no negative marking, put a guess on the third question rather than leave it blank (a random guess is a small bonus; the number of options is not given, so it is not counted in 1.7).
-**Fast method (30 seconds):** Rank by success per second: 0.9/40 = 0.0225, 0.8/90 = 0.0089, 0.5/150 = 0.0033; take in that order until the time runs out. Here this order gives the optimum, but in general you should also check combinations (this is the "knapsack" problem).
+**Fast method (30 seconds):** Rank by success per second: 0.9/40 = 0.0225, 0.8/90 = 0.0089, 0.5/150 = 0.0033; take in that order until the time runs out. Here this order gives the optimum, but in general you should also check combinations (this is called the "knapsack" problem: choosing items to get the most value within a fixed limit).
 **Check:** Verified by script: all 8 subsets enumerated.
 **Explain simply:**
 - Expected number correct means the sum of the success chances of the questions you attempt.
-**Likely follow-ups:** 1) *If the 150-second question was 95%?* Then 40 + 150 gives 1.85 and beats 1.7 (hand-checked: 0.9 + 0.95 = 1.85, 190 s fits). 2) *With only 120 seconds?* 40 + 90 = 130 s no longer fits, so the best single question is the 40-second one with 0.9 (checked by script logic: no pair fits).
+**Likely follow-ups:** 1) *If the 150-second question was 95%?* Then 40 + 150 gives 1.85 and beats 1.7 (hand-checked: 0.9 + 0.95 = 1.85, 190 s fits). 2) *With only 120 seconds?* 40 + 90 = 130 s no longer fits, so the best single question is the 40-second one with 0.9 (script-verified: no pair fits in 120 s).
 **Common mistakes / traps:** Picking the biggest success chance first without checking fit; attempting the long question at the cost of two short ones.

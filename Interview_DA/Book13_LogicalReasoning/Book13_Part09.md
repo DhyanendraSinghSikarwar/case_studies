@@ -330,7 +330,7 @@ Real output from Python sqlite3 (name, status):
 - LEFT JOIN means "keep every left row, attach right rows where they match, otherwise NULLs".
 - WHERE runs after the join; `NULL = 'Present'` is UNKNOWN, so unmatched rows vanish.
 - To list employees with no Present record, use Query 1's join plus `WHERE a.emp_id IS NULL` (here Bala and Dev).
-**Likely follow-ups:** 1) *How many rows with no condition at all (plain join on emp_id)?* 5 (Asha twice; script-verified). 2) *Which query finds "everyone, with attendance shown only if Present"?* Query 1.
+**Likely follow-ups:** 1) *How many rows with no extra condition at all (a plain LEFT JOIN on emp_id)?* 5 (Asha twice, Dev with NULL; script-verified). A plain inner join would give 4, because Dev has no attendance row. 2) *Which query finds "everyone, with attendance shown only if Present"?* Query 1.
 **Common mistakes / traps:** Answering 5 for Query 1 (counting Asha's Absent row); answering 4 for Query 2.
 
 ### Q13 ⭐⭐⭐ 🟡 Table `staff(dept, salary)` has rows: (Sales, 40000), (Sales, 60000), (HR, 30000), (HR, 70000), (IT, 80000), (HR, 55000). How many rows does each query return?
@@ -660,7 +660,7 @@ Before pass 6 the test `steps < 5` is false, so the loop ends. `MOD` means the r
 **Explain simply:**
 - A WHILE loop re-checks its condition before every pass; AND needs both parts true to continue.
 - This is the Collatz rule (halve if even, else triple and add one); it eventually reaches 1 for 27 but needs many more steps.
-**Likely follow-ups:** 1) *What if the cap were steps < 3?* Prints 124 3. 2) *What if the condition used OR?* The loop would continue while either part is true and run until n = 1 and steps >= 5.
+**Likely follow-ups:** 1) *What if the cap were steps < 3?* Prints 124 3. 2) *What if the condition used OR?* The loop would continue while either part is true, so it only stops when n = 1 and steps >= 5: it runs 111 passes and prints 1 111 (script-verified).
 **Common mistakes / traps:** Running until n = 1, or stopping one pass early or late (printing 62 4 or 94 6).
 
 ### Q27 ⭐⭐ 🟡 A decision table has three Yes/No conditions C1, C2 and C3, so there are 8 possible combinations. The table defines rules for these combinations only: YYY, YYN, YNY, NYY, NNY, NNN (written C1 C2 C3). How many combinations are missing, and which are they?
@@ -786,8 +786,8 @@ West AND tier IS NOT NULL  -> [(1,), (2,)]
 1. Lower edge: 1000 is the first included whole number; 999 is the last excluded one.
 2. Upper edge: 4999 is the last included; 5000 is the first excluded (rule says "below 5000").
 3. Expected results: No, Yes, Yes, No. Checked by script: rule `1000 <= x < 5000` gives False, True, True, False for the four values, and True for 2500.
-4. A wrong rule such as `>1000`, `<=5000` or `>=5000` still gives the same result for 2500, but fails at one of the four edge values.
-**Check:** hand-and-script check above; each of the four typical coding slips (`>`, `<=`) flips exactly one edge test.
+4. A wrong rule such as `>1000` (instead of `>=1000`) or `<=5000` (instead of `<5000`) still gives the same result for 2500, but fails at one of the four edge values.
+**Check:** hand-and-script check above; re-run: the slips `>1000`, `>=1001`, `<=5000` and `<4999` each flip exactly one of the four edge tests (1000, 1000, 5000, 4999 respectively) and leave 2500 unchanged.
 **Explain simply:**
 - "Boundary value testing": most bugs sit at the edges of a range, so test just below, on, and just above (or the first and last valid values).
 - A mid-range value like 2500 only proves the middle works.
